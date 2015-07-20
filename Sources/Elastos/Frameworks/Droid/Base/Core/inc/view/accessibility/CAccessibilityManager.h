@@ -6,7 +6,6 @@
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IIWindow;
 using Elastos::Droid::Content::IContext;
@@ -233,7 +232,7 @@ public:
     static const Int32 STATE_FLAG_TOUCH_EXPLORATION_ENABLED;
 
     static AutoPtr<IAccessibilityManager> sInstance;
-    static Mutex sInstanceSync;
+    static Object sInstanceSync;
 
     static const Int32 DO_SET_STATE;
 
@@ -242,7 +241,7 @@ public:
     Int32 mUserId;
 
     AutoPtr<IHandler> mHandler;
-    Mutex mHandlerLock;
+    Object mHandlerLock;
 
     Boolean mIsEnabled;
 

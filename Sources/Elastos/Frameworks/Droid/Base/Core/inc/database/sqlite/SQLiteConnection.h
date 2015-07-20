@@ -10,7 +10,6 @@
 #include "util/LruCache.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Regex::IPattern;
@@ -183,7 +182,7 @@ private:
         static const Int32 COOKIE_INDEX_MASK = 0xff;
 
         AutoPtr< ArrayOf<Operation*> > mOperations;
-        Mutex mOperationsLock;
+        Object mOperationsLock;
         Int32 mIndex;
         Int32 mGeneration;
     };

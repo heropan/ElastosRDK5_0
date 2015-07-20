@@ -304,14 +304,14 @@ GeckoApp::~GeckoApp()
 Boolean GeckoApp::CheckLaunchState(
     /* [in] */ LaunchState checkState)
 {
-    Mutex::Autolock lock(&sSyncLaunchState);
+    AutoLock lock(&sSyncLaunchState);
     return sLaunchState == checkState;
 }
 
 void GeckoApp::SetLaunchState(
     /* [in] */ LaunchState setState)
 {
-    Mutex::Autolock lock(&sSyncLaunchState);
+    AutoLock lock(&sSyncLaunchState);
     sLaunchState = setState;
 }
 
@@ -322,7 +322,7 @@ Boolean GeckoApp::CheckAndSetLaunchState(
     /* [in] */ LaunchState setState)
 {
     DBG_LOG("\t + GeckoApp::CheckAndSetLaunchState()");
-    Mutex::Autolock lock(&sSyncLaunchState);
+    AutoLock lock(&sSyncLaunchState);
     if (sLaunchState != checkState) {
         #if (DBG)
         Logger::D(String("GeckoApp"), "\t sLaunchState: %d", sLaunchState);
@@ -384,7 +384,7 @@ List<String> GeckoApp::GetPluginDirectories() {
             PackageManager_GET_SERVICES | PackageManager_GET_META_DATA,
             (ArrayOf<IResolveInfo*>**)&plugins);
 
-    Mutex::Autolock lock(sSyncPackageInfoCache);
+    AutoLock lock(sSyncPackageInfoCache);
     // clear the list of existing packageInfo objects
     mPackageInfoCache.clear();
 

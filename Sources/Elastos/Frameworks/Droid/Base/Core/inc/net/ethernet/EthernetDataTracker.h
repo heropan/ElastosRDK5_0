@@ -6,7 +6,6 @@
 #include "content/BroadcastReceiver.h"
 #include "os/Runnable.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -274,13 +273,13 @@ private:
     static const String TAG; // = "Ethernet";
 
     static AutoPtr<EthernetDataTracker> sInstance;
-    static Mutex sInstanceLock;
+    static Object sInstanceLock;
 
 private:
     Boolean mLinkUp;
     String mIfaceMatch;
     String mIface;
-    Mutex mIfaceLock;
+    Object mIfaceLock;
 
     AutoPtr<IAtomicBoolean> mTeardownRequested;
     AutoPtr<IAtomicBoolean> mPrivateDnsRouteSet;
@@ -306,7 +305,7 @@ private:
 
     AutoPtr<BroadcastReceiver> mPppoeStateReceiver;
 
-    Mutex mSelfLock;
+    Object mSelfLock;
 };
 
 } // Ethernet

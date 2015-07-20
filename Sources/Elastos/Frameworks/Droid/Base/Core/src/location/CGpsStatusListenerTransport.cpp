@@ -111,7 +111,7 @@ ECode CGpsStatusListenerTransport::OnNmeaReceived(
 {
     if (mNmeaListener != NULL) {
         {
-            Mutex::Autolock lock(mNmeaBufferLock);
+            AutoLock lock(mNmeaBufferLock);
 
             AutoPtr<Nmea> nmeaObj = new Nmea(timestamp, nmea);
             mNmeaBuffer.PushBack(nmeaObj);
@@ -130,14 +130,14 @@ ECode CGpsStatusListenerTransport::HandleGpsChanged(
     /* [in] */ Int32 event)
 {
     // synchronize on mGpsStatus to ensure the data is copied atomically.
-    Mutex::Autolock lock(mHost->mGpsStatusLock);
+    AutoLock lock(mHost->mGpsStatusLock);
 
     return mListener->OnGpsStatusChanged(event);
 }
 
 ECode CGpsStatusListenerTransport::HandleNmeaReceived()
 {
-    Mutex::Autolock lock(mNmeaBufferLock);
+    AutoLock lock(mNmeaBufferLock);
 
     List< AutoPtr<Nmea> >::Iterator it;
     for (it = mNmeaBuffer.Begin(); it != mNmeaBuffer.End(); ++it) {

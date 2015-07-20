@@ -85,7 +85,7 @@ DisplayManagerGlobal::~DisplayManagerGlobal()
 
 AutoPtr<DisplayManagerGlobal> DisplayManagerGlobal::GetInstance()
 {
-    Mutex::Autolock lock(sInstanceLock);
+    AutoLock lock(sInstanceLock);
 
     if (sInstance == NULL) {
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::DISPLAY_SERVICE);
@@ -108,7 +108,7 @@ ECode DisplayManagerGlobal::GetDisplayInfo(
     VALIDATE_NOT_NULL(displayInfo);
 
     //try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IDisplayInfo> info;
     if (USE_CACHE) {
@@ -150,7 +150,7 @@ ECode DisplayManagerGlobal::GetDisplayIds(
     VALIDATE_NOT_NULL(displayIds);
 
     //try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (USE_CACHE) {
         if (mDisplayIdCache != NULL) {
@@ -228,7 +228,7 @@ ECode DisplayManagerGlobal::RegisterDisplayListener(
         handler->GetLooper((ILooper**)&looper);
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     List<AutoPtr<DisplayListenerDelegate> >::Iterator iter = FindDisplayListenerLocked(listener);
     if (iter == mDisplayListeners.End()) {
@@ -248,7 +248,7 @@ ECode DisplayManagerGlobal::UnregisterDisplayListener(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     List<AutoPtr<DisplayListenerDelegate> >::Iterator iter = FindDisplayListenerLocked(listener);
     if (iter != mDisplayListeners.End()) {
@@ -288,7 +288,7 @@ void DisplayManagerGlobal::HandleDisplayEvent(
     /* [in] */ Int32 displayId,
     /* [in] */ Int32 event)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (USE_CACHE) {
         mDisplayInfoCache.Erase(displayId);

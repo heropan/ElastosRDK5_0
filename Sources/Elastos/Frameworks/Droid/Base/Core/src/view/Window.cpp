@@ -99,7 +99,7 @@ ECode Window::GetContext(
 ECode Window::GetWindowStyle(
     /* [out] */ ITypedArray** attrs)
 {
-    Mutex::Autolock lock(GetSelfSyncLock());
+    AutoLock lock(GetSelfSyncLock());
 
     if (mWindowStyle == NULL) {
         AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(

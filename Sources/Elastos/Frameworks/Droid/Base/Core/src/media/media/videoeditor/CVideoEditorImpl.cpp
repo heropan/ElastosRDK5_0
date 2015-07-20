@@ -174,7 +174,7 @@ ECode CVideoEditorImpl::GetNativeContext(
 ECode CVideoEditorImpl::AddAudioTrack(
     /* [in] */ IAudioTrack2* audioTrack)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     if (audioTrack == NULL) {
         //throw new IllegalArgumentException("Audio Track is NULL");
@@ -217,7 +217,7 @@ ECode CVideoEditorImpl::AddAudioTrack(
 ECode CVideoEditorImpl::AddMediaItem(
     /* [in] */ IMediaItem* mediaItem)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
     /*
      * Validate Media Item
      */
@@ -267,7 +267,7 @@ ECode CVideoEditorImpl::AddMediaItem(
 ECode CVideoEditorImpl::AddTransition(
     /* [in] */ ITransition* transition)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     if (transition == NULL) {
         //throw new IllegalArgumentException("NULL Transition");
@@ -679,7 +679,7 @@ ECode CVideoEditorImpl::GetMediaItem(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
     List<AutoPtr<IMediaItem> >::Iterator it = mMediaItems.Begin();
     for (; it != mMediaItems.End(); ++it) {
         String id;
@@ -729,7 +729,7 @@ ECode CVideoEditorImpl::InsertAudioTrack(
     /* [in] */ IAudioTrack2* audioTrack,
     /* [in] */ const String& afterAudioTrackId)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     if (mAudioTracks.GetSize() == 1) {
         //throw new IllegalArgumentException("No more tracks can be added");
@@ -761,7 +761,7 @@ ECode CVideoEditorImpl::InsertMediaItem(
     /* [in] */ IMediaItem* mediaItem,
     /* [in] */ const String& afterMediaItemId)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     List<AutoPtr<IMediaItem> >::Iterator it = mMediaItems.Begin();
     for (; it != mMediaItems.End(); ++it) {
@@ -815,7 +815,7 @@ ECode CVideoEditorImpl::MoveAudioTrack(
     /* [in] */ const String& audioTrackId,
     /* [in] */ const String& afterAudioTrackId)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     //throw new IllegalStateException("Not supported");
     return E_ILLEGAL_STATE_EXCEPTION;
@@ -825,7 +825,7 @@ ECode CVideoEditorImpl::MoveMediaItem(
     /* [in] */ const String& mediaItemId,
     /* [in] */ const String& afterMediaItemId)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     AutoPtr<IMediaItem> moveMediaItem;
     moveMediaItem = RemoveMediaItem(mediaItemId, TRUE);
@@ -919,7 +919,7 @@ ECode CVideoEditorImpl::ReleaseResources()
 
 ECode CVideoEditorImpl::RemoveAllMediaItems()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     mMANativeHelper->SetGeneratePreview(TRUE);
 
@@ -954,7 +954,7 @@ ECode CVideoEditorImpl::RemoveAudioTrack(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     AutoPtr<IAudioTrack2> audioTrack;
     GetAudioTrack(audioTrackId, (IAudioTrack2**)&audioTrack);
@@ -981,7 +981,7 @@ ECode CVideoEditorImpl::RemoveMediaItem(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     String firstItemString;
     mMediaItems[0]->GetId(&firstItemString);
@@ -1041,7 +1041,7 @@ AutoPtr<IMediaItem> CVideoEditorImpl::RemoveMediaItem(
     /* [in] */ const String& mediaItemId,
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     String firstItemString;
     mMediaItems[0]->GetId(&firstItemString);
@@ -1077,7 +1077,7 @@ ECode CVideoEditorImpl::RemoveTransition(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     AutoPtr<ITransition> transition;
     GetTransition(transitionId, (ITransition**)&transition);

@@ -11,7 +11,6 @@
 #include "util/CDisplayMetrics.h"
 #include "util/CTypedValue.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IMovie;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
@@ -1126,7 +1125,7 @@ public: /*package*/
     static AutoPtr<IResources> mSystem;
 
     AutoPtr<CTypedValue> mTmpValue;
-    Mutex mTmpValueLock;
+    Object mTmpValueLock;
     AutoPtr<CConfiguration> mTmpConfig;
     AutoPtr<CTypedArray> mCachedStyledAttributes;
     AutoPtr<CAssetManager> mAssets;
@@ -1157,7 +1156,7 @@ private:
     static Boolean sPreloaded;
     static Int32 sPreloadedDensity;
 
-    static Mutex mSyncLock;
+    static Object mSyncLock;
 
     // These are protected by the mTmpValue lock.
     DrawableMap mDrawableCache;
@@ -1168,7 +1167,7 @@ private:
 
     Int32 mLastCachedXmlBlockIndex;
     AutoPtr< ArrayOf<Int32> > mCachedXmlBlockIds;
-    Mutex mCachedXmlBlockIdsLock;
+    Object mCachedXmlBlockIdsLock;
     AutoPtr< ArrayOf<XmlBlock*> > mCachedXmlBlocks;
     AutoPtr<CConfiguration> mConfiguration;
     // AutoPtr<NativePluralRules> mPluralRule;

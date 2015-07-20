@@ -11,7 +11,6 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IVibrator;
 
 namespace Elastos {
@@ -354,7 +353,7 @@ private:
     AutoPtr<IKeyCharacterMap> mKeyCharacterMap;
     Boolean mHasVibrator;
     List<AutoPtr<MotionRange> > mMotionRanges;
-    Mutex mMotionRangesLock;
+    Object mMotionRangesLock;
 
     AutoPtr<IVibrator> mVibrator; // guarded by mMotionRanges during initialization
 };

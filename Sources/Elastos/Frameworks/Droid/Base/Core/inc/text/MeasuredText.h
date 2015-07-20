@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IPaintFontMetricsInt;
 using Elastos::Droid::Text::Style::IMetricAffectingSpan;
 
@@ -66,7 +65,7 @@ public:
     Int32 mLen;
 
 private:
-    static Mutex sLock;
+    static Object sLock;
     static AutoPtr< ArrayOf<MeasuredText*> > sCached;
 
     static Boolean localLOGV;

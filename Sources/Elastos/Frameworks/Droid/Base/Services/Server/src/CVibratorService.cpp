@@ -34,7 +34,7 @@ const String CVibratorService::TAG("VibratorService");
 
 ECode CVibratorService::VibrationRunnable::Run()
 {
-    Mutex::Autolock Lock(mHost->mVibrationsLock);
+    AutoLock Lock(mHost->mVibrationsLock);
     mHost->DoCancelVibrateLocked();
     mHost->StartNextVibrationLocked();
     return NOERROR;
@@ -90,7 +90,7 @@ CAR_INTERFACE_IMPL(CVibratorService::Vibration, IProxyDeathRecipient);
 
 ECode CVibratorService::Vibration::ProxyDied()
 {
-    Mutex::Autolock Lock(mOwner->mVibrationsLock);
+    AutoLock Lock(mOwner->mVibrationsLock);
 
     mOwner->mVibrations.Remove(this);
     if (this == mOwner->mCurrentVibration) {
@@ -234,7 +234,7 @@ ECode CVibratorService::VibrateThread::Run()
         mOwner->mWakeLock->ReleaseLock();
         ISynchronize::Probe(mThread)->Unlock();
     }
-    Mutex::Autolock Lock(mOwner->mVibrationsLock);
+    AutoLock Lock(mOwner->mVibrationsLock);
     // TODO: this object will be free?
     if (mOwner->mThread.Get() == this) {
         mOwner->mThread = NULL;
@@ -264,7 +264,7 @@ ECode CVibratorService::IntentReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
     if (action.Equals(IIntent::ACTION_SCREEN_OFF)) {
-        Mutex::Autolock Lock(mOwner->mVibrationsLock);
+        AutoLock Lock(mOwner->mVibrationsLock);
         mOwner->DoCancelVibrateLocked();
 
         List<AutoPtr<Vibration> >::Iterator it;
@@ -386,7 +386,7 @@ ECode CVibratorService::Vibrate(
 
     AutoPtr<Vibration> vib = new Vibration(token, milliseconds, uid, this);
     {
-        Mutex::Autolock Lock(mVibrationsLock);
+        AutoLock Lock(mVibrationsLock);
         RemoveVibrationLocked(token);
         DoCancelVibrateLocked();
         mCurrentVibration = vib;
@@ -450,7 +450,7 @@ ECode CVibratorService::VibratePattern(
     //}
 
     {
-        Mutex::Autolock Lock(mVibrationsLock);
+        AutoLock Lock(mVibrationsLock);
         RemoveVibrationLocked(token);
         DoCancelVibrateLocked();
         if (repeat >= 0) {
@@ -480,7 +480,7 @@ ECode CVibratorService::CancelVibrate(
     // so wakelock calls will succeed
     Int64 identity = Binder::ClearCallingIdentity();
     //try {
-    Mutex::Autolock Lock(mVibrationsLock);
+    AutoLock Lock(mVibrationsLock);
     AutoPtr<Vibration> vib = RemoveVibrationLocked(token);
     if (vib == mCurrentVibration) {
         DoCancelVibrateLocked();
@@ -571,11 +571,11 @@ void CVibratorService::UnlinkVibration(
 
 void CVibratorService::UpdateInputDeviceVibrators()
 {
-    Mutex::Autolock Lock(mVibrationsLock);
+    AutoLock Lock(mVibrationsLock);
     DoCancelVibrateLocked();
 
     {
-        Mutex::Autolock Lock(mInputDeviceVibratorsLock);
+        AutoLock Lock(mInputDeviceVibratorsLock);
 
         mVibrateInputDevicesSetting = FALSE;
         //try {
@@ -666,7 +666,7 @@ Boolean CVibratorService::DoVibratorExists() {
 void CVibratorService::DoVibratorOn(
     /* [in] */ Int64 millis)
 {
-    Mutex::Autolock Lock(mInputDeviceVibratorsLock);
+    AutoLock Lock(mInputDeviceVibratorsLock);
     if (mInputDeviceVibrators.Begin() != mInputDeviceVibrators.End()) {
         List<AutoPtr<IVibrator> >::Iterator it;
         for (it = mInputDeviceVibrators.Begin(); it != mInputDeviceVibrators.End(); ++it) {
@@ -680,7 +680,7 @@ void CVibratorService::DoVibratorOn(
 
 void CVibratorService::DoVibratorOff()
 {
-    Mutex::Autolock Lock(mInputDeviceVibratorsLock);
+    AutoLock Lock(mInputDeviceVibratorsLock);
     if (mInputDeviceVibrators.Begin() != mInputDeviceVibrators.End()) {
         List<AutoPtr<IVibrator> >::Iterator it;
         for (it = mInputDeviceVibrators.Begin(); it != mInputDeviceVibrators.End(); ++it) {

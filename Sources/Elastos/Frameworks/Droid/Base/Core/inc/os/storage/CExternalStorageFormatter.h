@@ -65,7 +65,7 @@ private:
 
     AutoPtr<IStorageManager> mStorageManager;
 
-    Mutex mWakeLock;
+    Object mWakeLock;
 
     AutoPtr<ProgressDialog> mProgressDialog;//= NULL;
 

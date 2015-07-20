@@ -84,7 +84,7 @@ ECode CAudioManager::FocusEventHandlerDelegate::MyHandler::HandleMessage(
 
     AutoPtr<IOnAudioFocusChangeListener> listener;
     {
-        Mutex::Autolock lock(mHost->mOwner->mFocusListenerLock);
+        AutoLock lock(mHost->mOwner->mFocusListenerLock);
         listener = mHost->mOwner->FindFocusListener(info);
     }
     if (listener != NULL) {
@@ -1167,7 +1167,7 @@ ECode CAudioManager::RegisterAudioFocusListener(
     /* [in] */ IOnAudioFocusChangeListener* l)
 {
     String key = GetIdForAudioFocusListener(l);
-    Mutex::Autolock lock(mFocusListenerLock);
+    AutoLock lock(mFocusListenerLock);
     HashMap<String, AutoPtr<IOnAudioFocusChangeListener> >::Iterator it =
         mAudioFocusIdListenerMap.Find(key);
     if (it != mAudioFocusIdListenerMap.End()) {
@@ -1181,7 +1181,7 @@ ECode CAudioManager::UnregisterAudioFocusListener(
     /* [in] */ IOnAudioFocusChangeListener* l)
 {
     String key = GetIdForAudioFocusListener(l);
-    Mutex::Autolock lock(mFocusListenerLock);
+    AutoLock lock(mFocusListenerLock);
     HashMap<String, AutoPtr<IOnAudioFocusChangeListener> >::Iterator it =
     mAudioFocusIdListenerMap.Find(key);
     if (it != mAudioFocusIdListenerMap.End())

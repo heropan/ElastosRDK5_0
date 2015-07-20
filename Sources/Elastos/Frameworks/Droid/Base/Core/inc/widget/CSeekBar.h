@@ -130,7 +130,7 @@ public:
         /* [in] */ ISeekBarOnSeekBarChangeListener* l);
 
 private:
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 };
 
 }// namespace Widget

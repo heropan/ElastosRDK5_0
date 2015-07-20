@@ -4,7 +4,6 @@
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::IO::IFile;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Storage::IMountService;
 using Elastos::Droid::Os::Storage::IStorageVolume;
 
@@ -284,7 +283,7 @@ private:
 
     static AutoPtr<IFile> DATA_DIRECTORY;
 
-    static Mutex sLock;
+    static Object sLock;
 
     /**
      * @hide

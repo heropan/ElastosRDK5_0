@@ -4,12 +4,10 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
-#include <elrefbase.h>
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IIntent;
@@ -91,7 +89,7 @@ private:
         // for the fast path of retrieving settings.
         String mCallGetCommand;
         String mCallSetCommand;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:
@@ -935,7 +933,7 @@ public:
         static HashSet<String> MOVED_TO_LOCK_SETTINGS;
         static HashSet<String> MOVED_TO_GLOBAL;
         const static Boolean sInited;
-        static Mutex sSecureLock;
+        static Object sSecureLock;
 
         static const String PRIVACY_TAG;
         static AutoPtr<IContext> sContext;

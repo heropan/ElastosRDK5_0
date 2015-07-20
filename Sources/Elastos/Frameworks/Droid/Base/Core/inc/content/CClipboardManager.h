@@ -125,14 +125,14 @@ private:
 
 private:
     static AutoPtr<IClipboard> sService;
-    static Mutex sStaticLock;
+    static Object sStaticLock;
     static const Int32 MSG_REPORT_PRIMARY_CLIP_CHANGED;
 
 private:
     AutoPtr<IContext> mContext;
     List<AutoPtr<IClipboardManagerOnPrimaryClipChangedListener> > mPrimaryClipChangedListeners;
     AutoPtr<IOnPrimaryClipChangedListener> mPrimaryClipChangedServiceListener;
-    Mutex mPrimaryClipChangedListenersLock;
+    Object mPrimaryClipChangedListenersLock;
     AutoPtr<IHandler> mHandler;
 };
 

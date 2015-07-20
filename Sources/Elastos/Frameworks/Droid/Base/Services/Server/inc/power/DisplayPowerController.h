@@ -12,7 +12,6 @@
 #include "display/CDisplayManagerService.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Animation::IAnimator;
 using Elastos::Droid::Animation::IObjectAnimator;
@@ -464,7 +463,7 @@ private:
     static const Float BRIGHTENING_LIGHT_HYSTERESIS;
     static const Float DARKENING_LIGHT_HYSTERESIS;
 
-    Mutex mLock;
+    Object mLock;
 
     // Notifier for sending asynchronous notifications.
     AutoPtr<Notifier> mNotifier;

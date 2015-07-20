@@ -7,7 +7,6 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFileInputStream;
@@ -2430,9 +2429,9 @@ private:
     AutoPtr<IContext> mBase;
 
     List< AutoPtr<IComponentCallbacks> > mComponentCallbacks;
-    Mutex mComponentCallbacksLock;
+    Object mComponentCallbacksLock;
     List< AutoPtr<IActivityLifecycleCallbacks> > mActivityLifecycleCallbacks;
-    Mutex mActivityLifecycleCallbacksLock;
+    Object mActivityLifecycleCallbacksLock;
 };
 
 } // namespace App

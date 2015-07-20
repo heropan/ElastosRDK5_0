@@ -114,7 +114,7 @@ ECode CRemoteControlClient::MetadataEditor::PutString( // throws IllegalArgument
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
@@ -143,7 +143,7 @@ ECode CRemoteControlClient::MetadataEditor::PutInt64( // throws IllegalArgumentE
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
@@ -171,7 +171,7 @@ ECode CRemoteControlClient::MetadataEditor::PutBitmap( // throws IllegalArgument
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mApplied) {
         Logger::E(TAG, "Can't edit a previously applied MetadataEditor");
@@ -199,7 +199,7 @@ ECode CRemoteControlClient::MetadataEditor::PutBitmap( // throws IllegalArgument
 /*synchronized*/
 ECode CRemoteControlClient::MetadataEditor::Clear()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mApplied) {
         Logger::E(TAG, "Can't clear a previously applied MetadataEditor");
@@ -213,14 +213,14 @@ ECode CRemoteControlClient::MetadataEditor::Clear()
 /*synchronized*/
 ECode CRemoteControlClient::MetadataEditor::Apply()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mApplied) {
         Logger::E(TAG, "Can't apply a previously applied MetadataEditor");
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mOwner->mCacheLock);
+        AutoLock lock(mOwner->mCacheLock);
         // assign the edited data
         mOwner->mMetadata = NULL;
         CBundle::New(mEditorMetadata, (IBundle**)&mOwner->mMetadata);
@@ -325,7 +325,7 @@ ECode CRemoteControlClient::EditMetadata(
 ECode CRemoteControlClient::SetPlaybackState(
     /* [in] */ Int32 state)
 {
-    Mutex::Autolock lock(mCacheLock);
+    AutoLock lock(mCacheLock);
 
     if (mPlaybackState != state) {
         // store locally
@@ -346,7 +346,7 @@ ECode CRemoteControlClient::SetTransportControlFlags(
     /* [in] */ Int32 transportControlFlags)
 {
 
-    Mutex::Autolock lock(mCacheLock);
+    AutoLock lock(mCacheLock);
     // store locally
     mTransportControlFlags = transportControlFlags;
 
@@ -361,7 +361,7 @@ ECode CRemoteControlClient::SetPlaybackInformation(
     /* [in] */ Int32 value)
 {
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         switch (what) {
             case PLAYBACKINFO_PLAYBACK_TYPE:
             {
@@ -442,7 +442,7 @@ ECode CRemoteControlClient::GetInt32PlaybackInformation(
     VALIDATE_NOT_NULL(result);
 
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         switch (what) {
             case PLAYBACKINFO_PLAYBACK_TYPE:
@@ -639,7 +639,7 @@ ECode CRemoteControlClient::EventHandler::HandleMessage(
         case MSG_REQUEST_PLAYBACK_STATE:
         {
             {
-                Mutex::Autolock lock(mOwner->mCacheLock);
+                AutoLock lock(mOwner->mCacheLock);
                 mOwner->SendPlaybackState_syncCacheLock();
             }
             break;
@@ -647,7 +647,7 @@ ECode CRemoteControlClient::EventHandler::HandleMessage(
         case MSG_REQUEST_METADATA:
         {
             {
-                Mutex::Autolock lock(mOwner->mCacheLock);
+                AutoLock lock(mOwner->mCacheLock);
                 mOwner->SendMetadata_syncCacheLock();
             }
             break;
@@ -655,7 +655,7 @@ ECode CRemoteControlClient::EventHandler::HandleMessage(
         case MSG_REQUEST_TRANSPORTCONTROL:
         {
             {
-                Mutex::Autolock lock(mOwner->mCacheLock);
+                AutoLock lock(mOwner->mCacheLock);
                 mOwner->SendTransportControlFlags_syncCacheLock();
             }
             break;
@@ -663,7 +663,7 @@ ECode CRemoteControlClient::EventHandler::HandleMessage(
         case MSG_REQUEST_ARTWORK:
         {
             {
-                Mutex::Autolock lock(mOwner->mCacheLock);
+                AutoLock lock(mOwner->mCacheLock);
                 mOwner->SendArtwork_syncCacheLock();
             }
             break;
@@ -839,7 +839,7 @@ void CRemoteControlClient::OnNewInternalClientGen(
     /* [in] */ Int32 artHeight)
 {
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         // this remote control client is told it is the "focused" one:
         // it implies that now (mCurrentClientGenId == mInternalClientGenId) is true
@@ -855,7 +855,7 @@ void CRemoteControlClient::OnNewCurrentClientGen(
     /* [in] */ Int32 clientGeneration)
 {
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         mCurrentClientGenId = clientGeneration;
     }
 }
@@ -864,7 +864,7 @@ void CRemoteControlClient::OnPlugDisplay(
     /* [in] */ IIRemoteControlDisplay* rcd)
 {
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         mRcDisplay = rcd;
     }
 }
@@ -873,7 +873,7 @@ void CRemoteControlClient::OnUnplugDisplay(
     /* [in] */ IIRemoteControlDisplay* rcd)
 {
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         if ((mRcDisplay != NULL) && (rcd == mRcDisplay)) {
             mRcDisplay = NULL;

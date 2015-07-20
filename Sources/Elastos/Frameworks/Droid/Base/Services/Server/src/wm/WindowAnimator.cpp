@@ -42,7 +42,7 @@ ECode WindowAnimator::AnimationRunnable::Run()
     // goes away and only the WindowAnimator.this remains.
     Object::Autolock lock(mHost->mService->mWindowMapLock);
     {
-        Mutex::Autolock lock(mHost->mSelfLock);
+        AutoLock lock(mHost->mSelfLock);
         mHost->CopyLayoutToAnimParamsLocked();
         mHost->AnimateLocked();
     }
@@ -140,7 +140,7 @@ void WindowAnimator::RemoveDisplayLocked(
 
 void WindowAnimator::UpdateAnimToLayoutLocked()
 {
-    Mutex::Autolock lock(mAnimToLayoutLock);
+    AutoLock lock(mAnimToLayoutLock);
     mAnimToLayout->mBulkUpdateParams = mBulkUpdateParams;
     mAnimToLayout->mPendingLayoutChanges
             = new HashMap<Int32, Int32>(
@@ -159,7 +159,7 @@ void WindowAnimator::CopyLayoutToAnimParamsLocked()
     AutoPtr<CWindowManagerService::LayoutToAnimatorParams> layoutToAnim
             = mService->mLayoutToAnim;
 
-    Mutex::Autolock lock(mService->mLayoutToAnimLock);
+    AutoLock lock(mService->mLayoutToAnimLock);
 
     layoutToAnim->mAnimationScheduled = FALSE;
 
@@ -801,7 +801,7 @@ void WindowAnimator::AnimateLocked()
     }
 
     if (mAnimating) {
-        Mutex::Autolock lock(mService->mLayoutToAnimLock);
+        AutoLock lock(mService->mLayoutToAnimLock);
         mService->ScheduleAnimationLocked();
     }
     else if (wasAnimating) {
@@ -873,7 +873,7 @@ String WindowAnimator::BulkUpdateParamsToString(
 
 void WindowAnimator::ClearPendingActions()
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     mPendingActions = 0;
 }
 

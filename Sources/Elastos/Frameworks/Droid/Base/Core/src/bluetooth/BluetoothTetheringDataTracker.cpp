@@ -257,7 +257,7 @@ ECode BluetoothTetheringDataTracker::IsAvailable(
     /* [out] */ Boolean* isAvailable)
 {
     VALIDATE_NOT_NULL(isAvailable)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mNetworkInfo->IsAvailable(isAvailable);
 }
 
@@ -309,7 +309,7 @@ ECode BluetoothTetheringDataTracker::GetNetworkInfo(
     /* [out] */ INetworkInfo** info)
 {
     VALIDATE_NOT_NULL(info)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *info = mNetworkInfo;
     REFCOUNT_ADD(*info)
     return NOERROR;
@@ -320,7 +320,7 @@ ECode BluetoothTetheringDataTracker::GetLinkProperties(
     /* [out] */ ILinkProperties** linkProperties)
 {
     VALIDATE_NOT_NULL(linkProperties)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return CLinkProperties::New(mLinkProperties, linkProperties);
 }
 
@@ -432,7 +432,7 @@ Boolean BluetoothTetheringDataTracker::ReadLinkProperty(
 void BluetoothTetheringDataTracker::StartReverseTether(
     /* [in] */ const String& iface)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     sIface = iface;
     if (DBG) Logger::D(TAG, "startReverseTether mCsHandler: %p", mCsHandler.Get());
     AutoPtr<IRunnable> runnable = new DhcpRunnable(this);
@@ -443,7 +443,7 @@ void BluetoothTetheringDataTracker::StartReverseTether(
 // synchronized
 void BluetoothTetheringDataTracker::StopReverseTether()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     //NetworkUtils.stopDhcp(iface);
     Boolean isAlive;
     if(mDhcpThread != NULL && (mDhcpThread->IsAlive(&isAlive), isAlive)) {

@@ -89,7 +89,7 @@ ECode LocalSocketImpl::SocketInputStream::Close()
 ECode LocalSocketImpl::SocketInputStream::Read(
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(mOwner->mReadMonitor);
+    AutoLock lock(mOwner->mReadMonitor);
 
     AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
     if (myFd == NULL) {
@@ -114,7 +114,7 @@ ECode LocalSocketImpl::SocketInputStream::ReadBytes(
     /* [in] */ Int32 len,
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(mOwner->mReadMonitor);
+    AutoLock lock(mOwner->mReadMonitor);
 
     AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
     if (myFd == NULL) {
@@ -226,7 +226,7 @@ ECode LocalSocketImpl::SocketOutputStream::Close()
 ECode LocalSocketImpl::SocketOutputStream::Write (
     /* [in] */ Int32 b)
 {
-    Mutex::Autolock lock(mOwner->mWriteMonitor);
+    AutoLock lock(mOwner->mWriteMonitor);
 
     AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
     if (myFd == NULL) {
@@ -248,7 +248,7 @@ ECode LocalSocketImpl::SocketOutputStream::WriteBytesEx (
     /* [in] */ Int32 off,
     /* [in] */ Int32 len)
 {
-    Mutex::Autolock lock(mOwner->mWriteMonitor);
+    AutoLock lock(mOwner->mWriteMonitor);
 
     AutoPtr<IFileDescriptor> myFd = mOwner->mFd;
     if (myFd == NULL) {
@@ -1028,7 +1028,7 @@ ECode LocalSocketImpl::Create(
  */
 ECode LocalSocketImpl::Close()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mFd == NULL) return NOERROR;
     FAIL_RETURN(NativeClose(mFd));
@@ -1122,7 +1122,7 @@ ECode LocalSocketImpl::GetInputStream(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mFis == NULL) {
             mFis = new SocketInputStream(this);
@@ -1151,7 +1151,7 @@ ECode LocalSocketImpl::GetOutputStream(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mFos == NULL) {
             mFos = new SocketOutputStream(this);
@@ -1298,7 +1298,7 @@ ECode LocalSocketImpl::SetOption(
 void LocalSocketImpl::SetFileDescriptorsForSend(
     /* [in] */ ArrayOf<IFileDescriptor*>* fds)
 {
-    Mutex::Autolock lock(mWriteMonitor);
+    AutoLock lock(mWriteMonitor);
 
     mOutboundFileDescriptors = fds;
 }
@@ -1315,7 +1315,7 @@ void LocalSocketImpl::SetFileDescriptorsForSend(
  */
 AutoPtr< ArrayOf<IFileDescriptor*> > LocalSocketImpl::GetAncillaryFileDescriptors()
 {
-    Mutex::Autolock lock(mReadMonitor);
+    AutoLock lock(mReadMonitor);
 
     AutoPtr< ArrayOf<IFileDescriptor*> > result = mInboundFileDescriptors;
 

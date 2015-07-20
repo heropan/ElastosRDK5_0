@@ -189,7 +189,7 @@ ECode CAccessibilityManagerService::AccessibilityConnectionWrapper::UnlinkToDeat
 ECode CAccessibilityManagerService::AccessibilityConnectionWrapper::ProxyDied()
 {
     UnlinkToDeath();
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     mHost->RemoveAccessibilityInteractionConnectionLocked(mWindowId, mUserId);
 
     return NOERROR;
@@ -469,7 +469,7 @@ Int32 CAccessibilityManagerService::SecurityPolicy::GetFocusedWindowId()
     AutoPtr<IBinder> token;
     ASSERT_SUCCEEDED(mHost->mWindowManagerService->GetFocusedWindowToken((IBinder**)&token));
     if (token != NULL) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         Int32 windowId = GetFocusedWindowIdLocked(token, mHost->mGlobalWindowTokens);
         if (windowId < 0) {
             windowId = GetFocusedWindowIdLocked(token,
@@ -602,7 +602,7 @@ ECode CAccessibilityManagerService::AccessibilityContentObserver::OnChange(
 {
     Boolean bval;
     if (mAccessibilityEnabledUri->Equals(uri ? uri->Probe(EIID_IInterface) : NULL, &bval), bval) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // We will update when the automation service dies.
         if (mHost->mUiAutomationService == NULL) {
             AutoPtr<UserState> userState = mHost->GetCurrentUserStateLocked();
@@ -613,7 +613,7 @@ ECode CAccessibilityManagerService::AccessibilityContentObserver::OnChange(
         }
     }
     else if (mTouchExplorationEnabledUri->Equals(uri ? uri->Probe(EIID_IInterface) : NULL, &bval), bval) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // We will update when the automation service dies.
         if (mHost->mUiAutomationService == NULL) {
             AutoPtr<UserState> userState = mHost->GetCurrentUserStateLocked();
@@ -623,7 +623,7 @@ ECode CAccessibilityManagerService::AccessibilityContentObserver::OnChange(
         }
     }
     else if (mDisplayMagnificationEnabledUri->Equals(uri ? uri->Probe(EIID_IInterface) : NULL, &bval), bval) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // We will update when the automation service dies.
         if (mHost->mUiAutomationService == NULL) {
             AutoPtr<UserState> userState = mHost->GetCurrentUserStateLocked();
@@ -633,7 +633,7 @@ ECode CAccessibilityManagerService::AccessibilityContentObserver::OnChange(
         }
     }
     else if (mEnabledAccessibilityServicesUri->Equals(uri ? uri->Probe(EIID_IInterface) : NULL, &bval), bval) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // We will update when the automation service dies.
         if (mHost->mUiAutomationService == NULL) {
             AutoPtr<UserState> userState = mHost->GetCurrentUserStateLocked();
@@ -642,7 +642,7 @@ ECode CAccessibilityManagerService::AccessibilityContentObserver::OnChange(
         }
     }
     else if (mTouchExplorationGrantedAccessibilityServicesUri->Equals(uri ? uri->Probe(EIID_IInterface) : NULL, &bval), bval) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // We will update when the automation service dies.
         if (mHost->mUiAutomationService == NULL) {
             AutoPtr<UserState> userState = mHost->GetCurrentUserStateLocked();
@@ -694,7 +694,7 @@ CAccessibilityManagerService::MyPackageMonitor::MyPackageMonitor(
 
 ECode CAccessibilityManagerService::MyPackageMonitor::OnSomePackagesChanged()
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     Int32 userId;
     GetChangingUserId(&userId);
@@ -716,7 +716,7 @@ ECode CAccessibilityManagerService::MyPackageMonitor::OnPackageRemoved(
     /* [in] */ const String packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     Int32 userId;
     GetChangingUserId(&userId);
     if (userId != mHost->mCurrentUserId) {
@@ -761,7 +761,7 @@ ECode CAccessibilityManagerService::MyPackageMonitor::OnHandleForceStop(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     Int32 userId;
     GetChangingUserId(&userId);
@@ -888,7 +888,7 @@ ECode CAccessibilityManagerService::AddClient(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 resolvedUserId;
     mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
     // If the client is from a process that runs across users such as
@@ -926,7 +926,7 @@ ECode CAccessibilityManagerService::SendAccessibilityEvent(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 resolvedUserId;
     mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
     // This method does nothing for a background user.
@@ -977,7 +977,7 @@ ECode CAccessibilityManagerService::GetInstalledAccessibilityServiceList(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 resolvedUserId;
     mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
     AutoPtr<IObjectContainer> services;
@@ -1002,7 +1002,7 @@ ECode CAccessibilityManagerService::GetEnabledAccessibilityServiceList(
 
     AutoPtr<IObjectContainer> result;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     CObjectContainer::New((IObjectContainer**)&result);
     mEnabledServicesForFeedbackTempList.Clear();
 
@@ -1037,7 +1037,7 @@ ECode CAccessibilityManagerService::Interrupt(
     // CopyOnWriteArrayList<Service> services;
     AutoPtr<List<AutoPtr<IAccessibilityServiceConnection> > > services;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 resolvedUserId;
         mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
         // This method does nothing for a background user.
@@ -1077,7 +1077,7 @@ ECode CAccessibilityManagerService::AddAccessibilityInteractionConnection(
     VALIDATE_NOT_NULL(result);
     assert(connection != NULL);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 resolvedUserId;
     mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
     Int32 windowId = sNextWindowId++;
@@ -1117,7 +1117,7 @@ ECode CAccessibilityManagerService::AddAccessibilityInteractionConnection(
 ECode CAccessibilityManagerService::RemoveAccessibilityInteractionConnection(
     /* [in] */ IIWindow* window)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<IUserHandleHelper> helper;
     CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
     Int32 id, result;
@@ -1188,7 +1188,7 @@ ECode CAccessibilityManagerService::RegisterUiTestAutomationService(
     CComponentName::New(String("foo.bar"), String("AutomationAccessibilityService"),
          (IComponentName**)&componentName);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // If an automation services is connected to the system all services are stopped
     // so the automation one is the only one running. Settings are not changed so when
     // the automation service goes away the state is restored from the settings.
@@ -1233,7 +1233,7 @@ ECode CAccessibilityManagerService::TemporaryEnableAccessibilityStateUntilKeygua
     // } catch (RemoteException re) {
     //     return;
     // }
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<UserState> userState = GetCurrentUserStateLocked();
     // Stash the old state so we can restore it when the keyguard is gone.
     mTempStateChangeForCurrentUserMemento->Initialize(mCurrentUserId, GetCurrentUserStateLocked());
@@ -1255,7 +1255,7 @@ ECode CAccessibilityManagerService::TemporaryEnableAccessibilityStateUntilKeygua
 ECode CAccessibilityManagerService::UnregisterUiTestAutomationService(
     /* [in] */ IAccessibilityServiceClient* serviceClient)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)mUiAutomationService.Get();
     // Automation service is not bound, so pretend it died to perform clean up.
     if (sc != NULL && sc->mServiceInterface != NULL
@@ -1270,7 +1270,7 @@ ECode CAccessibilityManagerService::UnregisterUiTestAutomationService(
 Boolean CAccessibilityManagerService::OnGesture(
     /* [in] */ Int32 gestureId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean handled = NotifyGestureLocked(gestureId, FALSE);
     if (!handled) {
         handled = NotifyGestureLocked(gestureId, TRUE);
@@ -1334,7 +1334,7 @@ Boolean CAccessibilityManagerService::GetActiveWindowBounds(
 {
     AutoPtr<IBinder> token;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 windowId = mSecurityPolicy->mActiveWindowId;
         HashMap<Int32, AutoPtr<IBinder> >::Iterator it = mGlobalWindowTokens.Find(windowId);
         if (it != mGlobalWindowTokens.End()) {
@@ -1386,7 +1386,7 @@ void CAccessibilityManagerService::OnTouchInteractionEnd()
 void CAccessibilityManagerService::SwitchUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // The user switched so we do not need to restore the current user
     // state since we will fully rebuild it when he becomes current again.
     mTempStateChangeForCurrentUserMemento.Clear();
@@ -1440,13 +1440,13 @@ void CAccessibilityManagerService::SwitchUser(
 void CAccessibilityManagerService::RemoveUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mUserStates.Erase(userId);
 }
 
 void CAccessibilityManagerService::RestoreStateFromMementoIfNeeded()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mTempStateChangeForCurrentUserMemento->mUserId != IUserHandle::USER_NULL) {
         AutoPtr<UserState> userState = GetCurrentUserStateLocked();
         // Restore the state from the memento.
@@ -1866,7 +1866,7 @@ void CAccessibilityManagerService::UpdateInputFilterLocked(
     AutoPtr<CAccessibilityInputFilter> inputFilter;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if ((userState->mIsAccessibilityEnabled && userState->mIsTouchExplorationEnabled)
                 || userState->mIsDisplayMagnificationEnabled) {
             if (!mHasInputFilter) {
@@ -1963,7 +1963,7 @@ void CAccessibilityManagerService::ShowEnableTouchExplorationDialog(
     sc->mResolveInfo->LoadLabel(packageManager, (ICharSequence**)&csq);
     String label;
     csq->ToString(&label);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<UserState> state = GetCurrentUserStateLocked();
     if (state->mIsTouchExplorationEnabled) {
         return;
@@ -2167,7 +2167,7 @@ void CAccessibilityManagerService::HandleSendAccessibilityEventToInputFilter(
     /* [in] */ IAccessibilityEvent* event)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mHasInputFilter && mInputFilter != NULL) {
             mInputFilter->NotifyAccessibilityEvent(event);
         }
@@ -2192,7 +2192,7 @@ void CAccessibilityManagerService::HandleSendClearedStateToClientsForUser(
 void CAccessibilityManagerService::HandleSendRecreateInternalState(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<UserState> userState = GetUserStateLocked(userId);
     RecreateInternalStateLocked(userState);
 }
@@ -2211,7 +2211,7 @@ void CAccessibilityManagerService::HandleAnnounceNewUserIfNeeded()
 
 void CAccessibilityManagerService::AnnounceNewUserIfNeeded()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<UserState> userState = GetCurrentUserStateLocked();
     if (userState->mIsAccessibilityEnabled) {
         AutoPtr<IUserManager> userManager;
@@ -2247,7 +2247,7 @@ void CAccessibilityManagerService::SendStateToClientsForUser(
 {
     AutoPtr<UserState> userState;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         userState = GetUserStateLocked(userId);
     }
     SendStateToClients(clientState, userState->mClients);

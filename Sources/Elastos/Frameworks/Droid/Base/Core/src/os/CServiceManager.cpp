@@ -107,7 +107,7 @@ ECode CServiceManager::GetService(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mServiceCacheLock);
+    AutoLock lock(mServiceCacheLock);
     HashMap<String, AutoPtr<IInterface> >::Iterator it =
             mServiceCache.Find(name);
     if (it != mServiceCache.End()) {

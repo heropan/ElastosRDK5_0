@@ -285,7 +285,7 @@ public:
     /*package*/ AutoPtr<CMessage> mNext;
 
 private:
-    static Mutex sPoolSync;
+    static Object sPoolSync;
     static AutoPtr<CMessage> sPool;
     static Int32 sPoolSize;
 

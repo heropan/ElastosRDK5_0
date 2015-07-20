@@ -85,7 +85,7 @@ ECode CAlarmManagerService::AlarmHandler::HandleMessage(
     AlarmList triggerList;
 
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         AutoPtr<ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
@@ -253,7 +253,7 @@ ECode CAlarmManagerService::AlarmThread::Run()
         }
 
         {
-            Mutex::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
             AutoPtr<ISystem> system;
             Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
             Int64 nowRTC;
@@ -527,7 +527,7 @@ ECode CAlarmManagerService::UninstallReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     String action;
     intent->GetAction(&action);
@@ -612,7 +612,7 @@ ECode CAlarmManagerService::ResultReceiver::OnSendFinished(
     /* [in] */ const String& resultData,
     /* [in] */ IBundle* resultExtras)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     Boolean bval;
     AutoPtr<InFlight> inflight;
@@ -829,7 +829,7 @@ ECode CAlarmManagerService::SetRepeating(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         AutoPtr<Alarm> alarm = new Alarm();
 
@@ -967,7 +967,7 @@ ECode CAlarmManagerService::SetTimeZone(
     zone->GetID(&id);
 
     {
-        Mutex::Autolock lock(mThisLock);
+        AutoLock lock(mThisLock);
         AutoPtr<ISystemProperties> sysProp;
         CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
         String current;
@@ -1026,7 +1026,7 @@ ECode CAlarmManagerService::Remove(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         RemoveLocked(operation);
         return NOERROR;
     }
@@ -1076,7 +1076,7 @@ Int64 CAlarmManagerService::TimeToNextAlarm()
     Int64 nextAlarm = Elastos::Core::Math::INT64_MAX_VALUE;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr< AlarmList > alarmList;
         for (Int32 i = IAlarmManager::RTC_WAKEUP; i <= IAlarmManager::RTC_SHUTDOWN_WAKEUP; i++) {
             alarmList = GetAlarmList(i);

@@ -59,7 +59,7 @@ private:
         CARAPI_(void) Recycle();
 
     private:
-        static Mutex mRecycledListLock;
+        static Object mRecycledListLock;
         static AutoPtr<KeyState> mRecycledList;
 
     public:

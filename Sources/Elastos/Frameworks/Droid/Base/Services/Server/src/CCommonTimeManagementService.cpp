@@ -6,7 +6,6 @@
 #include <elastos/core/StringBuilder.h>
 #include "os/Binder.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::StringBuilder;
@@ -297,7 +296,7 @@ ECode CCommonTimeManagementService::Dump(
         return -2;
     }
 
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     pw->PrintStringln(String("Current Common Time Management Service Config:"));
 
     StringBuilder builder("  Native service     : ");
@@ -366,7 +365,7 @@ void CCommonTimeManagementService::ConnectToTimeConfig()
     // attempt to reconnect in the future.
     CleanupTimeConfig();
     //try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     //TODO
     /*
     mCTConfig = new CommonTimeConfig();
@@ -460,7 +459,7 @@ void CCommonTimeManagementService::ReevaluateServiceState()
     //}
 
     Boolean doRebind = TRUE;
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     if ((!bindIface.IsNull()) && (mCurIface.IsNull())) {
         Logger::E(TAG, "Binding common time service to %s.", bindIface.string());
         mCurIface = bindIface;

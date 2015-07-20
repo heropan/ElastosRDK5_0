@@ -2,7 +2,6 @@
 #ifndef __MEDIASOURCE_H__
 #define __MEDIASOURCE_H__
 
-#include <elrefbase.h>
 #include <elautoptr.h>
 #include <cmdef.h>
 #include "app/Activity.h"

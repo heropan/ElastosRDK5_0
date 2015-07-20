@@ -2,7 +2,6 @@
 #define __SQLITESTATEMENTINFO_H__
 
 #include "ext/frameworkdef.h"
-#include <elrefbase.h>
 
 namespace Elastos {
 namespace Droid {

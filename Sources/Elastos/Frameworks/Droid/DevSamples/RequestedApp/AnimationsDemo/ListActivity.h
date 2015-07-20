@@ -3,7 +3,6 @@
 #define  __LISTACTIVITY_H__
 
 #include "app/Activity.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Widget::IAdapterViewOnItemClickListener;
@@ -173,7 +172,7 @@ private:
     AutoPtr<IRunnable> mRequestFocus;
 
     AutoPtr<IAdapterViewOnItemClickListener> mOnClickListener;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace AnimationsDemo

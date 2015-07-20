@@ -131,7 +131,7 @@ ECode CDragEvent::Recycle()
     //mClipDescription = NULL;
     //mLocalState = NULL;
 
-    Mutex::Autolock lock(sRecyclerLock);
+    AutoLock lock(sRecyclerLock);
     if (sRecyclerUsed < MAX_RECYCLED) {
         sRecyclerUsed++;
         mNext = sRecyclerTop;
@@ -219,7 +219,7 @@ ECode CDragEvent::Obtain(
 
     VALIDATE_NOT_NULL(event);
     {
-        Mutex::Autolock lock(sRecyclerLock);
+        AutoLock lock(sRecyclerLock);
 
         if (sRecyclerTop == NULL) {
             FAIL_RETURN(CDragEvent::NewByFriend(event));

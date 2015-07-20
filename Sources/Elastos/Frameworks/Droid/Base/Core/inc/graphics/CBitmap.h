@@ -4,7 +4,6 @@
 
 #include "_CBitmap.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -891,7 +890,7 @@ private:
      */
     static Int32 WORKING_COMPRESS_STORAGE;
 
-    static Mutex sClassLock;
+    static Object sClassLock;
 };
 
 } // namespace Graphics

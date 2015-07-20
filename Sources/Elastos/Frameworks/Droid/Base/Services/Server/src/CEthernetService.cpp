@@ -81,7 +81,7 @@ ECode CEthernetService::GetSavedConfig(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     Boolean isConfigured;
     if (IsConfigured(&isConfigured), isConfigured) {
@@ -124,7 +124,7 @@ ECode CEthernetService::GetSavedConfig(
 ECode CEthernetService::SetMode(
     /* [in] */ Int32 mode)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
@@ -142,7 +142,7 @@ ECode CEthernetService::SetMode(
 ECode CEthernetService::UpdateDevInfo(
     /* [in] */ IEthernetDevInfo* info)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     assert(info);
 
     AutoPtr<IContentResolver> cr;
@@ -197,7 +197,7 @@ ECode CEthernetService::GetTotalInterface(
 {
     VALIDATE_NOT_NULL(cnt);
     {
-        Mutex::Autolock lock(mDeviceMapLock);
+        AutoLock lock(mDeviceMapLock);
         *cnt = mDeviceMap.GetSize();
     }
     return NOERROR;
@@ -229,7 +229,7 @@ void CEthernetService::ScanDevice()
                 iaddr->GetHostAddress(&ipAddr);
                 value->SetIpAddress(ipAddr);
                 {
-                    Mutex::Autolock lock(mDeviceMapLock);
+                    AutoLock lock(mDeviceMapLock);
                     mDeviceMap[iface] = value;
                 }
             }
@@ -308,7 +308,7 @@ ECode CEthernetService::GetDeviceNameList(
     VALIDATE_NOT_NULL(list);
     *list = NULL;
     {
-        Mutex::Autolock lock(mDeviceMapLock);
+        AutoLock lock(mDeviceMapLock);
         if (mDeviceMap.IsEmpty())
             return NOERROR;
 
@@ -325,7 +325,7 @@ ECode CEthernetService::GetDeviceNameList(
 void CEthernetService::PersistEnabled(
     /* [in] */ Boolean enabled)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
@@ -340,7 +340,7 @@ void CEthernetService::PersistEnabled(
 ECode CEthernetService::SetState(
     /* [in] */ Int32 state)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (mEthState != state) {
         mEthState = state;
@@ -404,7 +404,7 @@ ECode CEthernetService::AddInterfaceToService(
         return NOERROR;
 
 
-    Mutex::Autolock lock(mDeviceMapLock);
+    AutoLock lock(mDeviceMapLock);
     //try{
     if (mDeviceMap.Find(iface) == mDeviceMap.End()) {
         AutoPtr<IEthernetDevInfo> value;
@@ -439,7 +439,7 @@ ECode CEthernetService::RemoveInterfaceFormService(
     if (!IsEth(name))
         return NOERROR;
 
-    Mutex::Autolock lock(mDeviceMapLock);
+    AutoLock lock(mDeviceMapLock);
     if (mDeviceMap.Find(name) != mDeviceMap.End()){
         SendChangedBroadcast(mDeviceMap[name], IEthernetManager::EVENT_DEVREM);
         mDeviceMap.Erase(name);
@@ -453,7 +453,7 @@ ECode CEthernetService::IsOn(
 {
     VALIDATE_NOT_NULL(isOn);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     // try{
@@ -477,7 +477,7 @@ ECode CEthernetService::IsDhcp(
 {
     VALIDATE_NOT_NULL(isDhcp);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);
     // try{

@@ -30,7 +30,7 @@ public:
 
     static CARAPI_(AutoPtr<IPool>) AcquireSynchronizedPool(
         /* [in] */ IPool* pool,
-        /* [in] */ Mutex& lock);
+        /* [in] */ Object& lock);
 };
 
 } // namespace Utility

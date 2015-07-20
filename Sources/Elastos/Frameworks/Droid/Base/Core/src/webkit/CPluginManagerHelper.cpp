@@ -23,7 +23,7 @@ ECode CPluginManagerHelper::GetInstance(
     /* [out] */ IPluginManager** pluginManager)
 {
     // TODO: Add your code here
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (mInstance == NULL) {
         if (context == NULL)
         {

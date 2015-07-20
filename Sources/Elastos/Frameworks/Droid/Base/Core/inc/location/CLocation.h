@@ -556,7 +556,7 @@ private:
     Float mInitialBearing;
     // Scratchpad
     AutoPtr<ArrayOf<Float> > mResults;
-    Mutex mResultsLock;
+    Object mResultsLock;
 };
 
 } // namespace Location

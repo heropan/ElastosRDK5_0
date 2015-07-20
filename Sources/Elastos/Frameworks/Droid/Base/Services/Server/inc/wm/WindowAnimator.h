@@ -177,7 +177,7 @@ public:
     static const Int32 KEYGUARD_SHOWN;
     static const Int32 KEYGUARD_ANIMATING_OUT;
 
-    Mutex mSelfLock;
+    Object mSelfLock;
 
     AutoPtr<CWindowManagerService> mService;
     AutoPtr<IContext> mContext;
@@ -230,7 +230,7 @@ public:
 
     /** Do not modify unless holding mService.mWindowMap or this and mAnimToLayout in that order */
     AutoPtr<AnimatorToLayoutParams> mAnimToLayout;
-    Mutex mAnimToLayoutLock;
+    Object mAnimToLayoutLock;
 
     Boolean mInitialized;
 

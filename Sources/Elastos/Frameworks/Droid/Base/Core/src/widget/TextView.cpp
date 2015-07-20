@@ -4994,7 +4994,7 @@ void TextView::InvalidateCursorPath()
         Int32 verticalPadding = GetExtendedPaddingTop() + GetVerticalOffset(TRUE);
 
         if (mEditor->mCursorCount == 0) {
-            Mutex::Autolock lock(sTempRectLock);
+            AutoLock lock(sTempRectLock);
 
             /*
                 * The reason for this concern about the thickness of the
@@ -5714,7 +5714,7 @@ ECode TextView::GetFocusedRect(
             }
 
             {
-                Mutex::Autolock lock(TextView::sTempRectLock);
+                AutoLock lock(TextView::sTempRectLock);
                 mHighlightPath->ComputeBounds(TEMP_RECTF, TRUE);
                 rect->SetLeft((Int32)TEMP_RECTF->mLeft - 1);
                 rect->SetRight((Int32)TEMP_RECTF->mRight + 1);

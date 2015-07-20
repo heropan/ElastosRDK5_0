@@ -541,7 +541,7 @@ ECode BroadcastQueue::ProcessNextBroadcast(
 
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
         {
-            Mutex::Autolock lock(mService->mPidsSelfLock);
+            AutoLock lock(mService->mPidsSelfLock);
             it = mService->mPidsSelfLocked.Find(mPendingBroadcast->mCurApp->mPid);
         }
         if (it != mService->mPidsSelfLocked.End()) {
@@ -983,7 +983,7 @@ void BroadcastQueue::BroadcastTimeoutLocked(
         Slogger::W(TAG, "Receiver during timeout BroadcastFilter: %s", bf->ToString().string());
         if (bf->mReceiverList->mPid != 0
                 && bf->mReceiverList->mPid != CActivityManagerService::MY_PID) {
-            Mutex::Autolock lock(mService->mPidsSelfLock);
+            AutoLock lock(mService->mPidsSelfLock);
             app = mService->mPidsSelfLocked[bf->mReceiverList->mPid];
         }
     }

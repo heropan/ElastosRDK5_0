@@ -6,7 +6,6 @@
 
 #include "webkit/WebSyncManager.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {

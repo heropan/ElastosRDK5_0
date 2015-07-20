@@ -78,7 +78,7 @@ private:
     //private final Lock mListLock = new ReentrantLock();
     //private final Condition mReadReady = mListLock.newCondition();
     //private final Condition mNotFull = mListLock.newCondition();
-    Mutex mListLock;
+    Object mListLock;
 
     // Guarded by mListLock.
     List< AutoPtr<ListEntry> > mDataBufferList;

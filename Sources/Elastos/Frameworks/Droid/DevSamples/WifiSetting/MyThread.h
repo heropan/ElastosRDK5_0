@@ -3,7 +3,6 @@
 #define __MYTHREAD_H__
 
 #include <elastos/core/Thread.h>
-#include <elrefbase.h>
 #include "CWifiSetting.h"
 #include "WifiFun.h"
 
@@ -142,10 +141,10 @@ public:
         /* [in] */ Int32 nanos);
 
 private:
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 
 private:
-    Mutex mLock;
+    Object mLock;
 
     CWifiSetting* mHost;
     ScanResult* mScanResult;

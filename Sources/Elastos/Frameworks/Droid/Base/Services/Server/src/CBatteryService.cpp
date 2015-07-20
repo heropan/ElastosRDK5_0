@@ -219,7 +219,7 @@ ECode CBatteryService::SendIntentRunnable::Run()
 void CBatteryService::PowerSupplyObserver::OnUEvent(
     /* [in] */ UEventObserver::UEvent* event)
 {
-    Mutex::Autolock Lock(mHost->mLock);
+    AutoLock Lock(mHost->mLock);
     mHost->UpdateLocked();
 }
 
@@ -232,7 +232,7 @@ void CBatteryService::InvalidChargerObserver::OnUEvent(
 {
     String result = event->Get(String("SWITCH_STATE"));
     Int32 invalidCharger = CString("1").Equals(result) ? 1 : 0;
-    Mutex::Autolock Lock(mHost->mLock);
+    AutoLock Lock(mHost->mLock);
     if (mHost->mInvalidCharger != invalidCharger) {
         mHost->mInvalidCharger = invalidCharger;
         mHost->UpdateLocked();
@@ -696,7 +696,7 @@ ECode CBatteryService::constructor(
     }
 
     // set initial status
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     UpdateLocked();
 
     return NOERROR;
@@ -705,7 +705,7 @@ ECode CBatteryService::constructor(
 void CBatteryService::SystemReady()
 {
     // check our power situation now that it is safe to display the shutdown dialog.
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     ShutdownIfNoPowerLocked();
     ShutdownIfOverTempLocked();
 }
@@ -713,7 +713,7 @@ void CBatteryService::SystemReady()
 Boolean CBatteryService::IsPowered(
     /* [in] */ Int32 plugTypeSet)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return IsPoweredLocked(plugTypeSet);
 }
 
@@ -739,19 +739,19 @@ Boolean CBatteryService::IsPoweredLocked(
 
 Int32 CBatteryService::GetPlugType()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mPlugType;
 }
 
 Int32 CBatteryService::GetBatteryLevel()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mBatteryLevel;
 }
 
 Boolean CBatteryService::IsBatteryLow()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return (mBatteryPresent && mBatteryLevel <= mLowBatteryWarningLevel);
 }
 

@@ -377,7 +377,7 @@ private:
     static AutoPtr<CStaticLayout> sStaticLayout;
     static Boolean sIsStaticLayoutInited;
 
-    static Mutex sLock;
+    static Object sLock;
 
     static const Int32 START = 0;
     static const Int32 DIR = START;

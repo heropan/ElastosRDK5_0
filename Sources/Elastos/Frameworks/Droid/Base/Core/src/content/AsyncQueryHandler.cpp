@@ -134,7 +134,7 @@ AsyncQueryHandler::AsyncQueryHandler(
     wrs->GetWeakReference((IWeakReference**)&mResolver);
 
     {
-        Mutex::Autolock lock(mAsyncQueryHandlerLock);
+        AutoLock lock(mAsyncQueryHandlerLock);
         if (NULL == sLooper) {
             AutoPtr<IHandlerThread> thread;
             CHandlerThread::New(String("AsyncQueryWorker"), (IHandlerThread**)&thread);
@@ -158,7 +158,7 @@ ECode AsyncQueryHandler::Init(
 
     mWorkerThreadHandler = NULL;
     {
-        Mutex::Autolock lock(mAsyncQueryHandlerLock);
+        AutoLock lock(mAsyncQueryHandlerLock);
         if (NULL == sLooper) {
             AutoPtr<IHandlerThread> thread;
             CHandlerThread::New(String("AsyncQueryWorker"), (IHandlerThread**)&thread);

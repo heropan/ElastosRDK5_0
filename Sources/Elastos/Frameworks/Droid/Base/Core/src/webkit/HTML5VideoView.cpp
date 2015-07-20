@@ -117,7 +117,7 @@ ECode HTML5VideoView::TimeupdateTask::Unlock()
     return NOERROR;
 }
 
-Mutex* HTML5VideoView::TimeupdateTask::GetSelfLock()
+Object* HTML5VideoView::TimeupdateTask::GetSelfLock()
 {
     return &mLock;
 }

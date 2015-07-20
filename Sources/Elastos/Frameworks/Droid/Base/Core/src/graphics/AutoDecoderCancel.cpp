@@ -4,7 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Graphics {
 
-static Mutex gAutoDecoderCancelMutex;
+static Object gAutoDecoderCancelMutex;
 static AutoDecoderCancel* gAutoDecoderCancel;
 #ifdef SK_DEBUG
 static int gAutoDecoderCancelCount;
@@ -18,7 +18,7 @@ AutoDecoderCancel::AutoDecoderCancel(
     mDecoder = decoder;
 
     if (NULL != options) {
-        Mutex::Autolock lock(gAutoDecoderCancelMutex);
+        AutoLock lock(gAutoDecoderCancelMutex);
 
         // Add us as the head of the list
         mPrev = NULL;
@@ -36,7 +36,7 @@ AutoDecoderCancel::AutoDecoderCancel(
 AutoDecoderCancel::~AutoDecoderCancel()
 {
     if (NULL != mOptions) {
-        Mutex::Autolock lock(gAutoDecoderCancelMutex);
+        AutoLock lock(gAutoDecoderCancelMutex);
 
         // take us out of the dllist
         AutoDecoderCancel* prev = mPrev;
@@ -63,7 +63,7 @@ AutoDecoderCancel::~AutoDecoderCancel()
 Boolean AutoDecoderCancel::RequestCancel(
     /* [in] */ IBitmapFactoryOptions* options)
 {
-    Mutex::Autolock lock(gAutoDecoderCancelMutex);
+    AutoLock lock(gAutoDecoderCancelMutex);
 
     Validate();
 

@@ -360,7 +360,7 @@ void ShutdownThread::ShutdownInner(
     // ensure that only one thread is trying to power down.
     // any additional calls are just returned
     {
-        Mutex::Autolock lock(sIsStartedGuard);
+        AutoLock lock(sIsStartedGuard);
         if (sIsStarted) {
             Slogger::D(TAG, "Request to shutdown already running, returning.");
             return;
@@ -546,7 +546,7 @@ void ShutdownThread::BeginShutdownSequence(
     /* [in] */ IContext* context)
 {
     {
-        Mutex::Autolock lock(sIsStartedGuard);
+        AutoLock lock(sIsStartedGuard);
         if (sIsStarted) {
             Slogger::D(TAG, "Shutdown sequence already running, returning.");
             return;

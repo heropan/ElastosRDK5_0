@@ -143,7 +143,7 @@ private:
     Int32 mIsEthEnabled;
     /*  the first String is now system_name, second String is boot_name  */
     HashMap<String, AutoPtr<IEthernetDevInfo> > mDeviceMap;
-    Mutex mDeviceMapLock;
+    Object mDeviceMapLock;
     AutoPtr<INetworkManagementService> mNMService;
     AutoPtr<BroadcastReceiver> mEthStateReceiver;
     AutoPtr<IIntentFilter> mFilter;

@@ -180,7 +180,7 @@ void CAccessibilityServiceConnection::SetDynamicallyConfigurableProperties(
     // If this service is up and running we may have to enable touch
     // exploration, otherwise this will happen when the service connects.
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     if (CanReceiveEvents()) {
         if (mRequestTouchExplorationMode) {
             service->TryEnableTouchExplorationLocked(this);
@@ -208,7 +208,7 @@ Boolean CAccessibilityServiceConnection::Unbind()
     if (mService != NULL) {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
         {
-            Mutex::Autolock lock(service->mLock);
+            AutoLock lock(service->mLock);
             service->TryRemoveServiceLocked(THIS_PROBE(IAccessibilityServiceConnection));
         }
         if (!mIsAutomation) {
@@ -229,7 +229,7 @@ ECode CAccessibilityServiceConnection::GetServiceInfo(
 {
     VALIDATE_NOT_NULL(serviceInfo);
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     *serviceInfo = mAccessibilityServiceInfo;
     REFCOUNT_ADD(*serviceInfo);
     return NOERROR;
@@ -241,7 +241,7 @@ ECode CAccessibilityServiceConnection::SetServiceInfo(
     Int32 identity = Binder::ClearCallingIdentity();
     // try {
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     // If the XML manifest had data to configure the service its info
     // should be already set. In such a case update only the dynamically
     // configurable properties.
@@ -275,7 +275,7 @@ ECode CAccessibilityServiceConnection::OnServiceConnected(
     }
 
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     service->TryAddServiceLocked(this, mUserId);
     return NOERROR;
     // } catch (RemoteException re) {
@@ -298,7 +298,7 @@ ECode CAccessibilityServiceConnection::FindAccessibilityNodeInfoByViewId(
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -368,7 +368,7 @@ ECode CAccessibilityServiceConnection::FindAccessibilityNodeInfosByText(
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -437,7 +437,7 @@ ECode CAccessibilityServiceConnection::FindAccessibilityNodeInfoByAccessibilityI
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -506,7 +506,7 @@ ECode CAccessibilityServiceConnection::FindFocus(
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -576,7 +576,7 @@ ECode CAccessibilityServiceConnection::FocusSearch(
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -647,7 +647,7 @@ ECode CAccessibilityServiceConnection::PerformAccessibilityAction(
     AutoPtr<IAccessibilityInteractionConnection> connection;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -709,7 +709,7 @@ ECode CAccessibilityServiceConnection::PerformGlobalAction(
     *result = FALSE;
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         AutoPtr<IUserHandleHelper> helper;
         ASSERT_SUCCEEDED(CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper));
         Int32 id, resolvedUserId;
@@ -789,7 +789,7 @@ ECode CAccessibilityServiceConnection::Dispose()
 ECode CAccessibilityServiceConnection::ProxyDied()
 {
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     // The death recipient is unregistered in tryRemoveServiceLocked
     service->TryRemoveServiceLocked(THIS_PROBE(IAccessibilityServiceConnection));
     // We no longer have an automation service, so restore
@@ -805,7 +805,7 @@ void CAccessibilityServiceConnection::NotifyAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-    Mutex::Autolock lock(service->mLock);
+    AutoLock lock(service->mLock);
     Int32 eventType;
     event->GetEventType(&eventType);
     // Make a copy since during dispatch it is possible the event to
@@ -842,7 +842,7 @@ void CAccessibilityServiceConnection::NotifyAccessibilityEventInternal(
 
     {
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
-        Mutex::Autolock lock(service->mLock);
+        AutoLock lock(service->mLock);
         listener = mServiceInterface;
 
         // If the service died/was disabled while the message for dispatching

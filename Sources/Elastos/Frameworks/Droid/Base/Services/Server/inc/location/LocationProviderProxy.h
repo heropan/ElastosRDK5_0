@@ -13,7 +13,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
@@ -155,7 +154,7 @@ private:
     String mName;
     AutoPtr<ServiceWatcher> mServiceWatcher;
 
-    Mutex mLock;
+    Object mLock;
 
     // cached values set by the location manager, synchronized on mLock
     AutoPtr<IProviderProperties> mProperties;

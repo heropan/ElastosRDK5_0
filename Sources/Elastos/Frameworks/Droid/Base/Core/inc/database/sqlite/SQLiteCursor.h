@@ -134,7 +134,7 @@ private:
     /** A mapping of column names to column indices, to speed up lookups */
     AutoPtr<HashMap<String, Int32> > mColumnNameMap;
 
-    Mutex mLock;
+    Object mLock;
 
     /** Used to find out where a cursor was allocated in case it never got released. */
 //   Throwable mStackTrace;

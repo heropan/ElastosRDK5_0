@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -254,7 +253,7 @@ private:
     ILayoutInflaterFactory2* mPrivateFactory;
     AutoPtr<ILayoutInflaterFilter> mFilter;
 
-    Mutex mConstructorArgsLock;
+    Object mConstructorArgsLock;
 
     static AutoPtr< HashMap<String, AutoPtr<IConstructorInfo> > > sConstructorMap;
 

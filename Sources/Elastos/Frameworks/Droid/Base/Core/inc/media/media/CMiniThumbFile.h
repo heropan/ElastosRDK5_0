@@ -81,8 +81,8 @@ private:
 
     static HashMap< String, AutoPtr<IMiniThumbFile> > sThumbFiles; // = new Hashtable<String, MiniThumbFile>();
 
-    Mutex mThislock;
-    static Mutex mStaticThislock;
+    Object mThislock;
+    static Object mStaticThislock;
 };
 
 } // namespace Media

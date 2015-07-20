@@ -215,7 +215,7 @@ private:
         /* [in] */ const String& newValue);
 
 protected:
-    Mutex mLock;
+    Object mLock;
 
 private:
     //private

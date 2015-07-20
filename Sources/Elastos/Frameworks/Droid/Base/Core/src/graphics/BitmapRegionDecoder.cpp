@@ -173,7 +173,7 @@ ECode BitmapRegionDecoder::DecodeRegion(
 {
     VALIDATE_NOT_NULL(bitmap);
 
-    Mutex::Autolock lock(mNativeLock);
+    AutoLock lock(mNativeLock);
 
     FAIL_RETURN(CheckRecycled("decodeRegion called on recycled region decoder"));
     Int32 width, height;
@@ -195,7 +195,7 @@ ECode BitmapRegionDecoder::GetWidth(
 {
     VALIDATE_NOT_NULL(width);
 
-    Mutex::Autolock lock(mNativeLock);
+    AutoLock lock(mNativeLock);
 
     FAIL_RETURN(CheckRecycled("getWidth called on recycled region decoder"));
     *width = NativeGetWidth(mNativeBitmapRegionDecoder);
@@ -208,7 +208,7 @@ ECode BitmapRegionDecoder::GetHeight(
 {
     VALIDATE_NOT_NULL(height);
 
-    Mutex::Autolock lock(mNativeLock);
+    AutoLock lock(mNativeLock);
 
     FAIL_RETURN(CheckRecycled("getHeight called on recycled region decoder"));
     *height = NativeGetHeight(mNativeBitmapRegionDecoder);
@@ -227,7 +227,7 @@ ECode BitmapRegionDecoder::GetHeight(
 */
 ECode BitmapRegionDecoder::Recycle()
 {
-    Mutex::Autolock lock(mNativeLock);
+    AutoLock lock(mNativeLock);
 
     if (!mRecycled) {
         NativeClean(mNativeBitmapRegionDecoder);

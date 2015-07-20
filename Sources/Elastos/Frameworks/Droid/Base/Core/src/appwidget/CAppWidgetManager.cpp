@@ -32,7 +32,7 @@ ECode CAppWidgetManager::GetInstance(
     /* [out] */ IAppWidgetManager** appWidgetManager)
 {
     VALIDATE_NOT_NULL(appWidgetManager);
-    Mutex::Autolock lock(sManagerCacheLock);
+    AutoLock lock(sManagerCacheLock);
     if (sService == NULL) {
         sService = IIAppWidgetService::Probe(ServiceManager::GetService(IContext::APPWIDGET_SERVICE).Get());
     }

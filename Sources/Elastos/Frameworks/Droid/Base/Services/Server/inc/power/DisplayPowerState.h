@@ -7,7 +7,6 @@
 #include "LightsService.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::View::IChoreographer;
@@ -83,7 +82,7 @@ private:
         static const Boolean INITIAL_SCREEN_ON;// = FALSE;    // unknown, assume off
         static const Int32 INITIAL_BACKLIGHT;// = -1;// unknown
 
-        Mutex mLock;
+        Object mLock;
 
         Boolean mPendingOn;
         Int32 mPendingBacklight;

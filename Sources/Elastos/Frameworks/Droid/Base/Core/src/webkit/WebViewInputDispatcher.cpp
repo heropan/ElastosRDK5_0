@@ -364,7 +364,7 @@ void WebViewInputDispatcher::SetWebKitWantsTouchEvents(
 //    }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mPostSendTouchEventsToWebKit != enable) {
             if (!enable) {
                 EnqueueWebKitCancelTouchEventIfNeededLocked();
@@ -428,7 +428,7 @@ Boolean WebViewInputDispatcher::PostPointerEvent(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         // Ensure that the event is consistent and should be delivered.
         AutoPtr<IMotionEvent> eventToEnqueue = event;
@@ -526,7 +526,7 @@ void WebViewInputDispatcher::UnscheduleLongPressLocked()
 
 void WebViewInputDispatcher::PostLongPress()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!mPostLongPressScheduled) {
         return;
@@ -613,7 +613,7 @@ void WebViewInputDispatcher::UnscheduleHideTapHighlightLocked()
 void WebViewInputDispatcher::PostShowTapHighlight(
     /* [in] */ Boolean show)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (show) {
         if (!mPostShowTapHighlightScheduled) {
             return;
@@ -648,7 +648,7 @@ void WebViewInputDispatcher::UnscheduleClickLocked()
 
 void WebViewInputDispatcher::PostClick()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mPostClickScheduled) {
         return;
     }
@@ -824,7 +824,7 @@ void WebViewInputDispatcher::DispatchWebKitEvents(
         Int32 flags;
 
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             if (!ENABLE_EVENT_BATCHING) {
                 DrainStaleWebKitEventsLocked();
             }
@@ -870,7 +870,7 @@ void WebViewInputDispatcher::DispatchWebKitEvents(
         }
 
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
 
             flags = d->mFlags;
             d->mFlags = flags & ~FLAG_WEBKIT_IN_PROGRESS;
@@ -962,7 +962,7 @@ void WebViewInputDispatcher::DrainStaleWebKitEventsLocked()
 // Runs on UI thread in response to the web kit thread appearing to be unresponsive.
 void WebViewInputDispatcher::HandleWebKitTimeout()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mWebKitTimeoutScheduled) {
         return;
     }
@@ -1023,7 +1023,7 @@ void WebViewInputDispatcher::DispatchUiEvents(
         Int32 eventType;
         Int32 flags;
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             AutoPtr<DispatchEvent> d = mUiDispatchEventQueue->Dequeue();
             if (d == NULL) {
                 if (mUiDispatchScheduled) {

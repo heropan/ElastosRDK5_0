@@ -9,7 +9,6 @@
 #include "MediaSet.h"
 #include "Path.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
@@ -105,7 +104,7 @@ public:
     static const Int32 INCLUDE_LOCAL_VIDEO_ONLY;
     static const Int32 INCLUDE_LOCAL_ALL_ONLY;
 
-    static Mutex sLOCK;
+    static Object sLOCK;
 
 private:
     static const String TAG;

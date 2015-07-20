@@ -924,7 +924,7 @@ ECode CStrictMode::MessageQueueIdleHandler::QueueIdle(
 ECode CStrictMode::SetVmPolicy(
     /* [in] */ Handle32 policy)
 {
-    Mutex::Autolock lock(classLock);
+    AutoLock lock(classLock);
     {
         sVmPolicy = (CStrictMode::VmPolicy*)policy;
         sVmPolicyMask = sVmPolicy->mMask;
@@ -954,7 +954,7 @@ ECode CStrictMode::GetVmPolicy(
 {
     VALIDATE_NOT_NULL(policy);
 
-    Mutex::Autolock lock(classLock);
+    AutoLock lock(classLock);
     {
         *policy = (Handle32)sVmPolicy.Get();
     }
@@ -1056,7 +1056,7 @@ ECode CStrictMode::OnVmPolicyViolation(
     Int64 timeSinceLastViolationMillis = 0x7FFFFFFFFFFFFFFFL; // Long.MAX_VALUE;
 
     {
-        Mutex::Autolock lock(sLastVmViolationTimeLock);
+        AutoLock lock(sLastVmViolationTimeLock);
         if (sLastVmViolationTime.Find(fingerprint) != sLastVmViolationTime.End()) {
             lastViolationTime = sLastVmViolationTime[fingerprint];
             timeSinceLastViolationMillis = now - lastViolationTime;
@@ -1227,7 +1227,7 @@ ECode CStrictMode::EnterCriticalSpan(
     AutoPtr<IStrictModeSpan> _span;
     CStrictModeSpan* cspan;
     {
-        Mutex::Autolock lock(stateLock);
+        AutoLock lock(stateLock);
         if (state->mFreeListHead != NULL) {
             _span = state->mFreeListHead;
             cspan = (CStrictModeSpan*)_span.Get();
@@ -1325,7 +1325,7 @@ ECode CStrictMode::IncrementExpectedActivityCount(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(classLock);
+    AutoLock lock(classLock);
     {
         if ((sVmPolicy->mMask & IStrictMode::DETECT_VM_ACTIVITY_LEAKS) == 0) {
             return NOERROR;
@@ -1348,7 +1348,7 @@ ECode CStrictMode::DecrementExpectedActivityCount(
     }
 
     Int32 limit;
-    Mutex::Autolock lock(classLock);
+    AutoLock lock(classLock);
     {
         if ((sVmPolicy->mMask & IStrictMode::DETECT_VM_ACTIVITY_LEAKS) == 0) {
             return NOERROR;
@@ -1418,7 +1418,7 @@ CStrictMode::InstanceTracker::InstanceTracker(
     AutoPtr<IObject> obj = IObject::Probe(instance);
     obj->GetClassID(mKlass);
     {
-        Mutex::Autolock lock(sInstanceCountsLock);
+        AutoLock lock(sInstanceCountsLock);
         HashMap<ClassID*, AutoPtr<IInteger32> >::Iterator it = sInstanceCounts.Find(mKlass);
         Int32 value;
         const Int32 newValue = (it != sInstanceCounts.End()) ? (it->mSecond->GetValue(&value), value + 1) : 1;
@@ -1432,7 +1432,7 @@ CStrictMode::InstanceTracker::~InstanceTracker()
 {
     // try {
     {
-        Mutex::Autolock lock(sInstanceCountsLock);
+        AutoLock lock(sInstanceCountsLock);
         HashMap<ClassID*, AutoPtr<IInteger32> >::Iterator it = sInstanceCounts.Find(mKlass);
         if (it != sInstanceCounts.End()) {
             Int32 value;
@@ -1458,7 +1458,7 @@ Int32 CStrictMode::InstanceTracker::GetInstanceCount(
     /* [in] */ ClassID* klass)
 {
     {
-        Mutex::Autolock lock(sInstanceCountsLock);
+        AutoLock lock(sInstanceCountsLock);
         HashMap<ClassID*, AutoPtr<IInteger32> >::Iterator it = sInstanceCounts.Find(klass);
         Int32 value;
         return it != sInstanceCounts.End() ? (it->mSecond->GetValue(&value),value) : 0;

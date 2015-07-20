@@ -400,7 +400,7 @@ ECode CWifiP2pManagerChannel::PutListener(
     }
 
     Int32 key;
-    Mutex::Autolock lock(mListenerMapLock);
+    AutoLock lock(mListenerMapLock);
     do {
         key = mListenerKey++;
     } while (key == INVALID_LISTENER_KEY);
@@ -421,7 +421,7 @@ ECode CWifiP2pManagerChannel::GetListener(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mListenerMapLock);
+    AutoLock lock(mListenerMapLock);
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
     if (it != mListenerMap.End()) {
         *obj = it->mSecond;

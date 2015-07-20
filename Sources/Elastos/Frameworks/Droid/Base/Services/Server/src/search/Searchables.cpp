@@ -49,7 +49,7 @@ ECode Searchables::GetSearchableInfo(
     *info = NULL;
     // Step 1.  Is the result already hashed?  (case 1)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Iterator it = mSearchablesMap->Find(activity);
         if(it != mSearchablesMap->End() && it->mSecond != NULL)
         {
@@ -112,7 +112,7 @@ ECode Searchables::GetSearchableInfo(
         // Now try the referred activity, and if found, cache
         // it against the original name so we can skip the check
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             // TODO: you will can't find item forever
             //
             Iterator it = mSearchablesMap->Find(referredActivity);

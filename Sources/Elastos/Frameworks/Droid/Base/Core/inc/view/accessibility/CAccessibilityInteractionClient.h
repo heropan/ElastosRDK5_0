@@ -10,7 +10,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Os::IMessage;
@@ -351,7 +350,7 @@ private:
 
     static const Int64 TIMEOUT_INTERACTION_MILLIS;
 
-    static Mutex sStaticLock;
+    static Object sStaticLock;
 
     static HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> > sClients;
 
@@ -373,7 +372,7 @@ private:
 
     // The connection cache is shared between all interrogating threads.
     static HashMap<Int32, AutoPtr<IAccessibilityServiceConnection> > sConnectionCache;
-    static Mutex sConnectionCacheLock;
+    static Object sConnectionCacheLock;
 
     // The connection cache is shared between all interrogating threads since
     // at any given time there is only one window allowing querying.

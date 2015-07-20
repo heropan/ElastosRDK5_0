@@ -116,7 +116,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
         case MESSAGE_GET_NAME_AND_ADDRESS:
             if (DBG) Logger::D(TAG,"MESSAGE_GET_NAME_AND_ADDRESS");
             {
-                Mutex::Autolock lock(mOwner->mConnectionLock);
+                AutoLock lock(mOwner->mConnectionLock);
                 //Start bind request
                 if ((mOwner->mBluetooth == NULL) && (!mOwner->mBinding)) {
                     if (DBG) Logger::D(TAG, "Binding to service to get name and address");
@@ -148,7 +148,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
             Boolean unbind = FALSE;
             if (DBG) Logger::D(TAG,"MESSAGE_SAVE_NAME_AND_ADDRESS");
             {
-                Mutex::Autolock lock(mOwner->mConnectionLock);
+                AutoLock lock(mOwner->mConnectionLock);
                 if (!mOwner->mEnable && mOwner->mBluetooth != NULL)
                     mOwner->mBluetooth->Enable();
             }
@@ -156,7 +156,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
                 mOwner->WaitForOnOff(TRUE, FALSE);
 
             {
-                Mutex::Autolock lock(mOwner->mConnectionLock);
+                AutoLock lock(mOwner->mConnectionLock);
                 if (mOwner->mBluetooth != NULL) {
                     String name =  NULL;
                     String address = NULL;
@@ -246,7 +246,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
 
             IBinder service = (IBinder) msg.obj;
             {
-                Mutex::Autolock lock(mConnectionLock);
+                AutoLock lock(mConnectionLock);
                 mOwner->mBinding = FALSE;
                 mOwner->mBluetooth = IBluetooth.Stub.asInterface(service);
 
@@ -282,7 +282,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
         case MESSAGE_TIMEOUT_BIND:
             Logger::E(TAG, "MESSAGE_TIMEOUT_BIND");
             {
-                Mutex::Autolock lock(mConnectionLock);
+                AutoLock lock(mConnectionLock);
                 mOwner->mBinding = FALSE;
             }
             break;
@@ -298,7 +298,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
         case MESSAGE_BLUETOOTH_SERVICE_DISCONNECTED:
             Logger::E(TAG, "MESSAGE_BLUETOOTH_SERVICE_DISCONNECTED");
             {
-                Mutex::Autolock lock(mConnectionLock);
+                AutoLock lock(mConnectionLock);
                 // if service is unbinded already, do nothing and return
                 if (mOwner->mBluetooth == NULL) return;
                 mOwner->mBluetooth = NULL;
@@ -348,7 +348,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
         case MESSAGE_TIMEOUT_UNBIND:
             Logger::E(TAG, "MESSAGE_TIMEOUT_UNBIND");
             {
-                Mutex::Autolock lock(mOwner->mConnectionLock);
+                AutoLock lock(mOwner->mConnectionLock);
                 mOwner->mUnbinding = FALSE;
             }
             break;
@@ -361,7 +361,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
             /* disable and enable BT when detect a user switch */
             if (mOwner->mEnable && mOwner->mBluetooth != NULL) {
                 {
-                    Mutex::Autolock lock(mOwner->mConnectionLock);
+                    AutoLock lock(mOwner->mConnectionLock);
                     if (mOwner->mBluetooth != NULL) {
                         //Unregister callback object
                         mOwner->mBluetooth->UnregisterCallback(mBluetoothCallback);
@@ -398,7 +398,7 @@ void CBluetoothManagerService::BluetoothHandler::HandleMessage(
 
                 mOwner->SendBluetoothServiceDownCallback();
                 {
-                    Mutex::Autolock lock(mConnectionLock);
+                    AutoLock lock(mConnectionLock);
                     if (mOwner->mBluetooth != NULL) {
                         mOwner->mBluetooth = NULL;
                         //Unbind
@@ -484,7 +484,7 @@ ECode CBluetoothManagerService::MyBroadcastReceiver::OnReceive(
         }
     }
     else if (IIntent::ACTION_AIRPLANE_MODE_CHANGED.Equals(action)) {
-        Mutex::Autolock lock(mReceiverLock);
+        AutoLock lock(mReceiverLock);
         if (mOwner->IsBluetoothPersistedStateOn()) {
             if (mOwner->IsAirplaneModeOn()) {
                 mOwner->PersistBluetoothSetting(BLUETOOTH_ON_AIRPLANE);
@@ -507,7 +507,7 @@ ECode CBluetoothManagerService::MyBroadcastReceiver::OnReceive(
     }
     else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
         {
-            Mutex::Autolock lock(mReceiverLock);
+            AutoLock lock(mReceiverLock);
             if (mOwner->mEnableExternal && mOwner->IsBluetoothPersistedStateOnBluetooth()) {
                 //Enable
                 // if (DBG) Log.d(TAG, "Auto-enabling Bluetooth.");
@@ -727,7 +727,7 @@ ECode CBluetoothManagerService::RegisterAdapter(
 
     mHandler->SendMessage(MESSAGE_REGISTER_ADAPTER, 0, 0, callback);
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         *result = mBluetooth;
         REFCOUNT_ADD(*result);
     }
@@ -774,7 +774,7 @@ ECode CBluetoothManagerService::IsEnabled(
     }
 
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         Boolean bol;
         mBluetooth->IsEnabled(&bol);
         *result = (mBluetooth != NULL && bol);
@@ -814,7 +814,7 @@ ECode CBluetoothManagerService::EnableNoAutoConnect(
     }
 
     {
-        Mutex::Autolock lock(mReceiverLock);
+        AutoLock lock(mReceiverLock);
         mQuietEnableExternal = TRUE;
         mEnableExternal = TRUE;
         SendEnableMsg(TRUE);
@@ -846,7 +846,7 @@ ECode CBluetoothManagerService::Enable(
     // }
 
     {
-        Mutex::Autolock lock(mReceiverLock);
+        AutoLock lock(mReceiverLock);
         mQuietEnableExternal = FALSE;
         mEnableExternal = TRUE;
         // waive WRITE_SECURE_SETTINGS permission check
@@ -882,7 +882,7 @@ ECode CBluetoothManagerService::Disable(
     // }
 
     {
-        Mutex::Autolock lock(mReceiverLock);
+        AutoLock lock(mReceiverLock);
         if (persist) {
             // waive WRITE_SECURE_SETTINGS permission check
             Int64 callingIdentity = Binder::ClearCallingIdentity();
@@ -905,7 +905,7 @@ ECode CBluetoothManagerService::UnbindAndFinish()
     }
 
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         if (mUnbinding)
             return NOERROR;
 
@@ -988,7 +988,7 @@ ECode CBluetoothManagerService::GetAddress(
     }
 
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         if (mBluetooth != NULL) {
              return mBluetooth->GetAddress(result);
         }
@@ -1016,7 +1016,7 @@ ECode CBluetoothManagerService::GetName(
     }
 
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         if (mBluetooth != NULL) {
             return mBluetooth->GetName(result);
         }
@@ -1033,7 +1033,7 @@ void CBluetoothManagerService::HandleEnable(
 {
     mQuietEnable = quietMode;
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         if ((mBluetooth == NULL) && (!mBinding)) {
             //Start bind timeout and bind
             mHandler->SendMessageDelayed(MESSAGE_TIMEOUT_BIND, 0, 0, NULL, TIMEOUT_BIND_MS);
@@ -1077,7 +1077,7 @@ void CBluetoothManagerService::HandleEnable(
 void CBluetoothManagerService::HandleDisable()
 {
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         // don't need to disable if GetNameAddressOnly is set,
         // service will be unbinded after Name and Address are saved
         if ((mBluetooth != NULL) && (!mConnection->IsGetNameAddressOnly())) {
@@ -1155,7 +1155,7 @@ Boolean CBluetoothManagerService::WaitForOnOff(
     Int32 i = 0;
     while (i < 10) {
         {
-            Mutex::Autolock lock(mConnectionLock);
+            AutoLock lock(mConnectionLock);
                 if (mBluetooth == NULL)
                     break;
                 Int32 val;

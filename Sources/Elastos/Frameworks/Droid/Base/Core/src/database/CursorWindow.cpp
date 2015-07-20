@@ -1017,7 +1017,7 @@ void CursorWindow::RecordNewWindow(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 window)
 {
-    Mutex::Autolock lock(sWindowToPidMapLock);
+    AutoLock lock(sWindowToPidMapLock);
     sWindowToPidMap[window] = pid;
     // if (Log.isLoggable(STATS_TAG, Log.VERBOSE)) {
     //     Log.i(STATS_TAG, "Created a new Cursor. " + printStats());
@@ -1027,7 +1027,7 @@ void CursorWindow::RecordNewWindow(
 void CursorWindow::RecordClosingOfWindow(
     /* [in] */ Int32 window)
 {
-    Mutex::Autolock lock(sWindowToPidMapLock);
+    AutoLock lock(sWindowToPidMapLock);
     if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
         // this means we are not in the ContentProvider.
         return;
@@ -1043,7 +1043,7 @@ String CursorWindow::PrintStats()
     HashMap<Int32, Int32> pidCounts;
 
     {
-        Mutex::Autolock lock(sWindowToPidMapLock);
+        AutoLock lock(sWindowToPidMapLock);
         if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
             // this means we are not in the ContentProvider.
             return String("");

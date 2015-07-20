@@ -312,7 +312,7 @@ ECode CDrmRightsManager::InstallRights(
 {
     VALIDATE_NOT_NULL(rights);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     Int32 mMimeType = 0;
 
@@ -358,7 +358,7 @@ ECode CDrmRightsManager::QueryRights(
 {
     VALIDATE_NOT_NULL(rights);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     AutoPtr<IDrmRights> rightsObj;
     CDrmRights::New((IDrmRights**)&rightsObj);
@@ -381,7 +381,7 @@ ECode CDrmRightsManager::GetRightsList(
 {
     VALIDATE_NOT_NULL(rightsList);
 
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     /* call native method to get how many rights object in current agent */
     Int32 mNum = NativeGetNumOfRights();
@@ -426,7 +426,7 @@ ECode CDrmRightsManager::GetRightsList(
 ECode CDrmRightsManager::DeleteRights(
     /* [in] */ IDrmRights* rights)
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     /* call native method to delete the specified rights object */
     NativeDeleteRights(rights);

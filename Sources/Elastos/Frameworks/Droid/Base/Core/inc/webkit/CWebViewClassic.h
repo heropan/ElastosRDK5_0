@@ -4020,8 +4020,8 @@ private:
 
     AutoPtr<IMessage> mListBoxMessage;
 
-    static Mutex sLock;
-    Mutex mLock;
+    static Object sLock;
+    Object mLock;
 };
 
 } // namespace Webkit

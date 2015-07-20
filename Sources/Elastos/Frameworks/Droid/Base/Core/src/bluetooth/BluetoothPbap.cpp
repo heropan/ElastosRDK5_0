@@ -110,7 +110,7 @@ BluetoothPbap::~BluetoothPbap()
 
 void BluetoothPbap::Close()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mAdapter != NULL) {
         AutoPtr<IIBluetoothManager> mgr = ((CBluetoothAdapter*)mAdapter.Get())->GetBluetoothManager();
         if (mgr != NULL) {
@@ -126,7 +126,7 @@ void BluetoothPbap::Close()
     }
 
     {
-        Mutex::Autolock lock(mConnectionLock);
+        AutoLock lock(mConnectionLock);
         if (mService != NULL) {
             // try {
             mService = NULL;

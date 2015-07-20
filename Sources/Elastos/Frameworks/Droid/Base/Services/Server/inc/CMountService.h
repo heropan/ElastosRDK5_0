@@ -794,7 +794,7 @@ private:
     AutoPtr<IContext> mContext;
     AutoPtr<NativeDaemonConnector> mConnector;
 
-    Mutex mVolumesLock;
+    Object mVolumesLock;
 
     /** When defined, base template for user-specific {@link StorageVolume}. */
     AutoPtr<IStorageVolume> mEmulatedTemplate;
@@ -809,7 +809,7 @@ private:
     /** Map from path to state */
     // @GuardedBy("mVolumesLock")
     HashMap<String, String> mVolumeStates;
-    Mutex mVolumeStatesLock;
+    Object mVolumeStatesLock;
 
     volatile Boolean mSystemReady;
 
@@ -818,7 +818,7 @@ private:
     Boolean mUmsAvailable;
     // Used as a lock for methods that register/unregister listeners.
     List<AutoPtr<MountServiceBinderListener> > mListeners;
-    Mutex mListenersLock;
+    Object mListenersLock;
     AutoPtr<ICountDownLatch> mConnectedSignal;
     AutoPtr<ICountDownLatch> mAsecsScanned;
     Boolean mSendUmsConnectedOnBoot;
@@ -828,7 +828,7 @@ private:
      * Used as a lock in methods to manipulate secure containers.
      */
     HashSet<String> mAsecMountSet;
-    Mutex mAsecMountSetLock;
+    Object mAsecMountSetLock;
 
     /**
      * Mounted OBB tracking information. Used to track the current state of all
@@ -836,11 +836,11 @@ private:
      */
     typedef List< AutoPtr<ObbState> > ObbStateList;
     HashMap<AutoPtr<IBinder>, AutoPtr<ObbStateList> > mObbMounts;
-    Mutex mObbMountsLock;
+    Object mObbMountsLock;
 
     /** Map from raw paths to {@link ObbState}. */
     HashMap<String, AutoPtr<ObbState> > mObbPathToStateMap;
-    Mutex mObbPathToStateMapLock;
+    Object mObbPathToStateMapLock;
 
     // OBB Action Handler
     AutoPtr<IHandler> mObbActionHandler;

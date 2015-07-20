@@ -453,9 +453,9 @@ private:
     AutoPtr<IAtomicFile> mPolicyFile;
     HashSet<String> mBlockedPackages;
 
-    Mutex mToastQueueLock;
-    Mutex mBlockedPackagesLock;
-    Mutex mNotificationListLock;
+    Object mToastQueueLock;
+    Object mBlockedPackagesLock;
+    Object mNotificationListLock;
 };
 
 } // Server

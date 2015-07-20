@@ -3871,7 +3871,7 @@ void CWebViewClassic::SetupTrustStorageListener(
 void CWebViewClassic::SetupProxyListener(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sProxyReceiver != NULL || sNotificationsEnabled == FALSE) {
         return;
@@ -3896,7 +3896,7 @@ void CWebViewClassic::SetupProxyListener(
 void CWebViewClassic::DisableProxyListener(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sProxyReceiver == NULL) {
         return;
@@ -3931,7 +3931,7 @@ void CWebViewClassic::SetupPackageListener(
      * instances.
      */
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
 
         // if the receiver already exists then we do not need to register it
         // again
@@ -4552,7 +4552,7 @@ void CWebViewClassic::DestroyCar()
     if (mWebViewCore != NULL) {
         // Tell WebViewCore to destroy itself
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
 
             AutoPtr<CWebViewCore> webViewCore = mWebViewCore;
             mWebViewCore = NULL; // prevent using partial webViewCore
@@ -4589,7 +4589,7 @@ void CWebViewClassic::DestroyNative()
  */
 void CWebViewClassic::EnablePlatformNotifications()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     sNotificationsEnabled = TRUE;
     AutoPtr<IContext> context = NativeUtil::GetContext();
@@ -4603,7 +4603,7 @@ void CWebViewClassic::EnablePlatformNotifications()
  */
 void CWebViewClassic::DisablePlatformNotifications()
 {
-    Mutex::Autolock lock(lock);
+    AutoLock lock(lock);
 
     sNotificationsEnabled = FALSE;
     AutoPtr<IContext> context = NativeUtil::GetContext();
@@ -4963,7 +4963,7 @@ ECode CWebViewClassic::RestoreState(
         // shared copy, so synchronize instead to prevent concurrent
         // modifications.
         {
-            Mutex::Autolock lock(list->mLock);
+            AutoLock lock(list->mLock);
 
             AutoPtr<ISerializable> obj;
             inState->GetSerializable(String("history"), (ISerializable**)&obj);
@@ -5207,7 +5207,7 @@ ECode CWebViewClassic::CanGoBack(
     VALIDATE_NOT_NULL(result);
     AutoPtr<WebBackForwardListClassic> l = mCallbackProxy->GetBackForwardList();
     {
-        Mutex::Autolock lock(l->mLock);
+        AutoLock lock(l->mLock);
 
         if (l->GetClearPending()) {
             *result = FALSE;
@@ -5239,7 +5239,7 @@ ECode CWebViewClassic::CanGoForward(
 {
     AutoPtr<WebBackForwardListClassic> l = mCallbackProxy->GetBackForwardList();
     {
-        Mutex::Autolock lock(l->mLock);
+        AutoLock lock(l->mLock);
 
         if (l->GetClearPending()) {
             *result = FALSE;
@@ -5274,7 +5274,7 @@ ECode CWebViewClassic::CanGoBackOrForward(
     VALIDATE_NOT_NULL(result);
     AutoPtr<WebBackForwardListClassic> l = mCallbackProxy->GetBackForwardList();
     {
-        Mutex::Autolock lock(l->mLock);
+        AutoLock lock(l->mLock);
 
         if (l->GetClearPending()) {
             *result = FALSE;
@@ -7100,7 +7100,7 @@ ECode CWebViewClassic::GetSettings(
  */
 AutoPtr<IPluginList> CWebViewClassic::GetPluginList()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     AutoPtr<IPluginList> pl;
     CPluginList::New((IPluginList**)&pl);
     return pl;
@@ -10594,7 +10594,7 @@ ECode CWebViewClassic::OnMeasure(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mWebViewPrivate->SetMeasuredDimension(measuredWidth, measuredHeight);
     }
     return NOERROR;
@@ -10741,7 +10741,7 @@ void CWebViewClassic::PassToJavaScript(
 ECode CWebViewClassic::GetWebViewCore(
     /* [out] */ IWebViewCore** wvc)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(wvc);
     *wvc = mWebViewCore;
     REFCOUNT_ADD(*wvc);

@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/FutureTask.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
 using Elastos::Core::IInteger64;
@@ -1579,7 +1578,7 @@ private:
 
     HashMap<AutoPtr<IOnAccountsUpdateListener>, AutoPtr<IHandler> >
             mAccountsUpdatedListeners;
-    Mutex mAccountsUpdatedListenersLock;
+    Object mAccountsUpdatedListenersLock;
 
     /**
      * BroadcastReceiver that listens for the LOGIN_ACCOUNTS_CHANGED_ACTION intent

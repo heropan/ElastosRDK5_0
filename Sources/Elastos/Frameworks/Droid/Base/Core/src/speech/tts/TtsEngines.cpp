@@ -24,7 +24,6 @@ using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocale;
 using Libcore::ICU::CLocaleHelper;
 using Elastos::Core::CStringWrapper;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -594,7 +593,7 @@ void TtsEngines::UpdateLocalePrefForEngine(
     /* [in] */ const String& name,
     /* [in] */ const String& newLocale)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IContentResolver> cr;
     mContext->GetContentResolver((IContentResolver**)&cr);

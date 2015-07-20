@@ -142,7 +142,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         if (magic != 0) {
             if (kind == MICRO_KIND) {
                 {
-                    Mutex::Autolock lock(sThumbBufLock);
+                    AutoLock lock(sThumbBufLock);
                     if (sThumbBuf == NULL) {
                         sThumbBuf = ArrayOf<Byte>::Alloc(IMiniThumbFile::BYTES_PER_MINTHUMB);
                     }
@@ -203,7 +203,7 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
         // Assuming thumbnail has been generated, at least original image exists.
         if (kind == MICRO_KIND) {
             {
-                Mutex::Autolock lock(sThumbBufLock);
+                AutoLock lock(sThumbBufLock);
                 if (sThumbBuf == NULL) {
                     sThumbBuf = ArrayOf<Byte>::Alloc(IMiniThumbFile::BYTES_PER_MINTHUMB);
                 }

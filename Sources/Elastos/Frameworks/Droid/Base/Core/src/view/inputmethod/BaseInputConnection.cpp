@@ -582,7 +582,7 @@ Boolean BaseInputConnection::SendKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
     {
-        Mutex::Autolock lock(((CInputMethodManager*)mIMM.Get())->mHLock);
+        AutoLock lock(((CInputMethodManager*)mIMM.Get())->mHLock);
 
         AutoPtr<ViewRootImpl> viewRootImpl;
         if (mTargetView != NULL) {

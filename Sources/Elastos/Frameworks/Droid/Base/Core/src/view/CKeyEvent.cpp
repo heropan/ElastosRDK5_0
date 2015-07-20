@@ -6,7 +6,6 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::HashMap;
@@ -559,7 +558,7 @@ AutoPtr<CKeyEvent> CKeyEvent::Obtain()
 {
     AutoPtr<CKeyEvent> ev;
     {
-        Mutex::Autolock lock(gRecyclerLock);
+        AutoLock lock(gRecyclerLock);
 
         ev = gRecyclerTop;
         if (ev == NULL) {
@@ -637,7 +636,7 @@ ECode CKeyEvent::Recycle()
     InputEvent::Recycle();
     mCharacters = NULL;
 
-    Mutex::Autolock lock(gRecyclerLock);
+    AutoLock lock(gRecyclerLock);
 
     if (gRecyclerUsed < MAX_RECYCLED) {
         gRecyclerUsed++;

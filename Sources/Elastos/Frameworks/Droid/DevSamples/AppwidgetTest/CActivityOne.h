@@ -4,7 +4,6 @@
 
 #include "app/Activity.h"
 #include "_CActivityOne.h"
-#include <elrefbase.h>
 
 using Elastos::ElRefBase;
 using Elastos::Droid::App::Activity;

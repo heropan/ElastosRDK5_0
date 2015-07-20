@@ -166,7 +166,7 @@ private:
         // Actual WebCore thread handler
         AutoPtr<IHandler> mHandler;
         WebSettingsClassic* mOwner;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:
@@ -1382,7 +1382,7 @@ private:
     static const String DESKTOP_USERAGENT;
     static const String IPHONE_USERAGENT;
     static AutoPtr<ILocale> sLocale;
-    static Mutex sLockForLocaleSettings;
+    static Object sLockForLocaleSettings;
 
     static const String ACCEPT_LANG_FOR_US_LOCALE;
     static struct ElaWebSettingsCallback* sElaWebSettingsCallback;

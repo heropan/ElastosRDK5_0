@@ -487,7 +487,7 @@ ECode TabletStatusBar::TakeScreenshotServiceConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
-    // Mutex::Autolock lock(mHost->mScreenshotLock);
+    // AutoLock lock(mHost->mScreenshotLock);
 
     // if (mHost->mScreenshotConnection != this) {
     //     return NOERROR;
@@ -1956,7 +1956,7 @@ ECode TabletStatusBar::SetAreThereNotifications()
 void TabletStatusBar::TakeScreenshot()
 {
     // {
-    //     Mutex::Autolock lock(mScreenshotLock);
+    //     AutoLock lock(mScreenshotLock);
     //     if (mScreenshotConnection != NULL) {
     //         return;
     //     }

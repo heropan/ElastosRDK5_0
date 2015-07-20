@@ -167,7 +167,7 @@ ECode CContentProviderClient::ReleaseProvider(
     /* [out] */ Boolean* isRelease)
 {
     VALIDATE_NOT_NULL(isRelease)
-    Mutex::Autolock lock(mCContentProviderClientLock);
+    AutoLock lock(mCContentProviderClientLock);
     if (mReleased) return E_ILLEGAL_STATE_EXCEPTION;
     mReleased = TRUE;
 

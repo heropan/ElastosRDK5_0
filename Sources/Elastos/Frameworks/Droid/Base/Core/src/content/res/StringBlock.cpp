@@ -236,7 +236,7 @@ StringBlock::~StringBlock()
 AutoPtr<ICharSequence> StringBlock::Get(
     /* [in] */ Int32 idx)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     if (mStrings != NULL) {
         if (idx < mStrings->GetLength()) {

@@ -19,7 +19,7 @@ SslClientCertLookupTable::SslClientCertLookupTable()
 //synchronized
 AutoPtr<SslClientCertLookupTable> SslClientCertLookupTable::GetInstance()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sTable == NULL) {
         sTable = new SslClientCertLookupTable();
     }

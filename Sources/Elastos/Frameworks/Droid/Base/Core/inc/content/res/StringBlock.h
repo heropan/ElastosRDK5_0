@@ -160,7 +160,7 @@ private:
     AutoPtr< ArrayOf<ICharSequence*> > mStrings;
     AutoPtr< HashMap<Int32, AutoPtr<ICharSequence> > > mSparseStrings;
     AutoPtr<StyleIDs> mStyleIDs;
-    Mutex mSyncLock;
+    Object mSyncLock;
     Boolean mUseSparse;
     Boolean mOwnsNative;
 };

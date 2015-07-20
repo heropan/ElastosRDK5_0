@@ -837,7 +837,7 @@ ECode CAccessibilityNodeInfo::Obtain(
 {
     VALIDATE_NOT_NULL(info);
 
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPool != NULL) {
         AutoPtr<CAccessibilityNodeInfo> infoCls = sPool;
         sPool = sPool->mNext;
@@ -873,7 +873,7 @@ ECode CAccessibilityNodeInfo::Recycle()
         // throw new IllegalStateException("Info already recycled!");
     }
     Clear();
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPoolSize <= MAX_POOL_SIZE) {
         mNext = sPool;
         sPool = this;

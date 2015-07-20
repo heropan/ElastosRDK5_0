@@ -368,7 +368,7 @@ void CNetworkManagementService::PrepareNativeDaemon()
 
     // push any existing quota or UID rules
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
 
         if (mActiveQuotas.Begin() != mActiveQuotas.End()) {
             Slogger::D(TAG, "pushing %d active quota rules", mActiveQuotas.GetSize());
@@ -1539,7 +1539,7 @@ ECode CNetworkManagementService::AddIdleTimer(
     if (DBG) Slogger::D(TAG, "Adding idletimer");
 
     {
-        Mutex::Autolock lock(mIdleTimerLock);
+        AutoLock lock(mIdleTimerLock);
         AutoPtr<IdleTimerParams> params = mActiveIdleTimers[iface];
         if (params != NULL) {
             // the interface already has idletimer, update network count
@@ -1577,7 +1577,7 @@ ECode CNetworkManagementService::RemoveIdleTimer(
     if (DBG) Slogger::D(TAG, "Removing idletimer");
 
     {
-        Mutex::Autolock lock(mIdleTimerLock);
+        AutoLock lock(mIdleTimerLock);
         AutoPtr<IdleTimerParams> params = mActiveIdleTimers[iface];
         if (params == NULL || --(params->mNetworkCount) > 0) {
             return NOERROR;
@@ -1648,7 +1648,7 @@ ECode CNetworkManagementService::SetInterfaceQuota(
         return NOERROR;
 
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
         HashMap<String, Int64>::Iterator iter = mActiveQuotas.Find(iface);
         if (iter != mActiveQuotas.End()) {
             //throw new IllegalStateException("iface " + iface + " already has quota");
@@ -1685,7 +1685,7 @@ ECode CNetworkManagementService::RemoveInterfaceQuota(
         return NOERROR;
 
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
         HashMap<String, Int64>::Iterator iter = mActiveQuotas.Find(iface);
         if (iter != mActiveQuotas.End()) {
             // TODO: eventually consider throwing
@@ -1727,7 +1727,7 @@ ECode CNetworkManagementService::SetInterfaceAlert(
     }
 
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
         HashMap<String, Int64>::Iterator iter2 = mActiveAlerts.Find(iface);
         if (iter2 != mActiveAlerts.End()) {
             //throw new IllegalStateException("iface " + iface + " already has alert");
@@ -1763,7 +1763,7 @@ ECode CNetworkManagementService::RemoveInterfaceAlert(
         return NOERROR;
 
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
         HashMap<String, Int64>::Iterator iter = mActiveAlerts.Find(iface);
         if (iter != mActiveAlerts.End()) {
             // TODO: eventually consider throwing
@@ -1821,7 +1821,7 @@ ECode CNetworkManagementService::SetUidNetworkRules(
         return NOERROR;
 
     {
-        Mutex::Autolock lock(mQuotaLock);
+        AutoLock lock(mQuotaLock);
         Boolean oldRejectOnQuota = mUidRejectOnQuota[uid];
         if (oldRejectOnQuota == rejectOnQuotaInterfaces) {
             // TODO: eventually consider throwing
@@ -2277,13 +2277,13 @@ ECode CNetworkManagementService::EnforceSystemUid()
 //     pw->Print("Bandwidth control enabled: "); pw->Println(mBandwidthControlEnabled);
 
 //     {
-//         Mutex::Autolock lock(mQuotaLock);
+//         AutoLock lock(mQuotaLock);
 //         pw->Print("Active quota ifaces: "); pw->Println(mActiveQuotas.ToString());
 //         pw->Print("Active alert ifaces: "); pw->Println(mActiveAlerts.ToString());
 //     }
 
 //     {
-//         Mutex::Autolock lock(mUidRejectOnQuota);
+//         AutoLock lock(mUidRejectOnQuota);
 //         pw->Print("UID reject on quota ifaces: [");
 //         const Int32 size = mUidRejectOnQuota.GetSize();
 //         for (Int32 i = 0; i < size; i++) {

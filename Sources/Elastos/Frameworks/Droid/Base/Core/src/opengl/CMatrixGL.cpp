@@ -502,7 +502,7 @@ ECode CMatrixGL::RotateM(
     /* [in] */ Float z)
 {
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         SetRotateM(sTemp, 0, a, x, y, z);
         MultiplyMM(rm, rmOffset, m, mOffset, sTemp, 0);
     }
@@ -518,7 +518,7 @@ ECode CMatrixGL::RotateM(
     /* [in] */ Float z)
 {
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         SetRotateM(sTemp, 0, a, x, y, z);
         MultiplyMM(sTemp, 16, m, mOffset, sTemp, 0);
         m->Copy(mOffset, sTemp, 16, 16);

@@ -41,7 +41,7 @@ private:
     // Cache the factory both for efficiency, and ensure any one process gets all webviews from the
     // same provider.
     static AutoPtr<IWebViewFactoryProvider> sProviderInstance;
-    static Mutex sProviderLock;
+    static Object sProviderLock;
 };
 
 } // namespace Webkit

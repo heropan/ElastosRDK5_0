@@ -215,7 +215,7 @@ ECode CCursorLoader::LoadInBackground(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mCCursorLoaderLock);
+    AutoLock lock(mCCursorLoaderLock);
     Boolean isCanceled = FALSE;
     if ((IsLoadInBackgroundCanceled(&isCanceled), isCanceled)) {
 //        throw new OperationCanceledException();
@@ -275,7 +275,7 @@ ECode CCursorLoader::LoadInBackground(
 ECode CCursorLoader::CancelLoadInBackground()
 {
     AsyncTaskLoader::CancelLoadInBackground();
-    Mutex::Autolock lock(mCCursorLoaderLock);
+    AutoLock lock(mCCursorLoaderLock);
 
     if (NULL != mCancellationSignal) {
         FAIL_RETURN(mCancellationSignal->Cancel());

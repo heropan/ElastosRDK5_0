@@ -16,7 +16,7 @@ void ResultPrinter::Print(
     /* [in] */ ITestResult* result,
     /* [in] */ Int64 runTime)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     PrintHeader(runTime);
     PrintErrors(result);
     PrintFailures(result);

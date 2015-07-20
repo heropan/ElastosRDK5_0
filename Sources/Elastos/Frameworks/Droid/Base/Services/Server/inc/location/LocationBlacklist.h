@@ -10,7 +10,6 @@
 #include "database/ContentObserver.h"
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IPrintWriter;
@@ -81,7 +80,7 @@ private:
     static const String WHITELIST_CONFIG_NAME;
 
     AutoPtr<IContext> mContext;
-    Mutex mLock;
+    Object mLock;
 
     // all fields below synchronized on mLock
     AutoPtr<ArrayOf<String> > mWhitelist;

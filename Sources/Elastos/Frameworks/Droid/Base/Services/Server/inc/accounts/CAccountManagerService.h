@@ -11,7 +11,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/Pair.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::Pair;
 using Elastos::Core::IInteger32;
@@ -673,11 +672,11 @@ private:
     AutoPtr<DatabaseHelper> mOpenHelper;
 
     AutoPtr<HashMap<String, AutoPtr<AccountManagerServiceSession> > > mSessions;
-    Mutex mSessionsLock;
+    Object mSessionsLock;
     AutoPtr<IAtomicInteger32> mNotificationIds;
 
     HashMap<Int32, AutoPtr<UserAccounts> > mUsers;
-    Mutex mUsersLock;
+    Object mUsersLock;
 
     HashMap<AutoPtr<IAccount>, Int32> mSigninRequiredNotificationIds;
     //static AtomicReference<AccountManagerService> sThis =
@@ -706,10 +705,10 @@ private:
     AutoPtr<CAccountManagerService::DatabaseHelper> mOpenHelper;
     HashMap<Pair<Pair<AutoPtr<IAccount>, String>*, AutoPtr<IInteger32> >*, AutoPtr<IInteger32> >
             mCredentialsPermissionNotificationIds;
-    Mutex mCredentialsPermissionNotificationIdsLock;
+    Object mCredentialsPermissionNotificationIdsLock;
     HashMap<AutoPtr<IAccount>, AutoPtr<IInteger32> > mSigninRequiredNotificationIds;
-    Mutex mSigninRequiredNotificationIdsLock;
-    Mutex mCacheLock;
+    Object mSigninRequiredNotificationIdsLock;
+    Object mCacheLock;
     /** protected by the {@link #cacheLock} */
     HashMap<String, AutoPtr< ArrayOf<IAccount*> > > mAccountCache;
     /** protected by the {@link #cacheLock} */

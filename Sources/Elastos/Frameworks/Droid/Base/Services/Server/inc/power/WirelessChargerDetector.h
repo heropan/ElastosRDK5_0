@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Hardware::ISensorManager;
 using Elastos::Droid::Hardware::ISensor;
 using Elastos::Droid::Hardware::ISensorEventListener;
@@ -148,7 +147,7 @@ private:
     static const Double MIN_GRAVITY;
     static const Double MAX_GRAVITY;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<ISensorManager> mSensorManager;
     AutoPtr<ISuspendBlocker> mSuspendBlocker;

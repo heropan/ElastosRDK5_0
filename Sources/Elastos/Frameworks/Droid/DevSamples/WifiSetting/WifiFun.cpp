@@ -3,12 +3,12 @@
 #include <cutils/properties.h>
 
 
-static Mutex gLock;
+static Object gLock;
 
 
 void* ElWifi_Start_Internal(void* arg)
 {
-    Mutex::Autolock lock(&gLock);
+    AutoLock lock(&gLock);
 
     if(!WifiNative::LoadDriver())
         return NULL;
@@ -63,7 +63,7 @@ bool ElWifi_Start()
 
 void* ElWifi_Stop_Internal(void*)
 {
-    Mutex::Autolock lock(&gLock);
+    AutoLock lock(&gLock);
 
     WifiNative::StopDhcp();
 

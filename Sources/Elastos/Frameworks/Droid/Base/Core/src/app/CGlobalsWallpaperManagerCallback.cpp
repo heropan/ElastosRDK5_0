@@ -57,7 +57,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::PeekWallpaperBitmap(
     /* [in] */ IContext* context,
     /* [in] */ Boolean returnDefault)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mWallpaper != NULL) {
         return mWallpaper;
     }
@@ -84,7 +84,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::PeekWallpaperBitmap(
 
 void CGlobalsWallpaperManagerCallback::ForgetLoadedWallpaper()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mWallpaper = NULL;
     mDefaultWallpaper = NULL;
 }
@@ -175,7 +175,7 @@ AutoPtr<IBitmap> CGlobalsWallpaperManagerCallback::GetDefaultWallpaperLocked(
 
 void CGlobalsWallpaperManagerCallback::HandleClearWallpaper()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mWallpaper = NULL;
     mDefaultWallpaper = NULL;
 }

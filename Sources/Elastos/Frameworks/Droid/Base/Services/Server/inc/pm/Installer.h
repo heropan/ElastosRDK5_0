@@ -3,7 +3,6 @@
 
 #include "Elastos.Droid.Server_server.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 
@@ -127,7 +126,7 @@ private:
 
     static const Boolean LOCAL_DEBUG = FALSE;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Pm

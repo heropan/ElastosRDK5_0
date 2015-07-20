@@ -130,7 +130,7 @@ public:
 
     private:
         Boolean mApplied; // = FALSE;
-        Mutex mThisLock;
+        Object mThisLock;
         CRemoteControlClient* mOwner;
     };
 
@@ -409,7 +409,7 @@ private:
     /**
      * Lock for all cached data
      */
-    Mutex mCacheLock;
+    Object mCacheLock;
 
     /**
      * Cache for the playback state.

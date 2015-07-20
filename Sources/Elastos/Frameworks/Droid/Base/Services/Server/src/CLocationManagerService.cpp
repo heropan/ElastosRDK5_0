@@ -129,7 +129,7 @@ ECode CLocationManagerService::LocationPackageMonitor::OnPackageDisappeared(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 reason)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr< List<AutoPtr<Receiver> > > deadReceivers;
     InterfaceReceiverIterator it = mHost->mReceivers.Begin();
     for(; it != mHost->mReceivers.End(); ++it) {
@@ -282,7 +282,7 @@ ECode CLocationManagerService::LocationContentObserver::GetInterfaceID(
 ECode CLocationManagerService::LocationContentObserver::OnChange(
     /* [in] */ Boolean selfUpdate)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     mHost->UpdateProvidersLocked();
     return NOERROR;
 }
@@ -401,7 +401,7 @@ Boolean CLocationManagerService::Receiver::CallStatusChangedLocked(
 {
     if (mListener != NULL) {
         // try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
@@ -423,7 +423,7 @@ Boolean CLocationManagerService::Receiver::CallStatusChangedLocked(
         statusChanged->PutExtras(bundle);
         statusChanged->PutInt32Extra(ILocationManager::KEY_STATUS_CHANGED, status);
 //        try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
         if (FAILED(mPendingIntent->Send(mHost->mContext, 0, statusChanged,
@@ -447,7 +447,7 @@ Boolean CLocationManagerService::Receiver::CallLocationChangedLocked(
     CLocation::New(location, (ILocation**)&l);
     if (mListener != NULL) {
         // try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
         if (FAILED(mListener->OnLocationChanged(l))) {
@@ -466,7 +466,7 @@ Boolean CLocationManagerService::Receiver::CallLocationChangedLocked(
         locationChanged->PutParcelableExtra(ILocationManager::KEY_LOCATION_CHANGED,
                 IParcelable::Probe(l));
         // try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
         if (FAILED(mPendingIntent->Send(mHost->mContext, 0, locationChanged,
@@ -489,7 +489,7 @@ Boolean CLocationManagerService::Receiver::CallProviderEnabledLocked(
 {
     if (mListener != NULL) {
         // try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
         ECode ec = NOERROR;
@@ -516,7 +516,7 @@ Boolean CLocationManagerService::Receiver::CallProviderEnabledLocked(
         providerIntent->PutBooleanExtra(ILocationManager::KEY_PROVIDER_ENABLED,
                 enabled);
         // try {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // synchronize to ensure incrementPendingBroadcastsLocked()
         // is called before decrementPendingBroadcasts()
         if (FAILED(mPendingIntent->Send(mHost->mContext, 0, providerIntent,
@@ -536,11 +536,11 @@ Boolean CLocationManagerService::Receiver::CallProviderEnabledLocked(
 ECode CLocationManagerService::Receiver::ProxyDied()
 {
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->RemoveUpdatesLocked(this);
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mPendingBroadcasts > 0) {
         mHost->DecrementPendingBroadcasts();
         mPendingBroadcasts = 0;
@@ -555,7 +555,7 @@ ECode CLocationManagerService::Receiver::OnSendFinished(
     /* [in] */ const String& resultData,
     /* [in] */ IBundle* resultExtras)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     DecrementPendingBroadcastsLocked();
     return NOERROR;
 }
@@ -665,7 +665,7 @@ void CLocationManagerService::Init()
     mLocationFudger = new LocationFudger(mContext, mLocationHandler);
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         LoadProvidersLocked();
     }
 
@@ -900,7 +900,7 @@ void CLocationManagerService::SwitchUser(
     /* [in] */ Int32 userId)
 {
     mBlacklist->SwitchUser(userId);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mLastLocation.Clear();
     List<AutoPtr<ILocationProviderInterface> >::Iterator it;
     for (it = mProviders.Begin(); it != mProviders.End(); ++it) {
@@ -928,7 +928,7 @@ ECode CLocationManagerService::LocationCallbackFinished(
         receiver = it->mSecond;
     }
     if (receiver != NULL) {
-        Mutex::Autolock lock(receiver->mLock);
+        AutoLock lock(receiver->mLock);
             // so wakelock calls will succeed
         Int64 identity = Binder::ClearCallingIdentity();
         receiver->DecrementPendingBroadcastsLocked();
@@ -1114,7 +1114,7 @@ ECode CLocationManagerService::GetAllProviders(
 {
     VALIDATE_NOT_NULL(allProviders);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     CParcelableObjectContainer::New(allProviders);
     List<AutoPtr<ILocationProviderInterface> >::Iterator it;
@@ -1148,7 +1148,7 @@ ECode CLocationManagerService::GetProviders(
     Int64 identity = Binder::ClearCallingIdentity();
 
     // try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     CParcelableObjectContainer::New(providers);
     List<AutoPtr<ILocationProviderInterface> >::Iterator it;
@@ -1632,7 +1632,7 @@ ECode CLocationManagerService::RequestLocationUpdates(
     // providers may use public location API's, need to clear identity
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     ECode ec = RequestLocationUpdatesLocked(sanitizedRequest, receiver, pid, uid,
             packageName);
         // }
@@ -1710,7 +1710,7 @@ ECode CLocationManagerService::RemoveUpdates(
     // providers may use public location API's, need to clear identity
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     RemoveUpdatesLocked(receiver);
         // }
     // } finally {
@@ -1729,7 +1729,7 @@ void CLocationManagerService::RemoveUpdatesLocked(
     if (it != mReceivers.End() && receiver->IsListener()) {
         mReceivers.Erase(it);
         // receiver.getListener().asBinder().unlinkToDeath(receiver, 0);
-        Mutex::Autolock lock(receiver->mLock);
+        AutoLock lock(receiver->mLock);
         if(receiver->mPendingBroadcasts > 0) {
             DecrementPendingBroadcasts();
             receiver->mPendingBroadcasts = 0;
@@ -1786,7 +1786,7 @@ ECode CLocationManagerService::GetLastLocation(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Figure out the provider. Either its explicitly request (deprecated API's),
     // or use the fused provider
     if (name.IsNull()) name = ILocationManager::FUSED_PROVIDER;
@@ -1933,7 +1933,7 @@ ECode CLocationManagerService::AddGpsStatusListener(
 ECode CLocationManagerService::RemoveGpsStatusListener(
     /* [in] */ IIGpsStatusListener* listener)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
         // try {
     return mGpsStatusProvider->RemoveGpsStatusListener(listener);
         // } catch (Exception e) {
@@ -1967,7 +1967,7 @@ ECode CLocationManagerService::SendExtraCommand(
         // throw new SecurityException("Requires ACCESS_LOCATION_EXTRA_COMMANDS permission");
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<ILocationProviderInterface> p;
     HashMap<String, AutoPtr<ILocationProviderInterface> >::Iterator it =
             mProvidersByName.Find(provider);
@@ -2024,7 +2024,7 @@ ECode CLocationManagerService::GetProviderProperties(
     FAIL_RETURN(CheckResolutionLevelIsSufficientForProviderUse(
             GetCallerAllowedResolutionLevel(), provider));
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         it = mProvidersByName.Find(provider);
         p = it->mSecond;
     }
@@ -2050,7 +2050,7 @@ ECode CLocationManagerService::IsProviderEnabled(
 
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<ILocationProviderInterface> p;
     HashMap<String, AutoPtr<ILocationProviderInterface> >::Iterator it
             = mProvidersByName.Find(provider);
@@ -2383,7 +2383,7 @@ void CLocationManagerService::HandleLocationChanged(
         mPassiveProvider->UpdateLocation(location);
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (IsAllowedBySettingsLocked(provider, mCurrentUserId)) {
         HandleLocationChangedLocked(location, passive);
     }
@@ -2392,7 +2392,7 @@ void CLocationManagerService::HandleLocationChanged(
 void CLocationManagerService::IncrementPendingBroadcasts()
 {
     // synchronized (mWakeLock) {
-    Mutex::Autolock lock(mLockForWakeLock);
+    AutoLock lock(mLockForWakeLock);
     if (mPendingBroadcasts++ == 0) {
         // try {
 //        mWakeLock->Acquire();
@@ -2408,7 +2408,7 @@ void CLocationManagerService::IncrementPendingBroadcasts()
 
 void CLocationManagerService::DecrementPendingBroadcasts()
 {
-    Mutex::Autolock lock(mLockForWakeLock);
+    AutoLock lock(mLockForWakeLock);
     // synchronized (mWakeLock) {
     if (--mPendingBroadcasts == 0) {
         // try {
@@ -2521,7 +2521,7 @@ ECode CLocationManagerService::AddTestProvider(
     }
 
     Int64 identity = Binder::ClearCallingIdentity();
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> provider = new MockProvider(name, this, properties);
     // remove the real provider if we are replacing GPS or network provider
     HashMap<String, AutoPtr<ILocationProviderInterface> >::Iterator it;
@@ -2552,7 +2552,7 @@ ECode CLocationManagerService::RemoveTestProvider(
     /* [in] */ const String& provider)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2594,7 +2594,7 @@ ECode CLocationManagerService::SetTestProviderLocation(
     /* [in] */ ILocation* loc)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2619,7 +2619,7 @@ ECode CLocationManagerService::ClearTestProviderLocation(
     /* [in] */ const String& provider)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2641,7 +2641,7 @@ ECode CLocationManagerService::SetTestProviderEnabled(
     /* [in] */ Boolean enabled)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2673,7 +2673,7 @@ ECode CLocationManagerService::ClearTestProviderEnabled(
     /* [in] */ const String& provider)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2704,7 +2704,7 @@ ECode CLocationManagerService::SetTestProviderStatus(
     /* [in] */ Int64 updateTime)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);
@@ -2725,7 +2725,7 @@ ECode CLocationManagerService::ClearTestProviderStatus(
     /* [in] */ const String& provider)
 {
     FAIL_RETURN(CheckMockPermissionsSafe());
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<MockProvider> mockProvider;
     HashMap<String, AutoPtr<MockProvider> >::Iterator mpIt =
             mMockProviders.Find(provider);

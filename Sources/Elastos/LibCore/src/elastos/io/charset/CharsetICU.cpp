@@ -56,7 +56,7 @@ ECode CharsetICU::Contains(
         *result = FALSE;
         return NOERROR;
     }
-    else if ((ICharset*)this == charset) {
+    else if (THIS_PROBE(ICharset) == charset) {
         *result = TRUE;
         return NOERROR;
     }

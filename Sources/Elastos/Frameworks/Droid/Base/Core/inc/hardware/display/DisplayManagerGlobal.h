@@ -10,7 +10,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Droid::View::ICompatibilityInfoHolder;
 using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::IDisplayInfo;
@@ -171,9 +170,9 @@ private:
     static const Boolean USE_CACHE = FALSE;
 
     static AutoPtr<DisplayManagerGlobal> sInstance;
-    static Mutex sInstanceLock;
+    static Object sInstanceLock;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IIDisplayManager> mDm;
 

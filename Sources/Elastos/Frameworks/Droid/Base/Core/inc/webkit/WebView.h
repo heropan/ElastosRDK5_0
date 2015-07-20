@@ -266,7 +266,7 @@ public:
 
     private:
         AutoPtr<IWebView> mWebview;
-        Mutex mLock;
+        Object mLock;
     };
 
     /**
@@ -1709,7 +1709,7 @@ private:
 
     AutoPtr<IWebViewProvider> mProvider;
 
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Webkit

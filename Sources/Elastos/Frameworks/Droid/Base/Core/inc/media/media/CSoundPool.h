@@ -421,7 +421,7 @@ private:
 
     AutoPtr<IOnLoadCompleteListener> mOnLoadCompleteListener;
 
-    Mutex mLock;
+    Object mLock;
 
     // SoundPool messages
     //

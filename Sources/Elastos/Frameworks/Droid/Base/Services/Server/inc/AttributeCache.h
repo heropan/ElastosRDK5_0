@@ -7,7 +7,6 @@
 #include "elastos/Mutex.h"
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
@@ -107,7 +106,7 @@ private:
     HashMap<Int32, HashMap<String, AutoPtr<Package> >* > mPackages;
     AutoPtr<IConfiguration> mConfiguration;
 
-    Mutex mLock;
+    Object mLock;
     typedef HashMap<String, AutoPtr<Package> > PackageMap;
     typedef HashMap<String, AutoPtr<Package> >::Iterator PackageIterator;
 

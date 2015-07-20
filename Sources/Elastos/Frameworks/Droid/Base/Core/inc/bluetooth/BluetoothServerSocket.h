@@ -58,7 +58,7 @@ private:
     Int32 mMessage;
     Int32 mChannel;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // Bluetooth

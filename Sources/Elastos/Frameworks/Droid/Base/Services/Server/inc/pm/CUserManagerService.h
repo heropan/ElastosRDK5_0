@@ -195,8 +195,8 @@ private:
     CARAPI Init(
         /* [in] */ IContext* context,
         /* [in] */ CPackageManagerService* pm,
-        /* [in] */ Mutex* installLock,
-        /* [in] */ Mutex* packagesLock,
+        /* [in] */ Object* installLock,
+        /* [in] */ Object* packagesLock,
         /* [in] */ IFile* dataDir,
         /* [in] */ IFile* baseUserPath);
 
@@ -281,8 +281,8 @@ private:
 
     AutoPtr<IContext> mContext;
     CPackageManagerService* mPm;
-    Mutex* mInstallLock;
-    Mutex* mPackagesLock;
+    Object* mInstallLock;
+    Object* mPackagesLock;
     Boolean mDeleteLock;
 
     AutoPtr<IHandler> mHandler;
@@ -307,7 +307,7 @@ private:
     Int32 mUserVersion;
 
     static AutoPtr<CUserManagerService> sInstance;
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Pm

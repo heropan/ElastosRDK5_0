@@ -48,7 +48,7 @@ ECode CGLU::GluLookAt(
     /* [in] */ Float upZ)
 {
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         AutoPtr<IMatrix> matrix;
         CMatrixGL::AcquireSingleton((IMatrix**)&matrix);
         matrix->SetLookAtM(sScratch, 0, eyeX, eyeY, eyeZ, centerX, centerY, centerZ,
@@ -99,7 +99,7 @@ ECode CGLU::GluProject(
     /* [out] */ Int32* rst)
 {
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         Int32 M_OFFSET = 0; // 0..15
         Int32 V_OFFSET = 16; // 16..19
         Int32 V2_OFFSET = 20; // 20..23

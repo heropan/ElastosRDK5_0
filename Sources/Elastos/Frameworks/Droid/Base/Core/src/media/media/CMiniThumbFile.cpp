@@ -25,7 +25,7 @@ namespace Media {
 
 /*static*/ HashMap< String, AutoPtr<IMiniThumbFile> > CMiniThumbFile::sThumbFiles;
 
-/*static*/ Mutex CMiniThumbFile::mStaticThislock;
+/*static*/ Object CMiniThumbFile::mStaticThislock;
 
 const Int32 CMiniThumbFile::MINI_THUMB_DATA_FILE_VERSION = 3;
 const Int32 CMiniThumbFile::HEADER_SIZE = 1 + 8 + 4;
@@ -46,7 +46,7 @@ ECode CMiniThumbFile::constructor(
 /*synchronized*/
 ECode CMiniThumbFile::Deactivate()
 {
-    Mutex::Autolock lock(mThislock);
+    AutoLock lock(mThislock);
 
     if (mMiniThumbFile != NULL) {
 //        try {
@@ -66,7 +66,7 @@ ECode CMiniThumbFile::GetMagic(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThislock);
+    AutoLock lock(mThislock);
     // check the mini thumb file for the right data.  Right is
     // defined as having the right magic number at the offset
     // reserved for this "id".
@@ -119,7 +119,7 @@ ECode CMiniThumbFile::SaveMiniThumbToFile( // throws IOException
     /* [in] */ Int64 id,
     /* [in] */ Int64 magic)
 {
-    Mutex::Autolock lock(mThislock);
+    AutoLock lock(mThislock);
 
     AutoPtr<IRandomAccessFile> r = MiniThumbDataFile();
     if (r == NULL) {
@@ -175,7 +175,7 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    Mutex::Autolock lock(mThislock);
+    AutoLock lock(mThislock);
     AutoPtr<IRandomAccessFile> r = MiniThumbDataFile();
     if (r == NULL) {
         return NOERROR;
@@ -225,7 +225,7 @@ ECode CMiniThumbFile::GetMiniThumbFromFile(
 /*static synchronized*/
 ECode CMiniThumbFile::Reset()
 {
-    Mutex::Autolock lock(mStaticThislock);
+    AutoLock lock(mStaticThislock);
 
     AutoPtr<IMiniThumbFile> file;
     HashMap< String, AutoPtr<IMiniThumbFile> >::Iterator it = sThumbFiles.Begin();
@@ -245,7 +245,7 @@ ECode CMiniThumbFile::Instance(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mStaticThislock);
+    AutoLock lock(mStaticThislock);
 
     AutoPtr< ArrayOf<String> > tempMatrix;
     uri->GetPathSegments((ArrayOf<String>**)&tempMatrix);

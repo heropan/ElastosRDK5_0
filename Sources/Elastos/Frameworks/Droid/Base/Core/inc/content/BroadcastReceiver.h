@@ -9,7 +9,6 @@
 #endif
 
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Mutex;
 using namespace Elastos::Droid::Os;
 using namespace Elastos::Droid::App;
 
@@ -177,7 +176,7 @@ public:
         AutoPtr<IBundle> mResultExtras;
         Boolean mAbortBroadcast;
         Boolean mFinished;
-        Mutex mPendingResultLock;
+        Object mPendingResultLock;
     };
 
 public:

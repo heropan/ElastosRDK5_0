@@ -32,7 +32,7 @@ ECode TokenWatcher::AcquireToken(
     /* [in] */ IBinder* token,
     /* [in] */ const String& tag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // explicitly checked to avoid bogus sendNotification calls because
     // of the WeakHashMap and the GC
     Int32 oldSize = mTokens.GetSize();
@@ -59,7 +59,7 @@ ECode TokenWatcher::Cleanup(
     /* [in] */ IBinder* token,
     /* [in] */ Boolean unlink)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<Death> d = mTokens[token];
     mTokens.Erase(token);
     if (unlink && d != NULL) {
@@ -89,7 +89,7 @@ ECode TokenWatcher::IsAcquired(
 {
     VALIDATE_NOT_NULL(result)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         *result = mAcquired;
     }
     return NOERROR;
@@ -125,7 +125,7 @@ AutoPtr< List<String> > TokenWatcher::DumpInternal()
 {
     AutoPtr< List<String> > a = new List<String>;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Set<AutoPtr<IBinder> > keys;
         HashMap<AutoPtr<IBinder>, AutoPtr<Death> >::Iterator iter = mTokens.Begin();
         for (; iter != mTokens.End(); ++iter) {
@@ -157,7 +157,7 @@ ECode TokenWatcher::NotificationTask()
 {
     Int32 value;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         value = mNotificationQueue;
         mNotificationQueue = -1;
     }

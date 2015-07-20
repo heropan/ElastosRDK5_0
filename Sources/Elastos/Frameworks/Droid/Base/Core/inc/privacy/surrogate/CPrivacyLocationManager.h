@@ -292,7 +292,7 @@ private:
 private:
     AutoPtr<IContext> mContext;
     AutoPtr<IPrivacySettingsManager> mPrivacySetMan;
-    Mutex mLock;
+    Object mLock;
 
     //TODO
     // List< AutoPtr<IThread> > mThreads;

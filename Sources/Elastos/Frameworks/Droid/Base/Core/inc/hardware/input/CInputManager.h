@@ -11,7 +11,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IVibrator;
@@ -368,12 +367,12 @@ private:
     static const Int32 MSG_DEVICE_CHANGED = 3;
 
     static AutoPtr<IInputManager> sInstance;
-    static Mutex sInstanceLock;
+    static Object sInstanceLock;
 
     AutoPtr<IIInputManager> mIm;
 
     // Guarded by mInputDevicesLock
-    Mutex mInputDevicesLock;
+    Object mInputDevicesLock;
     AutoPtr< HashMap<Int32, AutoPtr<IInputDevice> > > mInputDevices;
     AutoPtr<IInputDevicesChangedListener> mInputDevicesChangedListener;
     List<AutoPtr<InputDeviceListenerDelegate> > mInputDeviceListeners;

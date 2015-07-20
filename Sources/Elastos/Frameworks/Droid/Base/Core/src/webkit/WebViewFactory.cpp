@@ -30,7 +30,7 @@ Mutex WebViewFactory::sProviderLock;
 
 AutoPtr<IWebViewFactoryProvider> WebViewFactory::GetProvider()
 {
-    Mutex::Autolock lock(sProviderLock);
+    AutoLock lock(sProviderLock);
 
     // For now the main purpose of this function (and the factory abstraction) is to keep
     // us honest and minimize usage of WebViewClassic internals when binding the proxy.

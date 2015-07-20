@@ -10,7 +10,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Concurrent::ICountDownLatch;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IWorkSource;
 using Elastos::Droid::Os::IBinder;
@@ -129,7 +128,7 @@ public:
     private:
         String mTag;
         AutoPtr<IBinder> mBinder;
-        Mutex mBinderLock;
+        Object mBinderLock;
         Int32 mRefCount;
         Int32 mLockType;
         Boolean mRefCounted;
@@ -250,7 +249,7 @@ public:
     private:
         String mTag;
         AutoPtr<IBinder> mBinder;
-        Mutex mBinderLock;
+        Object mBinderLock;
         Int32 mRefCount;
         Boolean mRefCounted;
         Boolean mHeld;
@@ -626,14 +625,14 @@ private:
     static const Int32 INVALID_KEY;
     Int32 mListenerKey;
     HashMap<Int32, AutoPtr<IInterface> > mListenerMap;
-    Mutex mListenerMapLock;
+    Object mListenerMapLock;
 
     AutoPtr<AsyncChannel> mAsyncChannel;
     AutoPtr<ServiceHandler> mHandler;
     AutoPtr<IMessenger> mWifiServiceMessenger;
     AutoPtr<ICountDownLatch> mConnected;
 
-    static Mutex sThreadRefLock;
+    static Object sThreadRefLock;
     static Int32 sThreadRefCount;
     static AutoPtr<IHandlerThread> sHandlerThread;
 

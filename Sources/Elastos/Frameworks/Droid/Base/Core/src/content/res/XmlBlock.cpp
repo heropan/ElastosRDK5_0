@@ -859,7 +859,7 @@ ECode XmlBlock::Parser::GetStyleAttribute(
 
 ECode XmlBlock::Parser::Close()
 {
-    Mutex::Autolock lock(mHost->mSyncLock);
+    AutoLock lock(mHost->mSyncLock);
 
     if (mParseState != 0) {
         mHost->NativeDestroyParseState(mParseState);
@@ -923,7 +923,7 @@ XmlBlock::~XmlBlock()
 
 void XmlBlock::Close()
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     if (mOpen) {
         mOpen = FALSE;
@@ -950,7 +950,7 @@ void XmlBlock::DecOpenCountLocked()
 AutoPtr<IXmlResourceParser> XmlBlock::NewParser(
     /* [in] */ const String& path)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     if (mNative != 0) {
         return (IXmlResourceParser*)new Parser(NativeCreateParseState(mNative), this, path);

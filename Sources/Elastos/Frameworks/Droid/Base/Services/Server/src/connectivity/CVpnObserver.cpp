@@ -22,7 +22,7 @@ ECode CVpnObserver::InterfaceStatusChanged(
     /* [in] */ const String& interfaze,
     /* [in] */ Boolean up)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     if (!up && mOwner->mLegacyVpnRunner != NULL) {
         mOwner->mLegacyVpnRunner->Check(interfaze);
     }
@@ -46,7 +46,7 @@ ECode CVpnObserver::InterfaceRemoved(
     /* [in] */ const String& interfaze)
 {
     {
-        Mutex::Autolock lock(mOwner->mLock);
+        AutoLock lock(mOwner->mLock);
         if (interfaze.Equals(mOwner->mInterface) && mOwner->NativeCheck(interfaze) == 0) {
             Int64 token = Binder::ClearCallingIdentity();
             // try {

@@ -63,7 +63,7 @@ private:
      * Cache the Jpeg encoding quality parameters
      */
     HashMap<Int32, AutoPtr<ArrayOf<Int32> > > sCache;
-    Mutex mCacheLock;
+    Object mCacheLock;
 };
 
 } // namespace Media

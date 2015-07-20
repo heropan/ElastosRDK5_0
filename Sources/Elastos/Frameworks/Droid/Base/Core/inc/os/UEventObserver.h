@@ -86,7 +86,7 @@ private:
          *  an ArrayList where even elements are the String match and odd
          *  elements the corresponding UEventObserver observer */
         List< AutoPtr<IInterface> > mKeysAndObservers;
-        Mutex mKeysAndObserversLock;
+        Object mKeysAndObserversLock;
 
         List< AutoPtr<UEventObserver> > mTempObserversToSignal;
     };
@@ -150,9 +150,9 @@ private:
 
     static AutoPtr<UEventThread> sThread;
 
-    static Mutex sClsLock;
+    static Object sClsLock;
 
-    // static Mutex gMatchesMutex;
+    // static Object gMatchesMutex;
 
     // static Vector<String> gMatches;
 };

@@ -77,7 +77,7 @@ ECode CSystemSensorManager::SensorThread::SensorThreadRunnable::Run()
 
     /*synchronized (this) */
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // we've open the driver, we're ready to open the sensors
         mHost->mSensorsReady = TRUE;
 
@@ -91,7 +91,7 @@ ECode CSystemSensorManager::SensorThread::SensorThreadRunnable::Run()
 
         Int32 accuracy = (*status)[0];
         {
-            Mutex::Autolock lock(sListenersLock);
+            AutoLock lock(sListenersLock);
             if (sensor == -1 || sListeners.IsEmpty()) {
                 // we lost the connection to the event stream. this happens
                 // when the last listener is removed or if there is an error
@@ -145,7 +145,7 @@ Boolean CSystemSensorManager::SensorThread::StartLocked()
         CThread::New(runnable, String("SensorThread")/*SensorThread.class.getName()*/, (IThread**)&thread);
         thread->Start();
         {
-            Mutex::Autolock lock(runnable->mLock);
+            AutoLock lock(runnable->mLock);
             while (mSensorsReady == FALSE) {
                 //TODO
                 // runnable.wait();
@@ -327,7 +327,7 @@ ECode CSystemSensorManager::constructor(
     mContext = context;
 
     {
-        Mutex::Autolock lock(sListenersLock);
+        AutoLock lock(sListenersLock);
         if (!sSensorModuleInitialized) {
             sSensorModuleInitialized = TRUE;
 
@@ -518,7 +518,7 @@ Boolean CSystemSensorManager::RegisterListenerImpl(
 {
     Boolean result = TRUE;
     {
-        Mutex::Autolock lock(sListenersLock);
+        AutoLock lock(sListenersLock);
         // look for this listener in our list
         AutoPtr<ListenerDelegate> l;
 
@@ -571,7 +571,7 @@ void CSystemSensorManager::UnregisterListenerImpl(
     /* [in] */ ISensor* sensor)
 {
     {
-        Mutex::Autolock lock(sListenersLock);
+        AutoLock lock(sListenersLock);
         List<ListenerDelegate*>::Iterator ator = sListeners.Begin();
         //Int32 type = 0;
         //assert(sensor != NULL);

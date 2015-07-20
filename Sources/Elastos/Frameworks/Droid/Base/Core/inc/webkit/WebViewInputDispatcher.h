@@ -540,7 +540,7 @@ private:
     // TODO: If batching proves to be working well, remove this
     static const Boolean ENABLE_EVENT_BATCHING;
 
-    Mutex mLock;
+    Object mLock;
 
     // Pool of queued input events.  (guarded by mLock)
     static const Int32 MAX_DISPATCH_EVENT_POOL_SIZE = 10;

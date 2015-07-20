@@ -740,7 +740,7 @@ protected:
     AutoPtr<IPhoneStatusBarView> mStatusBarView;
 
     Int32 mPixelFormat;
-    Mutex mQueueLock;
+    Object mQueueLock;
     //TODO Object mQueueLock = new Object();
 
     // viewgroup containing the normal contents of the statusbar

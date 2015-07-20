@@ -56,7 +56,7 @@ UtteranceProgressListener::UtteranceProgressListenerStand::UtteranceProgressList
 ECode UtteranceProgressListener::UtteranceProgressListenerStand::OnDone(
     /* [in] */ const String & utteranceId)
 {
-    Mutex::Autolock lock(mMutex);
+    AutoLock lock(mMutex);
     mListener->OnUtteranceCompleted(utteranceId);
     return NOERROR;
 }

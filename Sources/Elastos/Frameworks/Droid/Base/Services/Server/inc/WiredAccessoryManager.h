@@ -181,7 +181,7 @@ private:
 
     static const Int32 MSG_NEW_DEVICE_STATE = 1;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IPowerManagerWakeLock> mWakeLock;  // held while there is a pending route change
     AutoPtr<IAudioManager> mAudioManager;

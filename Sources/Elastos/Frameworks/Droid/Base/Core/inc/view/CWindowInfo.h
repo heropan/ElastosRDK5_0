@@ -89,7 +89,7 @@ private:
 
     static const Int32 MAX_POOL_SIZE;
     static Int32 UNDEFINED;
-    static Mutex sPoolLock;
+    static Object sPoolLock;
     static AutoPtr<IWindowInfo> sPool;
     static Int32 sPoolSize;
 

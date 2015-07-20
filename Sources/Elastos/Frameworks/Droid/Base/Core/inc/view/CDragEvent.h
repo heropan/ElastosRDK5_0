@@ -174,7 +174,7 @@ private:
 
 private:
     static const Int32 MAX_RECYCLED = 10;
-    static Mutex sRecyclerLock;
+    static Object sRecyclerLock;
     static Int32 sRecyclerUsed;
     static AutoPtr<CDragEvent> sRecyclerTop;
     static const Boolean TRACK_RECYCLED_LOCATION = FALSE;

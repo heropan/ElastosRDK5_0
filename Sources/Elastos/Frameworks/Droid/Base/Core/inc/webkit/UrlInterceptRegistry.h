@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IMap;
 
@@ -42,7 +41,7 @@ private:
 
     static List< AutoPtr<IInterface> > mHandlerList;
 
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Webkit

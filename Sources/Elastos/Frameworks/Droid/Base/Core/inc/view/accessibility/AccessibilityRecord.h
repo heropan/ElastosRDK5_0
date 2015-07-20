@@ -4,7 +4,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
@@ -610,7 +609,7 @@ private:
     // Housekeeping
     static const Int32 MAX_POOL_SIZE;
     static AccessibilityRecord* sPool;
-    static Mutex sPoolLock;
+    static Object sPoolLock;
     static Int32 sPoolSize;
 
     friend class CAccessibilityRecord;

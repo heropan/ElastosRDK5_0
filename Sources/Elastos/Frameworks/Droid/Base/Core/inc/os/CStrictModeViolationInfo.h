@@ -6,7 +6,6 @@
 #include "ext/frameworkdef.h"
 #include <elastos/Core/Object.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::App::IApplicationErrorReportCrashInfo;
 using Elastos::Droid::Utility::IPrinter;
 
@@ -127,7 +126,7 @@ public:
      */
     Int64 mNumInstances;
 
-    Mutex mStateLock;
+    Object mStateLock;
 };
 
 } // namespace Os

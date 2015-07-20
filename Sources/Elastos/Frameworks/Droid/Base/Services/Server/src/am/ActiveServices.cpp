@@ -2263,7 +2263,7 @@ ECode ActiveServices::ServiceTimeout(
     String anrMessage;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (proc->mExecutingServices.IsEmpty() || proc->mThread == NULL) {
             return NOERROR;
         }
@@ -2548,7 +2548,7 @@ Boolean ActiveServices::DumpService(
     List<AutoPtr<CServiceRecord> > services;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr< ArrayOf<Int32> > users = mAm->GetUsersLocked();
         if (String("all").Equals(name)) {
             for (Int32 i = 0; i < users->GetLength(); ++i) {
@@ -2629,7 +2629,7 @@ void ActiveServices::DumpService(
 {
     String innerPrefix = prefix + "  ";
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         pw->PrintString(prefix);
         pw->PrintString(String("SERVICE "));
         pw->PrintString(r->mShortName);

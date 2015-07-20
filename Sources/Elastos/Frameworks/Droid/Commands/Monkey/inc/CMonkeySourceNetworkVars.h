@@ -19,7 +19,6 @@
 
 #include "ext/frameworkext.h"
 #include "_CMonkeySourceNetworkVars.h"
-#include <elrefbase.h>
 #include <elautoptr.h>
 #include <elastos/utility/etl/HashMap.h>
 

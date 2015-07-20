@@ -206,7 +206,7 @@ ECode CStorageManager::RegisterListener(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     if (mBinderListener == NULL ) {
         // try {
         AutoPtr<CMountServiceBinderListener> cmsbl;
@@ -237,7 +237,7 @@ ECode CStorageManager::UnregisterListener(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     List<AutoPtr<ListenerDelegate> >::Iterator it = mListeners.Begin();
     while ( it != mListeners.End()) {
         if ((*it)->GetListener().Get() == listener) {

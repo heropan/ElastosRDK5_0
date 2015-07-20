@@ -10,7 +10,6 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::Mutex;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::AppWidget::CAppWidgetProviderInfo;
 using Elastos::Droid::Content::CIntentFilter;
@@ -395,7 +394,7 @@ ECode CAppWidgetService::OnUserRemoved(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mAppWidgetServicesLock);
+        AutoLock lock(mAppWidgetServicesLock);
 
         AutoPtr<AppWidgetServiceImpl> impl = NULL;
         HashMap<Int32, AutoPtr<AppWidgetServiceImpl> >::Iterator iter = mAppWidgetServices.Find(userId);
@@ -422,7 +421,7 @@ ECode CAppWidgetService::OnUserStopping(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mAppWidgetServicesLock);
+        AutoLock lock(mAppWidgetServicesLock);
 
         HashMap<Int32, AutoPtr<AppWidgetServiceImpl> >::Iterator iter = mAppWidgetServices.Find(userId);
         if(iter != mAppWidgetServices.End()) {
@@ -442,7 +441,7 @@ AutoPtr<AppWidgetServiceImpl> CAppWidgetService::GetImplForUser(
     Boolean sendInitial = FALSE;
     AutoPtr<AppWidgetServiceImpl> service;
     {
-        Mutex::Autolock lock(mAppWidgetServicesLock);
+        AutoLock lock(mAppWidgetServicesLock);
 
         service = mAppWidgetServices[userId];
         if (service ==  NULL) {
@@ -609,7 +608,7 @@ ECode CAppWidgetService::Dump(
     // Dump the state of all the app widget providers
     //synchronized (mAppWidgetServices)
     {
-        Mutex::Autolock lock(mAppWidgetServicesLock);
+        AutoLock lock(mAppWidgetServicesLock);
         //IndentingPrintWriter ipw = new IndentingPrintWriter(pw, "  ");
         HashMap<Int32, AutoPtr<AppWidgetServiceImpl> >::Iterator iter = mAppWidgetServices.Begin();
         for(;iter != mAppWidgetServices.End(); ++iter) {

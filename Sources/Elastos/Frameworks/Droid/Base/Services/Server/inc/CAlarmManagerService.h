@@ -410,8 +410,8 @@ private:
 private:
     AutoPtr<IContext> mContext;
 
-    Mutex mLock;
-    Mutex mThisLock;
+    Object mLock;
+    Object mThisLock;
 
     typedef List<AutoPtr<Alarm> > AlarmList;
     typedef typename AlarmList::Iterator AlarmListIterator;

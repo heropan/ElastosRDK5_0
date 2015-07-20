@@ -43,7 +43,7 @@ Int32 SQLiteGlobal::ReleaseMemory()
 
 Int32 SQLiteGlobal::GetDefaultPageSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (sDefaultPageSize == 0) {
         AutoPtr<IStatFs> fs;

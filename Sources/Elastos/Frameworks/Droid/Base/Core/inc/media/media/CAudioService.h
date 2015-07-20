@@ -166,11 +166,11 @@ public:
 
 //        private final ConcurrentHashMap<Integer, Integer> mIndex = new ConcurrentHashMap<Integer, Integer>(8, 0.75f, 4);
         /*const*/ HashMap<Int32, Int32> mIndex;
-        Mutex mIndexLock;
+        Object mIndexLock;
 
 //        private final ConcurrentHashMap<Integer, Integer> mLastAudibleIndex = new ConcurrentHashMap<Integer, Integer>(8, 0.75f, 4);
         /*const*/ HashMap<Int32, Int32> mLastAudibleIndex;
-        Mutex mLastAudibleIndexLock;
+        Object mLastAudibleIndexLock;
 
         List< AutoPtr<VolumeDeathHandler> > mDeathHandlers; //handles mute/solo clients death
 
@@ -179,7 +179,7 @@ public:
         */
         Int32 mMuteCount;
 
-        Mutex mThisLock;
+        Object mThisLock;
 
         CAudioService* mAudioService;
     };
@@ -1715,14 +1715,14 @@ private:
 
     /** @see VolumeStreamState */
     AutoPtr< ArrayOf<VolumeStreamState*> > mStreamStates;
-    Mutex mStreamStatesLock;
+    Object mStreamStatesLock;
 
     AutoPtr<SettingsObserver> mSettingsObserver;
 
     Int32 mMode;
 
     // protects mRingerMode
-    Mutex mSettingsLock;
+    Object mSettingsLock;
 
     Boolean mMediaServerOk;
 
@@ -1860,7 +1860,7 @@ private:
 
     // Devices currently connected
     HashMap<Int32, String> mConnectedDevices; // = new HashMap <Integer, String>();
-    Mutex mConnectedDevicesLock;
+    Object mConnectedDevicesLock;
 
     // Forced device usage for communications
     Int32 mForcedUseForComm;
@@ -1873,11 +1873,11 @@ private:
     // List of binder death handlers for setMode() client processes.
     // The last process to have called setMode() is at the top of the list.
     List< AutoPtr<SetModeDeathHandler> > mSetModeDeathHandlers; // = new ArrayList <SetModeDeathHandler>();
-    Mutex mSetModeDeathHandlersLock;
+    Object mSetModeDeathHandlersLock;
 
     // List of clients having issued a SCO start request
     List< AutoPtr<ScoClient> > mScoClients; // = new ArrayList <ScoClient>();
-    Mutex mScoClientsLock;
+    Object mScoClientsLock;
 
     // BluetoothHeadset API to control SCO connection
     AutoPtr<IBluetoothHeadset> mBluetoothHeadset;
@@ -1939,7 +1939,7 @@ private:
     // mVolumeControlStream is set by VolumePanel to temporarily force the stream type which volume
     // is controlled by Vol keys.
     Int32 mVolumeControlStream; // = -1;
-    Mutex mForceControlStreamLock;
+    Object mForceControlStreamLock;
 
     // VolumePanel is currently the only client of forceVolumeControlStream() and runs in system
     // server process so in theory it is not necessary to monitor the client death.
@@ -1953,11 +1953,11 @@ private:
 
     // Request to override default use of A2DP for media.
     Boolean mBluetoothA2dpEnabled;
-    Mutex mBluetoothA2dpEnabledLock;
+    Object mBluetoothA2dpEnabledLock;
 
     // Monitoring of audio routes.  Protected by mCurAudioRoutes.
     AutoPtr<IAudioRoutesInfo> mCurAudioRoutes ; // = new AudioRoutesInfo();
-    Mutex mCurAudioRoutesLock;
+    Object mCurAudioRoutesLock;
 
     AutoPtr<IRemoteCallbackList> mRoutesObservers ; // = new RemoteCallbackList<IAudioRoutesObserver>();
 
@@ -1994,9 +1994,9 @@ private:
      * is ringing or during a call. Used by com.android.internal.telephony.CallManager when
      * entering and exiting calls.
      */
-    static Mutex mAudioFocusLock;
+    static Object mAudioFocusLock;
 
-    static Mutex mRingingLock;
+    static Object mRingingLock;
 
     //AutoPtr<IPhoneStateListener> mPhoneStateListener; // = new PhoneStateListener()
 
@@ -2009,7 +2009,7 @@ private:
     static const Int32 VOICEBUTTON_ACTION_START_VOICE_INPUT;// = 2;
     static const Int32 VOICEBUTTON_ACTION_SIMULATE_KEY_PRESS;// = 3;
 
-    Mutex mVoiceEventLock ;
+    Object mVoiceEventLock ;
     Boolean mVoiceButtonDown;
     Boolean mVoiceButtonHandled;
 
@@ -2022,7 +2022,7 @@ private:
 
     AutoPtr<IBroadcastReceiver> mKeyEventDone; // = new BroadcastReceiver();
 
-    Mutex mCurrentRcLock;
+    Object mCurrentRcLock;
 
     /**
      * The one remote control client which will receive a request for display information.
@@ -2056,7 +2056,7 @@ private:
      * every time we need this info.
      */
     AutoPtr<RemotePlaybackState> mMainRemote;
-    Mutex mMainRemoteLock;
+    Object mMainRemoteLock;
 
     /**
      * Indicates whether the "main" RemoteControlClient is considered active.
@@ -2079,7 +2079,7 @@ private:
      *  stack, audio focus or RC, can lead to a change in the remote control display
      */
 //    Stack< AutoPtr<RemoteControlStackEntry> > mRCStack; // = new Stack<RemoteControlStackEntry>();
-    Mutex mRCStackLock;
+    Object mRCStackLock;
 
     /**
      * The component the telephony package can register so telephony calls have priority to
@@ -2119,7 +2119,7 @@ private:
     const Int32 SAFE_MEDIA_VOLUME_ACTIVE; // = 3;
 
     Int32 mSafeMediaVolumeState;
-    Mutex mSafeMediaVolumeStateLock;
+    Object mSafeMediaVolumeStateLock;
 
     Int32 mMcc; // = 0;
 
@@ -2148,7 +2148,7 @@ private:
     //==========================================================================================
     // cached value of com.android.internal.R.bool.config_camera_sound_forced
     Boolean mCameraSoundForced;
-    Mutex mCameraSoundForcedLock;
+    Object mCameraSoundForcedLock;
 
 //    static AutoPtr< ArrayOf<String> > RINGER_MODE_NAMES;
     static String RINGER_MODE_NAMES[3];

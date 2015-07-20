@@ -1002,7 +1002,7 @@ private:
     static const String META_SYMBOLIC_NAMES[];
 
     static const Int32 MAX_RECYCLED = 10;
-    static Mutex gRecyclerLock;
+    static Object gRecyclerLock;
     static Int32 gRecyclerUsed;
     static AutoPtr<CKeyEvent> gRecyclerTop;
 

@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
@@ -1030,7 +1029,7 @@ protected:
     virtual ~WebSettings();
 
 protected:
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Webkit

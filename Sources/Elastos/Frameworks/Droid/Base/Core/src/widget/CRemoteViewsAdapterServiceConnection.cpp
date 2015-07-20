@@ -67,7 +67,7 @@ ECode CRemoteViewsAdapterServiceConnection::MyRunnableEx::Run()
 {
     RemoteViewsAdapter* adapter = reinterpret_cast<RemoteViewsAdapter*>(mAdapter->Probe(EIID_RemoteViewsAdapter));
     {
-        Mutex::Autolock lock(adapter->mCacheLock);
+        AutoLock lock(adapter->mCacheLock);
         adapter->mCache->CommitTemporaryMetaData();
     }
     AutoPtr<IRemoteAdapterConnectionCallback> callback = adapter->mCallback;
@@ -116,7 +116,7 @@ ECode CRemoteViewsAdapterServiceConnection::Bind(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mIsConnecting)
     {
         AutoPtr<IRemoteViewsAdapter> adapter;
@@ -150,7 +150,7 @@ ECode CRemoteViewsAdapterServiceConnection::Unbind(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // try {
         AutoPtr<IRemoteViewsAdapter> adapter;
         AutoPtr<IAppWidgetManager> mgr;
@@ -184,7 +184,7 @@ ECode CRemoteViewsAdapterServiceConnection::Unbind(
 ECode CRemoteViewsAdapterServiceConnection::GetRemoteViewsFactory(
     /* [out] */ IIRemoteViewsFactory** factory)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *factory = mRemoteViewsFactory;
     REFCOUNT_ADD(*factory);
     return NOERROR;
@@ -193,7 +193,7 @@ ECode CRemoteViewsAdapterServiceConnection::GetRemoteViewsFactory(
 ECode CRemoteViewsAdapterServiceConnection::IsConnected(
     /* [out] */ Boolean* isConnected)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *isConnected = mIsConnected;
     return NOERROR;
 }
@@ -201,7 +201,7 @@ ECode CRemoteViewsAdapterServiceConnection::IsConnected(
 ECode CRemoteViewsAdapterServiceConnection::OnServiceConnected(
     /* [in] */ IBinder* service)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mRemoteViewsFactory = IIRemoteViewsFactory::Probe(service);
     // Remove any deferred unbind messages
     // final RemoteViewsAdapter adapter = mAdapter.get();
@@ -223,7 +223,7 @@ ECode CRemoteViewsAdapterServiceConnection::OnServiceConnected(
 
 ECode CRemoteViewsAdapterServiceConnection::OnServiceDisconnected()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mIsConnected = FALSE;
     mIsConnecting = FALSE;
     mRemoteViewsFactory = NULL;

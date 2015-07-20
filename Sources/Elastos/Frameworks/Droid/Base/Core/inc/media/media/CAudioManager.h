@@ -1155,7 +1155,7 @@ private:
      * Lock to prevent concurrent changes to the list of focus listeners for this AudioManager
      * instance.
      */
-    Mutex mFocusListenerLock;
+    Object mFocusListenerLock;
 
     /**
      * Handler for audio focus events coming from the audio service.

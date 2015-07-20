@@ -118,16 +118,16 @@ private:
     static Boolean sKeyRunQueuesInited;
 
     static List<AutoPtr<IRunnable> > sFirstDrawHandlers;
-    static Mutex sFirstDrawHandlersLock;
+    static Object sFirstDrawHandlersLock;
 
     static Boolean sFirstDrawComplete;
 
     static List<AutoPtr<IComponentCallbacks> > sConfigCallbacks;
-    static Mutex sConfigCallbacksLock;
+    static Object sConfigCallbacksLock;
 
     static Boolean sUseRenderThread;
     static Boolean sRenderThreadQueried ;
-    static Mutex sRenderThreadQueryLock;
+    static Object sRenderThreadQueryLock;
 
     static AutoPtr<Elastos::Droid::View::Animation::IInterpolator> mResizeInterpolator;
 
@@ -268,7 +268,7 @@ private:
         AutoPtr<ArrayOf<IView*> > mTempViews;
         AutoPtr<ArrayOf<View::AttachInfo::InvalidateInfo*> > mTempViewRects;
 
-        Mutex mSelfLock;
+        Object mSelfLock;
         AutoPtr<IWeakReference> mHost;
     };
 
@@ -499,7 +499,7 @@ public:
 
     private:
         List<AutoPtr<HandlerAction> > mActions;
-        Mutex mLock;
+        Object mLock;
     };
 
 private:
@@ -1411,7 +1411,7 @@ private:
     AutoPtr<CSurfaceHolder> mHolder;
 
     AutoPtr<ViewRootHandler> mHandler;
-    Mutex mSyncLock;
+    Object mSyncLock;
 };
 
 } // namespace View

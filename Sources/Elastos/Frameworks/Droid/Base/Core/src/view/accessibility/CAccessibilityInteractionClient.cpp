@@ -65,7 +65,7 @@ AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetIns
 AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetInstanceForThread(
     /* [in] */ Int64 threadId)
 {
-    Mutex::Autolock lock(sStaticLock);
+    AutoLock lock(sStaticLock);
     AutoPtr<CAccessibilityInteractionClient> client;
     HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> >::Iterator it =  sClients.Find(threadId);
     if (it != sClients.End()) {
@@ -643,7 +643,7 @@ ECode CAccessibilityInteractionClient::GetConnection(
     VALIDATE_NOT_NULL(connection);
     *connection = NULL;
 
-    Mutex::Autolock lock(sConnectionCacheLock);
+    AutoLock lock(sConnectionCacheLock);
     HashMap<Int32, AutoPtr<IAccessibilityServiceConnection> >::Iterator it
         = sConnectionCache.Find(connectionId);
     if (it != sConnectionCache.End()) {
@@ -657,7 +657,7 @@ ECode CAccessibilityInteractionClient::AddConnection(
     /* [in] */ Int32 connectionId,
     /* [in] */ IAccessibilityServiceConnection* connection)
 {
-    Mutex::Autolock lock(sConnectionCacheLock);
+    AutoLock lock(sConnectionCacheLock);
     sConnectionCache[connectionId] = connection;
     return NOERROR;
 }
@@ -665,7 +665,7 @@ ECode CAccessibilityInteractionClient::AddConnection(
 ECode CAccessibilityInteractionClient::RemoveConnection(
     /* [in] */ Int32 connectionId)
 {
-    Mutex::Autolock lock(sConnectionCacheLock);
+    AutoLock lock(sConnectionCacheLock);
     sConnectionCache.Erase(connectionId);
     return NOERROR;
 }

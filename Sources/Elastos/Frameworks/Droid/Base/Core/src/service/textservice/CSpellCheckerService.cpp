@@ -82,7 +82,7 @@ ECode CSpellCheckerService::Session::OnGetSentenceSuggestionsMultiple(
     }
     if (mSentenceLevelAdapter == NULL) {
         {
-            Mutex::Autolock lock(&this);
+            AutoLock lock(&this);
             if (mSentenceLevelAdapter == NULL) {
                 const String localeStr = GetLocale();
                 if (!TextUtils->IsEmpty(localeStr)) {

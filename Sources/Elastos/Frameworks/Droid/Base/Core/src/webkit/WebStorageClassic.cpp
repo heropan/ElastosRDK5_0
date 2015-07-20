@@ -321,7 +321,7 @@ void WebStorageClassic::CreateUIHandler()
 //synchronized
 void WebStorageClassic::CreateHandler()
 {
-    Elastos::Core::Mutex::Autolock lock(mLock);
+    Elastos::Core::AutoLock lock(mLock);
 
     if (mHandler == NULL) {
         mHandler = new InnerHandler(this);
@@ -598,7 +598,7 @@ void WebStorageClassic::Update()
 void WebStorageClassic::PostMessage(
     /* [in] */ IMessage* msg)
 {
-    Elastos::Core::Mutex::Autolock lock(mLock);
+    Elastos::Core::AutoLock lock(mLock);
     if (mHandler != NULL) {
         Boolean result = FALSE;
         mHandler->SendMessage(msg, &result);

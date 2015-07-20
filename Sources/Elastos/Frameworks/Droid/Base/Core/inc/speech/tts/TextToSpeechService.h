@@ -242,7 +242,7 @@ private:
         Boolean mStarted;// = FALSE;
         //private
         Boolean mStopped;// = FALSE;
-        Mutex mLock;
+        Object mLock;
         AutoPtr<TextToSpeechService> mTtss;
     };
 
@@ -491,7 +491,7 @@ private:
     private:
         //private
         AutoPtr<SpeechItem> mCurrentSpeechItem;// = NULL;
-        Mutex mLock;
+        Object mLock;
         AutoPtr<TextToSpeechService> mTtss;
     };
 
@@ -666,7 +666,7 @@ private:
     private:
         //private final
         HashMap< AutoPtr</*IIBinder*/IBinder>, AutoPtr<IITextToSpeechCallback> > mCallerToCallback;
-        Mutex mCallerToCallbackLock;
+        Object mCallerToCallbackLock;
         AutoPtr<TextToSpeechService> mTtss;
     };
 

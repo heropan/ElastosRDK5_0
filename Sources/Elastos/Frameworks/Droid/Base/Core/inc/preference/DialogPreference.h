@@ -3,7 +3,6 @@
 #define __DIALOGPREFERENCE_H__
 
 #include "Preference.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::IAlertDialogBuilder;
 using Elastos::Droid::App::IDialog;

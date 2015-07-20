@@ -290,9 +290,9 @@ private:
     MyIBluetoothCallback* mBluetoothCallback;
     MyRunnableEx* mBTtimer;
     MyBroadcastReceiver* mReceiver;
-    Mutex mReceiverLock;
+    Object mReceiverLock;
 
-    Mutex mConnectionLock;
+    Object mConnectionLock;
 };
 
 } // namespace Server

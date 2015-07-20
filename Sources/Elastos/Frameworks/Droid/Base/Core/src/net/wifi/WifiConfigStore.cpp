@@ -108,7 +108,7 @@ void WifiConfigStore::DelayedDiskWrite::Write(
 {
     /* Do a delayed write to disk on a seperate handler thread */
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (++sWriteSequence == 1) {
             CHandlerThread::New(String("WifiConfigThread"), (IHandlerThread**)&sDiskWriteHandlerThread);
             sDiskWriteHandlerThread->Start();
@@ -306,7 +306,7 @@ void WifiConfigStore::DelayedDiskWrite::OnWriteCalled(
 
     //Quit if no more writes sent
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (--sWriteSequence == 0) {
             AutoPtr<ILooper> looper;
             sDiskWriteHandler->GetLooper((ILooper**)&looper);
@@ -568,7 +568,7 @@ Boolean WifiConfigStore::EnableNetwork(
     else {
         AutoPtr<IWifiConfiguration> enabledNetwork;
         {
-            Mutex::Autolock lock(mConfiguredNetworksLock);
+            AutoLock lock(mConfiguredNetworksLock);
             HashMap<Int32, AutoPtr<IWifiConfiguration> >::Iterator it = mConfiguredNetworks.Find(netId);
             if (it != mConfiguredNetworks.End()) {
                 enabledNetwork = it->mSecond;

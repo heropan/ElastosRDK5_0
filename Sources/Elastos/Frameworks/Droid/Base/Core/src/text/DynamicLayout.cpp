@@ -598,7 +598,7 @@ void DynamicLayout::Reflow(
     AutoPtr<CStaticLayout> reflowed;
 
     {
-        Mutex::Autolock lock(&sLock);
+        AutoLock lock(&sLock);
 
         reflowed = GetStaticLayout();
         SetStaticLayout(NULL);
@@ -695,7 +695,7 @@ void DynamicLayout::Reflow(
     UpdateBlocks(startline, endline - 1, n);
 
     {
-        Mutex::Autolock lock(&sLock);
+        AutoLock lock(&sLock);
 
         SetStaticLayout(reflowed);
         reflowed->Finish();

@@ -28,7 +28,7 @@ CAR_INTERFACE_IMPL(CookieManager, ICookieManager);
 //synchronized
 AutoPtr<ICookieManager> CookieManager::GetInstance()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     AutoPtr<ICookieManager> cookieManager;
     WebViewFactory::GetProvider()->GetCookieManager((ICookieManager**)&cookieManager);
     return cookieManager;

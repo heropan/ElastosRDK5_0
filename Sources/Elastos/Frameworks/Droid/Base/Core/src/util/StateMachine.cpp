@@ -55,7 +55,7 @@ void StateMachine::LogRec::Update(
 void StateMachine::LogRecords::SetSize(
     /* [in] */ Int32 maxSize)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mMaxSize = maxSize;
     mCount = 0;
@@ -64,26 +64,26 @@ void StateMachine::LogRecords::SetSize(
 
 Int32 StateMachine::LogRecords::GetSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mLogRecords.GetSize();
 }
 
 Int32 StateMachine::LogRecords::Count()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mCount;
 }
 
 void StateMachine::LogRecords::Cleanup()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mLogRecords.Clear();
 }
 
 AutoPtr<StateMachine::LogRec> StateMachine::LogRecords::Get(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 nextIndex = mOldestIndex + index;
     if (nextIndex >= mMaxSize) {
         nextIndex -= mMaxSize;
@@ -102,7 +102,7 @@ void StateMachine::LogRecords::Add(
     /* [in] */ State* state,
     /* [in] */ State* orgState)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCount += 1;
     if (mLogRecords.GetSize() < mMaxSize) {
         AutoPtr<LogRec> pmi = new LogRec(msg, messageInfo, state, orgState);

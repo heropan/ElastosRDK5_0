@@ -31,7 +31,6 @@ using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Pair;
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
 using Elastos::Net::ISocket;
@@ -2240,13 +2239,13 @@ public:
     /** Params from WindowManagerService to WindowAnimator. Do not modify or read without first
      * locking on either mWindowMap or mAnimator and then on mLayoutToAnim */
     AutoPtr<LayoutToAnimatorParams> mLayoutToAnim;
-    Mutex mLayoutToAnimLock;
+    Object mLayoutToAnimLock;
 
     /** The lowest wallpaper target with a detached wallpaper animation on it. */
     AutoPtr<WindowState> mWindowDetachedWallpaper;
 
     AutoPtr<WindowAnimator> mAnimator;
-    Mutex mAnimatorLock;
+    Object mAnimatorLock;
 
     /**
      * Whether the UI is currently running in touch mode (not showing

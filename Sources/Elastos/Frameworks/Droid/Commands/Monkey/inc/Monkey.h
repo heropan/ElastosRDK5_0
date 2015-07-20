@@ -6,9 +6,7 @@
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/Core/Object.h>
-#include <elrefbase.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::View::IIWindowManager;
@@ -140,7 +138,7 @@ public:
 
     AutoPtr<IMonkeyEventSource> mEventSource;
 
-    Mutex mLockLock;
+    Object mLockLock;
 
     AutoPtr<IIActivityManager> mAm;
 

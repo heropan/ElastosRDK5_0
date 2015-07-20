@@ -57,7 +57,7 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
     switch (what) {
         case IAudioEffect::NATIVE_EVENT_ENABLED_STATUS:
             {
-                Mutex::Autolock lock(mAudioEffect->mListenerLock);
+                AutoLock lock(mAudioEffect->mListenerLock);
                 enableStatusChangeListener = mAudioEffect->mEnableStatusChangeListener;
             }
             if (enableStatusChangeListener != NULL) {
@@ -66,7 +66,7 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
             break;
         case IAudioEffect::NATIVE_EVENT_CONTROL_STATUS:
             {
-                Mutex::Autolock lock(mAudioEffect->mListenerLock);
+                AutoLock lock(mAudioEffect->mListenerLock);
                 controlStatusChangeListener = mAudioEffect->mControlChangeStatusListener;
             }
             if (controlStatusChangeListener != NULL) {
@@ -75,7 +75,7 @@ ECode AudioEffect::NativeEventHandler::HandleMessage(
             break;
         case IAudioEffect::NATIVE_EVENT_PARAMETER_CHANGED:
             {
-                Mutex::Autolock lock(mAudioEffect->mListenerLock);
+                AutoLock lock(mAudioEffect->mListenerLock);
                 parameterChangeListener = mAudioEffect->mParameterChangeListener;
             }
             if (parameterChangeListener != NULL) {
@@ -184,14 +184,14 @@ ECode AudioEffect::Init(
     mId = (*id)[0];
     mDescriptor = (*desc)[0];
 
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     mState = IAudioEffect::STATE_INITIALIZED;
     return NOERROR;
 }
 
 ECode AudioEffect::ReleaseResources()
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     NativeRelease();
     mState = IAudioEffect::STATE_UNINITIALIZED;
     return NOERROR;
@@ -671,7 +671,7 @@ ECode AudioEffect::HasControl(
 ECode AudioEffect::SetEnableStatusListener(
     /* [in] */ IAudioEffectOnEnableStatusChangeListener* listener)
 {
-    Mutex::Autolock lock(mListenerLock);
+    AutoLock lock(mListenerLock);
     mEnableStatusChangeListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -682,7 +682,7 @@ ECode AudioEffect::SetEnableStatusListener(
 ECode AudioEffect::SetControlStatusListener(
     /* [in] */ IAudioEffectOnControlStatusChangeListener* listener)
 {
-    Mutex::Autolock lock(mListenerLock);
+    AutoLock lock(mListenerLock);
     mControlChangeStatusListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -693,7 +693,7 @@ ECode AudioEffect::SetControlStatusListener(
 ECode AudioEffect::SetParameterListener(
     /* [in] */ IAudioEffectOnParameterChangeListener* listener)
 {
-    Mutex::Autolock lock(mListenerLock);
+    AutoLock lock(mListenerLock);
     mParameterChangeListener = listener;
     if ((listener != NULL) && (mNativeEventHandler == NULL)) {
         CreateNativeEventHandler();
@@ -1354,7 +1354,7 @@ AutoPtr<ArrayOf<IAudioEffectDescriptor* > > AudioEffect::NativeQueryPreProcessin
 ECode AudioEffect::CheckState(
     /* [in] */ const String& methodName)
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     if (mState != IAudioEffect::STATE_INITIALIZED) {
        // throw (new IllegalStateException(methodName
        //         + " called on uninitialized AudioEffect."));

@@ -7,7 +7,6 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Mutex;
 using Elastos::Text::IDateFormat;
 using Elastos::Utility::ICalendar;
 //using Elastos::Utility::IFormatter;
@@ -720,7 +719,7 @@ public:
     */
 
 private:
-    static Mutex sLock;
+    static Object sLock;
     static AutoPtr<IConfiguration> sLastConfig;
     static AutoPtr<Elastos::Text::IDateFormat> sStatusTimeFormat;
     static String sElapsedFormatMMSS;
@@ -733,7 +732,7 @@ private:
     static AutoPtr<ITime> sNowTime;
     static AutoPtr<ITime> sThenTime;
 
-    static Mutex sLockDateUtilsClass;
+    static Object sLockDateUtilsClass;
 };
 
 } // namespace Format

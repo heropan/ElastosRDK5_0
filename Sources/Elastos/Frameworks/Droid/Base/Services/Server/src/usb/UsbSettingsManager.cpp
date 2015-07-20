@@ -517,7 +517,7 @@ UsbSettingsManager::UsbSettingsManager(
     CAtomicFile::New(baseName, (IAtomicFile**)&mSettingsFile);
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         Boolean isEquals;
         if (UserHandle::OWNER->Equals(userHandle, &isEquals)) {
@@ -958,7 +958,7 @@ void UsbSettingsManager::DeviceAttached(
     AutoPtr<List<AutoPtr<IResolveInfo> > > matches;
     String defaultPackage;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         matches = GetDeviceMatchesLocked(device, intent);
         // Launch our default activity directly, if we have one.
         // Otherwise we will start the UsbResolverActivity to allow the user to choose.
@@ -1003,7 +1003,7 @@ void UsbSettingsManager::AccessoryAttached(
     AutoPtr<List<AutoPtr<IResolveInfo> > > matches;
     String defaultPackage;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         matches = GetAccessoryMatchesLocked(accessory, intent);
         /*
          * Launch our default activity directly, if we have one.
@@ -1324,7 +1324,7 @@ void UsbSettingsManager::HandlePackageUpdate(
      * Check to see if the package supports any USB devices or accessories.
      * If so, clear any non-matching preferences for matching devices/accessories.
      */
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IPackageInfo> info;
     Boolean changed = FALSE;
@@ -1358,7 +1358,7 @@ void UsbSettingsManager::HandlePackageUpdate(
 Boolean UsbSettingsManager::HasPermission(
     /* [in] */ IUsbDevice* device)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String name;
     device->GetDeviceName(&name);
     AutoPtr<Int32BooleanMap> uidList;
@@ -1380,7 +1380,7 @@ Boolean UsbSettingsManager::HasPermission(
 Boolean UsbSettingsManager::HasPermission(
     /* [in] */ IUsbAccessory* accessory)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<Int32BooleanMap> uidList;
     HashMap< AutoPtr<IUsbAccessory>, AutoPtr<Int32BooleanMap> >::Iterator it = mAccessoryPermissionMap.Find(accessory);
     if (it != mAccessoryPermissionMap.End()) {
@@ -1527,7 +1527,7 @@ void UsbSettingsManager::SetDevicePackage(
     AutoPtr<DeviceFilter> filter = new DeviceFilter(device);
     Boolean changed = FALSE;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (packageName.IsNull()) {
         HashMap< AutoPtr<DeviceFilter>, String, HashPK_DeviceFilter, PKEq_DeviceFilter >::Iterator it
                 = mDevicePreferenceMap.Find(filter);
@@ -1555,7 +1555,7 @@ void UsbSettingsManager::SetAccessoryPackage(
     AutoPtr<AccessoryFilter> filter = new AccessoryFilter(accessory);
     Boolean changed = FALSE;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (packageName.IsNull()) {
         HashMap< AutoPtr<AccessoryFilter>, String, HashPK_AccessoryFilter, PKEq_AccessoryFilter >::Iterator it
                 = mAccessoryPreferenceMap.Find(filter);
@@ -1580,7 +1580,7 @@ void UsbSettingsManager::GrantDevicePermission(
     /* [in] */ IUsbDevice* device,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     String deviceName;
     device->GetDeviceName(&deviceName);
@@ -1596,7 +1596,7 @@ void UsbSettingsManager::GrantAccessoryPermission(
     /* [in] */ IUsbAccessory* accessory,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<Int32BooleanMap> uidList = mAccessoryPermissionMap[accessory];
     if (uidList == NULL) {
@@ -1609,7 +1609,7 @@ void UsbSettingsManager::GrantAccessoryPermission(
 Boolean UsbSettingsManager::HasDefaults(
     /* [in] */ const String& packageName)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     HashMap< AutoPtr<DeviceFilter>, String, HashPK_DeviceFilter, PKEq_DeviceFilter >::Iterator it1
             = mDevicePreferenceMap.Begin();
     for (; it1 != mDevicePreferenceMap.End(); ++it1) {
@@ -1626,7 +1626,7 @@ Boolean UsbSettingsManager::HasDefaults(
 void UsbSettingsManager::ClearDefaults(
     /* [in] */ const String& packageName)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (ClearPackageDefaultsLocked(packageName)) {
         WriteSettingsLocked();
     }
@@ -1637,7 +1637,7 @@ Boolean UsbSettingsManager::ClearPackageDefaultsLocked(
 {
     Boolean cleared = FALSE;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean isContain = FALSE;
     HashMap< AutoPtr<DeviceFilter>, String, HashPK_DeviceFilter, PKEq_DeviceFilter >::Iterator it1
             = mDevicePreferenceMap.Begin();

@@ -235,7 +235,7 @@ private:
     static const String CONTENT_LENGTH_HEADER;
 
     /* Used to synchronize waitUntilComplete() requests */
-    Mutex mClientResource;
+    Object mClientResource;
 
     /** True if loading should be paused **/
     Boolean mLoadingPaused;

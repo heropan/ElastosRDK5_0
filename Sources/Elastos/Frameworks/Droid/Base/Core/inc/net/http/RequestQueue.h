@@ -112,7 +112,7 @@ public:
 
         RequestQueue* mParent;
 
-        Mutex mLock;
+        Object mLock;
 
     };
 
@@ -277,7 +277,7 @@ private:
     // AutoPtr<IBroadcastReceiver> mProxyChangeReceiver;
     IBroadcastReceiver* mProxyChangeReceiver;
 
-    Mutex mLock;
+    Object mLock;
 
 };
 

@@ -1026,7 +1026,7 @@ public:
         Int32 mTid;
         Int32 mSavedPriority;
 
-        Mutex mLock;
+        Object mLock;
         CWebViewCore* mOwner;
     };
 
@@ -2589,14 +2589,14 @@ private:
     AutoPtr<CWebViewCoreViewState> mInitialViewState;
     Boolean mFirstLayoutForNonStandardLoad;
 
-    Mutex mSkipDrawFlagLock;
+    Object mSkipDrawFlagLock;
     Boolean mSkipDrawFlag;
     Boolean mDrawWasSkipped;
 
     static Boolean sRepaintScheduled;
 
     static Object sLock;
-    Mutex mLock;
+    Object mLock;
 
     static struct ElaWebViewCoreFieldsCallback sElaWebViewCoreFieldsCallback;
     static struct ElaWebViewCoreMethodsCallback sElaWebViewCoreMethodsCallback;

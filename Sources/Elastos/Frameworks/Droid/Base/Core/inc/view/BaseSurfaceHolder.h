@@ -8,7 +8,6 @@
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Vector;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 
@@ -89,7 +88,7 @@ private:
 public:
     List<AutoPtr<ISurfaceHolderCallback> > mCallbacks;
     //public final ReentrantLock mSurfaceLock = new ReentrantLock();
-    Mutex mSurfaceLock;
+    Object mSurfaceLock;
     AutoPtr<ISurface> mSurface;
 
 protected:
@@ -108,7 +107,7 @@ protected:
 
 private:
     static const char* TAG;
-    Mutex mCallbackLock;
+    Object mCallbackLock;
 };
 
 } // namespace View

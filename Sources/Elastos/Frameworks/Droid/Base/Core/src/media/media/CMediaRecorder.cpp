@@ -58,7 +58,7 @@ const Int32 CMediaRecorder::GOT_ERROR = -3;
 const Int32 CMediaRecorder::MIC_DATA_ACCESS = 10;
 const Int32 CMediaRecorder::BOTH_DATA_ACCESS = 11;
 
-static Mutex sLock;
+static Object sLock;
 
 // ----------------------------------------------------------------------------
 // ref-counted object for callbacks
@@ -108,7 +108,7 @@ static ECode process_media_recorder_call(
 
 static android::sp<android::MediaRecorder> getMediaRecorder(CMediaRecorder* thiz)
 {
-    Mutex::Autolock l(sLock);
+    AutoLock l(sLock);
     android::MediaRecorder* const p = (android::MediaRecorder*)thiz->mNativeContext;
     return android::sp<android::MediaRecorder>(p);
 }
@@ -116,7 +116,7 @@ static android::sp<android::MediaRecorder> getMediaRecorder(CMediaRecorder* thiz
 static android::sp<android::MediaRecorder> setMediaRecorder(
     CMediaRecorder* thiz, const android::sp<android::MediaRecorder>& recorder)
 {
-    Mutex::Autolock l(sLock);
+    AutoLock l(sLock);
     android::sp<android::MediaRecorder> old = (android::MediaRecorder*)thiz->mNativeContext;
     if (recorder.get()) {
         recorder->incStrong(thiz);

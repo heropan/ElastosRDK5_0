@@ -7,7 +7,6 @@
 #include <elastos/TimerTask.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnBufferingUpdateListener;
@@ -92,10 +91,10 @@ private:
         CARAPI SetScheduledTime(
                 /* [in] */ Int64 time);
     private:
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
     private:
-        Mutex mLock;
+        Object mLock;
         HTML5Audio* mOwner;
     };
 

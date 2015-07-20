@@ -45,7 +45,7 @@ ECode ContentObserver::GetContentObserver(
 {
     VALIDATE_NOT_NULL(contentObserver)
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mTransport == NULL) {
         CContentObserverTransport::New((IContentObserver*)this->Probe(EIID_IContentObserver), (IContentObserverTransport**)&mTransport);
     }
@@ -59,7 +59,7 @@ ECode ContentObserver::ReleaseContentObserver(
 {
     VALIDATE_NOT_NULL(contentObserver)
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IContentObserverTransport> oldTransport = mTransport;
     if (oldTransport != NULL) {

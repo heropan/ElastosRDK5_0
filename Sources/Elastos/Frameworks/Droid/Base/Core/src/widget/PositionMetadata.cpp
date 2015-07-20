@@ -97,7 +97,7 @@ AutoPtr<IPositionMetadata> PositionMetadata::Obtain(
 AutoPtr<PositionMetadata> PositionMetadata::GetRecycledOrCreate()
 {
     AutoPtr<PositionMetadata> pm = NULL;
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     /*unchecked*/
     if(sPool.IsEmpty() == FALSE) {
         pm = sPool.GetFront();
@@ -111,7 +111,7 @@ AutoPtr<PositionMetadata> PositionMetadata::GetRecycledOrCreate()
 ECode PositionMetadata::Recycle()
 {
     ResetState();
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if((sPool.GetSize()) < MAX_POOL_SIZE) {
         AutoPtr<PositionMetadata> pm = this;
         sPool.PushBack(pm);

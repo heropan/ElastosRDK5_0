@@ -64,7 +64,7 @@ ECode CSurfaceViewWindow::Resized(
         }
 
         {
-            Mutex::Autolock lock(surfaceView->mSurfaceLock);
+            AutoLock lock(surfaceView->mSurfaceLock);
             Boolean result;
 //        try {
             if (reportDraw) {

@@ -11,7 +11,6 @@
 #include <Elastos.CoreLibrary.h>
 
 using namespace Elastos;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintStream;
 using Elastos::Utility::IEnumeration;
 using Eunit::Framework::ITestListener;
@@ -100,7 +99,7 @@ protected:
 public:
     AutoPtr<IPrintStream> mWriter;
     Int32 mColumn;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Textui

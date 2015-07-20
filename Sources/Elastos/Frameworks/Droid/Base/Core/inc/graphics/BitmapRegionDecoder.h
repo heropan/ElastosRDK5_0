@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IInputStream;
 
@@ -168,7 +167,7 @@ private:
 private:
     Int32 mNativeBitmapRegionDecoder;
     Boolean mRecycled;
-    Mutex mNativeLock;
+    Object mNativeLock;
 };
 
 } // namespace Graphics

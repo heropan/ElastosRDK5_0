@@ -75,7 +75,7 @@ ECode CLocalSocket::ToString(
 void CLocalSocket::ImplCreateIfNeeded()
 {
     if (!mImplCreated) {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (!mImplCreated) {
 //            try {
@@ -98,7 +98,7 @@ void CLocalSocket::ImplCreateIfNeeded()
 ECode CLocalSocket::Connect(
     /* [in] */ ILocalSocketAddress* endpoint)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mIsConnected) {
 //        throw new IOException("already connected");
@@ -125,7 +125,7 @@ ECode CLocalSocket::Bind(
     ImplCreateIfNeeded();
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mIsBound) {
 //            throw new IOException("already bound");
@@ -279,7 +279,7 @@ ECode CLocalSocket::IsConnected(
   /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *result = mIsConnected;
     return NOERROR;
 }
@@ -298,7 +298,7 @@ ECode CLocalSocket::IsBound(
   /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *result = mIsBound;
     return NOERROR;
 }

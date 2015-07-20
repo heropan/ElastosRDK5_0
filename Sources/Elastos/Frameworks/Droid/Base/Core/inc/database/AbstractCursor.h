@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContentResolver;
 
@@ -309,7 +308,7 @@ private:
 
     AutoPtr<IUri> mNotifyUri;
 
-    Mutex mSelfObserverLock;
+    Object mSelfObserverLock;
     AutoPtr<IContentObserver> mSelfObserver;
     Boolean mSelfObserverRegistered;
 

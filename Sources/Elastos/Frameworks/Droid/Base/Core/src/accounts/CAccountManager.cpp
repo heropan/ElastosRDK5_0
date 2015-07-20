@@ -667,7 +667,7 @@ ECode CAccountManager::AccountsChangedBroadcastReceiver::OnReceive(
     AutoPtr< ArrayOf<IAccount*> > accounts;
     FAIL_RETURN(mHost->GetAccounts((ArrayOf<IAccount*>**)&accounts));
     // send the result to the listeners
-    Mutex::Autolock lock(mHost->mAccountsUpdatedListenersLock);
+    AutoLock lock(mHost->mAccountsUpdatedListenersLock);
     HashMap<AutoPtr<IOnAccountsUpdateListener>, AutoPtr<IHandler> >::Iterator it
             = mHost->mAccountsUpdatedListeners.Begin();
     for (; it != mHost->mAccountsUpdatedListeners.End(); ++it) {
@@ -1765,7 +1765,7 @@ ECode CAccountManager::AddOnAccountsUpdatedListener(
     }
 
     {
-        Mutex::Autolock lock(mAccountsUpdatedListenersLock);
+        AutoLock lock(mAccountsUpdatedListenersLock);
         HashMap<AutoPtr<IOnAccountsUpdateListener>, AutoPtr<IHandler> >::Iterator it;
         AutoPtr<IOnAccountsUpdateListener> key;
         for (it = mAccountsUpdatedListeners.Begin(); it != mAccountsUpdatedListeners.End(); ++it) {
@@ -1811,7 +1811,7 @@ ECode CAccountManager::RemoveOnAccountsUpdatedListener(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
 //        throw new IllegalArgumentException("listener is null");
     }
-    Mutex::Autolock lock(mAccountsUpdatedListenersLock);
+    AutoLock lock(mAccountsUpdatedListenersLock);
     HashMap<AutoPtr<IOnAccountsUpdateListener>, AutoPtr<IHandler> >::Iterator it;
     AutoPtr<IOnAccountsUpdateListener> key;
     for (it = mAccountsUpdatedListeners.Begin(); it != mAccountsUpdatedListeners.End(); ++it) {

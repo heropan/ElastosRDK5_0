@@ -2,7 +2,6 @@
 #include "DataManager.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Gallery {
@@ -68,7 +67,7 @@ void MediaSource::MapMediaItems(
         AutoPtr<PathId> pid = (*list)[i];
         AutoPtr<MediaObject> obj;
         {
-        	Mutex::Autolock lock(DataManager::sLOCK);
+        	AutoLock lock(DataManager::sLOCK);
             obj = pid->path->GetObject();
             if (obj == NULL) {
                 obj = CreateMediaObject(pid->path);

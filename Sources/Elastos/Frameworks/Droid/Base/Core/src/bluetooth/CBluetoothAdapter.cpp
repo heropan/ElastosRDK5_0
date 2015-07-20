@@ -66,7 +66,7 @@ Boolean CBluetoothAdapter::HasBluetoothFeature()
 
 AutoPtr<IBluetoothAdapter> CBluetoothAdapter::GetDefaultAdapter()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sAdapter == NULL) {
         if(!HasBluetoothFeature())  {
             Logger::I(TAG, "this device does not have Bluetooth support");
@@ -117,7 +117,7 @@ ECode CBluetoothAdapter::IsEnabled(
     VALIDATE_NOT_NULL(isEnable)
     *isEnable = FALSE;
 //    try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) {
         ECode ec = mService->IsEnabled(isEnable);
         if(FAILED(ec)) {
@@ -136,7 +136,7 @@ ECode CBluetoothAdapter::GetState(
     *state = STATE_OFF;
 
 //    try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) {
         return mService->GetState(state);
         // if (VDBG) Log.d(TAG, "" + hashCode() + ": getState(). Returning " + state);
@@ -216,7 +216,7 @@ ECode CBluetoothAdapter::GetUuids(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetUuids(uuids);
     // }
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -232,7 +232,7 @@ ECode CBluetoothAdapter::SetName(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->SetName(name, result);
     // }
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -248,7 +248,7 @@ ECode CBluetoothAdapter::GetScanMode(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetScanMode(mode);
     // }
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -266,7 +266,7 @@ ECode CBluetoothAdapter::SetScanMode(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->SetScanMode(mode, duration, result);
     // }
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -296,7 +296,7 @@ ECode CBluetoothAdapter::GetDiscoverableTimeout(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetDiscoverableTimeout(timeout);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
     // return -1;
@@ -309,7 +309,7 @@ ECode CBluetoothAdapter::SetDiscoverableTimeout(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     Boolean result;
     if (mService != NULL) return mService->SetDiscoverableTimeout(timeout, &result);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -324,7 +324,7 @@ ECode CBluetoothAdapter::StartDiscovery(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->StartDiscovery(result);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
     // return false;
@@ -339,7 +339,7 @@ ECode CBluetoothAdapter::CancelDiscovery(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->CancelDiscovery(result);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
     // return false;
@@ -354,7 +354,7 @@ ECode CBluetoothAdapter::IsDiscovering(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->IsDiscovering(isDiscovering);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
     return NOERROR;
@@ -373,7 +373,7 @@ ECode CBluetoothAdapter::GetBondedDevices(
         return NOERROR;
     }
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetBondedDevices(device);
     // return toDeviceSet(new BluetoothDevice[0]);
     // } catch (RemoteException e) {Log.e(TAG, "", e);}
@@ -389,7 +389,7 @@ ECode CBluetoothAdapter::GetConnectionState(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetAdapterConnectionState(connetionState);
     // } catch (RemoteException e) {Log.e(TAG, "getConnectionState:", e);}
     // return BluetoothAdapter.STATE_DISCONNECTED;
@@ -405,7 +405,7 @@ ECode CBluetoothAdapter::GetProfileConnectionState(
     Int32 state;
     if (GetState(&state), state != STATE_ON) return NOERROR;
     // try {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (mService != NULL) return mService->GetProfileConnectionState(profile, connetionState);
     // } catch (RemoteException e) {
     //     Log.e(TAG, "getProfileConnectionState:", e);
@@ -723,7 +723,7 @@ AutoPtr<IIBluetooth> CBluetoothAdapter::GetBluetoothService(
     /* [in] */ IIBluetoothManagerCallback* _cb)
 {
     AutoPtr<IIBluetoothManagerCallback> cb = _cb;
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     if (cb == NULL) {
         Logger::W(TAG, "getBluetoothService() called with no BluetoothManagerCallback");
     }
@@ -737,7 +737,7 @@ AutoPtr<IIBluetooth> CBluetoothAdapter::GetBluetoothService(
 void CBluetoothAdapter::RemoveServiceStateCallback(
     /* [in] */ IIBluetoothManagerCallback* cb)
 {
-    Mutex::Autolock lock(mManagerCallbackLock);
+    AutoLock lock(mManagerCallbackLock);
     mProxyServiceStateCallbacks.Remove(cb);
 }
 

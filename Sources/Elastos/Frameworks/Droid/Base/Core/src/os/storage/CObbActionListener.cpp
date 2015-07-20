@@ -20,7 +20,7 @@ ECode CObbActionListener::OnObbResult(
 {
     AutoPtr<CStorageManager::ObbListenerDelegate> delegate;
     {
-        Mutex::Autolock lock(mListenersLock);
+        AutoLock lock(mListenersLock);
         HashMap<Int32, AutoPtr<CStorageManager::ObbListenerDelegate> >::Iterator it = mListeners.Find(nonce);
         if (it != mListeners.End()) delegate = it->mSecond;
         if (delegate != NULL) {
@@ -40,7 +40,7 @@ Int32 CObbActionListener::AddListener(
     AutoPtr<CStorageManager::ObbListenerDelegate> delegate = new CStorageManager::ObbListenerDelegate(listener, mHost);
 
     {
-        Mutex::Autolock lock(mListenersLock);
+        AutoLock lock(mListenersLock);
         mListeners[delegate->mNonce] = delegate;
     }
 

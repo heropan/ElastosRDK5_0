@@ -236,9 +236,9 @@ private:
 
     AutoPtr<IHandler> mServiceRecordHandler;
     AutoPtr<IIBluetoothManagerCallback> mManagerCallback;
-    Mutex mManagerCallbackLock;
+    Object mManagerCallbackLock;
     List<AutoPtr<IIBluetoothManagerCallback> > mProxyServiceStateCallbacks;
-    static Mutex sLock;
+    static Object sLock;
 
     friend class CBluetoothAdapterManagerCallback;
 };

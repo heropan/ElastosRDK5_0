@@ -3,12 +3,10 @@
 #define __PATH_H__
 
 #include "app/Activity.h"
-#include <elrefbase.h>
 #include <elastos/utility/etl/HashMap.h>
 #include "MediaObject.h"
 
 using Elastos::Core::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Gallery {
@@ -74,7 +72,7 @@ public:
 private:
     static const String TAG;
     static AutoPtr<Path> sRoot;
-    static Mutex sPathLock;
+    static Object sPathLock;
 
     AutoPtr<Path> mParent;
     String mSegment;

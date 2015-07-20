@@ -740,7 +740,7 @@ private:
     AutoPtr<IIConnectivityManager> mConnManager;
     AutoPtr<IINotificationManager> mNotifManager;
 
-    Mutex mRulesLock;
+    Object mRulesLock;
 
     Boolean mScreenOn;
     Boolean mRestrictBackground;

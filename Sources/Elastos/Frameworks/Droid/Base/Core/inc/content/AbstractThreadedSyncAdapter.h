@@ -247,7 +247,7 @@ private:
     HashMap<AutoPtr<IAccount>, AutoPtr<SyncThread> > mSyncThreads;
     Boolean mAutoInitialize;
     Boolean mAllowParallelSyncs;
-    Mutex mSyncThreadLock;
+    Object mSyncThreadLock;
 
 };
 

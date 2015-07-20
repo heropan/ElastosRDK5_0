@@ -17,7 +17,7 @@ CAR_INTERFACE_IMPL_2(BaseTestRunner, ITestListener, IBaseTestRunner)
 ECode BaseTestRunner::StartTest(
     /* [in] */ ITest* test)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     String name;
     IObject::Probe(test)->ToString(&name);

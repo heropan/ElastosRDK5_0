@@ -8,7 +8,6 @@
 #include <elastos/RWLock.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Core::RWLock;
 using Elastos::IO::IFile;
 using Elastos::Utility::Etl::HashMap;
@@ -108,7 +107,7 @@ public:
      * improved by using 'AtomicInteger'
      */
     static volatile Int32 sDbAccessThreads;
-    static Mutex sDbAccessThreadsLock;
+    static Object sDbAccessThreadsLock;
     static volatile Int32 sDbVersion;
 
     /**
@@ -166,7 +165,7 @@ private:
 
     AutoPtr<IContext> mContext;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Privacy

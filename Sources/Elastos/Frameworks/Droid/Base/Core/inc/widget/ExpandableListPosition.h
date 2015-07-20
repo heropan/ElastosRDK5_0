@@ -68,7 +68,7 @@ public:
      */
     static const Int32 GROUP = 2;
 
-    static Mutex sLock;
+    static Object sLock;
 
     /**
      * The position of either the group being referred to, or the parent
@@ -92,7 +92,7 @@ public:
      */
     Int32 type;
 
-    Mutex mLock;
+    Object mLock;
 
 };
 

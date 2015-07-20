@@ -6,7 +6,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IDisplayInfo;
 using Elastos::Droid::View::IDisplay;
@@ -68,7 +67,7 @@ public:
     // These will only be modified with both mWindowMap and mDisplaySizeLock
     // held (in that order) so the window manager doesn't need to acquire this
     // lock when needing these values in its normal operation.
-    Mutex mDisplaySizeLock;
+    Object mDisplaySizeLock;
     Int32 mInitialDisplayWidth;
     Int32 mInitialDisplayHeight;
     Int32 mInitialDisplayDensity;

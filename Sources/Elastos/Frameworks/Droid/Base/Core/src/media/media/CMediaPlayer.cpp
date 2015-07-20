@@ -64,7 +64,7 @@ const Int32 CMediaPlayer::MEDIA_IO_ERROR = 300;  //Add by leven
 
 Int32 CMediaPlayer::mRawDataMode = 1;//IMediaPlayer::AUDIO_DATA_MODE_PCM;
 
-static Mutex sLock;
+static Object sLock;
 
 //===================================================================
 //                  JNIMediaPlayerListener
@@ -104,7 +104,7 @@ void JNIMediaPlayerListener::notify(int msg, int ext1, int ext2, const android::
 
 static android::sp<android::MediaPlayer> getMediaPlayer(CMediaPlayer* thiz)
 {
-    Mutex::Autolock l(sLock);
+    AutoLock l(sLock);
     android::MediaPlayer* const p = (android::MediaPlayer*)thiz->mNativeContext;
     return android::sp<android::MediaPlayer>(p);
 }
@@ -117,7 +117,7 @@ static android::sp<android::ISurfaceTexture> getVideoSurfaceTexture(CMediaPlayer
 
 static android::sp<android::MediaPlayer> setMediaPlayer(CMediaPlayer* thiz, const android::sp<android::MediaPlayer>& player)
 {
-    Mutex::Autolock l(sLock);
+    AutoLock l(sLock);
     android::sp<android::MediaPlayer> old = (android::MediaPlayer*)thiz->mNativeContext;
     if (player.get()) {
         player->incStrong(thiz);

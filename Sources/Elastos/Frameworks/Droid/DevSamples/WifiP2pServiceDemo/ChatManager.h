@@ -1,7 +1,6 @@
 #ifndef __CHATMANAGER_H__
 #define __CHATMANAGER_H__
 
-#include <elrefbase.h>
 #include "Elastos.Droid.Core.h"
 
 using Elastos::ElRefBase;

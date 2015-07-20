@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include <ext/frameworkext.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Utility::IDisplayMetrics;
@@ -366,7 +365,7 @@ private:
     Int32 mCachedAppWidthCompat;
     Int32 mCachedAppHeightCompat;
 
-    Mutex mSelfLock;
+    Object mSelfLock;
 };
 
 } // namespace View

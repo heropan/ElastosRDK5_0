@@ -19,7 +19,7 @@ public:
     static AutoPtr<IDate> InitStatics();
 
 private:
-    static Mutex mLockLock;
+    static Object mLockLock;
     MonkeyUtils();
 };
 

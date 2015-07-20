@@ -80,7 +80,7 @@ private:
     static const Int32 WAV_HEADER_LENGTH;// = 44;
     static const Int16 WAV_FORMAT_PCM;// = 0x0001;
 
-    Mutex mStateLock;
+    Object mStateLock;
     AutoPtr<IFile> mFileName;// = NULL;
     Int32 mSampleRateInHz;// = 0;
     Int32 mAudioFormat;// = 0;

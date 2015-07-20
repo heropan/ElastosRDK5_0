@@ -216,7 +216,7 @@ private:
 
     AutoPtr<IView> mScrollView;
 
-    Mutex mVibrateLock;
+    Object mVibrateLock;
 };
 
 }// namespace SystemUI

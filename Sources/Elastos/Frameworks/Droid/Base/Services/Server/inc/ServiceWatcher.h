@@ -127,7 +127,7 @@ private:
     AutoPtr<IRunnable> mNewServiceWork;
     AutoPtr<IHandler> mHandler;
     AutoPtr<ServiceWatcherPackageMonitor> mPackageMonitor;
-    Mutex mLock;
+    Object mLock;
 
     // all fields below synchronized on mLock
     AutoPtr<IBinder> mBinder;   // connected service

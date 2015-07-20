@@ -50,8 +50,8 @@ public:
 private:
     const static Int32 MAX_POOL_SIZE = 5;
     static List<AutoPtr<PositionMetadata> > sPool;
-    static Mutex sLock;
-    Mutex mLock;
+    static Object sLock;
+    Object mLock;
 
 public:
     AutoPtr<IExpandableListPosition> mPosition;

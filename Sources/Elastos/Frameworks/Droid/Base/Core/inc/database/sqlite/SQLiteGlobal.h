@@ -75,7 +75,7 @@ private:
 
 private:
     static const String TAG;
-    static Mutex mLock;
+    static Object mLock;
     static Int32 sDefaultPageSize;
 };
 

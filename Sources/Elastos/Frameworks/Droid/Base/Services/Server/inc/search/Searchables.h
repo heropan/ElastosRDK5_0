@@ -129,7 +129,7 @@ private:
     // User for which this Searchables caches information
     Int32 mUserId;
 
-    Mutex mLock;
+    Object mLock;
 
     typedef HashMap<AutoPtr<IComponentName>, AutoPtr<ISearchableInfo> >::Iterator Iterator;
     typedef HashMap<AutoPtr<IComponentName>, AutoPtr<ISearchableInfo> > CSHashMap;

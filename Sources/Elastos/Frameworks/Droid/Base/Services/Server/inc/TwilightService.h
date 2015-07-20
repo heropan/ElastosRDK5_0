@@ -9,7 +9,6 @@
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::Content::IContext;
@@ -292,7 +291,7 @@ private:
     AutoPtr<ILocationManager> mLocationManager;
     AutoPtr<LocationHandler> mLocationHandler;
 
-    Mutex mLock;
+    Object mLock;
 
     List<AutoPtr<TwilightListenerRecord> > mListeners;
     Boolean mSystemReady;

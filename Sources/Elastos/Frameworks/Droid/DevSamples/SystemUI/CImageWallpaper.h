@@ -121,7 +121,7 @@ private:
         static const Int32 TRIANGLE_VERTICES_DATA_UV_OFFSET = 3;
 
     private:
-        Mutex mLock;
+        Object mLock;
 
         // TODO: Not currently used, keeping around until we know we don't need it
         //@SuppressWarnings({"UnusedDeclaration"})

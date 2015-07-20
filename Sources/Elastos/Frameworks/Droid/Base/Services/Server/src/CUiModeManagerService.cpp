@@ -124,7 +124,7 @@ ECode CUiModeManagerService::ResultReceiver::OnReceive(
     intent->GetInt32Extra(String("enableFlags"), 0, &enableFlags);
     Int32 disableFlags;
     intent->GetInt32Extra(String("disableFlags"), 0, &disableFlags);
-    Mutex::Autolock Lock(mHost->mLock);
+    AutoLock Lock(mHost->mLock);
     String action;
     intent->GetAction(&action);
     mHost->UpdateAfterBroadcastLocked(action, enableFlags, disableFlags);
@@ -161,7 +161,7 @@ ECode CUiModeManagerService::BatteryReceiver::OnReceive(
     Int32 state;
     intent->GetInt32Extra(String("plugged"), 0, &state);//BatteryManager.EXTRA_PLUGGED
     mHost->mCharging = (state != 0);
-    Mutex::Autolock Lock(mHost->mLock);
+    AutoLock Lock(mHost->mLock);
     if (mHost->mSystemReady) {
         mHost->UpdateLocked(0, 0);
     }
@@ -243,7 +243,7 @@ ECode CUiModeManagerService::DisableCarMode(
     Int64 ident = Binder::ClearCallingIdentity();
 
     do {
-        Mutex::Autolock Lock(mLock);
+        AutoLock Lock(mLock);
         SetCarModeLocked(FALSE);
         if (mSystemReady) {
             UpdateLocked(0, flags);
@@ -260,7 +260,7 @@ ECode CUiModeManagerService::EnableCarMode(
 {
     Int64 ident = Binder::ClearCallingIdentity();
     do {
-        Mutex::Autolock Lock(mLock);
+        AutoLock Lock(mLock);
         SetCarModeLocked(TRUE);
         if (mSystemReady) {
             UpdateLocked(flags, 0);
@@ -279,7 +279,7 @@ ECode CUiModeManagerService::GetCurrentModeType(
     Int64 ident = Binder::ClearCallingIdentity();
 
     do {
-        Mutex::Autolock Lock(mLock);
+        AutoLock Lock(mLock);
         *type = mCurUiMode & IConfiguration::UI_MODE_TYPE_MASK;
     }while(0);
 
@@ -305,7 +305,7 @@ ECode CUiModeManagerService::SetNightMode(
 
     Int64 ident = Binder::ClearCallingIdentity();
     do {
-        Mutex::Autolock Lock(mLock);
+        AutoLock Lock(mLock);
         Boolean isDoingNightModeLocked;
         IsDoingNightModeLocked(&isDoingNightModeLocked);
         if (isDoingNightModeLocked && mNightMode != mode) {
@@ -330,7 +330,7 @@ ECode CUiModeManagerService::GetNightMode(
     /* [out] */ Int32 *mode)
 {
     VALIDATE_NOT_NULL(mode);
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     *mode = mNightMode;
     return NOERROR;
 }
@@ -343,7 +343,7 @@ ECode CUiModeManagerService::ToString(
 
 ECode CUiModeManagerService::SystemReady()
 {
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     mSystemReady = TRUE;
     mCarModeEnabled = (mDockState == IIntent::EXTRA_DOCK_STATE_CAR);
     UpdateComputedNightModeLocked();
@@ -371,7 +371,7 @@ ECode CUiModeManagerService::SetCarModeLocked(
 ECode CUiModeManagerService::UpdateDockState(
     /* [in] */ Int32 newState)
 {
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     if (newState != mDockState) {
         mDockState = newState;
         SetCarModeLocked(mDockState == IIntent::EXTRA_DOCK_STATE_CAR);
@@ -732,7 +732,7 @@ ECode CUiModeManagerService::AdjustStatusBarCarModeLocked()
 
 ECode CUiModeManagerService::UpdateTwilight()
 {
-    Mutex::Autolock Lock(mLock);
+    AutoLock Lock(mLock);
     Boolean isDoingNightModeLocked;
     IsDoingNightModeLocked(&isDoingNightModeLocked);
     if (isDoingNightModeLocked && mNightMode == IUiModeManager::MODE_NIGHT_AUTO) {
@@ -770,7 +770,7 @@ ECode CUiModeManagerService::UpdateComputedNightModeLocked()
 //         return NULL;
 //     }
 
-//     Mutex::Autolock(mLock);
+//     AutoLock(mLock);
 //     pw->PrintStringln(String("Current UI Mode Service state:"));
 //     pw->PrintString(String("  mDockState="));
 //     pw->PrintInt32(mDockState);

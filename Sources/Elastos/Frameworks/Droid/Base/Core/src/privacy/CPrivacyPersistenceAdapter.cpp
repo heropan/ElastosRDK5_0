@@ -306,7 +306,7 @@ void CPrivacyPersistenceAdapter::UpgradeDatabase()
         case 3:
 //            try {
             {
-                Mutex::Autolock lock(sDbAccessThreadsLock);
+                AutoLock lock(sDbAccessThreadsLock);
                 sDbAccessThreads++;
             }
 //            if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:upgradeDatabase: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -421,7 +421,7 @@ ECode CPrivacyPersistenceAdapter::GetValue(
 
     String output;
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //    if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:getValue: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -484,7 +484,7 @@ ECode CPrivacyPersistenceAdapter::SetValue(
 
 //    try {
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:setValue: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -556,7 +556,7 @@ ECode CPrivacyPersistenceAdapter::GetSettings(
 //    try {
         // indicate that the DB is being read to prevent closing by other threads
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:getSettings: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -997,7 +997,7 @@ ECode CPrivacyPersistenceAdapter::SaveSettings(
 
 //    try {
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:saveSettings: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -1279,7 +1279,7 @@ ECode CPrivacyPersistenceAdapter::DeleteSettings(
 
 //    try {
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:deleteSettings: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -1499,7 +1499,7 @@ ECode CPrivacyPersistenceAdapter::PurgeSettings(
 
 //    try {
     {
-        Mutex::Autolock lock(sDbAccessThreadsLock);
+        AutoLock lock(sDbAccessThreadsLock);
         ++sDbAccessThreads;
     }
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:purgeSettings: Increment DB access threads: now " + Integer.toString(sDbAccessThreads));
@@ -1634,7 +1634,7 @@ void CPrivacyPersistenceAdapter::CreateSettingsDir()
 
 AutoPtr<ISQLiteDatabase> CPrivacyPersistenceAdapter::GetDatabase()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean opened;
     Boolean readOnly;
     if (mDb == NULL || !(mDb->IsOpen(&opened), opened)
@@ -1654,7 +1654,7 @@ AutoPtr<ISQLiteDatabase> CPrivacyPersistenceAdapter::GetDatabase()
 
 void CPrivacyPersistenceAdapter::CloseIdleDatabase()
 {
-    Mutex::Autolock lock(sDbAccessThreadsLock);
+    AutoLock lock(sDbAccessThreadsLock);
     --sDbAccessThreads;
 //        if (LOG_OPEN_AND_CLOSE) Log.d(TAG, "PrivacyPersistenceAdapter:closeIdleDatabase: Decrement DB access threads: now " + Integer.toString(sDbAccessThreads));
         // only close DB if no other threads are reading

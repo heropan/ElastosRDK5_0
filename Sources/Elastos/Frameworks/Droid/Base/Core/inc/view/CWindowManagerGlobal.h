@@ -108,11 +108,11 @@ private:
     static const char* TAG;
 
     static AutoPtr<IWindowManagerGlobal> sDefaultWindowManager;
-    static Mutex sDefaultWindowManagerLock;
+    static Object sDefaultWindowManagerLock;
     static AutoPtr<IIWindowManager> sWindowManagerService;
     static AutoPtr<IWindowSession> sWindowSession;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<ArrayOf<IView*> > mViews;
     AutoPtr<ArrayOf<ViewRootImpl*> > mRoots;

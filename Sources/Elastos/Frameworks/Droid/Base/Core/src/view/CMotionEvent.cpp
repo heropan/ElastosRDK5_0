@@ -385,7 +385,7 @@ ECode CMotionEvent::Obtain(
 {
     VALIDATE_NOT_NULL(event);
     {
-        Mutex::Autolock lock(gRecyclerLock);
+        AutoLock lock(gRecyclerLock);
 
         if (gRecyclerTop == NULL) {
             return CMotionEvent::NewByFriend(event);
@@ -444,7 +444,7 @@ ECode CMotionEvent::Obtain(
     /* [in] */ Int32 flags,
     /* [out] */ CMotionEvent** event)
 {
-    Mutex::Autolock lock(gSharedTempLock);
+    AutoLock lock(gSharedTempLock);
 
     EnsureSharedTempPointerCapacity(pointerCount);
     ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
@@ -475,7 +475,7 @@ ECode CMotionEvent::Obtain(
 {
     FAIL_RETURN(Obtain(event));
 
-    Mutex::Autolock lock(gSharedTempLock);
+    AutoLock lock(gSharedTempLock);
 
     EnsureSharedTempPointerCapacity(1);
 
@@ -600,7 +600,7 @@ ECode CMotionEvent::Recycle()
 {
     InputEvent::Recycle();
 
-    Mutex::Autolock lock(gRecyclerLock);
+    AutoLock lock(gRecyclerLock);
 
     if (gRecyclerUsed < MAX_RECYCLED) {
         gRecyclerUsed++;
@@ -1465,7 +1465,7 @@ ECode CMotionEvent::AddBatch(
     /* [in] */ Float size,
     /* [in] */ Int32 metaState)
 {
-    Mutex::Autolock lock(gSharedTempLock);
+    AutoLock lock(gSharedTempLock);
 
     EnsureSharedTempPointerCapacity(1);
 
@@ -1534,7 +1534,7 @@ ECode CMotionEvent::AddBatch(
     }
 
     {
-        Mutex::Autolock lock(gSharedTempLock);
+        AutoLock lock(gSharedTempLock);
         EnsureSharedTempPointerCapacity(Elastos::Core::Math::Max(pointerCount, 2));
 
         ArrayOf<IPointerProperties*>* pp = gSharedTempPointerProperties;
@@ -1615,7 +1615,7 @@ ECode CMotionEvent::ClampNoHistory(
     AutoPtr<CMotionEvent> ev;
     FAIL_RETURN(Obtain((CMotionEvent**)&ev));
 
-    Mutex::Autolock lock(gSharedTempLock);
+    AutoLock lock(gSharedTempLock);
     const Int32 pointerCount = NativeGetPointerCount(mNative);
 
     EnsureSharedTempPointerCapacity(pointerCount);
@@ -1679,7 +1679,7 @@ ECode CMotionEvent::Split(
     AutoPtr<CMotionEvent> ev;
     FAIL_RETURN(Obtain((CMotionEvent**)&ev));
 
-    Mutex::Autolock lock(gSharedTempLock);
+    AutoLock lock(gSharedTempLock);
 
     const Int32 oldPointerCount = NativeGetPointerCount(mNative);
     EnsureSharedTempPointerCapacity(oldPointerCount);

@@ -10,7 +10,6 @@
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Core::Thread;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::App::IAlertDialog;

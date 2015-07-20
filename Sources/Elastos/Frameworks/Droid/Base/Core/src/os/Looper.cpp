@@ -102,7 +102,7 @@ ECode Looper::PrepareMainLooper()
 {
     FAIL_RETURN(Prepare(FALSE));
     {
-        Mutex::Autolock lock(sClassLock);
+        AutoLock lock(sClassLock);
 
         if (sMainLooper != NULL) {
             // throw new IllegalStateException("The main Looper has already been prepared.");
@@ -115,7 +115,7 @@ ECode Looper::PrepareMainLooper()
 
 AutoPtr<ILooper> Looper::GetMainLooper()
 {
-    Mutex::Autolock lock(sClassLock);
+    AutoLock lock(sClassLock);
 
     return sMainLooper;
 }

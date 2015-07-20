@@ -421,7 +421,7 @@ ECode AbstractCursor::UnregisterDataSetObserver(
 ECode AbstractCursor::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    Mutex::Autolock lock(mSelfObserverLock);
+    AutoLock lock(mSelfObserverLock);
 
     mContentObservable->DispatchChange(selfChange);
     if (mNotifyUri != NULL && selfChange) {
@@ -442,7 +442,7 @@ ECode AbstractCursor::SetNotificationUri(
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
 {
-    Mutex::Autolock lock(mSelfObserverLock);
+    AutoLock lock(mSelfObserverLock);
 
     mNotifyUri = notifyUri;
     mContentResolver = cr;

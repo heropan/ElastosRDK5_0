@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Privacy::IPrivacySettingsManager;
@@ -171,7 +170,7 @@ private:
     //BEGIN PRIVACY
 
     static List< AutoPtr<IRunnable> > sChangeCallbacks;
-    static Mutex sChangeCallbacksLock;
+    static Object sChangeCallbacksLock;
 
     static const Int32 IS_ALLOWED;// = -1;
     static const Int32 IS_NOT_ALLOWED;// = -2;

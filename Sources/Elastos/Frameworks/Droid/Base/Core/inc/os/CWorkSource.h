@@ -130,7 +130,7 @@ public:
      * hold sTmpWorkSource lock while working with these statics.
      */
     static const AutoPtr<IWorkSource> sTmpWorkSource;
-    static Mutex sTmpWorkSourceLock;
+    static Object sTmpWorkSourceLock;
     /**
      * For returning newbie work from a modification operation.
      */

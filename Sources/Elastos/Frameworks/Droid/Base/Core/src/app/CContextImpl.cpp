@@ -534,7 +534,7 @@ ECode CContextImpl::GetSharedPreferences(
 
     AutoPtr<SharedPreferencesImpl> sp;
     {
-        Mutex::Autolock lock(sSharedPrefsLock);
+        AutoLock lock(sSharedPrefsLock);
         HashMap<String, AutoPtr<SharedPreferencesImpl> >::Iterator ator = sSharedPrefs.Find(name);
         if (ator == sSharedPrefs.End()) {
             AutoPtr<IFile> prefsFile;
@@ -566,7 +566,7 @@ ECode CContextImpl::GetSharedPreferences(
 
 AutoPtr<IFile> CContextImpl::GetPreferencesDir()
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mPreferencesDir == NULL) {
         AutoPtr<IFile> file;
         GetDataDirFile((IFile**)&file);
@@ -644,7 +644,7 @@ ECode CContextImpl::GetFileStreamPath(
 ECode CContextImpl::GetFilesDir(
     /* [out] */ IFile** filesDir)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mFilesDir == NULL) {
         AutoPtr<IFile> file;
         GetDataDirFile((IFile**)&file);
@@ -675,7 +675,7 @@ ECode CContextImpl::GetExternalFilesDir(
     /* [in] */ const String& type,
     /* [out] */ IFile** filesDir)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mExternalFilesDir == NULL) {
         String packageName;
         GetPackageName(&packageName);
@@ -722,7 +722,7 @@ ECode CContextImpl::GetExternalFilesDir(
 ECode CContextImpl::GetObbDir(
     /* [out] */ IFile** obbDir)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mObbDir == NULL) {
         String pkgName;
         GetPackageName(&pkgName);
@@ -737,7 +737,7 @@ ECode CContextImpl::GetCacheDir(
     /* [out] */ IFile** cacheDir)
 {
     {
-        Mutex::Autolock lock(mSyncLock);
+        AutoLock lock(mSyncLock);
         if (mCacheDir == NULL) {
             AutoPtr<IFile> file;
             GetDataDirFile((IFile**)&file);
@@ -769,7 +769,7 @@ ECode CContextImpl::GetCacheDir(
 ECode CContextImpl::GetExternalCacheDir(
     /* [out] */ IFile** externalDir)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mExternalCacheDir == NULL) {
         String pkgName;
         GetPackageName(&pkgName);
@@ -936,7 +936,7 @@ ECode CContextImpl::GetDatabaseList(
 
 AutoPtr<IFile> CContextImpl::GetDatabasesDir()
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
     if (mDatabasesDir == NULL) {
         AutoPtr<IFile> file;
         GetDataDirFile((IFile**)&file);
@@ -1930,7 +1930,7 @@ ECode CContextImpl::GetSystemService(
     }
 
     if (IContext::PRIVACY_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         // BEGIN privacy-added
         // Log.d(TAG, "PDroid:ContextImpl: Creating static privacy service");
         // IBinder b = ServiceManager.getService("privacy");
@@ -1946,7 +1946,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::WINDOW_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IDisplay> display = mDisplay;
         if (display == NULL) {
@@ -1961,7 +1961,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::LAYOUT_INFLATER_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IPolicyManager> pm;
         FAIL_RETURN(CPolicyManager::AcquireSingleton((IPolicyManager**)&pm));
         AutoPtr<IContext> ctx = GetOuterContext();
@@ -1972,7 +1972,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::ACCOUNT_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::ACCOUNT_SERVICE);
         AutoPtr<IIAccountManager> accountService = (IIAccountManager*)service->Probe(EIID_IIAccountManager);
@@ -1984,7 +1984,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::ACTIVITY_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IActivityManager> activityManager;
@@ -1995,7 +1995,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::INPUT_METHOD_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInputMethodManager> iManager =
         CInputMethodManager::GetInstance(this);
@@ -2005,7 +2005,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::ALARM_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::ALARM_SERVICE);
         AutoPtr<IIAlarmManager> alarmService = IIAlarmManager::Probe(service.Get());
@@ -2018,7 +2018,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::BACKUP_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IBackupManager> backupManager;
@@ -2032,7 +2032,7 @@ ECode CContextImpl::GetSystemService(
         return E_NOT_IMPLEMENTED;
     }
     else if (IContext::POWER_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::POWER_SERVICE);
         AutoPtr<IIPowerManager> powerService = (IIPowerManager*)service->Probe(EIID_IIPowerManager);
@@ -2062,7 +2062,7 @@ ECode CContextImpl::GetSystemService(
         return E_NOT_IMPLEMENTED;
     }
     else if (IContext::WIFI_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInterface> b = ServiceManager::GetService(IContext::WIFI_SERVICE);
         AutoPtr<IIWifiManager> service = (IIWifiManager*)b->Probe(EIID_IIWifiManager);
@@ -2074,7 +2074,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::WIFI_P2P_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IInterface> b = ServiceManager::GetService(IContext::WIFI_P2P_SERVICE);
         assert(b != NULL);
@@ -2089,7 +2089,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::NOTIFICATION_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IApplicationInfo> appInfo;
@@ -2108,7 +2108,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::KEYGUARD_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IKeyguardManager> kgManager;
         CKeyguardManager::New((IKeyguardManager**)&kgManager);
@@ -2118,7 +2118,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::ACCESSIBILITY_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IAccessibilityManager> aManager;
         CAccessibilityManager::GetInstance(this, (IAccessibilityManager**)&aManager);
@@ -2127,7 +2127,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::LOCATION_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IILocationManager> locationManager;
         AutoPtr<IInterface> lm = ServiceManager::GetService(IContext::LOCATION_SERVICE);
         if(lm != NULL)
@@ -2147,7 +2147,7 @@ ECode CContextImpl::GetSystemService(
         return E_NOT_IMPLEMENTED;
     }
     else if (IContext::SENSOR_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         //return new SystemSensorManager(ctx.getOuterContext(),ctx.mMainThread.getHandler().getLooper());
         AutoPtr<ILooper> looper;
@@ -2160,7 +2160,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::STORAGE_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         // try {
         AutoPtr<ILooper> looper;
         mMainThread->GetHandler()->GetLooper((ILooper**)&looper);
@@ -2177,7 +2177,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::USB_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IIUsbManager> service = (IIUsbManager*)ServiceManager::GetService(IContext::USB_SERVICE).Get();
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IUsbManager> usbManager;
@@ -2188,7 +2188,7 @@ ECode CContextImpl::GetSystemService(
 
     }
     else if (IContext::SERIAL_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IInterface> service = ServiceManager::GetService(IContext::SERIAL_SERVICE);
         assert(service != NULL);
         AutoPtr<IISerialManager> serialService = (IISerialManager*)service->Probe(EIID_IISerialManager);
@@ -2201,7 +2201,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::VIBRATOR_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IVibratorService> service = IVibratorService::Probe(ServiceManager::GetService(IContext::VIBRATOR_SERVICE).Get());
         mServiceCache[name] = service.Get();
         *object = service.Get();
@@ -2209,7 +2209,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::STATUS_BAR_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IStatusBarManager> statusBarManager;
         ASSERT_SUCCEEDED(CStatusBarManager::New(ctx, (IStatusBarManager**)&statusBarManager));
@@ -2218,7 +2218,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::AUDIO_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IAudioManager> aManager;
         CAudioManager::New(this, (IAudioManager**)&aManager);
@@ -2231,7 +2231,7 @@ ECode CContextImpl::GetSystemService(
         return E_NOT_IMPLEMENTED;
     }
     else if (IContext::CLIPBOARD_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IClipboardManager> cbm;
         AutoPtr<IContext> ctx = GetOuterContext();
@@ -2241,7 +2241,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::WALLPAPER_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         *object = GetWallpaperManager().Get();
         mServiceCache[name] = GetWallpaperManager().Get();
@@ -2249,7 +2249,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::DROPBOX_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IInterface> b = ServiceManager::GetService(IContext::DROPBOX_SERVICE);
         AutoPtr<IDropBoxManagerService> service = IDropBoxManagerService::Probe(b);
         if (service == NULL) {
@@ -2269,7 +2269,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::DEVICE_POLICY_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         AutoPtr<IContext> ctx = GetOuterContext();
         AutoPtr<IDevicePolicyManager> devicePolicy;
         AutoPtr<IHandler> handler = mMainThread->GetHandler();
@@ -2279,7 +2279,7 @@ ECode CContextImpl::GetSystemService(
         return NOERROR;
     }
     else if (IContext::UI_MODE_SERVICE.Equals(name)) {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
 
         AutoPtr<IUiModeManager> uManager;
         CUiModeManager::New((IUiModeManager**)&uManager);

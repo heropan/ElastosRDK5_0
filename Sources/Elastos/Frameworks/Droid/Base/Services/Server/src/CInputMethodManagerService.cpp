@@ -230,7 +230,7 @@ CInputMethodManagerService::SettingsObserver::SettingsObserver(
 ECode CInputMethodManagerService::SettingsObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    Mutex::Autolock lock(mHost->mMethodMapLock);
+    AutoLock lock(mHost->mMethodMapLock);
     mHost->UpdateFromSettingsLocked();
     return NOERROR;
 }
@@ -325,7 +325,7 @@ ECode CInputMethodManagerService::MyPackageMonitor::OnHandleForceStop(
     }
 
     if (packages != NULL) {
-        Mutex::Autolock lock(mHost->mMethodMapLock);
+        AutoLock lock(mHost->mMethodMapLock);
         String curInputMethodId = mHost->mSettings->GetSelectedInputMethod();
 
         if (!curInputMethodId.IsNull()) {
@@ -369,7 +369,7 @@ ECode CInputMethodManagerService::MyPackageMonitor::OnSomePackagesChanged()
     }
 
     {
-        Mutex::Autolock lock(mHost->mMethodMapLock);
+        AutoLock lock(mHost->mMethodMapLock);
         AutoPtr<IInputMethodInfo> curIm;
         String curInputMethodId;
         curInputMethodId = mHost->mSettings->GetSelectedInputMethod();
@@ -484,7 +484,7 @@ void CInputMethodManagerService::HardKeyboardListener::HandleHardKeyboardStatusC
     //             + enabled);
     // }
     {
-        Mutex::Autolock lock(mHost->mMethodMapLock);
+        AutoLock lock(mHost->mMethodMapLock);
 
         Boolean showing = FALSE;
         if (mHost->mSwitchingDialog != NULL && mHost->mSwitchingDialogTitleView != NULL
@@ -514,7 +514,7 @@ ECode CInputMethodManagerService::CheckReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     {
-        Mutex::Autolock lock(mHost->mMethodMapLock);
+        AutoLock lock(mHost->mMethodMapLock);
 
         mHost->CheckCurrentLocaleChangedLocked();
     }
@@ -1556,7 +1556,7 @@ void CInputMethodManagerService::InputMethodFileManager::DeleteAllInputMethodSub
     /* [in] */ const String& imiId)
 {
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         mAdditionalSubtypesMap.Erase(imiId);
         WriteAdditionalInputMethodSubtypes(
@@ -1569,7 +1569,7 @@ void CInputMethodManagerService::InputMethodFileManager::AddInputMethodSubtypes(
     /* [in] */ ArrayOf<IInputMethodSubtype*>* additionalSubtypes)
 {
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr< InputMethodSubtypeList > subtypes = new InputMethodSubtypeList();
         const Int32 N = additionalSubtypes->GetLength();
@@ -1596,7 +1596,7 @@ void CInputMethodManagerService::InputMethodFileManager::AddInputMethodSubtypes(
 AutoPtr<IObjectStringMap>
 CInputMethodManagerService::InputMethodFileManager::GetAllAdditionalInputMethodSubtypes()
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     AutoPtr<IObjectStringMap> map;
     CObjectStringMap::New((IObjectStringMap**)&map);
 
@@ -2131,7 +2131,7 @@ Boolean CInputMethodManagerService::ContainsSubtypeOf(
 void CInputMethodManagerService::SystemReady(
     /* [in] */ CStatusBarManagerService* statusBar)
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (DEBUG) {
         Slogger::D(TAG, "--- systemReady");
@@ -2297,7 +2297,7 @@ ECode CInputMethodManagerService::GetInputMethodList(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     InputMethodInfoListIterator it;
     for (it = mMethodList->Begin(); it != mMethodList->End(); ++it) {
@@ -2319,7 +2319,7 @@ ECode CInputMethodManagerService::GetEnabledInputMethodList(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     AutoPtr< InputMethodInfoList > lists = mSettings->GetEnabledInputMethodListLocked();
     if (lists != NULL) {
@@ -2404,7 +2404,7 @@ ECode CInputMethodManagerService::GetEnabledInputMethodSubtypeList(
     if (!CalledFromValidUser()) {
         return CObjectContainer::New(infos);
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     return GetEnabledInputMethodSubtypeListLocked(imi, allowsImplicitlySelectedSubtypes, infos);
 }
 
@@ -2417,7 +2417,7 @@ ECode CInputMethodManagerService::AddClient(
     if (!CalledFromValidUser()) {
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     mClients[IBinder::Probe(client)] = new ClientState(client, inputContext, uid, pid);
     return NOERROR;
 }
@@ -2428,7 +2428,7 @@ ECode CInputMethodManagerService::RemoveClient(
     if (!CalledFromValidUser()) {
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     mClients.Erase(IBinder::Probe(client));
     return NOERROR;
 }
@@ -2761,7 +2761,7 @@ ECode CInputMethodManagerService::StartInput(
     if (!CalledFromValidUser()) {
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     Int64 ident = Binder::ClearCallingIdentity();
     ECode ec = StartInputLocked(client, inputContext, attribute, controlFlags, res);
@@ -2779,7 +2779,7 @@ ECode CInputMethodManagerService::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (mCurIntent != NULL) {
         AutoPtr<IComponentName> component;
@@ -2822,7 +2822,7 @@ void CInputMethodManagerService::OnSessionCreated(
     /* [in] */ IIInputMethod* method,
     /* [in] */ IIInputMethodSession* session)
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (mCurMethod != NULL && method != NULL
             && IBinder::Probe(mCurMethod) == IBinder::Probe(method)) {
@@ -2919,7 +2919,7 @@ void CInputMethodManagerService::ClearCurMethodLocked()
 ECode CInputMethodManagerService::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (DEBUG) {
         String nameStr, curStr;
@@ -2970,7 +2970,7 @@ ECode CInputMethodManagerService::UpdateStatusIcon(
 
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
         String ime("ime");
         if (iconId == 0) {
             if (DEBUG) Slogger::D(TAG, "hide the small icon for the input method");
@@ -3015,7 +3015,7 @@ Boolean CInputMethodManagerService::NeedsToShowImeSwitchOngoingNotification()
     if (!mShowOngoingImeSwitcherForPhones) return FALSE;
     if (IsScreenLocked()) return FALSE;
 
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     Int32 nonAuxCount = 0;
     Int32 auxCount = 0;
@@ -3096,7 +3096,7 @@ ECode CInputMethodManagerService::SetImeWindowStatus(
     }
 
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         mImeWindowVis = vis;
         mBackDisposition = backDisposition;
@@ -3178,7 +3178,7 @@ ECode CInputMethodManagerService::RegisterSuggestionSpansForNotification(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<IInputMethodInfo> currentImi;
         HashMap<String, AutoPtr<IInputMethodInfo> >::Iterator it = mMethodMap->Find(mCurMethodId);
@@ -3212,7 +3212,7 @@ ECode CInputMethodManagerService::NotifySuggestionPicked(
     }
 
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<IInputMethodInfo> targetImi;
         HashMap<AutoPtr<ISuggestionSpan>, AutoPtr<IInputMethodInfo> >::Iterator it =
@@ -3384,7 +3384,7 @@ ECode CInputMethodManagerService::ShowSoftInput(
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         if (mCurClient == NULL || client == NULL
                 || IBinder::Probe(mCurClient->mClient) != IBinder::Probe(client)) {
@@ -3485,7 +3485,7 @@ ECode CInputMethodManagerService::HideSoftInput(
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         if (mCurClient == NULL || client == NULL
                 || IBinder::Probe(mCurClient->mClient) != IBinder::Probe(client)) {
@@ -3575,7 +3575,7 @@ ECode CInputMethodManagerService::WindowGainedFocus(
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
         // if (DEBUG) Slog.v(TAG, "windowGainedFocus: " + client.asBinder()
         //         + " controlFlags=#" + Integer.toHexString(controlFlags)
         //         + " softInputMode=#" + Integer.toHexString(softInputMode)
@@ -3746,7 +3746,7 @@ ECode CInputMethodManagerService::ShowInputMethodPickerFromClient(
     if (!CalledFromValidUser()) {
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (mCurClient == NULL || client == NULL
             || IBinder::Probe(mCurClient->mClient) != IBinder::Probe(client)) {
@@ -3780,7 +3780,7 @@ ECode CInputMethodManagerService::SetInputMethodAndSubtype(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         if (subtype != NULL) {
             AutoPtr<IInputMethodInfo> info;
@@ -3808,7 +3808,7 @@ ECode CInputMethodManagerService::ShowInputMethodAndSubtypeEnablerFromClient(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         if (mCurClient == NULL || client == NULL
             || IBinder::Probe(mCurClient->mClient) != IBinder::Probe(client)) {
@@ -3837,7 +3837,7 @@ ECode CInputMethodManagerService::SwitchToLastInputMethod(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<StringStringPair> lastIme = mSettings->GetLastInputMethodAndSubtypeLocked();
         AutoPtr<IInputMethodInfo> lastImi;
@@ -3946,7 +3946,7 @@ ECode CInputMethodManagerService::SwitchToNextInputMethod(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<IInputMethodInfo> info;
         HashMap<String, AutoPtr<IInputMethodInfo> >::Iterator it = mMethodMap->Find(mCurMethodId);
@@ -3978,7 +3978,7 @@ ECode CInputMethodManagerService::GetLastInputMethodSubtype(
     }
 
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<StringStringPair> lastIme = mSettings->GetLastInputMethodAndSubtypeLocked();
         // TODO: Handle the case of the last IME with no subtypes
@@ -4026,7 +4026,7 @@ ECode CInputMethodManagerService::SetAdditionalInputMethodSubtypes(
     CStringWrapper::New(imiId, (ICharSequence**)&tmp);
     if (imiId.IsNullOrEmpty() || subtypes == NULL || subtypes->GetLength() == 0) return NOERROR;
     {
-        Mutex::Autolock lock(mMethodMapLock);
+        AutoLock lock(mMethodMapLock);
 
         AutoPtr<IInputMethodInfo> imi;
         HashMap<String, AutoPtr<IInputMethodInfo> >::Iterator it = mMethodMap->Find(imiId);
@@ -4067,7 +4067,7 @@ ECode CInputMethodManagerService::SetInputMethodWithSubtypeId(
     /* [in] */ const String& id,
     /* [in] */ Int32 subtypeId)
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (token == NULL) {
         Int32 perm = 0;
@@ -4100,7 +4100,7 @@ ECode CInputMethodManagerService::HideMySoftInput(
     // if (!CalledFromValidUser()) {
     //     return NOERROR;
     // }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (token == NULL || mCurToken.Get() != token) {
         // if (DEBUG) Slog.w(TAG, "Ignoring hideInputMethod of uid "
@@ -4120,7 +4120,7 @@ ECode CInputMethodManagerService::ShowMySoftInput(
     if (!CalledFromValidUser()) {
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (token == NULL || mCurToken.Get() != token) {
         // Slog.w(TAG, "Ignoring showMySoftInput of uid "
@@ -4529,7 +4529,7 @@ void CInputMethodManagerService::ShowInputMethodMenuInternal(
 
 void CInputMethodManagerService::HideInputMethodMenu()
 {
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     HideInputMethodMenuLocked();
 }
 
@@ -4558,7 +4558,7 @@ ECode CInputMethodManagerService::SetInputMethodEnabled(
         *state = FALSE;
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     Int32 perm = 0;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
@@ -4978,7 +4978,7 @@ ECode CInputMethodManagerService::GetCurrentInputMethodSubtype(
         *subtype = NULL;
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     AutoPtr<IInputMethodSubtype> s = GetCurrentInputMethodSubtypeLocked();
     *subtype = s;
@@ -5064,7 +5064,7 @@ ECode CInputMethodManagerService::GetShortcutInputMethodsAndSubtypes(
     VALIDATE_NOT_NULL(ret);
     *ret = NULL;
 
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
     if (mShortcutInputMethodsAndSubtypes.IsEmpty()) {
         // If there are no selected shortcut subtypes, the framework will try to find
         // the most applicable subtype from all subtypes whose mode is
@@ -5112,7 +5112,7 @@ ECode CInputMethodManagerService::SetCurrentInputMethodSubtype(
         *result = FALSE;
         return NOERROR;
     }
-    Mutex::Autolock lock(mMethodMapLock);
+    AutoLock lock(mMethodMapLock);
 
     if (subtype != NULL && !mCurMethodId.IsNull()) {
         AutoPtr<IInputMethodInfo> imi;

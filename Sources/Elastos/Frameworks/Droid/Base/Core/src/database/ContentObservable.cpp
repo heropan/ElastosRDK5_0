@@ -21,7 +21,7 @@ ECode ContentObservable::DispatchChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::Iterator iter;
     for (iter = mObservers.Begin(); iter != mObservers.End(); ++iter) {
@@ -37,7 +37,7 @@ ECode ContentObservable::DispatchChange(
 ECode ContentObservable::NotifyChange(
     /* [in] */ Boolean selfChange)
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::Iterator iter;
     for (iter = mObservers.Begin(); iter != mObservers.End(); ++iter) {

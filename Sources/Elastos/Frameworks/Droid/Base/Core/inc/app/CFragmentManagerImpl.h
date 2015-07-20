@@ -10,7 +10,6 @@
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Utility::IObjectInt32Map;
@@ -483,7 +482,7 @@ public:
     AutoPtr<IBundle> mStateBundle;
     AutoPtr<IObjectInt32Map> mStateArray;
     AutoPtr<ExecCommitRunnable> mExecCommit;
-    Mutex mThisLock;
+    Object mThisLock;
 };
 
 } // namespace App

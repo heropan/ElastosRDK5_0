@@ -5,7 +5,6 @@
 #include "app/Activity.h"
 #include "_CActivityOne.h"
 #include "CBroadcastReceiverOne.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Content::BroadcastReceiver;

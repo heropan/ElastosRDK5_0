@@ -9,7 +9,6 @@
 #include "text/SpanSet.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 //using Elastos::Droid::Emoji::IEmojiFactory;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IPaint;
@@ -809,7 +808,7 @@ private:
     static AutoPtr< ArrayOf<IParagraphStyle*> > NO_PARA_SPANS;
     static const Int32 TAB_INCREMENT = 20;
     static AutoPtr<IRect> sTempRect;
-    static Mutex sTempRectLock;
+    static Object sTempRectLock;
 
     AutoPtr<ICharSequence> mText;
     AutoPtr<ITextPaint> mPaint;

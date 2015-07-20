@@ -5,7 +5,6 @@
 #include "_CLinkSocket.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Net::ISocketAddress;
 using Elastos::Net::IInetAddress;
 using Elastos::IO::IInputStream;
@@ -195,7 +194,7 @@ public:
         /* [in] */ Int32 bandwidth);
 
 private:
-   Mutex mLock;
+   Object mLock;
    static const String TAG;
    static const Boolean DBG;
 };

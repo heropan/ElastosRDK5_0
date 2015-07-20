@@ -558,7 +558,7 @@ private:
     CContextImpl* mContext;
     AutoPtr<IIPackageManager> mPM;
 
-    static Mutex sSync;
+    static Object sSync;
     /*WeakReference<Drawable.ConstantState>*/
     static HashMap<AutoPtr<ResourceName>, AutoPtr<IWeakReference> > sIconCache;
     /*WeakReference<CharSequence>*/

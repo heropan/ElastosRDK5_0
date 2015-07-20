@@ -11,7 +11,6 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Core::Thread;
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;
@@ -76,7 +75,7 @@ AutoPtr<AsyncChannel::SyncMessenger> AsyncChannel::SyncMessenger::Obtain()
 {
     AutoPtr<SyncMessenger> sm;
     {
-        Mutex::Autolock lock(sStackLock);
+        AutoLock lock(sStackLock);
         if (sStack.IsEmpty()) {
             sm = new SyncMessenger();
             AutoPtr<IThread> thread;
@@ -103,7 +102,7 @@ AutoPtr<AsyncChannel::SyncMessenger> AsyncChannel::SyncMessenger::Obtain()
 void AsyncChannel::SyncMessenger::Recycle()
 {
     {
-        Mutex::Autolock lock(sStackLock);
+        AutoLock lock(sStackLock);
         sStack.Push(this);
     }
 }

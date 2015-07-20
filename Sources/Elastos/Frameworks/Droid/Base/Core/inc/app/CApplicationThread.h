@@ -5,7 +5,6 @@
 #include "_CApplicationThread.h"
 #include "app/CActivityThread.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Utility::IObjectStringMap;
@@ -290,7 +289,7 @@ private:
 
     CActivityThread* mAThread;//CActivityThread is host of CApplicationThread
 
-    Mutex mPackagesLock;
+    Object mPackagesLock;
 };
 
 } // namespace App

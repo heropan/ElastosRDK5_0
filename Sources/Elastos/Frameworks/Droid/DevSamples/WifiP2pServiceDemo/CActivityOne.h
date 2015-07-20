@@ -4,7 +4,6 @@
 
 #include "app/Activity.h"
 #include "_CActivityOne.h"
-#include <elrefbase.h>
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include "ChatManager.h"

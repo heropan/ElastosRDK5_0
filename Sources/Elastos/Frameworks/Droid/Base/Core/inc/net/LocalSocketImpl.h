@@ -6,7 +6,6 @@
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
 
-using Elastos::Core::Mutex;
 using Elastos::IO::InputStream;
 using Elastos::IO::IInputStream;
 using Elastos::IO::OutputStream;
@@ -275,8 +274,8 @@ private:
 /*private*/public:
     AutoPtr<SocketInputStream> mFis;
     AutoPtr<SocketOutputStream> mFos;
-    Mutex mReadMonitor;
-    Mutex mWriteMonitor;
+    Object mReadMonitor;
+    Object mWriteMonitor;
 
     /** null if closed or not yet created */
     AutoPtr<IFileDescriptor> mFd;
@@ -287,7 +286,7 @@ private:
     /** file descriptor array that should be written during next write */
     AutoPtr< ArrayOf<IFileDescriptor*> > mOutboundFileDescriptors;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Net

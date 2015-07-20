@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Droid::Net::IWebAddress;
 
@@ -202,7 +201,7 @@ protected:
     virtual CARAPI_(Boolean) AllowFileSchemeCookiesImpl();
 
 protected:
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Webkit

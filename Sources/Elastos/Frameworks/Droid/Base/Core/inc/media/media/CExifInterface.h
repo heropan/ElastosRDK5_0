@@ -183,7 +183,7 @@ private:
     // there can only be one user at a time for the native functions (and
     // they cannot keep state in the native code across function calls). We
     // use sLock to serialize the accesses.
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Media

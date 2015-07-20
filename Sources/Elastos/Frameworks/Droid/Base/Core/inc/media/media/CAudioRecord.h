@@ -516,7 +516,7 @@ private:
     /**
      * Lock to make sure mRecordingState updates are reflecting the actual state of the object.
      */
-    Mutex mRecordingStateLock;
+    Object mRecordingStateLock;
 
     /**
      * The listener the AudioRecord notifies when the record position reaches a marker
@@ -529,7 +529,7 @@ private:
     /**
      * Lock to protect position listener updates against event notifications
      */
-    Mutex mPositionListenerLock;
+    Object mPositionListenerLock;
 
     /**
      * Handler for marker events coming from the native code

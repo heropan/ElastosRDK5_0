@@ -77,7 +77,7 @@ CAR_INTERFACE_IMPL_LIGHT(BrowserFrame::ConfigCallback, IComponentCallbacks);
 void BrowserFrame::ConfigCallback::AddHandler(
     /* [in] */ IHandler* h)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // No need to ever remove a Handler. If the BrowserFrame is
     // destroyed, it will be collected and the WeakReference set to
     // null. If it happens to still be around during a configuration
@@ -114,7 +114,7 @@ ECode BrowserFrame::ConfigCallback::OnConfigurationChanged(
             break;
     }
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         // Create a list of handlers to remove. Go ahead and make it
         // the same size to avoid resizing.

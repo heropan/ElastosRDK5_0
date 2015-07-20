@@ -444,7 +444,7 @@ AutoPtr<IActivityChooserModel> ActivityChooserModel::Get(
     /* [in] */ IContext* context,
     /* [in] */ const String& historyFileName)
 {
-    Mutex::Autolock lock(sRegistryLock);
+    AutoLock lock(sRegistryLock);
     HashMap<String, AutoPtr<IActivityChooserModel> >::Iterator it =
         sDataModelRegistry.Find(historyFileName);
     AutoPtr<IActivityChooserModel> dataModel;
@@ -466,7 +466,7 @@ ActivityChooserModel::~ActivityChooserModel()
 ECode ActivityChooserModel::SetIntent(
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (intent == mIntent) {
         return NOERROR;
     }
@@ -479,7 +479,7 @@ ECode ActivityChooserModel::SetIntent(
 ECode ActivityChooserModel::GetIntent(
     /* [out] */ IIntent** intent)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     *intent = mIntent;
     REFCOUNT_ADD(*intent);
     return NOERROR;
@@ -488,7 +488,7 @@ ECode ActivityChooserModel::GetIntent(
 ECode ActivityChooserModel::GetActivityCount(
     /* [out] */ Int32* rst)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     EnsureConsistentState();
     *rst = mActivities.GetSize();
     return NOERROR;
@@ -498,7 +498,7 @@ ECode ActivityChooserModel::GetActivity(
     /* [in] */ Int32 index,
     /* [out] */ IResolveInfo** activity)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     EnsureConsistentState();
     *activity = mActivities[index]->mResolveInfo;
     REFCOUNT_ADD(*activity);
@@ -509,7 +509,7 @@ ECode ActivityChooserModel::GetActivityIndex(
     /* [in] */ IResolveInfo* activity,
     /* [out] */ Int32* rst)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     EnsureConsistentState();
     List<AutoPtr<ActivityResolveInfo> >::Iterator it =
         mActivities.Begin();
@@ -531,7 +531,7 @@ ECode ActivityChooserModel::ChooseActivity(
     /* [in] */ Int32 index,
     /* [out] */ IIntent** intent)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (mIntent == NULL) {
         *intent = NULL;
         return NOERROR;
@@ -579,7 +579,7 @@ ECode ActivityChooserModel::ChooseActivity(
 ECode ActivityChooserModel::SetOnChooseActivityListener(
     /* [in] */ IOnChooseActivityListener* listener)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     mActivityChoserModelPolicy = listener;
     return NOERROR;
 }
@@ -587,7 +587,7 @@ ECode ActivityChooserModel::SetOnChooseActivityListener(
 ECode ActivityChooserModel::GetDefaultActivity(
     /* [out] */ IResolveInfo** rInfo)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     EnsureConsistentState();
     if (!mActivities.IsEmpty()) {
         *rInfo = mActivities[0]->mResolveInfo;
@@ -601,7 +601,7 @@ ECode ActivityChooserModel::GetDefaultActivity(
 ECode ActivityChooserModel::SetDefaultActivity(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     EnsureConsistentState();
     AutoPtr<ActivityResolveInfo> newDefaultActivity = mActivities[index];
     AutoPtr<ActivityResolveInfo> oldDefaultActivity = mActivities[0];
@@ -634,7 +634,7 @@ ECode ActivityChooserModel::SetDefaultActivity(
 ECode ActivityChooserModel::SetActivitySorter(
     /* [in] */ IActivitySorter* activitySorter)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (activitySorter == mActivitySorter) {
         return NOERROR;
     }
@@ -648,7 +648,7 @@ ECode ActivityChooserModel::SetActivitySorter(
 ECode ActivityChooserModel::SetHistoryMaxSize(
     /* [in] */ Int32 historyMaxSize)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (mHistoryMaxSize == historyMaxSize) {
         return NOERROR;
     }
@@ -663,7 +663,7 @@ ECode ActivityChooserModel::SetHistoryMaxSize(
 ECode ActivityChooserModel::GetHistoryMaxSize(
     /* [out] */ Int32* size)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     *size = mHistoryMaxSize;
     return NOERROR;
 }
@@ -671,7 +671,7 @@ ECode ActivityChooserModel::GetHistoryMaxSize(
 ECode ActivityChooserModel::GetHistorySize(
         /*[out] */ Int32* size)
 {
-    Mutex::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     return mHistoryMaxSize;
 }
 

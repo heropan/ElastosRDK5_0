@@ -7,7 +7,6 @@
 #include "BluetoothInputStream.h"
 #include "BluetoothOutputStream.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::ICloseable;;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
@@ -165,7 +164,7 @@ private:
 
     /** prevents all native calls after destroyNative() */
     SocketState mSocketState;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // Bluetooth

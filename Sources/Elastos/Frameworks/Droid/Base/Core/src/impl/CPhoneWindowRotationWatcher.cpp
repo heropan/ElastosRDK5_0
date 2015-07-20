@@ -41,7 +41,7 @@ ECode CPhoneWindowRotationWatcher::OnRotationChanged(
 ECode CPhoneWindowRotationWatcher::AddWindow(
 /* [in] */ IWindow* phoneWindow)
 {
-    Mutex::Autolock locking(mLock);
+    AutoLock locking(mLock);
     if (!mIsWatching) {
         Int32 rotation;
         ECode ec = CPhoneWindow::WindowManagerHolder::sWindowManager->WatchRotation(this, &rotation);
@@ -63,7 +63,7 @@ ECode CPhoneWindowRotationWatcher::AddWindow(
 ECode CPhoneWindowRotationWatcher::RemoveWindow(
 /* [in] */ IWindow* phoneWindow)
 {
-    Mutex::Autolock locking(mLock);
+    AutoLock locking(mLock);
     List<AutoPtr<IWeakReference> >::Iterator it = mWindows.Begin();
     while (it != mWindows.End()) {
         AutoPtr<IWeakReference> weakWindow = *it;
@@ -80,7 +80,7 @@ ECode CPhoneWindowRotationWatcher::RemoveWindow(
 
 ECode CPhoneWindowRotationWatcher::DispatchRotationChanged()
 {
-    Mutex::Autolock locking(mLock);
+    AutoLock locking(mLock);
     List<AutoPtr<IWeakReference> >::Iterator it = mWindows.Begin();
     while (it != mWindows.End()) {
         AutoPtr<IWeakReference> weakWindow = *it;

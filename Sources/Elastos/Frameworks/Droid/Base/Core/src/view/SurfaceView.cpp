@@ -91,7 +91,7 @@ ECode SurfaceView::_SurfaceHolder::IsCreating(
 ECode SurfaceView::_SurfaceHolder::AddCallback(
     /* [in] */ ISurfaceHolderCallback* callback)
 {
-    Mutex::Autolock lock(mHost->mCallbacksLock);
+    AutoLock lock(mHost->mCallbacksLock);
     AutoPtr<ISurfaceHolderCallback> cb = callback;
     // This is a linear search, but in practice we'll
     // have only a couple callbacks, so it doesn't matter.
@@ -107,7 +107,7 @@ ECode SurfaceView::_SurfaceHolder::AddCallback(
 ECode SurfaceView::_SurfaceHolder::RemoveCallback(
     /* [in] */ ISurfaceHolderCallback* callback)
 {
-    Mutex::Autolock lock(mHost->mCallbacksLock);
+    AutoLock lock(mHost->mCallbacksLock);
     AutoPtr<ISurfaceHolderCallback> cb = callback;
     List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter
         = Find(mHost->mCallbacks.Begin(), mHost->mCallbacks.End(), cb);
@@ -224,7 +224,7 @@ ECode SurfaceView::_SurfaceHolder::GetSurfaceFrame(
 AutoPtr<ICanvas> SurfaceView::_SurfaceHolder::InternalLockCanvas(
     /* [in]*/ IRect* _dirty)
 {
-    Mutex::Autolock lock(mHost->mSurfaceLock);
+    AutoLock lock(mHost->mSurfaceLock);
 
     if (DEBUG) {
         Logger::I("SurfaceView", "Locking canvas... stopped=%d, win=%p\n",
@@ -868,7 +868,7 @@ ECode SurfaceView::UpdateWindow(
             Int32 relayoutResult = 0;
 
             {
-                Mutex::Autolock lock(mSurfaceLock);
+                AutoLock lock(mSurfaceLock);
                 mUpdateWindowNeeded = FALSE;
                 reportDrawNeeded = mReportDrawNeeded;
                 mReportDrawNeeded = FALSE;
@@ -1023,7 +1023,7 @@ ECode SurfaceView::UpdateWindow(
 
 AutoPtr<ArrayOf<ISurfaceHolderCallback*> > SurfaceView::GetSurfaceCallbacks()
 {
-    Mutex::Autolock lock(mCallbacksLock);
+    AutoLock lock(mCallbacksLock);
 
     AutoPtr<ArrayOf<ISurfaceHolderCallback*> > callbacks;
     Int32 size = mCallbacks.GetSize();

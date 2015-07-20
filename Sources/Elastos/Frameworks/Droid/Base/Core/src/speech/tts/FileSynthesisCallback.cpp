@@ -9,7 +9,6 @@ using Elastos::IO::CRandomAccessFile;
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IByteBufferHelper;
 using Elastos::IO::CByteBufferHelper;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::FileUtils;
 
@@ -43,7 +42,7 @@ FileSynthesisCallback::FileSynthesisCallback(
 //@Override
 void FileSynthesisCallback::Stop()
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     mStopped = TRUE;
     CleanUp();
 }
@@ -131,7 +130,7 @@ Int32 FileSynthesisCallback::Start(
         String strOut = String("FileSynthesisRequest.start(")+StringUtils::Int32ToString(sampleRateInHz)+String(",")+StringUtils::Int32ToString(audioFormat)+String(",")+StringUtils::Int32ToString(channelCount)+String(")\n");
         Logger::D(TAG, strOut);
     }
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     if (mStopped) {
         if (DBG){
             //Java:    Log.d(TAG, "Request has been aborted.");
@@ -179,7 +178,7 @@ Int32 FileSynthesisCallback::AudioAvailable(
         //Java:    Log.d(TAG, "FileSynthesisRequest.audioAvailable(" + buffer + "," + offset + "," + length + ")");
         Logger::D(TAG, String("FileSynthesisRequest.audioAvailable\n"));
     }
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     if (mStopped) {
         if (DBG){
             //Java:    Log.d(TAG, "Request has been aborted.");
@@ -210,7 +209,7 @@ Int32 FileSynthesisCallback::Done()
         //Java:    Log.d(TAG, "FileSynthesisRequest.done()");
         Logger::D(TAG, String("FileSynthesisRequest.done()\n"));
     }
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     if (mDone) {
         if (DBG){
             //Java:    Log.d(TAG, "Duplicate call to done()");
@@ -256,7 +255,7 @@ ECode FileSynthesisCallback::Error()
 {
     //Java:    if (DBG) Log.d(TAG, "FileSynthesisRequest.error()");
     Logger::D(TAG, String("FileSynthesisRequest.error()\n"));
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     CleanUp();
     return NOERROR;
 }

@@ -485,7 +485,7 @@ ECode NativeUtil::CheckInitialized()
 void NativeUtil::SetContext(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sContext != NULL) {
         return;
     }
@@ -495,7 +495,7 @@ void NativeUtil::SetContext(
 
 AutoPtr<IContext> NativeUtil::GetContext()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     return sContext;
 }
 
@@ -508,7 +508,7 @@ ECode NativeUtil::GetDatabaseDirectory(
 {
     VALIDATE_NOT_NULL(directory);
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     FAIL_RETURN(CheckInitialized());
 
@@ -531,7 +531,7 @@ ECode NativeUtil::GetCacheDirectory(
 {
     VALIDATE_NOT_NULL(directory);
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     FAIL_RETURN(CheckInitialized());
 
@@ -559,7 +559,7 @@ ECode NativeUtil::GetPackageName(
 {
     VALIDATE_NOT_NULL(name);
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     FAIL_RETURN(CheckInitialized());
 
@@ -573,7 +573,7 @@ ECode NativeUtil::GetPackageName(
 Int64 NativeUtil::ContentUrlSize(
     /* [in] */ const String& _url)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     String url = _url;
     // content://
@@ -624,7 +624,7 @@ Int64 NativeUtil::ContentUrlSize(
 AutoPtr<IInputStream> NativeUtil::ContentUrlStream(
     /* [in] */ const String& _url)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     String url = _url;
     // content://
@@ -661,7 +661,7 @@ ECode NativeUtil::GetAutofillQueryUrl(
 {
     VALIDATE_NOT_NULL(url);
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     FAIL_RETURN(CheckInitialized());
     // If the device has not checked in it won't have pulled down the system setting for the

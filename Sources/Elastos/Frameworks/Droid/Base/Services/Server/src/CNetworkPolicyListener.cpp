@@ -26,7 +26,7 @@ ECode CNetworkPolicyListener::OnUidRulesChanged(
 //    }
 
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         // skip update when we've already applied rules
         Int32 oldRules;
         HashMap<Int32, Int32>::Iterator iter = mOwner->mUidRules.Find(uid);
@@ -52,7 +52,7 @@ ECode CNetworkPolicyListener::OnMeteredIfacesChanged(
 //        //Log("onMeteredIfacesChanged(ifaces=" + Arrays.toString(meteredIfaces) + ")");
 //    }
     {
-       Mutex::Autolock lock(mOwner->mRulesLock);
+       AutoLock lock(mOwner->mRulesLock);
        mOwner->mMeteredIfaces.Clear();
        for (Int32 i = 0; i < meteredIfaces->GetLength(); i++) {
            mOwner->mMeteredIfaces.Insert((*meteredIfaces)[i]);

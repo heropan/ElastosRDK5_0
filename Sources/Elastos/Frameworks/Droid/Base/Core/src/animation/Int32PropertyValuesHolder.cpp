@@ -193,7 +193,7 @@ ECode Int32PropertyValuesHolder::SetupSetter(
     }
     // Check new static hashmap<propName, int> for setter method
     {
-        Mutex::Autolock lock(mPropertyMapLock);
+        AutoLock lock(mPropertyMapLock);
         AutoPtr<IClassInfo> clInfo = TransformClassInfo(target);
         ClassMethodMapIterator exit = sJNISetterPropertyMap.Find(clInfo);
         AutoPtr<MethodMap> propertyMap = NULL;

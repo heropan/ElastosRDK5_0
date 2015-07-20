@@ -1498,13 +1498,13 @@ private:
 
     static const Int32 MAX_RECYCLED = 10;
 
-    static Mutex gRecyclerLock;
+    static Object gRecyclerLock;
     static Int32 gRecyclerUsed;
     static AutoPtr<CMotionEvent> gRecyclerTop;
 
     // Shared temporary objects used when translating coordinates supplied by
     // the caller into single element PointerCoords and pointer id arrays.
-    static Mutex gSharedTempLock;
+    static Object gSharedTempLock;
     static AutoPtr<ArrayOf<IPointerCoords*> > gSharedTempPointerCoords;
     static AutoPtr<ArrayOf<IPointerProperties*> > gSharedTempPointerProperties;
     static AutoPtr<ArrayOf<Int32> > gSharedTempPointerIndexMap;

@@ -11,7 +11,6 @@
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::CLocale;
-using Elastos::Core::Mutex;
 using Elastos::Core::CStringWrapper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CObjectContainer;
@@ -486,7 +485,7 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceConnected(
     name -> ToString(&shortStringComponentName);
     Logger::I(mTts->TAG, String("Connected to ")+shortStringComponentName+String("\n"));
 
-    Mutex::Autolock lock(mTts->mStartLock);
+    AutoLock lock(mTts->mStartLock);
     if (mTts->mServiceConnection != NULL) {
         // Disconnect any previous service connection
         (mTts->mServiceConnection)->Disconnect();
@@ -514,7 +513,7 @@ ECode TextToSpeech::TextToSpeechConnection::OnServiceConnected(
 ECode TextToSpeech::TextToSpeechConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
-    Mutex::Autolock lock(mTts->mStartLock);
+    AutoLock lock(mTts->mStartLock);
     mService = NULL;
     // If this is the active connection, clear it
     if ((mTts->mServiceConnection).Get() == this) {
@@ -527,7 +526,7 @@ void TextToSpeech::TextToSpeechConnection::Disconnect()
 {
     (mTts->mContext)->UnbindService(this);
 
-    Mutex::Autolock lock(mTts->mStartLock);
+    AutoLock lock(mTts->mStartLock);
     mService = NULL;
     // If this is the active connection, clear it
     if ((mTts->mServiceConnection).Get() == this) {
@@ -541,7 +540,7 @@ Handle32 TextToSpeech::TextToSpeechConnection::RunAction(
     /* [in] */ const String& method,
     /* [in] */ Boolean reconnect)
 {
-    Mutex::Autolock lock(mTts->mStartLock);
+    AutoLock lock(mTts->mStartLock);
     //try {
         if (mService == NULL) {
             //Java:    Log.w(TAG, method + " failed: not connected to TTS engine");
@@ -656,7 +655,7 @@ Handle32 TextToSpeech::RunAction(
     /* [in] */ const String& method,
     /* [in] */ Boolean reconnect)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     if (mServiceConnection == NULL) {
         //Java:    Log.w(TAG, method + " failed: not bound to TTS engine");
         Logger::W(TAG, method + String(" failed: not bound to TTS engine\n"));
@@ -743,7 +742,7 @@ Boolean TextToSpeech::ConnectToEngine(
 void TextToSpeech::DispatchOnInit(
     /* [in] */ Int32 result)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     if (mInitListener != NULL) {
         mInitListener->OnInit(result);
         mInitListener = NULL;
@@ -766,7 +765,7 @@ Int32 TextToSpeech::AddSpeech(
     /* [in] */ const String& packagename,
     /* [in] */ Int32 resourceId)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(text, MakeResourceUri(packagename, resourceId)) );
     return ITextToSpeech::TTS_SUCCESS;
 }
@@ -775,7 +774,7 @@ Int32 TextToSpeech::AddSpeech(
     /* [in] */ const String& text,
     /* [in] */ const String& filename)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     AutoPtr<IUri> uri = /*Uri::Parse(filename)*/NULL;
     mUtterances.Insert(Map<String, AutoPtr<IUri> >::ValueType(text, uri.Get() ) );
     return ITextToSpeech::TTS_SUCCESS;
@@ -786,7 +785,7 @@ Int32 TextToSpeech::AddEarcon(
     /* [in] */ const String& packagename,
     /* [in] */ Int32 resourceId)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     mEarcons.Insert(Map<String, AutoPtr<IUri> >::ValueType(earcon, MakeResourceUri(packagename, resourceId) ) );
     return ITextToSpeech::TTS_SUCCESS;
 }
@@ -795,7 +794,7 @@ Int32 TextToSpeech::AddEarcon(
     /* [in] */ const String& earcon,
     /* [in] */ const String& filename)
 {
-    Mutex::Autolock lock(mStartLock);
+    AutoLock lock(mStartLock);
     AutoPtr<IUri> uri = /*Uri::Parse(filename)*/NULL;
     mEarcons.Insert(Map<String, AutoPtr<IUri> >::ValueType(earcon, uri.Get() ) );
     return ITextToSpeech::TTS_SUCCESS;
@@ -887,7 +886,7 @@ Int32 TextToSpeech::SetSpeechRate(
         Int32 intRate = (Int32)(speechRate * 100);
         if (intRate > 0) {
             if(TRUE){
-                Mutex::Autolock lock(mStartLock);
+                AutoLock lock(mStartLock);
                 mParams->PutInt32(ITextToSpeechEngine::KEY_PARAM_RATE, intRate);
             }
             return ITextToSpeech::TTS_SUCCESS;
@@ -903,7 +902,7 @@ Int32 TextToSpeech::SetPitch(
         Int32 intPitch = (Int32)(pitch * 100);
         if (intPitch > 0) {
             if(TRUE){
-                Mutex::Autolock lock(mStartLock);
+                AutoLock lock(mStartLock);
                 mParams->PutInt32(ITextToSpeechEngine::KEY_PARAM_PITCH, intPitch);
             }
             return ITextToSpeech::TTS_SUCCESS;

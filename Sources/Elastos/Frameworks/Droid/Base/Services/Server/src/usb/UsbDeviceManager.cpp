@@ -1023,13 +1023,13 @@ UsbDeviceManager::~UsbDeviceManager()
 void UsbDeviceManager::SetCurrentSettings(
     /* [in] */ UsbSettingsManager* settings)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCurrentSettings = settings;
 }
 
 AutoPtr<UsbSettingsManager> UsbDeviceManager::GetCurrentSettings()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mCurrentSettings;
 }
 

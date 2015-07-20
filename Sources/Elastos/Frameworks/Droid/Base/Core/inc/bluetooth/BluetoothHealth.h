@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
@@ -126,7 +125,7 @@ private:
     AutoPtr<IIBluetoothHealth> mService;
     AutoPtr<IBluetoothAdapter> mAdapter;
     AutoPtr<IServiceConnection> mConnection;
-    Mutex mConnectionLock;
+    Object mConnectionLock;
     AutoPtr<IIBluetoothStateChangeCallback> mBluetoothStateChangeCallback;
 
     friend class CBluetoothHealthStateChangeCallback;

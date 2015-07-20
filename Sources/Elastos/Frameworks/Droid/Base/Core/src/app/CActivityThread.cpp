@@ -637,7 +637,7 @@ ECode CActivityThread::ConfigurationChangedCallbacks::OnConfigurationChanged(
     }
 
     CActivityThread* host = (CActivityThread*)at.Get();
-    Mutex::Autolock lock(host->mPackagesLock);
+    AutoLock lock(host->mPackagesLock);
 
     // We need to apply this change to the resources
     // immediately, because upon returning the view
@@ -1311,7 +1311,7 @@ ECode CActivityThread::GetTopLevelResources(
             overrideConfiguration, compInfo->mApplicationScale);
     AutoPtr<IResources> r;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         // Resources is app scale dependent.
         if (FALSE) {
@@ -1391,7 +1391,7 @@ ECode CActivityThread::GetTopLevelResources(
     }
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IResources> existing;
         ActiveResourcesMapIterator it = mActiveResources.Find(key);
@@ -1470,7 +1470,7 @@ AutoPtr<LoadedPkg> CActivityThread::GetPackageInfo(
     /* [in] */ Int32 userId)
 {
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<LoadedPkg> packageInfo;
         if ((flags & IContext::CONTEXT_INCLUDE_CODE) != 0) {
@@ -1572,7 +1572,7 @@ AutoPtr<LoadedPkg> CActivityThread::PeekPackageInfo(
     /* [in] */ const String& packageName,
     /* [in] */ Boolean includeCode)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<LoadedPkg> packageInfo;
     if (includeCode) {
@@ -1605,7 +1605,7 @@ AutoPtr<LoadedPkg> CActivityThread::GetPackageInfo(
 {
     AutoPtr<LoadedPkg> packageInfo;
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     String pkgName;
     aInfo->GetPackageName(&pkgName);
@@ -1734,7 +1734,7 @@ ECode CActivityThread::GetSystemContext(
 {
     VALIDATE_NOT_NULL(ctx);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (sSystemContext == NULL) {
             AutoPtr<CContextImpl> context = CContextImpl::CreateSystemContext(this);
@@ -1766,7 +1766,7 @@ ECode CActivityThread::InstallSystemApplicationInfo(
     /* [in] */ IApplicationInfo* info)
 {
     Slogger::D(TAG, " > TODO: CActivityThread::InstallSystemApplicationInfo");
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     #if 0
     AutoPtr<IContextImpl> context;
     GetSystemContext((IContextImpl**)&context);
@@ -1827,7 +1827,7 @@ ECode CActivityThread::RegisterOnActivityPausedListener(
 {
     VALIDATE_NOT_NULL(listener);
 
-    Mutex::Autolock lock(mOnPauseListenersLock);
+    AutoLock lock(mOnPauseListenersLock);
     AutoPtr<OnPauseListenerList> list;
     OnPauseListenerMapIterator it = mOnPauseListeners.Find(activity);
     if (it != mOnPauseListeners.End()) {
@@ -1848,7 +1848,7 @@ ECode CActivityThread::UnregisterOnActivityPausedListener(
 {
     VALIDATE_NOT_NULL(listener);
 
-    Mutex::Autolock lock(mOnPauseListenersLock);
+    AutoLock lock(mOnPauseListenersLock);
 
     OnPauseListenerMapIterator it = mOnPauseListeners.Find(activity);
     if (it != mOnPauseListeners.End()) {
@@ -1983,7 +1983,7 @@ ECode CActivityThread::QueueOrSendMessage(
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (DEBUG_MESSAGES) {
         Slogger::V(TAG, "QueueOrSendMessage %d %s: arg1=%d, arg2=%d, obj=%p",
@@ -3461,7 +3461,7 @@ ECode CActivityThread::PerformPauseActivity(
     // Notify any outstanding on paused listeners
     AutoPtr<OnPauseListenerList> listeners;
     {
-        Mutex::Autolock lock(mOnPauseListenersLock);
+        AutoLock lock(mOnPauseListenersLock);
         OnPauseListenerMapIterator it = mOnPauseListeners.Find(r->mActivity);
         if (it != mOnPauseListeners.End()) {
             listeners = it->mSecond;
@@ -3732,7 +3732,7 @@ ECode CActivityThread::HandleSleeping(
 ECode CActivityThread::HandleSetCoreSettings(
     /* [in] */ IBundle* coreSettings)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     mCoreSettings = coreSettings;
     return NOERROR;
 }
@@ -4076,7 +4076,7 @@ ECode CActivityThread::RequestRelaunchActivity(
     AutoPtr<ActivityClientRecord> target;
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         List< AutoPtr<ActivityClientRecord> >::Iterator it;
         for (it = mRelaunchingActivities.Begin(); it != mRelaunchingActivities.End();
@@ -4179,7 +4179,7 @@ ECode CActivityThread::HandleRelaunchActivity(
     // recent version of the activity, or skip it if some previous call
     // had taken a more recent version.
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         AutoPtr<IBinder> token = tmp->mToken;
         tmp = NULL;
         List< AutoPtr<ActivityClientRecord> >::Iterator it;
@@ -4326,7 +4326,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
     AutoPtr< List<AutoPtr<IComponentCallbacks2> > > callbacks = new List<AutoPtr<IComponentCallbacks2> >();
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         List<AutoPtr<IApplication> >::Iterator it;
         for (it = mAllApplications.Begin(); it != mAllApplications.End(); ++it) {
             callbacks->PushBack(IComponentCallbacks2::Probe(*it));
@@ -4373,7 +4373,7 @@ AutoPtr< List<AutoPtr<IComponentCallbacks2> > > CActivityThread::CollectComponen
         }
     }
     {
-        Mutex::Autolock lock(mProviderMapLock);
+        AutoLock lock(mProviderMapLock);
         if (mLocalProviders.Begin() != mLocalProviders.End()) {
             HashMap<AutoPtr<IBinder>, AutoPtr<ProviderClientRecord> >::Iterator it;
             for (it = mLocalProviders.Begin(); it != mLocalProviders.End(); ++it) {
@@ -4453,7 +4453,7 @@ ECode CActivityThread::PerformConfigurationChanged(
 ECode CActivityThread::ApplyConfigurationToResources(
     /* [in] */ IConfiguration* config)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     ApplyConfigurationToResourcesLocked(config, NULL);
     return NOERROR;
 }
@@ -4630,7 +4630,7 @@ ECode CActivityThread::HandleConfigurationChanged(
     AutoPtr<IConfiguration> config = inConfig;
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         if (mPendingConfiguration != NULL) {
             Boolean isBetter;
             mPendingConfiguration->IsOtherSeqNewer(config, &isBetter);
@@ -5435,7 +5435,7 @@ ECode CActivityThread::AcquireExistingProvider(
     /* [in] */ Boolean stable,
     /* [out] */ IIContentProvider** cpr)
 {
-    Mutex::Autolock lock(mProviderMapLock);
+    AutoLock lock(mProviderMapLock);
 
     AutoPtr<ProviderKey> key = new ProviderKey(auth, userId);
     AutoPtr<ProviderClientRecord> pr;
@@ -5491,7 +5491,7 @@ ECode CActivityThread::ReleaseProvider(
 
     IBinder* jBinder = IBinder::Probe(provider);
     {
-        Mutex::Autolock lock(mProviderMapLock);
+        AutoLock lock(mProviderMapLock);
         AutoPtr<ProviderRefCount> prc;
         HashMap< AutoPtr<IBinder>, AutoPtr<ProviderRefCount> >::Iterator it =
                 mProviderRefCountMap.Find(jBinder);
@@ -5612,7 +5612,7 @@ ECode CActivityThread::CompleteRemoveProvider(
     /* [in] */ ProviderRefCount* prc)
 {
     {
-        Mutex::Autolock lock(mProviderMapLock);
+        AutoLock lock(mProviderMapLock);
         if (!prc->mRemovePending) {
             // There was a race!  Some other client managed to acquire
             // the provider before the removal was completed.
@@ -5672,7 +5672,7 @@ ECode CActivityThread::HandleUnstableProviderDied(
     /* [in] */ IBinder* provider,
     /* [in] */ Boolean fromClient)
 {
-    Mutex::Autolock lock(mProviderMapLock);
+    AutoLock lock(mProviderMapLock);
     return HandleUnstableProviderDiedLocked(provider, fromClient);
 }
 
@@ -5926,7 +5926,7 @@ AutoPtr<IContentProviderHolder> CActivityThread::InstallProvider(
     AutoPtr<IContentProviderHolder> retHolder;
 
     {
-        Mutex::Autolock lock(mProviderMapLock);
+        AutoLock lock(mProviderMapLock);
 
         if (DEBUG_PROVIDER) {
             Slogger::V(TAG, "Checking to add %p / %s", provider.Get(), name.string());
@@ -6097,7 +6097,7 @@ ECode CActivityThread::GetIntCoreSetting(
 {
     VALIDATE_NOT_NULL(setting);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     if (mCoreSettings != NULL) {
         mCoreSettings->GetInt32(key, defaultValue, setting);
         return NOERROR;

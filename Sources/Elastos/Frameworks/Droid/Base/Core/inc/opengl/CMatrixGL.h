@@ -225,7 +225,7 @@ private:
 
     typedef ArrayHelper<Float> FloatArrayHelper;
     static AutoPtr<ArrayOf<Float> > sTemp;
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Opengl

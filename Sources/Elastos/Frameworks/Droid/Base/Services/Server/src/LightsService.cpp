@@ -66,7 +66,7 @@ ECode LightsService::Light::SetBrightness(
     /* [in] */ Int32 brightness,
     /* [in] */ Int32 brightnessMode)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     Int32 color = brightness & 0x000000ff;
     color = 0xff000000 | (color << 16) | (color << 8) | color;
     return SetLightLocked(color, _LIGHT_FLASH_NONE, 0, 0, brightnessMode);
@@ -75,7 +75,7 @@ ECode LightsService::Light::SetBrightness(
 ECode LightsService::Light::SetColor(
     /* [in] */ Int32 color)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return SetLightLocked(color, _LIGHT_FLASH_NONE, 0, 0, 0);
 }
 
@@ -85,7 +85,7 @@ ECode LightsService::Light::SetFlashing(
     /* [in] */ Int32 onMS,
     /* [in] */ Int32 offMS)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return SetLightLocked(color, mode, onMS, offMS, _BRIGHTNESS_MODE_USER);
 }
 
@@ -98,7 +98,7 @@ ECode LightsService::Light::Pulse(
     /* [in] */ Int32 color,
     /* [in] */ Int32 onMS)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     if (mColor == 0 && !mFlashing) {
         SetLightLocked(color, _LIGHT_FLASH_HARDWARE, onMS, 1000, _BRIGHTNESS_MODE_USER);
 
@@ -112,13 +112,13 @@ ECode LightsService::Light::Pulse(
 
 ECode LightsService::Light::TurnOff()
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return SetLightLocked(0, _LIGHT_FLASH_NONE, 0, 0, 0);
 }
 
 ECode LightsService::Light::StopFlashing()
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return SetLightLocked(mColor, _LIGHT_FLASH_NONE, 0, 0, _BRIGHTNESS_MODE_USER);
 }
 

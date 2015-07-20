@@ -1353,7 +1353,7 @@ ECode ActivityStack::CompletePauseLocked()
             && mService->mBatteryStatsService->IsOnBattery()) {
         Int64 diff = 0;
         {
-            Mutex::Autolock lock(mService->mProcessStatsThreadLock);
+            AutoLock lock(mService->mProcessStatsThreadLock);
             Int64 pid;
             mService->mProcessStats->GetCpuTimeForPid(prev->mApp->mPid, &pid);
             diff = pid - prev->mCpuTimeAtResume;
@@ -1420,7 +1420,7 @@ ECode ActivityStack::CompleteResumeLocked(
     // TODO: To be more accurate, the mark should be before the onCreate,
     //       not after the onResume. But for subsequent starts, onResume is fine.
     if (next->mApp != NULL) {
-        Mutex::Autolock lock(mService->mProcessStatsThreadLock);
+        AutoLock lock(mService->mProcessStatsThreadLock);
         mService->mProcessStats->GetCpuTimeForPid(next->mApp->mPid, &next->mCpuTimeAtResume);
     }
     else {

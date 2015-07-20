@@ -15,7 +15,7 @@ WebSettings::~WebSettings()
 
 TextSize WebSettings::GetTextSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     TextSize closestSize = -1;
     Int32 smallestDelta = Elastos::Core::Math::INT32_MAX_VALUE;
     Int32 textSize = GetTextZoom();

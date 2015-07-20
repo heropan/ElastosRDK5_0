@@ -543,7 +543,7 @@ ECode CMediaMetadataRetriever::GetEmbeddedPicture(
 
 ECode CMediaMetadataRetriever::ReleaseResources()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     android::MediaMetadataRetriever* retriever = GetRetriever();
     assert(retriever != NULL);
     delete retriever;

@@ -4,7 +4,6 @@
 
 #include "_CLayoutChangesActivity.h"
 #include "app/Activity.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewGroup;

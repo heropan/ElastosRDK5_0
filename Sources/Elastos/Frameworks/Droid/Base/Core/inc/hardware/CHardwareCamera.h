@@ -991,7 +991,7 @@ public:
         android::sp<android::Camera>  mCamera;                // strong reference to native object
         // /*jclass*/AutoPtr<Face>      mFaceClass;  // strong reference to Face class
         // jclass      mRectClass;  // strong reference to Rect class
-        Mutex       mLock;
+        Object       mLock;
 
         /*
          * Global reference application-managed raw image buffer queue.
@@ -1777,7 +1777,7 @@ private:
     Boolean mOneShot;
     Boolean mWithBuffer;
     Boolean mFaceDetectionRunning;
-    Mutex mAutoFocusCallbackLock;
+    Object mAutoFocusCallbackLock;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //BEGIN PRIVACY

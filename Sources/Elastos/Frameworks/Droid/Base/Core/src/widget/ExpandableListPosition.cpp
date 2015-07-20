@@ -82,7 +82,7 @@ AutoPtr<IExpandableListPosition> ExpandableListPosition::GetRecycledOrCreate()
 {
     AutoPtr<IExpandableListPosition> elp;
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (sPool.IsEmpty() == FALSE) {
             elp = sPool.GetFront();
         } else {
@@ -95,7 +95,7 @@ AutoPtr<IExpandableListPosition> ExpandableListPosition::GetRecycledOrCreate()
 
 ECode ExpandableListPosition::Recycle()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
         if (sPool.GetSize() < MAX_POOL_SIZE) {
             AutoPtr<IExpandableListPosition> pm = THIS_PROBE(IExpandableListPosition);//= (IExpandableListPosition*)ExpandableListPosition::Probe(this);
             sPool.PushBack(pm);

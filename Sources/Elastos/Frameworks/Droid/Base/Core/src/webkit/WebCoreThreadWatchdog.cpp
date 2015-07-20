@@ -11,7 +11,6 @@
 #include "R.h"
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::CThread;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::App::CAlertDialogBuilder;
@@ -165,7 +164,7 @@ ECode WebCoreThreadWatchdog::InnerHandler::HandleMessage(
     msg->GetWhat(&what);
     switch (what) {
     case IS_ALIVE: {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
             if (mOwner->mPaused) {
                 return NOERROR;
             }
@@ -189,7 +188,7 @@ ECode WebCoreThreadWatchdog::InnerHandler::HandleMessage(
         Boolean postedDialog = FALSE;
             //synchronized (WebCoreThreadWatchdog.class)
             {
-                Mutex::Autolock lock(sLock);
+                AutoLock lock(sLock);
 
                 HashSet< AutoPtr<CWebViewClassic> >::Iterator iter = mOwner->mWebViews.Begin();
                 // Check each WebView we are aware of and find one that is capable of
@@ -288,7 +287,7 @@ WebCoreThreadWatchdog::WebCoreThreadWatchdog(
 AutoPtr<WebCoreThreadWatchdog> WebCoreThreadWatchdog::Start(
     /* [in] */ IHandler* webCoreThreadHandler)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sInstance == NULL) {
         sInstance = new WebCoreThreadWatchdog(webCoreThreadHandler);
         if (sInstanceThread == NULL) {
@@ -304,7 +303,7 @@ AutoPtr<WebCoreThreadWatchdog> WebCoreThreadWatchdog::Start(
 void WebCoreThreadWatchdog::RegisterWebView(
     /* [in] */ CWebViewClassic* w)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sInstance != NULL) {
         sInstance->AddWebView(w);
     }
@@ -314,7 +313,7 @@ void WebCoreThreadWatchdog::RegisterWebView(
 void WebCoreThreadWatchdog::UnregisterWebView(
     /* [in] */ CWebViewClassic* w)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sInstance != NULL) {
         sInstance->RemoveWebView(w);
     }
@@ -323,7 +322,7 @@ void WebCoreThreadWatchdog::UnregisterWebView(
 //synchronized
 void WebCoreThreadWatchdog::Pause()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sInstance != NULL) {
         sInstance->PauseWatchdog();
     }
@@ -332,7 +331,7 @@ void WebCoreThreadWatchdog::Pause()
 //synchronized
 void WebCoreThreadWatchdog::Resume()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (sInstance != NULL) {
         sInstance->ResumeWatchdog();
     }
@@ -348,7 +347,7 @@ ECode WebCoreThreadWatchdog::Run()
     // paused.
     // synchronized (WebCoreThreadWatchdog.class)
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (!mPaused) {
             AutoPtr<IMessageHelper> msgHelper;
             AutoPtr<IMessage> msg1, msg2, msg3;
@@ -423,7 +422,7 @@ void WebCoreThreadWatchdog::ResumeWatchdog()
 
 void WebCoreThreadWatchdog::CreateHandler()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     mHandler = new InnerHandler(this);
 }
 

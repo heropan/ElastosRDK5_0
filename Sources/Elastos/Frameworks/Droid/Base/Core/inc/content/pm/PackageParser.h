@@ -11,7 +11,6 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::Utility::Jar::IJarFile;
 using Elastos::Utility::Jar::IJarEntry;

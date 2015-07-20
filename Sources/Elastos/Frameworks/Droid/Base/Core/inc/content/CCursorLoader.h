@@ -184,7 +184,7 @@ private:
     String mSortOrder;
     AutoPtr<ICursor> mCursor;
     AutoPtr<ICancellationSignal> mCancellationSignal;
-    Mutex mCCursorLoaderLock;
+    Object mCCursorLoaderLock;
 
 };
 

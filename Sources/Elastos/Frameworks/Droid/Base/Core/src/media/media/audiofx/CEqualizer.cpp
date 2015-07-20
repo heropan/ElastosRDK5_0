@@ -24,7 +24,7 @@ ECode CEqualizer::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IEqualizerOnParameterChangeListener> l;
     {
-        Mutex::Autolock lock(&mHost->mParamListenerLock);
+        AutoLock lock(&mHost->mParamListenerLock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -289,7 +289,7 @@ ECode CEqualizer::GetPresetName(
 ECode CEqualizer::SetParameterListener(
     /* [in] */ IEqualizerOnParameterChangeListener* listener)
 {
-    Mutex::Autolock lock(mParamListenerLock);
+    AutoLock lock(mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);

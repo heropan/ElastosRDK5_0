@@ -37,7 +37,7 @@ CContentService::ObserverNode::ObserverEntry::ObserverEntry(
     /* [in] */ ObserverNode* host,
     /* [in] */ IIContentObserver* observer,
     /* [in] */ Boolean notify,
-    /* [in] */ Mutex* observersLock,
+    /* [in] */ Object* observersLock,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 pid,
     /* [in] */ Int32 userHandle)
@@ -65,7 +65,7 @@ CAR_INTERFACE_IMPL(CContentService::ObserverNode::ObserverEntry, IProxyDeathReci
 
 ECode CContentService::ObserverNode::ObserverEntry::ProxyDied()
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
     Boolean isRemove = mHost->RemoveObserverLocked(mObserver);
     return NOERROR;
 }
@@ -182,7 +182,7 @@ ECode CContentService::ObserverNode::AddObserverLocked(
     /* [in] */ IUri* uri,
     /* [in] */ IIContentObserver* observer,
     /* [in] */ Boolean notifyForDescendants,
-    /* [in] */ Mutex* observersLock,
+    /* [in] */ Object* observersLock,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 pid,
     /* [in] */ Int32 userHandle)
@@ -195,7 +195,7 @@ ECode CContentService::ObserverNode::AddObserverLocked(
     /* [in] */ Int32 index,
     /* [in] */ IIContentObserver* observer,
     /* [in] */ Boolean notifyForDescendants,
-    /* [in] */ Mutex* observersLock,
+    /* [in] */ Object* observersLock,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 pid,
     /* [in] */ Int32 userHandle)
@@ -348,7 +348,7 @@ CContentService::CContentService()
 
 AutoPtr<ISyncManager> CContentService::GetSyncManager()
 {
-    Mutex::Autolock lock(mSyncManagerLock);
+    AutoLock lock(mSyncManagerLock);
     // try {
         // Try to create the SyncManager, return null if it fails (e.g. the disk is full).
     if (mSyncManager == NULL) {
@@ -416,7 +416,7 @@ ECode CContentService::RegisterContentObserver(
         }
     }
 
-    Mutex::Autolock lock(mRootNodeLock);
+    AutoLock lock(mRootNodeLock);
     FAIL_RETURN(mRootNode->AddObserverLocked(uri, observer, notifyForDescendants,
             &mRootNodeLock, Binder::GetCallingUid(), Binder::GetCallingPid(), userHandle));
     return NOERROR;
@@ -445,7 +445,7 @@ ECode CContentService::UnregisterContentObserver(
         Slogger::V(TAG, "Unregistered observer %p : [%s]", observer, info.string());
     }
 
-    Mutex::Autolock lock(mRootNodeLock);
+    AutoLock lock(mRootNodeLock);
     mRootNode->RemoveObserverLocked(observer);
     return NOERROR;
 }
@@ -493,7 +493,7 @@ ECode CContentService::NotifyChange(
     // try {
     List<AutoPtr<ObserverCall> > calls;
     {
-        Mutex::Autolock lock(mRootNodeLock);
+        AutoLock lock(mRootNodeLock);
         mRootNode->CollectObserversLocked(uri, 0, observer, observerWantsSelfNotifications,
                 userHandle, &calls);
     }
@@ -502,7 +502,7 @@ ECode CContentService::NotifyChange(
         AutoPtr<ObserverCall> oc = *it;
         // try {
         if (FAILED(oc->mObserver->OnChange(oc->mSelfChange, uri))) {
-            Mutex::Autolock lock(mRootNodeLock);
+            AutoLock lock(mRootNodeLock);
             Slogger::W(TAG, "Found dead observer, removing");
             List<AutoPtr<ObserverNode::ObserverEntry> >& list = oc->mNode->mObservers;
             List<AutoPtr<ObserverNode::ObserverEntry> >::Iterator it2 = list.Begin();

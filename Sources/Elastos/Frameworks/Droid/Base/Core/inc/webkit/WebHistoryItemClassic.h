@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
 
 #ifdef __cplusplus
@@ -177,7 +176,7 @@ private:
 
 private:// Global identifier count.
     static Int32 sNextId;
-    static Mutex sLock;
+    static Object sLock;
     // Unique identifier.
     Int32 mId;
     // A point to a native WebHistoryItem instance which contains the actual data
@@ -195,7 +194,7 @@ private:// Global identifier count.
     // Custom client data that is not flattened or read by native code.
     AutoPtr<IInterface> mCustomData;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Webkit

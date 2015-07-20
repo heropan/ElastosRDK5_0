@@ -282,7 +282,7 @@ ECode PackageMonitor::Register(
     mRegisteredContext = context;
     if (NULL == thread) {
         {
-            Mutex::Autolock lock(sLock);
+            AutoLock lock(sLock);
             if (NULL == sBackgroundThread) {
 //                FAIL_RETURN(CHandlerThread::New("PackageMonitor", IProcess::THREAD_PRIORITY_BACKGROUND,
 //                        (IHandlerThread**)&sBackgroundThread))
@@ -586,7 +586,7 @@ ECode PackageMonitor::OnReceive(
             FAIL_RETURN(OnPackageAppeared(pkg, mChangeType))
             if (mChangeType == IPackageMonitor::PACKAGE_UPDATING) {
                 {
-                    Mutex::Autolock lock(mUpdatingPackagesLock);
+                    AutoLock lock(mUpdatingPackagesLock);
                     mUpdatingPackages.Erase(pkg);
                 }
             }
@@ -605,7 +605,7 @@ ECode PackageMonitor::OnReceive(
             if (ret) {
                 mChangeType = IPackageMonitor::PACKAGE_UPDATING;
                 {
-                    Mutex::Autolock lock(mUpdatingPackagesLock);
+                    AutoLock lock(mUpdatingPackagesLock);
                     //not used for now
                     //mUpdatingPackages.add(pkg);
                 }
@@ -721,7 +721,7 @@ ECode PackageMonitor::IsPackageUpdating(
 {
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
-    Mutex::Autolock lock(mUpdatingPackagesLock);
+    AutoLock lock(mUpdatingPackagesLock);
     HashSet<String>::Iterator it = mUpdatingPackages.Find(packageName);
     if (it != mUpdatingPackages.End()) {
         *result = TRUE;

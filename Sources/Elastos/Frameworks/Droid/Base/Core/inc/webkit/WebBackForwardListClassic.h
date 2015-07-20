@@ -146,9 +146,9 @@ private:
     // CallbackProxy to issue client callbacks.
     AutoPtr<CallbackProxy> mCallbackProxy;
 
-    Mutex mLock;
+    Object mLock;
 
-    static Mutex sLock;
+    static Object sLock;
     static ElaWebHistoryCallback* sElaWebHistoryCallback;
 };
 

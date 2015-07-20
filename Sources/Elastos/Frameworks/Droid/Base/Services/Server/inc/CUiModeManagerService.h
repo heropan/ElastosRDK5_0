@@ -7,7 +7,6 @@
 #include "content/BroadcastReceiver.h"
 #include "TwilightService.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -213,7 +212,7 @@ private:
     AutoPtr<TwilightService> mTwilightService;
     AutoPtr<IHandler> mHandler;
 
-    Mutex mLock;
+    Object mLock;
 
     Int32 mDockState;
     Int32 mLastBroadcastState;

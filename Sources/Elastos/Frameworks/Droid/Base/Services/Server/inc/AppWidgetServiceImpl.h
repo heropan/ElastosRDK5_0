@@ -14,7 +14,6 @@ using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::Pair;
 using Elastos::IO::IPrintWriter;
@@ -556,7 +555,7 @@ public:
     List<AutoPtr<Provider> > mInstalledProviders;
     Int32 mNextAppWidgetId;
     List<AutoPtr<AppWidgetId> > mAppWidgetIds;
-    Mutex mAppWidgetIdsLock;
+    Object mAppWidgetIdsLock;
     List<AutoPtr<Host> > mHosts;
     // set of package names
     HashSet<String> mPackagesWithBindWidgetPermission;

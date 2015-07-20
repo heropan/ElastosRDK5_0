@@ -8,7 +8,6 @@
 #include "os/Runnable.h"
 
 using Elastos::Droid::R;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Utility::IPool;
 using Elastos::Droid::Utility::Pools;
@@ -433,7 +432,7 @@ protected:
     //@Override
     virtual CARAPI OnDetachedFromWindow();
 
-    virtual CARAPI_(Mutex*) GetSelfLock() = 0;
+    virtual CARAPI_(Object*) GetSelfLock() = 0;
 
 
 private:
@@ -536,7 +535,7 @@ private:
 
     AutoPtr<AccessibilityEventSender> mAccessibilityEventSender;
 protected:
-    Mutex mLock;
+    Object mLock;
 };
 
 }// namespace Widget

@@ -138,7 +138,7 @@ ECode ListActivity::OnContentChanged()
 ECode ListActivity::SetListAdapter(
     /* [in] */ IListAdapter* adapter)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     EnsureList();
     mAdapter = adapter;
     return mList->SetAdapter(adapter);

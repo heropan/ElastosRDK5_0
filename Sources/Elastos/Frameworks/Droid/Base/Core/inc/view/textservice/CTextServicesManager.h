@@ -125,7 +125,7 @@ private:
     static AutoPtr<ITextServicesManager> sInstance;
     static AutoPtr<IITextServicesManager> sService;
 
-    static Mutex sLock;
+    static Object sLock;
 };
 
 }   //namespace Textservice

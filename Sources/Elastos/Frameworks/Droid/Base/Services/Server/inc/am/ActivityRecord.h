@@ -21,7 +21,6 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::IBinder;

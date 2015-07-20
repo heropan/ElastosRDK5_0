@@ -428,7 +428,7 @@ ECode CMediaRouter::constructor(
     /* [in] */ IContext* context)
 {
     {
-        Mutex::Autolock lock(mStaticClass);
+        AutoLock lock(mStaticClass);
         if (sStatic == NULL) {
             AutoPtr<IContext> appContext;
             context->GetApplicationContext((IContext**)&appContext);

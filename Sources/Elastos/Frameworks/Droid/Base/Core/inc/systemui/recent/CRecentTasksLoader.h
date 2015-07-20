@@ -8,7 +8,6 @@
 
 using Elastos::Utility::Concurrent::IBlockingQueue;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::AsyncTask;
@@ -207,7 +206,7 @@ private:
     // RecentsPanelView has it's reference
     AutoPtr<IWeakReference> mRecentsPanel; //IRecentsPanelView*
 
-    Mutex mFirstTaskLock;
+    Object mFirstTaskLock;
     AutoPtr<ITaskDescription> mFirstTask;
     Boolean mFirstTaskLoaded;
 

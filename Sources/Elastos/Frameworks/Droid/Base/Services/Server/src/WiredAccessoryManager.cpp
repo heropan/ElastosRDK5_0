@@ -144,7 +144,7 @@ WiredAccessoryManager::WiredAccessoryObserver::~WiredAccessoryObserver()
 void WiredAccessoryManager::WiredAccessoryObserver::Init()
 {
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         if (mHost->LOG) Slogger::V(mHost->TAG, "init()");
         AutoPtr<ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc(1024);
 
@@ -252,7 +252,7 @@ void WiredAccessoryManager::WiredAccessoryObserver::OnUEvent(
         String name = event->Get(String("SWITCH_NAME"));
         Int32 state = StringUtils::ParseInt32(name);//Integer.parseInt(event.get("SWITCH_STATE"));
         {
-            Mutex::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
             UpdateStateLocked(devPath, name, state);
         }
 //     } catch (NumberFormatException e) {
@@ -335,7 +335,7 @@ void WiredAccessoryManager::NotifyWiredAccessoryChanged(
             , switchMask);
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 headset;
         mSwitchValues = (mSwitchValues & ~switchMask) | switchValues;
         switch (mSwitchValues & (CInputManagerService::SW_HEADPHONE_INSERT_BIT | CInputManagerService::SW_MICROPHONE_INSERT_BIT)) {
@@ -433,7 +433,7 @@ void WiredAccessoryManager::SetDevicesState(
     /* [in] */ Int32 prevHeadsetState,
     /* [in] */ const String& headsetName)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 allHeadsets = SUPPORTED_HEADSETS;
     for (Int32 curHeadset = 1; allHeadsets != 0; curHeadset <<= 1) {
         if ((curHeadset & allHeadsets) != 0) {

@@ -40,7 +40,7 @@ PInterface CGetAccountsByTypeAndFeatureSession::Probe(
 ECode CGetAccountsByTypeAndFeatureSession::Run()
 {
     {
-        Mutex::Autolock lock(mAccounts->mCacheLock);
+        AutoLock lock(mAccounts->mCacheLock);
         mAccountsOfType = mHost->GetAccountsFromCacheLocked(mAccounts, mAccountType);
     }
     // check whether each account matches the requested features

@@ -102,7 +102,7 @@ ECode CClipboardManager::HasPrimaryClip(
 ECode CClipboardManager::AddPrimaryClipChangedListener(
     /* [in] */ IClipboardManagerOnPrimaryClipChangedListener* what)
 {
-    Mutex::Autolock lock(mPrimaryClipChangedListenersLock);
+    AutoLock lock(mPrimaryClipChangedListenersLock);
     if (mPrimaryClipChangedListeners.IsEmpty()) {
         AutoPtr<IClipboard> clipboard;
         FAIL_RETURN(GetService((IClipboard**)&clipboard));
@@ -115,7 +115,7 @@ ECode CClipboardManager::AddPrimaryClipChangedListener(
 ECode CClipboardManager::RemovePrimaryClipChangedListener(
     /* [in] */ IClipboardManagerOnPrimaryClipChangedListener* what)
 {
-    Mutex::Autolock lock(mPrimaryClipChangedListenersLock);
+    AutoLock lock(mPrimaryClipChangedListenersLock);
     mPrimaryClipChangedListeners.Remove(what);
     if (mPrimaryClipChangedListeners.IsEmpty()) {
         AutoPtr<IClipboard> clipboard;
@@ -176,7 +176,7 @@ ECode CClipboardManager::GetService(
     /* [out] */ IClipboard** clipboard)
 {
     VALIDATE_NOT_NULL(clipboard)
-    Mutex::Autolock lock(sStaticLock);
+    AutoLock lock(sStaticLock);
     if (NULL == sService) {
         sService = IClipboard::Probe(ServiceManager::GetService(String("clipboard")));
     }
@@ -188,7 +188,7 @@ ECode CClipboardManager::GetService(
 ECode CClipboardManager::ReportPrimaryClipChanged()
 {
     AutoPtr<ArrayOf<IInterface*> > listeners;
-    Mutex::Autolock lock(mPrimaryClipChangedListenersLock);
+    AutoLock lock(mPrimaryClipChangedListenersLock);
     const Int32 N = mPrimaryClipChangedListeners.GetSize();
 
     if (N <= 0) {

@@ -56,7 +56,7 @@ ECode CAsyncPlayer::MyThread::Run()
         AutoPtr<Command> cmd;
 
         {
-            Mutex::Autolock lock(mOwner->mCmdQueueLock);
+            AutoLock lock(mOwner->mCmdQueueLock);
 
             if (mOwner->mDebug) Logger::D(mOwner->mTag, "RemoveFirst");
 
@@ -91,7 +91,7 @@ ECode CAsyncPlayer::MyThread::Run()
         }
 
         {
-            Mutex::Autolock lock(mOwner->mCmdQueueLock);
+            AutoLock lock(mOwner->mCmdQueueLock);
 
             if (mOwner->mCmdQueue.IsEmpty()) {
                 // nothing left to do, quit
@@ -189,7 +189,7 @@ ECode CAsyncPlayer::Play(
     cmd->stream = stream;
 
     {
-        Mutex::Autolock lock(mCmdQueueLock);
+        AutoLock lock(mCmdQueueLock);
 
         EnqueueLocked(cmd);
         mState = PLAY;
@@ -199,7 +199,7 @@ ECode CAsyncPlayer::Play(
 
 ECode CAsyncPlayer::Stop()
 {
-    Mutex::Autolock lock(mCmdQueueLock);
+    AutoLock lock(mCmdQueueLock);
 
     // This check allows stop to be called multiple times without starting
     // a thread that ends up doing nothing.

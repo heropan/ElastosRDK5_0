@@ -18,8 +18,12 @@ ECode CDefaultSocketFactory::CreateSocket(
     /* [out] */ ISocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CSocket::New(sock);
+    *sock = NULL;
+    AutoPtr<CSocket> ss;
+    FAIL_RETURN(CSocket::NewByFriend((CSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultSocketFactory::CreateSocket(
@@ -28,8 +32,12 @@ ECode CDefaultSocketFactory::CreateSocket(
     /* [out] */ ISocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CSocket::New(host, port, sock);
+    *sock = NULL;
+    AutoPtr<CSocket> ss;
+    FAIL_RETURN(CSocket::NewByFriend(host, port, (CSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultSocketFactory::CreateSocket(
@@ -40,8 +48,12 @@ ECode CDefaultSocketFactory::CreateSocket(
     /* [out] */ ISocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CSocket::New(host, port, localHost, localPort, sock);
+    *sock = NULL;
+    AutoPtr<CSocket> ss;
+    FAIL_RETURN(CSocket::NewByFriend(host, port, localHost, localPort, (CSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultSocketFactory::CreateSocket(
@@ -50,8 +62,12 @@ ECode CDefaultSocketFactory::CreateSocket(
     /* [out] */ ISocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CSocket::New(host, port, sock);
+    *sock = NULL;
+    AutoPtr<CSocket> ss;
+    FAIL_RETURN(CSocket::NewByFriend(host, port, (CSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultSocketFactory::CreateSocket(
@@ -62,8 +78,12 @@ ECode CDefaultSocketFactory::CreateSocket(
     /* [out] */ ISocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CSocket::New(address, port, localAddress, localPort, sock);
+    *sock = NULL;
+    AutoPtr<CSocket> ss;
+    FAIL_RETURN(CSocket::NewByFriend(address, port, localAddress, localPort, (CSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 } // namespace Net

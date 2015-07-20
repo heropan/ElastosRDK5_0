@@ -66,7 +66,7 @@ ECode CAudioTrack::EventHandler::HandleMessage(
     AutoPtr<IOnPlaybackPositionUpdateListener> listener;
 
     {
-        Mutex::Autolock lock(mAudioTrack->mPositionListenerLock);
+        AutoLock lock(mAudioTrack->mPositionListenerLock);
         listener = mAudioTrack->mPositionListener;
     }
 
@@ -457,7 +457,7 @@ ECode CAudioTrack::GetPlayState(
 {
     VALIDATE_NOT_NULL(state);
     {
-        Mutex::Autolock lock(&mPlayStateLock);
+        AutoLock lock(&mPlayStateLock);
         *state = mPlayState;
     }
     return NOERROR;
@@ -582,7 +582,7 @@ ECode CAudioTrack::SetPlaybackPositionUpdateListener(
     /* [in] */ IHandler *handler)
 {
     {
-        Mutex::Autolock lock(&mPositionListenerLock);
+        AutoLock lock(&mPositionListenerLock);
 
         mPositionListener = listener;
     }
@@ -675,7 +675,7 @@ ECode CAudioTrack::SetPlaybackHeadPosition(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(&mPositionListenerLock);
+    AutoLock lock(&mPositionListenerLock);
 
     if ((mPlayState == PLAYSTATE_STOPPED) || (mPlayState == PLAYSTATE_PAUSED)) {
         *result = NativeSetPosition(positionInFrames);
@@ -722,7 +722,7 @@ ECode CAudioTrack::Play()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mPlayStateLock);
+    AutoLock lock(&mPlayStateLock);
 
     NativeStart();
     mPlayState = PLAYSTATE_PLAYING;
@@ -737,7 +737,7 @@ ECode CAudioTrack::Stop()
     }
 
     // stop playing
-    Mutex::Autolock lock(&mPlayStateLock);
+    AutoLock lock(&mPlayStateLock);
 
     NativeStop();
     mPlayState = PLAYSTATE_STOPPED;
@@ -753,7 +753,7 @@ ECode CAudioTrack::Pause()
     //logd("pause()");
 
     // pause playback
-    Mutex::Autolock lock(&mPlayStateLock);
+    AutoLock lock(&mPlayStateLock);
 
     NativePause();
     mPlayState = PLAYSTATE_PAUSED;

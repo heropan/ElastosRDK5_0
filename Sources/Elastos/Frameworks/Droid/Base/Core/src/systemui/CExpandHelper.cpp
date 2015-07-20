@@ -713,7 +713,7 @@ ECode CExpandHelper::Cancel()
 void CExpandHelper::Vibrate(
     /* [in] */ Int64 duration)
 {
-    Mutex::Autolock lock(mVibrateLock);
+    AutoLock lock(mVibrateLock);
     if (mVibrator == NULL) {
         AutoPtr<IInterface> tmpObj;
         mContext->GetSystemService(IContext::VIBRATOR_SERVICE, (IInterface**)&tmpObj);

@@ -12,7 +12,6 @@
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IFileOutputStream;
@@ -695,7 +694,7 @@ private:
     const static Boolean DEBUG;
 
     static HashMap<String, AutoPtr<SharedPreferencesImpl> > sSharedPrefs;
-    static Mutex sSharedPrefsLock;
+    static Object sSharedPrefsLock;
 
     String mBasePackageName;
     AutoPtr<IResources> mResources;
@@ -727,9 +726,9 @@ private:
     static AutoPtr< ArrayOf<String> > EMPTY_FILE_LIST;
 
     HashMap< String, AutoPtr<IInterface> > mServiceCache;
-    Mutex mCacheLock;
+    Object mCacheLock;
 
-    Mutex mSyncLock;
+    Object mSyncLock;
 
     static AutoPtr<IWallpaperManager> sWallpaperManager;
 };

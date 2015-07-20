@@ -165,7 +165,7 @@ private:
     /**
      * Object to wait on when suspending the SSL connection
      */
-    Mutex mSuspendLock;
+    Object mSuspendLock;
 
     /**
      * True if the connection is suspended pending the result of asking the

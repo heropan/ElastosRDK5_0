@@ -532,7 +532,7 @@ ECode AccessibilityRecord::Recycle()
         // throw new IllegalStateException("Record already recycled!");
     }
     Clear();
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPoolSize <= MAX_POOL_SIZE) {
         mNext = sPool;
         sPool = this;

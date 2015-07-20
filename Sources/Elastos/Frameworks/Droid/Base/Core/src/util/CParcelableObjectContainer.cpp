@@ -13,7 +13,7 @@ class ObjectEnumerator
 public:
     ObjectEnumerator(
         /* [in] */ ObjectNode* header,
-        /* [in] */ Mutex* lock,
+        /* [in] */ Object* lock,
         /* [in] */ Int32* state)
         : mHeader(header)
         , mCurrent(header)
@@ -78,7 +78,7 @@ public:
             return E_UNSUPPORTED_OPERATION_EXCEPTION;
         }
 
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mOrgState != *mState) {
             mCurrent = NULL;
@@ -100,7 +100,7 @@ public:
             return E_UNSUPPORTED_OPERATION_EXCEPTION;
         }
 
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mOrgState != *mState) {
             mCurrent = NULL;
@@ -129,7 +129,7 @@ public:
 private:
     ObjectNode* mHeader;
     ObjectNode* mCurrent;
-    Mutex* mLock;
+    Object* mLock;
     Int32* mState;
     Int32  mOrgState;
 };
@@ -154,7 +154,7 @@ ECode CParcelableObjectContainer::Add(
 {
     VALIDATE_NOT_NULL(object);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     ObjectNode* node = new ObjectNode(object);
     if (NULL == node) {
@@ -173,7 +173,7 @@ ECode CParcelableObjectContainer::Remove(
 {
     VALIDATE_NOT_NULL(object);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     ObjectNode* node;
     ForEachDLinkNode(ObjectNode*, node, &mHead) {
@@ -219,7 +219,7 @@ ECode CParcelableObjectContainer::Contains(
     *contains = FALSE;
     VALIDATE_NOT_NULL(object);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<IObjectEnumerator> pEnumerator;
     ECode ec = GetObjectEnumerator((IObjectEnumerator**)&pEnumerator);
@@ -244,7 +244,7 @@ ECode CParcelableObjectContainer::ContainsAll(
 {
     VALIDATE_NOT_NULL(contains);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<IObjectEnumerator> emu;
     objectContainer->GetObjectEnumerator((IObjectEnumerator**)&emu);
@@ -266,7 +266,7 @@ ECode CParcelableObjectContainer::ContainsAll(
 
 ECode CParcelableObjectContainer::Dispose()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     mCount = 0;
     mState++;
@@ -283,7 +283,7 @@ ECode CParcelableObjectContainer::Dispose()
 ECode CParcelableObjectContainer::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     source->ReadInt32(&mCount);
     for (Int32 i = 0; i < mCount; ++i) {
@@ -300,7 +300,7 @@ ECode CParcelableObjectContainer::ReadFromParcel(
 ECode CParcelableObjectContainer::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     dest->WriteInt32(mCount);
     ObjectNode* node;

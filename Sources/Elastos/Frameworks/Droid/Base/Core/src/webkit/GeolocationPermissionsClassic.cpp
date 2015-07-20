@@ -217,7 +217,7 @@ void GeolocationPermissionsClassic::CreateUIHandler()
 //synchronized
 void GeolocationPermissionsClassic::CreateHandler()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mHandler == NULL) {
         mHandler = new InnerHandler(this);
@@ -356,7 +356,7 @@ ECode GeolocationPermissionsClassic::ClearAll()
 void GeolocationPermissionsClassic::PostMessage(
     /* [in] */ IMessage* msg)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mHandler == NULL) {
         mQueuedMessages.PushBack(msg);

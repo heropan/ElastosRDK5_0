@@ -1849,7 +1849,7 @@ ECode ContentResolver::MaybeLogQueryToEventLog(
     Int32 samplePercent = SamplePercentForDuration(durationMillis);
     if (samplePercent < 100) {
         {
-            Mutex::Autolock lock(mRandomLock);
+            AutoLock lock(mRandomLock);
 
             Int32 rando;
             mRandom->NextInt32(100, &rando);
@@ -1898,7 +1898,7 @@ ECode ContentResolver::MaybeLogUpdateToEventLog(
     Int32 samplePercent = SamplePercentForDuration(durationMillis);
     if (samplePercent < 100) {
         {
-            Mutex::Autolock lock(mRandomLock);
+            AutoLock lock(mRandomLock);
 
             Int32 rando;
             mRandom->NextInt32(100, &rando);

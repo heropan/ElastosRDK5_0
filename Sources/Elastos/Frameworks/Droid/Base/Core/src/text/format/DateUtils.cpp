@@ -409,7 +409,7 @@ Int64 DateUtils::GetNumberOfDaysPassed(
     /* [in] */ Int64 date1,
     /* [in] */ Int64 date2)
 {
-    Mutex::Autolock lock(sLockDateUtilsClass);
+    AutoLock lock(sLockDateUtilsClass);
     if (sThenTime == NULL) {
         CTime::New((ITime**)&sThenTime);
     }
@@ -553,7 +553,7 @@ String DateUtils::GetRelativeDayString(
 
 ECode DateUtils::InitFormatStrings()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     InitFormatStringsLocked();
     return NOERROR;
 }
@@ -582,7 +582,7 @@ ECode DateUtils::InitFormatStringsLocked()
 AutoPtr<ICharSequence> DateUtils::TimeString(
     /* [in] */ Int64 millis)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     InitFormatStringsLocked();
     String ret;
 //    sStatusTimeFormat->Format(millis, &ret);
@@ -1487,7 +1487,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     system->GetCurrentTimeMillis(&now);
     Int64 span = Elastos::Core::Math::Abs(now - millis);
     {
-        Mutex::Autolock lock(sLockDateUtilsClass);
+        AutoLock lock(sLockDateUtilsClass);
         if (sNowTime == NULL) {
             CTime::New( (ITime**)&sNowTime );
         }

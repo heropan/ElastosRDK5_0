@@ -71,7 +71,7 @@ ECode ImageCacheService::GetImageData(
     /* [out] */ IBitmap** bitmap)
 {
     VALIDATE_NOT_NULL(bitmap);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String keyStr = StringUtils::Int32ToString(key);
     keyStr += "_";
     keyStr += StringUtils::Int64ToString(len);
@@ -122,7 +122,7 @@ ECode ImageCacheService::PutImageData(
     /* [in] */ Int64 modify,
     /* [in] */ IBitmap* bitmap)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String imgStr = StringUtils::Int32ToString(key);
     imgStr += "_";
     imgStr += StringUtils::Int64ToString(len);

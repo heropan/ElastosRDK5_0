@@ -63,7 +63,7 @@ private:
     private:
         // Private result object
         AutoPtr<IInterface> mResult;
-        Mutex mLock;
+        Object mLock;
     };
 
     class JsResultReceiver

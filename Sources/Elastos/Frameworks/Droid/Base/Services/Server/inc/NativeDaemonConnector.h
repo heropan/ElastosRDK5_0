@@ -17,7 +17,6 @@ using Elastos::Utility::BlockingQueue; // TODO delete
 using Elastos::Utility::Concurrent::IBlockingQueue;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IOutputStream;
@@ -73,7 +72,7 @@ private:
             // public BlockingQueue<NativeDaemonEvent> responses = new ArrayBlockingQueue<NativeDaemonEvent>(10);
             //AutoPtr<IBlockingQueue> mResponses;
             Queue< AutoPtr<NativeDaemonEvent> > mResponses; // TODO delete
-            Mutex mResponsesLock;
+            Object mResponsesLock;
 
             String mRequest;
             // The availableResponseCount member is used to track when we can remove this
@@ -114,7 +113,7 @@ private:
 
     private:
         List< AutoPtr<PendingCmd> > mPendingCmds;
-        Mutex mPendingCmdsLock;
+        Object mPendingCmdsLock;
         Int32 mMaxCount;
     };
 
@@ -231,7 +230,7 @@ private:
     AutoPtr<IAtomicInteger32> mSequenceNumber;
 
     /** Lock held whenever communicating with native daemon. */
-    Mutex mDaemonLock;
+    Object mDaemonLock;
 };
 
 } // namespace Server

@@ -112,7 +112,7 @@ private:
 
     private:
         static const Int32 MAX_RECYCLED;
-        static Mutex sRecycleLock;
+        static Object sRecycleLock;
         static AutoPtr<TouchTarget> sRecycleBin;
         static Int32 sRecycledCount;
     };
@@ -138,7 +138,7 @@ private:
 
     private:
         static const Int32 MAX_RECYCLED;
-        static Mutex sRecycleLock;
+        static Object sRecycleLock;
         static AutoPtr<HoverTarget> sRecycleBin;
         static Int32 sRecycledCount;
     };
@@ -186,7 +186,7 @@ private:
 
     private:
         static const Int32 MAX_POOL_SIZE;
-        static Mutex sPoolLock;
+        static Object sPoolLock;
         static AutoPtr<ChildListForAccessibility> sPool;
         static Int32 sPoolSize;
 
@@ -232,7 +232,7 @@ private:
 
     private:
         static const Int32 MAX_POOL_SIZE;
-        static Mutex sPoolLock;
+        static Object sPoolLock;
         static AutoPtr<ViewLocationHolder> sPool;
         static Int32 sPoolSize;
 

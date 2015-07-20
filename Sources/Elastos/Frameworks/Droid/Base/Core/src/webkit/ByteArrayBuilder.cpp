@@ -100,7 +100,7 @@ void ByteArrayBuilder::Append(
     /* [in] */ Int32 offset,
     /* [in] */ Int32 length)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     while (length > 0) {
         AutoPtr<Chunk> c;
@@ -138,7 +138,7 @@ void ByteArrayBuilder::Append(
 //synchronized
 AutoPtr<ByteArrayBuilder::Chunk> ByteArrayBuilder::GetFirstChunk()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean bFlag = FALSE;
     mChunks->IsEmpty(&bFlag);
@@ -151,7 +151,7 @@ AutoPtr<ByteArrayBuilder::Chunk> ByteArrayBuilder::GetFirstChunk()
 //synchronized
 Boolean ByteArrayBuilder::IsEmpty()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean bFlag = FALSE;
     mChunks->IsEmpty(&bFlag);
@@ -161,7 +161,7 @@ Boolean ByteArrayBuilder::IsEmpty()
 //synchronized
 Int32 ByteArrayBuilder::GetByteSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 total = 0;
     AutoPtr<IListIterator> it;
@@ -180,7 +180,7 @@ Int32 ByteArrayBuilder::GetByteSize()
 //synchronized
 void ByteArrayBuilder::Clear()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<Chunk> c = GetFirstChunk();
     while (c != NULL) {

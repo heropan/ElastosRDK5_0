@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::View::IIWindowManager;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::IRotationWatcher;
@@ -115,7 +114,7 @@ private:
     // List of legacy listeners.  Guarded by mLegacyListenersMap.
     HashMap<AutoPtr<ISensorListener>, AutoPtr<LegacyListener> > mLegacyListenersMap/* =
             new HashMap<SensorListener, LegacyListener>()*/;
-    Mutex mLegacyListenersMapLock;
+    Object mLegacyListenersMapLock;
 };
 
 class LegacyListener

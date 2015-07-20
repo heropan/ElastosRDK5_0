@@ -6,7 +6,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteCustomFunction.h"
 #include <elastos/utility/etl/List.h>
-#include <elrefbase.h>
 
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Etl::List;

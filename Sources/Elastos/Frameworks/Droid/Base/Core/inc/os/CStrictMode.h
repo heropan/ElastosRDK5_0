@@ -11,7 +11,6 @@
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICloseGuardReporter;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IStrictModeSpan;
 using Elastos::Droid::Os::IStrictModeThreadPolicy;
 using Elastos::Droid::Os::IStrictModeVmPolicy;
@@ -279,7 +278,7 @@ private:
 
         ClassID* mKlass;
 
-        static Mutex sInstanceCountsLock;
+        static Object sInstanceCountsLock;
     };
 
     class MyThread : public ThreadBase
@@ -543,9 +542,9 @@ private:
 
     static AutoPtr<IIWindowManager> sWindowManager;
 
-    Mutex classLock;
-    Mutex stateLock;
-    Mutex sLastVmViolationTimeLock;
+    Object classLock;
+    Object stateLock;
+    Object sLastVmViolationTimeLock;
 };
 
 } // namespace Os

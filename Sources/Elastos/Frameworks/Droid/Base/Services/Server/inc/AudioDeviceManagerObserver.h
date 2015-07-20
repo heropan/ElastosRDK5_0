@@ -164,10 +164,10 @@ private:
     /* use id,devName,androidName to identify a audio dev, the id is the key(one id to one dev)*/
     /*a device = {id,devNameForIn,devNameForOut,androidName}*/
     String mAudioNameMap[9][4];
-    Mutex mLock;
+    Object mLock;
 
     static AutoPtr<AudioDeviceManagerObserver> mAudioObserver;
-    static Mutex mAudioObserverLock;
+    static Object mAudioObserverLock;
 };
 
 } // namespace Server

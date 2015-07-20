@@ -944,7 +944,7 @@ Int64 Layout::GetLineRangeForDraw(
     Int32 dtop, dbottom;
 
     {
-        Mutex::Autolock lock(sTempRectLock);
+        AutoLock lock(sTempRectLock);
         Boolean flag = FALSE;
         canvas->GetClipBounds(sTempRect, &flag);
         if (!flag) {

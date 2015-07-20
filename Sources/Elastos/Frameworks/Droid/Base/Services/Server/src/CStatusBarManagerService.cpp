@@ -304,7 +304,7 @@ ECode CStatusBarManagerService::DisableInternal(
 {
     FAIL_RETURN(EnforceStatusBar());
     {
-        Mutex::Autolock Lock(_m_syncLock);
+        AutoLock Lock(_m_syncLock);
         DisableLocked(userId, what, token, pkg);
     }
     return NOERROR;
@@ -346,7 +346,7 @@ ECode CStatusBarManagerService::SetIcon(
 {
     FAIL_RETURN(EnforceStatusBar());
     {
-        Mutex::Autolock Lock(mIconsLock);
+        AutoLock Lock(mIconsLock);
         Int32 index = 0;
         mIcons->GetSlotIndex(slot, &index);
         if (index < 0) {
@@ -378,7 +378,7 @@ ECode CStatusBarManagerService::SetIconVisibility(
 {
     FAIL_RETURN(EnforceStatusBar());
     {
-        Mutex::Autolock Lock(mIconsLock);
+        AutoLock Lock(mIconsLock);
         Int32 index = 0;
         assert(mIcons != NULL);
         mIcons->GetSlotIndex(slot, &index);
@@ -411,7 +411,7 @@ ECode CStatusBarManagerService::RemoveIcon(
 {
     FAIL_RETURN(EnforceStatusBar());
     {
-        Mutex::Autolock Lock(mIconsLock);
+        AutoLock Lock(mIconsLock);
         Int32 index = 0;
         mIcons->GetSlotIndex(slot, &index);
         if (index < 0) {
@@ -436,7 +436,7 @@ ECode CStatusBarManagerService::TopAppWindowChanged(
     if (SPEW)
         Slogger::D(TAG, (mMenuVisible?"showing":"hiding"), " MENU key");
     {
-        Mutex::Autolock Lock(_m_syncLock);
+        AutoLock Lock(_m_syncLock);
         mMenuVisible = menuVisible;
 
         Boolean result;
@@ -456,7 +456,7 @@ ECode CStatusBarManagerService::SetImeWindowStatus(
         Slogger::D(TAG, "swetImeWindowStatus vis=%d backDisposition=%d", vis, backDisposition);
     }
     {
-        Mutex::Autolock Lock(_m_syncLock);
+        AutoLock Lock(_m_syncLock);
         // In case of IME change, we need to call up setImeWindowStatus() regardless of
         // mImeWindowVis because mImeWindowVis may not have been set to false when the
         // previous IME was destroyed.
@@ -480,7 +480,7 @@ ECode CStatusBarManagerService::SetSystemUiVisibility(
     if (SPEW)
         Slogger::D(TAG, "setSystemUiVisibility(0x%s)", StringUtils::Int32ToString(vis).string());
     {
-        Mutex::Autolock Lock(_m_syncLock);
+        AutoLock Lock(_m_syncLock);
         UpdateUiVisibilityLocked(vis, mask);
 
         DisableLocked(
@@ -601,12 +601,12 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     mBar = bar;
 
     do {
-        Mutex::Autolock Lock(mIconsLock);
+        AutoLock Lock(mIconsLock);
         (*iconList)->CopyFrom(mIcons);
     } while (FALSE);
 
     do {
-        Mutex::Autolock Lock(mNotificationsLock);
+        AutoLock Lock(mNotificationsLock);
         HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> >::Iterator iter = mNotifications.Begin();
         for(; iter != mNotifications.End(); ++iter) {
             (*notificationKeys)->Add(iter->mFirst);
@@ -615,7 +615,7 @@ ECode CStatusBarManagerService::RegisterStatusBar(
     } while (FALSE);
 
     do {
-        Mutex::Autolock Lock(_m_syncLock);
+        AutoLock Lock(_m_syncLock);
         GatherDisableActionsLocked(mCurrentUserId, &((**switches)[0]));
         (**switches)[1] = mSystemUiVisibility;
         (**switches)[2] = mMenuVisible ? 1 : 0;
@@ -699,7 +699,7 @@ ECode CStatusBarManagerService::AddNotification(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder);
-    Mutex::Autolock Lock(mNotificationsLock);
+    AutoLock Lock(mNotificationsLock);
     AutoPtr<IBinder> key;
     CBinder::New((IBinder**)&key);
     mNotifications[key] = notification;
@@ -715,7 +715,7 @@ ECode CStatusBarManagerService::UpdateNotification(
     /* [in] */ IBinder* key,
     /* [in] */ IStatusBarNotification* notification)
 {
-    Mutex::Autolock Lock(mNotificationsLock);
+    AutoLock Lock(mNotificationsLock);
     HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> >::Iterator iter = mNotifications.Find(key);
     if (iter == mNotifications.End()) {
         Slogger::E(TAG, "updateNotification key not found: %p", key);
@@ -731,7 +731,7 @@ ECode CStatusBarManagerService::UpdateNotification(
 ECode CStatusBarManagerService::RemoveNotification(
     /* [in] */ IBinder* key)
 {
-    Mutex::Autolock Lock(mNotificationsLock);
+    AutoLock Lock(mNotificationsLock);
     AutoPtr<IStatusBarNotification> n = mNotifications[key];
     mNotifications.Erase(key);
     if (n == NULL) {

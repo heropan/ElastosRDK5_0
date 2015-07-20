@@ -386,7 +386,7 @@ private:
     AutoPtr< SpanSet<IReplacementSpan> > mReplacementSpanSpanSet;
 
     static AutoPtr< ArrayOf<TextLine*> > sCached;
-    static Mutex sCachedLock;
+    static Object sCachedLock;
 
     static const Int32 TAB_INCREMENT = 20;
 };

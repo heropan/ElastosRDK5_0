@@ -92,7 +92,7 @@ private:
     AutoPtr<IGpsStatusListener> mListener;
     AutoPtr<IGpsStatusNmeaListener> mNmeaListener;
     List< AutoPtr<Nmea> > mNmeaBuffer;
-    Mutex mNmeaBufferLock;
+    Object mNmeaBufferLock;
     AutoPtr<IHandler> mGpsHandler;
 };
 

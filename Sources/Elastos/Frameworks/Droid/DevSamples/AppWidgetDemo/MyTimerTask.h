@@ -4,11 +4,9 @@
 
 #include <Elastos.CoreLibrary.h>
 #include <Elastos.CoreLibrary.h>
-#include <elrefbase.h>
 #include <elastos/TimerTask.h>
 #include "CTimeService.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::ITimer;
 using Elastos::Utility::ITimerTask;
 
@@ -77,11 +75,11 @@ public:
             /* [in] */ Int64 time);
 
 private:
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 
 private:
     static Int32 sCount;
-    Mutex mLock;
+    Object mLock;
     CTimeService* mService;
 };
 

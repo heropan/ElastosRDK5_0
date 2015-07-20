@@ -9,7 +9,6 @@
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::IO::IFileInputStream;
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
@@ -2093,7 +2092,7 @@ private:
     AutoPtr<INetworkStats> mNetworkSummaryCache;
     AutoPtr<INetworkStats> mNetworkDetailCache;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Os

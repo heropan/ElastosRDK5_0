@@ -168,7 +168,7 @@ void CActivityOne::PopulateUI()
     Boolean addTomato = FALSE;
 
     {
-        Mutex::Autolock lock(sDatalock);
+        AutoLock lock(sDatalock);
         Boolean exists = FALSE;
         mDataFile->Exists(&exists);
         CRandomAccessFile::New(mDataFile, String("rw"), (IRandomAccessFile**)&file);
@@ -227,7 +227,7 @@ void CActivityOne::RecordNewUIState()
 
     Int32 whichFilling; mFillingGroup->GetCheckedRadioButtonId(&whichFilling);
     {
-        Mutex::Autolock lock(sDatalock);
+        AutoLock lock(sDatalock);
         AutoPtr<IRandomAccessFile> file;
         CRandomAccessFile::New(mDataFile, String("rw"), (IRandomAccessFile**)&file);
         WriteDataToFileLocked(file, addMayo, addTomato, whichFilling);

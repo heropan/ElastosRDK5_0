@@ -84,7 +84,7 @@ ECode CTrafficStats::GetUidRxBytes(
 
 INetworkStatsService* CTrafficStats::GetStatsService()
 {
-    Mutex::Autolock lock(sProfilingLock);
+    AutoLock lock(sProfilingLock);
 
     if (sStatsService!=NULL)
         return sStatsService;
@@ -157,7 +157,7 @@ ECode CTrafficStats::UntagSocket(
 ECode CTrafficStats::StartDataProfiling(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sProfilingLock);
+    AutoLock lock(sProfilingLock);
 
     if (sActiveProfilingStart != NULL) {
         Slogger::E(TAG, "already profiling data");
@@ -173,7 +173,7 @@ ECode CTrafficStats::StopDataProfiling(
     /* [out] */ INetworkStats** retvalue)
 {
     VALIDATE_NOT_NULL(retvalue);
-    Mutex::Autolock lock(sProfilingLock);
+    AutoLock lock(sProfilingLock);
 
     if (sActiveProfilingStart == NULL) {
         Slogger::E(TAG, "not profiling data");

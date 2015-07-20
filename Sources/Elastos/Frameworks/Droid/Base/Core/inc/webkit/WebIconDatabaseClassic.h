@@ -7,7 +7,6 @@
 #include "webkit/WebIconDatabase.h"
 #include <elastos/Vector.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Vector;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessage;
@@ -117,7 +116,7 @@ private:
         AutoPtr<IHandler> mHandler;
         // Vector of messages before the WebCore thread is ready
         AutoPtr< Vector< AutoPtr<IMessage> > > mMessages;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:

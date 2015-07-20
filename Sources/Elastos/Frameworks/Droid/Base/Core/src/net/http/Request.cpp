@@ -130,7 +130,7 @@ Request::~Request()
 ECode Request::SetLoadingPaused(
      /* [in] */ Boolean pause)
 {
-    Mutex::Autolock lock(mClientResource);
+    AutoLock lock(mClientResource);
 
     mLoadingPaused = pause;
 
@@ -327,7 +327,7 @@ ECode Request::ReadResponse(
         Int32 lowWater = buf->GetLength() / 2;
         while (len != -1) {
             {
-                Mutex::Autolock lock(mClientResource);
+                AutoLock lock(mClientResource);
 
                 while (mLoadingPaused) {
                     // Put this (network loading) thread to sleep if WebCore
@@ -392,7 +392,7 @@ ECode Request::ReadResponse(
 
 ECode Request::Cancel()
 {
-    Mutex::Autolock lock(mClientResource);
+    AutoLock lock(mClientResource);
 
     if (HttpLog::LOGV) {
         HttpLog::V(String("Request.cancel(): ") + GetUri());
@@ -482,7 +482,7 @@ ECode Request::Reset()
 
 ECode Request::WaitUntilComplete()
 {
-    Mutex::Autolock lock(mClientResource);
+    AutoLock lock(mClientResource);
 
     if (HttpLog::LOGV) HttpLog::V(String("Request.waitUntilComplete()"));
     // TODO:
@@ -494,7 +494,7 @@ ECode Request::WaitUntilComplete()
 
 ECode Request::Complete()
 {
-    Mutex::Autolock lock(mClientResource);
+    AutoLock lock(mClientResource);
 
     // TODO:
     // return mClientResource.NotifyAll();

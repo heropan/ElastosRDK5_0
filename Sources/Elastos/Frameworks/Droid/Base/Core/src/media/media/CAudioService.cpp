@@ -205,7 +205,7 @@ ECode CAudioService::VolumeStreamState::VolumeDeathHandler::Mute(
                 // If the stream is not yet muted by any client, set level to 0
                 if (mVolumeStreamState->MuteCount() == 0) {
                     {
-                        Mutex::Autolock lock(&mVolumeStreamState->mIndexLock);
+                        AutoLock lock(&mVolumeStreamState->mIndexLock);
                         HashMap<Int32, Int32>::Iterator it = mVolumeStreamState->mIndex.Begin();
                         Int32 device;
                         Boolean bval;
@@ -262,7 +262,7 @@ ECode CAudioService::VolumeStreamState::VolumeDeathHandler::Mute(
                     Boolean bval;
                     mAudioService->IsStreamAffectedByRingerMode(mVolumeStreamState->mStreamType, &bval);
                     if (!bval || mAudioService->mRingerMode == IAudioManager::RINGER_MODE_NORMAL) {
-                        Mutex::Autolock lock(&mVolumeStreamState->mIndexLock);
+                        AutoLock lock(&mVolumeStreamState->mIndexLock);
                         HashMap<Int32, Int32>::Iterator it = mVolumeStreamState->mIndex.Begin();
                         Int32 device, index;
                         while (it != mVolumeStreamState->mIndex.End()) {
@@ -380,7 +380,7 @@ ECode CAudioService::VolumeStreamState::GetSettingNameForDevice(
 
 ECode CAudioService::VolumeStreamState::ReadSettings()
 {
-    Mutex::Autolock lock(&mThisLock);
+    AutoLock lock(&mThisLock);
 
     Int32 remainingDevices = IAudioSystem::DEVICE_OUT_ALL;
 
@@ -394,17 +394,17 @@ ECode CAudioService::VolumeStreamState::ReadSettings()
         Int32 index = 10 * CAudioManager::DEFAULT_STREAM_VOLUME[mStreamType];
 
         {
-            Mutex::Autolock cameraSoundLock(&mAudioService->mCameraSoundForcedLock);
+            AutoLock cameraSoundLock(&mAudioService->mCameraSoundForcedLock);
             if (mAudioService->mCameraSoundForced) {
                 index = mIndexMax;
             }
         }
         if (MuteCount() == 0) {
-            Mutex::Autolock indexLock(&mIndexLock);
+            AutoLock indexLock(&mIndexLock);
             mIndex[IAudioSystem::DEVICE_OUT_DEFAULT] = index;
         }
 
-        Mutex::Autolock lastIndexLock(&mLastAudibleIndexLock);
+        AutoLock lastIndexLock(&mLastAudibleIndexLock);
         mLastAudibleIndex[IAudioSystem::DEVICE_OUT_DEFAULT] = index;
         return NOERROR;
     }
@@ -422,10 +422,10 @@ ECode CAudioService::VolumeStreamState::ReadSettings()
         if (((*(mAudioService->mStreamVolumeAlias))[mStreamType] == IAudioSystem::STREAM_MUSIC) &&
                 ((device & mAudioService->mFixedVolumeDevices) != 0)) {
             if (MuteCount() == 0) {
-                Mutex::Autolock indexLock(&mIndexLock);
+                AutoLock indexLock(&mIndexLock);
                 mIndex[device] = index;
             }
-            Mutex::Autolock lastIndexLock(&mLastAudibleIndexLock);
+            AutoLock lastIndexLock(&mLastAudibleIndexLock);
             mLastAudibleIndex[device] = index;
             continue;
         }
@@ -465,7 +465,7 @@ ECode CAudioService::VolumeStreamState::ReadSettings()
         }
 
         {
-            Mutex::Autolock lastIndexLock(&mLastAudibleIndexLock);
+            AutoLock lastIndexLock(&mLastAudibleIndexLock);
             mLastAudibleIndex[device] = GetValidIndex(10 * lastAudibleIndex);
         }
 
@@ -481,7 +481,7 @@ ECode CAudioService::VolumeStreamState::ReadSettings()
         }
 
         if (MuteCount() == 0) {
-            Mutex::Autolock indexLock(&mIndexLock);
+            AutoLock indexLock(&mIndexLock);
             mIndex[device] = GetValidIndex(10 * index);
         }
     }
@@ -502,7 +502,7 @@ ECode CAudioService::VolumeStreamState::ApplyDeviceVolume(
 /*synchronized*/
 ECode CAudioService::VolumeStreamState::ApplyAllVolumes()
 {
-    Mutex::Autolock lock (mThisLock);
+    AutoLock lock (mThisLock);
     // apply default volume first: by convention this will reset all
     // devices volumes in audio policy manager to the supplied value
     Int32 index;
@@ -514,7 +514,7 @@ ECode CAudioService::VolumeStreamState::ApplyAllVolumes()
 
     // then apply device specific volumes
     {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
         HashMap<Int32, Int32>::Iterator it = mIndex.Begin();
         Int32 device, value;
         while (it != mIndex.End()) {
@@ -554,14 +554,14 @@ ECode CAudioService::VolumeStreamState::SetIndex(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     Int32 oldIndex;
     FAIL_RETURN(GetIndex(device, FALSE  /* lastAudible */, &oldIndex));
     index = GetValidIndex(index);
 
     {
-        Mutex::Autolock lock(mAudioService->mCameraSoundForcedLock);
+        AutoLock lock(mAudioService->mCameraSoundForcedLock);
         if ((mStreamType == IAudioSystem::STREAM_SYSTEM_ENFORCED)
             && mAudioService->mCameraSoundForced) {
             index = mIndexMax;
@@ -569,13 +569,13 @@ ECode CAudioService::VolumeStreamState::SetIndex(
     }
 
     {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
         mIndex[device] = GetValidIndex(index);
     }
 
     if (oldIndex != index) {
         if (lastAudible) {
-            Mutex::Autolock lastIndexLock(&mLastAudibleIndexLock);
+            AutoLock lastIndexLock(&mLastAudibleIndexLock);
             mLastAudibleIndex[device] = index;
         }
 
@@ -618,10 +618,10 @@ ECode CAudioService::VolumeStreamState::GetIndex(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
     Int32 index = -1;
     if (lastAudible) {
-        Mutex::Autolock lock(mLastAudibleIndexLock);
+        AutoLock lock(mLastAudibleIndexLock);
 
         HashMap<Int32, Int32>::Iterator it = mLastAudibleIndex.Find(device);
         if (it != mLastAudibleIndex.End()) {
@@ -636,7 +636,7 @@ ECode CAudioService::VolumeStreamState::GetIndex(
         }
     }
     else {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
 
         HashMap<Int32, Int32>::Iterator it = mIndex.Find(device);
         if (it != mIndex.End()) {
@@ -660,7 +660,7 @@ ECode CAudioService::VolumeStreamState::SetLastAudibleIndex(
     /* [in] */ Int32 index,
     /* [in] */ Int32 device)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     // Apply change to all streams using this one as alias
     // if changing volume of current device, also change volume of current
@@ -686,7 +686,7 @@ ECode CAudioService::VolumeStreamState::SetLastAudibleIndex(
     }
 
     {
-        Mutex::Autolock lock(mAudioService->mCameraSoundForcedLock);
+        AutoLock lock(mAudioService->mCameraSoundForcedLock);
         mLastAudibleIndex[device] = GetValidIndex(index);
     }
     return NOERROR;
@@ -697,7 +697,7 @@ ECode CAudioService::VolumeStreamState::AdjustLastAudibleIndex(
     /* [in] */ Int32 deltaIndex,
     /* [in] */ Int32 device)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     Int32 result;
     FAIL_RETURN(GetIndex(device, TRUE  /* lastAudible */, &result));
@@ -717,10 +717,10 @@ ECode CAudioService::VolumeStreamState::SetAllIndexes(
     /* [in] */ VolumeStreamState* srcStream,
     /* [in] */ Boolean lastAudible)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (lastAudible) {
-        Mutex::Autolock lock(mLastAudibleIndexLock);
+        AutoLock lock(mLastAudibleIndexLock);
 
         Int32 device, index, streamType;
         HashMap<Int32, Int32>::Iterator it = mLastAudibleIndex.Begin();
@@ -733,7 +733,7 @@ ECode CAudioService::VolumeStreamState::SetAllIndexes(
         }
     }
     else {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
 
         Boolean bval;
         Int32 device, index, streamType;
@@ -753,10 +753,10 @@ ECode CAudioService::VolumeStreamState::SetAllIndexes(
 /*synchronized*/
 ECode CAudioService::VolumeStreamState::SetAllIndexesToMax()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
         HashMap<Int32, Int32>::Iterator it = mIndex.Begin();
         for (; it != mIndex.End(); ++it) {
             it->mSecond = mIndexMax;
@@ -764,7 +764,7 @@ ECode CAudioService::VolumeStreamState::SetAllIndexesToMax()
     }
 
     {
-        Mutex::Autolock lock(&mLastAudibleIndexLock);
+        AutoLock lock(&mLastAudibleIndexLock);
         HashMap<Int32, Int32>::Iterator it = mLastAudibleIndex.Begin();
         for (; it != mLastAudibleIndex.End(); ++it) {
             it->mSecond = mIndexMax;
@@ -779,7 +779,7 @@ ECode CAudioService::VolumeStreamState::Mute(
     /* [in] */ IBinder* cb,
     /* [in] */ Boolean state)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     AutoPtr<VolumeDeathHandler> handler = GetDeathHandler(cb, state);
     if (handler == NULL) {
@@ -814,7 +814,7 @@ Int32 CAudioService::VolumeStreamState::GetValidIndex(
 /*synchronized*/
 Int32 CAudioService::VolumeStreamState::MuteCount()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
     return mMuteCount;
 }
 
@@ -860,7 +860,7 @@ String CAudioService::VolumeStreamState::ToString()
 
     sb += "   Current: ";
     {
-        Mutex::Autolock lock(&mIndexLock);
+        AutoLock lock(&mIndexLock);
         HashMap<Int32, Int32>::Iterator it = mIndex.Begin();
         for (; it != mIndex.End(); ++it) {
             sb += StringUtils::Int32ToHexString(it->mFirst);
@@ -872,7 +872,7 @@ String CAudioService::VolumeStreamState::ToString()
 
     sb += "\n   Last audible: ";
     {
-        Mutex::Autolock lock(&mLastAudibleIndexLock);
+        AutoLock lock(&mLastAudibleIndexLock);
         HashMap<Int32, Int32>::Iterator it = mLastAudibleIndex.Begin();
         for (; it != mLastAudibleIndex.End(); ++it) {
             sb += StringUtils::Int32ToHexString(it->mFirst);
@@ -912,7 +912,7 @@ CAudioService::ForceControlStreamClient::ForceControlStreamClient(
 
 ECode CAudioService::ForceControlStreamClient::ProxyDied()
 {
-    Mutex::Autolock lock(mAudioService->mForceControlStreamLock);
+    AutoLock lock(mAudioService->mForceControlStreamLock);
     Logger::W(TAG, "SCO client died");
     if (mAudioService->mForceControlStreamClient.Get() != this) {
         Logger::W(TAG, "unregistered control stream client died");
@@ -957,7 +957,7 @@ ECode CAudioService::SetModeDeathHandler::ProxyDied()
 {
     Int32 newModeOwnerPid = 0;
     {
-        Mutex::Autolock lock(mAudioService->mSetModeDeathHandlersLock);
+        AutoLock lock(mAudioService->mSetModeDeathHandlersLock);
 
         Logger::W(TAG, "setMode() client died");
 
@@ -1102,7 +1102,7 @@ CAudioService::ScoClient::ScoClient(
 
 ECode CAudioService::ScoClient::ProxyDied()
 {
-    Mutex::Autolock lock(mAudioService->mScoClientsLock);
+    AutoLock lock(mAudioService->mScoClientsLock);
 
     Logger::W(TAG, "SCO client died");
 
@@ -1124,7 +1124,7 @@ ECode CAudioService::ScoClient::ProxyDied()
 void CAudioService::ScoClient::IncCount()
 {
     {
-        Mutex::Autolock lock(mAudioService->mScoClientsLock);
+        AutoLock lock(mAudioService->mScoClientsLock);
 
         RequestScoState(IBluetoothHeadset::STATE_AUDIO_CONNECTED);
         if (mStartcount == 0) {
@@ -1143,7 +1143,7 @@ void CAudioService::ScoClient::IncCount()
 
 void CAudioService::ScoClient::DecCount()
 {
-    Mutex::Autolock lock(mAudioService->mScoClientsLock);
+    AutoLock lock(mAudioService->mScoClientsLock);
 
     if (mStartcount == 0) {
         Logger::W(TAG, "ScoClient.decCount() already 0");
@@ -1168,7 +1168,7 @@ void CAudioService::ScoClient::ClearCount(
     /* [in] */ Boolean stopSco)
 {
     {
-        Mutex::Autolock lock(mAudioService->mScoClientsLock);
+        AutoLock lock(mAudioService->mScoClientsLock);
         if (mStartcount != 0) {
             AutoPtr<IProxy> proxy = (IProxy*)mCb->Probe(EIID_IProxy);
             if (proxy) {
@@ -1203,7 +1203,7 @@ Int32 CAudioService::ScoClient::GetPid()
 
 Int32 CAudioService::ScoClient::TotalCount()
 {
-    Mutex::Autolock lock(mAudioService->mScoClientsLock);
+    AutoLock lock(mAudioService->mScoClientsLock);
     Int32 count = 0;
     List< AutoPtr<ScoClient> >::Iterator it = mAudioService->mScoClients.Begin();
     for (; it != mAudioService->mScoClients.End(); ++it) {
@@ -1225,7 +1225,7 @@ void CAudioService::ScoClient::RequestScoState(
             // Accept SCO audio activation only in NORMAL audio mode or if the mode is
             // currently controlled by the same client process.
             {
-                Mutex::Autolock lock(mAudioService->mSetModeDeathHandlersLock);
+                AutoLock lock(mAudioService->mSetModeDeathHandlersLock);
 
                 if ((mAudioService->mSetModeDeathHandlers.IsEmpty()
                     || mAudioService->mSetModeDeathHandlers[0]->GetPid() == mCreatorPid)
@@ -1437,7 +1437,7 @@ ECode CAudioService::AudioHandler::HandleMessage(
             Int32 temp;
             // Restore device connection states
             {
-                Mutex::Autolock lock(mAudioService->mConnectedDevicesLock);
+                AutoLock lock(mAudioService->mConnectedDevicesLock);
                 HashMap<Int32, String>::Iterator it = mAudioService->mConnectedDevices.Begin();
                 while (it != mAudioService->mConnectedDevices.End()) {
                     audioSystemHelper->SetDeviceConnectionState(
@@ -1482,14 +1482,14 @@ ECode CAudioService::AudioHandler::HandleMessage(
             }
 
             {
-                Mutex::Autolock lock(mAudioService->mBluetoothA2dpEnabledLock);
+                AutoLock lock(mAudioService->mBluetoothA2dpEnabledLock);
                 audioSystemHelper->SetForceUse(IAudioSystem::FOR_MEDIA,
                     mAudioService->mBluetoothA2dpEnabled ?
                     IAudioSystem::FORCE_NONE : IAudioSystem::FORCE_NO_BT_A2DP);
             }
 
             {
-                Mutex::Autolock lock(mAudioService->mSettingsLock);
+                AutoLock lock(mAudioService->mSettingsLock);
                 audioSystemHelper->SetForceUse(IAudioSystem::FOR_DOCK,
                     mAudioService->mDockAudioMediaEnabled ?
                     IAudioSystem::FORCE_ANALOG_DOCK : IAudioSystem::FORCE_NONE);
@@ -1514,7 +1514,7 @@ ECode CAudioService::AudioHandler::HandleMessage(
         case CAudioService::MSG_BTA2DP_DOCK_TIMEOUT: {
             //msg.obj  == address of BTA2DP device
             {
-                Mutex::Autolock lock(mAudioService->mConnectedDevicesLock);
+                AutoLock lock(mAudioService->mConnectedDevicesLock);
                 String text;
                 ICharSequence* seq = ICharSequence::Probe(obj);
                 if (seq != NULL) {
@@ -1574,7 +1574,7 @@ ECode CAudioService::AudioHandler::HandleMessage(
             if (N > 0) {
                 AutoPtr<IAudioRoutesInfo> routes;
                 {
-                    Mutex::Autolock lock(mAudioService->mCurAudioRoutesLock);
+                    AutoLock lock(mAudioService->mCurAudioRoutesLock);
                     CAudioRoutesInfo::New(mAudioService->mCurAudioRoutes,
                         (IAudioRoutesInfo**)&routes);
                 }
@@ -1858,7 +1858,7 @@ ECode CAudioService::SettingsObserver::OnChange(
     //       and mRingerModeAffectedStreams, so will leave this synchronized for now.
     //       mRingerModeMutedStreams and mMuteAffectedStreams are safe (only accessed once).
     {
-        Mutex::Autolock lock(mAudioService->mSettingsLock);
+        AutoLock lock(mAudioService->mSettingsLock);
 
         Int32 ringerModeAffectedStreams;
         Settings::System::GetInt32ForUser(mAudioService->mContentResolver,
@@ -1874,7 +1874,7 @@ ECode CAudioService::SettingsObserver::OnChange(
         }
 
         {
-            Mutex::Autolock lock(mAudioService->mCameraSoundForcedLock);
+            AutoLock lock(mAudioService->mCameraSoundForcedLock);
 
             if (mAudioService->mCameraSoundForced) {
                 ringerModeAffectedStreams &= ~(1 << IAudioSystem::STREAM_SYSTEM_ENFORCED);
@@ -1934,7 +1934,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
             }
 
             case IIntent::EXTRA_DOCK_STATE_LE_DESK: {
-                Mutex::Autolock lock(mAudioService->mSettingsLock);
+                AutoLock lock(mAudioService->mSettingsLock);
                 if (mAudioService->mDockAudioMediaEnabled) {
                     config = IAudioSystem::FORCE_ANALOG_DOCK;
                 }
@@ -2001,7 +2001,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
 
         Boolean connected = (state == IBluetoothProfile::STATE_CONNECTED);
         if (mAudioService->HandleDeviceConnection(connected, device, address)) {
-            Mutex::Autolock lock(mAudioService->mScoClientsLock);
+            AutoLock lock(mAudioService->mScoClientsLock);
             if (connected) {
                 mAudioService->mBluetoothHeadsetDevice = btDevice;
             }
@@ -2039,7 +2039,7 @@ ECode CAudioService::AudioServiceBroadcastReceiver::OnReceive(
         Boolean broadcast = FALSE;
         Int32 scoAudioState = IAudioManager::SCO_AUDIO_STATE_ERROR;
         {
-            Mutex::Autolock lock(mAudioService->mScoClientsLock);
+            AutoLock lock(mAudioService->mScoClientsLock);
 
             Int32 btState;
             intent->GetInt32Extra(IBluetoothProfile::EXTRA_STATE, -1, &btState);
@@ -2185,7 +2185,7 @@ CAudioService::AudioFocusDeathHandler::AudioFocusDeathHandler(
 
 ECode CAudioService::AudioFocusDeathHandler::ProxyDied()
 {
-    Mutex::Autolock lock(mAudioFocusLock);
+    AutoLock lock(mAudioFocusLock);
 
     Logger::W(TAG, "  AudioFocus   audio focus client died");
     mAudioService->RemoveFocusStackEntryForClient(mCb);
@@ -2426,7 +2426,7 @@ CAudioService::RcDisplayDeathHandler::RcDisplayDeathHandler(
 ECode CAudioService::RcDisplayDeathHandler::ProxyDied()
 {
     {
-        Mutex::Autolock lock(mAudioService->mRCStackLock);
+        AutoLock lock(mAudioService->mRCStackLock);
         Logger::W(TAG, "RemoteControl: display died");
         mAudioService->mRcDisplay = NULL;
     }
@@ -2978,7 +2978,7 @@ void CAudioService::ReadPersistedSettings()
     }
 
     {
-        Mutex::Autolock lock(mSettingsLock);
+        AutoLock lock(mSettingsLock);
 
         mRingerMode = ringerMode;
 
@@ -3017,7 +3017,7 @@ void CAudioService::ReadPersistedSettings()
         }
 
         {
-            Mutex::Autolock lock(mCameraSoundForcedLock);
+            AutoLock lock(mCameraSoundForcedLock);
 
             if (mCameraSoundForced) {
                 mRingerModeAffectedStreams &= ~(1 << IAudioSystem::STREAM_SYSTEM_ENFORCED);
@@ -3360,7 +3360,7 @@ ECode CAudioService::ForceVolumeControlStream(
     /* [in] */ Int32 streamType,
     /* [in] */ IBinder* cb)
 {
-    Mutex::Autolock lock(mForceControlStreamLock);
+    AutoLock lock(mForceControlStreamLock);
 
     mVolumeControlStream = streamType;
     if (mVolumeControlStream == -1) {
@@ -3789,7 +3789,7 @@ ECode CAudioService::GetMasterStreamType(
 ECode CAudioService::GetRingerMode(
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(mSettingsLock);
+    AutoLock lock(mSettingsLock);
     *result = mRingerMode;
     return NOERROR;
 }
@@ -3831,7 +3831,7 @@ void CAudioService::SetRingerModeInt(
     /* [in] */ Boolean persist)
 {
     {
-        Mutex::Autolock lock(mSettingsLock);
+        AutoLock lock(mSettingsLock);
         mRingerMode = ringerMode;
     }
 
@@ -3855,10 +3855,10 @@ void CAudioService::SetRingerModeInt(
                 if (mVoiceCapable &&
                     (*mStreamVolumeAlias)[streamType] == IAudioSystem::STREAM_RING)
                 {
-                    Mutex::Autolock lock(&mStreamStatesLock);
+                    AutoLock lock(&mStreamStatesLock);
                     VolumeStreamState* vsState = (*mStreamStates)[streamType];
 
-                    Mutex::Autolock lastIndexLock(&vsState->mLastAudibleIndexLock);
+                    AutoLock lastIndexLock(&vsState->mLastAudibleIndexLock);
                     HashMap<Int32, Int32>::Iterator it = vsState->mLastAudibleIndex.Begin();
                     while (it != vsState->mLastAudibleIndex.End()) {
                         if (it->mSecond == 0) it->mSecond = 10;
@@ -4007,7 +4007,7 @@ ECode CAudioService::SetMode(
     Int32 newModeOwnerPid = 0;
 
     {
-        Mutex::Autolock lock(mSetModeDeathHandlersLock);
+        AutoLock lock(mSetModeDeathHandlersLock);
 
         if (mode == IAudioSystem::MODE_CURRENT) {
             mode = mMode;
@@ -4366,7 +4366,7 @@ void CAudioService::ReadAudioSettings(
         }
 
         {
-            Mutex::Autolock lock(mStreamStatesLock);
+            AutoLock lock(mStreamStatesLock);
 
             streamState->ReadSettings();
 
@@ -4395,7 +4395,7 @@ void CAudioService::ReadAudioSettings(
     CheckAllAliasStreamVolumes();
 
     {
-        Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+        AutoLock lock(mSafeMediaVolumeStateLock);
 
         if (mSafeMediaVolumeState == SAFE_MEDIA_VOLUME_ACTIVE) {
             EnforceSafeMediaVolume();
@@ -4453,7 +4453,7 @@ ECode CAudioService::IsBluetoothScoOn(
 ECode CAudioService::SetBluetoothA2dpOn(
     /* [in] */ Boolean on)
 {
-    Mutex::Autolock lock(mBluetoothA2dpEnabledLock);
+    AutoLock lock(mBluetoothA2dpEnabledLock);
 
     mBluetoothA2dpEnabled = on;
 
@@ -4469,7 +4469,7 @@ ECode CAudioService::IsBluetoothA2dpOn(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mBluetoothA2dpEnabledLock);
+    AutoLock lock(mBluetoothA2dpEnabledLock);
     *result = mBluetoothA2dpEnabled;
     return NOERROR;
 }
@@ -4519,7 +4519,7 @@ AutoPtr<CAudioService::ScoClient> CAudioService::GetScoClient(
     /* [in] */ IBinder* cb,
     /* [in] */ Boolean create)
 {
-    Mutex::Autolock lock(mScoClientsLock);
+    AutoLock lock(mScoClientsLock);
 
     AutoPtr<ScoClient> client;
     Int32 size = mScoClients.GetSize();
@@ -4540,7 +4540,7 @@ ECode CAudioService::ClearAllScoClients(
     /* [in] */ Int32 exceptPid,
     /* [in] */ Boolean stopSco)
 {
-    Mutex::Autolock lock(mScoClientsLock);
+    AutoLock lock(mScoClientsLock);
     AutoPtr<ScoClient> savedClient;
     Int32 size = mScoClients.GetSize();
     for (Int32 i = 0; i < size; i++) {
@@ -4584,7 +4584,7 @@ Boolean CAudioService::GetBluetoothHeadset()
 void CAudioService::DisconnectBluetoothSco(
     /* [in] */ Int32 exceptPid)
 {
-    Mutex::Autolock lock(mScoClientsLock);
+    AutoLock lock(mScoClientsLock);
 
     CheckScoAudioState();
     if (mScoAudioState == SCO_STATE_ACTIVE_EXTERNAL ||
@@ -4610,7 +4610,7 @@ void CAudioService::DisconnectBluetoothSco(
 
 void CAudioService::ResetBluetoothSco()
 {
-    Mutex::Autolock lock(mScoClientsLock);
+    AutoLock lock(mScoClientsLock);
 
     ClearAllScoClients(0, FALSE);
     mScoAudioState = SCO_STATE_INACTIVE;
@@ -4662,7 +4662,7 @@ void CAudioService::OnSetRsxConnectionState(
 
 void CAudioService::OnCheckMusicActive()
 {
-    Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+    AutoLock lock(mSafeMediaVolumeStateLock);
 
     if (mSafeMediaVolumeState == SAFE_MEDIA_VOLUME_INACTIVE) {
         Int32 device = GetDeviceForStream(IAudioSystem::STREAM_MUSIC);
@@ -4699,7 +4699,7 @@ void CAudioService::OnCheckMusicActive()
 void CAudioService::OnConfigureSafeVolume(
     /* [in] */ Boolean force)
 {
-    Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+    AutoLock lock(mSafeMediaVolumeStateLock);
 
     AutoPtr<IResources> resources;
     Int32 mcc;
@@ -5113,7 +5113,7 @@ ECode CAudioService::SetWiredDeviceConnectionState(
     /* [in] */ Int32 state,
     /* [in] */ const String& name)
 {
-    Mutex::Autolock lock(mConnectedDevicesLock);
+    AutoLock lock(mConnectedDevicesLock);
 
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(name, (ICharSequence**)&seq);
@@ -5131,7 +5131,7 @@ ECode CAudioService::SetBluetoothA2dpDeviceConnectionState(
     /* [in] */ Int32 state,
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(mConnectedDevicesLock);
+    AutoLock lock(mConnectedDevicesLock);
     Int32 delay = CheckSendBecomingNoisyIntent(
         IAudioSystem::DEVICE_OUT_BLUETOOTH_A2DP,
         (state == IBluetoothA2dp::STATE_CONNECTED) ? 1 : 0);
@@ -5230,7 +5230,7 @@ void CAudioService::OnSetA2dpConnectionState(
         address = "";
     }
     {
-        Mutex::Autolock lock(mConnectedDevicesLock);
+        AutoLock lock(mConnectedDevicesLock);
 
         Boolean tempState;
         HashMap< Int32, String >::Iterator it = mConnectedDevices.Find(
@@ -5258,7 +5258,7 @@ void CAudioService::OnSetA2dpConnectionState(
             }
 
             {
-               Mutex::Autolock lock(mCurAudioRoutesLock);
+               AutoLock lock(mCurAudioRoutesLock);
                AutoPtr<ICharSequence> seq;
                mCurAudioRoutes->GetBluetoothName((ICharSequence**)&seq);
 
@@ -5285,7 +5285,7 @@ void CAudioService::OnSetA2dpConnectionState(
             MakeA2dpDeviceAvailable(address);
 
             {
-                Mutex::Autolock lock(mCurAudioRoutesLock);
+                AutoLock lock(mCurAudioRoutesLock);
 
                 AutoPtr<ICharSequence> seq;
                 mCurAudioRoutes->GetBluetoothName((ICharSequence**)&seq);
@@ -5313,7 +5313,7 @@ Boolean CAudioService::HandleDeviceConnection(
     /* [in] */ const String& params)
 {
     {
-        Mutex::Autolock lock(mConnectedDevicesLock);
+        AutoLock lock(mConnectedDevicesLock);
 
         Boolean tempState;
         HashMap< Int32, String >::Iterator it = mConnectedDevices.Find(device);
@@ -5422,7 +5422,7 @@ void CAudioService::SendDeviceConnectionIntent(
     }
 
     {
-        Mutex::Autolock lock(mCurAudioRoutesLock);
+        AutoLock lock(mCurAudioRoutesLock);
 
         if (connType != 0) {
             Int32 oldConn, newConn;
@@ -5461,7 +5461,7 @@ void CAudioService::OnSetWiredDeviceConnectionState(
     /* [in] */ Int32 state,
     /* [in] */ const String& name)
 {
-    Mutex::Autolock lock(mConnectedDevicesLock);
+    AutoLock lock(mConnectedDevicesLock);
 
     if ((state == 0) && ((device == IAudioSystem::DEVICE_OUT_WIRED_HEADSET) ||
             (device == IAudioSystem::DEVICE_OUT_WIRED_HEADPHONE))) {
@@ -5490,7 +5490,7 @@ void CAudioService::OnSetWiredDeviceConnectionState(
 
 void CAudioService::DiscardAudioFocusOwner()
 {
-    // Mutex::Autolock lock(mAudioFocusLock);
+    // AutoLock lock(mAudioFocusLock);
 
     // if (!mFocusStack->Empty() && (mFocusStack->Peek().mFocusDispatcher != NULL)) {
     //     // notify the current focus owner it lost focus after removing it from stack
@@ -5507,7 +5507,7 @@ void CAudioService::DiscardAudioFocusOwner()
 
     //     // clear RCD
     //     {
-    //         Mutex::Autolock lock(mRCStackLock);
+    //         AutoLock lock(mRCStackLock);
 
     //         ClearRemoteControlDisplay_syncAfRcs();
     //     }
@@ -5536,7 +5536,7 @@ String CAudioService::DumpFocusStack()
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    pw->PrintStringln(String("\nAudio Focus stack entries:"));
 //    {
-//        Mutex::Autolock lock(mAudioFocusLock);
+//        AutoLock lock(mAudioFocusLock);
 //
 //        Iterator<FocusStackEntry> stackIterator = mFocusStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -5568,7 +5568,7 @@ void CAudioService::RemoveFocusStackEntry(
 //            NotifyTopOfAudioFocusStack();
 //            // there's a new top of the stack, let the remote control know
 //            {
-//                Mutex::Autolock lock(mRCStackLock);
+//                AutoLock lock(mRCStackLock);
 //
 //                CheckUpdateRemoteControlDisplay_syncAfRcs(RC_INFO_ALL);
 //            }
@@ -5612,7 +5612,7 @@ void CAudioService::RemoveFocusStackEntryForClient(
 //        NotifyTopOfAudioFocusStack();
 //        // there's a new top of the stack, let the remote control know
 //        {
-//            Mutex::Autolock lock(mRCStackLock);
+//            AutoLock lock(mRCStackLock);
 //
 //            CheckUpdateRemoteControlDisplay_syncAfRcs(RC_INFO_ALL);
 //        }
@@ -5652,7 +5652,7 @@ ECode CAudioService::RequestAudioFocus(
 //    }
 
     {
-        Mutex::Autolock lock(mAudioFocusLock);
+        AutoLock lock(mAudioFocusLock);
 
         if (!CanReassignAudioFocus()) {
             *result = IAudioManager::AUDIOFOCUS_REQUEST_FAILED;
@@ -5712,7 +5712,7 @@ ECode CAudioService::RequestAudioFocus(
 //
 //        // there's a new top of the stack, let the remote control know
 //        {
-//            Mutex::Autolock lock(mRCStack);
+//            AutoLock lock(mRCStack);
 //            CheckUpdateRemoteControlDisplay_syncAfRcs(RC_INFO_ALL);
 //        }
     }//synchronized(mAudioFocusLock)
@@ -5730,7 +5730,7 @@ ECode CAudioService::AbandonAudioFocus(
 //    try {
         // this will take care of notifying the new focus owner if needed
         {
-            Mutex::Autolock lock(mAudioFocusLock);
+            AutoLock lock(mAudioFocusLock);
             RemoveFocusStackEntry(clientId, TRUE);
         }
 //    } catch (java.util.ConcurrentModificationException cme) {
@@ -5748,7 +5748,7 @@ ECode CAudioService::AbandonAudioFocus(
 ECode CAudioService::UnregisterAudioFocusClient(
     /* [in] */ const String& clientId)
 {
-    Mutex::Autolock lock(mAudioFocusLock);
+    AutoLock lock(mAudioFocusLock);
     RemoveFocusStackEntry(clientId, FALSE);
 
     return NOERROR;
@@ -5786,9 +5786,9 @@ void CAudioService::FilterMediaKeyEvent(
     // event filtering for telephony
     Int32 tempValue;
     {
-        Mutex::Autolock lock(mRingingLock);
+        AutoLock lock(mRingingLock);
         {
-            Mutex::Autolock lock(mRCStackLock);
+            AutoLock lock(mRCStackLock);
 
             GetMode(&tempValue);
             if ((mMediaReceiverForCalls != NULL) &&
@@ -5849,7 +5849,7 @@ void CAudioService::DispatchMediaKeyEvent(
     keyIntent->PutParcelableExtra(IIntent::EXTRA_KEY_EVENT, (IParcelable*)keyEvent);
 
     {
-        // Mutex::Autolock lock(mRCStackLock);
+        // AutoLock lock(mRCStackLock);
 
         // if (!mRCStack.IsEmpty()) {
         //    // send the intent that was registered by the client
@@ -5891,7 +5891,7 @@ void CAudioService::FilterVoiceInputKeyEvent(
     Int32 keyAction;
     keyEvent->GetAction(&keyAction);
     {
-        Mutex::Autolock lock(mVoiceEventLock);
+        AutoLock lock(mVoiceEventLock);
 
         if (keyAction == IKeyEvent::ACTION_DOWN) {
             Int32 tempValue;
@@ -6074,7 +6074,7 @@ String CAudioService::DumpRCStack()
     StringBuilder sb("\nRemote Control stack entries:");
 
     // {
-    //     Mutex::Autolock lock(mRCStackLock);
+    //     AutoLock lock(mRCStackLock);
 
     //     Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
     //     while(stackIterator->HasNext()) {
@@ -6097,7 +6097,7 @@ String CAudioService::DumpRCCStack()
     // pw->PrintStringln(String("\nRemote Control Client stack entries:"));
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -6113,7 +6113,7 @@ String CAudioService::DumpRCCStack()
 //        }
 //    }
 //    {
-//        Mutex::Autolock lock(mMainRemoteLock);
+//        AutoLock lock(mMainRemoteLock);
 //
 //        pw->Println("\nRemote Volume State:");
 //        pw->Println("  has remote: " + mHasRemotePlayback);
@@ -6133,7 +6133,7 @@ void CAudioService::RemoveMediaButtonReceiverForPackage(
 {
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        if (mRCStack.IsEmpty()) {
 //            return;
@@ -6305,9 +6305,9 @@ void CAudioService::OnRcDisplayClear()
     }
 
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
         {
-            Mutex::Autolock lock(mCurrentRcLock);
+            AutoLock lock(mCurrentRcLock);
 
             mCurrentRcClientGen++;
             // synchronously update the displays and clients with the new client generation
@@ -6322,9 +6322,9 @@ void CAudioService::OnRcDisplayUpdate(
     /* [in] */ Int32 flags /* USED ?*/)
 {
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
         {
-            Mutex::Autolock lock(mCurrentRcLock);
+            AutoLock lock(mCurrentRcLock);
 
             if ((mCurrentRcClient != NULL) && (mCurrentRcClient == rcse->mRcClient)) {
                 if (DEBUG_RC) {
@@ -6362,7 +6362,7 @@ void CAudioService::OnRcDisplayUpdate(
 void CAudioService::ClearRemoteControlDisplay_syncAfRcs()
 {
     {
-        Mutex::Autolock lock(mCurrentRcLock);
+        AutoLock lock(mCurrentRcLock);
 
         mCurrentRcClient = NULL;
     }
@@ -6388,7 +6388,7 @@ void CAudioService::UpdateRemoteControlDisplay_syncAfRcs(
 //        return;
 //    }
 //    {
-//        Mutex::Autolock lock(mCurrentRcLock);
+//        AutoLock lock(mCurrentRcLock);
 //
 //        if (!rcse.mRcClient->Equals(mCurrentRcClient)) {
 //           // new RC client, assume every type of information shall be queried
@@ -6461,9 +6461,9 @@ ECode CAudioService::RegisterMediaButtonIntent(
 {
     Logger::I(TAG, "  Remote Control   registerMediaButtonIntent() for " /*+ mediaIntent*/);
 
-    Mutex::Autolock lock(mAudioFocusLock);
+    AutoLock lock(mAudioFocusLock);
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
         {
             PushMediaButtonReceiver(mediaIntent, eventReceiver);
             // new RC client, assume every type of information shall be queried
@@ -6479,9 +6479,9 @@ ECode CAudioService::UnregisterMediaButtonIntent(
 {
     Logger::I(TAG, "  Remote Control   unregisterMediaButtonIntent() for " /*+ mediaIntent*/);
 
-    Mutex::Autolock lock(mAudioFocusLock);
+    AutoLock lock(mAudioFocusLock);
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
 
         Boolean topOfStackWillChange = IsCurrentRcController(mediaIntent);
         RemoveMediaButtonReceiver(mediaIntent);
@@ -6505,7 +6505,7 @@ ECode CAudioService::RegisterMediaButtonEventReceiverForCalls(
     }
 
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
         mMediaReceiverForCalls = c;
     }
 
@@ -6522,7 +6522,7 @@ ECode CAudioService::UnregisterMediaButtonEventReceiverForCalls()
     }
 
     {
-        Mutex::Autolock lock(mRCStackLock);
+        AutoLock lock(mRCStackLock);
         mMediaReceiverForCalls = NULL;
     }
 
@@ -6545,9 +6545,9 @@ ECode CAudioService::RegisterRemoteControlClient(
 
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mAudioFocusLock);
+//        AutoLock lock(mAudioFocusLock);
 //        {
-//            Mutex::Autolock lock(mRCStackLock);
+//            AutoLock lock(mRCStackLock);
 //            // store the new display information
 //            Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //            while(stackIterator->HasNext()) {
@@ -6614,9 +6614,9 @@ ECode CAudioService::UnregisterRemoteControlClient(
 {
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mAudioFocusLock);
+//        AutoLock lock(mAudioFocusLock);
 //        {
-//            Mutex::Autolock lock(mRCStackLock);
+//            AutoLock lock(mRCStackLock);
 //
 //            Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //            while(stackIterator->HasNext()) {
@@ -6673,9 +6673,9 @@ ECode CAudioService::RegisterRemoteControlDisplay(
     }
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mAudioFocusLock);
+//        AutoLock lock(mAudioFocusLock);
 //        {
-//            Mutex::Autolock lock(mRCStackLock);
+//            AutoLock lock(mRCStackLock);
 //
 //            if ((mRcDisplay == rcd) || (rcd == NULL)) {
 //                return;
@@ -6718,7 +6718,7 @@ ECode CAudioService::UnregisterRemoteControlDisplay(
     }
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //        // only one display here, so you can only unregister the current display
 //        if ((rcd == NULL) || (rcd != mRcDisplay)) {
 //            if (DEBUG_RC) {
@@ -6753,7 +6753,7 @@ ECode CAudioService::RemoteControlDisplayUsesBitmapSize(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    Mutex::Autolock lock(mRCStackLock);
+    AutoLock lock(mRCStackLock);
     // NOTE: Only one IRemoteControlDisplay supported in this implementation
     mArtworkExpectedWidth = w;
     mArtworkExpectedHeight = h;
@@ -6785,7 +6785,7 @@ void CAudioService::OnNewPlaybackInfoForRcc(
 //                String(", what=%d") + key + String(",val=%d") +
 //                value + String(")"));
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -6799,7 +6799,7 @@ void CAudioService::OnNewPlaybackInfoForRcc(
 //                    case RemoteControlClient_PLAYBACKINFO_VOLUME:
 //                        rcse::mPlaybackVolume = value;
 //                        {
-//                            Mutex::Autolock lock(&mMainRemote);
+//                            AutoLock lock(&mMainRemote);
 //                            if (rccId == mMainRemote::mRccId) {
 //                                mMainRemote::mVolume = value;
 //                                mVolumePanel->PostHasNewRemotePlaybackInfo();
@@ -6809,7 +6809,7 @@ void CAudioService::OnNewPlaybackInfoForRcc(
 //                    case RemoteControlClient_PLAYBACKINFO_VOLUME_MAX:
 //                        rcse::mPlaybackVolumeMax = value;
 //                        {
-//                            Mutex::Autolock lock(&mMainRemote);
+//                            AutoLock lock(&mMainRemote);
 //                            if (rccId == mMainRemote::mRccId) {
 //                                mMainRemote.mVolumeMax = value;
 //                                mVolumePanel->PostHasNewRemotePlaybackInfo();
@@ -6819,7 +6819,7 @@ void CAudioService::OnNewPlaybackInfoForRcc(
 //                    case RemoteControlClient_PLAYBACKINFO_VOLUME_HANDLING:
 //                        rcse.mPlaybackVolumeHandling = value;
 //                        {
-//                            Mutex::Autolock lock(&mMainRemote);
+//                            AutoLock lock(&mMainRemote);
 //                            if (rccId == mMainRemote::mRccId) {
 //                                mMainRemote::mVolumeHandling = value;
 //                                mVolumePanel->PostHasNewRemotePlaybackInfo();
@@ -6832,7 +6832,7 @@ void CAudioService::OnNewPlaybackInfoForRcc(
 //                    case RemoteControlClient_PLAYBACKINFO_PLAYSTATE:
 //                        rcse::mPlaybackState = value;
 //                        {
-//                            Mutex::Autolock lock(&mMainRemote);
+//                            AutoLock lock(&mMainRemote);
 //                            if (rccId == mMainRemote::mRccId) {
 //                                mMainRemoteIsActive = IsPlaystateActive(value);
 //                                PostReevaluateRemote();
@@ -6865,7 +6865,7 @@ void CAudioService::OnRegisterVolumeObserverForRcc(
 {
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -6883,7 +6883,7 @@ Boolean CAudioService::CheckUpdateRemoteStateIfActive(
 {
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -6895,7 +6895,7 @@ Boolean CAudioService::CheckUpdateRemoteStateIfActive(
 //                    Logger::D(TAG, "remote playback active on stream " + streamType
 //                            + ", vol =" + rcse.mPlaybackVolume);
 //                {
-//                    Mutex::Autolock lock(mMainRemoteLock);
+//                    AutoLock lock(mMainRemoteLock);
 //                    mMainRemote.mRccId = rcse.mRccId;
 //                    mMainRemote.mVolume = rcse.mPlaybackVolume;
 //                    mMainRemote.mVolumeMax = rcse.mPlaybackVolumeMax;
@@ -6907,7 +6907,7 @@ Boolean CAudioService::CheckUpdateRemoteStateIfActive(
 //        }
 //    }
 //    {
-//        Mutex::Autolock lock(mMainRemoteLock);
+//        AutoLock lock(mMainRemoteLock);
 //        mMainRemoteIsActive = FALSE;
 //    }
     return FALSE;
@@ -6944,7 +6944,7 @@ void CAudioService::AdjustRemoteVolume(
     Int32 rccId = IRemoteControlClient::RCSE_ID_UNREGISTERED;
     Boolean volFixed = FALSE;
     {
-        Mutex::Autolock lock(mMainRemoteLock);
+        AutoLock lock(mMainRemoteLock);
 
         if (!mMainRemoteIsActive) {
             if (DEBUG_VOL) {
@@ -6983,7 +6983,7 @@ void CAudioService::SendVolumeUpdateToRemote(
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    AutoPtr<IIRemoteVolumeObserver> rvo = NULL;
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -7007,7 +7007,7 @@ void CAudioService::SendVolumeUpdateToRemote(
 ECode CAudioService::GetRemoteStreamMaxVolume(
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(mMainRemoteLock);
+    AutoLock lock(mMainRemoteLock);
 
     if (mMainRemote->mRccId == IRemoteControlClient::RCSE_ID_UNREGISTERED) {
         *result = 0;
@@ -7022,7 +7022,7 @@ ECode CAudioService::GetRemoteStreamVolume(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mMainRemoteLock);
+    AutoLock lock(mMainRemoteLock);
 
     if (mMainRemote->mRccId == IRemoteControlClient::RCSE_ID_UNREGISTERED) {
         *result = 0;
@@ -7042,7 +7042,7 @@ ECode CAudioService::SetRemoteStreamVolume(
     Int32 rccId = IRemoteControlClient::RCSE_ID_UNREGISTERED;
 
     {
-        Mutex::Autolock lock(mMainRemoteLock);
+        AutoLock lock(mMainRemoteLock);
 
         if (mMainRemote->mRccId == IRemoteControlClient::RCSE_ID_UNREGISTERED) {
             return NOERROR;
@@ -7054,7 +7054,7 @@ ECode CAudioService::SetRemoteStreamVolume(
 
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -7092,7 +7092,7 @@ void CAudioService::OnReevaluateRemote()
     Boolean hasRemotePlayback = FALSE;
 /*Eddie(E_NOT_IMPLEMENTED)*/
 //    {
-//        Mutex::Autolock lock(mRCStackLock);
+//        AutoLock lock(mRCStackLock);
 //
 //        Iterator<RemoteControlStackEntry> stackIterator = mRCStack->Iterator();
 //        while(stackIterator->HasNext()) {
@@ -7104,7 +7104,7 @@ void CAudioService::OnReevaluateRemote()
 //        }
 //    }
    {
-       Mutex::Autolock lock(mMainRemoteLock);
+       AutoLock lock(mMainRemoteLock);
 
        if (mHasRemotePlayback != hasRemotePlayback) {
             mHasRemotePlayback = hasRemotePlayback;
@@ -7190,9 +7190,9 @@ void CAudioService::HandleConfigurationChanged(
         resources->GetBoolean(R::bool_::config_camera_sound_forced,
                 &cameraSoundForced);
         {
-            Mutex::Autolock lock(mSettingsLock);
+            AutoLock lock(mSettingsLock);
             {
-                Mutex::Autolock lock(mCameraSoundForcedLock);
+                AutoLock lock(mCameraSoundForcedLock);
 
                 if (cameraSoundForced != mCameraSoundForced) {
                     mCameraSoundForced = cameraSoundForced;
@@ -7272,7 +7272,7 @@ void CAudioService::SetOrientationForAudioSystem()
 ECode CAudioService::SetBluetoothA2dpOnInt(
     /* [in] */ Boolean on)
 {
-    Mutex::Autolock lock(mBluetoothA2dpEnabledLock);
+    AutoLock lock(mBluetoothA2dpEnabledLock);
 
     mBluetoothA2dpEnabled = on;
     mAudioHandler->RemoveMessages(MSG_SET_FORCE_BT_A2DP_USE);
@@ -7313,7 +7313,7 @@ ECode CAudioService::StartWatchingRoutes(
     VALIDATE_NOT_NULL(result);
 
     {
-        Mutex::Autolock lock(mCurAudioRoutesLock);
+        AutoLock lock(mCurAudioRoutesLock);
 
         AutoPtr<IAudioRoutesInfo> routes ;
         CAudioRoutesInfo::New(mCurAudioRoutes,(IAudioRoutesInfo**)&routes);
@@ -7339,7 +7339,7 @@ ECode CAudioService::StartWatchingRoutes(
 void CAudioService::SetSafeMediaVolumeEnabled(
     /* [in] */ Boolean on)
 {
-    Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+    AutoLock lock(mSafeMediaVolumeStateLock);
 
     if ((mSafeMediaVolumeState != SAFE_MEDIA_VOLUME_NOT_CONFIGURED) &&
             (mSafeMediaVolumeState != SAFE_MEDIA_VOLUME_DISABLED)) {
@@ -7403,7 +7403,7 @@ Boolean CAudioService::CheckSafeMediaVolume(
     /* [in] */ Int32 index,
     /* [in] */ Int32 device)
 {
-    Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+    AutoLock lock(mSafeMediaVolumeStateLock);
 
     if ((mSafeMediaVolumeState == SAFE_MEDIA_VOLUME_ACTIVE) &&
         ((*mStreamVolumeAlias)[streamType] == IAudioSystem::STREAM_MUSIC) &&
@@ -7419,7 +7419,7 @@ Boolean CAudioService::CheckSafeMediaVolume(
 
 ECode CAudioService::DisableSafeMediaVolume()
 {
-    Mutex::Autolock lock(mSafeMediaVolumeStateLock);
+    AutoLock lock(mSafeMediaVolumeStateLock);
     SetSafeMediaVolumeEnabled(FALSE);
     return NOERROR;
 }
@@ -7436,7 +7436,7 @@ ECode CAudioService::IsCameraSoundForced(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mCameraSoundForcedLock);
+    AutoLock lock(mCameraSoundForcedLock);
     *result = mCameraSoundForced;
     return NOERROR;
 }

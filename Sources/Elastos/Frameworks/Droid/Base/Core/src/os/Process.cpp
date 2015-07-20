@@ -403,7 +403,7 @@ ECode Process::StartViaZygote(
     *result = NULL;
 
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
 
         Boolean startJavaProcess = processClass.StartWith("android.");
 
@@ -702,7 +702,7 @@ ECode Process::SetCanSelfBackground(
 #if GUARD_THREAD_PRIORITY
     Logger::V("Process", "Process.setCanSelfBackground(%d) : tid=%d", backgroundOk, androidGetTid());
     {
-        Mutex::Autolock _l(gKeyCreateMutex);
+        AutoLock _l(gKeyCreateMutex);
         if (gBgKey == -1) {
             pthread_key_create(&gBgKey, NULL);
         }

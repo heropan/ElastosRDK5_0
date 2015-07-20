@@ -335,7 +335,7 @@ public:
         Boolean mDied;
         Boolean mForgotten;
         HashMap<AutoPtr<IComponentName>, AutoPtr<ConnectionInfo> > mActiveConnections;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:
@@ -440,7 +440,7 @@ public:
 
 private:
     static const String TAG;
-    Mutex mLock;
+    Object mLock;
 
     // CActivityThread has this's reference
     CActivityThread* mActivityThread;
@@ -461,13 +461,13 @@ private:
     typedef typename ReceiverMap::Iterator ReceiverMapIterator;
     HashMap<AutoPtr<IContext>, AutoPtr<ReceiverMap> > mReceivers;
     HashMap<AutoPtr<IContext>, AutoPtr<ReceiverMap> > mUnregisteredReceivers;
-    Mutex mReceiversLock;
+    Object mReceiversLock;
 
     typedef HashMap<AutoPtr<IServiceConnection>, AutoPtr<ServiceDispatcher> > ServiceMap;
     typedef typename ServiceMap::Iterator ServiceMapIterator;
     HashMap<AutoPtr<IContext>, AutoPtr<ServiceMap> > mServices;
     HashMap<AutoPtr<IContext>, AutoPtr<ServiceMap> > mUnboundServices;
-    Mutex mServicesLock;
+    Object mServicesLock;
 
     Int32 mClientCount;
 };

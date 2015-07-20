@@ -5,7 +5,6 @@
 #include "_CSensorManager.h"
 #include "hardware/LegacySensorManager.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::IObjectMap;
 
@@ -43,7 +42,7 @@ protected:
         Int32 mPoolSize;
         AutoPtr<ArrayOf<ISensorEvent*> > mPool;
         Int32 mNumItemsInPool;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:
@@ -311,7 +310,7 @@ private:
     CARAPI_(AutoPtr<LegacySensorManager>) GetLegacySensorManager();
 
 public:
-    static Mutex mLock;
+    static Object mLock;
 
 protected:
     static String TAG;
@@ -321,7 +320,7 @@ private:
     // final SparseArray<List<Sensor>> mSensorListByType =
     //         new SparseArray<List<Sensor>>();
     AutoPtr<IObjectMap> mSensorListByType;
-    Mutex mSensorListByTypeLock;
+    Object mSensorListByTypeLock;
 
     // Legacy sensor manager implementation.  Guarded by mSensorListByType during initialization.
     AutoPtr<LegacySensorManager> mLegacySensorManager;

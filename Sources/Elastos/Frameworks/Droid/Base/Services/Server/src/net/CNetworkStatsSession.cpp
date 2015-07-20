@@ -9,7 +9,7 @@ namespace Net {
 AutoPtr<NetworkStatsCollection> CNetworkStatsSession::GetUidComplete()
 {
     if (mUidComplete == NULL) {
-        Mutex::Autolock lock(mHost->_m_syncLock);
+        AutoLock lock(mHost->_m_syncLock);
         mUidComplete = mHost->mUidRecorder->GetOrLoadCompleteLocked();
     }
     return mUidComplete;
@@ -18,7 +18,7 @@ AutoPtr<NetworkStatsCollection> CNetworkStatsSession::GetUidComplete()
 AutoPtr<NetworkStatsCollection> CNetworkStatsSession::GetUidTagComplete()
 {
     if (mUidTagComplete == NULL) {
-        Mutex::Autolock lock(mHost->_m_syncLock);
+        AutoLock lock(mHost->_m_syncLock);
         mUidTagComplete = mHost->mUidTagRecorder->GetOrLoadCompleteLocked();
     }
     return mUidTagComplete;

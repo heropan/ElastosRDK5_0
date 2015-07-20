@@ -24,7 +24,7 @@ CAR_INTERFACE_IMPL_WITH_CPP_CAST(CEncoderCapabilities::AudioEncoderCap, IInterfa
 
 //=============================================================
 
-static Mutex sLock;
+static Object sLock;
 android::MediaProfiles *sssProfiles = NULL;
 
 /*static*/ String CEncoderCapabilities::TAG("EncoderCapabilities");
@@ -33,7 +33,7 @@ Boolean CEncoderCapabilities::InitStatic()
 {
 //    System.loadLibrary("media_jni");
 //    ALOGV("native_init");
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sssProfiles == NULL) {
         sssProfiles = android::MediaProfiles::getInstance();

@@ -439,7 +439,7 @@ ECode CFragmentManagerImpl::Dump(
 //     }
 //TODO:
 //     {
-//         Mutex::AutoLock lock(mThisLock);
+//         Object::AutoLock lock(mThisLock);
 //         if (mBackStackIndices != NULL) {
 //             if (mBackStackIndices->Begin() > mBackStackIndices->End()) {
 //                 writer->PrintString(prefix);
@@ -1390,7 +1390,7 @@ ECode CFragmentManagerImpl::EnqueueAction(
         FAIL_RETURN(CheckStateLoss());
     }
     {
-        Mutex::Autolock lock(mThisLock);
+        AutoLock lock(mThisLock);
         if (mActivity == NULL) {
 //             throw new IllegalStateException("Activity has been destroyed");
             return E_ILLEGAL_STATE_EXCEPTION;
@@ -1412,7 +1412,7 @@ ECode CFragmentManagerImpl::AllocBackStackIndex(
     /* [out] */ Int32* index)
 {
     VALIDATE_NOT_NULL(index);
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mAvailBackStackIndices.IsEmpty()) {
         Int32 size = mBackStackIndices.GetSize();
@@ -1435,7 +1435,7 @@ ECode CFragmentManagerImpl::SetBackStackIndex(
     /* [in] */ Int32 index,
     /* [in] */ IBackStackRecord* bse)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     Int32 N = mBackStackIndices.GetSize();
     if (index < N) {
@@ -1459,7 +1459,7 @@ ECode CFragmentManagerImpl::SetBackStackIndex(
 ECode CFragmentManagerImpl::FreeBackStackIndex(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock look(mThisLock);
+    AutoLock look(mThisLock);
 //TODO:
 //    (*mBackStackIndices)[index] = NULL;
 
@@ -1491,7 +1491,7 @@ ECode CFragmentManagerImpl::ExecPendingActions(
     List<AutoPtr<IRunnable> >::Iterator it;
     while (TRUE) {
         {
-            Mutex::Autolock lock(mThisLock);
+            AutoLock lock(mThisLock);
             numActions = mPendingActions.GetSize();
             if (numActions == 0) {
                 break;

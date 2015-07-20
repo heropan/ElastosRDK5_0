@@ -162,7 +162,7 @@ Boolean CSSLCertificateSocketFactory::IsSslCheckRelaxed()
 /*synchronized*/
 AutoPtr<ISSLSocketFactory> CSSLCertificateSocketFactory::GetDelegate()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Relax the SSL check if instructed (for this factory, or systemwide)
     if (!mSecure || IsSslCheckRelaxed()) {
         if (mInsecureFactory == NULL) {

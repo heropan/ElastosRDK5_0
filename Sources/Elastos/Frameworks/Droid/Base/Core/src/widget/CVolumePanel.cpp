@@ -204,7 +204,7 @@ ECode CVolumePanel::WarningDialogReceiver::OnReceive(
 {
     mDialog->Cancel();
 
-    Mutex::Autolock lock(CVolumePanel::sConfirmSafeVolumeLock);
+    AutoLock lock(CVolumePanel::sConfirmSafeVolumeLock);
     CVolumePanel::sConfirmSafeVolumeDialog = NULL;
     return NOERROR;
 }
@@ -213,7 +213,7 @@ ECode CVolumePanel::WarningDialogReceiver::OnDismiss(
     /* [Int32] */ IDialogInterface* unused)
 {
     mContext->UnregisterReceiver(THIS_PROBE(IBroadcastReceiver));
-    Mutex::Autolock lock(CVolumePanel::sConfirmSafeVolumeLock);
+    AutoLock lock(CVolumePanel::sConfirmSafeVolumeLock);
     CVolumePanel::sConfirmSafeVolumeDialog = NULL;
     return NOERROR;
 }
@@ -709,7 +709,7 @@ ECode CVolumePanel::PostVolumeChanged(
     if (hasMessage) return NOERROR;
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -733,7 +733,7 @@ ECode CVolumePanel::PostRemoteVolumeChanged(
     if (hasMessage) return NOERROR;
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -787,7 +787,7 @@ ECode CVolumePanel::PostMuteChanged(
     if (hasMessage) return NOERROR;
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (mStreamControls.IsEmpty()) {
             CreateSliders();
@@ -826,7 +826,7 @@ void CVolumePanel::OnVolumeChanged(
 {
     if ((flags & IAudioManager::FLAG_SHOW_UI) != 0) {
         {
-            Mutex::Autolock lock(_m_syncLock);
+            AutoLock lock(_m_syncLock);
             if (mActiveStreamType != streamType) {
                 ReorderSliders(streamType);
             }
@@ -1051,7 +1051,7 @@ void CVolumePanel::OnPlaySound(
     }
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         AutoPtr<IToneGenerator> toneGen = GetOrCreateToneGenerator(streamType);
         if (toneGen != NULL) {
             toneGen->StartTone(IToneGenerator::TONE_PROP_BEEP, &bval);
@@ -1065,7 +1065,7 @@ void CVolumePanel::OnPlaySound(
 void CVolumePanel::OnStopSounds()
 {
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         AutoPtr<IAudioSystemHelper> asHelper;
         CAudioSystemHelper::AcquireSingleton((IAudioSystemHelper**)&asHelper);
         Int32 numStreamTypes;
@@ -1106,7 +1106,7 @@ void CVolumePanel::OnRemoteVolumeChanged(
     Boolean bval;
     if (((flags & IAudioManager::FLAG_SHOW_UI) != 0)
         || (mDialog->IsShowing(&bval), bval)) {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         if (mActiveStreamType != IAudioService::STREAM_REMOTE_MUSIC) {
             ReorderSliders(IAudioService::STREAM_REMOTE_MUSIC);
         }
@@ -1172,7 +1172,7 @@ void CVolumePanel::OnSliderVisibilityChanged(
 void CVolumePanel::OnDisplaySafeVolumeWarning()
 {
     {
-        Mutex::Autolock lock(CVolumePanel::sConfirmSafeVolumeLock);
+        AutoLock lock(CVolumePanel::sConfirmSafeVolumeLock);
         if (sConfirmSafeVolumeDialog != NULL) {
             return;
         }
@@ -1215,7 +1215,7 @@ AutoPtr<IToneGenerator> CVolumePanel::GetOrCreateToneGenerator(
     }
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if ((*mToneGenerators)[streamType] == NULL) {
             // try {
@@ -1253,7 +1253,7 @@ void CVolumePanel::SetMusicIcon(
 void CVolumePanel::OnFreeResources()
 {
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         for (Int32 i = mToneGenerators->GetLength() - 1; i >= 0; i--) {
             if ((*mToneGenerators)[i] != NULL) {
                 (*mToneGenerators)[i]->ReleaseResources();

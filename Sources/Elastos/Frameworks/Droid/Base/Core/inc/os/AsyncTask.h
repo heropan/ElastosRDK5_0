@@ -10,7 +10,6 @@
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Deque;
 using Elastos::Core::IThread;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Concurrent::FutureTask;
 using Elastos::Utility::Concurrent::IThreadFactory;
 using Elastos::Utility::Concurrent::IExecutor;
@@ -265,7 +264,7 @@ private:
     public:
         Deque< AutoPtr<IRunnable> > mTasks;
         AutoPtr<IRunnable> mActive;
-        Mutex mLock;
+        Object mLock;
     };
 
     class WorkerRunnable

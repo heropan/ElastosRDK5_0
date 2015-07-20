@@ -542,7 +542,7 @@ CWifiService::WifiLock::WifiLock(
 ECode CWifiService::WifiLock::ProxyDied()
 {
    {
-       Mutex::Autolock lock(mOwner->mLocksLock);
+       AutoLock lock(mOwner->mLocksLock);
        mOwner->ReleaseWifiLockLocked(mBinder);
    }
    return NOERROR;
@@ -567,13 +567,13 @@ String CWifiService::WifiLock::ToString()
 //=========================================================
 Boolean CWifiService::LockList::HasLocks()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return !mList.IsEmpty();
 }
 
 Int32 CWifiService::LockList::GetStrongestLockMode()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mList.IsEmpty()) {
         return IWifiManager::WIFI_MODE_FULL;
     }
@@ -651,7 +651,7 @@ ECode CWifiService::Multicaster::ProxyDied()
 {
     Slogger::E(TAG, "Multicaster binderDied");
     {
-        Mutex::Autolock lock(mOwner->mMulticastersLock);
+        AutoLock lock(mOwner->mMulticastersLock);
 
         List< AutoPtr<Multicaster> >::Iterator it =
                 Find(mOwner->mMulticasters.Begin(), mOwner->mMulticasters.End(), AutoPtr<Multicaster>(this));
@@ -833,7 +833,7 @@ void CWifiService::NoteScanStart()
 {
     AutoPtr<IWorkSource> scanWorkSource;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (mScanWorkSource != NULL) {
             // Scan already in progress, don't add this one to battery stats
@@ -857,7 +857,7 @@ void CWifiService::NoteScanEnd()
 {
     AutoPtr<IWorkSource> scanWorkSource;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         scanWorkSource = mScanWorkSource;
         mScanWorkSource = NULL;
@@ -1052,7 +1052,7 @@ ECode CWifiService::SetWifiEnabled(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(EnforceChangePermission());
     Slogger::D(TAG, "SetWifiEnabled: %d pid=%d, uid=%d", enable, Binder::GetCallingPid(),
             Binder::GetCallingUid());
@@ -1666,7 +1666,7 @@ ECode CWifiService::AcquireWifiLock(
     }
     AutoPtr<WifiLock> wifiLock = new WifiLock(lockMode, tag, binder, ws, this);
     {
-        Mutex::Autolock lock(mLocksLock);
+        AutoLock lock(mLocksLock);
         *result = AcquireWifiLockLocked(wifiLock);
     }
     return NOERROR;
@@ -1748,7 +1748,7 @@ ECode CWifiService::UpdateWifiLockWorkSource(
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock l(mLocksLock);
+        AutoLock l(mLocksLock);
 
         List< AutoPtr<WifiLock> >::Iterator it = mLocks->FindLockByBinder(lock);
         if (it == mLocks->mList.End()) {
@@ -1784,7 +1784,7 @@ ECode CWifiService::ReleaseWifiLock(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::WAKE_LOCK, String(NULL)));
     {
-        Mutex::Autolock l(mLocksLock);
+        AutoLock l(mLocksLock);
         *result = ReleaseWifiLockLocked(lock);
         return NOERROR;
     }
@@ -1834,7 +1834,7 @@ ECode CWifiService::InitializeMulticastFiltering()
     FAIL_RETURN(EnforceMulticastChangePermission());
 
     {
-        Mutex::Autolock lock(mMulticastersLock);
+        AutoLock lock(mMulticastersLock);
         // if anybody had requested filters be off, leave off
         if (mMulticasters.Begin() != mMulticasters.End()) {
             return NOERROR;
@@ -1853,7 +1853,7 @@ ECode CWifiService::AcquireMulticastLock(
     FAIL_RETURN(EnforceMulticastChangePermission());
 
     {
-        Mutex::Autolock lock(mMulticastersLock);
+        AutoLock lock(mMulticastersLock);
 
         mMulticastEnabled++;
         mMulticasters.PushBack(new Multicaster(tag, binder, this));
@@ -1881,7 +1881,7 @@ ECode CWifiService::ReleaseMulticastLock()
 
     Int32 uid = Binder::GetCallingUid();
     {
-        Mutex::Autolock lock(mMulticastersLock);
+        AutoLock lock(mMulticastersLock);
 
         mMulticastDisabled++;
         List< AutoPtr<Multicaster> >::ReverseIterator rit;
@@ -1927,7 +1927,7 @@ ECode CWifiService::IsMulticastEnabled(
     FAIL_RETURN(EnforceAccessPermission());
 
     {
-        Mutex::Autolock lock(mMulticastersLock);
+        AutoLock lock(mMulticastersLock);
         *result =  mMulticasters.Begin() != mMulticasters.End();
     }
     return NOERROR;

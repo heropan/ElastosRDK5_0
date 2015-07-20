@@ -83,10 +83,10 @@ private:
 
     AutoPtr<IContext> mContext;
     AutoPtr<IPowerManagerWakeLock> mWakeLock;  // held while there is a pending route change
-    Mutex mLock;
+    Object mLock;
 
     static AutoPtr<UsbCameraDeviceManagerObserver> mUsbCameraObserver;
-    static Mutex mStaticLock;
+    static Object mStaticLock;
 };
 
 } // namespace Server

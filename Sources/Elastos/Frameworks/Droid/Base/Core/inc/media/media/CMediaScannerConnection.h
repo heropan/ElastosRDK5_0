@@ -5,7 +5,6 @@
 #include "_CMediaScannerConnection.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -156,7 +155,7 @@ private:
 
     AutoPtr<IIMediaScannerListener> mListener; // = new IMediaScannerListener.Stub();
 
-    Mutex mThisLock;
+    Object mThisLock;
 };
 
 } // namespace Media

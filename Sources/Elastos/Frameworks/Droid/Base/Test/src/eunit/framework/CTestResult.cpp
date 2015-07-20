@@ -81,7 +81,7 @@ ECode CTestResult::AddFailure(
 ECode CTestResult::AddListener(
     /* [in] */ ITestListener* listener)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     Boolean result;
     return mListeners->Add(listener, &result);
 }
@@ -92,14 +92,14 @@ ECode CTestResult::AddListener(
 ECode CTestResult::RemoveListener(
     /* [in] */ ITestListener* listener)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     Boolean result;
     return mListeners->Remove(listener, &result);
 }
 
 AutoPtr<IList> CTestResult::CloneListeners()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     AutoPtr<IArrayList> result;
     CArrayList::New((IArrayList**)&result);
     Boolean succeeded;
@@ -189,7 +189,7 @@ ECode CTestResult::RunCount(
 {
     VALIDATE_NOT_NULL(number);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     *number = mRunTests;
     return NOERROR;
 }
@@ -221,7 +221,7 @@ ECode CTestResult::ShouldStop(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     *result = mStop;
     return NOERROR;
 }
@@ -235,7 +235,7 @@ ECode CTestResult::StartTest(
     Int32 count;
     test->CountTestCases(&count);
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         mRunTests += count;
     }
     AutoPtr<IList> listeners = CloneListeners();
@@ -255,7 +255,7 @@ ECode CTestResult::StartTest(
  */
 ECode CTestResult::Stop()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mStop = TRUE;
     return NOERROR;
 }
@@ -267,7 +267,7 @@ ECode CTestResult::WasSuccessful(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     Int32 fCount, eCount;
     FailureCount(&fCount);
     ErrorCount(&eCount);

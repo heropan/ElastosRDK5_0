@@ -276,7 +276,7 @@ public:
 
 private:
     TextLayoutShaper* mShaper;
-    Mutex mLock;
+    Object mLock;
     bool mInitialized;
 
     GenerationCache<TextLayoutCacheKey, sp<TextLayoutValue> > mCache;

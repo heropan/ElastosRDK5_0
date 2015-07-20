@@ -7,7 +7,6 @@
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::App::IAlarmManager;
 using Elastos::Droid::App::INotification;
 using Elastos::Droid::App::INotificationManager;
@@ -279,7 +278,7 @@ private:
         static const Int32 MAX_SIMS_SUPPORTED = 3;
         static const Int32 DATA_FILE_VERSION = 1;
 
-        Mutex mParentLock;
+        Object mParentLock;
 
     }; //class DataRecorder
 

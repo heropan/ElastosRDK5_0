@@ -647,7 +647,7 @@ ECode CPrivacyLocationManager::RequestLocationUpdates(
 
     /*synchronized (lock) */
     { // custom listener should only return a value after this method has returned
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         String packageName;
         mContext->GetPackageName(&packageName);

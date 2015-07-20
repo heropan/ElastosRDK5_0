@@ -16,7 +16,7 @@ public:
 
     SynchronizedPool(
         /* [in] */ IPool* pool,
-        /* [in] */ Mutex& lock);
+        /* [in] */ Object& lock);
 
     CARAPI_(PInterface) Probe(
         /* [in]  */ REIID riid);
@@ -37,8 +37,8 @@ public:
 
 private:
     AutoPtr<IPool> mPool;
-    Mutex mLock;
-    Mutex& mLockRef;
+    Object mLock;
+    Object& mLockRef;
 };
 
 } // namespace Utility

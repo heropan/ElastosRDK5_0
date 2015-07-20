@@ -443,7 +443,7 @@ Int32 Monkey::Run(
     mNetworkMonitor->Stop();
 
     {
-        Mutex::Autolock lock(mLockLock);
+        AutoLock lock(mLockLock);
         if (mRequestAnrTraces) {
             ReportAnrTraces();
             mRequestAnrTraces = FALSE;
@@ -852,7 +852,7 @@ Int32 Monkey::RunMonkeyCycles()
             if ( -1 == system("cd /data && ./getsysinfo.sh")) {
                 PFL_EX("please check whether the shell script file is correct or not")
             }
-            Mutex::Autolock lock(mLockLock);
+            AutoLock lock(mLockLock);
             if (mRequestProcRank) {
                 ReportProcRank();
                 mRequestProcRank = FALSE;
@@ -999,7 +999,7 @@ Int32 Monkey::RunMonkeyCycles()
 void Monkey::SignalPersistentProcesses()
 {
     mAm->SignalPersistentProcesses(IProcess::SIGNAL_USR1);
-    Mutex::Autolock lock(mLockLock);
+    AutoLock lock(mLockLock);
     mLock.Wait(2000);
 }
 

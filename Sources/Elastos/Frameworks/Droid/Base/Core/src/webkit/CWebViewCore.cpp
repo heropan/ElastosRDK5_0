@@ -565,7 +565,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             // Time to take down the world. Cancel all pending
             // loads and destroy the native view and frame.
             {
-                Mutex::Autolock lock(mOwner->mOwner->_m_syncLock);
+                AutoLock lock(mOwner->mOwner->_m_syncLock);
 
                 mOwner->mOwner->mCallbackProxy->Shutdown();
                 // Wake up the WebCore thread just in case it is waiting for a
@@ -1416,7 +1416,7 @@ void CWebViewCore::EventHub::TransferMessages()
     mHandler = new MyHandler(this);
     // Take all queued messages and resend them to the new handler.
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         List< AutoPtr<IMessage> >::Iterator it;
         for (it = mMessages->Begin(); it != mMessages->End(); ++it) {
@@ -1511,7 +1511,7 @@ ECode CWebViewCore::EventHub::DispatchWebKitEvent(
 void CWebViewCore::EventHub::SendMessage(
     /* [in] */ IMessage* msg)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mBlockMessages) {
         return;
@@ -1528,7 +1528,7 @@ void CWebViewCore::EventHub::SendMessage(
 void CWebViewCore::EventHub::RemoveMessages(
     /* [in] */ Int32 what)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mBlockMessages) {
         return;
@@ -1557,7 +1557,7 @@ void CWebViewCore::EventHub::SendMessageDelayed(
     /* [in] */ IMessage* msg,
     /* [in] */ Int64 delay)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mBlockMessages) {
         return;
     }
@@ -1571,7 +1571,7 @@ void CWebViewCore::EventHub::SendMessageDelayed(
 void CWebViewCore::EventHub::SendMessageAtFrontOfQueue(
     /* [in] */ IMessage* msg)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mBlockMessages) {
         return;
     }
@@ -1589,7 +1589,7 @@ void CWebViewCore::EventHub::SendMessageAtFrontOfQueue(
  */
 void CWebViewCore::EventHub::RemoveMessages()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // reset mDrawIsScheduled flag as WEBKIT_DRAW may be removed
     mOwner->mDrawIsScheduled = FALSE;
      if (mMessages != NULL) {
@@ -1605,7 +1605,7 @@ void CWebViewCore::EventHub::RemoveMessages()
  */
 void CWebViewCore::EventHub::BlockMessages()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mBlockMessages = TRUE;
 }
 
@@ -2003,7 +2003,7 @@ void CWebViewCore::InitializeSubwindow()
  * is called only from BrowserFrame in the WebCore thread. */
 AutoPtr<BrowserFrame> CWebViewCore::GetBrowserFrame()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mBrowserFrame;
 }
 
@@ -2725,7 +2725,7 @@ ECode CWebViewCore::SendMessage(
 void CWebViewCore::SendMessages(
     /* [in] */ List< AutoPtr<IMessage> >& messages)
 {
-    Mutex::Autolock lock(mEventHub->mLock);
+    AutoLock lock(mEventHub->mLock);
 
     List< AutoPtr<IMessage> >::Iterator it;
     for (it = messages.Begin(); it != messages.End(); ++it) {
@@ -2858,7 +2858,7 @@ void CWebViewCore::RemoveMessages()
  */
 void CWebViewCore::Destroy()
 {
-    Mutex::Autolock lock(mEventHub->mLock);
+    AutoLock lock(mEventHub->mLock);
 
     // send DESTROY to front of queue
     // PAUSE/RESUME timers will still be processed even if they get handled later
@@ -3068,7 +3068,7 @@ Int64 CWebViewCore::GetUsedQuota()
 
 void CWebViewCore::PauseWebKitDraw()
 {
-    Mutex::Autolock lock(mSkipDrawFlagLock);
+    AutoLock lock(mSkipDrawFlagLock);
     if (!mSkipDrawFlag) {
         mSkipDrawFlag = TRUE;
     }
@@ -3076,7 +3076,7 @@ void CWebViewCore::PauseWebKitDraw()
 
 void CWebViewCore::ResumeWebKitDraw()
 {
-    Mutex::Autolock lock(mSkipDrawFlagLock);
+    AutoLock lock(mSkipDrawFlagLock);
     if (mSkipDrawFlag && mDrawWasSkipped) {
         // a draw was dropped, send a retry
         mDrawWasSkipped = FALSE;
@@ -3092,7 +3092,7 @@ void CWebViewCore::ResumeWebKitDraw()
 void CWebViewCore::WebkitDraw()
 {
     {
-        Mutex::Autolock lock(mSkipDrawFlagLock);
+        AutoLock lock(mSkipDrawFlagLock);
         if (mSkipDrawFlag) {
             mDrawWasSkipped = TRUE;
             return;
@@ -3238,7 +3238,7 @@ void CWebViewCore::PauseUpdatePicture(
         if (settings->EnableSmoothTransition(&result), !result) return;
 
         {
-            Mutex::Autolock lock(core->mLock);
+            AutoLock lock(core->mLock);
             if (core->mNativeClass == 0) {
                 Logger::W(LOGTAG, "Cannot pauseUpdatePicture, core destroyed or not initialized!");
                 return;
@@ -3256,7 +3256,7 @@ void CWebViewCore::ResumeUpdatePicture(
         if (!core->mDrawIsPaused) return;
 
         {
-            Mutex::Autolock lock(core->mLock);
+            AutoLock lock(core->mLock);
             if (core->mNativeClass == 0) {
                 Logger::W(LOGTAG, "Cannot resumeUpdatePicture, core destroyed!");
                 return;
@@ -3301,7 +3301,7 @@ void CWebViewCore::ContentDraw()
     //if (DebugFlags::WEB_VIEW_CORE) {
         //Logger::V(LOGTAG, "CWebViewCore::ContentDraw");
     //}
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mWebViewClassic == NULL || mBrowserFrame == NULL) {
         // We were destroyed
         return;

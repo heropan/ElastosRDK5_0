@@ -33,7 +33,7 @@ ECode CDisplayManager::GetDisplay(
 {
     VALIDATE_NOT_NULL(display);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IDisplay> temp = GetOrCreateDisplayLocked(displayId, FALSE /*assumeValid*/);
     *display = temp;
@@ -57,7 +57,7 @@ ECode CDisplayManager::GetDisplays(
     AutoPtr<ArrayOf<Int32> > displayIds;
     mGlobal->GetDisplayIds((ArrayOf<Int32>**)&displayIds);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     //try {
         if (category.IsNull()) {

@@ -7,7 +7,6 @@
 #include "graphics/drawable/Drawable.h"
 
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IFileOutputStream;
 using Elastos::Droid::Graphics::IBitmap;
@@ -340,7 +339,7 @@ private:
     Float mWallpaperXStep;
     Float mWallpaperYStep;
     AutoPtr<IContext> mContext;
-    static Mutex sSync;
+    static Object sSync;
     static AutoPtr<CGlobalsWallpaperManagerCallback> sGlobals;
 };
 

@@ -67,7 +67,7 @@ ECode CJetPlayer::NativeEventHandler::HandleMessage(
 
     {
         CJetPlayer* jetPlayer = (CJetPlayer*)jet.Get();
-        Mutex::Autolock lock(&jetPlayer->mEventListenerLock);
+        AutoLock lock(&jetPlayer->mEventListenerLock);
         listener = jetPlayer->mJetEventListener;
     }
 
@@ -323,7 +323,7 @@ ECode CJetPlayer::SetEventListener(
     /* [in] */ IOnJetEventListener* listener,
     /* [in] */ IHandler* handler)
 {
-    Mutex::Autolock lock(mEventListenerLock);
+    AutoLock lock(mEventListenerLock);
 
     mJetEventListener = listener;
 

@@ -9,7 +9,6 @@
 #endif
 #include "database/ContentObserver.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Content::IContext;
@@ -213,7 +212,7 @@ private:
 
     static Double sNextNextGaussian;
 
-    Mutex mLock;
+    Object mLock;
 
     /**
      * Used to monitor coarse accuracy secure setting for changes.

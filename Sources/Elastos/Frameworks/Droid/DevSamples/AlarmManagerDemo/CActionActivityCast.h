@@ -4,7 +4,6 @@
 
 #include "app/Activity.h"
 #include "_CActionActivityCast.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::Content::IIntent;

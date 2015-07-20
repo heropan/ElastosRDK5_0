@@ -5,7 +5,6 @@
 #include <elastos/Core/Object.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::ISynchronize;
 using Elastos::Core::Object;
 using Elastos::Droid::Os::IHandler;
@@ -282,7 +281,7 @@ private:
         /* [in] */ IInterface* token);
 
 public:
-    Mutex mQueueLock;
+    Object mQueueLock;
     AutoPtr<IMessageQueue> mQueue;
     AutoPtr<ILooper> mLooper;
     AutoPtr<IIMessenger> mMessenger;

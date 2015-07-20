@@ -6,7 +6,6 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Media::CAudioTrack;
 using Elastos::Droid::Media::IAudioFormat;
@@ -56,7 +55,7 @@ Boolean BlockingAudioTrack::Init()
 {
     AutoPtr<IAudioTrack> track = CreateStreamingAudioTrack();
     {
-        Mutex::Autolock lock(mAudioTrackLock);
+        AutoLock lock(mAudioTrackLock);
         mAudioTrack = track;
     }
 
@@ -69,7 +68,7 @@ Boolean BlockingAudioTrack::Init()
 
 void BlockingAudioTrack::Stop()
 {
-    Mutex::Autolock lock(mAudioTrackLock);
+    AutoLock lock(mAudioTrackLock);
     if (mAudioTrack != NULL) {
         mAudioTrack->Stop();
     }
@@ -81,7 +80,7 @@ Int32 BlockingAudioTrack::Write(
 {
     AutoPtr<IAudioTrack> track = NULL;
     {
-        Mutex::Autolock lock(mAudioTrackLock);
+        AutoLock lock(mAudioTrackLock);
         track = mAudioTrack;
     }
 
@@ -98,7 +97,7 @@ void BlockingAudioTrack::WaitAndRelease()
 {
     AutoPtr<IAudioTrack> track = NULL;
     {
-        Mutex::Autolock lock(mAudioTrackLock);
+        AutoLock lock(mAudioTrackLock);
         track = mAudioTrack;
     }
     if (track == NULL) {
@@ -147,7 +146,7 @@ void BlockingAudioTrack::WaitAndRelease()
         Logger::D(TAG, strOut);
     }
     {
-        Mutex::Autolock lock(mAudioTrackLock);
+        AutoLock lock(mAudioTrackLock);
         mAudioTrack = NULL;
     }
     track->Release();

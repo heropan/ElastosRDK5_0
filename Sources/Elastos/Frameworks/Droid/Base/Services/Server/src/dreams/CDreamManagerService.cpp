@@ -38,7 +38,7 @@ ECode CDreamManagerService::SRBroadcastReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     mHost->StopDreamLocked();
     return NOERROR;
 }
@@ -197,7 +197,7 @@ ECode CDreamManagerService::IsDreaming(
     FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::READ_DREAM_STATE));
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         *result =  mCurrentDreamToken != NULL && !mCurrentDreamIsTest;
     }
     return NOERROR;
@@ -246,7 +246,7 @@ ECode CDreamManagerService::TestDream(
     const Int64 ident = Binder::ClearCallingIdentity();
 //     try {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         StartDreamLocked(dream, TRUE /*isTest*/, callingUserId);
     }
 //     } finally {
@@ -296,7 +296,7 @@ ECode CDreamManagerService::FinishSelf(
     // locks are held and the user activity timeout has expired then the
     // device may simply go to sleep.
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mCurrentDreamToken.Get() == token) {
             StopDreamLocked();
         }
@@ -316,7 +316,7 @@ ECode CDreamManagerService::StartDream()
     AutoPtr<IComponentName> dream = ChooseDreamForUser(userId);
     if (dream != NULL) {
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             StartDreamLocked(dream, FALSE /*isTest*/, userId);
         }
     }
@@ -325,7 +325,7 @@ ECode CDreamManagerService::StartDream()
 
 ECode CDreamManagerService::StopDream()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     StopDreamLocked();
     return NOERROR;
 }

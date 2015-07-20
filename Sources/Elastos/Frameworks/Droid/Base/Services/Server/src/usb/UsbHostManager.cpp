@@ -131,13 +131,13 @@ int UsbHostManager::usb_device_removed(const char* devname, void* client_data)
 void UsbHostManager::SetCurrentSettings(
     /* [in] */ UsbSettingsManager* settings)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCurrentSettings = settings;
 }
 
 AutoPtr<UsbSettingsManager> UsbHostManager::GetCurrentSettings()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mCurrentSettings;
 }
 
@@ -184,7 +184,7 @@ void UsbHostManager::UsbDeviceAdded(
         return;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     HashMap< String, AutoPtr<IUsbDevice> >::Iterator it = mDevices.Find(deviceName);
     if (it != mDevices.End() && it->mSecond != NULL) {
@@ -251,7 +251,7 @@ void UsbHostManager::UsbDeviceAdded(
 void UsbHostManager::UsbDeviceRemoved(
     /* [in] */ const String& deviceName)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     HashMap< String, AutoPtr<IUsbDevice> >::Iterator it = mDevices.Find(deviceName);
     if (it == mDevices.End()) {
@@ -264,7 +264,7 @@ void UsbHostManager::UsbDeviceRemoved(
 
 void UsbHostManager::SystemReady()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IRunnable> runnable = new SRRunnable(this);
     AutoPtr<IThread> thread;
@@ -274,7 +274,7 @@ void UsbHostManager::SystemReady()
 
 AutoPtr<IBundle> UsbHostManager::GetDeviceList()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IBundle> devices;
     CBundle::New((IBundle**)&devices);
@@ -293,7 +293,7 @@ ECode UsbHostManager::OpenDevice(
 {
     VALIDATE_NOT_NULL(pfd);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (IsBlackListed(deviceName) == TRUE) {
         // throw new SecurityException("USB device is on a restricted bus");

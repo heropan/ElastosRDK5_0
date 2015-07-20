@@ -345,7 +345,7 @@ UserAccounts::UserAccounts(
     /* [in] */ Int32 userId)
     : mUserId(userId)
 {
-    Mutex::Autolock lock(mCacheLock);
+    AutoLock lock(mCacheLock);
     String name;
     CAccountManagerService::GetDatabaseName(userId, &name);
     mOpenHelper = new CAccountManagerService::DatabaseHelper(context, userId, name);
@@ -473,7 +473,7 @@ AutoPtr<IUserManager> CAccountManagerService::GetUserManager()
 AutoPtr<UserAccounts> CAccountManagerService::InitUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mUsersLock);
+    AutoLock lock(mUsersLock);
     AutoPtr<UserAccounts> accounts;
     HashMap<Int32, AutoPtr<UserAccounts> >::Iterator it = mUsers.Find(userId);
     if (it != mUsers.End()) {
@@ -490,7 +490,7 @@ AutoPtr<UserAccounts> CAccountManagerService::InitUser(
 
 void CAccountManagerService::PurgeOldGrantsAll()
 {
-    Mutex::Autolock lock(mUsersLock);
+    AutoLock lock(mUsersLock);
     HashMap<Int32, AutoPtr<UserAccounts> >::Iterator it;
     for (it = mUsers.Begin(); it != mUsers.End(); ++it) {
         PurgeOldGrants(it->mSecond);
@@ -500,7 +500,7 @@ void CAccountManagerService::PurgeOldGrantsAll()
 void CAccountManagerService::PurgeOldGrants (
     /* [in] */ UserAccounts* accounts)
 {
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     AutoPtr<ICursor> cursor;
@@ -558,7 +558,7 @@ void CAccountManagerService::ValidateAccountsInternal(
     }
 
     {
-        Mutex::Autolock lock(accounts->mCacheLock);
+        AutoLock lock(accounts->mCacheLock);
         AutoPtr<ISQLiteDatabase> db;
         ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
         Boolean accountDeleted = FALSE;
@@ -648,7 +648,7 @@ AutoPtr<UserAccounts> CAccountManagerService::GetUserAccountsForCaller()
 AutoPtr<UserAccounts> CAccountManagerService::GetUserAccounts(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mUsersLock);
+    AutoLock lock(mUsersLock);
     AutoPtr<UserAccounts> accounts;
     HashMap<Int32, AutoPtr<UserAccounts> >::Iterator it = mUsers.Find(userId);
     if (it != mUsers.End()) {
@@ -670,7 +670,7 @@ void CAccountManagerService::OnUserRemoved(
 
     AutoPtr<UserAccounts> accounts;
     {
-        Mutex::Autolock lock(mUsersLock);
+        AutoLock lock(mUsersLock);
         HashMap<Int32, AutoPtr<UserAccounts> >::Iterator it = mUsers.Find(userId);
         if (it != mUsers.End()) {
             accounts = it->mSecond;
@@ -688,7 +688,7 @@ void CAccountManagerService::OnUserRemoved(
         return;
     }
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     accounts->mOpenHelper->Close();
     AutoPtr<IFile> dbFile;
     String s;
@@ -745,7 +745,7 @@ String CAccountManagerService::ReadPasswordInternal(
         return String(NULL);
     }
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetReadableDatabase((ISQLiteDatabase**)&db));
     AutoPtr<ICursor> cursor;
@@ -877,7 +877,7 @@ Boolean CAccountManagerService::AddAccountInternal(
         return FALSE;
     }
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -1046,7 +1046,7 @@ ECode CAccountManagerService::RemoveAccount(
 
     CancelNotification(GetSigninRequiredNotificationId(accounts, account), user);
     {
-        Mutex::Autolock lock(accounts->mCredentialsPermissionNotificationIdsLock);
+        AutoLock lock(accounts->mCredentialsPermissionNotificationIdsLock);
         HashMap<Pair<Pair<AutoPtr<IAccount>, String>*, AutoPtr<IInteger32> >*, AutoPtr<IInteger32> >::Iterator it
                 = accounts->mCredentialsPermissionNotificationIds.Begin();
         for (; it != accounts->mCredentialsPermissionNotificationIds.End(); ++it) {
@@ -1087,7 +1087,7 @@ void CAccountManagerService::RemoveAccountInternal(
     /* [in] */ UserAccounts* accounts,
     /* [in] */ IAccount* account)
 {
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     AutoPtr< ArrayOf<String> > accountInfo = ArrayOf<String>::Alloc(2);
@@ -1124,7 +1124,7 @@ ECode CAccountManagerService::InvalidateAuthToken(
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(accounts->mCacheLock);
+        AutoLock lock(accounts->mCacheLock);
         AutoPtr<ISQLiteDatabase> db;
         ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
         db->BeginTransaction();
@@ -1200,7 +1200,7 @@ Boolean CAccountManagerService::SaveAuthTokenToDatabase(
     CUserHandle::New(accounts->mUserId, (IUserHandle**)&userH);
     CancelNotification(GetSigninRequiredNotificationId(accounts, account), userH);
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -1350,7 +1350,7 @@ void CAccountManagerService::SetPasswordInternal(
         return;
     }
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -1464,7 +1464,7 @@ void CAccountManagerService::SetUserdataInternal(
         return;
     }
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -1773,7 +1773,7 @@ AutoPtr<IInteger32> CAccountManagerService::GetCredentialPermissionNotificationI
 
     typedef Pair<AutoPtr<IAccount>, String> AccountStringPair;
     {
-        Mutex::Autolock lock(accounts->mCredentialsPermissionNotificationIdsLock);
+        AutoLock lock(accounts->mCredentialsPermissionNotificationIdsLock);
         AutoPtr<IInteger32> integer32;
         CInteger32::New(uid, (IInteger32**)&integer32);
         Pair<AccountStringPair *, AutoPtr<IInteger32> >* key =
@@ -1803,7 +1803,7 @@ Int32 CAccountManagerService::GetSigninRequiredNotificationId(
 {
     AutoPtr<IInteger32> id;
     {
-        Mutex::Autolock lock(accounts->mSigninRequiredNotificationIdsLock);
+        AutoLock lock(accounts->mSigninRequiredNotificationIdsLock);
         HashMap<AutoPtr<IAccount>, AutoPtr<IInteger32> >::Iterator it =
                 accounts->mSigninRequiredNotificationIds.Find(account);
         if (it != accounts->mSigninRequiredNotificationIds.End()) {
@@ -2033,7 +2033,7 @@ ECode CAccountManagerService::GetAccounts(
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(userAccounts->mCacheLock);
+        AutoLock lock(userAccounts->mCacheLock);
         AutoPtr< ArrayOf<IAccount*> > accounts = GetAccountsFromCacheLocked(
                 userAccounts, String(NULL));
         *_accounts = accounts;
@@ -2092,13 +2092,13 @@ ECode CAccountManagerService::GetAccounts(
 
     AutoPtr< ArrayOf<IAccountAndUser*> > runningAccounts;
     {
-        Mutex::Autolock lock(mUsersLock);
+        AutoLock lock(mUsersLock);
         HashMap<Int32, AutoPtr<UserAccounts> >::Iterator it;
         for (Int32 i = 0; i < userIds.GetLength(); ++i) {
             Int32 userId = userIds[i];
             AutoPtr<UserAccounts> userAccounts = GetUserAccounts(userId);
             if (userAccounts == NULL) continue;
-            Mutex::Autolock lock(userAccounts->mCacheLock);
+            AutoLock lock(userAccounts->mCacheLock);
             AutoPtr< ArrayOf<IAccount*> > accounts =
                     GetAccountsFromCacheLocked(userAccounts, String(NULL));
             runningAccounts = ArrayOf<IAccountAndUser*>::Alloc(accounts->GetLength());
@@ -2139,7 +2139,7 @@ ECode CAccountManagerService::GetAccountsAsUser(
     Int64 identityToken = Binder::ClearCallingIdentity();
     // try {
     {
-        Mutex::Autolock lock(userAccounts->mCacheLock);
+        AutoLock lock(userAccounts->mCacheLock);
         AutoPtr< ArrayOf<IAccount*> > accounts = GetAccountsFromCacheLocked(
                 userAccounts, accountType);
         *_accounts = accounts;
@@ -2188,7 +2188,7 @@ ECode CAccountManagerService::GetAccountsByFeatures(
     if (features == NULL || features->GetLength() == 0) {
         AutoPtr< ArrayOf<IAccount*> > accounts;
         {
-            Mutex::Autolock lock(userAccounts->mCacheLock);
+            AutoLock lock(userAccounts->mCacheLock);
             accounts = GetAccountsFromCacheLocked(userAccounts, accountType);
         }
         AutoPtr<IBundle> result;
@@ -2620,7 +2620,7 @@ Boolean CAccountManagerService::HasExplicitlyGrantedPermission(
     }
     AutoPtr<UserAccounts> accounts = GetUserAccountsForCaller();
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     accounts->mOpenHelper->GetReadableDatabase((ISQLiteDatabase**)&db);
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(4);
@@ -2732,7 +2732,7 @@ void CAccountManagerService::GrantAppPermission(
     }
     AutoPtr<UserAccounts> accounts = GetUserAccounts(UserHandle::GetUserId(uid));
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -2780,7 +2780,7 @@ void CAccountManagerService::RevokeAppPermission(
     }
     AutoPtr<UserAccounts> accounts = GetUserAccounts(UserHandle::GetUserId(uid));
 
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr<ISQLiteDatabase> db;
     ASSERT_SUCCEEDED(accounts->mOpenHelper->GetWritableDatabase((ISQLiteDatabase**)&db));
     db->BeginTransaction();
@@ -2975,7 +2975,7 @@ String CAccountManagerService::ReadAuthTokenInternal(
     /* [in] */ IAccount* account,
     /* [in] */ const String& authTokenType)
 {
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr< HashMap<String, String> > authTokensForAccount;
     HashMap<AutoPtr<IAccount>, AutoPtr< HashMap<String, String> > >::Iterator it =
             accounts->mAuthTokenCache.Find(account);
@@ -3002,7 +3002,7 @@ String CAccountManagerService::ReadUserDataInternal(
     /* [in] */ IAccount* account,
     /* [in] */ const String& key)
 {
-    Mutex::Autolock lock(accounts->mCacheLock);
+    AutoLock lock(accounts->mCacheLock);
     AutoPtr< HashMap<String, String> > userDataForAccount;
     HashMap<AutoPtr<IAccount>, AutoPtr< HashMap<String, String> > >::Iterator it =
             accounts->mUserDataCache.Find(account);

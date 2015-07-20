@@ -36,7 +36,7 @@ AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::
 {
     AutoPtr<KeyState> state;
     {
-        Mutex::Autolock lock(mRecycledListLock);
+        AutoLock lock(mRecycledListLock);
         state = mRecycledList;
         if (state != NULL) {
             mRecycledList = state->mNext;
@@ -54,7 +54,7 @@ AutoPtr<InputEventConsistencyVerifier::KeyState> InputEventConsistencyVerifier::
 
 void InputEventConsistencyVerifier::KeyState::Recycle()
 {
-    Mutex::Autolock lock(mRecycledListLock);
+    AutoLock lock(mRecycledListLock);
     mNext = mRecycledList;
     mRecycledList = mNext;
 }

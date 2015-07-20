@@ -106,7 +106,7 @@ ECode CImageWallpaper::DrawableEngine::WallpaperObserver::OnReceive(
         Logger::D(TAG, "onReceive");
     }
 
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     mOwner->mLastSurfaceWidth = mOwner->mLastSurfaceHeight = -1;
     mOwner->mBackground = NULL;
     mOwner->mRedrawNeeded = TRUE;
@@ -218,7 +218,7 @@ void CImageWallpaper::DrawableEngine::OnVisibilityChanged(
         Logger::D(TAG, "onVisibilityChanged: mVisible, visible=%d, %d", mVisible, visible);
     }
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     if (mVisible != visible) {
         if (DEBUG) {
             Logger::D(TAG, "Visibility changed to visible=%d", visible);
@@ -250,7 +250,7 @@ void CImageWallpaper::DrawableEngine::OnOffsetsChanged(
             xOffset, yOffset, xOffsetStep, yOffsetStep, xPixels, yPixels);
     }
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     if (mXOffset != xOffset || mYOffset != yOffset) {
         if (DEBUG) {
             Logger::D(TAG, "Offsets changed to (%f,%f).", xOffset, yOffset);
@@ -275,7 +275,7 @@ void CImageWallpaper::DrawableEngine::OnSurfaceChanged(
 
     Engine::OnSurfaceChanged(holder, format, width, height);
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     DrawFrameLocked();
 }
 
@@ -304,7 +304,7 @@ void CImageWallpaper::DrawableEngine::OnSurfaceRedrawNeeded(
     }
     Engine::OnSurfaceRedrawNeeded(holder);
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     DrawFrameLocked();
 }
 

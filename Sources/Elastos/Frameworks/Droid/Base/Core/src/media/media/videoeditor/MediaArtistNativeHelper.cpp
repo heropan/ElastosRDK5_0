@@ -2563,7 +2563,7 @@ void MediaArtistNativeHelper::ReleaseResources()
    //          // Change state and get Lock
    //          // This will ensure the generateClip function exits if it is running
    //          pContext->state = ManualEditState_STOPPING;
-   //          Mutex::Autolock autoLock(pContext->mLock);
+   //          AutoLock autoLock(pContext->mLock);
    //      }
 
    //      // Reset the context.
@@ -2744,7 +2744,7 @@ void MediaArtistNativeHelper::StopEncoding()
     // // Change state and get Lock
     // // This will ensure the generateClip function exits
     // pContext->state = ManualEditState_STOPPING;
-    // Mutex::Autolock autoLock(pContext->mLock);
+    // AutoLock autoLock(pContext->mLock);
 
     // // Make sure that the context was set.
     // videoEditJava_checkAndThrowIllegalStateException(&stopped, pEnv,
@@ -4221,7 +4221,7 @@ Int32 MediaArtistNativeHelper::NativeGenerateClip(
     // // Get the context.
     // pContext = (ManualEditContext*)videoEditClasses_getContext(&loaded, pEnv, thiz);
 
-    // Mutex::Autolock autoLock(pContext->mLock);
+    // AutoLock autoLock(pContext->mLock);
 
     // // Validate the settings parameter.
     // videoEditJava_checkAndThrowIllegalArgumentException(&loaded, pEnv,

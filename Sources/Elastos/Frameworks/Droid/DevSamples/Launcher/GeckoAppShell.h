@@ -49,7 +49,7 @@ private:
         CARAPI_(PInterface) Probe(
             /* [in]  */ REIID riid);
 
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
         UInt32 AddRef();
 
@@ -125,7 +125,7 @@ private:
     public:
          //SynchronousQueue<Handler> mHandlerQueue;
     private:
-        Mutex mSync;
+        Object mSync;
     };
 
     /*private static class GeckoMediaScannerClient implements MediaScannerConnectionClient {
@@ -215,13 +215,13 @@ private:
         static Void ResetIME();
 
     private:
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
         static AutoPtr<GeckoAppShell::IMEStateUpdater> GetInstance();
 
     private:
-        Mutex mLock;
-        static Mutex mClassLock;
+        Object mLock;
+        static Object mClassLock;
         static AutoPtr<GeckoAppShell::IMEStateUpdater> instance;
         Boolean mEnable;
         Boolean mReset;
@@ -764,7 +764,7 @@ private:
     static List< AutoPtr<GeckoEvent> > gPendingEvents;
 
     static Boolean gRestartScheduled;
-    static Mutex sSyncCloseCameraMet;
+    static Object sSyncCloseCameraMet;
     //AutoPtr< ISynchronousQueue<IDate> > sTracerQueue;
 
 //    static AutoPtr<ITimer> mIMETimer;
@@ -785,7 +785,7 @@ private:
     //static AutoPtr<ISensor> gOrientationSensor;
     //static SynchronousQueue<String> sClipboardQueue;
 
-    static Mutex mGeckoAppShell;
+    static Object mGeckoAppShell;
 
     friend class IMEStateUpdater;
 };

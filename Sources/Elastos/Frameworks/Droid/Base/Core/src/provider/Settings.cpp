@@ -118,7 +118,7 @@ ECode Settings::NameValueCache::LazyGetProvider(
     VALIDATE_NOT_NULL(provider)
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mContentProvider == NULL) {
             String authority;
             mUri->GetAuthority(&authority);
@@ -177,7 +177,7 @@ ECode Settings::NameValueCache::GetStringForUser(
         Int64 newValuesVersion = SystemProperties::GetInt64(mVersionSystemProperty, 0);
 
         // Our own user's settings data uses a client-side cache
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mValuesVersion != newValuesVersion) {
             if (LOCAL_LOGV || FALSE) {
                 String segment;
@@ -223,7 +223,7 @@ ECode Settings::NameValueCache::GetStringForUser(
             b->GetPairValue(&_value);
             // Don't update our cache for reads of other users' data
             if (isSelf) {
-                Mutex::Autolock lock(mLock);
+                AutoLock lock(mLock);
                 mValues[name] = _value;
             }
             else {
@@ -266,7 +266,7 @@ ECode Settings::NameValueCache::GetStringForUser(
         c->GetString(0, &_value);
     }
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mValues[name] = _value;
     }
     if (LOCAL_LOGV) {
@@ -1262,7 +1262,7 @@ ECode Settings::Secure::GetStringForUser(
 
     if (MOVED_TO_LOCK_SETTINGS.Find(name) != MOVED_TO_LOCK_SETTINGS.End()) {
         {
-            Mutex::Autolock lock(sSecureLock);
+            AutoLock lock(sSecureLock);
             if (sLockSettings == NULL) {
                 sLockSettings = (ILockSettings*)ServiceManager::GetService(String("lock_settings")).Get();
                 sIsSystemProcess = Process::MyUid() == IProcess::SYSTEM_UID;

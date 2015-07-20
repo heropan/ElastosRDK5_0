@@ -198,14 +198,14 @@ private:
     //          implemented for b/5265606.
 
     static AutoPtr<WebViewDatabaseClassic> sInstance;
-    static Mutex sInstanceLock;
+    static Object sInstanceLock;
 
     static AutoPtr<ISQLiteDatabase> sDatabase;
 
     // synchronize locks
-    Mutex mPasswordLock;
-    Mutex mFormLock;
-    Mutex mHttpAuthLock;
+    Object mPasswordLock;
+    Object mFormLock;
+    Object mHttpAuthLock;
 
     static const String mTableNames[];
 

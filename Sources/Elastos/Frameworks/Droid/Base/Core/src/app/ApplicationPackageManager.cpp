@@ -1191,7 +1191,7 @@ ECode ApplicationPackageManager::IsSafeMode(
 
 void ApplicationPackageManager::ConfigurationChanged()
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
     sIconCache.Clear();
     sStringCache.Clear();
 }
@@ -1199,7 +1199,7 @@ void ApplicationPackageManager::ConfigurationChanged()
 AutoPtr<IDrawable> ApplicationPackageManager::GetCachedIcon(
     /* [in] */ ResourceName* name)
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
     HashMap<AutoPtr<ResourceName>, AutoPtr<IWeakReference> >::Iterator it = sIconCache.Find(name);
     if (it != sIconCache.End()) {
         AutoPtr<IWeakReference> wr = it->mSecond;
@@ -1232,7 +1232,7 @@ void ApplicationPackageManager::PutCachedIcon(
     /* [in] */ IDrawable* dr)
 {
     assert(dr != NULL);
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
     AutoPtr<IDrawableConstantState> state;
     dr->GetConstantState((IDrawableConstantState**)&state);
 
@@ -1261,7 +1261,7 @@ void ApplicationPackageManager::HandlePackageBroadcast(
         for (Int32 i = 0; i < pkgList->GetLength(); ++i) {
             ssp = (*pkgList)[i];
             {
-                Mutex::Autolock lock(sSync);
+                AutoLock lock(sSync);
                 if (!sIconCache.IsEmpty()) {
                     HashMap<AutoPtr<ResourceName>, AutoPtr<IWeakReference> >::Iterator it;
                     for (it = sIconCache.Begin(); it != sIconCache.End();) {
@@ -1308,7 +1308,7 @@ void ApplicationPackageManager::HandlePackageBroadcast(
 AutoPtr<ICharSequence> ApplicationPackageManager::GetCachedString(
     /* [in] */ ResourceName* name)
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
 
     HashMap<AutoPtr<ResourceName>, AutoPtr<IWeakReference> >::Iterator it = sStringCache.Find(name);
     if (it != sIconCache.End()) {
@@ -1337,7 +1337,7 @@ void ApplicationPackageManager::PutCachedString(
     /* [in] */ ResourceName* name,
     /* [in] */ ICharSequence* cs)
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
 
     AutoPtr<IWeakReferenceSource> source = IWeakReferenceSource::Probe(cs);
     if (source != NULL) {

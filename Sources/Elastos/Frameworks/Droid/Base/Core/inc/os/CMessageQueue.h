@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -127,7 +126,7 @@ private:
     // Barriers are indicated by messages with a null target whose arg1 field carries the token.
     Int32 mNextBarrierToken;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Os

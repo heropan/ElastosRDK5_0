@@ -21,7 +21,7 @@ ECode CStrictModeSpan::Finish()
 {
     AutoPtr<CStrictMode::ThreadSpanState> state = mContainerState;
     {
-        Mutex::Autolock lock(mContainerStateLock);
+        AutoLock lock(mContainerStateLock);
         if (mName.IsNull()) {
             // Duplicate finish call.  Ignore.
             return NOERROR;

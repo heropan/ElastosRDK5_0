@@ -126,7 +126,7 @@ private:
     AutoPtr<IWifiDisplayThread> mWifiDisplayThread;
 
     AutoPtr<IHandler> mH;
-    Mutex mThisLock;
+    Object mThisLock;
 };
 
 } // namespace WifiDisplay

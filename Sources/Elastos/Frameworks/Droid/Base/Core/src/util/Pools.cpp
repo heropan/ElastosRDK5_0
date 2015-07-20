@@ -28,7 +28,7 @@ AutoPtr<IPool> Pools::AcquireSynchronizedPool(
 
 AutoPtr<IPool> Pools::AcquireSynchronizedPool(
     /* [in] */ IPool* pool,
-    /* [in] */ Mutex& lock)
+    /* [in] */ Object& lock)
 {
     return (IPool*)new SynchronizedPool(pool, lock);
 }

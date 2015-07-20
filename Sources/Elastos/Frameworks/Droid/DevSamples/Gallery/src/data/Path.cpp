@@ -18,7 +18,7 @@ AutoPtr<Path> Path::FromString(
     /* [in] */ const String& s)
 {
     Logger::D(TAG, "FromString--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     AutoPtr< ArrayOf<String> > segments = Split(s);
     AutoPtr<Path> current = sRoot;
     for (Int32 i = 0; i < segments->GetLength(); i++) {
@@ -117,7 +117,7 @@ AutoPtr<Path> Path::GetChild(
     /* [in] */ const String& segment)
 {
     Logger::D(TAG, "GetChild--1");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     HashMap<String, AutoPtr<Path> >::Iterator it = mChildren.Find(segment);
     if (it != mChildren.End()) {
         return it->mSecond;
@@ -130,7 +130,7 @@ AutoPtr<Path> Path::GetChild(
 AutoPtr<Path> Path::GetParent()
 {
     Logger::D(TAG, "GetParent--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     return mParent;
 }
 
@@ -152,7 +152,7 @@ void Path::SetObject(
     /* [in] */ MediaObject* object)
 {
     Logger::D(TAG, "SetObject--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     if (mObject == NULL) {
         mObject = object;
     }
@@ -161,14 +161,14 @@ void Path::SetObject(
 AutoPtr<MediaObject> Path::GetObject()
 {
     Logger::D(TAG, "GetObject--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     return (mObject == NULL) ? NULL : mObject;
 }
 
 String Path::ToString()
 {
     Logger::D(TAG, "ToString--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     StringBuilder sb;
     AutoPtr< ArrayOf<String> > segments = Split();
     for (Int32 i = 0; i < segments->GetLength(); i++) {
@@ -189,7 +189,7 @@ Boolean Path::EqualsIgnoreCase(
 AutoPtr< ArrayOf<String> > Path::Split()
 {
     Logger::D(TAG, "Split--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     Int32 n = 0;
     for (AutoPtr<Path> p = this; p != sRoot; p = p->mParent) {
         n++;
@@ -213,7 +213,7 @@ String Path::GetPrefix()
 AutoPtr<Path> Path::GetPrefixPath()
 {
     Logger::D(TAG, "GetPrefixPath--");
-    Mutex::Autolock lock(sPathLock);
+    AutoLock lock(sPathLock);
     AutoPtr<Path> current = this;
     if (current == sRoot) {
         // throw new IllegalStateException();

@@ -4,7 +4,6 @@
 
 #include "app/Activity.h"
 #include "_CActivityTwo.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::App::Activity;
 using Elastos::Droid::View::IViewOnClickListener;

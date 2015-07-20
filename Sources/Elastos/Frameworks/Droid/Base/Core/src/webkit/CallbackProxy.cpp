@@ -57,13 +57,13 @@ CAR_INTERFACE_IMPL_LIGHT(CallbackProxy::ResultTransport, IInterface);
 void CallbackProxy::ResultTransport::SetResult(
     /* [in] */ IInterface* result)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mResult = result;
 }
 
 AutoPtr<IInterface> CallbackProxy::ResultTransport::GetResult()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mResult;
 }
 

@@ -8,7 +8,6 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
-#include <elrefbase.h>
 
 using Elastos::IO::IFile;
 using Elastos::IO::IInputStream;

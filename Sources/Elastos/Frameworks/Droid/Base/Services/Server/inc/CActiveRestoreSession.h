@@ -126,7 +126,7 @@ public:
     private:
         AutoPtr<CBackupManagerService> mBackupManager;
         AutoPtr<CActiveRestoreSession> mSession;
-        Mutex mSessionLock;
+        Object mSessionLock;
     };
 
 private:
@@ -138,7 +138,7 @@ private:
     AutoPtr<ArrayOf<IRestoreSet*> > mRestoreSets;
     Boolean mEnded;
     CBackupManagerService* mHost;
-    Mutex mActivieRSLock;
+    Object mActivieRSLock;
     friend class CBackupManagerService;
 };
 

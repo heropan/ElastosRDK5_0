@@ -7,7 +7,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectInt32Map;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Graphics::IRect;
@@ -469,7 +468,7 @@ private:
     // Housekeeping.
     static const Int32 MAX_POOL_SIZE;
     static AutoPtr<CAccessibilityNodeInfo> sPool;
-    static Mutex sPoolLock;
+    static Object sPoolLock;
     static Int32 sPoolSize;
     AutoPtr<CAccessibilityNodeInfo> mNext;
     Boolean mIsInPool;

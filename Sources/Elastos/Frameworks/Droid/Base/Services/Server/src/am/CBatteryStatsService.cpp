@@ -39,7 +39,7 @@ ECode CBatteryStatsService::BluetoothProfileServiceListener::OnServiceConnected(
     /* [in] */ IBluetoothProfile* proxy)
 {
     mHost->mBluetoothHeadset = IBluetoothHeadset::Probe(proxy);
-    Mutex::Autolock lock(mHost->mStatsLock);
+    AutoLock lock(mHost->mStatsLock);
     if (mHost->mBluetoothPendingStats) {
         mHost->mStats->NoteBluetoothOnLocked();
         mHost->mStats->SetBtHeadset(mHost->mBluetoothHeadset);
@@ -89,7 +89,7 @@ void CBatteryStatsService::Publish(
 void CBatteryStatsService::Shutdown()
 {
     Slogger::W("BatteryStats", "Writing battery stats before shutdown...");
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->ShutdownLocked();
 
 }
@@ -133,7 +133,7 @@ ECode CBatteryStatsService::NoteStartWakelock(
     /* [in] */ Int32 type)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStartWakeLocked(uid, pid, name, type);
     return NOERROR;
 }
@@ -145,7 +145,7 @@ ECode CBatteryStatsService::NoteStopWakelock(
     /* [in] */ Int32 type)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStopWakeLocked(uid, pid, name, type);
     return NOERROR;
 }
@@ -157,7 +157,7 @@ ECode CBatteryStatsService::NoteStartWakelockFromSource(
     /* [in] */ Int32 type)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStartWakeFromSourceLocked(ws, pid, name, type);
     return NOERROR;
 }
@@ -169,7 +169,7 @@ ECode CBatteryStatsService::NoteStopWakelockFromSource(
     /* [in] */ Int32 type)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStopWakeFromSourceLocked(ws, pid, name, type);
     return NOERROR;
 }
@@ -179,7 +179,7 @@ ECode CBatteryStatsService::NoteStartSensor(
     /* [in] */ Int32 sensor)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStartSensorLocked(uid, sensor);
     return NOERROR;
 }
@@ -189,7 +189,7 @@ ECode CBatteryStatsService::NoteStopSensor(
     /* [in] */ Int32 sensor)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStopSensorLocked(uid, sensor);
     return NOERROR;
 }
@@ -198,7 +198,7 @@ ECode CBatteryStatsService::NoteStartGps(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStartGpsLocked(uid);
     return NOERROR;
 }
@@ -207,7 +207,7 @@ ECode CBatteryStatsService::NoteStopGps(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteStopGpsLocked(uid);
     return NOERROR;
 }
@@ -215,7 +215,7 @@ ECode CBatteryStatsService::NoteStopGps(
 ECode CBatteryStatsService::NoteScreenOn()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteScreenOnLocked();
     return NOERROR;
 }
@@ -224,7 +224,7 @@ ECode CBatteryStatsService::NoteScreenBrightness(
     /* [in] */ Int32 brightness)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteScreenBrightnessLocked(brightness);
     return NOERROR;
 }
@@ -232,7 +232,7 @@ ECode CBatteryStatsService::NoteScreenBrightness(
 ECode CBatteryStatsService::NoteScreenOff()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteScreenOffLocked();
     return NOERROR;
 }
@@ -249,7 +249,7 @@ ECode CBatteryStatsService::NoteUserActivity(
     /* [in] */ Int32 event)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteUserActivityLocked(uid, event);
     return NOERROR;
 }
@@ -257,7 +257,7 @@ ECode CBatteryStatsService::NoteUserActivity(
 ECode CBatteryStatsService::NotePhoneOn()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NotePhoneOnLocked();
     return NOERROR;
 }
@@ -265,7 +265,7 @@ ECode CBatteryStatsService::NotePhoneOn()
 ECode CBatteryStatsService::NotePhoneOff()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NotePhoneOffLocked();
     return NOERROR;
 }
@@ -274,7 +274,7 @@ ECode CBatteryStatsService::NotePhoneSignalStrength(
    /* [in] */ ISignalStrength* signalStrength)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NotePhoneSignalStrengthLocked(signalStrength);
     return NOERROR;
 }
@@ -284,7 +284,7 @@ ECode CBatteryStatsService::NotePhoneDataConnectionState(
     /* [in] */ Boolean hasData)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NotePhoneDataConnectionStateLocked(dataType, hasData);
     return NOERROR;
 }
@@ -299,7 +299,7 @@ ECode CBatteryStatsService::NotePhoneState(
     helper->GetDefault((ITelephonyManager**)&tm);
     Int32 simState;
     tm->GetSimState(&simState);
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NotePhoneStateLocked(state, simState);
     return NOERROR;
 }
@@ -307,7 +307,7 @@ ECode CBatteryStatsService::NotePhoneState(
 ECode CBatteryStatsService::NoteWifiOn()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiOnLocked();
     return NOERROR;
 }
@@ -315,7 +315,7 @@ ECode CBatteryStatsService::NoteWifiOn()
 ECode CBatteryStatsService::NoteWifiOff()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiOffLocked();
     return NOERROR;
 }
@@ -324,7 +324,7 @@ ECode CBatteryStatsService::NoteStartAudio(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteAudioOnLocked(uid);
     return NOERROR;
 }
@@ -333,7 +333,7 @@ ECode CBatteryStatsService::NoteStopAudio(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteAudioOffLocked(uid);
     return NOERROR;
 }
@@ -342,7 +342,7 @@ ECode CBatteryStatsService::NoteStartVideo(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteVideoOnLocked(uid);
     return NOERROR;
 }
@@ -351,7 +351,7 @@ ECode CBatteryStatsService::NoteStopVideo(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteVideoOffLocked(uid);
     return NOERROR;
 }
@@ -360,7 +360,7 @@ ECode CBatteryStatsService::NoteWifiRunning(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiRunningLocked(ws);
     return NOERROR;
 }
@@ -370,7 +370,7 @@ ECode CBatteryStatsService::NoteWifiRunningChanged(
     /* [in] */ IWorkSource* newWs)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiRunningChangedLocked(oldWs, newWs);
     return NOERROR;
 }
@@ -379,7 +379,7 @@ ECode CBatteryStatsService::NoteWifiStopped(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiStoppedLocked(ws);
     return NOERROR;
 }
@@ -396,7 +396,7 @@ ECode CBatteryStatsService::NoteBluetoothOn()
         adapter->GetProfileProxy(mContext, mBluetoothProfileServiceListener,
                                 IBluetoothProfile::HEADSET, &result);
     }
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     if (mBluetoothHeadset != NULL) {
         mStats->NoteBluetoothOnLocked();
         mStats->SetBtHeadset(mBluetoothHeadset);
@@ -410,7 +410,7 @@ ECode CBatteryStatsService::NoteBluetoothOn()
 ECode CBatteryStatsService::NoteBluetoothOff()
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mBluetoothPendingStats = FALSE;
     mStats->NoteBluetoothOffLocked();
     return NOERROR;
@@ -420,7 +420,7 @@ ECode CBatteryStatsService::NoteFullWifiLockAcquired(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteFullWifiLockAcquiredLocked(uid);
     return NOERROR;
 }
@@ -429,7 +429,7 @@ ECode CBatteryStatsService::NoteFullWifiLockReleased(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteFullWifiLockReleasedLocked(uid);
     return NOERROR;
 }
@@ -438,7 +438,7 @@ ECode CBatteryStatsService::NoteWifiScanStarted(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiScanStartedLocked(uid);
     return NOERROR;
 }
@@ -447,7 +447,7 @@ ECode CBatteryStatsService::NoteWifiScanStopped(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiScanStoppedLocked(uid);
     return NOERROR;
 }
@@ -456,7 +456,7 @@ ECode CBatteryStatsService::NoteWifiMulticastEnabled(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiMulticastEnabledLocked(uid);
     return NOERROR;
 }
@@ -465,7 +465,7 @@ ECode CBatteryStatsService::NoteWifiMulticastDisabled(
     /* [in] */ Int32 uid)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiMulticastDisabledLocked(uid);
     return NOERROR;
 }
@@ -474,7 +474,7 @@ ECode CBatteryStatsService::NoteFullWifiLockAcquiredFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteFullWifiLockAcquiredFromSourceLocked(ws);
     return NOERROR;
 }
@@ -483,7 +483,7 @@ ECode CBatteryStatsService::NoteFullWifiLockReleasedFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteFullWifiLockReleasedFromSourceLocked(ws);
     return NOERROR;
 }
@@ -492,7 +492,7 @@ ECode CBatteryStatsService::NoteWifiScanStartedFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiScanStartedFromSourceLocked(ws);
     return NOERROR;
 }
@@ -501,7 +501,7 @@ ECode CBatteryStatsService::NoteWifiScanStoppedFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiScanStoppedFromSourceLocked(ws);
     return NOERROR;
 }
@@ -510,7 +510,7 @@ ECode CBatteryStatsService::NoteWifiMulticastEnabledFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiMulticastEnabledFromSourceLocked(ws);
     return NOERROR;
 }
@@ -519,7 +519,7 @@ ECode CBatteryStatsService::NoteWifiMulticastDisabledFromSource(
     /* [in] */ IWorkSource* ws)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteWifiMulticastDisabledFromSourceLocked(ws);
     return NOERROR;
 }
@@ -529,7 +529,7 @@ ECode CBatteryStatsService::NoteNetworkInterfaceType(
     /* [in] */ Int32 type)
 {
     EnforceCallingPermission();
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     mStats->NoteNetworkInterfaceTypeLocked(iface, type);
     return NOERROR;
 }
@@ -618,13 +618,13 @@ ECode CBatteryStatsService::Dump(
                 isCheckin = TRUE;
             }
             else if (arg.Equals("--reset")) {
-                Mutex::Autolock lock(mStatsLock);
+                AutoLock lock(mStatsLock);
                 mStats->ResetAllStatsLocked();
                 pw->PrintString(String("Battery stats reset."));
                 noOutput = TRUE;
             }
             else if (arg.Equals("--write")) {
-                Mutex::Autolock lock(mStatsLock);
+                AutoLock lock(mStatsLock);
                 mStats->WriteSyncLocked();
                 pw->PrintString(String("Battery stats written."));
                 noOutput = TRUE;
@@ -662,11 +662,11 @@ ECode CBatteryStatsService::Dump(
             AutoPtr<IApplicationInfo> app = IApplicationInfo::Probe(a);
             temp->PushBack(app);
         }
-        Mutex::Autolock lock(mStatsLock);
+        AutoLock lock(mStatsLock);
         mStats->DumpCheckinLocked(pw, args, *temp);
     }
     else {
-        Mutex::Autolock lock(mStatsLock);
+        AutoLock lock(mStatsLock);
         mStats->DumpLocked(pw);
     }
     return NOERROR;

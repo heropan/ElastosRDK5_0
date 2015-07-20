@@ -4,7 +4,6 @@
 
 #include "content/res/StringBlock.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -398,7 +397,7 @@ private:
     AutoPtr<IAssetManager> mAssets;
     Int32 mNative;
     Int32 mOpenCount;
-    Mutex mSyncLock;
+    Object mSyncLock;
     Boolean mOpen;
 };
 

@@ -185,7 +185,7 @@ AutoPtr<ViewGroup::TouchTarget> ViewGroup::TouchTarget::Obtain(
     /* [in] */ Int32 pointerIdBits)
 {
     AutoPtr<TouchTarget> target;
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     {
         if (sRecycleBin == NULL) {
             target = new TouchTarget();
@@ -205,7 +205,7 @@ AutoPtr<ViewGroup::TouchTarget> ViewGroup::TouchTarget::Obtain(
 
 void ViewGroup::TouchTarget::Recycle()
 {
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     {
         if (sRecycledCount < MAX_RECYCLED) {
             mNext = sRecycleBin;
@@ -228,7 +228,7 @@ AutoPtr<ViewGroup::HoverTarget> ViewGroup::HoverTarget::Obtain(
     /* [in] */ IView* child)
 {
     AutoPtr<HoverTarget> target;
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     {
         if (sRecycleBin == NULL) {
             target = new HoverTarget();
@@ -246,7 +246,7 @@ AutoPtr<ViewGroup::HoverTarget> ViewGroup::HoverTarget::Obtain(
 
 void ViewGroup::HoverTarget::Recycle()
 {
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     {
         if (sRecycledCount < MAX_RECYCLED) {
             mNext = sRecycleBin;
@@ -270,7 +270,7 @@ AutoPtr<ViewGroup::ChildListForAccessibility> ViewGroup::ChildListForAccessibili
     /* [in] */ Boolean sort)
 {
     AutoPtr<ChildListForAccessibility> list;
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     {
         if (sPool != NULL) {
             list = sPool;
@@ -296,7 +296,7 @@ void ViewGroup::ChildListForAccessibility::Recycle()
     }
 
     Clear();
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     {
         if (sPoolSize < MAX_POOL_SIZE) {
             mNext = sPool;
@@ -427,7 +427,7 @@ AutoPtr<ViewGroup::ViewLocationHolder> ViewGroup::ViewLocationHolder::Obtain(
     /* [in] */ IView* view)
 {
     AutoPtr<ViewLocationHolder> holder;
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     {
         if (sPool != NULL) {
             holder = sPool;
@@ -452,7 +452,7 @@ void ViewGroup::ViewLocationHolder::Recycle()
     }
     Clear();
 
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     {
         if (sPoolSize < MAX_POOL_SIZE) {
             mNext = sPool;

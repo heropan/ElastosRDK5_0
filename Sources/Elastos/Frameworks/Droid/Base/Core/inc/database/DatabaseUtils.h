@@ -7,7 +7,6 @@
 
 using Elastos::Core::IStringBuilder;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintStream;
 using Elastos::Text::ICollator;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
@@ -254,7 +253,7 @@ public:
         AutoPtr<ISQLiteStatement> mInsertStatement;
         AutoPtr<ISQLiteStatement> mReplaceStatement;
         AutoPtr<ISQLiteStatement> mPreparedStatement;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:

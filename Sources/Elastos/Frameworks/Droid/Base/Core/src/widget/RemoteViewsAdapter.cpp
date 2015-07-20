@@ -266,7 +266,7 @@ RemoteViewsAdapter::RemoteViewsMetaData::RemoteViewsMetaData()
 ECode RemoteViewsAdapter::RemoteViewsMetaData::Set(
     /* [in] */ RemoteViewsMetaData* d)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCount = d->mCount;
     mViewTypeCount = d->mViewTypeCount;
     mHasStableIds = d->mHasStableIds;
@@ -326,7 +326,7 @@ AutoPtr<RemoteViewsFrameLayout> RemoteViewsAdapter::RemoteViewsMetaData::CreateL
     /* [in] */ Int32 position,
     /* [in] */ IView* convertView,
     /* [in] */ IViewGroup* parent,
-    /* [in] */ Mutex& lock,
+    /* [in] */ Object& lock,
     /* [in] */ ILayoutInflater* layoutInflater,
     /* [in] */ IRemoteViewsOnClickHandler* handler)
 {
@@ -337,7 +337,7 @@ AutoPtr<RemoteViewsFrameLayout> RemoteViewsAdapter::RemoteViewsMetaData::CreateL
 
     // Create a new loading view
     {
-        Mutex::Autolock alock(lock);
+        AutoLock alock(lock);
         Boolean customLoadingViewAvailable = FALSE;
 
         if (mUserLoadingView != NULL) {
@@ -507,8 +507,8 @@ AutoPtr<RemoteViewsAdapter::RemoteViewsIndexMetaData> RemoteViewsAdapter::FixedS
 
 ECode RemoteViewsAdapter::FixedSizeRemoteViewsCache::CommitTemporaryMetaData()
 {
-    Mutex::Autolock lock(mTemporaryMetaDataLock);
-    Mutex::Autolock lock(mMetaDataLock);
+    AutoLock lock(mTemporaryMetaDataLock);
+    AutoLock lock(mMetaDataLock);
     mMetaData->Set(mTemporaryMetaData);
     return NOERROR;
 }
@@ -566,7 +566,7 @@ ECode RemoteViewsAdapter::FixedSizeRemoteViewsCache::QueueRequestedPositionToLoa
 {
     mLastRequestedIndex = position;
     {
-        Mutex::Autolock lock(mLoadIndicesLock);
+        AutoLock lock(mLoadIndicesLock);
         mRequestedIndices.Insert(position);
         mLoadIndices.Insert(position);
     }
@@ -586,11 +586,11 @@ Boolean RemoteViewsAdapter::FixedSizeRemoteViewsCache::QueuePositionsToBePreload
 
     Int32 count = 0;
     {
-        Mutex::Autolock lock(mMetaDataLock);
+        AutoLock lock(mMetaDataLock);
         count = mMetaData->mCount;
     }
     {
-        Mutex::Autolock lock(mLoadIndicesLock);
+        AutoLock lock(mLoadIndicesLock);
         mLoadIndices.Clear();
 
         // Add all the requested indices
@@ -621,7 +621,7 @@ AutoPtr<ArrayOf<Int32> > RemoteViewsAdapter::FixedSizeRemoteViewsCache::GetNextI
     // We try and prioritize items that have been requested directly, instead
     // of items that are loaded as a result of the caching mechanism
      {
-        Mutex::Autolock lock(mLoadIndicesLock);
+        AutoLock lock(mLoadIndicesLock);
         // Prioritize requested indices to be loaded first
         AutoPtr<ArrayOf<Int32> > rst = ArrayOf<Int32>::Alloc(2);
         if (!mRequestedIndices.IsEmpty()) {
@@ -674,7 +674,7 @@ ECode RemoteViewsAdapter::FixedSizeRemoteViewsCache::Reset()
     mIndexRemoteViews.Clear();
     mIndexMetaData.Clear();
     {
-        Mutex::Autolock lock(mLoadIndicesLock);
+        AutoLock lock(mLoadIndicesLock);
         mRequestedIndices.Clear();
         mLoadIndices.Clear();
     }
@@ -688,7 +688,7 @@ RemoteViewsAdapter::InnerRunnable::InnerRunnable(
 
 ECode RemoteViewsAdapter::InnerRunnable::Run()
 {
-    Mutex::Autolock lock(sCacheLock);
+    AutoLock lock(sCacheLock);
     if (sCachedRemoteViewsCaches.Find(mKey) != sCachedRemoteViewsCaches.End()) {
         sCachedRemoteViewsCaches.Erase(mKey);
     }
@@ -709,7 +709,7 @@ ECode RemoteViewsAdapter::InnerRunnableEx::Run()
         // Get the next index to load
         Int32 position = -1;
         {
-            Mutex::Autolock lock(mHost->mCacheLock);
+            AutoLock lock(mHost->mCacheLock);
             AutoPtr<ArrayOf<Int32> > res = mHost->mCache->GetNextIndexToLoad();
             position = (*res)[0];
         }
@@ -735,7 +735,7 @@ RemoteViewsAdapter::InnerRunnableEx2::InnerRunnable(
 ECode RemoteViewsAdapter::InnerRunnableEx2::Run()
 {
     {
-        Mutex::Autolock(mHost->mCacheLock);
+        AutoLock(mHost->mCacheLock);
         mHost->mCache->CommitTemporaryMetaData();
     }
 
@@ -859,7 +859,7 @@ ECode RemoteViewsAdapter::SaveRemoteViewsCache()
     AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId, mUserId);
     {
         // If we already have a remove runnable posted for this key, remove it.
-        Mutex::Autolock lock(sCacheLock);
+        AutoLock lock(sCacheLock);
         RunIterator it = sRemoteViewsCacheRemoveRunnables.Find(key);
         if (it != sRemoteViewsCacheRemoveRunnables.End()) {
             AutoPtr<IRunnable> r = it->mSecond;
@@ -870,11 +870,11 @@ ECode RemoteViewsAdapter::SaveRemoteViewsCache()
         Int32 metaDataCount = 0;
         Int32 numRemoteViewsCached = 0;
         {
-            Mutex::Autolock lock(mCache->mMetaDataLock);
+            AutoLock lock(mCache->mMetaDataLock);
             metaDataCount = mCache->mMetaData->mCount;
         }
         {
-            Mutex::Autolock lock(mCacheLock);
+            AutoLock lock(mCacheLock);
             numRemoteViewsCached = mCache->mIndexRemoteViews.GetSize();
         }
         if (metaDataCount > 0 && numRemoteViewsCached > 0) {
@@ -898,7 +898,7 @@ Int32 RemoteViewsAdapter::GetCount()
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         return metaData->mCount;
     }
 }
@@ -912,7 +912,7 @@ AutoPtr<IInterface> RemoteViewsAdapter::GetItem(
 Int64 RemoteViewsAdapter::GetItemId(
     /* [in] */ Int32 position)
 {
-    Mutex::Autolock lock(mCacheLock);
+    AutoLock lock(mCacheLock);
     if (mCache->ContainsMetaDataAt(position)) {
         return mCache->GetMetaDataAt(position)->mItemId;
     }
@@ -926,7 +926,7 @@ Int32 RemoteViewsAdapter::GetItemViewType(
 {
     Int32 typeId = 0;
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         if(mCache->ContainsMetaDataAt(position)) {
             typeId = mCache->GetMetaDataAt(position)->mTypeId;
         }
@@ -936,7 +936,7 @@ Int32 RemoteViewsAdapter::GetItemViewType(
     }
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         return metaData->GetMappedViewType(typeId);
     }
 }
@@ -1005,7 +1005,7 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
                         AutoPtr<RemoteViewsFrameLayout> loadingView = NULL;
                         AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
                         {
-                            Mutex::Autolock lock(mCache->mMetaDataLock);
+                            AutoLock lock(mCache->mMetaDataLock);
                             loadingView = metaData->CreateLoadingView(position, convertView, parent,
                                     mCache->mMetaDataLock, mLayoutInflater, mRemoteViewsOnClickHandler);
                         }
@@ -1052,7 +1052,7 @@ AutoPtr<IView> RemoteViewsAdapter::GetView(
         AutoPtr<RemoteViewsFrameLayout> loadingView = NULL;
         AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
         {
-            Mutex::Autolock lock(mCache->mMetaDataLock);
+            AutoLock lock(mCache->mMetaDataLock);
             loadingView = metaData->CreateLoadingView(position, convertView, parent,
                     mCacheLock, mLayoutInflater, mRemoteViewsOnClickHandler);
         }
@@ -1069,7 +1069,7 @@ Int32 RemoteViewsAdapter::GetViewTypeCount()
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         return metaData->mViewTypeCount;
     }
 }
@@ -1078,7 +1078,7 @@ Boolean RemoteViewsAdapter::HasStableIds()
 {
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         return metaData->mHasStableIds;
     }
 }
@@ -1166,13 +1166,13 @@ ECode RemoteViewsAdapter::Init(
     AutoPtr<RemoteViewsCacheKey> key = new RemoteViewsCacheKey(comparison, mAppWidgetId, mUserId);
 
     {
-        Mutex::Autolock lock(sCacheLock);
+        AutoLock lock(sCacheLock);
         CacheIterator it = sCachedRemoteViewsCaches.Find(key);
         if (it != sCachedRemoteViewsCaches.End()) {
 
             mCache = it->mSecond;
             {
-                Mutex::Autolock lock(mCache->mMetaDataLock);
+                AutoLock lock(mCache->mMetaDataLock);
                 if (mCache->mMetaData->mCount > 0) {
                     // As a precautionary measure, we verify that the meta data indicates a
                     // non-zero count before declaring that data is ready.
@@ -1206,11 +1206,11 @@ ECode RemoteViewsAdapter::ProcessException(
     // a notifyDataSetChanged to update the widget accordingly
     AutoPtr<RemoteViewsMetaData> metaData = mCache->GetMetaData();
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         metaData->Reset();
     }
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         mCache->Reset();
     }
     AutoPtr<IRunnable> r = new InnerRunnable(this);
@@ -1265,7 +1265,7 @@ ECode RemoteViewsAdapter::UpdateTemporaryMetaData()
         }
         AutoPtr<RemoteViewsMetaData> tmpMetaData = mCache->GetTemporaryMetaData();
         {
-            Mutex::Autolock lock(mCache->mTemporaryMetaDataLock);
+            AutoLock lock(mCache->mTemporaryMetaDataLock);
             tmpMetaData->mHasStableIds = hasStableIds;
             // We +1 because the base view type is the loading view
             tmpMetaData->mViewTypeCount = viewTypeCount + 1;
@@ -1334,12 +1334,12 @@ ECode RemoteViewsAdapter::UpdateRemoteViews(
     Boolean viewTypeInRange;
     Int32 cacheCount;
     {
-        Mutex::Autolock lock(mCache->mMetaDataLock);
+        AutoLock lock(mCache->mMetaDataLock);
         viewTypeInRange = metaData->IsViewTypeInRange(layoutId);
         cacheCount = mCache->mMetaData->mCount;
     }
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         if (viewTypeInRange) {
             List<Int32> visibleWindow = GetVisibleWindow(mVisibleWindowLowerBound,
                     mVisibleWindowUpperBound, cacheCount);
@@ -1400,7 +1400,7 @@ ECode RemoteViewsAdapter::OnNotifyDataSetChanged()
 
     // Flush the cache so that we can reload new items from the service
     {
-        Mutex::Autolock lock(mCacheLock);
+        AutoLock lock(mCacheLock);
         mCache->Reset();
     }
 
@@ -1409,7 +1409,7 @@ ECode RemoteViewsAdapter::OnNotifyDataSetChanged()
     Int32 newCount;
     List<Int32> visibleWindow;
     {
-        Mutex::Autolock lock(mCache->mTemporaryMetaDataLock);
+        AutoLock lock(mCache->mTemporaryMetaDataLock);
         newCount = mCache->GetTemporaryMetaData()->mCount;
         visibleWindow = GetVisibleWindow(mVisibleWindowLowerBound,
                 mVisibleWindowUpperBound, newCount);

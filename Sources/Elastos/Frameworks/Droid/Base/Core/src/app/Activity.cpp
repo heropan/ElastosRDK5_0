@@ -911,7 +911,7 @@ ECode Activity::OnDestroy()
 
     // close any cursors we are managing.
     {
-        Mutex::Autolock lock(mManagedCursorsLock);
+        AutoLock lock(mManagedCursorsLock);
         AutoPtr<ManagedCursor> cursor;
         List<AutoPtr<ManagedCursor> >::Iterator it = mManagedCursors.Begin();
         for (; it != mManagedCursors.End(); ++it) {
@@ -1162,7 +1162,7 @@ ECode Activity::ManagedQuery(
 ECode Activity::StartManagingCursor(
     /* [in] */ ICursor* c)
 {
-    Mutex::Autolock lock(mManagedCursorsLock);
+    AutoLock lock(mManagedCursorsLock);
     AutoPtr<ManagedCursor> mc = new ManagedCursor(c);
     mManagedCursors.PushBack(mc);
     return NOERROR;
@@ -1171,7 +1171,7 @@ ECode Activity::StartManagingCursor(
 ECode Activity::StopManagingCursor(
     /* [in] */ ICursor* c)
 {
-    Mutex::Autolock lock(mManagedCursorsLock);
+    AutoLock lock(mManagedCursorsLock);
     List<AutoPtr<ManagedCursor> >::Iterator it;
     for (it = mManagedCursors.Begin(); it != mManagedCursors.End(); ++it) {
         AutoPtr<ManagedCursor> mc = *it;
@@ -2839,7 +2839,7 @@ ECode Activity::Finish()
         Int32 resultCode;
         AutoPtr<IIntent> resultData;
         {
-            Mutex::Autolock lock(mThisLock);
+            AutoLock lock(mThisLock);
             resultCode = mResultCode;
             resultData = mResultData;
         }
@@ -3653,7 +3653,7 @@ ECode Activity::NavigateUpTo(
         Int32 resultCode;
         AutoPtr<IIntent> resultData;
         {
-            Mutex::Autolock lock(mThisLock);
+            AutoLock lock(mThisLock);
             resultCode = mResultCode;
             resultData = mResultData;
         }
@@ -3914,7 +3914,7 @@ ECode Activity::PerformRestart()
         }
 
         {
-            Mutex::Autolock lock(mManagedCursorsLock);
+            AutoLock lock(mManagedCursorsLock);
 
             Int32 targetSdkVersion;
             AutoPtr<IApplicationInfo> appInfo;
@@ -4074,7 +4074,7 @@ ECode Activity::PerformStop()
         }
 
         {
-            Mutex::Autolock lock(mManagedCursorsLock);
+            AutoLock lock(mManagedCursorsLock);
             AutoPtr<ManagedCursor> mc;
             List<AutoPtr<ManagedCursor> >::Iterator it = mManagedCursors.Begin();
             for (; it != mManagedCursors.End(); ++it) {

@@ -5,7 +5,6 @@
 #include "_CGLU.h"
 #include "elastos/Mutex.h"
 
-using Elastos::Core::Mutex;
 using Elastosx::Microedition::Khronos::Opengles::IGL10;
 
 namespace Elastos {
@@ -174,7 +173,7 @@ public:
 
 private:
     static AutoPtr<ArrayOf<Float> > sScratch;
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Opengl

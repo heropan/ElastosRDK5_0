@@ -69,7 +69,7 @@ AutoPtr<IBitmapDrawable> AsyncImageLoader::ImageLoaderThread::LoadImageFromUrl(
     cacheService->GetImageData(hashkey, mIsHigh, len, last, (IBitmap**)&bitmap);
     if (bitmap != NULL) {
         {
-            Mutex::Autolock lock(sStatusLock);
+            AutoLock lock(sStatusLock);
             sImageSampleStatus[path] = TRUE;
         }
         AutoPtr<IBitmapDrawable> bitmapDrawable;
@@ -99,7 +99,7 @@ AutoPtr<IBitmapDrawable> AsyncImageLoader::ImageLoaderThread::LoadImageFromUrl(
     opt->SetInJustDecodeBounds(FALSE);
 
     {
-        Mutex::Autolock lock(sStatusLock);
+        AutoLock lock(sStatusLock);
         sImageSampleStatus[path] = (inSampleSize > 1 || mIsHigh);
     }
 
@@ -148,7 +148,7 @@ Int32 AsyncImageLoader::ImageLoaderThread::ComputeInitialSampleSize(
     Logger::D(TAG, "ComputeInitialSampleSize----w:%d,h:%d, tid:%d", w, h, gettid());
 
     if (mIsHigh) {
-        Mutex::Autolock lock(sImageWHLock);
+        AutoLock lock(sImageWHLock);
         AutoPtr< ArrayOf<Int32> > origionWH = ArrayOf<Int32>::Alloc(2);
         (*origionWH)[0] = w;
         (*origionWH)[1] = h;
@@ -206,7 +206,7 @@ AutoPtr<IBitmapDrawable> AsyncImageLoader::LoadDrawable(
     Logger::D(TAG, "===================================================");
     Logger::D(TAG, "LoadDrawable()--imageUrl:%s,isHigh:%d, tid:%d", imageUrl.string(), isHigh, gettid());
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (isHigh) {
         HashMap<String, AutoPtr<IWeakReference> >::Iterator it = sHighImageCache.Find(imageUrl);
@@ -282,7 +282,7 @@ void AsyncImageLoader::DrawableLoaded(
     /* [in] */ Boolean isHigh,
     /* [in] */ IBitmapDrawable* d)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<IBitmapDrawable> drawable = d;
     if (isHigh) {
@@ -319,7 +319,7 @@ void AsyncImageLoader::DrawableLoaded(
 Boolean AsyncImageLoader::NeedLoadHighDrawable(
     /* [in] */ const String& imageUrl)
 {
-    Mutex::Autolock lock(sStatusLock);
+    AutoLock lock(sStatusLock);
     HashMap<String, Boolean>::Iterator it = sImageSampleStatus.Find(imageUrl);
     if (it != sImageSampleStatus.End()) {
         return it->mSecond;
@@ -338,7 +338,7 @@ Boolean AsyncImageLoader::GetOrigionWidthAndHeight(
     // VALIDATE_NOT_NULL(h);
     *h = 0;
 
-    Mutex::Autolock lock(sImageWHLock);
+    AutoLock lock(sImageWHLock);
     HashMap<String, AutoPtr< ArrayOf<Int32> > >::Iterator it = sHighImageWH.Find(imageUrl);
     if (it != sHighImageWH.End()) {
         AutoPtr< ArrayOf<Int32> > tmpArray = it->mSecond;

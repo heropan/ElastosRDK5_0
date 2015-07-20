@@ -15,7 +15,6 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::TimerTask;
 using Elastos::Utility::ITimer;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Location::ICountry;
@@ -250,7 +249,7 @@ private:
      * using it to synchronize anything else in this file.
      */
     //private final Object mObject = new Object();
-    Mutex mObject;
+    Object mObject;
 
     /**
      * Start time of the current session for which the detector has been active.
@@ -284,7 +283,7 @@ private:
      */
     AutoPtr<ICountryListener> mLocationBasedCountryDetectionListener;
 
-    Mutex mLock;
+    Object mLock;
 
 };
 

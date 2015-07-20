@@ -57,7 +57,7 @@ private:
 private:
     Int32 mNativeContext;
 
-    Mutex mutex;
+    Object mutex;
 };
 
 } // namespace Mtp

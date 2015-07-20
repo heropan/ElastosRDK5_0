@@ -11,7 +11,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IHandler;
@@ -66,7 +65,7 @@ private:
 
         HashMap<String, String> mTtsParams;
         AutoPtr<ITextToSpeech> mTextToSpeech;
-        Mutex mTextToSpeechMutex;
+        Object mTextToSpeechMutex;
 
         /**
          * Whether this wrapper is ready to speak. If this is {@code true} then

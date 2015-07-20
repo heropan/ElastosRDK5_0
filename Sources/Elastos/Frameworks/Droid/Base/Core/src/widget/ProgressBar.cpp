@@ -88,7 +88,7 @@ ECode ProgressBar::RefreshProgressRunnable::Run()
 
     if (pb != NULL) {
         CProgressBar* host = (CProgressBar*)pb;
-        Mutex::Autolock lock(host->mLock);
+        AutoLock lock(host->mLock);
         Int32 count = host->mRefreshData.GetSize();
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<RefreshData> rd = host->mRefreshData[i];
@@ -487,7 +487,7 @@ void ProgressBar::InitProgressBar()
 //
 Boolean ProgressBar::IsIndeterminate()
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     return mIndeterminate;
 }
@@ -507,7 +507,7 @@ Boolean ProgressBar::IsIndeterminate()
 ECode ProgressBar::SetIndeterminate(
     /* [in] */ Boolean indeterminate)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     if ((!mOnlyIndeterminate || !mIndeterminate) && indeterminate != mIndeterminate) {
         mIndeterminate = indeterminate;
@@ -689,7 +689,7 @@ void ProgressBar::DoRefreshProgress(
     /* [in] */ Boolean fromUser,
     /* [in] */ Boolean callBackToApp)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     Float scale = mMax > 0 ? (Float)progress / (Float)mMax : 0;
     AutoPtr<IDrawable> d = mCurrentDrawable;
@@ -739,7 +739,7 @@ void ProgressBar::RefreshProgress(
     /* [in] */ Int32 progress,
     /* [in] */ Boolean fromUser)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     Int64 cId;
     Thread::GetCurrentThread()->GetId(&cId);
@@ -786,7 +786,7 @@ ECode ProgressBar::SetProgress(
     /* [in] */ Int32 progress,
     /* [in] */ Boolean fromUser)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     if (mIndeterminate) {
         return NOERROR;
@@ -823,7 +823,7 @@ ECode ProgressBar::SetProgress(
 ECode ProgressBar::SetSecondaryProgress(
     /* [in] */ Int32 secondaryProgress)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     if (mIndeterminate) {
         return NOERROR;
@@ -861,7 +861,7 @@ ECode ProgressBar::SetSecondaryProgress(
 //
 Int32 ProgressBar::GetProgress()
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     return mIndeterminate ? 0 : mProgress;
 }
@@ -882,7 +882,7 @@ Int32 ProgressBar::GetProgress()
 //
 Int32 ProgressBar::GetSecondaryProgress()
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     return mIndeterminate ? 0 : mSecondaryProgress;
 }
@@ -900,7 +900,7 @@ Int32 ProgressBar::GetSecondaryProgress()
 //
 Int32 ProgressBar::GetMax()
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     return mMax;
 }
@@ -919,7 +919,7 @@ Int32 ProgressBar::GetMax()
 ECode ProgressBar::SetMax(
     /* [in] */ Int32 max)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     if (max < 0) {
         max = 0;
@@ -1192,7 +1192,7 @@ void ProgressBar::UpdateDrawableBounds(
 void ProgressBar::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     View::OnDraw(canvas);
 
@@ -1235,7 +1235,7 @@ void ProgressBar::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Mutex::Autolock lock(*GetSelfLock());
+    AutoLock lock(*GetSelfLock());
 
     AutoPtr<IDrawable> d = mCurrentDrawable;
 
@@ -1310,7 +1310,7 @@ ECode ProgressBar::OnAttachedToWindow()
         StartAnimation();
     }
     {
-        Mutex::Autolock lock(*GetSelfLock());
+        AutoLock lock(*GetSelfLock());
         Int32 count = mRefreshData.GetSize();
         for (Int32 i = 0; i < count; i++) {
             AutoPtr<RefreshData> rd = mRefreshData[i];

@@ -118,7 +118,7 @@ public:
 public:
     /*package*/
     HashMap< AutoPtr<IBinder>, AutoPtr<Callback> > mCallbacks;
-    Mutex mCallbacksLock;
+    Object mCallbacksLock;
 
 private:
     AutoPtr< ArrayOf<IInterface*> > mActiveBroadcast;

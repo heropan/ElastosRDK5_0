@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Server_server.h"
 #include "display/CDisplayManagerService.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IFloatBuffer;
 using Elastos::IO::IByteBuffer;
 using Elastos::Droid::View::IDisplay;
@@ -55,7 +54,7 @@ private:
     private:
         AutoPtr<CDisplayManagerService> mDisplayManager;
         AutoPtr<ISurface> mSurface;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:

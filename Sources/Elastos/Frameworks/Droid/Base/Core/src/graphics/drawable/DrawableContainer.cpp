@@ -793,7 +793,7 @@ void DrawableContainer::DrawableContainerState::GrowArray(
 
 Boolean DrawableContainer::DrawableContainerState::CanConstantState()
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
 
     if (!mCheckedConstantState) {
         mCanConstantState = TRUE;

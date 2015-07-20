@@ -118,7 +118,7 @@ void GeofenceManager::AddFence(
             expireAt, packageName, intent);
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // first make sure it doesn't already exist
         //for (Int32 i = mFences.size() - 1; i >= 0; i--) {
         List<AutoPtr<GeofenceState> >::ReverseIterator rit = mFences.RBegin();
@@ -150,7 +150,7 @@ void GeofenceManager::RemoveFence(
     //synchronized (mLock)
     PFL_EX("DEBUG")
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Boolean bFlag;
         List<AutoPtr<GeofenceState> >::Iterator iter = mFences.Begin();
         while (iter != mFences.End()) {
@@ -187,7 +187,7 @@ void GeofenceManager::RemoveFence(
 */
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         List<AutoPtr<GeofenceState> >::Iterator iter = mFences.Begin();
         while (iter != mFences.End()) {
@@ -211,7 +211,7 @@ ECode GeofenceManager::OnLocationChanged(
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mReceivingLocationUpdates) {
             mLastLocationUpdate = location;
         }
@@ -349,7 +349,7 @@ ECode GeofenceManager::UpdateFences()
     List<AutoPtr<IPendingIntent> > exitIntents;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mPendingUpdate = FALSE;
 
         // Remove expired fences.

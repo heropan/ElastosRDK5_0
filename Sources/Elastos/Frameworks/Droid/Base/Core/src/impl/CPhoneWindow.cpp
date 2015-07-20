@@ -2790,7 +2790,7 @@ Boolean CPhoneWindow::LaunchDefaultSearch()
  */
 void CPhoneWindow::CloseContextMenu()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     if (mContextMenu != NULL) {
         mContextMenu->Close();
@@ -2804,7 +2804,7 @@ void CPhoneWindow::CloseContextMenu()
  */
 void CPhoneWindow::DismissContextMenu()
 {
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     mContextMenu = NULL;
 

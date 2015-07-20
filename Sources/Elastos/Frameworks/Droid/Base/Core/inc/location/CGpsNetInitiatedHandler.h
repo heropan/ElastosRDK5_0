@@ -4,7 +4,6 @@
 #include "_CGpsNetInitiatedHandler.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
@@ -148,7 +147,7 @@ private:
      */
     AutoPtr<INotification> mNiNotification;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Location

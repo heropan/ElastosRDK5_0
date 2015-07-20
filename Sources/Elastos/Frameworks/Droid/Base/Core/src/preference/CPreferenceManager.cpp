@@ -181,7 +181,7 @@ ECode CPreferenceManager::GetNextId(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *id = mNextId++;
     return NOERROR;
 }
@@ -403,7 +403,7 @@ ECode CPreferenceManager::GetContext(
 ECode CPreferenceManager::RegisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mActivityResultListeners == NULL) {
         mActivityResultListeners = new List<AutoPtr<IPreferenceManagerOnActivityResultListener> >();
@@ -422,7 +422,7 @@ ECode CPreferenceManager::RegisterOnActivityResultListener(
 ECode CPreferenceManager::UnregisterOnActivityResultListener(
     /* [in] */ IPreferenceManagerOnActivityResultListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActivityResultListeners != NULL) {
         mActivityResultListeners->Remove(listener);
     }
@@ -437,7 +437,7 @@ ECode CPreferenceManager::DispatchActivityResult(
     AutoPtr<List< AutoPtr<IPreferenceManagerOnActivityResultListener> > > list;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mActivityResultListeners == NULL) {
             return NOERROR;
         }
@@ -459,7 +459,7 @@ ECode CPreferenceManager::DispatchActivityResult(
 ECode CPreferenceManager::RegisterOnActivityStopListener(
     /* [in] */ IPreferenceManagerOnActivityStopListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActivityStopListeners == NULL) {
         mActivityStopListeners = new List<AutoPtr<IPreferenceManagerOnActivityStopListener> >();
     }
@@ -477,7 +477,7 @@ ECode CPreferenceManager::RegisterOnActivityStopListener(
 ECode CPreferenceManager::UnregisterOnActivityStopListener(
     /* [in] */ IPreferenceManagerOnActivityStopListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActivityStopListeners != NULL) {
         mActivityStopListeners->Remove(listener);
     }
@@ -489,7 +489,7 @@ ECode CPreferenceManager::DispatchActivityStop()
     AutoPtr<List<AutoPtr<IPreferenceManagerOnActivityStopListener> > > list;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mActivityStopListeners == NULL) return NOERROR;
         list = new List<AutoPtr<IPreferenceManagerOnActivityStopListener> >(*mActivityStopListeners);
     }
@@ -504,7 +504,7 @@ ECode CPreferenceManager::DispatchActivityStop()
 ECode CPreferenceManager::RegisterOnActivityDestroyListener(
     /* [in] */ IPreferenceManagerOnActivityDestroyListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActivityDestroyListeners == NULL) {
         mActivityDestroyListeners = new List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >();
     }
@@ -521,7 +521,7 @@ ECode CPreferenceManager::RegisterOnActivityDestroyListener(
 ECode CPreferenceManager::UnregisterOnActivityDestroyListener(
     /* [in] */ IPreferenceManagerOnActivityDestroyListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActivityDestroyListeners != NULL) {
         mActivityDestroyListeners->Remove(listener);
     }
@@ -533,7 +533,7 @@ ECode CPreferenceManager::DispatchActivityDestroy()
     AutoPtr<List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> > > list;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mActivityDestroyListeners != NULL) {
             list = new List<AutoPtr<IPreferenceManagerOnActivityDestroyListener> >(*mActivityDestroyListeners);
         }
@@ -556,7 +556,7 @@ ECode CPreferenceManager::GetNextRequestCode(
     /* [out] */ Int32* code)
 {
     VALIDATE_NOT_NULL(code)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *code = mNextRequestCode++;
     return NOERROR;
 }
@@ -564,7 +564,7 @@ ECode CPreferenceManager::GetNextRequestCode(
 ECode CPreferenceManager::AddPreferencesScreen(
     /* [in] */ IDialogInterface* screen)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mPreferencesScreens == NULL) {
         mPreferencesScreens = new List<AutoPtr<IDialogInterface> >();
     }
@@ -576,7 +576,7 @@ ECode CPreferenceManager::AddPreferencesScreen(
 ECode CPreferenceManager::RemovePreferencesScreen(
     /* [in] */ IDialogInterface* screen)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mPreferencesScreens == NULL) {
         return NOERROR;
@@ -599,7 +599,7 @@ void CPreferenceManager::DismissAllScreens()
     AutoPtr<List<AutoPtr<IDialogInterface> > > screensToDismiss;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mPreferencesScreens == NULL) {
             return;
         }

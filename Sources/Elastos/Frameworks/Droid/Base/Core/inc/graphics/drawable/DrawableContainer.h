@@ -119,7 +119,7 @@ public:
         Int32         mEnterFadeDuration;
         Int32         mExitFadeDuration;
 
-        Mutex mLock;
+        Object mLock;
     };
 
     class _Runnable

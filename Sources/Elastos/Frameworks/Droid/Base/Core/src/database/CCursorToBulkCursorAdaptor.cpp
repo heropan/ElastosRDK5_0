@@ -89,7 +89,7 @@ ECode CCursorToBulkCursorAdaptor::ThrowIfCursorIsClosed()
 
 ECode CCursorToBulkCursorAdaptor::ProxyDied()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     DisposeLocked();
     return NOERROR;
 }
@@ -99,7 +99,7 @@ ECode CCursorToBulkCursorAdaptor::GetBulkCursorDescriptor(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(ThrowIfCursorIsClosed())
 
     AutoPtr<CBulkCursorDescriptor> d;
@@ -126,7 +126,7 @@ ECode CCursorToBulkCursorAdaptor::GetWindow(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(ThrowIfCursorIsClosed())
 
     Boolean isSuccess;
@@ -170,7 +170,7 @@ ECode CCursorToBulkCursorAdaptor::GetWindow(
 ECode CCursorToBulkCursorAdaptor::OnMove(
     /* [in] */ Int32 position)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(ThrowIfCursorIsClosed())
     Int32 mPosition;
     mCursor->GetPosition(&mPosition);
@@ -180,7 +180,7 @@ ECode CCursorToBulkCursorAdaptor::OnMove(
 
 ECode CCursorToBulkCursorAdaptor::Deactivate()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (mCursor != NULL) {
         UnregisterObserverProxyLocked();
         mCursor->Deactivate();
@@ -192,7 +192,7 @@ ECode CCursorToBulkCursorAdaptor::Deactivate()
 
 ECode CCursorToBulkCursorAdaptor::Close()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     DisposeLocked();
     return NOERROR;
 }
@@ -203,7 +203,7 @@ ECode CCursorToBulkCursorAdaptor::Requery(
 {
     VALIDATE_NOT_NULL(result)
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     FAIL_RETURN(ThrowIfCursorIsClosed())
 
@@ -259,7 +259,7 @@ ECode CCursorToBulkCursorAdaptor::UnregisterObserverProxyLocked()
 ECode CCursorToBulkCursorAdaptor::GetExtras(
     /* [out] */ IBundle** result)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     FAIL_RETURN(ThrowIfCursorIsClosed())
     return mCursor->GetExtras(result);
@@ -269,7 +269,7 @@ ECode CCursorToBulkCursorAdaptor::Respond(
     /* [in] */ IBundle* extras,
     /* [out] */ IBundle** result)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(ThrowIfCursorIsClosed())
     return mCursor->Respond(extras, result);
 }
@@ -295,7 +295,7 @@ ECode CCursorToBulkCursorAdaptor::constructor(
     }
     mProviderName = providerName;
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     return CreateAndRegisterObserverProxyLocked(observer);
 }
 

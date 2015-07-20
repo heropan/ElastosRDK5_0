@@ -56,7 +56,7 @@ ECode CountryDetector::AddCountryListener(
 {
 /*
     {
-        Mutex::AutoLock lock(mListenersLock);
+        Object::AutoLock lock(mListenersLock);
         if (!mListeners.containsKey(listener)) {
             ListenerTransport transport = new ListenerTransport(listener, looper);
             try {

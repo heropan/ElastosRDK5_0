@@ -12,7 +12,6 @@
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Vector;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Os::HandlerBase;
@@ -176,7 +175,7 @@ private:
         Int32 mMaxSize;
         Int32 mOldestIndex;
         Int32 mCount;
-        Mutex mLock;
+        Object mLock;
     };
 
     class SmHandler

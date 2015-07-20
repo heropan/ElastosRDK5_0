@@ -219,7 +219,7 @@ Int32 SQLiteConnection::OperationLog::BeginOperation(
     AutoPtr<ISystem> system;
     Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
 
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     Int32 index = (mIndex + 1) % MAX_RECENT_OPERATIONS;
     AutoPtr<Operation> operation = (*mOperations)[index];
     if (operation == NULL) {
@@ -265,7 +265,7 @@ void SQLiteConnection::OperationLog::FailOperation(
     /* [in] */ Int32 cookie,
     /* [in] */ ECode ec)
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     AutoPtr<Operation> operation = GetOperationLocked(cookie);
     if (operation != NULL) {
         operation->mException = ec;
@@ -275,7 +275,7 @@ void SQLiteConnection::OperationLog::FailOperation(
 void SQLiteConnection::OperationLog::EndOperation(
     /* [in] */ Int32 cookie)
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     if (EndOperationDeferLogLocked(cookie)) {
         LogOperationLocked(cookie, String(NULL));
     }
@@ -284,7 +284,7 @@ void SQLiteConnection::OperationLog::EndOperation(
 Boolean SQLiteConnection::OperationLog::EndOperationDeferLog(
     /* [in] */ Int32 cookie)
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     return EndOperationDeferLogLocked(cookie);
 }
 
@@ -292,7 +292,7 @@ void SQLiteConnection::OperationLog::LogOperation(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& detail)
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     LogOperationLocked(cookie, detail);
 }
 
@@ -341,7 +341,7 @@ AutoPtr<SQLiteConnection::Operation> SQLiteConnection::OperationLog::GetOperatio
 
 String SQLiteConnection::OperationLog::DescribeCurrentOperation()
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     AutoPtr<Operation> operation = (*mOperations)[mIndex];
     if (operation != NULL && !operation->mFinished) {
         StringBuilder msg;
@@ -354,7 +354,7 @@ String SQLiteConnection::OperationLog::DescribeCurrentOperation()
 void SQLiteConnection::OperationLog::Dump(
     /* [in] */ IPrinter* printer)
 {
-    Mutex::Autolock lock(mOperationsLock);
+    AutoLock lock(mOperationsLock);
     printer->Println(String("  Most recently executed operations:"));
     Int32 index = mIndex;
     AutoPtr<Operation> operation = (*mOperations)[mIndex];

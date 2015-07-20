@@ -1379,14 +1379,14 @@ protected:
      * manager with lock held.  (This lock will be acquired in places
      * where the window manager is calling in with its own lock held.)
      */
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IIWindowManager> mWindowManager;
     AutoPtr<IWindowManagerPolicyWindowManagerFuncs> mWindowManagerFuncs;
     AutoPtr<IPowerManager> mPowerManager;
     AutoPtr<IIStatusBarService> mStatusBarService;
-    Mutex mServiceAquireLock;
+    Object mServiceAquireLock;
     AutoPtr<IVibrator> mVibrator; // Vibrator for giving feedback of orientation changes
     AutoPtr<ISearchManager> mSearchManager;
 

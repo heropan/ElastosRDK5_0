@@ -253,7 +253,7 @@ PInterface GeckoAppShell::LooperThread::Probe(
     return NULL;
 }
 
-Mutex* GeckoAppShell::LooperThread::GetSelfLock()
+Object* GeckoAppShell::LooperThread::GetSelfLock()
 {
     return &mSync;
 }
@@ -581,13 +581,13 @@ ECode GeckoAppShell::IMEStateUpdater::Unlock()
 
 Void GeckoAppShell::IMEStateUpdater::EnableIME()
 {
-    Mutex::Autolock lock(&mClassLock);
+    AutoLock lock(&mClassLock);
     GetInstance()->mEnable = TRUE;
 }
 
 Void GeckoAppShell::IMEStateUpdater::ResetIME()
 {
-    Mutex::Autolock lock(&mClassLock);
+    AutoLock lock(&mClassLock);
     GetInstance()->mReset = TRUE;
 }
 
@@ -604,7 +604,7 @@ AutoPtr<GeckoAppShell::IMEStateUpdater> GeckoAppShell::IMEStateUpdater::GetInsta
     return instance;
 }
 
-Mutex* GeckoAppShell::IMEStateUpdater::GetSelfLock()
+Object* GeckoAppShell::IMEStateUpdater::GetSelfLock()
 {
     return &mLock;
 }
@@ -1252,7 +1252,7 @@ ECode GeckoAppShell::NotifyScreenShot(
 ECode GeckoAppShell::GeckoEventSync()
 {
     PRINT_FILE_LINE_EX("GeckoAppShell::GeckoEventSync()");
-    Mutex::Autolock lock(mGeckoAppShell);
+    AutoLock lock(mGeckoAppShell);
 
     //ECode ec = CCountDownLatch::New(1, (ICountDownLatch**)&sGeckoPendingAcks);
     //if (FAILED(ec)) return ec;
@@ -3787,7 +3787,7 @@ public:
 
 ECode GeckoAppShell::CloseCamera()
 {
-    Mutex::Autolock lock(&sSyncCloseCameraMet);
+    AutoLock lock(&sSyncCloseCameraMet);
     AutoPtr<IThread> thread = Thread::GetCurrentThread();
     Int64 id;
     thread->GetId(&id);

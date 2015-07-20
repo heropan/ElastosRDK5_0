@@ -262,7 +262,7 @@ private:
     /**
      * Lock to make sure mPlayState updates are reflecting the actual state of the object.
      */
-    Mutex mPlayStateLock;
+    Object mPlayStateLock;
 
     int mNativeBufferSizeInBytes;
 

@@ -5,7 +5,6 @@
 #include "_CTime.h"
 
 using Libcore::ICU::ILocale;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Text::Format::ITime;
 
 namespace Elastos {
@@ -629,7 +628,7 @@ private:
      */
     static const Int32 sThursdayOffset[];
 
-    static Mutex sTimeClassLock;
+    static Object sTimeClassLock;
 };
 
 } // namespace Format

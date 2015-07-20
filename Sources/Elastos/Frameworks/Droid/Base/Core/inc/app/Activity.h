@@ -11,7 +11,6 @@ using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Core::IThread;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFile;
@@ -3704,8 +3703,8 @@ private:
 
     AutoPtr<IThread> mUiThread;
 
-    Mutex mThisLock;
-    Mutex mManagedCursorsLock;
+    Object mThisLock;
+    Object mManagedCursorsLock;
 };
 
 } // namespace App

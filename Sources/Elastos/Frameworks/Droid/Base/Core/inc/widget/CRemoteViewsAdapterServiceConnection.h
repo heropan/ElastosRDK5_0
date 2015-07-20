@@ -5,7 +5,6 @@
 #include "os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
@@ -79,7 +78,7 @@ private:
         AutoPtr<IRemoteViewsAdapter> mAdapter;
     };
 private:
-    Mutex mLock;
+    Object mLock;
     Boolean mIsConnected;
     Boolean mIsConnecting;
     IRemoteViewsAdapter* mAdapter;

@@ -7,7 +7,7 @@ namespace Database {
 
 ECode DataSetObservable::NotifyChanged()
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
     for (; rit != mObservers.REnd(); ++rit) {
@@ -20,7 +20,7 @@ ECode DataSetObservable::NotifyChanged()
 
 ECode DataSetObservable::NotifyInvalidated()
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
     for (; rit != mObservers.REnd(); ++rit) {

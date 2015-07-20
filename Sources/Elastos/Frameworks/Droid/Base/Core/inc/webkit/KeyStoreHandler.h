@@ -40,7 +40,7 @@ public:
 private:
     static const String LOGTAG;
     AutoPtr<ByteArrayBuilder> mDataBuilder;
-    Mutex mDataBuilderLock;
+    Object mDataBuilderLock;
     String mMimeType;
 };
 

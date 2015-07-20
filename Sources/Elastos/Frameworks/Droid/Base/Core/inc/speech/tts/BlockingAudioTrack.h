@@ -3,7 +3,6 @@
 
 #include "Elastos.Droid.Core_server.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Media::IAudioTrack;
 
 namespace Elastos {
@@ -136,7 +135,7 @@ private:
 
     // Need to be seen by stop() which can be called from another thread. mAudioTrack will be
     // set to null only after waitAndRelease().
-    Mutex mAudioTrackLock;
+    Object mAudioTrackLock;
     AutoPtr<IAudioTrack> mAudioTrack;
     /*volatile*/ Boolean mStopped;// = FALSE;
 

@@ -28,7 +28,7 @@ ECode CWMSWallpaperConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     if (mWallpaper->mConnection == this) {
         mWallpaper->mLastDiedTime = SystemClock::GetUptimeMillis();
         mService = IIWallpaperService::Probe(service);
@@ -46,7 +46,7 @@ ECode CWMSWallpaperConnection::OnServiceConnected(
 ECode CWMSWallpaperConnection::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     mService = NULL;
     mEngine = NULL;
     if (mWallpaper->mConnection == this) {
@@ -68,7 +68,7 @@ ECode CWMSWallpaperConnection::OnServiceDisconnected(
 ECode CWMSWallpaperConnection::AttachEngine(
     /* [in] */ IWallpaperEngine* engine)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     mEngine = engine;
 
     return NOERROR;
@@ -77,7 +77,7 @@ ECode CWMSWallpaperConnection::AttachEngine(
 ECode CWMSWallpaperConnection::EngineShown(
     /* [in] */ IWallpaperEngine* engine)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     if (mReply != NULL) {
         Int64 ident = Binder::ClearCallingIdentity();
         if (FAILED(mReply->SendResult(NULL)))
@@ -95,7 +95,7 @@ ECode CWMSWallpaperConnection::SetWallpaper(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     if (mWallpaper->mConnection == this) {
         AutoPtr<IParcelFileDescriptor> temp =
             mOwner->UpdateWallpaperBitmapLocked(name, mWallpaper);

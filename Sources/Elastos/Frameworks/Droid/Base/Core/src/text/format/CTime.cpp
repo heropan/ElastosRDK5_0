@@ -376,7 +376,7 @@ ECode CTime::Format(
     /* [out] */ String* ret)
 {
     VALIDATE_NOT_NULL(ret);
-    Mutex::Autolock lock(sTimeClassLock);
+    AutoLock lock(sTimeClassLock);
 
     AutoPtr<ILocaleHelper> localeHelp;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);

@@ -163,7 +163,7 @@ ECode CActivityController::AppCrashed(
     sm->SetThreadPolicy(sp);
     if (!mHost->mIgnoreCrashes || mHost->mRequestBugreport) {
         {
-            Mutex::Autolock lock(mHost->mLockLock);
+            AutoLock lock(mHost->mLockLock);
             if (!mHost->mIgnoreCrashes) {
                 mHost->mAbort = TRUE;
             }
@@ -215,7 +215,7 @@ ECode CActivityController::AppNotResponding(
     ps->PrintStringln(processStats);
     sm->SetThreadPolicy(sp);
     {
-        Mutex::Autolock lock(mHost->mLockLock);
+        AutoLock lock(mHost->mLockLock);
         mHost->mRequestAnrTraces = TRUE;
         mHost->mRequestDumpsysMemInfo = TRUE;
         mHost->mRequestProcRank = TRUE;
@@ -225,7 +225,7 @@ ECode CActivityController::AppNotResponding(
         }
     }
     if (!mHost->mIgnoreTimeouts) {
-        Mutex::Autolock lock(mHost->mLockLock);
+        AutoLock lock(mHost->mLockLock);
         mHost->mAbort = TRUE;
     }
     *res = (mHost->mKillProcessAfterError) ? -1 : 1;

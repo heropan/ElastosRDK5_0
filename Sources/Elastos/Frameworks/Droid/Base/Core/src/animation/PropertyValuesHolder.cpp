@@ -676,7 +676,7 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::SetupSetterOrGetter(
 {
     AutoPtr<IMethodInfo> setterOrGetter;
     {
-        Mutex::Autolock lock(mPropertyMapLock);
+        AutoLock lock(mPropertyMapLock);
         AutoPtr<IClassInfo> key = targetClass;
         AutoPtr< MethodMap > propertyMap;
         typename ClassMethodMap::Iterator it = propertyMapMap->Find(key);

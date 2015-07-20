@@ -972,7 +972,7 @@ private:
     AutoPtr<LockdownVpnTracker> mLockdownTracker;
 
     /** Lock around {@link #mUidRules} and {@link #mMeteredIfaces}. */
-    Mutex mRulesLock;
+    Object mRulesLock;
     /** Currently active network rules by UID. */
     HashMap<Int32, Int32> mUidRules;
     /** Set of ifaces that are costly. */
@@ -1013,7 +1013,7 @@ private:
     Boolean mInetConditionChangeInFlight;
     Int32 mDefaultConnectionSequence;
 
-    Mutex mDnsLock;
+    Object mDnsLock;
     Int32 mNumDnsEntries;
     Boolean mDnsOverridden;
 
@@ -1034,7 +1034,7 @@ private:
 
     /** Handler used for internal events. */
     AutoPtr<IHandler> mHandler;
-    Mutex mLockInteral;
+    Object mLockInteral;
     /** Handler used for incoming {@link NetworkStateTracker} events. */
     AutoPtr<NetworkStateTrackerHandler> mTrackerHandler;
 
@@ -1062,12 +1062,12 @@ private:
 
     // track the current default http proxy - tell the world if we get a new one (real change)
     AutoPtr<IProxyProperties> mDefaultProxy;
-    Mutex mDefaultProxyLock;
+    Object mDefaultProxyLock;
     Boolean mDefaultProxyDisabled;
 
     // track the global proxy.
     AutoPtr<IProxyProperties> mGlobalProxy;
-    Mutex mGlobalProxyLock;
+    Object mGlobalProxyLock;
 
     AutoPtr<SettingsObserver> mSettingsObserver;
 

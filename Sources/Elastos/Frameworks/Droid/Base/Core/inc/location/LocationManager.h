@@ -9,7 +9,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContext;
@@ -1006,8 +1005,8 @@ private:
 
     // Map from LocationListeners to their associated ListenerTransport objects
     HashMap<AutoPtr<ILocationListener>, AutoPtr<IILocationListener> > mListeners;
-    Mutex mutexListeners;
-    Mutex mGpsStatusLock;
+    Object mutexListeners;
+    Object mGpsStatusLock;
     friend class CGpsStatusListenerTransport;
     friend class CListenerTransport;
 };

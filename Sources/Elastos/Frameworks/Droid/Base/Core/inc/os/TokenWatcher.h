@@ -16,7 +16,6 @@ using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 
 namespace Elastos {
@@ -129,7 +128,7 @@ private:
 
 private:
     HashMap<AutoPtr<IBinder>, AutoPtr<Death> > mTokens;
-    Mutex mLock;
+    Object mLock;
     AutoPtr<IRunnable> mNotificationTask;
     AutoPtr<IHandler> mHandler;
     String mTag;

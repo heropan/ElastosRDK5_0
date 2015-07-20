@@ -54,7 +54,7 @@ Boolean LocationBlacklist::IsBlacklisted(
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 length = mBlacklist->GetLength();
         for (Int32 i = 0; i < length; i++) {
             if (packageName.StartWith((*mBlacklist)[i])) {
@@ -83,7 +83,7 @@ ECode LocationBlacklist::OnChange(
 void LocationBlacklist::SwitchUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCurrentUserId = userId;
     ReloadBlacklistLocked();
 }
@@ -105,7 +105,7 @@ void LocationBlacklist::ReloadBlacklistLocked()
 
 void LocationBlacklist::ReloadBlacklist()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     ReloadBlacklistLocked();
 }
 
@@ -116,7 +116,7 @@ Boolean LocationBlacklist::InWhitelist(
     /* [in] */ const String& pkg)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 length = mWhitelist->GetLength();
         for (Int32 i = 0; i < length; i++) {
             if (pkg.StartWith((*mWhitelist)[i])) return TRUE;
@@ -130,7 +130,7 @@ AutoPtr<ArrayOf<String> > LocationBlacklist::GetStringArrayLocked(
 {
     String flatString;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr<IContentResolver> cr;
         mContext->GetContentResolver((IContentResolver**)&cr);
         AutoPtr<ISettingsSecure> settingsSecure;

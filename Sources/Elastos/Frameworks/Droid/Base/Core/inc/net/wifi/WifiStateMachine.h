@@ -1653,7 +1653,7 @@ private:
     List< AutoPtr<IScanResult> > mScanResults;
     static const Int32 SCAN_RESULT_CACHE_SIZE = 80;
     HashMap<String, AutoPtr<IScanResult> > mScanResultCache;
-    Mutex mScanResultCacheLock;
+    Object mScanResultCacheLock;
 
     /* Chipset supports background scan */
     Boolean mBackgroundScanSupported;
@@ -1729,7 +1729,7 @@ private:
     AutoPtr<IContext> mContext;
 
     AutoPtr<DhcpInfoInternal> mDhcpInfoInternal;
-    Mutex mDhcpInfoInternalLock;
+    Object mDhcpInfoInternalLock;
     AutoPtr<IWifiInfo> mWifiInfo;
     AutoPtr<INetworkInfo> mNetworkInfo;
     AutoPtr<SupplicantStateTracker> mSupplicantStateTracker;
@@ -1939,7 +1939,7 @@ private:
      * Most recently set source of starting WIFI.
      */
     AutoPtr<IWorkSource> mRunningWifiUids;
-    Mutex mRunningWifiUidsLock;
+    Object mRunningWifiUidsLock;
 
     /**
      * The last reported UIDs that were responsible for starting WIFI.

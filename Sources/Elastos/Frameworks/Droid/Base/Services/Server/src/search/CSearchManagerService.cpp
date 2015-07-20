@@ -239,7 +239,7 @@ ECode CSearchManagerService::OnUserRemoved(
 {
     if (userId != IUserHandle::USER_OWNER)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Iterator it = mSearchables.Find(userId);
         if(it != mSearchables.End())
             mSearchables.Erase(it);
@@ -343,7 +343,7 @@ void CSearchManagerService::MyPackageMonitor::UpdateSearchables()
     GetChangingUserId(&changingUserId);
     {
         // Update list of searchable activities
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         Iterator it = mHost->mSearchables.Begin();
         for(; it != mHost->mSearchables.End(); it++)
         {
@@ -385,7 +385,7 @@ ECode CSearchManagerService::GlobalSearchProviderObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         Iterator it = mHost->mSearchables.Begin();
         for(; it != mHost->mSearchables.End(); it++)
         {

@@ -84,7 +84,7 @@ private:
     /**
      * Guards {@link #mAudioTrackHandler}, {@link #mItem} and {@link #mStopped}.
      */
-    /*const*/ Mutex mStateLock;
+    /*const*/ Object mStateLock;
 
     // Handler associated with a thread that plays back audio requests.
     /*const*/ AutoPtr<AudioPlaybackHandler> mAudioTrackHandler;

@@ -58,7 +58,7 @@ ECode CTextServicesManagerService::CTSMSUserSwitchObserver::OnUserSwitching(
     /* [in] */ IRemoteCallback* reply)
 {
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         mOwner->SwitchUserLocked(newUserId);
     }
 
@@ -94,7 +94,7 @@ ECode CTextServicesManagerService::TextServicesMonitor::OnSomePackagesChanged()
     }
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         BuildSpellCheckerMapLocked(
             mOwner->mContext, mOwner->mSpellCheckerList, mOwner->mSpellCheckerMap, mOwner->mSettings);
         AutoPtr<ISpellCheckerInfo> sci;
@@ -159,7 +159,7 @@ ECode CTextServicesManagerService::InternalServiceConnection::OnServiceConnected
 {
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         ec = OnServiceConnectedInnerLocked(name, service);
     }
     return ec;
@@ -188,7 +188,7 @@ ECode CTextServicesManagerService::InternalServiceConnection::OnServiceDisconnec
     /* [in] */ IComponentName* name)
 {
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         ManagedSpellCheckerBindGroupMapIt it = mOwner->mSpellCheckerBindGroups.Find(mSciId);
         if (it != mOwner->mSpellCheckerBindGroups.End() && this == it->mSecond->mInternalConnection) {
             mOwner->mSpellCheckerBindGroups.Erase(mSciId);
@@ -342,7 +342,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::OnServiceConnected(
                 listener->mScLocale, listener->mScListener, listener->mBundle, (IISpellCheckerSession**)&session);
 
         {
-            Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+            AutoLock lock(mOwner->mSpellCheckerMapLock);
             ManagedInternalDeathRecipientListIt it2 = Find(mListeners.Begin(), mListeners.End(), listener);
             if (it2 != mListeners.End()) {
                 assert(listener->mTsListener != NULL);
@@ -363,7 +363,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::OnServiceConnected(
     }
 
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         mSpellChecker = spellChecker;
         mConnected = TRUE;
     }
@@ -387,7 +387,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::AddListener(
     AutoPtr<InternalDeathRecipient> localRecipient;
 
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         ManagedInternalDeathRecipientListIt it = mListeners.Begin();
         //try {
         for (; it != mListeners.End(); ++it) {
@@ -417,7 +417,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::RemoveListener(
         Slogger::W(TAG, "remove listener: " + listener.hashCode());
     }*/
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
 
         List<AutoPtr<InternalDeathRecipient> > removeList;
         ManagedInternalDeathRecipientListIt it = mListeners.Begin();
@@ -456,7 +456,7 @@ ECode CTextServicesManagerService::SpellCheckerBindGroup::RemoveAll()
     Slogger::E(TAG, "Remove the spell checker bind unexpectedly.");
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mOwner->mSpellCheckerMapLock);
+        AutoLock lock(mOwner->mSpellCheckerMapLock);
         List<AutoPtr<InternalDeathRecipient> >::Iterator it = mListeners.Begin();
         for (; it != mListeners.End(); ++it) {
             AutoPtr<InternalDeathRecipient> idr = (*it);
@@ -576,7 +576,7 @@ ECode CTextServicesManagerService::GetCurrentSpellChecker(
         return NOERROR;
     }
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         String curSpellCheckerId;
         mSettings->GetSelectedSpellChecker(&curSpellCheckerId);
         if (DBG) {
@@ -608,7 +608,7 @@ ECode CTextServicesManagerService::GetCurrentSpellCheckerSubtype(
     }
 
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         String subtypeHashCodeStr;
         mSettings->GetSelectedSpellCheckerSubtype(&subtypeHashCodeStr);
         if (DBG) {
@@ -728,7 +728,7 @@ ECode CTextServicesManagerService::GetSpellCheckerService(
     }
 
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         ManagedISpellCheckerInfoMapIt it = mSpellCheckerMap.Find(sciId);
         if (it == mSpellCheckerMap.End()) {
             return NOERROR;
@@ -804,7 +804,7 @@ ECode CTextServicesManagerService::FinishSpellCheckerService(
     }
 
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         List<AutoPtr<SpellCheckerBindGroup> > removeList;
         ManagedSpellCheckerBindGroupMapIt it = mSpellCheckerBindGroups.Begin();
         for (; it != mSpellCheckerBindGroups.End(); ++it) {
@@ -833,7 +833,7 @@ ECode CTextServicesManagerService::SetCurrentSpellChecker(
 
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
         FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
@@ -858,7 +858,7 @@ ECode CTextServicesManagerService::SetCurrentSpellCheckerSubtype(
     }
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
         FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
@@ -882,7 +882,7 @@ ECode CTextServicesManagerService::SetSpellCheckerEnabled(
     }
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         Int32 permission;
         FAIL_RETURN(mContext->CheckCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::WRITE_SECURE_SETTINGS, &permission));
         if (permission != IPackageManager::PERMISSION_GRANTED) {
@@ -908,7 +908,7 @@ ECode CTextServicesManagerService::IsSpellCheckerEnabled(
     }
     ECode ec = NOERROR;
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         ec = IsSpellCheckerEnabledLocked(ebl);
     }
     return ec;
@@ -1319,7 +1319,7 @@ ECode CTextServicesManagerService::Dump(
     }
 
     {
-        Mutex::Autolock lock(mSpellCheckerMapLock);
+        AutoLock lock(mSpellCheckerMapLock);
         pw->PrintStringln(String("Current Text Services Manager state:"));
         pw->PrintStringln(String("  Spell Checker Map:"));
         ManagedISpellCheckerInfoMapIt it = mSpellCheckerMap.Begin();

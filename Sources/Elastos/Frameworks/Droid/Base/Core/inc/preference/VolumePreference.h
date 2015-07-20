@@ -5,7 +5,6 @@
 #include "SeekBarDialogPreference.h"
 #include "database/ContentObserver.h"
 #include "os/Runnable.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::Database::IContentObserver;
 using Elastos::Droid::Database::ContentObserver;

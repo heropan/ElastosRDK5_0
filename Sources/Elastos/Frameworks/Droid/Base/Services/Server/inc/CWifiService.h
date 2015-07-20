@@ -155,7 +155,7 @@ private:
 
     private:
         List< AutoPtr<WifiLock> > mList;
-        Mutex mLock;
+        Object mLock;
         CWifiService* mOwner;
     };
 
@@ -705,7 +705,7 @@ private:
     Int32 mPluggedType;
 
     AutoPtr<LockList> mLocks;
-    Mutex mLocksLock;
+    Object mLocksLock;
     // some wifi lock statistics
     Int32 mFullHighPerfLocksAcquired;
     Int32 mFullHighPerfLocksReleased;
@@ -715,7 +715,7 @@ private:
     Int32 mScanLocksReleased;
 
     List< AutoPtr<Multicaster> > mMulticasters;
-    Mutex mMulticastersLock;
+    Object mMulticastersLock;
     Int32 mMulticastEnabled;
     Int32 mMulticastDisabled;
 

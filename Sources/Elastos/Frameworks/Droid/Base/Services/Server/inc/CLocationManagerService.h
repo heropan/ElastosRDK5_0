@@ -75,7 +75,7 @@ private:
 
     private:
 
-        Mutex mLock;
+        Object mLock;
         CLocationManagerService* mHost;
 
     };
@@ -182,7 +182,7 @@ private:
         AutoPtr<IInterface> mKey;
         HashMap<String, AutoPtr<UpdateRecord> > mUpdateRecords;
         Int32 mPendingBroadcasts;
-        Mutex mLock;
+        Object mLock;
     friend class CLocationManagerService;
     };
 
@@ -598,8 +598,8 @@ private:
 
     AutoPtr<IContext> mContext;
     // used internally for synchronization
-    Mutex mLock;
-    Mutex mLockForWakeLock;
+    Object mLock;
+    Object mLockForWakeLock;
 
     // --- fields below are final after init() ---
     AutoPtr<LocationFudger> mLocationFudger;

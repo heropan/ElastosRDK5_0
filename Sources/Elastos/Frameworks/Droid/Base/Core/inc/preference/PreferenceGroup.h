@@ -94,7 +94,7 @@ private:
 
     Boolean mAttachedToActivity;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // Preference

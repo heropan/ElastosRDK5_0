@@ -195,7 +195,7 @@ ECode SQLiteCursor::Deactivate()
 ECode SQLiteCursor::Close()
 {
     AbstractWindowedCursor::Close();
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mQuery->Close();
     return mDriver->CursorClosed();
 }
@@ -212,7 +212,7 @@ ECode SQLiteCursor::Requery(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr<ISQLiteDatabase> database = ((CSQLiteQuery*)mQuery.Get())->GetDatabase();
         Boolean isOpened;
         if (database->IsOpen(&isOpened), !isOpened) {

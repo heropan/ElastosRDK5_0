@@ -1280,7 +1280,7 @@ AutoPtr< ArrayOf<Char32> > TextUtils::Obtain(
     assert(len >= 0);
     AutoPtr< ArrayOf<Char32> > buf;
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         buf = sTemp;
         sTemp = NULL;
     }
@@ -1300,7 +1300,7 @@ void TextUtils::Recycle(
         return;
     }
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     sTemp = temp;
 }
 

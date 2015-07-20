@@ -43,7 +43,7 @@ PInterface CRatingBar::Probe(
     return _CRatingBar::Probe(riid);
 }
 
-Mutex* CRatingBar::GetSelfLock()
+Object* CRatingBar::GetSelfLock()
 {
     return &mLock;
 }

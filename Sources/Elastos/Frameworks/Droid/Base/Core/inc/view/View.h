@@ -5432,7 +5432,7 @@ private:
     static Int32 sNextAccessibilityViewId;
 
     static Int32 sNextGeneratedId;
-    static Mutex sNextGeneratedIdLock;
+    static Object sNextGeneratedIdLock;
 
 public:
     /**

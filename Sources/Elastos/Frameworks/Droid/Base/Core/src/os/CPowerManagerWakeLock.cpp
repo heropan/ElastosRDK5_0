@@ -39,7 +39,7 @@ CPowerManagerWakeLock::CPowerManagerWakeLock()
 
 CPowerManagerWakeLock::~CPowerManagerWakeLock()
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     if (mHeld) {
         // Log.wtf(TAG, "WakeLock finalized while still held: " + mTag);
         // try {
@@ -52,14 +52,14 @@ CPowerManagerWakeLock::~CPowerManagerWakeLock()
 ECode CPowerManagerWakeLock::SetReferenceCounted(
     /* [in] */ Boolean value)
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     mRefCounted = value;
     return NOERROR;
 }
 
 ECode CPowerManagerWakeLock::AcquireLock()
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     AcquireLocked();
     return NOERROR;
 }
@@ -67,7 +67,7 @@ ECode CPowerManagerWakeLock::AcquireLock()
 ECode CPowerManagerWakeLock::AcquireLock(
     /* [in] */ Int64 timeout)
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     AcquireLocked();
     Boolean result;
     return mHost->mHandler->PostDelayed(mReleaser, timeout, &result);
@@ -99,7 +99,7 @@ ECode CPowerManagerWakeLock::ReleaseLock()
 ECode CPowerManagerWakeLock::ReleaseLock(
     /* [in] */ Int32 flags)
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     if (!mRefCounted || --mCount == 0) {
         mHost->mHandler->RemoveCallbacks(mReleaser);
         if (mHeld) {
@@ -122,7 +122,7 @@ ECode CPowerManagerWakeLock::IsHeld(
     /* [out] */ Boolean* isHeld)
 {
     VALIDATE_NOT_NULL(isHeld);
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     *isHeld = mHeld;
     return NOERROR;
 }
@@ -130,7 +130,7 @@ ECode CPowerManagerWakeLock::IsHeld(
 ECode CPowerManagerWakeLock::SetWorkSource(
     /* [in] */ IWorkSource* ws)
 {
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     Int32 size;
     if (ws != NULL && (ws->GetSize(&size), size == 0)) {
         ws = NULL;
@@ -165,7 +165,7 @@ ECode CPowerManagerWakeLock::ToString(
     /* [out] */ String* s)
 {
     VALIDATE_NOT_NULL(s);
-    Mutex::Autolock lock(mTokenLock);
+    AutoLock lock(mTokenLock);
     *s = String("WakeLock{") /*Integer.toHexString(System.identityHashCode(this))*/
             + String(" held=") + StringUtils::BooleanToString(mHeld) + String(", refCount=")
             + StringUtils::Int32ToString(mCount) + String("}");

@@ -427,7 +427,7 @@ ECode GpsLocationProvider::IsEnabled(
 {
     VALIDATE_NOT_NULL(enable);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         * enable = mEnabled;
         return NOERROR;
     }
@@ -878,7 +878,7 @@ void GpsLocationProvider::HandleEnable()
 
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mEnabled) return;
         mEnabled = TRUE;
     }
@@ -896,7 +896,7 @@ void GpsLocationProvider::HandleEnable()
     } else {
         //synchronized (mLock)
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             mEnabled = FALSE;
         }
 //        Log.w(TAG, "Failed to enable location provider");
@@ -909,7 +909,7 @@ void GpsLocationProvider::HandleDisable()
 
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (!mEnabled) return;
         mEnabled = FALSE;
     }
@@ -1197,7 +1197,7 @@ void GpsLocationProvider::ReportLocation(
 
     //synchronized (mLocation)
     {
-        Mutex::Autolock lock(mLocationMutex);
+        AutoLock lock(mLocationMutex);
         mLocationFlags = flags;
         if ((flags & LOCATION_HAS_LAT_LONG) == LOCATION_HAS_LAT_LONG) {
             mLocation->SetLatitude(latitude);
@@ -1247,7 +1247,7 @@ void GpsLocationProvider::ReportLocation(
         // notify status listeners
         //synchronized (mListeners)
         {
-            Mutex::Autolock lock(mListenersMutex);
+            AutoLock lock(mListenersMutex);
             Int32 size = mListeners.GetSize();
             for (Int32 i = 0; i < size; i++) {
                 AutoPtr<Listener> listener = mListeners[i];
@@ -1301,7 +1301,7 @@ void GpsLocationProvider::ReportStatus(
 
     //synchronized (mListeners)
     {
-        Mutex::Autolock lock(mListenersMutex);
+        AutoLock lock(mListenersMutex);
 
         Boolean wasNavigating = mNavigating;
 
@@ -1364,7 +1364,7 @@ void GpsLocationProvider::ReportSvStatus()
 
     //synchronized (mListeners)
     {
-        Mutex::Autolock lock(mListenersMutex);
+        AutoLock lock(mListenersMutex);
 
         Int32 size = mListeners.GetSize();
         for (Int32 i = 0; i < size; i++) {
@@ -1496,7 +1496,7 @@ void GpsLocationProvider::ReportNmea(
 {
     //synchronized (mListeners)
     {
-        Mutex::Autolock lock(mListenersMutex);
+        AutoLock lock(mListenersMutex);
         Int32 size = mListeners.GetSize();
         if (size > 0) {
             // don't bother creating the String if we have no listeners

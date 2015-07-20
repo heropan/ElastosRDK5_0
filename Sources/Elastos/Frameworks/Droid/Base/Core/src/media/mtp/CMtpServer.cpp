@@ -107,7 +107,7 @@ void CMtpServer::NativeRun()
 
 void CMtpServer::NativeCleanup()
 {
-    Elastos::Core::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::AutoLock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {
@@ -122,7 +122,7 @@ void CMtpServer::NativeCleanup()
 void CMtpServer::NativeSendObjectAdded(
     /* [in] */ Int32 handle)
 {
-    Elastos::Core::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::AutoLock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server)
@@ -135,7 +135,7 @@ void CMtpServer::NativeSendObjectAdded(
 void CMtpServer::NativeSendObjectRemoved(
     /* [in] */ Int32 handle)
 {
-    Elastos::Core::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::AutoLock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server)
@@ -148,7 +148,7 @@ void CMtpServer::NativeSendObjectRemoved(
 void CMtpServer::NativeAddStorage(
     /* [in] */ IMtpStorage* storage)
 {
-    Elastos::Core::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::AutoLock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {
@@ -183,7 +183,7 @@ void CMtpServer::NativeAddStorage(
 void CMtpServer::NativeRemoveStorage(
     /* [in] */ Int32 storageId)
 {
-    Elastos::Core::Mutex::Autolock autoLock(mutex);
+    Elastos::Core::AutoLock autoLock(mutex);
 
     MtpServer* server = (MtpServer*)mNativeContext;
     if (server) {

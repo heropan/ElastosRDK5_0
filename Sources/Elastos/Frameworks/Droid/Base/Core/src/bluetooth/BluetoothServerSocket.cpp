@@ -48,7 +48,7 @@ ECode BluetoothServerSocket::Accept(
 
 ECode BluetoothServerSocket::Close()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mHandler != NULL) {
         AutoPtr<IMessage> msg;
         mHandler->ObtainMessage(mMessage, (IMessage**)&msg);

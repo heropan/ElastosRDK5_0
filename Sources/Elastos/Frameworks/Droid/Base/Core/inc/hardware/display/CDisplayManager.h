@@ -194,7 +194,7 @@ private:
     AutoPtr<IContext> mContext;
     AutoPtr<IDisplayManagerGlobal> mGlobal;
 
-    Mutex mLock;
+    Object mLock;
     HashMap<Int32, AutoPtr<IDisplay> > mDisplays;
 
     List<AutoPtr<IDisplay> > mTempDisplays;

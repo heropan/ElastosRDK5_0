@@ -7,7 +7,6 @@
 #include "Elastos.Droid.Core.h"
 #endif
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IDatabaseErrorHandler;
 
@@ -250,7 +249,7 @@ private:
     Boolean mEnableWriteAheadLogging;
     AutoPtr<IDatabaseErrorHandler> mErrorHandler;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } //Sqlite

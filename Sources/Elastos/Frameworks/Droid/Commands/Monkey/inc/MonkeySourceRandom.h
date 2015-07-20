@@ -10,7 +10,6 @@
 #include "CMonkeyFlipEvent.h"
 #include "CMonkeyTrackballEvent.h"
 #include <elautoptr.h>
-#include <elrefbase.h>
 
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Core::IRandom;

@@ -11,7 +11,6 @@
 #include <Elastos.CoreLibrary.h>
 
 using namespace Elastos;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::Utility::IProperties;
 using Eunit::Framework::ITest;
@@ -145,7 +144,7 @@ public:
 
 private:
     static AutoPtr<IProperties> sPreferences;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Runner

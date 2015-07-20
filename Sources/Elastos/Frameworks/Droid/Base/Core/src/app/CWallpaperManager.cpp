@@ -52,7 +52,7 @@ CWallpaperManager::CWallpaperManager()
 void CWallpaperManager::InitGlobals(
     /* [in] */ ILooper* looper)
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
     if (sGlobals == NULL) {
         ASSERT_SUCCEEDED(CGlobalsWallpaperManagerCallback::NewByFriend(
                 looper, (CGlobalsWallpaperManagerCallback**)&sGlobals));

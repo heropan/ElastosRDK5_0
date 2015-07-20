@@ -183,7 +183,7 @@ void SQLiteDatabase::Dispose(
 {
     AutoPtr<SQLiteConnectionPool> pool;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // if (mCloseGuardLocked != NULL) {
         //     if (finalized) {
         //         mCloseGuardLocked.warnIfOpen();
@@ -197,7 +197,7 @@ void SQLiteDatabase::Dispose(
 
     if (!finalized) {
         {
-            Mutex::Autolock lock(sActiveDatabasesLock);
+            AutoLock lock(sActiveDatabasesLock);
             sActiveDatabases.Erase(this);
         }
         if (pool != NULL) {
@@ -219,7 +219,7 @@ ECode SQLiteDatabase::SetLockingEnabled(
 
 String SQLiteDatabase::GetLabel()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mConfigurationLocked->mLabel;
 }
 
@@ -253,7 +253,7 @@ ECode SQLiteDatabase::CreateSession(
 {
     AutoPtr<SQLiteConnectionPool> pool;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         FAIL_RETURN(ThrowIfNotOpenLocked());
         pool = mConnectionPoolLocked;
     }
@@ -557,7 +557,7 @@ ECode SQLiteDatabase::DeleteDatabase(
 
 ECode SQLiteDatabase::ReopenReadWrite()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     if (!IsReadOnlyLocked()) {
@@ -602,14 +602,14 @@ ECode SQLiteDatabase::Open()
 ECode SQLiteDatabase::OpenInner()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         assert(mConnectionPoolLocked == NULL);
         FAIL_RETURN(SQLiteConnectionPool::Open(mConfigurationLocked, (SQLiteConnectionPool**)&mConnectionPoolLocked));
         // mCloseGuardLocked.Open("close");
     }
 
-    Mutex::Autolock lock(sActiveDatabasesLock);
+    AutoLock lock(sActiveDatabasesLock);
     sActiveDatabases[this] = NULL;
     return NOERROR;
 }
@@ -631,7 +631,7 @@ ECode SQLiteDatabase::AddCustomFunction(
     // Create wrapper (also validates arguments).
     AutoPtr<SQLiteCustomFunction> wrapper = new SQLiteCustomFunction(name, numArgs, function);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     mConfigurationLocked->mCustomFunctions.PushBack(wrapper);
@@ -1222,7 +1222,7 @@ ECode SQLiteDatabase::ExecuteSql(
     if (type == DatabaseUtils_STATEMENT_ATTACH) {
         Boolean disableWal = FALSE;
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             if (!mHasAttachedDbsLocked) {
                 mHasAttachedDbsLocked = TRUE;
                 disableWal = TRUE;
@@ -1255,14 +1255,14 @@ ECode SQLiteDatabase::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
     VALIDATE_NOT_NULL(isReadOnly);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *isReadOnly = IsReadOnlyLocked();
     return NOERROR;
 }
 
 Boolean SQLiteDatabase::IsReadOnlyLocked()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return (mConfigurationLocked->mOpenFlags & OPEN_READ_MASK) == OPEN_READONLY;
 }
 
@@ -1270,7 +1270,7 @@ ECode SQLiteDatabase::IsInMemoryDatabase(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *result = mConfigurationLocked->IsInMemoryDb();
     return NOERROR;
 }
@@ -1279,7 +1279,7 @@ ECode SQLiteDatabase::IsOpen(
     /* [out] */ Boolean* isOpen)
 {
     VALIDATE_NOT_NULL(isOpen);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *isOpen = mConnectionPoolLocked != NULL;
     return NOERROR;
 }
@@ -1299,7 +1299,7 @@ ECode SQLiteDatabase::GetPath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *path = mConfigurationLocked->mPath;
     return NOERROR;
 }
@@ -1313,7 +1313,7 @@ ECode SQLiteDatabase::SetLocale(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     AutoPtr<ILocale> oldLocale = mConfigurationLocked->mLocale;
@@ -1338,7 +1338,7 @@ ECode SQLiteDatabase::SetMaxSqlCacheSize(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     Int32 oldMaxSqlCacheSize = mConfigurationLocked->mMaxSqlCacheSize;
@@ -1357,7 +1357,7 @@ ECode SQLiteDatabase::SetMaxSqlCacheSize(
 ECode SQLiteDatabase::SetForeignKeyConstraintsEnabled(
     /* [in] */ Boolean enable)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     if (mConfigurationLocked->mForeignKeyConstraintsEnabled == enable) {
@@ -1380,7 +1380,7 @@ ECode SQLiteDatabase::EnableWriteAheadLogging(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0) {
@@ -1428,7 +1428,7 @@ ECode SQLiteDatabase::EnableWriteAheadLogging(
 
 ECode SQLiteDatabase::DisableWriteAheadLogging()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
 
     if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) == 0) {
@@ -1450,7 +1450,7 @@ ECode SQLiteDatabase::IsWriteAheadLoggingEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfNotOpenLocked())
     *result = (mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0;
     return NOERROR;
@@ -1470,7 +1470,7 @@ AutoPtr< List<AutoPtr<SQLiteDebug::DbStats> > > SQLiteDatabase::GetDbStats()
 void SQLiteDatabase::CollectDbStats(
     /* [in] */ List<AutoPtr<SQLiteDebug::DbStats> >* dbStatsList)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mConnectionPoolLocked != NULL) {
         mConnectionPoolLocked->CollectDbStats(dbStatsList);
     }
@@ -1479,7 +1479,7 @@ void SQLiteDatabase::CollectDbStats(
 AutoPtr<List<AutoPtr<SQLiteDatabase> > > SQLiteDatabase::GetActiveDatabases()
 {
     AutoPtr<List<AutoPtr<SQLiteDatabase> > > databases = new List<AutoPtr<SQLiteDatabase> >();
-    Mutex::Autolock lock(sActiveDatabasesLock);
+    AutoLock lock(sActiveDatabasesLock);
     HashMap<AutoPtr<SQLiteDatabase>, AutoPtr<IInterface> >::Iterator it;
     for (it = sActiveDatabases.Begin(); it != sActiveDatabases.End(); ++it) {
         databases->PushBack(it->mFirst);
@@ -1503,7 +1503,7 @@ void SQLiteDatabase::Dump(
     /* [in] */ IPrinter* printer,
     /* [in] */ Boolean verbose)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mConnectionPoolLocked != NULL) {
         printer->Println(String(""));
         mConnectionPoolLocked->Dump(printer, verbose);
@@ -1519,7 +1519,7 @@ ECode SQLiteDatabase::GetAttachedDbs(
     AutoPtr<IObjectStringMap> attachedDbs;
     CObjectStringMap::New((IObjectStringMap**)&attachedDbs);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mConnectionPoolLocked == NULL) {
             // not open
             return NOERROR;

@@ -113,7 +113,7 @@ private:
     static const Boolean mDebug;
 
     List< AutoPtr<Command> > mCmdQueue;
-    Mutex mCmdQueueLock;
+    Object mCmdQueueLock;
 
     String mTag;
     AutoPtr<MyThread> mThread;

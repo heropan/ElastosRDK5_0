@@ -298,7 +298,7 @@ private:
     static const Int32 BOOTFAST_WAIT_TIME;
 
     // state tracking
-    static Mutex sIsStartedGuard;
+    static Object sIsStartedGuard;
     static Boolean sIsStarted;
 
     static Boolean mReboot;

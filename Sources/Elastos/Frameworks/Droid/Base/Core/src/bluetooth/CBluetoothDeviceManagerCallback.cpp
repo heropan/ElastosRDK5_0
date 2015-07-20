@@ -9,14 +9,14 @@ namespace Bluetooth {
 ECode CBluetoothDeviceManagerCallback::OnBluetoothServiceUp(
     /* [in] */ IIBluetooth* bluetoothService)
 {
-	Mutex::Autolock lock(CBluetoothDevice::sLock);
+	AutoLock lock(CBluetoothDevice::sLock);
     CBluetoothDevice::sService = bluetoothService;
     return NOERROR;
 }
 
 ECode CBluetoothDeviceManagerCallback::OnBluetoothServiceDown()
 {
-	Mutex::Autolock lock(CBluetoothDevice::sLock);
+	AutoLock lock(CBluetoothDevice::sLock);
     CBluetoothDevice::sService = NULL;
     return NOERROR;
 }

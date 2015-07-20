@@ -260,7 +260,7 @@ Int32 AbsSeekBar::GetKeyProgressIncrement()
 ECode AbsSeekBar::SetMax(
     /* [in] */ Int32 max)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    AutoLock lock(GetSelfLock());
 
     ProgressBar::SetMax(max);
 
@@ -431,7 +431,7 @@ ECode AbsSeekBar::OnResolveDrawables(
 void AbsSeekBar::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    AutoLock lock(GetSelfLock());
 
     ProgressBar::OnDraw(canvas);
     if (mThumb != NULL) {
@@ -449,7 +449,7 @@ void AbsSeekBar::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
-    Mutex::Autolock lock(GetSelfLock());
+    AutoLock lock(GetSelfLock());
 
     AutoPtr<IDrawable> d = GetCurrentDrawable();
 

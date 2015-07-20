@@ -3325,7 +3325,7 @@ AutoPtr< HashMap<String, AutoPtr<Elastos::Droid::Os::BatteryStatsImpl::KernelWak
     for (i = 0; i < len && (*wlBuffer)[i] != '\n' && (*wlBuffer)[i] != '\0'; i++);
     startIndex = endIndex = i + 1;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     HashMap<String, AutoPtr<KernelWakelockStats> >& m = mProcWakelockFileStats;
 
     sKernelWakelockUpdateVersion++;
@@ -5178,7 +5178,7 @@ void BatteryStatsImpl::SetOnBattery(
     /* [in] */ Int32 oldStatus,
     /* [in] */ Int32 level)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     SetOnBatteryLocked(onBattery, oldStatus, level);
 }
 
@@ -5266,7 +5266,7 @@ void BatteryStatsImpl::SetBatteryState(
     /* [in] */ Int32 temp,
     /* [in] */ Int32 volt)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean onBattery = plugType == BATTERY_PLUGGED_NONE;
     Int32 oldStatus = mHistoryCur->mBatteryStatus;
     if (!mHaveBatteryLevel) {
@@ -5576,7 +5576,7 @@ Int64 BatteryStatsImpl::GetTotalTcpBytesReceived(
 
 Int32 BatteryStatsImpl::GetDischargeStartLevel()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return GetDischargeStartLevelLocked();
 }
 
@@ -5587,7 +5587,7 @@ Int32 BatteryStatsImpl::GetDischargeStartLevelLocked()
 
 Int32 BatteryStatsImpl::GetDischargeCurrentLevel()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return GetDischargeCurrentLevelLocked();
 }
 
@@ -5598,7 +5598,7 @@ Int32 BatteryStatsImpl::GetDischargeCurrentLevelLocked()
 
 Int32 BatteryStatsImpl::GetLowDischargeAmountSinceCharge()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 val = mLowDischargeAmountSinceCharge;
     if (mOnBattery && mDischargeCurrentLevel < mDischargeUnplugLevel) {
         val += mDischargeUnplugLevel - mDischargeCurrentLevel-1;
@@ -5608,7 +5608,7 @@ Int32 BatteryStatsImpl::GetLowDischargeAmountSinceCharge()
 
 Int32 BatteryStatsImpl::GetHighDischargeAmountSinceCharge()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 val = mHighDischargeAmountSinceCharge;
     if (mOnBattery && mDischargeCurrentLevel < mDischargeUnplugLevel) {
         val += mDischargeUnplugLevel - mDischargeCurrentLevel;
@@ -5618,7 +5618,7 @@ Int32 BatteryStatsImpl::GetHighDischargeAmountSinceCharge()
 
 Int32 BatteryStatsImpl::GetDischargeAmountScreenOn()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     int val = mDischargeAmountScreenOn;
     if (mOnBattery && mScreenOn
             && mDischargeCurrentLevel < mDischargeScreenOnUnplugLevel) {
@@ -5629,7 +5629,7 @@ Int32 BatteryStatsImpl::GetDischargeAmountScreenOn()
 
 Int32 BatteryStatsImpl::GetDischargeAmountScreenOnSinceCharge()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 val = mDischargeAmountScreenOnSinceCharge;
     if (mOnBattery && mScreenOn
             && mDischargeCurrentLevel < mDischargeScreenOnUnplugLevel) {
@@ -5640,7 +5640,7 @@ Int32 BatteryStatsImpl::GetDischargeAmountScreenOnSinceCharge()
 
 Int32 BatteryStatsImpl::GetDischargeAmountScreenOff()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 val = mDischargeAmountScreenOff;
     if (mOnBattery && !mScreenOn
             && mDischargeCurrentLevel < mDischargeScreenOffUnplugLevel) {
@@ -5651,7 +5651,7 @@ Int32 BatteryStatsImpl::GetDischargeAmountScreenOff()
 
 Int32 BatteryStatsImpl::GetDischargeAmountScreenOffSinceCharge()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 val = mDischargeAmountScreenOffSinceCharge;
     if (mOnBattery && !mScreenOn
             && mDischargeCurrentLevel < mDischargeScreenOffUnplugLevel) {
@@ -5849,7 +5849,7 @@ void BatteryStatsImpl::CommitPendingDataToDisk()
 {
     AutoPtr<IParcel> next;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         next = mPendingWrite;
         mPendingWrite = NULL;
         if (next == NULL) {
@@ -6815,7 +6815,7 @@ void BatteryStatsImpl::DumpLocked(
 AutoPtr<INetworkStats> BatteryStatsImpl::GetNetworkStatsSummary()
 {
     // NOTE: calls from BatteryStatsService already hold this lock
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int64 age;
     if (mNetworkSummaryCache == NULL
             || (mNetworkSummaryCache->GetElapsedRealtimeAge(&age), age > IDateUtils::SECOND_IN_MILLIS)) {
@@ -6844,7 +6844,7 @@ AutoPtr<INetworkStats> BatteryStatsImpl::GetNetworkStatsSummary()
 AutoPtr<INetworkStats> BatteryStatsImpl::GetNetworkStatsDetailGroupedByUid()
 {
     // NOTE: calls from BatteryStatsService already hold this lock
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int64 age;
     if (mNetworkDetailCache == NULL
             || (mNetworkDetailCache->GetElapsedRealtimeAge(&age), age > IDateUtils::SECOND_IN_MILLIS)) {

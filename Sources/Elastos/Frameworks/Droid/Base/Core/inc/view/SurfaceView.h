@@ -399,8 +399,8 @@ private:
 
     Boolean mGlobalListenersAdded;
 
-    Mutex mSurfaceLock;
-    Mutex mCallbacksLock;
+    Object mSurfaceLock;
+    Object mCallbacksLock;
 
     //todo: for gecko using input method;
     AutoPtr<IView> mDelegate;

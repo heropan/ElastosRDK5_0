@@ -64,7 +64,7 @@ ECode CCameraProfileHelper::GetJpegEncodingQualityParameter(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mCacheLock);
+    AutoLock lock(mCacheLock);
     AutoPtr<ArrayOf<Int32> > levels = sCache[cameraId];
     if (levels == NULL) {
         levels = GetImageEncodingQualityLevels(cameraId);
@@ -91,14 +91,14 @@ AutoPtr<ArrayOf<Int32> > CCameraProfileHelper::GetImageEncodingQualityLevels(
     return levels;
 }
 
-static Mutex sLock;
+static Object sLock;
 android::MediaProfiles* sProfiles = NULL;
 
 // Methods implemented by JNI
 void CCameraProfileHelper::NativeInit()
 {
     ALOGV("native_init");
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sProfiles == NULL) {
         sProfiles = android::MediaProfiles::getInstance();

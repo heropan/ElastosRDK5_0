@@ -130,7 +130,7 @@ ECode WebSettingsClassic::EventHandler::InnerHandler::HandleMessage(
     msg->GetWhat(&what);
     switch (what) {
         case SYNC: {
-                Mutex::Autolock lock(mOwner->mOwner->mLock);
+                AutoLock lock(mOwner->mOwner->mLock);
                 if (mOwner->mOwner->mBrowserFrame->mNativeFrame != 0) {
                     mOwner->mOwner->NativeSync(mOwner->mOwner->mBrowserFrame->mNativeFrame);
                 }
@@ -173,7 +173,7 @@ WebSettingsClassic::EventHandler::EventHandler(
 
 void WebSettingsClassic::EventHandler::CreateHandler()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // as mRenderPriority can be set before thread is running, sync up
     SetRenderPriority();
@@ -183,7 +183,7 @@ void WebSettingsClassic::EventHandler::CreateHandler()
 
 void WebSettingsClassic::EventHandler::SetRenderPriority()
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
 
     if (mOwner->mRenderPriority == RenderPriority_NORMAL) {
         Process::SetThreadPriority(
@@ -206,7 +206,7 @@ void WebSettingsClassic::EventHandler::SetRenderPriority()
 Boolean WebSettingsClassic::EventHandler::SendMessage(
     /* [in] */ IMessage* msg)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mHandler != NULL) {
           Boolean result = FALSE;
@@ -363,7 +363,7 @@ String WebSettingsClassic::GetCurrentAcceptLanguage()
 {
     AutoPtr<ILocale> locale;
     {
-        Mutex::Autolock lock(sLockForLocaleSettings);
+        AutoLock lock(sLockForLocaleSettings);
         locale = sLocale;
     }
     StringBuilder buffer;
@@ -433,11 +433,11 @@ void WebSettingsClassic::AddLocaleToHttpAcceptLanguage(
  */
 String WebSettingsClassic::GetCurrentUserAgent()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ILocale> locale;
     {
-        Mutex::Autolock lock(sLockForLocaleSettings);
+        AutoLock lock(sLockForLocaleSettings);
         locale = sLocale;
     }
     return GetDefaultUserAgentForLocale(mContext, locale);
@@ -843,7 +843,7 @@ Boolean WebSettingsClassic::GetLightTouchEnabled()
 ECode WebSettingsClassic::SetUseDoubleTree(
     /* [in] */ Boolean use)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return NOERROR;
 }
 
@@ -852,7 +852,7 @@ ECode WebSettingsClassic::SetUseDoubleTree(
  */
 Boolean WebSettingsClassic::GetUseDoubleTree()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return FALSE;
 }
 
@@ -862,7 +862,7 @@ Boolean WebSettingsClassic::GetUseDoubleTree()
 ECode WebSettingsClassic::SetUserAgent(
     /* [in] */ Int32 ua)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     String uaString;
     if (ua == 1) {
@@ -892,7 +892,7 @@ ECode WebSettingsClassic::SetUserAgent(
  */
 Int32 WebSettingsClassic::GetUserAgent()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (DESKTOP_USERAGENT.Equals(mUserAgent)) {
         return 1;
@@ -912,7 +912,7 @@ Int32 WebSettingsClassic::GetUserAgent()
 ECode WebSettingsClassic::SetUseWideViewPort(
     /* [in] */ Boolean use)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mUseWideViewport != use) {
         mUseWideViewport = use;
@@ -926,7 +926,7 @@ ECode WebSettingsClassic::SetUseWideViewPort(
  */
 Boolean WebSettingsClassic::GetUseWideViewPort()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mUseWideViewport;
 }
@@ -937,7 +937,7 @@ Boolean WebSettingsClassic::GetUseWideViewPort()
 ECode WebSettingsClassic::SetSupportMultipleWindows(
     /* [in] */ Boolean support)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mSupportMultipleWindows != support) {
         mSupportMultipleWindows = support;
@@ -951,7 +951,7 @@ ECode WebSettingsClassic::SetSupportMultipleWindows(
  */
 Boolean WebSettingsClassic::SupportMultipleWindows()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mSupportMultipleWindows;
 }
@@ -962,7 +962,7 @@ Boolean WebSettingsClassic::SupportMultipleWindows()
 ECode WebSettingsClassic::SetLayoutAlgorithm(
     /* [in] */ LayoutAlgorithm l)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // XXX: This will only be affective if libwebcore was built with
     // ANDROID_LAYOUT defined.
@@ -978,7 +978,7 @@ ECode WebSettingsClassic::SetLayoutAlgorithm(
  */
 LayoutAlgorithm WebSettingsClassic::GetLayoutAlgorithm()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mLayoutAlgorithm;
 }
@@ -989,7 +989,7 @@ LayoutAlgorithm WebSettingsClassic::GetLayoutAlgorithm()
 ECode WebSettingsClassic::SetStandardFontFamily(
     /* [in] */ const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!font.IsNull() && !font.Equals(mStandardFontFamily)) {
         mStandardFontFamily = font;
@@ -1003,7 +1003,7 @@ ECode WebSettingsClassic::SetStandardFontFamily(
  */
 String WebSettingsClassic::GetStandardFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mStandardFontFamily;
 }
@@ -1014,7 +1014,7 @@ String WebSettingsClassic::GetStandardFontFamily()
 ECode WebSettingsClassic::SetFixedFontFamily(
     /* [in] */ const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!font.IsNull() && !font.Equals(mFixedFontFamily)) {
         mFixedFontFamily = font;
@@ -1028,7 +1028,7 @@ ECode WebSettingsClassic::SetFixedFontFamily(
  */
 String WebSettingsClassic::GetFixedFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mFixedFontFamily;
 }
@@ -1039,7 +1039,7 @@ String WebSettingsClassic::GetFixedFontFamily()
 ECode WebSettingsClassic::SetSansSerifFontFamily(
     /* [in] */  const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!font.IsNull() && !font.Equals(mSansSerifFontFamily)) {
         mSansSerifFontFamily = font;
@@ -1053,7 +1053,7 @@ ECode WebSettingsClassic::SetSansSerifFontFamily(
  */
 String WebSettingsClassic::GetSansSerifFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mSansSerifFontFamily;
 }
@@ -1064,7 +1064,7 @@ String WebSettingsClassic::GetSansSerifFontFamily()
 ECode WebSettingsClassic::SetSerifFontFamily(
     /* [in] */  const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!font.IsNull() && !font.Equals(mSerifFontFamily)) {
         mSerifFontFamily = font;
@@ -1078,7 +1078,7 @@ ECode WebSettingsClassic::SetSerifFontFamily(
  */
 String WebSettingsClassic::GetSerifFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mSerifFontFamily;
 }
@@ -1089,7 +1089,7 @@ String WebSettingsClassic::GetSerifFontFamily()
 ECode WebSettingsClassic::SetCursiveFontFamily(
     /* [in] */ const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!font.IsNull() && !font.Equals(mCursiveFontFamily)) {
         mCursiveFontFamily = font;
@@ -1103,7 +1103,7 @@ ECode WebSettingsClassic::SetCursiveFontFamily(
  */
 String WebSettingsClassic::GetCursiveFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mCursiveFontFamily;
 }
@@ -1114,7 +1114,7 @@ String WebSettingsClassic::GetCursiveFontFamily()
 ECode WebSettingsClassic::SetFantasyFontFamily(
     /* [in] */ const String& font)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (font.IsNull() && !font.Equals(mFantasyFontFamily)) {
         mFantasyFontFamily = font;
@@ -1128,7 +1128,7 @@ ECode WebSettingsClassic::SetFantasyFontFamily(
  */
 String WebSettingsClassic::GetFantasyFontFamily()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mFantasyFontFamily;
 }
@@ -1139,7 +1139,7 @@ String WebSettingsClassic::GetFantasyFontFamily()
 ECode WebSettingsClassic::SetMinimumFontSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     size = Pin(size);
     if (mMinimumFontSize != size) {
@@ -1154,7 +1154,7 @@ ECode WebSettingsClassic::SetMinimumFontSize(
  */
 Int32 WebSettingsClassic::GetMinimumFontSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mMinimumFontSize;
 }
@@ -1165,7 +1165,7 @@ Int32 WebSettingsClassic::GetMinimumFontSize()
 ECode WebSettingsClassic::SetMinimumLogicalFontSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     size = Pin(size);
     if (mMinimumLogicalFontSize != size) {
@@ -1180,7 +1180,7 @@ ECode WebSettingsClassic::SetMinimumLogicalFontSize(
  */
 Int32 WebSettingsClassic::GetMinimumLogicalFontSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mMinimumLogicalFontSize;
 }
@@ -1191,7 +1191,7 @@ Int32 WebSettingsClassic::GetMinimumLogicalFontSize()
 ECode WebSettingsClassic::SetDefaultFontSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     size = Pin(size);
     if (mDefaultFontSize != size) {
@@ -1206,7 +1206,7 @@ ECode WebSettingsClassic::SetDefaultFontSize(
  */
 Int32 WebSettingsClassic::GetDefaultFontSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDefaultFontSize;
 }
@@ -1217,7 +1217,7 @@ Int32 WebSettingsClassic::GetDefaultFontSize()
 ECode WebSettingsClassic::SetDefaultFixedFontSize(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     size = Pin(size);
     if (mDefaultFixedFontSize != size) {
@@ -1232,7 +1232,7 @@ ECode WebSettingsClassic::SetDefaultFixedFontSize(
  */
 Int32 WebSettingsClassic::GetDefaultFixedFontSize()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDefaultFixedFontSize;
 }
@@ -1244,7 +1244,7 @@ Int32 WebSettingsClassic::GetDefaultFixedFontSize()
 ECode WebSettingsClassic::SetPageCacheCapacity(
     /* [in] */ Int32 size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (size < 0) size = 0;
     if (size > 20) size = 20;
@@ -1261,7 +1261,7 @@ ECode WebSettingsClassic::SetPageCacheCapacity(
 ECode WebSettingsClassic::SetLoadsImagesAutomatically(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mLoadsImagesAutomatically != flag) {
         mLoadsImagesAutomatically = flag;
@@ -1275,7 +1275,7 @@ ECode WebSettingsClassic::SetLoadsImagesAutomatically(
  */
 Boolean WebSettingsClassic::GetLoadsImagesAutomatically()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mLoadsImagesAutomatically;
 }
@@ -1286,7 +1286,7 @@ Boolean WebSettingsClassic::GetLoadsImagesAutomatically()
 ECode WebSettingsClassic::SetBlockNetworkImage(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mBlockNetworkImage != flag) {
         mBlockNetworkImage = flag;
@@ -1300,7 +1300,7 @@ ECode WebSettingsClassic::SetBlockNetworkImage(
  */
 Boolean WebSettingsClassic::GetBlockNetworkImage()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mBlockNetworkImage;
 }
@@ -1311,7 +1311,7 @@ Boolean WebSettingsClassic::GetBlockNetworkImage()
 ECode WebSettingsClassic::SetBlockNetworkLoads(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mBlockNetworkLoads != flag) {
         mBlockNetworkLoads = flag;
@@ -1326,7 +1326,7 @@ ECode WebSettingsClassic::SetBlockNetworkLoads(
  */
 Boolean WebSettingsClassic::GetBlockNetworkLoads()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mBlockNetworkLoads;
 }
@@ -1353,7 +1353,7 @@ ECode WebSettingsClassic::VerifyNetworkAccess()
 ECode WebSettingsClassic::SetJavaScriptEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mJavaScriptEnabled != flag) {
         mJavaScriptEnabled = flag;
@@ -1369,7 +1369,7 @@ ECode WebSettingsClassic::SetJavaScriptEnabled(
 ECode WebSettingsClassic::SetAllowUniversalAccessFromFileURLs(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mAllowUniversalAccessFromFileURLs != flag) {
         mAllowUniversalAccessFromFileURLs = flag;
@@ -1384,7 +1384,7 @@ ECode WebSettingsClassic::SetAllowUniversalAccessFromFileURLs(
 ECode WebSettingsClassic::SetAllowFileAccessFromFileURLs(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mAllowFileAccessFromFileURLs != flag) {
         mAllowFileAccessFromFileURLs = flag;
@@ -1400,7 +1400,7 @@ ECode WebSettingsClassic::SetAllowFileAccessFromFileURLs(
 ECode WebSettingsClassic::SetHardwareAccelSkiaEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mHardwareAccelSkia != flag) {
         mHardwareAccelSkia = flag;
@@ -1416,7 +1416,7 @@ ECode WebSettingsClassic::GetHardwareAccelSkiaEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *enabled = mHardwareAccelSkia;
     return NOERROR;
 }
@@ -1428,7 +1428,7 @@ ECode WebSettingsClassic::GetHardwareAccelSkiaEnabled(
 ECode WebSettingsClassic::SetShowVisualIndicator(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mShowVisualIndicator != flag) {
         mShowVisualIndicator = flag;
@@ -1444,7 +1444,7 @@ ECode WebSettingsClassic::GetShowVisualIndicator(
     /* [out] */ Boolean* isShowing)
 {
     VALIDATE_NOT_NULL(isShowing);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *isShowing = mShowVisualIndicator;
     return NOERROR;
 }
@@ -1455,7 +1455,7 @@ ECode WebSettingsClassic::GetShowVisualIndicator(
 ECode WebSettingsClassic::SetPluginsEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     SetPluginState(flag ? PluginState_ON : PluginState_OFF);
     return NOERROR;
@@ -1467,7 +1467,7 @@ ECode WebSettingsClassic::SetPluginsEnabled(
 ECode WebSettingsClassic::SetPluginState(
     /* [in] */ PluginState state)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mPluginState != state) {
         mPluginState = state;
@@ -1482,7 +1482,7 @@ ECode WebSettingsClassic::SetPluginState(
 ECode WebSettingsClassic::SetPluginsPath(
     /* [in] */ const String& pluginsPath)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return NOERROR;
 }
 
@@ -1492,7 +1492,7 @@ ECode WebSettingsClassic::SetPluginsPath(
 ECode WebSettingsClassic::SetDatabasePath(
     /* [in] */ const String& databasePath)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!databasePath.IsNull() && !mDatabasePathHasBeenSet) {
         mDatabasePath = databasePath;
@@ -1508,7 +1508,7 @@ ECode WebSettingsClassic::SetDatabasePath(
 ECode WebSettingsClassic::SetGeolocationDatabasePath(
     /* [in] */ const String& databasePath)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!databasePath.IsNull()
             && !databasePath.Equals(mGeolocationDatabasePath)) {
@@ -1524,7 +1524,7 @@ ECode WebSettingsClassic::SetGeolocationDatabasePath(
 ECode WebSettingsClassic::SetAppCacheEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mAppCacheEnabled != flag) {
         mAppCacheEnabled = flag;
@@ -1539,7 +1539,7 @@ ECode WebSettingsClassic::SetAppCacheEnabled(
 ECode WebSettingsClassic::SetAppCachePath(
     /* [in] */ const String& path)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // We test for a valid path and for repeated setting on the native
     // side, but we can avoid syncing in some simple cases.
@@ -1556,7 +1556,7 @@ ECode WebSettingsClassic::SetAppCachePath(
 ECode WebSettingsClassic::SetAppCacheMaxSize(
     /* [in] */ Int64 appCacheMaxSize)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (appCacheMaxSize != mAppCacheMaxSize) {
         mAppCacheMaxSize = appCacheMaxSize;
@@ -1571,7 +1571,7 @@ ECode WebSettingsClassic::SetAppCacheMaxSize(
 ECode WebSettingsClassic::SetDatabaseEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mDatabaseEnabled != flag) {
         mDatabaseEnabled = flag;
@@ -1586,7 +1586,7 @@ ECode WebSettingsClassic::SetDatabaseEnabled(
 ECode WebSettingsClassic::SetDomStorageEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mDomStorageEnabled != flag) {
         mDomStorageEnabled = flag;
@@ -1600,7 +1600,7 @@ ECode WebSettingsClassic::SetDomStorageEnabled(
  */
 Boolean WebSettingsClassic::GetDomStorageEnabled()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDomStorageEnabled;
 }
@@ -1610,7 +1610,7 @@ Boolean WebSettingsClassic::GetDomStorageEnabled()
  */
 String WebSettingsClassic::GetDatabasePath()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDatabasePath;
 }
@@ -1620,7 +1620,7 @@ String WebSettingsClassic::GetDatabasePath()
  */
 Boolean WebSettingsClassic::GetDatabaseEnabled()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDatabaseEnabled;
 }
@@ -1634,7 +1634,7 @@ Boolean WebSettingsClassic::GetDatabaseEnabled()
 ECode WebSettingsClassic::SetWorkersEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mWorkersEnabled != flag) {
         mWorkersEnabled = flag;
@@ -1649,7 +1649,7 @@ ECode WebSettingsClassic::SetWorkersEnabled(
 ECode WebSettingsClassic::SetGeolocationEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mGeolocationEnabled != flag) {
         mGeolocationEnabled = flag;
@@ -1666,7 +1666,7 @@ ECode WebSettingsClassic::SetGeolocationEnabled(
 ECode WebSettingsClassic::SetXSSAuditorEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mXSSAuditorEnabled != flag) {
         mXSSAuditorEnabled = flag;
@@ -1681,7 +1681,7 @@ ECode WebSettingsClassic::SetXSSAuditorEnabled(
 ECode WebSettingsClassic::SetLinkPrefetchEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mLinkPrefetchEnabled != flag) {
         mLinkPrefetchEnabled = flag;
@@ -1695,7 +1695,7 @@ ECode WebSettingsClassic::SetLinkPrefetchEnabled(
  */
 Boolean WebSettingsClassic::GetJavaScriptEnabled()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mJavaScriptEnabled;
 }
@@ -1705,7 +1705,7 @@ Boolean WebSettingsClassic::GetJavaScriptEnabled()
  */
 Boolean WebSettingsClassic::GetAllowUniversalAccessFromFileURLs()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mAllowUniversalAccessFromFileURLs;
 }
@@ -1715,7 +1715,7 @@ Boolean WebSettingsClassic::GetAllowUniversalAccessFromFileURLs()
  */
 Boolean WebSettingsClassic::GetAllowFileAccessFromFileURLs()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mAllowFileAccessFromFileURLs;
 }
@@ -1725,7 +1725,7 @@ Boolean WebSettingsClassic::GetAllowFileAccessFromFileURLs()
  */
 Boolean WebSettingsClassic::GetPluginsEnabled()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mPluginState == PluginState_ON;
 }
@@ -1735,7 +1735,7 @@ Boolean WebSettingsClassic::GetPluginsEnabled()
  */
 PluginState WebSettingsClassic::GetPluginState()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mPluginState;
 }
@@ -1745,7 +1745,7 @@ PluginState WebSettingsClassic::GetPluginState()
  */
 String WebSettingsClassic::GetPluginsPath()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return String("");
 }
@@ -1756,7 +1756,7 @@ String WebSettingsClassic::GetPluginsPath()
 ECode WebSettingsClassic::SetJavaScriptCanOpenWindowsAutomatically(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mJavaScriptCanOpenWindowsAutomatically != flag) {
         mJavaScriptCanOpenWindowsAutomatically = flag;
@@ -1770,7 +1770,7 @@ ECode WebSettingsClassic::SetJavaScriptCanOpenWindowsAutomatically(
  */
 Boolean WebSettingsClassic::GetJavaScriptCanOpenWindowsAutomatically()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mJavaScriptCanOpenWindowsAutomatically;
 }
@@ -1781,7 +1781,7 @@ Boolean WebSettingsClassic::GetJavaScriptCanOpenWindowsAutomatically()
 ECode WebSettingsClassic::SetDefaultTextEncodingName(
     /* [in] */ const String& encoding)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!encoding.IsNull() && !encoding.Equals(mDefaultTextEncoding)) {
         mDefaultTextEncoding = encoding;
@@ -1795,7 +1795,7 @@ ECode WebSettingsClassic::SetDefaultTextEncodingName(
  */
 String WebSettingsClassic::GetDefaultTextEncodingName()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return mDefaultTextEncoding;
 }
@@ -1806,12 +1806,12 @@ String WebSettingsClassic::GetDefaultTextEncodingName()
 ECode WebSettingsClassic::SetUserAgentString(
     /* [in] */ const String& _ua)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     String ua = _ua;
     if (ua.IsNullOrEmpty()) {
         {
-            Mutex::Autolock lock(sLockForLocaleSettings);
+            AutoLock lock(sLockForLocaleSettings);
 
             AutoPtr<ILocaleHelper> helper;
             CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
@@ -1843,7 +1843,7 @@ ECode WebSettingsClassic::SetUserAgentString(
  */
 String WebSettingsClassic::GetUserAgentString()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (DESKTOP_USERAGENT.Equals(mUserAgent) ||
             IPHONE_USERAGENT.Equals(mUserAgent) ||
@@ -1853,7 +1853,7 @@ String WebSettingsClassic::GetUserAgentString()
 
     Boolean doPostSync = FALSE;
     {
-        Mutex::Autolock lock(sLockForLocaleSettings);
+        AutoLock lock(sLockForLocaleSettings);
 
         AutoPtr<ILocaleHelper> helper;
         CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
@@ -1877,10 +1877,10 @@ String WebSettingsClassic::GetUserAgentString()
 /* package api to grab the Accept Language string. */
 String WebSettingsClassic::GetAcceptLanguage()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     {
-        Mutex::Autolock lock(sLockForLocaleSettings);
+        AutoLock lock(sLockForLocaleSettings);
 
         AutoPtr<ILocaleHelper> helper;
         CLocaleHelper::AcquireSingleton((ILocaleHelper**)&helper);
@@ -1926,7 +1926,7 @@ Boolean WebSettingsClassic::GetNeedInitialFocus()
 ECode WebSettingsClassic::SetRenderPriority(
     /* [in] */ RenderPriority priority)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mRenderPriority != priority) {
         mRenderPriority = priority;
@@ -2015,7 +2015,7 @@ Boolean WebSettingsClassic::IsPrivateBrowsingEnabled()
 ECode WebSettingsClassic::SetPrivateBrowsingEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mPrivateBrowsingEnabled != flag) {
         mPrivateBrowsingEnabled = flag;
@@ -2047,7 +2047,7 @@ ECode WebSettingsClassic::ForceUserScalable(
 ECode WebSettingsClassic::SetForceUserScalable(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mForceUserScalable = flag;
     return NOERROR;
@@ -2057,7 +2057,7 @@ ECode WebSettingsClassic::SetForceUserScalable(
 ECode WebSettingsClassic::SetSyntheticLinksEnabled(
     /* [in] */ Boolean flag)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mSyntheticLinksEnabled != flag) {
         mSyntheticLinksEnabled = flag;
@@ -2070,7 +2070,7 @@ ECode WebSettingsClassic::SetSyntheticLinksEnabled(
 ECode WebSettingsClassic::SetAutoFillEnabled(
     /* [in] */ Boolean enabled)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // AutoFill is always disabled in private browsing mode.
     Boolean autoFillEnabled = enabled && !mPrivateBrowsingEnabled;
@@ -2085,7 +2085,7 @@ ECode WebSettingsClassic::GetAutoFillEnabled(
     /* [out] */ Boolean* enabled)
 {
     VALIDATE_NOT_NULL(enabled);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *enabled = mAutoFillEnabled;
     return NOERROR;
 }
@@ -2093,7 +2093,7 @@ ECode WebSettingsClassic::GetAutoFillEnabled(
 ECode WebSettingsClassic::SetAutoFillProfile(
     /* [in] */ IAutoFillProfile* profile)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mAutoFillProfile.Get() != profile) {
         mAutoFillProfile = profile;
@@ -2106,7 +2106,7 @@ ECode WebSettingsClassic::GetAutoFillProfile(
     /* [out] */ IAutoFillProfile** profile)
 {
     VALIDATE_NOT_NULL(profile);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *profile = mAutoFillProfile;
     REFCOUNT_ADD(*profile);
     return NOERROR;
@@ -2161,7 +2161,7 @@ ECode WebSettingsClassic::GetProperty(
 void WebSettingsClassic::SyncSettingsAndCreateHandler(
     /* [in] */ BrowserFrame* frame)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mBrowserFrame = frame;
     if (DebugFlags::WEB_SETTINGS) {
@@ -2185,7 +2185,7 @@ void WebSettingsClassic::SyncSettingsAndCreateHandler(
  */
 void WebSettingsClassic::OnDestroyed()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 }
 
 Int32 WebSettingsClassic::Pin(
@@ -2204,7 +2204,7 @@ Int32 WebSettingsClassic::Pin(
 /* Post a SYNC message to handle syncing the native settings. */
 void WebSettingsClassic::PostSync()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // Only post if a sync is not pending
     if (!mSyncPending) {
@@ -2220,7 +2220,7 @@ void WebSettingsClassic::PostSync()
 void WebSettingsClassic::NativeSync(
     /* [in] */ Int32 frame)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Elastos_WebSettings_nativeSync(this, frame);
 }
 

@@ -303,7 +303,7 @@ private:
     String mSubtypeMode;
     String mSubtypeExtraValue;
     /*volatile*/ AutoPtr< HashMap<String, String> > mExtraValueHashMapCache;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace InputMethod

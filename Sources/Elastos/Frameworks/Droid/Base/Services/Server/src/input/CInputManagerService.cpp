@@ -344,7 +344,7 @@ ECode CInputManagerService::InputFilterHost::SendInputEvent(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mOwner->mInputFilterLock);
+    AutoLock lock(&mOwner->mInputFilterLock);
     if (!mDisconnected) {
         mOwner->NativeInjectInputEvent(event, 0, 0,
             IInputManager::INJECT_INPUT_EVENT_MODE_ASYNC, 0,
@@ -714,7 +714,7 @@ ECode CInputManagerService::UnregisterInputChannel(
 void CInputManagerService::SetInputFilter(
     /* [in] */ IIInputFilter* filter)
 {
-    Mutex::Autolock lock(&mInputFilterLock);
+    AutoLock lock(&mInputFilterLock);
 
     AutoPtr<IIInputFilter> oldFilter = mInputFilter;
     if (oldFilter.Get() == filter) {
@@ -799,7 +799,7 @@ ECode CInputManagerService::GetInputDevice(
     VALIDATE_NOT_NULL(inputDevice);
     *inputDevice = NULL;
 
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     Int32 count = mInputDevices->GetLength();
     for (Int32 i = 0; i < count; i++) {
@@ -822,7 +822,7 @@ ECode CInputManagerService::GetInputDeviceIds(
 {
     VALIDATE_NOT_NULL(deviceIds);
 
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     Int32 count = mInputDevices->GetLength();
     *deviceIds = ArrayOf<Int32>::Alloc(count);
@@ -840,7 +840,7 @@ ECode CInputManagerService::GetInputDeviceIds(
 
 AutoPtr<ArrayOf<IInputDevice*> > CInputManagerService::GetInputDevices()
 {
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     return mInputDevices;
 }
@@ -853,7 +853,7 @@ ECode CInputManagerService::RegisterInputDevicesChangedListener(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     Int32 callingPid = Binder::GetCallingPid();
 
@@ -881,7 +881,7 @@ ECode CInputManagerService::RegisterInputDevicesChangedListener(
 void CInputManagerService::OnInputDevicesChangedListenerDied(
     /* [in] */ Int32 pid)
 {
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     mInputDevicesChangedListeners.Erase(pid);
 }
@@ -895,7 +895,7 @@ void CInputManagerService::DeliverInputDevicesChanged(
     mTempFullKeyboards.Clear();
     AutoPtr<ArrayOf<Int32> > deviceIdAndGeneration;
     {
-        Mutex::Autolock lock(mInputDevicesLock);
+        AutoLock lock(mInputDevicesLock);
 
         if (!mInputDevicesChangedPending) {
             return;
@@ -948,7 +948,7 @@ void CInputManagerService::DeliverInputDevicesChanged(
         Boolean missingLayoutForExternalKeyboard = FALSE;
         Boolean missingLayoutForExternalKeyboardAdded = FALSE;
         {
-            Mutex::Autolock lock(&mDataStoreLock);
+            AutoLock lock(&mDataStoreLock);
             List<AutoPtr<IInputDevice> >::Iterator iter = mTempFullKeyboards.Begin();
             for (Int32 i = 0; iter != mTempFullKeyboards.End(); ++iter, i++) {
                 String descriptor;
@@ -1035,7 +1035,7 @@ void CInputManagerService::UpdateKeyboardLayouts()
     AutoPtr<MyKeyboardLayoutVisitor> myKV = new MyKeyboardLayoutVisitor(availableKeyboardLayouts);
     VisitAllKeyboardLayouts(myKV);
     {
-        Mutex::Autolock lock(&mDataStoreLock);
+        AutoLock lock(&mDataStoreLock);
         mDataStore->RemoveUninstalledKeyboardLayouts(availableKeyboardLayouts);
         mDataStore->SaveIfNeeded();
     }
@@ -1287,7 +1287,7 @@ ECode CInputManagerService::GetCurrentKeyboardLayoutForInputDevice(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mDataStoreLock);
+    AutoLock lock(&mDataStoreLock);
     *keyboardLayoutDescriptor = mDataStore->GetCurrentKeyboardLayout(inputDeviceDescriptor);
 
     return NOERROR;
@@ -1313,7 +1313,7 @@ ECode CInputManagerService::SetCurrentKeyboardLayoutForInputDevice(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mDataStoreLock);
+    AutoLock lock(&mDataStoreLock);
     if (mDataStore->SetCurrentKeyboardLayout(
             inputDeviceDescriptor, keyboardLayoutDescriptor)) {
         Boolean result;
@@ -1335,7 +1335,7 @@ ECode CInputManagerService::GetKeyboardLayoutsForInputDevice(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mDataStoreLock);
+    AutoLock lock(&mDataStoreLock);
     AutoPtr<ArrayOf<String> > temp = mDataStore->GetKeyboardLayouts(inputDeviceDescriptor);
     *keyboardLayoutDescriptors = temp;
     REFCOUNT_ADD(*keyboardLayoutDescriptors);
@@ -1364,7 +1364,7 @@ ECode CInputManagerService::AddKeyboardLayoutForInputDevice(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mDataStoreLock);
+    AutoLock lock(&mDataStoreLock);
     String oldLayout = mDataStore->GetCurrentKeyboardLayout(inputDeviceDescriptor);
     if (mDataStore->AddKeyboardLayout(inputDeviceDescriptor, keyboardLayoutDescriptor)
         && !oldLayout.Equals(mDataStore->GetCurrentKeyboardLayout(inputDeviceDescriptor))) {
@@ -1396,7 +1396,7 @@ ECode CInputManagerService::RemoveKeyboardLayoutForInputDevice(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(&mDataStoreLock);
+    AutoLock lock(&mDataStoreLock);
     String oldLayout = mDataStore->GetCurrentKeyboardLayout(inputDeviceDescriptor);
     if (mDataStore->RemoveKeyboardLayout(inputDeviceDescriptor, keyboardLayoutDescriptor)
         && !oldLayout.Equals(mDataStore->GetCurrentKeyboardLayout(inputDeviceDescriptor))) {
@@ -1432,7 +1432,7 @@ void CInputManagerService::HandleSwitchKeyboardLayout(
         Boolean changed;
         String keyboardLayoutDescriptor;
         {
-            Mutex::Autolock lock(&mDataStoreLock);
+            AutoLock lock(&mDataStoreLock);
 
             changed = mDataStore->SwitchKeyboardLayout(inputDeviceDescriptor, direction);
             keyboardLayoutDescriptor = mDataStore->GetCurrentKeyboardLayout(
@@ -1626,7 +1626,7 @@ ECode CInputManagerService::Vibrate(
 
     AutoPtr<VibratorToken> v;
     {
-        Mutex::Autolock lock(&mVibratorLock);
+        AutoLock lock(&mVibratorLock);
         HashMap<AutoPtr<IBinder>, AutoPtr<VibratorToken> >::Iterator find
                 = mVibratorTokens.Find(token);
         if (find == mVibratorTokens.End()) {
@@ -1640,7 +1640,7 @@ ECode CInputManagerService::Vibrate(
         }
     }
 
-    Mutex::Autolock lock(v->mLock);
+    AutoLock lock(v->mLock);
     v->mVibrating = TRUE;
     NativeVibrate(deviceId, pattern, repeat, v->mTokenValue);
 
@@ -1653,7 +1653,7 @@ ECode CInputManagerService::CancelVibrate(
 {
     AutoPtr<VibratorToken> v;
     {
-        Mutex::Autolock lock(&mVibratorLock);
+        AutoLock lock(&mVibratorLock);
         HashMap<AutoPtr<IBinder>, AutoPtr<VibratorToken> >::Iterator find
                 = mVibratorTokens.Find(token);
         if (find == mVibratorTokens.End() || find->mSecond->mDeviceId != deviceId) {
@@ -1671,7 +1671,7 @@ void CInputManagerService::OnVibratorTokenDied(
     /* [in] */ VibratorToken* v)
 {
     {
-        Mutex::Autolock lock(&mVibratorLock);
+        AutoLock lock(&mVibratorLock);
         mVibratorTokens.Erase(v->mToken);
     }
 
@@ -1681,7 +1681,7 @@ void CInputManagerService::OnVibratorTokenDied(
 void CInputManagerService::CancelVibrateIfNeeded(
     /* [in] */ VibratorToken* v)
 {
-    Mutex::Autolock lock(v->mLock);
+    AutoLock lock(v->mLock);
     if (v->mVibrating) {
         NativeCancelVibrate(v->mDeviceId, v->mTokenValue);
         v->mVibrating = FALSE;
@@ -1740,7 +1740,7 @@ Boolean CInputManagerService::CheckCallingPermission(
 ECode CInputManagerService::Monitor()
 {
     {
-        Mutex::Autolock lock(&mInputFilterLock);
+        AutoLock lock(&mInputFilterLock);
     }
     NativeMonitor();
 
@@ -1762,7 +1762,7 @@ void CInputManagerService::NotifyConfigurationChanged(
 void CInputManagerService::NotifyInputDevicesChanged(
     /* [in] */ ArrayOf<IInputDevice*>* inputDevices)
 {
-    Mutex::Autolock lock(mInputDevicesLock);
+    AutoLock lock(mInputDevicesLock);
 
     if (!mInputDevicesChangedPending) {
         mInputDevicesChangedPending = TRUE;
@@ -1824,7 +1824,7 @@ Boolean CInputManagerService::FilterInputEvent(
     /* [in] */ Int32 policyFlags)
 {
     {
-        Mutex::Autolock lock(&mInputFilterLock);
+        AutoLock lock(&mInputFilterLock);
         if (mInputFilter != NULL) {
             mInputFilter->FilterInputEvent(event, policyFlags);
             return FALSE;

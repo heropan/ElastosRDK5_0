@@ -28,7 +28,7 @@ ECode IdleCache::CacheConnection(
         /* [in] */ Connection* connection,
         /* [out] */ Boolean* result)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean ret = FALSE;
 
@@ -63,7 +63,7 @@ ECode IdleCache::GetConnection(
     /* [in] */ IHttpHost* host,
     /* [out] */ Connection** conn)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Connection* ret = NULL;
 
@@ -89,7 +89,7 @@ ECode IdleCache::GetConnection(
 
 ECode IdleCache::Clear()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     for (Int32 i = 0; mCount > 0 && i < IDLE_CACHE_MAX; i++) {
         Entry* entry = (*mEntries)[i];
@@ -106,7 +106,7 @@ ECode IdleCache::Clear()
 
 ECode IdleCache::ClearIdle()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mCount > 0) {
         Int64 time;
@@ -136,7 +136,7 @@ ECode IdleCache::IdleReaper::Run()
     //         Elastos::os::Process::THREAD_PRIORITY_BACKGROUND);
 
     {
-        Mutex::Autolock lock(mParent->mLock);
+        AutoLock lock(mParent->mLock);
 
         while (check < EMPTY_CHECK_MAX) {
             Wait(CHECK_INTERVAL);

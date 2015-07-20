@@ -172,7 +172,7 @@ AudioDeviceManagerObserver::AudioDeviceManagerObserver(
 AutoPtr<AudioDeviceManagerObserver> AudioDeviceManagerObserver::GetInstance(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(mAudioObserverLock);
+    AutoLock lock(mAudioObserverLock);
     if (mAudioObserver == NULL) {
         mAudioObserver = new AudioDeviceManagerObserver(context);
     }
@@ -181,7 +181,7 @@ AutoPtr<AudioDeviceManagerObserver> AudioDeviceManagerObserver::GetInstance(
 
 void AudioDeviceManagerObserver::Init()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<ArrayOf<Char32> > buffer = ArrayOf<Char32>::Alloc(1024);
 
     String name_linux = String("unknown");
@@ -475,7 +475,7 @@ void AudioDeviceManagerObserver::UpdateState(
     /* [in] */ Int32 state,
     /* [in] */ String extraMng)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Logger::D(TAG, "name: %s, state: %d, type: %d", name.string(), state, type);
     AutoPtr<IIntent> intent;
     CIntent::New(IIntent::ACTION_AUDIO_PLUG_IN_OUT, (IIntent**)&intent);

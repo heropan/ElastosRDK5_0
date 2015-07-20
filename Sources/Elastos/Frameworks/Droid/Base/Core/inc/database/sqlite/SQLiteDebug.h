@@ -5,7 +5,6 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/List.h>
-#include <elrefbase.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Utility::IPrinter;

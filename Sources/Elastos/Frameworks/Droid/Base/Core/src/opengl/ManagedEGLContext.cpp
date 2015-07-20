@@ -25,7 +25,7 @@ ManagedEGLContext::ManagedEGLContext(
     /* [in] */ XIEGLContext* ctx)
 {
     mContext = ctx;
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     sActive.PushBack(this);
 }
 
@@ -58,7 +58,7 @@ ECode ManagedEGLContext::DoTerminate(
     }
 
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         // If there are no active managed contexts, we will not even
         // try to terminate.
         if (sActive.GetSize() <= 0) {

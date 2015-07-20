@@ -9,7 +9,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IThread;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::IO::ICloseable;
@@ -358,7 +357,7 @@ private:
 
     //const CloseGuard mCloseGuard = CloseGuard.get();
 
-    Mutex mLock;
+    Object mLock;
     AutoPtr<IAtomicBoolean> mConnectionLeaked;
     AutoPtr<SQLiteDatabaseConfiguration> mConfiguration;
     Int32 mMaxConnectionPoolSize;

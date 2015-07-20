@@ -319,7 +319,7 @@ Int32 CResources::SelectSystemTheme(
 
 AutoPtr<IResources> CResources::GetSystem()
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     AutoPtr<IResources> ret = mSystem;
     if (ret == NULL) {
@@ -385,7 +385,7 @@ ECode CResources::GetQuantityText(
 
 // AutoPtr<NativePluralRules> CResources::GetPluralRule()
 // {
-//     Mutex::Autolock lock(_m_syncLock);
+//     AutoLock lock(_m_syncLock);
 //     if (mPluralRule == NULL) {
 //         mPluralRule = NativePluralRules::ForLocale(mConfiguration->mLocale);
 //     }
@@ -625,7 +625,7 @@ ECode CResources::GetDimension(
 {
     VALIDATE_NOT_NULL(dim);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     FAIL_RETURN(GetValue(id, (ITypedValue*)mTmpValue.Get(), TRUE))
     if (mTmpValue->mType == ITypedValue::TYPE_DIMENSION) {
@@ -645,7 +645,7 @@ ECode CResources::GetDimensionPixelOffset(
 {
     VALIDATE_NOT_NULL(offset);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -667,7 +667,7 @@ ECode CResources::GetDimensionPixelSize(
 {
     VALIDATE_NOT_NULL(size);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -691,7 +691,7 @@ ECode CResources::GetFraction(
 {
     VALIDATE_NOT_NULL(fraction);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -711,7 +711,7 @@ ECode CResources::GetDrawable(
 {
     VALIDATE_NOT_NULL(drawable);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
     return LoadDrawable(value, id, drawable);
@@ -724,7 +724,7 @@ ECode CResources::GetDrawableForDensity(
 {
     VALIDATE_NOT_NULL(drawable);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValueForDensity(id, density, value, TRUE))
 
@@ -767,7 +767,7 @@ ECode CResources::GetColor(
 {
     VALIDATE_NOT_NULL(color);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -793,7 +793,7 @@ ECode CResources::GetColorStateList(
 {
     VALIDATE_NOT_NULL(list);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
     return LoadColorStateList(value, id, list);
@@ -805,7 +805,7 @@ ECode CResources::GetBoolean(
 {
     VALIDATE_NOT_NULL(b);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -826,7 +826,7 @@ ECode CResources::GetInteger(
 {
     VALIDATE_NOT_NULL(i);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -870,7 +870,7 @@ ECode CResources::OpenRawResource(
     /* [out] */ IInputStream** res)
 {
     VALIDATE_NOT_NULL(res);
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
     return OpenRawResource(id, (ITypedValue*)mTmpValue.Get(), res);
 }
 
@@ -903,7 +903,7 @@ ECode CResources::OpenRawResourceFd(
 {
     VALIDATE_NOT_NULL(des);
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     FAIL_RETURN(GetValue(id, (ITypedValue*)mTmpValue.Get(), TRUE))
 
@@ -1016,7 +1016,7 @@ ECode CResources::UpdateConfiguration(
     /* [in] */ ICompatibilityInfo* compat)
 {
     {
-        Mutex::Autolock lock(mTmpValueLock);
+        AutoLock lock(mTmpValueLock);
 
         // if (false) {
         //     Slog.i(TAG, "**** Updating config of " + this + ": old config is "
@@ -1127,7 +1127,7 @@ ECode CResources::UpdateConfiguration(
     }
 
     {
-        // Mutex::Autolock lock(_m_syncLock);
+        // AutoLock lock(_m_syncLock);
         // if (mPluralRule != NULL) {
         //     assert(config);
         //     mPluralRule = NativePluralRules::ForLocale((CConfiguration*)config->mLocale);
@@ -1268,7 +1268,7 @@ ECode CResources::GetDrawableResourceName(
     VALIDATE_NOT_NULL(name);
 
     {
-        Mutex::Autolock lock(mTmpValueLock);
+        AutoLock lock(mTmpValueLock);
 
         String cookie;
         String path;
@@ -1464,7 +1464,7 @@ ECode CResources::GetAssets(
 
 ECode CResources::FlushLayoutCache()
 {
-    Mutex::Autolock lock(mCachedXmlBlockIdsLock);
+    AutoLock lock(mCachedXmlBlockIdsLock);
 
     // First see if this block is in our cache.
     for (Int32 i = 0; i < mCachedXmlBlockIds->GetLength(); i++) {
@@ -1482,7 +1482,7 @@ ECode CResources::FlushLayoutCache()
 
 ECode CResources::StartPreloading()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (sPreloaded) {
         Slogger::E(TAG, "Resources already preloaded");
@@ -1702,7 +1702,7 @@ ECode CResources::LoadDrawable(
                 }
             }
             else {
-                Mutex::Autolock lock(mTmpValueLock);
+                AutoLock lock(mTmpValueLock);
                 //Log.i(TAG, "Saving cached drawable @ #" +
                 //        Integer.toHexString(key.intValue())
                 //        + " in " + this + ": " + cs);
@@ -1726,7 +1726,7 @@ AutoPtr<IDrawable> CResources::GetCachedDrawable(
     /* [in] */ HashMap<Int64, AutoPtr<IWeakReference> >& drawableCache,
     /* [in] */ Int64 key)
 {
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
     AutoPtr<IDrawableConstantState> drawable;
     DrawableMapIterator it = drawableCache.Find(key);
     if (it != drawableCache.End()) {
@@ -1881,7 +1881,7 @@ ECode CResources::LoadColorStateList(
             }
         }
         else {
-            Mutex::Autolock lock(mTmpValueLock);
+            AutoLock lock(mTmpValueLock);
 
             // Log.i(TAG, "Saving cached color state list @ #" +
             //         Integer.toHexString(key.intValue())
@@ -1898,7 +1898,7 @@ ECode CResources::LoadColorStateList(
 AutoPtr<IColorStateList> CResources::GetCachedColorStateList(
     /* [in] */ Int64 key)
 {
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<IColorStateList> entry;
     ColorStateIterator it = mColorStateListCache.Find(key);
@@ -1929,7 +1929,7 @@ ECode CResources::LoadXmlResourceParser(
     VALIDATE_NOT_NULL(parser);
     *parser = NULL;
 
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<ITypedValue> value = (ITypedValue*)mTmpValue.Get();
     FAIL_RETURN(GetValue(id, value, TRUE))
@@ -1958,7 +1958,7 @@ ECode CResources::LoadXmlResourceParser(
     if (id != 0) {
         // try {
         // These may be compiled...
-        Mutex::Autolock lock(mCachedXmlBlockIdsLock);
+        AutoLock lock(mCachedXmlBlockIdsLock);
         String name;
         // First see if this block is in our cache.
         Int32 num = mCachedXmlBlockIds->GetLength();
@@ -2035,7 +2035,7 @@ ECode CResources::LoadXmlResourceParser(
 AutoPtr<CTypedArray> CResources::GetCachedStyledAttributes(
     /* [in] */ Int32 len)
 {
-    Mutex::Autolock lock(mTmpValueLock);
+    AutoLock lock(mTmpValueLock);
 
     AutoPtr<CTypedArray> attrs = mCachedStyledAttributes;
     if (attrs != NULL) {

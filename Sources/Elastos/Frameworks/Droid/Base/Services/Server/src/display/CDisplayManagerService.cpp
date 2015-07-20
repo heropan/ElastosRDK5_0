@@ -341,7 +341,7 @@ ECode CDisplayManagerService::RegisterDisplayTransactionListener(
 {
     VALIDATE_NOT_NULL(listener);
 
-    Mutex::Autolock lock(mDisplayTransactionListenersLock);
+    AutoLock lock(mDisplayTransactionListenersLock);
     // List is self-synchronized copy-on-write.
     mDisplayTransactionListeners.PushBack(listener);
     return NOERROR;
@@ -352,7 +352,7 @@ ECode CDisplayManagerService::UnregisterDisplayTransactionListener(
 {
     VALIDATE_NOT_NULL(listener);
 
-    Mutex::Autolock lock(mDisplayTransactionListenersLock);
+    AutoLock lock(mDisplayTransactionListenersLock);
     // List is self-synchronized copy-on-write.
     mDisplayTransactionListeners.Remove(listener);
     return NOERROR;
@@ -407,7 +407,7 @@ ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManager()
 
     {
         // List is self-synchronized copy-on-write.
-        Mutex::Autolock lock(mDisplayTransactionListenersLock);
+        AutoLock lock(mDisplayTransactionListenersLock);
 
         List< AutoPtr<IDisplayTransactionListener> >::Iterator it;
         for (it = mDisplayTransactionListeners.Begin(); it != mDisplayTransactionListeners.End(); ++it) {

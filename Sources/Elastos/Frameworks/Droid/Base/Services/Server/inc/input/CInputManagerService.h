@@ -447,7 +447,7 @@ private:
         AutoPtr<IBinder> mToken;
         const Int32 mTokenValue;
         Boolean mVibrating;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:
@@ -1005,7 +1005,7 @@ private:
 
 protected:
     // State for the currently installed input filter.
-    Mutex mInputFilterLock;
+    Object mInputFilterLock;
     AutoPtr<IIInputFilter> mInputFilter; // guarded by mInputFilterLock
     AutoPtr<InputFilterHost> mInputFilterHost; // guarded by mInputFilterLock
 
@@ -1026,10 +1026,10 @@ private:
 
     // Persistent data store.  Must be locked each time during use.
     AutoPtr<PersistentDataStore> mDataStore;
-    Mutex mDataStoreLock;
+    Object mDataStoreLock;
 
     // List of currently registered input devices changed listeners by process id.
-    Mutex mInputDevicesLock;
+    Object mInputDevicesLock;
     Boolean mInputDevicesChangedPending; // guarded by mInputDevicesLock
     AutoPtr<ArrayOf<IInputDevice*> > mInputDevices;
     HashMap<Int32, AutoPtr<InputDevicesChangedListenerRecord> > mInputDevicesChangedListeners; // guarded by mInputDevicesLock
@@ -1040,7 +1040,7 @@ private:
     AutoPtr<IToast> mSwitchedKeyboardLayoutToast;
 
     // State for vibrator tokens.
-    Mutex mVibratorLock;
+    Object mVibratorLock;
     HashMap<AutoPtr<IBinder>, AutoPtr<VibratorToken> > mVibratorTokens;
     Int32 mNextVibratorTokenValue;
 };

@@ -111,7 +111,7 @@ ECode CDevicePolicyManagerService::ActiveAdminLockedReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     AutoPtr<IUserHandle> uHandle = mAdmin->GetUserHandle();
     Int32 userHandle;
@@ -170,7 +170,7 @@ ECode CDevicePolicyManagerService::DevicePolicyReceiver::OnReceive(
             || action.Equals(IIntent::ACTION_EXTERNAL_APPLICATIONS_UNAVAILABLE)) {
         if (action.Equals(IIntent::ACTION_USER_STARTED)) {
             // Reset the policy data
-            Mutex::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
 
             HashMap<Int32, AutoPtr<DevicePolicyData> >::Iterator it = mHost->mUserData.Find(userHandle);
             if (it != mHost->mUserData.End()) {
@@ -569,7 +569,7 @@ ECode CDevicePolicyManagerService::SetPasswordQuality(
     FAIL_RETURN(ValidateQualityConstant(quality));
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -593,7 +593,7 @@ ECode CDevicePolicyManagerService::GetPasswordQuality(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 mode = IDevicePolicyManager::PASSWORD_QUALITY_UNSPECIFIED;
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
@@ -627,7 +627,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumLength(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -653,7 +653,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumLength(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     Int32 length = 0;
@@ -686,7 +686,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumUpperCase(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -712,7 +712,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumUpperCase(
     *password = 0;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 length = 0;
 
@@ -745,7 +745,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumLowerCase(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -770,7 +770,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumLowerCase(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     Int32 length = 0;
@@ -803,7 +803,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumLetters(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -828,7 +828,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumLetters(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 length = 0;
 
@@ -861,7 +861,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumNumeric(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -885,7 +885,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumNumeric(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 length = 0;
 
@@ -919,7 +919,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumSymbols(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -943,7 +943,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumSymbols(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 length = 0;
     if (who != NULL) {
@@ -975,7 +975,7 @@ ECode CDevicePolicyManagerService::SetPasswordMinimumNonLetter(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -999,7 +999,7 @@ ECode CDevicePolicyManagerService::GetPasswordMinimumNonLetter(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int32 length = 0;
 
@@ -1032,7 +1032,7 @@ ECode CDevicePolicyManagerService::SetPasswordHistoryLength(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1057,7 +1057,7 @@ ECode CDevicePolicyManagerService::GetPasswordHistoryLength(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     Int32 length = 0;
@@ -1090,7 +1090,7 @@ ECode CDevicePolicyManagerService::SetPasswordExpirationTimeout(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1131,7 +1131,7 @@ ECode CDevicePolicyManagerService::GetPasswordExpirationTimeout(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who != NULL) {
         AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(who, userHandle);
@@ -1165,7 +1165,7 @@ ECode CDevicePolicyManagerService::GetPasswordExpiration(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     *password = GetPasswordExpirationLocked(who, userHandle);
     return NOERROR;
@@ -1178,7 +1178,7 @@ ECode CDevicePolicyManagerService::IsActivePasswordSufficient(
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     // This API can only be called by an active device admin,
@@ -1230,7 +1230,7 @@ ECode CDevicePolicyManagerService::GetCurrentFailedPasswordAttempts(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // This API can only be called by an active device admin,
     // so try to retrieve it to check that the caller is one.
     AutoPtr<ActiveAdmin> ap;
@@ -1247,7 +1247,7 @@ ECode CDevicePolicyManagerService::SetMaximumFailedPasswordsForWipe(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // This API can only be called by an active device admin,
     // so try to retrieve it to check that the caller is one.
@@ -1271,7 +1271,7 @@ ECode CDevicePolicyManagerService::GetMaximumFailedPasswordsForWipe(
     VALIDATE_NOT_NULL(password);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     Int32 count = 0;
@@ -1311,7 +1311,7 @@ ECode CDevicePolicyManagerService::ResetPassword(
 
     Int32 quality;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         // This API can only be called by an active device admin,
         // so try to retrieve it to check that the caller is one.
@@ -1463,7 +1463,7 @@ ECode CDevicePolicyManagerService::ResetPassword(
     CLockPatternUtils::New(mContext, (ILockPatternUtils**)&utils);
     utils->SaveLockPassword(password, quality, FALSE, userHandle);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         Int32 newOwner = (flags & IDevicePolicyManager::RESET_PASSWORD_REQUIRE_ENTRY) != 0 ? callingUid : -1;
         if (policy->mPasswordOwner != newOwner) {
@@ -1484,7 +1484,7 @@ ECode CDevicePolicyManagerService::SetMaximumTimeToLock(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1511,7 +1511,7 @@ ECode CDevicePolicyManagerService::GetMaximumTimeToLock(
     VALIDATE_NOT_NULL(value);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int64 newtime = 0;
     if (who != NULL) {
@@ -1540,7 +1540,7 @@ ECode CDevicePolicyManagerService::GetMaximumTimeToLock(
 
 ECode CDevicePolicyManagerService::LockNow()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // This API can only be called by an active device admin,
     // so try to retrieve it to check that the caller is one.
@@ -1557,7 +1557,7 @@ ECode CDevicePolicyManagerService::WipeData(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // This API can only be called by an active device admin,
     // so try to retrieve it to check that the caller is one.
@@ -1582,7 +1582,7 @@ ECode CDevicePolicyManagerService::SetGlobalProxy(
     *component = NULL;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1659,7 +1659,7 @@ ECode CDevicePolicyManagerService::GetGlobalProxyAdmin(
     *component = NULL;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         AutoPtr<DevicePolicyData> policy = GetUserData(IUserHandle::USER_OWNER);
         // Scan through active admins and find if anyone has already
@@ -1689,7 +1689,7 @@ ECode CDevicePolicyManagerService::SetStorageEncryption(
     *value = 0;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // Check for permissions
     if (who == NULL) {
@@ -1753,7 +1753,7 @@ ECode CDevicePolicyManagerService::GetStorageEncryption(
     *result = FALSE;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // Check for permissions if a particular caller is specified
     if (who != NULL) {
@@ -1796,7 +1796,7 @@ ECode CDevicePolicyManagerService::SetCameraDisabled(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1823,7 +1823,7 @@ ECode CDevicePolicyManagerService::GetCameraDisabled(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who != NULL) {
         AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(who, userHandle);
@@ -1852,7 +1852,7 @@ ECode CDevicePolicyManagerService::SetKeyguardDisabledFeatures(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who == NULL) {
         //throw new NullPointerException("ComponentName is null");
@@ -1877,7 +1877,7 @@ ECode CDevicePolicyManagerService::GetKeyguardDisabledFeatures(
     VALIDATE_NOT_NULL(features);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (who != NULL) {
         AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(who, userHandle);
@@ -1917,7 +1917,7 @@ ECode CDevicePolicyManagerService::SetActiveAdmin(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Int64 ident = Binder::ClearCallingIdentity();
 
@@ -1964,7 +1964,7 @@ ECode CDevicePolicyManagerService::IsAdminActive(
     VALIDATE_NOT_NULL(isActive);
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(adminReceiver, userHandle);
     *isActive = admin != NULL;
@@ -1979,7 +1979,7 @@ ECode CDevicePolicyManagerService::GetActiveAdmins(
     *admins = NULL;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     if (policy->mAdminList.Begin() == policy->mAdminList.End()) {
@@ -2010,7 +2010,7 @@ ECode CDevicePolicyManagerService::PackageHasActiveAdmins(
 
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     List< AutoPtr<ActiveAdmin> >::Iterator iter = policy->mAdminList.Begin();
@@ -2033,7 +2033,7 @@ ECode CDevicePolicyManagerService::GetRemoveWarning(
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(comp, userHandle);
     if (admin == NULL) {
@@ -2062,7 +2062,7 @@ ECode CDevicePolicyManagerService::RemoveActiveAdmin(
 {
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ActiveAdmin> admin = GetActiveAdminUncheckedLocked(adminReceiver, userHandle);
     if (admin == NULL) {
@@ -2089,7 +2089,7 @@ ECode CDevicePolicyManagerService::HasGrantedPolicy(
     *hasGrant = FALSE;
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<ActiveAdmin> administrator = GetActiveAdminUncheckedLocked(adminReceiver, userHandle);
     if (administrator == NULL) {
@@ -2117,7 +2117,7 @@ ECode CDevicePolicyManagerService::SetActivePasswordState(
     AutoPtr<DevicePolicyData> p = GetUserData(userHandle);
     ValidateQualityConstant(quality);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (p->mActivePasswordQuality != quality || p->mActivePasswordLength != length
             || p->mFailedPasswordAttempts != 0 || p->mActivePasswordLetters != letters
@@ -2152,7 +2152,7 @@ ECode CDevicePolicyManagerService::ReportFailedPasswordAttempt(
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     Int64 ident = Binder::ClearCallingIdentity();
@@ -2175,7 +2175,7 @@ ECode CDevicePolicyManagerService::ReportSuccessfulPasswordAttempt(
     FAIL_RETURN(EnforceCrossUserPermission(userHandle));
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BIND_DEVICE_ADMIN, String(NULL)));
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy = GetUserData(userHandle);
     if (policy->mFailedPasswordAttempts != 0 || policy->mPasswordOwner >= 0) {
@@ -2250,7 +2250,7 @@ ECode CDevicePolicyManagerService::FindAdmin(
 
 ECode CDevicePolicyManagerService::SystemReady()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     LoadSettingsLocked(GetUserData(IUserHandle::USER_OWNER), IUserHandle::USER_OWNER);
     return NOERROR;
 }
@@ -2342,7 +2342,7 @@ ECode CDevicePolicyManagerService::GetActiveAdminForCallerLocked(
 AutoPtr<CDevicePolicyManagerService::DevicePolicyData> CDevicePolicyManagerService::GetUserData(
     /* [in] */ Int32 userHandle)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<DevicePolicyData> policy;
     HashMap<Int32, AutoPtr<DevicePolicyData> >::Iterator it = mUserData.Find(userHandle);
@@ -2359,7 +2359,7 @@ AutoPtr<CDevicePolicyManagerService::DevicePolicyData> CDevicePolicyManagerServi
 void CDevicePolicyManagerService::RemoveUserData(
     /* [in] */ Int32 userHandle)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (userHandle == IUserHandle::USER_OWNER) {
         Slogger::W(TAG, "Tried to remove device policy file for user 0! Ignoring.");
@@ -3087,7 +3087,7 @@ void CDevicePolicyManagerService::ValidatePasswordOwnerLocked(
 void CDevicePolicyManagerService::HandlePasswordExpirationNotification(
     /* [in] */ DevicePolicyData* policy)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (policy->mAdminList.Begin() == policy->mAdminList.End()) {
         return;

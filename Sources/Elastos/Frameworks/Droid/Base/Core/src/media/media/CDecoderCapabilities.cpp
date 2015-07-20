@@ -73,13 +73,13 @@ ECode CDecoderCapabilities::GetAudioDecoders(
 //    Native method : android_media_MediaProfiles.cpp
 //---------------------------------------------------
 
-static Mutex sLock;
+static Object sLock;
 android::MediaProfiles *ssProfiles = NULL;
 
 void CDecoderCapabilities::Native_init()
 {
 //    ALOGV("native_init");
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (ssProfiles == NULL) {
         ssProfiles = android::MediaProfiles::getInstance();

@@ -59,7 +59,7 @@ CAR_INTERFACE_IMPL(AccessibilityInjector::TextToSpeechWrapper, IInterface);
 
 Boolean AccessibilityInjector::TextToSpeechWrapper::IsSpeaking()
 {
-    Mutex::Autolock lock(mTextToSpeechMutex);
+    AutoLock lock(mTextToSpeechMutex);
 
     if (!mReady) {
         return FALSE;
@@ -75,7 +75,7 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Speak(
     /* [in] */ Int32 queueMode,
     /* [in] */ HashMap<String, String>* params)
 {
-    Mutex::Autolock lock(mTextToSpeechMutex);
+    AutoLock lock(mTextToSpeechMutex);
 
     if (!mReady) {
 //        if (DEBUG) {
@@ -96,7 +96,7 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Speak(
 
 Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 {
-    Mutex::Autolock lock(mTextToSpeechMutex);
+    AutoLock lock(mTextToSpeechMutex);
 
     if (!mReady) {
 //        if (DEBUG) {
@@ -117,7 +117,7 @@ Int32 AccessibilityInjector::TextToSpeechWrapper::Stop()
 
 void AccessibilityInjector::TextToSpeechWrapper::Shutdown()
 {
-    Mutex::Autolock lock(mTextToSpeechMutex);
+    AutoLock lock(mTextToSpeechMutex);
 /*
     if (!mReady) {
         if (DEBUG) {

@@ -3,7 +3,6 @@
 #define __RESULTMSG_H__
 
 #include <elastos.h>
-#include <elrefbase.h>
 
 namespace Elastos {
 namespace Droid {

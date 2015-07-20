@@ -221,8 +221,8 @@ friend class LoopRunnable;
 private:
     static const String TAG;
     static LaunchState sLaunchState;
-    static Mutex sSyncLaunchState;
-    static Mutex sSyncPackageInfoCache;
+    static Object sSyncLaunchState;
+    static Object sSyncPackageInfoCache;
     static Boolean sTryCatchAttached;
 
     AutoPtr<IIntentFilter> mConnectivityFilter;

@@ -38,7 +38,7 @@ public:
 
 private:
     AutoPtr<XIEGLContext> mContext;
-    static Mutex sLock;
+    static Object sLock;
     static List<AutoPtr<ManagedEGLContext> > sActive;
 };
 

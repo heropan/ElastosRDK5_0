@@ -316,7 +316,7 @@ private:
 
     AutoPtr<IPreferenceManagerOnPreferenceTreeClickListener> mOnPreferenceTreeClickListener;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 }

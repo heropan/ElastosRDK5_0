@@ -202,7 +202,7 @@ ECode Application::RegisterComponentCallbacks(
     /* [in] */ IComponentCallbacks* componentCallback)
 {
     if (componentCallback) {
-        Mutex::Autolock lock(mComponentCallbacksLock);
+        AutoLock lock(mComponentCallbacksLock);
         mComponentCallbacks.PushBack(componentCallback);
     }
     return NOERROR;
@@ -212,7 +212,7 @@ ECode Application::UnregisterComponentCallbacks(
     /* [in] */ IComponentCallbacks* componentCallback)
 {
     if (componentCallback) {
-        Mutex::Autolock lock(mComponentCallbacksLock);
+        AutoLock lock(mComponentCallbacksLock);
         mComponentCallbacks.Remove(componentCallback);
     }
     return NOERROR;
@@ -222,7 +222,7 @@ ECode Application::RegisterActivityLifecycleCallbacks(
     /* [in] */ IActivityLifecycleCallbacks* cb)
 {
     if (cb) {
-        Mutex::Autolock lock(mActivityLifecycleCallbacksLock);
+        AutoLock lock(mActivityLifecycleCallbacksLock);
         mActivityLifecycleCallbacks.PushBack(cb);
     }
     return NOERROR;
@@ -232,7 +232,7 @@ ECode Application::UnregisterActivityLifecycleCallbacks(
     /* [in] */ IActivityLifecycleCallbacks* cb)
 {
     if (cb) {
-        Mutex::Autolock lock(mActivityLifecycleCallbacksLock);
+        AutoLock lock(mActivityLifecycleCallbacksLock);
         mActivityLifecycleCallbacks.Remove(cb);
     }
     return NOERROR;
@@ -337,7 +337,7 @@ AutoPtr< ArrayOf<IComponentCallbacks*> > Application::CollectComponentCallbacks(
 {
     AutoPtr< ArrayOf<IComponentCallbacks*> > callbacks;
     {
-        Mutex::Autolock lock(mComponentCallbacksLock);
+        AutoLock lock(mComponentCallbacksLock);
 
         Int32 size = mComponentCallbacks.GetSize();
         if (size > 0) {
@@ -356,7 +356,7 @@ AutoPtr< ArrayOf<IActivityLifecycleCallbacks*> > Application::CollectActivityLif
 {
     AutoPtr< ArrayOf<IActivityLifecycleCallbacks*> > callbacks;
     {
-        Mutex::Autolock lock(mActivityLifecycleCallbacksLock);
+        AutoLock lock(mActivityLifecycleCallbacksLock);
 
         Int32 size = mActivityLifecycleCallbacks.GetSize();
         if (size > 0) {

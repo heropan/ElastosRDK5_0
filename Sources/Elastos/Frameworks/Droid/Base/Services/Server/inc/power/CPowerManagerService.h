@@ -314,7 +314,7 @@ private:
     private:
         String mName;
         Int32 mReferenceCount;
-        Mutex mLock;
+        Object mLock;
     };
 
     class ScreenOnBlockerImpl
@@ -335,7 +335,7 @@ private:
 
     private:
         Int32 mNestCount;
-        Mutex mLock;
+        Object mLock;
         CPowerManagerService* mHost;
     };
 
@@ -355,7 +355,7 @@ private:
 
     private:
         Boolean mBlanked;
-        Mutex mLock;
+        Object mLock;
         CPowerManagerService* mHost;
     };
 

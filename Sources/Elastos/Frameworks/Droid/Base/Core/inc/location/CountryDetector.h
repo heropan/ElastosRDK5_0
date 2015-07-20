@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Location::ICountryListener;
 
@@ -125,7 +124,7 @@ private:
     AutoPtr<ICountryDetector> mService;
 //    HashMap<AutoPtr<ICountryListener>, AutoPtr<ListenerTransport> > mListeners;
 
-    Mutex mListenersLock;
+    Object mListenersLock;
 };
 
 }//namespace Location

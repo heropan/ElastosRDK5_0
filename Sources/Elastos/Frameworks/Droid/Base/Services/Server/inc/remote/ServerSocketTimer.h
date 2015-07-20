@@ -73,7 +73,7 @@ private:
         /** handles timer counting down */
         AutoPtr<IHandler> mHandler;
 
-        Mutex mLock;
+        Object mLock;
         ServerSocketTimer* mHost;
     };
 

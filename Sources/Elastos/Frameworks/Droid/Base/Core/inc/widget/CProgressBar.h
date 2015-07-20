@@ -240,7 +240,7 @@ public:
         /* [out] */ IInterpolator** interpolator);
 protected:
 
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 };
 
 }// namespace Widget

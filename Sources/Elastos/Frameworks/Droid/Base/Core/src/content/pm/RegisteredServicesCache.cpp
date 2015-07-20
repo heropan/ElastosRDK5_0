@@ -190,7 +190,7 @@ AutoPtr<RegisteredServicesCache::UserServices> RegisteredServicesCache::FindOrCr
 void RegisteredServicesCache::InvalidateCache(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
 
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     if (user->mServices != NULL) {
@@ -204,7 +204,7 @@ void RegisteredServicesCache::Dump(
     /* [in] */ ArrayOf<String>* args,
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
 
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     if (user->mServices != NULL) {
@@ -225,7 +225,7 @@ void RegisteredServicesCache::Dump(
 
 AutoPtr<IRegisteredServicesCacheListener> RegisteredServicesCache::GetListener()
 {
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
     return mListener;
 }
 
@@ -239,7 +239,7 @@ void RegisteredServicesCache::SetListener(
         CHandler::New(looper, (IHandler**)&handler);
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mHandler = handler;
     mListener = listener;
 }
@@ -255,7 +255,7 @@ void RegisteredServicesCache::NotifyListener(
     AutoPtr<IRegisteredServicesCacheListener> listener;
     AutoPtr<IHandler> handler;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         listener = mListener;
         handler = mHandler;
@@ -274,7 +274,7 @@ AutoPtr<RegisteredServicesCache::ServiceInfo> RegisteredServicesCache::GetServic
     /* [in] */ IInterface* type,
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
     // Find user and lazily populate cache
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     if (user->mServices == NULL) {
@@ -292,7 +292,7 @@ AutoPtr<RegisteredServicesCache::ServiceInfo> RegisteredServicesCache::GetServic
 AutoPtr< List<AutoPtr<RegisteredServicesCache::ServiceInfo> > > RegisteredServicesCache::GetAllServices(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
     // Find user and lazily populate cache
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     if (user->mServices == NULL) {
@@ -373,7 +373,7 @@ void RegisteredServicesCache::GenerateServicesMap(
         // }
     }
 
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
 
     AutoPtr<UserServices> user = FindOrCreateUserLocked(userId);
     Boolean firstScan = user->mServices == NULL;

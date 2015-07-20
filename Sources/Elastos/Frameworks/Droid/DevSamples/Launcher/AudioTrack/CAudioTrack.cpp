@@ -218,7 +218,7 @@ ECode CAudioTrack::Destroy()
 ECode CAudioTrack::GetPlayState(
     /* [out] */ Int32 * pState)
 {
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     *pState = mPlayState;
 
     return NOERROR;
@@ -271,7 +271,7 @@ ECode CAudioTrack::Play()
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_start();
     mPlayState = AudioTrack_PLAYSTATE_PLAYING;
 
@@ -287,7 +287,7 @@ ECode CAudioTrack::Pause()
     }
 
     // pause playback
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_pause();
     mPlayState = AudioTrack_PLAYSTATE_PAUSED;
 
@@ -303,7 +303,7 @@ ECode CAudioTrack::Stop()
     }
 
     // stop playing
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_stop();
     mPlayState = AudioTrack_PLAYSTATE_STOPPED;
 

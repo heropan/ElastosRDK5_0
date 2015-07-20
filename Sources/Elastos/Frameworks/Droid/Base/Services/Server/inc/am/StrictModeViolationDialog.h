@@ -62,7 +62,7 @@ private:
 
     AutoPtr<IHandler> mHandler;
 
-    Mutex mProcLock;
+    Object mProcLock;
 };
 
 } // namespace Am

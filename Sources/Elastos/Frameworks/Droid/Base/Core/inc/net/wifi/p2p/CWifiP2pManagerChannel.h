@@ -121,7 +121,7 @@ public:
     AutoPtr<IWifiP2pManagerDnsSdTxtRecordListener> mDnsSdTxtListener;
     AutoPtr<IWifiP2pManagerUpnpServiceResponseListener> mUpnpServRspListener;
     HashMap<Int32, AutoPtr<IInterface> > mListenerMap;
-    Mutex mListenerMapLock;
+    Object mListenerMapLock;
     Int32 mListenerKey;
     AutoPtr<IWifiP2pManagerDialogListener> mDialogListener;
 

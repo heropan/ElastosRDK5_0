@@ -48,7 +48,7 @@ AutoPtr<ISensorEvent> SensorManager::SensorEventPool::GetFromPool()
 {
     AutoPtr<ISensorEvent> t;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mNumItemsInPool > 0) {
             // remove the "top" item from the pool
             const Int32 index = mPoolSize - mNumItemsInPool;
@@ -68,7 +68,7 @@ AutoPtr<ISensorEvent> SensorManager::SensorEventPool::GetFromPool()
 void SensorManager::SensorEventPool::ReturnToPool(
     /* [in] */ ISensorEvent* t)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // is there space left in the pool?
     if (mNumItemsInPool < mPoolSize) {
         // if so, return the item to the pool
@@ -102,7 +102,7 @@ ECode SensorManager::GetSensorList(
     AutoPtr<ArrayOf<ISensor*> > fullList;
     GetFullSensorList((ArrayOf<ISensor*>**)&fullList);
     {
-        Mutex::Autolock lock(mSensorListByTypeLock);
+        AutoLock lock(mSensorListByTypeLock);
 
         AutoPtr<IInteger32> key;
         CInteger32::New(type, (IInteger32**)&key);
@@ -272,7 +272,7 @@ ECode SensorManager::RegisterListener(
 
 AutoPtr<LegacySensorManager> SensorManager::GetLegacySensorManager()
 {
-    Mutex::Autolock lock(mSensorListByTypeLock);
+    AutoLock lock(mSensorListByTypeLock);
     if (mLegacySensorManager == NULL) {
         // Log.i(TAG, "This application is using deprecated SensorManager API which will "
         //         + "be removed someday.  Please consider switching to the new API.");

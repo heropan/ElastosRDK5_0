@@ -72,7 +72,7 @@ ECode CRecentTasksLoader::BgLoadThread::Run()
     AutoPtr<ITaskDescription> first;
     mHost->LoadFirstTask((ITaskDescription**)&first);
     {
-        Mutex::Autolock lock(mHost->mFirstTaskLock);
+        AutoLock lock(mHost->mFirstTaskLock);
         if (mHost->mCancelPreloadingFirstTask) {
             mHost->ClearFirstTask();
         }
@@ -689,7 +689,7 @@ void CRecentTasksLoader::CancelLoadingThumbnailsAndIcons()
 
 void CRecentTasksLoader::ClearFirstTask()
 {
-    Mutex::Autolock lock(mFirstTaskLock);
+    AutoLock lock(mFirstTaskLock);
     mFirstTask = NULL;
     mFirstTaskLoaded = FALSE;
 }
@@ -697,7 +697,7 @@ void CRecentTasksLoader::ClearFirstTask()
 ECode CRecentTasksLoader::PreloadFirstTask()
 {
     AutoPtr<BgLoadThread> bgLoad = new BgLoadThread(this);
-    Mutex::Autolock lock(mFirstTaskLock);
+    AutoLock lock(mFirstTaskLock);
     if (!mPreloadingFirstTask) {
         ClearFirstTask();
         mPreloadingFirstTask = TRUE;
@@ -708,7 +708,7 @@ ECode CRecentTasksLoader::PreloadFirstTask()
 
 ECode CRecentTasksLoader::CancelPreloadingFirstTask()
 {
-    Mutex::Autolock lock(mFirstTaskLock);
+    AutoLock lock(mFirstTaskLock);
     if (mPreloadingFirstTask) {
         mCancelPreloadingFirstTask = TRUE;
     }
@@ -723,7 +723,7 @@ ECode CRecentTasksLoader::GetFirstTask(
 {
     VALIDATE_NOT_NULL(des);
     while (TRUE) {
-        Mutex::Autolock lock(mFirstTaskLock);
+        AutoLock lock(mFirstTaskLock);
         if (mFirstTaskLoaded) {
             *des = mFirstTask;
             REFCOUNT_ADD(*des);

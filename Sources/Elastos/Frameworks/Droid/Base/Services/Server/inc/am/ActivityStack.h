@@ -9,7 +9,6 @@
 #include "am/TaskAccessInfo.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;

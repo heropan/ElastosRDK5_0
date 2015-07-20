@@ -97,7 +97,7 @@ private:
 
     /** Set when a cursor change notification is received and is cleared on a call to requery(). */
     Boolean mDirty;
-    Mutex mMethodLock;
+    Object mMethodLock;
 
 public:
     //========================================================
@@ -186,7 +186,7 @@ protected:
     Boolean mChanged; // = false;
 
 private:
-    Mutex mLock;
+    Object mLock;
 };
 
 }

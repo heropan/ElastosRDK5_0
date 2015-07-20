@@ -122,7 +122,7 @@ ECode CWallpaperManagerService::WallpaperObserver::OnEvent(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(&mOwner->mLock);
+    AutoLock lock(&mOwner->mLock);
     // changing the wallpaper means we'll need to back up the new one
     Int64 origId = Binder::ClearCallingIdentity();
     AutoPtr<IBackupManager> bm;
@@ -182,7 +182,7 @@ ECode CWallpaperManagerService::MyPackageMonitor::OnPackageUpdateFinished(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Int32 userId;
     GetChangingUserId(&userId);
     if (mOwner->mCurrentUserId != userId) {
@@ -214,7 +214,7 @@ ECode CWallpaperManagerService::MyPackageMonitor::OnPackageUpdateFinished(
 ECode CWallpaperManagerService::MyPackageMonitor::OnPackageModified(
     /* [in] */ const String& packageName)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Int32 userId;
     GetChangingUserId(&userId);
     if (mOwner->mCurrentUserId != userId) {
@@ -241,7 +241,7 @@ ECode CWallpaperManagerService::MyPackageMonitor::OnPackageUpdateStarted(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Int32 userId;
     GetChangingUserId(&userId);
     if (mOwner->mCurrentUserId != userId) {
@@ -270,7 +270,7 @@ ECode CWallpaperManagerService::MyPackageMonitor::OnHandleForceStop(
     /* [in] */ Boolean doit,
     /* [out] */ Boolean* result)
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Boolean changed = FALSE;
     Int32 userId;
     GetChangingUserId(&userId);
@@ -290,7 +290,7 @@ ECode CWallpaperManagerService::MyPackageMonitor::OnHandleForceStop(
 
 ECode CWallpaperManagerService::MyPackageMonitor::OnSomePackagesChanged()
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Int32 userId;
     GetChangingUserId(&userId);
     if (mOwner->mCurrentUserId != userId) {
@@ -455,7 +455,7 @@ ECode CWallpaperManagerService::SystemReady()
 
 String CWallpaperManagerService::GetName()
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     return mWallpaperMap.Begin()->mSecond->mName;
 }
 
@@ -464,7 +464,7 @@ void CWallpaperManagerService::OnStoppingUser(
 {
     if (userId < 1) return;
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
     if (wallpaper != NULL) {
         if (wallpaper->mWallpaperObserver != NULL) {
@@ -480,7 +480,7 @@ void CWallpaperManagerService::OnRemoveUser(
 {
     if (userId < 1) return;
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     OnStoppingUser(userId);
     AutoPtr<IFile> wallpaperFile;
     CFile::New(GetWallpaperDir(userId), WALLPAPER, (IFile**)&wallpaperFile);
@@ -497,7 +497,7 @@ void CWallpaperManagerService::SwitchUser(
     /* [in] */ Int32 userId,
     /* [in] */ IRemoteCallback* reply)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     mCurrentUserId = userId;
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
     if (wallpaper == NULL) {
@@ -517,7 +517,7 @@ void CWallpaperManagerService::SwitchWallpaper(
     /* [in] */ WallpaperData* wallpaper,
     /* [in] */ IRemoteCallback* reply)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     //RuntimeException e = NULL;
     // try {
         AutoPtr<IComponentName> cname = wallpaper->mWallpaperComponent != NULL ?
@@ -537,7 +537,7 @@ ECode CWallpaperManagerService::ClearWallpaper()
 {
     if (DEBUG) Slogger::V(TAG, "clearWallpaper");
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     ClearWallpaperLocked(FALSE, UserHandle::GetCallingUserId(), NULL);
 
     return NOERROR;
@@ -592,7 +592,7 @@ ECode CWallpaperManagerService::HasNamedWallpaper(
     /* [in] */ const String& name,
     /* [out] */ Boolean* result)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
 
     AutoPtr<IObjectContainer> users;
     Int64 ident = Binder::ClearCallingIdentity();
@@ -641,7 +641,7 @@ ECode CWallpaperManagerService::SetDimensionHints(
 {
     FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER_HINTS));
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     Int32 userId = UserHandle::GetCallingUserId();
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
     if (wallpaper == NULL) {
@@ -676,7 +676,7 @@ ECode CWallpaperManagerService::SetDimensionHints(
 ECode CWallpaperManagerService::GetWidthHint(
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(UserHandle::GetCallingUserId());
     *result = wallpaper->mWidth;
 
@@ -686,7 +686,7 @@ ECode CWallpaperManagerService::GetWidthHint(
 ECode CWallpaperManagerService::GetHeightHint(
     /* [out] */ Int32* result)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(UserHandle::GetCallingUserId());
     *result = wallpaper->mHeight;
 
@@ -703,7 +703,7 @@ ECode CWallpaperManagerService::GetWallpaper(
     VALIDATE_NOT_NULL(outParams);
     *outParams = NULL;
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     // This returns the current user's wallpaper, if called by a system service. Else it
     // returns the wallpaper for the calling user.
     Int32 callingUid = Binder::GetCallingUid();
@@ -755,7 +755,7 @@ ECode CWallpaperManagerService::GetWallpaperInfo(
 
     Int32 userId = UserHandle::GetCallingUserId();
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
     if (wallpaper->mConnection != NULL) {
         *result = wallpaper->mConnection->mInfo;
@@ -777,7 +777,7 @@ ECode CWallpaperManagerService::SetWallpaper(
 
     FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER));
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     if (DEBUG) Slogger::V(TAG, "setWallpaper");
     Int32 userId = UserHandle::GetCallingUserId();
     AutoPtr<WallpaperData> wallpaper = GetWallpaperData(userId);
@@ -848,7 +848,7 @@ ECode CWallpaperManagerService::SetWallpaperComponent(
 {
     FAIL_RETURN(CheckPermission(Elastos::Droid::Manifest::Permission::SET_WALLPAPER_COMPONENT));
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     String str;
     name->ToString(&str);
     if (DEBUG) Slogger::V(TAG, "setWallpaperComponent name=%s", str.string());
@@ -1442,7 +1442,7 @@ void CWallpaperManagerService::SettingsRestored()
     AutoPtr<WallpaperData> wallpaper;
     Boolean success = FALSE;
     {
-        Mutex::Autolock lock(&mLock);
+        AutoLock lock(&mLock);
         LoadSettingsLocked(0);
         wallpaper = GetWallpaperData(0);
         Boolean equals;
@@ -1488,7 +1488,7 @@ void CWallpaperManagerService::SettingsRestored()
         GetWallpaperDir(0)->Delete(&res);
     }
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     SaveSettingsLocked(wallpaper);
 }
 
@@ -1591,7 +1591,7 @@ void CWallpaperManagerService::Dump(
     }
 
     {
-        Mutex::Autolock lock(&mLock);
+        AutoLock lock(&mLock);
         pw->PrintStringln(String("Current Wallpaper Service state:"));
         HashMap<Int32, AutoPtr<WallpaperData> >::Iterator iter;
         for (iter = mWallpaperMap.Begin(); iter != mWallpaperMap.End(); ++iter) {

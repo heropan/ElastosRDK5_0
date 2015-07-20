@@ -130,10 +130,10 @@ public:
     CARAPI GetInterpolator(
         /* [out] */ IInterpolator** interpolator);
 protected:
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 
 private:
-    Mutex mLock;
+    Object mLock;
 };
 
 }// namespace Widget

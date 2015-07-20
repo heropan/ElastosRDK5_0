@@ -168,7 +168,7 @@ ECode CWorkSource::SetReturningDiffs(
     *result = NULL;
 
     {
-        Mutex::Autolock lock(sTmpWorkSourceLock);
+        AutoLock lock(sTmpWorkSourceLock);
 
         sNewbWork = NULL;
         sGoneWork = NULL;
@@ -191,7 +191,7 @@ ECode CWorkSource::Add(
 {
     VALIDATE_NOT_NULL(added);
     {
-        Mutex::Autolock lock(sTmpWorkSourceLock);
+        AutoLock lock(sTmpWorkSourceLock);
         *added = UpdateLocked(other, FALSE, FALSE);
         return NOERROR;
     }
@@ -203,7 +203,7 @@ ECode CWorkSource::AddReturningNewbs(
 {
     VALIDATE_NOT_NULL(result);
     {
-        Mutex::Autolock lock(sTmpWorkSourceLock);
+        AutoLock lock(sTmpWorkSourceLock);
         sNewbWork = NULL;
         UpdateLocked(other, FALSE, TRUE);
         *result = sNewbWork;
@@ -218,7 +218,7 @@ ECode CWorkSource::Add(
 {
     VALIDATE_NOT_NULL(added);
     {
-        Mutex::Autolock lock(sTmpWorkSourceLock);
+        AutoLock lock(sTmpWorkSourceLock);
         ((CWorkSource*)sTmpWorkSource.Get())->mUids->Set(0, uid);
         *added = UpdateLocked(sTmpWorkSource, FALSE, FALSE);
         return NOERROR;
@@ -231,7 +231,7 @@ ECode CWorkSource::AddReturningNewbs(
 {
     VALIDATE_NOT_NULL(result);
     {
-        Mutex::Autolock lock(sTmpWorkSourceLock);
+        AutoLock lock(sTmpWorkSourceLock);
         sNewbWork = NULL;
         ((CWorkSource*)sTmpWorkSource.Get())->mUids->Set(0, uid);
         UpdateLocked(sTmpWorkSource, FALSE, TRUE);

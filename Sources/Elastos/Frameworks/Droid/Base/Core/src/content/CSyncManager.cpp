@@ -794,7 +794,7 @@ ECode CSyncManager::SyncHandler::MaybeStartNextSyncLocked(
     // order the sync queue, dropping syncs that are not allowed
     List<AutoPtr<ISyncOperation> > operations;
     {
-        Mutex::Autolock lock(mSyncMgr->mSyncQueueLock);
+        AutoLock lock(mSyncMgr->mSyncQueueLock);
 //        if (isLoggable) {
 //            Log.v(TAG, "build the operation array, syncQueue size is "
 //                + mSyncQueue.getOperations().size());
@@ -1071,7 +1071,7 @@ ECode CSyncManager::SyncHandler::MaybeStartNextSyncLocked(
             FAIL_RETURN(mSyncMgr->ScheduleSyncOperation(toReschedule->mSyncOperation))
         }
         {
-            Mutex::Autolock lock(mSyncMgr->mSyncQueueLock);
+            AutoLock lock(mSyncMgr->mSyncQueueLock);
             FAIL_RETURN(mSyncMgr->mSyncQueue->Remove(candidate))
         }
         FAIL_RETURN(DispatchSyncOperation(candidate, &result))
@@ -1759,7 +1759,7 @@ CAR_INTERFACE_IMPL(CSyncManager::SyncTimeTracker, IInterface)
 
 ECode CSyncManager::SyncTimeTracker::Update()
 {
-    Mutex::Autolock lock(mSyncTimeTrackerLock);
+    AutoLock lock(mSyncTimeTrackerLock);
     Boolean isSyncInProgress = !mSyncMgr->mActiveSyncContexts->IsEmpty();
 
     if (isSyncInProgress == mLastWasSyncing) return NOERROR;
@@ -1779,7 +1779,7 @@ ECode CSyncManager::SyncTimeTracker::TimeSpentSyncing(
     /* [out] */ Int64* syncTime)
 {
     VALIDATE_NOT_NULL(syncTime)
-    Mutex::Autolock lock(mSyncTimeTrackerLock);
+    AutoLock lock(mSyncTimeTrackerLock);
     if (!mLastWasSyncing) {
         *syncTime = mTimeSpentSyncing;
         return NOERROR;
@@ -2344,7 +2344,7 @@ ECode CSyncManager::ScheduleSyncOperation(
     /* [in] */ ISyncOperation* syncOperation)
 {
     Boolean queueChanged = FALSE;
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->Add(syncOperation, &queueChanged))
 
     if (queueChanged) {
@@ -2367,7 +2367,7 @@ ECode CSyncManager::ClearScheduledSyncOperations(
     /* [in] */ Int32 userId,
     /* [in] */ const String& authority)
 {
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->Remove(account, userId, authority))
     FAIL_RETURN(mSyncStorageEngine->SetBackoff(account, userId, authority,
             ISyncStorageEngine::NOT_IN_BACKOFF_MODE, ISyncStorageEngine::NOT_IN_BACKOFF_MODE))
@@ -2619,7 +2619,7 @@ ECode CSyncManager::DumpSyncState(
     }
 
     {
-        Mutex::Autolock lock(mSyncQueueLock);
+        AutoLock lock(mSyncQueueLock);
         sb->Reset(); // sb->SetLength(0);
         FAIL_RETURN(mSyncQueue->Dump(sb))
     }
@@ -2962,7 +2962,7 @@ ECode CSyncManager::GetConnectivityManager(
     /* [out] */ IConnectivityManager** connManager)
 {
     VALIDATE_NOT_NULL(connManager)
-    Mutex::Autolock lock(mCSyncManagerLock);
+    AutoLock lock(mCSyncManagerLock);
 
     if (NULL == mConnManagerDoNotUseDirectly) {
         FAIL_RETURN(mContext->GetSystemService(IContext::CONNECTIVITY_SERVICE,
@@ -3062,7 +3062,7 @@ ECode CSyncManager::ClearBackoffSetting(
     FAIL_RETURN(mSyncStorageEngine->SetBackoff(account, userId, authority, ISyncStorageEngine::NOT_IN_BACKOFF_MODE,
             ISyncStorageEngine::NOT_IN_BACKOFF_MODE))
 
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->OnBackoffChanged(account, userId, authority, 0))
 
     return NOERROR;
@@ -3129,7 +3129,7 @@ ECode CSyncManager::IncreaseBackoffSetting(
     FAIL_RETURN(op->SetBackoff(backoff))
     FAIL_RETURN(op->UpdateEffectiveRunTime())
 
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->OnBackoffChanged(account, userId, authority, backoff))
     return NOERROR;
 }
@@ -3156,7 +3156,7 @@ ECode CSyncManager::SetDelayUntilTime(
     FAIL_RETURN(op->GetUserId(&userId))
     FAIL_RETURN(op->GetAuthority(&authority))
     FAIL_RETURN(mSyncStorageEngine->SetDelayUntilTime(account, userId, authority, newDelayUntilTime))
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->OnDelayUntilTimeChanged(account, authority, newDelayUntilTime))
     return NOERROR;
 }
@@ -3171,7 +3171,7 @@ ECode CSyncManager::OnUserStarting(
 
     FAIL_RETURN(UpdateRunningAccounts())
 
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->AddPendingOperations(userId))
 
     // Schedule sync for any accounts under started user
@@ -3204,7 +3204,7 @@ ECode CSyncManager::OnUserRemoved(
     // Clean up the storage engine database
     AutoPtr<ArrayOf<IAccount *> > accounts;
     FAIL_RETURN(mSyncStorageEngine->DoDatabaseCleanup(accounts, userId))
-    Mutex::Autolock lock(mSyncQueueLock);
+    AutoLock lock(mSyncQueueLock);
     FAIL_RETURN(mSyncQueue->RemoveUser(userId))
     return NOERROR;
 }

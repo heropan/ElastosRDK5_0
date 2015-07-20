@@ -18,7 +18,7 @@ ECode CPluginList::GetList(
     /* [out] */ IObjectContainer** plugins)
 {
     VALIDATE_NOT_NULL(plugins);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     FAIL_RETURN(CObjectContainer::New(plugins));
     List< AutoPtr<CPlugin> >::Iterator it;
     for (it = mPlugins.Begin(); it != mPlugins.End(); ++it) {
@@ -30,7 +30,7 @@ ECode CPluginList::GetList(
 ECode CPluginList::AddPlugin(
     /* [in] */ IPlugin* plugin)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (Find(mPlugins.Begin(), mPlugins.End(), plugin) == mPlugins.End()) {
         mPlugins.PushBack((CPlugin*)plugin);
     }
@@ -40,14 +40,14 @@ ECode CPluginList::AddPlugin(
 ECode CPluginList::RemovePlugin(
     /* [in] */ IPlugin* plugin)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mPlugins.Remove((CPlugin*)plugin);
     return NOERROR;
 }
 
 ECode CPluginList::Clear()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mPlugins.Clear();
     return NOERROR;
 }
@@ -56,7 +56,7 @@ ECode CPluginList::PluginClicked(
     /* [in] */ IContext * context,
     /* [in] */ Int32 position)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     AutoPtr<CPlugin> plugin = mPlugins[position];
     if (plugin != NULL) {
         plugin->DispatchClickEvent(context);

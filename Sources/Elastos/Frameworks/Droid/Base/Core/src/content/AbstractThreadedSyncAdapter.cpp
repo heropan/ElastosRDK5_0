@@ -45,7 +45,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::StartSync(
     // check it and when we use it
     AutoPtr<IAccount> threadsKey = mAdapterContext->ToSyncKey(account);
     {
-        Mutex::Autolock lock(mAdapterContext->mSyncThreadLock);
+        AutoLock lock(mAdapterContext->mSyncThreadLock);
         HashMap<AutoPtr<IAccount>, AutoPtr<SyncThread> >::Iterator it = mAdapterContext->mSyncThreads.Find(threadsKey);
 
         if (it == mAdapterContext->mSyncThreads.End()) {
@@ -96,7 +96,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::CancelSync(
     // check it and when we use it
     AutoPtr<SyncThread> info = NULL;
     {
-        Mutex::Autolock lock(mAdapterContext->mSyncThreadLock);
+        AutoLock lock(mAdapterContext->mSyncThreadLock);
         HashMap<AutoPtr<IAccount>, AutoPtr<SyncThread> >::Iterator it = mAdapterContext->mSyncThreads.Begin();
         AutoPtr<SyncThread> current;
         for (; it != mAdapterContext->mSyncThreads.End(); it++) {
@@ -215,7 +215,7 @@ EXIT:
     // synchronize so that the assignment will be seen by other threads
     // that also synchronize accesses to mSyncThreads
     {
-        Mutex::Autolock lock(mAdapterContext->mSyncThreadLock);
+        AutoLock lock(mAdapterContext->mSyncThreadLock);
         mAdapterContext->mSyncThreads.Erase(mThreadsKey);
     }
     FAIL_RETURN(e)
@@ -283,7 +283,7 @@ ECode AbstractThreadedSyncAdapter::OnSyncCanceled()
 {
     AutoPtr<SyncThread> syncThread;
     {
-        Mutex::Autolock lock(mSyncThreadLock);
+        AutoLock lock(mSyncThreadLock);
         HashMap<AutoPtr<IAccount>, AutoPtr<SyncThread> >::Iterator it = mSyncThreads.Find((AutoPtr<IAccount>) NULL);
         syncThread = it->mSecond;
     }

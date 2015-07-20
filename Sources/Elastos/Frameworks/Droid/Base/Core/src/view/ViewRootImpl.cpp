@@ -532,7 +532,7 @@ ViewRootImpl::InvalidateOnAnimationRunnable::InvalidateOnAnimationRunnable(
 void ViewRootImpl::InvalidateOnAnimationRunnable::AddView(
     /* [in] */ IView* view)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     mViews.PushBack(view);
     PostIfNeededLocked();
 }
@@ -540,7 +540,7 @@ void ViewRootImpl::InvalidateOnAnimationRunnable::AddView(
 void ViewRootImpl::InvalidateOnAnimationRunnable::AddViewRect(
     /* [in] */ View::AttachInfo::InvalidateInfo* info)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     mViewRects.PushBack(info);
     PostIfNeededLocked();
 }
@@ -548,7 +548,7 @@ void ViewRootImpl::InvalidateOnAnimationRunnable::AddViewRect(
 void ViewRootImpl::InvalidateOnAnimationRunnable::RemoveView(
     /* [in] */ IView* view)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     mViews.Remove(view);
 
     typedef typename List<AutoPtr<View::AttachInfo::InvalidateInfo> >::ReverseIterator InfoReverseIterator;
@@ -581,7 +581,7 @@ ECode ViewRootImpl::InvalidateOnAnimationRunnable::Run()
     Int32 viewCount;
     Int32 viewRectCount;
     {
-        Mutex::Autolock lock(mSelfLock);
+        AutoLock lock(mSelfLock);
         mPosted = FALSE;
 
         viewCount = mViews.GetSize();
@@ -1091,7 +1091,7 @@ void ViewRootImpl::RunQueue::PostDelayed(
     handlerAction->mAction = action;
     handlerAction->mDelay = delayMillis;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mActions.PushBack(handlerAction);
 }
@@ -1099,7 +1099,7 @@ void ViewRootImpl::RunQueue::PostDelayed(
 void ViewRootImpl::RunQueue::RemoveCallbacks(
     /* [in] */ IRunnable* action)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     List<AutoPtr<HandlerAction> >::Iterator iter = mActions.Begin();
     while (iter != mActions.End()) {
@@ -1113,7 +1113,7 @@ void ViewRootImpl::RunQueue::RemoveCallbacks(
 void ViewRootImpl::RunQueue::ExecuteActions(
     /* [in] */ IHandler* handler)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean result;
 
@@ -1540,7 +1540,7 @@ Boolean ViewRootImpl::IsRenderThreadRequested(
     /* [in] */ IContext* context)
 {
     if (USE_RENDER_THREAD) {
-        Mutex::Autolock lock(sRenderThreadQueryLock);
+        AutoLock lock(sRenderThreadQueryLock);
 
         if (!sRenderThreadQueried) {
             AutoPtr<IPackageManager> packageManager;
@@ -1574,7 +1574,7 @@ Boolean ViewRootImpl::IsRenderThreadRequested(
 void ViewRootImpl::AddFirstDrawHandler(
     /* [in] */ IRunnable* callback)
 {
-    Mutex::Autolock lock(sFirstDrawHandlersLock);
+    AutoLock lock(sFirstDrawHandlersLock);
 
     if (!sFirstDrawComplete) {
         sFirstDrawHandlers.PushBack(callback);
@@ -1584,7 +1584,7 @@ void ViewRootImpl::AddFirstDrawHandler(
 void ViewRootImpl::AddConfigCallback(
     /* [in] */ IComponentCallbacks* callback)
 {
-    Mutex::Autolock lock(sConfigCallbacksLock);
+    AutoLock lock(sConfigCallbacksLock);
 
     sConfigCallbacks.PushBack(callback);
 }
@@ -1622,7 +1622,7 @@ ECode ViewRootImpl::SetView(
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [in] */ IView* panelParentView)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     if (mView == NULL) {
         mView = view;
@@ -2025,7 +2025,7 @@ void ViewRootImpl::SetLayoutParams(
     /* [in] */ IWindowManagerLayoutParams* attrs,
     /* [in] */ Boolean newView)
 {
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     Int32 oldSoftInputMode = mWindowAttributes->mSoftInputMode;
 
@@ -3617,7 +3617,7 @@ void ViewRootImpl::Draw(
     }
 
     if (!sFirstDrawComplete) {
-        Mutex::Autolock lock(sFirstDrawHandlersLock);
+        AutoLock lock(sFirstDrawHandlersLock);
 
         sFirstDrawComplete = TRUE;
         Boolean bval;
@@ -4344,7 +4344,7 @@ void ViewRootImpl::UpdateConfiguration(
     }
 
     {
-        Mutex::Autolock lock(sConfigCallbacksLock);
+        AutoLock lock(sConfigCallbacksLock);
 
         List<AutoPtr<IComponentCallbacks> >::Iterator iter;
         for (iter = sConfigCallbacks.Begin(); iter != sConfigCallbacks.End(); ++iter) {
@@ -5885,7 +5885,7 @@ ECode ViewRootImpl::DoDie()
         Logger::D(TAG, "DIE in 0x%08x of 0x%08x", this, mSurface.Get());
     }
 
-    Mutex::Autolock lock(mSyncLock);
+    AutoLock lock(mSyncLock);
 
     if (mAdded) {
         DispatchDetachedFromWindow();

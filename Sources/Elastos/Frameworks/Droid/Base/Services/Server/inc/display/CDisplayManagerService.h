@@ -441,7 +441,7 @@ private:
 
     // List of all display transaction listeners.
     List< AutoPtr<IDisplayTransactionListener> > mDisplayTransactionListeners;
-    Mutex mDisplayTransactionListenersLock;
+    Object mDisplayTransactionListenersLock;
 
     // Set to TRUE if all displays have been blanked by the power manager.
     Int32 mAllDisplayBlankStateFromPowerManager;

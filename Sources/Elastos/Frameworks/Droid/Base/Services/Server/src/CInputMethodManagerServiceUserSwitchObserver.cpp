@@ -17,7 +17,7 @@ ECode CInputMethodManagerServiceUserSwitchObserver::OnUserSwitching(
     /* [in] */ IRemoteCallback* reply)
 {
     {
-        Mutex::Autolock lock(mHost->mMethodMapLock);
+        AutoLock lock(mHost->mMethodMapLock);
         mHost->SwitchUserLocked(newUserId);
     }
 

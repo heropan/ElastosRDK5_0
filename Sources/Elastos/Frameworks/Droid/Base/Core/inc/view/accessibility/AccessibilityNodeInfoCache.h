@@ -89,7 +89,7 @@ private:
 
     static const Boolean CHECK_INTEGRITY;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr< HashMap<Int64, AutoPtr<IAccessibilityNodeInfo> > > mCacheImpl;
 

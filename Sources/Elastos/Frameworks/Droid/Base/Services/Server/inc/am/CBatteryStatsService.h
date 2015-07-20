@@ -5,7 +5,6 @@
 #include "_CBatteryStatsService.h"
 #include "os/BatteryStatsImpl.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Os::IWorkSource;
@@ -237,7 +236,7 @@ public:
     static AutoPtr<IIBatteryStats> sService;
 
     AutoPtr<BatteryStatsImpl> mStats;
-    Mutex mStatsLock;
+    Object mStatsLock;
     AutoPtr<IContext> mContext;
 
 private:

@@ -90,7 +90,7 @@ private:
 
     Int32 mReused;
 
-    Mutex mLock;
+    Object mLock;
 
 };
 

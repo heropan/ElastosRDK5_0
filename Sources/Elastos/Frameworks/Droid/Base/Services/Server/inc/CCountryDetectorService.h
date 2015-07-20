@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
@@ -165,7 +164,7 @@ private:
     const static Boolean DEBUG;
 
     HashMap<AutoPtr<IBinder>, AutoPtr<Receiver> > mReceivers;
-    Mutex mReceiverslock;
+    Object mReceiverslock;
 
     AutoPtr<IContext> mContext;
     //AutoPtr<IComprehensiveCountryDetector> mCountryDetector;

@@ -33,7 +33,7 @@ Int32 FileObserver::ObserverThread::StartWatching(
 {
     Int32 wfd = NativeStartWatching(mFd, path, mask);
     if (wfd >= 0) {
-        Mutex::Autolock Lock(mObserverslock);
+        AutoLock Lock(mObserverslock);
         AutoPtr<IWeakReference> wr;
         observer->GetWeakReference((IWeakReference**)&wr);
         mObservers[wfd] = wr;
@@ -55,7 +55,7 @@ ECode FileObserver::ObserverThread::OnEvent(
     // look up our observer, fixing up the map if necessary...
     AutoPtr<IFileObserver> observer;
     {
-        Mutex::Autolock Lock(mObserverslock);
+        AutoLock Lock(mObserverslock);
         AutoPtr<IWeakReference> weak;
         HashMap<Int32, AutoPtr<IWeakReference> >::Iterator it = mObservers.Find(wfd);
         if (it != mObservers.End()) {

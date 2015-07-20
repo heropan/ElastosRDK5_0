@@ -8,7 +8,6 @@
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
 using Elastos::Droid::Os::IBundle;
@@ -112,7 +111,7 @@ private:
     AutoPtr< ArrayOf<String> > mHostBlacklist;
 
     AutoPtr<IContext> mContext;
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<UsbSettingsManager> mCurrentSettings;
 };

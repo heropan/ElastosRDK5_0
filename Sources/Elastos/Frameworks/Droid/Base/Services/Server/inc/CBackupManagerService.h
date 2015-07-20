@@ -132,7 +132,7 @@ private:
         AutoPtr<IIBackupTransport> mTransport;
         AutoPtr<IIRestoreSession> mSession;
         AutoPtr<IIRestoreObserver> mObserver;
-        Mutex mSessionLock;
+        Object mSessionLock;
     };
 
     class RestoreParams
@@ -1352,7 +1352,7 @@ private:
     // final SparseArray<HashSet<String>> mBackupParticipants
     //         = new SparseArray<HashSet<String>>();
     HashMap<Int32, AutoPtr<HashSet<String> > >  mBackupParticipants;
-    Mutex mBackupParticipantsLock;
+    Object mBackupParticipantsLock;
 
     // Backups that we haven't started yet.
     typedef HashMap<String, AutoPtr<BackupRequest> > BackupRequestHashMap;
@@ -1363,7 +1363,7 @@ private:
     static const String PACKAGE_MANAGER_SENTINEL;
 
     // locking around the pending-backup management
-    Mutex mQueueLock;
+    Object mQueueLock;
 
     // The thread performing the sequence of queued backups binds to each app's agent
     // in succession.  Bind notifications are asynchronously delivered through the
@@ -1379,7 +1379,7 @@ private:
     // For debugging, we maintain a progress trace of operations during backup
     static const Boolean DEBUG_BACKUP_TRACE;
     List<String> mBackupTrace;
-    Mutex mBackupTraceLock;
+    Object mBackupTraceLock;
 
     // A similar synchronization mechanism around clearing apps' data for restore
     Object mClearDataLock;
@@ -1387,7 +1387,7 @@ private:
 
     // Transport bookkeeping
     HashMap<String, AutoPtr<IIBackupTransport> > mTransports;
-    Mutex mTransportsLock;
+    Object mTransportsLock;
 
     String mCurrentTransport;
     AutoPtr<IIBackupTransport> mLocalTransport;
@@ -1408,10 +1408,10 @@ private:
     Object mCurrentOpLock;
 
     AutoPtr<IRandom> mTokenGenerator;
-    Mutex mTokenGeneratorLock;
+    Object mTokenGeneratorLock;
     //const SparseArray<FullParams> mFullConfirmations; // = new SparseArray<FullParams>();
     HashMap<Int32, AutoPtr<FullParams> > mFullConfirmations;
-    Mutex mFullConfirmationsLock;
+    Object mFullConfirmationsLock;
 
     // Where we keep our journal files and other bookkeeping
     AutoPtr<IFile> mBaseStateDir;
@@ -1441,7 +1441,7 @@ private:
     // the ancestral dataset.
     AutoPtr<IFile> mEverStored;
     HashSet<String> mEverStoredApps;
-    Mutex mEverStoredAppsLock;
+    Object mEverStoredAppsLock;
 
     static const Int32 CURRENT_ANCESTRAL_RECORD_VERSION;  // increment when the schema changes
     AutoPtr<IFile> mTokenFile;
@@ -1459,7 +1459,7 @@ private:
     // ----- Track connection to GoogleBackupTransport service -----
     AutoPtr<IServiceConnection> mGoogleConnection;
 
-    Mutex mBackupServiceLock;
+    Object mBackupServiceLock;
 
 private:
     friend class RunBackupReceiver;

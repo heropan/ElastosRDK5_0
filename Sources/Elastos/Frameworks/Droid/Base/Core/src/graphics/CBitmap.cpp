@@ -17,7 +17,6 @@
 #include <skia/core/SkDither.h>
 #include <skia/core/SkBitmap.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Utility::AutoBufferPointer;
@@ -354,7 +353,7 @@ ECode CBitmap::CreateScaledBitmap(
 
     AutoPtr<IMatrix> m;
     {
-        Mutex::Autolock lock(sClassLock);
+        AutoLock lock(sClassLock);
 
         // small pool of just 1 matrix
         m = sScaleMatrix;
@@ -374,7 +373,7 @@ ECode CBitmap::CreateScaledBitmap(
     FAIL_RETURN(CreateBitmap(src, 0, 0, width, height, m, filter, bitmap));
 
     {
-        Mutex::Autolock lock(sClassLock);
+        AutoLock lock(sClassLock);
 
         // do we need to check for NULL? why not just assign everytime?
         if (sScaleMatrix == NULL) {

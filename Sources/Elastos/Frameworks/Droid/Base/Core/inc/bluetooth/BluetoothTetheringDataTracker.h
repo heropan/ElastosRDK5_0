@@ -5,7 +5,6 @@
 #include "BluetoothPan.h"
 #include "os/Runnable.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Core::IThread;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -253,7 +252,7 @@ private:
 
     AutoPtr<IBluetoothProfileServiceListener> mProfileServiceListener;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // Bluetooth

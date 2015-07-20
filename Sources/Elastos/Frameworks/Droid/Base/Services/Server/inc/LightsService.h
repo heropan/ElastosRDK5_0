@@ -111,7 +111,7 @@ public:
         Int32 mOnMS;
         Int32 mOffMS;
         Boolean mFlashing;
-        Mutex mSelfLock;
+        Object mSelfLock;
         LightsService* mOwner;
     };
 

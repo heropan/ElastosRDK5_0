@@ -1152,7 +1152,7 @@ CThrottleService::DataRecorder::DataRecorder(
 {
 //    mContext->GetSystemService(IContext::TELEPHONY_SERVICE, (IInterface**)&mTelephonyManager);
     {
-        Mutex::Autolock lock(mParentLock);
+        AutoLock lock(mParentLock);
 
         mPeriodCount = 6;
         mPeriodRxData = ArrayOf<Int64>::Alloc(mPeriodCount);
@@ -1206,7 +1206,7 @@ Boolean CThrottleService::DataRecorder::SetNextPeriod(
             }
         }
         {
-            Mutex::Autolock lock(mParentLock);
+            AutoLock lock(mParentLock);
             ++mCurrentPeriod;
             if (mCurrentPeriod >= mPeriodCount) {
                 mCurrentPeriod = 0;
@@ -1225,7 +1225,7 @@ ECode CThrottleService::DataRecorder::GetPeriodEnd(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     mPeriodEnd->GetTimeInMillis(result);
     return NOERROR;
 }
@@ -1233,7 +1233,7 @@ ECode CThrottleService::DataRecorder::GetPeriodEnd(
 void CThrottleService::DataRecorder::SetPeriodEnd(
     /* [in] */ ICalendar* end)
 {
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     mPeriodEnd = end;
 }
 
@@ -1241,7 +1241,7 @@ ECode CThrottleService::DataRecorder::GetPeriodStart(
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(&mParentLock);
+    AutoLock lock(&mParentLock);
     mPeriodStart->GetTimeInMillis(result);
     return NOERROR;
 }
@@ -1249,7 +1249,7 @@ ECode CThrottleService::DataRecorder::GetPeriodStart(
 void CThrottleService::DataRecorder::SetPeriodStart(
     /* [in] */ ICalendar* start)
 {
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     mPeriodStart = start;
 }
 
@@ -1257,7 +1257,7 @@ ECode CThrottleService::DataRecorder::GetPeriodCount(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     *result = mPeriodCount;
     return NOERROR;
 }
@@ -1265,7 +1265,7 @@ ECode CThrottleService::DataRecorder::GetPeriodCount(
 void CThrottleService::DataRecorder::ZeroData(
     /* [in] */ Int32 field)
 {
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     for(Int32 period = 0; period<mPeriodCount; period++) {
         (*mPeriodRxData)[period] = 0;
         (*mPeriodTxData)[period] = 0;
@@ -1279,7 +1279,7 @@ void CThrottleService::DataRecorder::AddData(
 {
     CheckForSubscriberId();
     {
-        Mutex::Autolock lock(mParentLock);
+        AutoLock lock(mParentLock);
         (*mPeriodRxData)[mCurrentPeriod] += bytesRead;
         (*mPeriodTxData)[mCurrentPeriod] += bytesWritten;
     }
@@ -1535,7 +1535,7 @@ void CThrottleService::DataRecorder::Retrieve()
     //     return;
     // }
     {
-        Mutex::Autolock lock(mParentLock);
+        AutoLock lock(mParentLock);
         mPeriodCount = periodCount;
         mPeriodRxData = periodRxData;
         mPeriodTxData = periodTxData;
@@ -1548,7 +1548,7 @@ void CThrottleService::DataRecorder::Retrieve()
 Int64 CThrottleService::DataRecorder::GetPeriodRx(
     /* [in] */ Int32 which)
 {
-    Mutex::Autolock lock(mParentLock);
+    AutoLock lock(mParentLock);
     if (which > mPeriodCount) return 0L;
     which = mCurrentPeriod - which;
     if (which < 0) which += mPeriodCount;
@@ -1558,7 +1558,7 @@ Int64 CThrottleService::DataRecorder::GetPeriodRx(
 Int64 CThrottleService::DataRecorder::GetPeriodTx(
     /* [in] */ Int32 which)
 {
-     Mutex::Autolock lock(mParentLock);
+     AutoLock lock(mParentLock);
      if (which > mPeriodCount) return 0;
      which = mCurrentPeriod - which;
      if (which < 0) which += mPeriodCount;

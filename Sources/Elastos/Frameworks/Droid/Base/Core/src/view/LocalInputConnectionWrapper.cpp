@@ -64,7 +64,7 @@ ECode LocalInputConnectionWrapper::GetTextAfterCursor(
     AutoPtr<CInputContextCallback> callback = CInputContextCallback::GetInstance();
     mIInputContext->GetTextAfterCursor(n, flags, callback->mSeq, callback.Get());
     {
-        Mutex::Autolock lock(callback->_m_syncLock);
+        AutoLock lock(callback->_m_syncLock);
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *text = callback->mTextAfterCursor;
@@ -90,7 +90,7 @@ ECode LocalInputConnectionWrapper::GetTextBeforeCursor(
     AutoPtr<CInputContextCallback> callback = CInputContextCallback::GetInstance();
     mIInputContext->GetTextBeforeCursor(n, flags, callback->mSeq, callback.Get());
     {
-        Mutex::Autolock lock(callback->_m_syncLock);
+        AutoLock lock(callback->_m_syncLock);
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *text = callback->mTextBeforeCursor;
@@ -115,7 +115,7 @@ ECode LocalInputConnectionWrapper::GetSelectedText(
     AutoPtr<CInputContextCallback> callback = CInputContextCallback::GetInstance();
     mIInputContext->GetSelectedText(flags, callback->mSeq, callback.Get());
     {
-        Mutex::Autolock lock(callback->_m_syncLock);
+        AutoLock lock(callback->_m_syncLock);
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *text = callback->mSelectedText;
@@ -141,7 +141,7 @@ ECode LocalInputConnectionWrapper::GetCursorCapsMode(
     AutoPtr<CInputContextCallback> callback = CInputContextCallback::GetInstance();
     mIInputContext->GetCursorCapsMode(reqModes, callback->mSeq, callback.Get());
     {
-        Mutex::Autolock lock(callback->_m_syncLock);
+        AutoLock lock(callback->_m_syncLock);
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *capsMode = callback->mCursorCapsMode;
@@ -166,7 +166,7 @@ ECode LocalInputConnectionWrapper::GetExtractedText(
     AutoPtr<CInputContextCallback> callback = CInputContextCallback::GetInstance();
     mIInputContext->GetExtractedText(request, flags, callback->mSeq, callback.Get());
     {
-        Mutex::Autolock lock(callback->_m_syncLock);
+        AutoLock lock(callback->_m_syncLock);
         callback->WaitForResultLocked();
         if (callback->mHaveValue) {
             *extractedText = callback->mExtractedText;

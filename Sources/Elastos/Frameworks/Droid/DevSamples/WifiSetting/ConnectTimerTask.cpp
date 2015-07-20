@@ -58,7 +58,7 @@ ECode ConnectTimerTask::Run()
             std::vector<ScanResult*>* scanList = ElWifi_ScanResults();
 
             //Add Wifi hot points to list.
-            Mutex::Autolock lock(mHost->mScanListLock);
+            AutoLock lock(mHost->mScanListLock);
             void (STDCALL CWifiSetting::*pHandlerFunc)(std::vector<ScanResult*>*);
             pHandlerFunc = &CWifiSetting::AddWifiNodesByVector;
             AutoPtr<IParcel> params;

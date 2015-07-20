@@ -85,7 +85,7 @@ private:
     // exclusive access to this object.
     static AutoPtr<CInputContextCallback> sInstance;
     static Int32 sSequenceNumber;
-    static Mutex sLock;
+    static Object sLock;
 
     pthread_cond_t mWaitCond;
 };

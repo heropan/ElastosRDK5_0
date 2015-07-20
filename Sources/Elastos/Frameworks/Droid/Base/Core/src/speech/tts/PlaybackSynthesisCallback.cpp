@@ -5,7 +5,6 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -57,7 +56,7 @@ void PlaybackSynthesisCallback::StopImpl(
 
     AutoPtr<SynthesisPlaybackQueueItem> item;
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         if (mStopped) {
             //Java:    Log.w(TAG, "stop() called twice");
             Logger::W(TAG, String("stop() called twice\n"));
@@ -121,7 +120,7 @@ Int32 PlaybackSynthesisCallback::Start(
     }
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         if (mStopped) {
             if (DBG) {
                 //Java:    Log.d(TAG, "stop() called before start(), returning.");
@@ -159,7 +158,7 @@ Int32 PlaybackSynthesisCallback::AudioAvailable(
     AutoPtr<SynthesisPlaybackQueueItem> item = NULL;
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         if (mItem == NULL || mStopped) {
             return ITextToSpeech::TTS_ERROR;
         }
@@ -193,7 +192,7 @@ Int32 PlaybackSynthesisCallback::Done()
     AutoPtr<SynthesisPlaybackQueueItem> item = NULL;
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         if (mDone) {
             //Java:    Log.w(TAG, "Duplicate call to done()");
             Logger::W(TAG, String("Duplicate call to done()\n") );

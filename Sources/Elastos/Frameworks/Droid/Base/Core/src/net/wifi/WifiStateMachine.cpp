@@ -1565,7 +1565,7 @@ ECode WifiStateMachine::DriverStartedState::Exit()
     if (DBG) mOwner->Log(String("DriverStartedState::Exit"));
     mOwner->mIsRunning = FALSE;
     mOwner->UpdateBatteryWorkSource(NULL);
-    Mutex::Autolock lock(mOwner->mScanResultCacheLock);
+    AutoLock lock(mOwner->mScanResultCacheLock);
     mOwner->mScanResults.Clear();
     return NOERROR;
 }
@@ -3797,7 +3797,7 @@ AutoPtr<IWifiInfo> WifiStateMachine::SyncRequestConnectionInfo()
 AutoPtr<IDhcpInfo> WifiStateMachine::SyncGetDhcpInfo()
 {
     {
-        Mutex::Autolock lock(mDhcpInfoInternalLock);
+        AutoLock lock(mDhcpInfoInternalLock);
         return mDhcpInfoInternal->MakeDhcpInfo();
     }
 }
@@ -3850,7 +3850,7 @@ void WifiStateMachine::SetScanType(
 
 AutoPtr<ArrayOf<IScanResult*> > WifiStateMachine::SyncGetScanResultsList()
 {
-    Mutex::Autolock lock(mScanResultCacheLock);
+    AutoLock lock(mScanResultCacheLock);
 
     AutoPtr<ArrayOf<IScanResult*> > scanList = ArrayOf<IScanResult*>::Alloc(mScanResults.GetSize());
     Int32 i = 0;
@@ -4069,7 +4069,7 @@ void WifiStateMachine::UpdateBatteryWorkSource(
     /* [in] */ IWorkSource* newSource)
 {
     {
-        Mutex::Autolock lock(mRunningWifiUidsLock);
+        AutoLock lock(mRunningWifiUidsLock);
         // try {
         if (newSource != NULL) {
             mRunningWifiUids->Set(newSource);
@@ -4445,7 +4445,7 @@ void WifiStateMachine::SetScanResults(
     }
 
     {
-        Mutex::Autolock lock(mScanResultCacheLock);
+        AutoLock lock(mScanResultCacheLock);
 
         mScanResults.Clear();
         AutoPtr< ArrayOf<String> > lines;
@@ -4630,7 +4630,7 @@ void WifiStateMachine::ConfigureLinkProperties()
     }
     else {
         {
-            Mutex::Autolock lock(mDhcpInfoInternalLock);
+            AutoLock lock(mDhcpInfoInternalLock);
 
             mLinkProperties = mDhcpInfoInternal->MakeLinkProperties();
         }
@@ -4892,7 +4892,7 @@ void WifiStateMachine::HandleSuccessfulIpConfiguration(
     /* [in] */ DhcpInfoInternal* dhcpInfoInternal)
 {
     {
-        Mutex::Autolock lock(mDhcpInfoInternalLock);
+        AutoLock lock(mDhcpInfoInternalLock);
         mDhcpInfoInternal = dhcpInfoInternal;
     }
     mLastSignalLevel = -1; // force update of signal strength

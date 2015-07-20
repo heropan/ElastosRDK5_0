@@ -6,7 +6,6 @@
 
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Internal::View::IInputContext;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IKeyEvent;
@@ -133,7 +132,7 @@ public:
         /* [out] */ Boolean* flag);
 
 public:
-    Mutex mSelfLock;
+    Object mSelfLock;
 
 private:
     static const Int32 MAX_WAIT_TIME_MILLIS;

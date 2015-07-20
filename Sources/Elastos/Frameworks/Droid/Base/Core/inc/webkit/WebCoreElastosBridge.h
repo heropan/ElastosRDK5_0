@@ -275,8 +275,8 @@ private:
 
     AutoPtr< HashMap<String, String> > mContentUriToFilePathMap;
 
-    static Mutex sLock;
-    Mutex mLock;
+    static Object sLock;
+    Object mLock;
 };
 
 } // namespace Webkit

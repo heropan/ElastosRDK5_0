@@ -132,7 +132,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     /* [in] */ const String& country)
 {
     {
-        Mutex::Autolock lock(&sLastUniqueLockObj);
+        AutoLock lock(&sLastUniqueLockObj);
         if ((country != NULL) && country.Equals(sLastUniqueCountry)) {
             if (DBG) {
                 Logger::D(TAG, "getTimeZonesWithUniqueOffsets(%s): return cached version", country.string());
@@ -144,7 +144,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     AutoPtr<ArrayOf<ITimeZone *> > zones = GetTimeZones(country);
 
     if (!zones) {
-        Mutex::Autolock lock(&sLastUniqueLockObj);
+        AutoLock lock(&sLastUniqueLockObj);
         sLastUniqueZoneOffsets = NULL;
         sLastUniqueCountry = NULL;
         return NULL;
@@ -189,7 +189,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     }
 
     {
-        Mutex::Autolock lock(&sLastUniqueLockObj);
+        AutoLock lock(&sLastUniqueLockObj);
         // Cache the last result
         sLastUniqueZoneOffsets = uniqueTimeZones;
         sLastUniqueCountry = country;
@@ -202,7 +202,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     /* [in] */ const String& country)
 {
     {
-        Mutex::Autolock lock(&sLastLockObj);
+        AutoLock lock(&sLastLockObj);
         if ((country != NULL) && country.Equals(sLastCountry)) {
             if (DBG) Logger::D(TAG, "getTimeZones(): return cached version", country.string());
             return sLastZones;
@@ -282,7 +282,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     parser->Close();
 
     {
-        Mutex::Autolock lock(&sLastLockObj);
+        AutoLock lock(&sLastLockObj);
 
         // Cache the last result;
         sLastZones = ArrayOf<ITimeZone*>::Alloc(list.GetSize());
@@ -462,7 +462,7 @@ void TimeUtils::FormatDuration(
     /* [in] */ Int64 duration,
     /* [in] */ StringBuilder& builder)
 {
-    Mutex::Autolock lock(sFormatSync);
+    AutoLock lock(sFormatSync);
     Int32 len = FormatDurationLocked(duration, 0);
     builder.AppendChars(*sFormatStr, 0, len);
 }
@@ -475,7 +475,7 @@ void TimeUtils::FormatDuration(
 {
     assert(pw != NULL);
 
-    Mutex::Autolock lock(sFormatSync);
+    AutoLock lock(sFormatSync);
     Int32 len = FormatDurationLocked(duration, fieldLen);
     String str(*sFormatStr, 0, len);
     pw->PrintString(str);

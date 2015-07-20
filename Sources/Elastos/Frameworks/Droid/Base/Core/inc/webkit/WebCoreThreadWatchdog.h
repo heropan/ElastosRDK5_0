@@ -199,7 +199,7 @@ private:
 
     HashSet< AutoPtr<CWebViewClassic> > mWebViews;
 
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Webkit

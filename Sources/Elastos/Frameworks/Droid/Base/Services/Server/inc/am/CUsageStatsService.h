@@ -260,10 +260,10 @@ public:
 
     // Lock to update package stats. Methods suffixed by SLOCK should invoked with
     // this lock held
-    Mutex mStatsLock;
+    Object mStatsLock;
     // Lock to write to file. Methods suffixed by FLOCK should invoked with
     // this lock held.
-    Mutex mFileLock;
+    Object mFileLock;
 
 private:
     // structure used to maintain statistics since the last checkin.
@@ -280,7 +280,7 @@ private:
 
     AutoPtr<ICalendar> mCal; // guarded by itself
 
-    Mutex mCalLock;
+    Object mCalLock;
 
     AutoPtr<IAtomicInteger32> mLastWriteDay;
     AutoPtr<IAtomicInteger64> mLastWriteElapsedTime;

@@ -67,7 +67,7 @@ ECode ConnectionThread::Run()
 
     //     /* wait for work */
     //     if (request == NULL) {
-    //         Mutex::Autolock lock(mLock);
+    //         AutoLock lock(mLock);
 
     //         // if (HttpLog.LOGV) HttpLog.v("ConnectionThread: Waiting for work");
     //         mWaiting = TRUE;

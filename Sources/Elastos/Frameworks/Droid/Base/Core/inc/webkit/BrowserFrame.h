@@ -181,7 +181,7 @@ private:
     private:
         List< AutoPtr<IWeakReference> > mHandlers;
         AutoPtr<IWindowManager> mWindowManager;
-        Mutex mLock;
+        Object mLock;
     };
 
     class MyHttpAuthHandler

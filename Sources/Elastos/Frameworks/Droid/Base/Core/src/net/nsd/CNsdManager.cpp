@@ -183,7 +183,7 @@ Int32 CNsdManager::PutListener(
     }
 
     Int32 key;
-    Mutex::Autolock lock(mMapLock);
+    AutoLock lock(mMapLock);
     do {
         key = mListenerKey++;
     }
@@ -208,7 +208,7 @@ ECode CNsdManager::GetListener(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mMapLock);
+    AutoLock lock(mMapLock);
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
     if(it != mListenerMap.End()) {
         *listener = it->mSecond;
@@ -221,7 +221,7 @@ ECode CNsdManager::GetListener(
 AutoPtr<INsdServiceInfo> CNsdManager::GetNsdService(
     /* [in] */ Int32 key)
 {
-    Mutex::Autolock lock(mMapLock);
+    AutoLock lock(mMapLock);
     HashMap<Int32, AutoPtr<INsdServiceInfo> >::Iterator it = mServiceMap.Find(key);
     if(it != mServiceMap.End())
         return it->mSecond;
@@ -234,7 +234,7 @@ void CNsdManager::RemoveListener(
 {
     if (key == INVALID_LISTENER_KEY) return;
 
-    Mutex::Autolock lock(mMapLock);
+    AutoLock lock(mMapLock);
 
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
     if(it != mListenerMap.End())
@@ -248,7 +248,7 @@ void CNsdManager::RemoveListener(
 Int32 CNsdManager::GetListenerKey(
     /* [in] */ IInterface* listener)
 {
-    Mutex::Autolock lock(mMapLock);
+    AutoLock lock(mMapLock);
     HashMap<Int32, AutoPtr<IInterface> >::Iterator it;
     for (it = mListenerMap.Begin(); it != mListenerMap.End(); ++it) {
         if (it->mSecond.Get() == listener) {

@@ -164,7 +164,7 @@ void EthernetDataTracker::InterfaceAdded(
 
     /**  The first adding interface will be reconnect.  **/
     {
-        Mutex::Autolock lock(mIfaceLock);
+        AutoLock lock(mIfaceLock);
         if(!mIface.IsEmpty())
             return;
         mIface = iface;
@@ -197,7 +197,7 @@ void EthernetDataTracker::InterfaceRemoved(
     Teardown(&res);
 
     {
-        Mutex::Autolock lock(mIfaceLock);
+        AutoLock lock(mIfaceLock);
         mIface = "";
     }
 }
@@ -319,7 +319,7 @@ void EthernetDataTracker::ConnectNetwork(
             return;
 
         {
-            Mutex::Autolock lock(mIfaceLock);
+            AutoLock lock(mIfaceLock);
             String ifName;
             ifaceInfo->GetIfName(&ifName);
             if (!mIface.Equals(ifName)) {
@@ -418,7 +418,7 @@ void EthernetDataTracker::SendStateBroadcast(
 /*static synchronized*/
 AutoPtr<EthernetDataTracker> EthernetDataTracker::GetInstance()
 {
-    Mutex::Autolock lock(sInstanceLock);
+    AutoLock lock(sInstanceLock);
     if (sInstance == NULL){
         sInstance = new EthernetDataTracker();
     }
@@ -561,7 +561,7 @@ ECode EthernetDataTracker::SetRadio(
 ECode EthernetDataTracker::IsAvailable(
     /* [out] */ Boolean* isAvailable)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return mNetworkInfo->IsAvailable(isAvailable);
 }
 
@@ -611,7 +611,7 @@ ECode EthernetDataTracker::SetPrivateDnsRoute(
 ECode EthernetDataTracker::GetNetworkInfo(
     /* [out] */ INetworkInfo** info)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     *info = mNetworkInfo;
     REFCOUNT_ADD(*info);
     return NOERROR;
@@ -622,7 +622,7 @@ ECode EthernetDataTracker::GetLinkProperties(
     /* [out] */ ILinkProperties** linkProperties)
 {
     VALIDATE_NOT_NULL(linkProperties);
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     return CLinkProperties::New(mLinkProperties, linkProperties);
 }
 

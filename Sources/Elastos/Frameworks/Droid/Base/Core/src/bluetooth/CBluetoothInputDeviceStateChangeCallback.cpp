@@ -17,7 +17,7 @@ ECode CBluetoothInputDeviceStateChangeCallback::OnBluetoothStateChange(
 	if (BluetoothInputDevice::DBG) Logger::D(BluetoothInputDevice::TAG, "onBluetoothStateChange: up=%d", on);
     if (!on) {
         if (BluetoothInputDevice::VDBG) Logger::D(BluetoothInputDevice::TAG,"Unbinding service...");
-        Mutex::Autolock lock(mHost->mConnectionLock);
+        AutoLock lock(mHost->mConnectionLock);
         // try {
         mHost->mService = NULL;
         ECode ec = mHost->mContext->UnbindService(mHost->mConnection);
@@ -29,7 +29,7 @@ ECode CBluetoothInputDeviceStateChangeCallback::OnBluetoothStateChange(
         // }
     }
     else {
-        Mutex::Autolock lock(mHost->mConnectionLock);
+        AutoLock lock(mHost->mConnectionLock);
         // try {
         if (mHost->mService == NULL) {
             if (BluetoothInputDevice::VDBG) Logger::D(BluetoothInputDevice::TAG, "Binding service...");

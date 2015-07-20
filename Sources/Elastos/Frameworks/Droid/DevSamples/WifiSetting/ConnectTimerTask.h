@@ -4,7 +4,6 @@
 
 #include <Elastos.Core.h>
 #include <Elastos.Core.h>
-#include <elrefbase.h>
 #include <elastos/TimerTask.h>
 #include <elautoptr.h>
 #include "WifiFun.h"

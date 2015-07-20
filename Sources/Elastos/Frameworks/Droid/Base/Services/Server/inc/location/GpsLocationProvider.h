@@ -14,7 +14,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
@@ -576,7 +575,7 @@ private:
 
 private:
 
-    Mutex mLock;
+    Object mLock;
 
     Int32 mLocationFlags;// = LOCATION_INVALID;
 
@@ -661,11 +660,11 @@ private:
     AutoPtr<INtpTrustedTime> mNtpTime;
     /*const*/ AutoPtr<IILocationManager> mILocationManager;
     AutoPtr<ILocation> mLocation;// = new Location(LocationManager.GPS_PROVIDER);
-    Mutex mLocationMutex;
+    Object mLocationMutex;
     AutoPtr<IBundle> mLocationExtras;// = new Bundle();
     //private ArrayList<Listener> mListeners = new ArrayList<Listener>();
     List<AutoPtr<Listener> > mListeners;
-    Mutex mListenersMutex;
+    Object mListenersMutex;
 
     // Handler for processing events
     AutoPtr<IHandler> mHandler;

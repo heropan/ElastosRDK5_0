@@ -93,7 +93,7 @@ void UEventObserver::UEventThread::SendEvent(
     /* [in] */ const String& message)
 {
     {
-        Mutex::Autolock lock(mKeysAndObserversLock);
+        AutoLock lock(mKeysAndObserversLock);
 
         List< AutoPtr<IInterface> >::Iterator it = mKeysAndObservers.Begin();
         while (it != mKeysAndObservers.End()) {
@@ -127,7 +127,7 @@ void UEventObserver::UEventThread::AddObserver(
     /* [in] */ const String& match,
     /* [in] */ UEventObserver* observer)
 {
-    Mutex::Autolock lock(mKeysAndObserversLock);
+    AutoLock lock(mKeysAndObserversLock);
 
     AutoPtr<ICharSequence> charSeq;
     CStringWrapper::New(match, (ICharSequence**)&charSeq);
@@ -140,7 +140,7 @@ void UEventObserver::UEventThread::AddObserver(
 void UEventObserver::UEventThread::RemoveObserver(
     /* [in] */ UEventObserver* observer)
 {
-    Mutex::Autolock lock(mKeysAndObserversLock);
+    AutoLock lock(mKeysAndObserversLock);
 
     List< AutoPtr<IInterface> >::Iterator it = mKeysAndObservers.Begin();
     while (it != mKeysAndObservers.End()) {
@@ -182,14 +182,14 @@ ECode UEventObserver::NativeSetup()
     return NOERROR;
 }
 
-static Mutex sMatchesMutex;
+static Object sMatchesMutex;
 static Vector<String> sMatches;
 
 static Boolean IsMatch(
     /* [in] */ const char* buffer,
     /* [in] */ Int32 length)
 {
-    Mutex::Autolock lock(sMatchesMutex);
+    AutoLock lock(sMatchesMutex);
 
     Vector<String>::Iterator it;
     for (it = sMatches.Begin(); it != sMatches.End(); ++it) {
@@ -232,14 +232,14 @@ String UEventObserver::NativeWaitForNextEvent()
 void UEventObserver::NativeAddMatch(
     /* [in] */ const String& matchStr)
 {
-    Mutex::Autolock lock(sMatchesMutex);
+    AutoLock lock(sMatchesMutex);
     sMatches.PushBack(matchStr);
 }
 
 void UEventObserver::NativeRemoveMatch(
     /* [in] */ const String& matchStr)
 {
-    Mutex::Autolock lock(sMatchesMutex);
+    AutoLock lock(sMatchesMutex);
 
     Vector<String>::Iterator it;
     for (it = sMatches.Begin(); it != sMatches.End(); ++it) {
@@ -252,7 +252,7 @@ void UEventObserver::NativeRemoveMatch(
 
 AutoPtr<UEventObserver::UEventThread> UEventObserver::GetThread()
 {
-    Mutex::Autolock lock(sClsLock);
+    AutoLock lock(sClsLock);
 
     if (sThread == NULL) {
         sThread = new UEventThread();
@@ -263,7 +263,7 @@ AutoPtr<UEventObserver::UEventThread> UEventObserver::GetThread()
 
 AutoPtr<UEventObserver::UEventThread> UEventObserver::PeekThread()
 {
-    Mutex::Autolock lock(sClsLock);
+    AutoLock lock(sClsLock);
     return sThread;
 }
 

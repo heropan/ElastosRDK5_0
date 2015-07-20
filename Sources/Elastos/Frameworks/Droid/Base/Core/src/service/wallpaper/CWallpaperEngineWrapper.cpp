@@ -218,7 +218,7 @@ void CWallpaperEngineWrapper::HandleTouchEvent(
     Int32 action;
     ev->GetAction(&action);
     if (action == IMotionEvent::ACTION_MOVE) {
-        Mutex::Autolock lock(mEngine->mLock);
+        AutoLock lock(mEngine->mLock);
         if (mEngine->mPendingMove.Get() == ev) {
             mEngine->mPendingMove = NULL;
         }

@@ -186,7 +186,7 @@ ECode CNetworkPolicyManagerService::ScreenReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mOwner->mRulesLock);
+    AutoLock lock(mOwner->mRulesLock);
     // screen-related broadcasts are protected by system, no need
     // for permissions check.
     Boolean result;
@@ -215,7 +215,7 @@ ECode CNetworkPolicyManagerService::PackageReceiver::OnReceive(
         // global background data policy
         if (LOGV) Slogger::V(TAG, "ACTION_PACKAGE_ADDED for uid=%d", uid);
         {
-            Mutex::Autolock lock(mOwner->mRulesLock);
+            AutoLock lock(mOwner->mRulesLock);
             mOwner->UpdateRulesForUidLocked(uid);
         }
     }
@@ -238,7 +238,7 @@ ECode CNetworkPolicyManagerService::UidRemovedReceiver::OnReceive(
     // remove any policy and update rules to clean up
     if (LOGV) Slogger::V(TAG, "ACTION_UID_REMOVED for uid=%d", uid);
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         mOwner->mUidPolicy.Erase(uid);
         mOwner->UpdateRulesForUidLocked(uid);
         mOwner->WritePolicyLocked();
@@ -268,7 +268,7 @@ ECode CNetworkPolicyManagerService::UserReceiver::OnReceive(
 
     // Update global restrict for new user
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         mOwner->UpdateRulesForRestrictBackgroundLocked();
     }
     return NOERROR;
@@ -286,7 +286,7 @@ ECode CNetworkPolicyManagerService::StatsReceiver::OnReceive(
     // READ_NETWORK_USAGE_HISTORY permission above.
     mOwner->MaybeRefreshTrustedTime();
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         mOwner->UpdateNetworkEnabledLocked();
         mOwner->UpdateNotificationsLocked();
     }
@@ -352,7 +352,7 @@ ECode CNetworkPolicyManagerService::WifiConfigReceiver::OnReceive(
             AutoPtr<INetworkTemplate> networkTemp;
             netTempHelper->BuildTemplateWifi(netid, (INetworkTemplate**)&networkTemp);
             {
-                Mutex::Autolock lock(mOwner->mRulesLock);
+                AutoLock lock(mOwner->mRulesLock);
                 HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it =
                         mOwner->mNetworkPolicy.Find(networkTemp);
                 if (it != mOwner->mNetworkPolicy.End()) {
@@ -402,7 +402,7 @@ ECode CNetworkPolicyManagerService::WifiStateReceiver::OnReceive(
     AutoPtr<INetworkTemplate> networkTemp;
     netTempHelper->BuildTemplateWifi(netid, (INetworkTemplate**)&networkTemp);
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         AutoPtr<INetworkPolicy> policy;
         HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it =
                 mOwner->mNetworkPolicy.Find(networkTemp);
@@ -446,7 +446,7 @@ ECode CNetworkPolicyManagerService::ConnReceiver::OnReceive(
 
     mOwner->MaybeRefreshTrustedTime();
     {
-        Mutex::Autolock lock(mOwner->mRulesLock);
+        AutoLock lock(mOwner->mRulesLock);
         mOwner->EnsureActiveMobilePolicyLocked();
         mOwner->UpdateNetworkEnabledLocked();
         mOwner->UpdateNetworkRulesLocked();
@@ -697,7 +697,7 @@ ECode CNetworkPolicyManagerService::SystemReady()
     }
 
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         // read policy from disk
         ReadPolicyLocked();
 
@@ -1829,7 +1829,7 @@ void CNetworkPolicyManagerService::SetUidPolicyUnchecked(
 {
     Int32 oldPolicy;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         GetUidPolicy(uid, &oldPolicy);
         mUidPolicy[uid] = policy;
 
@@ -1850,7 +1850,7 @@ ECode CNetworkPolicyManagerService::GetUidPolicy(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         HashMap<Int32, Int32>::Iterator it = mUidPolicy.Find(uid);
         if (it != mUidPolicy.End()) {
             *policy = it->mSecond;
@@ -1869,7 +1869,7 @@ ECode CNetworkPolicyManagerService::GetUidsWithPolicy(
 
     AutoPtr<ArrayOf<Int32> > uids = ArrayOf<Int32>::Alloc(0);
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         HashMap<Int32, Int32>::Iterator it;
         for(it = mUidPolicy.Begin(); it != mUidPolicy.End(); ++it) {
             Int32 uid = it->mFirst;
@@ -1950,7 +1950,7 @@ ECode CNetworkPolicyManagerService::SetNetworkPolicies(
 
     MaybeRefreshTrustedTime();
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
 
         mNetworkPolicy.Clear();
         for (Int32 i = 0; i <  policies->GetLength(); i++) {
@@ -1992,7 +1992,7 @@ ECode CNetworkPolicyManagerService::GetNetworkPolicies(
             Elastos::Droid::Manifest::Permission::READ_PHONE_STATE, TAG));
 
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
 
         *policies = ArrayOf<INetworkPolicy*>::Alloc(mNetworkPolicy.GetSize());
         REFCOUNT_ADD(*policies);
@@ -2027,7 +2027,7 @@ ECode CNetworkPolicyManagerService::PerformSnooze(
     MaybeRefreshTrustedTime();
     Int64 currentTime = CurrentTimeMillis();
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         // find and snooze local policy that matches
         AutoPtr<INetworkPolicy> policy;
         HashMap< AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator it
@@ -2068,7 +2068,7 @@ ECode CNetworkPolicyManagerService::SetRestrictBackground(
 
     MaybeRefreshTrustedTime();
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         mRestrictBackground = restrictBackground;
         UpdateRulesForRestrictBackgroundLocked();
         UpdateNotificationsLocked();
@@ -2091,7 +2091,7 @@ ECode CNetworkPolicyManagerService::GetRestrictBackground(
             Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         *restrictBackground = mRestrictBackground;
     }
     return NOERROR;
@@ -2147,7 +2147,7 @@ AutoPtr<INetworkQuotaInfo> CNetworkPolicyManagerService::GetNetworkQuotaInfoUnch
 
     AutoPtr<INetworkPolicy> policy;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         policy = FindPolicyForNetworkLocked(ident);
     }
 
@@ -2204,7 +2204,7 @@ ECode CNetworkPolicyManagerService::IsNetworkMetered(
 
     AutoPtr<INetworkPolicy> policy;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         policy = FindPolicyForNetworkLocked(ident);
     }
 
@@ -2251,7 +2251,7 @@ void CNetworkPolicyManagerService::Dump(
 
     // //synchronized (mRulesLock) {
     // {
-    //     Mutex::Autolock lock(mRulesLock);
+    //     AutoLock lock(mRulesLock);
     //     AutoPtr<HashSet<String> >::Iterator iter1 = argSet->Find(String("--unsnooze"));
     //     if (iter1 != argSet->End()) {
     //         HashMap<AutoPtr<INetworkTemplate>, AutoPtr<INetworkPolicy> >::Iterator iter2;
@@ -2355,7 +2355,7 @@ ECode CNetworkPolicyManagerService::IsUidForeground(
             Elastos::Droid::Manifest::Permission::MANAGE_NETWORK_POLICY, TAG));
 
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         // only really in foreground when screen is also on
         //*isUidForeground = (mUidForeground->Get(uid, FALSE) && mScreenOn);
         Boolean isForeground = FALSE;
@@ -2403,7 +2403,7 @@ void CNetworkPolicyManagerService::ComputeUidForegroundLocked(
 
 void CNetworkPolicyManagerService::UpdateScreenOn()
 {
-    Mutex::Autolock lock(mRulesLock);
+    AutoLock lock(mRulesLock);
     //try {
     mPowerManager->IsScreenOn(&mScreenOn);
     //} catch (RemoteException e) {
@@ -2806,7 +2806,7 @@ void CNetworkPolicyManagerService::HandleMsgForegroundActivitiesChanged(
     /* [in] */ Int32 uid,
     /* [in] */ Boolean foregroundActivities)
 {
-    Mutex::Autolock lock(mRulesLock);
+    AutoLock lock(mRulesLock);
     // because a uid can have multiple pids running inside, we need to
     // remember all pid states and summarize foreground at uid level.
 
@@ -2828,7 +2828,7 @@ void CNetworkPolicyManagerService::HandleMsgProcessDied(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mRulesLock);
+    AutoLock lock(mRulesLock);
     // clear records and recompute, when they exist
     AutoPtr<Int32BooleanMap> pidForeground;
     UidPidForegroundMapIterator it = mUidPidForeground.Find(uid);
@@ -2846,7 +2846,7 @@ void CNetworkPolicyManagerService::HandleMsgLimitReached(
 {
     MaybeRefreshTrustedTime();
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         if (mMeteredIfaces.Find(iface) != mMeteredIfaces.End()) {
             // force stats update to make sure we have
             // numbers that caused alert to trigger.

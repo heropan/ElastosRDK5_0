@@ -84,13 +84,13 @@ android::status_t RenderingThread::readyToRun() {
 }
 
 void RenderingThread::setDimensions(int width, int height) {
-    android::Mutex::Autolock lock(m_sync);
+    android::AutoLock lock(m_sync);
     m_width = width;
     m_height = height;
 }
 
 void RenderingThread::getDimensions(int& width, int& height) {
-    android::Mutex::Autolock lock(m_sync);
+    android::AutoLock lock(m_sync);
     width = m_width;
     height = m_height;
 }

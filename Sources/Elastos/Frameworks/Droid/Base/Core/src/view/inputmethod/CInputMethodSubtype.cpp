@@ -199,7 +199,7 @@ ECode CInputMethodSubtype::GetDisplayName(
 AutoPtr< HashMap<String, String> > CInputMethodSubtype::GetExtraValueHashMap()
 {
     if (mExtraValueHashMapCache == NULL) {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mExtraValueHashMapCache == NULL) {
             mExtraValueHashMapCache = new HashMap<String, String>(10);

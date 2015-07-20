@@ -13,8 +13,12 @@ ECode CDefaultServerSocketFactory::CreateServerSocket(
     /* [out] */ IServerSocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CServerSocket::New(sock);
+    *sock = NULL;
+    AutoPtr<CServerSocket> ss;
+    FAIL_RETURN(CServerSocket::NewByFriend((CServerSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultServerSocketFactory::CreateServerSocket(
@@ -22,8 +26,12 @@ ECode CDefaultServerSocketFactory::CreateServerSocket(
     /* [out] */ IServerSocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CServerSocket::New(port, sock);
+    *sock = NULL;
+    AutoPtr<CServerSocket> ss;
+    FAIL_RETURN(CServerSocket::NewByFriend(port, (CServerSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultServerSocketFactory::CreateServerSocket(
@@ -32,8 +40,12 @@ ECode CDefaultServerSocketFactory::CreateServerSocket(
     /* [out] */ IServerSocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CServerSocket::New(port, backlog, sock);
+    *sock = NULL;
+    AutoPtr<CServerSocket> ss;
+    FAIL_RETURN(CServerSocket::NewByFriend(port, backlog, (CServerSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 ECode CDefaultServerSocketFactory::CreateServerSocket(
@@ -43,8 +55,12 @@ ECode CDefaultServerSocketFactory::CreateServerSocket(
     /* [out] */ IServerSocket** sock)
 {
     VALIDATE_NOT_NULL(sock)
-
-    return  CServerSocket::New(port, backlog, iAddress, sock);
+    *sock = NULL;
+    AutoPtr<CServerSocket> ss;
+    FAIL_RETURN(CServerSocket::NewByFriend(port, backlog, iAddress, (CServerSocket**)&ss))
+    *sock = ss.Get();
+    REFCOUNT_ADD(*sock)
+    return NOERROR;
 }
 
 } // namespace Net

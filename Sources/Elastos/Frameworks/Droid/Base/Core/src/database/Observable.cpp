@@ -17,7 +17,7 @@ ECode Observable::RegisterObserver(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::Iterator it =
             Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
@@ -39,7 +39,7 @@ ECode Observable::UnregisterObserver(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
 
     List< AutoPtr<IInterface> >::Iterator it =
             Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
@@ -55,7 +55,7 @@ ECode Observable::UnregisterObserver(
 
 ECode Observable::UnregisterAll()
 {
-    Mutex::Autolock lock(mObserversLock);
+    AutoLock lock(mObserversLock);
     mObservers.Clear();
     return NOERROR;
 }

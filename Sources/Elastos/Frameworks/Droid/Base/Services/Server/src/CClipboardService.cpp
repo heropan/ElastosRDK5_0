@@ -88,7 +88,7 @@ AutoPtr<CClipboardService::PerUserClipboard> CClipboardService::GetClipboard()
 AutoPtr<CClipboardService::PerUserClipboard> CClipboardService::GetClipboard(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock Lock(mClipboardsLock);
+    AutoLock Lock(mClipboardsLock);
     AutoPtr<PerUserClipboard> puc;
     HashMap<Int32, AutoPtr<PerUserClipboard> >::Iterator it = mClipboards.Find(userId);
     if (it != mClipboards.End()) {
@@ -104,14 +104,14 @@ AutoPtr<CClipboardService::PerUserClipboard> CClipboardService::GetClipboard(
 void CClipboardService::RemoveClipboard(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock Lock(mClipboardsLock);
+    AutoLock Lock(mClipboardsLock);
     mClipboards.Erase(userId);
 }
 
 ECode CClipboardService::SetPrimaryClip(
     /* [in] */ IClipData* clip)
 {
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     Int32 itemCount;
     if (clip == NULL || (clip->GetItemCount(&itemCount), itemCount <= 0)) {
         Slogger::E(TAG, "No items");
@@ -145,7 +145,7 @@ ECode CClipboardService::GetPrimaryClip(
     VALIDATE_NOT_NULL(clip)
     *clip = NULL;
 
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     FAIL_RETURN(AddActiveOwnerLocked(Binder::GetCallingUid(), pkg));
     *clip = GetClipboard()->mPrimaryClip;
     REFCOUNT_ADD(*clip)
@@ -159,7 +159,7 @@ ECode CClipboardService::GetPrimaryClipDescription(
     VALIDATE_NOT_NULL(description)
     *description = NULL;
 
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     AutoPtr<PerUserClipboard> clipboard = GetClipboard();
     if (clipboard->mPrimaryClip != NULL) {
         AutoPtr<IClipDescription> des;
@@ -175,7 +175,7 @@ ECode CClipboardService::HasPrimaryClip(
     /* [out] */ Boolean* hasPrimaryClip)
 {
     VALIDATE_NOT_NULL(hasPrimaryClip);
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     *hasPrimaryClip = GetClipboard()->mPrimaryClip != NULL;
     return NOERROR;
 }
@@ -183,7 +183,7 @@ ECode CClipboardService::HasPrimaryClip(
 ECode CClipboardService::AddPrimaryClipChangedListener(
     /* [in] */ IOnPrimaryClipChangedListener* listener)
 {
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     Boolean result;
     return GetClipboard()->mPrimaryClipListeners->Register(listener, &result);
 }
@@ -191,7 +191,7 @@ ECode CClipboardService::AddPrimaryClipChangedListener(
 ECode CClipboardService::RemovePrimaryClipChangedListener(
     /* [in] */ IOnPrimaryClipChangedListener* listener)
 {
-    Mutex::Autolock Lock(mClipboardsLock);
+    AutoLock Lock(mClipboardsLock);
     Boolean result;
     return GetClipboard()->mPrimaryClipListeners->Unregister(listener, &result);
 }
@@ -201,7 +201,7 @@ ECode CClipboardService::HasClipboardText(
 {
     VALIDATE_NOT_NULL(hasClipboardText);
 
-    Mutex::Autolock Lock(_m_syncLock);
+    AutoLock Lock(_m_syncLock);
     AutoPtr<PerUserClipboard> clipboard = GetClipboard();
     if (clipboard->mPrimaryClip != NULL) {
         AutoPtr<IClipDataItem> item;

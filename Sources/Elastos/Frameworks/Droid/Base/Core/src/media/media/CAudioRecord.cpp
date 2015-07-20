@@ -69,7 +69,7 @@ ECode CAudioRecord::NativeEventHandler::HandleMessage(
     AutoPtr<IAudioRecordOnRecordPositionUpdateListener> listener;
 
     {
-        Mutex::Autolock lock(mOwner->mPositionListenerLock);
+        AutoLock lock(mOwner->mPositionListenerLock);
         listener = mOwner->mPositionListener;
     }
 
@@ -217,7 +217,7 @@ ECode CAudioRecord::StartRecording() // throws IllegalStateException
 
     // start recording
     {
-        Mutex::Autolock lock(mRecordingStateLock);
+        AutoLock lock(mRecordingStateLock);
 
         if (Native_start(IMediaSyncEvent::SYNC_EVENT_NONE, 0) == SUCCESS) {
             mRecordingState = RECORDSTATE_RECORDING;
@@ -242,7 +242,7 @@ ECode CAudioRecord::StartRecording( // throws IllegalStateException
     syncEvent->GetType(&tempValue1);
     syncEvent->GetAudioSessionId(&tempValue2);
     {
-        Mutex::Autolock lock(mRecordingStateLock);
+        AutoLock lock(mRecordingStateLock);
 
         if (Native_start(tempValue1, tempValue2) == SUCCESS) {
             mRecordingState = RECORDSTATE_RECORDING;
@@ -260,7 +260,7 @@ ECode CAudioRecord::Stop() // throws IllegalStateException
 
     // stop recording
     {
-        Mutex::Autolock lock(mRecordingStateLock);
+        AutoLock lock(mRecordingStateLock);
 
         Native_stop();
         mRecordingState = RECORDSTATE_STOPPED;
@@ -352,7 +352,7 @@ ECode CAudioRecord::SetRecordPositionUpdateListener(
     /* [in] */ IHandler* handler)
 {
     {
-        Mutex::Autolock lock(mPositionListenerLock);
+        AutoLock lock(mPositionListenerLock);
 
         mPositionListener = listener;
 
@@ -914,7 +914,7 @@ Int32 CAudioRecord::Native_setup(
     (*session)[0] = lpRecorder->getSessionId();
 
     // {   // scope for the lock
-    //     Mutex::Autolock l(sLock);
+    //     AutoLock l(sLock);
     //     sAudioRecordCallBackCookies.add(lpCallbackData);
     // }
 
@@ -947,7 +947,7 @@ void CAudioRecord::Native_finalize()
 void CAudioRecord::Native_release()
 {
     // serialize access. Ugly, but functional.
-    Mutex::Autolock lock(&_m_syncLock);
+    AutoLock lock(&_m_syncLock);
 
     android::AudioRecord* lpRecorder = (android::AudioRecord *)mNativeRecorderInJavaObj;
     audiorecord_callback_cookie* lpCookie = (audiorecord_callback_cookie *)mNativeCallbackCookie;

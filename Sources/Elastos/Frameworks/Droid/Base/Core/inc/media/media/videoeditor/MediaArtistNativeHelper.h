@@ -3,7 +3,6 @@
 #define __MEDIAARTISTNATIVEHELPER_H__
 
 #include <ext/frameworkext.h>
-#include <elrefbase.h>
 
 using Elastos::IO::IInt32Buffer;
 using Elastos::Utility::Concurrent::ISemaphore;

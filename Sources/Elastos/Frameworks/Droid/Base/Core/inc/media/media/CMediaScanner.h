@@ -456,7 +456,7 @@ private:
 
     Boolean mStopScan; // = FALSE; //jni will read it to check if need stop scan
 
-    Mutex  mLock;
+    Object  mLock;
 
     Int32 mScanCount; // = 0;
 };

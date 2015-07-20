@@ -213,7 +213,7 @@ protected:
     static const Int32 HANDLE_PROVIDERS_CHANGED = 3;
     static const Int32 HANDLE_VIEW_DATA_CHANGED = 4;
 
-    static Mutex sServiceLock;
+    static Object sServiceLock;
     static AutoPtr<IIAppWidgetService> sService;
     AutoPtr<IDisplayMetrics> mDisplayMetrics;
     AutoPtr<IContext> mContext;
@@ -224,7 +224,7 @@ protected:
     Int32 mHostId;
     AutoPtr<IIAppWidgetHost> mCallbacks;
     HashMap<Int32, AutoPtr<IAppWidgetHostView> > mViews;
-    Mutex mViewsLock;
+    Object mViewsLock;
 
 private:
     AutoPtr<IRemoteViewsOnClickHandler> mOnClickHandler;

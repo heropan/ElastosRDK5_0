@@ -4,7 +4,6 @@
 
 #include "app/Activity.h"
 #include "_CRecentsActivityOne.h"
-#include <elrefbase.h>
 #include "content/BroadcastReceiver.h"
 
 using Elastos::Droid::Os::IBundle;

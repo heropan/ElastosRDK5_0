@@ -4,7 +4,6 @@
 #include "app/Activity.h"
 #include "_CActivityOne.h"
 #include "content/BroadcastReceiver.h"
-#include <elrefbase.h>
 
 using Elastos::IO::IRandomAccessFile;
 using Elastos::IO::CRandomAccessFile;
@@ -102,7 +101,7 @@ public:
     AutoPtr<IEditText> mEditText;
 
     //mutex
-    static Mutex sDatalock;
+    static Object sDatalock;
 };
 
 } // namespace BackupManagerDemo

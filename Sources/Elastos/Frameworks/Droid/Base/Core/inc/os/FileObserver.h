@@ -7,7 +7,6 @@
 
 using Elastos::Droid::Os::IFileObserver;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -59,7 +58,7 @@ private:
 
     private:
         HashMap<Int32, AutoPtr<IWeakReference> > mObservers;
-        Mutex mObserverslock;
+        Object mObserverslock;
         Int32 mFd;
     };
 

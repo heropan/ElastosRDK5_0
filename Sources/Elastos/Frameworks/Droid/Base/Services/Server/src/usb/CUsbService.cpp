@@ -33,7 +33,7 @@ ECode CUsbService::UserChangedReceiver::OnReceive(
         mHost->SetCurrentUser(userId);
     }
     else if (action.Equals(IIntent::ACTION_USER_STOPPED)) {
-        Mutex::Autolock lock(mHost->_m_syncLock);
+        AutoLock lock(mHost->_m_syncLock);
         HashMap<Int32, AutoPtr<UsbSettingsManager> >::Iterator it = mHost->mSettingsByUser.Find(userId);
         if (it != mHost->mSettingsByUser.End()) {
             mHost->mSettingsByUser.Erase(it);
@@ -57,7 +57,7 @@ CUsbService::~CUsbService()
 AutoPtr<UsbSettingsManager> CUsbService::GetSettingsForUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<UsbSettingsManager> settings = mSettingsByUser[userId];
     if (settings == NULL) {

@@ -174,7 +174,7 @@ private:
     typedef HashMap<Int32, AutoPtr<ISearchables> > IntHashMap;
     typedef HashMap<Int32, AutoPtr<ISearchables> >::Iterator Iterator;
     IntHashMap mSearchables;//new SparseArray<Searchables>();
-    Mutex mLock;
+    Object mLock;
 };
 
 }// Search

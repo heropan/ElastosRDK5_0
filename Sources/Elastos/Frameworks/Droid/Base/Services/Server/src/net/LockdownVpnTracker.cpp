@@ -177,7 +177,7 @@ ECode LockdownVpnTracker::HandleStateChangedLocked()
 
 ECode LockdownVpnTracker::Init()
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     return InitLocked();
 }
 
@@ -207,7 +207,7 @@ ECode LockdownVpnTracker::InitLocked()
     // }
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         HandleStateChangedLocked();
     }
     return NOERROR;
@@ -215,7 +215,7 @@ ECode LockdownVpnTracker::InitLocked()
 
 ECode LockdownVpnTracker::Shutdown()
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     return ShutdownLocked();
 }
 
@@ -250,7 +250,7 @@ ECode LockdownVpnTracker::ShutdownLocked()
 
 ECode LockdownVpnTracker::Reset()
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     // cycle tracker, reset error count, and trigger retry
     ShutdownLocked();
     InitLocked();
@@ -281,7 +281,7 @@ ECode LockdownVpnTracker::ClearSourceRulesLocked()
 ECode LockdownVpnTracker::OnNetworkInfoChanged(
     /* [in] */ INetworkInfo* info)
 {
-    Mutex::Autolock lock(mStateLock);
+    AutoLock lock(mStateLock);
     return HandleStateChangedLocked();
 }
 
@@ -295,7 +295,7 @@ ECode LockdownVpnTracker::OnVpnStateChanged(
     }
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         return HandleStateChangedLocked();
     }
 }

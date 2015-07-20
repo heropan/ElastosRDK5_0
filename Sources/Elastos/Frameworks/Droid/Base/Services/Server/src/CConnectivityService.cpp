@@ -624,7 +624,7 @@ ECode CConnectivityService::VpnCallback::Override(
     // Apply DNS changes.
     Boolean changed = FALSE;
     {
-        Mutex::Autolock lock(mOwner->mDnsLock);
+        AutoLock lock(mOwner->mDnsLock);
         changed = mOwner->UpdateDns(String("VPN"), String("VPN"), addresses, domains);
         mOwner->mDnsOverridden = TRUE;
     }
@@ -634,7 +634,7 @@ ECode CConnectivityService::VpnCallback::Override(
 
     // Temporarily disable the default proxy.
     {
-        Mutex::Autolock lock(mOwner->mDefaultProxyLock);
+        AutoLock lock(mOwner->mDefaultProxyLock);
         mOwner->mDefaultProxyDisabled = TRUE;
         if (mOwner->mDefaultProxy != NULL) {
             mOwner->SendProxyBroadcast(NULL);
@@ -648,7 +648,7 @@ ECode CConnectivityService::VpnCallback::Override(
 ECode CConnectivityService::VpnCallback::Restore()
 {
     {
-        Mutex::Autolock lock(mOwner->mDnsLock);
+        AutoLock lock(mOwner->mDnsLock);
         if (mOwner->mDnsOverridden) {
             mOwner->mDnsOverridden = FALSE;
             Boolean result;
@@ -657,7 +657,7 @@ ECode CConnectivityService::VpnCallback::Restore()
     }
 
     {
-        Mutex::Autolock lock(mOwner->mDefaultProxyLock);
+        AutoLock lock(mOwner->mDefaultProxyLock);
         mOwner->mDefaultProxyDisabled = FALSE;
         if (mOwner->mDefaultProxy != NULL) {
             mOwner->SendProxyBroadcast(mOwner->mDefaultProxy);
@@ -1074,7 +1074,7 @@ ECode CConnectivityService::GetNetworkPreference(
     VALIDATE_NOT_NULL(preference);
     FAIL_RETURN(EnforceAccessPermission());
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         *preference = mNetworkPreference;
     }
     return NOERROR;
@@ -1099,7 +1099,7 @@ void CConnectivityService::HandleSetNetworkPreference(
             CSettingsGlobal::AcquireSingleton((ISettingsGlobal**)&settingsGlobal);
             settingsGlobal->PutInt32(cr, ISettingsGlobal::NETWORK_PREFERENCE, preference, &bol);
             {
-                Mutex::Autolock lock(_m_syncLock);
+                AutoLock lock(_m_syncLock);
                 mNetworkPreference = preference;
             }
             EnforcePreference();
@@ -1206,7 +1206,7 @@ Boolean CConnectivityService::IsNetworkBlocked(
     Boolean networkCostly = FALSE;
     Int32 uidRules;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
 
         networkCostly = !iface.IsNull() && mMeteredIfaces.Find(iface) != mMeteredIfaces.End();
         HashMap<Int32, Int32>::Iterator it = mUidRules.Find(uid);
@@ -1409,7 +1409,7 @@ ECode CConnectivityService::GetAllNetworkInfo(
     Int32 uid = Binder::GetCallingUid();
     List< AutoPtr<INetworkInfo> > result;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         for ( Int32 i = 0; i < mNetTrackers->GetLength(); i++ ) {
             if ((*mNetTrackers)[i] != NULL) {
                 AutoPtr<INetworkInfo> info = GetFilteredNetworkInfo((*mNetTrackers)[i], uid);
@@ -1501,7 +1501,7 @@ ECode CConnectivityService::GetAllNetworkState(
     Int32 uid = Binder::GetCallingUid();
     List< AutoPtr<INetworkState> > result;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         for (Int32 i = 0; i < mNetTrackers->GetLength(); i++) {
             AutoPtr<INetworkStateTracker> tracker = (*mNetTrackers)[i];
             if(tracker != NULL) {
@@ -1701,7 +1701,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
     Boolean networkMetered = IsNetworkMeteredUnchecked(usedNetworkType);
     Int32 uidRules;
     {
-        Mutex::Autolock lock(mRulesLock);
+        AutoLock lock(mRulesLock);
         HashMap<Int32, Int32>::Iterator it = mUidRules.Find(Binder::GetCallingUid());
         if (it != mUidRules.End()) {
             uidRules = it->mSecond;
@@ -1769,7 +1769,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
             Int32 restoreTimer = GetRestoreDefaultNetworkDelay(usedNetworkType);
 
             {
-                Mutex::Autolock lock(_m_syncLock);
+                AutoLock lock(_m_syncLock);
                 Boolean addToList = TRUE;
                 if (restoreTimer < 0) {
                     // In case there is no timer is specified for the feature,
@@ -1864,7 +1864,7 @@ ECode CConnectivityService::StartUsingNetworkFeature(
         else {
             // need to remember this unsupported request so we respond appropriately on stop
             {
-                Mutex::Autolock lock(_m_syncLock);
+                AutoLock lock(_m_syncLock);
                 mFeatureUsers.PushBack(fuser);
                 AutoPtr< List<Int32> > netRequestersPid = (*mNetRequestersPids)[usedNetworkType];
                 if (Find(netRequestersPid->Begin(), netRequestersPid->End(), currentPid)
@@ -1914,7 +1914,7 @@ ECode CConnectivityService::StopUsingNetworkFeature(
     Boolean found = FALSE;
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         List< AutoPtr<FeatureUser> >::Iterator it;
         for (it = mFeatureUsers.Begin(); it != mFeatureUsers.End(); ++it) {
             AutoPtr<FeatureUser> fu = *it;
@@ -1970,7 +1970,7 @@ Int32 CConnectivityService::StopUsingNetworkFeature(
     // need to link the mFeatureUsers list with the mNetRequestersPids state in this
     // sync block
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         // check if this process still has an outstanding start request
         if (Find(mFeatureUsers.Begin(), mFeatureUsers.End(), AutoPtr<FeatureUser>(u))
                 == mFeatureUsers.End()) {
@@ -2820,7 +2820,7 @@ void CConnectivityService::HandleConnectionFailure(
 void CConnectivityService::SendStickyBroadcast(
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (!mSystemReady) {
         mInitialBroadcast = NULL;
         CIntent::New(intent, (IIntent**)&mInitialBroadcast);
@@ -2866,7 +2866,7 @@ void CConnectivityService::SendStickyBroadcastDelayed(
 void CConnectivityService::SystemReady()
 {
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         mSystemReady = TRUE;
         if (mInitialBroadcast != NULL) {
             AutoPtr<IUserHandleHelper> helper;
@@ -2959,7 +2959,7 @@ void CConnectivityService::HandleConnect(
         }
 
         {
-            Mutex::Autolock lock(_m_syncLock);
+            AutoLock lock(_m_syncLock);
             // have a new default network, release the transition wakelock in a second
             // if it's held.  The second pause is to allow apps to reconnect over the
             // new network
@@ -3765,7 +3765,7 @@ void CConnectivityService::HandleDnsConfigurationChange(
                 String network;
                 info->GetTypeName(&network);
                 {
-                    Mutex::Autolock lock(mDnsLock);
+                    AutoLock lock(mDnsLock);
                     if (!mDnsOverridden) {
                         String iface;
                         p->GetInterfaceName(&iface);
@@ -3905,7 +3905,7 @@ void CConnectivityService::Dump(
 //    pw->DecreaseIndent();
 //
 //    {
-//        Mutex::Autolock lock(_m_syncLock);
+//        AutoLock lock(_m_syncLock);
 //
 //        Boolean isHeld;
 //        mNetTransitionWakeLock->IsHeld(&isHeld);
@@ -4120,7 +4120,7 @@ ECode CConnectivityService::RequestNetworkTransitionWakelock(
 {
     FAIL_RETURN(EnforceConnectivityInternalPermission());
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         Boolean  isHeld = FALSE;
         if ((mNetTransitionWakeLock->IsHeld(&isHeld), isHeld)) {
@@ -4262,7 +4262,7 @@ ECode CConnectivityService::GetProxy(
     /* [out] */ IProxyProperties** proxyProperties)
 {
     VALIDATE_NOT_NULL(proxyProperties);
-    Mutex::Autolock lock(mDefaultProxyLock);
+    AutoLock lock(mDefaultProxyLock);
     *proxyProperties = mDefaultProxyDisabled ? NULL : mDefaultProxy;
     REFCOUNT_ADD(*proxyProperties);
     return NOERROR;
@@ -4273,7 +4273,7 @@ ECode CConnectivityService::SetGlobalProxy(
 {
     FAIL_RETURN(EnforceChangePermission());
     {
-        Mutex::Autolock lock(mGlobalProxyLock);
+        AutoLock lock(mGlobalProxyLock);
         if (proxyProperties == mGlobalProxy) {
             return NOERROR;
         }
@@ -4341,7 +4341,7 @@ void CConnectivityService::LoadGlobalProxy()
         AutoPtr<IProxyProperties> proxyProperties;
         CProxyProperties::New(host, port, exclList, (IProxyProperties**)&proxyProperties);
         {
-            Mutex::Autolock lock(mGlobalProxyLock);
+            AutoLock lock(mGlobalProxyLock);
             mGlobalProxy = proxyProperties;
         }
     }
@@ -4352,7 +4352,7 @@ ECode CConnectivityService::GetGlobalProxy(
 {
     VALIDATE_NOT_NULL(proxyProperties);
     {
-        Mutex::Autolock lock(mGlobalProxyLock);
+        AutoLock lock(mGlobalProxyLock);
         *proxyProperties = mGlobalProxy;
         REFCOUNT_ADD(*proxyProperties);
     }
@@ -4370,7 +4370,7 @@ void CConnectivityService::HandleApplyDefaultProxy(
         }
     }
     {
-        Mutex::Autolock lock(mDefaultProxyLock);
+        AutoLock lock(mDefaultProxyLock);
         Boolean isEqual = FALSE;
         if (mDefaultProxy != NULL &&
             (mDefaultProxy->Equals(proxy, &isEqual), isEqual)) {
@@ -4663,7 +4663,7 @@ void CConnectivityService::HandleEventClearNetTransitionWakelock(
 {
     String causedBy;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         Boolean held = FALSE;
         if (arg1 == mNetTransitionWakeLockSerialNumber &&
                 (mNetTransitionWakeLock->IsHeld(&held), held)) {

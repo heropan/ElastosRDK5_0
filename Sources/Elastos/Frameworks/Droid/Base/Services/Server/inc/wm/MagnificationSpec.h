@@ -1,7 +1,6 @@
 #ifndef __MAGNIFICATIONSPEC_H__
 #define __MAGNIFICATIONSPEC_H__
 
-#include <elrefbase.h>
 
 namespace Elastos {
 namespace Droid {

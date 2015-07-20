@@ -161,7 +161,7 @@ SpellCheckerSession::SpellCheckerSessionListenerImpl::SpellCheckerSessionListene
 void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnServiceConnected(
     /* [in] */ ISpellCheckerSession* session)
 {
-    Mutex::AutoLock lock(mLock);
+    Object::AutoLock lock(mLock);
 //    if (DBG) {
 //        Log.w(TAG, "SpellCheckerSession connected.");
 //    }
@@ -222,7 +222,7 @@ void SpellCheckerSession::SpellCheckerSessionListenerImpl::OnGetSuggestions(
 {
     //synchronized (this)
     {
-        Mutex::AutoLock lock(mLock);
+        Object::AutoLock lock(mLock);
 //        if (mHandler != null) {
 //            mHandler.sendMessage(Message.obtain(mHandler,
 //                    MSG_ON_GET_SUGGESTION_MULTIPLE, results));
@@ -320,7 +320,7 @@ void SpellCheckerSession::SpellCheckerSessionListenerImpl::ProcessOrEnqueueTask(
     AutoPtr<ISpellCheckerSession> session;
     //synchronized (this)
     {
-        Mutex::AutoLock lock(mLock);
+        Object::AutoLock lock(mLock);
         session = mISpellCheckerSession;
         if (session == NULL) {
             SpellCheckerParams* closeTask = NULL;

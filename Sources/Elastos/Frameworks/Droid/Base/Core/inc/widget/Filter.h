@@ -6,7 +6,6 @@
 #include "os/HandlerBase.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
@@ -200,7 +199,7 @@ private:
 
     AutoPtr<IFilterDelayer> mDelayer;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Widget

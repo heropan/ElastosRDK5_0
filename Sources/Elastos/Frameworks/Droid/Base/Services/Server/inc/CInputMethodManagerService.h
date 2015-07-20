@@ -22,7 +22,6 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IComparable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::App::IUserSwitchObserver;
 using Elastos::Droid::Content::IIntent;
@@ -580,7 +579,7 @@ private:
 
         AutoPtr<IAtomicFile> mAdditionalInputMethodSubtypeFile;
         AutoPtr< HashMap<String, AutoPtr<IInputMethodInfo> > > mMethodMap;
-        Mutex mMethodMapLock;
+        Object mMethodMapLock;
         HashMap<String, AutoPtr< InputMethodSubtypeList > > mAdditionalSubtypesMap;
         CInputMethodManagerService* mHost;
         friend class MyPackageMonitor;
@@ -1002,7 +1001,7 @@ public:
     // lock for this class.
     AutoPtr< InputMethodInfoList > mMethodList;
     AutoPtr< HashMap<String, AutoPtr<IInputMethodInfo> > > mMethodMap;
-    Mutex mMethodMapLock;
+    Object mMethodMapLock;
 
     // Used to bring IME service up to visible adjustment while it is being shown.
     AutoPtr<VisibleServiceConnection> mVisibleConnection;

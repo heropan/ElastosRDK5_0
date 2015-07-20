@@ -402,7 +402,7 @@ private:
     /**
      * Lock to make sure mPlayState updates are reflecting the actual state of the object.
      */
-    Mutex mPlayStateLock;
+    Object mPlayStateLock;
     /**
      * The listener the AudioTrack notifies when the playback position reaches a marker
      * or for periodic updates during the progression of the playback head.
@@ -412,7 +412,7 @@ private:
     /**
      * Lock to protect event listener updates against event notifications.
      */
-    Mutex mPositionListenerLock;
+    Object mPositionListenerLock;
     /**
      * Size of the native audio buffer.
      */

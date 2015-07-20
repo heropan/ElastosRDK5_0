@@ -18,7 +18,6 @@
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IComparator;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::HandlerRunnableBase;
 using Elastos::Droid::Os::Runnable;
@@ -1655,7 +1654,7 @@ private:
 
     TextView* mTextView;
     AutoPtr<UserDictionaryListener> mUserDictionaryListener;//= new UserDictionaryListener();
-    Mutex mTempPositionLock;
+    Object mTempPositionLock;
 };
 
 } // namespace Widget

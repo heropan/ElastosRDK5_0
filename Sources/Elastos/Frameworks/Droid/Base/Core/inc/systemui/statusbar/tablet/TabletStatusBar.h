@@ -552,7 +552,7 @@ protected:
     // for disabling the status bar
     Int32 mDisabled;// = 0;
 
-    Mutex mScreenshotLock;
+    Object mScreenshotLock;
     AutoPtr<IServiceConnection> mScreenshotConnection;// = null;
     AutoPtr<IRunnable> mScreenshotTimeout;
 

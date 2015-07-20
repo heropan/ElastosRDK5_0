@@ -67,7 +67,7 @@ void CAccessibilityManager::HandleDoSetState(
 ECode CAccessibilityManager::CreateAsSharedAcrossUsers(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sInstanceSync);
+    AutoLock lock(sInstanceSync);
     if (sInstance != NULL) {
         Slogger::E(localLOG_TAG, "AccessibilityManager already created.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -83,7 +83,7 @@ ECode CAccessibilityManager::GetInstance(
     VALIDATE_NOT_NULL(manager);
     *manager = NULL;
 
-    Mutex::Autolock lock(sInstanceSync);
+    AutoLock lock(sInstanceSync);
     if (sInstance == NULL) {
         FAIL_RETURN(CreateSingletonInstance(context, UserHandle::GetMyUserId()));
     }
@@ -112,7 +112,7 @@ ECode CAccessibilityManager::IsEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mHandlerLock);
+    AutoLock lock(mHandlerLock);
     *result = mIsEnabled;
     return NOERROR;
 }
@@ -121,7 +121,7 @@ ECode CAccessibilityManager::IsTouchExplorationEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mHandlerLock);
+    AutoLock lock(mHandlerLock);
     *result = mIsTouchExplorationEnabled;
     return NOERROR;
 }
@@ -290,7 +290,7 @@ void CAccessibilityManager::SetState(
 void CAccessibilityManager::SetAccessibilityState(
     /* [in] */ Boolean isEnabled)
 {
-    Mutex::Autolock lock(mHandlerLock);
+    AutoLock lock(mHandlerLock);
     if (isEnabled != mIsEnabled) {
         mIsEnabled = isEnabled;
         NotifyAccessibilityStateChanged();

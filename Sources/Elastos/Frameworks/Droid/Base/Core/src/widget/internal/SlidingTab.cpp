@@ -973,7 +973,7 @@ ECode SlidingTab::SetHoldAfterTrigger(
 void SlidingTab::Vibrate(
     /* [in] */ Int64 duration)
 {
-//    Mutex::AutoLock lock(mLock);
+//    Object::AutoLock lock(mLock);
 //
 //    AutoPtr<IContentResolver> cr;
 //    mContext->GetContentResolver((IContentResolver**)&cr);

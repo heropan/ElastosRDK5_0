@@ -351,7 +351,7 @@ private:
 
     Boolean mBootCompleted;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IContentResolver> mContentResolver;

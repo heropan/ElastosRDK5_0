@@ -96,7 +96,7 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
     AutoPtr<IFilterResults> results = new FilterResults();
 
     if (!mHost->mOriginalValues) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mOriginalValues = new List<AutoPtr<IInterface> >(
             mHost->mObjects.Begin(), mHost->mObjects.End());
     }
@@ -107,7 +107,7 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
     }
 
     if (prefix == NULL || length == 0) {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
 
         AutoPtr<IObjectContainer> container;
         CObjectContainer::New((IObjectContainer**)&container);
@@ -127,7 +127,7 @@ ECode ArrayAdapter::ArrayFilter::PerformFiltering(
 
         AutoPtr< List<AutoPtr<IInterface> > > values;
         {
-            Mutex::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
             values = new List<AutoPtr<IInterface> >(*mHost->mOriginalValues);
         }
         AutoPtr<IObjectContainer> newValues;
@@ -316,7 +316,7 @@ ECode ArrayAdapter::Add(
     /* [in] */ IInterface* object)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             mOriginalValues->PushBack(object);
         } else {
@@ -334,7 +334,7 @@ ECode ArrayAdapter::AddAll(
 {
     assert(collection != NULL);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr<IObjectEnumerator> ator;
         collection->GetObjectEnumerator((IObjectEnumerator**)&ator);
         Boolean hasNext = FALSE;
@@ -366,7 +366,7 @@ ECode ArrayAdapter::AddAll(
     /* [in] */ ArrayOf<IInterface* >* items)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             assert(items != NULL);
             if (items->GetLength() > 0) {
@@ -402,7 +402,7 @@ ECode ArrayAdapter::Insert(
     /* [in] */ Int32 index)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             mOriginalValues->Insert(index, object);
         } else {
@@ -423,7 +423,7 @@ ECode ArrayAdapter::Remove(
     /* [in] */ IInterface* object)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             mOriginalValues->Remove(object);
         } else {
@@ -441,7 +441,7 @@ ECode ArrayAdapter::Remove(
 ECode ArrayAdapter::Clear()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             mOriginalValues->Clear();
         } else {
@@ -463,7 +463,7 @@ ECode ArrayAdapter::Sort(
     /* [in] */ IComparator* comparator)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mOriginalValues != NULL) {
             assert(0);
             Sort(mOriginalValues, comparator);

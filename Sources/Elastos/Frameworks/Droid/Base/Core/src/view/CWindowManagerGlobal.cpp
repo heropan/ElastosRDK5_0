@@ -40,7 +40,7 @@ CWindowManagerGlobal::SystemPropertyUpdaterRunnable::SystemPropertyUpdaterRunnab
 
 ECode CWindowManagerGlobal::SystemPropertyUpdaterRunnable::Run()
 {
-    Mutex::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     Int32 count = mOwner->mRoots->GetLength();
     for (Int32 i = 0; i < count; i++) {
         (*mOwner->mRoots)[i]->LoadSystemProperties();
@@ -56,7 +56,7 @@ CWindowManagerGlobal::CWindowManagerGlobal()
 
 AutoPtr<IWindowManagerGlobal> CWindowManagerGlobal::GetInstance()
 {
-    Mutex::Autolock lock(sDefaultWindowManagerLock);
+    AutoLock lock(sDefaultWindowManagerLock);
 
     if (sDefaultWindowManager == NULL) {
         CWindowManagerGlobal::AcquireSingleton((IWindowManagerGlobal**)&sDefaultWindowManager);
@@ -66,7 +66,7 @@ AutoPtr<IWindowManagerGlobal> CWindowManagerGlobal::GetInstance()
 
 AutoPtr<IIWindowManager> CWindowManagerGlobal::GetWindowManagerService()
 {
-    Mutex::Autolock lock(sDefaultWindowManagerLock);
+    AutoLock lock(sDefaultWindowManagerLock);
 
     if (sWindowManagerService == NULL) {
         AutoPtr<IServiceManager> sm;
@@ -80,7 +80,7 @@ AutoPtr<IIWindowManager> CWindowManagerGlobal::GetWindowManagerService()
 AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession(
     /* [in] */ ILooper* mainLooper)
 {
-    Mutex::Autolock lock(sDefaultWindowManagerLock);
+    AutoLock lock(sDefaultWindowManagerLock);
 
     if (sWindowSession == NULL) {
         //try {
@@ -103,7 +103,7 @@ AutoPtr<IWindowSession> CWindowManagerGlobal::GetWindowSession(
 
 AutoPtr<IWindowSession> CWindowManagerGlobal::PeekWindowSession()
 {
-    Mutex::Autolock lock(sDefaultWindowManagerLock);
+    AutoLock lock(sDefaultWindowManagerLock);
     return sWindowSession;
 }
 
@@ -180,7 +180,7 @@ ECode CWindowManagerGlobal::AddView(
     AutoPtr<IView> panelParentView;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         // Start watching for system property changes.
         if (mSystemPropertyUpdater == NULL) {
@@ -246,7 +246,7 @@ ECode CWindowManagerGlobal::AddView(
     ECode ec = root->SetView(view, wparams, panelParentView);
     if (FAILED(ec)) {
         // BadTokenException or InvalidDisplayException, clean up.
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Int32 index;
         FindViewLocked(view, FALSE, &index);
         if (index >= 0) {
@@ -274,7 +274,7 @@ ECode CWindowManagerGlobal::UpdateViewLayout(
 
     view->SetLayoutParams(wparams);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 index;
     FAIL_RETURN(FindViewLocked(view, TRUE, &index));
     mParams->Set(index, wparams);
@@ -292,7 +292,7 @@ ECode CWindowManagerGlobal::RemoveView(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 index;
     FAIL_RETURN(FindViewLocked(view, TRUE, &index));
     AutoPtr<IView> curView = RemoveViewLocked(index, immediate);
@@ -310,7 +310,7 @@ ECode CWindowManagerGlobal::CloseAll(
     /* [in] */ const String& who,
     /* [in] */ const String& what)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mViews == NULL)
         return NOERROR;
 
@@ -435,7 +435,7 @@ ECode CWindowManagerGlobal::StartTrimMemory(
     //         // Destroy all hardware surfaces and resources associated to
     //         // known windows
     //         {
-    //             Mutex::Autolock lock(mLock);
+    //             AutoLock lock(mLock);
     //             if (mViews == NULL)
     //                 return NOERROR;
     //             Int32 count = mViews->GetLength();
@@ -468,7 +468,7 @@ ECode CWindowManagerGlobal::EndTrimMemory()
 
 ECode CWindowManagerGlobal::TrimLocalMemory()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mViews == NULL)
         return NOERROR;
     Int32 count = mViews->GetLength();
@@ -484,7 +484,7 @@ ECode CWindowManagerGlobal::DumpGfxInfo(
     // FileOutputStream fout = new FileOutputStream(fd);
     // PrintWriter pw = new PrintWriter(fout);
     // try {
-    //     Mutex::Autolock lock(mLock);
+    //     AutoLock lock(mLock);
     //         if (mViews != NULL) {
     //             final Int32 count = mViews->GetLength();
 
@@ -551,7 +551,7 @@ ECode CWindowManagerGlobal::SetStoppedState(
     /* [in] */ IBinder* token,
     /* [in] */ Boolean stopped)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mViews != NULL) {
         Int32 count = mViews->GetLength();
         for (Int32 i=0; i < count; i++) {
@@ -569,7 +569,7 @@ ECode CWindowManagerGlobal::SetStoppedState(
 ECode CWindowManagerGlobal::ReportNewConfiguration(
     /* [in] */ IConfiguration* config)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mViews != NULL) {
         Int32 count = mViews->GetLength();
         AutoPtr<IConfiguration> newConfig;

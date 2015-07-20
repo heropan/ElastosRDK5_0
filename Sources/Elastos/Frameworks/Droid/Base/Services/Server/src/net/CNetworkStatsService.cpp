@@ -125,7 +125,7 @@ ECode CNetworkStatsService::RemovedReceiver::OnReceive(
     intent->GetInt32Extra(IIntent::EXTRA_UID, -1, &uid);
     if (uid == -1) return NOERROR;
 
-    Mutex::Autolock lock(mOwner->_m_syncLock);
+    AutoLock lock(mOwner->_m_syncLock);
     mOwner->mWakeLock->AcquireLock();
     // try {
     AutoPtr< ArrayOf<Int32> > uids = ArrayOf<Int32>::Alloc(1);
@@ -154,7 +154,7 @@ ECode CNetworkStatsService::UserReceiver::OnReceive(
     intent->GetInt32Extra(IIntent::EXTRA_USER_HANDLE, -1, &userId);
     if (userId == -1) return NOERROR;
 
-    Mutex::Autolock lock(mOwner->_m_syncLock);
+    AutoLock lock(mOwner->_m_syncLock);
     mOwner->mWakeLock->AcquireLock();
     // try {
     mOwner->RemoveUserLocked(userId);
@@ -175,7 +175,7 @@ ECode CNetworkStatsService::ShutdownReceiver::OnReceive(
     /* [in] */ IIntent* intent)
 {
     // SHUTDOWN is protected broadcast.
-    Mutex::Autolock lock(mOwner->_m_syncLock);
+    AutoLock lock(mOwner->_m_syncLock);
     mOwner->ShutdownLocked();
     return NOERROR;
 }
@@ -505,7 +505,7 @@ void CNetworkStatsService::SystemReady()
     UpdatePersistThresholds();
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         // upgrade any legacy stats, migrating them to rotated files
         MaybeUpgradeLegacyStatsLocked();
 
@@ -834,7 +834,7 @@ ECode CNetworkStatsService::IncrementOperationCount(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     Int32 set = INetworkStats::SET_DEFAULT;
     HashMap<Int32, Int32>::Iterator iter = mActiveUidCounterSet.Find(uid);
     if(iter != mActiveUidCounterSet.End()) {
@@ -852,7 +852,7 @@ ECode CNetworkStatsService::SetUidForeground(
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::MODIFY_NETWORK_ACCOUNTING, TAG))
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     Int32 set = uidForeground ? INetworkStats::SET_FOREGROUND : INetworkStats::SET_DEFAULT;
     Int32 oldSet = INetworkStats::SET_DEFAULT;
     HashMap<Int32, Int32>::Iterator iter = mActiveUidCounterSet.Find(uid);
@@ -913,7 +913,7 @@ ECode CNetworkStatsService::AdvisePersistThreshold(
     }
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         if (!mSystemReady) return NOERROR;
 
         UpdatePersistThresholds();
@@ -940,7 +940,7 @@ void CNetworkStatsService::UpdatePersistThresholds()
 
 void CNetworkStatsService::UpdateIfaces()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mWakeLock->AcquireLock();
     UpdateIfacesLocked();
     mWakeLock->ReleaseLock();
@@ -1076,7 +1076,7 @@ void CNetworkStatsService::BootstrapStatsLocked()
 void CNetworkStatsService::PerformPoll(
     /* [in] */ Int32 flags)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mWakeLock->AcquireLock();
 
     // try refreshing time source when stale
@@ -1307,7 +1307,7 @@ void CNetworkStatsService::Dump(
 
     // //synchronized (_m_syncLock) {
     // {
-    //     Mutex::Autolock lock(_m_syncLock);
+    //     AutoLock lock(_m_syncLock);
     //     if (poll) {
     //         PerformPollLocked(FLAG_PERSIST_ALL | FLAG_PERSIST_FORCE);
     //         pw->PrintStringln("Forced poll");

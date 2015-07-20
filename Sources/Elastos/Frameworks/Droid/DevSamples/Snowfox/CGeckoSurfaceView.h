@@ -1574,9 +1574,9 @@ private:
 
     //Software rendering
     AutoPtr<IBitmap> mSoftwareBitmap;
-    Mutex mSoftwareBitmapLock;
+    Object mSoftwareBitmapLock;
     AutoPtr<IBuffer> mSoftwareBuffer;
-    Mutex mSoftwareBufferLock;
+    Object mSoftwareBufferLock;
     AutoPtr<IBitmap> mSoftwareBufferCopy;
 
     //const SynchronousQueue<IInterface*> mSyncDraws;

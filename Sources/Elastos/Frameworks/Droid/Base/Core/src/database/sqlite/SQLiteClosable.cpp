@@ -21,7 +21,7 @@ void SQLiteClosable::OnAllReferencesReleasedFromContainer()
 
 ECode SQLiteClosable::AcquireReference()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mReferenceCount <= 0) {
         // throw new IllegalStateException(
@@ -37,7 +37,7 @@ ECode SQLiteClosable::ReleaseReference()
 {
     Boolean refCountIsZero = FALSE;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         refCountIsZero = --mReferenceCount == 0;
     }
     if (refCountIsZero) {
@@ -51,7 +51,7 @@ ECode SQLiteClosable::ReleaseReferenceFromContainer()
 {
     Boolean refCountIsZero = FALSE;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         refCountIsZero = --mReferenceCount == 0;
     }
     if (refCountIsZero) {

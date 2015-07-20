@@ -316,7 +316,7 @@ LegacySensorManager::LegacySensorManager(
 
     {
         assert(mSensorManager != NULL);
-        Mutex::Autolock lock(CSensorManager::mLock);
+        AutoLock lock(CSensorManager::mLock);
         if (!sInitialized) {
             sWindowManager = (IIWindowManager*)ServiceManager::GetService(String("window")).Get();
             // sWindowManager = IWindowManager.Stub.asInterface(
@@ -417,7 +417,7 @@ Boolean LegacySensorManager::RegisterLegacyListener(
             {
                 AutoPtr<ISensorListener> l = listener;
 
-                Mutex::Autolock lock(mLegacyListenersMapLock);
+                AutoLock lock(mLegacyListenersMapLock);
                 // If we don't already have one, create a LegacyListener
                 // to wrap this listener and process the events as
                 // they are expected by legacy apps.
@@ -484,7 +484,7 @@ void LegacySensorManager::UnregisterLegacyListener(
             // are called re-entrantly while sensors are being registered or unregistered.
             {
                 AutoPtr<ISensorListener> l = listener;
-                Mutex::Autolock lock(mLegacyListenersMapLock);
+                AutoLock lock(mLegacyListenersMapLock);
                 // do we know about this listener?
                 HashMap<AutoPtr<ISensorListener>, AutoPtr<LegacyListener> >::Iterator it;
                 it = mLegacyListenersMap.Find(l);
@@ -514,7 +514,7 @@ void LegacySensorManager::OnRotationChanged(
     /* [in] */ Int32 rotation)
 {
     {
-        Mutex::Autolock lock(CSensorManager::mLock);
+        AutoLock lock(CSensorManager::mLock);
         sRotation  = rotation;
     }
 }
@@ -522,7 +522,7 @@ void LegacySensorManager::OnRotationChanged(
 Int32 LegacySensorManager::GetRotation()
 {
     {
-        Mutex::Autolock lock(CSensorManager::mLock);
+        AutoLock lock(CSensorManager::mLock);
         return sRotation;
     }
 }

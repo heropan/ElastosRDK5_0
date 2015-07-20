@@ -8218,7 +8218,7 @@ Boolean CWindowManagerService::ComputeScreenConfigurationLocked(
     mPolicy->GetNonDecorDisplayHeight(dw, dh, mRotation, &appHeight);
     AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
     {
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         displayInfo->SetRotation(mRotation);
         displayInfo->SetLogicalWidth(dw);
         displayInfo->SetLogicalHeight(dh);
@@ -8669,7 +8669,7 @@ void CWindowManagerService::DisplayReady(
     AutoPtr<DisplayContent> displayContent = GetDisplayContentLocked(displayId);
     if (displayContent != NULL) {
         mAnimator->AddDisplayLocked(displayId);
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         // Bootstrap the default logical display from the display manager.
         AutoPtr<IDisplayInfo> displayInfo = displayContent->GetDisplayInfo();
         AutoPtr<IDisplayInfo> newDisplayInfo;
@@ -9267,7 +9267,7 @@ ECode CWindowManagerService::HandleForceGc()
 {
     Object::Autolock lock(mWindowMapLock);
     {
-        Mutex::Autolock lock(mAnimatorLock);
+        AutoLock lock(mAnimatorLock);
 
         // Since we're holding both mWindowMap and mAnimator we don't need to
         // hold mAnimator.mLayoutToAnim.
@@ -9295,7 +9295,7 @@ ECode CWindowManagerService::HandleAppFreezeTimeout()
 {
     Object::Autolock lock(mWindowMapLock);
     {
-        Mutex::Autolock lock(mAnimatorLock);
+        AutoLock lock(mAnimatorLock);
 
         Slogger::W(TAG, "App freeze timeout expired.");
         List< AutoPtr<AppWindowToken> >::ReverseIterator rit = mAppTokens.RBegin();
@@ -9518,7 +9518,7 @@ void CWindowManagerService::GetInitialDisplaySize(
     //  could lead to deadlock since this is called from ActivityManager.
     AutoPtr<DisplayContent> displayContent = GetDisplayContentLocked(displayId);
     if (displayContent != NULL) {
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         CPoint::New(displayContent->mInitialDisplayWidth, displayContent->mInitialDisplayHeight, size);
         // size->SetX(displayContent->mInitialDisplayWidth);
         // size->SetY(displayContent->mInitialDisplayHeight);
@@ -9570,7 +9570,7 @@ void CWindowManagerService::ReadForcedDisplaySizeAndDensityLocked(
             // try {
             width = StringUtils::ParseInt32(sizeStr.Substring(0, pos));
             height = StringUtils::ParseInt32(sizeStr.Substring(pos+1));
-            Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+            AutoLock lock(displayContent->mDisplaySizeLock);
             if (displayContent->mBaseDisplayWidth != width
                     || displayContent->mBaseDisplayHeight != height) {
                 // Slog.i(TAG, "FORCED DISPLAY SIZE: " + width + "x" + height);
@@ -9590,7 +9590,7 @@ void CWindowManagerService::ReadForcedDisplaySizeAndDensityLocked(
         Int32 density;
         // try {
         density = StringUtils::ParseInt32(densityStr);
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         if (displayContent->mBaseDisplayDensity != density) {
             Slogger::I(TAG, "FORCED DISPLAY DENSITY: %d", density);
             displayContent->mBaseDisplayDensity = density;
@@ -9607,7 +9607,7 @@ void CWindowManagerService::SetForcedDisplaySizeLocked(
 {
     Slogger::I(TAG, "Using new display size: %dx%d", width, height);
     {
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         displayContent->mBaseDisplayWidth = width;
         displayContent->mBaseDisplayHeight = height;
     }
@@ -9661,7 +9661,7 @@ void CWindowManagerService::SetForcedDisplayDensityLocked(
     Slogger::I(TAG, "Using new display density: %d", density);
 
     {
-        Mutex::Autolock lock(displayContent->mDisplaySizeLock);
+        AutoLock lock(displayContent->mDisplaySizeLock);
         displayContent->mBaseDisplayDensity = density;
     }
     ReconfigureDisplayLocked(displayContent);
@@ -11593,7 +11593,7 @@ void CWindowManagerService::ScheduleAnimationLocked()
 void CWindowManagerService::UpdateLayoutToAnimationLocked()
 {
     AutoPtr<LayoutToAnimatorParams> layoutToAnim = mLayoutToAnim;
-    Mutex::Autolock lock(mLayoutToAnimLock);
+    AutoLock lock(mLayoutToAnimLock);
     // Copy local params to transfer params.
     HashMap<Int32, AutoPtr<List<AutoPtr<WindowStateAnimator> > > >& allWinAnimatorLists = layoutToAnim->mWinAnimatorLists;
     allWinAnimatorLists.Clear();
@@ -11646,7 +11646,7 @@ void CWindowManagerService::UpdateLayoutToAnimationLocked()
 
 void CWindowManagerService::UpdateLayoutToAnimWallpaperTokens()
 {
-    Mutex::Autolock lock(mLayoutToAnimLock);
+    AutoLock lock(mLayoutToAnimLock);
     mLayoutToAnim->mWallpaperTokens.Clear();
     mLayoutToAnim->mWallpaperTokens.Insert(mLayoutToAnim->mWallpaperTokens.Begin(), mWallpaperTokens.Begin(), mWallpaperTokens.End());
     mLayoutToAnim->mChanges |= LayoutToAnimatorParams::WALLPAPER_TOKENS_CHANGED;
@@ -11656,7 +11656,7 @@ void CWindowManagerService::SetAnimDimParams(
     /* [in] */ Int32 displayId,
     /* [in] */ DimAnimator::Parameters* params)
 {
-    Mutex::Autolock lock(mLayoutToAnimLock);
+    AutoLock lock(mLayoutToAnimLock);
     mLayoutToAnim->mDimParams[displayId] = params;
     ScheduleAnimationLocked();
 }
@@ -11692,7 +11692,7 @@ Boolean CWindowManagerService::CopyAnimToLayoutParamsLocked()
 {
     Boolean doRequest = FALSE;
     AutoPtr<WindowAnimator::AnimatorToLayoutParams> animToLayout = mAnimator->mAnimToLayout;
-    Mutex::Autolock lock(mAnimator->mAnimToLayoutLock);
+    AutoLock lock(mAnimator->mAnimToLayoutLock);
     animToLayout->mUpdateQueued = FALSE;
     Int32 bulkUpdateParams = animToLayout->mBulkUpdateParams;
     // TODO(cmautner): As the number of bits grows, use masks of bit groups to

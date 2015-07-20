@@ -4,7 +4,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -47,7 +46,7 @@ protected:
      * once and will never be NULL.
      */
     List< AutoPtr<IInterface> > mObservers;
-    Mutex mObserversLock;
+    Object mObserversLock;
 };
 
 } //Database

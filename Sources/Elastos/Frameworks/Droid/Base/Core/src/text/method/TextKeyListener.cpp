@@ -409,7 +409,7 @@ void TextKeyListener::UpdatePrefs(
 Int32 TextKeyListener::GetPrefs(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean needInit = (mResolver == NULL);
     if (!needInit) {

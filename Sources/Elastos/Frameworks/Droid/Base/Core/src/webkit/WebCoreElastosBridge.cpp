@@ -17,7 +17,6 @@
 using Elastos::Core::IBoolean;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Net::IUri;
@@ -108,7 +107,7 @@ ECode WebCoreElastosBridge::GetWeakReference(
 void WebCoreElastosBridge::SetActiveWebView(
     /* [in] */ CWebViewClassic* webview)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<IInterface> obj;
     if (sCurrentMainWebView != NULL) {
@@ -126,7 +125,7 @@ void WebCoreElastosBridge::SetActiveWebView(
 void WebCoreElastosBridge::RemoveActiveWebView(
     /* [in] */ CWebViewClassic* webview)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<IInterface> obj;
     if (sCurrentMainWebView != NULL) {
@@ -449,7 +448,7 @@ String WebCoreElastosBridge::GetSignedPublicKey(
     /* [in] */ const String& challenge,
     /* [in] */ const String& url)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IWebViewClassic> obj;
     if (sCurrentMainWebView != NULL) {

@@ -41,7 +41,7 @@ ECode CMyBackupAgent::OnBackup(
 {
     Slogger::D(TAG, "OnBackup");
     {
-        Mutex::Autolock lock(CActivityOne::sDatalock);
+        AutoLock lock(CActivityOne::sDatalock);
         AutoPtr<IRandomAccessFile> file;
         CRandomAccessFile::New(mDataFile, String("r"), (IRandomAccessFile**)&file);
         AutoPtr<IDataInput> input = IDataInput::Probe(file);
@@ -113,7 +113,7 @@ ECode CMyBackupAgent::OnRestore(
             in->ReadBoolean(&mAddTomato);
 
             {
-                Mutex::Autolock lock(CActivityOne::sDatalock);
+                AutoLock lock(CActivityOne::sDatalock);
                 AutoPtr<IRandomAccessFile> file;
                 CRandomAccessFile::New(mDataFile, String("rw"), (IRandomAccessFile**)&file);
                 file->SetLength(0);

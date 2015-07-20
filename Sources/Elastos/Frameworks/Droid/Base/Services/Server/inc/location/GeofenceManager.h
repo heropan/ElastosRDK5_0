@@ -183,7 +183,7 @@ private:
     AutoPtr<GeofenceHandler> mHandler;
     AutoPtr<LocationBlacklist> mBlacklist;
 
-    Mutex mLock;
+    Object mLock;
 
     // access to members below is synchronized on mLock
     /**

@@ -32,7 +32,7 @@ ServiceManager::ServiceManager()
 
 Boolean ServiceManager::ConnectServer()
 {
-    Mutex::Autolock lock(mConnectedLock);
+    AutoLock lock(mConnectedLock);
 
     if (mIsConnected) return TRUE;
 

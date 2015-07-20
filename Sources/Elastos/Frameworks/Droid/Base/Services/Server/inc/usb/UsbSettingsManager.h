@@ -12,7 +12,6 @@
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::CComponentName;
@@ -388,7 +387,7 @@ private:
     // Maps AccessoryFilter to user preferred application package
     HashMap< AutoPtr<AccessoryFilter>, String, HashPK_AccessoryFilter, PKEq_AccessoryFilter > mAccessoryPreferenceMap;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<MyPackageMonitor> mPackageMonitor;
 

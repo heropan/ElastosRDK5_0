@@ -1420,7 +1420,7 @@ private:
     // (The referent Object is not used at this time.)
     // INVARIANT: Guarded by sActiveDatabases.
     static HashMap<AutoPtr<SQLiteDatabase>, AutoPtr<IInterface> > sActiveDatabases;
-    static Mutex sActiveDatabasesLock;
+    static Object sActiveDatabasesLock;
 
     // Thread-local for database sessions that belong to this database.
     // Each thread has its own database session.
@@ -1457,7 +1457,7 @@ private:
     //
     // Basic rule: grab the lock, access or modify global state, release the lock, then
     // do the required SQL work.
-    Mutex mLock;
+    Object mLock;
 
     // Warns if the database is finalized without being closed properly.
     // INVARIANT: Guarded by mLock.

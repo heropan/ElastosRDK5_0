@@ -83,7 +83,7 @@ MediaProfiles *sProfiles = NULL;
 void CVideoEditorProfile::NativeInit()
 {
     ALOGV("native_init");
-    android::Mutex::Autolock lock(sLock);
+    android::AutoLock lock(sLock);
 
     if (sProfiles == NULL) {
         sProfiles = MediaProfiles::getInstance();

@@ -29,7 +29,6 @@ using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Os::EIID_IHandler;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -124,14 +123,14 @@ TextToSpeechService::SynthHandler::SynthHandler(
 
 AutoPtr<TextToSpeechService::SpeechItem> TextToSpeechService::SynthHandler::GetCurrentSpeechItem()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mCurrentSpeechItem;
 }
 
 AutoPtr<TextToSpeechService::SpeechItem> TextToSpeechService::SynthHandler::SetCurrentSpeechItem(
     /* [in] */ TextToSpeechService::SpeechItem* speechItem)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<TextToSpeechService::SpeechItem> old = mCurrentSpeechItem;
     mCurrentSpeechItem = speechItem;
     return old;
@@ -140,7 +139,7 @@ AutoPtr<TextToSpeechService::SpeechItem> TextToSpeechService::SynthHandler::SetC
 AutoPtr<TextToSpeechService::SpeechItem> TextToSpeechService::SynthHandler::MaybeRemoveCurrentSpeechItem(
     /* [in] */ IInterface* callerIdentity)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if ((mCurrentSpeechItem != NULL) && ((SpeechItem*)((mCurrentSpeechItem->GetCallerIdentity()).Get())) == callerIdentity) {
         AutoPtr<TextToSpeechService::SpeechItem> current = mCurrentSpeechItem;
         mCurrentSpeechItem = NULL;
@@ -311,7 +310,7 @@ Int32 TextToSpeechService::SpeechItem::Play()
 {
     if(TRUE)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mStarted) {
             //throw new IllegalStateException("play() called twice");
             Logger::E(TAG, String("play() called twice\n"));
@@ -326,7 +325,7 @@ void TextToSpeechService::SpeechItem::Stop()
 {
     if(TRUE)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mStopped) {
             //throw new IllegalStateException("stop() called twice");
             Logger::E(TAG, String("stop() called twice\n"));
@@ -376,7 +375,7 @@ Int32 TextToSpeechService::SpeechItem::GetCallerPid()
 
 Boolean TextToSpeechService::SpeechItem::IsStopped()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mStopped;
 }
 
@@ -487,7 +486,7 @@ Int32 TextToSpeechService::SynthesisSpeechItem::PlayImpl()
     AutoPtr<AbstractSynthesisCallback> synthesisCallback;
     mEventLogger->OnRequestProcessingStart();
     if(TRUE){
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // stop() might have been called before we enter this
         // synchronized block.
         if (IsStopped()) {
@@ -520,7 +519,7 @@ void TextToSpeechService::SynthesisSpeechItem::StopImpl()
 {
     AutoPtr<AbstractSynthesisCallback> synthesisCallback;
     if(TRUE){
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         synthesisCallback = mSynthesisCallback;
     }
     if (synthesisCallback != NULL) {
@@ -940,7 +939,7 @@ void TextToSpeechService::CallbackMap::SetCallback(
     /* [in] */ /*IIBinder*/IBinder* caller,
     /* [in] */ IITextToSpeechCallback* cb)
 {
-    Mutex::Autolock lock(mCallerToCallbackLock);
+    AutoLock lock(mCallerToCallbackLock);
     AutoPtr<IITextToSpeechCallback> old = NULL;
     HashMap< AutoPtr</*IIBinder*/IBinder>, AutoPtr<IITextToSpeechCallback> >::Iterator oldI;
     if (cb != NULL) {
@@ -1004,7 +1003,7 @@ void TextToSpeechService::CallbackMap::OnCallbackDied(
 {
     AutoPtr</*IIBinder*/IBinder> caller = (/*IIBinder*/IBinder*) cookie;
     if(TRUE){
-        Mutex::Autolock lock(mCallerToCallbackLock);
+        AutoLock lock(mCallerToCallbackLock);
         mCallerToCallback.Erase(caller);
     }
     (mTtss->mSynthHandler)->StopForApp(caller);
@@ -1012,7 +1011,7 @@ void TextToSpeechService::CallbackMap::OnCallbackDied(
 
 void TextToSpeechService::CallbackMap::Kill()
 {
-    Mutex::Autolock lock(mCallerToCallbackLock);
+    AutoLock lock(mCallerToCallbackLock);
     mCallerToCallback.Clear();
     //Java:    super.kill();
 }
@@ -1023,7 +1022,7 @@ AutoPtr<IITextToSpeechCallback> TextToSpeechService::CallbackMap::GetCallbackFor
     AutoPtr<IITextToSpeechCallback> cb;
     AutoPtr</*IIBinder*/IBinder> asBinder = (/*IIBinder*/IBinder*) caller;
     if(TRUE){
-        Mutex::Autolock lock(mCallerToCallbackLock);
+        AutoLock lock(mCallerToCallbackLock);
         cb = (mCallerToCallback.Find(asBinder.Get()))->mSecond;
     }
     return cb;

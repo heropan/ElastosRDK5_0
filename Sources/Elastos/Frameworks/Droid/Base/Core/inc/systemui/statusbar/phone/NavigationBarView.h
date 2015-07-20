@@ -7,7 +7,6 @@
 #include "systemui/statusbar/DelegateViewHelper.h"
 #include "animation/AnimatorListenerAdapter.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IServiceConnection;
 using Elastos::Droid::View::IViewOnTouchListener;
@@ -247,7 +246,7 @@ private:
 
     AutoPtr<IHandler> mHander;
 
-    Mutex mScreenshotLock;
+    Object mScreenshotLock;
     AutoPtr<IServiceConnection> mScreenshotConnection;
 
     AutoPtr<IViewOnClickListener> mOnClickListener;

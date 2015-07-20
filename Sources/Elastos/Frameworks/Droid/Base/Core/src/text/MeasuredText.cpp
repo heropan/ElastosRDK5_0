@@ -39,7 +39,7 @@ AutoPtr<MeasuredText> MeasuredText::Obtain()
 {
     AutoPtr<MeasuredText> mt;
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
 
         if (sCached == NULL) {
             sCached = ArrayOf<MeasuredText*>::Alloc(3);
@@ -66,7 +66,7 @@ AutoPtr<MeasuredText> MeasuredText::Recycle(
 
     mt->mText = NULL;
     if (mt->mLen < 1000) {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
 
         if (sCached == NULL) {
             sCached = ArrayOf<MeasuredText*>::Alloc(3);

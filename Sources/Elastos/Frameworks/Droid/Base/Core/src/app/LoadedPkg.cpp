@@ -516,7 +516,7 @@ ECode LoadedPkg::ServiceDispatcher::Validate(
 
 void LoadedPkg::ServiceDispatcher::DoForget()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     HashMap<AutoPtr<IComponentName>, AutoPtr<ConnectionInfo> >::Iterator it;
     for (it = mActiveConnections.Begin(); it != mActiveConnections.End(); ++it) {
@@ -569,7 +569,7 @@ ECode LoadedPkg::ServiceDispatcher::DoConnected(
     AutoPtr<ConnectionInfo> info;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mForgotten) {
             // We unbound before receiving the connection; ignore
@@ -629,7 +629,7 @@ ECode LoadedPkg::ServiceDispatcher::Death(
     AutoPtr<ConnectionInfo> old;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mDied = true;
 
         HashMap<AutoPtr<IComponentName>, AutoPtr<ConnectionInfo> >::Iterator it;
@@ -908,7 +908,7 @@ ECode LoadedPkg::GetClassLoader(
 {
     VALIDATE_NOT_NULL(loader);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mClassLoader != NULL) {
         *loader = mClassLoader;
@@ -1277,7 +1277,7 @@ ECode LoadedPkg::GetReceiverDispatcher(
     VALIDATE_NOT_NULL(ir);
     *ir = NULL;
 
-    Mutex::Autolock lock(mReceiversLock);
+    AutoLock lock(mReceiversLock);
 
     AutoPtr<ReceiverDispatcher> rd;
     AutoPtr<ReceiverMap> map;
@@ -1323,7 +1323,7 @@ ECode LoadedPkg::ForgetReceiverDispatcher(
     VALIDATE_NOT_NULL(ir);
     *ir = NULL;
 
-    Mutex::Autolock lock(mReceiversLock);
+    AutoLock lock(mReceiversLock);
 
     AutoPtr<ReceiverDispatcher> rd;
     AutoPtr<ReceiverMap> map, holder;
@@ -1395,7 +1395,7 @@ ECode LoadedPkg::GetServiceDispatcher(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
 
     AutoPtr<ServiceDispatcher> sd;
     AutoPtr< ServiceMap > map = mServices[context];
@@ -1426,7 +1426,7 @@ ECode LoadedPkg::ForgetServiceDispatcher(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    Mutex::Autolock lock(mServicesLock);
+    AutoLock lock(mServicesLock);
 
     AutoPtr<ServiceDispatcher> sd;
     AutoPtr<ServiceMap> map;

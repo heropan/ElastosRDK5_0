@@ -4,7 +4,6 @@
 #include "_CGlobalsWallpaperManagerCallback.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::HandlerBase;
@@ -61,7 +60,7 @@ private:
     AutoPtr<IBitmap> mWallpaper;
     AutoPtr<IBitmap> mDefaultWallpaper;
     AutoPtr<IHandler> mHandler;
-    Mutex mLock;
+    Object mLock;
 
     friend class CWallpaperManager;
 };

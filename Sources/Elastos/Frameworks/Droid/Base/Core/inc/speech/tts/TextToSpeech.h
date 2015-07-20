@@ -13,7 +13,6 @@ using Libcore::ICU::ILocale;
 using Elastos::Utility::Map;
 using Elastos::Utility::Set;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Os::IBundle;
 //using Elastos::Droid::Os::IIBinder;
@@ -872,7 +871,7 @@ private:
     // a binder thread.
     /*volatile*/ AutoPtr<IUtteranceProgressListener> mUtteranceProgressListener;
     //private final Object mStartLock = new Object();
-    Mutex mStartLock;
+    Object mStartLock;
 
     String mRequestedEngine;// = NULL;
     // Whether to initialize this TTS object with the default engine,

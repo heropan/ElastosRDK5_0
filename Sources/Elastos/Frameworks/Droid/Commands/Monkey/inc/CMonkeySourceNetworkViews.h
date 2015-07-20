@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 #include "_CMonkeySourceNetworkViews.h"
-#include <elrefbase.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 

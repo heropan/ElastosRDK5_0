@@ -21,7 +21,7 @@ PInterface CProgressBar::Probe(
     return _CProgressBar::Probe(riid);
 }
 
-Mutex* CProgressBar::GetSelfLock()
+Object* CProgressBar::GetSelfLock()
 {
     return &(ProgressBar::mLock);
 }

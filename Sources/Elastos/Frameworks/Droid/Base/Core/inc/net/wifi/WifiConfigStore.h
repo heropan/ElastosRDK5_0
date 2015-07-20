@@ -10,7 +10,6 @@
 
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Utility::IBitSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::NetworkInfoDetailedState;
@@ -112,7 +111,7 @@ private:
         /* Tracks multiple writes on the same thread */
         static Int32 sWriteSequence;
         static String TAG;
-        static Mutex sLock;
+        static Object sLock;
         friend class DiskWriteRunnable;
     };
 
@@ -412,7 +411,7 @@ private:
 
     /* configured networks with network id as the key */
     HashMap<Int32, AutoPtr<IWifiConfiguration> > mConfiguredNetworks;
-    Mutex mConfiguredNetworksLock;
+    Object mConfiguredNetworksLock;
 
     /* A network id is a unique identifier for a network configured in the
      * supplicant. Network ids are generated when the supplicant reads

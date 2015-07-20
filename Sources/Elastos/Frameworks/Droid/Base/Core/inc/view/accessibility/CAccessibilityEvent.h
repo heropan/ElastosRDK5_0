@@ -6,7 +6,6 @@
 #include "view/accessibility/AccessibilityRecord.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::View::IView;
@@ -703,7 +702,7 @@ private:
     static const String TAG;
     static const Int32 MAX_POOL_SIZE;
     static AutoPtr<CAccessibilityEvent> sPool;
-    static Mutex sPoolLock;
+    static Object sPoolLock;
     static Int32 sPoolSize;
     AutoPtr<CAccessibilityEvent> mNext;
     Boolean mIsInPool;

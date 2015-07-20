@@ -11,7 +11,6 @@
 #include <binder/Parcel.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
@@ -201,7 +200,7 @@ CKeyCharacterMap::FallbackAction::FallbackAction()
 AutoPtr<CKeyCharacterMap::FallbackAction> CKeyCharacterMap::FallbackAction::Obtain()
 {
     AutoPtr<FallbackAction> target;
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     if (sRecycleBin == NULL) {
         target = new FallbackAction();
     }
@@ -217,7 +216,7 @@ AutoPtr<CKeyCharacterMap::FallbackAction> CKeyCharacterMap::FallbackAction::Obta
 
 CKeyCharacterMap::FallbackAction::Recycle()
 {
-    Mutex::Autolock lock(sRecycleLock);
+    AutoLock lock(sRecycleLock);
     if (sRecycledCount < MAX_RECYCLED) {
         mNext = sRecycleBin;
         sRecycleBin = this;
@@ -393,7 +392,7 @@ Int32 CKeyCharacterMap::GetDeadChar(
     Int32 combining = find->mSecond;
     Int32 combination = (combining << 16) | c;
     Int32 combined;
-    Mutex::Autolock lock(sDeadKeyCacheLock);
+    AutoLock lock(sDeadKeyCacheLock);
     find = sDeadKeyCache.Find(combination);
     if (find == sDeadKeyCache.End()) {
         combined = -1;

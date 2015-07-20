@@ -12,7 +12,6 @@
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IClassLoader;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFile;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IMessageHelper;
@@ -163,7 +162,7 @@ AutoPtr<CPluginManager> PluginManager::GetInstance(
 {
     //return NULL;
     //*
-    //Mutex::Autolock lock(sLock);
+    //AutoLock lock(sLock);
 
    // if (mInstance == NULL) {
    //     if (context == NULL)
@@ -181,7 +180,7 @@ AutoPtr<CPluginManager> PluginManager::GetInstance(
 //PluginManager* PluginManager::GetInstance(
 //    /* [in] */ IContext* context)
 //{
-//    Mutex::Autolock lock(sLock);
+//    AutoLock lock(sLock);
 //
 //    if (mInstance == NULL) {
 //        if (context == NULL) {
@@ -230,7 +229,7 @@ AutoPtr< ArrayOf<String> > PluginManager::GetPluginDirectories()
             IPackageManager::GET_SERVICES | IPackageManager::GET_META_DATA, (IObjectContainer**)&plugins);
 
     {
-        Mutex::Autolock lock(mPackageInfoCacheLock);
+        AutoLock lock(mPackageInfoCacheLock);
 
         // clear the list of existing packageInfo objects
         mPackageInfoCache.Clear();
@@ -381,7 +380,7 @@ String PluginManager::GetPluginsAPKName(
 
     // must be synchronized to ensure the consistency of the cache
     {
-        Mutex::Autolock lock(mPackageInfoCacheLock);
+        AutoLock lock(mPackageInfoCacheLock);
         List< AutoPtr<IPackageInfo> >::Iterator iter = mPackageInfoCache.Begin();
         for (; iter != mPackageInfoCache.End(); ++iter) {
             AutoPtr<IPackageInfo> pkgInfo = *iter;

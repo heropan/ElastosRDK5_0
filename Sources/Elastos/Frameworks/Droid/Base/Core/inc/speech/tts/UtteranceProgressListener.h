@@ -58,7 +58,7 @@ private:
         /* [in] */ ITextToSpeechOnUtteranceCompletedListener* listener);
     private:
         AutoPtr<ITextToSpeechOnUtteranceCompletedListener> mListener;
-        Mutex mMutex;
+        Object mMutex;
     };
 
 public:

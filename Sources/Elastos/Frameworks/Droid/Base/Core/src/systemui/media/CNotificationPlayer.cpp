@@ -48,7 +48,7 @@ ECode CNotificationPlayer::CreationAndCompletionThread::Run()
     Looper::Prepare();
     mHost->mLooper = Looper::MyLooper();
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AutoPtr<IAudioManager> audioManager;
         mCmd->mContext->GetSystemService(IContext::AUDIO_SERVICE, (IInterface**)&audioManager);
         // try {
@@ -106,7 +106,7 @@ ECode CNotificationPlayer::CmdThread::Run()
         AutoPtr<Command> cmd = NULL;
         List< AutoPtr<Command> >::Iterator it;
         {
-            Mutex::Autolock lock(mHost->mCmdQueueLock);
+            AutoLock lock(mHost->mCmdQueueLock);
             if (mDebug) Logger::D(mHost->mTag, "RemoveFirst");
             it = mHost->mCmdQueue.Begin();
             cmd = *it;
@@ -148,7 +148,7 @@ ECode CNotificationPlayer::CmdThread::Run()
         mHost->mCmdQueue.Remove(*it);
 
         {
-            Mutex::Autolock l(mHost->mCmdQueueLock);
+            AutoLock l(mHost->mCmdQueueLock);
             if (mHost->mCmdQueue.IsEmpty()) {
                 // nothing left to do, quit
                 // doing this check after we're done prevents the case where they
@@ -190,10 +190,10 @@ ECode CNotificationPlayer::OnCompletion(
     }
     // if there are no more sounds to play, end the Looper to listen for media completion
     {
-        Mutex::Autolock lock(mCmdQueueLock);
+        AutoLock lock(mCmdQueueLock);
         if (mCmdQueue.IsEmpty()) {
             {
-                Mutex::Autolock l(mCompletionHandlingLock);
+                AutoLock l(mCompletionHandlingLock);
                 if(mLooper != NULL) {
                     mLooper->Quit();
                 }
@@ -218,7 +218,7 @@ ECode CNotificationPlayer::Play(
     cmd->mLooping = looping;
     cmd->mStream = stream;
     {
-        Mutex::Autolock lock(mCmdQueueLock);
+        AutoLock lock(mCmdQueueLock);
         EnqueueLocked(cmd);
         mState = PLAY;
     }
@@ -228,7 +228,7 @@ ECode CNotificationPlayer::Play(
 ECode CNotificationPlayer::Stop()
 {
     {
-        Mutex::Autolock lock(mCmdQueueLock);
+        AutoLock lock(mCmdQueueLock);
         // This check allows stop to be called multiple times without starting
         // a thread that ends up doing nothing.
         if (mState != STOP) {
@@ -295,7 +295,7 @@ void CNotificationPlayer::StartSound(
     // This is were we deviate from the AsyncPlayer implementation and create the
     // MediaPlayer in a new thread with which we're synchronized
     {
-        Mutex::Autolock lock(mCompletionHandlingLock);
+        AutoLock lock(mCompletionHandlingLock);
         // if another sound was already playing, it doesn't matter we won't get notified
         // of the completion, since only the completion notification of the last sound
         // matters
@@ -310,7 +310,7 @@ void CNotificationPlayer::StartSound(
         }
         mCompletionThread = new CreationAndCompletionThread(cmd, this);
         {
-            Mutex::Autolock l(mCompletionThreadLock);
+            AutoLock l(mCompletionThreadLock);
             mCompletionThread->Start();
             mCompletionThread->Wait();
         }

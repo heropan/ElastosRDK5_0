@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
 using Elastos::Droid::Content::IContext;
@@ -193,7 +192,7 @@ private:
     static AutoPtr<IIntentFilter> sPackageFilt;
     static AutoPtr<IIntentFilter> sNonDataFilt;
     static AutoPtr<IIntentFilter> sExternalFilt;
-    static Mutex sLock;
+    static Object sLock;
     static AutoPtr<IHandlerThread> sBackgroundThread;
     static AutoPtr<IHandler> sBackgroundHandler;
 
@@ -208,7 +207,7 @@ private:
     Int32 mChangeUserId;
     Boolean mSomePackagesChanged;
     AutoPtr<ArrayOf<String> > mTempArray;
-    Mutex mUpdatingPackagesLock;
+    Object mUpdatingPackagesLock;
 
 };
 

@@ -7,7 +7,6 @@
 #include "database/CrossProcessCursorWrapper.h"
 #include "os/ParcelFileDescriptor.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IInputStream;
 using Elastos::Core::IRandom;
@@ -1234,11 +1233,11 @@ private:
     // sampled accordingly.
     static const Int32 SLOW_THRESHOLD_MILLIS;
     AutoPtr<IRandom> mRandom;  // guarded by itself
-    Mutex mRandomLock;
+    Object mRandomLock;
 
     static AutoPtr<IContentService> sContentService;
     IContext* mContext;
-    // Mutex mRandomLock;
+    // Object mRandomLock;
 };
 
 } // namespace Content

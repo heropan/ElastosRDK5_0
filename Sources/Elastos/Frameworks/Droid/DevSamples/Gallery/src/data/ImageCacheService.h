@@ -5,7 +5,6 @@
 #include "app/Activity.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Utility::Etl::List;
 
@@ -55,7 +54,7 @@ private:
     Int32 mImgWidth;
     Int32 mImgHeight;
     List<String> mCachePathList;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Gallery

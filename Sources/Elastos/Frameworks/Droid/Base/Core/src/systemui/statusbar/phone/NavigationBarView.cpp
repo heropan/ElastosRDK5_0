@@ -106,7 +106,7 @@ NavigationBarView::ScreenshotTimeoutRunnable::ScreenshotTimeoutRunnable(
 
 ECode NavigationBarView::ScreenshotTimeoutRunnable::Run()
 {
-    Mutex::Autolock lock(mHost->mScreenshotLock);
+    AutoLock lock(mHost->mScreenshotLock);
     if (mHost->mScreenshotConnection != NULL) {
         mHost->mContext->UnbindService(mHost->mScreenshotConnection);
         mHost->mScreenshotConnection = NULL;
@@ -300,7 +300,7 @@ AutoPtr<IView> NavigationBarView::GetSearchLight()
 void NavigationBarView::TakeScreenshot()
 {
     {
-        Mutex::Autolock lock(mScreenshotLock);
+        AutoLock lock(mScreenshotLock);
         if (mScreenshotConnection != NULL) {
             return;
         }

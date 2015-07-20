@@ -414,7 +414,7 @@ public:
      */
     List< AutoPtr<CServiceRecord> > mStoppingServices;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Am

@@ -259,7 +259,7 @@ public:
     Int32 mListenerKey;
     HashMap<Int32, AutoPtr<IInterface> > mListenerMap;
     HashMap<Int32, AutoPtr<INsdServiceInfo> > mServiceMap;
-    Mutex mMapLock;
+    Object mMapLock;
 
     AutoPtr<AsyncChannel> mAsyncChannel;
     AutoPtr<ServiceHandler> mHandler;

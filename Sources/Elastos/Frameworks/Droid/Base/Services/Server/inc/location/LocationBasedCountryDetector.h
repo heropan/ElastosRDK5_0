@@ -12,7 +12,6 @@
 #include <elastos/TimerTask.h>
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::IThread;
 using Elastos::Core::CThread;
 using Elastos::Utility::Etl::List;
@@ -201,7 +200,7 @@ private:
     AutoPtr<ILocationManager> mLocationManager;
     AutoPtr<List<String> > mEnabledProviders;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Location

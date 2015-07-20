@@ -126,7 +126,7 @@ CNotificationManagerService::MyNotificationCallbacks::MyNotificationCallbacks(
 ECode CNotificationManagerService::MyNotificationCallbacks::OnSetDisabled(
     /* [in] */ Int32 status)
 {
-    Mutex::Autolock lock(mHost->mNotificationListLock);
+    AutoLock lock(mHost->mNotificationListLock);
 
     mHost->mDisabledNotifications = status;
 
@@ -210,7 +210,7 @@ ECode CNotificationManagerService::MyNotificationCallbacks::OnNotificationClear(
 
 ECode CNotificationManagerService::MyNotificationCallbacks::OnPanelRevealed()
 {
-    Mutex::Autolock lock(mHost->mNotificationListLock);
+    AutoLock lock(mHost->mNotificationListLock);
 
     // sound
     mHost->mSoundNotification = NULL;
@@ -640,7 +640,7 @@ AutoPtr< ArrayOf<Int64> > CNotificationManagerService::GetLongArray(
 
 void CNotificationManagerService::LoadBlockDb()
 {
-    Mutex::Autolock lock(mBlockedPackagesLock);
+    AutoLock lock(mBlockedPackagesLock);
 
     if (mPolicyFile != NULL) {
         return;
@@ -712,7 +712,7 @@ void CNotificationManagerService::LoadBlockDb()
 
 void CNotificationManagerService::WriteBlockDb()
 {
-    Mutex::Autolock lock(mBlockedPackagesLock);
+    AutoLock lock(mBlockedPackagesLock);
 
     ECode ec = NOERROR;
     HashSet<String>::Iterator it;
@@ -818,7 +818,7 @@ ECode CNotificationManagerService::EnqueueToast(
     }
 
     {
-        Mutex::Autolock lock(mToastQueueLock);
+        AutoLock lock(mToastQueueLock);
 
         AutoPtr<IBinderHelper> binderHelper;
         CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
@@ -897,7 +897,7 @@ ECode CNotificationManagerService::CancelToast(
     }
 
     {
-        Mutex::Autolock lock(mToastQueueLock);
+        AutoLock lock(mToastQueueLock);
 
         AutoPtr<IBinderHelper> binderHelper;
         CBinderHelper::AcquireSingleton((IBinderHelper**)&binderHelper);
@@ -945,7 +945,7 @@ ECode CNotificationManagerService::SetNotificationsEnabledForPackage(
 
         // Now, cancel any outstanding notifications that are part of a just-disabled app
         if (ENABLE_BLOCKED_NOTIFICATIONS) {
-            Mutex::Autolock lock(mNotificationListLock);
+            AutoLock lock(mNotificationListLock);
 
             NotificationRecordIterator it = mNotificationList.Begin();
             for (; it != mNotificationList.End(); it++) {
@@ -1116,7 +1116,7 @@ void CNotificationManagerService::ScheduleTimeoutLocked(
 void CNotificationManagerService::HandleTimeout(
     /* [in] */ ToastRecord* record)
 {
-    Mutex::Autolock lock(mToastQueueLock);
+    AutoLock lock(mToastQueueLock);
 
     if (DBG) Slogger::D(TAG, "Timeout pkg=%s, callback=%p",
         record->mPkg.string(), record->mCallback.Get());
@@ -1238,7 +1238,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
     // Limit the number of notifications that any given package except the android
     // package can enqueue.  Prevents DOS attacks and deals with leaks.
     if (!isSystemNotification) {
-        Mutex::Autolock lock(mNotificationListLock);
+        AutoLock lock(mNotificationListLock);
 
         Int32 count = 0;
 
@@ -1346,7 +1346,7 @@ ECode CNotificationManagerService::EnqueueNotificationInternal(
     // Should this notification make noise, vibe, or use the LED?
     const Boolean canInterrupt = (score >= SCORE_INTERRUPTION_THRESHOLD);
     {
-        Mutex::Autolock lock(mNotificationListLock);
+        AutoLock lock(mNotificationListLock);
 
         AutoPtr<NotificationRecord> record = new NotificationRecord(
             pkg, tag, id, callingUid, callingPid, userId, score, notification);
@@ -1733,7 +1733,7 @@ void CNotificationManagerService::CancelNotification(
         id, pkg.string(), tag.string(), userId, mustHaveFlags, mustNotHaveFlags);
     //EventLog.writeEvent(EventLogTags.NOTIFICATION_CANCEL, pkg, id, tag, userId, mustHaveFlags, mustNotHaveFlags);
 
-    Mutex::Autolock lock(mNotificationListLock);
+    AutoLock lock(mNotificationListLock);
 
     Int32 index = IndexOfNotificationLocked(pkg, tag, id, userId);
     if (index < 0) {
@@ -1779,7 +1779,7 @@ Boolean CNotificationManagerService::CancelAllNotificationsInt(
 {
     //EventLog.writeEvent(EventLogTags.NOTIFICATION_CANCEL_ALL, pkg, userId, mustHaveFlags, mustNotHaveFlags);
 
-    Mutex::Autolock lock(mNotificationListLock);
+    AutoLock lock(mNotificationListLock);
 
     Boolean canceledSomething = FALSE;
     NotificationRecordList::ReverseIterator it = mNotificationList.RBegin();;
@@ -1976,7 +1976,7 @@ ECode CNotificationManagerService::CheckCallerIsSystemOrSameApp(
 void CNotificationManagerService::CancelAll(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mNotificationListLock);
+    AutoLock lock(mNotificationListLock);
     NotificationRecordList::ReverseIterator it = mNotificationList.RBegin();
 
     for (; it != mNotificationList.REnd();) {
@@ -2076,7 +2076,7 @@ Int32 CNotificationManagerService::IndexOfNotificationLocked(
 
 void CNotificationManagerService::UpdateNotificationPulse()
 {
-    Mutex::Autolock lock(mNotificationListLock);
+    AutoLock lock(mNotificationListLock);
     UpdateLightsLocked();
 }
 

@@ -29,7 +29,7 @@ ECode CRemoteViewsFactoryAdapter::IsCreated(
 {
     VALIDATE_NOT_NULL(res);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     *res = mIsCreated;
     return NOERROR;
 }
@@ -37,7 +37,7 @@ ECode CRemoteViewsFactoryAdapter::IsCreated(
 ECode CRemoteViewsFactoryAdapter::OnDataSetChanged()
 {
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     //try{
     mFactory->OnDataSetChanged();
     // } catch (Exception ex) {
@@ -49,7 +49,7 @@ ECode CRemoteViewsFactoryAdapter::OnDataSetChanged()
 
 ECode CRemoteViewsFactoryAdapter::OnDataSetChangedAsync()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     return OnDataSetChanged();
 }
 
@@ -57,7 +57,7 @@ ECode CRemoteViewsFactoryAdapter::GetCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     //try {
     mFactory->GetCount(count);
 
@@ -73,7 +73,7 @@ ECode CRemoteViewsFactoryAdapter::GetViewAt(
     /* [out] */ IParcelable** views)
 {
     VALIDATE_NOT_NULL(views);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     //try {
         mFactory->GetViewAt(position, views);
         if (IRemoteViews::Probe(*views)) {
@@ -90,7 +90,7 @@ ECode CRemoteViewsFactoryAdapter::GetLoadingView(
     /* [out] */ IParcelable** views)
 {
     VALIDATE_NOT_NULL(views);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     //try {
     mFactory->GetLoadingView(views);
     //} catch (Exception ex) {
@@ -104,7 +104,7 @@ ECode CRemoteViewsFactoryAdapter::GetViewTypeCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     //try {
     *count = 0;
     mFactory->GetViewTypeCount(count);
@@ -120,7 +120,7 @@ ECode CRemoteViewsFactoryAdapter::GetItemId(
     /* [out] */ Int64* id)
 {
     VALIDATE_NOT_NULL(id);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     *id = 0;
     //try {
     mFactory->GetItemId(position, id);
@@ -135,7 +135,7 @@ ECode CRemoteViewsFactoryAdapter::HasStableIds(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     *res = FALSE;
     //try {
     mFactory->HasStableIds(res);
@@ -149,7 +149,7 @@ ECode CRemoteViewsFactoryAdapter::HasStableIds(
 ECode CRemoteViewsFactoryAdapter::OnDestroy(
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(RemoteViewsService::sLock);
+    AutoLock lock(RemoteViewsService::sLock);
     AutoPtr<IIntentFilterComparison> fc;
     CIntentFilterComparison::New(intent, (IIntentFilterComparison**)&fc);
     if (RemoteViewsService::sRemoteViewFactories.Find(fc) != RemoteViewsService::sRemoteViewFactories.End()) {

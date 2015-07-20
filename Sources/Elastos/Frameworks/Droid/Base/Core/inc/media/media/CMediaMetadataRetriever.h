@@ -6,7 +6,6 @@
 #include "ext/frameworkext.h"
 #include <media/mediametadataretriever.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Droid::Net::IUri;
@@ -234,7 +233,7 @@ private:
 
     // The field below is accessed by native methods
     android::MediaMetadataRetriever* mContext;
-    Mutex sLock;
+    Object sLock;
 };
 
 } // namespace Media

@@ -74,7 +74,7 @@ AttributeCache::~AttributeCache()
 void AttributeCache::UpdateConfiguration(
     /* [in] */ IConfiguration* config)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 changes;
     mConfiguration->UpdateFrom(config, &changes);
     if ((changes & ~(IActivityInfo::CONFIG_FONT_SCALE |
@@ -98,7 +98,7 @@ void AttributeCache::UpdateConfiguration(
 ECode AttributeCache::RemoveUser(
         /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     HashMap<String, AutoPtr<Package> >* map = mPackages[userId];
     if (map != NULL)
         delete map;
@@ -109,7 +109,7 @@ ECode AttributeCache::RemoveUser(
 void AttributeCache::RemovePackage(
     /* [in] */ const String& packageName)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     HashMap<Int32, HashMap<String, AutoPtr<Package> >* >::Iterator it = mPackages.Begin();
     for (; it != mPackages.End(); it++) {
         HashMap<String, AutoPtr<Package> >* map = it->mSecond;
@@ -124,7 +124,7 @@ AutoPtr<AttributeCache::Entry> AttributeCache::Get(
     /* [in] */ Int32 resId,
     /* [in] */ ArrayOf<Int32>* styleable)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     HashMap<String, AutoPtr<Package> >* packages = mPackages[userId];
     if (packages == NULL) {
         packages = new HashMap<String, AutoPtr<Package> >();

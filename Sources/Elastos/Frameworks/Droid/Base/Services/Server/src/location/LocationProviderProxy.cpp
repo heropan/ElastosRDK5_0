@@ -30,7 +30,7 @@ ECode LocationProviderProxy::NewServiceWorkRunnable::Run()
     AutoPtr<IWorkSource> source;
     AutoPtr<IILocationProvider> service;
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         enabled = mHost->mEnabled;
         request = mHost->mRequest;
         source = mHost->mWorksource;
@@ -61,7 +61,7 @@ ECode LocationProviderProxy::NewServiceWorkRunnable::Run()
 //    }
 
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mProperties = properties;
     }
     return NOERROR;
@@ -150,7 +150,7 @@ ECode LocationProviderProxy::GetProperties(
     /* [out] */ IProviderProperties** properties)
 {
     VALIDATE_NOT_NULL(properties)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *properties = mProperties;
     REFCOUNT_ADD(*properties);
     return NOERROR;
@@ -161,7 +161,7 @@ ECode LocationProviderProxy::Enable()
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mEnabled = TRUE;
     }
 
@@ -184,7 +184,7 @@ ECode LocationProviderProxy::Disable()
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mEnabled = FALSE;
     }
 
@@ -206,7 +206,7 @@ ECode LocationProviderProxy::Disable()
 ECode LocationProviderProxy::IsEnabled(
     /* [out] */ Boolean* enable)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(enable);
     *enable = mEnabled;
     return NOERROR;
@@ -219,7 +219,7 @@ ECode LocationProviderProxy::SetRequest(
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mRequest = request;
         mWorksource = source;
     }

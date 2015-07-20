@@ -429,7 +429,7 @@ Boolean DisplayPowerController::RequestPowerState(
             , request, waitForNegativeProximity);
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Boolean changed = FALSE;
 
     if (waitForNegativeProximity && !mPendingWaitForNegativeProximityLocked) {
@@ -460,7 +460,7 @@ Boolean DisplayPowerController::RequestPowerState(
 
 void DisplayPowerController::SendUpdatePowerState()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     SendUpdatePowerStateLocked();
 }
 
@@ -519,7 +519,7 @@ void DisplayPowerController::UpdatePowerState()
     mTwilightChanged = FALSE;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mPendingUpdatePowerStateLocked = FALSE;
         if (mPendingRequestLocked == NULL) {
             return; // wait until first actual power request
@@ -705,7 +705,7 @@ void DisplayPowerController::UpdatePowerState()
             && (mElectronBeamOffAnimator->IsStarted(&isOffStarted), !isOffStarted)
             && mPowerState->WaitUntilClean(mCleanListener)) {
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             if (!mPendingRequestChangedLocked) {
                 mDisplayReadyLocked = TRUE;
 

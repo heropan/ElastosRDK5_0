@@ -1390,7 +1390,7 @@ ECode CMediaScanner::constructor(
 ECode CMediaScanner::StopScan()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if(mScanCount > 0) {
             mStopScan = TRUE;
@@ -1835,7 +1835,7 @@ ECode CMediaScanner::ScanDirectories(
 
     for (Int32 i = 0; i < directories->GetLength(); i++) {
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             if (mStopScan == TRUE) {
                 break;
             }
@@ -1920,7 +1920,7 @@ _EXIT_:
 void CMediaScanner::StartScan()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mScanCount++;
     }
 }
@@ -1928,7 +1928,7 @@ void CMediaScanner::StartScan()
 void CMediaScanner::ExitScan()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mScanCount--;
         if( mScanCount == 0 ){
             if(mStopScan == TRUE) {

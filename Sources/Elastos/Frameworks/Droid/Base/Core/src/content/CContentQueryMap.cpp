@@ -96,7 +96,7 @@ ECode CContentQueryMap::GetValues(
     /* [in] */ const String& rowName,
     /* [out] */ IContentValues** contentValues)
 {
-    Mutex::Autolock lock(mMethodLock);
+    AutoLock lock(mMethodLock);
     VALIDATE_NOT_NULL(contentValues)
     *contentValues = NULL;
 
@@ -143,7 +143,7 @@ ECode CContentQueryMap::GetRows(
     VALIDATE_NOT_NULL(rows);
     *rows = NULL;
 
-    Mutex::Autolock lock(mMethodLock);
+    AutoLock lock(mMethodLock);
     VALIDATE_NOT_NULL(rows)
     if (mDirty) {
         FAIL_RETURN(Requery())
@@ -160,7 +160,7 @@ ECode CContentQueryMap::GetRows(
 
 ECode CContentQueryMap::Close()
 {
-    Mutex::Autolock lock(mMethodLock);
+    AutoLock lock(mMethodLock);
     if (NULL != mContentObserver) {
         FAIL_RETURN(mCursor->UnregisterContentObserver(mContentObserver))
         mContentObserver = NULL;
@@ -204,7 +204,7 @@ ECode CContentQueryMap::Finalize()
 ECode CContentQueryMap::ReadCursorIntoCache(
     /* [in] */ ICursor* cursor)
 {
-    Mutex::Autolock lock(mMethodLock);
+    AutoLock lock(mMethodLock);
     // Make a new map so old values returned by getRows() are undisturbed.
     Int32 capacity = mValues.GetSize();
     mValues.Clear();
@@ -250,7 +250,7 @@ ECode CContentQueryMap::AddObserver(
         return E_NULL_POINTER_EXCEPTION;
     }
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Boolean isflag = FALSE;
         if (!(mObservers->Contains(observer, &isflag), isflag))
             mObservers->Add(observer, &isflag);
@@ -296,7 +296,7 @@ ECode CContentQueryMap::NotifyObservers(
     Int32 size = 0;
     AutoPtr< ArrayOf<IInterface*> > arrays;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Boolean isflag = FALSE;
         if (HasChanged(&isflag), isflag) {
             ClearChanged();

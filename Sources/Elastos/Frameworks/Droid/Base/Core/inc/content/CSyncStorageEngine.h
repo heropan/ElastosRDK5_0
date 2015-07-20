@@ -15,7 +15,6 @@
 
 
 using namespace Elastos::Core;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Accounts::IAccountAndUser;
 using Elastos::Droid::Database::ICursor;
@@ -585,7 +584,7 @@ private:
     AutoPtr<SparseArray> mMasterSyncAutomatically;
     Boolean mDefaultMasterSyncAutomatically;
     AutoPtr<ISyncStorageEngineOnSyncRequestListener> mSyncRequestListener;
-    Mutex mAuthoritiesLock;
+    Object mAuthoritiesLock;
 };
 
 }

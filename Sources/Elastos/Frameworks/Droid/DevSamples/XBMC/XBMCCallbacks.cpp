@@ -20,7 +20,7 @@ using Elastos::Droid::Graphics::CSurfaceTexture;
 using Elastos::Droid::View::ISurface;
 using Elastos::Droid::View::CSurface;
 
-static Mutex gLock;
+static Object gLock;
 
 extern start_browser();
 extern start_calculator();
@@ -110,7 +110,7 @@ int ElAudioTrack_GetMinBufferSize(int sampleRateInHz, int channelConfig, int aud
 
 void* ElWifi_Start_Internal(void* arg)
 {
-    Mutex::Autolock lock(&gLock);
+    AutoLock lock(&gLock);
 
     if(!WifiNative::LoadDriver())
         return NULL;
@@ -159,7 +159,7 @@ bool ElWifi_Start()
 
 void* ElWifi_Stop_Internal(void*)
 {
-    Mutex::Autolock lock(&gLock);
+    AutoLock lock(&gLock);
 
     WifiNative::StopDhcp();
 

@@ -10,7 +10,6 @@
 using Elastos::Core::IRunnable;
 using Elastos::Core::IInteger32;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Core::IThread;
 using Elastos::Core::Thread;
 using Elastos::Core::ThreadState;
@@ -138,7 +137,7 @@ class SmsIOThread : public IThread
 private:
     AutoPtr<IHandler> mHandler;
     static AutoPtr<SmsIOThread> sInstance;
-    Mutex mSync;
+    Object mSync;
 
 public:
     static SmsIOThread * GetInstance();
@@ -150,7 +149,7 @@ public:
     CARAPI_(PInterface) Probe(
             /* [in]  */ REIID riid);
 
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 
     UInt32 AddRef();
 

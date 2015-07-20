@@ -9,7 +9,6 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Os::Binder;

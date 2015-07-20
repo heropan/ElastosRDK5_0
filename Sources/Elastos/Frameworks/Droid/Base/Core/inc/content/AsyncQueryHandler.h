@@ -7,7 +7,6 @@
 
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::HandlerBase;
@@ -255,7 +254,7 @@ private:
 //    final WeakReference<ContentResolver> mResolver;
     AutoPtr<IWeakReference> mResolver;
     AutoPtr<IHandler> mWorkerThreadHandler;
-    Mutex mAsyncQueryHandlerLock;
+    Object mAsyncQueryHandlerLock;
 
 };
 

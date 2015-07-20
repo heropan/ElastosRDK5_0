@@ -49,7 +49,7 @@ ECode NtpTrustedTime::GetInstance(
 {
     VALIDATE_NOT_NULL(instance);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (sSingleton == NULL) {
         AutoPtr<IResources> res;
         context->GetResources((IResources**)&res);

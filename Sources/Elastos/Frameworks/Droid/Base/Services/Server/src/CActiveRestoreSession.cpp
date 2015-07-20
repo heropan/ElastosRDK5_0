@@ -34,7 +34,7 @@ ECode CActiveRestoreSession::GetAvailableRestoreSets(
     /* [out] */ Int32* result)
 {
     {
-        Mutex::Autolock lock(mActivieRSLock);
+        AutoLock lock(mActivieRSLock);
         VALIDATE_NOT_NULL(result);
 
         *result = 0;
@@ -94,7 +94,7 @@ ECode CActiveRestoreSession::RestoreAll(
     /* [in] */ IIRestoreObserver* observer,
     /* [out] */ Int32* value)
 {
-    Mutex::Autolock lock(mActivieRSLock);
+    AutoLock lock(mActivieRSLock);
     VALIDATE_NOT_NULL(value);
     *value = 0;
     mHost->mContext->EnforceCallingOrSelfPermission(
@@ -121,7 +121,7 @@ ECode CActiveRestoreSession::RestoreAll(
     }
 
     {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         if (mRestoreSets != NULL) {
             Int64 tempToken = 0;
             for (Int32 i = 0; i < mRestoreSets->GetLength(); i++) {
@@ -208,7 +208,7 @@ ECode CActiveRestoreSession::RestoreSome(
     }
 
     {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         Int64 tempToken;
         for (Int32 i = 0; i < mRestoreSets->GetLength(); ++i) {
             (*mRestoreSets)[i]->GetToken(&tempToken);
@@ -238,7 +238,7 @@ ECode CActiveRestoreSession::RestorePackage(
     /* [out] */ Int32* value)
 {
     {
-        Mutex::Autolock lock(mActivieRSLock);
+        AutoLock lock(mActivieRSLock);
         VALIDATE_NOT_NULL(value);
         *value = 0;
 
@@ -363,7 +363,7 @@ ECode CActiveRestoreSession::EndRestoreRunnable::Run()
 {
     // clean up the session's bookkeeping
     {
-        Mutex::Autolock lock(mSessionLock);
+        AutoLock lock(mSessionLock);
         // TRY {
         ECode ec = NOERROR;
         if (mSession->mRestoreTransport != NULL) {

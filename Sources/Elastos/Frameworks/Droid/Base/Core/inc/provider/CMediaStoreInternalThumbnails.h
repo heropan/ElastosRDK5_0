@@ -69,7 +69,7 @@ private:
 
 private:
     AutoPtr<ArrayOf<String> > PROJECTION;
-    Mutex sThumbBufLock;
+    Object sThumbBufLock;
     AutoPtr<ArrayOf<Byte> > sThumbBuf;
 };
 

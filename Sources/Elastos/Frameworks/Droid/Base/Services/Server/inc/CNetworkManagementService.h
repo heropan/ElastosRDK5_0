@@ -18,7 +18,6 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-using Elastos::Core::Mutex;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IFileInputStream;
@@ -492,7 +491,7 @@ private:
 
     AutoPtr<INetworkStatsFactory> mStatsFactory;
 
-    Mutex mQuotaLock;
+    Object mQuotaLock;
     /** Set of interfaces with active quotas. */
     HashMap<String, Int64> mActiveQuotas;
     /** Set of interfaces with active alerts. */
@@ -500,7 +499,7 @@ private:
     /** Set of UIDs with active reject rules. */
     HashMap<Int32, Boolean> mUidRejectOnQuota;
 
-    Mutex mIdleTimerLock;
+    Object mIdleTimerLock;
 
     HashMap<String, AutoPtr<IdleTimerParams> > mActiveIdleTimers;
 

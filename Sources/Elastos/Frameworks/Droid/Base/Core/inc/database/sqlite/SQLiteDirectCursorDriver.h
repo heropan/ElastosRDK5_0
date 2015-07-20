@@ -3,7 +3,6 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::Os::ICancellationSignal;
 

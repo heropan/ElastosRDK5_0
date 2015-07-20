@@ -12,7 +12,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::AppWidget::IIAppWidgetService;
@@ -246,7 +245,7 @@ private:
     AutoPtr<IHandler> mSaveStateHandler;
 
     HashMap<Int32, AutoPtr<AppWidgetServiceImpl> > mAppWidgetServices;
-    Mutex mAppWidgetServicesLock;
+    Object mAppWidgetServicesLock;
     AutoPtr<UserBroadcastReceiver> mUserBroadcastReceiver;
     AutoPtr<SysBroadcastReceiver> mBroadcastReceiver;
 };

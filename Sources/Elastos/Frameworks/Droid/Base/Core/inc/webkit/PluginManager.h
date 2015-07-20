@@ -102,7 +102,7 @@ private:
     AutoPtr<IContext> mContext;
 
     List< AutoPtr<IPackageInfo> > mPackageInfoCache;
-    Mutex mPackageInfoCacheLock;
+    Object mPackageInfoCacheLock;
 };
 
 } // namespace Webkit

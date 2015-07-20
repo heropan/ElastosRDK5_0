@@ -222,7 +222,7 @@ ECode CUsageStatsService::LocalPackageMonitor::OnPackageRemovedAllUsers(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mHost->mStatsLock);
+    AutoLock lock(mHost->mStatsLock);
     mHost->mLastResumeTimes.Erase(packageName);
     return NOERROR;
 }
@@ -332,7 +332,7 @@ String CUsageStatsService::GetCurrentDateStr(
 {
     StringBuilder sb;
     {
-        Mutex::Autolock lock(mCalLock);
+        AutoLock lock(mCalLock);
         AutoPtr<ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
         Int64 now;
@@ -388,7 +388,7 @@ void CUsageStatsService::ReadStatsFromFile()
 {
     AutoPtr<IFile> newFile = mFile;
     {
-        Mutex::Autolock lock(mFileLock);
+        AutoLock lock(mFileLock);
     //     try {
         Boolean exist;
         newFile->Exists(&exist);
@@ -434,7 +434,7 @@ void CUsageStatsService::ReadStatsFLOCK(
         if (mLocalLOGV) Slogger::V(TAG, "Reading package #%d: %s", N, pkgName.string());
         AutoPtr<PkgUsageStatsExtended> pus = new PkgUsageStatsExtended(in);
         {
-            Mutex::Autolock lock(mStatsLock);
+            AutoLock lock(mStatsLock);
             mStats[pkgName] = pus;
         }
     }
@@ -442,7 +442,7 @@ void CUsageStatsService::ReadStatsFLOCK(
 
 void CUsageStatsService::ReadHistoryStatsFromFile()
 {
-    Mutex::Autolock lock(mFileLock);
+    AutoLock lock(mFileLock);
     AutoPtr<IFile> bFile;
     mHistoryFile->GetBaseFile((IFile**)&bFile);
     Boolean exist;
@@ -487,7 +487,7 @@ ECode CUsageStatsService::ReadHistoryStatsFLOCK(
                         // try {
                         Int64 lastResumeTime = StringUtils::ParseInt64(lastResumeTimeStr);
                         {
-                            Mutex::Autolock lock(mStatsLock);
+                            AutoLock lock(mStatsLock);
                             LastResumeTimeMapIterator it = mLastResumeTimes.Find(pkg);
                             AutoPtr<StringInt64Map> lrt;
                             if (it == mLastResumeTimes.End()) {
@@ -588,7 +588,7 @@ void CUsageStatsService::WriteStatsToFile(
 {
     Int32 curDay;
     {
-        Mutex::Autolock lock(mCalLock);
+        AutoLock lock(mCalLock);
         AutoPtr<ISystem> system;
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
         Int64 millis;
@@ -625,7 +625,7 @@ void CUsageStatsService::WriteStatsToFile(
     }
 
     {
-        Mutex::Autolock lock(mFileLock);
+        AutoLock lock(mFileLock);
         // Get the most recent file
         mFileLeaf = GetCurrentDateStr(FILE_PREFIX);
         // Copy current file to back up
@@ -658,7 +658,7 @@ void CUsageStatsService::WriteStatsToFile(
                 mLastWriteDay->Set(curDay);
                 // clear stats
                 {
-                    Mutex::Autolock lock(mStatsLock);
+                    AutoLock lock(mStatsLock);
                     mStats.Clear();
                 }
                 mFile = NULL;
@@ -711,7 +711,7 @@ void CUsageStatsService::WriteStatsFLOCK(
 void CUsageStatsService::WriteStatsToParcelFLOCK(
     /* [in] */ IParcel* out)
 {
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     out->WriteInt32(VERSION);
     out->WriteInt32(mStats.GetSize());
     HashMap<String, AutoPtr<PkgUsageStatsExtended> >::Iterator it;
@@ -725,7 +725,7 @@ void CUsageStatsService::WriteStatsToParcelFLOCK(
 
 void CUsageStatsService::FilterHistoryStats()
 {
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     // Copy and clear the last resume times map, then copy back stats
     // for all installed packages.
     LastResumeTimeMap tmpLastResumeTimes(mLastResumeTimes.Begin(), mLastResumeTimes.End());
@@ -768,7 +768,7 @@ void CUsageStatsService::WriteHistoryStatsFLOCK(
     FAIL_GOTO(out->SetFeature(String("http://xmlpull.org/v1/doc/features.html#indent-output"), TRUE), EXCEPTION);
     FAIL_GOTO(out->WriteStartTag(String(NULL), String("usage-history")), EXCEPTION);
     {
-        Mutex::Autolock lock(mStatsLock);
+        AutoLock lock(mStatsLock);
         LastResumeTimeMapIterator it;
         for (it = mLastResumeTimes.Begin(); it != mLastResumeTimes.End(); ++it) {
             FAIL_GOTO(out->WriteStartTag(String(NULL), String("pkg")), EXCEPTION);
@@ -843,7 +843,7 @@ ECode CUsageStatsService::NoteResumeComponent(
     FAIL_RETURN(EnforceCallingPermission());
     String pkgName;
     {
-        Mutex::Autolock lock(mStatsLock);
+        AutoLock lock(mStatsLock);
         if ((componentName == NULL) ||
                 (componentName->GetPackageName(&pkgName), pkgName.IsNull())) {
             return NOERROR;
@@ -905,7 +905,7 @@ ECode CUsageStatsService::NotePauseComponent(
     FAIL_RETURN(EnforceCallingPermission());
 
     {
-        Mutex::Autolock lock(mStatsLock);
+        AutoLock lock(mStatsLock);
         String pkgName;
         if ((componentName == NULL) ||
                 (componentName->GetPackageName(&pkgName), pkgName.IsNull())) {
@@ -950,7 +950,7 @@ ECode CUsageStatsService::NoteLaunchTime(
     // Persist current data to file if needed.
     WriteStatsToFile(FALSE, FALSE);
 
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     HashMap<String, AutoPtr<PkgUsageStatsExtended> >::Iterator it = mStats.Find(pkgName);
     AutoPtr<PkgUsageStatsExtended> pus;
     if (it != mStats.End()) pus = it->mSecond;
@@ -987,7 +987,7 @@ ECode CUsageStatsService::GetPkgUsageStats(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     HashMap<String, AutoPtr<PkgUsageStatsExtended> >::Iterator it = mStats.Find(pkgName);
     AutoPtr<PkgUsageStatsExtended> pus;
     if (it != mStats.End()) pus = it->mSecond;
@@ -1020,7 +1020,7 @@ ECode CUsageStatsService::GetAllPkgUsageStats(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::PACKAGE_USAGE_STATS, String(NULL)));
 
-    Mutex::Autolock lock(mStatsLock);
+    AutoLock lock(mStatsLock);
     Int32 size = mLastResumeTimes.GetSize();
     if (size <= 0) {
         return NOERROR;

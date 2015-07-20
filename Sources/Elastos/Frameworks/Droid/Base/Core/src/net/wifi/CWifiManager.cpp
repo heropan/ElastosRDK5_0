@@ -50,13 +50,13 @@ CWifiManager::WifiLock::WifiLock(
 
 CWifiManager::WifiLock::~WifiLock()
 {
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
     if (mHeld) {
         // try {
         Boolean result = FALSE;
         mOwner->mService->ReleaseWifiLock(mBinder, &result);
         {
-            Mutex::Autolock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner->_m_syncLock);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
@@ -68,13 +68,13 @@ CAR_INTERFACE_IMPL(CWifiManager::WifiLock, IWifiLock)
 
 ECode CWifiManager::WifiLock::AcquireLock()
 {
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
     if (mRefCounted ? (++mRefCount == 1) : (!mHeld)) {
         // try {
         Boolean result = FALSE;
         mOwner->mService->AcquireWifiLock(mBinder, mLockType, mTag, mWorkSource, &result);
         {
-            Mutex::Autolock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner->_m_syncLock);
 
             if (mOwner->mActiveLockCount >= MAX_ACTIVE_LOCKS) {
                 mOwner->mService->ReleaseWifiLock(mBinder, &result);
@@ -93,13 +93,13 @@ ECode CWifiManager::WifiLock::AcquireLock()
 
 ECode CWifiManager::WifiLock::ReleaseLock()
 {
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
     if (mRefCounted ? (--mRefCount == 0) : (mHeld)) {
         // try {
         Boolean result = FALSE;
         mOwner->mService->ReleaseWifiLock(mBinder, &result);
         {
-            Mutex::Autolock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner->_m_syncLock);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
@@ -124,7 +124,7 @@ ECode CWifiManager::WifiLock::IsHeld(
     /* [out] */ Boolean* held)
 {
     VALIDATE_NOT_NULL(held);
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
     *held = mHeld;
     return NOERROR;
 }
@@ -132,7 +132,7 @@ ECode CWifiManager::WifiLock::IsHeld(
 ECode CWifiManager::WifiLock::SetWorkSource(
     /* [in] */ IWorkSource* ws)
 {
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
 
     Int32 size = 0;
     if (ws != NULL && (ws->GetSize(&size), size == 0)) {
@@ -188,13 +188,13 @@ CAR_INTERFACE_IMPL(CWifiManager::MulticastLock, IMulticastLock)
 ECode CWifiManager::MulticastLock::AcquireLock()
 {
     {
-        Mutex::Autolock lock(mBinderLock);
+        AutoLock lock(mBinderLock);
 
         if (mRefCounted ? (++mRefCount == 1) : (!mHeld)) {
             // try {
             mOwner->mService->AcquireMulticastLock(mBinder, mTag);
             {
-                Mutex::Autolock lock(mOwner->_m_syncLock);
+                AutoLock lock(mOwner->_m_syncLock);
 
                 if (mOwner->mActiveLockCount >= MAX_ACTIVE_LOCKS) {
                     mOwner->mService->ReleaseMulticastLock();
@@ -214,13 +214,13 @@ ECode CWifiManager::MulticastLock::AcquireLock()
 
 ECode CWifiManager::MulticastLock::ReleaseLock()
 {
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
 
     if (mRefCounted ? (--mRefCount == 0) : (mHeld)) {
         // try {
         mOwner->mService->ReleaseMulticastLock();
         {
-            Mutex::Autolock lock(mOwner->_m_syncLock);
+            AutoLock lock(mOwner->_m_syncLock);
             mOwner->mActiveLockCount--;
         }
         // } catch (RemoteException ignore) {
@@ -246,7 +246,7 @@ ECode CWifiManager::MulticastLock::IsHeld(
     /* [in] */ Boolean* held)
 {
     VALIDATE_NOT_NULL(held);
-    Mutex::Autolock lock(mBinderLock);
+    AutoLock lock(mBinderLock);
     *held = mHeld;
     return NOERROR;
 }
@@ -331,7 +331,7 @@ ECode CWifiManager::ServiceHandler::HandleMessage(
                 result->GetPin(&pin);
                 IWpsListener::Probe(listener)->OnStartSuccess(pin);
                 //Listener needs to stay until completion or failure
-                Mutex::Autolock lock(mOwner->mListenerMapLock);
+                AutoLock lock(mOwner->mListenerMapLock);
                 mOwner->mListenerMap[arg2] = listener;
             }
             break;
@@ -404,7 +404,7 @@ CWifiManager::~CWifiManager()
 
     //try {
     {
-        Mutex::Autolock lock(sThreadRefLock);
+        AutoLock lock(sThreadRefLock);
         if (--sThreadRefCount == 0 && sHandlerThread != NULL) {
             AutoPtr<ILooper> l;
             sHandlerThread->GetLooper((ILooper**)&l);
@@ -927,7 +927,7 @@ Int32 CWifiManager::PutListener(
     if (listener == NULL) return INVALID_KEY;
     Int32 key = 0;
     {
-        Mutex::Autolock lock(mListenerMapLock);
+        AutoLock lock(mListenerMapLock);
 
         do {
             key = mListenerKey++;
@@ -942,7 +942,7 @@ AutoPtr<IInterface> CWifiManager::RemoveListener(
 {
     if (key == INVALID_KEY) return NULL;
     {
-        Mutex::Autolock lock(mListenerMapLock);
+        AutoLock lock(mListenerMapLock);
 
         AutoPtr<IInterface> listener;
         HashMap<Int32, AutoPtr<IInterface> >::Iterator it = mListenerMap.Find(key);
@@ -963,7 +963,7 @@ void CWifiManager::Init()
     }
 
     {
-        Mutex::Autolock lock(sThreadRefLock);
+        AutoLock lock(sThreadRefLock);
         if (++sThreadRefCount == 1) {
             sHandlerThread = NULL;
             CHandlerThread::New(String("WifiManager"), (IHandlerThread**)&sHandlerThread);

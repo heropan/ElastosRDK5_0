@@ -91,7 +91,7 @@ LocationFudger::LocationFudger(
     Float accuracy = LoadCoarseAccuracy();
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         SetAccuracyInMetersLocked(accuracy);
         mOffsetLatitudeMeters = NextOffsetLocked();
         mOffsetLongitudeMeters = NextOffsetLocked();
@@ -107,7 +107,7 @@ AutoPtr<ILocation> LocationFudger::GetOrCreate(
 {
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         assert(location != NULL);
 
@@ -137,7 +137,7 @@ void LocationFudger::Dump(
 
 Double LocationFudger::NextOffsetLocked()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (sHavaNextNextGaussian) {
         sHavaNextNextGaussian = FALSE;
         return sNextNextGaussian * mStandardDeviationInMeters;
@@ -361,7 +361,7 @@ void LocationFudger::SetAccuracyInMetersLocked(
 void LocationFudger::SetAccuracyInMeters(
     /* [in] */ Float accuracyInMeters)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     SetAccuracyInMetersLocked(accuracyInMeters);
 }
 

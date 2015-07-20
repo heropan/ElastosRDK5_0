@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::Object;
 using Elastos::Utility::ILinkedList;
 
@@ -90,7 +89,7 @@ private:
 //            new ReferenceQueue<Chunk>();
 
     AutoPtr<ILinkedList> mChunks;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Webkit

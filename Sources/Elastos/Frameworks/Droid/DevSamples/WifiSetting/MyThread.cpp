@@ -318,7 +318,7 @@ printf("File=[%s], Line = [%d], FUNC = [%s], mScanResult=[%p], mPassword=[%p]\n"
     return NOERROR;
 }
 
-Mutex* MyThread::GetSelfLock()
+Object* MyThread::GetSelfLock()
 {
     return &mLock;
 }

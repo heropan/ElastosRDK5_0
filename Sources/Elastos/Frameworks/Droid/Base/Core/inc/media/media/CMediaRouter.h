@@ -525,7 +525,7 @@ public:
 private:
     static HashMap< AutoPtr<IContext>, AutoPtr<IMediaRouter> > sRouters; // = new HashMap<Context, MediaRouter>();
 
-    static Mutex mStaticClass;
+    static Object mStaticClass;
 };
 
 } // namespace Media

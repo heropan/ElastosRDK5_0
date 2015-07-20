@@ -121,7 +121,7 @@ ECode CWallpaperServiceEngineWindow::DispatchWallpaperOffsets(
     /* [in] */ Float yStep,
     /* [in] */ Boolean sync)
 {
-    Mutex::Autolock lock(mEngine->mLock);
+    AutoLock lock(mEngine->mLock);
     //if (DEBUG) Log.v(TAG, "Dispatch wallpaper offsets: " + x + ", " + y);
     mEngine->mPendingXOffset = x;
     mEngine->mPendingYOffset = y;
@@ -149,7 +149,7 @@ ECode CWallpaperServiceEngineWindow::DispatchWallpaperCommand(
     /* [in] */ IBundle* extras,
     /* [in] */ Boolean sync)
 {
-    Mutex::Autolock lock(mEngine->mLock);
+    AutoLock lock(mEngine->mLock);
     //if (DEBUG) Log.v(TAG, "Dispatch wallpaper command: " + x + ", " + y);
     AutoPtr<WallpaperService::WallpaperCommand> cmd = new WallpaperService::WallpaperCommand();
     cmd->mAction = action;

@@ -116,7 +116,7 @@ ECode CAssetManager::AssetInputStream::Available(
 
 ECode CAssetManager::AssetInputStream::Close()
 {
-    Mutex::Autolock lock(mAssetManager->_m_syncLock);
+    AutoLock lock(mAssetManager->_m_syncLock);
 
     if (mAsset != 0) {
         mAssetManager->DestroyAsset(mAsset);
@@ -235,7 +235,7 @@ CAssetManager::~CAssetManager()
 ECode CAssetManager::constructor()
 {
     if (DEBUG_REFS) {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         mNumRefs = 0;
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
     }
@@ -249,7 +249,7 @@ ECode CAssetManager::constructor(
     /* [in] */ Boolean isSystem)
 {
     if (DEBUG_REFS) {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         mNumRefs = 0;
         IncRefsLocked(GetHashCode(), "AssetManager::constructor()");
@@ -262,7 +262,7 @@ ECode CAssetManager::constructor(
 
 ECode CAssetManager::EnsureSystemAssets()
 {
-    Mutex::Autolock lock(sSync);
+    AutoLock lock(sSync);
 
     if (sSystem == NULL) {
         AutoPtr<CAssetManager> system;
@@ -283,7 +283,7 @@ AutoPtr<CAssetManager> CAssetManager::GetSystem()
 
 ECode CAssetManager::Close()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (mOpen) {
         mOpen = FALSE;
@@ -295,7 +295,7 @@ ECode CAssetManager::Close()
 AutoPtr<ICharSequence> CAssetManager::GetResourceText(
     /* [in] */Int32 ident)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<ITypedValue> tmpValue = mValue;
     Int32 block;
@@ -319,7 +319,7 @@ AutoPtr<ICharSequence> CAssetManager::GetResourceBagText(
     /* [in] */Int32 ident,
     /* [in] */Int32 bagEntryId)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     AutoPtr<ITypedValue> tmpValue = mValue;
     Int32 block;
@@ -421,7 +421,7 @@ Boolean CAssetManager::GetThemeValue(
 void CAssetManager::EnsureStringBlocks()
 {
     if (mStringBlocks == NULL) {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (mStringBlocks == NULL) {
             MakeStringBlocks(TRUE);
@@ -472,7 +472,7 @@ ECode CAssetManager::Open(
 {
     VALIDATE_NOT_NULL(stream);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -499,7 +499,7 @@ ECode CAssetManager::OpenFd(
 {
     VALIDATE_NOT_NULL(fd);
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -589,7 +589,7 @@ ECode CAssetManager::OpenNonAsset(
     /* [out] */ IInputStream ** stream)
 {
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (!mOpen) {
 //            throw new RuntimeException("Assetmanager has been closed");
@@ -626,7 +626,7 @@ ECode CAssetManager::OpenNonAssetFd(
     VALIDATE_NOT_NULL(fd);
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (!mOpen) {
             // Slogger::E(TAG, "Assetmanager has been closed");
@@ -699,7 +699,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
     VALIDATE_NOT_NULL(res);
     *res = NULL;
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (!mOpen) {
         // Slogger::E(TAG, "Assetmanager has been closed");
@@ -721,7 +721,7 @@ ECode CAssetManager::OpenXmlBlockAsset(
 void CAssetManager::XmlBlockGone(
     /* [in] */ Int32 id)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     DecRefsLocked(id, "AssetManager::XmlBlockGone");
 }
@@ -733,7 +733,7 @@ ECode CAssetManager::CreateTheme(
     *res = 0;
 
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
 
         if (!mOpen) {
             // Slogger::E(TAG, "Assetmanager has been closed");
@@ -749,7 +749,7 @@ ECode CAssetManager::CreateTheme(
 ECode CAssetManager::ReleaseTheme(
     /* [in] */ Int32 theme)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     DeleteTheme(theme);
     DecRefsLocked(theme, "AssetManager::ReleaseTheme");

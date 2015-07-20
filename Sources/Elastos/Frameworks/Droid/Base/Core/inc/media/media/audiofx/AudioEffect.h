@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
@@ -602,7 +601,7 @@ public:
      * @hide
      */
 
-    Mutex mListenerLock;
+    Object mListenerLock;
 
     /**
      * Handler for events coming from the native code
@@ -623,7 +622,7 @@ private:
     /**
      * Lock to synchronize access to mState
      */
-    Mutex mStateLock;
+    Object mStateLock;
     /**
      * System wide unique effect ID
      */

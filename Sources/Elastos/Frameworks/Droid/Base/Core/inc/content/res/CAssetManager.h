@@ -7,7 +7,6 @@
 #include "content/res/XmlBlock.h"
 #include <elastos/io/InputStream.h>
 
-using Elastos::Core::Mutex;
 using Elastos::IO::InputStream;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Utility::ITypedValue;
@@ -646,7 +645,7 @@ private:
     static const Boolean LocalLOGV;
     static const Boolean DEBUG_REFS;
 
-    static Mutex sSync;
+    static Object sSync;
 
     const AutoPtr<ITypedValue> mValue;
     AutoPtr< ArrayOf<Int64> > mOffsets;

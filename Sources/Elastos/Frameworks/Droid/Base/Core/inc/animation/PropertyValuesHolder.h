@@ -8,7 +8,6 @@
 
 using Elastos::Core::INumber;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Utility::IProperty;
 
@@ -473,7 +472,7 @@ protected:
     // This lock is used to ensure that only one thread is accessing the property maps
     // at a time.
     //ReentrantReadWriteLock mPropertyMapLock = new ReentrantReadWriteLock();
-    Mutex mPropertyMapLock;
+    Object mPropertyMapLock;
 
     // Used to pass single value to varargs parameter in setter invocation
     //final Object[] mTmpValueArray = new Object[1];

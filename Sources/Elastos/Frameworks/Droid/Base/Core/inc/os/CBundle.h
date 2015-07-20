@@ -9,7 +9,6 @@
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IClassLoader;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::IO::ISerializable;
 using Elastos::Utility::IObjectStringMap;
 using Elastos::Utility::IObjectInt32Map;
@@ -950,7 +949,7 @@ private:
      */
     AutoPtr<IClassLoader> mClassLoader;
 
-    Mutex mThisLock;
+    Object mThisLock;
 
     static const Int32 VAL_NULL = -1;
     static const Int32 VAL_NOT_NULL = 0;

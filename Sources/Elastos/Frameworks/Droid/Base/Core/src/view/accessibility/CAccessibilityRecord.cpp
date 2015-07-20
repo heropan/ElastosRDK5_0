@@ -345,7 +345,7 @@ ECode CAccessibilityRecord::Obtain(
     /* [out] */ IAccessibilityRecord** newInstance)
 {
     VALIDATE_NOT_NULL(newInstance);
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPool != NULL) {
         AccessibilityRecord* record = sPool;
         sPool = sPool->mNext;

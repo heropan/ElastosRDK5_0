@@ -224,7 +224,7 @@ PInterface SmsIOThread::Probe(
     return NULL;
 }
 
-Mutex* SmsIOThread::GetSelfLock()
+Object* SmsIOThread::GetSelfLock()
 {
     return &mSync;
 }

@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::HandlerBase;
@@ -369,7 +368,7 @@ private:
     /**
      * Lock to synchronize access to mState
      */
-    Mutex mStateLock;
+    Object mStateLock;
     /**
      * System wide unique Identifier of the visualizer engine used by this Visualizer instance
      */
@@ -378,7 +377,7 @@ private:
     /**
      * Lock to protect listeners updates against event notifications
      */
-    Mutex mListenerLock;
+    Object mListenerLock;
     /**
      * Handler for events coming from the native code
      */

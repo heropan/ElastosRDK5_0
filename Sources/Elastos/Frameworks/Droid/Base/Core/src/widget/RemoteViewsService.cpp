@@ -20,7 +20,7 @@ ECode RemoteViewsService::OnBind(
     /* [out] */ IBinder** binder)
 {
     VALIDATE_NOT_NULL(binder);
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<IIntentFilterComparison> fc;
     CIntentFilterComparison::New(intent, (IIntentFilterComparison**)&fc);

@@ -12,7 +12,7 @@ ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceUp(
     /* [in] */ IIBluetooth* bluetoothService)
 {
 	if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceUp: %p", bluetoothService);
-    Mutex::Autolock lock(mHost->mManagerCallbackLock);
+    AutoLock lock(mHost->mManagerCallbackLock);
     mHost->mService = bluetoothService;
     List<AutoPtr<IIBluetoothManagerCallback> >::Iterator it = mHost->mProxyServiceStateCallbacks.Begin();
     for (; it != mHost->mProxyServiceStateCallbacks.End(); ++it) {
@@ -32,7 +32,7 @@ ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceUp(
 ECode CBluetoothAdapterManagerCallback::OnBluetoothServiceDown()
 {
 	if (CBluetoothAdapter::VDBG) Logger::D(CBluetoothAdapter::TAG, "onBluetoothServiceDown: %p", mHost->mService.Get());
-    Mutex::Autolock lock(mHost->mManagerCallbackLock);
+    AutoLock lock(mHost->mManagerCallbackLock);
     mHost->mService = NULL;
     List<AutoPtr<IIBluetoothManagerCallback> >::Iterator it = mHost->mProxyServiceStateCallbacks.Begin();
     for (; it != mHost->mProxyServiceStateCallbacks.End(); ++it) {

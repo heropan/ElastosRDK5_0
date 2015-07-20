@@ -6,7 +6,6 @@
 #include "Elastos.Droid.Core_server.h"
 
 using Libcore::ICU::ILocale;
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::View::IView;
@@ -83,7 +82,7 @@ private:
     static const Int32 RIGHT;// = 9300; // Size of 'right' 13 Aug 2007
 
     //private static Object sLock = new Object();
-    static Mutex sAutoTextLock;
+    static Object sAutoTextLock;
 
     static AutoPtr<IAutoText> sInstance;// = new AutoText(Resources.getSystem());
     static Boolean sInited;

@@ -299,7 +299,7 @@ String CGpsNetInitiatedHandler::GetDialogTitle(
 void CGpsNetInitiatedHandler::SetNiNotification(
     /* [in] */ IGpsNiNotification* notif)
 {
-  Mutex::Autolock lock(mLock);
+  AutoLock lock(mLock);
 
   assert(notif != NULL);
 

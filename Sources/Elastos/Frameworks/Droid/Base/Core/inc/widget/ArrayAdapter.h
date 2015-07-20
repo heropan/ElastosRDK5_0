@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IComparator;
 using Elastos::Droid::Content::IContext;
@@ -222,7 +221,7 @@ private:
      * used by the filter (see {@link #getFilter()} to make a synchronized copy of
      * the original array of data.
      */
-    Mutex mLock;
+    Object mLock;
 
     /**
      * The resource indicating what views to inflate to display the content of this

@@ -51,7 +51,7 @@ class DroidBBinderHolder : public android::RefBase
 public:
     android::sp<DroidBBinder> get(IInterface* obj)
     {
-        Mutex::Autolock _l(mLock);
+        AutoLock _l(mLock);
 
         android::sp<DroidBBinder> b = mBinder.promote();
         if (b == NULL) {
@@ -66,17 +66,17 @@ public:
 
     android::sp<DroidBBinder> getExisting()
     {
-        Mutex::Autolock _l(mLock);
+        AutoLock _l(mLock);
 
         return mBinder.promote();
     }
 
 private:
-    Mutex mLock;
+    Object mLock;
     android::wp<DroidBBinder> mBinder;
 };
 
-static Mutex sProxyLock;
+static Object sProxyLock;
 
 AutoPtr<IBinder> DroidObjectForIBinder(const android::sp<android::IBinder>& val)
 {
@@ -91,7 +91,7 @@ AutoPtr<IBinder> DroidObjectForIBinder(const android::sp<android::IBinder>& val)
 
     // For the rest of the function we will hold this lock, to serialize
     // looking/creation of Java proxies for native Binder proxies.
-    Mutex::Autolock _l(sProxyLock);
+    AutoLock _l(sProxyLock);
 
     // Someone else's...  do we know about it?
     AutoPtr<BinderProxy> object = (BinderProxy*)val->findObject(&gBinderProxyOffsets);

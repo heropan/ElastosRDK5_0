@@ -388,7 +388,7 @@ public:
 public:
     static const String TAG;
 
-    static Mutex sManagerCacheLock;
+    static Object sManagerCacheLock;
     // WeakHashMap<Context, WeakReference<AppWidgetManager> >
     typedef HashMap<AutoPtr<IContext>, AutoPtr<IWeakReference> > CacheMap;
     typedef typename HashMap<AutoPtr<IContext>, AutoPtr<IWeakReference> >::Iterator CacheMapIterator;

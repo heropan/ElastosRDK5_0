@@ -4,7 +4,6 @@
 
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
-#include <elrefbase.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;

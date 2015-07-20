@@ -6,7 +6,6 @@
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IWorkSource;
@@ -246,7 +245,7 @@ private:
     static const Int32 MSG_BOOT_FAST_WAKE;// = 4;
     static const Int32 MSG_BOOT_FAST_SLEEP;// = 5;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IIBatteryStats> mBatteryStats;

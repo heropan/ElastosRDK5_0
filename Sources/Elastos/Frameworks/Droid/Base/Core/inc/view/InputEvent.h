@@ -182,7 +182,7 @@ protected:
 
 private:
     static Int32 sNextSeq;
-    static Mutex sNextSeqLock;
+    static Object sNextSeqLock;
     static const Boolean TRACK_RECYCLED_LOCATION = FALSE;
 };
 

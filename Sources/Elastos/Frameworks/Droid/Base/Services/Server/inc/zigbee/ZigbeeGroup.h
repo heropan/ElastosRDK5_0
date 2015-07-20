@@ -3,7 +3,6 @@
 #define __ZIGBEEGROUP_H__
 
 #include "ext/frameworkext.h"
-#include <elrefbase.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

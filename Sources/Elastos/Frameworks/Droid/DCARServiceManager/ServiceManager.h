@@ -10,7 +10,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 class ServiceManager : public ElLightRefBase
@@ -35,7 +34,7 @@ private:
     static AutoPtr<ServiceManager> sInstance;
 
     Boolean mIsConnected;
-    Mutex mConnectedLock;
+    Object mConnectedLock;
     String mServerIpAddress;
     Int32 mServerPort;
 };

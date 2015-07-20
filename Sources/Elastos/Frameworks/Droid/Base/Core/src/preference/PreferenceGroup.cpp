@@ -170,7 +170,7 @@ ECode PreferenceGroup::AddPreference(
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mPreferenceList.Insert(insertionIndex, preference);
     }
 
@@ -201,7 +201,7 @@ ECode PreferenceGroup::RemovePreference(
 Boolean PreferenceGroup::RemovePreferenceInt(
     /* [in] */ IPreference* preference)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     preference->OnPrepareForRemoval();
     mPreferenceList.Remove(preference);
     return TRUE;
@@ -210,7 +210,7 @@ Boolean PreferenceGroup::RemovePreferenceInt(
 ECode PreferenceGroup::RemoveAll()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         List<AutoPtr<IPreference> > preferenceList(mPreferenceList);
         for (Int32 i = preferenceList.GetSize() - 1; i >= 0; i--) {
             RemovePreferenceInt(*(preferenceList.Begin()));
@@ -335,7 +335,7 @@ ECode PreferenceGroup::SetEnabled(
 
 ECode PreferenceGroup::SortPreferences()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<IArrayList> arrayList;
     CArrayList::New((IArrayList**)&arrayList);
     List<AutoPtr<IPreference> >::Iterator it = mPreferenceList.Begin();

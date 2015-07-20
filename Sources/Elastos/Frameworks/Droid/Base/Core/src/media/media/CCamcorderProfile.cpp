@@ -14,7 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace Media {
 
-static Mutex sLock;
+static Object sLock;
 
 const Int32 CCamcorderProfile::QUALITY_LIST_START = ICamcorderProfile::QUALITY_LOW;
 const Int32 CCamcorderProfile::QUALITY_LIST_END = ICamcorderProfile::QUALITY_QVGA;

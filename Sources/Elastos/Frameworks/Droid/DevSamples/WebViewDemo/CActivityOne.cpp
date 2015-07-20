@@ -12,7 +12,6 @@
 
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Core::Thread;
 using Elastos::Droid::App::CProgressDialog;
 using Elastos::Droid::Os::CHandler;
@@ -748,13 +747,13 @@ ECode CActivityOne::Loadurl(
 //         };
 
 //     private:
-//         CARAPI_(Mutex*) GetSelfLock()
+//         CARAPI_(Object*) GetSelfLock()
 //         {
 //             return &mMutex;
 //         }
 
 //     private:
-//         Mutex mMutex;
+//         Object mMutex;
 //         AutoPtr<IWebView> view;
 //         String url;
 //         AutoPtr<CActivityOne> mHost;

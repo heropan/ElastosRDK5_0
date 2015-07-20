@@ -37,7 +37,7 @@ CAR_INTERFACE_IMPL(DataManager, IInterface)
 
 void DataManager::InitializeSourceMap()
 {
-    Mutex::Autolock lock(sLOCK);
+    AutoLock lock(sLOCK);
     if (!mSourceMap.IsEmpty()) return;
     AutoPtr<LocalSource> localSource = new LocalSource(mApplication);
     AddSource(localSource);

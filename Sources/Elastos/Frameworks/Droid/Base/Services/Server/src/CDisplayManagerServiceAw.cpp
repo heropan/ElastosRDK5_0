@@ -52,7 +52,7 @@ ECode CDisplayManagerServiceAw::DisplayThread::Run()
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_FOREGROUND);
     Process::SetCanSelfBackground(FALSE);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         NotifyAll();
     }
     while(TRUE)
@@ -90,7 +90,7 @@ ECode CDisplayManagerServiceAw::DisplayThread::Run()
     return NOERROR;
 }
 
-Mutex* CDisplayManagerServiceAw::DisplayThread::GetSelfLock()
+Object* CDisplayManagerServiceAw::DisplayThread::GetSelfLock()
 {
     return &mLock;
 }

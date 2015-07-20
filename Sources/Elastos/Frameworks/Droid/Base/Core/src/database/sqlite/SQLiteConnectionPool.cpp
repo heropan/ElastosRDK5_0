@@ -106,7 +106,7 @@ ECode SQLiteConnectionPool::Dispose(
         // when finalized because we don't know what state the connections
         // themselves will be in.  The finalizer is really just here for CloseGuard.
         // The connections will take care of themselves when their own finalizers run.
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         FAIL_RETURN(ThrowIfClosedLocked())
 
         mIsOpen = FALSE;
@@ -133,7 +133,7 @@ ECode SQLiteConnectionPool::Reconfigure(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     FAIL_RETURN(ThrowIfClosedLocked())
 
     Boolean walModeChanged = ((configuration->mOpenFlags ^ mConfiguration->mOpenFlags)
@@ -219,7 +219,7 @@ ECode SQLiteConnectionPool::AcquireConnection(
 ECode SQLiteConnectionPool::ReleaseConnection(
     /* [in] */ SQLiteConnection* connection)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AcquiredConnectionStatus status;
     HashMap<AutoPtr<SQLiteConnection>, AcquiredConnectionStatus>::Iterator it = mAcquiredConnections.Find(connection);
@@ -284,7 +284,7 @@ ECode SQLiteConnectionPool::ShouldYieldConnection(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     HashMap<AutoPtr<SQLiteConnection>, AcquiredConnectionStatus>::Iterator it;
     for (it = mAcquiredConnections.Begin(); it != mAcquiredConnections.End(); it++) {
@@ -312,7 +312,7 @@ ECode SQLiteConnectionPool::ShouldYieldConnection(
 void SQLiteConnectionPool::CollectDbStats(
     /* [in] */ List<AutoPtr<SQLiteDebug::DbStats> >* dbStatsList)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mAvailablePrimaryConnection != NULL) {
         mAvailablePrimaryConnection->CollectDbStats(dbStatsList);
@@ -494,7 +494,7 @@ CAR_INTERFACE_IMPL(SQLiteConnectionPool::OnCancelListener, ICancellationSignalOn
 
 ECode SQLiteConnectionPool::OnCancelListener::OnCancel()
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     if (mWaiter->mNonce == mNonce) {
         mHost->CancelConnectionWaiterLocked(mWaiter);
     }
@@ -516,7 +516,7 @@ ECode SQLiteConnectionPool::WaitForConnection(
     AutoPtr<ConnectionWaiter> waiter;
     Int32 nonce;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         FAIL_RETURN(ThrowIfClosedLocked())
 
@@ -575,7 +575,7 @@ ECode SQLiteConnectionPool::WaitForConnection(
         // Detect and recover from connection leaks.
         Boolean value;
         if (mConnectionLeaked->CompareAndSet(TRUE, FALSE, &value), value) {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             WakeConnectionWaitersLocked();
         }
 
@@ -586,7 +586,7 @@ ECode SQLiteConnectionPool::WaitForConnection(
         Thread::Interrupted();
 
         // Check whether we are done waiting yet.
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         ec = ThrowIfClosedLocked();
         FAIL_GOTO(ec, fail)
         AutoPtr<SQLiteConnection> connection = waiter->mAssignedConnection;
@@ -1003,7 +1003,7 @@ void SQLiteConnectionPool::Dump(
 {
     AutoPtr<IPrinter> indentedPrinter;
     //indentedPrinter = PrefixPrinter->Create(printer, "    ");
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     printer->Println(String("Connection pool for ") + mConfiguration->mPath + String(":"));
     printer->Println(String("  Open: ") + StringUtils::Int32ToString((Int32)mIsOpen));
     printer->Println(String("  Max connections: ") + StringUtils::Int32ToString(mMaxConnectionPoolSize));

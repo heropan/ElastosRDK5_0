@@ -362,7 +362,7 @@ ECode CAccessibilityEvent::Recycle()
         // throw new IllegalStateException("Event already recycled!");
     }
     Clear();
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPoolSize <= MAX_POOL_SIZE) {
         mNext = sPool;
         sPool = this;
@@ -534,7 +534,7 @@ ECode CAccessibilityEvent::Obtain(
     /* [out] */ IAccessibilityEvent** event)
 {
     VALIDATE_NOT_NULL(event);
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPool != NULL) {
         AutoPtr<CAccessibilityEvent> e = sPool;
         sPool = sPool->mNext;

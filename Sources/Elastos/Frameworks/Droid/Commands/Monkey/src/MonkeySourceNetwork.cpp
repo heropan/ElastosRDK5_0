@@ -534,7 +534,7 @@ MonkeySourceNetwork::DeferredReturn::WaitForEvent(
 
     switch (mEvent) {
         case ON_WINDOW_STATE_CHANGE: {
-            Mutex::Autolock lock(mLockLock);
+            AutoLock lock(mLockLock);
             mLock.Wait(mTimeout);
         }
     }

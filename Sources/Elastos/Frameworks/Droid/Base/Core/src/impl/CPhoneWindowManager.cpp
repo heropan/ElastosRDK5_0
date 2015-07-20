@@ -429,7 +429,7 @@ ECode CPhoneWindowManager::HideNavInputEventReceiver::OnInputEvent(
             // When the user taps down, we re-show the nav bar.
             Boolean changed = FALSE;
             {
-                Mutex::Autolock lock(mHost->mLock);
+                AutoLock lock(mHost->mLock);
                 // Any user activity always causes us to show the
                 // navigation controls, if they had been hidden.
                 // We also clear the low profile and only content
@@ -614,7 +614,7 @@ ECode CPhoneWindowManager::MultiuserBroadReceiver::OnReceive(
         // force a re-application of focused window sysui visibility.
         // the window may never have been shown for this user
         // e.g. the keyguard when going through the new-user setup flow
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         mHost->mLastSystemUiFlags = 0;
         mHost->UpdateSystemUiVisibilityLw();
     }
@@ -1209,7 +1209,7 @@ CPhoneWindowManager::ReevaluateRunnable::ReevaluateRunnable(
 ECode CPhoneWindowManager::ReevaluateRunnable::Run()
 {
     {
-        Mutex::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         // Clear flags.
         mHost->mForceClearedSystemUiFlags &=
                 ~IView::SYSTEM_UI_FLAG_HIDE_NAVIGATION;
@@ -1803,7 +1803,7 @@ void CPhoneWindowManager::StartFlicker()
 
 AutoPtr<IIStatusBarService> CPhoneWindowManager::GetStatusBarService()
 {
-    Mutex::Autolock lock(mServiceAquireLock);
+    AutoLock lock(mServiceAquireLock);
     if (mStatusBarService == NULL) {
         AutoPtr<IInterface> tmpObj = ServiceManager::GetService(IContext::STATUS_BAR_SERVICE);
         mStatusBarService = IIStatusBarService::Probe(tmpObj.Get());
@@ -2415,7 +2415,7 @@ void CPhoneWindowManager::UpdateSettings()
     mContext->GetContentResolver((IContentResolver**)&resolver);
     Boolean updateRotation = FALSE;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         Settings::System::GetInt32ForUser(resolver,
                 ISettingsSystem::END_BUTTON_BEHAVIOR,
                 ISettingsSystem::END_BUTTON_BEHAVIOR_DEFAULT,
@@ -6154,7 +6154,7 @@ ECode CPhoneWindowManager::ScreenTurnedOff(
 {
     // EventLog.writeEvent(70000, 0);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mScreenOnEarly = FALSE;
         mScreenOnFully = FALSE;
     }
@@ -6164,7 +6164,7 @@ ECode CPhoneWindowManager::ScreenTurnedOff(
     // }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         UpdateOrientationListenerLp();
         UpdateLockScreenTimeout();
     }
@@ -6183,7 +6183,7 @@ ECode CPhoneWindowManager::ScreenTurningOn(
     // }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mScreenOnEarly = TRUE;
         UpdateOrientationListenerLp();
         UpdateLockScreenTimeout();
@@ -6244,7 +6244,7 @@ void CPhoneWindowManager::FinishScreenTurningOn(
     /* [in] */ IScreenOnListener* screenOnListener)
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mScreenOnFully = TRUE;
     }
 
@@ -6447,7 +6447,7 @@ ECode CPhoneWindowManager::RotationForOrientationLw(
     //                 );
     // }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 sensorRotation = -1;
     // TODO: WindowOrientationListener is not implement.
     // Int32 sensorRotation = mOrientationListener->GetProposedRotation(); // may be -1
@@ -6710,7 +6710,7 @@ ECode CPhoneWindowManager::SystemReady()
     //     // tell the keyguard
     //     mKeyguardMediator.onSystemReady();
     // }
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     UpdateOrientationListenerLp();
     mSystemReady = TRUE;
     AutoPtr<UpdateSettingRunnable> updateSettingRunnable = new UpdateSettingRunnable(this);
@@ -6720,7 +6720,7 @@ ECode CPhoneWindowManager::SystemReady()
 
 ECode CPhoneWindowManager::SystemBooted()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mSystemBooted = TRUE;
     return NOERROR;
 }
@@ -6902,7 +6902,7 @@ Boolean CPhoneWindowManager::GoHome()
 ECode CPhoneWindowManager::SetCurrentOrientationLw(
     /* [in] */ Int32 newOrientation)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (newOrientation != mCurrentAppOrientation) {
         mCurrentAppOrientation = newOrientation;

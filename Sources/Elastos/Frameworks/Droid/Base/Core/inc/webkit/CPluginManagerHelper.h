@@ -21,7 +21,7 @@ public:
         /* [out] */ IPluginManager** pluginManager);
 
 private:
-    static Mutex sLock;
+    static Object sLock;
     static AutoPtr<CPluginManager> mInstance;
 };
 

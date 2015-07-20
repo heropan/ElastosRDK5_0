@@ -16,7 +16,7 @@ AutoPtr< ArrayOf<Char32> > TemporaryBuffer::Obtain(
     AutoPtr< ArrayOf<Char32> > buf;
 
     {
-        Mutex::Autolock lock(sClassLock);
+        AutoLock lock(sClassLock);
 
         buf = sTemp;
         sTemp = NULL;
@@ -35,7 +35,7 @@ void TemporaryBuffer::Recycle(
     if (temp->GetLength() > 1000) return;
 
     {
-        Mutex::Autolock lock(sClassLock);
+        AutoLock lock(sClassLock);
 
         sTemp = temp;
     }

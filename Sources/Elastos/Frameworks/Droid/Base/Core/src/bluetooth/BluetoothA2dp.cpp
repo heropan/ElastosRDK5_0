@@ -160,7 +160,7 @@ ECode BluetoothA2dp::Close()
         }
     }
 
-    Mutex::Autolock lock(mConnectionLock);
+    AutoLock lock(mConnectionLock);
     if (mService != NULL) {
 //            try {
         mService = NULL;

@@ -1364,10 +1364,10 @@ private:
     AutoPtr<IBitmap> mAvailThumbnailBitmap;
     AutoPtr<ICanvas> mThumbnailCanvas;
 
-    Mutex mOnPauseListenersLock;
-    Mutex mProviderMapLock;
-    Mutex mPackagesLock;
-    Mutex mLock;
+    Object mOnPauseListenersLock;
+    Object mProviderMapLock;
+    Object mPackagesLock;
+    Object mLock;
 };
 
 } // namespace App

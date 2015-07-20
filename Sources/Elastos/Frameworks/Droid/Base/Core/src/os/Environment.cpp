@@ -237,7 +237,7 @@ String Environment::GetExternalStorageState()
 AutoPtr<IStorageVolume> Environment::GetPrimaryVolume()
 {
     if (!sIsStorageVolumeInited) {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (!sIsStorageVolumeInited) {
             assert(Environment::sPrimaryVolume.Get() == NULL);
             // try {

@@ -146,13 +146,13 @@ String CHardwareCamera::Parameters::PIXEL_FORMAT_RGB565 = String("rgb565");
 String CHardwareCamera::Parameters::PIXEL_FORMAT_JPEG = String("jpeg");
 String CHardwareCamera::Parameters::PIXEL_FORMAT_BAYER_RGGB = String("bayer-rggb");
 
-static Mutex sLock;
+static Object sLock;
 android::sp<android::Camera> CHardwareCamera::get_native_camera(
     /* [in] */ CHardwareCamera* thiz,
     /* [in] */ JNICameraContext** pContext)
 {
     android::sp<android::Camera> camera;
-    Mutex::Autolock _l(sLock);
+    AutoLock _l(sLock);
     JNICameraContext* context = reinterpret_cast<JNICameraContext*>(thiz->mNativeContext)/*(env->GetIntField(thiz, fields.context))*/;
     if (context != NULL) {
         camera = context->getCamera();
@@ -199,7 +199,7 @@ CHardwareCamera::JNICameraContext::~JNICameraContext()
 void CHardwareCamera::JNICameraContext::release()
 {
     // ALOGV("release");
-    Mutex::Autolock _l(mLock);
+    AutoLock _l(mLock);
     // JNIEnv *env = AndroidRuntime::getJNIEnv();
 
     // if (mCameraJObjectWeak != NULL) {
@@ -230,7 +230,7 @@ void CHardwareCamera::JNICameraContext::notify(
     // ALOGV("notify");
 
     // VM pointer will be NULL if object is released
-    Mutex::Autolock _l(mLock);
+    AutoLock _l(mLock);
     if (mCameraJObjectWeak == NULL) {
         // ALOGW("callback on dead camera object");
         return;
@@ -347,7 +347,7 @@ void CHardwareCamera::JNICameraContext::postData(
     /* [in] */ camera_frame_metadata_t *metadata)
 {
     // VM pointer will be NULL if object is released
-    Mutex::Autolock _l(mLock);
+    AutoLock _l(mLock);
     // JNIEnv *env = AndroidRuntime::getJNIEnv();
     if (mCameraJObjectWeak == NULL) {
         // ALOGW("callback on dead camera object");
@@ -455,7 +455,7 @@ void CHardwareCamera::JNICameraContext::setCallbackMode(
     /* [in] */ bool installed,
     /* [in] */ bool manualMode)
 {
-    Mutex::Autolock _l(mLock);
+    AutoLock _l(mLock);
     mManualBufferMode = manualMode;
     mManualCameraCallbackSet = false;
 
@@ -482,7 +482,7 @@ void CHardwareCamera::JNICameraContext::setCallbackMode(
 
 android::sp<android::Camera> CHardwareCamera::JNICameraContext::getCamera()
 {
-    Mutex::Autolock _l(mLock);
+    AutoLock _l(mLock);
     return mCamera;
 }
 
@@ -492,7 +492,7 @@ void CHardwareCamera::JNICameraContext::addCallbackBuffer(
 {
     // ALOGV("addCallbackBuffer: 0x%x", msgType);
     if (cbb != NULL) {
-        Mutex::Autolock _l(mLock);
+        AutoLock _l(mLock);
         switch (msgType) {
             case CAMERA_MSG_PREVIEW_FRAME: {
                 // jbyteArray callbackBuffer = (jbyteArray)env->NewGlobalRef(cbb);
@@ -2258,7 +2258,7 @@ ECode CHardwareCamera::StopPreview()
     mJpegCallback = NULL;
 
     {
-        Mutex::Autolock lock(mAutoFocusCallbackLock);
+        AutoLock lock(mAutoFocusCallbackLock);
         mAutoFocusCallback = NULL;
     }
 
@@ -2351,7 +2351,7 @@ ECode CHardwareCamera::AutoFocus(
     /* [in] */ IAutoFocusCallback* cb)
 {
     {
-        Mutex::Autolock lock(mAutoFocusCallbackLock);
+        AutoLock lock(mAutoFocusCallbackLock);
         mAutoFocusCallback = cb;
     }
     native_autoFocus();
@@ -2361,7 +2361,7 @@ ECode CHardwareCamera::AutoFocus(
 ECode CHardwareCamera::CancelAutoFocus()
 {
     {
-        Mutex::Autolock lock(mAutoFocusCallbackLock);
+        AutoLock lock(mAutoFocusCallbackLock);
         mAutoFocusCallback = NULL;
     }
     native_cancelAutoFocus();
@@ -2735,7 +2735,7 @@ void CHardwareCamera::native_release()
     JNICameraContext* context = NULL;
     android::sp<android::Camera> camera;
     {
-        Mutex::Autolock _l(sLock);
+        AutoLock _l(sLock);
         context = reinterpret_cast<JNICameraContext*>(mNativeContext/*env->GetIntField(thiz, fields.context)*/);
 
         // Make sure we do not attempt to callback on a deleted Java object.

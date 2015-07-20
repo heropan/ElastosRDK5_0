@@ -87,7 +87,7 @@ ECode WebBackForwardListClassic::GetInterfaceID(
 ECode WebBackForwardListClassic::GetCurrentItem(
     /* [out] */ IWebHistoryItem** item)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return GetItemAtIndex(mCurrentIndex, item);
 }
 
@@ -95,7 +95,7 @@ ECode WebBackForwardListClassic::GetCurrentItem(
 ECode WebBackForwardListClassic::GetCurrentIndex(
     /* [out] */ Int32* index)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(index);
     *index = mCurrentIndex;
     return NOERROR;
@@ -105,7 +105,7 @@ ECode WebBackForwardListClassic::GetCurrentIndex(
 AutoPtr<WebHistoryItemClassic> WebBackForwardListClassic::GetItemAtIndex(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int32 size;
     if (index < 0 || index >= (GetSize(&size), size)) {
         return NULL;
@@ -128,7 +128,7 @@ ECode WebBackForwardListClassic::GetItemAtIndex(
 ECode WebBackForwardListClassic::GetSize(
     /* [out] */ Int32* size)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(size);
     *size = mArray.GetSize();
     return NOERROR;
@@ -142,7 +142,7 @@ ECode WebBackForwardListClassic::GetSize(
 //synchronized
 void WebBackForwardListClassic::SetClearPending()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mClearPending = TRUE;
 }
 
@@ -154,7 +154,7 @@ void WebBackForwardListClassic::SetClearPending()
 //synchronized
 Boolean WebBackForwardListClassic::GetClearPending()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mClearPending;
 }
 
@@ -170,7 +170,7 @@ Boolean WebBackForwardListClassic::GetClearPending()
 void WebBackForwardListClassic::AddHistoryItem(
     /* [in] */ IWebHistoryItem* item)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Update the current position because we are going to add the new item
     // in that slot.
     ++mCurrentIndex;
@@ -199,7 +199,7 @@ void WebBackForwardListClassic::AddHistoryItem(
 void WebBackForwardListClassic::Close(
     /* [in] */ Int32 nativeFrame)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Clear the array first because nativeClose will call addHistoryItem
     // with the current item.
     mArray.Clear();
@@ -212,7 +212,7 @@ void WebBackForwardListClassic::Close(
 //synchronized
 AutoPtr<WebBackForwardListClassic> WebBackForwardListClassic::Clone()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<WebBackForwardListClassic> l = new WebBackForwardListClassic(NULL);
     if (mClearPending) {
         // If a clear is pending, return a copy with only the current item.
@@ -241,7 +241,7 @@ AutoPtr<WebBackForwardListClassic> WebBackForwardListClassic::Clone()
 void WebBackForwardListClassic::SetCurrentIndex(
     /* [in] */ Int32 newIndex)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mCurrentIndex = newIndex;
     if (mCallbackProxy != NULL) {
         AutoPtr<IWebHistoryItem> item;
@@ -259,7 +259,7 @@ void WebBackForwardListClassic::RestoreIndex(
     /* [in] */ Int32 frame,
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     Elastos_WebHistory_restoreIndex(frame, index);
 }
 
@@ -267,7 +267,7 @@ void WebBackForwardListClassic::RestoreIndex(
 void WebBackForwardListClassic::RemoveHistoryItem(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // XXX: This is a special case. Since the callback is only triggered
     // when removing the first item, we can assert that the index is 0.
     // This lets us change the current index without having to query the

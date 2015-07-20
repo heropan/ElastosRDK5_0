@@ -4,7 +4,6 @@
 #include "CConnectivityService.h"
 #include <net/BaseNetworkStateTracker.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Security::IKeyStore;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
@@ -78,7 +77,7 @@ private:
         friend class Vpn;
 
         static const String TAG;
-        static Mutex sTAGLock;
+        static Object sTAGLock;
 
         AutoPtr<IVpnConfig> mConfig;
         AutoPtr<ArrayOf<String> > mDaemons;
@@ -244,7 +243,7 @@ private:
     AutoPtr<IPendingIntent> mStatusIntent;
     Boolean mEnableNotif;
     AutoPtr<INetworkManagementEventObserver> mObserver;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // Connectivity

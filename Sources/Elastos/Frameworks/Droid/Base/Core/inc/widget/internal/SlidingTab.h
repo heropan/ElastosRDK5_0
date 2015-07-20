@@ -7,7 +7,6 @@
 #include "R.h"
 
 using Elastos::Core::Math;
-using Elastos::Core::Mutex;
 using Elastos::Droid::R;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IViewGroup;
@@ -426,7 +425,7 @@ private:
     AutoPtr<IRect> mTmpRect;
     AutoPtr<AnimationDoneListener> mAnimationDoneListener;
 protected:
-    Mutex mLock;
+    Object mLock;
 };
 
 }// namespace Internal

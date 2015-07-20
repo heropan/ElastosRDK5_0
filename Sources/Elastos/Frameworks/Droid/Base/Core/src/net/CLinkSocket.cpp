@@ -265,7 +265,7 @@ ECode CLinkSocket::Connect()
 //@Override
 ECode CLinkSocket::Close()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 //    if (DBG) log("close() EX");
     return NOERROR;
 }

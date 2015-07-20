@@ -9,7 +9,6 @@
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::Accounts::IAccount;
@@ -67,7 +66,7 @@ public:
                 /* [in] */ ObserverNode* host,
                 /* [in] */ IIContentObserver* observer,
                 /* [in] */ Boolean notify,
-                /* [in] */ Mutex* observersLock,
+                /* [in] */ Object* observersLock,
                 /* [in] */ Int32 uid,
                 /* [in] */ Int32 pid,
                 /* [in] */ Int32 userHandle);
@@ -93,7 +92,7 @@ public:
 
         private:
             ObserverNode* mHost;
-            Mutex* mObserversLock;
+            Object* mObserversLock;
         };
 
     public:
@@ -114,7 +113,7 @@ public:
             /* [in] */ IUri* uri,
             /* [in] */ IIContentObserver* observer,
             /* [in] */ Boolean notifyForDescendants,
-            /* [in] */ Mutex* observersLock,
+            /* [in] */ Object* observersLock,
             /* [in] */ Int32 uid,
             /* [in] */ Int32 pid,
             /* [in] */ Int32 userHandle);
@@ -146,7 +145,7 @@ public:
             /* [in] */ Int32 index,
             /* [in] */ IIContentObserver* observer,
             /* [in] */ Boolean notifyForDescendants,
-            /* [in] */ Mutex* observersLock,
+            /* [in] */ Object* observersLock,
             /* [in] */ Int32 uid,
             /* [in] */ Int32 pid,
             /* [in] */ Int32 userHandle);
@@ -324,9 +323,9 @@ private:
     AutoPtr<IContext> mContext;
     Boolean mFactoryTest;
     AutoPtr<ObserverNode> mRootNode;
-    Mutex mRootNodeLock;
+    Object mRootNodeLock;
     AutoPtr<ISyncManager> mSyncManager;
-    Mutex mSyncManagerLock;
+    Object mSyncManagerLock;
 };
 
 }

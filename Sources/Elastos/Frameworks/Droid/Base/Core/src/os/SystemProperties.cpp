@@ -374,7 +374,7 @@ void SystemProperties::DataAccess(
 void SystemProperties::AddChangeCallback(
     /* [in] */ IRunnable* callback)
 {
-    Mutex::Autolock lock(sChangeCallbacksLock);
+    AutoLock lock(sChangeCallbacksLock);
     if (sChangeCallbacks.Begin() == sChangeCallbacks.End()) {
         NativeAddChangeCallback();
     }
@@ -383,7 +383,7 @@ void SystemProperties::AddChangeCallback(
 
 void SystemProperties::CallChangeCallbacks()
 {
-    Mutex::Autolock lock(sChangeCallbacksLock);
+    AutoLock lock(sChangeCallbacksLock);
     //Log.i("foo", "Calling " + sChangeCallbacks.size() + " change callbacks!");
     if (sChangeCallbacks.Begin() == sChangeCallbacks.End()) {
         return;

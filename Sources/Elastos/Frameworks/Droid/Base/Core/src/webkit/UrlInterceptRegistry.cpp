@@ -17,20 +17,20 @@ Mutex UrlInterceptRegistry::sLock;
 void UrlInterceptRegistry::SetUrlInterceptDisabled(
     /* [in] */ Boolean disabled)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     mDisabled = disabled;
 }
 
 Boolean UrlInterceptRegistry::UrlInterceptDisabled()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     return mDisabled;
 }
 
 Boolean UrlInterceptRegistry::RegisterHandler(
     /* [in] */ IUrlInterceptHandler* handler)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     if (Find(mHandlerList.Begin(), mHandlerList.End(), handler) == mHandlerList.End()) {
         mHandlerList.PushFront(handler);
         return TRUE;
@@ -43,7 +43,7 @@ Boolean UrlInterceptRegistry::RegisterHandler(
 Boolean UrlInterceptRegistry::UnregisterHandler(
     /* [in] */ IUrlInterceptHandler* handler)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     mHandlerList.Remove(handler);
     return TRUE;
 }
@@ -52,7 +52,7 @@ AutoPtr<ICacheManagerCacheResult> UrlInterceptRegistry::GetSurrogate(
     /* [in] */ const String& url,
     /* [in] */ IMap* headers)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (UrlInterceptDisabled()) {
         return NULL;
@@ -77,7 +77,7 @@ AutoPtr<IPluginData> UrlInterceptRegistry::GetPluginData(
     /* [in] */ const String& url,
     /* [in] */ IMap* headers)
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (UrlInterceptDisabled()) {
         return NULL;

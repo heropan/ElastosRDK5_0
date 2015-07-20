@@ -146,7 +146,7 @@ ECode CSyncStorageEngine::AddStatusChangeListener(
     /* [in] */ Int32 mask,
     /* [in] */ IISyncStatusObserver* syncStatusObserver)
 {
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     Boolean ret = FALSE;
     AutoPtr<IInteger32> maskObj;
     FAIL_RETURN(CInteger32::New(mask, (IInteger32**)&maskObj))
@@ -157,7 +157,7 @@ ECode CSyncStorageEngine::AddStatusChangeListener(
 ECode CSyncStorageEngine::RemoveStatusChangeListener(
     /* [in] */ IISyncStatusObserver* syncStatusObserver)
 {
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     Boolean ret = FALSE;
     FAIL_RETURN(mChangeListeners->Unregister(syncStatusObserver, &ret))
     return NOERROR;
@@ -170,7 +170,7 @@ ECode CSyncStorageEngine::GetSyncAutomatically(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
 
     if (NULL != account) {
         AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
@@ -228,7 +228,7 @@ ECode CSyncStorageEngine::SetSyncAutomatically(
     Logger::D(TAG, str);
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<ISyncStorageEngineAuthorityInfo> authorityInfo;
         FAIL_RETURN(GetOrCreateAuthorityLocked(account, userId, providerName, -1, FALSE,
                 (ISyncStorageEngineAuthorityInfo**)&authorityInfo))
@@ -264,7 +264,7 @@ ECode CSyncStorageEngine::GetIsSyncable(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
 
     if (NULL != account) {
         AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
@@ -333,7 +333,7 @@ ECode CSyncStorageEngine::SetIsSyncable(
     Logger::D(TAG, str);
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<ISyncStorageEngineAuthorityInfo> authorityInfo;
         FAIL_RETURN(GetOrCreateAuthorityLocked(account, userId, providerName, -1, FALSE,
                 (ISyncStorageEngineAuthorityInfo**)&authorityInfo))
@@ -371,7 +371,7 @@ ECode CSyncStorageEngine::GetBackoff(
     VALIDATE_NOT_NULL(pair)
     *pair = NULL;
 
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
     FAIL_RETURN(GetAuthorityLocked(account, userId, providerName, String("getBackoff"),
             (ISyncStorageEngineAuthorityInfo**)&authority))
@@ -421,7 +421,7 @@ ECode CSyncStorageEngine::SetBackoff(
     }
 
     Boolean changed = FALSE;
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
 
     if (NULL == account || providerName.IsNull()) {
         HashMap<AutoPtr<IAccountAndUser>, AutoPtr<CSyncStorageEngine::AccountInfo> >::Iterator it = mAccounts->Begin();
@@ -489,10 +489,10 @@ ECode CSyncStorageEngine::ClearAllBackoffs(
 {
     Boolean changed = FALSE;
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
-        Mutex syncQueueLock;
+        AutoLock lock(mAuthoritiesLock);
+        Object syncQueueLock;
         {
-            Mutex::Autolock lock(syncQueueLock);
+            AutoLock lock(syncQueueLock);
             HashMap<AutoPtr<IAccountAndUser>, AutoPtr<CSyncStorageEngine::AccountInfo> >::Iterator it = mAccounts->Begin();
             AutoPtr<CSyncStorageEngine::AccountInfo> accountInfo;
 
@@ -581,7 +581,7 @@ ECode CSyncStorageEngine::SetDelayUntilTime(
     }
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<ISyncStorageEngineAuthorityInfo> authorityInfo;
         FAIL_RETURN(GetOrCreateAuthorityLocked(account, userId, providerName, -1 /* ident */, TRUE,
                 (ISyncStorageEngineAuthorityInfo**)&authorityInfo))
@@ -605,7 +605,7 @@ ECode CSyncStorageEngine::GetDelayUntilTime(
     /* [out] */ Int64* delayUntilTime)
 {
     VALIDATE_NOT_NULL(delayUntilTime);
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
     FAIL_RETURN(GetAuthorityLocked(account, userId, providerName, String("getDelayUntil"),
             (ISyncStorageEngineAuthorityInfo**)&authority))
@@ -647,7 +647,7 @@ ECode CSyncStorageEngine::GetPeriodicSyncs(
     /* [out] */ IObjectContainer** periodicSyncList)
 {
     VALIDATE_NOT_NULL(periodicSyncList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     FAIL_RETURN(CObjectContainer::New(periodicSyncList))
     AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
     FAIL_RETURN(GetAuthorityLocked(account, userId, providerName, String("getPeriodicSyncs"),
@@ -691,7 +691,7 @@ ECode CSyncStorageEngine::SetMasterSyncAutomatically(
     /* [in] */ Int32 userId)
 {
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<IBoolean> isAuto = (IBoolean*) mMasterSyncAutomatically->Get(userId);
         Boolean ret = FALSE;
 
@@ -724,7 +724,7 @@ ECode CSyncStorageEngine::GetMasterSyncAutomatically(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     AutoPtr<IBoolean> isAuto = (IBoolean*) mMasterSyncAutomatically->Get(userId);
 
     if (NULL == isAuto) {
@@ -743,7 +743,7 @@ ECode CSyncStorageEngine::GetOrCreateAuthority(
     /* [out] */ ISyncStorageEngineAuthorityInfo** authorityInfo)
 {
     VALIDATE_NOT_NULL(authorityInfo);
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     FAIL_RETURN(GetOrCreateAuthorityLocked(account, userId, authority, -1/* assign a new identifier if creating a new authority */,
             TRUE /* write to storage if this results in a change */, authorityInfo))
     return NOERROR;
@@ -754,7 +754,7 @@ ECode CSyncStorageEngine::RemoveAuthority(
     /* [in] */ Int32 userId,
     /* [in] */ const String& authority)
 {
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     FAIL_RETURN(RemoveAuthorityLocked(account, userId, authority, TRUE /* doWrite */))
     return NOERROR;
 }
@@ -764,7 +764,7 @@ ECode CSyncStorageEngine::GetAuthority(
     /* [out] */ ISyncStorageEngineAuthorityInfo** authorityInfo)
 {
     VALIDATE_NOT_NULL(authorityInfo)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     AutoPtr<ISyncStorageEngineAuthorityInfo> temp = (ISyncStorageEngineAuthorityInfo*) mAuthorities->Get(authorityId);
     *authorityInfo = temp;
     REFCOUNT_ADD(*authorityInfo);
@@ -778,7 +778,7 @@ ECode CSyncStorageEngine::IsSyncActive(
     /* [out] */ Boolean* isActive)
 {
     VALIDATE_NOT_NULL(isActive)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     AutoPtr<IObjectContainer> objContainer;
     AutoPtr<IObjectEnumerator> objEnumerator;
     FAIL_RETURN(GetCurrentSyncs(userId, (IObjectContainer**)&objContainer))
@@ -820,7 +820,7 @@ ECode CSyncStorageEngine::InsertIntoPending(
 {
     VALIDATE_NOT_NULL(pendingOperation)
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<IAccount> account;
         String authority;
         Int32 userId = 0;
@@ -888,7 +888,7 @@ ECode CSyncStorageEngine::DeleteFromPending(
     *result = FALSE;
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<IAccount> account;
         String authority;
         Int32 userId = 0;
@@ -1001,7 +1001,7 @@ ECode CSyncStorageEngine::GetPendingOperations(
     /* [out] */ IObjectContainer** pendingOperationList)
 {
     VALIDATE_NOT_NULL(pendingOperationList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     FAIL_RETURN(CObjectContainer::New(pendingOperationList))
     List<AutoPtr<ISyncStorageEnginePendingOperation> >::Iterator iter = mPendingOperations->Begin();
     AutoPtr<ISyncStorageEnginePendingOperation> operation;
@@ -1018,7 +1018,7 @@ ECode CSyncStorageEngine::GetPendingOperationCount(
     /* [out] */ Int32* count)
 {
     VALIDATE_NOT_NULL(count)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     *count = mPendingOperations->GetSize();
     return NOERROR;
 }
@@ -1028,7 +1028,7 @@ ECode CSyncStorageEngine::DoDatabaseCleanup(
     /* [in] */ Int32 userId)
 {
     VALIDATE_NOT_NULL(accounts)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
 
     if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
         String str("Updating for new accounts...");
@@ -1132,7 +1132,7 @@ ECode CSyncStorageEngine::AddActiveSync(
     *syncInfo = NULL;
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<IAccount> account;
         AutoPtr<IBundle> extras;
         String authority;
@@ -1198,7 +1198,7 @@ ECode CSyncStorageEngine::RemoveActiveSync(
     /* [in] */ Int32 userId)
 {
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
             AutoPtr<IAccount> account;
             String authority;
@@ -1250,7 +1250,7 @@ ECode CSyncStorageEngine::InsertStartSyncEvent(
     Int64 id = 0;
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
 
         if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
             String str("insertStartSyncEvent: account=");
@@ -1322,7 +1322,7 @@ ECode CSyncStorageEngine::StopSyncEvent(
     /* [in] */ Int64 upstreamActivity)
 {
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
 
         if (Logger::IsLoggable(TAG, Logger::VERBOSE)) {
             String str("stopSyncEvent: historyId=");
@@ -1508,7 +1508,7 @@ ECode CSyncStorageEngine::GetCurrentSyncs(
     /* [out] */ IObjectContainer** syncInfoList)
 {
     VALIDATE_NOT_NULL(syncInfoList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     HashMap<Int32, AutoPtr<SyncInfoList> >::Iterator it = mCurrentSyncs->Find(userId);
     AutoPtr<SyncInfoList> syncList = it->mSecond;
 
@@ -1530,7 +1530,7 @@ ECode CSyncStorageEngine::GetSyncStatus(
     /* [out] */ IObjectContainer** syncStatusInfoList)
 {
     VALIDATE_NOT_NULL(syncStatusInfoList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     const Int32 N = mSyncStatus->Size();
     FAIL_RETURN(CObjectContainer::New(syncStatusInfoList))
 
@@ -1545,7 +1545,7 @@ ECode CSyncStorageEngine::GetAuthorities(
     /* [out] */ IObjectContainer** authorityInfoList)
 {
     VALIDATE_NOT_NULL(authorityInfoList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     const Int32 N = mAuthorities->Size();
     FAIL_RETURN(CObjectContainer::New(authorityInfoList))
 
@@ -1573,7 +1573,7 @@ ECode CSyncStorageEngine::GetStatusByAccountAndAuthority(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     const Int32 N = mSyncStatus->Size();
     AutoPtr<ISyncStatusInfo> cur;
     AutoPtr<ISyncStorageEngineAuthorityInfo> ainfo;
@@ -1610,7 +1610,7 @@ ECode CSyncStorageEngine::IsSyncPending(
     /* [out] */ Boolean* isPending)
 {
     VALIDATE_NOT_NULL(isPending)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     const Int32 N = mSyncStatus->Size();
     AutoPtr<ISyncStatusInfo> cur;
     AutoPtr<ISyncStorageEngineAuthorityInfo> ainfo;
@@ -1650,7 +1650,7 @@ ECode CSyncStorageEngine::GetSyncHistory(
     /* [out] */ IObjectContainer** syncHistoryItemList)
 {
     VALIDATE_NOT_NULL(syncHistoryItemList)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     FAIL_RETURN(CObjectContainer::New(syncHistoryItemList))
     List<AutoPtr<ISyncStorageEngineSyncHistoryItem> >::Iterator iter = mSyncHistory->Begin();
     AutoPtr<ISyncStorageEngineSyncHistoryItem> historyItem;
@@ -1667,7 +1667,7 @@ ECode CSyncStorageEngine::GetDayStatistics(
     /* [out, callee] */ ArrayOf<ISyncStorageEngineDayStats *>** dayStats)
 {
     VALIDATE_NOT_NULL(dayStats);
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     Int32 N = mDayStats->GetLength();
     AutoPtr<ArrayOf<ISyncStorageEngineDayStats*> > tmpArray = ArrayOf<ISyncStorageEngineDayStats*>::Alloc(N);
     tmpArray->Copy(mDayStats);
@@ -1682,7 +1682,7 @@ ECode CSyncStorageEngine::GetOrCreateSyncStatus(
 {
     VALIDATE_NOT_NULL(authority)
     VALIDATE_NOT_NULL(syncStatus)
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     Int32 ident = 0;
     FAIL_RETURN(authority->GetIdent(&ident))
     FAIL_RETURN(GetOrCreateSyncStatusLocked(ident, syncStatus))
@@ -1691,7 +1691,7 @@ ECode CSyncStorageEngine::GetOrCreateSyncStatus(
 
 ECode CSyncStorageEngine::WriteAllState()
 {
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
     // Account info is always written so no need to do it here.
 
     if (mNumPendingFinished > 0) {
@@ -1707,7 +1707,7 @@ ECode CSyncStorageEngine::WriteAllState()
 
 ECode CSyncStorageEngine::ClearAndReadState()
 {
-    Mutex::Autolock lock(mAuthoritiesLock);
+    AutoLock lock(mAuthoritiesLock);
 
     if (NULL != mAuthorities) mAuthorities->Clear();
     mAccounts->Clear();
@@ -1862,7 +1862,7 @@ ECode CSyncStorageEngine::ReportChange(
     AutoPtr<ISyncStatusObserver> observer;
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         Int32 i = 0;
         FAIL_RETURN(mChangeListeners->BeginBroadcast(&i))
 
@@ -1943,7 +1943,7 @@ ECode CSyncStorageEngine::UpdateOrRemovePeriodicSync(
     }
 
     {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         AutoPtr<ISyncStorageEngineAuthorityInfo> authority;
         FAIL_DOFINAL(GetOrCreateAuthorityLocked(account, userId, providerName, -1, FALSE,
                 (ISyncStorageEngineAuthorityInfo**)&authority))
@@ -3614,11 +3614,11 @@ ECode CSyncStorageEngine::HandleMessage(
     msg->GetWhat(&what);
 
     if (what == MSG_WRITE_STATUS) {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         FAIL_RETURN(WriteStatusLocked())
     }
     else if (what == MSG_WRITE_STATISTICS) {
-        Mutex::Autolock lock(mAuthoritiesLock);
+        AutoLock lock(mAuthoritiesLock);
         FAIL_RETURN(WriteStatisticsLocked())
     }
     return NOERROR;

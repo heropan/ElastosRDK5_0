@@ -9,7 +9,6 @@
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IRemoteCallbackList;
 using Elastos::Droid::Net::IUri;
@@ -147,7 +146,7 @@ private:
     AutoPtr<IBinder> mPermissionOwner;
 
     HashMap<Int32, AutoPtr<PerUserClipboard> > mClipboards;
-    Mutex mClipboardsLock;
+    Object mClipboardsLock;
 };
 
 }//namespace Server

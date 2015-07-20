@@ -6,7 +6,6 @@
 #include "database/ContentObserver.h"
 //#include "Elastos.Droid.Core_server.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IContentObserver;
@@ -177,7 +176,7 @@ protected://private:
     //static AutoPtr<ITextKeyListener> sInstance[CAPITALIZELENGTH * 2];
 
 protected:
-    Mutex mLock;
+    Object mLock;
 private:
     Capitalize mAutoCap;
     Boolean mAutoText;

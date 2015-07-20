@@ -256,7 +256,7 @@ private:
     static const String TAG;
 
     List< AutoPtr<Vibration> > mVibrations;
-    Mutex mVibrationsLock;
+    Object mVibrationsLock;
     AutoPtr<Vibration> mCurrentVibration;
     AutoPtr<IWorkSource> mTmpWorkSource;
     AutoPtr<IHandler> mH;
@@ -266,12 +266,12 @@ private:
     AutoPtr<IInputManager> mIm;
 
     AutoPtr<VibrateThread> mThread;
-    // Mutex mThreadLock;
+    // Object mThreadLock;
 
     // mInputDeviceVibrators lock should be acquired after mVibrations lock, if both are
     // to be acquired
     List< AutoPtr<IVibrator> > mInputDeviceVibrators;
-    Mutex mInputDeviceVibratorsLock;
+    Object mInputDeviceVibratorsLock;
     Boolean mVibrateInputDevicesSetting; // guarded by mInputDeviceVibrators
     Boolean mInputDeviceListenerRegistered; // guarded by mInputDeviceVibrators
 

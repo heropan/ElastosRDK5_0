@@ -19,7 +19,7 @@ public:
 
 private:
     static AutoPtr< ArrayOf<Char32> > sTemp;
-    static Mutex sClassLock;
+    static Object sClassLock;
 };
 
 } // namespace Graphics

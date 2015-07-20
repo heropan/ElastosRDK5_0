@@ -769,7 +769,7 @@ ECode CBundle::Clone(
 
 ECode CBundle::Unparcel()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mParcelledData == NULL) {
         return NOERROR;

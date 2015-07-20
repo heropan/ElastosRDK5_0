@@ -5,7 +5,6 @@
 #include "view/inputmethod/BaseInputConnection.h"
 #include "view/inputmethod/CExtractedText.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Text::ISpanned;
@@ -84,7 +83,7 @@ private:
     // A negative value means that this connection has been finished by the InputMethodManager.
     Int32 mBatchEditNesting;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 }// namespace Internal

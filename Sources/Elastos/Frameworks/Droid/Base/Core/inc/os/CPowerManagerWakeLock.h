@@ -152,7 +152,7 @@ private:
     Int32 mFlags;
     String mTag;
     AutoPtr<IBinder> mToken;
-    Mutex mTokenLock;
+    Object mTokenLock;
     Int32 mCount;
     Boolean mRefCounted;
     Boolean mHeld;

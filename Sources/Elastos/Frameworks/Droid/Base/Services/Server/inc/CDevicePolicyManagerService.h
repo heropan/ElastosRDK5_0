@@ -17,7 +17,6 @@ using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileDescriptor;
 using Elastos::Core::IRunnable;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
@@ -741,7 +740,7 @@ public:
      */
     static const String SYSTEM_PROP_DISABLE_CAMERA;
 
-    Mutex mLock;
+    Object mLock;
 
 private:
     static const String DEVICE_POLICIES_XML;

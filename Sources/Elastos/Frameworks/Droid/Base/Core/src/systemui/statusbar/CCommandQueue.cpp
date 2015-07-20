@@ -56,7 +56,7 @@ ECode CCommandQueue::SetIcon(
     /* [in] */ Int32 index,
     /* [in] */ IStatusBarIcon* icon)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     String iconPackage;
     icon->GetIconPackage(&iconPackage);
@@ -87,7 +87,7 @@ ECode CCommandQueue::SetIcon(
 ECode CCommandQueue::RemoveIcon(
     /* [in] */ Int32 index)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     Int32 what = MSG_ICON | index;
     mHandler->RemoveMessages(what);
@@ -101,7 +101,7 @@ ECode CCommandQueue::AddNotification(
     /* [in] */ IBinder* key,
     /* [in] */ IStatusBarNotification* notification)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     AutoPtr<NotificationQueueEntry> ne = new NotificationQueueEntry();
     ne->mKey = key;
@@ -117,7 +117,7 @@ ECode CCommandQueue::UpdateNotification(
     /* [in] */ IBinder* key,
     /* [in] */ IStatusBarNotification* notification)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     AutoPtr<NotificationQueueEntry> ne = new NotificationQueueEntry();
     ne->mKey = key;
@@ -132,7 +132,7 @@ ECode CCommandQueue::UpdateNotification(
 ECode CCommandQueue::RemoveNotification(
     /* [in] */ IBinder* key)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_REMOVE_NOTIFICATION, key, (IMessage**)&msg);
@@ -143,7 +143,7 @@ ECode CCommandQueue::RemoveNotification(
 ECode CCommandQueue::Disable(
     /* [in] */ Int32 state)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_DISABLE);
     AutoPtr<IMessage> msg;
@@ -154,7 +154,7 @@ ECode CCommandQueue::Disable(
 
 ECode CCommandQueue::AnimateExpandNotificationsPanel()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_EXPAND_NOTIFICATIONS);
     AutoPtr<IMessage> msg;
@@ -165,7 +165,7 @@ ECode CCommandQueue::AnimateExpandNotificationsPanel()
 
 ECode CCommandQueue::AnimateExpandSettingsPanel()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_EXPAND_SETTINGS);
     AutoPtr<IMessage> msg;
@@ -176,7 +176,7 @@ ECode CCommandQueue::AnimateExpandSettingsPanel()
 
 ECode CCommandQueue::AnimateCollapsePanels()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_COLLAPSE_PANELS);
     AutoPtr<IMessage> msg;
@@ -189,7 +189,7 @@ ECode CCommandQueue::SetSystemUiVisibility(
     /* [in] */ Int32 vis,
     /* [in] */ Int32 mask)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_SET_SYSTEMUI_VISIBILITY);
     AutoPtr<IMessage> msg;
@@ -202,7 +202,7 @@ ECode CCommandQueue::SetSystemUiVisibility(
 ECode CCommandQueue::TopAppWindowChanged(
     /* [in] */ Boolean menuVisible)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_TOP_APP_WINDOW_CHANGED);
     AutoPtr<IMessage> msg;
@@ -217,7 +217,7 @@ ECode CCommandQueue::SetImeWindowStatus(
     /* [in] */ Int32 vis,
     /* [in] */ Int32 backDisposition)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_SHOW_IME_BUTTON);
     AutoPtr<IMessage> msg;
@@ -231,7 +231,7 @@ ECode CCommandQueue::SetHardKeyboardStatus(
     /* [in] */ Boolean available,
     /* [in] */ Boolean enabled)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_SET_HARD_KEYBOARD_STATUS);
     AutoPtr<IMessage> msg;
@@ -243,7 +243,7 @@ ECode CCommandQueue::SetHardKeyboardStatus(
 
 ECode CCommandQueue::ToggleRecentApps()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_TOGGLE_RECENT_APPS);
     AutoPtr<IMessage> msg;
@@ -254,7 +254,7 @@ ECode CCommandQueue::ToggleRecentApps()
 
 ECode CCommandQueue::PreloadRecentApps()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_PRELOAD_RECENT_APPS);
     AutoPtr<IMessage> msg;
@@ -265,7 +265,7 @@ ECode CCommandQueue::PreloadRecentApps()
 
 ECode CCommandQueue::CancelPreloadRecentApps()
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_CANCEL_PRELOAD_RECENT_APPS);
     AutoPtr<IMessage> msg;
@@ -277,7 +277,7 @@ ECode CCommandQueue::CancelPreloadRecentApps()
 ECode CCommandQueue::SetNavigationIconHints(
     /* [in] */ Int32 hints)
 {
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     mHandler->RemoveMessages(MSG_SET_NAVIGATION_ICON_HINTS);
     AutoPtr<IMessage> msg;
@@ -387,7 +387,7 @@ ECode CCommandQueue::HandleSetIcon(
 {
     assert(mList != NULL);
 
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     Int32 viewIndex;
     mList->GetViewIndex(index, &viewIndex);
@@ -414,7 +414,7 @@ ECode CCommandQueue::HandleRemoveIcon(
 {
     assert(mList != NULL);
 
-    Mutex::Autolock lock(mListLock);
+    AutoLock lock(mListLock);
 
     Int32 viewIndex;
     mList->GetViewIndex(index, &viewIndex);

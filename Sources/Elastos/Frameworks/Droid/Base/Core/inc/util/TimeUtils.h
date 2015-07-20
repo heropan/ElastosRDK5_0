@@ -5,7 +5,6 @@
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::ITimeZone;
 using Elastos::IO::IPrintWriter;
@@ -139,7 +138,7 @@ public:
     static const Int32 SECONDS_PER_HOUR;// = 60 * 60;
     static const Int32 SECONDS_PER_DAY;// = 24 * 60 * 60;
 
-    static Mutex sFormatSync;
+    static Object sFormatSync;
     static AutoPtr<ArrayOf<Char32> > sFormatStr;// = new char[HUNDRED_DAY_FIELD_LEN+5];
 
     static const Int64 LARGEST_DURATION;// = (1000 * DateUtils.DAY_IN_MILLIS) - 1;
@@ -149,12 +148,12 @@ private:
     static const String TAG;// = "TimeUtils";
 
     /** Cached results of getTineZones */
-    static Mutex sLastLockObj;
+    static Object sLastLockObj;
     static AutoPtr<ArrayOf<ITimeZone *> > sLastZones;
     static String sLastCountry;
 
     /** Cached results of getTimeZonesWithUniqueOffsets */
-    static Mutex sLastUniqueLockObj;
+    static Object sLastUniqueLockObj;
     static AutoPtr<ArrayOf<ITimeZone *> > sLastUniqueZoneOffsets;
     static String sLastUniqueCountry;
 

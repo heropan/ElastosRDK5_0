@@ -311,7 +311,7 @@ private:
      * Lock to guard the model registry.
      */
 
-    static Mutex sRegistryLock;
+    static Object sRegistryLock;
     /**
      * This the registry for data models.
      */
@@ -322,7 +322,7 @@ private:
      * Lock for synchronizing on this instance.
      */
 
-    Mutex mInstanceLock;
+    Object mInstanceLock;
     /**
      * List of activities that can handle the current intent.
      */

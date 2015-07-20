@@ -6,7 +6,6 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::StatusBar::IStatusBarIcon;
@@ -145,7 +144,7 @@ private:
     AutoPtr<ICommandQueueCallbacks> mCallbacks;
     AutoPtr<IHandler> mHandler;
 
-    Mutex mListLock;
+    Object mListLock;
 };
 
 }// namespace StatusBar

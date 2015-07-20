@@ -238,7 +238,7 @@ CBackupManagerService::BackupHandler::HandleMessage(
         }
         case CBackupManagerService::MSG_RESTORE_TIMEOUT:{
             {
-                Mutex::Autolock lock(mHost->mBackupServiceLock);
+                AutoLock lock(mHost->mBackupServiceLock);
                 if (mHost->mActiveRestoreSession != NULL) {
                     // Client app left the restore session dangling.  We know that it
                     // can't be in the middle of an actual restore operation because
@@ -299,7 +299,7 @@ ECode CBackupManagerService::ProvisionedObserver::OnChange(
     }
 
     {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         if (mHost->mProvisioned && !wasProvisioned && mHost->mEnabled) {
             // we're now good to go, so start the backup alarms
             if (MORE_DEBUG)
@@ -475,7 +475,7 @@ ECode CBackupManagerService::RunBackupReceiver::OnReceive(
 
     if (RUN_BACKUP_ACTION.Equals(action)) {
         {
-            Mutex::Autolock lock(mHost->mQueueLock);
+            AutoLock lock(mHost->mQueueLock);
             if (mHost->mPendingInits.IsEmpty() == FALSE) {
                 // If there are pending init operations, we process those
                 // and then settle into the usual periodic backup schedule.
@@ -538,7 +538,7 @@ ECode CBackupManagerService::RunInitializeReceiver::OnReceive(
     intent->GetAction(&action);
 
     if (RUN_INITIALIZE_ACTION.Equals(action)) {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         if (DEBUG) Slogger::V(TAG, "Running a device init");
 
         // Acquire the wakelock and pass it to the init thread.  it will
@@ -934,7 +934,7 @@ void CBackupManagerService::PerformBackupTask::FinalizeBackup()
     // to false to allow another pass to fire, because we're done with the
     // state machine sequence and the wakelock is refcounted.
     {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         mHost->mBackupRunning = FALSE;
         if (mStatus == IBackupConstants::TRANSPORT_NOT_INITIALIZED) {
             // Make sure we back up everything and perform the one-time init
@@ -1225,7 +1225,7 @@ void CBackupManagerService::PerformBackupTask::RestartBackupAlarm()
 {
     mHost->AddBackupTrace(String("setting backup trigger"));
     {
-        Mutex::Autolock lock(mHost->mQueueLock);
+        AutoLock lock(mHost->mQueueLock);
         // try {
         Int64 time;
         mTransport->RequestBackupTime(&time);
@@ -4367,7 +4367,7 @@ ECode CBackupManagerService::PerformInitializeTask::Run()
                 mHost->ResetBackupState(tmpF);
                 //EventLog.writeEvent(EventLogTags.BACKUP_SUCCESS, 0, millis);
                 {
-                    Mutex::Autolock lock(mHost->mQueueLock);
+                    AutoLock lock(mHost->mQueueLock);
                     mHost->RecordInitPendingLocked(FALSE, *transportName);
                 }
             } else {
@@ -4376,7 +4376,7 @@ ECode CBackupManagerService::PerformInitializeTask::Run()
                 Slogger::E(TAG, "Transport error in initializeDevice()");
                 //EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, "(initialize)");
                 {
-                    Mutex::Autolock lock(mHost->mQueueLock);
+                    AutoLock lock(mHost->mQueueLock);
                     mHost->RecordInitPendingLocked(TRUE, *transportName);
                 }
                 // do this via another alarm to make sure of the wakelock states
@@ -4526,7 +4526,7 @@ ECode CBackupManagerService::TrackPackageInstallAndRemoval::OnReceive(
     extras->GetInt32(IIntent::EXTRA_UID, &uid);
     if (added) {
         {
-            Mutex::Autolock lock(mHost->mBackupParticipantsLock);
+            AutoLock lock(mHost->mBackupParticipantsLock);
             if (replacing) {
                     // This is the package-replaced case; we just remove the entry
                     // under the old uid and fall through to re-add.
@@ -4542,7 +4542,7 @@ ECode CBackupManagerService::TrackPackageInstallAndRemoval::OnReceive(
         }
         else {
             {
-                Mutex::Autolock lock(mHost->mBackupParticipantsLock);
+                AutoLock lock(mHost->mBackupParticipantsLock);
                 mHost->RemovePackageParticipantsLocked(pkgList, uid);
             }
         }
@@ -4736,7 +4736,7 @@ _Exit_:
     // schedules a backup pass on the Package Manager metadata the first
     // time anything needs to be backed up.
     {
-        Mutex::Autolock lock(mBackupParticipantsLock);
+        AutoLock lock(mBackupParticipantsLock);
         AddPackageParticipantsLocked(NULL);
     }
 
@@ -4838,7 +4838,7 @@ Int32 CBackupManagerService::GenerateToken()
     Int32 token;
     do {
         {
-            Mutex::Autolock lock(mTokenGeneratorLock);
+            AutoLock lock(mTokenGeneratorLock);
             mTokenGenerator->NextInt32(&token);
         }
     } while (token < 0);
@@ -4851,7 +4851,7 @@ void CBackupManagerService::AddBackupTrace(
 {
     if (DEBUG_BACKUP_TRACE) {
         {
-            Mutex::Autolock lock(mBackupTraceLock);
+            AutoLock lock(mBackupTraceLock);
             mBackupTrace.PushBack(s);
         }
     }
@@ -4861,7 +4861,7 @@ void CBackupManagerService::ClearBackupTrace()
 {
     if (DEBUG_BACKUP_TRACE) {
         {
-            Mutex::Autolock lock(mBackupTraceLock);
+            AutoLock lock(mBackupTraceLock);
             mBackupTrace.Clear();
         }
     }
@@ -4949,7 +4949,7 @@ ECode CBackupManagerService::ClearBackupData(
         if (DEBUG) Slogger::V(TAG, "Found the app - running clear process");
         // found it; fire off the clear request
         {
-            Mutex::Autolock lock(mQueueLock);
+            AutoLock lock(mQueueLock);
             Int64 oldId = Binder::ClearCallingIdentity();
             //TODO
             mWakelock->AcquireLock();
@@ -5075,7 +5075,7 @@ ECode CBackupManagerService::SetBackupEnabled(
 
     Boolean wasEnabled = mEnabled;
     {
-        Mutex::Autolock lock(mBackupServiceLock);
+        AutoLock lock(mBackupServiceLock);
 
         AutoPtr<IContentResolver> res;
         mContext->GetContentResolver((IContentResolver**)&res);
@@ -5088,7 +5088,7 @@ ECode CBackupManagerService::SetBackupEnabled(
     }
 
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         if (enable && !wasEnabled && mProvisioned) {
             // if we've just been enabled, start scheduling backup passes
             StartBackupAlarmsLocked(BACKUP_INTERVAL);
@@ -5107,7 +5107,7 @@ ECode CBackupManagerService::SetBackupEnabled(
                 // the currently-active one.
                 AutoPtr<HashSet<String> > allTransports = new HashSet<String>();
                 {
-                    Mutex::Autolock lock(mTransportsLock);
+                    AutoLock lock(mTransportsLock);
                     HashMap<String, AutoPtr<IIBackupTransport> >::Iterator it = mTransports.Begin();
                     for(; it != mTransports.End(); ++it) {
                         allTransports->Insert(it->mFirst);
@@ -5139,7 +5139,7 @@ ECode CBackupManagerService::SetAutoRestore(
 
     Slogger::I(TAG, "Auto restore => %d", doAutoRestore);
     {
-        Mutex::Autolock lock(mBackupServiceLock);
+        AutoLock lock(mBackupServiceLock);
 
         AutoPtr<IContentResolver> res;
         mContext->GetContentResolver((IContentResolver**)&res);
@@ -5290,7 +5290,7 @@ ECode CBackupManagerService::BackupNow()
 
     if (DEBUG) Slogger::V(TAG, "Scheduling immediate backup pass");
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         // Because the alarms we are using can jitter, and we want an *immediate*
         // backup pass to happen, we restart the timer beginning with "next time,"
         // then manually fire the backup trigger intent ourselves.
@@ -5356,7 +5356,7 @@ ECode CBackupManagerService::FullBackup(
 
     Int32 token = GenerateToken();
     {
-        Mutex::Autolock lock(mFullConfirmationsLock);
+        AutoLock lock(mFullConfirmationsLock);
         mFullConfirmations[token] = params;
     }
 
@@ -5427,7 +5427,7 @@ ECode CBackupManagerService::FullRestore(
 
     Int32 token = GenerateToken();
     {
-        Mutex::Autolock lock(mFullConfirmationsLock);
+        AutoLock lock(mFullConfirmationsLock);
         mFullConfirmations[token] = params;
     }
 
@@ -5485,7 +5485,7 @@ ECode CBackupManagerService::AcknowledgeFullBackupOrRestore(
     // try {
     AutoPtr<FullParams> params;
     {
-        Mutex::Autolock lock(&mFullConfirmationsLock);
+        AutoLock lock(&mFullConfirmationsLock);
         params = mFullConfirmations[token];
         if (params != NULL) {
             mBackupHandler->RemoveMessages(MSG_FULL_CONFIRMATION_TIMEOUT, params);
@@ -5605,7 +5605,7 @@ ECode CBackupManagerService::SelectBackupTransport(
         Elastos::Droid::Manifest::Permission::BACKUP,
         String("selectBackupTransport")));
     {
-        Mutex::Autolock lock(mTransportsLock);
+        AutoLock lock(mTransportsLock);
         String prevTransport;
         if (mTransports[transport] != NULL) {
             prevTransport = mCurrentTransport;
@@ -5637,7 +5637,7 @@ ECode CBackupManagerService::GetConfigurationIntent(
     VALIDATE_NOT_NULL(result);
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::BACKUP, String("getConfigurationIntent")));
     {
-        Mutex::Autolock lock(mTransportsLock);
+        AutoLock lock(mTransportsLock);
         AutoPtr<IIBackupTransport> transport = mTransports[transportName];
         if (transport != NULL) {
             // try {
@@ -5675,7 +5675,7 @@ ECode CBackupManagerService::GetDestinationString(
             String("getDestinationString")));
 
     {
-        Mutex::Autolock lock(mTransportsLock);
+        AutoLock lock(mTransportsLock);
         AutoPtr<IIBackupTransport> transport = mTransports[transportName];
         if (transport != NULL) {
             // try {
@@ -5746,7 +5746,7 @@ ECode CBackupManagerService::BeginRestoreSession(
     }
 
     {
-        Mutex::Autolock lock(mBackupServiceLock);
+        AutoLock lock(mBackupServiceLock);
         if (mActiveRestoreSession != NULL) {
             Slogger::D(TAG, "Restore session requested but one already active");
             *session = NULL;
@@ -5887,7 +5887,7 @@ void CBackupManagerService::ClearRestoreSession(
     /* [in] */ IIRestoreSession* currentSession)
 {
     {
-        Mutex::Autolock lock(mBackupServiceLock);
+        AutoLock lock(mBackupServiceLock);
         if (currentSession != mActiveRestoreSession) {
             Slogger::E(TAG, "ending non-current restore session");
         }
@@ -6335,7 +6335,7 @@ void CBackupManagerService::ResetBackupState(
     /* [in] */ IFile* stateFileDir)
 {
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         // Wipe the "what we've ever backed up" tracking
         mEverStoredApps.Clear();
 
@@ -6362,7 +6362,7 @@ void CBackupManagerService::ResetBackupState(
 
         // Enqueue a new backup of every participant
         {
-            Mutex::Autolock lock(mBackupParticipantsLock);
+            AutoLock lock(mBackupParticipantsLock);
             HashMap<Int32, AutoPtr<HashSet<String> > >::Iterator it;
             for (it = mBackupParticipants.Begin(); it != mBackupParticipants.End(); ++it) {
                 //Int32 uid = it->mFirst;
@@ -6382,7 +6382,7 @@ void CBackupManagerService::RegisterTransport(
     /* [in] */ IIBackupTransport* transport)
 {
     {
-        Mutex::Autolock lock(mTransportsLock);
+        AutoLock lock(mTransportsLock);
         if (DEBUG) Slogger::V(TAG, "Registering transport %s = transport", name.string());
         if (transport != NULL) {
             mTransports[name] = transport;
@@ -6414,7 +6414,7 @@ void CBackupManagerService::RegisterTransport(
     initSentinel->Exists(&tmpFlag);
     if (tmpFlag) {
         {
-            Mutex::Autolock lock(mQueueLock);
+            AutoLock lock(mQueueLock);
             mPendingInits.Insert(transportName);
 
             // TODO: pick a better starting time than now + 1 minute
@@ -6613,7 +6613,7 @@ void CBackupManagerService::LogBackupComplete(
     if (packageName.Equals(PACKAGE_MANAGER_SENTINEL)) return;
 
     {
-        Mutex::Autolock lock(mEverStoredAppsLock);
+        AutoLock lock(mEverStoredAppsLock);
 
         HashSet<String>::Iterator item = mEverStoredApps.Find(packageName);
         if (item != mEverStoredApps.End()) {
@@ -6654,7 +6654,7 @@ ECode CBackupManagerService::RemoveEverBackedUp(
     if (DEBUG) Slogger::V(TAG, "Removing backed-up knowledge of %s", packageName.string());
     if (MORE_DEBUG) Slogger::V(TAG, "New set:");
 
-    Mutex::Autolock lock(mEverStoredAppsLock);
+    AutoLock lock(mEverStoredAppsLock);
     // Rewrite the file and rename to overwrite.  If we reboot in the middle,
     // we'll recognize on initialization time that the package no longer
     // exists and fix it up then.
@@ -6752,7 +6752,7 @@ _Exit_:
 AutoPtr<IIBackupTransport> CBackupManagerService::GetTransport(
     /* [in] */ const String& transportName)
 {
-    Mutex::Autolock lock(mTransportsLock);
+    AutoLock lock(mTransportsLock);
     AutoPtr<IIBackupTransport> transport = mTransports[transportName];
     if (transport == NULL) {
         Logger::W(TAG, "Requested unavailable transport: %s", transportName.string());
@@ -6894,7 +6894,7 @@ Int64 CBackupManagerService::GetAvailableRestoreToken(
 {
     Int64 token = mAncestralToken;
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         HashSet<String>::Iterator it = mEverStoredApps.Find(packageName);
         if (it != mEverStoredApps.End()) {
             token = mCurrentToken;
@@ -7073,7 +7073,7 @@ void CBackupManagerService::DataChangedImpl(
     }
 
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         // Note that this client has made data changes that need to be backed up
         HashSet<String>::Iterator app = targets->Begin();
         if (targets->Find(packageName) != targets->End()) {
@@ -7120,7 +7120,7 @@ AutoPtr< HashSet<String> > CBackupManagerService::DataChangedTargets(
     AutoPtr< HashSet<String> > targets = new HashSet<String>();
     if (res == IPackageManager::PERMISSION_DENIED) {
         {
-            Mutex::Autolock lock(mBackupParticipantsLock);
+            AutoLock lock(mBackupParticipantsLock);
 
             AutoPtr<HashSet<String> > s = mBackupParticipants[Binder::GetCallingUid()];
             if (s != NULL) {
@@ -7137,7 +7137,7 @@ AutoPtr< HashSet<String> > CBackupManagerService::DataChangedTargets(
     // a caller with full permission can ask to back up any participating app
     // !!! TODO: allow backup of ANY app?
     {
-        Mutex::Autolock lock(mBackupParticipantsLock);
+        AutoLock lock(mBackupParticipantsLock);
         HashMap<Int32, AutoPtr<HashSet<String> > >::Iterator iter = mBackupParticipants.Begin();
         for(; iter != mBackupParticipants.End(); ++iter) {
             AutoPtr<HashSet<String> > s = iter->mSecond;
@@ -7215,7 +7215,7 @@ void CBackupManagerService::DumpInternal(
     /* [in] */ IPrintWriter* pw)
 {
     {
-        Mutex::Autolock lock(&mQueueLock);
+        AutoLock lock(&mQueueLock);
         String str("Backup Manager is ");
         str += (mEnabled ? "enabled" : "disabled");
         str += " / ";
@@ -7289,7 +7289,7 @@ _Exit_:
 
         if (DEBUG_BACKUP_TRACE) {
             {
-                Mutex::Autolock lock(mBackupTraceLock);
+                AutoLock lock(mBackupTraceLock);
                 if (!mBackupTrace.IsEmpty()) {
                     pw->PrintStringln(String("Most recent backup trace:"));
                     for (List<String>::Iterator it = mBackupTrace.Begin(); it != mBackupTrace.End(); ++it) {
@@ -7351,7 +7351,7 @@ void CBackupManagerService::HandleRunBackup()
     if (NULL == transport) {
         Logger::V(TAG, "Backup requested but no transport available");
         {
-            Mutex::Autolock lock(mQueueLock);
+            AutoLock lock(mQueueLock);
             mBackupRunning = FALSE;
         }
         mWakelock->ReleaseLock();
@@ -7362,7 +7362,7 @@ void CBackupManagerService::HandleRunBackup()
     AutoPtr<List<AutoPtr<BackupRequest> > > queue = new List<AutoPtr<BackupRequest> >();
     AutoPtr<IFile> oldJournal = mJournal;
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         // Do we have any work to do?  Construct the work queue
         // then release the synchronization lock to actually run
         // the backup.
@@ -7397,7 +7397,7 @@ void CBackupManagerService::HandleRunBackup()
     } else {
         Logger::V(TAG, "Backup requested but nothing pending");
         {
-            Mutex::Autolock lock(mQueueLock);
+            AutoLock lock(mQueueLock);
             mBackupRunning = FALSE;
         }
         mWakelock->ReleaseLock();
@@ -7410,7 +7410,7 @@ void CBackupManagerService::HandleRunInitilize()
 
     // Snapshot the pending-init queue and work on that
     {
-        Mutex::Autolock lock(mQueueLock);
+        AutoLock lock(mQueueLock);
         queue = new HashSet<String>(mPendingInits);
         mPendingInits.Clear();
     }
@@ -7431,7 +7431,7 @@ void CBackupManagerService::HandleGetRestoreSets(
     FAIL_GOTO((ec = params->mTransport->GetAvailableRestoreSets((ArrayOf<IRestoreSet*>**)&sets)), _Exit_);
     // cache the result in the active session
     {
-        Mutex::Autolock lock(params->mSessionLock);
+        AutoLock lock(params->mSessionLock);
         ((CActiveRestoreSession*)(params->mSession.Get()))->mRestoreSets = sets;
     }
 
@@ -7481,7 +7481,7 @@ void CBackupManagerService::HandleRestore(
 void CBackupManagerService::HandleFullConfirmationTimeout(
     /* [in] */ Int32 token)
 {
-    Mutex::Autolock lock(mFullConfirmationsLock);
+    AutoLock lock(mFullConfirmationsLock);
     AutoPtr<FullParams> params = mFullConfirmations[token];
     if (params != NULL) {
         Slogger::I(TAG, "Full backup/restore timed out waiting for user confirmation");

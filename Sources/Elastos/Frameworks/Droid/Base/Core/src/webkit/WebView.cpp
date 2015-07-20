@@ -19,7 +19,7 @@ namespace Webkit {
 ECode WebView::WebViewTransport::SetWebView(
     /* [in] */ IWebView* webview)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mWebview = webview;
     return NOERROR;
 }
@@ -27,7 +27,7 @@ ECode WebView::WebViewTransport::SetWebView(
 ECode WebView::WebViewTransport::GetWebView(
     /* [out] */ IWebView** webView)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     *webView = mWebview;
     REFCOUNT_ADD(*webView);
     return NOERROR;
@@ -1669,7 +1669,7 @@ AutoPtr<IWebSettings> WebView::GetSettings()
  */
 AutoPtr<IPluginList> WebView::GetPluginList()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
     CheckThread();
     AutoPtr<IPluginList> pl;
     CPluginList::New((IPluginList**)&pl);
@@ -1903,7 +1903,7 @@ void WebView::EnsureProviderCreated()
 
 AutoPtr<IWebViewFactoryProvider> WebView::GetFactory()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     // For now the main purpose of this function (and the factory abstration) is to keep
     // us honest and minimize usage of WebViewClassic internals when binding the proxy.

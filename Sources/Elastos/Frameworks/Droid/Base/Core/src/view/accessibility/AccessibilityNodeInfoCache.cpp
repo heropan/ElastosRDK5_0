@@ -75,7 +75,7 @@ void AccessibilityNodeInfoCache::OnAccessibilityEvent(
                 // Since we prefetch the descendants of a node we
                 // just remove the entire subtree since when the node
                 // is fetched we will gets its descendant anyway.
-                Mutex::Autolock lock(mLock);
+                AutoLock lock(mLock);
                 Int64 sourceId;
                 event->GetSourceNodeId(&sourceId);
                 ClearSubTreeLocked(sourceId);
@@ -88,7 +88,7 @@ void AccessibilityNodeInfoCache::OnAccessibilityEvent(
             } break;
             case IAccessibilityEvent::TYPE_WINDOW_CONTENT_CHANGED:
             case IAccessibilityEvent::TYPE_VIEW_SCROLLED: {
-                Mutex::Autolock lock(mLock);
+                AutoLock lock(mLock);
                 Int64 accessibilityNodeId;
                 event->GetSourceNodeId(&accessibilityNodeId);
                 ClearSubTreeLocked(accessibilityNodeId);
@@ -104,7 +104,7 @@ AutoPtr<IAccessibilityNodeInfo> AccessibilityNodeInfoCache::Get(
     /* [in] */ Int64 accessibilityNodeId)
 {
     if (ENABLED) {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         HashMap<Int64, AutoPtr<IAccessibilityNodeInfo> >::Iterator it
                 = mCacheImpl->Find(accessibilityNodeId);
         AutoPtr<IAccessibilityNodeInfo> info;
@@ -130,7 +130,7 @@ void AccessibilityNodeInfoCache::Add(
     /* [in] */ IAccessibilityNodeInfo* info)
 {
     if (ENABLED) {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // if (DEBUG) {
         //     Log.i(TAG, "add(" + info + ")");
         // }
@@ -188,7 +188,7 @@ void AccessibilityNodeInfoCache::Add(
 void AccessibilityNodeInfoCache::Clear()
 {
     if (ENABLED) {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         // if (DEBUG) {
         //     Log.i(TAG, "clear()");
         // }
@@ -263,7 +263,7 @@ void AccessibilityNodeInfoCache::ClearSubtreeWithOldAccessibilityFocusLocked(
 
 void AccessibilityNodeInfoCache::CheckIntegrity()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Get the root.
     if (mCacheImpl->Begin() == mCacheImpl->End()) {
         return;

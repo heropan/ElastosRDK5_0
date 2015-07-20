@@ -88,7 +88,7 @@ private:
     private:
         /** A stack of SyncMessengers */
         static Stack< AutoPtr<SyncMessenger> > sStack;
-        static Mutex sStackLock;
+        static Object sStackLock;
         /** A number of SyncMessengers created */
         static Int32 sCount;
         /** The handler thread */

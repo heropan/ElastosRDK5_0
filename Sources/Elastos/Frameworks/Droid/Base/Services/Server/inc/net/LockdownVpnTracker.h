@@ -6,7 +6,6 @@
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
@@ -114,7 +113,7 @@ private:
     AutoPtr<Elastos::Droid::Server::Connectivity::Vpn> mVpn;
     AutoPtr<IVpnProfile> mProfile;
 
-    Mutex mStateLock;
+    Object mStateLock;
 
     AutoPtr<IPendingIntent> mResetIntent;
 

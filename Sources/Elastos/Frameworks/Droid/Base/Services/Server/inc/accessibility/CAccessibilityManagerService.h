@@ -14,7 +14,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
@@ -666,7 +665,7 @@ private:
 
     AutoPtr<IContext> mContext;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<ISimpleStringSplitter> mStringColonSplitter;
 

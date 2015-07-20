@@ -2,7 +2,6 @@
 #ifndef __ZIGBEEDEVICE_H__
 #define __ZIGBEEDEVICE_H__
 
-#include <elrefbase.h>
 #include "ext/frameworkext.h"
 
 namespace Elastos {

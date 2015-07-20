@@ -4,7 +4,6 @@
 
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::IO::IInputStream;
 
@@ -76,7 +75,7 @@ private:
     static String sCacheDirectory;
     static AutoPtr<IContext> sContext;
     static const String ANDROID_CONTENT;
-    static Mutex sLock;
+    static Object sLock;
 };
 
 } // namespace Webkit

@@ -5,7 +5,6 @@
 #include "_CContentProviderClient.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::Res::IAssetFileDescriptor;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::IUri;
@@ -157,7 +156,7 @@ private:
     AutoPtr<IContentResolver> mContentResolver;
     Boolean mStable;
     Boolean mReleased;
-    Mutex mCContentProviderClientLock;
+    Object mCContentProviderClientLock;
 
 };
 

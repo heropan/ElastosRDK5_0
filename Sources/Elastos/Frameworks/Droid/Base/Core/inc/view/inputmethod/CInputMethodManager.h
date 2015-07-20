@@ -656,7 +656,7 @@ public:
     static const Boolean DEBUG;
     static const String TAG;
 
-    static Mutex sInstanceSync;
+    static Object sInstanceSync;
     static AutoPtr<IInputMethodManager> sInstance;
 
     /**
@@ -676,7 +676,7 @@ public:
     // For scheduling work on the main thread.  This also serves as our
     // global lock.
     AutoPtr<IHandler> mH;
-    Mutex mHLock;
+    Object mHLock;
 
     // Our generic input connection if the current target does not have its own.
     AutoPtr<IInputContext> mIInputContext;

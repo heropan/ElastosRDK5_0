@@ -22,7 +22,7 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageUpdateFinished(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     if(packageName.Equals(mHost->mPackageName)) {
         // package updated, make sure to rebind
         mHost->UnbindLocked();
@@ -37,7 +37,7 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageAdded(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     if (packageName.Equals(mHost->mPackageName)) {
         // package updated, make sure to rebind
@@ -53,7 +53,7 @@ ECode ServiceWatcher::ServiceWatcherPackageMonitor::OnPackageRemoved(
     /* [in] */ const String& packageName,
     /* [in] */ Int32 uid)
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
 
     if (packageName.Equals(mHost->mPackageName)) {
         mHost->UnbindLocked();
@@ -115,7 +115,7 @@ ServiceWatcher::ServiceWatcher(
 Boolean ServiceWatcher::Start()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (!BindBestPackageLocked(String(NULL))) return FALSE;
     }
 
@@ -274,7 +274,7 @@ ECode ServiceWatcher::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* binder)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String packageName;
     name->GetPackageName(&packageName);
     if (packageName.Equals(mPackageName)) {
@@ -294,7 +294,7 @@ ECode ServiceWatcher::OnServiceConnected(
 ECode ServiceWatcher::OnServiceDisconnected(
     /* [in] */ IComponentName* name)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String packageName;
     name->GetPackageName(&packageName);
     if (D) Slogger::D(mTag, "%s disconnected", packageName.string());
@@ -307,26 +307,26 @@ ECode ServiceWatcher::OnServiceDisconnected(
 
 String ServiceWatcher::GetBestPackageName()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mPackageName;
 }
 
 Int32 ServiceWatcher::GetBestVersion()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mVersion;
 }
 
 AutoPtr<IBinder> ServiceWatcher::GetBinder()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mBinder;
 }
 
 void ServiceWatcher::SwitchUser(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     UnbindLocked();
     mCurrentUserId = userId;
     BindBestPackageLocked(String(NULL));

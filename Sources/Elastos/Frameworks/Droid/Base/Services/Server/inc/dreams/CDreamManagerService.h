@@ -198,7 +198,7 @@ private:
     static const Boolean DEBUG;
     static const String TAG;
 
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IHandler> mHandler;

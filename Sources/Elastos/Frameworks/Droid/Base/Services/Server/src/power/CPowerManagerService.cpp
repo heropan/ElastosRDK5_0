@@ -63,7 +63,7 @@ namespace Power {
 
 static CPowerManagerService* gPowerManagerService = NULL;
 static struct power_module* gPowerModule = NULL;
-static Mutex gPowerManagerLock;
+static Object gPowerManagerLock;
 static Boolean gScreenOn = TRUE;
 static Boolean gScreenBright = TRUE;
 static nsecs_t gLastEventTime[android::USER_ACTIVITY_EVENT_LAST + 1];
@@ -148,7 +148,7 @@ ECode CPowerManagerService::HdmiPluggedReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     Int32 wasPlugged = mHost->mHdmiPlugged ? 1 : 0;
     Int32 value = wasPlugged;
     intent->GetInt32Extra(String("hdmistatus")/*DisplayManagerAw::EXTRA_HDMISTATUS*/, wasPlugged, &value);
@@ -197,7 +197,7 @@ ECode CPowerManagerService::BatteryReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     mHost->HandleBatteryStateChangedLocked();
     return NOERROR;
 }
@@ -232,7 +232,7 @@ ECode CPowerManagerService::DreamReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     mHost->ScheduleSandmanLocked();
     return NOERROR;
 }
@@ -247,7 +247,7 @@ ECode CPowerManagerService::UserSwitchedReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     mHost->HandleSettingsChangedLocked();
     return NOERROR;
 }
@@ -261,7 +261,7 @@ ECode CPowerManagerService::DockReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     Int32 dockState;
     intent->GetInt32Extra(IIntent::EXTRA_DOCK_STATE,
             IIntent::EXTRA_DOCK_STATE_UNDOCKED, &dockState);
@@ -286,7 +286,7 @@ ECode CPowerManagerService::SettingsObserver::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     mHost->HandleSettingsChangedLocked();
     return NOERROR;
 }
@@ -424,7 +424,7 @@ CAR_INTERFACE_IMPL(CPowerManagerService::SuspendBlockerImpl, ISuspendBlocker);
 
 ECode CPowerManagerService::SuspendBlockerImpl::Acquire()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mReferenceCount += 1;
     if (mReferenceCount == 1) {
         CPowerManagerService::NativeAcquireSuspendBlocker(mName);
@@ -434,7 +434,7 @@ ECode CPowerManagerService::SuspendBlockerImpl::Acquire()
 
 ECode CPowerManagerService::SuspendBlockerImpl::Release()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mReferenceCount -= 1;
     if (mReferenceCount == 0) {
         CPowerManagerService::NativeReleaseSuspendBlocker(mName);
@@ -481,13 +481,13 @@ CAR_INTERFACE_IMPL(CPowerManagerService::ScreenOnBlockerImpl, IScreenOnBlocker);
 
 Boolean CPowerManagerService::ScreenOnBlockerImpl::IsHeld()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mNestCount != 0;
 }
 
 ECode CPowerManagerService::ScreenOnBlockerImpl::Acquire()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mNestCount += 1;
     if (CPowerManagerService::DEBUG) {
         Slogger::D(CPowerManagerService::TAG, "Screen on blocked: mNestCount=%d", mNestCount);
@@ -497,7 +497,7 @@ ECode CPowerManagerService::ScreenOnBlockerImpl::Acquire()
 
 ECode CPowerManagerService::ScreenOnBlockerImpl::Release()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mNestCount -= 1;
     if (mNestCount < 0) {
         Slogger::E(CPowerManagerService::TAG,
@@ -526,7 +526,7 @@ CAR_INTERFACE_IMPL(CPowerManagerService::DisplayBlankerImpl, IDisplayBlanker);
 
 ECode CPowerManagerService::DisplayBlankerImpl::BlankAllDisplays()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mBlanked = TRUE;
     mHost->mDisplayManagerService->BlankAllDisplaysFromPowerManager();
     CPowerManagerService::NativeSetInteractive(FALSE);
@@ -539,7 +539,7 @@ ECode CPowerManagerService::DisplayBlankerImpl::BlankAllDisplays()
 
 ECode CPowerManagerService::DisplayBlankerImpl::UnblankAllDisplays()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     CPowerManagerService::NativeSetAutoSuspend(FALSE);
     CPowerManagerService::NativeSetInteractive(TRUE);
     mHost->mDisplayManagerService->UnblankAllDisplaysFromPowerManager();
@@ -723,7 +723,7 @@ void CPowerManagerService::NativeSetPowerState(
     /* [in] */ Boolean screenOn,
     /* [in] */ Boolean screenBright)
 {
-    Mutex::Autolock lock(gPowerManagerLock);
+    AutoLock lock(gPowerManagerLock);
     gScreenOn = screenOn;
     gScreenBright = screenBright;
 }
@@ -812,7 +812,7 @@ void CPowerManagerService::Init(
 void CPowerManagerService::SetPolicy(
     /* [in] */ IWindowManagerPolicy* policy)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mPolicy = policy;
 }
 
@@ -820,7 +820,7 @@ ECode CPowerManagerService::SystemReady(
     /* [in] */ TwilightService* twilight)
     ///* [in] */ CDreamManagerService* dreamManager)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mSystemReady = TRUE;
     // mDreamManager = dreamManager;
 
@@ -1079,7 +1079,7 @@ ECode CPowerManagerService::AcquireWakeLockInternal(
     /* [in] */ Int32 uid,
     /* [in] */ Int32 pid)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "acquireWakeLockInternal: lock=, flags=0x%08x, tag=\"%s\", ws=%p, uid=%d, pid=%d"
                 /*+ Objects.hashCode(lock)*/, flags, (const char*)tag, ws, uid, pid);
@@ -1160,7 +1160,7 @@ void CPowerManagerService::ReleaseWakeLockInternal(
     /* [in] */ IBinder* _lock,
     /* [in] */ Int32 flags)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "releaseWakeLockInternal: lock=, flags=0x%08x"
                 /* + Objects.hashCode(lock)*/, flags);
@@ -1192,7 +1192,7 @@ void CPowerManagerService::ReleaseWakeLockInternal(
 void CPowerManagerService::HandleWakeLockDeath(
     /* [in] */ WakeLock* wakeLock)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "handleWakeLockDeath: lock="/* + Objects.hashCode(wakeLock.mLock)*/);
     }
@@ -1260,7 +1260,7 @@ ECode CPowerManagerService::UpdateWakeLockWorkSourceInternal(
     /* [in] */IBinder* _lock,
     /* [in] */IWorkSource* ws)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     List< AutoPtr<WakeLock> >::Iterator it = FindWakeLockIndexLocked(_lock);
     if (it == mWakeLocks.End()) {
         Slogger::E(TAG, "Wake lock not active");
@@ -1327,7 +1327,7 @@ ECode CPowerManagerService::IsWakeLockLevelSupported(
 Boolean CPowerManagerService::IsWakeLockLevelSupportedInternal(
     /* [in] */ Int32 level)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     switch (level) {
         case IPowerManager::PARTIAL_WAKE_LOCK:
         case IPowerManager::SCREEN_DIM_WAKE_LOCK:
@@ -1355,7 +1355,7 @@ ECode CPowerManagerService::UserActivity(
         // Once upon a time applications could call userActivity().
         // Now we require the DEVICE_POWER permission.  Log a warning and ignore the
         // request instead of throwing a SecurityException so we don't break old apps.
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         if (now >= mLastWarningAboutUserActivityPermission + (5 * 60 * 1000)) {
             mLastWarningAboutUserActivityPermission = now;
             Slogger::W(TAG, "Ignoring call to PowerManager.userActivity() because the caller does not have DEVICE_POWER permission.  Please fix your app!   pid=%d uid=%d"
@@ -1405,7 +1405,7 @@ void CPowerManagerService::UserActivityInternal(
             Slogger::D(TAG, "in boot fast mode not allow userActivity");
             return;
     }
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (UserActivityNoUpdateLocked(eventTime, event, flags, uid)) {
         UpdatePowerStateLocked();
     }
@@ -1488,7 +1488,7 @@ void CPowerManagerService::WakeUpFromNative(
 void CPowerManagerService::WakeUpInternal(
     /* [in] */ Int64 eventTime)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (WakeUpNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -1567,7 +1567,7 @@ void CPowerManagerService::GoToSleepInternal(
     /* [in] */ Int64 eventTime,
     /* [in] */ Int32 reason)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (GoToSleepNoUpdateLocked(eventTime, reason)) {
         UpdatePowerStateLocked();
     }
@@ -1663,7 +1663,7 @@ ECode CPowerManagerService::Nap(
 void CPowerManagerService::NapInternal(
     /* [in] */ Int64 eventTime)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (NapNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -1960,7 +1960,7 @@ void CPowerManagerService::UpdateUserActivitySummaryLocked(
 void CPowerManagerService::HandleUserActivityTimeout()
 {
     // runs on handler thread
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (DEBUG_SPEW) {
         Slogger::D(TAG, "handleUserActivityTimeout");
     }
@@ -2077,7 +2077,7 @@ void CPowerManagerService::HandleSandman()
     // Handle preconditions.
     Boolean startDreaming = FALSE;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         mSandmanScheduled = FALSE;
         Boolean canDream = CanDreamLocked();
         if (DEBUG_SPEW) {
@@ -2105,7 +2105,7 @@ void CPowerManagerService::HandleSandman()
     // We might need to stop the dream again if the preconditions changed.
     Boolean continueDreaming = FALSE;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         if (isDreaming && CanDreamLocked()) {
             if (mWakefulness == WAKEFULNESS_NAPPING) {
                 mWakefulness = WAKEFULNESS_DREAMING;
@@ -2171,7 +2171,7 @@ void CPowerManagerService::HandleDreamFinishedLocked()
 
 void CPowerManagerService::HandleScreenOnBlockerReleased()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mDirty |= DIRTY_SCREEN_ON_BLOCKER_RELEASED;
     UpdatePowerStateLocked();
 }
@@ -2332,7 +2332,7 @@ ECode CPowerManagerService::IsScreenOn(
 
 Boolean CPowerManagerService::IsScreenOnInternal()
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     return !mSystemReady
             || mDisplayPowerRequest->mScreenState != DisplayPowerRequest::SCREEN_STATE_OFF;
 }
@@ -2367,7 +2367,7 @@ void CPowerManagerService::CheckIfBootAnimationFinished()
         return;
     }
 
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (!mBootCompleted) {
         Slogger::I(TAG, "Boot animation finished.");
         HandleBootCompletedLocked();
@@ -2560,7 +2560,7 @@ ECode CPowerManagerService::SetMaximumScreenOffTimeoutFromDeviceAdmin(
 void CPowerManagerService::SetMaximumScreenOffTimeoutFromDeviceAdminInternal(
     /* [in] */ Int32 timeMs)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     mMaximumScreenOffTimeoutFromDeviceAdmin = timeMs;
     mDirty |= DIRTY_SETTINGS;
     UpdatePowerStateLocked();
@@ -2594,7 +2594,7 @@ void CPowerManagerService::SetAttentionLightInternal(
 {
     AutoPtr<LightsService::Light> light;
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         if (!mSystemReady) {
             return;
         }
@@ -2634,7 +2634,7 @@ void CPowerManagerService::GoToBootFastSleepInternal(
 {
     if(DEBUG_BOOTFAST)
         Slogger::D(TAG, "goToBootFastSleepInternal");
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (GoToBootFastSleepNoUpdateLocked(eventTime)) {
         mPolicy->HideScreen(TRUE);
         UpdatePowerStateLocked();
@@ -2706,7 +2706,7 @@ void CPowerManagerService::BootFastWakeInternal(
 {
     if(DEBUG_BOOTFAST)
         Slogger::D(TAG, "bootFastWakeInternal");
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (BootFastWakeNoUpdateLocked(eventTime)) {
         UpdatePowerStateLocked();
     }
@@ -2815,7 +2815,7 @@ ECode CPowerManagerService::TimeSinceScreenWasLastOn(
     /* [out] */ Int64* time)
 {
     VALIDATE_NOT_NULL(time);
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (mDisplayPowerRequest->mScreenState != DisplayPowerRequest::SCREEN_STATE_OFF) {
         *time = 0;
         return NOERROR;
@@ -2843,7 +2843,7 @@ ECode CPowerManagerService::SetScreenBrightnessOverrideFromWindowManager(
 void CPowerManagerService::SetScreenBrightnessOverrideFromWindowManagerInternal(
         /* [in] */ Int32 brightness)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (mScreenBrightnessOverrideFromWindowManager != brightness) {
         mScreenBrightnessOverrideFromWindowManager = brightness;
         mDirty |= DIRTY_SETTINGS;
@@ -2878,7 +2878,7 @@ ECode CPowerManagerService::SetUserActivityTimeoutOverrideFromWindowManager(
 void CPowerManagerService::SetUserActivityTimeoutOverrideFromWindowManagerInternal(
     /* [in] */ Int64 timeoutMillis)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (mUserActivityTimeoutOverrideFromWindowManager != timeoutMillis) {
         mUserActivityTimeoutOverrideFromWindowManager = timeoutMillis;
         mDirty |= DIRTY_SETTINGS;
@@ -2904,7 +2904,7 @@ ECode CPowerManagerService::SetTemporaryScreenBrightnessSettingOverride(
 void CPowerManagerService::SetTemporaryScreenBrightnessSettingOverrideInternal(
     /* [in] */ Int32 brightness)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     if (mTemporaryScreenBrightnessSettingOverride != brightness) {
         mTemporaryScreenBrightnessSettingOverride = brightness;
         mDirty |= DIRTY_SETTINGS;
@@ -2930,7 +2930,7 @@ ECode CPowerManagerService::SetTemporaryScreenAutoBrightnessAdjustmentSettingOve
 void CPowerManagerService::SetTemporaryScreenAutoBrightnessAdjustmentSettingOverrideInternal(
     /* [in] */ Float adj)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
     // Note: This condition handles NaN because NaN is not equal to any other
     // value, including itself.
     if (mTemporaryScreenAutoBrightnessAdjustmentSettingOverride != adj) {
@@ -2954,7 +2954,7 @@ ECode CPowerManagerService::LowLevelReboot(
 // ECode CPowerManagerService::Monitor()
 // {
 //     // Grab and release lock for watchdog monitor to detect deadlocks.
-//     Mutex::Autolock lock(_m_syncLock);
+//     AutoLock lock(_m_syncLock);
 //     return NOERROR;
 // }
 
@@ -3111,7 +3111,7 @@ AutoPtr<IWorkSource> CPowerManagerService::CopyWorkSource(
 ECode CPowerManagerService::constructor()
 {
     {
-        Mutex::Autolock lock(_m_syncLock);
+        AutoLock lock(_m_syncLock);
         mWakeLockSuspendBlocker = CreateSuspendBlockerLocked(String("PowerManagerService"));
         mWakeLockSuspendBlocker->Acquire();
         mScreenOnBlocker = new ScreenOnBlockerImpl(this);
@@ -3128,13 +3128,13 @@ ECode CPowerManagerService::constructor()
 // method for NativeInputManager
 bool CPowerManagerService::isScreenOn()
 {
-    Mutex::Autolock lock(gPowerManagerLock);
+    AutoLock lock(gPowerManagerLock);
     return gScreenOn;
 }
 
 bool CPowerManagerService::isScreenBright()
 {
-    Mutex::Autolock lock(gPowerManagerLock);
+    AutoLock lock(gPowerManagerLock);
     return gScreenBright;
 }
 

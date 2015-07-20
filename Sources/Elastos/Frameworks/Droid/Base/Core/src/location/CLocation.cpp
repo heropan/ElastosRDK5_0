@@ -331,7 +331,7 @@ ECode CLocation::DistanceTo(
     VALIDATE_NOT_NULL(distance);
 
     // See if we already have the result
-    Mutex::Autolock lock(mResultsLock);
+    AutoLock lock(mResultsLock);
 
     AutoPtr<CLocation> destLocation = (CLocation*)dest;
     if (mLatitude != mLat1 || mLongitude != mLon1 ||
@@ -366,7 +366,7 @@ ECode CLocation::BearingTo(
 {
     VALIDATE_NOT_NULL(initialBearing);
 
-    Mutex::Autolock lock(mResultsLock);
+    AutoLock lock(mResultsLock);
 
     // See if we already have the result
     AutoPtr<CLocation> destLocation = (CLocation*)dest;

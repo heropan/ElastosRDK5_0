@@ -1,7 +1,6 @@
 #include "speech/tts/SynthesisPlaybackQueueItem.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -95,7 +94,7 @@ ECode SynthesisPlaybackQueueItem::Stop(
     //try {
         //Java:    mListLock.lock();
         {
-            Mutex::Autolock lock(mListLock);
+            AutoLock lock(mListLock);
             // Update our internal state.
             mStopped = TRUE;
             mIsError = isError;
@@ -127,7 +126,7 @@ void SynthesisPlaybackQueueItem::Done()
 {
     //try {
         //mListLock.lock();
-        Mutex::Autolock lock(mListLock);
+        AutoLock lock(mListLock);
 
         // Update state.
         mDone = TRUE;
@@ -153,7 +152,7 @@ void SynthesisPlaybackQueueItem::Put(
 {
     //try {
         //Java:    mListLock.lock();
-        Mutex::Autolock lock(mListLock);
+        AutoLock lock(mListLock);
         Int64 unconsumedAudioMs = 0;
 
         while ((unconsumedAudioMs = mAudioTrack->GetAudioLengthMs(mUnconsumedBytes)) >
@@ -183,7 +182,7 @@ AutoPtr< ArrayOf<Byte> > SynthesisPlaybackQueueItem::Take()// throws Interrupted
 {
     //try {
         //Java:    mListLock.lock();
-        Mutex::Autolock lock(mListLock);
+        AutoLock lock(mListLock);
 
         // Block if there are no available buffers, and stop() has not
         // been called and done() has not been called.

@@ -29,7 +29,7 @@ void MonkeyUtils::ToCalendarTime(
     /* [in] */ Int64 time,
     /* [out] */ String *formatedTime)
 {
-    Mutex::Autolock lock(mLockLock);
+    AutoLock lock(mLockLock);
     if(formatedTime == NULL)
         return;
     sDate->SetTime(time);

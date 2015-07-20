@@ -20,7 +20,7 @@ AutoPtr<ITextServicesManager> CTextServicesManager::GetInstance()
 {
     //synchronized (TextServicesManager.class)
     {
-        Mutex::AutoLock lock(sLock);
+        Object::AutoLock lock(sLock);
         if (sInstance != NULL) {
             return sInstance;
         }

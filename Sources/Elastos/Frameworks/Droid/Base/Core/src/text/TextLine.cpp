@@ -46,7 +46,7 @@ AutoPtr<TextLine> TextLine::Obtain()
 {
     AutoPtr<TextLine> tl;
     {
-      Mutex::Autolock lock(sCachedLock);
+      AutoLock lock(sCachedLock);
       Int32 length = sCached->GetLength();
       for (Int32 i = length; --i >= 0;) {
           if ((*sCached)[i] != NULL) {
@@ -84,7 +84,7 @@ AutoPtr<TextLine> TextLine::Recycle(
 
     //synchronized(sCached)
     {
-        Mutex::Autolock lock(sCachedLock);
+        AutoLock lock(sCachedLock);
         for (Int32 i = 0; i < sCached->GetLength(); ++i) {
             if ((*sCached)[i] == NULL) {
                 sCached->Set(i, tl);

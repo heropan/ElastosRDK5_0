@@ -12,8 +12,6 @@ CAR_SINGLETON_IMPL(CServerSocketFactoryHelper)
 ECode CServerSocketFactoryHelper::GetDefault(
     /* [out] */ IServerSocketFactory** factory)
 {
-    VALIDATE_NOT_NULL(factory)
-
     return ServerSocketFactory::GetDefault(factory);
 }
 

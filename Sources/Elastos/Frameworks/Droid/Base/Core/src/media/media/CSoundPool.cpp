@@ -53,7 +53,7 @@ ECode CSoundPool::EventHandler::HandleMessage(
             }
 
             {
-                Mutex::Autolock lock(mSoundPool->mLock);
+                AutoLock lock(mSoundPool->mLock);
                 if (mSoundPool->mOnLoadCompleteListener != NULL) {
                     mSoundPool->mOnLoadCompleteListener->OnLoadComplete(
                         (ISoundPool*)mSoundPool->Probe(EIID_ISoundPool), arg1, arg2);
@@ -371,7 +371,7 @@ ECode CSoundPool::SetRate(
 ECode CSoundPool::SetOnLoadCompleteListener(
     /* [in] */ IOnLoadCompleteListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mEventHandler = NULL;
     if (listener != NULL) {

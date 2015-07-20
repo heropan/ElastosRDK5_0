@@ -554,7 +554,7 @@ TwilightService::TwilightService(
 void TwilightService::SystemReady()
 {
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     mSystemReady = TRUE;
 
     AutoPtr<IIntentFilter> filter;
@@ -576,7 +576,7 @@ ECode TwilightService::GetCurrentState(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     *result = mTwilightState;
     return NOERROR;
 }
@@ -585,7 +585,7 @@ ECode TwilightService::RegisterListener(
     /* [in] */ ITwilightListener* listener,
     /* [in] */ IHandler* handler)
 {
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     AutoPtr<TwilightListenerRecord> r = new TwilightListenerRecord(listener, handler);
     mListeners.PushBack(r);
 
@@ -600,7 +600,7 @@ void TwilightService::SetTwilightState(
     /* [in] */ TwilightState* state)
 {
 
-    Mutex::Autolock lock(&mLock);
+    AutoLock lock(&mLock);
     if (mTwilightState.Get() != state) {
         if (DEBUG) {
             //Slogger::D(TAG, "Twilight state changed: " + state);

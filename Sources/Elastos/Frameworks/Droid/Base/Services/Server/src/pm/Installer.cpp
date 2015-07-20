@@ -174,7 +174,7 @@ Boolean Installer::WriteCommand(
 String Installer::Transaction(
     /* [in] */ const String& cmd)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!Connect()) {
         Slogger::E(TAG, "connection failed");

@@ -139,7 +139,7 @@ private:
 private:
     static AutoPtr<CookieManagerClassic> sRef;
     static const String LOGTAG;
-    static Mutex sLock;
+    static Object sLock;
 
     Int32 mPendingCookieOperations;
 };

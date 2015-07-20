@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::IPowerManagerWakeLock;
@@ -58,7 +57,7 @@ private:
     private:
         AutoPtr<Command> mCmd;
         CNotificationPlayer* mHost;
-        Mutex mLock;
+        Object mLock;
     };
 
     class CmdThread
@@ -151,7 +150,7 @@ private:
     String mTag;
     AutoPtr<CmdThread> mThread;
     AutoPtr<CreationAndCompletionThread> mCompletionThread;
-    Mutex mCompletionHandlingLock; // = new Object();
+    Object mCompletionHandlingLock; // = new Object();
     AutoPtr<IMediaPlayer> mPlayer;
     AutoPtr<IPowerManagerWakeLock> mWakeLock;
     AutoPtr<IAudioManager> mAudioManager;
@@ -159,8 +158,8 @@ private:
     // The current state according to the caller.  Reality lags behind
     // because of the asynchronous nature of this class.
     Int32 mState; // = STOP;
-    Mutex mCmdQueueLock;
-    Mutex mCompletionThreadLock;
+    Object mCmdQueueLock;
+    Object mCompletionThreadLock;
 };
 
 } // namespace Media

@@ -53,7 +53,7 @@ ECode CUpdateLock::IsHeld(
 {
     VALIDATE_NOT_NULL(result)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         *result = mHeld;
     }
     return NOERROR;
@@ -66,7 +66,7 @@ ECode CUpdateLock::AcquireLock()
     }
     CheckService();
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         AcquireLocked();
     }
     return NOERROR;
@@ -94,7 +94,7 @@ ECode CUpdateLock::ReleaseLock()
     }
     CheckService();
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         ReleaseLocked();
     }
     return NOERROR;
@@ -121,7 +121,7 @@ ECode CUpdateLock::ReleaseLocked()
 
 CUpdateLock::~CUpdateLock()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // if mHeld is true, sService must be non-null
     if (mHeld) {
         // Log.wtf(TAG, "UpdateLock finalized while still held");

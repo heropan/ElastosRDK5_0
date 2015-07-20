@@ -7,7 +7,6 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::CUriMatcher;
 using Elastos::Utility::Logging::Logger;
 

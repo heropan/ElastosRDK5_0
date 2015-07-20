@@ -149,7 +149,7 @@ AutoPtr<IInputMethodManager> CInputMethodManager::GetInstance(
 AutoPtr<IInputMethodManager> CInputMethodManager::GetInstance(
     /* [in] */ ILooper* mainLooper)
 {
-    Mutex::Autolock lock(sInstanceSync);
+    AutoLock lock(sInstanceSync);
 
     if (sInstance != NULL) {
         return sInstance;
@@ -297,7 +297,7 @@ ECode CInputMethodManager::IsActive(
 {
     VALIDATE_NOT_NULL(active);
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     Boolean check = FALSE;
     *active = (mServedView.Get() == view ||
@@ -311,7 +311,7 @@ ECode CInputMethodManager::IsActive(
 {
     VALIDATE_NOT_NULL(active);
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     *active = mServedView != NULL && mCurrentTextBoxAttribute != NULL;
     return NOERROR;
@@ -407,7 +407,7 @@ ECode CInputMethodManager::DisplayCompletions(
     /* [in] */ ArrayOf<ICompletionInfo*>* completions)
 {
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     Boolean check = FALSE;
     if (mServedView.Get() != view && (mServedView == NULL ||
@@ -431,7 +431,7 @@ ECode CInputMethodManager::UpdateExtractedText(
     /* [in] */ IExtractedText* text)
 {
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     Boolean check = FALSE;
     if (mServedView.Get() != view && (mServedView == NULL ||
@@ -464,7 +464,7 @@ ECode CInputMethodManager::ShowSoftInput(
 {
     VALIDATE_NOT_NULL(show);
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     Boolean check = FALSE;
     //Logger::V(TAG, "CInputMethodManager::ShowSoftInputEx, view:%p, ServedView:%p", view, mServedView.Get());
@@ -508,7 +508,7 @@ ECode CInputMethodManager::HideSoftInputFromWindow(
 {
     VALIDATE_NOT_NULL(hide);
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     AutoPtr<IBinder> token;
     if (mServedView == NULL ||
@@ -529,7 +529,7 @@ ECode CInputMethodManager::ToggleSoftInputFromWindow(
     /* [in] */ Int32 showFlags,
     /* [in] */ Int32 hideFlags)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     AutoPtr<IBinder> token;
     if (mServedView == NULL ||
@@ -563,7 +563,7 @@ ECode CInputMethodManager::RestartInput(
 {
     FAIL_RETURN(CheckFocus());
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Boolean check = FALSE;
         if (mServedView.Get() != view && (mServedView == NULL ||
@@ -586,7 +586,7 @@ Boolean CInputMethodManager::StartInputInner(
 {
     AutoPtr<IView> view;
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         view = mServedView;
 
@@ -647,7 +647,7 @@ Boolean CInputMethodManager::StartInputInner(
     }
 
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         // Now that we are locked again, validate that our state hasn't
         // changed.
@@ -740,7 +740,7 @@ ECode CInputMethodManager::WindowDismissed(
     /* [in] */ IBinder* appWindowToken)
 {
     FAIL_RETURN(CheckFocus());
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     AutoPtr<IBinder> token;
     if (mServedView != NULL &&
@@ -753,7 +753,7 @@ ECode CInputMethodManager::WindowDismissed(
 ECode CInputMethodManager::FocusIn(
     /* [in] */ IView* view)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
     FocusInLocked(view);
     return NOERROR;
 }
@@ -781,7 +781,7 @@ void CInputMethodManager::FocusInLocked(
 ECode CInputMethodManager::FocusOut(
     /* [in] */ IView* view)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     // if (DEBUG) Log.v(TAG, "focusOut: " + view
     //         + " mServedView=" + mServedView
@@ -830,7 +830,7 @@ Boolean CInputMethodManager::CheckFocusNoStartInput(
 
     AutoPtr<IInputConnection> ic;
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         if (mServedView == mNextServedView && !forceNewFocus) {
             return FALSE;
@@ -883,7 +883,7 @@ ECode CInputMethodManager::OnWindowFocus(
     Boolean forceNewFocus = FALSE;
 
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         // if (DEBUG) Log.v(TAG, "onWindowFocus: " + focusedView
         //         + " softInputMode=" + softInputMode
@@ -925,7 +925,7 @@ ECode CInputMethodManager::OnWindowFocus(
     // For some reason we didn't do a startInput + windowFocusGain, so
     // we'll just do a window focus gain and call it a day.
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         // try {
         //     if (DEBUG) Log.v(TAG, "Reporting focus gain, without startInput");
@@ -941,7 +941,7 @@ ECode CInputMethodManager::OnWindowFocus(
 ECode CInputMethodManager::StartGettingWindowFocus(
     /* [in] */ IView* rootView)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
     mCurRootView = rootView;
     return NOERROR;
 }
@@ -955,7 +955,7 @@ ECode CInputMethodManager::UpdateSelection(
 {
     FAIL_RETURN(CheckFocus());
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Boolean check = FALSE;
         if ((mServedView.Get() != view && (mServedView == NULL ||
@@ -991,7 +991,7 @@ ECode CInputMethodManager::ViewClicked(
     const Boolean focusChanged = mServedView != mNextServedView;
     FAIL_RETURN(CheckFocus());
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Boolean check = FALSE;
         if ((mServedView.Get() != view && (mServedView.Get() == NULL
@@ -1027,7 +1027,7 @@ ECode CInputMethodManager::UpdateCursor(
 {
     FAIL_RETURN(CheckFocus());
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Boolean check = FALSE;
         if ((mServedView.Get() != view && (mServedView == NULL ||
@@ -1060,7 +1060,7 @@ ECode CInputMethodManager::SendAppPrivateCommand(
 {
     FAIL_RETURN(CheckFocus());
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Boolean check;
         if ((mServedView.Get() != view && (mServedView == NULL ||
@@ -1131,7 +1131,7 @@ ECode CInputMethodManager::DispatchKeyEvent(
 {
     Boolean handled = FALSE;
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         if (DEBUG) Logger::D(TAG, "dispatchKeyEvent");
 
@@ -1172,7 +1172,7 @@ ECode CInputMethodManager::DispatchTrackballEvent(
     /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
 {
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         if (DEBUG) Logger::D(TAG, "dispatchTrackballEvent");
 
         if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
@@ -1201,7 +1201,7 @@ ECode CInputMethodManager::DispatchGenericMotionEvent(
     /* [in] */ IInputMethodManagerFinishedEventCallback* callback)
 {
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         if (DEBUG) Logger::D(TAG, "dispatchGenericMotionEvent");
 
         if (mCurMethod != NULL && mCurrentTextBoxAttribute != NULL) {
@@ -1229,7 +1229,7 @@ void CInputMethodManager::FinishedEvent(
 {
     AutoPtr<IInputMethodManagerFinishedEventCallback> callback;
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         AutoPtr<PendingEvent> p = DequeuePendingEventLocked(seq);
         if (p == NULL) {
@@ -1247,7 +1247,7 @@ void CInputMethodManager::TimeoutEvent(
 {
     AutoPtr<IInputMethodManagerFinishedEventCallback> callback;
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         AutoPtr<PendingEvent> p = DequeuePendingEventLocked(seq);
         if (p == NULL) {
@@ -1341,7 +1341,7 @@ void CInputMethodManager::RecyclePendingEventLocked(
 
 ECode CInputMethodManager::ShowInputMethodPicker()
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
     ShowInputMethodPickerLocked();
     return NOERROR;
 }
@@ -1358,7 +1358,7 @@ void CInputMethodManager::ShowInputMethodPickerLocked()
 ECode CInputMethodManager::ShowInputMethodAndSubtypeEnabler(
     /* [in] */ const String& imiId)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
     // try {
     return mService->ShowInputMethodAndSubtypeEnablerFromClient(mClient, imiId);
     // } catch (RemoteException e) {
@@ -1371,7 +1371,7 @@ ECode CInputMethodManager::GetCurrentInputMethodSubtype(
 {
     VALIDATE_NOT_NULL(subtype);
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->GetCurrentInputMethodSubtype(subtype);
         // } catch (RemoteException e) {
@@ -1387,7 +1387,7 @@ ECode CInputMethodManager::SetCurrentInputMethodSubtype(
 {
     VALIDATE_NOT_NULL(result);
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->SetCurrentInputMethodSubtype(subtype, result);
         // } catch (RemoteException e) {
@@ -1403,7 +1403,7 @@ ECode CInputMethodManager::GetShortcutInputMethodsAndSubtypes(
     assert(0);
     VALIDATE_NOT_NULL(ret);
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         CObjectMap::New(ret);
         // try {
@@ -1449,7 +1449,7 @@ ECode CInputMethodManager::SwitchToLastInputMethod(
     /* [out] */ Boolean* switched)
 {
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->SwitchToLastInputMethod(imeToken, switched);
         // } catch (RemoteException e) {
@@ -1465,7 +1465,7 @@ ECode CInputMethodManager::SwitchToNextInputMethod(
     /* [out] */ Boolean* switched)
 {
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->SwitchToNextInputMethod(imeToken, onlyCurrentIme, switched);
         // } catch (RemoteException e) {
@@ -1480,7 +1480,7 @@ ECode CInputMethodManager::SetAdditionalInputMethodSubtypes(
     /* [in] */ ArrayOf<IInputMethodSubtype*>* subtypes)
 {
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->SetAdditionalInputMethodSubtypes(imiId, subtypes);
         // } catch (RemoteException e) {
@@ -1494,7 +1494,7 @@ ECode CInputMethodManager::GetLastInputMethodSubtype(
 {
     VALIDATE_NOT_NULL(subtype);
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
         // try {
         return mService->GetLastInputMethodSubtype(subtype);
         // } catch (RemoteException e) {
@@ -1509,7 +1509,7 @@ void CInputMethodManager::HandleBind(
 {
     assert(res != NULL);
     {
-        Mutex::Autolock lock(mHLock);
+        AutoLock lock(mHLock);
 
         Int32 sequence;
         res->GetSequence(&sequence);
@@ -1531,7 +1531,7 @@ void CInputMethodManager::HandleUnBind(
     /* [in] */ Int32 sequence)
 {
     Boolean startInput = FALSE;
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     if (mBindSequence == sequence) {
         if (FALSE) {
@@ -1565,7 +1565,7 @@ void CInputMethodManager::HandleUnBind(
 void CInputMethodManager::HandleSetActive(
     /* [in] */ Boolean active)
 {
-    Mutex::Autolock lock(mHLock);
+    AutoLock lock(mHLock);
 
     mActive = active;
     mFullscreenMode = FALSE;

@@ -124,7 +124,7 @@ ECode CAudioSystem::SetErrorCallback(
     /* [in] */ IAudioSystemErrorCallback* cb)
 {
     {
-        Mutex::Autolock lock(sStaticAudioSystemLock);
+        AutoLock lock(sStaticAudioSystemLock);
         mErrorCallback = cb;
     }
     // Calling a method on AudioFlinger here makes sure that we bind to IAudioFlinger
@@ -391,7 +391,7 @@ void CAudioSystem::ErrorCallbackFromNative(
     if (DBG) Logger::E("CAudioSystem", "ErrorCallbackFromNative error: %d", error);
     AutoPtr<IAudioSystemErrorCallback> errorCallback;
     {
-        Mutex::Autolock lock(sStaticAudioSystemLock);
+        AutoLock lock(sStaticAudioSystemLock);
         if (mErrorCallback != NULL) {
             errorCallback = mErrorCallback;
         }

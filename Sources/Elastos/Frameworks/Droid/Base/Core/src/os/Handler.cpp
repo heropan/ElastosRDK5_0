@@ -368,7 +368,7 @@ ECode Handler::GetIMessenger(
 {
     VALIDATE_NOT_NULL(mgr);
 
-    Mutex::Autolock lock(mQueueLock);
+    AutoLock lock(mQueueLock);
 
     if (mMessenger == NULL) {
         CMessengerImpl::New(THIS_PROBE(IHandler), (IIMessenger**)&mMessenger);

@@ -54,7 +54,7 @@ AutoPtr<IAccountManagerResponse> AccountManagerServiceSession::GetResponseAndClo
 void AccountManagerServiceSession::Close()
 {
     {
-        Mutex::Autolock lock(mHost->mSessionsLock);
+        AutoLock lock(mHost->mSessionsLock);
         HashMap<String, AutoPtr<AccountManagerServiceSession> >::Iterator it = mHost->mSessions->Find(ToString());
         if (it == mHost->mSessions->End()) {
             // the session was already closed, so bail out now
@@ -364,7 +364,7 @@ ECode AccountManagerServiceSession::Init(
     mCreationTime = SystemClock::GetElapsedRealtime();
     mHost = host;
     {
-        Mutex::Autolock lock(mHost->mSessionsLock);
+        AutoLock lock(mHost->mSessionsLock);
         (*mHost->mSessions)[ToString()] = this;
     }
     AutoPtr<IProxy> proxy = (IProxy*)response->Probe(EIID_IProxy);

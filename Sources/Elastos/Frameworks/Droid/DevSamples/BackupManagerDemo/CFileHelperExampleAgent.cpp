@@ -35,7 +35,7 @@ ECode CFileHelperExampleAgent::OnBackup(
 {
     Slogger::D(TAG, "OnBackup");
     {
-        Mutex::Autolock lock(CActivityOne::sDatalock);
+        AutoLock lock(CActivityOne::sDatalock);
         BackupAgentHelper::OnBackup(oldState, data, newState);
     }
     return NOERROR;
@@ -48,7 +48,7 @@ ECode CFileHelperExampleAgent::OnRestore(
 {
     Slogger::D(TAG, "OnRestore");
     {
-        Mutex::Autolock lock(CActivityOne::sDatalock);
+        AutoLock lock(CActivityOne::sDatalock);
         BackupAgentHelper::OnRestore(data, appVersionCode, newState);
     }
     return NOERROR;

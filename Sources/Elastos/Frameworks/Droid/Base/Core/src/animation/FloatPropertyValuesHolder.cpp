@@ -194,7 +194,7 @@ ECode FloatPropertyValuesHolder::SetupSetter(
     }
     // Check new static hashmap<propName, int> for setter method
     {
-        Mutex::Autolock lock(mPropertyMapLock);
+        AutoLock lock(mPropertyMapLock);
         AutoPtr<IClassInfo> clInfo = TransformClassInfo(target);
         ClassID id;
         id.pUunm = (char*)malloc(80);

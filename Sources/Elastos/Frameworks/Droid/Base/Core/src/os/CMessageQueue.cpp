@@ -64,7 +64,7 @@ ECode CMessageQueue::AddIdleHandler(
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mIdleHandlers.PushBack(handler);
     return NOERROR;
 }
@@ -72,7 +72,7 @@ ECode CMessageQueue::AddIdleHandler(
 ECode CMessageQueue::RemoveIdleHandler(
     /* [in] */ IIdleHandler* handler)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mIdleHandlers.Remove(handler);
     return NOERROR;
 }
@@ -94,7 +94,7 @@ ECode CMessageQueue::GetNext(
         NativePollOnce(nextPollTimeoutMillis);
 
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
 
             if (mQuiting) {
                 return NOERROR;
@@ -190,7 +190,7 @@ ECode CMessageQueue::GetNext(
             // }
 
             if (!keep) {
-                Mutex::Autolock lock(mLock);
+                AutoLock lock(mLock);
                 mIdleHandlers.Remove(idler);
             }
         }
@@ -215,7 +215,7 @@ ECode CMessageQueue::Quit()
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mQuiting) {
             return NOERROR;
@@ -254,7 +254,7 @@ ECode CMessageQueue::EnqueueMessage(
 
     Boolean needWake, isAsync;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         if (mQuiting) {
             Slogger::W(TAG, "sending message to a Handler on a dead thread");
@@ -318,7 +318,7 @@ ECode CMessageQueue::HasMessages(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHandler> pH;
     AutoPtr<IInterface> pObj;
@@ -366,7 +366,7 @@ ECode CMessageQueue::HasMessages(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHandler> pH;
     AutoPtr<IInterface> pObj;
@@ -411,7 +411,7 @@ ECode CMessageQueue::RemoveMessages(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHandler> pH;
     AutoPtr<IInterface> pObj;
@@ -491,7 +491,7 @@ ECode CMessageQueue::RemoveMessages(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHandler> pH;
     AutoPtr<IRunnable> pR;
@@ -570,7 +570,7 @@ ECode CMessageQueue::RemoveCallbacksAndMessages(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHandler> pH;
     AutoPtr<IInterface> pObj;
@@ -654,7 +654,7 @@ ECode CMessageQueue::EnqueueSyncBarrier(
 
     // Enqueue a new sync barrier token.
     // We don't need to wake the queue because the purpose of a barrier is to stall it.
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     const Int32 token = mNextBarrierToken++;
     AutoPtr<IMessageHelper> helper;
@@ -693,7 +693,7 @@ ECode CMessageQueue::RemoveSyncBarrier(
     // If the queue is no longer stalled by a barrier then wake it.
     Boolean needWake;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
 
         Int32 arg1;
         AutoPtr<IMessage> prev;

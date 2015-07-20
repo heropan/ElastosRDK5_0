@@ -63,7 +63,7 @@ UsbCameraDeviceManagerObserver::UsbCameraDeviceManagerObserver(
 AutoPtr<UsbCameraDeviceManagerObserver> UsbCameraDeviceManagerObserver::GetInstance(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(mStaticLock);
+    AutoLock lock(mStaticLock);
     if(mUsbCameraObserver == NULL){
         mUsbCameraObserver = new UsbCameraDeviceManagerObserver(context);
     }
@@ -100,7 +100,7 @@ void UsbCameraDeviceManagerObserver::UpdateState(
     /* [in] */ Int32 state ,
     /* [in] */ Int32 totalNum)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     UpdateState(name,totalNum,state,String(NULL));
 }
 
@@ -110,7 +110,7 @@ void UsbCameraDeviceManagerObserver::UpdateState(
     /* [in] */ Int32 totalNum,
     /* [in] */ const String& extraMng)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Logger::D(TAG, "name: %s state: %d totalNum: %d", name.string(), state, totalNum);
     AutoPtr<IIntent> intent;
 

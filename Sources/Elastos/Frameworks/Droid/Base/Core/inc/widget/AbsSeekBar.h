@@ -168,7 +168,7 @@ protected:
      */
     virtual CARAPI_(void) OnKeyChange();
 
-    virtual CARAPI_(Mutex*) GetSelfLock() = 0;
+    virtual CARAPI_(Object*) GetSelfLock() = 0;
 
 private:
     /**

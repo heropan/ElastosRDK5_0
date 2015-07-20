@@ -3,7 +3,6 @@
 #define __ABSTRACTDEVICEFACTORY_H__
 
 #include <ext/frameworkext.h>
-#include <elrefbase.h>
 
 using Elastos::Droid::Content::IContext;
 

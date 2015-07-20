@@ -113,7 +113,7 @@ ECode CMediaScannerConnection::constructor(
 
 ECode CMediaScannerConnection::Connect()
 {
-   Mutex::Autolock lock(mThisLock);
+   AutoLock lock(mThisLock);
 
    if (!mConnected) {
        AutoPtr<IIntent> intent;
@@ -129,7 +129,7 @@ ECode CMediaScannerConnection::Connect()
 
 ECode CMediaScannerConnection::Disconnect()
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     ECode ec = NOERROR;
     if (mConnected) {
@@ -159,7 +159,7 @@ ECode CMediaScannerConnection::IsConnected(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     *result = mService != NULL && mConnected;
     return NOERROR;
@@ -169,7 +169,7 @@ ECode CMediaScannerConnection::ScanFile(
     /* [in] */ const String& path,
     /* [in] */ const String& mimeType)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (mService == NULL || !mConnected) {
         Logger::E(TAG, "not connected to MediaScannerService");
@@ -201,7 +201,7 @@ ECode CMediaScannerConnection::OnServiceConnected(
         Logger::V(TAG, "Connected to Media Scanner");
     }
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     mService = IIMediaScannerService::Probe(service);
     if (mService != NULL && mClient != NULL) {
@@ -218,7 +218,7 @@ ECode CMediaScannerConnection::OnServiceDisconnected(
         Logger::V(TAG, "Disconnected from Media Scanner");
     }
 
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     mService = NULL;
 

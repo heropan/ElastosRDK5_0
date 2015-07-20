@@ -8,7 +8,6 @@
 #include "accessibility/CMagnificationSpec.h"
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::AsyncTask;
@@ -444,7 +443,7 @@ private:
     private:
         static const Int32 MAX_POOL_SIZE;
 
-        static Mutex sLock;
+        static Object sLock;
         static AutoPtr<MotionEventInfo> sPool;
         static Int32 sPoolSize;
 

@@ -5,7 +5,6 @@
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IIPowerManager;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IIWindowManager;
@@ -30,10 +29,10 @@ public:
         virtual CARAPI Run();
 
     private:
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
     private:
-        Mutex mLock;
+        Object mLock;
         CDisplayManagerServiceAw* mService;
         AutoPtr<IContext> mContext;
         AutoPtr<IIPowerManager> mPM;

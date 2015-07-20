@@ -12,7 +12,6 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/HashSet.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
@@ -429,9 +428,9 @@ private:
     // enabled all the time to minimize development-vs-user
     // differences in testing.
     static HashMap<Int32, AutoPtr<SettingsFileObserver> > sObserverInstances;
-    static Mutex sObserverInstancesLock;
+    static Object sObserverInstancesLock;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace SettingsProvider

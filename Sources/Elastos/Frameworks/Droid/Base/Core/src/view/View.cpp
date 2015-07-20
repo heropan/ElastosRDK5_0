@@ -14240,7 +14240,7 @@ Boolean View::IsTextAlignmentResolved()
 Int32 View::GenerateViewId()
 {
     //for (;;) {
-        Mutex::Autolock lock(sNextGeneratedIdLock);
+        AutoLock lock(sNextGeneratedIdLock);
         Int32 result = sNextGeneratedId;
         // aapt-generated IDs have the high byte nonzero; clamp to the range under that.
         Int32 newValue = result + 1;

@@ -391,11 +391,11 @@ ECode CMountService::UserBroadcastReceiver::OnReceive(
     String action;
     intent->GetAction(&action);
     if (IIntent::ACTION_USER_ADDED.Equals(action)) {
-        Mutex::Autolock lock(mHost->mVolumesLock);
+        AutoLock lock(mHost->mVolumesLock);
         mHost->CreateEmulatedVolumeForUserLocked(user);
     }
     else if (IIntent::ACTION_USER_REMOVED.Equals(action)) {
-        Mutex::Autolock lock(mHost->mVolumesLock);
+        AutoLock lock(mHost->mVolumesLock);
         List<AutoPtr<IStorageVolume> > toRemove;
         List<AutoPtr<IStorageVolume> >::Iterator iter = mHost->mVolumes.Begin();
         for(; iter != mHost->mVolumes.End(); iter++) {
@@ -449,7 +449,7 @@ ECode CMountService::MountServiceBinderListener::ProxyDied()
     if (LOCAL_LOGD) {
         Slogger::D(TAG, "An IMountServiceListener has died!");
     }
-    Mutex::Autolock lock(mHost->mListenersLock);
+    AutoLock lock(mHost->mListenersLock);
     AutoPtr<IProxy> proxy = (IProxy*)mListener->Probe(EIID_IProxy);
     assert(proxy != NULL);
     Boolean result;
@@ -507,7 +507,7 @@ ECode CMountService::OnDaemonConnectedThread::Run()
         state = IEnvironment::MEDIA_REMOVED;
 
         {
-            Mutex::Autolock lock(mHost->mVolumesLock);
+            AutoLock lock(mHost->mVolumesLock);
             HashMap<String, AutoPtr<IStorageVolume> >::Iterator it = mHost->mVolumesByPath.Find(path);
             if (it != mHost->mVolumesByPath.End()) {
                 volume = it->mSecond;
@@ -748,7 +748,7 @@ ECode CMountService::MountObbAction::HandleExecute()
 
     Boolean isMounted;
     {
-        Mutex::Autolock lock(mHost->mObbMountsLock);
+        AutoLock lock(mHost->mObbMountsLock);
         HashMap<String, AutoPtr<ObbState> >::Iterator iter = mHost->mObbPathToStateMap.Find(mObbState->mRawPath);
         isMounted = iter != mHost->mObbPathToStateMap.End();
     }
@@ -816,7 +816,7 @@ ECode CMountService::MountObbAction::HandleExecute()
             Slogger::D(TAG, "Successfully mounted OBB %s", (const char*)mObbState->mVoldPath);
 
         {
-            Mutex::Autolock lock(mHost->mObbMountsLock);
+            AutoLock lock(mHost->mObbMountsLock);
             mHost->AddObbStateLocked(mObbState);
         }
 
@@ -862,7 +862,7 @@ ECode CMountService::UnmountObbAction::HandleExecute()
 
     AutoPtr<ObbState> existingState;
     {
-        Mutex::Autolock lock(mHost->mObbMountsLock);
+        AutoLock lock(mHost->mObbMountsLock);
         HashMap<String, AutoPtr<ObbState> >::Iterator iter = mHost->mObbPathToStateMap.Find(mObbState->mRawPath);
         if(iter != mHost->mObbPathToStateMap.End()) {
             existingState = iter->mSecond;
@@ -924,7 +924,7 @@ ECode CMountService::UnmountObbAction::HandleExecute()
 
     if (rc == StorageResultCode::OperationSucceeded) {
         {
-            Mutex::Autolock lock(mHost->mObbMountsLock);
+            AutoLock lock(mHost->mObbMountsLock);
             mHost->RemoveObbStateLocked(existingState);
         }
 
@@ -1145,7 +1145,7 @@ void CMountService::HandleSystemReady()
     // while holding locks.
     HashMap<String, String> snapshot(30);
     {
-        Mutex::Autolock lock(mVolumesLock);
+        AutoLock lock(mVolumesLock);
         HashMap<String, String>::Iterator it = mVolumeStates.Begin();
         for(; it != mVolumeStates.End(); ++it) {
             snapshot[it->mFirst] = it->mSecond;
@@ -1175,7 +1175,7 @@ void CMountService::HandleSystemReady()
 
     // Push mounted state for all emulated storage
     {
-        Mutex::Autolock lock(mVolumesLock);
+        AutoLock lock(mVolumesLock);
         List<AutoPtr<IStorageVolume> >::Iterator iter;
         for (iter = mVolumes.Begin(); iter != mVolumes.End(); ++iter) {
             AutoPtr<IStorageVolume> volume = *iter;
@@ -1233,7 +1233,7 @@ void CMountService::UpdatePublicVolumeState(
 
     String oldState;
     {
-        Mutex::Autolock lock(mVolumesLock);
+        AutoLock lock(mVolumesLock);
 
         HashMap<String, String>::Iterator iter = mVolumeStates.Find(path);
         if(iter != mVolumeStates.End()) {
@@ -1275,7 +1275,7 @@ void CMountService::UpdatePublicVolumeState(
         }
     }
 
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
 
     List<AutoPtr<MountServiceBinderListener> >::ReverseIterator rit;
     for(rit = mListeners.RBegin(); rit != mListeners.REnd();) {
@@ -1369,7 +1369,7 @@ ECode CMountService::OnEvent(
         AutoPtr<IStorageVolume> volume;
         String state;
         {
-            Mutex::Autolock lock(mVolumesLock);
+            AutoLock lock(mVolumesLock);
             volume = mVolumesByPath[path];
             state = mVolumeStates[path];
         }
@@ -1534,7 +1534,7 @@ Int32 CMountService::DoMountVolume(
 
     AutoPtr<IStorageVolume> volume;
    {
-        Mutex::Autolock lock(mVolumesLock);
+        AutoLock lock(mVolumesLock);
         volume = mVolumesByPath[path];
     }
 
@@ -1695,7 +1695,7 @@ Int32 CMountService::DoUnmountVolume(
 
     // We unmounted the volume. None of the asec containers are available now.
     {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         mAsecMountSet.Clear();
     }
 
@@ -1788,7 +1788,7 @@ void CMountService::NotifyShareAvailabilityChange(
     /* [in] */ const Boolean avail)
 {
     {
-        Mutex::Autolock lock(mListenersLock);
+        AutoLock lock(mListenersLock);
         mUmsAvailable = avail;
         List<AutoPtr<MountServiceBinderListener> >::ReverseIterator rit = mListeners.RBegin();
         while (rit != mListeners.REnd()) {
@@ -2074,7 +2074,7 @@ void CMountService::RemoveVolumeLocked(
 
 AutoPtr<IStorageVolume> CMountService::GetPrimaryPhysicalVolume()
 {
-    Mutex::Autolock lock(mVolumesLock);
+    AutoLock lock(mVolumesLock);
     List<AutoPtr<IStorageVolume> >::Iterator iter;
     for (iter = mVolumes.Begin(); iter != mVolumes.End(); ++iter) {
         AutoPtr<IStorageVolume> volume = *iter;
@@ -2097,7 +2097,7 @@ void CMountService::SystemReady()
 ECode CMountService::RegisterListener(
     /* [in] */ IMountServiceListener* listener)
 {
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     AutoPtr<MountServiceBinderListener> bl = new MountServiceBinderListener(listener, this);
     // try {
     AutoPtr<IProxy> proxy = (IProxy*)listener->Probe(EIID_IProxy);
@@ -2117,7 +2117,7 @@ ECode CMountService::RegisterListener(
 ECode CMountService::UnregisterListener(
     /* [in] */ IMountServiceListener* listener)
 {
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     List<AutoPtr<MountServiceBinderListener> >::Iterator iter = mListeners.Begin();
     for(; iter != mListeners.End(); iter++) {
         AutoPtr<MountServiceBinderListener> bl = *iter;
@@ -2138,7 +2138,7 @@ ECode CMountService::Shutdown(
     FAIL_RETURN(ValidatePermission(Elastos::Droid::Manifest::Permission::SHUTDOWN));
 
     Slogger::I(TAG, "Shutting down");
-    Mutex::Autolock lock(mVolumesLock);
+    AutoLock lock(mVolumesLock);
     HashMap<String, String>::Iterator iter = mVolumeStates.Begin();
     for (; iter != mVolumeStates.End(); ++iter) {
         String path = iter->mFirst;
@@ -2211,14 +2211,14 @@ ECode CMountService::Shutdown(
 
 Boolean CMountService::GetUmsEnabling()
 {
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     return mUmsEnabling;
 }
 
 void CMountService::SetUmsEnabling(
     /* [in] */ Boolean enable)
 {
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     mUmsEnabling = enable;
 }
 
@@ -2232,7 +2232,7 @@ ECode CMountService::IsUsbMassStorageConnected(
         *connected = TRUE;
         return NOERROR;
     }
-    Mutex::Autolock lock(mListenersLock);
+    AutoLock lock(mListenersLock);
     *connected = mUmsAvailable;
     return NOERROR;
 }
@@ -2332,7 +2332,7 @@ ECode CMountService::GetVolumeState(
     /* [out] */ String* s)
 {
     VALIDATE_NOT_NULL(s);
-    Mutex::Autolock lock(mVolumesLock);
+    AutoLock lock(mVolumesLock);
 
     String state;
     HashMap<String, String>::Iterator iter = mVolumeStates.Find(mountPoint);
@@ -2550,7 +2550,7 @@ ECode CMountService::CreateSecureContainer(
     // }
 
     if (rc == StorageResultCode::OperationSucceeded) {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         mAsecMountSet.Insert(id);
     }
     *result = rc;
@@ -2680,7 +2680,7 @@ ECode CMountService::DestroySecureContainer(
     // }
 
     if (rc == StorageResultCode::OperationSucceeded) {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         HashSet<String>::Iterator iter = mAsecMountSet.Find(id);
         if (iter != mAsecMountSet.End()) {
             mAsecMountSet.Erase(iter);
@@ -2702,7 +2702,7 @@ ECode CMountService::MountSecureContainer(
     WarnOnNotMounted();
 
     {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         HashSet<String>::Iterator iter = mAsecMountSet.Find(id);
         if (iter != mAsecMountSet.End()) {
             *result = StorageResultCode::OperationFailedStorageMounted;
@@ -2740,7 +2740,7 @@ ECode CMountService::MountSecureContainer(
     // }
 
     if (rc == StorageResultCode::OperationSucceeded) {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         mAsecMountSet.Insert(id);
     }
     *result = rc;
@@ -2759,7 +2759,7 @@ ECode CMountService::UnmountSecureContainer(
 
     HashSet<String>::Iterator iter;
     {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         iter = mAsecMountSet.Find(id);
         if (iter == mAsecMountSet.End()) {
             *result = StorageResultCode::OperationFailedStorageNotMounted;
@@ -2812,7 +2812,7 @@ ECode CMountService::UnmountSecureContainer(
     // }
 
     if (rc == StorageResultCode::OperationSucceeded) {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         mAsecMountSet.Erase(iter);
     }
     *result = rc;
@@ -2828,7 +2828,7 @@ ECode CMountService::IsSecureContainerMounted(
     WaitForReady();
     WarnOnNotMounted();
 
-    Mutex::Autolock lock(mAsecMountSetLock);
+    AutoLock lock(mAsecMountSetLock);
     HashSet<String>::Iterator iter = mAsecMountSet.Find(String(id));
     *mounted = iter != mAsecMountSet.End();
     return NOERROR;
@@ -2845,7 +2845,7 @@ ECode CMountService::RenameSecureContainer(
     WarnOnNotMounted();
 
     {
-        Mutex::Autolock lock(mAsecMountSetLock);
+        AutoLock lock(mAsecMountSetLock);
         /*
          * Because a mounted container has active internal state which cannot be
          * changed while active, we must ensure both ids are not currently mounted.
@@ -3014,7 +3014,7 @@ ECode CMountService::GetMountedObbPath(
 
     AutoPtr<ObbState> state;
     {
-        Mutex::Autolock lock(mObbPathToStateMapLock);
+        AutoLock lock(mObbPathToStateMapLock);
         HashMap<String, AutoPtr<ObbState> >::Iterator it = mObbPathToStateMap.Find(rawPath);
         if (it != mObbPathToStateMap.End()) {
             state = it->mSecond;
@@ -3073,7 +3073,7 @@ ECode CMountService::IsObbMounted(
         return E_NULL_POINTER_EXCEPTION;
         // throw new NullPointerException(String.valueOf(errorMessage));
     }
-    Mutex::Autolock lock(mObbMountsLock);
+    AutoLock lock(mObbMountsLock);
     HashMap<String, AutoPtr<ObbState> >::Iterator iter = mObbPathToStateMap.Find(rawPath);
     *mounted = iter != mObbPathToStateMap.End();
     return NOERROR;
@@ -3125,7 +3125,7 @@ ECode CMountService::UnmountObb(
 
     AutoPtr<ObbState> existingState;
     {
-        Mutex::Autolock lock(mObbPathToStateMapLock);
+        AutoLock lock(mObbPathToStateMapLock);
         existingState = mObbPathToStateMap[rawPath];
     }
 
@@ -3427,7 +3427,7 @@ ECode CMountService::GetVolumeList(
             Binder::GetCallingPid(), Binder::GetCallingUid(), &permission));
     Boolean accessAll = permission == IPackageManager::PERMISSION_GRANTED;
 
-    Mutex::Autolock lock(mVolumesLock);
+    AutoLock lock(mVolumesLock);
     List<AutoPtr<IStorageVolume> > filtered;
     List<AutoPtr<IStorageVolume> >::Iterator iter;
     for (iter = mVolumes.Begin(); iter != mVolumes.End(); ++iter) {
@@ -3633,7 +3633,7 @@ void CMountService::HandleObbFlushMountState(
     if (DEBUG_OBB)
         Slogger::I(TAG, "Flushing all OBB state for path %s", (const char*)path);
 
-    Mutex::Autolock lock(mObbMountsLock);
+    AutoLock lock(mObbMountsLock);
     List<AutoPtr<ObbState> > obbStatesToRemove;
 
     HashMap<String, AutoPtr<ObbState> >::Iterator it = mObbPathToStateMap.Begin();
@@ -3795,7 +3795,7 @@ String CMountService::BuildObbPath(
 //     }
 
 //     {
-//         Mutex::Autolock lock(mObbMountsLock);
+//         AutoLock lock(mObbMountsLock);
 //         pw->Println("  mObbMounts:");
 
 //         final Iterator<Entry<IBinder, List<ObbState>>> binders = mObbMounts.entrySet().iterator();
@@ -3821,7 +3821,7 @@ String CMountService::BuildObbPath(
 //     pw->Println("");
 
 //     {
-//         Mutex::Autolock lock(mVolumesLock);
+//         AutoLock lock(mVolumesLock);
 //         pw->Println("  mVolumes:");
 
 //         List<IStorageVolume*>::Iterator iter;
@@ -3851,7 +3851,7 @@ ECode CMountService::constructor(
     mContext = context;
 
     {
-        Mutex::Autolock lock(mVolumesLock);
+        AutoLock lock(mVolumesLock);
         FAIL_RETURN(ReadStorageListLocked());
     }
 

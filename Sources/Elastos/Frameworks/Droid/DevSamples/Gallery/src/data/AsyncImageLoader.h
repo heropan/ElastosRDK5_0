@@ -7,7 +7,6 @@
 #include "ImageCacheService.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Graphics::Drawable::IBitmapDrawable;
 using Elastos::Droid::Graphics::IBitmapFactoryOptions;
@@ -117,9 +116,9 @@ private:
     static HashMap<String, AutoPtr< ArrayOf<Int32> > > sHighImageWH;
     static HashMap<String, AutoPtr<List<AutoPtr<ImageLoaderParam> > > > sImageLoaderParamCache;
 
-    static Mutex sLock;
-    static Mutex sStatusLock;
-    static Mutex sImageWHLock;
+    static Object sLock;
+    static Object sStatusLock;
+    static Object sImageWHLock;
 };
 
 } // namespace Gallery

@@ -6,7 +6,6 @@
 #include "media/media/audiofx/AudioEffect.h"
 
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Media::Audiofx::AudioEffect;
 
 namespace Elastos {
@@ -368,7 +367,7 @@ private:
     /**
      * Lock for access to mParamListener
      */
-    Mutex mParamListenerLock;
+    Object mParamListenerLock;
 };
 
 } // namespace Audiofx

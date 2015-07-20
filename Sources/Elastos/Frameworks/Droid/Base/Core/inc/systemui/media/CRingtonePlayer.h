@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IUserHandle;
 using Elastos::Droid::Net::IUri;
@@ -43,7 +42,7 @@ private:
     public:
         AutoPtr<IBinder> mToken;
         AutoPtr<IRingtone> mRingtone;
-        Mutex mLock;
+        Object mLock;
         CRingtonePlayer* mHost;
     };
 
@@ -82,7 +81,7 @@ private:
 
     private:
         CRingtonePlayer* mHost;
-        Mutex mLock;
+        Object mLock;
     };
 
 public:

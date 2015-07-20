@@ -2,7 +2,6 @@
 #define __VISUALIZERVIEW_H__
 
 #include "ext/frameworkext.h"
-#include <elrefbase.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::ICanvas;

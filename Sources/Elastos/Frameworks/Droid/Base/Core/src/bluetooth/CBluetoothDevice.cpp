@@ -28,7 +28,7 @@ Mutex CBluetoothDevice::sLock;
 
 AutoPtr<IIBluetooth> CBluetoothDevice::GetService()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sService == NULL) {
         AutoPtr<IBluetoothAdapter> adapter = CBluetoothAdapter::GetDefaultAdapter();

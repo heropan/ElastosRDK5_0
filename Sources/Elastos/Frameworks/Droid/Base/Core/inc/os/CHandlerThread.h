@@ -159,7 +159,7 @@ protected:
     CARAPI_(void) OnLooperPrepared();
 
 private:
-    CARAPI_(Mutex*) GetSelfLock();
+    CARAPI_(Object*) GetSelfLock();
 
 public:
     Int32 mPriority;

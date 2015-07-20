@@ -2199,7 +2199,7 @@ public:/*package*/
     // Lock for state used when installing and doing other long running
     // operations.  Methods that must be called with this lock held have
     // the prefix "LI".
-    Mutex mInstallLock;
+    Object mInstallLock;
 
     // These are the directories in the 3rd party applications installed dir
     // that we have currently loaded packages from.  Keys are the application's
@@ -2214,7 +2214,7 @@ public:/*package*/
     // as the lock for the global state.  Methods that must be called with
     // this lock held have the prefix "LP".
     HashMap<String, AutoPtr<PackageParser::Package> > mPackages;
-    Mutex mPackagesLock;
+    Object mPackagesLock;
 
     AutoPtr<Settings> mSettings;
     Boolean mRestoredSettings;

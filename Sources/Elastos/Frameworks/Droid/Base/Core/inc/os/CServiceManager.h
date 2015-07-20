@@ -45,7 +45,7 @@ public:
 
 private:
     HashMap<String, AutoPtr<IInterface> > mServiceCache;
-    Mutex mServiceCacheLock;
+    Object mServiceCacheLock;
 };
 
 } // namespace Os

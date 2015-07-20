@@ -344,7 +344,7 @@ void CExifInterface::LoadAttributes() // throws IOException
 
     String attrStr;
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         attrStr = GetAttributesNative(mFilename);
     }
 
@@ -412,7 +412,7 @@ ECode CExifInterface::SaveAttributes() //throws IOException
 
     String s = sb.ToString();
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
 
         SaveAttributesNative(mFilename, s);
         CommitChangesNative(mFilename);
@@ -434,7 +434,7 @@ ECode CExifInterface::GetThumbnail(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     AutoPtr<ArrayOf<Byte> > thumbnail = GetThumbnailNative(mFilename);
     *result = thumbnail;

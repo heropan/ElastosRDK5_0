@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IIntentFilterComparison;
 using Elastos::Droid::Widget::Internal::IIRemoteViewsFactory;
 
@@ -32,7 +31,7 @@ private:
     static const String TAG;
 
     static HashMap< AutoPtr<IIntentFilterComparison>, AutoPtr<IRemoteViewsFactory> > sRemoteViewFactories;
-    static Mutex sLock;
+    static Object sLock;
     friend class CRemoteViewsFactoryAdapter;
 };
 

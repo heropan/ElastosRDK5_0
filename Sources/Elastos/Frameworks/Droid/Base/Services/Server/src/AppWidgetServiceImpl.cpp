@@ -27,7 +27,6 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IntegralToString;
-using Elastos::Core::Mutex;
 using Elastos::Droid::R;
 using Elastos::Droid::AppWidget::CAppWidgetProviderInfo;
 using Elastos::Droid::AppWidget::IAppWidgetManager;
@@ -97,7 +96,7 @@ AppWidgetServiceImpl::SaveStateRunnable::SaveStateRunnable(
 
 ECode AppWidgetServiceImpl::SaveStateRunnable::Run()
 {
-    Mutex::Autolock lock(mHost->mAppWidgetIdsLock);
+    AutoLock lock(mHost->mAppWidgetIdsLock);
 
     mHost->EnsureStateLoadedLocked();
     mHost->SaveStateLocked();
@@ -260,7 +259,7 @@ void AppWidgetServiceImpl::SystemReady(
     mSafeMode = safeMode;
 
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
         EnsureStateLoadedLocked();
     }
 }
@@ -283,7 +282,7 @@ void AppWidgetServiceImpl::OnConfigurationChanged()
         mLocale = revised;
 
         {
-            Mutex::Autolock lock(mAppWidgetIdsLock);
+            AutoLock lock(mAppWidgetIdsLock);
 
             EnsureStateLoadedLocked();
             // Note: updateProvidersForPackageLocked() may remove providers, so we must copy the
@@ -345,7 +344,7 @@ void AppWidgetServiceImpl::OnBroadcastReceived(
         return;
     }
     if (added || changed) {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
 
         EnsureStateLoadedLocked();
         AutoPtr<IBundle> extras;
@@ -376,7 +375,7 @@ void AppWidgetServiceImpl::OnBroadcastReceived(
             // The package is being updated. We'll receive a PACKAGE_ADDED shortly.
         }
         else {
-            Mutex::Autolock lock(mAppWidgetIdsLock);
+            AutoLock lock(mAppWidgetIdsLock);
 
             EnsureStateLoadedLocked();
             for(Int32 i = 0; i < pkgList->GetLength(); i++) {
@@ -389,7 +388,7 @@ void AppWidgetServiceImpl::OnBroadcastReceived(
 
     if (providersModified) {
         // If the set of providers has been modified, notify each active AppWidgetHost
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
         EnsureStateLoadedLocked();
         NotifyHostsForProvidersChangedLocked();
     }
@@ -487,7 +486,7 @@ void AppWidgetServiceImpl::Dump(
 
     // //synchronized (mAppWidgetIds)
     // {
-    //     Mutex::Autolock lock(mAppWidgetIdsLock);
+    //     AutoLock lock(mAppWidgetIdsLock);
     //     //int N = mInstalledProviders.size();
     //     pw->PrintStringln("Providers:");
     //     //for (int i=0; i<N; i++)
@@ -551,7 +550,7 @@ ECode AppWidgetServiceImpl::AllocateAppWidgetId(
     Int32 callingUid;
     FAIL_RETURN(EnforceSystemOrCallingUid(packageName, &callingUid));
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
 
         EnsureStateLoadedLocked();
         Int32 appWidgetId = mNextAppWidgetId++;
@@ -579,7 +578,7 @@ ECode AppWidgetServiceImpl::AllocateAppWidgetId(
 void AppWidgetServiceImpl::DeleteAppWidgetId(
     /* [in] */ Int32 appWidgetId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
     if (id != NULL) {
@@ -591,7 +590,7 @@ void AppWidgetServiceImpl::DeleteAppWidgetId(
 void AppWidgetServiceImpl::DeleteHost(
     /* [in] */ Int32 hostId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     Int32 callingUid = Binder::GetCallingUid();
     AutoPtr<Host> host = LookupHostLocked(callingUid, hostId);
@@ -603,7 +602,7 @@ void AppWidgetServiceImpl::DeleteHost(
 
 void AppWidgetServiceImpl::DeleteAllHosts()
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     Int32 callingUid = Binder::GetCallingUid();
     List<AutoPtr<Host> >::ReverseIterator rit;
@@ -709,7 +708,7 @@ ECode AppWidgetServiceImpl::BindAppWidgetIdImpl(
     Int64 ident = Binder::ClearCallingIdentity();
     //try {
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
 
         AutoPtr<IBundle> optionsNew = CloneIfLocalBinder(options);
         EnsureStateLoadedLocked();
@@ -830,7 +829,7 @@ Boolean AppWidgetServiceImpl::CallerHasBindAppWidgetPermission(
     //    return false;
     //}
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
         EnsureStateLoadedLocked();
         return mPackagesWithBindWidgetPermission.Find(packageName)
                 != mPackagesWithBindWidgetPermission.End();
@@ -846,7 +845,7 @@ ECode AppWidgetServiceImpl::HasBindAppWidgetPermission(
             String("hasBindAppWidgetPermission packageName=") + packageName));
 
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
         EnsureStateLoadedLocked();
         *result = mPackagesWithBindWidgetPermission.Find(packageName)
                 != mPackagesWithBindWidgetPermission.End();
@@ -863,7 +862,7 @@ ECode AppWidgetServiceImpl::SetBindAppWidgetPermission(
             String("setBindAppWidgetPermission packageName=") + packageName));
 
     {
-        Mutex::Autolock lock(mAppWidgetIdsLock);
+        AutoLock lock(mAppWidgetIdsLock);
         EnsureStateLoadedLocked();
         if (permission) {
             mPackagesWithBindWidgetPermission.Insert(packageName);
@@ -881,7 +880,7 @@ ECode AppWidgetServiceImpl::BindRemoteViewsService(
     /* [in] */ IIntent* intent,
     /* [in] */ IBinder* connection)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
 
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
@@ -955,7 +954,7 @@ ECode AppWidgetServiceImpl::UnbindRemoteViewsService(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IIntent* intent)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
 
     EnsureStateLoadedLocked();
     // Unbind from the RemoteViewsService (which will trigger a callback to the bound
@@ -1068,7 +1067,7 @@ void AppWidgetServiceImpl::DecrementAppWidgetServiceRefCount(
 AutoPtr<IAppWidgetProviderInfo> AppWidgetServiceImpl::GetAppWidgetInfo(
     /* [in] */ Int32 appWidgetId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
     if (id != NULL && id->mProvider != NULL && !id->mProvider->mZombie) {
@@ -1084,7 +1083,7 @@ AutoPtr<IRemoteViews> AppWidgetServiceImpl::GetAppWidgetViews(
         Log(String("getAppWidgetViews id=") + StringUtils::Int32ToString(appWidgetId));
     }
 
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
     if (id != NULL) {
@@ -1099,7 +1098,7 @@ AutoPtr<IRemoteViews> AppWidgetServiceImpl::GetAppWidgetViews(
 AutoPtr<IObjectContainer> AppWidgetServiceImpl::GetInstalledProviders(
     /* [in] */ Int32 categoryFilter)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<IObjectContainer> result;
     CParcelableObjectContainer::New((IObjectContainer**)&result);
@@ -1145,7 +1144,7 @@ ECode AppWidgetServiceImpl::UpdateAppWidgetIds(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked((*appWidgetIds)[i]);
@@ -1164,7 +1163,7 @@ ECode AppWidgetServiceImpl::UpdateAppWidgetOptions(
     /* [in] */ Int32 appWidgetId,
     /* [in] */ IBundle* _options)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     AutoPtr<IBundle> options = CloneIfLocalBinder(_options);
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
@@ -1195,7 +1194,7 @@ ECode AppWidgetServiceImpl::UpdateAppWidgetOptions(
 AutoPtr<IBundle> AppWidgetServiceImpl::GetAppWidgetOptions(
     /* [in] */ Int32 appWidgetId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked(appWidgetId);
     if (id != NULL && id->mOptions != NULL) {
@@ -1222,7 +1221,7 @@ ECode AppWidgetServiceImpl::PartiallyUpdateAppWidgetIds(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked((*appWidgetIds)[i]);
@@ -1249,7 +1248,7 @@ ECode AppWidgetServiceImpl::NotifyAppWidgetViewDataChanged(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     for (Int32 i = 0; i < N; i++) {
         AutoPtr<AppWidgetId> id = LookupAppWidgetIdLocked((*appWidgetIds)[i]);
@@ -1262,7 +1261,7 @@ ECode AppWidgetServiceImpl::UpdateAppWidgetProvider(
     /* [in] */ IComponentName* provider,
     /* [in] */ IRemoteViews* views)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<Provider> p = LookupProviderLocked(provider);
     if (p == NULL) {
@@ -1433,7 +1432,7 @@ ECode AppWidgetServiceImpl::StartListening(
     Int32 callingUid;
     FAIL_RETURN(EnforceCallingUid(packageName, &callingUid));
 
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<Host> host = LookupOrAddHostLocked(callingUid, packageName, hostId);
     host->mCallbacks = callbacks;
@@ -1455,7 +1454,7 @@ ECode AppWidgetServiceImpl::StartListening(
 void AppWidgetServiceImpl::StopListening(
     /* [in] */ Int32 hostId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<Host> host = LookupHostLocked(Binder::GetCallingUid(), hostId);
     if (host != NULL) {
@@ -1737,7 +1736,7 @@ AutoPtr<ArrayOf<Int32> > AppWidgetServiceImpl::GetAppWidgetIds(
 AutoPtr<ArrayOf<Int32> > AppWidgetServiceImpl::GetAppWidgetIds(
     /* [in] */ IComponentName* provider)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     AutoPtr<Provider> p = LookupProviderLocked(provider);
     AutoPtr<ArrayOf<Int32> > data;
@@ -1764,7 +1763,7 @@ AutoPtr<ArrayOf<Int32> > AppWidgetServiceImpl::GetAppWidgetIds(
 AutoPtr<ArrayOf<Int32> > AppWidgetServiceImpl::GetAppWidgetIdsForHost(
     /* [in] */ Int32 hostId)
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
 
     AutoPtr<ArrayOf<Int32> > ids;
 
@@ -1983,7 +1982,7 @@ ECode AppWidgetServiceImpl::EnforceCallingUid(
 
 void AppWidgetServiceImpl::SendInitialBroadcasts()
 {
-    Mutex::Autolock lock(mAppWidgetIdsLock);
+    AutoLock lock(mAppWidgetIdsLock);
     EnsureStateLoadedLocked();
     List<AutoPtr<Provider> >::Iterator iter;
     for (iter = mInstalledProviders.Begin(); iter != mInstalledProviders.End(); ++iter) {

@@ -24,7 +24,7 @@ WebHistoryItemClassic::WebHistoryItemClassic(
 {
     mFlattenedData = data;
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         mId = sNextId++;
     }
 }
@@ -37,7 +37,7 @@ WebHistoryItemClassic::WebHistoryItemClassic(
     /* [in] */ Int32 nativeBridge)
 {
     {
-        Mutex::Autolock lock(sLock);
+        AutoLock lock(sLock);
         mId = sNextId++;
     }
     mNativeBridge = nativeBridge;
@@ -282,7 +282,7 @@ void WebHistoryItemClassic::Inflate(
 //synchronized
 AutoPtr<WebHistoryItemClassic> WebHistoryItemClassic::Clone()
 {
-    Elastos::Core::Mutex::Autolock lock(mLock);
+    Elastos::Core::AutoLock lock(mLock);
     return new WebHistoryItemClassic(this);
 }
 

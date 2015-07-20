@@ -4,7 +4,6 @@
 
 #include "ext/frameworkdef.h"
 #include "database/sqlite/SQLiteDatabase.h"
-#include <elrefbase.h>
 
 namespace Elastos {
 namespace Droid {

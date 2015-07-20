@@ -31,7 +31,7 @@ const String CApplicationThread::DB_INFO_FORMAT("  %8s %8s %14s %14s  %s");
 void CApplicationThread::UpdatePendingConfiguration(
     /* [in] */ IConfiguration* config)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     Boolean isNewer;
     if (mAThread->mPendingConfiguration == NULL ||

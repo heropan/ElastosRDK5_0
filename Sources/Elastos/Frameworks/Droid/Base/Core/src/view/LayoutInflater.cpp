@@ -387,7 +387,7 @@ ECode LayoutInflater::Inflate(
     /* [out] */ IView** view)
 {
     assert(view != NULL);
-    Mutex::Autolock lock(mConstructorArgsLock);
+    AutoLock lock(mConstructorArgsLock);
 
     AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
     AutoPtr<IContext> lastContext = (IContext*)((*mConstructorArgs)[0]);

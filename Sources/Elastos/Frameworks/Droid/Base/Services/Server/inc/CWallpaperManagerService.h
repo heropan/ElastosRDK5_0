@@ -314,7 +314,7 @@ private:
     static AutoPtr<IComponentName> IMAGE_WALLPAPER;
 
 private:
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<IContext> mContext;
     AutoPtr<IIWindowManager> mIWindowManager;

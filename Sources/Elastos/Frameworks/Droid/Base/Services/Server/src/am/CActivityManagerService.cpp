@@ -1051,7 +1051,7 @@ CAR_INTERFACE_IMPL(CActivityManagerService::ErrorMsgButtonOnClickListener, IDial
 CActivityManagerService::DropBoxTagThread::DropBoxTagThread(
     /* [in] */ CActivityManagerService* host,
     /* [in] */ StringBuilder* sb,
-    /* [in] */ Mutex* lock,
+    /* [in] */ Object* lock,
     /* [in] */ IDropBoxManager* dbox,
     /* [in] */ const String& tag)
     : mHost(host)
@@ -1107,7 +1107,7 @@ ECode CActivityManagerService::DropBoxTagThread2::Run()
 
     String errorReport;
     {
-        Mutex::Autolock lock(mHost->mStrictModeBufferLock);
+        AutoLock lock(mHost->mStrictModeBufferLock);
         errorReport = mHost->mStrictModeBuffer->ToString();
         if (errorReport.GetLength() == 0) {
             return NOERROR;
@@ -1664,7 +1664,7 @@ ECode CActivityManagerService::SetSystemProcess()
         app->mMaxAdj = ProcessList::SYSTEM_ADJ;
         mSelf->mProcessNames->Put(app->mProcessName, app->mUid, app);
         {
-            Mutex::Autolock lock(mSelf->mPidsSelfLock);
+            AutoLock lock(mSelf->mPidsSelfLock);
 
             mSelf->mPidsSelfLocked[app->mPid] = app;
         }
@@ -1806,7 +1806,7 @@ ECode CActivityManagerService::UpdateCpuStatsNow()
     AutoPtr<BatteryStatsImpl> bstats = mBatteryStatsService->GetActiveStatistics();
     bstats->Lock();
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         if (haveNewCpuStats) {
             if (mOnBattery) {
                 Int32 perc = bstats->StartAddingCpuLocked();
@@ -1881,7 +1881,7 @@ ECode CActivityManagerService::BatteryPowerChanged(
     {
         Object::Autolock lock(mLock);
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             mOnBattery = DEBUG_POWER ? TRUE : onBattery;
         }
     }
@@ -2246,7 +2246,7 @@ ECode CActivityManagerService::StartProcessLocked(
 {
     if (app->mPid > 0 && app->mPid != MY_PID) {
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             mPidsSelfLocked.Erase(app->mPid);
             mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG,
                 app ? app->Probe(EIID_IInterface) : NULL);
@@ -2421,7 +2421,7 @@ ECode CActivityManagerService::StartProcessLocked(
     app->mUsingWrapper = usingWrapper;
     app->mRemoved = FALSE;
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         mPidsSelfLocked[pid] = app;
 
         AutoPtr<IMessage> msg;
@@ -3518,7 +3518,7 @@ ECode CActivityManagerService::CrashApplication(
         // still has any relation to current pids, so must scan through the
         // list.
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
             for (it = mPidsSelfLocked.Begin(); it != mPidsSelfLocked.End(); ++it) {
                 AutoPtr<ProcessRecord> p = it->mSecond;
@@ -4565,7 +4565,7 @@ ECode CActivityManagerService::CloseSystemDialogs(
         if (uid >= IProcess::FIRST_APPLICATION_UID) {
             AutoPtr<ProcessRecord> proc;
             {
-                Mutex::Autolock lock(mPidsSelfLock);
+                AutoLock lock(mPidsSelfLock);
                 proc = mPidsSelfLocked[pid];
             }
             if (proc->mCurRawAdj > ProcessList::PERCEPTIBLE_APP_ADJ) {
@@ -5072,7 +5072,7 @@ Boolean CActivityManagerService::RemoveProcessLocked(
     if (app->mPid > 0 && app->mPid != MY_PID) {
         Int32 pid = app->mPid;
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             mPidsSelfLocked.Erase(pid);
             mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
         }
@@ -5101,7 +5101,7 @@ ECode CActivityManagerService::ProcessStartTimedOutLocked(
     const Int32 pid = app->mPid;
     Boolean gone = FALSE;
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         AutoPtr<ProcessRecord> knownApp;
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(pid);
         if (it != mPidsSelfLocked.End()) {
@@ -5167,7 +5167,7 @@ Boolean CActivityManagerService::AttachApplicationLocked(
     // next app record if we are emulating process with anonymous threads.
     AutoPtr<ProcessRecord> app;
     if (pid != MY_PID && pid >= 0) {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         app = mPidsSelfLocked[pid];
     }
     else {
@@ -6181,7 +6181,7 @@ ECode CActivityManagerService::ForegroundTokenDied(
 {
     Object::Autolock lock(mLock);
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         AutoPtr<ForegroundToken> cur
             = mForegroundProcesses[token->mPid];
         if (cur.Get() != token) {
@@ -6211,7 +6211,7 @@ ECode CActivityManagerService::SetProcessForeground(
         Boolean changed = FALSE;
 
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         AutoPtr<ProcessRecord> pr = mPidsSelfLocked[pid];
             if (pr == NULL && isForeground) {
                 Slogger::W(TAG, "setProcessForeground called on unknown pid: %d", pid);
@@ -9534,7 +9534,7 @@ ECode CActivityManagerService::InputDispatchingTimedOut(
     {
         Object::Autolock lock(mLock);
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             proc = mPidsSelfLocked[pid];
         }
         if (proc != NULL) {
@@ -9729,7 +9729,7 @@ ECode CActivityManagerService::KillPids(
 
     Boolean killed = FALSE;
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         Int32 pidsCount = pids->GetLength();
         AutoPtr<ArrayOf<Int32> > types = ArrayOf<Int32>::Alloc(pidsCount);
         Int32 worstType = 0;
@@ -9811,7 +9811,7 @@ Boolean CActivityManagerService::KillProcessesBelowAdj(
 
     Boolean killed = FALSE;
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
         for (it = mPidsSelfLocked.Begin(); it != mPidsSelfLocked.End(); ++it) {
             const Int32 pid = it->mFirst;
@@ -10123,7 +10123,7 @@ ECode CActivityManagerService::SystemReady(
 
     AutoPtr<List<AutoPtr<ProcessRecord> > > procsToKill;
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
 
         List<AutoPtr<ProcessRecord> > pidsList;
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
@@ -10612,7 +10612,7 @@ ECode CActivityManagerService::HandleApplicationStrictModeViolation(
        Int32 stackFingerprint;
        info->HashCode(&stackFingerprint);
        Boolean logIt = TRUE;
-       Mutex::Autolock lock(mAlreadyLoggedViolatedStacksLock);
+       AutoLock lock(mAlreadyLoggedViolatedStacksLock);
        AutoPtr<IInteger32> sfp;
        CInteger32::New(stackFingerprint, (IInteger32**)&sfp);
        HashSet< AutoPtr<IInteger32> >::Iterator it = mAlreadyLoggedViolatedStacks.Find(sfp);
@@ -11446,7 +11446,7 @@ ECode CActivityManagerService::GetMyMemoryState(
         Object::Autolock lock(mLock);
         AutoPtr<ProcessRecord> proc;
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(Binder::GetCallingPid());
             if (it != mPidsSelfLocked.End()) proc = it->mSecond;
         }
@@ -11884,7 +11884,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
 
     if (dumpAll) {
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             Boolean printed = FALSE;
             HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it;
             for (it = mPidsSelfLocked.Begin(); it != mPidsSelfLocked.End(); ++it) {
@@ -11910,7 +11910,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
 
     if (mForegroundProcesses.Begin() != mForegroundProcesses.End()) {
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
             Boolean printed = FALSE;
             HashMap<Int32, AutoPtr<ForegroundToken> >::Iterator it;
             for (it = mForegroundProcesses.Begin(); it != mForegroundProcesses.End(); ++it) {
@@ -13658,7 +13658,7 @@ ECode CActivityManagerService::CleanUpApplicationRecordLocked(
     else if (app->mPid > 0 && app->mPid != MY_PID) {
         // Goodbye!
         {
-            Mutex::Autolock lock(mPidsSelfLock);
+            AutoLock lock(mPidsSelfLock);
 
             mPidsSelfLocked.Erase(app->mPid);
             mHandler->RemoveMessages(PROC_START_TIMEOUT_MSG, app->Probe(EIID_IInterface));
@@ -17711,7 +17711,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::FindProcessLocked(
     // try {
     Int32 pid = StringUtils::ParseInt32(process);
     {
-        Mutex::Autolock lock(mPidsSelfLock);
+        AutoLock lock(mPidsSelfLock);
         HashMap<Int32, AutoPtr<ProcessRecord> >::Iterator it = mPidsSelfLocked.Find(pid);
         if (it != mPidsSelfLocked.End()) proc = it->mSecond;
     }

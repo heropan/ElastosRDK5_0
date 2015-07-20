@@ -318,7 +318,7 @@ Boolean ComprehensiveCountryDetector::IsAirplaneModeOff()
 /* synchronized */
 void ComprehensiveCountryDetector::AddPhoneStateListener()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     /*
     if (mPhoneStateListener == null) {
@@ -343,7 +343,7 @@ void ComprehensiveCountryDetector::AddPhoneStateListener()
 /* synchronized */
 void ComprehensiveCountryDetector::RemovePhoneStateListener()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 #if 0
     if (mPhoneStateListener != NULL) {
         mTelephonyManager->Listen(mPhoneStateListener, IPhoneStateListener::LISTEN_NONE);
@@ -394,7 +394,7 @@ void ComprehensiveCountryDetector::AddToLogs(
     // need to add this country as another entry in the logs. Synchronize access to this
     // variable since multiple threads could be calling this method.
     {
-        Mutex::Autolock lock(mObject);
+        AutoLock lock(mObject);
         Boolean equal = FALSE;
         if (mLastCountryAddedToLogs != NULL) {
             AutoPtr<IObject> countryObj = IObject::Probe(mLastCountryAddedToLogs);
@@ -459,7 +459,7 @@ AutoPtr<ICountry> ComprehensiveCountryDetector::DetectCountry(
 void ComprehensiveCountryDetector::StartLocationBasedDetector(
     /* [in] */ ICountryListener* listener)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mLocationBasedCountryDetector != NULL) {
         return;
@@ -477,7 +477,7 @@ void ComprehensiveCountryDetector::StartLocationBasedDetector(
 /* synchronized */
 void ComprehensiveCountryDetector::StopLocationBasedDetector()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
 //    if (DEBUG) {
 //        Slog.d(TAG, "tries to stop LocationBasedDetector "
@@ -520,7 +520,7 @@ void ComprehensiveCountryDetector::NotifyIfCountryChanged(
 /* synchronized */
 void ComprehensiveCountryDetector::ScheduleLocationRefresh()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mLocationRefreshTimer != NULL) return;
     // if (DEBUG) {
     //     Slog.d(TAG, "start periodic location refresh timer. Interval: "
@@ -538,7 +538,7 @@ void ComprehensiveCountryDetector::ScheduleLocationRefresh()
 /* synchronized */
 void ComprehensiveCountryDetector::CancelLocationRefresh()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mLocationRefreshTimer != NULL) {
         mLocationRefreshTimer->Cancel();
         mLocationRefreshTimer = NULL;

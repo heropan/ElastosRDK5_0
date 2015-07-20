@@ -1,7 +1,6 @@
 #include "view/CWindowInfo.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -73,7 +72,7 @@ ECode CWindowInfo::WriteToParcel(
 ECode CWindowInfo::Obtain(
     /* [out] */ IWindowInfo** info)
 {
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPoolSize > 0) {
         *info = sPool;
         CWindowInfo* tmp = (CWindowInfo*)(*info);
@@ -112,7 +111,7 @@ ECode CWindowInfo::Recycle()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     Clear();
-    Mutex::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
     if (sPoolSize < MAX_POOL_SIZE) {
         mNext = sPool;
         sPool = this;

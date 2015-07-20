@@ -340,7 +340,7 @@ ECode CInputDevice::GetVibrator(
 {
     VALIDATE_NOT_NULL(vibrator);
 
-    Mutex::Autolock lock(mMotionRangesLock);
+    AutoLock lock(mMotionRangesLock);
     if (mVibrator == NULL) {
         if (mHasVibrator) {
             CInputManager::GetInstance()->GetInputDeviceVibrator(

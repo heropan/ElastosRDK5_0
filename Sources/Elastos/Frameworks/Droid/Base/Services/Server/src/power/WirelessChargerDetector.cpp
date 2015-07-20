@@ -76,7 +76,7 @@ Boolean WirelessChargerDetector::Update(
     /* [in] */ Int32 plugType,
     /* [in] */ Int32 batteryLevel)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Boolean wasPoweredWirelessly = mPoweredWirelessly;
 
@@ -139,7 +139,7 @@ void WirelessChargerDetector::ProcessSample(
     /* [in] */ Float y,
     /* [in] */ Float z)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mDetectionInProgress) {
         return;
     }

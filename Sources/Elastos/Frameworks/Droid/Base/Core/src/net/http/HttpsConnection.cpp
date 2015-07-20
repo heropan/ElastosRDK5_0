@@ -51,8 +51,8 @@ ECode HttpsConnection::InitializeEngine(
     // FAIL_RETURN(context->SetPersistentCache(cache));
 
     // {
-    //     Mutex mLock;
-    //     Mutex::Autolock lock(mLock);
+    //     Object mLock;
+    //     AutoLock lock(mLock);
     //     FAIL_RETURN(sslContext->EngineGetSocketFactory((ISSLSocketFactory**)&mSslSocketFactory));
     // }
 
@@ -390,7 +390,7 @@ ECode HttpsConnection::OpenConnection(
         // then check if we're still suspended and only wait if we actually
         // need to.
         {
-            Mutex::Autolock lock(mSuspendLock);
+            AutoLock lock(mSuspendLock);
             mSuspended = true;
         }
         // don't hold the lock while calling out to the event handler
@@ -405,7 +405,7 @@ ECode HttpsConnection::OpenConnection(
         }
 
         {
-            Mutex::Autolock lock(mSuspendLock);
+            AutoLock lock(mSuspendLock);
             if (mSuspended) {
                 // Put a limit on how long we are waiting; if the timeout
                 // expires (which should never happen unless you choose
@@ -484,7 +484,7 @@ ECode HttpsConnection::RestartConnection(
         HttpLog::V(String("HttpsConnection.restartConnection(): proceed: ") + StringUtils::BooleanToString(proceed));
     }
 
-    Mutex::Autolock lock(mSuspendLock);
+    AutoLock lock(mSuspendLock);
 
     if (mSuspended) {
         mSuspended = FALSE;

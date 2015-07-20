@@ -298,7 +298,7 @@ ECode CHandlerThread::GetThreadId(
     return NOERROR;
 }
 
-Mutex* CHandlerThread::GetSelfLock()
+Object* CHandlerThread::GetSelfLock()
 {
     return &_m_syncLock;
 }

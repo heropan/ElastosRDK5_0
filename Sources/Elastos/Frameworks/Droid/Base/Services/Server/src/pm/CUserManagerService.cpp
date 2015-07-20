@@ -65,9 +65,9 @@ namespace Pm {
 
 ECode CUserManagerService::FinishThread::Run()
 {
-    Mutex::Autolock lock(mHost->mInstallLock);
+    AutoLock lock(mHost->mInstallLock);
     {
-        Mutex::Autolock lock(mHost->mPackagesLock);
+        AutoLock lock(mHost->mPackagesLock);
         mHost->RemoveUserStateLocked(mUserHandle);
     }
     return NOERROR;
@@ -89,7 +89,7 @@ ECode CUserManagerService::FinishBroadcastReceiver::OnReceive(
 
 ECode CUserManagerService::RemoveRunnable::Run()
 {
-    Mutex::Autolock lock(mHost->mPackagesLock);
+    AutoLock lock(mHost->mPackagesLock);
     mHost->mRemovingUserIds.Erase(mUserHandle);
     return NOERROR;
 }
@@ -153,8 +153,8 @@ ECode CUserManagerService::constructor(
     /* [in] */ IFile* dataDir,
     /* [in] */ IFile* baseUserPath)
 {
-    Mutex* installLock = new Mutex();
-    Mutex* packagesLock = new Mutex();
+    Object* installLock = new Object();
+    Object* packagesLock = new Object();
     mDeleteLock = TRUE;
     return Init(NULL, NULL, installLock, packagesLock, dataDir, baseUserPath);
 }
@@ -172,14 +172,14 @@ ECode CUserManagerService::constructor(
     AutoPtr<IFile> baseUserPath;
     CFile::New(dataDir, String("user"), (IFile**)&baseUserPath);
     return Init(context, (CPackageManagerService*)pm,
-            (Mutex*)installLock, (Mutex*)packagesLock, dataDir, baseUserPath);
+            (Object*)installLock, (Object*)packagesLock, dataDir, baseUserPath);
 }
 
 ECode CUserManagerService::Init(
     /* [in] */ IContext* context,
     /* [in] */ CPackageManagerService* pm,
-    /* [in] */ Mutex* installLock,
-    /* [in] */ Mutex* packagesLock,
+    /* [in] */ Object* installLock,
+    /* [in] */ Object* packagesLock,
     /* [in] */ IFile* dataDir,
     /* [in] */ IFile* baseUserPath)
 {
@@ -189,10 +189,10 @@ ECode CUserManagerService::Init(
     mPackagesLock = packagesLock;
     CHandler::New((IHandler**)&mHandler);
     {
-        Mutex::Autolock lock(mInstallLock);
+        AutoLock lock(mInstallLock);
 
         {
-            Mutex::Autolock lock(mPackagesLock);
+            AutoLock lock(mPackagesLock);
 
             Boolean result;
             CFile::New(dataDir, USER_INFO_DIR, (IFile**)&mUsersDir);
@@ -240,7 +240,7 @@ ECode CUserManagerService::Init(
 
 AutoPtr<CUserManagerService> CUserManagerService::GetInstance()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     return sInstance;
 }
@@ -254,7 +254,7 @@ ECode CUserManagerService::GetUsers(
 
     FAIL_RETURN(CheckManageUsersPermission(String("query users")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         CParcelableObjectContainer::New(users);
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it;
@@ -284,7 +284,7 @@ ECode CUserManagerService::GetUserInfo(
 
     FAIL_RETURN(CheckManageUsersPermission(String("query user")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> user = GetUserInfoLocked(userId);
         *userInfo = user;
@@ -314,7 +314,7 @@ AutoPtr<IUserInfo> CUserManagerService::GetUserInfoLocked(
 Boolean CUserManagerService::Exists(
     /* [in] */ Int32 userId)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     for (Int32 i = 0; i < mUserIds->GetLength(); ++i) {
         if ((*mUserIds)[i] == userId) return TRUE;
@@ -329,7 +329,7 @@ ECode CUserManagerService::SetUserName(
     FAIL_RETURN(CheckManageUsersPermission(String("rename users")));
     Boolean changed = FALSE;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> info;
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userId);
@@ -360,7 +360,7 @@ ECode CUserManagerService::SetUserIcon(
 {
     FAIL_RETURN(CheckManageUsersPermission(String("update users")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> info;
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userId);
@@ -400,7 +400,7 @@ ECode CUserManagerService::GetUserIcon(
 
     FAIL_RETURN(CheckManageUsersPermission(String("read users")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> info;
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userId);
@@ -428,7 +428,7 @@ ECode CUserManagerService::SetGuestEnabled(
 {
     FAIL_RETURN(CheckManageUsersPermission(String("enable guest users")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (mGuestEnabled != enable) {
             mGuestEnabled = enable;
@@ -465,7 +465,7 @@ ECode CUserManagerService::IsGuestEnabled(
     VALIDATE_NOT_NULL(result);
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         *result = mGuestEnabled;
         return NOERROR;
@@ -485,7 +485,7 @@ ECode CUserManagerService::MakeInitialized(
 {
     FAIL_RETURN(CheckManageUsersPermission(String("makeInitialized")));
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> info;
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userId);
@@ -579,7 +579,7 @@ void CUserManagerService::WriteBitmapLocked(
 AutoPtr< ArrayOf<Int32> > CUserManagerService::GetUserIds()
 {
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         return mUserIds;
     }
@@ -593,7 +593,7 @@ AutoPtr< ArrayOf<Int32> > CUserManagerService::GetUserIdsLPr()
 void CUserManagerService::ReadUserList()
 {
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         ReadUserListLocked();
     }
@@ -989,9 +989,9 @@ ECode CUserManagerService::CreateUser(
     AutoPtr<IUserInfo> userInfo;
     // try {
         {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             {
-                Mutex::Autolock lock(mPackagesLock);
+                AutoLock lock(mPackagesLock);
                 if (IsUserLimitReachedLocked()) return NOERROR;
                 Int32 userId = GetNextAvailableIdLocked();
                 CUserInfo::New(userId, name, String(NULL), flags, (IUserInfo**)&userInfo);
@@ -1047,7 +1047,7 @@ ECode CUserManagerService::RemoveUser(
     FAIL_RETURN(CheckManageUsersPermission(String("Only the system can remove users")));
     AutoPtr<IUserInfo> user;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userHandle);
         if (it != mUsers.End()) user = it->mSecond;
         if (userHandle == 0 || user == NULL) {
@@ -1158,7 +1158,7 @@ ECode CUserManagerService::GetUserSerialNumber(
     VALIDATE_NOT_NULL(serialNo);
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (!Exists(userHandle)) {
             *serialNo = -1;
@@ -1175,7 +1175,7 @@ ECode CUserManagerService::GetUserHandle(
     VALIDATE_NOT_NULL(userHandle);
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         for (Int32 i = 0; i < mUserIds->GetLength(); ++i) {
             Int32 userId = (*mUserIds)[i];
@@ -1220,7 +1220,7 @@ void CUserManagerService::UserForeground(
     /* [in] */ Int32 userId)
 {
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<IUserInfo> user;
         HashMap<Int32, AutoPtr<IUserInfo> >::Iterator it = mUsers.Find(userId);
@@ -1247,7 +1247,7 @@ void CUserManagerService::UserForeground(
 Int32 CUserManagerService::GetNextAvailableIdLocked()
 {
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         Int32 i = MIN_USER_ID;
         while (i < Elastos::Core::Math::INT32_MAX_VALUE) {

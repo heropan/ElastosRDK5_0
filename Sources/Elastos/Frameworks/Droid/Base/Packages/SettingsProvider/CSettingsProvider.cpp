@@ -617,7 +617,7 @@ ECode CSettingsProvider::OnCreate(
 void CSettingsProvider::OnUserRemoved(
     /* [in] */ Int32 userHandle)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // the db file itself will be deleted automatically, but we need to tear down
     // our caches and other internal bookkeeping.
     HashMap<Int32, AutoPtr<SettingsFileObserver> >::Iterator it = sObserverInstances.Find(userHandle);
@@ -646,7 +646,7 @@ void CSettingsProvider::EstablishDbTracking(
     AutoPtr<DatabaseHelper> dbhelper;
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         HashMap<Int32, AutoPtr<DatabaseHelper> >::Iterator it = mOpenHelpers.Find(userHandle);
         if (it != mOpenHelpers.End()) {
             dbhelper = it->mSecond;
@@ -680,7 +680,7 @@ void CSettingsProvider::EstablishDbTracking(
     // separately, and of course it has to run after the db file
     // itself was set up by the DatabaseHelper.
     {
-        Mutex::Autolock lock(sObserverInstancesLock);
+        AutoLock lock(sObserverInstancesLock);
         if (sObserverInstances.Find(userHandle) == sObserverInstances.End()) {
             String path;
             db->GetPath(&path);

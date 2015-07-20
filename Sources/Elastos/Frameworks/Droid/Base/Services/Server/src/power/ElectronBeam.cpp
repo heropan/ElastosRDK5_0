@@ -45,7 +45,7 @@ CAR_INTERFACE_IMPL(ElectronBeam::NaturalSurfaceLayout, IDisplayTransactionListen
 void ElectronBeam::NaturalSurfaceLayout::Dispose()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mSurface = NULL;
     }
     mDisplayManager->UnregisterDisplayTransactionListener((IDisplayTransactionListener*)this);
@@ -53,7 +53,7 @@ void ElectronBeam::NaturalSurfaceLayout::Dispose()
 
 ECode ElectronBeam::NaturalSurfaceLayout::OnDisplayTransaction()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mSurface == NULL) {
         return NOERROR;
     }

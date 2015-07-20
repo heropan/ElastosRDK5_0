@@ -5,7 +5,6 @@
 #include "_CNetworkStatsHistory.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IDataOutputStream;
 using Elastos::IO::IDataInputStream;
 using Elastos::Core::IRandom;

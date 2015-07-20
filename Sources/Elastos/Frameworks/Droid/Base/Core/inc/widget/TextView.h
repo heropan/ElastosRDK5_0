@@ -10,7 +10,6 @@
 #include "widget/Editor.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Utility::Concurrent::Locks::IReentrantLock;
 using Libcore::ICU::ILocale;
@@ -2923,7 +2922,7 @@ private:
     static const Int32 PIXELS = 2;
 
     static const AutoPtr<CRectF> TEMP_RECTF;// = new RectF();
-    static Mutex sTempRectLock;
+    static Object sTempRectLock;
 
     // XXX should be much larger
     static const Int32 VERY_WIDE = 1024*1024;

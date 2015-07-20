@@ -199,7 +199,7 @@ private:
     AutoPtr<IHandler> mHandler;
     AutoPtr<IHandler> mUIHandler;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Webkit

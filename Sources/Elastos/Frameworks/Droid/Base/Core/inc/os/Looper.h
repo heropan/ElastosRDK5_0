@@ -9,7 +9,6 @@
 #include <pthread.h>
 
 using Elastos::Core::IThread;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Os::IMessageQueue;
 
@@ -161,7 +160,7 @@ private:
 
     AutoPtr<IPrinter> mLogging;
 
-    static Mutex sClassLock;
+    static Object sClassLock;
 };
 
 } // namespace Os

@@ -8,7 +8,6 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::EIID_IWindow;
@@ -55,7 +54,7 @@ private:
     AutoPtr<MyRunnable> mRotationChanged;
     List<AutoPtr<IWeakReference> > mWindows;
     Boolean mIsWatching;
-    Mutex mLock;
+    Object mLock;
 };
 
 

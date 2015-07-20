@@ -20,7 +20,7 @@ const Boolean InputEvent::TRACK_RECYCLED_LOCATION;
 InputEvent::InputEvent()
     : mRecycled(FALSE)
 {
-    Mutex::Autolock lock(sNextSeqLock);
+    AutoLock lock(sNextSeqLock);
     mSeq = ++sNextSeq;
 }
 
@@ -62,7 +62,7 @@ void InputEvent::PrepareForReuse()
 {
     mRecycled = FALSE;
     //mRecycledLocation = NULL;
-    Mutex::Autolock lock(sNextSeqLock);
+    AutoLock lock(sNextSeqLock);
     mSeq = ++sNextSeq;
 }
 

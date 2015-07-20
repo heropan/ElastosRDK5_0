@@ -90,7 +90,7 @@ void NativeDaemonConnector::ResponseQueue::Add(
 {
     AutoPtr<PendingCmd> found;
     {
-        Mutex::Autolock lock(mPendingCmdsLock);
+        AutoLock lock(mPendingCmdsLock);
 
         List< AutoPtr<PendingCmd> >::Iterator iter;
         for (iter = mPendingCmds.Begin(); iter != mPendingCmds.End(); ++iter) {
@@ -123,7 +123,7 @@ void NativeDaemonConnector::ResponseQueue::Add(
     }
 //    try {
     // TODO: delete
-    Mutex::Autolock lock(found->mResponsesLock);
+    AutoLock lock(found->mResponsesLock);
     found->mResponses.Push(response);
     //found->mResponses->Put(response->Probe(EIID_IInterface));
 //    } catch (InterruptedException e) { }
@@ -136,7 +136,7 @@ AutoPtr<NativeDaemonEvent> NativeDaemonConnector::ResponseQueue::Remove(
 {
     AutoPtr<PendingCmd> found;
     {
-        Mutex::Autolock lock(mPendingCmdsLock);
+        AutoLock lock(mPendingCmdsLock);
 
         List< AutoPtr<PendingCmd> >::Iterator iter;
         for (iter = mPendingCmds.Begin(); iter != mPendingCmds.End(); ++iter) {
@@ -163,7 +163,7 @@ AutoPtr<NativeDaemonEvent> NativeDaemonConnector::ResponseQueue::Remove(
     Thread::Attach((IThread**)&thread);
     do {
         {
-            Mutex::Autolock lock(found->mResponsesLock);
+            AutoLock lock(found->mResponsesLock);
             if (!found->mResponses.IsEmpty()) {
                 result = found->mResponses.GetFront();
                 found->mResponses.Pop();
@@ -198,7 +198,7 @@ void NativeDaemonConnector::ResponseQueue::Dump(
 {
 //    pw->Println(String("Pending requests:"));
 //    {
-//        Mutex::Autolock lock(mPendingCmdsLock);
+//        AutoLock lock(mPendingCmdsLock);
 //
 //        List< AutoPtr<PendingCmd> >::Iterator iter;
 //        for (iter = mPendingCmds.Begin(); iter != mPendingCmds.End(); ++iter) {
@@ -355,7 +355,7 @@ ECode NativeDaemonConnector::ListenToSocket()
     AutoPtr<IInputStream> inputStream;
     socket->GetInputStream((IInputStream**)&inputStream);
     {
-        Mutex::Autolock lock(mDaemonLock);
+        AutoLock lock(mDaemonLock);
         mOutputStream = NULL;
         socket->GetOutputStream((IOutputStream**)&mOutputStream);
     }
@@ -438,7 +438,7 @@ ECode NativeDaemonConnector::ListenToSocket()
 
 _EXIT_:
     {
-        Mutex::Autolock lock(mDaemonLock);
+        AutoLock lock(mDaemonLock);
 
         if (mOutputStream != NULL) {
             // try {
@@ -694,7 +694,7 @@ ECode NativeDaemonConnector::Execute(
     String sentCmd = cmdBuilder.ToString(); /* logCmd + \0 */
 
     {
-        Mutex::Autolock lock(mDaemonLock);
+        AutoLock lock(mDaemonLock);
 
         if (mOutputStream == NULL) {
             *eventsArray = ArrayOf<NativeDaemonEvent*>::Alloc(0);

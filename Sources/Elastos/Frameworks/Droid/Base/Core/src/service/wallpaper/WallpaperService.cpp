@@ -15,7 +15,6 @@
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CStringWrapper;
 using Elastos::Droid::Content::CIntentFilter;
@@ -370,7 +369,7 @@ void WallpaperService::Engine::Dump(
     // out->Print(prefix); out->Print("mLayout="); out->Println(mLayout);
     // //synchronized (mLock)
     // {
-    //     Mutex::Autolock lock(mLock);
+    //     AutoLock lock(mLock);
     //     out->Print(prefix); out->Print("mPendingXOffset="); out->Print(mPendingXOffset);
     //             out->Print(" mPendingXOffset="); out->Println(mPendingXOffset);
     //     out->Print(prefix); out->Print("mPendingXOffsetStep=");
@@ -394,7 +393,7 @@ void WallpaperService::Engine::DispatchPointer(
     if (isTouchEvent) {
         //synchronized (mLock)
         {
-            Mutex::Autolock lock(mLock);
+            AutoLock lock(mLock);
             Int32 action;
             event->GetAction(&action);
             if (action == IMotionEvent::ACTION_MOVE) {
@@ -764,7 +763,7 @@ void WallpaperService::Engine::DoOffsetsChanged(
     Boolean sync;
     //synchronized (mLock)
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         xOffset = mPendingXOffset;
         yOffset = mPendingYOffset;
         xOffsetStep = mPendingXOffsetStep;

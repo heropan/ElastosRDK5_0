@@ -112,7 +112,7 @@ ECode LocationBasedCountryDetector::DetectCountry(
     VALIDATE_NOT_NULL(country);
     *country = NULL;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mLocationListeners != NULL) {
         return E_ILLEGAL_STATE_EXCEPTION;
     }
@@ -152,7 +152,7 @@ ECode LocationBasedCountryDetector::DetectCountry(
 //synchronized
 void LocationBasedCountryDetector::Stop()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mLocationListeners != NULL) {
         List<AutoPtr<LocationListener> >::Iterator it = mLocationListeners->Begin();
@@ -307,7 +307,7 @@ AutoPtr< List<String> > LocationBasedCountryDetector::GetEnabledProviders()
 void LocationBasedCountryDetector::QueryCountryCode(
     /* [in] */ ILocation* location)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (location == NULL) {
             NotifyListener(NULL);
             return;

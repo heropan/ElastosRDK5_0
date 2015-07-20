@@ -23,7 +23,7 @@ ECode CVirtualizer::BaseParameterListener::OnParameterChange(
 {
     AutoPtr<IVirtualizerOnParameterChangeListener> l;
     {
-        Mutex::Autolock lock(&mHost->mParamListenerLock);
+        AutoLock lock(&mHost->mParamListenerLock);
         if (mHost->mParamListener != NULL) {
             l = mHost->mParamListener;
         }
@@ -113,7 +113,7 @@ ECode CVirtualizer::GetRoundedStrength(
 ECode CVirtualizer::SetParameterListener(
     /* [in] */ IVirtualizerOnParameterChangeListener* listener)
 {
-    Mutex::Autolock lock(&mParamListenerLock);
+    AutoLock lock(&mParamListenerLock);
     if (mParamListener != NULL) {
         mParamListener = listener;
         mBaseParamListener = new BaseParameterListener(this);

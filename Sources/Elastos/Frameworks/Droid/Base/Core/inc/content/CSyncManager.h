@@ -482,7 +482,7 @@ private:
     private:
         /** The cumulative time we have spent syncing */
         Int64 mTimeSpentSyncing;
-        Mutex mSyncTimeTrackerLock;
+        Object mSyncTimeTrackerLock;
         AutoPtr<CSyncManager> mSyncMgr;
 
     };
@@ -1023,8 +1023,8 @@ private:
 
     /* volatile */ Boolean mBootCompleted;
 
-    Mutex mSyncQueueLock;
-    Mutex mCSyncManagerLock;
+    Object mSyncQueueLock;
+    Object mCSyncManagerLock;
 };
 
 }

@@ -32,7 +32,7 @@ private:
 
     HashMap<Int32, AutoPtr<CStorageManager::ObbListenerDelegate> > mListeners;
 
-    Mutex mListenersLock;
+    Object mListenersLock;
 };
 
 } // namespace Storage

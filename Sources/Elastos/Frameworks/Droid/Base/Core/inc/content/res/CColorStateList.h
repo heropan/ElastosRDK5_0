@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::Utility::IAttributeSet;
 
@@ -130,7 +129,7 @@ private:
     static AutoPtr< ArrayOf<Int32Array > > EMPTY;
     //static HashMap<Int32, AutoPtr<IColorStateList> > sCache;
     static HashMap<Int32, AutoPtr<IWeakReference> > sCache;
-    static Mutex sCacheLock;
+    static Object sCacheLock;
 
     AutoPtr< ArrayOf<Int32Array > > mStateSpecs; // must be parallel to mColors
     AutoPtr< ArrayOf<Int32> > mColors;      // must be parallel to mStateSpecs

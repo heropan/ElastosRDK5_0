@@ -462,7 +462,7 @@ public:
 private:
     // TODO: Add your private member variables here.
 
-    static Mutex sProfilingLock;
+    static Object sProfilingLock;
     static AutoPtr<INetworkStatsService> sStatsService;
     static INetworkStatsService* GetStatsService();
 

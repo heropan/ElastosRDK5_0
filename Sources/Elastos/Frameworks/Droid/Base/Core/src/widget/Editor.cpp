@@ -3921,7 +3921,7 @@ Boolean Editor::IsPositionVisible(
 {
 //    synchronized (TEMP_POSITION)
     {
-        Mutex::Autolock lock(mTempPositionLock);
+        AutoLock lock(mTempPositionLock);
         AutoPtr<ArrayOf<Float> > position = TEMP_POSITION;
         (*position)[0] = positionX;
         (*position)[1] = positionY;

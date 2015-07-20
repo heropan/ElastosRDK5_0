@@ -11,7 +11,6 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IRunnable;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::IO::IFileInputStream;
@@ -255,7 +254,7 @@ private:
     String mAttributesName;
     AutoPtr<IXmlSerializerAndParser> mSerializerAndParser;
 
-    Mutex mServicesLock;
+    Object mServicesLock;
 
     // @GuardedBy("mServicesLock")
     Boolean mPersistentServicesFileDidNotExist;
@@ -277,7 +276,7 @@ private:
 
     AutoPtr<IBroadcastReceiver> mExternalReceiver;
 
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Pm

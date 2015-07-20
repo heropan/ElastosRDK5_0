@@ -46,7 +46,7 @@ ECode CColorStateList::ValueOf(
     *_csl = NULL;
 
     //TODO: should we collect these eventually?
-    Mutex::Autolock lock(sCacheLock);
+    AutoLock lock(sCacheLock);
 
     AutoPtr<IColorStateList> csl;
     HashMap<Int32, AutoPtr<IWeakReference> >::Iterator it = sCache.Find(color);

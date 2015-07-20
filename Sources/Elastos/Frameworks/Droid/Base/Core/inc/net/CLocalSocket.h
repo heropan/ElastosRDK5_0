@@ -5,7 +5,6 @@
 #include "_CLocalSocket.h"
 #include "net/LocalSocketImpl.h"
 
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 
 namespace Elastos {
@@ -110,7 +109,7 @@ private:
     AutoPtr<ILocalSocketAddress> mLocalAddress;
     Boolean mIsBound;
     Boolean mIsConnected;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Net

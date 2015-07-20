@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include "net/NetworkIdentitySet.h"
 #include "util/FileRotator.h"
-#include <elrefbase.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

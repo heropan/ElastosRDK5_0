@@ -127,7 +127,7 @@ void ServerSocketTimer::TimerThread::OnFinish()
  */
 void ServerSocketTimer::TimerThread::StartCountDown()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     AutoPtr<ILooper> looper;
     GetLooper((ILooper**)&looper);
     mHandler = new TimerThreadHandler(looper, this);
@@ -147,7 +147,7 @@ void ServerSocketTimer::TimerThread::StartCountDown()
 /** reset  mStopTimeInFuture */
 void ServerSocketTimer::TimerThread::ResetTimer()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mStopTimeInFuture = SystemClock::GetElapsedRealtime() + mMillisInFuture;
 }
 

@@ -10,7 +10,6 @@
 
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IPrintWriter;
 using Elastos::Droid::App::IUserSwitchObserver;
@@ -362,7 +361,7 @@ private:
     HashMap<String, AutoPtr<SpellCheckerBindGroup> > mSpellCheckerBindGroups; //= new HashMap<String, SpellCheckerBindGroup>();
     typedef HashMap<String, AutoPtr<SpellCheckerBindGroup> >::Iterator ManagedSpellCheckerBindGroupMapIt;
     AutoPtr<TextServicesSettings> mSettings;
-    Mutex mSpellCheckerMapLock;
+    Object mSpellCheckerMapLock;
 };
 
 } // namespace Server

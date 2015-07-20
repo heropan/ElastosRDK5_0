@@ -2,7 +2,6 @@
 #include "webkit/CertTool.h"
 #include "webkit/KeyStoreHandler.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::EIID_IHandler;
 
 namespace Elastos {
@@ -27,7 +26,7 @@ void KeyStoreHandler::DidReceiveData(
     /* [in] */ ArrayOf<Byte>* data,
     /* [in] */ Int32 length)
 {
-    Mutex::Autolock lock(mDataBuilderLock);
+    AutoLock lock(mDataBuilderLock);
     mDataBuilder->Append(data, 0, length);
 }
 
@@ -40,7 +39,7 @@ void KeyStoreHandler::InstallCert(
     // This must be synchronized so that no more data can be added
     // after getByteSize returns.
     {
-        Mutex::Autolock lock(mDataBuilderLock);
+        AutoLock lock(mDataBuilderLock);
         // In the case of downloading certificate, we will save it
         // to the KeyStore and stop the current loading so that it
         // will not generate a new history page

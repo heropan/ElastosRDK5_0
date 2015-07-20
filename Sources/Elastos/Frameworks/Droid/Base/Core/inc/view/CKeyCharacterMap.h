@@ -64,7 +64,7 @@ private:
      * These mappings are derived from the Unicode NFC tables as needed.
      */
     static HashMap<Int32, Int32> sDeadKeyCache;
-    static Mutex sDeadKeyCacheLock;
+    static Object sDeadKeyCacheLock;
     static const AutoPtr<IStringBuilder> sDeadKeyBuilder;
 
     static const Boolean mIsStaticInited;
@@ -100,7 +100,7 @@ public:
 
     private:
         static Int32 MAX_RECYCLED;
-        static Mutex sRecycleLock;
+        static Object sRecycleLock;
         static AutoPtr<FallbackAction> sRecycleBin;
         static Int32 sRecycledCount;
 

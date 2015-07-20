@@ -124,7 +124,7 @@ void CAppWidgetHost::SetUserId(
 
 void CAppWidgetHost::BindService()
 {
-    Mutex::Autolock lock(sServiceLock);
+    AutoLock lock(sServiceLock);
     if (sService == NULL) {
         sService = IIAppWidgetService::Probe(ServiceManager::GetService(IContext::APPWIDGET_SERVICE));
     }
@@ -273,7 +273,7 @@ Boolean CAppWidgetHost::IsLocalBinder()
 ECode CAppWidgetHost::DeleteAppWidgetId(
     /* [in] */ Int32 appWidgetId)
 {
-    Mutex::Autolock lock(mViewsLock);
+    AutoLock lock(mViewsLock);
     mViews.Erase(appWidgetId);
     // try {
     ECode ec = sService->DeleteAppWidgetId(appWidgetId);
@@ -340,7 +340,7 @@ ECode CAppWidgetHost::CreateView(
     view->SetOnClickHandler(mOnClickHandler);
     view->SetAppWidget(appWidgetId, appWidget);
     {
-        Mutex::Autolock lock(mViewsLock);
+        AutoLock lock(mViewsLock);
         mViews[appWidgetId] = view;
     }
     AutoPtr<IParcelable> views;
@@ -395,7 +395,7 @@ void CAppWidgetHost::OnProviderChanged(
     app->SetMinResizeHeight(minResizeHeight);
 
     {
-        Mutex::Autolock lock(mViewsLock);
+        AutoLock lock(mViewsLock);
         HashMap<Int32, AutoPtr<IAppWidgetHostView> >::Iterator it = mViews.Find(appWidgetId);
         if (it != mViews.End()) {
             v = it->mSecond;
@@ -417,7 +417,7 @@ ECode CAppWidgetHost::UpdateAppWidgetView(
 {
     AutoPtr<IAppWidgetHostView> v;
     {
-        Mutex::Autolock lock(mViewsLock);
+        AutoLock lock(mViewsLock);
         HashMap<Int32, AutoPtr<IAppWidgetHostView> >::Iterator it = mViews.Find(appWidgetId);
         if (it != mViews.End()) {
             v = it->mSecond;
@@ -435,7 +435,7 @@ ECode CAppWidgetHost::ViewDataChanged(
 {
     AutoPtr<IAppWidgetHostView> v;
     {
-        Mutex::Autolock lock(mViewsLock);
+        AutoLock lock(mViewsLock);
         HashMap<Int32, AutoPtr<IAppWidgetHostView> >::Iterator it = mViews.Find(appWidgetId);
         if (it != mViews.End()) {
             v = it->mSecond;

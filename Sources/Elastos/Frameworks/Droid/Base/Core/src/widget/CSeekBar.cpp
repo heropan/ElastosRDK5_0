@@ -225,7 +225,7 @@ ECode CSeekBar::SetOnSeekBarChangeListener(
     return SeekBar::SetOnSeekBarChangeListener(l);
 }
 
-Mutex* CSeekBar::GetSelfLock()
+Object* CSeekBar::GetSelfLock()
 {
     return &_m_syncLock;
 }

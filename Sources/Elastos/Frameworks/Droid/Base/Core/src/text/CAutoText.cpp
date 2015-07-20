@@ -83,7 +83,7 @@ AutoPtr<IAutoText> CAutoText::GetInstance(
     AutoPtr<IAutoText> instance;
 
     {
-        Mutex::Autolock lock(sAutoTextLock);
+        AutoLock lock(sAutoTextLock);
         instance = GetStaticInstance();
         Boolean bEqual;
         if (!(locale->Equals((((CAutoText*)(instance.Get()))->mLocale).Get(), &bEqual), bEqual)) {

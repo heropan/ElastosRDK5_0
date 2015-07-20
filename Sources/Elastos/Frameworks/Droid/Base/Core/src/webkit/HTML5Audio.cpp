@@ -143,7 +143,7 @@ ECode HTML5Audio::TimeupdateTask::Unlock()
     return NOERROR;
 }
 
-Mutex* HTML5Audio::TimeupdateTask::GetSelfLock()
+Object* HTML5Audio::TimeupdateTask::GetSelfLock()
 {
     return &mLock;
 }

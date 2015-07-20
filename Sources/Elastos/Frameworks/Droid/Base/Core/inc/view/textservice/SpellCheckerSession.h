@@ -239,7 +239,7 @@ private:
         HandlerThread mThread;
         Handler mAsyncHandler;
 
-        Mutex mLock;
+        Object mLock;
     };
 
     class InternalListener //extends ITextServicesSessionListener.Stub

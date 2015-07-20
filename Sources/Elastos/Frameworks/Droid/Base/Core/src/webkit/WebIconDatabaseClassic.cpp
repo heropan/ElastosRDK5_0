@@ -148,7 +148,7 @@ ECode WebIconDatabaseClassic::EventHandler::HandleMessage(
 // Called by WebCore thread to create the actual handler
 void WebIconDatabaseClassic::EventHandler::CreateHandler()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mHandler == NULL) {
         mHandler = new InnerHandler(this);
@@ -167,14 +167,14 @@ void WebIconDatabaseClassic::EventHandler::CreateHandler()
 
 Boolean WebIconDatabaseClassic::EventHandler::HasHandler()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mHandler != NULL;
 }
 
 void WebIconDatabaseClassic::EventHandler::PostMessage(
     /* [in] */ IMessage* msg)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mMessages != NULL) {
         mMessages->PushBack(msg);
     }

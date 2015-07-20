@@ -31,7 +31,7 @@ private:
     AutoPtr<CStrictModeSpan> mPrev;  // not used when in freeList, only active
     AutoPtr<CStrictMode::ThreadSpanState> mContainerState;
 
-    Mutex mContainerStateLock;
+    Object mContainerStateLock;
 };
 
 } // namespace Os

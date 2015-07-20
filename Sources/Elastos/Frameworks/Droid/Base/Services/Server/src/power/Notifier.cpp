@@ -43,7 +43,7 @@ CAR_INTERFACE_IMPL(Notifier::ScreenOnListener, IScreenOnListener);
 
 ECode Notifier::ScreenOnListener::OnScreenOn()
 {
-    Mutex::Autolock lock(mHost->mLock);
+    AutoLock lock(mHost->mLock);
     if (mHost->mScreenOnBlockerAcquired && !mHost->mPendingWakeUpBroadcast) {
         mHost->mScreenOnBlockerAcquired = FALSE;
         mHost->mScreenOnBlocker->Release();
@@ -271,7 +271,7 @@ void Notifier::OnWakeUpStarted()
         Slogger::D(TAG, "onWakeUpStarted");
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActualPowerState != POWER_STATE_AWAKE) {
         mActualPowerState = POWER_STATE_AWAKE;
         mPendingWakeUpBroadcast = TRUE;
@@ -297,7 +297,7 @@ void Notifier::OnGoToSleepStarted(
         Slogger::D(TAG, "onGoToSleepStarted");
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mLastGoToSleepReason = reason;
 }
 
@@ -307,7 +307,7 @@ void Notifier::OnGoToSleepFinished()
         Slogger::D(TAG, "onGoToSleepFinished");
     }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mActualPowerState != POWER_STATE_ASLEEP) {
         mActualPowerState = POWER_STATE_ASLEEP;
         mPendingGoToSleepBroadcast = TRUE;
@@ -333,7 +333,7 @@ void Notifier::OnUserActivity(
     //     // Ignore
     // }
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mUserActivityPending) {
         mUserActivityPending = TRUE;
 
@@ -347,7 +347,7 @@ void Notifier::OnUserActivity(
 
 void Notifier::OnBootFastWake()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mBootFastWakePending) {
         mBootFastWakePending = TRUE;
 
@@ -361,7 +361,7 @@ void Notifier::OnBootFastWake()
 
 void Notifier::OnBootFastSleep()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mBootFastSleepPending) {
         mBootFastSleepPending = TRUE;
 
@@ -414,7 +414,7 @@ void Notifier::FinishPendingBroadcastLocked()
 void Notifier::SendUserActivity()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (!mUserActivityPending) {
             return;
         }
@@ -427,7 +427,7 @@ void Notifier::SendUserActivity()
 void Notifier::SendBootFastWake()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if(!mBootFastWakePending){
             return;
         }
@@ -450,7 +450,7 @@ void Notifier::SendBootFastWake()
 void Notifier::SendBootFastSleep()
 {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if(!mBootFastWakePending){
             return;
         }
@@ -472,7 +472,7 @@ void Notifier::SendNextBroadcast()
     Int32 powerState;
     Int32 goToSleepReason;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mBroadcastedPowerState == POWER_STATE_UNKNOWN) {
             // Broadcasted power state is unknown.  Send wake up.
             mPendingWakeUpBroadcast = FALSE;

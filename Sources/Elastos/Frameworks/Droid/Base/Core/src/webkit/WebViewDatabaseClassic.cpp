@@ -12,7 +12,6 @@ using Elastos::Core::IInteger64;
 using Elastos::Core::CStringWrapper;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
-using Elastos::Core::Mutex;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
@@ -118,7 +117,7 @@ WebViewDatabaseClassic::WebViewDatabaseClassic(
 AutoPtr<WebViewDatabaseClassic> WebViewDatabaseClassic::GetInstance(
     /* [in] */ IContext* context)
 {
-    Mutex::Autolock lock(sInstanceLock);
+    AutoLock lock(sInstanceLock);
 
     if (sInstance == NULL) {
         sInstance = new WebViewDatabaseClassic(context);
@@ -431,7 +430,7 @@ void WebViewDatabaseClassic::SetUsernamePassword(
     }
 
     {
-        Mutex::Autolock lock(mPasswordLock);
+        AutoLock lock(mPasswordLock);
         AutoPtr<IContentValues> c;
         CContentValues::New((IContentValues**)&c);
         AutoPtr<ICharSequence> cs;
@@ -473,7 +472,7 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetUsernamePassword(
     sb.AppendCStr(" == ?)");
     String selection = sb.ToString();
     {
-        Mutex::Autolock lock(mPasswordLock);
+        AutoLock lock(mPasswordLock);
         AutoPtr< ArrayOf<String> > ret;
         AutoPtr<ICursor> cursor;
         //try {
@@ -510,7 +509,7 @@ ECode WebViewDatabaseClassic::HasUsernamePassword(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mPasswordLock);
+    AutoLock lock(mPasswordLock);
     *result = HasEntries(TABLE_PASSWORD_ID);
     return NOERROR;
 }
@@ -525,7 +524,7 @@ ECode WebViewDatabaseClassic::ClearUsernamePassword()
     }
 
     {
-        Mutex::Autolock lock(mPasswordLock);
+        AutoLock lock(mPasswordLock);
         Int32 value;
         sDatabase->Delete(mTableNames[TABLE_PASSWORD_ID], String(NULL), NULL, &value);
     }
@@ -557,7 +556,7 @@ void WebViewDatabaseClassic::SetHttpAuthUsernamePassword(
     }
 
     {
-        Mutex::Autolock lock(mHttpAuthLock);
+        AutoLock lock(mHttpAuthLock);
         AutoPtr<IContentValues> c;
         CContentValues::New((IContentValues**)&c);
         AutoPtr<ICharSequence> cs;
@@ -606,7 +605,7 @@ AutoPtr< ArrayOf<String> > WebViewDatabaseClassic::GetHttpAuthUsernamePassword(
     sb.AppendCStr(" == ?)");
     String selection = sb.ToString();
     {
-        Mutex::Autolock lock(mHttpAuthLock);
+        AutoLock lock(mHttpAuthLock);
         AutoPtr< ArrayOf<String> > ret;
         AutoPtr<ICursor> cursor;
         //try {
@@ -644,7 +643,7 @@ ECode WebViewDatabaseClassic::HasHttpAuthUsernamePassword(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mHttpAuthLock);
+    AutoLock lock(mHttpAuthLock);
     *result = HasEntries(TABLE_HTTPAUTH_ID);
     return NOERROR;
 }
@@ -659,7 +658,7 @@ ECode WebViewDatabaseClassic::ClearHttpAuthUsernamePassword()
     }
 
     {
-        Mutex::Autolock lock(mHttpAuthLock);
+        AutoLock lock(mHttpAuthLock);
         Int32 value;
         sDatabase->Delete(mTableNames[TABLE_HTTPAUTH_ID], String(NULL), NULL, &value);
     }
@@ -691,7 +690,7 @@ void WebViewDatabaseClassic::SetFormData(
     sb.AppendCStr(" == ?)");
     String selection = sb.ToString();
     {
-        Mutex::Autolock lock(mFormLock);
+        AutoLock lock(mFormLock);
         Int64 urlid = -1;
         AutoPtr<ICursor> cursor;
         //try {
@@ -776,7 +775,7 @@ AutoPtr<IArrayList> WebViewDatabaseClassic::GetFormData(
     sb.AppendString(FORMDATA_NAME_COL);
     String dataSelection = sb.ToString();
     {
-        Mutex::Autolock lock(mFormLock);
+        AutoLock lock(mFormLock);
         AutoPtr<ICursor> cursor;
         //try {
             AutoPtr< ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
@@ -839,7 +838,7 @@ ECode WebViewDatabaseClassic::HasFormData(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Mutex::Autolock lock(mFormLock);
+    AutoLock lock(mFormLock);
     *result = HasEntries(TABLE_FORMURL_ID);
     return NOERROR;
 }
@@ -854,7 +853,7 @@ ECode WebViewDatabaseClassic::ClearFormData()
     }
 
     {
-        Mutex::Autolock lock(mFormLock);
+        AutoLock lock(mFormLock);
         Int32 result;
         sDatabase->Delete(mTableNames[TABLE_FORMURL_ID], String(NULL), NULL, &result);
         sDatabase->Delete(mTableNames[TABLE_FORMDATA_ID], String(NULL), NULL, &result);

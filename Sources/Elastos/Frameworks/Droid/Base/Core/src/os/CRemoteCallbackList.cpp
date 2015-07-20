@@ -23,7 +23,7 @@ ECode CRemoteCallbackList::Callback::ProxyDied()
 {
     Slogger::W("CRemoteCallbackList::Callback", " >> %p ProxyDied()", (IProxyDeathRecipient*)this);
     {
-        Mutex::Autolock lock(mOwner->mCallbacksLock);
+        AutoLock lock(mOwner->mCallbacksLock);
 
         mOwner->mCallbacks.Erase(IBinder::Probe(mCallback));
     }
@@ -52,7 +52,7 @@ ECode CRemoteCallbackList::Register(
     VALIDATE_NOT_NULL(result);
 
     {
-        Mutex::Autolock lock(mCallbacksLock);
+        AutoLock lock(mCallbacksLock);
 
         if (mKilled) {
             *result = FALSE;
@@ -81,7 +81,7 @@ ECode CRemoteCallbackList::Unregister(
     VALIDATE_NOT_NULL(result);
 
     {
-        Mutex::Autolock lock(mCallbacksLock);
+        AutoLock lock(mCallbacksLock);
 
         HashMap< AutoPtr<IBinder>, AutoPtr<Callback> >::Iterator it =
                 mCallbacks.Find(IBinder::Probe(callback));
@@ -102,7 +102,7 @@ ECode CRemoteCallbackList::Unregister(
 ECode CRemoteCallbackList::Kill()
 {
     {
-        Mutex::Autolock lock(mCallbacksLock);
+        AutoLock lock(mCallbacksLock);
 
         HashMap< AutoPtr<IBinder>, AutoPtr<Callback> >::Iterator it;
         for (it = mCallbacks.Begin(); it != mCallbacks.End(); ++it) {
@@ -137,7 +137,7 @@ ECode CRemoteCallbackList::BeginBroadcast(
     VALIDATE_NOT_NULL(number);
 
     {
-        Mutex::Autolock lock(mCallbacksLock);
+        AutoLock lock(mCallbacksLock);
 
         if (mBroadcastCount > 0) {
             // throw new IllegalStateException(
@@ -212,7 +212,7 @@ ECode CRemoteCallbackList::GetRegisteredCallbackCount(
     VALIDATE_NOT_NULL(count);
 
     {
-        Mutex::Autolock lock(mCallbacksLock);
+        AutoLock lock(mCallbacksLock);
 
         if (mKilled) {
             *count = 0;

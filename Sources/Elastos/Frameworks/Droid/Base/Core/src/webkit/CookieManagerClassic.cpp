@@ -29,7 +29,7 @@ static void RemoveSessionCookies(
 //synchronized
 AutoPtr<CookieManagerClassic> CookieManagerClassic::GetInstance()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     if (sRef == NULL) {
         sRef = new CookieManagerClassic();

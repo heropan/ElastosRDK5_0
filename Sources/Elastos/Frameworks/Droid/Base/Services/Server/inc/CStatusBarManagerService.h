@@ -10,7 +10,6 @@
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;
@@ -386,10 +385,10 @@ public:
     AutoPtr<INotificationCallbacks> mNotificationCallbacks;
     AutoPtr<IIStatusBar> mBar;
     AutoPtr<IStatusBarIconList> mIcons;
-    Mutex mIconsLock;
+    Object mIconsLock;
 
     HashMap<AutoPtr<IBinder>, AutoPtr<IStatusBarNotification> > mNotifications;
-    Mutex mNotificationsLock;
+    Object mNotificationsLock;
 
     // for disabling the status bar
     List<AutoPtr<DisableRecord> > mDisableRecords;

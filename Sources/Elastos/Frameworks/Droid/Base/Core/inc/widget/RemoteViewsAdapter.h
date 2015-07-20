@@ -15,7 +15,6 @@
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
@@ -182,7 +181,7 @@ private:
             /* [in] */ Int32 position,
             /* [in] */ IView* convertView,
             /* [in] */ IViewGroup* parent,
-            /* [in] */ Mutex& lock,
+            /* [in] */ Object& lock,
             /* [in] */ ILayoutInflater* layoutInflater,
             /* [in] */ IRemoteViewsOnClickHandler* handler);
         friend class RemoteViewsAdapter;
@@ -197,7 +196,7 @@ private:
         AutoPtr<IRemoteViews> mFirstView;
         Int32 mFirstViewHeight;
     private:
-        Mutex mLock;
+        Object mLock;
         HashMap<Int32, Int32> mTypeIdIndexMap;
     };
 
@@ -278,9 +277,9 @@ private:
         Int32 mPreloadUpperBound;
         Int32 mMaxCount;
         Int32 mMaxCountSlack;
-        Mutex mTemporaryMetaDataLock;
-        Mutex mMetaDataLock;
-        Mutex mLoadIndicesLock;
+        Object mTemporaryMetaDataLock;
+        Object mMetaDataLock;
+        Object mLoadIndicesLock;
         friend class RemoteViewsAdapter;
     };
 
@@ -462,7 +461,7 @@ private:
     // We cache the FixedSizeRemoteViewsCaches across orientation. These are the related data
     // structures;
     static HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<FixedSizeRemoteViewsCache> > sCachedRemoteViewsCaches;
-    static Mutex sCacheLock;
+    static Object sCacheLock;
 
     static HashMap<AutoPtr<RemoteViewsCacheKey>, AutoPtr<IRunnable> > sRemoteViewsCacheRemoveRunnables;
 
@@ -481,7 +480,7 @@ private:
     IRemoteAdapterConnectionCallback* mCallback; // weakReference
     AutoPtr<IRemoteViewsOnClickHandler> mRemoteViewsOnClickHandler;
     AutoPtr<FixedSizeRemoteViewsCache> mCache;
-    Mutex mCacheLock;
+    Object mCacheLock;
     Int32 mVisibleWindowLowerBound;
     Int32 mVisibleWindowUpperBound;
 

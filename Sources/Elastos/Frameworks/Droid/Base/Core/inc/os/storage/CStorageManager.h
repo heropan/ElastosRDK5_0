@@ -297,7 +297,7 @@ private:
      */
     AutoPtr<IObbActionListener> mObbActionListener;
 
-    Mutex mListenersLock;
+    Object mListenersLock;
 };
 
 } // namespace Storage

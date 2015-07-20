@@ -7,7 +7,6 @@
 #include <pthread.h>
 #include "os/HandlerBase.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessage;
@@ -458,7 +457,7 @@ private:
     static const Int32 CALLBACK_LAST;
 
 private:
-    Mutex mLock;
+    Object mLock;
 
     AutoPtr<ILooper> mLooper;
     AutoPtr<FrameHandler> mHandler;

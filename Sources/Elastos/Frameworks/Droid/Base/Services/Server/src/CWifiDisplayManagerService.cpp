@@ -26,7 +26,7 @@ CWifiDisplayManagerService::ThreadDeathRecipient::ThreadDeathRecipient(
 
 ECode CWifiDisplayManagerService::ThreadDeathRecipient::ProxyDied()
 {
-    Mutex::Autolock lock(mHost->_m_syncLock);
+    AutoLock lock(mHost->_m_syncLock);
     Int32 ival;
     mHost->RemoveWifiDisplayClient(mClient, &ival);
 

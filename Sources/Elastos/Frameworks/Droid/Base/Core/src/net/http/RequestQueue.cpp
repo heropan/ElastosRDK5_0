@@ -53,7 +53,7 @@ ECode RequestQueue::ActivePool::Shutdown()
 
 ECode RequestQueue::ActivePool::StartConnectionThread()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // return mParent->Notify();
     return E_NOT_IMPLEMENTED;
 }
@@ -114,7 +114,7 @@ ECode RequestQueue::ActivePool::GetThread(
 {
     VALIDATE_NOT_NULL(thread);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     for (Int32 i = 0; i < mThreads->GetLength(); i++) {
         ConnectionThread* ct = (*mThreads)[i];
@@ -249,7 +249,7 @@ ECode RequestQueue::Init(
 
 ECode RequestQueue::EnablePlatformNotifications()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (HttpLog::LOGV) {
         HttpLog::V(String("RequestQueue.enablePlatformNotifications() network"));
@@ -269,7 +269,7 @@ ECode RequestQueue::EnablePlatformNotifications()
 
 ECode RequestQueue::DisablePlatformNotifications()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (HttpLog::LOGV) {
         HttpLog::V(String("RequestQueue.disablePlatformNotifications() network"));
@@ -474,7 +474,7 @@ IHttpHost* RequestQueue::DetermineHost(
 
 Boolean RequestQueue::RequestsPending()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     return !mPending.IsEmpty();
 }
@@ -515,7 +515,7 @@ ECode RequestQueue::GetRequest(
 {
     VALIDATE_NOT_NULL(req);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Request* ret = NULL;
 
@@ -537,7 +537,7 @@ ECode RequestQueue::GetRequest(
 {
     VALIDATE_NOT_NULL(req);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     Request* ret = NULL;
 
@@ -567,7 +567,7 @@ ECode RequestQueue::HaveRequest(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     HashMap<AutoPtr<IHttpHost>, AutoPtr<RequestList> >::Iterator it;// = mPending.Find(host);
     *result = it != mPending.End();
@@ -589,7 +589,7 @@ CARAPI RequestQueue::QueueRequest(
     /* [in] */ Request* request,
     /* [in] */ Boolean head)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     AutoPtr<IHttpHost> host = request->mProxyHost == NULL
         ? request->mHost : request->mProxyHost;

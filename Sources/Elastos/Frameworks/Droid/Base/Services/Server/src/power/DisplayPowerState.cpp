@@ -199,7 +199,7 @@ ECode DisplayPowerState::PhotonicModulator::TaskRunnable::Run()
         Int32 backlight;
         Boolean backlightChanged;
         {
-            Mutex::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
             on = mHost->mPendingOn;
             onChanged = (on != mHost->mActualOn);
             backlight = mHost->mPendingBacklight;
@@ -252,7 +252,7 @@ Boolean DisplayPowerState::PhotonicModulator::SetState(
     /* [in] */ Boolean on,
     /* [in] */ Int32 backlight)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (on != mPendingOn || backlight != mPendingBacklight) {
         if (DEBUG) {
             Slogger::D(TAG, "Requesting new screen state: on=%d, backlight=%d", on, backlight);

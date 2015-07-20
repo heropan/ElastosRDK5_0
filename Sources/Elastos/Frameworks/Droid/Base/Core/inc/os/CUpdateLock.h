@@ -62,7 +62,7 @@ private:
     static const Boolean DEBUG;
     static const String TAG;
     static AutoPtr<IIUpdateLock> sService;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace Os

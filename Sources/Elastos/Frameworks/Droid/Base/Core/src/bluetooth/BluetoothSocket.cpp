@@ -231,7 +231,7 @@ ECode BluetoothSocket::Connect()
     }
 
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (DBG) Slogger::D(TAG, "connect(), SocketState: %d, mPfd: %p", mSocketState, mPfd.Get());
         if (mSocketState == CLOSED) {
             // throw new IOException("socket closed");
@@ -260,7 +260,7 @@ ECode BluetoothSocket::Connect()
     mPort = channel;
     String str;
     WaitSocketSignal(mSocketIS, &str);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mSocketState == CLOSED) {
         // throw new IOException("bt socket closed");
         Slogger::E(TAG, "bt socket closed");
@@ -301,7 +301,7 @@ Int32 BluetoothSocket::BindListen()
     // read out port number
     // try {
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (VDBG) Slogger::D(TAG, "bindListen(), SocketState: %d, mPfd: %p", mSocketState, mPfd.Get());
         if(mSocketState != INIT) return EBADFD;
         if(mPfd == NULL) return -1;
@@ -318,7 +318,7 @@ Int32 BluetoothSocket::BindListen()
     Int32 channel;
     ReadInt32(mSocketIS, &channel);
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if(mSocketState == INIT)
             mSocketState = LISTENING;
     }
@@ -353,7 +353,7 @@ ECode BluetoothSocket::Accept(
     String remoteAddr;
     WaitSocketSignal(mSocketIS, &remoteAddr);
     if(timeout > 0) mSocket->SetSoTimeout(0);
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mSocketState != LISTENING) {
         // throw new IOException("bt socket is not in listen state");
         Slogger::E(TAG, "bt socket is not in listen state");
@@ -419,7 +419,7 @@ ECode BluetoothSocket::Close()
         return NOERROR;
     }
     else {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if(mSocketState == CLOSED) return NOERROR;
         mSocketState = CLOSED;
         if (VDBG) Slogger::D(TAG, "close() this: %p, channel: %d, mSocketIS: %p, mSocketOS: %p, mSocket: %p", this

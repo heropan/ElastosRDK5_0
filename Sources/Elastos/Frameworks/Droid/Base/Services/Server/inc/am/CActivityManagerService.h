@@ -638,7 +638,7 @@ private:
         DropBoxTagThread(
             /* [in] */ CActivityManagerService* host,
             /* [in] */ StringBuilder* sb,
-            /* [in] */ Mutex* lock,
+            /* [in] */ Object* lock,
             /* [in] */ IDropBoxManager* dbox,
             /* [in] */ const String& tag);
 
@@ -647,7 +647,7 @@ private:
     public:
         CActivityManagerService* mHost;
         AutoPtr<StringBuilder> mSb;
-        Mutex* mSbLock;
+        Object* mSbLock;
         AutoPtr<IDropBoxManager> mDbox;
         String mTag;
     };
@@ -3135,7 +3135,7 @@ public:
      */
     AutoPtr<ProcessStatsThread> mProcessStatsThread;
 
-    Mutex mProcessStatsThreadLock;
+    Object mProcessStatsThreadLock;
 
     /**
      * Used to collect process stats when showing not responding dialog.
@@ -3206,7 +3206,7 @@ public:
 
     static Boolean INIT_SUCCEEDED;
 
-    Mutex mPidsSelfLock;
+    Object mPidsSelfLock;
 
     AutoPtr<IHandler> mHandler;
 
@@ -3237,7 +3237,7 @@ private:
      * MAX_DUP_SUPPRESSED_STACKS entries, the contents are cleared.
      */
     HashSet< AutoPtr<IInteger32> > mAlreadyLoggedViolatedStacks;
-    Mutex mAlreadyLoggedViolatedStacksLock;
+    Object mAlreadyLoggedViolatedStacksLock;
 
     static const Int32 MAX_DUP_SUPPRESSED_STACKS;
 
@@ -3249,7 +3249,7 @@ private:
      * in-flight.
      */
     AutoPtr<StringBuilder> mStrictModeBuffer;
-    Mutex mStrictModeBufferLock;
+    Object mStrictModeBufferLock;
 
     /**
      * Global set of specific Uri permissions that have been granted.

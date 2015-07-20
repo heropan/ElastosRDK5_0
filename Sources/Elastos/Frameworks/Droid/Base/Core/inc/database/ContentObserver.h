@@ -4,7 +4,6 @@
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Net::IUri;
@@ -162,7 +161,7 @@ protected:
         /* [in]  */ IHandler* handler);
 
 protected:
-    Mutex mLock;
+    Object mLock;
     AutoPtr<IContentObserverTransport> mTransport;
     AutoPtr<IHandler> mHandler;
 };

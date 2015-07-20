@@ -5,7 +5,6 @@
 #include "_CBluetoothDevice.h"
 #include "CBluetoothDeviceManagerCallback.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::IUUID;
 using Elastos::Droid::Os::IParcelUuid;
 
@@ -147,7 +146,7 @@ private:
     static AutoPtr<IIBluetooth> sService;
     String mAddress;
     static AutoPtr<IIBluetoothManagerCallback> mStateChangeCallback;
-    static Mutex sLock;
+    static Object sLock;
 
     friend class CBluetoothDeviceManagerCallback;
 };

@@ -42,7 +42,7 @@ AutoPtr<IEditable> EditableInputConnection::GetEditable()
 
 Boolean EditableInputConnection::BeginBatchEdit()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mBatchEditNesting >= 0) {
         mTextView->BeginBatchEdit();
         mBatchEditNesting++;
@@ -53,7 +53,7 @@ Boolean EditableInputConnection::BeginBatchEdit()
 
 Boolean EditableInputConnection::EndBatchEdit()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mBatchEditNesting > 0) {
         // When the connection is reset by the InputMethodManager and reportFinish
         // is called, some endBatchEdit calls may still be asynchronously received from the
@@ -70,7 +70,7 @@ ECode EditableInputConnection::ReportFinish()
 {
     BaseInputConnection::ReportFinish();
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     while (mBatchEditNesting > 0) {
         EndBatchEdit();
     }

@@ -9,7 +9,6 @@
 
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Libcore::ICU::ILocale;
 
 namespace Elastos {
@@ -613,7 +612,7 @@ private:
 private:
     static const Char32 FIRST_RIGHT_TO_LEFT = 0x0590;//'\u0590';
 
-    static Mutex sLock;
+    static Object sLock;
 
     static AutoPtr< ArrayOf<Char32> > sTemp;
 

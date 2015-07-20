@@ -165,7 +165,7 @@ private:
 
     static const Int32 NUM_FORCE_USE;
 
-    static Mutex sStaticAudioSystemLock;
+    static Object sStaticAudioSystemLock;
 };
 
 } // namespace Media

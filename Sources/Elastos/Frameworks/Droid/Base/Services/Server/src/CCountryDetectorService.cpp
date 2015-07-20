@@ -122,7 +122,7 @@ ECode CCountryDetectorService::RemoveCountryListener(
 ECode CCountryDetectorService::AddListener(
     /* [in] */ IICountryListener *listener)
 {
-    Mutex::Autolock lock(mReceiverslock);
+    AutoLock lock(mReceiverslock);
     AutoPtr<Receiver> r = new Receiver(listener, this);
     //try {
     AutoPtr<IBinder> binder = IBinder::Probe(listener);
@@ -143,7 +143,7 @@ ECode CCountryDetectorService::AddListener(
 ECode CCountryDetectorService::RemoveListener(
     /* [in] */ IBinder *key)
 {
-    Mutex::Autolock lock(mReceiverslock);
+    AutoLock lock(mReceiverslock);
     mReceivers.Erase(key);
     if (mReceivers.IsEmpty()) {
         SetCountryListener(NULL);
@@ -156,7 +156,7 @@ ECode CCountryDetectorService::RemoveListener(
 ECode CCountryDetectorService::NotifyReceivers(
     /* [in] */ ICountry *country)
 {
-    Mutex::Autolock lock(mReceiverslock);
+    AutoLock lock(mReceiverslock);
     HashMap<AutoPtr<IBinder>, AutoPtr<Receiver> >::Iterator iter = mReceivers.Begin();
     AutoPtr<Receiver> receiver;
     for (; iter != mReceivers.End(); ++iter) {

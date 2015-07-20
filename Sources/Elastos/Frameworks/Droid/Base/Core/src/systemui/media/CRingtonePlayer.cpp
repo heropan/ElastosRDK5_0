@@ -47,7 +47,7 @@ ECode CRingtonePlayer::Client::ProxyDied()
 {
     if (LOGD) Slogger::D(TAG, "binderDied() token = %p", mToken.Get());
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mHost->mClients.Erase(mToken);
     }
     return mRingtone->Stop();
@@ -70,7 +70,7 @@ ECode CRingtonePlayer::MyRingtonePlayer::Play( // throws RemoteException
     HashMap<AutoPtr<IBinder>, AutoPtr<Client> >::Iterator it;
     AutoPtr<Client> client;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         it = mHost->mClients.Find(token);
         if (it == mHost->mClients.End()) {
             AutoPtr<IBinderHelper> binderHelper;
@@ -98,7 +98,7 @@ ECode CRingtonePlayer::MyRingtonePlayer::Stop(
     HashMap<AutoPtr<IBinder>, AutoPtr<Client> >::Iterator it;
     AutoPtr<Client> client;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         it = mHost->mClients.Find(token);
         if (it != mHost->mClients.End()) {
             client = it->mSecond;
@@ -123,7 +123,7 @@ ECode CRingtonePlayer::MyRingtonePlayer::IsPlaying(
     // if (LOGD) Slogger::D(TAG, "isPlaying(token=" + token + ")");
     HashMap<AutoPtr<IBinder>, AutoPtr<Client> >::Iterator it;
     {
-        Mutex::Autolock lock(mLock);
+        AutoLock lock(mLock);
         it = mHost->mClients.Find(token);
     }
     if (it != mHost->mClients.End() && (it->mSecond != NULL)) {

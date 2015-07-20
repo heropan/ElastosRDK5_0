@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/Set.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Set;
 using Elastos::Utility::IObjectStringMap;
 
@@ -47,7 +46,7 @@ private:
 
 private:
     static AutoPtr<SslClientCertLookupTable> sTable;
-    static Mutex sLock;
+    static Object sLock;
     AutoPtr<IObjectStringMap> privateKeys;
     AutoPtr<IObjectStringMap> certificateChains;
     Set<String> denied;

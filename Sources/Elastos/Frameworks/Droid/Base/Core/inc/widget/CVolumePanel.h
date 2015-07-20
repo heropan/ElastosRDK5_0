@@ -28,7 +28,6 @@ using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::Media::IAudioService;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Media::IToneGenerator;
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -440,7 +439,7 @@ private:
     AutoPtr<IVibrator> mVibrator;
 
     static AutoPtr<IAlertDialog> sConfirmSafeVolumeDialog;
-    static Mutex sConfirmSafeVolumeLock;// = new Object();
+    static Object sConfirmSafeVolumeLock;// = new Object();
 
 };
 

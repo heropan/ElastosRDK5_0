@@ -626,7 +626,7 @@ ECode CTypedArray::GetPositionDescription(
 
 ECode CTypedArray::Recycle()
 {
-    Mutex::Autolock lock(mResources->mTmpValueLock);
+    AutoLock lock(mResources->mTmpValueLock);
     AutoPtr<ITypedArray> cached = mResources->mCachedStyledAttributes;
     if (cached == NULL || ((CTypedArray*)cached.Get())->mData->GetLength() < mData->GetLength()) {
         mXml = NULL;

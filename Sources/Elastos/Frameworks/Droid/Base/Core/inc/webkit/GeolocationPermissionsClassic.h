@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashSet.h>
 #include <elastos/Vector.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IMenu;
@@ -140,7 +139,7 @@ private:
     static CARAPI_(void) NativeClearAll();
 
 private:
-    Mutex mLock;
+    Object mLock;
     AutoPtr<IHandler> mHandler;
     AutoPtr<IHandler> mUIHandler;
 

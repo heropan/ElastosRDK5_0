@@ -390,7 +390,7 @@ public:
         AutoPtr<IWindowSession> mSession;
         AutoPtr<IInputChannel> mInputChannel;
 
-        Mutex mLock;
+        Object mLock;
 
         Boolean mOffsetMessageEnqueued;
         Float mPendingXOffset;

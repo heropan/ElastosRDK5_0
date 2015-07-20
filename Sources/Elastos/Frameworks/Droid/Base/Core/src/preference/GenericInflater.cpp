@@ -205,7 +205,7 @@ ECode GenericInflater::Inflate(
     VALIDATE_NOT_NULL(t)
     *t = NULL;
 
-    Mutex::Autolock lock(mConstructorArgsLock);
+    AutoLock lock(mConstructorArgsLock);
     AutoPtr<IAttributeSet> attrs = Xml::AsAttributeSet(parser);
     mConstructorArgs->Set(0, mContext);
     AutoPtr<IInterface> result = root;

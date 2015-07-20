@@ -269,7 +269,7 @@ private:
     AutoPtr<ArrayOf<IKeyManager*> > mKeyManagers;
     AutoPtr<ArrayOf<Byte> > mNpnProtocols;
     Int32 mHandshakeTimeoutMillis;
-    Mutex mLock;
+    Object mLock;
 
     CARAPI_(void) Init(
         /* [in] */ Int32 handshakeTimeoutMillis,

@@ -9,7 +9,6 @@
 
 #include <elastos/utility/etl/List.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::App::IActivity;
@@ -163,9 +162,9 @@ public:
 
 private:
     List< AutoPtr<IComponentCallbacks> > mComponentCallbacks;
-    Mutex mComponentCallbacksLock;
+    Object mComponentCallbacksLock;
     List< AutoPtr<IActivityLifecycleCallbacks> > mActivityLifecycleCallbacks;
-    Mutex mActivityLifecycleCallbacksLock;
+    Object mActivityLifecycleCallbacksLock;
 };
 
 } // namespace App

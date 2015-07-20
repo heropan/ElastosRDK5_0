@@ -33,7 +33,7 @@ protected:
 
 private:
     Int32 mReferenceCount;
-    Mutex mLock;
+    Object mLock;
 };
 
 } //Sqlite

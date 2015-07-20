@@ -230,7 +230,7 @@ void ElAudioTrack::Release()
  */
 int ElAudioTrack::GetPlayState()
 {
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     return mPlayState;
 }
 
@@ -349,7 +349,7 @@ void ElAudioTrack::Play()
         return;
     }
 
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_start();
     mPlayState = PLAYSTATE_PLAYING;
 }
@@ -368,7 +368,7 @@ void ElAudioTrack::Pause()
     }
 
     // pause playback
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_pause();
     mPlayState = PLAYSTATE_PAUSED;
 
@@ -388,7 +388,7 @@ void ElAudioTrack::Stop()
     }
 
     // stop playing
-    Mutex::Autolock lock(mPlayStateLock);
+    AutoLock lock(mPlayStateLock);
     native_stop();
     mPlayState = PLAYSTATE_STOPPED;
 }

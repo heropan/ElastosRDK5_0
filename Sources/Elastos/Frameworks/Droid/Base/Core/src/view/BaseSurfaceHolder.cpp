@@ -60,7 +60,7 @@ Int32 BaseSurfaceHolder::GetRequestedType()
 ECode BaseSurfaceHolder::AddCallback(
     /* [in] */ ISurfaceHolderCallback* cback)
 {
-    Mutex::Autolock lock(mCallbackLock);
+    AutoLock lock(mCallbackLock);
 
     // This is a linear search, but in practice we'll
     // have only a couple callbacks, so it doesn't matter.
@@ -78,7 +78,7 @@ ECode BaseSurfaceHolder::AddCallback(
 ECode BaseSurfaceHolder::RemoveCallback(
     /* [in] */ ISurfaceHolderCallback* cback)
 {
-    Mutex::Autolock lock(mCallbackLock);
+    AutoLock lock(mCallbackLock);
 
     AutoPtr<ISurfaceHolderCallback> temp = cback;
     List<AutoPtr<ISurfaceHolderCallback> >::Iterator iter =
@@ -96,7 +96,7 @@ Vector<AutoPtr<ISurfaceHolderCallback> >& BaseSurfaceHolder::GetCallbacks()
         return mGottenCallbacks;
     }
 
-    Mutex::Autolock lock(mCallbackLock);
+    AutoLock lock(mCallbackLock);
 
     mGottenCallbacks.Clear();
     if (mCallbacks.IsEmpty() == FALSE) {

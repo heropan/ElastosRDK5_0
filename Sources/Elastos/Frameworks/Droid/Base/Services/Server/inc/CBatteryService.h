@@ -7,7 +7,6 @@
 #include "os/Runnable.h"
 #include "LightsService.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::UEventObserver;
@@ -280,7 +279,7 @@ private:
     AutoPtr<IIBatteryStats> mBatteryStats;
     AutoPtr<IHandler> mHandler;
 
-    Mutex mLock;
+    Object mLock;
 
     /* Begin native fields: All of these fields are set by native code. */
     Boolean mAcOnline;

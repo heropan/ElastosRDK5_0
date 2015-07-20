@@ -643,7 +643,7 @@ ECode LocationManager::RemoveUpdates(
     mContext->GetPackageName(&packageName);
     AutoPtr<IILocationListener> transport;
     {
-        Mutex::Autolock lock(mutexListeners);
+        AutoLock lock(mutexListeners);
         HashMap<AutoPtr<ILocationListener>, AutoPtr<IILocationListener> >::Iterator it
                 = mListeners.Find(listener);
         if (it != mListeners.End()) {
@@ -1355,7 +1355,7 @@ AutoPtr<IILocationListener> LocationManager::WrapListener(
     if (listener == NULL) return NULL;
     //synchronized (mListeners)
     {
-        Mutex::Autolock lock(mutexListeners);
+        AutoLock lock(mutexListeners);
         AutoPtr<ILocationListener> tempKey = listener;
         HashMap<AutoPtr<ILocationListener>, AutoPtr<IILocationListener> >::Iterator it =
                 mListeners.Find(tempKey);

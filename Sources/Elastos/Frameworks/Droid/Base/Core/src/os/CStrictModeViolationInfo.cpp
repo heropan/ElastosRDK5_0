@@ -64,7 +64,7 @@ ECode CStrictModeViolationInfo::constructor(
     // }
 
     {
-        Mutex::Autolock lock(mStateLock);
+        AutoLock lock(mStateLock);
         Int32 spanActiveCount = state->mActiveSize;
         if (spanActiveCount > CStrictMode::MAX_SPAN_TAGS) {
             spanActiveCount = CStrictMode::MAX_SPAN_TAGS;

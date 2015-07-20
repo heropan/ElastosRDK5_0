@@ -7,7 +7,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Core::Mutex;
 using Elastos::Droid::Database::Sqlite::SQLiteClosable;
 
 namespace Elastos {
@@ -658,7 +657,7 @@ private:
 
     static HashMap<Int32, Int32> sWindowToPidMap;
 
-    static Mutex sWindowToPidMapLock;
+    static Object sWindowToPidMapLock;
 
     friend class CCursorWindow;
 };

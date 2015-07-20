@@ -9,7 +9,6 @@
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 
-using Elastos::Core::Mutex;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
@@ -203,7 +202,7 @@ ECode BroadcastReceiver::PendingResult::SetExtrasClassLoader(
 ECode BroadcastReceiver::PendingResult::SendFinished(
     /* [in] */ IIActivityManager* am)
 {
-    Mutex::Autolock lock(mPendingResultLock);
+    AutoLock lock(mPendingResultLock);
     if (mFinished) return E_ILLEGAL_STATE_EXCEPTION;
     mFinished = TRUE;
 

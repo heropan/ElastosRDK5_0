@@ -147,7 +147,7 @@ ECode MyTimerTask::Unlock()
     return NOERROR;
 }
 
-Mutex* MyTimerTask::GetSelfLock()
+Object* MyTimerTask::GetSelfLock()
 {
     return &mLock;
 }

@@ -17,7 +17,7 @@ ECode CBluetoothPbapStateChangeCallback::OnBluetoothStateChange(
 	if (BluetoothPbap::DBG) Logger::D(BluetoothPbap::TAG, "onBluetoothStateChange: up=%d", up);
     if (!up) {
         if (BluetoothPbap::VDBG) Logger::D(BluetoothPbap::TAG, "Unbinding service...");
-        Mutex::Autolock lock(mHost->mConnectionLock);
+        AutoLock lock(mHost->mConnectionLock);
         // try {
         mHost->mService = NULL;
         ECode ec = mHost->mContext->UnbindService(mHost->mConnection);
@@ -29,7 +29,7 @@ ECode CBluetoothPbapStateChangeCallback::OnBluetoothStateChange(
         // }
     }
     else {
-        Mutex::Autolock lock(mHost->mConnectionLock);
+        AutoLock lock(mHost->mConnectionLock);
         // try {
         if (mHost->mService == NULL) {
             if (BluetoothPbap::VDBG) Logger::D(BluetoothPbap::TAG, "Binding service...");

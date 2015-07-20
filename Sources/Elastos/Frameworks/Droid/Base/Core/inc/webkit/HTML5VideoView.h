@@ -5,7 +5,6 @@
 #include "ext/frameworkext.h"
 #include <elastos/TimerTask.h>
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Media::IMediaPlayer;
 using Elastos::Droid::Media::IMediaPlayerOnPreparedListener;
 using Elastos::Droid::Net::IUri;
@@ -76,10 +75,10 @@ private:
                 /* [in] */ Int64 time);
 
     private:
-        CARAPI_(Mutex*) GetSelfLock();
+        CARAPI_(Object*) GetSelfLock();
 
     private:
-        Mutex mLock;
+        Object mLock;
         AutoPtr<HTML5VideoViewProxy> mProxy;
     };
 

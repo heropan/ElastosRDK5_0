@@ -27,7 +27,7 @@ ECode CBluetoothPanStateChangeCallback::OnBluetoothStateChange(
     }
     else {
         if (BluetoothPan::VDBG) Logger::D(BluetoothPan::TAG,"Unbinding service...");
-        Mutex::Autolock lock(mHost->mConnectionLock);
+        AutoLock lock(mHost->mConnectionLock);
         // try {
         mHost->mPanService = NULL;
         ECode ec = mHost->mContext->UnbindService(mHost->mConnection);

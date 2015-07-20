@@ -228,7 +228,7 @@ private:
     String mCurIface;
     AutoPtr<IHandler> mReconnectHandler;
     AutoPtr<IHandler> mNoInterfaceHandler;
-    Mutex mLock;
+    Object mLock;
     Boolean mDetectedAtStartup;
     Byte mEffectivePrio;
 

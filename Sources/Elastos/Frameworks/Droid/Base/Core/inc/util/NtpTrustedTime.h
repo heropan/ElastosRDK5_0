@@ -4,7 +4,6 @@
 #include "ext/frameworkext.h"
 #include "util/TrustedTime.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::INtpTrustedTime;
 
@@ -68,7 +67,7 @@ private:
     Int64 mCachedNtpTime;
     Int64 mCachedNtpElapsedRealtime;
     Int64 mCachedNtpCertainty;
-    static Mutex mLock;
+    static Object mLock;
 };
 
 } // namespace Utility

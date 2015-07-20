@@ -158,7 +158,7 @@ ECode Vpn::LegacyVpnRunner::Run()
     // Wait for the previous thread since it has been interrupted.
     Logger::V(TAG, "Waiting");
     {
-        Mutex::Autolock lock(sTAGLock);
+        AutoLock lock(sTAGLock);
         Logger::V(TAG, "Executing");
         Execute();
         MonitorDaemons();
@@ -391,7 +391,7 @@ ECode Vpn::LegacyVpnRunner::Execute()
     }
 
     {
-        Mutex::Autolock lock(mOwner->mLock);
+        AutoLock lock(mOwner->mLock);
         // Check if the thread is interrupted while we are waiting.
         ec = Checkpoint(FALSE);
         if(FAILED(ec)) goto ERROR;
@@ -572,7 +572,7 @@ ECode Vpn::Prepare(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Return false if the package does not match.
     if (!oldPackage.IsNull() && !oldPackage.Equals(mPackage)) {
         *result = FALSE;
@@ -662,7 +662,7 @@ ECode Vpn::Establish(
     VALIDATE_NOT_NULL(fd);
     *fd = NULL;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // Check if the caller is already prepared.
     AutoPtr<IPackageManager> pm;
@@ -812,7 +812,7 @@ ECode Vpn::InterfaceStatusChanged(
     /* [in] */ const String& iface,
     /* [in] */ Boolean up)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return mObserver->InterfaceStatusChanged(iface, up);
 }
 
@@ -1415,7 +1415,7 @@ void Vpn::StartLegacyVpn(
     /* [in] */ ArrayOf<String>* racoon,
     /* [in] */ ArrayOf<String>* mtpd)
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     StopLegacyVpn();
 
     // Prepare for the new request. This also checks the caller.
@@ -1430,13 +1430,13 @@ void Vpn::StartLegacyVpn(
 
 ECode Vpn::StopLegacyVpn()
 {
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (mLegacyVpnRunner != NULL) {
         mLegacyVpnRunner->Exit();
         mLegacyVpnRunner = NULL;
 
         {
-            Mutex::Autolock lock(LegacyVpnRunner::sTAGLock);
+            AutoLock lock(LegacyVpnRunner::sTAGLock);
             // wait for old thread to completely finish before spinning up
             // new instance, otherwise state updates can be out of order.
         }
@@ -1453,7 +1453,7 @@ ECode Vpn::GetLegacyVpnInfo(
     VALIDATE_NOT_NULL(info);
     *info = NULL;
 
-    Mutex::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Check if the caller is authorized.
     FAIL_RETURN(EnforceControlPermission());
     if (mLegacyVpnRunner == NULL) {

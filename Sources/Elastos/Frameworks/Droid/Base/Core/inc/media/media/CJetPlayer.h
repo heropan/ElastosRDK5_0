@@ -406,7 +406,7 @@ private:
     /**
      * Lock to protect the event listener updates against event notifications
      */
-    Mutex mEventListenerLock;
+    Object mEventListenerLock;
 
     AutoPtr<IOnJetEventListener> mJetEventListener;
 

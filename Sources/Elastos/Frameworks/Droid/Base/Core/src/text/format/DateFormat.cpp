@@ -59,7 +59,7 @@ Boolean DateFormat::Is24HourFormat(
         config->GetLocale((ILocale**)&locale);
 
         {
-            Mutex::Autolock lock(sLocaleLock);
+            AutoLock lock(sLocaleLock);
 
             Boolean bIs24HourLocale;
             if (sIs24HourLocale != NULL &&
@@ -89,7 +89,7 @@ Boolean DateFormat::Is24HourFormat(
         }
 
         {
-            Mutex::Autolock lock(sLocaleLock);
+            AutoLock lock(sLocaleLock);
 
             sIs24HourLocale = locale;
             sIs24Hour = value.Equals("24");

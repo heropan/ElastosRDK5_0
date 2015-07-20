@@ -44,7 +44,7 @@ private:
             CARAPI_(Boolean) Open();
 
         public:
-            Mutex  mLock;
+            Object  mLock;
 
         private:
             SensorThread* mHost;
@@ -259,7 +259,7 @@ private:
     // Used within this module from outside SensorManager, don't make private
     static /*SparseArray<Sensor>*/ HashMap<Int32, ISensor*> sHandleToSensor/* = new SparseArray<Sensor>()*/;
     static List<ListenerDelegate*> sListeners/* = new ArrayList<ListenerDelegate>()*/;
-    static Mutex sListenersLock;
+    static Object sListenersLock;
 
     // Common pool of sensor events.
     static AutoPtr<SensorEventPool> sPool;

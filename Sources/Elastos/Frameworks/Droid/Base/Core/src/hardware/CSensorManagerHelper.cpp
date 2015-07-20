@@ -106,7 +106,7 @@ ECode CSensorManagerHelper::RemapCoordinateSystem(
     assert(state != NULL);
     if (inR == outR) {
         {
-            Mutex::Autolock lock(mTempMatrixLock);
+            AutoLock lock(mTempMatrixLock);
             // we don't expect to have a lot of contention
             if (RemapCoordinateSystemImpl(inR, X, Y, mTempMatrix)) {
                 const Int32 size = outR->GetLength();

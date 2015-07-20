@@ -36,7 +36,7 @@ CInputContextCallback::~CInputContextCallback()
 
 AutoPtr<CInputContextCallback> CInputContextCallback::GetInstance()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     // Return sInstance if it's non-NULL, otherwise construct a new callback
     AutoPtr<CInputContextCallback> callback;
@@ -61,7 +61,7 @@ AutoPtr<CInputContextCallback> CInputContextCallback::GetInstance()
  */
 void CInputContextCallback::Dispose()
 {
-    Mutex::Autolock lock(sLock);
+    AutoLock lock(sLock);
 
     // If sInstance is non-NULL, just let this object be garbage-collected
     if (sInstance == NULL) {
@@ -77,7 +77,7 @@ ECode CInputContextCallback::SetTextBeforeCursor(
     /* [in] */ ICharSequence* textBeforeCursor,
     /* [in] */ Int32 seq)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (seq == mSeq) {
         mTextBeforeCursor = textBeforeCursor;
@@ -96,7 +96,7 @@ ECode CInputContextCallback::SetTextAfterCursor(
     /* [in] */ ICharSequence* textAfterCursor,
     /* [in] */ Int32 seq)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (seq == mSeq) {
         mTextAfterCursor = textAfterCursor;
@@ -115,7 +115,7 @@ ECode CInputContextCallback::SetSelectedText(
     /* [in] */ ICharSequence* selectedText,
     /* [in] */ Int32 seq)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (seq == mSeq) {
         mSelectedText = selectedText;
@@ -134,7 +134,7 @@ ECode CInputContextCallback::SetCursorCapsMode(
     /* [in] */ Int32 capsMode,
     /* [in] */ Int32 seq)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (seq == mSeq) {
         mCursorCapsMode = capsMode;
@@ -153,7 +153,7 @@ ECode CInputContextCallback::SetExtractedText(
     /* [in] */ IExtractedText* extractedText,
     /* [in] */ Int32 seq)
 {
-    Mutex::Autolock lock(_m_syncLock);
+    AutoLock lock(_m_syncLock);
 
     if (seq == mSeq) {
         mExtractedText = extractedText;

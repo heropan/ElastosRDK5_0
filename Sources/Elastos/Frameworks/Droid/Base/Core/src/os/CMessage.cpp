@@ -34,7 +34,7 @@ ECode CMessage::constructor()
 AutoPtr<IMessage> CMessage::Obtain()
 {
     {
-        Mutex::Autolock lock(sPoolSync);
+        AutoLock lock(sPoolSync);
 
         if (sPool != NULL) {
             AutoPtr<CMessage> m = sPool;
@@ -178,7 +178,7 @@ ECode CMessage::Recycle()
     ClearForRecycle();
 
     {
-        Mutex::Autolock lock(sPoolSync);
+        AutoLock lock(sPoolSync);
 
         if (sPoolSize < MAX_POOL_SIZE) {
             mNext = sPool;

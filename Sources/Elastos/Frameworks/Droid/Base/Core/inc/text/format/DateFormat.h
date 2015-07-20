@@ -4,7 +4,6 @@
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::Mutex;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
 using Libcore::ICU::ILocale;
@@ -180,7 +179,7 @@ private:
         /* [in] */ Int32 inMinDigits);
 
 private:
-    static Mutex sLocaleLock;
+    static Object sLocaleLock;
     static AutoPtr<ILocale> sIs24HourLocale;
     static Boolean sIs24Hour;
 

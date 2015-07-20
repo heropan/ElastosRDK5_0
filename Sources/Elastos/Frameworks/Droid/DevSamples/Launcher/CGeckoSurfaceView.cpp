@@ -520,7 +520,7 @@ ECode CGeckoSurfaceView::Draw(
         return E_INVALID_ARGUMENT;
     }
 
-    Mutex::Autolock lock(mSoftwareBufferLock);
+    AutoLock lock(mSoftwareBufferLock);
     if (pBuffer != mSoftwareBuffer || !mSoftwareBufferCopy)
         return E_INVALID_ARGUMENT;
 
@@ -552,7 +552,7 @@ ECode CGeckoSurfaceView::Draw(
         return NOERROR;
     }
 
-    Mutex::Autolock lock(mSoftwareBitmapLock);
+    AutoLock lock(mSoftwareBitmapLock);
 
     if (bitmap != mSoftwareBitmap) {
         return NOERROR;

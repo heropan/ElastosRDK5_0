@@ -885,7 +885,7 @@ ECode CPackageManagerService::AppDirObserver::OnEvent(
 
     // TODO post a message to the handler to obtain serial ordering
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
 
         String fullPathStr;
         AutoPtr<IFile> fullPath;
@@ -911,7 +911,7 @@ ECode CPackageManagerService::AppDirObserver::OnEvent(
         AutoPtr<PackageParser::Package> p;
         AutoPtr<PackageSetting> ps;
         {
-            Mutex::Autolock l(mHost->mPackagesLock);
+            AutoLock l(mHost->mPackagesLock);
 
             HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
                 = mHost->mAppDirs.Find(fullPathStr);
@@ -968,7 +968,7 @@ ECode CPackageManagerService::AppDirObserver::OnEvent(
                      * lock.
                      */
                     {
-                        Mutex::Autolock l(mHost->mPackagesLock);
+                        AutoLock l(mHost->mPackagesLock);
 
                         mHost->UpdatePermissionsLPw(p->mPackageName, p,
                             p->mPermissions.Begin() != p->mPermissions.End() ? UPDATE_PERMISSIONS_ALL : 0);
@@ -982,7 +982,7 @@ ECode CPackageManagerService::AppDirObserver::OnEvent(
         }
 
         {
-            Mutex::Autolock l(mHost->mPackagesLock);
+            AutoLock l(mHost->mPackagesLock);
 
             mHost->mSettings->WriteLPr();
         }
@@ -1075,7 +1075,7 @@ CPackageManagerService::MeasureParams::MeasureParams(
 ECode CPackageManagerService::MeasureParams::HandleStartCopy()
 {
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
         String packageName;
         mStats->GetPackageName(&packageName);
         Int32 userHandle;
@@ -1217,7 +1217,7 @@ Int32 CPackageManagerService::InstallParams::InstallLocationPolicy(
     pkgLite->GetInstallLocation(&installLocation);
     Boolean onSd = (flags & IPackageManager::INSTALL_EXTERNAL) != 0;
     {
-        Mutex::Autolock lock(mHost->mPackagesLock);
+        AutoLock lock(mHost->mPackagesLock);
 
         AutoPtr<PackageParser::Package> pkg;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it
@@ -2627,7 +2627,7 @@ ECode CPackageManagerService::NotifyRunnable::Run()
 
     Int32 retCode = -1;
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
         retCode = mHost->mInstaller->FreeCache(mFreeStorageSize);
         if (retCode < 0) {
             Slogger::W(TAG, "Couldn't clear application caches");
@@ -2653,7 +2653,7 @@ ECode CPackageManagerService::FreeStorageRunnable::Run()
     mHost->mHandler->RemoveCallbacks(this);
     Int32 retCode = -1;
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
         retCode = mHost->mInstaller->FreeCache(mFreeStorageSize);
         if (retCode < 0) {
             Slogger::W(TAG, "Couldn't clear application caches");
@@ -2698,7 +2698,7 @@ ECode CPackageManagerService::ClearRunnable::Run()
 
     Boolean succeeded;
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
         succeeded = mHost->ClearApplicationUserDataLI(mPackageName, mUserId);
     }
     mHost->ClearExternalStorageDataSync(mPackageName, mUserId, TRUE);
@@ -2731,7 +2731,7 @@ ECode CPackageManagerService::DeleteRunnable::Run()
 
     Boolean succeded;
     {
-        Mutex::Autolock lock(mHost->mInstallLock);
+        AutoLock lock(mHost->mInstallLock);
         succeded = mHost->DeleteApplicationCacheFilesLI(mPackageName, mUserId);
     }
     mHost->ClearExternalStorageDataSync(mPackageName, mUserId, FALSE);
@@ -2770,7 +2770,7 @@ ECode CPackageManagerService::ProcessRunnable::Run()
         AutoPtr<ArrayOf<Int32> > uidArr;
         AutoPtr<List<String> > pkgList;
         {
-            Mutex::Autolock lock(mHost->mPackagesLock);
+            AutoLock lock(mHost->mPackagesLock);
             HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mHost->mPackages.Find(mMp->mPackageName);
             AutoPtr<PackageParser::Package> pkg;
             if (it != mHost->mPackages.End()) pkg = it->mSecond;
@@ -2799,9 +2799,9 @@ ECode CPackageManagerService::ProcessRunnable::Run()
             mHost->SendResourcesChangedBroadcast(FALSE, *pkgList, uidArr, NULL);
             // Update package code and resource paths
             {
-                Mutex::Autolock lock(mHost->mInstallLock);
+                AutoLock lock(mHost->mInstallLock);
                 {
-                    Mutex::Autolock lock(mHost->mPackagesLock);
+                    AutoLock lock(mHost->mPackagesLock);
                     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mHost->mPackages.Find(mMp->mPackageName);
                     AutoPtr<PackageParser::Package> pkg;
                     if (it != mHost->mPackages.End()) pkg = it->mSecond;
@@ -2908,7 +2908,7 @@ ECode CPackageManagerService::ProcessRunnable::Run()
 //         Runtime.getRuntime().gc();
         // Delete older code
         {
-            Mutex::Autolock lock(mHost->mInstallLock);
+            AutoLock lock(mHost->mInstallLock);
             mMp->mSrcArgs->DoPostDeleteLI(TRUE);
         }
     }
@@ -2917,7 +2917,7 @@ ECode CPackageManagerService::ProcessRunnable::Run()
     // an operation was already pending for this package.
     if (returnCode != IPackageManager::MOVE_FAILED_OPERATION_PENDING) {
         {
-            Mutex::Autolock lock(mHost->mPackagesLock);
+            AutoLock lock(mHost->mPackagesLock);
             HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mHost->mPackages.Find(mMp->mPackageName);
             AutoPtr<PackageParser::Package> pkg;
             if (it != mHost->mPackages.End()) pkg = it->mSecond;
@@ -3152,10 +3152,10 @@ ECode CPackageManagerService::constructor(
     }
 
     {
-        Mutex::Autolock lock(mInstallLock);
+        AutoLock lock(mInstallLock);
         // writer
         {
-            Mutex::Autolock lock2(mPackagesLock);
+            AutoLock lock2(mPackagesLock);
             mHandlerThread->Start();
             AutoPtr<ILooper> looper;
             mHandlerThread->GetLooper((ILooper**)&looper);
@@ -4073,7 +4073,7 @@ ECode CPackageManagerService::GetPackageInfo(
     }
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get package info")));
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> p;
     if (!packageName.IsNullOrEmpty()) {
@@ -4108,7 +4108,7 @@ ECode CPackageManagerService::CurrentToCanonicalPackageNames(
 
     AutoPtr< ArrayOf<String> > out = ArrayOf<String>::Alloc(names.GetLength());
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         for (Int32 i = names.GetLength() - 1; i >= 0; i--) {
             AutoPtr<PackageSetting> ps;
@@ -4133,7 +4133,7 @@ ECode CPackageManagerService::CanonicalToCurrentPackageNames(
 
     AutoPtr< ArrayOf<String> > out = ArrayOf<String>::Alloc(names.GetLength());
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         for (Int32 i = names.GetLength() - 1; i >= 0; i--) {
             String cur;
@@ -4163,7 +4163,7 @@ ECode CPackageManagerService::GetPackageUid(
     }
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get package uid")));
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> p;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(packageName);
@@ -4208,7 +4208,7 @@ ECode CPackageManagerService::GetPackageGids(
     Boolean enforcedDefault = IsPermissionEnforcedDefault(READ_EXTERNAL_STORAGE);
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<PackageParser::Package> p;
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(packageName);
@@ -4266,7 +4266,7 @@ ECode CPackageManagerService::GetPermissionInfo(
     VALIDATE_NOT_NULL(info);
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<BasePermission> p;
     HashMap<String, AutoPtr<BasePermission> >::Iterator it =
@@ -4292,7 +4292,7 @@ ECode CPackageManagerService::QueryPermissionsByGroup(
     VALIDATE_NOT_NULL(infos);
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<IObjectContainer> out;
     FAIL_RETURN(CParcelableObjectContainer::New((IObjectContainer**)&out));
@@ -4339,7 +4339,7 @@ ECode CPackageManagerService::GetPermissionGroupInfo(
     }
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::PermissionGroup> pg;
     HashMap<String, AutoPtr<PackageParser::PermissionGroup> >::Iterator it =
@@ -4361,7 +4361,7 @@ ECode CPackageManagerService::GetAllPermissionGroups(
     VALIDATE_NOT_NULL(infos);
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<IObjectContainer> out;
     FAIL_RETURN(CParcelableObjectContainer::New((IObjectContainer**)&out));
@@ -4457,7 +4457,7 @@ ECode CPackageManagerService::GetApplicationInfo(
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get application info")));
     // writer
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> p;
     if (!packageName.IsNull()) {
@@ -4540,7 +4540,7 @@ ECode CPackageManagerService::GetActivityInfo(
     }
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get activity info")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Activity> a;
     HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Activity> >::Iterator it =
@@ -4592,7 +4592,7 @@ ECode CPackageManagerService::GetReceiverInfo(
     }
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get receiver info")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Activity> a;
     HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Activity> >::Iterator it =
@@ -4639,7 +4639,7 @@ ECode CPackageManagerService::GetServiceInfo(
 
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get service info")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Service> s;
     HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Service> >::Iterator it =
@@ -4685,7 +4685,7 @@ ECode CPackageManagerService::GetProviderInfo(
     }
     FAIL_RETURN(EnforceCrossUserPermission(Binder::GetCallingUid(), userId, FALSE, String("get provider info")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Provider> p;
     HashMap<AutoPtr<IComponentName>, AutoPtr<PackageParser::Provider> >::Iterator it =
@@ -4722,7 +4722,7 @@ ECode CPackageManagerService::GetSystemSharedLibraryNames(
 {
     VALIDATE_NOT_NULL(names);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     Int32 size = mSharedLibraries.GetSize();
     if (size > 0) {
@@ -4745,7 +4745,7 @@ ECode CPackageManagerService::GetSystemAvailableFeatures(
 {
     VALIDATE_NOT_NULL(infos);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     Int32 size = mAvailableFeatures.GetSize();
     if (size > 0) {
@@ -4777,7 +4777,7 @@ ECode CPackageManagerService::HasSystemFeature(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     *result = mAvailableFeatures.Find(name) != mAvailableFeatures.End();
     return NOERROR;
@@ -4805,7 +4805,7 @@ ECode CPackageManagerService::CheckPermission(
 
     // const Boolean enforcedDefault = IsPermissionEnforcedDefault(permName);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> p;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(pkgName);
@@ -4840,7 +4840,7 @@ ECode CPackageManagerService::CheckUidPermission(
     const Boolean enforcedDefault = IsPermissionEnforcedDefault(permName);
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(UserHandle::GetAppId(uid));
         if (obj != NULL) {
             GrantedPermissions* gp = NULL;
@@ -5116,7 +5116,7 @@ ECode CPackageManagerService::AddPermission(
 {
     VALIDATE_NOT_NULL(isAdded);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     return AddPermissionLocked(info, FALSE, isAdded);
 }
@@ -5127,7 +5127,7 @@ ECode CPackageManagerService::AddPermissionAsync(
 {
     VALIDATE_NOT_NULL(isAdded);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     return AddPermissionLocked(info, TRUE, isAdded);
 }
@@ -5135,7 +5135,7 @@ ECode CPackageManagerService::AddPermissionAsync(
 ECode CPackageManagerService::RemovePermission(
     /* [in] */ const String& name)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<BasePermission> tree;
     FAIL_RETURN(CheckPermissionTreeLP(name, (BasePermission**)&tree));
@@ -5164,7 +5164,7 @@ ECode CPackageManagerService::GrantPermission(
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator pkgit =
             mPackages.Find(packageName);
     AutoPtr<PackageParser::Package> pkg;
@@ -5210,7 +5210,7 @@ ECode CPackageManagerService::RevokePermission(
     /* [in] */ const String& packageName,
     /* [in] */ const String& permissionName)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     AutoPtr<PackageParser::Package> pkg;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator pkgit = mPackages.Find(packageName);
     if (pkgit != mPackages.End()) pkg = pkgit->mSecond;
@@ -5264,7 +5264,7 @@ ECode CPackageManagerService::IsProtectedBroadcast(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     if (actionName.IsNull()) {
         *result = FALSE;
@@ -5282,7 +5282,7 @@ ECode CPackageManagerService::CheckSignatures(
 {
     VALIDATE_NOT_NULL(result);
 
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> p1;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it1 = mPackages.Find(pkg1);
@@ -5314,7 +5314,7 @@ ECode CPackageManagerService::CheckUidSignatures(
     uid1 = UserHandle::GetAppId(uid1);
     uid2 = UserHandle::GetAppId(uid2);
     //reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     AutoPtr< ArrayOf<ISignature*> > s1;
     AutoPtr< ArrayOf<ISignature*> > s2;
@@ -5400,7 +5400,7 @@ ECode CPackageManagerService::GetPackagesForUid(
 
     uid = UserHandle::GetAppId(uid);
     //reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(uid);
     if (obj && obj->Probe(EIID_SharedUserSetting) != NULL) {
@@ -5435,7 +5435,7 @@ ECode CPackageManagerService::GetNameForUid(
     VALIDATE_NOT_NULL(name);
 
     //reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     AutoPtr<IInterface> obj = mSettings->GetUserIdLPr(UserHandle::GetAppId(uid));
     if (obj->Probe(EIID_SharedUserSetting) != NULL) {
@@ -5467,7 +5467,7 @@ ECode CPackageManagerService::GetUidForSharedUser(
         return NOERROR;
     }
     // reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     AutoPtr<SharedUserSetting> suid = mSettings->GetSharedUserLPw(sharedUserName, 0, FALSE);
     if (suid == NULL) {
@@ -5590,7 +5590,7 @@ AutoPtr<IResolveInfo> CPackageManagerService::FindPreferredActivity(
     AutoPtr<IIntent> intent = _intent;
     if (!sUserManager->Exists(userId)) return NULL;
     //writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<IIntent> selector;
     if (intent->GetSelector((IIntent**)&selector), selector != NULL) {
@@ -5752,7 +5752,7 @@ ECode CPackageManagerService::QueryIntentActivities(
     }
 
     // reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     String pkgName;
     intent->GetPackage(&pkgName);
@@ -6068,7 +6068,7 @@ ECode CPackageManagerService::QueryIntentReceivers(
     }
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     String pkgName;
     intent->GetPackage(&pkgName);
@@ -6172,7 +6172,7 @@ ECode CPackageManagerService::QueryIntentServices(
     }
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     String pkgName;
     intent->GetPackage(&pkgName);
@@ -6284,7 +6284,7 @@ ECode CPackageManagerService::GetInstalledPackages(
 
     {
         // writer
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (listUninstalled) {
             keys = ArrayOf<String>::Alloc(mSettings->mPackages.GetSize());
@@ -6367,7 +6367,7 @@ ECode CPackageManagerService::GetInstalledApplications(
 
     {
         // writer
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (listUninstalled) {
             keys = ArrayOf<String>::Alloc(mSettings->mPackages.GetSize());
@@ -6443,7 +6443,7 @@ ECode CPackageManagerService::GetPersistentApplications(
 
     {
         // reader
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap< String, AutoPtr<PackageParser::Package> >::Iterator it;
         const Int32 userId = UserHandle::GetCallingUserId();
@@ -6487,7 +6487,7 @@ ECode CPackageManagerService::ResolveContentProvider(
     }
 
     //reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Provider> provider;
     HashMap< String, AutoPtr<PackageParser::Provider> >::Iterator it = mProviders.Find(name);
@@ -6525,7 +6525,7 @@ ECode CPackageManagerService::QuerySyncProviders(
     /* [in] */ IObjectContainer* outInfo)
 {
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     HashMap< String, AutoPtr<PackageParser::Provider> >::Iterator it;
     const Int32 userId = UserHandle::GetCallingUserId();
@@ -6570,7 +6570,7 @@ ECode CPackageManagerService::QueryContentProviders(
 
     {
         // reader
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap< AutoPtr<IComponentName>, AutoPtr<PackageParser::Provider> >::Iterator it;
         const Int32 userId = !processName.IsNull() ?
@@ -6625,7 +6625,7 @@ ECode CPackageManagerService::GetInstrumentationInfo(
     VALIDATE_NOT_NULL(instInfo);
 
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Instrumentation> i;
     HashMap< AutoPtr<IComponentName>, AutoPtr<PackageParser::Instrumentation> >::Iterator it =
@@ -6651,7 +6651,7 @@ ECode CPackageManagerService::QueryInstrumentation(
 
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap< AutoPtr<IComponentName>, AutoPtr<PackageParser::Instrumentation> >::Iterator it;
         for (it = mInstrumentation.Begin(); it != mInstrumentation.End(); ++it) {
@@ -6857,7 +6857,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
     AutoPtr<PackageSetting> updatedPkg;
     // reader
     {
-        Mutex::Autolock Lock(mPackagesLock);
+        AutoLock Lock(mPackagesLock);
 
         // Look to see if we already know about this package.
         String oldName;
@@ -6906,7 +6906,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
                 // version of the app
                 // writer
                 {
-                    Mutex::Autolock lock(mPackagesLock);
+                    AutoLock lock(mPackagesLock);
 
                     // Just remove the loaded entries from package lists.
                     mPackages.Erase(ps->mName);
@@ -6919,12 +6919,12 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
                 AutoPtr<InstallArgs> args = CreateInstallArgs(PackageFlagsToInstallFlags(ps),
                         ps->mCodePathString, ps->mResourcePathString, ps->mNativeLibraryPathString);
                 {
-                    Mutex::Autolock lock(mInstallLock);
+                    AutoLock lock(mInstallLock);
 
                     args->CleanUpResourcesLI();
                 }
                 {
-                    Mutex::Autolock lock(mPackagesLock);
+                    AutoLock lock(mPackagesLock);
 
                     mSettings->EnableSystemPackageLPw(ps->mName);
                 }
@@ -6980,7 +6980,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
                 AutoPtr<InstallArgs> args = CreateInstallArgs(PackageFlagsToInstallFlags(ps),
                         ps->mCodePathString, ps->mResourcePathString, ps->mNativeLibraryPathString);
                 {
-                    Mutex::Autolock lock(mInstallLock);
+                    AutoLock lock(mInstallLock);
 
                     args->CleanUpResourcesLI();
                 }
@@ -7025,7 +7025,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
      */
     if (shouldHideSystemApp) {
         {
-            Mutex::Autolock lock(mPackagesLock);
+            AutoLock lock(mPackagesLock);
 
             /*
              * We have to grant systems permissions before we hide, because
@@ -7113,7 +7113,7 @@ ECode CPackageManagerService::PerformBootDexOpt()
 {
     List<AutoPtr<PackageParser::Package> > pkgs;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (!mDeferredDexOpt.IsEmpty()) {
             pkgs.Assign(mDeferredDexOpt.Begin(), mDeferredDexOpt.End());
@@ -7148,7 +7148,7 @@ ECode CPackageManagerService::PerformBootDexOpt()
             }
             AutoPtr<PackageParser::Package> p = *it;
             {
-                Mutex::Autolock lock(mInstallLock);
+                AutoLock lock(mInstallLock);
                 if (!p->mDidDexOpt) {
                     PerformDexOptLI(p, FALSE, FALSE);
                 }
@@ -7173,7 +7173,7 @@ ECode CPackageManagerService::PerformDexOpt(
 
     AutoPtr<PackageParser::Package> p;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap< String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(packageName);
@@ -7186,7 +7186,7 @@ ECode CPackageManagerService::PerformDexOpt(
         }
     }
     {
-        Mutex::Autolock lock(mInstallLock);
+        AutoLock lock(mInstallLock);
 
         *result = PerformDexOptLI(p, FALSE, FALSE) == DEX_OPT_PERFORMED;
         return NOERROR;
@@ -7389,7 +7389,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
 
     if (pkg->mPackageName.Equals("android")) {
         {
-            Mutex::Autolock lock(mPackagesLock);
+            AutoLock lock(mPackagesLock);
 
             if (mElastosApplication != NULL) {
                 Slogger::W(TAG, "*************************************************");
@@ -7464,7 +7464,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
 
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         // Check all shared libraries and map to their actual file path.
         if (pkg->mUsesLibraries != NULL || pkg->mUsesOptionalLibraries != NULL) {
@@ -7856,7 +7856,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
                     msg.AppendCStr(" in settings");
                     // writer
                     {
-                        Mutex::Autolock lock(mPackagesLock);
+                        AutoLock lock(mPackagesLock);
 
                         mSettings->mReadMessages->AppendString(msg.ToString());
                         mSettings->mReadMessages->AppendChar('\n');
@@ -7996,7 +7996,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
 
                 AutoPtr<ArrayOf<Int32> > userIds = sUserManager->GetUserIds();
                 {
-                    Mutex::Autolock lock(mInstallLock);
+                    AutoLock lock(mInstallLock);
                     Int32 userId;
                     for (Int32 i = 0; i < userIds->GetLength(); i++) {
                         userId = (*userIds)[i];
@@ -8055,7 +8055,7 @@ AutoPtr<PackageParser::Package> CPackageManagerService::ScanPackageLI(
 
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         // We don't expect installation to fail beyond this point,
         if ((scanMode & SCAN_MONITOR) != 0) {
@@ -8519,7 +8519,7 @@ void CPackageManagerService::RemovePackageLI(
 //    }
 
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     mPackages.Erase(ps->mName);
     if (!ps->mCodePathString.IsNull()) {
@@ -8542,7 +8542,7 @@ void CPackageManagerService::RemoveInstalledPackageLI(
 //    }
 
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     String pkgName;
     pkg->mApplicationInfo->GetPackageName(&pkgName);
@@ -9119,7 +9119,7 @@ ECode CPackageManagerService::NextPackageToClean(
     *nextPackage = NULL;
 
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     if (!IsExternalMediaAvailable()) {
         // If the external storage is no longer mounted at this point,
@@ -9180,7 +9180,7 @@ void CPackageManagerService::HandleStartCleaningPackage(
 {
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_DEFAULT);
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (userId == IUserHandle::USER_ALL) {
             AutoPtr<ArrayOf<Int32> > users = sUserManager->GetUserIds();
@@ -9206,7 +9206,7 @@ void CPackageManagerService::StartCleaningPackages()
 {
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (!IsExternalMediaAvailable()) {
             return;
@@ -9323,7 +9323,7 @@ ECode CPackageManagerService::InstallExistingPackage(
 
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         HashMap<String, AutoPtr<PackageSetting> >::Iterator psIt = mSettings->mPackages.Find(packageName);
         if (psIt != mSettings->mPackages.End()) pkgSetting = psIt->mSecond;
         if (pkgSetting == NULL) {
@@ -9506,7 +9506,7 @@ AutoPtr<List<AutoPtr<IComponentName> > > CPackageManagerService::MatchVerifiers(
 Int32 CPackageManagerService::GetUidForVerifier(
     /* [in] */ IVerifierInfo* verifierInfo)
 {
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     String vPkgName;
     verifierInfo->GetPackageName(&vPkgName);
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(vPkgName);
@@ -9649,7 +9649,7 @@ ECode CPackageManagerService::SetInstallerPackageName(
 {
     const Int32 uid = Binder::GetCallingUid();
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     HashMap<String, AutoPtr<PackageSetting> >::Iterator it = mSettings->mPackages.Find(targetPackage);
     AutoPtr<PackageSetting> targetPackageSetting;
     if (it != mSettings->mPackages.End()) targetPackageSetting = it->mSecond;
@@ -9766,7 +9766,7 @@ void CPackageManagerService::HandlePendingInstallRun(
     if (res->mReturnCode == IPackageManager::INSTALL_SUCCEEDED) {
         args->DoPreInstall(res->mReturnCode);
         {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             AutoPtr<ArrayOf<Byte> > readBuffer = ArrayOf<Byte>::Alloc(PackageParser::CERTIFICATE_BUFFER_SIZE);
             if (readBuffer == NULL) {
                 Slogger::E(TAG, "Failed install package: out of memory!");
@@ -10039,7 +10039,7 @@ void CPackageManagerService::InstallNewPackageLI(
     Boolean dataDirExists;
     GetDataPathForPackage(pkg->mPackageName, 0)->Exists(&dataDirExists);
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (mSettings->mRenamedPackages.Find(pkgName) != mSettings->mRenamedPackages.End()) {
             // A package with the same name is already installed, though
@@ -10104,7 +10104,7 @@ void CPackageManagerService::ReplacePackageLI(
     String pkgName = pkg->mPackageName;
     // First find the old package info and check signatures
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(pkgName);
@@ -10210,7 +10210,7 @@ void CPackageManagerService::ReplaceNonSystemPackageLI(
             // Restore of old package succeeded. Update permissions.
             // writer
             {
-                Mutex::Autolock lock(mPackagesLock);
+                AutoLock lock(mPackagesLock);
 
                 UpdatePermissionsLPw(deletedPackage->mPackageName, deletedPackage,
                         UPDATE_PERMISSIONS_ALL);
@@ -10246,7 +10246,7 @@ void CPackageManagerService::ReplaceSystemPackageLI(
     AutoPtr<PackageSetting> oldPkgSetting;
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(packageName);
@@ -10275,7 +10275,7 @@ void CPackageManagerService::ReplaceSystemPackageLI(
     RemovePackageLI(oldPkgSetting, TRUE);
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (!mSettings->DisableSystemPackageLPw(packageName) && deletedPackage != NULL) {
             // We didn't need to disable the .apk as a current system package,
@@ -10328,7 +10328,7 @@ void CPackageManagerService::ReplaceSystemPackageLI(
         ScanPackageLI(oldPkg, parseFlags, SCAN_MONITOR | SCAN_UPDATE_SIGNATURE, 0, user, readBuffer);
         // Restore the old system information in Settings
         {
-            Mutex::Autolock lock(mPackagesLock);
+            AutoLock lock(mPackagesLock);
 
             if (updatedSettings) {
                 mSettings->EnableSystemPackageLPw(packageName);
@@ -10391,7 +10391,7 @@ void CPackageManagerService::UpdateSettingsLI(
 {
     String pkgName = newPackage->mPackageName;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         //write settings. the installStatus will be incomplete at this stage.
         //note that the new package setting would have already been
@@ -10411,7 +10411,7 @@ void CPackageManagerService::UpdateSettingsLI(
     Logger::D(TAG, "New package installed in %s", newPackage->mPath.string());
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         UpdatePermissionsLPw(newPackage->mPackageName, newPackage,
                 UPDATE_PERMISSIONS_REPLACE_PKG |
@@ -10500,7 +10500,7 @@ void CPackageManagerService::InstallPackageLI(
     String oldCodePath;
     Boolean systemApp = FALSE;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         // Check if installing already existing package
         if ((pFlags & IPackageManager::INSTALL_REPLACE_EXISTING) != 0) {
@@ -10571,7 +10571,7 @@ void CPackageManagerService::InstallPackageLI(
     }
 
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         AutoPtr<PackageSetting> ps;
         HashMap<String, AutoPtr<PackageSetting> >::Iterator it =
@@ -10767,7 +10767,7 @@ Int32 CPackageManagerService::DeletePackageX(
     Boolean removedForAllUsers = FALSE;
     Boolean systemUpdate = FALSE;
     {
-        Mutex::Autolock lock(mInstallLock);
+        AutoLock lock(mInstallLock);
 
         AutoPtr<IUserHandle> userHandle;
         if ((flags & IPackageManager::DELETE_ALL_USERS) != 0)
@@ -10814,7 +10814,7 @@ Int32 CPackageManagerService::DeletePackageX(
     // Delete the resources here after sending the broadcast to let
     // other processes clean up before deleting resources.
     if (info->mArgs != NULL) {
-        Mutex::Autolock lock(mInstallLock);
+        AutoLock lock(mInstallLock);
 
         info->mArgs->DoPostDeleteLI(TRUE);
     }
@@ -10833,7 +10833,7 @@ void CPackageManagerService::RemovePackageDataLI(
     AutoPtr<PackageSetting> deletedPs;
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageSetting> >::Iterator itor
                 = mSettings->mPackages.Find(packageName);
@@ -10853,7 +10853,7 @@ void CPackageManagerService::RemovePackageDataLI(
     }
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         if (deletedPs != NULL) {
             if ((flags & IPackageManager::DELETE_KEEP_DATA) == 0) {
@@ -10891,7 +10891,7 @@ Boolean CPackageManagerService::DeleteSystemPackageLI(
     // the system pkg from system partition
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         disabledPs = mSettings->GetDisabledSystemPkgLPr(newPs->mName);
     }
@@ -10919,7 +10919,7 @@ Boolean CPackageManagerService::DeleteSystemPackageLI(
     }
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         // Reinstate the old system package
         mSettings->EnableSystemPackageLPw(newPs->mName);
         // Remove any native libraries from the upgraded package.
@@ -10940,7 +10940,7 @@ Boolean CPackageManagerService::DeleteSystemPackageLI(
     }
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         UpdatePermissionsLPw(newPkg->mPackageName, newPkg,
                 UPDATE_PERMISSIONS_ALL | UPDATE_PERMISSIONS_REPLACE_PKG);
@@ -10993,7 +10993,7 @@ Boolean CPackageManagerService::DeletePackageLI(
     Int32 removeUser = -1;
     Int32 appId = -1;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageSetting> >::Iterator it =
                 mSettings->mPackages.Find(packageName);
@@ -11193,7 +11193,7 @@ Boolean CPackageManagerService::ClearApplicationUserDataLI(
     AutoPtr<PackageParser::Package> p;
     Boolean dataOnly = FALSE;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(packageName);
@@ -11261,7 +11261,7 @@ Boolean CPackageManagerService::DeleteApplicationCacheFilesLI(
     }
     AutoPtr<PackageParser::Package> p;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(packageName);
@@ -11327,7 +11327,7 @@ Boolean CPackageManagerService::GetPackageSizeInfoLI(
     Boolean dataOnly = FALSE;
     String asecPath;
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it =
                 mPackages.Find(packageName);
@@ -11448,7 +11448,7 @@ ECode CPackageManagerService::AddPreferredActivity(
     Int32 callingUid = Binder::GetCallingUid();
     FAIL_RETURN(EnforceCrossUserPermission(callingUid, userId, TRUE, String("add preferred activity")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     Int32 perm;
     mContext->CheckCallingOrSelfPermission(
             Elastos::Droid::Manifest::Permission::SET_PREFERRED_APPLICATIONS, &perm);
@@ -11498,7 +11498,7 @@ ECode CPackageManagerService::ReplacePreferredActivity(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     Int32 result = 0;
     FAIL_RETURN(mContext->CheckCallingOrSelfPermission(
@@ -11559,7 +11559,7 @@ ECode CPackageManagerService::ClearPackagePreferredActivities(
 {
     Int32 uid = Binder::GetCallingUid();
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> pkg;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(packageName);
@@ -11638,7 +11638,7 @@ ECode CPackageManagerService::GetPreferredActivities(
     Int32 num = 0;
     const Int32 userId = UserHandle::GetCallingUserId();
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     HashMap<Int32, AutoPtr<PreferredIntentResolver> >::Iterator it = mSettings->mPreferredActivities.Find(userId);
     AutoPtr<PreferredIntentResolver> pir;
@@ -11720,7 +11720,7 @@ ECode CPackageManagerService::SetEnabledSetting(
 
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
 
         HashMap<String, AutoPtr<PackageSetting> >::Iterator psit =
                 mSettings->mPackages.Find(packageName);
@@ -11881,7 +11881,7 @@ ECode CPackageManagerService::SetPackageStoppedState(
     Boolean allowedByPermission = (permission == IPackageManager::PERMISSION_GRANTED);
     FAIL_RETURN(EnforceCrossUserPermission(uid, userId, TRUE, String("stop package")));
     // writer
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     Boolean setted;
     mSettings->SetPackageStoppedStateLPw(packageName, stopped, allowedByPermission,
             uid, userId, &setted);
@@ -11899,7 +11899,7 @@ ECode CPackageManagerService::GetInstallerPackageName(
     VALIDATE_NOT_NULL(name);
 
     // reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     return mSettings->GetInstallerPackageNameLPr(packageName, name);
 }
@@ -11918,7 +11918,7 @@ ECode CPackageManagerService::GetApplicationEnabledSetting(
     Int32 uid = Binder::GetCallingUid();
     FAIL_RETURN(EnforceCrossUserPermission(uid, userId, FALSE, String("get enabled")));
     // reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     return mSettings->GetApplicationEnabledSettingLPr(packageName, userId, setting);
 }
@@ -11935,7 +11935,7 @@ ECode CPackageManagerService::GetComponentEnabledSetting(
     Int32 uid = Binder::GetCallingUid();
     FAIL_RETURN(EnforceCrossUserPermission(uid, userId, FALSE, String("get component enabled")));
     // reader
-    Mutex::Autolock Lock(mPackagesLock);
+    AutoLock Lock(mPackagesLock);
 
     return mSettings->GetComponentEnabledSettingLPr(componentName, userId, setting);
 }
@@ -11969,7 +11969,7 @@ ECode CPackageManagerService::SystemReady()
         Logger::D(TAG, "compatibility mode:%d", compatibilityModeEnabled);
     }
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     // Verify that all of the preferred activity components actually
     // exist.  It is possible for applications to be updated and at
     // that point remove a previously declared activity component that
@@ -12356,7 +12356,7 @@ ECode CPackageManagerService::UpdateExternalMediaStatus(
     // reader; this apparently protects mMediaMounted, but should probably
     // be a different lock in that case.
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         Logger::I(TAG, "Updating external media status from %s to %s",
                 (mMediaMounted ? "mounted" : "unmounted"),
                 (mediaStatus ? "mounted" : "unmounted"));
@@ -12413,7 +12413,7 @@ void CPackageManagerService::UpdateExternalMediaStatusInner(
         Int32 num = 0;
         // reader
         {
-            Mutex::Autolock lock(mPackagesLock);
+            AutoLock lock(mPackagesLock);
 
             for (Int32 i = 0; i < list->GetLength(); i++) {
                 String cid = (*list)[i];
@@ -12572,7 +12572,7 @@ void CPackageManagerService::LoadMediaPackages(
 
         doGc = TRUE;
         {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             AutoPtr<IFile> file;
             CFile::New(codePath, (IFile**)&file);
             AutoPtr<PackageParser::Package> pkg = ScanPackageLI(file, parseFlags, 0, 0, NULL, readBuffer);
@@ -12585,7 +12585,7 @@ void CPackageManagerService::LoadMediaPackages(
                  */
                 // writer
                 {
-                    Mutex::Autolock lock(mPackagesLock);
+                    AutoLock lock(mPackagesLock);
                     retCode = IPackageManager::INSTALL_SUCCEEDED;
                     pkgList.PushBack(pkg->mPackageName);
                     // Post process args
@@ -12610,7 +12610,7 @@ void CPackageManagerService::LoadMediaPackages(
     }
     // writer
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         // If the platform SDK has changed since the last time we booted,
         // we need to re-grant app permission to catch any new ones that
         // appear. This is really a hack, and means that apps can in some
@@ -12677,7 +12677,7 @@ void CPackageManagerService::UnloadAllContainers(
         it->Next((IInterface**)&obj);
         AsecInstallArgs* arg = (AsecInstallArgs*)obj.Get();
         {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             arg->DoPostDeleteLI(FALSE);
         }
     }
@@ -12713,7 +12713,7 @@ ECode CPackageManagerService::UnloadMediaPackages(
         // Delete package internally
         AutoPtr<PackageRemovedInfo> outInfo = new PackageRemovedInfo(this);
         {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             Boolean res = DeletePackageLI(pkgName, NULL, FALSE,
                 IPackageManager::DELETE_KEEP_DATA, outInfo, FALSE, readBuffer);
             if (res) {
@@ -12728,7 +12728,7 @@ ECode CPackageManagerService::UnloadMediaPackages(
 
     // reader
     {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         // We didn't update the settings after removing each package;
         // write them now for all packages.
         mSettings->WriteLPr();
@@ -12768,7 +12768,7 @@ ECode CPackageManagerService::MovePackage(
     Int32 currFlags = 0;
     Int32 newFlags = 0;
     // reader
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
 
     AutoPtr<PackageParser::Package> pkg;
     HashMap<String, AutoPtr<PackageParser::Package> >::Iterator it = mPackages.Find(packageName);
@@ -12941,7 +12941,7 @@ ECode CPackageManagerService::GetVerifierDeviceIdentity(
             Elastos::Droid::Manifest::Permission::PACKAGE_VERIFICATION_AGENT,
             String("Only package verification agents can read the verifier device identity")));
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     AutoPtr<IVerifierDeviceIdentity> id = mSettings->GetVerifierDeviceIdentityLPw();
     *identity = id;
     REFCOUNT_ADD(*identity);
@@ -12954,7 +12954,7 @@ ECode CPackageManagerService::SetPermissionEnforced(
 {
     FAIL_RETURN(mContext->EnforceCallingOrSelfPermission(Elastos::Droid::Manifest::Permission::GRANT_REVOKE_PERMISSIONS, String(NULL)));
     if (READ_EXTERNAL_STORAGE.Equals(permission)) {
-        Mutex::Autolock lock(mPackagesLock);
+        AutoLock lock(mPackagesLock);
         Boolean value;
         if (mSettings->mReadExternalStorageEnforced == NULL
                 || (mSettings->mReadExternalStorageEnforced->GetValue(&value), value != enforced)) {
@@ -12994,7 +12994,7 @@ ECode CPackageManagerService::IsPermissionEnforced(
 
     const Boolean enforcedDefault = IsPermissionEnforcedDefault(permission);
 
-    Mutex::Autolock lock(mPackagesLock);
+    AutoLock lock(mPackagesLock);
     *result = IsPermissionEnforcedLocked(permission, enforcedDefault);
     return NOERROR;
 }
@@ -13252,7 +13252,7 @@ void CPackageManagerService::HandleSendPendingBroadcast()
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_DEFAULT);
 
     {
-        Mutex::Autolock l(mPackagesLock);
+        AutoLock l(mPackagesLock);
         size = mPendingBroadcasts.GetSize();
         if (size <= 0) {
             // Nothing to be done. Just return
@@ -13379,7 +13379,7 @@ void CPackageManagerService::HandlePostInstall(
         // Runtime.getRuntime().gc();
         // We delete after a gc for applications  on sdcard.
         if (deleteOld) {
-            Mutex::Autolock lock(mInstallLock);
+            AutoLock lock(mInstallLock);
             res->mRemovedInfo->mArgs->DoPostDeleteLI(TRUE);
         }
         if (args->mObserver != NULL) {
@@ -13511,7 +13511,7 @@ void CPackageManagerService::HandleWriteSettings()
 {
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_DEFAULT);
     {
-        Mutex::Autolock l(mPackagesLock);
+        AutoLock l(mPackagesLock);
 
         mHandler->RemoveMessages(WRITE_SETTINGS);
         mHandler->RemoveMessages(WRITE_PACKAGE_RESTRICTIONS);
@@ -13525,7 +13525,7 @@ void CPackageManagerService::HandleWritePackageRestriction()
 {
     Process::SetThreadPriority(IProcess::THREAD_PRIORITY_DEFAULT);
     {
-        Mutex::Autolock l(mPackagesLock);
+        AutoLock l(mPackagesLock);
 
         mHandler->RemoveMessages(WRITE_PACKAGE_RESTRICTIONS);
         HashSet<Int32>::Iterator it = mDirtyUsers.Begin();

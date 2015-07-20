@@ -59,7 +59,7 @@ ECode Display::IsValid(
 {
     VALIDATE_NOT_NULL(isValid);
 
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     *isValid = mIsValid;
 
@@ -72,7 +72,7 @@ ECode Display::GetDisplayInfo(
 {
     VALIDATE_NOT_NULL(isValid);
 
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     outDisplayInfo->CopyFrom(mDisplayInfo);
     *isValid = mIsValid;
@@ -131,7 +131,7 @@ ECode Display::GetName(
 {
     VALIDATE_NOT_NULL(name);
 
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     return mDisplayInfo->GetName(name);
 }
@@ -139,7 +139,7 @@ ECode Display::GetName(
 ECode Display::GetSize(
     /* [in] */ IPoint* outSize)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
     Int32 widthPixels, heightPixels;
@@ -153,7 +153,7 @@ ECode Display::GetSize(
 ECode Display::GetRectSize(
     /* [in] */ IRect* outSize)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
     Int32 widthPixels, heightPixels;
@@ -168,7 +168,7 @@ ECode Display::GetCurrentSizeRange(
     /* [in] */ IPoint* outSmallestSize,
     /* [in] */ IPoint* outLargestSize)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     Int32 x, y;
     mDisplayInfo->GetSmallestNominalAppWidth(&x);
@@ -186,7 +186,7 @@ ECode Display::GetMaximumSizeDimension(
 {
     VALIDATE_NOT_NULL(maximumSizeDimension);
 
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     Int32 logicalWidth, logicalHeight;
     mDisplayInfo->GetLogicalWidth(&logicalWidth);
@@ -200,7 +200,7 @@ ECode Display::GetWidth(
     /* [out] */ Int32* width)
 {
     VALIDATE_NOT_NULL(width);
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateCachedAppSizeIfNeededLocked();
     *width = mCachedAppWidthCompat;
 
@@ -211,7 +211,7 @@ ECode Display::GetHeight(
     /* [out] */ Int32* height)
 {
     VALIDATE_NOT_NULL(height);
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateCachedAppSizeIfNeededLocked();
     *height = mCachedAppHeightCompat;
 
@@ -222,7 +222,7 @@ ECode Display::GetRotation(
     /* [out] */ Int32* rotation)
 {
     VALIDATE_NOT_NULL(rotation);
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     return mDisplayInfo->GetRotation(rotation);
 }
@@ -247,7 +247,7 @@ ECode Display::GetRefreshRate(
     /* [out] */ Float* refreshRate)
 {
     VALIDATE_NOT_NULL(refreshRate);
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     return mDisplayInfo->GetRefreshRate(refreshRate);
 }
@@ -255,7 +255,7 @@ ECode Display::GetRefreshRate(
 ECode Display::GetMetrics(
     /* [in] */ IDisplayMetrics* outMetrics)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     mDisplayInfo->GetAppMetrics(outMetrics, mCompatibilityInfo);
 
@@ -265,7 +265,7 @@ ECode Display::GetMetrics(
 ECode Display::GetRealSize(
     /* [in] */ IPoint* outSize)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     Int32 logicalWidth, logicalHeight;
     mDisplayInfo->GetLogicalWidth(&logicalWidth);
@@ -278,7 +278,7 @@ ECode Display::GetRealSize(
 ECode Display::GetRealMetrics(
     /* [in] */ IDisplayMetrics* outMetrics)
 {
-    Mutex::Autolock lock(mSelfLock);
+    AutoLock lock(mSelfLock);
     UpdateDisplayInfoLocked();
     return mDisplayInfo->GetLogicalMetrics(outMetrics, NULL);
 }
@@ -337,7 +337,7 @@ void Display::UpdateCachedAppSizeIfNeededLocked()
 // //@Override
 // String ToString()
 // {
-//     Mutex::Autolock lock(mSelfLock);
+//     AutoLock lock(mSelfLock);
 //     UpdateDisplayInfoLocked();
 //     mDisplayInfo->GetAppMetrics(mTempMetrics.Get(), mCompatibilityInfo);
 //     return "Display id " + mDisplayId + ": " + mDisplayInfo

@@ -187,7 +187,7 @@ void WifiDisplayManagerBase::QueueOrSendMessage(
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2)
 {
-    Mutex::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
 
     if (DEBUG_MESSAGES) {
         Slogger::V(TAG, "SCHEDULE %d : %s, arg1: %d",

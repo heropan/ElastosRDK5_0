@@ -179,7 +179,7 @@ private:
 
 private:
     static AutoPtr<ArrayOf<Float> > mTempMatrix;
-    static Mutex mTempMatrixLock;
+    static Object mTempMatrixLock;
 };
 
 

@@ -167,7 +167,7 @@ private:
     AutoPtr<IRunnable> mRequestFocus;
 
     AutoPtr<IAdapterViewOnItemClickListener> mOnClickListener;
-    Mutex mLock;
+    Object mLock;
 };
 
 } // namespace App

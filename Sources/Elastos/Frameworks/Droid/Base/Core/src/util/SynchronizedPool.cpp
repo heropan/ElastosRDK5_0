@@ -15,7 +15,7 @@ SynchronizedPool::SynchronizedPool(
 
 SynchronizedPool::SynchronizedPool(
     /* [in] */ IPool* pool,
-    /* [in] */ Mutex& lock)
+    /* [in] */ Object& lock)
     : mPool(pool)
     , mLockRef(lock)
 {
@@ -64,7 +64,7 @@ ECode SynchronizedPool::Acquire(
 {
     VALIDATE_NOT_NULL(element);
 
-    Mutex::Autolock lock(mLockRef);
+    AutoLock lock(mLockRef);
 
     return mPool->Acquire(element);
 }
@@ -72,7 +72,7 @@ ECode SynchronizedPool::Acquire(
 ECode SynchronizedPool::ReleaseElement(
     /* [in] */ IPoolable* element)
 {
-    Mutex::Autolock lock(mLockRef);
+    AutoLock lock(mLockRef);
 
     return mPool->ReleaseElement(element);
 }

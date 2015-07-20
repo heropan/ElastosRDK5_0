@@ -5,7 +5,6 @@
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
 
-using Elastos::Core::Mutex;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IServiceConnection;
@@ -262,7 +261,7 @@ private:
 
     AutoPtr<IIBluetoothStateChangeCallback> mBluetoothStateChangeCallback;
     AutoPtr<IServiceConnection> mConnection;
-    Mutex mConnectionLock;
+    Object mConnectionLock;
 
     friend class ServiceConnection;
     friend class CBluetoothInputDeviceStateChangeCallback;
