@@ -13,7 +13,7 @@ SOURCES += CTimeWidgetProvider.cpp
 SOURCES += Elastos.Droid.Core.cpp
 
 IMPORTS = Elastos.Core.eco
-IMPORTS += Elastos.Core.eco
+IMPORTS += Elastos.CoreLibrary.eco
 
 LIBRARIES  = $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib

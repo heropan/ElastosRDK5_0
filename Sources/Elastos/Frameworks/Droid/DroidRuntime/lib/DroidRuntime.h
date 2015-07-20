@@ -22,9 +22,9 @@ public:
         /* [in] */ ArrayOf<String>* args);
 
     CARAPI_(void) Start(
-        /* [in] */ const char* moduleName,
-        /* [in] */ const char* className,
-        /* [in] */ const char* options);
+        /* [in] */ const String& moduleName,
+        /* [in] */ const String& className,
+        /* [in] */ const String& options);
 
     static CARAPI_(AutoPtr<DroidRuntime>) GetRuntime();
 

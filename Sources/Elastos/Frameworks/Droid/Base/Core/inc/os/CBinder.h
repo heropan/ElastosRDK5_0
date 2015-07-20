@@ -1,7 +1,7 @@
-#ifndef __CBINDER_H__
-#define __CBINDER_H__
+#ifndef __ELASTOS_DROID_OS_CBINDER_H__
+#define __ELASTOS_DROID_OS_CBINDER_H__
 
-#include "_CBinder.h"
+#include "_Elastos_Droid_Os_CBinder.h"
 #include <Elastos.CoreLibrary.h>
 #include "os/Binder.h"
 
@@ -11,13 +11,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CarClass(CBinder), public Binder
+CarClass(CBinder)
+    , public Binder
 {
 public:
-    CARAPI constructor();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 //    /**
 //     * Get the canonical name of the interface supported by this binder.
@@ -181,7 +178,7 @@ public:
      * with their own uid.  If the current thread is not currently executing an
      * incoming transaction, then its own UserHandle is returned.
      */
-    static CARAPI_(AutoPtr<IUserHandle>) GetCallingUserHandle();
+    //static CARAPI_(AutoPtr<IUserHandle>) GetCallingUserHandle();
 
     /**
      * Reset the identity of the incoming IPC on the current thread.  This can
@@ -259,4 +256,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBINDER_H__
+#endif //__ELASTOS_DROID_OS_CBINDER_H__

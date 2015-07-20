@@ -2,14 +2,12 @@
 #ifndef __SERVICEMANAGER_H__
 #define __SERVICEMANAGER_H__
 
-#ifndef __USE_MALLOC
-#define __USE_MALLOC
-#endif
-
-#include <elastos.h>
+#include <elastos/coredef.h>
+#include <elastos/core/Mutex.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using namespace Elastos;
+using Elastos::Core::Mutex;
 using Elastos::Utility::Etl::HashMap;
 
 class ServiceManager : public ElLightRefBase
@@ -34,7 +32,7 @@ private:
     static AutoPtr<ServiceManager> sInstance;
 
     Boolean mIsConnected;
-    Object mConnectedLock;
+    Mutex mConnectedLock;
     String mServerIpAddress;
     Int32 mServerPort;
 };

@@ -1,27 +1,15 @@
 #include <ext/frameworkdef.h>
 #include "os/CBinder.h"
-#include "os/CUserHandle.h"
+//#include "os/CUserHandle.h"
 
-using Elastos::Droid::Os::IUserHandle;
-using Elastos::Droid::Os::CUserHandle;
+// using Elastos::Droid::Os::IUserHandle;
+// using Elastos::Droid::Os::CUserHandle;
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-ECode CBinder::constructor()
-{
-    return NOERROR;
-}
 
-PInterface CBinder::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_Binder) {
-        return reinterpret_cast<PInterface>((Binder*)this);
-    }
-    return _CBinder::Probe(riid);
-}
 
 //ECode CBinder::GetInterfaceDescriptor(
 //    /* [out] */ String* str)
@@ -113,13 +101,13 @@ Int32 CBinder::GetCallingUid()
     return Binder::GetCallingUid();
 }
 
-AutoPtr<IUserHandle> CBinder::GetCallingUserHandle()
-{
-    Int32 userId = CUserHandle::GetUserId(GetCallingUid());
-    AutoPtr<IUserHandle> userHandle;
-    CUserHandle::New(userId, (IUserHandle**)&userHandle);
-    return userHandle;
-}
+// AutoPtr<IUserHandle> CBinder::GetCallingUserHandle()
+// {
+//     Int32 userId = CUserHandle::GetUserId(GetCallingUid());
+//     AutoPtr<IUserHandle> userHandle;
+//     CUserHandle::New(userId, (IUserHandle**)&userHandle);
+//     return userHandle;
+// }
 
 Int64 CBinder::ClearCallingIdentity()
 {

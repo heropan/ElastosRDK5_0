@@ -65,15 +65,13 @@ ECode DroidRuntime::CallMain(
     AutoPtr<IMethodInfo> methodInfo;
     AutoPtr<IArgumentList> argumentList;
 
-    ECode ec = _CReflector_AcquireModuleInfo(
-            moduleName.string(), (IModuleInfo**)&moduleInfo);
+    ECode ec = _CReflector_AcquireModuleInfo(moduleName, (IModuleInfo**)&moduleInfo);
     if (FAILED(ec)) {
         Logger::E(TAG, "Acquire \"%s\" module info failed!\n", moduleName.string());
         return ec;
     }
 
-    ec = moduleInfo->GetClassInfo(
-            className.string(), (IClassInfo**)&classInfo);
+    ec = moduleInfo->GetClassInfo(className, (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
         Logger::E(TAG, "Acquire \"%s\" class info failed!\n", className.string());
         return ec;
@@ -86,7 +84,7 @@ ECode DroidRuntime::CallMain(
     }
 
     ec = classInfo->GetMethodInfo(
-            "Main", (IMethodInfo**)&methodInfo);
+            String("Main"), String("[LElastos/String;)E"), (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         Logger::E(TAG, "Acquire \"Main\" method info failed!\n");
         return ec;
@@ -148,13 +146,13 @@ static void BlockSignals()
  * options string.
  */
 void DroidRuntime::Start(
-    /* [in] */ const char* moduleName,
-    /* [in] */ const char* className,
-    /* [in] */ const char* options)
+    /* [in] */ const String& moduleName,
+    /* [in] */ const String& className,
+    /* [in] */ const String& options)
 {
     Logger::D(TAG, "\n>>>>>> AndroidRuntime START %s - %s <<<<<<\n",
-            moduleName != NULL ? moduleName : "(unknown)",
-            className != NULL ? className : "(unknown)");
+            !moduleName.IsNull() ? moduleName.string() : "(unknown)",
+            !className.IsNull() ? className.string() : "(unknown)");
 
     BlockSigpipe();
 
@@ -191,10 +189,10 @@ void DroidRuntime::Start(
      * Create an array to hold them.
      */
     AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
-    args->Set(0, String(className));
-    args->Set(1, String(options));
+    args->Set(0, className);
+    args->Set(1, options);
 
-    CallMain(String(moduleName), String(className), args.Get());
+    CallMain(moduleName, className, args.Get());
 
     Logger::D(TAG, "Shutting down\n");
 }
