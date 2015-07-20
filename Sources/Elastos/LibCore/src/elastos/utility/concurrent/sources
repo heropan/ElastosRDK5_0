@@ -70,5 +70,7 @@ SOURCES += Executors.cpp
 SOURCES += ForkJoinTask.cpp
 SOURCES += FutureTask.cpp
 SOURCES += TimeUnit.cpp
+SOURCES += RecursiveAction.cpp
+SOURCES += RecursiveTask.cpp
 
 SOURCES += concurrent.cpp
