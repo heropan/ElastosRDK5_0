@@ -827,7 +827,7 @@ String WifiNative::P2pConnect(
         }
 
         StringBuilder sb("go_intent=");
-        sb.AppendInt32(groupOwnerIntent);
+        sb.Append(groupOwnerIntent);
         args.PushBack(sb.ToString());
     }
 

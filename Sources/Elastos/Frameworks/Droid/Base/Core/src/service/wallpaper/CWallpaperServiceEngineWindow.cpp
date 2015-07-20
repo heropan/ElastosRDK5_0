@@ -50,7 +50,7 @@ ECode CWallpaperServiceEngineWindow::Resized(
     /* [in] */ IConfiguration* newConfig)
 {
     AutoPtr<IMessage> msg;
-    mEngine->mCaller->ObtainMessageI(WallpaperService::MSG_WINDOW_RESIZED,
+    mEngine->mCaller->ObtainMessage(WallpaperService::MSG_WINDOW_RESIZED,
         reportDraw ? 1 : 0, (IMessage**)&msg);
     return mEngine->mCaller->SendMessage(msg);
 }
@@ -60,7 +60,7 @@ ECode CWallpaperServiceEngineWindow::Moved(
     /* [in] */ Int32 newY)
 {
     AutoPtr<IMessage> msg;
-    mEngine->mCaller->ObtainMessageII(WallpaperService::MSG_WINDOW_MOVED,
+    mEngine->mCaller->ObtainMessage(WallpaperService::MSG_WINDOW_MOVED,
         newX, newY, (IMessage**)&msg);
     return mEngine->mCaller->SendMessage(msg);
 }
@@ -74,7 +74,7 @@ ECode CWallpaperServiceEngineWindow::DispatchAppVisibility(
     mEngine->mIWallpaperEngine->GetIsPreview(&isPreView);
     if (!isPreView) {
         AutoPtr<IMessage> msg;
-        mEngine->mCaller->ObtainMessageI(WallpaperService::MSG_VISIBILITY_CHANGED,
+        mEngine->mCaller->ObtainMessage(WallpaperService::MSG_VISIBILITY_CHANGED,
             visible ? 1 : 0, (IMessage**)&msg);
         return mEngine->mCaller->SendMessage(msg);
     }
@@ -160,7 +160,7 @@ ECode CWallpaperServiceEngineWindow::DispatchWallpaperCommand(
     cmd->mSync = sync;
 
     AutoPtr<IMessage> msg;
-    mEngine->mCaller->ObtainMessageO(WallpaperService::MSG_WALLPAPER_COMMAND,
+    mEngine->mCaller->ObtainMessage(WallpaperService::MSG_WALLPAPER_COMMAND,
         cmd, (IMessage**)&msg);
     return mEngine->mCaller->SendMessage(msg);
 }

@@ -32,7 +32,7 @@ ECode CAccessibilityServiceClientWrapper::SetConnection(
     /* [in] */ Int32 connectionId)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessageIO(DO_SET_SET_CONNECTION, connectionId, connection, (IMessage**)&message);
+    mCaller->ObtainMessage(DO_SET_SET_CONNECTION, connectionId, connection, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 
@@ -47,7 +47,7 @@ ECode CAccessibilityServiceClientWrapper::OnAccessibilityEvent(
     /* [in] */ IAccessibilityEvent* event)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessageO(DO_ON_ACCESSIBILITY_EVENT, event, (IMessage**)&message);
+    mCaller->ObtainMessage(DO_ON_ACCESSIBILITY_EVENT, event, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 
@@ -55,7 +55,7 @@ ECode CAccessibilityServiceClientWrapper::OnGesture(
     /* [in] */ Int32 gestureId)
 {
     AutoPtr<IMessage> message;
-    mCaller->ObtainMessageI(DO_ON_GESTURE, gestureId, (IMessage**)&message);
+    mCaller->ObtainMessage(DO_ON_GESTURE, gestureId, (IMessage**)&message);
     return mCaller->SendMessage(message);
 }
 

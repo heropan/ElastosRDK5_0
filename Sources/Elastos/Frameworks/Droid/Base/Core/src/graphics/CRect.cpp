@@ -104,9 +104,9 @@ ECode CRect::ToShortString(
     VALIDATE_NOT_NULL(str);
 
     StringBuilder sb(32);
-    sb.AppendString(String("Rect(")); sb.AppendInt32(mLeft); sb.AppendString(String(", "));
-    sb.AppendInt32(mTop); sb.AppendString(String(" - ")); sb.AppendInt32(mRight);
-    sb.AppendString(String(", ")); sb.AppendInt32(mBottom); sb.AppendString(String(")"));
+    sb.Append(String("Rect(")); sb.Append(mLeft); sb.Append(String(", "));
+    sb.Append(mTop); sb.Append(String(" - ")); sb.Append(mRight);
+    sb.Append(String(", ")); sb.Append(mBottom); sb.Append(String(")"));
     return sb.ToString(str);
 }
 

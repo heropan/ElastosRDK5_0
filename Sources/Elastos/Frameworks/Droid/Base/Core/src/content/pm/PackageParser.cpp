@@ -1656,7 +1656,7 @@ Boolean PackageParser::CollectCertificates(
                     (*certs)[i]->GetPublicKey((IPublicKey**)&pubKey);
                     AutoPtr<ArrayOf<Byte> > encoded;
                     pubKey->GetEncoded((ArrayOf<Byte>**)&encoded);
-                    sb.AppendCStr((const char*)encoded->GetPayload());
+                    sb.Append((const char*)encoded->GetPayload());
                     IObject::Probe(pubKey.Get())->ToString(&pks);
                     sb += pks;
                     Slogger::I(TAG, sb.ToString().string());
@@ -1884,7 +1884,7 @@ String PackageParser::ValidateName(
             continue;
         }
         StringBuilder sb;
-        sb.AppendString(String("bad character '"));
+        sb.Append(String("bad character '"));
         sb.AppendChar(c);
         sb.AppendChar('\'');
         return sb.ToString();

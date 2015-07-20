@@ -91,7 +91,7 @@ static Boolean IsFileSupported(
 //         String fileName(ptr->d_name);
 //         if (IsFileSupported(fileName)) {
 //             StringBuilder sb(MEDIA_MUSIC_PATH);
-//             sb.AppendString(fileName);
+//             sb.Append(fileName);
 //             mp3List.PushBack(sb.ToString());
 //         }
 //     }

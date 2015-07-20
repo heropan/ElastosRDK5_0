@@ -152,18 +152,18 @@ ECode CCellInfoGsm::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CellInfoGsm:");
+    sb.Append("CellInfoGsm:");
     String strSuper;
     CellInfo::ToString(&strSuper);
-    sb.AppendString(strSuper);
-    sb.AppendCStr(", ");
+    sb.Append(strSuper);
+    sb.Append(", ");
     String strcGsm;
     mCellIdentityGsm->ToString(&strcGsm);
-    sb.AppendString(strcGsm);
+    sb.Append(strcGsm);
     String strcssGsm;
     mCellSignalStrengthGsm->ToString(&strcssGsm);
-    sb.AppendCStr(", ");
-    sb.AppendString(strcssGsm);
+    sb.Append(", ");
+    sb.Append(strcssGsm);
     *str = sb.ToString();
     return NOERROR;
 }

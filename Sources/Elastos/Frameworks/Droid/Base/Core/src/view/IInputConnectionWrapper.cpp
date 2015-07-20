@@ -126,7 +126,7 @@ ECode IInputConnectionWrapper::GetTextAfterCursor(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return DispatchMessage(ObtainMessageIISC(DO_GET_TEXT_AFTER_CURSOR, length, flags, seq, callback));
+    return DispatchMessage(ObtainMessageSC(DO_GET_TEXT_AFTER_CURSOR, length, flags, seq, callback));
 }
 
 ECode IInputConnectionWrapper::GetTextBeforeCursor(
@@ -135,7 +135,7 @@ ECode IInputConnectionWrapper::GetTextBeforeCursor(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return DispatchMessage(ObtainMessageIISC(DO_GET_TEXT_BEFORE_CURSOR, length, flags, seq, callback));
+    return DispatchMessage(ObtainMessageSC(DO_GET_TEXT_BEFORE_CURSOR, length, flags, seq, callback));
 }
 
 ECode IInputConnectionWrapper::GetSelectedText(
@@ -143,7 +143,7 @@ ECode IInputConnectionWrapper::GetSelectedText(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return DispatchMessage(ObtainMessageISC(DO_GET_SELECTED_TEXT, flags, seq, callback));
+    return DispatchMessage(ObtainMessageSC(DO_GET_SELECTED_TEXT, flags, seq, callback));
 }
 
 ECode IInputConnectionWrapper::GetCursorCapsMode(
@@ -151,7 +151,7 @@ ECode IInputConnectionWrapper::GetCursorCapsMode(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return DispatchMessage(ObtainMessageISC(DO_GET_CURSOR_CAPS_MODE, reqModes, seq, callback));
+    return DispatchMessage(ObtainMessageSC(DO_GET_CURSOR_CAPS_MODE, reqModes, seq, callback));
 }
 
 ECode IInputConnectionWrapper::GetExtractedText(
@@ -160,7 +160,7 @@ ECode IInputConnectionWrapper::GetExtractedText(
     /* [in] */ Int32 seq,
     /* [in] */ IInputContextCallback* callback)
 {
-    return DispatchMessage(ObtainMessageIOSC(DO_GET_EXTRACTED_TEXT, flags,
+    return DispatchMessage(ObtainMessageSC(DO_GET_EXTRACTED_TEXT, flags,
             request, seq, callback));
 }
 
@@ -168,52 +168,52 @@ ECode IInputConnectionWrapper::CommitText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 newCursorPosition)
 {
-    return DispatchMessage(ObtainMessageIO(DO_COMMIT_TEXT, newCursorPosition, text));
+    return DispatchMessage(ObtainMessage(DO_COMMIT_TEXT, newCursorPosition, text));
 }
 
 ECode IInputConnectionWrapper::CommitCompletion(
     /* [in] */ ICompletionInfo* text)
 {
-    return DispatchMessage(ObtainMessageO(DO_COMMIT_COMPLETION, text));
+    return DispatchMessage(ObtainMessage(DO_COMMIT_COMPLETION, text));
 }
 
 ECode IInputConnectionWrapper::CommitCorrection(
     /* [in] */ ICorrectionInfo* info)
 {
-    return DispatchMessage(ObtainMessageO(DO_COMMIT_CORRECTION, info));
+    return DispatchMessage(ObtainMessage(DO_COMMIT_CORRECTION, info));
 }
 
 ECode IInputConnectionWrapper::SetSelection(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return DispatchMessage(ObtainMessageII(DO_SET_SELECTION, start, end));
+    return DispatchMessage(ObtainMessage(DO_SET_SELECTION, start, end));
 }
 
 ECode IInputConnectionWrapper::PerformEditorAction(
     /* [in] */ Int32 id)
 {
-    return DispatchMessage(ObtainMessageII(DO_PERFORM_EDITOR_ACTION, id, 0));
+    return DispatchMessage(ObtainMessage(DO_PERFORM_EDITOR_ACTION, id, 0));
 }
 
 ECode IInputConnectionWrapper::PerformContextMenuAction(
     /* [in] */ Int32 id)
 {
-    return DispatchMessage(ObtainMessageII(DO_PERFORM_CONTEXT_MENU_ACTION, id, 0));
+    return DispatchMessage(ObtainMessage(DO_PERFORM_CONTEXT_MENU_ACTION, id, 0));
 }
 
 ECode IInputConnectionWrapper::SetComposingRegion(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
-    return DispatchMessage(ObtainMessageII(DO_SET_COMPOSING_REGION, start, end));
+    return DispatchMessage(ObtainMessage(DO_SET_COMPOSING_REGION, start, end));
 }
 
 ECode IInputConnectionWrapper::SetComposingText(
     /* [in] */ ICharSequence* text,
     /* [in] */ Int32 newCursorPosition)
 {
-    return DispatchMessage(ObtainMessageIO(DO_SET_COMPOSING_TEXT, newCursorPosition, text));
+    return DispatchMessage(ObtainMessage(DO_SET_COMPOSING_TEXT, newCursorPosition, text));
 }
 
 ECode IInputConnectionWrapper::FinishComposingText()
@@ -224,20 +224,20 @@ ECode IInputConnectionWrapper::FinishComposingText()
 ECode IInputConnectionWrapper::SendKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    return DispatchMessage(ObtainMessageO(DO_SEND_KEY_EVENT, event));
+    return DispatchMessage(ObtainMessage(DO_SEND_KEY_EVENT, event));
 }
 
 ECode IInputConnectionWrapper::ClearMetaKeyStates(
     /* [in] */ Int32 states)
 {
-    return DispatchMessage(ObtainMessageII(DO_CLEAR_META_KEY_STATES, states, 0));
+    return DispatchMessage(ObtainMessage(DO_CLEAR_META_KEY_STATES, states, 0));
 }
 
 ECode IInputConnectionWrapper::DeleteSurroundingText(
     /* [in] */ Int32 leftLength,
     /* [in] */ Int32 rightLength)
 {
-    return DispatchMessage(ObtainMessageII(DO_DELETE_SURROUNDING_TEXT,
+    return DispatchMessage(ObtainMessage(DO_DELETE_SURROUNDING_TEXT,
         leftLength, rightLength));
 }
 
@@ -254,14 +254,14 @@ ECode IInputConnectionWrapper::EndBatchEdit()
 ECode IInputConnectionWrapper::ReportFullscreenMode(
     /* [in] */ Boolean enabled)
 {
-    return DispatchMessage(ObtainMessageII(DO_REPORT_FULLSCREEN_MODE, enabled ? 1 : 0, 0));
+    return DispatchMessage(ObtainMessage(DO_REPORT_FULLSCREEN_MODE, enabled ? 1 : 0, 0));
 }
 
 ECode IInputConnectionWrapper::PerformPrivateCommand(
     /* [in] */ const String& action,
     /* [in] */ IBundle* data)
 {
-    return DispatchMessage(ObtainMessageOO(DO_PERFORM_PRIVATE_COMMAND, action, data));
+    return DispatchMessage(ObtainMessage(DO_PERFORM_PRIVATE_COMMAND, action, data));
 }
 
 ECode IInputConnectionWrapper::GetDescription(
@@ -582,7 +582,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageII(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2)
@@ -592,7 +592,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageII(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageO(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1)
 {
@@ -601,7 +601,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageO(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageISC(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 seq,
@@ -614,7 +614,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageISC(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIISC(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -627,7 +627,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIISC(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIOSC(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageSC(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2,
@@ -640,7 +640,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIOSC(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIO(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2)
@@ -650,7 +650,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageIO(
     return msg;
 }
 
-AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessageOO(
+AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ const String& arg1,
     /* [in] */ IInterface* arg2)

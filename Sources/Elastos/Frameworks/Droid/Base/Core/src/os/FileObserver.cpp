@@ -16,7 +16,7 @@ namespace Os {
 
 FileObserver::ObserverThread::ObserverThread()
 {
-    Thread::Init(String("FileObserver"));
+    Thread::constructor(String("FileObserver"));
     mFd = NativeInit();
 }
 

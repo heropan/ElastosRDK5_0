@@ -2062,16 +2062,16 @@ ECode CActivityThread::PerformLaunchActivity(
     r->mPackageInfo->GetAppDir(&appDir);
     StringBuilder sb;
     if (appDir.EndWith(".epk")) {
-        sb.AppendCStr("/data/elastos/");
-        sb.AppendString(packageName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/elastos/");
+        sb.Append(packageName);
+        sb.Append(".eco");
     }
     else {
-        sb.AppendCStr("/data/data/com.elastos.runtime/elastos/");
-        sb.AppendString(packageName);
-        sb.AppendCStr("/");
-        sb.AppendString(packageName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/data/com.elastos.runtime/elastos/");
+        sb.Append(packageName);
+        sb.Append("/");
+        sb.Append(packageName);
+        sb.Append(".eco");
     }
     String path = sb.ToString();
     AutoPtr<IModuleInfo> moduleInfo;
@@ -2465,9 +2465,9 @@ ECode CActivityThread::HandleReceiver(
     }
     else {
         StringBuilder sb;
-        sb.AppendCStr("/data/elastos/");
-        sb.AppendString(packageName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/elastos/");
+        sb.Append(packageName);
+        sb.Append(".eco");
         path = sb.ToString();
 
         Int32 index = className.LastIndexOf('.');
@@ -2638,19 +2638,19 @@ ECode CActivityThread::HandleCreateBackupAgent(
 
     StringBuilder sb;
     if (appDir.EndWith(".epk")) {
-        sb.AppendCStr("/data/elastos/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/elastos/");
+        sb.Append(pkgName);
+        sb.Append(".eco");
     }
     else if(appDir.EndWith("framework-res.apk")) {
-        sb.AppendCStr("/system/lib/Elastos.Droid.Server.eco");
+        sb.Append("/system/lib/Elastos.Droid.Server.eco");
     }
     else {
-        sb.AppendCStr("/data/data/com.elastos.runtime/elastos/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr("/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/data/com.elastos.runtime/elastos/");
+        sb.Append(pkgName);
+        sb.Append("/");
+        sb.Append(pkgName);
+        sb.Append(".eco");
     }
     String path = sb.ToString();
 
@@ -2758,16 +2758,16 @@ ECode CActivityThread::HandleCreateService(
     StringBuilder sb;
     // for epk
     if (appDir.EndWith(".epk")) {
-        sb.AppendCStr("/data/elastos/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/elastos/");
+        sb.Append(pkgName);
+        sb.Append(".eco");
     }
     else {
-        sb.AppendCStr("/data/data/com.elastos.runtime/elastos/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr("/");
-        sb.AppendString(pkgName);
-        sb.AppendCStr(".eco");
+        sb.Append("/data/data/com.elastos.runtime/elastos/");
+        sb.Append(pkgName);
+        sb.Append("/");
+        sb.Append(pkgName);
+        sb.Append(".eco");
     }
 
     String path = sb.ToString();
@@ -5858,9 +5858,9 @@ AutoPtr<IContentProviderHolder> CActivityThread::InstallProvider(
             Int32 index = name.LastIndexOf('.');
             String packageName = name.Substring(0, index);
             StringBuilder sb;
-            sb.AppendCStr("/data/elastos/");
-            sb.AppendString(packageName);
-            sb.AppendCStr(".eco");
+            sb.Append("/data/elastos/");
+            sb.Append(packageName);
+            sb.Append(".eco");
 
             packagePath = sb.ToString();
             className = name.Substring(index + 1);

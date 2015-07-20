@@ -64,7 +64,7 @@ CRecentTasksLoader::BgLoadThread::BgLoadThread(
     /* [in] */ CRecentTasksLoader* host)
     : mHost(host)
 {
-    Thread::Init(String("BgLoadThread"));
+    Thread::constructor(String("BgLoadThread"));
 }
 
 ECode CRecentTasksLoader::BgLoadThread::Run()

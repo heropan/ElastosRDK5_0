@@ -70,19 +70,19 @@ String Rfc822Token::ToString()
     StringBuilder sb;
 
     if (!mName.IsNullOrEmpty()) {
-        sb.AppendString(QuoteNameIfNecessary(mName));
+        sb.Append(QuoteNameIfNecessary(mName));
         sb.AppendChar(' ');
     }
 
     if (!mComment.IsNullOrEmpty()) {
             sb.AppendChar('(');
-            sb.AppendString(QuoteComment(mComment));
-            sb.AppendCStr(") ");
+            sb.Append(QuoteComment(mComment));
+            sb.Append(") ");
     }
 
     if (!mAddress.IsNullOrEmpty()) {
         sb.AppendChar('<');
-        sb.AppendString(mAddress);
+        sb.Append(mAddress);
         sb.AppendChar('>');
     }
 

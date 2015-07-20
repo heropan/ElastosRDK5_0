@@ -118,8 +118,8 @@ Slogger::D("CActivityOne", "OnRestoreInstanceState, mState=====[%d]", mState);
     assert(ITextView::Probe(mTextValue) != NULL);
     AutoPtr<ICharSequence> txt;
     StringBuilder sb;
-    sb.AppendString(String("OnRestoreInstanceState value:["));
-    sb.AppendInt32(mState);
+    sb.Append(String("OnRestoreInstanceState value:["));
+    sb.Append(mState);
     sb.AppendChar(']');
 
     CStringWrapper::New(sb.ToString(), (ICharSequence**)&txt);

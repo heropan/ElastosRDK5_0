@@ -92,13 +92,13 @@ ECode CCdmaSmsCbProgramResults::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CdmaSmsCbProgramResults{category=");
-    sb.AppendInt32(mCategory);
-    sb.AppendCStr(", language=");
-    sb.AppendInt32(mLanguage);
-    sb.AppendCStr(", result=");
-    sb.AppendInt32(mCategoryResult);
-    sb.AppendCStr("}");
+    sb.Append("CdmaSmsCbProgramResults{category=");
+    sb.Append(mCategory);
+    sb.Append(", language=");
+    sb.Append(mLanguage);
+    sb.Append(", result=");
+    sb.Append(mCategoryResult);
+    sb.Append("}");
     *str = sb.ToString();
     return NOERROR;
 }

@@ -406,8 +406,8 @@ String CMediaRecorder::GetPrivacyPath()
     value->NextInt64(&temp);
 
     StringBuilder sb(32);
-    sb.AppendInt64(temp);
-    sb.AppendCStr(".tmp");
+    sb.Append(temp);
+    sb.Append(".tmp");
     sb.ToString(&data_name);
 
     ECode ec = NOERROR;
@@ -451,9 +451,9 @@ String CMediaRecorder::GetPrivacyPath()
         t->GetAbsolutePath(&sdPath);
 
         StringBuilder sb(32);
-        sb.AppendString(sdPath);
-        sb.AppendCStr("/");
-        sb.AppendString(data_name);
+        sb.Append(sdPath);
+        sb.Append("/");
+        sb.Append(data_name);
         sb.ToString(&currentPath);
 
         ec = MakePrivacyPath(currentPath);
@@ -476,8 +476,8 @@ AutoPtr< IFileDescriptor > CMediaRecorder::GetPrivacyFileDescriptor()
     Int64 temp;
     StringBuilder sb(32);
     value->NextInt64(&temp);
-    sb.AppendInt64(temp);
-    sb.AppendCStr( ".tmp" );
+    sb.Append(temp);
+    sb.Append( ".tmp" );
     sb.ToString(&data_name);
 
     ECode ec = NOERROR;
@@ -518,9 +518,9 @@ AutoPtr< IFileDescriptor > CMediaRecorder::GetPrivacyFileDescriptor()
         t->GetAbsolutePath(&sdPath);
 
         StringBuilder sb(32);
-        sb.AppendString(sdPath);
-        sb.AppendCStr("/");
-        sb.AppendString(data_name);
+        sb.Append(sdPath);
+        sb.Append("/");
+        sb.Append(data_name);
         sb.ToString(&path);
 
         ec = MakePrivacyPath(path);
@@ -808,7 +808,7 @@ ECode CMediaRecorder::SetCaptureRate(
     Double timeBetweenFrameCapture = 1 / fps;
     Int32 timeBetweenFrameCaptureMs = (Int32) (1000 * timeBetweenFrameCapture);
     StringBuilder sb("time-between-time-lapse-frame-capture=");
-    sb.AppendDouble(timeBetweenFrameCaptureMs);
+    sb.Append(timeBetweenFrameCaptureMs);
     return SetParameter(sb.ToString().string());
 }
 
@@ -821,7 +821,7 @@ ECode CMediaRecorder::SetOrientationHint(
     }
 
     StringBuilder sb("video-param-rotation-angle-degrees=");
-    sb.AppendInt32(degrees);
+    sb.Append(degrees);
     return SetParameter(sb.ToString().string());
 }
 
@@ -955,7 +955,7 @@ ECode CMediaRecorder::SetAudioSamplingRate(
     }
 
     StringBuilder sb("audio-param-sampling-rate=");
-    sb.AppendInt32(samplingRate);
+    sb.Append(samplingRate);
     return SetParameter(sb.ToString().string());
 }
 
@@ -968,7 +968,7 @@ ECode CMediaRecorder::SetAudioChannels(
     }
 
     StringBuilder sb("audio-param-number-of-channels=");
-    sb.AppendInt32(numChannels);
+    sb.Append(numChannels);
     return SetParameter(sb.ToString().string());
 }
 
@@ -981,7 +981,7 @@ ECode CMediaRecorder::SetAudioEncodingBitRate(
     }
 
     StringBuilder sb("audio-param-encoding-bitrate=");
-    sb.AppendInt32(bitRate);
+    sb.Append(bitRate);
     return SetParameter(sb.ToString().string());
 }
 
@@ -1000,7 +1000,7 @@ ECode CMediaRecorder::SetVideoEncodingBitRate(
     }
 
     StringBuilder sb("video-param-encoding-bitrate=");
-    sb.AppendInt32(bitRate);
+    sb.Append(bitRate);
     return SetParameter(sb.ToString().string());
 }
 

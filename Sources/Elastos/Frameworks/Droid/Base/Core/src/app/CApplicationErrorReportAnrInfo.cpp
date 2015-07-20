@@ -80,23 +80,23 @@ ECode CApplicationErrorReportAnrInfo::Dump(
     VALIDATE_NOT_NULL(pw);
 
     StringBuilder sb(30);
-    sb.AppendString(prefix);
-    sb.AppendCStr("activity:");
-    sb.AppendString(mActivity);
+    sb.Append(prefix);
+    sb.Append("activity:");
+    sb.Append(mActivity);
     String str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("cause:");
-    sb.AppendString(mCause);
+    sb.Append(prefix);
+    sb.Append("cause:");
+    sb.Append(mCause);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("info:");
-    sb.AppendString(mInfo);
+    sb.Append(prefix);
+    sb.Append("info:");
+    sb.Append(mInfo);
     str = sb.ToString();
     FAIL_RETURN(pw->Println(str));
 

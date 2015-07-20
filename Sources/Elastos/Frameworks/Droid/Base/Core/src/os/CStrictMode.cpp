@@ -799,7 +799,7 @@ void CStrictMode::ExecuteDeathPenalty(
 CStrictMode::MyThread::MyThread(
     /* [in] */ const String& str)
 {
-    Thread::Init(str);
+    Thread::constructor(str);
 }
 
 ECode CStrictMode::MyThread::Run()

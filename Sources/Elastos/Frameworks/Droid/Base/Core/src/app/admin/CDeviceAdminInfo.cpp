@@ -414,12 +414,12 @@ ECode CDeviceAdminInfo::Dump(
 {
     VALIDATE_NOT_NULL(pw);
     StringBuilder sb(prefix);
-    sb.AppendCStr("Receiver:");
+    sb.Append("Receiver:");
     FAIL_RETURN(pw->Println(sb.ToString()));
 
     sb.Reset();
-    sb.AppendString(prefix);
-    sb.AppendCStr("  ");
+    sb.Append(prefix);
+    sb.Append("  ");
     return mReceiver->Dump(pw, sb.ToString());
 }
 
@@ -455,8 +455,8 @@ ECode CDeviceAdminInfo::ToString(
     FAIL_RETURN(ai->GetName(&name));
 
     StringBuilder sb("DeviceAdminInfo{");
-    sb.AppendString(name);
-    sb.AppendCStr("}");
+    sb.Append(name);
+    sb.Append("}");
     return sb.ToString(string);
 }
 

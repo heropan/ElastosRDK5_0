@@ -17,9 +17,14 @@ namespace Os {
  * Handy class for starting a new thread that has a looper. The looper can then be
  * used to create handler classes. Note that start() must still be called.
  */
-CarClass(CHandlerThread), public Thread
+CarClass(CHandlerThread)
+    , public Thread
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CHandlerThread();
+
     CARAPI constructor(
         /* [in] */ const String& name);
 
@@ -33,96 +38,7 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 priority);
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI CheckAccess();
-
-    CARAPI CountStackFrames(
-        /* [out] */ Int32* number);
-
-    CARAPI Destroy();
-
-    CARAPI GetId(
-        /* [out] */ Int64* id);
-
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI GetPriority(
-        /* [out] */ Int32* priority);
-
-    CARAPI GetState(
-        /* [out] */ ThreadState* state);
-
-    CARAPI GetThreadGroup(
-        /* [out] */ IThreadGroup** group);
-
-    CARAPI Interrupt();
-
-    CARAPI IsAlive(
-        /* [out] */ Boolean* isAlive);
-
-    CARAPI IsDaemon(
-        /* [out] */ Boolean* isDaemon);
-
-    CARAPI IsInterrupted(
-        /* [out] */ Boolean* isInterrupted);
-
-    CARAPI Join();
-
-    CARAPI Join(
-        /* [in] */ Int64 millis);
-
-    CARAPI Join(
-        /* [in] */ Int64 millis,
-        /* [in] */ Int32 nanos);
-
-    CARAPI Resume();
-
-    CARAPI SetDaemon(
-        /* [in] */ Boolean isDaemon);
-
-    CARAPI SetName(
-        /* [in] */ const String& threadName);
-
-    CARAPI SetPriority(
-        /* [in] */ Int32 priority);
-
-    CARAPI Start();
-
-    CARAPI Stop();
-
-    CARAPI Suspend();
-
-    CARAPI Detach();
-
-    CARAPI Unpark();
-
-    CARAPI ParkFor(
-        /* [in] */ Int64 nanos);
-
-    CARAPI ParkUntil(
-        /* [in] */ Int64 time);
-
     CARAPI Run();
-
-    CARAPI Lock();
-
-    CARAPI Unlock();
-
-    CARAPI Notify();
-
-    CARAPI NotifyAll();
-
-    CARAPI Wait();
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis);
-
-    CARAPI Wait(
-        /* [in] */ Int64 millis,
-        /* [in] */ Int32 nanos);
 
     CARAPI GetLooper(
         /* [out] */ ILooper** looper);
@@ -130,26 +46,11 @@ public:
     CARAPI Quit(
         /* [out] */ Boolean* result);
 
+    CARAPI QuitSafely(
+        /* [out] */ Boolean* result);
+
     CARAPI GetThreadId(
         /* [out] */ Int32* tid);
-
-    CARAPI GetUncaughtExceptionHandler(
-        /* [out] */ IThreadUncaughtExceptionHandler** handler);
-
-    CARAPI GetContextClassLoader(
-        /* [out] */ IClassLoader** outload);
-
-    CARAPI SetContextClassLoader(
-        /* [in] */ IClassLoader* cl);
-
-    CARAPI PushInterruptAction(
-        /* [in] */ IRunnable* interruptAction);
-
-    CARAPI PopInterruptAction(
-        /* [in] */ IRunnable* interruptAction);
-
-    CARAPI SetUncaughtExceptionHandler(
-        /* [in] */ IThreadUncaughtExceptionHandler* handler);
 
 protected:
     /**
@@ -157,9 +58,6 @@ protected:
      * setup before Looper loops.
      */
     CARAPI_(void) OnLooperPrepared();
-
-private:
-    CARAPI_(Object*) GetSelfLock();
 
 public:
     Int32 mPriority;

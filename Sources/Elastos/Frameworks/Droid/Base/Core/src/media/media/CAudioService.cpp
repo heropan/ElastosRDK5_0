@@ -1011,7 +1011,7 @@ CAudioService::SoundPoolListenerThread::SoundPoolListenerThread(
     /* [in] */ CAudioService* owner)
     : mAudioService(owner)
 {
-    Thread::Init(String("SoundPoolListenerThread"));
+    Thread::constructor(String("SoundPoolListenerThread"));
 }
 
 ECode CAudioService::SoundPoolListenerThread::Run()

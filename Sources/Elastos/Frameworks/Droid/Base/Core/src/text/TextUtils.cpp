@@ -1185,7 +1185,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
             Int32 length = remaining + ellipsis.GetByteLength();
             StringBuilder sb(length);
             sb.AppendChars(*buf, 0, left);
-            sb.AppendString(ellipsis);
+            sb.Append(ellipsis);
             sb.AppendChars(*buf, right, len - right);
             MeasuredText::Recycle(mt);
             return sb.ToCharSequence();

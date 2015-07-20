@@ -1,5 +1,5 @@
-#ifndef __PROCESS_H__
-#define __PROCESS_H__
+#ifndef __ELASTOS_DROID_OS_PROCESS_H__
+#define __ELASTOS_DROID_OS_PROCESS_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -14,8 +14,12 @@ namespace Droid {
 namespace Os {
 
 class Process
+    : public Object
+    , public IProcess
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Start a new process.
      *
@@ -499,4 +503,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __PROCESS_H__
+#endif // __ELASTOS_DROID_OS_PROCESS_H__

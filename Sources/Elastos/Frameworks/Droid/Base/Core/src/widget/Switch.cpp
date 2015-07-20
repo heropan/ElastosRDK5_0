@@ -818,7 +818,7 @@ ECode Switch::OnInitializeAccessibilityNodeInfo(
         } else {
             StringBuilder sb;
             sb.AppendCharSequence(oldText);
-            sb.AppendString(String(""));
+            sb.Append(String(""));
             sb.AppendCharSequence(switchText);
             AutoPtr<ICharSequence> seq = sb.ToCharSequence();
             info->SetText(seq);

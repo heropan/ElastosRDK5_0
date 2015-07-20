@@ -7,14 +7,12 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CAR_INTERFACE_IMPL_2(HandlerRunnableBase, IHandler, IRunnable)
-
-IHANDLER_METHODS_IMPL(HandlerRunnableBase, Handler)
+CAR_INTERFACE_IMPL(HandlerRunnableBase, Handler, IRunnable)
 
 HandlerRunnableBase::HandlerRunnableBase(
     /* [in] */ Boolean async)
 {
-    Handler::Init(async);
+    Handler::constructor(async);
 }
 
 HandlerRunnableBase::HandlerRunnableBase(

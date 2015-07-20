@@ -260,21 +260,21 @@ ECode CMountService::ObbState::Unlink()
 String CMountService::ObbState::ToString()
 {
     StringBuilder sb("ObbState{");
-    sb.AppendCStr("rawPath=");
-    sb.AppendString(mRawPath);
-    sb.AppendCStr(",canonicalPath=");
-    sb.AppendString(mCanonicalPath);
-    sb.AppendCStr(",ownerPath=");
-    sb.AppendString(mOwnerPath);
-    sb.AppendCStr(",voldPath=");
-    sb.AppendString(mVoldPath);
-    sb.AppendCStr(",ownerGid=");
-    sb.AppendInt32(mOwnerGid);
-    sb.AppendCStr(",token=");
+    sb.Append("rawPath=");
+    sb.Append(mRawPath);
+    sb.Append(",canonicalPath=");
+    sb.Append(mCanonicalPath);
+    sb.Append(",ownerPath=");
+    sb.Append(mOwnerPath);
+    sb.Append(",voldPath=");
+    sb.Append(mVoldPath);
+    sb.Append(",ownerGid=");
+    sb.Append(mOwnerGid);
+    sb.Append(",token=");
     sb.AppendObject(mToken);
-    sb.AppendCStr(",binder=");
+    sb.Append(",binder=");
     sb.AppendObject(GetBinder());
-    sb.AppendCStr("}");
+    sb.Append("}");
     return sb.ToString();
 }
 
@@ -464,7 +464,7 @@ CMountService::OnDaemonConnectedThread::OnDaemonConnectedThread(
     /* [in] */ CMountService* host)
     : mHost(host)
 {
-    Thread::Init(threadName);
+    Thread::constructor(threadName);
 }
 
 ECode CMountService::OnDaemonConnectedThread::Run()
@@ -572,7 +572,7 @@ CMountService::OnEventThread::OnEventThread(
     : mPath(path)
     , mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 
@@ -596,7 +596,7 @@ CMountService::UsbMassStorageThread::UsbMassStorageThread(
     : mPath(path)
     , mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CMountService::UsbMassStorageThread::Run()
@@ -837,8 +837,8 @@ void CMountService::MountObbAction::HandleError()
 String CMountService::MountObbAction::ToString()
 {
     StringBuilder sb;
-    sb.AppendCStr("MountObbAction{");
-    sb.AppendString(mObbState->ToString());
+    sb.Append("MountObbAction{");
+    sb.Append(mObbState->ToString());
     sb.AppendChar('}');
     return sb.ToString();
 }
@@ -944,8 +944,8 @@ void CMountService::UnmountObbAction::HandleError()
 String CMountService::UnmountObbAction::ToString()
 {
     StringBuilder sb("UnmountObbAction{");
-    sb.AppendString(mObbState->ToString());
-    sb.AppendCStr(",force=");
+    sb.Append(mObbState->ToString());
+    sb.Append(",force=");
     sb.AppendBoolean(mForceUnmount);
     sb.AppendChar('}');
     return sb.ToString();

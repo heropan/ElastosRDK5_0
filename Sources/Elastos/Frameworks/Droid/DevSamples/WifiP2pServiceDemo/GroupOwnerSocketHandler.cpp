@@ -24,7 +24,7 @@ GroupOwnerSocketHandler::GroupOwnerSocketHandler(
     /* [in] */ IHandler* handler)
     : mHandler(handler)
 {
-    Thread::Init(String("GroupOwnerSocketHandler"));
+    Thread::constructor(String("GroupOwnerSocketHandler"));
 
     AutoPtr<ITimeUnitHelper> helper;
     CTimeUnitHelper::AcquireSingleton((ITimeUnitHelper**)&helper);

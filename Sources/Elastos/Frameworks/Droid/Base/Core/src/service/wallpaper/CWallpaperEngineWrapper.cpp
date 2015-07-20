@@ -69,7 +69,7 @@ ECode CWallpaperEngineWrapper::SetDesiredSize(
     /* [in] */ Int32 height)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageII(DO_SET_DESIRED_SIZE, width, height, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_SET_DESIRED_SIZE, width, height, (IMessage**)&msg);
     return mCaller->SendMessage(msg);
 }
 
@@ -77,7 +77,7 @@ ECode CWallpaperEngineWrapper::SetVisibility(
     /* [in] */ Boolean visible)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageI(MSG_VISIBILITY_CHANGED, visible ? 1 : 0, (IMessage**)&msg);
+    mCaller->ObtainMessage(MSG_VISIBILITY_CHANGED, visible ? 1 : 0, (IMessage**)&msg);
     return mCaller->SendMessage(msg);
 }
 

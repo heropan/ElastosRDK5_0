@@ -130,8 +130,8 @@ void SQLiteCursor::FillWindow(
         mWindow->GetNumRows(&mCursorWindowCapacity);
         //if (Log.isLoggable(TAG, Log.DEBUG)) {
             // StringBuilder sb;
-            // sb.AppendString(String("received count(*) from native_fill_window: "));
-            // sb.AppendInt32(mCount);
+            // sb.Append(String("received count(*) from native_fill_window: "));
+            // sb.Append(mCount);
             // Slogger::D(TAG, sb.ToString());
         //}
     }

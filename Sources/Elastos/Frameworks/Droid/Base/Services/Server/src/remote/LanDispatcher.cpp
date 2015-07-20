@@ -27,7 +27,7 @@ const Int32 LanDispatcher::LISTENPORT = 49528;
 LanDispatcher::LanDispatcher(
     /* [in] */ IContext* context)
 {
-    Thread::Init();
+    Thread::constructor();
     if (DBG) Slogger::D(TAG, "constructor");
     AutoPtr<IInetAddressHelper> iah;
     CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&iah);
@@ -49,7 +49,7 @@ String LanDispatcher::GetVerifiedPort(
         AutoPtr<ServerSocketTimer> socketTimer = new ServerSocketTimer(mContext);
         socketTimer->Start();
         mServerSocketList.PushBack(socketTimer);
-        sb.AppendInt32(socketTimer->GetSocketPort());
+        sb.Append(socketTimer->GetSocketPort());
         return sb.ToString();
     }
     else if (clientMsg.Equals(mCheck)) {

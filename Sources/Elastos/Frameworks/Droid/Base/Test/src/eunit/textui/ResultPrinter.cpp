@@ -70,20 +70,20 @@ void ResultPrinter::PrintDefects(
     GetWriter((IPrintStream**)&writer);
     if (count == 1) {
         StringBuilder sb;
-        sb.AppendCStr("There was ");
-        sb.AppendInt32(count);
-        sb.AppendCStr(" ");
-        sb.AppendString(type);
-        sb.AppendCStr(":");
+        sb.Append("There was ");
+        sb.Append(count);
+        sb.Append(" ");
+        sb.Append(type);
+        sb.Append(":");
         writer->PrintStringln(sb.ToString());
     }
     else {
         StringBuilder sb;
-        sb.AppendCStr("There were ");
-        sb.AppendInt32(count);
-        sb.AppendCStr(" ");
-        sb.AppendString(type);
-        sb.AppendCStr("s:");
+        sb.Append("There were ");
+        sb.Append(count);
+        sb.Append(" ");
+        sb.Append(type);
+        sb.Append("s:");
         writer->PrintStringln(sb.ToString());
     }
     Boolean hasMore;
@@ -138,28 +138,28 @@ void ResultPrinter::PrintFooter(
         Int32 number;
         result->RunCount(&number);
         StringBuilder sb;
-        sb.AppendCStr(" (");
-        sb.AppendInt32(number);
-        sb.AppendCStr(" test");
-        if (number == 1) sb.AppendCStr("");
-        else sb.AppendCStr("s");
-        sb.AppendCStr(")");
+        sb.Append(" (");
+        sb.Append(number);
+        sb.Append(" test");
+        if (number == 1) sb.Append("");
+        else sb.Append("s");
+        sb.Append(")");
         writer->PrintStringln(sb.ToString());
     }
     else{
         writer->Println();
         writer->PrintStringln(String("FAILURES!!!"));
         StringBuilder sb;
-        sb.AppendCStr("Tests run: ");
+        sb.Append("Tests run: ");
         Int32 number;
         result->RunCount(&number);
-        sb.AppendInt32(number);
-        sb.AppendCStr(",  Failures: ");
+        sb.Append(number);
+        sb.Append(",  Failures: ");
         result->FailureCount(&number);
-        sb.AppendInt32(number);
-        sb.AppendCStr(",  Errors: ");
+        sb.Append(number);
+        sb.Append(",  Errors: ");
         result->ErrorCount(&number);
-        sb.AppendInt32(number);
+        sb.Append(number);
         writer->PrintStringln(sb.ToString());
     }
     writer->Println();

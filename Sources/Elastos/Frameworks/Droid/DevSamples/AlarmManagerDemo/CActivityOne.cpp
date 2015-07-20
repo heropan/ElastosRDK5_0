@@ -51,11 +51,11 @@ ECode CActivityOne::OnCreate(
     // AutoPtr<IModuleInfo> moduleInfo;
     // AutoPtr<IClassInfo> classInfo;
     // StringBuilder sb;
-    // sb.AppendCStr("/data/data/com.elastos.runtime/elastos/");
-    // sb.AppendString(String("AlarmManagerDemo"));
-    // sb.AppendCStr("/");
-    // sb.AppendString(String("AlarmManagerDemo"));
-    // sb.AppendCStr(".eco");
+    // sb.Append("/data/data/com.elastos.runtime/elastos/");
+    // sb.Append(String("AlarmManagerDemo"));
+    // sb.Append("/");
+    // sb.Append(String("AlarmManagerDemo"));
+    // sb.Append(".eco");
     // String path = sb.ToString();
 
     // ECode ec = _CReflector_AcquireModuleInfo(path, (IModuleInfo**)&moduleInfo);

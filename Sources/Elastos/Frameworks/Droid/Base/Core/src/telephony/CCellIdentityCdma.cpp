@@ -177,13 +177,13 @@ ECode CCellIdentityCdma::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CdmaCellIdentitiy:");
-    sb.AppendCStr("super class");
-    sb.AppendCStr(" mNetworkId="); sb.AppendInt32(mNetworkId);
-    sb.AppendCStr(" mSystemId="); sb.AppendInt32(mSystemId);
-    sb.AppendCStr(" mBasestationId="); sb.AppendInt32(mBasestationId);
-    sb.AppendCStr(" mLongitude="); sb.AppendInt32(mLongitude);
-    sb.AppendCStr(" mLatitude="); sb.AppendInt32(mLatitude);
+    sb.Append("CdmaCellIdentitiy:");
+    sb.Append("super class");
+    sb.Append(" mNetworkId="); sb.Append(mNetworkId);
+    sb.Append(" mSystemId="); sb.Append(mSystemId);
+    sb.Append(" mBasestationId="); sb.Append(mBasestationId);
+    sb.Append(" mLongitude="); sb.Append(mLongitude);
+    sb.Append(" mLatitude="); sb.Append(mLatitude);
 
     *str = sb.ToString();
     return NOERROR;

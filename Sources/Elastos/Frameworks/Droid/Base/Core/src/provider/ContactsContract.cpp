@@ -144,22 +144,22 @@ ECode ContactsContract::Snippetize(
             if (firstToken > -1) {
                 StringBuilder sb;
                 if (firstToken > 0) {
-                    FAIL_RETURN(sb.AppendString(snippetEllipsis))
+                    FAIL_RETURN(sb.Append(snippetEllipsis))
                 }
                 for (Int32 i = firstToken; i < lastToken; i++) {
                     String markedToken = markedTokens[i];
                     String originalToken = lineTokens[i];
-                    FAIL_RETURN(sb.AppendString(markedToken))
+                    FAIL_RETURN(sb.Append(markedToken))
                     if (i < lastToken - 1) {
                         // Add the characters that appeared between this token and the next.
                         Int32 start, end;
                         FAIL_RETURN((*tokenOffsets)[i]->GetValue(&start))
                         FAIL_RETURN((*tokenOffsets)[i + 1]->GetValue(&end))
-                        FAIL_RETURN(sb.AppendString(contentLine.Substring(start + originalToken.GetLength(), end)))
+                        FAIL_RETURN(sb.Append(contentLine.Substring(start + originalToken.GetLength(), end)))
                     }
                 }
                 if (lastToken < lineTokens.GetSize()) {
-                    FAIL_RETURN(sb.AppendString(snippetEllipsis))
+                    FAIL_RETURN(sb.Append(snippetEllipsis))
                 }
                 *snippet =  sb.ToString();
                 return NOERROR;

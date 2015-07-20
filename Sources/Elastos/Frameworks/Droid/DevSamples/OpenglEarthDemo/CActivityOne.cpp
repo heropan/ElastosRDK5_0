@@ -158,7 +158,7 @@ ECode SceneRenderer::OnDrawFrame(
 RotateThread::RotateThread(
     /* [in] */ SceneRenderer* render)
 {
-    Thread::Init();
+    Thread::constructor();
     mRender = render;
 }
 

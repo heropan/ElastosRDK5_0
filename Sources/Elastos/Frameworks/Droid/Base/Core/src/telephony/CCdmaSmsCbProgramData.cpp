@@ -150,19 +150,19 @@ ECode CCdmaSmsCbProgramData::ToString(
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
 
-    sb.AppendCStr("CdmaSmsCbProgramData{operation=");
-    sb.AppendInt32(mOperation);
-    sb.AppendCStr(", category=");
-    sb.AppendInt32(mCategory);
-    sb.AppendCStr(", language=");
-    sb.AppendInt32(mLanguage);
-    sb.AppendCStr(", max messages=");
-    sb.AppendInt32(mMaxMessages);
-    sb.AppendCStr(", alert option=");
-    sb.AppendInt32(mAlertOption);
-    sb.AppendCStr(", category name=");
-    sb.AppendString(mCategoryName);
-    sb.AppendCStr("}");
+    sb.Append("CdmaSmsCbProgramData{operation=");
+    sb.Append(mOperation);
+    sb.Append(", category=");
+    sb.Append(mCategory);
+    sb.Append(", language=");
+    sb.Append(mLanguage);
+    sb.Append(", max messages=");
+    sb.Append(mMaxMessages);
+    sb.Append(", alert option=");
+    sb.Append(mAlertOption);
+    sb.Append(", category name=");
+    sb.Append(mCategoryName);
+    sb.Append("}");
     *str = sb.ToString();
 
     return NOERROR;

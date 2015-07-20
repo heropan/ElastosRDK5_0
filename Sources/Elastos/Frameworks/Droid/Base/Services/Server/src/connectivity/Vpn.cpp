@@ -112,7 +112,7 @@ Vpn::LegacyVpnRunner::LegacyVpnRunner(
     /* [in] */ Vpn* owner)
     : mTimer(-1)
 {
-    Thread::Init(TAG);
+    Thread::constructor(TAG);
 
     mConfig = config;
     mDaemons = ArrayOf<String>::Alloc(2);

@@ -162,7 +162,7 @@ WifiMonitor::MonitorThread::MonitorThread(
     /* [in] */ WifiMonitor* owner)
     : mHost(owner)
 {
-    Thread::Init(String("WifiMonitor"));
+    Thread::constructor(String("WifiMonitor"));
 }
 
 ECode WifiMonitor::MonitorThread::Run()

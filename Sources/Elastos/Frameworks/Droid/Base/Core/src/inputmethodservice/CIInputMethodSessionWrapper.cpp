@@ -191,7 +191,7 @@ ECode CIInputMethodSessionWrapper::DisplayCompletions(
     }
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_DISPLAY_COMPLETIONS, container, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_DISPLAY_COMPLETIONS, container, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -200,7 +200,7 @@ ECode CIInputMethodSessionWrapper::UpdateExtractedText(
     /* [in] */ IExtractedText* text)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIO(DO_UPDATE_EXTRACTED_TEXT, token, text, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_UPDATE_EXTRACTED_TEXT, token, text, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -210,7 +210,7 @@ ECode CIInputMethodSessionWrapper::DispatchKeyEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_KEY_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_DISPATCH_KEY_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -220,7 +220,7 @@ ECode CIInputMethodSessionWrapper::DispatchTrackballEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_TRACKBALL_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_DISPATCH_TRACKBALL_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -230,7 +230,7 @@ ECode CIInputMethodSessionWrapper::DispatchGenericMotionEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_GENERIC_MOTION_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_DISPATCH_GENERIC_MOTION_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -243,7 +243,7 @@ ECode CIInputMethodSessionWrapper::UpdateSelection(
     /* [in] */ Int32 candidatesEnd)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIIIIII(DO_UPDATE_SELECTION,
+    mCaller->ObtainMessage(DO_UPDATE_SELECTION,
         oldSelStart, oldSelEnd, newSelStart, newSelEnd,
         candidatesStart, candidatesEnd, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
@@ -253,7 +253,7 @@ ECode CIInputMethodSessionWrapper::ViewClicked(
     /* [in] */ Boolean focusChanged)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageI(DO_VIEW_CLICKED, focusChanged ? 1 : 0, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_VIEW_CLICKED, focusChanged ? 1 : 0, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -261,7 +261,7 @@ ECode CIInputMethodSessionWrapper::UpdateCursor(
     /* [in] */ IRect* newCursor)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_UPDATE_CURSOR, newCursor, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_UPDATE_CURSOR, newCursor, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -272,7 +272,7 @@ ECode CIInputMethodSessionWrapper::AppPrivateCommand(
     AutoPtr<ICharSequence> seq;
     CStringWrapper::New(action, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageOO(DO_APP_PRIVATE_COMMAND, seq, data, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_APP_PRIVATE_COMMAND, seq, data, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -281,7 +281,7 @@ ECode CIInputMethodSessionWrapper::ToggleSoftInput(
     /* [in] */ Int32 hideFlags)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageII(DO_APP_PRIVATE_COMMAND, showFlags, hideFlags, (IMessage**)&msg);
+    mCaller->ObtainMessage(DO_APP_PRIVATE_COMMAND, showFlags, hideFlags, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

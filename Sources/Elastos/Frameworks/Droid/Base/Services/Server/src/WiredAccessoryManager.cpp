@@ -490,11 +490,11 @@ String WiredAccessoryManager::SwitchCodeToString(
     StringBuilder sb;
     if ((switchMask & CInputManagerService::SW_HEADPHONE_INSERT_BIT) != 0 &&
             (switchValues & CInputManagerService::SW_HEADPHONE_INSERT_BIT) != 0) {
-        sb.AppendString(String("SW_HEADPHONE_INSERT "));
+        sb.Append(String("SW_HEADPHONE_INSERT "));
     }
     if ((switchMask & CInputManagerService::SW_MICROPHONE_INSERT_BIT) != 0 &&
             (switchValues & CInputManagerService::SW_MICROPHONE_INSERT_BIT) != 0) {
-        sb.AppendString(String("SW_MICROPHONE_INSERT"));
+        sb.Append(String("SW_MICROPHONE_INSERT"));
     }
     return sb.ToString();
 }

@@ -102,14 +102,14 @@ ECode CCallerInfoAsyncQueryHelper::StartQuery(
         // prefix, if we start storing SIP addresses that way in the
         // database.
         StringBuilder sb;
-        sb.AppendCStr("upper(");
-        sb.AppendCStr("data1");
-        sb.AppendCStr(")=?");
-        sb.AppendCStr(" AND ");
-        sb.AppendCStr("mimetype");
-        sb.AppendCStr("=");
-        sb.AppendCStr("vnd.android.cursor.item/sip_address");
-        sb.AppendCStr("'");
+        sb.Append("upper(");
+        sb.Append("data1");
+        sb.Append(")=?");
+        sb.Append(" AND ");
+        sb.Append("mimetype");
+        sb.Append("=");
+        sb.Append("vnd.android.cursor.item/sip_address");
+        sb.Append("'");
         selection = sb.ToString();
         selectionArgs = ArrayOf<String>::Alloc(1);
         (*selectionArgs)[0] = number.ToUpperCase();

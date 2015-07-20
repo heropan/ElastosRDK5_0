@@ -250,7 +250,7 @@ void CInputMethodManagerService::ImmsBroadcastReceiver::UpdateActive()
    // Inform the current client of the change in active status
    if (mHost->mCurClient != NULL && mHost->mCurClient->mClient != NULL) {
         AutoPtr<IMessage> msg;
-        mHost->mCaller->ObtainMessageIO(
+        mHost->mCaller->ObtainMessage(
             CInputMethodManagerService::MSG_SET_ACTIVE,
             mHost->mScreenOn ? 1 : 0, mHost->mCurClient, (IMessage**)&msg);
         mHost->ExecuteOrSendMessage(mHost->mCurClient->mClient, msg);
@@ -1021,7 +1021,7 @@ void CInputMethodManagerService::InputMethodSettings::EnableAllIMEsIfThereIsNoEn
             if (it != mMethodList->Begin()) sb.AppendChar(':');
             String id;
             imi->GetId(&id);
-            sb.AppendString(id);
+            sb.Append(id);
         }
         PutEnabledInputMethodsStr(sb.ToString());
     }
@@ -2457,17 +2457,17 @@ void CInputMethodManagerService::UnbindCurrentClientLocked()
             mBoundToMethod = FALSE;
             if (mCurMethod != NULL) {
                 AutoPtr<IMessage> msg;
-                mCaller->ObtainMessageO(MSG_UNBIND_INPUT, mCurMethod, (IMessage**)&msg);
+                mCaller->ObtainMessage(MSG_UNBIND_INPUT, mCurMethod, (IMessage**)&msg);
                 ExecuteOrSendMessage(mCurMethod, msg);
             }
         }
 
         AutoPtr<IMessage> msg1;
-        mCaller->ObtainMessageIO(MSG_SET_ACTIVE, 0, mCurClient, (IMessage**)&msg1);
+        mCaller->ObtainMessage(MSG_SET_ACTIVE, 0, mCurClient, (IMessage**)&msg1);
         ExecuteOrSendMessage(mCurClient->mClient, msg1);
 
         AutoPtr<IMessage> msg2;
-        mCaller->ObtainMessageIO(MSG_UNBIND_METHOD, mCurSeq, mCurClient->mClient, (IMessage**)&msg2);
+        mCaller->ObtainMessage(MSG_UNBIND_METHOD, mCurSeq, mCurClient->mClient, (IMessage**)&msg2);
         ExecuteOrSendMessage(mCurClient->mClient, msg2);
 
         mCurClient->mSessionRequested = FALSE;
@@ -2510,7 +2510,7 @@ ECode CInputMethodManagerService::AttachNewInputLocked(
 
     if (!mBoundToMethod) {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageOO(MSG_BIND_INPUT,
+        mCaller->ObtainMessage(MSG_BIND_INPUT,
             mCurMethod, mCurClient->mBinding,
             (IMessage**)&msg);
         ExecuteOrSendMessage(mCurMethod, msg);
@@ -2520,14 +2520,14 @@ ECode CInputMethodManagerService::AttachNewInputLocked(
     SessionState* session = mCurClient->mCurSession.Get();
     if (initial) {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageOOO(MSG_START_INPUT,
+        mCaller->ObtainMessage(MSG_START_INPUT,
             session, mCurInputContext, mCurAttribute,
             (IMessage**)&msg);
         ExecuteOrSendMessage(session->mMethod, msg);
     }
     else {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageOOO(MSG_RESTART_INPUT,
+        mCaller->ObtainMessage(MSG_RESTART_INPUT,
             session, mCurInputContext, mCurAttribute,
             (IMessage**)&msg);
         ExecuteOrSendMessage(session->mMethod, msg);
@@ -2623,7 +2623,7 @@ ECode CInputMethodManagerService::StartInputUncheckedLocked(
         // If the screen is on, inform the new client it is active
         if (mScreenOn) {
             AutoPtr<IMessage> msg;
-            mCaller->ObtainMessageIO(MSG_SET_ACTIVE, mScreenOn ? 1 : 0, cs, (IMessage**)&msg);
+            mCaller->ObtainMessage(MSG_SET_ACTIVE, mScreenOn ? 1 : 0, cs, (IMessage**)&msg);
             ExecuteOrSendMessage(cs->mClient, msg);
         }
     }
@@ -2654,7 +2654,7 @@ ECode CInputMethodManagerService::StartInputUncheckedLocked(
                         mCurMethod, (Handle32)this, (IInputMethodCallback**)&methodCallback);
 
                     AutoPtr<IMessage> msg;
-                    mCaller->ObtainMessageOO(MSG_CREATE_SESSION, mCurMethod, methodCallback, (IMessage**)&msg);
+                    mCaller->ObtainMessage(MSG_CREATE_SESSION, mCurMethod, methodCallback, (IMessage**)&msg);
                     ExecuteOrSendMessage(mCurMethod, msg);
                 }
                 // Return to client, and we will get back with it when
@@ -2800,7 +2800,7 @@ ECode CInputMethodManagerService::OnServiceConnected(
             }
 
             AutoPtr<IMessage> msg;
-            mCaller->ObtainMessageOO(MSG_ATTACH_TOKEN, mCurMethod, mCurToken, (IMessage**)&msg);
+            mCaller->ObtainMessage(MSG_ATTACH_TOKEN, mCurMethod, mCurToken, (IMessage**)&msg);
             ExecuteOrSendMessage(mCurMethod, msg);
 
             if (mCurClient != NULL) {
@@ -2810,7 +2810,7 @@ ECode CInputMethodManagerService::OnServiceConnected(
                     mCurMethod, (Handle32)this, (IInputMethodCallback**)&methodCallback);
 
                 AutoPtr<IMessage> msg;
-                mCaller->ObtainMessageOO(MSG_CREATE_SESSION, mCurMethod, methodCallback, (IMessage**)&msg);
+                mCaller->ObtainMessage(MSG_CREATE_SESSION, mCurMethod, methodCallback, (IMessage**)&msg);
                 ExecuteOrSendMessage(mCurMethod, msg);
             }
         }
@@ -2836,7 +2836,7 @@ void CInputMethodManagerService::OnSessionCreated(
             res->GetIIMSession((IIInputMethodSession**)&m);
             if (m != NULL) {
                 AutoPtr<IMessage> msg;
-                mCaller->ObtainMessageOO(MSG_BIND_METHOD, mCurClient->mClient, res, (IMessage**)&msg);
+                mCaller->ObtainMessage(MSG_BIND_METHOD, mCurClient->mClient, res, (IMessage**)&msg);
                 ExecuteOrSendMessage(mCurClient->mClient, msg);
             }
         }
@@ -2875,7 +2875,7 @@ void CInputMethodManagerService::UnbindCurrentMethodLocked(
 
     if (reportToClient && mCurClient != NULL) {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageIO(MSG_UNBIND_METHOD,
+        mCaller->ObtainMessage(MSG_UNBIND_METHOD,
             mCurSeq, mCurClient->mClient, (IMessage**)&msg);
         ExecuteOrSendMessage(mCurClient->mClient, msg);
     }
@@ -2945,7 +2945,7 @@ ECode CInputMethodManagerService::OnServiceDisconnected(
             mInputShown = FALSE;
             if (mCurClient != NULL) {
                 AutoPtr<IMessage> msg;
-                mCaller->ObtainMessageIO(MSG_UNBIND_METHOD,
+                mCaller->ObtainMessage(MSG_UNBIND_METHOD,
                     mCurSeq, mCurClient->mClient, (IMessage**)&msg);
                 ExecuteOrSendMessage(mCurClient->mClient, msg);
             }
@@ -3434,7 +3434,7 @@ Boolean CInputMethodManagerService::ShowCurrentInputLocked(
     Boolean res = FALSE;
     if (mCurMethod != NULL) {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageIOO(
+        mCaller->ObtainMessage(
             MSG_SHOW_SOFT_INPUT, GetImeShowFlags(),
             mCurMethod, resultReceiver, (IMessage**)&msg);
         ExecuteOrSendMessage(mCurMethod, msg);
@@ -3537,7 +3537,7 @@ Boolean CInputMethodManagerService::HideCurrentInputLocked(
     Boolean res = FALSE;
     if (mInputShown && mCurMethod != NULL) {
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageOO(MSG_HIDE_SOFT_INPUT,
+        mCaller->ObtainMessage(MSG_HIDE_SOFT_INPUT,
             mCurMethod, resultReceiver, (IMessage**)&msg);
         ExecuteOrSendMessage(mCurMethod, msg);
         res = TRUE;
@@ -3818,7 +3818,7 @@ ECode CInputMethodManagerService::ShowInputMethodAndSubtypeEnablerFromClient(
         AutoPtr<ICharSequence> seq;
         CStringWrapper::New(inputMethodId, (ICharSequence**)&seq);
         AutoPtr<IMessage> msg;
-        mCaller->ObtainMessageO(MSG_SHOW_IM_SUBTYPE_ENABLER,
+        mCaller->ObtainMessage(MSG_SHOW_IM_SUBTYPE_ENABLER,
             seq, (IMessage**)&msg);
         ExecuteOrSendMessage(mCurMethod, msg);
     }

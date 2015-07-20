@@ -44,7 +44,7 @@ RemoteCmdListener::RemoteCmdListener(
     : mSocketListener(listenSocket)
     , mContext(context)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 void RemoteCmdListener::Quit()

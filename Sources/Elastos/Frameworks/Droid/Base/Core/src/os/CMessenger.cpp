@@ -91,7 +91,6 @@ ECode CMessenger::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* equals)
 {
-    VALIDATE_NOT_NULL(equals);
     return Equals(IMessenger::Probe(other), equals);
 }
 

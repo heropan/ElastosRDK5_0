@@ -23,7 +23,7 @@ ClientSocketHandler::ClientSocketHandler(
     : mHandler(handler)
     , mAddress(groupOwnerAddress)
 {
-    Thread::Init(String("ClientSocketHandler"));
+    Thread::constructor(String("ClientSocketHandler"));
 }
 
 ECode ClientSocketHandler::Run()

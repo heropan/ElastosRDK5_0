@@ -68,7 +68,7 @@ CZigbeeService::HistoryRecordThread::HistoryRecordThread(
     , mFilename(filename)
     , mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CZigbeeService::HistoryRecordThread::Run()
@@ -188,7 +188,7 @@ CZigbeeService::BulbScenarioModeThread::BulbScenarioModeThread(
     , mShortAddr(shortAddr)
     , mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CZigbeeService::BulbScenarioModeThread::Destroy()
@@ -771,7 +771,7 @@ CZigbeeService::CallbackThread::CallbackThread(
     , mMsgID(msgID)
     , mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CZigbeeService::CallbackThread::Run()
@@ -1248,7 +1248,7 @@ Int32 CZigbeeService::InitZigbeeDevices()
     for (Int32 i = 1; i <= deviceNum; i++) {    // Art Test start from 1, 0 is coordinator
         //setup zigbee device general informantion
         StringBuilder sb(mDefaultDeviceName); //device name, default naming: zigbee1, zigbee2 ...
-        sb.AppendInt32(i);
+        sb.Append(i);
         String name = sb.ToString();
         Int32 onlineStatus = Native_GetDeviceOnlineStatus((*shortAddrList)[i]);  //device online status
         //Int32 shortAddr = Native_GetDeviceShortAddr(i); //device short address
@@ -1375,7 +1375,7 @@ Int32 CZigbeeService::UpdateZigbeeDevices()
             Int32 index = 1;
             while(TRUE) {
                 StringBuilder sb(mDefaultDeviceName); //device name, default naming: zigbee1, zigbee2 ...
-                sb.AppendInt32(index);
+                sb.Append(index);
                 String tempName = sb.ToString();
                 if (!IsDeviceExist(tempName)) {
                     name = tempName;

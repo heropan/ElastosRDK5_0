@@ -76,49 +76,49 @@ public:
         /* [in] */ Int32 what,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageBO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Boolean arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageBOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Boolean arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageI(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageII(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -126,27 +126,27 @@ public:
         /* [in] */ IInterface* arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageOOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
         /* [in] */ IInterface* arg3,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageOOOO(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ IInterface* arg1,
         /* [in] */ IInterface* arg2,
@@ -154,7 +154,7 @@ public:
         /* [in] */ IInterface* arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIII(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -162,7 +162,7 @@ public:
         /* [in] */ Int32 arg4,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIIII(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -171,7 +171,7 @@ public:
         /* [in] */ Int32 arg5,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIIIII(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,
@@ -181,7 +181,7 @@ public:
         /* [in] */ Int32 arg6,
         /* [out] */ IMessage** msg);
 
-    CARAPI ObtainMessageIIII0(
+    CARAPI ObtainMessage(
         /* [in] */ Int32 what,
         /* [in] */ Int32 arg1,
         /* [in] */ Int32 arg2,

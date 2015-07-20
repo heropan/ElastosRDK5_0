@@ -160,8 +160,8 @@ AutoPtr<HashMap<String, AutoPtr<CMonkeySourceNetworkVars::VarGetter> > > CMonkey
                 Int32 length = categories->GetLength();
                 for(Int32 i = 0; i < length; ++i)
                 {
-                    sb.AppendString((*categories)[i]);
-                    sb.AppendString(String(" "));
+                    sb.Append((*categories)[i]);
+                    sb.Append(String(" "));
                 }
                 sb.ToString(&categoriesString);
             }
@@ -235,8 +235,8 @@ ECode CMonkeySourceNetworkVars::ListVarCommand::TranslateCommand(
     HashMap<String, AutoPtr<VarGetter> >::Iterator it = VAR_MAP->Begin();
     for(; it != VAR_MAP->End(); ++it)
     {
-        sb.AppendString(it->mFirst);
-        sb.AppendString(String(" "));
+        sb.Append(it->mFirst);
+        sb.Append(String(" "));
     }
     String word;
     sb.Substring(0, &word);

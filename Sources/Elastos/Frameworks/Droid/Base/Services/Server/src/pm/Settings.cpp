@@ -1750,13 +1750,13 @@ void Settings::WriteLPr()
                 //
                 //sb.setLength(0);
 
-                sb.AppendString((ai->GetPackageName(&temp), temp));
-                sb.AppendString(String(" "));
+                sb.Append((ai->GetPackageName(&temp), temp));
+                sb.Append(String(" "));
                 ai->GetUid(&val);
-                sb.AppendInt32((Int32)val);
-                sb.AppendString(isDebug ? String(" 1 ") : String(" 0 "));
-                dataPath.IsNull() ? sb.AppendString(String("NULL")) : sb.AppendString(dataPath);
-                sb.AppendString(String("\n"));
+                sb.Append((Int32)val);
+                sb.Append(isDebug ? String(" 1 ") : String(" 0 "));
+                dataPath.IsNull() ? sb.Append(String("NULL")) : sb.Append(dataPath);
+                sb.Append(String("\n"));
                 sb.ToString(&temp);
                 AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc((Byte*)temp.string(), temp.GetByteLength());
                 ec = str->WriteBytes(*bytes);
@@ -3107,7 +3107,7 @@ String Settings::CompToString(
         sb.AppendChar('[');
         HashSet<String>::Iterator it;
         for (it = cmp->Begin(); it != cmp->End(); ++it) {
-            sb.AppendString(*it);
+            sb.Append(*it);
         }
         sb.AppendChar(']');
         return sb.ToString();

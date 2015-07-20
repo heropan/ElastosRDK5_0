@@ -124,7 +124,7 @@ String EventLogger::GetLocaleString()
     //Java:    StringBuilder sb = new StringBuilder(mRequest.getLanguage());
     String rLanguage;
     StringBuilder sb;
-    sb.AppendString((mRequest->GetLanguage(&rLanguage), rLanguage));
+    sb.Append((mRequest->GetLanguage(&rLanguage), rLanguage));
 
     String rCountry;
     AutoPtr<ICharSequence> cs;
@@ -132,7 +132,7 @@ String EventLogger::GetLocaleString()
 
     if (!TextUtils::IsEmpty(cs)) {
         sb.AppendChar((Char32)"-");
-        sb.AppendString(rCountry);
+        sb.Append(rCountry);
 
         String rVariant;
         mRequest->GetVariant(&rVariant);
@@ -140,7 +140,7 @@ String EventLogger::GetLocaleString()
         CStringWrapper::New(rVariant, (ICharSequence**)&cs);
         if (!TextUtils::IsEmpty(cs)) {
             sb.AppendChar((Char32)"-");
-            sb.AppendString(rVariant);
+            sb.Append(rVariant);
         }
     }
     return sb.ToString();

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
 #define __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
 
-
+#include "Handler.h"
 
 namespace Elastos {
 namespace Droid {
@@ -11,15 +11,11 @@ namespace Os {
  * Base class for HandlerRunnable
  */
 class HandlerRunnableBase
-    : public IHandler
+    : public Handler
     , public IRunnable
-    , public ElRefBase
-    , public Handler
 {
 public:
     CAR_INTERFACE_DECL()
-
-    IHANDLER_METHODS_DECL()
 
     HandlerRunnableBase(
         /* [in] */ Boolean async = FALSE);

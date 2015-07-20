@@ -627,7 +627,7 @@ GLSurfaceView::GLThread::GLThread(
     , mRenderComplete(FALSE)
     , mSizeChanged(TRUE)
 {
-    Thread::Init();
+    Thread::constructor();
     mWidth = 0;
     mHeight = 0;
     mRequestRender = TRUE;

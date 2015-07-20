@@ -92,19 +92,19 @@ ECode DisplayViewport::ToString(
     VALIDATE_NOT_NULL(str);
 
     StringBuilder sb;
-    sb.AppendCStr("DisplayViewport{valid=");
+    sb.Append("DisplayViewport{valid=");
     sb.AppendBoolean(mValid);
-    sb.AppendCStr(", displayId=");
-    sb.AppendInt32(mDisplayId);
-    sb.AppendCStr(", orientation=");
-    sb.AppendInt32(mOrientation);
+    sb.Append(", displayId=");
+    sb.Append(mDisplayId);
+    sb.Append(", orientation=");
+    sb.Append(mOrientation);
     // + ", logicalFrame=" + logicalFrame
     // + ", physicalFrame=" + physicalFrame
-    sb.AppendCStr(", deviceWidth=");
-    sb.AppendInt32(mDeviceWidth);
-    sb.AppendCStr(", deviceHeight=");
-    sb.AppendInt32(mDeviceHeight);
-    sb.AppendCStr("}");
+    sb.Append(", deviceWidth=");
+    sb.Append(mDeviceWidth);
+    sb.Append(", deviceHeight=");
+    sb.Append(mDeviceHeight);
+    sb.Append("}");
 
     *str = sb.ToString();
     return NOERROR;

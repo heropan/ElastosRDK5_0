@@ -184,9 +184,9 @@ ECode CCellSignalStrengthGsm::ToString(
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
 
-    sb.AppendCStr("CellSignalStrengthGsm:");
-    sb.AppendCStr(" ss="); sb.AppendInt32(mSignalStrength);
-    sb.AppendCStr(" ber="); sb.AppendInt32(mBitErrorRate);
+    sb.Append("CellSignalStrengthGsm:");
+    sb.Append(" ss="); sb.Append(mSignalStrength);
+    sb.Append(" ber="); sb.Append(mBitErrorRate);
     *str = sb.ToString();
     return NOERROR;
 }

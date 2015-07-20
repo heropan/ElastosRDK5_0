@@ -332,7 +332,7 @@ void BackStackRecord::Dump(
                 case OP_SHOW: cmdStr="SHOW"; break;
                 case OP_DETACH: cmdStr="DETACH"; break;
                 case OP_ATTACH: cmdStr="ATTACH"; break;
-                default: StringBuilder sb("cmd="); sb.AppendInt32(op->mCmd); cmdStr = sb.ToString(); break;
+                default: StringBuilder sb("cmd="); sb.Append(op->mCmd); cmdStr = sb.ToString(); break;
             }
             writer->PrintString(prefix); writer->PrintString(String("  Op #")); writer->PrintInt32(num);
                     writer->PrintString(String(": ")); writer->PrintString(cmdStr);

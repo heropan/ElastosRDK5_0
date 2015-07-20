@@ -58,7 +58,7 @@ CPppoeService::MyStopInterfaceThread::MyStopInterfaceThread(
     /* [in] */ CPppoeService* owner)
     : mOwner(owner)
 {
-    Thread::Init(String("CPppoeService::MyStopInterfaceThread"));
+    Thread::constructor(String("CPppoeService::MyStopInterfaceThread"));
 }
 
 ECode CPppoeService::MyStopInterfaceThread::Run()
@@ -72,7 +72,7 @@ CPppoeService::MyResetInterfaceThread::MyResetInterfaceThread(
     /* [in] */ CPppoeService* owner)
     : mOwner(owner)
 {
-    Thread::Init(String("CPppoeService::MyResetInterfaceThread"));
+    Thread::constructor(String("CPppoeService::MyResetInterfaceThread"));
 }
 
 ECode CPppoeService::MyResetInterfaceThread::Run()

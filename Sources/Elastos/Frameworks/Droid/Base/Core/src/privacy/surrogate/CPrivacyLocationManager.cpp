@@ -927,7 +927,7 @@ CPrivacyLocationManager::PrivacyLocationUpdater::PrivacyLocationUpdater(
     , mLatitude(latitude)
     , mLongitude(longitude)
 {
-    Thread::Init(String("PrivacyLocationManager"));
+    Thread::constructor(String("PrivacyLocationManager"));
 }
 
 ECode CPrivacyLocationManager::PrivacyLocationUpdater::Run()

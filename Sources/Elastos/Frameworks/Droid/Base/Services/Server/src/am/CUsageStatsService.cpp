@@ -199,7 +199,7 @@ CUsageStatsService::WriteStatsToFileThread::WriteStatsToFileThread(
     /* [in] */ CUsageStatsService* host)
     : mHost(host)
 {
-    Thread::Init(String("CUsageStatsService_DiskWriter"));
+    Thread::constructor(String("CUsageStatsService_DiskWriter"));
 }
 
 ECode CUsageStatsService::WriteStatsToFileThread::Run()
@@ -339,24 +339,24 @@ String CUsageStatsService::GetCurrentDateStr(
         system->GetCurrentTimeMillis(&now);
 //        mCal->SetTimeInMillis(now);
         if (!prefix.IsNull()) {
-            sb.AppendString(prefix);
+            sb.Append(prefix);
         }
         Int32 year = 0;
 //        mCal->Get(ICalendar::YEAR, &year);
-        sb.AppendInt32(year);
+        sb.Append(year);
         Int32 month = 0;
 //        mCal->Get(ICalendar::MONTH, &month);
         Int32 mm = month - ICalendar::JANUARY +1;
         if (mm < 10) {
-            sb.AppendCStr("0");
+            sb.Append("0");
         }
-        sb.AppendInt32(mm);
+        sb.Append(mm);
         Int32 dd = 0;
 //        mCal->Get(ICalendar::DAY_OF_MONTH, &dd);
         if (dd < 10) {
-            sb.AppendCStr("0");
+            sb.Append("0");
         }
-        sb.AppendInt32(dd);
+        sb.Append(dd);
     }
     return sb.ToString();
 }
@@ -1128,19 +1128,19 @@ void CUsageStatsService::CollectDumpInfoFromParcelFLOCK(
 {
     StringBuilder sb(512);
     if (isCompactOutput) {
-        sb.AppendCStr("D:");
-        sb.AppendInt32(CHECKIN_VERSION);
+        sb.Append("D:");
+        sb.Append(CHECKIN_VERSION);
         sb.AppendChar(',');
     } else {
-        sb.AppendCStr("Date: ");
+        sb.Append("Date: ");
     }
 
-    sb.AppendString(date);
+    sb.Append(date);
 
     Int32 vers;
     in->ReadInt32(&vers);
     if (vers != VERSION) {
-        sb.AppendCStr(" (old data version)");
+        sb.Append(" (old data version)");
         pw->PrintStringln(sb.ToString());
         return;
     }
@@ -1163,74 +1163,74 @@ void CUsageStatsService::CollectDumpInfoFromParcelFLOCK(
             // This package has not been requested -- don't print
             // anything for it.
         } else if (isCompactOutput) {
-            sb.AppendCStr("P:");
-            sb.AppendString(pkgName);
+            sb.Append("P:");
+            sb.Append(pkgName);
             sb.AppendChar(',');
-            sb.AppendInt32(pus->mLaunchCount);
+            sb.Append(pus->mLaunchCount);
             sb.AppendChar(',');
-            sb.AppendInt64(pus->mUsageTime);
+            sb.Append(pus->mUsageTime);
             sb.AppendChar('\n');
             const Int32 NC = pus->mLaunchTimes.GetSize();
             if (NC > 0) {
                 HashMap<String, AutoPtr<TimeStats> >::Iterator it;
                 for (it = pus->mLaunchTimes.Begin(); it != pus->mLaunchTimes.End(); ++it) {
-                sb.AppendCStr("A:");
+                sb.Append("A:");
                 String activity = it->mFirst;
                 if (activity.StartWith(pkgName)) {
                     sb.AppendChar('*');
-                    sb.AppendString(activity.Substring(
+                    sb.Append(activity.Substring(
                                 pkgName.GetLength(), activity.GetLength()));
                     } else {
-                        sb.AppendString(activity);
+                        sb.Append(activity);
                     }
                     AutoPtr<TimeStats> times = it->mSecond;
                     sb.AppendChar(',');
-                    sb.AppendInt32(times->mCount);
+                    sb.Append(times->mCount);
                     for (Int32 i=0; i<NUM_LAUNCH_TIME_BINS; i++) {
-                        sb.AppendCStr(",");
-                        sb.AppendInt32((*times->mTimes)[i]);
+                        sb.Append(",");
+                        sb.Append((*times->mTimes)[i]);
                     }
                     sb.AppendChar('\n');
                 }
             }
 
         } else {
-            sb.AppendCStr("  ");
-            sb.AppendString(pkgName);
-            sb.AppendCStr(": ");
-            sb.AppendInt32(pus->mLaunchCount);
-            sb.AppendCStr(" times, ");
-            sb.AppendInt64(pus->mUsageTime);
-            sb.AppendCStr(" ms");
+            sb.Append("  ");
+            sb.Append(pkgName);
+            sb.Append(": ");
+            sb.Append(pus->mLaunchCount);
+            sb.Append(" times, ");
+            sb.Append(pus->mUsageTime);
+            sb.Append(" ms");
             sb.AppendChar('\n');
             const Int32 NC = pus->mLaunchTimes.GetSize();
             if (NC > 0) {
                 HashMap<String, AutoPtr<TimeStats> >::Iterator it;
                 for (it = pus->mLaunchTimes.Begin(); it != pus->mLaunchTimes.End(); ++it) {
-                    sb.AppendCStr("    ");
-                    sb.AppendString(it->mFirst);
+                    sb.Append("    ");
+                    sb.Append(it->mFirst);
                     AutoPtr<TimeStats> times = it->mSecond;
-                    sb.AppendCStr(": ");
-                    sb.AppendInt32(times->mCount);
-                    sb.AppendCStr(" starts");
+                    sb.Append(": ");
+                    sb.Append(times->mCount);
+                    sb.Append(" starts");
                     Int32 lastBin = 0;
                     for (Int32 i=0; i<NUM_LAUNCH_TIME_BINS-1; i++) {
                         if ((*times->mTimes)[i] != 0) {
-                            sb.AppendCStr(", ");
-                            sb.AppendInt32(lastBin);
+                            sb.Append(", ");
+                            sb.Append(lastBin);
                             sb.AppendChar('-');
-                            sb.AppendInt32((*LAUNCH_TIME_BINS)[i]);
-                            sb.AppendCStr("ms=");
-                            sb.AppendInt32((*times->mTimes)[i]);
+                            sb.Append((*LAUNCH_TIME_BINS)[i]);
+                            sb.Append("ms=");
+                            sb.Append((*times->mTimes)[i]);
                         }
                         lastBin = (*LAUNCH_TIME_BINS)[i];
                     }
                     if ((*times->mTimes)[NUM_LAUNCH_TIME_BINS-1] != 0) {
-                        sb.AppendCStr(", ");
-                        sb.AppendCStr(">=");
-                        sb.AppendInt32(lastBin);
-                        sb.AppendCStr("ms=");
-                        sb.AppendInt32((*times->mTimes)[NUM_LAUNCH_TIME_BINS-1]);
+                        sb.Append(", ");
+                        sb.Append(">=");
+                        sb.Append(lastBin);
+                        sb.Append("ms=");
+                        sb.Append((*times->mTimes)[NUM_LAUNCH_TIME_BINS-1]);
                     }
                     sb.AppendChar('\n');
                 }

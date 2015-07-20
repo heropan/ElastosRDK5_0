@@ -151,18 +151,18 @@ ECode CCellInfoCdma::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("CellInfoCdma:");
+    sb.Append("CellInfoCdma:");
     String strSuper;
     CellInfo::ToString(&strSuper);
-    sb.AppendString(strSuper);
-    sb.AppendCStr(", ");
+    sb.Append(strSuper);
+    sb.Append(", ");
     String strccdma;
     mCellIdentityCdma->ToString(&strccdma);
-    sb.AppendString(strccdma);
+    sb.Append(strccdma);
     String strcsscdma;
     mCellSignalStrengthCdma->ToString(&strcsscdma);
-    sb.AppendCStr(", ");
-    sb.AppendString(strcsscdma);
+    sb.Append(", ");
+    sb.Append(strcsscdma);
     *str = sb.ToString();
     return NOERROR;
 }

@@ -165,7 +165,7 @@ IdleCache::IdleReaper::IdleReaper(
     /* [in] */ IdleCache* parent)
     : mParent(parent)
 {
-    Thread::Init("IdleReaper");
+    Thread::constructor("IdleReaper");
 }
 
 IdleCache::IdleReaper::~IdleReaper()

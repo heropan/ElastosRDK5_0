@@ -158,11 +158,11 @@ ECode CCMailTo::ToString(
     {
         String temp1, temp2;
         Uri::encode(it->mFirst, &temp1);
-        sb.AppendString(temp1);
+        sb.Append(temp1);
         sb.AppendChar('=');
 
         Uri::encode(it->mSecond, &temp2);
-        sb.AppendString(temp2);
+        sb.Append(temp2);
         sb.AppendChar('&');
     }
 

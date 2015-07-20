@@ -177,12 +177,12 @@ ECode CCellIdentityLte::ToString(
 {
     VALIDATE_NOT_NULL(str);
     StringBuilder sb;
-    sb.AppendCStr("super.toString()");
-    sb.AppendCStr(" mMcc="); sb.AppendInt32(mMcc);
-    sb.AppendCStr(" mMnc="); sb.AppendInt32(mMnc);
-    sb.AppendCStr(" mCi="); sb.AppendInt32(mCi);
-    sb.AppendCStr(" mPci="); sb.AppendInt32(mPci);
-    sb.AppendCStr(" mTac="); sb.AppendInt32(mTac);
+    sb.Append("super.toString()");
+    sb.Append(" mMcc="); sb.Append(mMcc);
+    sb.Append(" mMnc="); sb.Append(mMnc);
+    sb.Append(" mCi="); sb.Append(mCi);
+    sb.Append(" mPci="); sb.Append(mPci);
+    sb.Append(" mTac="); sb.Append(mTac);
 
     *str = sb.ToString();
 

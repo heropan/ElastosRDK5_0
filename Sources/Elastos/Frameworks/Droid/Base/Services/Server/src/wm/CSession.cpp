@@ -53,26 +53,26 @@ ECode CSession::constructor(
     mUid = Binder::GetCallingUid();
     mPid = Binder::GetCallingPid();
     StringBuilder sb;
-    sb.AppendCStr("Session{");
-    sb.AppendString(StringUtils::Int32ToString((Int32)this));
-    sb.AppendCStr(" ");
-    sb.AppendInt32(mPid);
+    sb.Append("Session{");
+    sb.Append(StringUtils::Int32ToString((Int32)this));
+    sb.Append(" ");
+    sb.Append(mPid);
     if (mUid < IProcess::FIRST_APPLICATION_UID) {
-        sb.AppendCStr(":");
-        sb.AppendInt32(mUid);
+        sb.Append(":");
+        sb.Append(mUid);
     }
     else {
         AutoPtr<IUserHandleHelper> helper;
         CUserHandleHelper::AcquireSingleton((IUserHandleHelper**)&helper);
-        sb.AppendCStr(":u");
+        sb.Append(":u");
         Int32 id;
         helper->GetUserId(mUid, &id);
-        sb.AppendInt32(id);
+        sb.Append(id);
         sb.AppendChar('a');
         helper->GetAppId(mUid, &id);
-        sb.AppendInt32(id);
+        sb.Append(id);
     }
-    sb.AppendCStr("}");
+    sb.Append("}");
     sb.ToString(&mStringName);
 
     {

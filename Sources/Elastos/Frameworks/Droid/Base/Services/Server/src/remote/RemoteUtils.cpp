@@ -27,11 +27,11 @@ String RemoteUtils::ComposeResult(
     /* [in] */ String result)
 {
     StringBuilder sb(StringUtils::Int32ToString(rltNum));
-    sb.AppendString(SPLITER);
+    sb.Append(SPLITER);
 
     /** append result if there is no error */
     if(rltNum == ResultMsg::RESULTMSG_NOERROR->ToInt32()) {
-        sb.AppendString(result);
+        sb.Append(result);
     }
 
     if (DBG) Slogger::D(TAG, "ComposeResult: %s", sb.ToString().string());

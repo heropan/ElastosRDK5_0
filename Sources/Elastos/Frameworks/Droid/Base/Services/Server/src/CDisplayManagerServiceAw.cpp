@@ -41,7 +41,7 @@ CDisplayManagerServiceAw::DisplayThread::DisplayThread(
     , mTvdachotplug(0)
 {
     String superPara("DisplayManagerPolicy");
-    Thread::Init(superPara);
+    Thread::constructor(superPara);
     mService = service;
     mContext = context;
     mPM = pm;

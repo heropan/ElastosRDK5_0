@@ -101,7 +101,7 @@ ECode CManifestDigest::ToString(
     VALIDATE_NOT_NULL(str)
     StringBuilder sb(TO_STRING_PREFIX.GetLength()
         + mDigest->GetLength() * 3 + 1);
-    sb.AppendString(TO_STRING_PREFIX);
+    sb.Append(TO_STRING_PREFIX);
     const Int32 N = mDigest->GetLength();
     for (Int32 i = 0; i < N; i++) {
         const Byte b = (*mDigest)[i];

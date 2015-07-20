@@ -240,18 +240,18 @@ ECode CServiceState::ToString(
     StringBuilder sb;
     String radioTechnology = RilRadioTechnologyToString(mRadioTechnology);
 
-    sb.AppendInt32(mState); sb.AppendCStr(" "); sb.AppendCStr(mRoaming ? "roaming" : "home");
-    sb.AppendCStr(" "); sb.AppendString(mOperatorAlphaLong);
-    sb.AppendCStr(" "); sb.AppendString(mOperatorAlphaShort);
-    sb.AppendCStr(" "); sb.AppendString(mOperatorNumeric);
-    sb.AppendCStr(" "); sb.AppendCStr(mIsManualNetworkSelection ? "(manual)" : "");
-    sb.AppendCStr(" "); sb.AppendString(radioTechnology);
-    sb.AppendCStr(" "); sb.AppendCStr(mCssIndicator ? "CSS supported" : "CSS not supported");
-    sb.AppendCStr(" "); sb.AppendInt32(mNetworkId);
-    sb.AppendCStr(" "); sb.AppendInt32(mSystemId);
-    sb.AppendCStr(" RoamInd="); sb.AppendInt32(mCdmaRoamingIndicator);
-    sb.AppendCStr(" DefRoamInd="); sb.AppendInt32(mCdmaDefaultRoamingIndicator);
-    sb.AppendCStr(" EmergOnly="); sb.AppendBoolean(mIsEmergencyOnly);
+    sb.Append(mState); sb.Append(" "); sb.Append(mRoaming ? "roaming" : "home");
+    sb.Append(" "); sb.Append(mOperatorAlphaLong);
+    sb.Append(" "); sb.Append(mOperatorAlphaShort);
+    sb.Append(" "); sb.Append(mOperatorNumeric);
+    sb.Append(" "); sb.Append(mIsManualNetworkSelection ? "(manual)" : "");
+    sb.Append(" "); sb.Append(radioTechnology);
+    sb.Append(" "); sb.Append(mCssIndicator ? "CSS supported" : "CSS not supported");
+    sb.Append(" "); sb.Append(mNetworkId);
+    sb.Append(" "); sb.Append(mSystemId);
+    sb.Append(" RoamInd="); sb.Append(mCdmaRoamingIndicator);
+    sb.Append(" DefRoamInd="); sb.Append(mCdmaDefaultRoamingIndicator);
+    sb.Append(" EmergOnly="); sb.AppendBoolean(mIsEmergencyOnly);
     *str = sb.ToString();
     return NOERROR;
 }

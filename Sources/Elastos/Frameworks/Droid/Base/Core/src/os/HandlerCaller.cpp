@@ -172,16 +172,16 @@ ECode HandlerCaller::ObtainMessage(
     return NOERROR;
 }
 
-ECode HandlerCaller::ObtainMessageBO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Boolean arg1,
     /* [in] */ IInterface* arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageIIO(what, arg1 ? 1 : 0, 0, arg2, msg);
+    return ObtainMessage(what, arg1 ? 1 : 0, 0, arg2, msg);
 }
 
-ECode HandlerCaller::ObtainMessageBOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Boolean arg1,
     /* [in] */ IInterface* arg2,
@@ -194,44 +194,44 @@ ECode HandlerCaller::ObtainMessageBOO(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessageIIO(what, arg1 ? 1 : 0, 0, args, msg);
+    return ObtainMessage(what, arg1 ? 1 : 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageIIO(what, 0, 0, arg1, msg);
+    return ObtainMessage(what, 0, 0, arg1, msg);
 }
 
-ECode HandlerCaller::ObtainMessageI(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageIIO(what, arg1, 0, NULL, msg);
+    return ObtainMessage(what, arg1, 0, NULL, msg);
 }
 
-ECode HandlerCaller::ObtainMessageII(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageIIO(what, arg1, arg2, NULL, msg);
+    return ObtainMessage(what, arg1, arg2, NULL, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2,
     /* [out] */ IMessage** msg)
 {
-    return ObtainMessageIIO(what, arg1, 0, arg2, msg);
+    return ObtainMessage(what, arg1, 0, arg2, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIIO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -247,7 +247,7 @@ ECode HandlerCaller::ObtainMessageIIO(
     return NOERROR;
 }
 
-ECode HandlerCaller::ObtainMessageIIOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -261,10 +261,10 @@ ECode HandlerCaller::ObtainMessageIIOO(
     args->mArg1 = arg3;
     args->mArg2 = arg4;
 
-    return ObtainMessageIIO(what, arg1, arg2, args, msg);
+    return ObtainMessage(what, arg1, arg2, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ IInterface* arg2,
@@ -277,10 +277,10 @@ ECode HandlerCaller::ObtainMessageIOO(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessageIIO(what, arg1, 0, args, msg);
+    return ObtainMessage(what, arg1, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -292,10 +292,10 @@ ECode HandlerCaller::ObtainMessageOO(
     args->mArg1 = arg1;
     args->mArg2 = arg2;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageOOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -309,10 +309,10 @@ ECode HandlerCaller::ObtainMessageOOO(
     args->mArg2 = arg2;
     args->mArg3 = arg3;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageOOOO(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ IInterface* arg1,
     /* [in] */ IInterface* arg2,
@@ -328,10 +328,10 @@ ECode HandlerCaller::ObtainMessageOOOO(
     args->mArg3 = arg3;
     args->mArg4 = arg4;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIIII(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -347,10 +347,10 @@ ECode HandlerCaller::ObtainMessageIIII(
     args->mArgi3 = arg3;
     args->mArgi4 = arg4;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIIIII(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -368,10 +368,10 @@ ECode HandlerCaller::ObtainMessageIIIII(
     args->mArgi4 = arg4;
     args->mArgi5 = arg5;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIIIIII(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -391,10 +391,10 @@ ECode HandlerCaller::ObtainMessageIIIIII(
     args->mArgi5 = arg5;
     args->mArgi6 = arg6;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
-ECode HandlerCaller::ObtainMessageIIII0(
+ECode HandlerCaller::ObtainMessage(
     /* [in] */ Int32 what,
     /* [in] */ Int32 arg1,
     /* [in] */ Int32 arg2,
@@ -412,7 +412,7 @@ ECode HandlerCaller::ObtainMessageIIII0(
     args->mArgi4 = arg4;
     args->mArg1 = arg5;
 
-    return ObtainMessageIIO(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, args, msg);
 }
 
 AutoPtr<IHandlerCallerCallback> HandlerCaller::GetCallback()

@@ -486,7 +486,7 @@ CActivityManagerService::AThread::AThread()
     : mService(NULL)
     , mReady(FALSE)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CActivityManagerService::AThread::Run()
@@ -545,7 +545,7 @@ CActivityManagerService::ProcessStatsThread::ProcessStatsThread(
     /* [in] */ CActivityManagerService* host)
     : mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CActivityManagerService::ProcessStatsThread::Run()
@@ -809,7 +809,7 @@ CActivityManagerService::ReportMemUsageThread::ReportMemUsageThread(
     /* [in] */ CActivityManagerService* host)
     : mHost(host)
 {
-    Thread::Init();
+    Thread::constructor();
 }
 
 ECode CActivityManagerService::ReportMemUsageThread::Run()
@@ -1060,7 +1060,7 @@ CActivityManagerService::DropBoxTagThread::DropBoxTagThread(
     , mDbox(dbox)
     , mTag(tag)
 {
-    Thread::Init(String("Error dump: ") + tag);
+    Thread::constructor(String("Error dump: ") + tag);
 }
 
 ECode CActivityManagerService::DropBoxTagThread::Run()
@@ -1095,7 +1095,7 @@ CActivityManagerService::DropBoxTagThread2::DropBoxTagThread2(
     , mDbox(dbox)
     , mTag(tag)
 {
-    Thread::Init(String("Error dump: ") + tag);
+    Thread::constructor(String("Error dump: ") + tag);
 }
 
 ECode CActivityManagerService::DropBoxTagThread2::Run()
@@ -1139,7 +1139,7 @@ CActivityManagerService::WorkerThread::WorkerThread(
     , mCrashInfo(crashInfo)
     , mDbox(dbox)
 {
-    Thread::Init(String("Error dump: ") + dropboxTag);
+    Thread::constructor(String("Error dump: ") + dropboxTag);
 }
 
 ECode CActivityManagerService::WorkerThread::Run()
@@ -4021,11 +4021,11 @@ ECode CActivityManagerService::LogAppTooSlow(
     tobj->Set(now);
     String fString;
     tobj->Format(String("%Y-%m-%d %H:%M:%S"), &fString);
-    sb.AppendString(fString);
-    sb.AppendString(String(": "));
+    sb.Append(fString);
+    sb.Append(String(": "));
     TimeUtils::FormatDuration(SystemClock::GetUptimeMillis()-startTime, sb);
-    sb.AppendString(String(" since "));
-    sb.AppendString(msg);
+    sb.Append(String(" since "));
+    sb.Append(msg);
     AutoPtr<IFileOutputStream> fos;
     CFileOutputStream::New(tracesFile, (IFileOutputStream**)&fos);
     String str = sb.ToString();
@@ -10878,9 +10878,9 @@ ECode CActivityManagerService::AppendDropBoxProcessHeaders(
     // is invoked due to unavailability of lock on am and it
     // would prevent watchdog from killing system_server.
     if (process == NULL) {
-        sb.AppendCStr("Process: ");
-        sb.AppendString(processName);
-        sb.AppendCStr("\n");
+        sb.Append("Process: ");
+        sb.Append(processName);
+        sb.Append("\n");
         return NOERROR;
     }
     // Note: ProcessRecord 'process' is guarded by the service
@@ -10888,41 +10888,41 @@ ECode CActivityManagerService::AppendDropBoxProcessHeaders(
     // concurrently during execution of this method)
     {
         Object::Autolock lock(mLock);
-        sb.AppendCStr("Process: ");
-        sb.AppendString(processName);
-        sb.AppendCStr("\n");
+        sb.Append("Process: ");
+        sb.Append(processName);
+        sb.Append("\n");
         Int32 flags;
         process->mInfo->GetFlags(&flags);
         AutoPtr<IIPackageManager> pm = AppGlobals::GetPackageManager();
-        sb.AppendCStr("Flags: 0x");
+        sb.Append("Flags: 0x");
         String fstr = StringUtils::Int32ToString(flags, 16);
-        sb.AppendString(fstr);
-        sb.AppendCStr("\n");
+        sb.Append(fstr);
+        sb.Append("\n");
         HashSet<String>::Iterator it;
         for (it = process->mPkgList.Begin(); it != process->mPkgList.End(); ++it) {
             String pkg = *it;
-            sb.AppendCStr("Package: ");
-            sb.AppendString(pkg);
+            sb.Append("Package: ");
+            sb.Append(pkg);
             // try {
             AutoPtr<IPackageInfo> pi;
             FAIL_RETURN(pm->GetPackageInfo(pkg, 0, UserHandle::GetCallingUserId(), (IPackageInfo**)&pi));
             if (pi != NULL) {
-                sb.AppendCStr(" v");
+                sb.Append(" v");
                 Int32 code;
                 pi->GetVersionCode(&code);
-                sb.AppendInt32(code);
+                sb.Append(code);
                 String name;
                 pi->GetVersionName(&name);
                 if (!name.IsNull()) {
-                    sb.AppendCStr(" (");
-                    sb.AppendString(name);
-                    sb.AppendCStr(")");
+                    sb.Append(" (");
+                    sb.Append(name);
+                    sb.Append(")");
                 }
             }
             // } catch (RemoteException e) {
             //     Slogger::e(TAG, "Error getting package info: " + pkg, e);
             // }
-            sb.AppendCStr("\n");
+            sb.Append("\n");
         }
     }
     return NOERROR;
@@ -12068,7 +12068,7 @@ Boolean CActivityManagerService::DumpProcessesLocked(
     pw->PrintStringln(String("  mPreviousProcess: ") + (mPreviousProcess != NULL ? mPreviousProcess->ToString() : "NULL"));
     if (dumpAll) {
         StringBuilder sb(128);
-        sb.AppendCStr("  mPreviousProcessVisibleTime: ");
+        sb.Append("  mPreviousProcessVisibleTime: ");
         TimeUtils::FormatDuration(mPreviousProcessVisibleTime, sb);
         pw->PrintStringln(sb.ToString());
     }
@@ -16988,26 +16988,26 @@ ECode CActivityManagerService::CheckExcessivePowerUsageLocked(
             Int64 cputimeUsed = app->mCurCpuTime - app->mLastCpuTime;
             if (DEBUG_POWER) {
                 StringBuilder sb(128);
-                sb.AppendCStr("Wake for ");
+                sb.Append("Wake for ");
                 app->ToShortString(sb);
-                sb.AppendCStr(": over ");
+                sb.Append(": over ");
                 TimeUtils::FormatDuration(realtimeSince, sb);
-                sb.AppendCStr(" used ");
+                sb.Append(" used ");
                 TimeUtils::FormatDuration(wtimeUsed, sb);
-                sb.AppendCStr(" (");
-                sb.AppendInt64((wtimeUsed*100)/realtimeSince);
-                sb.AppendCStr("%)");
+                sb.Append(" (");
+                sb.Append((wtimeUsed*100)/realtimeSince);
+                sb.Append("%)");
                 Slogger::I(TAG, sb.ToString());
                 // sb.SetLength(0);
-                sb.AppendCStr("CPU for ");
+                sb.Append("CPU for ");
                 app->ToShortString(sb);
-                sb.AppendCStr(": over ");
+                sb.Append(": over ");
                 TimeUtils::FormatDuration(uptimeSince, sb);
-                sb.AppendCStr(" used ");
+                sb.Append(" used ");
                 TimeUtils::FormatDuration(cputimeUsed, sb);
-                sb.AppendCStr(" (");
-                sb.AppendInt64((cputimeUsed*100)/uptimeSince);
-                sb.AppendCStr("%)");
+                sb.Append(" (");
+                sb.Append((cputimeUsed*100)/uptimeSince);
+                sb.Append("%)");
                 Slogger::I(TAG, sb.ToString());
             }
             // If a process has held a wake lock for more
