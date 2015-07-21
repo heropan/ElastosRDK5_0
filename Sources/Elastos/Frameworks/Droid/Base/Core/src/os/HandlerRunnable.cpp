@@ -1,4 +1,4 @@
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 
 using Elastos::Droid::Os::EIID_IHandler;
 using Elastos::Core::EIID_IRunnable;
@@ -7,22 +7,22 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CAR_INTERFACE_IMPL(HandlerRunnableBase, Handler, IRunnable)
+CAR_INTERFACE_IMPL(HandlerRunnable, Handler, IRunnable)
 
-HandlerRunnableBase::HandlerRunnableBase(
+HandlerRunnable::HandlerRunnable(
     /* [in] */ Boolean async)
 {
     Handler::constructor(async);
 }
 
-HandlerRunnableBase::HandlerRunnableBase(
+HandlerRunnable::HandlerRunnable(
     /* [in] */ ILooper* looper,
     /* [in] */ Boolean async)
     : Handler(looper, async)
 {
 }
 
-HandlerRunnableBase::HandlerRunnableBase(
+HandlerRunnable::HandlerRunnable(
     /* [in] */ IHandlerCallback* callback,
     /* [in] */ Boolean takeStrongRefOfCallback,
     /* [in] */ Boolean async)
@@ -30,7 +30,7 @@ HandlerRunnableBase::HandlerRunnableBase(
 {
 }
 
-HandlerRunnableBase::HandlerRunnableBase(
+HandlerRunnable::HandlerRunnable(
     /* [in] */ ILooper* looper,
     /* [in] */ IHandlerCallback* callback,
     /* [in] */ Boolean takeStrongRefOfCallback,
@@ -39,11 +39,11 @@ HandlerRunnableBase::HandlerRunnableBase(
 {
 }
 
-HandlerRunnableBase::~HandlerRunnableBase()
+HandlerRunnable::~HandlerRunnable()
 {
 }
 
-ECode HandlerRunnableBase::HandleMessage(
+ECode HandlerRunnable::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     return NOERROR;

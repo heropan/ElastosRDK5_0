@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
-#define __ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
+#ifndef __ELASTOS_DROID_OS_HANDLERRUNNABLE_H__
+#define __ELASTOS_DROID_OS_HANDLERRUNNABLE_H__
 
 #include "Handler.h"
 
@@ -10,32 +10,32 @@ namespace Os {
 /**
  * Base class for HandlerRunnable
  */
-class HandlerRunnableBase
+class HandlerRunnable
     : public Handler
     , public IRunnable
 {
 public:
     CAR_INTERFACE_DECL()
 
-    HandlerRunnableBase(
+    HandlerRunnable(
         /* [in] */ Boolean async = FALSE);
 
-    HandlerRunnableBase(
+    HandlerRunnable(
         /* [in] */ ILooper* looper,
         /* [in] */ Boolean async = FALSE);
 
-    HandlerRunnableBase(
+    HandlerRunnable(
         /* [in] */ IHandlerCallback* callback,
         /* [in] */ Boolean takeStrongRefOfCallback,
         /* [in] */ Boolean async = FALSE);
 
-    HandlerRunnableBase(
+    HandlerRunnable(
         /* [in] */ ILooper* looper,
         /* [in] */ IHandlerCallback* callback,
         /* [in] */ Boolean takeStrongRefOfCallback,
         /* [in] */ Boolean async = FALSE);
 
-    virtual ~HandlerRunnableBase();
+    virtual ~HandlerRunnable();
 
     virtual CARAPI HandleMessage(
         /* [in] */ IMessage* msg);
@@ -46,4 +46,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_OS_HANDLER_RUNNABLE_BASE_H__
+#endif //__ELASTOS_DROID_OS_HANDLERRUNNABLE_H__

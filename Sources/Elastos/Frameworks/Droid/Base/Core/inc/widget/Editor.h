@@ -13,13 +13,13 @@
 
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::IComparator;
 using Elastos::Droid::Os::HandlerBase;
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::EIID_IBundle;
@@ -1120,7 +1120,7 @@ public:
 //==============================================================================
 
 class Blink
-    : public HandlerRunnableBase
+    : public HandlerRunnable
 {
 public:
     Blink(

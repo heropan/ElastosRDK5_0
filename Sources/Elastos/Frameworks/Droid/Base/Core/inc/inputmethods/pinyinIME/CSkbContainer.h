@@ -4,13 +4,13 @@
 
 #include "_CSkbContainer.h"
 #include "SoftKey.h"
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 
 
 #include "widget/RelativeLayout.h"
 
 using Elastos::Droid::InputMethodService::IInputMethodService;
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::Widget::IViewFlipper;
 using Elastos::Droid::Widget::IPopupWindow;
@@ -24,7 +24,7 @@ class SkbContainer: public Elastos::Droid::Widget::RelativeLayout
 {
 public:
     class LongPressTimer
-        : public HandlerRunnableBase
+        : public HandlerRunnable
     {
     public:
         LongPressTimer(

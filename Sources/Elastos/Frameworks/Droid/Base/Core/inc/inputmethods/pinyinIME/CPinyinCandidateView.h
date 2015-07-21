@@ -4,9 +4,9 @@
 
 #include "_CPinyinCandidateView.h"
 
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::View::IGestureDetector;
 
 namespace Elastos {
@@ -18,7 +18,7 @@ class PinyinCandidateView: public Elastos::Droid::View::View
 {
     private:
     class PressTimer
-        : public HandlerRunnableBase
+        : public HandlerRunnable
     {
     public:
         PressTimer(

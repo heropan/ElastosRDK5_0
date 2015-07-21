@@ -2,12 +2,12 @@
 #define __MultiTapKeyListener_H__
 
 #include "text/method/BaseKeyListener.h"
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 //using Elastos::Droid::Text::ITextKeyListener::Capitalize;
 
 namespace Elastos {
@@ -28,7 +28,7 @@ class MultiTapKeyListener : public BaseKeyListener
 {
 private:
     class Timeout
-        : public HandlerRunnableBase
+        : public HandlerRunnable
     {
     public:
         friend class MultiTapKeyListener;

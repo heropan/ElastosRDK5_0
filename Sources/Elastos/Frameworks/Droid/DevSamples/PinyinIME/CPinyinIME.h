@@ -6,7 +6,7 @@
 #include "_CPinyinIME.h"
 #include <inputmethodservice/InputMethodService.h>
 #include "EnglishInputProcessor.h"
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 #include "os/HandlerBase.h"
 
 using Elastos::Droid::App::IAlertDialog;
@@ -32,7 +32,7 @@ using Elastos::Droid::Inputmethods::PinyinIME::ISkbContainer;
 using Elastos::Droid::Inputmethods::PinyinIME::ICandidateViewListener;
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinEnvironment;
 using Elastos::Droid::InputMethodService::IAbstractInputMethodSessionImpl;
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::IOnGestureListener;
@@ -54,7 +54,7 @@ CarClass(CPinyinIME), public Elastos::Droid::InputMethodService::InputMethodServ
 {
 private:
     class PopupTimer
-        : public HandlerRunnableBase
+        : public HandlerRunnable
     {
     public:
         PopupTimer(
