@@ -20,12 +20,13 @@ else
         export XDK_BUILD_ENV=rdk
     fi
 
-    if [ "${BASH_SOURCE/\/Setup*/}" == "./SetEnv.sh" ] || [ "${BASH_SOURCE/\/Setup*/}" == "SetEnv.sh" ]; then
-        export XDK_ROOT=${PWD/\/Setup*/}
-    else
-        export XDK_ROOT=${BASH_SOURCE/\/Setup*/}
-    fi
+    export XDK_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
+    if [[ ! -f $XDK_ROOT/Setup/Config/$1.sh ]]; then
+        echo "Error: $XDK_SETUP_PATH/Config/$1.sh is not exist."
+        unset XDK_BUILD_ENV XDK_ROOT
+        return
+    fi
     ################################################################################
     # Clean WINDOWS path
     source $XDK_ROOT/Setup/CleanEnv.sh
@@ -38,9 +39,6 @@ else
 
     ################################################################################
     # Set user defined environment variables if the user config file exist
-    if [ ! -f $XDK_SETUP_PATH/Config/$1.sh ]; then
-        echo "Error: $XDK_SETUP_PATH/Config/$1.sh is not exist."
-    else
         source $XDK_SETUP_PATH/Config/$1.sh
 
         # Set command and build-tool lookup path
@@ -129,5 +127,4 @@ else
             export PS1='\[\e]0;$TITLE \w\a\]${debian_chroot:+($debian_chroot)}\w\$'
             #clear
         fi
-    fi
 fi
