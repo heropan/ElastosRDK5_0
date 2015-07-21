@@ -2,12 +2,16 @@
 #define __ELASTOS_IO_PIPEIMPL_H__
 
 #include "Pipe.h"
+#include "SinkChannel.h"
+#include "SourceChannel.h"
 
 using Elastos::IO::IFileDescriptorChannel;
 using Elastos::IO::Channels::ISocketChannel;
 using Elastos::IO::Channels::Pipe;
 using Elastos::IO::Channels::ISinkChannel;
 using Elastos::IO::Channels::ISourceChannel;
+using Elastos::IO::Channels::SinkChannel;
+using Elastos::IO::Channels::SourceChannel;
 
 namespace Elastos {
 namespace IO {
@@ -16,7 +20,7 @@ class PipeImpl : public Pipe
 {
 private:
     class PipeSourceChannel
-        : public Pipe::SourceChannel
+        : public SourceChannel
         , public IFileDescriptorChannel
     {
     public:
@@ -57,7 +61,7 @@ private:
     };
 
     class PipeSinkChannel
-        : public Pipe::SinkChannel
+        : public SinkChannel
         , public IFileDescriptorChannel
     {
     public:

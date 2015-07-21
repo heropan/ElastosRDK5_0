@@ -26,3 +26,6 @@ SOURCES += Selector.cpp
 SOURCES += ServerSocketChannel.cpp
 SOURCES += SocketChannel.cpp
 SOURCES += SelectableChannel.cpp
+SOURCES += SinkChannel.cpp
+SOURCES += SourceChannel.cpp
+SOURCES += Pipe.cpp

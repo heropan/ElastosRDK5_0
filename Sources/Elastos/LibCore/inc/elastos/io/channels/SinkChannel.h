@@ -12,15 +12,19 @@ namespace Channels {
 
 class SinkChannel
     : public AbstractSelectableChannel
+    , public ISinkChannel
+    , public IWritableByteChannel
     , public IGatheringByteChannel
 {
 public:
     CAR_INTERFACE_DECL()
 
-    CARAPI ValidOps(
+    CARAPI GetValidOps(
         /* [out] */ Int32* ret);
 
 protected:
+    SinkChannel();
+
     SinkChannel(
         /* [in] */ ISelectorProvider* provider);
 };

@@ -11,13 +11,19 @@ namespace Channels {
 
 class SourceChannel
     : public AbstractSelectableChannel
+    , public ISourceChannel
+    , public IReadableByteChannel
     , public IScatteringByteChannel
 {
 public:
-    CARAPI ValidOps(
+    CAR_INTERFACE_DECL()
+
+    CARAPI GetValidOps(
         /* [out] */ Int32* ret);
 
 protected:
+    SourceChannel();
+
     SourceChannel(
         /* [in] */ ISelectorProvider* provider);
 };

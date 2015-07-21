@@ -5,16 +5,19 @@ namespace Elastos {
 namespace IO {
 namespace Channels {
 
-CAR_INTERFACE_DECL(SinkChannel, AbstractSelectableChannel, IIGatheringByteChannel)
+CAR_INTERFACE_IMPL_3(SinkChannel, AbstractSelectableChannel, ISinkChannel, IGatheringByteChannel, IWritableByteChannel)
+
+SinkChannel::SinkChannel()
+{}
 
 SinkChannel::SinkChannel(
     /* [in] */ ISelectorProvider* provider)
-    : AbstractSelectableChannel(provider)
 {
+    AbstractSelectableChannel::constructor(provider);
     assert(NULL != provider);
 }
 
-ECode SinkChannel::ValidOps(
+ECode SinkChannel::GetValidOps(
     /* [out] */ Int32* ret)
 {
 	VALIDATE_NOT_NULL(ret)

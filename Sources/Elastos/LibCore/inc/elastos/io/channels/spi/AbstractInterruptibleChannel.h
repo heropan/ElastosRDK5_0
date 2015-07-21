@@ -28,6 +28,23 @@ class AbstractInterruptibleChannel
     , public IInterruptibleChannel
     , public IAbstractInterruptibleChannel
 {
+private:
+    class ActionRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        ActionRunnable(
+            /* [in] */ AbstractInterruptibleChannel *channel);
+
+        CAR_INTERFACE_DECL()
+
+        CARAPI Run();
+
+    private:
+        AutoPtr<AbstractInterruptibleChannel> mChannel;
+    };
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -99,7 +116,8 @@ protected:
      *             if another thread interrupts the calling thread while this
      *             method is executing.
      */
-    CARAPI End(Boolean success);
+    CARAPI End(
+        /* [in] */ Boolean success);
 
 private:
     volatile Boolean mClosed;

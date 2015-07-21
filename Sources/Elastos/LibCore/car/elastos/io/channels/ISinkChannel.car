@@ -9,26 +9,11 @@ module
 
     /**
     * @Involve
-    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.IAbstractSelectableChannel;
+    * interface Elastos.IO.Channels.IWritableByteChannel;
+    * interface Elastos.IO.Channels.IGatheringByteChannel;
     */
     interface ISinkChannel {
-        // extended from IWritableByteChannel
-        WriteByteBuffer(
-            [in]  IByteBuffer* buffer,
-            [out] Int32* ret);
-
-        // extended from IGatheringByteChannel
-        WriteByteBuffers(
-            [in]  ArrayOf<IByteBuffer*> buffers,
-            [out] Int64* ret);
-
-        // extended from IGatheringByteChannel
-        WriteByteBuffers(
-            [in]  ArrayOf<IByteBuffer*> buffers,
-            [in]  Int32 offset,
-            [in]  Int32 length,
-            [out] Int64* ret);
-
     } // ISinkChannel
 
     } // namespace Channels

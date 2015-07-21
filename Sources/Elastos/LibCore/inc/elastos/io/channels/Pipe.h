@@ -1,12 +1,7 @@
-#ifndef __ELASTOS_IO_CHANNELS_SINKCHANNEL_H__
-#define __ELASTOS_IO_CHANNELS_SINKCHANNEL_H__
+#ifndef __ELASTOS_IO_CHANNELS_PIPE_H__
+#define __ELASTOS_IO_CHANNELS_PIPE_H__
 
 #include "Object.h"
-#include "AbstractSelectableChannel.h"
-
-using Elastos::Core::IRunnable;
-using Elastos::IO::Channels::Spi::ISelectorProvider;
-using Elastos::IO::Channels::Spi::AbstractSelectableChannel;
 
 namespace Elastos {
 namespace IO {
@@ -16,69 +11,6 @@ class Pipe
     : public Object
     , public IPipe
 {
-public:
-    /**
-     * Writable sink channel used to write to a pipe.
-     */
-    class SinkChannel
-        : public AbstractSelectableChannel
-        , public IWritableByteChannel
-        , public IGatheringByteChannel
-    {
-    protected:
-        CAR_INTERFACE_DECL()
-
-        SinkChannel();
-
-        /**
-         * Constructs a new {@code SinkChannel}.
-         *
-         * @param provider
-         *            the provider of the channel.
-         */
-        CARAPI constructor(
-            /* [in] */ ISelectorProvider* provider);
-
-        /**
-         * Indicates that this channel only supports writing.
-         *
-         * @return a static value of OP_WRITE.
-         */
-        CARAPI GetValidOps(
-            /* [out] */ Int32* value);
-    };
-
-    /**
-     * Readable source channel used to read from a pipe.
-     */
-    class SourceChannel
-        : public AbstractSelectableChannel
-        , public IReadableByteChannel
-        , public IScatteringByteChannel
-    {
-    protected:
-        CAR_INTERFACE_DECL()
-
-        SourceChannel();
-
-        /**
-         * Constructs a new {@code SourceChannel}.
-         *
-         * @param provider
-         *            the provider of the channel.
-         */
-        constructor(
-            /* [in] */ ISelectorProvider* provider);
-
-        /**
-         * Indicates that this channel only supports reading.
-         *
-         * @return a static value of OP_READ.
-         */
-        CARAPI GetValidOps(
-            /* [out] */ Int32* value);
-    };
-
 public:
     CAR_INTERFACE_DECL()
 
@@ -115,5 +47,5 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_IO_CHANNELS_PIPE_H__
 

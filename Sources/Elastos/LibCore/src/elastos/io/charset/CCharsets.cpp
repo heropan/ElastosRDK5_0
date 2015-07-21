@@ -118,7 +118,7 @@ ECode CCharsets::ToAsciiBytes(
     /* [in] */ Int32 length,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    return CCharsets::CharsToBytes(chars, offset, length, 0x7f, bytes);
+    return CharsToBytes(chars, offset, length, 0x7f, bytes);
 }
 
 ECode CCharsets::ToIsoLatin1Bytes(
@@ -127,7 +127,7 @@ ECode CCharsets::ToIsoLatin1Bytes(
     /* [in] */ Int32 length,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
-    return CCharsets::CharsToBytes(chars, offset, length, 0xff, bytes);
+    return CharsToBytes(chars, offset, length, 0xff, bytes);
 }
 
 ECode CCharsets::ToUtf8Bytes(

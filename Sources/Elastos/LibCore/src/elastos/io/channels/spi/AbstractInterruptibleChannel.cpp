@@ -3,60 +3,36 @@
 #include "AutoLock.h"
 
 using Elastos::Core::Thread;
+using Elastos::Core::EIID_IRunnable;
 
 namespace Elastos {
 namespace IO {
 namespace Channels {
 namespace Spi {
 
-CAR_INTERFACE_IMPL_4(AbstractInterruptibleChannel, Object, IChannel, ICloseable, IInterruptibleChannel, IAbstractInterruptibleChannel)
+//==========================================================
+//       AbstractInterruptibleChannel::ActionRunnable
+//==========================================================
 
-class ActionRunnable
-    : public ElRefBase
-    , public IRunnable
+CAR_INTERFACE_IMPL(AbstractInterruptibleChannel::ActionRunnable, Object, IRunnable)
+
+AbstractInterruptibleChannel::ActionRunnable::ActionRunnable(
+    /* [in] */ AbstractInterruptibleChannel* channel)
 {
-public:
-    ActionRunnable(AbstractInterruptibleChannel *channel)
-    {
-        this->mChannel = channel;
-    }
+    mChannel = channel;
+}
 
-    ~ActionRunnable()
-    {
-    }
+ECode AbstractInterruptibleChannel::ActionRunnable::Run()
+{
+    mChannel->SetInterrupted(TRUE);
+    return mChannel->Close();
+}
 
-    ECode Run()
-    {
-        mChannel->SetInterrupted(TRUE);
-        return mChannel->Close();
-    }
+//==========================================================
+//       AbstractInterruptibleChannel
+//==========================================================
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid)
-    {
-        return NULL;
-    }
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID)
-    {
-        return E_NOT_IMPLEMENTED;
-    }
-
-    CARAPI_(UInt32) AddRef()
-    {
-        return ElRefBase::AddRef();
-    }
-
-    CARAPI_(UInt32) Release()
-    {
-        return ElRefBase::Release();
-    }
-
-private:
-    AbstractInterruptibleChannel *mChannel;
-};
+CAR_INTERFACE_IMPL_4(AbstractInterruptibleChannel, Object, IChannel, ICloseable, IInterruptibleChannel, IAbstractInterruptibleChannel)
 
 AbstractInterruptibleChannel::AbstractInterruptibleChannel()
     : mClosed(FALSE)

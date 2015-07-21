@@ -212,7 +212,6 @@ ECode ByteBufferAsInt64Buffer::Slice(
 ECode ByteBufferAsInt64Buffer::ProtectedArray(
     /* [out, callee] */ ArrayOf<Int64>** array)
 {
-    VALIDATE_NOT_NULL(array)
     assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
@@ -221,7 +220,6 @@ ECode ByteBufferAsInt64Buffer::ProtectedArray(
 ECode ByteBufferAsInt64Buffer::ProtectedArrayOffset(
     /* [out] */ Int32* offset)
 {
-    VALIDATE_NOT_NULL(offset)
     assert(0);
     // throw new UnsupportedOperationException();
     return E_UNSUPPORTED_OPERATION_EXCEPTION;

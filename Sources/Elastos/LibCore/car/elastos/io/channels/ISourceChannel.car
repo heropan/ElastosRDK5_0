@@ -9,25 +9,11 @@ module
 
     /**
     * @Involve
-    * interface Elastos.IO.Channels.IChannel;
+    * interface Elastos.IO.Channels.IAbstractSelectableChannel;
+    * interface Elastos.IO.Channels.IReadableByteChannel;
+    * interface Elastos.IO.Channels.IScatteringByteChannel;
     */
     interface ISourceChannel {
-        // extended from IReadableByteChannel
-        ReadByteBuffer(
-            [in] IByteBuffer* buffer);
-
-        // extended from IScatteringByteChannel
-        ReadByteBuffers(
-            [in]  ArrayOf<IByteBuffer*> buffers,
-            [out] Int64* ret);
-
-        // extended from IScatteringByteChannel
-        ReadByteBuffers(
-            [in] ArrayOf<IByteBuffer*> buffers,
-            [in] Int32 offset,
-            [in] Int32 length,
-            [out]Int64* ret);
-
     } // ISinkChannel
 
     } // namespace Channels
