@@ -3,10 +3,10 @@
 #define  __CBALLOONHINT_H__
 
 #include "_CBalloonHint.h"
-#include "os/HandlerRunnableBase.h"
+#include "os/HandlerRunnable.h"
 #include "widget/PopupWindow.h"
 
-using Elastos::Droid::Os::HandlerRunnableBase;
+using Elastos::Droid::Os::HandlerRunnable;
 using Elastos::Droid::Widget::IPopupWindowOnDismissListener;
 using Elastos::Droid::Widget::PopupWindow;
 
@@ -23,7 +23,7 @@ CarClass(CBalloonHint), public PopupWindow
 {
 private:
     class BalloonTimer
-        : public HandlerRunnableBase
+        : public HandlerRunnable
     {
     public:
 

@@ -1,9 +1,6 @@
 TARGET_NAME= os
 TARGET_TYPE= lib
 
-CAR_FLAGS += -n -u
-LUBE_FLAGS += -n -u
-
 C_DEFINES += -DDROID_CORE
 
 include $(MAKEDIR)/../../../../sources.inc
@@ -23,7 +20,7 @@ SOURCES += SystemClock.cpp
 SOURCES += Looper.cpp
 SOURCES += CLooperHelper.cpp
 SOURCES += Handler.cpp
-SOURCES += HandlerRunnableBase.cpp
+SOURCES += HandlerRunnable.cpp
 #SOURCES += CHandlerThread.cpp
 SOURCES += SomeArgs.cpp
 SOURCES += HandlerCaller.cpp
@@ -36,7 +33,7 @@ SOURCES += CMessageQueue.cpp
 SOURCES += NativeMessageQueue.cpp
 SOURCES += UserHandle.cpp
 SOURCES += CUserHandleHelper.cpp
-#SOURCES += Build.cpp
+SOURCES += Build.cpp
 #SOURCES += SystemProperties.cpp
 #SOURCES += CSystemProperties.cpp
 

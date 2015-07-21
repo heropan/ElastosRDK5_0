@@ -1,85 +1,89 @@
 
-#ifndef __CSYSTEMSERVER_H__
-#define __CSYSTEMSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CSYSTEMSERVER_H__
+#define __ELASTOS_DROID_SERVER_CSYSTEMSERVER_H__
 
-#include "_CSystemServer.h"
-#include "CInputMethodManagerService.h"
-#include "CWallpaperManagerService.h"
-#include "CStatusBarManagerService.h"
-#include "usb/CUsbService.h"
-#include "CMountService.h"
-#include "CNetworkManagementService.h"
-#include "net/CNetworkStatsService.h"
-#include "net/CNetworkPolicyManagerService.h"
-#include "CAppWidgetService.h"
-#include "CConnectivityService.h"
-#include "CRecognitionManagerService.h"
-#include "CTextServicesManagerService.h"
-#include "CCountryDetectorService.h"
-#include "NetworkTimeUpdateService.h"
-#include "CCommonTimeManagementService.h"
-#include "TwilightService.h"
-#include "CUiModeManagerService.h"
-#include "CBatteryService.h"
-#include "CThrottleService.h"
-#include "CLocationManagerService.h"
+#include "_Elastos_Droid_Server_CSystemServer.h"
+#include <elastos/core/Singleton.h>
+#include <elastos/core/Thread.h>
+#include "os/Runnable.h"
+// #include "CInputMethodManagerService.h"
+// #include "CWallpaperManagerService.h"
+// #include "CStatusBarManagerService.h"
+// #include "usb/CUsbService.h"
+// #include "CMountService.h"
+// #include "CNetworkManagementService.h"
+// #include "net/CNetworkStatsService.h"
+// #include "net/CNetworkPolicyManagerService.h"
+// #include "CAppWidgetService.h"
+// #include "CConnectivityService.h"
+// #include "CRecognitionManagerService.h"
+// #include "CTextServicesManagerService.h"
+// #include "CCountryDetectorService.h"
+// #include "NetworkTimeUpdateService.h"
+// #include "CCommonTimeManagementService.h"
+// #include "TwilightService.h"
+// #include "CUiModeManagerService.h"
+// #include "CBatteryService.h"
+// #include "CThrottleService.h"
+// #include "CLocationManagerService.h"
 
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Server::Usb::CUsbService;
-using Elastos::Droid::Server::CRecognitionManagerService;
-using Elastos::Droid::Server::CTextServicesManagerService;
-using Elastos::Droid::Server::CCountryDetectorService;
-using Elastos::Droid::Server::NetworkTimeUpdateService;
-using Elastos::Droid::Server::CCommonTimeManagementService;
-using Elastos::Droid::Server::TwilightService;
-using Elastos::Droid::Server::CUiModeManagerService;
-using Elastos::Droid::Server::CBatteryService;
-using Elastos::Droid::Server::Net::CNetworkStatsService;
-using Elastos::Droid::Server::Net::CNetworkPolicyManagerService;
-using Elastos::Droid::Server::CThrottleService;
-using Elastos::Droid::Server::Location::CLocationManagerService;
+using Elastos::Core::Thread;
+using Elastos::Core::IThread;
+using Elastos::Droid::Os::Runnable;
+using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Content::IContentResolver;
+// using Elastos::Droid::Server::Usb::CUsbService;
+// using Elastos::Droid::Server::CRecognitionManagerService;
+// using Elastos::Droid::Server::CTextServicesManagerService;
+// using Elastos::Droid::Server::CCountryDetectorService;
+// using Elastos::Droid::Server::NetworkTimeUpdateService;
+// using Elastos::Droid::Server::CCommonTimeManagementService;
+// using Elastos::Droid::Server::TwilightService;
+// using Elastos::Droid::Server::CUiModeManagerService;
+// using Elastos::Droid::Server::CBatteryService;
+// using Elastos::Droid::Server::Net::CNetworkStatsService;
+// using Elastos::Droid::Server::Net::CNetworkPolicyManagerService;
+// using Elastos::Droid::Server::CThrottleService;
+// using Elastos::Droid::Server::Location::CLocationManagerService;
 
 namespace Elastos {
 namespace Droid {
 namespace Server {
 
 class ServerThread
-    : public ThreadBase
+    : public Thread
 {
 private:
     class SystemReadyRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         SystemReadyRunnable();
 
-        CAR_INTERFACE_DECL()
-
         CARAPI Run();
 
     public:
-        CInputMethodManagerService* mImm;
-        CWallpaperManagerService* mWallpaper;
-        CNetworkManagementService* mNetworkManage;
-        CNetworkStatsService* mNetworkStats;
-        CNetworkPolicyManagerService* mNetworkPolicy;
-        CConnectivityService* mConnectivity;
-        CUsbService* mUsb;
-        CThrottleService* mThrottle;
-        CMountService* mMountService;
-        CBatteryService* mBattery;
-        CAppWidgetService* mAppWidget;
-        CStatusBarManagerService* mStatusBar;
-        CRecognitionManagerService* mRecognition;
-        CTextServicesManagerService* mTextServiceManagerService;
-        CCountryDetectorService* mCountryDetector;
-        NetworkTimeUpdateService* mNetworkTimeUpdater;
-        CCommonTimeManagementService* mCommonTimeMgmtService;
-        TwilightService* mTwilight;
-        CUiModeManagerService* mUiMode;
-        CLocationManagerService* mLocationF;
-        AutoPtr<IContext> mContext;
+        // CInputMethodManagerService* mImm;
+        // CWallpaperManagerService* mWallpaper;
+        // CNetworkManagementService* mNetworkManage;
+        // CNetworkStatsService* mNetworkStats;
+        // CNetworkPolicyManagerService* mNetworkPolicy;
+        // CConnectivityService* mConnectivity;
+        // CUsbService* mUsb;
+        // CThrottleService* mThrottle;
+        // CMountService* mMountService;
+        // CBatteryService* mBattery;
+        // CAppWidgetService* mAppWidget;
+        // CStatusBarManagerService* mStatusBar;
+        // CRecognitionManagerService* mRecognition;
+        // CTextServicesManagerService* mTextServiceManagerService;
+        // CCountryDetectorService* mCountryDetector;
+        // NetworkTimeUpdateService* mNetworkTimeUpdater;
+        // CCommonTimeManagementService* mCommonTimeMgmtService;
+        // TwilightService* mTwilight;
+        // CUiModeManagerService* mUiMode;
+        // CLocationManagerService* mLocationF;
+        // AutoPtr<IContext> mContext;
         Boolean mHeadless;
     };
 
@@ -95,13 +99,19 @@ private:
     static const String ENCRYPTING_STATE;// = "trigger_restart_min_framework";
     static const String ENCRYPTED_STATE;// = "1";
 
-    AutoPtr<IContentResolver> mContentResolver;
+    // AutoPtr<IContentResolver> mContentResolver;
     const Boolean mDeviceHasYpbpr;
 };
 
 CarClass(CSystemServer)
+    , public Singleton
+    , public ISystemServer
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI Init1(
         /* [in] */ const ArrayOf<String>& args);
 

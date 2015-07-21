@@ -1,1189 +1,1189 @@
 
 module
 {
-    merge("StatusBarManagerService.car");
-    merge("NetworkManagementService.car");
-    merge("power/SuspendBlocker.car");
-    merge("power/ScreenOnBlocker.car");
-    merge("power/DisplayBlanker.car");
-    merge("accessibility/EventStreamTransformation.car");
-    merge("accessibility/ScreenMagnifier.car");
-    merge("am/UriPermissionOwnerExternalToken.car");
-    merge("display/DisplayTransactionListener.car");
-    merge("display/WifiDisplayController.car");
-    merge("display/DisplayAdapter.car");
-    merge("display/OverlayDisplayWindow.car");
-    merge("display/DisplayViewport.car");
-    merge("display/DisplayManagerService.car");
+    // merge("StatusBarManagerService.car");
+    // merge("NetworkManagementService.car");
+    // merge("power/SuspendBlocker.car");
+    // merge("power/ScreenOnBlocker.car");
+    // merge("power/DisplayBlanker.car");
+    // merge("accessibility/EventStreamTransformation.car");
+    // merge("accessibility/ScreenMagnifier.car");
+    // merge("am/UriPermissionOwnerExternalToken.car");
+    // merge("display/DisplayTransactionListener.car");
+    // merge("display/WifiDisplayController.car");
+    // merge("display/DisplayAdapter.car");
+    // merge("display/OverlayDisplayWindow.car");
+    // merge("display/DisplayViewport.car");
+    // merge("display/DisplayManagerService.car");
     merge("Exceptions.car");
     merge("SystemServer.car");
-    merge("RecognitionManagerService.car");
-    merge("DeviceStorageMonitorService.car");
-    merge("dreams/DreamManagerService.car");
-    merge("search/Searchables.car");
+    // merge("RecognitionManagerService.car");
+    // merge("DeviceStorageMonitorService.car");
+    // merge("dreams/DreamManagerService.car");
+    // merge("search/Searchables.car");
 
-    using interface Elastos.Core.IRunnable;
-    using interface Elastos.IO.IFile;
-    using interface Elastos.Utility.ISet;
+    // using interface Elastos.Core.IRunnable;
+    // using interface Elastos.IO.IFile;
+    // using interface Elastos.Utility.ISet;
 
-    using interface Elastos.Droid.Utility.ITrustedTime;
-    using interface Elastos.Droid.App.IStopUserCallback;
-    using interface Elastos.Droid.App.IIActivityManager;
-    using interface Elastos.Droid.App.IUserSwitchObserver;
-    using interface Elastos.Droid.App.IIWallpaperManager;
-    using interface Elastos.Droid.App.IIUiModeManager;
-    using interface Elastos.Droid.App.IWallpaperInfo;
-    using interface Elastos.Droid.App.IIAlarmManager;
-    using interface Elastos.Droid.App.IINotificationManager;
-    using interface Elastos.Droid.App.IISearchManager;
-    using interface Elastos.Droid.App.IProcessObserver;
-    using interface Elastos.Droid.App.Admin.IIDevicePolicyManager;
-    using interface Elastos.Droid.App.Backup.IBackupAgentHelper;
-    using interface Elastos.Droid.App.Backup.IIBackupManager;
-    using interface Elastos.Droid.App.Backup.IIRestoreSession;
-    using interface Elastos.Droid.AppWidget.IIAppWidgetService;
-    using interface Elastos.Droid.Content.IBroadcastReceiver;
-    using interface Elastos.Droid.Content.IClipboard;
-    using interface Elastos.Droid.Content.IContext;
-    using interface Elastos.Droid.Content.IIntent;
-    using interface Elastos.Droid.Content.IIntentReceiver;
-    using interface Elastos.Droid.Content.IServiceConnection;
-    using interface Elastos.Droid.Content.IComponentName;
-    using interface Elastos.Droid.Content.IContentService;
-    using interface Elastos.Droid.Content.IIIntentSender;
-    using interface Elastos.Droid.Content.Pm.IIPackageManager;
-    using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
-    using interface Elastos.Droid.Location.IICountryDetector;
-    using interface Elastos.Droid.Location.ICountryListener;
-    using interface Elastos.Droid.Net.IIConnectivityManager;
-    using interface Elastos.Droid.Net.IINetworkPolicyManager;
-    using interface Elastos.Droid.Net.INetworkManagementEventObserver;
-    using interface Elastos.Droid.Net.INetworkStatsService;
-    using interface Elastos.Droid.Net.INetworkPolicyListener;
-    using interface Elastos.Droid.Net.IIThrottleManager;
-    using interface Elastos.Droid.Net.INetworkStatsSession;
-    using interface Elastos.Droid.Os.IBinder;
-    using interface Elastos.Droid.Os.ILooper;
-    using interface Elastos.Droid.Os.IHandler;
-    using interface Elastos.Droid.Os.IIUserManager;
-    using interface Elastos.Droid.Os.IVibratorService;
-    using interface Elastos.Droid.Os.IHandlerCallback;
-    using interface Elastos.Droid.Os.IIUpdateLock;
-    using interface Elastos.Droid.Os.INetworkManagementService;
-    using interface Elastos.Droid.Os.IBundle;
-    using interface Elastos.Droid.Os.IIPowerManager;
-    using interface Elastos.Droid.Os.IHardwareService;
-    using interface Elastos.Droid.Os.IZigbeeService;
-    using interface Elastos.Droid.Os.IKortideRemoteService;
-    using interface Elastos.Droid.Os.Storage.IMountService;
-    using interface Elastos.Droid.Os.Storage.IMountShutdownObserver;
-    using interface Elastos.Droid.View.IIWindowManager;
-    using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
-    using interface Elastos.Droid.View.IWindowSession;
-    using interface Elastos.Droid.View.IApplicationToken;
-    using interface Elastos.Droid.View.IWindowManager;
-    using interface Elastos.Droid.View.IInputMethodCallback;
-    using interface Elastos.Droid.View.InputMethod.IInputMethod;
-    using interface Elastos.Droid.View.Accessibility.IIAccessibilityManager;
-    using interface Elastos.Droid.Internal.View.IIInputMethod;
-    using interface Elastos.Droid.Internal.View.IIInputMethodManager;
-    using interface Elastos.Droid.View.IDisplayContentChangeListener;
-    using interface Elastos.Droid.View.IInputFilter;
-    using interface Elastos.Droid.View.IIDisplayManagerAw;
-    using interface Elastos.Droid.Hardware.Display.IDisplayListener;
-    using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
-    using interface Elastos.Droid.Hardware.Input.IIInputManager;
-    using interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
-    using interface Elastos.Droid.Hardware.Usb.IIUsbManager;
-    using interface Elastos.Droid.Hardware.IISerialManager;
-    using interface Elastos.Droid.Internal.App.IIBatteryStats;
-    using interface Elastos.Droid.Internal.App.IIUsageStats;
-    using interface Elastos.Droid.Internal.Os.IBatteryCallback;
-    using interface Elastos.Droid.Internal.Os.IDropBoxManagerService;
-    using interface Elastos.Droid.Internal.View.IInputMethodClient;
-    using interface Elastos.Droid.Internal.View.IInputContext;
-    using interface Elastos.Droid.Privacy.IIPrivacySettingsManager;
-    using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
-    using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
-    using interface Elastos.Droid.Accounts.IIAccountManager;
-    using interface Elastos.Droid.Accounts.IAccountManagerResponse;
-    using interface Elastos.Droid.Accounts.IAccount;
-    using interface Elastos.Droid.Accounts.IIAccountAuthenticatorResponse;
+    // using interface Elastos.Droid.Utility.ITrustedTime;
+    // using interface Elastos.Droid.App.IStopUserCallback;
+    // using interface Elastos.Droid.App.IIActivityManager;
+    // using interface Elastos.Droid.App.IUserSwitchObserver;
+    // using interface Elastos.Droid.App.IIWallpaperManager;
+    // using interface Elastos.Droid.App.IIUiModeManager;
+    // using interface Elastos.Droid.App.IWallpaperInfo;
+    // using interface Elastos.Droid.App.IIAlarmManager;
+    // using interface Elastos.Droid.App.IINotificationManager;
+    // using interface Elastos.Droid.App.IISearchManager;
+    // using interface Elastos.Droid.App.IProcessObserver;
+    // using interface Elastos.Droid.App.Admin.IIDevicePolicyManager;
+    // using interface Elastos.Droid.App.Backup.IBackupAgentHelper;
+    // using interface Elastos.Droid.App.Backup.IIBackupManager;
+    // using interface Elastos.Droid.App.Backup.IIRestoreSession;
+    // using interface Elastos.Droid.AppWidget.IIAppWidgetService;
+    // using interface Elastos.Droid.Content.IBroadcastReceiver;
+    // using interface Elastos.Droid.Content.IClipboard;
+    // using interface Elastos.Droid.Content.IContext;
+    // using interface Elastos.Droid.Content.IIntent;
+    // using interface Elastos.Droid.Content.IIntentReceiver;
+    // using interface Elastos.Droid.Content.IServiceConnection;
+    // using interface Elastos.Droid.Content.IComponentName;
+    // using interface Elastos.Droid.Content.IContentService;
+    // using interface Elastos.Droid.Content.IIIntentSender;
+    // using interface Elastos.Droid.Content.Pm.IIPackageManager;
+    // using interface Elastos.Droid.Content.Pm.IRegisteredServicesCacheListener;
+    // using interface Elastos.Droid.Location.IICountryDetector;
+    // using interface Elastos.Droid.Location.ICountryListener;
+    // using interface Elastos.Droid.Net.IIConnectivityManager;
+    // using interface Elastos.Droid.Net.IINetworkPolicyManager;
+    // using interface Elastos.Droid.Net.INetworkManagementEventObserver;
+    // using interface Elastos.Droid.Net.INetworkStatsService;
+    // using interface Elastos.Droid.Net.INetworkPolicyListener;
+    // using interface Elastos.Droid.Net.IIThrottleManager;
+    // using interface Elastos.Droid.Net.INetworkStatsSession;
+    // using interface Elastos.Droid.Os.IBinder;
+    // using interface Elastos.Droid.Os.ILooper;
+    // using interface Elastos.Droid.Os.IHandler;
+    // using interface Elastos.Droid.Os.IIUserManager;
+    // using interface Elastos.Droid.Os.IVibratorService;
+    // using interface Elastos.Droid.Os.IHandlerCallback;
+    // using interface Elastos.Droid.Os.IIUpdateLock;
+    // using interface Elastos.Droid.Os.INetworkManagementService;
+    // using interface Elastos.Droid.Os.IBundle;
+    // using interface Elastos.Droid.Os.IIPowerManager;
+    // using interface Elastos.Droid.Os.IHardwareService;
+    // using interface Elastos.Droid.Os.IZigbeeService;
+    // using interface Elastos.Droid.Os.IKortideRemoteService;
+    // using interface Elastos.Droid.Os.Storage.IMountService;
+    // using interface Elastos.Droid.Os.Storage.IMountShutdownObserver;
+    // using interface Elastos.Droid.View.IIWindowManager;
+    // using interface Elastos.Droid.View.IWindowManagerPolicyWindowManagerFuncs;
+    // using interface Elastos.Droid.View.IWindowSession;
+    // using interface Elastos.Droid.View.IApplicationToken;
+    // using interface Elastos.Droid.View.IWindowManager;
+    // using interface Elastos.Droid.View.IInputMethodCallback;
+    // using interface Elastos.Droid.View.InputMethod.IInputMethod;
+    // using interface Elastos.Droid.View.Accessibility.IIAccessibilityManager;
+    // using interface Elastos.Droid.Internal.View.IIInputMethod;
+    // using interface Elastos.Droid.Internal.View.IIInputMethodManager;
+    // using interface Elastos.Droid.View.IDisplayContentChangeListener;
+    // using interface Elastos.Droid.View.IInputFilter;
+    // using interface Elastos.Droid.View.IIDisplayManagerAw;
+    // using interface Elastos.Droid.Hardware.Display.IDisplayListener;
+    // using interface Elastos.Droid.Hardware.Display.IIDisplayManager;
+    // using interface Elastos.Droid.Hardware.Input.IIInputManager;
+    // using interface Elastos.Droid.Hardware.Input.IInputDeviceListener;
+    // using interface Elastos.Droid.Hardware.Usb.IIUsbManager;
+    // using interface Elastos.Droid.Hardware.IISerialManager;
+    // using interface Elastos.Droid.Internal.App.IIBatteryStats;
+    // using interface Elastos.Droid.Internal.App.IIUsageStats;
+    // using interface Elastos.Droid.Internal.Os.IBatteryCallback;
+    // using interface Elastos.Droid.Internal.Os.IDropBoxManagerService;
+    // using interface Elastos.Droid.Internal.View.IInputMethodClient;
+    // using interface Elastos.Droid.Internal.View.IInputContext;
+    // using interface Elastos.Droid.Privacy.IIPrivacySettingsManager;
+    // using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
+    // using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
+    // using interface Elastos.Droid.Accounts.IIAccountManager;
+    // using interface Elastos.Droid.Accounts.IAccountManagerResponse;
+    // using interface Elastos.Droid.Accounts.IAccount;
+    // using interface Elastos.Droid.Accounts.IIAccountAuthenticatorResponse;
 
-    using interface Elastos.Droid.Net.Ethernet.IIEthernetManager;
-    using interface Elastos.Droid.Net.Nsd.IINsdManager;
-    using interface Elastos.Droid.Net.Wifi.IIWifiManager;
-    using interface Elastos.Droid.StatusBar.IIStatusBarService;
-    using interface Elastos.Droid.Service.Wallpaper.IWallpaperConnection;
-    using interface Elastos.Droid.View.Textservice.IITextServicesManager;
-    using interface Elastos.Droid.Net.Pppoe.IPppoeStateTracker;
-    using interface Elastos.Droid.Net.Pppoe.IIPppoeManager;
-    using interface Elastos.Droid.Location.IILocationManager;
-    using interface Elastos.Droid.WifiDisplay.IWifiDisplayManager;
-    using interface Elastos.Droid.Utility.ITrustedTime;
+    // using interface Elastos.Droid.Net.Ethernet.IIEthernetManager;
+    // using interface Elastos.Droid.Net.Nsd.IINsdManager;
+    // using interface Elastos.Droid.Net.Wifi.IIWifiManager;
+    // using interface Elastos.Droid.StatusBar.IIStatusBarService;
+    // using interface Elastos.Droid.Service.Wallpaper.IWallpaperConnection;
+    // using interface Elastos.Droid.View.Textservice.IITextServicesManager;
+    // using interface Elastos.Droid.Net.Pppoe.IPppoeStateTracker;
+    // using interface Elastos.Droid.Net.Pppoe.IIPppoeManager;
+    // using interface Elastos.Droid.Location.IILocationManager;
+    // using interface Elastos.Droid.WifiDisplay.IWifiDisplayManager;
+    // using interface Elastos.Droid.Utility.ITrustedTime;
 
-    using interface Elastos.Droid.Server.Display.IDisplayManagerServiceWindowManagerFuncs;
-    using interface Elastos.Droid.Server.Display.IDisplayManagerServiceInputManagerFuncs;
+    // using interface Elastos.Droid.Server.Display.IDisplayManagerServiceWindowManagerFuncs;
+    // using interface Elastos.Droid.Server.Display.IDisplayManagerServiceInputManagerFuncs;
 
     namespace Elastos {
     namespace Droid {
     namespace Server {
 
-    class CBootReceiver {
-        interface IBroadcastReceiver;
-    }
-
-    class CMasterClearReceiver {
-        interface IBroadcastReceiver;
-    }
-
-    [local]
-    class CBrickReceiver {
-        interface IBroadcastReceiver;
-    }
-
-    [local]
-    class CSerialService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IISerialManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CDisplayManagerServiceAw {
-        constructor(
-            [in] IContext* ctx,
-            [in] IIPowerManager* pm);
-
-        interface IIDisplayManagerAw;
-        interface IBinder;
-    }
-
-    [local]
-    class CAlarmManagerService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIAlarmManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CBackupManagerService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIBackupManager;
-        interface IBinder;
-    }
-
-    class CSystemBackupAgent {
-        interface IBackupAgentHelper;
-    }
-
-    [local]
-    class CActiveRestoreSession {
-        constructor(
-            [in] String packageName,
-            [in] String transport,
-            [in] Handle32 host);
-
-        interface IIRestoreSession;
-        interface IBinder;
-    }
-
-    [local]
-    class CDiskStatsService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IBinder;
-    }
-
-    [local]
-    class CUpdateLockService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIUpdateLock;
-        interface IBinder;
-    }
-
-    [local]
-    class CSamplingProfilerService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IBinder;
-    }
-
-    [local]
-    class CCountryDetectorService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IICountryDetector;
-        interface IBinder;
-        interface IRunnable;
-    }
-
-    [local]
-    class CEthernetService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIEthernetManager;
-    }
-
-    [local]
-    class CCommonTimeManagementService
-    {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IBinder;
-    }
-
-    // [local]
-    // class CPppoeService {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IPppoeStateTracker* tracker);
-//
-    //     interface IIPppoeManager;
-    // }
-
-    [local]
-    class CClipboardService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IClipboard;
-        interface IBinder;
-    }
-
-    [local]
-    class CVibratorService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IInputDeviceListener;
-        interface IVibratorService;
-        interface IBinder;
-    }
-
-    [local]
-    class CStatusBarManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 windowManager);
-
-        interface IIStatusBarService;
-        interface IBinder;
-    }
-
-    [local]
-    class CNotificationManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 statusBar,
-            [in] Handle32 lights);
-
-        interface IINotificationManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CDeviceStorageMonitorService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IDeviceStorageMonitorService;
-        interface IBinder;
-    }
-
-    [local]
-    class CUiModeManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 twilight);
-
-        interface IIUiModeManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CLegacyFlashlightHack {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IHardwareService;
-        interface IBinder;
-    }
-
-    [local]
-    class CBatteryService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 lights);
-
-        interface IBinder;
-    }
-
-    [local]
-    class CDropBoxManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IFile* path);
-
-        interface IDropBoxManagerService;
-        interface IBinder;
-    }
-
-    [local]
-    class CNsdService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IINsdManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CThrottleService {
-        constructor(
-            [in] IContext* ctx);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] INetworkManagementService* nmService,
-            [in] ITrustedTime* time,
-            [in] String iface);
-
-        interface IIThrottleManager;
-        interface IBinder;
-    }
-
-    [local]
-    class CWallpaperManagerService  {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIWallpaperManager;
-        interface IBinder;
-    }
-
-    class CWMSWallpaperConnection {
-        constructor(
-            [in] IWallpaperInfo* info,
-            [in] Handle32 wallpaperData,
-            [in] Handle32 owner);
-
-        interface IWallpaperConnection;
-        interface IServiceConnection;
-        interface IBinder;
-    }
-
-    class CWMSUserSwitchObserver {
-        constructor(
-            [in] Handle32 owner);
-
-        interface IUserSwitchObserver;
-        interface IBinder;
-    }
-
-    [local]
-    class CDevicePolicyManagerService {
-        constructor(
-            [in] IContext* context);
-
-        interface IIDevicePolicyManager;
-    }
-
-    namespace Am {
-
-    class CActivityManagerService {
-        constructor();
-
-        interface IIActivityManager;
-        interface IBatteryCallback;
-    }
-
-    class CShutdownReceiver {
-        constructor(
-            [in] Handle32 host,
-            [in] Handle32 uss);
-
-        interface IIntentReceiver;
-    }
-
-    class CStoppingReceiver {
-        constructor(
-            [in] Handle32 host,
-            [in] Handle32 uss,
-            [in] IIntent* shutdownIntent,
-            [in] IIntentReceiver* shutdownReceiver,
-            [in] Int32 userId);
-
-        interface IIntentReceiver;
-    }
-
-    class CActivityRecordToken {
-        constructor(
-            [in] Handle32 activity);
-
-        interface IApplicationToken;
-        interface IBinder;
-    }
-
-    class CBatteryStatsService {
-        constructor(
-            [in] String fileName);
-
-        interface IIBatteryStats;
-    }
-
-    class CUsageStatsService {
-        constructor(
-            [in] String dir);
-
-        interface IIUsageStats;
-    }
-
-    class CContentProviderConnection {
-        constructor(
-            [in] Handle32 provider,
-            [in] Handle32 client);
-
-        interface IBinder;
-    }
-
-    class CPendingIntentRecord {
-        constructor(
-            [in] Handle32 owner,
-            [in] Handle32 k,
-            [in] Int32 u);
-
-        interface IIIntentSender;
-        interface IBinder;
-    }
-
-    class CServiceRecord {
-        interface IBinder;
-    }
-
-    class CUriPermissionOwnerExternalToken {
-        constructor(
-            [in] Handle32 owner);
-
-        interface IUriPermissionOwnerExternalToken;
-        interface IBinder;
-    }
-
-    } // namespace Am
-
-    namespace Connectivity {
-
-    [local]
-    class CTethering {
-        constructor(
-            [in] IContext* ctx,
-            [in] INetworkManagementService* nmService,
-            [in] INetworkStatsService* statsService,
-            [in] IIConnectivityManager* connService,
-            [in] ILooper* looper);
-
-        interface INetworkManagementEventObserver;
-        interface IBinder;
-    }
-
-    class CVpnObserver {
-        constructor(
-            [in] Handle32 owner);
-
-        interface INetworkManagementEventObserver;
-        interface IBinder;
-    }
-
-    } // namespace Connectivity
-
-    namespace Display {
-
-    [local]
-    class CDisplayManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IHandler* mainHandler,
-            [in] IHandler* uiHandler);
-
-        interface IIDisplayManager;
-    }
-
-    } // namespace Display
-
-    namespace Dreams {
-
-    [local]
-    class CDreamManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IHandler* mainHandler);
-
-        interface IDreamManagerService;
-        interface IBinder;
-    }
-
-    } // namespace Dreams
-
-    namespace Input {
-
-    [local]
-    class CInputManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IHandler* handler);
-
-        interface IIInputManager;
-        interface IDisplayManagerServiceInputManagerFuncs;
-        //interface IWatchdogMonitor;
-    }
-
-    } // namespace Input
-
-    namespace Location {
-
-    [local]
-    class CLocationManagerService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IILocationManager;
-        interface IRunnable;
-    }
-
-    } //Location
-
-    namespace Net {
-        class CProcessObserver {
-            constructor(
-                [in] Handle32 owner);
-
-            interface IProcessObserver;
-        }
-
-        [local]
-        class CNetworkPolicyManagerService {
-            constructor(
-                [in] IContext* ctx,
-                [in] IIActivityManager* activityManager,
-                [in] IIPowerManager* powerManager,
-                [in] INetworkStatsService* networkStats,
-                [in] INetworkManagementService* networkManagement);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IIActivityManager* activityManager,
-                [in] IIPowerManager* powerManager,
-                [in] INetworkStatsService* networkStats,
-                [in] INetworkManagementService* networkManagement,
-                [in] ITrustedTime* time,
-                [in] IFile* systemDir,
-                [in] Boolean suppressDefaultPolicy);
-
-            interface IINetworkPolicyManager;
-        }
-
-        [local]
-        class CNetworkStatsService {
-            constructor(
-                [in] IContext* ctx,
-                [in] INetworkManagementService* networkManager,
-                [in] IIAlarmManager* alarmManager);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] INetworkManagementService* networkManager,
-                [in] IIAlarmManager* alarmManager,
-                [in] ITrustedTime* time,
-                [in] IFile* systemDir,
-                [in] Handle32 settings);
-
-            interface INetworkStatsService;
-        }
-
-        class CNetworkStatsSession {
-            constructor(
-                [in] Handle32 host);
-
-            interface INetworkStatsSession;
-        }
-
-        class CNetworkPolicyManagerServiceAlertObserber {
-            constructor(
-                [in] Handle32 owner);
-
-            interface INetworkManagementEventObserver;
-        }
-
-        class CNetworkStatsServiceAlertObserber {
-            constructor(
-                [in] Handle32 owner);
-
-            interface INetworkManagementEventObserver;
-        }
-
-    } // namespace Net
-
-    namespace Pm {
-
-    [local]
-    class CPackageManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 installer,
-            [in] Boolean factoryTest,
-            [in] Boolean onlyCore);
-
-        interface IIPackageManager;
-    }
-
-    class CResourcesChangedReceiver {
-        constructor(
-            [in] IIPackageManager* owner,
-            [in] ISet* keys,
-            [in] Boolean reportStatus);
-
-        interface IIntentReceiver;
-    }
-
-    [local]
-    class CUserManagerService {
-        constructor(
-            [in] IFile* dataDir,
-            [in] IFile* baseUserPath);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 pm,
-            [in] Handle32 installLock,
-            [in] Handle32 packagesLock);
-
-        interface IIUserManager;
-    }
-
-    class CUserStopUserCallback {
-        constructor(
-            [in] IIUserManager* mUm);
-
-        interface IStopUserCallback;
-    }
-
-    } // namespace Pm
-
-//    namespace Updates {
-//
-//    class CCertPinInstallReceiver {
-//        constructor();
-//
-//        interface IBroadcastReceiver;
-//    }
-//
-//    class CConfigUpdateInstallReceiver {
-//        constructor(
-//            [in] String updateDir,
-//            [in] String updateContentPath,
-//            [in] String updateMetadataPath,
-//            [in] String updateVersionPath));
-//
-//        interface IBroadcastReceiver;
-//    }
-//
-//    class CSmsShortCodesInstallReceiver {
-//        constructor();
-//
-//        interface IBroadcastReceiver;
-//    }
-//
-//    } // namespace Updates
-
-    namespace Usb {
-
-    [local]
-    class CUsbService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IIUsbManager;
-    }
-
-    } // namespace Usb
-
-    namespace Search {
-
-        [local]
-        class CSearchManagerService {
-            constructor(
-                [in] IContext* ctx);
-
-            interface IISearchManager;
-            interface IBinder;
-        }
-    }
-    namespace Wm {
-
-    [local]
-    class CWindowManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 pm,
-            [in] Handle32 displayManager,
-            [in] Handle32 inputManager,
-            [in] IHandler* uiHandler,
-            [in] Boolean haveInputMethods,
-            [in] Boolean showBootMsgs,
-            [in] Boolean onlyCore);
-
-        interface IIWindowManager;
-        interface IWindowManagerPolicyWindowManagerFuncs;
-        interface IDisplayManagerServiceWindowManagerFuncs;
-        interface IDisplayListener;
-    }
-
-    class CSession {
-        constructor(
-            [in] Handle32 service,
-            [in] IInputMethodClient* client,
-            [in] IInputContext* inputContext);
-
-        interface IWindowSession;
-        interface IProxyDeathRecipient;
-    }
-
-    } // Wm
-
-    class CNetworkPolicyListener {
-        constructor(
-            [in] Handle32 service);
-
-        interface INetworkPolicyListener;
-    }
-
-    class CDataActivityObserver {
-        constructor(
-            [in] Handle32 owner);
-
-        interface INetworkManagementEventObserver;
-    }
-
-    [local]
-    class CConnectivityService {
-        constructor(
-            [in] IContext* ctx,
-            [in] INetworkManagementService* netManager,
-            [in] INetworkStatsService* statsService,
-            [in] IINetworkPolicyManager* policyManager);
-
-        constructor(
-            [in] IContext* ctx,
-            [in] INetworkManagementService* netManager,
-            [in] INetworkStatsService* statsService,
-            [in] IINetworkPolicyManager* policyManager,
-            [in] Handle32 netFactory);
-
-        interface IIConnectivityManager;
-    }
-
-    [local]
-    class CInputMethodManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Handle32 windowManagerService);
-
-        interface IIInputMethodManager;
-        interface IServiceConnection;
-        interface IHandlerCallback;
-    }
-
-    class CInputMethodManagerServiceMethodCallback {
-        constructor(
-            [in] IIInputMethod* method,
-            [in] Handle32 inputMethodManagerService);
-
-        interface IInputMethodCallback;
-    }
-
-    class CInputMethodManagerServiceUserSwitchObserver {
-        constructor(
-            [in] Handle32 inputMethodManagerService);
-
-        interface IUserSwitchObserver;
-    }
-
-    [local]
-    class CNetworkManagementService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface INetworkManagementService;
-    }
-
-    [local]
-    class CMountService {
-        constructor(
-            [in] IContext* ctx);
-
-        interface IMountService;
-        interface INativeDaemonConnectorCallbacks;
-    }
+//     class CBootReceiver {
+//         interface IBroadcastReceiver;
+//     }
+
+//     class CMasterClearReceiver {
+//         interface IBroadcastReceiver;
+//     }
+
+//     [local]
+//     class CBrickReceiver {
+//         interface IBroadcastReceiver;
+//     }
+
+//     [local]
+//     class CSerialService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IISerialManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CDisplayManagerServiceAw {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IIPowerManager* pm);
+
+//         interface IIDisplayManagerAw;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CAlarmManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIAlarmManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CBackupManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIBackupManager;
+//         interface IBinder;
+//     }
+
+//     class CSystemBackupAgent {
+//         interface IBackupAgentHelper;
+//     }
+
+//     [local]
+//     class CActiveRestoreSession {
+//         constructor(
+//             [in] String packageName,
+//             [in] String transport,
+//             [in] Handle32 host);
+
+//         interface IIRestoreSession;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CDiskStatsService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CUpdateLockService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIUpdateLock;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CSamplingProfilerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CCountryDetectorService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IICountryDetector;
+//         interface IBinder;
+//         interface IRunnable;
+//     }
+
+//     [local]
+//     class CEthernetService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIEthernetManager;
+//     }
+
+//     [local]
+//     class CCommonTimeManagementService
+//     {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IBinder;
+//     }
+
+//     // [local]
+//     // class CPppoeService {
+//     //     constructor(
+//     //         [in] IContext* ctx,
+//     //         [in] IPppoeStateTracker* tracker);
+// //
+//     //     interface IIPppoeManager;
+//     // }
+
+//     [local]
+//     class CClipboardService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IClipboard;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CVibratorService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IInputDeviceListener;
+//         interface IVibratorService;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CStatusBarManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 windowManager);
+
+//         interface IIStatusBarService;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CNotificationManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 statusBar,
+//             [in] Handle32 lights);
+
+//         interface IINotificationManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CDeviceStorageMonitorService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IDeviceStorageMonitorService;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CUiModeManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 twilight);
+
+//         interface IIUiModeManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CLegacyFlashlightHack {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IHardwareService;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CBatteryService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 lights);
+
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CDropBoxManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IFile* path);
+
+//         interface IDropBoxManagerService;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CNsdService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IINsdManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CThrottleService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] INetworkManagementService* nmService,
+//             [in] ITrustedTime* time,
+//             [in] String iface);
+
+//         interface IIThrottleManager;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CWallpaperManagerService  {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIWallpaperManager;
+//         interface IBinder;
+//     }
+
+//     class CWMSWallpaperConnection {
+//         constructor(
+//             [in] IWallpaperInfo* info,
+//             [in] Handle32 wallpaperData,
+//             [in] Handle32 owner);
+
+//         interface IWallpaperConnection;
+//         interface IServiceConnection;
+//         interface IBinder;
+//     }
+
+//     class CWMSUserSwitchObserver {
+//         constructor(
+//             [in] Handle32 owner);
+
+//         interface IUserSwitchObserver;
+//         interface IBinder;
+//     }
+
+//     [local]
+//     class CDevicePolicyManagerService {
+//         constructor(
+//             [in] IContext* context);
+
+//         interface IIDevicePolicyManager;
+//     }
+
+//     namespace Am {
+
+//     class CActivityManagerService {
+//         constructor();
+
+//         interface IIActivityManager;
+//         interface IBatteryCallback;
+//     }
+
+//     class CShutdownReceiver {
+//         constructor(
+//             [in] Handle32 host,
+//             [in] Handle32 uss);
+
+//         interface IIntentReceiver;
+//     }
+
+//     class CStoppingReceiver {
+//         constructor(
+//             [in] Handle32 host,
+//             [in] Handle32 uss,
+//             [in] IIntent* shutdownIntent,
+//             [in] IIntentReceiver* shutdownReceiver,
+//             [in] Int32 userId);
+
+//         interface IIntentReceiver;
+//     }
+
+//     class CActivityRecordToken {
+//         constructor(
+//             [in] Handle32 activity);
+
+//         interface IApplicationToken;
+//         interface IBinder;
+//     }
+
+//     class CBatteryStatsService {
+//         constructor(
+//             [in] String fileName);
+
+//         interface IIBatteryStats;
+//     }
+
+//     class CUsageStatsService {
+//         constructor(
+//             [in] String dir);
+
+//         interface IIUsageStats;
+//     }
+
+//     class CContentProviderConnection {
+//         constructor(
+//             [in] Handle32 provider,
+//             [in] Handle32 client);
+
+//         interface IBinder;
+//     }
+
+//     class CPendingIntentRecord {
+//         constructor(
+//             [in] Handle32 owner,
+//             [in] Handle32 k,
+//             [in] Int32 u);
+
+//         interface IIIntentSender;
+//         interface IBinder;
+//     }
+
+//     class CServiceRecord {
+//         interface IBinder;
+//     }
+
+//     class CUriPermissionOwnerExternalToken {
+//         constructor(
+//             [in] Handle32 owner);
+
+//         interface IUriPermissionOwnerExternalToken;
+//         interface IBinder;
+//     }
+
+//     } // namespace Am
+
+//     namespace Connectivity {
+
+//     [local]
+//     class CTethering {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] INetworkManagementService* nmService,
+//             [in] INetworkStatsService* statsService,
+//             [in] IIConnectivityManager* connService,
+//             [in] ILooper* looper);
+
+//         interface INetworkManagementEventObserver;
+//         interface IBinder;
+//     }
+
+//     class CVpnObserver {
+//         constructor(
+//             [in] Handle32 owner);
+
+//         interface INetworkManagementEventObserver;
+//         interface IBinder;
+//     }
+
+//     } // namespace Connectivity
+
+//     namespace Display {
+
+//     [local]
+//     class CDisplayManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IHandler* mainHandler,
+//             [in] IHandler* uiHandler);
+
+//         interface IIDisplayManager;
+//     }
+
+//     } // namespace Display
+
+//     namespace Dreams {
+
+//     [local]
+//     class CDreamManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IHandler* mainHandler);
+
+//         interface IDreamManagerService;
+//         interface IBinder;
+//     }
+
+//     } // namespace Dreams
+
+//     namespace Input {
+
+//     [local]
+//     class CInputManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IHandler* handler);
+
+//         interface IIInputManager;
+//         interface IDisplayManagerServiceInputManagerFuncs;
+//         //interface IWatchdogMonitor;
+//     }
+
+//     } // namespace Input
+
+//     namespace Location {
+
+//     [local]
+//     class CLocationManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IILocationManager;
+//         interface IRunnable;
+//     }
+
+//     } //Location
+
+//     namespace Net {
+//         class CProcessObserver {
+//             constructor(
+//                 [in] Handle32 owner);
+
+//             interface IProcessObserver;
+//         }
+
+//         [local]
+//         class CNetworkPolicyManagerService {
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] IIActivityManager* activityManager,
+//                 [in] IIPowerManager* powerManager,
+//                 [in] INetworkStatsService* networkStats,
+//                 [in] INetworkManagementService* networkManagement);
+
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] IIActivityManager* activityManager,
+//                 [in] IIPowerManager* powerManager,
+//                 [in] INetworkStatsService* networkStats,
+//                 [in] INetworkManagementService* networkManagement,
+//                 [in] ITrustedTime* time,
+//                 [in] IFile* systemDir,
+//                 [in] Boolean suppressDefaultPolicy);
+
+//             interface IINetworkPolicyManager;
+//         }
+
+//         [local]
+//         class CNetworkStatsService {
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] INetworkManagementService* networkManager,
+//                 [in] IIAlarmManager* alarmManager);
+
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] INetworkManagementService* networkManager,
+//                 [in] IIAlarmManager* alarmManager,
+//                 [in] ITrustedTime* time,
+//                 [in] IFile* systemDir,
+//                 [in] Handle32 settings);
+
+//             interface INetworkStatsService;
+//         }
+
+//         class CNetworkStatsSession {
+//             constructor(
+//                 [in] Handle32 host);
+
+//             interface INetworkStatsSession;
+//         }
+
+//         class CNetworkPolicyManagerServiceAlertObserber {
+//             constructor(
+//                 [in] Handle32 owner);
+
+//             interface INetworkManagementEventObserver;
+//         }
+
+//         class CNetworkStatsServiceAlertObserber {
+//             constructor(
+//                 [in] Handle32 owner);
+
+//             interface INetworkManagementEventObserver;
+//         }
+
+//     } // namespace Net
+
+//     namespace Pm {
+
+//     [local]
+//     class CPackageManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 installer,
+//             [in] Boolean factoryTest,
+//             [in] Boolean onlyCore);
+
+//         interface IIPackageManager;
+//     }
+
+//     class CResourcesChangedReceiver {
+//         constructor(
+//             [in] IIPackageManager* owner,
+//             [in] ISet* keys,
+//             [in] Boolean reportStatus);
+
+//         interface IIntentReceiver;
+//     }
+
+//     [local]
+//     class CUserManagerService {
+//         constructor(
+//             [in] IFile* dataDir,
+//             [in] IFile* baseUserPath);
+
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 pm,
+//             [in] Handle32 installLock,
+//             [in] Handle32 packagesLock);
+
+//         interface IIUserManager;
+//     }
+
+//     class CUserStopUserCallback {
+//         constructor(
+//             [in] IIUserManager* mUm);
+
+//         interface IStopUserCallback;
+//     }
+
+//     } // namespace Pm
+
+// //    namespace Updates {
+// //
+// //    class CCertPinInstallReceiver {
+// //        constructor();
+// //
+// //        interface IBroadcastReceiver;
+// //    }
+// //
+// //    class CConfigUpdateInstallReceiver {
+// //        constructor(
+// //            [in] String updateDir,
+// //            [in] String updateContentPath,
+// //            [in] String updateMetadataPath,
+// //            [in] String updateVersionPath));
+// //
+// //        interface IBroadcastReceiver;
+// //    }
+// //
+// //    class CSmsShortCodesInstallReceiver {
+// //        constructor();
+// //
+// //        interface IBroadcastReceiver;
+// //    }
+// //
+// //    } // namespace Updates
+
+//     namespace Usb {
+
+//     [local]
+//     class CUsbService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IIUsbManager;
+//     }
+
+//     } // namespace Usb
+
+//     namespace Search {
+
+//         [local]
+//         class CSearchManagerService {
+//             constructor(
+//                 [in] IContext* ctx);
+
+//             interface IISearchManager;
+//             interface IBinder;
+//         }
+//     }
+//     namespace Wm {
+
+//     [local]
+//     class CWindowManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 pm,
+//             [in] Handle32 displayManager,
+//             [in] Handle32 inputManager,
+//             [in] IHandler* uiHandler,
+//             [in] Boolean haveInputMethods,
+//             [in] Boolean showBootMsgs,
+//             [in] Boolean onlyCore);
+
+//         interface IIWindowManager;
+//         interface IWindowManagerPolicyWindowManagerFuncs;
+//         interface IDisplayManagerServiceWindowManagerFuncs;
+//         interface IDisplayListener;
+//     }
+
+//     class CSession {
+//         constructor(
+//             [in] Handle32 service,
+//             [in] IInputMethodClient* client,
+//             [in] IInputContext* inputContext);
+
+//         interface IWindowSession;
+//         interface IProxyDeathRecipient;
+//     }
+
+//     } // Wm
+
+//     class CNetworkPolicyListener {
+//         constructor(
+//             [in] Handle32 service);
+
+//         interface INetworkPolicyListener;
+//     }
+
+//     class CDataActivityObserver {
+//         constructor(
+//             [in] Handle32 owner);
+
+//         interface INetworkManagementEventObserver;
+//     }
+
+//     [local]
+//     class CConnectivityService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] INetworkManagementService* netManager,
+//             [in] INetworkStatsService* statsService,
+//             [in] IINetworkPolicyManager* policyManager);
+
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] INetworkManagementService* netManager,
+//             [in] INetworkStatsService* statsService,
+//             [in] IINetworkPolicyManager* policyManager,
+//             [in] Handle32 netFactory);
+
+//         interface IIConnectivityManager;
+//     }
+
+//     [local]
+//     class CInputMethodManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Handle32 windowManagerService);
+
+//         interface IIInputMethodManager;
+//         interface IServiceConnection;
+//         interface IHandlerCallback;
+//     }
+
+//     class CInputMethodManagerServiceMethodCallback {
+//         constructor(
+//             [in] IIInputMethod* method,
+//             [in] Handle32 inputMethodManagerService);
+
+//         interface IInputMethodCallback;
+//     }
+
+//     class CInputMethodManagerServiceUserSwitchObserver {
+//         constructor(
+//             [in] Handle32 inputMethodManagerService);
+
+//         interface IUserSwitchObserver;
+//     }
+
+//     [local]
+//     class CNetworkManagementService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface INetworkManagementService;
+//     }
+
+//     [local]
+//     class CMountService {
+//         constructor(
+//             [in] IContext* ctx);
+
+//         interface IMountService;
+//         interface INativeDaemonConnectorCallbacks;
+//     }
 
     singleton class CSystemServer {
         interface ISystemServer;
     }
 
-    /**
-     * {@hide}
-     */
-    [local]
-    class CContentService {
-        constructor(
-            [in] IContext* ctx,
-            [in] Boolean factoryTest);
+//     /**
+//      * {@hide}
+//      */
+//     [local]
+//     class CContentService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] Boolean factoryTest);
 
-        interface IContentService;
-    }
+//         interface IContentService;
+//     }
 
-    [local]
-    class CRecognitionManagerService {
-        constructor(
-            [in] IContext* ctx);
-        interface IRecognitionManagerService;
-        interface IBinder;
-    }
+//     [local]
+//     class CRecognitionManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+//         interface IRecognitionManagerService;
+//         interface IBinder;
+//     }
 
-    [local]
-    class CTextServicesManagerService {
-        constructor(
-            [in] IContext* ctx);
-        interface IITextServicesManager;
-        interface IBinder;
-    }
+//     [local]
+//     class CTextServicesManagerService {
+//         constructor(
+//             [in] IContext* ctx);
+//         interface IITextServicesManager;
+//         interface IBinder;
+//     }
 
-    [local]
-    class CPrivacySettingsManagerService {
-        constructor(
-            [in] IContext* ctx);
+//     [local]
+//     class CPrivacySettingsManagerService {
+//         constructor(
+//             [in] IContext* ctx);
 
-            interface IIPrivacySettingsManager;
-    }
+//             interface IIPrivacySettingsManager;
+//     }
 
-    [local]
-    class CAppWidgetService {
-        constructor(
-            [in] IContext* ctx);
+//     [local]
+//     class CAppWidgetService {
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface IIAppWidgetService;
-        interface IBinder;
-    }
+//         interface IIAppWidgetService;
+//         interface IBinder;
+//     }
 
-    namespace Accessibility {
-        [local]
-        class CAccessibilityManagerService {
-            constructor(
-                [in] IContext* ctx);
+//     namespace Accessibility {
+//         [local]
+//         class CAccessibilityManagerService {
+//             constructor(
+//                 [in] IContext* ctx);
 
-            interface IIAccessibilityManager;
-        }
+//             interface IIAccessibilityManager;
+//         }
 
-        class CAccessibilityServiceConnection {
-            constructor(
-                [in] ILooper* looper,
-                [in] Int32 userId,
-                [in] IComponentName* componentName,
-                [in] IAccessibilityServiceInfo* accessibilityServiceInfo,
-                [in] Boolean isAutomation,
-                [in] IIAccessibilityManager* accessibilityManager);
+//         class CAccessibilityServiceConnection {
+//             constructor(
+//                 [in] ILooper* looper,
+//                 [in] Int32 userId,
+//                 [in] IComponentName* componentName,
+//                 [in] IAccessibilityServiceInfo* accessibilityServiceInfo,
+//                 [in] Boolean isAutomation,
+//                 [in] IIAccessibilityManager* accessibilityManager);
 
-            interface IAccessibilityServiceConnection;
-            interface IServiceConnection;
-            interface IProxyDeathRecipient;
-        }
+//             interface IAccessibilityServiceConnection;
+//             interface IServiceConnection;
+//             interface IProxyDeathRecipient;
+//         }
 
-        [local]
-        class CAccessibilityInputFilter {
-            constructor(
-                [in] IContext* ctx,
-                [in] IIAccessibilityManager* service);
+//         [local]
+//         class CAccessibilityInputFilter {
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] IIAccessibilityManager* service);
 
-            interface IInputFilter;
-            interface IEventStreamTransformation;
-        }
+//             interface IInputFilter;
+//             interface IEventStreamTransformation;
+//         }
 
-        class CMagnificationSpec {
-            constructor(
-                [in] Handle32 screenMagnifier);
+//         class CMagnificationSpec {
+//             constructor(
+//                 [in] Handle32 screenMagnifier);
 
-            interface IMagnificationSpec;
-        }
+//             interface IMagnificationSpec;
+//         }
 
-        class CMagnificationController {
-            constructor(
-                [in] Handle32 screenMagnifier,
-                [in] Int32 animationDuration);
+//         class CMagnificationController {
+//             constructor(
+//                 [in] Handle32 screenMagnifier,
+//                 [in] Int32 animationDuration);
 
-            interface IMagnificationController;
-        }
+//             interface IMagnificationController;
+//         }
 
-        [local]
-        class CViewportWindow {
-            constructor(
-                [in] IContext* ctx,
-                [in] IWindowManager* service,
-                [in] Handle32 displayProvider);
+//         [local]
+//         class CViewportWindow {
+//             constructor(
+//                 [in] IContext* ctx,
+//                 [in] IWindowManager* service,
+//                 [in] Handle32 displayProvider);
 
-            interface IViewportWindow;
-        }
+//             interface IViewportWindow;
+//         }
 
-    } // Accessibility
+//     } // Accessibility
 
 
-    namespace Accounts {
+//     namespace Accounts {
 
-    /**
-     * A system service that provides  account, password, and authtoken management for all
-     * accounts on the device. Some of these calls are implemented with the help of the corresponding
-     * {@link IAccountAuthenticator} services. This service is not accessed by users directly,
-     * instead one uses an instance of {@link AccountManager}, which can be accessed as follows:
-     *    AccountManager accountManager =
-     *      (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE)
-     * @hide
-     */
-    [local]
-    class CAccountManagerService {
-        constructor(
-            [in] IContext* ctx);
+//     /**
+//      * A system service that provides  account, password, and authtoken management for all
+//      * accounts on the device. Some of these calls are implemented with the help of the corresponding
+//      * {@link IAccountAuthenticator} services. This service is not accessed by users directly,
+//      * instead one uses an instance of {@link AccountManager}, which can be accessed as follows:
+//      *    AccountManager accountManager =
+//      *      (AccountManager)context.getSystemService(Context.ACCOUNT_SERVICE)
+//      * @hide
+//      */
+//     [local]
+//     class CAccountManagerService {
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface IIAccountManager;
-        interface IRegisteredServicesCacheListener;
-    }
+//         interface IIAccountManager;
+//         interface IRegisteredServicesCacheListener;
+//     }
 
-    [local]
-    class CTestFeaturesSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] IAccount* account,
-            [in] ArrayOf<String> features,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CTestFeaturesSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] IAccount* account,
+//             [in] ArrayOf<String> features,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CRemoveAccountSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] IAccount* account,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CRemoveAccountSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] IAccount* account,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CGetAccountsByTypeAndFeatureSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] String type,
-            [in] ArrayOf<String> features,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CGetAccountsByTypeAndFeatureSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] String type,
+//             [in] ArrayOf<String> features,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CGetAuthTokenLabelSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] String type,
-            [in] String authTokenType,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CGetAuthTokenLabelSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] String type,
+//             [in] String authTokenType,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CGetAuthTokenSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] IAccount* account,
-            [in] String authTokenType,
-            [in] Boolean expectActivityLaunch,
-            [in] IBundle* loginOptions,
-            [in] Boolean notifyOnAuthFailure,
-            [in] Boolean permissionGranted,
-            [in] Boolean customTokens,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CGetAuthTokenSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] IAccount* account,
+//             [in] String authTokenType,
+//             [in] Boolean expectActivityLaunch,
+//             [in] IBundle* loginOptions,
+//             [in] Boolean notifyOnAuthFailure,
+//             [in] Boolean permissionGranted,
+//             [in] Boolean customTokens,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CAddAcountSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] String accountType,
-            [in] Boolean expectActivityLaunch,
-            [in] String authTokenType,
-            [in] ArrayOf<String> requiredFeatures,
-            [in] IBundle* options,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CAddAcountSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] String accountType,
+//             [in] Boolean expectActivityLaunch,
+//             [in] String authTokenType,
+//             [in] ArrayOf<String> requiredFeatures,
+//             [in] IBundle* options,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CConfirmCredentialsAsUserSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] Boolean expectActivityLaunch,
-            [in] IAccount* account,
-            [in] IBundle* options,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CConfirmCredentialsAsUserSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] Boolean expectActivityLaunch,
+//             [in] IAccount* account,
+//             [in] IBundle* options,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CUpdateCredentialsSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] Boolean expectActivityLaunch,
-            [in] IAccount* account,
-            [in] String authTokenType,
-            [in] IBundle* loginOptions,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CUpdateCredentialsSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] Boolean expectActivityLaunch,
+//             [in] IAccount* account,
+//             [in] String authTokenType,
+//             [in] IBundle* loginOptions,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    [local]
-    class CEditPropertiesSession {
-        constructor(
-            [in] Handle32 accounts,
-            [in] IAccountManagerResponse* response,
-            [in] String type,
-            [in] Boolean expectActivityLaunch,
-            [in] IIAccountManager* host);
+//     [local]
+//     class CEditPropertiesSession {
+//         constructor(
+//             [in] Handle32 accounts,
+//             [in] IAccountManagerResponse* response,
+//             [in] String type,
+//             [in] Boolean expectActivityLaunch,
+//             [in] IIAccountManager* host);
 
-        interface IIAccountAuthenticatorResponse;
-        interface IProxyDeathRecipient;
-        interface IServiceConnection;
-    }
+//         interface IIAccountAuthenticatorResponse;
+//         interface IProxyDeathRecipient;
+//         interface IServiceConnection;
+//     }
 
-    } // Accounts
+//     } // Accounts
 
-    namespace Power {
+//     namespace Power {
 
-    /**
-     * The power manager service is responsible for coordinating power management
-     * functions on the device.
-     */
-    class CPowerManagerService {
-        constructor();
+//     /**
+//      * The power manager service is responsible for coordinating power management
+//      * functions on the device.
+//      */
+//     class CPowerManagerService {
+//         constructor();
 
-        interface IIPowerManager;
-    }
+//         interface IIPowerManager;
+//     }
 
-    class CMountShutdownObserver {
-        constructor(
-            [in] Handle32 host);
+//     class CMountShutdownObserver {
+//         constructor(
+//             [in] Handle32 host);
 
-        interface IMountShutdownObserver;
-    }
+//         interface IMountShutdownObserver;
+//     }
 
-    } // Power
+//     } // Power
 
-    [local]
-    class CWifiService {
-        constructor(
-            [in] IContext* ctx);
+//     [local]
+//     class CWifiService {
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface IIWifiManager;
-    }
+//         interface IIWifiManager;
+//     }
 
-    [local]
-    class CWifiDisplayManagerService {
-        constructor(
-            [in] IContext* ctx,
-            [in] IIPowerManager* powerManagerService);
+//     [local]
+//     class CWifiDisplayManagerService {
+//         constructor(
+//             [in] IContext* ctx,
+//             [in] IIPowerManager* powerManagerService);
 
-        interface IWifiDisplayManager;
-    }
+//         interface IWifiDisplayManager;
+//     }
 
-    [local]
-    class CZigbeeService {
-        constructor(
-            [in] IContext* ctx);
+//     [local]
+//     class CZigbeeService {
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface IZigbeeService;
-        interface IBinder;
-    }
+//         interface IZigbeeService;
+//         interface IBinder;
+//     }
 
-    [local]
-    class CKortideRemoteService {
-        constructor(
-            [in] IContext* ctx);
+//     [local]
+//     class CKortideRemoteService {
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface IKortideRemoteService;
-        interface IBinder;
-    }
+//         interface IKortideRemoteService;
+//         interface IBinder;
+//     }
 
     } // namespace Server
     } // namepsace Droid
     } // namespace Elastos
 
 
-    //==========================================================================
-    namespace Elastos {
-    namespace Droid {
-    namespace Widget {
-    namespace Internal {
+//     //==========================================================================
+//     namespace Elastos {
+//     namespace Droid {
+//     namespace Widget {
+//     namespace Internal {
 
-    [local]
-    class CLockSettingsService {
+//     [local]
+//     class CLockSettingsService {
 
-        constructor(
-            [in] IContext* ctx);
+//         constructor(
+//             [in] IContext* ctx);
 
-        interface ILockSettings;
-    }
+//         interface ILockSettings;
+//     }
 
-    } // namespace Internal
-    } // namespace Widget
-    } // namespace Droid
-    } // namespace Elastos
+//     } // namespace Internal
+//     } // namespace Widget
+//     } // namespace Droid
+//     } // namespace Elastos
 }

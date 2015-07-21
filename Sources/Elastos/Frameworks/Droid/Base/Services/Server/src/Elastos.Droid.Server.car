@@ -1,6 +1,6 @@
 module
 {
-    importlib("Elastos.Core.eco");
+    importlib("Elastos.CoreLibrary.eco");
     importlib("Elastos.Droid.Core.eco");
 
     merge("../car/server.car");

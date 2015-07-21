@@ -1,6 +1,6 @@
 #include "os/Build.h"
 #ifdef DROID_CORE
-#include "os/CSystemProperties.h"
+//#include "os/CSystemProperties.h"
 #endif
 #include <elastos/core/StringUtils.h>
 
@@ -28,7 +28,7 @@ static String GetSDK()
 static Int32 GetSDKInt()
 {
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     Int32 value;
     sysProp->GetInt32(String("ro.build.version.sdk"), 0, &value);
     return value;
@@ -96,7 +96,7 @@ const String Build::HOST = GetString("ro.build.host");
 static Boolean InitISDEBUGGABLE()
 {
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     Int32 value;
     sysProp->GetInt32(String("ro.debuggable"), 0, &value);
     return value == 1;
@@ -121,7 +121,7 @@ String Build::GetString(
     /* [in] */ const String& property)
 {
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String value;
     sysProp->Get(property, UNKNOWN, &value);
     return value;
@@ -131,7 +131,7 @@ Int64 Build::GetLong(
     /* [in] */ const String& property)
 {
     AutoPtr<ISystemProperties> sysProp;
-    CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    //CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
     String retStr;
     sysProp->Get(property, UNKNOWN, &retStr);
     if (retStr.Equals(UNKNOWN))
