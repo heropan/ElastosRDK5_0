@@ -6,7 +6,6 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/Core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
-#include <Elastos.Droid.System.h>
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;

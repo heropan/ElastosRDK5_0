@@ -9,8 +9,29 @@ module
     namespace Droid {
     namespace Os {
 
+    interface IParcelFileDescriptorOnCloseListener {
+        /**
+         * Event indicating the ParcelFileDescriptor to which this listener was
+         * attached has been closed.
+         *
+         * @param e error state, or {@code null} if closed cleanly.
+         *        If the close event was the result of
+         *        {@link ParcelFileDescriptor#detachFd()}, this will be a
+         *        {@link FileDescriptorDetachedException}. After detach the
+         *        remote side may continue reading/writing to the underlying
+         *        {@link FileDescriptor}, but they can no longer deliver
+         *        reliable close/error events.
+         */
+        OnClose(
+            [in] ECode ioe);
+    }
 
-    interface IParcelFileDescriptor extends Elastos.IO.ICloseable {
+    /**
+     * @Involve
+     * interface IParcelable
+     * interface ICloseable
+     */
+    interface IParcelFileDescriptor {
         /**
          * For use with {@link #open}: if {@link #MODE_CREATE} has been supplied
          * and this file doesn't already exist, then create the file with
@@ -63,6 +84,10 @@ module
         GetFileDescriptor(
             [out] IFileDescriptor** des);
 
+        /**
+         * Return the total size of the file representing this fd, as determined by
+         * {@code stat()}. Returns -1 if the fd is not a file.
+         */
         GetStatSize(
             [out] Int64* len);
 
@@ -76,7 +101,53 @@ module
          * through this API.
          */
         GetFd(
-            [out] Int32* fd);
+            [out] IFileDescriptor* fd);
+
+        /**
+         * Return the native fd int for this ParcelFileDescriptor and detach it from
+         * the object here. You are now responsible for closing the fd in native
+         * code.
+         * <p>
+         * You should not detach when the original creator of the descriptor is
+         * expecting a reliable signal through {@link #close()} or
+         * {@link #closeWithError(String)}.
+         *
+         * @see #canDetectErrors()
+         */
+        DetachFd(
+            [out] Int32* len);
+
+        Close();
+
+        CloseWithError(
+            [in] String msg);
+
+        ReleaseResources();
+
+        /**
+         * Indicates if this ParcelFileDescriptor can communicate and detect remote
+         * errors/crashes.
+         *
+         * @see #checkError()
+         */
+        CanDetectErrors();
+
+        /**
+         * Detect and throw if the other end of a pipe or socket pair encountered an
+         * error or crashed. This allows a reader to distinguish between a valid EOF
+         * and an error/crash.
+         * <p>
+         * If this ParcelFileDescriptor is unable to detect remote errors, it will
+         * return silently.
+         *
+         * @throws IOException for normal errors.
+         * @throws FileDescriptorDetachedException
+         *            if the remote side called {@link #detachFd()}. Once detached, the remote
+         *            side is unable to communicate any errors through
+         *            {@link #closeWithError(String)}.
+         * @see #canDetectErrors()
+         */
+        CheckError();
     }
 
     interface IParcelFileDescriptorHelper {
@@ -101,6 +172,27 @@ module
             [in] Int32 mode,
             [out] IParcelFileDescriptor** descriptor);
 
+        Open(
+            [in] IFile* file,
+            [in] Int32 mode,
+            [in] IHandler* handler,
+            [in] IParcelFileDescriptorOnCloseListener* listener,
+            [out] IParcelFileDescriptor** descriptor);
+
+        /**
+        * Create a new ParcelFileDescriptor that is a dup of an existing
+        * FileDescriptor.  This obeys standard POSIX semantics, where the
+        * new file descriptor shared state such as file position with the
+        * original file descriptor.
+        */
+        Dup(
+            [in] IFileDescriptor* fd,
+            [out] IParcelFileDescriptor** descriptor);
+
+        Dup(
+            [in] IFileDescriptor* fd,
+            [out] IParcelFileDescriptor** descriptor);
+
         /**
          * Take ownership of a raw native fd in to a new ParcelFileDescriptor.
          * The returned ParcelFileDescriptor now owns the given fd, and will be
@@ -116,6 +208,35 @@ module
             [out] IParcelFileDescriptor** descriptor);
 
         /**
+         * Create a new ParcelFileDescriptor from the specified Socket.  The new
+         * ParcelFileDescriptor holds a dup of the original FileDescriptor in
+         * the Socket, so you must still close the Socket as well as the new
+         * ParcelFileDescriptor.
+         *
+         * @param socket The Socket whose FileDescriptor is used to create
+         *               a new ParcelFileDescriptor.
+         *
+         * @return A new ParcelFileDescriptor with the FileDescriptor of the
+         *         specified Socket.
+         */
+        FromSocket(
+            [in] ISocket* socket,
+            [out] IParcelFileDescriptor** descriptor);
+
+        /**
+         * Create a new ParcelFileDescriptor from the specified DatagramSocket.
+         *
+         * @param datagramSocket The DatagramSocket whose FileDescriptor is used
+         *               to create a new ParcelFileDescriptor.
+         *
+         * @return A new ParcelFileDescriptor with the FileDescriptor of the
+         *         specified DatagramSocket.
+         */
+        FromDatagramSocket(
+            [in] IDatagramSocket* socket,
+            [out] IParcelFileDescriptor** descriptor);
+
+        /**
          * Create two ParcelFileDescriptors structured as a data pipe.  The first
          * ParcelFileDescriptor in the returned array is the read side; the second
          * is the write side.
@@ -124,14 +245,45 @@ module
             [out, callee] ArrayOf<IParcelFileDescriptor*>* pfds);
 
         /**
-        * Create a new ParcelFileDescriptor that is a dup of an existing
-        * FileDescriptor.  This obeys standard POSIX semantics, where the
-        * new file descriptor shared state such as file position with the
-        * original file descriptor.
-        */
-        Dup(
-            [in] IFileDescriptor* fd,
-            [out] IParcelFileDescriptor** descriptor);
+         * Create two ParcelFileDescriptors structured as a data pipe. The first
+         * ParcelFileDescriptor in the returned array is the read side; the second
+         * is the write side.
+         * <p>
+         * The write end has the ability to deliver an error message through
+         * {@link #closeWithError(String)} which can be handled by the read end
+         * calling {@link #checkError()}, usually after detecting an EOF.
+         * This can also be used to detect remote crashes.
+         */
+        CreateReliablePipe(
+            [out, callee] ArrayOf<IParcelFileDescriptor*>* pfds);
+
+        /**
+         * Create two ParcelFileDescriptors structured as a pair of sockets
+         * connected to each other. The two sockets are indistinguishable.
+         */
+        CreateSocketPair(
+            [out, callee] ArrayOf<IParcelFileDescriptor*>* pfds);
+
+        /**
+         * Create two ParcelFileDescriptors structured as a pair of sockets
+         * connected to each other. The two sockets are indistinguishable.
+         * <p>
+         * Both ends have the ability to deliver an error message through
+         * {@link #closeWithError(String)} which can be detected by the other end
+         * calling {@link #checkError()}, usually after detecting an EOF.
+         * This can also be used to detect remote crashes.
+         */
+        CreateReliableSocketPair(
+            [out, callee] ArrayOf<IParcelFileDescriptor*>* pfds);
+
+        FromData(
+            [in] ArrayOf<Byte>* data,
+            [in] String name,
+            [out] IParcelFileDescriptor** pfds);
+
+        ParseMode(
+            [in] String name,
+            [out] Int32* result);
 
     }
 

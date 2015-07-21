@@ -105,4 +105,15 @@ module
     }}} // Elastos.Droid.Privacy
 
 
+    //
+    // Elastos.Droid.Media
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+        interface IAudioAttributes {
+        }
+
+    }}} // Elastos.Droid.Media
 }

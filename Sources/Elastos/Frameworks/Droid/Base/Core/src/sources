@@ -10,7 +10,6 @@ CAR_FLAGS += -n -u
 LUBE_FLAGS += -n -u
 
 IMPORTS = Elastos.CoreLibrary.eco
-//IMPORTS += Elastos.Droid.System.eco
 
 include $(MAKEDIR)/../../../sources.inc
 
@@ -99,7 +98,6 @@ SOURCES = Elastos.Droid.Core.car
 // SOURCES += Manifest.cpp
 SOURCES += frameworkext.cpp
 SOURCES += Elastos.CoreLibrary.cpp
-// SOURCES += Elastos.Droid.System.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 // LIBRARIES += graphics/graphics.lib

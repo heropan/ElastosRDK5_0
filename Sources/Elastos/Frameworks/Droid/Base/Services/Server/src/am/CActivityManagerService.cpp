@@ -61,7 +61,6 @@
 #include "AttributeCache.h"
 #include "R.h"
 #include "Manifest.h"
-#include <Elastos.Droid.System.h>
 #include <dlfcn.h>
 #include "CSystemServer.h"
 
