@@ -4,7 +4,6 @@
 #include "os/Process.h"
 #include "os/RuntimeInit.h"
 //#include "net/CLocalServerSocket.h"
-#include <Elastos.Droid.System.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/Vector.h>

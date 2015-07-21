@@ -5,6 +5,10 @@ module
     namespace Droid {
     namespace Os {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IWorkSource {
         /**
          * Compare this WorkSource with another.
@@ -26,6 +30,11 @@ module
         /** @hide */
         Set(
             [in] Int32 uid);
+
+        /** @hide */
+        Set(
+            [in] Int32 uid,
+            [in] String name);
 
         /** @hide */
         SetReturningDiffs(
@@ -53,6 +62,12 @@ module
             [out] Boolean* added);
 
         /** @hide */
+        Add(
+            [in] Int32 uid,
+            [in] String name,
+            [out] Boolean* added);
+
+        /** @hide */
         AddReturningNewbs(
             [in] Int32 uid,
             [out] IWorkSource** result);
@@ -61,6 +76,7 @@ module
             [in] IWorkSource* other,
             [out] Boolean* successed);
 
+        /** @hide */
         GetSize(
             [out] Int32* value);
 
@@ -69,21 +85,26 @@ module
             [in] Int32 index,
             [out] Int32* value);
 
+        /** @hide */
+        GetName(
+            [in] Int32 index,
+            [out] String* value);
+
         /**
          * Clear this WorkSource to be empty.
          */
         Clear();
 
-        Equals(
-            [in] IWorkSource* o,
-            [out] Boolean* equal);
+        /**
+         * Clear names from this WorkSource.  Uids are left intact.
+         *
+         * <p>Useful when combining with another WorkSource that doesn't have names.
+         * @hide
+         */
+        ClearNames();
 
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* equal);
-
-        GetHashCode(
-            [out] Int32* hash);
+        StripNames(
+            [out] IWorkSource** result);
     }
 
     } // namespace Os

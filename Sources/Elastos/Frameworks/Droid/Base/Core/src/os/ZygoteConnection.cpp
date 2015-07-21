@@ -5,7 +5,6 @@
 #include "os/SELinux.h"
 #include "os/Process.h"
 #include "os/RuntimeInit.h"
-#include <Elastos.Droid.System.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
 
