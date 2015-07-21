@@ -378,7 +378,7 @@ ECode CWindowManagerService::PolicyInitializer::GetInterfaceID(
 ECode CWindowManagerService::PolicyInitializer::Run()
 {
     // TODO:
-    // WindowManagerPolicyThread.set(Thread::GetCurrentThread(), Looper::MyLooper());
+    // WindowManagerPolicyThread.set(Thread::GetCurrentThread(), Looper::GetMyLooper());
 
     FAIL_RETURN(mHost->mPolicy->Init(mHost->mContext,
             (IIWindowManager*)mHost->Probe(EIID_IIWindowManager),

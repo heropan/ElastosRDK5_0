@@ -1,13 +1,14 @@
 
 #include "os/CRuntimeInit.h"
 
-using Elastos::Core::IRunnable;
-
 namespace Elastos {
 namespace Droid {
 namespace Internal {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CRuntimeInit, RuntimeInit, IRuntimeInit)
+
+CAR_OBJECT_IMPL(CRuntimeInit)
 
 ECode CRuntimeInit::Main(
     /* [in] */ const ArrayOf<String>& args)

@@ -1,5 +1,5 @@
-#ifndef __HH_BUILD_H__
-#define __HH_BUILD_H__
+#ifndef __ELASTOS_DROID_OS_BUILD_H__
+#define __ELASTOS_DROID_OS_BUILD_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -387,9 +387,6 @@ public:
     /** A build ID string meant for displaying to the user */
     static const String DISPLAY;
 
-    /**a firmware realse */
-    static const String FIRMWARE;
-
     /** The name of the overall product. */
     static const String PRODUCT;
 
@@ -426,11 +423,29 @@ public:
     /** A hardware serial number, if available.  Alphanumeric only, case-insensitive. */
     static const String SERIAL;
 
-    /**a property to tablet systemUI */
-    static const String TABLETUI;
+    /**
+     * An ordered list of ABIs supported by this device. The most preferred ABI is the first
+     * element in the list.
+     *
+     * See {@link #SUPPORTED_32_BIT_ABIS} and {@link #SUPPORTED_64_BIT_ABIS}.
+     */
+    static AutoPtr<ArrayOf<String> > SUPPORTED_ABIS;
 
-    /**a property to tablet systemUI */
-    static const String DEFAULT_FONTSCALE;
+    /**
+     * An ordered list of <b>32 bit</b> ABIs supported by this device. The most preferred ABI
+     * is the first element in the list.
+     *
+     * See {@link #SUPPORTED_ABIS} and {@link #SUPPORTED_64_BIT_ABIS}.
+     */
+    static AutoPtr<ArrayOf<String> > SUPPORTED_32_BIT_ABIS;
+
+    /**
+     * An ordered list of <b>64 bit</b> ABIs supported by this device. The most preferred ABI
+     * is the first element in the list.
+     *
+     * See {@link #SUPPORTED_ABIS} and {@link #SUPPORTED_32_BIT_ABIS}.
+     */
+    static AutoPtr<ArrayOf<String> > SUPPORTED_64_BIT_ABIS;
 
 public:
     /** The type of build, like "user" or "eng". */
@@ -459,4 +474,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_BUILD_H__
+#endif // __ELASTOS_DROID_OS_BUILD_H__

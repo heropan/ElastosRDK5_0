@@ -276,7 +276,7 @@ ECode IInputConnectionWrapper::DispatchMessage(
     // If we are calling this from the main thread, then we can call
     // right through.  Otherwise, we need to send the message to the
     // main thread.
-    if (Looper::MyLooper() == mMainLooper) {
+    if (Looper::GetMyLooper() == mMainLooper) {
         ExecuteMessage(msg);
         msg->Recycle();
         return NOERROR;

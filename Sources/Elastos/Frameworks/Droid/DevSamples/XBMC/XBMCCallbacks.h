@@ -3,9 +3,9 @@
 #define __IXBMCCALLBACKS_H__
 
 #include "ext/frameworkdef.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 class IElAudioTrackInterface
 {

@@ -3,14 +3,14 @@
 #define __LISTVIEW_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 #include "widget/AbsListView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Widget {
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::View::IKeyEvent;

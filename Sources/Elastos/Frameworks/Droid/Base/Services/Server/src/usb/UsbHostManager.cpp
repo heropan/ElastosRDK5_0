@@ -4,12 +4,12 @@
 #include "usb/UsbHostManager.h"
 #include <unistd.h>
 #include <asm/byteorder.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <usbhost/usbhost.h>
 
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::CFileDescriptor;
 using Elastos::Utility::Logging::Logger;

@@ -32,7 +32,7 @@ ECode HandlerThread::Run()
     {
         Lock();
 
-        mLooper = Looper::MyLooper();
+        mLooper = Looper::GetMyLooper();
         NotifyAll();
 
         Unlock();

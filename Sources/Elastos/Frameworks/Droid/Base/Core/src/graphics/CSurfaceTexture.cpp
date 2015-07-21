@@ -40,7 +40,7 @@ ECode CSurfaceTexture::constructor(
     /* [in] */ Boolean allowSynchronousMode)
 {
     AutoPtr<ILooper> looper;
-    if ((looper = Looper::MyLooper()) != NULL) {
+    if ((looper = Looper::GetMyLooper()) != NULL) {
         mEventHandler = new EventHandler(looper, this);
     }
     else if ((looper = Looper::GetMainLooper()) != NULL) {

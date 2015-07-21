@@ -82,7 +82,7 @@ using Elastos::Droid::Internal::Policy::CPolicyManager;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::View::Animation::IAccelerateDecelerateInterpolator;
@@ -1980,7 +1980,7 @@ void ViewRootImpl::EnableHardwareAcceleration(
     //             && forceHwAccelerated)) {
     //         // Don't enable hardware acceleration when we're not on the main thread
     //         if (!HardwareRenderer::sSystemRendererDisabled &&
-    //                 Looper::GetMainLooper() != Looper::MyLooper()) {
+    //                 Looper::GetMainLooper() != Looper::GetMyLooper()) {
     //             Logger::W(HardwareRenderer::LOG_TAG, "Attempting to initialize hardware "
     //                 "acceleration outside of the main thread, aborting");
     //             return;

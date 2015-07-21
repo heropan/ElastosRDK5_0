@@ -18,7 +18,7 @@ using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Hardware::Input::CInputManager;
 using Elastos::Droid::Hardware::Input::IInputManager;
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {

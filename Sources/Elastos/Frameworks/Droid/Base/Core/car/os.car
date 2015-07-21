@@ -11,16 +11,8 @@ module
     merge("os/HandlerThread.car");
     merge("os/HandlerCaller.car");
     merge("os/BaseBundle.car");
-
-    // merge("os/storage/ExternalStorageFormatter.car");
-    // merge("os/storage/IMountService.car");
-    // merge("os/storage/IMountServiceListener.car");
-    // merge("os/storage/IMountShutdownObserver.car");
-    // merge("os/storage/IObbActionListener.car");
-    // merge("os/storage/OnObbStateChangeListener.car");
-    // merge("os/storage/StorageEventListener.car");
-    // merge("os/storage/StorageManager.car");
-    // merge("os/storage/StorageVolume.car");
+    merge("os/ZygoteInit.car");
+    merge("os/RuntimeInit.car");
 
     // merge("os/BatteryManager.car");
     // merge("os/BatteryStats.car");
@@ -46,7 +38,6 @@ module
     // merge("os/UserHandle.car");
     // merge("os/UserManager.car");
     // merge("os/WorkSource.car");
-    // merge("os/ZygoteInit.car");
     // merge("os/PowerManager.car");
     // merge("os/IPowerManager.car");
     // merge("os/IVibratorService.car");
@@ -54,7 +45,6 @@ module
     // merge("os/DropBoxManager.car");
     // merge("os/IDropBoxManagerService.car");
     // merge("os/CancellationSignal.car");
-    // merge("os/RuntimeInit.car");
     // merge("os/SystemProperties.car");
     // merge("os/SystemService.car");
     // merge("os/Environment.car");
@@ -66,6 +56,16 @@ module
     // merge("os/IZigbeeService.car");
     // merge("os/ZigbeeManager.car");
     // merge("os/IKortideRemoteService.car");
+
+    // merge("os/storage/ExternalStorageFormatter.car");
+    // merge("os/storage/IMountService.car");
+    // merge("os/storage/IMountServiceListener.car");
+    // merge("os/storage/IMountShutdownObserver.car");
+    // merge("os/storage/IObbActionListener.car");
+    // merge("os/storage/OnObbStateChangeListener.car");
+    // merge("os/storage/StorageEventListener.car");
+    // merge("os/storage/StorageManager.car");
+    // merge("os/storage/StorageVolume.car");
 
     // using interface Elastos.Core.IClassLoader;
     // using interface Elastos.IO.IFileDescriptor;
@@ -564,18 +564,18 @@ module
     } // namespace Droid
     } // namespace Elastos
 
-    // namespace Elastos {
-    // namespace Droid {
-    // namespace Internal {
-    // namespace Os {
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Os {
 
-    // singleton class CZygoteInit {
-    //     interface IZygoteInit;
-    // }
+    //singleton class CZygoteInit {
+    //    interface IZygoteInit;
+    //}
 
-    // singleton class CRuntimeInit {
-    //     interface IRuntimeInit;
-    // }
+    singleton class CRuntimeInit {
+        interface IRuntimeInit;
+    }
 
     // class CProcessStats {
     //     constructor(
@@ -601,9 +601,9 @@ module
     //     interface IParcelable;
     // }
 
-    // } // namespace Os
-    // } // namespace Internal
-    // } // namespace Droid
-    // } // namespace Elastos
+    } // namespace Os
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 
 }

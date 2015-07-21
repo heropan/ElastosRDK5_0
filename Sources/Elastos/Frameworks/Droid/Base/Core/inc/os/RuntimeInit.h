@@ -1,8 +1,9 @@
 
-#ifndef __RUNTIMEINIT_H__
-#define __RUNTIMEINIT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_RUNTIMEINIT_H__
+#define __ELASTOS_DROID_INTERNAL_RUNTIMEINIT_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
 
@@ -12,6 +13,7 @@ namespace Internal {
 namespace Os {
 
 class RuntimeInit
+    : public Object
 {
 public:
     /**
@@ -94,7 +96,7 @@ private:
 
 private:
     static const String TAG;
-    static const Boolean DEBUG = FALSE;
+    static const Boolean DEBUG;
 };
 
 } // namespace Os

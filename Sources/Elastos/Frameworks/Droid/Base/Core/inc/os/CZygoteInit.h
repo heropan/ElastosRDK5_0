@@ -1,8 +1,9 @@
 
-#ifndef __CZYGOTEINIT_H__
-#define __CZYGOTEINIT_H__
+#ifndef __ELASTOS_DROID_INTZERNAL_CZYGOTEINIT_H__
+#define __ELASTOS_DROID_INTZERNAL_CZYGOTEINIT_H__
 
-#include "_CZygoteInit.h"
+#include "_Elastos_Droid_Internal_Os_CZygoteInit.h"
+#include "os/Runnable.h"
 #include "os/ZygoteConnection.h"
 
 using Elastos::Core::IRunnable;
@@ -15,6 +16,8 @@ namespace Internal {
 namespace Os {
 
 CarClass(CZygoteInit)
+    , public Object
+    , public IZygoteInit
 {
 public:
     /**
@@ -23,25 +26,13 @@ public:
      * the initial process setup stack frames.
      */
     class MethodAndArgsCaller
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         MethodAndArgsCaller(
             /* [in] */ IInterface* object,
             /* [in] */ IMethodInfo* method,
             /* [in] */ ArrayOf<String>* args);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface* pObject,
-            /* [in] */ InterfaceID* pIID);
 
         CARAPI Run();
 

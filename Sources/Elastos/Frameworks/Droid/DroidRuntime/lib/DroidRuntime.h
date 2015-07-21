@@ -1,6 +1,6 @@
 
-#ifndef __DROIDRUNTIME_H__
-#define __DROIDRUNTIME_H__
+#ifndef __ELASTOS_DROID_DROIDRUNTIME_H__
+#define __ELASTOS_DROID_DROIDRUNTIME_H__
 
 #include <elastos.h>
 
@@ -38,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DROIDRUNTIME_H__
+#endif //__ELASTOS_DROID_DROIDRUNTIME_H__

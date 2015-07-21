@@ -305,7 +305,7 @@ AutoPtr<Choreographer> Choreographer::GetInstance()
 
     AutoPtr<Choreographer> instance = (Choreographer*)pthread_getspecific(sKey);
     if (instance == NULL) {
-        AutoPtr<ILooper> looper = Looper::MyLooper();
+        AutoPtr<ILooper> looper = Looper::GetMyLooper();
         if (looper == NULL) {
             Logger::E(TAG, "The current thread must have a looper!");
             assert(0);
@@ -652,7 +652,7 @@ void Choreographer::ScheduleVsyncLocked()
 
 Boolean Choreographer::IsRunningOnLooperThreadLocked()
 {
-    return Looper::MyLooper() == mLooper;
+    return Looper::GetMyLooper() == mLooper;
 }
 
 AutoPtr<Choreographer::CallbackRecord> Choreographer::ObtainCallbackLocked(

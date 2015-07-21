@@ -316,7 +316,7 @@ void SharedPreferencesImpl::EditorImpl::NotifyListeners(
     if (mcr->mKeysModified.IsEmpty()) {
         return;
     }
-    if (Looper::MyLooper() == Looper::GetMainLooper()) {
+    if (Looper::GetMyLooper() == Looper::GetMainLooper()) {
         List<String>::ReverseIterator it;
         for (it = mcr->mKeysModified.RBegin(); it != mcr->mKeysModified.REnd(); ++it) {
             const String key = (String)*it;

@@ -320,7 +320,7 @@ CMediaPlayer::~CMediaPlayer()
 
 ECode CMediaPlayer::constructor()
 {
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     if (looper != NULL) {
         AutoPtr<IWeakReference> wr;
         GetWeakReference((IWeakReference**)&wr);

@@ -4,7 +4,7 @@
 #include "os/Binder.h"
 #include "os/SystemClock.h"
 #ifdef DROID_CORE
-// #include "os/CMessageQueue.h"
+#include "os/CMessageQueue.h"
 #endif
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>
@@ -32,8 +32,7 @@ Object Looper::sClassLock;
 Looper::Looper(
     /* [in] */ Boolean quitAllowed)
 {
-    assert(0);
-    // CMessageQueue::New(quitAllowed, (IMessageQueue**)&mQueue);
+    CMessageQueue::New(quitAllowed, (IMessageQueue**)&mQueue);
     mThread = Thread::GetCurrentThread();
 }
 

@@ -1,7 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "os/RuntimeInit.h"
-#include "os/CZygoteInit.h"
+//#include "os/CZygoteInit.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <DroidRuntime.h>
 
@@ -50,9 +50,8 @@ ECode RuntimeInit::Arguments::ParseArgs(
     return NOERROR;
 }
 
-
 const String RuntimeInit::TAG("RuntimeInit");
-const Boolean RuntimeInit::DEBUG;
+const Boolean RuntimeInit::DEBUG = FALSE;;
 
 ECode RuntimeInit::InvokeStaticMain(
     /* [in] */ const String& moduleName,
@@ -76,7 +75,7 @@ ECode RuntimeInit::InvokeStaticMain(
     }
 
     ec = moduleInfo->GetClassInfo(
-            className.string(), (IClassInfo**)&classInfo);
+            className, (IClassInfo**)&classInfo);
     if (FAILED(ec)) {
         Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"%s\" class info failed!\n", className.string());
         return ec;
@@ -89,13 +88,13 @@ ECode RuntimeInit::InvokeStaticMain(
     }
 
     ec = classInfo->GetMethodInfo(
-            "Main", (IMethodInfo**)&methodInfo);
+            String("Main"), String("[LElastos/String;)E"), (IMethodInfo**)&methodInfo);
     if (FAILED(ec)) {
         Slogger::E("RuntimeInit::InvokeStaticMain", "Acquire \"Main\" method info failed!\n");
         return ec;
     }
-
-    *task = new CZygoteInit::MethodAndArgsCaller(object, methodInfo, argv);
+    assert(0 && "TODO: upgrade");
+    //*task = new CZygoteInit::MethodAndArgsCaller(object, methodInfo, argv);
     REFCOUNT_ADD(*task);
     return NOERROR;
 }

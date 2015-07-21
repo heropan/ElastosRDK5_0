@@ -2,7 +2,7 @@
 TARGET_NAME = Elastos.Droid.Test
 TARGET_TYPE = eco
 
-#IMPORTS = Elastos.Core.eco
+#IMPORTS = Elastos.CoreLibrary.eco
 
 INCLUDES += $(MAKEDIR)/../inc/
 INCLUDES += $(MAKEDIR)/../inc/droid
@@ -10,7 +10,7 @@ INCLUDES += $(MAKEDIR)/../inc/droid/test
 INCLUDES += $(MAKEDIR)/../inc/droid/test/suitebuilder
 
 SOURCES  = Elastos.Droid.Test.car
-SOURCES += Elastos.Core.cpp
+SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Eunit.cpp
 
@@ -20,5 +20,5 @@ LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_USER_LIB)/Eunit.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += -lm -licuuc -llog -lutils -lcutils -lbinder

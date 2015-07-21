@@ -1563,7 +1563,7 @@ ECode CAccountManager::EditProperties(
 
 ECode CAccountManager::EnsureNotOnMainThread()
 {
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     AutoPtr<ILooper> mainLooper;
     if (looper != NULL &&
             (mContext->GetMainLooper((ILooper**)&mainLooper), looper == mainLooper)) {

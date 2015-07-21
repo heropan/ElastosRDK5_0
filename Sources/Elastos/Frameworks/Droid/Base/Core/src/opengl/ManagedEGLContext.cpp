@@ -51,7 +51,7 @@ ECode ManagedEGLContext::DoTerminate(
     /* [out] */ Boolean* rst)
 {
     List<AutoPtr<ManagedEGLContext> > active;
-    if (Looper::GetMainLooper() != Looper::MyLooper()) {
+    if (Looper::GetMainLooper() != Looper::GetMyLooper()) {
         SLOGGERE("ManagedEGLContext", "Called on wrong thread")
         *rst = FALSE;
         return E_ILLEGAL_STATE_EXCEPTION;

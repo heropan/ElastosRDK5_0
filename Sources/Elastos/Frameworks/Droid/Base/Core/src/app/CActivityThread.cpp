@@ -902,7 +902,7 @@ ECode CActivityThread::H::HandleMessage(
             if (mHost->mInitialApplication != NULL) {
                 mHost->mInitialApplication->OnTerminate();
             }
-            Looper::MyLooper()->Quit();
+            Looper::GetMyLooper()->Quit();
             break;
         case NEW_INTENT: {
             //Trace.traceBegin(//Trace.trace_TAG_ACTIVITY_MANAGER, "activityNewIntent");
@@ -1135,7 +1135,7 @@ CActivityThread::CActivityThread()
 {
     ASSERT_SUCCEEDED(CApplicationThread::New((IApplicationThread**)&mAppThread));
     ((CApplicationThread*)mAppThread.Get())->mAThread = this;
-    mLooper = Looper::MyLooper();
+    mLooper = Looper::GetMyLooper();
 
     mH = new H(this);
 }
@@ -1793,7 +1793,7 @@ ECode CActivityThread::ScheduleGcIdler()
 {
 //    if (!mGcIdlerScheduled) {
 //        mGcIdlerScheduled = TRUE;
-// //       Looper::MyQueue()->AddIdleHandler(mGcIdler);
+// //       Looper::GetMyQueue()->AddIdleHandler(mGcIdler);
 //    }
 //  mH.removeMessages(H.GC_WHEN_IDLE);
     return NOERROR;
@@ -3251,7 +3251,7 @@ ECode CActivityThread::HandleResumeActivity(
             if (localLOGV)  {
                 Slogger::V(TAG, "Scheduling idle handler for %p", r.Get());
             }
-            Looper::MyQueue()->AddIdleHandler(new Idler(this));
+            Looper::GetMyQueue()->AddIdleHandler(new Idler(this));
         }
         r->mOnlyLocalRequest = FALSE;
 

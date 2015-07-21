@@ -1913,7 +1913,7 @@ AutoPtr<IWebViewFactoryProvider> WebView::GetFactory()
 
 void WebView::CheckThread()
 {
-    if (Looper::MyLooper() != Looper::GetMainLooper()) {
+    if (Looper::GetMyLooper() != Looper::GetMainLooper()) {
         assert(0);
 //        Throwable throwable = new Throwable(
 //                "Warning: A WebView method was called on thread '" +

@@ -12,7 +12,7 @@
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Graphics::CRect;
 using Elastos::Droid::Os::SystemClock;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {

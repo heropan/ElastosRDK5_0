@@ -5,9 +5,9 @@
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include "webkit/WebIconDatabase.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Content::IContentResolver;

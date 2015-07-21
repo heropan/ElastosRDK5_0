@@ -282,7 +282,7 @@ WiredAccessoryManager::WiredAccessoryManager(
     , mSwitchValues(0)
     , mUseDevInputEventForAudioJack(FALSE)
 {
-    mHandler = new MyHandler(Looper::MyLooper(), this);
+    mHandler = new MyHandler(Looper::GetMyLooper(), this);
     AutoPtr<IInterface> powerService;
     context->GetSystemService(IContext::POWER_SERVICE, (IInterface**)&powerService);
     AutoPtr<IPowerManager> pm = IPowerManager::Probe(powerService);

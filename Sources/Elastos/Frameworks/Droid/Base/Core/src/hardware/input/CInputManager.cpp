@@ -249,7 +249,7 @@ ECode CInputManager::RegisterInputDeviceListener(
 
     AutoPtr<ILooper> looper;
     if (NULL == handler) {
-        looper = Looper::MyLooper();
+        looper = Looper::GetMyLooper();
     }
     else {
         handler->GetLooper((ILooper**)&looper);

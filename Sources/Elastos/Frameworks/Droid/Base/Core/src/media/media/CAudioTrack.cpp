@@ -174,7 +174,7 @@ ECode CAudioTrack::constructor(
     mState = STATE_UNINITIALIZED;
 
     // remember which looper is associated with the AudioTrack instantiation
-    mInitializationLooper = Looper::MyLooper();
+    mInitializationLooper = Looper::GetMyLooper();
     if (mInitializationLooper == NULL) {
         mInitializationLooper = Looper::GetMainLooper();
     }

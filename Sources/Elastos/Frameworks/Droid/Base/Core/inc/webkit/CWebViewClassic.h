@@ -32,7 +32,7 @@
 
 #include "view/VelocityTracker.h"
 #include "view/View.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
@@ -41,7 +41,7 @@ using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::IFileInputStream;
 using Elastos::Utility::IMap;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::ISet;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Animation::IObjectAnimator;

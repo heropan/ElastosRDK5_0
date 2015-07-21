@@ -278,7 +278,7 @@ Boolean SQLiteDatabase::IsMainThread()
 {
     // FIXME: There should be a better way to do this.
     // Would also be nice to have something that would work across Binder calls.
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     return looper != NULL && looper == Looper::GetMainLooper();
 }
 

@@ -133,7 +133,7 @@ CJetPlayer::~CJetPlayer()
 ECode CJetPlayer::constructor()
 {
     // remember which looper is associated with the JetPlayer instanciation
-    mInitializationLooper = Looper::MyLooper();
+    mInitializationLooper = Looper::GetMyLooper();
     if (mInitializationLooper == NULL) {
         mInitializationLooper = Looper::GetMainLooper();
     }

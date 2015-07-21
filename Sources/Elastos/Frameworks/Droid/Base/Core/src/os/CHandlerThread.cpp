@@ -49,7 +49,7 @@ ECode CHandlerThread::Run()
     {
         AutoLock(this)
 
-        mLooper = Looper::MyLooper();
+        mLooper = Looper::GetMyLooper();
         NotifyAll();
     }
     Process::SetThreadPriority(mPriority);

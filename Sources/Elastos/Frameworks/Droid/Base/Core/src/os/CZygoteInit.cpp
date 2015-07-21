@@ -3,11 +3,11 @@
 #include "os/CZygoteInit.h"
 #include "os/Process.h"
 #include "os/RuntimeInit.h"
-#include "net/CLocalServerSocket.h"
+//#include "net/CLocalServerSocket.h"
 #include <Elastos.Droid.System.h>
 #include <Elastos.CoreLibrary.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -15,19 +15,19 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Utility::Vector;
-using Elastos::Droid::Net::CLocalServerSocket;
-using Elastos::Droid::Os::Process;
-using Elastos::Droid::System::CZygote;
-using Elastos::Droid::System::IZygote;
+using Elastos::Utility::Etl::Vector;
+using Elastos::Utility::Logging::Logger;
 using Elastos::IO::CFileDescriptor;
 using Elastos::IO::IFileDescriptor;
-using Elastos::Utility::Logging::Logger;
 using Libcore::IO::CLibcore;
 using Libcore::IO::COsConstants;
 using Libcore::IO::ILibcore;
 using Libcore::IO::IOs;
 using Libcore::IO::IOsConstants;
+//using Elastos::Droid::Net::CLocalServerSocket;
+using Elastos::Droid::Os::Process;
+using Elastos::Droid::System::CZygote;
+using Elastos::Droid::System::IZygote;
 
 namespace Elastos {
 namespace Droid {
@@ -47,37 +47,6 @@ CZygoteInit::MethodAndArgsCaller::MethodAndArgsCaller(
     , mArgs(args)
 {}
 
-PInterface CZygoteInit::MethodAndArgsCaller::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IRunnable*)this;
-    }
-    else if (riid == Elastos::Core::EIID_IRunnable) {
-        return (IRunnable*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CZygoteInit::MethodAndArgsCaller::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CZygoteInit::MethodAndArgsCaller::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CZygoteInit::MethodAndArgsCaller::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [in] */ InterfaceID* pIID)
-{
-    assert(0);
-    return E_NOT_IMPLEMENTED;
-}
-
 ECode CZygoteInit::MethodAndArgsCaller::Run()
 {
     AutoPtr<IArgumentList> argumentList;
@@ -96,7 +65,6 @@ ECode CZygoteInit::MethodAndArgsCaller::Run()
     }
     return ec;
 }
-
 
 ECode CZygoteInit::RegisterZygoteSocket()
 {

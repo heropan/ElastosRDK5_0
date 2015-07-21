@@ -2817,7 +2817,7 @@ ECode Activity::Recreate()
 
     AutoPtr<ILooper> myLooper;
 #ifdef DROID_CORE
-    myLooper = Looper::MyLooper();
+    myLooper = Looper::GetMyLooper();
 #else
     AutoPtr<ILooperHelper> helper;
     CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);

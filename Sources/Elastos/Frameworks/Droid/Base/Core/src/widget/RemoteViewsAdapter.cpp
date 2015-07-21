@@ -1147,7 +1147,7 @@ ECode RemoteViewsAdapter::Init(
     AutoPtr<ILooper> looper;
     mWorkerThread->GetLooper((ILooper**)&looper);
     CHandler::New(looper, (IHandler**)&mWorkerQueue);
-    CHandler::New(Looper::MyLooper(), (IHandler**)&mMainQueue);
+    CHandler::New(Looper::GetMyLooper(), (IHandler**)&mMainQueue);
 
     if (sCacheRemovalThread == NULL) {
         CHandlerThread::New(String("RemoteViewsAdapter-cachePruner"), (IHandlerThread**)&sCacheRemovalThread);

@@ -408,7 +408,7 @@ ECode Dialog::Hide()
  */
 ECode Dialog::Dismiss()
 {
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     AutoPtr<ILooper> handlerLooper;
     mHandler->GetLooper((ILooper**)&handlerLooper);
     if (looper == handlerLooper) {

@@ -6,13 +6,13 @@
 #include "os/HandlerBase.h"
 #include "webkit/GeolocationPermissions.h"
 #include <elastos/utility/etl/HashSet.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
 using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::View::IActionMode;
 using Elastos::Droid::View::IMenu;
 using Elastos::Utility::ISet;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 namespace Elastos {
 namespace Droid {

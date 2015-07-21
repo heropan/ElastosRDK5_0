@@ -19,14 +19,14 @@ SOURCES += XmlUtils.cpp
 SOURCES += Elastos.Droid.Core.cpp
 SOURCES += Org.Kxml2.IO.cpp
 SOURCES += FileUtils.cpp
-SOURCES += Elastos.Core.cpp
+SOURCES += Elastos.CoreLibrary.cpp
 SOURCES += CSettingsBackupAgent.cpp
 SOURCES += SettingsHelper.cpp
 
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Runtime.lib
 LIBRARIES += $(XDK_USER_LIB)/Elastos.Droid.lib
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco
-LIBRARIES += $(XDK_TARGETS)/Elastos.Core.eco
+LIBRARIES += $(XDK_TARGETS)/Elastos.CoreLibrary.eco
 LIBRARIES += $(XDK_TARGETS)/Elastos.Droid.Core.eco
 LIBRARIES += $(XDK_USER_LIB)/crt0.lib
 LIBRARIES += $(PREBUILD_LIB)/libm.a

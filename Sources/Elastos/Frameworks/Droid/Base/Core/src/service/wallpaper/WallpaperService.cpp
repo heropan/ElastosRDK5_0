@@ -26,7 +26,7 @@ using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Utility::Iterator;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 namespace Elastos {
 namespace Droid {

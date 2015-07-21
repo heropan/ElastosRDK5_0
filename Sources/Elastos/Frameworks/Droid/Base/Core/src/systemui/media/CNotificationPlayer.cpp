@@ -46,7 +46,7 @@ CNotificationPlayer::CreationAndCompletionThread::CreationAndCompletionThread(
 ECode CNotificationPlayer::CreationAndCompletionThread::Run()
 {
     Looper::Prepare();
-    mHost->mLooper = Looper::MyLooper();
+    mHost->mLooper = Looper::GetMyLooper();
     {
         AutoLock lock(mLock);
         AutoPtr<IAudioManager> audioManager;

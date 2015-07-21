@@ -1478,7 +1478,7 @@ ECode CFragmentManagerImpl::ExecPendingActions(
     }
 
     AutoPtr<Activity> activity = reinterpret_cast<Activity*>(mActivity->Probe(EIID_Activity));
-    AutoPtr<ILooper> myLooper = Looper::MyLooper();
+    AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
     AutoPtr<ILooper> aLooper;
     activity->mHandler->GetLooper((ILooper**)&aLooper);
     if (myLooper.Get() != aLooper.Get()) {

@@ -45,4 +45,17 @@ module
 
     }}} // Elastos.Droid.Content
 
+
+    //
+    // Elastos.Droid.Net
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+        interface ILocalServerSocket {
+        }
+
+    }}} // Elastos.Droid.Net
+
 }

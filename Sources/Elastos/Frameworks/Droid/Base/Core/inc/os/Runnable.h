@@ -2,13 +2,9 @@
 #ifndef __ELASTOS_DROID_OS_RUNNABLE_H__
 #define __ELASTOS_DROID_OS_RUNNABLE_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
+#include <elastos/core/Object.h>
 
-
+using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {
@@ -16,25 +12,15 @@ namespace Droid {
 namespace Os {
 
 class Runnable
-    : public ElRefBase
+    : public Object
     , public IRunnable
 {
 protected:
-    Runnable() {}
+    CAR_INTERFACE_DECL()
 
-    virtual ~Runnable() {}
+    Runnable();
 
-public:
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    virtual ~Runnable();
 };
 
 } // namespace Os

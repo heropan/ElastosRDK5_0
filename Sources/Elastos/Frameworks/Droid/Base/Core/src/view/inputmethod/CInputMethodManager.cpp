@@ -616,7 +616,7 @@ Boolean CInputMethodManager::StartInputInner(
 
     AutoPtr<ILooper> looper;
     vh->GetLooper((ILooper**)&looper);
-    if (looper != Looper::MyLooper()) {
+    if (looper != Looper::GetMyLooper()) {
         // The view is running on a different thread than our own, so
         // we need to reschedule our work for over there.
         if (DEBUG) Logger::V(TAG, "Starting input: reschedule to view thread");

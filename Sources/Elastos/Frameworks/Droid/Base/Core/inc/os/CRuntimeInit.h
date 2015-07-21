@@ -1,8 +1,8 @@
 
-#ifndef __CRUNTIMEINIT_H__
-#define __CRUNTIMEINIT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_CRUNTIMEINIT_H__
+#define __ELASTOS_DROID_INTERNAL_CRUNTIMEINIT_H__
 
-#include "_CRuntimeInit.h"
+#include "_Elastos_Droid_Internal_Os_CRuntimeInit.h"
 #include "RuntimeInit.h"
 
 namespace Elastos {
@@ -10,9 +10,15 @@ namespace Droid {
 namespace Internal {
 namespace Os {
 
-CarClass(CRuntimeInit), public RuntimeInit
+CarClass(CRuntimeInit)
+    , public RuntimeInit
+    , public IRuntimeInit
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI Main(
         /* [in] */ const ArrayOf<String>& args);
 };
@@ -22,4 +28,4 @@ public:
 } // namespace Internal
 } // namespace Elastos
 
-#endif // __CRUNTIMEINIT_H__
+#endif // __ELASTOS_DROID_INTERNAL_CRUNTIMEINIT_H__

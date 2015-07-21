@@ -116,7 +116,7 @@ ECode HandlerCaller::ExecuteOrSendMessage(
     // If we are calling this from the main thread, then we can call
     // right through.  Otherwise, we need to send the message to the
     // main thread.
-    AutoPtr<ILooper> myLooper = Looper::MyLooper();
+    AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
     if (myLooper == mMainLooper) {
         ECode ec = NOERROR;
         AutoPtr<IHandlerCallerCallback> cb = GetCallback();

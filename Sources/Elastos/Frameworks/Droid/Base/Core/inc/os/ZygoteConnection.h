@@ -1,6 +1,6 @@
 
-#ifndef __ZYGOTECONNECTION_H__
-#define __ZYGOTECONNECTION_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__
+#define __ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -373,4 +373,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ZYGOTECONNECTION_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_ZYGOTECONNECTION_H__

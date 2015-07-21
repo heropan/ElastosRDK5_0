@@ -535,7 +535,7 @@ void ValueAnimator::NotifyStartListeners()
 void ValueAnimator::Start(
     /* [in] */ Boolean playBackwards)
 {
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
 
     if (looper == NULL) {
         return;

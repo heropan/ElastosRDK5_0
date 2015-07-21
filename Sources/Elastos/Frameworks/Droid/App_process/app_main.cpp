@@ -1,5 +1,5 @@
 
-#include <ext/frameworkdef.h>
+#include <elastos/coredef.h>
 #include <DroidRuntime.h>
 #include <cutils/process_name.h>
 #include <binder/ProcessState.h>
@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
     }
 
     if (zygote) {
-        runtime.Start("Elastos.Droid.Core.eco", "CZygoteInit",
-                startSystemServer ? "start-system-server" : "");
+        runtime.Start(String("Elastos.Droid.Core.eco"), String("CZygoteInit"),
+                startSystemServer ? String("start-system-server") : String(""));
     }
     else if (className) {
 // Remainder of args get passed to startup class main()
@@ -124,8 +124,8 @@ int main(int argc, char* argv[])
 
         runtime.mClassName = className;
         runtime.mArgs = args;
-        runtime.Start("Elastos.Droid.Core.eco", "CRuntimeInit",
-            application ? "application" : "tool");
+        runtime.Start(String("Elastos.Droid.Core.eco"), String("CRuntimeInit"),
+            application ? String("application") : String("tool"));
     }
     else {
 //        fprintf(stderr, "Error: no class name or --zygote supplied.\n");

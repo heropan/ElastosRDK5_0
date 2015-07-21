@@ -4,10 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Droid::Graphics::ICanvas;
 using Elastos::Droid::Graphics::IRect;
 

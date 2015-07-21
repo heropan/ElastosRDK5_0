@@ -681,7 +681,7 @@ void CLocationManagerService::Init()
     CSettingsSecure::AcquireSingleton((ISettingsSecure**)&settingsSecure);
     settingsSecure->GetUriFor(ISettingsSecure::LOCATION_PROVIDERS_ALLOWED, (IUri**)&uri);
     resolver->RegisterContentObserver(uri, TRUE, lcObserver.Get(), IUserHandle::USER_ALL);
-    AutoPtr<ILooper> myLooper = Looper::MyLooper();
+    AutoPtr<ILooper> myLooper = Looper::GetMyLooper();
     mPackageMonitor->Register(mContext, myLooper, TRUE);
 
     // listen for user change

@@ -13,7 +13,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 #include <binder/ProcessState.h>
 #include <cutils/sched_policy.h>
 #include <sys/resource.h>
@@ -33,7 +33,7 @@ using Elastos::IO::IFlushable;
 using Elastos::IO::IDataInput;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Net::CLocalSocket;
 using Elastos::Droid::Net::ILocalSocketAddress;

@@ -288,7 +288,7 @@ CMediaRecorder::~CMediaRecorder()
 
 ECode CMediaRecorder::constructor()
 {
-    AutoPtr<ILooper> looper = Looper::MyLooper();
+    AutoPtr<ILooper> looper = Looper::GetMyLooper();
     if (looper != NULL) {
         mEventHandler = new EventHandler(this, looper);
     }

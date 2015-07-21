@@ -3,7 +3,7 @@
 #include "XBMCCallbacks.h"
 #include "ElAudioTrack.h"
 #include "WifiNative.h"
-#include <elastos/Vector.h>
+#include <elastos/utility/etl/Vector.h>
 #include <pthread.h>
 #include <utils/Log.h>
 #include <cutils/properties.h>
@@ -13,7 +13,7 @@
 
 #include <Elastos.Droid.Core.h>
 
-using Elastos::Utility::Vector;
+using Elastos::Utility::Etl::Vector;
 
 using Elastos::Droid::Graphics::ISurfaceTexture;
 using Elastos::Droid::Graphics::CSurfaceTexture;

@@ -2204,7 +2204,7 @@ ECode CHardwareCamera::constructor(
     AutoPtr<ILooper> looper;
     assert(0);
     //TODO
-    // if ((looper = Looper::MyLooper()) != NULL) {
+    // if ((looper = Looper::GetMyLooper()) != NULL) {
     //     mEventHandler = new EventHandler(this, looper);
     // } else if ((looper = Looper.getMainLooper()) != NULL) {
     //     mEventHandler = new EventHandler(this, looper);
