@@ -1,13 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
 
-    interface IVelocityTracker extends Elastos.Droid.Utility.IPoolable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Utility.IPoolable
+     */
+    interface IVelocityTracker {
         Recycle();
 
         Clear();

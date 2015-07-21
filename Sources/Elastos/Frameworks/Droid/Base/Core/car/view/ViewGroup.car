@@ -144,7 +144,11 @@ module
                 [in] ICanvas* canvas);
         }
 
-        interface IViewGroupMarginLayoutParams extends IViewGroupLayoutParams {
+        /**
+         * @Involve
+         * interface IViewGroupLayoutParams
+         */
+        interface IViewGroupMarginLayoutParams {
             /**
              * The default start and end margin.
              * @hide
@@ -317,8 +321,12 @@ module
                 [out] Boolean* rtl);
         }
 
+        /**
+         * @Involve
+         * interface IView
+         */
         [deprecated]
-        interface IViewGroup extends IView {
+        interface IViewGroup {
             /**
              * This view will get focus before any of its descendants.
              */

@@ -1,6 +1,5 @@
 module
 {
-    interface Libcore.ICU.ILocale;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Text.ISelectionPositionIterator;
 

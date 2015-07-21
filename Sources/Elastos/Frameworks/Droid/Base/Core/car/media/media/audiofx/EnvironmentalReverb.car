@@ -95,7 +95,11 @@ module
             [in] Int16 density);
     }
 
-    interface IEnvironmentalReverb extends IAudioEffect {
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IEnvironmentalReverb {
         /**
          * Room level. Parameter ID for OnParameterChangeListener
          */

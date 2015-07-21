@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IZoomButton extends Elastos.Droid.Widget.IImageButton
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IImageButton
+     */
+    interface IZoomButton
     {
         SetZoomSpeed(
             [in] Int64 speed);

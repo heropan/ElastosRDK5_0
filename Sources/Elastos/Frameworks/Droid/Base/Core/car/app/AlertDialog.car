@@ -3,7 +3,6 @@ module
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Os.IMessage;
-    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
@@ -53,7 +52,11 @@ module
      *
      * @implements Elastos.Droid.App.IDialog
      */
-    interface IAlertDialog extends IDialog {
+    /**
+     * @Involve
+     * interface IDialog
+     */
+    interface IAlertDialog {
         /**
          * Special theme constant for #AlertDialog(Context, int): use
          * the traditional (pre-Holo) alert dialog theme.

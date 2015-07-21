@@ -447,8 +447,12 @@ module
             [in] IRouteInfo* info);
     }
 
+    /**
+     * @Involve
+     * interface IRouteInfo
+     */
     [local]
-    interface IUserRouteInfo extends IRouteInfo {
+    interface IUserRouteInfo {
 
         /**
          * Set the current user-visible status for this route.
@@ -551,8 +555,12 @@ module
             [in] Int32 stream);
     }
 
+    /**
+     * @Involve
+     * interface IRouteInfo
+     */
     [local]
-    interface IRouteGroup extends IRouteInfo {
+    interface IRouteGroup {
         /**
          * Add a route to this group. The route must not currently belong to another group.
          *

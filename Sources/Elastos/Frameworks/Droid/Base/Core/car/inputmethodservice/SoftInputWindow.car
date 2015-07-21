@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace InputMethodService {
 
-    interface ISoftInputWindow extends Elastos.Droid.App.IDialog {
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IDialog
+     */
+    interface ISoftInputWindow {
         SetToken(
             [in] IBinder* token);
 

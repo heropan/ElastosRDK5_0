@@ -11,7 +11,11 @@ module
      *
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Os.IPatternMatcher
      */
-    interface IPathPermission extends Elastos.Droid.Os.IPatternMatcher {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IPatternMatcher
+     */
+    interface IPathPermission {
         GetReadPermission(
             [out] String* readPermission);
 

@@ -12,15 +12,17 @@ module
     interface Elastos.Droid.View.IWindowManager;
     interface Elastos.Droid.View.IWindow;
     interface Elastos.Droid.View.IViewGroupLayoutParams;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
     namespace Service {
     namespace Dreams {
 
-    interface IDreamService extends Elastos.Droid.App.IService // implements Window.Callback
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
+    interface IDreamService // implements Window.Callback
     {
 
         /**

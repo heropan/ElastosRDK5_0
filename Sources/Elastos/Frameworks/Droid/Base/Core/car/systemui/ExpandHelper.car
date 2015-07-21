@@ -1,8 +1,6 @@
 module
 {
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IMotionEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -52,8 +50,12 @@ module
             [out] Boolean* result);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.IGefingerpoken
+     */
     [local]
-    interface IExpandHelper extends Elastos.Droid.SystemUI.IGefingerpoken {
+    interface IExpandHelper {
         SetEventSource(
             [in] IView* eventSource);
 

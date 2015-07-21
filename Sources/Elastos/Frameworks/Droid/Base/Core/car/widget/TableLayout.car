@@ -5,10 +5,18 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface ITableLayoutLayoutParams extends ILinearLayoutLayoutParams {
+    /**
+     * @Involve
+     * interface ILinearLayoutLayoutParams
+     */
+    interface ITableLayoutLayoutParams {
     }
 
-    interface ITableLayout extends ILinearLayout {
+    /**
+     * @Involve
+     * interface ILinearLayout
+     */
+    interface ITableLayout {
         /**
          * <p>Indicates whether all columns are shrinkable or not.</p>
          *

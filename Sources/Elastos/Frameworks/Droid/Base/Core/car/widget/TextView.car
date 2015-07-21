@@ -26,7 +26,6 @@ module
     interface Elastos.Droid.Text.Method.IMovementMethod;
     interface Elastos.Droid.Text.Method.ITransformationMethod;
     interface Elastos.Droid.View.IKeyEvent;
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.View.InputMethod.IExtractedTextRequest;
     interface Elastos.Droid.View.InputMethod.IExtractedText;
@@ -75,11 +74,19 @@ module
      * User interface state that is stored by TextView for implementing
      * {@link View#onSaveInstanceState}.
      */
-    interface ITextViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface ITextViewSavedState {
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
     [deprecated]
-    interface ITextView extends Elastos.Droid.View.IView {
+    interface ITextView {
 
         /**
          * Sets the typeface and style in which the text should be displayed,

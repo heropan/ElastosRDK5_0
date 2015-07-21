@@ -12,7 +12,11 @@ module
      * 
      * @author Michael Becke
      */
-    interface IPartBase extends IPart {
+    /**
+     * @Involve
+     * interface IPart
+     */
+    interface IPartBase {
         /**
          * Sets the character encoding.
          * 
@@ -48,7 +52,11 @@ module
             [in] String transferEncoding);
     }
 
-    interface IPartBaseHelper extends IPartHelper {
+    /**
+     * @Involve
+     * interface IPartHelper
+     */
+    interface IPartBaseHelper {
     }
 
     } // namespace Multipart

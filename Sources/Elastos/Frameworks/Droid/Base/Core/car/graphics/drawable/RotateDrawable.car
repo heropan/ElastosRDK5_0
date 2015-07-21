@@ -95,7 +95,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-        interface IRotateDrawable extends IDrawable {
+        /**
+         * @Involve
+         * interface IDrawable
+         */
+        interface IRotateDrawable {
             /**
              * Returns the drawable rotated by this RotateDrawable.
              */

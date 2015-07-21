@@ -4,7 +4,11 @@ module
     namespace Droid {
     namespace Preference {
     
-        interface IPreferenceCategory extends IPreferenceGroup {
+        /**
+         * @Involve
+         * interface IPreferenceGroup
+         */
+        interface IPreferenceCategory {
             
         }
     

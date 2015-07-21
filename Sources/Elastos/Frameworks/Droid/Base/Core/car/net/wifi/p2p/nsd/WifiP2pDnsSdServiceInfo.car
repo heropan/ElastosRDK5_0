@@ -19,7 +19,11 @@ module
      * {@see WifiP2pServiceInfo}
      * {@see WifiP2pUpnpServiceInfo}
      */
-    interface IWifiP2pDnsSdServiceInfo extends IWifiP2pServiceInfo {
+    /**
+     * @Involve
+     * interface IWifiP2pServiceInfo
+     */
+    interface IWifiP2pDnsSdServiceInfo {
         /**
          * Bonjour version 1.
          * @hide

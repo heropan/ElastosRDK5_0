@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IResourceCursorAdapter extends ICursorAdapter
+    /**
+     * @Involve
+     * interface ICursorAdapter
+     */
+    interface IResourceCursorAdapter
     {
         /**
          * <p>Sets the layout resource of the item views.</p>

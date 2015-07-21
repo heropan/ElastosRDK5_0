@@ -97,7 +97,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface IClipDrawable extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface IClipDrawable {
         const Int32 HORIZONTAL = 1;
         const Int32 VERTICAL = 2;
     }

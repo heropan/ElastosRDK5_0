@@ -2,7 +2,6 @@ module
 {
     interface Elastos.Droid.Text.ILayout;
     interface Elastos.Droid.Text.ISpannable;
-    interface Elastos.Droid.Text.INoCopySpan;
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.Widget.ITextView;
 
@@ -54,7 +53,11 @@ module
             [out] Int32* ret);
     }
 
-    interface ITouchDragState extends Elastos.Droid.Text.INoCopySpan {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Text.INoCopySpan
+     */
+    interface ITouchDragState {
 
     }
 

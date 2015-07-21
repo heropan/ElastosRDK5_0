@@ -11,8 +11,12 @@ module
     interface IRecentsPanelView;
     interface ITaskDescription;
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewOnTouchListener
+     */
     [local, deprecated]
-    interface IRecentTasksLoader extends Elastos.Droid.View.IViewOnTouchListener {
+    interface IRecentTasksLoader {
         SetRecentsPanel(
             [in] IRecentsPanelView* newRecentsPanel,
             [in] IRecentsPanelView* caller);

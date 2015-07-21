@@ -4,7 +4,6 @@ module
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.Text.ILayout;
-    interface Elastos.Droid.Text.Style.IParagraphStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -17,7 +16,11 @@ module
      * adding its margin to the ones before it. The leading margin is on the right
      * for lines in a right-to-left paragraph.
      */
-    interface ILeadingMarginSpan extends IParagraphStyle
+    /**
+     * @Involve
+     * interface IParagraphStyle
+     */
+    interface ILeadingMarginSpan
     {
         /**
          * Returns the amount by which to adjust the leading margin. Positive values
@@ -71,7 +74,11 @@ module
      * this object is attached that the "first line of paragraph" margin
      * width will be applied to.
      */
-    interface ILeadingMarginSpan2 extends ILeadingMarginSpan/*, WrapTogetherSpan*/ {
+    /**
+     * @Involve
+     * interface ILeadingMarginSpan
+     */
+    interface ILeadingMarginSpan2/*, WrapTogetherSpan*/ {
         /**
          * Returns the number of lines of text to which this object is
          * attached that the "first line" margin will apply to.

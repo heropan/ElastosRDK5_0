@@ -2,11 +2,9 @@
 module
 {
 
-    interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Net.ILinkCapabilities;
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Telephony.ICellInfo;
     interface Elastos.Droid.Internal.Telephony.IIPhoneStateListener;
     interface Elastos.Droid.Telephony.IServiceState;
     interface Elastos.Droid.Telephony.ISignalStrength;

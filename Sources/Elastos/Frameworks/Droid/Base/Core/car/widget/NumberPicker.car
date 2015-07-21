@@ -66,8 +66,12 @@ module
             [out] String* str);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
     [deprecated]
-    interface INumberPicker extends Elastos.Droid.Widget.ILinearLayout {
+    interface INumberPicker {
         /**
          * Sets the listener to be notified on change of the current value.
          *

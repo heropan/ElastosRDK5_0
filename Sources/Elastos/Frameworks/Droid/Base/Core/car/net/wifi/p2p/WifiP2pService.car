@@ -54,7 +54,11 @@ module
      *
      * {@see WifiP2pManager}
      */
-    interface IWifiP2pService extends IIWifiP2pManager {
+    /**
+     * @Involve
+     * interface IIWifiP2pManager
+     */
+    interface IWifiP2pService {
 
         /* Delayed message to timeout group creation */
         const Int32 GROUP_CREATING_TIMED_OUT        = 0x00023001;   //IProtocol::BASE_WIFI_P2P_SERVICE + 1;

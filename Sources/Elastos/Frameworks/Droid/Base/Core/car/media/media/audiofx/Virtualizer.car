@@ -41,7 +41,11 @@ module
             [in] Int16 result);
     }
 
-    interface IVirtualizer extends IAudioEffect {
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IVirtualizer {
 
         /**
          * Is strength parameter supported by virtualizer engine. Parameter ID for getParameter().

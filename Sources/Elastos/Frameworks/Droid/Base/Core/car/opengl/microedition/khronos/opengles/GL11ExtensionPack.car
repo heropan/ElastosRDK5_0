@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.IO.IBuffer;
     using interface Elastos.IO.IInt32Buffer;
     using interface Elastos.IO.IFloatBuffer;
 
@@ -10,8 +9,12 @@ module
     namespace Khronos {
     namespace Opengles {
 
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Opengles.IGL
+     */
     [deprecated]
-    interface IGL11ExtensionPack extends Elastosx.Microedition.Khronos.Opengles.IGL {
+    interface IGL11ExtensionPack {
         const Int32 _GL_BLEND_DST_ALPHA                                  = 0x80CA;
         const Int32 _GL_BLEND_DST_RGB                                    = 0x80C8;
         const Int32 _GL_BLEND_EQUATION                                   = 0x8009;

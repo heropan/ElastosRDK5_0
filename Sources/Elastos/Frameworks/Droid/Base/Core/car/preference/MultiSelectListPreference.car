@@ -7,8 +7,12 @@ module
     namespace Droid {
     namespace Preference {
 
+        /**
+         * @Involve
+         * interface IDialogPreference
+         */
         [deprecated]
-        interface IMultiSelectListPreference extends IDialogPreference {
+        interface IMultiSelectListPreference {
             /**
              * Sets the human-readable entries to be shown in the list. This will be
              * shown in subsequent dialogs.
@@ -88,7 +92,11 @@ module
                 [out] Int32* index);
         }
 
-        interface IMultiSelectListPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IMultiSelectListPreferenceSavedState {
             SetValues(
                 [in] ISet* value);
 

@@ -8,7 +8,11 @@ module
     namespace Widget{
     namespace Internal{
 
-    interface IPointerLocationView extends Elastos.Droid.View.IView
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IPointerLocationView
     {
         SetPrintCoords(
             [in] Boolean state);

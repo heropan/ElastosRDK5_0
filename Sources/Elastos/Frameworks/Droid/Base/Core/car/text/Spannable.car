@@ -12,7 +12,11 @@ module
      * attached and detached.  Not all Spannable classes have mutable text;
      * see {@link Editable} for that.
      */
-    interface ISpannable extends ISpanned {
+    /**
+     * @Involve
+     * interface ISpanned
+     */
+    interface ISpannable {
         /**
          * Attach the specified markup object to the range <code>start&hellip;end</code>
          * of the text, or move the object to that range if it was already

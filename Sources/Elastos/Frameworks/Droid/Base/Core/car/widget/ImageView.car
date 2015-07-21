@@ -81,8 +81,12 @@ module
      * @attr ref android.R.styleable#ImageView_scaleType
      * @attr ref android.R.styleable#ImageView_cropToPadding
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
     [deprecated]
-    interface IImageView extends Elastos.Droid.View.IView {
+    interface IImageView {
         /**
          * True when ImageView is adjusting its bounds
          * to preserve the aspect ratio of its drawable

@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {

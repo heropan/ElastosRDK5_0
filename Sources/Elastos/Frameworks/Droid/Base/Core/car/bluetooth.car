@@ -29,9 +29,6 @@ module
     merge("bluetooth/IBluetoothPbap.car");
     merge("bluetooth/IBluetoothStateChangeCallback.car");
 
-    using interface Elastos.IO.ICloseable;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.IParcelUuid;
 
     namespace Elastos {
     namespace Droid {

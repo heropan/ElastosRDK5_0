@@ -25,7 +25,11 @@ module
             [in] Boolean isChecked);
     }
 
-    interface ICompoundButton extends IButton {
+    /**
+     * @Involve
+     * interface IButton
+     */
+    interface ICompoundButton {
         /**
              * Register a callback to be invoked when the checked state of this button
              * changes.

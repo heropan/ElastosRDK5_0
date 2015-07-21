@@ -3,8 +3,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Text.ILayout;
-    interface Elastos.Droid.Text.ILayoutHelper;
     interface Elastos.Droid.Text.ITextPaint;
     interface Elastos.Droid.Text.ITextDirectionHeuristic;
     enum Elastos.Droid.Text.LayoutAlignment;
@@ -14,7 +12,11 @@ module
     namespace Droid {
     namespace Text {
 
-    interface IBoringLayoutMetrics extends Elastos.Droid.Graphics.IPaintFontMetricsInt {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Graphics.IPaintFontMetricsInt
+     */
+    interface IBoringLayoutMetrics {
         GetWidth(
             [out] Int32* width);
 
@@ -22,7 +24,11 @@ module
             [in] Int32 width);
     }
 
-    interface IBoringLayout extends ILayout {
+    /**
+     * @Involve
+     * interface ILayout
+     */
+    interface IBoringLayout {
 
         /**
          * Returns a BoringLayout for the specified text, potentially reusing
@@ -59,7 +65,11 @@ module
             [out] IBoringLayout** layout);
     }
 
-    interface IBoringLayoutHelper extends ILayoutHelper {
+    /**
+     * @Involve
+     * interface ILayoutHelper
+     */
+    interface IBoringLayoutHelper {
         Make(
             [in] ICharSequence* source,
             [in] ITextPaint* paint,

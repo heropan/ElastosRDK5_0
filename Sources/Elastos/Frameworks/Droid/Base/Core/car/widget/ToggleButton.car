@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IToggleButton extends Elastos.Droid.Widget.ICompoundButton
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ICompoundButton
+     */
+    interface IToggleButton
     {
         /**
          * Returns the text for when the button is in the checked state.

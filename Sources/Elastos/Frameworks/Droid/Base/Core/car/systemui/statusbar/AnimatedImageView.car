@@ -5,7 +5,11 @@ module
     namespace SystemUI {
     namespace StatusBar {
 
-    interface IAnimatedImageView extends Elastos.Droid.Widget.IImageView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IImageView
+     */
+    interface IAnimatedImageView {
 
     }
 

@@ -5,9 +5,6 @@ module
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Webkit.IAutoFillProfile;
-    interface Elastos.Droid.Webkit.IWebStorage;
-    interface Elastos.Droid.Webkit.IWebSettings;
-    interface Elastos.Droid.Webkit.IWebSettingsClassic;
 
     namespace Elastos {
     namespace Droid {
@@ -53,7 +50,11 @@ module
      * WebSettings implementation for the WebViewClassic implementation of WebView.
      * @hide
      */
-    interface IWebSettingsClassic extends IWebSettings {
+    /**
+     * @Involve
+     * interface IWebSettings
+     */
+    interface IWebSettingsClassic {
 
         /**
          * Set the double-tap zoom of the page in percent. Default is 100.

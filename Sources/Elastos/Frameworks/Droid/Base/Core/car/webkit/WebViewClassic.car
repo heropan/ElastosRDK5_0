@@ -12,7 +12,6 @@ module
     interface Elastos.Droid.Webkit.IWebView;
     interface Elastos.Droid.Webkit.IWebViewClient;
     interface Elastos.Droid.Webkit.IWebViewCore;
-    interface Elastos.Droid.Webkit.IWebViewProvider;
     interface Elastos.Droid.Webkit.IWebBackForwardListClient;
 
     namespace Elastos {

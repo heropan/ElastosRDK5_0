@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
 
@@ -13,8 +12,12 @@ module
      * draw/measure/widths calculations from an internal array.
      * {@hide}
      */
+    /**
+     * @Involve
+     * interface Elastos.Core.ICharSequence
+     */
     [deprecated]
-    interface IGraphicsOperations extends Elastos.Core.ICharSequence {
+    interface IGraphicsOperations {
         /**
          * Just like {@link Canvas#drawText}.
          */

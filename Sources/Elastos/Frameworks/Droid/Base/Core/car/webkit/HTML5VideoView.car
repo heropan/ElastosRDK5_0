@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.ISurfaceTexture;
     interface Elastos.Droid.Media.IMediaPlayerOnPreparedListener;
     interface Elastos.Droid.Webkit.IHTML5VideoViewProxy;
     interface Elastos.Droid.Webkit.IWebViewClassic;

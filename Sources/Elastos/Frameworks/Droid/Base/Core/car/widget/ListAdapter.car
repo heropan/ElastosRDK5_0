@@ -12,8 +12,12 @@ module
      * required. The ListView can display any data provided that it is wrapped in a
      * ListAdapter.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapter
+     */
     [local]
-    interface IListAdapter extends Elastos.Droid.Widget.IAdapter {
+    interface IListAdapter {
         /**
          * Are all items in this ListAdapter enabled?
          * If yes it means all items are selectable and clickable.

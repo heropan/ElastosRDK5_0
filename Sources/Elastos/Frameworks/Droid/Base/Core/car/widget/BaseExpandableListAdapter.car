@@ -17,7 +17,11 @@ module
      * @see SimpleExpandableListAdapter
      * @see SimpleCursorTreeAdapter
      */
-    interface IBaseExpandableListAdapter extends Elastos.Droid.Widget.IExpandableListAdapter {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IExpandableListAdapter
+     */
+    interface IBaseExpandableListAdapter {
         /**
          * @see DataSetObservable#notifyInvalidated()
          */

@@ -17,7 +17,11 @@ module
      * 
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.IIntent
      */
-    interface ILabeledIntent extends Elastos.Droid.Content.IIntent {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IIntent
+     */
+    interface ILabeledIntent {
         /**
          * Return the name of the package holding label and icon resources.
          */

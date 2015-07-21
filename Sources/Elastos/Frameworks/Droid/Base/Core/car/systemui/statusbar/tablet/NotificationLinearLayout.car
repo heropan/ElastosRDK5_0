@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface INotificationLinearLayout extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface INotificationLinearLayout {
     }
 
     } // namespace Tablet

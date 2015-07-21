@@ -5,8 +5,12 @@ module
     namespace Droid {
     namespace Preference {
 
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
         [deprecated]
-        interface IMultiCheckPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        interface IMultiCheckPreferenceSavedState {
             GetValues(
                 [out, callee] ArrayOf<Boolean>* values);
 

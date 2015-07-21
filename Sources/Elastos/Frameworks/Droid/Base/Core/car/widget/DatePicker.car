@@ -28,7 +28,11 @@ module
             [in] Int32 dayOfMonth);
     }
 
-    interface IDatePicker extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IDatePicker {
         /**
          * Gets the minimal date supported by this {@link DatePicker} in
          * milliseconds since January 1, 1970 00:00:00 in

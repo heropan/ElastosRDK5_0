@@ -8,7 +8,11 @@ module
     /**
      * @implements Elastos.Droid.Graphics.IColorFilter
      */
-    interface IPorterDuffColorFilter extends IColorFilter {
+    /**
+     * @Involve
+     * interface IColorFilter
+     */
+    interface IPorterDuffColorFilter {
     }
 
     } // namespace Graphics

@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.IO.IFile;
-    using interface Elastos.Core.IComparable;
 
     interface Elastos.Droid.Net.IUriBuilder;
 
@@ -10,7 +9,11 @@ module
     namespace Droid {
     namespace Net {
 
-    interface IUri {// extends IComparable {
+    /**
+     * @Involve
+     * interface IComparable
+     */
+    interface IUri {// {
         /**
          * Returns true if this URI is hierarchical like "http://google.com".
          * Absolute URIs are hierarchical if the scheme-specific part starts with

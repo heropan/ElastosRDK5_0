@@ -12,7 +12,11 @@ module
      * Implementors of this class will want to be sure to implement
      * {@link #getEditable} to provide access to their own editable object.
      */
-    interface IBaseInputConnection extends IInputConnection {
+    /**
+     * @Involve
+     * interface IInputConnection
+     */
+    interface IBaseInputConnection {
     }
 
     } // namespace InputMethod

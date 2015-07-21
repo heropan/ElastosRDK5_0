@@ -107,7 +107,6 @@ module
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IRemoteCallback;
-    interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.IIntent;
@@ -115,13 +114,10 @@ module
     interface Elastos.Droid.Content.IIntentSender;
     interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Content.IContentResolver;
-    interface Elastos.Droid.Content.IContextWrapper;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterface;
-    interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
-    interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
     interface Elastos.Droid.Content.IIntentReceiver;
     interface Elastos.Droid.Content.IComponentName;
@@ -148,8 +144,12 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContext
+     */
     [local]
-    interface IContextImpl extends Elastos.Droid.Content.IContext {
+    interface IContextImpl {
     }
 
     [local]

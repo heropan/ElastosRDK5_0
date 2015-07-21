@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface IVideoEditorImpl extends IVideoEditor {
+    /**
+     * @Involve
+     * interface IVideoEditor
+     */
+    interface IVideoEditorImpl {
 
     }
     } // namespace videoeditor

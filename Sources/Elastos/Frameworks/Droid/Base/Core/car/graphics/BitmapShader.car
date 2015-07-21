@@ -18,7 +18,11 @@ module
       *
       * @implements Elastos.Droid.Graphics.IShader
       */
-    interface IBitmapShader extends IShader{
+    /**
+     * @Involve
+     * interface IShader
+     */
+    interface IBitmapShader{
     }
 
     } // namespace Graphics

@@ -5,7 +5,11 @@ module
     namespace Droid {
     namespace Graphics {
 
-    interface IPorterDuffXfermode extends IXfermode {
+    /**
+     * @Involve
+     * interface IXfermode
+     */
+    interface IPorterDuffXfermode {
         GetMode(
             [out] PorterDuffMode* mode);
     }

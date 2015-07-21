@@ -27,7 +27,11 @@ module
       * @implements Elastos.Droid.Graphics.IMaskFilter
       */
 
-    interface IBlurMaskFilter extends IMaskFilter{
+    /**
+     * @Involve
+     * interface IMaskFilter
+     */
+    interface IBlurMaskFilter{
     }
 
     } // namespace Graphics

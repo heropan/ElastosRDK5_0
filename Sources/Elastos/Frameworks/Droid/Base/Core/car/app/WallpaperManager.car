@@ -14,7 +14,11 @@ module
     namespace Droid {
     namespace App {
 
-    interface IFastBitmapDrawable extends Elastos.Droid.Graphics.Drawable.IDrawable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Graphics.Drawable.IDrawable
+     */
+    interface IFastBitmapDrawable {
     }
 
     /**

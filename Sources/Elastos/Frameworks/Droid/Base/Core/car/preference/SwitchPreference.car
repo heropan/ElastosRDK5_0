@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Preference {
 
-        interface ISwitchPreference extends ITwoStatePreference {
+        /**
+         * @Involve
+         * interface ITwoStatePreference
+         */
+        interface ISwitchPreference {
             /**
              * Set the text displayed on the switch widget in the on state.
              * This should be a very short string; one word if possible.

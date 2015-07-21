@@ -21,7 +21,11 @@ module
       *
       * @implements Elastos.Droid.Graphics.IDrawFilter
       */
-    interface IPaintFlagsDrawFilter extends IDrawFilter {
+    /**
+     * @Involve
+     * interface IDrawFilter
+     */
+    interface IPaintFlagsDrawFilter {
     }
 
     } // namespace Graphics

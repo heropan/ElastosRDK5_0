@@ -1,10 +1,8 @@
 
 module
 {
-    using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Database.ICursor;
-    interface Elastos.Droid.View.IView;
 
     namespace Elastos {
     namespace Droid {
@@ -12,7 +10,11 @@ module
 
     interface IBaseExpandableListAdapter;
 
-    interface ICursorTreeAdapter extends IBaseExpandableListAdapter
+    /**
+     * @Involve
+     * interface IBaseExpandableListAdapter
+     */
+    interface ICursorTreeAdapter
     {
         /**
          * Sets the group Cursor.

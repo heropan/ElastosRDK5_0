@@ -32,7 +32,11 @@ module
      *
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.ILoader
      */
-    interface IAsyncTaskLoader extends Elastos.Droid.Content.ILoader {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.ILoader
+     */
+    interface IAsyncTaskLoader {
         /**
          * Set amount to throttle updates by.  This is the minimum time from
          * when the last #loadInBackground() call has completed until

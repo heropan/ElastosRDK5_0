@@ -1,9 +1,6 @@
 module
 {
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.ICharacterStyle;
-    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
 
     namespace Elastos {
     namespace Droid {
@@ -16,12 +13,20 @@ module
      *
      * @hide
      */
-    interface ISuggestionRangeSpan extends ICharacterStyle /*implements IParcelableSpan*/ {
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
+    interface ISuggestionRangeSpan /*implements IParcelableSpan*/ {
         SetBackgroundColor(
             [in] Int32 backgroundColor);
     }
 
-    interface ISuggestionRangeSpanHelper extends ICharacterStyleHelper {}
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface ISuggestionRangeSpanHelper {}
 
     }//namespace Style
     }//namespace Text

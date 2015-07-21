@@ -1,8 +1,6 @@
 
 module
 {
-    using interface Elastos.Droid.Os.IHandler;
-    using interface Elastos.Security.Cert.IX509Certificate;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +14,11 @@ module
      *
      * @hide
      */
-    interface IClientCertRequestHandler extends Elastos.Droid.Os.IHandler {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IHandler
+     */
+    interface IClientCertRequestHandler {
         /**
          * Proceed with the specified private key and client certificate chain.
          */

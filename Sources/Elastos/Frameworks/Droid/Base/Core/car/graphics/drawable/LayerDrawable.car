@@ -95,7 +95,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface ILayerDrawable extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface ILayerDrawable {
         /**
          * Look for a layer with the given id, and returns its Drawable.
          *

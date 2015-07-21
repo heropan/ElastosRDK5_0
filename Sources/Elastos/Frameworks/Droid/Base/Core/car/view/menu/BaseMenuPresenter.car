@@ -15,8 +15,12 @@ module
         /**
          * @hide
          */
+        /**
+         * @Involve
+         * interface IMenuPresenter
+         */
         [local]
-        interface IBaseMenuPresenter extends IMenuPresenter {
+        interface IBaseMenuPresenter {
 
             CreateItemView(
                 [in] IViewGroup* parent,

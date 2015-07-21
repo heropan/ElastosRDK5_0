@@ -10,8 +10,6 @@ module
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IMenuItem;
-    interface Elastos.Droid.View.IContextMenu;
-    interface Elastos.Droid.View.IContextMenuInfo;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
@@ -57,8 +55,12 @@ module
      *
      * @implements Elastos.Droid.App.Elastos.Droid.Content.IDialogInterface
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IDialogInterface
+     */
     [local]
-    interface IDialog extends Elastos.Droid.Content.IDialogInterface {
+    interface IDialog {
         /**
          * Retrieve the Context this Dialog is running in.
          *

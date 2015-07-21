@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
 
@@ -9,8 +8,12 @@ module
     namespace Droid {
     namespace AccessibilityService {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IBinder
+     */
     [deprecated]
-    interface IAccessibilityServiceClient extends Elastos.Droid.Os.IBinder {
+    interface IAccessibilityServiceClient {
         SetConnection(
             [in] IAccessibilityServiceConnection* connection,
             [in] Int32 connectionId);

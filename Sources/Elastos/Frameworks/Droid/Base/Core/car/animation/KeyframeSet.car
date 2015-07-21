@@ -65,7 +65,11 @@ module
     /**
      * @implements Elastos.Droid.Animation.IKeyframeSet
      */
-    interface IInt32KeyframeSet extends IKeyframeSet {
+    /**
+     * @Involve
+     * interface IKeyframeSet
+     */
+    interface IInt32KeyframeSet {
         GetIntValue(
             [in] Float fraction,
             [out] Int32* value);
@@ -74,7 +78,11 @@ module
     /**
      * @implements Elastos.Droid.Animation.IKeyframeSet
      */
-    interface IFloatKeyframeSet extends IKeyframeSet {
+    /**
+     * @Involve
+     * interface IKeyframeSet
+     */
+    interface IFloatKeyframeSet {
         GetFloatValue(
             [in] Float fraction,
             [out] Float* value);

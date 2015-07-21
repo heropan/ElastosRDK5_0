@@ -1,15 +1,17 @@
 
 module
 {
-    interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.View.IViewGroupMarginLayoutParams;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {
     namespace Widget {
 
-    interface ILinearLayoutLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     */
+    interface ILinearLayoutLayoutParams {
         GetWeight(
             [out] Float* weight);
 
@@ -23,8 +25,12 @@ module
             [in] Int32 gravity);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
     [local]
-    interface ILinearLayout extends Elastos.Droid.View.IViewGroup {
+    interface ILinearLayout {
         const Int32 HORIZONTAL = 0;
         const Int32 VERTICAL = 1;
 

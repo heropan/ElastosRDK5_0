@@ -1,8 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.Graphics.Drawable.IDrawableConstantState;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Utility.IDisplayMetrics;
     interface Elastos.Droid.Graphics.IPaint;
@@ -25,7 +23,11 @@ module
          * file using the draw9patch tool, see the
          * <a href="{@docRoot}guide/developing/tools/draw9patch.html">Draw 9-patch</a> tool guide.</p></div>
          */
-        interface INinePatchDrawable extends IDrawable {
+        /**
+         * @Involve
+         * interface IDrawable
+         */
+        interface INinePatchDrawable {
             /**
              * Set the density scale at which this drawable will be rendered. This
              * method assumes the drawable will be rendered at the same density as the

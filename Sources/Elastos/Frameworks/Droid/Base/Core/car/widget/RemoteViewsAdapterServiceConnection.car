@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
@@ -9,8 +8,12 @@ module
     namespace Droid{
     namespace Widget{
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.Internal.IRemoteViewsAdapterConnection
+     */
     [local]
-    interface IRemoteViewsAdapterServiceConnection extends Elastos.Droid.Widget.Internal.IRemoteViewsAdapterConnection
+    interface IRemoteViewsAdapterServiceConnection
     {
         Bind(
             [in] IContext* ctx,

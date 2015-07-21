@@ -8,7 +8,11 @@ module {
     namespace Widget{
 
 
-    interface IAbsSeekBar extends Elastos.Droid.Widget.IProgressBar {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IProgressBar
+     */
+    interface IAbsSeekBar {
         /**
          * Sets the thumb that will be drawn at the end of the progress meter within the SeekBar.
          * <p>

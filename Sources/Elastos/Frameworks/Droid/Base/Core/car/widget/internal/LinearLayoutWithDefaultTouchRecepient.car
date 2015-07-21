@@ -16,7 +16,11 @@ module
      * off a lock pattern if the finger is eventually dragged into the bounds of the
      * lock pattern view.
      */
-    interface ILinearLayoutWithDefaultTouchRecepient extends Elastos.Droid.Widget.ILinearLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface ILinearLayoutWithDefaultTouchRecepient
     {
         SetDefaultTouchRecepient(
             [in] IView* defaultTouchRecepient);

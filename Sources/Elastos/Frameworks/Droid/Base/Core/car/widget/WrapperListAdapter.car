@@ -13,7 +13,11 @@ module
      *
      * @see ListView
      */
-    interface IWrapperListAdapter extends Elastos.Droid.Widget.IListAdapter {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IListAdapter
+     */
+    interface IWrapperListAdapter {
         /**
          * Returns the adapter wrapped by this list adapter.
          *

@@ -1,19 +1,11 @@
 
 module
 {
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IKeyEvent;
-    interface Elastos.Droid.View.IMotionEvent;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.IWindowManager;
-    interface Elastos.Droid.View.IWindowManagerLayoutParams;
     interface Elastos.Droid.View.IViewGroupLayoutParams;
-    interface Elastos.Droid.View.ISurfaceHolderCallback2;
-    interface Elastos.Droid.View.IInputQueueCallback;
-    interface Elastos.Droid.View.ILayoutInflater;
     interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos {

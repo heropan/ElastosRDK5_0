@@ -14,7 +14,11 @@ module
      *
      * @see ListView
      */
-    interface ISpinnerAdapter extends Elastos.Droid.Widget.IAdapter {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapter
+     */
+    interface ISpinnerAdapter {
         /**
          * <p>Get a {@link android.view.View} that displays in the drop down popup
          * the data at the specified position in the data set.</p>

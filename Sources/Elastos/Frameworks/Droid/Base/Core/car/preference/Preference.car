@@ -13,9 +13,7 @@ module
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Preference.IPreferenceScreen;
     interface Elastos.Droid.Preference.IPreferenceManager;
-    interface Elastos.Droid.Preference.IOnDependencyChangeListener;
 
     namespace Elastos {
     namespace Droid {

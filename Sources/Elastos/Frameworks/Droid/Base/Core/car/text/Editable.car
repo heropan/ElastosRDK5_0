@@ -3,16 +3,17 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IAppendable;
-    using interface Elastos.Utility.IObjectContainer;
-    interface Elastos.Droid.Text.ISpannable;
-    interface Elastos.Droid.Text.IGetChars;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
+    /**
+     * @Involve
+     * interface ISpannable
+     */
     [deprecated]
-    interface IEditable extends ISpannable /*implements IGetChars, IAppendable*/ {
+    interface IEditable /*implements IGetChars, IAppendable*/ {
         /**
          * Replaces the specified range (<code>st&hellip;en</code>) of text in this
          * Editable with a copy of the slice <code>start&hellip;end</code> from

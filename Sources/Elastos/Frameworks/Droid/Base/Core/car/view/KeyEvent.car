@@ -130,7 +130,11 @@ module
             [in] IKeyEvent* event);
     }
 
-    interface IKeyEvent extends IInputEvent {
+    /**
+     * @Involve
+     * interface IInputEvent
+     */
+    interface IKeyEvent {
         /** Key code constant: Unknown key code. */
         const Int32 KEYCODE_UNKNOWN         = 0;
         /** Key code constant: Soft Left key.

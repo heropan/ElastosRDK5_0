@@ -45,7 +45,11 @@ module
         OnScrollEnded();
     }
 
-    interface ISlidingDrawer extends Elastos.Droid.View.IViewGroup
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface ISlidingDrawer
     {
         const Int32 ORIENTATION_HORIZONTAL = 0;
         const Int32 ORIENTATION_VERTICAL = 1;

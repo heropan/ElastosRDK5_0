@@ -12,7 +12,11 @@ module
      * call either {@link #proceed} or {@link #cancel} to set the WebView's
      * response to the request.
      */
-    interface IHttpAuthHandler extends Elastos.Droid.Os.IHandler {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IHandler
+     */
+    interface IHttpAuthHandler {
         /**
          * Gets whether the credentials stored for the current host (i.e. the host
          * for which {@link WebViewClient#onReceivedHttpAuthRequest} was called)

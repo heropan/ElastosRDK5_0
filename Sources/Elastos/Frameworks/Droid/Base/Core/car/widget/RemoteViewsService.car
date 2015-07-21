@@ -99,8 +99,12 @@ module
             [out] Boolean* res);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
     [local]
-    interface IRemoteViewsService extends Elastos.Droid.App.IService {
+    interface IRemoteViewsService {
         /**
          * To be implemented by the derived service to generate appropriate factories for
          * the data.

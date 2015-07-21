@@ -47,7 +47,11 @@ module
      * Entry ID: bob
      * </pre>
      */
-    interface IRootElement extends IElement {
+    /**
+     * @Involve
+     * interface IElement
+     */
+    interface IRootElement {
         /**
          * Gets the SAX {@code ContentHandler}. Pass this to your SAX parser.
          */

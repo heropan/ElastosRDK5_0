@@ -37,7 +37,11 @@ module
      * }
      * </pre>
      */
-    interface IStringSplitter extends Elastos.Utility.IIterator {
+    /**
+     * @Involve
+     * interface Elastos.Utility.IIterator
+     */
+    interface IStringSplitter {
         SetString(
             [in] String string);
     }
@@ -49,7 +53,11 @@ module
      * be returned for the empty string after that delimeter. That is, splitting <tt>"a,b,"</tt> on
      * comma will return <tt>"a", "b"</tt>, not <tt>"a", "b", ""</tt>.
      */
-    interface ISimpleStringSplitter extends IStringSplitter {
+    /**
+     * @Involve
+     * interface IStringSplitter
+     */
+    interface ISimpleStringSplitter {
         GetIterator(
             [out] IIterator** it);
 

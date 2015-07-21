@@ -4,7 +4,6 @@ module
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewBaseSavedState;
     interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.View.Menu.IMenuPresenterCallback;
     interface Elastos.Droid.App.IActionBarOnNavigationListener;
@@ -19,7 +18,11 @@ module
     namespace Widget{
     namespace Internal{
 
-    interface IActionBarView extends Elastos.Droid.Widget.Internal.IAbsActionBarView
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.Internal.IAbsActionBarView
+     */
+    interface IActionBarView
     {
         /**
          * Set the window callback used to invoke menu items; used for dispatching home button presses.
@@ -139,7 +142,11 @@ module
     }
 
 
-    interface IActionBarViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IActionBarViewSavedState {
 
     }
 

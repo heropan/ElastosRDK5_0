@@ -57,8 +57,12 @@ module
             [out] IView** view);
     }
 
+    /**
+     * @Involve
+     * interface ILayoutInflaterFactory
+     */
     [local]
-    interface ILayoutInflaterFactory2 extends ILayoutInflaterFactory {
+    interface ILayoutInflaterFactory2 {
         /**
          * Version of {@link #onCreateView(String, Context, AttributeSet)}
          * that also supplies the parent that the view created view will be

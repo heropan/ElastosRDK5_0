@@ -48,7 +48,11 @@ module {
             [in] IContext* ctx);
     }
 
-    interface IDrmStoreColumns extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IDrmStoreColumns {
         /**
          * The data stream for the file
          * <P>Type: DATA STREAM</P>
@@ -74,12 +78,20 @@ module {
         const String MIME_TYPE = "mime_type";
     }
 
-    interface IDrmStoreImages extends IDrmStoreColumns {
+    /**
+     * @Involve
+     * interface IDrmStoreColumns
+     */
+    interface IDrmStoreImages {
         GetCONTENTURI(
             [out] IUri** uri);
     }
 
-    interface IDrmStoreAudio extends IDrmStoreColumns {
+    /**
+     * @Involve
+     * interface IDrmStoreColumns
+     */
+    interface IDrmStoreAudio {
         GetCONTENTURI(
             [out] IUri** uri);
     }

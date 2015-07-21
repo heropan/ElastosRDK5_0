@@ -11,8 +11,12 @@ module
     namespace Khronos {
     namespace Egl {
 
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Egl.IEGL
+     */
     [deprecated]
-    interface IEGL10 extends Elastosx.Microedition.Khronos.Egl.IEGL {
+    interface IEGL10 {
         const Int32 _EGL_SUCCESS                     = 0x3000;
         const Int32 _EGL_NOT_INITIALIZED             = 0x3001;
         const Int32 _EGL_BAD_ACCESS                  = 0x3002;

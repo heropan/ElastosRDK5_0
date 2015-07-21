@@ -1,16 +1,13 @@
 
 module
 {
-    using interface Elastos.Net.IInetAddress;
 
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.INetworkInfo;
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.INetworkState;
     interface Elastos.Droid.Net.INetworkQuotaInfo;
     interface Elastos.Droid.Net.IProxyProperties;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
 //    interface IVpnConfig;
 //    interface IVpnProfile;

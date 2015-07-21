@@ -11,7 +11,11 @@ module
     namespace Text {
     namespace Style {
 
-    interface IReplacementSpan extends IMetricAffectingSpan {
+    /**
+     * @Involve
+     * interface IMetricAffectingSpan
+     */
+    interface IReplacementSpan {
         GetSize(
             [in] IPaint* paint,
             [in] ICharSequence* text,
@@ -32,7 +36,11 @@ module
             [in] IPaint* paint);
     }
 
-    interface IReplacementSpanHelper extends IMetricAffectingSpanHelper {
+    /**
+     * @Involve
+     * interface IMetricAffectingSpanHelper
+     */
+    interface IReplacementSpanHelper {
     }
 
     }//namespace Style

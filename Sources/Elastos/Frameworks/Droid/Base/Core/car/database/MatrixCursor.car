@@ -27,7 +27,11 @@ module
      * {@link #newRow()} to add rows. Automatically expands internal capacity
      * as needed.
      */
-    interface IMatrixCursor extends IAbstractCursor {
+    /**
+     * @Involve
+     * interface IAbstractCursor
+     */
+    interface IMatrixCursor {
         /**
          * Adds a new row to the end and returns a builder for that row. Not safe
          * for concurrent use.

@@ -90,7 +90,11 @@ module
             [out] Boolean* res);
     }
 
-    interface ISearchView extends Elastos.Droid.Widget.ILinearLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface ISearchView
     {
         /**
          * Sets the SearchableInfo for this SearchView. Properties in the SearchableInfo are used

@@ -4,8 +4,12 @@ module {
     namespace Droid {
     namespace Widget {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IListView
+     */
     [local]
-    interface IRecycleListView extends Elastos.Droid.Widget.IListView {
+    interface IRecycleListView {
 
         GetRecycleOnMeasure(
             [out] Boolean* recycleOnMeasure);

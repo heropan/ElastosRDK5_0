@@ -16,8 +16,12 @@ module
      * consumer for reading.
      * </p>
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Database.Sqlite.ISQLiteClosable
+     */
     [deprecated]
-    interface ICursorWindow extends Elastos.Droid.Database.Sqlite.ISQLiteClosable
+    interface ICursorWindow
     {
         /**
          * Clears out the existing contents of the window, making it safe to reuse

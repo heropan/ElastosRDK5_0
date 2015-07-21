@@ -8,8 +8,12 @@ module
     namespace Inputmethods {
     namespace PinyinIME {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
     [deprecated]
-    interface ISoftKeyboardView extends Elastos.Droid.View.IView {
+    interface ISoftKeyboardView {
         SetSoftKeyboard(
             [in] ISoftKeyboard* softSkb,
             [out] Boolean* result);

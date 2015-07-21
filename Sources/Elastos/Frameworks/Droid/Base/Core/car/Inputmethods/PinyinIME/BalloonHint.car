@@ -10,8 +10,12 @@ module
     namespace Inputmethods {
     namespace PinyinIME {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IPopupWindow
+     */
     [deprecated]
-    interface IBalloonHint extends Elastos.Droid.Widget.IPopupWindow {
+    interface IBalloonHint {
         GetContext(
             [out] IContext** ctx);
 
@@ -90,7 +94,11 @@ module
         RemoveTimer();
     }
 
-    interface IBalloonView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IBalloonView {
         SetIcon(
             [in] IDrawable* icon);
 

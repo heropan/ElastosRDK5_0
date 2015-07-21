@@ -1,5 +1,4 @@
 module {
-    interface Elastos.Droid.Provider.IBaseColumns;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Internal.Telephony.ICallerInfo;
@@ -18,8 +17,12 @@ module {
             [out] IUri** uri);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
     [local]
-    interface ICalls extends IBaseColumns{
+    interface ICalls{
         /**
          * Query parameter used to limit the number of call logs returned.
          * <p>

@@ -32,8 +32,12 @@ module
             [in] IView* v);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.IGefingerpoken
+     */
     [local]
-    interface ISwipeHelper extends Elastos.Droid.SystemUI.IGefingerpoken {
+    interface ISwipeHelper {
         const Int32 X = 0;
         const Int32 Y = 1;
         const Float ALPHA_FADE_START = 0.0;    //fraction of thumbnail width where fade starts

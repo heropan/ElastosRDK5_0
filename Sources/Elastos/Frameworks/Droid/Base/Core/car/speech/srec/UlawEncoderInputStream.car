@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +12,11 @@ module
      * Not yet ready to be supported, so
      * @hide
      */
-    interface IUlawEncoderInputStream extends Elastos.IO.IInputStream {
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
+    interface IUlawEncoderInputStream {
     }
 
     [deprecated]

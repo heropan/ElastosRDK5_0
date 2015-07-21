@@ -16,14 +16,17 @@ module
      * {@link android.view.Gravity#LEFT} then the {@link Chronometer} will be placed
      * just ahead of the leading edge of the {@link ProgressBar} position.
      */
-    interface Elastos.Droid.Widget.IChronometer;
 
     namespace Elastos{
     namespace Droid{
     namespace Widget{
     namespace Internal{
 
-    interface ITextProgressBar extends Elastos.Droid.Widget.IRelativeLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface ITextProgressBar
     {
         /**
          * Set the expected termination time of the running {@link Chronometer}.

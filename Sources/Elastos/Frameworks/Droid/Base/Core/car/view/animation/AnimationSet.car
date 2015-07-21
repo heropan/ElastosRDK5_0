@@ -32,7 +32,11 @@ module
          * <code>setDuration(500)</code> on an AnimationSet has the same effect as declaring
          * <code>android:duration="500"</code> in an XML resource for an AnimationSet object.</p>
          */
-        interface IAnimationSet extends IAnimation {
+        /**
+         * @Involve
+         * interface IAnimation
+         */
+        interface IAnimationSet {
             /**
              * Add a child animation to this animation set.
              * The transforms of the child animations are applied in the order

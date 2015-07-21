@@ -15,7 +15,6 @@ module
     interface Elastos.Droid.View.InputMethod.IExtractedText;
     interface Elastos.Droid.View.InputMethod.IInputMethodSubtype;
     interface Elastos.Droid.View.InputMethod.IInputMethodInfo;
-    interface Elastos.Droid.View.IInputMethodCallback;
     interface Elastos.Droid.Internal.View.IInputMethodClient;
     interface Elastos.Droid.Internal.View.IInputContext;
 

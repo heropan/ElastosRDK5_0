@@ -72,8 +72,12 @@ module
      * @attr ref android.R.styleable#ViewStub_layout
      */
     //@RemoteView
+    /**
+     * @Involve
+     * interface IView
+     */
     [local]
-    interface IViewStub extends IView {
+    interface IViewStub {
         /**
          * Returns the id taken by the inflated view. If the inflated id is
          * {@link View#NO_ID}, the inflated view keeps its original id.

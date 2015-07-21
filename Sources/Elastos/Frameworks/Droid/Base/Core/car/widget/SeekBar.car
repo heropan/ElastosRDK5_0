@@ -45,7 +45,11 @@ module
             [in] ISeekBar* seekBar);
     }
 
-    interface ISeekBar extends Elastos.Droid.Widget.IAbsSeekBar {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAbsSeekBar
+     */
+    interface ISeekBar {
         /**
          * Sets a listener to receive notifications of changes to the SeekBar's progress level. Also
          * provides notifications of when the user starts and stops a touch gesture within the SeekBar.

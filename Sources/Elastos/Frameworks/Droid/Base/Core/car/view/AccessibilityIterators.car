@@ -15,11 +15,19 @@ module
             [out, callee] ArrayOf<Int32>* array);
     }
 
-    interface ILineTextSegmentIterator extends ITextSegmentIterator {
+    /**
+     * @Involve
+     * interface ITextSegmentIterator
+     */
+    interface ILineTextSegmentIterator {
 
     }
 
-    interface IPageTextSegmentIterator extends ITextSegmentIterator {
+    /**
+     * @Involve
+     * interface ITextSegmentIterator
+     */
+    interface IPageTextSegmentIterator {
 
     }
 

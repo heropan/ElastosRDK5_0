@@ -8,7 +8,11 @@ module
     namespace StatusBar {
 
 
-    interface IStatusBarIconView extends Elastos.Droid.SystemUI.StatusBar.IAnimatedImageView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.StatusBar.IAnimatedImageView
+     */
+    interface IStatusBarIconView {
         Set(
             [in] IStatusBarIcon* icon,
             [out] Boolean* succeeded);

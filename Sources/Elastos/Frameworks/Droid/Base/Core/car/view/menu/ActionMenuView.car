@@ -4,14 +4,17 @@ module
 
     interface Elastos.Droid.View.IViewGroupLayoutParams;
     interface Elastos.Droid.View.Menu.IActionMenuPresenter;
-    interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Menu {
 
-        interface IActionMenuViewLayoutParams extends Elastos.Droid.Widget.ILinearLayoutLayoutParams {
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.ILinearLayoutLayoutParams
+         */
+        interface IActionMenuViewLayoutParams {
 
             SetIsOverflowButton(
                 [in] Boolean isOverflow);
@@ -53,8 +56,12 @@ module
         /**
          * @hide
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.ILinearLayout
+         */
         [local]
-        interface IActionMenuView extends Elastos.Droid.Widget.ILinearLayout {
+        interface IActionMenuView {
             SetPresenter(
                 [in] IActionMenuPresenter* presenter);
 

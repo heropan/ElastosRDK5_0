@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Telephony {
 
-    interface ICellSignalStrengthLte extends ICellSignalStrength {
+    /**
+     * @Involve
+     * interface ICellSignalStrength
+     */
+    interface ICellSignalStrengthLte {
 
         Initialize(
             [in] Int32 lteSignalStrength,

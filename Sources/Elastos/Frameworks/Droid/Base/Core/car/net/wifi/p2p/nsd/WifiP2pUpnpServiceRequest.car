@@ -16,7 +16,11 @@ module
      * {@see WifiP2pServiceRequest}
      * {@see WifiP2pDnsSdServiceRequest}
      */
-    interface IWifiP2pUpnpServiceRequest extends IWifiP2pServiceRequest {
+    /**
+     * @Involve
+     * interface IWifiP2pServiceRequest
+     */
+    interface IWifiP2pUpnpServiceRequest {
     }
 
     interface IWifiP2pUpnpServiceRequestHelper {

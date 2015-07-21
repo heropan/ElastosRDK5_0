@@ -8,8 +8,12 @@ module
     namespace Droid {
     namespace Widget {
 
+    /**
+     * @Involve
+     * interface IBaseExpandableListAdapter
+     */
     [local]
-    interface ISimpleExpandableListAdapter extends IBaseExpandableListAdapter
+    interface ISimpleExpandableListAdapter
     {
         /**
          * Instantiates a new View for a child.

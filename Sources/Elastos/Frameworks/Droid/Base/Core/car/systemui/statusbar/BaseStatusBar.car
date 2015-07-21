@@ -1,16 +1,18 @@
 module
 {
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.StatusBar.IIStatusBarService;
     interface Elastos.Droid.StatusBar.IStatusBarNotification;
-    interface Elastos.Droid.SystemUI.ISystemUI;
 
     namespace Elastos {
     namespace Droid {
     namespace SystemUI {
     namespace StatusBar {
 
-    interface IBaseStatusBar extends Elastos.Droid.SystemUI.ISystemUI {
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.ISystemUI
+     */
+    interface IBaseStatusBar {
 
         // Should match the value in PhoneWindowManager
         const String SYSTEM_DIALOG_REASON_RECENT_APPS = "recentapps";

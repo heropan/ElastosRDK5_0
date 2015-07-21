@@ -51,7 +51,11 @@ module
          * {@link SurfaceHolder.Callback#surfaceDestroyed SurfaceHolder.Callback.surfaceDestroyed()}.
          * </ul>
          */
-        interface ISurfaceView extends Elastos.Droid.View.IView {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IView
+         */
+        interface ISurfaceView {
 
             /**
              * Return the SurfaceHolder providing access and control over this

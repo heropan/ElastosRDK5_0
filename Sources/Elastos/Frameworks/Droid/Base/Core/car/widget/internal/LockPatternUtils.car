@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.Widget.IButton;
     interface Elastos.Droid.App.Admin.IDevicePolicyManager;
-    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos{
     namespace Droid{

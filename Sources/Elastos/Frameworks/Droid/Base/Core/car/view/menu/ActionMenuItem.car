@@ -9,8 +9,12 @@ module
         /**
          * @hide
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IMenuItem
+         */
         [local]
-        interface IActionMenuItem extends Elastos.Droid.View.IMenuItem {
+        interface IActionMenuItem {
 
             SetExclusiveCheckable(
                 [in] Boolean exclusive);

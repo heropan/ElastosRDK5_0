@@ -27,7 +27,11 @@ module
      *
      * @implements Elastos.Droid.Graphics.Xfermode
      */
-    interface IAvoidXfermode extends IXfermode{
+    /**
+     * @Involve
+     * interface IXfermode
+     */
+    interface IAvoidXfermode{
     }
 
     } // namespace Graphics

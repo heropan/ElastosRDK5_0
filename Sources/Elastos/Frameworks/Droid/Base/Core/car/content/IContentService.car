@@ -4,7 +4,6 @@ module
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.IISyncStatusObserver;
     interface Elastos.Droid.Content.ISyncAdapterType;
-    interface Elastos.Droid.Content.ISyncInfo;
     interface Elastos.Droid.Database.IIContentObserver;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBundle;

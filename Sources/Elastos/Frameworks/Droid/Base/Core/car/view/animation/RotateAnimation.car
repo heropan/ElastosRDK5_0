@@ -7,7 +7,11 @@ module
     namespace Animation {
 
 
-    interface IRotateAnimation extends IAnimation {
+    /**
+     * @Involve
+     * interface IAnimation
+     */
+    interface IRotateAnimation {
     }
 
     }   //namespace Animation

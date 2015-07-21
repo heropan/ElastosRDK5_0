@@ -4,7 +4,11 @@ module
     namespace Droid {
     namespace Utility {
 
-    interface IXmlPullAttributes extends IAttributeSet
+    /**
+     * @Involve
+     * interface IAttributeSet
+     */
+    interface IXmlPullAttributes
     {}
 
     } // namespace Utility

@@ -1,13 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.Text.ILayoutHelper;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
-    interface IDynamicLayout extends ILayout {
+    /**
+     * @Involve
+     * interface ILayout
+     */
+    interface IDynamicLayout {
         /**
          * @hide
          */
@@ -27,7 +30,11 @@ module
             [out] Int32* ret);
     }
 
-    interface IDynamicLayoutHelper extends ILayoutHelper {}
+    /**
+     * @Involve
+     * interface ILayoutHelper
+     */
+    interface IDynamicLayoutHelper {}
 
     } // namespace Text
     } // namepsace Droid

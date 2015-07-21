@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.App.Backup.IBackupDataOutput;
 
     namespace Elastos {

@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.IO.IFileDescriptor;
 
     interface Elastos.Droid.Os.IUserHandle;
 

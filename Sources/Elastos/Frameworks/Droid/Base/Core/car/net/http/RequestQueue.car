@@ -3,7 +3,6 @@ module
     using interface Elastos.IO.IInputStream;
     using interface Elastos.Utility.IObjectStringMap;
 
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.Http.IRequest;
     interface Elastos.Droid.Net.IWebAddress;
     interface Org.Apache.Http.IHttpHost;

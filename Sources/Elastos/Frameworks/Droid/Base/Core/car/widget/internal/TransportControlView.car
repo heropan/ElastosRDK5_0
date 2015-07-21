@@ -1,19 +1,25 @@
 
 module
 {
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.Widget.Internal.ILockScreenWidgetCallback;
 
     namespace Elastos{
     namespace Droid{
     namespace Widget{
     namespace Internal{
 
-    interface ITransportControlViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface ITransportControlViewSavedState {
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
     [local]
-    interface ITransportControlView extends Elastos.Droid.Widget.IFrameLayout
+    interface ITransportControlView
     {
     }
 

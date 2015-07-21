@@ -1,11 +1,6 @@
 module
 {
-    interface Libcore.ICU.ILocale;
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.ICharacterStyle;
-    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
 
     namespace Elastos {
     namespace Droid {
@@ -24,8 +19,12 @@ module
      *
      * @see TextView#isSuggestionsEnabled()
      */
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
     [deprecated]
-    interface ISuggestionSpan extends ICharacterStyle /*implements IParcelableSpan*/ {
+    interface ISuggestionSpan /*implements IParcelableSpan*/ {
 
         /**
          * Sets this flag if the suggestions should be easily accessible with few interactions.
@@ -101,7 +100,11 @@ module
             [out] Int32* ret);
     }
 
-    interface ISuggestionSpanHelper extends ICharacterStyleHelper {
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface ISuggestionSpanHelper {
     }
 
     }//namespace Style

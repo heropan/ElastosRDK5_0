@@ -1,15 +1,11 @@
 
 module
 {
-    using interface Elastos.Core.IStringBuilder;
     interface Elastos.Droid.Content.ISyncStorageEngine;
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.ISyncAdapterType;
     interface Elastos.Droid.Content.ISyncOperation;
-    interface Elastos.Droid.Content.ISyncQueue;
-    interface Elastos.Droid.Content.IISyncContext;
-    interface Elastos.Droid.Os.IPowerManagerWakeLock;
 
     namespace Elastos {
     namespace Droid {

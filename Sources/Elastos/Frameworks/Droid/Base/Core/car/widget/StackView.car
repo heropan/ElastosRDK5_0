@@ -7,12 +7,20 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IStackView extends Elastos.Droid.Widget.IAdapterViewAnimator
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapterViewAnimator
+     */
+    interface IStackView
     {
 
     }
 
-    interface IStackViewLayoutParams extends Elastos.Droid.View.IViewGroupLayoutParams
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupLayoutParams
+     */
+    interface IStackViewLayoutParams
     {
         GetInvalidateRect(
             [out] IRect** rect);

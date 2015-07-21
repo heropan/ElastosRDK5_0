@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Widget.IImageView;
 
     namespace Elastos {
     namespace Droid {
@@ -8,7 +7,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IKeyButtonView extends Elastos.Droid.Widget.IImageView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IImageView
+     */
+    interface IKeyButtonView {
         SetDrawingAlpha(
             [in] Float alpha);
 

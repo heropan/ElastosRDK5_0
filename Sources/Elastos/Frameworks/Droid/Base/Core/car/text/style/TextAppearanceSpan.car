@@ -1,10 +1,6 @@
 module
 {
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IColorStateList;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
 
     namespace Elastos {
     namespace Droid {
@@ -15,7 +11,11 @@ module
      * Sets the text color, size, style, and typeface to match a TextAppearance
      * resource.
      */
-    interface ITextAppearanceSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+    /**
+     * @Involve
+     * interface IMetricAffectingSpan
+     */
+    interface ITextAppearanceSpan /*implements IParcelableSpan*/ {
 
         /**
          * Returns the typeface family specified by this span, or <code>null</code>
@@ -53,7 +53,11 @@ module
             [out] Int32* ret);
     }
 
-    interface ITextAppearanceSpanHelper extends IMetricAffectingSpanHelper {}
+    /**
+     * @Involve
+     * interface IMetricAffectingSpanHelper
+     */
+    interface ITextAppearanceSpanHelper {}
 
     }//namespace Style
     }//namespace Text

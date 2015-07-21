@@ -4,7 +4,11 @@ module
     namespace Droid {
     namespace Preference {
 
-        interface ICheckBoxPreference extends ITwoStatePreference {
+        /**
+         * @Involve
+         * interface ITwoStatePreference
+         */
+        interface ICheckBoxPreference {
 
         }
 

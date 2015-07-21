@@ -1,15 +1,18 @@
 
 module
 {
-    interface Elastos.Droid.Widget.IListView;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Menu {
 
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.IListView
+         */
         [local]
-        interface IExpandedMenuView extends Elastos.Droid.Widget.IListView {
+        interface IExpandedMenuView {
 
         }
 

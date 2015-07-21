@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IMenuItem;
@@ -22,7 +21,11 @@ module
          * <a href="{@docRoot}guide/topics/ui/menus.html">Menus</a> developer guide.</p>
          * </div>
          */
-        interface ISubMenu extends IMenu {
+        /**
+         * @Involve
+         * interface IMenu
+         */
+        interface ISubMenu {
             /**
              * Sets the submenu header's title to the title given in <var>titleRes</var>
              * resource identifier.

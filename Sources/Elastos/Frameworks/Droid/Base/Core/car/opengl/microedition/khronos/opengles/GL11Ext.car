@@ -11,8 +11,12 @@ module
     namespace Khronos {
     namespace Opengles {
 
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Opengles.IGL
+     */
     [deprecated]
-    interface IGL11Ext extends Elastosx.Microedition.Khronos.Opengles.IGL {
+    interface IGL11Ext {
         const Int32 _GL_MATRIX_INDEX_ARRAY_BUFFER_BINDING_OES = 0x8B9E;
         const Int32 _GL_MATRIX_INDEX_ARRAY_OES                = 0x8844;
         const Int32 _GL_MATRIX_INDEX_ARRAY_POINTER_OES        = 0x8849;

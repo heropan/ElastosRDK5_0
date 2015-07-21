@@ -1,5 +1,4 @@
 module {
-    interface Elastos.Droid.Provider.IBaseColumns;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
@@ -624,7 +623,11 @@ module {
      * @deprecated use SyncState instead
      */
     //@Deprecated
-    interface ISyncStateColumns extends ISyncStateContractColumns {
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    interface ISyncStateColumns {
     }
 
     /**
@@ -4647,7 +4650,11 @@ module {
      * @deprecated This old name was never meant to be made public. Do not use.
      */
     //@Deprecated
-    interface IContactsContractPresence extends IContactsContractStatusUpdates {}
+    /**
+     * @Involve
+     * interface IContactsContractStatusUpdates
+     */
+    interface IContactsContractPresence {}
 
     /**
      * Additional column returned by the {@link Contacts#CONTENT_FILTER_URI} providing the

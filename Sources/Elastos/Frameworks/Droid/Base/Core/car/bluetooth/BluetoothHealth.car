@@ -45,8 +45,12 @@ module
          *
          * @implements Elastos.Droid.IBluetoothProfile
          */
+        /**
+         * @Involve
+         * interface IBluetoothProfile
+         */
         [deprecated]
-        interface IBluetoothHealth extends IBluetoothProfile {
+        interface IBluetoothHealth {
 
             /**
              * Health Profile Source Role - the health device.

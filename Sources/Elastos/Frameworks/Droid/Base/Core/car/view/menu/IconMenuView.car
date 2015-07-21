@@ -1,14 +1,17 @@
 
 module
 {
-    interface Elastos.Droid.View.Menu.IMenuBuilder;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Menu {
 
-        interface IIconMenuViewSavedState extends Elastos.Droid.View.IViewBaseSavedState{
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IViewBaseSavedState
+         */
+        interface IIconMenuViewSavedState{
 
             SetFocusedPosition(
                 [in] Int32 focusedPosition);
@@ -17,8 +20,12 @@ module
                 [out] Int32* focusedPosition);
         }
 
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IViewGroup
+         */
         [local]
-        interface IIconMenuView extends Elastos.Droid.View.IViewGroup {
+        interface IIconMenuView {
             /**
              * Returns the number of items per row.
              * <p>
@@ -44,7 +51,11 @@ module
                 [out] Int32* nunmber);
         }
 
-        interface IIconMenuViewLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+         */
+        interface IIconMenuViewLayoutParams {
 
             SetLeft(
                 [in] Int32 left);

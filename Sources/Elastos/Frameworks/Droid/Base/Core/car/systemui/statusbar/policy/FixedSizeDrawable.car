@@ -7,7 +7,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IFixedSizeDrawable extends Elastos.Droid.Graphics.Drawable.IDrawable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Graphics.Drawable.IDrawable
+     */
+    interface IFixedSizeDrawable {
         SetFixedBounds(
             [in] Int32 l,
             [in] Int32 t,

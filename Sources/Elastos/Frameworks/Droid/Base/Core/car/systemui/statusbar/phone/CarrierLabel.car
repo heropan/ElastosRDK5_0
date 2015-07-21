@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IView;
 
     namespace Elastos {
     namespace Droid {
@@ -8,7 +7,11 @@ module
     namespace StatusBar {
     namespace Phone {
 
-    interface ICarrierLabel extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface ICarrierLabel {
 
     }
 

@@ -32,7 +32,11 @@ module
      *
      * @attr ref android.R.styleable#Chronometer_format
      */
-    interface IChronometer extends ITextView
+    /**
+     * @Involve
+     * interface ITextView
+     */
+    interface IChronometer
     {
         /**
          * Set the time that the count-up timer is in reference to.

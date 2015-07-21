@@ -23,13 +23,10 @@ module
     merge("preference/GenericInflater.car");
     merge("preference/VolumePreference.car");
 
-    using interface Elastos.Core.IComparable;
-    using interface Elastos.Core.IRunnable;
 
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
-    interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.Widget.IArrayAdapter;
@@ -37,7 +34,6 @@ module
     interface Elastos.Droid.Widget.ISpinnerAdapter;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.ISeekBar;
-    interface Elastos.Droid.Widget.ISeekBarOnSeekBarChangeListener;
 
     namespace Elastos {
     namespace Droid {

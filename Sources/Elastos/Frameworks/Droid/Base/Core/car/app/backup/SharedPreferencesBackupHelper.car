@@ -52,7 +52,11 @@ module
      * {@link BackupAgent#onRestore(BackupDataInput, int, android.os.ParcelFileDescriptor) BackupAgent.onRestore()}
      * callbacks to the SharedPreferencesBackupHelper as appropriate.
      */
-    interface ISharedPreferencesBackupHelper extends IFileBackupHelperBase {
+    /**
+     * @Involve
+     * interface IFileBackupHelperBase
+     */
+    interface ISharedPreferencesBackupHelper {
 
         /**
         * Based on oldState, determine which of the files from the application's data directory

@@ -1,20 +1,26 @@
 module
 {
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.IClickableSpan;
-    interface Elastos.Droid.Text.Style.IClickableSpanHelper;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IURLSpan extends IClickableSpan /*implements IParcelableSpan*/ {
+    /**
+     * @Involve
+     * interface IClickableSpan
+     */
+    interface IURLSpan /*implements IParcelableSpan*/ {
         GetURL(
             [out] String* url);
     }
 
-    interface IURLSpanHelper extends IClickableSpanHelper {}
+    /**
+     * @Involve
+     * interface IClickableSpanHelper
+     */
+    interface IURLSpanHelper {}
 
     }//namespace Style
     }//namespace Text

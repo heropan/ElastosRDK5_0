@@ -1,7 +1,6 @@
 module
 {
     interface Elastos.Droid.Text.Method.IMovementMethod;
-    interface Elastos.Droid.Text.Method.IBaseMovementMethod;
 
     namespace Elastos {
     namespace Droid {
@@ -11,7 +10,11 @@ module
     /**
      * A movement method that interprets movement keys by scrolling the text buffer.
      */
-    interface IScrollingMovementMethod extends IBaseMovementMethod  {
+    /**
+     * @Involve
+     * interface IBaseMovementMethod
+     */
+    interface IScrollingMovementMethod  {
         //implements IMovementMethod
     }
 

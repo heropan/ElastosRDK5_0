@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Telephony {
 
-    interface ICellSignalStrengthGsm extends Elastos.Droid.Telephony.ICellSignalStrength {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Telephony.ICellSignalStrength
+     */
+    interface ICellSignalStrengthGsm {
 
         Initialize(
             [in] Int32 ss,

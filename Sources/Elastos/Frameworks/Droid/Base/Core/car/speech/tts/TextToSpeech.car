@@ -4,10 +4,7 @@ module
     interface Elastos.Utility.IObjectStringMap;
     interface IObjectContainer;
     //interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Speech.Tts.ITextToSpeechOnInitListener;
     interface Elastos.Droid.Speech.Tts.ITextToSpeechOnUtteranceCompletedListener;
-    interface Elastos.Droid.Speech.Tts.ITextToSpeechEngine;
-    interface Elastos.Droid.Speech.Tts.ITextToSpeechEngineInfo;
     interface Elastos.Droid.Speech.Tts.IUtteranceProgressListener;
 
     namespace Elastos {

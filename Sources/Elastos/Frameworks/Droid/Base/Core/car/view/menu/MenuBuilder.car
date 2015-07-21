@@ -10,7 +10,6 @@ module
     interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.IContextMenuInfo;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.Menu.IMenuItemImpl;
     interface Elastos.Droid.View.Menu.IMenuPresenter;
@@ -24,8 +23,12 @@ module
          * Implementation of the {@link android.view.Menu} interface for creating a
          * standard menu UI.
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IMenu
+         */
         [local]
-        interface IMenuBuilder extends Elastos.Droid.View.IMenu {
+        interface IMenuBuilder {
             SetDefaultShowAsAction(
                 [in] Int32 defaultShowAsAction,
                 [out] IMenuBuilder** builder);

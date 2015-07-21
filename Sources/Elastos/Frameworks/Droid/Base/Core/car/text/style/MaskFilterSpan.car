@@ -2,20 +2,26 @@ module
 {
     interface Elastos.Droid.Graphics.IMaskFilter;
     interface Elastos.Droid.Text.Style.IUpdateAppearance;
-    interface Elastos.Droid.Text.Style.ICharacterStyle;
-    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IMaskFilterSpan extends ICharacterStyle /*implements IUpdateAppearance*/ {
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
+    interface IMaskFilterSpan /*implements IUpdateAppearance*/ {
         GetMaskFilter(
             [out] IMaskFilter** ret);
     }
 
-    interface IMaskFilterSpanHelper extends ICharacterStyleHelper {}
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface IMaskFilterSpanHelper {}
 
     }//namespace Style
     }//namespace Text

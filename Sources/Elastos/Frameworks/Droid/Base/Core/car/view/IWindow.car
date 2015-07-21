@@ -99,7 +99,11 @@ module
         DoneAnimating();
     }
 
-    interface IPhoneWindowRotationWatcher extends Elastos.Droid.View.IRotationWatcher {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IRotationWatcher
+     */
+    interface IPhoneWindowRotationWatcher {
         AddWindow(
             [in] IWindow* phoneWindow);
 

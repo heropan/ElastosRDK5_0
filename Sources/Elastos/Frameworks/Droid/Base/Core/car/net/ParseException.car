@@ -11,7 +11,11 @@ module
     namespace Droid {
     namespace Net {
     
-    interface IParseException extends IRuntimeException {
+    /**
+     * @Involve
+     * interface IRuntimeException
+     */
+    interface IParseException {
     
         /**
          * Thrown when parsing a URL fails.

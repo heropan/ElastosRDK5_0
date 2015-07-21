@@ -2,18 +2,23 @@ module
 {
     interface IParcel;
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
-    interface Elastos.Droid.Text.Style.IUpdateLayout;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface ISubscriptSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {}
+    /**
+     * @Involve
+     * interface IMetricAffectingSpan
+     */
+    interface ISubscriptSpan /*implements IParcelableSpan*/ {}
 
-    interface ISubscriptSpanHelper extends IMetricAffectingSpanHelper {}
+    /**
+     * @Involve
+     * interface IMetricAffectingSpanHelper
+     */
+    interface ISubscriptSpanHelper {}
 
     }//namespace Style
     }//namespace Text

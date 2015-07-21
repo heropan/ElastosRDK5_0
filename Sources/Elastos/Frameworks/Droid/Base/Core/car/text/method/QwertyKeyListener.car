@@ -1,9 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Text.Method.IKeyListener;
-    interface Elastos.Droid.Text.Method.IBaseKeyListener;
-    interface Elastos.Droid.Text.Method.IMetaKeyKeyListenerHelper;
     interface Elastos.Droid.Text.ISpannable;
 
     enum Elastos.Droid.Text.Method.Capitalize;
@@ -22,9 +19,17 @@ module
      * with hardware keyboards.  Software input methods have no obligation to trigger
      * the methods in this class.
      */
-    interface IQwertyKeyListener extends IBaseKeyListener {}
+    /**
+     * @Involve
+     * interface IBaseKeyListener
+     */
+    interface IQwertyKeyListener {}
 
-    interface IQwertyKeyListenerHelper extends IMetaKeyKeyListenerHelper{
+    /**
+     * @Involve
+     * interface IMetaKeyKeyListenerHelper
+     */
+    interface IQwertyKeyListenerHelper{
 
         /**
          * Returns a new or existing instance with the specified capitalization

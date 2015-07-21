@@ -1,7 +1,6 @@
 module
 {
     interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.Database.IObservable;
 
     namespace Elastos {
     namespace Droid {
@@ -12,8 +11,12 @@ module
      * that provides methods for sending notifications to a list of
      * {@link ContentObserver} objects.
      */
+    /**
+     * @Involve
+     * interface IObservable
+     */
     [deprecated]
-    interface IContentObservable extends IObservable {
+    interface IContentObservable {
         /**
          * invokes dispatchUpdate on each observer, unless the observer doesn't want
          * self-notifications and the update is from a self-notification

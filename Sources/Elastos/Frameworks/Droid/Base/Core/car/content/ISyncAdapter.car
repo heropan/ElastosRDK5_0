@@ -13,8 +13,12 @@ module
      * Interface used by the SyncAdapter to indicate its progress.
      * @hide
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IBinder
+     */
     [oneway]
-    interface IISyncAdapter extends Elastos.Droid.Os.IBinder {
+    interface IISyncAdapter {
         /**
          * Initiate a sync for this account. SyncAdapter-specific parameters may
          * be specified in extras, which is guaranteed to not be null.

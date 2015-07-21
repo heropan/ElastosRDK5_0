@@ -72,7 +72,11 @@ module
      * @sa Drawable
      * @implements Elastos.Droid.Graphics.Drawable.IDrawableContainer
      */
-    interface IAnimationDrawable extends IDrawableContainer {
+    /**
+     * @Involve
+     * interface IDrawableContainer
+     */
+    interface IAnimationDrawable {
         /**
          * Add a frame to the animation
          *

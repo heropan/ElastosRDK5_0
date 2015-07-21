@@ -64,7 +64,6 @@ module
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IBroadcastReceiver;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
@@ -81,7 +80,6 @@ module
     interface Elastos.Droid.View.IOnComputeInternalInsetsListener;
     interface Elastos.Droid.View.IOnPreDrawListener;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-    interface Elastos.Droid.StatusBar.IStatusBarIconList;
     interface Elastos.Droid.SystemUI.ISwipeHelperCallback;
     interface Elastos.Droid.SystemUI.IExpandHelperCallback;
     interface Elastos.Droid.SystemUI.Recent.IStatusBarTouchProxy;

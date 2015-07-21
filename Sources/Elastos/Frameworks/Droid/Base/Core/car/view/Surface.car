@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Utility.IDisplayMetrics;
     interface Elastos.Droid.Content.Res.ICompatibilityInfoTranslator;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ICanvas;

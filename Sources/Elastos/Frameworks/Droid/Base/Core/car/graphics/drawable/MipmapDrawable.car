@@ -69,7 +69,11 @@ module
          * </p>
          * @attr ref android.R.styleable#MipmapDrawableItem_drawable
          */
-        interface IMipmapDrawable extends IDrawableContainer {
+        /**
+         * @Involve
+         * interface IDrawableContainer
+         */
+        interface IMipmapDrawable {
             /**
              * Adds a Drawable to the list of available mipmap Drawables. The Drawable actually used when
              * this MipmapDrawable is drawn is determined from its bounds.

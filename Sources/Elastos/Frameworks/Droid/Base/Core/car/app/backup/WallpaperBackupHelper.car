@@ -10,7 +10,11 @@ module
     namespace Backup {
 
     /* extends FileBackupHelperBase implements BackupHelper */
-    interface IWallpaperBackupHelper extends IFileBackupHelperBase {
+    /**
+     * @Involve
+     * interface IFileBackupHelperBase
+     */
+    interface IWallpaperBackupHelper {
         // Use old keys to keep legacy data compatibility and avoid writing two wallpapers
         const String WALLPAPER_IMAGE_KEY =
                 "/data/data/com.android.settings/files/wallpaper";

@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Content.Pm.IComponentInfo;
     interface Elastos.Droid.Content.Pm.IPathPermission;
     interface Elastos.Droid.Os.IPatternMatcher;
 
@@ -18,8 +17,12 @@ module
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IComponentInfo
      */
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IComponentInfo
+     */
     [deprecated]
-    interface IProviderInfo extends Elastos.Droid.Content.Pm.IComponentInfo {
+    interface IProviderInfo {
         /**
          * Bit in #flags: If set, a single instance of the provider will
          * run for all users on the device.  Set from the

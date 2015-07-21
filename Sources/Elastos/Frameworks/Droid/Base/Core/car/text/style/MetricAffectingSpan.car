@@ -7,12 +7,20 @@ module
     namespace Text {
     namespace Style {
 
-    interface IMetricAffectingSpan extends ICharacterStyle {
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
+    interface IMetricAffectingSpan {
         UpdateMeasureState(
             [in] ITextPaint* p);
     }
 
-    interface IMetricAffectingSpanHelper extends ICharacterStyleHelper {}
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface IMetricAffectingSpanHelper {}
 
     }//namespace Style
     }//namespace Text

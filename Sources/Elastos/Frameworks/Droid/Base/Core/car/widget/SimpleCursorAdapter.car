@@ -93,8 +93,12 @@ module
             [out] ICharSequence** cs);
     }
 
+    /**
+     * @Involve
+     * interface IResourceCursorAdapter
+     */
     [deprecated]
-    interface ISimpleCursorAdapter extends IResourceCursorAdapter
+    interface ISimpleCursorAdapter
     {
         /**
          * Returns the {@link ViewBinder} used to bind data to views.

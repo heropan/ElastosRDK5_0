@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface ITransitionFadeBlack extends ITransition {
+    /**
+     * @Involve
+     * interface ITransition
+     */
+    interface ITransitionFadeBlack {
 
     }
     } // namespace videoeditor

@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewBaseSavedState;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos{
@@ -89,11 +88,19 @@ module
     interface IExpandableListContextMenuInfo {
     }
 
-    interface IExpandableListViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IExpandableListViewSavedState {
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IListView
+     */
     [local]
-    interface IExpandableListView extends Elastos.Droid.Widget.IListView {
+    interface IExpandableListView {
 
         SetChildDivider(
             [in] IDrawable* childDivider);

@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Text.INoCopySpan;
     interface Elastos.Droid.Text.ISpannable;
 
     namespace Elastos {
@@ -13,7 +12,11 @@ module
      * will be called to notify it that other markup objects have been
      * added, changed, or removed.
      */
-    interface ISpanWatcher extends INoCopySpan {
+    /**
+     * @Involve
+     * interface INoCopySpan
+     */
+    interface ISpanWatcher {
         /**
          * This method is called to notify you that the specified object
          * has been attached to the specified range of the text.

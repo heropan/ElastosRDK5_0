@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos{
@@ -9,7 +8,11 @@ module
     namespace Widget{
 
 
-    interface IFrameLayoutLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     */
+    interface IFrameLayoutLayoutParams {
         /**
          * The gravity to apply with the View to which these layout parameters
          * are associated.
@@ -25,7 +28,11 @@ module
             [out] Int32* gravity);
     }
 
-    interface IFrameLayout extends Elastos.Droid.View.IViewGroup {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface IFrameLayout {
         /**
          * Describes how the foreground is positioned.
          *

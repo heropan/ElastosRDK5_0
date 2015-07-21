@@ -1,18 +1,16 @@
 module
 {
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Graphics.IBitmap;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.Text.Style.IDynamicDrawableSpan;
-    interface Elastos.Droid.Text.Style.IDynamicDrawableSpanHelper;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IImageSpan extends IDynamicDrawableSpan {
+    /**
+     * @Involve
+     * interface IDynamicDrawableSpan
+     */
+    interface IImageSpan {
         /**
          * Returns the source string that was saved during construction.
          */
@@ -20,7 +18,11 @@ module
             [out] String* ret);
     }
 
-    interface IImageSpanHelper extends IDynamicDrawableSpanHelper {}
+    /**
+     * @Involve
+     * interface IDynamicDrawableSpanHelper
+     */
+    interface IImageSpanHelper {}
 
     }//namespace Style
     }//namespace Text

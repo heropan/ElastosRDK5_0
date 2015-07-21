@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Libcore.ICU.ILocale;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Location.ILocationRequest;
@@ -10,7 +9,6 @@ module
     interface Elastos.Droid.Location.ICriteria;
     interface Elastos.Droid.App.IPendingIntent;
     interface Elastos.Droid.Location.IProviderProperties;
-    interface Elastos.Droid.Location.IProviderRequest;
 
     namespace Elastos {
     namespace Droid {

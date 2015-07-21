@@ -6,7 +6,11 @@ module
     namespace Privacy {
     namespace Surrogate {
     
-    interface IPrivacyLocationManager extends Elastos.Droid.Location.ILocationManager {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Location.ILocationManager
+     */
+    interface IPrivacyLocationManager {
         
     }
     

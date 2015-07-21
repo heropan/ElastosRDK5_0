@@ -4,8 +4,6 @@ module
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.IO.IPrintWriter;
 
-    interface Elastos.Droid.Content.IComponentCallbacks;
-    interface Elastos.Droid.Content.IComponentCallbacks2;
     interface Elastos.Droid.Content.IContentProviderResult;
     interface Elastos.Droid.Content.IContentProviderPipeDataWriter;
     interface Elastos.Droid.Content.IContentValues;
@@ -28,8 +26,12 @@ module
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.IComponentCallbacks2
      */
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     */
     [deprecated]
-    interface IContentProvider extends Elastos.Droid.Content.IComponentCallbacks2 {
+    interface IContentProvider {
         /**
          * Retrieves the Context this provider is running in.  Only available once
          * #onCreate has been called -- this will return null in the
@@ -707,7 +709,11 @@ module
             [out] IContentProvider** localContentProvider);
     }
 
-    interface IContentProviderTransport extends Elastos.Droid.Content.IIContentProvider {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IIContentProvider
+     */
+    interface IContentProviderTransport {
         GetContentProvider(
             [out] IContentProvider** provider);
 

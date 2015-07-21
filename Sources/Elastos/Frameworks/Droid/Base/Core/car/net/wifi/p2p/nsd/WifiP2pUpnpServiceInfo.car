@@ -17,7 +17,11 @@ module
      * {@see WifiP2pServiceInfo}
      * {@see WifiP2pDnsSdServiceInfo}
      */
-    interface IWifiP2pUpnpServiceInfo extends IWifiP2pServiceInfo {
+    /**
+     * @Involve
+     * interface IWifiP2pServiceInfo
+     */
+    interface IWifiP2pUpnpServiceInfo {
         /**
          * UPnP version 1.0.
          *

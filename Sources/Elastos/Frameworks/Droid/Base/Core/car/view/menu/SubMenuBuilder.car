@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.View.IMenu;
-    interface Elastos.Droid.View.IMenuItem;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +12,11 @@ module
          * The model for a sub menu, which is an extension of the menu.  Most methods are proxied to
          * the parent menu.
          */
-        interface ISubMenuBuilder extends IMenuBuilder {
+        /**
+         * @Involve
+         * interface IMenuBuilder
+         */
+        interface ISubMenuBuilder {
             GetParentMenu(
                 [out] IMenu** menu);
         }

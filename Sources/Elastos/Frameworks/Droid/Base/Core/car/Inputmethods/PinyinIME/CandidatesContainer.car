@@ -12,7 +12,11 @@ module
         UpdateArrowStatus();
     }
 
-    interface ICandidatesContainer extends Elastos.Droid.Widget.IRelativeLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface ICandidatesContainer {
         Initialize(
             [in] ICandidateViewListener* cvListener,
             [in] IBalloonHint* balloonHint,

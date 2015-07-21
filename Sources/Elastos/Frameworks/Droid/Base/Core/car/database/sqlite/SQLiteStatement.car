@@ -15,7 +15,11 @@ module
      * This class is not thread-safe.
      * </p>
      */
-    interface ISQLiteStatement extends ISQLiteProgram {
+    /**
+     * @Involve
+     * interface ISQLiteProgram
+     */
+    interface ISQLiteStatement {
         /**
          * Execute this SQL statement, if it is not a query. For example,
          * CREATE TABLE, DELTE, INSERT, etc.

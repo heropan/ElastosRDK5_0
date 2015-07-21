@@ -31,7 +31,11 @@ module
                 [out] Boolean* rst);
         }
 
-        interface IMenuAdapter extends Elastos.Droid.Widget.IBaseAdapter {
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.IBaseAdapter
+         */
+        interface IMenuAdapter {
         }
 
     } // namespace Menu

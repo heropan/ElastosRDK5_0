@@ -4,7 +4,11 @@ module
     namespace Droid{
     namespace Widget{
 
-    interface ISearchViewSearchAutoComplete extends Elastos.Droid.Widget.IAutoCompleteTextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAutoCompleteTextView
+     */
+    interface ISearchViewSearchAutoComplete {
 
         SetSearchView(
             [in] ISearchView* searchView);

@@ -11,8 +11,12 @@ module
      * This class is not thread-safe.
      * </p>
      */
+    /**
+     * @Involve
+     * interface ISQLiteClosable
+     */
     [deprecated]
-    interface ISQLiteProgram extends ISQLiteClosable {
+    interface ISQLiteProgram {
         /**
          * Returns a unique identifier for this program.
          *

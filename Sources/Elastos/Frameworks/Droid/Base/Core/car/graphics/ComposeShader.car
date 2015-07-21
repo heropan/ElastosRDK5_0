@@ -20,7 +20,11 @@ module
      *
      * @implements Elastos.Droid.Graphic.IShader
      */
-    interface IComposeShader extends IShader {
+    /**
+     * @Involve
+     * interface IShader
+     */
+    interface IComposeShader {
     }
 
     } // namespace Graphics

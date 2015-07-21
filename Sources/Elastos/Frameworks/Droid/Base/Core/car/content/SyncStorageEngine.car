@@ -13,15 +13,18 @@ module
     interface Elastos.Droid.Content.ISyncStorageEnginePendingOperation;
     interface Elastos.Droid.Content.ISyncQueue;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Utility.IPair;
 
     namespace Elastos {
     namespace Droid {
     namespace Content {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IHandler
+     */
     [deprecated]
-    interface ISyncStorageEngine extends Elastos.Droid.Os.IHandler {
+    interface ISyncStorageEngine {
         /** Enum value for a sync start event. */
         const Int32 EVENT_START = 0;
 

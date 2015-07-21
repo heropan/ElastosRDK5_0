@@ -8,8 +8,12 @@ module
     namespace SystemUI {
     namespace Media {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Media.IMediaPlayerOnCompletionListener
+     */
     [local]
-    interface INotificationPlayer extends Elastos.Droid.Media.IMediaPlayerOnCompletionListener {
+    interface INotificationPlayer {
         Play(
             [in] IContext* ctx,
             [in] IUri* uri,

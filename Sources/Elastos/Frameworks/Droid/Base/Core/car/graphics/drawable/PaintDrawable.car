@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.IShapeDrawable;
 
     namespace Elastos {
     namespace Droid {
@@ -24,8 +23,12 @@ module
         * @sa RectShape
         * @implements Elastos.Droid.Graphics. Drawable.IShapeDrawable
         */
+        /**
+         * @Involve
+         * interface IShapeDrawable
+         */
         [deprecated]
-        interface IPaintDrawable extends IShapeDrawable {
+        interface IPaintDrawable {
             /**
              * Specify radius for the corners of the rectangle. If this is > 0, then the
              * drawable is drawn in a round-rectangle, rather than a rectangle.

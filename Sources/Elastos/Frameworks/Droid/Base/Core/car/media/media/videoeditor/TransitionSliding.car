@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface ITransitionSliding extends ITransition {
+    /**
+     * @Involve
+     * interface ITransition
+     */
+    interface ITransitionSliding {
 
         /** Video 1 is pushed to the right while video 2 is coming from left */
         const Int32 DIRECTION_RIGHT_OUT_LEFT_IN = 0;

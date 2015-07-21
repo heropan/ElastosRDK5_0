@@ -9,7 +9,11 @@ module
     namespace Inputmethods {
     namespace PinyinIME {
 
-    interface ICandidateView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface ICandidateView {
         Initialize(
             [in] IArrowUpdater* arrowUpdater,
             [in] IBalloonHint* balloonHint,

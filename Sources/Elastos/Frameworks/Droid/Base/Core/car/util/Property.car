@@ -43,17 +43,29 @@ module
 
     }
 
-    interface IReflectiveProperty extends IProperty {
+    /**
+     * @Involve
+     * interface IProperty
+     */
+    interface IReflectiveProperty {
     }
 
-    interface IInt32Property extends IProperty {
+    /**
+     * @Involve
+     * interface IProperty
+     */
+    interface IInt32Property {
 
         SetValue(
             [in] IInterface* obj,
             [in] Int32 value);
     }
 
-    interface IFloatProperty extends IProperty {
+    /**
+     * @Involve
+     * interface IProperty
+     */
+    interface IFloatProperty {
 
         SetValue(
             [in] IInterface* obj,

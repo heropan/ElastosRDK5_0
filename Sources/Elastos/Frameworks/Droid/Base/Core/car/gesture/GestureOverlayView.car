@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Utility.IObjectContainer;
 
-    interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Graphics.IPath;
     interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.View.IMotionEvent;
@@ -49,8 +48,12 @@ module
      * A transparent overlay for gesture input that can be placed on top of other
      * widgets or contain other widgets.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
     [local, deprecated]
-    interface IGestureOverlayView extends Elastos.Droid.Widget.IFrameLayout {
+    interface IGestureOverlayView {
         const Int32 GESTURE_STROKE_TYPE_SINGLE = 0;
         const Int32 GESTURE_STROKE_TYPE_MULTIPLE = 1;
 

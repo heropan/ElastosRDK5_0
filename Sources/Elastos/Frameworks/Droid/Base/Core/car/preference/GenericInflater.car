@@ -2,7 +2,6 @@ module
 {
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Utility.IAttributeSet;
-    using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Elastos {
     namespace Droid {

@@ -10,7 +10,6 @@ module
     //For SoftKeyboard.
     merge("inputmethodservice/SoftKeyboard.car");
 
-    interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
     interface Elastos.Droid.Os.IBinder;
@@ -28,8 +27,6 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.InputMethod.IInputMethod;
     interface Elastos.Droid.View.InputMethod.IInputMethodSession;
-    interface Elastos.Droid.View.Menu.IMenuBuilder;
-    interface Elastos.Droid.Widget.IEditText;
     interface Elastos.Droid.Widget.IButton;
 
 

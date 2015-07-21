@@ -1,8 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IHandler;
-    interface Elastos.Droid.Net.IDhcpInfo;
-    interface Elastos.Droid.Net.Ethernet.IIEthernetManager;
 
     namespace Elastos {
     namespace Droid {

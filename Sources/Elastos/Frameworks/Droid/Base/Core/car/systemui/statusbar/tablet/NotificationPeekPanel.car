@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface INotificationPeekPanel extends Elastos.Droid.Widget.IRelativeLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface INotificationPeekPanel {
         SetBar(
             [in] ITabletStatusBar* bar);
     }

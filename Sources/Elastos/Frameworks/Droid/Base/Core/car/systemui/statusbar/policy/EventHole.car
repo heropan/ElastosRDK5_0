@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IEventHole extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IEventHole {
     }
 
     } // namespace Policy

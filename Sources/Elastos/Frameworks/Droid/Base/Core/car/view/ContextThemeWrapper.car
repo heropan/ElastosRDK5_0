@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace View {
 
-        interface IContextThemeWrapper extends Elastos.Droid.Content.IContextWrapper {
+        /**
+         * @Involve
+         * interface Elastos.Droid.Content.IContextWrapper
+         */
+        interface IContextThemeWrapper {
             ApplyOverrideConfiguration(
                 [in] IConfiguration* overrideConfiguration);
         }

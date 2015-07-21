@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IDeadZone extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IDeadZone {
 
         const Int32 HORIZONTAL  = 0;
         const Int32 VERTICAL    = 1;

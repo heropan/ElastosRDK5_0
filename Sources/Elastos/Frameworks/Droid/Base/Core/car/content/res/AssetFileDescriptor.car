@@ -3,10 +3,7 @@ module
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.IO.IFileInputStream;
     using interface Elastos.IO.IFileOutputStream;
-    using interface Elastos.IO.IParcel;
     using interface Elastos.Droid.Os.IParcelFileDescriptor;
-    using interface Elastos.Droid.Os.IParcelFileDescriptorAutoCloseOutputStream;
-    using interface Elastos.Droid.Os.IParcelFileDescriptorAutoCloseInputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -125,7 +122,11 @@ module
      *
      * @sa ParcelFileDescriptor#close ParcelFileDescritor.close()
      */
-    interface IAssetFileDescriptorAutoCloseInputStream extends Elastos.Droid.Os.IParcelFileDescriptorAutoCloseInputStream {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IParcelFileDescriptorAutoCloseInputStream
+     */
+    interface IAssetFileDescriptorAutoCloseInputStream {
     }
 
     /**
@@ -135,7 +136,11 @@ module
      *
      * @sa ParcelFileDescriptor#close ParcelFileDescritor.close()
     */
-    interface IAssetFileDescriptorAutoCloseOutputStream extends Elastos.Droid.Os.IParcelFileDescriptorAutoCloseOutputStream {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IParcelFileDescriptorAutoCloseOutputStream
+     */
+    interface IAssetFileDescriptorAutoCloseOutputStream {
     }
 
     } // namespace Res

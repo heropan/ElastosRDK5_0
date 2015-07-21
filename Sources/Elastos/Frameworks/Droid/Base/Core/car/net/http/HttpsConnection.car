@@ -1,13 +1,16 @@
 module
 {
-    using interface Elastos.IO.IFile;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
-    interface IHttpsConnection extends IConnection {
+    /**
+     * @Involve
+     * interface IConnection
+     */
+    interface IHttpsConnection {
     }
 
     } // namespace Http

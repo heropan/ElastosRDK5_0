@@ -4,7 +4,6 @@ module
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.App.IDialog;
     interface Elastos.Droid.Graphics.IRect;
-    interface Elastos.Droid.InputMethodService.IAbstractInputMethodService;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.ILayoutInflater;
     interface Elastos.Droid.View.IWindow;
@@ -172,8 +171,12 @@ module
      * @attr ref android.R.styleable#InputMethodService_imeExtractEnterAnimation
      * @attr ref android.R.styleable#InputMethodService_imeExtractExitAnimation
      */
+    /**
+     * @Involve
+     * interface IAbstractInputMethodService
+     */
     [deprecated]
-    interface IInputMethodService extends IAbstractInputMethodService {
+    interface IInputMethodService {
         /**
          * The back button will close the input window.
          */

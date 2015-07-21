@@ -1,12 +1,15 @@
 module
 {
-    interface Elastos.Droid.Widget.ISeekBar;
 
     namespace Elastos {
     namespace Droid {
     namespace Preference {
 
-        interface ISeekBarPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface ISeekBarPreferenceSavedState {
             SetProgress(
                 [in] Int32 progress);
 

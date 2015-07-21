@@ -8,8 +8,12 @@ module
     namespace Khronos {
     namespace Opengles {
 
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Opengles.IGL
+     */
     [deprecated]
-    interface IGL10Ext extends Elastosx.Microedition.Khronos.Opengles.IGL {
+    interface IGL10Ext {
         GlQueryMatrixxOES(
             [in] ArrayOf<Int32>* mantissa,
             [in] Int32 mantissaOffset,

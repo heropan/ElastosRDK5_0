@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Audiofx {
 
-    interface IAcousticEchoCanceler extends IAudioEffect
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IAcousticEchoCanceler
     {}
 
     interface IAcousticEchoCancelerHelper{

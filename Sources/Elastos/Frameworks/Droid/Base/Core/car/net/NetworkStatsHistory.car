@@ -5,7 +5,6 @@ module
     using interface Elastos.Core.IRandom;
     using interface Elastos.Droid.Internal.Utility.IIndentingPrintWriter;
 
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Net.INetworkStatsEntry;
     interface Elastos.Droid.Net.INetworkStatsHistoryEntry;
 

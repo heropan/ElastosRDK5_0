@@ -11,7 +11,11 @@ module
     namespace Content {
     namespace Res {
 
-    interface IAssetInputStream extends Elastos.IO.IInputStream {
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
+    interface IAssetInputStream {
         GetAssetInt32(
             [out] Int32* value);
     }

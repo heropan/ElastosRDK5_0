@@ -12,8 +12,12 @@ module
         /**
          * The item view for each item in the {@link IconMenuView}.
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.Menu.IMenuPresenter
+         */
         [local]
-        interface IListMenuPresenter extends Elastos.Droid.View.Menu.IMenuPresenter {
+        interface IListMenuPresenter {
 
             GetAdapter(
                 [out] IListAdapter** apt);

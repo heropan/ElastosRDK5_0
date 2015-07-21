@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Content.Pm.IPackageItemInfo;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Utility.IPrinter;
     interface Elastos.Core.ICharSequence;
@@ -20,8 +19,12 @@ module
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
      */
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     */
     [deprecated]
-    interface IApplicationInfo extends Elastos.Droid.Content.Pm.IPackageItemInfo {
+    interface IApplicationInfo {
 
         /**
          * Value for #flags: if set, this application is installed in the

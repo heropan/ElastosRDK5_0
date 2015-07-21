@@ -1,7 +1,6 @@
 module
 {
     interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.Database.ICrossProcessCursor;
     interface Elastos.Droid.Content.IContentResolver;
 
     namespace Elastos {
@@ -12,8 +11,12 @@ module
     * This is an abstract cursor class that handles a lot of the common code
     * that all cursors need to deal with and is provided for convenience reasons.
     */
+    /**
+     * @Involve
+     * interface ICrossProcessCursor
+     */
     [deprecated]
-    interface IAbstractCursor extends ICrossProcessCursor {
+    interface IAbstractCursor {
         GetNotificationUri(
             [out] IUri** uri);
 

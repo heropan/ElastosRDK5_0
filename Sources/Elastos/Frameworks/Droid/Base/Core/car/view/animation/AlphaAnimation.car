@@ -6,7 +6,11 @@ module
     namespace View {
     namespace Animation {
 
-        interface IAlphaAnimation extends Elastos.Droid.View.Animation.IAnimation
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.Animation.IAnimation
+         */
+        interface IAlphaAnimation
         {
         }
     }// namespace Animation

@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Database.ICursorWrapper;
 
     namespace Elastos {
     namespace Droid {
@@ -18,7 +17,11 @@ module
      * {@link CrossProcessCursor}.
      * </p>
      */
-    interface ICrossProcessCursorWrapper extends ICursorWrapper {
+    /**
+     * @Involve
+     * interface ICursorWrapper
+     */
+    interface ICrossProcessCursorWrapper {
     }
 
     } //Database

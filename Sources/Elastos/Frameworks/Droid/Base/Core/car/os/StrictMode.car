@@ -5,13 +5,16 @@ module
     interface Elastos.Droid.Os.IStrictModeSpan;
     interface Elastos.Droid.Os.IStrictModeViolationInfo;
 
-    using interface Elastos.Core.IBlockGuardPolicy;
 
     namespace Elastos {
     namespace Droid {
     namespace Os {
 
-    interface IAndroidBlockGuardPolicy extends Elastos.Core.IBlockGuardPolicy {
+    /**
+     * @Involve
+     * interface Elastos.Core.IBlockGuardPolicy
+     */
+    interface IAndroidBlockGuardPolicy {
         ToString(
             [out] String* str);
 

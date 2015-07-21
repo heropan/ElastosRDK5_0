@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectContainer;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Accounts.IAuthenticatorDescription;
     interface Elastos.Droid.Accounts.IAccountManagerResponse;

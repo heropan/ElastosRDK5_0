@@ -57,8 +57,12 @@ module
      * to the current locale.
      * </p>
      */
+    /**
+     * @Involve
+     * interface ISQLiteClosable
+     */
     [deprecated]
-    interface ISQLiteDatabase extends ISQLiteClosable {
+    interface ISQLiteDatabase {
         /**
          * When a constraint violation occurs, an immediate ROLLBACK occurs,
          * thus ending the current transaction, and the command aborts with a

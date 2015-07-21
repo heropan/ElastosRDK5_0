@@ -10,8 +10,12 @@ module
     namespace Khronos {
     namespace Opengles {
 
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Opengles.IGL10
+     */
     [deprecated]
-    interface IGL11 extends Elastosx.Microedition.Khronos.Opengles.IGL10 {
+    interface IGL11 {
         const Int32 _GL_ACTIVE_TEXTURE                          = 0x84E0;
         const Int32 _GL_ADD_SIGNED                              = 0x8574;
         const Int32 _GL_ALPHA_SCALE                             = 0x0D1C;

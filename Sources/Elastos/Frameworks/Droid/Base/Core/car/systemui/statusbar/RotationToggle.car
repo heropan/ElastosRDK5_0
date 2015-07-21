@@ -5,7 +5,11 @@ module
     namespace SystemUI {
     namespace StatusBar {
 
-    interface IRotationToggle extends Elastos.Droid.Widget.ICompoundButton {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ICompoundButton
+     */
+    interface IRotationToggle {
 
     }
 

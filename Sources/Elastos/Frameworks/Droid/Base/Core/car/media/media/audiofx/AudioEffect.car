@@ -1,7 +1,6 @@
 module
 {
     using interface Elastos.Utility.IUUID;
-    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {

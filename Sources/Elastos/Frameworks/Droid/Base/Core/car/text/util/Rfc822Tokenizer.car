@@ -15,7 +15,11 @@ module
      * a string of addresses (such as might be typed into such a field)
      * into a series of Rfc822Tokens.
      */
-    interface IRfc822Tokenizer extends Elastos.Droid.Widget.ITokenizer {}
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITokenizer
+     */
+    interface IRfc822Tokenizer {}
 
     [deprecated]
     interface IRfc822TokenizerHelper{

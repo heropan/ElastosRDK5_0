@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
@@ -13,7 +12,11 @@ module
      * implementation of this service is stateless.
      */
     //public abstract class
-    interface IRecognitionService extends Elastos.Droid.App.IService {
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
+    interface IRecognitionService {
         /**
          * The {@link Intent} that must be declared as handled by the service.
          */

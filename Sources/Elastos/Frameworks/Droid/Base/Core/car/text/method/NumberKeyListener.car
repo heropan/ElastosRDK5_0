@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.IBaseKeyListener;
     interface Elastos.Droid.Text.IInputFilter;
 
     namespace Elastos {
@@ -16,9 +15,17 @@ module
      * the methods in this class.
      */
     //public abstract class
-    interface INumberKeyListener extends IBaseKeyListener /*implements IInputFilter*/ {}
+    /**
+     * @Involve
+     * interface IBaseKeyListener
+     */
+    interface INumberKeyListener /*implements IInputFilter*/ {}
 
-    interface INumberKeyListenerHelper extends IBaseKeyListenerHelper{}
+    /**
+     * @Involve
+     * interface IBaseKeyListenerHelper
+     */
+    interface INumberKeyListenerHelper{}
 
     }//namespace Method
     }//namespace Text

@@ -111,7 +111,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface IBitmapDrawable extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface IBitmapDrawable {
         /**
          * Returns the bitmap used by this drawable to render. May be null.
          */

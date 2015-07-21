@@ -5,7 +5,11 @@ module
     namespace SystemUI {
     namespace Media {
 
-    interface IRingtonePlayer extends Elastos.Droid.SystemUI.ISystemUI {
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.ISystemUI
+     */
+    interface IRingtonePlayer {
     }
 
     } // namespace Media

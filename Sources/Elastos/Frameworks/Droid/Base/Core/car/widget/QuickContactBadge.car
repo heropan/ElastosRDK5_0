@@ -9,7 +9,11 @@ module
 
     interface IImageView;
 
-    interface IQuickContactBadge extends IImageView
+    /**
+     * @Involve
+     * interface IImageView
+     */
+    interface IQuickContactBadge
     {
         /**
          * Resets the contact photo to the default state.

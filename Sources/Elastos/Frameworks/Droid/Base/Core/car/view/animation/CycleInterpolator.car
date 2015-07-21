@@ -11,7 +11,11 @@ module
      * the basic animation effects (alpha, scale, translate, rotate) to be
      * accelerated, decelerated, repeated, etc.
      */
-    interface ICycleInterpolator extends IInterpolator {
+    /**
+     * @Involve
+     * interface IInterpolator
+     */
+    interface ICycleInterpolator {
     }
 
     }   //namespace Animation

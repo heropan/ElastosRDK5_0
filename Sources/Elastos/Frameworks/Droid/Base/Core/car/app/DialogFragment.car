@@ -2,7 +2,6 @@ module
 {
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.App.IDialog;
-    interface Elastos.Droid.Content.IDialogInterface;
 
     namespace Elastos {
     namespace Droid {

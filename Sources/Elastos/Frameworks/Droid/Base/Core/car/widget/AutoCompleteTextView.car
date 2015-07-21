@@ -61,8 +61,12 @@ module
         OnDismiss();
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IEditText
+     */
     [local]
-    interface IAutoCompleteTextView extends Elastos.Droid.Widget.IEditText
+    interface IAutoCompleteTextView
     {
         SetCompletionHint(
             [in] ICharSequence* hint);

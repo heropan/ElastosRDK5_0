@@ -2,10 +2,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IActionMode;
-    interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Widget.ISpinnerAdapter;
     interface Elastos.Droid.Content.IContext;
@@ -1051,7 +1048,11 @@ module
      *
      * @attr ref android.R.styleable#ActionBar_LayoutParams_layout_gravity
      */
-    interface IActionBarLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     */
+    interface IActionBarLayoutParams {
 
         GetGravity(
            [out] Int32* gravity);

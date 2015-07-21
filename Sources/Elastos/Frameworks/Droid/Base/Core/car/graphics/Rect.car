@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Core.IStringBuilder;
 
     namespace Elastos {
     namespace Droid {

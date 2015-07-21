@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Content.Pm.IComponentInfo;
     interface Elastos.Droid.Utility.IPrinter;
 
     namespace Elastos {
@@ -16,7 +15,11 @@ module
      *
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IComponentInfo
      */
-    interface IActivityInfo extends Elastos.Droid.Content.Pm.IComponentInfo {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IComponentInfo
+     */
+    interface IActivityInfo {
         /**
          * Constant corresponding to <code>standard</code> in
          * the android.R.attr#launchMode attribute.

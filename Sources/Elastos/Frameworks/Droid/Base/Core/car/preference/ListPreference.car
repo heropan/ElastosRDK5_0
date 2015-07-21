@@ -6,8 +6,12 @@ module
     namespace Droid {
     namespace Preference {
 
+        /**
+         * @Involve
+         * interface IDialogPreference
+         */
         [deprecated]
-        interface IListPreference extends IDialogPreference {
+        interface IListPreference {
             /**
              * Sets the human-readable entries to be shown in the list. This will be
              * shown in subsequent dialogs.
@@ -106,7 +110,11 @@ module
                 [out] Int32* index);
         }
 
-        interface IListPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IListPreferenceSavedState {
             SetValue(
                 [in] String value);
 

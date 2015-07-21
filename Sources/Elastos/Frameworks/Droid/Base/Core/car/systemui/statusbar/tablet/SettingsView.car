@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface ISettingsView extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface ISettingsView {
     }
 
     } // namespace Tablet

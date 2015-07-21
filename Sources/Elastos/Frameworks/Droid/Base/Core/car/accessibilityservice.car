@@ -7,7 +7,6 @@ module
     merge("accessibilityservice/AccessibilityService.car");
     merge("accessibilityservice/UiTestAutomationBridge.car");
 
-    interface Elastos.Droid.App.IService;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.ILooper;
     interface Elastos.Droid.Os.IHandlerCallerCallback;

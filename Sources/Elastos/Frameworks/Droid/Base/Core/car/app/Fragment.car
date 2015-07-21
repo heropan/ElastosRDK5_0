@@ -10,12 +10,9 @@ module
     interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IMenuItem;
     interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.View.IContextMenu;
     interface Elastos.Droid.View.IMenuInflater;
     interface Elastos.Droid.View.ILayoutInflater;
-    interface Elastos.Droid.View.IContextMenuInfo;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Animation.IAnimator;
@@ -1042,7 +1039,11 @@ module
 
     }
 
-    interface IFragmentSavedState extends IParcelable {
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    interface IFragmentSavedState {
         GetState(
             [out] IBundle** state);
 

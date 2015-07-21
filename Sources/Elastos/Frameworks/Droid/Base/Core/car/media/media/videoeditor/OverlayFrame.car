@@ -7,7 +7,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface IOverlayFrame extends IOverlay {
+    /**
+     * @Involve
+     * interface IOverlay
+     */
+    interface IOverlayFrame {
         /**
          * Get the overlay bitmap.
          *

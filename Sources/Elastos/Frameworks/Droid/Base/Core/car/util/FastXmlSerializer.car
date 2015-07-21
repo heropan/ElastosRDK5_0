@@ -1,14 +1,15 @@
 module
 {
-    using interface Elastos.IO.IFile;
-    using interface Elastos.IO.IFileOutputStream;
-    using interface Elastos.IO.IFileInputStream;
 
     namespace Elastos {
     namespace Droid {
     namespace Utility {
 
-    interface IFastXmlSerializer extends Org.Xmlpull.V1.IXmlSerializer
+    /**
+     * @Involve
+     * interface Org.Xmlpull.V1.IXmlSerializer
+     */
+    interface IFastXmlSerializer
     {
 
     }

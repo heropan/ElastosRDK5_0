@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface ITextClock extends ITextView
+    /**
+     * @Involve
+     * interface ITextView
+     */
+    interface ITextClock
     {
         /**
          * Returns the formatting pattern used to display the date and/or time

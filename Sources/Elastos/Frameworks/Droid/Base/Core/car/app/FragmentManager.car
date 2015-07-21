@@ -364,8 +364,12 @@ module
             [out] IView** view);
     }
 
+    /**
+     * @Involve
+     * interface IFragmentManager
+     */
     [deprecated]
-    interface IFragmentManagerImpl extends IFragmentManager {
+    interface IFragmentManagerImpl {
         const String TAG = "FragmentManager";
 
         const String TARGET_REQUEST_CODE_STATE_TAG = "android:target_req_state";

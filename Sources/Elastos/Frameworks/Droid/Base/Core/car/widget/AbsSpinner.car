@@ -1,17 +1,23 @@
 
 module
 {
-    interface Elastos.Droid.View.IViewBaseSavedState;
-    interface Elastos.Droid.Widget.IAdapterView;
 
     namespace Elastos{
     namespace Droid{
     namespace Widget{
 
-    interface IAbsSpinnerSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IAbsSpinnerSavedState {
     }
 
-    interface IAbsSpinner extends Elastos.Droid.Widget.IAdapterView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapterView
+     */
+    interface IAbsSpinner {
         /**
          * Jump directly to a specific item in the adapter data.
          */

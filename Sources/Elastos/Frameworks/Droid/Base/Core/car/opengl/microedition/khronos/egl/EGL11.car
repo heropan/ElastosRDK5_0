@@ -6,7 +6,11 @@ module
     namespace Khronos {
     namespace Egl {
 
-    interface IEGL11 extends Elastosx.Microedition.Khronos.Egl.IEGL10 {
+    /**
+     * @Involve
+     * interface Elastosx.Microedition.Khronos.Egl.IEGL10
+     */
+    interface IEGL11 {
         const Int32 _EGL_CONTEXT_LOST = 0x300E;
     }
 

@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.IReplacementTransformationMethod;
 
     namespace Elastos {
     namespace Droid {
@@ -12,7 +11,11 @@ module
      * to be hidden by displaying them as zero-width non-breaking space
      * characters (\uFEFF).
      */
-    interface IHideReturnsTransformationMethod extends IReplacementTransformationMethod {
+    /**
+     * @Involve
+     * interface IReplacementTransformationMethod
+     */
+    interface IHideReturnsTransformationMethod {
     }
 
     interface IHideReturnsTransformationMethodHelper{

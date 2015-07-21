@@ -95,7 +95,11 @@ module
         *
         * @implements Elastos.Droid.Graphics.Drawable.IDrawable
         */
-        interface IScaleDrawable extends IDrawable {
+        /**
+         * @Involve
+         * interface IDrawable
+         */
+        interface IScaleDrawable {
             /**
              * Returns the drawable scaled by this ScaleDrawable.
              */

@@ -20,7 +20,11 @@ module
       *
       * @implements Elastos.Droid.Graphics.IXfermode
       */
-    interface IPixelXorXfermode extends IXfermode {
+    /**
+     * @Involve
+     * interface IXfermode
+     */
+    interface IPixelXorXfermode {
     }
 
     } // namespace Graphics

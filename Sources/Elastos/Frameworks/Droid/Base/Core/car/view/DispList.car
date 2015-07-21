@@ -73,7 +73,11 @@ module
                 [out] IDispListDispFormat** rst);
         }
 
-        interface IDispList extends Elastos.Droid.Os.IHandler {
+        /**
+         * @Involve
+         * interface Elastos.Droid.Os.IHandler
+         */
+        interface IDispList {
 
             const Int32 DISP_FORMAT_NTSC_ID                 =       0x54FA01;
             const Int32 DISP_FORMAT_PAL_ID                  =       0x54FA02;

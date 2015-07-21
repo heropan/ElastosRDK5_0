@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -24,7 +23,11 @@ module
      * @see BackupHelper
      */
 
-    interface IBackupDataInputStream extends Elastos.IO.IInputStream{
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
+    interface IBackupDataInputStream{
         /**
          * Report the key string associated with this entity within the backup data set.
          *

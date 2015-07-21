@@ -12,7 +12,11 @@ module
       *
       * @implements Elastos.Droid.Graphics.IMaskFilter
       */
-    interface IEmbossMaskFilter extends IMaskFilter {
+    /**
+     * @Involve
+     * interface IMaskFilter
+     */
+    interface IEmbossMaskFilter {
     }
 
     } // namespace Graphics

@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Telephony {
 
-    interface ICellInfoGsm extends Elastos.Droid.Telephony.ICellInfo {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Telephony.ICellInfo
+     */
+    interface ICellInfoGsm {
 
         GetCellIdentity(
             [out] ICellIdentityGsm** res);

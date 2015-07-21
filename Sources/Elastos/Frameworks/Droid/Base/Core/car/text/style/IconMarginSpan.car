@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Droid.Graphics.IBitmap;
-    interface Elastos.Droid.Text.Style.ILeadingMarginSpan;
     interface Elastos.Droid.Text.Style.ILineHeightSpan;
 
     namespace Elastos {

@@ -1,7 +1,6 @@
 module {
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
-    interface Elastos.Droid.Provider.IBaseColumns;
 
     namespace Elastos {
     namespace Droid {
@@ -252,7 +251,11 @@ module {
             [in] IWebIconDatabaseIconListener* listener);
     }
 
-    interface IBrowserBookmarkColumns extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IBrowserBookmarkColumns {
         /**
          * The URL of the bookmark or history item.
          * <p>Type: TEXT (URL)</p>
@@ -312,7 +315,11 @@ module {
         const String USER_ENTERED = "user_entered";
     }
 
-    interface IBrowserSearchColumns extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IBrowserSearchColumns {
         /**
          * @deprecated Not used.
          */

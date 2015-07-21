@@ -179,7 +179,6 @@ module
     interface Elastos.Droid.View.IOnGestureListener;
     interface Elastos.Droid.View.IOnTouchModeChangeListener;
     interface Elastos.Droid.View.IViewOnFocusChangeListener;
-    interface Elastos.Droid.View.IViewOnLayoutChangeListener;
     interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IViewOnCreateContextMenuListener;

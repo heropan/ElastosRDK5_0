@@ -4,7 +4,6 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Net.Http.ISslError;
     interface Elastos.Droid.Webkit.IWebView;
-    interface Elastos.Droid.Webkit.IWebViewClient;
 
     namespace Elastos {
     namespace Droid {
@@ -15,7 +14,11 @@ module
      * These are not part of the public WebView API, so the class is hidden.
      * @hide
      */
-    interface IWebViewClientClassicExt extends IWebViewClient {
+    /**
+     * @Involve
+     * interface IWebViewClient
+     */
+    interface IWebViewClientClassicExt {
 
         /**
          * Notify the host application that an SSL error occurred while loading a

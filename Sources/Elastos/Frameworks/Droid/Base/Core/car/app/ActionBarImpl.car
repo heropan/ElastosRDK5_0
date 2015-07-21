@@ -1,8 +1,6 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
     
-    interface Elastos.Droid.App.IActionBar;
     interface Elastos.Droid.View.IActionMode;
     interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.Content.Res.IConfiguration;
@@ -12,8 +10,12 @@ module
     namespace Internal {
     namespace App {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IActionBar
+     */
     [local]
-    interface IActionBarImpl extends Elastos.Droid.App.IActionBar {
+    interface IActionBarImpl {
         OnConfigurationChanged(
             [in] IConfiguration* newConfig);
 

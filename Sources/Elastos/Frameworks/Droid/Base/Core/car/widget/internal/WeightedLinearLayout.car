@@ -11,7 +11,11 @@ module
      * A special layout when measured in AT_MOST will take up a given percentage of
      * the available space.
      */
-    interface IWeightedLinearLayout extends Elastos.Droid.Widget.ILinearLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IWeightedLinearLayout
     {
     }
 

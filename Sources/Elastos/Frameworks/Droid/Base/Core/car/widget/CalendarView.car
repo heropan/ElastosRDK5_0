@@ -52,7 +52,11 @@ module
      * @attr ref android.R.styleable#CalendarView_dateTextAppearance
      */
 
-    interface ICalendarView extends IFrameLayout
+    /**
+     * @Involve
+     * interface IFrameLayout
+     */
+    interface ICalendarView
     {
 
         /**

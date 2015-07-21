@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Widget.Internal.IScrollingTabContainerView;
     interface Elastos.Droid.View.IView;
@@ -11,7 +10,11 @@ module
     namespace Widget{
     namespace Internal{
 
-    interface IActionBarContainer extends Elastos.Droid.Widget.IFrameLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IActionBarContainer
     {
         SetPrimaryBackground(
             [in] IDrawable* bg);

@@ -1,14 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos {
     namespace Droid {
     namespace Widget {
 
-    interface IRelativeLayoutLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     */
+    interface IRelativeLayoutLayoutParams {
         /**
          * Adds a layout rule to be interpreted by the RelativeLayout. This
          * method should only be used for constraints that don't refer to another sibling
@@ -90,7 +92,11 @@ module
             [out] Boolean* align);
     }
 
-    interface IRelativeLayout extends Elastos.Droid.View.IViewGroup {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface IRelativeLayout {
 
         const Int32 RelativeLayout_TRUE = -1;
 

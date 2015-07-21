@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Net.IInetAddress;
-    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +12,11 @@ module
      * arg1 is the ID of the ping, also returned by {@link #pingDnsAsync(InetAddress, int, int)}
      * arg2 is the delay, or is negative on error.
      */
-    interface IDnsPinger extends Elastos.Droid.Os.IHandler {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IHandler
+     */
+    interface IDnsPinger {
 
         const Int32 DNS_PING_RESULT = 0x00050000; // BASE;
         /** An error code for a {@link #DNS_PING_RESULT} packet */

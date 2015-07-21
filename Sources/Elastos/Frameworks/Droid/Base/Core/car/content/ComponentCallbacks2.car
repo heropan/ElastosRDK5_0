@@ -12,7 +12,11 @@ module
      * @sa ComponentCallbacks
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.IComponentCallbacks
      */
-    interface IComponentCallbacks2 extends Elastos.Droid.Content.IComponentCallbacks {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     */
+    interface IComponentCallbacks2 {
         /**
          * Level for #onTrimMemory(int): the process is nearing the end
          * of the background LRU list, and if more memory isn't found soon it will

@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Audiofx {
 
-    interface INoiseSuppressor extends IAudioEffect
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface INoiseSuppressor
     {}
 
     interface INoiseSuppressorHelper {

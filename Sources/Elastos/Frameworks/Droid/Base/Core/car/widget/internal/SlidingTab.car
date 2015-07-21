@@ -64,7 +64,11 @@ module
      * the tab will result in whichHandle being {@link ISlidingTabOnTriggerListener#NO_HANDLE}.
      *
      */
-    interface ISlidingTab extends Elastos.Droid.View.IViewGroup
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface ISlidingTab
     {
         /**
          * Reset the tabs to their original state and stop any existing animation.

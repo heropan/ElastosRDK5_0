@@ -15,7 +15,11 @@ module
      * the cursor can provide a pre-filled window to use via {@link #getWindow} thereby
      * obviating the need to copy the data to yet another cursor window.
      */
-    interface ICrossProcessCursor extends ICursor {
+    /**
+     * @Involve
+     * interface ICursor
+     */
+    interface ICrossProcessCursor {
         /**
          * returns a pre-filled window, return NULL if no such window
          */

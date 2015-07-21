@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Content.IEntity;
-    interface Elastos.Droid.Content.IEntityIterator;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +15,11 @@ module
      *
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.IEntityIterator
      */
-    interface ICursorEntityIterator extends Elastos.Droid.Content.IEntityIterator {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IEntityIterator
+     */
+    interface ICursorEntityIterator {
         /**
          * Returns the entity that the cursor is currently pointing to. This must take care to advance
          * the cursor past this entity. This will never be called if the cursor is at the end.

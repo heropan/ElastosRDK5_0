@@ -5,7 +5,6 @@ module
     using interface Elastos.Utility.IObjectInt32Map;
 
     interface Elastos.Droid.Net.ILinkCapabilities;
-    interface Elastos.Droid.Os.IParcel;
 
     namespace Elastos {
     namespace Droid {

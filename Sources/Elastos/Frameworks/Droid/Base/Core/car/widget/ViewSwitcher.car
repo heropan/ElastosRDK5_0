@@ -22,8 +22,12 @@ module
             [out] IView** view);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IViewAnimator
+     */
     [local]
-    interface IViewSwitcher extends Elastos.Droid.Widget.IViewAnimator
+    interface IViewSwitcher
     {
         /**
          * Returns the next view to be displayed.

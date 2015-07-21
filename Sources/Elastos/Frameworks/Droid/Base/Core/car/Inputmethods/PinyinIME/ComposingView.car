@@ -50,7 +50,11 @@ module
         ComposingStatus_EDIT_PINYIN,
     }
 
-    interface IComposingView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IComposingView {
         Reset();
 
         /**

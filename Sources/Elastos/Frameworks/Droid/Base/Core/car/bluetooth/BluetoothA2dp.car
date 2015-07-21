@@ -21,7 +21,11 @@ module
          *
          * @implements Elastos.Droid.Bluetooth.Elastos.Droid.Bluetooth.IBluetoothProfile
          */
-        interface IBluetoothA2dp extends IBluetoothProfile {
+        /**
+         * @Involve
+         * interface IBluetoothProfile
+         */
+        interface IBluetoothA2dp {
             /**
              * Intent used to broadcast the change in connection state of the A2DP
              * profile.

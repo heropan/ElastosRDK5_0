@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Droid {
@@ -13,8 +12,12 @@ module
      * see {@link Spannable} for mutable markup and {@link Editable} for
      * mutable text.
      */
+    /**
+     * @Involve
+     * interface Elastos.Core.ICharSequence
+     */
     [deprecated]
-    interface ISpanned extends Elastos.Core.ICharSequence {
+    interface ISpanned {
         /**
          * Bitmask of bits that are relevent for controlling point/mark behavior
          * of spans.

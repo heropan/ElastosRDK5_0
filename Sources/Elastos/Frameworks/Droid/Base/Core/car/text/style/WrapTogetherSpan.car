@@ -1,14 +1,17 @@
 
 module
 {
-    interface Elastos.Droid.Text.Style.IParagraphStyle;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IWrapTogetherSpan extends IParagraphStyle {}
+    /**
+     * @Involve
+     * interface IParagraphStyle
+     */
+    interface IWrapTogetherSpan {}
 
     }//namespace Style
     }//namespace Text

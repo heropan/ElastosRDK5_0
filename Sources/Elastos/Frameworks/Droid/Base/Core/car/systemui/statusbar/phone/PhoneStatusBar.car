@@ -1,10 +1,7 @@
 module
 {
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.StatusBar.IStatusBarIcon;
-    interface Elastos.Droid.StatusBar.IStatusBarNotification;
     interface Elastos.Droid.Animation.IAnimator;
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.View.IView;
@@ -17,8 +14,12 @@ module
     namespace StatusBar {
     namespace Phone {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar
+     */
     [local]
-    interface IPhoneStatusBar extends Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar {
+    interface IPhoneStatusBar {
 
         const String ACTION_STATUSBAR_START = "com.android.internal.policy.statusbar.START";
 

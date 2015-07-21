@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Text.IEditable;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
 
@@ -12,8 +11,12 @@ module
     /**
      * This is the class for text whose content and markup can both be changed.
      */
+    /**
+     * @Involve
+     * interface IEditable
+     */
     [deprecated]
-    interface ISpannableStringBuilder extends IEditable {
+    interface ISpannableStringBuilder {
 
         /**
          * Return a String containing a copy of the chars in this buffer, limited to the

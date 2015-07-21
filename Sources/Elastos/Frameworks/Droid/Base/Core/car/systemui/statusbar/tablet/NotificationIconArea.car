@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IMotionEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -8,11 +7,19 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface INotificationIconArea extends Elastos.Droid.Widget.IRelativeLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface INotificationIconArea {
     }
 
 
-    interface INotificationIconAreaIconLayout extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface INotificationIconAreaIconLayout {
     }
 
     } // namespace Tablet

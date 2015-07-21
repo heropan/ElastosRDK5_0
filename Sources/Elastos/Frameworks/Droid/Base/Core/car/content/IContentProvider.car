@@ -1,14 +1,10 @@
 
 module
 {
-    using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.IO.IPrintWriter;
 
     interface Elastos.Droid.Content.IContentProviderResult;
     interface Elastos.Droid.Content.IContentValues;
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IAssetFileDescriptor;
-    interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Os.IBundle;

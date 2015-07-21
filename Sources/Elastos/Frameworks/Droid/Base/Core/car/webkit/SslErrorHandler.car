@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {
@@ -12,7 +11,11 @@ module
      * This class is passed as a parameter to BrowserCallback.displaySslErrorDialog
      * and is meant to receive the user's response.
      */
-    interface ISslErrorHandler extends Elastos.Droid.Os.IHandler {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Os.IHandler
+     */
+    interface ISslErrorHandler {
         /**
          * Proceed with the SSL certificate.
          */

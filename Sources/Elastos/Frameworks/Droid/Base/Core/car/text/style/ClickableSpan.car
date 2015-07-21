@@ -2,8 +2,6 @@
 module
 {
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.Text.Style.ICharacterStyle;
-    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
     interface Elastos.Droid.Text.Style.IUpdateAppearance;
 
     namespace Elastos {
@@ -17,8 +15,12 @@ module
      * text can be selected.  If clicked, the {@link #onClick} method will
      * be called.
      */
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
     [local]
-    interface IClickableSpan extends ICharacterStyle /*implements IUpdateAppearance*/ {
+    interface IClickableSpan /*implements IUpdateAppearance*/ {
         /**
          * Performs the click action associated with this span.
          */
@@ -26,7 +28,11 @@ module
             [in] IView* widget);
     }
 
-    interface IClickableSpanHelper extends ICharacterStyleHelper {}
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface IClickableSpanHelper {}
 
     }//namespace Style
     }//namespace Text

@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Telephony {
 
-    interface IGsmCellLocation extends Elastos.Droid.Telephony.ICellLocation {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Telephony.ICellLocation
+     */
+    interface IGsmCellLocation {
 
         GetLac(
             [out] Int32* lac);

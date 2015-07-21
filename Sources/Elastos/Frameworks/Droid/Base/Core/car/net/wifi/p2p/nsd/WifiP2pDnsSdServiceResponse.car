@@ -16,7 +16,11 @@ module
      *
      * @hide
      */
-    interface IWifiP2pDnsSdServiceResponse extends IWifiP2pServiceResponse {
+    /**
+     * @Involve
+     * interface IWifiP2pServiceResponse
+     */
+    interface IWifiP2pDnsSdServiceResponse {
         /**
          * Returns query DNS name.
          * @return DNS name.

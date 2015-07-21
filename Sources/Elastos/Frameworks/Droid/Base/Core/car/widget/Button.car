@@ -78,7 +78,11 @@ module
      * {@link android.R.styleable#View View Attributes}
      * </p>
      */
-    interface IButton extends ITextView {}
+    /**
+     * @Involve
+     * interface ITextView
+     */
+    interface IButton {}
 
     } // namespace Widget
     } // namespace Droid

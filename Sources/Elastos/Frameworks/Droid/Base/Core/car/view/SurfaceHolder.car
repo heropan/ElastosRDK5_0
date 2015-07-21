@@ -64,7 +64,11 @@ module
         /**
          * Additional callbacks that can be received for {@link Callback}.
          */
-        interface ISurfaceHolderCallback2 extends ISurfaceHolderCallback {
+        /**
+         * @Involve
+         * interface ISurfaceHolderCallback
+         */
+        interface ISurfaceHolderCallback2 {
             /**
              * Called when the application needs to redraw the content of its
              * surface, after it is resized or for some other reason.  By not

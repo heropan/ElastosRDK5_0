@@ -14,7 +14,11 @@ module
      * This class is not thread-safe.
      * </p>
      */
-    interface ISQLiteQuery extends ISQLiteProgram {
+    /**
+     * @Involve
+     * interface ISQLiteProgram
+     */
+    interface ISQLiteQuery {
         /**
          * Reads rows into a buffer.
          *

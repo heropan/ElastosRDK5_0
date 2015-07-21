@@ -5,7 +5,11 @@ module
     namespace Droid {
     namespace InputMethodService {
 
-    interface IExtractEditLayout extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IExtractEditLayout {
         /**
          * @return true if an action mode is currently active.
          */

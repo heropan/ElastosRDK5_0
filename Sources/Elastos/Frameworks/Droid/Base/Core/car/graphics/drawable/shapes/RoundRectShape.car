@@ -14,7 +14,11 @@ module
      * but more graphical control is available if you instead pass
      * the RoundRectShape to a {@link android.graphics.drawable.ShapeDrawable}.
      */
-    interface IRoundRectShape extends IRectShape {
+    /**
+     * @Involve
+     * interface IRectShape
+     */
+    interface IRoundRectShape {
     }
 
     } // namespace Shapes

@@ -19,7 +19,11 @@ module
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
      */
 
-    interface IPermissionInfo extends Elastos.Droid.Content.Pm.IPackageItemInfo {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     */
+    interface IPermissionInfo {
         /**
          * A normal application value for #protectionLevel corresponding
          * to the <code>normal</code> value of

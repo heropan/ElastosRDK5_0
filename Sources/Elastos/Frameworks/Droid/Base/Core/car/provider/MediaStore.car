@@ -1,7 +1,6 @@
 module {
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
-    interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Graphics.IBitmap;
@@ -323,7 +322,11 @@ module {
             [out] String* ver);
     }
 
-    interface IMediaStoreMediaColumns extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreMediaColumns {
         /**
          * The data stream for the file
          * <P>Type: DATA STREAM</P>
@@ -449,7 +452,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IMediaStoreInternalThumbnails extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreInternalThumbnails {
         const Int32 MINI_KIND = 1;
         const Int32 FULL_SCREEN_KIND = 2;
         const Int32 MICRO_KIND = 3;
@@ -497,7 +504,11 @@ module {
             [out] IBitmap** bitmap);
     }
 
-    interface IMediaStoreFilesFileColumns extends IMediaStoreMediaColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreMediaColumns
+     */
+    interface IMediaStoreFilesFileColumns {
         /**
          * The MTP storage ID of the file
          * <P>Type: INTEGER</P>
@@ -564,7 +575,11 @@ module {
         const Int32 MEDIA_TYPE_PLAYLIST = 4;
     }
 
-    interface IMediaStoreImagesImageColumns extends IMediaStoreMediaColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreMediaColumns
+     */
+    interface IMediaStoreImagesImageColumns {
         /**
          * The description of the image
          * <P>Type: TEXT</P>
@@ -630,8 +645,12 @@ module {
         const String BUCKET_DISPLAY_NAME = "bucket_display_name";
     }
 
+    /**
+     * @Involve
+     * interface IMediaStoreImagesImageColumns
+     */
     [deprecated]
-    interface IMediaStoreImagesMedia extends IMediaStoreImagesImageColumns {
+    interface IMediaStoreImagesMedia {
 
         /**
          * The MIME type of of this directory of
@@ -740,8 +759,12 @@ module {
             [out] IUri** uri);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
     [deprecated]
-    interface IMediaStoreImagesThumbnails extends IBaseColumns {
+    interface IMediaStoreImagesThumbnails {
 
         /**
          * The default sort order for this table
@@ -917,7 +940,11 @@ module {
             [out] String* key);
     }
 
-    interface IMediaStoreAudioAudioColumns extends IMediaStoreMediaColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreMediaColumns
+     */
+    interface IMediaStoreAudioAudioColumns {
 
         /**
          * A non human readable key calculated from the TITLE, used for
@@ -1052,7 +1079,11 @@ module {
         const String GENRE = "genre";
     }
 
-    interface IMediaStoreAudioMedia extends IMediaStoreAudioAudioColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreAudioAudioColumns
+     */
+    interface IMediaStoreAudioMedia {
 
         /**
          * The MIME type for this table.
@@ -1121,7 +1152,11 @@ module {
         const String NAME = "name";
     }
 
-    interface IMediaStoreAudioGenres extends IBaseColumns /*, IMediaStoreAudioGenresColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreAudioGenres /*, IMediaStoreAudioGenresColumns*/ {
         /**
          * The name of the genre
          * <P>Type: TEXT</P>
@@ -1181,7 +1216,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IMediaStoreAudioGenresMembers extends IMediaStoreAudioAudioColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreAudioAudioColumns
+     */
+    interface IMediaStoreAudioGenresMembers {
         /**
          * A subdirectory of each genre containing all member audio files.
          */
@@ -1239,7 +1278,11 @@ module {
         const String DATE_MODIFIED = "date_modified";
     }
 
-    interface IMediaStoreAudioPlaylists extends IBaseColumns /*,IMediaStoreAudioPlaylistsColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreAudioPlaylists /*,IMediaStoreAudioPlaylistsColumns*/ {
         /**
          * The name of the playlist
          * <P>Type: TEXT</P>
@@ -1307,7 +1350,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IMediaStoreAudioPlaylistsMembers extends IMediaStoreAudioAudioColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreAudioAudioColumns
+     */
+    interface IMediaStoreAudioPlaylistsMembers {
         /**
          * The ID within the playlist.
          */
@@ -1388,7 +1435,11 @@ module {
         const String NUMBER_OF_TRACKS = "number_of_tracks";
     }
 
-    interface IMediaStoreAudioArtists extends IBaseColumns /*,IMediaStoreAudioArtistColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreAudioArtists /*,IMediaStoreAudioArtistColumns*/ {
         /**
          * The artist who created the audio file, if any
          * <P>Type: TEXT</P>
@@ -1517,14 +1568,22 @@ module {
         const String ALBUM_ART = "album_art";
     }
 
-    interface IMediaStoreAudioArtistsAlbums extends IMediaStoreAudioAlbumColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreAudioAlbumColumns
+     */
+    interface IMediaStoreAudioArtistsAlbums {
         GetContentUri(
             [in] String volumeName,
             [in] Int64 artistId,
             [out] IUri** uri);
     }
 
-    interface IMediaStoreAudioAlbums extends IBaseColumns /*, IMediaStoreAudioAlbumColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreAudioAlbums /*, IMediaStoreAudioAlbumColumns*/ {
         /**
          * The id for the album
          * <P>Type: INTEGER</P>
@@ -1642,7 +1701,11 @@ module {
             [out] ICursor** cursor);
     }
 
-    interface IMediaStoreVideoVideoColumns extends IMediaStoreMediaColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreMediaColumns
+     */
+    interface IMediaStoreVideoVideoColumns {
         /**
          * The duration of the video file, in ms
          * <P>Type: INTEGER (long)</P>
@@ -1746,7 +1809,11 @@ module {
         const String BOOKMARK = "bookmark";
     }
 
-    interface IMediaStoreVideoMedia extends IMediaStoreVideoVideoColumns {
+    /**
+     * @Involve
+     * interface IMediaStoreVideoVideoColumns
+     */
+    interface IMediaStoreVideoMedia {
         /**
          * The MIME type for this table.
          */
@@ -1782,7 +1849,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IMediaStoreVideoThumbnails extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface IMediaStoreVideoThumbnails {
 
         /**
          * The default sort order for this table

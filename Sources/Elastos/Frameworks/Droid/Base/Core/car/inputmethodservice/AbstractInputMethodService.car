@@ -13,7 +13,11 @@ module
      * interface.  This takes care of basic maintenance of the input method,
      * but most behavior must be implemented in a derived class.
      */
-    interface IAbstractInputMethodImpl extends Elastos.Droid.View.InputMethod.IInputMethod {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.InputMethod.IInputMethod
+     */
+    interface IAbstractInputMethodImpl {
     }
 
    /**
@@ -21,7 +25,11 @@ module
      * interface.  This takes care of basic maintenance of the session,
      * but most behavior must be implemented in a derived class.
      */
-    interface IAbstractInputMethodSessionImpl extends Elastos.Droid.View.InputMethod.IInputMethodSession {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.InputMethod.IInputMethodSession
+     */
+    interface IAbstractInputMethodSessionImpl {
         /**
          * Check whether this session has been enabled by the system.  If not
          * enabled, you should not execute any calls on to it.
@@ -65,7 +73,11 @@ module
      * of the InputMethod interface itself.  Derived classes must implement that
      * interface.
      */
-    interface IAbstractInputMethodService extends Elastos.Droid.App.IService {
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
+    interface IAbstractInputMethodService {
         /**
          * Return the global {@link KeyEvent.DispatcherState KeyEvent.DispatcherState}
          * for used for processing events from the target application.

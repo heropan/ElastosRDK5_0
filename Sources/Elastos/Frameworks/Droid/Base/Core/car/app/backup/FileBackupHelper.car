@@ -22,7 +22,11 @@ module
      * <p class="note"><strong>Note:</strong> This should be
      * used only with small configuration files, not large binary files.
      */
-    interface IFileBackupHelper extends Elastos.Droid.App.Backup.IFileBackupHelperBase {
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.Backup.IFileBackupHelperBase
+     */
+    interface IFileBackupHelper {
 
         /**
          * Based on <code>oldState</code>, determine which of the files from the

@@ -3,7 +3,6 @@ module {
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.IEntityIterator;
     interface Elastos.Droid.Content.IContentProviderClient;
-    interface Elastos.Droid.Provider.IBaseColumns;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.App.IAlarmManager;
@@ -189,7 +188,11 @@ module {
      * sync adapter.
      *
      */
-    interface ICalendarContractSyncColumns extends ICalendarContractCalendarSyncColumns {
+    /**
+     * @Involve
+     * interface ICalendarContractCalendarSyncColumns
+     */
+    interface ICalendarContractSyncColumns {
         /**
          * The account that was used to sync the entry to the device. If the
          * account_type is not {@link #ACCOUNT_TYPE_LOCAL} then the name and
@@ -1401,7 +1404,11 @@ module {
      * time zone for the instances. These settings are stored using a key/value
      * scheme. A {@link #KEY} must be specified when updating these values.
      */
-    interface ICalendarContractCalendarCache extends ICalendarContractCalendarCacheColumns {
+    /**
+     * @Involve
+     * interface ICalendarContractCalendarCacheColumns
+     */
+    interface ICalendarContractCalendarCache {
         /**
          * They key for updating the use of auto/home time zones in Calendar.
          * Valid values are {@link #TIMEZONE_TYPE_AUTO} or
@@ -1509,8 +1516,12 @@ module {
     /**
      * Fields and helpers for querying for a list of days that contain events.
      */
+    /**
+     * @Involve
+     * interface ICalendarContractEventDaysColumns
+     */
     [deprecated]
-    interface ICalendarContractEventDays extends ICalendarContractEventDaysColumns {
+    interface ICalendarContractEventDays {
         GetCONTENTURI(
             [out] IUri** uri);
 
@@ -1817,7 +1828,11 @@ module {
             [out] Boolean* isExit);
     }
 
-    interface ICalendarContractColorsColumns extends ISyncStateContractColumns {
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    interface ICalendarContractColorsColumns {
         /**
          * The type of color, which describes how it should be used. Valid types
          * are {@link #TYPE_CALENDAR} and {@link #TYPE_EVENT}. Column name.
@@ -1867,7 +1882,11 @@ module {
      * addition, a row can only be deleted once all references to that color
      * have been removed from the {@link Calendars} or {@link Events} tables.
      */
-    interface ICalendarContractColors extends ICalendarContractColorsColumns {
+    /**
+     * @Involve
+     * interface ICalendarContractColorsColumns
+     */
+    interface ICalendarContractColors {
         /**
          * @hide
          */
@@ -1924,7 +1943,11 @@ module {
      *
      * @see SyncStateContract
      */
-    interface ICalendarContractSyncState extends ISyncStateContractColumns {
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    interface ICalendarContractSyncState {
         /**
          * The content:// style URI for this table
          */

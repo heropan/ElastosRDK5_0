@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.Menu.IMenuView;
     interface Elastos.Droid.View.Menu.ISubMenuBuilder;

@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IDateView extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface IDateView {
 
     }
 

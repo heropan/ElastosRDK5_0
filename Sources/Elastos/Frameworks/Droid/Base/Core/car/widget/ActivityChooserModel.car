@@ -73,7 +73,11 @@ module
             [out] Boolean* res);
     }
 
-    interface IActivityChooserModel extends Elastos.Droid.Database.IDataSetObservable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Database.IDataSetObservable
+     */
+    interface IActivityChooserModel {
         /**
          * Sets an intent for which to choose a activity.
          * <p>
@@ -276,7 +280,11 @@ module
      * Represents an activity.
      */
 
-    interface IActivityResolveInfo extends Elastos.Core.IComparable {
+    /**
+     * @Involve
+     * interface Elastos.Core.IComparable
+     */
+    interface IActivityResolveInfo {
         GetHashCode(
             [out] Int32* code);
 

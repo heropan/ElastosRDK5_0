@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -10,8 +9,12 @@ module
     /**
      * PCM input stream from the microphone, 16 bits per sample.
      */
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
     [deprecated]
-    interface IMicrophoneInputStream extends Elastos.IO.IInputStream {
+    interface IMicrophoneInputStream {
         //@Override
         /*
         Read(

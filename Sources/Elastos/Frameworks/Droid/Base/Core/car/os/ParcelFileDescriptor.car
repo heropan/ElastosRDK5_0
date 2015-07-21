@@ -2,8 +2,6 @@ module
 {
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.IO.IFileInputStream;
-    using interface Elastos.IO.IFileOutputStream;
 
     namespace Elastos {
     namespace Droid {
@@ -284,7 +282,6 @@ module
         ParseMode(
             [in] String name,
             [out] Int32* result);
-
     }
 
     /**
@@ -292,7 +289,11 @@ module
      * take care of calling {@link ParcelFileDescriptor#close
      * ParcelFileDescriptor.close()} for you when the stream is closed.
      */
-    interface IParcelFileDescriptorAutoCloseInputStream extends Elastos.IO.IFileInputStream {
+    /**
+     * @Involve
+     * interface Elastos.IO.IFileInputStream
+     */
+    interface IParcelFileDescriptorAutoCloseInputStream {
     }
 
     /**
@@ -300,7 +301,11 @@ module
      * take care of calling {@link ParcelFileDescriptor#close
      * ParcelFileDescriptor.close()} for you when the stream is closed.
      */
-    interface IParcelFileDescriptorAutoCloseOutputStream extends Elastos.IO.IFileOutputStream{
+    /**
+     * @Involve
+     * interface Elastos.IO.IFileOutputStream
+     */
+    interface IParcelFileDescriptorAutoCloseOutputStream{
     }
 
     } // namespace Os

@@ -5,7 +5,11 @@ module
     namespace Droid{
     namespace Widget{
 
-    interface IViewFlipper extends Elastos.Droid.Widget.IViewAnimator
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IViewAnimator
+     */
+    interface IViewFlipper
     {
         /**
          * How long to wait before flipping to the next view

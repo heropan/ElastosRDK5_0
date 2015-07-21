@@ -11,9 +11,7 @@ module
     merge("net/nsd/INsdManager.car");
     merge("net/nsd/DnsSdTxtRecord.car");
 
-    interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Net.Ethernet.IIEthernetManager;
     interface Elastos.Droid.Net.INetworkManagementEventObserver;
 
     namespace Elastos {

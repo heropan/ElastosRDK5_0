@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Widget.IImageView;
-    interface Elastos.Droid.Widget.IBaseAdapter;
 
     namespace Elastos {
     namespace Droid {
@@ -67,8 +66,12 @@ module
      * </ul>
      * If no appropriate binding can be found, an {@link IllegalStateException} is thrown.
      */
+    /**
+     * @Involve
+     * interface IBaseAdapter
+     */
     [local]
-    interface ISimpleAdapter extends IBaseAdapter {
+    interface ISimpleAdapter {
         /**
          * <p>Sets the layout resource to create the drop down views.</p>
          *

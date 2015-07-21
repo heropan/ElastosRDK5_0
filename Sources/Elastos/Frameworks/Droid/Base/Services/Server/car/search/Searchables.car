@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Droid.Content.IComponentName;
     using interface Elastos.Droid.App.ISearchableInfo;
-    using interface Elastos.Droid.Content.Pm.IResolveInfo;
 
     namespace Elastos {
     namespace Droid {

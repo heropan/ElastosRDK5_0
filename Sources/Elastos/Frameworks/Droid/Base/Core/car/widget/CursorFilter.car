@@ -35,7 +35,11 @@ module
      * and convert the results into String that can be used by auto-completion
      * widgets.</p>
      */
-    interface ICursorFilter extends IFilter
+    /**
+     * @Involve
+     * interface IFilter
+     */
+    interface ICursorFilter
     {
     }
 

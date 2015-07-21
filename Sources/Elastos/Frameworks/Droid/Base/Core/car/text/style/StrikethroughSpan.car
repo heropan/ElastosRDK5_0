@@ -1,19 +1,23 @@
 module
 {
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.ICharacterStyle;
-    interface Elastos.Droid.Text.Style.ICharacterStyleHelper;
-    interface Elastos.Droid.Text.Style.IUpdateAppearance;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IStrikethroughSpan extends ICharacterStyle /*implements IUpdateAppearance, IParcelableSpan*/ {}
+    /**
+     * @Involve
+     * interface ICharacterStyle
+     */
+    interface IStrikethroughSpan /*implements IUpdateAppearance, IParcelableSpan*/ {}
 
-    interface IStrikethroughSpanHelper extends ICharacterStyleHelper {}
+    /**
+     * @Involve
+     * interface ICharacterStyleHelper
+     */
+    interface IStrikethroughSpanHelper {}
 
     }//namespace Style
     }//namespace Text

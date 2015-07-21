@@ -12,9 +12,7 @@ module
 
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.App.IActivityThread;
-    interface Elastos.Droid.App.IApplicationThread;
     interface Elastos.Droid.App.IInstrumentation;
     interface Elastos.Droid.App.IApplication;
     interface Elastos.Droid.App.ILoaderManager;
@@ -639,8 +637,12 @@ module
      *
      * @implements extends Elastos.Droid.View.IContextThemeWrapper
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IContextThemeWrapper
+     */
     [deprecated]
-    interface IActivity extends Elastos.Droid.View.IContextThemeWrapper {
+    interface IActivity {
         /** Standard activity result: operation canceled. */
         const Int32 RESULT_CANCELED     = 0;
 

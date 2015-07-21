@@ -6,7 +6,11 @@ module
     namespace View {
     namespace Animation {
 
-        interface IGridLayoutAnimationParameters extends IAnimationParameters
+        /**
+         * @Involve
+         * interface IAnimationParameters
+         */
+        interface IGridLayoutAnimationParameters
         {
             GetColumn(
                 [out] Int32* column);
@@ -33,7 +37,11 @@ module
                 [in] Int32 rowsCount);
         }
 
-        interface IGridLayoutAnimationController extends ILayoutAnimationController {
+        /**
+         * @Involve
+         * interface ILayoutAnimationController
+         */
+        interface IGridLayoutAnimationController {
             /**
              * Animates the children starting from the left of the grid to the right.
              */

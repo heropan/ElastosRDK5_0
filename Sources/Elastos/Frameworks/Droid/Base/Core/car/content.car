@@ -108,14 +108,11 @@ module
     merge("content/res/XmlResourceParser.car");
 
     using interface Elastos.Utility.IObservable;
-    using interface Elastos.Security.Spec.IAlgorithmParameterSpec;
-    using interface Elastos.Crypto.ISecretKey;
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IComparable;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IFlushable;
     using interface Elastos.Crypto.IMac;
-    using interface Elastos.Security.IPublicKey;
 
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Content.IIntent;

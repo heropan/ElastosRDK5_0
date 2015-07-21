@@ -15,7 +15,11 @@ module
             [in] Boolean enabled);
     }
 
-    interface IInputMethodsPanel extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IInputMethodsPanel {
 
         SetHardKeyboardEnabledChangeListener(
             [in] IOnHardKeyboardEnabledChangeListener* listener);

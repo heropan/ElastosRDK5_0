@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface IMediaImageItem extends IMediaItem {
+    /**
+     * @Involve
+     * interface IMediaItem
+     */
+    interface IMediaImageItem {
         GetScaledWidth(
             [out] Int32* result);
 

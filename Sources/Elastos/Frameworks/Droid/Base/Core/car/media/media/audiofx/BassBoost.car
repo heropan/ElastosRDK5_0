@@ -36,7 +36,11 @@ module
             [in] Int16 result);
     }
 
-    interface IBassBoost extends IAudioEffect {
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IBassBoost {
         /**
          * Is strength parameter supported by bass boost engine. Parameter ID for getParameter().
          */

@@ -15,7 +15,11 @@ module
      *
      * @hide
      */
-    interface IWifiP2pUpnpServiceResponse extends IWifiP2pServiceResponse {
+    /**
+     * @Involve
+     * interface IWifiP2pServiceResponse
+     */
+    interface IWifiP2pUpnpServiceResponse {
         /**
          * Return UPnP version number.
          *

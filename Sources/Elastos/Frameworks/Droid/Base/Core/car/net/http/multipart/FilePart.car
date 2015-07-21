@@ -22,7 +22,11 @@ module
      * @since 2.0 
      *
      */
-    interface IFilePart extends IPartBase {
+    /**
+     * @Involve
+     * interface IPartBase
+     */
+    interface IFilePart {
         /** Default content encoding of file attachments. */
         const String DEFAULT_CONTENT_TYPE = "application/octet-stream";
 
@@ -33,7 +37,11 @@ module
         const String DEFAULT_TRANSFER_ENCODING = "binary";
     }
 
-    interface IFilePartHelper extends IPartBaseHelper {
+    /**
+     * @Involve
+     * interface IPartBaseHelper
+     */
+    interface IFilePartHelper {
     }
 
     } // namespace Multipart

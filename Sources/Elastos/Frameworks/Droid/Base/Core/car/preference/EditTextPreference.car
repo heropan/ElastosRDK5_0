@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Preference {
 
-        interface IEditTextPreference extends IDialogPreference {
+        /**
+         * @Involve
+         * interface IDialogPreference
+         */
+        interface IEditTextPreference {
             /**
              * Saves the text to the {@link SharedPreferences}.
              *
@@ -42,7 +46,11 @@ module
                 [out] IEditText** editText);
         }
 
-        interface IEditTextPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IEditTextPreferenceSavedState {
             GetText(
                 [out] String* text);
 

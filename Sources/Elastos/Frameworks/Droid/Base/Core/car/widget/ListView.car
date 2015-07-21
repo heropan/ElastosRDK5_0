@@ -3,8 +3,6 @@ module
 {
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Graphics.IRect;
 
 
     namespace Elastos {
@@ -33,11 +31,19 @@ module
             [out] Boolean* selectable);
     }
 
-    interface IListViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IListViewSavedState {
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAbsListView
+     */
     [local]
-    interface IListView extends Elastos.Droid.Widget.IAbsListView {
+    interface IListView {
         /**
          * @return The maximum amount a list view will scroll in response to
          *   an arrow event.

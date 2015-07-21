@@ -230,8 +230,12 @@ module
             [out] Int32* hash);
     }
 
+    /**
+     * @Involve
+     * interface IInputEvent
+     */
     [deprecated]
-    interface IMotionEvent extends IInputEvent {
+    interface IMotionEvent {
         /**
          * An invalid pointer id.
          *

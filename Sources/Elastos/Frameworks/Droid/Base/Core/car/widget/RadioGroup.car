@@ -1,8 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Widget.ILinearLayoutLayoutParams;
-    interface Elastos.Droid.Widget.ILinearLayout;
 
     namespace Elastos {
     namespace Droid {
@@ -16,11 +14,19 @@ module
             [in] Int32 checkedId);
     }
 
-    interface IRadioGroupLayoutParams extends Elastos.Droid.Widget.ILinearLayoutLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayoutLayoutParams
+     */
+    interface IRadioGroupLayoutParams {
 
     }
 
-    interface IRadioGroup extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IRadioGroup {
         /**
          * <p>Sets the selection to the radio button whose identifier is passed in
          * parameter. Using -1 as the selection identifier clears the selection;

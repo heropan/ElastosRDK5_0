@@ -6,7 +6,11 @@ module
     namespace Droid{
     namespace Widget{
 
-    interface IDigitalClock extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface IDigitalClock {
 
 
     }

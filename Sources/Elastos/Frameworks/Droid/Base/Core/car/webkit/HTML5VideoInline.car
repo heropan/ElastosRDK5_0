@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Graphics.ISurfaceTexture;
-    interface Elastos.Droid.Webkit.IHTML5VideoView;
 
     namespace Elastos {
     namespace Droid {
@@ -24,7 +23,11 @@ module
     /**
      * @hide This is only used by the browser
      */
-    interface IHTML5VideoInline extends IHTML5VideoView {
+    /**
+     * @Involve
+     * interface IHTML5VideoView
+     */
+    interface IHTML5VideoInline {
 
     }
 

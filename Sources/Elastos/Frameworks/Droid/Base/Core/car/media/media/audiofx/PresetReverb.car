@@ -41,7 +41,11 @@ module
             [in] Int16 result);
     }
 
-    interface IPresetReverb extends IAudioEffect {
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IPresetReverb {
 
         /**
          * Preset. Parameter ID for

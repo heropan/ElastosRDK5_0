@@ -54,8 +54,12 @@ module {
             [out] IPositionMetadata** positionMetadata);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IBaseAdapter
+     */
     [local]
-    interface IExpandableListConnector extends Elastos.Droid.Widget.IBaseAdapter {
+    interface IExpandableListConnector {
         /**
          * Point to the {@link ExpandableListAdapter} that will give us data/Views
          *

@@ -49,7 +49,11 @@ module
             [out] Int32* offset);
     }
 
-    interface ISpinner extends IAbsSpinner
+    /**
+     * @Involve
+     * interface IAbsSpinner
+     */
+    interface ISpinner
     {
         /**
          * Set the background drawable for the spinner's popup window of choices.

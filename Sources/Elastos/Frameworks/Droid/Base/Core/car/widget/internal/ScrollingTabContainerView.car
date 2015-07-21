@@ -12,8 +12,12 @@ module
      * This widget implements the dynamic action bar tab behavior that can change
      * across different configurations or circumstances.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IHorizontalScrollView
+     */
     [local]
-    interface IScrollingTabContainerView extends Elastos.Droid.Widget.IHorizontalScrollView
+    interface IScrollingTabContainerView
     {
         SetAllowCollapse(
             [in] Boolean allowCollapse);

@@ -33,8 +33,12 @@ module
             [in] ISurfaceTexture* surfaceTexture);
     }
 
+    /**
+     * @Involve
+     * interface IView
+     */
     [local]
-    interface ITextureView extends IView {
+    interface ITextureView {
         /**
          * Indicates whether the content of this TextureView is opaque. The
          * content is assumed to be opaque by default.

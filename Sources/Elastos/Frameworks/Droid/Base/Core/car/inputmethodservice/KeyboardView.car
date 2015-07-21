@@ -2,7 +2,6 @@
 module {
     interface Elastos.Droid.View.IView;
     interface Elastos.Core.ICharSequence;
-    interface Elastos.Droid.InputMethodService.IKeyboardKey;
 
     namespace Elastos {
     namespace Droid {
@@ -73,7 +72,11 @@ module {
         SwipeUp();
     }
 
-    interface IKeyboardView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IKeyboardView {
         SetOnKeyboardActionListener(
             [in] IOnKeyboardActionListener* listener);
 

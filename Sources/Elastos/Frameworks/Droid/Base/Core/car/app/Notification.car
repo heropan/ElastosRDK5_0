@@ -923,7 +923,11 @@ module
      *
      * @see Notification#bigContentView
      */
-    interface INotificationBigPictureStyle extends INotificationStyle {
+    /**
+     * @Involve
+     * interface INotificationStyle
+     */
+    interface INotificationBigPictureStyle {
         /**
          * Overrides ContentTitle in the big form of the template.
          * This defaults to the value passed to setContentTitle().
@@ -969,7 +973,11 @@ module
      *
      * @implements Elastos.Droid.App.INotificationStyle
      */
-    interface INotificationBigTextStyle extends INotificationStyle {
+    /**
+     * @Involve
+     * interface INotificationStyle
+     */
+    interface INotificationBigTextStyle {
         /**
          * Overrides ContentTitle in the big form of the template.
          * This defaults to the value passed to setContentTitle().
@@ -1011,7 +1019,11 @@ module
      *
      * @see Notification#bigContentView
      */
-    interface INotificationInboxStyle extends INotificationStyle {
+    /**
+     * @Involve
+     * interface INotificationStyle
+     */
+    interface INotificationInboxStyle {
         /**
          * Overrides ContentTitle in the big form of the template.
          * This defaults to the value passed to setContentTitle().

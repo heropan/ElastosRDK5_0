@@ -7,7 +7,11 @@ module
     namespace Net {
     namespace Http {
 
-    interface IHttpResponseCache extends Elastos.Net.IResponseCache {
+    /**
+     * @Involve
+     * interface Elastos.Net.IResponseCache
+     */
+    interface IHttpResponseCache {
         /**
          * Returns the number of bytes currently being used to store the values in
          * this cache. This may be greater than the {@link #maxSize} if a background

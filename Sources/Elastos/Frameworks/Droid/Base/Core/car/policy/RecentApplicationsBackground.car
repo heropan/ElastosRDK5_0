@@ -7,8 +7,12 @@ module
     namespace Policy {
     namespace Impl {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
     [local]
-    interface IRecentApplicationsBackground extends Elastos.Droid.Widget.ILinearLayout {
+    interface IRecentApplicationsBackground {
     }
 
     } // Impl

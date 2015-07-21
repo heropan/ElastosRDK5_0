@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Widget.IFrameLayout;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos{
@@ -9,7 +8,11 @@ module
     namespace Widget{
     namespace Internal{
 
-    interface IActionBarViewHomeView extends Elastos.Droid.Widget.IFrameLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IActionBarViewHomeView
     {
         SetUp(
             [in] Boolean isUp);

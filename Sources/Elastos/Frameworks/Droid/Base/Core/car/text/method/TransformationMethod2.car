@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.ITransformationMethod;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +12,11 @@ module
      *
      * @hide
      */
-    interface ITransformationMethod2 extends ITransformationMethod {
+    /**
+     * @Involve
+     * interface ITransformationMethod
+     */
+    interface ITransformationMethod2 {
         /**
          * Relax the contract of TransformationMethod to allow length changes,
          * or revert to the length-restricted behavior.

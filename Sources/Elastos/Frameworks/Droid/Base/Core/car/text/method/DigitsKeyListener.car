@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.INumberKeyListener;
-    interface Elastos.Droid.Text.Method.IMetaKeyKeyListenerHelper;
 
     namespace Elastos {
     namespace Droid {
@@ -15,9 +13,17 @@ module
      * with hardware keyboards.  Software input methods have no obligation to trigger
      * the methods in this class.
      */
-    interface IDigitsKeyListener extends INumberKeyListener {}
+    /**
+     * @Involve
+     * interface INumberKeyListener
+     */
+    interface IDigitsKeyListener {}
 
-    interface IDigitsKeyListenerHelper extends IMetaKeyKeyListenerHelper {
+    /**
+     * @Involve
+     * interface IMetaKeyKeyListenerHelper
+     */
+    interface IDigitsKeyListenerHelper {
 
         /**
          * Returns a DigitsKeyListener that accepts the digits 0 through 9.

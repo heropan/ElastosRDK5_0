@@ -2,10 +2,7 @@
 module
 {
 
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Content.Res.IConfiguration;
-    interface Elastos.Droid.View.Menu.ISubMenuBuilder;
-    interface Elastos.Droid.View.IMenuItem;
 
     namespace Elastos {
     namespace Droid {
@@ -21,8 +18,12 @@ module
                 [out] Int32* menuId);
         }
 
+        /**
+         * @Involve
+         * interface IBaseMenuPresenter
+         */
         [local]
-        interface IActionMenuPresenter extends IBaseMenuPresenter {
+        interface IActionMenuPresenter {
             OnConfigurationChanged(
                 [in] IConfiguration* newConfig);
 

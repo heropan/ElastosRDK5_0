@@ -27,7 +27,6 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Text.ITextWatcher;
-    interface Elastos.Droid.Widget.ILinearLayout;
     interface Elastos.Droid.Widget.IFilterListener;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback;

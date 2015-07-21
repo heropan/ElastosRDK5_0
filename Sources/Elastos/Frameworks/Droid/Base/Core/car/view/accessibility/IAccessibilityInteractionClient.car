@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
     interface Elastos.Droid.Os.IMessage;
     interface Elastos.Droid.Os.IBundle;
 
@@ -44,7 +43,11 @@ module
      *
      * @hide
      */
-    interface IAccessibilityInteractionClient extends IAccessibilityInteractionConnectionCallback {
+    /**
+     * @Involve
+     * interface IAccessibilityInteractionConnectionCallback
+     */
+    interface IAccessibilityInteractionClient {
         const Int32 NO_ID = -1;
 
         /**

@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace SystemUI {
 
-    interface ISearchPanelView extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface ISearchPanelView {
         Show(
             [in] Boolean show,
             [in] Boolean animate);

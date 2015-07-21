@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {
@@ -80,7 +79,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-        interface IInsetDrawable extends IDrawable {
+        /**
+         * @Involve
+         * interface IDrawable
+         */
+        interface IInsetDrawable {
         }
 
     } // namespace Drawable

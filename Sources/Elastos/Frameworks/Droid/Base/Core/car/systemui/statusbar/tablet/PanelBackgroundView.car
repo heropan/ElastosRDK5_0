@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface IPanelBackgroundView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IPanelBackgroundView {
     }
 
     } // namespace Tablet

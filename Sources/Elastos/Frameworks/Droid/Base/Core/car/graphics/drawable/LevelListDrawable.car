@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.IDrawableContainer;
 
     namespace Elastos {
     namespace Droid {
@@ -53,7 +52,11 @@ module
          * @sa Drawable
          * @implements Elastos.Droid.Graphics.Drawable.IDrawableContainer
          */
-        interface ILevelListDrawable extends IDrawableContainer {
+        /**
+         * @Involve
+         * interface IDrawableContainer
+         */
+        interface ILevelListDrawable {
             AddLevel(
                 [in] Int32 low,
                 [in] Int32 high,

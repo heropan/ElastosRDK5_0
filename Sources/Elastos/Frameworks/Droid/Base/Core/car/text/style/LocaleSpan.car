@@ -1,10 +1,7 @@
 module
 {
     interface Libcore.ICU.ILocale;
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
-    interface Elastos.Droid.Text.Style.IMetricAffectingSpanHelper;
 
     namespace Elastos {
     namespace Droid {
@@ -14,7 +11,11 @@ module
     /**
      * Changes the {@link Locale} of the text to which the span is attached.
      */
-    interface ILocaleSpan extends IMetricAffectingSpan /*implements IParcelableSpan*/ {
+    /**
+     * @Involve
+     * interface IMetricAffectingSpan
+     */
+    interface ILocaleSpan /*implements IParcelableSpan*/ {
         /**
          * Returns the {@link Locale}.
          *
@@ -24,7 +25,11 @@ module
             [out] ILocale** ret);
     }
 
-    interface ILocaleSpanHelper extends IMetricAffectingSpanHelper {}
+    /**
+     * @Involve
+     * interface IMetricAffectingSpanHelper
+     */
+    interface ILocaleSpanHelper {}
 
     }//namespace Style
     }//namespace Text

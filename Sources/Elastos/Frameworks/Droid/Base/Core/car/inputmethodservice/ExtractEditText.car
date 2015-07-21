@@ -12,7 +12,11 @@ module
      * Specialization of {@link EditText} for showing and interacting with the
      * extracted text in a full-screen input method.
      */
-    interface IExtractEditText extends Elastos.Droid.Widget.IEditText {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IEditText
+     */
+    interface IExtractEditText {
         SetIME(
             [in] IInputMethodService* ime);
 

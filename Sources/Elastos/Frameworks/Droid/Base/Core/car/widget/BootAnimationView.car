@@ -11,7 +11,11 @@ module
      * {@link ListAdapter} interface} and {@link Spinner} (by implementing the
      * specialized {@link SpinnerAdapter} interface.
      */
-    interface IBootAnimationView extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IBootAnimationView {
 
         StartShowBatteryCharge(
             [in] Int32 percent);

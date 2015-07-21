@@ -273,7 +273,11 @@ module
      * @implements Elastos.Droid.Content.IContextWrapper
      *
      */
-    interface IService extends Elastos.Droid.Content.IContextWrapper {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     */
+    interface IService {
         /**
          * Bits returned by {@sa #onStartCommand} describing how to continue
          * the service if it is killed.  May be {@sa #START_STICKY},

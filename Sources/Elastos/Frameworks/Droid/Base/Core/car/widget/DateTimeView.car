@@ -1,13 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.Widget.ITextView;
 
     namespace Elastos{
     namespace Droid{
     namespace Widget{
 
-    interface IDateTimeView extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface IDateTimeView {
         SetTime(
             [in] Int64 time);
 

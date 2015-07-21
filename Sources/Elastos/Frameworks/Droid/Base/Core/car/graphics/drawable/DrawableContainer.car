@@ -77,7 +77,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface IDrawableContainer extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface IDrawableContainer {
         /**
          * Change the global fade duration when a new drawable is entering
          * the scene.

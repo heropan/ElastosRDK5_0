@@ -2,7 +2,6 @@
 module
 {
 
-    using interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {

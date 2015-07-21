@@ -14,8 +14,12 @@ module
      * @hide
      * @implements Elastos.IO.IFilterInputStream
      */
+    /**
+     * @Involve
+     * interface Elastos.IO.IFilterInputStream
+     */
     [deprecated]
-    interface IMacAuthenticatedInputStream extends Elastos.IO.IFilterInputStream {
+    interface IMacAuthenticatedInputStream {
         IsTagEqual(
             [in] ArrayOf<Byte>* tag,
             [out] Boolean* result);

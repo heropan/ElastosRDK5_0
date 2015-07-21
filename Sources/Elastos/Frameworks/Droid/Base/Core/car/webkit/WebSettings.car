@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Webkit.IWebSettings;
 
     namespace Elastos {
     namespace Droid {

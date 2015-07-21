@@ -25,8 +25,12 @@ module
      *
      * @implements Elastos.Droid.Animation.IValueAnimator
      */
+    /**
+     * @Involve
+     * interface IValueAnimator
+     */
      [local]
-    interface IObjectAnimator extends IValueAnimator {
+    interface IObjectAnimator {
         /**
          * Sets the name of the property that will be animated. This name is used to derive
          * a setter function that will be called to set animated values.

@@ -5,7 +5,6 @@ module
 //    using interface Elastos::Utility::IFormatter;
 
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.Res.IResources;
 
     namespace Elastos {
     namespace Droid {

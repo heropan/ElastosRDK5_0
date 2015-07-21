@@ -13,8 +13,12 @@ module
         /**
          * The item view for each item in the {@link IconMenuView}.
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.ITextView
+         */
         [local]
-        interface IIconMenuItemView extends Elastos.Droid.Widget.ITextView {
+        interface IIconMenuItemView {
             SetItemInvoker(
                 [in] IMenuBuilderItemInvoker* itemInvoker);
 

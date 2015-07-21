@@ -7,8 +7,12 @@ module
     namespace SystemUI {
     namespace Recent {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IHorizontalScrollView
+     */
     [deprecated]
-    interface IRecentsHorizontalScrollView extends Elastos.Droid.Widget.IHorizontalScrollView {
+    interface IRecentsHorizontalScrollView {
         DismissChild(
             [in] IView* v);
     }

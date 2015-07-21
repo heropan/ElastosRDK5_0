@@ -8,8 +8,6 @@ module
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IContentProvider;
-    interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IConfigurationInfo;
     interface Elastos.Droid.Content.Pm.IPackageDataObserver;
     interface Elastos.Droid.Internal.Os.IPkgUsageStats;

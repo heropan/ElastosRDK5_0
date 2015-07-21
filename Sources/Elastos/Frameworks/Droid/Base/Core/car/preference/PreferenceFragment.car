@@ -1,7 +1,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.Content.IIntent;
 
     interface Elastos.Droid.Widget.IListView;
@@ -10,8 +9,12 @@ module
     namespace Droid {
     namespace Preference {
 
+        /**
+         * @Involve
+         * interface Elastos.Droid.App.IFragment
+         */
         [deprecated, local]
-        interface IPreferenceFragment extends Elastos.Droid.App.IFragment{
+        interface IPreferenceFragment{
             /**
              * Returns the {@link PreferenceManager} used by this fragment.
              * @return The {@link PreferenceManager}.

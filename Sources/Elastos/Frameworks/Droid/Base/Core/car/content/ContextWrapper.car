@@ -12,7 +12,11 @@ module
      *
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.IContext
      */
-    interface IContextWrapper extends Elastos.Droid.Content.IContext {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContext
+     */
+    interface IContextWrapper {
         /**
          * @return the base context as set by the constructor or setBaseContext
          */

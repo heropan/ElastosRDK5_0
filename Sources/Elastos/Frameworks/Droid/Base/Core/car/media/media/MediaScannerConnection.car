@@ -30,7 +30,11 @@ module
      * when a connection to the MediaScanner service has been established
      * and when the scanning of a file has completed.
      */
-    interface IMediaScannerConnectionClient extends IOnScanCompletedListener {
+    /**
+     * @Involve
+     * interface IOnScanCompletedListener
+     */
+    interface IMediaScannerConnectionClient {
         /**
          * Called to notify the client when a connection to the
          * MediaScanner service has been established.
@@ -38,7 +42,11 @@ module
         OnMediaScannerConnected();
     }
 
-    interface IMediaScannerConnection extends Elastos.Droid.Content.IServiceConnection {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IServiceConnection
+     */
+    interface IMediaScannerConnection {
         /**
          * Initiates a connection to the media scanner service.
          * {@link MediaScannerConnectionClient#onMediaScannerConnected()}

@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Text.Method.ITransformationMethod2;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +11,11 @@ module
      *
      * @hide
      */
-    interface IAllCapsTransformationMethod extends ITransformationMethod2 {}
+    /**
+     * @Involve
+     * interface ITransformationMethod2
+     */
+    interface IAllCapsTransformationMethod {}
 
     }//namespace Method
     }//namespace Text

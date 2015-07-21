@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.View.Menu.IMenuBuilderItemInvoker;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {
@@ -12,8 +11,12 @@ module
         /**
          * @hide
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.Widget.ITextView
+         */
         [local]
-        interface IActionMenuItemView extends Elastos.Droid.Widget.ITextView {
+        interface IActionMenuItemView {
             SetItemInvoker(
                 [in] IMenuBuilderItemInvoker* itemInvoker);
 

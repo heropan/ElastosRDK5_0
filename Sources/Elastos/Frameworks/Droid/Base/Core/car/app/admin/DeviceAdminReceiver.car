@@ -75,8 +75,12 @@ module
      *
      * @implements Elastos.Droid.App.Admin.Elastos.Droid.Content.IBroadcastReceiver
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IBroadcastReceiver
+     */
     [local]
-    interface IDeviceAdminReceiver extends Elastos.Droid.Content.IBroadcastReceiver {
+    interface IDeviceAdminReceiver {
         /**
          * This is the primary action that a device administrator must implement to be
          * allowed to manage a device.  This will be set to the receiver

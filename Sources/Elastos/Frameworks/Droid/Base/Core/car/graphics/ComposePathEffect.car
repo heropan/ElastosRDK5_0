@@ -11,7 +11,11 @@ module
      *
      * @implements Elastos.Droid.Graphics.IPathEffect
      */
-    interface IComposePathEffect extends IPathEffect {
+    /**
+     * @Involve
+     * interface IPathEffect
+     */
+    interface IComposePathEffect {
     }
 
     } // namespace Graphics

@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface IShirtPocket extends Elastos.Droid.Widget.IImageView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IImageView
+     */
+    interface IShirtPocket {
         Holding(
             [out] Boolean* result);
 

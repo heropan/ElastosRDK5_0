@@ -8,7 +8,11 @@ module
     namespace Internal {
     namespace Policy {
 
-    interface IPhoneFallbackEventHandler extends Elastos.Droid.View.IFallbackEventHandler {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IFallbackEventHandler
+     */
+    interface IPhoneFallbackEventHandler {
         OnKeyDown(
             [in] Int32 keyCode,
             [in] IKeyEvent *event,

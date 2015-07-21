@@ -7,7 +7,11 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IClock extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface IClock {
 
     }
 

@@ -11,8 +11,12 @@ module
     namespace Droid {
     namespace Widget {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ICompoundButton
+     */
     [local]
-    interface ISwitch extends Elastos.Droid.Widget.ICompoundButton
+    interface ISwitch
     {
         /**
          * Sets the switch text color, size, style, hint color, and highlight color

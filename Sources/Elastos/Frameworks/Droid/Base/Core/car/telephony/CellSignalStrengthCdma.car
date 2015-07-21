@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Telephony {
 
-    interface ICellSignalStrengthCdma extends ICellSignalStrength {
+    /**
+     * @Involve
+     * interface ICellSignalStrength
+     */
+    interface ICellSignalStrengthCdma {
 
         Initialize(
             [in] Int32 cdmaDbm,

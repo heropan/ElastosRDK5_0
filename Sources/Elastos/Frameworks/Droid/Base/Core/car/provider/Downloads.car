@@ -1,6 +1,4 @@
 module {
-    interface Elastos.Droid.Provider.IBaseColumns;
-    interface Elastos.Droid.App.IDownloadManagerRequest;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
 
@@ -19,8 +17,12 @@ module {
             [in] String notification_class);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
     [local]
-    interface IDownloadsImpl extends IBaseColumns {
+    interface IDownloadsImpl {
         /**
          * The permission to access the download manager
          */

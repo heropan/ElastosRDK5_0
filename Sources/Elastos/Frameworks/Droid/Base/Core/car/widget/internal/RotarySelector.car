@@ -56,7 +56,11 @@ module
      * left to right, or right to left.  Used by incoming call screen, and the lock screen when no
      * security pattern is set.
      */
-    interface IRotarySelector extends Elastos.Droid.View.IView
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IRotarySelector
     {
         const Int32 HORIZONTAL = 0;
         const Int32 VERTICAL = 1;

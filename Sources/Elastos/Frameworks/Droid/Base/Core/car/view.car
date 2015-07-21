@@ -152,14 +152,12 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IInputMethodCallback;
-    interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IWindowManagerPolicyThread;
     interface Elastos.Droid.View.IAccessibilityInteractionController;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfoHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
     interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnection;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityRecord;
     interface Elastos.Droid.View.Accessibility.IAccessibilityRecordHelper;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;

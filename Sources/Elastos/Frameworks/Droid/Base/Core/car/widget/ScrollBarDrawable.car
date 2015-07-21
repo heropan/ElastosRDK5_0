@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IScrollBarDrawable extends Elastos.Droid.Graphics.Drawable.IDrawable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Graphics.Drawable.IDrawable
+     */
+    interface IScrollBarDrawable {
         /**
          * Indicate whether the horizontal scrollbar track should always be drawn regardless of the
          * extent. Defaults to false.

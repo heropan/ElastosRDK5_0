@@ -1,9 +1,5 @@
 module
 {
-    interface Elastos.Droid.App.IService;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.ILooper;
-    interface Elastos.Droid.Os.IMessage;
 
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
@@ -12,8 +8,12 @@ module
     namespace Droid {
     namespace AccessibilityService {
 
+        /**
+         * @Involve
+         * interface Elastos.Droid.App.IService
+         */
         [deprecated]
-        interface IAccessibilityService extends Elastos.Droid.App.IService
+        interface IAccessibilityService
         {
             /**
              * The user has performed a swipe up gesture on the touch screen.
@@ -227,8 +227,12 @@ module
                 [out] Boolean* result);
         }
 
+        /**
+         * @Involve
+         * interface IAccessibilityServiceClient
+         */
         [deprecated]
-        interface IAccessibilityServiceClientWrapper extends IAccessibilityServiceClient
+        interface IAccessibilityServiceClientWrapper
         {
             const Int32 NO_ID = -1;
         }

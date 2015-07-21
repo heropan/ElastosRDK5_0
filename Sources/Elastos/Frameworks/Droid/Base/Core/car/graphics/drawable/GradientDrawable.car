@@ -28,8 +28,12 @@ module
         GradientDrawableOrientation_TL_BR,
     }
 
+    /**
+     * @Involve
+     * interface IDrawable
+     */
     [deprecated]
-    interface IGradientDrawable extends IDrawable {
+    interface IGradientDrawable {
         /**
          * Shape is a rectangle, possibly with rounded corners
          */

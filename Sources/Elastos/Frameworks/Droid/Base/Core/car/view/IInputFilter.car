@@ -96,7 +96,11 @@ module
      *
      * @hide
      */
-    interface IInputFilter extends Elastos.Droid.View.IIInputFilter {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IIInputFilter
+     */
+    interface IInputFilter {
         /**
          * Sends an input event to the dispatcher.
          *

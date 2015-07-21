@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.Webkit.IWebView;
 
     namespace Elastos {
@@ -13,8 +12,12 @@ module
      * <p>
      * The WebView is automically paused or resumed when the Fragment is paused or resumed.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IFragment
+     */
     [local]
-    interface IWebViewFragment extends Elastos.Droid.App.IFragment {
+    interface IWebViewFragment {
 
         /**
          * Gets the WebView.

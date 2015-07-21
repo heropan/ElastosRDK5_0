@@ -16,8 +16,12 @@ module
             [in] Int32 index);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
     [deprecated]
-    interface ICandidateView extends Elastos.Droid.View.IView {
+    interface ICandidateView {
         SetService(
             [in] ISoftKeyboard* listener);
 

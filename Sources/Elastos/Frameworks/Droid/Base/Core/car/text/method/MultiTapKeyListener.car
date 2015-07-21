@@ -1,9 +1,6 @@
 module
 {
-    interface Elastos.Droid.Text.Method.IBaseKeyListener;
-    interface Elastos.Droid.Text.Method.IBaseKeyListenerHelper;
     interface Elastos.Droid.Text.ISpanWatcher;
-    interface Elastos.Droid.Text.ISpannable;
 
     enum Elastos.Droid.Text.Method.Capitalize;
 
@@ -21,9 +18,17 @@ module
      * with hardware keyboards.  Software input methods have no obligation to trigger
      * the methods in this class.
      */
-    interface IMultiTapKeyListener extends IBaseKeyListener /*implements ISpanWatcher*/ {}
+    /**
+     * @Involve
+     * interface IBaseKeyListener
+     */
+    interface IMultiTapKeyListener /*implements ISpanWatcher*/ {}
 
-    interface IMultiTapKeyListenerHelper extends IBaseKeyListenerHelper {
+    /**
+     * @Involve
+     * interface IBaseKeyListenerHelper
+     */
+    interface IMultiTapKeyListenerHelper {
 
         /**
          * Returns a new or existing instance with the specified capitalization

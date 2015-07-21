@@ -8,7 +8,11 @@ module
     namespace Widget {
 
 
-    interface IScrollView extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IScrollView {
         /**
          * @return The maximum amount this scroll view will scroll in response to
          *   an arrow event.

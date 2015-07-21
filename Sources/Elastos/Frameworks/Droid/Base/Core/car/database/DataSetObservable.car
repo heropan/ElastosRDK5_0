@@ -9,7 +9,11 @@ module
      * that provides methods for sending notifications to a list of
      * {@link DataSetObserver} objects.
      */
-    interface IDataSetObservable extends IObservable {
+    /**
+     * @Involve
+     * interface IObservable
+     */
+    interface IDataSetObservable {
         /**
          * Invokes onChanged on each observer. Called when the data set being observed has
          * changed, and which when read contains the new state of the data.

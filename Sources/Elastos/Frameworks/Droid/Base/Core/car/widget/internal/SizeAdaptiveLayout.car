@@ -17,7 +17,11 @@ module
      * @attr ref android.R.styleable#SizeAdaptiveLayout_Layout_layout_minHeight
      * @attr ref android.R.styleable#SizeAdaptiveLayout_Layout_layout_maxHeight
      */
-    interface ISizeAdaptiveLayoutLayoutParams extends Elastos.Droid.View.IViewGroupLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupLayoutParams
+     */
+    interface ISizeAdaptiveLayoutLayoutParams {
         /**
          * Constant value for maxHeight that indicates there is not maximum height.
          */
@@ -52,8 +56,12 @@ module
      * See {@link SizeAdaptiveLayout.LayoutParams} for a full description of the
      * layout parameters used by SizeAdaptiveLayout.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
     [local]
-    interface ISizeAdaptiveLayout extends Elastos.Droid.View.IViewGroup
+    interface ISizeAdaptiveLayout
     {
         /**
          * Visible for testing

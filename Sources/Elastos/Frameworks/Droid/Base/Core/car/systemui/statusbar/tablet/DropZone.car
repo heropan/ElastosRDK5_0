@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface IDropZone extends Elastos.Droid.View.IView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
+    interface IDropZone {
         SetPocket(
             [in] IShirtPocket* p);
     }

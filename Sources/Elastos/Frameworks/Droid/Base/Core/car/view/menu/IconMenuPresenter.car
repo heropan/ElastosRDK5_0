@@ -11,8 +11,12 @@ module
         /**
          * The item view for each item in the {@link IconMenuView}.
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.Menu.IBaseMenuPresenter
+         */
         [local]
-        interface IIconMenuPresenter extends Elastos.Droid.View.Menu.IBaseMenuPresenter {
+        interface IIconMenuPresenter {
 
             GetNumActualItemsShown(
                 [out] Int32* rst);

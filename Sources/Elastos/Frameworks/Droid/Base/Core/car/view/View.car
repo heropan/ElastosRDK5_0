@@ -25,7 +25,6 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeProvider;
-    interface Elastos.Droid.View.IAbsSavedState;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.ITouchDelegate;
     interface Elastos.Droid.View.IDispatcherState;
@@ -378,7 +377,11 @@ module
                 [in] IView* v);
         }
 
-        interface IViewBaseSavedState extends IAbsSavedState {
+        /**
+         * @Involve
+         * interface IAbsSavedState
+         */
+        interface IViewBaseSavedState {
         }
 
         interface IAccessibilityDelegate {

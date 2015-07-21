@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.SystemUI.StatusBar.Tablet.ITabletStatusBar;
 
     namespace Elastos {
     namespace Droid {
@@ -21,7 +20,11 @@ module
             [in] Int32 value);
     }
 
-    interface IToggleSlider extends Elastos.Droid.Widget.IRelativeLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface IToggleSlider {
         SetOnChangedListener(
             [in] IToggleSliderListener* listener);
 

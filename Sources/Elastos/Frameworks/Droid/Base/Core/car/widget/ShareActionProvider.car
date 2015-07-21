@@ -39,7 +39,11 @@ module
             [out] Boolean* selected);
     }
 
-    interface IShareActionProvider extends Elastos.Droid.View.IActionProvider
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IActionProvider
+     */
+    interface IShareActionProvider
     {
         /**
          * Sets a listener to be notified when a share target has been selected.

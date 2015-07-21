@@ -13,7 +13,11 @@ module
     namespace Droid{
     namespace Widget{
 
-    interface IVideoView extends Elastos.Droid.View.ISurfaceView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.ISurfaceView
+     */
+    interface IVideoView {
         ResolveAdjustedSize(
             [in] Int32 desiredSize,
             [in] Int32 measureSpec,

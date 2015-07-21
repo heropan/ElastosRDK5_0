@@ -1,12 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Content.IBroadcastReceiver;
-    interface Elastos.Droid.Content.IServiceConnection;
-    interface Elastos.Droid.Content.IIntentFilter;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Os.IUserHandle;
-    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {
@@ -19,7 +13,11 @@ module
      *
      * @implements Elastos.Droid.Content.Elastos.Droid.Content.IContext
      */
-    interface IReceiverRestrictedContext extends Elastos.Droid.Content.IContextWrapper {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     */
+    interface IReceiverRestrictedContext {
     }
 
     } // namespace Content

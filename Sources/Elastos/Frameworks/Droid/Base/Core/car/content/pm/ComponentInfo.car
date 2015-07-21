@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Content.Pm.IApplicationInfo;
-    interface Elastos.Droid.Content.Pm.IPackageItemInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -22,7 +21,11 @@ module
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
      */
 
-    interface IComponentInfo extends Elastos.Droid.Content.Pm.IPackageItemInfo {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     */
+    interface IComponentInfo {
         /**
          * Return whether this component and its enclosing application are enabled.
          */

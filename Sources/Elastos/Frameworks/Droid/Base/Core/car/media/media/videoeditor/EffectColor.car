@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Videoeditor {
 
-    interface IEffectColor extends IEffect {
+    /**
+     * @Involve
+     * interface IEffect
+     */
+    interface IEffectColor {
         /**
          * Change the video frame color to the RGB color value provided
          */

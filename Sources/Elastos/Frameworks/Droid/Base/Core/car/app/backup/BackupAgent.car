@@ -83,7 +83,11 @@ module
      *
      * @implements Elastos.Droid.App.Backup.Elastos.Droid.Content.IContextWrapper
      */
-    interface IBackupAgent extends Elastos.Droid.Content.IContextWrapper {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     */
+    interface IBackupAgent {
         /** @hide */
         const Int32 TYPE_EOF = 0;
 

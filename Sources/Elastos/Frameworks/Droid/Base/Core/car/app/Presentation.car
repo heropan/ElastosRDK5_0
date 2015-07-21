@@ -11,7 +11,11 @@ module
      *
      *@implements Elastos.Droid.App>IDialog
      */
-    interface IPresentation extends IDialog {
+    /**
+     * @Involve
+     * interface IDialog
+     */
+    interface IPresentation {
         const Int32 MSG_CANCEL = 1;
 
         /**

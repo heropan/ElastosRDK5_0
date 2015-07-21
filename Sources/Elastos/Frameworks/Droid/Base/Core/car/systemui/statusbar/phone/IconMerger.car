@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Phone {
 
-    interface IIconMerger extends Elastos.Droid.Widget.ILinearLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IIconMerger {
 
         SetOverflowIndicator(
             [in] IView* v);

@@ -5,8 +5,12 @@ module
     namespace Droid {
     namespace Media {
 
+    /**
+     * @Involve
+     * interface Elastos.IO.ICloseable
+     */
     [deprecated]
-    interface IDataSource extends Elastos.IO.ICloseable {
+    interface IDataSource {
         /**
          * Reads data from the data source at the requested position
          *

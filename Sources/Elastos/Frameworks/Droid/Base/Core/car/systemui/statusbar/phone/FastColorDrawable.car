@@ -7,7 +7,11 @@ module
     namespace StatusBar {
     namespace Phone {
 
-    interface IFastColorDrawable extends Elastos.Droid.Graphics.Drawable.IDrawable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Graphics.Drawable.IDrawable
+     */
+    interface IFastColorDrawable {
     }
 
     } // namespace Phone

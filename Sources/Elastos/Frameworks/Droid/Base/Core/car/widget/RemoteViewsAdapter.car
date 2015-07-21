@@ -1,10 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos {
     namespace Droid {
@@ -37,8 +34,12 @@ module
      * to be later inflated as child views.
      */
     /** @hide */
+    /**
+     * @Involve
+     * interface IBaseAdapter
+     */
     [local]
-    interface IRemoteViewsAdapter extends IBaseAdapter
+    interface IRemoteViewsAdapter
     {
         IsDataReady(
             [out] Boolean* res);

@@ -4,7 +4,11 @@ module
     namespace Droid {
     namespace Preference {
 
-        interface IVolumePreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IVolumePreferenceSavedState {
         }
 
     } // Preference

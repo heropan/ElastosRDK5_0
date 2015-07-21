@@ -5,8 +5,12 @@ module
     namespace Droid {
     namespace Media {
 
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
     [deprecated]
-    interface IAmrInputStream extends Elastos.IO.IInputStream {
+    interface IAmrInputStream {
     }
 
     } // namespace media

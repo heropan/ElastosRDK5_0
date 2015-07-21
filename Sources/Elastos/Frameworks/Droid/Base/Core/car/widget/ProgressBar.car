@@ -9,11 +9,19 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IProgressBarSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IProgressBarSavedState {
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IView
+     */
     [local]
-    interface IProgressBar extends Elastos.Droid.View.IView {
+    interface IProgressBar {
         /**
          * <p>Indicate whether this progress bar is in indeterminate mode.</p>
          *

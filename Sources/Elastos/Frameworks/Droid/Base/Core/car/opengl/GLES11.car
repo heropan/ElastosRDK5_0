@@ -9,8 +9,12 @@ module
     namespace Droid {
     namespace Opengl {
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Opengl.IGLES10
+     */
     [deprecated]
-    interface IGLES11 extends Elastos.Droid.Opengl.IGLES10 {
+    interface IGLES11 {
         const Int32 _GL_ACTIVE_TEXTURE                          = 0x84E0;
         const Int32 _GL_ADD_SIGNED                              = 0x8574;
         const Int32 _GL_ALPHA_SCALE                             = 0x0D1C;

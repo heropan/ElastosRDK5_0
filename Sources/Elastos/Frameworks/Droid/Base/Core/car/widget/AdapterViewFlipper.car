@@ -2,7 +2,6 @@
 module
 {
 
-    interface Elastos.Droid.Widget.IAdapterViewAnimator;
     namespace Elastos{
     namespace Droid{
     namespace Widget{
@@ -16,7 +15,11 @@ module
      * @attr ref android.R.styleable#AdapterViewFlipper_autoStart
      */
 
-    interface IAdapterViewFlipper extends Elastos.Droid.Widget.IAdapterViewAnimator
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapterViewAnimator
+     */
+    interface IAdapterViewFlipper
     {
         /**
          * Returns the flip interval, in milliseconds.

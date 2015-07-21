@@ -9,8 +9,12 @@ module
     namespace Droid{
     namespace Widget{
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
     [local]
-    interface IViewAnimator extends Elastos.Droid.Widget.IFrameLayout
+    interface IViewAnimator
     {
         /**
          * Sets which child view will be displayed.

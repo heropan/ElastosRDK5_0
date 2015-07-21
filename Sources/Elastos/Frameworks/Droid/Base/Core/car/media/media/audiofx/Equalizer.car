@@ -56,7 +56,11 @@ module
             [in] ArrayOf<Int16>* levels);
     }
 
-    interface IEqualizer extends IAudioEffect {
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IEqualizer {
 
         // These constants must be synchronized with those in
         // frameworks/base/include/media/EffectEqualizerApi.h

@@ -2,7 +2,6 @@
 module
 {
 
-    interface Elastos.Droid.Webkit.IDownloadListener;
 
     namespace Elastos {
     namespace Droid {
@@ -13,7 +12,11 @@ module
     * part of onDownloadStart callback.
     * @hide
     */
-    interface IBrowserDownloadListener extends IDownloadListener {
+    /**
+     * @Involve
+     * interface IDownloadListener
+     */
+    interface IBrowserDownloadListener {
         /**
          * Notify the host application that a file should be downloaded
          * @param url The full url to the content that should be downloaded

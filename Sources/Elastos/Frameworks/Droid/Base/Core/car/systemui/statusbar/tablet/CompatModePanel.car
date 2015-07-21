@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface ICompatModePanel extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface ICompatModePanel {
         SetTrigger(
             [in] IView* view);
 

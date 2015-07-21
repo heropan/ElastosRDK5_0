@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IStringBuilder;
-    using interface Elastos.Core.IClassLoader;
     using interface Elastos.Utility.IObjectStringMap;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 

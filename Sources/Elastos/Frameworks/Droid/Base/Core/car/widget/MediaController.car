@@ -66,8 +66,12 @@ module
      *   with the boolean set to false
      * </ul>
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
     [local]
-    interface IMediaController extends Elastos.Droid.Widget.IFrameLayout {
+    interface IMediaController {
         SetMediaPlayer(
             [in] IMediaPlayerControl* player);
 

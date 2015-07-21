@@ -1,13 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.Widget.ITextView;
 
     namespace Elastos{
     namespace Droid{
     namespace Widget{
 
-    interface IEditText extends Elastos.Droid.Widget.ITextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITextView
+     */
+    interface IEditText {
 
         /**
          * Convenience for {@link Selection#setSelection(Spannable, Int32, Int32)}.

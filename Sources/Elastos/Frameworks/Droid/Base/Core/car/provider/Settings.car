@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Provider.IBaseColumns;
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Content.IIntent;
@@ -179,7 +178,11 @@ module
             [out] IUri** value);
     }
 
-    interface ISettingsGlobal extends ISettingsNameValueTable {
+    /**
+     * @Involve
+     * interface ISettingsNameValueTable
+     */
+    interface ISettingsGlobal {
         const String SYS_PROP_SETTING_VERSION = "sys.settings_global_version";
 
         /**
@@ -1411,7 +1414,11 @@ module
             [out] Boolean* result);
     }
 
-    interface ISettingsSecure extends ISettingsNameValueTable {
+    /**
+     * @Involve
+     * interface ISettingsNameValueTable
+     */
+    interface ISettingsSecure {
         const String SYS_PROP_SETTING_VERSION = "sys.settings_secure_version";
 
         /**
@@ -2573,7 +2580,11 @@ module
             [in] Int32 userId);
     }
 
-    interface ISettingsSystem extends ISettingsNameValueTable {
+    /**
+     * @Involve
+     * interface ISettingsNameValueTable
+     */
+    interface ISettingsSystem {
         const String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
 
         /**
@@ -4046,8 +4057,12 @@ module
             [in] Int32 userHandle);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
     [local]
-    interface ISettingsBookmarks extends IBaseColumns {
+    interface ISettingsBookmarks {
         const String ID = "_id";
 
         const String TITLE = "title";

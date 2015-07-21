@@ -1,6 +1,5 @@
 module
 {
-    using interface Elastos.Droid.App.IService;
 
     namespace Elastos {
     namespace Droid {
@@ -37,7 +36,11 @@ module
      *
      */
     //public abstract class
-    interface  ITextToSpeechService extends Elastos.Droid.App.IService {
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
+    interface  ITextToSpeechService {
     }
 
     interface ITextToSpeechServiceUtteranceProgressDispatcher {

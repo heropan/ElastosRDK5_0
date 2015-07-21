@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IZoomControls extends Elastos.Droid.Widget.ILinearLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface IZoomControls
     {
         SetOnZoomInClickListener(
             [in] IViewOnClickListener* listener);

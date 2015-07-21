@@ -1,13 +1,16 @@
 
 module
 {
-    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
     namespace Media {
 
-    interface IResampleInputStream extends Elastos.IO.IInputStream
+    /**
+     * @Involve
+     * interface Elastos.IO.IInputStream
+     */
+    interface IResampleInputStream
     {
     }
 

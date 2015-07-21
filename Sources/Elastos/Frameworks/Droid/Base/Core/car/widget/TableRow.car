@@ -7,7 +7,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface ITableRowLayoutParams extends ILinearLayoutLayoutParams {
+    /**
+     * @Involve
+     * interface ILinearLayoutLayoutParams
+     */
+    interface ITableRowLayoutParams {
         SetColumn(
             [in] Int32 column);
 
@@ -21,7 +25,11 @@ module
             [out] Int32* span);
     }
 
-    interface ITableRow extends ILinearLayout {
+    /**
+     * @Involve
+     * interface ILinearLayout
+     */
+    interface ITableRow {
         /**
          * <p>Returns the view at the specified index. This method can be overriden
          * to take into account virtual children. Refer to

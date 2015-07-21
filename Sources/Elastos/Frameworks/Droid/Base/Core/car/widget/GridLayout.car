@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos{
     namespace Droid{
@@ -80,7 +79,11 @@ module
      * @attr ref android.R.styleable#GridLayout_Layout_layout_columnSpan
      * @attr ref android.R.styleable#GridLayout_Layout_layout_gravity
      */
-    interface IGridLayoutLayoutParams extends Elastos.Droid.View.IViewGroupMarginLayoutParams
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     */
+    interface IGridLayoutLayoutParams
     {
         /**
          * Describes how the child views are positioned. Default is {@code LEFT | BASELINE}.
@@ -202,7 +205,11 @@ module
             [out] Int32* size);
     }
 
-    interface IGridLayout extends Elastos.Droid.View.IViewGroup
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface IGridLayout
     {
         /**
          * Returns the current orientation.

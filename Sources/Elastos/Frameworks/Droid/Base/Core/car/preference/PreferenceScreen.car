@@ -3,7 +3,6 @@ module
 
     interface Elastos.Droid.App.IDialog;
 
-    interface Elastos.Droid.Content.IDialogInterface;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Widget.IListAdapter;
     interface Elastos.Droid.Widget.IListView;
@@ -12,7 +11,11 @@ module
     namespace Droid {
     namespace Preference {
 
-        interface IPreferenceScreen extends IPreferenceGroup {
+        /**
+         * @Involve
+         * interface IPreferenceGroup
+         */
+        interface IPreferenceScreen {
             /**
              * Returns an adapter that can be attached to a {@link PreferenceActivity}
              * or {@link PreferenceFragment} to show the preferences contained in this
@@ -58,7 +61,11 @@ module
                 [out] IDialog** dialog);
         }
 
-        interface IPreferenceScreenSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IPreferenceScreenSavedState {
             IsDialogShowing(
                 [out] Boolean* isDialogShowing);
 

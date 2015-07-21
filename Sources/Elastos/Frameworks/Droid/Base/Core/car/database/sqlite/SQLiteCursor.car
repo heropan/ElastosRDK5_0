@@ -14,8 +14,12 @@ module
      * SQLiteCursor is not internally synchronized so code using a SQLiteCursor from multiple
      * threads should perform its own synchronization when using the SQLiteCursor.
      */
+    /**
+     * @Involve
+     * interface 
+     */
     [deprecated]
-    interface ISQLiteCursor extends  Elastos.Droid.Database.IAbstractWindowedCursor {
+    interface ISQLiteCursor Elastos.Droid.Database.IAbstractWindowedCursor {
         /**
          * @return the SQLiteDatabase that this cursor is associated with.
          */

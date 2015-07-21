@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.Widget.IWrapperListAdapter;
 
     namespace Elastos{
     namespace Droid{

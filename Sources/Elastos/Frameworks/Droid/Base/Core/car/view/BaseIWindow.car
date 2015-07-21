@@ -5,8 +5,12 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * @Involve
+     * interface IIWindow
+     */
     [deprecated]
-    interface IBaseIWindow extends IIWindow {
+    interface IBaseIWindow {
         SetSession(
             [in] IWindowSession* session);
 

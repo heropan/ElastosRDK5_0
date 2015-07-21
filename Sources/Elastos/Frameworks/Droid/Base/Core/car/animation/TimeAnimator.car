@@ -17,7 +17,11 @@ module
      *
      * @implements Elastos.Droid.Animation.IValueAnimator
      */
-    interface ITimeAnimator extends IValueAnimator {
+    /**
+     * @Involve
+     * interface IValueAnimator
+     */
+    interface ITimeAnimator {
         /**
          * Sets a listener that is sent update events throughout the life of
          * an animation.

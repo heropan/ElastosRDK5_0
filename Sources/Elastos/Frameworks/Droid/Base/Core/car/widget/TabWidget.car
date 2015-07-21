@@ -27,7 +27,11 @@ module
             [in] Boolean clicked);
     }
 
-    interface ITabWidget extends Elastos.Droid.Widget.ILinearLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ILinearLayout
+     */
+    interface ITabWidget
     {
         /**
          * Returns the tab indicator view at the given index.

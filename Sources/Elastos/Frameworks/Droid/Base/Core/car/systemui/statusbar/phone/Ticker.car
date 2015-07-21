@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.StatusBar.IStatusBarNotification;
 
     namespace Elastos {

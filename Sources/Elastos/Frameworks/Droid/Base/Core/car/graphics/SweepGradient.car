@@ -13,7 +13,11 @@ module
      * @implements Elastos.Droid.Graphics.IShader
      */
 
-    interface ISweepGradient extends IShader {
+    /**
+     * @Involve
+     * interface IShader
+     */
+    interface ISweepGradient {
     }
 
     } // namespace Graphics

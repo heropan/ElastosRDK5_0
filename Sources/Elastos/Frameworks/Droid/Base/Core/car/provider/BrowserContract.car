@@ -1,7 +1,5 @@
 module {
-    interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Provider.IBaseColumns;
 
     namespace Elastos {
     namespace Droid {
@@ -60,7 +58,11 @@ module {
         const String CLIENT_UNIQUE = IBrowserContractBaseSyncColumns::SYNC4;
     }
 
-    interface IBrowserContractSyncColumns extends IBrowserContractBaseSyncColumns {
+    /**
+     * @Involve
+     * interface IBrowserContractBaseSyncColumns
+     */
+    interface IBrowserContractSyncColumns {
         /**
          * The name of the account instance to which this row belongs, which when paired with
          * {@link #ACCOUNT_TYPE} identifies a specific account.
@@ -187,7 +189,11 @@ module {
         const String URL = "url";
     }
 
-    interface IBrowserContractBookmarks extends IBrowserContractCommonColumns,
+    /**
+     * @Involve
+     * interface IBrowserContractCommonColumns
+     */
+    interface IBrowserContractBookmarks,
             IBrowserContractImageColumns, IBrowserContractSyncColumns {
 
         /**
@@ -372,7 +378,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IBrowserContractHistory extends IBrowserContractCommonColumns,
+    /**
+     * @Involve
+     * interface IBrowserContractCommonColumns
+     */
+    interface IBrowserContractHistory,
             IBrowserContractHistoryColumns, IBrowserContractImageColumns {
 
         /**
@@ -428,7 +438,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IBrowserContractSyncState extends ISyncStateContractColumns{
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    interface IBrowserContractSyncState{
         const String CONTENT_DIRECTORY =
                 ISyncStateContractConstants::CONTENT_DIRECTORY;
 
@@ -471,7 +485,11 @@ module {
             [out] IContentProviderOperation** operation);
     }
 
-    interface IBrowserContractImages extends IBrowserContractImageColumns {
+    /**
+     * @Involve
+     * interface IBrowserContractImageColumns
+     */
+    interface IBrowserContractImages {
 
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of images.
@@ -529,7 +547,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IBrowserContractImageMappings extends IBrowserContractImageMappingColumns {
+    /**
+     * @Involve
+     * interface IBrowserContractImageMappingColumns
+     */
+    interface IBrowserContractImageMappings {
 
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of image mappings.
@@ -548,7 +570,11 @@ module {
             [out] IUri** uri);
     }
 
-    interface IBrowserContractCombined extends IBrowserContractCommonColumns,
+    /**
+     * @Involve
+     * interface IBrowserContractCommonColumns
+     */
+    interface IBrowserContractCombined,
             IBrowserContractHistoryColumns,
             IBrowserContractImageColumns {
 

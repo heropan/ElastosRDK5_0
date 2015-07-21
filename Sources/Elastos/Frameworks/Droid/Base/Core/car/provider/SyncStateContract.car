@@ -2,7 +2,6 @@ module {
 
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Accounts.IAccount;
-    interface Elastos.Droid.Provider.IBaseColumns;
     interface Elastos.Droid.Content.IContentProviderClient;
     interface Elastos.Droid.Content.IContentProviderOperation;
 
@@ -10,7 +9,11 @@ module {
     namespace Droid {
     namespace Provider {
 
-    interface ISyncStateContractColumns extends IBaseColumns {
+    /**
+     * @Involve
+     * interface IBaseColumns
+     */
+    interface ISyncStateContractColumns {
         /**
          * A reference to the name of the account to which this data belongs
          * <P>Type: STRING</P>
@@ -30,7 +33,11 @@ module {
         const String DATA = "data";
     }
 
-    interface ISyncStateContractConstants extends ISyncStateContractColumns {
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    interface ISyncStateContractConstants {
         const String CONTENT_DIRECTORY = "syncstate";
     }
 

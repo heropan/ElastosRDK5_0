@@ -8,7 +8,11 @@ module
     namespace StatusBar {
     namespace Phone {
 
-    interface IPhoneStatusBarView extends Elastos.Droid.SystemUI.StatusBar.Phone.IPanelBar {
+    /**
+     * @Involve
+     * interface Elastos.Droid.SystemUI.StatusBar.Phone.IPanelBar
+     */
+    interface IPhoneStatusBarView {
 
         SetBar(
             [in] IPhoneStatusBar* bar);

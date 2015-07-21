@@ -19,7 +19,11 @@ module
      * Cursor implementations are not required to be synchronized so code using a Cursor from multiple
      * threads should perform its own synchronization when using the Cursor.
      */
-    interface ICursor extends Elastos.IO.ICloseable {
+    /**
+     * @Involve
+     * interface Elastos.IO.ICloseable
+     */
+    interface ICursor {
         /*
          * Values returned by {@link #getType(int)}.
          * These should be consistent with the corresponding types defined in CursorWindow.h

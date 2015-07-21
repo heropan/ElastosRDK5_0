@@ -11,7 +11,11 @@ module
      * the basic animation effects (alpha, scale, translate, rotate) to be
      * accelerated, decelerated, repeated, etc.
      */
-    interface IInterpolator extends Elastos.Droid.Animation.ITimeInterpolator {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Animation.ITimeInterpolator
+     */
+    interface IInterpolator {
     }
 
     }   //namespace Animation

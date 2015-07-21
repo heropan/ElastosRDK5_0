@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Database.ICursor;
 
     namespace Elastos {
     namespace Droid {
@@ -37,11 +36,19 @@ module
             [out] ICharSequence** res);
     }
 
-    interface ICommaTokenizer extends Elastos.Droid.Widget.ITokenizer {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.ITokenizer
+     */
+    interface ICommaTokenizer {
 
     }
 
-    interface IMultiAutoCompleteTextView extends Elastos.Droid.Widget.IAutoCompleteTextView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAutoCompleteTextView
+     */
+    interface IMultiAutoCompleteTextView {
         /**
          * Sets the Tokenizer that will be used to determine the relevant
          * range of the text where the user is typing.

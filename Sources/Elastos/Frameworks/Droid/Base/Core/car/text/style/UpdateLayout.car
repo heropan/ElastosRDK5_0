@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Text.Style.IUpdateAppearance;
 
     namespace Elastos {
     namespace Droid {
@@ -14,7 +13,11 @@ module
      * this interface.  This interface also includes {@link UpdateAppearance}
      * since such a change implicitly also impacts the appearance.
      */
-    interface IUpdateLayout extends IUpdateAppearance {}
+    /**
+     * @Involve
+     * interface IUpdateAppearance
+     */
+    interface IUpdateLayout {}
 
     }//namespace Style
     }//namespace Text

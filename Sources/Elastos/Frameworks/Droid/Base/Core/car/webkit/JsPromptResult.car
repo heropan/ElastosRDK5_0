@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Webkit.IJsResult;
 
     namespace Elastos {
     namespace Droid {
@@ -14,7 +13,11 @@ module
      * dialog prompt back to the WebView instance. The client can call cancel() to cancel the dialog or
      * confirm() with the user's input to confirm the dialog.
      */
-    interface IJsPromptResult extends IJsResult {
+    /**
+     * @Involve
+     * interface IJsResult
+     */
+    interface IJsPromptResult {
         /**
          * Handle a confirmation response from the user.
          */

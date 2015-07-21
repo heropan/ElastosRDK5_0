@@ -13,8 +13,12 @@ module
     namespace Droid {
     namespace Net {
 
+    /**
+     * @Involve
+     * interface Elastos.Net.Ssl.ISSLSocketFactory
+     */
     [deprecated]
-    interface ISSLCertificateSocketFactory extends Elastos.Net.Ssl.ISSLSocketFactory {
+    interface ISSLCertificateSocketFactory {
 
         /**
          * Sets the {@link TrustManager}s to be used for connections made by this factory.

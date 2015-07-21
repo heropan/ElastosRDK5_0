@@ -5,15 +5,17 @@ module
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.IO.IPrintWriter;
 
-    interface Elastos.Droid.App.IFragmentTransaction;
-    interface Elastos.Droid.App.IFragmentManager;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
 
+    /**
+     * @Involve
+     * interface IFragmentTransaction
+     */
     [deprecated]
-    interface IBackStackRecord extends IFragmentTransaction{
+    interface IBackStackRecord{
         /* @Override */
         ToString(
             [out] String* str);

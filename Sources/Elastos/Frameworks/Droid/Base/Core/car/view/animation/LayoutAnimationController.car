@@ -25,7 +25,11 @@ module
             [in] Int32 index);
     }
 
-    interface ILayoutAnimationParameters extends IAnimationParameters
+    /**
+     * @Involve
+     * interface IAnimationParameters
+     */
+    interface ILayoutAnimationParameters
     {}
 
     [local]

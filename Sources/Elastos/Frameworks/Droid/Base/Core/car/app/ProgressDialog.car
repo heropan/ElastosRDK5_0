@@ -20,7 +20,11 @@ module
      *
      * @implements Elastos.Driod.App.IAlertDialog
      */
-    interface IProgressDialog extends IAlertDialog {
+    /**
+     * @Involve
+     * interface IAlertDialog
+     */
+    interface IProgressDialog {
         /** Creates a ProgressDialog with a circular, spinning progress
          * bar. This is the default.
          */

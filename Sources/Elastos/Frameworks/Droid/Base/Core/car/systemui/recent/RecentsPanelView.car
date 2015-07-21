@@ -30,8 +30,12 @@ module
             [out] IView** view);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
     [deprecated]
-    interface IRecentsPanelView extends Elastos.Droid.Widget.IFrameLayout {
+    interface IRecentsPanelView {
         NumItemsInOneScreenful(
             [out] Int32* num);
 

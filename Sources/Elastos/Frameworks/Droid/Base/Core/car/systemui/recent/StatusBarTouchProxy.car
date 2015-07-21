@@ -7,7 +7,11 @@ module
     namespace SystemUI {
     namespace Recent {
 
-    interface IStatusBarTouchProxy extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IStatusBarTouchProxy {
         SetStatusBar(
             [in] IView* statusBar);
     }

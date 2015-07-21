@@ -12,7 +12,11 @@ module
      * Interface to insert data to ContentResolver
      * @hide
      */
-    interface IContentInsertHandler extends Org.Xml.Sax.IContentHandler {
+    /**
+     * @Involve
+     * interface Org.Xml.Sax.IContentHandler
+     */
+    interface IContentInsertHandler {
         /**
          * insert data from InputStream to ContentResolver
          * @param contentResolver

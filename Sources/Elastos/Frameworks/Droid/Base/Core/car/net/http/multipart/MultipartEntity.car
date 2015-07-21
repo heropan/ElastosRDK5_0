@@ -45,7 +45,11 @@ module
      * 
      * @since 3.0
      */
-    interface IMultipartEntity extends Org.Apache.Http.Entity.IAbstractHttpEntity {
+    /**
+     * @Involve
+     * interface Org.Apache.Http.Entity.IAbstractHttpEntity
+     */
+    interface IMultipartEntity {
         /**
          * Sets the value to use as the multipart boundary.
          * <p>

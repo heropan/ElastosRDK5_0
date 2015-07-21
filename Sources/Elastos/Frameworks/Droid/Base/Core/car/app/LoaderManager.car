@@ -17,8 +17,12 @@ module
             [in] ArrayOf<String>* args);
     }
 
+    /**
+     * @Involve
+     * interface ILoaderManager
+     */
     [local]
-    interface ILoaderManagerImpl extends ILoaderManager {
+    interface ILoaderManagerImpl {
         DoStart();
 
         DoStop();

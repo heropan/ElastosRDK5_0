@@ -6,7 +6,11 @@ module
     namespace StatusBar {
     namespace Phone {
 
-    interface IStatusBarWindowView extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface IStatusBarWindowView {
 
         CancelExpandHelper();
     }

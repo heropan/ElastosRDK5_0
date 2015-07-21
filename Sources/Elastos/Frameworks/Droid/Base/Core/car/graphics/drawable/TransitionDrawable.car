@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.ILayerDrawable;
 
     namespace Elastos {
     namespace Droid {
@@ -41,7 +40,11 @@ module
          * 
          * @sa Drawable Resources
          */
-        interface ITransitionDrawable extends ILayerDrawable {
+        /**
+         * @Involve
+         * interface ILayerDrawable
+         */
+        interface ITransitionDrawable {
             /**
              * Begin the second layer on top of the first layer.
              *

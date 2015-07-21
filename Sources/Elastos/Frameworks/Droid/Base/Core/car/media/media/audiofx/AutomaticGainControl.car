@@ -5,7 +5,11 @@ module
     namespace Media {
     namespace Audiofx {
 
-    interface IAutomaticGainControl extends IAudioEffect
+    /**
+     * @Involve
+     * interface IAudioEffect
+     */
+    interface IAutomaticGainControl
     {}
 
     interface IAutomaticGainControlHelper{

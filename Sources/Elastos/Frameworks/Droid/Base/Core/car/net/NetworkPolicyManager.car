@@ -3,7 +3,6 @@ module
 {
     using interface Elastos.IO.IPrintWriter;
 
-    interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Net.INetworkPolicy;
     interface Elastos.Droid.Net.INetworkPolicyListener;
     interface Elastos.Droid.Text.Format.ITime;

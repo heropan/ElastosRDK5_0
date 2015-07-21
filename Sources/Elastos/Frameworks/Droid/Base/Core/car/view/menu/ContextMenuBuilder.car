@@ -13,8 +13,12 @@ module
         /**
          * @hide
          */
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.Menu.IMenuBuilder
+         */
         [local]
-        interface IContextMenuBuilder extends Elastos.Droid.View.Menu.IMenuBuilder {
+        interface IContextMenuBuilder {
 
             Show(
                 [in] IView* originalView,

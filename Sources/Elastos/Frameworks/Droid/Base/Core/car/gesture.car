@@ -14,8 +14,6 @@ module {
     merge("gesture/GestureLibraries.car");
     merge("gesture/GestureOverlayView.car");
 
-    interface Elastos.IO.IFile;
-    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {

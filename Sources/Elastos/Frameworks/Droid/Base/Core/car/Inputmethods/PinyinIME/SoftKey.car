@@ -24,7 +24,11 @@ module
             [out] String* label);
     }
 
-    interface ISoftKeyToggle extends ISoftKey {
+    /**
+     * @Involve
+     * interface ISoftKey
+     */
+    interface ISoftKeyToggle {
 
     }
 

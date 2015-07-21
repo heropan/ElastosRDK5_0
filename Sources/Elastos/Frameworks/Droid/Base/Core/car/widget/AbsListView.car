@@ -7,9 +7,7 @@ module
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.Widget.IRemoteViewsOnClickHandler;
-    interface Elastos.Droid.Widget.IAdapter;
     interface Elastos.Droid.Widget.IAbsListView;
     interface Elastos.Droid.View.IActionMode;
 
@@ -94,7 +92,11 @@ module
      * {@link #onItemCheckedStateChanged(ActionMode, int, long, boolean)} events when the user
      * selects and deselects list items.
      */
-    interface IMultiChoiceModeListener extends Elastos.Droid.View.IActionModeCallback {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IActionModeCallback
+     */
+    interface IMultiChoiceModeListener {
         /**
          * Called when an item is checked or unchecked during selection mode.
          *
@@ -111,11 +113,19 @@ module
             [in] Boolean checked);
     }
 
-    interface IAbsListViewSavedState extends Elastos.Droid.View.IViewBaseSavedState {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewBaseSavedState
+     */
+    interface IAbsListViewSavedState {
 
     }
 
-    interface IAbsListViewLayoutParams extends Elastos.Droid.View.IViewGroupLayoutParams {
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroupLayoutParams
+     */
+    interface IAbsListViewLayoutParams {
 
         GetViewType(
             [out] Int32* viewType);
@@ -169,7 +179,11 @@ module
             [in] IView* view);
     }
 
-    interface IAbsListView extends Elastos.Droid.Widget.IAdapterView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IAdapterView
+     */
+    interface IAbsListView {
 
         /**
          * Disables the transcript mode.

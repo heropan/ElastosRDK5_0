@@ -135,10 +135,18 @@ module
             [out] IPropertyValuesHolder** holder);
     }
 
-    interface IInt32PropertyValuesHolder extends IPropertyValuesHolder {
+    /**
+     * @Involve
+     * interface IPropertyValuesHolder
+     */
+    interface IInt32PropertyValuesHolder {
     }
 
-    interface IFloatPropertyValuesHolder extends IPropertyValuesHolder {
+    /**
+     * @Involve
+     * interface IPropertyValuesHolder
+     */
+    interface IFloatPropertyValuesHolder {
     }
 
     [deprecated, local]

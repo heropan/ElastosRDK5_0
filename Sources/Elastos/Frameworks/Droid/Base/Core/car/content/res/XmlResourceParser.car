@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Elastos {
     namespace Droid {
@@ -16,7 +15,11 @@ module
      *
      * @implements Elastos.Droid.Content.Res.Org.Xmlpull.V1.IXmlPullParser
      */
-    interface IXmlResourceParser extends Org.Xmlpull.V1.IXmlPullParser {
+    /**
+     * @Involve
+     * interface Org.Xmlpull.V1.IXmlPullParser
+     */
+    interface IXmlResourceParser {
         /**
          * Close this interface to the resource.  Calls on the interface are no
          * longer value after this call.

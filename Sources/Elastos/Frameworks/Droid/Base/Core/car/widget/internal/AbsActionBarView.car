@@ -1,9 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.Widget.Internal.IActionBarContainer;
-    interface Elastos.Droid.Widget.Internal.IScrollingTabContainerView;
 
     namespace Elastos{
     namespace Droid{
@@ -11,7 +9,11 @@ module
     namespace Internal{
     //zhangjingcheng
 
-    interface IAbsActionBarView extends Elastos.Droid.View.IViewGroup
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
+    interface IAbsActionBarView
     {
         /**
          * Sets whether the bar should be split right now, no questions asked.

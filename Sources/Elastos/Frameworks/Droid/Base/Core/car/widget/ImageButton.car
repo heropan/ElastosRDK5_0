@@ -52,7 +52,11 @@ module
      * {@link android.R.styleable#View View Attributes}
      * </p>
      */
-    interface IImageButton extends Elastos.Droid.Widget.IImageView {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IImageView
+     */
+    interface IImageButton {
     }
 
     }// namespace Widget

@@ -6,7 +6,11 @@ module {
     namespace Widget{
 
 
-    interface INumberPickerCustomEditText extends Elastos.Droid.Widget.IEditText {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IEditText
+     */
+    interface INumberPickerCustomEditText {
     }
 
     }// namespace Widget

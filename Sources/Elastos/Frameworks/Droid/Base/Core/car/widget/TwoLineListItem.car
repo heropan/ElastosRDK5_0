@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface ITwoLineListItem extends Elastos.Droid.Widget.IRelativeLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IRelativeLayout
+     */
+    interface ITwoLineListItem
     {
         /**
          * Returns a handle to the item with ID text1.

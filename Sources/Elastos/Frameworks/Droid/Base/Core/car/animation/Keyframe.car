@@ -223,13 +223,21 @@ module
     /**
      * @implements Elastos.Droid.Animation.IKeyframe
      */
-    interface IObjectKeyframe extends IKeyframe {
+    /**
+     * @Involve
+     * interface IKeyframe
+     */
+    interface IObjectKeyframe {
     }
 
     /**
      * @implements Elastos.Droid.Animation.IKeyframe
      */
-    interface IInt32Keyframe extends IKeyframe {
+    /**
+     * @Involve
+     * interface IKeyframe
+     */
+    interface IInt32Keyframe {
         GetInt32Value(
             [out] Int32* value);
     }
@@ -237,7 +245,11 @@ module
     /**
      * @implements Elastos.Droid.Animation.IKeyframe
      */
-    interface IFloatKeyframe extends IKeyframe {
+    /**
+     * @Involve
+     * interface IKeyframe
+     */
+    interface IFloatKeyframe {
         GetFloatValue(
             [out] Float* value);
     }

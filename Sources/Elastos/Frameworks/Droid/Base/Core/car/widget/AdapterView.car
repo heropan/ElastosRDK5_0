@@ -128,8 +128,12 @@ module
      * See {@link ListView}, {@link GridView}, {@link Spinner} and
      *      {@link Gallery} for commonly used subclasses of AdapterView.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewGroup
+     */
     [local]
-    interface IAdapterView extends Elastos.Droid.View.IViewGroup {
+    interface IAdapterView {
         /**
          * The item view type returned by {@link Adapter#getItemViewType(Int32)} when
          * the adapter does not want the item's view recycled.

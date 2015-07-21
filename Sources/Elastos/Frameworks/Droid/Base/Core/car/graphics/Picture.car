@@ -4,7 +4,6 @@ module
     interface Elastos.Droid.Graphics.ICanvas;
 
     interface Elastos.IO.IOutputStream;
-    interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {

@@ -11,7 +11,11 @@ module
     namespace StatusBar {
     namespace Tablet {
 
-    interface ITabletStatusBarView extends Elastos.Droid.Widget.IFrameLayout {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface ITabletStatusBarView {
         SetDelegateView(
             [in] IView* view);
 

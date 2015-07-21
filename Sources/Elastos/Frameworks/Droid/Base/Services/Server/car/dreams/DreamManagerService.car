@@ -6,7 +6,11 @@ module
     namespace Server {
     namespace Dreams {
 
-    interface IDreamManagerService extends Elastos.Droid.Service.Dreams.IDreamManager {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Service.Dreams.IDreamManager
+     */
+    interface IDreamManagerService {
         SystemReady();
 
         StartDream();

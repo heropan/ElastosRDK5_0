@@ -17,7 +17,11 @@ module
      *
      * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
      */
-    interface IPermissionGroupInfo extends Elastos.Droid.Content.Pm.IPackageItemInfo {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     */
+    interface IPermissionGroupInfo {
         /**
          * Flag for #flags, corresponding to <code>personalInfo</code>
          * value of android.R.attr#permissionGroupFlags.

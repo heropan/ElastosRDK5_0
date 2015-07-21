@@ -1,7 +1,6 @@
 module
 {
     interface Elastos.Droid.View.ISurfaceHolder;
-    interface Elastos.Droid.Graphics.IBitmap;
 
     namespace Elastos {
     namespace Droid {
@@ -10,7 +9,11 @@ module
 
     interface IWaveformData;
 
-    interface IMediaVideoItem extends IMediaItem {
+    /**
+     * @Involve
+     * interface IMediaItem
+     */
+    interface IMediaVideoItem {
         /**
          * Sets the start and end marks for trimming a video media item.
          * This method will adjust the duration of bounding transitions, effects

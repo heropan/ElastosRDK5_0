@@ -12,7 +12,11 @@ module
      * 
      * @implements Elastos.Droid.Graphics.IMaskFilter
      */
-    interface ITableMaskFilter extends IMaskFilter {
+    /**
+     * @Involve
+     * interface IMaskFilter
+     */
+    interface ITableMaskFilter {
     }
 
     interface ITableMaskFilterHelper {

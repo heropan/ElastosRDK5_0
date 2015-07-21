@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Utility.IObjectContainer;
-    using interface Elastos.Net.ISocketAddress;
 
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.ILinkCapabilities;
@@ -12,8 +11,12 @@ module
     namespace Droid {
     namespace Net {
 
+    /**
+     * @Involve
+     * interface Elastos.Net.ISocket
+     */
     [local]
-    interface ILinkSocket extends Elastos.Net.ISocket{
+    interface ILinkSocket{
 
         GetLinkProperties(
             [out] ILinkProperties** result);

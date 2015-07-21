@@ -13,7 +13,11 @@ module
      * to be able to save lockscreen information for secondary users.
      * @hide
      */
-    interface ILockSettingsService extends ILockSettings
+    /**
+     * @Involve
+     * interface ILockSettings
+     */
+    interface ILockSettingsService
     {
         SystemReady();
     }

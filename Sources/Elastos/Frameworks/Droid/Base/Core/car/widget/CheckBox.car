@@ -40,7 +40,11 @@ module
      * {@link android.R.styleable#View View Attributes}
      * </p>
      */
-    interface ICheckBox extends ICompoundButton {
+    /**
+     * @Involve
+     * interface ICompoundButton
+     */
+    interface ICheckBox {
     }
 
     } // namespace Widget

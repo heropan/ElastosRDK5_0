@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
@@ -28,7 +27,11 @@ module
          * </div>
          * @implements IBroadcastReceiver
          */
-        interface IAppWidgetProvider extends Elastos.Droid.Content.IBroadcastReceiver {
+        /**
+         * @Involve
+         * interface Elastos.Droid.Content.IBroadcastReceiver
+         */
+        interface IAppWidgetProvider {
             /**
              * Called in response to the {@sa AppWidgetManager#ACTION_APPWIDGET_UPDATE} broadcast when
              * this AppWidget provider is being asked to provide {@sa android.widget.RemoteViews RemoteViews}

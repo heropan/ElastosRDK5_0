@@ -6,7 +6,11 @@ module
     namespace Droid {
     namespace Text {
 
-    interface ISpannableString extends Elastos.Droid.Text.ISpannable {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Text.ISpannable
+     */
+    interface ISpannableString {
     }
 
     interface ISpannableStringHelper {

@@ -13,7 +13,6 @@ module
     interface Elastos.Droid.App.IPendingIntent;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.View.ILayoutInflaterFilter;
     interface Elastos.Droid.Graphics.IBitmap;
 
 
@@ -36,8 +35,12 @@ module
             [in] IRemoteViewsBitmapCache* bitmapCache);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.ILayoutInflaterFilter
+     */
     [local, parcelable]
-    interface IRemoteViews extends Elastos.Droid.View.ILayoutInflaterFilter
+    interface IRemoteViews
     {
         /**
          * Merges the passed RemoteViews actions with this RemoteViews actions according to

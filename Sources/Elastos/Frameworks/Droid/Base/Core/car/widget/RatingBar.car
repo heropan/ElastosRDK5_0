@@ -36,7 +36,11 @@ module
 
     }
 
-    interface IRatingBar extends IAbsSeekBar
+    /**
+     * @Involve
+     * interface IAbsSeekBar
+     */
+    interface IRatingBar
     {
         /**
          * Sets the listener to be called when the rating changes.

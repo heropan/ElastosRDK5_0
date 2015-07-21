@@ -33,8 +33,12 @@ module
      *
      * @implements Elastos.Droid.Animation.IAnimator
      */
+    /**
+     * @Involve
+     * interface IAnimator
+     */
     [deprecated]
-    interface IValueAnimator extends IAnimator {
+    interface IValueAnimator {
         /**
          * When the animation reaches the end and <code>repeatCount</code> is INFINITE
          * or a positive value, the animation restarts from the beginning.

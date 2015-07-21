@@ -4,7 +4,6 @@ module
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IBuffer;
 
-    interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.Utility.IDisplayMetrics;

@@ -2,7 +2,6 @@ module
 {
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.Res.IConfiguration;
-    interface Elastos.Droid.Content.IComponentCallbacks;
     interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
@@ -53,7 +52,11 @@ module
      * @implements Elastos.Droid.Content.IContextWrapper
      *
      */
-    interface IApplication extends Elastos.Droid.Content.IContextWrapper {
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     */
+    interface IApplication {
         /**
          * Called when the application is starting, before any other application
          * objects have been created.  Implementations should be as quick as

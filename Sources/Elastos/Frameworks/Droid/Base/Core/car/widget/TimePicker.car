@@ -25,7 +25,11 @@ module
             [in] Int32 minute);
     }
 
-    interface ITimePicker extends Elastos.Droid.Widget.IFrameLayout
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IFrameLayout
+     */
+    interface ITimePicker
     {
         /**
          * Set the callback that indicates the time has been adjusted by the user.

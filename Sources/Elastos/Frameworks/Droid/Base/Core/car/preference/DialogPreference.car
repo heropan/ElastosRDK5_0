@@ -1,13 +1,11 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    interface Elastos.Droid.Content.IDialogInterface;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.App.IAlertDialogBuilder;
     interface Elastos.Droid.App.IDialog;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IAbsSavedState;
 
     namespace Elastos {
     namespace Droid {
@@ -227,7 +225,11 @@ module
 
         }
 
-        interface IDialogPreferenceSavedState extends Elastos.Droid.View.IAbsSavedState {
+        /**
+         * @Involve
+         * interface Elastos.Droid.View.IAbsSavedState
+         */
+        interface IDialogPreferenceSavedState {
             IsDialogShowing(
                 [out] Boolean* isShow);
 

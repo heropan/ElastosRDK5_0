@@ -16,7 +16,11 @@ module
      * @attr ref android.R.styleable#CheckedTextView_checked
      * @attr ref android.R.styleable#CheckedTextView_checkMark
      */
-    interface ICheckedTextView extends ITextView
+    /**
+     * @Involve
+     * interface ITextView
+     */
+    interface ICheckedTextView
     {
         /**
          * Set the checkmark to a given Drawable, identified by its resourece id. This will be drawn

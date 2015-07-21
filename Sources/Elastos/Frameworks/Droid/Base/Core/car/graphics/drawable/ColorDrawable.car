@@ -86,7 +86,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface IColorDrawable extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface IColorDrawable {
         /**
          * Returns the alpha value of this drawable's color.
          *

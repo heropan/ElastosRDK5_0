@@ -13,7 +13,11 @@ module
      * but more graphical control is available if you instead pass
      * the RectShape to a {@link android.graphics.drawable.ShapeDrawable}.
      */
-    interface IRectShape extends IShape {
+    /**
+     * @Involve
+     * interface IShape
+     */
+    interface IRectShape {
     }
 
     } // namespace Shapes

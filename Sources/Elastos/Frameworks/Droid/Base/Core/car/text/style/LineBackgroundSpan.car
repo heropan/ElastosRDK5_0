@@ -4,14 +4,17 @@ module
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
-    interface Elastos.Droid.Text.Style.IParagraphStyle;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface ILineBackgroundSpan extends IParagraphStyle {
+    /**
+     * @Involve
+     * interface IParagraphStyle
+     */
+    interface ILineBackgroundSpan {
         DrawBackground(
             [in] ICanvas* c,
             [in] IPaint* p,

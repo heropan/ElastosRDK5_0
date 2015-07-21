@@ -116,7 +116,11 @@ module
     *
     * @implements Elastos.Droid.Graphics.Drawable.IDrawable
     */
-    interface IShapeDrawable extends IDrawable {
+    /**
+     * @Involve
+     * interface IDrawable
+     */
+    interface IShapeDrawable {
         /**
          * Returns the Paint used to draw the shape.
          */
