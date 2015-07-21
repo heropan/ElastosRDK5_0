@@ -20,7 +20,7 @@ AppErrorResult::AppErrorResult()
 void AppErrorResult::SetResult(
     /* [in] */ Int32 res)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mHasResult = TRUE;
     mResult = res;
     NotifyAll();
@@ -28,7 +28,7 @@ void AppErrorResult::SetResult(
 
 Int32 AppErrorResult::GetResult()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     while (!mHasResult) {
         // try {
         Wait();

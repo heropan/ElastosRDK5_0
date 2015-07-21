@@ -42,7 +42,7 @@ ECode MyActivityController::ActivityStarting(
     /* [out] */ Boolean * res)
 {
     VALIDATE_NOT_NULL(res);
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     PFL_EX("** Activity starting: %s", pkg.string());
     *res = TRUE;
     return NOERROR;
@@ -53,7 +53,7 @@ ECode MyActivityController::ActivityResuming(
     /* [out] */ Boolean * res)
 {
     VALIDATE_NOT_NULL(res);
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     PFL_EX("** Activity resuming: %s", pkg.string());
     *res = TRUE;
     return NOERROR;
@@ -69,7 +69,7 @@ ECode MyActivityController::AppCrashed(
     /* [out] */ Boolean * res)
 {
     VALIDATE_NOT_NULL(res);
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     PFL_EX("** ERROR: PROCESS CRASHED");
     PFL_EX("processName: %s", processName.string());
     PFL_EX("processPid: %d", pid);
@@ -94,7 +94,7 @@ ECode MyActivityController::AppEarlyNotResponding(
     /* [in] */ const String& annotation,
     /* [out] */ Int32 * res)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(res);
     PFL_EX("** ERROR: EARLY PROCESS NOT RESPONDING");
     PFL_EX("processName: %s", processName.string());
@@ -118,7 +118,7 @@ ECode MyActivityController::AppNotResponding(
     /* [in] */ const String& processStats,
     /* [out] */ Int32 * res)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(res);
     PFL_EX("** ERROR: PROCESS NOT RESPONDING");
     PFL_EX("processName: %s", processName.string());
@@ -201,7 +201,7 @@ ECode MyActivityController::WaitControllerLocked(
 ECode MyActivityController::ResumeController(
     /* [in] */ Int32 result)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mState = STATE_NORMAL;
     mResult = result;
     ECode ec = mLock.NotifyAll();
@@ -301,7 +301,7 @@ ECode MyActivityController::Run()
             PFL_EX("Invalid command: %s", line.string());
         }
 
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (addNewline) {
             PFL_EX("");
         }
@@ -339,7 +339,7 @@ ECode MyActivityController::GdbThreadRunnable::Run()
     Int32 count = 0;
     while (TRUE) {
         {
-            Object::Autolock lock(mHost->mLock);
+            AutoLock lock(mHost->mLock);
             if (mHost->mGdbThread == NULL) {
                 return NOERROR;
             }

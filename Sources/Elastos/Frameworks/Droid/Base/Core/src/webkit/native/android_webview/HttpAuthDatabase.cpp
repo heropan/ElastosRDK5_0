@@ -72,7 +72,7 @@ void HttpAuthDatabase::InitOnBackgroundThread(
     /* [in] */ IContext* context,
     /* [in] */ String databaseFile)
 {
-    Object::Autolock lock(mInitializedLock);
+    AutoLock lock(mInitializedLock);
     if (mInitialized) {
         return;
     }
@@ -157,7 +157,7 @@ void HttpAuthDatabase::CreateTable()
 Boolean HttpAuthDatabase::WaitForInit()
 {
     {
-        Object::Autolock lock(mInitializedLock);
+        AutoLock lock(mInitializedLock);
         while (!mInitialized) {
             // try {
                 mInitializedLock->Wait();

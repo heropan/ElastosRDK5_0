@@ -40,7 +40,7 @@ WindowState::DeathRecipient::DeathRecipient(
 ECode WindowState::DeathRecipient::ProxyDied()
 {
     Slogger::I(TAG, "WindowState:: %p, DeathRecipient::ProxyDied(): ", mOwner);
-    Object::Autolock lock(&mOwner->mService->mWindowMapLock);
+    AutoLock lock(&mOwner->mService->mWindowMapLock);
 
     AutoPtr<IBinder> binder = IBinder::Probe(mOwner->mClient);
     AutoPtr<WindowState> win;

@@ -33,7 +33,7 @@ ECode CStoppingReceiver::PerformReceive(
 {
     // On to the next.
     {
-        Object::Autolock lock(mHost->mLock);
+        AutoLock lock(mHost->mLock);
         if (mUss->mState != UserStartedState::STATE_STOPPING) {
             // Whoops, we are being started back up.  Abort, abort!
             return NOERROR;

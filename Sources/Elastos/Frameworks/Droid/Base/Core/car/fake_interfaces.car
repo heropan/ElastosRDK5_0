@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Os.ILooper;
+
+
     //
     // Elastos.Droid.Utility
     //
@@ -9,6 +12,12 @@ module
     namespace Utility {
 
         interface IPrinter {
+        }
+
+        interface ISize {
+        }
+
+        interface ISizeF {
         }
 
     }}} // Elastos.Droid.Utility
@@ -20,15 +29,8 @@ module
     namespace Droid {
     namespace Os {
 
-        interface IBundle {
-        }
-
         interface IPersistableBundle {
         }
-
-        interface IUserHandle {
-        }
-
 
     }}} // Elastos.Droid.Os
 
@@ -41,7 +43,15 @@ module
     namespace Content {
 
         interface IContext {
+            GetMainLooper(
+                [out] ILooper** looper);
         }
+
+        namespace Pm {
+            interface IIPackageManager {
+            }
+
+        }// Pm
 
     }}} // Elastos.Droid.Content
 
@@ -57,5 +67,42 @@ module
         }
 
     }}} // Elastos.Droid.Net
+
+
+    //
+    // Elastos.Droid.Privacy
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Privacy {
+
+        interface IIPrivacySettingsManager {
+        }
+
+        interface IPrivacySettingsManager {
+        }
+
+        interface IPrivacySettings {
+        }
+
+    }}} // Elastos.Droid.Privacy
+
+
+    //
+    // Elastos.Droid.Privacy
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Graphics {
+
+        interface IBitmap {
+        }
+
+        interface IBitmapFactory {
+        }
+
+
+    }}} // Elastos.Droid.Privacy
+
 
 }

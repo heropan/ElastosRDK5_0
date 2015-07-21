@@ -209,7 +209,7 @@ Boolean CipherFactory::RestoreFromBundle(
         CSecretKeySpec(wrappedKey, String("AES"), (IKey**)&bundledKey);
 
         {
-            Object::Autolock lock(mDataLock);
+            AutoLock lock(mDataLock);
             if (mData == NULL) {
                 mData = new CipherData(bundledKey, iv);
                 return TRUE;

@@ -93,7 +93,7 @@ ECode CInstrumentationActivityMonitor::WaitForActivity(
     VALIDATE_NOT_NULL(activity)
     *activity = NULL;
 
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     if (mLastActivity == NULL) {
         // try {
         // TODO
@@ -115,7 +115,7 @@ ECode CInstrumentationActivityMonitor::WaitForActivityWithTimeout(
     VALIDATE_NOT_NULL(activity);
     *activity = NULL;
 
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     if (mLastActivity == NULL) {
         // try {
         // TODO
@@ -144,7 +144,7 @@ ECode CInstrumentationActivityMonitor::Match(
     VALIDATE_NOT_NULL(result)
     *result = FALSE;
 
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     if (mWhich != NULL) {
         AutoPtr<IContentResolver> cr;
         who->GetContentResolver((IContentResolver**)&cr);

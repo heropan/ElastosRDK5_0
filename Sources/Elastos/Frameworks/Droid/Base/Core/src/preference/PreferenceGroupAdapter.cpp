@@ -154,7 +154,7 @@ ECode PreferenceGroupAdapter::GetInterfaceID(
 void PreferenceGroupAdapter::SyncMyPreferences()
 {
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         if (mIsSyncing) {
             return;
         }
@@ -171,7 +171,7 @@ void PreferenceGroupAdapter::SyncMyPreferences()
 
     BaseAdapter::NotifyDataSetChanged();
 
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mIsSyncing = FALSE;
     mLock.NotifyAll();
 }

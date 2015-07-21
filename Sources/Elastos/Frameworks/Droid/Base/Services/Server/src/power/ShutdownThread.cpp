@@ -677,7 +677,7 @@ void ShutdownThread::BeginShutdownSequence(
 
 void ShutdownThread::ActionDone()
 {
-    Object::Autolock lock(mActionDoneSync);
+    AutoLock lock(mActionDoneSync);
     mActionDone = TRUE;
     mActionDoneSync.NotifyAll();
 }
@@ -737,7 +737,7 @@ ECode ShutdownThread::Run()
 
         Int64 endTime = SystemClock::GetElapsedRealtime() + MAX_BROADCAST_TIME;
         {
-            Object::Autolock lock(mActionDoneSync);
+            AutoLock lock(mActionDoneSync);
             while (!mActionDone) {
                 Int64 delay = endTime - SystemClock::GetElapsedRealtime();
                 if (delay <= 0) {
@@ -782,7 +782,7 @@ ECode ShutdownThread::Run()
         mActionDone = FALSE;
         Int64 endShutTime = SystemClock::GetElapsedRealtime() + MAX_SHUTDOWN_WAIT_TIME;
         {
-            Object::Autolock lock(mActionDoneSync);
+            AutoLock lock(mActionDoneSync);
             // try {
             // final IMountService mount = IMountService.Stub.asInterface(
             //         ServiceManager.checkService("mount"));

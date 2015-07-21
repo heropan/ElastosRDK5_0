@@ -152,14 +152,14 @@ ECode ViewServer::ViewServerWorker::Run()
 
 void ViewServer::ViewServerWorker::WindowsChanged()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mNeedWindowListUpdate = TRUE;
     mLock.NotifyAll();
 }
 
 void ViewServer::ViewServerWorker::FocusChanged()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mNeedFocusedWindowUpdate = TRUE;
     mLock.NotifyAll();
 }
@@ -192,7 +192,7 @@ Boolean ViewServer::ViewServerWorker::WindowManagerAutolistLoop()
         Boolean needFocusedWindowUpdate = FALSE;
 
         {
-            Object::Autolock lock(mLock);
+            AutoLock lock(mLock);
             while (!mNeedWindowListUpdate && !mNeedFocusedWindowUpdate) {
                 mLock.Wait();
             }

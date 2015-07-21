@@ -133,7 +133,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutString(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<ICharSequence> pValue;
     CStringWrapper::New(value, (ICharSequence**)&pValue);
     mModified[key] = pValue;
@@ -144,7 +144,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutStringSet(
     /* [in] */ const String& key,
     /* [in] */ ISet* values)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<ISet> newValues;
     if (values != NULL) {
         CHashSet::New(values, (ISet**)&newValues);
@@ -157,7 +157,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutInt32(
     /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<IInteger32> pValue;
     CInteger32::New(value, (IInteger32**)&pValue);
     mModified[key] = pValue;
@@ -168,7 +168,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutInt64(
     /* [in] */ const String& key,
     /* [in] */ Int64 value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<IInteger64> pValue;
     CInteger64::New(value, (IInteger64**)&pValue);
     mModified[key] = pValue;
@@ -179,7 +179,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutFloat(
     /* [in] */ const String& key,
     /* [in] */ Float value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<IFloat> pValue;
     CFloat::New(value, (IFloat**)&pValue);
     mModified[key] = pValue;
@@ -190,7 +190,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutBoolean(
     /* [in] */ const String& key,
     /* [in] */ Boolean value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AutoPtr<IBoolean> pValue;
     CBoolean::New(value, (IBoolean**)&pValue);
     mModified[key] = pValue;
@@ -200,14 +200,14 @@ ECode SharedPreferencesImpl::EditorImpl::PutBoolean(
 ECode SharedPreferencesImpl::EditorImpl::Remove(
     /* [in] */ const String& key)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mModified[key] = this;
     return NOERROR;
 }
 
 ECode SharedPreferencesImpl::EditorImpl::Clear()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mClear = TRUE;
     return NOERROR;
 }
@@ -235,7 +235,7 @@ AutoPtr<SharedPreferencesImpl::MemoryCommitResult> SharedPreferencesImpl::Editor
 {
     AutoPtr<SharedPreferencesImpl::MemoryCommitResult> mcr = new MemoryCommitResult();
     {
-        Object::Autolock lock(mHost);
+        AutoLock lock(mHost);
         // We optimistically don't make a deep copy until
         // a memory commit comes in when we're already
         // writing to disk.
@@ -252,7 +252,7 @@ AutoPtr<SharedPreferencesImpl::MemoryCommitResult> SharedPreferencesImpl::Editor
         }
 
         {
-            Object::Autolock lock(this);
+            AutoLock lock(this);
             if (mClear) {
                 if (!mHost->mMap->IsEmpty()) {
                     mcr->mChangesMade = TRUE;
@@ -349,7 +349,7 @@ SharedPreferencesImpl::LoadFromDiskLockedRunnable::LoadFromDiskLockedRunnable(
 
 ECode SharedPreferencesImpl::LoadFromDiskLockedRunnable::Run()
 {
-    Object::Autolock lock(mHost);
+    AutoLock lock(mHost);
     mHost->LoadFromDiskLocked();
     return NOERROR;
 }
@@ -367,11 +367,11 @@ SharedPreferencesImpl::WriteToDiskRunnable::WriteToDiskRunnable(
 ECode SharedPreferencesImpl::WriteToDiskRunnable::Run()
 {
     {
-        Object::Autolock lock(mHost->mWritingToDiskLock);
+        AutoLock lock(mHost->mWritingToDiskLock);
         mHost->WriteToFile(mMcr);
     }
     {
-        Object::Autolock lock(mHost);
+        AutoLock lock(mHost);
         mHost->mDiskWritesInFlight--;
     }
     if (mPostWriteRunnable != NULL) {
@@ -429,7 +429,7 @@ ECode SharedPreferencesImpl::GetInterfaceID(
 void SharedPreferencesImpl::StartLoadFromDisk()
 {
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         mLoaded = FALSE;
     }
     LoadFromDiskLockedRunnable* runnable = new LoadFromDiskLockedRunnable(this);
@@ -531,7 +531,7 @@ AutoPtr<IFile> SharedPreferencesImpl::MakeBackupFile(
 
 void SharedPreferencesImpl::StartReloadIfChangedUnexpectedly()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     // TODO: wait for any pending writes to disk?
     if (!HasFileChangedUnexpectedly()) {
         return;
@@ -542,7 +542,7 @@ void SharedPreferencesImpl::StartReloadIfChangedUnexpectedly()
 Boolean SharedPreferencesImpl::HasFileChangedUnexpectedly()
 {
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         if (mDiskWritesInFlight > 0) {
             // If we know we caused it, it's not unexpected.
             //if (DEBUG) Log.d(TAG, "disk write in flight, not unexpected.");
@@ -572,7 +572,7 @@ Boolean SharedPreferencesImpl::HasFileChangedUnexpectedly()
     }
 
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         Int64 st_mtime = 0;
         Int64 st_size = 0;
         stat->GetMtime(&st_mtime);
@@ -584,7 +584,7 @@ Boolean SharedPreferencesImpl::HasFileChangedUnexpectedly()
 ECode SharedPreferencesImpl::RegisterOnSharedPreferenceChangeListener(
     /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mListeners[listener] = mContent;
     return NOERROR;
 }
@@ -592,7 +592,7 @@ ECode SharedPreferencesImpl::RegisterOnSharedPreferenceChangeListener(
 ECode SharedPreferencesImpl::UnregisterOnSharedPreferenceChangeListener(
     /* [in] */ ISharedPreferencesOnSharedPreferenceChangeListener* listener)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     HashMap<AutoPtr<ISharedPreferencesOnSharedPreferenceChangeListener>, AutoPtr<IInterface> >::Iterator it = mListeners.Find(listener);
     mListeners.Erase(it);
     return NOERROR;
@@ -623,7 +623,7 @@ ECode SharedPreferencesImpl::GetAll(
     VALIDATE_NOT_NULL(result);
     CObjectMap::New(result);
 
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AwaitLoadedLocked();
     //noinspection unchecked
     HashMap<String, AutoPtr<IInterface> >::Iterator it;
@@ -641,7 +641,7 @@ ECode SharedPreferencesImpl::GetString(
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value);
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     *value = defValue;
 
     AwaitLoadedLocked();
@@ -665,7 +665,7 @@ ECode SharedPreferencesImpl::GetStringSet(
     /* [out] */ ISet** values)
 {
     VALIDATE_NOT_NULL(values)
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AwaitLoadedLocked();
     HashMap<String, AutoPtr<IInterface> >::Iterator it = mMap->Find(key);
     AutoPtr<ISet> v;
@@ -683,7 +683,7 @@ ECode SharedPreferencesImpl::GetInt32(
     /* [out] */ Int32* value)
 {
     VALIDATE_NOT_NULL(value);
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     *value = defValue;
 
     AwaitLoadedLocked();
@@ -707,7 +707,7 @@ ECode SharedPreferencesImpl::GetInt64(
     /* [out] */ Int64* value)
 {
     VALIDATE_NOT_NULL(value);
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     *value = defValue;
 
     AwaitLoadedLocked();
@@ -731,7 +731,7 @@ ECode SharedPreferencesImpl::GetFloat(
     /* [out] */ Float* value)
 {
     VALIDATE_NOT_NULL(value);
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     *value = defValue;
 
     AwaitLoadedLocked();
@@ -755,7 +755,7 @@ ECode SharedPreferencesImpl::GetBoolean(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value);
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     *value = defValue;
 
     AwaitLoadedLocked();
@@ -778,7 +778,7 @@ ECode SharedPreferencesImpl::Contains(
     /* [out] */ Boolean* isContain) {
     VALIDATE_NOT_NULL(isContain);
 
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     AwaitLoadedLocked();
     if (key.IsNull()) {
         *isContain = FALSE;
@@ -805,7 +805,7 @@ ECode SharedPreferencesImpl::Edit(
     // ... all without blocking.
     VALIDATE_NOT_NULL(result);
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         AwaitLoadedLocked();
     }
     AutoPtr<EditorImpl> editorImpl = new EditorImpl(this);
@@ -828,7 +828,7 @@ void SharedPreferencesImpl::EnqueueDiskWrite(
     if (isFromSyncCommit) {
         Boolean wasEmpty = FALSE;
         {
-            Object::Autolock lock(this);
+            AutoLock lock(this);
             wasEmpty = mDiskWritesInFlight == 1;
         }
         if (wasEmpty) {
@@ -941,7 +941,7 @@ void SharedPreferencesImpl::WriteToFile(
     FAIL_GOTO(libcore->GetOs((IOs**)&os), failed);
     FAIL_GOTO(os->Stat(path, (IStructStat**)&stat), failed);
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         stat->GetMtime(&mStatTimestamp);
         stat->GetSize(&mStatSize);
     }

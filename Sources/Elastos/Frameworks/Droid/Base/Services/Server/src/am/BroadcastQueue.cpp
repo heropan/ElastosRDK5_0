@@ -50,7 +50,7 @@ ECode BroadcastQueue::MyHandler::HandleMessage(
             mHost->ProcessNextBroadcast(TRUE);
             break;
         case BroadcastQueue::BROADCAST_TIMEOUT_MSG: {   // (CActivityManagerService::FIRST_BROADCAST_QUEUE_MSG + 1)
-            Object::Autolock lock(mHost->mService->mLock);
+            AutoLock lock(mHost->mService->mLock);
             mHost->BroadcastTimeoutLocked(TRUE);
             break;
         }
@@ -488,7 +488,7 @@ void BroadcastQueue::DeliverToRegisteredReceiverLocked(
 ECode BroadcastQueue::ProcessNextBroadcast(
     /* [in] */ Boolean fromMsg)
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     AutoPtr<BroadcastRecord> r;
     if (DEBUG_BROADCAST) {
         Slogger::V(TAG, "processNextBroadcast [%s]: %d broadcasts, %d ordered broadcasts"

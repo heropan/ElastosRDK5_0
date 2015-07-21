@@ -253,14 +253,14 @@ CSettingsProvider::SettingsCache::SettingsCache(
 
 Boolean CSettingsProvider::SettingsCache::FullyMatchesDisk()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     return mCacheFullyMatchesDisk;
 }
 
 void CSettingsProvider::SettingsCache::SetFullyMatchesDisk(
     /* [in] */ Boolean value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mCacheFullyMatchesDisk = value;
 }
 
@@ -289,7 +289,7 @@ AutoPtr<IBundle> CSettingsProvider::SettingsCache::PutIfAbsent(
         helper->ForPair(String("value"), value, (IBundle**)&bundle);
     }
     if (value.IsNull() || (Int32)value.GetLength() <= MAX_CACHE_ENTRY_SIZE) {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         if (Get(key) == NULL) {
             Put(key, bundle);
         }
@@ -319,7 +319,7 @@ void CSettingsProvider::SettingsCache::Populate(
     /* [in] */ const String& name,
     /* [in] */ const String& value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     if (value.IsNull() || (Int32)value.GetLength() <= MAX_CACHE_ENTRY_SIZE) {
         AutoPtr<IBundleHelper> helper;
         CBundleHelper::AcquireSingleton((IBundleHelper**)&helper);
@@ -338,7 +338,7 @@ Boolean CSettingsProvider::SettingsCache::IsRedundantSetValue(
     /* [in] */ const String& value)
 {
     if (cache == NULL) return FALSE;
-    Object::Autolock lock(cache);
+    AutoLock lock(cache);
     AutoPtr<IBundle> bundle = cache->Get(name);
     if (bundle == NULL) return FALSE;
     String oldValue;
@@ -744,7 +744,7 @@ void CSettingsProvider::FullyPopulateCache(
             String("") + StringUtils::Int32ToString(MAX_CACHE_ENTRIES + 1), (ICursor**)&c);
     // try {
     {
-        Object::Autolock lock(cache);
+        AutoLock lock(cache);
         cache->EvictAll();
         cache->SetFullyMatchesDisk(TRUE);  // optimistic
         Int32 rows = 0;
@@ -889,7 +889,7 @@ void CSettingsProvider::InvalidateCache(
     if (cache == NULL) {
         return;
     }
-    Object::Autolock lock(cache);
+    AutoLock lock(cache);
     cache->EvictAll();
     cache->mCacheFullyMatchesDisk = FALSE;
 }
@@ -1025,7 +1025,7 @@ AutoPtr<IBundle> CSettingsProvider::LookupValue(
         return NULL;
     }
     {
-        Object::Autolock lock(cache);
+        AutoLock lock(cache);
         AutoPtr<IBundle> value = cache->Get(key);
         if (value != NULL) {
             if (value != TOO_LARGE_TO_CACHE_MARKER) {

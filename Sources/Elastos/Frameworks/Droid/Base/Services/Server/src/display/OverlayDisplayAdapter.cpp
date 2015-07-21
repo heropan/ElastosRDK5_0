@@ -181,7 +181,7 @@ ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated(
     /* [in] */ Float refreshRate)
 {
     Slogger::D(TAG, "===================OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated()===========");
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
 
     AutoPtr<ISurfaceHelper> surfaceHelper;
     CSurfaceHelper::AcquireSingleton((ISurfaceHelper**)&surfaceHelper);
@@ -196,7 +196,7 @@ ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowCreated(
 
 ECode OverlayDisplayAdapter::OverlayDisplayHandle::OnWindowDestroyed()
 {
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     if (mDevice != NULL) {
         mDevice->ClearSurfaceTextureLocked();
         mHost->SendDisplayDeviceEventLocked(mDevice, DISPLAY_DEVICE_EVENT_REMOVED);
@@ -228,7 +228,7 @@ void OverlayDisplayAdapter::OverlayDisplayHandle::HandleShow()
         mGravity, this);
     window->Show();
     {
-        Object::Autolock lock(mHost->GetSyncRoot());
+        AutoLock lock(mHost->GetSyncRoot());
         mWindow = window;
     }
 }
@@ -237,7 +237,7 @@ void OverlayDisplayAdapter::OverlayDisplayHandle::HandleDismiss()
 {
     AutoPtr<OverlayDisplayWindow> window;
     {
-        Object::Autolock lock(mHost->GetSyncRoot());
+        AutoLock lock(mHost->GetSyncRoot());
         window = mWindow;
         mWindow = NULL;
     }
@@ -330,7 +330,7 @@ void OverlayDisplayAdapter::RegisterLocked()
 
 void OverlayDisplayAdapter::UpdateOverlayDisplayDevices()
 {
-    Object::Autolock lock(GetSyncRoot());
+    AutoLock lock(GetSyncRoot());
 
     UpdateOverlayDisplayDevicesLocked();
 }

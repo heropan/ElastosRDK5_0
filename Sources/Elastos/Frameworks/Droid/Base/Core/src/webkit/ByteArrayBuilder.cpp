@@ -61,7 +61,7 @@ void ByteArrayBuilder::Chunk::ReleaseResources()
 {
     mLength = 0;
     {
-        Object::Autolock lock(sPoolObject);
+        AutoLock lock(sPoolObject);
         // Add the chunk back to the pool as a SoftReference so it can
         // be gc'd if needed.
         AutoPtr<IWeakReference> weakChunk;
@@ -211,7 +211,7 @@ AutoPtr<ByteArrayBuilder::Chunk> ByteArrayBuilder::ObtainChunk(
     }
 
     {
-        Object::Autolock lock(sPoolObject);
+        AutoLock lock(sPoolObject);
         // Process any queued references and remove them from the pool.
         ProcessPoolLocked();
         Boolean bFlag = FALSE;

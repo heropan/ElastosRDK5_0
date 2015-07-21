@@ -225,7 +225,7 @@ ECode ActivityStack::ThumbnailRetriever::GetThumbnail(
 
 ECode ActivityStack::HandleSleepTimeout()
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     if (mService->IsSleeping()) {
         Slogger::W(TAG, "Sleep timeout!  Sleeping now.");
         mSleepTimeout = TRUE;
@@ -241,7 +241,7 @@ ECode ActivityStack::HandlePauseTimeout(
     // so we need to be conservative and assume it isn't.
     Slogger::W(TAG, "Activity pause timeout for %s", r->ToString().string());
     {
-        Object::Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
         if (r != NULL && r->mApp != NULL) {
             String rStr;
             r->ToString(&rStr);
@@ -276,7 +276,7 @@ ECode ActivityStack::HandleIdleTimeout(
 ECode ActivityStack::HandleLaunchTick(
     /* [in] */ ActivityRecord* r)
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     if (r != NULL && r->ContinueLaunchTickingLocked()) {
         String rStr;
         r->ToString(&rStr);
@@ -292,7 +292,7 @@ ECode ActivityStack::HandleStopTimeout(
     // We don't at this point know if the activity is fullscreen,
     // so we need to be conservative and assume it isn't.
     Slogger::W(TAG, "Activity stop timeout for %s", r->ToString().string());
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     return ActivityStoppedLocked(r, NULL, NULL, NULL);
 }
 
@@ -307,7 +307,7 @@ ECode ActivityStack::HandleLaunchTimeout()
         return mHandler->SendMessageDelayed(nmsg, LAUNCH_TIMEOUT, &result);
     }
 
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     Boolean held;
     mLaunchingActivity->IsHeld(&held);
     if (held) {
@@ -319,7 +319,7 @@ ECode ActivityStack::HandleLaunchTimeout()
 
 ECode ActivityStack::HandleResumeTopActivity()
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
 
     ResumeTopActivityLocked(NULL);
     return NOERROR;
@@ -328,7 +328,7 @@ ECode ActivityStack::HandleResumeTopActivity()
 ECode ActivityStack::HandleDestroyActivities(
     /* [in] */ ScheduleDestroyArgs* args)
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     DestroyActivitiesLocked(args->mOwner, args->mOomAdj, args->mReason);
     return NOERROR;
 }
@@ -1156,7 +1156,7 @@ ECode ActivityStack::ActivityResumed(
 {
     AutoPtr<ActivityRecord> r;
 
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     Int32 index = GetIndexOfTokenLocked(token);
     if (index >= 0) {
         r = mHistory[index];
@@ -1180,7 +1180,7 @@ ECode ActivityStack::ActivityPaused(
 
     AutoPtr<ActivityRecord> r;
 
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     Int32 index = GetIndexOfTokenLocked(token);
     if (index >= 0) {
         r = mHistory[index];
@@ -1965,7 +1965,7 @@ Boolean ActivityStack::ResumeTopActivityLocked(
         // the screen based on the new activity order.
         Boolean updated = FALSE;
         if (mMainStack) {
-            Object::Autolock lock(mService->mLock);
+            AutoLock lock(mService->mLock);
 
             AutoPtr<IConfiguration> config;
             Boolean res;
@@ -3695,7 +3695,7 @@ ECode ActivityStack::StartActivityMayWait(
     AutoPtr<IActivityInfo> aInfo = ResolveActivity(intent, resolvedType, startFlags,
                 profileFile, profileFd, userId);
 
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
 
     Int32 callingPid;
     if (callingUid >= 0) {
@@ -3932,7 +3932,7 @@ ECode ActivityStack::StartActivities(
     Int64 origId = Binder::ClearCallingIdentity();
     // try {
     {
-        Object::Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
 
         for (Int32 i = 0; i < intents->GetLength(); i++) {
             AutoPtr<IIntent> intent = (*intents)[i];
@@ -4241,7 +4241,7 @@ AutoPtr<ActivityRecord> ActivityStack::ActivityIdleInternal(
     Boolean activityRemoved = FALSE;
 
     {
-        Object::Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
 
         AutoPtr<ActivityRecord> r;
         ActivityRecord::ForToken(token, (ActivityRecord**)&r);
@@ -4343,7 +4343,7 @@ AutoPtr<ActivityRecord> ActivityStack::ActivityIdleInternal(
         for (it = stops->Begin(); it != stops->End(); ++it) {
             AutoPtr<ActivityRecord> r = *it;
             {
-                Object::Autolock lock(mService->mLock);
+                AutoLock lock(mService->mLock);
                 if (r->mFinishing) {
                     AutoPtr<ActivityRecord> outR;
                     FinishCurrentActivityLocked(r, FINISH_IMMEDIATELY, FALSE, (ActivityRecord**)&outR);
@@ -4361,7 +4361,7 @@ AutoPtr<ActivityRecord> ActivityStack::ActivityIdleInternal(
         for(it = finishes->Begin(); it != finishes->End(); ++it) {
             AutoPtr<ActivityRecord> r = *it;
             {
-                Object::Autolock lock(mService->mLock);
+                AutoLock lock(mService->mLock);
                 activityRemoved = DestroyActivityLocked(r, TRUE, FALSE, String("finish-idle"));
             }
         }
@@ -5045,7 +5045,7 @@ Boolean ActivityStack::DestroyActivityLocked(
 ECode ActivityStack::ActivityDestroyed(
     /* [in] */ IBinder* token)
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     const Int64 origId = Binder::ClearCallingIdentity();
    // try {
     AutoPtr<ActivityRecord> r;

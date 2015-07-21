@@ -7,11 +7,14 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_DECL(CSystemProperties, Singleton, ISystemProperties)
+
+CAR_SINGLETON_DECL(CSystemProperties)
+
 ECode CSystemProperties::Get(
     /* [in] */ const String& key,
     /* [out] */ String* value)
 {
-    VALIDATE_NOT_NULL(value)
     return SystemProperties::Get(key, value);
 }
 
@@ -20,7 +23,6 @@ ECode CSystemProperties::Get(
     /* [in] */ const String& def,
     /* [out] */ String* value)
 {
-    VALIDATE_NOT_NULL(value)
     return SystemProperties::Get(key, def, value);
 }
 
@@ -58,15 +60,13 @@ ECode CSystemProperties::Set(
     /* [in] */ const String& key,
     /* [in] */ const String& val)
 {
-    SystemProperties::Set(key, val);
-    return NOERROR;
+    return SystemProperties::Set(key, val);
 }
 
 ECode CSystemProperties::AddChangeCallback(
     /* [in] */ IRunnable* cb)
 {
-    SystemProperties::AddChangeCallback(cb);
-    return NOERROR;
+    return SystemProperties::AddChangeCallback(cb);
 }
 
 } // namespace Os

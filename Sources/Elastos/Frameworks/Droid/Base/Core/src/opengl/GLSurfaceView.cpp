@@ -666,7 +666,7 @@ ECode GLSurfaceView::GLThread::SetRenderMode(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     mRenderMode = renderMode;
     sLockMgr.NotifyAll();
 
@@ -675,13 +675,13 @@ ECode GLSurfaceView::GLThread::SetRenderMode(
 
 Int32 GLSurfaceView::GLThread::GetRenderMode()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     return mRenderMode;
 }
 
 ECode GLSurfaceView::GLThread::RequestRender()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     mRequestRender = TRUE;
     sLockMgr.NotifyAll();
     return NOERROR;
@@ -689,7 +689,7 @@ ECode GLSurfaceView::GLThread::RequestRender()
 
 ECode GLSurfaceView::GLThread::SurfaceCreated()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     if (LOG_THREADS) {
         Int64 tid;
         GetId(&tid);
@@ -719,7 +719,7 @@ ECode GLSurfaceView::GLThread::SurfaceCreated()
 
 ECode GLSurfaceView::GLThread::SurfaceDestroyed()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     if (LOG_THREADS) {
         Int64 id;
         GetId(&id);
@@ -741,7 +741,7 @@ ECode GLSurfaceView::GLThread::SurfaceDestroyed()
 
 ECode GLSurfaceView::GLThread::OnPause()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     if (LOG_PAUSE_RESUME) {
         Int64 id;
         GetId(&id);
@@ -788,7 +788,7 @@ ECode GLSurfaceView::GLThread::OnWindowResize(
     /* [in] */ Int32 w,
     /* [in] */ Int32 h)
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     mWidth = w;
     mHeight = h;
     mSizeChanged = TRUE;
@@ -814,7 +814,7 @@ ECode GLSurfaceView::GLThread::OnWindowResize(
 
 ECode GLSurfaceView::GLThread::RequestExitAndWait()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     mShouldExit = TRUE;
     sLockMgr.NotifyAll();
     while (! mExited) {
@@ -839,7 +839,7 @@ ECode GLSurfaceView::GLThread::QueueEvent(
     if (r == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     mEventQueue.PushBack(r);
     sLockMgr.NotifyAll();
     return NOERROR;
@@ -885,7 +885,7 @@ ECode GLSurfaceView::GLThread::GuardedRun()
 
         while (TRUE) {
             {
-                Object::Autolock lock(sLockMgr);
+                AutoLock lock(sLockMgr);
                 while (TRUE) {
                     if (mShouldExit) {
                         return NOERROR;
@@ -1023,7 +1023,7 @@ ECode GLSurfaceView::GLThread::GuardedRun()
                                 if (FAILED(ec)) {
                                     sGLThreadManager->ReleaseEglContextLocked(this);
                                     {
-                                        Object::Autolock lock(sLockMgr);
+                                        AutoLock lock(sLockMgr);
                                         StopEglSurfaceLocked();
                                         StopEglContextLocked();
                                     }
@@ -1087,7 +1087,7 @@ ECode GLSurfaceView::GLThread::GuardedRun()
                     }
                     if(FAILED(sLockMgr.Wait())) {
                         {
-                            Object::Autolock lock(sLockMgr);
+                            AutoLock lock(sLockMgr);
                             StopEglSurfaceLocked();
                             StopEglContextLocked();
                         }
@@ -1109,7 +1109,7 @@ ECode GLSurfaceView::GLThread::GuardedRun()
                 mEglHelper->CreateSurface(&created);
                 if (!created) {
                     {
-                        Object::Autolock lock(sLockMgr);
+                        AutoLock lock(sLockMgr);
                         mSurfaceIsBad = TRUE;
                         sLockMgr.NotifyAll();
                     }
@@ -1188,7 +1188,7 @@ ECode GLSurfaceView::GLThread::GuardedRun()
                     EglHelper::LogEglErrorAsWarning(String("GLThread"), String("eglSwapBuffers"), swapError);
 
                     {
-                        Object::Autolock lock(sLockMgr);
+                        AutoLock lock(sLockMgr);
                         mSurfaceIsBad = TRUE;
                         sLockMgr.NotifyAll();
                     }
@@ -1220,7 +1220,7 @@ GLSurfaceView::GLThreadManager::GLThreadManager()
 ECode GLSurfaceView::GLThreadManager::ThreadExiting(
     /* [in] */ GLThread* thread)
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     if (LOG_THREADS) {
         Int64 id;
         thread->GetId(&id);
@@ -1268,7 +1268,7 @@ ECode GLSurfaceView::GLThreadManager::ReleaseEglContextLocked(
 
 Boolean GLSurfaceView::GLThreadManager::ShouldReleaseEGLContextWhenPausing()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     // Release the EGL context when pausing even if
     // the hardware supports multiple EGL contexts.
     // Otherwise the device could run out of EGL contexts.
@@ -1277,7 +1277,7 @@ Boolean GLSurfaceView::GLThreadManager::ShouldReleaseEGLContextWhenPausing()
 
 Boolean GLSurfaceView::GLThreadManager::ShouldTerminateEGLWhenPausing()
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     CheckGLESVersion();
     return !mMultipleGLESContextsAllowed;
 }
@@ -1285,7 +1285,7 @@ Boolean GLSurfaceView::GLThreadManager::ShouldTerminateEGLWhenPausing()
 ECode GLSurfaceView::GLThreadManager::CheckGLDriver(
     /* [in] */ IGL10* gl)
 {
-    Object::Autolock lock(sLockMgr);
+    AutoLock lock(sLockMgr);
     if (! mGLESDriverCheckComplete) {
         CheckGLESVersion();
         String renderer;

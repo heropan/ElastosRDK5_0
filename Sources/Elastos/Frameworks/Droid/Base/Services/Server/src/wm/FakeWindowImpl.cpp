@@ -109,7 +109,7 @@ void FakeWindowImpl::Layout(
 
 ECode FakeWindowImpl::Dismiss()
 {
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     if (mService->RemoveFakeWindowLocked((IFakeWindow*)this)) {
         mInputEventReceiver->Dispose();
         mService->mInputManager->UnregisterInputChannel(mServerChannel);

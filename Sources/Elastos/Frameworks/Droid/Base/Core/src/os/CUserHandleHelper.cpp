@@ -1,10 +1,13 @@
-#include <ext/frameworkdef.h>
 #include "os/CUserHandleHelper.h"
 #include "os/UserHandle.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
+
+CAR_INTERFACE_IMPL(CUserHandleHelper, Singleton, IUserHandleHelper)
+
+CAR_SINGLETON_IMPL(CUserHandleHelper)
 
 ECode CUserHandleHelper::IsSameUser(
     /* [in] */ Int32 uid1,

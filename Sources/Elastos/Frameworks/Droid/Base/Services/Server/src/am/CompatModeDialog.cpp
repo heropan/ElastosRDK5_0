@@ -25,7 +25,7 @@ ECode CompatModeDialog::CompatEnabledListener::OnCheckedChanged(
     /* [in] */ ICompoundButton* buttonView,
     /* [in] */ Boolean isChecked)
 {
-    Object::Autolock lock(mHost->mService->mLock);
+    AutoLock lock(mHost->mService->mLock);
     String appInfoPkgName;
     mHost->mAppInfo->GetPackageName(&appInfoPkgName);
     Boolean checked;
@@ -44,7 +44,7 @@ ECode CompatModeDialog::AlwaysShowListener::OnCheckedChanged(
     /* [in] */ ICompoundButton* buttonView,
     /* [in] */ Boolean isChecked)
 {
-    Object::Autolock lock(mHost->mService->mLock);
+    AutoLock lock(mHost->mService->mLock);
     String appInfoPkgName;
     mHost->mAppInfo->GetPackageName(&appInfoPkgName);
     Boolean checked;
@@ -198,7 +198,7 @@ ECode CompatModeDialog::OnCreateContextMenu(
 
 void CompatModeDialog::UpdateControls()
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
     Int32 mode = mService->mCompatModePackages->ComputeCompatModeLocked(mAppInfo);
     ICheckable::Probe(mCompatEnabled)->SetChecked(mode == IActivityManager::COMPAT_MODE_ENABLED);
     String appInfoPkgName;

@@ -467,6 +467,10 @@ public:
      * @hide
      */
     static const Boolean IS_DEBUGGABLE;
+
+private:
+    Build();
+    Build(const Build&);
 };
 
 

@@ -10,7 +10,7 @@ ECode CRestoreObserver::RestoreSetsAvailable(
     /* [in] */ ArrayOf<Elastos::Droid::App::Backup::IRestoreSet *> * pResult)
 {
     // TODO: Add your code here
-    Object::Autolock lock(mRestoreObserverlock);
+    AutoLock lock(mRestoreObserverlock);
     mSet = pResult;
     mDone = TRUE;
     mRestoreObserverlock.NotifyAll();
@@ -40,7 +40,7 @@ ECode CRestoreObserver::RestoreFinished(
     // TODO: Add your code here
     printf("Backup RestoreObserver::RestoreFinished[%d]\n", error);
     {
-        Object::Autolock lock(mRestoreObserverlock);
+        AutoLock lock(mRestoreObserverlock);
         mDone = TRUE;
         mRestoreObserverlock.NotifyAll();
     }
@@ -56,7 +56,7 @@ ECode CRestoreObserver::ToString(
 
 ECode CRestoreObserver::WaitForCompletion()
 {
-    Object::Autolock lock(mRestoreObserverlock);
+    AutoLock lock(mRestoreObserverlock);
     while(!mDone) {
         mRestoreObserverlock.Wait();
     }

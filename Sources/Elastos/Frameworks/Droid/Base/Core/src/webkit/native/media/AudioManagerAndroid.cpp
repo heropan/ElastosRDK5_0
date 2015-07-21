@@ -96,7 +96,7 @@ ECode AudioManagerAndroid::WiredHeadsetBroadcastReceiver::OnReceive(
     }
     switch (state) {
         case STATE_UNPLUGGED: {
-                Object::Autolock lock(mOwner->mLock);
+                AutoLock lock(mOwner->mLock);
                 // Wired headset and earpiece are mutually exclusive.
                 (*mAudioDevices)[DEVICE_WIRED_HEADSET] = FALSE;
                 if (HasEarpiece()) {
@@ -105,7 +105,7 @@ ECode AudioManagerAndroid::WiredHeadsetBroadcastReceiver::OnReceive(
             }
             break;
         case STATE_PLUGGED: {
-                Object::Autolock lock(mOwner->mLock);
+                AutoLock lock(mOwner->mLock);
                 // Wired headset and earpiece are mutually exclusive.
                 (*mAudioDevices)[DEVICE_WIRED_HEADSET] = TRUE;
                 (*mAudioDevices)[DEVICE_EARPIECE] = FALSE;
@@ -167,13 +167,13 @@ ECode AudioManagerAndroid::BluetoothHeadsetBroadcastReceiver::OnReceive(
             // since BT SCO will be disconnected automatically when
             // the BT headset is disabled.
             {
-                Object::Autolock lock(mOwner->mLock);
+                AutoLock lock(mOwner->mLock);
                 // Remove the BT device from the list of devices.
                 mAudioDevices[DEVICE_BLUETOOTH_HEADSET] = FALSE;
             }
             break;
         case android::bluetooth::BluetoothProfile::STATE_CONNECTED: {
-                Object::Autolock lock(mOwner->mLock);
+                AutoLock lock(mOwner->mLock);
                 // Add the BT device to the list of devices.
                 mAudioDevices[DEVICE_BLUETOOTH_HEADSET] = TRUE;
             }
@@ -610,7 +610,7 @@ Boolean AudioManagerAndroid::SetDevice(
     if (intDeviceId == DEVICE_DEFAULT) {
         AutoPtr< ArrayOf<Boolean> > devices;
         {
-            Object::Autolock lock(mLock);
+            AutoLock lock(mLock);
             devices = mAudioDevices->Clone();
             mRequestedAudioDevice = DEVICE_DEFAULT;
         }
@@ -627,7 +627,7 @@ Boolean AudioManagerAndroid::SetDevice(
     }
 
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mRequestedAudioDevice = intDeviceId;
     }
 
@@ -657,7 +657,7 @@ AutoPtr< ArrayOf<AudioDeviceName> > AudioManagerAndroid::GetAudioInputDeviceName
 
     AutoPtr< ArrayOf<Boolean> > devices;
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         devices = mAudioDevices->Clone();
     }
     List<String> list = new ArrayList<String>();
@@ -1161,7 +1161,7 @@ Int32 AudioManagerAndroid::SelectDefaultDevice(
 /** Returns true if setDevice() has been called with a valid device id. */
 Boolean AudioManagerAndroid::DeviceHasBeenRequested()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     return (mRequestedAudioDevice != DEVICE_INVALID);
 }
 
@@ -1176,7 +1176,7 @@ void AudioManagerAndroid::UpdateDeviceActivation()
     Int32 requested = DEVICE_INVALID;
 
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         requested = mRequestedAudioDevice;
         devices = mAudioDevices->Clone();
     }
@@ -1221,7 +1221,7 @@ Int32 AudioManagerAndroid::GetNumOfAudioDevices(
  */
 void AudioManagerAndroid::ReportUpdate()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     List<String> devices = new ArrayList<String>();
     for (Int32 i = 0; i < DEVICE_COUNT; ++i) {
         if (mAudioDevices[i])

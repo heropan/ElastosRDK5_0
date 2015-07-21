@@ -75,7 +75,7 @@ Boolean JellyBeanAccessibilityInjector::CallbackHandler::PerformAction(
 Boolean JellyBeanAccessibilityInjector::CallbackHandler::GetResultAndClear(
     /* [in] */ Int32 resultId)
 {
-    Object::Autolock lock(mResultLock);
+    AutoLock lock(mResultLock);
     const Boolean success = WaitForResultTimedLocked(resultId);
     const Boolean result = success ? mResult : FALSE;
     ClearResultLocked();
@@ -138,7 +138,7 @@ void JellyBeanAccessibilityInjector::CallbackHandler::OnResult(
     // }
 
     {
-        Object::Autolock lock(mResultLock);
+        AutoLock lock(mResultLock);
         if (resultId > mResultId) {
             mResult = Boolean.parseBoolean(result);
             mResultId = resultId;

@@ -1,9 +1,10 @@
 
 #include "os/SystemProperties.h"
-#include "os/ServiceManager.h"
-#include "os/Process.h"
-#include "graphics/CBitmapFactory.h"
-#include "privacy/CPrivacySettingsManager.h"
+//#include "os/ServiceManager.h"
+//#include "os/Process.h"
+//#include "graphics/CBitmapFactory.h"
+//#include "privacy/CPrivacySettingsManager.h"
+#include <elastos/core/AutoLock.h>
 #include <cutils/properties.h>
 #include "utils/misc.h"
 #include <stdio.h>
@@ -15,13 +16,13 @@ using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
-using Elastos::Droid::Os::ServiceManager;
-using Elastos::Droid::Os::Process;
+//using Elastos::Droid::Os::ServiceManager;
+//using Elastos::Droid::Os::Process;
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IBitmapFactory;
-using Elastos::Droid::Graphics::CBitmapFactory;
-using Elastos::Droid::Graphics::BitmapCompressFormat_JPEG;
-using Elastos::Droid::Privacy::CPrivacySettingsManager;
+//using Elastos::Droid::Graphics::CBitmapFactory;
+//using Elastos::Droid::Graphics::BitmapCompressFormat_JPEG;
+//using Elastos::Droid::Privacy::CPrivacySettingsManager;
 using Elastos::Droid::Privacy::IIPrivacySettingsManager;
 using Elastos::Droid::Privacy::IPrivacySettings;
 
@@ -34,7 +35,7 @@ const Int32 SystemProperties::PROP_NAME_MAX;
 const Int32 SystemProperties::PROP_VALUE_MAX;
 
 List< AutoPtr<IRunnable> > SystemProperties::sChangeCallbacks;
-Mutex SystemProperties::sChangeCallbacksLock;
+Object SystemProperties::sChangeCallbacksLock;
 
 const Int32 SystemProperties::IS_ALLOWED = -1;
 const Int32 SystemProperties::IS_NOT_ALLOWED = -2;
@@ -81,7 +82,7 @@ Int32 SystemProperties::GetInt32(
 {
     if (key.IsNull() || key.GetLength() > PROP_NAME_MAX) {
 //        throw new IllegalArgumentException("key.length > " + PROP_NAME_MAX);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeGetInt32(key, def);
 }
@@ -92,7 +93,7 @@ Int64 SystemProperties::GetInt64(
 {
     if (key.IsNull() || key.GetLength() > PROP_NAME_MAX) {
 //        throw new IllegalArgumentException("key.length > " + PROP_NAME_MAX);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeGetInt64(key, def);
 }
@@ -103,25 +104,26 @@ Boolean SystemProperties::GetBoolean(
 {
     if (key.IsNull() || key.GetLength() > PROP_NAME_MAX) {
 //        throw new IllegalArgumentException("key.length > " + PROP_NAME_MAX);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NativeGetBoolean(key, def);
 }
 
-void SystemProperties::Set(
+ECode SystemProperties::Set(
     /* [in] */ const String& key,
     /* [in] */ const String& val)
 {
     if (key.IsNull() || key.GetLength() > PROP_NAME_MAX) {
 //        throw new IllegalArgumentException("key.length > " + PROP_NAME_MAX);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (!val.IsNull() && val.GetLength() > PROP_VALUE_MAX) {
 //        throw new IllegalArgumentException("val.length > " +
 //            PROP_VALUE_MAX);
-        assert(0);
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     NativeSet(key, val);
+    return NOERROR;
 }
 
 String SystemProperties::NativeGet(
@@ -239,14 +241,15 @@ AutoPtr<ArrayOf<String> > SystemProperties::GetPackageName()
 {
     // try{
     if (mPackageManager == NULL) {
-        AutoPtr<IInterface> b = ServiceManager::GetService(String("package"));
-        assert(b != NULL);
-        mPackageManager = IIPackageManager::Probe(b);
+        assert(0 && "TODO");
+        // AutoPtr<IInterface> b = ServiceManager::GetService(String("package"));
+        // assert(b != NULL);
+        // mPackageManager = IIPackageManager::Probe(b);
     }
 
     AutoPtr<ArrayOf<String> > packageNames;
-    Int32 uid = Process::MyUid();
-    mPackageManager->GetPackagesForUid(uid, (ArrayOf<String>**)&packageNames);
+    // Int32 uid = Process::MyUid();
+    // mPackageManager->GetPackagesForUid(uid, (ArrayOf<String>**)&packageNames);
     return packageNames;
     // }
     // catch(Exception e){
@@ -296,21 +299,22 @@ void SystemProperties::Initiate()
     // try{
     mContext = NULL;
 
-    AutoPtr<IInterface> b = ServiceManager::GetService(String("package"));
-    assert(b != NULL);
-    mPackageManager = IIPackageManager::Probe(b);
+    assert(0 && "TODO");
+    // AutoPtr<IInterface> b = ServiceManager::GetService(String("package"));
+    // assert(b != NULL);
+    // mPackageManager = IIPackageManager::Probe(b);
 
-    b = ServiceManager::GetService(String("privacy"));
-    assert(b != NULL);
-    AutoPtr<IIPrivacySettingsManager> psm = IIPrivacySettingsManager::Probe(b);
+    // b = ServiceManager::GetService(String("privacy"));
+    // assert(b != NULL);
+    // AutoPtr<IIPrivacySettingsManager> psm = IIPrivacySettingsManager::Probe(b);
 
-    ECode ec = CPrivacySettingsManager::New(mContext, psm, (IPrivacySettingsManager**)&mPrivacySettingsManager);
-    if (FAILED(ec)) {
-        mPrivacyMode = FALSE;
-    }
-    else {
-        mPrivacyMode = TRUE;
-    }
+    // ECode ec = CPrivacySettingsManager::New(mContext, psm, (IPrivacySettingsManager**)&mPrivacySettingsManager);
+    // if (FAILED(ec)) {
+    //     mPrivacyMode = FALSE;
+    // }
+    // else {
+    //     mPrivacyMode = TRUE;
+    // }
     // catch(Exception e){
     //     e.printStackTrace();
     //     Log.e(PRIVACY_TAG, "Something went wrong with initalize variables");
@@ -371,7 +375,7 @@ void SystemProperties::DataAccess(
     // }
 }
 
-void SystemProperties::AddChangeCallback(
+ECode SystemProperties::AddChangeCallback(
     /* [in] */ IRunnable* callback)
 {
     AutoLock lock(sChangeCallbacksLock);
@@ -379,15 +383,17 @@ void SystemProperties::AddChangeCallback(
         NativeAddChangeCallback();
     }
     sChangeCallbacks.PushBack(callback);
+    return NOERROR;
 }
 
 void SystemProperties::CallChangeCallbacks()
 {
     AutoLock lock(sChangeCallbacksLock);
     //Log.i("foo", "Calling " + sChangeCallbacks.size() + " change callbacks!");
-    if (sChangeCallbacks.Begin() == sChangeCallbacks.End()) {
+    if (sChangeCallbacks.IsEmpty()) {
         return;
     }
+
     AutoPtr< List< AutoPtr<IRunnable> > > callbacks = new List< AutoPtr<IRunnable> >(sChangeCallbacks);
     List< AutoPtr<IRunnable> >::Iterator it = callbacks->Begin();
     for (; it != callbacks->End(); ++it) {

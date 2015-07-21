@@ -183,7 +183,7 @@ Boolean AccessibilityInjector::CallbackHandler::PerformAction(
 Boolean AccessibilityInjector::CallbackHandler::GetResultAndClear(
     /* [in] */ Int32 resultId)
 {
-    Object::Autolock lock(mResultLock);
+    AutoLock lock(mResultLock);
 
     Boolean success = WaitForResultTimedLocked(resultId);
     Boolean result = success ? mResult : FALSE;
@@ -254,7 +254,7 @@ Boolean AccessibilityInjector::CallbackHandler::WaitForResultTimedLocked(
         AutoPtr<IThread> thread;
         Thread::Attach((IThread**)&thread);
         {
-            Object::Autolock lock(mResultLock);
+            AutoLock lock(mResultLock);
             mResultLock.Wait(waitTimeMillis);
         }
 
@@ -291,7 +291,7 @@ void AccessibilityInjector::CallbackHandler::OnResult(
     AutoPtr<IThread> thread;
     Thread::Attach((IThread**)&thread);
     {
-        Object::Autolock lock(mResultLock);
+        AutoLock lock(mResultLock);
         if (resultId > mResultId) {
             mResult = result.EqualsIgnoreCase("TRUE");
             mResultId = resultId;

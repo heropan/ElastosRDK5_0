@@ -2195,7 +2195,7 @@ ECode CWebViewClassic::PrivateHandler::HandleMessage(
             else if (request == mHost->mFindRequest) {
                 Int32 matchCount, matchIndex;
                 {
-                    Object::Autolock lock(mHost->mFindRequest);
+                    AutoLock lock(mHost->mFindRequest);
 
                     matchCount = request->mMatchCount;
                     matchIndex = request->mMatchIndex;
@@ -6453,7 +6453,7 @@ Int32 CWebViewClassic::FindAllBody(
         return 0; // no need to wait for response
     }
     {
-        Object::Autolock lock(mFindRequest);
+        AutoLock lock(mFindRequest);
 
         // try {
         mWebViewCore->SendMessageAtFrontOfQueue(CWebViewCore::EventHub::FIND_ALL, mFindRequest);

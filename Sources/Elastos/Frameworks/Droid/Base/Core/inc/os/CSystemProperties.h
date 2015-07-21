@@ -1,8 +1,9 @@
 
-#ifndef __CSYSTEMPROPERTIES_H__
-#define __CSYSTEMPROPERTIES_H__
+#ifndef __ELASTOS_DROID_OS_CSYSTEMPROPERTIES_H__
+#define __ELASTOS_DROID_OS_CSYSTEMPROPERTIES_H__
 
-#include "_CSystemProperties.h"
+#include "_Elastos_Droid_Os_CSystemProperties.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::IRunnable;
 
@@ -11,8 +12,14 @@ namespace Droid {
 namespace Os {
 
 CarClass(CSystemProperties)
+    , public Singleton
+    , public ISystemProperties
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Get the value for the given key.
      * @return an empty string if the key isn't found
@@ -93,4 +100,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSYSTEMPROPERTIES_H__
+#endif //__ELASTOS_DROID_OS_CSYSTEMPROPERTIES_H__

@@ -32,7 +32,7 @@ ConnectionThread::ConnectionThread(
 
 ECode ConnectionThread::RequestStop()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
 
     mRunning = FALSE;
     // return mRequestFeeder->Notify();

@@ -44,7 +44,7 @@ ECode CUiTestAutomationBridge::MyAccessibilityServiceCallbacks::OnAccessibilityE
     /* [in] */ IAccessibilityEvent* event)
 {
     {
-        Object::Autolock(mHost->mLock);
+        AutoLock(mHost->mLock);
 
         AutoPtr<IAccessibilityEventHelper> helper;
         CAccessibilityEventHelper::AcquireSingleton((IAccessibilityEventHelper**)&helper);
@@ -85,7 +85,7 @@ ECode CUiTestAutomationBridge::MyAccessibilityServiceCallbacks::OnServiceConnect
 ECode CUiTestAutomationBridge::MyAccessibilityServiceCallbacks::OnSetConnectionId(
     /* [in] */ Int32 connectionId)
 {
-    Object::Autolock(mHost->mLock);
+    AutoLock(mHost->mLock);
     mHost->mConnectionId = connectionId;
     mHost->mLock.NotifyAll();
     return NOERROR;
@@ -204,7 +204,7 @@ ECode CUiTestAutomationBridge::Connect()
     //     throw new IllegalStateException("Cound not register UiAutomationService.", re);
     // }
 
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     Int64 startTimeMillis = SystemClock::GetUptimeMillis();
     while (TRUE) {
         Boolean b;
@@ -286,7 +286,7 @@ ECode CUiTestAutomationBridge::ExecuteCommandAndWaitForAccessibilityEvent(
     *event = NULL;
 
     // TODO: This is broken - remove from here when finalizing this as public APIs.
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     // Prepare to wait for an event.
     mWaitingForEventDelivery = TRUE;
     mUnprocessedEventAvailable = FALSE;
@@ -357,7 +357,7 @@ ECode CUiTestAutomationBridge::WaitForIdle(
     {
         lastEventTime = SystemClock::GetUptimeMillis();
     }
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     while (TRUE) {
         Int64 currentTimeMillis = SystemClock::GetUptimeMillis();
         Int64 sinceLastEventTimeMillis = currentTimeMillis - lastEventTime;

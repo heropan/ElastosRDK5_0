@@ -74,7 +74,6 @@ const Int32 Build::VERSION_CODES::JELLY_BEAN_MR1;
 const String Build::UNKNOWN = String("unknown");
 const String Build::ID = GetString("ro.build.id");
 const String Build::DISPLAY = GetString("ro.build.display.id");
-const String Build::FIRMWARE = GetString("ro.product.firmware");
 const String Build::PRODUCT = GetString("ro.product.name");
 const String Build::DEVICE = GetString("ro.product.device");
 const String Build::BOARD = GetString("ro.product.board");
@@ -93,8 +92,6 @@ const String Build::FINGERPRINT = GetString("ro.build.fingerprint");
 const Int64 Build::TIME = GetLong("ro.build.date.utc") * 1000;
 const String Build::USER = GetString("ro.build.user");
 const String Build::HOST = GetString("ro.build.host");
-const String Build::TABLETUI = GetString("ro.property.tabletUI");
-const String Build::DEFAULT_FONTSCALE = GetString("ro.property.fontScale");
 
 static Boolean InitISDEBUGGABLE()
 {

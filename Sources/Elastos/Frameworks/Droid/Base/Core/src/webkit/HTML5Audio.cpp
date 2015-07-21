@@ -164,7 +164,7 @@ CAR_INTERFACE_IMPL_LIGHT(HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnab
 
 ECode HTML5Audio::IsPrivateBrowsingEnabledGetter::InnerRunnable::Run()
 {
-    IsPrivateBrowsingEnabledGetter::Object::Autolock lock(mOwner);
+    IsPrivateBrowsingEnabledGetter::AutoLock lock(mOwner);
 
     mWebView->IsPrivateBrowsingEnabled(&(mOwner->mIsPrivateBrowsingEnabled));
     mOwner->mIsReady = TRUE;
@@ -195,7 +195,7 @@ HTML5Audio::IsPrivateBrowsingEnabledGetter::IsPrivateBrowsingEnabledGetter(
 //synchronized
 Boolean HTML5Audio::IsPrivateBrowsingEnabledGetter::Get()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
 
     while (!mIsReady) {
 //        try {

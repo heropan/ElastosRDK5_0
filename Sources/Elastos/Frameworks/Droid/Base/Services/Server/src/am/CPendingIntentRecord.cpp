@@ -91,7 +91,7 @@ Int32 CPendingIntentRecord::SendInner(
     /* [in] */ IBundle* options)
 {
     String resolvedType(aResolvedType);
-    Object::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
 
     if (!mCanceled) {
         mSent = TRUE;
@@ -221,7 +221,7 @@ Int32 CPendingIntentRecord::SendInner(
 
 ECode CPendingIntentRecord::CompleteFinalize()
 {
-    Object::Autolock lock(mOwner->mLock);
+    AutoLock lock(mOwner->mLock);
     typename CActivityManagerService::PendingIntentRecordHashMap::Iterator it;
     it = mOwner->mIntentSenderRecords.Find(mKey);
     if (it != mOwner->mIntentSenderRecords.End()) {

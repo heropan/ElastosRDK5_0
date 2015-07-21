@@ -806,7 +806,7 @@ ECode ActivityRecord::StopFreezingScreenLocked(
 
 ECode ActivityRecord::WindowsDrawn()
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
 
     if (mLaunchTime != 0) {
         const Int32 curTime = SystemClock::GetUptimeMillis();
@@ -843,7 +843,7 @@ ECode ActivityRecord::WindowsDrawn()
 
 ECode ActivityRecord::WindowsVisible()
 {
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
 
     mStack->ReportActivityVisibleLocked(this);
     if (CActivityManagerService::DEBUG_SWITCH) {
@@ -926,7 +926,7 @@ ECode ActivityRecord::KeyDispatchingTimedOut(
     AutoPtr<ActivityRecord> r;
     AutoPtr<ProcessRecord> anrApp;
     {
-        Object::Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
 
         r = GetWaitingHistoryRecordLocked();
         if (r != NULL && r->mApp != NULL)
@@ -970,7 +970,7 @@ ECode ActivityRecord::GetKeyDispatchingTimeout(
 {
     VALIDATE_NOT_NULL(timeout);
 
-    Object::Autolock lock(mService->mLock);
+    AutoLock lock(mService->mLock);
 
     AutoPtr<ActivityRecord> r = GetWaitingHistoryRecordLocked();
     if (r != NULL && r->mApp != NULL

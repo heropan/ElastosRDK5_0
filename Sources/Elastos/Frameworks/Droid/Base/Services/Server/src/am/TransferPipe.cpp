@@ -136,7 +136,7 @@ ECode TransferPipe::Go(
 {
     // try {
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         mOutFd = out;
         mEndTime = SystemClock::GetUptimeMillis() + timeout;
 
@@ -261,7 +261,7 @@ ECode TransferPipe::Run()
     //     }
     // }
 
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mComplete = TRUE;
     mLock.NotifyAll();
 

@@ -14,7 +14,7 @@ namespace Os {
 HandlerCaller::MyHandler::MyHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ IWeakReference* host)
-    : HandlerBase(looper)
+    : Handler(looper)
     , mWeakHost(host)
 {
 }
@@ -38,7 +38,7 @@ ECode HandlerCaller::MyHandler::HandleMessage(
 //==========================================================================
 // HandlerCaller
 //==========================================================================
-CAR_INTERFACE_IMPL_2(HandlerCaller, IWeakReferenceSource, IHandlerCaller)
+CAR_INTERFACE_IMPL(HandlerCaller, Object, IHandlerCaller)
 
 ECode HandlerCaller::GetWeakReference(
     /* [out] */ IWeakReference** weakReference)
@@ -56,6 +56,24 @@ HandlerCaller::HandlerCaller(
     /* [in] */ Boolean isStrong)
     : mContext(context)
 {
+    constructor(context, callback, isStrong);
+}
+
+HandlerCaller::HandlerCaller(
+    /* [in] */ IContext* context,
+    /* [in] */ ILooper* looper,
+    /* [in] */ IHandlerCallerCallback* callback,
+    /* [in] */ Boolean isStrong)
+    : mContext(context)
+{
+    constructor(context, looper, callback, isStrong);
+}
+
+HandlerCaller::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IHandlerCallerCallback* callback,
+    /* [in] */ Boolean isStrong)
+{
     assert(context != NULL);
     context->GetMainLooper((ILooper**)&mMainLooper);
     AutoPtr<IWeakReference> weakReference = new WeakReferenceImpl(
@@ -69,15 +87,16 @@ HandlerCaller::HandlerCaller(
     }
     else {
         assert(0 && "IWeakReferenceSource::Probe(callback) == NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
-HandlerCaller::HandlerCaller(
+ECode HandlerCaller::constructor(
     /* [in] */ IContext* context,
     /* [in] */ ILooper* looper,
     /* [in] */ IHandlerCallerCallback* callback,
     /* [in] */ Boolean isStrong)
-    : mContext(context)
 {
     mMainLooper = looper;
     AutoPtr<IWeakReference> weakReference = new WeakReferenceImpl(
@@ -91,7 +110,9 @@ HandlerCaller::HandlerCaller(
     }
     else {
         assert(0 && "IWeakReferenceSource::Probe(callback) == NULL");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode HandlerCaller::GetContext(
@@ -194,7 +215,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessage(what, arg1 ? 1 : 0, 0, args, msg);
+    return ObtainMessage(what, arg1 ? 1 : 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -261,7 +282,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg3;
     args->mArg2 = arg4;
 
-    return ObtainMessage(what, arg1, arg2, args, msg);
+    return ObtainMessage(what, arg1, arg2, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -277,7 +298,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg2;
     args->mArg2 = arg3;
 
-    return ObtainMessage(what, arg1, 0, args, msg);
+    return ObtainMessage(what, arg1, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -292,7 +313,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg1 = arg1;
     args->mArg2 = arg2;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -309,7 +330,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg2 = arg2;
     args->mArg3 = arg3;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -328,7 +349,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArg3 = arg3;
     args->mArg4 = arg4;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -347,7 +368,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi3 = arg3;
     args->mArgi4 = arg4;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -368,7 +389,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi4 = arg4;
     args->mArgi5 = arg5;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -391,7 +412,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi5 = arg5;
     args->mArgi6 = arg6;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 ECode HandlerCaller::ObtainMessage(
@@ -412,7 +433,7 @@ ECode HandlerCaller::ObtainMessage(
     args->mArgi4 = arg4;
     args->mArg1 = arg5;
 
-    return ObtainMessage(what, 0, 0, args, msg);
+    return ObtainMessage(what, 0, 0, TO_IINTERFACE(args), msg);
 }
 
 AutoPtr<IHandlerCallerCallback> HandlerCaller::GetCallback()

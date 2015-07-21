@@ -96,7 +96,7 @@ ECode CallbackProxy::JsResultReceiver::OnJsResultComplete(
 
 void CallbackProxy::JsResultReceiver::NotifyCallbackProxy()
 {
-    Object::Autolock lock(mOwner);
+    AutoLock lock(mOwner);
     mOwner->Notify();
 }
 
@@ -111,7 +111,7 @@ ECode CallbackProxy::UploadFile::OnReceiveValue(
 {
     mValue = IUri::Probe(value);
     {
-        Object::Autolock lock(mOwner);
+        AutoLock lock(mOwner);
         mOwner->Notify();
     }
     return NOERROR;
@@ -575,7 +575,7 @@ ECode CallbackProxy::HandleMessage(
             msg->GetObj((IInterface**)&obj);
             ResultTransport* result = (ResultTransport*)obj.Get();
             {
-                Object::Autolock lock(this);
+                AutoLock lock(this);
                 AutoPtr<IBoolean> iOverride;
                 CBoolean::New(override, (IBoolean**)&iOverride);
                 result->SetResult(iOverride);
@@ -646,7 +646,7 @@ ECode CallbackProxy::HandleMessage(
             // setProgress is called and before mProgressUpdatePending is
             // changed.
             {
-                Object::Autolock lock(this);
+                AutoLock lock(this);
                 if (mWebChromeClient != NULL) {
                     AutoPtr<IWebView> wv;
                     mWebView->GetWebView((IWebView**)&wv);
@@ -723,7 +723,7 @@ ECode CallbackProxy::HandleMessage(
                 Boolean result = FALSE;
                 mWebChromeClient->OnCreateWindow(wv, arg1, arg2, msgObj, &result);
                 if (!result) {
-                    Object::Autolock lock(this);
+                    AutoLock lock(this);
                     Notify();
                 }
                 mWebView->DismissZoomControl();
@@ -760,7 +760,7 @@ ECode CallbackProxy::HandleMessage(
                 AutoPtr<IMessage> msgObj;
                 msg->GetObj((IInterface**)&msgObj);
                 if (!mWebView->OnSavePassword(schemePlusHost, username, password, msgObj)) {
-                    Object::Autolock lock(this);
+                    AutoLock lock(this);
                     Notify();
                 }
             }
@@ -1067,7 +1067,7 @@ ECode CallbackProxy::HandleMessage(
             break;
 
         case NOTIFY: {
-                Object::Autolock lock(this);
+                AutoLock lock(this);
                 Notify();
             }
             break;
@@ -1692,7 +1692,7 @@ void CallbackProxy::OnReceivedHttpAuthCredentials(
 void CallbackProxy::OnProgressChanged(
     /* [in] */ Int32 newProgress)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     // Synchronize so that mLatestProgress is up-to-date.
     // update mLatestProgress even mWebChromeClient is null as
     // WebView.getProgress() needs it
@@ -2226,14 +2226,14 @@ Boolean CallbackProxy::CanShowAlertDialog()
 //synchronized
 void CallbackProxy::BlockMessages()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mBlockMessages = TRUE;
 }
 
 //synchronized
 Boolean CallbackProxy::MessagesBlocked()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     return mBlockMessages;
 }
 
@@ -2272,7 +2272,7 @@ String CallbackProxy::GetJsDialogTitle(
 void CallbackProxy::SendMessageToUiThreadSync(
     /* [in] */ IMessage* msg)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     Boolean result = FALSE;
     SendMessage(msg, &result);
     WebCoreThreadWatchdog::Pause();

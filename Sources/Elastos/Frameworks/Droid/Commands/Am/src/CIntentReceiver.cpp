@@ -32,14 +32,14 @@ ECode CIntentReceiver::PerformReceive(
     }
     PFL_EX("%s", line.string());
 
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mFinished = TRUE;
     return mLock.NotifyAll();
 }
 
 CARAPI CIntentReceiver::WaitForFinish()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     ECode ec = NOERROR;
     while (!mFinished) {
         ECode ec = mLock.Wait();

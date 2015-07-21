@@ -1022,7 +1022,7 @@ ECode CAudioService::SoundPoolListenerThread::Run()
     CLooperHelper::AcquireSingleton((ILooperHelper**)&looperHelper);
     looperHelper->MyLooper((ILooper**)(&(mAudioService->mSoundPoolLooper)));
     {
-        Object::Autolock lock(mAudioService->mSoundEffectsLock);
+        AutoLock lock(mAudioService->mSoundEffectsLock);
 
         if (mAudioService->mSoundPool != NULL) {
             mAudioService->mSoundPoolCallBack = new SoundPoolCallback(mAudioService);
@@ -1070,7 +1070,7 @@ ECode CAudioService::SoundPoolCallback::OnLoadComplete(
     if (CAudioService::DEBUG_VOL)
         Logger::D("CAudioService::SoundPoolCallback", "OnLoadComplete sampleId %d, status %d", sampleId, status);
 
-    Object::Autolock lock(mAudioService->mSoundEffectsLock);
+    AutoLock lock(mAudioService->mSoundEffectsLock);
     if (status != 0) {
         mStatus = status;
     }
@@ -1306,7 +1306,7 @@ ECode CAudioService::AudioSystemThread::Run()
     Looper::Prepare();
 
     {
-        Object::Autolock lock(mAudioService->mThisLock);
+        AutoLock lock(mAudioService->mThisLock);
         mAudioService->mAudioHandler = new AudioHandler(mAudioService);
 
         //Notify that the handler has been created
@@ -1734,7 +1734,7 @@ void CAudioService::AudioHandler::PlaySoundEffect(
     Logger::D("CAudioService::AudioHandler", "+ PlaySoundEffect effectType %d, volume %d", effectType, volume);
     using Elastos::Core::Math;
     {
-        Object::Autolock lock(mAudioService->mSoundEffectsLock);
+        AutoLock lock(mAudioService->mSoundEffectsLock);
 
         if (mAudioService->mSoundPool == NULL) {
             Logger::D("CAudioService::AudioHandler", "- PlaySoundEffect mSoundPool is null.");
@@ -2816,7 +2816,7 @@ void CAudioService::CreateAudioSystemThread()
 
 void CAudioService::WaitForAudioHandlerCreation()
 {
-    Object::Autolock lock(mThisLock);
+    AutoLock lock(mThisLock);
     ECode ec = NOERROR;
     while (mAudioHandler == NULL) {
         // try {
@@ -4179,7 +4179,7 @@ ECode CAudioService::LoadSoundEffects(
     Int32 status;
 
     {
-        Object::Autolock lock(mSoundEffectsLock);
+        AutoLock lock(mSoundEffectsLock);
 
         if (!mBootCompleted) {
             Logger::W(TAG, "loadSoundEffects() called before boot complete");
@@ -4306,7 +4306,7 @@ ECode CAudioService::LoadSoundEffects(
 
 ECode CAudioService::UnloadSoundEffects()
 {
-    Object::Autolock lock(mSoundEffectsLock);
+    AutoLock lock(mSoundEffectsLock);
 
     if (mSoundPool == NULL) {
         return NOERROR;

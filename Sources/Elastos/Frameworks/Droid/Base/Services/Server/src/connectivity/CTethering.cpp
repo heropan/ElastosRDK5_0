@@ -57,7 +57,7 @@ ECode CTethering::StateReceiver::OnReceive(
     intent->GetAction(&action);
     if (action.Equals(IUsbManager::ACTION_USB_STATE)) {
         {
-            Object::Autolock lock(mOwner->mPublicSync);
+            AutoLock lock(mOwner->mPublicSync);
             Boolean usbConnected;
             intent->GetBooleanExtra(IUsbManager::USB_CONNECTED, FALSE, &usbConnected);
             intent->GetBooleanExtra(IUsbManager::USB_FUNCTION_RNDIS, FALSE, &mOwner->mRndisEnabled);
@@ -439,14 +439,14 @@ String CTethering::TetherInterfaceSM::ToString()
 
 Int32 CTethering::TetherInterfaceSM::GetLastError()
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     return mLastError;
 }
 
 void CTethering::TetherInterfaceSM::SetLastError(
     /* [in] */ Int32 error)
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
 
     mLastError = error;
 
@@ -461,33 +461,33 @@ void CTethering::TetherInterfaceSM::SetLastError(
 
 Boolean CTethering::TetherInterfaceSM::IsAvailable()
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     return mAvailable;
 }
 
 void CTethering::TetherInterfaceSM::SetAvailable(
     /* [in] */ Boolean available)
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     mAvailable = available;
 }
 
 Boolean CTethering::TetherInterfaceSM::IsTethered()
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     return mTethered;
 }
 
 void CTethering::TetherInterfaceSM::SetTethered(
     /* [in] */ Boolean tethered)
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     mTethered = tethered;
 }
 
 Boolean CTethering::TetherInterfaceSM::IsErrored()
 {
-    Object::Autolock lock(mOwner->mPublicSync);
+    AutoLock lock(mOwner->mPublicSync);
     return mLastError != IConnectivityManager::TETHER_ERROR_NO_ERROR;
 }
 
@@ -636,7 +636,7 @@ void CTethering::TetherMasterSM::TetherMasterUtilState::ChooseUpstreamType(
     mOwner->mOwner->UpdateConfiguration();
 
     {
-        Object::Autolock lock(mOwner->mOwner->mPublicSync);
+        AutoLock lock(mOwner->mOwner->mPublicSync);
 
         if (VDBG) {
             Logger::D(CTethering::TAG, "chooseUpstreamType has upstream iface types:");
@@ -1214,7 +1214,7 @@ void CTethering::UpdateConfiguration()
     }
 
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         mTetherableUsbRegexs = tetherableUsbRegexs;
         mTetherableWifiRegexs = tetherableWifiRegexs;
         mTetherableBluetoothRegexs = tetherableBluetoothRegexs;
@@ -1232,7 +1232,7 @@ ECode CTethering::InterfaceStatusChanged(
     Boolean found = FALSE;
     Boolean usb = FALSE;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         if (IsWifi(iface)) {
             found = TRUE;
         }
@@ -1287,7 +1287,7 @@ ECode CTethering::InterfaceLinkStateChanged(
 Boolean CTethering::IsUsb(
     /* [in] */ const String& iface)
 {
-    Object::Autolock lock(mPublicSync);
+    AutoLock lock(mPublicSync);
 
     for (Int32 i = 0; i < mTetherableUsbRegexs->GetLength(); i++){
         String regex = (*mTetherableUsbRegexs)[i];
@@ -1305,7 +1305,7 @@ Boolean CTethering::IsUsb(
 Boolean CTethering::IsWifi(
     /* [in] */ const String& iface)
 {
-    Object::Autolock lock(mPublicSync);
+    AutoLock lock(mPublicSync);
 
     for (Int32 i = 0; i < mTetherableWifiRegexs->GetLength(); i++){
         String regex = (*mTetherableWifiRegexs)[i];
@@ -1323,7 +1323,7 @@ Boolean CTethering::IsWifi(
 Boolean CTethering::IsBluetooth(
     /* [in] */ const String& iface)
 {
-    Object::Autolock lock(mPublicSync);
+    AutoLock lock(mPublicSync);
 
     for (Int32 i = 0; i < mTetherableBluetoothRegexs->GetLength(); i++){
         String regex = (*mTetherableBluetoothRegexs)[i];
@@ -1345,7 +1345,7 @@ ECode CTethering::InterfaceAdded(
     Boolean found = FALSE;
     Boolean usb = FALSE;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
 
         if (IsWifi(iface)) {
             found = TRUE;
@@ -1384,7 +1384,7 @@ ECode CTethering::InterfaceRemoved(
 {
     if (VDBG) Logger::D(TAG, "interfaceRemoved %s", iface.string());
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
 
         AutoPtr<TetherInterfaceSM> sm;
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it = mIfaces.Find(iface);
@@ -1426,7 +1426,7 @@ ECode CTethering::Tether(
     if (DBG) Logger::D(TAG, "Tethering %s", iface.string());
     AutoPtr<TetherInterfaceSM> sm;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it = mIfaces.Find(iface);
         if (it != mIfaces.End()) {
             sm = it->mSecond;
@@ -1456,7 +1456,7 @@ ECode CTethering::Untether(
     if (DBG) Logger::D(TAG, "Untethering %s", iface.string());
     AutoPtr<TetherInterfaceSM> sm;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it = mIfaces.Find(iface);
         if (it != mIfaces.End()) {
             sm = it->mSecond;
@@ -1485,7 +1485,7 @@ ECode CTethering::GetLastTetherError(
     VALIDATE_NOT_NULL(value);
     AutoPtr<TetherInterfaceSM> sm;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it = mIfaces.Find(iface);
         if (it != mIfaces.End()) {
             sm = it->mSecond;
@@ -1518,7 +1518,7 @@ void CTethering::SendTetherStateChangedBroadcast()
     Boolean bluetoothTethered = FALSE;
 
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
 
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
         for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
@@ -1787,7 +1787,7 @@ ECode CTethering::SetUsbTethering(
     mContext->GetSystemService(IContext::USB_SERVICE, (IInterface**)&usbManager);
 
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
 
         if (enable){
             if (mRndisEnabled) {
@@ -1814,7 +1814,7 @@ AutoPtr< ArrayOf<Int32> > CTethering::GetUpstreamIfaceTypes()
 {
     AutoPtr< ArrayOf<Int32> > values;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         UpdateConfiguration();
         values = ArrayOf<Int32>::Alloc(mUpstreamIfaceTypes.GetSize());
         List< AutoPtr<IInteger32> >::Iterator it = mUpstreamIfaceTypes.Begin();
@@ -1838,7 +1838,7 @@ void CTethering::CheckDunRequired()
     global->GetInt32(contentresolver, ISettingsGlobal::TETHER_DUN_REQUIRED,
          2, &secureSetting);
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         // 2 = not set, 0 = DUN not required, 1 = DUN required
         if (secureSetting != 2) {
             Int32 requiredApn = (secureSetting == 1 ?
@@ -1889,7 +1889,7 @@ ECode CTethering::GetTetheredIfaces(
     VALIDATE_NOT_NULL(result);
     List<String> list;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
         for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
             AutoPtr<TetherInterfaceSM> sm = it->mSecond;
@@ -1915,7 +1915,7 @@ ECode CTethering::GetTetheredIfacePairs(
     VALIDATE_NOT_NULL(result);
     List<String> list;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
         for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
             AutoPtr<TetherInterfaceSM> sm = it->mSecond;
@@ -1942,7 +1942,7 @@ ECode CTethering::GetTetherableIfaces(
     VALIDATE_NOT_NULL(result);
     List<String> list;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
         for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
             AutoPtr<TetherInterfaceSM> sm = it->mSecond;
@@ -1966,7 +1966,7 @@ AutoPtr< ArrayOf<String> > CTethering::GetErroredIfaces()
 {
     List<String> list;
     {
-        Object::Autolock lock(mPublicSync);
+        AutoLock lock(mPublicSync);
         HashMap<String, AutoPtr<TetherInterfaceSM> >::Iterator it;
         for (it = mIfaces.Begin(); it != mIfaces.End(); ++it) {
             AutoPtr<TetherInterfaceSM> sm = it->mSecond;
@@ -2011,7 +2011,7 @@ ECode CTethering::Dump(
 //     }
 
 //     {
-//         Object::Autolock lock(mPublicSync);
+//         AutoLock lock(mPublicSync);
 // //      //pw.println("mUpstreamIfaceTypes: ");
 // //      /*for (Integer netType : mUpstreamIfaceTypes) {
 // //          pw.println(" " + netType);

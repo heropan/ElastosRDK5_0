@@ -23,7 +23,7 @@ ECode StrictModeViolationDialog::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     {
-        Object::Autolock lock(mOwner->mService->mLock);
+        AutoLock lock(mOwner->mService->mLock);
         if (mOwner->mProc != NULL && mOwner->mProc->mCrashDialog == mOwner) {
             mOwner->mProc->mCrashDialog = NULL;
         }

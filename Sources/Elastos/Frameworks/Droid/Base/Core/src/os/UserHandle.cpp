@@ -1,6 +1,5 @@
-#include "ext/frameworkext.h"
 #include "os/UserHandle.h"
-#include "os/Process.h"
+//#include "os/Process.h"
 #include "os/Binder.h"
 #ifdef DROID_CORE
 #include "os/CUserHandle.h"
@@ -31,13 +30,22 @@ const AutoPtr<IUserHandle> UserHandle::CURRENT = InitUserHandle(IUserHandle::USE
 const AutoPtr<IUserHandle> UserHandle::CURRENT_OR_SELF = InitUserHandle(IUserHandle::USER_CURRENT_OR_SELF);
 const AutoPtr<IUserHandle> UserHandle::OWNER = InitUserHandle(IUserHandle::USER_OWNER);
 
-UserHandle::UserHandle() : mHandle(0)
+CAR_INTERFACE_IMPL(UserHandle, Object, IUserHandle)
+
+UserHandle::UserHandle()
+    : mHandle(0)
 {
 }
 
 UserHandle::UserHandle(
-    /* [in] */ Int32 h) : mHandle(h)
+    /* [in] */ Int32 h)
+    : mHandle(h)
 {
+}
+
+ECode UserHandle::constructor()
+{
+    return NOERROR;
 }
 
 ECode UserHandle::constructor(
@@ -108,6 +116,13 @@ ECode UserHandle::ToString(
     sb += "}";
     *str = sb.ToString();
     return NOERROR;
+}
+
+ECode UserHandle::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* equals)
+{
+    return Equals(IUserHandle::Probe(other), equals);
 }
 
 ECode UserHandle::Equals(
@@ -210,7 +225,9 @@ Int32 UserHandle::GetSharedAppGid(
 
 Int32 UserHandle::GetMyUserId()
 {
-    return GetUserId(Process::MyUid());
+    assert(0 && "TODO: upgrade");
+    Int32 uid ;//= Process::MyUid();
+    return GetUserId(uid);
 }
 
 } // namespace Os

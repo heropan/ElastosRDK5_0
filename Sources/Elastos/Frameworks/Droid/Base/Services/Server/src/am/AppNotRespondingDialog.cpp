@@ -140,7 +140,7 @@ ECode AppNotRespondingDialog::MyHandler::HandleMessage(
         case WAIT_AND_REPORT:
         case WAIT:
             // Continue waiting for the application.
-            Object::Autolock lock(mHost->mService->mLock);
+            AutoLock lock(mHost->mService->mLock);
             AutoPtr<ProcessRecord> app = mHost->mProc;
 
             if (type == WAIT_AND_REPORT) {

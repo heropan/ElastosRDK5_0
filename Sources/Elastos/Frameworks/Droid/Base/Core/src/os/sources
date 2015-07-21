@@ -1,6 +1,9 @@
 TARGET_NAME= os
 TARGET_TYPE= lib
 
+CAR_FLAGS += -n -u
+LUBE_FLAGS += -n -u
+
 C_DEFINES += -DDROID_CORE
 
 include $(MAKEDIR)/../../../../sources.inc
@@ -22,6 +25,8 @@ SOURCES += CLooperHelper.cpp
 SOURCES += Handler.cpp
 SOURCES += HandlerRunnableBase.cpp
 #SOURCES += CHandlerThread.cpp
+SOURCES += SomeArgs.cpp
+SOURCES += HandlerCaller.cpp
 SOURCES += Runnable.cpp
 SOURCES += CMessage.cpp
 SOURCES += CMessageHelper.cpp
@@ -29,11 +34,15 @@ SOURCES += CMessenger.cpp
 SOURCES += CMessengerImpl.cpp
 SOURCES += CMessageQueue.cpp
 SOURCES += NativeMessageQueue.cpp
+SOURCES += UserHandle.cpp
+SOURCES += CUserHandleHelper.cpp
+#SOURCES += Build.cpp
+#SOURCES += SystemProperties.cpp
+#SOURCES += CSystemProperties.cpp
 
 #SOURCES = BatteryStats.cpp
 #SOURCES += BatteryStatsImpl.cpp
 #SOURCES += BinderProxy.cpp
-#SOURCES += Build.cpp
 #SOURCES += CBinderDeathRecipient.cpp
 #SOURCES += CBundle.cpp
 #SOURCES += CBundleHelper.cpp
@@ -47,13 +56,9 @@ SOURCES += NativeMessageQueue.cpp
 #SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
 #SOURCES += CPatternMatcher.cpp
 #SOURCES += CServiceManager.cpp
-#SOURCES += CUserHandle.cpp
-#SOURCES += CUserHandleHelper.cpp
 #SOURCES += Environment.cpp
 #SOURCES += FileObserver.cpp
 #SOURCES += FileUtils.cpp
-#SOURCES += SomeArgs.cpp
-#SOURCES += HandlerCaller.cpp
 #SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
 #SOURCES += PatternMatcher.cpp
@@ -62,8 +67,6 @@ SOURCES += NativeMessageQueue.cpp
 #SOURCES += CProcessStats.cpp
 #SOURCES += SELinux.cpp
 #SOURCES += ServiceManager.cpp
-#SOURCES += SystemProperties.cpp
-#SOURCES += UserHandle.cpp
 #SOURCES += ZygoteConnection.cpp
 #SOURCES += CPowerManager.cpp
 #SOURCES += CPowerManagerHelper.cpp
@@ -78,7 +81,6 @@ SOURCES += NativeMessageQueue.cpp
 #SOURCES += CUpdateLock.cpp
 #SOURCES += CCancellationSignal.cpp
 #SOURCES += CCancellationSignalHelper.cpp
-#SOURCES += CSystemProperties.cpp
 #SOURCES += SystemService.cpp
 #SOURCES += CSystemService.cpp
 #SOURCES += CEnvironment.cpp

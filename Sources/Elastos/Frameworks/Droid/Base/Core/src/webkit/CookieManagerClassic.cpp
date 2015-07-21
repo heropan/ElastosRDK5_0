@@ -42,7 +42,7 @@ AutoPtr<CookieManagerClassic> CookieManagerClassic::GetInstance()
 ECode CookieManagerClassic::SetAcceptCookie(
     /* [in] */ Boolean accept)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     NativeSetAcceptCookie(accept);
     return NOERROR;
 }
@@ -51,7 +51,7 @@ ECode CookieManagerClassic::SetAcceptCookie(
 ECode CookieManagerClassic::AcceptCookie(
     /* [out] */ Boolean* result)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     Boolean bFlag = NativeAcceptCookie();
     if (result) *result = bFlag;
     return NOERROR;
@@ -61,7 +61,7 @@ ECode CookieManagerClassic::SetCookie(
     /* [in] */ const String& url,
     /* [in] */ const String& value)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     SetCookie(url, value, FALSE);
     return NOERROR;
 }
@@ -124,7 +124,7 @@ ECode CookieManagerClassic::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(cookie);
     assert(0);
 //    return NativeGetCookie(uri.toString(), false);
@@ -177,7 +177,7 @@ ECode CookieManagerClassic::RemoveAllCookie()
 ECode CookieManagerClassic::HasCookies(
     /* [out] */ Boolean* result)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     return HasCookies(FALSE, result);
 }
 
@@ -186,7 +186,7 @@ ECode CookieManagerClassic::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(result);
     *result = NativeHasCookies(privateBrowsing);
     return NOERROR;
@@ -217,7 +217,7 @@ void CookieManagerClassic::SetAcceptFileSchemeCookiesImpl(
 //synchronized
 void CookieManagerClassic::SignalCookieOperationsComplete()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mPendingCookieOperations--;
     assert(mPendingCookieOperations > -1);
 //    notify();
@@ -226,7 +226,7 @@ void CookieManagerClassic::SignalCookieOperationsComplete()
 //synchronized
 void CookieManagerClassic::SignalCookieOperationsStart()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mPendingCookieOperations++;
 }
 

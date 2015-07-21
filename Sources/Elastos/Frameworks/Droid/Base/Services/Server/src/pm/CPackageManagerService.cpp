@@ -2604,7 +2604,7 @@ ECode CPackageManagerService::ClearStorageConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     mContainerService = IMediaContainerService::Probe(service);
     mLock.NotifyAll();
@@ -11114,7 +11114,7 @@ void CPackageManagerService::ClearExternalStorageDataSync(
             Int32 curUser = (*users)[i];
             Int64 timeout = SystemClock::GetUptimeMillis() + 5000;
             {
-                Object::Autolock lock(conn->mLock);
+                AutoLock lock(conn->mLock);
 
                 Int64 now = SystemClock::GetUptimeMillis();
                 while (conn->mContainerService == NULL && now < timeout) {

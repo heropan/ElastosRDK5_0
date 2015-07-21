@@ -49,7 +49,7 @@ Int64 PerfTraceEvent::sBeginNanoTime;
 void PerfTraceEvent::SetFilter(
     /* [in] */ List<String>* strings)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     sFilter = new LinkedList<String>(strings);
 }
 
@@ -60,7 +60,7 @@ void PerfTraceEvent::SetFilter(
 //synchronized
 void PerfTraceEvent::SetEnabled(boolean enabled)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     if (sEnabled == enabled) {
         return;
     }
@@ -94,7 +94,7 @@ void PerfTraceEvent::SetEnabled(boolean enabled)
 void PerfTraceEvent::SetMemoryTrackingEnabled(
     /* [in] */ Boolean enabled)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     sTrackMemory = enabled;
 }
 
@@ -114,7 +114,7 @@ void PerfTraceEvent::SetMemoryTrackingEnabled(
 void PerfTraceEvent::SetTimingTrackingEnabled(
     /* [in] */ Boolean enabled)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     sTrackTiming = enabled;
 }
 
@@ -126,7 +126,7 @@ void PerfTraceEvent::SetTimingTrackingEnabled(
 //synchronized
 Boolean PerfTraceEvent::Enabled()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     return sEnabled;
 }
 
@@ -137,7 +137,7 @@ Boolean PerfTraceEvent::Enabled()
 void PerfTraceEvent::Instant(
     /* [in] */ String name)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     // Instant doesn't really need/take an event id, but this should be okay.
     Int64 eventId = name.HashCode();
     TraceEvent::Instant(name);
@@ -155,7 +155,7 @@ void PerfTraceEvent::Instant(
 void PerfTraceEvent::Begin(
     /* [in] */ String name)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     const Int64 eventId = name.HashCode();
     TraceEvent::StartAsync(name, eventId);
     if (sEnabled && MatchesFilter(name)) {
@@ -180,7 +180,7 @@ void PerfTraceEvent::Begin(
 void PerfTraceEvent::End(
     /* [in] */ String name)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     const Int64 eventId = name.HashCode();
     TraceEvent::FinishAsync(name, eventId);
     if (sEnabled && MatchesFilter(name)) {
@@ -205,7 +205,7 @@ void PerfTraceEvent::Begin(
     /* [in] */ String name,
     /* [in] */ IMemoryInfo* memoryInfo)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     const Int64 eventId = name.HashCode();
     TraceEvent::StartAsync(name, eventId);
     if (sEnabled && MatchesFilter(name)) {
@@ -230,7 +230,7 @@ void PerfTraceEvent::End(
     /* [in] */ String name,
     /* [in] */ IMemoryInfo* memoryInfo)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     Int64 eventId = name.HashCode();
     TraceEvent::FinishAsync(name, eventId);
     if (sEnabled && MatchesFilter(name)) {
@@ -364,7 +364,7 @@ String PerfTraceEvent::MakeSafeTraceName(
 void PerfTraceEvent::SetOutputFile(
     /* [in] */ IFile* file)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     sOutputFile = file;
 }
 

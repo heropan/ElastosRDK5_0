@@ -26,7 +26,7 @@ ECode AppErrorDialog::MyHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
     {
-        Object::Autolock lock(mHost->mService->mLock);
+        AutoLock lock(mHost->mService->mLock);
         if (mHost->mProc != NULL && mHost->mProc->mCrashDialog == mHost) {
             mHost->mProc->mCrashDialog = NULL;
         }

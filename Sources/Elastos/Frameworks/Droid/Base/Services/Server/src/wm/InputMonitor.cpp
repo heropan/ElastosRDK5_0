@@ -26,7 +26,7 @@ void InputMonitor::NotifyInputChannelBroken(
         return;
     }
 
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     WindowState* windowState = (WindowState*)inputWindowHandle->mWindowState;
     if (windowState != NULL) {
         // Slog.i(WindowManagerService.TAG, "WINDOW DIED " + windowState);
@@ -43,7 +43,7 @@ Int64 InputMonitor::NotifyANR(
     Boolean aboveSystem = FALSE;
 
     {
-        Object::Autolock lock(mService->mWindowMapLock);
+        AutoLock lock(mService->mWindowMapLock);
 
         if (inputWindowHandle != NULL) {
             windowState = (WindowState*)inputWindowHandle->mWindowState;
@@ -289,7 +289,7 @@ void InputMonitor::NotifyConfigurationChanged()
 {
     mService->SendNewConfiguration();
 
-    Object::Autolock lock(mInputDevicesReadyMonitor);
+    AutoLock lock(mInputDevicesReadyMonitor);
     if (!mInputDevicesReady) {
         mInputDevicesReady = TRUE;
         mInputDevicesReadyMonitor.NotifyAll();
@@ -299,7 +299,7 @@ void InputMonitor::NotifyConfigurationChanged()
 Boolean InputMonitor::WaitForInputDevicesReady(
     /* [in] */ Int64 timeoutMillis)
 {
-    Object::Autolock lock(mInputDevicesReadyMonitor);
+    AutoLock lock(mInputDevicesReadyMonitor);
     if (!mInputDevicesReady) {
         // try {
         mInputDevicesReadyMonitor.Wait(timeoutMillis);

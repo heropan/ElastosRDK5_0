@@ -1,4 +1,5 @@
 #include "os/SomeArgs.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -8,8 +9,6 @@ const Int32 SomeArgs::MAX_POOL_SIZE = 10;
 AutoPtr<SomeArgs> SomeArgs::sPool;
 Int32 SomeArgs::sPoolSize = 0;
 Object SomeArgs::sPoolLock;
-
-CAR_INTERFACE_IMPL(SomeArgs, IInterface)
 
 SomeArgs::SomeArgs()
     : mArgi1(0)
@@ -25,7 +24,7 @@ SomeArgs::SomeArgs()
 
 AutoPtr<SomeArgs> SomeArgs::Obtain()
 {
-    Object::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
 
     if (sPoolSize > 0) {
         AutoPtr<SomeArgs> args = sPool;
@@ -47,7 +46,7 @@ ECode SomeArgs::Recycle()
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    Object::Autolock lock(sPoolLock);
+    AutoLock lock(sPoolLock);
 
     Clear();
     if (sPoolSize < MAX_POOL_SIZE) {

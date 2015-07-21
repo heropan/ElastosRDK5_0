@@ -68,7 +68,7 @@ ECode ParcelFileDescriptor::AutoCloseInputStream::Close()
     //} finally {
     //super.close();
     // BEGIN android-changed
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // if (mChannel != NULL) {
     //     mChannel->Close();
@@ -228,7 +228,7 @@ ECode ParcelFileDescriptor::AutoCloseOutputStream::Close()
     mPfd->Close();
     //} finally {
     //super.close();
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     // if (channel != null) {
     //     channel.close();

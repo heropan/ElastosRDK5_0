@@ -57,7 +57,7 @@ ECode WifiDisplayAdapter::MyBroadcastReceiver::OnReceive(
             Slogger::D(WifiDisplayAdapter::TAG, "OnReceive: %s", action.string());
         }
 
-        Object::Autolock lock(mHost->GetSyncRoot());
+        AutoLock lock(mHost->GetSyncRoot());
         mHost->RequestDisconnectLocked();
     }
 
@@ -77,7 +77,7 @@ WifiDisplayAdapter::MyWifiDisplayControllerListener::MyWifiDisplayControllerList
 ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnFeatureStateChanged(
     /* [in] */ Int32 featureState)
 {
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     if (mHost->mFeatureState != featureState) {
         mHost->mFeatureState = featureState;
         mHost->ScheduleStatusChangedBroadcastLocked();
@@ -91,7 +91,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanStarted()
         Slogger::D(WifiDisplayAdapter::TAG, "OnScanStarted");
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     if (mHost->mScanState != IWifiDisplayStatus::SCAN_STATE_SCANNING) {
         mHost->mScanState = IWifiDisplayStatus::SCAN_STATE_SCANNING;
         mHost->ScheduleStatusChangedBroadcastLocked();
@@ -129,7 +129,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnScanFinished(
         Slogger::D(WifiDisplayAdapter::TAG, "OnScanFinished");
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     AutoPtr<ArrayOf<IWifiDisplay*> > displays =
        mHost->mPersistentDataStore->ApplyWifiDisplayAliases(availableDisplays);
 
@@ -152,7 +152,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnecting(
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayConnecting: %s", info.string());
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     AutoPtr<IWifiDisplay> newDisplay =
        mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
 
@@ -173,7 +173,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnectionFa
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayConnectionFailed");
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     if (mHost->mActiveDisplayState != IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED
         || mHost->mActiveDisplay != NULL) {
         mHost->mActiveDisplayState = IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED;
@@ -197,7 +197,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayConnected(
             info.string(), width, height);
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     AutoPtr<IWifiDisplay> newDisplay =
         mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
     mHost->AddDisplayDeviceLocked(newDisplay, surface, width, height, flags);
@@ -222,7 +222,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayChanged(
         Slogger::D(WifiDisplayAdapter::TAG, "OnDisplayChanged: %s", info.string());
     }
 
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     AutoPtr<IWifiDisplay> newDisplay =
         mHost->mPersistentDataStore->ApplyWifiDisplayAlias(display);
     Boolean hasSameAddr, equal;
@@ -246,7 +246,7 @@ ECode WifiDisplayAdapter::MyWifiDisplayControllerListener::OnDisplayDisconnected
     }
 
     // Stop listening.
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     mHost->RemoveDisplayDeviceLocked();
 
     if (mHost->mActiveDisplayState != IWifiDisplayStatus::DISPLAY_STATE_NOT_CONNECTED
@@ -538,7 +538,7 @@ void WifiDisplayAdapter::RequestConnectLocked(
     }
 
     if (!trusted) {
-        Object::Autolock lock(GetSyncRoot());
+        AutoLock lock(GetSyncRoot());
 
         if (!IsRememberedDisplayLocked(address)) {
            Slogger::W(TAG, "Ignoring request by an untrusted client "
@@ -797,7 +797,7 @@ void WifiDisplayAdapter::HandleSendStatusChangeBroadcast()
 {
     AutoPtr<IIntent> intent;
     {
-        Object::Autolock lock(GetSyncRoot());
+        AutoLock lock(GetSyncRoot());
         if (!mPendingStatusChangeBroadcast) {
             return;
         }
@@ -826,7 +826,7 @@ void WifiDisplayAdapter::HandleUpdateNotification()
 {
     Boolean isConnected;
     {
-        Object::Autolock lock(GetSyncRoot());
+        AutoLock lock(GetSyncRoot());
 
         if (!mPendingNotificationUpdate) {
             return;

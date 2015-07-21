@@ -137,7 +137,7 @@ ECode CAssetFileDescriptorAutoCloseInputStream::IsMarkSupported(
 
 ECode CAssetFileDescriptorAutoCloseInputStream::Reset()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (mRemaining >= 0) {
         // Not supported.

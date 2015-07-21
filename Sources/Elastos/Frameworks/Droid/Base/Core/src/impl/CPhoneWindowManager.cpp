@@ -512,7 +512,7 @@ CPhoneWindowManager::ScreenshotTimeoutRunnable::ScreenshotTimeoutRunnable(
 
 ECode CPhoneWindowManager::ScreenshotTimeoutRunnable::Run()
 {
-    Object::Autolock lock(mHost->mScreenshotLock);
+    AutoLock lock(mHost->mScreenshotLock);
     if (mHost->mScreenshotConnection != NULL) {
         mHost->mContext->UnbindService(mHost->mScreenshotConnection);
         mHost->mScreenshotConnection = NULL;
@@ -638,7 +638,7 @@ CPhoneWindowManager::ScreenLockTimeoutRunnable::ScreenLockTimeoutRunnable(
 
 ECode CPhoneWindowManager::ScreenLockTimeoutRunnable::Run()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     // if (localLOGV) Log.v(TAG, "mScreenLockTimeout activating keyguard");
     // TODO : KeyguardMediator is not implement.
     // if (mHost->mKeyguardMediator != NULL) {
@@ -1271,7 +1271,7 @@ CPhoneWindowManager::ScreenshotHandler::ScreenshotHandler(
 ECode CPhoneWindowManager::ScreenshotHandler::HandleMessage(
     /* [in] */ IMessage* msg)
 {
-    Object::Autolock lock(mHost->mScreenshotLock);
+    AutoLock lock(mHost->mScreenshotLock);
     if (mHost->mScreenshotConnection == myConn) {
         mHost->mContext->UnbindService(mHost->mScreenshotConnection);
         mHost->mScreenshotConnection = NULL;
@@ -1301,7 +1301,7 @@ ECode CPhoneWindowManager::ScreenshotServiceConnection::OnServiceConnected(
     /* [in] */ IComponentName* name,
     /* [in] */ IBinder* service)
 {
-    Object::Autolock lock(mHost->mScreenshotLock);
+    AutoLock lock(mHost->mScreenshotLock);
     if (mHost->mScreenshotConnection != this) {
         return NOERROR;
     }
@@ -5573,7 +5573,7 @@ void CPhoneWindowManager::HandleVolumeKey(
 
 void CPhoneWindowManager::TakeScreenshot()
 {
-    Object::Autolock lock(mScreenshotLock);
+    AutoLock lock(mScreenshotLock);
     if (mScreenshotConnection != NULL) {
         return;
     }
@@ -6758,7 +6758,7 @@ ECode CPhoneWindowManager::UserActivity()
     // In fact, the current code acquires way too many,
     // and probably has lurking deadlocks.
 
-    Object::Autolock lock(mScreenLockTimeout);
+    AutoLock lock(mScreenLockTimeout);
     if (mLockScreenTimerActive) {
         // reset the timer
         mHandler->RemoveCallbacks(mScreenLockTimeout);
@@ -6785,7 +6785,7 @@ ECode CPhoneWindowManager::LockNow(
 
 void CPhoneWindowManager::UpdateLockScreenTimeout()
 {
-    Object::Autolock lock(mScreenLockTimeout);
+    AutoLock lock(mScreenLockTimeout);
     Boolean enable = FALSE;
     // TODO: KeyguardMediator is not implement.
     // Boolean enable = (mAllowLockscreenWhenOn && mScreenOnEarly &&

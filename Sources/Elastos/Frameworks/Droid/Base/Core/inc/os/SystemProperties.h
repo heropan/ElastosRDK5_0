@@ -1,9 +1,9 @@
 
-#ifndef __HH_SYSTEM_PROPERTIES_H
-#define __HH_SYSTEM_PROPERTIES_H
+#ifndef __ELASTOS_DROID_OS_SYSTEMPROPERTIES_H
+#define __ELASTOS_DROID_OS_SYSTEMPROPERTIES_H
 
-#include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -90,11 +90,11 @@ public:
      * @throws IllegalArgumentException if the key exceeds 32 characters
      * @throws IllegalArgumentException if the value exceeds 92 characters
      */
-    static CARAPI_(void) Set(
+    static CARAPI Set(
         /* [in] */ const String& key,
         /* [in] */ const String& val);
 
-    static CARAPI_(void) AddChangeCallback(
+    static CARAPI AddChangeCallback(
         /* [in] */ IRunnable* callback);
 
     static CARAPI_(void) CallChangeCallbacks();
@@ -195,5 +195,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_SYSTEM_PROPERTIES_H
+#endif // __ELASTOS_DROID_OS_SYSTEMPROPERTIES_H
 

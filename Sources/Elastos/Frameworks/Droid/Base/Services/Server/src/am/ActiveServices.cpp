@@ -251,7 +251,7 @@ void ActiveServices::ServiceRestarter::SetService(
 
 ECode ActiveServices::ServiceRestarter::Run()
 {
-    Object::Autolock lock(mOwner->mAm->mLock);
+    AutoLock lock(mOwner->mAm->mLock);
     return mOwner->PerformServiceRestartLocked(mService);
 }
 

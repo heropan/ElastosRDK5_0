@@ -570,7 +570,7 @@ ECode CBackupManagerService::ClearDataObserver::OnRemoveCompleted(
     /* [in] */ Boolean succeeded)
 {
     {
-        Object::Autolock lock(mHost->mClearDataLock);
+        AutoLock lock(mHost->mClearDataLock);
         mHost->mClearingData = FALSE;
 
         mHost->mClearDataLock.NotifyAll();
@@ -1204,7 +1204,7 @@ void CBackupManagerService::PerformBackupTask::ClearAgentState()
      // catch (IOException e) {}
     mSavedState = mBackupData = mNewState = NULL;
     {
-        Object::Autolock lock(mHost->mCurrentOpLock);
+        AutoLock lock(mHost->mCurrentOpLock);
         mHost->mCurrentOperations.Clear();
     }
 
@@ -1580,11 +1580,11 @@ ECode CBackupManagerService::PerformFullBackupTask::Run()
         /* nothing we can do about this */
     // }
     {
-        Object::Autolock lock(mHost->mCurrentOpLock);
+        AutoLock lock(mHost->mCurrentOpLock);
         mHost->mCurrentOperations.Clear();
     }
     {
-        Object::Autolock lock(mLatchObjectLock);
+        AutoLock lock(mLatchObjectLock);
         mLatchObject->Set(TRUE);
         mLatchObjectLock.NotifyAll();
     }
@@ -2040,7 +2040,7 @@ CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::RestoreIn
 ECode CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::Reset()
 {
     {
-        Object::Autolock lock(mDoneLock);
+        AutoLock lock(mDoneLock);
         mDone->Set(FALSE);
     }
     return NOERROR;
@@ -2049,7 +2049,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::Res
 ECode CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::WaitForCompletion()
 {
     {
-        Object::Autolock lock(&mDoneLock);
+        AutoLock lock(&mDoneLock);
         Boolean result = FALSE;
         while (mDone->Get(&result), result == FALSE) {
             //try {
@@ -2071,7 +2071,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::Pac
     /* [in] */ Int32 returnCode)
 {
     {
-        Object::Autolock lock(mDoneLock);
+        AutoLock lock(mDoneLock);
         mResult = returnCode;
         mPackageName = packageName;
         mDone->Set(TRUE);
@@ -2090,7 +2090,7 @@ CBackupManagerService::PerformFullRestoreTask::RestoreDeleteObserver::RestoreDel
 ECode CBackupManagerService::PerformFullRestoreTask::RestoreDeleteObserver::Reset()
 {
     {
-        Object::Autolock lock(mDoneLock);
+        AutoLock lock(mDoneLock);
         mDone->Set(FALSE);
     }
     return NOERROR;
@@ -2099,7 +2099,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::RestoreDeleteObserver::Rese
 ECode CBackupManagerService::PerformFullRestoreTask::RestoreDeleteObserver::WaitForCompletion()
 {
     {
-        Object::Autolock lock(mDoneLock);
+        AutoLock lock(mDoneLock);
         Boolean result;
         while (mDone->Get(&result), result == FALSE) {
             // try {
@@ -2115,7 +2115,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::RestoreDeleteObserver::Pack
     /* [in] */ Int32 returnCode)
 {
     {
-        Object::Autolock lock(mDoneLock);
+        AutoLock lock(mDoneLock);
         mResult = returnCode;
         mDone->Set(TRUE);
         mDoneLock.NotifyAll();
@@ -2273,12 +2273,12 @@ _Exit_:
     //     /* nothing we can do about this */
     // }
     {
-        Object::Autolock lock(mHost->mCurrentOpLock);
+        AutoLock lock(mHost->mCurrentOpLock);
         mHost->mCurrentOperations.Clear();
     }
 
     {
-        Object::Autolock lock(mLatchObjectLock);
+        AutoLock lock(mLatchObjectLock);
         mLatchObject->Set(true);
         mLatchObjectLock.NotifyAll();
     }
@@ -4223,7 +4223,7 @@ void CBackupManagerService::PerformRestoreTask::AgentErrorCleanup()
     // responsibility here is to clear the decks for whatever comes next.
     mHost->mBackupHandler->RemoveMessages(MSG_TIMEOUT, this);
     {
-        Object::Autolock lock(mHost->mCurrentOpLock);
+        AutoLock lock(mHost->mCurrentOpLock);
         mHost->mCurrentOperations.Clear();
     }
 }
@@ -4977,7 +4977,7 @@ ECode CBackupManagerService::AgentConnected(
     /* [in] */ IBinder* agentBinder)
 {
     {
-        Object::Autolock lock(mAgentConnectLock);
+        AutoLock lock(mAgentConnectLock);
         if (Binder::GetCallingUid() == IProcess::SYSTEM_UID) {
             String binderStr;
             agentBinder->ToString(&binderStr);
@@ -5002,7 +5002,7 @@ ECode CBackupManagerService::AgentDisconnected(
 {
     // TODO: handle backup being interrupted
     {
-        Object::Autolock lock(mAgentConnectLock);
+        AutoLock lock(mAgentConnectLock);
         if (Binder::GetCallingUid() == IProcess::SYSTEM_UID) {
             mConnectedAgent = NULL;
             mConnecting = FALSE;
@@ -5773,7 +5773,7 @@ ECode CBackupManagerService::OpComplete(
     if (MORE_DEBUG) Slogger::V(TAG, "opComplete: %d", token);
     AutoPtr<Operation> op = NULL;
     {
-        Object::Autolock lock(mCurrentOpLock);
+        AutoLock lock(mCurrentOpLock);
         op = mCurrentOperations[token];
         if (op != NULL) {
             op->mState = OP_ACKNOWLEDGED;
@@ -5863,7 +5863,7 @@ void CBackupManagerService::WaitForCompletion(
     /* [in] */ FullParams* params)
 {
     {
-        Object::Autolock lock(params->mLatchLock);
+        AutoLock lock(params->mLatchLock);
         Boolean value;
         while (params->mLatch->Get(&value), value == FALSE) {
             // try {
@@ -5877,7 +5877,7 @@ void CBackupManagerService::SignalFullBackupRestoreCompletion(
         /* [in] */ FullParams* params)
 {
     {
-        Object::Autolock lock(params->mLatchLock);
+        AutoLock lock(params->mLatchLock);
         params->mLatch->Set(TRUE);
         params->mLatchLock.NotifyAll();
     }
@@ -6768,7 +6768,7 @@ AutoPtr<IIBackupAgent> CBackupManagerService::BindToAgentSynchronous(
 {
     AutoPtr<IIBackupAgent> agent = NULL;
     {
-        Object::Autolock lock(mAgentConnectLock);
+        AutoLock lock(mAgentConnectLock);
         mConnecting = TRUE;
         mConnectedAgent = NULL;
         //try {
@@ -6860,7 +6860,7 @@ void CBackupManagerService::ClearApplicationDataSynchronous(
     AutoPtr<ClearDataObserver> observer = new ClearDataObserver(this);
 
     {
-        Object::Autolock lock(mClearDataLock);
+        AutoLock lock(mClearDataLock);
         mClearingData = TRUE;
         //try{
         Boolean res = FALSE;
@@ -6910,7 +6910,7 @@ void CBackupManagerService::PrepareOperationTimeout(
 {
     if (MORE_DEBUG) Logger::V(TAG, "starting timeout: token= %d interval=%d", token, interval);
     {
-        Object::Autolock lock(mCurrentOpLock);
+        AutoLock lock(mCurrentOpLock);
         AutoPtr<Operation> op = new Operation(OP_PENDING, callback);
         mCurrentOperations[token] = op;
 
@@ -6930,7 +6930,7 @@ Boolean CBackupManagerService::WaitUntilOperationComplete(
     Int32 finalState = OP_PENDING;
     AutoPtr<Operation> op = NULL;
     {
-        Object::Autolock lock(mCurrentOpLock);
+        AutoLock lock(mCurrentOpLock);
         //try {
         while (TRUE)
         {
@@ -6967,7 +6967,7 @@ void CBackupManagerService::HandleTimeout(
     // Notify any synchronous waiters
     AutoPtr<Operation> op;
     {
-        Object::Autolock lock(mCurrentOpLock);
+        AutoLock lock(mCurrentOpLock);
         op = mCurrentOperations[token];
         if (MORE_DEBUG) {
             if (op == NULL) Slogger::W(TAG, "Timeout of token %d but no op found", token);

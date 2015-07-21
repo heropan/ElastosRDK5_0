@@ -218,13 +218,13 @@ void DeviceMonitor::Pause()
 
 void DeviceMonitor::Stop()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mRunning = FALSE;
 }
 
 void DeviceMonitor::WaitForStart()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     while (!mRunning) {
         // try {
         mLock.Wait();
@@ -234,7 +234,7 @@ void DeviceMonitor::WaitForStart()
 
 void DeviceMonitor::StartMonitoring()
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     if (!mRunning) {
         mRunning = TRUE;
         mLock.NotifyAll();

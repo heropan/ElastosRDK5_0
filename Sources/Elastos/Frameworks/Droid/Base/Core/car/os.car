@@ -1,22 +1,25 @@
 module
 {
     merge("os/Binder.car");
-    merge("os/Looper.car");
     merge("os/Message.car");
     merge("os/Messenger.car");
     merge("os/IMessenger.car");
     merge("os/MessageQueue.car");
+    merge("os/Looper.car");
     merge("os/Handler.car");
     merge("os/IdleHandler.car");
     merge("os/HandlerThread.car");
     merge("os/HandlerCaller.car");
-    merge("os/BaseBundle.car");
     merge("os/ZygoteInit.car");
     merge("os/RuntimeInit.car");
+    merge("os/UserHandle.car");
+    merge("os/Process.car");
+    merge("os/SystemProperties.car");
+    merge("os/BaseBundle.car");
+    merge("os/Bundle.car");
 
     // merge("os/BatteryManager.car");
     // merge("os/BatteryStats.car");
-    //merge("os/Bundle.car");
     // merge("os/FileObserver.car");
 
     // merge("os/IHardwareService.car");
@@ -28,14 +31,12 @@ module
     // merge("os/ParcelFileDescriptor.car");
     // merge("os/ParcelStringList.car");
     // merge("os/PatternMatcher.car");
-    // merge("os/Process.car");
     // merge("os/ProcessStats.car");
     // merge("os/RemoteCallbackList.car");
     // merge("os/ResultReceiver.car");
     // merge("os/IResultReceiver.car");
     // merge("os/ServiceManager.car");
     // merge("os/UpdateLock.car");
-    // merge("os/UserHandle.car");
     // merge("os/UserManager.car");
     // merge("os/WorkSource.car");
     // merge("os/PowerManager.car");
@@ -45,7 +46,7 @@ module
     // merge("os/DropBoxManager.car");
     // merge("os/IDropBoxManagerService.car");
     // merge("os/CancellationSignal.car");
-    // merge("os/SystemProperties.car");
+
     // merge("os/SystemService.car");
     // merge("os/Environment.car");
     // merge("os/Debug.car");
@@ -73,8 +74,9 @@ module
     // using interface Elastos.IO.ICloseable;
     // using interface Elastos.IO.IFlushable;
     // using interface Elastos.Utility.IObjectStringMap;
+
     // interface Elastos.Droid.Os.ILooper;
-    // interface Elastos.Droid.Os.IUserHandle;
+    //interface Elastos.Droid.Os.IUserHandle;
     // interface Elastos.Droid.Content.IContext;
     // interface Elastos.Droid.Internal.Os.IDropBoxManagerService;
 
@@ -266,19 +268,19 @@ module
     //     interface IServiceManager;
     // }
 
-    // class CUserHandle {
-    //     constructor();
+    class CUserHandle {
+        constructor();
 
-    //     constructor(
-    //         [in] Int32 h);
+        constructor(
+            [in] Int32 h);
 
-    //     interface IUserHandle;
-    //     interface IParcelable;
-    // }
+        interface IUserHandle;
+        interface IParcelable;
+    }
 
-    // singleton class CUserHandleHelper {
-    //     interface IUserHandleHelper;
-    // }
+    singleton class CUserHandleHelper {
+        interface IUserHandleHelper;
+    }
 
     // class CPatternMatcher {
     //     constructor();
@@ -427,9 +429,9 @@ module
     //     interface IParcelable;
     // }
 
-    // singleton class CSystemProperties {
-    //     interface ISystemProperties;
-    // }
+    //singleton class CSystemProperties {
+    //    interface ISystemProperties;
+    //}
 
     // singleton class CSystemService {
     //     interface ISystemService;

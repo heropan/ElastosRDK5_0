@@ -45,7 +45,7 @@ AutoPtr<ICookieManager> CookieManager::GetInstance()
 ECode CookieManager::SetAcceptCookie(
     /* [in] */ Boolean accept)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     assert(0);
     return NOERROR;
 }
@@ -59,7 +59,7 @@ ECode CookieManager::SetAcceptCookie(
 //synchronized
 Boolean CookieManager::AcceptCookie()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     assert(0);
     return FALSE;
 }
@@ -133,7 +133,7 @@ ECode CookieManager::GetCookie(
     /* [in] */ IWebAddress* uri,
     /* [out] */ String* cookie)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(cookie);
     assert(0);
     *cookie = String(NULL);
@@ -168,7 +168,7 @@ ECode CookieManager::RemoveAllCookie()
 ECode CookieManager::HasCookies(
     /* [out] */ Boolean* result)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(result);
     assert(0);
     *result = FALSE;
@@ -186,7 +186,7 @@ ECode CookieManager::HasCookies(
     /* [in] */ Boolean privateBrowsing,
     /* [out] */ Boolean* result)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(result);
     assert(0);
     *result = FALSE;

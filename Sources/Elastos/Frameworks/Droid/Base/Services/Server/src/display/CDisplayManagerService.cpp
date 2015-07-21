@@ -110,7 +110,7 @@ ECode CDisplayManagerService::DisplayManagerHandler::HandleMessage(
         case MSG_UPDATE_VIEWPORT:
         {
             {
-                Object::Autolock lock(mHost->mSyncRoot);
+                AutoLock lock(mHost->mSyncRoot);
                 mHost->mTempDefaultViewport->CopyFrom(mHost->mDefaultViewport);
                 mHost->mTempExternalTouchViewport->CopyFrom(mHost->mExternalTouchViewport);
             }
@@ -164,7 +164,7 @@ ECode CDisplayManagerService::DisplayAdapterListener::OnDisplayDeviceEvent(
 
 ECode CDisplayManagerService::DisplayAdapterListener::OnTraversalRequested()
 {
-    Object::Autolock lock(mHost->mSyncRoot);
+    AutoLock lock(mHost->mSyncRoot);
     mHost->ScheduleTraversalLocked(FALSE);
     return NOERROR;
 }
@@ -256,7 +256,7 @@ ECode CDisplayManagerService::WaitForDefaultDisplay(
 {
     VALIDATE_NOT_NULL(res);
 
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     Int64 timeout = SystemClock::GetUptimeMillis() + WAIT_FOR_DEFAULT_DISPLAY_TIMEOUT;
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find;
     while (mLogicalDisplays.Find(IDisplay::DEFAULT_DISPLAY) == mLogicalDisplays.End()) {
@@ -285,7 +285,7 @@ ECode CDisplayManagerService::WaitForDefaultDisplay(
 ECode CDisplayManagerService::SetWindowManager(
     /* [in] */ IDisplayManagerServiceWindowManagerFuncs* windowManagerFuncs)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     mWindowManagerFuncs = windowManagerFuncs;
     ScheduleTraversalLocked(FALSE);
 
@@ -299,7 +299,7 @@ ECode CDisplayManagerService::SetWindowManager(
 ECode CDisplayManagerService::SetInputManager(
     /* [in] */ IDisplayManagerServiceInputManagerFuncs* inputManagerFuncs)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     mInputManagerFuncs = inputManagerFuncs;
     ScheduleTraversalLocked(FALSE);
 
@@ -313,7 +313,7 @@ ECode CDisplayManagerService::SystemReady(
     /* [in] */ Boolean safeMode,
     /* [in] */ Boolean onlyCore)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     mSafeMode = safeMode;
     mOnlyCore = onlyCore;
 
@@ -373,7 +373,7 @@ ECode CDisplayManagerService::SetDisplayInfoOverrideFromWindowManager(
     /* [in] */ Int32 displayId,
     /* [in] */ IDisplayInfo* info)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find = mLogicalDisplays.Find(displayId);
     if (find != mLogicalDisplays.End()) {
@@ -397,7 +397,7 @@ ECode CDisplayManagerService::SetDisplayInfoOverrideFromWindowManager(
  */
 ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManager()
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     if (!mPendingTraversal) {
         return NOERROR;
     }
@@ -423,7 +423,7 @@ ECode CDisplayManagerService::PerformTraversalInTransactionFromWindowManager()
  */
 ECode CDisplayManagerService::BlankAllDisplaysFromPowerManager()
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     if (mAllDisplayBlankStateFromPowerManager != DISPLAY_BLANK_STATE_BLANKED) {
         mAllDisplayBlankStateFromPowerManager = DISPLAY_BLANK_STATE_BLANKED;
 
@@ -443,7 +443,7 @@ ECode CDisplayManagerService::BlankAllDisplaysFromPowerManager()
  */
 ECode CDisplayManagerService::UnblankAllDisplaysFromPowerManager()
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     if (mAllDisplayBlankStateFromPowerManager != DISPLAY_BLANK_STATE_UNBLANKED) {
         mAllDisplayBlankStateFromPowerManager = DISPLAY_BLANK_STATE_UNBLANKED;
 
@@ -473,7 +473,7 @@ ECode CDisplayManagerService::GetDisplayInfo(
     VALIDATE_NOT_NULL(displayInfo);
     *displayInfo = NULL;
 
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find = mLogicalDisplays.Find(displayId);
     if (find != mLogicalDisplays.End()) {
@@ -495,7 +495,7 @@ ECode CDisplayManagerService::GetDisplayIds(
 {
     VALIDATE_NOT_NULL(displayIds);
 
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     Int32 count = mLogicalDisplays.GetSize();
     *displayIds = ArrayOf<Int32>::Alloc(count);
     if (*displayIds == NULL)
@@ -520,7 +520,7 @@ ECode CDisplayManagerService::RegisterCallback(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     Int32 callingPid = Binder::GetCallingPid();
     HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator find
@@ -546,7 +546,7 @@ ECode CDisplayManagerService::RegisterCallback(
 void CDisplayManagerService::OnCallbackDied(
     /* [in] */ Int32 pid)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     mCallbacks.Erase(pid);
 }
 
@@ -556,7 +556,7 @@ ECode CDisplayManagerService::ScanWifiDisplays()
 
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             mWifiDisplayAdapter->RequestScanLocked();
         }
@@ -580,7 +580,7 @@ ECode CDisplayManagerService::ConnectWifiDisplay(
     Boolean trusted = CanCallerConfigureWifiDisplay();
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             mWifiDisplayAdapter->RequestConnectLocked(address, trusted);
         }
@@ -597,7 +597,7 @@ ECode CDisplayManagerService::DisconnectWifiDisplay()
 
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             mWifiDisplayAdapter->RequestDisconnectLocked();
         }
@@ -627,7 +627,7 @@ ECode CDisplayManagerService::RenameWifiDisplay(
 
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             mWifiDisplayAdapter->RequestRenameLocked(address, alias);
         }
@@ -656,7 +656,7 @@ ECode CDisplayManagerService::ForgetWifiDisplay(
 
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             mWifiDisplayAdapter->RequestForgetLocked(address);
         }
@@ -676,7 +676,7 @@ ECode CDisplayManagerService::GetWifiDisplayStatus(
 
     Int64 token = Binder::ClearCallingIdentity();
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         if (mWifiDisplayAdapter != NULL) {
             AutoPtr<IWifiDisplayStatus> s = mWifiDisplayAdapter->GetWifiDisplayStatusLocked();
             *status = s;
@@ -705,7 +705,7 @@ void CDisplayManagerService::RegisterDefaultDisplayAdapter()
 {
     if (DEBUG) Slogger::D(TAG, "RegisterDefaultDisplayAdapter mHeadless: %d", mHeadless);
     // Register default display adapter.
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     if (mHeadless) {
         AutoPtr<HeadlessDisplayAdapter> adapter = new HeadlessDisplayAdapter(
@@ -721,7 +721,7 @@ void CDisplayManagerService::RegisterDefaultDisplayAdapter()
 
 void CDisplayManagerService::RegisterAdditionalDisplayAdapters()
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     Boolean result = ShouldRegisterNonEssentialDisplayAdaptersLocked();
     if (result) {
         RegisterOverlayDisplayAdapterLocked();
@@ -781,7 +781,7 @@ void CDisplayManagerService::RegisterDisplayAdapterLocked(
 void CDisplayManagerService::HandleDisplayDeviceAdded(
    /* [in] */ DisplayDevice* device)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     if (Find(mDisplayDevices.Begin(), mDisplayDevices.End(),
         AutoPtr<DisplayDevice>(device)) != mDisplayDevices.End()) {
@@ -812,7 +812,7 @@ void CDisplayManagerService::HandleDisplayDeviceAdded(
 void CDisplayManagerService::HandleDisplayDeviceChanged(
     /* [in] */ DisplayDevice* device)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     if (Find(mDisplayDevices.Begin(), mDisplayDevices.End(),
         AutoPtr<DisplayDevice>(device)) == mDisplayDevices.End()) {
         Slogger::W(TAG, "Attempted to change non-existent display device: %s",
@@ -832,7 +832,7 @@ void CDisplayManagerService::HandleDisplayDeviceChanged(
 void CDisplayManagerService::HandleDisplayDeviceRemoved(
     /* [in] */ DisplayDevice* device)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
 
     List<AutoPtr<DisplayDevice> >::Iterator find = Find(
         mDisplayDevices.Begin(), mDisplayDevices.End(), AutoPtr<DisplayDevice>(device));
@@ -987,7 +987,7 @@ ECode CDisplayManagerService::SetDisplayHasContent(
     /* [in] */ Boolean hasContent,
     /* [in] */ Boolean inTraversal)
 {
-    Object::Autolock lock(mSyncRoot);
+    AutoLock lock(mSyncRoot);
     AutoPtr<LogicalDisplay> display;
     HashMap<Int32, AutoPtr<LogicalDisplay> >::Iterator find = mLogicalDisplays.Find(displayId);
     if (find != mLogicalDisplays.End())
@@ -1110,7 +1110,7 @@ void CDisplayManagerService::DeliverDisplayEvent(
 
     // Grab the lock and copy the callbacks.
     {
-        Object::Autolock lock(mSyncRoot);
+        AutoLock lock(mSyncRoot);
         mTempCallbacks.Clear();
         HashMap<Int32, AutoPtr<CallbackRecord> >::Iterator iter;
         for (iter = mCallbacks.Begin(); iter != mCallbacks.End(); ++iter) {
@@ -1143,7 +1143,7 @@ ECode CDisplayManagerService::Dump(
 
     // pw->PrintStringln(String("DISPLAY MANAGER (dumpsys display)"));
 
-    // Object::Autolock lock(mSyncRoot);
+    // AutoLock lock(mSyncRoot);
 
     // pw->PrintStringln(String("  mHeadless=") + mHeadless);
     // pw->PrintStringln(String("  mOnlyCode=") + mOnlyCore);

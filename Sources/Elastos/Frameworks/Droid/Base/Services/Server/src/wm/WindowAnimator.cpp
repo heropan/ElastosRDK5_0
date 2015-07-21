@@ -40,7 +40,7 @@ ECode WindowAnimator::AnimationRunnable::Run()
 {
     // TODO(cmautner): When full isolation is achieved for animation, the first lock
     // goes away and only the WindowAnimator.this remains.
-    Object::Autolock lock(mHost->mService->mWindowMapLock);
+    AutoLock lock(mHost->mService->mWindowMapLock);
     {
         AutoLock lock(mHost->mSelfLock);
         mHost->CopyLayoutToAnimParamsLocked();

@@ -1,6 +1,6 @@
 
-#ifndef __USERHANDLE_H__
-#define __USERHANDLE_H__
+#ifndef __ELASTOS_DROID_OS_USERHANDLE_H__
+#define __ELASTOS_DROID_OS_USERHANDLE_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -8,19 +8,25 @@
 #include "Elastos.Droid.Core.h"
 #endif
 
+#include <elastos/core/Object.h>
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 class UserHandle
+    : public Object
+    , public IUserHandle
 {
-protected:
-    UserHandle();
-
 public:
+    CAR_INTERFACE_DECL()
+
+    UserHandle();
 
     UserHandle(
         /* [in] */ Int32 h);
+
+    CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Int32 h);
@@ -36,6 +42,10 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+    CARAPI Equals(
+        /* [in] */ IInterface* other,
+        /* [out] */ Boolean* equals);
 
     CARAPI Equals(
         /* [in] */ IUserHandle* other,
@@ -160,4 +170,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__USERHANDLE_H__
+#endif //__ELASTOS_DROID_OS_USERHANDLE_H__

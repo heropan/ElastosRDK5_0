@@ -46,7 +46,7 @@ AutoPtr<IBundle> CoreSettingsObserver::GetCoreSettingsLocked()
 ECode CoreSettingsObserver::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    Object::Autolock lock(mActivityManagerService->mLock);
+    AutoLock lock(mActivityManagerService->mLock);
     SendCoreSettings();
     return NOERROR;
 }

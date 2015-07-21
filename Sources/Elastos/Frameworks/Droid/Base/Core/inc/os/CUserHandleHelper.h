@@ -1,15 +1,21 @@
-#ifndef __CUSERHANDLEHELPER_H__
-#define __CUSERHANDLEHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CUSERHANDLEHELPER_H__
+#define __ELASTOS_DROID_OS_CUSERHANDLEHELPER_H__
 
-#include "_CUserHandleHelper.h"
+#include "_Elastos_Droid_Os_CUserHandleHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CUserHandleHelper)
+    , public Singleton
+    , public IUserHandleHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * Checks to see if the user id is the same for the two uids, i.e., they belong to the same
@@ -137,4 +143,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUSERHANDLEHELPER_H__
+#endif //__ELASTOS_DROID_OS_CUSERHANDLEHELPER_H__

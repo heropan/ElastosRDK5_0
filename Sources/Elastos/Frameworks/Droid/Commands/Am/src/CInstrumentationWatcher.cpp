@@ -21,7 +21,7 @@ ECode CInstrumentationWatcher::InstrumentationStatus(
     /* [in] */ Int32 resultCode,
     /* [in] */ IBundle * results)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String pretty;
     if (!mRawMode && results != NULL) {
         results->GetString(IInstrumentation::REPORT_KEY_STREAMRESULT, &pretty);
@@ -63,7 +63,7 @@ ECode CInstrumentationWatcher::InstrumentationFinished(
     /* [in] */ Int32 resultCode,
     /* [in] */ IBundle * results)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     String pretty;
     if (!mRawMode && results != NULL) {
         results->GetString(IInstrumentation::REPORT_KEY_STREAMRESULT, &pretty);
@@ -127,7 +127,7 @@ return true;*/
 //Because interface named PingBinder is not implemented, now just comment following code temperarily
 /*
     VALIDATE_NOT_NULL(result);
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     ECode ec = NOERROR;
     while (!mFinished) {
         Boolean result;

@@ -128,7 +128,7 @@ AutoPtr<WebViewDatabaseClassic> WebViewDatabaseClassic::GetInstance(
 void WebViewDatabaseClassic::Init(
     /* [in] */ IContext* context)
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
 
     if (mInitialized) {
         return;
@@ -370,7 +370,7 @@ void WebViewDatabaseClassic::UpgradeDatabaseToV10()
 Boolean WebViewDatabaseClassic::CheckInitialized()
 {
     {
-        Object::Autolock lock(this);
+        AutoLock lock(this);
         while (!mInitialized) {
             //try {
             Wait();

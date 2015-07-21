@@ -76,7 +76,7 @@ ECode CSession::constructor(
     sb.ToString(&mStringName);
 
     {
-        Object::Autolock lock(mService->mWindowMapLock);
+        AutoLock lock(mService->mWindowMapLock);
 
         if (mService->mInputMethodManager == NULL && mService->mHaveInputMethods) {
             mService->mInputMethodManager = IIInputMethodManager::Probe(
@@ -306,7 +306,7 @@ ECode CSession::FinishDrawing(
 ECode CSession::SetInTouchMode(
     /* [in] */ Boolean mode)
 {
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     mService->mInTouchMode = mode;
     return NOERROR;
 }
@@ -326,7 +326,7 @@ ECode CSession::PerformHapticFeedback(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<WindowState> win;
@@ -375,7 +375,7 @@ ECode CSession::PerformDrag(
     //     Slog.d(WindowManagerService.TAG, "perform drag: win=" + window + " data=" + data);
     // }
 
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     if (mService->mDragState == NULL) {
         Slogger::W(CWindowManagerService::TAG, "No drag prepared");
         *result = false;
@@ -473,7 +473,7 @@ ECode CSession::ReportDropResult(
         Slogger::D(CWindowManagerService::TAG, "Drop result=%d reported by %p", consumed, token.Get());
     }
 
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     if (mService->mDragState == NULL) {
@@ -540,7 +540,7 @@ ECode CSession::SetWallpaperPosition(
     /* [in] */ Float xstep,
     /* [in] */ Float ystep)
 {
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<WindowState> win;
@@ -574,7 +574,7 @@ ECode CSession::SendWallpaperCommand(
 {
     VALIDATE_NOT_NULL(result);
 
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<WindowState> win;
@@ -610,7 +610,7 @@ ECode CSession::SetUniverseTransform(
     /* [in] */ Float dsdy,
     /* [in] */ Float dtdy)
 {
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 ident = Binder::ClearCallingIdentity();
     // try {
     AutoPtr<WindowState> win;
@@ -631,7 +631,7 @@ ECode CSession::OnRectangleOnScreenRequested(
     /* [in] */ IRect* rectangle,
     /* [in] */ Boolean immediate)
 {
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
     Int64 identity = Binder::ClearCallingIdentity();
     // try {
     mService->OnRectangleOnScreenRequested(token, rectangle, immediate);
@@ -700,7 +700,7 @@ ECode CSession::ProxyDied()
         mService->mInputMethodManager->RemoveClient(mClient);
     }
 
-    Object::Autolock lock(mService->mWindowMapLock);
+    AutoLock lock(mService->mWindowMapLock);
 
     AutoPtr<IProxy> proxy = (IProxy*)mClient->Probe(EIID_IProxy);
     assert(proxy != NULL);

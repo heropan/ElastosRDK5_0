@@ -81,7 +81,7 @@ AutoPtr<CAccessibilityInteractionClient> CAccessibilityInteractionClient::GetIns
 ECode CAccessibilityInteractionClient::SetSameThreadMessage(
     /* [in] */ IMessage* message)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     mSameThreadMessage = message;
     mInstanceLock.NotifyAll();
     return NOERROR;
@@ -439,7 +439,7 @@ AutoPtr<IAccessibilityNodeInfo>
 CAccessibilityInteractionClient::GetFindAccessibilityNodeInfoResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     Boolean success = WaitForResultTimedLocked(interactionId);
     AutoPtr<IAccessibilityNodeInfo> result = success ? mFindAccessibilityNodeInfoResult : NULL;
     ClearResultLocked();
@@ -450,7 +450,7 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfoResult(
     /* [in] */ IAccessibilityNodeInfo* info,
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (interactionId > mInteractionId) {
         mFindAccessibilityNodeInfoResult = info;
         mInteractionId = interactionId;
@@ -462,7 +462,7 @@ AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > >
 CAccessibilityInteractionClient::GetFindAccessibilityNodeInfosResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     Boolean success = WaitForResultTimedLocked(interactionId);
     AutoPtr<List<AutoPtr<IAccessibilityNodeInfo> > > result;
     if (success) {
@@ -480,7 +480,7 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfosResult(
     /* [in] */ IObjectContainer* infos,
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (interactionId > mInteractionId) {
         if (infos != NULL) {
             // If the call is not an IPC, i.e. it is made from the same process, we need to
@@ -524,7 +524,7 @@ ECode CAccessibilityInteractionClient::SetFindAccessibilityNodeInfosResult(
 Boolean CAccessibilityInteractionClient::GetPerformAccessibilityActionResultAndClear(
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     Boolean success = WaitForResultTimedLocked(interactionId);
     Boolean result = success ? mPerformAccessibilityActionResult : FALSE;
     ClearResultLocked();
@@ -535,7 +535,7 @@ ECode CAccessibilityInteractionClient::SetPerformAccessibilityActionResult(
     /* [in] */ Boolean succeeded,
     /* [in] */ Int32 interactionId)
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     if (interactionId > mInteractionId) {
         mPerformAccessibilityActionResult = succeeded;
         mInteractionId = interactionId;
@@ -630,7 +630,7 @@ void CAccessibilityInteractionClient::FinalizeAndCacheAccessibilityNodeInfos(
 
 AutoPtr<IMessage> CAccessibilityInteractionClient::GetSameProcessMessageAndClear()
 {
-    Object::Autolock lock(mInstanceLock);
+    AutoLock lock(mInstanceLock);
     AutoPtr<IMessage> result = mSameThreadMessage;
     mSameThreadMessage = NULL;
     return result;

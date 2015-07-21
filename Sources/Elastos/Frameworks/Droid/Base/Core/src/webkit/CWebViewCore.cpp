@@ -448,7 +448,7 @@ ECode CWebViewCore::WebCoreThread::Run()
     Looper::Prepare();
     assert(sWebCoreHandler != NULL);
     {
-        Object::Autolock lock(CWebViewCore::sLock);
+        AutoLock lock(CWebViewCore::sLock);
 
         sWebCoreHandler = new MyHandler(mOwner);
         CWebViewCore::sLock.Notify();
@@ -571,7 +571,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
                 // Wake up the WebCore thread just in case it is waiting for a
                 // JavaScript dialog.
                 {
-                    Object::Autolock lock(mOwner->mOwner->mCallbackProxy);
+                    AutoLock lock(mOwner->mOwner->mCallbackProxy);
                     mOwner->mOwner->mCallbackProxy->Notify();
                 }
                 mOwner->mOwner->mBrowserFrame->Destroy();
@@ -1250,7 +1250,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
                 Int32 matchCount = mOwner->mOwner->NativeFindAll(mOwner->mOwner->mNativeClass, request->mSearchText);
                 Int32 matchIndex = mOwner->mOwner->NativeFindNext(mOwner->mOwner->mNativeClass, TRUE);
                 {
-                    Object::Autolock lock(request);
+                    AutoLock lock(request);
                     request->mMatchCount = matchCount;
                     request->mMatchIndex = matchIndex;
                     request->Notify();
@@ -1275,7 +1275,7 @@ ECode CWebViewCore::EventHub::MyHandler::HandleMessage(
             msg->GetArg1(&arg1);
             Int32 matchIndex = mOwner->mOwner->NativeFindNext(mOwner->mOwner->mNativeClass, arg1 != 0);
             {
-                Object::Autolock lock(request);
+                AutoLock lock(request);
                 request->mMatchIndex = matchIndex;
             }
             AutoPtr<IMessageHelper> helper;
@@ -1883,7 +1883,7 @@ ECode CWebViewCore::constructor(
     // XXX: This is the only time the UI thread will wait for the WebCore
     // thread!
     {
-        Object::Autolock lock(sLock);
+        AutoLock lock(sLock);
         if (sWebCoreHandler == NULL) {
             // Create a global thread and start it.
             AutoPtr<IRunnable> r = new WebCoreThread(this);

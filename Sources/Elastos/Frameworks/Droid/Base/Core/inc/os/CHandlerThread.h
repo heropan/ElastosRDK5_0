@@ -1,8 +1,8 @@
 
-#ifndef __CHANDLERTHREAD_H__
-#define __CHANDLERTHREAD_H__
+#ifndef __ELASTOS_DROID_OS_CHANDLERTHREAD_H__
+#define __ELASTOS_DROID_OS_CHANDLERTHREAD_H__
 
-#include "_CHandlerThread.h"
+#include "_Elastos_Droid_Os_CHandlerThread.h"
 #include <elastos/core/Thread.h>
 
 using Elastos::Core::IClassLoader;
@@ -69,4 +69,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CHANDLERTHREAD_H__
+#endif //__ELASTOS_DROID_OS_CHANDLERTHREAD_H__

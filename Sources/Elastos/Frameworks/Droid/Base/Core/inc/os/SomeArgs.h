@@ -1,22 +1,16 @@
 #ifndef __ELASTOS_DROID_OS_SOME_ARGS_H__
 #define __ELASTOS_DROID_OS_SOME_ARGS_H__
 
-#include "ext/frameworkext.h"
-#include <elastos/Core/Object.h>
-
-using Elastos::Core::Object;
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 class SomeArgs
-    : public ElRefBase
-    , public IInterface
+    : public Object
 {
 public:
-    CAR_INTERFACE_DECL()
-
     static CARAPI_(AutoPtr<SomeArgs>) Obtain();
 
     CARAPI Recycle();
@@ -54,5 +48,7 @@ private:
 } // namespace Os
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Os::SomeArgs, IInterface)
 
 #endif //__ELASTOS_DROID_OS_SOME_ARGS_H__

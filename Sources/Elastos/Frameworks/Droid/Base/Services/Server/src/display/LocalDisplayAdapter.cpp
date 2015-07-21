@@ -162,7 +162,7 @@ void LocalDisplayAdapter::HotplugDisplayEventReceiver::OnHotplug(
     /* [in] */ Int32 builtInDisplayId,
     /* [in] */ Boolean connected)
 {
-    Object::Autolock lock(mHost->GetSyncRoot());
+    AutoLock lock(mHost->GetSyncRoot());
     mHost->ScanDisplaysLocked();
 }
 

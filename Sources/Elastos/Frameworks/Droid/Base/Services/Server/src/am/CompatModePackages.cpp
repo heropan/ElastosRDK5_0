@@ -433,7 +433,7 @@ void CompatModePackages::SaveCompatModes()
 {
     HashMap<String, AutoPtr<IInteger32> > pkgs;
     {
-        Object::Autolock lock(mService->mLock);
+        AutoLock lock(mService->mLock);
         pkgs.Insert(mPackages->Begin(), mPackages->End());
     }
 

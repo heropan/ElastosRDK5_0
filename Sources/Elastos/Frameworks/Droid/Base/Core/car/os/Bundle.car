@@ -4,9 +4,12 @@ module
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IInteger32;
     using interface Elastos.IO.ISerializable;
-    using interface Elastos.Utility.IObjectStringMap;
-    using interface Elastos.Utility.IObjectInt32Map;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Utility.ISize;
+    interface Elastos.Droid.Utility.ISizeF;
 
     namespace Elastos {
     namespace Droid {
@@ -20,34 +23,15 @@ module
      */
     [deprecated, local, parcelable]
     interface IBundle {
-
-        ToString(
-            [out] String* str);
-
-        /**
-         * TODO: optimize this later (getting just the value part of a Bundle
-         * with a single pair) once Bundle.forPair() above is implemented
-         * with a special single-value Map implementation/serialization.
-         *
-         * Note: value in single-pair Bundle may be null.
-         *
-         * @hide
-         */
+        /** @hide */
         GetPairValue(
             [out] String* val);
 
-        /**
-         * Changes the ClassLoader this Bundle uses when instantiating objects.
-         *
-         * @param loader An explicit ClassLoader to use when instantiating objects
-         * inside of the Bundle.
-         */
+        /** @hide */
         SetClassLoader(
             [in] IClassLoader* loader);
 
-        /**
-         * Return the ClassLoader currently associated with this Bundle.
-         */
+        /** @hide */
         GetClassLoader(
             [out] IClassLoader** loader);
 
@@ -59,93 +43,9 @@ module
             [in] Boolean allowFds,
             [out] Boolean* prev);
 
-        /**
-         * Clones the current Bundle. The internal map is cloned, but the keys and
-         * values to which it refers are copied by reference.
-         */
-        //@Override
-        Clone(
-            [out] IBundle** b);
-
-        /**
-         * If the underlying data are stored as a Parcel, unparcel them
-         * using the currently assigned class loader.
-         */
-        Unparcel();
-
-        /**
-         * @hide
-         */
-        IsParcelled(
-            [out] Boolean* b);
-
-        /**
-         * Returns the number of mappings contained in this Bundle.
-         *
-         * @return the number of mappings as an int.
-         */
-        GetSize(
-            [out] Int32* size);
-
-        /**
-         * Returns true if the mapping of this Bundle is empty, false otherwise.
-         */
-        IsEmpty(
-            [out] Boolean* b);
-
-        /**
-         * Removes all elements from the mapping of this Bundle.
-         */
-        Clear();
-
-        /**
-         * Returns true if the given key is contained in the mapping
-         * of this Bundle.
-         *
-         * @param key a String key
-         * @return true if the key is part of the mapping, false otherwise
-         */
-        ContainsKey(
-            [in] String key,
-            [out] Boolean* result);
-
-        /**
-         * Returns the entry with the given key as an object.
-         *
-         * @param key a String key
-         * @return an Object, or null
-         */
-        Get(
-            [in] String key,
-            [out] IInterface** value);
-
-        /**
-         * Removes any entry with the given key from the mapping of this Bundle.
-         *
-         * @param key a String key
-         */
-        Remove(
-            [in] String key);
-
-        /**
-         * Inserts all mappings from the given Bundle into this Bundle.
-         *
-         * @param map a Bundle
-         */
         PutAll(
-            [in] IBundle* map);
+            [in] IBundle* bundle);
 
-        /**
-         * Returns a Set containing the Strings used as keys in this Bundle.
-         *
-         * @return a Set of String keys
-         */
-        KeySet(
-            [out] IObjectContainer** result);
-
-        /**
-         * Reports whether the bundle contains any parcelled file descriptors.
-         */
         HasFileDescriptors(
             [out] Boolean* result);
 
@@ -185,251 +85,98 @@ module
             [in] String key,
             [in] String value);
 
-        /**
-         * Inserts a CharSequence value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a CharSequence, or null
-         */
         PutCharSequence(
             [in] String key,
             [in] ICharSequence* value);
 
-        /**
-         * Inserts a Parcelable value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a ObjectStringMap object, or null
-         */
-        PutObjectStringMap(
-            [in] String key,
-            [in] IObjectStringMap* value);
-
-        /**
-         * Inserts a Parcelable value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a Parcelable object, or null
-         */
         PutParcelable(
             [in] String key,
             [in] IParcelable* value);
 
-        /**
-         * Inserts an array of Parcelable values into the mapping of this Bundle,
-         * replacing any existing value for the given key.  Either key or value may
-         * be null.
-         *
-         * @param key a String, or null
-         * @param value an array of Parcelable objects, or null
-         */
+        PutSize(
+            [in] String key,
+            [in] ISize* value);
+
+        PutSizeF(
+            [in] String key,
+            [in] ISizeF* value);
+
         PutParcelableArray(
             [in] String key,
             [in] ArrayOf<IParcelable*>* value);
 
-        /**
-         * Inserts a List of Parcelable values into the mapping of this Bundle,
-         * replacing any existing value for the given key.  Either key or value may
-         * be null.
-         *
-         * @param key a String, or null
-         * @param value an ArrayList of Parcelable objects, or null
-         */
         PutParcelableArrayList(
             [in] String key,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
-        /**
-         * Inserts a SparceArray of Parcelable values into the mapping of this
-         * Bundle, replacing any existing value for the given key.  Either key
-         * or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a SparseArray of Parcelable objects, or null
-         */
         PutSparseParcelableArray(
             [in] String key,
-            [in] IObjectInt32Map* value);
+            [in] IMap* value);
 
-        /**
-         * Inserts an ArrayList<Integer> value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value an ArrayList<Integer> object, or null
-         */
         PutIntegerArrayList(
             [in] String key,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
-        /**
-         * Inserts an ArrayList<String> value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value an ArrayList<String> object, or null
-         */
         PutStringArrayList(
             [in] String key,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
-        /**
-         * Inserts an ArrayList<CharSequence> value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value an ArrayList<CharSequence> object, or null
-         */
         PutCharSequenceArrayList(
             [in] String key,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
-        /**
-         * Inserts a Serializable value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a Serializable object, or null
-         */
-        PutSerializable(
+         PutSerializable(
             [in] String key,
             [in] ISerializable* value);
 
-        /**
-         * Inserts a boolean array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a boolean array object, or null
-         */
         PutBooleanArray(
             [in] String key,
             [in] ArrayOf<Boolean>* value);
 
-        /**
-         * Inserts a byte array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a byte array object, or null
-         */
         PutByteArray(
             [in] String key,
             [in] ArrayOf<Byte>* value);
 
-        /**
-         * Inserts a short array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a short array object, or null
-         */
         PutInt16Array(
             [in] String key,
             [in] ArrayOf<Int16>* value);
 
-        /**
-         * Inserts a char array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a char array object, or null
-         */
         PutCharArray(
             [in] String key,
             [in] ArrayOf<Char32>* value);
 
-        /**
-         * Inserts an int array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value an int array object, or null
-         */
         PutInt32Array(
             [in] String key,
             [in] ArrayOf<Int32>* value);
 
-        /**
-         * Inserts a long array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a long array object, or null
-         */
         PutInt64Array(
             [in] String key,
             [in] ArrayOf<Int64>* value);
 
-        /**
-         * Inserts a float array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a float array object, or null
-         */
         PutFloatArray(
             [in] String key,
             [in] ArrayOf<Float>* value);
 
-        /**
-         * Inserts a double array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a double array object, or null
-         */
         PutDoubleArray(
             [in] String key,
             [in] ArrayOf<Double>* value);
 
-        /**
-         * Inserts a String array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a String array object, or null
-         */
         PutStringArray(
             [in] String key,
             [in] ArrayOf<String>* value);
 
-        /**
-         * Inserts a CharSequence array value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a CharSequence array object, or null
-         */
         PutCharSequenceArray(
             [in] String key,
             [in] ArrayOf<ICharSequence*>* value);
 
-        /**
-         * Inserts a Bundle value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a Bundle object, or null
-         */
         PutBundle(
             [in] String key,
             [in] IBundle* value);
 
-        /**
-         * Inserts an IBinder value into the mapping of this Bundle, replacing
-         * any existing value for the given key.  Either key or value may be null.
-         *
-         * @param key a String, or null
-         * @param value an IBinder object, or null
-         *
-         * @deprecated
-         * @hide
-         */
-        // @Deprecated
+        PutBinder(
+            [in] String key,
+            [in] IBinder* value);
+
         PutIBinder(
             [in] String key,
             [in] IBinder* value);
@@ -438,13 +185,6 @@ module
             [in] String key,
             [out] Boolean* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a boolean value
-         */
         GetBoolean(
             [in] String key,
             [in] Boolean defaultValue,
@@ -454,13 +194,6 @@ module
             [in] String key,
             [out] Byte* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a byte value
-         */
         GetByte(
             [in] String key,
             [in] Byte defaultValue,
@@ -470,13 +203,6 @@ module
             [in] String key,
             [out] Char32* value);
 
-        /**
-         * Returns the value associated with the given key, or (char) 0 if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a char value
-         */
         GetChar(
             [in] String key,
             [in] Char32 defaultValue,
@@ -486,13 +212,6 @@ module
             [in] String key,
             [out] Int16* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a short value
-         */
         GetInt16(
             [in] String key,
             [in] Int16 defaultValue,
@@ -502,13 +221,6 @@ module
             [in] String key,
             [out] Int32* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return an int value
-         */
         GetInt32(
             [in] String key,
             [in] Int32 defaultValue,
@@ -518,13 +230,6 @@ module
             [in] String key,
             [out] Int64* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a long value
-         */
         GetInt64(
             [in] String key,
             [in] Int64 defaultValue,
@@ -534,13 +239,6 @@ module
             [in] String key,
             [out] Float* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a float value
-         */
         GetFloat(
             [in] String key,
             [in] Float defaultValue,
@@ -550,332 +248,119 @@ module
             [in] String key,
             [out] Double* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String
-         * @return a double value
-         */
         GetDouble(
             [in] String key,
             [in] Double defaultValue,
             [out] Double* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a String value, or null
-         */
         GetString(
             [in] String key,
             [out] String* value);
 
-        /**
-         * Returns the value associated with the given key, or defaultValue if
-         * no mapping of the desired type exists for the given key.
-         *
-         * @param key a String, or null
-         * @param defaultValue Value to return if key does not exist
-         * @return a String value, or null
-         */
         GetString(
             [in] String key,
             [in] String defaultValue,
             [out] String* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a CharSequence value, or null
-         */
         GetCharSequence(
             [in] String key,
             [out] ICharSequence** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a Bundle value, or null
-         */
+        GetSize(
+            [in] String key,
+            [out] ISize** value);
+
+        GetSizeF(
+            [in] String key,
+            [out] ISizeF** value);
+
         GetBundle(
             [in] String key,
             [out] IBundle** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a Parcelable value, or null
-         */
         GetParcelable(
             [in] String key,
             [out] IParcelable** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a ObjectStringMap value, or null
-         */
-        GetObjectStringMap(
-            [in] String key,
-            [out] IObjectStringMap** value);
-
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a Parcelable[] value, or null
-         */
         GetParcelableArray(
             [in] String key,
             [out, callee] ArrayOf<IParcelable*>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an ArrayList<T> value, or null
-         */
         GetParcelableArrayList(
             [in] String key,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         *
-         * @return a SparseArray of T values, or null
-         */
         GetSparseParcelableArray(
             [in] String key,
-            [out] IObjectInt32Map** value);
+            [out] IMap** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a Serializable value, or null
-         */
         GetSerializable(
             [in] String key,
             [out] ISerializable** result);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an ArrayList<String> value, or null
-         */
         GetIntegerArrayList(
             [in] String key,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an ArrayList<String> value, or null
-         */
         GetStringArrayList(
             [in] String key,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an ArrayList<CharSequence> value, or null
-         */
         GetCharSequenceArrayList(
             [in] String key,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a boolean[] value, or null
-         */
         GetBooleanArray(
             [in] String key,
             [out, callee] ArrayOf<Boolean>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a byte[] value, or null
-         */
         GetByteArray(
             [in] String key,
             [out, callee] ArrayOf<Byte>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a short[] value, or null
-         */
         GetInt16Array(
             [in] String key,
             [out, callee] ArrayOf<Int16>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a char[] value, or null
-         */
         GetCharArray(
             [in] String key,
             [out, callee] ArrayOf<Char32>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an int[] value, or null
-         */
         GetInt32Array(
             [in] String key,
             [out, callee] ArrayOf<Int32>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a long[] value, or null
-         */
         GetInt64Array(
             [in] String key,
             [out, callee] ArrayOf<Int64>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a float[] value, or null
-         */
         GetFloatArray(
             [in] String key,
             [out, callee] ArrayOf<Float>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a double[] value, or null
-         */
         GetDoubleArray(
             [in] String key,
             [out, callee] ArrayOf<Double>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a String[] value, or null
-         */
         GetStringArray(
             [in] String key,
             [out, callee] ArrayOf<String>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return a CharSequence[] value, or null
-         */
         GetCharSequenceArray(
             [in] String key,
             [out, callee] ArrayOf<ICharSequence*>* value);
 
-        /**
-         * Returns the value associated with the given key, or null if
-         * no mapping of the desired type exists for the given key or a null
-         * value is explicitly associated with the key.
-         *
-         * @param key a String, or null
-         * @return an IBinder value, or null
-         *
-         * @deprecated
-         * @hide
-         */
-        // @Deprecated
-        GetIBinder(
+        GetBinder(
             [in] String key,
             [out] IBinder** value);
 
-        /**
-         * Inserts a SparceArray of Parcelable values into the mapping of this
-         * Bundle, replacing any existing value for the given key.  Either key
-         * or value may be null.
-         *
-         * @param key a String, or null
-         * @param value a SparseArray of Parcelable objects, or null
-         */
-        //Put map to bundle.
-        PutParcelableMap(
+        GetIBinder(
             [in] String key,
-            [in] IInterface* parcelableMap);
-
-        GetParcelableMap(
-            [in] String key,
-            [out] IInterface** parcelableMap);
+            [out] IBinder** value);
     }
 
     interface IBundleHelper {
-        GetEmpty(
+        GetEMPTY(
             [out] IBundle** bundle);
 
         ForPair(

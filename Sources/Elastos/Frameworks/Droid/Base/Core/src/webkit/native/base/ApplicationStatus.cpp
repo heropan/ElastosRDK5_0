@@ -331,7 +331,7 @@ Int32 ApplicationStatus::GetStateForActivity(
 Int32 ApplicationStatus::GetStateForApplication()
 {
     {
-        Object::Autolock lock(sCachedApplicationStateLock);
+        AutoLock lock(sCachedApplicationStateLock);
         if (sCachedApplicationState == NULL) {
             sCachedApplicationState = DetermineApplicationState();
         }

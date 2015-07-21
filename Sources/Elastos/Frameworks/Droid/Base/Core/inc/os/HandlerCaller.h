@@ -1,11 +1,10 @@
 #ifndef __ELASTOS_DROID_OS_HANDLER_CALLER_H__
 #define __ELASTOS_DROID_OS_HANDLER_CALLER_H__
 
-#include "ext/frameworkext.h"
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
 
 using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::Os::IHandlerCallerCallback;
 
 namespace Elastos {
@@ -13,12 +12,12 @@ namespace Droid {
 namespace Os {
 
 class HandlerCaller
-    : public IWeakReferenceSource
+    : public Object
     , public IHandlerCaller
-    , public ElRefBase
 {
 private:
-    class MyHandler : public HandlerBase
+    class MyHandler
+        : public Handler
     {
     public:
         MyHandler(
@@ -32,6 +31,9 @@ private:
         AutoPtr<IWeakReference> mWeakHost;
     };
 
+protected:
+    HandlerCaller();
+
 public:
     CAR_INTERFACE_DECL()
 
@@ -44,6 +46,17 @@ public:
         /* [in] */ Boolean isStrong);
 
     HandlerCaller(
+        /* [in] */ IContext* context,
+        /* [in] */ ILooper* looper,
+        /* [in] */ IHandlerCallerCallback* callback,
+        /* [in] */ Boolean isStrong);
+
+    constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IHandlerCallerCallback* callback,
+        /* [in] */ Boolean isStrong);
+
+    constructor(
         /* [in] */ IContext* context,
         /* [in] */ ILooper* looper,
         /* [in] */ IHandlerCallerCallback* callback,

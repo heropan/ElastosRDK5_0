@@ -131,7 +131,7 @@ CAR_INTERFACE_IMPL(Instrumentation::SyncRunnable, IRunnable)
 Instrumentation::SyncRunnable::Run()
 {
     mTarget->Run();
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mComplete = TRUE;
     NotifyAll();
     return NOERROR;
@@ -139,7 +139,7 @@ Instrumentation::SyncRunnable::Run()
 
 void Instrumentation::SyncRunnable::WaitForComplete()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     while (!mComplete) {
         // try {
         Wait();
@@ -166,7 +166,7 @@ Instrumentation::ActivityGoing::QueueIdle(
     /* [out] */ Boolean* res)
 {
     VALIDATE_NOT_NULL(res)
-    Object::Autolock lock(mHost->mSync);
+    AutoLock lock(mHost->mSync);
     mHost->mWaitingActivities->Remove(mWaiter);
     mHost->mSync.NotifyAll();
     *res = FALSE;
@@ -193,7 +193,7 @@ ECode Instrumentation::Idler::QueueIdle(
     if (mCallback != NULL) {
         mCallback->Run();
     }
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     mIdle = TRUE;
     NotifyAll();
     *res = FALSE;
@@ -202,7 +202,7 @@ ECode Instrumentation::Idler::QueueIdle(
 
 void Instrumentation::Idler::WaitForIdle()
 {
-    Object::Autolock lock(this);
+    AutoLock lock(this);
     while (!mIdle) {
         // try {
         Wait();
@@ -530,7 +530,7 @@ ECode Instrumentation::StartActivitySync(
 
     FAIL_RETURN(ValidateNotAppThread())
 
-    Object::Autolock lock(mSync);
+    AutoLock lock(mSync);
 
     AutoPtr<IIntent> intent;
     CIntent::New(aIntent, (IIntent**)&intent);
@@ -594,7 +594,7 @@ ECode Instrumentation::StartActivitySync(
 ECode Instrumentation::AddMonitor(
     /* [in] */ IInstrumentationActivityMonitor* monitor)
 {
-    Object::Autolock lock(mSync);
+    AutoLock lock(mSync);
     if (mActivityMonitors == NULL) {
         mActivityMonitors = new List<AutoPtr<IInstrumentationActivityMonitor> >();
     }
@@ -642,7 +642,7 @@ ECode Instrumentation::CheckMonitorHit(
     VALIDATE_NOT_NULL(reached)
     WaitForIdleSync();
 
-    Object::Autolock lock(mSync);
+    AutoLock lock(mSync);
     Int32 hits;
     if (monitor->GetHits(&hits), hits < minHits) {
         *reached = FALSE;
@@ -662,7 +662,7 @@ ECode Instrumentation::WaitForMonitor(
     AutoPtr<IActivity> act;
     monitor->WaitForActivity((IActivity**)&act);
     {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         mActivityMonitors->Remove(monitor);
     }
     *activity  = act;
@@ -680,7 +680,7 @@ ECode Instrumentation::WaitForMonitorWithTimeout(
     AutoPtr<IActivity> act;
     monitor->WaitForActivityWithTimeout(timeOut, (IActivity**)&act);
     {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         mActivityMonitors->Remove(monitor);
     }
     *activity  = act;
@@ -691,7 +691,7 @@ ECode Instrumentation::WaitForMonitorWithTimeout(
 ECode Instrumentation::RemoveMonitor(
     /* [in] */ IInstrumentationActivityMonitor* monitor)
 {
-    Object::Autolock lock(mSync);
+    AutoLock lock(mSync);
     mActivityMonitors->Remove(monitor);
     return NOERROR;
 }
@@ -1002,7 +1002,7 @@ ECode Instrumentation::CallActivityOnCreate(
     /* [in] */ IBundle* icicle)
 {
     if (mWaitingActivities != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         List<AutoPtr<ActivityWaiter> >::Iterator it = mWaitingActivities->Begin();
         for (; it != mWaitingActivities->End(); ++it) {
             AutoPtr<ActivityWaiter> aw = *it;
@@ -1021,7 +1021,7 @@ ECode Instrumentation::CallActivityOnCreate(
     activity->PerformCreate(icicle);
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for (it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IIntent> intent;
@@ -1055,7 +1055,7 @@ ECode Instrumentation::CallActivityOnDestroy(
     activity->PerformDestroy();
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for (it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IIntent> aIntent;
@@ -1112,7 +1112,7 @@ ECode Instrumentation::CallActivityOnResume(
     act->OnResume();
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         Boolean result;
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
@@ -1324,7 +1324,7 @@ ECode Instrumentation::ExecStartActivity(
 
     AutoPtr<IApplicationThread> whoThread = IApplicationThread::Probe(contextThread);
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IInstrumentationActivityMonitor> am = *it;
@@ -1514,7 +1514,7 @@ ECode Instrumentation::ExecStartActivitiesAsUser(
     // END privacy-added
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
         for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
             AutoPtr<IInstrumentationActivityMonitor> am = *it;
@@ -1646,7 +1646,7 @@ ECode Instrumentation::ExecStartActivity(
 
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         if (!mActivityMonitors->IsEmpty()) {
             List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
             for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {
@@ -1793,7 +1793,7 @@ ECode Instrumentation::ExecStartActivity(
     // END privacy-added
 
     if (mActivityMonitors != NULL) {
-        Object::Autolock lock(mSync);
+        AutoLock lock(mSync);
         if (!mActivityMonitors->IsEmpty()) {
             List<AutoPtr<IInstrumentationActivityMonitor> >::Iterator it;
             for(it = mActivityMonitors->Begin(); it != mActivityMonitors->End(); ++it) {

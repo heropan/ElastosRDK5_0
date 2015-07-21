@@ -54,7 +54,7 @@ ECode ContentProviderRecord::ExternalProcessHandle::UnlinkFromOwnDeathLocked()
 ECode ContentProviderRecord::ExternalProcessHandle::ProxyDied()
 {
     PFL_EX("ProxyDied()");
-    Object::Autolock lock(mOwner->mService->mLock);
+    AutoLock lock(mOwner->mService->mLock);
     if (mOwner->HasExternalProcessHandles() &&
         mOwner->mExternalProcessTokenToHandle.Find(mToken)
         != mOwner->mExternalProcessTokenToHandle.End()) {

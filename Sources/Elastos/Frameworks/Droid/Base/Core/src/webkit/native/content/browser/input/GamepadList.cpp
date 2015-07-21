@@ -100,7 +100,7 @@ void GamepadList::AttachedToWindow(
     if (mAttachedToWindowCounter++ == 0) {
         context->GetSystemService(IContext::INPUT_SERVICE, (IInterface**)&mInputManager);
         {
-            Object::Autolock lock(mLock);
+            AutoLock lock(mLock);
             InitializeDevices();
         }
         // Register an input device listener.
@@ -124,7 +124,7 @@ void GamepadList::DetachedFromWindow()
 {
     if (--mAttachedToWindowCounter == 0) {
         {
-            Object::Autolock lock(mLock);
+            AutoLock lock(mLock);
             for (Int32 i = 0; i < MAX_GAMEPADS; ++i) {
                 (*mGamepadDevices)[i] = NULL;
             }
@@ -145,7 +145,7 @@ void GamepadList::OnInputDeviceChangedImpl(
 void GamepadList::OnInputDeviceRemovedImpl(
     /* [in] */ Int32 deviceId)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     UnregisterGamepad(deviceId);
 }
 
@@ -159,7 +159,7 @@ void GamepadList::OnInputDeviceAddedImpl(
     if (!IsGamepadDevice(inputDevice)) return;
 
     {
-        Object::Autolock lock(mLock);
+        AutoLock lock(mLock);
         RegisterGamepad(inputDevice);
     }
 }
@@ -230,7 +230,7 @@ Boolean GamepadList::DispatchKeyEvent(
 Boolean GamepadList::HandleKeyEvent(
     /* [in] */ IKeyEvent* event)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
     AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(event);
@@ -253,7 +253,7 @@ Boolean GamepadList::OnGenericMotionEvent(
 Boolean GamepadList::HandleMotionEvent(
     /* [in] */ IMotionEvent* event)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     if (!mIsGamepadAccessed) return FALSE;
     AutoPtr<GamepadDevice> gamepad = GetGamepadForEvent(event);
@@ -370,7 +370,7 @@ void GamepadList::UpdateGamepadData(
 void GamepadList::GrabGamepadData(
     /* [in] */ Int64 webGamepadsPtr)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
 
     for (Int32 i = 0; i < MAX_GAMEPADS; i++) {
         const AutoPtr<GamepadDevice> device = GetDevice(i);
@@ -397,7 +397,7 @@ void GamepadList::NotifyForGamepadsAccess(
 void GamepadList::SetIsGamepadAccessed(
     /* [in] */ Boolean isGamepadAccessed)
 {
-    Object::Autolock lock(mLock);
+    AutoLock lock(mLock);
     mIsGamepadAccessed = isGamepadAccessed;
     if (isGamepadAccessed) {
         for (Int32 i = 0; i < MAX_GAMEPADS; i++) {
