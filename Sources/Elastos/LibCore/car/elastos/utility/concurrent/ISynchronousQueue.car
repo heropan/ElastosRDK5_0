@@ -5,6 +5,22 @@ module
     namespace Elastos {
     namespace Utility {
     namespace Concurrent {
+
+    interface IWaitQueue {
+    }
+
+    interface ILifoWaitQueue {
+    }
+
+    interface IFifoWaitQueue {
+    }
+
+    interface ISynchronousQueueTransferStack {
+    }
+
+    interface ISynchronousQueueTransferQueue {
+    }
+
     /**
      * A {@linkplain BlockingQueue blocking queue} in which each insert
      * operation must wait for a corresponding remove operation by another

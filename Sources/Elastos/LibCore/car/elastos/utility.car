@@ -2288,6 +2288,29 @@ module
         interface ISerializable;
     }
 
+    class CSynchronousQueue {
+        /**
+         * Creates a {@code SynchronousQueue} with nonfair access policy.
+         */
+        constructor();
+
+        /**
+         * Creates a {@code SynchronousQueue} with the specified fairness policy.
+         *
+         * @param fair if true, waiting threads contend in FIFO order for
+         *        access; otherwise the order is unspecified.
+         */
+        constructor(
+            [in] Boolean fair);
+
+        interface ISynchronousQueue;
+        interface IBlockingQueue;
+        interface IQueue;
+        interface ICollection;
+        interface IIterable;
+        interface ISerializable;
+    }
+
     namespace Atomic {
 
     class CAtomicBoolean {
