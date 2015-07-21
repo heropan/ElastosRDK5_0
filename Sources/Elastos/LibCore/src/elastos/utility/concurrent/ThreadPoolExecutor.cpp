@@ -1,5 +1,5 @@
 
-#include "CThreadPoolExecutor.h"
+#include "ThreadPoolExecutor.h"
 #include "CAtomicInteger32.h"
 #include "Executors.h"
 #include "TimeUnit.h"
@@ -18,27 +18,27 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
-const Int32 CThreadPoolExecutor::COUNT_BITS;
-const Int32 CThreadPoolExecutor::CAPACITY;
+const Int32 ThreadPoolExecutor::COUNT_BITS;
+const Int32 ThreadPoolExecutor::CAPACITY;
 
 // runState is stored in the high-order bits
-const Int32 CThreadPoolExecutor::RUNNING;
-const Int32 CThreadPoolExecutor::SHUTDOWN;
-const Int32 CThreadPoolExecutor::STOP;
-const Int32 CThreadPoolExecutor::TIDYING;
-const Int32 CThreadPoolExecutor::TERMINATED;
-const AutoPtr<IRejectedExecutionHandler> CThreadPoolExecutor::sDefaultHandler =
-        new CThreadPoolExecutor::AbortPolicy();
-const Boolean CThreadPoolExecutor::ONLY_ONE;
+const Int32 ThreadPoolExecutor::RUNNING;
+const Int32 ThreadPoolExecutor::SHUTDOWN;
+const Int32 ThreadPoolExecutor::STOP;
+const Int32 ThreadPoolExecutor::TIDYING;
+const Int32 ThreadPoolExecutor::TERMINATED;
+const AutoPtr<IRejectedExecutionHandler> ThreadPoolExecutor::sDefaultHandler =
+        new ThreadPoolExecutor::AbortPolicy();
+const Boolean ThreadPoolExecutor::ONLY_ONE;
 
 //==========================================================
-//         CThreadPoolExecutor::Worker
+//         ThreadPoolExecutor::Worker
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor::Worker, AbstractQueuedSynchronizer, IRunnable);
+CAR_INTERFACE_IMPL(ThreadPoolExecutor::Worker, AbstractQueuedSynchronizer, IRunnable);
 
-CThreadPoolExecutor::Worker::Worker(
+ThreadPoolExecutor::Worker::Worker(
     /* [in] */ IRunnable* firstTask,
-    /* [in] */ CThreadPoolExecutor* owner)
+    /* [in] */ ThreadPoolExecutor* owner)
     : mFirstTask(firstTask)
     , mOwner(owner)
 {
@@ -48,7 +48,7 @@ CThreadPoolExecutor::Worker::Worker(
     factory->NewThread((IRunnable*)this, (IThread**)&mThread);
 }
 
-void CThreadPoolExecutor::Worker::InterruptIfStarted()
+void ThreadPoolExecutor::Worker::InterruptIfStarted()
 {
     AutoPtr<IThread> t;
     Boolean b = FALSE;
@@ -60,7 +60,7 @@ void CThreadPoolExecutor::Worker::InterruptIfStarted()
     }
 }
 
-Boolean CThreadPoolExecutor::Worker::TryAcquire(
+Boolean ThreadPoolExecutor::Worker::TryAcquire(
     /* [in] */ Int32 unused)
 {
     if (CompareAndSetState(0, 1)) {
@@ -71,7 +71,7 @@ Boolean CThreadPoolExecutor::Worker::TryAcquire(
     return FALSE;
 }
 
-Boolean CThreadPoolExecutor::Worker::TryRelease(
+Boolean ThreadPoolExecutor::Worker::TryRelease(
     /* [in] */ Int32 unused)
 {
     SetExclusiveOwnerThread(NULL);
@@ -81,11 +81,11 @@ Boolean CThreadPoolExecutor::Worker::TryRelease(
 
 
 //==========================================================
-//         CThreadPoolExecutor::CallerRunsPolicy
+//         ThreadPoolExecutor::CallerRunsPolicy
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor::CallerRunsPolicy, Object, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(ThreadPoolExecutor::CallerRunsPolicy, Object, IRejectedExecutionHandler);
 
-ECode CThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
+ECode ThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
     /* [in] */ IRunnable* r,
     /* [in] */ IThreadPoolExecutor* e)
 {
@@ -98,23 +98,23 @@ ECode CThreadPoolExecutor::CallerRunsPolicy::RejectedExecution(
 
 
 //==========================================================
-//         CThreadPoolExecutor::AbortPolicy
+//         ThreadPoolExecutor::AbortPolicy
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor::AbortPolicy, Object, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(ThreadPoolExecutor::AbortPolicy, Object, IRejectedExecutionHandler);
 
 
 //==========================================================
-//         CThreadPoolExecutor::DiscardPolicy
+//         ThreadPoolExecutor::DiscardPolicy
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor::DiscardPolicy, Object, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(ThreadPoolExecutor::DiscardPolicy, Object, IRejectedExecutionHandler);
 
 
 //==========================================================
-//         CThreadPoolExecutor::DiscardOldestPolicy
+//         ThreadPoolExecutor::DiscardOldestPolicy
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor::DiscardOldestPolicy, Object, IRejectedExecutionHandler);
+CAR_INTERFACE_IMPL(ThreadPoolExecutor::DiscardOldestPolicy, Object, IRejectedExecutionHandler);
 
-ECode CThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
+ECode ThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
     /* [in] */ IRunnable* r,
     /* [in] */ IThreadPoolExecutor* e)
 {
@@ -131,13 +131,11 @@ ECode CThreadPoolExecutor::DiscardOldestPolicy::RejectedExecution(
 
 
 //==========================================================
-//         CThreadPoolExecutor
+//         ThreadPoolExecutor
 //==========================================================
-CAR_INTERFACE_IMPL(CThreadPoolExecutor, AbstractExecutorService, IThreadPoolExecutor)
+CAR_INTERFACE_IMPL(ThreadPoolExecutor, AbstractExecutorService, IThreadPoolExecutor)
 
-CAR_OBJECT_IMPL(CThreadPoolExecutor);
-
-CThreadPoolExecutor::CThreadPoolExecutor()
+ThreadPoolExecutor::ThreadPoolExecutor()
     : mLargestPoolSize(0)
     , mCompletedTaskCount(0)
     , mKeepAliveTime(0)
@@ -148,12 +146,12 @@ CThreadPoolExecutor::CThreadPoolExecutor()
     ASSERT_SUCCEEDED(CAtomicInteger32::New(CtlOf(RUNNING, 0), (IAtomicInteger32**)&mCtl));
 }
 
-CThreadPoolExecutor::~CThreadPoolExecutor()
+ThreadPoolExecutor::~ThreadPoolExecutor()
 {
     Shutdown();
 }
 
-ECode CThreadPoolExecutor::constructor(
+ECode ThreadPoolExecutor::constructor(
     /* [in] */ Int32 corePoolSize,
     /* [in] */ Int32 maximumPoolSize,
     /* [in] */ Int64 keepAliveTime,
@@ -165,7 +163,7 @@ ECode CThreadPoolExecutor::constructor(
             factory, sDefaultHandler);
 }
 
-ECode CThreadPoolExecutor::constructor(
+ECode ThreadPoolExecutor::constructor(
     /* [in] */ Int32 corePoolSize,
     /* [in] */ Int32 maximumPoolSize,
     /* [in] */ Int64 keepAliveTime,
@@ -177,7 +175,7 @@ ECode CThreadPoolExecutor::constructor(
              threadFactory, sDefaultHandler);
 }
 
-ECode CThreadPoolExecutor::constructor(
+ECode ThreadPoolExecutor::constructor(
     /* [in] */ Int32 corePoolSize,
     /* [in] */ Int32 maximumPoolSize,
     /* [in] */ Int64 keepAliveTime,
@@ -190,7 +188,7 @@ ECode CThreadPoolExecutor::constructor(
              factory, handler);
 }
 
-ECode CThreadPoolExecutor::constructor(
+ECode ThreadPoolExecutor::constructor(
     /* [in] */ Int32 corePoolSize,
     /* [in] */ Int32 maximumPoolSize,
     /* [in] */ Int64 keepAliveTime,
@@ -217,7 +215,7 @@ ECode CThreadPoolExecutor::constructor(
     return NOERROR;
 }
 
-Boolean CThreadPoolExecutor::CompareAndIncrementWorkerCount(
+Boolean ThreadPoolExecutor::CompareAndIncrementWorkerCount(
     /* [in] */ Int32 expect)
 {
     Boolean result;
@@ -225,7 +223,7 @@ Boolean CThreadPoolExecutor::CompareAndIncrementWorkerCount(
     return result;
 }
 
-Boolean CThreadPoolExecutor::CompareAndDecrementWorkerCount(
+Boolean ThreadPoolExecutor::CompareAndDecrementWorkerCount(
     /* [in] */ Int32 expect)
 {
     Boolean result;
@@ -233,13 +231,13 @@ Boolean CThreadPoolExecutor::CompareAndDecrementWorkerCount(
     return result;
 }
 
-void CThreadPoolExecutor::DecrementWorkerCount()
+void ThreadPoolExecutor::DecrementWorkerCount()
 {
     Int32 value;
     do {} while (mCtl->Get(&value), !CompareAndDecrementWorkerCount(value));
 }
 
-void CThreadPoolExecutor::AdvanceRunState(
+void ThreadPoolExecutor::AdvanceRunState(
     /* [in] */ Int32 targetState)
 {
     for (;;) {
@@ -252,7 +250,7 @@ void CThreadPoolExecutor::AdvanceRunState(
     }
 }
 
-void CThreadPoolExecutor::TryTerminate()
+void ThreadPoolExecutor::TryTerminate()
 {
     for (;;) {
         Int32 c;
@@ -281,7 +279,7 @@ void CThreadPoolExecutor::TryTerminate()
     }
 }
 
-ECode CThreadPoolExecutor::CheckShutdownAccess()
+ECode ThreadPoolExecutor::CheckShutdownAccess()
 {
     // TODO:
     // SecurityManager security = System.getSecurityManager();
@@ -299,7 +297,7 @@ ECode CThreadPoolExecutor::CheckShutdownAccess()
     return NOERROR;
 }
 
-void CThreadPoolExecutor::InterruptWorkers()
+void ThreadPoolExecutor::InterruptWorkers()
 {
     AutoLock lock(mMainLock);
 
@@ -310,7 +308,7 @@ void CThreadPoolExecutor::InterruptWorkers()
     // }
 }
 
-void CThreadPoolExecutor::InterruptIdleWorkers(
+void ThreadPoolExecutor::InterruptIdleWorkers(
     /* [in] */ Boolean onlyOne)
 {
     AutoLock lock(mMainLock);
@@ -328,18 +326,18 @@ void CThreadPoolExecutor::InterruptIdleWorkers(
     // }
 }
 
-void CThreadPoolExecutor::InterruptIdleWorkers()
+void ThreadPoolExecutor::InterruptIdleWorkers()
 {
     InterruptIdleWorkers(FALSE);
 }
 
-void CThreadPoolExecutor::Reject(
+void ThreadPoolExecutor::Reject(
     /* [in] */ IRunnable* command)
 {
     mHandler->RejectedExecution(command, this);
 }
 
-Boolean CThreadPoolExecutor::IsRunningOrShutdown(
+Boolean ThreadPoolExecutor::IsRunningOrShutdown(
     /* [in] */ Boolean shutdownOK)
 {
     Int32 value;
@@ -348,7 +346,7 @@ Boolean CThreadPoolExecutor::IsRunningOrShutdown(
     return rs == RUNNING || (rs == SHUTDOWN && shutdownOK);
 }
 
-AutoPtr<IList> CThreadPoolExecutor::DrainQueue()
+AutoPtr<IList> ThreadPoolExecutor::DrainQueue()
 {
     AutoPtr<IBlockingQueue> q = mWorkQueue;
     AutoPtr<IArrayList> taskList;
@@ -372,7 +370,7 @@ AutoPtr<IList> CThreadPoolExecutor::DrainQueue()
     return res;
 }
 
-Boolean CThreadPoolExecutor::AddWorker(
+Boolean ThreadPoolExecutor::AddWorker(
     /* [in] */ IRunnable* firstTask,
     /* [in] */ Boolean core)
 {
@@ -447,7 +445,7 @@ NEXT:
     return workerStarted;
 }
 
-void CThreadPoolExecutor::AddWorkerFailed(
+void ThreadPoolExecutor::AddWorkerFailed(
     /* [in] */ Worker* w)
 {
     AutoLock lock(mMainLock);
@@ -458,7 +456,7 @@ void CThreadPoolExecutor::AddWorkerFailed(
     TryTerminate();
 }
 
-void CThreadPoolExecutor::ProcessWorkerExit(
+void ThreadPoolExecutor::ProcessWorkerExit(
     /* [in] */ Worker* w,
     /* [in] */ Boolean completedAbruptly)
 {
@@ -492,7 +490,7 @@ void CThreadPoolExecutor::ProcessWorkerExit(
     }
 }
 
-AutoPtr<IRunnable> CThreadPoolExecutor::GetTask()
+AutoPtr<IRunnable> ThreadPoolExecutor::GetTask()
 {
     Boolean timedOut = FALSE; // Did the last poll() time out?
 
@@ -540,7 +538,7 @@ AutoPtr<IRunnable> CThreadPoolExecutor::GetTask()
     }
 }
 
-ECode CThreadPoolExecutor::RunWorker(
+ECode ThreadPoolExecutor::RunWorker(
     /* [in] */ Worker* w)
 {
     AutoPtr<IThread> wt = Thread::GetCurrentThread();
@@ -593,7 +591,7 @@ EXIT2:
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::Execute(
+ECode ThreadPoolExecutor::Execute(
     /* [in] */ IRunnable* command)
 {
     if (command == NULL) {
@@ -644,7 +642,7 @@ ECode CThreadPoolExecutor::Execute(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::Shutdown()
+ECode ThreadPoolExecutor::Shutdown()
 {
     {
         AutoLock lock(mMainLock);
@@ -658,7 +656,7 @@ ECode CThreadPoolExecutor::Shutdown()
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::ShutdownNow(
+ECode ThreadPoolExecutor::ShutdownNow(
     /* [out] */ IList** tasks)
 {
     if (tasks != NULL) {
@@ -682,7 +680,7 @@ ECode CThreadPoolExecutor::ShutdownNow(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::IsShutdown(
+ECode ThreadPoolExecutor::IsShutdown(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -692,7 +690,7 @@ ECode CThreadPoolExecutor::IsShutdown(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::IsTerminating(
+ECode ThreadPoolExecutor::IsTerminating(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -702,7 +700,7 @@ ECode CThreadPoolExecutor::IsTerminating(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::IsTerminated(
+ECode ThreadPoolExecutor::IsTerminated(
     /* [out] */ Boolean* result)
 {
     Int32 c;
@@ -711,7 +709,7 @@ ECode CThreadPoolExecutor::IsTerminated(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::AwaitTermination(
+ECode ThreadPoolExecutor::AwaitTermination(
     /* [in] */ Int64 timeout,
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)
@@ -736,7 +734,7 @@ ECode CThreadPoolExecutor::AwaitTermination(
     }
 }
 
-ECode CThreadPoolExecutor::SetThreadFactory(
+ECode ThreadPoolExecutor::SetThreadFactory(
     /* [in] */ IThreadFactory* threadFactory)
 {
     if (threadFactory == NULL) {
@@ -746,7 +744,7 @@ ECode CThreadPoolExecutor::SetThreadFactory(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetThreadFactory(
+ECode ThreadPoolExecutor::GetThreadFactory(
     /* [out] */ IThreadFactory** threadFactory)
 {
     VALIDATE_NOT_NULL(threadFactory);
@@ -755,7 +753,7 @@ ECode CThreadPoolExecutor::GetThreadFactory(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::SetRejectedExecutionHandler(
+ECode ThreadPoolExecutor::SetRejectedExecutionHandler(
     /* [in] */ IRejectedExecutionHandler* handler)
 {
     if (handler == NULL) {
@@ -765,7 +763,7 @@ ECode CThreadPoolExecutor::SetRejectedExecutionHandler(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetRejectedExecutionHandler(
+ECode ThreadPoolExecutor::GetRejectedExecutionHandler(
     /* [out] */ IRejectedExecutionHandler** handler)
 {
     VALIDATE_NOT_NULL(handler);
@@ -774,7 +772,7 @@ ECode CThreadPoolExecutor::GetRejectedExecutionHandler(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::SetCorePoolSize(
+ECode ThreadPoolExecutor::SetCorePoolSize(
     /* [in] */ Int32 corePoolSize)
 {
     if (corePoolSize < 0) {
@@ -805,7 +803,7 @@ ECode CThreadPoolExecutor::SetCorePoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetCorePoolSize(
+ECode ThreadPoolExecutor::GetCorePoolSize(
     /* [out] */ Int32* corePoolSize)
 {
     VALIDATE_NOT_NULL(corePoolSize);
@@ -813,7 +811,7 @@ ECode CThreadPoolExecutor::GetCorePoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::PrestartCoreThread(
+ECode ThreadPoolExecutor::PrestartCoreThread(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -824,7 +822,7 @@ ECode CThreadPoolExecutor::PrestartCoreThread(
     return NOERROR;
 }
 
-void CThreadPoolExecutor::EnsurePrestart()
+void ThreadPoolExecutor::EnsurePrestart()
 {
     Int32 c;
     mCtl->Get(&c);
@@ -837,7 +835,7 @@ void CThreadPoolExecutor::EnsurePrestart()
     }
 }
 
-ECode CThreadPoolExecutor::PrestartAllCoreThreads(
+ECode ThreadPoolExecutor::PrestartAllCoreThreads(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -849,7 +847,7 @@ ECode CThreadPoolExecutor::PrestartAllCoreThreads(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::AllowsCoreThreadTimeOut(
+ECode ThreadPoolExecutor::AllowsCoreThreadTimeOut(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -857,7 +855,7 @@ ECode CThreadPoolExecutor::AllowsCoreThreadTimeOut(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::AllowCoreThreadTimeOut(
+ECode ThreadPoolExecutor::AllowCoreThreadTimeOut(
     /* [in] */ Boolean value)
 {
     if (value && mKeepAliveTime <= 0) {
@@ -873,7 +871,7 @@ ECode CThreadPoolExecutor::AllowCoreThreadTimeOut(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::SetMaximumPoolSize(
+ECode ThreadPoolExecutor::SetMaximumPoolSize(
     /* [in] */ Int32 maximumPoolSize)
 {
     if (maximumPoolSize <= 0 || maximumPoolSize < mCorePoolSize) {
@@ -888,7 +886,7 @@ ECode CThreadPoolExecutor::SetMaximumPoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetMaximumPoolSize(
+ECode ThreadPoolExecutor::GetMaximumPoolSize(
     /* [out] */ Int32* maximumPoolSize)
 {
     VALIDATE_NOT_NULL(maximumPoolSize);
@@ -896,7 +894,7 @@ ECode CThreadPoolExecutor::GetMaximumPoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::SetKeepAliveTime(
+ECode ThreadPoolExecutor::SetKeepAliveTime(
     /* [in] */ Int64 time,
     /* [in] */ ITimeUnit* unit)
 {
@@ -918,7 +916,7 @@ ECode CThreadPoolExecutor::SetKeepAliveTime(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetKeepAliveTime(
+ECode ThreadPoolExecutor::GetKeepAliveTime(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Int64* time)
 {
@@ -927,7 +925,7 @@ ECode CThreadPoolExecutor::GetKeepAliveTime(
     return unit->Convert(mKeepAliveTime, nanos, time);
 }
 
-ECode CThreadPoolExecutor::GetQueue(
+ECode ThreadPoolExecutor::GetQueue(
     /* [out] */ IBlockingQueue** queue)
 {
     VALIDATE_NOT_NULL(queue);
@@ -936,7 +934,7 @@ ECode CThreadPoolExecutor::GetQueue(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::Remove(
+ECode ThreadPoolExecutor::Remove(
     /* [in] */ IRunnable* task,
     /* [out] */ Boolean* result)
 {
@@ -946,7 +944,7 @@ ECode CThreadPoolExecutor::Remove(
     return ec;
 }
 
-ECode CThreadPoolExecutor::Purge()
+ECode ThreadPoolExecutor::Purge()
 {
     AutoPtr<IBlockingQueue> q = mWorkQueue;
     // try {
@@ -976,7 +974,7 @@ ECode CThreadPoolExecutor::Purge()
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetPoolSize(
+ECode ThreadPoolExecutor::GetPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -989,7 +987,7 @@ ECode CThreadPoolExecutor::GetPoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetActiveCount(
+ECode ThreadPoolExecutor::GetActiveCount(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -1006,7 +1004,7 @@ ECode CThreadPoolExecutor::GetActiveCount(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetLargestPoolSize(
+ECode ThreadPoolExecutor::GetLargestPoolSize(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -1015,7 +1013,7 @@ ECode CThreadPoolExecutor::GetLargestPoolSize(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetTaskCount(
+ECode ThreadPoolExecutor::GetTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -1035,7 +1033,7 @@ ECode CThreadPoolExecutor::GetTaskCount(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::GetCompletedTaskCount(
+ECode ThreadPoolExecutor::GetCompletedTaskCount(
     /* [out] */ Int64* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -1050,7 +1048,7 @@ ECode CThreadPoolExecutor::GetCompletedTaskCount(
     return NOERROR;
 }
 
-ECode CThreadPoolExecutor::ToString(
+ECode ThreadPoolExecutor::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
