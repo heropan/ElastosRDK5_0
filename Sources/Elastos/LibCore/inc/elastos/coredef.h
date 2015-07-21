@@ -892,7 +892,7 @@ private:                                                                        
     void ClassName::OnLastStrongRef(                                                    \
         /* [in] */ const void* id)                                                      \
     {                                                                                   \
-        return _##ClassName::OnLastStrongRef(id);                                       \
+        _##ClassName::OnLastStrongRef(id);                                              \
     }                                                                                   \
                                                                                         \
     SpinLock& ClassName::GetSelfSpinLock()                                              \
