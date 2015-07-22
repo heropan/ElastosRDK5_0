@@ -1,0 +1,37 @@
+module
+{
+
+    interface Elastos.Droid.Os.IUserHandle;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+    /**
+     * @Involve
+     * interface IBaseBundle;
+     * interface ICloneable;
+     * interface IXmlUtilsWriteMapCallback;
+     */
+    [deprecated]
+    interface IPersistableBundle {
+        PutPersistableBundle(
+            [in] String key,
+            [in] IPersistableBundle* value);
+
+        GetPersistableBundle(
+            [in] String key,
+            [out] IPersistableBundle** value);
+    }
+
+    interface IPersistableBundleHelper {
+        GetEMPTY(
+            [out] IPersistableBundle** bundle);
+    }
+
+
+    } // namespace Os
+    } // namespace Droid
+    } // namespace Elastos
+
+} // module

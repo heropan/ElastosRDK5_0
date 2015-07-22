@@ -6,6 +6,104 @@ module
     namespace Os {
 
     interface IBatteryStats {
+
+        /** @hide */
+        const String  SERVICE_NAME = "batterystats";
+
+        /**
+         * A constant indicating a partial wake lock timer.
+         */
+        const Int32 WAKE_TYPE_PARTIAL = 0;
+
+        /**
+         * A constant indicating a full wake lock timer.
+         */
+        const Int32 WAKE_TYPE_FULL = 1;
+
+        /**
+         * A constant indicating a window wake lock timer.
+         */
+        const Int32 WAKE_TYPE_WINDOW = 2;
+
+        /**
+         * A constant indicating a sensor timer.
+         */
+        const Int32 SENSOR = 3;
+
+        /**
+         * A constant indicating a a wifi running timer
+         */
+        const Int32 WIFI_RUNNING = 4;
+
+        /**
+         * A constant indicating a full wifi lock timer
+         */
+        const Int32 FULL_WIFI_LOCK = 5;
+
+        /**
+         * A constant indicating a wifi scan
+         */
+        const Int32 WIFI_SCAN = 6;
+
+         /**
+          * A constant indicating a wifi multicast timer
+          */
+         const Int32 WIFI_MULTICAST_ENABLED = 7;
+
+        /**
+         * A constant indicating an audio turn on timer
+         */
+        const Int32 AUDIO_TURNED_ON = 7;
+
+        /**
+         * A constant indicating a video turn on timer
+         */
+        const Int32 VIDEO_TURNED_ON = 8;
+
+        /**
+         * A constant indicating a vibrator on timer
+         */
+        const Int32 VIBRATOR_ON = 9;
+
+        /**
+         * A constant indicating a foreground activity timer
+         */
+        const Int32 FOREGROUND_ACTIVITY = 10;
+
+        /**
+         * A constant indicating a wifi batched scan is active
+         */
+        const Int32 WIFI_BATCHED_SCAN = 11;
+
+        /**
+         * A constant indicating a process state timer
+         */
+        const Int32 PROCESS_STATE = 12;
+
+        /**
+         * A constant indicating a sync timer
+         */
+        const Int32 SYNC = 13;
+
+        /**
+         * A constant indicating a job timer
+         */
+        const Int32 JOB = 14;
+
+        /**
+         * Include all of the data in the stats, including previously saved data.
+         */
+        const Int32 STATS_SINCE_CHARGED = 0;
+
+        /**
+         * Include only the current run in the stats.
+         */
+        const Int32 STATS_CURRENT = 1;
+
+        /**
+         * Include only the run since the last time the device was unplugged in the stats.
+         */
+        const Int32 STATS_SINCE_UNPLUGGED = 2;
     }
 
     interface IBatteryStatsUid {

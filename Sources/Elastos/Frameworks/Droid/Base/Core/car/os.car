@@ -2,8 +2,8 @@ module
 {
     merge("os/BaseBundle.car");
     merge("os/BatteryProperties.car");
-    // merge("os/BatteryManager.car");
-    // merge("os/BatteryStats.car");
+    merge("os/BatteryManager.car");
+    merge("os/BatteryStats.car");
     merge("os/Binder.car");
     merge("os/Bundle.car");
     merge("os/CancellationSignal.car");
@@ -12,8 +12,8 @@ module
     merge("os/CountDownTimer.car");
     merge("os/Debug.car");
     merge("os/DebugMemoryInfo.car");
-    // merge("os/DropBoxManager.car");
-    // merge("os/IDropBoxManagerService.car");
+    merge("os/DropBoxManager.car");
+    merge("os/IDropBoxManagerService.car");
     merge("os/Environment.car");
     merge("os/FileObserver.car");
     merge("os/Handler.car");
@@ -30,31 +30,29 @@ module
     merge("os/ISchedulingPolicyService.car");
     merge("os/IServiceManager.car");
     merge("os/IUpdateLock.car");
-    //merge("os/IUserManager.car");
-    //merge("os/IVibratorService.car");
+    merge("os/IUserManager.car");
+    merge("os/IVibratorService.car");
     merge("os/Looper.car");
-    //merge("os/MemoryFile.car")
+    merge("os/MemoryFile.car");
     merge("os/Message.car");
     merge("os/MessageQueue.car");
     merge("os/Messenger.car");
     merge("os/ParcelFileDescriptor.car");
     merge("os/ParcelUuid.car");
     merge("os/PatternMatcher.car");
-    // merge("os/PowerManager.car");
+    merge("os/PersistableBundle.car");
+    merge("os/PowerManager.car");
     merge("os/Process.car");
-    //merge("os/RecoverySystem.car")
+    merge("os/RecoverySystem.car");
     merge("os/RemoteCallbackList.car");
-    // merge("os/ResultReceiver.car");
-    // merge("os/IResultReceiver.car");
-    // merge("os/SELinux.car")
+    merge("os/ResultReceiver.car");
+    merge("os/IResultReceiver.car");
     merge("os/ServiceManager.car");
     merge("os/StatFs.car");
-    // merge("os/StrictMode.car");
-    // merge("os/SystemClock.car");
+    merge("os/StrictMode.car");
     merge("os/SystemProperties.car");
     merge("os/SystemService.car");
-    //merge("os/TokenWatcher.car");
-    //mrege("os/Trace.car")
+    merge("os/Trace.car");
     merge("os/UserHandle.car");
     merge("os/UserManager.car");
     merge("os/Vibrator.car");

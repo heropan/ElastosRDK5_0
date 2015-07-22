@@ -1,5 +1,8 @@
 module
 {
+    using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.Pm.IUserInfo;
     interface Elastos.Droid.Graphics.IBitmap;
 
@@ -15,6 +18,15 @@ module
             [in] String name,
             [in] Int32 flags,
             [out] IUserInfo** userInfo);
+
+        CreateProfileForUser(
+            [in] String name,
+            [in] Int32 flags,
+            [in] Int32 userHandle,
+            [out] IUserInfo** userInfo);
+
+        SetUserEnabled(
+            [in] Int32 userHandle);
 
         RemoveUser(
             [in] Int32 userHandle,
@@ -34,28 +46,79 @@ module
 
         GetUsers(
             [in] Boolean excludeDying,
-            [out] IObjectContainer** users);
+            [out] IList** users);
+
+        GetProfiles(
+            [in] Int32 userHandle,
+            [in] Boolean enabledOnly,
+            [out] IList** result);
+
+        GetProfileParent(
+            [in] Int32 userHandle,
+            [out] IUserInfo** info);
 
         GetUserInfo(
             [in] Int32 userHandle,
             [out] IUserInfo** userInfo);
 
-        SetGuestEnabled(
-            [in] Boolean enabled);
-
-        IsGuestEnabled(
-            [out] Boolean* enabled);
-
-        WipeUser(
-            [in] Int32 userHandle);
+        IsRestricted(
+            [out] Boolean* result);
 
         GetUserSerialNumber(
             [in] Int32 userHandle,
-            [out] Int32* number);
+            [out] Int32* result);
 
         GetUserHandle(
             [in] Int32 userSerialNumber,
-            [out] Int32* handle);
+            [out] Int32* result);
+
+        GetUserRestrictions(
+            [in] Int32 userHandle,
+            [out] IBundle** bundle);
+
+        HasUserRestriction(
+            [in] String restrictionKey,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        SetUserRestrictions(
+            [in] IBundle* restrictions,
+            [in] Int32 userHandle);
+
+        SetApplicationRestrictions(
+            [in] String packageName,
+            [in] IBundle* restrictions,
+            [in] Int32 userHandle);
+
+        GetApplicationRestrictions(
+            [in] String packageName,
+            [out] IBundle** bundle);
+
+        GetApplicationRestrictionsForUser(
+            [in] String packageName,
+            [in] Int32 userHandle,
+            [out] IBundle** bundle);
+
+        SetRestrictionsChallenge(
+            [in] String newPin);
+
+        CheckRestrictionsChallenge(
+            [in] String pin);
+
+        HasRestrictionsChallenge(
+            [out] Boolean* result);
+
+        RemoveRestrictions();
+
+        SetDefaultGuestRestrictions(
+            [in] IBundle* restrictions);
+
+        GetDefaultGuestRestrictions(
+            [out] IBundle** result);
+
+        MarkGuestForDeletion(
+            [in] Int32 userHandle,
+            [out] Boolean* result);
     }
 
     } // namespace Os

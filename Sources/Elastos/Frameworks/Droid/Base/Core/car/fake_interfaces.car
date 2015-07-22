@@ -3,6 +3,17 @@ module
 {
     interface Elastos.Droid.Os.ILooper;
 
+    //
+    // Elastos.Droid.App
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+        interface IApplicationErrorReportCrashInfo {
+        }
+
+    }}} // Elastos.Droid.App
 
     //
     // Elastos.Droid.Utility
@@ -21,19 +32,6 @@ module
         }
 
     }}} // Elastos.Droid.Utility
-
-    //
-    // Elastos.Droid.Os
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Os {
-
-        interface IPersistableBundle {
-        }
-
-    }}} // Elastos.Droid.Os
-
 
     //
     // Elastos.Droid.Content

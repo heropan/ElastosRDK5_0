@@ -7,7 +7,13 @@ module
     namespace Droid {
     namespace Os {
 
+    /**
+     * @Involve
+     * interface ICloseable
+     */
     interface IDropBoxManagerEntry {
+        Close();
+
         /** @return the tag originally attached to the entry. */
         GetTag(
             [out] String* tag);
