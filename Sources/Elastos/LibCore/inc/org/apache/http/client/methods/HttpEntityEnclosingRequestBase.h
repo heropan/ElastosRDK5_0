@@ -28,6 +28,8 @@ class HttpEntityEnclosingRequestBase
 public:
     HttpEntityEnclosingRequestBase();
 
+    virtual ~HttpEntityEnclosingRequestBase() = 0;
+
     CAR_INTERFACE_DECL()
 
     CARAPI SetEntity(

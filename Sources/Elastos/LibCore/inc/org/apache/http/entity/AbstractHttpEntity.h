@@ -37,6 +37,8 @@ public:
      */
     AbstractHttpEntity();
 
+    virtual ~AbstractHttpEntity() = 0;
+
     CAR_INTERFACE_DECL()
 
     /**

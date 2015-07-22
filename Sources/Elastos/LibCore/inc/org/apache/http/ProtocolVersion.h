@@ -36,6 +36,8 @@ class ProtocolVersion
 public:
     ProtocolVersion();
 
+    virtual ~ProtocolVersion() = 0;
+
     CAR_INTERFACE_DECL()
 
     /**

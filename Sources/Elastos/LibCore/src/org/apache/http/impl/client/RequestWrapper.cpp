@@ -58,7 +58,7 @@ RequestWrapper::RequestWrapper(
     }
 }
 
-CAR_INTERFACE_IMPL(RequestWrapper, AbstractHttpMessage, IHttpUriRequest)
+CAR_INTERFACE_IMPL_2(RequestWrapper, AbstractHttpMessage, IHttpUriRequest, IHttpRequest)
 
 void RequestWrapper::ResetHeaders()
 {

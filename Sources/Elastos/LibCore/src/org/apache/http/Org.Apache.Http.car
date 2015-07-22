@@ -138,7 +138,9 @@ module
     merge("../../../../car/org/apache/http/entity/ContentLengthStrategy.car");
     merge("../../../../car/org/apache/http/entity/ContentProducer.car");
 
-     merge("../../../../car/org/apache/http/impl/auth/NTLMEngine.car");
+    merge("../../../../car/org/apache/http/impl/auth/NTLMEngine.car");
+    merge("../../../../car/org/apache/http/impl/conn/tsccm/RefQueueHandler.car");
+    merge("../../../../car/org/apache/http/impl/conn/tsccm/PoolEntryRequest.car");
 
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 

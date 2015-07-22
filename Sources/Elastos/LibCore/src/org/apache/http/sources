@@ -70,5 +70,6 @@ LIBRARIES += entity/entity.lib
 LIBRARIES += impl/impl.lib
 LIBRARIES += impl/auth/auth.lib
 LIBRARIES += impl/client/client.lib
+LIBRARIES += impl/conn/conn.lib
 
 LIBRARIES += -lcutils

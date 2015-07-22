@@ -200,7 +200,8 @@ module
          *
          * @param state The state object
          */
-        void setState(Object state);
+        SetState(
+            [in] IObject* state);
 
         /**
          * Returns the state object associated with this connection.

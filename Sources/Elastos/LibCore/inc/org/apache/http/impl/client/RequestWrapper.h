@@ -34,10 +34,13 @@ namespace Client {
 class RequestWrapper
     : public AbstractHttpMessage
     , public IHttpUriRequest
+    , public IHttpRequest
 {
 public:
     RequestWrapper(
         /* [in] */ IHttpRequest* request);
+
+    virtual ~RequestWrapper() = 0;
 
     CAR_INTERFACE_DECL()
 

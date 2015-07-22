@@ -8,6 +8,8 @@ using Elastos::Net::IURI;
 using Org::Apache::Http::IHttpEntityEnclosingRequest;
 using Org::Apache::Http::IHttpEntity;
 using Org::Apache::Http::IRequestLine;
+using Org::Apache::Http::IHttpRequest;
+using Org::Apache::Http::IHttpMessage;
 
 namespace Org {
 namespace Apache {

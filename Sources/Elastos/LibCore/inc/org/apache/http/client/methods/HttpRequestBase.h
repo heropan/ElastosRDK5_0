@@ -37,6 +37,8 @@ class HttpRequestBase
 public:
     HttpRequestBase();
 
+    virtual ~HttpRequestBase() = 0;
+
     CAR_INTERFACE_DECL()
 
     virtual CARAPI GetMethod(

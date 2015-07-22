@@ -1,0 +1,19 @@
+
+TARGET_NAME= tsccm
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/conn
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/conn
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/conn/tsccm
+
+SOURCES = AbstractConnPool.cpp
+SOURCES += BasicPoolEntry.cpp
+SOURCES += BasicPoolEntryRef.cpp
+SOURCES += BasicPooledConnAdapter.cpp
+SOURCES += ConnPoolByRoute.cpp
+SOURCES += RefQueueWorker.cpp
+SOURCES += RouteSpecificPool.cpp
+SOURCES += ThreadSafeClientConnManager.cpp
+SOURCES += WaitingThread.cpp
+SOURCES += WaitingThreadAborter.cpp

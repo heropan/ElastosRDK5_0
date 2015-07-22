@@ -31,6 +31,8 @@ class AbstractVerifier
 public:
     AbstractVerifier() {}
 
+    virtual ~AbstractVerifier() = 0;
+
     CAR_INTERFACE_DECL()
 
     CARAPI Verify(

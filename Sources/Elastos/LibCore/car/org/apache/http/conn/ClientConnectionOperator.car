@@ -42,7 +42,6 @@ module
         CreateConnection(
             [out] IOperatedClientConnection** connection);
 
-
         /**
          * Opens a connection to the given target host.
          *
@@ -61,7 +60,6 @@ module
             [in] IInetAddress* local,
             [in] IHttpContext* context,
             [in] IHttpParams* params);
-
 
         /**
          * Updates a connection with a layered secure connection.

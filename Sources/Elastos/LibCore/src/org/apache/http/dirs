@@ -18,3 +18,5 @@ DIRS += entity
 DIRS += impl
 DIRS += impl/auth
 DIRS += impl/client
+DIRS += impl/conn
+DIRS += impl/conn/tsccm
