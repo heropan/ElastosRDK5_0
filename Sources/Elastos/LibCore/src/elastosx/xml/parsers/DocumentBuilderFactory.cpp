@@ -156,7 +156,7 @@ ECode DocumentBuilderFactory::NewInstance(
 
     // try {
         if (pLoader == NULL) {
-            String path = factoryClassName.Substring(0, factoryClassName.LastIndexOf('.') - 1);
+            String path = factoryClassName.Substring(0, factoryClassName.LastIndexOf('.'));
             FAIL_RETURN(CPathClassLoader::New(path, (IClassLoader**)&pLoader))
         }
 
