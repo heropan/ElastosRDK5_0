@@ -6,6 +6,9 @@ namespace Elastosx {
 namespace Security {
 namespace Auth {
 
+CAR_SINGLETON_IMPL(CSubjectHelper)
+
+CAR_INTERFACE_IMPL(CSubjectHelper, Singleton, ISubjectHelper)
 
 ECode CSubjectHelper::DoAs(
     /* [in] */ ISubject *subject,
@@ -48,7 +51,7 @@ ECode CSubjectHelper::GetSubject(
     return CSubject::GetSubject(context, subject);
 }
 
-}
-}
-}
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 

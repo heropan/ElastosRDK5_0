@@ -1,10 +1,12 @@
 
-#ifndef __CSUBJECT_H__
-#define __CSUBJECT_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_CSUBJECT_H__
+#define __ELASTOSX_SECURITY_AUTH_CSUBJECT_H__
 
-#include "_CSubject.h"
+#include "_Elastosx_Security_Auth_CSubject.h"
 #include "AbstractSet.h"
+#if 0 // TODO: Waiting for AccessControlContext
 #include "CAccessControlContext.h"
+#endif
 
 using Elastos::IO::IObjectInputStream;
 using Elastos::IO::IObjectOutputStream;
@@ -14,87 +16,266 @@ using Elastos::Security::IDomainCombiner;
 using Elastos::Security::IPermission;
 using Elastos::Security::IPrivilegedAction;
 using Elastos::Security::IPrivilegedExceptionAction;
+#if 0 // TODO: Waiting for AccessControlContext
 using Elastos::Security::CAccessControlContext;
+#endif
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::ILinkedList;
 using Elastos::Utility::ISet;
 using Elastos::Utility::AbstractSet;
 using Elastosx::Security::Auth::ISubjectDomainCombiner;
+using Elastos::Core::Object;
 
 namespace Elastosx {
 namespace Security {
 namespace Auth {
 
 CarClass(CSubject)
+    , public Object
+    , public ISubject
 {
 public:
-    static CARAPI_(AutoPtr<IPermission>) InitStatics();
+    CAR_OBJECT_DECL()
 
+    CAR_INTERFACE_DECL()
+
+    /**
+     * Runs the code defined by {@code action} using the permissions granted to
+     * the {@code Subject} itself and to the code as well.
+     *
+     * @param subject
+     *            the distinguished {@code Subject}.
+     * @param action
+     *            the code to be run.
+     * @return the {@code Object} returned when running the {@code action}.
+     */
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAs(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedAction *action,
         /* [out] */ IInterface **obj);
 
+    /**
+     * Run the code defined by {@code action} using the permissions granted to
+     * the {@code Subject} and to the code itself, additionally providing a more
+     * specific context.
+     *
+     * @param subject
+     *            the distinguished {@code Subject}.
+     * @param action
+     *            the code to be run.
+     * @param context
+     *            the specific context in which the {@code action} is invoked.
+     *            if {@code null} a new {@link AccessControlContext} is
+     *            instantiated.
+     * @return the {@code Object} returned when running the {@code action}.
+     */
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAsPrivileged(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedAction *action,
         /* [in] */ IAccessControlContext *context,
         /* [out] */ IInterface **obj);
 
+    /**
+     * Runs the code defined by {@code action} using the permissions granted to
+     * the subject and to the code itself.
+     *
+     * @param subject
+     *            the distinguished {@code Subject}.
+     * @param action
+     *            the code to be run.
+     * @return the {@code Object} returned when running the {@code action}.
+     * @throws PrivilegedActionException
+     *             if running the {@code action} throws an exception.
+     */
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAs(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [out] */ IInterface **obj);
 
+    /**
+     * Runs the code defined by {@code action} using the permissions granted to
+     * the subject and to the code itself, additionally providing a more
+     * specific context.
+     *
+     * @param subject
+     *            the distinguished {@code Subject}.
+     * @param action
+     *            the code to be run.
+     * @param context
+     *            the specific context in which the {@code action} is invoked.
+     *            if {@code null} a new {@link AccessControlContext} is
+     *            instantiated.
+     * @return the {@code Object} returned when running the {@code action}.
+     * @throws PrivilegedActionException
+     *             if running the {@code action} throws an exception.
+     */
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAsPrivileged(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
         /* [in] */ IAccessControlContext *context,
         /* [out] */ IInterface **obj);
 
+    /**
+     * Returns the {@code Subject} that was last associated with the {@code
+     * context} provided as argument.
+     *
+     * @param context
+     *            the {@code context} that was associated with the
+     *            {@code Subject}.
+     * @return the {@code Subject} that was last associated with the {@code
+     *         context} provided as argument.
+     */
     static CARAPI GetSubject(
         /* [in] */ IAccessControlContext *context,
         /* [out] */ ISubject **subject);
 
+    /**
+     * Checks two Subjects for equality. More specifically if the principals,
+     * public and private credentials are equal, equality for two {@code
+     * Subjects} is implied.
+     *
+     * @param obj
+     *            the {@code Object} checked for equality with this {@code
+     *            Subject}.
+     * @return {@code true} if the specified {@code Subject} is equal to this
+     *         one.
+     */
+    // @Override
     CARAPI Equals(
         /* [in] */ IInterface *obj,
         /* [out] */ Boolean *isEqual);
 
+    /**
+     * Returns this {@code Subject}'s {@link Principal}.
+     *
+     * @return this {@code Subject}'s {@link Principal}.
+     */
     CARAPI GetPrincipals(
         /* [out] */ ISet **principals);
 
+    /**
+     * Returns this {@code Subject}'s {@link Principal} which is a subclass of
+     * the {@code Class} provided.
+     *
+     * @param c
+     *            the {@code Class} as a criteria which the {@code Principal}
+     *            returned must satisfy.
+     * @return this {@code Subject}'s {@link Principal}. Modifications to the
+     *         returned set of {@code Principal}s do not affect this {@code
+     *         Subject}'s set.
+     */
     CARAPI GetPrincipals(
         /* [in] */ IInterface *pC,
         /* [out] */ ISet **principals);
 
+    /**
+     * Returns the private credentials associated with this {@code Subject}.
+     *
+     * @return the private credentials associated with this {@code Subject}.
+     */
     CARAPI GetPrivateCredentials(
         /* [out] */ ISet **credentials);
 
+    /**
+     * Returns this {@code Subject}'s private credentials which are a subclass
+     * of the {@code Class} provided.
+     *
+     * @param c
+     *            the {@code Class} as a criteria which the private credentials
+     *            returned must satisfy.
+     * @return this {@code Subject}'s private credentials. Modifications to the
+     *         returned set of credentials do not affect this {@code Subject}'s
+     *         credentials.
+     */
     CARAPI GetPrivateCredentials(
         /* [in] */ const ClassID& id,
         /* [out] */ ISet **credentials);
 
+    /**
+     * Returns the public credentials associated with this {@code Subject}.
+     *
+     * @return the public credentials associated with this {@code Subject}.
+     */
     CARAPI GetPublicCredentials(
         /* [out] */ ISet **credentials);
 
+    /**
+     * Returns this {@code Subject}'s public credentials which are a subclass of
+     * the {@code Class} provided.
+     *
+     * @param c
+     *            the {@code Class} as a criteria which the public credentials
+     *            returned must satisfy.
+     * @return this {@code Subject}'s public credentials. Modifications to the
+     *         returned set of credentials do not affect this {@code Subject}'s
+     *         credentials.
+     */
     CARAPI GetPublicCredentials(
         /* [in] */ const ClassID& id,
         /* [out] */ ISet **credentials);
 
+    /**
+     * Returns a hash code of this {@code Subject}.
+     *
+     * @return a hash code of this {@code Subject}.
+     */
+    // @Override
     CARAPI GetHashCode(
         /* [out] */ Int32 *hashCode);
 
+    /**
+     * Prevents from modifications being done to the credentials and {@link
+     * Principal} sets. After setting it to read-only this {@code Subject} can
+     * not be made writable again. The destroy method on the credentials still
+     * works though.
+     */
     CARAPI SetReadOnly();
 
+    /**
+     * Returns whether this {@code Subject} is read-only or not.
+     *
+     * @return whether this {@code Subject} is read-only or not.
+     */
     CARAPI IsReadOnly(
         /* [out] */ Boolean *isReadOnly);
 
+    /**
+     * Returns a {@code String} representation of this {@code Subject}.
+     *
+     * @return a {@code String} representation of this {@code Subject}.
+     */
+    // @Override
     CARAPI ToString(
         /* [out] */ String *str);
 
+    /**
+     * The default constructor initializing the sets of public and private
+     * credentials and principals with the empty set.
+     */
     CARAPI constructor();
 
+    /**
+     * The constructor for the subject, setting its public and private
+     * credentials and principals according to the arguments.
+     *
+     * @param readOnly
+     *            {@code true} if this {@code Subject} is read-only, thus
+     *            preventing any modifications to be done.
+     * @param subjPrincipals
+     *            the set of Principals that are attributed to this {@code
+     *            Subject}.
+     * @param pubCredentials
+     *            the set of public credentials that distinguish this {@code
+     *            Subject}.
+     * @param privCredentials
+     *            the set of private credentials that distinguish this {@code
+     *            Subject}.
+     */
     CARAPI constructor(
         /* [in] */ Boolean readOnly,
         /* [in] */ ISet *subjPrincipals,
@@ -104,66 +285,26 @@ public:
 private:
     class SecureSet
         : public AbstractSet
-        , public ISet
-        , public ElRefBase {
+    {
     public:
-        CAR_INTERFACE_DECL()
         /*
          * verifies specified element, checks set state, and security permission
          * to modify set before adding new element
          */
+        // @Override
         CARAPI Add(
             /* [in] */ IInterface *o,
             /* [out] */ Boolean *ret);
 
-        CARAPI AddAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
-        CARAPI Clear();
-
-        CARAPI Contains(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI ContainsAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* result);
-
-        CARAPI Equals(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* value);
-
-        CARAPI GetHashCode(
-            /* [out] */ Int32* value);
-
-        CARAPI IsEmpty(
-            /* [out] */ Boolean* result);
-
-        CARAPI Remove(
-            /* [in] */ IInterface* object,
-            /* [out] */ Boolean* result);
-
-        CARAPI RemoveAll(
-            /* [in] */ ICollection* collection,
-            /* [out] */ Boolean* modified);
-
+        // returns an instance of SecureIterator
+        // @Override
         CARAPI GetIterator(
             /* [out] */ IIterator **it);
 
+        // @Override
         CARAPI RetainAll(
             /* [in] */ ICollection *c,
             /* [out] */ Boolean *ret);
-
-        CARAPI GetSize(
-            /* [out] */ Int32 *size);
-
-        CARAPI ToArray(
-            /* [out, callee] */ ArrayOf<IInterface*>** array);
-
-        CARAPI ToArray(
-            /* [in] */ ArrayOf<IInterface*>* contents,
-            /* [out, callee] */ ArrayOf<IInterface*>** outArray);
 
         /**
          * return set with elements that are instances or subclasses of the
@@ -188,19 +329,24 @@ private:
         CARAPI Get(
             /* [in] */ const ClassID& id,
             /* [out] */ ISet **obj);
+
+        CARAPI GetSize(
+            /* [out] */ Int32* size);
+
         /**
          * Represents iterator for subject's secure set
          */
         class SecureIterator
-            : public IIterator
-            , public ElRefBase
+            : public Object
+            , public IIterator
         {
         public:
             CAR_INTERFACE_DECL()
+
             CARAPI HasNext(
                 /* [out] */ Boolean *hasNext);
 
-            CARAPI Next(
+            CARAPI GetNext(
                 /* [out] */ IInterface **next);
 
             /**
@@ -217,33 +363,9 @@ private:
             Handle32 mHost;
         };
 
-        class SecureIteratorEx
-            : public SecureIterator
-        {
-        public:
-            SecureIterator(
-                /* [in] */ IIterator *iterator,
-                /* [in] */ Handle32 host)
-                : SecureIterator(iterator, host)
-            {}
-
-            CARAPI Next(
-                /* [out] */ IInterface **next)
-            {
-                return mIterator->Next(next);
-            }
-        };
-
-
         // verifies new set element
         CARAPI VerifyElement(
             /* [in] */ IInterface *o);
-
-        CARAPI ReadObject(
-            /* [in] */ IObjectInputStream *is);
-
-        CARAPI WriteObject(
-            /* [in] */ IObjectOutputStream *os);
 
     private:
         /**
@@ -282,6 +404,7 @@ private:
         static const Int32 SET_PubCred = 2;
 
         // permission required to modify set
+        // transient
         AutoPtr<IPermission> mPermission;
 
         Handle32 mHost;
@@ -290,7 +413,7 @@ private:
 
     class PrivilegedAction
         : public IPrivilegedAction
-        , public ElRefBase
+        , public Object
     {
     public:
         PrivilegedAction(
@@ -347,36 +470,16 @@ private:
         AutoPtr<IAccessControlContext> mAcc;
     };
 
-    class PrivilegedActionEx
-        : public PrivilegedAction
-    {
-    public:
-        PrivilegedAction(
-            /* [in] */ IAccessControlContext *context,
-            /* [in] */ ISubjectDomainCombiner *combiner)
-            : PrivilegedAction(context)
-            , mCombiner(combiner)
-        {}
-
-        ECode Run(
-            /* [out] */ IInterface **dc)
-        {
-            AutoPtr<IAccessControlContext> acc;
-            CAccessControlContext::New(mAcc, mCombiner, (IAccessControlContext**)&acc);
-            *dc = acc.Get();
-            REFCOUNT_ADD(*dc)
-            return NOERROR;
-        }
-    private:
-        AutoPtr<ISubjectDomainCombiner> mCombiner;
-    };
-
+    // instantiates a new context and passes it to AccessController
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAs_PrivilegedAction(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedAction *action,
         /* [in] */ IAccessControlContext * const context,
         /* [out] */ IInterface **ret);
 
+    // instantiates a new context and passes it to AccessController
+    // @SuppressWarnings("unchecked")
     static CARAPI DoAs_PrivilegedExceptionAction(
         /* [in] */ ISubject *subject,
         /* [in] */ IPrivilegedExceptionAction *action,
@@ -408,19 +511,21 @@ private:
 
     static const AutoPtr<IPermission> _READ_ONLY;
 
-    const AutoPtr<ISet> mPrincipals;
+    AutoPtr<ISet> mPrincipals;
 
     Boolean mReadOnly;
 
     // set of private credentials
+    // transient
     AutoPtr<SecureSet> mPrivateCredentials;
 
     // set of public credentials
+    // transient
     AutoPtr<SecureSet> mPublicCredentials;
 };
 
-}
-}
-}
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
-#endif // __CSUBJECT_H__
+#endif // __ELASTOSX_SECURITY_AUTH_CSUBJECT_H__

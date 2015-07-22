@@ -10,6 +10,25 @@ module
     namespace Security {
     namespace Auth {
 
+    /**
+     * The central class of the {@code javax.security.auth} package representing an
+     * authenticated user or entity (both referred to as "subject"). IT defines also
+     * the static methods that allow code to be run, and do modifications according
+     * to the subject's permissions.
+     * <p>
+     * A subject has the following features:
+     * <ul>
+     * <li>A set of {@code Principal} objects specifying the identities bound to a
+     * {@code Subject} that distinguish it.</li>
+     * <li>Credentials (public and private) such as certificates, keys, or
+     * authentication proofs such as tickets</li>
+     * </ul>
+     */
+    /**
+     * @Involve
+     * Change to no super interface in Elastos.
+     * So, there are some functions override.
+     */
     interface ISubject {
         /**
          * Checks two Subjects for equality. More specifically if the principals,
@@ -22,6 +41,7 @@ module
          * @return {@code true} if the specified {@code Subject} is equal to this
          *         one.
          */
+         // @Override
          Equals(
             [in] IInterface* obj,
             [out] Boolean* isEqual);
@@ -100,6 +120,7 @@ module
          *
          * @return a hash code of this {@code Subject}.
          */
+         // @Override
         GetHashCode(
             [out] Int32* hashCode);
 
@@ -124,7 +145,7 @@ module
          *
          * @return a {@code String} representation of this {@code Subject}.
          */
-        //@Override
+        // @Override
         ToString(
             [out] String* str);
     }
@@ -205,10 +226,10 @@ module
          */
         //@SuppressWarnings("unchecked")
         DoAsPrivileged(
-        [in] ISubject* subject,
-        [in] IPrivilegedExceptionAction* action,
-        [in] IAccessControlContext* context,
-        [out] IInterface** obj);
+            [in] ISubject* subject,
+            [in] IPrivilegedExceptionAction* action,
+            [in] IAccessControlContext* context,
+            [out] IInterface** obj);
 
         /**
          * Returns the {@code Subject} that was last associated with the {@code

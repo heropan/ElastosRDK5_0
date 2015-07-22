@@ -21,6 +21,7 @@ module
     interface Elastos.Utility.IMap;
     interface Elastos.Security.IPermission;
     interface Elastos.Security.IGuard;
+    interface Elastos.Utility.ISet;
 
     namespace Elastosx {
     namespace Security {
@@ -83,6 +84,22 @@ module
         interface IGuard;
         interface IPermission;
         interface IPrivateCredentialPermission;
+    }
+
+    class CSubject {
+        constructor();
+
+        constructor(
+            [in] Boolean readOnly,
+            [in] ISet *subjPrincipals,
+            [in] ISet *pubCredentials,
+            [in] ISet *privCredentials);
+
+        interface ISubject;
+    }
+
+    singleton class CSubjectHelper {
+        interface ISubjectHelper;
     }
 
     } // namespace Auth

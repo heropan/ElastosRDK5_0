@@ -1,147 +1,245 @@
 
 #include "CSubject.h"
 #include "CAuthPermission.h"
+#if 0 // TODO: Waiting for AccessController
 #include "CAccessController.h"
-#include "CAccessControlContext.h"
+#endif
+#if 0 // TODO: Waiting for SubjectDomainCombiner
 #include "CSubjectDomainCombiner.h"
+#endif
 #include "StringBuilder.h"
 #include "CLinkedList.h"
 
 using Elastos::Core::StringBuilder;
+#if 0 // TODO: Waiting for AccessController
 using Elastos::Security::CAccessController;
+#endif
+#if 0 // TODO: Waiting for AccessControlContext
 using Elastos::Security::CAccessControlContext;
+#endif
 using Elastos::Security::IAccessController;
 using Elastos::Security::IProtectionDomain;
 using Elastos::Utility::EIID_IIterator;
 using Elastos::Utility::EIID_ISet;
 using Elastos::Utility::CLinkedList;
+#if 0 // TODO: Waiting for SubjectDomainCombiner
 using Elastosx::Security::Auth::CSubjectDomainCombiner;
+#endif
+using Elastos::Utility::EIID_ICollection;
+using Elastos::Core::IInteger16;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::IByte;
+using Elastos::Core::IFloat;
+using Elastos::Core::IDouble;
+using Elastos::Core::IChar32;
+using Elastos::Core::IBoolean;
+using Elastos::Security::EIID_IPrincipal;
 
 namespace Elastosx {
 namespace Security {
 namespace Auth {
 
+CAR_OBJECT_IMPL(CSubject)
+
+CAR_INTERFACE_IMPL(CSubject, Object, ISubject)
+
 const Int64 CSubject::serialVersionUID = -8308522755600156056L;
 
 const Int64 CSubject::SecureSet::serialVersionUID = 7911754171111800359L;
 
-const Int64 serialVersionUID = -8308522755600156056L;
+// for define interface functions in class declare area
+#define CAR_INNER_INTERFACE_IMPL(SupperClassName, InterfaceName)       \
+                                                           \
+    UInt32 AddRef()                                        \
+    {                                                      \
+        return ElRefBase::AddRef();                        \
+    }                                                      \
+                                                           \
+    UInt32 Release()                                       \
+    {                                                      \
+        return ElRefBase::Release();                       \
+    }                                                      \
+                                                           \
+    PInterface Probe(                                      \
+        /* [in] */ REIID riid)                             \
+    {                                                      \
+        if (riid == EIID_IInterface) {                     \
+            return (IInterface*)(InterfaceName*)this;      \
+        }                                                  \
+        else if (riid == EIID_##InterfaceName) {           \
+            return (InterfaceName*)this;                   \
+        }                                                  \
+        return SupperClassName::Probe(riid);               \
+    }                                                      \
+                                                           \
+    ECode GetInterfaceID(                                  \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        if (object == (IInterface*)(InterfaceName*)this) { \
+            *iid = EIID_##InterfaceName;                   \
+            return NOERROR;                                \
+        }                                                  \
+        return SupperClassName::GetInterfaceID(object, iid); \
+    }
 
-const AutoPtr<IPermission> CSubject::_AS_PRIVILEGED;
-
-const AutoPtr<IPermission> CSubject::_SUBJECT;
-
-const AutoPtr<IPermission> CSubject::_PRINCIPALS;
-
-const AutoPtr<IPermission> CSubject::_PRIVATE_CREDENTIALS;
-
-const AutoPtr<IPermission> CSubject::_PUBLIC_CREDENTIALS;
-
-const AutoPtr<IPermission> CSubject::_READ_ONLY;
-
-const AutoPtr<IPermission> CSubject::_AS = CSubject::InitStatics();
-
-AutoPtr<IPermission> CSubject::InitStatics()
+AutoPtr<IPermission> GetNewAuthPermission(const String& name)
 {
-    AutoPtr<CAuthPermission> obj;
-    CAuthPermission::NewByFriend(String("doAs"), (CAuthPermission**)&obj);
-    AutoPtr<IPermission> as = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("doAsPrivileged"), (CAuthPermission**)&obj);
-    _AS_PRIVILEGED = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("getSubject"), (CAuthPermission**)&obj);
-    _SUBJECT = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("modifyPrincipals"), (CAuthPermission**)&obj);
-    _PRINCIPALS = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("modifyPrivateCredentials"), (CAuthPermission**)&obj);
-    _PRIVATE_CREDENTIALS = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("modifyPublicCredentials"), (CAuthPermission**)&obj);
-    _PUBLIC_CREDENTIALS = (IPermission*)obj.Get();
-
-    obj = NULL;
-    CAuthPermission::NewByFriend(String("setReadOnly"), (CAuthPermission**)&obj);
-    _READ_ONLY = (IPermission*)obj.Get();
-
-    return as;
+    AutoPtr<IPermission> rev;
+    CAuthPermission::New(name, (IPermission**)&rev);
+    return rev;
 }
+
+const AutoPtr<IPermission> CSubject::_AS_PRIVILEGED = GetNewAuthPermission(String("doAsPrivileged"));
+
+const AutoPtr<IPermission> CSubject::_SUBJECT = GetNewAuthPermission(String("getSubject"));
+
+const AutoPtr<IPermission> CSubject::_PRINCIPALS = GetNewAuthPermission(String("modifyPrincipals"));
+
+const AutoPtr<IPermission> CSubject::_PRIVATE_CREDENTIALS = GetNewAuthPermission(String("modifyPrivateCredentials"));
+
+const AutoPtr<IPermission> CSubject::_PUBLIC_CREDENTIALS = GetNewAuthPermission(String("modifyPublicCredentials"));
+
+const AutoPtr<IPermission> CSubject::_READ_ONLY = GetNewAuthPermission(String("setReadOnly"));
+
+const AutoPtr<IPermission> CSubject::_AS = GetNewAuthPermission(String("doAs"));
 
 ECode CSubject::DoAs(
     /* [in] */ ISubject *subject,
     /* [in] */ IPrivilegedAction *action,
     /* [out] */ IInterface **obj)
 {
+    VALIDATE_NOT_NULL(*obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(subject)
+    VALIDATE_NOT_NULL(action)
+
     AutoPtr<IAccessController> ac;
     AutoPtr<IAccessControlContext> acc;
+#if 0 // TODO: Waiting for CAccessController
     CAccessController::AcquireSingleton((IAccessController**)&ac);
+#else
+    assert(0);
+#endif
     ac->GetContext((IAccessControlContext**)&acc);
     return DoAs_PrivilegedAction(subject, action, acc, obj);
 }
 
 ECode CSubject::DoAsPrivileged(
-    /* [in] */ ISubject *subject,
-    /* [in] */ IPrivilegedAction *action,
-    /* [in] */ IAccessControlContext *context,
-    /* [out] */ IInterface **obj)
+    /* [in] */ ISubject* subject,
+    /* [in] */ IPrivilegedAction* action,
+    /* [in] */ IAccessControlContext* context,
+    /* [out] */ IInterface** obj)
 {
-    if (context == NULL) {
+    VALIDATE_NOT_NULL(*obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(subject)
+    VALIDATE_NOT_NULL(action)
+
+    if (NULL == context) {
         AutoPtr<ArrayOf<IProtectionDomain*> > context = ArrayOf<IProtectionDomain*>::Alloc(0);
         AutoPtr<IAccessControlContext> acc;
+#if 0 // TODO: Waiting for CAccessControlContext
         CAccessControlContext::New(context, (IAccessControlContext**)&acc);
+#else
+        assert(0);
+#endif
         return DoAs_PrivilegedAction(subject, action, acc, obj);
     }
     return DoAs_PrivilegedAction(subject, action, context, obj);
 }
 
 ECode CSubject::DoAs(
-    /* [in] */ ISubject *subject,
-    /* [in] */ IPrivilegedExceptionAction *action,
-    /* [out] */ IInterface **obj)
+    /* [in] */ ISubject* subject,
+    /* [in] */ IPrivilegedExceptionAction* action,
+    /* [out] */ IInterface** obj)
 {
+    VALIDATE_NOT_NULL(*obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(subject)
+    VALIDATE_NOT_NULL(action)
+
     AutoPtr<IAccessController> ac;
     AutoPtr<IAccessControlContext> acc;
+#if 0 // TODO: Waiting for CAccessController
     CAccessController::AcquireSingleton((IAccessController**)&ac);
+#else
+    assert(0);
+#endif
     ac->GetContext((IAccessControlContext**)&acc);
     return DoAs_PrivilegedExceptionAction(subject, action, acc, obj);
 }
 
 ECode CSubject::DoAsPrivileged(
-    /* [in] */ ISubject *subject,
-    /* [in] */ IPrivilegedExceptionAction *action,
-    /* [in] */ IAccessControlContext *context,
-    /* [out] */ IInterface **obj)
+    /* [in] */ ISubject* subject,
+    /* [in] */ IPrivilegedExceptionAction* action,
+    /* [in] */ IAccessControlContext* context,
+    /* [out] */ IInterface** obj)
 {
-    if (context == NULL) {
-        AutoPtr<ArrayOf<IProtectionDomain*> > context = ArrayOf<IProtectionDomain*>::Alloc(0);
+    VALIDATE_NOT_NULL(*obj)
+    *obj = NULL;
+    VALIDATE_NOT_NULL(subject)
+    VALIDATE_NOT_NULL(action)
+
+    if (NULL == context) {
+        AutoPtr<ArrayOf<IProtectionDomain*> > pd = ArrayOf<IProtectionDomain*>::Alloc(0);
         AutoPtr<IAccessControlContext> acc;
-        CAccessControlContext::New(context, (IAccessControlContext**)&acc);
+#if 0 // TODO: Waiting for CAccessControlContext
+        CAccessControlContext::New(pd, (IAccessControlContext**)&acc);
+#else
+    assert(0);
+#endif
         return DoAs_PrivilegedExceptionAction(subject, action, acc, obj);
     }
     return DoAs_PrivilegedExceptionAction(subject, action, context, obj);
 }
 
 ECode CSubject::GetSubject(
-    /* [in] */ IAccessControlContext *context,
-    /* [out] */ ISubject **subject)
+    /* [in] */ IAccessControlContext* context,
+    /* [out] */ ISubject** subject)
 {
-    if (!context) {
+    VALIDATE_NOT_NULL(*subject)
+    *subject = NULL;
+
+    if (NULL == context) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    AutoPtr<IPrivilegedAction> action = new PrivilegedAction(context);
+    class InnerSub_PrivilegedAction
+        : public Object
+        , public IPrivilegedAction
+    {
+    public:
+        CAR_INNER_INTERFACE_IMPL(Object, IPrivilegedAction)
+
+        InnerSub_PrivilegedAction(IAccessControlContext* context)
+            : mContext(context)
+        {}
+
+        ECode Run(
+            /* [out] */ IInterface** result)
+        {
+            VALIDATE_NOT_NULL(*result)
+            *result = NULL;
+
+            return mContext->GetDomainCombiner((IDomainCombiner**)result);
+        }
+    private:
+        AutoPtr<IAccessControlContext> mContext;
+    };
+    AutoPtr<IPrivilegedAction> action = new InnerSub_PrivilegedAction(context);
     AutoPtr<IAccessController> ac;
+#if 0 // TODO: Waiting for CAccessController
     CAccessController::AcquireSingleton((IAccessController**)&ac);
+#else
+    assert(0);
+#endif
     AutoPtr<IInterface> cmb;
     ac->DoPrivileged(action, (IInterface**)&cmb);
     AutoPtr<IDomainCombiner> combiner = IDomainCombiner::Probe(cmb);
-    if (combiner == NULL || !ISubjectDomainCombiner::Probe(combiner.Get())) {
+    if (NULL == combiner || !ISubjectDomainCombiner::Probe(combiner.Get())) {
         return NOERROR;
     }
     return ISubjectDomainCombiner::Probe(combiner.Get())->GetSubject(subject);
@@ -154,12 +252,20 @@ ECode CSubject::Equals(
     VALIDATE_NOT_NULL(isEqual)
     *isEqual = FALSE;
 
-    if (obj == NULL) {
+    if (THIS_PROBE(IInterface) == obj) {
+        *isEqual = TRUE;
+    }
+
+    ClassID thisID, objID;
+    this->GetClassID(&thisID);
+    IObject::Probe(obj)->GetClassID(&objID);
+
+    if (NULL == obj || thisID != objID) {
         return NOERROR;
     }
 
     ISubject* thatObj = (ISubject*)obj->Probe(EIID_ISubject);
-    if (thatObj == NULL) {
+    if (NULL == thatObj) {
         return NOERROR;
     }
 
@@ -171,21 +277,22 @@ ECode CSubject::Equals(
     CSubject* that = (CSubject*)thatObj;
     Boolean equals1, equals2, equals3;
     mPrincipals->Equals(that->mPrincipals, &equals1);
-    mPublicCredentials->Equals(that->mPublicCredentials, &equals2);
-    mPrivateCredentials->Equals(that->mPrivateCredentials, &equals3);
+    mPublicCredentials->Equals((ISet*)that->mPublicCredentials, &equals2);
+    mPrivateCredentials->Equals((ISet*)that->mPrivateCredentials, &equals3);
     if (equals1 && equals2 && equals3) {
         *isEqual = TRUE;
         return NOERROR;
     }
-    *isEqual = FALSE;
     return NOERROR;
 }
 
 ECode CSubject::GetPrincipals(
     /* [out] */ ISet **principals)
 {
-    VALIDATE_NOT_NULL(principals)
+    VALIDATE_NOT_NULL(*principals)
+
     *principals = mPrincipals;
+    REFCOUNT_ADD(*principals)
     return NOERROR;
 }
 
@@ -193,6 +300,10 @@ ECode CSubject::GetPrincipals(
     /* [in] */ IInterface *c,
     /* [out] */ ISet **principals)
 {
+    VALIDATE_NOT_NULL(*principals)
+    *principals = NULL;
+    VALIDATE_NOT_NULL(c)
+
     ClassID clsId;
     IObject::Probe(c)->GetClassID(&clsId);
     return ((SecureSet*)mPrincipals.Get())->Get(clsId, principals);
@@ -201,7 +312,7 @@ ECode CSubject::GetPrincipals(
 ECode CSubject::GetPrivateCredentials(
     /* [out] */ ISet **credentials)
 {
-    VALIDATE_NOT_NULL(credentials)
+    VALIDATE_NOT_NULL(*credentials)
     *credentials = mPrivateCredentials;
     REFCOUNT_ADD(*credentials)
     return NOERROR;
@@ -211,62 +322,17 @@ ECode CSubject::GetPrivateCredentials(
     /* [in] */ const ClassID& id,
     /* [out] */ ISet **credentials)
 {
-    /*
-    if (c == null) {
-        throw new NullPointerException("c == null");
-    }
+    VALIDATE_NOT_NULL(*credentials)
+    *credentials = NULL;
 
-    AbstractSet<E> s = new AbstractSet<E>() {
-        private LinkedList<E> elements = new LinkedList<E>();
-
-        @Override
-        public boolean add(E o) {
-            if (!c.isAssignableFrom(o.getClass())) {
-                throw new IllegalArgumentException("Invalid type: " + o.getClass());
-            }
-
-            if (elements.contains(o)) {
-                return false;
-            }
-            elements.add(o);
-            return true;
-        }
-
-        @Override
-        public Iterator<E> iterator() {
-            return elements.iterator();
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-
-            if (c == null) {
-                throw new NullPointerException("c == null");
-            }
-            return super.retainAll(c);
-        }
-
-        @Override
-        public int size() {
-            return elements.size();
-        }
-    };
-
-    // FIXME must have permissions for requested priv. credentials
-    for (SST o : this) {
-        if (c.isAssignableFrom(o.getClass())) {
-            s.add(c.cast(o));
-        }
-    }
-    return s;
-    */
-    return E_NOT_IMPLEMENTED;
+    return mPrivateCredentials->Get(id, credentials);
 }
 
 ECode CSubject::GetPublicCredentials(
     /* [out] */ ISet **credentials)
 {
-    VALIDATE_NOT_NULL(credentials)
+    VALIDATE_NOT_NULL(*credentials)
+
     *credentials = mPublicCredentials;
     REFCOUNT_ADD(*credentials)
     return NOERROR;
@@ -276,6 +342,9 @@ ECode CSubject::GetPublicCredentials(
     /* [in] */ const ClassID& id,
     /* [out] */ ISet **credentials)
 {
+    VALIDATE_NOT_NULL(*credentials)
+    *credentials = NULL;
+
     return mPublicCredentials->Get(id, credentials);
 }
 
@@ -283,6 +352,8 @@ ECode CSubject::GetHashCode(
     /* [out] */ Int32 *hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
+    *hashCode = 0;
+
     Int32 hc;
     mPrincipals->GetHashCode(hashCode);
     mPrivateCredentials->GetHashCode(&hc);
@@ -302,6 +373,7 @@ ECode CSubject::IsReadOnly(
     /* [out] */ Boolean *isReadOnly)
 {
     VALIDATE_NOT_NULL(isReadOnly)
+
     *isReadOnly = mReadOnly;
     return NOERROR;
 }
@@ -310,26 +382,28 @@ ECode CSubject::ToString(
     /* [out] */ String *str)
 {
     VALIDATE_NOT_NULL(str)
+    *str = String(NULL);
+
     StringBuilder buf("Subject:\n");
     AutoPtr<IIterator> it;
     mPrincipals->GetIterator((IIterator**)&it);
     Boolean hasNext;
     while(it->HasNext(&hasNext), hasNext) {
-        buf.AppendCStr("\tPrincipal: ");
+        buf.Append("\tPrincipal: ");
         AutoPtr<IInterface> elem;
         it->GetNext((IInterface**)&elem);
-        buf.AppendObject(elem);
-        buf.AppendChar('\n');
+        buf.Append(elem);
+        buf.Append('\n');
     }
 
     it = NULL;
     mPublicCredentials->GetIterator((IIterator**)&it);
     while(it->HasNext(&hasNext), hasNext) {
-        buf.AppendCStr("\tPublic Credential: ");
+        buf.Append("\tPublic Credential: ");
         AutoPtr<IInterface> elem;
         it->GetNext((IInterface**)&elem);
-        buf.AppendObject(elem);
-        buf.AppendChar('\n');
+        buf.Append(elem);
+        buf.Append('\n');
     }
 
     Int32 offset;
@@ -338,13 +412,13 @@ ECode CSubject::ToString(
     it = NULL;
     mPrivateCredentials->GetIterator((IIterator**)&it);
     while(it->HasNext(&hasNext), hasNext) {
-        buf.AppendCStr("\tPrivate Credential: ");
+        buf.Append("\tPrivate Credential: ");
         AutoPtr<IInterface> elem;
         it->GetNext((IInterface**)&elem);
-        buf.AppendObject(elem);
-        buf.AppendChar('\n');
+        buf.Append(elem);
+        buf.Append('\n');
     }
-    buf.ToString(str);
+    return buf.ToString(str);
 }
 
 ECode CSubject::constructor()
@@ -362,21 +436,25 @@ ECode CSubject::constructor(
     /* [in] */ ISet *pubCredentials,
     /* [in] */ ISet *privCredentials)
 {
-    if (subjPrincipals == NULL) {
+    VALIDATE_NOT_NULL(subjPrincipals)
+    VALIDATE_NOT_NULL(pubCredentials)
+    VALIDATE_NOT_NULL(privCredentials)
+
+    if (NULL == subjPrincipals) {
         //throw new NullPointerException("subjPrincipals == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    else if (pubCredentials == NULL) {
+    else if (NULL == pubCredentials) {
         //throw new NullPointerException("pubCredentials == null");
         return E_NULL_POINTER_EXCEPTION;
     }
-    else if (privCredentials == NULL) {
+    else if (NULL == privCredentials) {
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    mPrincipals = new SecureSet(_PRINCIPALS, subjPrincipals, (Handle32)this);
-    mPublicCredentials = new SecureSet(_PUBLIC_CREDENTIALS, pubCredentials, (Handle32)this);
-    mPrivateCredentials = new SecureSet(_PRIVATE_CREDENTIALS, privCredentials, (Handle32)this);
+    mPrincipals = new SecureSet(_PRINCIPALS, (ICollection*) subjPrincipals->Probe(EIID_ICollection), (Handle32)this);
+    mPublicCredentials = new SecureSet(_PUBLIC_CREDENTIALS, (ICollection*) pubCredentials->Probe(EIID_ICollection), (Handle32)this);
+    mPrivateCredentials = new SecureSet(_PRIVATE_CREDENTIALS, (ICollection*) privCredentials->Probe(EIID_ICollection), (Handle32)this);
     mReadOnly = readOnly;
     return NOERROR;
 }
@@ -387,24 +465,67 @@ ECode CSubject::DoAs_PrivilegedAction(
     /* [in] */ IAccessControlContext * const context,
     /* [out] */ IInterface **ret)
 {
-    VALIDATE_NOT_NULL(ret)
+    VALIDATE_NOT_NULL(*ret)
+    *ret = NULL;
+    VALIDATE_NOT_NULL(subject)
+    VALIDATE_NOT_NULL(context)
+    VALIDATE_NOT_NULL(action)
+
     AutoPtr<IAccessControlContext> newContext;
     AutoPtr<ISubjectDomainCombiner> combiner;
-    if (subject == NULL) {
+    if (NULL == subject) {
         // performance optimization
         // if subject is null there is nothing to combine
+        combiner = NULL;
     }
     else {
+#if 0 // TODO: Waiting for CSubjectDomainCombiner
         CSubjectDomainCombiner::New(subject, (ISubjectDomainCombiner**)&combiner);
+#else
+        assert(0);
+#endif
     }
 
-    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedAction(context, combiner);
+    class InnerSub_PrivilegedAction : public IPrivilegedAction, public Object
+    {
+    public:
+        CAR_INNER_INTERFACE_IMPL(Object, IPrivilegedAction)
+
+        InnerSub_PrivilegedAction(IAccessControlContext* const context, ISubjectDomainCombiner* combiner)
+                : mContext(context), mCombiner(combiner) {}
+        ECode Run(
+            /* [out] */ IInterface** result)
+        {
+            VALIDATE_NOT_NULL(*result)
+            *result = NULL;
+
+#if 0 // TODO: Waiting for CAccessControlContext
+            return CAccessControlContext::New(mContext, mCombiner, (IAccessControlContext**)&result);
+#else
+            assert(0);
+            return NOERROR;
+#endif
+        }
+    private:
+        AutoPtr<IAccessControlContext> mContext;
+        AutoPtr<ISubjectDomainCombiner> mCombiner;
+    };
+    AutoPtr<IPrivilegedAction> dccAction = new InnerSub_PrivilegedAction(context, combiner);
     AutoPtr<IAccessController> ac;
+#if 0 // TODO: Waiting for CAccessController
     CAccessController::AcquireSingleton((IAccessController**)&ac);
+#else
+    assert(0);
+#endif
     AutoPtr<IInterface> priv;
     ac->DoPrivileged(dccAction, (IInterface**)&priv);
     newContext = IAccessControlContext::Probe(priv);
+#if 0 // TODO: Waiting for IAccessController
     return ac->DoPrivileged(action, newContext, ret);
+#else
+    assert(0);
+    return NOERROR;
+#endif
 }
 
 ECode CSubject::DoAs_PrivilegedExceptionAction(
@@ -413,24 +534,67 @@ ECode CSubject::DoAs_PrivilegedExceptionAction(
     /* [in] */ IAccessControlContext * const context,
     /* [out] */ IInterface **ret)
 {
-    VALIDATE_NOT_NULL(ret)
+    VALIDATE_NOT_NULL(*ret)
+    *ret = NULL;
+    VALIDATE_NOT_NULL(context)
+    VALIDATE_NOT_NULL(action)
+
     AutoPtr<IAccessControlContext> newContext;
     AutoPtr<ISubjectDomainCombiner> combiner;
-    if (subject == NULL) {
+    if (NULL == subject) {
         // performance optimization
         // if subject is null there is nothing to combine
+        combiner = NULL;
     }
     else {
+#if 0 // TODO: Waiting for CSubjectDomainCombiner
         CSubjectDomainCombiner::New(subject, (ISubjectDomainCombiner**)&combiner);
+#else
+        assert(0);
+#endif
     }
 
-    AutoPtr<IPrivilegedAction> dccAction = new PrivilegedAction(context, combiner);
+    class InnerSub_PrivilegedAction : public IPrivilegedAction, public Object
+    {
+    public:
+        CAR_INNER_INTERFACE_IMPL(Object, IPrivilegedAction)
+
+        InnerSub_PrivilegedAction(IAccessControlContext* const context, ISubjectDomainCombiner* combiner)
+                : mContext(context), mCombiner(combiner) {}
+        ECode Run(
+            /* [out] */ IInterface** result)
+        {
+            VALIDATE_NOT_NULL(*result)
+            *result = NULL;
+
+#if 0 // TODO: Waiting for CAccessControlContext
+            return CAccessControlContext::New(mContext, mCombiner, (IAccessControlContext**)&result);
+#else
+            assert(0);
+            return NOERROR;
+#endif
+        }
+    private:
+        AutoPtr<IAccessControlContext> mContext;
+        AutoPtr<ISubjectDomainCombiner> mCombiner;
+    };
+
+    AutoPtr<IPrivilegedAction> dccAction = new InnerSub_PrivilegedAction(context, combiner);
     AutoPtr<IAccessController> ac;
+#if 0 // TODO: Waiting for CAccessController
     CAccessController::AcquireSingleton((IAccessController**)&ac);
+#else
+    assert(0);
+#endif
     AutoPtr<IInterface> priv;
     ac->DoPrivileged(dccAction, (IInterface**)&priv);
     newContext = IAccessControlContext::Probe(priv);
+#if 0 // TODO: Waiting for IAccessController
     return ac->DoPrivileged(action, newContext, ret);
+#else
+    assert(0);
+    return NOERROR;
+#endif
 }
 
 ECode CSubject::CheckState()
@@ -441,8 +605,6 @@ ECode CSubject::CheckState()
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(CSubject::SecureSet, ISet)
-
 /*
  * verifies specified element, checks set state, and security permission
  * to modify set before adding new element
@@ -452,6 +614,9 @@ ECode CSubject::SecureSet::Add(
     /* [out] */ Boolean *ret)
 {
     VALIDATE_NOT_NULL(ret)
+    *ret = FALSE;
+    VALIDATE_NOT_NULL(o)
+
     VerifyElement(o);
     ((CSubject*)mHost)->CheckState();
     Boolean isContained;
@@ -460,72 +625,15 @@ ECode CSubject::SecureSet::Add(
         *ret = TRUE;
         return NOERROR;
     }
-    *ret = FALSE;
     return NOERROR;
-}
-
-ECode CSubject::SecureSet::AddAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::AddAll(collection, modified);
-}
-
-ECode CSubject::SecureSet::Clear()
-{
-    return AbstractSet::Clear();
-}
-
-ECode CSubject::SecureSet::Contains(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::Contains(object, result);
-}
-
-ECode CSubject::SecureSet::ContainsAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::ContainsAll(collection, result);
-}
-
-ECode CSubject::SecureSet::Equals(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* value)
-{
-    return AbstractSet::Equals(object, value);
-}
-
-ECode CSubject::SecureSet::GetHashCode(
-    /* [out] */ Int32* value)
-{
-    return AbstractSet::GetHashCode(value);
-}
-
-ECode CSubject::SecureSet::IsEmpty(
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::IsEmpty(result);
-}
-
-ECode CSubject::SecureSet::Remove(
-    /* [in] */ IInterface* object,
-    /* [out] */ Boolean* result)
-{
-    return AbstractSet::Remove(object, result);
-}
-
-ECode CSubject::SecureSet::RemoveAll(
-    /* [in] */ ICollection* collection,
-    /* [out] */ Boolean* modified)
-{
-    return AbstractSet::RemoveAll(collection, modified);
 }
 
 ECode CSubject::SecureSet::GetIterator(
     /* [out] */ IIterator **it)
 {
+    VALIDATE_NOT_NULL(*it)
+    *it = NULL;
+
     if (mPermission == _PRIVATE_CREDENTIALS) {
         /*
         * private credential set requires iterator with additional
@@ -539,7 +647,32 @@ ECode CSubject::SecureSet::GetIterator(
     }
     AutoPtr<IIterator> iter;
     mElements->GetIterator((IIterator**)&iter);
-    *it = new SecureIterator(iter, mHost);
+    class InnerSub_SecureIterator
+        : public SecureIterator
+    {
+    public:
+        InnerSub_SecureIterator(
+            /* [in] */ IIterator *iterator,
+            /* [in] */ Handle32 host)
+            : SecureIterator(iterator, host)
+        {}
+        /*
+         * checks permission to access next private credential moves
+         * to the next element even SecurityException was thrown
+         */
+        // @Override
+        ECode GetNext(
+            /* [out] */ IInterface **next)
+        {
+            VALIDATE_NOT_NULL(*next)
+            *next = NULL;
+
+            return mIterator->GetNext(next);
+        }
+
+
+    };
+    *it = new InnerSub_SecureIterator(iter, mHost);
     REFCOUNT_ADD(*it)
     return NOERROR;
 }
@@ -549,29 +682,12 @@ ECode CSubject::SecureSet::RetainAll(
     /* [out] */ Boolean *ret)
 {
     VALIDATE_NOT_NULL(ret)
-    if (c == NULL) {
+    *ret = FALSE;
+
+    if (NULL == c) {
         return E_NULL_POINTER_EXCEPTION;
     }
     return AbstractSet::RetainAll(c, ret);
-}
-
-ECode CSubject::SecureSet::GetSize(
-    /* [out] */ Int32 *size)
-{
-    return mElements->GetSize(size);
-}
-
-ECode CSubject::SecureSet::ToArray(
-    /* [out, callee] */ ArrayOf<IInterface*>** array)
-{
-    return AbstractSet::ToArray(array);
-}
-
-ECode CSubject::SecureSet::ToArray(
-    /* [in] */ ArrayOf<IInterface*>* contents,
-    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
-{
-    return AbstractSet::ToArray(contents, outArray);
 }
 
 CSubject::SecureSet::SecureSet(
@@ -582,6 +698,7 @@ CSubject::SecureSet::SecureSet(
 {
     CLinkedList::New((ILinkedList**)&mElements);
 }
+
 CSubject::SecureSet::SecureSet(
     /* [in] */ IPermission *perm,
     /* [in] */ ICollection *s,
@@ -589,144 +706,169 @@ CSubject::SecureSet::SecureSet(
     : mPermission(perm)
     , mHost(host)
 {
-    /*
     // Subject's constructor receives a Set, we can trusts if a set is from bootclasspath,
     // and not to check whether it contains duplicates or not
-    boolean trust = s.getClass().getClassLoader() == null;
-
-    for (SST o : s) {
-        verifyElement(o);
-        if (trust || !elements.contains(o)) {
-            elements.add(o);
-        }
+    Boolean trust = FALSE;
+    AutoPtr<IIterator> it;
+    s->GetIterator((IIterator**)&it);
+    Boolean has_next;
+    AutoPtr<IInterface> o;
+    if (it->HasNext(&has_next), has_next) {
+        it->GetNext((IInterface**)&o);
+        trust = (IInteger16::Probe(o) != NULL)
+                || (IInteger32::Probe(o) != NULL)
+                || (IInteger64::Probe(o) != NULL)
+                || (IByte::Probe(o) != NULL)
+                || (IFloat::Probe(o) != NULL)
+                || (IDouble::Probe(o) != NULL)
+                || (IChar32::Probe(o) != NULL)
+                || (IBoolean::Probe(o) != NULL);
+    } else {
+        return;
     }
-    */
+
+    do
+    {
+        VerifyElement(o);
+        Boolean is_contains;
+        if (trust || mElements->Contains(o, &is_contains), is_contains) {
+            mElements->Add(o);
+        }
+        it->GetNext((IInterface**)&o);
+    }while(it->HasNext(&has_next), has_next);
 }
 
 ECode CSubject::SecureSet::Get(
     /* [in] */ const ClassID& id,
     /* [out] */ ISet **obj)
 {
-    /*
-        if (c == null) {
-            throw new NullPointerException("c == null");
+    VALIDATE_NOT_NULL(*obj)
+    *obj = NULL;
+
+    class InnerSet : public AbstractSet {
+    public:
+        InnerSet(const ClassID& id)
+            : mId(id)
+        {
+            CLinkedList::New((ILinkedList**)&mElements);
         }
 
-        AbstractSet<E> s = new AbstractSet<E>() {
-            private LinkedList<E> elements = new LinkedList<E>();
+        // @Override
+        ECode Add(
+            /* [in] */ IInterface* o,
+            /* [out] */ Boolean* rev)
+        {
+            VALIDATE_NOT_NULL(rev)
+            *rev = FALSE;
+            VALIDATE_NOT_NULL(o)
 
-            @Override
-            public boolean add(E o) {
-                if (!c.isAssignableFrom(o.getClass())) {
-                    throw new IllegalArgumentException("Invalid type: " + o.getClass());
-                }
-
-                if (elements.contains(o)) {
-                    return false;
-                }
-                elements.add(o);
-                return true;
+            if (o->Probe((REIID)mId) == NULL) {
+                // throw new IllegalArgumentException("Invalid type: " + o.getClass());
+                return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
 
-            @Override
-            public Iterator<E> iterator() {
-                return elements.iterator();
+            Boolean had;
+            if (mElements->Contains(o, &had), had) {
+                *rev = FALSE;
+                return NOERROR;
             }
-
-            @Override
-            public boolean retainAll(Collection<?> c) {
-
-                if (c == null) {
-                    throw new NullPointerException("c == null");
-                }
-                return super.retainAll(c);
-            }
-
-            @Override
-            public int size() {
-                return elements.size();
-            }
-        };
-
-        // FIXME must have permissions for requested priv. credentials
-        for (SST o : this) {
-            if (c.isAssignableFrom(o.getClass())) {
-                s.add(c.cast(o));
-            }
+            mElements->Add(o);
+            *rev = TRUE;
+            return NOERROR;
         }
-        return s;
-    */
-    return E_NOT_IMPLEMENTED;
+
+        // @Override
+        ECode GetIterator(
+            /* [out] */ IIterator** it)
+        {
+            VALIDATE_NOT_NULL(*it)
+            *it = NULL;
+
+            return mElements->GetIterator(it);
+        }
+
+        // @Override
+        ECode RetainAll(
+            /* [in] */ ICollection* c,
+            /* [out] */ Boolean* rev)
+        {
+            VALIDATE_NOT_NULL(rev)
+            *rev = FALSE;
+            VALIDATE_NOT_NULL(c)
+
+            if (NULL == c) {
+                // throw new NullPointerException("c == null");
+                return E_NULL_POINTER_EXCEPTION;
+            }
+            return AbstractSet::RetainAll(c, rev);
+        }
+
+        // @Override
+        ECode GetSize(
+            /* [out] */ Int32* size)
+        {
+            VALIDATE_NOT_NULL(size)
+            *size = 0;
+
+            return mElements->GetSize(size);
+        }
+
+    private:
+        AutoPtr<ILinkedList> mElements;
+        ClassID mId;
+    };
+
+    AutoPtr<AbstractSet> s = new InnerSet(id);
+
+    // FIXME must have permissions for requested priv. credentials
+    AutoPtr<IIterator> it;
+    this->GetIterator((IIterator**)&it);
+    Boolean has_next;
+    AutoPtr<IInterface> o;
+    Boolean tmp;
+    while(it->HasNext(&has_next), has_next)
+    {
+        it->GetNext((IInterface**)&o);
+        if (o->Probe((REIID)id) != NULL) {
+            s->Add(o->Probe((REIID)id), &tmp);
+        }
+    }
+    *obj = s;
+    REFCOUNT_ADD(*obj);
+    return NOERROR;
 }
 
 ECode CSubject::SecureSet::VerifyElement(
     /* [in] */ IInterface *o)
 {
-    if (o == NULL) {
+    if (NULL == o) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    /*
-    if (permission == _PRINCIPALS && !(Principal.class.isAssignableFrom(o.getClass()))) {
-        throw new IllegalArgumentException("Element is not instance of java.security.Principal");
-    }
-    */
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode CSubject::SecureSet::ReadObject(
-    /* [in] */ IObjectInputStream *is)
-{
-    is->DefaultReadObject();
-    switch(mSetType) {
-        case SET_Principal:
-            mPermission = _PRINCIPALS;
-            break;
-        case SET_PrivCred:
-            mPermission = _PRIVATE_CREDENTIALS;
-            break;
-        case SET_PubCred:
-            mPermission = _PUBLIC_CREDENTIALS;
-            break;
-        default:
-            return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    AutoPtr<IIterator> it;
-    mElements->GetIterator((IIterator**)&it);
-    for(Boolean hasNext = FALSE; (it->HasNext(&hasNext), hasNext);) {
-        AutoPtr<IInterface> elem;
-        it->GetNext((IInterface**)&elem);
-        VerifyElement(elem);
+    if (mPermission == _PRINCIPALS && o->Probe(EIID_IPrincipal) == NULL) {
+        // throw new IllegalArgumentException("Element is not instance of java.security.Principal");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return NOERROR;
 }
 
-ECode CSubject::SecureSet::WriteObject(
-    /* [in] */ IObjectOutputStream *os)
-{
-    if (mPermission == _PRIVATE_CREDENTIALS) {
-        mSetType = SET_PrivCred;
-    } else if (mPermission == _PRINCIPALS) {
-        mSetType = SET_Principal;
-    } else {
-        mSetType = SET_PubCred;
-    }
-
-    return os->DefaultWriteObject();
-}
-
-CAR_INTERFACE_IMPL(CSubject::SecureSet::SecureIterator, IIterator)
+CAR_INTERFACE_IMPL(CSubject::SecureSet::SecureIterator, Object, IIterator)
 
 ECode CSubject::SecureSet::SecureIterator::HasNext(
     /* [out] */ Boolean *hasNext)
 {
+    VALIDATE_NOT_NULL(hasNext)
+    *hasNext = FALSE;
+
     return mIterator->HasNext(hasNext);
 }
 
 ECode CSubject::SecureSet::SecureIterator::GetNext(
     /* [out] */ IInterface **next)
 {
-    return mIterator->Next(next);
+    VALIDATE_NOT_NULL(*next)
+    *next = NULL;
+
+    return mIterator->GetNext(next);
 }
 
 /**
@@ -746,7 +888,16 @@ CSubject::SecureSet::SecureIterator::SecureIterator(
     , mHost(host)
 {}
 
+ECode CSubject::SecureSet::GetSize(
+            /* [out] */ Int32* size)
+{
+    VALIDATE_NOT_NULL(size)
+    *size = 0;
+
+    return mElements->GetSize(size);
 }
-}
-}
+
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
