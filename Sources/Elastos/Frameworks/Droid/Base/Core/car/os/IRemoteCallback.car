@@ -7,6 +7,10 @@ module
     namespace Os {
 
     /** @hide */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     [oneway]
     interface IRemoteCallback {
         SendResult(

@@ -8,11 +8,44 @@ module
      * This class is used to retrieved various statistics about the memory mappings for this
      * process. The returns info broken down by dalvik, native, and other. All results are in kB.
      */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IDebugMemoryInfo {
-        const Int32 NUM_OTHER_STATS = 9;
+
+        /** @hide */
+        const Int32 NUM_OTHER_STATS = 16;
+
+        /** @hide */
+        const Int32 NUM_DVK_STATS = 5;
+
+        /** @hide */
+        const Int32 NUM_CATEGORIES = 7;
+
+        /** @hide */
+        const Int32 OffsetPss = 0;
+        /** @hide */
+        const Int32 OffsetSwappablePss = 1;
+        /** @hide */
+        const Int32 OffsetPrivateDirty = 2;
+        /** @hide */
+        const Int32 OffsetSharedDirty = 3;
+        /** @hide */
+        const Int32 OffsetPrivateClean = 4;
+        /** @hide */
+        const Int32 OffsetSharedClean = 5;
+        /** @hide */
+        const Int32 OffsetSwappedOut = 6;
 
         GetTotalPss(
             [out] Int32* totalPss);
+
+        GetTotalUss(
+            [out] Int32* result);
+
+        GetTotalSwappablePss(
+            [out] Int32* result);
 
         GetTotalPrivateDirty(
             [out] Int32* totalPrivateDirty);

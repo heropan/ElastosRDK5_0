@@ -5,6 +5,10 @@ module
     namespace Droid {
     namespace Os {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IPatternMatcher {
         const Int32 PATTERN_LITERAL = 0;
         const Int32 PATTERN_PREFIX = 1;

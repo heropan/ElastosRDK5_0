@@ -1,10 +1,15 @@
 module
 {
-    interface Elastos.Droid.Net.INetworkManagementEventObserver;
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Net.IInterfaceConfiguration;
-    interface Elastos.Droid.Net.IRouteInfo;
+    interface Elastos.Droid.Net.INetworkManagementEventObserver;
+    interface Elastos.Droid.Net.INetwork;
     interface Elastos.Droid.Net.INetworkStats;
+    interface Elastos.Droid.Net.IRouteInfo;
+    interface Elastos.Droid.Net.IUidRange;
     interface Elastos.Droid.Net.Wifi.IWifiConfiguration;
+    interface Elastos.Droid.Os.INetworkActivityListener;
 
     namespace Elastos {
     namespace Droid {
@@ -112,20 +117,11 @@ module
             [in] IRouteInfo* route);
 
         /**
-         * Add the specified route to a secondary interface
-         * This will go into a special route table to be accessed
-         * via ip rules
+         * Set the specified MTU size
          */
-        AddSecondaryRoute(
+        SetMtu(
             [in] String iface,
-            [in] IRouteInfo* route);
-
-        /**
-         * Remove the specified secondary route.
-         */
-        RemoveSecondaryRoute(
-            [in] String iface,
-            [in] IRouteInfo* route);
+            [in] Int32 mtu);
 
         /**
          * Shuts down the service
@@ -199,6 +195,7 @@ module
          * Sets the list of DNS forwarders (in order of priority)
          */
         SetDnsForwarders(
+            [in] INetwork* network,
             [in] ArrayOf<String>* dns);
 
         /**
@@ -308,12 +305,9 @@ module
             [out] INetworkStats** stats);
 
         /**
-         * Return summary of network statistics for the requested pairs of
-         * tethering interfaces.  Even indexes are remote interface, and odd
-         * indexes are corresponding local interfaces.
+         * Return summary of network statistics all tethering interfaces.
          */
         GetNetworkStatsTethering(
-            [in] ArrayOf<String>* ifacePairs,
             [out] INetworkStats** stats);
 
         /**
@@ -362,30 +356,6 @@ module
             [out] Boolean* enabled);
 
         /**
-         * Configures bandwidth throttling on an interface.
-         */
-        SetInterfaceThrottle(
-            [in] String iface,
-            [in] Int32 rxKbps,
-            [in] Int32 txKbps);
-
-        /**
-         * Returns the currently configured RX throttle values
-         * for the specified interface
-         */
-        GetInterfaceRxThrottle(
-            [in] String iface,
-            [out] Int32* rxThrottle);
-
-        /**
-         * Returns the currently configured TX throttle values
-         * for the specified interface
-         */
-        GetInterfaceTxThrottle(
-            [in] String iface,
-            [out] Int32* txThrottle);
-
-        /**
          * Sets idletimer for an interface.
          *
          * This either initializes a new idletimer or increases its
@@ -426,7 +396,8 @@ module
         /**
          * Flush the DNS cache associated with the default interface.
          */
-        FlushDefaultDnsCache();
+        FlushNetworkDnsCache(
+            [in] Int32 netId);
 
         /**
          * Flush the DNS cache associated with the specified interface.
@@ -435,7 +406,8 @@ module
             [in] String iface);
 
         SetFirewallEnabled(
-            [in] Boolean enabled);
+            [in] Boolean enabled,
+            [out] Boolean* prev);
 
         IsFirewallEnabled(
             [out] Boolean* enabled);
@@ -456,6 +428,125 @@ module
         SetFirewallUidRule(
             [in] Int32 uid,
             [in] Boolean allow);
+
+        /**
+         * Set all packets from users in ranges to go through VPN specified by netId.
+         */
+        AddVpnUidRanges(
+            [in] Int32 netId,
+            [in] ArrayOf<IUidRange*>* ranges);
+
+        /**
+         * Clears the special VPN rules for users in ranges and VPN specified by netId.
+         */
+        RemoveVpnUidRanges(
+            [in] Int32 netId,
+            [in] ArrayOf<IUidRange*>* ranges);
+
+        /**
+         * Start the clatd (464xlat) service
+         */
+        StartClatd(
+            [in] String interfaceName);
+
+        /**
+         * Stop the clatd (464xlat) service
+         */
+        StopClatd();
+
+        /**
+         * Determine whether the clatd (464xlat) service has been started
+         */
+        IsClatdStarted(
+            [out] Boolean* result);
+
+        /**
+         * Start listening for mobile activity state changes.
+         */
+        RegisterNetworkActivityListener(
+            [in] INetworkActivityListener* listener);
+
+        /**
+         * Stop listening for mobile activity state changes.
+         */
+        UnregisterNetworkActivityListener(
+            [in] INetworkActivityListener* listener);
+
+        /**
+         * Check whether the mobile radio is currently active.
+         */
+        IsNetworkActive(
+            [out] Boolean* result);
+
+        /**
+         * Setup a new physical network.
+         */
+        CreatePhysicalNetwork(
+            [in] Int32 netId);
+
+        /**
+         * Setup a new VPN.
+         */
+        CreateVirtualNetwork(
+            [in] Int32 netId,
+            [in] Boolean hasDNS,
+            [in] Boolean secure);
+
+        /**
+         * Remove a network.
+         */
+        RemoveNetwork(
+            [in] Int32 netId);
+
+        /**
+         * Add an interface to a network.
+         */
+        AddInterfaceToNetwork(
+            [in] String iface,
+            [in] Int32 netId);
+
+        /**
+         * Remove an Interface from a network.
+         */
+        RemoveInterfaceFromNetwork(
+            [in] String iface,
+            [in] Int32 netId);
+
+        AddLegacyRouteForNetId(
+            [in] Int32 netId,
+            [in] IRouteInfo* routeInfo,
+            [in] Int32 uid);
+
+        SetDefaultNetId(
+            [in] Int32 netId);
+
+        ClearDefaultNetId();
+
+        SetPermission(
+            [in] String permission,
+            [in] ArrayOf<Int32>* uids);
+
+        ClearPermission(
+            [in] ArrayOf<Int32>* uids);
+
+        /**
+         * Allow UID to call protect().
+         */
+        AllowProtect(
+            [in] Int32 uid);
+
+        /**
+         * Deny UID from calling protect().
+         */
+        DenyProtect(
+            [in] Int32 uid);
+
+        AddInterfaceToLocalNetwork(
+            [in] String iface,
+            [in] IList* routes); //List<RouteInfo>
+
+        RemoveInterfaceFromLocalNetwork(
+            [in] String iface);
     }
 
     } // namespace Os

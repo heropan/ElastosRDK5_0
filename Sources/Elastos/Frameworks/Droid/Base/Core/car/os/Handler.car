@@ -1,7 +1,10 @@
 module
 {
     using interface Elastos.Core.IRunnable;
+
     interface Elastos.Droid.Os.ILooper;
+    interface Elastos.Droid.Os.IMessage;
+    interface Elastos.Droid.Os.IMessageQueue;
     interface Elastos.Droid.Os.IIMessenger;
 
     namespace Elastos {
