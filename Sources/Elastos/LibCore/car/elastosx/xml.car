@@ -68,6 +68,7 @@ module
     interface Org.Xml.Sax.IContentHandler;
     interface Org.Xml.Sax.IXMLReader;
     interface Org.Xml.Sax.IInputSource;
+    interface Elastos.Core.IClassLoader;
 
     namespace Elastosx {
     namespace Xml {
@@ -216,6 +217,23 @@ module
     } // namespace Stream
 
     } // namespace Transform
+
+    namespace XPath {
+
+    class CXPathConstants {
+
+        interface IXPathConstants;
+    }
+
+    [local]
+    class CXPathFactoryFinder {
+        constructor(
+            [in] IClassLoader* cl);
+
+        interface IXPathFactoryFinder;
+    }
+
+    }// namespace XPath
 
     } // namespace Xml
     } // namespace Elastosx
