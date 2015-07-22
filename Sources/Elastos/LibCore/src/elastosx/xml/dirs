@@ -3,3 +3,5 @@ DIRS += datatype
 DIRS += transform
 DIRS += parsers
 DIRS += xpath
+DIRS += validation
+
