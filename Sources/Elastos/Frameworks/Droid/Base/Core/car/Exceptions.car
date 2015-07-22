@@ -39,7 +39,6 @@ module
     const E_ACCOUNTS_EXCEPTION                          = 0xD3010000;
     const E_NETWORK_ERROR_EXCEPTION                     = 0xD3020000;
     const E_AUTHENTICATOR_EXCEPTION                     = 0xD3030000;
-    const E_OPERATION_CANCELED_EXCEPTION                = 0xD3040000;
 
     //==========================================================================
     // Elastos Widget exception codes (Family: 0x54 - D4)
@@ -75,7 +74,12 @@ module
     //==========================================================================
     // Elastos Os exception codes (Family: 0x56 - D6)
     const E_DEAD_OBJECT_EXCEPTION                       = 0xD6010000;
-    const E_ZYGOTE_START_FAILED_EX                      = 0xD6020000;
+    const E_ZYGOTE_START_FAILED_EXCEPTION               = 0xD6020000;
+    const E_NETWORK_ON_MAIN_THREAD_FAILED_EXCEPTION     = 0xD6030000;
+    const E_OPERATION_CANCELED_EXCEPTION                = 0xD6040000;
+    const E_PARCEL_FORMAT_EXCEPTION                     = 0xD6050000;
+    const E_REMOTE_MAIL_EXCEPTION                       = 0xD6060000;
+    const E_TRANSACTION_TOO_LARGE_EXCEPTION             = 0xD6070000;
 
     //==========================================================================
     // Elastos Droid Utility exception codes (Family: 0x57 - D7)

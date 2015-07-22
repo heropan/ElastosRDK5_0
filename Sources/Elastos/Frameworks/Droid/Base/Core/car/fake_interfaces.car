@@ -51,6 +51,9 @@ module
             interface IIPackageManager {
             }
 
+            interface IUserInfo {
+            }
+
         }// Pm
 
     }}} // Elastos.Droid.Content
@@ -64,6 +67,30 @@ module
     namespace Net {
 
         interface ILocalServerSocket {
+        }
+
+        interface IInterfaceConfiguration {
+        }
+
+        interface INetworkManagementEventObserver {
+        }
+
+        interface INetwork {
+        }
+
+        interface INetworkStats {
+        }
+
+        interface IRouteInfo {
+        }
+
+        interface IUidRange {
+        }
+
+        namespace Wifi {
+
+            interface IWifiConfiguration {
+            }
         }
 
     }}} // Elastos.Droid.Net

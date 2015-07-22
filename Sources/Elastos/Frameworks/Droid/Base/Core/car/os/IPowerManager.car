@@ -1,9 +1,12 @@
 module
 {
+    interface Elastos.Droid.Os.IWorkSource;
+
     namespace Elastos {
     namespace Droid {
     namespace Os {
 
+    [deprecated]
     interface IIPowerManager
     {
         // WARNING: The first two methods must remain the first two methods because their
@@ -14,9 +17,25 @@ module
             [in] String tag,
             [in] IWorkSource* ws);
 
+        AcquireWakeLockWithUid(
+            [in] IBinder* lock,
+            [in] Int32 flags,
+            [in] String tag,
+            [in] String packageName,
+            [in] Int32 uidtoblame,
+            [in] IWorkSource* ws);
+
         ReleaseWakeLock(
             [in] IBinder* lock,
             [in] Int32 flags);
+
+        UpdateWakeLockUids(
+            [in] IBinder* lock,
+            [in] ArrayOf<Int32>* uids);
+
+        PowerHint(
+            [in] Int32 hintId,
+            [in] Int32 data);
 
         UpdateWakeLockWorkSource(
             [in] IBinder* lock,
@@ -41,8 +60,15 @@ module
         Nap(
             [in] Int64 eventTime);
 
-        IsScreenOn(
-            [out] Boolean* isScreenOn);
+        IsInteractive(
+            [out] Boolean* result);
+
+        IsPowerSaveMode(
+            [out] Boolean* result);
+
+        SetPowerSaveMode(
+            [in] Boolean mode,
+            [out] Boolean* result);
 
         Reboot(
             [in] Boolean confirm,
@@ -74,18 +100,6 @@ module
         SetAttentionLight(
             [in] Boolean on,
             [in] Int32 color);
-
-        GoToBootFastSleep(
-            [in] Int64 time);
-
-        BootFastWake(
-            [in] Int64 time);
-
-        IsBootFastStatus(
-            [out] Boolean* result);
-
-        IsBootFastWakeFromStandby(
-            [out] Boolean* result);
     }
 
     } // namespace Os

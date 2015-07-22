@@ -1,20 +1,13 @@
 
 module
 {
+    interface Elastos.Droid.Os.IPermissionController;
+
     namespace Elastos {
     namespace Droid {
     namespace Os {
 
-    interface IServiceManager {
-        AddService(
-            [in] String name,
-            [in] IInterface* service);
-
-        AddService(
-            [in] String name,
-            [in] IInterface* service,
-            [in] Boolean allowIsolated);
-
+    interface IIServiceManager {
         GetService(
             [in] String name,
             [out] IInterface** service);
@@ -23,8 +16,17 @@ module
             [in] String name,
             [out] IInterface** service);
 
+        AddService(
+            [in] String name,
+            [in] IInterface* service,
+            [in] Boolean allowIsolated);
+
         ListServices(
             [out, callee] ArrayOf<String>* services);
+
+        SetPermissionController(
+            [in] IPermissionController* controller);
+
     }
 
     } // namespace Os

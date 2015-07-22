@@ -2,6 +2,9 @@ module
 {
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.Net.ISocket;
+    using interface Elastos.Net.IDatagramSocket;
+
 
     namespace Elastos {
     namespace Droid {
@@ -29,6 +32,7 @@ module
      * interface IParcelable
      * interface ICloseable
      */
+    [deprecated]
     interface IParcelFileDescriptor {
         /**
          * For use with {@link #open}: if {@link #MODE_CREATE} has been supplied
@@ -99,7 +103,7 @@ module
          * through this API.
          */
         GetFd(
-            [out] IFileDescriptor* fd);
+            [out] Int32* fd);
 
         /**
          * Return the native fd int for this ParcelFileDescriptor and detach it from
@@ -148,6 +152,7 @@ module
         CheckError();
     }
 
+    [deprecated]
     interface IParcelFileDescriptorHelper {
         /**
          * Create a new ParcelFileDescriptor accessing a given file.
@@ -188,7 +193,6 @@ module
             [out] IParcelFileDescriptor** descriptor);
 
         Dup(
-            [in] IFileDescriptor* fd,
             [out] IParcelFileDescriptor** descriptor);
 
         /**

@@ -5,6 +5,10 @@ module
     namespace Internal {
     namespace Os {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IProcessStatsStats {
         GetPid(
             [out] Int32* pid);
