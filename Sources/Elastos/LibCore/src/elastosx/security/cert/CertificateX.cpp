@@ -1,9 +1,14 @@
 
 #include "CertificateX.h"
+#include "Arrays.h"
+
+using Elastos::Utility::Arrays;
 
 namespace Elastosx {
 namespace Security {
 namespace Cert {
+
+CAR_INTERFACE_IMPL(Certificate, Object, ICertificate)
 
 // {E2B9C46C-4362-7D9B-4DF1-84C0669BE14D}
 extern "C" const InterfaceID EIID_XCertificate =
@@ -14,23 +19,25 @@ ECode Certificate::Equals(
     /* [out] */ Boolean* isEqual)
 {
     VALIDATE_NOT_NULL(isEqual)
-    if (obj && reinterpret_cast<Certificate*>(obj->Probe(EIID_XCertificate)) == this) {
+    *isEqual = FALSE;
+    VALIDATE_NOT_NULL(obj)
+
+    if (obj->Probe(EIID_XCertificate) == this->Probe(EIID_XCertificate)) {
         *isEqual = TRUE;
         return NOERROR;
     }
-    if (!obj || !reinterpret_cast<Certificate*>(obj->Probe(EIID_XCertificate))) {
-        *isEqual = FALSE;
+    if (NULL == obj->Probe(EIID_XCertificate)) {
         return NOERROR;
     }
-    AutoPtr<Certificate> object = reinterpret_cast<Certificate*>(obj->Probe(EIID_XCertificate));
+    AutoPtr<ICertificate> object = (ICertificate*) obj->Probe(EIID_XCertificate);
     AutoPtr<ArrayOf<Byte> > encode, oEncode;
     ECode ec;
     FAIL_GOTO(ec = GetEncoded((ArrayOf<Byte>**)&encode), ERROR_PROCESS)
-    FAIL_GOTO(ec = GetEncoded((ArrayOf<Byte>**)&oEncode), ERROR_PROCESS)
-    *isEqual = encode->Equals(oEncode);
+    FAIL_GOTO(ec =((ICertificate*) obj->Probe(EIID_XCertificate))->GetEncoded((ArrayOf<Byte>**)&oEncode), ERROR_PROCESS)
+    *isEqual = Arrays::Equals(encode, oEncode);
     return NOERROR;
 ERROR_PROCESS:
-    if(ec == E_CERTIFICATE_ENCODING_EXCEPTION) {
+    if(E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
         *isEqual = FALSE;
         return NOERROR;
     }
@@ -41,6 +48,8 @@ ECode Certificate::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
+    *hashCode = 0;
+
     Int32 res = 0;
     AutoPtr<ArrayOf<Byte> > encode;
     ECode ec;
@@ -49,7 +58,7 @@ ECode Certificate::GetHashCode(
         res += (*encode)[i];
     }
 ERROR_PROCESS:
-    if (ec == E_CERTIFICATE_ENCODING_EXCEPTION) {
+    if (E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
         ;
     }
     else {

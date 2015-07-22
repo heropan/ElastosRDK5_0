@@ -22,6 +22,7 @@ module
     interface Elastos.Security.IPermission;
     interface Elastos.Security.IGuard;
     interface Elastos.Utility.ISet;
+    interface Elastos.Security.IDomainCombiner;
 
     namespace Elastosx {
     namespace Security {
@@ -100,6 +101,14 @@ module
 
     singleton class CSubjectHelper {
         interface ISubjectHelper;
+    }
+
+    class CSubjectDomainCombiner {
+        constructor(
+            [in] ISubject *sub);
+
+        interface IDomainCombiner;
+        interface ISubjectDomainCombiner;
     }
 
     } // namespace Auth

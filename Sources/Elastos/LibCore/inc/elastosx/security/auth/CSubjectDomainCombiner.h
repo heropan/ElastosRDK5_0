@@ -1,18 +1,28 @@
 
-#ifndef __CSUBJECTDOMAINCOMBINER_H__
-#define __CSUBJECTDOMAINCOMBINER_H__
+#ifndef __ELASTOSX_SECURITY_AUTH_CSUBJECTDOMAINCOMBINER_H__
+#define __ELASTOSX_SECURITY_AUTH_CSUBJECTDOMAINCOMBINER_H__
 
-#include "_CSubjectDomainCombiner.h"
+#include "_Elastosx_Security_Auth_CSubjectDomainCombiner.h"
+#include "Object.h"
 
 using Elastos::Security::IProtectionDomain;
+using Elastos::Core::Object;
+using Elastos::Security::IDomainCombiner;
 
 namespace Elastosx {
 namespace Security {
 namespace Auth {
 
 CarClass(CSubjectDomainCombiner)
+    , public Object
+    , public IDomainCombiner
+    , public ISubjectDomainCombiner
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI Combine(
         /* [in] */ ArrayOf<IProtectionDomain*> *current,
         /* [in] */ ArrayOf<IProtectionDomain*> *assigned,
@@ -25,8 +35,8 @@ public:
         /* [in] */ ISubject *sub);
 };
 
-}
-}
-}
+} // namespace Auth
+} // namespace Security
+} // namespace Elastosx
 
-#endif // __CSUBJECTDOMAINCOMBINER_H__
+#endif // __ELASTOSX_SECURITY_AUTH_CSUBJECTDOMAINCOMBINER_H__

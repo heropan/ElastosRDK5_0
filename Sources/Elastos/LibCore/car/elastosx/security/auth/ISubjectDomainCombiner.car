@@ -7,6 +7,9 @@ module
     namespace Auth {
 
     /**
+     * Legacy security code; do not use.
+     */
+    /**
      * @Involve
      * interface Elastos.Security.IDomainCombiner
      */

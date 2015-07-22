@@ -98,10 +98,16 @@ module
          * @exception SignatureException
          *                if signature errors are detected.
          */
-        VerifyEx(
+        Verify(
             [in] IPublicKey* key,
             [in] String sigProvider);
 
+        /**
+         * Returns a string containing a concise, human-readable description of the
+         * receiver.
+         *
+         * @return a printable representation for the receiver.
+         */
         ToString(
             [out] String *str);
 
