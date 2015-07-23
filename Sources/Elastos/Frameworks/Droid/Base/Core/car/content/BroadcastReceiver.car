@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Core.IClassLoader;
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Os.IBundle;
@@ -32,7 +33,7 @@ module
      */
 
     [local]
-    interface IBroadcastReceiverPendingResult {
+    interface IPendingResult {
         /**
          * Version of BroadcastReceiver#setResultCode(int) BroadcastReceiver.setResultCode(int) for
          * asynchronous broadcast handling.
@@ -428,7 +429,7 @@ module
          * @sa PendingResult#finish PendingResult.finish()
          */
         GoAsync(
-            [out] IBroadcastReceiverPendingResult** pendingResult);
+            [out] IPendingResult** pendingResult);
 
         /**
          * Provide a binder to an already-running service.  This method is synchronous
@@ -636,13 +637,13 @@ module
          * For internal use to set the result data that is active. @hide
          */
         SetPendingResult(
-            [in] IBroadcastReceiverPendingResult* result);
+            [in] IPendingResult* result);
 
         /**
          * For internal use to set the result data that is active. @hide
          */
         GetPendingResult(
-            [out] IBroadcastReceiverPendingResult** pendingResult);
+            [out] IPendingResult** pendingResult);
 
         /** @hide */
         GetSendingUserId(

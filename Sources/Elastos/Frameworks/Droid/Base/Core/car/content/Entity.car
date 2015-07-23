@@ -1,5 +1,7 @@
 module
 {
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Content.IContentValues;
     interface Elastos.Droid.Net.IUri;
 
@@ -12,7 +14,7 @@ module
             [out] IContentValues** entityValues);
 
         GetSubValues(
-            [out] IObjectContainer** subValues);
+            [out] IArrayList** subValues);
 
         AddSubValue(
             [in] IUri* uri,

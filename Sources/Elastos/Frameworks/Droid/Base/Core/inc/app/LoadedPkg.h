@@ -22,7 +22,7 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::View::ICompatibilityInfoHolder;
 
 
@@ -47,7 +47,7 @@ public:
     public:
         class Args
             : public ElRefBase
-            , public IBroadcastReceiverPendingResult
+            , public IPendingResult
             , public BroadcastReceiver::PendingResult
             , public IRunnable
         {

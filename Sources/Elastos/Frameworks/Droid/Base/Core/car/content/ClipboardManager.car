@@ -29,6 +29,10 @@ module
         OnPrimaryClipChanged();
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Text.IClipboardManager
+     */
     interface IClipboardManager{
         /**
          * Sets the current primary clip on the clipboard.  This is the clip that

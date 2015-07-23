@@ -416,46 +416,56 @@ module
      *
      * @sa coerceToText(Context)
      */
-
-    interface IClipData {
+     /**
+      * @Involve
+      * interface IParcelable
+      */
+     interface IClipData {
           /**
-          * Return the {@link ClipDescription} associated with this data, describing
-          * what it contains.
-          */
+           * Return the {@link ClipDescription} associated with this data, describing
+           * what it contains.
+           */
           GetDescription(
                [out] IClipDescription** description);
 
-        /**
-         * Add a new Item to the overall ClipData container.
-         */
-        AddItem(
+          /**
+           * Add a new Item to the overall ClipData container.
+           */
+          AddItem(
             [in] IClipDataItem* item);
 
-        /** @hide */
-        GetIcon(
+          /** @hide */
+          GetIcon(
             [out] IBitmap** icon);
 
-        /**
-         * Return the number of items in the clip data.
-         */
-        GetItemCount(
+          /**
+           * Return the number of items in the clip data.
+           */
+          GetItemCount(
             [out] Int32* itemCount);
 
-        /**
-         * Return a single item inside of the clip data.  The index can range
-         * from 0 to #getItemCount()-1.
-         *
-         * @sa #getItemCount()
-         */
-        GetItemAt(
+          /**
+           * Return a single item inside of the clip data.  The index can range
+           * from 0 to #getItemCount()-1.
+           *
+           * @sa #getItemCount()
+           */
+          GetItemAt(
             [in] Int32 index,
             [out] IClipDataItem** item);
 
-        ToString(
+         /**
+          * Prepare this {@link ClipData} to leave an app process.
+          *
+          * @hide
+          */
+          PrepareToLeaveProcess();
+
+          ToString(
             [out] String* str);
 
-        /** @hide */
-        ToShortString(
+          /** @hide */
+          ToShortString(
             [in] IStringBuilder* sb);
     }
 

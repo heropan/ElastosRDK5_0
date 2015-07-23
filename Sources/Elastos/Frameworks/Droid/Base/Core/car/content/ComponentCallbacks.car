@@ -9,13 +9,13 @@ module
 
     /**
      * The set of callback APIs that are common to all application components
-     * (android.app.Activity, android.app.Service,
-     * ContentProvider, and android.app.Application).
+     * ({@link android.app.Activity}, {@link android.app.Service},
+     * {@link ContentProvider}, and {@link android.app.Application}).
      *
-     * @sa android.app.Activity
-     * @sa android.app.Service
-     * @sa ContentProvider
-     * @sa android.app.Application
+     * <p class="note"><strong>Note:</strong> You should also implement the {@link
+     * ComponentCallbacks2} interface, which provides the {@link
+     * ComponentCallbacks2#onTrimMemory} callback to help your app manage its memory usage more
+     * effectively.</p>
      */
     interface IComponentCallbacks {
         /**

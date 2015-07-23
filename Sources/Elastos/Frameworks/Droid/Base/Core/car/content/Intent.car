@@ -3,7 +3,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IStringBuilder;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IArrayList;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     interface Elastos.Droid.Content.IClipData;
@@ -22,7 +22,7 @@ module
     namespace Droid {
     namespace Content {
 
-    [deprecated]
+    [deprecated, local]
     interface IIntent {
         // ---------------------------------------------------------------------
         // ---------------------------------------------------------------------
@@ -3208,20 +3208,6 @@ module
          * @param name The name of the desired item.
          *
          * @return the value of an item that previously added with putExtra()
-         * or null if no ObjectStringMap value was found.
-         *
-         * @see #putExtra(String, ObjectStringMap)
-         */
-        GetObjectStringMapExtra(
-            [in] String name,
-            [out] IObjectStringMap** value);
-
-        /**
-         * Retrieve extended data from the intent.
-         *
-         * @param name The name of the desired item.
-         *
-         * @return the value of an item that previously added with putExtra()
          * or null if no Parcelable[] value was found.
          *
          * @see #putExtra(String, Parcelable[])
@@ -3242,7 +3228,7 @@ module
          */
         GetParcelableArrayListExtra(
             [in] String name,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
         /**
          * Retrieve extended data from the intent.
@@ -3270,7 +3256,7 @@ module
          */
         GetIntegerArrayListExtra(
             [in] String name,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
         /**
          * Retrieve extended data from the intent.
@@ -3284,7 +3270,7 @@ module
          */
         GetStringArrayListExtra(
             [in] String name,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
         /**
          * Retrieve extended data from the intent.
@@ -3298,7 +3284,7 @@ module
          */
         GetCharSequenceArrayListExtra(
             [in] String name,
-            [out] IObjectContainer** value);
+            [out] IArrayList** value);
 
         /**
          * Retrieve extended data from the intent.
@@ -4107,25 +4093,6 @@ module
          * like "com.android.contacts.ShowAll".
          *
          * @param name The name of the extra data, with package prefix.
-         * @param value The ObjectStringMap data value.
-         *
-         * @return Returns the same Intent object, for chaining multiple calls
-         * into a single statement.
-         *
-         * @see #putExtras
-         * @see #removeExtra
-         * @see #getObjectStringMapExtra(String)
-         */
-        PutObjectStringMapExtra(
-            [in] String name,
-            [in] IObjectStringMap* value);
-
-        /**
-         * Add extended data to the intent.  The name must include a package
-         * prefix, for example the app com.android.contacts would use names
-         * like "com.android.contacts.ShowAll".
-         *
-         * @param name The name of the extra data, with package prefix.
          * @param value The Parcelable[] data value.
          *
          * @return Returns the same Intent object, for chaining multiple calls
@@ -4156,7 +4123,7 @@ module
          */
         PutParcelableArrayListExtra(
             [in] String name,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
         /**
          * Add extended data to the intent.  The name must include a package
@@ -4175,7 +4142,7 @@ module
          */
         PutIntegerArrayListExtra(
             [in] String name,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
         /**
          * Add extended data to the intent.  The name must include a package
@@ -4194,7 +4161,7 @@ module
          */
         PutStringArrayListExtra(
             [in] String name,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
         /**
          * Add extended data to the intent.  The name must include a package
@@ -4213,7 +4180,7 @@ module
          */
         PutCharSequenceArrayListExtra(
             [in] String name,
-            [in] IObjectContainer* value);
+            [in] IArrayList* value);
 
         /**
          * Add extended data to the intent.  The name must include a package
@@ -4833,6 +4800,7 @@ module
             [out] Boolean* result);
     }
 
+    [local]
     interface IIntentHelper {
         /**
          * Convenience function for creating a {@link #ACTION_CHOOSER} Intent.
@@ -5036,6 +5004,7 @@ module
             [out] String* str);
     }
 
+    [local]
     interface IIntentShortcutIconResourceHelper {
         /**
          * Creates a new ShortcutIconResource for the specified context and resource
@@ -5052,6 +5021,7 @@ module
             [out] IIntentShortcutIconResource** shortcutIconRes);
     }
 
+    [local]
     interface IIntentFilterComparison {
         /**
          * Return the Intent that this FilterComparison represents.

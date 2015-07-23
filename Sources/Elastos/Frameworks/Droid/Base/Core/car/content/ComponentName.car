@@ -15,9 +15,13 @@ module
      * name inside of that package.
      *
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     * interface ICloneable
+     * interface IComparable
+     */
     interface IComponentName {
-        Clone(
-            [out] IComponentName** newComponentName);
 
         /**
          * Return the package name of this component.
@@ -76,17 +80,6 @@ module
 
         ToString(
             [out] String* str);
-
-        Equals(
-            [in] IComponentName* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        CompareTo(
-            [in] IComponentName* that,
-            [out] Int32* result);
     }
 
     interface IComponentNameHelper {

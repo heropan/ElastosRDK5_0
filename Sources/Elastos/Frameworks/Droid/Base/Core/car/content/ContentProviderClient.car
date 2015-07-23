@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Content.IContentProvider;
     interface Elastos.Droid.Content.IContentValues;
     interface Elastos.Droid.Content.Res.IAssetFileDescriptor;
@@ -39,11 +41,7 @@ module
      */
     [deprecated]
     interface IContentProviderClient {
-        /**
-         * See ContentProvider#query ContentProvider.query
-         *
-         * @sa ContentProvider#query ContentProvider.query
-         */
+        /** See {@link ContentProvider#query ContentProvider.query} */
         Query(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
@@ -52,11 +50,7 @@ module
             [in] String sortOrder,
             [out] ICursor** cursor);
 
-        /**
-         * See ContentProvider#query ContentProvider.query
-         *
-         * @sa ContentProvider#query ContentProvider.query
-         */
+        /** See {@link ContentProvider#query ContentProvider.query} */
         Query(
             [in] IUri* uri,
             [in] ArrayOf<String>* projection,
@@ -84,6 +78,16 @@ module
             [in] IUri* uri,
             [in] String mimeTypeFilter,
             [out, callee] ArrayOf<String>* streamTypes);
+
+        /** See {@link ContentProvider#canonicalize} */
+        Canonicalize(
+            [in] IUri* uri,
+            [out] IUri** result);
+
+        /** See {@link ContentProvider#uncanonicalize} */
+        Uncanonicalize(
+            [in] IUri* uri,
+            [out] IUri** result);
 
         /**
          * See ContentProvider#insert ContentProvider.insert
@@ -144,6 +148,19 @@ module
             [out] IParcelFileDescriptor** fileDescriptor);
 
         /**
+         * See {@link ContentProvider#openFile ContentProvider.openFile}.  Note that
+         * this <em>does not</em>
+         * take care of non-content: URIs such as file:.  It is strongly recommended
+         * you use the {@link ContentResolver#openFileDescriptor
+         * ContentResolver.openFileDescriptor} API instead.
+         */
+        OpenFile(
+            [in] IUri* uri,
+            [in] String mode,
+            [in] ICancellationSignal* signal,
+            [out] IParcelFileDescriptor** fileDescriptor);
+
+        /**
          * See ContentProvider#openAssetFile ContentProvider.openAssetFile.
          * Note that this <em>does not</em>
          * take care of non-content: URIs such as file:.  It is strongly recommended
@@ -159,6 +176,19 @@ module
             [out] IAssetFileDescriptor** fileDescriptor);
 
         /**
+         * See {@link ContentProvider#openAssetFile ContentProvider.openAssetFile}.
+         * Note that this <em>does not</em>
+         * take care of non-content: URIs such as file:.  It is strongly recommended
+         * you use the {@link ContentResolver#openAssetFileDescriptor
+         * ContentResolver.openAssetFileDescriptor} API instead.
+         */
+        OpenAssetFile(
+            [in] IUri* uri,
+            [in] String mode,
+            [in] ICancellationSignal* signal,
+            [out] IAssetFileDescriptor** fileDescriptor);
+
+        /**
          * See ContentProvider#openTypedAssetFile ContentProvider.openTypedAssetFile
          *
          * @sa ContentProvider#openTypedAssetFile ContentProvider.openTypedAssetFile
@@ -169,13 +199,20 @@ module
             [in] IBundle* opts,
             [out] IAssetFileDescriptor** fileDescriptor);
 
+        OpenTypedAssetFileDescriptor(
+            [in] IUri* uri,
+            [in] String mimeType,
+            [in] IBundle* opts,
+            [in] ICancellationSignal* signal,
+            [out] IAssetFileDescriptor** fileDescriptor);
+
         /**
          * See ContentProvider#applyBatch ContentProvider.applyBatch
          *
          * @sa ContentProvider#applyBatch ContentProvider.applyBatch
          */
         ApplyBatch(
-            [in] IObjectContainer* operations,
+            [in] IArrayList* operations,
             [out, callee] ArrayOf<IContentProviderResult*>* providerResults);
 
         /**

@@ -415,7 +415,7 @@ ECode BroadcastReceiver::GetWeakReference(
 }
 
 ECode BroadcastReceiver::GoAsync(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     VALIDATE_NOT_NULL(pendingResult);
     *pendingResult = mPendingResult;
@@ -593,14 +593,14 @@ ECode BroadcastReceiver::SetOrderedHint(
 }
 
 ECode BroadcastReceiver::SetPendingResult(
-    /* [in] */ IBroadcastReceiverPendingResult* result)
+    /* [in] */ IPendingResult* result)
 {
     mPendingResult = result;
     return NOERROR;
 }
 
 ECode BroadcastReceiver::GetPendingResult(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     VALIDATE_NOT_NULL(pendingResult);
     *pendingResult = mPendingResult;

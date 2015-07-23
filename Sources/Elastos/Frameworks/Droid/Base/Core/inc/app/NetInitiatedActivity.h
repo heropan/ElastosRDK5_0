@@ -12,7 +12,7 @@ using Elastos::Droid::Os::HandlerBase;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IBroadcastReceiver;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Content::IDialogInterfaceOnClickListener;
 using Elastos::Droid::Internal::App::AlertActivity;
 

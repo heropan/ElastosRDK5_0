@@ -33,6 +33,41 @@ module
         GetEntityAndIncrementCursor(
             [in] ICursor* cursor,
             [out] IEntity** entity);
+
+        /**
+         * Returns true if there is at least one more element, false otherwise.
+         * @see #next
+         */
+        HasNext(
+            [out] Boolean* result);
+
+        /**
+         * Returns the next object and advances the iterator.
+         *
+         * @return the next object.
+         * @throws NoSuchElementException
+         *             if there are no more elements.
+         * @see #hasNext
+         */
+        GetNext(
+            [out] IInterface** object);
+
+        /**
+         * Removes the last object returned by {@code next} from the collection.
+         * This method can only be called once between each call to {@code next}.
+         *
+         * @throws UnsupportedOperationException
+         *             if removing is not supported by the collection being
+         *             iterated.
+         * @throws IllegalStateException
+         *             if {@code next} has not been called, or {@code remove} has
+         *             already been called after the last call to {@code next}.
+         */
+        Remove();
+
+        Reset();
+
+        Close();
     }
 
     } // namespace Content

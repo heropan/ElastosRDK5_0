@@ -24,7 +24,7 @@ using Elastos::Utility::Etl::Pair;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CUserHandle;
-using Elastos::Droid::Content::EIID_IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::EIID_IPendingResult;
 using Elastos::Droid::Content::Pm::PackageManager;
 using Elastos::Droid::Content::Pm::CApplicationInfo;
 using Elastos::Droid::App::CInnerReceiver;
@@ -99,7 +99,7 @@ ECode LoadedPkg::ReceiverDispatcher::Args::Run()
     // ClassLoader cl =  mReceiver.getClass().getClassLoader();
     // intent.setExtrasClassLoader(cl);
     // setExtrasClassLoader(cl);
-    receiver->SetPendingResult((IBroadcastReceiverPendingResult*)this);
+    receiver->SetPendingResult((IPendingResult*)this);
     ECode ec = receiver->OnReceive(mHost->mContext, intent);
     if (FAILED(ec)) {
         if (mHost->mRegistered && ordered) {
@@ -137,8 +137,8 @@ ECode LoadedPkg::ReceiverDispatcher::Args::Run()
     //     }
     // }
 
-    AutoPtr<IBroadcastReceiverPendingResult> result;
-    receiver->GetPendingResult((IBroadcastReceiverPendingResult**)&result);
+    AutoPtr<IPendingResult> result;
+    receiver->GetPendingResult((IPendingResult**)&result);
     if (result != NULL) {
         Finish();
     }
@@ -152,10 +152,10 @@ PInterface LoadedPkg::ReceiverDispatcher::Args::Probe(
     /* [in]  */ REIID riid)
 {
     if (riid == EIID_IInterface) {
-        return (PInterface)(IBroadcastReceiverPendingResult*)this;
+        return (PInterface)(IPendingResult*)this;
     }
-    else if (riid == EIID_IBroadcastReceiverPendingResult) {
-        return (IBroadcastReceiverPendingResult*)this;
+    else if (riid == EIID_IPendingResult) {
+        return (IPendingResult*)this;
     }
     else if (riid == EIID_IRunnable) {
         return (IRunnable*)this;
@@ -180,8 +180,8 @@ ECode LoadedPkg::ReceiverDispatcher::Args::GetInterfaceID(
 {
     VALIDATE_NOT_NULL(pIID);
 
-    if (pObject == (IInterface*)(IBroadcastReceiverPendingResult*)this) {
-        *pIID = EIID_IBroadcastReceiverPendingResult;
+    if (pObject == (IInterface*)(IPendingResult*)this) {
+        *pIID = EIID_IPendingResult;
     }
     else if (pObject == (IInterface*)(IRunnable*)this) {
         *pIID = EIID_IRunnable;

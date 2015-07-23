@@ -1,41 +1,53 @@
 module
 {
-//     merge("content/Intent.car");
-//     merge("content/BroadcastReceiver.car");
-//     merge("content/ClipData.car");
-//     merge("content/ClipDescription.car");
-//     merge("content/ClipboardManager.car");
-//     merge("content/ComponentCallbacks.car");
-//     merge("content/ComponentCallbacks2.car");
-//     merge("content/ComponentName.car");
-//     merge("content/IContentProvider.car");
-//     merge("content/ContentProvider.car");
-//     merge("content/ContentProviderClient.car");
-//     merge("content/ContentProviderOperation.car");
-//     merge("content/ContentProviderResult.car");
-//     merge("content/ContentResolver.car");
-//     merge("content/IContentService.car");
-//     merge("content/ContentUris.car");
-//     merge("content/ContentValues.car");
-//     merge("content/Context.car");
-//     merge("content/ContextWrapper.car");
+    merge("content/AbstractThreadedSyncAdapter.car");
+    merge("content/AsyncQueryHandler.car");
+    merge("content/AsyncTaskLoader.car");
+    merge("content/BroadcastReceiver.car");
+    merge("content/ClipData.car");
+    merge("content/ClipDescription.car");
+    merge("content/ClipboardManager.car");
+    merge("content/ComponentCallbacks.car");
+    merge("content/ComponentCallbacks2.car");
+    merge("content/ComponentName.car");
+    merge("content/ContentInsertHandler.car");
+    merge("content/ContentProvider.car");
+    merge("content/ContentProviderClient.car");
+    merge("content/ContentProviderOperation.car");
+    merge("content/ContentProviderResult.car");
+    merge("content/ContentQueryMap.car");
+    merge("content/ContentResolver.car");
+    merge("content/ContentUris.car");
+    merge("content/ContentValues.car");
+    merge("content/Context.car");
+    merge("content/ContextWrapper.car");
+    merge("content/CursorEntityIterator.car");
+    merge("content/CursorLoader.car");
+    merge("content/DialogInterface.car");
+    merge("content/Entity.car");
+    merge("content/EntityIterator.car");
+    merge("content/IClipboard.car");
+    merge("content/IContentProvider.car");
+    merge("content/IContentService.car");
+    merge("content/IIntentReceiver.car");
+    merge("content/IIntentSender.car");
+    merge("content/IOnPrimaryClipChangedListener.car");
+    merge("content/IRestrictionsManager.car");
+    merge("content/ISyncAdapter.car");
+    merge("content/ISyncContext.car");
+    merge("content/ISyncServiceAdapter.car");
+    merge("content/ISyncStatusObserver.car");
+    //merge("content/Intent.car");
+
+
+    merge("content/SyncResult.car");
+    merge("content/SyncStats.car");
+
+//
 //     merge("content/MutableContextWrapper.car");
-//     merge("content/EntityIterator.car");
-//     merge("content/CursorEntityIterator.car");
 //     merge("content/Loader.car");
-//     merge("content/AsyncTaskLoader.car");
-//     merge("content/CursorLoader.car");
-//     merge("content/DialogInterface.car");
-//     merge("content/Entity.car");
-//     merge("content/IClipboard.car");
-//     merge("content/IIntentReceiver.car");
-//     merge("content/IIntentSender.car");
 //     merge("content/IntentFilter.car");
 //     merge("content/IntentSender.car");
-//     merge("content/IOnPrimaryClipChangedListener.car");
-//     merge("content/ISyncAdapter.car");
-//     merge("content/ISyncContext.car");
-//     merge("content/ISyncStatusObserver.car");
 //     merge("content/PeriodicSync.car");
 //     merge("content/ServiceConnection.car");
 //     merge("content/SharedPreferences.car");
@@ -45,20 +57,15 @@ module
 //     merge("content/SyncManager.car");
 //     merge("content/SyncOperation.car");
 //     merge("content/SyncQueue.car");
-//     merge("content/SyncResult.car");
-//     merge("content/SyncStats.car");
 //     merge("content/SyncStatusInfo.car");
 //     merge("content/SyncStatusObserver.car");
 //     merge("content/SyncStorageEngine.car");
 //     merge("content/UriMatcher.car");
-//     merge("content/ContentInsertHandler.car");
-//     merge("content/ContentQueryMap.car");
-//     merge("content/AbstractThreadedSyncAdapter.car");
-//     merge("content/AsyncQueryHandler.car");
 //     merge("content/NativeLibraryHelper.car");
 //     merge("content/PackageHelper.car");
 //     merge("content/PackageMonitor.car");
 //     merge("content/SelectionBuilder.car");
+
 //     merge("content/pm/PackageItemInfo.car");
 //     merge("content/pm/ComponentInfo.car");
 //     merge("content/pm/ActivityInfo.car");
@@ -96,6 +103,7 @@ module
 //     merge("content/pm/VerifierDeviceIdentity.car");
 //     merge("content/pm/VerifierInfo.car");
 //     merge("content/pm/XmlSerializerAndParser.car");
+
 //     merge("content/res/AssetFileDescriptor.car");
 //     merge("content/res/AssetManager.car");
 //     merge("content/res/ColorStateList.car");
@@ -984,7 +992,7 @@ module
 //      * the entire object to another thread, which will be solely responsible
 //      * for setting any results and finally calling {@link #finish()}.
 //      */
-//     class CBroadcastReceiverPendingResult {
+//     class CPendingResult {
 //         /** @hide */
 //         constructor(
 //             [in] Int32 resultCode,
@@ -996,7 +1004,7 @@ module
 //             [in] IBinder* token,
 //             [in] Int32 userId);
 
-//         interface IBroadcastReceiverPendingResult;
+//         interface IPendingResult;
 //     }
 
 //     /**

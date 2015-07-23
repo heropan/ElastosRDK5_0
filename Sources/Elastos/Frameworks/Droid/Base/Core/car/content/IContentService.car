@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.IISyncStatusObserver;
     interface Elastos.Droid.Content.ISyncAdapterType;
@@ -63,6 +65,12 @@ module
             [in] String providerName,
             [out] Boolean* result);
 
+        GetSyncAutomaticallyAsUser(
+            [in] IAccount* account,
+            [in] String providerName,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
         /**
          * Set whether or not the provider is synced when it receives a network tickle.
          *
@@ -74,6 +82,12 @@ module
             [in] String providerName,
             [in] Boolean sync);
 
+        SetSyncAutomaticallyAsUser(
+            [in] IAccount* account,
+            [in] String providerName,
+            [in] Boolean sync,
+            [in] Int32 userId);
+
         /**
          * Get the frequency of the periodic poll, if any.
          * @param providerName the provider whose setting we are querying
@@ -83,7 +97,7 @@ module
         GetPeriodicSyncs(
             [in] IAccount* account,
             [in] String providerName,
-            [out] IObjectContainer** periodicSyncList);
+            [out] IList** periodicSyncList);
 
         /**
          * Set whether or not the provider is to be synced on a periodic basis.
@@ -119,6 +133,12 @@ module
             [in] String providerName,
             [out] Int32* value);
 
+        GetIsSyncableAsUser(
+            [in] IAccount* account,
+            [in] String providerName,
+            [in] Int32 userId,
+            [out] Int32* value);
+
         /**
          * Set whether this account/provider is syncable.
          * @param syncable, >0 denotes syncable, 0 means not syncable, <0 means unknown
@@ -131,8 +151,34 @@ module
         SetMasterSyncAutomatically(
             [in] Boolean flag);
 
+        SetMasterSyncAutomaticallyAsUser(
+            [in] Boolean flag,
+            [in] Int32 userId);
+
         GetMasterSyncAutomatically(
             [out] Boolean* result);
+
+        GetMasterSyncAutomaticallyAsUser(
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetCurrentSyncs(
+            [out] IList** syncInfoList);
+
+        GetCurrentSyncsAsUser(
+            [in] Int32 userId,
+            [out] IList** syncInfoList);
+
+        /**
+         * Returns the types of the SyncAdapters that are registered with the system.
+         * @return Returns the types of the SyncAdapters that are registered with the system.
+         */
+        GetSyncAdapterTypes(
+            [out, callee] ArrayOf<ISyncAdapterType*>* result);
+
+        GetSyncAdapterTypesAsUser(
+            [in] Int32 userId,
+            [out, callee] ArrayOf<ISyncAdapterType*>* result);
 
         /**
          * Returns true if there is currently a sync operation for the given
@@ -143,16 +189,6 @@ module
             [in] String authority,
             [out] Boolean* isActive);
 
-        GetCurrentSyncs(
-            [out] IObjectContainer** syncInfoList);
-
-        /**
-         * Returns the types of the SyncAdapters that are registered with the system.
-         * @return Returns the types of the SyncAdapters that are registered with the system.
-         */
-        GetSyncAdapterTypes(
-            [out, callee] ArrayOf<ISyncAdapterType*>* result);
-
         /**
          * Returns the status that matches the authority. If there are multiples accounts for
          * the authority, the one with the latest "lastSuccessTime" status is returned.
@@ -162,6 +198,14 @@ module
         GetSyncStatus(
             [in] IAccount* account,
             [in] String authority,
+            [in] IComponentName* name,
+            [out] ISyncStatusInfo** result);
+
+        GetSyncStatusAsUser(
+            [in] IAccount* account,
+            [in] String authority,
+            [in] IComponentName* name,
+            [in] Int32 userId,
             [out] ISyncStatusInfo** result);
 
         /**
@@ -170,6 +214,12 @@ module
         IsSyncPending(
             [in] IAccount* account,
             [in] String authority,
+            [out] Boolean* isPending);
+
+        IsSyncPending(
+            [in] IAccount* account,
+            [in] String authority,
+            [in] Int32 userId,
             [out] Boolean* isPending);
 
         AddStatusChangeListener(

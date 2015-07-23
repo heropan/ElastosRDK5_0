@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Content.IContext;
+
     namespace Elastos {
     namespace Droid {
     namespace Content {
@@ -16,6 +18,7 @@ module
      * @Involve
      * interface Elastos.Droid.Content.IContext
      */
+    [local]
     interface IContextWrapper {
         /**
          * @return the base context as set by the constructor or setBaseContext

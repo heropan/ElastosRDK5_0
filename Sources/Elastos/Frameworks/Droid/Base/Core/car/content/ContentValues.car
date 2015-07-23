@@ -1,16 +1,8 @@
 
 module
 {
-    using interface Elastos.Core.IArrayOf;
-    using interface Elastos.Core.IBoolean;
-    using interface Elastos.Core.IByte;
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Core.IDouble;
-    using interface Elastos.Core.IFloat;
-    using interface Elastos.Core.IInteger16;
-    using interface Elastos.Core.IInteger32;
-    using interface Elastos.Core.IInteger64;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -20,6 +12,10 @@ module
      * This class is used to store a set of values that the ContentResolver can process.
      *
      * @sa ContentResolver
+     */
+    /**
+     * @Involve
+     * interface IParcelable
      */
     [deprecated]
     interface IContentValues {
@@ -36,9 +32,9 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutString(
+        Put(
             [in] String key,
-            [in] ICharSequence* value);
+            [in] String value);
 
         /**
          * Adds all values from the passed in ContentValues.
@@ -56,7 +52,7 @@ module
          */
         PutByte(
             [in] String key,
-            [in] IByte* value);
+            [in] Byte value);
 
         /**
          * Adds a value to the set.
@@ -64,9 +60,9 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutInt16(
+        Put(
             [in] String key,
-            [in] IInteger16* value);
+            [in] Int16 value);
 
         /**
          * Adds a value to the set.
@@ -74,9 +70,9 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutInt32(
+        Put(
             [in] String key,
-            [in] IInteger32* value);
+            [in] Int32 value);
 
         /**
          * Adds a value to the set.
@@ -84,9 +80,9 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutInt64(
+        Put(
             [in] String key,
-            [in] IInteger64* value);
+            [in] Int64 value);
 
         /**
          * Adds a value to the set.
@@ -94,18 +90,18 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutFloat(
+        Put(
             [in] String key,
-            [in] IFloat* value);
+            [in] Float value);
         /**
          * Adds a value to the set.
          *
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutDouble(
+        Put(
             [in] String key,
-            [in] IDouble* value);
+            [in] Double value);
 
         /**
          * Adds a value to the set.
@@ -115,7 +111,7 @@ module
          */
         PutBoolean(
             [in] String key,
-            [in] IBoolean* value);
+            [in] Boolean value);
 
         /**
          * Adds a value to the set.
@@ -123,9 +119,9 @@ module
          * @param key the name of the value to put
          * @param value the data for the value to put
          */
-        PutBytes(
+        Put(
             [in] String key,
-            [in] IArrayOf* value);
+            [in] ArrayOf<Byte>* value);
 
         /**
          * Adds a null value to the set.
@@ -277,16 +273,16 @@ module
          *
          * @return a set of all of the keys and values
          */
-        ValueSet(
-            [out] IObjectStringMap** values);
+        GetValueSet(
+            [out] ISet** values);
 
         /**
          * Returns a set of all of the keys
          *
          * @return a set of all of the keys
          */
-        KeySet(
-            [out, callee] ArrayOf<String>* value);
+        GetKeySet(
+            [out] ISet** value);
 
         /**
          * Returns a string containing a concise, human-readable description of this object.

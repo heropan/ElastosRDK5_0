@@ -10,8 +10,9 @@ module
     namespace Droid {
     namespace App {
 
-        interface IApplicationErrorReportCrashInfo {
-        }
+        interface IIActivityManager {}
+
+        interface IApplicationErrorReportCrashInfo {}
 
     }}} // Elastos.Droid.App
 
@@ -22,14 +23,13 @@ module
     namespace Droid {
     namespace Utility {
 
-        interface IPrinter {
-        }
+        interface IPrinter {}
 
-        interface ISize {
-        }
+        interface ISize {}
 
-        interface ISizeF {
-        }
+        interface ISizeF {}
+
+        interface IAttributeSet {}
 
     }}} // Elastos.Droid.Utility
 
@@ -40,20 +40,55 @@ module
     namespace Droid {
     namespace Content {
 
-        interface IContext {
-            GetMainLooper(
-                [out] ILooper** looper);
-        }
+        interface IIntentSender {}
 
-        interface IContentProviderClient {}
+        interface IIntentFilter {}
 
-        interface ISyncResult {}
+        interface IServiceConnection {}
+
+        interface ISharedPreferences {}
+
+        interface ISyncAdapterType {}
+
+        interface ISyncInfo {}
+
+        interface ISyncStatusInfo {}
+
+        interface ISyncStatusObserver {}
+
+        interface ISyncRequest {}
+
 
         namespace Pm {
-            interface IIPackageManager {
-            }
+            interface IActivityInfo {}
+
+            interface IApplicationInfo {}
+
+            interface IPackageManager {}
+
+            interface IIPackageManager {}
+
+            interface IPathPermission {}
+
+            interface IProviderInfo {}
 
         }// Pm
+
+        namespace Res {
+            interface IAssetFileDescriptor {}
+
+            interface IAssetManager {}
+
+            interface IConfiguration {}
+
+            interface IResources {}
+
+            interface IResourcesTheme {}
+
+            interface ITypedArray {}
+
+
+        }// Res
 
     }}} // Elastos.Droid.Content
 
@@ -78,31 +113,27 @@ module
     namespace Droid {
     namespace Net {
 
-        interface ILocalServerSocket {
-        }
+        interface IUri {}
 
-        interface IInterfaceConfiguration {
-        }
+        interface IUriBuilder {}
 
-        interface INetworkManagementEventObserver {
-        }
+        interface ILocalServerSocket {}
 
-        interface INetwork {
-        }
+        interface IInterfaceConfiguration {}
 
-        interface INetworkStats {
-        }
+        interface INetworkManagementEventObserver {}
 
-        interface IRouteInfo {
-        }
+        interface INetwork {}
 
-        interface IUidRange {
-        }
+        interface INetworkStats {}
+
+        interface IRouteInfo {}
+
+        interface IUidRange {}
 
         namespace Wifi {
 
-            interface IWifiConfiguration {
-            }
+            interface IWifiConfiguration {}
         }
 
     }}} // Elastos.Droid.Net
@@ -134,15 +165,33 @@ module
     namespace Droid {
     namespace Graphics {
 
-        interface IBitmap {
-        }
+        interface IBitmap {}
 
-        interface IBitmapFactory {
-        }
+        interface IBitmapFactory {}
 
+        interface IRect {}
+
+        namespace Drawable {
+            interface IDrawable {}
+
+        } // Elastos.Droid.Graphics.Drawable
 
     }}} // Elastos.Droid.Privacy
 
+    //
+    // Elastos.Droid.View
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+
+        interface IDisplay {}
+
+        interface ICompatibilityInfoHolder {}
+
+        interface IKeyEvent {}
+
+    }}} // Elastos.Droid.View
 
     //
     // Elastos.Droid.Media
@@ -155,4 +204,28 @@ module
         }
 
     }}} // Elastos.Droid.Media
+
+    //
+    // Elastos.Droid.Database
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Database {
+
+        interface ICursor {}
+
+        interface IContentObserver {}
+
+        interface IIContentObserver {}
+
+        interface IDatabaseErrorHandler {}
+
+        namespace Sqlite {
+            interface ISQLiteDatabase {}
+
+            interface ISQLiteDatabaseCursorFactory{}
+
+        } // Elastos.Droid.Sqlite
+
+    }}} // Elastos.Droid.Database
 }

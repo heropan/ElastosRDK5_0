@@ -38,7 +38,7 @@ using Elastos::Droid::Content::BroadcastReceiver;
 using Elastos::Droid::Content::IContentProvider;
 using Elastos::Droid::Content::IIContentProvider;
 using Elastos::Droid::Content::IComponentName;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Content::Pm::CActivityInfo;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
@@ -285,7 +285,7 @@ public:
     class ReceiverData
         : public ElRefBase
         , public BroadcastReceiver::PendingResult
-        , public IBroadcastReceiverPendingResult
+        , public IPendingResult
     {
     public:
         CAR_INTERFACE_DECL()

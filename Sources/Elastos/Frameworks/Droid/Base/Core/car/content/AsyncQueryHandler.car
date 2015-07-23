@@ -8,6 +8,10 @@ module
     namespace Droid {
     namespace Content {
 
+    /**
+     * @Involve
+     * interface IHandler
+     */
     [deprecated]
     interface IAsyncQueryHandler {
         /**

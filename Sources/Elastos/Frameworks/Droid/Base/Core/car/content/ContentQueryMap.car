@@ -1,16 +1,21 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
+
     interface Elastos.Droid.Content.IContentValues;
 
     namespace Elastos {
     namespace Droid {
     namespace Content {
 
+    /**
+     * @Involve
+     * interface IObservable;
+     */
     interface IContentQueryMap {
         /**
-         * Change whether or not the ContentQueryMap will register with the cursor's ContentProvider 
+         * Change whether or not the ContentQueryMap will register with the cursor's ContentProvider
          * for change notifications. If you use a ContentQueryMap in an activity you should call this
          * with false in onPause(), which means you need to call it with true in onResume()
          * if want it to be kept updated.
@@ -33,7 +38,7 @@ module
         Requery();
 
         GetRows(
-            [out] IObjectStringMap** rows);
+            [out] IMap** rows);
 
         Close();
     }

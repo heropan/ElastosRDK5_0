@@ -9,7 +9,7 @@
 
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::IIntent;

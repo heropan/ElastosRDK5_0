@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IHashMap;
+
     interface Elastos.Droid.Content.IContentProvider;
     interface Elastos.Droid.Content.IContentProviderResult;
     interface Elastos.Droid.Content.IContentValues;
@@ -134,7 +136,7 @@ module
      */
     [deprecated]
     interface IContentProviderOperationBuilder {
-        /**  
+        /**
          * Create a ContentProviderOperation from this Builder.
          *
          * @sa Builder
@@ -263,11 +265,10 @@ module
             [out] IContentValues**  valuesBackReferences);
 
         GetSelectionArgsBackReferences(
-            [out] IObjectContainer** selectionArgsBackRef);
+            [out] IHashMap** selectionArgsBackRef);
 
         GetYieldAllowed(
             [out] Boolean* yieldAllowed);
-
     }
 
     interface IContentProviderOperationHelper {

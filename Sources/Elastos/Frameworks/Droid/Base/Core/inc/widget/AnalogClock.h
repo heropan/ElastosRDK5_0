@@ -13,7 +13,7 @@ using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Text::Format::CTime;
 using Elastos::Droid::Content::IBroadcastReceiver;
 using Elastos::Droid::Content::BroadcastReceiver;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IIntentFilter;
 using Elastos::Droid::Content::CIntentFilter;
@@ -56,7 +56,7 @@ private:
         }
 
         CARAPI GoAsync(
-            /* [out] */ IBroadcastReceiverPendingResult** pendingResult);
+            /* [out] */ IPendingResult** pendingResult);
 
         CARAPI PeekService(
             /* [in] */ IContext* myContext,
@@ -104,10 +104,10 @@ private:
             /* [in] */ Boolean isOrdered);
 
         CARAPI SetPendingResult(
-            /* [in] */ IBroadcastReceiverPendingResult* result);
+            /* [in] */ IPendingResult* result);
 
         CARAPI GetPendingResult(
-            /* [out] */ IBroadcastReceiverPendingResult** pendingResult);
+            /* [out] */ IPendingResult** pendingResult);
 
         CARAPI GetSendingUserId(
             /* [out] */ Int32* userId);

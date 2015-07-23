@@ -494,20 +494,6 @@ module
         const String CONNECTIVITY_SERVICE = "connectivity";
 
         /**
-         * Use with #getSystemService} to retrieve a
-         * android.net.ThrottleManager for handling management of
-         * throttling.
-         *
-         * @sa #getSystemService
-         * @sa android.net.ThrottleManager
-         *
-         * @hide
-         * @see #getSystemService
-         * @see android.net.ThrottleManager
-         */
-        const String THROTTLE_SERVICE = "throttle";
-
-        /**
          * Use with #getSystemService to retrieve a
          * android.os.IUpdateLock for managing runtime sequences that
          * must not be interrupted by headless OTA application or similar.
@@ -553,7 +539,16 @@ module
          */
         const String WIFI_SERVICE = "wifi";
 
-        const String PRIVACY_SERVICE = "privacy";
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.net.wifi.passpoint.WifiPasspointManager} for handling management of
+         * Wi-Fi passpoint access.
+         *
+         * @see #getSystemService
+         * @see android.net.wifi.passpoint.WifiPasspointManager
+         * @hide
+         */
+        const String WIFI_PASSPOINT_SERVICE = "wifipasspoint";
 
         /**
          * Use with #getSystemService to retrieve a
@@ -569,6 +564,28 @@ module
         const String WIFI_P2P_SERVICE = "wifip2p";
 
         /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.net.wifi.WifiScanner} for scanning the wifi universe
+         *
+         * @see #getSystemService
+         * @see android.net.wifi.WifiScanner
+         * @hide
+         */
+        //@SystemApi
+        const String WIFI_SCANNING_SERVICE = "wifiscanner";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.net.wifi.RttManager} for ranging devices with wifi
+         *
+         * @see #getSystemService
+         * @see android.net.wifi.RttManager
+         * @hide
+         */
+        //@SystemApi
+        const String WIFI_RTT_SERVICE = "rttmanager";
+
+        /**
          * Use with #getSystemService to retrieve a
          * android.net.ethernet.EthernetManager for handling management of
          * Ethernet access.
@@ -577,15 +594,6 @@ module
          * @sa android.net.ethernet.EthernetManager
          */
         const String ETHERNET_SERVICE = "ethernet";
-
-        /**
-         * Use with #getSystemService
-         *
-         * @sa #getSystemService
-         * @see #getSystemService
-         * @see android.net.pppoe.PppoeManager
-         */
-        const String PPPOE_SERVICE = "pppoe";
 
         /**
          * Use with #getSystemService to retrieve a
@@ -613,6 +621,17 @@ module
          */
         const String AUDIO_SERVICE = "audio";
 
+       /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.service.fingerprint.FingerprintManager} for handling management
+         * of fingerprints.
+         *
+         * @see #getSystemService
+         * @see android.app.FingerprintManager
+         * @hide
+         */
+        const String FINGERPRINT_SERVICE = "fingerprint";
+
         /**
          * Use with #getSystemService to retrieve a
          * android.media.MediaRouter for controlling and managing
@@ -627,6 +646,15 @@ module
         const String MEDIA_ROUTER_SERVICE = "media_router";
 
         /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.media.session.MediaSessionManager} for managing media Sessions.
+         *
+         * @see #getSystemService
+         * @see android.media.session.MediaSessionManager
+         */
+        const String MEDIA_SESSION_SERVICE = "media_session";
+
+        /**
          * Use with #getSystemService to retrieve a
          * android.telephony.TelephonyManager for handling management the
          * telephony features of the device.
@@ -639,25 +667,15 @@ module
          */
         const String TELEPHONY_SERVICE = "phone";
 
-    /**
-     * Use with {@link #getSystemService} to retrieve a
-     * {@link android.telephony.TelephonyManager} for handling management the
-     * display features of the device.
-     *
-     * @see #getSystemService
-     * @see android.view.DisplayManager
-     */
-        const String DISPLAY_SERVICE_AW = "display_aw";
-
-    /**
-     * Use with {@link #getSystemService} to retrieve a
-     * {@link android.telephony.TelephonyManager} for handling management the
-     * display features of the device.
-     *
-     * @see #getSystemService
-     * @see android.view.DisplayManager
-     */
-        const String WIFIDISPLAY_SERVICE = "wifidisplay";
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.telecom.TelecomManager} to manage telecom-related features
+         * of the device.
+         *
+         * @see #getSystemService
+         * @see android.telecom.TelecomManager
+         */
+        const String TELECOM_SERVICE = "telecom";
 
         /**
          * Use with #getSystemService to retrieve a
@@ -707,6 +725,14 @@ module
          * @see #getSystemService
          */
         const String APPWIDGET_SERVICE = "appwidget";
+
+        /**
+         * Official published name of the (internal) voice interaction manager service.
+         *
+         * @hide
+         * @see #getSystemService
+         */
+        const String VOICE_INTERACTION_MANAGER_SERVICE = "voiceinteraction";
 
         /**
          * Use with #getSystemService to retrieve an
@@ -761,6 +787,14 @@ module
         const String DOWNLOAD_SERVICE = "download";
 
         /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.os.BatteryManager} for managing battery state.
+         *
+         * @see #getSystemService
+         */
+        const String BATTERY_SERVICE = "batterymanager";
+
+        /**
          * Use with {@sa #getSystemService} to retrieve a
          * {@sa android.nfc.NfcManager} for using NFC.
          *
@@ -808,6 +842,18 @@ module
         const String SERIAL_SERVICE = "serial";
 
         /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.hardware.hdmi.HdmiControlManager} for controlling and managing
+         * HDMI-CEC protocol.
+         *
+         * @see #getSystemService
+         * @see android.hardware.hdmi.HdmiControlManager
+         * @hide
+         */
+        //@SystemApi
+        const String HDMI_CONTROL_SERVICE = "hdmi_control";
+
+        /**
          * Use with {@sa #getSystemService} to retrieve a
          * {@sa android.hardware.input.InputManager} for interacting with input devices.
          *
@@ -826,24 +872,139 @@ module
         const String DISPLAY_SERVICE = "display";
 
         /**
-         * Use with {@sa #getSystemService} to retrieve a
-         * {@sa android.os.SchedulingPolicyService} for managing scheduling policy.
-         *
-         * @see #getSystemService
-         * @see android.os.SchedulingPolicyService
-         *
-         * @hide
-         */
-        const String SCHEDULING_POLICY_SERVICE = "scheduling_policy";
-
-        /**
-         * Use with {@sa #getSystemService} to retrieve a
-         * {@sa android.os.UserManager} for managing users on devices that support multiple users.
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.os.UserManager} for managing users on devices that support multiple users.
          *
          * @see #getSystemService
          * @see android.os.UserManager
          */
         const String USER_SERVICE = "user";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.content.pm.LauncherApps} for querying and monitoring launchable apps across
+         * profiles of a user.
+         *
+         * @see #getSystemService
+         * @see android.content.pm.LauncherApps
+         */
+        const String LAUNCHER_APPS_SERVICE = "launcherapps";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.content.RestrictionsManager} for retrieving application restrictions
+         * and requesting permissions for restricted operations.
+         * @see #getSystemService
+         * @see android.content.RestrictionsManager
+         */
+        const String RESTRICTIONS_SERVICE = "restrictions";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.app.AppOpsManager} for tracking application operations
+         * on the device.
+         *
+         * @see #getSystemService
+         * @see android.app.AppOpsManager
+         */
+        const String APP_OPS_SERVICE = "appops";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.hardware.camera2.CameraManager} for interacting with
+         * camera devices.
+         *
+         * @see #getSystemService
+         * @see android.hardware.camera2.CameraManager
+         */
+        const String CAMERA_SERVICE = "camera";
+
+        /**
+         * {@link android.print.PrintManager} for printing and managing
+         * printers and print tasks.
+         *
+         * @see #getSystemService
+         * @see android.print.PrintManager
+         */
+        const String PRINT_SERVICE = "print";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.hardware.ConsumerIrManager} for transmitting infrared
+         * signals from the device.
+         *
+         * @see #getSystemService
+         * @see android.hardware.ConsumerIrManager
+         */
+        const String CONSUMER_IR_SERVICE = "consumer_ir";
+
+        /**
+         * {@link android.app.trust.TrustManager} for managing trust agents.
+         * @see #getSystemService
+         * @see android.app.trust.TrustManager
+         * @hide
+         */
+        const String TRUST_SERVICE = "trust";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a
+         * {@link android.media.tv.TvInputManager} for interacting with TV inputs
+         * on the device.
+         *
+         * @see #getSystemService
+         * @see android.media.tv.TvInputManager
+         */
+        const String TV_INPUT_SERVICE = "tv_input";
+
+        /**
+         * {@link android.net.NetworkScoreManager} for managing network scoring.
+         * @see #getSystemService
+         * @see android.net.NetworkScoreManager
+         * @hide
+         */
+        //@SystemApi
+        const String NETWORK_SCORE_SERVICE = "network_score";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.app.UsageStatsManager} for interacting with the status bar.
+         *
+         * @see #getSystemService
+         * @see android.app.UsageStatsManager
+         * @hide
+         */
+        const String USAGE_STATS_SERVICE = "usagestats";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.app.job.JobScheduler} instance for managing occasional
+         * background tasks.
+         * @see #getSystemService
+         * @see android.app.job.JobScheduler
+         */
+        const String JOB_SCHEDULER_SERVICE = "jobscheduler";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.service.persistentdata.PersistentDataBlockManager} instance
+         * for interacting with a storage device that lives across factory resets.
+         *
+         * @see #getSystemService
+         * @see android.service.persistentdata.PersistentDataBlockManager
+         * @hide
+         */
+        //@SystemApi
+        const String PERSISTENT_DATA_BLOCK_SERVICE = "persistent_data_block";
+
+        /**
+         * Use with {@link #getSystemService} to retrieve a {@link
+         * android.media.projection.MediaProjectionManager} instance for managing
+         * media projection sessions.
+         * @see #getSystemService
+         * @see android.media.projection.ProjectionManager
+         */
+        const String MEDIA_PROJECTION_SERVICE = "media_projection";
+
 
         /**
          * Flag for use with {@sa #createPackageContext}: include the application
@@ -981,6 +1142,19 @@ module
             [out] String* str);
 
         /**
+         * Return a drawable object associated with a particular resource ID and
+         * styled for the current theme.
+         *
+         * @param id The desired resource identifier, as generated by the aapt
+         *           tool. This integer encodes the package, type, and resource
+         *           entry. The value 0 is an invalid identifier.
+         * @return Drawable An object that can be used to draw this resource.
+         */
+        GetDrawable(
+            [in] Int32 resId,
+            [in] IDrawable* drawable);
+
+        /**
          * Set the base theme for this context.  Note that this should be called
          * before any views are instantiated in the Context (for example before
          * calling {@sa android.app.Activity#setContentView} or
@@ -1062,6 +1236,15 @@ module
 
         /** Return the name of this application's package. */
         GetPackageName(
+            [out] String* packageName);
+
+        /** @hide Return the package name that should be used for app ops calls from
+         * this context.  This is the same as {@link #getBasePackageName()} except in
+         * cases where system components are loaded into other app processes, in which
+         * case this will be the name of the primary package in that process (so that app
+         * ops uid verification will work with the name).
+         */
+        GetOpPackageName(
             [out] String* packageName);
 
         /** Return the full application info for this context's package. */
@@ -1231,6 +1414,27 @@ module
             [out] IFile** filesDir);
 
         /**
+         * Returns the absolute path to the directory on the filesystem similar to
+         * {@link #getFilesDir()}.  The difference is that files placed under this
+         * directory will be excluded from automatic backup to remote storage.  See
+         * {@link android.app.backup.BackupAgent BackupAgent} for a full discussion
+         * of the automatic backup mechanism in Android.
+         *
+         * <p>No permissions are required to read or write to the returned path, since this
+         * path is internal storage.
+         *
+         * @return The path of the directory holding application files that will not be
+         *         automatically backed up to remote storage.
+         *
+         * @see #openFileOutput
+         * @see #getFileStreamPath
+         * @see #getDir
+         * @see android.app.backup.BackupAgent
+         */
+        GetNoBackupFilesDir(
+            [out] IFile** filesDir);
+
+        /**
          * Returns the absolute path to the directory on the external filesystem
          * (that is somewhere on {@sa android.os.Environment#getExternalStorageDirectory()
          * Environment.getExternalStorageDirectory()}) where the application can
@@ -1309,6 +1513,43 @@ module
             [out] IFile** filesDir);
 
         /**
+         * Returns absolute paths to application-specific directories on all
+         * external storage devices where the application can place persistent files
+         * it owns. These files are internal to the application, and not typically
+         * visible to the user as media.
+         * <p>
+         * This is like {@link #getFilesDir()} in that these files will be deleted when
+         * the application is uninstalled, however there are some important differences:
+         * <ul>
+         * <li>External files are not always available: they will disappear if the
+         * user mounts the external storage on a computer or removes it.
+         * <li>There is no security enforced with these files.
+         * </ul>
+         * <p>
+         * External storage devices returned here are considered a permanent part of
+         * the device, including both emulated external storage and physical media
+         * slots, such as SD cards in a battery compartment. The returned paths do
+         * not include transient devices, such as USB flash drives.
+         * <p>
+         * An application may store data on any or all of the returned devices.  For
+         * example, an app may choose to store large files on the device with the
+         * most available space, as measured by {@link StatFs}.
+         * <p>
+         * No permissions are required to read or write to the returned paths; they
+         * are always accessible to the calling app.  Write access outside of these
+         * paths on secondary external storage devices is not available.
+         * <p>
+         * The first path returned is the same as {@link #getExternalFilesDir(String)}.
+         * Returned paths may be {@code null} if a storage device is unavailable.
+         *
+         * @see #getExternalFilesDir(String)
+         * @see Environment#getExternalStorageState(File)
+         */
+        GetExternalFilesDirs(
+            [in] String type,
+            [out, callee] ArrayOf<IFile*>* filesDir);
+
+        /**
          * Return the directory where this application's OBB files (if there
          * are any) can be found.  Note if the application does not have any OBB
          * files, this directory may not exist.
@@ -1320,6 +1561,43 @@ module
          */
         GetObbDir(
             [out] IFile** obbDir);
+
+        /**
+         * Returns absolute paths to application-specific directories on all
+         * external storage devices where the application's OBB files (if there are
+         * any) can be found. Note if the application does not have any OBB files,
+         * these directories may not exist.
+         * <p>
+         * This is like {@link #getFilesDir()} in that these files will be deleted when
+         * the application is uninstalled, however there are some important differences:
+         * <ul>
+         * <li>External files are not always available: they will disappear if the
+         * user mounts the external storage on a computer or removes it.
+         * <li>There is no security enforced with these files.
+         * </ul>
+         * <p>
+         * External storage devices returned here are considered a permanent part of
+         * the device, including both emulated external storage and physical media
+         * slots, such as SD cards in a battery compartment. The returned paths do
+         * not include transient devices, such as USB flash drives.
+         * <p>
+         * An application may store data on any or all of the returned devices.  For
+         * example, an app may choose to store large files on the device with the
+         * most available space, as measured by {@link StatFs}.
+         * <p>
+         * No permissions are required to read or write to the returned paths; they
+         * are always accessible to the calling app.  Write access outside of these
+         * paths on secondary external storage devices is not available.
+         * <p>
+         * The first path returned is the same as {@link #getObbDir()}.
+         * Returned paths may be {@code null} if a storage device is unavailable.
+         *
+         * @see #getObbDir()
+         * @see Environment#getExternalStorageState(File)
+         */
+        GetObbDirs(
+            [in] String type,
+            [out, callee] ArrayOf<IFile*>* filesDir);
 
         /**
          * Returns the absolute path to the application specific cache directory
@@ -1340,6 +1618,23 @@ module
          */
         GetCacheDir(
             [out] IFile** cacheDir);
+
+        /**
+         * Returns the absolute path to the application specific cache directory on
+         * the filesystem designed for storing cached code. The system will delete
+         * any files stored in this location both when your specific application is
+         * upgraded, and when the entire platform is upgraded.
+         * <p>
+         * This location is optimal for storing compiled or optimized code generated
+         * by your application at runtime.
+         * <p>
+         * Apps require no extra permissions to read or write to the returned path,
+         * since this path lives in their private storage.
+         *
+         * @return The path of the directory holding application code cache files.
+         */
+        GetCodeCacheDir(
+            [out] IFile** dir);
 
         /**
          * Returns the absolute path to the directory on the external filesystem
@@ -1382,7 +1677,78 @@ module
          * @see #getCacheDir
          */
         GetExternalCacheDir(
-            [out] IFile** externalDir);
+            [out] IFile** dir);
+
+        /**
+         * Returns absolute paths to application-specific directories on all
+         * external storage devices where the application can place cache files it
+         * owns. These files are internal to the application, and not typically
+         * visible to the user as media.
+         * <p>
+         * This is like {@link #getCacheDir()} in that these files will be deleted when
+         * the application is uninstalled, however there are some important differences:
+         * <ul>
+         * <li>External files are not always available: they will disappear if the
+         * user mounts the external storage on a computer or removes it.
+         * <li>There is no security enforced with these files.
+         * </ul>
+         * <p>
+         * External storage devices returned here are considered a permanent part of
+         * the device, including both emulated external storage and physical media
+         * slots, such as SD cards in a battery compartment. The returned paths do
+         * not include transient devices, such as USB flash drives.
+         * <p>
+         * An application may store data on any or all of the returned devices.  For
+         * example, an app may choose to store large files on the device with the
+         * most available space, as measured by {@link StatFs}.
+         * <p>
+         * No permissions are required to read or write to the returned paths; they
+         * are always accessible to the calling app.  Write access outside of these
+         * paths on secondary external storage devices is not available.
+         * <p>
+         * The first path returned is the same as {@link #getExternalCacheDir()}.
+         * Returned paths may be {@code null} if a storage device is unavailable.
+         *
+         * @see #getExternalCacheDir()
+         * @see Environment#getExternalStorageState(File)
+         */
+        GetExternalCacheDirs(
+            [out, callee] ArrayOf<IFile*>* dirs);
+
+        /**
+         * Returns absolute paths to application-specific directories on all
+         * external storage devices where the application can place media files.
+         * These files are scanned and made available to other apps through
+         * {@link MediaStore}.
+         * <p>
+         * This is like {@link #getExternalFilesDirs} in that these files will be
+         * deleted when the application is uninstalled, however there are some
+         * important differences:
+         * <ul>
+         * <li>External files are not always available: they will disappear if the
+         * user mounts the external storage on a computer or removes it.
+         * <li>There is no security enforced with these files.
+         * </ul>
+         * <p>
+         * External storage devices returned here are considered a permanent part of
+         * the device, including both emulated external storage and physical media
+         * slots, such as SD cards in a battery compartment. The returned paths do
+         * not include transient devices, such as USB flash drives.
+         * <p>
+         * An application may store data on any or all of the returned devices. For
+         * example, an app may choose to store large files on the device with the
+         * most available space, as measured by {@link StatFs}.
+         * <p>
+         * No permissions are required to read or write to the returned paths; they
+         * are always accessible to the calling app. Write access outside of these
+         * paths on secondary external storage devices is not available.
+         * <p>
+         * Returned paths may be {@code null} if a storage device is unavailable.
+         *
+         * @see Environment#getExternalStorageState(File)
+         */
+        GetExternalMediaDirs(
+            [out, callee] ArrayOf<IFile*>* dirs);
 
         /**
          * Returns an array of strings naming the private files associated with
@@ -2459,18 +2825,6 @@ module
             [out] Boolean* succeeded);
 
         /**
-         * Same as {@sa #bindService(Intent, ServiceConnection, int)}, but with an explicit userHandle
-         * argument for use by system server and other multi-user aware code.
-         * @hide
-         */
-        BindService(
-            [in] IIntent* service,
-            [in] IServiceConnection* conn,
-            [in] Int32 flags,
-            [in] Int32 userHandle,
-            [out] Boolean* succeeded);
-
-        /**
          * Disconnect from an application service.  You will no longer receive
          * calls as the service is restarted, and the service is now allowed to
          * stop at any time.
@@ -3092,19 +3446,6 @@ module
         CreateDisplayContext(
             [in] IDisplay* display,
             [out] IContext** ctx);
-
-        /**
-         * Gets the compatibility info holder for this context.  This information
-         * is provided on a per-application basis and is used to simulate lower density
-         * display metrics for legacy applications.
-         *
-         * @param displayId The display id for which to get compatibility info.
-         * @return The compatibility info holder, or null if not required by the application.
-         * @hide
-         */
-        GetCompatibilityInfo(
-            [in] Int32 displayId,
-            [out] ICompatibilityInfoHolder** infoHolder);
 
         /**
          * Indicates whether this Context is restricted.

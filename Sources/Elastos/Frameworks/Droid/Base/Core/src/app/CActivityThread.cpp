@@ -71,7 +71,7 @@ using Elastos::Droid::Graphics::CBitmap;
 using Elastos::Droid::Graphics::Canvas;
 using Elastos::Droid::Graphics::CCanvas;
 using Elastos::Droid::Content::CComponentName;
-using Elastos::Droid::Content::EIID_IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::EIID_IPendingResult;
 using Elastos::Droid::Content::Pm::IPackageInfo;
 using Elastos::Droid::Content::Pm::IInstrumentationInfo;
 using Elastos::Droid::Content::Pm::CInstrumentationInfo;
@@ -83,7 +83,7 @@ using Elastos::Droid::Content::Res::CConfigurationHelper;
 using Elastos::Droid::Content::Res::EIID_IResources;
 using Elastos::Droid::Content::EIID_IComponentCallbacks;
 using Elastos::Droid::Content::EIID_IComponentCallbacks2;
-using Elastos::Droid::Content::IBroadcastReceiverPendingResult;
+using Elastos::Droid::Content::IPendingResult;
 using Elastos::Droid::Hardware::Display::DisplayManagerGlobal;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabaseHelper;
 using Elastos::Droid::Database::Sqlite::CSQLiteDatabaseHelper;
@@ -390,7 +390,7 @@ CActivityThread::ProviderClientRecord::ProviderClientRecord(
 //==============================================================================
 // CActivityThread::ReceiverData
 //==============================================================================
-CAR_INTERFACE_IMPL(CActivityThread::ReceiverData, IBroadcastReceiverPendingResult)
+CAR_INTERFACE_IMPL(CActivityThread::ReceiverData, IPendingResult)
 
 CActivityThread::ReceiverData::ReceiverData(
     /* [in] */ IIntent* intent,
@@ -2534,7 +2534,7 @@ ECode CActivityThread::HandleReceiver(
     pthread_setspecific(sCurrentBroadcastIntentKey, data->mIntent.Get());
     REFCOUNT_ADD(data->mIntent);
 
-    receiver->SetPendingResult((IBroadcastReceiverPendingResult*)data);
+    receiver->SetPendingResult((IPendingResult*)data);
     AutoPtr<IContext> ic;
     ((CContextImpl*)context.Get())->GetReceiverRestrictedContext((IContext**)&ic);
     ec = receiver->OnReceive(ic, data->mIntent);
@@ -2566,8 +2566,8 @@ ECode CActivityThread::HandleReceiver(
     pthread_setspecific(sCurrentBroadcastIntentKey, NULL);
 
     if (SUCCEEDED(ec)) {
-        AutoPtr<IBroadcastReceiverPendingResult> result;
-        receiver->GetPendingResult((IBroadcastReceiverPendingResult**)&result);
+        AutoPtr<IPendingResult> result;
+        receiver->GetPendingResult((IPendingResult**)&result);
         if (result != NULL) {
             data->Finish();
         }

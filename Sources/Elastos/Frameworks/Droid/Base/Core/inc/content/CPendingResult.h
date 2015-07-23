@@ -2,7 +2,7 @@
 #ifndef __CBROADCASTRECEIVERPENDINGRESULT_H__
 #define __CBROADCASTRECEIVERPENDINGRESULT_H__
 
-#include "_CBroadcastReceiverPendingResult.h"
+#include "_CPendingResult.h"
 #include <ext/frameworkext.h>
 #include "content/BroadcastReceiver.h"
 
@@ -10,7 +10,7 @@ namespace Elastos {
 namespace Droid {
 namespace Content {
 
-CarClass(CBroadcastReceiverPendingResult), public BroadcastReceiver::PendingResult
+CarClass(CPendingResult), public BroadcastReceiver::PendingResult
 {
 public:
     /**

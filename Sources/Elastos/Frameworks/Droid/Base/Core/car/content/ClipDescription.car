@@ -17,10 +17,13 @@ module
      * <h3>Developer Guides</h3>
      * <p>
      * For more information about using the clipboard framework, read the Copy and Paste developer guide.
-     * 
+     *
      * Copy and Paste
      */
-
+     /**
+      * @Involve
+      * interface IParcelable
+      */
     interface IClipDescription {
         /**
          * The MIME type for a clip holding plain text.

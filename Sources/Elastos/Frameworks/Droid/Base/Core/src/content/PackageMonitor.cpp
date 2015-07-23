@@ -138,7 +138,7 @@ UInt32 PackageMonitor::Release()
 }
 
 ECode PackageMonitor::GoAsync(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GoAsync(pendingResult);
 }
@@ -231,13 +231,13 @@ ECode PackageMonitor::SetOrderedHint(
 }
 
 ECode PackageMonitor::SetPendingResult(
-    /* [in] */ IBroadcastReceiverPendingResult* result)
+    /* [in] */ IPendingResult* result)
 {
     return BroadcastReceiver::SetPendingResult(result);
 }
 
 ECode PackageMonitor::GetPendingResult(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GetPendingResult(pendingResult);
 }

@@ -1,6 +1,7 @@
 
 module
 {
+    using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.Content.IContentProviderResult;
     interface Elastos.Droid.Content.IContentValues;
@@ -68,7 +69,7 @@ module
             [out] IAssetFileDescriptor** fileDescriptor);
 
         ApplyBatch(
-            [in] IObjectContainer* operations,
+            [in] IArrayList* operations,
             [out, callee] ArrayOf<IContentProviderResult*>* providerResults);
 
         Call(
@@ -79,6 +80,16 @@ module
 
         CreateCancellationSignal(
             [out] IICancellationSignal** cancellationSignal);
+
+        Canonicalize(
+            [in] String callingPkg,
+            [in] IUri* uri,
+            [out] IUri** result);
+
+        Uncanonicalize(
+            [in] String callingPkg,
+            [in] IUri* uri,
+            [out] IUri** result);
 
         // Data interchange.
         GetStreamTypes(

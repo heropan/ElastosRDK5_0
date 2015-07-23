@@ -274,7 +274,7 @@ public:
      * must be called once processing of the broadcast is done.
      */
     virtual CARAPI GoAsync(
-        /* [out] */ IBroadcastReceiverPendingResult** pendingResult);
+        /* [out] */ IPendingResult** pendingResult);
 
     /**
      * Provide a binder to an already-running service.  This method is synchronous
@@ -465,13 +465,13 @@ public:
      * For internal use to set the result data that is active. @hide
      */
     virtual CARAPI SetPendingResult(
-        /* [in] */ IBroadcastReceiverPendingResult* result);
+        /* [in] */ IPendingResult* result);
 
     /**
      * For internal use to set the result data that is active. @hide
      */
     virtual CARAPI GetPendingResult(
-        /* [out] */ IBroadcastReceiverPendingResult** pendingResult);
+        /* [out] */ IPendingResult** pendingResult);
 
     /** @hide */
     virtual CARAPI GetSendingUserId(
@@ -501,7 +501,7 @@ private:
     CARAPI CheckSynchronousHint();
 
 private:
-    AutoPtr<IBroadcastReceiverPendingResult> mPendingResult;
+    AutoPtr<IPendingResult> mPendingResult;
     Boolean mDebugUnregister;
 
 };

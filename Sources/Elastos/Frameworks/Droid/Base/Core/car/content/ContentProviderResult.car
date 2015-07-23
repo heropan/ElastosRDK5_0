@@ -15,13 +15,23 @@ module
      * @sa uri
      * @sa count
      */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IContentProviderResult {
         GetUri(
             [out] IUri** uri);
 
         GetCount(
             [out] Int32* count);
-        
+
+        SetUri(
+            [in] IUri* uri);
+
+        SetCount(
+            [in] Int32 count);
+
         ToString(
             [out] String* str);
     }

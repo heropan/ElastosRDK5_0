@@ -46,7 +46,7 @@ ECode AnalogClock::IntentReceiver::OnReceive(
 }
 
 ECode AnalogClock::IntentReceiver::GoAsync(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GoAsync(pendingResult);
 }
@@ -139,13 +139,13 @@ ECode AnalogClock::IntentReceiver::SetOrderedHint(
 }
 
 ECode AnalogClock::IntentReceiver::SetPendingResult(
-    /* [in] */ IBroadcastReceiverPendingResult* result)
+    /* [in] */ IPendingResult* result)
 {
     return BroadcastReceiver::SetPendingResult(result);
 }
 
 ECode AnalogClock::IntentReceiver::GetPendingResult(
-    /* [out] */ IBroadcastReceiverPendingResult** pendingResult)
+    /* [out] */ IPendingResult** pendingResult)
 {
     return BroadcastReceiver::GetPendingResult(pendingResult);
 }
