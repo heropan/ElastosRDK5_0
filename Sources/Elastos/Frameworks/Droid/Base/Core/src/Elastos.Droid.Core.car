@@ -9,7 +9,7 @@ module
     merge("../car/os.car");
     //merge("../car/animation.car");
     //merge("../car/database.car");
-    //merge("../car/content.car");
+    merge("../car/content.car");
     //merge("../car/graphics.car");
     //merge("../car/location.car");
     //merge("../car/view.car");

@@ -1,5 +1,6 @@
 
 #include "os/CMessengerImpl.h"
+#include "os/Binder.h"
 
 namespace Elastos {
 namespace Droid {
@@ -20,6 +21,8 @@ ECode CMessengerImpl::Send(
     /* [in] */ IMessage* message)
 {
     Boolean result;
+    Int32 uid = Binder::GetCallingUid();
+    message->SetSendingUid(uid);
     return mOwner->SendMessage(message, &result);
 }
 

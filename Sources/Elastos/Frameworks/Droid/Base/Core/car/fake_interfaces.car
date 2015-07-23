@@ -45,16 +45,30 @@ module
                 [out] ILooper** looper);
         }
 
+        interface IContentProviderClient {}
+
+        interface ISyncResult {}
+
         namespace Pm {
             interface IIPackageManager {
-            }
-
-            interface IUserInfo {
             }
 
         }// Pm
 
     }}} // Elastos.Droid.Content
+
+
+    //
+    // Elastos.Droid.Accounts
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Accounts {
+
+        interface IAccount {
+        }
+
+    }}} // Elastos.Droid.Accounts
 
 
     //

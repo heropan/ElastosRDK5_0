@@ -54,6 +54,13 @@ public:
          * a release build.
          */
         static const String CODENAME;
+
+        static AutoPtr<ArrayOf<String> > ALL_CODENAMES;
+
+        /**
+         * @hide
+         */
+        static AutoPtr<ArrayOf<String> > ACTIVE_CODENAMES;
     };
 
     class VERSION_CODES {
@@ -362,6 +369,91 @@ public:
          * </ul>
          */
         static const Int32 JELLY_BEAN_MR1 = 17;
+
+        /**
+         * July 2013: Android 4.3, the revenge of the beans.
+         */
+        static const Int32 JELLY_BEAN_MR2 = 18;
+
+        /**
+         * October 2013: Android 4.4, KitKat, another tasty treat.
+         *
+         * <p>Applications targeting this or a later release will get these
+         * new changes in behavior:</p>
+         * <ul>
+         * <li> The default result of {android.preference.PreferenceActivity#isValidFragment
+         * PreferenceActivity.isValueFragment} becomes false instead of true.</li>
+         * <li> In {@link android.webkit.WebView}, apps targeting earlier versions will have
+         * JS URLs evaluated directly and any result of the evaluation will not replace
+         * the current page content.  Apps targetting KITKAT or later that load a JS URL will
+         * have the result of that URL replace the content of the current page</li>
+         * <li> {@link android.app.AlarmManager#set AlarmManager.set} becomes interpreted as
+         * an inexact value, to give the system more flexibility in scheduling alarms.</li>
+         * <li> {@link android.content.Context#getSharedPreferences(String, int)
+         * Context.getSharedPreferences} no longer allows a null name.</li>
+         * <li> {@link android.widget.RelativeLayout} changes to compute wrapped content
+         * margins correctly.</li>
+         * <li> {@link android.app.ActionBar}'s window content overlay is allowed to be
+         * drawn.</li>
+         * <li>The {@link android.Manifest.permission#READ_EXTERNAL_STORAGE}
+         * permission is now always enforced.</li>
+         * <li>Access to package-specific external storage directories belonging
+         * to the calling app no longer requires the
+         * {@link android.Manifest.permission#READ_EXTERNAL_STORAGE} or
+         * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE}
+         * permissions.</li>
+         * </ul>
+         */
+        static const Int32 KITKAT = 19;
+
+        /**
+         * Android 4.4W: KitKat for watches, snacks on the run.
+         *
+         * <p>Applications targeting this or a later release will get these
+         * new changes in behavior:</p>
+         * <ul>
+         * <li>{@link android.app.AlertDialog} might not have a default background if the theme does
+         * not specify one.</li>
+         * </ul>
+         */
+        static const Int32 KITKAT_WATCH = 20;
+
+        /**
+         * Temporary until we completely switch to {@link #LOLLIPOP}.
+         * @hide
+         */
+        static const Int32 L = 21;
+
+        /**
+         * Lollipop.  A flat one with beautiful shadows.  But still tasty.
+         *
+         * <p>Applications targeting this or a later release will get these
+         * new changes in behavior:</p>
+         * <ul>
+         * <li> {@link android.content.Context#bindService Context.bindService} now
+         * requires an explicit Intent, and will throw an exception if given an implicit
+         * Intent.</li>
+         * <li> {@link android.app.Notification.Builder Notification.Builder} will
+         * not have the colors of their various notification elements adjusted to better
+         * match the new material design look.</li>
+         * <li> {@link android.os.Message} will validate that a message is not currently
+         * in use when it is recycled.</li>
+         * <li> Hardware accelerated drawing in windows will be enabled automatically
+         * in most places.</li>
+         * <li> {@link android.widget.Spinner} throws an exception if attaching an
+         * adapter with more than one item type.</li>
+         * <li> If the app is a launcher, the launcher will be available to the user
+         * even when they are using corporate profiles (which requires that the app
+         * use {@link android.content.pm.LauncherApps} to correctly populate its
+         * apps UI).</li>
+         * <li> Calling {@link android.app.Service#stopForeground Service.stopForeground}
+         * with removeNotification false will modify the still posted notification so that
+         * it is no longer forced to be ongoing.</li>
+         * <li> A {@link android.service.dreams.DreamService} must require the
+         * {@link android.Manifest.permission#BIND_DREAM_SERVICE} permission to be usable.</li>
+         * </ul>
+         */
+        static const Int32 LOLLIPOP = 21;
     };
 
 public:
@@ -369,14 +461,30 @@ public:
     static CARAPI_(String) GetString(
         /* [in] */ const char* property);
 
-    static CARAPI_(Int64) GetLong(
+    static CARAPI_(Int64) GetInt64(
         /* [in] */ const char* property);
 
     static CARAPI_(String) GetString(
         /* [in] */ const String& property);
 
-    static CARAPI_(Int64) GetLong(
+    static CARAPI_(Int64) GetInt64(
         /* [in] */ const String& property);
+
+    /**
+     * Ensure that raw fingerprint system property is defined. If it was derived
+     * dynamically by {@link #deriveFingerprint()} this is where we push the
+     * derived value into the property service.
+     *
+     * @hide
+     */
+     static CARAPI EnsureFingerprintProperty();
+
+    /**
+     * Returns the version string for the radio firmware.  May return
+     * null (if, for instance, the radio is not currently on).
+     */
+    static String GetRadioVersion();
+
 public:
     /** Value used for when a build property is unknown. */
     static const String UNKNOWN;
@@ -396,16 +504,24 @@ public:
     /** The name of the underlying board, like "goldfish". */
     static const String BOARD;
 
-    /** The name of the instruction set (CPU type + ABI convention) of native code. */
+    /**
+     * The name of the instruction set (CPU type + ABI convention) of native code.
+     *
+     * @deprecated Use {@link #SUPPORTED_ABIS} instead.
+     */
     static const String CPU_ABI;
 
-    /** The name of the second instruction set (CPU type + ABI convention) of native code. */
+    /**
+     * The name of the second instruction set (CPU type + ABI convention) of native code.
+     *
+     * @deprecated Use {@link #SUPPORTED_ABIS} instead.
+     */
     static const String CPU_ABI2;
 
     /** The manufacturer of the product/hardware. */
     static const String MANUFACTURER;
 
-    /** The brand (e.g., carrier) the software is customized for, if any. */
+    /** The consumer-visible brand with which the product/hardware will be associated, if any. */
     static const String BRAND;
 
     /** The end-user-visible name for the end product. */
@@ -448,6 +564,8 @@ public:
     static AutoPtr<ArrayOf<String> > SUPPORTED_64_BIT_ABIS;
 
 public:
+    static const String TAG;// = "Build";
+
     /** The type of build, like "user" or "eng". */
     static const String TYPE;
 
@@ -471,6 +589,27 @@ public:
 private:
     Build();
     Build(const Build&);
+
+    // static {
+    //     /*
+    //      * Adjusts CPU_ABI and CPU_ABI2 depending on whether or not a given process is 64 bit.
+    //      * 32 bit processes will always see 32 bit ABIs in these fields for backward
+    //      * compatibility.
+    //      */
+    //     final String[] abiList;
+    //     if (VMRuntime.getRuntime().is64Bit()) {
+    //         abiList = SUPPORTED_64_BIT_ABIS;
+    //     } else {
+    //         abiList = SUPPORTED_32_BIT_ABIS;
+    //     }
+
+    //     CPU_ABI = abiList[0];
+    //     if (abiList.length > 1) {
+    //         CPU_ABI2 = abiList[1];
+    //     } else {
+    //         CPU_ABI2 = "";
+    //     }
+    // }
 };
 
 

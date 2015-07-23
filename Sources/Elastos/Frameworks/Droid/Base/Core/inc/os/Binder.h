@@ -142,11 +142,14 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
+    static CARAPI_(Boolean) IsProxy(
+        /* [in] */ IInterface* iface);
+
 private:
     CARAPI_(void) Destroy();
 
 public:
-    Int32 mObject;
+    Int64 mObject;
 };
 
 } // namespace Os

@@ -89,6 +89,21 @@ ECode HandlerThread::Quit(
     return NOERROR;
 }
 
+ECode HandlerThread::QuitSafely(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+
+    AutoPtr<ILooper> looper;
+    FAIL_RETURN(GetLooper((ILooper**)&looper));
+    if (looper != NULL) {
+        looper->QuitSafely();
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
+}
 ECode HandlerThread::GetThreadId(
     /* [out] */ Int32* tid)
 {

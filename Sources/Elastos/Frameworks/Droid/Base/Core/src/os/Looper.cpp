@@ -152,7 +152,7 @@ ECode Looper::Loop()
             //         + msg.callback + " what=" + msg.what);
         }
 
-        msg->Recycle();
+        msg->RecycleUnchecked();
     }
 }
 
