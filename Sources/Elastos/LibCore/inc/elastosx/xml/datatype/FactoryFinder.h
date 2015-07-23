@@ -4,40 +4,38 @@
 #include "Object.h"
 
 using Elastos::Core::Object;
+using Elastos::Core::IClassLoader;
 
 namespace Elastosx {
 namespace Xml {
 namespace Datatype {
 
-class FactoryFinder : public Object
+class FactoryFinder
 {
 public:
+    static CARAPI NewInstance(
+        /* [in] */ String clsName,
+        /* [in] */ IClassLoader* loader,
+        /* [out] */ IInterface** obj);
+
+    static CARAPI Find(
+        /* [in] */ String factoryId,
+        /* [in] */ String fallbackClassName,
+        /* [out] */ IInterface** obj);
 
 private:
     FactoryFinder();
 
-    static void DebugPrint();
-
-    static AutoPtr<IClassLoader> FindClassLoader();
-
-    static AutoPtr<IInterface> NewInstance();
-
-    static AutoPtr<IInterface> Find(
-        /* [in] */ String factoryId,
-        /* [in] */ String fallbackClassName);
+    static CARAPI FindClassLoader(
+        /* [in] */ String clsName,
+        /* [out] */ IClassLoader** pLoader);
 
 private:
-    /** <p>Name of class to display in output messages.</p> */
-    static const String sCLASS_NAME;
-
-    /** <p>Debug flag to trace loading process.</p> */
-    static Boolean sDebug;
-
     /** <p>Cache properties for performance.</p> */
-    static AutoPtr<IProperties> sCacheProps;
+    // static AutoPtr<IProperties> sCacheProps;
 
     /** <p>First time requires initialization overhead.</p> */
-    static Boolean firstTime;
+    static Boolean sFirstTime;
 
     /** Default columns per line. */
     static const Int32 DEFAULT_LINE_LENGTH;
