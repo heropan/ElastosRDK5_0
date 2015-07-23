@@ -3,12 +3,19 @@
 #define __ELASTOSX_NET_SSL_CSSLPARAMETERS_H__
 
 #include "_Elastosx_Net_Ssl_CSSLParameters.h"
-#include <elastos/core/Object.h>
+#include "Object.h"
+
+using Elastos::Core::Object;
 
 namespace Elastosx {
 namespace Net {
 namespace Ssl {
 
+/**
+ * SSL handshake parameters that include protocols, cipher suites, and
+ * client authentication requirements.
+ * @since 1.6
+ */
 CarClass(CSSLParameters)
     , public Object
     , public ISSLParameters

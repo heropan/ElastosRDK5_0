@@ -21,4 +21,8 @@ module
     const E_XPATH_EXCEPTION                                       = 0xB0070000;
     const E_XPATH_EXPRESSION_EXCEPTION                 = 0xB0080000;
 
+    //==========================================================================
+    // Elastosx.Net exception codes (Family: 0x30 - B0)
+    const E_SSL_PEER_UNVERIFIED_EXCEPTION                                  = 0xB1010000;
+
 }

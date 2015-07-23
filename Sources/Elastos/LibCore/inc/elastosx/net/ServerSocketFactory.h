@@ -11,6 +11,10 @@ using Elastos::Net::IServerSocket;
 namespace Elastosx {
 namespace Net {
 
+/**
+ * This abstract class defines methods to create server sockets. It can be
+ * subclassed to create specific server socket types.
+ */
 class ServerSocketFactory
     : public Object
     , public IServerSocketFactory

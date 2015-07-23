@@ -11,6 +11,10 @@ using Elastos::Net::IInetAddress;
 namespace Elastosx {
 namespace Net {
 
+/**
+ * This abstract class defines methods to create sockets. It can be subclassed
+ * to create specific socket types with additional socket-level functionality.
+ */
 class SocketFactory
     : public Object
     , public ISocketFactory

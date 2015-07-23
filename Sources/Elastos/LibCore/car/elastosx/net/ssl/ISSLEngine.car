@@ -1,10 +1,15 @@
 
 module
 {
-    interface Elastos.Core.IRunnable;
-    interface Elastos.IO.IByteBuffer;
+    using interface Elastos.Core.IRunnable;
+    using interface Elastos.IO.IByteBuffer;
+
     interface Elastosx.Net.Ssl.ISSLSession;
+    interface Elastosx.Net.Ssl.ISSLEngineResult;
     interface Elastosx.Net.Ssl.ISSLParameters;
+
+    enum Elastosx.Net.Ssl.SSLEngineResult_Status;
+    enum Elastosx.Net.Ssl.SSLEngineResult_HandshakeStatus;
 
     namespace Elastosx {
     namespace Net {

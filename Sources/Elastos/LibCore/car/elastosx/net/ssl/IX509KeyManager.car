@@ -6,15 +6,13 @@ module
     interface Elastos.Net.ISocket;
     interface Elastos.Security.Cert.IX509Certificate;
 
-    /**
-     * A Key Manager for X509 certificate-based key pairs.
-     */
-
     namespace Elastosx {
     namespace Net {
     namespace Ssl {
 
     /**
+     * A Key Manager for X509 certificate-based key pairs.
+     *
      * @Involve
      * interface Elastosx.Net.Ssl.IKeyManager
      */

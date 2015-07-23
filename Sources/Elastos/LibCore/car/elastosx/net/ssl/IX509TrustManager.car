@@ -10,8 +10,7 @@ module
     /**
      * The trust manager for X509 certificates to be used to perform authentication
      * for secure sockets.
-     */
-    /**
+     *
      * @Involve
      * interface Elastosx.Net.Ssl.ITrustManager
      */

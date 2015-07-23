@@ -100,7 +100,7 @@ ECode CSSLParameters::constructor(
     /* [in] */ ArrayOf<String>* cipherSuites,
     /* [in] */ ArrayOf<String>* protocols)
 {
-    SetCipherSuites(cipherSuites);
+    FAIL_RETURN(SetCipherSuites(cipherSuites))
     return SetProtocols(protocols);
 }
 

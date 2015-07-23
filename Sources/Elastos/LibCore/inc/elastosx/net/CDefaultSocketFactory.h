@@ -11,6 +11,9 @@ using Elastos::Net::IInetAddress;
 namespace Elastosx {
 namespace Net {
 
+/**
+ * Default implementation of {@link javax.net.SocketFactory}
+ */
 CarClass(CDefaultSocketFactory) , public SocketFactory
 {
 public:

@@ -10,11 +10,10 @@ module
     /**
      * The listener to be implemented to receive event notifications on completion
      * of SSL handshake on an SSL connection.
+     *
+     * @Involve
+     * interface Elastos.Utility.IEventListener;
      */
-    /**
-      * @Involve
-      * interface Elastos.Utility.IEventListener;
-      */
     interface IHandshakeCompletedListener {
         /**
          * The callback method that is invoked when a SSL handshake is completed.

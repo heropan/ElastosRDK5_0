@@ -73,7 +73,7 @@ module
          * @return the status of the current handshake.
          */
         GetHandshakeStatus(
-            [out] SSLEngineResult_HandshakeStatus* status);
+            [out] enum SSLEngineResult_HandshakeStatus* status);
 
         /**
          * Returns the number of bytes retrieved from the source buffer(s).

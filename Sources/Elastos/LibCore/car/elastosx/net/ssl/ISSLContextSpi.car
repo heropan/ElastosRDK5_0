@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Security.ISecureRandom;
+    interface Elastosx.Net.Ssl.ISSLEngine;
     interface Elastosx.Net.Ssl.ISSLSocketFactory;
     interface Elastosx.Net.Ssl.ISSLServerSocketFactory;
 
@@ -31,7 +32,7 @@ module
         EngineInit(
             [in] ArrayOf<IKeyManager*>* km,
             [in] ArrayOf<ITrustManager*>* tm,
-            [in] ArrayOf<ISecureRandom*>* sr);
+            [in] ISecureRandom* sr);
 
         /**
          * Returns a socket factory for this instance.
@@ -62,7 +63,7 @@ module
          *             if the provider does not support the operation.
          */
         EngineCreateSSLEngine(
-            [in ]String host,
+            [in] String host,
             [in] Int32 port,
             [out] ISSLEngine** engine);
 

@@ -4,15 +4,15 @@ module
     interface Elastos.Security.IKeyStore;
     interface Elastosx.Net.Ssl.IManagerFactoryParameters;
     interface Elastosx.Net.Ssl.ITrustManager;
-    /**
-     * The <i>Service Provider Interface</i> (SPI) for the
-     * {@code TrustManagerFactory} class.
-     */
 
     namespace Elastosx {
     namespace Net {
     namespace Ssl {
 
+    /**
+     * The <i>Service Provider Interface</i> (SPI) for the
+     * {@code TrustManagerFactory} class.
+     */
     interface ITrustManagerFactorySpi {
         /**
          * Initializes this factory instance with the specified keystore as source
