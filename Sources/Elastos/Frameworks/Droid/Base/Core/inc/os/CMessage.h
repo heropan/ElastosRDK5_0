@@ -130,9 +130,12 @@ public:
         /* [in] */ IMessage* next);
 
     /**
-     * Return a Message instance to the global pool.  You MUST NOT touch
-     * the Message after calling this function -- it has effectively been
-     * freed.
+     * Return a Message instance to the global pool.
+     * <p>
+     * You MUST NOT touch the Message after calling this function because it has
+     * effectively been freed.  It is an error to recycle a message that is currently
+     * enqueued or that is in the process of being delivered to a Handler.
+     * </p>
      */
     CARAPI Recycle();
 
@@ -229,13 +232,16 @@ public:
 
     CARAPI MarkInUse();
 
-    CARAPI_(void) ClearForRecycle();
-
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
     CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);
+
+    CARAPI UpdateCheckRecycle(
+        /* [in] */ Int32 targetSdkVersion);
+
+    CARAPI RecycleUnchecked();
 
 public:
     /**
@@ -279,7 +285,21 @@ public:
      */
     AutoPtr<IMessenger> mReplyTo;
 
-    /** If set message is in use */
+    /**
+     * Optional field indicating the uid that sent the message.  This is
+     * only valid for messages posted by a {@link Messenger}; otherwise,
+     * it will be -1.
+     */
+    Int32 mSendingUid;// = -1;
+
+    /** If set message is in use.
+     * This flag is set when the message is enqueued and remains set while it
+     * is delivered and afterwards when it is recycled.  The flag is only cleared
+     * when a new message is created or obtained since that is the only time that
+     * applications are allowed to modify the contents of the message.
+     *
+     * It is an error to attempt to enqueue or recycle a message that is already in use.
+     */
     /*package*/ static const Int32 FLAG_IN_USE = 1 << 0;
 
     /** If set message is asynchronous */
@@ -307,6 +327,8 @@ private:
     static Int32 sPoolSize;
 
     static const Int32 MAX_POOL_SIZE = 50;
+
+    static Boolean gCheckRecycle;// = true;
 };
 
 } // namespace Os

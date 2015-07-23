@@ -1,6 +1,7 @@
 
 #include "ext/frameworkdef.h"
 #include "os/CMessage.h"
+#include "os/Build.h"
 //#include "os/CBundle.h"
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/AutoLock.h>
@@ -15,10 +16,12 @@ namespace Os {
 const Int32 CMessage::FLAG_IN_USE;
 const Int32 CMessage::FLAG_ASYNCHRONOUS;
 const Int32 CMessage::FLAGS_TO_CLEAR_ON_COPY_FROM;
+
 Object CMessage::sPoolSync;
 AutoPtr<CMessage> CMessage::sPool;
 Int32 CMessage::sPoolSize = 0;
 const Int32 CMessage::MAX_POOL_SIZE;
+Boolean CMessage::gCheckRecycle = TRUE;
 
 CAR_INTERFACE_IMPL_2(CMessage, Object, IMessage, IParcelable)
 
@@ -28,6 +31,7 @@ CMessage::CMessage()
     : mWhat(0)
     , mArg1(0)
     , mArg2(0)
+    , mSendingUid(-1)
     , mFlags(0)
     , mWhen(0)
 {}
@@ -45,7 +49,8 @@ AutoPtr<IMessage> CMessage::Obtain()
         if (sPool != NULL) {
             AutoPtr<CMessage> m = sPool;
             sPool = m->mNext;
-            m->mNext = NULL;
+            m->mNext = NULL; // clear in-use flag
+            m->mFlags = 0;
             sPoolSize--;
             return (IMessage*)m.Get();
         }
@@ -72,6 +77,8 @@ AutoPtr<IMessage> CMessage::Obtain(
     AutoPtr<IMessenger> replyTo;
     orig->GetReplyTo((IMessenger**)&replyTo);
     m->SetReplyTo(replyTo);
+    orig->GetSendingUid(&value);
+    m->SetSendingUid(value);
     AutoPtr<IBundle> data;
     orig->GetData((IBundle**)&data);
     if (data != NULL) {
@@ -191,13 +198,47 @@ ECode CMessage::SetNext(
     return NOERROR;
 }
 
+ECode CMessage::UpdateCheckRecycle(
+    /* [in] */ Int32 targetSdkVersion)
+{
+    if (targetSdkVersion < Build::VERSION_CODES::LOLLIPOP) {
+        gCheckRecycle = FALSE;
+    }
+    return NOERROR;
+}
+
 ECode CMessage::Recycle()
 {
-    ClearForRecycle();
+    Boolean value;
+    if (IsInUse(&value), value) {
+        if (gCheckRecycle) {
+            // throw new IllegalStateException("This message cannot be recycled because it "
+            //         + "is still in use.");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        return NOERROR;
+    }
 
-    {
-        AutoLock lock(sPoolSync);
+    return RecycleUnchecked();
+}
 
+ECode CMessage::RecycleUnchecked()
+{
+    // Mark the message as in use while it remains in the recycled object pool.
+    // Clear out all other details.
+    mFlags = FLAG_IN_USE;
+    mWhat = 0;
+    mArg1 = 0;
+    mArg2 = 0;
+    mObj = NULL;
+    mReplyTo = NULL;
+    mSendingUid = -1;
+    mWhen = 0;
+    mTarget = NULL;
+    mCallback = NULL;
+    mData = NULL;
+
+    synchronized (sPoolSync) {
         if (sPoolSize < MAX_POOL_SIZE) {
             mNext = sPool;
             sPool = this;
@@ -217,6 +258,7 @@ ECode CMessage::CopyFrom(
     mArg2 = m->mArg2;
     mObj = m->mObj;
     mReplyTo = m->mReplyTo;
+    mSendingUid = m->mSendingUid;
 
     mData = NULL;
     if (m->mData != NULL) {
@@ -435,20 +477,6 @@ ECode CMessage::MarkInUse()
     return NOERROR;
 }
 
-void CMessage::ClearForRecycle()
-{
-    mFlags = 0;
-    mWhat = 0;
-    mArg1 = 0;
-    mArg2 = 0;
-    mObj = NULL;
-    mReplyTo = NULL;
-    mWhen = 0;
-    mTarget = NULL;
-    mCallback = NULL;
-    mData = NULL;
-}
-
 ECode CMessage::ReadFromParcel(
     /* [in] */ IParcel* source)
 {
@@ -466,6 +494,7 @@ ECode CMessage::ReadFromParcel(
     source->ReadInterfacePtr((Handle32*)&mData);
     source->ReadInterfacePtr((Handle32*)&mReplyTo);
     // replyTo = Messenger.readMessengerOrNullFromParcel(source);
+    source->ReadInt32(&mSendingUid);
     return NOERROR;
 }
 
@@ -500,8 +529,49 @@ ECode CMessage::WriteToParcel(
     dest->WriteInterfacePtr(mReplyTo);
 
     // CMessenger::WriteMessengerOrNullToParcel(mReplyTo, dest);
+    dest->WriteInt32(mSendingUid);
     return NOERROR;
 }
+
+// String toString(long now) {
+//     StringBuilder b = new StringBuilder();
+//     b.append("{ when=");
+//     TimeUtils.formatDuration(when - now, b);
+
+//     if (target != null) {
+//         if (callback != null) {
+//             b.append(" callback=");
+//             b.append(callback.getClass().getName());
+//         } else {
+//             b.append(" what=");
+//             b.append(what);
+//         }
+
+//         if (arg1 != 0) {
+//             b.append(" arg1=");
+//             b.append(arg1);
+//         }
+
+//         if (arg2 != 0) {
+//             b.append(" arg2=");
+//             b.append(arg2);
+//         }
+
+//         if (obj != null) {
+//             b.append(" obj=");
+//             b.append(obj);
+//         }
+
+//         b.append(" target=");
+//         b.append(target.getClass().getName());
+//     } else {
+//         b.append(" barrier=");
+//         b.append(arg1);
+//     }
+
+//     b.append(" }");
+//     return b.toString();
+// }
 
 } // namespace Os
 } // namespace Droid

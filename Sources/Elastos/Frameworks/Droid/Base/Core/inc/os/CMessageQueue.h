@@ -102,6 +102,9 @@ public:
         /* [out] */ Int32* result);
 
 private:
+    // Disposes of the underlying message queue.
+    // Must only be called on the looper thread or the finalizer.
+    CARAPI Dispose();
 
     CARAPI NativeInit();
 
@@ -112,9 +115,18 @@ private:
 
     CARAPI_(void) NativeWake();
 
+    CARAPI_(Boolean) NativeIsIdling();
+
     CARAPI DebugMessage(
         /* [in] */ IMessage* msg,
         /* [in] */ const char* info);
+
+    CARAPI RemoveAllMessagesLocked();
+
+    CARAPI RemoveAllFutureMessagesLocked();
+
+    CARAPI_(Boolean) IsIdlingLocked();
+
 private:
     static const String TAG;
     static const Boolean DBG;
@@ -122,12 +134,12 @@ private:
     // True if the message queue can be quit.
     Boolean mQuitAllowed;
 
-    Handle32 mPtr; // used by native code
+    Int64 mPtr; // used by native code
 
     AutoPtr<IMessage> mMessages;
     List<AutoPtr<IIdleHandler> > mIdleHandlers;
     AutoPtr<ArrayOf<IIdleHandler*> > mPendingIdleHandlers;
-    Boolean mQuiting;
+    Boolean mQuitting;
 
     // Indicates whether next() is blocked waiting in pollOnce() with a non-zero timeout.
     Boolean mBlocked;

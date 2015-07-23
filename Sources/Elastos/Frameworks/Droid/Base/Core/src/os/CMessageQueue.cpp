@@ -42,7 +42,7 @@ ECode CMessageQueue::DebugMessage(
 CMessageQueue::CMessageQueue()
     : mQuitAllowed(FALSE)
     , mPtr(0)
-    , mQuiting(FALSE)
+    , mQuitting(FALSE)
     , mBlocked(FALSE)
     , mNextBarrierToken(0)
 {
@@ -51,7 +51,7 @@ CMessageQueue::CMessageQueue()
 
 CMessageQueue::~CMessageQueue()
 {
-    NativeDestroy();
+    Dispose();
 }
 
 ECode CMessageQueue::constructor(
@@ -82,11 +82,28 @@ ECode CMessageQueue::RemoveIdleHandler(
     return NOERROR;
 }
 
+ECode CMessageQueue::Dispose()
+{
+    if (mPtr != 0) {
+        NativeDestroy();
+        mPtr = 0;
+    }
+    return NOERROR;
+}
+
 ECode CMessageQueue::GetNext(
     /* [out] */ IMessage** result)
 {
     VALIDATE_NOT_NULL(result);
     *result = NULL;
+
+    // Return here if the message loop has already quit and been disposed.
+    // This can happen if the application tries to restart a looper after quit
+    // which is not supported.
+    Int64 ptr = mPtr;
+    if (ptr == 0) {
+        return NOERROR;
+    }
 
     using Elastos::Core::Math;
     Int32 pendingIdleHandlerCount = -1; // -1 only during first iteration
@@ -101,11 +118,7 @@ ECode CMessageQueue::GetNext(
         {
             AutoLock lock(mLock);
 
-            if (mQuiting) {
-                return NOERROR;
-            }
-
-            // Try to retrieve the next message.  Return if found.
+             // Try to retrieve the next message.  Return if found.
             Int64 now = SystemClock::GetUptimeMillis();
             AutoPtr<IMessage> prevMsg;
             AutoPtr<IMessage> msg = mMessages;
@@ -144,7 +157,6 @@ ECode CMessageQueue::GetNext(
                     // if (DBG) DebugMessage(msg, "Returning");
 
                     msg->SetNext(NULL);
-                    msg->MarkInUse();
                     *result = msg;
                     REFCOUNT_ADD(*result);
                     return NOERROR;
@@ -153,6 +165,12 @@ ECode CMessageQueue::GetNext(
             else {
                 // No more messages.
                 nextPollTimeoutMillis = -1;
+            }
+
+            // Process the quit message now that all pending messages have been handled.
+            if (mQuitting) {
+                Dispose();
+                return NOERROR;
             }
 
             // If first time idle, then get the number of idlers to run.
@@ -223,17 +241,17 @@ ECode CMessageQueue::Quit(
     {
         AutoLock lock(mLock);
 
-        if (mQuiting) {
+        if (mQuitting) {
             return NOERROR;
         }
-        mQuiting = TRUE;
+        mQuitting = TRUE;
 
-        // if (safe) {
-        //     RemoveAllFutureMessagesLocked();
-        // }
-        // else {
-        //     RemoveAllMessagesLocked();
-        // }
+        if (safe) {
+            RemoveAllFutureMessagesLocked();
+        }
+        else {
+            RemoveAllMessagesLocked();
+        }
 
         // We can assume mPtr != 0 because mQuitting was previously false.
         NativeWake();
@@ -251,14 +269,6 @@ ECode CMessageQueue::EnqueueMessage(
     *result = FALSE;
     VALIDATE_NOT_NULL(msg);
 
-    Boolean inUse;
-    msg->IsInUse(&inUse);
-    if (inUse) {
-        Slogger::W(TAG, "This message is already in use.");
-        assert(0);
-        return E_RUNTIME_EXCEPTION;
-    }
-
     AutoPtr<IHandler> target;
     msg->GetTarget((IHandler**)&target);
     if (target.Get() == NULL) {
@@ -267,18 +277,29 @@ ECode CMessageQueue::EnqueueMessage(
         return E_RUNTIME_EXCEPTION;
     }
 
+    Boolean inUse;
+    msg->IsInUse(&inUse);
+    if (inUse) {
+        Slogger::W(TAG, "This message is already in use.");
+        assert(0);
+        return E_RUNTIME_EXCEPTION;
+    }
+
     Boolean needWake, isAsync;
     {
         AutoLock lock(mLock);
 
-        if (mQuiting) {
+        if (mQuitting) {
             Slogger::W(TAG, "sending message to a Handler on a dead thread");
+            msg->Recycle();
             return NOERROR;
         }
 
+        msg->MarkInUse();
         Int64 tempWhen;
         msg->SetWhen(when);
         AutoPtr<IMessage> p = mMessages;
+        Boolean needWake;
         if (p == NULL || when == 0 || (p->GetWhen(&tempWhen), when < tempWhen)) {
             // New head, wake up the event queue if blocked.
             msg->SetNext(p);
@@ -310,10 +331,11 @@ ECode CMessageQueue::EnqueueMessage(
             msg->SetNext(p);    // invariant: p == prev.next
             prev->SetNext(msg);
         }
-    }
 
-    if (needWake) {
-        NativeWake();
+        // We can assume mPtr != 0 because mQuitting is false.
+        if (needWake) {
+            NativeWake();
+        }
     }
 
     *result = TRUE;
@@ -417,6 +439,23 @@ ECode CMessageQueue::HasMessages(
     return NOERROR;
 }
 
+ECode CMessageQueue::IsIdling(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    synchronized (this) {
+        *result = IsIdlingLocked();
+    }
+    return NOERROR;
+}
+
+Boolean CMessageQueue::IsIdlingLocked()
+{
+    // If the loop is quitting then it must not be idling.
+    // We can assume mPtr != 0 when mQuitting is false.
+    return !mQuitting && NativeIsIdling();
+}
+
 ECode CMessageQueue::RemoveMessages(
     /* [in] */ IHandler* h,
     /* [in] */ Int32 what,
@@ -452,7 +491,7 @@ ECode CMessageQueue::RemoveMessages(
             AutoPtr<IMessage> next;
             p->GetNext((IMessage**)&next);
             mMessages = next;
-            p->Recycle();
+            p->RecycleUnchecked();
             p = next;
             continue;
         }
@@ -485,7 +524,7 @@ ECode CMessageQueue::RemoveMessages(
                     AutoPtr<IMessage> nn;
                     next->GetNext((IMessage**)&nn);
                     // DebugMessage(next, "Remove");
-                    next->Recycle();
+                    next->RecycleUnchecked();
                     p->SetNext(nn);
                     continue;
                 }
@@ -493,19 +532,6 @@ ECode CMessageQueue::RemoveMessages(
         }
         p = next;
     }
-
-    return NOERROR;
-}
-
-ECode CMessageQueue::IsIdling(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-
-    AutoLock lock(mLock);
-    *result = FALSE;
-
-     //return isIdlingLocked();
 
     return NOERROR;
 }
@@ -545,7 +571,7 @@ ECode CMessageQueue::RemoveMessages(
             AutoPtr<IMessage> n;
             p->GetNext((IMessage**)&n);
             mMessages = n;
-            p->Recycle();
+            p->RecycleUnchecked();
             p = n;
             continue;
         }
@@ -578,7 +604,7 @@ ECode CMessageQueue::RemoveMessages(
                     AutoPtr<IMessage> nn;
                     n->GetNext((IMessage**)&nn);
                     // DebugMessage(n, "Remove");
-                    n->Recycle();
+                    n->RecycleUnchecked();
                     p->SetNext(nn);
                     continue;
                 }
@@ -622,7 +648,7 @@ ECode CMessageQueue::RemoveCallbacksAndMessages(
             AutoPtr<IMessage> n;
             p->GetNext((IMessage**)&n);
             mMessages = n;
-            p->Recycle();
+            p->RecycleUnchecked();
             p = n;
             continue;
         }
@@ -654,7 +680,7 @@ ECode CMessageQueue::RemoveCallbacksAndMessages(
                     AutoPtr<IMessage> nn;
                     n->GetNext((IMessage**)&nn);
                     // DebugMessage(n, "RemoveCallbacksAndMessages");
-                    n->Recycle();
+                    n->RecycleUnchecked();
                     p->SetNext(nn);
                     continue;
                 }
@@ -689,6 +715,8 @@ ECode CMessageQueue::EnqueueSyncBarrier(
     CMessageHelper::AcquireSingleton((IMessageHelper**)&helper);
     AutoPtr<IMessage> msg;
     helper->Obtain((IMessage**)&msg);
+    msg->MarkInUse();
+    msg->SetWhen(when);
     msg->SetArg1(token);
 
     AutoPtr<IMessage> prev;
@@ -719,7 +747,6 @@ ECode CMessageQueue::RemoveSyncBarrier(
 {
     // Remove a sync barrier token from the queue.
     // If the queue is no longer stalled by a barrier then wake it.
-    Boolean needWake;
     {
         AutoLock lock(mLock);
 
@@ -741,6 +768,7 @@ ECode CMessageQueue::RemoveSyncBarrier(
                 " barrier token has not been posted or has already been removed.");
             return E_ILLEGAL_STATE_EXCEPTION;
         }
+        Boolean needWake;
         if (prev != NULL) {
             AutoPtr<IMessage> n;
             p->GetNext((IMessage**)&n);
@@ -755,13 +783,65 @@ ECode CMessageQueue::RemoveSyncBarrier(
             needWake = (mMessages == NULL
                 || (mMessages->GetTarget((IHandler**)&target), target.Get() != NULL));
         }
-        p->Recycle();
+        p->RecycleUnchecked();
+
+        // If the loop is quitting then it is already awake.
+        // We can assume mPtr != 0 when mQuitting is false.
+        if (needWake && !mQuitting) {
+            NativeWake();
+        }
     }
 
-    if (needWake) {
-        NativeWake();
-    }
+    return NOERROR;
+}
 
+ECode CMessageQueue::RemoveAllMessagesLocked()
+{
+    AutoPtr<IMessage> p = mMessages;
+    while (p != NULL) {
+        AutoPtr<IMessage> n;
+        p->GetNext((IMessage**)&n);
+        p->RecycleUnchecked();
+        p = n;
+    }
+    mMessages = NULL;
+    return NOERROR;
+}
+
+ECode CMessageQueue::RemoveAllFutureMessagesLocked()
+{
+    Int64 now = SystemClock::GetUptimeMillis();
+    AutoPtr<IMessage> p = mMessages;
+    if (p != NULL) {
+        Int64 when;
+        p->GetWhen(&when);
+        if (when > now) {
+            RemoveAllMessagesLocked();
+        }
+        else {
+            AutoPtr<IMessage> n;
+            for (;;) {
+                n = NULL;
+                p->GetNext((IMessage**)&n);
+                if (n == NULL) {
+                    return NOERROR;
+                }
+                n->GetWhen(&when);
+                if (when > now) {
+                    break;
+                }
+                p = n;
+            }
+            p->SetNext(NULL);
+            do {
+                p = n;
+                n = NULL;
+                p->GetNext((IMessage**)&n);
+                p->RecycleUnchecked();
+            }
+            while (n != NULL);
+        }
+    }
     return NOERROR;
 }
 
@@ -798,6 +878,13 @@ void CMessageQueue::NativeWake()
 {
     NativeMessageQueue* nativeMessageQueue = (NativeMessageQueue*)mPtr;
     return nativeMessageQueue->Wake();
+}
+
+Boolean CMessageQueue::NativeIsIdling()
+{
+    NativeMessageQueue* nativeMessageQueue = (NativeMessageQueue*)mPtr;
+    assert(0 && "TODO waiting for lib");
+    //return nativeMessageQueue->getLooper()->isIdling();
 }
 
 } // namespace Os
