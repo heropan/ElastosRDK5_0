@@ -1802,7 +1802,7 @@ jobject Util::ToJavaConfiguration(
     }
 
     Boolean tempBool;
-    configuration->GetUserSetLocale(&tempBool);
+    configuration->IsUserSetLocale(&tempBool);
     f = env->GetFieldID(configKlass, "userSetLocale", "Z");
     Util::CheckErrorAndLog(env, "ToJavaConfiguration", "Fail GetFieldID: userSetLocale %d", __LINE__);
 

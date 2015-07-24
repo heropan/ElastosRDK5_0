@@ -1,6 +1,6 @@
 module
 {
-    interface Libcore.ICU.ILocale;
+    interface Elastos.Utility.ILocale;
     interface Elastos.IO.IInputStream;
 
     namespace Elastos {

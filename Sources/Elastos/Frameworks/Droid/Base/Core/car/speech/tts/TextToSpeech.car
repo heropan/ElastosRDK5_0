@@ -1,6 +1,6 @@
 module
 {
-    interface Libcore.ICU.ILocale;
+    interface Elastos.Utility.ILocale;
     interface Elastos.Utility.IObjectStringMap;
     interface IObjectContainer;
     //interface Elastos.Droid.Content.IContext;

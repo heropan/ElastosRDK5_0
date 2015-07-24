@@ -17,7 +17,9 @@ module
      */
     /**
      * @Involve
-     * interface Org.Xmlpull.V1.IXmlPullParser
+     * interface Org.Xmlpull.V1.IXmlPullParser;
+     * interface Elastos.Droid.Utility.IAttributeSet;
+     * interface ICloseable;
      */
     interface IXmlResourceParser {
         /**

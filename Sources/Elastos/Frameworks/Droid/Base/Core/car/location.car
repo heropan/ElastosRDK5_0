@@ -31,7 +31,7 @@ module
     merge("location/GpsStatusListenerTransport.car");
     merge("location/GpsNetInitiatedHandler.car");
 
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.ILooper;

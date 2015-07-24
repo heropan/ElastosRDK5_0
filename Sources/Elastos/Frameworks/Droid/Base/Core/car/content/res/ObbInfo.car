@@ -11,6 +11,10 @@ module
      * from the footer on the OBB file. This information may be manipulated by a
      * developer with the <code>obbtool</code> program in the Android SDK.
      */
+    /**
+     * @Invovle
+     * interface IParcelable
+     */
     [deprecated]
     interface IObbInfo {
         /** Flag noting that this OBB is an overlay patch for a base OBB. */

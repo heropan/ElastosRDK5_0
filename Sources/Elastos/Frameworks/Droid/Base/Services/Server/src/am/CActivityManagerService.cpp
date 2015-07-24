@@ -15737,7 +15737,7 @@ Boolean CActivityManagerService::UpdateConfigurationLocked(
                 mConfiguration->GetLocale((ILocale**)&curLocale);
                 Boolean equals, userSetLocale;
                 locale->Equals(curLocale, &equals);
-                values->GetUserSetLocale(&userSetLocale);
+                values->IsUserSetLocale(&userSetLocale);
                 SaveLocaleLocked(locale, !equals, userSetLocale);
             }
 

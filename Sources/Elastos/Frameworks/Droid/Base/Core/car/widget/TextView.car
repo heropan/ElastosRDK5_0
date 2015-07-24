@@ -3,7 +3,7 @@ module
 {
     enum Elastos.Droid.Text.TextUtilsTruncateAt;
     using interface Elastos.Core.ICharSequence;
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IContext;

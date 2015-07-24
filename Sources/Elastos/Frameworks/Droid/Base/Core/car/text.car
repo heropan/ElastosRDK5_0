@@ -169,7 +169,7 @@ module
     interface Elastos.Droid.Text.ITextWatcher;
     interface Elastos.Droid.Text.ISpanWatcher;
     interface Elastos.Droid.Text.ISelectionPositionIterator;
-    interface Libcore.ICU.ILocale;
+    interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {

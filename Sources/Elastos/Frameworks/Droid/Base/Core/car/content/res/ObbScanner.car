@@ -16,9 +16,9 @@ module
      */
 
     interface IObbScanner {
-         GetObbInfo(
-             [in] String filePath,
-             [out] IObbInfo** obbInfo);
+        GetObbInfo(
+            [in] String filePath,
+            [out] IObbInfo** obbInfo);
     }
 
     } // namespace Res

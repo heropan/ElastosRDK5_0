@@ -26,7 +26,7 @@ module
         /**
          * Return the number of values in this array.
          */
-        Length(
+        GetLength(
             [out] Int32* len);
 
         /**
@@ -374,10 +374,19 @@ module
          *
          * @return Returns true if the value was retrieved, else false.
          */
-         GetValue(
+        GetValue(
             [in] Int32 index,
             [in] ITypedValue* outValue,
             [out] Boolean* value);
+
+        /**
+         * Returns the type of attribute at the specified index.
+         *
+         * @param index Index of attribute whose type to retrieve.
+         * @return Attribute type.
+         */
+        GetType(
+            [in] Int32 index);
 
         /**
          * Determines whether there is an attribute at <var>index</var>.
@@ -415,6 +424,17 @@ module
          * Give back a previously retrieved StyledAttributes, for later re-use.
          */
         Recycle();
+
+        /**
+         * Return a mask of the configuration parameters for which the values in
+         * this typed array may change.
+         *
+         * @return Returns a mask of the changing configuration parameters, as
+         *         defined by {@link android.content.pm.ActivityInfo}.
+         * @see android.content.pm.ActivityInfo
+         */
+        GetChangingConfigurations(
+            [out] Int32* value);
     }
 
     } // namespace Res

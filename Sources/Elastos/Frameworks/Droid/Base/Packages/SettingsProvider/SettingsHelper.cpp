@@ -179,7 +179,7 @@ void SettingsHelper::SetLocaleData(
     // change after registering. Need to find some other way to detect if the user manually
     // changed the locale
     Boolean temp;
-    if (conf->GetUserSetLocale(&temp), temp) return;  // Don't change if user set it in the SetupWizard
+    if (conf->IsUserSetLocale(&temp), temp) return;  // Don't change if user set it in the SetupWizard
     AutoPtr<IAssetManager> asset;
     mContext->GetAssets((IAssetManager**)&asset);
     AutoPtr<ArrayOf<String> > availableLocales;

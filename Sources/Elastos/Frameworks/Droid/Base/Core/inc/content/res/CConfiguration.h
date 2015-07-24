@@ -204,7 +204,7 @@ public:
     CARAPI GetLocale(
         /* [out] */ ILocale** locale);
 
-    CARAPI GetUserSetLocale(
+    CARAPI IsUserSetLocale(
         /* [out] */ Boolean* userSetLocale);
 
     CARAPI SetUserSetLocale(

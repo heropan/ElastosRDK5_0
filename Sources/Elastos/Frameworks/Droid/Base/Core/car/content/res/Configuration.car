@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Libcore.ICU.ILocale;
+    using interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {
@@ -18,163 +18,99 @@ module
      * from an activity, you can get it by chaining the request with getResources():
      * {Configuration config = getResources().getConfiguration();}
      */
-
+    /**
+     * @Involve
+     * interface IParcelable;
+     * interface IComparable;
+     */
     interface IConfiguration {
         /**
-         * Constant for #screenLayout: bits that encode the size.
-         * @sa #screenLayout
+         * Constant used to to represent MNC (Mobile Network Code) zero.
+         * 0 cannot be used, since it is used to represent an undefined MNC.
          */
+        const Int32 MNC_ZERO = 0xffff;
+
+        /** Constant for {@link #screenLayout}: bits that encode the size. */
         const Int32 SCREENLAYOUT_SIZE_MASK = 0x0f;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_SIZE_MASK
-         * value indicating that no size has been set.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_SIZE_MASK
-         */
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_SIZE_MASK}
+         * value indicating that no size has been set. */
         const Int32 SCREENLAYOUT_SIZE_UNDEFINED = 0x00;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_SIZE_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_SIZE_MASK}
          * value indicating the screen is at least approximately 320x426 dp units,
          * corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenSizeQualifier">small</a>
          * resource qualifier.
          * See <a href="{@docRoot}guide/practices/screens_support.html">Supporting
-         * Multiple Screens</a> for more information.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_SIZE_MASK
-         */
+         * Multiple Screens</a> for more information. */
         const Int32 SCREENLAYOUT_SIZE_SMALL = 0x01;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_SIZE_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_SIZE_MASK}
          * value indicating the screen is at least approximately 320x470 dp units,
          * corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenSizeQualifier">normal</a>
          * resource qualifier.
          * See <a href="{@docRoot}guide/practices/screens_support.html">Supporting
-         * Multiple Screens</a> for more information.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_SIZE_MASK
-         */
+         * Multiple Screens</a> for more information. */
         const Int32 SCREENLAYOUT_SIZE_NORMAL = 0x02;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_SIZE_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_SIZE_MASK}
          * value indicating the screen is at least approximately 480x640 dp units,
          * corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenSizeQualifier">large</a>
          * resource qualifier.
          * See <a href="{@docRoot}guide/practices/screens_support.html">Supporting
-         * Multiple Screens</a> for more information.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_SIZE_MASK
-         */
+         * Multiple Screens</a> for more information. */
         const Int32 SCREENLAYOUT_SIZE_LARGE = 0x03;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_SIZE_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_SIZE_MASK}
          * value indicating the screen is at least approximately 720x960 dp units,
          * corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenSizeQualifier">xlarge</a>
          * resource qualifier.
          * See <a href="{@docRoot}guide/practices/screens_support.html">Supporting
-         * Multiple Screens</a> for more information.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_SIZE_MASK
-         */
+         * Multiple Screens</a> for more information.*/
         const Int32 SCREENLAYOUT_SIZE_XLARGE = 0x04;
 
-        /**
-         * Constant for #screenLayout: bits that encode the aspect ratio.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LONG_MASK
-         */
+        /** Constant for {@link #screenLayout}: bits that encode the aspect ratio. */
         const Int32 SCREENLAYOUT_LONG_MASK = 0x30;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LONG_MASK
-         * value indicating that no size has been set.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LONG_MASK
-         */
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LONG_MASK}
+         * value indicating that no size has been set. */
         const Int32 SCREENLAYOUT_LONG_UNDEFINED = 0x00;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LONG_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LONG_MASK}
          * value that corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenAspectQualifier">notlong</a>
-         * resource qualifier.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LONG_MASK
-         */
+         * resource qualifier. */
         const Int32 SCREENLAYOUT_LONG_NO = 0x10;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LONG_MASK
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LONG_MASK}
          * value that corresponds to the
          * <a href="{@docRoot}guide/topics/resources/providing-resources.html#ScreenAspectQualifier">long</a>
-         * resource qualifier.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LONG_MASK
-         */
+         * resource qualifier. */
         const Int32 SCREENLAYOUT_LONG_YES = 0x20;
 
-        /**
-         * Constant for #screenLayout: bits that encode the layout direction.
-         *
-         * @sa #screenLayout
-         */
+        /** Constant for {@link #screenLayout}: bits that encode the layout direction. */
         const Int32 SCREENLAYOUT_LAYOUTDIR_MASK = 0xC0;
 
-        /**
-         * Constant for #screenLayout: bits shift to get the layout direction.
-         *
-         * @sa #screenLayout
-         */
+        /** Constant for {@link #screenLayout}: bits shift to get the layout direction. */
         const Int32 SCREENLAYOUT_LAYOUTDIR_SHIFT = 6;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LAYOUTDIR_MASK
-         * value indicating that no layout dir has been set.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LAYOUTDIR_MASK
-         */
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LAYOUTDIR_MASK}
+         * value indicating that no layout dir has been set. */
         const Int32 SCREENLAYOUT_LAYOUTDIR_UNDEFINED = 0x00;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LAYOUTDIR_MASK
-         * value indicating that a layout dir has been set to LTR.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LAYOUTDIR_MASK
-        */
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LAYOUTDIR_MASK}
+         * value indicating that a layout dir has been set to LTR. */
         const Int32 SCREENLAYOUT_LAYOUTDIR_LTR = 0x01 << SCREENLAYOUT_LAYOUTDIR_SHIFT;
 
-        /**
-         * Constant for #screenLayout: a #SCREENLAYOUT_LAYOUTDIR_MASK
-         * value indicating that a layout dir has been set to RTL.
-         *
-         * @sa #screenLayout
-         * @sa #SCREENLAYOUT_LAYOUTDIR_MASK
-         */
+        /** Constant for {@link #screenLayout}: a {@link #SCREENLAYOUT_LAYOUTDIR_MASK}
+         * value indicating that a layout dir has been set to RTL. */
         const Int32 SCREENLAYOUT_LAYOUTDIR_RTL = 0x02 << SCREENLAYOUT_LAYOUTDIR_SHIFT;
 
-        /**
-         * Constant for #screenLayout: a value indicating that screenLayout is undefined
-         * @sa #screenLayout
-         */
+        /** Constant for {@link #screenLayout}: a value indicating that screenLayout is undefined */
         const Int32 SCREENLAYOUT_UNDEFINED = SCREENLAYOUT_SIZE_UNDEFINED |
                 SCREENLAYOUT_LONG_UNDEFINED | SCREENLAYOUT_LAYOUTDIR_UNDEFINED;
 
@@ -185,6 +121,7 @@ module
          * @hide
          */
         const Int32 SCREENLAYOUT_COMPAT_NEEDED = 0x10000000;
+
 
         const Int32 TOUCHSCREEN_UNDEFINED = 0;
         const Int32 TOUCHSCREEN_NOTOUCH = 1;
@@ -266,6 +203,19 @@ module
          */
         const Int32 DENSITY_DPI_UNDEFINED = 0;
 
+        /**
+         * Value for {@link #densityDpi} for resources that scale to any density (vector drawables).
+         * {@hide}
+         */
+        const Int32 DENSITY_DPI_ANY = 0xfffe;
+
+        /**
+         * Value for {@link #densityDpi} for resources that are not meant to be scaled.
+         * {@hide}
+         */
+        const Int32 DENSITY_DPI_NONE = 0xffff;
+
+
         GetFontScale(
             [out] Float* fontScale);
 
@@ -290,7 +240,7 @@ module
         SetLocale(
             [in] ILocale* locale);
 
-        GetUserSetLocale(
+        IsUserSetLocale(
             [out] Boolean* userSetLocale);
 
         SetUserSetLocale(
@@ -301,6 +251,20 @@ module
 
         SetScreenLayout(
             [in] Int32 layout);
+
+        /**
+         * Check if the Configuration's current {@link #screenLayout} is at
+         * least the given size.
+         *
+         * @param size The desired size, either {@link #SCREENLAYOUT_SIZE_SMALL},
+         * {@link #SCREENLAYOUT_SIZE_NORMAL}, {@link #SCREENLAYOUT_SIZE_LARGE}, or
+         * {@link #SCREENLAYOUT_SIZE_XLARGE}.
+         * @return Returns true if the current screen layout size is at least
+         * the given size.
+         */
+        IsLayoutSizeAtLeast(
+            [in] Int32 size,
+            [out] Boolean* locale);
 
         GetTouchscreen(
             [out] Int32* touchscreen);
@@ -397,27 +361,6 @@ module
 
         SetCompatSmallestScreenWidthDp(
             [in] Int32 dp);
-
-        /**
-        * Check if the Configuration's current #screenLayout is at
-        * least the given size.
-        *
-        * @sa #screenLayout
-        *
-        * @param size The desired size, either #SCREENLAYOUT_SIZE_SMALL,
-        * #SCREENLAYOUT_SIZE_NORMAL, #SCREENLAYOUT_SIZE_LARGE, or
-        * #SCREENLAYOUT_SIZE_XLARGE.
-        *
-        * @sa #SCREENLAYOUT_SIZE_SMALL
-        * @sa #SCREENLAYOUT_SIZE_NORMAL
-        * @sa #SCREENLAYOUT_SIZE_LARGE
-        * @sa #SCREENLAYOUT_SIZE_XLARGE
-        * @return Returns true if the current screen layout size is at least
-        * the given size.
-        */
-        IsLayoutSizeAtLeast(
-            [in] Int32 size,
-            [out] Boolean* value);
 
         SetTo(
             [in] IConfiguration* source);

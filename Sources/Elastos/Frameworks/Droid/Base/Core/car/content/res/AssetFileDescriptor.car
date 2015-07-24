@@ -4,6 +4,7 @@ module
     using interface Elastos.IO.IFileInputStream;
     using interface Elastos.IO.IFileOutputStream;
     using interface Elastos.Droid.Os.IParcelFileDescriptor;
+    using interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
@@ -15,7 +16,11 @@ module
      * opened FileDescriptor that can be used to read the data, as well as the
      * offset and length of that entry's data in the file.
      */
-
+    /**
+     * @Involve
+     * interface IParcelable
+     * interface ICloseable
+     */
     interface IAssetFileDescriptor {
 
         /**
@@ -48,6 +53,13 @@ module
          */
         GetStartOffset(
             [out] Int64* startOffset);
+
+        /**
+         * Returns any additional details that can be used to interpret the
+         * underlying file descriptor. May be null.
+         */
+        GetExtras(
+            [out] IBundle** bundle);
 
         /**
          * Returns the total number of bytes of this asset entry's data.  May be

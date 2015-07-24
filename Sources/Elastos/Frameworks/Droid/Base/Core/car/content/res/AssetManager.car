@@ -27,6 +27,10 @@ module
      * files that have been bundled with the application as a simple stream of
      * bytes.
      */
+    /**
+     * @Involve
+     * interface ICloseable;
+     */
     [deprecated]
     interface IAssetManager {
         /**

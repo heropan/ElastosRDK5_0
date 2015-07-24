@@ -52,7 +52,25 @@ module
             [in] Int32 alpha,
             [out] IColorStateList** colors);
 
+        /**
+         * Indicates whether this color state list contains more than one state spec
+         * and will change color based on state.
+         *
+         * @return True if this color state list changes color based on state, false
+         *         otherwise.
+         * @see #getColorForState(int[], int)
+         */
         IsStateful(
+            [out] Boolean* isStateful);
+
+        /**
+         * Indicates whether this color state list is opaque, which means that every
+         * color returned from {@link #getColorForState(int[], int)} has an alpha
+         * value of 255.
+         *
+         * @return True if this color state list is opaque.
+         */
+        IsOpaque(
             [out] Boolean* isStateful);
 
         /**
@@ -66,7 +84,7 @@ module
          *
          * @sa android.view.View
          * @sa ColorStateList
-         * 
+         *
          */
         GetColorForState(
             [in] ArrayOf<Int32>* stateSet,
@@ -93,7 +111,7 @@ module
 
         /**
         * Create a ColorStateList from an XML document, given a set of Resources.
-        * 
+        *
         * @sa Resources
         */
         CreateFromXml(

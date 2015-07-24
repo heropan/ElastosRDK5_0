@@ -31,6 +31,10 @@ module
 
         interface IAttributeSet {}
 
+        interface IDisplayMetrics {}
+
+        interface ITypedValue {}
+
     }}} // Elastos.Droid.Utility
 
     //
@@ -54,22 +58,6 @@ module
             interface IProviderInfo {}
 
         }// Pm
-
-        namespace Res {
-            interface IAssetFileDescriptor {}
-
-            interface IAssetManager {}
-
-            interface IConfiguration {}
-
-            interface IResources {}
-
-            interface IResourcesTheme {}
-
-            interface ITypedArray {}
-
-
-        }// Res
 
     }}} // Elastos.Droid.Content
 
@@ -146,11 +134,19 @@ module
     namespace Droid {
     namespace Graphics {
 
+        interface IPointF {}
+
+        interface IRect {}
+
+        interface IRegion {}
+
+        interface ICanvas {}
+
         interface IBitmap {}
 
         interface IBitmapFactory {}
 
-        interface IRect {}
+        interface IMovie {}
 
         namespace Drawable {
             interface IDrawable {}
@@ -171,6 +167,10 @@ module
         interface ICompatibilityInfoHolder {}
 
         interface IKeyEvent {}
+
+        interface IWindowManagerLayoutParams {}
+
+        interface IMotionEvent {}
 
     }}} // Elastos.Droid.View
 

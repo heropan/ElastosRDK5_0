@@ -158,7 +158,7 @@ ECode CConfiguration::SetTo(
         locale->Clone((ILocale**)&mLocale);
     }
 
-    o->GetUserSetLocale(&mUserSetLocale);
+    o->IsUserSetLocale(&mUserSetLocale);
     o->GetTouchscreen(&mTouchscreen);
     o->GetKeyboard(&mKeyboard);
     o->GetKeyboardHidden(&mKeyboardHidden);
@@ -1012,7 +1012,7 @@ ECode CConfiguration::GetLocale(
     return NOERROR;
 }
 
-ECode CConfiguration::GetUserSetLocale(
+ECode CConfiguration::IsUserSetLocale(
     /* [out] */ Boolean* userSetLocale)
 {
     VALIDATE_NOT_NULL(userSetLocale);
