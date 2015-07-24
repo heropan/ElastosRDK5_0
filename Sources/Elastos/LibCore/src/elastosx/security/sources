@@ -11,7 +11,9 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/callback
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/x500
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/cert
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/io
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/security/cert
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility
 
 VPATH := $(MAKEDIR)/auth/callback:$(MAKEDIR)/auth/x500:$(MAKEDIR)/auth:$(MAKEDIR)/cert
@@ -25,3 +27,5 @@ SOURCES += CSubject.cpp
 SOURCES += CSubjectHelper.cpp
 SOURCES += CSubjectDomainCombiner.cpp
 SOURCES += CertificateX.cpp
+SOURCES += X509CertificateX.cpp
+SOURCES += CX509CertificateHelper.cpp

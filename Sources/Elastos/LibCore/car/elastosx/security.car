@@ -112,6 +112,14 @@ module
     }
 
     } // namespace Auth
+
+    namespace Cert {
+
+    singleton class CX509CertificateHelper {
+        interface IX509CertificateHelper;
+    }
+
+    } // namespace Cert
     } // namespace Security
     } // namespace Elastosx
 

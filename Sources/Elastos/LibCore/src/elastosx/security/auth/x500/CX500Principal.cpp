@@ -99,7 +99,9 @@ ECode CX500Principal::GetName(
                 if (oidMap->ContainsKey(csq, &b), b) {
                     String replaceName;
                     AutoPtr<ICharSequence> pReplaceName;
-                    oidMap->Get(csq, (IInterface**)(ICharSequence**)&pReplaceName);
+                    AutoPtr<IInterface> tmp;
+                    oidMap->Get(csq, (IInterface**)&tmp);
+                    pReplaceName = ICharSequence::Probe(tmp);
                     pReplaceName->ToString(&replaceName);
                     if(commaIndex > 0) replaceName = String(" ") + replaceName;
                     resultName->Replace(commaIndex + 1, equalIndex, replaceName);
@@ -138,7 +140,9 @@ ECode CX500Principal::GetName(
                         subsidyName->Substring(subsidyEqualIndex + 1,
                                 subGoalEndIndex));
                 AutoPtr<ICharSequence> pReplaceName;
-                oidMap->Get(csq, (IInterface**)(ICharSequence**)&pReplaceName);
+                AutoPtr<IInterface> tmp;
+                oidMap->Get(csq, (IInterface**)&tmp);
+                pReplaceName = ICharSequence::Probe(tmp);
                 String s;
                 pReplaceName->ToString(&s);
                 resultName->Replace(commaIndex + 1, equalIndex, s);

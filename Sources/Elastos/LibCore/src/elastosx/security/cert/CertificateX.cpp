@@ -10,10 +10,6 @@ namespace Cert {
 
 CAR_INTERFACE_IMPL(Certificate, Object, ICertificate)
 
-// {E2B9C46C-4362-7D9B-4DF1-84C0669BE14D}
-extern "C" const InterfaceID EIID_XCertificate =
-    { 0xE2B9C46C, 0x4362, 0x7D9B, { 0x4D, 0xF1, 0x84, 0xC0, 0x66, 0x9B, 0xE1, 0x4D } };
-
 ECode Certificate::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* isEqual)
@@ -22,18 +18,18 @@ ECode Certificate::Equals(
     *isEqual = FALSE;
     VALIDATE_NOT_NULL(obj)
 
-    if (obj->Probe(EIID_XCertificate) == this->Probe(EIID_XCertificate)) {
+    if (obj->Probe(EIID_ICertificate) == this->Probe(EIID_ICertificate)) {
         *isEqual = TRUE;
         return NOERROR;
     }
-    if (NULL == obj->Probe(EIID_XCertificate)) {
+    if (NULL == obj->Probe(EIID_ICertificate)) {
         return NOERROR;
     }
-    AutoPtr<ICertificate> object = (ICertificate*) obj->Probe(EIID_XCertificate);
+    AutoPtr<ICertificate> object = (ICertificate*) obj->Probe(EIID_ICertificate);
     AutoPtr<ArrayOf<Byte> > encode, oEncode;
     ECode ec;
     FAIL_GOTO(ec = GetEncoded((ArrayOf<Byte>**)&encode), ERROR_PROCESS)
-    FAIL_GOTO(ec =((ICertificate*) obj->Probe(EIID_XCertificate))->GetEncoded((ArrayOf<Byte>**)&oEncode), ERROR_PROCESS)
+    FAIL_GOTO(ec =((ICertificate*) obj->Probe(EIID_ICertificate))->GetEncoded((ArrayOf<Byte>**)&oEncode), ERROR_PROCESS)
     *isEqual = Arrays::Equals(encode, oEncode);
     return NOERROR;
 ERROR_PROCESS:

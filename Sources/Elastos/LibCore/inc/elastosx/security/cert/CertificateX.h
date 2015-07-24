@@ -11,8 +11,6 @@ namespace Elastosx {
 namespace Security {
 namespace Cert {
 
-extern "C" const InterfaceID EIID_XCertificate;
-
 class Certificate
     : public Object
     , public ICertificate

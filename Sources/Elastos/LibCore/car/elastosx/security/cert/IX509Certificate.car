@@ -11,6 +11,18 @@ module
     namespace Cert {
 
     /**
+     * Abstract base class for X.509 certificates.
+     * <p>
+     * This represents a standard way for accessing the attributes of X.509 v1
+     * certificates.
+     * <p>
+     * Note: This package is provided only for compatibility reasons.
+     * It contains a simplified version of the java.security.cert package that was
+     * previously used by JSSE (Java SSL package). All applications that do not have
+     * to be compatible with older versions of JSSE (that is before Java SDK 1.5)
+     * should only use java.security.cert.
+     */
+    /**
      * @Involve
      * interface ICertificate
      */
@@ -186,6 +198,7 @@ module
             [out, callee] ArrayOf<Byte>* params);
     }
 
+    [deprecated]
     interface IX509CertificateHelper {
         /**
          * Creates a new {@code X509Certificate} and initializes it from the
@@ -212,7 +225,7 @@ module
          *             if the certificate cannot be created or initialized.
          */
         GetInstance(
-            [in] ArrayOf<Byte> certData,
+            [in] ArrayOf<Byte>* certData,
             [out] IX509Certificate** cert);
     }
 

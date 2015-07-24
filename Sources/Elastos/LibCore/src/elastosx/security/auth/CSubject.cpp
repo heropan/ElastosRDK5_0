@@ -48,44 +48,6 @@ const Int64 CSubject::serialVersionUID = -8308522755600156056L;
 
 const Int64 CSubject::SecureSet::serialVersionUID = 7911754171111800359L;
 
-// for define interface functions in class declare area
-#define CAR_INNER_INTERFACE_IMPL(SupperClassName, InterfaceName)       \
-                                                           \
-    UInt32 AddRef()                                        \
-    {                                                      \
-        return ElRefBase::AddRef();                        \
-    }                                                      \
-                                                           \
-    UInt32 Release()                                       \
-    {                                                      \
-        return ElRefBase::Release();                       \
-    }                                                      \
-                                                           \
-    PInterface Probe(                                      \
-        /* [in] */ REIID riid)                             \
-    {                                                      \
-        if (riid == EIID_IInterface) {                     \
-            return (IInterface*)(InterfaceName*)this;      \
-        }                                                  \
-        else if (riid == EIID_##InterfaceName) {           \
-            return (InterfaceName*)this;                   \
-        }                                                  \
-        return SupperClassName::Probe(riid);               \
-    }                                                      \
-                                                           \
-    ECode GetInterfaceID(                                  \
-        /* [in] */ IInterface* object,                     \
-        /* [out] */ InterfaceID* iid)                      \
-    {                                                      \
-        VALIDATE_NOT_NULL(iid);                            \
-                                                           \
-        if (object == (IInterface*)(InterfaceName*)this) { \
-            *iid = EIID_##InterfaceName;                   \
-            return NOERROR;                                \
-        }                                                  \
-        return SupperClassName::GetInterfaceID(object, iid); \
-    }
-
 AutoPtr<IPermission> GetNewAuthPermission(const String& name)
 {
     AutoPtr<IPermission> rev;
@@ -486,7 +448,9 @@ ECode CSubject::DoAs_PrivilegedAction(
 #endif
     }
 
-    class InnerSub_PrivilegedAction : public IPrivilegedAction, public Object
+    class InnerSub_PrivilegedAction
+        : public Object
+        , public IPrivilegedAction
     {
     public:
         CAR_INNER_INTERFACE_IMPL(Object, IPrivilegedAction)
@@ -554,7 +518,9 @@ ECode CSubject::DoAs_PrivilegedExceptionAction(
 #endif
     }
 
-    class InnerSub_PrivilegedAction : public IPrivilegedAction, public Object
+    class InnerSub_PrivilegedAction
+        : public Object
+        , public IPrivilegedAction
     {
     public:
         CAR_INNER_INTERFACE_IMPL(Object, IPrivilegedAction)

@@ -49,6 +49,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastosx/security
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/auth/
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/auth/callback
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/auth/x500
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/security/cert
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/crypto
 INCLUDES += $(MAKEDIR)/../../inc/libcore/io
 INCLUDES += $(MAKEDIR)/../../inc/libcore/icu

@@ -918,5 +918,46 @@ public:                                                                         
     CAR_SINGLETON_METHODS_IMPL(ClassName)
 #endif
 
+#ifndef CAR_INNER_INTERFACE_IMPL
+// for define interface functions in class declare area
+// only sub class of pure virtual interface need it
+#define CAR_INNER_INTERFACE_IMPL(SupperClassName, InterfaceName)       \
+                                                           \
+    UInt32 AddRef()                                        \
+    {                                                      \
+        return ElRefBase::AddRef();                        \
+    }                                                      \
+                                                           \
+    UInt32 Release()                                       \
+    {                                                      \
+        return ElRefBase::Release();                       \
+    }                                                      \
+                                                           \
+    PInterface Probe(                                      \
+        /* [in] */ REIID riid)                             \
+    {                                                      \
+        if (riid == EIID_IInterface) {                     \
+            return (IInterface*)(InterfaceName*)this;      \
+        }                                                  \
+        else if (riid == EIID_##InterfaceName) {           \
+            return (InterfaceName*)this;                   \
+        }                                                  \
+        return SupperClassName::Probe(riid);               \
+    }                                                      \
+                                                           \
+    ECode GetInterfaceID(                                  \
+        /* [in] */ IInterface* object,                     \
+        /* [out] */ InterfaceID* iid)                      \
+    {                                                      \
+        VALIDATE_NOT_NULL(iid);                            \
+                                                           \
+        if (object == (IInterface*)(InterfaceName*)this) { \
+            *iid = EIID_##InterfaceName;                   \
+            return NOERROR;                                \
+        }                                                  \
+        return SupperClassName::GetInterfaceID(object, iid); \
+    }
+#endif // CAR_INNER_INTERFACE_IMPL
+
 
 #endif //__ELASTOS_CORE_DEF_H__
