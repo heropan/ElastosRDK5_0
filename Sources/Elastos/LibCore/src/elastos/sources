@@ -38,6 +38,7 @@ INCLUDES += $(MAKEDIR)/../../inc/elastosx/sql
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/namespace
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/datatype
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/xpath
+INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/validation
 
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/parsers
 INCLUDES += $(MAKEDIR)/../../inc/elastosx/xml/transform
@@ -111,6 +112,7 @@ LIBRARIES += ../elastosx/xml/datatype/datatype.lib
 LIBRARIES += ../elastosx/xml/transform/transform.lib
 LIBRARIES += ../elastosx/xml/parsers/parsers.lib
 LIBRARIES += ../elastosx/xml/xpath/xpath.lib
+LIBRARIES += ../elastosx/xml/validation/validation.lib
 
 
 LIBRARIES += $(XDK_TARGETS)/Elastos.Runtime.eco

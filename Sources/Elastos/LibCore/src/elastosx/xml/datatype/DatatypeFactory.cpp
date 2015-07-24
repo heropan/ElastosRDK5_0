@@ -5,7 +5,7 @@
 #include "CBigInteger.h"
 #include "Thread.h"
 #include "CPathClassLoader.h"
-
+#include "FactoryFinder.h"
 
 using Elastos::Core::Object;
 using Elastos::Core::IClassLoader;
@@ -24,13 +24,15 @@ CAR_INTERFACE_IMPL(DatatypeFactory, Object, IDatatypeFactory)
 ECode DatatypeFactory::NewInstance(
     /* [out] */ IDatatypeFactory** factory)
 {
-    // AutoPtr<IInterface> tmp = FactoryFinder::Find(
-    //         /* The default property name according to the JAXP spec */
-    //         DATATYPEFACTORY_PROPERTY,
-    //         /* The fallback implementation class name */
-    //         DATATYPEFACTORY_IMPLEMENTATION_CLASS);
-    // *factory = IDatatypeFactory::Probe(tmp);
-    // REFCOUNT_ADD(*factory)
+    AutoPtr<IInterface> tmp;
+    FactoryFinder::Find(
+            /* The default property name according to the JAXP spec */
+            DATATYPEFACTORY_PROPERTY,
+            /* The fallback implementation class name */
+            DATATYPEFACTORY_IMPLEMENTATION_CLASS,
+            (IInterface**)&tmp);
+    *factory = IDatatypeFactory::Probe(tmp);
+    REFCOUNT_ADD(*factory)
     return NOERROR;
 }
 

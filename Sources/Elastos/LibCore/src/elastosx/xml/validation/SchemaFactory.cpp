@@ -92,7 +92,7 @@ ECode SchemaFactory::NewSchema(
 }
 
 ECode SchemaFactory::NewInstance(
-    /* [in] */ String schemaLanguage,
+    /* [in] */ const String& schemaLanguage,
     /* [out] */ ISchemaFactory** factory)
 {
     AutoPtr<IClassLoader> cl;
@@ -109,8 +109,8 @@ ECode SchemaFactory::NewInstance(
 }
 
 ECode SchemaFactory::NewInstance(
-    /* [in] */ String schemaLanguage,
-    /* [in] */ String factoryClassName,
+    /* [in] */ const String& schemaLanguage,
+    /* [in] */ const String& factoryClassName,
     /* [in] */ IClassLoader* classLoader,
     /* [out] */ ISchemaFactory** factory)
 {

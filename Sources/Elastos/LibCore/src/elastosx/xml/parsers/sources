@@ -23,3 +23,5 @@ SOURCES += DocumentBuilder.cpp
 SOURCES += DocumentBuilderFactory.cpp
 SOURCES += SAXParser.cpp
 SOURCES += SAXParserFactory.cpp
+SOURCES += CDocumentBuilderFactoryHelper.cpp
+SOURCES += CSAXParserFactoryHelper.cpp

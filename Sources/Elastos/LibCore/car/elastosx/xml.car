@@ -96,13 +96,45 @@ module
 
     } // namespace Namespace
 
+
+
     namespace Datatype {
 
     singleton class CDatatypeConstants {
         interface IDatatypeConstants;
     }
 
+    singleton class CDatatypeFactoryHelper {
+        interface IDatatypeFactoryHelper;
+    }
+
     } // namespace Datatype
+
+
+
+    namespace Parsers {
+
+    singleton class CDocumentBuilderFactoryHelper {
+        interface IDocumentBuilderFactoryHelper;
+    }
+
+    singleton class CSAXParserFactoryHelper {
+        interface ISAXParserFactoryHelper;
+    }
+
+    } // namespace Parsers
+
+
+
+    namespace Validation {
+
+    singleton class CSchemaFactoryHelper {
+        interface ISchemaFactoryHelper;
+    }
+
+    } // namespace Validation
+
+
 
     namespace Transform {
     namespace Dom {

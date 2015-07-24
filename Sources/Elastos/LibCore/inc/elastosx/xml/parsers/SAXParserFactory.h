@@ -46,7 +46,7 @@ public:
         /* [out]*/ ISAXParserFactory** instance);
 
     static CARAPI NewInstance(
-        /* [in]*/ String factoryClassName,
+        /* [in]*/ const String& factoryClassName,
         /* [in]*/ IClassLoader* classLoader,
         /* [out]*/ ISAXParserFactory** instance);
 

@@ -154,12 +154,12 @@ module
     interface IDatatypeFactoryHelper {
 
         NewInstance(
-            [out] IDatatypeFactory** instaces);
+            [out] IDatatypeFactory** instance);
 
         NewInstance(
             [in] String factoryClassName,
             [in] IClassLoader* classLoader,
-            [out] IDatatypeFactory** instaces);
+            [out] IDatatypeFactory** instance);
     }
 
     } // namespace Datatype

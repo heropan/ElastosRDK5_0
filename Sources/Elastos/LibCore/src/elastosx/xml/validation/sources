@@ -28,4 +28,4 @@ SOURCES += SchemaFactoryLoader.cpp
 SOURCES += TypeInfoProvider.cpp
 SOURCES += Validator.cpp
 SOURCES += ValidatorHandler.cpp
-
+SOURCES += CSchemaFactoryHelper.cpp

@@ -74,7 +74,7 @@ ECode SAXParserFactory::NewInstance(
 }
 
 ECode SAXParserFactory::NewInstance(
-    /* [in]*/ String factoryClassName,
+    /* [in]*/ const String& factoryClassName,
     /* [in]*/ IClassLoader* classLoader,
     /* [out]*/ ISAXParserFactory** instance)
 {

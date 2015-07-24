@@ -53,12 +53,12 @@ public:
     using ISchemaFactory::NewSchema;
 
     static CARAPI NewInstance(
-        /* [in] */ String schemaLanguage,
+        /* [in] */ const String& schemaLanguage,
         /* [out] */ ISchemaFactory** factory);
 
     static CARAPI NewInstance(
-        /* [in] */ String schemaLanguage,
-        /* [in] */ String factoryClassName,
+        /* [in] */ const String& schemaLanguage,
+        /* [in] */ const String& factoryClassName,
         /* [in] */ IClassLoader* classLoader,
         /* [out] */ ISchemaFactory** factory);
 };
