@@ -35,6 +35,16 @@ module
             [out] IProvider ** provider);
 
         /**
+         * Initializes this {@code KeyAgreement} with the specified key.
+         *
+         * @param key the key to initialize this key agreement.
+         * @throws InvalidKeyException if the specified key cannot be used to
+         *             initialize this key agreement.
+         */
+        Init(
+            [in] IKey * key);
+
+        /**
          * Initializes this {@code KeyAgreement} with the specified key and the
          * specified randomness source.
          *
