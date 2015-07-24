@@ -63,6 +63,7 @@ SOURCES += CSemaphore.cpp
 SOURCES += CTimeUnitHelper.cpp
 SOURCES += CThreadLocalRandom.cpp
 SOURCES += CSynchronousQueue.cpp
+SOURCES += CScheduledThreadPoolExecutor.cpp
 SOURCES += CopyOnWriteArrayList.cpp
 SOURCES += CountedCompleter.cpp
 SOURCES += Executors.cpp

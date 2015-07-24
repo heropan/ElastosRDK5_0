@@ -1627,8 +1627,6 @@ ECode CConcurrentHashMap::CollectionView::RetainAll(
 //===============================================================================
 // CConcurrentHashMap::
 //===============================================================================
-AutoPtr<IAtomicInteger32> CConcurrentHashMap::mCounterHashCodeGenerator;
-
 Int32 CConcurrentHashMap::SEED_INCREMENT = 0x61c88647;
 
 //AutoPtr<ThreadLocal> CConcurrentHashMap::mThreadCounterHashCode = new ThreadLocal();
@@ -2459,6 +2457,15 @@ ECode CConcurrentHashMap::EntrySetView::ToArray(
 //===============================================================================
 // CConcurrentHashMap
 //===============================================================================
+static AutoPtr<IAtomicInteger32> InitmCounterHashCodeGenerator()
+{
+    AutoPtr<CAtomicInteger32> ai;
+    CAtomicInteger32::NewByFriend(1, (CAtomicInteger32**)&ai);
+    return (IAtomicInteger32*)ai.Get();
+}
+
+const AutoPtr<IAtomicInteger32> CConcurrentHashMap::mCounterHashCodeGenerator = InitmCounterHashCodeGenerator();
+
 CAR_INTERFACE_IMPL_3(CConcurrentHashMap, AbstractMap, IConcurrentHashMap, IConcurrentMap, ISerializable)
 
 CAR_OBJECT_IMPL(CConcurrentHashMap);
@@ -2468,7 +2475,6 @@ ECode CConcurrentHashMap::constructor(
     /* [in] */ Float loadFactor,
     /* [in] */ Int32 concurrencyLevel)
 {
-    CAtomicInteger32::New((IAtomicInteger32**)&CConcurrentHashMap::mCounterHashCodeGenerator);
     if (!(loadFactor > 0) || initialCapacity < 0 || concurrencyLevel <= 0) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -2491,7 +2497,6 @@ ECode CConcurrentHashMap::constructor(
 ECode CConcurrentHashMap::constructor(
     /* [in] */ Int32 initialCapacity)
 {
-    CAtomicInteger32::New((IAtomicInteger32**)&CConcurrentHashMap::mCounterHashCodeGenerator);
     if (initialCapacity < 0)
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     Int32 cap = ((initialCapacity >= (MAXIMUM_CAPACITY >> 1)) ?
@@ -2503,14 +2508,12 @@ ECode CConcurrentHashMap::constructor(
 
 ECode CConcurrentHashMap::constructor()
 {
-    CAtomicInteger32::New((IAtomicInteger32**)&CConcurrentHashMap::mCounterHashCodeGenerator);
     return NOERROR;
 }
 
 ECode CConcurrentHashMap::constructor(
     /* [in] */ IMap* m)
 {
-    CAtomicInteger32::New((IAtomicInteger32**)&CConcurrentHashMap::mCounterHashCodeGenerator);
     mSizeCtl = DEFAULT_CAPACITY;
     PutAll(m);
     return NOERROR;
