@@ -1,0 +1,27 @@
+module
+{
+    using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.ISet;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Utility {
+    /**
+     * An InputStream that does Base64 decoding on the data read through
+     * it.
+     */
+    /**
+     * @Involve
+     * interface IFilterInputStream;
+     */
+    [deprecated]
+    interface IBase64InputStream {
+        MarkSupported(
+            [out] Boolean* value);
+    }
+
+    } // namespace Utility
+    } // namespace Droid
+    } // namespace Elastos
+}

@@ -84,6 +84,11 @@ module
     //==========================================================================
     // Elastos Droid Utility exception codes (Family: 0x57 - D7)
     const E_TIME_FORMAT_EXCEPTION                       =  0xD7010000;
+    const E_ANDROID_EXCEPTION                           =  0xD7020000;
+    const E_ANDROID_RUNTIME_EXCEPTION                   =  0xD7030000;
+    const E_BASE64_DATA_EXCEPTION                       =  0xD7040000;
+    const E_MALFORMED_JSON_EXCEPTION                    =  0xD7050000;
+    const E_NO_SUCH_PROPERTY_EXCEPTION                  =  0xD7060000;
 
     //==========================================================================
     // Elastos Droid Utility exception codes (Family: 0x58 - D8)

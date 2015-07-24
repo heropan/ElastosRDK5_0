@@ -5,6 +5,7 @@
 using Elastos::IO::CFile;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CFileOutputStream;
+using Elastos::IO::ICloseable;
 using Elastos::Droid::Os::FileUtils;
 
 namespace Elastos {
@@ -125,9 +126,9 @@ ECode CAtomicFile::FinishWrite(
 {
     if (str != NULL) {
         Boolean result;
-        FileUtils::Sync(str, &result);
+        // FileUtils::Sync(str, &result);
         //try {
-            str->Close();
+            ICloseable::Probe(str)->Close();
             return mBackupName->Delete(&result);
         //} catch (IOException e) {
         //    Log.w("AtomicFile", "finishWrite: Got exception:", e);
@@ -146,9 +147,9 @@ ECode CAtomicFile::FailWrite(
 {
     if (str != NULL) {
         Boolean result;
-        FileUtils::Sync(str, &result);
+        // FileUtils::Sync(str, &result);
         //try {
-            str->Close();
+            ICloseable::Probe(str)->Close();
             mBaseName->Delete(&result);
             mBackupName->RenameTo(mBaseName, &result);
         //} catch (IOException e) {
@@ -167,8 +168,8 @@ ECode CAtomicFile::Truncate()
         AutoPtr<IFileOutputStream> fos;
         FAIL_RETURN(CFileOutputStream::New(mBaseName, (IFileOutputStream**)&fos));
         Boolean result;
-        FileUtils::Sync(fos, &result);
-        fos->Close();
+        // FileUtils::Sync(fos, &result);
+        ICloseable::Probe(fos)->Close();
     //} catch (FileNotFoundException e) {
     //    throw new IOException("Couldn't append " + mBaseName);
     //} catch (IOException e) {
@@ -231,12 +232,12 @@ ECode CAtomicFile::ReadFully(
     //try {
     Int32 pos = 0;
     Int32 avail, amt;
-    stream->Available(&avail);
+    IInputStream::Probe(stream)->Available(&avail);
     AutoPtr<ArrayOf<Byte> > data = ArrayOf<Byte>::Alloc(avail);
 
     AutoPtr<ArrayOf<Byte> > newData;
     while (TRUE) {
-        stream->ReadBytes(data, pos,data->GetLength() - pos, &amt);
+        IInputStream::Probe(stream)->Read(data, pos,data->GetLength() - pos, &amt);
         //Log.i("foo", "Read " + amt + " bytes at " + pos
         //        + " of avail " + data.length);
         if (amt <= 0) {
@@ -246,7 +247,7 @@ ECode CAtomicFile::ReadFully(
         }
 
         pos += amt;
-        stream->Available(&avail);
+        IInputStream::Probe(stream)->Available(&avail);
         if (avail > data->GetLength() - pos) {
             newData = ArrayOf<Byte>::Alloc(pos + avail);
             newData->Copy(data, 0, pos);
@@ -258,7 +259,7 @@ ECode CAtomicFile::ReadFully(
     REFCOUNT_ADD(*result);
 _EXIT_:
     //} finally {
-        stream->Close();
+        ICloseable::Probe(stream)->Close();
     //}
     return NOERROR;
 }

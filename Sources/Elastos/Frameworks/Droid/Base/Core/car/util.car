@@ -1,6 +1,8 @@
 
 module
 {
+    merge("util/ArrayMap.car");
+    merge("util/ArraySet.car");
     merge("util/AtomicFile.car");
     merge("util/AttributeSet.car");
     merge("util/XmlPullAttributes.car");
@@ -20,6 +22,34 @@ module
     merge("util/Pair.car");
     merge("util/IndentingPrintWriter.car");
     merge("util/Base64.car");
+    merge("util/Base64InputStream.car");
+    merge("util/Base64OutputStream.car");
+    merge("util/Config.car");
+    merge("util/DayOfMonthCursor.car");
+    merge("util/DebugUtils.car");
+    merge("util/FastImmutableArraySet.car");
+    merge("util/FloatMath.car");
+    merge("util/JsonReader.car");
+    merge("util/JsonWriter.car");
+    merge("util/LayoutDirection.car");
+    merge("util/LocalLog.car");
+    merge("util/Log.car");
+    merge("util/LogPrinter.car");
+    merge("util/Int64Array.car");
+    merge("util/Int64SparseArray.car");
+    merge("util/LruCache.car");
+    merge("util/MonthDisplayHelper.car");
+    merge("util/Patterns.car");
+    merge("util/Printer.car");
+    merge("util/Range.car");
+    merge("util/Rational.car");
+    merge("util/Size.car");
+    merge("util/SizeF.car");
+    merge("util/SparseArray.car");
+    merge("util/SparseBooleanArray.car");
+    merge("util/SparseInt32Array.car");
+    merge("util/SparseInt64Array.car");
+    merge("util/StateSet.car");
 
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;
@@ -38,7 +68,7 @@ module
         interface IAtomicFile;
     }
 
-    class CDisplayMetrics {
+/*    class CDisplayMetrics {
         interface IDisplayMetrics;
     }
 
@@ -106,10 +136,10 @@ module
     singleton class CBase64 {
         interface IBase64;
     }
-
+*/
     } // namespace Utility
 
-    namespace Internal {
+/*    namespace Internal {
     namespace Utility {
 
         class CIndentingPrintWriter {
@@ -124,7 +154,7 @@ module
 
     } // namespace Utility
     } // namespace Internal
-
+*/
     } // namespace Droid
     } // namespace Elastos
 }

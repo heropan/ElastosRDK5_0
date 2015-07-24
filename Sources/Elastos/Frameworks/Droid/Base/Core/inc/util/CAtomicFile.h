@@ -1,7 +1,8 @@
 #ifndef __CATOMICFILE_H__
 #define __CATOMICFILE_H__
 
-#include "_CAtomicFile.h"
+#include "_Elastos_Droid_Utility_CAtomicFile.h"
+#include "elastos/core/Object.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileOutputStream;
@@ -11,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-CarClass(CAtomicFile)
+CarClass(CAtomicFile) , public Object
 {
 public:
     CAtomicFile();
