@@ -3,7 +3,10 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IStringBuilder;
+    using interface Elastos.Core.IClassLoader;
+    using interface Elastos.IO.ISerializable;
     using interface Elastos.Utility.IArrayList;
+    using interface Elastos.Utility.ISet;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     interface Elastos.Droid.Content.IClipData;
@@ -476,6 +479,40 @@ module
          */
         //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String ACTION_ASSIST = "android.intent.action.ASSIST";
+
+        /**
+         * Activity Action: Perform voice assist action.
+         * <p>
+         * Input: {@link #EXTRA_ASSIST_PACKAGE}, {@link #EXTRA_ASSIST_CONTEXT}, can provide
+         * additional optional contextual information about where the user was when they
+         * requested the voice assist.
+         * Output: nothing.
+         * @hide
+         */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String ACTION_VOICE_ASSIST = "android.intent.action.VOICE_ASSIST";
+
+        /**
+         * An optional field on {@link #ACTION_ASSIST} containing the name of the current foreground
+         * application package at the time the assist was invoked.
+         */
+        const String EXTRA_ASSIST_PACKAGE
+                = "android.intent.extra.ASSIST_PACKAGE";
+
+        /**
+         * An optional field on {@link #ACTION_ASSIST} and containing additional contextual
+         * information supplied by the current foreground app at the time of the assist request.
+         * This is a {@link Bundle} of additional data.
+         */
+        const String EXTRA_ASSIST_CONTEXT
+                = "android.intent.extra.ASSIST_CONTEXT";
+
+        /**
+         * An optional field on {@link #ACTION_ASSIST} suggesting that the user will likely use a
+         * keyboard as the primary input device for assistance.
+         */
+        const String EXTRA_ASSIST_INPUT_HINT_KEYBOARD =
+                "android.intent.extra.ASSIST_INPUT_HINT_KEYBOARD";
 
         /**
          * Activity Action: List all available applications
@@ -1206,41 +1243,6 @@ module
         const String ACTION_SHUTDOWN = "android.intent.action.ACTION_SHUTDOWN";
 
         /**
-         * Broadcast Action:  HDMI Hotplug Changed.
-         * This is broadcast when the hdmi hotplug status (completely turned
-         * off, not sleeping).  Once the broadcast is complete, the final shutdown
-         * will proceed and all unsaved data lost.  Apps will not normally need
-         * to handle this, since the foreground activity will be paused as well.
-         *
-         * <p class="note">This is a protected intent that can only be sent
-         * by the system.
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_HDMISTATUS_CHANGED = "android.intent.action.HDMISTATUS_CHANGED";
-
-        /**
-         * Broadcast Action:  tvdac Hotplug Changed.
-         * This is broadcast when the tvdac hotplug status (completely turned
-         * off, not sleeping).  Once the broadcast is complete, the final shutdown
-         * will proceed and all unsaved data lost.  Apps will not normally need
-         * to handle this, since the foreground activity will be paused as well.
-         *
-         * <p class="note">This is a protected intent that can only be sent
-         * by the system.
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_TVDACSTATUS_CHANGED = "android.intent.action.TVDACSTATUS_CHANGED";
-
-        /**
-         * Broadcast Action: Display output changed. This is broadcast when the
-         * display output format change
-         * <p class="note">
-         * This is a protected intent that can only be sent by the system.
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_DISPLAY_OUTPUT_CHANGED = "android.intent.action.DISPLAY_OUTPUT_CHANGED";
-
-        /**
          * Activity Action:  Start this activity to request system shutdown.
          * The optional boolean extra field {@link #EXTRA_KEY_CONFIRM} can be set to true
          * to request confirmation from the user before shutting down.
@@ -1517,78 +1519,6 @@ module
         const String ACTION_HEADSET_PLUG = "android.intent.action.HEADSET_PLUG";
 
         /**
-         * Broadcast Action: An analog audio speaker/headset plugged in or unplugged.
-         *
-         * <p>The intent will have the following extra values:
-         * <ul>
-         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
-         *   <li><em>name</em> - Headset type, human readable string </li>
-         * </ul>
-         * </ul>
-         * @hide
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_ANALOG_AUDIO_DOCK_PLUG = "android.intent.action.ANALOG_AUDIO_DOCK_PLUG";
-
-        /**
-         * Broadcast Action: A digital audio speaker/headset plugged in or unplugged.
-         *
-         * <p>The intent will have the following extra values:
-         * <ul>
-         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
-         *   <li><em>name</em> - Headset type, human readable string </li>
-         * </ul>
-         * </ul>
-         * @hide
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_DIGITAL_AUDIO_DOCK_PLUG = "android.intent.action.DIGITAL_AUDIO_DOCK_PLUG";
-
-        /**
-         * Broadcast Action: A HMDI cable was plugged or unplugged
-         *
-         * <p>The intent will have the following extra values:
-         * <ul>
-         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
-         *   <li><em>name</em> - HDMI cable, human readable string </li>
-         * </ul>
-         * </ul>
-         * @hide
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_HDMI_AUDIO_PLUG = "android.intent.action.HDMI_AUDIO_PLUG";
-
-        /**
-         * Broadcast Action: A USB audio accessory was plugged in or unplugged.
-         *
-         * <p>The intent will have the following extra values:
-         * <ul>
-         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
-         *   <li><em>card</em> - ALSA card number (integer) </li>
-         *   <li><em>device</em> - ALSA device number (integer) </li>
-         * </ul>
-         * </ul>
-         * @hide
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_USB_AUDIO_ACCESSORY_PLUG = "android.intent.action.USB_AUDIO_ACCESSORY_PLUG";
-
-        /**
-         * Broadcast Action: A USB audio device was plugged in or unplugged.
-         *
-         * <p>The intent will have the following extra values:
-         * <ul>
-         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
-         *   <li><em>card</em> - ALSA card number (integer) </li>
-         *   <li><em>device</em> - ALSA device number (integer) </li>
-         * </ul>
-         * </ul>
-         * @hide
-         */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_USB_AUDIO_DEVICE_PLUG = "android.intent.action.USB_AUDIO_DEVICE_PLUG";
-
-        /**
          * <p>Broadcast Action: The user has switched on advanced settings in the settings app:</p>
          * <ul>
          *   <li><em>state</em> - A boolean value indicating whether the settings is on or off.</li>
@@ -1601,6 +1531,16 @@ module
          */
         //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
         const String ACTION_ADVANCED_SETTINGS_CHANGED = "android.intent.action.ADVANCED_SETTINGS";
+
+        /**
+         *  Broadcast Action: Sent after application restrictions are changed.
+         *
+         * <p class="note">This is a protected intent that can only be sent
+         * by the system.</p>
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_APPLICATION_RESTRICTIONS_CHANGED =
+                "android.intent.action.APPLICATION_RESTRICTIONS_CHANGED";
 
         /**
          * Broadcast Action: An outgoing call is about to be placed.
@@ -1666,6 +1606,65 @@ module
         const String ACTION_DOCK_EVENT = "android.intent.action.DOCK_EVENT";
 
         /**
+         * Broadcast Action: A broadcast when idle maintenance can be started.
+         * This means that the user is not interacting with the device and is
+         * not expected to do so soon. Typical use of the idle maintenance is
+         * to perform somehow expensive tasks that can be postponed at a moment
+         * when they will not degrade user experience.
+         * <p>
+         * <p class="note">In order to keep the device responsive in case of an
+         * unexpected user interaction, implementations of a maintenance task
+         * should be interruptible. In such a scenario a broadcast with action
+         * {@link #ACTION_IDLE_MAINTENANCE_END} will be sent. In other words, you
+         * should not do the maintenance work in
+         * {@link BroadcastReceiver#onReceive(Context, Intent)}, rather start a
+         * maintenance service by {@link Context#startService(Intent)}. Also
+         * you should hold a wake lock while your maintenance service is running
+         * to prevent the device going to sleep.
+         * </p>
+         * <p>
+         * <p class="note">This is a protected intent that can only be sent by
+         * the system.
+         * </p>
+         *
+         * @see #ACTION_IDLE_MAINTENANCE_END
+         *
+         * @hide
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_IDLE_MAINTENANCE_START =
+                "android.intent.action.ACTION_IDLE_MAINTENANCE_START";
+
+        /**
+         * Broadcast Action:  A broadcast when idle maintenance should be stopped.
+         * This means that the user was not interacting with the device as a result
+         * of which a broadcast with action {@link #ACTION_IDLE_MAINTENANCE_START}
+         * was sent and now the user started interacting with the device. Typical
+         * use of the idle maintenance is to perform somehow expensive tasks that
+         * can be postponed at a moment when they will not degrade user experience.
+         * <p>
+         * <p class="note">In order to keep the device responsive in case of an
+         * unexpected user interaction, implementations of a maintenance task
+         * should be interruptible. Hence, on receiving a broadcast with this
+         * action, the maintenance task should be interrupted as soon as possible.
+         * In other words, you should not do the maintenance work in
+         * {@link BroadcastReceiver#onReceive(Context, Intent)}, rather stop the
+         * maintenance service that was started on receiving of
+         * {@link #ACTION_IDLE_MAINTENANCE_START}.Also you should release the wake
+         * lock you acquired when your maintenance service started.
+         * </p>
+         * <p class="note">This is a protected intent that can only be sent
+         * by the system.
+         *
+         * @see #ACTION_IDLE_MAINTENANCE_START
+         *
+         * @hide
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_IDLE_MAINTENANCE_END =
+                "android.intent.action.ACTION_IDLE_MAINTENANCE_END";
+
+        /**
          * Broadcast Action: a remote intent is to be broadcasted.
          *
          * A remote intent is used for remote RPC between devices. The remote intent
@@ -1689,6 +1688,38 @@ module
          * @hide
          */
         const String ACTION_PRE_BOOT_COMPLETED = "android.intent.action.PRE_BOOT_COMPLETED";
+
+        /**
+         * Broadcast to a specific application to query any supported restrictions to impose
+         * on restricted users. The broadcast intent contains an extra
+         * {@link #EXTRA_RESTRICTIONS_BUNDLE} with the currently persisted
+         * restrictions as a Bundle of key/value pairs. The value types can be Boolean, String or
+         * String[] depending on the restriction type.<p/>
+         * The response should contain an extra {@link #EXTRA_RESTRICTIONS_LIST},
+         * which is of type <code>ArrayList&lt;RestrictionEntry&gt;</code>. It can also
+         * contain an extra {@link #EXTRA_RESTRICTIONS_INTENT}, which is of type <code>Intent</code>.
+         * The activity specified by that intent will be launched for a result which must contain
+         * one of the extras {@link #EXTRA_RESTRICTIONS_LIST} or {@link #EXTRA_RESTRICTIONS_BUNDLE}.
+         * The keys and values of the returned restrictions will be persisted.
+         * @see RestrictionEntry
+         */
+        const String ACTION_GET_RESTRICTION_ENTRIES =
+                "android.intent.action.GET_RESTRICTION_ENTRIES";
+
+        /**
+         * @hide
+         * Activity to challenge the user for a PIN that was configured when setting up
+         * restrictions. Restrictions include blocking of apps and preventing certain user operations,
+         * controlled by {@link android.os.UserManager#setUserRestrictions(Bundle).
+         * Launch the activity using
+         * {@link android.app.Activity#startActivityForResult(Intent, int)} and check if the
+         * result is {@link android.app.Activity#RESULT_OK} for a successful response to the
+         * challenge.<p/>
+         * Before launching this activity, make sure that there is a PIN in effect, by calling
+         * {@link android.os.UserManager#hasRestrictionsChallenge()}.
+         */
+        const String ACTION_RESTRICTIONS_CHALLENGE =
+                "android.intent.action.RESTRICTIONS_CHALLENGE";
 
         /**
          * Sent the first time a user is starting, to allow system apps to
@@ -1818,11 +1849,148 @@ module
         const String ACTION_USER_INFO_CHANGED = "android.intent.action.USER_INFO_CHANGED";
 
         /**
+         * Broadcast sent to the primary user when an associated managed profile is added (the profile
+         * was created and is ready to be used). Carries an extra {@link #EXTRA_USER} that specifies
+         * the UserHandle of the profile that was added. Only applications (for example Launchers)
+         * that need to display merged content across both primary and managed profiles need to
+         * worry about this broadcast. This is only sent to registered receivers,
+         * not manifest receivers.
+         */
+        const String ACTION_MANAGED_PROFILE_ADDED =
+                "android.intent.action.MANAGED_PROFILE_ADDED";
+
+        /**
+         * Broadcast sent to the primary user when an associated managed profile is removed. Carries an
+         * extra {@link #EXTRA_USER} that specifies the UserHandle of the profile that was removed.
+         * Only applications (for example Launchers) that need to display merged content across both
+         * primary and managed profiles need to worry about this broadcast. This is only sent to
+         * registered receivers, not manifest receivers.
+         */
+        const String ACTION_MANAGED_PROFILE_REMOVED =
+                "android.intent.action.MANAGED_PROFILE_REMOVED";
+
+        /**
          * Sent when the user taps on the clock widget in the system's "quick settings" area.
          */
         const String ACTION_QUICK_CLOCK = "android.intent.action.QUICK_CLOCK";
 
-        const String ACTION_BOOT_FAST = "android.intent.action.BOOT_FAST";
+        /**
+         * Activity Action: Shows the brightness setting dialog.
+         * @hide
+         */
+        const String ACTION_SHOW_BRIGHTNESS_DIALOG =
+                "android.intent.action.SHOW_BRIGHTNESS_DIALOG";
+
+        /**
+         * Broadcast Action:  A global button was pressed.  Includes a single
+         * extra field, {@link #EXTRA_KEY_EVENT}, containing the key event that
+         * caused the broadcast.
+         * @hide
+         */
+        const String ACTION_GLOBAL_BUTTON = "android.intent.action.GLOBAL_BUTTON";
+
+        /**
+         * Activity Action: Allow the user to select and return one or more existing
+         * documents. When invoked, the system will display the various
+         * {@link DocumentsProvider} instances installed on the device, letting the
+         * user interactively navigate through them. These documents include local
+         * media, such as photos and video, and documents provided by installed
+         * cloud storage providers.
+         * <p>
+         * Each document is represented as a {@code content://} URI backed by a
+         * {@link DocumentsProvider}, which can be opened as a stream with
+         * {@link ContentResolver#openFileDescriptor(Uri, String)}, or queried for
+         * {@link android.provider.DocumentsContract.Document} metadata.
+         * <p>
+         * All selected documents are returned to the calling application with
+         * persistable read and write permission grants. If you want to maintain
+         * access to the documents across device reboots, you need to explicitly
+         * take the persistable permissions using
+         * {@link ContentResolver#takePersistableUriPermission(Uri, int)}.
+         * <p>
+         * Callers must indicate the acceptable document MIME types through
+         * {@link #setType(String)}. For example, to select photos, use
+         * {@code image/*}. If multiple disjoint MIME types are acceptable, define
+         * them in {@link #EXTRA_MIME_TYPES} and {@link #setType(String)} to
+         * {@literal *}/*.
+         * <p>
+         * If the caller can handle multiple returned items (the user performing
+         * multiple selection), then you can specify {@link #EXTRA_ALLOW_MULTIPLE}
+         * to indicate this.
+         * <p>
+         * Callers must include {@link #CATEGORY_OPENABLE} in the Intent so that
+         * returned URIs can be opened with
+         * {@link ContentResolver#openFileDescriptor(Uri, String)}.
+         * <p>
+         * Output: The URI of the item that was picked, returned in
+         * {@link #getData()}. This must be a {@code content://} URI so that any
+         * receiver can access it. If multiple documents were selected, they are
+         * returned in {@link #getClipData()}.
+         *
+         * @see DocumentsContract
+         * @see #ACTION_OPEN_DOCUMENT_TREE
+         * @see #ACTION_CREATE_DOCUMENT
+         * @see #FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+         */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String ACTION_OPEN_DOCUMENT = "android.intent.action.OPEN_DOCUMENT";
+
+        /**
+         * Activity Action: Allow the user to create a new document. When invoked,
+         * the system will display the various {@link DocumentsProvider} instances
+         * installed on the device, letting the user navigate through them. The
+         * returned document may be a newly created document with no content, or it
+         * may be an existing document with the requested MIME type.
+         * <p>
+         * Each document is represented as a {@code content://} URI backed by a
+         * {@link DocumentsProvider}, which can be opened as a stream with
+         * {@link ContentResolver#openFileDescriptor(Uri, String)}, or queried for
+         * {@link android.provider.DocumentsContract.Document} metadata.
+         * <p>
+         * Callers must indicate the concrete MIME type of the document being
+         * created by setting {@link #setType(String)}. This MIME type cannot be
+         * changed after the document is created.
+         * <p>
+         * Callers can provide an initial display name through {@link #EXTRA_TITLE},
+         * but the user may change this value before creating the file.
+         * <p>
+         * Callers must include {@link #CATEGORY_OPENABLE} in the Intent so that
+         * returned URIs can be opened with
+         * {@link ContentResolver#openFileDescriptor(Uri, String)}.
+         * <p>
+         * Output: The URI of the item that was created. This must be a
+         * {@code content://} URI so that any receiver can access it.
+         *
+         * @see DocumentsContract
+         * @see #ACTION_OPEN_DOCUMENT
+         * @see #ACTION_OPEN_DOCUMENT_TREE
+         * @see #FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+         */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String ACTION_CREATE_DOCUMENT = "android.intent.action.CREATE_DOCUMENT";
+
+        /**
+         * Activity Action: Allow the user to pick a directory subtree. When
+         * invoked, the system will display the various {@link DocumentsProvider}
+         * instances installed on the device, letting the user navigate through
+         * them. Apps can fully manage documents within the returned directory.
+         * <p>
+         * To gain access to descendant (child, grandchild, etc) documents, use
+         * {@link DocumentsContract#buildDocumentUriUsingTree(Uri, String)} and
+         * {@link DocumentsContract#buildChildDocumentsUriUsingTree(Uri, String)}
+         * with the returned URI.
+         * <p>
+         * Output: The URI representing the selected directory tree.
+         *
+         * @see DocumentsContract
+         */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String
+                ACTION_OPEN_DOCUMENT_TREE = "android.intent.action.OPEN_DOCUMENT_TREE";
+
+        /** {@hide} */
+        const String ACTION_MASTER_CLEAR = "android.intent.action.MASTER_CLEAR";
+
 
         // ---------------------------------------------------------------------
         // ---------------------------------------------------------------------
@@ -1851,6 +2019,17 @@ module
          */
         //@SdkConstant(SdkConstantType.INTENT_CATEGORY)
         const String CATEGORY_BROWSABLE = "android.intent.category.BROWSABLE";
+
+        /**
+         * @hide
+         * Categories for activities that can participate in voice interaction.
+         * An activity that supports this category must be prepared to run with
+         * no UI shown at all (though in some case it may have a UI shown), and
+         * rely on {@link android.app.VoiceInteractor} to interact with the user.
+         */
+        //@SdkConstant(SdkConstantType.INTENT_CATEGORY)
+        //@SystemApi
+        const String CATEGORY_VOICE = "android.intent.category.VOICE";
 
         /**
          * Set if the activity should be considered as an alternative action to
@@ -1897,6 +2076,19 @@ module
          */
         //@SdkConstant(SdkConstantType.INTENT_CATEGORY)
         const String CATEGORY_LAUNCHER = "android.intent.category.LAUNCHER";
+
+        /**
+         * Indicates an activity optimized for Leanback mode, and that should
+         * be displayed in the Leanback launcher.
+         */
+        //@SdkConstant(SdkConstantType.INTENT_CATEGORY)
+        const String CATEGORY_LEANBACK_LAUNCHER = "android.intent.category.LEANBACK_LAUNCHER";
+        /**
+         * Indicates a Leanback settings activity to be displayed in the Leanback launcher.
+         * @hide
+         */
+        //@SystemApi
+        const String CATEGORY_LEANBACK_SETTINGS = "android.intent.category.LEANBACK_SETTINGS";
 
         /**
          * Provides information about the package it is in; typically used if
@@ -2201,6 +2393,33 @@ module
         const String EXTRA_INITIAL_INTENTS = "android.intent.extra.INITIAL_INTENTS";
 
         /**
+         * A Bundle forming a mapping of potential target package names to different extras Bundles
+         * to add to the default intent extras in {@link #EXTRA_INTENT} when used with
+         * {@link #ACTION_CHOOSER}. Each key should be a package name. The package need not
+         * be currently installed on the device.
+         *
+         * <p>An application may choose to provide alternate extras for the case where a user
+         * selects an activity from a predetermined set of target packages. If the activity
+         * the user selects from the chooser belongs to a package with its package name as
+         * a key in this bundle, the corresponding extras for that package will be merged with
+         * the extras already present in the intent at {@link #EXTRA_INTENT}. If a replacement
+         * extra has the same key as an extra already present in the intent it will overwrite
+         * the extra from the intent.</p>
+         *
+         * <p><em>Examples:</em>
+         * <ul>
+         *     <li>An application may offer different {@link #EXTRA_TEXT} to an application
+         *     when sharing with it via {@link #ACTION_SEND}, augmenting a link with additional query
+         *     parameters for that target.</li>
+         *     <li>An application may offer additional metadata for known targets of a given intent
+         *     to pass along information only relevant to that target such as account or content
+         *     identifiers already known to that application.</li>
+         * </ul></p>
+         */
+        const String EXTRA_REPLACEMENT_EXTRAS =
+                "android.intent.extra.REPLACEMENT_EXTRAS";
+
+        /**
          * A {@link android.view.KeyEvent} object containing the event that
          * triggered the creation of the Intent it is in.
          */
@@ -2393,13 +2612,89 @@ module
         const String EXTRA_LOCAL_ONLY = "android.intent.extra.LOCAL_ONLY";
 
         /**
+         * Extra used to indicate that an intent can allow the user to select and
+         * return multiple items. This is a boolean extra; the default is false. If
+         * true, an implementation is allowed to present the user with a UI where
+         * they can pick multiple items that are all returned to the caller. When
+         * this happens, they should be returned as the {@link #getClipData()} part
+         * of the result Intent.
+         *
+         * @see #ACTION_GET_CONTENT
+         * @see #ACTION_OPEN_DOCUMENT
+         */
+        const String EXTRA_ALLOW_MULTIPLE =
+                "android.intent.extra.ALLOW_MULTIPLE";
+
+        /**
          * The userHandle carried with broadcast intents related to addition, removal and switching of users
          * - {@link #ACTION_USER_ADDED}, {@link #ACTION_USER_REMOVED} and {@link #ACTION_USER_SWITCHED}.
          * @hide
          */
         const String EXTRA_USER_HANDLE = "android.intent.extra.user_handle";
 
-        const String EXTRA_BOOT_FAST = "android.intent.extra.boot_fast";
+        /**
+         * The UserHandle carried with broadcasts intents related to addition and removal of managed
+         * profiles - {@link #ACTION_MANAGED_PROFILE_ADDED} and {@link #ACTION_MANAGED_PROFILE_REMOVED}.
+         */
+        const String EXTRA_USER =
+                "android.intent.extra.USER";
+
+        /**
+         * Extra used in the response from a BroadcastReceiver that handles
+         * {@link #ACTION_GET_RESTRICTION_ENTRIES}. The type of the extra is
+         * <code>ArrayList&lt;RestrictionEntry&gt;</code>.
+         */
+        const String EXTRA_RESTRICTIONS_LIST = "android.intent.extra.restrictions_list";
+
+        /**
+         * Extra sent in the intent to the BroadcastReceiver that handles
+         * {@link #ACTION_GET_RESTRICTION_ENTRIES}. The type of the extra is a Bundle containing
+         * the restrictions as key/value pairs.
+         */
+        const String EXTRA_RESTRICTIONS_BUNDLE =
+                "android.intent.extra.restrictions_bundle";
+
+        /**
+         * Extra used in the response from a BroadcastReceiver that handles
+         * {@link #ACTION_GET_RESTRICTION_ENTRIES}.
+         */
+        const String EXTRA_RESTRICTIONS_INTENT =
+                "android.intent.extra.restrictions_intent";
+
+        /**
+         * Extra used to communicate a set of acceptable MIME types. The type of the
+         * extra is {@code String[]}. Values may be a combination of concrete MIME
+         * types (such as "image/png") and/or partial MIME types (such as
+         * "audio/*").
+         *
+         * @see #ACTION_GET_CONTENT
+         * @see #ACTION_OPEN_DOCUMENT
+         */
+        const String EXTRA_MIME_TYPES = "android.intent.extra.MIME_TYPES";
+
+        /**
+         * Optional extra for {@link #ACTION_SHUTDOWN} that allows the sender to qualify that
+         * this shutdown is only for the user space of the system, not a complete shutdown.
+         * When this is true, hardware devices can use this information to determine that
+         * they shouldn't do a complete shutdown of their device since this is not a
+         * complete shutdown down to the kernel, but only user space restarting.
+         * The default if not supplied is false.
+         */
+        const String EXTRA_SHUTDOWN_USERSPACE_ONLY
+                = "android.intent.extra.SHUTDOWN_USERSPACE_ONLY";
+
+        /**
+         * Optional boolean extra for {@link #ACTION_TIME_CHANGED} that indicates the
+         * user has set their time format preferences to the 24 hour format.
+         *
+         * @hide for internal use only.
+         */
+        const String EXTRA_TIME_PREF_24_HOUR_FORMAT =
+                "android.intent.extra.TIME_PREF_24_HOUR_FORMAT";
+
+        /** {@hide} */
+        const String EXTRA_REASON = "android.intent.extra.REASON";
+
 
         // ---------------------------------------------------------------------
         // ---------------------------------------------------------------------
@@ -2453,6 +2748,33 @@ module
          * places where the framework may automatically set the exclude flag).
          */
         const Int32 FLAG_INCLUDE_STOPPED_PACKAGES = 0x00000020;
+
+        /**
+         * When combined with {@link #FLAG_GRANT_READ_URI_PERMISSION} and/or
+         * {@link #FLAG_GRANT_WRITE_URI_PERMISSION}, the URI permission grant can be
+         * persisted across device reboots until explicitly revoked with
+         * {@link Context#revokeUriPermission(Uri, int)}. This flag only offers the
+         * grant for possible persisting; the receiving application must call
+         * {@link ContentResolver#takePersistableUriPermission(Uri, int)} to
+         * actually persist.
+         *
+         * @see ContentResolver#takePersistableUriPermission(Uri, int)
+         * @see ContentResolver#releasePersistableUriPermission(Uri, int)
+         * @see ContentResolver#getPersistedUriPermissions()
+         * @see ContentResolver#getOutgoingPersistedUriPermissions()
+         */
+        const Int32 FLAG_GRANT_PERSISTABLE_URI_PERMISSION = 0x00000040;
+
+        /**
+         * When combined with {@link #FLAG_GRANT_READ_URI_PERMISSION} and/or
+         * {@link #FLAG_GRANT_WRITE_URI_PERMISSION}, the URI permission grant
+         * applies to any URI that is a prefix match against the original granted
+         * URI. (Without this flag, the URI must match exactly for access to be
+         * granted.) Another URI is considered a prefix match only when scheme,
+         * authority, and all path segments defined by the prefix are an exact
+         * match.
+         */
+        const Int32 FLAG_GRANT_PREFIX_URI_PERMISSION = 0x00000080;
 
         /**
          * If set, the new activity is not kept in the history stack.  As soon as
@@ -2623,6 +2945,39 @@ module
         const Int32 FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET = 0x00080000;
 
         /**
+         * This flag is used to open a document into a new task rooted at the activity launched
+         * by this Intent. Through the use of this flag, or its equivalent attribute,
+         * {@link android.R.attr#documentLaunchMode} multiple instances of the same activity
+         * containing different douments will appear in the recent tasks list.
+         *
+         * <p>The use of the activity attribute form of this,
+         * {@link android.R.attr#documentLaunchMode}, is
+         * preferred over the Intent flag described here. The attribute form allows the
+         * Activity to specify multiple document behavior for all launchers of the Activity
+         * whereas using this flag requires each Intent that launches the Activity to specify it.
+         *
+         * <p>Note that the default semantics of this flag w.r.t. whether the recents entry for
+         * it is kept after the activity is finished is different than the use of
+         * {@link #FLAG_ACTIVITY_NEW_TASK} and {@link android.R.attr#documentLaunchMode} -- if
+         * this flag is being used to create a new recents entry, then by default that entry
+         * will be removed once the activity is finished.  You can modify this behavior with
+         * {@link #FLAG_ACTIVITY_RETAIN_IN_RECENTS}.
+         *
+         * <p>FLAG_ACTIVITY_NEW_DOCUMENT may be used in conjunction with {@link
+         * #FLAG_ACTIVITY_MULTIPLE_TASK}. When used alone it is the
+         * equivalent of the Activity manifest specifying {@link
+         * android.R.attr#documentLaunchMode}="intoExisting". When used with
+         * FLAG_ACTIVITY_MULTIPLE_TASK it is the equivalent of the Activity manifest specifying
+         * {@link android.R.attr#documentLaunchMode}="always".
+         *
+         * Refer to {@link android.R.attr#documentLaunchMode} for more information.
+         *
+         * @see android.R.attr#documentLaunchMode
+         * @see #FLAG_ACTIVITY_MULTIPLE_TASK
+         */
+        const Int32 FLAG_ACTIVITY_NEW_DOCUMENT = FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET;
+
+        /**
          * If set, this flag will prevent the normal {@link android.app.Activity#onUserLeaveHint}
          * callback from occurring on the current frontmost activity before it is
          * paused as the newly-started activity is brought to the front.
@@ -2716,6 +3071,13 @@ module
         const Int32 FLAG_RECEIVER_FOREGROUND = 0x10000000;
 
         /**
+         * If this is an ordered broadcast, don't allow receivers to abort the broadcast.
+         * They can still propagate results through to later receivers, but they can not prevent
+         * later receivers from seeing the broadcast.
+         */
+        const Int32 FLAG_RECEIVER_NO_ABORT = 0x08000000;
+
+        /**
          * If set, when sending a broadcast <i>before boot has completed</i> only
          * registered receivers will be called -- no BroadcastReceiver components
          * will be launched.  Sticky intent state will be recorded properly even
@@ -2728,7 +3090,7 @@ module
          *
          * @hide
          */
-        const Int32 FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT = 0x08000000;
+        const Int32 FLAG_RECEIVER_REGISTERED_ONLY_BEFORE_BOOT = 0x04000000;
 
         /**
          * Set when this broadcast is for a boot upgrade, a special mode that
@@ -2736,19 +3098,14 @@ module
          * the app process with no providers running in it.
          * @hide
          */
-        const Int32 FLAG_RECEIVER_BOOT_UPGRADE = 0x04000000;
-
-        /*add by chenjd,2013-03-19,start {{---------------------------
-        * add intent for audio plug in/out
-        */
-        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String ACTION_AUDIO_PLUG_IN_OUT = "android.intent.action.AUDIO_PLUG_IN_OUT";
-        /*add by chenjd, end ---------------------------------------}}*/
+        const Int32 FLAG_RECEIVER_BOOT_UPGRADE = 0x02000000;
 
         /**
          * @hide Flags that can't be changed with PendingIntent.
          */
-        const Int32 IMMUTABLE_FLAGS = FLAG_GRANT_READ_URI_PERMISSION | FLAG_GRANT_WRITE_URI_PERMISSION;
+        const Int32 IMMUTABLE_FLAGS = FLAG_GRANT_READ_URI_PERMISSION
+                | FLAG_GRANT_WRITE_URI_PERMISSION | FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+                | FLAG_GRANT_PREFIX_URI_PERMISSION;
 
         // ---------------------------------------------------------------------
         // ---------------------------------------------------------------------
@@ -2812,9 +3169,6 @@ module
          */
         const Int32 FILL_IN_CLIP_DATA = 0x80;
 
-        Clone(
-            [out] IIntent** intent);
-
         /**
          * Make a clone of only the parts of the Intent that are relevant for
          * filter matching: the action, data, type, component, and categories.
@@ -2846,7 +3200,7 @@ module
          * @see #getScheme
          * @see #setData
          */
-         GetData(
+        GetData(
             [out] IUri** data);
 
         /**
@@ -2957,7 +3311,7 @@ module
          * @see #addCategory
          */
         GetCategories(
-            [out, callee] ArrayOf<String>* categories);
+            [out] ISet** categories);
 
         /**
          * Return the specific selector associated with this Intent.  If there is
@@ -2984,10 +3338,8 @@ module
          * @param loader a ClassLoader, or null to use the default loader
          * at the time of unmarshalling.
          */
-        //TODO
-        //SetExtrasClassLoader(
-        //    [in] IClassLoader* loader);
-
+        SetExtrasClassLoader(
+            [in] IClassLoader* loader);
 
         /**
          * Returns true if an extra value is associated with the given name.
@@ -3240,9 +3592,9 @@ module
          *
          * @see #putExtra(String, Serializable)
          */
-        // GetSerializableExtra(
-        //     [in] String name,
-        //     [out] ISerializable** value);
+        GetSerializableExtra(
+            [in] String name,
+            [out] ISerializable** value);
 
         /**
          * Retrieve extended data from the intent.
@@ -3254,7 +3606,7 @@ module
          *
          * @see #putIntegerArrayListExtra(String, ArrayList)
          */
-        GetIntegerArrayListExtra(
+        GetInteger32ArrayListExtra(
             [in] String name,
             [out] IArrayList** value);
 
@@ -3950,7 +4302,7 @@ module
          * @see #removeExtra
          * @see #getShortExtra(String, short)
          */
-        PutInt16Extra(
+        PutExtra(
             [in] String name,
             [in] Int16 value);
 
@@ -3969,7 +4321,7 @@ module
          * @see #removeExtra
          * @see #getIntExtra(String, int)
          */
-        PutInt32Extra(
+        PutExtra(
             [in] String name,
             [in] Int32 value);
 
@@ -3988,7 +4340,7 @@ module
          * @see #removeExtra
          * @see #getLongExtra(String, long)
          */
-        PutInt64Extra(
+        PutExtra(
             [in] String name,
             [in] Int64 value);
 
@@ -4007,7 +4359,7 @@ module
          * @see #removeExtra
          * @see #getFloatExtra(String, float)
          */
-        PutFloatExtra(
+        PutExtra(
             [in] String name,
             [in] Float value);
 
@@ -4026,7 +4378,7 @@ module
          * @see #removeExtra
          * @see #getDoubleExtra(String, double)
          */
-        PutDoubleExtra(
+        PutExtra(
             [in] String name,
             [in] Double value);
 
@@ -4045,7 +4397,7 @@ module
          * @see #removeExtra
          * @see #getStringExtra(String)
          */
-        PutStringExtra(
+        PutExtra(
             [in] String name,
             [in] String value);
 
@@ -4064,7 +4416,7 @@ module
          * @see #removeExtra
          * @see #getCharSequenceExtra(String)
          */
-        PutCharSequenceExtra(
+        PutExtra(
             [in] String name,
             [in] ICharSequence* value);
 
@@ -4083,7 +4435,7 @@ module
          * @see #removeExtra
          * @see #getParcelableExtra(String)
          */
-        PutParcelableExtra(
+        PutExtra(
             [in] String name,
             [in] IParcelable* value);
 
@@ -4102,7 +4454,7 @@ module
          * @see #removeExtra
          * @see #getParcelableArrayExtra(String)
          */
-        PutParcelableArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<IParcelable*>* value);
 
@@ -4140,7 +4492,7 @@ module
          * @see #removeExtra
          * @see #getIntegerArrayListExtra(String)
          */
-        PutIntegerArrayListExtra(
+        PutInteger32ArrayListExtra(
             [in] String name,
             [in] IArrayList* value);
 
@@ -4197,10 +4549,10 @@ module
          * @see #removeExtra
          * @see #getSerializableExtra(String)
          */
-        // PutSerializableExtra(
-        //     [in] String name,
-        //     [in] ISerializable* value,
-        //     [out] IIntent** result);
+        PutExtra(
+            [in] String name,
+            [in] ISerializable* value,
+            [out] IIntent** result);
 
         /**
          * Add extended data to the intent.  The name must include a package
@@ -4255,7 +4607,7 @@ module
          * @see #removeExtra
          * @see #getShortArrayExtra(String)
          */
-        PutInt16ArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<Int16>* value);
 
@@ -4293,7 +4645,7 @@ module
          * @see #removeExtra
          * @see #getIntArrayExtra(String)
          */
-        PutInt32ArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<Int32>* value);
 
@@ -4312,7 +4664,7 @@ module
          * @see #removeExtra
          * @see #getLongArrayExtra(String)
          */
-        PutInt64ArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<Int64>* value);
 
@@ -4331,7 +4683,7 @@ module
          * @see #removeExtra
          * @see #getFloatArrayExtra(String)
          */
-        PutFloatArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<Float>* value);
 
@@ -4350,7 +4702,7 @@ module
          * @see #removeExtra
          * @see #getDoubleArrayExtra(String)
          */
-        PutDoubleArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<Double>* value);
 
@@ -4369,7 +4721,7 @@ module
          * @see #removeExtra
          * @see #getStringArrayExtra(String)
          */
-        PutStringArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<String>* value);
 
@@ -4388,7 +4740,7 @@ module
          * @see #removeExtra
          * @see #getCharSequenceArrayExtra(String)
          */
-        PutCharSequenceArrayExtra(
+        PutExtra(
             [in] String name,
             [in] ArrayOf<ICharSequence*>* value);
 
@@ -4407,7 +4759,7 @@ module
          * @see #removeExtra
          * @see #getBundleExtra(String)
          */
-        PutBundleExtra(
+        PutExtra(
             [in] String name,
             [in] IBundle* value);
 
@@ -4981,6 +5333,10 @@ module
             [out] String* mimeType);
     }
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IIntentShortcutIconResource {
         /**
          * The package name of the application containing the icon.

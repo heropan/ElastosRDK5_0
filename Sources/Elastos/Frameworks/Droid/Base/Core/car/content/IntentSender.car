@@ -19,6 +19,7 @@ module
      * android.content.BroadcastReceiver, Handler, int, String, Bundle)
      * Context.sendBroadcast()} with a final BroadcastReceiver.
      */
+    [local]
     interface IIntentSenderOnFinished {
         /**
          * Called when a send operation as completed.
@@ -37,6 +38,10 @@ module
             [in] IBundle* resultExtras);
     }
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     [local, parcelable]
     interface IIntentSender {
         /**

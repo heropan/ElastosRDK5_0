@@ -1137,7 +1137,7 @@ ECode PackageParser::IntentInfo::Dump(
     return IntentFilter::Dump(du, prefix);
 }
 
-ECode PackageParser::IntentInfo::GetHasPartialTypes(
+ECode PackageParser::IntentInfo::HasPartialTypes(
     /* [out] */ Boolean* has)
 {
     VALIDATE_NOT_NULL(has)

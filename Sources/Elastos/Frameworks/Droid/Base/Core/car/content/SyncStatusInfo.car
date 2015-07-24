@@ -5,6 +5,10 @@ module
     namespace Droid {
     namespace Content {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     [deprecated]
     interface ISyncStatusInfo {
         GetAuthorityId(

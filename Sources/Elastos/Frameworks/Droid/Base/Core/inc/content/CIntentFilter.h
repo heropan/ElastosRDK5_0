@@ -508,7 +508,7 @@ public:
         /* [in] */ IPrinter* du,
         /* [in] */ const String& prefix);
 
-    CARAPI GetHasPartialTypes(
+    CARAPI HasPartialTypes(
         /* [out] */ Boolean* has);
 
     CARAPI ReadFromParcel(

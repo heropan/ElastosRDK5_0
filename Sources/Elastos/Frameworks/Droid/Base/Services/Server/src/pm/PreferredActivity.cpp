@@ -446,7 +446,7 @@ ECode PreferredActivity::Dump(
     return IntentFilter::Dump(du, prefix);
 }
 
-ECode PreferredActivity::GetHasPartialTypes(
+ECode PreferredActivity::HasPartialTypes(
     /* [out] */ Boolean* has)
 {
     VALIDATE_NOT_NULL(has)

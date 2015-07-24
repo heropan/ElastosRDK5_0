@@ -9,8 +9,7 @@ module
     namespace Content {
 
     /**
-     * Interface used by the SyncAdapter to indicate its progress.
-     * @hide
+     * Value type that contains information about a periodic sync.
      */
     interface IPeriodicSync {
         /** The account to be synced */
