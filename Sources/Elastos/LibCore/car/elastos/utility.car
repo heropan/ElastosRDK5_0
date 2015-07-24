@@ -186,6 +186,7 @@ module
     merge("utility/concurrent/IScheduledExecutorService.car");
     merge("utility/concurrent/IRecursiveAction.car");
     merge("utility/concurrent/IRecursiveTask.car");
+    merge("utility/concurrent/IScheduledThreadPoolExecutor.car");
 
     //======================================================
     // Elastos.Utility.Zip
@@ -2309,6 +2310,73 @@ module
         interface ICollection;
         interface IIterable;
         interface ISerializable;
+    }
+
+    class CScheduledThreadPoolExecutor {
+        /**
+         * Creates a new {@code ScheduledThreadPoolExecutor} with the
+         * given core pool size.
+         *
+         * @param corePoolSize the number of threads to keep in the pool, even
+         *        if they are idle, unless {@code allowCoreThreadTimeOut} is set
+         * @throws IllegalArgumentException if {@code corePoolSize < 0}
+         */
+        constructor(
+            [in] Int32 corePoolSize);
+
+        /**
+         * Creates a new {@code ScheduledThreadPoolExecutor} with the
+         * given initial parameters.
+         *
+         * @param corePoolSize the number of threads to keep in the pool, even
+         *        if they are idle, unless {@code allowCoreThreadTimeOut} is set
+         * @param threadFactory the factory to use when the executor
+         *        creates a new thread
+         * @throws IllegalArgumentException if {@code corePoolSize < 0}
+         * @throws NullPointerException if {@code threadFactory} is null
+         */
+        constructor(
+            [in] Int32 corePoolSize,
+            [in] IThreadFactory* threadFactory);
+
+        /**
+         * Creates a new ScheduledThreadPoolExecutor with the given
+         * initial parameters.
+         *
+         * @param corePoolSize the number of threads to keep in the pool, even
+         *        if they are idle, unless {@code allowCoreThreadTimeOut} is set
+         * @param handler the handler to use when execution is blocked
+         *        because the thread bounds and queue capacities are reached
+         * @throws IllegalArgumentException if {@code corePoolSize < 0}
+         * @throws NullPointerException if {@code handler} is null
+         */
+        constructor(
+            [in] Int32 corePoolSize,
+            [in] IRejectedExecutionHandler* handler);
+
+        /**
+         * Creates a new ScheduledThreadPoolExecutor with the given
+         * initial parameters.
+         *
+         * @param corePoolSize the number of threads to keep in the pool, even
+         *        if they are idle, unless {@code allowCoreThreadTimeOut} is set
+         * @param threadFactory the factory to use when the executor
+         *        creates a new thread
+         * @param handler the handler to use when execution is blocked
+         *        because the thread bounds and queue capacities are reached
+         * @throws IllegalArgumentException if {@code corePoolSize < 0}
+         * @throws NullPointerException if {@code threadFactory} or
+         *         {@code handler} is null
+         */
+        constructor(
+            [in] Int32 corePoolSize,
+            [in] IThreadFactory* threadFactory,
+            [in] IRejectedExecutionHandler* handler);
+
+        interface IScheduledThreadPoolExecutor;
+        interface IScheduledExecutorService;
+        interface IExecutorService;
+        interface IExecutor;
     }
 
     namespace Atomic {

@@ -1600,7 +1600,7 @@ public:
     /**
      * Generates initial value for per-thread CounterHashCodes.
      */
-    static AutoPtr<IAtomicInteger32> mCounterHashCodeGenerator;
+    static const AutoPtr<IAtomicInteger32> mCounterHashCodeGenerator;
 
     /**
      * Increment for counterHashCodeGenerator. See class ThreadLocal
