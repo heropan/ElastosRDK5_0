@@ -5,12 +5,29 @@ module
     namespace Droid {
     namespace Content {
 
+    /**
+     * Value type that represents a SyncAdapterType. This object overrides {@link #equals} and
+     * {@link #hashCode}, making it suitable for use as the key of a {@link java.util.Map}
+     */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface ISyncAdapterType {
+        SetAuthority(
+            [in] String authority);
+
         GetAuthority(
             [out] String* authority);
 
+        SetAccountType(
+            [in] String accountType);
+
         GetAccountType(
             [out] String* accountType);
+
+        SetKey(
+            [in] Boolean isKey);
 
         IsKey(
             [out] Boolean* isKey);

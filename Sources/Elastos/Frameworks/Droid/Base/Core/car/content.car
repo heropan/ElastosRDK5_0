@@ -37,30 +37,32 @@ module
     merge("content/ISyncContext.car");
     merge("content/ISyncServiceAdapter.car");
     merge("content/ISyncStatusObserver.car");
-    //merge("content/Intent.car");
-
-
+    merge("content/Intent.car");
+    merge("content/IntentFilter.car");
+    merge("content/IntentSender.car");
+    merge("content/Loader.car");
+    merge("content/MutableContextWrapper.car");
+    merge("content/PeriodicSync.car");
+    merge("content/RestrictionEntry.car");
+    merge("content/RestrictionsManager.car");
+    merge("content/SearchRecentSuggestionsProvider.car");
+    merge("content/ServiceConnection.car");
+    merge("content/SharedPreferences.car");
+    merge("content/SyncAdapterType.car");
+    merge("content/SyncContext.car");
+    merge("content/SyncInfo.car");
+    merge("content/SyncRequest.car");
     merge("content/SyncResult.car");
     merge("content/SyncStats.car");
+    merge("content/SyncStatusInfo.car");
+    merge("content/SyncStatusObserver.car");
+    merge("content/UriMatcher.car");
 
-//
-//     merge("content/MutableContextWrapper.car");
-//     merge("content/Loader.car");
-//     merge("content/IntentFilter.car");
-//     merge("content/IntentSender.car");
-//     merge("content/PeriodicSync.car");
-//     merge("content/ServiceConnection.car");
-//     merge("content/SharedPreferences.car");
-//     merge("content/SyncAdapterType.car");
-//     merge("content/SyncContext.car");
-//     merge("content/SyncInfo.car");
 //     merge("content/SyncManager.car");
 //     merge("content/SyncOperation.car");
 //     merge("content/SyncQueue.car");
-//     merge("content/SyncStatusInfo.car");
-//     merge("content/SyncStatusObserver.car");
 //     merge("content/SyncStorageEngine.car");
-//     merge("content/UriMatcher.car");
+//
 //     merge("content/NativeLibraryHelper.car");
 //     merge("content/PackageHelper.car");
 //     merge("content/PackageMonitor.car");

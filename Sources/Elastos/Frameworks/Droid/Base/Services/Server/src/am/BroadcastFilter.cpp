@@ -465,7 +465,7 @@ ECode BroadcastFilter::Dump(
     return IntentFilter::Dump(du, prefix);
 }
 
-ECode BroadcastFilter::GetHasPartialTypes(
+ECode BroadcastFilter::HasPartialTypes(
     /* [out] */ Boolean* has)
 {
     VALIDATE_NOT_NULL(has)

@@ -40,25 +40,6 @@ module
     namespace Droid {
     namespace Content {
 
-        interface IIntentSender {}
-
-        interface IIntentFilter {}
-
-        interface IServiceConnection {}
-
-        interface ISharedPreferences {}
-
-        interface ISyncAdapterType {}
-
-        interface ISyncInfo {}
-
-        interface ISyncStatusInfo {}
-
-        interface ISyncStatusObserver {}
-
-        interface ISyncRequest {}
-
-
         namespace Pm {
             interface IActivityInfo {}
 

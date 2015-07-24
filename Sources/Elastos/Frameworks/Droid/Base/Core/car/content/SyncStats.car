@@ -5,6 +5,16 @@ module
     namespace Droid {
     namespace Content {
 
+    /**
+     * Used to record various statistics about the result of a sync operation. The SyncManager
+     * gets access to these via a {@link SyncResult} and uses some of them to determine the
+     * disposition of the sync. See {@link SyncResult} for further dicussion on how the
+     * SyncManager uses these values.
+     */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface ISyncStats {
         /**
          * The SyncAdapter was unable to authenticate the {@link android.accounts.Account}

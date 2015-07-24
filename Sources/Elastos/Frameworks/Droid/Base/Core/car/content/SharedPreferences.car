@@ -2,7 +2,7 @@
 module
 {
     interface Elastos.Droid.Content.ISharedPreferences;
-    using interface Elastos.Utility.IObjectMap;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {
@@ -244,7 +244,7 @@ module
          * @throws NullPointerException
          */
         GetAll(
-            [out] IObjectMap** result);
+            [out] IMap** result);
 
         /**
          * Retrieve a String value from the preferences.

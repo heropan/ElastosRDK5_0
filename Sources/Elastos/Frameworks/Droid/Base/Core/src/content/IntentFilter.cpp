@@ -151,7 +151,7 @@ ECode IntentFilter::Init(
             mDataPaths->PushBack((*paths)[i]);
         }
     }
-    other->GetHasPartialTypes(&mHasPartialTypes);
+    other->HasPartialTypes(&mHasPartialTypes);
     return NOERROR;
 }
 

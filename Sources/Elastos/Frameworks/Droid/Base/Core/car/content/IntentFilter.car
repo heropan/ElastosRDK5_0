@@ -39,7 +39,11 @@ module
             [out] Int32* result);
     }
 
-    [deprecated]
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
+    [deprecated, local]
     interface IIntentFilter {
         /**
          * The filter {@link #setPriority} value at which system high-priority
@@ -64,8 +68,8 @@ module
         /**
          * The part of a match constant that describes the category of match
          * that occurred.  May be either {@link #MATCH_CATEGORY_EMPTY},
-         * {@link #MATCH_CATEGORY_SCHEME}, {@link #MATCH_CATEGORY_HOST},
-         * {@link #MATCH_CATEGORY_PORT},
+         * {@link #MATCH_CATEGORY_SCHEME}, {@link #MATCH_CATEGORY_SCHEME_SPECIFIC_PART},
+         * {@link #MATCH_CATEGORY_HOST}, {@link #MATCH_CATEGORY_PORT},
          * {@link #MATCH_CATEGORY_PATH}, or {@link #MATCH_CATEGORY_TYPE}.  Higher
          * values indicate a better match.
          */
@@ -90,30 +94,30 @@ module
          * The filter matched an intent that had no data specified.
          */
         const Int32 MATCH_CATEGORY_EMPTY = 0x0100000;
-
         /**
          * The filter matched an intent with the same data URI scheme.
          */
         const Int32 MATCH_CATEGORY_SCHEME = 0x0200000;
-
         /**
          * The filter matched an intent with the same data URI scheme and
          * authority host.
          */
         const Int32 MATCH_CATEGORY_HOST = 0x0300000;
-
         /**
          * The filter matched an intent with the same data URI scheme and
          * authority host and port.
          */
         const Int32 MATCH_CATEGORY_PORT = 0x0400000;
-
         /**
          * The filter matched an intent with the same data URI scheme,
          * authority, and path.
          */
         const Int32 MATCH_CATEGORY_PATH = 0x0500000;
-
+        /**
+         * The filter matched an intent with the same data URI scheme and
+         * scheme specific part.
+         */
+        const Int32 MATCH_CATEGORY_SCHEME_SPECIFIC_PART = 0x0580000;
         /**
          * The filter matched an intent with the same data MIME type.
          */
@@ -123,17 +127,14 @@ module
          * The filter didn't match due to different MIME types.
          */
         const Int32 NO_MATCH_TYPE = -1;
-
         /**
          * The filter didn't match due to different data URIs.
          */
         const Int32 NO_MATCH_DATA = -2;
-
         /**
          * The filter didn't match due to different actions.
          */
         const Int32 NO_MATCH_ACTION = -3;
-
         /**
          * The filter didn't match because it required one or more categories
          * that were not in the Intent.
@@ -329,6 +330,68 @@ module
             [out, callee] ArrayOf<String>* schemes);
 
         /**
+         * Add a new Intent data "scheme specific part" to match against.  The filter must
+         * include one or more schemes (via {@link #addDataScheme}) for the
+         * scheme specific part to be considered.  If any scheme specific parts are
+         * included in the filter, then an Intent's data must match one of
+         * them.  If no scheme specific parts are included, then only the scheme must match.
+         *
+         * <p>The "scheme specific part" that this matches against is the string returned
+         * by {@link android.net.Uri#getSchemeSpecificPart() Uri.getSchemeSpecificPart}.
+         * For Uris that contain a path, this kind of matching is not generally of interest,
+         * since {@link #addDataAuthority(String, String)} and
+         * {@link #addDataPath(String, int)} can provide a better mechanism for matching
+         * them.  However, for Uris that do not contain a path, the authority and path
+         * are empty, so this is the only way to match against the non-scheme part.</p>
+         *
+         * @param ssp Either a raw string that must exactly match the scheme specific part
+         * path, or a simple pattern, depending on <var>type</var>.
+         * @param type Determines how <var>ssp</var> will be compared to
+         * determine a match: either {@link PatternMatcher#PATTERN_LITERAL},
+         * {@link PatternMatcher#PATTERN_PREFIX}, or
+         * {@link PatternMatcher#PATTERN_SIMPLE_GLOB}.
+         *
+         * @see #matchData
+         * @see #addDataScheme
+         */
+        AddDataSchemeSpecificPart(
+            [in] String ssp,
+            [in] Int32 type);
+
+        /**
+         * Return the number of data scheme specific parts in the filter.
+         */
+        CountDataSchemeSpecificParts(
+            [out] Int32* count);
+
+        /**
+         * Return a data scheme specific part in the filter.
+         */
+        GetDataSchemeSpecificPart(
+            [in] Int32 index,
+            [out] IPatternMatcher** matcher);
+
+        /**
+         * Is the given data scheme specific part included in the filter?  Note that if the
+         * filter does not include any scheme specific parts, false will <em>always</em> be
+         * returned.
+         *
+         * @param data The scheme specific part that is being looked for.
+         *
+         * @return Returns true if the data string matches a scheme specific part listed in the
+         *         filter.
+         */
+        HasDataSchemeSpecificPart(
+            [in] String data,
+            [out] Boolean* result);
+
+        /**
+         * Return an iterator over the filter's data scheme specific parts.
+         */
+        GetSchemeSpecificParts(
+            [out, callee] ArrayOf<IPatternMatcher*> * array);
+
+        /**
          * Add a new Intent data authority to match against.  The filter must
          * include one or more schemes (via {@link #addDataScheme}) for the
          * authority to be considered.  If any authorities are
@@ -357,14 +420,14 @@ module
          * Return the number of data authorities in the filter.
          */
         CountDataAuthorities(
-            [out] Int32* count);
+            [out] Int32* authorities);
 
         /**
          * Return a data authority in the filter.
          */
         GetDataAuthority(
             [in] Int32 index,
-            [out] IIntentFilterAuthorityEntry** authority);
+            [out] IIntentFilterAuthorityEntry** entry);
 
         /**
          * Is the given data authority included in the filter?  Note that if the
@@ -629,10 +692,11 @@ module
             [in] IPrinter* du,
             [in] String prefix);
 
-        GetHasPartialTypes(
+        HasPartialTypes(
             [out] Boolean* has);
     }
 
+    [local]
     interface IIntentFilterHelper {
         /**
          * Create a new IntentFilter instance with a specified action and MIME

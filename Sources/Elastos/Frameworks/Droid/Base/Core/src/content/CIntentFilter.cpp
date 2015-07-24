@@ -360,7 +360,7 @@ ECode CIntentFilter::Dump(
     return IntentFilter::Dump(du, prefix);
 }
 
-ECode CIntentFilter::GetHasPartialTypes(
+ECode CIntentFilter::HasPartialTypes(
     /* [out] */ Boolean* has)
 {
     VALIDATE_NOT_NULL(has)
