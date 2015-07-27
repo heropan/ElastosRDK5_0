@@ -10,6 +10,10 @@ module
     merge("crypto/IExemptionMechanismSpi.car");
     merge("crypto/ISecretKey.car");
     merge("crypto/IKeyAgreement.car");
+    merge("crypto/IKeyAgreementSpi.car");
+    merge("crypto/IKeyGenerator.car");
+    merge("crypto/IKeyGeneratorSpi.car");
+    merge("crypto/INullCipher.car");
 
     merge("crypto/interfaces/IDHKey.car");
     merge("crypto/interfaces/IDHPrivateKey.car");
@@ -32,7 +36,11 @@ module
     merge("crypto/spec/IRC5ParameterSpec.car");
     merge("crypto/spec/ISecretKeySpec.car");
 
-    using interface Elastos.Security.IProvider;
+    interface Elastos.Security.IProvider;
+    interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IOutputStream;
+    interface Elastos.IO.IFilterInputStream;
+    interface Elastos.IO.IFilterOutputStream;
 
    namespace Elastosx {
    namespace Crypto {
@@ -54,6 +62,75 @@ module
 
     singleton class CCipherHelper {     // 声明单例 CAR 类
         interface ICipherHelper;        // 接口声明
+    }
+
+    class CCipherInputStream {
+        constructor(
+            [in] IInputStream* is,
+            [in] ICipher* c);
+
+        constructor(
+            [in] IInputStream* is);
+
+        interface ICipherInputStream;
+        interface IFilterInputStream;
+    }
+
+    class CCipherOutputStream {
+        constructor(
+            [in] IOutputStream* os,
+            [in] ICipher* c);
+
+        constructor(
+            [in] IOutputStream* os);
+
+        interface ICipherOutputStream;
+        interface IFilterOutputStream;
+    }
+
+    class CExemptionMechanism {
+        constructor(
+            [in] IExemptionMechanismSpi* exmechSpi,
+            [in] IProvider* provider,
+            [in] String mechanism);
+
+        interface IExemptionMechanism;
+    }
+
+    singleton class CExemptionMechanismHelper {
+        interface IExemptionMechanismHelper;
+    }
+
+    class CKeyAgreement {
+        constructor(
+            [in] IKeyAgreementSpi* keyAgreeSpi,
+            [in] IProvider* provider,
+            [in] String algorithm);
+
+        interface IKeyAgreement;
+    }
+
+    singleton class CKeyAgreementHelper {
+        interface IKeyAgreementHelper;
+    }
+
+    class CKeyGenerator {
+        constructor(
+            [in] IKeyGeneratorSpi* keyGenSpi,
+            [in] IProvider* provider,
+            [in] String algorithm);
+
+        interface IKeyGenerator;
+    }
+
+    singleton class CKeyGeneratorHelper {
+        interface IKeyGeneratorHelper;
+    }
+
+    class CNullCipher {
+        constructor();
+
+        interface INullCipher;
     }
 
    } // namespace Crypto
