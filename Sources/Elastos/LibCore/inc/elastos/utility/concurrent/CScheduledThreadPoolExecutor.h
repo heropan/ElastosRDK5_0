@@ -64,7 +64,8 @@ public:
             CAR_INTERFACE_DECL()
 
             Itr(
-                /* [in] */ ArrayOf<IRunnableScheduledFuture*>* array);
+                /* [in] */ ArrayOf<IRunnableScheduledFuture*>* array,
+                /* [in] */ DelayedWorkQueue* owner);
 
             CARAPI HasNext(
                 /* [out] */ Boolean* result);
@@ -78,6 +79,7 @@ public:
             AutoPtr<ArrayOf<IRunnableScheduledFuture*> > mArray;
             Int32 mCursor;     // index of next element to return
             Int32 mLastRet;   // index of last element, or -1 if no such
+            DelayedWorkQueue* mOwner;
         };
 
     public:

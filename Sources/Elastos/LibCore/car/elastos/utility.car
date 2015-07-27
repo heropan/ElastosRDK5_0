@@ -187,6 +187,7 @@ module
     merge("utility/concurrent/IRecursiveAction.car");
     merge("utility/concurrent/IRecursiveTask.car");
     merge("utility/concurrent/IScheduledThreadPoolExecutor.car");
+    merge("utility/concurrent/ICountedCompleter.car");
 
     //======================================================
     // Elastos.Utility.Zip

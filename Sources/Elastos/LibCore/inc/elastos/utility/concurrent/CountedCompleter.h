@@ -10,12 +10,15 @@ namespace Concurrent {
 
 class CountedCompleter
     : public ForkJoinTask
+    , public ICountedCompleter
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * The main computation performed by this task.
      */
-    virtual CARAPI_(void) Compute() = 0;
+    virtual CARAPI Compute() = 0;
 
     /**
      * Performs an action when method {@link #tryComplete} is invoked
@@ -29,8 +32,8 @@ public:
      * @param caller the task invoking this method (which may
      * be this task itself)
      */
-    virtual CARAPI_(void) OnCompletion(
-        /* [in] */ CountedCompleter* caller);
+    virtual CARAPI OnCompletion(
+        /* [in] */ ICountedCompleter* caller);
 
     /**
      * Performs an action when method {@link
@@ -50,9 +53,10 @@ public:
      * @return {@code true} if this exception should be propagated to this
      * task's completer, if one exists
      */
-    virtual CARAPI_(Boolean) OnExceptionalCompletion(
+    virtual CARAPI OnExceptionalCompletion(
         /* [in] */ IThrowable* ex,
-        /* [in] */ CountedCompleter* caller);
+        /* [in] */ ICountedCompleter* caller,
+        /* [out] */ Boolean* res);
 
     /**
      * Returns the completer established in this task's constructor,
@@ -60,21 +64,23 @@ public:
      *
      * @return the completer
      */
-    virtual CARAPI_(AutoPtr<CountedCompleter>) GetCompleter();
+    virtual CARAPI GetCompleter(
+        /* [out] */ ICountedCompleter** res);
 
     /**
      * Returns the current pending count.
      *
      * @return the current pending count
      */
-    virtual CARAPI_(Int32) GetPendingCount();
+    virtual CARAPI GetPendingCount(
+        /* [out] */ Int32* res);
 
     /**
      * Sets the pending count to the given value.
      *
      * @param count the count
      */
-    virtual CARAPI_(void) SetPendingCount(
+    virtual CARAPI SetPendingCount(
         /* [in] */ Int32 count);
 
     /**
@@ -82,7 +88,7 @@ public:
      *
      * @param delta the value to add
      */
-    virtual CARAPI_(void) AddToPendingCount(
+    virtual CARAPI AddToPendingCount(
         /* [in] */ Int32 delta);
 
     /**
@@ -93,9 +99,10 @@ public:
      * @param count the new value
      * @return {@code true} if successful
      */
-    virtual CARAPI_(Boolean) CompareAndSetPendingCount(
+    virtual CARAPI CompareAndSetPendingCount(
         /* [in] */ Int32 expected,
-        /* [in] */ Int32 count);
+        /* [in] */ Int32 count,
+        /* [out] */ Boolean* res);
 
     /**
      * If the pending count is nonzero, (atomically) decrements it.
@@ -103,7 +110,8 @@ public:
      * @return the initial (undecremented) pending count holding on entry
      * to this method
      */
-    virtual CARAPI_(Int32) DecrementPendingCountUnlessZero();
+    virtual CARAPI DecrementPendingCountUnlessZero(
+        /* [out] */ Int32* res);
 
     /**
      * Returns the root of the current computation; i.e., this
@@ -111,7 +119,8 @@ public:
      *
      * @return the root of the current computation
      */
-    virtual CARAPI_(AutoPtr<CountedCompleter>) GetRoot();
+    virtual CARAPI GetRoot(
+        /* [out] */ ICountedCompleter** res);
 
     /**
      * If the pending count is nonzero, decrements the count;
@@ -119,7 +128,7 @@ public:
      * and then similarly tries to complete this task's completer,
      * if one exists, else marks this task as complete.
      */
-    virtual CARAPI_(void) TryComplete();
+    virtual CARAPI TryComplete();
 
     /**
      * Equivalent to {@link #tryComplete} but does not invoke {@link
@@ -130,7 +139,7 @@ public:
      * useful in cases where {@code onCompletion} should not, or need
      * not, be invoked for each completer in a computation.
      */
-    virtual CARAPI_(void) PropagateCompletion();
+    virtual CARAPI PropagateCompletion();
 
     /**
      * Regardless of pending count, invokes
@@ -162,7 +171,8 @@ public:
      *
      * @return this task, if pending count was zero, else {@code null}
      */
-    virtual CARAPI_(AutoPtr<CountedCompleter>) FirstComplete();
+    virtual CARAPI FirstComplete(
+        /* [out] */ ICountedCompleter** res);
 
     /**
      * If this task does not have a completer, invokes {@link
@@ -181,12 +191,13 @@ public:
      *
      * @return the completer, or {@code null} if none
      */
-    virtual CARAPI_(AutoPtr<CountedCompleter>) NextComplete();
+    virtual CARAPI NextComplete(
+        /* [out] */ ICountedCompleter** res);
 
     /**
      * Equivalent to {@code getRoot().quietlyComplete()}.
      */
-    virtual CARAPI_(void) QuietlyCompleteRoot();
+    virtual CARAPI QuietlyCompleteRoot();
 
     /**
      * Returns the result of the computation. By default
@@ -200,6 +211,9 @@ public:
     virtual CARAPI GetRawResult(
         /* [out] */ IInterface** outface);
 
+    /**
+     * Supports ForkJoinTask exception propagation.
+     */
     virtual CARAPI_(void) InternalPropagateException(
         /* [in] */ IThrowable* ex);
 
@@ -211,7 +225,7 @@ public:
      * @param initialPendingCount the initial pending count
      */
     CountedCompleter(
-        /* [in] */ CountedCompleter* completer,
+        /* [in] */ ICountedCompleter* completer,
         /* [in] */ Int32 initialPendingCount);
 
     /**
@@ -221,7 +235,7 @@ public:
      * @param completer this task's completer, or {@code null} if none
      */
     CountedCompleter(
-        /* [in] */ CountedCompleter* completer);
+        /* [in] */ ICountedCompleter* completer);
 
     /**
      * Creates a new CountedCompleter with no completer
@@ -239,7 +253,7 @@ public:
 //    private static final long serialVersionUID = 5232453752276485070L;
 
     /** This task's completer, or null if none */
-    AutoPtr<CountedCompleter> mCompleter;
+    AutoPtr<ICountedCompleter> mCompleter;
     /** The number of pending tasks until completion */
     volatile Int32 mPending;
 

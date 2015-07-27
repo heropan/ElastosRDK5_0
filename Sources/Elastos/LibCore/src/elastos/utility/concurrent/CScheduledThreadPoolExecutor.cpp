@@ -1022,7 +1022,7 @@ ECode CScheduledThreadPoolExecutor::DelayedWorkQueue::GetIterator(
 
     AutoPtr<ArrayOf<IRunnableScheduledFuture*> > arr;
     Arrays::CopyOf(mQueue, mSize, (ArrayOf<IRunnableScheduledFuture*>**)&arr);
-    AutoPtr<Itr> p = new Itr(arr);
+    AutoPtr<Itr> p = new Itr(arr, this);
     *it = IIterator::Probe(p);
     REFCOUNT_ADD(*it)
     return NOERROR;
@@ -1034,9 +1034,11 @@ ECode CScheduledThreadPoolExecutor::DelayedWorkQueue::GetIterator(
 CAR_INTERFACE_IMPL(CScheduledThreadPoolExecutor::DelayedWorkQueue::Itr, Object, IIterator)
 
 CScheduledThreadPoolExecutor::DelayedWorkQueue::Itr::Itr(
-    /* [in] */ ArrayOf<IRunnableScheduledFuture*>* array)
+    /* [in] */ ArrayOf<IRunnableScheduledFuture*>* array,
+    /* [in] */ DelayedWorkQueue* owner)
 {
     mArray = array;
+    mOwner = owner;
 }
 
 ECode CScheduledThreadPoolExecutor::DelayedWorkQueue::Itr::HasNext(
@@ -1065,7 +1067,8 @@ ECode CScheduledThreadPoolExecutor::DelayedWorkQueue::Itr::Remove()
 {
     if (mLastRet < 0)
         return E_ILLEGAL_STATE_EXCEPTION;
-//    DelayedWorkQueue.this.Remove((*mArray)[mLastRet]);
+    Boolean b;
+    mOwner->Remove((*mArray)[mLastRet], &b);
     mLastRet = -1;
     return NOERROR;
 }

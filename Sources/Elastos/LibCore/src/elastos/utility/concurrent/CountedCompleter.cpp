@@ -8,8 +8,10 @@ namespace Concurrent {
 //====================================================================
 // CountedCompleter::
 //====================================================================
+CAR_INTERFACE_IMPL(CountedCompleter, ForkJoinTask, ICountedCompleter)
+
 CountedCompleter::CountedCompleter(
-    /* [in] */ CountedCompleter* completer,
+    /* [in] */ ICountedCompleter* completer,
     /* [in] */ Int32 initialPendingCount)
 {
     mCompleter = completer;
@@ -17,7 +19,7 @@ CountedCompleter::CountedCompleter(
 }
 
 CountedCompleter::CountedCompleter(
-    /* [in] */ CountedCompleter* completer)
+    /* [in] */ ICountedCompleter* completer)
 {
     mCompleter = completer;
 }
@@ -27,94 +29,125 @@ CountedCompleter::CountedCompleter()
     mCompleter = NULL;
 }
 
-void CountedCompleter::OnCompletion(
-    /* [in] */ CountedCompleter* caller)
+ECode CountedCompleter::OnCompletion(
+    /* [in] */ ICountedCompleter* caller)
 {
+    return NOERROR;
 }
 
-Boolean CountedCompleter::OnExceptionalCompletion(
+ECode CountedCompleter::OnExceptionalCompletion(
     /* [in] */ IThrowable* ex,
-    /* [in] */ CountedCompleter* caller)
+    /* [in] */ ICountedCompleter* caller,
+    /* [out] */ Boolean* res)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(res)
+
+    *res = TRUE;
+    return NOERROR;
 }
 
-AutoPtr<CountedCompleter> CountedCompleter::GetCompleter()
+ECode CountedCompleter::GetCompleter(
+    /* [out] */ ICountedCompleter** res)
 {
-    return mCompleter;
+    VALIDATE_NOT_NULL(res)
+
+    *res = mCompleter;
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
-Int32 CountedCompleter::GetPendingCount()
+ECode CountedCompleter::GetPendingCount(
+    /* [out] */ Int32* res)
 {
-    return mPending;
+    VALIDATE_NOT_NULL(res)
+
+    *res = mPending;
+    return NOERROR;
 }
 
-void CountedCompleter::SetPendingCount(
+ECode CountedCompleter::SetPendingCount(
     /* [in] */ Int32 count)
 {
     mPending = count;
+    return NOERROR;
 }
 
-void CountedCompleter::AddToPendingCount(
+ECode CountedCompleter::AddToPendingCount(
     /* [in] */ Int32 delta)
 {
 //    Int32 c;
 //    do {} while (!U.compareAndSwapInt(this, PENDING, c = pending, c+delta));
+    return NOERROR;
 }
 
-Boolean CountedCompleter::CompareAndSetPendingCount(
+ECode CountedCompleter::CompareAndSetPendingCount(
     /* [in] */ Int32 expected,
-    /* [in] */ Int32 count)
+    /* [in] */ Int32 count,
+    /* [out] */ Boolean* res)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(res)
+
+    *res = FALSE;
+    return NOERROR;
 //    return U.compareAndSwapInt(this, PENDING, expected, count);
 }
 
-Int32 CountedCompleter::DecrementPendingCountUnlessZero()
+ECode CountedCompleter::DecrementPendingCountUnlessZero(
+    /* [out] */ Int32* res)
 {
+    VALIDATE_NOT_NULL(res)
+
     Int32 c = 0;
     // do {} while ((c = pending) != 0 &&
     //              !U.compareAndSwapInt(this, PENDING, c, c - 1));
-    return c;
+    *res = c;
+    return NOERROR;
 }
 
-AutoPtr<CountedCompleter> CountedCompleter::GetRoot()
+ECode CountedCompleter::GetRoot(
+    /* [out] */ ICountedCompleter** res)
 {
+    VALIDATE_NOT_NULL(res)
+
     AutoPtr<CountedCompleter> a = this, p;
-    while ((p = a->mCompleter) != NULL)
+    while ((p = (CountedCompleter*)(a->mCompleter.Get())) != NULL)
         a = p;
-    return a;
+    *res = ICountedCompleter::Probe(a);
+    REFCOUNT_ADD(*res)
+    return NOERROR;
 }
 
-void CountedCompleter::TryComplete()
+ECode CountedCompleter::TryComplete()
 {
     AutoPtr<CountedCompleter> a = this, s = a;
     for (Int32 c;;) {
         if ((c = a->mPending) == 0) {
             a->OnCompletion(s);
-            if ((a = (s = a)->mCompleter) == NULL) {
+            if ((a = (CountedCompleter*)((s = a)->mCompleter.Get())) == NULL) {
                 s->QuietlyComplete();
-                return;
+                return NOERROR;
             }
         }
         // else if (U.compareAndSwapInt(a, PENDING, c, c - 1))
         //     return;
     }
+    return NOERROR;
 }
 
-void CountedCompleter::PropagateCompletion()
+ECode CountedCompleter::PropagateCompletion()
 {
     AutoPtr<CountedCompleter> a = this, s = a;
     for (Int32 c;;) {
         if ((c = a->mPending) == 0) {
-            if ((a = (s = a)->mCompleter) == NULL) {
+            if ((a = (CountedCompleter*)((s = a)->mCompleter.Get())) == NULL) {
                 s->QuietlyComplete();
-                return;
+                return NOERROR;
             }
         }
         // else if (U.compareAndSwapInt(a, PENDING, c, c - 1))
         //     return;
     }
+    return NOERROR;
 }
 
 ECode CountedCompleter::Complete(
@@ -124,49 +157,62 @@ ECode CountedCompleter::Complete(
     SetRawResult(value);
     OnCompletion(this);
     QuietlyComplete();
-    if ((p = mCompleter) != NULL)
+    if ((p = (CountedCompleter*)mCompleter.Get()) != NULL)
         p->TryComplete();
     return NOERROR;
 }
 
-AutoPtr<CountedCompleter> CountedCompleter::FirstComplete()
+ECode CountedCompleter::FirstComplete(
+    /* [out] */ ICountedCompleter** res)
 {
+    VALIDATE_NOT_NULL(res)
+
     for (Int32 c;;) {
-        if ((c = mPending) == 0)
-            return this;
+        if ((c = mPending) == 0) {
+            *res = this;
+            REFCOUNT_ADD(*res)
+            return NOERROR;
+        }
         // else if (U.compareAndSwapInt(this, PENDING, c, c - 1))
         //     return NULL;
     }
+    return NOERROR;
 }
 
-AutoPtr<CountedCompleter> CountedCompleter::NextComplete()
+ECode CountedCompleter::NextComplete(
+    /* [out] */ ICountedCompleter** res)
 {
-    AutoPtr<CountedCompleter> p;
-    if ((p = mCompleter) != NULL)
-        return p->FirstComplete();
+    VALIDATE_NOT_NULL(res)
+
+    AutoPtr<ICountedCompleter> p;
+    if ((p = mCompleter) != NULL) {
+        return p->FirstComplete(res);
+    }
     else {
         QuietlyComplete();
-        return NULL;
+        *res = NULL;
+        return NOERROR;
     }
 }
 
-void CountedCompleter::QuietlyCompleteRoot()
+ECode CountedCompleter::QuietlyCompleteRoot()
 {
     for (AutoPtr<CountedCompleter> a = this, p;;) {
-        if ((p = a->mCompleter) == NULL) {
-            a->QuietlyComplete();
-            return;
+        if ((p = (CountedCompleter*)(a->mCompleter.Get())) == NULL) {
+            return a->QuietlyComplete();
         }
         a = p;
     }
+    return NOERROR;
 }
 
 void CountedCompleter::InternalPropagateException(
     /* [in] */ IThrowable* ex)
 {
     AutoPtr<CountedCompleter> a = this, s = a;
-    while (a->OnExceptionalCompletion(ex, s) &&
-           (a = (s = a)->mCompleter) != NULL && a->mStatus >= 0 &&
+    Boolean b = FALSE;
+    while ((a->OnExceptionalCompletion(ex, s, &b), b) &&
+           (a = (CountedCompleter*)((s = a)->mCompleter.Get())) != NULL && a->mStatus >= 0 &&
            a->RecordExceptionalCompletion(ex) == EXCEPTIONAL)
         ;
 }

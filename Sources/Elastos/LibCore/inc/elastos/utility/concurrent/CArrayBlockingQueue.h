@@ -232,24 +232,26 @@ public:
         /**
          * Node in a linked list of weak iterator references.
          */
-        class Node : public Itr { // extends WeakReference<Itr> {
+        class Node
+            : public Object // extends WeakReference<Itr> {
+        {
         public:
-            AutoPtr<Node> mNext;
-
             Node(
                 /* [in] */ Itr* iterator,
-                /* [in] */ Node* next,
-                /* [in] */ CArrayBlockingQueue* host)
-                : Itr(host)
+                /* [in] */ Node* next)
             {
                 // super(iterator);
                 mNext = next;
             }
+
+        public:
+            AutoPtr<Node> mNext;
         };
 
     public:
         Itrs(
-            /* [in] */ Itr* initial);
+            /* [in] */ Itr* initial,
+            /* [in] */ CArrayBlockingQueue* owner);
 
         /**
          * Sweeps itrs, looking for and expunging stale iterators.
@@ -309,6 +311,8 @@ public:
 
         static const Int32 SHORT_SWEEP_PROBES;
         static const Int32 LONG_SWEEP_PROBES;
+
+        CArrayBlockingQueue* mOwner;
     };
 
 public:
@@ -516,7 +520,7 @@ public:
      * @see #size
      */
     // CARAPI IsEmpty(
-    //      /* [out] */ Boolean* result);
+    //       [out]  Boolean* result);
 
     /**
      * Removes a single instance of the specified element from this queue,
@@ -540,7 +544,7 @@ public:
         /* [out] */ Boolean* modified);
 
     // CARAPI Remove(
-    //     /* [out] */ IInterface** e);
+    //      [out]  IInterface** e);
 
     /**
      * Removes all occurrences in this {@code Collection} of each object in the

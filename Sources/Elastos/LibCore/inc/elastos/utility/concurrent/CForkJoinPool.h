@@ -220,21 +220,21 @@ public:
          * Tries to poll for and execute the given task or any other
          * task in its CountedCompleter computation.
          */
-        // Boolean PollAndExecCC(
-        //     /* [in] */ ICountedCompleter* root);
+        Boolean PollAndExecCC(
+            /* [in] */ ICountedCompleter* root);
 
         /**
          * Tries to pop and execute the given task or any other task
          * in its CountedCompleter computation.
          */
-        // Boolean ExternalPopAndExecCC(
-        //     /* [in] */ ICountedCompleter* root);
+        Boolean ExternalPopAndExecCC(
+            /* [in] */ ICountedCompleter* root);
 
         /**
          * Internal version
          */
-        // Boolean InternalPopAndExecCC(
-        //     /* [in] */ ICountedCompleter* root);
+        Boolean InternalPopAndExecCC(
+            /* [in] */ ICountedCompleter* root);
 
         /**
          * Returns true if owned and not known to be blocked.
@@ -700,8 +700,8 @@ public:
     CARAPI_(Boolean) TryExternalUnpush(
         /* [in] */ IForkJoinTask* task);
 
-    // Int32 ExternalHelpComplete(
-    //     /* [in] */ ICountedCompleter* task);
+    Int32 ExternalHelpComplete(
+        /* [in] */ ICountedCompleter* task);
 
     /**
      * Returns the common pool instance. This pool is statically
@@ -861,9 +861,9 @@ private:
      *
      * @param task the task to join
      */
-    // Int32 HelpComplete(
-    //     /* [in] */ WorkQueue* joiner,
-    //     /* [in] */ ICountedCompleter* task);
+    Int32 HelpComplete(
+        /* [in] */ WorkQueue* joiner,
+        /* [in] */ ICountedCompleter* task);
 
     /**
      * Returns a (probably) non-empty steal queue, if one is found

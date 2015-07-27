@@ -1,15 +1,13 @@
 
 #include "AbstractExecutorService.h"
-//#include "CFutureTask.h"
+#include "CFutureTask.h"
 #include "TimeUnit.h"
-//#include "CExecutorCompletionService.h"
+#include "CExecutorCompletionService.h"
 #include "CSystem.h"
-//#include <List.h>
 #include "CArrayList.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::EIID_IRunnable;
-//using Elastos::Utility::List;
 using Elastos::Utility::CArrayList;
 
 namespace Elastos {
@@ -23,7 +21,7 @@ AutoPtr<IRunnableFuture> AbstractExecutorService::NewTaskFor(
     /* [in] */ IInterface* value)
 {
     AutoPtr<IRunnableFuture> task;
-//    CFutureTask::New(runnable, value, (IRunnableFuture**)&task);
+    CFutureTask::New(runnable, value, (IRunnableFuture**)&task);
     return task;
 }
 
@@ -31,7 +29,7 @@ AutoPtr<IRunnableFuture> AbstractExecutorService::NewTaskFor(
     /* [in] */ ICallable* callable)
 {
     AutoPtr<IRunnableFuture> task;
-//    CFutureTask::New(callable, (IRunnableFuture**)&task);
+    CFutureTask::New(callable, (IRunnableFuture**)&task);
     return task;
 }
 
@@ -97,7 +95,7 @@ ECode AbstractExecutorService::DoInvokeAny(
     AutoPtr<IArrayList> futures;
     CArrayList::New(ntasks, (IArrayList**)&futures);
     AutoPtr<ICompletionService> ecs;
-//    CExecutorCompletionService::New(THIS_PROBE(IExecutor), (ICompletionService**)&ecs);
+    CExecutorCompletionService::New(THIS_PROBE(IExecutor), (ICompletionService**)&ecs);
 
     // For efficiency, especially in executors with limited
     // parallelism, check to see if previously submitted tasks are

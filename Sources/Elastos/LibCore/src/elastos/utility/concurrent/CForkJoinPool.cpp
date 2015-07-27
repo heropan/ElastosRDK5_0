@@ -11,6 +11,8 @@
 #include "AutoLock.h"
 #include "CSystem.h"
 #include "StringUtils.h"
+#include "CountedCompleter.h"
+#include "CThreadLocalRandom.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
@@ -249,10 +251,10 @@ Boolean CForkJoinPool::WorkQueue::TryUnpush(
 
 void CForkJoinPool::WorkQueue::CancelAll()
 {
-//    ForkJoinTask::CancelIgnoringExceptions(currentJoin);
-//    ForkJoinTask::CancelIgnoringExceptions(currentSteal);
-    // for (AutoPtr<IForkJoinTask> t; (t = Poll()) != NULL; )
-    //     ForkJoinTask::CancelIgnoringExceptions(t);
+    ForkJoinTask::CancelIgnoringExceptions((ForkJoinTask*)mCurrentJoin.Get());
+    ForkJoinTask::CancelIgnoringExceptions((ForkJoinTask*)mCurrentSteal.Get());
+    for (AutoPtr<IForkJoinTask> t; (t = Poll()) != NULL; )
+        ForkJoinTask::CancelIgnoringExceptions((ForkJoinTask*)t.Get());
 }
 
 void CForkJoinPool::WorkQueue::PollAndExecAll()
@@ -340,86 +342,86 @@ Boolean CForkJoinPool::WorkQueue::TryRemoveAndExec(
     // return stat;
 }
 
-// Boolean CForkJoinPool::WorkQueue::PollAndExecCC(
-//     /* [in] */ ICountedCompleter* root)
-// {
-//     assert(0 && "TODO");
-//     // ForkJoinTask<?>[] a; int b; Object o; CountedCompleter<?> t, r;
-//     // if ((b = base) - top < 0 && (a = array) != null) {
-//     //     long j = (((a.length - 1) & b) << ASHIFT) + ABASE;
-//     //     if ((o = U.getObjectVolatile(a, j)) == null)
-//     //         return true; // retry
-//     //     if (o instanceof CountedCompleter) {
-//     //         for (t = (CountedCompleter<?>)o, r = t;;) {
-//     //             if (r == root) {
-//     //                 if (base == b &&
-//     //                     U.compareAndSwapObject(a, j, t, null)) {
-//     //                     U.putOrderedInt(this, QBASE, b + 1);
-//     //                     t.doExec();
-//     //                 }
-//     //                 return true;
-//     //             }
-//     //             else if ((r = r.completer) == null)
-//     //                 break; // not part of root computation
-//     //         }
-//     //     }
-//     // }
-//     return FALSE;
-// }
+Boolean CForkJoinPool::WorkQueue::PollAndExecCC(
+    /* [in] */ ICountedCompleter* root)
+{
+    assert(0 && "TODO");
+    // ForkJoinTask<?>[] a; int b; Object o; CountedCompleter<?> t, r;
+    // if ((b = base) - top < 0 && (a = array) != null) {
+    //     long j = (((a.length - 1) & b) << ASHIFT) + ABASE;
+    //     if ((o = U.getObjectVolatile(a, j)) == null)
+    //         return true; // retry
+    //     if (o instanceof CountedCompleter) {
+    //         for (t = (CountedCompleter<?>)o, r = t;;) {
+    //             if (r == root) {
+    //                 if (base == b &&
+    //                     U.compareAndSwapObject(a, j, t, null)) {
+    //                     U.putOrderedInt(this, QBASE, b + 1);
+    //                     t.doExec();
+    //                 }
+    //                 return true;
+    //             }
+    //             else if ((r = r.completer) == null)
+    //                 break; // not part of root computation
+    //         }
+    //     }
+    // }
+    return FALSE;
+}
 
-// Boolean CForkJoinPool::WorkQueue::ExternalPopAndExecCC(
-//     /* [in] */ ICountedCompleter* root)
-// {
-//     assert(0 && "TODO");
-//     // ForkJoinTask<?>[] a; int s; Object o; CountedCompleter<?> t, r;
-//     // if (base - (s = top) < 0 && (a = array) != null) {
-//     //     long j = (((a.length - 1) & (s - 1)) << ASHIFT) + ABASE;
-//     //     if ((o = U.getObject(a, j)) instanceof CountedCompleter) {
-//     //         for (t = (CountedCompleter<?>)o, r = t;;) {
-//     //             if (r == root) {
-//     //                 if (U.compareAndSwapInt(this, QLOCK, 0, 1)) {
-//     //                     if (top == s && array == a &&
-//     //                         U.compareAndSwapObject(a, j, t, null)) {
-//     //                         top = s - 1;
-//     //                         qlock = 0;
-//     //                         t.doExec();
-//     //                     }
-//     //                     else
-//     //                         qlock = 0;
-//     //                 }
-//     //                 return true;
-//     //             }
-//     //             else if ((r = r.completer) == null)
-//     //                 break;
-//     //         }
-//     //     }
-//     // }
-//     return FALSE;
-// }
+Boolean CForkJoinPool::WorkQueue::ExternalPopAndExecCC(
+    /* [in] */ ICountedCompleter* root)
+{
+    assert(0 && "TODO");
+    // ForkJoinTask<?>[] a; int s; Object o; CountedCompleter<?> t, r;
+    // if (base - (s = top) < 0 && (a = array) != null) {
+    //     long j = (((a.length - 1) & (s - 1)) << ASHIFT) + ABASE;
+    //     if ((o = U.getObject(a, j)) instanceof CountedCompleter) {
+    //         for (t = (CountedCompleter<?>)o, r = t;;) {
+    //             if (r == root) {
+    //                 if (U.compareAndSwapInt(this, QLOCK, 0, 1)) {
+    //                     if (top == s && array == a &&
+    //                         U.compareAndSwapObject(a, j, t, null)) {
+    //                         top = s - 1;
+    //                         qlock = 0;
+    //                         t.doExec();
+    //                     }
+    //                     else
+    //                         qlock = 0;
+    //                 }
+    //                 return true;
+    //             }
+    //             else if ((r = r.completer) == null)
+    //                 break;
+    //         }
+    //     }
+    // }
+    return FALSE;
+}
 
-// Boolean CForkJoinPool::WorkQueue::InternalPopAndExecCC(
-//     /* [in] */ ICountedCompleter* root)
-// {
-//     assert(0 && "TODO");
-//     // ForkJoinTask<?>[] a; int s; Object o; CountedCompleter<?> t, r;
-//     // if (base - (s = top) < 0 && (a = array) != null) {
-//     //     long j = (((a.length - 1) & (s - 1)) << ASHIFT) + ABASE;
-//     //     if ((o = U.getObject(a, j)) instanceof CountedCompleter) {
-//     //         for (t = (CountedCompleter<?>)o, r = t;;) {
-//     //             if (r == root) {
-//     //                 if (U.compareAndSwapObject(a, j, t, null)) {
-//     //                     top = s - 1;
-//     //                     t.doExec();
-//     //                 }
-//     //                 return true;
-//     //             }
-//     //             else if ((r = r.completer) == null)
-//     //                 break;
-//     //         }
-//     //     }
-//     // }
-//     return FALSE;
-// }
+Boolean CForkJoinPool::WorkQueue::InternalPopAndExecCC(
+    /* [in] */ ICountedCompleter* root)
+{
+    assert(0 && "TODO");
+    // ForkJoinTask<?>[] a; int s; Object o; CountedCompleter<?> t, r;
+    // if (base - (s = top) < 0 && (a = array) != null) {
+    //     long j = (((a.length - 1) & (s - 1)) << ASHIFT) + ABASE;
+    //     if ((o = U.getObject(a, j)) instanceof CountedCompleter) {
+    //         for (t = (CountedCompleter<?>)o, r = t;;) {
+    //             if (r == root) {
+    //                 if (U.compareAndSwapObject(a, j, t, null)) {
+    //                     top = s - 1;
+    //                     t.doExec();
+    //                 }
+    //                 return true;
+    //             }
+    //             else if ((r = r.completer) == null)
+    //                 break;
+    //         }
+    //     }
+    // }
+    return FALSE;
+}
 
 Boolean CForkJoinPool::WorkQueue::IsApparentlyUnblocked()
 {
@@ -1044,36 +1046,37 @@ Int32 CForkJoinPool::TryHelpStealer(
     // return stat;
 }
 
-// Int32 CForkJoinPool::HelpComplete(
-//     /* [in] */ WorkQueue* joiner,
-//     /* [in] */ CCountedCompleter* task)
-// {
-//     AutoPtr<ArrayOf<WorkQueue*> > ws; Int32 m;
-//     Int32 s = 0;
-//     if ((ws = mWorkQueues) != NULL && (m = ws->GetLength() - 1) >= 0 &&
-//         joiner != NULL && task != NULL) {
-//         Int32 j = joiner->mPoolIndex;
-//         Int32 scans = m + m + 1;
-//         Int64 c = 0L;              // for stability check
-//         for (Int32 k = scans; ; j += 2) {
-//             AutoPtr<WorkQueue> q;
-//             if ((s = task->mStatus) < 0)
-//                 break;
-//             else if (joiner->InternalPopAndExecCC(task))
-//                 k = scans;
-//             else if ((s = task->mStatus) < 0)
-//                 break;
-//             else if ((q = (*ws)[j & m]) != NULL && q->PollAndExecCC(task))
-//                 k = scans;
-//             else if (--k < 0) {
-//                 if (c == (c = ctl))
-//                     break;
-//                 k = scans;
-//             }
-//         }
-//     }
-//     return s;
-// }
+Int32 CForkJoinPool::HelpComplete(
+    /* [in] */ WorkQueue* joiner,
+    /* [in] */ ICountedCompleter* task)
+{
+    AutoPtr<ArrayOf<WorkQueue*> > ws; Int32 m;
+    Int32 s = 0;
+    if ((ws = mWorkQueues) != NULL && (m = ws->GetLength() - 1) >= 0 &&
+        joiner != NULL && task != NULL) {
+        Int32 j = joiner->mPoolIndex;
+        Int32 scans = m + m + 1;
+        Int64 c = 0L;              // for stability check
+        for (Int32 k = scans; ; j += 2) {
+            AutoPtr<CountedCompleter> ct = (CountedCompleter*)task;
+            AutoPtr<WorkQueue> q;
+            if ((s = ct->mStatus) < 0)
+                break;
+            else if (joiner->InternalPopAndExecCC(task))
+                k = scans;
+            else if ((s = ct->mStatus) < 0)
+                break;
+            else if ((q = (*ws)[j & m]) != NULL && q->PollAndExecCC(task))
+                k = scans;
+            else if (--k < 0) {
+                if (c == (c = mCtl))
+                    break;
+                k = scans;
+            }
+        }
+    }
+    return s;
+}
 
 Boolean CForkJoinPool::TryCompensate(
     /* [in] */ Int64 c)
@@ -1173,15 +1176,15 @@ void CForkJoinPool::HelpJoinOnce(
     /* [in] */ WorkQueue* joiner,
     /* [in] */ ForkJoinTask* task)
 {
-    Int32 s;
+    Int32 s = 0;
     if (joiner != NULL && task != NULL && (s = task->mStatus) >= 0) {
         AutoPtr<IForkJoinTask> prevJoin = joiner->mCurrentJoin;
         joiner->mCurrentJoin = task;
         do {} while (joiner->TryRemoveAndExec(task) && // process local tasks
                      (s = task->mStatus) >= 0);
         if (s >= 0) {
-            // if (task->Probe(EIID_CountedCompleter) != NULL)
-            //     HelpComplete(joiner, (CountedCompleter*)task);
+            if (task->Probe(EIID_ICountedCompleter) != NULL)
+                HelpComplete(joiner, ICountedCompleter::Probe(task));
             do {} while (task->mStatus >= 0 &&
                          TryHelpStealer(joiner, task) > 0);
         }
@@ -1191,7 +1194,8 @@ void CForkJoinPool::HelpJoinOnce(
 
 AutoPtr<CForkJoinPool::WorkQueue> CForkJoinPool::FindNonEmptyStealQueue()
 {
-    Int32 r;// = ThreadLocalRandom::Current()->NextInt();
+    Int32 r = 0;
+    IRandom::Probe(CThreadLocalRandom::GetCurrent())->NextInt32(&r);
     for (;;) {
         Int32 ps = mPlock, m; AutoPtr<ArrayOf<WorkQueue*> > ws; AutoPtr<WorkQueue> q;
         if ((ws = mWorkQueues) != NULL && (m = ws->GetLength() - 1) >= 0) {
@@ -1266,7 +1270,7 @@ Int32 CForkJoinPool::GetSurplusQueuedTaskCount()
         pool = wt->mPool;
         AutoPtr<CForkJoinPool> cpool = (CForkJoinPool*)pool.Get();
         Int32 p = cpool->mParallelism;
-        Int32 n;// = (q = wt->mWorkQueue)->mTop - q->mBase;
+        Int32 n = (q = wt->mWorkQueue)->mTop - q->mBase;
         Int32 a = (Int32)(cpool->mCtl >> AC_SHIFT) + p;
         return n - (a > (p >>= 1) ? 0 :
                     a > (p >>= 1) ? 1 :
@@ -1403,37 +1407,38 @@ Boolean CForkJoinPool::TryExternalUnpush(
     // return popped;
 }
 
-// Int32 CForkJoinPool::ExternalHelpComplete(
-//     /* [in] */ ICountedCompleter* task)
-// {
-//     AutoPtr<WorkQueue> joiner; Int32 m, j;
-//     AutoPtr<Submitter> z = mSubmitters->Get();
-//     AutoPtr<ArrayOf<WorkQueue*> > ws = mWorkQueues;
-//     Int32 s = 0;
-//     if (z != NULL && ws != NULL && (m = ws->GetLength() - 1) >= 0 &&
-//         (joiner = (*ws)[(j = z->mSeed) & m & SQMASK]) != NULL && task != NULL) {
-//         Int32 scans = m + m + 1;
-//         Int64 c = 0L;             // for stability check
-//         j |= 1;                  // poll odd queues
-//         for (Int32 k = scans; ; j += 2) {
-//             AutoPtr<WorkQueue> q;
-//             if ((s = task->mStatus) < 0)
-//                 break;
-//             else if (joiner->ExternalPopAndExecCC(task))
-//                 k = scans;
-//             else if ((s = task->mStatus) < 0)
-//                 break;
-//             else if ((q = (*ws)[j & m]) != NULL && q->PollAndExecCC(task))
-//                 k = scans;
-//             else if (--k < 0) {
-//                 if (c == (c = ctl))
-//                     break;
-//                 k = scans;
-//             }
-//         }
-//     }
-//     return s;
-// }
+Int32 CForkJoinPool::ExternalHelpComplete(
+    /* [in] */ ICountedCompleter* task)
+{
+    assert(0 && "TODO");
+    // AutoPtr<WorkQueue> joiner; Int32 m, j;
+    // AutoPtr<Submitter> z = mSubmitters->Get();
+    // AutoPtr<ArrayOf<WorkQueue*> > ws = mWorkQueues;
+    Int32 s = 0;
+    // if (z != NULL && ws != NULL && (m = ws->GetLength() - 1) >= 0 &&
+    //     (joiner = (*ws)[(j = z->mSeed) & m & SQMASK]) != NULL && task != NULL) {
+    //     Int32 scans = m + m + 1;
+    //     Int64 c = 0L;             // for stability check
+    //     j |= 1;                  // poll odd queues
+    //     for (Int32 k = scans; ; j += 2) {
+    //         AutoPtr<WorkQueue> q;
+    //         if ((s = task->mStatus) < 0)
+    //             break;
+    //         else if (joiner->ExternalPopAndExecCC(task))
+    //             k = scans;
+    //         else if ((s = task->mStatus) < 0)
+    //             break;
+    //         else if ((q = (*ws)[j & m]) != NULL && q->PollAndExecCC(task))
+    //             k = scans;
+    //         else if (--k < 0) {
+    //             if (c == (c = ctl))
+    //                 break;
+    //             k = scans;
+    //         }
+    //     }
+    // }
+    return s;
+}
 
 void CForkJoinPool::CheckPermission()
 {
@@ -1543,8 +1548,8 @@ ECode CForkJoinPool::Execute(
     AutoPtr<IForkJoinTask> job;
     if (task->Probe(EIID_IForkJoinTask) != NULL) // avoid re-wrap
         job = (IForkJoinTask*) task;
-    // else
-    //     job = new ForkJoinTask::RunnableExecuteAction(task);
+    else
+        job = new RunnableExecuteAction(task);
     ExternalPush(job);
     return NOERROR;
 }
@@ -1601,8 +1606,8 @@ ECode CForkJoinPool::Submit(
     AutoPtr<IForkJoinTask> job;
     if (task->Probe(EIID_IForkJoinTask) != NULL) // avoid re-wrap
         job = (IForkJoinTask*) task;
-    // else
-    //     job = new ForkJoinTask::AdaptedRunnableAction(task);
+    else
+        job = new AdaptedRunnableAction(task);
     ExternalPush(job);
     *outfork = (IFuture*)job->Probe(EIID_IFuture);
     REFCOUNT_ADD(*outfork);
@@ -1644,7 +1649,8 @@ ECode CForkJoinPool::InvokeAll(
         for (Int32 i = 0; i < size; i++) {
             AutoPtr<IInterface> p;
             forkJoinTasks->Get(i, (IInterface**)&p);
-//            IForkJoinTask::Probe(p)->Cancel(FALSE);
+            Boolean bCancl;
+            IFuture::Probe(IForkJoinTask::Probe(p))->Cancel(FALSE, &bCancl);
         }
     }
     AutoPtr<IList> l = (IList*)(forkJoinTasks->Probe(EIID_IList));
@@ -1997,7 +2003,7 @@ ECode CForkJoinPool::AwaitQuiescence(
     if (thread->Probe(EIID_IForkJoinWorkerThread) != NULL) {
         wt = (ForkJoinWorkerThread*)IForkJoinWorkerThread::Probe(thread);
         if (Object::Equals(wt->mPool->Probe(EIID_IInterface), THIS_PROBE(IInterface))) {
-//            HelpQuiescePool(wt->mWorkQueue);
+            HelpQuiescePool(wt->mWorkQueue);
             *result = TRUE;
             return NOERROR;
         }
@@ -2103,9 +2109,9 @@ AutoPtr<IForkJoinPool> CForkJoinPool::MakeCommonPool()
     //     handler = ((IThreadUncaughtExceptionHandler)ClassLoader.
     //                getSystemClassLoader().loadClass(hp).newInstance());
 
-    // if (parallelism < 0 && // default 1 less than #cores
-    //     (parallelism = Runtime.getRuntime().availableProcessors() - 1) < 0)
-    //     parallelism = 0;
+    if (parallelism < 0 && // default 1 less than #cores
+        (parallelism = 4 - 1) < 0)  // (parallelism = Runtime.getRuntime().availableProcessors() - 1) < 0)
+        parallelism = 0;
     if (parallelism > MAX_CAP)
         parallelism = MAX_CAP;
     AutoPtr<IForkJoinPool> res;

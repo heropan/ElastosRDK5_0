@@ -46,7 +46,6 @@ ECode CCountDownLatch::constructor(
     /* [in] */ Int32 count)
 {
     if (count < 0) {
-        // throw new IllegalArgumentException("count < 0");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mSync = new Sync(count);
@@ -63,10 +62,9 @@ ECode CCountDownLatch::Await(
     /* [in] */ ITimeUnit* unit,
     /* [out] */ Boolean* result)
 {
-    // return mSync->TryAcquireSharedNanos(1, unit.toNanos(timeout));
-//    PRINT_FILE_LINE("TODO");
-    assert(0 && "TODO");
-    return E_NOT_IMPLEMENTED;
+    Int64 nas;
+    unit->ToNanos(timeout, &nas);
+    return mSync->TryAcquireSharedNanos(1, nas, result);
 }
 
 ECode CCountDownLatch::CountDown()

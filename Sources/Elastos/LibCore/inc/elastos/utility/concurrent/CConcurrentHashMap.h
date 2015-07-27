@@ -173,7 +173,10 @@ public:
          * Returns the TreeNode (or null if not found) for the given key
          * starting at given root.
          */
-//        AutoPtr<TreeNode> FindTreeNode(int h, Object k, Class<?> kc);
+        AutoPtr<TreeNode> FindTreeNode(
+            /* [in] */ Int32 h,
+            /* [in] */ IInterface* k,
+            /* [in] */ const InterfaceID& kc);
 
     public:
         AutoPtr<TreeNode> mParent;  // red-black tree links
@@ -1339,13 +1342,17 @@ public:
      * Returns x's Class if it is of the form "class C implements
      * Comparable<C>", else null.
      */
-//    static Class<?> ComparableClassFor(Object x);
+    static InterfaceID ComparableClassFor(
+        /* [in] */ IInterface* x);
 
     /**
      * Returns k.compareTo(x) if x matches kc (k's screened comparable
      * class), else 0.
      */
-//    static int CompareComparables(Class<?> kc, Object k, Object x);
+    static Int32 CompareComparables(
+        /* [in] */ const InterfaceID& kc,
+        /* [in] */ IInterface* k,
+        /* [in] */ IInterface* x);
 
     /* ---------------- Table element access -------------- */
 

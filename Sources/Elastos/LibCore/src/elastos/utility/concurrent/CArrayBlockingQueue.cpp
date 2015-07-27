@@ -41,7 +41,6 @@ ECode CArrayBlockingQueue::constructor(
     /* [in] */ Boolean fair)
 {
     if (capacity <= 0) {
-        // throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -102,7 +101,7 @@ _Exit_:
 
 // ECode CArrayBlockingQueue::Add(
 //     /* [in] */ IInterface* e,
-//     /* [out] */ Boolean* modified)
+//      [out]  Boolean* modified)
 // {
 //     return AbstractQueue::Add(e, modified);
 // }
@@ -357,15 +356,13 @@ ECode CArrayBlockingQueue::Remove(
     if (mCount > 0) {
         Int32 putIndex = mPutIndex;
         Int32 i = mTakeIndex;
-        Boolean equals;
         do {
-            assert(0 && "TODO");
-            // if (o->Equals((*items)[i], &equals), equals) {
-            //     RemoveAt(i);
-            //     *result = TRUE;
-            //     lock->UnLock();
-            //     return NOERROR;
-            // }
+            if (Object::Equals(o, (*items)[i])) {
+                RemoveAt(i);
+                *result = TRUE;
+                (ILock::Probe(lock))->UnLock();
+                return NOERROR;
+            }
         } while ((i = Inc(i)) != putIndex);
     }
     // } finally {
@@ -409,14 +406,12 @@ ECode CArrayBlockingQueue::Contains(
     if (mCount > 0) {
         Int32 putIndex = mPutIndex;
         Int32 i = mTakeIndex;
-        Boolean equals;
         do {
-            assert(0 && "TODO");
-            // if (o->Equals((*items)[i], &equals), equals) {
-            //     *result = TRUE;
-            //     lock->UnLock();
-            //     return NOERROR;
-            // }
+            if (Object::Equals(o, (*items)[i])) {
+                *result = TRUE;
+                (ILock::Probe(lock))->UnLock();
+                return NOERROR;
+            }
         } while ((i = Inc(i)) != putIndex);
     }
     // } finally {
@@ -738,10 +733,12 @@ const Int32 CArrayBlockingQueue::Itrs::SHORT_SWEEP_PROBES = 4;
 const Int32 CArrayBlockingQueue::Itrs::LONG_SWEEP_PROBES = 16;
 
 CArrayBlockingQueue::Itrs::Itrs(
-    /* [in] */ Itr* initial)
+    /* [in] */ Itr* initial,
+    /* [in] */ CArrayBlockingQueue* owner)
 {
     Register(initial);
     mCycles = 0;
+    mOwner = owner;
 }
 
 ECode CArrayBlockingQueue::Itrs::DoSomeSweeping(
@@ -749,139 +746,142 @@ ECode CArrayBlockingQueue::Itrs::DoSomeSweeping(
 {
     // assert lock.getHoldCount() == 1;
     // assert head != NULL;
-    // Int32 probes = tryHarder ? LONG_SWEEP_PROBES : SHORT_SWEEP_PROBES;
-    // AutoPtr<Node> o, p;
-    // AutoPtr<Node> sweeper = mSweeper;
-    // Boolean passedGo;   // to limit search to one full sweep
+    Int32 probes = tryHarder ? LONG_SWEEP_PROBES : SHORT_SWEEP_PROBES;
+    AutoPtr<Node> o, p;
+    AutoPtr<Node> sweeper = mSweeper;
+    Boolean passedGo;   // to limit search to one full sweep
 
-    // if (sweeper == NULL) {
-    //     o = NULL;
-    //     p = head;
-    //     passedGo = TRUE;
-    // }
-    // else {
-    //     o = sweeper;
-    //     p = o->mNext;
-    //     passedGo = FALSE;
-    // }
+    if (sweeper == NULL) {
+        o = NULL;
+        p = mHead;
+        passedGo = TRUE;
+    }
+    else {
+        o = sweeper;
+        p = o->mNext;
+        passedGo = FALSE;
+    }
 
-    // for (; probes > 0; probes--) {
-    //     if (p == NULL) {
-    //         if (passedGo)
-    //             break;
-    //         o = NULL;
-    //         p = head;
-    //         passedGo = TRUE;
-    //     }
-    //     Itr it = p.get();
-    //     Node next = p.next;
-    //     if (it == NULL || it.IsDetached()) {
-    //         // found a discarded/exhausted iterator
-    //         probes = LONG_SWEEP_PROBES; // "try harder"
-    //         // unlink p
-    //         p.clear();
-    //         p.next = NULL;
-    //         if (o == NULL) {
-    //             head = next;
-    //             if (next == NULL) {
-    //                 // We've run out of iterators to track; retire
-    //                 itrs = NULL;
-    //                 return;
-    //             }
-    //         }
-    //         else
-    //             o.next = next;
-    //     } else {
-    //         o = p;
-    //     }
-    //     p = next;
-    // }
+    for (; probes > 0; probes--) {
+        if (p == NULL) {
+            if (passedGo)
+                break;
+            o = NULL;
+            p = mHead;
+            passedGo = TRUE;
+        }
+        AutoPtr<Itr> it = (Itr*)(p.Get());
+        AutoPtr<Node> next = p->mNext;
+        if (it == NULL || it->IsDetached()) {
+            // found a discarded/exhausted iterator
+            probes = LONG_SWEEP_PROBES; // "try harder"
+            // unlink p
+//            p->Clear();
+            p->mNext = NULL;
+            if (o == NULL) {
+                mHead = next;
+                if (next == NULL) {
+                    // We've run out of iterators to track; retire
+                    mOwner->mItrs = NULL;
+                    return NOERROR;
+                }
+            }
+            else
+                o->mNext = next;
+        }
+        else {
+            o = p;
+        }
+        p = next;
+    }
 
-    // this.sweeper = (p == NULL) ? NULL : o;
-    return E_NOT_IMPLEMENTED;
+    mSweeper = (p == NULL) ? NULL : o;
+    return NOERROR;
 }
 
 ECode CArrayBlockingQueue::Itrs::Register(
     /* [in] */ Itr* itr)
 {
     // assert lock.getHoldCount() == 1;
-    // mHead = new Node(itr, head);
-    return E_NOT_IMPLEMENTED;
+    mHead = new Node(itr, mHead);
+    return NOERROR;
 }
 
 ECode CArrayBlockingQueue::Itrs::TakeIndexWrapped()
 {
-    // // assert lock.getHoldCount() == 1;
-    // cycles++;
-    // for (Node o = NULL, p = head; p != NULL;) {
-    //     Itr it = p.get();
-    //     Node next = p.next;
-    //     if (it == NULL || it.takeIndexWrapped()) {
-    //         // unlink p
-    //         // assert it == NULL || it.IsDetached();
-    //         p.clear();
-    //         p.next = NULL;
-    //         if (o == NULL)
-    //             head = next;
-    //         else
-    //             o.next = next;
-    //     } else {
-    //         o = p;
-    //     }
-    //     p = next;
-    // }
-    // if (head == NULL)   // no more iterators to track
-    //     itrs = NULL;
-    return E_NOT_IMPLEMENTED;
+    // assert lock.getHoldCount() == 1;
+    mCycles++;
+    for (AutoPtr<Node> o = NULL, p = mHead; p != NULL;) {
+        AutoPtr<Itr> it = (Itr*)(p.Get());
+        AutoPtr<Node> next = p->mNext;
+        if (it == NULL || it->TakeIndexWrapped()) {
+            // unlink p
+            // assert it == NULL || it.IsDetached();
+//            p.clear();
+            p->mNext = NULL;
+            if (o == NULL)
+                mHead = next;
+            else
+                o->mNext = next;
+        }
+        else {
+            o = p;
+        }
+        p = next;
+    }
+    if (mHead == NULL)   // no more iterators to track
+        mOwner->mItrs = NULL;
+    return NOERROR;
 }
 
 ECode CArrayBlockingQueue::Itrs::RemovedAt(
     /* [in] */ Int32 removedIndex)
 {
-    // for (Node o = NULL, p = head; p != NULL;) {
-    //     Itr it = p.get();
-    //     Node next = p.next;
-    //     if (it == NULL || it.removedAt(removedIndex)) {
-    //         // unlink p
-    //         // assert it == NULL || it.IsDetached();
-    //         p.clear();
-    //         p.next = NULL;
-    //         if (o == NULL)
-    //             head = next;
-    //         else
-    //             o.next = next;
-    //     } else {
-    //         o = p;
-    //     }
-    //     p = next;
-    // }
-    // if (head == NULL)   // no more iterators to track
-    //     itrs = NULL;
-    return E_NOT_IMPLEMENTED;
+    for (AutoPtr<Node> o = NULL, p = mHead; p != NULL;) {
+        AutoPtr<Itr> it = (Itr*)(p.Get());
+        AutoPtr<Node> next = p->mNext;
+        if (it == NULL || it->RemovedAt(removedIndex)) {
+            // unlink p
+            // assert it == NULL || it.IsDetached();
+//            p.clear();
+            p->mNext = NULL;
+            if (o == NULL)
+                mHead = next;
+            else
+                o->mNext = next;
+        }
+        else {
+            o = p;
+        }
+        p = next;
+    }
+    if (mHead == NULL)   // no more iterators to track
+        mOwner->mItrs = NULL;
+    return NOERROR;
 }
 
 ECode CArrayBlockingQueue::Itrs::QueueIsEmpty()
 {
-    // // assert lock.getHoldCount() == 1;
-    // for (Node p = head; p != NULL; p = p.next) {
-    //     Itr it = p.get();
-    //     if (it != NULL) {
-    //         p.clear();
-    //         it.shutdown();
-    //     }
-    // }
-    // head = NULL;
-    // itrs = NULL;
-    return E_NOT_IMPLEMENTED;
+    // assert lock.getHoldCount() == 1;
+    for (AutoPtr<Node> p = mHead; p != NULL; p = p->mNext) {
+        AutoPtr<Itr> it = (Itr*)(p.Get());
+        if (it != NULL) {
+//            p.clear();
+            it->Shutdown();
+        }
+    }
+    mHead = NULL;
+    mOwner->mItrs = NULL;
+    return NOERROR;
 }
 
 ECode CArrayBlockingQueue::Itrs::ElementDequeued()
 {
     // assert lock.getHoldCount() == 1;
-    // if (mCount == 0)
-    //     QueueIsEmpty();
-    // else if (mTakeIndex == 0)
-    //     TakeIndexWrapped();
+    if (mOwner->mCount == 0)
+        QueueIsEmpty();
+    else if (mOwner->mTakeIndex == 0)
+        TakeIndexWrapped();
     return NOERROR;
 }
 
@@ -920,7 +920,7 @@ CArrayBlockingQueue::Itr::Itr(
             mNextItem = mHost->ItemAt(mNextIndex = takeIndex);
             mCursor = IncCursor(takeIndex);
             if (mHost->mItrs == NULL) {
-                mHost->mItrs = new Itrs(this);
+                mHost->mItrs = new Itrs(this, mHost);
             }
             else {
                 mHost->mItrs->Register(this); // in this order

@@ -5,6 +5,7 @@
 #include "CBoolean.h"
 #include "CAtomicInteger32.h"
 #include "AutoLock.h"
+#include "Arrays.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::IO::IOutputStream;
@@ -13,6 +14,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::AutoLock;
+using Elastos::Core::IComparable;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 using Elastos::Utility::Concurrent::Locks::EIID_IReentrantLock;
 
@@ -151,31 +153,37 @@ Int32 CConcurrentHashMap::TableSizeFor(
     return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
 }
 
-// static Class<?> comparableClassFor(Object x)
-// {
-//     if (x instanceof Comparable) {
-//         Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
-//         if ((c = x.getClass()) == String.class) // bypass checks
-//             return c;
-//         if ((ts = c.getGenericInterfaces()) != null) {
-//             for (int i = 0; i < ts.length; ++i) {
-//                 if (((t = ts[i]) instanceof ParameterizedType) &&
-//                     ((p = (ParameterizedType)t).getRawType() ==
-//                      Comparable.class) &&
-//                     (as = p.getActualTypeArguments()) != null &&
-//                     as.length == 1 && as[0] == c) // type arg is c
-//                     return c;
-//             }
-//         }
-//     }
-//     return null;
-// }
+InterfaceID CConcurrentHashMap::ComparableClassFor(
+    /* [in] */ IInterface* x)
+{
+    assert(0 && "TODO");
+    // if (x->Probe(EIID_IComparable) != NULL) {
+    //     Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
+    //     if ((c = x.getClass()) == String.class) // bypass checks
+    //         return c;
+    //     if ((ts = c.getGenericInterfaces()) != null) {
+    //         for (int i = 0; i < ts.length; ++i) {
+    //             if (((t = ts[i]) instanceof ParameterizedType) &&
+    //                 ((p = (ParameterizedType)t).getRawType() ==
+    //                  Comparable.class) &&
+    //                 (as = p.getActualTypeArguments()) != null &&
+    //                 as.length == 1 && as[0] == c) // type arg is c
+    //                 return c;
+    //         }
+    //     }
+    // }
+    return EIID_IInterface;
+}
 
-// static int compareComparables(Class<?> kc, Object k, Object x)
-// {
-//     return (x == null || x.getClass() != kc ? 0 :
-//             ((Comparable)k).compareTo(x));
-// }
+Int32 CConcurrentHashMap::CompareComparables(
+    /* [in] */ const InterfaceID& kc,
+    /* [in] */ IInterface* k,
+    /* [in] */ IInterface* x)
+{
+    Int32 res, id = 0;
+    return (x == NULL/* || (x->GetClassID(&id) ,id) != kc */ ? 0 :
+            (IComparable::Probe(k)->CompareTo(x, &res), res));
+}
 
 AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::TabAt(
     /* [in] */ ArrayOf<Node*>* tab,
@@ -320,20 +328,20 @@ AutoPtr<IInterface> CConcurrentHashMap::ReplaceNode(
                     }
                     else if (ITreeBin::Probe(f) != NULL) {
                         validated = TRUE;
-                        // AutoPtr<TreeBin> t = (TreeBin*)ITreeBin::Probe(f);
-                        // AutoPtr<TreeNode> r, p;
-                        // if ((r = t->mRoot) != NULL &&
-                        //     (p = r->FindTreeNode(hash, key, NULL)) != NULL) {
-                        //     AutoPtr<IInterface> pv = p->mVal;
-                        //     if (cv == NULL || cv == pv ||
-                        //         (pv != NULL && Object::Equals(cv, pv))) {
-                        //         oldVal = pv;
-                        //         if (value != NULL)
-                        //             p->mVal = value;
-                        //         else if (t->RemoveTreeNode(p))
-                        //             SetTabAt(tab, i, Untreeify(t->mFirst));
-                        //     }
-                        // }
+                        AutoPtr<TreeBin> t = (TreeBin*)ITreeBin::Probe(f);
+                        AutoPtr<TreeNode> r, p;
+                        if ((r = t->mRoot) != NULL &&
+                            (p = r->FindTreeNode(hash, key, EIID_IInterface)) != NULL) {
+                            AutoPtr<IInterface> pv = p->mVal;
+                            if (cv == NULL || cv == pv ||
+                                (pv != NULL && Object::Equals(cv, pv))) {
+                                oldVal = pv;
+                                if (value != NULL)
+                                    p->mVal = value;
+                                else if (t->RemoveTreeNode(p))
+                                    SetTabAt(tab, i, Untreeify(t->mFirst.Get()).Get());
+                            }
+                        }
                     }
                 }
             }
@@ -774,41 +782,42 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::TreeNode::Find(
     /* [in] */ Int32 h,
     /* [in] */ IInterface* k)
 {
-    assert(0 && "TODO");
-    return NULL;
-//    return FindTreeNode(h, k, NULL);
+    return FindTreeNode(h, k, EIID_IInterface);
 }
 
-// final TreeNode<K,V> findTreeNode(Int32 h, Object k, Class<?> kc)
-// {
-//     if (k != NULL) {
-//         TreeNode p = this;
-//         do  {
-//             Int32 ph, dir; AutoPtr<IInterface> pk; TreeNode q;
-//             TreeNode pl = p.left, pr = p.right;
-//             if ((ph = p.hash) > h)
-//                 p = pl;
-//             else if (ph < h)
-//                 p = pr;
-//             else if ((pk = p.key) == k || (pk != NULL && k.equals(pk)))
-//                 return p;
-//             else if (pl == NULL && pr == NULL)
-//                 break;
-//             else if ((kc != NULL ||
-//                       (kc = comparableClassFor(k)) != NULL) &&
-//                      (dir = compareComparables(kc, k, pk)) != 0)
-//                 p = (dir < 0) ? pl : pr;
-//             else if (pl == NULL)
-//                 p = pr;
-//             else if (pr == NULL ||
-//                      (q = pr.findTreeNode(h, k, kc)) == NULL)
-//                 p = pl;
-//             else
-//                 return q;
-//         } while (p != NULL);
-//     }
-//     return NULL;
-// }
+AutoPtr<CConcurrentHashMap::TreeNode> CConcurrentHashMap::TreeNode::FindTreeNode(
+    /* [in] */ Int32 h,
+    /* [in] */ IInterface* k,
+    /* [in] */ const InterfaceID& kc)
+{
+    if (k != NULL) {
+        AutoPtr<TreeNode> p = this;
+        do {
+            Int32 ph, dir; AutoPtr<IInterface> pk; AutoPtr<TreeNode> q;
+            AutoPtr<TreeNode> pl = p->mLeft, pr = p->mRight;
+            if ((ph = p->mHash) > h)
+                p = pl;
+            else if (ph < h)
+                p = pr;
+            else if ((pk = p->mKey).Get() == k || (pk != NULL && Object::Equals(k, pk)))
+                return p;
+            else if (pl == NULL && pr == NULL)
+                break;
+            else if ((kc != EIID_IInterface ||
+                      (kc = ComparableClassFor(k)) != EIID_IInterface) &&
+                     (dir = CompareComparables(kc, k, pk)) != 0)
+                p = (dir < 0) ? pl : pr;
+            else if (pl == NULL)
+                p = pr;
+            else if (pr == NULL ||
+                     (q = pr->FindTreeNode(h, k, kc)) == NULL)
+                p = pl;
+            else
+                return q;
+        } while (p != NULL);
+    }
+    return NULL;
+}
 
 //===============================================================================
 // CConcurrentHashMap::TreeBin::
@@ -824,43 +833,42 @@ CConcurrentHashMap::TreeBin::TreeBin(
 {
     mFirst = b;
     AutoPtr<TreeNode> r;
-    assert(0 && "TODO");
-    // for (AutoPtr<TreeNode> x = b, next; x != NULL; x = next) {
-    //     next = TreeNode::Probe(x->mNext);
-    //     x->mLeft = x->mRight = NULL;
-    //     if (r == NULL) {
-    //         x->mParent = NULL;
-    //         x->mRed = FALSE;
-    //         r = x;
-    //     }
-    //     else {
-    //         AutoPtr<IInterface> key = x->mKey;
-    //         Int32 hash = x->mHash;
-    //         Class<?> kc = NULL;
-    //         for (AutoPtr<TreeNode> p = r;;) {
-    //             Int32 dir, ph;
-    //             if ((ph = p->mHash) > hash)
-    //                 dir = -1;
-    //             else if (ph < hash)
-    //                 dir = 1;
-    //             else if ((kc != NULL ||
-    //                       (kc = ComparableClassFor(key)) != NULL))
-    //                 dir = CompareComparables(kc, key, p->mKey);
-    //             else
-    //                 dir = 0;
-    //             AutoPtr<TreeNode> xp = p;
-    //             if ((p = (dir <= 0) ? p->mLeft : p->mRight) == NULL) {
-    //                 x->mParent = xp;
-    //                 if (dir <= 0)
-    //                     xp->mLeft = x;
-    //                 else
-    //                     xp->mRight = x;
-    //                 r = BalanceInsertion(r, x);
-    //                 break;
-    //             }
-    //         }
-    //     }
-    // }
+    for (AutoPtr<TreeNode> x = b, next; x != NULL; x = next) {
+        next = ITreeNode::Probe(x->mNext);
+        x->mLeft = x->mRight = NULL;
+        if (r == NULL) {
+            x->mParent = NULL;
+            x->mRed = FALSE;
+            r = x;
+        }
+        else {
+            AutoPtr<IInterface> key = x->mKey;
+            Int32 hash = x->mHash;
+            InterfaceID kc;
+            for (AutoPtr<TreeNode> p = r;;) {
+                Int32 dir, ph;
+                if ((ph = p->mHash) > hash)
+                    dir = -1;
+                else if (ph < hash)
+                    dir = 1;
+                else if ((kc != EIID_IInterface ||
+                          (kc = ComparableClassFor(key)) != EIID_IInterface))
+                    dir = CompareComparables(kc, key, p->mKey);
+                else
+                    dir = 0;
+                AutoPtr<TreeNode> xp = p;
+                if ((p = (dir <= 0) ? p->mLeft : p->mRight) == NULL) {
+                    x->mParent = xp;
+                    if (dir <= 0)
+                        xp->mLeft = x;
+                    else
+                        xp->mRight = x;
+                    r = BalanceInsertion(r, x);
+                    break;
+                }
+            }
+        }
+    }
     mRoot = r;
 }
 
@@ -937,54 +945,53 @@ AutoPtr<CConcurrentHashMap::TreeNode> CConcurrentHashMap::TreeBin::PutTreeVal(
     /* [in] */ IInterface* k,
     /* [in] */ IInterface* v)
 {
-    assert(0 && "TODO");
+    InterfaceID kc = EIID_IInterface;
+    for (AutoPtr<TreeNode> p = mRoot;;) {
+        Int32 dir, ph; AutoPtr<IInterface> pk; AutoPtr<TreeNode> q, pr;
+        if (p == NULL) {
+            mRoot = new TreeNode(h, k, v, NULL, NULL);
+            mFirst = mRoot;
+            break;
+        }
+        else if ((ph = p->mHash) > h)
+            dir = -1;
+        else if (ph < h)
+            dir = 1;
+        else if ((pk = p->mKey).Get() == k || (pk != NULL && Object::Equals(k, pk)))
+            return p;
+        else if ((kc == EIID_IInterface &&
+                  (kc = ComparableClassFor(k)) == EIID_IInterface) ||
+                 (dir = CompareComparables(kc, k, pk)) == 0) {
+            if (p->mLeft == NULL)
+                dir = 1;
+            else if ((pr = p->mRight) == NULL ||
+                     (q = pr->FindTreeNode(h, k, kc)) == NULL)
+                dir = -1;
+            else
+                return q;
+        }
+        AutoPtr<TreeNode> xp = p;
+        if ((p = (dir < 0) ? p->mLeft : p->mRight) == NULL) {
+            AutoPtr<TreeNode> x, f = mFirst;
+            mFirst = x = new TreeNode(h, k, v, f, xp);
+            if (f != NULL)
+                f->mPrev = x;
+            if (dir < 0)
+                xp->mLeft = x;
+            else
+                xp->mRight = x;
+            if (!xp->mRed)
+                x->mRed = TRUE;
+            else {
+                LockRoot();
+                mRoot = BalanceInsertion(mRoot, x);
+                UnlockRoot();
+            }
+            break;
+        }
+    }
+    assert(CheckInvariants(mRoot));
     return NULL;
-    // Class<?> kc = NULL;
-    // for (AutoPtr<TreeNode> p = mRoot;;) {
-    //     Int32 dir, ph; AutoPtr<IInterface> pk; TreeNode q, pr;
-    //     if (p == NULL) {
-    //         mFirst = mRoot = new TreeNode(h, k, v, NULL, NULL);
-    //         break;
-    //     }
-    //     else if ((ph = p->mHash) > h)
-    //         dir = -1;
-    //     else if (ph < h)
-    //         dir = 1;
-    //     else if ((pk = p->mKey) == k || (pk != NULL && Object::Equals(k, pk)))
-    //         return p;
-    //     else if ((kc == NULL &&
-    //               (kc = ComparableClassFor(k)) == NULL) ||
-    //              (dir = CompareComparables(kc, k, pk)) == 0) {
-    //         if (p->mLeft == NULL)
-    //             dir = 1;
-    //         else if ((pr = p->mRight) == NULL ||
-    //                  (q = pr->FindTreeNode(h, k, kc)) == NULL)
-    //             dir = -1;
-    //         else
-    //             return q;
-    //     }
-    //     AutoPtr<TreeNode> xp = p;
-    //     if ((p = (dir < 0) ? p->mLeft : p->mRight) == NULL) {
-    //         AutoPtr<TreeNode> x, f = mFirst;
-    //         mFirst = x = new TreeNode(h, k, v, f, xp);
-    //         if (f != NULL)
-    //             f->mPrev = x;
-    //         if (dir < 0)
-    //             xp->mLeft = x;
-    //         else
-    //             xp->mRight = x;
-    //         if (!xp->mRed)
-    //             x->mRed = TRUE;
-    //         else {
-    //             LockRoot();
-    //             mRoot = BalanceInsertion(mRoot, x);
-    //             UnlockRoot();
-    //         }
-    //         break;
-    //     }
-    // }
-    // assert checkInvariants(mRoot);
-    // return NULL;
 }
 
 Boolean CConcurrentHashMap::TreeBin::RemoveTreeNode(
@@ -1078,7 +1085,7 @@ Boolean CConcurrentHashMap::TreeBin::RemoveTreeNode(
         }
     }
     UnlockRoot();
-//    assert checkInvariants(mRoot);
+    assert(CheckInvariants(mRoot));
     return FALSE;
 }
 
@@ -1334,7 +1341,7 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::Traverser::Advance()
             }
             else if (ITreeBin::Probe(e) != NULL) {
                 TreeBin* tb = (TreeBin*)ITreeBin::Probe(e);
-                e = tb->mFirst;
+                e = (Node*)(tb->mFirst.Get());
             }
             else {
                 e = NULL;
@@ -1472,28 +1479,34 @@ ECode CConcurrentHashMap::CollectionView::ToArray(
 {
     VALIDATE_NOT_NULL(array)
 
-//     Int64 sz = mMap->MappingCount();
-//     if (sz > MAX_ARRAY_SIZE)
-//         return E_OUTOF_MEMORY_ERROR;
-// //        throw new OutOfMemoryError(oomeMsg);
-//     Int32 n = (Int32)sz;
-//     AutoPtr<ArrayOf<IInterface*> > r = new Object[n];
-//     Int32 i = 0;
-//     for (E e : this) {
-//         if (i == n) {
-//             if (n >= MAX_ARRAY_SIZE)
-//                 return E_OUTOF_MEMORY_ERROR;
-// //                throw new OutOfMemoryError(oomeMsg);
-//             if (n >= MAX_ARRAY_SIZE - (MAX_ARRAY_SIZE >> 1) - 1)
-//                 n = MAX_ARRAY_SIZE;
-//             else
-//                 n += (n >> 1) + 1;
-//             r = Arrays::CopyOf(r, n);
-//         }
-//         (*r)[i++] = e;
-//     }
-//     return (i == n) ? r : Arrays::CopyOf(r, i);
-    return NOERROR;
+    Int64 sz = mMap->MappingCount();
+    if (sz > MAX_ARRAY_SIZE)
+        return E_OUT_OF_MEMORY;
+    Int32 n = (Int32)sz;
+    AutoPtr<ArrayOf<IInterface*> > r = ArrayOf<IInterface*>::Alloc(n);
+    Int32 i = 0;
+    /* for (E e : this) */ {
+        AutoPtr<IInterface> e;
+        if (i == n) {
+            if (n >= MAX_ARRAY_SIZE)
+                return E_OUT_OF_MEMORY;
+            if (n >= MAX_ARRAY_SIZE - (MAX_ARRAY_SIZE >> 1) - 1)
+                n = MAX_ARRAY_SIZE;
+            else
+                n += (n >> 1) + 1;
+            Arrays::CopyOf(r, n, (ArrayOf<IInterface*>**)&r);
+        }
+        (*r)[i++] = e;
+    }
+
+    if (i == n) {
+        *array = r;
+        REFCOUNT_ADD(*array)
+        return NOERROR;
+    }
+    else {
+        return Arrays::CopyOf(r, i, array);
+    }
 }
 
 ECode CConcurrentHashMap::CollectionView::ToArray(
@@ -1502,34 +1515,44 @@ ECode CConcurrentHashMap::CollectionView::ToArray(
 {
     VALIDATE_NOT_NULL(outArray)
 
-//     Int64 sz = mMap->MappingCount();
-//     if (sz > MAX_ARRAY_SIZE)
-//         return NOERROR;
-// //        throw new OutOfMemoryError(oomeMsg);
-//     Int32 m = (Int32)sz;
-//     AutoPtr<ArrayOf<IInterface*> > r = (a.length >= m) ? a :
-//         (T[])java.lang.reflect.Array
-//         .newInstance(a.getClass().getComponentType(), m);
-//     Int32 n = r->GetLength();
-//     Int32 i = 0;
-//     for (E e : this) {
-//         if (i == n) {
-//             if (n >= MAX_ARRAY_SIZE)
-//                 throw new OutOfMemoryError(oomeMsg);
-//             if (n >= MAX_ARRAY_SIZE - (MAX_ARRAY_SIZE >> 1) - 1)
-//                 n = MAX_ARRAY_SIZE;
-//             else
-//                 n += (n >> 1) + 1;
-//             r = Arrays::CopyOf(r, n);
-//         }
-//         r[i++] = (T)e;
-//     }
-//     if (a == r && i < n) {
-//         r[i] = NULL; // NULL-terminate
-//         return r;
-//     }
-//     return (i == n) ? r : Arrays::CopyOf(r, i);
-    return NOERROR;
+    Int64 sz = mMap->MappingCount();
+    if (sz > MAX_ARRAY_SIZE)
+        return E_OUT_OF_MEMORY;
+    Int32 m = (Int32)sz;
+    // AutoPtr<ArrayOf<IInterface*> > r = (inArray->GetLength() >= m) ? inArray :
+    //     (T[])java.lang.reflect.Array
+    //     .newInstance(inArray.getClass().getComponentType(), m);
+    AutoPtr<ArrayOf<IInterface*> > r = (inArray->GetLength() >= m) ? inArray : inArray;
+    Int32 n = r->GetLength();
+    Int32 i = 0;
+    /* for (E e : this) */ {
+        AutoPtr<IInterface> e;
+        if (i == n) {
+            if (n >= MAX_ARRAY_SIZE)
+                return E_OUT_OF_MEMORY;
+            if (n >= MAX_ARRAY_SIZE - (MAX_ARRAY_SIZE >> 1) - 1)
+                n = MAX_ARRAY_SIZE;
+            else
+                n += (n >> 1) + 1;
+            Arrays::CopyOf(r, n, (ArrayOf<IInterface*>**)&r);
+        }
+        (*r)[i++] = e;
+    }
+    if (inArray == r && i < n) {
+        (*r)[i] = NULL; // NULL-terminate
+        *outArray = r;
+        REFCOUNT_ADD(*outArray)
+        return NOERROR;
+    }
+
+    if (i == n) {
+        *outArray = r;
+        REFCOUNT_ADD(*outArray)
+        return NOERROR;
+    }
+    else {
+        return Arrays::CopyOf(r, i, outArray);
+    }
 }
 
 String CConcurrentHashMap::CollectionView::ToString()
