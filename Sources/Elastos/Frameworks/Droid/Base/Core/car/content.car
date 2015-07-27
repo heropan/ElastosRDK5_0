@@ -67,9 +67,10 @@ module
 //     merge("content/PackageMonitor.car");
 //     merge("content/SelectionBuilder.car");
 
+    merge("content/pm/ActivityInfo.car");
+
 //     merge("content/pm/PackageItemInfo.car");
 //     merge("content/pm/ComponentInfo.car");
-//     merge("content/pm/ActivityInfo.car");
 //     merge("content/pm/ApplicationInfo.car");
 //     merge("content/pm/ConfigurationInfo.car");
 //     merge("content/pm/ContainerEncryptionParams.car");

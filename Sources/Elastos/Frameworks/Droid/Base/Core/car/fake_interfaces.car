@@ -16,26 +16,6 @@ module
 
     }}} // Elastos.Droid.App
 
-    //
-    // Elastos.Droid.Utility
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Utility {
-
-        interface IPrinter {}
-
-        interface ISize {}
-
-        interface ISizeF {}
-
-        interface IAttributeSet {}
-
-        interface IDisplayMetrics {}
-
-        interface ITypedValue {}
-
-    }}} // Elastos.Droid.Utility
 
     //
     // Elastos.Droid.Content
@@ -45,8 +25,6 @@ module
     namespace Content {
 
         namespace Pm {
-            interface IActivityInfo {}
-
             interface IApplicationInfo {}
 
             interface IPackageManager {}

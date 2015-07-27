@@ -53,6 +53,43 @@ module
         const Int32 LAUNCH_SINGLE_INSTANCE = 3;
 
         /**
+         * Constant corresponding to <code>none</code> in
+         * the {@link android.R.attr#documentLaunchMode} attribute.
+         */
+        const Int32 DOCUMENT_LAUNCH_NONE = 0;
+        /**
+         * Constant corresponding to <code>intoExisting</code> in
+         * the {@link android.R.attr#documentLaunchMode} attribute.
+         */
+        const Int32 DOCUMENT_LAUNCH_INTO_EXISTING = 1;
+        /**
+         * Constant corresponding to <code>always</code> in
+         * the {@link android.R.attr#documentLaunchMode} attribute.
+         */
+        const Int32 DOCUMENT_LAUNCH_ALWAYS = 2;
+        /**
+         * Constant corresponding to <code>never</code> in
+         * the {@link android.R.attr#documentLaunchMode} attribute.
+         */
+        const Int32 DOCUMENT_LAUNCH_NEVER = 3;
+
+        /**
+         * Constant corresponding to <code>persistRootOnly</code> in
+         * the {@link android.R.attr#persistableMode} attribute.
+         */
+        const Int32 PERSIST_ROOT_ONLY = 0;
+        /**
+         * Constant corresponding to <code>doNotPersist</code> in
+         * the {@link android.R.attr#persistableMode} attribute.
+         */
+        const Int32 PERSIST_NEVER = 1;
+        /**
+         * Constant corresponding to <code>persistAcrossReboots</code> in
+         * the {@link android.R.attr#persistableMode} attribute.
+         */
+        const Int32 PERSIST_ACROSS_REBOOTS = 2;
+
+        /**
          * Bit in #flags indicating whether this activity is able to
          * run in multiple processes.  If
          * true, the system may instantiate it in the some process as the
@@ -192,9 +229,29 @@ module
          * @sa android.view.WindowManager.LayoutParams#FLAG_FULLSCREEN
          * @sa android.app.Notification#fullScreenIntent fullScreenIntent
          * @sa #FLAG_IMMERSIVE
-         * 
+         *
          */
         const Int32 FLAG_IMMERSIVE = 0x0800;
+
+        /**
+         * Bit in {@link #flags}: If set, a task rooted at this activity will have its
+         * baseIntent replaced by the activity immediately above this. Each activity may further
+         * relinquish its identity to the activity above it using this flag. Set from the
+         * {@link android.R.attr#relinquishTaskIdentity} attribute.
+         */
+        const Int32 FLAG_RELINQUISH_TASK_IDENTITY = 0x1000;
+        /**
+         * Bit in {@link #flags} indicating that tasks started with this activity are to be
+         * removed from the recent list of tasks when the last activity in the task is finished.
+         * Corresponds to {@link android.R.attr#autoRemoveFromRecents}
+         */
+        const Int32 FLAG_AUTO_REMOVE_FROM_RECENTS = 0x2000;
+        /**
+         * Bit in {@link #flags} indicating that this activity can start is creation/resume
+         * while the previous activity is still pausing.  Corresponds to
+         * {@link android.R.attr#resumeWhilePausing}
+         */
+        const Int32 FLAG_RESUME_WHILE_PAUSING = 0x4000;
 
         /**
          * @hide Bit in #flags: If set, this component will only be seen
@@ -217,6 +274,14 @@ module
          * @sa android.R.attr#singleUser
          */
         const Int32 FLAG_SINGLE_USER = 0x40000000;
+
+        /**
+         * @hide Bit in {@link #flags}: If set, this activity may be launched into an
+         * owned ActivityContainer such as that within an ActivityView. If not set and
+         * this activity is launched into such a container a SecurityExcception will be
+         * thrown. Set from the {@link android.R.attr#allowEmbedded} attribute.
+         */
+        const Int32 FLAG_ALLOW_EMBEDDED = 0x80000000;
 
         /**
          * Constant corresponding to <code>unspecified</code> in
@@ -313,6 +378,30 @@ module
          * @sa android.R.attr#screenOrientation
          */
         const Int32 SCREEN_ORIENTATION_FULL_SENSOR = 10;
+
+        /**
+         * Constant corresponding to <code>userLandscape</code> in
+         * the {@link android.R.attr#screenOrientation} attribute.
+         */
+        const Int32 SCREEN_ORIENTATION_USER_LANDSCAPE = 11;
+
+        /**
+         * Constant corresponding to <code>userPortrait</code> in
+         * the {@link android.R.attr#screenOrientation} attribute.
+         */
+        const Int32 SCREEN_ORIENTATION_USER_PORTRAIT = 12;
+
+        /**
+         * Constant corresponding to <code>fullUser</code> in
+         * the {@link android.R.attr#screenOrientation} attribute.
+         */
+        const Int32 SCREEN_ORIENTATION_FULL_USER = 13;
+
+        /**
+         * Constant corresponding to <code>locked</code> in
+         * the {@link android.R.attr#screenOrientation} attribute.
+         */
+        const Int32 SCREEN_ORIENTATION_LOCKED = 14;
 
         /**
          * Bit in #configChanges that indicates that the activity
