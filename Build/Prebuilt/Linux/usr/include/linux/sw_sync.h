@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_SW_SYNC_H
-#define _LINUX_SW_SYNC_H
+#ifndef _UAPI_LINUX_SW_SYNC_H
+#define _UAPI_LINUX_SW_SYNC_H
 #include <linux/types.h>
 struct sw_sync_create_fence_data {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

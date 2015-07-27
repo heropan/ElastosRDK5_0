@@ -18,18 +18,19 @@
  ****************************************************************************/
 #ifndef _QNX4TYPES_H
 #define _QNX4TYPES_H
+#include <linux/types.h>
 typedef __le16 qnx4_nxtnt_t;
-typedef __u8 qnx4_ftype_t;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+typedef __u8 qnx4_ftype_t;
 typedef struct {
  __le32 xtnt_blk;
  __le32 xtnt_size;
-} qnx4_xtnt_t;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+} qnx4_xtnt_t;
 typedef __le16 qnx4_mode_t;
 typedef __le16 qnx4_muid_t;
 typedef __le16 qnx4_mgid_t;
-typedef __le32 qnx4_off_t;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+typedef __le32 qnx4_off_t;
 typedef __le16 qnx4_nlink_t;
 #endif

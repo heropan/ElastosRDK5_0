@@ -1,7 +1,7 @@
 /*
 *******************************************************************************
 *
-*   Copyright (C) 2009-2010, International Business Machines
+*   Copyright (C) 2009-2011, International Business Machines
 *   Corporation and others.  All Rights Reserved.
 *
 *******************************************************************************
@@ -37,6 +37,8 @@ U_NAMESPACE_BEGIN
  * This is not an abstract base class. This class can be used and instantiated
  * by itself, although it will be more useful when subclassed.
  *
+ * Inside Google, this class is modified to use Google error logging.
+ *
  * Features:
  * - The constructor initializes the internal UErrorCode to U_ZERO_ERROR,
  *   removing one common source of errors.
@@ -57,7 +59,7 @@ U_NAMESPACE_BEGIN
  * \code
  *   class IcuErrorCode: public icu::ErrorCode {
  *   public:
- *     virtual ~IcuErrorCode() {
+ *     virtual ~IcuErrorCode() {  // should be defined in .cpp as "key function"
  *       // Safe because our handleFailure() does not throw exceptions.
  *       if(isFailure()) { handleFailure(); }
  *     }
@@ -84,7 +86,7 @@ public:
      */
     ErrorCode() : errorCode(U_ZERO_ERROR) {}
     /** Destructor, does nothing. See class documentation for details. @stable ICU 4.2 */
-    virtual ~ErrorCode() {}
+    virtual ~ErrorCode();
     /** Conversion operator, returns a reference. @stable ICU 4.2 */
     operator UErrorCode & () { return errorCode; }
     /** Conversion operator, returns a pointer. @stable ICU 4.2 */
@@ -129,6 +131,7 @@ protected:
      * Throw an exception, log an error, terminate the program, or similar.
      * @stable ICU 4.2
      */
+
     virtual void handleFailure() const {}
 };
 

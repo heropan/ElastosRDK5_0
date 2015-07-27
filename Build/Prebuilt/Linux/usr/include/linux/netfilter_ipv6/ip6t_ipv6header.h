@@ -18,12 +18,12 @@
  ****************************************************************************/
 #ifndef __IPV6HEADER_H
 #define __IPV6HEADER_H
-struct ip6t_ipv6header_info
-{
+#include <linux/types.h>
+struct ip6t_ipv6header_info {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int8_t matchflags;
- u_int8_t invflags;
- u_int8_t modeflag;
+ __u8 matchflags;
+ __u8 invflags;
+ __u8 modeflag;
 };
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define MASK_HOPOPTS 128

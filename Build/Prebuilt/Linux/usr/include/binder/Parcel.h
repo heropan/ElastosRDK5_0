@@ -23,22 +23,21 @@
 #include <utils/String16.h>
 #include <utils/Vector.h>
 #include <utils/Flattenable.h>
+#include <linux/binder.h>
 
 // ---------------------------------------------------------------------------
 namespace android {
 
+template <typename T> class Flattenable;
 template <typename T> class LightFlattenable;
-class Flattenable;
 class IBinder;
 class IPCThreadState;
 class ProcessState;
 class String8;
 class TextOutput;
 
-struct flat_binder_object;  // defined in support_p/binder_module.h
-
-class Parcel
-{
+class Parcel {
+    friend class IPCThreadState;
 public:
     class ReadableBlob;
     class WritableBlob;
@@ -67,7 +66,7 @@ public:
     bool                hasFileDescriptors() const;
 
     // Writes the RPC header.
-    status_t            writeInterfaceToken(const String16& itfs);
+    status_t            writeInterfaceToken(const String16& interfaceToken);
 
     // Parses the RPC header, returning true if the interface name
     // in the header matches the expected interface from the caller.
@@ -76,13 +75,16 @@ public:
     // propagating the StrictMode policy mask, populating the current
     // IPCThreadState, which as an optimization may optionally be
     // passed in.
-    bool                enforceInterface(const String16& itfs,
+    bool                enforceInterface(const String16& interfaceToken,
                                          IPCThreadState* threadState = NULL) const;
     bool                checkInterface(IBinder*) const;
 
     void                freeData();
 
-    const size_t*       objects() const;
+private:
+    const binder_size_t* objects() const;
+
+public:
     size_t              objectsCount() const;
     
     status_t            errorCheck() const;
@@ -95,14 +97,17 @@ public:
     status_t            writeInt64(int64_t val);
     status_t            writeFloat(float val);
     status_t            writeDouble(double val);
-    status_t            writeIntPtr(intptr_t val);
     status_t            writeCString(const char* str);
     status_t            writeString8(const String8& str);
     status_t            writeString16(const String16& str);
     status_t            writeString16(const char16_t* str, size_t len);
     status_t            writeStrongBinder(const sp<IBinder>& val);
     status_t            writeWeakBinder(const wp<IBinder>& val);
-    status_t            write(const Flattenable& val);
+    status_t            writeInt32Array(size_t len, const int32_t *val);
+    status_t            writeByteArray(size_t len, const uint8_t *val);
+
+    template<typename T>
+    status_t            write(const Flattenable<T>& val);
 
     template<typename T>
     status_t            write(const LightFlattenable<T>& val);
@@ -122,6 +127,11 @@ public:
     // Place a file descriptor into the parcel.  A dup of the fd is made, which
     // will be closed once the parcel is destroyed.
     status_t            writeDupFileDescriptor(int fd);
+
+    // Writes a raw fd and optional comm channel fd to the parcel as a ParcelFileDescriptor.
+    // A dup's of the fds are made, which will be closed once the parcel is destroyed.
+    // Null values are passed as -1.
+    status_t            writeParcelFileDescriptor(int fd, int commChannel = -1);
 
     // Writes a blob to the parcel.
     // If the blob is small, then it is stored in-place, otherwise it is
@@ -157,7 +167,9 @@ public:
     const char16_t*     readString16Inplace(size_t* outLen) const;
     sp<IBinder>         readStrongBinder() const;
     wp<IBinder>         readWeakBinder() const;
-    status_t            read(Flattenable& val) const;
+
+    template<typename T>
+    status_t            read(Flattenable<T>& val) const;
 
     template<typename T>
     status_t            read(LightFlattenable<T>& val) const;
@@ -180,6 +192,11 @@ public:
     // in the parcel, which you do not own -- use dup() to get your own copy.
     int                 readFileDescriptor() const;
 
+    // Reads a ParcelFileDescriptor from the parcel.  Returns the raw fd as
+    // the result, and the optional comm channel fd in outCommChannel.
+    // Null values are returned as -1.
+    int                 readParcelFileDescriptor(int& outCommChannel) const;
+
     // Reads a blob from the parcel.
     // The caller should call release() on the blob after reading its contents.
     status_t            readBlob(size_t len, ReadableBlob* outBlob) const;
@@ -189,19 +206,21 @@ public:
     // Explicitly close all file descriptors in the parcel.
     void                closeFileDescriptors();
     
+private:
     typedef void        (*release_func)(Parcel* parcel,
                                         const uint8_t* data, size_t dataSize,
-                                        const size_t* objects, size_t objectsSize,
+                                        const binder_size_t* objects, size_t objectsSize,
                                         void* cookie);
                         
-    const uint8_t*      ipcData() const;
+    uintptr_t           ipcData() const;
     size_t              ipcDataSize() const;
-    const size_t*       ipcObjects() const;
+    uintptr_t           ipcObjects() const;
     size_t              ipcObjectsCount() const;
     void                ipcSetDataReference(const uint8_t* data, size_t dataSize,
-                                            const size_t* objects, size_t objectsCount,
+                                            const binder_size_t* objects, size_t objectsCount,
                                             release_func relFunc, void* relCookie);
     
+public:
     void                print(TextOutput& to, uint32_t flags = 0) const;
 
 private:
@@ -214,6 +233,9 @@ private:
     status_t            growData(size_t len);
     status_t            restartWrite(size_t desired);
     status_t            continueWrite(size_t desired);
+    status_t            writePointer(uintptr_t val);
+    status_t            readPointer(uintptr_t *pArg) const;
+    uintptr_t           readPointer() const;
     void                freeDataNoInit();
     void                initState();
     void                scanForFds() const;
@@ -231,7 +253,7 @@ private:
     size_t              mDataSize;
     size_t              mDataCapacity;
     mutable size_t      mDataPos;
-    size_t*             mObjects;
+    binder_size_t*      mObjects;
     size_t              mObjectsSize;
     size_t              mObjectsCapacity;
     mutable size_t      mNextObjectHint;
@@ -260,6 +282,39 @@ private:
         size_t mSize;
     };
 
+    class FlattenableHelperInterface {
+    protected:
+        ~FlattenableHelperInterface() { }
+    public:
+        virtual size_t getFlattenedSize() const = 0;
+        virtual size_t getFdCount() const = 0;
+        virtual status_t flatten(void* buffer, size_t size, int* fds, size_t count) const = 0;
+        virtual status_t unflatten(void const* buffer, size_t size, int const* fds, size_t count) = 0;
+    };
+
+    template<typename T>
+    class FlattenableHelper : public FlattenableHelperInterface {
+        friend class Parcel;
+        const Flattenable<T>& val;
+        explicit FlattenableHelper(const Flattenable<T>& val) : val(val) { }
+
+    public:
+        virtual size_t getFlattenedSize() const {
+            return val.getFlattenedSize();
+        }
+        virtual size_t getFdCount() const {
+            return val.getFdCount();
+        }
+        virtual status_t flatten(void* buffer, size_t size, int* fds, size_t count) const {
+            return val.flatten(buffer, size, fds, count);
+        }
+        virtual status_t unflatten(void const* buffer, size_t size, int const* fds, size_t count) {
+            return const_cast<Flattenable<T>&>(val).unflatten(buffer, size, fds, count);
+        }
+    };
+    status_t write(const FlattenableHelperInterface& val);
+    status_t read(FlattenableHelperInterface& val) const;
+
 public:
     class ReadableBlob : public Blob {
         friend class Parcel;
@@ -277,8 +332,14 @@ public:
 // ---------------------------------------------------------------------------
 
 template<typename T>
+status_t Parcel::write(const Flattenable<T>& val) {
+    const FlattenableHelper<T> helper(val);
+    return write(helper);
+}
+
+template<typename T>
 status_t Parcel::write(const LightFlattenable<T>& val) {
-    size_t size(val.getSize());
+    size_t size(val.getFlattenedSize());
     if (!val.isFixedSize()) {
         status_t err = writeInt32(size);
         if (err != NO_ERROR) {
@@ -287,17 +348,24 @@ status_t Parcel::write(const LightFlattenable<T>& val) {
     }
     if (size) {
         void* buffer = writeInplace(size);
-        return buffer == NULL ? NO_MEMORY :
-                val.flatten(buffer);
+        if (buffer == NULL)
+            return NO_MEMORY;
+        return val.flatten(buffer, size);
     }
     return NO_ERROR;
+}
+
+template<typename T>
+status_t Parcel::read(Flattenable<T>& val) const {
+    FlattenableHelper<T> helper(val);
+    return read(helper);
 }
 
 template<typename T>
 status_t Parcel::read(LightFlattenable<T>& val) const {
     size_t size;
     if (val.isFixedSize()) {
-        size = val.getSize();
+        size = val.getFlattenedSize();
     } else {
         int32_t s;
         status_t err = readInt32(&s);

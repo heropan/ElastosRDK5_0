@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_UTSNAME_H
-#define _LINUX_UTSNAME_H
+#ifndef _UAPI_LINUX_UTSNAME_H
+#define _UAPI_LINUX_UTSNAME_H
 #define __OLD_UTS_LEN 8
 struct oldold_utsname {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -39,13 +39,13 @@ struct old_utsname {
  char machine[65];
 };
 struct new_utsname {
- char sysname[65];
+ char sysname[__NEW_UTS_LEN + 1];
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- char nodename[65];
- char release[65];
- char version[65];
- char machine[65];
+ char nodename[__NEW_UTS_LEN + 1];
+ char release[__NEW_UTS_LEN + 1];
+ char version[__NEW_UTS_LEN + 1];
+ char machine[__NEW_UTS_LEN + 1];
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- char domainname[65];
+ char domainname[__NEW_UTS_LEN + 1];
 };
 #endif

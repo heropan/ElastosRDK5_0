@@ -16,8 +16,4 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_ERRNO_H
-#define _LINUX_ERRNO_H
 #include <asm/errno.h>
-#endif
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

@@ -18,23 +18,24 @@
  ****************************************************************************/
 #ifndef _IPT_ECN_TARGET_H
 #define _IPT_ECN_TARGET_H
-#include <linux/netfilter_ipv4/ipt_DSCP.h>
-#define IPT_ECN_IP_MASK (~IPT_DSCP_MASK)
+#include <linux/types.h>
+#include <linux/netfilter/xt_DSCP.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define IPT_ECN_OP_SET_IP 0x01  
-#define IPT_ECN_OP_SET_ECE 0x10  
-#define IPT_ECN_OP_SET_CWR 0x20  
+#define IPT_ECN_IP_MASK (~XT_DSCP_MASK)
+#define IPT_ECN_OP_SET_IP 0x01
+#define IPT_ECN_OP_SET_ECE 0x10
+#define IPT_ECN_OP_SET_CWR 0x20
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define IPT_ECN_OP_MASK 0xce
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 struct ipt_ECN_info {
- u_int8_t operation;
- u_int8_t ip_ect;
+ __u8 operation;
+ __u8 ip_ect;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  union {
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  struct {
- u_int8_t ece:1, cwr:1;
+ __u8 ece:1, cwr:1;
  } tcp;
- } proto;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ } proto;
 };
 #endif

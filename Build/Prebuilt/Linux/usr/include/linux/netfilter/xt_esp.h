@@ -18,13 +18,13 @@
  ****************************************************************************/
 #ifndef _XT_ESP_H
 #define _XT_ESP_H
-struct xt_esp
-{
+#include <linux/types.h>
+struct xt_esp {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int32_t spis[2];
- u_int8_t invflags;
+ __u32 spis[2];
+ __u8 invflags;
 };
-#define XT_ESP_INV_SPI 0x01  
+#define XT_ESP_INV_SPI 0x01
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define XT_ESP_INV_MASK 0x01  
+#define XT_ESP_INV_MASK 0x01
 #endif

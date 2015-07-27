@@ -52,6 +52,7 @@ protected:
     BasicHashtableImpl(size_t entrySize, bool hasTrivialDestructor,
             size_t minimumInitialCapacity, float loadFactor);
     BasicHashtableImpl(const BasicHashtableImpl& other);
+    virtual ~BasicHashtableImpl();
 
     void dispose();
 
@@ -326,6 +327,14 @@ public:
      */
     inline void rehash(size_t minimumCapacity, float loadFactor) {
         BasicHashtableImpl::rehash(minimumCapacity, loadFactor);
+    }
+
+    /* Determines whether there is room to add another entry without rehashing.
+     * When this returns true, a subsequent add() operation is guaranteed to
+     * complete without performing a rehash.
+     */
+    inline bool hasMoreRoom() const {
+        return mCapacity > mFilledBuckets;
     }
 
 protected:

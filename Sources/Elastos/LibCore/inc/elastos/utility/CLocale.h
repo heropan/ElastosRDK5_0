@@ -710,7 +710,7 @@ private:
         /* [out] */ ILocale** locale);
 
 private:
-    static AutoPtr<ArrayOf<IObjectStreamField> > sSerialPersistentFields;
+    static AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
     static String UNDETERMINED_LANGUAGE;
 
     /**

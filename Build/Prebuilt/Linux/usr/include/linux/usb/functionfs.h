@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __LINUX_FUNCTIONFS_H__
-#define __LINUX_FUNCTIONFS_H__ 1
+#ifndef _UAPI__LINUX_FUNCTIONFS_H__
+#define _UAPI__LINUX_FUNCTIONFS_H__
 #include <linux/types.h>
 #include <linux/ioctl.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

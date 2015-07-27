@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-/* === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE ===
- *
- * THIS IS A COPY OF libcore/include/UniquePtr.h AND AS SUCH THAT IS THE
- * CANONICAL SOURCE OF THIS FILE. PLEASE KEEP THEM IN SYNC.
- *
- * === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE === NOTE ===
- */
-
 #ifndef UNIQUE_PTR_H_included
 #define UNIQUE_PTR_H_included
 
 #include <cstdlib> // For NULL.
+
+// This is a fake declaration of std::swap to avoid including <algorithm>
+namespace std {
+template <class T> void swap(T&, T&);
+}
 
 // Default deleter for pointer types.
 template <typename T>
@@ -86,6 +83,11 @@ public:
             D()(mPtr);
             mPtr = ptr;
         }
+    }
+
+    // Swap with another unique pointer.
+    void swap(UniquePtr<T>& other) {
+      std::swap(mPtr, other.mPtr);
     }
 
 private:

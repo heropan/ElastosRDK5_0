@@ -16,14 +16,4 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __ARCH_ARM_SOCKIOS_H
-#define __ARCH_ARM_SOCKIOS_H
-#define FIOSETOWN 0x8901
-#define SIOCSPGRP 0x8902
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define FIOGETOWN 0x8903
-#define SIOCGPGRP 0x8904
-#define SIOCATMARK 0x8905
-#define SIOCGSTAMP 0x8906  
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#endif
+#include <asm-generic/sockios.h>

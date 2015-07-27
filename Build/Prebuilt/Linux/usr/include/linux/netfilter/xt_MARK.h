@@ -18,19 +18,6 @@
  ****************************************************************************/
 #ifndef _XT_MARK_H_target
 #define _XT_MARK_H_target
-struct xt_mark_target_info {
- unsigned long mark;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-};
-enum {
- XT_MARK_SET=0,
- XT_MARK_AND,
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- XT_MARK_OR,
-};
-struct xt_mark_target_info_v1 {
- unsigned long mark;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int8_t mode;
-};
+#include <linux/netfilter/xt_mark.h>
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

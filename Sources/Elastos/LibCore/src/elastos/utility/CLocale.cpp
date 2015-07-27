@@ -61,9 +61,9 @@ const AutoPtr<ILocale> CLocale::US = CreateLocale(String("en"), String("US"));
 
 String CLocale::UNDETERMINED_LANGUAGE("und");
 
-static AutoPtr<ArrayOf<IObjectStreamField> > InitSerialPersistentFields()
+static AutoPtr<ArrayOf<IObjectStreamField*> > InitSerialPersistentFields()
 {
-    AutoPtr<ArrayOf<IObjectStreamField> > notimpl;
+    AutoPtr<ArrayOf<IObjectStreamField*> > notimpl;
     // new ObjectStreamField("country", String.class),
     // new ObjectStreamField("hashcode", int.class),
     // new ObjectStreamField("language", String.class),
@@ -72,7 +72,7 @@ static AutoPtr<ArrayOf<IObjectStreamField> > InitSerialPersistentFields()
     // new ObjectStreamField("extensions", String.class),
     return notimpl;
 }
-AutoPtr<ArrayOf<IObjectStreamField> > CLocale::sSerialPersistentFields = InitSerialPersistentFields();
+AutoPtr<ArrayOf<IObjectStreamField*> > CLocale::sSerialPersistentFields = InitSerialPersistentFields();
 
 static AutoPtr< StringMap > InitGRANDFATHERED_LOCALES()
 {

@@ -16,29 +16,28 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_TYPES_H
-#define _LINUX_TYPES_H
-#include <linux/posix_types.h>
+#ifndef _UAPI_LINUX_TYPES_H
+#define _UAPI_LINUX_TYPES_H
 #include <asm/types.h>
+#ifndef __ASSEMBLY__
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#include <linux/posix_types.h>
 #define __bitwise__
 #define __bitwise
 typedef __u16 __bitwise __le16;
-typedef __u16 __bitwise __be16;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+typedef __u16 __bitwise __be16;
 typedef __u32 __bitwise __le32;
 typedef __u32 __bitwise __be32;
-#if defined(__GNUC__) && !defined(__STRICT_ANSI__)
 typedef __u64 __bitwise __le64;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 typedef __u64 __bitwise __be64;
-#endif
-struct ustat {
- __kernel_daddr_t f_tfree;
+typedef __u16 __bitwise __sum16;
+typedef __u32 __bitwise __wsum;
+#define __aligned_u64 __u64 __attribute__((aligned(8)))
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- __kernel_ino_t f_tinode;
- char f_fname[6];
- char f_fpack[6];
-};
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define __aligned_be64 __be64 __attribute__((aligned(8)))
+#define __aligned_le64 __le64 __attribute__((aligned(8)))
 #endif
+#endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

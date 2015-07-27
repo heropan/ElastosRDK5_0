@@ -79,7 +79,7 @@ struct VectorBase : public VectorAllocBase<T, Alloc, AllocTraits<T, Alloc>::S_in
 
     ~VectorBase()
     {
-        Deallocate(Base::mStart, Base::mEndOfStorage - Base::mStart);
+        this->Deallocate(Base::mStart, Base::mEndOfStorage - Base::mStart);
     }
 };
 

@@ -18,9 +18,22 @@
  ****************************************************************************/
 #ifndef _XT_CONNMARK_H
 #define _XT_CONNMARK_H
-struct xt_connmark_info {
- unsigned long mark, mask;
+#include <linux/types.h>
+enum {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int8_t invert;
+ XT_CONNMARK_SET = 0,
+ XT_CONNMARK_SAVE,
+ XT_CONNMARK_RESTORE
 };
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+struct xt_connmark_tginfo1 {
+ __u32 ctmark, ctmask, nfmask;
+ __u8 mode;
+};
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+struct xt_connmark_mtinfo1 {
+ __u32 mark, mask;
+ __u8 invert;
+};
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #endif

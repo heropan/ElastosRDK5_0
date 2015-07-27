@@ -16,8 +16,4 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_POLL_H
-#define _LINUX_POLL_H
 #include <asm/poll.h>
-#endif
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

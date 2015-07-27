@@ -16,25 +16,28 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __LINUX_USB_F_MTP_H
-#define __LINUX_USB_F_MTP_H
+#ifndef _UAPI_LINUX_USB_F_MTP_H
+#define _UAPI_LINUX_USB_F_MTP_H
+#include <linux/ioctl.h>
+#include <linux/types.h>
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 struct mtp_file_range {
  int fd;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  loff_t offset;
  int64_t length;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  uint16_t command;
  uint32_t transaction_id;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
 struct mtp_event {
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  size_t length;
  void *data;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
 #define MTP_SEND_FILE _IOW('M', 0, struct mtp_file_range)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define MTP_RECEIVE_FILE _IOW('M', 1, struct mtp_file_range)
 #define MTP_SEND_EVENT _IOW('M', 3, struct mtp_event)
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define MTP_SEND_FILE_WITH_HEADER _IOW('M', 4, struct mtp_file_range)
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

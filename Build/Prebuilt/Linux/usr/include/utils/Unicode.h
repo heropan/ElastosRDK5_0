@@ -22,8 +22,11 @@
 
 extern "C" {
 
+// Definitions exist in C++11
+#if defined __cplusplus && __cplusplus < 201103L
 typedef uint32_t char32_t;
 typedef uint16_t char16_t;
+#endif
 
 // Standard string functions on char16_t strings.
 int strcmp16(const char16_t *, const char16_t *);
@@ -162,6 +165,13 @@ char16_t* utf8_to_utf16_no_null_terminator(const uint8_t* src, size_t srcLen, ch
  * plus an added NULL terminator.
  */
 void utf8_to_utf16(const uint8_t* src, size_t srcLen, char16_t* dst);
+
+/**
+ * Like utf8_to_utf16_no_null_terminator, but you can supply a maximum length of the
+ * decoded string.  The decoded string will fill up to that length; if it is longer
+ * the returned pointer will be to the character after dstLen.
+ */
+char16_t* utf8_to_utf16_n(const uint8_t* src, size_t srcLen, char16_t* dst, size_t dstLen);
 
 }
 

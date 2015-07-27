@@ -18,13 +18,14 @@
  ****************************************************************************/
 #ifndef _XT_CONNSECMARK_H_target
 #define _XT_CONNSECMARK_H_target
+#include <linux/types.h>
 enum {
- CONNSECMARK_SAVE = 1,
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ CONNSECMARK_SAVE = 1,
  CONNSECMARK_RESTORE,
 };
 struct xt_connsecmark_target_info {
- u_int8_t mode;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ __u8 mode;
 };
 #endif

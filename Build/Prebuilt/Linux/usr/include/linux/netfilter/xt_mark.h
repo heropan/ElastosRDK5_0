@@ -18,9 +18,14 @@
  ****************************************************************************/
 #ifndef _XT_MARK_H
 #define _XT_MARK_H
-struct xt_mark_info {
- unsigned long mark, mask;
+#include <linux/types.h>
+struct xt_mark_tginfo2 {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int8_t invert;
+ __u32 mark, mask;
+};
+struct xt_mark_mtinfo1 {
+ __u32 mark, mask;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ __u8 invert;
 };
 #endif

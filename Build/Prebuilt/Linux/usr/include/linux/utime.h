@@ -18,9 +18,11 @@
  ****************************************************************************/
 #ifndef _LINUX_UTIME_H
 #define _LINUX_UTIME_H
+#include <linux/types.h>
 struct utimbuf {
- time_t actime;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- time_t modtime;
+ __kernel_time_t actime;
+ __kernel_time_t modtime;
 };
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

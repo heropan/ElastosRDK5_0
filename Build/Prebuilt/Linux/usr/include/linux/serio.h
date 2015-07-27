@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _SERIO_H
-#define _SERIO_H
+#ifndef _UAPI_SERIO_H
+#define _UAPI_SERIO_H
 #include <linux/ioctl.h>
 #define SPIOCSTYPE _IOW('q', 0x01, unsigned long)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -68,4 +68,21 @@
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define SERIO_ELO 0x29
 #define SERIO_MICROTOUCH 0x30
+#define SERIO_PENMOUNT 0x31
+#define SERIO_TOUCHRIGHT 0x32
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define SERIO_TOUCHWIN 0x33
+#define SERIO_TAOSEVM 0x34
+#define SERIO_FUJITSU 0x35
+#define SERIO_ZHENHUA 0x36
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define SERIO_INEXIO 0x37
+#define SERIO_TOUCHIT213 0x38
+#define SERIO_W8001 0x39
+#define SERIO_DYNAPRO 0x3a
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define SERIO_HAMPSHIRE 0x3b
+#define SERIO_PS2MULT 0x3c
+#define SERIO_TSC40 0x3d
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

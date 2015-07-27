@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __HID_H
-#define __HID_H
+#ifndef _UAPI__HID_H
+#define _UAPI__HID_H
 #define USB_INTERFACE_CLASS_HID 3
 #define USB_INTERFACE_SUBCLASS_BOOT 1
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

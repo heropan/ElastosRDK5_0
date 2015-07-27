@@ -48,6 +48,11 @@ public:
         SHARED = 1
     };
 
+    enum WakeUpType {
+        WAKE_UP_ONE = 0,
+        WAKE_UP_ALL = 1
+    };
+
     Condition();
     Condition(int type);
     ~Condition();
@@ -55,8 +60,16 @@ public:
     status_t wait(Mutex& mutex);
     // same with relative timeout
     status_t waitRelative(Mutex& mutex, nsecs_t reltime);
-    // Signal the condition variable, allowing one thread to continue.
+    // Signal the condition variable, allowing exactly one thread to continue.
     void signal();
+    // Signal the condition variable, allowing one or all threads to continue.
+    void signal(WakeUpType type) {
+        if (type == WAKE_UP_ONE) {
+            signal();
+        } else {
+            broadcast();
+        }
+    }
     // Signal the condition variable, allowing all threads to continue.
     void broadcast();
 
@@ -119,6 +132,17 @@ inline status_t Condition::waitRelative(Mutex& mutex, nsecs_t reltime) {
 #endif // HAVE_PTHREAD_COND_TIMEDWAIT_RELATIVE
 }
 inline void Condition::signal() {
+    /*
+     * POSIX says pthread_cond_signal wakes up "one or more" waiting threads.
+     * However bionic follows the glibc guarantee which wakes up "exactly one"
+     * waiting thread.
+     *
+     * man 3 pthread_cond_signal
+     *   pthread_cond_signal restarts one of the threads that are waiting on
+     *   the condition variable cond. If no threads are waiting on cond,
+     *   nothing happens. If several threads are waiting on cond, exactly one
+     *   is restarted, but it is not specified which.
+     */
     pthread_cond_signal(&mCond);
 }
 inline void Condition::broadcast() {

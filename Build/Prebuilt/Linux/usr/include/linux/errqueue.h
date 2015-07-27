@@ -16,10 +16,10 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_ERRQUEUE_H
-#define _LINUX_ERRQUEUE_H 1
-struct sock_extended_err
-{
+#ifndef _UAPI_LINUX_ERRQUEUE_H
+#define _UAPI_LINUX_ERRQUEUE_H
+#include <linux/types.h>
+struct sock_extended_err {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  __u32 ee_errno;
  __u8 ee_origin;
@@ -36,5 +36,8 @@ struct sock_extended_err
 #define SO_EE_ORIGIN_ICMP 2
 #define SO_EE_ORIGIN_ICMP6 3
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define SO_EE_ORIGIN_TXSTATUS 4
+#define SO_EE_ORIGIN_TIMESTAMPING SO_EE_ORIGIN_TXSTATUS
 #define SO_EE_OFFENDER(ee) ((struct sockaddr*)((ee)+1))
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

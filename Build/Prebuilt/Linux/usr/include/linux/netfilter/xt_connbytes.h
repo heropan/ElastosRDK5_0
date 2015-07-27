@@ -18,28 +18,28 @@
  ****************************************************************************/
 #ifndef _XT_CONNBYTES_H
 #define _XT_CONNBYTES_H
+#include <linux/types.h>
 enum xt_connbytes_what {
- XT_CONNBYTES_PKTS,
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ XT_CONNBYTES_PKTS,
  XT_CONNBYTES_BYTES,
  XT_CONNBYTES_AVGPKT,
 };
-enum xt_connbytes_direction {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+enum xt_connbytes_direction {
  XT_CONNBYTES_DIR_ORIGINAL,
  XT_CONNBYTES_DIR_REPLY,
  XT_CONNBYTES_DIR_BOTH,
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-struct xt_connbytes_info
-{
+struct xt_connbytes_info {
  struct {
- aligned_u64 from;
+ __aligned_u64 from;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- aligned_u64 to;
+ __aligned_u64 to;
  } count;
- u_int8_t what;
- u_int8_t direction;
+ __u8 what;
+ __u8 direction;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
 #endif

@@ -124,7 +124,7 @@ endif
 
 ifeq "$(XDK_TARGET_CPU)" "arm"
 ifneq "$(XDK_TARGET_FORMAT)" "elf"
-  DLLTOOL_FLAGS := -C -f -mcpu=arm9 -f -march=armv5te --no-export-all-symbols \
+  DLLTOOL_FLAGS := -C -f -mcpu=arm9 -f -march=armv7-a --no-export-all-symbols \
                    -D $(TARGET_NAME).$(DEPEND_OBJ_TYPE) \
                    -l $(XDK_USER_LIB)/$(TARGET_NAME).lib \
                    $(DLLTOOL_FLAGS)
@@ -294,7 +294,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
   endif
 
     ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-        DLL_FLAGS := $(32B_FLAG) $(DLL_FLAGS) -shared -Wl,-fpic,--no-undefined,--no-undefined-version
+        DLL_FLAGS := $(32B_FLAG) $(DLL_FLAGS) -shared -Wl,-fPIC,--no-undefined,--no-undefined-version
         ifeq "$(EXPORT_ALL_SYMBOLS)" ""
             DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
         else
@@ -319,7 +319,7 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           endif
     endif
     ifeq "$(XDK_TARGET_PLATFORM)" "android"
-         DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fpic -Wl,--no-undefined,--no-undefined-version
+         DLL_FLAGS := $(DLL_FLAGS) $(LIBC_FLAGS) -nostdlib -shared -fPIC -Wl,--no-undefined,--no-undefined-version
           ifeq "$(EXPORT_ALL_SYMBOLS)" ""
               DLL_FLAGS := $(DLL_FLAGS) -Wl,--retain-symbols-file,__$(DEF_FILE_NAME).sym -Wl,--version-script,__$(DEF_FILE_NAME).vs
           else
@@ -333,10 +333,10 @@ else # "$(XDK_TARGET_FORMAT)" "elf"
           EXE_FLAGS := $(EXE_FLAGS) -lgcc -lc -lstdc++ -nostdlib -Bdynamic -Wl,--no-gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
           ECX_FLAGS := $(ECX_FLAGS) $(LIBC_FLAGS) -lstdc++ -nostdlib -Bdynamic -Wl,--no-gc-sections -Wl,-z,nocopyreloc -L$(PREBUILD_LIB) -L$(XDK_TARGETS)
 
-          EXE_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_dynamic.o $(PREBUILD_LIB)/crtend_android.o
-          ECX_CRT_BEGIN=--sysroot=/home/jingcao/workspace/Elastos3.0/DevKit/pdk/linux -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_dynamic.o $(PREBUILD_LIB)/crtend_android.o
+          EXE_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
+          ECX_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
 
-          DLL_CRT_BEGIN=--sysroot=/home/jingcao/workspace/Elastos3.0/DevKit/pdk/linux -Wl,-X -Wl,-dynamic-linker,/system/bin/linker
+          DLL_CRT_BEGIN=--sysroot=$(GCC_SYSROOT) -Wl,-X -Wl,-dynamic-linker,/system/bin/linker $(PREBUILD_LIB)/crtbegin_so.o $(PREBUILD_LIB)/crtend_so.o
           DLL_CRT_END=$(GCC_LIB_PATH)/libgcc.a
       endif
 
@@ -446,7 +446,7 @@ ifeq "$(XDK_TARGET_CPU)" "x86"
 endif
 
 ifeq "$(XDK_TARGET_CPU)" "arm"
-  C_FLAGS:= -march=armv5te \
+  C_FLAGS:= -march=armv7-a \
             -fms-extensions -mstructure-size-boundary=8 \
             $(C_FLAGS)
   ifneq "$(XDK_TARGET_PLATFORM)" "linux"
@@ -457,10 +457,11 @@ ifeq "$(XDK_TARGET_CPU)" "arm"
   endif
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "android"
-    C_FLAGS:= -msoft-float -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
+#    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fpermissive $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-    C_FLAGS:= -msoft-float -fpic -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "jil"
     C_FLAGS:= -mthumb -mthumb-interwork $(C_FLAGS)

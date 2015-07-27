@@ -19,6 +19,9 @@
 # include <sys/prctl.h>
 #endif
 
+#include <linux/capability.h>
+#include <sys/capability.h>
+
 using Elastos::Core::Thread;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;

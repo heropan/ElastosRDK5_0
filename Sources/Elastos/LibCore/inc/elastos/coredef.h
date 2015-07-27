@@ -7,6 +7,7 @@
 #endif
 
 #include <errno.h>
+#include <unistd.h>
 
 #define ANDROID_SMP 1
 

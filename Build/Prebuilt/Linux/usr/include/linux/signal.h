@@ -16,9 +16,11 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_SIGNAL_H
-#define _LINUX_SIGNAL_H
+#ifndef _UAPI_LINUX_SIGNAL_H
+#define _UAPI_LINUX_SIGNAL_H
 #include <asm/signal.h>
 #include <asm/siginfo.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define SS_ONSTACK 1
+#define SS_DISABLE 2
 #endif

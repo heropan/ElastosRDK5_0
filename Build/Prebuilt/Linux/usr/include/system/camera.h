@@ -88,11 +88,6 @@ enum {
     // Notify on autofocus start and stop. This is useful in continuous
     // autofocus - FOCUS_MODE_CONTINUOUS_VIDEO and FOCUS_MODE_CONTINUOUS_PICTURE.
     CAMERA_MSG_FOCUS_MOVE = 0x0800,       // notifyCallback
-    
-    CAMERA_MSG_CONTINUOUSSNAP= 0x1000,    //notifyCallback for continuous snap 
-    CAMERA_MSG_SNAP= 0x2000,              //notifyCallback of setting camera idle  for single snap 
-    CAMERA_MSG_SNAP_THUMB= 0x4000,        //notifyCallback of saving thumb for single snap 
-    
     CAMERA_MSG_ALL_MSGS = 0xFFFF
 };
 
@@ -168,7 +163,6 @@ enum {
      * can silently finish itself or show a dialog.
      */
     CAMERA_CMD_PING = 9,
-    
 
     /**
      * Configure the number of video buffers used for recording. The intended
@@ -180,9 +174,6 @@ enum {
      * count is non-positive or too big to be realized.
      */
     CAMERA_CMD_SET_VIDEO_BUFFER_COUNT = 10,
-
-    CAMERA_CMD_SET_SCREEN_ID = 0xFF000000,
-	CAMERA_CMD_SET_CEDARX_RECORDER = 0xFF000001,
 };
 
 /** camera fatal errors */

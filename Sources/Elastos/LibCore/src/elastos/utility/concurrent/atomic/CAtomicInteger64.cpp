@@ -70,7 +70,7 @@ ECode CAtomicInteger64::LazySet(
 {
     volatile Int64* address = &mValue;
 
-    ANDROID_MEMBAR_STORE();
+    // ANDROID_MEMBAR_STORE();
     *address = newValue;
     return NOERROR;
 }

@@ -43,4 +43,3 @@ typedef __restorefn_t __user *__sigrestore_t;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #endif
 #endif
-

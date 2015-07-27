@@ -41,7 +41,16 @@ class TextOutput;
 class String16
 {
 public:
+    /* use String16(StaticLinkage) if you're statically linking against
+     * libutils and declaring an empty static String16, e.g.:
+     *
+     *   static String16 sAStaticEmptyString(String16::kEmptyString);
+     *   static String16 sAnotherStaticEmptyString(sAStaticEmptyString);
+     */
+    enum StaticLinkage { kEmptyString };
+
                                 String16();
+    explicit                    String16(StaticLinkage);
                                 String16(const String16& o);
                                 String16(const String16& o,
                                          size_t len,
@@ -116,8 +125,6 @@ private:
 // String16 can be trivially moved using memcpy() because moving does not
 // require any change to the underlying SharedBuffer contents or reference count.
 ANDROID_TRIVIAL_MOVE_TRAIT(String16)
-
-TextOutput& operator<<(TextOutput& to, const String16& val);
 
 // ---------------------------------------------------------------------------
 // No user servicable parts below.

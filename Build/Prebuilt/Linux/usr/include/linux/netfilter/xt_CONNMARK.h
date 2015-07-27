@@ -18,17 +18,6 @@
  ****************************************************************************/
 #ifndef _XT_CONNMARK_H_target
 #define _XT_CONNMARK_H_target
-enum {
- XT_CONNMARK_SET = 0,
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- XT_CONNMARK_SAVE,
- XT_CONNMARK_RESTORE
-};
-struct xt_connmark_target_info {
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- unsigned long mark;
- unsigned long mask;
- u_int8_t mode;
-};
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#include <linux/netfilter/xt_connmark.h>
 #endif
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

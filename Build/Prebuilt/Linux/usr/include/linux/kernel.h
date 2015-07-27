@@ -16,31 +16,10 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_KERNEL_H
-#define _LINUX_KERNEL_H
-#define SI_LOAD_SHIFT 16
-struct sysinfo {
+#ifndef _UAPI_LINUX_KERNEL_H
+#define _UAPI_LINUX_KERNEL_H
+#include <linux/sysinfo.h>
+#define __ALIGN_KERNEL(x, a) __ALIGN_KERNEL_MASK(x, (typeof(x))(a) - 1)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- long uptime;
- unsigned long loads[3];
- unsigned long totalram;
- unsigned long freeram;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- unsigned long sharedram;
- unsigned long bufferram;
- unsigned long totalswap;
- unsigned long freeswap;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- unsigned short procs;
- unsigned short pad;
- unsigned long totalhigh;
- unsigned long freehigh;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- unsigned int mem_unit;
- char _f[20-2*sizeof(long)-sizeof(int)];
-};
-#define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define BUILD_BUG_ON_ZERO(e) (sizeof(char[1 - 2 * !!(e)]) - 1)
-#define __FUNCTION__ (__func__)
+#define __ALIGN_KERNEL_MASK(x, mask) (((x) + (mask)) & ~(mask))
 #endif

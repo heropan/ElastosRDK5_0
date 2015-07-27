@@ -131,8 +131,8 @@ static Boolean CompareAndSwapObject(volatile int32_t* address, IInterface* expec
 
 static void PutOrderedInt32(volatile int32_t* address, Int32 newValue)
 {
-    ANDROID_MEMBAR_STORE();
-    *address = newValue;
+    // ANDROID_MEMBAR_STORE();
+    // *address = newValue;
 }
 
 ECode FutureTask::Cancel(

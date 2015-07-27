@@ -19,9 +19,9 @@
 #ifndef _LINUX_PATCHKEY_H_INDIRECT
 #error "patchkey.h included directly"
 #endif
-#ifndef _LINUX_PATCHKEY_H
+#ifndef _UAPI_LINUX_PATCHKEY_H
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define _LINUX_PATCHKEY_H
+#define _UAPI_LINUX_PATCHKEY_H
 #include <endian.h>
 #ifdef __BYTE_ORDER
 #if __BYTE_ORDER == __BIG_ENDIAN

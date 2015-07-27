@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_STAT_H
-#define _LINUX_STAT_H
+#ifndef _UAPI_LINUX_STAT_H
+#define _UAPI_LINUX_STAT_H
 #if !defined(__GLIBC__) || __GLIBC__ < 2
 #define S_IFMT 00170000
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

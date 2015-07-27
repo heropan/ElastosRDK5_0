@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __LINUX_KEYCHORD_H_
-#define __LINUX_KEYCHORD_H_
+#ifndef _UAPI_LINUX_KEYCHORD_H_
+#define _UAPI_LINUX_KEYCHORD_H_
 #include <linux/input.h>
 #define KEYCHORD_VERSION 1
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

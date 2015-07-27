@@ -108,4 +108,3 @@ typedef struct sigaltstack {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 } stack_t;
 #endif
-

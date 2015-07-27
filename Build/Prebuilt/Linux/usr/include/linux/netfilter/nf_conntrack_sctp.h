@@ -33,12 +33,9 @@ enum sctp_conntrack {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  SCTP_CONNTRACK_MAX
 };
-struct ip_ct_sctp
-{
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+struct ip_ct_sctp {
  enum sctp_conntrack state;
- u_int32_t vtag[IP_CT_DIR_MAX];
- u_int32_t ttag[IP_CT_DIR_MAX];
-};
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ __be32 vtag[IP_CT_DIR_MAX];
+};
 #endif

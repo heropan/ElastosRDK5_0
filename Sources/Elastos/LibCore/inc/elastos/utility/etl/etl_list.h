@@ -658,7 +658,7 @@ void ListBase<T,Alloc>::Clear()
         ListNode<T>* tmp = cur;
         cur = static_cast<ListNode<T>*>(cur->mNext);
         Destroy(&tmp->mData);
-        PutNode(tmp);
+        this->PutNode(tmp);
     }
     Base::mNode->mNext = Base::mNode;
     Base::mNode->mPrev = Base::mNode;

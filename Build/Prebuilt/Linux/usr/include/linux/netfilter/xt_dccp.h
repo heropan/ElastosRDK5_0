@@ -18,21 +18,22 @@
  ****************************************************************************/
 #ifndef _XT_DCCP_H_
 #define _XT_DCCP_H_
+#include <linux/types.h>
 #define XT_DCCP_SRC_PORTS 0x01
-#define XT_DCCP_DEST_PORTS 0x02
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define XT_DCCP_DEST_PORTS 0x02
 #define XT_DCCP_TYPE 0x04
 #define XT_DCCP_OPTION 0x08
 #define XT_DCCP_VALID_FLAGS 0x0f
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 struct xt_dccp_info {
+ __u16 dpts[2];
+ __u16 spts[2];
+ __u16 flags;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int16_t dpts[2];
- u_int16_t spts[2];
- u_int16_t flags;
- u_int16_t invflags;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- u_int16_t typemask;
- u_int8_t option;
+ __u16 invflags;
+ __u16 typemask;
+ __u8 option;
 };
-#endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#endif

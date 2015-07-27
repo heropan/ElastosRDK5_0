@@ -16,12 +16,15 @@
 
 #ifndef ANDROID_SURFACE_FLINGER_H
 #define ANDROID_SURFACE_FLINGER_H
-
+#include <actionsconfig.h>
 #include <stdint.h>
 #include <sys/types.h>
 
 #include <EGL/egl.h>
-#include <GLES/gl.h>
+
+/*
+ * NOTE: Make sure this file doesn't include  anything from <gl/ > or <gl2/ >
+ */
 
 #include <cutils/compiler.h>
 
@@ -32,10 +35,10 @@
 #include <utils/SortedVector.h>
 #include <utils/threads.h>
 
-#include <binder/BinderService.h>
 #include <binder/IMemory.h>
 
 #include <ui/PixelFormat.h>
+#include <ui/mat4.h>
 
 #include <gui/ISurfaceComposer.h>
 #include <gui/ISurfaceComposerClient.h>
@@ -45,11 +48,13 @@
 #include <private/gui/LayerState.h>
 
 #include "Barrier.h"
-#include "MessageQueue.h"
 #include "DisplayDevice.h"
-#include <gui/ISurfaceClient.h>
+#include "DispSync.h"
+#include "FrameTracker.h"
+#include "MessageQueue.h"
 
 #include "DisplayHardware/HWComposer.h"
+#include "Effects/Daltonizer.h"
 
 namespace android {
 
@@ -60,11 +65,10 @@ class DisplayEventConnection;
 class EventThread;
 class IGraphicBufferAlloc;
 class Layer;
-class LayerBase;
-class LayerBaseClient;
 class LayerDim;
-class LayerScreenshot;
-class SurfaceTextureClient;
+class Surface;
+class RenderEngine;
+class EventControlThread;
 
 // ---------------------------------------------------------------------------
 
@@ -75,52 +79,43 @@ enum {
     eTransactionMask          = 0x07
 };
 
-class SurfaceFlinger : public BinderService<SurfaceFlinger>,
-                       public BnSurfaceComposer,
+class SurfaceFlinger : public BnSurfaceComposer,
                        private IBinder::DeathRecipient,
-                       private Thread,
                        private HWComposer::EventHandler
 {
 public:
-    static char const* getServiceName() {
+    static char const* getServiceName() ANDROID_API {
         return "SurfaceFlinger";
     }
 
-    SurfaceFlinger();
+    SurfaceFlinger() ANDROID_API;
+
+    // must be called before clients can connect
+    void init() ANDROID_API;
+
+    // starts SurfaceFlinger main loop in the current thread
+    void run() ANDROID_API;
 
     enum {
         EVENT_VSYNC = HWC_EVENT_VSYNC
     };
 
     // post an asynchronous message to the main thread
-    status_t postMessageAsync(const sp<MessageBase>& msg, nsecs_t reltime = 0,
-        uint32_t flags = 0);
+    status_t postMessageAsync(const sp<MessageBase>& msg, nsecs_t reltime = 0, uint32_t flags = 0);
 
     // post a synchronous message to the main thread
-    status_t postMessageSync(const sp<MessageBase>& msg, nsecs_t reltime = 0,
-        uint32_t flags = 0);
+    status_t postMessageSync(const sp<MessageBase>& msg, nsecs_t reltime = 0, uint32_t flags = 0);
 
     // force full composition on all displays
     void repaintEverything();
 
-    // renders content on given display to a texture. thread-safe version.
-    status_t renderScreenToTexture(uint32_t layerStack, GLuint* textureName,
-        GLfloat* uOut, GLfloat* vOut);
-
-    // renders content on given display to a texture, w/o acquiring main lock
-    status_t renderScreenToTextureLocked(uint32_t layerStack, GLuint* textureName,
-        GLfloat* uOut, GLfloat* vOut);
-
     // returns the default Display
     sp<const DisplayDevice> getDefaultDisplayDevice() const {
-        return getDisplayDevice(mDefaultDisplays[DisplayDevice::DISPLAY_PRIMARY]);
+        return getDisplayDevice(mBuiltinDisplays[DisplayDevice::DISPLAY_PRIMARY]);
     }
 
     // utility function to delete a texture on the main thread
-    void deleteTextureAsync(GLuint texture);
-
-    // allocate a h/w composer display id
-    int32_t allocateHwcDisplayId(DisplayDevice::DisplayType type);
+    void deleteTextureAsync(uint32_t texture);
 
     // enable/disable h/w composer event
     // TODO: this should be made accessible only to EventThread
@@ -133,25 +128,21 @@ public:
 
     // for debugging only
     // TODO: this should be made accessible only to HWComposer
-    const Vector< sp<LayerBase> >& getLayerSortedByZForHwcDisplay(int disp);
+    const Vector< sp<Layer> >& getLayerSortedByZForHwcDisplay(int id);
 
-    virtual int setDisplayProp(int cmd,int param0,int param1,int param2);
-    virtual int getDisplayProp(int cmd,int param0,int param1);
-    int         setDisplayParameter(uint32_t cmd,uint32_t  value);
-    uint32_t    getDisplayParameter(uint32_t cmd);
-    virtual void    registerClient(const sp<ISurfaceClient>& client);
-    virtual void    unregisterClient();
-    virtual void    NotifyFramebufferChanged_l(int event, int param = 0);
-    virtual int     NotifyFBConverted_l(unsigned int addr1,unsigned int addr2,int bufid,int64_t proctime);
-    void            removeNotificationClient(pid_t pid);
+    RenderEngine& getRenderEngine() const {
+        return *mRenderEngine;
+    }
 
 private:
     friend class Client;
     friend class DisplayEventConnection;
-    friend class LayerBase;
-    friend class LayerBaseClient;
     friend class Layer;
-    friend class LayerScreenshot;
+    friend class MonitoredProducer;
+
+    // This value is specified in number of frames.  Log frame stats at most
+    // every half hour.
+    enum { LOG_FRAME_STATS_PERIOD =  30*60*60 };
 
     // We're reference counted, never destroy SurfaceFlinger directly
     virtual ~SurfaceFlinger();
@@ -160,7 +151,7 @@ private:
      * Internal data structures
      */
 
-    class LayerVector : public SortedVector<sp<LayerBase> > {
+    class LayerVector : public SortedVector< sp<Layer> > {
     public:
         LayerVector();
         LayerVector(const LayerVector& rhs);
@@ -174,11 +165,12 @@ private:
         bool isMainDisplay() const { return type == DisplayDevice::DISPLAY_PRIMARY; }
         bool isVirtualDisplay() const { return type >= DisplayDevice::DISPLAY_VIRTUAL; }
         DisplayDevice::DisplayType type;
-        sp<ISurfaceTexture> surface;
+        sp<IGraphicBufferProducer> surface;
         uint32_t layerStack;
         Rect viewport;
         Rect frame;
         uint8_t orientation;
+        uint32_t width, height;
         String8 displayName;
         bool isSecure;
     };
@@ -194,29 +186,38 @@ private:
     virtual status_t onTransact(uint32_t code, const Parcel& data,
         Parcel* reply, uint32_t flags);
     virtual status_t dump(int fd, const Vector<String16>& args);
-
+#if ACTIONS_FEATURE_DEBUG_FPS_DEFAULT_ON
+    //ActionsCode(wh, NEW_FEATURE : add for debug fps)
+    void debugShowFPS() const;
+#endif 
     /* ------------------------------------------------------------------------
      * ISurfaceComposer interface
      */
     virtual sp<ISurfaceComposerClient> createConnection();
     virtual sp<IGraphicBufferAlloc> createGraphicBufferAlloc();
     virtual sp<IBinder> createDisplay(const String8& displayName, bool secure);
+    virtual void destroyDisplay(const sp<IBinder>& display);
     virtual sp<IBinder> getBuiltInDisplay(int32_t id);
     virtual void setTransactionState(const Vector<ComposerState>& state,
             const Vector<DisplayState>& displays, uint32_t flags);
     virtual void bootFinished();
     virtual bool authenticateSurfaceTexture(
-        const sp<ISurfaceTexture>& surface) const;
+        const sp<IGraphicBufferProducer>& bufferProducer) const;
     virtual sp<IDisplayEventConnection> createDisplayEventConnection();
-    virtual status_t captureScreen(const sp<IBinder>& display, sp<IMemoryHeap>* heap,
-        uint32_t* width, uint32_t* height, PixelFormat* format,
-        uint32_t reqWidth, uint32_t reqHeight, uint32_t minLayerZ,
-        uint32_t maxLayerZ);
-    // called when screen needs to turn off
-    virtual void blank(const sp<IBinder>& display);
-    // called when screen is turning back on
-    virtual void unblank(const sp<IBinder>& display);
-    virtual status_t getDisplayInfo(const sp<IBinder>& display, DisplayInfo* info);
+    virtual status_t captureScreen(const sp<IBinder>& display,
+            const sp<IGraphicBufferProducer>& producer,
+            Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
+            uint32_t minLayerZ, uint32_t maxLayerZ,
+            bool useIdentityTransform, ISurfaceComposer::Rotation rotation);
+    virtual status_t getDisplayStats(const sp<IBinder>& display,
+            DisplayStatInfo* stats);
+    virtual status_t getDisplayConfigs(const sp<IBinder>& display,
+            Vector<DisplayInfo>* configs);
+    virtual int getActiveConfig(const sp<IBinder>& display);
+    virtual void setPowerMode(const sp<IBinder>& display, int mode);
+    virtual status_t setActiveConfig(const sp<IBinder>& display, int id);
+    virtual status_t clearAnimationFrameStats();
+    virtual status_t getAnimationFrameStats(FrameStats* outStats) const;
 
     /* ------------------------------------------------------------------------
      * DeathRecipient interface
@@ -224,10 +225,8 @@ private:
     virtual void binderDied(const wp<IBinder>& who);
 
     /* ------------------------------------------------------------------------
-     * Thread interface
+     * RefBase interface
      */
-    virtual bool threadLoop();
-    virtual status_t readyToRun();
     virtual void onFirstRef();
 
     /* ------------------------------------------------------------------------
@@ -246,10 +245,10 @@ private:
 
     // called on the main thread in response to initializeDisplays()
     void onInitializeDisplays();
-    // called on the main thread in response to blank()
-    void onScreenReleased(const sp<const DisplayDevice>& hw);
-    // called on the main thread in response to unblank()
-    void onScreenAcquired(const sp<const DisplayDevice>& hw);
+    // called on the main thread in response to setActiveConfig()
+    void setActiveConfigInternal(const sp<DisplayDevice>& hw, int mode);
+    // called on the main thread in response to setPowerMode()
+    void setPowerModeInternal(const sp<DisplayDevice>& hw, int mode);
 
     void handleMessageTransaction();
     void handleMessageInvalidate();
@@ -257,6 +256,8 @@ private:
 
     void handleTransaction(uint32_t transactionFlags);
     void handleTransactionLocked(uint32_t transactionFlags);
+
+    void updateCursorAsync();
 
     /* handlePageFilp: this is were we latch a new buffer
      * if available and compute the dirty region.
@@ -270,46 +271,42 @@ private:
     uint32_t peekTransactionFlags(uint32_t flags);
     uint32_t setTransactionFlags(uint32_t flags);
     void commitTransaction();
-    uint32_t setClientStateLocked(const sp<Client>& client,
-        const layer_state_t& s);
+    uint32_t setClientStateLocked(const sp<Client>& client, const layer_state_t& s);
     uint32_t setDisplayStateLocked(const DisplayState& s);
 
     /* ------------------------------------------------------------------------
      * Layer management
      */
-    sp<ISurface> createLayer(ISurfaceComposerClient::surface_data_t* params,
-            const String8& name, const sp<Client>& client,
-            uint32_t w, uint32_t h, PixelFormat format, uint32_t flags);
+    status_t createLayer(const String8& name, const sp<Client>& client,
+            uint32_t w, uint32_t h, PixelFormat format, uint32_t flags,
+            sp<IBinder>* handle, sp<IGraphicBufferProducer>* gbp);
 
-    sp<Layer> createNormalLayer(const sp<Client>& client,
-            uint32_t w, uint32_t h, uint32_t flags, PixelFormat& format);
+    status_t createNormalLayer(const sp<Client>& client, const String8& name,
+            uint32_t w, uint32_t h, uint32_t flags, PixelFormat& format,
+            sp<IBinder>* outHandle, sp<IGraphicBufferProducer>* outGbp,
+            sp<Layer>* outLayer);
 
-    sp<LayerDim> createDimLayer(const sp<Client>& client,
-            uint32_t w, uint32_t h, uint32_t flags);
-
-    sp<LayerScreenshot> createScreenshotLayer(const sp<Client>& client,
-            uint32_t w, uint32_t h, uint32_t flags);
+    status_t createDimLayer(const sp<Client>& client, const String8& name,
+            uint32_t w, uint32_t h, uint32_t flags, sp<IBinder>* outHandle,
+            sp<IGraphicBufferProducer>* outGbp, sp<Layer>* outLayer);
 
     // called in response to the window-manager calling
     // ISurfaceComposerClient::destroySurface()
-    // The specified layer is first placed in a purgatory list
-    // until all references from the client are released.
-    status_t onLayerRemoved(const sp<Client>& client, SurfaceID sid);
+    status_t onLayerRemoved(const sp<Client>& client, const sp<IBinder>& handle);
 
     // called when all clients have released all their references to
     // this layer meaning it is entirely safe to destroy all
     // resources associated to this layer.
-    status_t onLayerDestroyed(const wp<LayerBaseClient>& layer);
+    status_t onLayerDestroyed(const wp<Layer>& layer);
 
     // remove a layer from SurfaceFlinger immediately
-    status_t removeLayer(const sp<LayerBase>& layer);
+    status_t removeLayer(const sp<Layer>& layer);
 
     // add a layer to SurfaceFlinger
-    ssize_t addClientLayer(const sp<Client>& client,
-        const sp<LayerBaseClient>& lbc);
-
-    status_t removeLayer_l(const sp<LayerBase>& layer);
-    status_t purgatorizeLayer_l(const sp<LayerBase>& layer);
+    void addClientLayer(const sp<Client>& client,
+            const sp<IBinder>& handle,
+            const sp<IGraphicBufferProducer>& gbc,
+            const sp<Layer>& lbc);
 
     /* ------------------------------------------------------------------------
      * Boot animation, on/off animations and screen capture
@@ -317,27 +314,33 @@ private:
 
     void startBootAnim();
 
-    status_t captureScreenImplLocked(const sp<IBinder>& display, sp<IMemoryHeap>* heap,
-        uint32_t* width, uint32_t* height, PixelFormat* format,
-        uint32_t reqWidth, uint32_t reqHeight, uint32_t minLayerZ,
-        uint32_t maxLayerZ);
+    void renderScreenImplLocked(
+            const sp<const DisplayDevice>& hw,
+            Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
+            uint32_t minLayerZ, uint32_t maxLayerZ,
+            bool yswap, bool useIdentityTransform, Transform::orientation_flags rotation);
+
+    status_t captureScreenImplLocked(
+            const sp<const DisplayDevice>& hw,
+            const sp<IGraphicBufferProducer>& producer,
+            Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
+            uint32_t minLayerZ, uint32_t maxLayerZ,
+            bool useIdentityTransform, Transform::orientation_flags rotation);
 
     /* ------------------------------------------------------------------------
      * EGL
      */
-    static status_t selectConfigForAttribute(EGLDisplay dpy,
-        EGLint const* attrs, EGLint attribute, EGLint value, EGLConfig* outConfig);
-    static EGLConfig selectEGLConfig(EGLDisplay disp, EGLint visualId);
-    static EGLContext createGLContext(EGLDisplay disp, EGLConfig config);
-    void initializeGL(EGLDisplay display);
-    uint32_t getMaxTextureSize() const;
-    uint32_t getMaxViewportDims() const;
+    size_t getMaxTextureSize() const;
+    size_t getMaxViewportDims() const;
 
     /* ------------------------------------------------------------------------
      * Display and layer stack management
      */
     // called when starting, or restarting after system_server death
     void initializeDisplays();
+
+    // Create an IBinder for a builtin display and add it to current state
+    void createBuiltinDisplayLocked(DisplayDevice::DisplayType type);
 
     // NOTE: can only be called from the main thread or with mStateLock held
     sp<const DisplayDevice> getDisplayDevice(const wp<IBinder>& dpy) const {
@@ -352,6 +355,9 @@ private:
     // mark a region of a layer stack dirty. this updates the dirty
     // region of all screens presenting this layer stack.
     void invalidateLayerStack(uint32_t layerStack, const Region& dirty);
+
+    // allocate a h/w composer display id
+    int32_t allocateHwcDisplayId(DisplayDevice::DisplayType type);
 
     /* ------------------------------------------------------------------------
      * H/W composer
@@ -373,69 +379,40 @@ private:
     void setUpHWComposer();
     void doComposition();
     void doDebugFlashRegions();
-    void doDisplayComposition(const sp<const DisplayDevice>& hw,
-            const Region& dirtyRegion);
-    void doComposeSurfaces(const sp<const DisplayDevice>& hw,
-            const Region& dirty);
+    void doDisplayComposition(const sp<const DisplayDevice>& hw, const Region& dirtyRegion);
+
+    // compose surfaces for display hw. this fails if using GL and the surface
+    // has been destroyed and is no longer valid.
+    bool doComposeSurfaces(const sp<const DisplayDevice>& hw, const Region& dirty);
 
     void postFramebuffer();
-    void drawWormhole(const sp<const DisplayDevice>& hw,
-            const Region& region) const;
-    GLuint getProtectedTexName() const {
-        return mProtectedTexName;
-    }
+    void drawWormhole(const sp<const DisplayDevice>& hw, const Region& region) const;
 
-    // --- Notification Client ---
-    class NotificationClient : public IBinder::DeathRecipient
-    {
-        public:
-            NotificationClient(const sp<SurfaceFlinger>& audioFlinger,
-                                     const sp<ISurfaceClient>& client,
-                                     pid_t pid);
-            virtual             ~NotificationClient();
-            sp<ISurfaceClient>    client() { return mClient; }
-            // IBinder::DeathRecipient
-            virtual     void        binderDied(const wp<IBinder>& who);
-
-        private:
-            NotificationClient(const NotificationClient&);
-            NotificationClient& operator = (const NotificationClient&);
-
-            sp<SurfaceFlinger>          mSurfaceFlinger;
-            pid_t                       mPid;
-            sp<ISurfaceClient>          mClient;
-    };
-    /*virtual int setDisplayProp(int cmd,int param0,int param1,int param2);
-    virtual int getDisplayProp(int cmd,int param0,int param1);
-    int         setDisplayParameter(uint32_t cmd,uint32_t  value);
-    uint32_t    getDisplayParameter(uint32_t cmd);
-    virtual void    registerClient(const sp<ISurfaceClient>& client);
-    virtual void    unregisterClient();
-    virtual void    NotifyFramebufferChanged_l(int event, int param = 0);
-    virtual int     NotifyFBConverted_l(unsigned int addr1,unsigned int addr2,int bufid,int64_t proctime);
-    void            removeNotificationClient(pid_t pid);*/
-    mutable Mutex   mClientLock;
-    DefaultKeyedVector< pid_t, sp<NotificationClient> >    mNotificationClients;
-    int mDispWidth;
-    int mDispHeight;
-    int mSetDispSize;
     /* ------------------------------------------------------------------------
      * Display management
      */
 
+    /* ------------------------------------------------------------------------
+     * VSync
+     */
+     void enableHardwareVsync();
+     void disableHardwareVsync(bool makeUnavailable);
+     void resyncToHardwareVsync(bool makeAvailable);
 
     /* ------------------------------------------------------------------------
      * Debugging & dumpsys
      */
-    void listLayersLocked(const Vector<String16>& args, size_t& index,
-        String8& result, char* buffer, size_t SIZE) const;
-    void dumpStatsLocked(const Vector<String16>& args, size_t& index,
-        String8& result, char* buffer, size_t SIZE) const;
-    void clearStatsLocked(const Vector<String16>& args, size_t& index,
-        String8& result, char* buffer, size_t SIZE) const;
-    void dumpAllLocked(String8& result, char* buffer, size_t SIZE) const;
+    void listLayersLocked(const Vector<String16>& args, size_t& index, String8& result) const;
+    void dumpStatsLocked(const Vector<String16>& args, size_t& index, String8& result) const;
+    void clearStatsLocked(const Vector<String16>& args, size_t& index, String8& result);
+    void dumpAllLocked(const Vector<String16>& args, size_t& index, String8& result) const;
     bool startDdmConnection();
     static void appendSfConfigString(String8& result);
+    void checkScreenshot(size_t w, size_t s, size_t h, void const* vaddr,
+            const sp<const DisplayDevice>& hw,
+            uint32_t minLayerZ, uint32_t maxLayerZ);
+
+    void logFrameStats();
 
     /* ------------------------------------------------------------------------
      * Attributes
@@ -446,10 +423,10 @@ private:
     State mCurrentState;
     volatile int32_t mTransactionFlags;
     Condition mTransactionCV;
-    SortedVector<sp<LayerBase> > mLayerPurgatory;
     bool mTransactionPending;
     bool mAnimTransactionPending;
-    Vector<sp<LayerBase> > mLayersPendingRemoval;
+    Vector< sp<Layer> > mLayersPendingRemoval;
+    SortedVector< wp<IBinder> > mGraphicBufferProducerList;
 
     // protected by mStateLock (but we could use another lock)
     bool mLayersRemoved;
@@ -459,21 +436,22 @@ private:
 
     // constant members (no synchronization needed for access)
     HWComposer* mHwc;
-    GLuint mProtectedTexName;
+    RenderEngine* mRenderEngine;
     nsecs_t mBootTime;
+    bool mGpuToCpuSupported;
     sp<EventThread> mEventThread;
-    GLint mMaxViewportDims[2];
-    GLint mMaxTextureSize;
+    sp<EventThread> mSFEventThread;
+    sp<EventControlThread> mEventControlThread;
     EGLContext mEGLContext;
-    EGLConfig mEGLConfig;
     EGLDisplay mEGLDisplay;
-    sp<IBinder> mDefaultDisplays[DisplayDevice::NUM_DISPLAY_TYPES];
+    sp<IBinder> mBuiltinDisplays[DisplayDevice::NUM_BUILTIN_DISPLAY_TYPES];
 
     // Can only accessed from the main thread, these members
     // don't need synchronization
     State mDrawingState;
     bool mVisibleRegionsDirty;
     bool mHwWorkListDirty;
+    bool mAnimCompositionPending;
 
     // this may only be written from the main thread with mStateLock held
     // it may be read from other threads with mStateLock held
@@ -492,26 +470,49 @@ private:
 
     // these are thread safe
     mutable MessageQueue mEventQueue;
-    mutable Barrier mReadyToRunBarrier;
+    FrameTracker mAnimFrameTracker;
+    DispSync mPrimaryDispSync;
 
     // protected by mDestroyedLayerLock;
     mutable Mutex mDestroyedLayerLock;
-    Vector<LayerBase const *> mDestroyedLayers;
+    Vector<Layer const *> mDestroyedLayers;
+
+    // protected by mHWVsyncLock
+    Mutex mHWVsyncLock;
+    bool mPrimaryHWVsyncEnabled;
+    bool mHWVsyncAvailable;
 
     /* ------------------------------------------------------------------------
      * Feature prototyping
      */
 
-    sp<IBinder> mExtDisplayToken;
+    Daltonizer mDaltonizer;
+    bool mDaltonize;
 
-    /* ------------------------------------------------------------------------
-     * Feature GPU scaling
-     */
-    uint32_t mAppWidth;
-    uint32_t mAppHeight;
+    mat4 mColorMatrix;
+    bool mHasColorMatrix;
+    //ActionsCode(wh, NEW_FEATURE : support hw rotation)
+#if ACTIONS_FEATURE_HW_ROTATION_DEFAULT_ON
+public:
+    // helper class for collect related property settings
+    struct PropertiesState {
+        PropertiesState()
+            : mHwRotation(0),
+            mDefaultRotation(0),
+            mHdmiDefaultFormat(PIXEL_FORMAT_RGB_565)
+        { }
+
+        // for phyical panel rotation info
+        int mHwRotation; 
+        // for logcal display init rotation      
+        int mDefaultRotation;
+        // for hdmi format config      
+        int mHdmiDefaultFormat;
+    };
+    PropertiesState sPropertiesState;
+#endif
 };
 
-// ---------------------------------------------------------------------------
 }; // namespace android
 
 #endif // ANDROID_SURFACE_FLINGER_H

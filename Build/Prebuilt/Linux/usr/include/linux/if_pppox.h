@@ -16,14 +16,14 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __LINUX_IF_PPPOX_H
-#define __LINUX_IF_PPPOX_H
+#ifndef _UAPI__LINUX_IF_PPPOX_H
+#define _UAPI__LINUX_IF_PPPOX_H
 #include <linux/types.h>
 #include <asm/byteorder.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#include <linux/socket.h>
+#include <linux/if_ether.h>
 #include <linux/if_pppol2tp.h>
-#include <linux/if_pppolac.h>
-#include <linux/if_pppopns.h>
 #ifndef AF_PPPOX
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define AF_PPPOX 24
@@ -38,40 +38,50 @@ struct pppoe_addr {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
 struct pptp_addr {
- __be16 call_id;
+ __u16 call_id;
  struct in_addr sin_addr;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 };
-#define PX_PROTO_OE 0  
-#define PX_PROTO_OL2TP 1  
+#define PX_PROTO_OE 0
+#define PX_PROTO_OL2TP 1
 #define PX_PROTO_PPTP 2
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define PX_PROTO_OLAC 3
-#define PX_PROTO_OPNS 4
-#define PX_MAX_PROTO 5
+#define PX_MAX_PROTO 3
 struct sockaddr_pppox {
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- sa_family_t sa_family;
+ __kernel_sa_family_t sa_family;
  unsigned int sa_protocol;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  union {
  struct pppoe_addr pppoe;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  struct pptp_addr pptp;
  } sa_addr;
-} __attribute__((packed));
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+} __packed;
 struct sockaddr_pppol2tp {
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- sa_family_t sa_family;
+ __kernel_sa_family_t sa_family;
  unsigned int sa_protocol;
- struct pppol2tp_addr pppol2tp;
-} __attribute__((packed));
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ struct pppol2tp_addr pppol2tp;
+} __packed;
+struct sockaddr_pppol2tpin6 {
+ __kernel_sa_family_t sa_family;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ unsigned int sa_protocol;
+ struct pppol2tpin6_addr pppol2tp;
+} __packed;
 struct sockaddr_pppol2tpv3 {
- sa_family_t sa_family;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ __kernel_sa_family_t sa_family;
  unsigned int sa_protocol;
  struct pppol2tpv3_addr pppol2tp;
+} __packed;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-} __attribute__((packed));
+struct sockaddr_pppol2tpv3in6 {
+ __kernel_sa_family_t sa_family;
+ unsigned int sa_protocol;
+ struct pppol2tpv3in6_addr pppol2tp;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+} __packed;
 #define PPPOEIOCSFWD _IOW(0xB1 ,0, size_t)
 #define PPPOEIOCDFWD _IO(0xB1 ,1)
 #define PADI_CODE 0x09
@@ -102,12 +112,12 @@ struct pppoe_tag {
 struct pppoe_hdr {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #ifdef __LITTLE_ENDIAN_BITFIELD
- __u8 ver : 4;
  __u8 type : 4;
+ __u8 ver : 4;
 #elif defined(__BIG_ENDIAN_BITFIELD)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
- __u8 type : 4;
  __u8 ver : 4;
+ __u8 type : 4;
 #else
 #error "Please fix <asm/byteorder.h>"
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -117,7 +127,7 @@ struct pppoe_hdr {
  __be16 length;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  struct pppoe_tag tag[0];
-} __attribute__((packed));
+} __packed;
 #define PPPOE_SES_HLEN 8
 #endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

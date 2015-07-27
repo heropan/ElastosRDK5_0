@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_IF_VLAN_H_
-#define _LINUX_IF_VLAN_H_
+#ifndef _UAPI_LINUX_IF_VLAN_H_
+#define _UAPI_LINUX_IF_VLAN_H_
 enum vlan_ioctl_cmds {
  ADD_VLAN_CMD,
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -38,31 +38,32 @@ enum vlan_flags {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  VLAN_FLAG_GVRP = 0x2,
  VLAN_FLAG_LOOSE_BINDING = 0x4,
+ VLAN_FLAG_MVRP = 0x8,
 };
-enum vlan_name_types {
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+enum vlan_name_types {
  VLAN_NAME_TYPE_PLUS_VID,
  VLAN_NAME_TYPE_RAW_PLUS_VID,
  VLAN_NAME_TYPE_PLUS_VID_NO_PAD,
- VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD,
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ VLAN_NAME_TYPE_RAW_PLUS_VID_NO_PAD,
  VLAN_NAME_TYPE_HIGHEST
 };
 struct vlan_ioctl_args {
- int cmd;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ int cmd;
  char device1[24];
  union {
  char device2[24];
- int VID;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ int VID;
  unsigned int skb_priority;
  unsigned int name_type;
  unsigned int bind_type;
- unsigned int flag;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ unsigned int flag;
  } u;
  short vlan_qos;
 };
-#endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#endif

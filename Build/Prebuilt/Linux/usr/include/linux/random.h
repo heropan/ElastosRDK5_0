@@ -16,21 +16,24 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_RANDOM_H
-#define _LINUX_RANDOM_H
+#ifndef _UAPI_LINUX_RANDOM_H
+#define _UAPI_LINUX_RANDOM_H
+#include <linux/types.h>
 #include <linux/ioctl.h>
-#define RNDGETENTCNT _IOR( 'R', 0x00, int )
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#include <linux/irqnr.h>
+#define RNDGETENTCNT _IOR( 'R', 0x00, int )
 #define RNDADDTOENTCNT _IOW( 'R', 0x01, int )
 #define RNDGETPOOL _IOR( 'R', 0x02, int [2] )
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define RNDADDENTROPY _IOW( 'R', 0x03, int [2] )
 #define RNDZAPENTCNT _IO( 'R', 0x04 )
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define RNDCLEARPOOL _IO( 'R', 0x06 )
 struct rand_pool_info {
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  int entropy_count;
  int buf_size;
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  __u32 buf[0];
 };
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #endif

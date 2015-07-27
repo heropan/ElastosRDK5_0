@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_BYTEORDER_LITTLE_ENDIAN_H
-#define _LINUX_BYTEORDER_LITTLE_ENDIAN_H
+#ifndef _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
+#define _UAPI_LINUX_BYTEORDER_LITTLE_ENDIAN_H
 #ifndef __LITTLE_ENDIAN
 #define __LITTLE_ENDIAN 1234
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -27,7 +27,7 @@
 #endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #include <linux/types.h>
-#include <linux/byteorder/swab.h>
+#include <linux/swab.h>
 #define __constant_htonl(x) ((__force __be32)___constant_swab32((x)))
 #define __constant_ntohl(x) ___constant_swab32((__force __be32)(x))
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -63,13 +63,13 @@
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __cpu_to_be16(x) ((__force __be16)__swab16((x)))
 #define __be16_to_cpu(x) __swab16((__force __u16)(__be16)(x))
-#define __cpu_to_le64s(x) do {} while (0)
-#define __le64_to_cpus(x) do {} while (0)
+#define __cpu_to_le64s(x) do { (void)(x); } while (0)
+#define __le64_to_cpus(x) do { (void)(x); } while (0)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define __cpu_to_le32s(x) do {} while (0)
-#define __le32_to_cpus(x) do {} while (0)
-#define __cpu_to_le16s(x) do {} while (0)
-#define __le16_to_cpus(x) do {} while (0)
+#define __cpu_to_le32s(x) do { (void)(x); } while (0)
+#define __le32_to_cpus(x) do { (void)(x); } while (0)
+#define __cpu_to_le16s(x) do { (void)(x); } while (0)
+#define __le16_to_cpus(x) do { (void)(x); } while (0)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __cpu_to_be64s(x) __swab64s((x))
 #define __be64_to_cpus(x) __swab64s((x))
@@ -78,6 +78,4 @@
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define __cpu_to_be16s(x) __swab16s((x))
 #define __be16_to_cpus(x) __swab16s((x))
-#include <linux/byteorder/generic.h>
 #endif
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

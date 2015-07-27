@@ -16,10 +16,10 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_USBDEVICE_FS_H
-#define _LINUX_USBDEVICE_FS_H
+#ifndef _UAPI_LINUX_USBDEVICE_FS_H
+#define _UAPI_LINUX_USBDEVICE_FS_H
 #include <linux/types.h>
-#define USBDEVICE_SUPER_MAGIC 0x9fa2
+#include <linux/magic.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 struct usbdevfs_ctrltransfer {
  __u8 bRequestType;
@@ -61,8 +61,13 @@ struct usbdevfs_connectinfo {
  unsigned char slow;
 };
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define USBDEVFS_URB_SHORT_NOT_OK 1
-#define USBDEVFS_URB_ISO_ASAP 2
+#define USBDEVFS_URB_SHORT_NOT_OK 0x01
+#define USBDEVFS_URB_ISO_ASAP 0x02
+#define USBDEVFS_URB_BULK_CONTINUATION 0x04
+#define USBDEVFS_URB_NO_FSBR 0x20
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_URB_ZERO_PACKET 0x40
+#define USBDEVFS_URB_NO_INTERRUPT 0x80
 #define USBDEVFS_URB_TYPE_ISO 0
 #define USBDEVFS_URB_TYPE_INTERRUPT 1
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -89,7 +94,7 @@ struct usbdevfs_urb {
  int number_of_packets;
  int error_count;
  unsigned int signr;
- void *usercontext;
+ void __user *usercontext;
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
  struct usbdevfs_iso_packet_desc iso_frame_desc[0];
 };
@@ -104,35 +109,57 @@ struct usbdevfs_hub_portinfo {
  char nports;
  char port [127];
 };
+#define USBDEVFS_CAP_ZERO_PACKET 0x01
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_CAP_BULK_CONTINUATION 0x02
+#define USBDEVFS_CAP_NO_PACKET_SIZE_LIM 0x04
+#define USBDEVFS_CAP_BULK_SCATTER_GATHER 0x08
+#define USBDEVFS_DISCONNECT_CLAIM_IF_DRIVER 0x01
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_DISCONNECT_CLAIM_EXCEPT_DRIVER 0x02
+struct usbdevfs_disconnect_claim {
+ unsigned int interface;
+ unsigned int flags;
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+ char driver[USBDEVFS_MAXDRIVERNAME + 1];
+};
 #define USBDEVFS_CONTROL _IOWR('U', 0, struct usbdevfs_ctrltransfer)
+#define USBDEVFS_CONTROL32 _IOWR('U', 0, struct usbdevfs_ctrltransfer32)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_BULK _IOWR('U', 2, struct usbdevfs_bulktransfer)
+#define USBDEVFS_BULK32 _IOWR('U', 2, struct usbdevfs_bulktransfer32)
 #define USBDEVFS_RESETEP _IOR('U', 3, unsigned int)
 #define USBDEVFS_SETINTERFACE _IOR('U', 4, struct usbdevfs_setinterface)
-#define USBDEVFS_SETCONFIGURATION _IOR('U', 5, unsigned int)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_SETCONFIGURATION _IOR('U', 5, unsigned int)
 #define USBDEVFS_GETDRIVER _IOW('U', 8, struct usbdevfs_getdriver)
 #define USBDEVFS_SUBMITURB _IOR('U', 10, struct usbdevfs_urb)
 #define USBDEVFS_SUBMITURB32 _IOR('U', 10, struct usbdevfs_urb32)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_DISCARDURB _IO('U', 11)
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_REAPURB _IOW('U', 12, void *)
-#define USBDEVFS_REAPURB32 _IOW('U', 12, u32)
+#define USBDEVFS_REAPURB32 _IOW('U', 12, __u32)
 #define USBDEVFS_REAPURBNDELAY _IOW('U', 13, void *)
-#define USBDEVFS_REAPURBNDELAY32 _IOW('U', 13, u32)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_REAPURBNDELAY32 _IOW('U', 13, __u32)
 #define USBDEVFS_DISCSIGNAL _IOR('U', 14, struct usbdevfs_disconnectsignal)
+#define USBDEVFS_DISCSIGNAL32 _IOR('U', 14, struct usbdevfs_disconnectsignal32)
 #define USBDEVFS_CLAIMINTERFACE _IOR('U', 15, unsigned int)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_RELEASEINTERFACE _IOR('U', 16, unsigned int)
 #define USBDEVFS_CONNECTINFO _IOW('U', 17, struct usbdevfs_connectinfo)
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_IOCTL _IOWR('U', 18, struct usbdevfs_ioctl)
 #define USBDEVFS_IOCTL32 _IOWR('U', 18, struct usbdevfs_ioctl32)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_HUB_PORTINFO _IOR('U', 19, struct usbdevfs_hub_portinfo)
 #define USBDEVFS_RESET _IO('U', 20)
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #define USBDEVFS_CLEAR_HALT _IOR('U', 21, unsigned int)
 #define USBDEVFS_DISCONNECT _IO('U', 22)
-#define USBDEVFS_CONNECT _IO('U', 23)
-#endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_CONNECT _IO('U', 23)
+#define USBDEVFS_CLAIM_PORT _IOR('U', 24, unsigned int)
+#define USBDEVFS_RELEASE_PORT _IOR('U', 25, unsigned int)
+#define USBDEVFS_GET_CAPABILITIES _IOR('U', 26, __u32)
+/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
+#define USBDEVFS_DISCONNECT_CLAIM _IOR('U', 27, struct usbdevfs_disconnect_claim)
+#endif

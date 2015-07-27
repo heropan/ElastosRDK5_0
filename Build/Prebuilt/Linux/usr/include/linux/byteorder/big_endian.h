@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H
-#define _LINUX_BYTEORDER_BIG_ENDIAN_H
+#ifndef _UAPI_LINUX_BYTEORDER_BIG_ENDIAN_H
+#define _UAPI_LINUX_BYTEORDER_BIG_ENDIAN_H
 #ifndef __BIG_ENDIAN
 #define __BIG_ENDIAN 4321
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -27,7 +27,7 @@
 #endif
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 #include <linux/types.h>
-#include <linux/byteorder/swab.h>
+#include <linux/swab.h>
 #define __constant_htonl(x) ((__force __be32)(__u32)(x))
 #define __constant_ntohl(x) ((__force __u32)(__be32)(x))
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
@@ -71,13 +71,11 @@
 #define __cpu_to_le16s(x) __swab16s((x))
 #define __le16_to_cpus(x) __swab16s((x))
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define __cpu_to_be64s(x) do {} while (0)
-#define __be64_to_cpus(x) do {} while (0)
-#define __cpu_to_be32s(x) do {} while (0)
-#define __be32_to_cpus(x) do {} while (0)
+#define __cpu_to_be64s(x) do { (void)(x); } while (0)
+#define __be64_to_cpus(x) do { (void)(x); } while (0)
+#define __cpu_to_be32s(x) do { (void)(x); } while (0)
+#define __be32_to_cpus(x) do { (void)(x); } while (0)
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
-#define __cpu_to_be16s(x) do {} while (0)
-#define __be16_to_cpus(x) do {} while (0)
-#include <linux/byteorder/generic.h>
+#define __cpu_to_be16s(x) do { (void)(x); } while (0)
+#define __be16_to_cpus(x) do { (void)(x); } while (0)
 #endif
-/* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

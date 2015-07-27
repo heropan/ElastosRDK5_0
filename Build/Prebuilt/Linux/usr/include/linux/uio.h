@@ -16,8 +16,8 @@
  ***
  ****************************************************************************
  ****************************************************************************/
-#ifndef __LINUX_UIO_H
-#define __LINUX_UIO_H
+#ifndef _UAPI__LINUX_UIO_H
+#define _UAPI__LINUX_UIO_H
 #include <linux/compiler.h>
 #include <linux/types.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */

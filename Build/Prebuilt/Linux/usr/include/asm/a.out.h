@@ -19,7 +19,7 @@
 #ifndef __ARM_A_OUT_H__
 #define __ARM_A_OUT_H__
 #include <linux/personality.h>
-#include <asm/types.h>
+#include <linux/types.h>
 /* WARNING: DO NOT EDIT, AUTO-GENERATED CODE - SEE TOP FOR INSTRUCTIONS */
 struct exec
 {
