@@ -10,7 +10,6 @@ module
     namespace Content {
     namespace Pm {
 
-
     /**
      * Information you can retrieve about a particular application. This
      * corresponds to information collected from the AndroidManifest.xml's
@@ -21,328 +20,294 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     * interface Elastos.Droid.Content.Pm.IPackageItemInfo;
+     * interface IParcelable;
      */
     [deprecated]
     interface IApplicationInfo {
 
         /**
-         * Value for #flags: if set, this application is installed in the
+         * Value for {@link #flags}: if set, this application is installed in the
          * device's system image.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_SYSTEM = 0x00000001; //1<<0;
+        const Int32 FLAG_SYSTEM = 1<<0;
 
         /**
-         * Value for #flags: set to true if this application would like to
+         * Value for {@link #flags}: set to true if this application would like to
          * allow debugging of its
          * code, even when installed on a non-development system.  Comes
-         * from android.R.styleable#AndroidManifestApplication_debuggable
-         * android:debuggable of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * android.R.styleable#AndroidManifestApplication_debuggable android:debuggable
+         * from {@link android.R.styleable#AndroidManifestApplication_debuggable
+         * android:debuggable} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_DEBUGGABLE = 0x00000002; //1<<1;
+        const Int32 FLAG_DEBUGGABLE = 1<<1;
 
         /**
-         * Value for #flags: set to true if this application has code
+         * Value for {@link #flags}: set to true if this application has code
          * associated with it.  Comes
-         * from android.R.styleable#AndroidManifestApplication_hasCode
-         * android:hasCode of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_hasCode android:hasCode
+         * from {@link android.R.styleable#AndroidManifestApplication_hasCode
+         * android:hasCode} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_HAS_CODE = 0x00000004; //1<<2;
+        const Int32 FLAG_HAS_CODE = 1<<2;
 
         /**
-         * Value for #flags: set to true if this application is persistent.
-         * Comes from android.R.styleable#AndroidManifestApplication_persistent
-         * android:persistent of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_persistent android:persistent
+         * Value for {@link #flags}: set to true if this application is persistent.
+         * Comes from {@link android.R.styleable#AndroidManifestApplication_persistent
+         * android:persistent} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_PERSISTENT = 0x00000008; //1<<3;
+        const Int32 FLAG_PERSISTENT = 1<<3;
 
         /**
-         * Value for #flags: set to true if this application holds the
-         * android.Manifest.permission#FACTORY_TEST permission and the
+         * Value for {@link #flags}: set to true if this application holds the
+         * {@link android.Manifest.permission#FACTORY_TEST} permission and the
          * device is running in factory test mode.
-         *
-         * @sa #flags
-         * @sa android.Manifest.permission#FACTORY_TEST
          */
-        const Int32 FLAG_FACTORY_TEST = 0x00000010; //1<<4;
+        const Int32 FLAG_FACTORY_TEST = 1<<4;
 
         /**
-         * Value for #flags: default value for the corresponding ActivityInfo flag.
-         * Comes from android.R.styleable#AndroidManifestApplication_allowTaskReparenting
-         * android:allowTaskReparenting of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_allowTaskReparenting android:allowTaskReparenting
+         * Value for {@link #flags}: default value for the corresponding ActivityInfo flag.
+         * Comes from {@link android.R.styleable#AndroidManifestApplication_allowTaskReparenting
+         * android:allowTaskReparenting} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_ALLOW_TASK_REPARENTING = 0x00000020; //1<<5;
+        const Int32 FLAG_ALLOW_TASK_REPARENTING = 1<<5;
 
         /**
-         * Value for #flags: default value for the corresponding ActivityInfo flag.
-         * Comes from android.R.styleable#AndroidManifestApplication_allowClearUserData
-         * android:allowClearUserData of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_allowClearUserData android:allowClearUserData
+         * Value for {@link #flags}: default value for the corresponding ActivityInfo flag.
+         * Comes from {@link android.R.styleable#AndroidManifestApplication_allowClearUserData
+         * android:allowClearUserData} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_ALLOW_CLEAR_USER_DATA = 0x00000040; //1<<6;
+        const Int32 FLAG_ALLOW_CLEAR_USER_DATA = 1<<6;
 
         /**
-         * Value for #flags: this is set if this application has been
+         * Value for {@link #flags}: this is set if this application has been
          * install as an update to a built-in system application.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_UPDATED_SYSTEM_APP = 0x00000080; //1<<7;
+        const Int32 FLAG_UPDATED_SYSTEM_APP = 1<<7;
 
         /**
-         * Value for #flags: this is set of the application has specified
-         * android.R.styleable#AndroidManifestApplication_testOnly
-         * android:testOnly to be true.
-         *
-         * @sa #flags
-         * android.R.styleable#AndroidManifestApplication_testOnly android:testOnly
+         * Value for {@link #flags}: this is set of the application has specified
+         * {@link android.R.styleable#AndroidManifestApplication_testOnly
+         * android:testOnly} to be true.
          */
-        const Int32 FLAG_TEST_ONLY = 0x00000100; //1<<8;
+        const Int32 FLAG_TEST_ONLY = 1<<8;
 
         /**
-         * Value for #flags: true when the application's window can be
+         * Value for {@link #flags}: true when the application's window can be
          * reduced in size for smaller screens.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_smallScreens
-         * android:smallScreens.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestSupportsScreens_smallScreens android:smallScreens
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_smallScreens
+         * android:smallScreens}.
          */
-        const Int32 FLAG_SUPPORTS_SMALL_SCREENS = 0x00000200; //1<<9;
+        const Int32 FLAG_SUPPORTS_SMALL_SCREENS = 1<<9;
 
         /**
-         * Value for #flags: true when the application's window can be
+         * Value for {@link #flags}: true when the application's window can be
          * displayed on normal screens.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_normalScreens
-         * android:normalScreens.
-         *
-         * @sa #flags
-         * android.R.styleable#AndroidManifestSupportsScreens_normalScreens android:normalScreens
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_normalScreens
+         * android:normalScreens}.
          */
-        const Int32 FLAG_SUPPORTS_NORMAL_SCREENS = 0x00000400; //1<<10;
+        const Int32 FLAG_SUPPORTS_NORMAL_SCREENS = 1<<10;
 
         /**
-         * Value for #flags: true when the application's window can be
+         * Value for {@link #flags}: true when the application's window can be
          * increased in size for larger screens.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_largeScreens
-         * android:largeScreens.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestSupportsScreens_largeScreens android:largeScreens
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_largeScreens
+         * android:largeScreens}.
          */
-        const Int32 FLAG_SUPPORTS_LARGE_SCREENS = 0x00000800; //1<<11;
+        const Int32 FLAG_SUPPORTS_LARGE_SCREENS = 1<<11;
 
         /**
-         * Value for #flags: true when the application knows how to adjust
+         * Value for {@link #flags}: true when the application knows how to adjust
          * its UI for different screen sizes.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_resizeable
-         * android:resizeable.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestSupportsScreens_resizeable android:resizeable
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_resizeable
+         * android:resizeable}.
          */
-        const Int32 FLAG_RESIZEABLE_FOR_SCREENS = 0x00001000; //1<<12;
+        const Int32 FLAG_RESIZEABLE_FOR_SCREENS = 1<<12;
 
         /**
-         * Value for #flags: true when the application knows how to
+         * Value for {@link #flags}: true when the application knows how to
          * accomodate different screen densities.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_anyDensity android:anyDensity.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestSupportsScreens_anyDensity android:anyDensity
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_anyDensity
+         * android:anyDensity}.
          */
-        const Int32 FLAG_SUPPORTS_SCREEN_DENSITIES = 0x00002000; //1<<13;
+        const Int32 FLAG_SUPPORTS_SCREEN_DENSITIES = 1<<13;
 
         /**
-         * Value for #flags: set to true if this application would like to
+         * Value for {@link #flags}: set to true if this application would like to
          * request the VM to operate under the safe mode. Comes from
-         * android.R.styleable#AndroidManifestApplication_vmSafeMode
-         * android:vmSafeMode of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_vmSafeMode android:vmSafeMode
+         * {@link android.R.styleable#AndroidManifestApplication_vmSafeMode
+         * android:vmSafeMode} of the &lt;application&gt; tag.
          */
-        const Int32 FLAG_VM_SAFE_MODE = 0x00004000; //1<<14;
+        const Int32 FLAG_VM_SAFE_MODE = 1<<14;
 
         /**
-         * Value for #flags: set to <code>false</code> if the application does not wish
+         * Value for {@link #flags}: set to <code>false</code> if the application does not wish
          * to permit any OS-driven backups of its data; <code>true</code> otherwise.
          *
          * <p>Comes from the
-         * android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
+         * {@link android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup}
          * attribute of the &lt;application&gt; tag.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
          */
-        const Int32 FLAG_ALLOW_BACKUP = 0x00008000; //1<<15;
+        const Int32 FLAG_ALLOW_BACKUP = 1<<15;
 
         /**
-         * Value for #flags: set to <code>false</code> if the application must be kept
+         * Value for {@link #flags}: set to <code>false</code> if the application must be kept
          * in memory following a full-system restore operation; <code>true</code> otherwise.
          * Ordinarily, during a full system restore operation each application is shut down
          * following execution of its agent's onRestore() method.  Setting this attribute to
          * <code>false</code> prevents this.  Most applications will not need to set this attribute.
          *
-         * @sa #flags
-         *
          * <p>If
-         * android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
-         * android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent
+         * {@link android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup}
+         * is set to <code>false</code> or no
+         * {@link android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent}
          * is specified, this flag will be ignored.
          *
          * <p>Comes from the
-         * android.R.styleable#AndroidManifestApplication_killAfterRestore android:killAfterRestore
+         * {@link android.R.styleable#AndroidManifestApplication_killAfterRestore android:killAfterRestore}
          * attribute of the &lt;application&gt; tag.
-         *
-         * @sa android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
-         * @sa android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent
-         * @sa android.R.styleable#AndroidManifestApplication_killAfterRestore android:killAfterRestore
          */
-        const Int32 FLAG_KILL_AFTER_RESTORE = 0x00010000; //1<<16;
+        const Int32 FLAG_KILL_AFTER_RESTORE = 1<<16;
 
         /**
-         * Value for #flags: Set to <code>true</code> if the application's backup
+         * Value for {@link #flags}: Set to <code>true</code> if the application's backup
          * agent claims to be able to handle restore data even "from the future,"
          * i.e. from versions of the application with a versionCode greater than
          * the one currently installed on the device.  <i>Use with caution!</i>  By default
          * this attribute is <code>false</code> and the Backup Manager will ensure that data
          * from "future" versions of the application are never supplied during a restore operation.
          *
-         * @sa #flags
-         *
          * <p>If
-         * android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
-         * android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent
+         * {@link android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup}
+         * is set to <code>false</code> or no
+         * {@link android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent}
          * is specified, this flag will be ignored.
          *
          * <p>Comes from the
-         * android.R.styleable#AndroidManifestApplication_killAfterRestore android:killAfterRestore
+         * {@link android.R.styleable#AndroidManifestApplication_restoreAnyVersion android:restoreAnyVersion}
          * attribute of the &lt;application&gt; tag.
-         *
-         * @sa android.R.styleable#AndroidManifestApplication_allowBackup android:allowBackup
-         * @sa android.R.styleable#AndroidManifestApplication_backupAgent android:backupAgent
-         * @sa android.R.styleable#AndroidManifestApplication_killAfterRestore android:killAfterRestore
          */
-        const Int32 FLAG_RESTORE_ANY_VERSION = 0x00020000; //1<<17;
+        const Int32 FLAG_RESTORE_ANY_VERSION = 1<<17;
 
         /**
-         * Value for #flags: Set to true if the application is
+         * Value for {@link #flags}: Set to true if the application is
          * currently installed on external/removable/unprotected storage.  Such
          * applications may not be available if their storage is not currently
          * mounted.  When the storage it is on is not available, it will look like
          * the application has been uninstalled (its .apk is no longer available)
          * but its persistent data is not removed.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_EXTERNAL_STORAGE = 0x00040000; //1<<18;
+        const Int32 FLAG_EXTERNAL_STORAGE = 1<<18;
 
         /**
-         * Value for #flags: true when the application's window can be
+         * Value for {@link #flags}: true when the application's window can be
          * increased in size for extra large screens.  Corresponds to
-         * android.R.styleable#AndroidManifestSupportsScreens_xlargeScreens android:xlargeScreens.
-         *
-         * @sa #flags
-         * @sa android.R.styleable#AndroidManifestSupportsScreens_xlargeScreens android:xlargeScreens
-         * @hide
+         * {@link android.R.styleable#AndroidManifestSupportsScreens_xlargeScreens
+         * android:xlargeScreens}.
          */
-        const Int32 FLAG_SUPPORTS_XLARGE_SCREENS = 0x00080000; //1<<19;
+        const Int32 FLAG_SUPPORTS_XLARGE_SCREENS = 1<<19;
 
         /**
-         * Value for #flags: true when the application has requested a
+         * Value for {@link #flags}: true when the application has requested a
          * large heap for its processes.  Corresponds to
-         * {@sa android.R.styleable#AndroidManifestApplication_largeHeap
+         * {@link android.R.styleable#AndroidManifestApplication_largeHeap
          * android:largeHeap}.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_LARGE_HEAP = 0x00100000; //1<<20;
+        const Int32 FLAG_LARGE_HEAP = 1<<20;
 
         /**
-         * Value for #flags: true if this application's package is in
+         * Value for {@link #flags}: true if this application's package is in
          * the stopped state.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_STOPPED = 0x00200000; //1<<21;
+        const Int32 FLAG_STOPPED = 1<<21;
 
         /**
-         * Value for #flags: true  when the application is willing to support
+         * Value for {@link #flags}: true  when the application is willing to support
          * RTL (right to left). All activities will inherit this value.
          *
-         * @sa #flags
-         *
-         * Set from the android.R.attr#supportsRtl attribute in the
+         * Set from the {@link android.R.attr#supportsRtl} attribute in the
          * activity's manifest.
-         *
-         * @sa android.R.attr#supportsRtl
          *
          * Default value is false (no support for RTL).
          */
-        const Int32 FLAG_SUPPORTS_RTL = 0x00400000; //1<<22;
+        const Int32 FLAG_SUPPORTS_RTL = 1<<22;
 
         /**
-         * Value for #flags: true if the application is currently
+         * Value for {@link #flags}: true if the application is currently
          * installed for the calling user.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_INSTALLED = 0x00800000; //1<<23;
+        const Int32 FLAG_INSTALLED = 1<<23;
 
         /**
-         * Value for #flags: true if the application only has its
+         * Value for {@link #flags}: true if the application only has its
          * data installed; the application package itself does not currently
          * exist on the device.
-         *
-         * @sa #flags
          */
-        const Int32 FLAG_IS_DATA_ONLY = 0x01000000; //1<<24;
+        const Int32 FLAG_IS_DATA_ONLY = 1<<24;
 
         /**
-         * Value for #flags: set to <code>true</code> if the application
+         * Value for {@link #flags}: true if the application was declared to be a game, or
+         * false if it is a non-game application.
+         */
+        const Int32 FLAG_IS_GAME = 1<<25;
+
+        /**
+         * Value for {@link #flags}: {@code true} if the application asks that only
+         * full-data streaming backups of its data be performed even though it defines
+         * a {@link android.app.backup.BackupAgent BackupAgent}, which normally
+         * indicates that the app will manage its backed-up data via incremental
+         * key/value updates.
+         */
+        const Int32 FLAG_FULL_BACKUP_ONLY = 1<<26;
+
+        /**
+         * Value for {@link #flags}: true if the application is hidden via restrictions and for
+         * most purposes is considered as not installed.
+         * {@hide}
+         */
+        const Int32 FLAG_HIDDEN = 1<<27;
+
+        /**
+         * Value for {@link #flags}: set to <code>true</code> if the application
          * has reported that it is heavy-weight, and thus can not participate in
          * the normal application lifecycle.
          *
-         * @sa #flags
-         *
          * <p>Comes from the
-         * android.R.styleable#AndroidManifestApplication_cantSaveState android:cantSaveState
+         * android.R.styleable#AndroidManifestApplication_cantSaveState
          * attribute of the &lt;application&gt; tag.
-         *
-         * @sa android.R.styleable#AndroidManifestApplication_cantSaveState android:cantSaveState
          *
          * {@hide}
          */
-        const Int32 FLAG_CANT_SAVE_STATE = 0x10000000; //1<<28;
+        const Int32 FLAG_CANT_SAVE_STATE = 1<<28;
 
         /**
-         * Value for #flags: Set to true if the application has been
+         * Value for {@link #flags}: Set to true if the application has been
          * installed using the forward lock option.
-         *
-         * @sa #flags
          *
          * NOTE: DO NOT CHANGE THIS VALUE!  It is saved in packages.xml.
          *
          * {@hide}
          */
-        const Int32 FLAG_FORWARD_LOCK = 0x20000000; //1<<29;
+        const Int32 FLAG_FORWARD_LOCK = 1<<29;
+
+        /**
+         * Value for {@link #flags}: set to {@code true} if the application
+         * is permitted to hold privileged permissions.
+         *
+         * {@hide}
+         */
+        const Int32 FLAG_PRIVILEGED = 1<<30;
+
+        /**
+         * Value for {@link #flags}: true if code from this application will need to be
+         * loaded into other applications' processes. On devices that support multiple
+         * instruction sets, this implies the code might be loaded into a process that's
+         * using any of the devices supported instruction sets.
+         *
+         * <p> The system might treat such applications specially, for eg., by
+         * extracting the application's native libraries for all supported instruction
+         * sets or by compiling the application's dex code for all supported instruction
+         * sets.
+         */
+        const Int32 FLAG_MULTIARCH  = 1 << 31;
 
 
         Dump(
@@ -455,11 +420,29 @@ module
         SetPublicSourceDir(
             [in] String pubicSourceDir);
 
+        GetSplitSourceDirs(
+            [out, callee] ArrayOf<String>* resourceDirs);
+
+        SetSplitSourceDirs(
+            [in] ArrayOf<String>* resourceDirs);
+
+        GetSplitPublicSourceDirs(
+            [out, callee] ArrayOf<String>* resourceDirs);
+
+        SetSplitPublicSourceDirs(
+            [in] ArrayOf<String>* resourceDirs);
+
         GetResourceDirs(
             [out, callee] ArrayOf<String>* resourceDirs);
 
         SetResourceDirs(
             [in] ArrayOf<String>* resourceDirs);
+
+        GetSeinfo(
+            [out] String* dataDir);
+
+        SetSeinfo(
+            [in] String dataDir);
 
         GetSharedLibraryFiles(
             [out, callee] ArrayOf<String>* sharedLibraryFiles);
@@ -479,6 +462,36 @@ module
         SetNativeLibraryDir(
             [in] String libraryDir);
 
+        GetSecondaryNativeLibraryDir(
+            [out] String* libraryDir);
+
+        SetSecondaryNativeLibraryDir(
+            [in] String libraryDir);
+
+        GetNativeLibraryRootDir(
+            [out] String* libraryDir);
+
+        SetNativeLibraryRootDir(
+            [in] String libraryDir);
+
+        GetNativeLibraryRootRequiresIsa(
+            [out] String* libraryDir);
+
+        SetNativeLibraryRootRequiresIsa(
+            [in] String libraryDir);
+
+        GetPrimaryCpuAbi(
+            [out] String* libraryDir);
+
+        SetPrimaryCpuAbi(
+            [in] String libraryDir);
+
+        GetSecondaryCpuAbi(
+            [out] String* libraryDir);
+
+        SetSecondaryCpuAbi(
+            [in] String libraryDir);
+
         GetUid(
             [out] Int32* uid);
 
@@ -490,6 +503,12 @@ module
 
         SetTargetSdkVersion(
             [in] Int32 sdkVersion);
+
+        GetVersionCode(
+            [out] Int32* uid);
+
+        SetVersionCode(
+            [in] Int32 uid);
 
         GetEnabled(
             [out] Boolean* enabled);
@@ -510,10 +529,19 @@ module
             [in] Int32 location);
     }
 
+    /**
+     * @Involve
+     * interface IComparator;
+     */
     interface IApplicationInfoDisplayNameComparator {
         Compare(
-            [in] IApplicationInfo* aa,
-            [in] IApplicationInfo* ab,
+            [in] IApplicationInfo* a,
+            [in] IApplicationInfo* b,
+            [out] Int32* result);
+
+        Compare(
+            [in] IInterface* a,
+            [in] IInterface* b,
             [out] Int32* result);
     }
 

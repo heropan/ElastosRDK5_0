@@ -25,15 +25,33 @@ module
     namespace Content {
 
         namespace Pm {
-            interface IApplicationInfo {}
-
-            interface IPackageManager {}
-
-            interface IIPackageManager {}
 
             interface IPathPermission {}
 
             interface IProviderInfo {}
+
+            interface IResolveInfo {}
+
+            interface IParceledListSlice {}
+
+            interface IPermissionInfo {}
+
+            interface IPermissionGroupInfo {}
+
+            interface IServiceInfo {}
+
+            interface IVerificationParams {}
+
+            interface IVerifierDeviceIdentity {}
+
+            interface IPackageStats {}
+
+            interface ISignature {}
+
+            interface IVerifierInfo {}
+
+
+
 
         }// Pm
 

@@ -3,10 +3,10 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
+    interface Elastos.Droid.Content.IIntentFilter;
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IActivityInfo;
     interface Elastos.Droid.Content.Pm.IServiceInfo;
-    interface Elastos.Droid.Content.IIntentFilter;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Utility.IPrinter;
 

@@ -11,7 +11,10 @@ module
      * declared by an application. This corresponds to information collected from
      * the AndroidManifest.xml's <uses-configuration> and <uses-feature> tags.
      */
-
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IConfigurationInfo {
         /**
          * Value for #reqInputFeatures: if set, indicates that the application

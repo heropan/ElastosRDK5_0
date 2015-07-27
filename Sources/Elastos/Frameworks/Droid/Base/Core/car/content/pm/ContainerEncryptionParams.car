@@ -2,13 +2,17 @@
 module
 {
     using interface Elastos.Security.Spec.IAlgorithmParameterSpec;
-    using interface Elastos.Crypto.ISecretKey;
+    using interface Elastosx.Crypto.ISecretKey;
 
     namespace Elastos {
     namespace Droid {
     namespace Content {
     namespace Pm {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     [deprecated]
     interface IContainerEncryptionParams {
         GetEncryptionAlgorithm(

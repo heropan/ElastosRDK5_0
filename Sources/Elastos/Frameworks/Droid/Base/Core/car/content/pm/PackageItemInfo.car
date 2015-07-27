@@ -23,7 +23,6 @@ module
      * does provide convenience methods to assist in the implementation of
      * Parcelable in subclasses.
      */
-
     interface IPackageItemInfo {
         /**
          * Retrieve the current textual label associated with this item.  This

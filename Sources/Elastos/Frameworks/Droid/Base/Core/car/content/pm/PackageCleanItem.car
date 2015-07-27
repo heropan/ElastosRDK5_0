@@ -17,11 +17,20 @@ module
         GetUserId(
             [out] Int32* userId);
 
+        SetUserId(
+            [in] Int32 userId);
+
         GetPackageName(
             [out] String* packageName);
 
+        SetPackageName(
+            [in] String packageName);
+
         GetAndCode(
             [out] Boolean* andCode);
+
+        SetAndCode(
+            [in] Boolean andCode);
     }
 
     } // namespace Pm

@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Content.Pm.IPackageInfo;
     interface Elastos.Droid.Content.Pm.IPermissionInfo;
     interface Elastos.Droid.Content.Pm.IPermissionGroupInfo;
@@ -9,6 +11,7 @@ module
     interface Elastos.Droid.Content.Pm.IServiceInfo;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Content.Pm.IKeySet;
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
     interface Elastos.Droid.Content.Pm.IInstrumentationInfo;
     interface Elastos.Droid.Content.Pm.IPackageInstallObserver;
@@ -39,8 +42,13 @@ module
      *
      *  {@hide}
      */
-    [deprecated]
+    [deprecated, local]
     interface IIPackageManager {
+        IsPackageAvailable(
+            [in] String packageName,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
         GetPackageInfo(
             [in] String packageName,
             [in] Int32 flags,
@@ -72,7 +80,7 @@ module
         QueryPermissionsByGroup(
             [in] String group,
             [in] Int32 flags,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetPermissionGroupInfo(
             [in] String name,
@@ -81,7 +89,7 @@ module
 
         GetAllPermissionGroups(
             [in] Int32 flags,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetApplicationInfo(
             [in] String packageName,
@@ -94,6 +102,12 @@ module
             [in] Int32 flags,
             [in] Int32 userId,
             [out] IActivityInfo** info);
+
+        ActivitySupportsIntent(
+            [in] IComponentName* className,
+            [in] IIntent* intent,
+            [in] String resolvedType,
+            [out] Boolean* result);
 
         GetReceiverInfo(
             [in] IComponentName* className,
@@ -164,6 +178,18 @@ module
             [in] String sharedUserName,
             [out] Int32* uid);
 
+        GetFlagsForUid(
+            [in] Int32 uid,
+            [out] Int32* result);
+
+        IsUidPrivileged(
+            [in] Int32 uid,
+            [out] Boolean* result);
+
+        GetAppOpPermissionPackages(
+            [in] String permissionName,
+            [out] String* result);
+
         ResolveIntent(
             [in] IIntent* intent,
             [in] String resolvedType,
@@ -171,12 +197,19 @@ module
             [in] Int32 userId,
             [out] IResolveInfo** info);
 
+        CanForwardTo(
+            [in] IIntent* intent,
+            [in] String resolvedType,
+            [in] Int32 sourceUserId,
+            [in] Int32 targetUserId,
+            [out] Boolean* result);
+
         QueryIntentActivities(
             [in] IIntent* intent,
             [in] String resolvedType,
             [in] Int32 flags,
             [in] Int32 userId,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         QueryIntentActivityOptions(
             [in] IComponentName* caller,
@@ -186,14 +219,14 @@ module
             [in] String resolvedType,
             [in] Int32 flags,
             [in] Int32 userId,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         QueryIntentReceivers(
             [in] IIntent* intent,
             [in] String resolvedType,
             [in] Int32 flags,
             [in] Int32 userId,
-            [out] IObjectContainer** receivers);
+            [out] IList** receivers);
 
         ResolveService(
             [in] IIntent* intent,
@@ -207,7 +240,14 @@ module
             [in] String resolvedType,
             [in] Int32 flags,
             [in] Int32 userId,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
+
+        QueryIntentContentProviders(
+            [in] IIntent* intent,
+            [in] String resolvedType,
+            [in] Int32 flags,
+            [in] Int32 userId,
+            [out] IList** infos);
 
         /**
          * This implements getInstalledPackages via a "last returned row"
@@ -218,6 +258,18 @@ module
         GetInstalledPackages(
             [in] Int32 flags,
             [in] String lastRead,
+            [in] Int32 userId,
+            [out] IParceledListSlice** slice);
+
+        /**
+         * This implements getPackagesHoldingPermissions via a "last returned row"
+         * mechanism that is not exposed in the API. This is to get around the IPC
+         * limit that kicks in when flags are included that bloat up the data
+         * returned.
+         */
+        GetPackagesHoldingPermissions(
+            [in] ArrayOf<String>* permissions,
+            [in] Int32 flags,
             [in] Int32 userId,
             [out] IParceledListSlice** slice);
 
@@ -241,7 +293,7 @@ module
          */
         GetPersistentApplications(
             [in] Int32 flags,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         ResolveContentProvider(
             [in] String name,
@@ -258,14 +310,14 @@ module
          *                name in 'outNames'.
          */
         QuerySyncProviders(
-            [in/*, out */] IObjectContainer* outNames,
-            [in/*, out */] IObjectContainer* outInfo);
+            [in/*, out */] IList* outNames,
+            [in/*, out */] IList* outInfo);
 
         QueryContentProviders(
             [in] String processName,
             [in] Int32 uid,
             [in] Int32 flags,
-            [out] IObjectContainer** providers);
+            [out] IList** providers);
 
         GetInstrumentationInfo(
             [in] IComponentName* className,
@@ -275,26 +327,22 @@ module
         QueryInstrumentation(
             [in] String targetPackage,
             [in] Int32 flags,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
-        /**
-         * Install a package.
-         *
-         * @param packageURI The location of the package file to install.
-         * @param observer a callback to use to notify when the package installation in finished.
-         * @param flags - possible values: #FORWARD_LOCK_PACKAGE,
-         * #REPLACE_EXISITING_PACKAGE
-         * @param installerPackageName Optional package name of the application that is performing the
-         * installation. This identifies which market the package came from.
-         *
-         * @sa #FORWARD_LOCK_PACKAGE
-         * @sa #REPLACE_EXISITING_PACKAGE
-         */
         InstallPackage(
             [in] IUri* packageURI,
             [in] IPackageInstallObserver* observer,
             [in] Int32 flags,
             [in] String installerPackageName);
+
+        InstallPackageAsUser(
+            [in] String originPath,
+            [in] IPackageInstallObserver2* observer,
+            [in] Int32 flags,
+            [in] String installerPackageName,
+            [in] IVerificationParams* verificationParams,
+            [in] String packageAbiOverride,
+            [in] Int32 userId);
 
         FinishPackageInstall(
             [in] Int32 token);
@@ -303,18 +351,25 @@ module
             [in] String targetPackage,
             [in] String installerPackageName);
 
+        /** @deprecated rawr, don't call AIDL methods directly! */
+        DeletePackageAsUser(
+            [in] String packageName,
+            [in] IPackageDeleteObserver* observer,
+            [in] Int32 userId,
+            [in] Int32 flags);
+
         /**
-         * Delete a package.
+         * Delete a package for a specific user.
          *
          * @param packageName The fully qualified name of the package to delete.
          * @param observer a callback to use to notify when the package deletion in finished.
-         * @param flags - possible values: #DONT_DELETE_DATA
-         *
-         * @sa #DONT_DELETE_DATA
+         * @param userId the id of the user for whom to delete the package
+         * @param flags - possible values: {@link #DONT_DELETE_DATA}
          */
         DeletePackage(
             [in] String packageName,
-            [in] IPackageDeleteObserver* observer,
+            [in] IPackageDeleteObserver2* observer,
+            [in] Int32 userId,
             [in] Int32 flags);
 
         GetInstallerPackageName(
@@ -329,7 +384,24 @@ module
 
         GetPreferredPackages(
             [in] Int32 flags,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
+
+        ResetPreferredActivities(
+            [in] Int32 userId);
+
+        GetLastChosenActivity(
+            [in] IIntent* intent,
+            [in] String resolvedType,
+            [in] Int32 flags,
+            [out] IResolveInfo** info);
+
+        SetLastChosenActivity(
+            [in] IIntent* intent,
+            [in] String resolvedType,
+            [in] Int32 flags,
+            [in] IIntentFilter* filter,
+            [in] Int32 match,
+            [in] IComponentName* activity);
 
         AddPreferredActivity(
             [in] IIntentFilter* filter,
@@ -348,10 +420,40 @@ module
             [in] String packageName);
 
         GetPreferredActivities(
-            [in/*, out */] IObjectContainer* outFilters,
-            [in/*, out */] IObjectContainer* outActivities,
+            [in/*, out */] IList* outFilters,
+            [in/*, out */] IList* outActivities,
             [in] String packageName,
             [out] Int32* value);
+
+        AddPersistentPreferredActivity(
+            [in] IIntentFilter* filter,
+            [in] IComponentName* activity,
+            [in] Int32 userId);
+
+        ClearPackagePersistentPreferredActivities(
+            [in] String packageName,
+            [in] Int32 userId);
+
+        AddCrossProfileIntentFilter(
+            [in] IIntentFilter* intentFilter,
+            [in] String ownerPackage,
+            [in] Int32 ownerUserId,
+            [in] Int32 sourceUserId,
+            [in] Int32 targetUserId,
+            [in] Int32 flags);
+
+        ClearCrossProfileIntentFilters(
+            [in] Int32 sourceUserId,
+            [in] String ownerPackage,
+            [in] Int32 ownerUserId);
+
+        /**
+         * Report the set of 'Home' activity candidates, plus (if any) which of them
+         * is the current "always use this one" setting.
+         */
+         GetHomeActivities(
+            [out] IList** outHomeCandidates,
+            [out] IComponentName** name);
 
         /**
          * As per android.content.pm.PackageManager#setComponentEnabledSetting.
@@ -523,12 +625,22 @@ module
 
         /**
          * Ask the package manager to perform dex-opt (if needed) on the given
-         * package, if it already hasn't done mode.  Only does this if running
-         * in the special development "no pre-dexopt" mode.
+         * package and for the given instruction set if it already hasn't done
+         * so.
+         *
+         * If the supplied instructionSet is null, the package manager will use
+         * the packages default instruction set.
+         *
+         * In most cases, apps are dexopted in advance and this function will
+         * be a no-op.
          */
-        PerformDexOpt(
+        PerformDexOptIfNeeded(
             [in] String packageName,
+            [in] String instructionSet,
             [out] Boolean* result);
+
+        ForceDexOpt(
+            [in] String packageName);
 
         /**
          * Update status of external media on the package manager to scan and
@@ -560,25 +672,9 @@ module
         GetInstallLocation(
             [out] Int32* location);
 
-        InstallPackageWithVerification(
-            [in] IUri* packageURI,
-            [in] IPackageInstallObserver* observer,
-            [in] Int32 flags,
-            [in] String installerPackageName,
-            [in] IUri* verificationURI,
-            [in] IManifestDigest* manifestDigest,
-            [in] IContainerEncryptionParams* encryptionParams);
-
-        InstallPackageWithVerificationAndEncryption(
-            [in] IUri* packageURI,
-            [in] IPackageInstallObserver* observer,
-            [in] Int32 flags,
-            [in] String installerPackageName,
-            [in] IVerificationParams* verificationParams,
-            [in] IContainerEncryptionParams* encryptionParams);
-
-        InstallExistingPackage(
+        InstallExistingPackageAsUser(
             [in] String packageName,
+            [in] Int32 userId,
             [out] Int32* result);
 
         VerifyPendingInstall(
@@ -609,6 +705,50 @@ module
 
         /** Reflects current DeviceStorageMonitorService state */
         IsStorageLow(
+            [out] Boolean* result);
+
+        SetApplicationHiddenSettingAsUser(
+            [in] String packageName,
+            [in] Boolean hide,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetApplicationHiddenSettingAsUser(
+            [in] String packageName,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetPackageInstaller(
+            [out] IIPackageInstaller** installer);
+
+        SetBlockUninstallForUser(
+            [in] String packageName,
+            [in] Boolean blockUninstall,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetBlockUninstallForUser(
+            [in] String packageName,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetKeySetByAlias(
+            [in] String packageName,
+            [in] String alias,
+            [out] IKeySet** set);
+
+        GetSigningKeySet(
+            [in] String packageName,
+            [out] IKeySet** set);
+
+        IsPackageSignedByKeySet(
+            [in] String packageName,
+            [in] IKeySet* ks,
+            [out] Boolean* result);
+
+        IsPackageSignedByKeySetExactly(
+            [in] String packageName,
+            [in] IKeySet* ks,
             [out] Boolean* result);
     }
 

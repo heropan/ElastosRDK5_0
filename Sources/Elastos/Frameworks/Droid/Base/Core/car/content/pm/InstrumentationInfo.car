@@ -6,16 +6,18 @@ module
     namespace Content {
     namespace Pm {
 
+
     /**
-     * Information you can retrieve about a particular piece of test instrumentation.
-     * This corresponds to information collected from the AndroidManifest.xml's <instrumentation> tag.
-     *
-     * @implements Elastos.Droid.Content.Pm.Elastos.Droid.Content.Pm.IPackageItemInfo
+     * Information you can retrieve about a particular piece of test
+     * instrumentation.  This corresponds to information collected
+     * from the AndroidManifest.xml's &lt;instrumentation&gt; tag.
      */
     /**
      * @Involve
      * interface Elastos.Droid.Content.Pm.IPackageItemInfo
+     * interface IParcelable
      */
+    [deprecated]
     interface IInstrumentationInfo {
         ToString(
             [out] String* str);
@@ -37,6 +39,18 @@ module
 
         SetPublicSourceDir(
             [in] String pubSrcDir);
+
+        SetSplitSourceDirs(
+            [in] ArrayOf<String>* dirs);
+
+        GetSplitSourceDirs(
+            [out, callee] ArrayOf<String>* dirs);
+
+        SetSplitPublicSourceDirs(
+            [in] ArrayOf<String>* dirs);
+
+        GetSplitPublicSourceDirs(
+            [out, callee] ArrayOf<String>* dirs);
 
         GetDataDir(
             [out] String* dataDir);

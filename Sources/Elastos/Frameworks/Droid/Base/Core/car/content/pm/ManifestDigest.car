@@ -1,13 +1,23 @@
 
 module
 {
-    using interface Elastos.Utility.Jar.IAttributes;
+    using interface Elastos.IO.IInputStream;
 
     namespace Elastos {
     namespace Droid {
     namespace Content {
     namespace Pm {
 
+    /**
+     * Represents the manifest digest for a package. This is suitable for comparison
+     * of two packages to know whether the manifests are identical.
+     *
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IManifestDigest {
         Equals(
             [in] IInterface* obj,
@@ -21,8 +31,8 @@ module
     }
 
     interface IManifestDigestHelper {
-        FromAttributes(
-            [in] IAttributes* attributes,
+        FromInputStream(
+            [in] IInputStream* attributes,
             [out] IManifestDigest** digest);
     }
 

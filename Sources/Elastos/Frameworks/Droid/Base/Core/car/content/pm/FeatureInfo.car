@@ -10,7 +10,10 @@ module
      * A single feature that can be requested by an application. This corresponds to
      * information collected from the AndroidManifest.xml's <uses-feature> tag.
      */
-
+    /**
+     * @Involve
+     * interface IFeatureInfo
+     */
     interface IFeatureInfo {
         /**
          * Default value for #reqGlEsVersion;
