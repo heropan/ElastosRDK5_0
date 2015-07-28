@@ -9,6 +9,7 @@
 #include "CLinkedBlockingQueue.h"
 #include "CThreadPoolExecutor.h"
 #include "TimeUnit.h"
+#include "CScheduledThreadPoolExecutor.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
@@ -17,6 +18,7 @@ using Elastos::Core::Thread;
 using Elastos::Utility::Concurrent::CForkJoinPool;
 using Elastos::Utility::Concurrent::CLinkedBlockingQueue;
 using Elastos::Utility::Concurrent::CThreadPoolExecutor;
+using Elastos::Utility::Concurrent::CScheduledThreadPoolExecutor;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
 
 namespace Elastos {
@@ -603,12 +605,12 @@ ECode Executors::NewSingleThreadScheduledExecutor(
 {
     VALIDATE_NOT_NULL(result)
 
-    assert(0 && "TODO");
-    // AutoPtr<ScheduledThreadPoolExecutor> p = new ScheduledThreadPoolExecutor(1);
-    // AutoPtr<DelegatedScheduledExecutorService> res =
-    //     new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
-    // *result = IScheduledExecutorService::Probe(res);
-    // REFCOUNT_ADD(*result)
+    AutoPtr<IScheduledThreadPoolExecutor> p;
+    CScheduledThreadPoolExecutor::New(1, (IScheduledThreadPoolExecutor**)&p);
+    AutoPtr<DelegatedScheduledExecutorService> res =
+        new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
+    *result = IScheduledExecutorService::Probe(res);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -618,12 +620,12 @@ ECode Executors::NewSingleThreadScheduledExecutor(
 {
     VALIDATE_NOT_NULL(result)
 
-    assert(0 && "TODO");
-    // AutoPtr<ScheduledThreadPoolExecutor> p = new ScheduledThreadPoolExecutor(1, threadFactory);
-    // AutoPtr<DelegatedScheduledExecutorService> res =
-    //     new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
-    // *result = IScheduledExecutorService::Probe(res);
-    // REFCOUNT_ADD(*result)
+    AutoPtr<IScheduledThreadPoolExecutor> p;
+    CScheduledThreadPoolExecutor::New(1, threadFactory, (IScheduledThreadPoolExecutor**)&p);
+    AutoPtr<DelegatedScheduledExecutorService> res =
+        new DelegatedScheduledExecutorService(IScheduledExecutorService::Probe(p));
+    *result = IScheduledExecutorService::Probe(res);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -633,10 +635,10 @@ ECode Executors::NewScheduledThreadPool(
 {
     VALIDATE_NOT_NULL(result)
 
-    assert(0 && "TODO");
-    // AutoPtr<ScheduledThreadPoolExecutor> res = new ScheduledThreadPoolExecutor(corePoolSize);
-    // *result = IScheduledExecutorService::Probe(res);
-    // REFCOUNT_ADD(*result)
+    AutoPtr<IScheduledThreadPoolExecutor> res;
+    CScheduledThreadPoolExecutor::New(corePoolSize, (IScheduledThreadPoolExecutor**)&res);
+    *result = IScheduledExecutorService::Probe(res);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -647,10 +649,10 @@ ECode Executors::NewScheduledThreadPool(
 {
     VALIDATE_NOT_NULL(result)
 
-    assert(0 && "TODO");
-    // AutoPtr<ScheduledThreadPoolExecutor> res = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
-    // *result = IScheduledExecutorService::Probe(res);
-    // REFCOUNT_ADD(*result)
+    AutoPtr<IScheduledThreadPoolExecutor> res;
+    CScheduledThreadPoolExecutor::New(corePoolSize, threadFactory, (IScheduledThreadPoolExecutor**)&res);
+    *result = IScheduledExecutorService::Probe(res);
+    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 

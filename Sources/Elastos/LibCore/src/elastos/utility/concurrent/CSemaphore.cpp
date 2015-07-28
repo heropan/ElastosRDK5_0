@@ -281,7 +281,7 @@ ECode CSemaphore::IsFair(
     /* [out] */ Boolean* value)
 {
     VALIDATE_NOT_NULL(value)
-//    *value = mSync->Probe(EIID_FairSync) != NULL;
+    *value = mSync->GetSyncID() == SyncID_FairSync;
     return NOERROR;
 }
 

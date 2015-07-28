@@ -1,6 +1,6 @@
 
 #include "ForkJoinTask.h"
-#include <Thread.h>
+#include "Thread.h"
 #include "ForkJoinWorkerThread.h"
 #include "CSystem.h"
 #include "AutoLock.h"
@@ -173,7 +173,7 @@ ForkJoinTask::ExceptionNode::ExceptionNode(
 {
 //    super(task, exceptionTableRefQueue);
     mEx = ex;
-//    mNext = next;
+    mNext = next;
     Thread::GetCurrentThread()->GetId(&mThrower);
 }
 
@@ -731,8 +731,8 @@ AutoPtr<IForkJoinPool> ForkJoinTask::GetPool()
     AutoPtr<IForkJoinWorkerThread> ft = (IForkJoinWorkerThread*)t->Probe(EIID_IForkJoinWorkerThread);
     AutoPtr<IForkJoinPool> p;
     if (ft != NULL) {
-        // AutoPtr<CForkJoinWorkerThread> cft = (CForkJoinWorkerThread*)ft.Get();
-        // p = cft->mPool;
+        AutoPtr<ForkJoinWorkerThread> cft = (ForkJoinWorkerThread*)ft.Get();
+        p = cft->mPool;
     }
     else
         p = NULL;
