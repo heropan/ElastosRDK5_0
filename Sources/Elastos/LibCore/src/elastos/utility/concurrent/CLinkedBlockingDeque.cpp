@@ -954,13 +954,13 @@ ECode CLinkedBlockingDeque::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    return E_NO_SUCH_ELEMENT_EXCEPTION;
+    return AbstractQueue::Equals(object, result);
 }
 
 ECode CLinkedBlockingDeque::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
-    return E_NO_SUCH_ELEMENT_EXCEPTION;
+    return AbstractQueue::GetHashCode(hashCode);
 }
 
 } // namespace Concurrent

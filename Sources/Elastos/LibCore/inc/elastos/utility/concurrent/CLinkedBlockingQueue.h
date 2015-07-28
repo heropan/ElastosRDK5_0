@@ -3,7 +3,7 @@
 #define __ELASTOS_UTILITY_CLINKEDBLOCKINGQUEUE_H__
 
 #include "_Elastos_Utility_Concurrent_CLinkedBlockingQueue.h"
-//#include <Condition.h>
+//#include "Condition.h"
 #include "AbstractQueue.h"
 
 using Elastos::IO::ISerializable;
@@ -273,7 +273,7 @@ private:
     AutoPtr<IReentrantLock> mPutLock;
 
     /** Wait queue for waiting puts */
-//    Condition mNotFull;
+//    AutoPtr<Condition> mNotFull;
 };
 
 } // namespace Concurrent

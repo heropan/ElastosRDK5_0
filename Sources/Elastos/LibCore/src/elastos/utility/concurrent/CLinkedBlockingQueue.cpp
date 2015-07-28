@@ -1,7 +1,7 @@
 
 #include "CLinkedBlockingQueue.h"
 #include "CAtomicInteger32.h"
-#include <Math.h>
+#include "Math.h"
 
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Utility::Concurrent::Atomic::CAtomicInteger32;
@@ -11,6 +11,9 @@ namespace Elastos {
 namespace Utility {
 namespace Concurrent {
 
+//====================================================================
+// CLinkedBlockingQueue::Itr::
+//====================================================================
 CAR_INTERFACE_IMPL(CLinkedBlockingQueue::Itr, Object, IIterator);
 
 CLinkedBlockingQueue::Itr::Itr(
@@ -85,6 +88,9 @@ ECode CLinkedBlockingQueue::Itr::Remove()
     return NOERROR;
 }
 
+//====================================================================
+// CLinkedBlockingQueue::
+//====================================================================
 CAR_INTERFACE_IMPL_2(CLinkedBlockingQueue, AbstractQueue, IBlockingQueue, ISerializable)
 
 CAR_OBJECT_IMPL(CLinkedBlockingQueue);
@@ -140,7 +146,7 @@ void CLinkedBlockingQueue::SignalNotEmpty()
 {
     AutoPtr<IReentrantLock> takeLock = mTakeLock;
     ILock::Probe(takeLock)->Lock();
-//    mNotEmpty.Signal();
+//    mNotEmpty->Signal();
     ILock::Probe(takeLock)->UnLock();
 }
 
@@ -452,12 +458,12 @@ ECode CLinkedBlockingQueue::Remove(
     for (AutoPtr<Node> trail = mHead, p = trail->mNext;
         p != NULL;
         trail = p, p = p->mNext) {
-        assert(0);
-        // if (o.equals(p.item)) {
-        //     unlink(p, trail);
-        //     FullyUnlock();
-        //     return true;
-        // }
+        if (Object::Equals(o, p->mItem)) {
+            Unlink(p, trail);
+            FullyUnlock();
+            *modified = TRUE;
+            return NOERROR;
+        }
     }
     FullyUnlock();
     *modified = FALSE;
@@ -475,11 +481,11 @@ ECode CLinkedBlockingQueue::Contains(
     }
     FullyLock();
     for (AutoPtr<Node> p = mHead->mNext; p != NULL; p = p->mNext) {
-        assert(0);
-        // if (o.equals(p.item)) {
-        //     FullyUnlock();
-        //     return true;
-        // }
+        if (Object::Equals(object, p->mItem)) {
+            FullyUnlock();
+            *result = TRUE;
+            return NOERROR;
+        }
     }
     FullyUnlock();
     *result = FALSE;
@@ -726,15 +732,13 @@ ECode CLinkedBlockingQueue::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    return AbstractQueue::Equals(object, result);
 }
 
 ECode CLinkedBlockingQueue::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
-    assert(0);
-    return E_NOT_IMPLEMENTED;
+    return AbstractQueue::GetHashCode(hashCode);
 }
 
 } // namespace Concurrent
