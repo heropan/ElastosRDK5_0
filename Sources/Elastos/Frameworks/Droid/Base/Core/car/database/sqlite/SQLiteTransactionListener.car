@@ -25,8 +25,8 @@ module
         OnRollback();
     }
 
-    } //Sqlite
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Sqlite
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

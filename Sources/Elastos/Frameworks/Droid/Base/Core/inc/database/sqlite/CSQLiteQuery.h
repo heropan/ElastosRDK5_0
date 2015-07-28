@@ -1,7 +1,7 @@
 #ifndef __CSQLITEQUERY_H__
 #define __CSQLITEQUERY_H__
 
-#include "_CSQLiteQuery.h"
+#include "_Elastos_Droid_Database_Sqlite_CSQLiteQuery.h"
 #include "database/sqlite/SQLiteProgram.h"
 
 namespace Elastos {

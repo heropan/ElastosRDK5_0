@@ -24,7 +24,7 @@ module
         OnInvalidated();
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -50,7 +50,7 @@ module
             [in] Boolean selfChange);
     }
 
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

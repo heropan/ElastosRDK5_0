@@ -20,7 +20,7 @@ module
             [in] ISQLiteDatabase* dbObj);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

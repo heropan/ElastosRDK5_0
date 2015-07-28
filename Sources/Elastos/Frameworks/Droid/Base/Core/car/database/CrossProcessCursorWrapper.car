@@ -24,7 +24,7 @@ module
     interface ICrossProcessCursorWrapper {
     }
 
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

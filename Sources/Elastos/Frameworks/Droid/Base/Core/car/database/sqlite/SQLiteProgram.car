@@ -92,8 +92,8 @@ module
             [in] ArrayOf<String>* bindArgs);
     }
 
-    } //Sqlite
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Sqlite
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

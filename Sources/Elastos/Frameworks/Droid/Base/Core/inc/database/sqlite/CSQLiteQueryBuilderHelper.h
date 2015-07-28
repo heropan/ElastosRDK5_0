@@ -1,7 +1,8 @@
 #ifndef __CSQLITEQUERYBUILDERHELPER_H__
 #define __CSQLITEQUERYBUILDERHELPER_H__
 
-#include "_CSQLiteQueryBuilderHelper.h"
+#include "_Elastos_Droid_Database_Sqlite_CSQLiteQueryBuilderHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::Core::IStringBuilder;
 
@@ -11,7 +12,14 @@ namespace Database {
 namespace Sqlite {
 
 CarClass(CSQLiteQueryBuilderHelper)
+    , public Singleton
+    , public ISQLiteQueryBuilderHelper
 {
+public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI BuildQueryString(
         /* [in] */ Boolean distinct,
         /* [in] */ const String& tables,

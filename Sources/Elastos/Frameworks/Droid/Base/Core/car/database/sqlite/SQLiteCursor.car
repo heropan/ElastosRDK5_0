@@ -16,10 +16,10 @@ module
      */
     /**
      * @Involve
-     * interface 
+     * interface Elastos.Droid.Database.IAbstractWindowedCursor
      */
     [deprecated]
-    interface ISQLiteCursor Elastos.Droid.Database.IAbstractWindowedCursor {
+    interface ISQLiteCursor {
         /**
          * @return the SQLiteDatabase that this cursor is associated with.
          */
@@ -33,8 +33,8 @@ module
             [in] ArrayOf<String>* selectionArgs);
     }
 
-    } //Sqlite
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Sqlite
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

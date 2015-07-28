@@ -22,7 +22,7 @@ module
             [out] ICursor** cursor);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

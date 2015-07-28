@@ -1,5 +1,6 @@
 module
 {
+    using interface Elastos.Utility.IIterable;
 
     namespace Elastos {
     namespace Droid {
@@ -64,10 +65,10 @@ module
          *  at cursor construction time
          */
         AddRow(
-            [in] IObjectContainer* columnValues);
+            [in] IIterable* columnValues);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

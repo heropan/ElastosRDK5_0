@@ -22,7 +22,7 @@ module
             [in] Int32 sizeCopied);
     }
 
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

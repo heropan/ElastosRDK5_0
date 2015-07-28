@@ -50,6 +50,8 @@ module
     merge("util/SparseInt32Array.car");
     merge("util/SparseInt64Array.car");
     merge("util/StateSet.car");
+    merge("util/TimeUtils.car");
+    merge("util/TimingLogger.car");
 
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;

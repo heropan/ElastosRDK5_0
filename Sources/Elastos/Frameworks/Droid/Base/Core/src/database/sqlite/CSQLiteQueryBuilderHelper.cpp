@@ -1,11 +1,15 @@
 
 #include "database/sqlite/CSQLiteQueryBuilderHelper.h"
-#include "database/sqlite/SQLiteQueryBuilder.h"
+// #include "database/sqlite/SQLiteQueryBuilder.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
 namespace Sqlite {
+
+CAR_INTERFACE_IMPL(CSQLiteQueryBuilderHelper, Singleton, ISQLiteQueryBuilderHelper)
+
+CAR_SINGLETON_IMPL(CSQLiteQueryBuilderHelper)
 
 ECode CSQLiteQueryBuilderHelper::BuildQueryString(
     /* [in] */ Boolean distinct,
@@ -18,16 +22,16 @@ ECode CSQLiteQueryBuilderHelper::BuildQueryString(
     /* [in] */ const String& limit,
     /* [out] */ String* queryStr)
 {
-    VALIDATE_NOT_NULL(queryStr)
-    return SQLiteQueryBuilder::BuildQueryString(distinct, tables, columns, where, groupBy,
-        having, orderBy, limit, queryStr);
+    // VALIDATE_NOT_NULL(queryStr)
+    // return SQLiteQueryBuilder::BuildQueryString(distinct, tables, columns, where, groupBy,
+    //     having, orderBy, limit, queryStr);
 }
 
 ECode CSQLiteQueryBuilderHelper::AppendColumns(
     /* [in] */ IStringBuilder* s,
     /* [in] */ const ArrayOf<String>& columns)
 {
-    return SQLiteQueryBuilder::AppendColumns(s, columns);
+    // return SQLiteQueryBuilder::AppendColumns(s, columns);
 }
 
 

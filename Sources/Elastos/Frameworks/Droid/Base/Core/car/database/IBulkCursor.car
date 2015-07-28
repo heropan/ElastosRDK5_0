@@ -60,7 +60,7 @@ module
             [out] IBundle** result);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

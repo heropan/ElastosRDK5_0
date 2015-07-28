@@ -447,7 +447,7 @@ module
             [out] ICursorWindow** result);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -755,7 +755,7 @@ module
             [out,callee] ArrayOf<String>* args);
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

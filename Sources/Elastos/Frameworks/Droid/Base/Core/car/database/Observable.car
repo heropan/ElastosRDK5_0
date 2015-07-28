@@ -39,7 +39,7 @@ module
         UnregisterAll();
     }
 
-    }
-    }
-    }
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

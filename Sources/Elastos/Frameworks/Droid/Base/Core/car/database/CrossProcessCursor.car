@@ -49,7 +49,7 @@ module
             [out] Boolean* succeeded);
     }
 
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

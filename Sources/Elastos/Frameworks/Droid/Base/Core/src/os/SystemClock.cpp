@@ -53,8 +53,8 @@ Boolean SystemClock::SetCurrentTimeMillis(Int64 millis)
     // } catch (SecurityException e) {
     //     Slog.e(TAG, "Unable to set RTC", e);
     // }
-
     // return false;
+
 }
 
 

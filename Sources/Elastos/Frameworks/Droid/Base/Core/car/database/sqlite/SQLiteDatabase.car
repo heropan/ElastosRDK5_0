@@ -2,7 +2,7 @@ module
 {
     using interface Elastos.IO.IFile;
     using interface Elastos.Utility.ILocale;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Os.ICancellationSignal;
     interface Elastos.Droid.Content.IContentValues;
@@ -392,7 +392,7 @@ module
          */
         //@Deprecated
         GetSyncedTables(
-            [out] IObjectStringMap** tables);
+            [out] IMap** tables);
 
         /**
          * Reopens the database in read-write mode.
@@ -1296,7 +1296,7 @@ module
          * is not open.
          */
         GetAttachedDbs(
-            [out] IObjectStringMap** dbs);
+            [out] IMap** dbs);
 
         /**
          * Runs 'pragma integrity_check' on the given database (and all the attached databases)
@@ -1433,8 +1433,8 @@ module
             [out] String* str);
     }
 
-    } //Sqlite
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Sqlite
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

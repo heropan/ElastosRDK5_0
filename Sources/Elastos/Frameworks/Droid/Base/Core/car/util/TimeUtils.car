@@ -1,0 +1,73 @@
+
+module
+{
+    using interface Elastos.Utility.ITimeZone;
+    using interface Elastos.Utility.IArrayList;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Utility {
+    /**
+     * A class containing utility methods related to time zones.
+     */
+    interface ITimeUtilsHelper {
+        /**
+         * Tries to return a time zone that would have had the specified offset
+         * and DST value at the specified moment in the specified country.
+         * Returns null if no suitable zone could be found.
+         */
+        GetTimeZone(
+            [in] Int32 offset,
+            [in] Boolean dst,
+            [in] Int64 when,
+            [in] String country,
+            [out] ITimeZone** outtz);
+
+        /**
+         * Return list of unique time zones for the country. Do not modify
+         *
+         * @param country to find
+         * @return list of unique time zones, maybe empty but never null. Do not modify.
+         * @hide
+         */
+        GetTimeZonesWithUniqueOffsets(
+            [in] String country,
+            [out] IArrayList** outal);
+
+        /**
+         * Returns the time zones for the country, which is the code
+         * attribute of the timezone element in time_zones_by_country.xml. Do not modify.
+         *
+         * @param country is a two character country code.
+         * @return TimeZone list, maybe empty but never null. Do not modify.
+         * @hide
+         */
+        GetTimeZones(
+            [in] String country,
+            [out] IArrayList** outal);
+
+        /**
+         * Returns a String indicating the version of the time zone database currently
+         * in use.  The format of the string is dependent on the underlying time zone
+         * database implementation, but will typically contain the year in which the database
+         * was updated plus a letter from a to z indicating changes made within that year.
+         *
+         * <p>Time zone database updates should be expected to occur periodically due to
+         * political and legal changes that cannot be anticipated in advance.  Therefore,
+         * when computing the UTC time for a future event, applications should be aware that
+         * the results may differ following a time zone database update.  This method allows
+         * applications to detect that a database change has occurred, and to recalculate any
+         * cached times accordingly.
+         *
+         * <p>The time zone database may be assumed to change only when the device runtime
+         * is restarted.  Therefore, it is not necessary to re-query the database version
+         * during the lifetime of an activity.
+         */
+        GetTimeZoneDatabaseVersion(
+            [out] String* str);
+    }
+
+    } // namespace Utility
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -2,7 +2,7 @@ module
 {
     using interface Elastos.Core.IStringBuilder;
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Os.ICancellationSignal;
     interface Elastos.Droid.Database.Sqlite.ISQLiteDatabaseCursorFactory;
@@ -84,7 +84,7 @@ module
          * @param columnMap maps from the user column names to the database column names
          */
         SetProjectionMap(
-            [in] IObjectStringMap* columnMap);
+            [in] IMap* columnMap);
 
         /**
          * Sets the cursor factory to be used for the query.  You can use
@@ -348,7 +348,7 @@ module
         BuildUnionSubQuery(
             [in] String typeDiscriminatorColumn,
             [in] ArrayOf<String> unionColumns,
-            [in] IObjectStringMap* columnsPresentInTable,
+            [in] IMap* columnsPresentInTable,
             [in] Int32 computedColumnsOffset,
             [in] String typeDiscriminatorValue,
             [in] String selection,
@@ -367,7 +367,7 @@ module
         BuildUnionSubQuery(
             [in] String typeDiscriminatorColumn,
             [in] ArrayOf<String> unionColumns,
-            [in] IObjectStringMap* columnsPresentInTable,
+            [in] IMap* columnsPresentInTable,
             [in] Int32 computedColumnsOffset,
             [in] String typeDiscriminatorValue,
             [in] String selection,
@@ -444,8 +444,8 @@ module
             [in] ArrayOf<String> columns);
     }
 
-    } //Sqlite
-    } //Database
-    } //Droid
-    } //Elastos
+    } // namespace Sqlite
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
 }

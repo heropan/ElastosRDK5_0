@@ -1,15 +1,15 @@
-#ifndef __CSQLITECURSOR_H__
-#define __CSQLITECURSOR_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITECURSOR_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITECURSOR_H__
 
-#include "_CSQLiteCursor.h"
-#include "database/sqlite/SQLiteCursor.h"
+#include "_Elastos_Droid_Database_Sqlite_CSQLiteCursor.h"
+// #include "database/sqlite/SQLiteCursor.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
 namespace Sqlite {
 
-CarClass(CSQLiteCursor) , public SQLiteCursor
+CarClass(CSQLiteCursor) // , public SQLiteCursor
 {
 public:
     CARAPI constructor(
@@ -218,4 +218,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif // __CSQLITECURSOR_H__
+#endif // __ELASTOS_DROID_DATABASE_SQLITE_CSQLITECURSOR_H__
