@@ -197,38 +197,38 @@ protected:
      * @param registeredParties the current number of registered parties
      * @return {@code true} if this phaser should terminate
      */
-    Boolean OnAdvance(
+    CARAPI_(Boolean) OnAdvance(
         /* [in] */ Int32 phase,
         /* [in] */ Int32 registeredParties);
 
 private:
     // The following unpacking methods are usually manually inlined
 
-    static Int32 UnarrivedOf(
+    static CARAPI_(Int32) UnarrivedOf(
         /* [in] */ Int64 s);
 
-    static Int32 PartiesOf(
+    static CARAPI_(Int32) PartiesOf(
         /* [in] */ Int64 s);
 
-    static Int32 PhaseOf(
+    static CARAPI_(Int32) PhaseOf(
         /* [in] */ Int64 s);
 
-    static Int32 ArrivedOf(
+    static CARAPI_(Int32) ArrivedOf(
         /* [in] */ Int64 s);
 
-    AutoPtr<IAtomicReference> QueueFor(
+    CARAPI_(AutoPtr<IAtomicReference>) QueueFor(
         /* [in] */ Int32 phase);
 
     /**
      * Returns message string for bounds exceptions on arrival.
      */
-    String BadArrive(
+    CARAPI_(String) BadArrive(
         /* [in] */ Int64 s);
 
     /**
      * Returns message string for bounds exceptions on registration.
      */
-    String BadRegister(
+    CARAPI_(String) BadRegister(
         /* [in] */ Int64 s);
 
     /**
@@ -240,7 +240,7 @@ private:
      *               ONE_ARRIVAL for arrive,
      *               ONE_DEREGISTER for arriveAndDeregister
      */
-    Int32 DoArrive(
+    CARAPI_(Int32) DoArrive(
         /* [in] */ Int32 adjust);
 
     /**
@@ -249,7 +249,7 @@ private:
      * @param registrations number to add to both parties and
      * unarrived fields. Must be greater than zero.
      */
-    Int32 DoRegister(
+    CARAPI_(Int32) DoRegister(
         /* [in] */ Int32 registrations);
 
     /**
@@ -261,12 +261,12 @@ private:
      *
      * @return reconciled state
      */
-    Int64 ReconcileState();
+    CARAPI_(Int64) ReconcileState();
 
     /**
      * Implementation of toString and string-based error messages
      */
-    String StateToString(
+    CARAPI_(String) StateToString(
         /* [in] */ Int64 s);
 
     // Waiting mechanics
@@ -274,7 +274,7 @@ private:
     /**
      * Removes and signals threads from queue for phase.
      */
-    void ReleaseWaiters(
+    CARAPI_(void) ReleaseWaiters(
         /* [in] */ Int32 phase);
 
     /**
@@ -286,7 +286,7 @@ private:
      *
      * @return current phase on exit
      */
-    Int32 AbortWait(
+    CARAPI_(Int32) AbortWait(
         /* [in] */ Int32 phase);
 
     /**
@@ -298,7 +298,7 @@ private:
      * if null, denotes noninterruptible wait
      * @return current phase
      */
-    Int32 InternalAwaitAdvance(
+    CARAPI_(Int32) InternalAwaitAdvance(
         /* [in] */ Int32 phase,
         /* [in] */ QNode* node);
 

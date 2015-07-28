@@ -158,7 +158,7 @@ public:
         /**
          * Sets f's heapIndex if it is a ScheduledFutureTask.
          */
-        void SetIndex(
+        CARAPI_(void) SetIndex(
             /* [in] */ IRunnableScheduledFuture* f,
             /* [in] */ Int32 idx);
 
@@ -166,7 +166,7 @@ public:
          * Sifts element added at bottom up to its heap-ordered spot.
          * Call only when holding lock.
          */
-        void SiftUp(
+        CARAPI_(void) SiftUp(
             /* [in] */ Int32 k,
             /* [in] */ IRunnableScheduledFuture* key);
 
@@ -174,19 +174,19 @@ public:
          * Sifts element added at top down to its heap-ordered spot.
          * Call only when holding lock.
          */
-        void SiftDown(
+        CARAPI_(void) SiftDown(
             /* [in] */ Int32 k,
             /* [in] */ IRunnableScheduledFuture* key);
 
         /**
          * Resizes the heap array.  Call only when holding lock.
          */
-        void Grow();
+        CARAPI_(void) Grow();
 
         /**
          * Finds index of given object, or -1 if absent.
          */
-        Int32 IndexOf(
+        CARAPI_(Int32) IndexOf(
             /* [in] */ IInterface* x);
 
         /**
@@ -195,14 +195,14 @@ public:
          * holding lock.
          * @param f the task to remove and return
          */
-        AutoPtr<IRunnableScheduledFuture> FinishPoll(
+        CARAPI_(AutoPtr<IRunnableScheduledFuture>) FinishPoll(
             /* [in] */ IRunnableScheduledFuture* f);
 
         /**
          * Returns first element only if it is expired.
          * Used only by drainTo.  Call only when holding lock.
          */
-        AutoPtr<IRunnableScheduledFuture> PeekExpired();
+        CARAPI_(AutoPtr<IRunnableScheduledFuture>) PeekExpired();
 
     private:
         static Int32 INITIAL_CAPACITY;
@@ -295,7 +295,7 @@ private:
         /**
          * Sets the next time to run for a periodic task.
          */
-        void SetNextRunTime();
+        CARAPI_(void) SetNextRunTime();
 
     public:
         /** The actual task to be re-enqueued by reExecutePeriodic */
@@ -442,7 +442,7 @@ public:
      * @param value if {@code true}, continue after shutdown, else don't
      * @see #getContinueExistingPeriodicTasksAfterShutdownPolicy
      */
-    void SetContinueExistingPeriodicTasksAfterShutdownPolicy(
+    CARAPI_(void) SetContinueExistingPeriodicTasksAfterShutdownPolicy(
         /* [in] */ Boolean value);
 
     /**
@@ -456,7 +456,7 @@ public:
      * @return {@code true} if will continue after shutdown
      * @see #setContinueExistingPeriodicTasksAfterShutdownPolicy
      */
-    Boolean GetContinueExistingPeriodicTasksAfterShutdownPolicy();
+    CARAPI_(Boolean) GetContinueExistingPeriodicTasksAfterShutdownPolicy();
 
     /**
      * Sets the policy on whether to execute existing delayed
@@ -469,7 +469,7 @@ public:
      * @param value if {@code true}, execute after shutdown, else don't
      * @see #getExecuteExistingDelayedTasksAfterShutdownPolicy
      */
-    void SetExecuteExistingDelayedTasksAfterShutdownPolicy(
+    CARAPI_(void) SetExecuteExistingDelayedTasksAfterShutdownPolicy(
         /* [in] */ Boolean value);
 
     /**
@@ -483,7 +483,7 @@ public:
      * @return {@code true} if will execute after shutdown
      * @see #setExecuteExistingDelayedTasksAfterShutdownPolicy
      */
-    Boolean GetExecuteExistingDelayedTasksAfterShutdownPolicy();
+    CARAPI_(Boolean) GetExecuteExistingDelayedTasksAfterShutdownPolicy();
 
     /**
      * Sets the policy on whether cancelled tasks should be immediately
@@ -494,7 +494,7 @@ public:
      * @see #getRemoveOnCancelPolicy
      * @since 1.7
      */
-    void SetRemoveOnCancelPolicy(
+    CARAPI_(void) SetRemoveOnCancelPolicy(
         /* [in] */ Boolean value);
 
     /**
@@ -507,7 +507,7 @@ public:
      * @see #setRemoveOnCancelPolicy
      * @since 1.7
      */
-    Boolean GetRemoveOnCancelPolicy();
+    CARAPI_(Boolean) GetRemoveOnCancelPolicy();
 
     /**
      * Initiates an orderly shutdown in which previously submitted
@@ -567,7 +567,7 @@ public:
     /**
      * Returns current nanosecond time.
      */
-    Int64 Now();
+    CARAPI_(Int64) Now();
 
     /**
      * Returns true if can run a task given current run state
@@ -575,7 +575,7 @@ public:
      *
      * @param periodic true if this task periodic, false if delayed
      */
-    Boolean CanRunInCurrentRunState(
+    CARAPI_(Boolean) CanRunInCurrentRunState(
         /* [in] */ Boolean periodic);
 
     /**
@@ -584,14 +584,14 @@ public:
      *
      * @param task the task
      */
-    void ReExecutePeriodic(
+    CARAPI_(void) ReExecutePeriodic(
         /* [in] */ IRunnableScheduledFuture* task);
 
     /**
      * Cancels and clears the queue of all tasks that should not be run
      * due to shutdown policy.  Invoked within super.shutdown.
      */
-    void OnShutdown();
+    CARAPI_(void) OnShutdown();
 
     /**
      * Modifies or replaces the task used to execute a runnable.
@@ -604,7 +604,7 @@ public:
      * @return a task that can execute the runnable
      * @since 1.6
      */
-    AutoPtr<IRunnableScheduledFuture> DecorateTask(
+    CARAPI_(AutoPtr<IRunnableScheduledFuture>) DecorateTask(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IRunnableScheduledFuture* task);
 
@@ -619,14 +619,14 @@ public:
      * @return a task that can execute the callable
      * @since 1.6
      */
-    AutoPtr<IRunnableScheduledFuture> DecorateTask(
+    CARAPI_(AutoPtr<IRunnableScheduledFuture>) DecorateTask(
         /* [in] */ ICallable* callable,
         /* [in] */ IRunnableScheduledFuture* task);
 
     /**
      * Returns the trigger time of a delayed action.
      */
-    Int64 TriggerTime(
+    CARAPI_(Int64) TriggerTime(
         /* [in] */ Int64 delay);
 
 private:
@@ -641,13 +641,13 @@ private:
      *
      * @param task the task
      */
-    void DelayedExecute(
+    CARAPI_(void) DelayedExecute(
         /* [in] */ IRunnableScheduledFuture* task);
 
     /**
      * Returns the trigger time of a delayed action.
      */
-    Int64 TriggerTime(
+    CARAPI_(Int64) TriggerTime(
         /* [in] */ Int64 delay,
         /* [in] */ ITimeUnit* unit);
 
@@ -658,7 +658,7 @@ private:
      * not yet been, while some other task is added with a delay of
      * Long.MAX_VALUE.
      */
-    Int64 OverflowFree(
+    CARAPI_(Int64) OverflowFree(
         /* [in] */ Int64 delay);
 
 private:

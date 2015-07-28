@@ -146,7 +146,7 @@ private:
      * Return first element only if it is expired.
      * Used only by drainTo.  Call only when holding lock.
      */
-    AutoPtr<IInterface> PeekExpired();
+    CARAPI_(AutoPtr<IInterface>) PeekExpired();
 
 private:
     AutoPtr<IReentrantLock> mLock;

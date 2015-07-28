@@ -1210,12 +1210,12 @@ private:
      * create threads, since there is generally no recourse from
      * within this class.
      */
-    /* volatile */ AutoPtr<IThreadFactory> mThreadFactory;
+    volatile AutoPtr<IThreadFactory> mThreadFactory;
 
     /**
      * Handler called when saturated or shutdown in execute.
      */
-    /* volatile */ AutoPtr<IRejectedExecutionHandler> mHandler;
+    volatile AutoPtr<IRejectedExecutionHandler> mHandler;
 
     /**
      * Timeout in nanoseconds for idle threads waiting for work.
@@ -1223,27 +1223,27 @@ private:
      * present or if allowCoreThreadTimeOut. Otherwise they wait
      * forever for new work.
      */
-    /* volatile */ Int64 mKeepAliveTime;
+    volatile Int64 mKeepAliveTime;
 
     /**
      * If false (default), core threads stay alive even when idle.
      * If true, core threads use keepAliveTime to time out waiting
      * for work.
      */
-    /* volatile */ Boolean mAllowCoreThreadTimeOut;
+    volatile Boolean mAllowCoreThreadTimeOut;
 
     /**
      * Core pool size is the minimum number of workers to keep alive
      * (and not allow to time out etc) unless allowCoreThreadTimeOut
      * is set, in which case the minimum is zero.
      */
-    /* volatile */ Int32 mCorePoolSize;
+    volatile Int32 mCorePoolSize;
 
     /**
      * Maximum pool size. Note that the actual maximum is internally
      * bounded by CAPACITY.
      */
-    /* volatile */ Int32 mMaximumPoolSize;
+    volatile Int32 mMaximumPoolSize;
 
     /**
      * The default rejected execution handler

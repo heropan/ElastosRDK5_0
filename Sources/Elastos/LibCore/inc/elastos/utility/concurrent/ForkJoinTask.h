@@ -532,7 +532,7 @@ public:
     CARAPI Exec(
         /* [out] */ Boolean* res);
 
-    void InternalPropagateException(
+    CARAPI_(void) InternalPropagateException(
         /* [in] */ IThrowable* ex);
 
 public:
@@ -559,7 +559,7 @@ public:
     CARAPI Exec(
         /* [out] */ Boolean* res);
 
-    void Run();
+    CARAPI_(void) Run();
 
 public:
     AutoPtr<ICallable> mCallable;

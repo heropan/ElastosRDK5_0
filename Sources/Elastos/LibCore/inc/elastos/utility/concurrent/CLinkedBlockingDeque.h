@@ -66,15 +66,15 @@ private:
         AbstractItr(
             /* [in] */ CLinkedBlockingDeque* owner);
 
-        virtual AutoPtr<Node> FirstNode() = 0;
+        virtual CARAPI_(AutoPtr<Node>) FirstNode() = 0;
 
-        virtual AutoPtr<Node> NextNode(
+        virtual CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* n) = 0;
 
         /**
          * Advances next.
          */
-        void Advance();
+        CARAPI_(void) Advance();
 
         CARAPI HasNext(
             /* [out] */ Boolean* result);
@@ -123,9 +123,9 @@ private:
         Itr(
             /* [in] */ CLinkedBlockingDeque* owner);
 
-        virtual AutoPtr<Node> FirstNode();
+        virtual CARAPI_(AutoPtr<Node>) FirstNode();
 
-        virtual AutoPtr<Node> NextNode(
+        virtual CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* n);
     };
 
@@ -136,9 +136,9 @@ private:
         DescendingItr(
             /* [in] */ CLinkedBlockingDeque* owner);
 
-        virtual AutoPtr<Node> FirstNode();
+        virtual CARAPI_(AutoPtr<Node>) FirstNode();
 
-        virtual AutoPtr<Node> NextNode(
+        virtual CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* n);
     };
 

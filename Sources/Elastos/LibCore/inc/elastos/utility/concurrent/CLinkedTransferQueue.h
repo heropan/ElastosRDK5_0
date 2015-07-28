@@ -30,11 +30,11 @@ public:
     {
     public:
         // CAS methods for fields
-        Boolean CasNext(
+        CARAPI_(Boolean) CasNext(
             /* [in] */ Node* cmp,
             /* [in] */ Node* val);
 
-        Boolean CasItem(
+        CARAPI_(Boolean) CasItem(
             /* [in] */ IInterface* cmp,
             /* [in] */ IInterface* val);
 
@@ -50,7 +50,7 @@ public:
          * Links node to itself to avoid garbage retention.  Called
          * only after CASing head field, so uses relaxed write.
          */
-        void ForgetNext();
+        CARAPI_(void) ForgetNext();
 
         /**
          * Sets item to self and waiter to null, to avoid garbage
@@ -61,31 +61,31 @@ public:
          * follows either CAS or return from park (if ever parked;
          * else we don't care).
          */
-        void ForgetContents();
+        CARAPI_(void) ForgetContents();
 
         /**
          * Returns true if this node has been matched, including the
          * case of artificial matches due to cancellation.
          */
-        Boolean IsMatched();
+        CARAPI_(Boolean) IsMatched();
 
         /**
          * Returns true if this is an unmatched request node.
          */
-        Boolean IsUnmatchedRequest();
+        CARAPI_(Boolean) IsUnmatchedRequest();
 
         /**
          * Returns true if a node with the given mode cannot be
          * appended to this node because this node is unmatched and
          * has opposite data mode.
          */
-        Boolean CannotPrecede(
+        CARAPI_(Boolean) CannotPrecede(
             /* [in] */ Boolean haveData);
 
         /**
          * Tries to artificially match a data node -- used by remove.
          */
-        Boolean TryMatchData();
+        CARAPI_(Boolean) TryMatchData();
 
     public:
         Boolean mIsData;   // false if this is a request node
@@ -139,7 +139,7 @@ public:
         /**
          * Moves to next node after prev, or first node if prev null.
          */
-        void Advance(
+        CARAPI_(void) Advance(
             /* [in] */ Node* prev);
 
     private:

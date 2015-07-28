@@ -42,7 +42,7 @@ public:
          *         the caller can distinguish which of these occurred
          *         by checking Thread.interrupted.
          */
-        virtual AutoPtr<IInterface> Transfer(
+        virtual CARAPI_(AutoPtr<IInterface>) Transfer(
             /* [in] */ IInterface* e,
             /* [in] */ Boolean timed,
             /* [in] */ Int64 nanos) = 0;
@@ -66,7 +66,7 @@ public:
             SNode(
                 /* [in] */ IInterface* item);
 
-            Boolean CasNext(
+            CARAPI_(Boolean) CasNext(
                 /* [in] */ SNode* cmp,
                 /* [in] */ SNode* val);
 
@@ -78,15 +78,15 @@ public:
              * @param s the node to match
              * @return true if successfully matched to s
              */
-            Boolean TryMatch(
+            CARAPI_(Boolean) TryMatch(
                 /* [in] */ SNode* s);
 
             /**
              * Tries to cancel a wait by matching node to itself.
              */
-            void TryCancel();
+            CARAPI_(void) TryCancel();
 
-            Boolean IsCancelled();
+            CARAPI_(Boolean) IsCancelled();
 
         public:
             volatile AutoPtr<SNode> mNext;        // next node in stack
@@ -117,7 +117,7 @@ public:
     public:
         CAR_INTERFACE_DECL()
 
-        Boolean CasHead(
+        CARAPI_(Boolean) CasHead(
             /* [in] */ SNode* h,
             /* [in] */ SNode* nh);
 
@@ -128,7 +128,7 @@ public:
          * and CASes of head and to avoid surges of garbage when CASes
          * to push nodes fail due to contention.
          */
-        static AutoPtr<SNode> Snode(
+        static CARAPI_(AutoPtr<SNode>) Snode(
             /* [in] */ SNode* s,
             /* [in] */ IInterface* e,
             /* [in] */ SNode* next,
@@ -137,7 +137,7 @@ public:
         /**
          * Puts or takes an item.
          */
-        AutoPtr<IInterface> Transfer(
+        CARAPI_(AutoPtr<IInterface>) Transfer(
             /* [in] */ IInterface* e,
             /* [in] */ Boolean timed,
             /* [in] */ Int64 nanos);
@@ -150,7 +150,7 @@ public:
          * @param nanos timeout value
          * @return matched node, or s if cancelled
          */
-        AutoPtr<SNode> AwaitFulfill(
+        CARAPI_(AutoPtr<SNode>) AwaitFulfill(
             /* [in] */ SNode* s,
             /* [in] */ Boolean timed,
             /* [in] */ Int64 nanos);
@@ -159,17 +159,17 @@ public:
          * Returns true if node s is at head or there is an active
          * fulfiller.
          */
-        Boolean ShouldSpin(
+        CARAPI_(Boolean) ShouldSpin(
             /* [in] */ SNode* s);
 
         /**
          * Unlinks s from the stack.
          */
-        void Clean(
+        CARAPI_(void) Clean(
             /* [in] */ SNode* s);
 
         /** Returns true if m has fulfilling bit set. */
-        static Boolean IsFulfilling(
+        static CARAPI_(Boolean) IsFulfilling(
             /* [in] */ Int32 m);
 
     public:
@@ -223,28 +223,28 @@ public:
                 /* [in] */ IInterface* item,
                 /* [in] */ Boolean isData);
 
-            Boolean CasNext(
+            CARAPI_(Boolean) CasNext(
                 /* [in] */ QNode* cmp,
                 /* [in] */ QNode* val);
 
-            Boolean CasItem(
+            CARAPI_(Boolean) CasItem(
                 /* [in] */ IInterface* cmp,
                 /* [in] */ IInterface* val);
 
             /**
              * Tries to cancel by CAS'ing ref to this as item.
              */
-            void TryCancel(
+            CARAPI_(void) TryCancel(
                 /* [in] */ IInterface* cmp);
 
-            Boolean IsCancelled();
+            CARAPI_(Boolean) IsCancelled();
 
             /**
              * Returns true if this node is known to be off the queue
              * because its next pointer has been forgotten due to
              * an advanceHead operation.
              */
-            Boolean IsOffList();
+            CARAPI_(Boolean) IsOffList();
 
         public:
             volatile AutoPtr<QNode> mNext;          // next node in queue
@@ -280,28 +280,28 @@ public:
          * Tries to cas nh as new head; if successful, unlink
          * old head's next node to avoid garbage retention.
          */
-        void AdvanceHead(
+        CARAPI_(void) AdvanceHead(
             /* [in] */ QNode* h,
             /* [in] */ QNode* nh);
 
         /**
          * Tries to cas nt as new tail.
          */
-        void AdvanceTail(
+        CARAPI_(void) AdvanceTail(
             /* [in] */ QNode* t,
             /* [in] */ QNode* nt);
 
         /**
          * Tries to CAS cleanMe slot.
          */
-        Boolean CasCleanMe(
+        CARAPI_(Boolean) CasCleanMe(
             /* [in] */ QNode* cmp,
             /* [in] */ QNode* val);
 
         /**
          * Puts or takes an item.
          */
-        AutoPtr<IInterface> Transfer(
+        CARAPI_(AutoPtr<IInterface>) Transfer(
             /* [in] */ IInterface* e,
             /* [in] */ Boolean timed,
             /* [in] */ Int64 nanos);
@@ -315,7 +315,7 @@ public:
          * @param nanos timeout value
          * @return matched item, or s if cancelled
          */
-        AutoPtr<IInterface> AwaitFulfill(
+        CARAPI_(AutoPtr<IInterface>) AwaitFulfill(
             /* [in] */ QNode* s,
             /* [in] */ IInterface* e,
             /* [in] */ Boolean timed,
@@ -324,7 +324,7 @@ public:
         /**
          * Gets rid of cancelled node s with original predecessor pred.
          */
-        void Clean(
+        CARAPI_(void) Clean(
             /* [in] */ QNode* pred,
             /* [in] */ QNode* s);
 
@@ -518,13 +518,13 @@ private:
     /**
      * Saves this queue to a stream (that is, serializes it).
      */
-    void WriteObject(
+    CARAPI_(void) WriteObject(
         /* [in] */ IObjectOutputStream* s);
 
     /**
      * Reconstitutes this queue from a stream (that is, deserializes it).
      */
-    void ReadObject(
+    CARAPI_(void) ReadObject(
         /* [in] */ IObjectInputStream* s);
 
 public:

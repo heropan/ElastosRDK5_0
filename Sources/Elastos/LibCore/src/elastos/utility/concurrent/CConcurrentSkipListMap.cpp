@@ -96,12 +96,14 @@ Boolean CConcurrentSkipListMap::Node::CasNext(
 
 Boolean CConcurrentSkipListMap::Node::IsMarker()
 {
-    return Object::Equals(mValue, THIS_PROBE(IInterface));
+    Boolean b = Object::Equals(mValue.Get(), THIS_PROBE(IInterface));
+    return b;
 }
 
 Boolean CConcurrentSkipListMap::Node::IsBaseHeader()
 {
-    return Object::Equals(mValue, sBASE_HEADER);
+    Boolean b = Object::Equals(mValue.Get(), sBASE_HEADER);
+    return b;
 }
 
 Boolean CConcurrentSkipListMap::Node::AppendMarker(
@@ -121,7 +123,7 @@ void CConcurrentSkipListMap::Node::HelpDelete(
      */
     if (Object::Equals(f->Probe(EIID_IInterface), mNext->Probe(EIID_IInterface))
         && Object::Equals(THIS_PROBE(IInterface), b->mNext->Probe(EIID_IInterface))) {
-        if (f == NULL || !Object::Equals(f->mValue, f->Probe(EIID_IInterface))) // not already marked
+        if (f == NULL || !Object::Equals(f->mValue.Get(), f->Probe(EIID_IInterface))) // not already marked
             AppendMarker(f);
         else
             b->CasNext(this, f->mNext);
@@ -330,7 +332,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindPredecessor(
         return NULL;
 //        throw new NullPointerException(); // don't postpone errors
     for (;;) {
-        AutoPtr<Index> q = mHead;
+        AutoPtr<HeadIndex> q = mHead;
         AutoPtr<Index> r = q->mRight;
         for (;;) {
             if (r != NULL) {
@@ -344,14 +346,14 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindPredecessor(
                 }
                 Int32 res;
                 if ((key->CompareTo(k, &res), res) > 0) {
-                    q = r;
+                    q = (HeadIndex*)(r.Get());
                     r = r->mRight;
                     continue;
                 }
             }
             AutoPtr<Index> d = q->mDown;
             if (d != NULL) {
-                q = d;
+                q = (HeadIndex*)(d.Get());
                 r = d->mRight;
             }
             else
@@ -371,7 +373,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindNode(
             if (n == NULL)
                 return NULL;
             AutoPtr<Node> f = n->mNext;
-            if (n != b->mNext)                // inconsistent read
+            if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))                // inconsistent read
                 break;
             AutoPtr<IInterface> v = n->mValue;
             if (v == NULL) {                // n is deleted
@@ -426,7 +428,7 @@ AutoPtr<IInterface> CConcurrentSkipListMap::DoPut(
         for (;;) {
             if (n != NULL) {
                 AutoPtr<Node> f = n->mNext;
-                if (n != b->mNext)               // inconsistent read
+                if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))               // inconsistent read
                     break;
                 AutoPtr<IInterface> v = n->mValue;
                 if (v == NULL) {               // n is deleted
@@ -602,7 +604,7 @@ AutoPtr<IInterface> CConcurrentSkipListMap::DoRemove(
             if (n == NULL)
                 return NULL;
             AutoPtr<Node> f = n->mNext;
-            if (n != b->mNext)                    // inconsistent read
+            if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))                    // inconsistent read
                 break;
             AutoPtr<IInterface> v = n->mValue;
             if (v == NULL) {                    // n is deleted
@@ -642,8 +644,8 @@ void CConcurrentSkipListMap::TryReduceLevel()
     AutoPtr<HeadIndex> d;
     AutoPtr<HeadIndex> e;
     if (h->mLevel > 3 &&
-        (d = h->mDown) != NULL &&
-        (e = d->mDown) != NULL &&
+        (d = (HeadIndex*)(h->mDown.Get())) != NULL &&
+        (e = (HeadIndex*)(d->mDown.Get())) != NULL &&
         e->mRight == NULL &&
         d->mRight == NULL &&
         h->mRight == NULL &&
@@ -696,12 +698,12 @@ AutoPtr<IMapEntry> CConcurrentSkipListMap::DoRemoveFirstEntry()
 void CConcurrentSkipListMap::ClearIndexToFirst()
 {
     for (;;) {
-        AutoPtr<Index> q = mHead;
+        AutoPtr<HeadIndex> q = mHead;
         for (;;) {
             AutoPtr<Index> r = q->mRight;
             if (r != NULL && r->IndexesDeletedNode() && !q->Unlink(r))
                 break;
-            if ((q = q->mDown) == NULL) {
+            if ((q = (HeadIndex*)(q->mDown.Get())) == NULL) {
                 if (mHead->mRight == NULL)
                     TryReduceLevel();
                 return;
@@ -719,7 +721,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindLast()
      * because this doesn't use comparisons.  So traversals of
      * both levels are folded together.
      */
-    AutoPtr<Index> q = mHead;
+    AutoPtr<HeadIndex> q = mHead;
     for (;;) {
         AutoPtr<Index> d, r;
         if ((r = q->mRight) != NULL) {
@@ -728,10 +730,10 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindLast()
                 q = mHead; // restart
             }
             else
-                q = r;
+                q = (HeadIndex*)(r.Get());
         }
         else if ((d = q->mDown) != NULL) {
-            q = d;
+            q = (HeadIndex*)(d.Get());
         }
         else {
             AutoPtr<Node> b = q->mNode;
@@ -740,7 +742,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindLast()
                 if (n == NULL)
                     return b->IsBaseHeader() ? NULL : b;
                 AutoPtr<Node> f = n->mNext;            // inconsistent read
-                if (n != b->mNext)
+                if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))
                     break;
                 AutoPtr<IInterface> v = n->mValue;
                 if (v == NULL) {                 // n is deleted
@@ -761,7 +763,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindLast()
 AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindPredecessorOfLast()
 {
     for (;;) {
-        AutoPtr<Index> q = mHead;
+        AutoPtr<HeadIndex> q = mHead;
         for (;;) {
             AutoPtr<Index> d, r;
             if ((r = q->mRight) != NULL) {
@@ -771,12 +773,12 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindPredecessorOfL
                 }
                 // proceed as far across as possible without overshooting
                 if (r->mNode->mNext != NULL) {
-                    q = r;
+                    q = (HeadIndex*)(r.Get());
                     continue;
                 }
             }
             if ((d = q->mDown) != NULL)
-                q = d;
+                q = (HeadIndex*)(d.Get());
             else
                 return q->mNode;
         }
@@ -796,7 +798,7 @@ AutoPtr<IMapEntry> CConcurrentSkipListMap::DoRemoveLastEntry()
         }
         for (;;) {
             AutoPtr<Node> f = n->mNext;
-            if (n != b->mNext)                    // inconsistent read
+            if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))                    // inconsistent read
                 break;
             AutoPtr<IInterface> v = n->mValue;
             if (v == NULL) {                    // n is deleted
@@ -848,7 +850,7 @@ AutoPtr<CConcurrentSkipListMap::Node> CConcurrentSkipListMap::FindNear(
             if (n == NULL)
                 return ((rel & sLT) == 0 || b->IsBaseHeader()) ? NULL : b;
             AutoPtr<Node> f = n->mNext;
-            if (n != b->mNext)                  // inconsistent read
+            if (!Object::Equals(n->Probe(EIID_IInterface), b->mNext->Probe(EIID_IInterface)))                  // inconsistent read
                 break;
             AutoPtr<IInterface> v = n->mValue;
             if (v == NULL) {                  // n is deleted
