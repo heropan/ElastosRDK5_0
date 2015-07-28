@@ -656,7 +656,7 @@ ECode CSurface::constructor(
     //surfaceTexture->ToString(&mName);
     // try {
     ECode ec = NativeCreateFromSurfaceTexture(surfaceTexture);
-    if (ec == E_OUT_OF_RESOURCES_EXCEPTION) {
+    if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
         ec = E_RUNTIME_EXCEPTION;
     }
     // } catch (OutOfResourcesException ex) {

@@ -21,6 +21,7 @@ module
      * @Involve
      * interface Elastos.Droid.Content.Pm.IPackageItemInfo
      */
+    [local]
     interface IPermissionGroupInfo {
         /**
          * Flag for #flags, corresponding to <code>personalInfo</code>
@@ -29,7 +30,7 @@ module
          * @sa #flags
          * @sa android.R.attr#permissionGroupFlags
          */
-        const Int32 FLAG_PERSONAL_INFO = 0x00000001; //1<<0
+        const Int32 FLAG_PERSONAL_INFO = 1<<0;
 
         /**
          * Retrieve the textual description of this permission.  This

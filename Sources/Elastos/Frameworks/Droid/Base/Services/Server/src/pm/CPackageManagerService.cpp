@@ -1030,7 +1030,7 @@ Boolean CPackageManagerService::HandlerParams::StartCopy()
     }
     else {
         ECode ec = HandleStartCopy();
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             if (DEBUG_INSTALL)
                 Slogger::I(TAG, "Posting install MCS_RECONNECT");
 

@@ -262,7 +262,7 @@ AutoPtr<IDrawable> StatusBarIconView::GetIcon(
         AutoPtr<IPackageManager> pm;
         context->GetPackageManager((IPackageManager**)&pm);
         ECode ec = pm->GetResourcesForApplicationAsUser(pkg, userId, (IResources**)&r);
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             return NULL;
         }
         // } catch (PackageManager.NameNotFoundException ex) {

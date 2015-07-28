@@ -9048,7 +9048,7 @@ AutoPtr<ProcessRecord> CActivityManagerService::AddAppLocked(
 //    try {
         ECode ec = AppGlobals::GetPackageManager()->SetPackageStoppedState(
                 pkgName, FALSE, UserHandle::GetUserId(app->mUid));
-        if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
             Slogger::W(TAG, "Failed trying to unstop package %s : %08x",
                     pkgName.string(), ec);
         }

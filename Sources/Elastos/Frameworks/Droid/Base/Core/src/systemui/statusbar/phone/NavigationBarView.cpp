@@ -710,7 +710,7 @@ String NavigationBarView::GetResourceName(
         mContext->GetResources((IResources**)&res);
         String name;
         ECode ec = res->GetResourceName(resId, &name);
-        if (ec == E_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NOT_FOUND_EXCEPTION) {
             return String("(unknown)");
         }
         return name;

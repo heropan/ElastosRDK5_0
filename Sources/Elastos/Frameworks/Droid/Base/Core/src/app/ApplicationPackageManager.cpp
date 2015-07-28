@@ -1421,7 +1421,7 @@ ECode ApplicationPackageManager::GetXml(
     if (appInfo == NULL) {
         // try {
         ECode ec = GetApplicationInfo(packageName, 0, (IApplicationInfo**)&appInfo);
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             *parser = NULL;
             return ec;
         }

@@ -322,7 +322,7 @@ ECode CXPathFactoryFinder::LoadFromServicesFile(
     ECode ec1 = CInputStreamReader::New(in, String("UTF-8"), (IInputStreamReader**)&reader);
     AutoPtr<IReader> r = IReader::Probe(reader);
     ECode ec2 = CBufferedReader::New(r,/* DEFAULT_LINE_LENGTH,*/ (IBufferedReader**)&rd);
-    if (ec1 == E_UNSUPPORTED_ENCODING_EXCEPTION || ec2 == E_UNSUPPORTED_ENCODING_EXCEPTION) {
+    if (ec1 == (ECode)E_UNSUPPORTED_ENCODING_EXCEPTION || ec2 == (ECode)E_UNSUPPORTED_ENCODING_EXCEPTION) {
         CInputStreamReader::New(in, (IInputStreamReader**)&reader);
         r = IReader::Probe(reader);
         CBufferedReader::New(r, /*DEFAULT_LINE_LENGTH,*/ (IBufferedReader**)&rd);
@@ -334,7 +334,7 @@ ECode CXPathFactoryFinder::LoadFromServicesFile(
     while (TRUE) {
 
         ECode ec = rd->ReadLine(&factoryClassName);
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             break;
         }
 

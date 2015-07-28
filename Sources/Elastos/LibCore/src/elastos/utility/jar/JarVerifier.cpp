@@ -190,7 +190,7 @@ ECode JarVerifier::InitEntry(
         // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md;
         ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             //ignore
         }
         if (FAILED(ec)) {
@@ -393,7 +393,7 @@ ECode JarVerifier::Verify(
         // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md;
         ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
-        if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
             //ignore
         }
         if (FAILED(ec)) {

@@ -1,53 +1,20 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Content {
     namespace Pm {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IParceledListSlice {
-        /**
-         * Appends a parcel to this list slice.
-         *
-         * @param item Parcelable item to append to this list slice
-         * @return true when the list slice is full and should not be appended to
-         *         anymore
-         */
-        Append(
-            [in] IParcelable* item,
-            [out] Boolean* result);
-
-        /**
-         * Populates a list and discards the internal state of the
-         * ParceledListSlice in the process. The instance should
-         * not be used anymore.
-         *
-         * @param list list to insert items from this slice.
-         * @param creator creator that knows how to unparcel the
-         *        target object type.
-         * @return the last item inserted into the list or null if none.
-         */
-        PopulateList(
-            [in/*, out*/] IObjectContainer* list,
-            [in] ClassID clsid,
-            [out] IInterface** obj);
-
-        /**
-         * Sets whether this is the last list slice in the series.
-         *
-         * @param lastSlice
-         */
-        SetLastSlice(
-            [in] Boolean lastSlice);
-
-        /**
-         * Returns whether this is the last slice in a series of slices.
-         *
-         * @return true if this is the last slice in the series.
-         */
-        IsLastSlice(
-            [out] Boolean* result);
+        GetList(
+            [out] IList** list);
     }
 
     } // namespace Pm

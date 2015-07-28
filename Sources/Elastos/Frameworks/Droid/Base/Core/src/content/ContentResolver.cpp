@@ -613,13 +613,13 @@ ECode ContentResolver::Query(
     // try {
     ECode ec = unstableProvider->Query(uri, projection,
             selection, selectionArgs, sortOrder, remoteCancellationSignal, (ICursor**)&temp);
-    if (ec == E_DEAD_OBJECT_EXCEPTION) goto DeadObjectException;
+    if (ec == (ECode)E_DEAD_OBJECT_EXCEPTION) goto DeadObjectException;
     FAIL_GOTO(ec, __EXIT__)
 
     // BEGIN privacy-added
     // Logger::D(TAG, "PDroid:ContentResolver:wrapping content resolver in PrivacyContentResolver");
     ec = PrivacyContentResolver::EnforcePrivacyPermission(uri, projection, mContext, temp, (ICursor**)&qCursor);
-    if (ec == E_DEAD_OBJECT_EXCEPTION) goto DeadObjectException;
+    if (ec == (ECode)E_DEAD_OBJECT_EXCEPTION) goto DeadObjectException;
     FAIL_GOTO(ec, __EXIT__)
     // END privacy-added
 

@@ -167,7 +167,7 @@ Int32 CPendingIntentRecord::SendInner(
                         resultTo, resultWho, requestCode, 0, options, userId, &status);
             }
 
-            if (ec == E_RUNTIME_EXCEPTION) {
+            if (ec == (ECode)E_RUNTIME_EXCEPTION) {
                 Slogger::W(CActivityManagerService::TAG,
                         "Unable to send startActivity intent %08x", ec);
             }
@@ -185,7 +185,7 @@ Int32 CPendingIntentRecord::SendInner(
                     finalIntent, resolvedType, finishedReceiver, code, nullStr, NULL,
                     requiredPermission, (finishedReceiver != NULL), FALSE, userId, &status);
             sendFinish = FALSE;
-            if (ec == E_RUNTIME_EXCEPTION) {
+            if (ec == (ECode)E_RUNTIME_EXCEPTION) {
                 Slogger::W(CActivityManagerService::TAG,
                         "Unable to send startActivity intent %08x", ec);
             }
@@ -194,7 +194,7 @@ Int32 CPendingIntentRecord::SendInner(
         case IActivityManager::INTENT_SENDER_SERVICE:
             AutoPtr<IComponentName> cn;
             ec = mOwner->StartServiceInPackage(mUid, finalIntent, resolvedType, userId, (IComponentName**)&cn);
-            if (ec == E_RUNTIME_EXCEPTION) {
+            if (ec == (ECode)E_RUNTIME_EXCEPTION) {
                 Slogger::W(CActivityManagerService::TAG,
                         "Unable to send startService intent %08x", ec);
             }

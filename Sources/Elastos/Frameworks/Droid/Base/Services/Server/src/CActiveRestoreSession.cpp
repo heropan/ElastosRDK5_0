@@ -260,7 +260,7 @@ ECode CActiveRestoreSession::RestorePackage(
         AutoPtr<IPackageInfo> app;
         //try {
         ECode ec = mHost->mPackageManager->GetPackageInfo(packageName, 0, (IPackageInfo**)&app);
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             Slogger::W(TAG, "Asked to restore nonexistent pkg %s", packageName.string());
             *value = -1;
             return ec;

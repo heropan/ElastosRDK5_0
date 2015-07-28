@@ -1165,7 +1165,7 @@ ECode CDevicePolicyManager::GetAdminInfo(
     ri->SetActivityInfo(ai.Get());
 
     ec = CDeviceAdminInfo::New(mContext, ri, info);
-    if (ec == E_XML_PULL_PARSER_EXCEPTION) {
+    if (ec == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
         String warn("XmlPullParserException: Unable to parse device policy");
         warn += cnStr;
         Logger::W(TAG, warn);
@@ -1173,7 +1173,7 @@ ECode CDevicePolicyManager::GetAdminInfo(
         *info = NULL;
         return ec;
     }
-    else if (ec == E_IO_EXCEPTION) {
+    else if (ec == (ECode)E_IO_EXCEPTION) {
         String warn("IOException: Unable to parse device policy");
         warn += cnStr;
         Logger::W(TAG, warn);

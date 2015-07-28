@@ -554,7 +554,7 @@ ECode CX509CertImpl::constructor(
     mCertificate->GetTbsCertificate((ITBSCertificate**)&mTbsCert);
     mTbsCert->GetExtensions((IExtensions**)&mExtensions);
 ERROR_PROCESS:
-    if (ec == E_IO_EXCEPTION)
+    if (ec == (ECode)E_IO_EXCEPTION)
         return E_CERTIFICATE_EXCEPTION;
     return NOERROR;
 }

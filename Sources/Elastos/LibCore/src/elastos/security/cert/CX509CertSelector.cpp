@@ -89,7 +89,7 @@ ECode CX509CertSelector::SetIssuerUsingString(
     mIssuerName = issuerName;
     mIssuerBytes = NULL;
 ERROR_PROCESS:
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         return E_IO_EXCEPTION;
     }
     return ec;
@@ -123,7 +123,7 @@ ECode CX509CertSelector::SetIssuerUsingBytes(
     mIssuerBytes = ArrayOf<Byte>::Alloc(issuerDN->GetLength());
     FAIL_GOTO(ec = mIssuerBytes->Copy(0, issuerDN, 0, issuerDN->GetLength()), ERROR_PROCESS)
 ERROR_PROCESS:
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         return E_IO_EXCEPTION;
     }
     return ec;
@@ -173,7 +173,7 @@ ECode CX509CertSelector::SetSubjectUsingString(
     ECode ec;
     FAIL_GOTO(ec = CX500Principal::New(subjectDN, (IX500Principal**)&mSubject), ERROR_PROCESS)
 ERROR_PROCESS:
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         return E_IO_EXCEPTION;
     }
     return ec;
@@ -199,7 +199,7 @@ ECode CX509CertSelector::SetSubjectUsingBytes(
     }
     mSubject = NULL;
     ECode ec = CX500Principal::New(subjectDN, (IX500Principal**)&mSubject);
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         return E_IO_EXCEPTION;
     }
     return ec;

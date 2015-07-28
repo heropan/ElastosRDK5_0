@@ -35,7 +35,7 @@ ECode CIDN::ToUnicode(
 
     // try {
     ECode ec = Convert(input, flags, FALSE, result);
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         *result = input;
         return NOERROR;
     }

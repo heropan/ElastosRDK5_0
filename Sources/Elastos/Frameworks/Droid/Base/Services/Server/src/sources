@@ -34,6 +34,7 @@ INCLUDES += $(PREBUILD_INC)/skia/core
 INCLUDES += $(PREBUILD_INC)/gui
 INCLUDES += $(PREBUILD_INC)/ui
 INCLUDES += $(PREBUILD_INC)/hardware
+INCLUDES += $(PREBUILD_INC)/surfaceFlinger
 
 SOURCES = Elastos.Droid.Server.car
 SOURCES += CSystemServer.cpp

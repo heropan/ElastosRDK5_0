@@ -151,10 +151,10 @@ _EXIT_:
             is = NULL;
         }
 
-        if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
-        else if (ec == E_IO_EXCEPTION) {
+        else if (ec == (ECode)E_IO_EXCEPTION) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
 
@@ -308,7 +308,7 @@ ECode CMediaMetadataRetriever::SetDataSource(
     AutoPtr<IFileDescriptor> descriptor;
 
     ECode ec = resolver->OpenAssetFileDescriptor(uri, String("r"), (IAssetFileDescriptor**)&fd);
-    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         ec = E_ILLEGAL_ARGUMENT_EXCEPTION;
         FAIL_GOTO(ec, _EXIT_);
     }
@@ -349,7 +349,7 @@ _EXIT_:
         fd = NULL;
     }
 
-    if (ec == E_SECURITY_EXCEPTION) {
+    if (ec == (ECode)E_SECURITY_EXCEPTION) {
         ec = NOERROR;
     }
 

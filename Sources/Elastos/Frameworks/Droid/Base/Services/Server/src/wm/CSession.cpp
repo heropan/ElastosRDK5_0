@@ -106,7 +106,7 @@ ECode CSession::constructor(
     }
 
 _Exit_:
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         if (mService->mInputMethodManager != NULL) {
             mService->mInputMethodManager->RemoveClient(client);
         }

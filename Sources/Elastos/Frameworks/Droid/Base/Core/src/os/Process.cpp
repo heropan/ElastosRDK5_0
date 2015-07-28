@@ -88,7 +88,7 @@ ECode Process::Start(
     // try {
     ECode ec = StartViaZygote(processClass, niceName, uid, gid, gids,
             debugFlags, mountExternal, targetSdkVersion, seInfo, zygoteArgs, result);
-    if (ec == E_ZYGOTE_START_FAILED_EX) {
+    if (ec == (ECode)E_ZYGOTE_START_FAILED_EX) {
         return E_RUNTIME_EXCEPTION;
     }
     return ec;

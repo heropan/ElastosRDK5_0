@@ -19,7 +19,11 @@ module
      * Information that is returned from resolving an intent against an IntentFilter.
      * This partially corresponds to information collected from the AndroidManifest.xml's <intent> tags.
      */
-
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [local]
     interface IResolveInfo {
         /**
          * Retrieve the current textual label associated with this resolution.  This
@@ -147,6 +151,7 @@ module
             [in] Boolean system);
     }
 
+    [local]
     interface IResolveInfoDisplayNameComparator {
         Compare(
             [in] IResolveInfo* a,

@@ -101,23 +101,23 @@ ECode SessionCmdTask::FactoryRunForResult(
 
     if (SUCCEEDED(ec))
         mResultNum = ResultMsg::RESULTMSG_NOERROR->ToInt32();
-    else if (ec == E_NO_SUCH_METHOD_EXCEPTION) {
+    else if (ec == (ECode)E_NO_SUCH_METHOD_EXCEPTION) {
         Slogger::E(TAG, "NoSuchMethodException!!");
         *result = ResultMsg::ES_METHOD_NOT_FOUND_EXCEPTION->ToString();
         mResultNum = ResultMsg::ES_METHOD_NOT_FOUND_EXCEPTION->ToInt32();
         ec = NOERROR;
     }
-    // else if (ec == E_ILLEGAL_ACCESS_EXCEPTION) {
+    // else if (ec == (ECode)E_ILLEGAL_ACCESS_EXCEPTION) {
     //     Slogger::E(TAG, "IllegalAccessException!!");
     //     *result = ResultMsg::ES_ILLEGAL_ACCESS_EXCEPTION->ToString();
     //     mResultNum = ResultMsg::ES_ILLEGAL_ACCESS_EXCEPTION->ToInt32();
     // }
-    // else if (ec == E_INVOCATION_TARGET_EXCEPTION) {
+    // else if (ec == (ECode)E_INVOCATION_TARGET_EXCEPTION) {
     //     Slogger::E(TAG, "InvocationTargetException!!");
     //     *result = ResultMsg::ES_INVOCATION_TARGET_EXCEPTION->ToString();
     //     mResultNum = ResultMsg::ES_INVOCATION_TARGET_EXCEPTION->ToInt32();
     // }
-    // else if (ec == E_INSTANTIATION_EXCEPTION) {
+    // else if (ec == (ECode)E_INSTANTIATION_EXCEPTION) {
     //     Slogger::E(TAG, "InstantiationException!!");
     //     *result = ResultMsg::ES_INSTANTIATION_EXCEPTION->ToString();
     //     mResultNum = ResultMsg::ES_INSTANTIATION_EXCEPTION->ToInt32();

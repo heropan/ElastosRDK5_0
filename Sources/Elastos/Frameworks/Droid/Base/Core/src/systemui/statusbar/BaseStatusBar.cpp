@@ -1276,10 +1276,10 @@ Boolean BaseStatusBar::InflateViews(
     AutoPtr<IView> expandedLarge;
     // try {
        ECode ec = oneU->Apply(mContext, adaptive, mOnClickHandler, (IView**)&expandedOneU);
-       if (ec == E_RUNTIME_EXCEPTION) return FALSE;
+       if (ec == (ECode)E_RUNTIME_EXCEPTION) return FALSE;
        if (large != NULL) {
            ec = large->Apply(mContext, adaptive, mOnClickHandler, (IView**)&expandedLarge);
-           if (ec == E_RUNTIME_EXCEPTION) return FALSE;
+           if (ec == (ECode)E_RUNTIME_EXCEPTION) return FALSE;
        }
 
     // catch (RuntimeException e) {
@@ -1683,7 +1683,7 @@ ECode BaseStatusBar::UpdateNotification(
             UpdateExpansionStates();
         // } catch (RuntimeException e) {
         // It failed to add cleanly.  Log, and remove the view from the panel.
-        if (ec == E_RUNTIME_EXCEPTION) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
             Slogger::W(TAG, "Couldn't reapply views for package %s", pkg.string());
             RemoveNotificationViews(key);
             AddNotificationViews(key, notification);

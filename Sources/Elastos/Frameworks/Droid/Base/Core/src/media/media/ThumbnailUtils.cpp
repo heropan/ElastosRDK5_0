@@ -119,7 +119,7 @@ AutoPtr<IBitmap> ThumbnailUtils::CreateImageThumbnail(
         //     Log.e(TAG, "Unable to decode file " + filePath + ". OutOfMemoryError.", oom);
         // } finally {
 _EXIT_:
-        if (ec == E_IO_EXCEPTION || ec == E_OUT_OF_MEMORY_ERROR) {
+        if (ec == (ECode)E_IO_EXCEPTION || ec == E_OUT_OF_MEMORY_ERROR) {
             Slogger::E(TAG, "Unable to decode file %s", filePath.string());
         }
         // try {
@@ -166,11 +166,11 @@ AutoPtr<IBitmap> ThumbnailUtils::CreateVideoThumbnail(
     FAIL_GOTO(ec, _EXIT_)
 
 _EXIT_:
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         // Assume this is a corrupt video file
         ec = NOERROR;
     }
-    else if (ec == E_RUNTIME_EXCEPTION) {
+    else if (ec == (ECode)E_RUNTIME_EXCEPTION) {
         // Assume this is a corrupt video file.
         ec = NOERROR;
     }

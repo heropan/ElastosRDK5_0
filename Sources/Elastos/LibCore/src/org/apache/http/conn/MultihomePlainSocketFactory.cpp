@@ -112,7 +112,7 @@ ECode MultihomePlainSocketFactory::ConnectSocket(
         AutoPtr<IInetSocketAddress> insa;
         CInetSocketAddress::New(address, port, (IInetSocketAddress**)&insa);
         ec = sock->Connect(insa, timeout);
-        if (ec == E_SOCKET_TIMEOUT_EXCEPTION) {
+        if (ec == (ECode)E_SOCKET_TIMEOUT_EXCEPTION) {
             return ec;
         }
         else if (ec = E_IO_EXCEPTION) {

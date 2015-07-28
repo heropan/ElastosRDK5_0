@@ -164,7 +164,7 @@ ECode JarURLConnection::Decode(
         Boolean convertPlus = FALSE;
         AutoPtr<ICharset> charset;// = StandardCharsets::UTF_8
         ECode ec = UriCodec::Decode(encoded, convertPlus, charset, TRUE /* throwOnFailure */, value);
-        if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
             ALOGE("E_MALFORMED_URL_EXCEPTION: JarURLConnection: Unable to decode URL %s",
                 encoded.string());
             return E_MALFORMED_URL_EXCEPTION;

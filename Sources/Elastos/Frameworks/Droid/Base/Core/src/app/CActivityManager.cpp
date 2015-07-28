@@ -56,7 +56,7 @@ ECode CActivityManager::GetFrontActivityScreenCompatMode(
     AutoPtr<IIActivityManager> am = ActivityManagerNative::GetDefault();
     if (am) {
         ec = am->GetFrontActivityScreenCompatMode(mode);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             // System dead, we will be dead too soon!
             *mode = 0;
             ec = NOERROR;

@@ -90,7 +90,7 @@ ECode CClipDataItem::CoerceToText(
         AutoPtr<IAssetFileDescriptor> descr;
         ECode ec = resolver->OpenTypedAssetFileDescriptor(uri, String("text/*"),
                 NULL, (IAssetFileDescriptor**)&descr);
-        if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
             String tmp;
             uri->ToString(&tmp);
             return CStringWrapper::New(tmp, text);
@@ -346,12 +346,12 @@ EXIT:
             if (stream != NULL) {
                 FAIL_RETURN(ICloseable::Probe(stream)->Close());
             }
-            if (ec == E_IO_EXCEPTION) {
+            if (ec == (ECode)E_IO_EXCEPTION) {
                 // Something bad has happened.
 //                Html.escapeHtml(e.toString());
                 return E_NOT_IMPLEMENTED;
             }
-            else if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+            else if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
                 // Unable to open content URI as text...  not really an
                 // error, just something to ignore.
             }

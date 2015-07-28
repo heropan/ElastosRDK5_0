@@ -228,14 +228,14 @@ ECode CRingtone::SetUri(
 
 _EXIT_:
     //} catch (SecurityException e) {
-    if (ec == E_SECURITY_EXCEPTION) {
+    if (ec == (ECode)E_SECURITY_EXCEPTION) {
         DestroyLocalPlayer();
         if (!mAllowRemote) {
             Logger::E(TAG, "Remote playback not allowed: E_SECURITY_EXCEPTION");
         }
     }
     //} catch (IOException e) {
-    else if (ec == E_IO_EXCEPTION) {
+    else if (ec == (ECode)E_IO_EXCEPTION) {
         DestroyLocalPlayer();
         if (!mAllowRemote) {
             Logger::E(TAG, "Remote playback not allowed: E_IO_EXCEPTION");
@@ -277,7 +277,7 @@ ECode CRingtone::Play()
         mUri->GetCanonicalUri((IUri**)&canonicalUri);
         //try {
         ECode ec = mRemotePlayer->Play(mRemoteToken, canonicalUri, mStreamType);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Logger::W(TAG, "Problem playing ringtone: E_REMOTE_EXCEPTION");
         }
     }
@@ -296,7 +296,7 @@ ECode CRingtone::Stop()
     else if (mAllowRemote) {
         //try {
         ECode ec = mRemotePlayer->Stop(mRemoteToken);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Logger::W(TAG, "Problem playing ringtone: E_REMOTE_EXCEPTION");
         }
         //} catch (RemoteException e) {

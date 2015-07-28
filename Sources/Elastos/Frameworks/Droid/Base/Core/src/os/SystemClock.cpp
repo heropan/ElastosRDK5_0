@@ -18,7 +18,7 @@ void SystemClock::Sleep(
     do {
         // try {
         ECode ec = Thread::Sleep(duration);
-        if (ec == E_INTERRUPTED_EXCEPTION) {
+        if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
             interrupted = TRUE;
         }
         // }
@@ -55,8 +55,6 @@ Boolean SystemClock::SetCurrentTimeMillis(Int64 millis)
     // }
 
     // return false;
-
-    return (android::setCurrentTimeMillis(millis) == 0);
 }
 
 

@@ -287,14 +287,14 @@ ECode HttpsConnection::OpenConnection(
 
         AutoPtr<IHttpRequest> httpReq = (IHttpRequest*)proxyReq->Probe(EIID_IHttpRequest);
         ec = proxyConnection->SendRequestHeader(httpReq);
-        // if (ec == E_PARSE_EXCEPTION
+        // if (ec == (ECode)E_PARSE_EXCEPTION
         //         || ec == E_HTTP_EXCEPTION
         //         || ec == E_IO_EXCEPTION ) {
         //     Logger::E(TAG, String("failed to send a CONNECT request"));
         //     return ec;
         // }
         ec = proxyConnection->Flush();
-        // if (ec == E_PARSE_EXCEPTION
+        // if (ec == (ECode)E_PARSE_EXCEPTION
         //         || ec == E_HTTP_EXCEPTION
         //         || ec == E_IO_EXCEPTION ) {
         //     Logger::E(TAG, String("failed to send a CONNECT request"));
@@ -308,7 +308,7 @@ ECode HttpsConnection::OpenConnection(
         do {
             statusLine = NULL;
             ec = proxyConnection->ParseResponseHeader(headers, (IStatusLine**)&statusLine);
-            // if (ec == E_PARSE_EXCEPTION
+            // if (ec == (ECode)E_PARSE_EXCEPTION
             //         || ec == E_HTTP_EXCEPTION
             //         || ec == E_IO_EXCEPTION ) {
             //     Logger::E(TAG, String("failed to send a CONNECT request"));

@@ -1456,12 +1456,6 @@ ECode CSystemServer::Init1(
     esm->linkToDeath(grim, grim.get(), 0);
 
     char propBuf[PROPERTY_VALUE_MAX];
-    property_get("system_init.startsurfaceflinger", propBuf, "1");
-    if (strcmp(propBuf, "1") == 0) {
-        // Start the SurfaceFlinger
-        android::SurfaceFlinger::instantiate();
-    }
-
     property_get("system_init.startsensorservice", propBuf, "1");
     if (strcmp(propBuf, "1") == 0) {
         // Start the sensor service

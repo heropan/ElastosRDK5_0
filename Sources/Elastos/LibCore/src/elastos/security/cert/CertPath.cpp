@@ -120,7 +120,7 @@ ECode CertPath::WriteReplace(
     AutoPtr<CertPathRep> ret;
     AutoPtr<ArrayOf<Byte> > encode;
     ECode ec = GetEncoded((ArrayOf<Byte>**)&encode);
-    if (ec == E_CERTIFICATE_ENCODING_EXCEPTION) {
+    if (ec == (ECode)E_CERTIFICATE_ENCODING_EXCEPTION) {
         return E_NOT_SERIALIZABLE_EXCEPTION;
     }
     ret = new CertPathRep(mType, encode);

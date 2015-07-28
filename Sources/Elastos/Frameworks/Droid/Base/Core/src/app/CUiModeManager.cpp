@@ -47,7 +47,7 @@ ECode CUiModeManager::EnableCarMode(
     }
 
     ECode ec = mService->EnableCarMode(flags);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "EnableCarMode: RemoteException");
     }
     return ec;
@@ -66,7 +66,7 @@ ECode CUiModeManager::DisableCarMode(
     }
 
     ECode ec = mService->DisableCarMode(flags);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "DisableCarMode: RemoteException");
     }
     return ec;
@@ -90,7 +90,7 @@ ECode CUiModeManager::GetCurrentModeType(
     }
 
     ECode ec = mService->GetCurrentModeType(type);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "GetCurrentModeType: RemoteException");
     }
     return ec;
@@ -119,7 +119,7 @@ ECode CUiModeManager::SetNightMode(
     }
 
     ECode ec = mService->SetNightMode(mode);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "SetNightMode: RemoteException");
     }
     return ec;
@@ -142,7 +142,7 @@ ECode CUiModeManager::GetNightMode(
     }
 
     ECode ec = mService->GetNightMode(mode);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "GetNightMode: RemoteException");
     }
     return ec;

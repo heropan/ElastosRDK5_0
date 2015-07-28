@@ -465,7 +465,7 @@ ECode InetAddress::IsReachable(
     // try {
     ECode ec = latch->Await();
     // } catch (InterruptedException ignored) {
-    if (ec == E_INTERRUPTED_EXCEPTION) {
+    if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
        AutoPtr<IThread> onthread = Thread::GetCurrentThread();
        onthread->Interrupt(); // Leave the interrupted bit set.
     }

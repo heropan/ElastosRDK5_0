@@ -222,7 +222,7 @@ ECode CJarEntry::AddCodeSigner(
         // CCertificateFactoryHelper::AcquireSingleton((ICertificateFactoryHelper**)&helper);
         mFactory = NULL;
         ECode ec = helper->GetInstance(String("X.509"), (ICertificateFactory**)&mFactory);
-        if (ec == E_CERTIFICATE_EXCEPTION) {
+        if (ec == (ECode)E_CERTIFICATE_EXCEPTION) {
             // do nothing
         }
         else if (FAILED(ec)) {
@@ -241,7 +241,7 @@ ECode CJarEntry::AddCodeSigner(
     for (Int32 i = 0; it != asigners->End(); ++it, ++i)
         lst->Add(i, (*it).Get());
     // ECode ec = mFactory->GenerateCertPath(lst, (ICertPath**)&certPath);
-    // if (ec == E_CERTIFICATE_EXCEPTION) {
+    // if (ec == (ECode)E_CERTIFICATE_EXCEPTION) {
     //     // do nothing
     // }
     // else if( FAILED(ec)) {

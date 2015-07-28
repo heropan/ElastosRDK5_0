@@ -545,14 +545,14 @@ void VideoView::OpenVideo()
     mCurrentState = STATE_PREPARING;
     AttachMediaController();
 exit:
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         mCurrentState = STATE_ERROR;
         mTargetState = STATE_ERROR;
         Boolean result;
         mErrorListener->OnError(mMediaPlayer, IMediaPlayer::MEDIA_ERROR_UNKNOWN, 0, &result);
         return;
     }
-    else if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         mCurrentState = STATE_ERROR;
         mTargetState = STATE_ERROR;
         Boolean result;

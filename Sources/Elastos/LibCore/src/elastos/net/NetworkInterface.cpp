@@ -170,7 +170,7 @@ ECode NetworkInterface::ReadIfInet6Lines(
     // try {
     String result;
     ECode ec = IoUtils::ReadFileAsString(String("/proc/net/if_inet6"), &result);
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         return E_SOCKET_EXCEPTION;
     }
     return StringUtils::Split(result, String("\n"), lines);

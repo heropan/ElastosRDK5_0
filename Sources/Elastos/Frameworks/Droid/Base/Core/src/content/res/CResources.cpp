@@ -1515,7 +1515,7 @@ Boolean CResources::VerifyPreloadConfig(
         value->GetResourceId(&id);
         String resName;
         ECode ec = GetResourceName(id, &resName);
-        if (ec == E_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NOT_FOUND_EXCEPTION) {
             resName = "?";
         }
         Slogger::W(TAG, "Preloaded %s resource #0x%08x (%s) that varies with configuration!!",

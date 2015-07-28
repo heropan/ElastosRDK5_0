@@ -242,7 +242,7 @@ ERROR_PROCESS:
                         *res = TRUE;
                         return NOERROR;
 ERROR_PROCESS_EX:
-                        if (ec == E_ACTIVITY_NOT_FOUND_EXCEPTION) {
+                        if (ec == (ECode)E_ACTIVITY_NOT_FOUND_EXCEPTION) {
                             // Ignore
                         }
                         else {

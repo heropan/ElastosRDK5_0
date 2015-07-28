@@ -213,11 +213,11 @@ void PersistentDataStore::Load()
     ec = LoadFromXml(parser);
 
 _Exit_:
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::W(TAG, "Failed to load display manager persistent store data.");
         ClearState();
     }
-    else if (ec == E_XML_PULL_PARSER_EXCEPTION ) {
+    else if (ec == (ECode)E_XML_PULL_PARSER_EXCEPTION ) {
         Slogger::W(TAG, "Failed to load display manager persistent store data.");
         ClearState();
     }

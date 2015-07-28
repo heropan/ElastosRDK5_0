@@ -569,7 +569,7 @@ ECode CSyncManager::SyncHandler::WaitUntilReadyToRun()
         while (TRUE) {
                 ECode ec = latch->Await();
                 mReadyToRunLatch = NULL;
-                if (ec == E_INTERRUPTED_EXCEPTION) {
+                if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
 //***                    AutoPtr<IThread> thread = Thread::GetCurrentThread();
 //***                    FAIL_RETURN(thread->Interrupt())
                 }
@@ -1176,7 +1176,7 @@ ECode CSyncManager::SyncHandler::RunBoundToSyncAdapter(
 //        Log.e(TAG, "Caught RuntimeException while starting the sync " + syncOperation, exc);
 //    }
     EXIT:
-        if (ec == E_RUNTIME_EXCEPTION) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
             CloseActiveSyncContext(activeSyncContext);
 //            Log.e(TAG, "Caught RuntimeException while starting the sync " + syncOperation, exc);
             return E_RUNTIME_EXCEPTION;

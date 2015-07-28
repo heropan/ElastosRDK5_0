@@ -978,10 +978,10 @@ Boolean CWallpaperManagerService::BindWallpaperComponentLocked(
                 if (rsiName.Equals(siName) && rsiPackageName.Equals(siPackageName)) {
                     // try {
                     ECode ec = CWallpaperInfo::New(mContext, resInfo, (IWallpaperInfo**)&wi);
-                    if (ec == E_XML_PULL_PARSER_EXCEPTION) {
+                    if (ec == (ECode)E_XML_PULL_PARSER_EXCEPTION) {
                         Slogger::W(TAG, "(%s/%s)Xml Pull Parser Exception", siPackageName.string(), siName.string());
                         return FALSE;
-                    } else if (ec == E_IO_EXCEPTION) {
+                    } else if (ec == (ECode)E_IO_EXCEPTION) {
                         Slogger::W(TAG, "(%s/%s)IO Exception", siPackageName.string(), siName.string());
                         return FALSE;
                     }

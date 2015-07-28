@@ -107,7 +107,7 @@ ECode ActivityManagerTaskThumbnails::GetSubThumbnail(
 
 //     try {
     ECode ec = mRetriever->GetThumbnail(index, thumbnail);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         ec = NOERROR;
         *thumbnail = NULL;
     }

@@ -155,7 +155,7 @@ CARAPI PackageManagerBackupAgent::OnBackup(
             AutoPtr<IPackageInfo> info;
             //try {
             ECode ec = mPackageManager->GetPackageInfo(packName, IPackageManager::GET_SIGNATURES, (IPackageInfo**)&info);
-            if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+            if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 mExisting.Insert(packName);
                 continue;
             }
@@ -366,7 +366,7 @@ ECode PackageManagerBackupAgent::ReadSignatureArray(
     Int32 num;
     // try {
     ECode ec = IDataInput::Probe(in)->ReadInt32(&num);
-    if (ec == E_EOF_EXCEPTION) {
+    if (ec == (ECode)E_EOF_EXCEPTION) {
         Slogger::W(TAG, "Read empty signature block");
         *sigs = NULL;
         return NOERROR;
@@ -458,10 +458,10 @@ void PackageManagerBackupAgent::ParseStateFile(
         mStateVersions[pkg] = new Metadata(versionCode, NULL);
     }
 Exit:
-    if (ec == E_EOF_EXCEPTION) {
+    if (ec == (ECode)E_EOF_EXCEPTION) {
         //safe; we're done
     }
-    else if (ec == E_IO_EXCEPTION) {
+    else if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "Unable to read Package Manager state file");
     }
     // } catch (EOFException eof) {

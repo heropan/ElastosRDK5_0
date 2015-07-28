@@ -258,11 +258,11 @@ ECode ZigbeeFactory::RunForResult(
             Slogger::D(TAG, "RunForResult result = NULL");
         }
     // }
-    if (ec == E_INTERRUPTED_EXCEPTION) {
+    if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
         Slogger::E(TAG, "RunForResult(): InterruptedException!");
         ec = NOERROR;
     }
-    else if (ec == E_EXECUTION_EXCEPTION) {
+    else if (ec == (ECode)E_EXECUTION_EXCEPTION) {
         Slogger::E(TAG, "RunForResult(): ExecutionException!");
         ec = NOERROR;
     }

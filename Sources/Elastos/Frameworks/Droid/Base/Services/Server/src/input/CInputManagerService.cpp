@@ -1942,7 +1942,7 @@ AutoPtr<ArrayOf<String> > CInputManagerService::GetExcludedDeviceNames()
         }
     }
 _Exit_:
-    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         // It's ok if the file does not exist.
     }
     else if (FAILED(ec)) {

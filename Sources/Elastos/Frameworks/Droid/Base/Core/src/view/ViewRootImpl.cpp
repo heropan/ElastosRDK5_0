@@ -3772,7 +3772,7 @@ Boolean ViewRootImpl::DrawSoftware(
         ec = canvas->SetDensity(mDensity);
     } while(0);
 
-    if (ec == E_OUT_OF_RESOURCES_EXCEPTION) {
+    if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
         Logger::E(TAG, "OutOfResourcesException locking surface");
 
         Boolean outOfMemory;
@@ -3785,7 +3785,7 @@ Boolean ViewRootImpl::DrawSoftware(
         mLayoutRequested = TRUE;    // ask wm for a new surface next time.
         return FALSE;
     }
-    else if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    else if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         Logger::E(TAG, "Could not lock surface");
         // Don't assume this is due to out of memory, it could be
         // something else, and if it is something else then we could
@@ -6763,7 +6763,7 @@ void ViewRootImpl::HandleWindowFocusChanged(
             //     Boolean res;
             //     ECode ec = mAttachInfo->mHardwareRenderer->InitializeIfNeeded(
             //         mWidth, mHeight, surface, &res)
-            //     if (ec == E_OUT_OF_RESOURCES_EXCEPTION) {
+            //     if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
             //         Logger::E(TAG, "OutOfResourcesException locking surface");
 
             //         Boolean outOfMemory;

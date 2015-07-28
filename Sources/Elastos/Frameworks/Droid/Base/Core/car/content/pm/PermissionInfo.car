@@ -23,6 +23,7 @@ module
      * @Involve
      * interface Elastos.Droid.Content.Pm.IPackageItemInfo
      */
+    [local]
     interface IPermissionInfo {
         /**
          * A normal application value for #protectionLevel corresponding
@@ -85,6 +86,13 @@ module
         const Int32 PROTECTION_FLAG_DEVELOPMENT = 0x20;
 
         /**
+         * Additional flag for {@link #protectionLevel}, corresponding
+         * to the <code>appop</code> value of
+         * {@link android.R.attr#protectionLevel}.
+         */
+        const Int32 PROTECTION_FLAG_APPOP = 0x40;
+
+        /**
          * Mask for #protectionLevel: the basic protection type.
          *
          * @sa #protectionLevel
@@ -103,7 +111,7 @@ module
          * @sa #flags
          * @sa android.R.attr#permissionFlags
          */
-        const Int32 FLAG_COSTS_MONEY = 0x00000001; //1<<0
+        const Int32 FLAG_COSTS_MONEY = 1<<0;
 
         /**
          * Retrieve the textual description of this permission.  This

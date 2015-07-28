@@ -832,7 +832,7 @@ ECode CGeckoSmsManager::SaveSentMessage(
     return NOERROR;
 
 exception:
-    if (ec == E_GECKO_ID_TOO_HIGH) {
+    if (ec == (ECode)E_GECKO_ID_TOO_HIGH) {
         printf("GeckoSmsManager" "The id we received is higher than the higher allowed value.");
         return ec;
     } else {

@@ -116,7 +116,7 @@ ECode LanDispatcher::Run()
             }
         } while (0);
 
-        if (ec == E_SOCKET_TIMEOUT_EXCEPTION) {
+        if (ec == (ECode)E_SOCKET_TIMEOUT_EXCEPTION) {
             Slogger::E(TAG, "Socket timeout!");
         }
         else if (FAILED(ec)) {

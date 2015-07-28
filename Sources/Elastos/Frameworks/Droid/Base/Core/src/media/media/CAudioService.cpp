@@ -224,7 +224,7 @@ ECode CAudioService::VolumeStreamState::VolumeDeathHandler::Mute(
                 }
             } while(0);
 
-            if (ec == E_REMOTE_EXCEPTION) {
+            if (ec == (ECode)E_REMOTE_EXCEPTION) {
                 // Client has died!
                 ProxyDied();
                 return ec;
@@ -2444,7 +2444,7 @@ void CAudioService::RcDisplayDeathHandler::UnlinkToRcDisplayDeath()
     if (proxy) {
         Boolean result;
         ECode ec = proxy->UnlinkToDeath(this, 0, &result);
-        if (ec == E_NO_SUCH_ELEMENT_EXCEPTION) {
+        if (ec == (ECode)E_NO_SUCH_ELEMENT_EXCEPTION) {
             // not much we can do here, the display was being unregistered anyway
             Logger::E(TAG, "Encountered %08x in unlinkToRcDisplayDeath()", ec);
         }
@@ -2822,7 +2822,7 @@ void CAudioService::WaitForAudioHandlerCreation()
         // try {
         // Wait for mAudioHandler to be set by the other thread
         ec = mThisLock.Wait();
-        if (ec == E_INTERRUPTED_EXCEPTION) {
+        if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
             Logger::E(TAG, "Interrupted while waiting on volume handler.");
         }
         // } catch (InterruptedException e) {
@@ -6260,7 +6260,7 @@ void CAudioService::SetNewRcClientOnDisplays_syncRcsCurrc(
     // NOTE: Only one IRemoteControlDisplay supported in this implementation
     if (mRcDisplay != NULL) {
         ECode ec = mRcDisplay->SetCurrentClientId(newClientGeneration, newMediaIntent, clearing);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             // if we had a display before, stop monitoring its death
            RcDisplay_stopDeathMonitor_syncRcStack();
            mRcDisplay = NULL;
@@ -6342,7 +6342,7 @@ void CAudioService::OnRcDisplayUpdate(
 //                try {
                     ECode ec = mCurrentRcClient->OnInformationRequested(mCurrentRcClientGen,
                         flags, mArtworkExpectedWidth, mArtworkExpectedHeight);
-                    if (ec == E_REMOTE_EXCEPTION) {
+                    if (ec == (ECode)E_REMOTE_EXCEPTION) {
                         Logger::E(TAG, "Current valid remote client is dead: %08x", ec);
                         mCurrentRcClient = NULL;
                     }

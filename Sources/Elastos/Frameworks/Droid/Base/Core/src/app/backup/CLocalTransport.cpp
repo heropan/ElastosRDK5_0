@@ -356,7 +356,7 @@ ECode CLocalTransport::GetRestoreData(
     for (Int32 i = 0; i < cnt; ++i) {
         AutoPtr<IFileInputStream> in;
         ec = CFileInputStream::New((*blobs)[i], (IFileInputStream**)&in);
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Logger::E(TAG, "Unable to read backup records");
             *value = IBackupConstants::TRANSPORT_ERROR;
             return E_IO_EXCEPTION;

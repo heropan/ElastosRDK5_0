@@ -518,11 +518,11 @@ List<String> GeckoApp::GetPluginDirectories() {
             continue;
         }
 
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             printf("Can't find plugin: %s\n", pkgName);
             continue;
         }
-        else if (ec == E_CLASS_NOT_FOUND_EXCEPTION) {
+        else if (ec == (ECode)E_CLASS_NOT_FOUND_EXCEPTION) {
             printf("Can't find plugin's class: %s\n", serName);
             continue;
         }

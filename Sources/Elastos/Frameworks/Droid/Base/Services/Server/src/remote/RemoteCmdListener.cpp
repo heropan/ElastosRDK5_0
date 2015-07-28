@@ -135,12 +135,12 @@ void RemoteCmdListener::AcceptStringCmd()
             cmdResult = temp;
         } while (0);
 
-        if (ec == E_TIMEOUT_EXCEPTION) {
+        if (ec == (ECode)E_TIMEOUT_EXCEPTION) {
             cmdResult = ResultMsg::ES_CMD_TIMEOUT->ToString();
             cmdResult = RemoteUtils::ComposeResult(ResultMsg::ES_CMD_TIMEOUT->ToInt32(), String(""));
             // e.printStackTrace();
         }
-        else if (ec == E_UNSUPPORTED_ENCODING_EXCEPTION) {
+        else if (ec == (ECode)E_UNSUPPORTED_ENCODING_EXCEPTION) {
             Slogger::E(TAG, "UnsupportedEncodingException! cmdResult is %s", cmdResult.string());
         }
         else if (FAILED(ec)) {

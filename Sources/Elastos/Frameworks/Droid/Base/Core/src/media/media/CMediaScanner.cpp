@@ -1863,15 +1863,15 @@ ECode CMediaScanner::ScanDirectories(
     }
 
 _EXIT_:
-    if (ec == E_SQL_EXCEPTION) {
+    if (ec == (ECode)E_SQL_EXCEPTION) {
         // this might happen if the SD card is removed while the media scanner is running
         Logger::E(TAG, String("SQLException in CMediaScanner.scan()")/*, e*/);
     }
-    else if (ec == E_UNSUPPORTED_OPERATION_EXCEPTION) {
+    else if (ec == (ECode)E_UNSUPPORTED_OPERATION_EXCEPTION) {
        // this might happen if the SD card is removed while the media scanner is running
        Logger::E(TAG, "UnsupportedOperationException in CMediaScanner.scan()");
     }
-    else if (ec == E_REMOTE_EXCEPTION) {
+    else if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "RemoteException in CMediaScanner.scan()");
     }
 
@@ -1911,7 +1911,7 @@ ECode CMediaScanner::ScanSingleFile(
     return NOERROR;
 
 _EXIT_:
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Logger::E(TAG, "RemoteException in CMediaScanner.scanFile()");
     }
     return ec;

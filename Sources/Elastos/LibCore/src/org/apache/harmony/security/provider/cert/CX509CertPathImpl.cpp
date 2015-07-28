@@ -222,7 +222,7 @@ ECode CX509CertPathImpl::ASN1SequenceOfDerived::GetValues(
     *values = ICollection::Probe(encodings.Get());
     REFCOUNT_ADD(*values)
 ERROR_PROCESS:
-    if (ec == E_CERTIFICATE_ENCODING_EXCEPTION) {
+    if (ec == (ECode)E_CERTIFICATE_ENCODING_EXCEPTION) {
         ec = E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     return ec;
@@ -369,7 +369,7 @@ ECode CX509CertPathImpl::GetInstance(
     REFCOUNT_ADD(*instance)
     return ec;
 ERROR_PROCESS:
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         ec = E_CERTIFICATE_EXCEPTION;
     }
     return ec;

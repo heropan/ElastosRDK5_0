@@ -643,7 +643,7 @@ void WifiMonitor::MonitorThread::HandleSupplicantStateChange(
 
             Int32 value = 0;
             ec = StringUtils::ParseInt32((*nameValue)[1], &value);
-            if (ec == E_NUMBER_FORMAT_EXCEPTION) continue;
+            if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) continue;
 
             if ((*nameValue)[0].Equals("id")) {
                 networkId = value;

@@ -73,7 +73,7 @@ ECode X509CRLEntry::Equals(
     return encode->Equals(oEncode);
 
 FAIL_PROCESS:
-    if (ec == E_CRL_EXCEPTION) {
+    if (ec == (ECode)E_CRL_EXCEPTION) {
         *isEqual = FALSE;
         return NOERROR;
     }
@@ -92,7 +92,7 @@ ECode X509CRLEntry::GetHashCode(
         res += (*array)[i] & 0xFF;
     }
 FAIL_PROCESS:
-    if (ec == E_CRL_EXCEPTION) {
+    if (ec == (ECode)E_CRL_EXCEPTION) {
         ;
     }
     else

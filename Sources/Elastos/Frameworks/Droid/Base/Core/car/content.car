@@ -101,17 +101,16 @@ module
     merge("content/pm/PackageInstaller.car");
     merge("content/pm/PackageItemInfo.car");
     merge("content/pm/PackageManager.car");
-
-//     merge("content/pm/PackageStats.car");
-//     merge("content/pm/ParceledListSlice.car");
-//     merge("content/pm/PathPermission.car");
-//     merge("content/pm/PermissionGroupInfo.car");
-//     merge("content/pm/PermissionInfo.car");
-//     merge("content/pm/ProviderInfo.car");
-//     merge("content/pm/RegisteredServicesCacheListener.car");
-//    merge("content/pm/ResolveInfo.car");
-//     merge("content/pm/ServiceInfo.car");
-//     merge("content/pm/Signature.car");
+    merge("content/pm/PackageStats.car");
+    merge("content/pm/ParceledListSlice.car");
+    merge("content/pm/PathPermission.car");
+    merge("content/pm/PermissionGroupInfo.car");
+    merge("content/pm/PermissionInfo.car");
+    merge("content/pm/ProviderInfo.car");
+    merge("content/pm/RegisteredServicesCacheListener.car");
+    merge("content/pm/ResolveInfo.car");
+    merge("content/pm/ServiceInfo.car");
+    merge("content/pm/Signature.car");
     merge("content/pm/UserInfo.car");
 //     merge("content/pm/VerificationParams.car");
 //     merge("content/pm/VerifierDeviceIdentity.car");

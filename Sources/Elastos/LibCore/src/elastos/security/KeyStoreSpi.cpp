@@ -28,7 +28,7 @@ ECode KeyStoreSpi::EngineLoadEx(
         ECode ec;
         FAIL_GOTO(ec = EngineLoad(NULL, pwd), ERROR_PROCESS1)
 ERROR_PROCESS1:
-        if (ec == E_ILLEGAL_STATE_EXCEPTION) {
+        if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
             ec = E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         return ec;
@@ -38,7 +38,7 @@ ERROR_PROCESS1:
         FAIL_GOTO(ec = GetPasswordFromCallBack(pp, (ArrayOf<Char32>**)&pwd), ERROR_PROCESS2)
         return EngineLoad(NULL, pwd);
 ERROR_PROCESS2:
-        if (ec == E_UNRECOVERABLE_ENTRY_EXCEPTION) {
+        if (ec == (ECode)E_UNRECOVERABLE_ENTRY_EXCEPTION) {
             ec = E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         return ec;
@@ -71,7 +71,7 @@ ECode KeyStoreSpi::EngineGetEntry(
             ECode ec;
             FAIL_GOTO(ec = IKeyStorePasswordProtection::Probe(protParam)->GetPassword((ArrayOf<Char32>**)&passW), ERROR_PROCESS)
 ERROR_PROCESS:
-            if (ec == E_ILLEGAL_STATE_EXCEPTION) {
+            if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
                 ec = E_KEY_STORE_EXCEPTION;
             }
             FAIL_RETURN(ec)
@@ -135,7 +135,7 @@ ECode KeyStoreSpi::EngineSetEntry(
             ECode ec;
             FAIL_GOTO(ec = IKeyStorePasswordProtection::Probe(protParam)->GetPassword((ArrayOf<Char32>**)&passW), ERROR_PROCESS)
 ERROR_PROCESS:
-            if (ec == E_ILLEGAL_STATE_EXCEPTION) {
+            if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
                 ec = E_KEY_STORE_EXCEPTION;
             }
             FAIL_RETURN(ec)

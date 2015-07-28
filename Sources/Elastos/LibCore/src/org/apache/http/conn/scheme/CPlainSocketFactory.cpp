@@ -88,7 +88,7 @@ ECode CPlainSocketFactory::ConnectSocket(
     }
     // try {
     ECode ec = sock->Connect(remoteAddress, timeout);
-    if (ec == E_SOCKET_TIMEOUT_EXCEPTION) {
+    if (ec == (ECode)E_SOCKET_TIMEOUT_EXCEPTION) {
         Logger::E("CPlainSocketFactory", "Connect to %p timed out", remoteAddress.Get());
         return E_CONNECT_TIMEOUT_EXCEPTION;
     }

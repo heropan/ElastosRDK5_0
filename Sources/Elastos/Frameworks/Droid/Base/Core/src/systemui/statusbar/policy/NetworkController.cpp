@@ -1657,7 +1657,7 @@ String NetworkController::GetResourceName(
         mContext->GetResources((IResources**)&res);
         // try {
         ECode ec = res->GetResourceName(resId, &str);
-        if (ec == E_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NOT_FOUND_EXCEPTION) {
             str = String("(unknown)");
         }
         // } catch (android.content.res.Resources.NotFoundException ex) {

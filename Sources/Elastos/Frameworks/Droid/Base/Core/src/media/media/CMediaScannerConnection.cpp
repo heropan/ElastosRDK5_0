@@ -140,7 +140,7 @@ ECode CMediaScannerConnection::Disconnect()
 //      try {
         ec = mContext->UnbindService(this);
     //      } catch (IllegalArgumentException ex) {
-        if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+        if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
             if (FALSE) {
                 Logger::V(TAG, "disconnect failed: " /*+ ex*/);
             }
@@ -182,7 +182,7 @@ ECode CMediaScannerConnection::ScanFile(
     }
     ECode ec = mService->RequestScanFile(path, mimeType, mListener);
 //        } catch (RemoteException e) {
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         if (FALSE) {
             Logger::D(TAG, "Failed to scan file %s", path.string());
         }

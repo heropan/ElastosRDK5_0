@@ -303,7 +303,7 @@ ECode Service::StopSelf(
 
     Boolean res;
     ECode ec = mActivityManager->StopServiceToken(cn, mToken, startId, &res);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         ec = NOERROR;
     }
     return ec;
@@ -323,7 +323,7 @@ ECode Service::StopSelfResult(
     FAIL_RETURN(CComponentName::New(THIS_PROBE(IContext), mClassName, (IComponentName**)&cn));
 
     ECode ec = mActivityManager->StopServiceToken(cn, mToken, startId, result);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         ec = NOERROR;
     }
     return ec;

@@ -249,7 +249,7 @@ ECode ResourceBundle::Control::NewBundle(
             }
         }
         // } catch (NullPointerException e) {
-        if (ec == E_NULL_POINTER_EXCEPTION) {
+        if (ec == (ECode)E_NULL_POINTER_EXCEPTION) {
             *resbun = NULL;
             return NOERROR;
         }

@@ -483,7 +483,7 @@ ECode CBackupManagerService::RunBackupReceiver::OnReceive(
                 //try {
                 mHost->mAlarmManager->Cancel(mHost->mRunInitIntent);
                 ECode ec = mHost->mRunInitIntent->Send();
-                if (ec == E_CANCELED_EXCEPTION) {
+                if (ec == (ECode)E_CANCELED_EXCEPTION) {
                     Slogger::E(TAG, "Run init intent cancelled");
                 }
                 //} catch (PendingIntent.CanceledException ce) {
@@ -884,7 +884,7 @@ _Exit_:
         mHost->AddBackupTrace(String("expecting completion/timeout callback"));
     }
 
-    if (ec == E_SECURITY_EXCEPTION) {
+    if (ec == (ECode)E_SECURITY_EXCEPTION) {
         Slogger::D(TAG, "error in bind/backup 0x%08x", ec);
         mStatus = IBackupConstants::AGENT_ERROR;
         mHost->AddBackupTrace(String("agent SE"));
@@ -1549,7 +1549,7 @@ ECode CBackupManagerService::PerformFullBackupTask::Run()
     if (mIncludeShared) {
         // try {
         ECode ec = mHost->mPackageManager->GetPackageInfo(SHARED_BACKUP_AGENT_PACKAGE, 0, (IPackageInfo**)&pkg);
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             Slogger::E(TAG, "Unable to fild shared-storage backup handler");
         }
         packagesToBackup->PushBack(pkg);
@@ -2054,7 +2054,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::RestoreInstallObserver::Wai
         while (mDone->Get(&result), result == FALSE) {
             //try {
             ECode ec = mDoneLock.Wait();
-            if (ec == E_INTERRUPTED_EXCEPTION) {}
+            if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {}
             //} catch (InterruptedException e) { }
         }
     }
@@ -2285,7 +2285,7 @@ _Exit_:
     SendEndRestore();
     Slogger::D(TAG, "Full restore pass complete.");
     mHost->mWakelock->ReleaseLock();
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "Unable to read restore input");
     }
     // }
@@ -2411,10 +2411,10 @@ AutoPtr<IInputStream> CBackupManagerService::PerformFullRestoreTask::DecodeAesHe
  *        // Slog.w(TAG, "Can't read input header");
  *    // }
  *_Exit_:
- *    if (ec == E_INVALID_ALGORITHM_PARAMETER_EXCEPTION) {
+ *    if (ec == (ECode)E_INVALID_ALGORITHM_PARAMETER_EXCEPTION) {
  *        Slogger::E(TAG, "Needed parameter spec unavailable! E_INVALID_ALGORITHM_PARAMETER_EXCEPTION");
  *    }
- *    //if (ec == E_BADPADDING_EXCEPTION) {
+ *    //if (ec == (ECode)E_BADPADDING_EXCEPTION) {
  *    //    // This case frequently occurs when the wrong password is used to decrypt
  *    //    // the master key.  Use the identical "incorrect password" log text as is
  *    //    // used in the checksum failure log in order to avoid providing additional
@@ -2424,20 +2424,20 @@ AutoPtr<IInputStream> CBackupManagerService::PerformFullRestoreTask::DecodeAesHe
  *    //if (ec = E_ILLEGAL_BLOCK_SIZE_EXCEPTION) {
  *    //    Slogger::W(TAG, "Invalid block size in master key");
  *    //}
- *    //else if (ec == E_NO_SUCH_ALGORITHM_EXCEPTION) {
+ *    //else if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
  *    //    Slogger::E(TAG, "Needed decryption algorithm unavailable!");
  *    //}
- *    //if (ec == E_NO_SUCH_PADDING_EXCEPTION) {
+ *    //if (ec == (ECode)E_NO_SUCH_PADDING_EXCEPTION) {
  *    //    Slogger::E(TAG, "Needed padding mechanism unavailable!");
  *    //}
- *    //else if (ec == E_INVALID_KEY_EXCEPTION) {
+ *    //else if (ec == (ECode)E_INVALID_KEY_EXCEPTION) {
  *    //    Slogger::W(TAG, "Illegal password; aborting");
  *    //}
  *
- *    else if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+ *    else if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
  *        Slogger::W(TAG, "Can't parse restore data header");
  *    }
- *    else if (ec == E_IO_EXCEPTION) {
+ *    else if (ec == (ECode)E_IO_EXCEPTION) {
  *        Slogger::W(TAG, "Can't read input header");
  *    }
  *    else if (FAILED(ec)) {
@@ -2581,10 +2581,10 @@ Boolean CBackupManagerService::PerformFullRestoreTask::RestoreOneFile(
                 mAgent = mHost->BindToAgentSynchronous(mTargetApp, IApplicationThread::BACKUP_MODE_RESTORE_FULL);
                 mAgentPackage = pkg;
 _Exit1_:
-                if (ec == E_IO_EXCEPTION) {
+                if (ec == (ECode)E_IO_EXCEPTION) {
                     //fall through to error handling
                 }
-                if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+                if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                     //fall through to error handling
                 }
                 // } catch (IOException e) {
@@ -2638,12 +2638,12 @@ _Exit1_:
                             token, mHost->mBackupManagerBinder)), _Exit2_);
                 }
 _Exit2_:
-                 if (ec == E_IO_EXCEPTION) {
+                 if (ec == (ECode)E_IO_EXCEPTION) {
                      Slogger::D(TAG, "Couldn't establish restore");
                      agentSuccess = FALSE;
                      okay = FALSE;
                  }
-                 if (ec == E_REMOTE_EXCEPTION) {
+                 if (ec == (ECode)E_REMOTE_EXCEPTION) {
                      Slogger::E(TAG, "Agent crashed during full restore");
                      agentSuccess = FALSE;
                      okay = FALSE;
@@ -2734,7 +2734,7 @@ _Exit2_:
         }
     }
 _Exit_:
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         if (DEBUG) Slogger::W(TAG, "io exception on restore socket read 0x%08x", ec);
         //treat as EOF
         info = NULL;
@@ -2764,12 +2764,12 @@ void CBackupManagerService::PerformFullRestoreTask::TearDownPipes()
     if (mPipes != NULL) {
         // try {
         ECode ec = (*mPipes)[0]->Close();
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Slogger::W(TAG, "Couldn't close agent pipes");
         }
         (*mPipes)[0] = NULL;
         ec = (*mPipes)[1]->Close();
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Slogger::W(TAG, "Couldn't close agent pipes");
         }
         (*mPipes)[1] = NULL;
@@ -2786,7 +2786,7 @@ void CBackupManagerService::PerformFullRestoreTask::TearDownAgent(
         // try {
         // unbind and tidy up even on timeout or failure, just in case
         ECode ec = mHost->mActivityManager->UnbindBackupAgent(app);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Slogger::D(TAG, "Lost app trying to shut down");
             mAgent = NULL;
             return;
@@ -2804,7 +2804,7 @@ void CBackupManagerService::PerformFullRestoreTask::TearDownAgent(
             String processName;
             app->GetProcessName(&processName);
             ec = mHost->mActivityManager->KillApplicationProcess(processName, uid);
-            if (ec == E_REMOTE_EXCEPTION) {
+            if (ec == (ECode)E_REMOTE_EXCEPTION) {
                 Slogger::D(TAG, "Lost app trying to shut down");
                 mAgent = NULL;
                 return;
@@ -2909,7 +2909,7 @@ Boolean CBackupManagerService::PerformFullRestoreTask::InstallApk(
                 }
             }
 _Exit1_:
-            if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+            if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 Slogger::W(TAG, "Install of package %s succeeded but now not found", info->mPackageName.string());
                 okay = FALSE;
             }
@@ -2930,7 +2930,7 @@ _Exit1_:
         }
     }
 _Exit_:
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Slogger::E(TAG, "Unable to transcribe restored apk for install");
             okay = FALSE;
         }
@@ -3090,7 +3090,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::ReadAppManifest(
                     // policy = RestorePolicy.ACCEPT_IF_APK;
                 // }
 _Exit1_:
-                if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+                if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                     // Okay, the target app isn't installed.  We can process
                     // the restore properly only if the dataset provides the
                     // apk file and we can successfully install it.
@@ -3119,10 +3119,10 @@ _Exit1_:
         // Slog.w(TAG, e.getMessage());
     // }
 _Exit_:
-    if (ec == E_NUMBER_FORMAT_EXCEPTION) {
+    if (ec == (ECode)E_NUMBER_FORMAT_EXCEPTION) {
         Slogger::W(TAG, "Corrupt restore manifest for package %s", info->mPackageName.string());
     }
-    if (ec == E_ILLEGAL_ARGUMENT_EXCEPTION) {
+    if (ec == (ECode)E_ILLEGAL_ARGUMENT_EXCEPTION) {
         Slogger::W(TAG, "%s : %d", __FILE__, __LINE__);
     }
     *out = policy;
@@ -3321,7 +3321,7 @@ ECode CBackupManagerService::PerformFullRestoreTask::ReadTarHeaders(
             }
         }
 _Exit_:
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             if (DEBUG) {
                 Slogger::E(TAG, "Parse error in header: E_IO_EXCEPTION");
                 HEXLOG(block);
@@ -3528,7 +3528,7 @@ void CBackupManagerService::PerformFullRestoreTask::SendStartRestore()
     if (mObserver != NULL) {
         // try {
         ECode ec = mObserver->OnStartRestore();
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Slogger::W(TAG, "full restore observer went away: startRestore");
             mObserver = NULL;
         }
@@ -3546,7 +3546,7 @@ void CBackupManagerService::PerformFullRestoreTask::SendOnRestorePackage(
         // try {
         // TODO: use a more user-friendly name string
         ECode ec = mObserver->OnRestorePackage(name);
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Slogger::W(TAG, "full restore observer went away: restorePackage");
             mObserver = NULL;
         }
@@ -3562,7 +3562,7 @@ void CBackupManagerService::PerformFullRestoreTask::SendEndRestore()
     if (mObserver != NULL) {
         // try {
         ECode ec = mObserver->OnEndRestore();
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Slogger::W(TAG, "full restore observer went away: endRestore");
             mObserver = NULL;
         }
@@ -3723,7 +3723,7 @@ void CBackupManagerService::PerformRestoreTask::BeginRestore()
         // }
     }
 _Exit_:
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Slogger::E(TAG, "Error communicating with transport for restore");
         ExecuteNextState(FINAL);
         return ;
@@ -3755,7 +3755,7 @@ void CBackupManagerService::PerformRestoreTask::DownloadRestoreData()
         arrayInfo->Set(i, (*it));
     }
     ECode ec = mTransport->StartRestore(mToken, arrayInfo, &mStatus);
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Slogger::E(TAG, "Error communicating with transport for restore");
         // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
         mStatus = IBackupConstants::TRANSPORT_ERROR;
@@ -3836,7 +3836,7 @@ void CBackupManagerService::PerformRestoreTask::DownloadRestoreData()
         return;
     }
 _Exit_:
-    if (ec == E_REMOTE_EXCEPTION) {
+    if (ec == (ECode)E_REMOTE_EXCEPTION) {
         Slogger::E(TAG, "Error communicating with transport for restore");
         mStatus = IBackupConstants::TRANSPORT_ERROR;
         mHost->mBackupHandler->RemoveMessages(MSG_BACKUP_RESTORE_STEP, this);
@@ -3996,7 +3996,7 @@ void CBackupManagerService::PerformRestoreTask::RestoreNextAgent()
         // executeNextState(RestoreState.RUNNING_QUEUE);
     // }
 _Exit_:
-        if (ec == E_REMOTE_EXCEPTION) {
+        if (ec == (ECode)E_REMOTE_EXCEPTION) {
             Slogger::E(TAG, "Unable to fetch restore data from transport");
             mStatus = IBackupConstants::TRANSPORT_ERROR;
             ExecuteNextState(FINAL);
@@ -4673,7 +4673,7 @@ ECode CBackupManagerService::constructor(
 _Exit_:
         if (in != NULL) in->Close();
         if (fin != NULL) fin->Close();
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             Slogger::E(TAG, "Unable to read saved backup pw hash");
         }
             // } catch (IOException e) {
@@ -4907,7 +4907,7 @@ ECode CBackupManagerService::ClearBackupData(
     //try {
     ECode ec = mPackageManager->GetPackageInfo(packageName, IPackageManager::GET_SIGNATURES,
             (IPackageInfo**)&info);
-    if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         Slogger::D(TAG, "No such package '%s' - not clearing backup data", packageName.string());
         return ec;
     }
@@ -5246,7 +5246,7 @@ _Exit_:
     if (out != NULL) out->Close();
     if (buffer != NULL) buffer->Close();
     if (pwf != NULL) pwf->Close();
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "Unable to set backup password");
     }
     // }
@@ -5456,7 +5456,7 @@ _Exit_:
     // } finally {
         // try {
     ec = fd->Close();
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::W(TAG, "Error trying to close fd after full restore");
     }
         // } catch (IOException e) {
@@ -5712,7 +5712,7 @@ ECode CBackupManagerService::BeginRestoreSession(
             AutoPtr<IPackageInfo> app;
             //try {
             ECode ec = mPackageManager->GetPackageInfo(packageName, 0, (IPackageInfo**)&app);
-            if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+            if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
                 Slogger::W(TAG, "Asked to restore nonexistent pkg %s", packageName.string());
                 return ec;
             }
@@ -5839,7 +5839,7 @@ Boolean CBackupManagerService::StartConfirmationUi(
     confIntent->PutInt32Extra(IFullBackup::CONF_TOKEN_INTENT_EXTRA, token);
     confIntent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
     ECode ec = mContext->StartActivity(confIntent);
-    if (ec == E_ACTIVITY_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_ACTIVITY_NOT_FOUND_EXCEPTION) {
         return FALSE;
     }
     // } catch (ActivityNotFoundException e) {
@@ -5937,7 +5937,7 @@ void CBackupManagerService::InitPackageTracking()
     }
     tf->Close();
 _Exit_:
-    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
         Slogger::V(TAG, "No ancestral data");
     }
     else if (FAILED(ec)) {
@@ -6102,11 +6102,11 @@ _Exit_:
 
             Boolean successed = FALSE;
             f->Delete(&successed);
-            if (ec == E_EOF_EXCEPTION) {
+            if (ec == (ECode)E_EOF_EXCEPTION) {
                 // no more data; we're done
                 Slogger::E(TAG, "data over");
             }
-            else if (ec == E_IO_EXCEPTION) {
+            else if (ec == (ECode)E_IO_EXCEPTION) {
                 String str;
                 f->ToString(&str);
                 Slogger::E(TAG, "Can't read %s", str.string());
@@ -6595,7 +6595,7 @@ AutoPtr< List<AutoPtr<IPackageInfo> > > CBackupManagerService::AllAgentPackages(
             app->SetSharedLibraryFiles(sharedLibraryFiles);
         }
 _Exit_:
-        if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
             packages->Remove(a);
         }
         // } catch (NameNotFoundException e) {
@@ -6637,7 +6637,7 @@ void CBackupManagerService::LogBackupComplete(
         //try {
 _Exit_:
         if (out != NULL) out->Close();
-        if (ec == E_IO_EXCEPTION) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
             String fileName;
             mEverStored->GetName(&fileName);
             Slogger::E(TAG, "Can't log backup of %s to %s", packageName.string(), fileName.string());
@@ -6694,7 +6694,7 @@ _Exit_:
     if (known != NULL) known->Close();
     //} catch (IOException e) {}
     //}
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         String str;
         mEverStored->ToString(&str);
         Slogger::W(TAG, "Error rewriting %s", str.string());
@@ -6838,7 +6838,7 @@ void CBackupManagerService::ClearApplicationDataSynchronous(
     // try {
     AutoPtr<IPackageInfo> info;
     ECode ec = mPackageManager->GetPackageInfo(packageName, 0, (IPackageInfo**)&info);
-    if (ec == E_NAME_NOT_FOUND_EXCEPTION) {
+    if (ec == (ECode)E_NAME_NOT_FOUND_EXCEPTION) {
         Slogger::W(TAG, "Tried to clear data for %s but not found", packageName.string());
         return;
     }
@@ -6877,7 +6877,7 @@ void CBackupManagerService::ClearApplicationDataSynchronous(
         while (mClearingData && (millis < timeoutMark)) {
             //try{
             ECode ec = mClearDataLock.Wait(5000);
-            if (ec == E_INTERRUPTED_EXCEPTION) {
+            if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
                 mClearingData = FALSE;
             }
             // } catch (InterruptedException e) {
@@ -7181,7 +7181,7 @@ _Exit_:
     if (out != NULL) {
         out->Close();
     }
-    if (ec == E_IO_EXCEPTION) {
+    if (ec == (ECode)E_IO_EXCEPTION) {
         Slogger::E(TAG, "Can't write %s to backup journal", str.string());
         mJournal = NULL;
     }

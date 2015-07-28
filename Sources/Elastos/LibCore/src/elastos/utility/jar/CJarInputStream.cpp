@@ -145,7 +145,7 @@ ECode CJarInputStream::Read(
                 // try {
                 Boolean bval;
                 ECode ec = mVerifier->ReadCertificates(&bval);
-                if (ec == E_SECURITY_EXCEPTION) {
+                if (ec == (ECode)E_SECURITY_EXCEPTION) {
                     mVerifier = NULL;
                     return ec;
                 }

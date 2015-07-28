@@ -249,7 +249,7 @@ void AudioDeviceManagerObserver::Init()
             }
         } while(0);
 
-        if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+        if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
             Logger::V(TAG, "This kernel does not have sound card %d", card);
             break;
         }
@@ -426,7 +426,7 @@ void AudioDeviceManagerObserver::OnUEvent(
                     if (isBreak)
                         break;
 
-                    if (ec == E_FILE_NOT_FOUND_EXCEPTION) {
+                    if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
                         if (cnt == 0) {
                             Slogger::E(TAG, "can not read card id");
                             return ;

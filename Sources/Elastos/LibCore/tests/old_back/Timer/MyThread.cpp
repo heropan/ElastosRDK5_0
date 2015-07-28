@@ -235,7 +235,7 @@ ECode MyThread::Run()
 {
     while ( !mStop ) {
         ECode ec = Thread::Sleep(1000);
-        if (ec == E_INTERRUPTED_EXCEPTION) {
+        if (ec == (ECode)E_INTERRUPTED_EXCEPTION) {
             printf("======Thread interrupted...======\n");
         }
 

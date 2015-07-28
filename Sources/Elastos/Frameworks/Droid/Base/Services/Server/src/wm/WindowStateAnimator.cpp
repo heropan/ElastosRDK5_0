@@ -521,7 +521,7 @@ AutoPtr<ISurface> WindowStateAnimator::CreateSurfaceLocked()
         ECode ec = CSurface::New(mSession->mSurfaceSession, titleStr,
                     w, h, format, flags, (ISurface**)&mSurface);
         if (FAILED(ec)) {
-            if (ec == E_OUT_OF_RESOURCES_EXCEPTION) {
+            if (ec == (ECode)E_OUT_OF_RESOURCES_EXCEPTION) {
                 mWin->mHasSurface = FALSE;
                 Slogger::W(TAG, "OutOfResourcesException creating surface");
                 mService->ReclaimSomeSurfaceMemoryLocked(this,

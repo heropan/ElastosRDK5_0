@@ -447,7 +447,7 @@ Boolean CURI::IsValidDomainName(
     /* [in] */ const String& host)
 {
     ECode ec = UriCodec::ValidateSimple(host, String("-."));
-    if (ec == E_URI_SYNTAX_EXCEPTION) {
+    if (ec == (ECode)E_URI_SYNTAX_EXCEPTION) {
         return FALSE;
     }
 
@@ -622,7 +622,7 @@ ECode CURI::Create(
 //    try {
     AutoPtr<CURI> outuri;
     ECode ec = CURI::NewByFriend(uri, (CURI**)&outuri);
-    if (ec == E_URI_SYNTAX_EXCEPTION) {
+    if (ec == (ECode)E_URI_SYNTAX_EXCEPTION) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     *obj = (IURI*)outuri.Get();
