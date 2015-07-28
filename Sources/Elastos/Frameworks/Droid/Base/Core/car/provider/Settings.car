@@ -14,6 +14,9 @@ module
     namespace Droid {
     namespace Provider {
 
+    /**
+     * The Settings provider contains global system-level device preferences.
+     */
     [deprecated]
     interface ISettings {
         const String ACTION_SETTINGS = "android.settings.SETTINGS";
@@ -29,11 +32,23 @@ module
         const String ACTION_AIRPLANE_MODE_SETTINGS =
                 "android.settings.AIRPLANE_MODE_SETTINGS";
 
+        const String ACTION_VOICE_CONTROL_AIRPLANE_MODE =
+                "android.settings.VOICE_CONTROL_AIRPLANE_MODE";
+
         const String ACTION_ACCESSIBILITY_SETTINGS =
                 "android.settings.ACCESSIBILITY_SETTINGS";
 
+        const String ACTION_USAGE_ACCESS_SETTINGS =
+                "android.settings.USAGE_ACCESS_SETTINGS";
+
         const String ACTION_SECURITY_SETTINGS =
                 "android.settings.SECURITY_SETTINGS";
+
+        const String ACTION_TRUSTED_CREDENTIALS_USER =
+                "com.android.settings.TRUSTED_CREDENTIALS_USER";
+
+        const String ACTION_MONITORING_CERT_INFO =
+                "com.android.settings.MONITORING_CERT_INFO";
 
         const String ACTION_PRIVACY_SETTINGS =
                 "android.settings.PRIVACY_SETTINGS";
@@ -50,6 +65,9 @@ module
         const String ACTION_WIFI_DISPLAY_SETTINGS =
                 "android.settings.WIFI_DISPLAY_SETTINGS";
 
+        const String ACTION_CAST_SETTINGS =
+                "android.settings.CAST_SETTINGS";
+
         const String ACTION_DATE_SETTINGS =
                 "android.settings.DATE_SETTINGS";
 
@@ -61,6 +79,10 @@ module
 
         const String ACTION_LOCALE_SETTINGS =
                 "android.settings.LOCALE_SETTINGS";
+
+
+        const String ACTION_VOICE_INPUT_SETTINGS =
+                "android.settings.VOICE_INPUT_SETTINGS";
 
         const String ACTION_INPUT_METHOD_SETTINGS =
                 "android.settings.INPUT_METHOD_SETTINGS";
@@ -95,6 +117,9 @@ module
         const String ACTION_APPLICATION_DETAILS_SETTINGS =
                 "android.settings.APPLICATION_DETAILS_SETTINGS";
 
+        const String ACTION_APP_OPS_SETTINGS =
+                "android.settings.APP_OPS_SETTINGS";
+
         const String ACTION_SYSTEM_UPDATE_SETTINGS =
                 "android.settings.SYSTEM_UPDATE_SETTINGS";
 
@@ -127,6 +152,9 @@ module
         const String ACTION_NFCSHARING_SETTINGS =
                 "android.settings.NFCSHARING_SETTINGS";
 
+        const String ACTION_NFC_PAYMENT_SETTINGS =
+            "android.settings.NFC_PAYMENT_SETTINGS";
+
         /**
          * Activity Action: Show Daydream settings.
          * <p>
@@ -141,6 +169,43 @@ module
          */
         //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String ACTION_DREAM_SETTINGS = "android.settings.DREAM_SETTINGS";
+
+        const String ACTION_NOTIFICATION_LISTENER_SETTINGS
+                = "android.settings.NOTIFICATION_LISTENER_SETTINGS";
+
+        const String ACTION_CONDITION_PROVIDER_SETTINGS
+                = "android.settings.ACTION_CONDITION_PROVIDER_SETTINGS";
+
+        const String ACTION_CAPTIONING_SETTINGS = "android.settings.CAPTIONING_SETTINGS";
+
+        const String ACTION_ZEN_MODE_SETTINGS = "android.settings.ZEN_MODE_SETTINGS";
+
+        const String ACTION_SHOW_REGULATORY_INFO = "android.settings.SHOW_REGULATORY_INFO";
+
+        const String DEVICE_NAME_SETTINGS = "android.settings.DEVICE_NAME";
+
+        const String ACTION_PAIRING_SETTINGS = "android.settings.PAIRING_SETTINGS";
+
+        const String ACTION_BATTERY_SAVER_SETTINGS
+                = "android.settings.BATTERY_SAVER_SETTINGS";
+
+        const String ACTION_PRINT_SETTINGS =
+                "android.settings.ACTION_PRINT_SETTINGS";
+
+        const String ACTION_HOME_SETTINGS
+                = "android.settings.HOME_SETTINGS";
+
+        const String ACTION_NOTIFICATION_SETTINGS
+                = "android.settings.NOTIFICATION_SETTINGS";
+
+        const String ACTION_APP_NOTIFICATION_SETTINGS
+                = "android.settings.APP_NOTIFICATION_SETTINGS";
+
+        const String ACTION_APP_NOTIFICATION_REDACTION
+                = "android.settings.ACTION_APP_NOTIFICATION_REDACTION";
+
+        /** @hide */ const String EXTRA_APP_UID = "app_uid";
+        /** @hide */ const String EXTRA_APP_PACKAGE = "app_package";
 
         const String CALL_METHOD_GET_SYSTEM = "GET_system";
 
@@ -158,7 +223,15 @@ module
 
         const String EXTRA_AUTHORITIES = "authorities";
 
+        const String EXTRA_ACCOUNT_TYPES = "account_types";
+
         const String EXTRA_INPUT_METHOD_ID = "input_method_id";
+
+        const String EXTRA_INPUT_DEVICE_IDENTIFIER = "input_device_identifier";
+
+        const String EXTRA_AIRPLANE_MODE_ENABLED = "airplane_mode_enabled";
+
+        private static final String JID_RESOURCE_PREFIX = "android";
 
         const String AUTHORITY = "settings";
 
@@ -167,6 +240,10 @@ module
             [out] String* deviceId);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     */
     interface ISettingsNameValueTable {
         const String NAME = "name";
 

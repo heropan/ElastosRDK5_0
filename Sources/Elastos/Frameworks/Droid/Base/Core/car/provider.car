@@ -7,6 +7,8 @@ module
     merge("provider/CallLog.car");
     merge("provider/Contacts.car");
     merge("provider/ContactsContract.car");
+
+    // TODO
     merge("provider/DocumentsContract.car");
     merge("provider/DocumentsProvider.car");
     merge("provider/Downloads.car");
@@ -16,11 +18,12 @@ module
     merge("provider/SearchRecentSuggestions.car");
 
 
-     //merge("provider/Settings.car");
-    //merge("provider/SyncConstValue.car");
-    //merge("provider/SyncStateContract.car");
-    //
-    //
+    //merge("provider/Settings.car");
+    merge("provider/SyncConstValue.car");
+    merge("provider/SyncStateContract.car");
+    merge("provider/UserDictionary.car");
+    merge("provider/VoicemailContract.car");
+
 
     // namespace Elastos {
     // namespace Droid {

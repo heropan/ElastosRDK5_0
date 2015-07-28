@@ -175,31 +175,6 @@ module
 
     }}} // Elastos.Droid.Media
 
-    //
-    // Elastos.Droid.Database
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Database {
-
-        interface ICursor {}
-
-        interface IContentObserver {}
-
-        interface IIContentObserver {}
-
-        interface IDatabaseErrorHandler {}
-
-        namespace Sqlite {
-
-            interface ISQLiteDatabase {}
-
-            interface ISQLiteDatabaseCursorFactory{}
-
-        } // Elastos.Droid.Sqlite
-
-    }}} // Elastos.Droid.Database
-
 
     namespace Org {
     namespace Apache {
@@ -270,15 +245,6 @@ module
     } // namespace Apache
     } // namespace Org
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Database {
-
-        interface ICharArrayBuffer {}
-
-    } // namespace Database
-    } // namespace Droid
-    } // namespace Elastos
 
     namespace Elastos {
     namespace io {

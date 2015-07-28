@@ -4,6 +4,7 @@ module {
     interface Elastos.Droid.Accounts.IAccount;
     interface Elastos.Droid.Content.IContentProviderClient;
     interface Elastos.Droid.Content.IContentProviderOperation;
+    interface Elastos.Droid.Utility.IPair;
 
     namespace Elastos {
     namespace Droid {
@@ -41,6 +42,7 @@ module {
         const String CONTENT_DIRECTORY = "syncstate";
     }
 
+    [deprecated]
     interface ISyncStateContractHelpers {
         /**
          * Get the sync state that is associated with the account or null.
@@ -72,25 +74,25 @@ module {
             [in] IContentProviderClient* provider,
             [in] IUri* uri,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
         Insert(
             [in] IContentProviderClient* provider,
             [in] IUri* uri,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IUri** retUri);
 
         Update(
             [in] IContentProviderClient* provider,
             [in] IUri* uri,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
-        /*GetWithUri(
+        GetWithUri(
             [in] IContentProviderClient* provider,
             [in] IUri* uri,
             [in] IAccount* account,
-            [out] Pair<IUri*, ArrayOf<Byte> >* value);*/
+            [out] IPair** value);
 
         /**
          * Creates and returns a ContentProviderOperation that assigns the data array as the
@@ -104,7 +106,7 @@ module {
         NewSetOperation(
             [in] IUri* uri,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IContentProviderOperation** operation);
 
         /**
@@ -117,7 +119,7 @@ module {
          */
         NewUpdateOperation(
             [in] IUri* uri,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IContentProviderOperation** operation);
     }
 
