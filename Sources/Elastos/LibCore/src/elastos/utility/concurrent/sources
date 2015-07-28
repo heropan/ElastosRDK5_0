@@ -62,6 +62,7 @@ SOURCES += CPriorityBlockingQueue.cpp
 SOURCES += CSemaphore.cpp
 SOURCES += CTimeUnitHelper.cpp
 SOURCES += CThreadLocalRandom.cpp
+SOURCES += CThreadLocalRandomHelper.cpp
 SOURCES += CSynchronousQueue.cpp
 SOURCES += CScheduledThreadPoolExecutor.cpp
 SOURCES += CopyOnWriteArrayList.cpp
