@@ -53,18 +53,6 @@ module
         SetRoutes(
             [in] String routes);
 
-        GetDnsServers(
-            [out] IObjectContainer** dnsServers);
-
-        SetDnsServers(
-            [in] IObjectContainer* dnsServers);
-
-        GetSearchDomains(
-            [out] IObjectContainer** searchDomains);
-
-        SetSearchDomains(
-            [in] IObjectContainer* searchDomains);
-
         GetConfigureIntent(
             [out] IPendingIntent** configureIntent);
 

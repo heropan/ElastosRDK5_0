@@ -5,13 +5,13 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Net.Http.IHeaders;
-    interface Org.Apache.Http.IHttpRequest;
-    interface Org.Apache.Http.IHttpEntity;
-    interface Org.Apache.Http.Entity.IAbstractHttpEntity;
-    interface Org.Apache.Http.IHttpEntityEnclosingRequest;
-    interface Org.Apache.Http.IStatusLine;
-    interface Org.Apache.Http.Params.IHttpParams;
-    interface Elastos.Net.ISocket;
+    using interface Org.Apache.Http.IHttpRequest;
+    using interface Org.Apache.Http.IHttpEntity;
+    using interface Org.Apache.Http.Entity.IAbstractHttpEntity;
+    using interface Org.Apache.Http.IHttpEntityEnclosingRequest;
+    using interface Org.Apache.Http.IStatusLine;
+    using interface Org.Apache.Http.Params.IHttpParams;
+    using interface Elastos.Net.ISocket;
 
     namespace Elastos {
     namespace Droid {
@@ -41,7 +41,7 @@ module
         DisableCurlLogging();
     }
 
-    [deprecated]
+    [deprecated, local]
     interface IAndroidHttpClientHelper {
         /**
          * Create a new HttpClient with reasonable defaults (which you can update).

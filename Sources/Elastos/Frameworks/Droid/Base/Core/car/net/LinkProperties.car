@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Utility.IList;
     using interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
@@ -11,18 +11,6 @@ module
 	interface ICompareResult {
         ToString(
             [out] String* result);
-
-        GetRemoved(
-            [out] IObjectContainer** result);
-
-        AddRemoved(
-            [in] IInterface* removed);
-
-        GetAdded(
-            [out] IObjectContainer** result);
-
-        AddAdded(
-            [in] IInterface* added);
     }
 
     interface ILinkProperties {
@@ -34,25 +22,25 @@ module
             [out] String* result);
 
         GetAddresses(
-            [out] IObjectContainer** result);
+            [out] IList** result);
 
         AddLinkAddress(
             [in] ILinkAddress* address);
 
         GetLinkAddresses(
-            [out] IObjectContainer** result);
+            [out] IList** result);
 
         AddDns(
             [in] IInetAddress* dns);
 
         GetDnses(
-            [out] IObjectContainer** result);
+            [out] IList** result);
 
         AddRoute(
             [in] IRouteInfo* route);
 
         GetRoutes(
-            [out] IObjectContainer** result);
+            [out] IList** result);
 
         SetHttpProxy(
             [in] IProxyProperties* proxy);

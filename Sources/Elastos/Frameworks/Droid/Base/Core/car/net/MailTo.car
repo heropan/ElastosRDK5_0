@@ -3,7 +3,7 @@
 
 module
 {
-using interface Elastos.Utility.IObjectStringMap;
+using interface Elastos.Utility.IMap;
 
 namespace Elastos {
 namespace Droid {
@@ -19,7 +19,7 @@ namespace Net {
     IsMailTo(
         [in] String url,
         [out] Boolean* result);
-     
+
     /**
      * Parse and decode a mailto scheme string. This parser implements
      * RFC 2368. The returned object can be queried for the parsed parameters.
@@ -30,7 +30,7 @@ namespace Net {
     Parse(
         [in] String url,
         [out] IMailTo** result);
-     
+
     /**
      * Retrieve the To address line from the parsed mailto URL. This could be
      * several email address that are comma-space delimited.
@@ -70,9 +70,9 @@ namespace Net {
      * @return map containing all parsed values
      */
     GetHeaders(
-        [out] IObjectStringMap** rethashmap);
+        [out] IMap** rethashmap);
     }
-    
+
     interface IMailToHelper{
     /**
      * Test to see if the given string is a mailto URL
@@ -82,7 +82,7 @@ namespace Net {
     IsMailTo(
         [in] String url,
         [out] Boolean* result);
-        
+
     /**
      * Parse and decode a mailto scheme string. This parser implements
      * RFC 2368. The returned object can be queried for the parsed parameters.
@@ -92,7 +92,7 @@ namespace Net {
      */
     Parse(
         [in] String url,
-        [out] IMailTo** result);  
+        [out] IMailTo** result);
 
 
 

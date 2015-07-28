@@ -1,17 +1,18 @@
 module
 {
     using interface Elastos.IO.IInputStream;
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Net.Http.IRequest;
     interface Elastos.Droid.Net.IWebAddress;
-    interface Org.Apache.Http.IHttpHost;
+    using interface Org.Apache.Http.IHttpHost;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    [local]
     interface IRequestQueue {
         /**
          * Enables data state and proxy tracking
@@ -44,7 +45,7 @@ module
         QueueRequest(
             [in] String url,
             [in] String method,
-            [in] IObjectStringMap* headers,
+            [in] IMap* headers,
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,
@@ -65,7 +66,7 @@ module
             [in] String url,
             [in] IWebAddress* uri,
             [in] String method,
-            [in] IObjectStringMap* headers,
+            [in] IMap* headers,
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,
@@ -75,7 +76,7 @@ module
             [in] String url,
             [in] IWebAddress* uri,
             [in] String method,
-            [in] IObjectStringMap* headers,
+            [in] IMap* headers,
             [in] IEventHandler* eventHandler,
             [in] IInputStream* bodyProvider,
             [in] Int32 bodyLength,

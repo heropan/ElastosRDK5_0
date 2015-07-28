@@ -5,6 +5,12 @@
 #include <elastos/coredef.h>
 #endif
 
+#ifdef DROID_CORE
+#include "Elastos.Droid.Core_server.h"
+#else
+#include "Elastos.Droid.Core.h"
+#endif
+
 // #define MAX_PATH    256
 
 // #define XML_NAMESPACE   "http://schemas.elastos.com/capsule/res/elastos"

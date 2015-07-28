@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Utility.ICollection;
     using interface Elastos.Net.IInetAddress;
 
     interface Elastos.Droid.Net.ILinkAddress;
@@ -60,7 +60,7 @@ module
         */
         //To-do: confirm the use of Collection<> (that is originally used here) in Elastos and replace List<>
         SelectBestRoute(
-            [in] IObjectContainer* routes,
+            [in] ICollection* routes,
             [in] IInetAddress* dest,
             [out] IRouteInfo** info);
     }

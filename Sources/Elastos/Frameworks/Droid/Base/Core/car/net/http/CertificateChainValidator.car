@@ -1,13 +1,17 @@
 module
 {
-    interface Elastos.Droid.Net.Http.ISslError;
-    interface Elastos.Net.Ssl.ISSLSocket;
+    using interface Elastos.Droid.Net.Http.ISslError;
+    using interface Elastosx.Net.Ssl.ISSLSocket;
+    using interface Elastos.Core.IArrayOf;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    interface IHttpsConnection;
+
+    [local]
     interface ICertificateChainValidator {
         /**
          * Performs the handshake and server certificates validation
@@ -26,6 +30,7 @@ module
             [out] ISslError** err);
     }
 
+    [local, deprecated]
     interface ICertificateChainValidatorHelper {
         /**
          * @return The singleton instance of the certificates chain validator
@@ -41,9 +46,9 @@ module
          * @param authType The authentication type for the cert chain
          * @return An SSL error object if there is an error and null otherwise
          */
-         // TODO: 
+         // TODO:
         VerifyServerCertificates(
-            [in] IObjectContainer* certChain,
+            [in] ArrayOf<IArrayOf*>* certChain,
             [in] String sDomain,
             [in] String authType,
             [out] ISslError** err);

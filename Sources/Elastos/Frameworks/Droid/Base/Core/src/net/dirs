@@ -1,6 +1,6 @@
 
 #DIRS += http
-DIRS += nsd
-DIRS += wifi
-DIRS += ethernet
-DIRS += pppoe
+#DIRS += nsd
+#DIRS += wifi
+#DIRS += ethernet
+#DIRS += pppoe

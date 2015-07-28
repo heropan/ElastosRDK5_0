@@ -1,7 +1,7 @@
 module
 {
-    interface Org.Apache.Http.IHttpHost;
-    interface Org.Apache.Http.Conn.Routing.IHttpRoutePlanner;
+    using interface Org.Apache.Http.IHttpHost;
+    using interface Org.Apache.Http.Conn.Routing.IHttpRoutePlanner;
 
     //add using in the future
     interface Elastos.Droid.Content.IContext;

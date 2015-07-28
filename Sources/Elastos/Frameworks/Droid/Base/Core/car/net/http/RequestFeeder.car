@@ -1,6 +1,6 @@
 module
 {
-    interface Org.Apache.Http.IHttpHost;
+    using interface Org.Apache.Http.IHttpHost;
     interface Elastos.Droid.Net.Http.IRequest;
 
     namespace Elastos {

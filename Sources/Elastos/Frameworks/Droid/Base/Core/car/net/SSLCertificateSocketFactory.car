@@ -2,12 +2,11 @@ module
 {
     using interface Elastos.Net.ISocket;
     using interface Elastos.Net.IInetAddress;
-    //add "using" in the future
-    interface Elastos.Net.ISocketFactory;
-    interface Elastos.Net.Ssl.ISSLSocketFactory;
+    using interface Elastosx.Net.ISocketFactory;
+    using interface Elastosx.Net.Ssl.ISSLSocketFactory;
     interface Elastos.Droid.Net.ISSLSessionCache;
-    interface Elastos.Net.Ssl.ITrustManager;
-    interface Elastos.Net.Ssl.IKeyManager;
+    using interface Elastosx.Net.Ssl.ITrustManager;
+    using interface Elastosx.Net.Ssl.IKeyManager;
 
     namespace Elastos {
     namespace Droid {
@@ -15,9 +14,9 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Net.Ssl.ISSLSocketFactory
+     * interface Elastosx.Net.Ssl.ISSLSocketFactory
      */
-    [deprecated]
+    [deprecated, local]
     interface ISSLCertificateSocketFactory {
 
         /**
@@ -215,7 +214,7 @@ module
         GetDefault(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
 
         /**
          * Returns a new instance of a socket factory with all SSL security checks
@@ -232,7 +231,7 @@ module
         GetInsecure(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
 
         /**
          * Returns a socket factory (also named SSLSocketFactory, but in a different
@@ -246,7 +245,7 @@ module
         GetHttpSocketFactory(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastos.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
 
         /**
          * Verify the hostname of the certificate used by the other end of a

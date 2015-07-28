@@ -2,7 +2,7 @@
 module
 {
     using interface Elastos.Utility.IObjectContainer;
-    using interface Elastos.Utility.IObjectInt32Map;
+    using interface Elastos.Utility.IMap;
 
     interface Elastos.Droid.Net.ILinkCapabilities;
 
@@ -127,7 +127,7 @@ module
                 [out] String* result);
 
             GetCapabilities(
-                [out] IObjectInt32Map** result);
+                [out] IMap** result);
 
             Put(
                 [in] Int32 key,

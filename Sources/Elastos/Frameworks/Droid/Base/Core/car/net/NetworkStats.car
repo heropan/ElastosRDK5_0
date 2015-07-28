@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.Utility.IHashSet;
 
     namespace Elastos {
     namespace Droid {
@@ -198,7 +199,7 @@ module
 
         GetTotal(
             [in] INetworkStatsEntry* recycle,
-            [in] IObjectContainer* limitIface,
+            [in] IHashSet* limitIface,
             [out] INetworkStatsEntry** result);
 
         GetTotalIncludingTags(

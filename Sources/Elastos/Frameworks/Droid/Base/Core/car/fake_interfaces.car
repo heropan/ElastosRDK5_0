@@ -10,12 +10,12 @@ module
     namespace Droid {
     namespace App {
 
+        interface IPendingIntent {}
         interface IIActivityManager {}
 
         interface IApplicationErrorReportCrashInfo {}
 
     }}} // Elastos.Droid.App
-
 
     //
     // Elastos.Droid.Content
@@ -57,23 +57,37 @@ module
     namespace Droid {
     namespace Net {
 
-        interface IUri {}
+        interface IDhcpStateMachine {}
 
-        interface IUriBuilder {}
+        // interface IUri {}
 
-        interface ILocalServerSocket {}
+        // interface IUriBuilder {}
 
-        interface IInterfaceConfiguration {}
+        // interface ILocalServerSocket {}
 
-        interface INetworkManagementEventObserver {}
+        // interface IInterfaceConfiguration {}
+
+        interface ILinkCapabilities {}
+
+        interface ILinkSocket {}
+
+        interface ILinkQualityInfo {}
+
+        // interface INetworkManagementEventObserver {}
 
         interface INetwork {}
 
-        interface INetworkStats {}
+        interface INetworkCapabilities {}
 
-        interface IRouteInfo {}
+        // interface INetworkStats {}
+
+        // interface IRouteInfo {}
+
+        interface ISamplingSnapshot {}
 
         interface IUidRange {}
+
+        interface IWebAddress {}
 
         namespace Wifi {
 
@@ -147,6 +161,8 @@ module
 
         interface IMotionEvent {}
 
+        interface IView {}
+
     }}} // Elastos.Droid.View
 
     //
@@ -177,6 +193,7 @@ module
         interface IDatabaseErrorHandler {}
 
         namespace Sqlite {
+
             interface ISQLiteDatabase {}
 
             interface ISQLiteDatabaseCursorFactory{}
@@ -184,4 +201,94 @@ module
         } // Elastos.Droid.Sqlite
 
     }}} // Elastos.Droid.Database
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+
+        interface IHttpHost {}
+
+        interface IHttpRequest {}
+
+        interface IHttpEntity {}
+
+        interface IHttpEntityEnclosingRequest {}
+
+        interface IStatusLine {}
+
+    namespace Conn {
+    namespace Routing {
+
+        interface IHttpRoutePlanner {}
+
+    }
+    }
+
+    namespace Params {
+
+        interface IHttpParams {}
+
+    }
+
+    namespace Util {
+
+        interface ICharArrayBuffer {}
+
+    } // namespace Util
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    // namespace Elastos {
+    // namespace Utility {
+
+        // interface IHashSet {}
+
+    // }
+    // }
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+    namespace Format {
+
+        interface ITime {}
+
+    }
+    }
+    }
+    }
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Entity {
+
+        interface IAbstractHttpEntity {}
+
+    } // namespace Entity
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Database {
+
+        interface ICharArrayBuffer {}
+
+    } // namespace Database
+    } // namespace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace io {
+    namespace nio {
+
+        interface ICharArrayBuffer {}
+
+    } // namespace nio
+    } // namespace io
+    } // namespace Elastos
+
 }

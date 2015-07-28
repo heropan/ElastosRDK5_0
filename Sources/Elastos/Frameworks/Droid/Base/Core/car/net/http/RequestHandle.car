@@ -1,12 +1,13 @@
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    [deprecated]
     interface IRequestHandle {
         const Int32 MAX_REDIRECT_COUNT = 16;
 
@@ -53,7 +54,7 @@ module
         SetupRedirect(
             [in] String redirectTo,
             [in] Int32 statusCode,
-            [in] IObjectStringMap* cacheHeaders,
+            [in] IMap* cacheHeaders,
             [out] Boolean* result);
 
         /**
@@ -103,7 +104,7 @@ module
         AuthorizationHeader(
             [in] Boolean isProxy,
             [out] String* header);
-        
+
     }
 
     } // namespace Http

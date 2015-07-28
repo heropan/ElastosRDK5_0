@@ -1,6 +1,7 @@
 module
 {
-    interface Org.Apache.Http.Util.ICharArrayBuffer;
+    using interface Org.Apache.Http.Util.ICharArrayBuffer;
+    using interface Elastos.Utility.IArrayList;
 
     namespace Elastos {
     namespace Droid {
@@ -113,7 +114,7 @@ module
             [out] String* etag);
 
         GetSetCookie(
-            [out] IObjectContainer** cookie);
+            [out] IArrayList** cookie);
 
         GetPragma(
             [out] String* sPragma);

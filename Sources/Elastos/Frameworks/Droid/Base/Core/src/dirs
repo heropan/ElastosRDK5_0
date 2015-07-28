@@ -1,6 +1,6 @@
 
 DIRS += os
-#DIRS += net
+DIRS += net
 DIRS += util
 #DIRS += content
 #DIRS += media

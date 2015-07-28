@@ -4,6 +4,8 @@ module
     interface Elastos.Droid.Net.INetworkInfo;
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.ILinkCapabilities;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {
@@ -202,7 +204,7 @@ module
         */
         SetDependencyMet(
             [in] Boolean met);
-    };
+    }
 
     } // namespace Net
     } // namespace Droid

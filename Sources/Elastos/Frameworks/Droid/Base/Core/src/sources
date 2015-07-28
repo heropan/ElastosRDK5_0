@@ -60,7 +60,7 @@ INCLUDES += $(MAKEDIR)/../inc
 // INCLUDES += $(MAKEDIR)/../inc/database/
 // INCLUDES += $(MAKEDIR)/../inc/database/sqlite
 
-// INCLUDES += $(MAKEDIR)/../inc/net
+INCLUDES += $(MAKEDIR)/../inc/net
 // INCLUDES += $(MAKEDIR)/../inc/net/wifi
 // INCLUDES += $(MAKEDIR)/../inc/net/nsd
 // INCLUDES += $(MAKEDIR)/../inc/net/ethernet
@@ -118,7 +118,7 @@ LIBRARIES += os/os.lib
 // LIBRARIES += impl/impl.lib
 // LIBRARIES += animation/animation.lib
 // LIBRARIES += location/location.lib
-// LIBRARIES += net/net.lib
+LIBRARIES += net/net.lib
 // LIBRARIES += net/nsd/nsd.lib
 // LIBRARIES += net/ethernet/ethernet.lib
 // LIBRARIES += net/pppoe/pppoe.lib

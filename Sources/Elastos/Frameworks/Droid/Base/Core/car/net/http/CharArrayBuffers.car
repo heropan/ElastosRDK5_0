@@ -1,6 +1,6 @@
 module
 {
-    interface Org.Apache.Http.Util.ICharArrayBuffer;
+    using interface Org.Apache.Http.Util.ICharArrayBuffer;
 
     namespace Elastos {
     namespace Droid {

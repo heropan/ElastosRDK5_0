@@ -3,93 +3,138 @@
 #define __ELASTOS_DROID_NET_BASENETWORKSTATETRACKER_H__
 
 #include "ext/frameworkdef.h"
-#include "net/NetworkStateTracker.h"
+#include "Object.h"
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
+using Elastos::Core::Object;
+using Elastos::Droid::Os::IMessenger;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IHandler;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
 class BaseNetworkStateTracker
-    : public ElRefBase
+    : public Object
     , public INetworkStateTracker
+    , public IBaseNetworkStateTracker
 {
-public:
-    BaseNetworkStateTracker(
-        /* [in] */ Int32 networkType);
+    // TODO: better document threading expectations
+    // TODO: migrate to make NetworkStateTracker abstract class
 
+public:
     CAR_INTERFACE_DECL();
 
-    CARAPI StartMonitoring(
+    virtual CARAPI constructor(
+        /* [in] */ Int32 networkType);
+
+    // @Override
+    virtual CARAPI StartMonitoring(
         /* [in] */ IContext* context,
         /* [in] */ IHandler* target);
 
-    CARAPI GetNetworkInfo(
+    virtual CARAPI GetNetworkInfo(
         /* [out] */ INetworkInfo** info);
 
-    CARAPI GetLinkProperties(
+    virtual CARAPI GetLinkProperties(
         /* [out] */ ILinkProperties** result);
 
-    CARAPI GetLinkCapabilities(
+    virtual CARAPI GetLinkCapabilities(
         /* [out] */ ILinkCapabilities** result);
 
-    CARAPI CaptivePortalCheckComplete();
+    virtual CARAPI GetLinkQualityInfo(
+        /* [out] */ ILinkQualityInfo** result);
 
-    CARAPI SetRadio(
+    virtual CARAPI CaptivePortalCheckComplete();
+
+    virtual CARAPI SetRadio(
         /* [in] */ Boolean turnOn,
         /* [out] */ Boolean* result);
 
-    CARAPI IsAvailable(
+    virtual CARAPI IsAvailable(
         /* [out] */ Boolean* result);
 
-    CARAPI SetUserDataEnable(
+    virtual CARAPI SetUserDataEnable(
         /* [in] */ Boolean enabled);
 
-    CARAPI SetPolicyDataEnable(
+    virtual CARAPI SetPolicyDataEnable(
         /* [in] */ Boolean enabled);
 
-    CARAPI IsPrivateDnsRouteSet(
+    virtual CARAPI IsPrivateDnsRouteSet(
         /* [out] */ Boolean* result);
 
-    CARAPI SetPrivateDnsRoute(
+    virtual CARAPI SetPrivateDnsRoute(
         /* [in] */ Boolean enabled);
 
-    CARAPI IsDefaultRouteSet(
+    virtual CARAPI IsDefaultRouteSet(
         /* [out] */ Boolean* result);
 
-    CARAPI SetDefaultRoute(
+    virtual CARAPI SetDefaultRoute(
         /* [in] */ Boolean enabled);
 
-    CARAPI IsTeardownRequested(
+    virtual CARAPI IsTeardownRequested(
         /* [out] */ Boolean* result);
 
-    CARAPI SetTeardownRequested(
+    virtual CARAPI SetTeardownRequested(
         /* [in] */ Boolean isRequested);
 
-    CARAPI SetDependencyMet(
+    virtual CARAPI SetDependencyMet(
         /* [in] */ Boolean met);
 
+    // @Override
+    virtual CARAPI AddStackedLink(
+        /* [in] */ ILinkProperties* link);
+
+    // @Override
+    virtual CARAPI RemoveStackedLink(
+        /* [in] */ ILinkProperties* link);
+
+    // @Override
+    virtual CARAPI SupplyMessenger(
+        /* [in] */ IMessenger* messenger);
+
+    // @Override
+    virtual CARAPI GetNetworkInterfaceName(
+        /* [out] */ String* result);
+
+    // @Override
+    virtual CARAPI StartSampling(
+        /* [in] */ ISamplingSnapshot* s);
+
+    // @Override
+    virtual CARAPI StopSampling(
+        /* [in] */ ISamplingSnapshot* s);
+
+    // @Override
+    virtual CARAPI SetNetId(
+        /* [in] */ Int32 netId);
+
+    // @Override
+    virtual CARAPI GetNetwork(
+        /* [out] */ INetwork** result);
+
 protected:
-    CARAPI_(AutoPtr<IHandler>) GetTargetHandler();
+    BaseNetworkStateTracker();
 
-    CARAPI_(void) DispatchStateChanged();
+    virtual CARAPI constructor();
 
-    CARAPI_(void) DispatchConfigurationChanged();
+    virtual CARAPI GetTargetHandler(
+        /* [out] */ IHandler** handler);
 
-    virtual CARAPI_(void) StartMonitoringInternal() = 0;
+    virtual CARAPI DispatchStateChanged();
 
-public:
-    // TODO: better document threading expectations
-    // TODO: migrate to make NetworkStateTracker abstract class
-    static const String PROP_TCP_BUFFER_UNKNOWN;
-    static const String PROP_TCP_BUFFER_WIFI;
+    virtual CARAPI DispatchConfigurationChanged();
+
+    virtual CARAPI StartMonitoringInternal();
 
 protected:
     AutoPtr<IContext> mContext;
     AutoPtr<INetworkInfo> mNetworkInfo;
     AutoPtr<ILinkProperties> mLinkProperties;
     AutoPtr<ILinkCapabilities> mLinkCapabilities;
+    AutoPtr<INetwork> mNetwork;
+    AutoPtr<INetworkCapabilities> mNetworkCapabilities;
 
 private:
     AutoPtr<IHandler> mTarget;

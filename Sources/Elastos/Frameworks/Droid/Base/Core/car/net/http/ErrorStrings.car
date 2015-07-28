@@ -7,6 +7,7 @@ module
     namespace Net {
     namespace Http {
 
+    [local]
     interface IErrorStrings {
         /**
          * Get the localized error message resource for the given error code.

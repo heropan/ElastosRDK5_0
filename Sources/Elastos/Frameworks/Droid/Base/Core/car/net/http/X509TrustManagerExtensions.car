@@ -1,12 +1,14 @@
 module
 {
     using interface Elastos.Security.Cert.IX509Certificate;
+    using interface Elastos.Utility.IList;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
     namespace Http {
 
+    [local]
     interface IX509TrustManagerExtensions {
         /**
          * Verifies the given certificate chain.
@@ -22,7 +24,7 @@ module
             [in] ArrayOf<IX509Certificate*> chain,
             [in] String authType,
             [in] String host,
-            [out] IObjectContainer** certificates);
+            [out] IList** certificates);
     }
 
     } // namespace Http

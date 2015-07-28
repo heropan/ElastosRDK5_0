@@ -18,6 +18,7 @@ module
      *
      * {@hide}
      */
+    [local]
     interface IEventHandler {
         /**
          * Error codes used in the error() callback.  Positive error codes

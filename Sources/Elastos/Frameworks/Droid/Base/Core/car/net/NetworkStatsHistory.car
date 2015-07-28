@@ -2,7 +2,7 @@
 module
 {
     using interface Elastos.IO.IDataOutputStream;
-    using interface Elastos.Core.IRandom;
+    using interface Elastos.Utility.IRandom;
     using interface Elastos.Droid.Internal.Utility.IIndentingPrintWriter;
 
     interface Elastos.Droid.Net.INetworkStatsEntry;

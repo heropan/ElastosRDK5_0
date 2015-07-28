@@ -2,7 +2,8 @@
 
 module
 {
-using interface Elastos.Utility.IObjectContainer;
+interface Elastos.Utility.ISet;
+interface Elastos.Utility.IList;
 
 namespace Elastos {
 namespace Droid {
@@ -147,7 +148,7 @@ namespace Net {
      */
     //anthony
     GetParameterSet(
-        [out] IObjectContainer** result);
+        [out] ISet** result);
 
     /**
      * An array list of all of the parameter value pairs in the sanitized
@@ -157,7 +158,7 @@ namespace Net {
      */
      //anthony
     GetParameterList(
-        [out] IObjectContainer** result);
+        [out] IList** result);
 
     /**
      * Check if a parameter exists in the current sanitized query.
