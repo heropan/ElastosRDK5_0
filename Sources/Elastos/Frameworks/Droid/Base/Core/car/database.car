@@ -10,7 +10,6 @@ module
     merge("database/sqlite/SQLiteQueryBuilder.car");
     merge("database/sqlite/SQLiteStatement.car");
     merge("database/sqlite/SQLiteTransactionListener.car");
-    merge("database/sqlite/SQLiteConnection.car");
 
     merge("database/Cursor.car");
     merge("database/CrossProcessCursor.car");
