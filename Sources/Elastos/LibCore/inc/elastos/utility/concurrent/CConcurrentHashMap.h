@@ -75,7 +75,7 @@ public:
         /**
          * Virtualized support for map.get(); overridden in subclasses.
          */
-        AutoPtr<Node> Find(
+        CARAPI_(AutoPtr<Node>) Find(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k);
 
@@ -119,7 +119,7 @@ public:
         ForwardingNode(
             /* [in] */ ArrayOf<Node*>* tab);
 
-        AutoPtr<Node> Find(
+        CARAPI_(AutoPtr<Node>) Find(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k);
 
@@ -139,7 +139,7 @@ public:
 
         ReservationNode() : Node(RESERVED, NULL, NULL, NULL) {}
 
-        AutoPtr<Node> Find(
+        CARAPI_(AutoPtr<Node>) Find(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k) {
             return NULL;
@@ -165,7 +165,7 @@ public:
             /* [in] */ Node* next,
             /* [in] */ TreeNode* parent);
 
-        AutoPtr<Node> Find(
+        CARAPI_(AutoPtr<Node>) Find(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k);
 
@@ -173,7 +173,7 @@ public:
          * Returns the TreeNode (or null if not found) for the given key
          * starting at given root.
          */
-        AutoPtr<TreeNode> FindTreeNode(
+        CARAPI_(AutoPtr<TreeNode>) FindTreeNode(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k,
             /* [in] */ const InterfaceID& kc);
@@ -213,7 +213,7 @@ public:
          * using tree comparisons from root, but continues linear
          * search when lock not available.
          */
-        AutoPtr<Node> Find(
+        CARAPI_(AutoPtr<Node>) Find(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k);
 
@@ -221,7 +221,7 @@ public:
          * Finds or adds a node.
          * @return null if added
          */
-        AutoPtr<TreeNode> PutTreeVal(
+        CARAPI_(AutoPtr<TreeNode>) PutTreeVal(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k,
             /* [in] */ IInterface* v);
@@ -236,49 +236,49 @@ public:
          *
          * @return true if now too small, so should be untreeified
          */
-        Boolean RemoveTreeNode(
+        CARAPI_(Boolean) RemoveTreeNode(
             /* [in] */ TreeNode* p);
 
         /* ------------------------------------------------------------ */
         // Red-black tree methods, all adapted from CLR
 
-        static AutoPtr<TreeNode> RotateLeft(
+        static CARAPI_(AutoPtr<TreeNode>) RotateLeft(
             /* [in] */ TreeNode* root,
             /* [in] */ TreeNode* p);
 
-        static AutoPtr<TreeNode> RotateRight(
+        static CARAPI_(AutoPtr<TreeNode>) RotateRight(
             /* [in] */ TreeNode* root,
             /* [in] */ TreeNode* p);
 
-        static AutoPtr<TreeNode> BalanceInsertion(
+        static CARAPI_(AutoPtr<TreeNode>) BalanceInsertion(
             /* [in] */ TreeNode* root,
             /* [in] */ TreeNode* x);
 
-        static AutoPtr<TreeNode> BalanceDeletion(
+        static CARAPI_(AutoPtr<TreeNode>) BalanceDeletion(
             /* [in] */ TreeNode* root,
             /* [in] */ TreeNode* x);
 
         /**
          * Recursive invariant check
          */
-        static Boolean CheckInvariants(
+        static CARAPI_(Boolean) CheckInvariants(
             /* [in] */ TreeNode* t);
 
     private:
         /**
          * Acquires write lock for tree restructuring.
          */
-        void LockRoot();
+        CARAPI_(void) LockRoot();
 
         /**
          * Releases write lock for tree restructuring.
          */
-        void UnlockRoot();
+        CARAPI_(void) UnlockRoot();
 
         /**
          * Possibly blocks awaiting root lock.
          */
-        void ContendedLock();
+        CARAPI_(void) ContendedLock();
 
     public:
         AutoPtr<TreeNode> mRoot;
@@ -340,7 +340,7 @@ public:
         /**
          * Advances if possible, returning next valid node, or null if none.
          */
-        AutoPtr<Node> Advance();
+        CARAPI_(AutoPtr<Node>) Advance();
 
     public:
         AutoPtr<ArrayOf<Node*> > mTab;        // current table; updated if resized
@@ -525,7 +525,7 @@ public:
          *
          * @return the map backing this view
          */
-        AutoPtr<CConcurrentHashMap> GetMap();
+        CARAPI_(AutoPtr<CConcurrentHashMap>) GetMap();
 
         /**
          * Removes all of the elements from this view, by removing all
@@ -578,7 +578,7 @@ public:
          *
          * @return a string representation of this collection
          */
-        String ToString();
+        CARAPI_(String) ToString();
 
         CARAPI ContainsAll(
             /* [in] */ ICollection* collection,
@@ -631,7 +631,7 @@ public:
          * @return the default mapped value for additions, or {@code null}
          * if not supported
          */
-        AutoPtr<IInterface> GetMappedValue();
+        CARAPI_(AutoPtr<IInterface>) GetMappedValue();
 
         CARAPI Contains(
             /* [in] */ IInterface* object,
@@ -1031,7 +1031,7 @@ public:
         /* [out] */ IInterface** oldValue);
 
     /** Implementation for put and putIfAbsent */
-    AutoPtr<IInterface> PutVal(
+    CARAPI_(AutoPtr<IInterface>) PutVal(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [in] */ Boolean onlyIfAbsent);
@@ -1064,7 +1064,7 @@ public:
      * Replaces node value with v, conditional upon match of cv if
      * non-null.  If resulting value is null, delete.
      */
-    AutoPtr<IInterface> ReplaceNode(
+    CARAPI_(AutoPtr<IInterface>) ReplaceNode(
         /* [in] */ IInterface* key,
         /* [in] */ IInterface* value,
         /* [in] */ IInterface* cv);
@@ -1158,7 +1158,7 @@ public:
      *
      * @return a string representation of this map
      */
-    String ToString();
+    CARAPI_(String) ToString();
 
     /**
      * Compares the specified object with this map for equality.
@@ -1272,7 +1272,7 @@ public:
      *
      * @hide
      */
-    Int64 MappingCount();
+    CARAPI_(Int64) MappingCount();
 
     /**
      * Creates a new {@link Set} backed by a ConcurrentHashMap
@@ -1283,7 +1283,7 @@ public:
      *
      * @hide
      */
-    static AutoPtr<KeySetView> NewKeySet();
+    static CARAPI_(AutoPtr<KeySetView>) NewKeySet();
 
     /**
      * Creates a new {@link Set} backed by a ConcurrentHashMap
@@ -1298,7 +1298,7 @@ public:
      *
      * @hide
      */
-    static AutoPtr<KeySetView> NewKeySet(
+    static CARAPI_(AutoPtr<KeySetView>) NewKeySet(
         /* [in] */ Int32 initialCapacity);
 
     /**
@@ -1314,10 +1314,10 @@ public:
      *
      * @hide
      */
-    AutoPtr<ISet> KeySet(
+    CARAPI_(AutoPtr<ISet>) KeySet(
         /* [in] */ IInterface* mappedValue);
 
-    Int64 SumCount();
+    CARAPI_(Int64) SumCount();
 
     /**
      * Spreads (XORs) higher bits of hash to lower and also forces top
@@ -1335,21 +1335,21 @@ public:
      * to incorporate impact of the highest bits that would otherwise
      * never be used in index calculations because of table bounds.
      */
-    static Int32 Spread(
+    static CARAPI_(Int32) Spread(
         /* [in] */ Int32 h);
 
     /**
      * Returns x's Class if it is of the form "class C implements
      * Comparable<C>", else null.
      */
-    static InterfaceID ComparableClassFor(
+    static CARAPI_(InterfaceID) ComparableClassFor(
         /* [in] */ IInterface* x);
 
     /**
      * Returns k.compareTo(x) if x matches kc (k's screened comparable
      * class), else 0.
      */
-    static Int32 CompareComparables(
+    static CARAPI_(Int32) CompareComparables(
         /* [in] */ const InterfaceID& kc,
         /* [in] */ IInterface* k,
         /* [in] */ IInterface* x);
@@ -1370,17 +1370,17 @@ public:
      * and so do not need full volatile semantics, but still require
      * ordering to maintain concurrent readability.
      */
-    static AutoPtr<Node> TabAt(
+    static CARAPI_(AutoPtr<Node>) TabAt(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ Int32 i);
 
-    static Boolean CasTabAt(
+    static CARAPI_(Boolean) CasTabAt(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ Int32 i,
         /* [in] */ Node* c,
         /* [in] */ Node* v);
 
-    static void SetTabAt(
+    static CARAPI_(void) SetTabAt(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ Int32 i,
         /* [in] */ Node* v);
@@ -1413,7 +1413,7 @@ private:
      * Returns a power of two table size for the given desired capacity.
      * See Hackers Delight, sec 3.2
      */
-    static Int32 TableSizeFor(
+    static CARAPI_(Int32) TableSizeFor(
         /* [in] */ Int32 c);
 
     /* ---------------- Table Initialization and Resizing -------------- */
@@ -1421,7 +1421,7 @@ private:
     /**
      * Initializes table, using the size recorded in sizeCtl.
      */
-    AutoPtr<ArrayOf<Node*> > InitTable();
+    CARAPI_(AutoPtr<ArrayOf<Node*> >) InitTable();
 
     /**
      * Adds to count, and if table is too small and not already
@@ -1433,14 +1433,14 @@ private:
      * @param x the count to add
      * @param check if <0, don't check resize, if <= 1 only check if uncontended
      */
-    void AddCount(
+    CARAPI_(void) AddCount(
         /* [in] */ Int64 x,
         /* [in] */ Int32 check);
 
     /**
      * Helps transfer if a resize is in progress.
      */
-    AutoPtr<ArrayOf<Node*> > HelpTransfer(
+    CARAPI_(AutoPtr<ArrayOf<Node*> >) HelpTransfer(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ Node* f);
 
@@ -1449,14 +1449,14 @@ private:
      *
      * @param size number of elements (doesn't need to be perfectly accurate)
      */
-    void TryPresize(
+    CARAPI_(void) TryPresize(
         /* [in] */ Int32 size);
 
     /**
      * Moves and/or copies the nodes in each bin to new table. See
      * above for explanation.
      */
-    void Transfer(
+    CARAPI_(void) Transfer(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ ArrayOf<Node*>* nextTab);
 
@@ -1466,18 +1466,18 @@ private:
      * Replaces all linked nodes in bin at given index unless table is
      * too small, in which case resizes instead.
      */
-    void TreeifyBin(
+    CARAPI_(void) TreeifyBin(
         /* [in] */ ArrayOf<Node*>* tab,
         /* [in] */ Int32 index);
 
     /**
      * Returns a list on non-TreeNodes replacing those in given list.
      */
-    static AutoPtr<Node> Untreeify(
+    static CARAPI_(AutoPtr<Node>) Untreeify(
         /* [in] */ Node* b);
 
     // See LongAdder version for explanation
-    void FullAddCount(
+    CARAPI_(void) FullAddCount(
         /* [in] */ Int64 x,
         /* [in] */ CounterHashCode* hc,
         /* [in] */ Boolean wasUncontended);

@@ -88,7 +88,7 @@ private:
      * @return the other thread's item; or null if interrupted; or
      * TIMED_OUT if timed and timed out
      */
-    AutoPtr<IInterface> ArenaExchange(
+    CARAPI_(AutoPtr<IInterface>) ArenaExchange(
         /* [in] */ IInterface* item,
         /* [in] */ Boolean timed,
         /* [in] */ Int64 ns);
@@ -103,7 +103,7 @@ private:
      * was enabled or the thread was interrupted before completion; or
      * TIMED_OUT if timed and timed out
      */
-    AutoPtr<IInterface> SlotExchange(
+    CARAPI_(AutoPtr<IInterface>) SlotExchange(
         /* [in] */ IInterface* item,
         /* [in] */ Boolean timed,
         /* [in] */ Int64 ns);

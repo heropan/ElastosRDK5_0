@@ -40,33 +40,33 @@ public:
         Node(
             /* [in] */ Node* next);
 
-        Boolean CasValue(
+        CARAPI_(Boolean) CasValue(
             /* [in] */ IInterface* cmp,
             /* [in] */ IInterface* val);
 
-        Boolean CasNext(
+        CARAPI_(Boolean) CasNext(
             /* [in] */ Node* cmp,
             /* [in] */ Node* val);
 
-        Boolean IsMarker();
+        CARAPI_(Boolean) IsMarker();
 
-        Boolean IsBaseHeader();
+        CARAPI_(Boolean) IsBaseHeader();
 
-        Boolean AppendMarker(
+        CARAPI_(Boolean) AppendMarker(
             /* [in] */ Node* f);
 
-        void HelpDelete(
+        CARAPI_(void) HelpDelete(
             /* [in] */ Node* b,
             /* [in] */ Node* f);
 
-        AutoPtr<IInterface> GetValidValue();
+        CARAPI_(AutoPtr<IInterface>) GetValidValue();
 
-        AutoPtr<SimpleImmutableEntry> CreateSnapshot();
+        CARAPI_(AutoPtr<SimpleImmutableEntry>) CreateSnapshot();
 
     public:
         AutoPtr<IInterface> mKey;
-        /*volatile*/ AutoPtr<IInterface> mValue;
-        /*volatile*/ AutoPtr<Node> mNext;
+        volatile AutoPtr<IInterface> mValue;
+        volatile AutoPtr<Node> mNext;
 
         // UNSAFE mechanics
 
@@ -97,17 +97,17 @@ public:
             /* [in] */ Index* down,
             /* [in] */ Index* right);
 
-        Boolean CasRight(
+        CARAPI_(Boolean) CasRight(
             /* [in] */ Index* cmp,
             /* [in] */ Index* val);
 
-        Boolean IndexesDeletedNode();
+        CARAPI_(Boolean) IndexesDeletedNode();
 
-        Boolean Link(
+        CARAPI_(Boolean) Link(
             /* [in] */ Index* succ,
             /* [in] */ Index* newSucc);
 
-        Boolean Unlink(
+        CARAPI_(Boolean) Unlink(
             /* [in] */ Index* succ);
 
         // Unsafe mechanics
@@ -126,7 +126,7 @@ public:
     public:
         AutoPtr<Node> mNode;
         AutoPtr<Index> mDown;
-        /*volatile*/ AutoPtr<Index> mRight;
+        volatile AutoPtr<Index> mRight;
     };
 
     /* ---------------- Head nodes -------------- */
@@ -514,14 +514,14 @@ public:
             CARAPI HasNext(
                 /* [out] */ Boolean* result);
 
-            void Advance();
+            CARAPI_(void) Advance();
 
             CARAPI Remove();
 
         private:
-            void Ascend();
+            CARAPI_(void) Ascend();
 
-            void Descend();
+            CARAPI_(void) Descend();
 
         public:
             AutoPtr<Node> mLastReturned;
@@ -762,46 +762,46 @@ public:
     private:
         /* ----------------  Utilities -------------- */
 
-        Boolean TooLow(
+        CARAPI_(Boolean) TooLow(
             /* [in] */ IInterface* key);
 
-        Boolean TooHigh(
+        CARAPI_(Boolean) TooHigh(
             /* [in] */ PInterface key);
 
-        Boolean InBounds(
+        CARAPI_(Boolean) InBounds(
             /* [in] */ PInterface key);
 
         CARAPI CheckKeyBounds(
             /* [in] */ PInterface key);
 
-        Boolean IsBeforeEnd(
+        CARAPI_(Boolean) IsBeforeEnd(
             /* [in] */ Node* n);
 
-        AutoPtr<Node> LoNode();
+        CARAPI_(AutoPtr<Node>) LoNode();
 
-        AutoPtr<Node> HiNode();
+        CARAPI_(AutoPtr<Node>) HiNode();
 
-        AutoPtr<IInterface> LowestKey();
+        CARAPI_(AutoPtr<IInterface>) LowestKey();
 
-        AutoPtr<IInterface> HighestKey();
+        CARAPI_(AutoPtr<IInterface>) HighestKey();
 
-        AutoPtr<IMapEntry> LowestEntry();
+        CARAPI_(AutoPtr<IMapEntry>) LowestEntry();
 
-        AutoPtr<IMapEntry> HighestEntry();
+        CARAPI_(AutoPtr<IMapEntry>) HighestEntry();
 
-        AutoPtr<IMapEntry> RemoveLowest();
+        CARAPI_(AutoPtr<IMapEntry>) RemoveLowest();
 
-        AutoPtr<IMapEntry> RemoveHighest();
+        CARAPI_(AutoPtr<IMapEntry>) RemoveHighest();
 
-        AutoPtr<IMapEntry> GetNearEntry(
+        CARAPI_(AutoPtr<IMapEntry>) GetNearEntry(
             /* [in] */ PInterface key,
             /* [in] */ Int32 rel);
 
-        AutoPtr<IInterface> GetNearKey(
+        CARAPI_(AutoPtr<IInterface>) GetNearKey(
             /* [in] */ PInterface key,
             /* [in] */ Int32 rel);
 
-        AutoPtr<_SubMap> NewSubMap(
+        CARAPI_(AutoPtr<_SubMap>) NewSubMap(
             /* [in] */ PInterface fromKey,
             /* [in] */ Boolean fromInclusive,
             /* [in] */ PInterface toKey,
@@ -836,47 +836,47 @@ public:
 
     CARAPI Initialize();
 
-    Int32 Compare(
+    CARAPI_(Int32) Compare(
         /* [in] */ PInterface k1,
         /* [in] */ PInterface k2);
 
-    Boolean InHalfOpenRange(
+    CARAPI_(Boolean) InHalfOpenRange(
         /* [in] */ PInterface key,
         /* [in] */ PInterface least,
         /* [in] */ PInterface fence);
 
-    Boolean InOpenRange(
+    CARAPI_(Boolean) InOpenRange(
         /* [in] */ PInterface key,
         /* [in] */ PInterface least,
         /* [in] */ PInterface fence);
 
     /* ---------------- Deletion -------------- */
 
-    AutoPtr<IInterface> DoRemove(
+    CARAPI_(AutoPtr<IInterface>) DoRemove(
         /* [in] */ PInterface okey,
         /* [in] */ PInterface value);
 
     /* ---------------- Finding and removing first element -------------- */
 
-    AutoPtr<Node> FindFirst();
+    CARAPI_(AutoPtr<Node>) FindFirst();
 
-    AutoPtr<IMapEntry> DoRemoveFirstEntry();
+    CARAPI_(AutoPtr<IMapEntry>) DoRemoveFirstEntry();
 
     /* ---------------- Finding and removing last element -------------- */
 
-    AutoPtr<Node> FindLast();
+    CARAPI_(AutoPtr<Node>) FindLast();
 
-    AutoPtr<IMapEntry> DoRemoveLastEntry();
+    CARAPI_(AutoPtr<IMapEntry>) DoRemoveLastEntry();
 
     /* ---------------- Relational operations -------------- */
 
     // Control values OR'ed as arguments to findNear
 
-    AutoPtr<Node> FindNear(
+    CARAPI_(AutoPtr<Node>) FindNear(
         /* [in] */ PInterface kkey,
         /* [in] */ Int32 rel);
 
-    AutoPtr<AbstractMap::SimpleImmutableEntry> GetNear(
+    CARAPI_(AutoPtr<AbstractMap::SimpleImmutableEntry>) GetNear(
         /* [in] */ PInterface key,
         /* [in] */ Int32 rel);
 
@@ -1065,15 +1065,15 @@ public:
 
     // Factory methods for iterators needed by ConcurrentSkipListSet etc
 
-    AutoPtr<IIterator> KeyIterator();
+    CARAPI_(AutoPtr<IIterator>) KeyIterator();
 
-    AutoPtr<IIterator> ValueIterator();
+    CARAPI_(AutoPtr<IIterator>) ValueIterator();
 
-    AutoPtr<IIterator> EntryIterator();
+    CARAPI_(AutoPtr<IIterator>) EntryIterator();
 
     /* ---------------- View Classes -------------- */
 
-    static AutoPtr<IList> ToList(
+    static CARAPI_(AutoPtr<IList>) ToList(
         /* [in] */ ICollection* c);
 
     CARAPI PutAll(
@@ -1090,56 +1090,56 @@ public:
         /* [in] */ IInterface* key);
 
 private:
-    Boolean CasHead(
+    CARAPI_(Boolean) CasHead(
         /* [in] */ HeadIndex* cmp,
         /* [in] */ HeadIndex* val);
 
-    AutoPtr<IComparable> Comparable(
+    CARAPI_(AutoPtr<IComparable>) Comparable(
         /* [in] */ PInterface key);
 
     /* ---------------- Traversal -------------- */
 
-    AutoPtr<Node> FindPredecessor(
+    CARAPI_(AutoPtr<Node>) FindPredecessor(
         /* [in] */ IComparable* key);
 
-    AutoPtr<Node> FindNode(
+    CARAPI_(AutoPtr<Node>) FindNode(
         /* [in] */ IComparable* key);
 
-    AutoPtr<IInterface> DoGet(
+    CARAPI_(AutoPtr<IInterface>) DoGet(
         /* [in] */ PInterface okey);
 
     /* ---------------- Insertion -------------- */
 
-    AutoPtr<IInterface> DoPut(
+    CARAPI_(AutoPtr<IInterface>) DoPut(
         /* [in] */ PInterface kkey,
         /* [in] */ PInterface value,
         /* [in] */ Boolean onlyIfAbsent);
 
-    Int32 RandomLevel();
+    CARAPI_(Int32) RandomLevel();
 
-    void InsertIndex(
+    CARAPI_(void) InsertIndex(
         /* [in] */ Node* z,
         /* [in] */ Int32 level);
 
-    void AddIndex(
+    CARAPI_(void) AddIndex(
         /* [in] */ Index* idx,
         /* [in] */ HeadIndex* h,
         /* [in] */ Int32 indexLevel);
 
-    void TryReduceLevel();
+    CARAPI_(void) TryReduceLevel();
 
-    void ClearIndexToFirst();
+    CARAPI_(void) ClearIndexToFirst();
 
-    AutoPtr<Node> FindPredecessorOfLast();
+    CARAPI_(AutoPtr<Node>) FindPredecessorOfLast();
 
-    void BuildFromSorted(
+    CARAPI_(void) BuildFromSorted(
         /* [in] */ ISortedMap* map);
     /* ---------------- Serialization -------------- */
 
-    void WriteObject(
+    CARAPI_(void) WriteObject(
         /* [in] */ IObjectOutputStream* s);
 
-    void ReadObject(
+    CARAPI_(void) ReadObject(
         /* [in] */ IObjectInputStream* s);
 
 private:
@@ -1149,7 +1149,7 @@ private:
 
     static AutoPtr<IInterface> sBASE_HEADER;
 
-    /*volatile*/ AutoPtr<HeadIndex> mHead;
+    volatile AutoPtr<HeadIndex> mHead;
 
     AutoPtr<IComparator> mComparator;
 

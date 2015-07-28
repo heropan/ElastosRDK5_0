@@ -220,20 +220,20 @@ public:
          * Tries to poll for and execute the given task or any other
          * task in its CountedCompleter computation.
          */
-        Boolean PollAndExecCC(
+        CARAPI_(Boolean) PollAndExecCC(
             /* [in] */ ICountedCompleter* root);
 
         /**
          * Tries to pop and execute the given task or any other task
          * in its CountedCompleter computation.
          */
-        Boolean ExternalPopAndExecCC(
+        CARAPI_(Boolean) ExternalPopAndExecCC(
             /* [in] */ ICountedCompleter* root);
 
         /**
          * Internal version
          */
-        Boolean InternalPopAndExecCC(
+        CARAPI_(Boolean) InternalPopAndExecCC(
             /* [in] */ ICountedCompleter* root);
 
         /**
@@ -700,7 +700,7 @@ public:
     CARAPI_(Boolean) TryExternalUnpush(
         /* [in] */ IForkJoinTask* task);
 
-    Int32 ExternalHelpComplete(
+    CARAPI_(Int32) ExternalHelpComplete(
         /* [in] */ ICountedCompleter* task);
 
     /**
@@ -861,7 +861,7 @@ private:
      *
      * @param task the task to join
      */
-    Int32 HelpComplete(
+    CARAPI_(Int32) HelpComplete(
         /* [in] */ WorkQueue* joiner,
         /* [in] */ ICountedCompleter* task);
 

@@ -146,15 +146,15 @@ public:
         CARAPI Execute(
             /* [in] */ IRunnable* command);
 
-        void Shutdown();
+        CARAPI_(void) Shutdown();
 
-        AutoPtr<IList> ShutdownNow();
+        CARAPI_(AutoPtr<IList>) ShutdownNow();
 
-        Boolean IsShutdown();
+        CARAPI_(Boolean) IsShutdown();
 
-        Boolean IsTerminated();
+        CARAPI_(Boolean) IsTerminated();
 
-        Boolean AwaitTermination(
+        CARAPI_(Boolean) AwaitTermination(
             /* [in] */ Int64 timeout,
             /* [in] */ ITimeUnit* unit);
 
@@ -202,7 +202,7 @@ public:
         FinalizableDelegatedExecutorService(
             /* [in] */ IExecutorService* executor);
 
-        void Finalize();
+        CARAPI_(void) Finalize();
     };
 
     /**

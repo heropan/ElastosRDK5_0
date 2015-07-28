@@ -30,21 +30,21 @@ protected:
         Node(
             /* [in] */ IInterface* item);
 
-        Boolean CasItem(
+        CARAPI_(Boolean) CasItem(
             /* [in] */ IInterface* cmp,
             /* [in] */ IInterface* val);
 
-        void LazySetNext(
+        CARAPI_(void) LazySetNext(
             /* [in] */ Node* val);
 
-        Boolean CasNext(
+        CARAPI_(Boolean) CasNext(
             /* [in] */ Node* cmp,
             /* [in] */ Node* val);
 
-        void LazySetPrev(
+        CARAPI_(void) LazySetPrev(
             /* [in] */ Node* val);
 
-        Boolean CasPrev(
+        CARAPI_(Boolean) CasPrev(
             /* [in] */ Node* cmp,
             /* [in] */ Node* val);
 
@@ -72,9 +72,9 @@ private:
         AbstractItr(
             /* [in] */ CConcurrentLinkedDeque* owner);
 
-        virtual AutoPtr<Node> StartNode() = 0;
+        virtual CARAPI_(AutoPtr<Node>) StartNode() = 0;
 
-        virtual AutoPtr<Node> NextNode(
+        virtual CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* p) = 0;
 
         CARAPI HasNext(
@@ -90,7 +90,7 @@ private:
          * Sets nextNode and nextItem to next valid node, or to null
          * if no such.
          */
-        void Advance();
+        CARAPI_(void) Advance();
 
     public:
         CConcurrentLinkedDeque* mOwner;
@@ -126,12 +126,12 @@ private:
              : AbstractItr(owner)
         {}
 
-        AutoPtr<Node> StartNode()
+        CARAPI_(AutoPtr<Node>) StartNode()
         {
             return mOwner->First();
         }
 
-        AutoPtr<Node> NextNode(
+        CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* p)
         {
             return mOwner->Succ(p);
@@ -154,12 +154,12 @@ private:
              : AbstractItr(owner)
         {}
 
-        AutoPtr<Node> StartNode()
+        CARAPI_(AutoPtr<Node>) StartNode()
         {
             return mOwner->Last();
         }
 
-        AutoPtr<Node> NextNode(
+        CARAPI_(AutoPtr<Node>) NextNode(
             /* [in] */ Node* p)
         {
             return mOwner->Pred(p);

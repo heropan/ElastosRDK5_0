@@ -27,14 +27,14 @@ private:
         Node(
             /* [in] */ IInterface* item);
 
-        Boolean CasItem(
+        CARAPI_(Boolean) CasItem(
             /* [in] */ IInterface* cmp,
             /* [in] */ IInterface* val);
 
-        void LazySetNext(
+        CARAPI_(void) LazySetNext(
             /* [in] */ Node* val);
 
-        Boolean CasNext(
+        CARAPI_(Boolean) CasNext(
             /* [in] */ Node* cmp,
             /* [in] */ Node* val);
 
