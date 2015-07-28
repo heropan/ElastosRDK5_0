@@ -1992,6 +1992,10 @@ module
         interface IRandom;
     }
 
+    singleton class CThreadLocalRandomHelper {
+        interface IThreadLocalRandomHelper;
+    }
+
     class CForkJoinPool {
         constructor();
 
