@@ -112,10 +112,10 @@ module
     merge("content/pm/ServiceInfo.car");
     merge("content/pm/Signature.car");
     merge("content/pm/UserInfo.car");
-//     merge("content/pm/VerificationParams.car");
-//     merge("content/pm/VerifierDeviceIdentity.car");
-//     merge("content/pm/VerifierInfo.car");
-//     merge("content/pm/XmlSerializerAndParser.car");
+    merge("content/pm/VerificationParams.car");
+    merge("content/pm/VerifierDeviceIdentity.car");
+    merge("content/pm/VerifierInfo.car");
+    merge("content/pm/XmlSerializerAndParser.car");
 
     merge("content/res/AssetFileDescriptor.car");
     merge("content/res/AssetManager.car");

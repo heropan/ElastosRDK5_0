@@ -12,7 +12,7 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CDownloadsImpl::GetCONTENTURI(
+ECode CDownloadsImpl::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

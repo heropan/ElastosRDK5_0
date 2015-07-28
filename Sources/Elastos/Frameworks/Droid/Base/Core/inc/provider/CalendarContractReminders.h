@@ -31,7 +31,7 @@ public:
     /**
      * The content:// style URL for the top-level calendar authority
      */
-    static CARAPI GetCONTENTURI(
+    static CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     static CARAPI Query(

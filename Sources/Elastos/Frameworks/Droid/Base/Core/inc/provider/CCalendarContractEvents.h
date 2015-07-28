@@ -132,7 +132,7 @@ public:
      * specify a single event.
      */
     //@SuppressWarnings("hiding")
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

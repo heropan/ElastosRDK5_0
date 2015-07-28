@@ -14,13 +14,13 @@ ECode CContactsContractDisplayPhoto::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractDisplayPhoto::GetCONTENTURI(
+ECode CContactsContractDisplayPhoto::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("display_photo"), uri);
 }
 
@@ -30,7 +30,7 @@ ECode CContactsContractDisplayPhoto::GetCONTENTMAXDIMENSIONSURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("photo_dimensions"), uri);
 }
 

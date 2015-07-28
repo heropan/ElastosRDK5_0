@@ -18,7 +18,7 @@ public:
     /**
      * The content:// style URI for this table
      */
-    static CARAPI GetCONTENTURI(
+    static CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -37,7 +37,7 @@ public:
      * Lookup key should be appended unencoded - it is stored in the encoded
      * form, ready for use in a URI.
      */
-    static CARAPI GetCONTENTLOOKUPURI(
+    static CARAPI GetCONTENT_LOOKUP_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -48,7 +48,7 @@ public:
      * referenced contact formatted as a vCard when opened through
      * {@link ContentResolver#openAssetFileDescriptor(Uri, String)}.
      */
-    static CARAPI GetCONTENTVCARDURI(
+    static CARAPI GetCONTENT_VCARD_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -67,7 +67,7 @@ public:
      *
      * @hide
      */
-    static CARAPI GetCONTENTMULTIVCARDURI(
+    static CARAPI GetCONTENT_MULTIVCARD_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -76,7 +76,7 @@ public:
      * various parts of the contact name. The filter argument should be passed
      * as an additional path segment after this URI.
      */
-    static CARAPI GetCONTENTFILTERURI(
+    static CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -84,14 +84,14 @@ public:
      * {@link ContactsContract.Data}, filtered to include only starred contacts
      * and the most frequently contacted contacts.
      */
-    static CARAPI GetCONTENTSTREQUENTURI(
+    static CARAPI GetCONTENT_STREQUENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URI for showing frequently contacted person listing.
      * @hide
      */
-    static CARAPI GetCONTENTFREQUENTURI(
+    static CARAPI GetCONTENT_FREQUENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -100,10 +100,10 @@ public:
      * various parts of the contact name. The filter argument should be passed
      * as an additional path segment after this URI.
      */
-    static CARAPI GetCONTENTSTREQUENTFILTERURI(
+    static CARAPI GetCONTENT_STREQUENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
-    static CARAPI GetCONTENTGROUPURI(
+    static CARAPI GetCONTENT_GROUP_URI(
         /* [out] */ IUri** uri);
 
     /**

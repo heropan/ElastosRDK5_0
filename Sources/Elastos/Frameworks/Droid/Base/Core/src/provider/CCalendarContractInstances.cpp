@@ -27,7 +27,7 @@ ECode CCalendarContractInstances::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractInstances::GetCONTENTURI(
+ECode CCalendarContractInstances::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -70,7 +70,7 @@ ECode CCalendarContractInstances::Query(
 
     AutoPtr<IUriBuilder> builder;
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     FAIL_RETURN(_uri->BuildUpon((IUriBuilder**)&builder))
     AutoPtr<IContentUris> helper;
     FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&helper))

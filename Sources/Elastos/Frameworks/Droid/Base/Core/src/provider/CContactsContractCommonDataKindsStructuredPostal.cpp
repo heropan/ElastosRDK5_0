@@ -17,13 +17,13 @@ ECode CContactsContractCommonDataKindsStructuredPostal::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractCommonDataKindsStructuredPostal::GetCONTENTURI(
+ECode CContactsContractCommonDataKindsStructuredPostal::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, String("postals"), uri);
 }
 

@@ -13,7 +13,7 @@ ECode CCalendarContractColors::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractColors::GetCONTENTURI(
+ECode CCalendarContractColors::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

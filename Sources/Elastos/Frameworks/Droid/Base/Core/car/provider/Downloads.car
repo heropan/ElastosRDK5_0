@@ -1,4 +1,5 @@
 module {
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
 
@@ -637,7 +638,7 @@ module {
         /**
          * The content:// URI to access downloads owned by the caller's UID.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**

@@ -7,7 +7,7 @@ ECode CBrowserContractSettings::constructor()
     return NOERROR;
 }
 
-ECode CBrowserContractSettings::GetCONTENTURI(
+ECode CBrowserContractSettings::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri =Uri.withAppendedPath(AUTHORITY_URI, "settings");

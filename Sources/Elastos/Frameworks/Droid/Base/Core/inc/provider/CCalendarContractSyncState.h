@@ -26,7 +26,7 @@ public:
     /**
      * The content:// style URL for the top-level calendar authority
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
 private:

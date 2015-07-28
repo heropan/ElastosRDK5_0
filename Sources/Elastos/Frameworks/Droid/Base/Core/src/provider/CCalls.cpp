@@ -68,7 +68,7 @@ AutoPtr<IUri> CCalls::CONTENT_URI = initCONTENTURI();
 AutoPtr<IUri> CCalls::CONTENT_FILTER_URI = initCONTENTFILTERURI();
 AutoPtr<IUri> CCalls::CONTENT_URI_WITH_VOICEMAIL = initCONTENTURIWITHVOICEMAIL();
 
-ECode CCalls::GetCONTENTURI(
+ECode CCalls::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -78,7 +78,7 @@ ECode CCalls::GetCONTENTURI(
     return NOERROR;
 }
 
-ECode CCalls::GetCONTENTFILTERURI(
+ECode CCalls::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -88,7 +88,7 @@ ECode CCalls::GetCONTENTFILTERURI(
     return NOERROR;
 }
 
-ECode CCalls::GetCONTENTURIWITHVOICEMAIL(
+ECode CCalls::GetCONTENT_URIWITHVOICEMAIL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -195,7 +195,7 @@ ECode CCalls::AddCall(
             AutoPtr<IUri> uri;
             AutoPtr<IContactsContractCommonDataKindsPhone> helper;
             FAIL_RETURN(CContactsContractCommonDataKindsPhone::AcquireSingleton((IContactsContractCommonDataKindsPhone**)&helper))
-            FAIL_RETURN(helper->GetCONTENTURI((IUri**)&uri))
+            FAIL_RETURN(helper->GetCONTENT_URI((IUri**)&uri))
             AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
             (*projection)[0] = IBaseColumns::ID;
             AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(2);
@@ -212,7 +212,7 @@ ECode CCalls::AddCall(
             AutoPtr<IUri> _uri, uri;
             AutoPtr<IContactsContractCommonDataKindsCallable> helper;
             FAIL_RETURN(CContactsContractCommonDataKindsCallable::AcquireSingleton((IContactsContractCommonDataKindsCallable**)&helper))
-            FAIL_RETURN(helper->GetCONTENTURI((IUri**)&_uri))
+            FAIL_RETURN(helper->GetCONTENT_URI((IUri**)&_uri))
             String encoded;
             FAIL_RETURN(Uri::Encode(phoneNumber, &encoded))
             FAIL_RETURN(Uri::WithAppendedPath(_uri, encoded, (IUri**)&uri))

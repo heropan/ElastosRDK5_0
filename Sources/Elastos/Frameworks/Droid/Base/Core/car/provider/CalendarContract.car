@@ -28,16 +28,13 @@ module {
          * {@link Activity#RESULT_OK} or {@link Activity#RESULT_CANCELED} to
          * acknowledge whether the action was handled or not.
          *
-         * The custom app should have an intent-filter like the following
+         * The custom app should have an intent filter like the following:
          * <pre>
-         * {@code
-         * <intent-filter>
-         *    <action android:name="android.provider.calendar.action.HANDLE_CUSTOM_EVENT" />
-         *    <category android:name="android.intent.category.DEFAULT" />
-         *    <data android:mimeType="vnd.android.cursor.item/event" />
-         * </intent-filter>
-         * }
-         * </pre>
+         * &lt;intent-filter&gt;
+         *    &lt;action android:name="android.provider.calendar.action.HANDLE_CUSTOM_EVENT" /&gt;
+         *    &lt;category android:name="android.intent.category.DEFAULT" /&gt;
+         *    &lt;data android:mimeType="vnd.android.cursor.item/event" /&gt;
+         * &lt;/intent-filter&gt;</pre>
          * <p>
          * Input: {@link Intent#getData} has the event URI. The extra
          * {@link #EXTRA_EVENT_BEGIN_TIME} has the start time of the instance. The
@@ -45,10 +42,11 @@ module {
          * {@link EventsColumns#CUSTOM_APP_URI}.
          * <p>
          * Output: {@link Activity#RESULT_OK} if this was handled; otherwise
-         * {@link Activity#RESULT_CANCELED}
+         * {@link Activity#RESULT_CANCELED}.
          */
         //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
-        const String ACTION_HANDLE_CUSTOM_EVENT = "android.provider.calendar.action.HANDLE_CUSTOM_EVENT";
+        const String ACTION_HANDLE_CUSTOM_EVENT =
+            "android.provider.calendar.action.HANDLE_CUSTOM_EVENT";
 
         /**
          * Intent Extras key: {@link EventsColumns#CUSTOM_APP_URI} for the event in
@@ -109,7 +107,7 @@ module {
         /**
          * The content:// style URL for the top-level calendar authority
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -222,7 +220,14 @@ module {
          * Used to indicate that local, unsynced, changes are present.
          * <P>Type: INTEGER (long)</P>
          */
+
         const String DIRTY = "dirty";
+
+        /**
+         * Used in conjunction with {@link #DIRTY} to indicate what packages wrote local changes.
+         * <P>Type: TEXT</P>
+         */
+        const String MUTATORS = "mutators";
 
         /**
          * Whether the row has been deleted but not synced to the server. A
@@ -400,13 +405,18 @@ module {
      * Class that represents a Calendar Entity. There is one entry per calendar.
      * This is a helper class to make batch operations easier.
      */
-    interface ICalendarContractCalendarEntity
-        /* extends IBaseColumns, ICalendarContractSyncColumns, ICalendarContractCalendarColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractSyncColumns;
+     * interface ICalendarContractCalendarColumns;
+     */
+    interface ICalendarContractCalendarEntity {
         /**
          * The default Uri used when creating a new calendar EntityIterator.
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -517,6 +527,12 @@ module {
      * <li>{@link #CAL_SYNC10}</li>
      * </ul>
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractSyncColumns;
+     * interface ICalendarContractCalendarColumns;
+     */
     interface ICalendarContractCalendars
         /* extends IBaseColumns, ICalendarContractSyncColumns, ICalendarContractCalendarColumns */ {
         /**
@@ -540,7 +556,7 @@ module {
          * The content:// style URL for accessing Calendars
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         GetSYNCWRITABLECOLUMNS(
@@ -647,14 +663,19 @@ module {
      * <li>{@link #ATTENDEE_ID_NAMESPACE}</li>
      * </ul>
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractAttendeesColumns;
+     * interface ICalendarContractEventsColumns;
+     */
     [deprecated]
-    interface ICalendarContractAttendees
-        /* extends IBaseColumns, ICalendarContractAttendeesColumns, ICalendarContractEventsColumns */ {
+    interface ICalendarContractAttendees {
         /**
          * The content:// style URL for accessing Attendees data
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1064,12 +1085,17 @@ module {
      * {@link ContentProviderClient} is required as the helper does additional
      * queries to add reminders and attendees to each entry.
      */
-    interface ICalendarContractEventsEntity
-        /* extends IBaseColumns, ICalendarContractSyncColumns, ICalendarContractEventsColumns */ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractSyncColumns;
+     * interface ICalendarContractEventsColumns;
+     */
+    interface ICalendarContractEventsEntity {
         /**
          * The content:// style URL for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1207,15 +1233,21 @@ module {
      * The remaining columns are either updated by the provider only or are
      * views into other tables and cannot be changed through the Events table.
      */
-    interface ICalendarContractEvents
-        /* extends IBaseColumns, ICalendarContractSyncColumns, ICalendarContractEventsColumns, ICalendarContractCalendarColumns */ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractSyncColumns;
+     * interface ICalendarContractEventsColumns;
+     * interface ICalendarContractCalendarColumns;
+     */
+    interface ICalendarContractEvents {
         /**
          * The content:// style URL for interacting with events. Appending an
          * event id using {@link ContentUris#withAppendedId(Uri, long)} will
          * specify a single event.
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1254,9 +1286,14 @@ module {
      * days and minutes. The instances table is not writable and only provides a
      * way to query event occurrences.
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractSyncColumns;
+     * interface ICalendarContractCalendarColumns;
+     */
     [deprecated]
-    interface ICalendarContractInstances
-        /* extends IBaseColumns, ICalendarContractEventsColumns, ICalendarContractCalendarColumns */ {
+    interface ICalendarContractInstances {
         /**
          * The beginning time of the instance, in UTC milliseconds. Column name.
          * <P>Type: INTEGER (long; millis since epoch)</P>
@@ -1309,7 +1346,7 @@ module {
          * this is used directly.
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1317,7 +1354,7 @@ module {
          * Day. The start and end day should be added as path segments if this
          * is used directly.
          */
-        GetCONTENTBYDAYURI(
+        GetCONTENT_BY_DAY_URI(
             [out] IUri** uri);
 
         /**
@@ -1325,7 +1362,7 @@ module {
          * term. The begin, end, and search string should be appended as path
          * segments if this is used directly.
          */
-        GetCONTENTSEARCHURI(
+        GetCONTENT_SEARCH_URI(
             [out] IUri** uri);
 
         /**
@@ -1333,7 +1370,7 @@ module {
          * term. The start day, end day, and search string should be appended as
          * path segments if this is used directly.
          */
-        GetCONTENTSEARCHBYDAYURI(
+        GetCONTENT_SEARCH_BY_DAY_URI(
             [out] IUri** uri);
 
         /**
@@ -1406,7 +1443,7 @@ module {
      */
     /**
      * @Involve
-     * interface ICalendarContractCalendarCacheColumns
+     * interface ICalendarContractCalendarCacheColumns;
      */
     interface ICalendarContractCalendarCache {
         /**
@@ -1495,6 +1532,11 @@ module {
     /**
      * @hide
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractCalendarMetaDataColumns;
+     */
     interface ICalendarContractCalendarMetaData
         /* extends ICalendarContractCalendarMetaDataColumns, IBaseColumns */ {
     }
@@ -1522,7 +1564,7 @@ module {
      */
     [deprecated]
     interface ICalendarContractEventDays {
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1598,11 +1640,16 @@ module {
      * <li>{@link #METHOD}</li>
      * </ul>
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractRemindersColumns;
+     * interface ICalendarContractEventsColumns;
+     */
     [deprecated]
-    interface ICalendarContractReminders
-        /* extends IBaseColumns, ICalendarContractRemindersColumns, ICalendarContractEventsColumns */ {
+    interface ICalendarContractReminders {
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1715,10 +1762,15 @@ module {
      * should not need to write to this table directly except to update the
      * state of a reminder.
      */
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractCalendarAlertsColumns;
+     * interface ICalendarContractEventsColumns;
+     * interface ICalendarContractCalendarColumns;
+     */
     [local]
-    interface ICalendarContractCalendarAlerts
-        /* extends IBaseColumns, ICalendarContractCalendarAlertsColumns,
-        ICalendarContractEventsColumns, ICalendarContractCalendarColumns */ {
+    interface ICalendarContractCalendarAlerts {
         /**
          * @hide
          */
@@ -1727,7 +1779,7 @@ module {
          * The Uri for querying calendar alert information
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1736,7 +1788,7 @@ module {
          * events with multiple alarms will appear just once, but multiple
          * instances of a repeating event will show up multiple times.
          */
-        GetCONTENTURIBYINSTANCE(
+        GetCONTENT_URI_BY_INSTANCE(
                 [out] IUri** uri);
 
         /**
@@ -1896,7 +1948,7 @@ module {
          * The Uri for querying color information
          */
         //@SuppressWarnings("hiding")
-        GetCONTENTURI(
+        GetCONTENT_URI(
                 [out] IUri** uri);
     }
 
@@ -1932,9 +1984,14 @@ module {
      * <li>{@link #VALUE}</li>
      * </ul>
      */
-    interface ICalendarContractExtendedProperties
-        /*extends IBaseColumns, ICalendarContractExtendedPropertiesColumns, ICalendarContractEventsColumns*/ {
-        GetCONTENTURI(
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractExtendedPropertiesColumns;
+     * interface ICalendarContractEventsColumns;
+     */
+    interface ICalendarContractExtendedProperties {
+        GetCONTENT_URI(
                 [out] IUri** uri);
     }
 
@@ -1951,7 +2008,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
                 [out] IUri** uri);
     }
 
@@ -1997,8 +2054,12 @@ module {
     /**
      * @hide
      */
-    interface ICalendarContractEventsRawTimes
-        /*extends  IBaseColumns, ICalendarContractEventsRawTimesColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ICalendarContractEventsRawTimesColumns;
+     */
+    interface ICalendarContractEventsRawTimes {
     }
 
     } // namespace Provider

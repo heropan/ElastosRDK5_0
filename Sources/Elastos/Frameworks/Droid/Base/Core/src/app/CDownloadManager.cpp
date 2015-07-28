@@ -557,7 +557,7 @@ ECode CDownloadManager::constructor(
     mPackageName = packageName;
     AutoPtr<IDownloadsImpl> impl;
     CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
-    impl->GetCONTENTURI((IUri**)&mBaseUri);
+    impl->GetCONTENT_URI((IUri**)&mBaseUri);
     return NOERROR;
 }
 
@@ -569,7 +569,7 @@ ECode CDownloadManager::SetAccessAllDownloads(
     if (accessAllDownloads) {
         dImpl->GetALLDOWNLOADSCONTENTURI((IUri**)&mBaseUri);
     } else {
-        dImpl->GetCONTENTURI((IUri**)&mBaseUri);
+        dImpl->GetCONTENT_URI((IUri**)&mBaseUri);
     }
     return NOERROR;
 }
@@ -583,7 +583,7 @@ ECode CDownloadManager::Enqueue(
     AutoPtr<IDownloadsImpl> dImpl;
     CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&dImpl);
     AutoPtr<IUri> uri;
-    dImpl->GetCONTENTURI((IUri**)&uri);
+    dImpl->GetCONTENT_URI((IUri**)&uri);
     AutoPtr<IUri> downloadUri;
     mResolver->Insert(uri, values, (IUri**)&downloadUri);
     String segment;
@@ -701,7 +701,7 @@ ECode CDownloadManager::GetUriForDownloadedFile(
                 AutoPtr<IDownloadsImpl> impl;
                 CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
                 AutoPtr<IUri> contentUri;
-                impl->GetCONTENTURI((IUri**)&contentUri);
+                impl->GetCONTENT_URI((IUri**)&contentUri);
                 cUris->WithAppendedId(contentUri, id, uri);
                 if (cursor != NULL) {
                     cursor->Close();
@@ -940,7 +940,7 @@ ECode CDownloadManager::AddCompletedDownload(
     AutoPtr<IDownloadsImpl> impl;
     CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
     AutoPtr<IUri> contentUri;
-    impl->GetCONTENTURI((IUri**)&contentUri);
+    impl->GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IUri> downloadUri;
     mResolver->Insert(contentUri, values, (IUri**)&downloadUri);
     if (downloadUri == NULL) {

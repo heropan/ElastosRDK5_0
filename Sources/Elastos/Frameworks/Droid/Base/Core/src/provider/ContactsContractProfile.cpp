@@ -9,23 +9,23 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode ContactsContractProfile::GetCONTENTURI(
+ECode ContactsContractProfile::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("profile"), uri);
 }
 
-ECode ContactsContractProfile::GetCONTENTVCARDURI(
+ECode ContactsContractProfile::GetCONTENT_VCARD_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, String("as_vcard"), uri);
 
 }
@@ -36,7 +36,7 @@ ECode ContactsContractProfile::GetCONTENTRAWCONTACTSURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, String("raw_contacts"), uri);
 }
 

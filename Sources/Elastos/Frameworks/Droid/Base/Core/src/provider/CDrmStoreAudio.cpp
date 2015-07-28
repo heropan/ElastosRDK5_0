@@ -2,7 +2,7 @@
 #include "provider/CDrmStoreAudio.h"
 
 
-ECode CDrmStoreAudio::GetCONTENTURI(
+ECode CDrmStoreAudio::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.parse("content://" + AUTHORITY + "/audio");

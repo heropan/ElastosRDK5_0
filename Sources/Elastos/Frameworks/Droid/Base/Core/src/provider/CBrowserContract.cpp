@@ -2,7 +2,7 @@
 #include "provider/CBrowserContract.h"
 
 
-ECode CBrowserContract::GetAUTHORITYURI(
+ECode CBrowserContract::GetAUTHORITY_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.parse("content://" + AUTHORITY);

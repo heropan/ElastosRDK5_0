@@ -1,4 +1,9 @@
 module {
+
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.IInteger32;
+
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
@@ -11,10 +16,8 @@ module {
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Utility.IPair;
 
-    using interface Elastos.IO.IInputStream;
-    using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Core.IInteger32;
 
     namespace Elastos {
     namespace Droid {
@@ -166,7 +169,7 @@ module {
         const String REMOVE_DUPLICATE_ENTRIES = "remove_duplicate_entries";
 
         /** A content:// style uri to the authority for the contacts provider */
-        GetAUTHORITYURI(
+        GetAUTHORITY_URI(
             [out] IUri** uri);
 
         /**
@@ -259,56 +262,6 @@ module {
          * The key to retrieve from the returned Bundle to obtain the pre-authorized URI.
          */
         const String KEY_AUTHORIZED_URI = "authorized_uri";
-    }
-
-    /**
-     * @hide
-     */
-    interface IContactsContractPreferences {
-        /**
-         * A key in the {@link android.provider.Settings android.provider.Settings} provider
-         * that stores the preferred sorting order for contacts (by given name vs. by family name).
-         *
-         * @hide
-         */
-        const String SORT_ORDER = "android.contacts.SORT_ORDER";
-
-        /**
-         * The value for the SORT_ORDER key corresponding to sorting by given name first.
-         *
-         * @hide
-         */
-        const Int32 SORT_ORDER_PRIMARY = 1;
-
-        /**
-         * The value for the SORT_ORDER key corresponding to sorting by family name first.
-         *
-         * @hide
-         */
-        const Int32 SORT_ORDER_ALTERNATIVE = 2;
-
-        /**
-         * A key in the {@link android.provider.Settings android.provider.Settings} provider
-         * that stores the preferred display order for contacts (given name first vs. family
-         * name first).
-         *
-         * @hide
-         */
-        const String DISPLAY_ORDER = "android.contacts.DISPLAY_ORDER";
-
-        /**
-         * The value for the DISPLAY_ORDER key corresponding to showing the given name first.
-         *
-         * @hide
-         */
-        const Int32 DISPLAY_ORDER_PRIMARY = 1;
-
-        /**
-         * The value for the DISPLAY_ORDER key corresponding to showing the family name first.
-         *
-         * @hide
-         */
-        const Int32 DISPLAY_ORDER_ALTERNATIVE = 2;
     }
 
     /**
@@ -437,6 +390,10 @@ module {
      * (see {@link android.accounts.AccountManager}). If the account is later removed,
      * the corresponding directory rows are automatically removed from the Contacts Provider.
      * </p>
+     */
+    /**
+     * @Involve
+     * interface IBaseColumns
      */
     interface IContactsContractDirectory {
 
@@ -605,7 +562,7 @@ module {
          * The content:// style URI for this table.  Requests to this URI can be
          * performed on the UI thread because they are always unblocking.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -635,6 +592,11 @@ module {
      *
      * @see SyncStateContract
      */
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
+    [deprecated]
     interface IContactsContractSyncState {
         const String CONTENT_DIRECTORY = "syncstate";
                 //ISyncStateContractConstants::CONTENT_DIRECTORY;
@@ -642,7 +604,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -654,19 +616,27 @@ module {
             [out, callee] ArrayOf<Byte>* value);
 
         /**
+         * @see android.provider.SyncStateContract.Helpers#get
+         */
+        GetWithUri(
+            [in] IContentProviderClient* provider,
+            [in] IAccount* account,
+            [out] IPair** value);
+
+        /**
          * @see android.provider.SyncStateContract.Helpers#set
          */
         Set(
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data);
+            [in] ArrayOf<Byte>* data);
 
         /**
          * @see android.provider.SyncStateContract.Helpers#newSetOperation
          */
         NewSetOperation(
             [in] IAccount* account,
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [out] IContentProviderOperation** operation);
     }
 
@@ -676,6 +646,10 @@ module {
      *
      * @see SyncStateContract
      */
+    /**
+     * @Involve
+     * interface ISyncStateContractColumns
+     */
     interface IContactsContractProfileSyncState {
         const String CONTENT_DIRECTORY = "syncstate";
                 //ISyncStateContractConstants::CONTENT_DIRECTORY;
@@ -683,7 +657,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -693,6 +667,14 @@ module {
             [in] IContentProviderClient* provider,
             [in] IAccount* account,
             [out, callee] ArrayOf<Byte>* value);
+
+        /**
+         * @see android.provider.SyncStateContract.Helpers#get
+         */
+        GetWithUri(
+            [in] IContentProviderClient* provider,
+            [in] IAccount* account,
+            [out] IPair** value);
 
         Set(
             [in] IContentProviderClient* provider,
@@ -735,8 +717,11 @@ module {
      * @see RawContacts
      * @see Groups
      */
-    interface IContactsContractSyncColumns extends
-            IContactsContractBaseSyncColumns {
+    /**
+     * @Involve
+     * interface IContactsContractBaseSyncColumns
+     */
+    interface IContactsContractSyncColumns {
         /**
          * The name of the account instance to which this row belongs, which when paired with
          * {@link #ACCOUNT_TYPE} identifies a specific account.
@@ -800,6 +785,13 @@ module {
          * <P>Type: INTEGER (boolean)</P>
          */
         const String STARRED = "starred";
+
+        /**
+         * The position at which the contact is pinned. If {@link PinnedPositions#UNPINNED},
+         * the contact is not pinned. Also see {@link PinnedPositions}.
+         * <P>Type: INTEGER </P>
+         */
+        const String PINNED = "pinned";
 
         /**
          * URI for a custom ringtone associated with the contact. If null or missing,
@@ -915,6 +907,15 @@ module {
          * its row id changed as a result of a sync or aggregation.
          */
         const String LOOKUP_KEY = "lookup";
+
+        /**
+         * Timestamp (milliseconds since epoch) of when this contact was last updated.  This
+         * includes updates to all data associated with this contact including raw contacts.  Any
+         * modification (including deletes and inserts) of underlying contact data are also
+         * reflected in this timestamp.
+         */
+        const String CONTACT_LAST_UPDATED_TIMESTAMP =
+                "contact_last_updated_timestamp";
     }
 
     /**
@@ -1374,6 +1375,15 @@ module {
      * </tr>
      * </table>
      */
+    /**
+     * @Involve
+     * interface IBaseColumns
+     * interface IContactsContractContactsColumns;
+     * interface IContactsContractContactNameColumns;
+     * interface IContactsContractContactStatusColumns;
+     * interface IContactsContractContactCounts;
+     */
+    [local]
     interface IContactsContractContacts {
         /**
         * Boolean parameter that may be used with {@link #CONTENT_VCARD_URI}
@@ -1405,7 +1415,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1424,7 +1434,7 @@ module {
          * Lookup key should be appended unencoded - it is stored in the encoded
          * form, ready for use in a URI.
          */
-        GetCONTENTLOOKUPURI(
+        GetCONTENT_LOOKUP_URI(
             [out] IUri** uri);
 
         /**
@@ -1435,7 +1445,7 @@ module {
          * referenced contact formatted as a vCard when opened through
          * {@link ContentResolver#openAssetFileDescriptor(Uri, String)}.
          */
-        GetCONTENTVCARDURI(
+        GetCONTENT_VCARD_URI(
             [out] IUri** uri);
 
         /**
@@ -1454,7 +1464,7 @@ module {
          *
          * @hide
          */
-        GetCONTENTMULTIVCARDURI(
+        GetCONTENT_MULTIVCARD_URI(
             [out] IUri** uri);
 
         /**
@@ -1463,7 +1473,7 @@ module {
          * various parts of the contact name. The filter argument should be passed
          * as an additional path segment after this URI.
          */
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
 
         /**
@@ -1471,14 +1481,14 @@ module {
          * {@link ContactsContract.Data}, filtered to include only starred contacts
          * and the most frequently contacted contacts.
          */
-        GetCONTENTSTREQUENTURI(
+        GetCONTENT_STREQUENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for showing frequently contacted person listing.
          * @hide
          */
-        GetCONTENTFREQUENTURI(
+        GetCONTENT_FREQUENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1487,10 +1497,10 @@ module {
          * various parts of the contact name. The filter argument should be passed
          * as an additional path segment after this URI.
          */
-        GetCONTENTSTREQUENTFILTERURI(
+        GetCONTENT_STREQUENT_FILTER_URI(
             [out] IUri** uri);
 
-        GetCONTENTGROUPURI(
+        GetCONTENT_GROUP_URI(
             [out] IUri** uri);
 
         /**
@@ -1542,6 +1552,15 @@ module {
             [in] Int64 contactId);
 
         /**
+         * Return TRUE if a contact ID is from the contacts provider on the enterprise profile.
+         *
+         * {@link PhoneLookup#ENTERPRISE_CONTENT_FILTER_URI} may return such a contact.
+         */
+        IsEnterpriseContactId(
+            [in] Int64 contactId,
+            [out] Boolean* result);
+
+        /**
          * Opens an InputStream for the contacts's photo and returns the
          * photo as a byte stream.
          * @param cr The content resolver to use for querying
@@ -1578,8 +1597,12 @@ module {
      * {@link ContactsContract.Data} rows.  This directory can be used either
      * with a {@link #CONTENT_URI} or {@link #CONTENT_LOOKUP_URI}.
      */
-    interface IContactsContractContactsData
-        /*extends IBaseColumns, IContactsContractDataColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsContractDataColumns
+     */
+    interface IContactsContractContactsData {
         /**
          * The directory twig for this sub-table
          */
@@ -1615,17 +1638,20 @@ module {
      * leave them as null in subsequent rows.
      * </p>
      */
-    interface IContactsContractContactsEntity
-        /* extends IBaseColumns,
-        IContactsContractContactsColumns,
-        IContactsContractContactNameColumns,
-        IContactsContractRawContactsColumns,
-        IContactsContractBaseSyncColumns,
-        IContactsContractSyncColumns,
-        IContactsContractDataColumns,
-        IContactsContractStatusColumns,
-        IContactsContractContactOptionsColumns,
-        IContactsContractContactStatusColumns*/ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsContractContactsColumns;
+     * interface IContactsContractContactNameColumns;
+     * interface IContactsContractRawContactsColumns;
+     * interface IContactsContractBaseSyncColumns;
+     * interface IContactsContractSyncColumns;
+     * interface IContactsContractDataColumns;
+     * interface IContactsContractStatusColumns;
+     * interface IContactsContractContactOptionsColumns;
+     * interface IContactsContractContactStatusColumns;
+     */
+    interface IContactsContractContactsEntity {
         /**
          * The directory twig for this sub-table
          */
@@ -1801,8 +1827,11 @@ module {
      * permission.
      * </p>
      */
-    interface IContactsContractContactsStreamItems extends
-            IContactsContractStreamItemsColumns {
+    /**
+     * @Involve
+     * interface IContactsContractStreamItemsColumns;
+     */
+    interface IContactsContractContactsStreamItems {
         /**
          * The directory twig for this sub-table
          */
@@ -2071,7 +2100,7 @@ module {
          * The content:// style URI for this table, which requests the contact entry
          * representing the user's personal profile data.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -2080,7 +2109,7 @@ module {
          * user's profile contact formatted as a vCard when opened through
          * {@link ContentResolver#openAssetFileDescriptor(Uri, String)}.
          */
-        GetCONTENTVCARDURI(
+        GetCONTENT_VCARD_URI(
             [out] IUri** uri);
 
         /**
@@ -2639,7 +2668,7 @@ module {
          * The content:// style URI for this table, which requests a directory of
          * raw contact rows matching the selection criteria.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -3061,7 +3090,7 @@ module {
          * The content:// style URI for this table, which handles social network stream
          * updates for the user's contacts.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -4031,7 +4060,7 @@ module {
          * The content:// style URI for this table, which requests a directory
          * of data rows matching the selection criteria.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -4222,13 +4251,13 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for this table, specific to the user's profile.
          */
-        GetPROFILECONTENTURI(
+        GetPROFILE_CONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -4397,7 +4426,7 @@ module {
          * Uri lookupUri = Uri.withAppendedPath(PhoneLookup.CONTENT_URI, Uri.encode(phoneNumber));
          * </pre>
          */
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
     }
 
@@ -4616,13 +4645,13 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for this table, specific to the user's profile.
          */
-        GetPROFILECONTENTURI(
+        GetPROFILE_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -5112,7 +5141,7 @@ module {
          * {@link #CONTENT_ITEM_TYPE} MIME type, combined with the
          * associated raw contact and aggregate contact data.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -5121,7 +5150,7 @@ module {
          * to display names as well as phone numbers. The filter argument should be passed
          * as an additional path segment after this URI.
          */
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
 
         /**
@@ -5244,7 +5273,7 @@ module {
          * {@link #CONTENT_ITEM_TYPE} MIME type, combined with the
          * associated raw contact and aggregate contact data.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -5262,7 +5291,7 @@ module {
          * </pre>
          * </p>
          */
-        GetCONTENTLOOKUPURI(
+        GetCONTENT_LOOKUP_URI(
             [out] IUri** uri);
 
         /**
@@ -5282,7 +5311,7 @@ module {
          * </pre>
          * </p>
          */
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
 
         /**
@@ -5474,7 +5503,7 @@ module {
          * The content:// style URI for all data records of the
          * {@link StructuredPostal#CONTENT_ITEM_TYPE} MIME type.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -6316,13 +6345,13 @@ module {
          * Similar to {@link Phone#CONTENT_URI}, but returns callable data instead of only
          * phone numbers.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
         /**
          * Similar to {@link Phone#CONTENT_FILTER_URI}, but allows users to filter callable
          * data.
          */
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
     }
 
@@ -6606,7 +6635,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -6710,7 +6739,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -6861,7 +6890,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -6940,7 +6969,7 @@ module {
          *
          * @hide
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -7234,7 +7263,7 @@ module {
          * The content:// style URI for this class, which allows access to full-size photos,
          * given a key.
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**

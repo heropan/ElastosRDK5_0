@@ -13,7 +13,7 @@ ECode CContactsGroups::constructor()
     return NOERROR;
 }
 
-ECode CContactsGroups::GetCONTENTURI(
+ECode CContactsGroups::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -21,7 +21,7 @@ ECode CContactsGroups::GetCONTENTURI(
     return Uri::Parse(String("content://contacts/groups"), uri);
 }
 
-ECode CContactsGroups::GetDELETEDCONTENTURI(
+ECode CContactsGroups::GetDELETED_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

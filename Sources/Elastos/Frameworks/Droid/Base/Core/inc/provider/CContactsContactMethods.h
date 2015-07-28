@@ -20,7 +20,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    static CARAPI GetCONTENTURI(
+    static CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -28,7 +28,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    static CARAPI GetCONTENTEMAILURI(
+    static CARAPI GetRAW_CONTENT_EMAIL_URL(
         /* [out] */ IUri** uri);
 
     /**

@@ -24,7 +24,7 @@ public:
      * The content:// style URI for all data records of the
      * {@link StructuredPostal#CONTENT_ITEM_TYPE} MIME type.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

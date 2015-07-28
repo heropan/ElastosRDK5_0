@@ -11,31 +11,14 @@ module
     namespace App {
 
         interface IPendingIntent {}
+
+        interface IAlarmManager {}
+
         interface IIActivityManager {}
 
         interface IApplicationErrorReportCrashInfo {}
 
     }}} // Elastos.Droid.App
-
-    //
-    // Elastos.Droid.Content
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Content {
-
-        namespace Pm {
-
-            interface IVerificationParams {}
-
-            interface IVerifierDeviceIdentity {}
-
-            interface IVerifierInfo {}
-
-        }// Pm
-
-    }}} // Elastos.Droid.Content
-
 
     //
     // Elastos.Droid.Accounts
@@ -117,7 +100,7 @@ module
 
 
     //
-    // Elastos.Droid.Privacy
+    // Elastos.Droid.Graphics
     //
     namespace Elastos {
     namespace Droid {
@@ -135,6 +118,8 @@ module
 
         interface IBitmapFactory {}
 
+        interface IBitmapFactoryOptions {}
+
         interface IMovie {}
 
         namespace Drawable {
@@ -142,7 +127,7 @@ module
 
         } // Elastos.Droid.Graphics.Drawable
 
-    }}} // Elastos.Droid.Privacy
+    }}} // Elastos.Droid.Graphics
 
     //
     // Elastos.Droid.View
@@ -164,6 +149,19 @@ module
         interface IView {}
 
     }}} // Elastos.Droid.View
+
+    //
+    // Elastos.Droid.Widget
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Widget {
+
+        interface IImageView {
+        }
+
+    }}} // Elastos.Droid.Widget
+
 
     //
     // Elastos.Droid.Media
@@ -201,6 +199,7 @@ module
         } // Elastos.Droid.Sqlite
 
     }}} // Elastos.Droid.Database
+
 
     namespace Org {
     namespace Apache {
@@ -290,5 +289,50 @@ module
     } // namespace nio
     } // namespace io
     } // namespace Elastos
+
+    //
+    // Elastos.Droid.webkit
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Webkit {
+
+        interface IWebIconDatabase {
+        }
+        interface IWebIconDatabaseIconListener {
+        }
+
+    }}} // Elastos.Droid.Webkit
+
+
+    //
+    // Elastos.Droid.telecom
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Telecom {
+
+        interface IPhoneAccountHandle {
+        }
+
+    }}} // Elastos.Droid.telecom
+
+    //
+    // Elastos.Droid.Internal.Telephony
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+
+    namespace Telephony {
+
+        interface ICallerInfo {
+        }
+
+    } //Elastos.Droid.Internal.Telephony
+
+
+    }}} // Elastos.Droid.Internal
+
 
 }

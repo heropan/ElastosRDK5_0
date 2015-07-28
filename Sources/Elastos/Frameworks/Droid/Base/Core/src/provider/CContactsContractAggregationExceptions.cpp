@@ -14,13 +14,13 @@ ECode CContactsContractAggregationExceptions::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractAggregationExceptions::GetCONTENTURI(
+ECode CContactsContractAggregationExceptions::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("aggregation_exceptions"), uri);
 }
 

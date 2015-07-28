@@ -143,7 +143,7 @@ ECode CCalendarContractCalendarEntity::constructor()
 }
 
 
-ECode CCalendarContractCalendarEntity::GetCONTENTURI(
+ECode CCalendarContractCalendarEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

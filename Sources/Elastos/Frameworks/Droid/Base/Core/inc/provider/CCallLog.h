@@ -16,7 +16,7 @@ public:
     /**
      * The content:// style URL for this provider
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
 public:

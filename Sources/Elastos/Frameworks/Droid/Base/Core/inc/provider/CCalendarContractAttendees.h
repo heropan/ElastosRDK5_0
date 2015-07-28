@@ -40,7 +40,7 @@ public:
      * The content:// style URL for accessing Attendees data
      */
     //@SuppressWarnings("hiding")
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

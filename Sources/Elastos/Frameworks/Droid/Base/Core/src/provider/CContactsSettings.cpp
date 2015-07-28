@@ -19,7 +19,7 @@ ECode CContactsSettings::constructor()
     return NOERROR;
 }
 
-ECode CContactsSettings::GetCONTENTURI(
+ECode CContactsSettings::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -63,7 +63,7 @@ ECode CContactsSettings::GetSetting(
     }
     AutoPtr<ICursor> cursor;
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ArrayOf<String> > args;
     args = ArrayOf<String>::Alloc(1);
     (*args)[0] = IContactsSettingsColumns::VALUE;
@@ -105,7 +105,7 @@ ECode CContactsSettings::SetSetting(
     FAIL_RETURN(CStringWrapper::New(value, (ICharSequence**)&valueStr))
     FAIL_RETURN(values->PutString(IContactsSettingsColumns::VALUE, valueStr))
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     Int32 result;
     return cr->Update(uri, values, String(NULL), NULL, &result);
 }

@@ -18,13 +18,13 @@ public:
     /**
      * The content:// style URL for this table
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URL for filtering this table on phone numbers
      */
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -33,7 +33,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetCONTENTURIWITHVOICEMAIL(
+    CARAPI GetCONTENT_URIWITHVOICEMAIL(
         /* [out] */ IUri** uri);
 
     /**

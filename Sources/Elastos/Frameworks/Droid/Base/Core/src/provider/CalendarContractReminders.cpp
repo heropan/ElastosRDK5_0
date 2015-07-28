@@ -12,7 +12,7 @@ namespace Provider {
 
 const String CalendarContractReminders::REMINDERS_WHERE = String(ICalendarContractRemindersColumns::EVENT_ID) + String("=?");
 
-ECode CalendarContractReminders::GetCONTENTURI(
+ECode CalendarContractReminders::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -31,7 +31,7 @@ ECode CalendarContractReminders::Query(
     AutoPtr<ArrayOf<String> > remArgs = ArrayOf<String>::Alloc(1);
     (*remArgs)[0] = StringUtils::Int64ToString(eventId);
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     return cr->Query(uri, projection, REMINDERS_WHERE, remArgs /*selection args*/, String(NULL) /* sort order */, cursor);
 }
 

@@ -7,7 +7,7 @@ ECode CBrowserContractHistory::constructor()
     return NOERROR;
 }
 
-ECode CBrowserContractHistory::GetCONTENTURI(
+ECode CBrowserContractHistory::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, "history");

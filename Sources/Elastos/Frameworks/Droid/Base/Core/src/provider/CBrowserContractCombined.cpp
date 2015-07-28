@@ -7,7 +7,7 @@ ECode CBrowserContractCombined::constructor()
     return NOERROR;
 }
 
-ECode CBrowserContractCombined::GetCONTENTURI(
+ECode CBrowserContractCombined::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, "combined");

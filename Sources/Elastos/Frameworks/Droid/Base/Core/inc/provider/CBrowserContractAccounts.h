@@ -14,7 +14,7 @@ public:
     /**
      * Directory under {@link Bookmarks#CONTENT_URI}
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 };
 

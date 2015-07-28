@@ -10,12 +10,12 @@ ECode CCalendarContractAttendees::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractAttendees::GetCONTENTURI(
+ECode CCalendarContractAttendees::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return CalendarContractAttendees::GetCONTENTURI(uri);
+    return CalendarContractAttendees::GetCONTENT_URI(uri);
 }
 
 ECode CCalendarContractAttendees::Query(

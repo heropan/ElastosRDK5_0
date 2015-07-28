@@ -32,7 +32,7 @@ public:
      * and end of the range to query should be added as path segments if
      * this is used directly.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

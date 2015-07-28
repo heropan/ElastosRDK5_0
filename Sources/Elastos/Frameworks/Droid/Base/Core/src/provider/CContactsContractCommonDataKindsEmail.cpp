@@ -17,33 +17,33 @@ ECode CContactsContractCommonDataKindsEmail::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractCommonDataKindsEmail::GetCONTENTURI(
+ECode CContactsContractCommonDataKindsEmail::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("emails"), uri);
 }
 
-ECode CContactsContractCommonDataKindsEmail::GetCONTENTLOOKUPURI(
+ECode CContactsContractCommonDataKindsEmail::GetCONTENT_LOOKUP_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("lookup"), uri);
 }
 
-ECode CContactsContractCommonDataKindsEmail::GetCONTENTFILTERURI(
+ECode CContactsContractCommonDataKindsEmail::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("filter"), uri);
 }
 

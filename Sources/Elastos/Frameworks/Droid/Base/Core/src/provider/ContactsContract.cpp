@@ -46,7 +46,7 @@ static AutoPtr<IPattern> initSPLITPATTERN()
 
 AutoPtr<IPattern> ContactsContract::SPLIT_PATTERN = initSPLITPATTERN();
 
-ECode ContactsContract::GetAUTHORITYURI(
+ECode ContactsContract::GetAUTHORITY_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

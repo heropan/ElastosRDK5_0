@@ -21,13 +21,13 @@ public:
     /**
      * The content:// style URI for this table
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URI for this table, specific to the user's profile.
      */
-    CARAPI GetPROFILECONTENTURI(
+    CARAPI GetPROFILE_CONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

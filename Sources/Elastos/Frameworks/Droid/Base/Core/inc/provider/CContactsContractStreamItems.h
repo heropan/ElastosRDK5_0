@@ -19,7 +19,7 @@ public:
      * The content:// style URI for this table, which handles social network stream
      * updates for the user's contacts.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

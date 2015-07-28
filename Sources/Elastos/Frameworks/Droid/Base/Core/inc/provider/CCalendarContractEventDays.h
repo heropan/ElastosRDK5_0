@@ -23,7 +23,7 @@ public:
      */
     CARAPI constructor();
 
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

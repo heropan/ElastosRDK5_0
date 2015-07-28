@@ -2,7 +2,7 @@
 #include "provider/CDrmStoreImages.h"
 
 
-ECode CDrmStoreImages::GetCONTENTURI(
+ECode CDrmStoreImages::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.parse("content://" + AUTHORITY + "/images");

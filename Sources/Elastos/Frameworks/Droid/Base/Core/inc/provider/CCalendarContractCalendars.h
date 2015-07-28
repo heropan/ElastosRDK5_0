@@ -118,7 +118,7 @@ public:
      * The content:// style URL for accessing Calendars
      */
     //@SuppressWarnings("hiding")
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

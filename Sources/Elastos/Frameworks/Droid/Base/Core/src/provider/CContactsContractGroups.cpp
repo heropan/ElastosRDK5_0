@@ -23,13 +23,13 @@ ECode CContactsContractGroups::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractGroups::GetCONTENTURI(
+ECode CContactsContractGroups::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("groups"), uri);
 }
 
@@ -39,7 +39,7 @@ ECode CContactsContractGroups::GetCONTENTSUMMARYURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("groups_summary"), uri);
 }
 

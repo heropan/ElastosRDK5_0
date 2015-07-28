@@ -21,7 +21,7 @@ public:
      * The content:// style URI for this table, which requests a directory
      * of data rows matching the selection criteria.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

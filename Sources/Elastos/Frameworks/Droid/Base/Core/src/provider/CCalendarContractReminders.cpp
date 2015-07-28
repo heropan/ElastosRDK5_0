@@ -10,12 +10,12 @@ ECode CCalendarContractReminders::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractReminders::GetCONTENTURI(
+ECode CCalendarContractReminders::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return CalendarContractReminders::GetCONTENTURI(uri);
+    return CalendarContractReminders::GetCONTENT_URI(uri);
 }
 
 ECode CCalendarContractReminders::Query(

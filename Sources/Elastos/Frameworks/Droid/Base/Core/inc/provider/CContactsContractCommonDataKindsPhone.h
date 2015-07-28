@@ -26,7 +26,7 @@ public:
      * {@link #CONTENT_ITEM_TYPE} MIME type, combined with the
      * associated raw contact and aggregate contact data.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -35,7 +35,7 @@ public:
      * to display names as well as phone numbers. The filter argument should be passed
      * as an additional path segment after this URI.
      */
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**

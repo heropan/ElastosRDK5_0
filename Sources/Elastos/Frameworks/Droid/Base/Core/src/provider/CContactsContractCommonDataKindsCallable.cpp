@@ -14,23 +14,23 @@ ECode CContactsContractCommonDataKindsCallable::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractCommonDataKindsCallable::GetCONTENTURI(
+ECode CContactsContractCommonDataKindsCallable::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("callables"), uri);
 }
 
-ECode CContactsContractCommonDataKindsCallable::GetCONTENTFILTERURI(
+ECode CContactsContractCommonDataKindsCallable::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, String("filter"), uri);
 }
 

@@ -8,6 +8,16 @@ module
     namespace Content {
     namespace Pm {
 
+    /**
+     * Contains information about a package verifier as used by
+     * {@code PackageManagerService} during package verification.
+     *
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IVerifierInfo {
         GetPackageName(
             [out] String* packageName);

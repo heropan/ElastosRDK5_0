@@ -17,7 +17,7 @@ public:
      * The content:// style URI for this table, which requests the contact entry
      * representing the user's personal profile data.
      */
-    static CARAPI GetCONTENTURI(
+    static CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -26,7 +26,7 @@ public:
      * user's profile contact formatted as a vCard when opened through
      * {@link ContentResolver#openAssetFileDescriptor(Uri, String)}.
      */
-    static CARAPI GetCONTENTVCARDURI(
+    static CARAPI GetCONTENT_VCARD_URI(
         /* [out] */ IUri** uri);
 
     /**

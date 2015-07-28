@@ -47,7 +47,7 @@ ECode CCalendarContractCalendars::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractCalendars::GetCONTENTURI(
+ECode CCalendarContractCalendars::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

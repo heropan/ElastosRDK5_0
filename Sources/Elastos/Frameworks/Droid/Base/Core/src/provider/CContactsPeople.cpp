@@ -49,7 +49,7 @@ ECode CContactsPeople::constructor()
     return NOERROR;
 }
 
-ECode CContactsPeople::GetCONTENTURI(
+ECode CContactsPeople::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -57,7 +57,7 @@ ECode CContactsPeople::GetCONTENTURI(
     return Uri::Parse(String("content://contacts/people"), uri);
 }
 
-ECode CContactsPeople::GetCONTENTFILTERURI(
+ECode CContactsPeople::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -65,7 +65,7 @@ ECode CContactsPeople::GetCONTENTFILTERURI(
     return Uri::Parse(String("content://contacts/people/filter"), uri);
 }
 
-ECode CContactsPeople::GetDELETEDCONTENTURI(
+ECode CContactsPeople::GetDELETED_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -73,7 +73,7 @@ ECode CContactsPeople::GetDELETEDCONTENTURI(
     return Uri::Parse(String("content://contacts/deleted_people"), uri);
 }
 
-ECode CContactsPeople::GetWITHEMAILORIMFILTERURI(
+ECode CContactsPeople::GetWITH_EMAIL_OR_IM_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -95,7 +95,7 @@ ECode CContactsPeople::MarkAsContacted(
     /* [in] */ Int64 personId)
 {
     AutoPtr<IUri> _uri, uri, contentUri;
-    GetCONTENTURI((IUri**)&contentUri);
+    GetCONTENT_URI((IUri**)&contentUri);
     AutoPtr<IContentUris> helper;
     CContentUris::AcquireSingleton((IContentUris**)&helper);
     helper->WithAppendedId(contentUri, personId, (IUri**)&_uri);
@@ -125,7 +125,7 @@ ECode CContactsPeople::TryGetMyContactsGroupId(
     AutoPtr<IContactsGroups> helper;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&helper);
     AutoPtr<IUri> uri;
-    helper->GetCONTENTURI((IUri**)&uri);
+    helper->GetCONTENT_URI((IUri**)&uri);
     resolver->Query(uri, GROUPS_PROJECTION,
         IContactsGroupsColumns::SYSTEM_ID + String("='") + IContactsGroups::GROUP_MY_CONTACTS + String("'"),
         NULL, String(NULL), (ICursor**)&groupsCursor);
@@ -171,7 +171,7 @@ ECode CContactsPeople::AddToGroup(
     AutoPtr<IContactsGroups> helper;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&helper);
     AutoPtr<IUri> _uri;
-    helper->GetCONTENTURI((IUri**)&_uri);
+    helper->GetCONTENT_URI((IUri**)&_uri);
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
     (*args)[0] = groupName;
     AutoPtr<ICursor> groupsCursor;
@@ -215,7 +215,7 @@ ECode CContactsPeople::AddToGroup(
     AutoPtr<IUri> _uri;
     AutoPtr<IContactsGroupMembership> helper;
     CContactsGroupMembership::AcquireSingleton((IContactsGroupMembership**)&helper);
-    helper->GetCONTENTURI((IUri**)&_uri);
+    helper->GetCONTENT_URI((IUri**)&_uri);
     return resolver->Insert(_uri, values, uri);
 }
 
@@ -225,7 +225,7 @@ ECode CContactsPeople::CreatePersonInMyContactsGroup(
     /* [out] */ IUri** uri)
 {
     AutoPtr<IUri> _uri;
-    GetCONTENTURI((IUri**)&_uri);
+    GetCONTENT_URI((IUri**)&_uri);
     AutoPtr<IUri> contactUri;
     resolver->Insert(_uri, values, (IUri**)&contactUri);
     if (contactUri == NULL) {
@@ -261,7 +261,7 @@ ECode CContactsPeople::QueryGroups(
     AutoPtr<IContactsGroupMembership> helper;
     CContactsGroupMembership::AcquireSingleton((IContactsGroupMembership**)&helper);
     AutoPtr<IUri> uri;
-    helper->GetCONTENTURI((IUri**)&uri);
+    helper->GetCONTENT_URI((IUri**)&uri);
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
     (*args)[0] = StringUtils::Int64ToString(person);
     return resolver->Query(uri, NULL, String("person=?"),

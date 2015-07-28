@@ -69,7 +69,7 @@ ECode CCalendarContractEvents::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractEvents::GetCONTENTURI(
+ECode CCalendarContractEvents::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

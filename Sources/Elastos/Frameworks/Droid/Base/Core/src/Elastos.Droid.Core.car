@@ -40,7 +40,7 @@ module
     //merge("../car/webkit.car");
     //merge("../car/accessibilityservice.car");
     //merge("../car/privacy.car");
-    //merge("../car/provider.car");
+    merge("../car/provider.car");
     //merge("../car/statusbar.car");
     //merge("../car/service.car");
     //merge("../car/systemui.car");

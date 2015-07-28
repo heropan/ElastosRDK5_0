@@ -10,12 +10,12 @@ ECode CContactsContractData::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractData::GetCONTENTURI(
+ECode CContactsContractData::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return ContactsContractData::GetCONTENTURI(uri);
+    return ContactsContractData::GetCONTENT_URI(uri);
 }
 
 ECode CContactsContractData::GetContactLookupUri(

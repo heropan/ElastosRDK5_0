@@ -12,7 +12,7 @@ namespace Provider {
 
 String CalendarContractAttendees::ATTENDEES_WHERE = String(ICalendarContractAttendeesColumns::EVENT_ID) + String("=?");
 
-ECode CalendarContractAttendees::GetCONTENTURI(
+ECode CalendarContractAttendees::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -29,7 +29,7 @@ ECode CalendarContractAttendees::Query(
     AutoPtr<ArrayOf<String> > attArgs = ArrayOf<String>::Alloc(1);
     (*attArgs)[0] = StringUtils::Int64ToString(eventId);
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return cr->Query(_uri, projection, ATTENDEES_WHERE, attArgs /* selection args */, String(NULL) /* sort order */, cursor);
 }
 

@@ -11,7 +11,7 @@ namespace Provider {
 CarClass(CBrowserContract)
 {
 public:
-    CARAPI GetAUTHORITYURI(
+    CARAPI GetAUTHORITY_URI(
         /* [out] */ IUri** uri);
 };
 

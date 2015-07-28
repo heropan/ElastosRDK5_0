@@ -17,13 +17,13 @@ ECode CCalendarContractSyncState::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractSyncState::GetCONTENTURI(
+ECode CCalendarContractSyncState::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(CalendarContract::GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(CalendarContract::GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, CONTENT_DIRECTORY, uri);
 }
 

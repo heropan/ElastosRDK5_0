@@ -1,6 +1,5 @@
 module {
-    //interface Elastos.Droid.Provider.IContactsContractIntentsUI;
-    //interface Elastos.Droid.Provider.IContactsContractIntentsInsert;
+
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.IContentValues;
     interface Elastos.Droid.Content.IContext;
@@ -17,6 +16,15 @@ module {
     namespace Droid {
     namespace Provider {
 
+    /**
+     * The Contacts provider stores all information about contacts.
+     *
+     * @deprecated The APIs have been superseded by {@link ContactsContract}. The newer APIs allow
+     * access multiple accounts and support aggregation of similar contacts. These APIs continue to
+     * work but will only return data for the first Google account created, which matches the original
+     * behavior.
+     */
+    //@Deprecated
     interface IContacts {
         /**
          * @deprecated see {@link android.provider.ContactsContract}
@@ -60,7 +68,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -98,6 +106,11 @@ module {
         const String VALUE = "value";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ISettingsColumns;
+     */
     interface IContactsSettings {
 
         /**
@@ -132,7 +145,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -252,13 +265,17 @@ module {
         const String PHOTO_VERSION = "photo_version";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface ISyncConstValue;
+     * interface IContactsPeopleColumns;
+     * interface IContactsPhonesColumns;
+     * interface IContactsPresenceColumns;
+     *
+     */
     [local, deprecated]
-    interface IContactsPeople
-            /* extends IBaseColumns,
-            ISyncConstValue,
-            IContactsPeopleColumns,
-            IContactsPhonesColumns,
-            IContactsPresenceColumns */ {
+    interface IContactsPeople {
         /**
          * The MIME type of {@link #CONTENT_URI} providing a directory of
          * people.
@@ -313,7 +330,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -322,7 +339,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTFILTERURI(
+        GetCONTENT_FILTER_URI(
             [out] IUri** uri);
 
         /**
@@ -331,7 +348,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetDELETEDCONTENTURI(
+        GetDELETED_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -347,7 +364,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetWITHEMAILORIMFILTERURI(
+        GetWITH_EMAIL_OR_IM_FILTER_URI(
             [out] IUri** uri);
 
         /**
@@ -486,6 +503,12 @@ module {
             [out] IBitmap** bitmap);
     }
 
+    /**
+     * @Involve
+     * inteface IBaseColumns;
+     * inteface IContactsPhonesColumns;
+     * inteface IContactsPeopleColumns;
+     */
     interface IContactsPeoplePhones {
         /**
          * The directory twig for this sub-table
@@ -502,6 +525,12 @@ module {
         const String DEFAULT_SORT_ORDER = "number ASC";
     }
 
+    /**
+     * @Involve
+     * inteface IBaseColumns;
+     * inteface IContactsContactMethodsColumns;
+     * inteface IContactsPeopleColumns;
+     */
     interface IContactsPeopleContactMethods {
         /**
          * The directory twig for this sub-table
@@ -518,6 +547,11 @@ module {
         const String DEFAULT_SORT_ORDER = "data ASC";
     }
 
+    /**
+     * @Involve
+     * inteface IBaseColumns;
+     * inteface IContactsExtensionsColumns;
+     */
     interface IContactsPeopleExtensions {
         /**
          * The directory twig for this sub-table
@@ -577,6 +611,11 @@ module {
         const String SYSTEM_ID = "system_id";
     }
 
+    /**
+     * @Involve
+     * inteface IBaseColumns;
+     * inteface IContactsGroupsColumns;
+     */
     interface IContactsGroups {
 
         /**
@@ -620,7 +659,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -629,7 +668,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetDELETEDCONTENTURI(
+        GetDELETED_CONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -716,6 +755,12 @@ module {
         const String ISPRIMARY = "isprimary";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsPhonesColumns;
+     * interface IContactsPeopleColumn;
+     */
     [local, deprecated]
     interface IContactsPhones {
         /**
@@ -754,7 +799,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -762,7 +807,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTFILTERURL(
+        GetCONTENT_FILTER_URL(
             [out] IUri** uri);
 
         /**
@@ -787,6 +832,11 @@ module {
             [out] ICharSequence** label);
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsGroupsColumns;
+     */
     interface IContactsGroupMembership {
 
         /**
@@ -865,7 +915,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -873,7 +923,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetRAWCONTENTURI(
+        GetRAW_CONTENT_URL(
             [out] IUri** uri);
     }
 
@@ -963,6 +1013,12 @@ module {
         const String ISPRIMARY = "isprimary";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsContactMethodsColumns;
+     * interface IContactsPeopleColumns;
+     */
     [local]
     interface IContactsContactMethods {
         /**
@@ -1134,7 +1190,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1142,7 +1198,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTEMAILURI(
+        GetRAW_CONTENT_EMAIL_URL(
             [out] IUri** uri);
 
         /**
@@ -1254,6 +1310,12 @@ module {
         const String IM_ACCOUNT = "im_account";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsPresenceColumns;
+     * interface IContactsPeopleColumns;
+     */
     [deprecated, local]
     interface IContactsPresence {
 
@@ -1270,7 +1332,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1364,10 +1426,13 @@ module {
         const String ISPRIMARY = "isprimary";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsOrganizationColumns;
+     */
     [local]
-    interface IContactsOrganizations
-            /* extends IBaseColumns,
-            IContactsOrganizationColumns */ {
+    interface IContactsOrganizations {
         /**
          * The directory twig for this sub-table
          * @deprecated see {@link android.provider.ContactsContract}
@@ -1387,7 +1452,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1453,8 +1518,13 @@ module {
         const String DATA = "data";
     }
 
-    interface IContactsPhotos
-        /* extends IBaseColumns, IContactsPhotosColumns, ISyncConstValue */ {
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsPhotosColumns;
+     * interface ISyncConstValue;
+     */
+    interface IContactsPhotos {
 
         /**
          * The directory twig for this sub-table
@@ -1475,7 +1545,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -1497,6 +1567,11 @@ module {
         const String VALUE = "value";
     }
 
+    /**
+     * @Involve
+     * interface IBaseColumns;
+     * interface IContactsExtensionsColumns;
+     */
     interface IContactsExtensions {
 
         /**
@@ -1535,7 +1610,7 @@ module {
          * @deprecated see {@link android.provider.ContactsContract}
          */
         //@Deprecated
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 

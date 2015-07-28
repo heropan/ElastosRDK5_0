@@ -27,7 +27,7 @@ module {
         const String PARAM_LIMIT = "limit";
 
         /** A content:// style uri to the authority for the browser provider */
-        GetAUTHORITYURI(
+        GetAUTHORITY_URI(
             [out] IUri** uri);
 
     }
@@ -328,14 +328,14 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the default folder
          * @hide
          */
-        GetCONTENTURIDEFAULTFOLDER(
+        GetCONTENT_URIDEFAULTFOLDER(
             [out] IUri** uri);
 
         /**
@@ -374,7 +374,7 @@ module {
         /**
          * Directory under {@link Bookmarks#CONTENT_URI}
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -398,7 +398,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -434,7 +434,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -449,7 +449,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -543,7 +543,7 @@ module {
          */
         const String URL = "url_key";
 
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -566,7 +566,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -588,7 +588,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -626,7 +626,7 @@ module {
         /**
          * The content:// style URI for this table
          */
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 

@@ -16,23 +16,23 @@ ECode CContactsContractStatusUpdates::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractStatusUpdates::GetCONTENTURI(
+ECode CContactsContractStatusUpdates::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("status_updates"), uri);
 }
 
-ECode CContactsContractStatusUpdates::GetPROFILECONTENTURI(
+ECode CContactsContractStatusUpdates::GetPROFILE_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> conUri;
-    FAIL_RETURN(ContactsContractProfile::GetCONTENTURI((IUri**)&conUri))
+    FAIL_RETURN(ContactsContractProfile::GetCONTENT_URI((IUri**)&conUri))
     return Uri::WithAppendedPath(conUri, String("status_updates"), uri);
 }
 

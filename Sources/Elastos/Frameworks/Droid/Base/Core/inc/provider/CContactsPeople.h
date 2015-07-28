@@ -31,7 +31,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -40,7 +40,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -49,7 +49,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetDELETEDCONTENTURI(
+    CARAPI GetDELETED_CONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -65,7 +65,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetWITHEMAILORIMFILTERURI(
+    CARAPI GetWITH_EMAIL_OR_IM_FILTER_URI(
         /* [out] */ IUri** uri);
 
     CARAPI GetDEFAULTSORTORDER(

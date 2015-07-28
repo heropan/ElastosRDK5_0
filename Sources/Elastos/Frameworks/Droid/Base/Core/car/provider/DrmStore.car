@@ -83,7 +83,7 @@ module {
      * interface IDrmStoreColumns
      */
     interface IDrmStoreImages {
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 
@@ -92,7 +92,7 @@ module {
      * interface IDrmStoreColumns
      */
     interface IDrmStoreAudio {
-        GetCONTENTURI(
+        GetCONTENT_URI(
             [out] IUri** uri);
     }
 

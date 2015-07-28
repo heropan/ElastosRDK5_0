@@ -25,7 +25,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -33,7 +33,7 @@ public:
      * @deprecated see {@link android.provider.ContactsContract}
      */
     //@Deprecated
-    CARAPI GetCONTENTFILTERURL(
+    CARAPI GetCONTENT_FILTER_URL(
         /* [out] */ IUri** uri);
 
     /**

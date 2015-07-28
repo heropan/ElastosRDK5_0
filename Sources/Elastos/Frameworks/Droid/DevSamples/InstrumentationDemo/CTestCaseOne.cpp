@@ -151,7 +151,7 @@ ECode CTestCaseOne::SetUp()
         AutoPtr<IContactsPeople> people;
         CContactsPeople::AcquireSingleton((IContactsPeople**)&people);
         AutoPtr<IUri> baseUriPeople;
-        people->GetCONTENTURI((IUri**)&baseUriPeople);
+        people->GetCONTENT_URI((IUri**)&baseUriPeople);
 
         AutoPtr<IUri> insertedUri;
         ec = mProvider->Insert(baseUriPeople, value, (IUri**)&insertedUri);
@@ -168,7 +168,7 @@ ECode CTestCaseOne::SetUp()
     AutoPtr<IContactsGroups> group;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&group);
     AutoPtr<IUri> baseUriGroup;
-    group->GetCONTENTURI((IUri**)&baseUriGroup);
+    group->GetCONTENT_URI((IUri**)&baseUriGroup);
 
     AutoPtr<IUri> insertedUri;
     ec = mProvider->Insert(baseUriGroup, value, (IUri**)&insertedUri);
@@ -239,7 +239,7 @@ ECode CTestCaseOne::TestAddToGroup()
     AutoPtr<IContactsGroups> group;
     CContactsGroups::AcquireSingleton((IContactsGroups**)&group);
     AutoPtr<IUri> uriGroup;
-    group->GetCONTENTURI((IUri**)&uriGroup);
+    group->GetCONTENT_URI((IUri**)&uriGroup);
 
     AutoPtr<IUri> insertedUri;
     ECode ec = mProvider->Insert(uriGroup, testValues, (IUri**)&insertedUri);
@@ -261,7 +261,7 @@ ECode CTestCaseOne::TestAddToGroup()
     AutoPtr<IContactsPeople> people;
     CContactsPeople::AcquireSingleton((IContactsPeople**)&people);
     AutoPtr<IUri> uriPeople;
-    people->GetCONTENTURI((IUri**)&uriPeople);
+    people->GetCONTENT_URI((IUri**)&uriPeople);
 
     uri = NULL;
     ec = people->AddToMyContactsGroup(mContentResolver, personId, (IUri**)&uri);

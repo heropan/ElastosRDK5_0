@@ -16,13 +16,13 @@ ECode CContactsContractProfileSyncState::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractProfileSyncState::GetCONTENTURI(
+ECode CContactsContractProfileSyncState::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContractProfile::GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContractProfile::GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, IContactsContractProfileSyncState::CONTENT_DIRECTORY, uri);
 }
 
@@ -34,7 +34,7 @@ ECode CContactsContractProfileSyncState::Get(
     VALIDATE_NOT_NULL(value);
 
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     return SyncStateContractHelpers::Get(provider, uri, account, value);
 }
 
@@ -55,7 +55,7 @@ ECode CContactsContractProfileSyncState::Set(
     /* [in] */ const ArrayOf<Byte>& data)
 {
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     return SyncStateContractHelpers::Set(provider, uri, account, data);
 }
 
@@ -70,7 +70,7 @@ ECode CContactsContractProfileSyncState::NewSetOperation(
     VALIDATE_NOT_NULL(operation);
 
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     return SyncStateContractHelpers::NewSetOperation(uri, account, data, operation);
 }
 

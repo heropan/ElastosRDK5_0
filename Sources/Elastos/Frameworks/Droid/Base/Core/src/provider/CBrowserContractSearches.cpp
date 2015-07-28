@@ -10,7 +10,7 @@ ECode CBrowserContractSearches::constructor()
 /**
  * The content:// style URI for this table
  */
-ECode CBrowserContractSearches::GetCONTENTURI(
+ECode CBrowserContractSearches::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, "searches");

@@ -21,7 +21,7 @@ ECode CContactsContractDataUsageFeedback::GetFEEDBACKURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> conUri;
-    FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&conUri))
+    FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&conUri))
     return Uri::WithAppendedPath(conUri, String("usagefeedback"), uri);
 }
 
@@ -31,7 +31,7 @@ ECode CContactsContractDataUsageFeedback::GetDELETEUSAGEURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> conUri;
-    FAIL_RETURN(ContactsContractContacts::GetCONTENTURI((IUri**)&conUri))
+    FAIL_RETURN(ContactsContractContacts::GetCONTENT_URI((IUri**)&conUri))
     return Uri::WithAppendedPath(conUri, String("delete_usage"), uri);
 }
 

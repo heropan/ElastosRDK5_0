@@ -22,7 +22,7 @@ class ContactsContract
 {
 public:
     /** A content:// style uri to the authority for the contacts provider */
-    static CARAPI GetAUTHORITYURI(
+    static CARAPI GetAUTHORITY_URI(
         /* [out] */ IUri** uri);
 
     /**

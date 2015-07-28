@@ -25,7 +25,7 @@ public:
      * Uri lookupUri = Uri.withAppendedPath(PhoneLookup.CONTENT_URI, Uri.encode(phoneNumber));
      * </pre>
      */
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 };
 

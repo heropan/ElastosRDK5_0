@@ -2,13 +2,13 @@
 #include "provider/CBrowserContractBookmarks.h"
 
 
-ECode CBrowserContractBookmarks::GetCONTENTURI(
+ECode CBrowserContractBookmarks::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, "bookmarks");
 }
 
-ECode CBrowserContractBookmarks::GetCONTENTURIDEFAULTFOLDER(
+ECode CBrowserContractBookmarks::GetCONTENT_URIDEFAULTFOLDER(
         /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(CONTENT_URI, "folder");

@@ -13,7 +13,7 @@ ECode CContactsGroupMembership::constructor()
     return NOERROR;
 }
 
-ECode CContactsGroupMembership::GetCONTENTURI(
+ECode CContactsGroupMembership::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -21,7 +21,7 @@ ECode CContactsGroupMembership::GetCONTENTURI(
     return Uri::Parse(String("content://contacts/groupmembership"), uri);
 }
 
-ECode CContactsGroupMembership::GetRAWCONTENTURI(
+ECode CContactsGroupMembership::GetRAW_CONTENT_URL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

@@ -26,93 +26,93 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode ContactsContractContacts::GetCONTENTURI(
+ECode ContactsContractContacts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("contacts"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTLOOKUPURI(
+ECode ContactsContractContacts::GetCONTENT_LOOKUP_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("lookup"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTVCARDURI(
+ECode ContactsContractContacts::GetCONTENT_VCARD_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("as_vcard"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTMULTIVCARDURI(
+ECode ContactsContractContacts::GetCONTENT_MULTIVCARD_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("as_multi_vcard"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTFILTERURI(
+ECode ContactsContractContacts::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("filter"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTSTREQUENTURI(
+ECode ContactsContractContacts::GetCONTENT_STREQUENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("strequent"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTFREQUENTURI(
+ECode ContactsContractContacts::GetCONTENT_FREQUENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("frequent"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTSTREQUENTFILTERURI(
+ECode ContactsContractContacts::GetCONTENT_STREQUENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("filter"), uri);
 }
 
-ECode ContactsContractContacts::GetCONTENTGROUPURI(
+ECode ContactsContractContacts::GetCONTENT_GROUP_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("group"), uri);
 }
 
@@ -160,7 +160,7 @@ ECode ContactsContractContacts::GetLookupUri(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri, _uri;
-    FAIL_RETURN(GetCONTENTLOOKUPURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_LOOKUP_URI((IUri**)&auUri))
     FAIL_RETURN(Uri::WithAppendedPath(auUri, lookupKey, (IUri**)&_uri))
     AutoPtr<IContentUris> contentUris;
     FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&contentUris))
@@ -195,7 +195,7 @@ ECode ContactsContractContacts::LookupContact(
         Int64 contactId;
         FAIL_GOTO(c->GetInt64(0, &contactId), EXIT)
         AutoPtr<IUri> auUri;
-        FAIL_GOTO(GetCONTENTURI((IUri**)&auUri), EXIT)
+        FAIL_GOTO(GetCONTENT_URI((IUri**)&auUri), EXIT)
         AutoPtr<IContentUris> contentUris;
         FAIL_GOTO(CContentUris::AcquireSingleton((IContentUris**)&contentUris), EXIT)
         FAIL_GOTO(contentUris->WithAppendedId(auUri, contactId, uri), EXIT)
@@ -214,7 +214,7 @@ ECode ContactsContractContacts::MarkAsContacted(
     /* [in] */ Int64 contactId)
 {
     AutoPtr<IUri> uri, auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     AutoPtr<IContentUris> contentUris;
     FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&contentUris))
     FAIL_RETURN(contentUris->WithAppendedId(auUri, contactId, (IUri**)&uri))

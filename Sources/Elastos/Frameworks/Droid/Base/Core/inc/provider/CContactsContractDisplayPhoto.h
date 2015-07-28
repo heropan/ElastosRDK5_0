@@ -22,7 +22,7 @@ public:
      * The content:// style URI for this class, which allows access to full-size photos,
      * given a key.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

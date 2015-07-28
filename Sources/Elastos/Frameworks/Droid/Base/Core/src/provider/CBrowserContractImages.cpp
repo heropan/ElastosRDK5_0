@@ -7,7 +7,7 @@ ECode CBrowserContractImages::constructor()
     return NOERROR;
 }
 
-ECode CBrowserContractImages::GetCONTENTURI(
+ECode CBrowserContractImages::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, "images");

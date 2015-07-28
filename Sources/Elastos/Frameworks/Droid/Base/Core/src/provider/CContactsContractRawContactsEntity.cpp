@@ -15,26 +15,26 @@ ECode CContactsContractRawContactsEntity::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractRawContactsEntity::GetCONTENTURI(
+ECode CContactsContractRawContactsEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("raw_contact_entities"), uri);
 }
 
 /**
  * The content:// style URI for this table, specific to the user's profile.
  */
-ECode CContactsContractRawContactsEntity::GetPROFILECONTENTURI(
+ECode CContactsContractRawContactsEntity::GetPROFILE_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> conUri;
-    FAIL_RETURN(ContactsContractProfile::GetCONTENTURI((IUri**)&conUri))
+    FAIL_RETURN(ContactsContractProfile::GetCONTENT_URI((IUri**)&conUri))
     return Uri::WithAppendedPath(conUri, String("raw_contact_entities"), uri);
 }
 

@@ -1,11 +1,16 @@
 module {
+
+    interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IContentResolver;
+    interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Webkit.IWebIconDatabaseIconListener;
 
     namespace Elastos {
     namespace Droid {
     namespace Provider {
 
+    [local]
     interface IBrowser {
         /**
          * The name of extra data when starting Browser with ACTION_VIEW or
@@ -64,11 +69,44 @@ module {
         const Int32 SEARCHES_PROJECTION_SEARCH_INDEX = 1;
         const Int32 SEARCHES_PROJECTION_DATE_INDEX = 2;
 
-        GetBOOKMARKSURI(
-            [out] IUri** uri);
+        /**
+         * Boolean extra passed along with an Intent to a browser, specifying that
+         * a new tab be created.  Overrides EXTRA_APPLICATION_ID; if both are set,
+         * a new tab will be used, rather than using the same one.
+         */
+        const String EXTRA_CREATE_NEW_TAB = "create_new_tab";
 
-        GetSEARCHESURI(
-            [out] IUri** uri);
+        /**
+         * Stores a Bitmap extra in an {@link Intent} representing the screenshot of
+         * a page to share.  When receiving an {@link Intent#ACTION_SEND} from the
+         * Browser, use this to access the screenshot.
+         * @hide
+         */
+        const String EXTRA_SHARE_SCREENSHOT = "share_screenshot";
+
+        /**
+         * Stores a Bitmap extra in an {@link Intent} representing the favicon of a
+         * page to share.  When receiving an {@link Intent#ACTION_SEND} from the
+         * Browser, use this to access the favicon.
+         * @hide
+         */
+        const String EXTRA_SHARE_FAVICON = "share_favicon";
+
+        /* if you change column order you must also change indices
+           below */
+        GetHISTORY_PROJECTION(
+            [out, callee] ArrayOf<String>* projections);
+
+        /* columns needed to determine whether to truncate history */
+        GetTRUNCATE_HISTORY_PROJECTION(
+            [out, callee] ArrayOf<String>* projections);
+
+        /**
+         * A projection of {@link #SEARCHES_URI} that contains {@link SearchColumns#_ID},
+         * {@link SearchColumns#SEARCH}, and {@link SearchColumns#DATE}.
+         */
+        GetSEARCHES_PROJECTION(
+            [out, callee] ArrayOf<String>* projections);
 
         /**
          *  Open an activity to save a bookmark. Launch with a title
@@ -156,7 +194,7 @@ module {
          */
         GetVisitedHistory(
             [in] IContentResolver* cr,
-            [out] ArrayOf<String>* urls);
+            [out, callee] ArrayOf<String>* urls);
 
         /**
          * If there are more than MAX_HISTORY_COUNT non-bookmark history

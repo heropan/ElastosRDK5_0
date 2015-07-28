@@ -18,7 +18,7 @@ ECode CCalendarContractEventDays::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractEventDays::GetCONTENTURI(
+ECode CCalendarContractEventDays::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -41,7 +41,7 @@ ECode CCalendarContractEventDays::Query(
     }
     Int32 endDay = startDay + numDays - 1;
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     AutoPtr<IUriBuilder> builder;
     FAIL_RETURN(_uri->BuildUpon((IUriBuilder**)&builder))
     AutoPtr<IContentUris> helper;

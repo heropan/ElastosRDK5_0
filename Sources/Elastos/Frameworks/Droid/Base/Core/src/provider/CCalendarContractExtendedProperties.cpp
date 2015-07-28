@@ -10,12 +10,12 @@ ECode CCalendarContractExtendedProperties::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractExtendedProperties::GetCONTENTURI(
+ECode CCalendarContractExtendedProperties::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return CalendarContractExtendedProperties::GetCONTENTURI(uri);
+    return CalendarContractExtendedProperties::GetCONTENT_URI(uri);
 }
 
 } //Provider

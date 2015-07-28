@@ -25,7 +25,7 @@ public:
      * {@link #CONTENT_ITEM_TYPE} MIME type, combined with the
      * associated raw contact and aggregate contact data.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -43,7 +43,7 @@ public:
      * </pre>
      * </p>
      */
-    CARAPI GetCONTENTLOOKUPURI(
+    CARAPI GetCONTENT_LOOKUP_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -63,7 +63,7 @@ public:
      * </pre>
      * </p>
      */
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**

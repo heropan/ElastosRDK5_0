@@ -29,7 +29,7 @@ ECode CDownloads::RemoveAllDownloadsByPackage(
     AutoPtr<IDownloadsImpl> impl;
     CDownloadsImpl::AcquireSingleton((IDownloadsImpl**)&impl);
     AutoPtr<IUri> uri;
-    impl->GetCONTENTURI((IUri**)&uri);
+    impl->GetCONTENT_URI((IUri**)&uri);
     AutoPtr<ArrayOf<String> > array = ArrayOf<String>::Alloc(2);
     array->Set(0, notification_package);
     array->Set(1, notification_class);

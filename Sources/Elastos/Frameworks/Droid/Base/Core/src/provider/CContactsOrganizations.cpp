@@ -19,7 +19,7 @@ ECode CContactsOrganizations::constructor()
     return NOERROR;
 }
 
-ECode CContactsOrganizations::GetCONTENTURI(
+ECode CContactsOrganizations::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

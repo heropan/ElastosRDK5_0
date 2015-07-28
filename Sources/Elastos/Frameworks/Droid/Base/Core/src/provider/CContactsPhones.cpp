@@ -17,7 +17,7 @@ ECode CContactsPhones::constructor()
     return NOERROR;
 }
 
-ECode CContactsPhones::GetCONTENTURI(
+ECode CContactsPhones::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -25,7 +25,7 @@ ECode CContactsPhones::GetCONTENTURI(
     return Uri::Parse(String("content://contacts/phones"), uri);
 }
 
-ECode CContactsPhones::GetCONTENTFILTERURL(
+ECode CContactsPhones::GetCONTENT_FILTER_URL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

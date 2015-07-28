@@ -15,7 +15,7 @@ CarClass(CContactsContract)
 {
 public:
     /** A content:// style uri to the authority for the contacts provider */
-    CARAPI GetAUTHORITYURI(
+    CARAPI GetAUTHORITY_URI(
         /* [out] */ IUri** uri);
 
     /**

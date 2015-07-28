@@ -32,13 +32,13 @@ ECode CContactsContractRawContacts::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractRawContacts::GetCONTENTURI(
+ECode CContactsContractRawContacts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("raw_contacts"), uri);
 }
 
@@ -258,7 +258,7 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
             }
         }
         AutoPtr<IUri> _uri;
-        FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&_uri))
+        FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&_uri))
         FAIL_RETURN(contact->AddSubValue(_uri, cv))
     } while ((cursor->MoveToNext(&result), result));
 

@@ -11,20 +11,20 @@ ECode CContactsContractProfile::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractProfile::GetCONTENTURI(
+ECode CContactsContractProfile::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return ContactsContractProfile::GetCONTENTURI(uri);
+    return ContactsContractProfile::GetCONTENT_URI(uri);
 }
 
-ECode CContactsContractProfile::GetCONTENTVCARDURI(
+ECode CContactsContractProfile::GetCONTENT_VCARD_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return ContactsContractProfile::GetCONTENTVCARDURI(uri);
+    return ContactsContractProfile::GetCONTENT_VCARD_URI(uri);
 
 }
 

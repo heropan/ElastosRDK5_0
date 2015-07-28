@@ -1,662 +1,673 @@
 module
 {
+    merge("provider/AlarmClock.car");
     merge("provider/BaseColumns.car");
-    merge("provider/Settings.car");
-    merge("provider/Downloads.car");
-    merge("provider/MediaStore.car");
+    merge("provider/Browser.car");
+    merge("provider/CalendarContract.car");
     merge("provider/CallLog.car");
     merge("provider/Contacts.car");
-    merge("provider/SyncConstValue.car");
-    merge("provider/SyncStateContract.car");
     merge("provider/ContactsContract.car");
-    merge("provider/CalendarContract.car");
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Provider {
-
-    singleton class CSettings
-    {
-        interface ISettings;
-    }
-
-    singleton class CSettingsBookmarks
-    {
-        interface ISettingsBookmarks;
-    }
-
-    singleton class CSettingsGlobal
-    {
-        interface ISettingsGlobal;
-    }
-
-    singleton class CSettingsNameValueTable
-    {
-        interface ISettingsNameValueTable;
-    }
-
-    singleton class CSettingsSecure
-    {
-        interface ISettingsSecure;
-    }
-
-    singleton class CSettingsSystem
-    {
-        interface ISettingsSystem;
-    }
-
-    class CDownloads
-    {
-        constructor();
-        interface IDownloads;
-    }
-
-    singleton class CMediaStore
-    {
-        interface IMediaStore;
-    }
-
-    singleton class CMediaStoreFiles
-    {
-        interface IMediaStoreFiles;
-    }
-
-    singleton class CMediaStoreInternalThumbnails
-    {
-        interface IMediaStoreInternalThumbnails;
-    }
-
-    singleton class CMediaStoreImagesMedia
-    {
-        interface IMediaStoreImagesMedia;
-    }
-
-    singleton class CMediaStoreImagesThumbnails
-    {
-        interface IMediaStoreImagesThumbnails;
-    }
-
-    singleton class CMediaStoreAudio
-    {
-        interface IMediaStoreAudio;
-    }
-
-    singleton class CMediaStoreAudioMedia
-    {
-        interface IMediaStoreAudioMedia;
-    }
-
-    singleton class CMediaStoreAudioGenres
-    {
-        interface IMediaStoreAudioGenres;
-    }
-
-    singleton class CMediaStoreAudioGenresMembers
-    {
-        interface IMediaStoreAudioGenresMembers;
-    }
-
-    singleton class CMediaStoreAudioPlaylists
-    {
-        interface IMediaStoreAudioPlaylists;
-    }
-
-    singleton class CMediaStoreAudioPlaylistsMembers
-    {
-        interface IMediaStoreAudioPlaylistsMembers;
-    }
-
-    singleton class CMediaStoreAudioArtists
-    {
-        interface IMediaStoreAudioArtists;
-    }
-
-    singleton class CMediaStoreAudioArtistsAlbums
-    {
-        interface IMediaStoreAudioArtistsAlbums;
-    }
-
-    singleton class CMediaStoreAudioAlbums
-    {
-        interface IMediaStoreAudioAlbums;
-    }
-
-    singleton class CMediaStoreVideo
-    {
-        interface IMediaStoreVideo;
-    }
-
-    singleton class CMediaStoreVideoMedia
-    {
-        interface IMediaStoreVideoMedia;
-    }
-
-    singleton class CMediaStoreVideoThumbnails
-    {
-        interface IMediaStoreVideoThumbnails;
-    }
-
-    singleton class CDownloadsImpl
-    {
-        interface IDownloadsImpl;
-    }
-
-    singleton class CCallLog
-    {
-        interface ICallLog;
-    }
-
-    singleton class CCalls
-    {
-        interface ICalls;
-    }
-
-    singleton class CContacts
-    {
-        constructor();
-
-        interface IContacts;
-    }
-
-    singleton class CContactsSettings
-    {
-        constructor();
-
-        interface IBaseColumns;
-        interface IContactsSettings;
-        interface IContactsSettingsColumns;
-    }
-
-    singleton class CContactsPeople
-    {
-        constructor();
-
-        interface IContactsPeople;
-        interface IBaseColumns;
-        interface ISyncConstValue;
-        interface IContactsPeopleColumns;
-        interface IContactsPhonesColumns;
-        interface IContactsPresenceColumns;
-    }
-
-    singleton class CContactsGroups
-    {
-        constructor();
-
-        interface IContactsGroups;
-        interface IBaseColumns;
-        interface ISyncConstValue;
-        interface IContactsGroupsColumns;
-    }
-
-    singleton class CContactsPhones
-    {
-        constructor();
-
-        interface IContactsPhones;
-        interface IBaseColumns;
-        interface IContactsPhonesColumns;
-        interface IContactsPeopleColumns;
-    }
-
-    singleton class CContactsGroupMembership
-    {
-        constructor();
-
-        interface IContactsGroupMembership;
-        interface IBaseColumns;
-        interface IContactsGroupsColumns;
-    }
-
-    class CContactsContactMethods
-    {
-        constructor();
-
-        interface IContactsContactMethods;
-        interface IBaseColumns;
-        interface IContactsContactMethodsColumns;
-        interface IContactsPeopleColumns;
-    }
-
-    singleton class CContactsContactMethodsHelper
-    {
-        interface IContactsContactMethodsHelper;
-    }
-
-    singleton class CContactsPresence
-    {
-        constructor();
-
-        interface IContactsPresence;
-        interface IBaseColumns;
-        interface IContactsPresenceColumns;
-        interface IContactsPeopleColumns;
-    }
-
-    singleton class CContactsOrganizations
-    {
-        constructor();
-
-        interface IContactsOrganizations;
-        interface IBaseColumns;
-        interface IContactsOrganizationColumns;
-    }
-
-    singleton class CContactsPhotos
-    {
-        constructor();
-
-        interface IContactsPhotos;
-        interface IBaseColumns;
-        interface IContactsPhotosColumns;
-        interface ISyncConstValue;
-    }
-
-    singleton class CContactsExtensions
-    {
-        constructor();
-
-        interface IContactsExtensions;
-        interface IBaseColumns;
-        interface IContactsExtensionsColumns;
-    }
-
-    singleton class CSyncStateContractHelpers
-    {
-        interface ISyncStateContractHelpers;
-    }
-
-    singleton class CContactsContract
-    {
-        interface IContactsContract;
-    }
-
-    singleton class CContactsContractDirectory
-    {
-        constructor();
-
-        interface IContactsContractDirectory;
-        interface IBaseColumns;
-    }
-
-    singleton class CContactsContractSyncState
-    {
-        constructor();
-
-        interface IContactsContractSyncState;
-        interface ISyncStateContractColumns;
-    }
-
-    singleton class CContactsContractProfileSyncState
-    {
-        constructor();
-
-        interface IContactsContractProfileSyncState;
-        interface ISyncStateContractColumns;
-    }
-
-    singleton class CContactsContractContacts
-    {
-        constructor();
-
-        interface IContactsContractContacts;
-        interface IBaseColumns;
-        interface IContactsContractContactsColumns;
-        interface IContactsContractContactOptionsColumns;
-        interface IContactsContractContactNameColumns;
-        interface IContactsContractContactStatusColumns;
-    }
-
-    class CContactsContractContactsAggregationSuggestionsBuilder
-    {
-        interface IContactsContractContactsAggregationSuggestionsBuilder;
-    }
-
-    singleton class CContactsContractContactsAggregationSuggestions
-    {
-        constructor();
-
-        interface IContactsContractContactsAggregationSuggestions;
-        interface IBaseColumns;
-        interface IContactsContractContactsColumns;
-        interface IContactsContractContactOptionsColumns;
-        interface IContactsContractContactStatusColumns;
-    }
-
-    singleton class CContactsContractProfile
-    {
-        constructor();
-
-        interface IContactsContractProfile;
-        interface IBaseColumns;
-        interface IContactsContractContactsColumns;
-        interface IContactsContractContactOptionsColumns;
-        interface IContactsContractContactNameColumns;
-        interface IContactsContractContactStatusColumns;
-    }
-
-    singleton class CContactsContractRawContacts
-    {
-        constructor();
-
-        interface IContactsContractRawContacts;
-        interface IBaseColumns;
-        interface IContactsContractRawContactsColumns;
-        interface IContactsContractContactOptionsColumns;
-        interface IContactsContractContactNameColumns;
-        interface IContactsContractSyncColumns;
-    }
-
-    singleton class CContactsContractStreamItems
-    {
-        constructor();
-
-        interface IContactsContractStreamItems;
-        interface IBaseColumns;
-        interface IContactsContractStreamItemsColumns;
-    }
-
-    singleton class CContactsContractData
-    {
-        constructor();
-
-        interface IContactsContractData;
-        interface IContactsContractDataColumnsWithJoins;
-    }
-
-    singleton class CContactsContractRawContactsEntity
-    {
-        constructor();
-
-        interface IContactsContractRawContactsEntityEx;
-        interface IBaseColumns;
-        interface IContactsContractDataColumns;
-        interface IContactsContractRawContactsColumns;
-    }
-
-    singleton class CContactsContractPhoneLookup
-    {
-        constructor();
-
-        interface IContactsContractPhoneLookup;
-        interface IBaseColumns;
-        interface IContactsContractPhoneLookupColumns;
-        interface IContactsContractContactsColumns;
-        interface IContactsContractContactOptionsColumns;
-    }
-
-    singleton class CContactsContractStatusUpdates
-    {
-        constructor();
-
-        interface IContactsContractStatusUpdates;
-        interface IContactsContractStatusColumns;
-        interface IContactsContractPresenceColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsPhone
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsPhone;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsEmail
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsEmail;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsStructuredPostal
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsStructuredPostal;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsIm
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsIm;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsOrganization
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsOrganization;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsRelation
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsRelation;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsEvent
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsEvent;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsSipAddress
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsSipAddress;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractCommonDataKindsCallable
-    {
-        constructor();
-
-        interface IContactsContractCommonDataKindsCallable;
-        interface IContactsContractDataColumnsWithJoins;
-        interface IContactsContractCommonDataKindsCommonColumns;
-    }
-
-    singleton class CContactsContractGroups
-    {
-        constructor();
-
-        interface IContactsContractGroups;
-        interface IBaseColumns;
-        interface IContactsContractGroupsColumns;
-        interface IContactsContractSyncColumns;
-    }
-
-    singleton class CContactsContractAggregationExceptions
-    {
-        constructor();
-
-        interface IContactsContractAggregationExceptions;
-        interface IBaseColumns;
-    }
-
-    singleton class CContactsContractSettings
-    {
-        constructor();
-
-        interface IContactsContractSettings;
-        interface IContactsContractSettingsColumns;
-    }
-
-    singleton class CContactsContractProviderStatus
-    {
-        constructor();
-
-        interface IContactsContractProviderStatus;
-    }
-
-    singleton class CContactsContractDataUsageFeedback
-    {
-        constructor();
-
-        interface IContactsContractDataUsageFeedback;
-    }
-
-    singleton class CContactsContractQuickContact
-    {
-        constructor();
-
-        interface IContactsContractQuickContact;
-    }
-
-    singleton class CContactsContractDisplayPhoto
-    {
-        constructor();
-
-        interface IContactsContractDisplayPhoto;
-    }
-
-    singleton class CCalendarContract
-    {
-        constructor();
-
-        interface ICalendarContract;
-    }
-
-    singleton class CCalendarContractCalendarEntity
-    {
-        constructor();
-
-        interface ICalendarContractCalendarEntity;
-        interface IBaseColumns;
-        interface ICalendarContractSyncColumns;
-        interface ICalendarContractCalendarColumns;
-    }
-
-    singleton class CCalendarContractCalendars
-    {
-        constructor();
-
-        interface ICalendarContractCalendars;
-        interface IBaseColumns;
-        interface ICalendarContractSyncColumns;
-        interface ICalendarContractCalendarColumns;
-    }
-
-    singleton class CCalendarContractAttendees
-    {
-        constructor();
-
-        interface ICalendarContractAttendees;
-        interface IBaseColumns;
-        interface ICalendarContractAttendeesColumns;
-        interface ICalendarContractEventsColumns;
-    }
-
-    singleton class CCalendarContractEventsEntity
-    {
-        constructor();
-
-        interface ICalendarContractEventsEntity;
-        interface IBaseColumns;
-        interface ICalendarContractSyncColumns;
-        interface ICalendarContractEventsColumns;
-    }
-
-    singleton class CCalendarContractEvents
-    {
-        constructor();
-
-        interface ICalendarContractEvents;
-        interface IBaseColumns;
-        interface ICalendarContractSyncColumns;
-        interface ICalendarContractEventsColumns;
-        interface ICalendarContractCalendarColumns;
-    }
-
-    singleton class CCalendarContractInstances
-    {
-        constructor();
-
-        interface ICalendarContractInstances;
-        interface IBaseColumns;
-        interface ICalendarContractEventsColumns;
-        interface ICalendarContractCalendarColumns;
-    }
-
-    singleton class CCalendarContractCalendarCache
-    {
-        constructor();
-
-        interface ICalendarContractCalendarCache;
-    }
-
-    singleton class CCalendarContractEventDays
-    {
-        constructor();
-
-        interface ICalendarContractEventDays;
-    }
-
-    singleton class CCalendarContractReminders
-    {
-        constructor();
-
-        interface ICalendarContractReminders;
-        interface IBaseColumns;
-        interface ICalendarContractRemindersColumns;
-        interface ICalendarContractEventsColumns;
-    }
-
-    singleton class CCalendarContractCalendarAlerts
-    {
-        constructor();
-
-        interface ICalendarContractCalendarAlerts;
-        interface IBaseColumns;
-        interface ICalendarContractCalendarAlertsColumns;
-        interface ICalendarContractEventsColumns;
-        interface ICalendarContractCalendarColumns;
-    }
-
-    singleton class CCalendarContractColors
-    {
-        constructor();
-
-        interface ICalendarContractColors;
-    }
-
-    singleton class CCalendarContractExtendedProperties
-    {
-        constructor();
-
-        interface ICalendarContractExtendedProperties;
-        interface IBaseColumns;
-        interface ICalendarContractExtendedPropertiesColumns;
-        interface ICalendarContractEventsColumns;
-    }
-
-    singleton class CCalendarContractSyncState
-    {
-        constructor();
-
-        interface ICalendarContractSyncState;
-    }
-
-    }//namespace Provider
-    }//namespace Droid
-    }//namespace Elastos
+    merge("provider/DocumentsContract.car");
+    merge("provider/DocumentsProvider.car");
+    merge("provider/Downloads.car");
+    merge("provider/LiveFolders.car");
+    merge("provider/MediaStore.car");
+    merge("provider/OpenableColumns.car");
+    merge("provider/SearchRecentSuggestions.car");
+
+
+     //merge("provider/Settings.car");
+    //merge("provider/SyncConstValue.car");
+    //merge("provider/SyncStateContract.car");
+    //
+    //
+
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace Provider {
+
+    // singleton class CSettings
+    // {
+    //     interface ISettings;
+    // }
+
+    // singleton class CSettingsBookmarks
+    // {
+    //     interface ISettingsBookmarks;
+    // }
+
+    // singleton class CSettingsGlobal
+    // {
+    //     interface ISettingsGlobal;
+    // }
+
+    // singleton class CSettingsNameValueTable
+    // {
+    //     interface ISettingsNameValueTable;
+    // }
+
+    // singleton class CSettingsSecure
+    // {
+    //     interface ISettingsSecure;
+    // }
+
+    // singleton class CSettingsSystem
+    // {
+    //     interface ISettingsSystem;
+    // }
+
+    // class CDownloads
+    // {
+    //     constructor();
+    //     interface IDownloads;
+    // }
+
+    // singleton class CMediaStore
+    // {
+    //     interface IMediaStore;
+    // }
+
+    // singleton class CMediaStoreFiles
+    // {
+    //     interface IMediaStoreFiles;
+    // }
+
+    // singleton class CMediaStoreInternalThumbnails
+    // {
+    //     interface IMediaStoreInternalThumbnails;
+    // }
+
+    // singleton class CMediaStoreImagesMedia
+    // {
+    //     interface IMediaStoreImagesMedia;
+    // }
+
+    // singleton class CMediaStoreImagesThumbnails
+    // {
+    //     interface IMediaStoreImagesThumbnails;
+    // }
+
+    // singleton class CMediaStoreAudio
+    // {
+    //     interface IMediaStoreAudio;
+    // }
+
+    // singleton class CMediaStoreAudioMedia
+    // {
+    //     interface IMediaStoreAudioMedia;
+    // }
+
+    // singleton class CMediaStoreAudioGenres
+    // {
+    //     interface IMediaStoreAudioGenres;
+    // }
+
+    // singleton class CMediaStoreAudioGenresMembers
+    // {
+    //     interface IMediaStoreAudioGenresMembers;
+    // }
+
+    // singleton class CMediaStoreAudioPlaylists
+    // {
+    //     interface IMediaStoreAudioPlaylists;
+    // }
+
+    // singleton class CMediaStoreAudioPlaylistsMembers
+    // {
+    //     interface IMediaStoreAudioPlaylistsMembers;
+    // }
+
+    // singleton class CMediaStoreAudioArtists
+    // {
+    //     interface IMediaStoreAudioArtists;
+    // }
+
+    // singleton class CMediaStoreAudioArtistsAlbums
+    // {
+    //     interface IMediaStoreAudioArtistsAlbums;
+    // }
+
+    // singleton class CMediaStoreAudioAlbums
+    // {
+    //     interface IMediaStoreAudioAlbums;
+    // }
+
+    // singleton class CMediaStoreVideo
+    // {
+    //     interface IMediaStoreVideo;
+    // }
+
+    // singleton class CMediaStoreVideoMedia
+    // {
+    //     interface IMediaStoreVideoMedia;
+    // }
+
+    // singleton class CMediaStoreVideoThumbnails
+    // {
+    //     interface IMediaStoreVideoThumbnails;
+    // }
+
+    // singleton class CDownloadsImpl
+    // {
+    //     interface IDownloadsImpl;
+    // }
+
+    // singleton class CCallLog
+    // {
+    //     interface ICallLog;
+    // }
+
+    // singleton class CCalls
+    // {
+    //     interface ICalls;
+    // }
+
+    // singleton class CContacts
+    // {
+    //     constructor();
+
+    //     interface IContacts;
+    // }
+
+    // singleton class CContactsSettings
+    // {
+    //     constructor();
+
+    //     interface IBaseColumns;
+    //     interface IContactsSettings;
+    //     interface IContactsSettingsColumns;
+    // }
+
+    // singleton class CContactsPeople
+    // {
+    //     constructor();
+
+    //     interface IContactsPeople;
+    //     interface IBaseColumns;
+    //     interface ISyncConstValue;
+    //     interface IContactsPeopleColumns;
+    //     interface IContactsPhonesColumns;
+    //     interface IContactsPresenceColumns;
+    // }
+
+    // singleton class CContactsGroups
+    // {
+    //     constructor();
+
+    //     interface IContactsGroups;
+    //     interface IBaseColumns;
+    //     interface ISyncConstValue;
+    //     interface IContactsGroupsColumns;
+    // }
+
+    // singleton class CContactsPhones
+    // {
+    //     constructor();
+
+    //     interface IContactsPhones;
+    //     interface IBaseColumns;
+    //     interface IContactsPhonesColumns;
+    //     interface IContactsPeopleColumns;
+    // }
+
+    // singleton class CContactsGroupMembership
+    // {
+    //     constructor();
+
+    //     interface IContactsGroupMembership;
+    //     interface IBaseColumns;
+    //     interface IContactsGroupsColumns;
+    // }
+
+    // class CContactsContactMethods
+    // {
+    //     constructor();
+
+    //     interface IContactsContactMethods;
+    //     interface IBaseColumns;
+    //     interface IContactsContactMethodsColumns;
+    //     interface IContactsPeopleColumns;
+    // }
+
+    // singleton class CContactsContactMethodsHelper
+    // {
+    //     interface IContactsContactMethodsHelper;
+    // }
+
+    // singleton class CContactsPresence
+    // {
+    //     constructor();
+
+    //     interface IContactsPresence;
+    //     interface IBaseColumns;
+    //     interface IContactsPresenceColumns;
+    //     interface IContactsPeopleColumns;
+    // }
+
+    // singleton class CContactsOrganizations
+    // {
+    //     constructor();
+
+    //     interface IContactsOrganizations;
+    //     interface IBaseColumns;
+    //     interface IContactsOrganizationColumns;
+    // }
+
+    // singleton class CContactsPhotos
+    // {
+    //     constructor();
+
+    //     interface IContactsPhotos;
+    //     interface IBaseColumns;
+    //     interface IContactsPhotosColumns;
+    //     interface ISyncConstValue;
+    // }
+
+    // singleton class CContactsExtensions
+    // {
+    //     constructor();
+
+    //     interface IContactsExtensions;
+    //     interface IBaseColumns;
+    //     interface IContactsExtensionsColumns;
+    // }
+
+    // singleton class CSyncStateContractHelpers
+    // {
+    //     interface ISyncStateContractHelpers;
+    // }
+
+    // singleton class CContactsContract
+    // {
+    //     interface IContactsContract;
+    // }
+
+    // singleton class CContactsContractDirectory
+    // {
+    //     constructor();
+
+    //     interface IContactsContractDirectory;
+    //     interface IBaseColumns;
+    // }
+
+    // singleton class CContactsContractSyncState
+    // {
+    //     constructor();
+
+    //     interface IContactsContractSyncState;
+    //     interface ISyncStateContractColumns;
+    // }
+
+    // singleton class CContactsContractProfileSyncState
+    // {
+    //     constructor();
+
+    //     interface IContactsContractProfileSyncState;
+    //     interface ISyncStateContractColumns;
+    // }
+
+    // singleton class CContactsContractContacts
+    // {
+    //     constructor();
+
+    //     interface IContactsContractContacts;
+    //     interface IBaseColumns;
+    //     interface IContactsContractContactsColumns;
+    //     interface IContactsContractContactOptionsColumns;
+    //     interface IContactsContractContactNameColumns;
+    //     interface IContactsContractContactStatusColumns;
+    // }
+
+    // class CContactsContractContactsAggregationSuggestionsBuilder
+    // {
+    //     interface IContactsContractContactsAggregationSuggestionsBuilder;
+    // }
+
+    // singleton class CContactsContractContactsAggregationSuggestions
+    // {
+    //     constructor();
+
+    //     interface IContactsContractContactsAggregationSuggestions;
+    //     interface IBaseColumns;
+    //     interface IContactsContractContactsColumns;
+    //     interface IContactsContractContactOptionsColumns;
+    //     interface IContactsContractContactStatusColumns;
+    // }
+
+    // singleton class CContactsContractProfile
+    // {
+    //     constructor();
+
+    //     interface IContactsContractProfile;
+    //     interface IBaseColumns;
+    //     interface IContactsContractContactsColumns;
+    //     interface IContactsContractContactOptionsColumns;
+    //     interface IContactsContractContactNameColumns;
+    //     interface IContactsContractContactStatusColumns;
+    // }
+
+    // singleton class CContactsContractRawContacts
+    // {
+    //     constructor();
+
+    //     interface IContactsContractRawContacts;
+    //     interface IBaseColumns;
+    //     interface IContactsContractRawContactsColumns;
+    //     interface IContactsContractContactOptionsColumns;
+    //     interface IContactsContractContactNameColumns;
+    //     interface IContactsContractSyncColumns;
+    // }
+
+    // singleton class CContactsContractStreamItems
+    // {
+    //     constructor();
+
+    //     interface IContactsContractStreamItems;
+    //     interface IBaseColumns;
+    //     interface IContactsContractStreamItemsColumns;
+    // }
+
+    // singleton class CContactsContractData
+    // {
+    //     constructor();
+
+    //     interface IContactsContractData;
+    //     interface IContactsContractDataColumnsWithJoins;
+    // }
+
+    // singleton class CContactsContractRawContactsEntity
+    // {
+    //     constructor();
+
+    //     interface IContactsContractRawContactsEntityEx;
+    //     interface IBaseColumns;
+    //     interface IContactsContractDataColumns;
+    //     interface IContactsContractRawContactsColumns;
+    // }
+
+    // singleton class CContactsContractPhoneLookup
+    // {
+    //     constructor();
+
+    //     interface IContactsContractPhoneLookup;
+    //     interface IBaseColumns;
+    //     interface IContactsContractPhoneLookupColumns;
+    //     interface IContactsContractContactsColumns;
+    //     interface IContactsContractContactOptionsColumns;
+    // }
+
+    // singleton class CContactsContractStatusUpdates
+    // {
+    //     constructor();
+
+    //     interface IContactsContractStatusUpdates;
+    //     interface IContactsContractStatusColumns;
+    //     interface IContactsContractPresenceColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsPhone
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsPhone;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsEmail
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsEmail;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsStructuredPostal
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsStructuredPostal;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsIm
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsIm;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsOrganization
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsOrganization;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsRelation
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsRelation;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsEvent
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsEvent;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsSipAddress
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsSipAddress;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractCommonDataKindsCallable
+    // {
+    //     constructor();
+
+    //     interface IContactsContractCommonDataKindsCallable;
+    //     interface IContactsContractDataColumnsWithJoins;
+    //     interface IContactsContractCommonDataKindsCommonColumns;
+    // }
+
+    // singleton class CContactsContractGroups
+    // {
+    //     constructor();
+
+    //     interface IContactsContractGroups;
+    //     interface IBaseColumns;
+    //     interface IContactsContractGroupsColumns;
+    //     interface IContactsContractSyncColumns;
+    // }
+
+    // singleton class CContactsContractAggregationExceptions
+    // {
+    //     constructor();
+
+    //     interface IContactsContractAggregationExceptions;
+    //     interface IBaseColumns;
+    // }
+
+    // singleton class CContactsContractSettings
+    // {
+    //     constructor();
+
+    //     interface IContactsContractSettings;
+    //     interface IContactsContractSettingsColumns;
+    // }
+
+    // singleton class CContactsContractProviderStatus
+    // {
+    //     constructor();
+
+    //     interface IContactsContractProviderStatus;
+    // }
+
+    // singleton class CContactsContractDataUsageFeedback
+    // {
+    //     constructor();
+
+    //     interface IContactsContractDataUsageFeedback;
+    // }
+
+    // singleton class CContactsContractQuickContact
+    // {
+    //     constructor();
+
+    //     interface IContactsContractQuickContact;
+    // }
+
+    // singleton class CContactsContractDisplayPhoto
+    // {
+    //     constructor();
+
+    //     interface IContactsContractDisplayPhoto;
+    // }
+
+    // singleton class CCalendarContract
+    // {
+    //     constructor();
+
+    //     interface ICalendarContract;
+    // }
+
+    // singleton class CCalendarContractCalendarEntity
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractCalendarEntity;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractSyncColumns;
+    //     interface ICalendarContractCalendarColumns;
+    // }
+
+    // singleton class CCalendarContractCalendars
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractCalendars;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractSyncColumns;
+    //     interface ICalendarContractCalendarColumns;
+    // }
+
+    // singleton class CCalendarContractAttendees
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractAttendees;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractAttendeesColumns;
+    //     interface ICalendarContractEventsColumns;
+    // }
+
+    // singleton class CCalendarContractEventsEntity
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractEventsEntity;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractSyncColumns;
+    //     interface ICalendarContractEventsColumns;
+    // }
+
+    // singleton class CCalendarContractEvents
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractEvents;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractSyncColumns;
+    //     interface ICalendarContractEventsColumns;
+    //     interface ICalendarContractCalendarColumns;
+    // }
+
+    // singleton class CCalendarContractInstances
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractInstances;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractEventsColumns;
+    //     interface ICalendarContractCalendarColumns;
+    // }
+
+    // singleton class CCalendarContractCalendarCache
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractCalendarCache;
+    // }
+
+    // singleton class CCalendarContractEventDays
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractEventDays;
+    // }
+
+    // singleton class CCalendarContractReminders
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractReminders;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractRemindersColumns;
+    //     interface ICalendarContractEventsColumns;
+    // }
+
+    // singleton class CCalendarContractCalendarAlerts
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractCalendarAlerts;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractCalendarAlertsColumns;
+    //     interface ICalendarContractEventsColumns;
+    //     interface ICalendarContractCalendarColumns;
+    // }
+
+    // singleton class CCalendarContractColors
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractColors;
+    // }
+
+    // singleton class CCalendarContractExtendedProperties
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractExtendedProperties;
+    //     interface IBaseColumns;
+    //     interface ICalendarContractExtendedPropertiesColumns;
+    //     interface ICalendarContractEventsColumns;
+    // }
+
+    // singleton class CCalendarContractSyncState
+    // {
+    //     constructor();
+
+    //     interface ICalendarContractSyncState;
+    // }
+
+    // }//namespace Provider
+    // }//namespace Droid
+    // }//namespace Elastos
 }

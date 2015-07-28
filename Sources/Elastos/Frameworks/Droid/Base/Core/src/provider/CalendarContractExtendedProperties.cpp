@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CalendarContractExtendedProperties::GetCONTENTURI(
+ECode CalendarContractExtendedProperties::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

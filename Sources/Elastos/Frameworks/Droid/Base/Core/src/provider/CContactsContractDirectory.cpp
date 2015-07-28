@@ -17,13 +17,13 @@ ECode CContactsContractDirectory::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractDirectory::GetCONTENTURI(
+ECode CContactsContractDirectory::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("directories"), uri);
 }
 
@@ -37,7 +37,7 @@ ECode CContactsContractDirectory::NotifyDirectoryChange(
     FAIL_RETURN(CContentValues::New((IContentValues**)&contentValues))
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     Int32 result;
     return resolver->Update(auUri, contentValues, String(NULL), NULL, &result);
 }

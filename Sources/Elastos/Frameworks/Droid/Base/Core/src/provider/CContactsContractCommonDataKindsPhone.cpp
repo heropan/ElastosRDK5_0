@@ -17,23 +17,23 @@ ECode CContactsContractCommonDataKindsPhone::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractCommonDataKindsPhone::GetCONTENTURI(
+ECode CContactsContractCommonDataKindsPhone::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContractData::GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContractData::GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("phones"), uri);
 }
 
-ECode CContactsContractCommonDataKindsPhone::GetCONTENTFILTERURI(
+ECode CContactsContractCommonDataKindsPhone::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&auUri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("filter"), uri);
 }
 

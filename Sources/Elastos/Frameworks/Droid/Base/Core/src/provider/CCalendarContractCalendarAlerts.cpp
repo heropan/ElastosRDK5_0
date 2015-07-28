@@ -56,7 +56,7 @@ ECode CCalendarContractCalendarAlerts::constructor()
     return NOERROR;
 }
 
-ECode CCalendarContractCalendarAlerts::GetCONTENTURI(
+ECode CCalendarContractCalendarAlerts::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -64,7 +64,7 @@ ECode CCalendarContractCalendarAlerts::GetCONTENTURI(
     return Uri::Parse(String("content://") + ICalendarContract::AUTHORITY + String("/calendar_alerts"), uri);
 }
 
-ECode CCalendarContractCalendarAlerts::GetCONTENTURIBYINSTANCE(
+ECode CCalendarContractCalendarAlerts::GetCONTENT_URIBYINSTANCE(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -127,7 +127,7 @@ ECode CCalendarContractCalendarAlerts::Insert(
     FAIL_RETURN(values->PutInt32(ICalendarContractCalendarAlertsColumns::MINUTES, cminutes))
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return cr->Insert(_uri, values, uri);
 }
 
@@ -146,7 +146,7 @@ ECode CCalendarContractCalendarAlerts::FindNextAlarmTime(
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(1);
     (*args)[0] = StringUtils::Int64ToString(millis);
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ICursor> cursor;
     FAIL_RETURN(cr->Query(uri, projection, WHERE_FINDNEXTALARMTIME, args, SORT_ORDER_ALARMTIME_ASC, (ICursor**)&cursor))
     Int64 alarmTime = -1;
@@ -187,7 +187,7 @@ ECode CCalendarContractCalendarAlerts::RescheduleMissedAlarms(
     (*args)[1] = StringUtils::Int64ToString(ancient);
     (*args)[2] = StringUtils::Int64ToString(now);
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ICursor> cursor;
     FAIL_RETURN(cr->Query(uri, projection, WHERE_RESCHEDULE_MISSED_ALARMS, args,
         SORT_ORDER_ALARMTIME_ASC, (ICursor**)&cursor))
@@ -243,7 +243,7 @@ ECode CCalendarContractCalendarAlerts::ScheduleAlarm(
     AutoPtr<IIntent> intent;
     FAIL_RETURN(CIntent::New(ICalendarContract::ACTION_EVENT_REMINDER, (IIntent**)&intent))
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(CalendarContract::GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(CalendarContract::GetCONTENT_URI((IUri**)&_uri))
     AutoPtr<IContentUris> urihelper;
     FAIL_RETURN(CContentUris::AcquireSingleton((IContentUris**)&urihelper))
     AutoPtr<IUri> newUri;
@@ -272,7 +272,7 @@ ECode CCalendarContractCalendarAlerts::IsAlarmExists(
     AutoPtr<ArrayOf<String> > projection = ArrayOf<String>::Alloc(1);
     (*projection)[0] = ALARM_TIME;
     AutoPtr<IUri> uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))
     AutoPtr<ArrayOf<String> > args = ArrayOf<String>::Alloc(3);
     (*args)[0] = StringUtils::Int64ToString(eventId);
     (*args)[1] = StringUtils::Int64ToString(begin);

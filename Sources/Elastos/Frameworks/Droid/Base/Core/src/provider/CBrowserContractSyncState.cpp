@@ -7,7 +7,7 @@ ECode CBrowserContractSyncState::constructor()
     return NOERROR;
 }
 
-ECode CBrowserContractSyncState::GetCONTENTURI(
+ECode CBrowserContractSyncState::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
 //    *uri = Uri.withAppendedPath(AUTHORITY_URI, CONTENT_DIRECTORY);

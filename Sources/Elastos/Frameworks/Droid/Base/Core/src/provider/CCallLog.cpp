@@ -21,7 +21,7 @@ static AutoPtr<IUri> initCONTENTURI()
 
 AutoPtr<IUri> CCallLog::CONTENT_URI = initCONTENTURI();
 
-ECode CCallLog::GetCONTENTURI(
+ECode CCallLog::GetCONTENT_URI(
         /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

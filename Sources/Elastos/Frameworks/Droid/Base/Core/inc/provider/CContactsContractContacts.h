@@ -20,7 +20,7 @@ public:
     /**
      * The content:// style URI for this table
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -39,7 +39,7 @@ public:
      * Lookup key should be appended unencoded - it is stored in the encoded
      * form, ready for use in a URI.
      */
-    CARAPI GetCONTENTLOOKUPURI(
+    CARAPI GetCONTENT_LOOKUP_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -50,7 +50,7 @@ public:
      * referenced contact formatted as a vCard when opened through
      * {@link ContentResolver#openAssetFileDescriptor(Uri, String)}.
      */
-    CARAPI GetCONTENTVCARDURI(
+    CARAPI GetCONTENT_VCARD_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -69,7 +69,7 @@ public:
      *
      * @hide
      */
-    CARAPI GetCONTENTMULTIVCARDURI(
+    CARAPI GetCONTENT_MULTIVCARD_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -78,7 +78,7 @@ public:
      * various parts of the contact name. The filter argument should be passed
      * as an additional path segment after this URI.
      */
-    CARAPI GetCONTENTFILTERURI(
+    CARAPI GetCONTENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -86,14 +86,14 @@ public:
      * {@link ContactsContract.Data}, filtered to include only starred contacts
      * and the most frequently contacted contacts.
      */
-    CARAPI GetCONTENTSTREQUENTURI(
+    CARAPI GetCONTENT_STREQUENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URI for showing frequently contacted person listing.
      * @hide
      */
-    CARAPI GetCONTENTFREQUENTURI(
+    CARAPI GetCONTENT_FREQUENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -102,10 +102,10 @@ public:
      * various parts of the contact name. The filter argument should be passed
      * as an additional path segment after this URI.
      */
-    CARAPI GetCONTENTSTREQUENTFILTERURI(
+    CARAPI GetCONTENT_STREQUENT_FILTER_URI(
         /* [out] */ IUri** uri);
 
-    CARAPI GetCONTENTGROUPURI(
+    CARAPI GetCONTENT_GROUP_URI(
         /* [out] */ IUri** uri);
 
     /**

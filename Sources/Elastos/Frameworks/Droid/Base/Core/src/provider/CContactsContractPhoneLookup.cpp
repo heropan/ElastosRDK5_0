@@ -14,13 +14,13 @@ ECode CContactsContractPhoneLookup::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractPhoneLookup::GetCONTENTFILTERURI(
+ECode CContactsContractPhoneLookup::GetCONTENT_FILTER_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("phone_lookup"), uri);
 }
 

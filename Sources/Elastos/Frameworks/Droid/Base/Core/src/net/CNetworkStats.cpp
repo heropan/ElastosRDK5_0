@@ -704,11 +704,11 @@ ECode CNetworkStats::Subtract(
         }
         else {
             // existing row, subtract remote value
-            entry->SetRxBytes((*leftRxBytes)[i] - (*rightRxBytes)[i]);
-            entry->SetRxPackets((*leftRxPackets)[i] - (*rightRxPackets)[i]);
-            entry->SetTxBytes((*leftTxBytes)[i] - (*rightTxBytes)[i]);
-            entry->SetTxPackets((*leftTxPackets)[i] - (*rightTxPackets)[i]);
-            entry->SetOperations((*leftOperations)[i] - (*rightOperations)[i]);
+            entry->SetRxBytes((*leftRxBytes)[i] - (*rightRxBytes)[j]);
+            entry->SetRxPackets((*leftRxPackets)[i] - (*rightRxPackets)[j]);
+            entry->SetTxBytes((*leftTxBytes)[i] - (*rightTxBytes)[j]);
+            entry->SetTxPackets((*leftTxPackets)[i] - (*rightTxPackets)[j]);
+            entry->SetOperations((*leftOperations)[i] - (*rightOperations)[j]);
 
             Int64 entryRxbyte;
             entry->GetRxBytes(&entryRxbyte);

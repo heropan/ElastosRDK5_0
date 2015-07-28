@@ -5,12 +5,12 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContract::GetAUTHORITYURI(
+ECode CContactsContract::GetAUTHORITY_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return ContactsContract::GetAUTHORITYURI(uri);
+    return ContactsContract::GetAUTHORITY_URI(uri);
 }
 
 ECode CContactsContract::IsProfileId(

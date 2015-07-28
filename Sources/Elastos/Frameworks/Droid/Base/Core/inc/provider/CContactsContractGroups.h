@@ -54,7 +54,7 @@ public:
     /**
      * The content:// style URI for this table
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

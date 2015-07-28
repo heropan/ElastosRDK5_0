@@ -232,7 +232,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
     AutoPtr<ArrayOf<String> > selectionArgs = ArrayOf<String>::Alloc(1);
     (*selectionArgs)[0] = StringUtils::Int64ToString(eventId);
     AutoPtr<IUri> remindUri;
-    CalendarContractReminders::GetCONTENTURI((IUri**)&remindUri);
+    CalendarContractReminders::GetCONTENT_URI((IUri**)&remindUri);
     if (mResolver != NULL) {
         FAIL_RETURN(mResolver->Query(remindUri, REMINDERS_PROJECTION,
             WHERE_EVENT_ID, selectionArgs, String(NULL), (ICursor**)&subCursor))
@@ -264,7 +264,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
 
     subCursor = NULL;
     AutoPtr<IUri> attendeesUri;
-    CalendarContractAttendees::GetCONTENTURI((IUri**)&attendeesUri);
+    CalendarContractAttendees::GetCONTENT_URI((IUri**)&attendeesUri);
     if (mResolver != NULL) {
         FAIL_RETURN(mResolver->Query(attendeesUri, ATTENDEES_PROJECTION,
             WHERE_EVENT_ID, selectionArgs, String(NULL), (ICursor**)&subCursor))
@@ -328,7 +328,7 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
 
     subCursor = NULL;
     AutoPtr<IUri> propertiesUri;
-    CalendarContractExtendedProperties::GetCONTENTURI((IUri**)&propertiesUri);
+    CalendarContractExtendedProperties::GetCONTENT_URI((IUri**)&propertiesUri);
     if (mResolver != NULL) {
         FAIL_RETURN(mResolver->Query(propertiesUri, EXTENDED_PROJECTION,
             WHERE_EVENT_ID, selectionArgs, String(NULL), (ICursor**)&subCursor))
@@ -374,7 +374,7 @@ ECode CCalendarContractEventsEntity::constructor()
 }
 
 
-ECode CCalendarContractEventsEntity::GetCONTENTURI(
+ECode CCalendarContractEventsEntity::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

@@ -23,7 +23,7 @@ public:
      * The content:// style URI for this table.  Requests to this URI can be
      * performed on the UI thread because they are always unblocking.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

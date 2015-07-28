@@ -14,13 +14,13 @@ ECode CContactsContractStreamItems::constructor()
     return NOERROR;
 }
 
-ECode CContactsContractStreamItems::GetCONTENTURI(
+ECode CContactsContractStreamItems::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("stream_items"), uri);
 }
 
@@ -30,7 +30,7 @@ ECode CContactsContractStreamItems::GetCONTENTPHOTOURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&_uri))
     return Uri::WithAppendedPath(_uri, String("photo"), uri);
 }
 
@@ -40,7 +40,7 @@ ECode CContactsContractStreamItems::GetCONTENTLIMITURI(
     VALIDATE_NOT_NULL(uri);
 
     AutoPtr<IUri> auUri;
-    FAIL_RETURN(ContactsContract::GetAUTHORITYURI((IUri**)&auUri))
+    FAIL_RETURN(ContactsContract::GetAUTHORITY_URI((IUri**)&auUri))
     return Uri::WithAppendedPath(auUri, String("stream_items_limit"), uri);
 }
 

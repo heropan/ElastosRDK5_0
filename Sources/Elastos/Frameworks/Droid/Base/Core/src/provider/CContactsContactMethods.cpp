@@ -27,7 +27,7 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContactMethods::GetCONTENTURI(
+ECode CContactsContactMethods::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -35,7 +35,7 @@ ECode CContactsContactMethods::GetCONTENTURI(
     return Uri::Parse(String("content://contacts/contact_methods"), uri);
 }
 
-ECode CContactsContactMethods::GetCONTENTEMAILURI(
+ECode CContactsContactMethods::GetRAW_CONTENT_EMAIL_URL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -233,7 +233,7 @@ ECode CContactsContactMethods::AddPostalLocation(
     FAIL_RETURN(values->PutDouble(POSTAL_LOCATION_LONGITUDE, _longitude))
 
     AutoPtr<IUri> loc, curi;
-    FAIL_RETURN(GetCONTENTURI((IUri**)&curi))
+    FAIL_RETURN(GetCONTENT_URI((IUri**)&curi))
     FAIL_RETURN(resolver->Insert(curi, values, (IUri**)&loc))
     Int64 locId;
     AutoPtr<IContentUris> helper;

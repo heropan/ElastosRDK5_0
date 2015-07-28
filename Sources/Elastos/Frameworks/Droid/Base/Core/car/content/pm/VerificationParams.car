@@ -9,6 +9,17 @@ module
     namespace Content {
     namespace Pm {
 
+    /**
+     * Represents verification parameters used to verify packages to be installed.
+     *
+     * @deprecated callers should migrate to {@link PackageInstaller}.
+     * @hide
+     */
+    //@Deprecated
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IVerificationParams {
         /** A constant used to indicate that a uid value is not present. */
         const Int32 NO_UID = -1;

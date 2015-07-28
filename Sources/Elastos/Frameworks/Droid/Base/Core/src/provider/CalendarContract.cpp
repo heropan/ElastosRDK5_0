@@ -10,7 +10,7 @@ namespace Provider {
 
 const String CalendarContract::TAG("Calendar");
 
-ECode CalendarContract::GetCONTENTURI(
+ECode CalendarContract::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

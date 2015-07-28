@@ -45,7 +45,7 @@ ECode CContactsContractContactsAggregationSuggestionsBuilder::Build(
 
     AutoPtr<IUriBuilder> builder;
     AutoPtr<IUri> _uri;
-    FAIL_RETURN(ContactsContractContacts::GetCONTENTURI((IUri**)&_uri))
+    FAIL_RETURN(ContactsContractContacts::GetCONTENT_URI((IUri**)&_uri))
     FAIL_RETURN(_uri->BuildUpon((IUriBuilder**)&builder))
     FAIL_RETURN(builder->AppendEncodedPath(StringUtils::Int64ToString(mContactId)))
     FAIL_RETURN(builder->AppendPath(IContactsContractContactsAggregationSuggestions::CONTENT_DIRECTORY))

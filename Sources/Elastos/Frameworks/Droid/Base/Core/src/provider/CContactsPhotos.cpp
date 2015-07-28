@@ -13,7 +13,7 @@ ECode CContactsPhotos::constructor()
     return NOERROR;
 }
 
-ECode CContactsPhotos::GetCONTENTURI(
+ECode CContactsPhotos::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

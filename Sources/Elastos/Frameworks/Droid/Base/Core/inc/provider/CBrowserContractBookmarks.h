@@ -14,14 +14,14 @@ public:
     /**
      * The content:// style URI for this table
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URI for the default folder
      * @hide
      */
-    CARAPI GetCONTENTURIDEFAULTFOLDER(
+    CARAPI GetCONTENT_URIDEFAULTFOLDER(
         /* [out] */ IUri** uri);
 
     /**

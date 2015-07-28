@@ -11,7 +11,7 @@ namespace Provider {
 CarClass(CDrmStoreAudio)
 {
 public:
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 };
 

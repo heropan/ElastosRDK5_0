@@ -6,20 +6,20 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CContactsContactMethodsHelper::GetCONTENTURI(
+ECode CContactsContactMethodsHelper::GetCONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return CContactsContactMethods::GetCONTENTURI(uri);
+    return CContactsContactMethods::GetCONTENT_URI(uri);
 }
 
-ECode CContactsContactMethodsHelper::GetCONTENTEMAILURI(
+ECode CContactsContactMethodsHelper::GetRAW_CONTENT_EMAIL_URL(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
 
-    return CContactsContactMethods::GetCONTENTEMAILURI(uri);
+    return CContactsContactMethods::GetRAW_CONTENT_EMAIL_URL(uri);
 }
 
 ECode CContactsContactMethodsHelper::EncodePredefinedImProtocol(

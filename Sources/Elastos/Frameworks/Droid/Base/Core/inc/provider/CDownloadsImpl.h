@@ -16,7 +16,7 @@ public:
     /**
      * The content:// URI to access downloads owned by the caller's UID.
      */
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**

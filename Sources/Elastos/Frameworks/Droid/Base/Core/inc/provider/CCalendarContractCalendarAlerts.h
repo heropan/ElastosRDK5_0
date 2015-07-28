@@ -36,7 +36,7 @@ public:
      * The Uri for querying calendar alert information
      */
     //@SuppressWarnings("hiding")
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
@@ -45,7 +45,7 @@ public:
      * events with multiple alarms will appear just once, but multiple
      * instances of a repeating event will show up multiple times.
      */
-    CARAPI GetCONTENTURIBYINSTANCE(
+    CARAPI GetCONTENT_URIBYINSTANCE(
         /* [out] */ IUri** uri);
 
     /**

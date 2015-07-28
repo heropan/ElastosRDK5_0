@@ -59,7 +59,7 @@ public:
      * The default Uri used when creating a new calendar EntityIterator.
      */
     //@SuppressWarnings("hiding")
-    CARAPI GetCONTENTURI(
+    CARAPI GetCONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
