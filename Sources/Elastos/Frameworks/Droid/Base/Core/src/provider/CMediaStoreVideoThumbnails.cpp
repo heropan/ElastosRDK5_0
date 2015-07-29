@@ -11,14 +11,14 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CMediaStoreVideoThumbnails::GetINTERNALCONTENTURI(
+ECode CMediaStoreVideoThumbnails::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
     return GetContentUri(String("internal"), uri);
 }
 
-ECode CMediaStoreVideoThumbnails::GetEXTERNALCONTENTURI(
+ECode CMediaStoreVideoThumbnails::GetEXTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -30,7 +30,7 @@ ECode CMediaStoreVideoThumbnails::CancelThumbnailRequest(
     /* [in] */ Int64 origId)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);
@@ -46,7 +46,7 @@ ECode CMediaStoreVideoThumbnails::GetThumbnail(
     /* [out] */ IBitmap** bitmap)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
@@ -65,7 +65,7 @@ ECode CMediaStoreVideoThumbnails::GetThumbnail(
     /* [out] */ IBitmap** bitmap)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     VALIDATE_NOT_NULL(bitmap);
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
@@ -80,7 +80,7 @@ ECode CMediaStoreVideoThumbnails::CancelThumbnailRequest(
     /* [in] */ Int64 groupId)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);

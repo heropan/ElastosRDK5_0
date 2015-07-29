@@ -11,14 +11,14 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CMediaStoreImagesThumbnails::GetINTERNALCONTENTURI(
+ECode CMediaStoreImagesThumbnails::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
     return GetContentUri(String("internal"), uri);
 }
 
-ECode CMediaStoreImagesThumbnails::GetEXTERNALCONTENTURI(
+ECode CMediaStoreImagesThumbnails::GetEXTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -57,7 +57,7 @@ ECode CMediaStoreImagesThumbnails::QueryMiniThumbnail(
 {
     VALIDATE_NOT_NULL(cursor);
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     return cr->Query(uri, projection,
             IMediaStoreImagesThumbnails::IMAGE_ID + " = " + origId + " AND " + IMediaStoreImagesThumbnails::KIND + " = " +
             kind, NULL, String(NULL), cursor);
@@ -68,7 +68,7 @@ ECode CMediaStoreImagesThumbnails::CancelThumbnailRequest(
     /* [in] */ Int64 origId)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);
@@ -84,7 +84,7 @@ ECode CMediaStoreImagesThumbnails::GetThumbnail(
     /* [out] */ IBitmap** bitmap)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);
@@ -99,7 +99,7 @@ ECode CMediaStoreImagesThumbnails::CancelThumbnailRequest(
     /* [in] */ Int64 groupId)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);
@@ -115,7 +115,7 @@ ECode CMediaStoreImagesThumbnails::GetThumbnail(
     /* [out] */ IBitmap** bitmap)
 {
     AutoPtr<IUri> uri;
-    GetEXTERNALCONTENTURI((IUri**)&uri);
+    GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     AutoPtr<IMediaStoreInternalThumbnails> thumbnails;
     CMediaStoreInternalThumbnails::AcquireSingleton((IMediaStoreInternalThumbnails**)&thumbnails);

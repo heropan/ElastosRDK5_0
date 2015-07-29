@@ -30,14 +30,14 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CMediaStoreImagesMedia::GetINTERNALCONTENTURI(
+ECode CMediaStoreImagesMedia::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
     return GetContentUri(String("internal"), uri);
 }
 
-ECode CMediaStoreImagesMedia::GetEXTERNALCONTENTURI(
+ECode CMediaStoreImagesMedia::GetEXTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -170,7 +170,7 @@ AutoPtr<IBitmap> CMediaStoreImagesMedia::StoreThumbnail(
     AutoPtr<IMediaStoreImagesThumbnails> helper;
     CMediaStoreImagesThumbnails::AcquireSingleton((IMediaStoreImagesThumbnails**)&helper);
     AutoPtr<IUri> uri;
-    helper->GetEXTERNALCONTENTURI((IUri**)&uri);
+    helper->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     cr->Insert(uri, values, (IUri**)&url);
 
     //try {
@@ -215,7 +215,7 @@ ECode CMediaStoreImagesMedia::InsertImage(
 
     //try {
         AutoPtr<IUri> uri;
-        GetEXTERNALCONTENTURI((IUri**)&uri);
+        GetEXTERNAL_CONTENT_URI((IUri**)&uri);
         cr->Insert(uri, values, (IUri**)&url);
 
         if (source != NULL) {

@@ -10,14 +10,14 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CMediaStoreAudioPlaylists::GetINTERNALCONTENTURI(
+ECode CMediaStoreAudioPlaylists::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
     return GetContentUri(String("internal"), uri);
 }
 
-ECode CMediaStoreAudioPlaylists::GetEXTERNALCONTENTURI(
+ECode CMediaStoreAudioPlaylists::GetEXTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);

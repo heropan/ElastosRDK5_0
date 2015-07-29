@@ -127,11 +127,11 @@ ECode CMediaStoreInternalThumbnails::GetThumbnail(
     if(isVideo) {
         AutoPtr<IMediaStoreVideoMedia> media;
         CMediaStoreVideoMedia::AcquireSingleton((IMediaStoreVideoMedia**)&media);
-        media->GetEXTERNALCONTENTURI((IUri**)&uri);
+        media->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     } else {
         AutoPtr<IMediaStoreImagesMedia> media;
         CMediaStoreImagesMedia::AcquireSingleton((IMediaStoreImagesMedia**)&media);
-        media->GetEXTERNALCONTENTURI((IUri**)&uri);
+        media->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     }
     CMiniThumbFile::New(uri, (IMiniThumbFile**)&thumbFile);
 

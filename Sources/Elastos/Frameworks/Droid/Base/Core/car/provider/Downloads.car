@@ -7,6 +7,11 @@ module {
     namespace Droid {
     namespace Provider {
 
+    /**
+     * The Download Manager
+     *
+     * @pending
+     */
     [local]
     interface IDownloads {
         /**
@@ -19,6 +24,15 @@ module {
     }
 
     /**
+     * Implementation details
+     *
+     * Exposes constants used to interact with the download manager's
+     * content provider.
+     * The constants URI ... STATUS are the names of columns in the downloads table.
+     *
+     * @hide
+     */
+    /**
      * @Involve
      * interface IBaseColumns
      */
@@ -27,8 +41,7 @@ module {
         /**
          * The permission to access the download manager
          */
-        const String PERMISSION_ACCESS =
-                "android.permission.ACCESS_DOWNLOAD_MANAGER";
+        const String PERMISSION_ACCESS = "android.permission.ACCESS_DOWNLOAD_MANAGER";
 
         /**
          * The permission to access the download manager's advanced functions
@@ -67,8 +80,34 @@ module {
         const String PERMISSION_NO_NOTIFICATION =
                 "android.permission.DOWNLOAD_WITHOUT_NOTIFICATION";
 
+        /**
+         * The content:// URI to access downloads owned by the caller's UID.
+         */
+        //public static final Uri CONTENT_URI =
+        //        Uri.parse("content://downloads/my_downloads");
+        GetCONTENT_URI(
+            [out] IUri** uri);
+
+        /**
+         * The content URI for accessing all downloads across all UIDs (requires the
+         * ACCESS_ALL_DOWNLOADS permission).
+         */
+        //public static final Uri ALL_DOWNLOADS_CONTENT_URI =
+        //        Uri.parse("content://downloads/all_downloads");
+        GetALL_DOWNLOADS_CONTENT_URI(
+            [out] IUri** uri);
+
         /** URI segment to access a publicly accessible downloaded file */
         const String PUBLICLY_ACCESSIBLE_DOWNLOADS_URI_SEGMENT = "public_downloads";
+
+        /**
+         * The content URI for accessing publicly accessible downloads (i.e., it requires no
+         * permissions to access this downloaded file)
+         */
+        //public static final Uri PUBLICLY_ACCESSIBLE_DOWNLOADS_URI =
+        //        Uri.parse("content://downloads/" + PUBLICLY_ACCESSIBLE_DOWNLOADS_URI_SEGMENT);
+        GetPUBLICLY_ACCESSIBLE_DOWNLOADS_URI(
+            [out] IUri** uri);
 
         /**
          * Broadcast Action: this is sent by the download manager to the app
@@ -133,7 +172,7 @@ module {
          * <P>Type: TEXT</P>
          * <P>Owner can Read</P>
          */
-        const String DATA = "_data";
+        const String _DATA = "_data";
 
         /**
          * The name of the column containing the MIME type of the downloaded data.
@@ -322,8 +361,7 @@ module {
          * <P>Type: INTEGER</P>
          * <P>Owner can Init/Read</P>
          */
-        const String COLUMN_IS_VISIBLE_IN_DOWNLOADS_UI =
-                "is_visible_in_downloads_ui";
+        const String COLUMN_IS_VISIBLE_IN_DOWNLOADS_UI = "is_visible_in_downloads_ui";
 
         /**
          * If true, the user has confirmed that this download can proceed over the mobile network
@@ -331,7 +369,7 @@ module {
          * <P>Type: BOOLEAN</P>
          */
         const String COLUMN_BYPASS_RECOMMENDED_SIZE_LIMIT =
-                "bypass_recommended_size_limit";
+            "bypass_recommended_size_limit";
 
         /**
          * Set to true if this download is deleted. It is completely removed from the database
@@ -371,6 +409,11 @@ module {
          * <P>Type: INT</P>
          */
         const String COLUMN_LAST_UPDATESRC = "lastUpdateSrc";
+
+        /** The column that is used to count retries */
+        const String COLUMN_FAILED_CONNECTIONS = "numfailed";
+
+        const String COLUMN_ALLOW_WRITE = "allow_write";
 
         /**
          * default value for {@link #COLUMN_LAST_UPDATESRC}.
@@ -619,41 +662,19 @@ module {
          * This download is visible but only shows in the notifications
          * while it's in progress.
          */
-        const Int32 VISIBILITY_VISIBLE = 0;
-                //IDownloadManagerRequest::VISIBILITY_VISIBLE;
+        const Int32 VISIBILITY_VISIBLE = 0;//DownloadManager.Request.VISIBILITY_VISIBLE;
 
         /**
          * This download is visible and shows in the notifications while
          * in progress and after completion.
          */
         const Int32 VISIBILITY_VISIBLE_NOTIFY_COMPLETED = 1;
-                //IDownloadManagerRequest::VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+            //DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
 
         /**
          * This download doesn't show in the UI or in the notifications.
          */
-        const Int32 VISIBILITY_HIDDEN = 2;
-                //IDownloadManagerRequest::VISIBILITY_HIDDEN;
-
-        /**
-         * The content:// URI to access downloads owned by the caller's UID.
-         */
-        GetCONTENT_URI(
-            [out] IUri** uri);
-
-        /**
-         * The content URI for accessing all downloads across all UIDs (requires the
-         * ACCESS_ALL_DOWNLOADS permission).
-         */
-        GetALLDOWNLOADSCONTENTURI(
-            [out] IUri** uri);
-
-        /**
-         * The content URI for accessing publicly accessible downloads (i.e., it requires no
-         * permissions to access this downloaded file)
-         */
-        GetPUBLICLYACCESSIBLEDOWNLOADSURI(
-            [out] IUri** uri);
+        const Int32 VISIBILITY_HIDDEN = 2;//DownloadManager.Request.VISIBILITY_HIDDEN;
 
         /**
          * Returns whether the status is informational (i.e. 1xx).

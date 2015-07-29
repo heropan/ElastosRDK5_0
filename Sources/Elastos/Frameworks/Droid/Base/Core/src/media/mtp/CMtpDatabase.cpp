@@ -1423,7 +1423,7 @@ void CMtpDatabase::EndSendObject(
                 AutoPtr<IMediaStoreAudioPlaylists> list;
                 CMediaStoreAudioPlaylists::AcquireSingleton((IMediaStoreAudioPlaylists**)&list);
                 AutoPtr<IUri> extUri;
-                list->GetEXTERNALCONTENTURI((IUri**)&extUri);
+                list->GetEXTERNAL_CONTENT_URI((IUri**)&extUri);
                 mMediaProvider->Insert(extUri, values, (IUri**)&uri);
             //} catch (RemoteException e) {
             //    Log->E(TAG, "RemoteException in endSendObject", e);

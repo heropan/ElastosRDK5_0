@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IHashSet;
 
     interface Elastos.Droid.Content.IContentResolver;
     interface Elastos.Droid.Content.IIntent;
@@ -231,8 +232,6 @@ module
 
         const String EXTRA_AIRPLANE_MODE_ENABLED = "airplane_mode_enabled";
 
-        private static final String JID_RESOURCE_PREFIX = "android";
-
         const String AUTHORITY = "settings";
 
         GetGTalkDeviceId(
@@ -256,6 +255,12 @@ module
     }
 
     /**
+     * Global system settings, containing preferences that always apply identically
+     * to all defined users.  Applications can read these but are not allowed to write;
+     * like the "Secure" settings, these are for preferences that the user must
+     * explicitly modify through the system UI or specialized APIs for those values.
+     */
+    /**
      * @Involve
      * interface ISettingsNameValueTable
      */
@@ -263,19 +268,26 @@ module
         const String SYS_PROP_SETTING_VERSION = "sys.settings_global_version";
 
         /**
+         * Whether users are allowed to add more users or guest from lockscreen.
+         * <p>
+         * Type: int
+         * @hide
+         */
+        const String ADD_USERS_WHEN_LOCKED = "add_users_when_locked";
+
+        /**
          * Setting whether the global gesture for enabling accessibility is enabled.
          * If this gesture is enabled the user will be able to perfrom it to enable
          * the accessibility state without visiting the settings app.
          * @hide
          */
-        const String ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED = "enable_accessibility_global_gesture_enabled";
+        const String ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED =
+                "enable_accessibility_global_gesture_enabled";
 
         /**
          * Whether Airplane Mode is on.
          */
         const String AIRPLANE_MODE_ON = "airplane_mode_on";
-
-        const String AIRPLANE_MODE_ON_FAST_BOOT = "airplane_mode_on_fast_boot";
 
         /**
          * Constant for use in AIRPLANE_MODE_RADIOS to specify Bluetooth radio.
@@ -291,7 +303,6 @@ module
          * {@hide}
          */
         const String RADIO_WIMAX = "wimax";
-
         /**
          * Constant for use in AIRPLANE_MODE_RADIOS to specify Cellular radio.
          */
@@ -404,6 +415,13 @@ module
         const String UNLOCK_SOUND = "unlock_sound";
 
         /**
+         * URI for the "device is trusted" sound, which is played when the device enters the trusted
+         * state without unlocking.
+         * @hide
+         */
+        const String TRUSTED_SOUND = "trusted_sound";
+
+        /**
          * URI for the low battery sound file.
          * @hide
          */
@@ -419,7 +437,8 @@ module
          * URI for the "wireless charging started" sound.
          * @hide
          */
-        const String WIRELESS_CHARGING_STARTED_SOUND = "wireless_charging_started_sound";
+        const String WIRELESS_CHARGING_STARTED_SOUND =
+                "wireless_charging_started_sound";
 
         /**
          * Whether we keep the device on while the device is plugged in.
@@ -435,9 +454,22 @@ module
         const String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
 
         /**
+         * When the user has enable the option to have a "bug report" command
+         * in the power menu.
+         * @hide
+         */
+        const String BUGREPORT_IN_POWER_MENU = "bugreport_in_power_menu";
+
+        /**
          * Whether ADB is enabled.
          */
         const String ADB_ENABLED = "adb_enabled";
+
+        /**
+         * Whether Views are allowed to save their attribute data.
+         * @hide
+         */
+        const String DEBUG_VIEW_ATTRIBUTES = "debug_view_attributes";
 
         /**
          * Whether assisted GPS should be enabled or not.
@@ -457,7 +489,8 @@ module
          *                            1 = CDMA Cell Broadcast SMS enabled
          * @hide
          */
-        const String CDMA_CELL_BROADCAST_SMS = "cdma_cell_broadcast_sms";
+        const String CDMA_CELL_BROADCAST_SMS =
+                "cdma_cell_broadcast_sms";
 
         /**
          * The CDMA roaming mode 0 = Home Networks, CDMA default
@@ -503,6 +536,14 @@ module
        const String DATA_ROAMING = "data_roaming";
 
        /**
+        * The value passed to a Mobile DataConnection via bringUp which defines the
+        * number of retries to preform when setting up the initial connection. The default
+        * value defined in DataConnectionTrackerBase#DEFAULT_MDC_INITIAL_RETRY is currently 1.
+        * @hide
+        */
+       const String MDC_INITIAL_MAX_RETRY = "mdc_initial_max_retry";
+
+       /**
         * Whether user has enabled development settings.
         */
        const String DEVELOPMENT_SETTINGS_ENABLED = "development_settings_enabled";
@@ -531,7 +572,8 @@ module
         * a non-wifi connection.
         * @hide
         */
-       const String DOWNLOAD_MAX_BYTES_OVER_MOBILE = "download_manager_max_bytes_over_mobile";
+       const String DOWNLOAD_MAX_BYTES_OVER_MOBILE =
+               "download_manager_max_bytes_over_mobile";
 
        /**
         * The recommended maximum size, in bytes, of a download that the download manager should
@@ -539,16 +581,59 @@ module
         * have the option to start the download over the mobile connection anyway.
         * @hide
         */
-       const String DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE = "download_manager_recommended_max_bytes_over_mobile";
+       const String DOWNLOAD_RECOMMENDED_MAX_BYTES_OVER_MOBILE =
+               "download_manager_recommended_max_bytes_over_mobile";
 
        /**
-        * Whether the package installer should allow installation of apps downloaded from
-        * sources other than Google Play.
-        *
-        * 1 = allow installing from other sources
-        * 0 = only allow installing from Google Play
+        * @deprecated Use {@link android.provider.Settings.Secure#INSTALL_NON_MARKET_APPS} instead
         */
+       //@Deprecated
        const String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+            //Secure.INSTALL_NON_MARKET_APPS;
+
+       /**
+        * Whether HDMI control shall be enabled. If disabled, no CEC/MHL command will be
+        * sent or processed. (0 = false, 1 = true)
+        * @hide
+        */
+       const String HDMI_CONTROL_ENABLED = "hdmi_control_enabled";
+
+       /**
+        * Whether HDMI system audio is enabled. If enabled, TV internal speaker is muted,
+        * and the output is redirected to AV Receiver connected via
+        * {@Global#HDMI_SYSTEM_AUDIO_OUTPUT}.
+        * @hide
+        */
+       const String HDMI_SYSTEM_AUDIO_ENABLED = "hdmi_system_audio_enabled";
+
+       /**
+        * Whether TV will automatically turn on upon reception of the CEC command
+        * &lt;Text View On&gt; or &lt;Image View On&gt;. (0 = false, 1 = true)
+        * @hide
+        */
+       const String HDMI_CONTROL_AUTO_WAKEUP_ENABLED =
+               "hdmi_control_auto_wakeup_enabled";
+
+       /**
+        * Whether TV will also turn off other CEC devices when it goes to standby mode.
+        * (0 = false, 1 = true)
+        * @hide
+        */
+       const String HDMI_CONTROL_AUTO_DEVICE_OFF_ENABLED =
+               "hdmi_control_auto_device_off_enabled";
+
+       /**
+        * Whether TV will switch to MHL port when a mobile device is plugged in.
+        * (0 = false, 1 = true)
+        * @hide
+        */
+       const String MHL_INPUT_SWITCHING_ENABLED = "mhl_input_switching_enabled";
+
+       /**
+        * Whether TV will charge the mobile device connected at MHL port. (0 = false, 1 = true)
+        * @hide
+        */
+       const String MHL_POWER_CHARGE_ENABLED = "mhl_power_charge_enabled";
 
        /**
         * Whether mobile data connections are allowed by the user.  See
@@ -602,6 +687,13 @@ module
         * connectivity service should touch this.
         */
        const String NETWORK_PREFERENCE = "network_preference";
+
+       /**
+        * Which package name to use for network scoring. If null, or if the package is not a valid
+        * scorer app, external network scores will neither be requested nor accepted.
+        * @hide
+        */
+       const String NETWORK_SCORER_APP = "network_scorer_app";
 
        /**
         * If the NITZ_UPDATE_DIFF time is exceeded then an automatic adjustment
@@ -662,7 +754,8 @@ module
         * connection problems.
         * @hide
         */
-       const String PDP_WATCHDOG_POLL_INTERVAL_MS = "pdp_watchdog_poll_interval_ms";
+       const String PDP_WATCHDOG_POLL_INTERVAL_MS =
+               "pdp_watchdog_poll_interval_ms";
 
        /**
         * The interval in milliseconds at which to check packet counts on the
@@ -670,7 +763,8 @@ module
         * connection problems.
         * @hide
         */
-       const String PDP_WATCHDOG_LONG_POLL_INTERVAL_MS = "pdp_watchdog_long_poll_interval_ms";
+       const String PDP_WATCHDOG_LONG_POLL_INTERVAL_MS =
+               "pdp_watchdog_long_poll_interval_ms";
 
        /**
         * The interval in milliseconds at which to check packet counts on the
@@ -678,7 +772,8 @@ module
         * outgoing packets has been reached without incoming packets.
         * @hide
         */
-       const String PDP_WATCHDOG_ERROR_POLL_INTERVAL_MS = "pdp_watchdog_error_poll_interval_ms";
+       const String PDP_WATCHDOG_ERROR_POLL_INTERVAL_MS =
+               "pdp_watchdog_error_poll_interval_ms";
 
        /**
         * The number of outgoing packets sent without seeing an incoming packet
@@ -686,7 +781,8 @@ module
         * device is logged to the event log
         * @hide
         */
-       const String PDP_WATCHDOG_TRIGGER_PACKET_COUNT = "pdp_watchdog_trigger_packet_count";
+       const String PDP_WATCHDOG_TRIGGER_PACKET_COUNT =
+               "pdp_watchdog_trigger_packet_count";
 
        /**
         * The number of polls to perform (at {@link #PDP_WATCHDOG_ERROR_POLL_INTERVAL_MS})
@@ -694,14 +790,16 @@ module
         * attempting data connection recovery.
         * @hide
         */
-       const String PDP_WATCHDOG_ERROR_POLL_COUNT = "pdp_watchdog_error_poll_count";
+       const String PDP_WATCHDOG_ERROR_POLL_COUNT =
+               "pdp_watchdog_error_poll_count";
 
        /**
         * The number of failed PDP reset attempts before moving to something more
         * drastic: re-registering to the network.
         * @hide
         */
-       const String PDP_WATCHDOG_MAX_PDP_RESET_FAIL_COUNT = "pdp_watchdog_max_pdp_reset_fail_count";
+       const String PDP_WATCHDOG_MAX_PDP_RESET_FAIL_COUNT =
+               "pdp_watchdog_max_pdp_reset_fail_count";
 
        /**
         * A positive value indicates how often the SamplingProfiler
@@ -716,13 +814,15 @@ module
         * URL to open browser on to allow user to manage a prepay account
         * @hide
         */
-       const String SETUP_PREPAID_DATA_SERVICE_URL = "setup_prepaid_data_service_url";
+       const String SETUP_PREPAID_DATA_SERVICE_URL =
+               "setup_prepaid_data_service_url";
 
        /**
         * URL to attempt a GET on to see if this is a prepay device
         * @hide
         */
-       const String SETUP_PREPAID_DETECTION_TARGET_URL = "setup_prepaid_detection_target_url";
+       const String SETUP_PREPAID_DETECTION_TARGET_URL =
+               "setup_prepaid_detection_target_url";
 
        /**
         * Host to check for a redirect to after an attempt to GET
@@ -730,7 +830,8 @@ module
         * this is a prepaid device with zero balance.)
         * @hide
         */
-       const String SETUP_PREPAID_DETECTION_REDIR_HOST = "setup_prepaid_detection_redir_host";
+       const String SETUP_PREPAID_DETECTION_REDIR_HOST =
+               "setup_prepaid_detection_redir_host";
 
        /**
         * The interval in milliseconds at which to check the number of SMS sent out without asking
@@ -738,7 +839,8 @@ module
         *
         * @hide
         */
-       const String SMS_OUTGOING_CHECK_INTERVAL_MS = "sms_outgoing_check_interval_ms";
+       const String SMS_OUTGOING_CHECK_INTERVAL_MS =
+               "sms_outgoing_check_interval_ms";
 
        /**
         * The number of outgoing SMS sent without asking for user permit (of {@link
@@ -746,7 +848,8 @@ module
         *
         * @hide
         */
-       const String SMS_OUTGOING_CHECK_MAX_COUNT = "sms_outgoing_check_max_count";
+       const String SMS_OUTGOING_CHECK_MAX_COUNT =
+               "sms_outgoing_check_max_count";
 
        /**
         * Used to disable SMS short code confirmation - defaults to true.
@@ -764,6 +867,12 @@ module
          * @hide
          */
         const String SMS_SHORT_CODE_RULE = "sms_short_code_rule";
+
+       /**
+        * Used to select TCP's default initial receiver window size in segments - defaults to a build config value
+        * @hide
+        */
+       const String TCP_DEFAULT_INIT_RWND = "tcp_default_init_rwnd";
 
        /**
         * Used to disable Tethering on a device - defaults to true
@@ -790,49 +899,6 @@ module
        const String TETHER_DUN_APN = "tether_dun_apn";
 
        /**
-        * The bandwidth throttle polling freqency in seconds
-        * @hide
-        */
-       const String THROTTLE_POLLING_SEC = "throttle_polling_sec";
-
-       /**
-        * The bandwidth throttle threshold (long)
-        * @hide
-        */
-       const String THROTTLE_THRESHOLD_BYTES = "throttle_threshold_bytes";
-
-       /**
-        * The bandwidth throttle value (kbps)
-        * @hide
-        */
-       const String THROTTLE_VALUE_KBITSPS = "throttle_value_kbitsps";
-
-       /**
-        * The bandwidth throttle reset calendar day (1-28)
-        * @hide
-        */
-       const String THROTTLE_RESET_DAY = "throttle_reset_day";
-
-       /**
-        * The throttling notifications we should send
-        * @hide
-        */
-       const String THROTTLE_NOTIFICATION_TYPE = "throttle_notification_type";
-
-       /**
-        * Help URI for data throttling policy
-        * @hide
-        */
-       const String THROTTLE_HELP_URI = "throttle_help_uri";
-
-       /**
-        * The length of time in Sec that we allow our notion of NTP time
-        * to be cached before we refresh it
-        * @hide
-        */
-       const String THROTTLE_MAX_NTP_CACHE_AGE_SEC = "throttle_max_ntp_cache_age_sec";
-
-       /**
         * USB Mass Storage Enabled
         */
        const String USB_MASS_STORAGE_ENABLED = "usb_mass_storage_enabled";
@@ -843,9 +909,12 @@ module
         */
        const String USE_GOOGLE_MAIL = "use_google_mail";
 
-       /** Autofill server address (Used in WebView/browser).
-        * {@hide} */
-       const String WEB_AUTOFILL_QUERY_URL = "web_autofill_query_url";
+        /**
+         * Webview Data reduction proxy key.
+         * @hide
+         */
+        const String WEBVIEW_DATA_REDUCTION_PROXY_KEY =
+                "webview_data_reduction_proxy_key";
 
        /**
         * Whether Wifi display is enabled/disabled
@@ -853,6 +922,29 @@ module
         * @hide
         */
        const String WIFI_DISPLAY_ON = "wifi_display_on";
+
+       /**
+        * Whether Wifi display certification mode is enabled/disabled
+        * 0=disabled. 1=enabled.
+        * @hide
+        */
+       const String WIFI_DISPLAY_CERTIFICATION_ON =
+               "wifi_display_certification_on";
+
+       /**
+        * WPS Configuration method used by Wifi display, this setting only
+        * takes effect when WIFI_DISPLAY_CERTIFICATION_ON is 1 (enabled).
+        *
+        * Possible values are:
+        *
+        * WpsInfo.INVALID: use default WPS method chosen by framework
+        * WpsInfo.PBC    : use Push button
+        * WpsInfo.KEYPAD : use Keypad
+        * WpsInfo.DISPLAY: use Display
+        * @hide
+        */
+       const String WIFI_DISPLAY_WPS_CONFIG =
+           "wifi_display_wps_config";
 
        /**
         * Whether to notify the user of open networks.
@@ -863,18 +955,20 @@ module
         * show the notification, we will not show it again for
         * {@link android.provider.Settings.Secure#WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY} time.
         */
-       const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wifi_networks_available_notification_on";
-
+       const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON =
+               "wifi_networks_available_notification_on";
        /**
         * {@hide}
         */
-       const String WIMAX_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wimax_networks_available_notification_on";
+       const String WIMAX_NETWORKS_AVAILABLE_NOTIFICATION_ON =
+               "wimax_networks_available_notification_on";
 
        /**
         * Delay (in seconds) before repeating the Wi-Fi networks available notification.
         * Connecting to a network will reset the timer.
         */
-       const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY = "wifi_networks_available_repeat_delay";
+       const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY =
+               "wifi_networks_available_repeat_delay";
 
        /**
         * 802.11 country code in ISO 3166 format
@@ -888,7 +982,8 @@ module
         * device is on the move and the screen is off.
         * @hide
         */
-       const String WIFI_FRAMEWORK_SCAN_INTERVAL_MS = "wifi_framework_scan_interval_ms";
+       const String WIFI_FRAMEWORK_SCAN_INTERVAL_MS =
+               "wifi_framework_scan_interval_ms";
 
        /**
         * The interval in milliseconds after which Wi-Fi is considered idle.
@@ -910,6 +1005,13 @@ module
        const String WIFI_ON = "wifi_on";
 
        /**
+        * Setting to allow scans to be enabled even wifi is turned off for connectivity.
+        * @hide
+        */
+       const String WIFI_SCAN_ALWAYS_AVAILABLE =
+                "wifi_scan_always_enabled";
+
+       /**
         * Used to save the Wifi_ON state prior to tethering.
         * This state will be checked to restore Wifi after
         * the user turns off tethering.
@@ -922,13 +1024,29 @@ module
         * The interval in milliseconds to scan as used by the wifi supplicant
         * @hide
         */
-       const String WIFI_SUPPLICANT_SCAN_INTERVAL_MS = "wifi_supplicant_scan_interval_ms";
+       const String WIFI_SUPPLICANT_SCAN_INTERVAL_MS =
+               "wifi_supplicant_scan_interval_ms";
 
-       /**
+        /**
+         * whether frameworks handles wifi auto-join
+         * @hide
+         */
+       const String WIFI_ENHANCED_AUTO_JOIN =
+                "wifi_enhanced_auto_join";
+
+        /**
+         * whether settings show RSSI
+         * @hide
+         */
+        const String WIFI_NETWORK_SHOW_RSSI =
+                "wifi_network_show_rssi";
+
+        /**
         * The interval in milliseconds to scan at supplicant when p2p is connected
         * @hide
         */
-       const String WIFI_SCAN_INTERVAL_WHEN_P2P_CONNECTED_MS = "wifi_scan_interval_p2p_connected_ms";
+       const String WIFI_SCAN_INTERVAL_WHEN_P2P_CONNECTED_MS =
+               "wifi_scan_interval_p2p_connected_ms";
 
        /**
         * Whether the Wi-Fi watchdog is enabled.
@@ -940,14 +1058,16 @@ module
         * the setting needs to be set to 0 to disable it.
         * @hide
         */
-       const String WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED = "wifi_watchdog_poor_network_test_enabled";
+       const String WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED =
+               "wifi_watchdog_poor_network_test_enabled";
 
        /**
         * Setting to turn on suspend optimizations at screen off on Wi-Fi. Enabled by default and
         * needs to be set to 0 to disable it.
         * @hide
         */
-       const String WIFI_SUSPEND_OPTIMIZATIONS_ENABLED = "wifi_suspend_optimizations_enabled";
+       const String WIFI_SUSPEND_OPTIMIZATIONS_ENABLED =
+               "wifi_suspend_optimizations_enabled";
 
        /**
         * The maximum number of times we will retry a connection to an access
@@ -960,7 +1080,8 @@ module
         * Maximum amount of time in milliseconds to hold a wakelock while waiting for mobile
         * data connectivity to be established after a disconnect from Wi-Fi.
         */
-       const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS = "wifi_mobile_data_transition_wakelock_timeout_ms";
+       const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS =
+           "wifi_mobile_data_transition_wakelock_timeout_ms";
 
        /**
         * The operational wifi frequency band
@@ -979,18 +1100,33 @@ module
        const String WIFI_P2P_DEVICE_NAME = "wifi_p2p_device_name";
 
        /**
+        * The min time between wifi disable and wifi enable
+        * @hide
+        */
+       const String WIFI_REENABLE_DELAY_MS = "wifi_reenable_delay";
+
+       /**
         * The number of milliseconds to delay when checking for data stalls during
         * non-aggressive detection. (screen is turned off.)
         * @hide
         */
-       const String DATA_STALL_ALARM_NON_AGGRESSIVE_DELAY_IN_MS = "data_stall_alarm_non_aggressive_delay_in_ms";
+       const String DATA_STALL_ALARM_NON_AGGRESSIVE_DELAY_IN_MS =
+               "data_stall_alarm_non_aggressive_delay_in_ms";
 
        /**
         * The number of milliseconds to delay when checking for data stalls during
         * aggressive detection. (screen on or suspected data stall)
         * @hide
         */
-       const String DATA_STALL_ALARM_AGGRESSIVE_DELAY_IN_MS = "data_stall_alarm_aggressive_delay_in_ms";
+       const String DATA_STALL_ALARM_AGGRESSIVE_DELAY_IN_MS =
+               "data_stall_alarm_aggressive_delay_in_ms";
+
+       /**
+        * The number of milliseconds to allow the provisioning apn to remain active
+        * @hide
+        */
+       const String PROVISIONING_APN_ALARM_DELAY_IN_MS =
+               "provisioning_apn_alarm_delay_in_ms";
 
        /**
         * The interval in milliseconds at which to check gprs registration
@@ -999,7 +1135,8 @@ module
         *
         * @hide
         */
-       const String GPRS_REGISTER_CHECK_PERIOD_MS = "gprs_register_check_period_ms";
+       const String GPRS_REGISTER_CHECK_PERIOD_MS =
+               "gprs_register_check_period_ms";
 
        /**
         * Nonzero causes Log.wtf() to crash.
@@ -1146,7 +1283,8 @@ module
          *
          * @hide
          */
-        const String SYS_STORAGE_THRESHOLD_MAX_BYTES = "sys_storage_threshold_max_bytes";
+        const String
+                SYS_STORAGE_THRESHOLD_MAX_BYTES = "sys_storage_threshold_max_bytes";
 
         /**
          * Minimum bytes of free storage on the device before the data partition
@@ -1155,7 +1293,8 @@ module
          *
          * @hide
          */
-        const String SYS_STORAGE_FULL_THRESHOLD_BYTES = "sys_storage_full_threshold_bytes";
+        const String
+                SYS_STORAGE_FULL_THRESHOLD_BYTES = "sys_storage_full_threshold_bytes";
 
         /**
          * The maximum reconnect delay for short network outages or when the
@@ -1163,7 +1302,8 @@ module
          *
          * @hide
          */
-        const String SYNC_MAX_RETRY_DELAY_IN_SECONDS = "sync_max_retry_delay_in_seconds";
+        const String
+                SYNC_MAX_RETRY_DELAY_IN_SECONDS = "sync_max_retry_delay_in_seconds";
 
         /**
          * The number of milliseconds to delay before sending out
@@ -1172,6 +1312,25 @@ module
          * @hide
          */
         const String CONNECTIVITY_CHANGE_DELAY = "connectivity_change_delay";
+
+
+        /**
+         * Network sampling interval, in seconds. We'll generate link information
+         * about bytes/packets sent and error rates based on data sampled in this interval
+         *
+         * @hide
+         */
+
+        const String CONNECTIVITY_SAMPLING_INTERVAL_IN_SECONDS =
+                "connectivity_sampling_interval_in_seconds";
+
+        /**
+         * The series of successively longer delays used in retrying to download PAC file.
+         * Last delay is used between successful PAC downloads.
+         *
+         * @hide
+         */
+        const String PAC_CHANGE_DELAY = "pac_change_delay";
 
         /**
          * Setting to turn off captive portal detection. Feature is enabled by
@@ -1263,6 +1422,12 @@ module
         const String GLOBAL_HTTP_PROXY_EXCLUSION_LIST = "global_http_proxy_exclusion_list";
 
         /**
+         * The location PAC File for the proxy.
+         * @hide
+         */
+        const String GLOBAL_HTTP_PROXY_PAC = "global_proxy_pac_url";
+
+        /**
          * Enables the UI setting to allow the user to specify the global HTTP
          * proxy and associated exclusion list.
          *
@@ -1283,6 +1448,8 @@ module
         const String BLUETOOTH_A2DP_SINK_PRIORITY_PREFIX = "bluetooth_a2dp_sink_priority_";
         /** {@hide} */
         const String BLUETOOTH_INPUT_DEVICE_PRIORITY_PREFIX = "bluetooth_input_device_priority_";
+        /** {@hide} */
+        const String BLUETOOTH_MAP_PRIORITY_PREFIX = "bluetooth_map_priority_";
 
         /**
          * Scaling factor for normal window animations. Setting to 0 will
@@ -1347,14 +1514,8 @@ module
          *                              0 = GSM / WCDMA preferred
          * @hide
          */
-        const String PREFERRED_NETWORK_MODE = "preferred_network_mode";
-
-        /**
-         * The cdma subscription 0 = Subscription from RUIM, when available
-         *                       1 = Subscription from NV
-         * @hide
-         */
-        const String PREFERRED_CDMA_SUBSCRIPTION = "preferred_cdma_subscription";
+        const String PREFERRED_NETWORK_MODE =
+                "preferred_network_mode";
 
         /**
          * Name of an application package to be debugged.
@@ -1373,6 +1534,19 @@ module
         const String SHOW_PROCESSES = "show_processes";
 
         /**
+         * If 1 low power mode is enabled.
+         * @hide
+         */
+        const String LOW_POWER_MODE = "low_power";
+
+        /**
+         * Battery level [1-99] at which low power mode automatically turns on.
+         * If 0, it will not automatically turn on.
+         * @hide
+         */
+        const String LOW_POWER_MODE_TRIGGER_LEVEL = "low_power_trigger_level";
+
+         /**
          * If 1, the activity manager will aggressively finish activities and
          * processes as soon as they are no longer needed.  If 0, the normal
          * extended lifetime is used.
@@ -1393,11 +1567,256 @@ module
          */
         const String AUDIO_SAFE_VOLUME_STATE = "audio_safe_volume_state";
 
-        GetContentUri(
-            [out] IUri** uri);
+        /**
+         * URL for tzinfo (time zone) updates
+         * @hide
+         */
+        const String TZINFO_UPDATE_CONTENT_URL = "tzinfo_content_url";
 
-        GetSettingsToBackup(
-            [out, callee] ArrayOf<String>* array);
+        /**
+         * URL for tzinfo (time zone) update metadata
+         * @hide
+         */
+        const String TZINFO_UPDATE_METADATA_URL = "tzinfo_metadata_url";
+
+        /**
+         * URL for selinux (mandatory access control) updates
+         * @hide
+         */
+        const String SELINUX_UPDATE_CONTENT_URL = "selinux_content_url";
+
+        /**
+         * URL for selinux (mandatory access control) update metadata
+         * @hide
+         */
+        const String SELINUX_UPDATE_METADATA_URL = "selinux_metadata_url";
+
+        /**
+         * URL for sms short code updates
+         * @hide
+         */
+        const String SMS_SHORT_CODES_UPDATE_CONTENT_URL =
+                "sms_short_codes_content_url";
+
+        /**
+         * URL for sms short code update metadata
+         * @hide
+         */
+        const String SMS_SHORT_CODES_UPDATE_METADATA_URL =
+                "sms_short_codes_metadata_url";
+
+        /**
+         * URL for cert pinlist updates
+         * @hide
+         */
+        const String CERT_PIN_UPDATE_CONTENT_URL = "cert_pin_content_url";
+
+        /**
+         * URL for cert pinlist updates
+         * @hide
+         */
+        const String CERT_PIN_UPDATE_METADATA_URL = "cert_pin_metadata_url";
+
+        /**
+         * URL for intent firewall updates
+         * @hide
+         */
+        const String INTENT_FIREWALL_UPDATE_CONTENT_URL =
+                "intent_firewall_content_url";
+
+        /**
+         * URL for intent firewall update metadata
+         * @hide
+         */
+        const String INTENT_FIREWALL_UPDATE_METADATA_URL =
+                "intent_firewall_metadata_url";
+
+        /**
+         * SELinux enforcement status. If 0, permissive; if 1, enforcing.
+         * @hide
+         */
+        const String SELINUX_STATUS = "selinux_status";
+
+        /**
+         * Developer setting to force RTL layout.
+         * @hide
+         */
+        const String DEVELOPMENT_FORCE_RTL = "debug.force_rtl";
+
+        /**
+         * Milliseconds after screen-off after which low battery sounds will be silenced.
+         *
+         * If zero, battery sounds will always play.
+         * Defaults to @integer/def_low_battery_sound_timeout in SettingsProvider.
+         *
+         * @hide
+         */
+        const String LOW_BATTERY_SOUND_TIMEOUT = "low_battery_sound_timeout";
+
+        /**
+         * Milliseconds to wait before bouncing Wi-Fi after settings is restored. Note that after
+         * the caller is done with this, they should call {@link ContentResolver#delete} to
+         * clean up any value that they may have written.
+         *
+         * @hide
+         */
+        const String WIFI_BOUNCE_DELAY_OVERRIDE_MS = "wifi_bounce_delay_override_ms";
+
+        /**
+         * Defines global runtime overrides to window policy.
+         *
+         * See {@link com.android.internal.policy.impl.PolicyControl} for value format.
+         *
+         * @hide
+         */
+        const String POLICY_CONTROL = "policy_control";
+
+        /**
+         * Defines global zen mode.  ZEN_MODE_OFF, ZEN_MODE_IMPORTANT_INTERRUPTIONS,
+         * or ZEN_MODE_NO_INTERRUPTIONS.
+         *
+         * @hide
+         */
+        const String ZEN_MODE = "zen_mode";
+
+        /** @hide */ const Int32 ZEN_MODE_OFF = 0;
+        /** @hide */ const Int32 ZEN_MODE_IMPORTANT_INTERRUPTIONS = 1;
+        /** @hide */ const Int32 ZEN_MODE_NO_INTERRUPTIONS = 2;
+
+        /**
+         * Opaque value, changes when persisted zen mode configuration changes.
+         *
+         * @hide
+         */
+        const String ZEN_MODE_CONFIG_ETAG = "zen_mode_config_etag";
+
+        /**
+         * Defines global heads up toggle.  One of HEADS_UP_OFF, HEADS_UP_ON.
+         *
+         * @hide
+         */
+        const String HEADS_UP_NOTIFICATIONS_ENABLED =
+                "heads_up_notifications_enabled";
+
+        /** @hide */ const Int32 HEADS_UP_OFF = 0;
+        /** @hide */ const Int32 HEADS_UP_ON = 1;
+
+        /**
+         * The name of the device
+         *
+         * @hide
+         */
+        const String DEVICE_NAME = "device_name";
+
+        /**
+         * Whether it should be possible to create a guest user on the device.
+         * <p>
+         * Type: int (0 for disabled, 1 for enabled)
+         * @hide
+         */
+        const String GUEST_USER_ENABLED = "guest_user_enabled";
+
+        /**
+         * Whether the NetworkScoringService has been first initialized.
+         * <p>
+         * Type: int (0 for false, 1 for true)
+         * @hide
+         */
+        const String NETWORK_SCORING_PROVISIONED = "network_scoring_provisioned";
+
+        /**
+         * Whether the user wants to be prompted for password to decrypt the device on boot.
+         * This only matters if the storage is encrypted.
+         * <p>
+         * Type: int (0 for false, 1 for true)
+         * @hide
+         */
+        const String REQUIRE_PASSWORD_TO_DECRYPT = "require_password_to_decrypt";
+
+        /**
+         * Settings to backup. This is here so that it's in the same place as the settings
+         * keys and easy to update.
+         *
+         * These keys may be mentioned in the SETTINGS_TO_BACKUP arrays in System
+         * and Secure as well.  This is because those tables drive both backup and
+         * restore, and restore needs to properly whitelist keys that used to live
+         * in those namespaces.  The keys will only actually be backed up / restored
+         * if they are also mentioned in this table (Global.SETTINGS_TO_BACKUP).
+         *
+         * NOTE: Settings are backed up and restored in the order they appear
+         *       in this array. If you have one setting depending on another,
+         *       make sure that they are ordered appropriately.
+         *
+         * @hide
+         */
+        //const String[] SETTINGS_TO_BACKUP = {
+        //    BUGREPORT_IN_POWER_MENU,
+        //    STAY_ON_WHILE_PLUGGED_IN,
+        //    AUTO_TIME,
+        //    AUTO_TIME_ZONE,
+        //    POWER_SOUNDS_ENABLED,
+        //    DOCK_SOUNDS_ENABLED,
+        //    USB_MASS_STORAGE_ENABLED,
+        //    ENABLE_ACCESSIBILITY_GLOBAL_GESTURE_ENABLED,
+        //    WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,
+        //    WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY,
+        //    WIFI_WATCHDOG_POOR_NETWORK_TEST_ENABLED,
+        //    WIFI_NUM_OPEN_NETWORKS_KEPT,
+        //    EMERGENCY_TONE,
+        //    CALL_AUTO_RETRY,
+        //    DOCK_AUDIO_MEDIA_ENABLED
+        //};
+        GetSETTINGS_TO_BACKUP(
+            [out, callee] ArrayOf<String>* backups);
+
+        /**
+          * Subscription to be used for voice call on a multi sim device. The supported values
+          * are 0 = SUB1, 1 = SUB2 and etc.
+          * @hide
+          */
+        const String MULTI_SIM_VOICE_CALL_SUBSCRIPTION = "multi_sim_voice_call";
+
+        /**
+          * Used to provide option to user to select subscription during dial.
+          * The supported values are 0 = disable or 1 = enable prompt.
+          * @hide
+          */
+        const String MULTI_SIM_VOICE_PROMPT = "multi_sim_voice_prompt";
+
+        /**
+          * Subscription to be used for data call on a multi sim device. The supported values
+          * are 0 = SUB1, 1 = SUB2 and etc.
+          * @hide
+          */
+        const String MULTI_SIM_DATA_CALL_SUBSCRIPTION = "multi_sim_data_call";
+
+        /**
+          * Subscription to be used for SMS on a multi sim device. The supported values
+          * are 0 = SUB1, 1 = SUB2 and etc.
+          * @hide
+          */
+        const String MULTI_SIM_SMS_SUBSCRIPTION = "multi_sim_sms";
+
+       /**
+          * Used to provide option to user to select subscription during send SMS.
+          * The value 1 - enable, 0 - disable
+          * @hide
+          */
+        const String MULTI_SIM_SMS_PROMPT = "multi_sim_sms_prompt";
+
+        /** User preferred subscriptions setting.
+          * This holds the details of the user selected subscription from the card and
+          * the activation status. Each settings string have the coma separated values
+          * iccId,appType,appId,activationStatus,3gppIndex,3gpp2Index
+          * @hide
+         */
+        //const String[] MULTI_SIM_USER_PREFERRED_SUBS = {"user_preferred_sub1",
+        //        "user_preferred_sub2","user_preferred_sub3"};
+        GetMULTI_SIM_USER_PREFERRED_SUBS(
+            [out, callee] ArrayOf<String>* subs);
+
+        GetCONTENT_URI(
+            [out] IUri** uri);
 
         GetBluetoothHeadsetPriorityKey(
             [in] String address,
@@ -1409,6 +1828,14 @@ module
 
         GetBluetoothInputDevicePriorityKey(
             [in] String address,
+            [out] String* key);
+
+        GetBluetoothMapPriorityKey(
+            [in] String address,
+            [out] String* key);
+
+        ZenModeToString(
+            [in] Int32 mode,
             [out] String* key);
 
         GetString(
@@ -1492,6 +1919,12 @@ module
     }
 
     /**
+     * Secure system settings, containing system preferences that applications
+     * can read but are not allowed to write.  These are for preferences that
+     * the user must explicitly modify through the system UI or specialized
+     * APIs for those values, not modified directly by applications.
+     */
+    /**
      * @Involve
      * interface ISettingsNameValueTable
      */
@@ -1503,20 +1936,23 @@ module
          * instead
          */
         //@Deprecated
-        const String DEVELOPMENT_SETTINGS_ENABLED = "development_settings_enabled"; //ISettingsGlobal::DEVELOPMENT_SETTINGS_ENABLED;
+        const String DEVELOPMENT_SETTINGS_ENABLED = "development_settings_enabled";
+            //Global.DEVELOPMENT_SETTINGS_ENABLED;
 
         /**
          * When the user has enable the option to have a "bug report" command
          * in the power menu.
+         * @deprecated Use {@link android.provider.Settings.Global#BUGREPORT_IN_POWER_MENU} instead
          * @hide
          */
+        //@Deprecated
         const String BUGREPORT_IN_POWER_MENU = "bugreport_in_power_menu";
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#ADB_ENABLED} instead
          */
         //@Deprecated
-        const String ADB_ENABLED = "adb_enabled"; // ISettingsGlobal::ADB_ENABLED;
+        const String ADB_ENABLED = "adb_enabled";//Global.ADB_ENABLED;
 
         /**
          * Setting to allow mock locations and location provider status to be injected into the
@@ -1528,9 +1964,14 @@ module
 
         /**
          * A 64-bit number (as a hex string) that is randomly
-         * generated on the device's first boot and should remain
-         * constant for the lifetime of the device.  (The value may
-         * change if a factory reset is performed on the device.)
+         * generated when the user first sets up the device and should remain
+         * constant for the lifetime of the user's device. The value may
+         * change if a factory reset is performed on the device.
+         * <p class="note"><strong>Note:</strong> When a device has <a
+         * href="{@docRoot}about/versions/android-4.2.html#MultipleUsers">multiple users</a>
+         * (available on certain devices running Android 4.2 or higher), each user appears as a
+         * completely separate device, so the {@code ANDROID_ID} value is unique to each
+         * user.</p>
          */
         const String ANDROID_ID = "android_id";
 
@@ -1538,13 +1979,13 @@ module
          * @deprecated Use {@link android.provider.Settings.Global#BLUETOOTH_ON} instead
          */
         //@Deprecated
-        const String BLUETOOTH_ON = "bluetooth_on"; // ISettingsGlobal::BLUETOOTH_ON;
+        const String BLUETOOTH_ON = "bluetooth_on";//Global.BLUETOOTH_ON;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DATA_ROAMING} instead
          */
         //@Deprecated
-        const String DATA_ROAMING = "data_roaming"; // ISettingsGlobal::DATA_ROAMING;
+        const String DATA_ROAMING = "data_roaming";//Global.DATA_ROAMING;
 
         /**
          * Setting to record the input method used by default, holding the ID
@@ -1556,25 +1997,41 @@ module
          * Setting to record the input method subtype used by default, holding the ID
          * of the desired method.
          */
-        const String SELECTED_INPUT_METHOD_SUBTYPE = "selected_input_method_subtype";
+        const String SELECTED_INPUT_METHOD_SUBTYPE =
+                "selected_input_method_subtype";
 
         /**
          * Setting to record the history of input method subtype, holding the pair of ID of IME
          * and its last used subtype.
          * @hide
          */
-        const String INPUT_METHODS_SUBTYPE_HISTORY = "input_methods_subtype_history";
+        const String INPUT_METHODS_SUBTYPE_HISTORY =
+                "input_methods_subtype_history";
 
         /**
          * Setting to record the visibility of input method selector
          */
-        const String INPUT_METHOD_SELECTOR_VISIBILITY = "input_method_selector_visibility";
+        const String INPUT_METHOD_SELECTOR_VISIBILITY =
+                "input_method_selector_visibility";
+
+        /**
+         * The currently selected voice interaction service flattened ComponentName.
+         * @hide
+         */
+        const String VOICE_INTERACTION_SERVICE = "voice_interaction_service";
+
+        /**
+         * bluetooth HCI snoop log configuration
+         * @hide
+         */
+        const String BLUETOOTH_HCI_LOG =
+                "bluetooth_hci_log";
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DEVICE_PROVISIONED} instead
          */
         //@Deprecated
-        const String DEVICE_PROVISIONED = "device_provisioned"; // ISettingsGlobal::DEVICE_PROVISIONED;
+        const String DEVICE_PROVISIONED = "device_provisioned";//Global.DEVICE_PROVISIONED;
 
         /**
          * Whether the current user has been set up via setup wizard (0 = false, 1 = true)
@@ -1598,30 +2055,82 @@ module
         const String DISABLED_SYSTEM_INPUT_METHODS = "disabled_system_input_methods";
 
         /**
+         * Whether to show the IME when a hard keyboard is connected. This is a boolean that
+         * determines if the IME should be shown when a hard keyboard is attached.
+         * @hide
+         */
+        const String SHOW_IME_WITH_HARD_KEYBOARD = "show_ime_with_hard_keyboard";
+
+        /**
          * Host name and port for global http proxy. Uses ':' seperator for
          * between host and port.
          *
          * @deprecated Use {@link Global#HTTP_PROXY}
          */
         //@Deprecated
-        const String HTTP_PROXY = "http_proxy"; // ISettingsGlobal::HTTP_PROXY;
+        const String HTTP_PROXY = "http_proxy";//Global.HTTP_PROXY;
 
         /**
-         * @deprecated Use {@link android.provider.Settings.Global#INSTALL_NON_MARKET_APPS} instead
+         * Whether applications can be installed for this user via the system's
+         * {@link Intent#ACTION_INSTALL_PACKAGE} mechanism.
+         *
+         * <p>1 = permit app installation via the system package installer intent
+         * <p>0 = do not allow use of the package installer
+         */
+        const String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+
+        /**
+         * Comma-separated list of location providers that activities may access. Do not rely on
+         * this value being present in settings.db or on ContentObserver notifications on the
+         * corresponding Uri.
+         *
+         * @deprecated use {@link #LOCATION_MODE} and
+         * {@link LocationManager#MODE_CHANGED_ACTION} (or
+         * {@link LocationManager#PROVIDERS_CHANGED_ACTION})
          */
         //@Deprecated
-        const String INSTALL_NON_MARKET_APPS = "install_non_market_apps"; // ISettingsGlobal::INSTALL_NON_MARKET_APPS;
+        const String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
 
         /**
-         * Comma-separated list of location providers that activities may access.
+         * The degree of location access enabled by the user.
+         * <p>
+         * When used with {@link #putInt(ContentResolver, String, int)}, must be one of {@link
+         * #LOCATION_MODE_HIGH_ACCURACY}, {@link #LOCATION_MODE_SENSORS_ONLY}, {@link
+         * #LOCATION_MODE_BATTERY_SAVING}, or {@link #LOCATION_MODE_OFF}. When used with {@link
+         * #getInt(ContentResolver, String)}, the caller must gracefully handle additional location
+         * modes that might be added in the future.
+         * <p>
+         * Note: do not rely on this value being present in settings.db or on ContentObserver
+         * notifications for the corresponding Uri. Use {@link LocationManager#MODE_CHANGED_ACTION}
+         * to receive changes in this value.
          */
-        const String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
+        const String LOCATION_MODE = "location_mode";
+
+        /**
+         * Location access disabled.
+         */
+        const Int32 LOCATION_MODE_OFF = 0;
+        /**
+         * Network Location Provider disabled, but GPS and other sensors enabled.
+         */
+        const Int32 LOCATION_MODE_SENSORS_ONLY = 1;
+        /**
+         * Reduced power usage, such as limiting the number of GPS updates per hour. Requests
+         * with {@link android.location.Criteria#POWER_HIGH} may be downgraded to
+         * {@link android.location.Criteria#POWER_MEDIUM}.
+         */
+        const Int32 LOCATION_MODE_BATTERY_SAVING = 2;
+        /**
+         * Best-effort location computation allowed.
+         */
+        const Int32 LOCATION_MODE_HIGH_ACCURACY = 3;
 
         /**
          * A flag containing settings used for biometric weak
          * @hide
          */
-        const String LOCK_BIOMETRIC_WEAK_FLAGS = "lock_biometric_weak_flags";
+        const String LOCK_BIOMETRIC_WEAK_FLAGS =
+                "lock_biometric_weak_flags";
 
         /**
          * Whether autolock is enabled (0 = false, 1 = true)
@@ -1642,7 +2151,8 @@ module
          *             {@link Settings.System#HAPTIC_FEEDBACK_ENABLED}.
          */
         //@Deprecated
-        const String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
+        const String
+                LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
 
         /**
          * This preference allows the device to be locked given time after screen goes off,
@@ -1655,6 +2165,7 @@ module
         /**
          * This preference contains the string that shows for owner info on LockScreen.
          * @hide
+         * @deprecated
          */
         const String LOCK_SCREEN_OWNER_INFO = "lock_screen_owner_info";
 
@@ -1662,25 +2173,59 @@ module
          * Ids of the user-selected appwidgets on the lockscreen (comma-delimited).
          * @hide
          */
-        const String LOCK_SCREEN_APPWIDGET_IDS = "lock_screen_appwidget_ids";
+        const String LOCK_SCREEN_APPWIDGET_IDS =
+            "lock_screen_appwidget_ids";
+
+        /**
+         * List of enrolled fingerprint identifiers (comma-delimited).
+         * @hide
+         */
+        const String USER_FINGERPRINT_IDS = "user_fingerprint_ids";
 
         /**
          * Id of the appwidget shown on the lock screen when appwidgets are disabled.
          * @hide
          */
-        const String LOCK_SCREEN_FALLBACK_APPWIDGET_ID = "lock_screen_fallback_appwidget_id";
+        const String LOCK_SCREEN_FALLBACK_APPWIDGET_ID =
+            "lock_screen_fallback_appwidget_id";
 
         /**
          * Index of the lockscreen appwidget to restore, -1 if none.
          * @hide
          */
-        const String LOCK_SCREEN_STICKY_APPWIDGET = "lock_screen_sticky_appwidget";
+        const String LOCK_SCREEN_STICKY_APPWIDGET =
+            "lock_screen_sticky_appwidget";
 
         /**
          * This preference enables showing the owner info on LockScreen.
          * @hide
+         * @deprecated
          */
-        const String LOCK_SCREEN_OWNER_INFO_ENABLED = "lock_screen_owner_info_enabled";
+        const String LOCK_SCREEN_OWNER_INFO_ENABLED =
+            "lock_screen_owner_info_enabled";
+
+        /**
+         * When set by a user, allows notifications to be shown atop a securely locked screen
+         * in their full "private" form (same as when the device is unlocked).
+         * @hide
+         */
+        const String LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS =
+                "lock_screen_allow_private_notifications";
+
+        /**
+         * Set by the system to track if the user needs to see the call to action for
+         * the lockscreen notification policy.
+         * @hide
+         */
+        const String SHOW_NOTE_ABOUT_NOTIFICATION_HIDING =
+                "show_note_about_notification_hiding";
+
+        /**
+         * Set to 1 by the system after trust agents have been initialized.
+         * @hide
+         */
+        const String TRUST_AGENTS_INITIALIZED =
+                "trust_agents_initialized";
 
         /**
          * The Logging ID (a unique 64-bit value) as a hex string.
@@ -1695,7 +2240,8 @@ module
          * @deprecated Use {@link android.provider.Settings.Global#NETWORK_PREFERENCE} instead
          */
         //@Deprecated
-        const String NETWORK_PREFERENCE = "network_preference"; // ISettingsGlobal::NETWORK_PREFERENCE;
+        const String NETWORK_PREFERENCE = "network_preference";
+            //Global.NETWORK_PREFERENCE;
 
         /**
          * No longer supported.
@@ -1724,13 +2270,15 @@ module
          * @deprecated Use {@link android.provider.Settings.Global#USB_MASS_STORAGE_ENABLED} instead
          */
         //@Deprecated
-        const String USB_MASS_STORAGE_ENABLED = "usb_mass_storage_enabled"; // ISettingsGlobal::USB_MASS_STORAGE_ENABLED;
+        const String USB_MASS_STORAGE_ENABLED = "usb_mass_storage_enabled";
+            //Global.USB_MASS_STORAGE_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#USE_GOOGLE_MAIL} instead
          */
         //@Deprecated
-        const String USE_GOOGLE_MAIL = "use_google_mail"; // ISettingsGlobal::USE_GOOGLE_MAIL;
+        const String USE_GOOGLE_MAIL = "use_google_mail";
+            //Global.USE_GOOGLE_MAIL;
 
         /**
          * If accessibility is enabled.
@@ -1745,7 +2293,8 @@ module
         /**
          * List of the enabled accessibility providers.
          */
-        const String ENABLED_ACCESSIBILITY_SERVICES = "enabled_accessibility_services";
+        const String ENABLED_ACCESSIBILITY_SERVICES =
+            "enabled_accessibility_services";
 
         /**
          * List of the accessibility services to which the user has granted
@@ -1753,12 +2302,21 @@ module
          *
          * @hide
          */
-        const String TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES = "touch_exploration_granted_accessibility_services";
+        const String TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES =
+            "touch_exploration_granted_accessibility_services";
 
         /**
          * Whether to speak passwords while in accessibility mode.
          */
         const String ACCESSIBILITY_SPEAK_PASSWORD = "speak_password";
+
+        /**
+         * Whether to draw text with high contrast while in accessibility mode.
+         *
+         * @hide
+         */
+        const String ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED =
+                "high_text_contrast_enabled";
 
         /**
          * If injection of accessibility enhancing JavaScript screen-reader
@@ -1773,7 +2331,8 @@ module
          * </p>
          * @hide
          */
-        const String ACCESSIBILITY_SCRIPT_INJECTION = "accessibility_script_injection";
+        const String ACCESSIBILITY_SCRIPT_INJECTION =
+            "accessibility_script_injection";
 
         /**
          * The URL for the injected JavaScript based screen-reader used
@@ -1788,7 +2347,8 @@ module
          * </p>
          * @hide
          */
-        const String ACCESSIBILITY_SCREEN_READER_URL = "accessibility_script_injection_url";
+        const String ACCESSIBILITY_SCREEN_READER_URL =
+            "accessibility_script_injection_url";
 
         /**
          * Key bindings for navigation in built-in accessibility support for web content.
@@ -1825,7 +2385,8 @@ module
          * </p>
          * @hide
          */
-        const String ACCESSIBILITY_WEB_CONTENT_KEY_BINDINGS = "accessibility_web_content_key_bindings";
+        const String ACCESSIBILITY_WEB_CONTENT_KEY_BINDINGS =
+            "accessibility_web_content_key_bindings";
 
         /**
          * Setting that specifies whether the display magnification is enabled.
@@ -1835,7 +2396,8 @@ module
          *
          * @hide
          */
-        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED = "accessibility_display_magnification_enabled";
+        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED =
+                "accessibility_display_magnification_enabled";
 
         /**
          * Setting that specifies what the display magnification scale is.
@@ -1846,7 +2408,8 @@ module
          *
          * @hide
          */
-        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_SCALE = "accessibility_display_magnification_scale";
+        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_SCALE =
+                "accessibility_display_magnification_scale";
 
         /**
          * Setting that specifies whether the display magnification should be
@@ -1862,13 +2425,175 @@ module
          *
          * @hide
          */
-        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_AUTO_UPDATE = "accessibility_display_magnification_auto_update";
+        const String ACCESSIBILITY_DISPLAY_MAGNIFICATION_AUTO_UPDATE =
+                "accessibility_display_magnification_auto_update";
+
+        /**
+         * Setting that specifies whether timed text (captions) should be
+         * displayed in video content. Text display properties are controlled by
+         * the following settings:
+         * <ul>
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_LOCALE}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_EDGE_COLOR}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_EDGE_TYPE}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_TYPEFACE}
+         * <li>{@link #ACCESSIBILITY_CAPTIONING_FONT_SCALE}
+         * </ul>
+         *
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_ENABLED =
+                "accessibility_captioning_enabled";
+
+        /**
+         * Setting that specifies the language for captions as a locale string,
+         * e.g. en_US.
+         *
+         * @see java.util.Locale#toString
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_LOCALE =
+                "accessibility_captioning_locale";
+
+        /**
+         * Integer property that specifies the preset style for captions, one
+         * of:
+         * <ul>
+         * <li>{@link android.view.accessibility.CaptioningManager.CaptionStyle#PRESET_CUSTOM}
+         * <li>a valid index of {@link android.view.accessibility.CaptioningManager.CaptionStyle#PRESETS}
+         * </ul>
+         *
+         * @see java.util.Locale#toString
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_PRESET =
+                "accessibility_captioning_preset";
+
+        /**
+         * Integer property that specifes the background color for captions as a
+         * packed 32-bit color.
+         *
+         * @see android.graphics.Color#argb
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR =
+                "accessibility_captioning_background_color";
+
+        /**
+         * Integer property that specifes the foreground color for captions as a
+         * packed 32-bit color.
+         *
+         * @see android.graphics.Color#argb
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR =
+                "accessibility_captioning_foreground_color";
+
+        /**
+         * Integer property that specifes the edge type for captions, one of:
+         * <ul>
+         * <li>{@link android.view.accessibility.CaptioningManager.CaptionStyle#EDGE_TYPE_NONE}
+         * <li>{@link android.view.accessibility.CaptioningManager.CaptionStyle#EDGE_TYPE_OUTLINE}
+         * <li>{@link android.view.accessibility.CaptioningManager.CaptionStyle#EDGE_TYPE_DROP_SHADOW}
+         * </ul>
+         *
+         * @see #ACCESSIBILITY_CAPTIONING_EDGE_COLOR
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_EDGE_TYPE =
+                "accessibility_captioning_edge_type";
+
+        /**
+         * Integer property that specifes the edge color for captions as a
+         * packed 32-bit color.
+         *
+         * @see #ACCESSIBILITY_CAPTIONING_EDGE_TYPE
+         * @see android.graphics.Color#argb
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_EDGE_COLOR =
+                "accessibility_captioning_edge_color";
+
+        /**
+         * Integer property that specifes the window color for captions as a
+         * packed 32-bit color.
+         *
+         * @see android.graphics.Color#argb
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_WINDOW_COLOR =
+                "accessibility_captioning_window_color";
+
+        /**
+         * String property that specifies the typeface for captions, one of:
+         * <ul>
+         * <li>DEFAULT
+         * <li>MONOSPACE
+         * <li>SANS_SERIF
+         * <li>SERIF
+         * </ul>
+         *
+         * @see android.graphics.Typeface
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_TYPEFACE =
+                "accessibility_captioning_typeface";
+
+        /**
+         * Floating point property that specifies font scaling for captions.
+         *
+         * @hide
+         */
+        const String ACCESSIBILITY_CAPTIONING_FONT_SCALE =
+                "accessibility_captioning_font_scale";
+
+        /**
+         * Setting that specifies whether display color inversion is enabled.
+         */
+        const String ACCESSIBILITY_DISPLAY_INVERSION_ENABLED =
+                "accessibility_display_inversion_enabled";
+
+        /**
+         * Setting that specifies whether display color space adjustment is
+         * enabled.
+         *
+         * @hide
+         */
+        const String ACCESSIBILITY_DISPLAY_DALTONIZER_ENABLED =
+                "accessibility_display_daltonizer_enabled";
+
+        /**
+         * Integer property that specifies the type of color space adjustment to
+         * perform. Valid values are defined in AccessibilityManager.
+         *
+         * @hide
+         */
+        const String ACCESSIBILITY_DISPLAY_DALTONIZER =
+                "accessibility_display_daltonizer";
 
         /**
          * The timout for considering a press to be a long press in milliseconds.
          * @hide
          */
         const String LONG_PRESS_TIMEOUT = "long_press_timeout";
+
+        /**
+         * List of the enabled print services.
+         * @hide
+         */
+        const String ENABLED_PRINT_SERVICES =
+            "enabled_print_services";
+
+        /**
+         * List of the system print services we enabled on first boot. On
+         * first boot we enable all system, i.e. bundled print services,
+         * once, so they work out-of-the-box.
+         * @hide
+         */
+        const String ENABLED_ON_FIRST_BOOT_SYSTEM_PRINT_SERVICES =
+            "enabled_on_first_boot_system_print_services";
 
         /**
          * Setting to always use the default text-to-speech settings regardless
@@ -1954,46 +2679,32 @@ module
          * instead.
          */
         //@Deprecated
-        const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wifi_networks_available_notification_on"; // ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
+        const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wifi_networks_available_notification_on";
+            //Global.WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY}
          * instead.
          */
         //@Deprecated
-        const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY = "wifi_networks_available_repeat_delay"; // ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
+        const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY = "wifi_networks_available_repeat_delay";
+            //Global.WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_NUM_OPEN_NETWORKS_KEPT}
          * instead.
          */
         //@Deprecated
-        const String WIFI_NUM_OPEN_NETWORKS_KEPT = "wifi_num_open_networks_kept"; // ISettingsGlobal::WIFI_NUM_OPEN_NETWORKS_KEPT;
-
-        /**
-         * Ethernet related configurations
-         */
-        const String ETHERNET_ON      = "eth_on";
-        const String ETHERNET_MODE    = "eth_mode";
-        const String ETHERNET_IP      = "eth_ip";
-        const String ETHERNET_MASK    = "eth_netmask";
-        const String ETHERNET_DNS     = "eth_dns";
-        const String ETHERNET_ROUTE   = "eth_route";
-        const String ETHERNET_CONF    = "eth_conf";
-        const String ETHERNET_IFNAME  = "eth_ifname";
-
-        /**
-         * Wifi cheat configuration
-         */
-        const String WIFI_CHEAT_ON  = "wifi_cheat_on";
-
+        const String WIFI_NUM_OPEN_NETWORKS_KEPT = "wifi_num_open_networks_kept";
+            //Global.WIFI_NUM_OPEN_NETWORKS_KEPT;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_ON}
          * instead.
          */
         //@Deprecated
-        const String WIFI_ON = "wifi_on"; // ISettingsGlobal::WIFI_ON;
+        const String WIFI_ON = "wifi_on";
+            //Global.WIFI_ON;
 
         /**
          * The acceptable packet loss percentage (range 0 - 100) before trying
@@ -2001,7 +2712,8 @@ module
          * @deprecated This setting is not used.
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE = "wifi_watchdog_acceptable_packet_loss_percentage";
+        const String WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE =
+                "wifi_watchdog_acceptable_packet_loss_percentage";
 
         /**
          * The number of access points required for a network in order for the
@@ -2016,7 +2728,8 @@ module
          * @deprecated This setting is not used.
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS = "wifi_watchdog_background_check_delay_ms";
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS =
+                "wifi_watchdog_background_check_delay_ms";
 
         /**
          * Whether the Wi-Fi watchdog is enabled for background checking even
@@ -2024,14 +2737,16 @@ module
          * @deprecated This setting is not used.
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED = "wifi_watchdog_background_check_enabled";
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED =
+                "wifi_watchdog_background_check_enabled";
 
         /**
          * The timeout for a background ping
          * @deprecated This setting is not used.
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS = "wifi_watchdog_background_check_timeout_ms";
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS =
+                "wifi_watchdog_background_check_timeout_ms";
 
         /**
          * The number of initial pings to perform that *may* be ignored if they
@@ -2041,7 +2756,8 @@ module
          * @deprecated This setting is not used.
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT = "wifi_watchdog_initial_ignored_ping_count";
+        const String WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT =
+            "wifi_watchdog_initial_ignored_ping_count";
 
         /**
          * The maximum number of access points (per network) to attempt to test.
@@ -2092,14 +2808,16 @@ module
          * {@link android.provider.Settings.Global#WIFI_MAX_DHCP_RETRY_COUNT} instead
          */
         //@Deprecated
-        const String WIFI_MAX_DHCP_RETRY_COUNT = "wifi_max_dhcp_retry_count"; // ISettingsGlobal::WIFI_MAX_DHCP_RETRY_COUNT;
+        const String WIFI_MAX_DHCP_RETRY_COUNT = "wifi_max_dhcp_retry_count";
+            //Global.WIFI_MAX_DHCP_RETRY_COUNT;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Global#WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS} instead
          */
         //@Deprecated
-        const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS = "wifi_mobile_data_transition_wakelock_timeout_ms"; // ISettingsGlobal::WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
+        const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS = "wifi_mobile_data_transition_wakelock_timeout_ms";
+            //Global.WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
 
         /**
          * Whether background data usage is allowed.
@@ -2117,7 +2835,8 @@ module
          * Origins for which browsers should allow geolocation by default.
          * The value is a space-separated list of origins.
          */
-        const String ALLOWED_GEOLOCATION_ORIGINS = "allowed_geolocation_origins";
+        const String ALLOWED_GEOLOCATION_ORIGINS
+                = "allowed_geolocation_origins";
 
         /**
          * The preferred TTY mode     0 = TTy Off, CDMA default
@@ -2126,7 +2845,8 @@ module
          *                            3 = TTY VCO
          * @hide
          */
-        const String PREFERRED_TTY_MODE = "preferred_tty_mode";
+        const String PREFERRED_TTY_MODE =
+                "preferred_tty_mode";
 
         /**
          * Whether the enhanced voice privacy mode is enabled.
@@ -2188,7 +2908,7 @@ module
          * instead.
          */
         //@Deprecated
-        const String WIFI_IDLE_MS = "wifi_idle_ms"; // ISettingsGlobal::WIFI_IDLE_MS;
+        const String WIFI_IDLE_MS = "wifi_idle_ms";//Global.WIFI_IDLE_MS;
 
         /**
          * The global search provider chosen by the user (if multiple global
@@ -2199,58 +2919,53 @@ module
          *
          * @hide
          */
-        const String SEARCH_GLOBAL_SEARCH_ACTIVITY = "search_global_search_activity";
+        const String SEARCH_GLOBAL_SEARCH_ACTIVITY =
+                "search_global_search_activity";
 
         /**
          * The number of promoted sources in GlobalSearch.
          * @hide
          */
         const String SEARCH_NUM_PROMOTED_SOURCES = "search_num_promoted_sources";
-
         /**
          * The maximum number of suggestions returned by GlobalSearch.
          * @hide
          */
         const String SEARCH_MAX_RESULTS_TO_DISPLAY = "search_max_results_to_display";
-
         /**
          * The number of suggestions GlobalSearch will ask each non-web search source for.
          * @hide
          */
         const String SEARCH_MAX_RESULTS_PER_SOURCE = "search_max_results_per_source";
-
         /**
          * The number of suggestions the GlobalSearch will ask the web search source for.
          * @hide
          */
-        const String SEARCH_WEB_RESULTS_OVERRIDE_LIMIT = "search_web_results_override_limit";
-
+        const String SEARCH_WEB_RESULTS_OVERRIDE_LIMIT =
+                "search_web_results_override_limit";
         /**
          * The number of milliseconds that GlobalSearch will wait for suggestions from
          * promoted sources before continuing with all other sources.
          * @hide
          */
-        const String SEARCH_PROMOTED_SOURCE_DEADLINE_MILLIS = "search_promoted_source_deadline_millis";
-
+        const String SEARCH_PROMOTED_SOURCE_DEADLINE_MILLIS =
+                "search_promoted_source_deadline_millis";
         /**
          * The number of milliseconds before GlobalSearch aborts search suggesiton queries.
          * @hide
          */
         const String SEARCH_SOURCE_TIMEOUT_MILLIS = "search_source_timeout_millis";
-
         /**
          * The maximum number of milliseconds that GlobalSearch shows the previous results
          * after receiving a new query.
          * @hide
          */
         const String SEARCH_PREFILL_MILLIS = "search_prefill_millis";
-
         /**
          * The maximum age of log data used for shortcuts in GlobalSearch.
          * @hide
          */
         const String SEARCH_MAX_STAT_AGE_MILLIS = "search_max_stat_age_millis";
-
         /**
          * The maximum age of log data used for source ranking in GlobalSearch.
          * @hide
@@ -2274,43 +2989,43 @@ module
          * @hide
          */
         const String SEARCH_MAX_SHORTCUTS_RETURNED = "search_max_shortcuts_returned";
-
         /**
          * The size of the core thread pool for suggestion queries in GlobalSearch.
          * @hide
          */
-        const String SEARCH_QUERY_THREAD_CORE_POOL_SIZE = "search_query_thread_core_pool_size";
-
+        const String SEARCH_QUERY_THREAD_CORE_POOL_SIZE =
+                "search_query_thread_core_pool_size";
         /**
          * The maximum size of the thread pool for suggestion queries in GlobalSearch.
          * @hide
          */
-        const String SEARCH_QUERY_THREAD_MAX_POOL_SIZE = "search_query_thread_max_pool_size";
-
+        const String SEARCH_QUERY_THREAD_MAX_POOL_SIZE =
+                "search_query_thread_max_pool_size";
         /**
          * The size of the core thread pool for shortcut refreshing in GlobalSearch.
          * @hide
          */
-        const String SEARCH_SHORTCUT_REFRESH_CORE_POOL_SIZE = "search_shortcut_refresh_core_pool_size";
-
+        const String SEARCH_SHORTCUT_REFRESH_CORE_POOL_SIZE =
+                "search_shortcut_refresh_core_pool_size";
         /**
          * The maximum size of the thread pool for shortcut refreshing in GlobalSearch.
          * @hide
          */
-        const String SEARCH_SHORTCUT_REFRESH_MAX_POOL_SIZE = "search_shortcut_refresh_max_pool_size";
-
+        const String SEARCH_SHORTCUT_REFRESH_MAX_POOL_SIZE =
+                "search_shortcut_refresh_max_pool_size";
         /**
          * The maximun time that excess threads in the GlobalSeach thread pools will
          * wait before terminating.
          * @hide
          */
-        const String SEARCH_THREAD_KEEPALIVE_SECONDS = "search_thread_keepalive_seconds";
-
+        const String SEARCH_THREAD_KEEPALIVE_SECONDS =
+                "search_thread_keepalive_seconds";
         /**
          * The maximum number of concurrent suggestion queries to each source.
          * @hide
          */
-        const String SEARCH_PER_SOURCE_CONCURRENT_QUERY_LIMIT = "search_per_source_concurrent_query_limit";
+        const String SEARCH_PER_SOURCE_CONCURRENT_QUERY_LIMIT =
+                "search_per_source_concurrent_query_limit";
 
         /**
          * Whether or not alert sounds are played on MountService events. (0 = false, 1 = true)
@@ -2344,6 +3059,13 @@ module
         const String ANR_SHOW_BACKGROUND = "anr_show_background";
 
         /**
+         * (Experimental). If nonzero, WebView uses data reduction proxy to save network
+         * bandwidth. Otherwise, WebView does not use data reduction proxy.
+         * @hide
+         */
+        const String WEBVIEW_DATA_REDUCTION_PROXY = "webview_data_reduction_proxy";
+
+        /**
          * The {@link ComponentName} string of the service to be used as the voice recognition
          * service.
          *
@@ -2351,6 +3073,14 @@ module
          */
         const String VOICE_RECOGNITION_SERVICE = "voice_recognition_service";
 
+        /**
+         * Stores whether an user has consented to have apps verified through PAM.
+         * The value is boolean (1 or 0).
+         *
+         * @hide
+         */
+        const String PACKAGE_VERIFIER_USER_CONSENT =
+            "package_verifier_user_consent";
 
         /**
          * The {@link ComponentName} string of the selected spell checker service which is
@@ -2403,7 +3133,20 @@ module
          * INCALL_POWER_BUTTON_BEHAVIOR default value.
          * @hide
          */
-        const Int32 INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT = INCALL_POWER_BUTTON_BEHAVIOR_SCREEN_OFF;
+        const Int32 INCALL_POWER_BUTTON_BEHAVIOR_DEFAULT =
+                INCALL_POWER_BUTTON_BEHAVIOR_SCREEN_OFF;
+
+        /**
+         * Whether the device should wake when the wake gesture sensor detects motion.
+         * @hide
+         */
+        const String WAKE_GESTURE_ENABLED = "wake_gesture_enabled";
+
+        /**
+         * Whether the device should doze if configured.
+         * @hide
+         */
+        const String DOZE_ENABLED = "doze_enabled";
 
         /**
          * The current night mode that has been selected by the user.  Owned
@@ -2448,52 +3191,203 @@ module
          */
         const String SCREENSAVER_DEFAULT_COMPONENT = "screensaver_default_component";
 
-        /*************************************************************************/
-        /**                         AW Custom Definition Begin                  **/
         /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:use to save the pppoe interface .<br/>
-         * Date:2013-3-13
+         * The default NFC payment component
+         * @hide
+         */
+        const String NFC_PAYMENT_DEFAULT_COMPONENT = "nfc_payment_default_component";
+
+        /**
+         * Whether NFC payment is handled by the foreground application or a default.
+         * @hide
+         */
+        const String NFC_PAYMENT_FOREGROUND = "nfc_payment_foreground";
+
+        /**
+         * Specifies the package name currently configured to be the primary sms application
+         * @hide
+         */
+        const String SMS_DEFAULT_APPLICATION = "sms_default_application";
+
+        /**
+         * Name of a package that the current user has explicitly allowed to see all of that
+         * user's notifications.
          *
          * @hide
          */
-        const String PPPOE_INTERFACE = "pppoe_interface";
+        const String ENABLED_NOTIFICATION_LISTENERS = "enabled_notification_listeners";
 
         /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:Use to set weather pppoe auto connect to internet .<br/>
-         * Date :2013-3-13
+         * @hide
+         */
+        const String ENABLED_CONDITION_PROVIDERS = "enabled_condition_providers";
+
+        /** @hide */
+        const String BAR_SERVICE_COMPONENT = "bar_service_component";
+
+        /** @hide */
+        const String IMMERSIVE_MODE_CONFIRMATIONS = "immersive_mode_confirmations";
+
+        /**
+         * This is the query URI for finding a print service to install.
          *
          * @hide
          */
-        const String PPPOE_AUTO_CONN = "pppoe_auto_conn";
+        const String PRINT_SERVICE_SEARCH_URI = "print_service_search_uri";
 
         /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:use to set weather enable pppoe .<br/>
-         * Date :2013-3-13
+         * This is the query URI for finding a NFC payment service to install.
          *
          * @hide
          */
-        const String PPPOE_ENABLE = "pppoe_enable";
+        const String PAYMENT_SERVICE_SEARCH_URI = "payment_service_search_uri";
 
         /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:802.11 country code in ISO 3166 format .<br/>
-         * Date :2013-3-13
+         * If enabled, apps should try to skip any introductory hints on first launch. This might
+         * apply to users that are already familiar with the environment or temporary users.
+         * <p>
+         * Type : int (0 to show hints, 1 to skip showing hints)
+         */
+        const String SKIP_FIRST_USE_HINTS = "skip_first_use_hints";
+
+        /**
+         * Persisted playback time after a user confirmation of an unsafe volume level.
          *
          * @hide
          */
-        const String WIFI_COUNTRY_CODE = "wifi_country_code";
+        const String UNSAFE_VOLUME_MUSIC_ACTIVE_MS = "unsafe_volume_music_active_ms";
 
-        GetContentUri(
-            [out] IUri** uri);
+        /**
+         * This preference enables notification display on the lockscreen.
+         * @hide
+         */
+        const String LOCK_SCREEN_SHOW_NOTIFICATIONS =
+                "lock_screen_show_notifications";
 
-        GetSettingsToBackup(
+        /**
+         * List of TV inputs that are currently hidden. This is a string
+         * containing the IDs of all hidden TV inputs. Each ID is encoded by
+         * {@link android.net.Uri#encode(String)} and separated by ':'.
+         * @hide
+         */
+        const String TV_INPUT_HIDDEN_INPUTS = "tv_input_hidden_inputs";
+
+        /**
+         * List of custom TV input labels. This is a string containing <TV input id, custom name>
+         * pairs. TV input id and custom name are encoded by {@link android.net.Uri#encode(String)}
+         * and separated by ','. Each pair is separated by ':'.
+         * @hide
+         */
+        const String TV_INPUT_CUSTOM_LABELS = "tv_input_custom_labels";
+
+        /**
+         * Whether automatic routing of system audio to USB audio peripheral is disabled.
+         * The value is boolean (1 or 0), where 1 means automatic routing is disabled,
+         * and 0 means automatic routing is enabled.
+         *
+         * @hide
+         */
+        const String USB_AUDIO_AUTOMATIC_ROUTING_DISABLED =
+                "usb_audio_automatic_routing_disabled";
+
+        /**
+         * The timeout in milliseconds before the device fully goes to sleep after
+         * a period of inactivity.  This value sets an upper bound on how long the device
+         * will stay awake or dreaming without user activity.  It should generally
+         * be longer than {@link #SCREEN_OFF_TIMEOUT} as otherwise the device
+         * will sleep before it ever has a chance to dream.
+         * <p>
+         * Use -1 to disable this timeout.
+         * </p>
+         *
+         * @hide
+         */
+        const String SLEEP_TIMEOUT = "sleep_timeout";
+
+        /**
+         * This are the settings to be backed up.
+         *
+         * NOTE: Settings are backed up and restored in the order they appear
+         *       in this array. If you have one setting depending on another,
+         *       make sure that they are ordered appropriately.
+         *
+         * @hide
+         */
+        //const String[] SETTINGS_TO_BACKUP = {
+        //    BUGREPORT_IN_POWER_MENU,                            // moved to global
+        //    ALLOW_MOCK_LOCATION,
+        //    PARENTAL_CONTROL_ENABLED,
+        //    PARENTAL_CONTROL_REDIRECT_URL,
+        //    USB_MASS_STORAGE_ENABLED,                           // moved to global
+        //    ACCESSIBILITY_DISPLAY_MAGNIFICATION_ENABLED,
+        //    ACCESSIBILITY_DISPLAY_MAGNIFICATION_SCALE,
+        //    ACCESSIBILITY_DISPLAY_MAGNIFICATION_AUTO_UPDATE,
+        //    ACCESSIBILITY_SCRIPT_INJECTION,
+        //    BACKUP_AUTO_RESTORE,
+        //    ENABLED_ACCESSIBILITY_SERVICES,
+        //    TOUCH_EXPLORATION_GRANTED_ACCESSIBILITY_SERVICES,
+        //    TOUCH_EXPLORATION_ENABLED,
+        //    ACCESSIBILITY_ENABLED,
+        //    ACCESSIBILITY_SPEAK_PASSWORD,
+        //    ACCESSIBILITY_HIGH_TEXT_CONTRAST_ENABLED,
+        //    ACCESSIBILITY_CAPTIONING_ENABLED,
+        //    ACCESSIBILITY_CAPTIONING_LOCALE,
+        //    ACCESSIBILITY_CAPTIONING_BACKGROUND_COLOR,
+        //    ACCESSIBILITY_CAPTIONING_FOREGROUND_COLOR,
+        //    ACCESSIBILITY_CAPTIONING_EDGE_TYPE,
+        //    ACCESSIBILITY_CAPTIONING_EDGE_COLOR,
+        //    ACCESSIBILITY_CAPTIONING_TYPEFACE,
+        //    ACCESSIBILITY_CAPTIONING_FONT_SCALE,
+        //    TTS_USE_DEFAULTS,
+        //    TTS_DEFAULT_RATE,
+        //    TTS_DEFAULT_PITCH,
+        //    TTS_DEFAULT_SYNTH,
+        //    TTS_DEFAULT_LANG,
+        //    TTS_DEFAULT_COUNTRY,
+        //    TTS_ENABLED_PLUGINS,
+        //    TTS_DEFAULT_LOCALE,
+        //    WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,            // moved to global
+        //    WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY,               // moved to global
+        //    WIFI_NUM_OPEN_NETWORKS_KEPT,                        // moved to global
+        //    MOUNT_PLAY_NOTIFICATION_SND,
+        //    MOUNT_UMS_AUTOSTART,
+        //    MOUNT_UMS_PROMPT,
+        //    MOUNT_UMS_NOTIFY_ENABLED,
+        //    UI_NIGHT_MODE,
+        //    SLEEP_TIMEOUT
+        //};
+
+        GetSETTINGS_TO_BACKUP(
             [out, callee] ArrayOf<String>* array);
 
+        /**
+         * These entries are considered common between the personal and the managed profile,
+         * since the managed profile doesn't get to change them.
+         * @hide
+         */
+        //const String[] CLONE_TO_MANAGED_PROFILE = {
+        //    ACCESSIBILITY_ENABLED,
+        //    ALLOW_MOCK_LOCATION,
+        //    ALLOWED_GEOLOCATION_ORIGINS,
+        //    DEFAULT_INPUT_METHOD,
+        //    ENABLED_ACCESSIBILITY_SERVICES,
+        //    ENABLED_INPUT_METHODS,
+        //    LOCATION_MODE,
+        //    LOCATION_PROVIDERS_ALLOWED,
+        //    LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS,
+        //    SELECTED_INPUT_METHOD_SUBTYPE,
+        //    SELECTED_SPELL_CHECKER,
+        //    SELECTED_SPELL_CHECKER_SUBTYPE
+        //};
+
+        GetCLONE_TO_MANAGED_PROFILE(
+            [out, callee] ArrayOf<String>* array);
+
+        GetCONTENT_URI(
+            [out] IUri** uri);
+
         GetMovedKeys(
-            [in] IObjectContainer* outKeySet);
+            [in] IHashSet* outKeySet);
 
         GetString(
             [in] IContentResolver* resolver,
@@ -2654,7 +3548,19 @@ module
             [in] IContentResolver* cr,
             [in] String provider,
             [in] Boolean enabled,
-            [in] Int32 userId);
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        SetLocationModeForUser(
+            [in] IContentResolver* cr,
+            [in] Int32 mode,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetLocationModeForUser(
+            [in] IContentResolver* cr,
+            [in] Int32 userId,
+            [out] Int32* mode);
     }
 
     /**
@@ -2664,11 +3570,13 @@ module
     interface ISettingsSystem {
         const String SYS_PROP_SETTING_VERSION = "sys.settings_system_version";
 
+
         /**
          * @deprecated Use {@link android.provider.Settings.Global#STAY_ON_WHILE_PLUGGED_IN} instead
          */
         //@Deprecated
-        const String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in"; // ISettingsGlobal::STAY_ON_WHILE_PLUGGED_IN;
+        const String STAY_ON_WHILE_PLUGGED_IN = "stay_on_while_plugged_in";
+            //Global.STAY_ON_WHILE_PLUGGED_IN;
 
         /**
          * What happens when the user presses the end call button if they're not
@@ -2698,7 +3606,7 @@ module
          * END_BUTTON_BEHAVIOR default value.
          * @hide
          */
-        const Int32 END_BUTTON_BEHAVIOR_DEFAULT = END_BUTTON_BEHAVIOR_SLEEP;
+        const Int32 END_BUTTON_BEHAVIOR_DEFAULT = 0x2;//END_BUTTON_BEHAVIOR_SLEEP;
 
         /**
          * Is advanced settings mode turned on. 0 == no, 1 == yes
@@ -2716,44 +3624,45 @@ module
          * @deprecated Use {@link android.provider.Settings.Global#AIRPLANE_MODE_ON} instead
          */
         //@Deprecated
-        const String AIRPLANE_MODE_ON = "airplane_mode_on"; // ISettingsGlobal::AIRPLANE_MODE_ON;
+        const String AIRPLANE_MODE_ON = "airplane_mode_on";//Global.AIRPLANE_MODE_ON;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#RADIO_BLUETOOTH} instead
          */
         //@Deprecated
-        const String RADIO_BLUETOOTH = "bluetooth"; // Global.RADIO_BLUETOOTH;
+        const String RADIO_BLUETOOTH = "bluetooth";//Global.RADIO_BLUETOOTH;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#RADIO_WIFI} instead
          */
         //@Deprecated
-        const String RADIO_WIFI = "wifi"; // ISettingsGlobal.RADIO_WIFI;
+        const String RADIO_WIFI = "wifi";//Global.RADIO_WIFI;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#RADIO_WIMAX} instead
          * {@hide}
          */
         //@Deprecated
-        const String RADIO_WIMAX = "wimax"; // ISettingsGlobal.RADIO_WIMAX;
+        const String RADIO_WIMAX = "wimax";//Global.RADIO_WIMAX;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#RADIO_CELL} instead
          */
         //@Deprecated
-        const String RADIO_CELL = "cell"; // ISettingsGlobal.RADIO_CELL;
+        const String RADIO_CELL = "cell";//Global.RADIO_CELL;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#RADIO_NFC} instead
          */
         //@Deprecated
-        const String RADIO_NFC = "nfc"; // ISettingsGlobal.RADIO_NFC;
+        const String RADIO_NFC = "nfc";//Global.RADIO_NFC;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#AIRPLANE_MODE_RADIOS} instead
          */
         //@Deprecated
-        const String AIRPLANE_MODE_RADIOS = "airplane_mode_radios"; // ISettingsGlobal.AIRPLANE_MODE_RADIOS;
+        const String AIRPLANE_MODE_RADIOS = "airplane_mode_radios";
+            //Global.AIRPLANE_MODE_RADIOS;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#AIRPLANE_MODE_TOGGLEABLE_RADIOS} instead
@@ -2761,37 +3670,43 @@ module
          * {@hide}
          */
         //@Deprecated
-        const String AIRPLANE_MODE_TOGGLEABLE_RADIOS = "airplane_mode_toggleable_radios"; // ISettingsGlobal.AIRPLANE_MODE_TOGGLEABLE_RADIOS;
+        const String AIRPLANE_MODE_TOGGLEABLE_RADIOS = "airplane_mode_toggleable_radios";
+            //Global.AIRPLANE_MODE_TOGGLEABLE_RADIOS;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_SLEEP_POLICY} instead
          */
         //@Deprecated
-        const String WIFI_SLEEP_POLICY = "wifi_sleep_policy"; // ISettingsGlobal.WIFI_SLEEP_POLICY;
+        const String WIFI_SLEEP_POLICY = "wifi_sleep_policy";
+            //Global.WIFI_SLEEP_POLICY;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_SLEEP_POLICY_DEFAULT} instead
          */
         //@Deprecated
-        const Int32 WIFI_SLEEP_POLICY_DEFAULT = 0; // ISettingsGlobal.WIFI_SLEEP_POLICY_DEFAULT;
+        const Int32 WIFI_SLEEP_POLICY_DEFAULT = 0;
+            //Global.WIFI_SLEEP_POLICY_DEFAULT;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED} instead
          */
         //@Deprecated
-        const Int32 WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED = 1; // ISettingsGlobal.WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED;
+        const Int32 WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED = 1;
+            //Global.WIFI_SLEEP_POLICY_NEVER_WHILE_PLUGGED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_SLEEP_POLICY_NEVER} instead
          */
         //@Deprecated
-        const Int32 WIFI_SLEEP_POLICY_NEVER = 2; // ISettingsGlobal.WIFI_SLEEP_POLICY_NEVER;
+        const Int32 WIFI_SLEEP_POLICY_NEVER = 2;
+            //Global.WIFI_SLEEP_POLICY_NEVER;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#MODE_RINGER} instead
          */
         //@Deprecated
-        const String MODE_RINGER = "mode_ringer"; // ISettingsGlobal.MODE_RINGER;
+        const String MODE_RINGER = "mode_ringer";
+            //Global.MODE_RINGER;
 
         /**
          * Whether to use static IP and other static network attributes.
@@ -2862,21 +3777,24 @@ module
          * 1 -- connectable but not discoverable
          * 0 -- neither connectable nor discoverable
          */
-        const String BLUETOOTH_DISCOVERABILITY = "bluetooth_discoverability";
+        const String BLUETOOTH_DISCOVERABILITY =
+            "bluetooth_discoverability";
 
         /**
          * Bluetooth discoverability timeout.  If this value is nonzero, then
          * Bluetooth becomes discoverable for a certain number of seconds,
          * after which is becomes simply connectable.  The value is in seconds.
          */
-        const String BLUETOOTH_DISCOVERABILITY_TIMEOUT = "bluetooth_discoverability_timeout";
+        const String BLUETOOTH_DISCOVERABILITY_TIMEOUT =
+            "bluetooth_discoverability_timeout";
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#LOCK_PATTERN_ENABLED}
          * instead
          */
         //@Deprecated
-        const String LOCK_PATTERN_ENABLED = "lock_pattern_autolock"; // ISettingsSecure::LOCK_PATTERN_ENABLED;
+        const String LOCK_PATTERN_ENABLED = "lock_pattern_autolock";
+            //Secure.LOCK_PATTERN_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#LOCK_PATTERN_VISIBLE}
@@ -2891,13 +3809,17 @@ module
          * instead
          */
         //@Deprecated
-        const String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED = "lock_pattern_tactile_feedback_enabled";
+        const String LOCK_PATTERN_TACTILE_FEEDBACK_ENABLED =
+            "lock_pattern_tactile_feedback_enabled";
 
 
         /**
          * A formatted string of the next alarm that is set, or the empty string
          * if there is no alarm set.
+         *
+         * @deprecated Use {@link android.app.AlarmManager#getNextAlarmClock()}.
          */
+        //@Deprecated
         const String NEXT_ALARM_FORMATTED = "next_alarm_formatted";
 
         /**
@@ -2911,7 +3833,8 @@ module
          * @deprecated Use {@link Global#DEBUG_APP} instead
          */
         //@Deprecated
-        const String DEBUG_APP = "debug_app"; // ISettingsGlobal::DEBUG_APP;
+        const String DEBUG_APP = "debug_app";
+            //Global.DEBUG_APP;
 
         /**
          * If 1, when launching DEBUG_APP it will wait for the debugger before
@@ -2920,7 +3843,8 @@ module
          * @deprecated Use {@link Global#WAIT_FOR_DEBUGGER} instead
          */
         //@Deprecated
-        const String WAIT_FOR_DEBUGGER = "wait_for_debugger"; // ISettingsGlobal::WAIT_FOR_DEBUGGER;
+        const String WAIT_FOR_DEBUGGER = "wait_for_debugger";
+            //Global.WAIT_FOR_DEBUGGER;
 
         /**
          * Whether or not to dim the screen. 0=no  1=yes
@@ -2930,7 +3854,10 @@ module
         const String DIM_SCREEN = "dim_screen";
 
         /**
-         * The timeout before the screen turns off.
+         * The amount of time in milliseconds before the device goes to sleep or begins
+         * to dream after a period of inactivity.  This value is also known as the
+         * user activity timeout period since the screen isn't necessarily turned off
+         * when it expires.
          */
         const String SCREEN_OFF_TIMEOUT = "screen_off_timeout";
 
@@ -2967,7 +3894,8 @@ module
          * @deprecated Use {@link Global#SHOW_PROCESSES} instead
          */
         //@Deprecated
-        const String SHOW_PROCESSES = "show_processes"; // ISettingsGlobal::SHOW_PROCESSES;
+        const String SHOW_PROCESSES = "show_processes";
+            //Global.SHOW_PROCESSES;
 
         /**
          * If 1, the activity manager will aggressively finish activities and
@@ -2977,7 +3905,7 @@ module
          * @deprecated Use {@link Global#ALWAYS_FINISH_ACTIVITIES} instead
          */
         //@Deprecated
-        const String ALWAYS_FINISH_ACTIVITIES = "always_finish_activities"; // ISettingsGlobal::ALWAYS_FINISH_ACTIVITIES;
+        const String ALWAYS_FINISH_ACTIVITIES = "always_finish_activities";//Global.ALWAYS_FINISH_ACTIVITIES;
 
         /**
          * Determines which streams are affected by ringer mode changes. The
@@ -3069,6 +3997,13 @@ module
         const String VOLUME_MASTER_MUTE = "volume_master_mute";
 
         /**
+         * Microphone mute (int 1 = mute, 0 = not muted).
+         *
+         * @hide
+         */
+        const String MICROPHONE_MUTE = "microphone_mute";
+
+        /**
          * Whether the notifications should use the ring volume (value of 1) or
          * a separate notification volume (value of 0). In most cases, users
          * will have this enabled so the notification and ringer volumes will be
@@ -3101,6 +4036,16 @@ module
         const String VIBRATE_IN_SILENT = "vibrate_in_silent";
 
         /**
+         * The mapping of stream type (integer) to its setting.
+         */
+        //const String[] VOLUME_SETTINGS = {
+        //    VOLUME_VOICE, VOLUME_SYSTEM, VOLUME_RING, VOLUME_MUSIC,
+        //    VOLUME_ALARM, VOLUME_NOTIFICATION, VOLUME_BLUETOOTH_SCO
+        //};
+        GetVOLUME_SETTINGS(
+            [out, callee] ArrayOf<String>* settings);
+
+        /**
          * Appended to various volume related settings to record the previous
          * values before they the settings were affected by a silent/vibrate
          * ringer mode change.
@@ -3119,6 +4064,18 @@ module
         const String RINGTONE = "ringtone";
 
         /**
+         * A {@link Uri} that will point to the current default ringtone at any
+         * given time.
+         * <p>
+         * If the current default ringtone is in the DRM provider and the caller
+         * does not have permission, the exception will be a
+         * FileNotFoundException.
+         */
+        //public static final Uri DEFAULT_RINGTONE_URI = getUriFor(RINGTONE);
+        GetDEFAULT_RINGTONE_URI(
+            [out] IUri** uri);
+
+        /**
          * Persistent store for the system-wide default notification sound.
          *
          * @see #RINGTONE
@@ -3127,12 +4084,32 @@ module
         const String NOTIFICATION_SOUND = "notification_sound";
 
         /**
+         * A {@link Uri} that will point to the current default notification
+         * sound at any given time.
+         *
+         * @see #DEFAULT_RINGTONE_URI
+         */
+        //public static final Uri DEFAULT_NOTIFICATION_URI = getUriFor(NOTIFICATION_SOUND);
+        GetDEFAULT_NOTIFICATION_URI(
+            [out] IUri** uri);
+
+        /**
          * Persistent store for the system-wide default alarm alert.
          *
          * @see #RINGTONE
          * @see #DEFAULT_ALARM_ALERT_URI
          */
         const String ALARM_ALERT = "alarm_alert";
+
+        /**
+         * A {@link Uri} that will point to the current default alarm alert at
+         * any given time.
+         *
+         * @see #DEFAULT_ALARM_ALERT_URI
+         */
+        //public static final Uri DEFAULT_ALARM_ALERT_URI = getUriFor(ALARM_ALERT);
+        GetDEFAULT_ALARM_ALERT_URI(
+            [out] IUri** uri);
 
         /**
          * Persistent store for the system default media button event receiver.
@@ -3178,14 +4155,16 @@ module
          * instead
          */
         //@Deprecated
-        const String AUTO_TIME = "auto_time"; // Global.AUTO_TIME;
+        const String AUTO_TIME = "auto_time";
+            //Global.AUTO_TIME;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#AUTO_TIME_ZONE}
          * instead
          */
         //@Deprecated
-        const String AUTO_TIME_ZONE = "auto_time_zone"; // ISettingsGlobal::AUTO_TIME_ZONE;
+        const String AUTO_TIME_ZONE = "auto_time_zone";
+            //Global.AUTO_TIME_ZONE;
 
         /**
          * Display times as 12 or 24 hours
@@ -3218,7 +4197,8 @@ module
          * @deprecated Use {@link Global#WINDOW_ANIMATION_SCALE} instead
          */
         //@Deprecated
-        const String WINDOW_ANIMATION_SCALE = "window_animation_scale"; // ISettingsGlobal::WINDOW_ANIMATION_SCALE;
+        const String WINDOW_ANIMATION_SCALE = "window_animation_scale";
+            //Global.WINDOW_ANIMATION_SCALE;
 
         /**
          * Scaling factor for activity transition animations. Setting to 0 will disable window
@@ -3227,7 +4207,8 @@ module
          * @deprecated Use {@link Global#TRANSITION_ANIMATION_SCALE} instead
          */
         //@Deprecated
-        const String TRANSITION_ANIMATION_SCALE = "transition_animation_scale"; // ISettingsGlobal::TRANSITION_ANIMATION_SCALE;
+        const String TRANSITION_ANIMATION_SCALE = "transition_animation_scale";
+            //Global.TRANSITION_ANIMATION_SCALE;
 
         /**
          * Scaling factor for Animator-based animations. This affects both the start delay and
@@ -3237,7 +4218,8 @@ module
          * @deprecated Use {@link Global#ANIMATOR_DURATION_SCALE} instead
          */
         //@Deprecated
-        const String ANIMATOR_DURATION_SCALE = "animator_duration_scale"; // ISettingsGlobal::ANIMATOR_DURATION_SCALE;
+        const String ANIMATOR_DURATION_SCALE = "animator_duration_scale";
+            //Global.ANIMATOR_DURATION_SCALE;
 
         /**
          * Control whether the accelerometer will be used to change screen
@@ -3253,7 +4235,7 @@ module
          * preference, this rotation value will be used. Must be one of the
          * {@link android.view.Surface#ROTATION_0 Surface rotation constants}.
          *
-         * @see Display#getRotation
+         * @see android.view.Display#getRotation
          */
         const String USER_ROTATION = "user_rotation";
 
@@ -3361,7 +4343,8 @@ module
         const String SHOW_TOUCHES = "show_touches";
 
         /**
-         * Log raw orientation data from {@link WindowOrientationListener} for use with the
+         * Log raw orientation data from
+         * {@link com.android.internal.policy.impl.WindowOrientationListener} for use with the
          * orientationplot.py tool.
          * 0 = no
          * 1 = yes
@@ -3376,7 +4359,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String POWER_SOUNDS_ENABLED = "power_sounds_enabled"; // ISettingsGlobal::POWER_SOUNDS_ENABLED;
+        const String POWER_SOUNDS_ENABLED = "power_sounds_enabled";
+            //Global.POWER_SOUNDS_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DOCK_SOUNDS_ENABLED}
@@ -3384,7 +4368,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String DOCK_SOUNDS_ENABLED = "dock_sounds_enabled"; // ISettingsGlobal::DOCK_SOUNDS_ENABLED;
+        const String DOCK_SOUNDS_ENABLED = "dock_sounds_enabled";
+            //Global.DOCK_SOUNDS_ENABLED;
 
         /**
          * Whether to play sounds when the keyguard is shown and dismissed.
@@ -3404,7 +4389,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String LOW_BATTERY_SOUND = "low_battery_sound"; // ISettingsGlobal::LOW_BATTERY_SOUND;
+        const String LOW_BATTERY_SOUND = "low_battery_sound";
+            //Global.LOW_BATTERY_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DESK_DOCK_SOUND}
@@ -3412,7 +4398,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String DESK_DOCK_SOUND = "desk_dock_sound"; // ISettingsGlobal::DESK_DOCK_SOUND;
+        const String DESK_DOCK_SOUND = "desk_dock_sound";
+            //Global.DESK_DOCK_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DESK_UNDOCK_SOUND}
@@ -3420,7 +4407,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String DESK_UNDOCK_SOUND = "desk_undock_sound"; // ISettingsGlobal::DESK_UNDOCK_SOUND;
+        const String DESK_UNDOCK_SOUND = "desk_undock_sound";
+            //Global.DESK_UNDOCK_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#CAR_DOCK_SOUND}
@@ -3428,7 +4416,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String CAR_DOCK_SOUND = "car_dock_sound"; // ISettingsGlobal::CAR_DOCK_SOUND;
+        const String CAR_DOCK_SOUND = "car_dock_sound";
+            //Global.CAR_DOCK_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#CAR_UNDOCK_SOUND}
@@ -3436,7 +4425,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String CAR_UNDOCK_SOUND = "car_undock_sound"; // ISettingsGlobal::CAR_UNDOCK_SOUND;
+        const String CAR_UNDOCK_SOUND = "car_undock_sound";
+            //Global.CAR_UNDOCK_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#LOCK_SOUND}
@@ -3444,7 +4434,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String LOCK_SOUND = "lock_sound"; // ISettingsGlobal::LOCK_SOUND;
+        const String LOCK_SOUND = "lock_sound";
+            //Global.LOCK_SOUND;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#UNLOCK_SOUND}
@@ -3452,7 +4443,8 @@ module
          * @hide
          */
         //@Deprecated
-        const String UNLOCK_SOUND = "unlock_sound"; // ISettingsGlobal::UNLOCK_SOUND;
+        const String UNLOCK_SOUND = "unlock_sound";
+            //Global.UNLOCK_SOUND;
 
         /**
          * Receive incoming SIP calls?
@@ -3466,7 +4458,6 @@ module
          * Call Preference String.
          * "SIP_ALWAYS" : Always use SIP with network access
          * "SIP_ADDRESS_ONLY" : Only if destination is a SIP address
-         * "SIP_ASK_ME_EACH_TIME" : Always ask me each time
          * @hide
          */
         const String SIP_CALL_OPTIONS = "sip_call_options";
@@ -3484,9 +4475,13 @@ module
         const String SIP_ADDRESS_ONLY = "SIP_ADDRESS_ONLY";
 
         /**
-         * One of the sip call options: Always ask me each time.
+         * @deprecated Use SIP_ALWAYS or SIP_ADDRESS_ONLY instead.  Formerly used to indicate that
+         * the user should be prompted each time a call is made whether it should be placed using
+         * SIP.  The {@link com.android.providers.settings.DatabaseHelper} replaces this with
+         * SIP_ADDRESS_ONLY.
          * @hide
          */
+        //@Deprecated
         const String SIP_ASK_ME_EACH_TIME = "SIP_ASK_ME_EACH_TIME";
 
         /**
@@ -3499,355 +4494,200 @@ module
          */
         const String POINTER_SPEED = "pointer_speed";
 
-
-        /*************************************************************************/
-        /**                         AW Custom Definition Begin                  **/
+        /**
+         * Whether lock-to-app will be triggered by long-press on recents.
+         * @hide
+         */
+        const String LOCK_TO_APP_ENABLED = "lock_to_app_enabled";
 
         /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:To set weather scan the tf card.<br/>
-         * Date :2013-3-13
+         * Whether lock-to-app will lock the keyguard when exiting.
+         * @hide
+         */
+        const String LOCK_TO_APP_EXIT_LOCKED = "lock_to_app_exit_locked";
+
+        /**
+         * I am the lolrus.
+         * <p>
+         * Nonzero values indicate that the user has a bukkit.
+         * Backward-compatible with <code>PrefGetPreference(prefAllowEasterEggs)</code>.
+         * @hide
+         */
+        const String EGG_MODE = "egg_mode";
+
+        /**
+         * When to use Wi-Fi calling
          *
+         * @see android.telephony.TelephonyManager.WifiCallingChoices
          * @hide
          */
-        const String IS_SCAN_TF_CARD = "is_scan_tf_card";
+        const String WHEN_TO_MAKE_WIFI_CALLS = "when_to_make_wifi_calls";
 
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:To use default or special accelerometer coordinate
-         * system.<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String ACCELEROMETER_COORDINATE = "accelerometer_coordinate";
-
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:the display mode options.<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String DISPLAY_ADAPTION_MODE = "display_adaption_mode";
-
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:enable the screen adaption...<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String DISPLAY_ADAPTION_ENABLE = "display_adapter_enable";
-
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:enable the smart brightness in nuclear..<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String SMART_BRIGHTNESS_ENABLE = "smart_brightness_enable";
-
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:enable the smart brightness preview mode in nuclear.<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String SMART_BRIGHTNESS_PREVIEW_ENABLE = "smart_brightness_enable";
-
-        /**
-         * Author :huanglong@allwinnertech<br/>
-         * Description:record the hdmi output mode .<br/>
-         * Date :2013-3-13
-         *
-         * @hide
-         */
-        const String HDMI_OUTPUT_MODE = "hdmi_output_mode";
-
-        /* add by Gary. start {{----------------------------------- */
-        /* 2011-11-1 */
-        /*
-         * support shortcut keys with color keys for some specific websites and
-         * apps
-         */
-        /**
-         * one shortcut key for websites or apps
-         * @hide
-         */
-        const String SHORTCUT_KEY_0 = "shortcut_key_0";
-        /**
-         * one shortcut key for websites or apps
-         * @hide
-         */
-        const String SHORTCUT_KEY_1 = "shortcut_key_1";
-        /**
-         * one shortcut key for websites or apps
-         * @hide
-         */
-        const String SHORTCUT_KEY_2 = "shortcut_key_2";
-        /**
-         * one shortcut key for websites or apps
-         * @hide
-         */
-        const String SHORTCUT_KEY_3 = "shortcut_key_3";
-        /**@hide*/
-        const String SHORTCUT_PATH_SEPARATOR = "--split--";
-        /**@hide*/
-        const String SHORTCUT_PATH_TYPE_WEBSITE = "website";
-        /**@hide*/
-        const String SHORTCUT_PATH_TYPE_APP = "app";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:adjust the display area.<br/>
-         * Date :2011-12-10
-         *
-         * @hide
-         */
-        const String DISPLAY_AREA_RATIO = "display_area_ratio";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:To set weather scan the usb host.<br/>
-         * Date :2011-12-10
-         *
-         * @hide
-         */
-        const String IS_SCAN_USB_HOST = "is_scan_usb_host";
-
-        /**
-         * @hide
-         */
-        const String IS_SCAN_SATA = "is_scan_sata";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:record the display format and the advance of the mouse in
-         * mouse mode<br/>
-         * Date :2011-12-10
-         *
-         * @hide
-         */
-        const String DISPLY_OUTPUT_FORMAT = "display_output_format";
-        /**@hide*/
-        const String MOUSE_ADVANCE = "mouse_advance";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:record the color parameters : brightness, contrast,and
-         * saturation<br/>
-         * Date :2011-12-11
-         *
-         * @hide
-         */
-        const String COLOR_BRIGHTNESS = "color_brightness";
-        /**@hide*/
-        const String COLOR_CONTRAST = "color_contrast";
-        /**@hide*/
-        const String COLOR_SATURATION = "color_saturation";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:record the audio output type<br/>
-         * Date :2011-12-11
-         *
-         * @hide
-         */
-        const String AUDIO_OUTPUT_TYPE = "audio_output_type";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:record the audio output channel<br/>
-         * Date :2011-12-17
-         *
-         * @hide
-         */
-        const String AUDIO_OUTPUT_CHANNEL = "audio_output_channel";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:directly power off when long press on the power key<br/>
-         * Date :2011-12-17
-         *
-         * @hide
-         */
-        const String DIRECTLY_POWER_OFF = "directly_power_off";
-
-        /**
-         * Author :ygwang@allwinnertech<br/>
-         * Description:add a switch to control BD folder play mode<br/>
-         * Date :2012-4-27
-         *
-         * @hide
-         */
-        const String BD_FOLDER_PLAY_MODE = "bd_folder_play_mode";
-
-        /**
-         * Author: huanglong@allwinnertech<br/>
-         * Description:advanced bright system<br/>
-         * Date:2013-3-13
-         *
-         * @hide
-         */
-        const String BRIGHT_SYSTEM_MODE = "bright_system_mode";
-        /**@hide*/
-        const String BRIGHTNESS_LIGHT_MODE = "brightness_light_mode";
-        /**@hide*/
-                const String ENABLE_PASS_THROUGH = "enable_pass_through";
-        /**                         AW Custom Definition End                    **/
-        /*************************************************************************/
-
-        /**
-        * enable the boot fast mode
-        *
-        *
-        */
-        const String BOOT_FAST_ENABLE = "boot_fast_enable";
+        // Settings moved to Settings.Secure
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#ADB_ENABLED}
          * instead
          */
         //@Deprecated
-        const String ADB_ENABLED = "adb_enabled"; // ISettingsGlobal::ADB_ENABLED;
+        const String ADB_ENABLED = "adb_enabled";
+            //Global.ADB_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#ANDROID_ID} instead
          */
         //@Deprecated
-        const String ANDROID_ID = "android_id"; // ISettingsSecure::ANDROID_ID;
+        const String ANDROID_ID = "android_id";
+            //Secure.ANDROID_ID;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#BLUETOOTH_ON} instead
          */
         //@Deprecated
-        const String BLUETOOTH_ON = "bluetooth_on"; // ISettingsGlobal::BLUETOOTH_ON;
+        const String BLUETOOTH_ON = "bluetooth_on";
+            //Global.BLUETOOTH_ON;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DATA_ROAMING} instead
          */
         //@Deprecated
-        const String DATA_ROAMING = "data_roaming"; // ISettingsGlobal::DATA_ROAMING;
+        const String DATA_ROAMING = "data_roaming";
+            //Global.DATA_ROAMING;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#DEVICE_PROVISIONED} instead
          */
         //@Deprecated
-        const String DEVICE_PROVISIONED = "device_provisioned"; // ISettingsGlobal::DEVICE_PROVISIONED;
+        const String DEVICE_PROVISIONED = "device_provisioned";
+            //Global.DEVICE_PROVISIONED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#HTTP_PROXY} instead
          */
         //@Deprecated
-        const String HTTP_PROXY = "http_proxy"; // ISettingsGlobal::HTTP_PROXY;
+        const String HTTP_PROXY = "http_proxy";
+            //Global.HTTP_PROXY;
 
         /**
-         * @deprecated Use {@link android.provider.Settings.Global#INSTALL_NON_MARKET_APPS} instead
+         * @deprecated Use {@link android.provider.Settings.Secure#INSTALL_NON_MARKET_APPS} instead
          */
         //@Deprecated
-        const String INSTALL_NON_MARKET_APPS = "install_non_market_apps"; // ISettingsGlobal::INSTALL_NON_MARKET_APPS;
+        const String INSTALL_NON_MARKET_APPS = "install_non_market_apps";
+            //Secure.INSTALL_NON_MARKET_APPS;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#LOCATION_PROVIDERS_ALLOWED}
          * instead
          */
         //@Deprecated
-        const String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed"; // ISettingsSecure::LOCATION_PROVIDERS_ALLOWED;
+        const String LOCATION_PROVIDERS_ALLOWED = "location_providers_allowed";
+            //Secure.LOCATION_PROVIDERS_ALLOWED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#LOGGING_ID} instead
          */
         //@Deprecated
-        const String LOGGING_ID = "logging_id"; // ISettingsSecure::LOGGING_ID;
+        const String LOGGING_ID = "logging_id";
+            //Secure.LOGGING_ID;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#NETWORK_PREFERENCE} instead
          */
         //@Deprecated
-        const String NETWORK_PREFERENCE = "network_preference"; // ISettingsGlobal::NETWORK_PREFERENCE;
+        const String NETWORK_PREFERENCE = "network_preference";
+            //Global.NETWORK_PREFERENCE;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#PARENTAL_CONTROL_ENABLED}
          * instead
          */
         //@Deprecated
-        const String PARENTAL_CONTROL_ENABLED = "parental_control_enabled"; // ISettingsSecure::PARENTAL_CONTROL_ENABLED;
+        const String PARENTAL_CONTROL_ENABLED = "parental_control_enabled";
+            //Secure.PARENTAL_CONTROL_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#PARENTAL_CONTROL_LAST_UPDATE}
          * instead
          */
         //@Deprecated
-        const String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update"; // ISettingsSecure::PARENTAL_CONTROL_LAST_UPDATE;
+        const String PARENTAL_CONTROL_LAST_UPDATE = "parental_control_last_update";
+            //Secure.PARENTAL_CONTROL_LAST_UPDATE;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#PARENTAL_CONTROL_REDIRECT_URL}
          * instead
          */
         //@Deprecated
-        const String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url"; // ISettingsSecure::PARENTAL_CONTROL_REDIRECT_URL;
+        const String PARENTAL_CONTROL_REDIRECT_URL = "parental_control_redirect_url";
+            //Secure.PARENTAL_CONTROL_REDIRECT_URL;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#SETTINGS_CLASSNAME} instead
          */
         //@Deprecated
-        const String SETTINGS_CLASSNAME = "settings_classname"; // ISettingsSecure::SETTINGS_CLASSNAME;
+        const String SETTINGS_CLASSNAME = "settings_classname";
+            //Secure.SETTINGS_CLASSNAME;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#USB_MASS_STORAGE_ENABLED} instead
          */
         //@Deprecated
-        const String USB_MASS_STORAGE_ENABLED = "usb_mass_storage_enabled"; // ISettingsGlobal::USB_MASS_STORAGE_ENABLED;
+        const String USB_MASS_STORAGE_ENABLED = "usb_mass_storage_enabled";
+            //Global.USB_MASS_STORAGE_ENABLED;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#USE_GOOGLE_MAIL} instead
          */
         //@Deprecated
-        const String USE_GOOGLE_MAIL = "use_google_mail"; // ISettingsGlobal::USE_GOOGLE_MAIL;
+        const String USE_GOOGLE_MAIL = "use_google_mail";
+            //Global.USE_GOOGLE_MAIL;
 
        /**
          * @deprecated Use
          * {@link android.provider.Settings.Global#WIFI_MAX_DHCP_RETRY_COUNT} instead
          */
         //@Deprecated
-        const String WIFI_MAX_DHCP_RETRY_COUNT = "wifi_max_dhcp_retry_count"; // ISettingsGlobal::WIFI_MAX_DHCP_RETRY_COUNT;
+        const String WIFI_MAX_DHCP_RETRY_COUNT = "wifi_max_dhcp_retry_count";
+            //Global.WIFI_MAX_DHCP_RETRY_COUNT;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Global#WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS} instead
          */
         //@Deprecated
-        const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS = "wifi_mobile_data_transition_wakelock_timeout_ms"; // ISettingsGlobal::WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
+        const String WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS = "wifi_mobile_data_transition_wakelock_timeout_ms";
+            //Global.WIFI_MOBILE_DATA_TRANSITION_WAKELOCK_TIMEOUT_MS;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Global#WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON} instead
          */
         //@Deprecated
-        const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wifi_networks_available_repeat_delay"; // ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
+        const String WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON = "wifi_networks_available_notification_on";
+            //Global.WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Global#WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY} instead
          */
         //@Deprecated
-        const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY = "wifi_networks_available_repeat_delay"; // ISettingsGlobal::WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
+        const String WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY = "wifi_networks_available_repeat_delay";
+            //Global.WIFI_NETWORKS_AVAILABLE_REPEAT_DELAY;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_NUM_OPEN_NETWORKS_KEPT}
          * instead
          */
         //@Deprecated
-        const String WIFI_NUM_OPEN_NETWORKS_KEPT = "wifi_num_open_networks_kept"; // ISettingsGlobal::WIFI_NUM_OPEN_NETWORKS_KEPT;
+        const String WIFI_NUM_OPEN_NETWORKS_KEPT = "wifi_num_open_networks_kept";
+            //Global.WIFI_NUM_OPEN_NETWORKS_KEPT;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_ON} instead
          */
         //@Deprecated
-        const String WIFI_ON = "wifi_on"; // ISettingsGlobal::WIFI_ON;
+        const String WIFI_ON = "wifi_on";
+            // Global.WIFI_ON;
 
         /**
          * @deprecated Use
@@ -3855,27 +4695,31 @@ module
          * instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE = "wifi_watchdog_acceptable_packet_loss_percentage"; // ISettingsSecure::WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE;
+        const String WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE = "wifi_watchdog_acceptable_packet_loss_percentage";
+            //Secure.WIFI_WATCHDOG_ACCEPTABLE_PACKET_LOSS_PERCENTAGE;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#WIFI_WATCHDOG_AP_COUNT} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_AP_COUNT = "wifi_watchdog_ap_count"; // ISettingsSecure::WIFI_WATCHDOG_AP_COUNT;
+        const String WIFI_WATCHDOG_AP_COUNT = "wifi_watchdog_ap_count";
+            //Secure.WIFI_WATCHDOG_AP_COUNT;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Secure#WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS = "wifi_watchdog_background_check_delay_ms"; // ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS;
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS = "wifi_watchdog_background_check_delay_ms";
+            //Secure.WIFI_WATCHDOG_BACKGROUND_CHECK_DELAY_MS;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Secure#WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED = "wifi_watchdog_background_check_enabled"; // ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED;
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED = "wifi_watchdog_background_check_timeout_ms";
+            //Secure.WIFI_WATCHDOG_BACKGROUND_CHECK_ENABLED;
 
         /**
          * @deprecated Use
@@ -3883,71 +4727,63 @@ module
          * instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS = "wifi_watchdog_background_check_timeout_ms"; // ISettingsSecure::WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS;
+        const String WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS = "wifi_watchdog_background_check_timeout_ms";
+            //Secure.WIFI_WATCHDOG_BACKGROUND_CHECK_TIMEOUT_MS;
 
         /**
          * @deprecated Use
          * {@link android.provider.Settings.Secure#WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT = "wifi_watchdog_initial_ignored_ping_count"; // ISettingsSecure::WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT;
+        const String WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT = "wifi_watchdog_initial_ignored_ping_count";
+            //Secure.WIFI_WATCHDOG_INITIAL_IGNORED_PING_COUNT;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#WIFI_WATCHDOG_MAX_AP_CHECKS}
          * instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_MAX_AP_CHECKS = "wifi_watchdog_max_ap_checks"; // ISettingsSecure::WIFI_WATCHDOG_MAX_AP_CHECKS;
+        const String WIFI_WATCHDOG_MAX_AP_CHECKS = "wifi_watchdog_max_ap_checks";
+            //Secure.WIFI_WATCHDOG_MAX_AP_CHECKS;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Global#WIFI_WATCHDOG_ON} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_ON = "wifi_watchdog_on"; // ISettingsGlobal::WIFI_WATCHDOG_ON;
+        const String WIFI_WATCHDOG_ON = "wifi_watchdog_on";
+            //Global.WIFI_WATCHDOG_ON;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#WIFI_WATCHDOG_PING_COUNT} instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_PING_COUNT = "wifi_watchdog_ping_count"; // ISettingsSecure::WIFI_WATCHDOG_PING_COUNT;
+        const String WIFI_WATCHDOG_PING_COUNT = "wifi_watchdog_ping_count";
+            //Secure.WIFI_WATCHDOG_PING_COUNT;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#WIFI_WATCHDOG_PING_DELAY_MS}
          * instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_PING_DELAY_MS = "wifi_watchdog_ping_delay_ms"; // ISettingsSecure::WIFI_WATCHDOG_PING_DELAY_MS;
+        const String WIFI_WATCHDOG_PING_DELAY_MS = "wifi_watchdog_ping_delay_ms";
+            //Secure.WIFI_WATCHDOG_PING_DELAY_MS;
 
         /**
          * @deprecated Use {@link android.provider.Settings.Secure#WIFI_WATCHDOG_PING_TIMEOUT_MS}
          * instead
          */
         //@Deprecated
-        const String WIFI_WATCHDOG_PING_TIMEOUT_MS = "wifi_watchdog_ping_timeout_ms"; // ISettingsSecure::WIFI_WATCHDOG_PING_TIMEOUT_MS;
+        const String WIFI_WATCHDOG_PING_TIMEOUT_MS = "wifi_watchdog_ping_timeout_ms";
+            //Secure.WIFI_WATCHDOG_PING_TIMEOUT_MS;
 
-        GetContentUri(
+        GetCONTENT_URI(
             [out] IUri** uri);
-
-        GetSettingsToBackup(
-            [out, callee] ArrayOf<String>* array);
-
-        GetDefaultRingtoneUri(
-            [out] IUri** uri);
-
-        GetDefaultNotificationUri(
-            [out] IUri** uri);
-
-        GetDefaultAlarmAlertUri(
-            [out] IUri** uri);
-
-        GetVolumnSettings(
-            [out, callee] ArrayOf<String>* settings);
 
         GetMovedKeys(
-            [in] IObjectContainer* outKeySet);
+            [in] IHashSet* outKeySet);
 
         GetNonLegacyMovedKeys(
-            [in] IObjectContainer* outKeySet);
+            [in] IHashSet* outKeySet);
 
         GetString(
             [in] IContentResolver* resolver,
@@ -4152,7 +4988,7 @@ module
 
         const String ORDERING = "ordering";
 
-        GetContentUri(
+        GetCONTENT_URI(
             [out] IUri** uri);
 
         GetIntentForShortcut(

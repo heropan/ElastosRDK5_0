@@ -138,7 +138,7 @@ ECode CActivityOne::ViewClickListener::OnClick(
         AutoPtr<IContentResolver> cr;
         mHost->GetContentResolver((IContentResolver**)&cr);
         AutoPtr<IUri> uri;
-        imageMedia->GetEXTERNALCONTENTURI((IUri**)&uri);
+        imageMedia->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
         String uriStr;
         uri->ToString(&uriStr);
         LOGGERD("CActivityOne", "Query Media Image uri = %s", uriStr.string());

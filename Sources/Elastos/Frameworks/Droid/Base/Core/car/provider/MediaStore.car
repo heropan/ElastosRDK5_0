@@ -73,15 +73,20 @@ module {
          * An intent to perform a search for music media and automatically play content from the
          * result when possible. This can be fired, for example, by the result of a voice recognition
          * command to listen to music.
-         * <p>
-         * Contains the {@link android.app.SearchManager#QUERY} extra, which is a string
-         * that can contain any type of unstructured music search, like the name of an artist,
-         * an album, a song, a genre, or any combination of these.
-         * <p>
-         * Because this intent includes an open-ended unstructured search string, it makes the most
-         * sense for apps that can support large-scale search of music, such as services connected
-         * to an online database of music which can be streamed and played on the device.
+         * <p>This intent always includes the {@link android.provider.MediaStore#EXTRA_MEDIA_FOCUS}
+         * and {@link android.app.SearchManager#QUERY} extras. The
+         * {@link android.provider.MediaStore#EXTRA_MEDIA_FOCUS} extra determines the search mode, and
+         * the value of the {@link android.app.SearchManager#QUERY} extra depends on the search mode.
+         * For more information about the search modes for this intent, see
+         * <a href="{@docRoot}guide/components/intents-common.html#PlaySearch">Play music based
+         * on a search query</a> in <a href="{@docRoot}guide/components/intents-common.html">Common
+         * Intents</a>.</p>
+         *
+         * <p>This intent makes the most sense for apps that can support large-scale search of music,
+         * such as services connected to an online database of music which can be streamed and played
+         * on the device.</p>
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH =
                 "android.media.action.MEDIA_PLAY_FROM_SEARCH";
 
@@ -98,6 +103,7 @@ module {
          * sense for apps that can support large-scale search of text media, such as services connected
          * to an online database of books and/or magazines which can be read on the device.
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String INTENT_ACTION_TEXT_OPEN_FROM_SEARCH =
                 "android.media.action.TEXT_OPEN_FROM_SEARCH";
 
@@ -114,6 +120,7 @@ module {
          * sense for apps that can support large-scale search of video, such as services connected to an
          * online database of videos which can be streamed and played on the device.
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String INTENT_ACTION_VIDEO_PLAY_FROM_SEARCH =
                 "android.media.action.VIDEO_PLAY_FROM_SEARCH";
 
@@ -130,6 +137,18 @@ module {
          */
         const String EXTRA_MEDIA_TITLE = "android.intent.extra.title";
         /**
+         * The name of the Intent-extra used to define the genre.
+         */
+        const String EXTRA_MEDIA_GENRE = "android.intent.extra.genre";
+        /**
+         * The name of the Intent-extra used to define the playlist.
+         */
+        const String EXTRA_MEDIA_PLAYLIST = "android.intent.extra.playlist";
+        /**
+         * The name of the Intent-extra used to define the radio channel.
+         */
+        const String EXTRA_MEDIA_RADIO_CHANNEL = "android.intent.extra.radio_channel";
+        /**
          * The name of the Intent-extra used to define the search focus. The search focus
          * indicates whether the search should be for things related to the artist, album
          * or song that is identified by the other extras.
@@ -141,8 +160,7 @@ module {
          * This is an int property that overrides the activity's requestedOrientation.
          * @see android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
          */
-        const String EXTRA_SCREEN_ORIENTATION =
-                "android.intent.extra.screenOrientation";
+        const String EXTRA_SCREEN_ORIENTATION = "android.intent.extra.screenOrientation";
 
         /**
          * The name of an Intent-extra used to control the UI of a ViewImage.
@@ -154,8 +172,7 @@ module {
          * The name of an Intent-extra used to control the UI of a ViewImage.
          * This is a boolean property that specifies whether or not to show action icons.
          */
-        const String EXTRA_SHOW_ACTION_ICONS =
-                "android.intent.extra.showActionIcons";
+        const String EXTRA_SHOW_ACTION_ICONS = "android.intent.extra.showActionIcons";
 
         /**
          * The name of the Intent-extra used to control the onCompletion behavior of a MovieView.
@@ -163,28 +180,13 @@ module {
          * when the movie completes playing. The default value is true, which means to automatically
          * exit the movie player activity when the movie completes playing.
          */
-        const String EXTRA_FINISH_ON_COMPLETION =
-                "android.intent.extra.finishOnCompletion";
-
-        //by Bevis, for VideoPlayer to create playlist
-        const String PLAYLIST_TYPE = "android.intent.extra.playListType";
-
-        const String PLAYLIST_TYPE_CUR_FOLDER = "curFolder";
-        const String PLAYLIST_TYPE_MEDIA_PROVIDER = "mediaProvider";
-        /**
-         * Author:huanglong@allwinnertech<br/>
-         * Description: to save the blu ray play mode<br/>
-         * Date : 2013-3-15
-         *
-         * @hide
-         */
-        const String EXTRA_BD_FOLDER_PLAY_MODE = "android.intent.extra.bdfolderplaymode";
+        const String EXTRA_FINISH_ON_COMPLETION = "android.intent.extra.finishOnCompletion";
 
         /**
          * The name of the Intent action used to launch a camera in still image mode.
          */
-        const String INTENT_ACTION_STILL_IMAGE_CAMERA =
-                "android.media.action.STILL_IMAGE_CAMERA";
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String INTENT_ACTION_STILL_IMAGE_CAMERA = "android.media.action.STILL_IMAGE_CAMERA";
 
         /**
          * The name of the Intent action used to launch a camera in still image mode
@@ -198,14 +200,15 @@ module {
          * this flag is used, so launching more than one activity is strongly
          * discouraged.
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String INTENT_ACTION_STILL_IMAGE_CAMERA_SECURE =
                 "android.media.action.STILL_IMAGE_CAMERA_SECURE";
 
         /**
          * The name of the Intent action used to launch a camera in video mode.
          */
-        const String INTENT_ACTION_VIDEO_CAMERA =
-                "android.media.action.VIDEO_CAMERA";
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String INTENT_ACTION_VIDEO_CAMERA = "android.media.action.VIDEO_CAMERA";
 
         /**
          * Standard Intent action that can be sent to have the camera application
@@ -216,10 +219,15 @@ module {
          * object in the extra field. This is useful for applications that only need a small image.
          * If the EXTRA_OUTPUT is present, then the full-sized image will be written to the Uri
          * value of EXTRA_OUTPUT.
+         * As of {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this uri can also be supplied through
+         * {@link android.content.Intent#setClipData(ClipData)}. If using this approach, you still must
+         * supply the uri through the EXTRA_OUTPUT field for compatibility with old applications.
+         * If you don't set a ClipData, it will be copied there for you when calling
+         * {@link Context#startActivity(Intent)}.
          * @see #EXTRA_OUTPUT
          */
-        const String ACTION_IMAGE_CAPTURE =
-                "android.media.action.IMAGE_CAPTURE";
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
+        const String ACTION_IMAGE_CAPTURE = "android.media.action.IMAGE_CAPTURE";
 
         /**
          * Intent action that can be sent to have the camera application capture an image and return
@@ -236,10 +244,16 @@ module {
          * object in the extra field. This is useful for applications that only need a small image.
          * If the EXTRA_OUTPUT is present, then the full-sized image will be written to the Uri
          * value of EXTRA_OUTPUT.
+         * As of {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this uri can also be supplied through
+         * {@link android.content.Intent#setClipData(ClipData)}. If using this approach, you still must
+         * supply the uri through the EXTRA_OUTPUT field for compatibility with old applications.
+         * If you don't set a ClipData, it will be copied there for you when calling
+         * {@link Context#startActivity(Intent)}.
          *
          * @see #ACTION_IMAGE_CAPTURE
          * @see #EXTRA_OUTPUT
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String ACTION_IMAGE_CAPTURE_SECURE =
                 "android.media.action.IMAGE_CAPTURE_SECURE";
 
@@ -253,11 +267,17 @@ module {
          * where the video is written. If EXTRA_OUTPUT is not present the video will be
          * written to the standard location for videos, and the Uri of that location will be
          * returned in the data field of the Uri.
+         * As of {@link android.os.Build.VERSION_CODES#LOLLIPOP}, this uri can also be supplied through
+         * {@link android.content.Intent#setClipData(ClipData)}. If using this approach, you still must
+         * supply the uri through the EXTRA_OUTPUT field for compatibility with old applications.
+         * If you don't set a ClipData, it will be copied there for you when calling
+         * {@link Context#startActivity(Intent)}.
          * @see #EXTRA_OUTPUT
          * @see #EXTRA_VIDEO_QUALITY
          * @see #EXTRA_SIZE_LIMIT
          * @see #EXTRA_DURATION_LIMIT
          */
+        //@SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
         const String ACTION_VIDEO_CAPTURE = "android.media.action.VIDEO_CAPTURE";
 
         /**
@@ -454,58 +474,6 @@ module {
 
     /**
      * @Involve
-     * interface IBaseColumns
-     */
-    interface IMediaStoreInternalThumbnails {
-        const Int32 MINI_KIND = 1;
-        const Int32 FULL_SCREEN_KIND = 2;
-        const Int32 MICRO_KIND = 3;
-        const Int32 DEFAULT_GROUP_ID = 0;
-
-        /**
-         * This method cancels the thumbnail request so clients waiting for getThumbnail will be
-         * interrupted and return immediately. Only the original process which made the getThumbnail
-         * requests can cancel their own requests.
-         *
-         * @param cr ContentResolver
-         * @param origId original image or video id. use -1 to cancel all requests.
-         * @param groupId the same groupId used in getThumbnail
-         * @param baseUri the base URI of requested thumbnails
-         */
-        CancelThumbnailRequest(
-            [in] IContentResolver* cr,
-            [in] Int64 origId,
-            [in] IUri* baseUri,
-            [in] Int64 groupId);
-
-        /**
-         * This method ensure thumbnails associated with origId are generated and decode the byte
-         * stream from database (MICRO_KIND) or file (MINI_KIND).
-         *
-         * Special optimization has been done to avoid further IPC communication for MICRO_KIND
-         * thumbnails.
-         *
-         * @param cr ContentResolver
-         * @param origId original image or video id
-         * @param kind could be MINI_KIND or MICRO_KIND
-         * @param options this is only used for MINI_KIND when decoding the Bitmap
-         * @param baseUri the base URI of requested thumbnails
-         * @param groupId the id of group to which this request belongs
-         * @return Bitmap bitmap of specified thumbnail kind
-         */
-        GetThumbnail(
-            [in] IContentResolver* cr,
-            [in] Int64 origId,
-            [in] Int64 groupId,
-            [in] Int32 kind,
-            [in] IBitmapFactoryOptions* options,
-            [in] IUri* baseUri,
-            [in] Boolean isVideo,
-            [out] IBitmap** bitmap);
-    }
-
-    /**
-     * @Involve
      * interface IMediaStoreMediaColumns
      */
     interface IMediaStoreFilesFileColumns {
@@ -667,14 +635,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         Query(
@@ -813,14 +781,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         Query(
@@ -1118,14 +1086,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1155,8 +1123,9 @@ module {
     /**
      * @Involve
      * interface IBaseColumns
+     * interface IMediaStoreAudioGenresColumns
      */
-    interface IMediaStoreAudioGenres /*, IMediaStoreAudioGenresColumns*/ {
+    interface IMediaStoreAudioGenres {
         /**
          * The name of the genre
          * <P>Type: TEXT</P>
@@ -1181,14 +1150,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1280,9 +1249,10 @@ module {
 
     /**
      * @Involve
-     * interface IBaseColumns
+     * interface IBaseColumns;
+     * interface IMediaStoreAudioPlaylistsColumns;
      */
-    interface IMediaStoreAudioPlaylists /*,IMediaStoreAudioPlaylistsColumns*/ {
+    interface IMediaStoreAudioPlaylists {
         /**
          * The name of the playlist
          * <P>Type: TEXT</P>
@@ -1328,14 +1298,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1437,9 +1407,10 @@ module {
 
     /**
      * @Involve
-     * interface IBaseColumns
+     * interface IBaseColumns;
+     * interface IMediaStoreAudioArtistColumns;
      */
-    interface IMediaStoreAudioArtists /*,IMediaStoreAudioArtistColumns*/ {
+    interface IMediaStoreAudioArtists {
         /**
          * The artist who created the audio file, if any
          * <P>Type: TEXT</P>
@@ -1481,14 +1452,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1581,9 +1552,10 @@ module {
 
     /**
      * @Involve
-     * interface IBaseColumns
+     * interface IBaseColumns;
+     * interface IMediaStoreAudioAlbumColumns;
      */
-    interface IMediaStoreAudioAlbums /*, IMediaStoreAudioAlbumColumns*/ {
+    interface IMediaStoreAudioAlbums {
         /**
          * The id for the album
          * <P>Type: INTEGER</P>
@@ -1665,14 +1637,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1685,6 +1657,13 @@ module {
         GetContentUri(
             [in] String volumeName,
             [out] IUri** uri);
+    }
+
+    interface IMediaStoreAudioRadio {
+        /**
+         * The MIME type for entries in this table.
+         */
+        const String ENTRY_CONTENT_TYPE = "vnd.android.cursor.item/radio";
     }
 
     [deprecated]
@@ -1827,14 +1806,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
@@ -1897,14 +1876,14 @@ module {
         /**
          * The content:// style URI for the internal storage.
          */
-        GetINTERNALCONTENTURI(
+        GetINTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**
          * The content:// style URI for the "primary" external storage
          * volume.
          */
-        GetEXTERNALCONTENTURI(
+        GetEXTERNAL_CONTENT_URI(
             [out] IUri** uri);
 
         /**

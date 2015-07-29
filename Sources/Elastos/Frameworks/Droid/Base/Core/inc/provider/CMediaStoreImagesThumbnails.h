@@ -20,14 +20,14 @@ public:
     /**
      * The content:// style URI for the internal storage.
      */
-    CARAPI GetINTERNALCONTENTURI(
+    CARAPI GetINTERNAL_CONTENT_URI(
         /* [out] */ IUri** uri);
 
     /**
      * The content:// style URI for the "primary" external storage
      * volume.
      */
-    CARAPI GetEXTERNALCONTENTURI(
+    CARAPI GetEXTERNAL_CONTENT_URI(
         /* [out] */ IUri** uri);
 
     CARAPI Query(

@@ -40,7 +40,7 @@ static AutoPtr<ArrayOf<String> > InitINTERNAL_COLUMNS()
     CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
     String internalContentUri;
     AutoPtr<IUri> uri;
-    am->GetINTERNALCONTENTURI((IUri**)&uri);
+    am->GetINTERNAL_CONTENT_URI((IUri**)&uri);
     uri->ToString(&internalContentUri);
 
     String info;
@@ -72,7 +72,7 @@ static AutoPtr<ArrayOf<String> > InitMEDIA_COLUMNS()
     CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
     String externalContentUri;
     AutoPtr<IUri> uri;
-    am->GetEXTERNALCONTENTURI((IUri**)&uri);
+    am->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
     uri->ToString(&externalContentUri);
 
     String info;
@@ -489,7 +489,7 @@ AutoPtr<ICursor> CRingtoneManager::GetInternalRingtones()
     AutoPtr<IMediaStoreAudioMedia> am;
     CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
     AutoPtr<IUri> uri;
-    am->GetINTERNALCONTENTURI((IUri**)&uri);
+    am->GetINTERNAL_CONTENT_URI((IUri**)&uri);
     return Query(uri, INTERNAL_COLUMNS,
         ConstructBooleanTrueWhereClause(&mFilterColumns, mIncludeDrm),
         NULL, IMediaStoreAudioMedia::DEFAULT_SORT_ORDER);
@@ -511,7 +511,7 @@ AutoPtr<ICursor> CRingtoneManager::GetMediaRingtones()
     AutoPtr<IMediaStoreAudioMedia> am;
     CMediaStoreAudioMedia::AcquireSingleton((IMediaStoreAudioMedia**)&am);
     AutoPtr<IUri> uri;
-    am->GetEXTERNALCONTENTURI((IUri**)&uri);
+    am->GetEXTERNAL_CONTENT_URI((IUri**)&uri);
 
     return (status.Equals(IEnvironment::MEDIA_MOUNTED) || status.Equals(IEnvironment::MEDIA_MOUNTED_READ_ONLY))
         ? Query(uri, MEDIA_COLUMNS,

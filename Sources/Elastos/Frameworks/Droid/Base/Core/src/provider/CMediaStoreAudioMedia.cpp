@@ -13,14 +13,14 @@ namespace Elastos {
 namespace Droid {
 namespace Provider {
 
-ECode CMediaStoreAudioMedia::GetINTERNALCONTENTURI(
+ECode CMediaStoreAudioMedia::GetINTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
     return GetContentUri(String("internal"), uri);
 }
 
-ECode CMediaStoreAudioMedia::GetEXTERNALCONTENTURI(
+ECode CMediaStoreAudioMedia::GetEXTERNAL_CONTENT_URI(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri);
@@ -48,9 +48,9 @@ ECode CMediaStoreAudioMedia::GetContentUriForPath(
     file->GetPath(&str);
 
     if(str.StartWith(path)) {
-        return GetINTERNALCONTENTURI(uri);
+        return GetINTERNAL_CONTENT_URI(uri);
     } else {
-        return GetEXTERNALCONTENTURI(uri);
+        return GetEXTERNAL_CONTENT_URI(uri);
     }
 }
 

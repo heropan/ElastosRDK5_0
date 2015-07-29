@@ -42,29 +42,15 @@ module
 
         interface IDhcpStateMachine {}
 
-        // interface IUri {}
-
-        // interface IUriBuilder {}
-
-        // interface ILocalServerSocket {}
-
-        // interface IInterfaceConfiguration {}
-
         interface ILinkCapabilities {}
 
         interface ILinkSocket {}
 
         interface ILinkQualityInfo {}
 
-        // interface INetworkManagementEventObserver {}
-
         interface INetwork {}
 
         interface INetworkCapabilities {}
-
-        // interface INetworkStats {}
-
-        // interface IRouteInfo {}
 
         interface ISamplingSnapshot {}
 
@@ -181,14 +167,6 @@ module
     } // namespace Http
     } // namespace Apache
     } // namespace Org
-
-    // namespace Elastos {
-    // namespace Utility {
-
-        // interface IHashSet {}
-
-    // }
-    // }
 
     namespace Elastos {
     namespace Droid {
