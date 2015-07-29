@@ -21,16 +21,6 @@ module
             [in] IPoint* p,
             [out] Boolean* result);
 
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hash);
-
-        ToString(
-            [out] String* info);
-
         GetX(
             [out] Int32* x);
 

@@ -61,6 +61,12 @@ module
         SetInPreferredConfig(
             [in] BitmapConfig config);
 
+        GetInPremultiplied(
+            [out] Boolean* inPremultiplied);
+
+        SetInPremultiplied(
+            [in] Boolean inPremultiplied);
+
         GetInDither(
             [out] Boolean* dither);
 
@@ -144,6 +150,8 @@ module
     * Creates Bitmap objects from various sources, including files, streams,
     * and byte-arrays.
     */
+
+    [deprecated]
     interface IBitmapFactory {
         /**
          * For backwards compatibility, allows the app layer to change the default
@@ -269,7 +277,7 @@ module
          *         the color array's length is less than the number of pixels.
          */
         CreateBitmap(
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 offset,
             [in] Int32 stride,
             [in] Int32 width,
@@ -293,7 +301,7 @@ module
          *         the color array's length is less than the number of pixels.
          */
         CreateBitmap(
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 width,
             [in] Int32 height,
             [in] BitmapConfig config,
@@ -339,7 +347,7 @@ module
          */
         CreateBitmap(
             [in] IDisplayMetrics* display,
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 offset,
             [in] Int32 stride,
             [in] Int32 width,
@@ -366,7 +374,7 @@ module
          */
         CreateBitmap(
             [in] IDisplayMetrics* display,
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 width,
             [in] Int32 height,
             [in] BitmapConfig config,
@@ -395,7 +403,7 @@ module
          *         size be returned (in opts.outWidth and opts.outHeight)
          */
         DecodeByteArray(
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [in] Int32 offset,
             [in] Int32 length,
             [in] IBitmapFactoryOptions* opts,
@@ -411,7 +419,7 @@ module
          * @return The decoded bitmap, or null if the image could not be decode.
          */
         DecodeByteArray(
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [in] Int32 offset,
             [in] Int32 length,
             [out] IBitmap** bitmap);

@@ -6,10 +6,10 @@ module
     namespace Graphics {
 
     enum BlurMaskFilterBlur {
-        BlurMaskFilterBlur_INNER = 3,   //!< just blur inside the original border
         BlurMaskFilterBlur_NORMAL = 0,  //!< blur inside and outside of the original border
-        BlurMaskFilterBlur_OUTER = 2,   //!< just blur outside the original border
         BlurMaskFilterBlur_SOLID = 1,   //!< include the original mask, blur outside
+        BlurMaskFilterBlur_OUTER = 2,   //!< just blur outside the original border
+        BlurMaskFilterBlur_INNER = 3,   //!< just blur inside the original border
     }
 
     /**

@@ -39,9 +39,10 @@ module
             [out] Boolean* result);
     }
 
+    [deprecated]
     interface IMovieHelper {
         DecodeByteArray(
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [in] Int32 offset,
             [in] Int32 length,
             [out] IMovie** movie);

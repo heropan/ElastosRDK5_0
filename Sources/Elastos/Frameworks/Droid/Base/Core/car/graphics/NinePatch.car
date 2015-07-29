@@ -12,6 +12,40 @@ module
     namespace Graphics {
 
     /**
+     * Struct of inset information attached to a 9 patch bitmap.
+     *
+     * Present on a 9 patch bitmap if it optical insets were manually included,
+     * or if outline insets were automatically included by aapt.
+     *
+     * @hide
+     */
+
+     interface INinePatchInsetStruct {
+        GetOpticalRect(
+            [out] IRect** rect);
+
+        SetOpticalRect(
+            [in] IRect* rect);
+
+        GetOutlineRect(
+            [out] IRect** rect);
+
+        SetOutlineRect(
+            [in] IRect* rect);
+
+        GetOutlineRadius(
+            [out] Float* radius);
+
+        SetOutlineRadius(
+            [in] Float radius);
+
+        GetOutlineAlpha(
+            [out] Float* radius);
+
+        SetOutlineAlpha(
+            [in] Float radius);
+     }
+    /**
      * The NinePatch class permits drawing a bitmap in nine sections.
      * The four corners are unscaled; the four edges are scaled in one axis,
      * and the middle is scaled in both axes. Normally, the middle is
@@ -28,7 +62,43 @@ module
      * using a WYSIWYG graphics editor.
      * </p>
      */
+    [deprecated]
     interface INinePatch {
+        /**
+         * Returns the name of this NinePatch object if one was specified
+         * when calling the constructor.
+         */
+        GetName(
+            [out] String* name);
+
+        /**
+         * Returns the paint used to draw this NinePatch. The paint can be null.
+         *
+         * @see #setPaint(Paint)
+         * @see #draw(Canvas, Rect)
+         * @see #draw(Canvas, RectF)
+         */
+        GetPaint(
+            [out] IPaint** paint);
+
+        /**
+         * Sets the paint to use when drawing the NinePatch.
+         *
+         * @param p The paint that will be used to draw this NinePatch.
+         *
+         * @see #getPaint()
+         * @see #draw(Canvas, Rect)
+         * @see #draw(Canvas, RectF)
+         */
+        SetPaint(
+            [in] IPaint* p);
+
+        /**
+         * Returns the bitmap used to draw this NinePatch.
+         */
+        GetBitmap(
+            [out] IBitmap** bp);
+
         /**
          * Draw a bitmap of nine patches.
          *
@@ -83,8 +153,17 @@ module
         HasAlpha(
             [out] Boolean* hasAlpha);
 
-        SetPaint(
-            [in] IPaint* paint);
+        /**
+         * Verifies that the specified byte array is a valid 9-patch data chunk.
+         *
+         * @param chunk A byte array representing a 9-patch data chunk.
+         *
+         * @return True if the specified byte array represents a 9-patch data chunk,
+         *         false otherwise.
+         */
+        IsNinePatchChunk(
+            [in] ArrayOf<Byte>* chunk,
+            [out] Boolean* rst);
     }
 
     [deprecated]

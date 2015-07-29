@@ -17,19 +17,20 @@ module
      * no contributions from red, green, or blue), and opaque-white would be
      * 0xFFFFFFFF
      */
+    [deprecated]
     interface IColor {
         const Int32 BLACK       = 0xFF000000;
-        const Int32 BLUE        = 0xFF0000FF;
-        const Int32 CYAN        = 0xFF00FFFF;
         const Int32 DKGRAY      = 0xFF444444;
         const Int32 GRAY        = 0xFF888888;
-        const Int32 GREEN       = 0xFF00FF00;
         const Int32 LTGRAY      = 0xFFCCCCCC;
-        const Int32 MAGENTA     = 0xFFFF00FF;
-        const Int32 RED         = 0xFFFF0000;
-        const Int32 TRANSPARENT = 0;
         const Int32 WHITE       = 0xFFFFFFFF;
+        const Int32 RED         = 0xFFFF0000;
+        const Int32 GREEN       = 0xFF00FF00;
+        const Int32 BLUE        = 0xFF0000FF;
         const Int32 YELLOW      = 0xFFFFFF00;
+        const Int32 CYAN        = 0xFF00FFFF;
+        const Int32 MAGENTA     = 0xFFFF00FF;
+        const Int32 TRANSPARENT = 0;
 
         /**
          * Returns the brightness component of a color int.
@@ -52,7 +53,7 @@ module
          * @return the resulting argb color
          */
         HSVToColor(
-            [in] ArrayOf<Float> hsv,
+            [in] ArrayOf<Float>* hsv,
             [out] Int32* color);
 
         /**
@@ -68,7 +69,7 @@ module
          */
         HSVToColor(
             [in] Int32 alpha,
-            [in] ArrayOf<Float> hsv,
+            [in] ArrayOf<Float>* hsv,
             [out] Int32* color);
 
         /**
@@ -85,7 +86,7 @@ module
             [in] Int32 red,
             [in] Int32 green,
             [in] Int32 blue,
-            [out] ArrayOf<Float> hsv);
+            [in] ArrayOf<Float>* hsv);
 
         /**
          * Return the alpha component of a color int. This is the same as saying
@@ -130,7 +131,7 @@ module
          */
         ColorToHSV(
             [in] Int32 color,
-            [out] ArrayOf<Float> hsv);
+            [in /* out */] ArrayOf<Float>* hsv);
 
         /**
          * Return the green component of a color int. This is the same as saying
@@ -211,7 +212,7 @@ module
          * @hide Pending API council
          */
         HSBtoColor(
-            [in] ArrayOf<Float> hsb,
+            [in] ArrayOf<Float>* hsb,
             [out] Int32* color);
 
         /**

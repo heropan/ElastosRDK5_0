@@ -20,6 +20,8 @@ module
      *   B' = k*R + l*G + m*B + n*A + o;
      *   A' = p*R + q*G + r*B + s*A + t;
      */
+
+    [deprecated]
     interface IColorMatrix {
         /**
          * Return the array of floats representing this colormatrix.
@@ -60,7 +62,7 @@ module
          * Assign the array of floats into this matrix, copying all of its values.
          */
         Set(
-            [in] ArrayOf<Float> src);
+            [in] ArrayOf<Float>* src);
 
         /**
          * Set this colormatrix to the concatenation of the two specified

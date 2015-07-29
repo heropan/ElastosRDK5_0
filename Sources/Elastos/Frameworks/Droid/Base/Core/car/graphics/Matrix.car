@@ -51,6 +51,8 @@ module
      * using either reset() - to construct an identity matrix, or one of the set..()
      * functions (e.g. setTranslate, setRotate, etc.).
      */
+
+    [deprecated]
     interface IMatrix {
         const Int32 MSCALE_X = 0;   //!< use with getValues/setValues
         const Int32 MSKEW_X  = 1;   //!< use with getValues/setValues
@@ -68,18 +70,11 @@ module
             [in] IMatrix* matrix,
             [out] Boolean* isEqual);
 
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hash);
-
         /**
          * Copy 9 values from the matrix into the array.
          */
         GetValues(
-            [out] ArrayOf<Float> values);
+            [in /* out */] ArrayOf<Float>* values);
 
         /**
          * If this matrix can be inverted, return true and if inverse is not null,
@@ -98,6 +93,15 @@ module
             [out] Boolean* isIdentity);
 
         /**
+         * Gets whether this matrix is affine. An affine matrix preserves
+         * straight lines and has no perspective.
+         *
+         * @return Whether the matrix is affine.
+         */
+        IsAffine(
+            [out] Boolean* isAffine);
+
+        /**
          * Apply this matrix to the array of 2D points specified by src, and write
          * the transformed points into the array of points specified by dst. The
          * two arrays represent their "points" as pairs of floats [x, y].
@@ -109,9 +113,9 @@ module
          * @param pointCount The number of points (x,y pairs) to transform
          */
         MapPoints(
-            [out] ArrayOf<Float> dst,
+            [in] ArrayOf<Float>* dst,
             [in] Int32 dstIndex,
-            [in] ArrayOf<Float> src,
+            [in] ArrayOf<Float>* src,
             [in] Int32 srcIndex,
             [in] Int32 pointCount);
 
@@ -124,8 +128,8 @@ module
          * @param src   The array of src points (x,y pairs)
          */
         MapPoints(
-            [out] ArrayOf<Float> dst,
-            [in] ArrayOf<Float> src);
+            [in /* out*/] ArrayOf<Float>* dst,
+            [in] ArrayOf<Float>* src);
 
         /**
          * Apply this matrix to the array of 2D points, and write the transformed
@@ -134,7 +138,7 @@ module
          * @param pts The array [x0, y0, x1, y1, ...] of points to transform.
          */
         MapPoints(
-            [/*in, */out] ArrayOf<Float> pts);
+            [in /* out */] ArrayOf<Float>* pts);
 
         /**
          * Return the mean radius of a circle after it has been mapped by
@@ -188,9 +192,9 @@ module
          * @param vectorCount The number of vectors (x,y pairs) to transform
          */
         MapVectors(
-            [out] ArrayOf<Float> dst,
+            [in /* out */] ArrayOf<Float>* dst,
             [in] Int32 dstIndex,
-            [in] ArrayOf<Float> src,
+            [in] ArrayOf<Float>* src,
             [in] Int32 srcIndex,
             [in] Int32 vectorCount);
 
@@ -208,8 +212,8 @@ module
          * @param src   The array of src vectors (x,y pairs)
          */
         MapVectors(
-            [out] ArrayOf<Float> dst,
-            [in] ArrayOf<Float> src);
+            [in /* out */] ArrayOf<Float>* dst,
+            [in] ArrayOf<Float>* src);
 
         /**
          * Apply this matrix to the array of 2D vectors, and write the transformed
@@ -223,7 +227,7 @@ module
          * @param vecs The array [x0, y0, x1, y1, ...] of vectors to transform.
          */
         MapVectors(
-            [/* in, */out] ArrayOf<Float> vecs);
+            [in /* out */] ArrayOf<Float>* vecs);
 
         /**
          * Postconcats the matrix with the specified matrix.
@@ -425,9 +429,9 @@ module
          * @return true if the matrix was set to the specified transformation
          */
         SetPolyToPoly(
-            [in] ArrayOf<Float> src,
+            [in] ArrayOf<Float>* src,
             [in] Int32 srcIndex,
-            [out] ArrayOf<Float> dst,
+            [in] ArrayOf<Float>* dst,
             [in] Int32 dstIndex,
             [in] Int32 pointCount,
             [out] Boolean* result);
@@ -533,10 +537,7 @@ module
          * the same values.
          */
         SetValues(
-            [in] ArrayOf<Float> values);
-
-        ToString(
-            [out] String* str) ;
+            [in] ArrayOf<Float>* values);
 
         ToShortString(
             [out] String* str);

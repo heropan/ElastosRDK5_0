@@ -67,6 +67,7 @@ module
         Recycle();
     }
 
+    [deprecated]
     interface IBitmapRegionDecoderHelper {
         /**
          * Create a BitmapRegionDecoder from the specified byte array.
@@ -90,7 +91,7 @@ module
          * IOException | if the image format is not supported or can not be decoded.
          */
         NewInstance(
-            [in] ArrayOf<Byte> data,
+            [in] ArrayOf<Byte>* data,
             [in] Int32 offset,
             [in] Int32 length,
             [in] Boolean isShareable,

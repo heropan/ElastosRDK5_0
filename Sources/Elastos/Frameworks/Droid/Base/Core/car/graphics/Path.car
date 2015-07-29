@@ -14,9 +14,9 @@ module
      */
     enum PathDirection {
         /** clockwise */
-        PathDirection_CW = 0,    // must match enum in SkPath.h
+        PathDirection_CW = 1,    // must match enum in SkPath.h
         /** counter-clockwise */
-        PathDirection_CCW = 1,    // must match enum in SkPath.h
+        PathDirection_CCW = 2,    // must match enum in SkPath.h
     }
 
     /** Enum for the ways a path may be filled
@@ -30,12 +30,43 @@ module
     }
 
     /**
+     * The logical operations that can be performed when combining two paths.
+     *
+     * @see #op(Path, android.graphics.Path.Op)
+     * @see #op(Path, Path, android.graphics.Path.Op)
+     */
+    enum PathOp {
+        /**
+         * Subtract the second path from the first path.
+         */
+        PathOp_DIFFERENCE = 0,
+        /**
+         * Intersect the two paths.
+         */
+        PathOp_INTERSECT = 1,
+        /**
+         * Union (inclusive-or) the two paths.
+         */
+        PathOp_UNION = 2,
+        /**
+         * Exclusive-or the two paths.
+         */
+        PathOp_XOR = 3,
+        /**
+         * Subtract the first path from the second path.
+         */
+        PathOp_REVERSE_DIFFERENCE = 4
+    }
+
+    /**
      * The Path class encapsulates compound (multiple contour) geometric paths
      * consisting of straight line segments, quadratic curves, and cubic curves.
      * It can be drawn with canvas.drawPath(path, paint), either filled or stroked
      * (based on the paint's Style), or it can be used for clipping or to draw
      * text on a path.
      */
+
+    [deprecated]
     interface IPath {
         /**
          * Add the specified arc to the path as a new contour.
@@ -46,6 +77,20 @@ module
          */
         AddArc(
             [in] IRectF* oval,
+            [in] Float startAngle,
+            [in] Float sweepAngle);
+
+        /**
+         * Add the specified arc to the path as a new contour.
+         *
+         * @param startAngle Starting angle (in degrees) where the arc begins
+         * @param sweepAngle Sweep angle (in degrees) measured clockwise
+         */
+        AddArc(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
             [in] Float startAngle,
             [in] Float sweepAngle);
 
@@ -71,6 +116,18 @@ module
          */
         AddOval(
             [in] IRectF* oval,
+            [in] PathDirection dir);
+
+        /**
+         * Add a closed oval contour to the path
+         *
+         * @param dir The direction to wind the oval's contour
+         */
+        AddOval(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
             [in] PathDirection dir);
 
         /**
@@ -152,43 +209,24 @@ module
          */
         AddRoundRect(
             [in] IRectF* rect,
-            [in] ArrayOf<Float> radii,
+            [in] ArrayOf<Float>* radii,
             [in] PathDirection dir);
 
         /**
-         * Append the specified arc to the path as a new contour. If the start of
-         * the path is different from the path's current last point, then an
-         * automatic lineTo() is added to connect the current contour to the
-         * start of the arc. However, if the path is empty, then we call moveTo()
-         * with the first point of the arc. The sweep angle is tread mod 360.
+         * Add a closed round-rectangle contour to the path
          *
-         * @param oval        The bounds of oval defining shape and size of the arc
-         * @param startAngle  Starting angle (in degrees) where the arc begins
-         * @param sweepAngle  Sweep angle (in degrees) measured clockwise, treated
-         *                    mod 360.
-         * @param forceMoveTo If true, always begin a new contour with the arc
+         * @param rx   The x-radius of the rounded corners on the round-rectangle
+         * @param ry   The y-radius of the rounded corners on the round-rectangle
+         * @param dir  The direction to wind the round-rectangle's contour
          */
-        ArcTo(
-            [in] IRectF* oval,
-            [in] Float startAngle,
-            [in] Float sweepAngle,
-            [in] Boolean forceMoveTo);
-
-        /**
-         * Append the specified arc to the path as a new contour. If the start of
-         * the path is different from the path's current last point, then an
-         * automatic lineTo() is added to connect the current contour to the
-         * start of the arc. However, if the path is empty, then we call moveTo()
-         * with the first point of the arc.
-         *
-         * @param oval        The bounds of oval defining shape and size of the arc
-         * @param startAngle  Starting angle (in degrees) where the arc begins
-         * @param sweepAngle  Sweep angle (in degrees) measured clockwise
-         */
-        ArcTo(
-            [in] IRectF* oval,
-            [in] Float startAngle,
-            [in] Float sweepAngle);
+        AddRoundRect(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] Float rx,
+            [in] Float ry,
+            [in] PathDirection dir);
 
         /**
          * Close the current contour. If the current point is not equal to the
@@ -350,6 +388,63 @@ module
             [in] Float x3,
             [in] Float y3);
 
+
+        /**
+         * Append the specified arc to the path as a new contour. If the start of
+         * the path is different from the path's current last point, then an
+         * automatic lineTo() is added to connect the current contour to the
+         * start of the arc. However, if the path is empty, then we call moveTo()
+         * with the first point of the arc.
+         *
+         * @param oval        The bounds of oval defining shape and size of the arc
+         * @param startAngle  Starting angle (in degrees) where the arc begins
+         * @param sweepAngle  Sweep angle (in degrees) measured clockwise, treated
+         *                    mod 360.
+         * @param forceMoveTo If true, always begin a new contour with the arc
+         */
+        ArcTo(
+            [in] IRectF* oval,
+            [in] Float startAngle,
+            [in] Float sweepAngle,
+            [in] Boolean forceMoveTo);
+
+        /**
+         * Append the specified arc to the path as a new contour. If the start of
+         * the path is different from the path's current last point, then an
+         * automatic lineTo() is added to connect the current contour to the
+         * start of the arc. However, if the path is empty, then we call moveTo()
+         * with the first point of the arc.
+         *
+         * @param oval        The bounds of oval defining shape and size of the arc
+         * @param startAngle  Starting angle (in degrees) where the arc begins
+         * @param sweepAngle  Sweep angle (in degrees) measured clockwise
+         */
+        ArcTo(
+            [in] IRectF* oval,
+            [in] Float startAngle,
+            [in] Float sweepAngle);
+
+        /**
+         * Append the specified arc to the path as a new contour. If the start of
+         * the path is different from the path's current last point, then an
+         * automatic lineTo() is added to connect the current contour to the
+         * start of the arc. However, if the path is empty, then we call moveTo()
+         * with the first point of the arc.
+         *
+         * @param startAngle  Starting angle (in degrees) where the arc begins
+         * @param sweepAngle  Sweep angle (in degrees) measured clockwise, treated
+         *                    mod 360.
+         * @param forceMoveTo If true, always begin a new contour with the arc
+         */
+        ArcTo(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] Float startAngle,
+            [in] Float sweepAngle,
+            [in] Boolean forceMoveTo);
+
         /**
          * Same as lineTo, but the coordinates are considered relative to the last
          * point on this contour. If there is no previous point, then a moveTo(0,0)
@@ -416,6 +511,58 @@ module
             [in] IPath* src);
 
         /**
+         * Set this path to the result of applying the Op to this path and the specified path.
+         * The resulting path will be constructed from non-overlapping contours.
+         * The curve order is reduced where possible so that cubics may be turned
+         * into quadratics, and quadratics maybe turned into lines.
+         *
+         * @param path The second operand (for difference, the subtrahend)
+         *
+         * @return True if operation succeeded, false otherwise and this path remains unmodified.
+         *
+         * @see Op
+         * @see #op(Path, Path, android.graphics.Path.Op)
+         */
+        Op(
+            [in] IPath* path,
+            [in] PathOp op,
+            [out] Boolean* rst);
+
+        /**
+         * Set this path to the result of applying the Op to the two specified paths.
+         * The resulting path will be constructed from non-overlapping contours.
+         * The curve order is reduced where possible so that cubics may be turned
+         * into quadratics, and quadratics maybe turned into lines.
+         *
+         * @param path1 The first operand (for difference, the minuend)
+         * @param path2 The second operand (for difference, the subtrahend)
+         *
+         * @return True if operation succeeded, false otherwise and this path remains unmodified.
+         *
+         * @see Op
+         * @see #op(Path, android.graphics.Path.Op)
+         */
+        Op(
+            [in] IPath* path1,
+            [in] IPath* path2,
+            [in] PathOp op,
+            [out] Boolean* rst);
+
+        /**
+         * Returns the path's convexity, as defined by the content of the path.
+         * <p>
+         * A path is convex if it has a single contour, and only ever curves in a
+         * single direction.
+         * <p>
+         * This function will calculate the convexity of the path from its control
+         * points, and cache the result.
+         *
+         * @return True if the path is convex.
+         */
+        IsConvex(
+            [out] Boolean* isConvex);
+
+        /**
          * Set the path's fill type. This defines how "inside" is computed.
          *
          * @param ft The new fill type for this path
@@ -457,6 +604,28 @@ module
          */
         Transform(
             [in] IMatrix* matrix);
+
+        /**
+         * Approximate the <code>Path</code> with a series of line segments.
+         * This returns float[] with the array containing point components.
+         * There are three components for each point, in order:
+         * <ul>
+         *     <li>Fraction along the length of the path that the point resides</li>
+         *     <li>The x coordinate of the point</li>
+         *     <li>The y coordinate of the point</li>
+         * </ul>
+         * <p>Two points may share the same fraction along its length when there is
+         * a move action within the Path.</p>
+         *
+         * @param acceptableError The acceptable error for a line on the
+         *                        Path. Typically this would be 0.5 so that
+         *                        the error is less than half a pixel.
+         * @return An array of components for points approximating the Path.
+         * @hide
+         */
+        Approximate(
+            [in] Float acceptableError,
+            [out, callee] ArrayOf<Float>* rst);
     }
 
     } // namespace Graphics

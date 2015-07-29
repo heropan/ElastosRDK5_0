@@ -8,6 +8,7 @@ module
     namespace Droid {
     namespace Graphics {
 
+    [deprecated]
     interface IPathMeasure {
         const Int32 POSITION_MATRIX_FLAG = 0x01;    // must match flags in SkPathMeasure.h
         const Int32 TANGENT_MATRIX_FLAG  = 0x02;    // must match flags in SkPathMeasure.h
@@ -48,8 +49,8 @@ module
          */
         GetPosTan(
             [in] Float distance,
-            [out] ArrayOf<Float> pos,
-            [out] ArrayOf<Float> tan,
+            [in /* out*/] ArrayOf<Float>* pos,
+            [in /* out*/] ArrayOf<Float>* tan,
             [out] Boolean* result);
 
         /**

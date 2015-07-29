@@ -13,6 +13,11 @@ module
      * the rectangle's width and height. Note: most methods do not check to see that
      * the coordinates are sorted correctly (i.e. left <= right and top <= bottom).
      */
+
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IRect {
         /**
          * Returns true if (x,y) is inside the rectangle. The left and top are
@@ -380,6 +385,17 @@ module
 
         SetRight(
             [in] Int32 right);
+    }
+
+    interface IRectHelper {
+
+    /**
+     * Returns a Rect from a string of the form returned by {@link #flattenToString},
+     * or null if the string is not of that form.
+     */
+        UnflattenFromString(
+            [in] String str,
+            [out] IRect** rect);
     }
 
     } // namespace Graphics

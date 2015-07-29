@@ -6,6 +6,7 @@ module
     enum Elastos.Droid.Graphics.PorterDuffMode;
     enum Elastos.Droid.Graphics.RegionOp;
     interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.INinePatch;
     interface Elastos.Droid.Graphics.IDrawFilter;
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.IPaint;
@@ -26,8 +27,8 @@ module
 
     enum CanvasVertexMode {
         CanvasVertexMode_TRIANGLES = 0x00,
-        CanvasVertexMode_TRIANGLE_FAN = 0x02,
         CanvasVertexMode_TRIANGLE_STRIP = 0x01,
+        CanvasVertexMode_TRIANGLE_FAN = 0x02,
     }
 
     /**
@@ -294,6 +295,37 @@ module
             [in] IPaint* paint);
 
         /**
+         * <p>Draw the specified arc, which will be scaled to fit inside the
+         * specified oval.</p>
+         *
+         * <p>If the start angle is negative or >= 360, the start angle is treated
+         * as start angle modulo 360.</p>
+         *
+         * <p>If the sweep angle is >= 360, then the oval is drawn
+         * completely. Note that this differs slightly from SkPath::arcTo, which
+         * treats the sweep angle modulo 360. If the sweep angle is negative,
+         * the sweep angle is treated as sweep angle modulo 360</p>
+         *
+         * <p>The arc is drawn clockwise. An angle of 0 degrees correspond to the
+         * geometric angle of 0 degrees (3 o'clock on a watch.)</p>
+         *
+         * @param startAngle Starting angle (in degrees) where the arc begins
+         * @param sweepAngle Sweep angle (in degrees) measured clockwise
+         * @param useCenter If true, include the center of the oval in the arc, and
+                            close it if it is being stroked. This will draw a wedge
+         * @param paint      The paint used to draw the arc
+         */
+        DrawArc(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] Float startAngle,
+            [in] Float sweepAngle,
+            [in] Boolean useCenter,
+            [in] IPaint* paint);
+
+        /**
          * Draw the specified bitmap, with its top/left corner at (x,y), using
          * the specified paint, transformed by the current matrix.
          *
@@ -394,7 +426,7 @@ module
          * @param paint    May be null. The paint used to draw the bitmap
          */
         DrawBitmap(
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 offset,
             [in] Int32 stride,
             [in] Float x,
@@ -408,7 +440,7 @@ module
          * Legacy version of drawBitmap(int[] colors, ...) that took ints for x,y
          */
         DrawBitmap(
-            [in] ArrayOf<Int32> colors,
+            [in] ArrayOf<Int32>* colors,
             [in] Int32 offset,
             [in] Int32 stride,
             [in] Int32 x,
@@ -460,7 +492,7 @@ module
             [in] IBitmap* bitmap,
             [in] Int32 meshWidth,
             [in] Int32 meshHeight,
-            [in] ArrayOf<Float> verts,
+            [in] ArrayOf<Float>* verts,
             [in] Int32 vertOffset,
             [in] ArrayOf<Int32>* colors,
             [in] Int32 colorOffset,
@@ -534,13 +566,13 @@ module
          * @param paint    The paint used to draw the points
          */
         DrawLines(
-            [in] ArrayOf<Float> pts,
+            [in] ArrayOf<Float>* pts,
             [in] Int32 offset,
             [in] Int32 count,
             [in] IPaint* paint);
 
         DrawLines(
-            [in] ArrayOf<Float> pts,
+            [in] ArrayOf<Float>* pts,
             [in] IPaint* paint);
 
         /**
@@ -551,6 +583,17 @@ module
          */
         DrawOval(
             [in] IRectF* oval,
+            [in] IPaint* paint);
+
+        /**
+         * Draw the specified oval using the specified paint. The oval will be
+         * filled or framed based on the Style in the paint.
+         */
+        DrawOval(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
             [in] IPaint* paint);
 
         /**
@@ -566,18 +609,28 @@ module
         /**
          * Draws the specified bitmap as an N-patch (most often, a 9-patches.)
          *
-         * Note: Only supported by hardware accelerated canvas at the moment.
-         *
-         * @param bitmap The bitmap to draw as an N-patch
-         * @param chunks The patches information (matches the native struct Res_png_9patch)
+         * @param patch The ninepatch object to render
          * @param dst The destination rectangle.
          * @param paint The paint to draw the bitmap with. may be null
          *
          * @hide
          */
         DrawPatch(
-            [in] IBitmap* bitmap,
-            [in] ArrayOf<Byte> chunks,
+            [in] INinePatch* patch,
+            [in] IRect* dst,
+            [in] IPaint* paint);
+
+        /**
+         * Draws the specified bitmap as an N-patch (most often, a 9-patches.)
+         *
+         * @param patch The ninepatch object to render
+         * @param dst The destination rectangle.
+         * @param paint The paint to draw the bitmap with. may be null
+         *
+         * @hide
+         */
+        DrawPatch(
+            [in] INinePatch* patch,
             [in] IRectF* dst,
             [in] IPaint* paint);
 
@@ -641,7 +694,7 @@ module
          * @param paint    The paint used to draw the points
          */
         DrawPoints(
-            [in] ArrayOf<Float> pts,
+            [in] ArrayOf<Float>* pts,
             [in] Int32 offset,
             [in] Int32 count,
             [in] IPaint* paint);
@@ -650,7 +703,7 @@ module
          * Helper for drawPoints() that assumes you want to draw the entire array
          */
         DrawPoints(
-            [in] ArrayOf<Float> pts,
+            [in] ArrayOf<Float>* pts,
             [in] IPaint* paint);
 
         /**
@@ -665,10 +718,10 @@ module
          * @param paint    The paint used for the text (e.g. color, size, style)
          */
         DrawPosText(
-            [in] ArrayOf<Char32> text,
+            [in] ArrayOf<Char32>* text,
             [in] Int32 index,
             [in] Int32 count,
-            [in] ArrayOf<Float> pos,
+            [in] ArrayOf<Float>* pos,
             [in] IPaint* paint);
 
         /**
@@ -681,7 +734,7 @@ module
          */
         DrawPosText(
             [in] String text,
-            [in] ArrayOf<Float> pos,
+            [in] ArrayOf<Float>* pos,
             [in] IPaint* paint);
 
         /**
@@ -693,6 +746,21 @@ module
          * @param b blue component (0..255) of the color to draw onto the canvas
          */
         DrawRGB(
+            [in] Int32 r,
+            [in] Int32 g,
+            [in] Int32 b);
+
+        /**
+         * Fill the entire canvas' bitmap (restricted to the current clip) with the
+         * specified ARGB color, using srcover porterduff mode.
+         *
+         * @param a alpha component (0..255) of the color to draw onto the canvas
+         * @param r red component (0..255) of the color to draw onto the canvas
+         * @param g green component (0..255) of the color to draw onto the canvas
+         * @param b blue component (0..255) of the color to draw onto the canvas
+         */
+        DrawRGB(
+            [in] Int32 a,
             [in] Int32 r,
             [in] Int32 g,
             [in] Int32 b);
@@ -752,6 +820,22 @@ module
             [in] IPaint* paint);
 
         /**
+         * Draw the specified round-rect using the specified paint. The roundrect
+         * will be filled or framed based on the Style in the paint.
+         *
+         * @param rx    The x-radius of the oval used to round the corners
+         * @param ry    The y-radius of the oval used to round the corners
+         * @param paint The paint used to draw the roundRect
+         */
+        DrawRoundRect(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] Float rx,
+            [in] Float ry,
+            [in] IPaint* paint);
+        /**
          * Draw the text, with origin at (x,y), using the specified paint. The
          * origin is interpreted based on the Align setting in the paint.
          *
@@ -761,7 +845,7 @@ module
          * @param paint The paint used for the text (e.g. color, size, style)
          */
         DrawText(
-            [in] ArrayOf<Char32> text,
+            [in] ArrayOf<Char32>* text,
             [in] Int32 index,
             [in] Int32 count,
             [in] Float x,
@@ -837,7 +921,7 @@ module
          * @param paint    The paint used for the text (e.g. color, size, style)
          */
         DrawTextOnPath(
-            [in] ArrayOf<Char32> text,
+            [in] ArrayOf<Char32>* text,
             [in] Int32 index,
             [in] Int32 count,
             [in] IPath* path,
@@ -889,14 +973,14 @@ module
          * @hide
          */
         DrawTextRun(
-            [in] ArrayOf<Char32> text,
+            [in] ArrayOf<Char32>* text,
             [in] Int32 index,
             [in] Int32 count,
             [in] Int32 contextIndex,
             [in] Int32 contextCount,
             [in] Float x,
             [in] Float y,
-            [in] Int32 dir,
+            [in] Boolean isRtl,
             [in] IPaint* paint);
 
         /**
@@ -924,7 +1008,7 @@ module
             [in] Int32 contextEnd,
             [in] Float x,
             [in] Float y,
-            [in] Int32 dir,
+            [in] Boolean isRtl,
             [in] IPaint* paint);
 
         /**
@@ -960,7 +1044,7 @@ module
         DrawVertices(
             [in] CanvasVertexMode mode,
             [in] Int32 vertexCount,
-            [in] ArrayOf<Float> verts,
+            [in] ArrayOf<Float>* verts,
             [in] Int32 vertOffset,
             [in] ArrayOf<Float>* texs,
             [in] Int32 texOffset,
@@ -1245,6 +1329,14 @@ module
             [out] Int32* result);
 
         /**
+         * Convenience for saveLayer(bounds, paint, {@link #ALL_SAVE_FLAG})
+         */
+        SaveLayer(
+            [in] IRectF* bounds,
+            [in] IPaint* paint,
+            [out] Int32* result);
+
+        /**
          * Helper version of saveLayer() that takes 4 values rather than a RectF.
          */
         SaveLayer(
@@ -1254,6 +1346,17 @@ module
             [in] Float bottom,
             [in] IPaint* paint,
             [in] Int32 saveFlags,
+            [out] Int32* result);
+
+        /**
+         * Convenience for saveLayer(left, top, right, bottom, paint, {@link #ALL_SAVE_FLAG})
+         */
+        SaveLayer(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] IPaint* paint,
             [out] Int32* result);
 
         /**
@@ -1279,6 +1382,14 @@ module
             [out] Int32* result);
 
         /**
+         * Convenience for saveLayerAlpha(bounds, alpha, {@link #ALL_SAVE_FLAG})
+         */
+       SaveLayerAlpha(
+            [in] IRectF* bounds,
+            [in] Int32 alpha,
+            [out] Int32* result);
+
+        /**
          * Helper for saveLayerAlpha() that takes 4 values instead of a RectF.
          */
         SaveLayerAlpha(
@@ -1288,6 +1399,17 @@ module
             [in] Float bottom,
             [in] Int32 alpha,
             [in] Int32 saveFlags,
+            [out] Int32* result);
+
+        /**
+         * Helper for saveLayerAlpha(left, top, right, bottom, alpha, {@link #ALL_SAVE_FLAG})
+         */
+        SaveLayerAlpha(
+            [in] Float left,
+            [in] Float top,
+            [in] Float right,
+            [in] Float bottom,
+            [in] Int32 alpha,
             [out] Int32* result);
 
         /**

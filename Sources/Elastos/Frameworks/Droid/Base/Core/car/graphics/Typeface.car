@@ -34,6 +34,7 @@ module
             [out] Boolean* isItalic);
     }
 
+    [deprecated]
     interface ITypefaceHelper {
         /**
          * Create a typeface object given a family name, and option style information.
@@ -120,6 +121,27 @@ module
         SetGammaForText(
             [in] Float blackGamma,
             [in] Float whiteGamma);
+
+        /**
+         * Create a new typeface from an array of font families.
+         *
+         * @param families array of font families
+         * @hide
+         */
+        CreateFromFamilies(
+            [in] ArrayOf<IFontFamily>* families,
+            [out] ITypeface** typeface);
+
+        /**
+         * Create a new typeface from an array of font families, including
+         * also the font families in the fallback list.
+         *
+         * @param families array of font families
+         * @hide
+         */
+        CreateFromFamiliesWithDefault(
+            [in] ArrayOf<IFontFamily>* families,
+            [out] ITypeface** typeface);
     }
 
     } // namespace Graphics

@@ -16,6 +16,10 @@ module
         RegionOp_REPLACE = 0x05,
     }
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IRegion {
         /**
          * Return true if the region contains the specified point
@@ -260,16 +264,6 @@ module
         Equals(
             [in] IRegion* region,
             [out] Boolean* result);
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hash);
-
-        ToString(
-            [out] String* info);
 
         GetNativeRegion(
             [out] Handle32* region);

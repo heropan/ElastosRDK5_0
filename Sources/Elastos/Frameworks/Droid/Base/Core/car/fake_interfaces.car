@@ -98,37 +98,6 @@ module
 
     }}} // Elastos.Droid.Privacy
 
-
-    //
-    // Elastos.Droid.Graphics
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Graphics {
-
-        interface IPointF {}
-
-        interface IRect {}
-
-        interface IRegion {}
-
-        interface ICanvas {}
-
-        interface IBitmap {}
-
-        interface IBitmapFactory {}
-
-        interface IBitmapFactoryOptions {}
-
-        interface IMovie {}
-
-        namespace Drawable {
-            interface IDrawable {}
-
-        } // Elastos.Droid.Graphics.Drawable
-
-    }}} // Elastos.Droid.Graphics
-
     //
     // Elastos.Droid.View
     //

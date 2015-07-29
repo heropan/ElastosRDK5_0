@@ -14,6 +14,11 @@ module
      * the rectangle's width and height. Note: most methods do not check to see that
      * the coordinates are sorted correctly (i.e. left <= right and top <= bottom).
      */
+
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IRectF {
         /**
          * @return the horizontal center of the rectangle. This does not check for
@@ -342,21 +347,29 @@ module
             [in] IRectF* r,
             [out] Boolean* result);
 
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* isEqual);
-
-        GetHashCode(
-            [out] Int32* hash);
-
-        ToString(
-            [out] String* info);
-
         /**
          * Return a string representation of the rectangle in a compact form.
          */
         ToShortString(
             [out] String* str);
+    }
+
+    interface IRectFHelper {
+
+        /**
+         * Returns true iff the two specified rectangles intersect. In no event are
+         * either of the rectangles modified. To record the intersection,
+         * use intersect() or setIntersect().
+         *
+         * @param a The first rectangle being tested for intersection
+         * @param b The second rectangle being tested for intersection
+         * @return true iff the two specified rectangles intersect. In no event are
+         *              either of the rectangles modified.
+         */
+        Intersects(
+            [in] IRectF* a,
+            [in] IRectF* b,
+            [out] Boolean* rst);
     }
 
     } // namespace Graphics
