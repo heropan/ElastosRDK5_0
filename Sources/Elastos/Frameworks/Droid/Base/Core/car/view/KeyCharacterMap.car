@@ -13,6 +13,13 @@ module
         const Int32 META_LENGTH = 4;
     }
 
+    /**
+     * Describes the keys provided by a keyboard device and their associated labels.
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     [deprecated]
     interface IKeyCharacterMap {
         /**
@@ -220,7 +227,7 @@ module
          */
         GetMatch(
             [in] Int32 keyCode,
-            [in] ArrayOf<Char32> chars,
+            [in] ArrayOf<Char32>* chars,
             [out] Char32* match);
 
         /**
@@ -235,7 +242,7 @@ module
          */
         GetMatch(
             [in] Int32 keyCode,
-            [in] ArrayOf<Char32> chars,
+            [in] ArrayOf<Char32>* chars,
             [in] Int32 metaState,
             [out] Char32* match);
 
@@ -354,6 +361,7 @@ module
             [out] Int32* map);
     }
 
+    [deprecated]
     interface IKeyCharacterMapHelper {
         /**
          * Loads the key character maps for the keyboard with the specified device id.
@@ -403,7 +411,7 @@ module
          * at the same index in the key codes array.
          */
         DeviceHasKeys(
-            [in] ArrayOf<Int32> keyCodes,
+            [in] ArrayOf<Int32>* keyCodes,
             [out, callee] ArrayOf<Boolean>* hasKeys);
     }
 

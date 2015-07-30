@@ -1,22 +1,21 @@
 
 module
 {
-    using interface Elastos.Core.IObjectContainer;
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Internal.View.IInputMethodClient;
     interface Elastos.Droid.Internal.View.IInputContext;
     interface Elastos.Droid.View.IWindowSession;
     interface Elastos.Droid.View.IApplicationToken;
-    interface Elastos.Droid.View.IIInputFilter;
-    interface Elastos.Droid.View.IDisplayContentChangeListener;
-    interface Elastos.Droid.View.IWindowInfo;
     interface Elastos.Droid.View.IOnKeyguardExitResult;
     interface Elastos.Droid.View.IRotationWatcher;
+    interface Elastos.Droid.View.IWindowSessionCallback;
+    interface Elastos.Droid.View.IWindowContentFrameStats;
+    interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Content.Res.ICompatibilityInfo;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Os.IIRemoteCallback;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IBitmap;
 
@@ -27,7 +26,7 @@ module
 
     [deprecated]
     interface IIWindowManager {
-        /**
+         /**
          * ===== NOTICE =====
          * The first three methods must remain the first three methods. Scripts
          * and tools rely on their transaction number to work properly.
@@ -35,151 +34,142 @@ module
         // This is used for debugging
         StartViewServer(
             [in] Int32 port,
-            [out] Boolean* result);
-
-        StopViewServer(
-            [out] Boolean* result);
-
+            [out] Boolean* result);   // Transaction #1
+        StopViewServer();            // Transaction #2
         IsViewServerRunning(
-            [out] Boolean* result);
+            [out] Boolean* result);       // Transaction #3
 
         OpenSession(
+            [in] IWindowSessionCallback* cb,
             [in] IInputMethodClient* client,
             [in] IInputContext* inputContext,
             [out] IWindowSession** session);
-
         InputMethodClientHasFocus(
             [in] IInputMethodClient* client,
             [out] Boolean* result);
 
+        GetInitialDisplaySize(
+            [in] Int32 displayId,
+            [out] IPoint** size);
+        GetBaseDisplaySize(
+            [in] Int32 displayId,
+            [out] IPoint** size);
         SetForcedDisplaySize(
             [in] Int32 displayId,
             [in] Int32 width,
             [in] Int32 height);
-
         ClearForcedDisplaySize(
             [in] Int32 displayId);
-
+        GetInitialDisplayDensity(
+            [in] Int32 displayId,
+            [out] Int32* result);
+        GetBaseDisplayDensity(
+            [in] Int32 displayId,
+            [out] Int32* result);
         SetForcedDisplayDensity(
             [in] Int32 displayId,
             [in] Int32 density);
-
         ClearForcedDisplayDensity(
             [in] Int32 displayId);
 
-        // Is the device configured to have a full system bar for larger screens?
-        HasSystemNavBar(
-            [out] Boolean* result);
+        SetOverscan(
+            [in] Int32 displayId,
+            [in] Int32 left,
+            [in] Int32 top,
+            [in] Int32 right,
+            [in] Int32 bottom);
 
         // These can only be called when holding the MANAGE_APP_TOKENS permission.
         PauseKeyDispatching(
             [in] IBinder* token);
-
         ResumeKeyDispatching(
             [in] IBinder* token);
-
         SetEventDispatching(
             [in] Boolean enabled);
-
         AddWindowToken(
             [in] IBinder* token,
             [in] Int32 type);
-
         RemoveWindowToken(
             [in] IBinder* token);
-
         AddAppToken(
             [in] Int32 addPos,
-            [in] Int32 userId,
             [in] IApplicationToken* token,
             [in] Int32 groupId,
+            [in] Int32 stackId,
             [in] Int32 requestedOrientation,
             [in] Boolean fullscreen,
-            [in] Boolean showWhenLocked);
-
+            [in] Boolean showWhenLocked,
+            [in] Int32 userId,
+            [in] Int32 configChanges,
+            [in] Boolean voiceInteraction,
+            [in] Boolean launchTaskBehind);
         SetAppGroupId(
             [in] IBinder* token,
             [in] Int32 groupId);
-
         SetAppOrientation(
             [in] IApplicationToken* token,
             [in] Int32 requestedOrientation);
-
         GetAppOrientation(
             [in] IApplicationToken* token,
-            [out] Int32* orientation);
-
+            [out] Int32* result);
         SetFocusedApp(
             [in] IBinder* token,
             [in] Boolean moveFocusNow);
-
         PrepareAppTransition(
             [in] Int32 transit,
             [in] Boolean alwaysKeepCurrent);
-
         GetPendingAppTransition(
-            [out] Int32* transit);
-
+            [in] Int32* result);
         OverridePendingAppTransition(
-            [in] String capsuleName,
+            [in] String packageName,
             [in] Int32 enterAnim,
             [in] Int32 exitAnim,
-            [in] IRemoteCallback* startedCallback);
-
+            [in] IIRemoteCallback* startedCallback);
         OverridePendingAppTransitionScaleUp(
             [in] Int32 startX,
             [in] Int32 startY,
             [in] Int32 startWidth,
             [in] Int32 startHeight);
-
         OverridePendingAppTransitionThumb(
             [in] IBitmap* srcThumb,
             [in] Int32 startX,
             [in] Int32 startY,
-            [in] IRemoteCallback* startedCallback,
+            [in] IIRemoteCallback* startedCallback,
             [in] Boolean scaleUp);
-
+        OverridePendingAppTransitionAspectScaledThumb(
+            [in] IBitmap* srcThumb,
+            [in] Int32 startX,
+            [in] Int32 startY,
+            [in] Int32 targetWidth,
+            [in] Int32 targetHeight,
+            [in] IIRemoteCallback* startedCallback,
+            [in] Boolean scaleUp);
         ExecuteAppTransition();
-
         SetAppStartingWindow(
             [in] IBinder* token,
-            [in] String cap,
+            [in] String pkg,
             [in] Int32 theme,
             [in] ICompatibilityInfo* compatInfo,
             [in] ICharSequence* nonLocalizedLabel,
             [in] Int32 labelRes,
             [in] Int32 icon,
+            [in] Int32 logo,
             [in] Int32 windowFlags,
             [in] IBinder* transferFrom,
             [in] Boolean createIfNeeded);
-
         SetAppWillBeHidden(
             [in] IBinder* token);
-
         SetAppVisibility(
             [in] IBinder* token,
             [in] Boolean visible);
-
         StartAppFreezingScreen(
             [in] IBinder* token,
             [in] Int32 configChanges);
-
         StopAppFreezingScreen(
             [in] IBinder* token,
             [in] Boolean force);
-
         RemoveAppToken(
             [in] IBinder* token);
-
-        MoveAppToken(
-            [in] Int32 index,
-            [in] IBinder* token);
-
-        MoveAppTokensToTop(
-            [in] IObjectContainer* tokens);
-
-        MoveAppTokensToBottom(
-            [in] IObjectContainer* tokens);
 
         // Re-evaluate the current orientation from the caller's state.
         // If there is a change, the new Configuration is returned and the
@@ -187,38 +177,33 @@ module
         UpdateOrientationFromAppTokens(
             [in] IConfiguration* currentConfig,
             [in] IBinder* freezeThisOneIfNeeded,
-            [out] IConfiguration** config);
-
+            [out] IConfiguration** cfg);
         SetNewConfiguration(
             [in] IConfiguration* config);
 
         StartFreezingScreen(
             [in] Int32 exitAnim,
             [in] Int32 enterAnim);
-
         StopFreezingScreen();
 
         // these require DISABLE_KEYGUARD permission
         DisableKeyguard(
             [in] IBinder* token,
             [in] String tag);
-
         ReenableKeyguard(
             [in] IBinder* token);
-
         ExitKeyguardSecurely(
-            [in] IOnKeyguardExitResult* keyguardCallback);
-
+            [in] IOnKeyguardExitResult* cb);
         IsKeyguardLocked(
-            [out] Boolean* isLocked);
-
+            [out] Boolean* result);
         IsKeyguardSecure(
-            [out] Boolean* isSecure);
-
+            [out] Boolean* result);
         InKeyguardRestrictedInputMode(
             [out] Boolean* result);
-
         DismissKeyguard();
+        KeyguardGoingAway(
+            [in] Boolean disableWindowAnimations,
+            [in] Boolean keyguardGoingToNotificationShade);
 
         CloseSystemDialogs(
             [in] String reason);
@@ -226,17 +211,17 @@ module
         // These can only be called with the SET_ANIMATON_SCALE permission.
         GetAnimationScale(
             [in] Int32 which,
-            [out] Float* scale);
-
+            [out] Float* result);
         GetAnimationScales(
             [out, callee] ArrayOf<Float>* scales);
-
         SetAnimationScale(
             [in] Int32 which,
             [in] Float scale);
-
         SetAnimationScales(
             [in] ArrayOf<Float>* scales);
+
+        GetCurrentAnimatorScale(
+            [out] Float* result);
 
         // For testing
         SetInTouchMode(
@@ -253,9 +238,16 @@ module
         // Proxy to set the system property for whether the flashing
         // should be enabled.  The 'enabled' value is null or blank for
         // the system default (differs per build variant) or any valid
-        // boolean string as parsed by SystemProperties.getBoolean().
+        // Boolean string as parsed by SystemProperties.getBoolean().
         SetStrictModeVisualIndicatorPreference(
             [in] String enabled);
+
+        /**
+         * Set whether screen capture is disabled for all windows of a specific user
+         */
+        SetScreenCaptureDisabled(
+            [in] Int32 userId,
+            [in] Boolean disabled);
 
         // These can only be called with the SET_ORIENTATION permission.
         /**
@@ -276,7 +268,7 @@ module
          * {@link android.view.Surface}.
          */
         GetRotation(
-            [out] Int32* rotation);
+            [out] Int32* result);
 
         /**
          * Watch the rotation of the screen.  Returns the current rotation,
@@ -284,7 +276,14 @@ module
          */
         WatchRotation(
             [in] IRotationWatcher* watcher,
-            [out] Int32* rotation);
+            [out] Int32* result);
+
+        /**
+         * Remove a rotation watcher set using watchRotation.
+         * @hide
+         */
+        RemoveRotationWatcher(
+            [in] IRotationWatcher* watcher);
 
         /**
          * Determine the preferred edge of the screen to pin the compact options menu against.
@@ -292,7 +291,7 @@ module
          * @hide
          */
         GetPreferredOptionsPanelGravity(
-            [out] Int32* value);
+            [out] Int32* result);
 
         /**
          * Lock the device orientation to the specified rotation, or to the
@@ -310,6 +309,14 @@ module
         ThawRotation();
 
         /**
+         * Gets whether the rotation is frozen.
+         *
+         * @return Whether the rotation is frozen.
+         */
+        IsRotationFrozen(
+            [out] Boolean* result);
+
+        /**
          * Create a screenshot of the applications currently displayed.
          */
         ScreenshotApplications(
@@ -317,6 +324,7 @@ module
             [in] Int32 displayId,
             [in] Int32 maxWidth,
             [in] Int32 maxHeight,
+            [in] Boolean force565,
             [out] IBitmap** bitmap);
 
         /**
@@ -324,15 +332,6 @@ module
          */
         StatusBarVisibilityChanged(
             [in] Int32 visibility);
-
-        /**
-         * Block until the given window has been drawn to the screen.
-         * Returns true if really waiting, false if the window does not exist.
-         */
-        WaitForWindowDrawn(
-            [in] IBinder* token,
-            [in] IRemoteCallback* cb,
-            [out] Boolean* isWait);
 
         /**
          * Device has a software navigation bar (separate from the status bar).
@@ -347,91 +346,35 @@ module
             [in] IBundle* options);
 
         /**
-         * Gets the token for the focused window.
-         */
-        GetFocusedWindowToken(
-            [out] IBinder** token);
-
-        /**
-         * Gets the compatibility scale of e window given its token.
-         */
-        GetWindowCompatibilityScale(
-            [in] IBinder* windowToken,
-            [out] Float* scale);
-
-        /**
-         * Sets an input filter for manipulating the input event stream.
-         */
-        SetInputFilter(
-            [in] IIInputFilter* filter);
-
-        /**
-         * Sets the scale and offset for implementing accessibility magnification.
-         */
-        MagnifyDisplay(
-            [in] Int32 dipslayId,
-            [in] Float scale,
-            [in] Float offsetX,
-            [in] Float offsetY);
-
-        /**
-         * Adds a listener for display content changes.
-         */
-        AddDisplayContentChangeListener(
-            [in] Int32 displayId,
-            [in] IDisplayContentChangeListener* listener);
-
-        /**
-         * Removes a listener for display content changes.
-         */
-        RemoveDisplayContentChangeListener(
-            [in] Int32 displayId,
-            [in] IDisplayContentChangeListener* listener);
-
-        /**
-         * Gets the info for a window given its token.
-         */
-        GetWindowInfo(
-            [in] IBinder* token,
-            [out] IWindowInfo** wInfo);
-
-        /**
-         * Gets the infos for all visible windows.
-         */
-        GetVisibleWindowsForDisplay(
-            [in] Int32 displayId,
-            [out] IObjectContainer** outInfos);
-
-        /**
          * Device is in safe mode.
          */
         IsSafeModeEnabled(
-            [out] Boolean* isSafe);
+            [out] Boolean* result);
 
         /**
-         * Tell keyguard to show the assistant (Intent.ACTION_ASSIST) after asking for the user's
-         * credentials.
+         * Enables the screen if all conditions are met.
          */
-        ShowAssistant();
+        EnableScreenIfNeeded();
 
-        ResetInputCalibration();
-        KeyEnterMouseMode();
+        /**
+         * Clears the frame statistics for a given window.
+         *
+         * @param token The window token.
+         * @return Whether the frame statistics were cleared.
+         */
+        ClearWindowContentFrameStats(
+            [in] IBinder* token,
+            [out] Boolean* result);
 
-        KeyExitMouseMode();
-
-        KeySetMouseMoveCode(
-            [in] Int32 left,
-            [in] Int32 right,
-            [in] Int32 top,
-            [in] Int32 bottom);
-
-        KeySetMouseBtnCode(
-            [in] Int32 leftbtn,
-            [in] Int32 midbtn,
-            [in] Int32 rightbtn);
-
-        KeySetMouseDistance(
-            [in] Int32 distance);
+        /**
+         * Gets the content frame statistics for a given window.
+         *
+         * @param token The window token.
+         * @return The frame statistics or null if the window does not exist.
+         */
+        GetWindowContentFrameStats(
+            [in] IBinder* token,
+            [out] IWindowContentFrameStats** stats);
     }
 
     } // View

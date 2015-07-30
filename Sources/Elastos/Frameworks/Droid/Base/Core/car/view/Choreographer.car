@@ -60,6 +60,13 @@ module
         const Int32 CALLBACK_TRAVERSAL = 2;
 
         /**
+         * @return The refresh rate as the nanoseconds between frames
+         * @hide
+         */
+        GetFrameIntervalNanos(
+            [out] Int64* result);
+
+        /**
          * Posts a callback to run on the next frame.
          * <p>
          * The callback runs once then is automatically removed.
@@ -197,6 +204,7 @@ module
     }
 
     interface IChoreographerHelper {
+
         /**
          * Gets the choreographer for the calling thread.  Must be called from
          * a thread that already has a {@link android.os.Looper} associated with it.
@@ -205,7 +213,7 @@ module
          * @throws IllegalStateException if the thread does not have a looper.
          */
         GetInstance(
-            [out] IChoreographer** choreographer);
+            [out] IChoreographer** c);
 
         /**
          * The amount of time, in milliseconds, between each frame of the animation.
@@ -223,7 +231,7 @@ module
          * @hide
          */
         GetFrameDelay(
-            [out] Int64* frameDelay);
+            [out] Int64* result);
 
         /**
          * The amount of time, in milliseconds, between each frame of the animation.
@@ -241,7 +249,7 @@ module
          * @hide
          */
         SetFrameDelay(
-            [in] Int64 frameDelay);
+            [in] Int64 delay);
 
         /**
          * Subtracts typical frame delay time from a delay interval in milliseconds.
@@ -249,7 +257,7 @@ module
          * This method can be used to compensate for animation delay times that have baked
          * in assumptions about the frame delay.  For example, it's quite common for code to
          * assume a 60Hz frame time and bake in a 16ms delay.  When we call
-         * {@link #postAnimationCallbackDelayed} we want to know how Int32 to wait before
+         * {@link #postAnimationCallbackDelayed} we want to know how long to wait before
          * posting the animation callback but let the animation timer take care of the remaining
          * frame delay time.
          * </p><p>
@@ -267,7 +275,7 @@ module
          */
         SubtractFrameDelay(
             [in] Int64 delayMillis,
-            [out] Int64* frameDelay);
+            [out] Int64* result);
     }
 
     } // namespace View

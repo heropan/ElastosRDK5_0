@@ -5,6 +5,13 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * Common base class for input events.
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IInputEvent {
         /**
          * Gets the id for the device that this event came from.  An id of
@@ -43,6 +50,18 @@ module
          */
         SetSource(
             [in] Int32 source);
+
+        /**
+         * Determines whether the event is from the given source.
+         *
+         * @param source The input source to check against. This can be a specific device type, such as
+         * {@link InputDevice#SOURCE_TOUCH_NAVIGATION}, or a more generic device class, such as
+         * {@link InputDevice#SOURCE_CLASS_POINTER}.
+         * @return Whether the event is from the given source.
+         */
+        IsFromSource(
+            [in] Int32 source,
+            [out] Boolean* result);
 
         /**
          * Copies the event.

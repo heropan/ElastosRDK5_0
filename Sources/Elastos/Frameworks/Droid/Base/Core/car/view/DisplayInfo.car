@@ -2,11 +2,18 @@
 module
 {
     interface Elastos.Droid.Utility.IDisplayMetrics;
+    interface Elastos.Droid.Content.Res.ICompatibilityInfo;
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
 
+    /**
+     * Describes the characteristics of a particular logical display.
+     * @hide
+     */
+    [deprecated]
     interface IDisplayInfo {
         GetLayerStack(
             [out] Int32* layerStack);
@@ -98,6 +105,12 @@ module
         SetRefreshRate(
             [in] Float refreshRate);
 
+        GetSupportedRefreshRates(
+            [out, callee] ArrayOf<Float>* rates);
+
+        SetSupportedRefreshRates(
+            [in] ArrayOf<Float>* rates);
+
         GetLogicalDensityDpi(
             [out] Int32* logicalDensityDpi);
 
@@ -116,27 +129,55 @@ module
         SetPhysicalYDpi(
             [in] Float physicalYDpi);
 
-        Equals(
-            [in] IDisplayInfo* otherObj,
-            [out] Boolean* isEquals);
+        GetAppVsyncOffsetNanos(
+            [out] Int64* nanos);
 
-        Equals(
-            [in] IInterface* otherObj,
-            [out] Boolean* isEquals);
+        SetAppVsyncOffsetNanos(
+            [in] Int64 nanos);
 
-        GetHashCode(
-            [out] Int32* hash);
+        GetPresentationDeadlineNanos(
+            [out] Int64* nanos);
+
+        SetPresentationDeadlineNanos(
+            [in] Int64 nanos);
+
+        GetRate(
+            [out] Int32* rates);
+
+        SetRate(
+            [in] Int32 rates);
+
+        GetOwnerUid(
+            [out] Int32* rates);
+
+        SetOwnerUid(
+            [in] Int32 rates);
+
+        GetOwnerPackageName(
+            [out] String* rates);
+
+        SetOwnerPackageName(
+            [in] String rates);
 
         CopyFrom(
             [in] IDisplayInfo* otherObj);
 
         GetAppMetrics(
+            [in] IDisplayMetrics* outMetrics);
+
+        GetAppMetrics(
             [in] IDisplayMetrics* outMetrics,
-            [in] ICompatibilityInfoHolder* cih);
+            [in] IDisplayAdjustments* da);
+
+        GetAppMetrics(
+            [in] IDisplayMetrics* outMetrics,
+            [in] ICompatibilityInfo* cih,
+            [in] IBinder* binder);
 
         GetLogicalMetrics(
             [in] IDisplayMetrics* outMetrics,
-            [in] ICompatibilityInfoHolder* cih);
+            [in] ICompatibilityInfo* cih,
+            [in] IBinder* binder);
 
         GetNaturalWidth(
             [out] Int32* width);
@@ -144,9 +185,16 @@ module
         GetNaturalHeight(
             [out] Int32* height);
 
+        /**
+         * Returns true if the specified UID has access to this display.
+         */
+        HasAccess(
+            [in] Int32 uid,
+            [out] Boolean* result);
     }
 
     } // namespace View
     } // namepsace Droid
     } // namespace Elastos
 }
+

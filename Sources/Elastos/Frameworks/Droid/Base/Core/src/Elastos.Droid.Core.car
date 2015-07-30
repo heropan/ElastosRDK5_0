@@ -12,7 +12,7 @@ module
     merge("../car/content.car");
     merge("../car/graphics.car");
     //merge("../car/location.car");
-    //merge("../car/view.car");
+    merge("../car/view.car");
     //merge("../car/hardware.car");
     //merge("../car/text.car");
     //merge("../car/app.car");

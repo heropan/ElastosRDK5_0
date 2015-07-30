@@ -19,6 +19,12 @@ module
     [oneway]
     interface IIWindow {
         /**
+         * ===== NOTICE =====
+         * The first method must remain the first method. Scripts
+         * and tools rely on their transaction number to work properly.
+         */
+
+        /**
          * Invoked by the view server to tell a window to execute the specified
          * command. Any response from the receiver must be sent through the
          * specified file descriptor.
@@ -43,9 +49,6 @@ module
             [in] Boolean visible);
 
         DispatchGetNewSurface();
-
-        DispatchScreenState(
-            [in] Boolean on);
 
         /**
          * Tell the window that it is either gaining or losing focus.  Keep it up
@@ -97,18 +100,6 @@ module
          * is done.
          */
         DoneAnimating();
-    }
-
-    /**
-     * @Involve
-     * interface Elastos.Droid.View.IRotationWatcher
-     */
-    interface IPhoneWindowRotationWatcher {
-        AddWindow(
-            [in] IWindow* phoneWindow);
-
-        RemoveWindow(
-            [in] IWindow* phoneWindow);
     }
 
     } // namespace View

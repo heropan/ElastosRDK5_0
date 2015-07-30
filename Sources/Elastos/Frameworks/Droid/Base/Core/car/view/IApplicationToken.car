@@ -13,6 +13,7 @@ module
         WindowsGone();
 
         KeyDispatchingTimedOut(
+            [in] String reason,
             [out] Boolean* res);
 
         GetKeyDispatchingTimeout(

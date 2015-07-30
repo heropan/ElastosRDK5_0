@@ -91,19 +91,67 @@ module
     namespace Droid {
     namespace View {
 
-        interface IDisplay {}
-
         interface ICompatibilityInfoHolder {}
 
-        interface IKeyEvent {}
+        interface IMenuInflater {}
+
+        interface IMenuItem {}
+
+        interface ISubMenu {}
 
         interface IWindowManagerLayoutParams {}
 
+        interface IWindowContentFrameStats {}
+
+        interface IIWindowId {}
+
         interface IMotionEvent {}
+
+        interface IRenderNode {}
+
+        interface ISurface {}
+
+        interface ICanvasProperty {}
 
         interface IView {}
 
+        interface IViewGroup {}
+
+        interface IMagnificationSpec {}
+
+        namespace Accessibility {
+
+            interface IAccessibilityInteractionConnectionCallback {}
+
+        } // Elastos.Droid.View.Accessibility
+
+        namespace Internal {
+
+            interface IInputMethodClient {}
+
+            interface IInputContext {}
+
+        }// Elastos.Droid.View.Internal
+
     }}} // Elastos.Droid.View
+
+    //
+    // Elastos.Droid.Widget
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+
+        namespace View {
+
+            interface IInputMethodClient {}
+
+            interface IInputContext {}
+
+        }// Elastos.Droid.Internal.View
+
+    }}} // Elastos.Droid.Internal
+
 
     //
     // Elastos.Droid.Widget
@@ -246,6 +294,19 @@ module
 
 
     }}} // Elastos.Droid.Internal
+
+    //
+    // Elastos.Droid.Hardware
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+
+        namespace Input {
+            interface IInputDeviceIdentifier {}
+        }
+
+    }}} // Elastos.Droid.Hardware
 
 
 }

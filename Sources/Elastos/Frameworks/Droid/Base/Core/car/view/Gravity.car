@@ -7,6 +7,10 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * Standard constants and tools for placing an object within a potentially
+     * larger container.
+     */
     interface IGravity {
         /** Constant indicating that no gravity has been set **/
         const Int32 NO_GRAVITY = 0x0000;
@@ -28,24 +32,24 @@ module
         const Int32 AXIS_Y_SHIFT = 4;
 
         /** Push object to the top of its container, not changing its size. */
-        const Int32 TOP = 0x0003<<AXIS_Y_SHIFT;//(AXIS_PULL_BEFORE|AXIS_SPECIFIED)<<AXIS_Y_SHIFT;
+        const Int32 TOP = 0x0003 << 4;
         /** Push object to the bottom of its container, not changing its size. */
-        const Int32 BOTTOM = 0x0005<<AXIS_Y_SHIFT;//(AXIS_PULL_AFTER|AXIS_SPECIFIED)<<AXIS_Y_SHIFT;
+        const Int32 BOTTOM = 0x0005 << 4;
         /** Push object to the left of its container, not changing its size. */
-        const Int32 LEFT = 0x0003<<AXIS_X_SHIFT;//(AXIS_PULL_BEFORE|AXIS_SPECIFIED)<<AXIS_X_SHIFT;
+        const Int32 LEFT = 0x0003 << 4;
         /** Push object to the right of its container, not changing its size. */
-        const Int32 RIGHT = 0x0005<<AXIS_X_SHIFT;//(AXIS_PULL_AFTER|AXIS_SPECIFIED)<<AXIS_X_SHIFT;
+        const Int32 RIGHT = 0x0005 << 4;
 
         /** Place object in the vertical center of its container, not changing its
          *  size. */
-        const Int32 CENTER_VERTICAL = AXIS_SPECIFIED<<AXIS_Y_SHIFT;
+        const Int32 CENTER_VERTICAL = 0x0001<<AXIS_Y_SHIFT;
         /** Grow the vertical size of the object if needed so it completely fills
          *  its container. */
         const Int32 FILL_VERTICAL = TOP|BOTTOM;
 
         /** Place object in the horizontal center of its container, not changing its
          *  size. */
-        const Int32 CENTER_HORIZONTAL = AXIS_SPECIFIED<<AXIS_X_SHIFT;
+        const Int32 CENTER_HORIZONTAL = 0x0001<<4;
         /** Grow the horizontal size of the object if needed so it completely fills
          *  its container. */
         const Int32 FILL_HORIZONTAL = LEFT|RIGHT;
@@ -64,7 +68,7 @@ module
 
         /** Flag to clip the edges of the object to its container along the
          *  horizontal axis. */
-        const Int32 CLIP_HORIZONTAL = AXIS_CLIP<<AXIS_X_SHIFT;
+        const Int32 CLIP_HORIZONTAL = AXIS_CLIP<<4;
 
         /** Raw bit controlling whether the layout direction is relative or not (START/END instead of
          * absolute LEFT/RIGHT).
@@ -74,13 +78,11 @@ module
         /**
          * Binary mask to get the absolute horizontal gravity of a gravity.
          */
-        const Int32 HORIZONTAL_GRAVITY_MASK = 0x0007 << AXIS_X_SHIFT;/*(AXIS_SPECIFIED |
-                AXIS_PULL_BEFORE | AXIS_PULL_AFTER) << AXIS_X_SHIFT;*/
+        const Int32 HORIZONTAL_GRAVITY_MASK = 0x0007 << 4;
         /**
          * Binary mask to get the vertical gravity of a gravity.
          */
-        const Int32 VERTICAL_GRAVITY_MASK = 0x0007 << AXIS_Y_SHIFT;/*(AXIS_SPECIFIED |
-                AXIS_PULL_BEFORE | AXIS_PULL_AFTER) << AXIS_Y_SHIFT;*/
+        const Int32 VERTICAL_GRAVITY_MASK = 0x0007 << AXIS_Y_SHIFT;
 
         /** Special constant to enable clipping to an overall display along the
          *  vertical dimension.  This is not applied by default by
@@ -108,7 +110,7 @@ module
         const Int32 RELATIVE_HORIZONTAL_GRAVITY_MASK = START | END;
 
         /**
-         * Apply a gravity constant to an object. This suppose that the layout direction is LTR.
+         * Apply a gravity constant to an object. This supposes that the layout direction is LTR.
          *
          * @param gravity The desired placement of the object, as defined by the
          *                constants in this class.

@@ -10,7 +10,7 @@ namespace View {
 CarClass(CAbsSavedStateHelper)
 {
 public:
-    CARAPI GetEmptyState(
+    CARAPI GetEMPTY_STATE(
         /* [out] */ IAbsSavedState** emptyState);
 };
 

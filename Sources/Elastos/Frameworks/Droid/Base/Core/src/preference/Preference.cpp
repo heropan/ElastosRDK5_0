@@ -1492,7 +1492,7 @@ ECode Preference::OnSaveInstanceState(
     AutoPtr<IAbsSavedStateHelper> helper;
     CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
     AutoPtr<IAbsSavedState> emptyState;
-    helper->GetEmptyState((IAbsSavedState**)&emptyState);
+    helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
     *state = IParcelable::Probe(emptyState);
     REFCOUNT_ADD(*state);
     return NOERROR;
@@ -1532,7 +1532,7 @@ ECode Preference::OnRestoreInstanceState(
     AutoPtr<IAbsSavedStateHelper> helper;
     CAbsSavedStateHelper::AcquireSingleton((IAbsSavedStateHelper**)&helper);
     AutoPtr<IAbsSavedState> emptyState;
-    helper->GetEmptyState((IAbsSavedState**)&emptyState);
+    helper->GetEMPTY_STATE((IAbsSavedState**)&emptyState);
     if (state != IParcelable::Probe(emptyState) && state != NULL) {
     //        throw new IllegalArgumentException("Wrong state class -- expecting Preference State");
         Slogger::E("preference", "Wrong state class -- expecting Preference State");

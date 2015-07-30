@@ -2,11 +2,12 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.View.IMenuItem;
     interface Elastos.Droid.View.ISubMenu;
+    interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.View.IKeyEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -40,6 +41,7 @@ module
          * <a href="{@docRoot}guide/topics/ui/menus.html">Menus</a> developer guide.</p>
          * </div>
          */
+        [deprecated, local]
         interface IMenu {
             /**
              * This is the part of an order integer that the user can provide.
@@ -316,10 +318,10 @@ module
                 [in] Int32 itemId,
                 [in] Int32 order,
                 [in] IComponentName* caller,
-                [in] ArrayOf<IIntent*> specifics,
+                [in] ArrayOf<IIntent*>* specifics,
                 [in] IIntent* intent,
                 [in] Int32 flags,
-                [in] ArrayOf<IMenuItem*> outSpecificItems,
+                [in] ArrayOf<IMenuItem*>* outSpecificItems,
                 [out] Int32* count);
 
             /**
@@ -484,7 +486,6 @@ module
                 [in] Int32 id,
                 [in] Int32 flags,
                 [out] Boolean* isShown);
-
 
             /**
              * Control whether the menu should be running in qwerty mode (alphabetic

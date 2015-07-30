@@ -9,6 +9,10 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * The algorithm used for finding the next focusable view in a given direction
+     * from a view that currently has focus.
+     */
     [deprecated]
     interface IFocusFinder {
         /**
@@ -57,6 +61,14 @@ module
             [in] Int32 direction,
             [in] ArrayOf<Int32>* deltas,
             [out] IView** touchable);
+    }
+
+    interface IFocusFinderHelper {
+        /**
+         * Get the focus finder for this thread.
+         */
+        GetInstance(
+            [out] IFocusFinder** finder);
     }
 
     } // namespace View

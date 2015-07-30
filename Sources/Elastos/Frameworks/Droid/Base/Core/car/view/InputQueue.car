@@ -7,9 +7,12 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * An input queue provides a mechanism for an application to receive incoming
+     * input events.  Currently only usable from native code.
+     */
     interface IInputQueue {
-        GetInputChannel(
-            [out] IInputChannel** inputChannel);
+        Dispose();
     }
 
     interface IInputQueueCallback {

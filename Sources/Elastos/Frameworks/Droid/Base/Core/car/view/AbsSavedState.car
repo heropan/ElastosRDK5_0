@@ -9,13 +9,17 @@ module
      * A {@link Parcelable} implementation that should be used by inheritance
      * hierarchies to ensure the state of all classes along the chain is saved.
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IAbsSavedState {
         GetSuperState(
             [out] IParcelable** superState);
     }
 
     interface IAbsSavedStateHelper {
-        GetEmptyState(
+        GetEMPTY_STATE(
             [out] IAbsSavedState** emptyState);
     }
 

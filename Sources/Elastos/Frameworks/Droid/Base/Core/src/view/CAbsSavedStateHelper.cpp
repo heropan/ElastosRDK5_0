@@ -6,7 +6,7 @@ namespace Elastos {
 namespace Droid {
 namespace View {
 
-ECode CAbsSavedStateHelper::GetEmptyState(
+ECode CAbsSavedStateHelper::GetEMPTY_STATE(
     /* [out] */ IAbsSavedState** emptyState)
 {
     VALIDATE_NOT_NULL(emptyState)

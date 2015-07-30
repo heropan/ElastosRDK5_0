@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Content.IComponentCallbacks;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
@@ -18,17 +20,23 @@ module
     /**
      * @Involve
      * interface ITextSegmentIterator
+     * interface IComponentCallbacks
      */
-    interface ILineTextSegmentIterator {
+    interface ICharacterTextSegmentIterator {
+    }
 
+    /**
+     * @Involve
+     * interface ICharacterTextSegmentIterator
+     */
+    interface IWordTextSegmentIterator {
     }
 
     /**
      * @Involve
      * interface ITextSegmentIterator
      */
-    interface IPageTextSegmentIterator {
-
+    interface IParagraphTextSegmentIterator {
     }
 
     } // namespace View

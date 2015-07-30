@@ -1,11 +1,11 @@
 
 module
 {
+    interface Elastos.Droid.View.IKeyEvent;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
-
-    interface IKeyEvent;
 
     interface IKeyEventCallback {
         /**
@@ -133,8 +133,11 @@ module
     /**
      * @Involve
      * interface IInputEvent
+     * interface IParcelable
      */
+    [deprecated]
     interface IKeyEvent {
+
         /** Key code constant: Unknown key code. */
         const Int32 KEYCODE_UNKNOWN         = 0;
         /** Key code constant: Soft Left key.
@@ -356,27 +359,27 @@ module
         const Int32 KEYCODE_SWITCH_CHARSET  = 95;   // switch char-sets (Kanji,Katakana)
         /** Key code constant: A Button key.
          * On a game controller, the A button should be either the button labeled A
-         * or the first button on the upper row of controller buttons. */
+         * or the first button on the bottom row of controller buttons. */
         const Int32 KEYCODE_BUTTON_A        = 96;
         /** Key code constant: B Button key.
          * On a game controller, the B button should be either the button labeled B
-         * or the second button on the upper row of controller buttons. */
+         * or the second button on the bottom row of controller buttons. */
         const Int32 KEYCODE_BUTTON_B        = 97;
         /** Key code constant: C Button key.
          * On a game controller, the C button should be either the button labeled C
-         * or the third button on the upper row of controller buttons. */
+         * or the third button on the bottom row of controller buttons. */
         const Int32 KEYCODE_BUTTON_C        = 98;
         /** Key code constant: X Button key.
          * On a game controller, the X button should be either the button labeled X
-         * or the first button on the lower row of controller buttons. */
+         * or the first button on the upper row of controller buttons. */
         const Int32 KEYCODE_BUTTON_X        = 99;
         /** Key code constant: Y Button key.
          * On a game controller, the Y button should be either the button labeled Y
-         * or the second button on the lower row of controller buttons. */
+         * or the second button on the upper row of controller buttons. */
         const Int32 KEYCODE_BUTTON_Y        = 100;
         /** Key code constant: Z Button key.
          * On a game controller, the Z button should be either the button labeled Z
-         * or the third button on the lower row of controller buttons. */
+         * or the third button on the upper row of controller buttons. */
         const Int32 KEYCODE_BUTTON_Z        = 101;
         /** Key code constant: L1 Button key.
          * On a game controller, the L1 button should be either the button labeled L1 (or L)
@@ -677,55 +680,132 @@ module
         /** Key code constant: Assist key.
          * Launches the global assist activity.  Not delivered to applications. */
         const Int32 KEYCODE_ASSIST          = 219;
-
-        /* add by Gary. start {{----------------------------------- */
-        /* 2011-10-27 */
-        /* add some new keys for TVD */
-        const Int32 KEYCODE_TV_SYSTEM       = 10000;
-        /** Key code constant: a shortcut key for a time dialog */
-        const Int32 KEYCODE_GOTO            = 10001;
-        /** Key code constant: a shortcut key for switching subtitles */
-        const Int32 KEYCODE_SUBTITLE        = 10002;
-        /** Key code constant: a shortcut key for switching tracks */
-        const Int32 KEYCODE_AUDIO           = 10003;
-        /** Key code constant: a shortcut key for zooming video */
-        const Int32 KEYCODE_ZOOM            = 10004;
-        /** Key code constant: a shortcut key for help */
-        const Int32 KEYCODE_HELP            = 10005;
-        /** Key code constant: a shortcut key for favourite */
-        const Int32 KEYCODE_FAVOURITE       = 10006;
-        /** Key code constant: a shortcut key for loop */
-        const Int32 KEYCODE_LOOP            = 10007;
-        /** Key code constant: a shortcut key for showing or hiding statusbar's expanded view */
-        const Int32 KEYCODE_EXPAND          = 10008;
-        /** Key code constant: a shortcut key for mouse */
-        const Int32 KEYCODE_MOUSE           = 10009;
-        /** Key code constant: a shortcut key for movie */
-        const Int32 KEYCODE_MOVIE           = 10010;
-        /** Key code constant: a shortcut key for app list */
-        const Int32 KEYCODE_APPS            = 10011;
-        /** Key code constant: a shortcut key for the browser app */
-        const Int32 KEYCODE_BROWSER         = 10012;
-        /** Key code constant: a shortcut key for the screenshot */
-        const Int32 KEYCODE_SCREENSHOT      = 10013;
-
-        /* add by Gary. end   -----------------------------------}} */
-
-        // NOTE: If you add a new keycode here you must also add it to:
-        //  isSystem()
-        //  native/include/android/keycodes.h
-        //  frameworks/base/include/ui/KeycodeLabels.h
-        //  external/webkit/WebKit/android/plugins/ANPKeyCodes.h
-        //  frameworks/base/core/res/res/values/attrs.xml
-        //  emulator?
-        //  LAST_KEYCODE
-        //  KEYCODE_SYMBOLIC_NAMES
-        //
-        //  Also Android currently does not reserve code ranges for vendor-
-        //  specific key codes.  If you have new key codes to have, you
-        //  MUST contribute a patch to the open source project to define
-        //  those new codes.  This is intended to maintain a consistent
-        //  set of key code definitions across all Android devices.
+        /** Key code constant: Brightness Down key.
+         * Adjusts the screen brightness down. */
+        const Int32 KEYCODE_BRIGHTNESS_DOWN = 220;
+        /** Key code constant: Brightness Up key.
+         * Adjusts the screen brightness up. */
+        const Int32 KEYCODE_BRIGHTNESS_UP   = 221;
+        /** Key code constant: Audio Track key.
+         * Switches the audio tracks. */
+        const Int32 KEYCODE_MEDIA_AUDIO_TRACK = 222;
+        /** Key code constant: Sleep key.
+         * Puts the device to sleep.  Behaves somewhat like {@link #KEYCODE_POWER} but it
+         * has no effect if the device is already asleep. */
+        const Int32 KEYCODE_SLEEP           = 223;
+        /** Key code constant: Wakeup key.
+         * Wakes up the device.  Behaves somewhat like {@link #KEYCODE_POWER} but it
+         * has no effect if the device is already awake. */
+        const Int32 KEYCODE_WAKEUP          = 224;
+        /** Key code constant: Pairing key.
+         * Initiates peripheral pairing mode. Useful for pairing remote control
+         * devices or game controllers, especially if no other input mode is
+         * available. */
+        const Int32 KEYCODE_PAIRING         = 225;
+        /** Key code constant: Media Top Menu key.
+         * Goes to the top of media menu. */
+        const Int32 KEYCODE_MEDIA_TOP_MENU  = 226;
+        /** Key code constant: '11' key. */
+        const Int32 KEYCODE_11              = 227;
+        /** Key code constant: '12' key. */
+        const Int32 KEYCODE_12              = 228;
+        /** Key code constant: Last Channel key.
+         * Goes to the last viewed channel. */
+        const Int32 KEYCODE_LAST_CHANNEL    = 229;
+        /** Key code constant: TV data service key.
+         * Displays data services like weather, sports. */
+        const Int32 KEYCODE_TV_DATA_SERVICE = 230;
+        /** Key code constant: Voice Assist key.
+         * Launches the global voice assist activity. Not delivered to applications. */
+        const Int32 KEYCODE_VOICE_ASSIST = 231;
+        /** Key code constant: Radio key.
+         * Toggles TV service / Radio service. */
+        const Int32 KEYCODE_TV_RADIO_SERVICE = 232;
+        /** Key code constant: Teletext key.
+         * Displays Teletext service. */
+        const Int32 KEYCODE_TV_TELETEXT = 233;
+        /** Key code constant: Number entry key.
+         * Initiates to enter multi-digit channel nubmber when each digit key is assigned
+         * for selecting separate channel. Corresponds to Number Entry Mode (0x1D) of CEC
+         * User Control Code. */
+        const Int32 KEYCODE_TV_NUMBER_ENTRY = 234;
+        /** Key code constant: Analog Terrestrial key.
+         * Switches to analog terrestrial broadcast service. */
+        const Int32 KEYCODE_TV_TERRESTRIAL_ANALOG = 235;
+        /** Key code constant: Digital Terrestrial key.
+         * Switches to digital terrestrial broadcast service. */
+        const Int32 KEYCODE_TV_TERRESTRIAL_DIGITAL = 236;
+        /** Key code constant: Satellite key.
+         * Switches to digital satellite broadcast service. */
+        const Int32 KEYCODE_TV_SATELLITE = 237;
+        /** Key code constant: BS key.
+         * Switches to BS digital satellite broadcasting service available in Japan. */
+        const Int32 KEYCODE_TV_SATELLITE_BS = 238;
+        /** Key code constant: CS key.
+         * Switches to CS digital satellite broadcasting service available in Japan. */
+        const Int32 KEYCODE_TV_SATELLITE_CS = 239;
+        /** Key code constant: BS/CS key.
+         * Toggles between BS and CS digital satellite services. */
+        const Int32 KEYCODE_TV_SATELLITE_SERVICE = 240;
+        /** Key code constant: Toggle Network key.
+         * Toggles selecting broacast services. */
+        const Int32 KEYCODE_TV_NETWORK = 241;
+        /** Key code constant: Antenna/Cable key.
+         * Toggles broadcast input source between antenna and cable. */
+        const Int32 KEYCODE_TV_ANTENNA_CABLE = 242;
+        /** Key code constant: HDMI #1 key.
+         * Switches to HDMI input #1. */
+        const Int32 KEYCODE_TV_INPUT_HDMI_1 = 243;
+        /** Key code constant: HDMI #2 key.
+         * Switches to HDMI input #2. */
+        const Int32 KEYCODE_TV_INPUT_HDMI_2 = 244;
+        /** Key code constant: HDMI #3 key.
+         * Switches to HDMI input #3. */
+        const Int32 KEYCODE_TV_INPUT_HDMI_3 = 245;
+        /** Key code constant: HDMI #4 key.
+         * Switches to HDMI input #4. */
+        const Int32 KEYCODE_TV_INPUT_HDMI_4 = 246;
+        /** Key code constant: Composite #1 key.
+         * Switches to composite video input #1. */
+        const Int32 KEYCODE_TV_INPUT_COMPOSITE_1 = 247;
+        /** Key code constant: Composite #2 key.
+         * Switches to composite video input #2. */
+        const Int32 KEYCODE_TV_INPUT_COMPOSITE_2 = 248;
+        /** Key code constant: Component #1 key.
+         * Switches to component video input #1. */
+        const Int32 KEYCODE_TV_INPUT_COMPONENT_1 = 249;
+        /** Key code constant: Component #2 key.
+         * Switches to component video input #2. */
+        const Int32 KEYCODE_TV_INPUT_COMPONENT_2 = 250;
+        /** Key code constant: VGA #1 key.
+         * Switches to VGA (analog RGB) input #1. */
+        const Int32 KEYCODE_TV_INPUT_VGA_1 = 251;
+        /** Key code constant: Audio description key.
+         * Toggles audio description off / on. */
+        const Int32 KEYCODE_TV_AUDIO_DESCRIPTION = 252;
+        /** Key code constant: Audio description mixing volume up key.
+         * Louden audio description volume as compared with normal audio volume. */
+        const Int32 KEYCODE_TV_AUDIO_DESCRIPTION_MIX_UP = 253;
+        /** Key code constant: Audio description mixing volume down key.
+         * Lessen audio description volume as compared with normal audio volume. */
+        const Int32 KEYCODE_TV_AUDIO_DESCRIPTION_MIX_DOWN = 254;
+        /** Key code constant: Zoom mode key.
+         * Changes Zoom mode (Normal, Full, Zoom, Wide-zoom, etc.) */
+        const Int32 KEYCODE_TV_ZOOM_MODE = 255;
+        /** Key code constant: Contents menu key.
+         * Goes to the title list. Corresponds to Contents Menu (0x0B) of CEC User Control
+         * Code */
+        const Int32 KEYCODE_TV_CONTENTS_MENU = 256;
+        /** Key code constant: Media context menu key.
+         * Goes to the context menu of media contents. Corresponds to Media Context-sensitive
+         * Menu (0x11) of CEC User Control Code. */
+        const Int32 KEYCODE_TV_MEDIA_CONTEXT_MENU = 257;
+        /** Key code constant: Timer programming key.
+         * Goes to the timer recording menu. Corresponds to Timer Programming (0x54) of
+         * CEC User Control Code. */
+        const Int32 KEYCODE_TV_TIMER_PROGRAMMING = 258;
+        /** Key code constant: Help key. */
+        const Int32 KEYCODE_HELP = 259;
 
         /**
          * @deprecated There are now more than MAX_KEYCODE keycodes.
@@ -967,7 +1047,11 @@ module
 
         /**
          * This mask is set if the device woke because of this key event.
+         *
+         * @deprecated This flag will never be set by the system since the system
+         * consumes all wake keys itself.
          */
+        //@Deprecated
         const Int32 FLAG_WOKE_HERE = 0x1;
 
         /**
@@ -1047,6 +1131,12 @@ module
         const Int32 FLAG_FALLBACK = 0x400;
 
         /**
+         * Signifies that the key is being predispatched.
+         * @hide
+         */
+        const Int32 FLAG_PREDISPATCH = 0x20000000;
+
+        /**
          * Private control to determine when an app is tracking a key sequence.
          * @hide
          */
@@ -1075,14 +1165,13 @@ module
         IsDown(
             [out] Boolean* isDown);
 
-        /**
-         * Is this a system key?  System keys can not be used for menu shortcuts.
-         *
-         * TODO: this information should come from a table somewhere.
-         * TODO: should the dpad keys be here?  arguably, because they also shouldn't be menu shortcuts
+        /** Is this a system key?  System keys can not be used for menu shortcuts.
          */
         IsSystem(
             [out] Boolean* isSystem);
+
+        IsWakeKey(
+            [out] Boolean* wakeKey);
 
         /** @hide */
         HasDefaultAction(
@@ -1498,7 +1587,7 @@ module
          * @return The matching associated character, or 0 if none.
          */
         GetMatch(
-            [in] ArrayOf<Char32> chars,
+            [in] ArrayOf<Char32>* chars,
             [out] Char32* match);
 
         /**
@@ -1511,7 +1600,7 @@ module
          * @return The matching associated character, or 0 if none.
          */
         GetMatch(
-            [in] ArrayOf<Char32> chars,
+            [in] ArrayOf<Char32>* chars,
             [in] Int32 modifiers,
             [out] Char32* match);
 
@@ -1681,6 +1770,29 @@ module
         IsGamepadButton(
             [in] Int32 keyCode,
             [out] Boolean* res);
+
+        /** Whether key will, by default, trigger a click on the focused view.
+         * @hide
+        */
+        IsConfirmKey(
+            [in] Int32 keyCode,
+            [out] Boolean* result);
+
+        IsMediaKey(
+            [in] Int32 keyCode,
+            [out] Boolean* result);
+
+        IsSystemKey(
+            [in] Int32 keyCode,
+            [out] Boolean* result);
+
+        IsWakeKey(
+            [in] Int32 keyCode,
+            [out] Boolean* result);
+
+        IsMetaKey(
+            [in] Int32 keyCode,
+            [out] Boolean* result);
 
         /**
          * Gets a mask that includes all valid modifier key meta state bits.
