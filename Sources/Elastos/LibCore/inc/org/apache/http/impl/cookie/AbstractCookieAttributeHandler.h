@@ -1,0 +1,44 @@
+
+#ifndef __ORG_APACHE_HTTP_IMPL_COOKIE_ABSTRACTCOOKIEATTRIBUTEHANDLER_H__
+#define __ORG_APACHE_HTTP_IMPL_COOKIE_ABSTRACTCOOKIEATTRIBUTEHANDLER_H__
+
+#include <Org.Apache.Http_server.h>
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Org::Apache::Http::Cookie::ICookieAttributeHandler;
+using Org::Apache::Http::Cookie::ICookie;
+using Org::Apache::Http::Cookie::ICookieOrigin;
+
+namespace Org {
+namespace Apache {
+namespace Http {
+namespace Impl {
+namespace Cookie {
+
+class AbstractCookieAttributeHandler
+    : public Object
+    , public ICookieAttributeHandler
+{
+public:
+    virtual ~AbstractCookieAttributeHandler() = 0;
+
+    CAR_INTERFACE_DECL()
+
+    CARAPI Validate(
+        /* [in] */ ICookie* cookie,
+        /* [in] */ ICookieOrigin* origin);
+
+    CARAPI Match(
+        /* [in] */ ICookie* cookie,
+        /* [in] */ ICookieOrigin* origin,
+        /* [out] */ Boolean* result);
+};
+
+} // namespace Cookie
+} // namespace Impl
+} // namespace Http
+} // namespace Apache
+} // namespace Org
+
+#endif // __ORG_APACHE_HTTP_IMPL_COOKIE_ABSTRACTCOOKIEATTRIBUTEHANDLER_H__

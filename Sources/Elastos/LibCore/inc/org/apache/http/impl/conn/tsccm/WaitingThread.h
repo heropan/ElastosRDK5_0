@@ -109,6 +109,7 @@ private:
 
     /** True if this was interrupted. */
     Boolean mAborted;
+};
 
 } // namespace Tsccm
 } // namespace Conn

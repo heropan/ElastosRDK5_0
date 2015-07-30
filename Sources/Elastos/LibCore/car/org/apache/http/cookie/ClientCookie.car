@@ -24,7 +24,7 @@ module
      * @Involve
      * interface ICookie;
      */
-    interface ICookie {
+    interface IClientCookie {
 
         // RFC2109 attributes
         const String VERSION_ATTR    = "version";

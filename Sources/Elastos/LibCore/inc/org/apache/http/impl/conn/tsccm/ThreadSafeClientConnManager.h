@@ -163,6 +163,7 @@ protected:
 
 private:
     // private final Log log = LogFactory.getLog(getClass());
+};
 
 } // namespace Tsccm
 } // namespace Conn

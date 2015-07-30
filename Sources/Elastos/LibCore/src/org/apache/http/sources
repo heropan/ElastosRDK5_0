@@ -71,5 +71,7 @@ LIBRARIES += impl/impl.lib
 LIBRARIES += impl/auth/auth.lib
 LIBRARIES += impl/client/client.lib
 LIBRARIES += impl/conn/conn.lib
+LIBRARIES += impl/conn/tsccm/tsccm.lib
+LIBRARIES += impl/cookie/cookie.lib
 
 LIBRARIES += -lcutils
