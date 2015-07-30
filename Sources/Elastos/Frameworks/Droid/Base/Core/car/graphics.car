@@ -82,6 +82,10 @@ module
     merge("graphics/drawable/LevelListDrawable.car");
     merge("graphics/drawable/PaintDrawable.car");
     merge("graphics/drawable/PictureDrawable.car");
+    merge("graphics/drawable/AnimatedStateListDrawable.car");
+    merge("graphics/drawable/AnimatedVectorDrawable.car");
+    merge("graphics/drawable/RippleDrawable.car");
+    merge("graphics/drawable/VectorDrawable.car");
     merge("graphics/drawable/shapes/Shape.car");
     merge("graphics/drawable/shapes/RectShape.car");
     merge("graphics/drawable/shapes/RoundRectShape.car");

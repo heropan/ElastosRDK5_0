@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Content.Res.IColorStateList;
+
     namespace Elastos {
     namespace Droid {
     namespace Graphics {
@@ -123,6 +125,23 @@ module
             [in] Int32 color);
 
         /**
+         * <p>Set the stroke width and color state list for the drawable. If width
+         * is zero, then no stroke is drawn.</p>
+         * <p><strong>Note</strong>: changing this property will affect all instances
+         * of a drawable loaded from a resource. It is recommended to invoke
+         * {@link #mutate()} before changing this property.</p>
+         *
+         * @param width The width in pixels of the stroke
+         * @param colorStateList The color state list of the stroke
+         *
+         * @see #mutate()
+         * @see #setStroke(int, ColorStateList, float, float)
+         */
+        SetStroke(
+            [in] Int32 width,
+            [in] IColorStateList* colorStateList);
+
+        /**
          * <p>Set the stroke width and color for the drawable. If width is zero,
          * then no stroke is drawn. This method can also be used to dash the stroke.</p>
          * <p><strong>Note</strong>: changing this property will affect all instances
@@ -140,6 +159,28 @@ module
         SetStroke(
             [in] Int32 width,
             [in] Int32 color,
+            [in] Float dashWidth,
+            [in] Float dashGap);
+
+        /**
+         * <p>Set the stroke width and color state list for the drawable. If width
+         * is zero, then no stroke is drawn. This method can also be used to dash
+         * the stroke.</p>
+         * <p><strong>Note</strong>: changing this property will affect all instances
+         * of a drawable loaded from a resource. It is recommended to invoke
+         * {@link #mutate()} before changing this property.</p>
+         *
+         * @param width The width in pixels of the stroke
+         * @param colorStateList The color state list of the stroke
+         * @param dashWidth The length in pixels of the dashes, set to 0 to disable dashes
+         * @param dashGap The gap in pixels between dashes
+         *
+         * @see #mutate()
+         * @see #setStroke(int, ColorStateList)
+         */
+        SetStroke(
+            [in] Int32 width,
+            [in] IColorStateList* colorStateList,
             [in] Float dashWidth,
             [in] Float dashGap);
 
@@ -220,6 +261,15 @@ module
             [in] Float gradientRadius);
 
         /**
+         * Returns the radius of the gradient in pixels. The radius is valid only
+         * when the gradient type is set to {@link #RADIAL_GRADIENT}.
+         *
+         * @return Radius in pixels.
+         */
+        GetGradientRadius(
+            [out] Float* radius);
+
+        /**
          * <p>Sets whether or not this drawable will honor its <code>level</code>
          * property.</p>
          * <p><strong>Note</strong>: changing this property will affect all instances
@@ -282,6 +332,22 @@ module
          */
         SetColor(
             [in] Int32 argb);
+
+        /**
+         * Changes this drawable to use a single color state list instead of a
+         * gradient. Calling this method with a null argument will clear the color
+         * and is equivalent to calling {@link #setColor(int)} with the argument
+         * {@link Color#TRANSPARENT}.
+         * <p>
+         * <strong>Note</strong>: changing color will affect all instances of a
+         * drawable loaded from a resource. It is recommended to invoke
+         * {@link #mutate()} before changing the color.</p>
+         *
+         * @param colorStateList The color state list used to fill the shape
+         * @see #mutate()
+         */
+        SetColor(
+            [in] IColorStateList* colorStateList);
     }
 
     } // namespace Drawable

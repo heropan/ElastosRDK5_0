@@ -2,10 +2,12 @@
 module
 {
     enum Elastos.Droid.Graphics.ShaderTileMode;
+    enum Elastos.Droid.Graphics.PorterDuffMode;
     interface Elastos.Droid.Utility.IDisplayMetrics;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
+    interface Elastos.Droid.Content.Res.IColorStateList;
 
     namespace Elastos {
     namespace Droid {
@@ -178,12 +180,49 @@ module
         SetAntiAlias(
             [in] Boolean aa);
 
+
+        /**
+         * Indicates whether anti-aliasing is enabled for this drawable.
+         *
+         * @return True if anti-aliasing is enabled, false otherwise.
+         *
+         * @see #setAntiAlias(boolean)
+         */
+        HasAntiAlias(
+            [out] Boolean* aa);
+
         /** Set the gravity used to position/stretch the bitmap within its bounds.
          *  See android.view.Gravity
          * @param gravity the gravity
          */
         SetGravity(
             [in] Int32 gravity);
+
+
+        /**
+         * Enables or disables the mipmap hint for this drawable's bitmap.
+         * See {@link Bitmap#setHasMipMap(boolean)} for more information.
+         *
+         * If the bitmap is null calling this method has no effect.
+         *
+         * @param mipMap True if the bitmap should use mipmaps, false otherwise.
+         *
+         * @see #hasMipMap()
+         */
+        SetMipMap(
+            [in] Boolean mipMap);
+
+        /**
+         * Indicates whether the mipmap hint is enabled on this drawable's bitmap.
+         *
+         * @return True if the mipmap hint is set, false otherwise. If the bitmap
+         *         is null, this method always returns false.
+         *
+         * @see #setMipMap(boolean)
+         * @attr ref android.R.styleable#BitmapDrawable_mipMap
+         */
+        HasMipMap(
+            [out] Boolean* mipMap);
 
         /**
          * Set the density scale at which this drawable will be rendered. This
@@ -278,6 +317,19 @@ module
          */
         SetTileModeY(
             [in] ShaderTileMode mode);
+
+
+        /**
+         * @hide only needed by a hack within ProgressBar
+         */
+        GetTint(
+            [out] IColorStateList** list);
+
+        /**
+         * @hide only needed by a hack within ProgressBar
+         */
+        GetTintMode(
+            [out] PorterDuffMode* mode);
     }
 
     } // namespace Drawable

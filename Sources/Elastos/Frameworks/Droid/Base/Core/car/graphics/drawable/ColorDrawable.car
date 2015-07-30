@@ -92,14 +92,6 @@ module
      */
     interface IColorDrawable {
         /**
-         * Returns the alpha value of this drawable's color.
-         *
-         * @return A value between 0 and 255.
-         */
-        GetAlpha(
-            [out] Int32* alpha);
-
-        /**
          * Gets the drawable's color value.
          *
          * @return int The color to draw.
