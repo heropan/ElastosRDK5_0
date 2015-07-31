@@ -2,12 +2,11 @@
 module
 {
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewStub;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
-
-    interface IViewStub;
 
     /**
      * Listener used to receive a notification after a ViewStub has successfully

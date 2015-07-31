@@ -66,15 +66,13 @@ module
         const Int32 ADD_PERMISSION_DENIED = -8;
         const Int32 ADD_INVALID_DISPLAY = -9;
 
-        GetWindowManagerService(
-            [out] IIWindowManager** windowManager);
 
-        GetWindowSession(
-            [in] ILooper* mainLooper,
-            [out] IWindowSession** windowSession);
+        GetViewRootNames(
+            [out, callee] ArrayOf<String>* names);
 
-        PeekWindowSession(
-            [out] IWindowSession** windowSession);
+        GetRootView(
+            [in] String name,
+            [out] IView** view);
 
         AddView(
             [in] IView* view,
@@ -95,12 +93,41 @@ module
             [in] String who,
             [in] String what);
 
+        TrimMemory(
+            [in] Int32 level);
+
         SetStoppedState(
             [in] IBinder* token,
             [in] Boolean state);
 
         ReportNewConfiguration(
             [in] IConfiguration* config);
+
+        ChangeCanvasOpacity(
+            [in] IBinder* token,
+            [in] Boolean opaque);
+    }
+
+    [local]
+    interface IWindowManagerGlobalHelper {
+        GetInstance(
+            [out] IWindowManagerGlobal** wmg);
+
+        GetWindowManagerService(
+            [out] IIWindowManager** windowManager);
+
+        GetWindowSession(
+            [in] ILooper* mainLooper,
+            [out] IWindowSession** windowSession);
+
+        PeekWindowSession(
+            [out] IWindowSession** windowSession);
+
+        ShouldDestroyEglContext(
+            [in] Int32 trimLevel,
+            [out] Boolean* result);
+
+        TrimForeground();
     }
 
     } // namespace View

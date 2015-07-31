@@ -1,62 +1,69 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
 
+    /**
+     * This class represents information about a window from the
+     * window manager to another part of the system.
+     *
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     [local, deprecated]
     interface IWindowInfo {
-        SetToken(
-            [in] IInterface* token);
-
-        SetFrame(
-            [in] IRect* frame);
 
         SetType(
             [in] Int32 type);
 
-        SetDisplayId(
-            [in] Int32 displayId);
-
-        SetCompatibilityScale(
-            [in] Float compatibilityScale);
-
-        SetVisible(
-            [in] Boolean visible);
-
         SetLayer(
             [in] Int32 layer);
 
-        SetTouchableRegion(
-            [in] IRect* touchableRegion);
+        SetToken(
+            [in] IBinder* token);
 
-        GetToken(
-            [out] IInterface** token);
+        SetParentToken(
+            [in] IBinder* token);
 
-        GetDisplayId(
-            [out] Int32* id);
+        SetFocused(
+            [in] Boolean focused);
+
+        SetBoundsInScreen(
+            [in] IRect* rect);
+
+        SetChildTokens(
+            [in] IList* tokens);
 
         GetType(
             [out] Int32* type);
 
-        GetCompatibilityScale(
-            [out] Float* compatibilityScale);
-
-        GetVisible(
-            [out] Boolean* visible);
-
         GetLayer(
             [out] Int32* layer);
 
+        GetToken(
+            [out] IBinder** token);
 
-        GetFrame(
-            [out] IRect** frame);
+        GetParentToken(
+            [out] IBinder** token);
 
-        GetTouchableRegion(
-            [out] IRect** region);
+        GetFocused(
+            [out] Boolean* focused);
+
+        GetBoundsInScreen(
+            [out] IRect** rect);
+
+        GetChildTokens(
+            [out] IList** tokens);
 
         Recycle();
     }

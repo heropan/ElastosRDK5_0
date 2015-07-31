@@ -24,7 +24,6 @@ module
              * child of this view parent. This will schedule a layout pass of the view
              * tree.
              */
-            //IView has RequestLayout method
             RequestLayout();
 
             /**
@@ -32,7 +31,6 @@ module
              *
              * @param result true if layout was requested, false otherwise
              */
-            //IView has IsLayoutRequested method
             IsLayoutRequested(
                 [out] Boolean* result);
 
@@ -90,7 +88,6 @@ module
              *
              * @param parent a ViewParent or null if this ViewParent does not have a parent
              */
-            //IView has GetParent method
             GetParent(
                 [out] IViewParent** parent);
 
@@ -156,7 +153,6 @@ module
              * @param v The view that currently has focus
              * @param direction One of FOCUS_UP, FOCUS_DOWN, FOCUS_LEFT, and FOCUS_RIGHT
              */
-            //IView has FocusSearch method;
             FocusSearch(
                 [in] IView* focused,
                 [in] Int32 direction,
@@ -185,7 +181,8 @@ module
              *
              * <p>In most cases, a subclass does not need to override this.  However, if
              * the subclass is added directly to the window manager (for example,
-             * {@link ViewManager#addView(View, android.view.ViewGroup.LayoutParams)})
+             * {@link ViewManager#addView(
+                [in] IView*, android.view.ViewGroup.LayoutParams)})
              * then it should override this and show the context menu.</p>
              *
              * @param originalView The source view where the context menu was first invoked
@@ -209,7 +206,8 @@ module
              *
              * <p>In most cases, a subclass does not need to override this. However, if the
              * subclass is added directly to the window manager (for example,
-             * {@link ViewManager#addView(View, android.view.ViewGroup.LayoutParams)})
+             * {@link ViewManager#addView(
+                [in] IView*, android.view.ViewGroup.LayoutParams)})
              * then it should override this and start the action mode.</p>
              *
              * @param originalView The source view where the action mode was first invoked
@@ -324,14 +322,290 @@ module
                 [out] IViewParent** parent);
 
             /**
-             * A child notifies its parent that its state for accessibility has changed.
-             * That is some of the child properties reported to accessibility services has
-             * changed, hence the interested services have to be notified for the new state.
-             *
-             * @hide
+             * Notifies a view parent that the accessibility state of one of its
+             * descendants has changed and that the structure of the subtree is
+             * different.
+             * @param child The direct child whose subtree has changed.
+             * @param source The descendant view that changed.
+             * @param changeType A bit mask of the types of changes that occurred. One
+             *            or more of:
+             *            <ul>
+             *            <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION}
+             *            <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_SUBTREE}
+             *            <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_TEXT}
+             *            <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_UNDEFINED}
+             *            </ul>
              */
-            ChildAccessibilityStateChanged(
-                [in] IView* child);
+            NotifySubtreeAccessibilityStateChanged(
+                [in] IView* child,
+                [in] IView* source,
+                [in] Int32 changeType);
+
+            /**
+             * Tells if this view parent can resolve the layout direction.
+             * See {@link View#setLayoutDirection(int)}
+             *
+             * @return True if this view parent can resolve the layout direction.
+             */
+            CanResolveLayoutDirection(
+                [out] Boolean* result);
+
+            /**
+             * Tells if this view parent layout direction is resolved.
+             * See {@link View#setLayoutDirection(int)}
+             *
+             * @return True if this view parent layout direction is resolved.
+             */
+            IsLayoutDirectionResolved(
+                [out] Boolean* result);
+
+            /**
+             * Return this view parent layout direction. See {@link View#getLayoutDirection()}
+             *
+             * @return {@link View#LAYOUT_DIRECTION_RTL} if the layout direction is RTL or returns
+             * {@link View#LAYOUT_DIRECTION_LTR} if the layout direction is not RTL.
+             */
+            GetLayoutDirection(
+                [out] Int32* result);
+
+            /**
+             * Tells if this view parent can resolve the text direction.
+             * See {@link View#setTextDirection(int)}
+             *
+             * @return True if this view parent can resolve the text direction.
+             */
+            CanResolveTextDirection(
+                [out] Boolean* result);
+
+            /**
+             * Tells if this view parent text direction is resolved.
+             * See {@link View#setTextDirection(int)}
+             *
+             * @return True if this view parent text direction is resolved.
+             */
+            IsTextDirectionResolved(
+                [out] Boolean* result);
+
+            /**
+             * Return this view parent text direction. See {@link View#getTextDirection()}
+             *
+             * @return the resolved text direction. Returns one of:
+             *
+             * {@link View#TEXT_DIRECTION_FIRST_STRONG}
+             * {@link View#TEXT_DIRECTION_ANY_RTL},
+             * {@link View#TEXT_DIRECTION_LTR},
+             * {@link View#TEXT_DIRECTION_RTL},
+             * {@link View#TEXT_DIRECTION_LOCALE}
+             */
+            GetTextDirection(
+                [out] Int32* result);
+
+            /**
+             * Tells if this view parent can resolve the text alignment.
+             * See {@link View#setTextAlignment(int)}
+             *
+             * @return True if this view parent can resolve the text alignment.
+             */
+            CanResolveTextAlignment(
+                [out] Boolean* result);
+
+            /**
+             * Tells if this view parent text alignment is resolved.
+             * See {@link View#setTextAlignment(int)}
+             *
+             * @return True if this view parent text alignment is resolved.
+             */
+            IsTextAlignmentResolved(
+                [out] Boolean* result);
+
+            /**
+             * Return this view parent text alignment. See {@link android.view.View#getTextAlignment()}
+             *
+             * @return the resolved text alignment. Returns one of:
+             *
+             * {@link View#TEXT_ALIGNMENT_GRAVITY},
+             * {@link View#TEXT_ALIGNMENT_CENTER},
+             * {@link View#TEXT_ALIGNMENT_TEXT_START},
+             * {@link View#TEXT_ALIGNMENT_TEXT_END},
+             * {@link View#TEXT_ALIGNMENT_VIEW_START},
+             * {@link View#TEXT_ALIGNMENT_VIEW_END}
+             */
+            GetTextAlignment(
+                [out] Int32* result);
+
+            /**
+             * React to a descendant view initiating a nestable scroll operation, claiming the
+             * nested scroll operation if appropriate.
+             *
+             * <p>This method will be called in response to a descendant view invoking
+             * {@link View#startNestedScroll(int)}. Each parent up the view hierarchy will be
+             * given an opportunity to respond and claim the nested scrolling operation by returning
+             * <code>true</code>.</p>
+             *
+             * <p>This method may be overridden by ViewParent implementations to indicate when the view
+             * is willing to support a nested scrolling operation that is about to begin. If it returns
+             * true, this ViewParent will become the target view's nested scrolling parent for the duration
+             * of the scroll operation in progress. When the nested scroll is finished this ViewParent
+             * will receive a call to {@link #onStopNestedScroll(
+                [in] IView*)}.
+             * </p>
+             *
+             * @param child Direct child of this ViewParent containing target
+             * @param target View that initiated the nested scroll
+             * @param nestedScrollAxes Flags consisting of {@link View#SCROLL_AXIS_HORIZONTAL},
+             *                         {@link View#SCROLL_AXIS_VERTICAL} or both
+             * @return true if this ViewParent accepts the nested scroll operation
+             */
+            OnStartNestedScroll(
+                [in] IView* child,
+                [in] IView* target,
+                [in] Int32 nestedScrollAxes,
+                [out] Boolean* result);
+
+            /**
+             * React to the successful claiming of a nested scroll operation.
+             *
+             * <p>This method will be called after
+             * {@link #onStartNestedScroll(
+                [in] IView*, View, int) onStartNestedScroll} returns true. It offers
+             * an opportunity for the view and its superclasses to perform initial configuration
+             * for the nested scroll. Implementations of this method should always call their superclass's
+             * implementation of this method if one is present.</p>
+             *
+             * @param child Direct child of this ViewParent containing target
+             * @param target View that initiated the nested scroll
+             * @param nestedScrollAxes Flags consisting of {@link View#SCROLL_AXIS_HORIZONTAL},
+             *                         {@link View#SCROLL_AXIS_VERTICAL} or both
+             * @see #onStartNestedScroll(
+                [in] IView*, View, int)
+             * @see #onStopNestedScroll(
+                [in] IView*)
+             */
+            OnNestedScrollAccepted(
+                [in] IView* child,
+                [in] IView* target,
+                [in] Int32 nestedScrollAxes);
+
+            /**
+             * React to a nested scroll operation ending.
+             *
+             * <p>Perform cleanup after a nested scrolling operation.
+             * This method will be called when a nested scroll stops, for example when a nested touch
+             * scroll ends with a {@link MotionEvent#ACTION_UP} or {@link MotionEvent#ACTION_CANCEL} event.
+             * Implementations of this method should always call their superclass's implementation of this
+             * method if one is present.</p>
+             *
+             * @param target View that initiated the nested scroll
+             */
+            OnStopNestedScroll(
+                [in] IView* target);
+
+            /**
+             * React to a nested scroll in progress.
+             *
+             * <p>This method will be called when the ViewParent's current nested scrolling child view
+             * dispatches a nested scroll event. To receive calls to this method the ViewParent must have
+             * previously returned <code>true</code> for a call to
+             * {@link #onStartNestedScroll(
+                [in] IView*, View, int)}.</p>
+             *
+             * <p>Both the consumed and unconsumed portions of the scroll distance are reported to the
+             * ViewParent. An implementation may choose to use the consumed portion to match or chase scroll
+             * position of multiple child elements, for example. The unconsumed portion may be used to
+             * allow continuous dragging of multiple scrolling or draggable elements, such as scrolling
+             * a list within a vertical drawer where the drawer begins dragging once the edge of inner
+             * scrolling content is reached.</p>
+             *
+             * @param target The descendent view controlling the nested scroll
+             * @param dxConsumed Horizontal scroll distance in pixels already consumed by target
+             * @param dyConsumed Vertical scroll distance in pixels already consumed by target
+             * @param dxUnconsumed Horizontal scroll distance in pixels not consumed by target
+             * @param dyUnconsumed Vertical scroll distance in pixels not consumed by target
+             */
+            OnNestedScroll(
+                [in] IView* target,
+                [in] Int32 dxConsumed,
+                [in] Int32 dyConsumed,
+                [in] Int32 dxUnconsumed,
+                [in] Int32 dyUnconsumed);
+
+            /**
+             * React to a nested scroll in progress before the target view consumes a portion of the scroll.
+             *
+             * <p>When working with nested scrolling often the parent view may want an opportunity
+             * to consume the scroll before the nested scrolling child does. An example of this is a
+             * drawer that contains a scrollable list. The user will want to be able to scroll the list
+             * fully into view before the list itself begins scrolling.</p>
+             *
+             * <p><code>onNestedPreScroll</code> is called when a nested scrolling child invokes
+             * {@link View#dispatchNestedPreScroll(int, int, int[], int[])}. The implementation should
+             * report how any pixels of the scroll reported by dx, dy were consumed in the
+             * <code>consumed</code> array. Index 0 corresponds to dx and index 1 corresponds to dy.
+             * This parameter will never be null. Initial values for consumed[0] and consumed[1]
+             * will always be 0.</p>
+             *
+             * @param target View that initiated the nested scroll
+             * @param dx Horizontal scroll distance in pixels
+             * @param dy Vertical scroll distance in pixels
+             * @param consumed Output. The horizontal and vertical scroll distance consumed by this parent
+             */
+            OnNestedPreScroll(
+                [in] IView* target,
+                [in] Int32 dx,
+                [in] Int32 dy,
+                [in] ArrayOf<Int32>* consumed);
+
+            /**
+             * Request a fling from a nested scroll.
+             *
+             * <p>This method signifies that a nested scrolling child has detected suitable conditions
+             * for a fling. Generally this means that a touch scroll has ended with a
+             * {@link VelocityTracker velocity} in the direction of scrolling that meets or exceeds
+             * the {@link ViewConfiguration#getScaledMinimumFlingVelocity() minimum fling velocity}
+             * along a scrollable axis.</p>
+             *
+             * <p>If a nested scrolling child view would normally fling but it is at the edge of
+             * its own content, it can use this method to delegate the fling to its nested scrolling
+             * parent instead. The parent may optionally consume the fling or observe a child fling.</p>
+             *
+             * @param target View that initiated the nested scroll
+             * @param velocityX Horizontal velocity in pixels per second
+             * @param velocityY Vertical velocity in pixels per second
+             * @param consumed true if the child consumed the fling, false otherwise
+             * @return true if this parent consumed or otherwise reacted to the fling
+             */
+            OnNestedFling(
+                [in] IView* target,
+                [in] Float velocityX,
+                [in] Float velocityY,
+                [in] Boolean consumed);
+
+            /**
+             * React to a nested fling before the target view consumes it.
+             *
+             * <p>This method siginfies that a nested scrolling child has detected a fling with the given
+             * velocity along each axis. Generally this means that a touch scroll has ended with a
+             * {@link VelocityTracker velocity} in the direction of scrolling that meets or exceeds
+             * the {@link ViewConfiguration#getScaledMinimumFlingVelocity() minimum fling velocity}
+             * along a scrollable axis.</p>
+             *
+             * <p>If a nested scrolling parent is consuming motion as part of a
+             * {@link #onNestedPreScroll(
+                [in] IView*, int, int, int[]) pre-scroll}, it may be appropriate for
+             * it to also consume the pre-fling to complete that same motion. By returning
+             * <code>true</code> from this method, the parent indicates that the child should not
+             * fling its own internal content as well.</p>
+             *
+             * @param target View that initiated the nested scroll
+             * @param velocityX Horizontal velocity in pixels per second
+             * @param velocityY Vertical velocity in pixels per second
+             * @return true if this parent consumed the fling ahead of the target view
+             */
+            OnNestedPreFling(
+                [in] IView* target,
+                [in] Float velocityX,
+                [in] Float velocityY,
+                [out] Boolean* result);
         }
 
     } // namespace View

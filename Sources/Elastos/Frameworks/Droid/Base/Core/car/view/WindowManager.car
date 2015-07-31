@@ -1,7 +1,8 @@
 
 module
 {
-    interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.IView;
@@ -16,6 +17,7 @@ module
      */
     [parcelable]
     interface IWindowManagerLayoutParams{
+
         /**
          * Start of window types that represent normal application windows.
          */
@@ -62,10 +64,10 @@ module
          * Window type: a panel on top of an application window.  These windows
          * appear on top of their attached window.
          */
-        const Int32 TYPE_APPLICATION_PANEL  = FIRST_SUB_WINDOW;
+        const Int32 TYPE_APPLICATION_PANEL  = 1000; //FIRST_SUB_WINDOW;
 
         /**
-         * Window type: window for showing media (e.g. video).  These windows
+         * Window type: window for showing media (such as video).  These windows
          * are displayed behind their attached window.
          */
         const Int32 TYPE_APPLICATION_MEDIA  = 1001;//FIRST_SUB_WINDOW+1;
@@ -109,7 +111,7 @@ module
          * windows are shifted down so they are below it.
          * In multiuser systems shows on all users' windows.
          */
-        const Int32 TYPE_STATUS_BAR         = FIRST_SYSTEM_WINDOW;
+        const Int32 TYPE_STATUS_BAR         = 2000;//FIRST_SYSTEM_WINDOW;
 
         /**
          * Window type: the search bar.  There can be only one search bar
@@ -137,6 +139,7 @@ module
         /**
          * Window type: keyguard window.
          * In multiuser systems shows on all users' windows.
+         * @removed
          */
         const Int32 TYPE_KEYGUARD           = 2004;//FIRST_SYSTEM_WINDOW+4;
 
@@ -321,6 +324,25 @@ module
         const Int32 TYPE_RECENTS_OVERLAY = 2028;//FIRST_SYSTEM_WINDOW+28;
 
         /**
+         * Window type: keyguard scrim window. Shows if keyguard needs to be restarted.
+         * In multiuser systems shows on all users' windows.
+         * @hide
+         */
+        const Int32 TYPE_KEYGUARD_SCRIM           = 2029;//FIRST_SYSTEM_WINDOW+29;
+
+        /**
+         * Window type: Window for Presentation on top of private
+         * virtual display.
+         */
+        const Int32 TYPE_PRIVATE_PRESENTATION = 2030;//FIRST_SYSTEM_WINDOW+30;
+
+        /**
+         * Window type: Windows in the voice interaction layer.
+         * @hide
+         */
+        const Int32 TYPE_VOICE_INTERACTION = 2031;//FIRST_SYSTEM_WINDOW+31;
+
+        /**
          * End of types of system windows.
          */
         const Int32 LAST_SYSTEM_WINDOW      = 2999;
@@ -337,6 +359,7 @@ module
         /** @deprecated this is ignored, this value is set automatically when needed. */
         //@Deprecated
         const Int32 MEMORY_TYPE_PUSH_BUFFERS = 3;
+
 
         /** Window flag: as long as this window is visible to the user, allow
          *  the lock screen to activate while the screen is on.
@@ -371,18 +394,21 @@ module
         /** Window flag: this window can never receive touch events. */
         const Int32 FLAG_NOT_TOUCHABLE      = 0x00000010;
 
-        /** Window flag: Even when this window is focusable (its
-         * {@link #FLAG_NOT_FOCUSABLE is not set), allow any pointer events
+        /** Window flag: even when this window is focusable (its
+         * {@link #FLAG_NOT_FOCUSABLE} is not set), allow any pointer events
          * outside of the window to be sent to the windows behind it.  Otherwise
          * it will consume all pointer events itself, regardless of whether they
          * are inside of the window. */
         const Int32 FLAG_NOT_TOUCH_MODAL    = 0x00000020;
 
-        /** Window flag: When set, if the device is asleep when the touch
+        /** Window flag: when set, if the device is asleep when the touch
          * screen is pressed, you will receive this first touch event.  Usually
          * the first touch event is consumed by the system since the user can
          * not see what they are pressing on.
+         *
+         * @deprecated This flag has no effect.
          */
+        //@Deprecated
         const Int32 FLAG_TOUCHABLE_WHEN_WAKING = 0x00000040;
 
         /** Window flag: as long as this window is visible to the user, keep
@@ -390,7 +416,7 @@ module
         const Int32 FLAG_KEEP_SCREEN_ON     = 0x00000080;
 
         /** Window flag: place the window within the entire screen, ignoring
-         *  decorations around the border (a.k.a. the status bar).  The
+         *  decorations around the border (such as the status bar).  The
          *  window must correctly position its contents to take the screen
          *  decoration into account.  This flag is normally set for you
          *  by Window as described in {@link Window#setFlags}. */
@@ -399,14 +425,30 @@ module
         /** Window flag: allow window to extend outside of the screen. */
         const Int32 FLAG_LAYOUT_NO_LIMITS   = 0x00000200;
 
-        /** Window flag: Hide all screen decorations (e.g. status bar) while
+        /**
+         * Window flag: hide all screen decorations (such as the status bar) while
          * this window is displayed.  This allows the window to use the entire
          * display space for itself -- the status bar will be hidden when
-         * an app window with this flag set is on the top layer. */
+         * an app window with this flag set is on the top layer. A fullscreen window
+         * will ignore a value of {@link #SOFT_INPUT_ADJUST_RESIZE} for the window's
+         * {@link #softInputMode} field; the window will stay fullscreen
+         * and will not resize.
+         *
+         * <p>This flag can be controlled in your theme through the
+         * {@link android.R.attr#windowFullscreen} attribute; this attribute
+         * is automatically set for you in the standard fullscreen themes
+         * such as {@link android.R.style#Theme_NoTitleBar_Fullscreen},
+         * {@link android.R.style#Theme_Black_NoTitleBar_Fullscreen},
+         * {@link android.R.style#Theme_Light_NoTitleBar_Fullscreen},
+         * {@link android.R.style#Theme_Holo_NoActionBar_Fullscreen},
+         * {@link android.R.style#Theme_Holo_Light_NoActionBar_Fullscreen},
+         * {@link android.R.style#Theme_DeviceDefault_NoActionBar_Fullscreen}, and
+         * {@link android.R.style#Theme_DeviceDefault_Light_NoActionBar_Fullscreen}.</p>
+         */
         const Int32 FLAG_FULLSCREEN      = 0x00000400;
 
-        /** Window flag: Override {@link #FLAG_FULLSCREEN and force the
-         *  screen decorations (such as status bar) to be shown. */
+        /** Window flag: override {@link #FLAG_FULLSCREEN} and force the
+         *  screen decorations (such as the status bar) to be shown. */
         const Int32 FLAG_FORCE_NOT_FULLSCREEN   = 0x00000800;
 
         /** Window flag: turn on dithering when compositing this window to
@@ -415,7 +457,7 @@ module
         //@Deprecated
         const Int32 FLAG_DITHER             = 0x00001000;
 
-        /** Window flag: Treat the content of the window as secure, preventing
+        /** Window flag: treat the content of the window as secure, preventing
          * it from appearing in screenshots or from being viewed on non-secure
          * displays.
          *
@@ -484,6 +526,17 @@ module
          * to actually see the wallpaper behind it; this flag just ensures
          * that the wallpaper surface will be there if this window actually
          * has translucent regions.
+         *
+         * <p>This flag can be controlled in your theme through the
+         * {@link android.R.attr#windowShowWallpaper} attribute; this attribute
+         * is automatically set for you in the standard wallpaper themes
+         * such as {@link android.R.style#Theme_Wallpaper},
+         * {@link android.R.style#Theme_Wallpaper_NoTitleBar},
+         * {@link android.R.style#Theme_Wallpaper_NoTitleBar_Fullscreen},
+         * {@link android.R.style#Theme_Holo_Wallpaper},
+         * {@link android.R.style#Theme_Holo_Wallpaper_NoTitleBar},
+         * {@link android.R.style#Theme_DeviceDefault_Wallpaper}, and
+         * {@link android.R.style#Theme_DeviceDefault_Wallpaper_NoTitleBar}.</p>
          */
         const Int32 FLAG_SHOW_WALLPAPER = 0x00100000;
 
@@ -550,8 +603,88 @@ module
          */
         const Int32 FLAG_HARDWARE_ACCELERATED = 0x01000000;
 
+        /**
+         * Window flag: allow window contents to extend in to the screen's
+         * overscan area, if there is one.  The window should still correctly
+         * position its contents to take the overscan area into account.
+         *
+         * <p>This flag can be controlled in your theme through the
+         * {@link android.R.attr#windowOverscan} attribute; this attribute
+         * is automatically set for you in the standard overscan themes
+         * such as
+         * {@link android.R.style#Theme_Holo_NoActionBar_Overscan},
+         * {@link android.R.style#Theme_Holo_Light_NoActionBar_Overscan},
+         * {@link android.R.style#Theme_DeviceDefault_NoActionBar_Overscan}, and
+         * {@link android.R.style#Theme_DeviceDefault_Light_NoActionBar_Overscan}.</p>
+         *
+         * <p>When this flag is enabled for a window, its normal content may be obscured
+         * to some degree by the overscan region of the display.  To ensure key parts of
+         * that content are visible to the user, you can use
+         * {@link View#setFitsSystemWindows(boolean) View.setFitsSystemWindows(boolean)}
+         * to set the point in the view hierarchy where the appropriate offsets should
+         * be applied.  (This can be done either by directly calling this function, using
+         * the {@link android.R.attr#fitsSystemWindows} attribute in your view hierarchy,
+         * or implementing you own {@link View#fitSystemWindows(android.graphics.Rect)
+         * View.fitSystemWindows(Rect)} method).</p>
+         *
+         * <p>This mechanism for positioning content elements is identical to its equivalent
+         * use with layout and {@link View#setSystemUiVisibility(int)
+         * View.setSystemUiVisibility(int)}; here is an example layout that will correctly
+         * position its UI elements with this overscan flag is set:</p>
+         *
+         * {@sample development/samples/ApiDemos/res/layout/overscan_activity.xml complete}
+         */
+        const Int32 FLAG_LAYOUT_IN_OVERSCAN = 0x02000000;
+
+        /**
+         * Window flag: request a translucent status bar with minimal system-provided
+         * background protection.
+         *
+         * <p>This flag can be controlled in your theme through the
+         * {@link android.R.attr#windowTranslucentStatus} attribute; this attribute
+         * is automatically set for you in the standard translucent decor themes
+         * such as
+         * {@link android.R.style#Theme_Holo_NoActionBar_TranslucentDecor},
+         * {@link android.R.style#Theme_Holo_Light_NoActionBar_TranslucentDecor},
+         * {@link android.R.style#Theme_DeviceDefault_NoActionBar_TranslucentDecor}, and
+         * {@link android.R.style#Theme_DeviceDefault_Light_NoActionBar_TranslucentDecor}.</p>
+         *
+         * <p>When this flag is enabled for a window, it automatically sets
+         * the system UI visibility flags {@link View#SYSTEM_UI_FLAG_LAYOUT_STABLE} and
+         * {@link View#SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN}.</p>
+         */
+        const Int32 FLAG_TRANSLUCENT_STATUS = 0x04000000;
+
+        /**
+         * Window flag: request a translucent navigation bar with minimal system-provided
+         * background protection.
+         *
+         * <p>This flag can be controlled in your theme through the
+         * {@link android.R.attr#windowTranslucentNavigation} attribute; this attribute
+         * is automatically set for you in the standard translucent decor themes
+         * such as
+         * {@link android.R.style#Theme_Holo_NoActionBar_TranslucentDecor},
+         * {@link android.R.style#Theme_Holo_Light_NoActionBar_TranslucentDecor},
+         * {@link android.R.style#Theme_DeviceDefault_NoActionBar_TranslucentDecor}, and
+         * {@link android.R.style#Theme_DeviceDefault_Light_NoActionBar_TranslucentDecor}.</p>
+         *
+         * <p>When this flag is enabled for a window, it automatically sets
+         * the system UI visibility flags {@link View#SYSTEM_UI_FLAG_LAYOUT_STABLE} and
+         * {@link View#SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION}.</p>
+         */
+        const Int32 FLAG_TRANSLUCENT_NAVIGATION = 0x08000000;
+
         // ----- HIDDEN FLAGS.
         // These start at the high bit and go down.
+
+        /**
+         * Flag for a window in local focus mode.
+         * Window in local focus mode can control focus independent of window manager using
+         * {@link Window#setLocalFocus(boolean, boolean)}.
+         * Usually window in this mode will not get touch/key events from window manager, but will
+         * get events only via local injection using {@link Window#injectInputEvent(InputEvent)}.
+         */
+        const Int32 FLAG_LOCAL_FOCUS_MODE = 0x10000000;
 
         /** Window flag: Enable touches to slide out of a window into neighboring
          * windows in mid-gesture instead of being captured for the duration of
@@ -563,7 +696,7 @@ module
          *
          * {@hide}
          */
-        const Int32 FLAG_SLIPPERY = 0x04000000;
+        const Int32 FLAG_SLIPPERY = 0x20000000;
 
         /**
          * Flag for a window belonging to an activity that responds to {@link KeyEvent#KEYCODE_MENU}
@@ -576,27 +709,22 @@ module
          *
          * {@hide}
          */
-        const Int32 FLAG_NEEDS_MENU_KEY = 0x08000000;
+        const Int32 FLAG_NEEDS_MENU_KEY = 0x40000000;
 
-        /** Window flag: special flag to limit the size of the window to be
-         * original size ([320x480] x density). Used to create window for applications
-         * running under compatibility mode.
-         *
-         * {@hide} */
-        const Int32 FLAG_COMPATIBLE_WINDOW = 0x20000000;
-
-        /** Window flag: a special option intended for system dialogs.  When
-         * this flag is set, the window will demand focus unconditionally when
-         * it is created.
-         * {@hide} */
-        const Int32 FLAG_SYSTEM_ERROR = 0x40000000;
+        /**
+         * Flag indicating that this Window is responsible for drawing the background for the
+         * system bars. If set, the system bars are drawn with a transparent background and the
+         * corresponding areas in this window are filled with the colors specified in
+         * {@link Window#getStatusBarColor()} and {@link Window#getNavigationBarColor()}.
+         */
+        const Int32 FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS = 0x80000000;
 
         /**
          * If the window has requested hardware acceleration, but this is not
          * allowed in the process it is in, then still render it as if it is
          * hardware accelerated.  This is used for the starting preview windows
          * in the system process, which don't need to have the overhead of
-         * hardware acceleration (they are just a rendering), but should
+         * hardware acceleration (they are just a static rendering), but should
          * be rendered as such to match the actual window of the app even if it
          * is hardware accelerated.
          * Even if the window isn't hardware accelerated, still do its rendering
@@ -652,11 +780,36 @@ module
         const Int32 PRIVATE_FLAG_SHOW_FOR_ALL_USERS = 0x00000010;
 
         /**
-         * Special flag for the volume overlay: force the window manager out of "hide nav bar"
-         * mode while the window is on screen.
+         * Never animate position changes of the window.
          *
          * {@hide} */
-        const Int32 PRIVATE_FLAG_FORCE_SHOW_NAV_BAR = 0x00000020;
+        const Int32 PRIVATE_FLAG_NO_MOVE_ANIMATION = 0x00000040;
+
+        /** Window flag: special flag to limit the size of the window to be
+         * original size ([320x480] x density). Used to create window for applications
+         * running under compatibility mode.
+         *
+         * {@hide} */
+        const Int32 PRIVATE_FLAG_COMPATIBLE_WINDOW = 0x00000080;
+
+        /** Window flag: a special option intended for system dialogs.  When
+         * this flag is set, the window will demand focus unconditionally when
+         * it is created.
+         * {@hide} */
+        const Int32 PRIVATE_FLAG_SYSTEM_ERROR = 0x00000100;
+
+        /** Window flag: maintain the previous translucent decor state when this window
+         * becomes top-most.
+         * {@hide} */
+        const Int32 PRIVATE_FLAG_INHERIT_TRANSLUCENT_DECOR = 0x00000200;
+
+        /**
+         * Flag whether the current window is a keyguard window, meaning that it will hide all other
+         * windows behind it except for windows with flag {@link #FLAG_SHOW_WHEN_LOCKED} set.
+         * Further, this can only be set by {@link LayoutParams#TYPE_STATUS_BAR}.
+         * {@hide}
+         */
+        const Int32 PRIVATE_FLAG_KEYGUARD = 0x00000400;
 
         /**
          * Mask for {@link #softInputMode} of the bits that determine the
@@ -720,7 +873,10 @@ module
          * method.  This can <em>not</em> be combined with
          * {@link #SOFT_INPUT_ADJUST_PAN}; if
          * neither of these are set, then the system will try to pick one or
-         * the other depending on the contents of the window.
+         * the other depending on the contents of the window. If the window's
+         * layout parameter flags include {@link #FLAG_FULLSCREEN}, this
+         * value for {@link #softInputMode} will be ignored; the window will
+         * not resize, but will stay fullscreen.
          */
         const Int32 SOFT_INPUT_ADJUST_RESIZE = 0x10;
 
@@ -771,6 +927,25 @@ module
         const Float BRIGHTNESS_OVERRIDE_FULL = 1.0;
 
         /**
+         * Value for {@link #rotationAnimation} to define the animation used to
+         * specify that this window will rotate in or out following a rotation.
+         */
+        const Int32 ROTATION_ANIMATION_ROTATE = 0;
+
+        /**
+         * Value for {@link #rotationAnimation} to define the animation used to
+         * specify that this window will fade in or out following a rotation.
+         */
+        const Int32 ROTATION_ANIMATION_CROSSFADE = 1;
+
+        /**
+         * Value for {@link #rotationAnimation} to define the animation used to
+         * specify that this window will immediately disappear or appear following
+         * a rotation.
+         */
+        const Int32 ROTATION_ANIMATION_JUMPCUT = 2;
+
+        /**
          * When this window has focus, disable touch pad pointer gesture processing.
          * The window will receive raw position updates from the touch pad instead
          * of pointer movements and synthetic touch events.
@@ -811,20 +986,28 @@ module
         const Int32 SOFT_INPUT_MODE_CHANGED = 1<<9;
         const Int32 SCREEN_ORIENTATION_CHANGED = 1<<10;
         const Int32 SCREEN_BRIGHTNESS_CHANGED = 1<<11;
+        const Int32 ROTATION_ANIMATION_CHANGED = 1<<12;
         /** {@hide} */
-        const Int32 BUTTON_BRIGHTNESS_CHANGED = 1<<12;
+        const Int32 BUTTON_BRIGHTNESS_CHANGED = 1<<13;
         /** {@hide} */
-        const Int32 SYSTEM_UI_VISIBILITY_CHANGED = 1<<13;
+        const Int32 SYSTEM_UI_VISIBILITY_CHANGED = 1<<14;
         /** {@hide} */
-        const Int32 SYSTEM_UI_LISTENER_CHANGED = 1<<14;
+        const Int32 SYSTEM_UI_LISTENER_CHANGED = 1<<15;
         /** {@hide} */
-        const Int32 INPUT_FEATURES_CHANGED = 1<<15;
+        const Int32 INPUT_FEATURES_CHANGED = 1<<16;
         /** {@hide} */
-        const Int32 PRIVATE_FLAGS_CHANGED = 1<<16;
+        const Int32 PRIVATE_FLAGS_CHANGED = 1<<17;
         /** {@hide} */
-        const Int32 USER_ACTIVITY_TIMEOUT_CHANGED = 1<<17;
+        const Int32 USER_ACTIVITY_TIMEOUT_CHANGED = 1<<18;
+        /** {@hide} */
+        const Int32 TRANSLUCENT_FLAGS_CHANGED = 1<<19;
+        /** {@hide} */
+        const Int32 SURFACE_INSETS_CHANGED = 1<<20;
+        /** {@hide} */
+        const Int32 PREFERRED_REFRESH_RATE_CHANGED = 1 << 21;
         /** {@hide} */
         const Int32 EVERYTHING_CHANGED = 0xffffffff;
+
 
         SetTitle(
             [in] ICharSequence* title);
@@ -996,16 +1179,11 @@ module
             [in] Int32 userActivityTimeout);
     }
 
-    interface IWindowManagerLayoutParamsHelper {
-        MayUseInputMethodHelper(
-            [in] Int32 flags,
-            [out] Boolean* mayUse);
-    }
-
     /**
      * @Involve
      * interface IViewManager
      */
+    [local]
     interface IWindowManager {
         /**
          * Returns the {@link Display} upon which this {@link WindowManager} instance

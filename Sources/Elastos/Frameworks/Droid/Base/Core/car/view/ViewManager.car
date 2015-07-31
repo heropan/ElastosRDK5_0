@@ -13,7 +13,6 @@ module
         */
         [local]
         interface IViewManager {
-            //IViewGroup has AddView ~ AddViewEx4
             /**
              * Assign the passed LayoutParams to the passed View and add the view to the window.
              * <p>Throws {@link android.view.WindowManager.BadTokenException} for certain programming

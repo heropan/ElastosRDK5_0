@@ -7,6 +7,9 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * Contains methods to standard constants used in the UI for timeouts, sizes, and distances.
+     */
     interface IViewConfiguration {
         /**
          * @return The width of the horizontal scrollbar and the height of the vertical
@@ -95,6 +98,17 @@ module
          */
         GetScaledOverflingDistance(
             [out] Int32* overflingDistance);
+
+        /**
+         * The amount of time a user needs to press the relevant key to bring up
+         * the global actions dialog.
+         *
+         * @return how long a user needs to press the relevant key to bring up
+         *   the global actions dialog.
+         * @hide
+         */
+        GetDeviceGlobalActionKeyTimeout(
+            [out] Int64* timeout);
 
         /**
          * Report if the device has a permanent menu key available to the user.

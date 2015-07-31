@@ -10,6 +10,37 @@ module
 
 
     /**
+     * Interface definition for a callback to be invoked when the view hierarchy is
+     * attached to and detached from its window.
+     */
+     interface IOnWindowAttachListener {
+        /**
+         * Callback method to be invoked when the view hierarchy is attached to a window
+         */
+        OnWindowAttached();
+
+        /**
+         * Callback method to be invoked when the view hierarchy is detached from a window
+         */
+        OnWindowDetached();
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when the view hierarchy's window
+     * focus state changes.
+     */
+    interface IOnWindowFocusChangeListener {
+        /**
+         * Callback method to be invoked when the window focus changes in the view tree.
+         *
+         * @param hasFocus Set to true if the window is gaining focus, false if it is
+         * losing focus.
+         */
+        OnWindowFocusChanged(
+            [in] Boolean hasFocus);
+    }
+
+    /**
      * Interface definition for a callback to be invoked when the focus state within
      * the view tree changes.
      */
@@ -145,17 +176,6 @@ module
         GetTouchableInsets(
             [out] Int32* set);
 
-        Equals(
-            [in] IInternalInsetsInfo* o,
-            [out] Boolean* res);
-
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* res);
-
-        GetHashCode(
-            [out] Int32* hash);
-
         GetContentInsets(
             [out] IRect** contentInsets);
 
@@ -187,8 +207,169 @@ module
             [in] IInternalInsetsInfo* inoutInfo);
     }
 
+    /**
+     * A view tree observer is used to register listeners that can be notified of global
+     * changes in the view tree. Such global events include, but are not limited to,
+     * layout of the whole tree, beginning of the drawing pass, touch mode change....
+     *
+     * A ViewTreeObserver should never be instantiated by applications as it is provided
+     * by the views hierarchy. Refer to {@link android.view.View#getViewTreeObserver()}
+     * for more information.
+     */
     [local]
     interface IViewTreeObserver {
+
+        /**
+         * Register a callback to be invoked when the view hierarchy is attached to a window.
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnWindowAttachListener(
+            [in] IOnWindowAttachListener* listener);
+
+        /**
+         * Remove a previously installed window attach callback.
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnWindowAttachListener(android.view.ViewTreeObserver.OnWindowAttachListener)
+         */
+        RemoveOnWindowAttachListener(
+            [in] IOnWindowAttachListener* listener);
+
+        /**
+         * Register a callback to be invoked when the window focus state within the view tree changes.
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnWindowFocusChangeListener(
+            [in] IOnWindowFocusChangeListener* listener);
+
+        /**
+         * Remove a previously installed window focus change callback.
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnWindowFocusChangeListener(android.view.ViewTreeObserver.OnWindowFocusChangeListener)
+         */
+        RemoveOnWindowFocusChangeListener(
+            [in] IOnWindowFocusChangeListener* listener);
+
+        /**
+         * Register a callback to be invoked when the focus state within the view tree changes.
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnGlobalFocusChangeListener(
+            [in] IOnGlobalFocusChangeListener* listener);
+
+        /**
+         * Remove a previously installed focus change callback.
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnGlobalFocusChangeListener(OnGlobalFocusChangeListener)
+         */
+        RemoveOnGlobalFocusChangeListener(
+            [in] IOnGlobalFocusChangeListener* listener);
+
+        /**
+         * Register a callback to be invoked when the global layout state or the visibility of views
+         * within the view tree changes
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnGlobalLayoutListener(
+            [in] IOnGlobalLayoutListener* listener);
+
+        /**
+         * Remove a previously installed global layout callback
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @deprecated Use #removeOnGlobalLayoutListener instead
+         *
+         * @see #addOnGlobalLayoutListener(OnGlobalLayoutListener)
+         */
+        RemoveGlobalOnLayoutListener(
+            [in] IOnGlobalLayoutListener* listener);
+
+        /**
+         * Remove a previously installed global layout callback
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnGlobalLayoutListener(OnGlobalLayoutListener)
+         */
+        RemoveOnGlobalLayoutListener(
+            [in] IOnGlobalLayoutListener* victim);
+
+        /**
+         * Register a callback to be invoked when the view tree is about to be drawn
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnPreDrawListener(
+            [in] IOnPreDrawListener* listener);
+
+         /**
+         * Remove a previously installed pre-draw callback
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnPreDrawListener(OnPreDrawListener)
+         */
+        RemoveOnPreDrawListener(
+            [in] IOnPreDrawListener* victim);
+
+        /**
+         * <p>Register a callback to be invoked when the view tree is about to be drawn.</p>
+         * <p><strong>Note:</strong> this method <strong>cannot</strong> be invoked from
+         * {@link android.view.ViewTreeObserver.OnDrawListener#onDraw()}.</p>
+         *
+         * @param listener The callback to add
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         */
+        AddOnDrawListener(
+            [in] IOnDrawListener* listener);
+
+        /**
+         * <p>Remove a previously installed pre-draw callback.</p>
+         * <p><strong>Note:</strong> this method <strong>cannot</strong> be invoked from
+         * {@link android.view.ViewTreeObserver.OnDrawListener#onDraw()}.</p>
+         *
+         * @param victim The callback to remove
+         *
+         * @throws IllegalStateException If {@link #isAlive()} returns false
+         *
+         * @see #addOnDrawListener(OnDrawListener)
+         */
+        RemoveOnDrawListener(
+            [in] IOnDrawListener* listener);
+
         /**
          * Register a callback to be invoked when a view has been scrolled.
          *
@@ -234,83 +415,6 @@ module
             [in] IOnTouchModeChangeListener* victim);
 
         /**
-         * Register a callback to be invoked when the view tree is about to be drawn
-         *
-         * @param listener The callback to add
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         */
-        AddOnPreDrawListener(
-            [in] IOnPreDrawListener* listener);
-
-         /**
-         * Remove a previously installed pre-draw callback
-         *
-         * @param victim The callback to remove
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         *
-         * @see #addOnPreDrawListener(OnPreDrawListener)
-         */
-        RemoveOnPreDrawListener(
-            [in] IOnPreDrawListener* victim);
-
-        /**
-         * Merges all the listeners registered on the specified observer with the listeners
-         * registered on this object. After this method is invoked, the specified observer
-         * will return false in {@link #isAlive()} and should not be used anymore.
-         *
-         * @param observer The ViewTreeObserver whose listeners must be added to this observer
-         */
-        Merge(
-            [in] IViewTreeObserver* observer);
-
-        /**
-         * Register a callback to be invoked when the focus state within the view tree changes.
-         *
-         * @param listener The callback to add
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         */
-        AddOnGlobalFocusChangeListener(
-            [in] IOnGlobalFocusChangeListener* listener);
-
-        /**
-         * Remove a previously installed focus change callback.
-         *
-         * @param victim The callback to remove
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         *
-         * @see #addOnGlobalFocusChangeListener(OnGlobalFocusChangeListener)
-         */
-        RemoveOnGlobalFocusChangeListener(
-            [in] IOnGlobalFocusChangeListener* victim);
-
-        /**
-         * Register a callback to be invoked when the global layout state or the visibility of views
-         * within the view tree changes
-         *
-         * @param listener The callback to add
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         */
-        AddOnGlobalLayoutListener(
-            [in] IOnGlobalLayoutListener* listener);
-
-        /**
-         * Remove a previously installed global layout callback
-         *
-         * @param victim The callback to remove
-         *
-         * @throws IllegalStateException If {@link #isAlive()} returns false
-         *
-         * @see #addOnGlobalLayoutListener(OnGlobalLayoutListener)
-         */
-        RemoveGlobalOnLayoutListener(
-            [in] IOnGlobalLayoutListener*  victim);
-
-        /**
          * Register a callback to be invoked when the invoked when it is time to
          * compute the window's internal insets.
          *
@@ -337,7 +441,7 @@ module
          * @hide
          */
         RemoveOnComputeInternalInsetsListener(
-            [in] IOnComputeInternalInsetsListener* victim);
+            [in] IOnComputeInternalInsetsListener* listener);
 
         /**
          * Indicates whether this ViewTreeObserver is alive. When an observer is not alive,
@@ -349,14 +453,7 @@ module
          * @return True if this object is alive and be used, false otherwise.
          */
         IsAlive(
-            [out] Boolean* alive);
-
-        /**
-         * Notifies registered listeners that focus has changed.
-         */
-        DispatchOnGlobalFocusChange(
-            [in] IView* oldFocus,
-            [in] IView* newFocus);
+            [out] Boolean* result);
 
         /**
          * Notifies registered listeners that a global layout happened. This can be called

@@ -30,6 +30,7 @@ module
     merge("view/IRotationWatcher.car");
     merge("view/IWindow.car");
     merge("view/IWindowFocusObserver.car");
+    merge("view/IWindowId.car");
     merge("view/IWindowManager.car");
     merge("view/IWindowSession.car");
     merge("view/InputChannel.car");
@@ -60,25 +61,30 @@ module
     merge("view/TouchDelegate.car");
     merge("view/VelocityTracker.car");
     merge("view/View.car");
+    merge("view/ViewConfiguration.car");
+    merge("view/ViewGroup.car");
+    merge("view/ViewGroupOverlay.car");
+    merge("view/ViewManager.car");
+    merge("view/ViewOutlineProvider.car");
+    merge("view/ViewOverlay.car");
+    merge("view/ViewParent.car");
+    merge("view/ViewPropertyAnimator.car");
+    merge("view/ViewStub.car");
+    merge("view/ViewTreeObserver.car");
+    merge("view/Window.car");
+    merge("view/WindowAnimationFrameStats.car");
+    merge("view/WindowContentFrameStats.car");
+    merge("view/WindowId.car");
+    merge("view/WindowInfo.car");
+    merge("view/WindowInsets.car");
+    merge("view/WindowManager.car");
+    merge("view/WindowManagerGlobal.car");
+    //merge("view/WindowManagerPolicy.car");
 
     // merge("view/CompatibilityInfoHolder.car");
     // merge("view/DisplayList.car");
     // merge("view/IDisplayContentChangeListener.car");
     // merge("view/RootViewSurfaceTaker.car");
-    //
-    // merge("view/ViewConfiguration.car");
-    //
-    // merge("view/ViewStub.car");
-    // merge("view/ViewGroup.car");
-    // merge("view/ViewManager.car");
-    // merge("view/ViewParent.car");
-    // merge("view/ViewPropertyAnimator.car");
-    // merge("view/ViewTreeObserver.car");
-    // merge("view/Window.car");
-    // merge("view/WindowInfo.car");
-    // merge("view/WindowManager.car");
-    // merge("view/WindowManagerGlobal.car");
-    // merge("view/WindowManagerPolicy.car");
     // merge("view/IInputMethodCallback.car");
     // merge("view/IInputMethodSession.car");
     // merge("view/IInputMethodClient.car");

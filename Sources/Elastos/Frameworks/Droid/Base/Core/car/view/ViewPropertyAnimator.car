@@ -4,11 +4,33 @@ module
     interface Elastos.Core.IRunnable;
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Animation.IAnimatorListener;
+    interface Elastos.Droid.Animation.IAnimatorUpdateListener;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
 
+    /**
+     * This class enables automatic and optimized animation of select properties on View objects.
+     * If only one or two properties on a View object are being animated, then using an
+     * {@link android.animation.ObjectAnimator} is fine; the property setters called by ObjectAnimator
+     * are well equipped to do the right thing to set the property and invalidate the view
+     * appropriately. But if several properties are animated simultaneously, or if you just want a
+     * more convenient syntax to animate a specific property, then ViewPropertyAnimator might be
+     * more well-suited to the task.
+     *
+     * <p>This class may provide better performance for several simultaneous animations, because
+     * it will optimize invalidate calls to take place only once for several properties instead of each
+     * animated property independently causing its own invalidation. Also, the syntax of using this
+     * class could be easier to use because the caller need only tell the View object which
+     * property to animate, and the value to animate either to or by, and this class handles the
+     * details of configuring the underlying Animator class and starting it.</p>
+     *
+     * <p>This class is not constructed by the caller, but rather by the View whose properties
+     * it will animate. Calls to {@link android.view.View#animate()} will return a reference
+     * to the appropriate ViewPropertyAnimator object for that View.</p>
+     *
+     */
     [deprecated]
     interface IViewPropertyAnimator {
 
@@ -78,6 +100,23 @@ module
             [in] IAnimatorListener* listener);
 
         /**
+         * Sets a listener for update events in the underlying ValueAnimator that runs
+         * the property animations. Note that the underlying animator is animating between
+         * 0 and 1 (these values are then turned into the actual property values internally
+         * by ViewPropertyAnimator). So the animator cannot give information on the current
+         * values of the properties being animated by this ViewPropertyAnimator, although
+         * the view object itself can be queried to get the current values.
+         *
+         * @see android.animation.ValueAnimator.AnimatorUpdateListener
+         *
+         * @param listener The listener to be called with update events. A value of
+         * <code>null</code> removes any existing listener.
+         * @return This object, allowing calls to methods in this class to be chained.
+         */
+        SetUpdateListener(
+            [in] IAnimatorUpdateListener* listener);
+
+        /**
          * Starts the currently pending property animations immediately. Calling <code>start()</code>
          * is optional because all animations start automatically at the next opportunity. However,
          * if the animations are needed to start immediately and synchronously (not at the time when
@@ -133,6 +172,28 @@ module
          * @return This object, allowing calls to methods in this class to be chained.
          */
         YBy(
+            [in] Float value);
+
+        /**
+         * This method will cause the View's <code>z</code> property to be animated to the
+         * specified value. Animations already running on the property will be canceled.
+         *
+         * @param value The value to be animated to.
+         * @see View#setZ(float)
+         * @return This object, allowing calls to methods in this class to be chained.
+         */
+        Z(
+            [in] Float value);
+
+        /**
+         * This method will cause the View's <code>z</code> property to be animated by the
+         * specified value. Animations already running on the property will be canceled.
+         *
+         * @param value The amount to be animated by, as an offset from the current value.
+         * @see View#setZ(float)
+         * @return This object, allowing calls to methods in this class to be chained.
+         */
+        ZBy(
             [in] Float value);
 
         /**
@@ -243,6 +304,29 @@ module
          * @return This object, allowing calls to methods in this class to be chained.
          */
         TranslationYBy(
+            [in] Float value);
+
+
+        /**
+         * This method will cause the View's <code>translationZ</code> property to be animated to the
+         * specified value. Animations already running on the property will be canceled.
+         *
+         * @param value The value to be animated to.
+         * @see View#setTranslationZ(float)
+         * @return This object, allowing calls to methods in this class to be chained.
+         */
+        TranslationZ(
+            [in] Float value);
+
+        /**
+         * This method will cause the View's <code>translationZ</code> property to be animated by the
+         * specified value. Animations already running on the property will be canceled.
+         *
+         * @param value The amount to be animated by, as an offset from the current value.
+         * @see View#setTranslationZ(float)
+         * @return This object, allowing calls to methods in this class to be chained.
+         */
+        TranslationZBy(
             [in] Float value);
 
         /**

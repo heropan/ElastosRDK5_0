@@ -92,10 +92,32 @@ module
     namespace Droid {
     namespace Animation {
 
-        interface IStateListAnimator {
-        }
+        interface IStateListAnimator {}
+
+        interface ILayoutTransition {}
+
+        interface ITimeInterpolator {}
+
+        interface IAnimatorListener {}
+
+        interface IAnimatorUpdateListener{}
 
     }}} // Elastos.Droid.Animation
+
+    //
+    // Elastos.Droid.Transition
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Transition {
+
+        interface ITransitionManager {}
+
+        interface ITransition {}
+
+        interface IScene {}
+
+    }}} // Elastos.Droid.Transition
 
 
     //
@@ -107,36 +129,18 @@ module
 
         interface ICompatibilityInfoHolder {}
 
-        interface IViewOutlineProvider {}
-
-        interface IWindowManagerLayoutParams {}
-
-        interface IWindowContentFrameStats {}
-
-        interface IIWindowId {}
-
-        interface IWindowId {}
-
-        interface IWindowInsets {}
-
         interface ICanvasProperty {}
-
-        interface IViewGroup {}
-
-        interface IViewParent {}
-
-        interface IViewOverlay {}
-
-        interface IViewGroupLayoutParams {}
-
-        interface IViewTreeObserver {}
-
-        interface IViewPropertyAnimator {}
 
         interface IMagnificationSpec {}
 
         namespace Animation {
             interface IAnimation {}
+
+            interface IAnimationParameters {}
+
+            interface IAnimationListener {}
+
+            interface ILayoutAnimationController {}
         }
 
         namespace InputMethod {
@@ -216,6 +220,12 @@ module
     namespace Media {
 
         interface IAudioAttributes {
+        }
+
+        namespace Session {
+            interface IMediaController {}
+
+            interface IMediaSession {}
         }
 
     }}} // Elastos.Droid.Media
