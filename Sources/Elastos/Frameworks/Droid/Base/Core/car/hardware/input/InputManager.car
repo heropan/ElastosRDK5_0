@@ -4,8 +4,8 @@ module
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IVibrator;
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.View.IInputDevice;
-    interface Elastos.Droid.View.IInputEvent;
+    // interface Elastos.Droid.View.IInputDevice;
+    // interface Elastos.Droid.View.IInputEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -155,9 +155,9 @@ module
          * @param id The device id.
          * @return The input device or null if not found.
          */
-        GetInputDevice(
-            [in] Int32 id,
-            [out] IInputDevice** device);
+        // GetInputDevice(
+        //     [in] Int32 id,
+        //     [out] IInputDevice** device);
 
         /**
          * Gets information about the input device with the specified descriptor.
@@ -165,9 +165,9 @@ module
          * @return The input device or null if not found.
          * @hide
          */
-        GetInputDeviceByDescriptor(
-            [in] String descriptor,
-            [out] IInputDevice** device);
+        // GetInputDeviceByDescriptor(
+        //     [in] String descriptor,
+        //     [out] IInputDevice** device);
 
         /**
          * Gets the ids of all input devices in the system.
@@ -384,10 +384,10 @@ module
          *
          * @hide
          */
-        InjectInputEvent(
-            [in] IInputEvent* event,
-            [in] Int32 mode,
-            [out] Boolean* res);
+        // InjectInputEvent(
+        //     [in] IInputEvent* event,
+        //     [in] Int32 mode,
+        //     [out] Boolean* res);
 
         /**
          * Gets a vibrator service associated with an input device, assuming it has one.

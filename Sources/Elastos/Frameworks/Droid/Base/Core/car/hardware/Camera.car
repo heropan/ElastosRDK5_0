@@ -2,7 +2,8 @@
 module
 {
     using interface Elastos.Core.IInteger32;
-    interface Elastos.Droid.View.ISurfaceHolder;
+    using interface Elastos.Utility.IList;
+    // interface Elastos.Droid.View.ISurfaceHolder;
     interface Elastos.Droid.Graphics.ISurfaceTexture;
 
 
@@ -643,7 +644,7 @@ module
          * @see #PREVIEW_FPS_MAX_INDEX
          */
         GetSupportedPreviewFpsRange(
-            [out] IObjectContainer** lists);
+            [out] IList** lists);
 
         /**
          * Sets the image format for preview pictures.
@@ -2012,7 +2013,7 @@ module
          *
          * <p>You must call this as soon as you're done with the Camera object.</p>
          */
-        Release();
+        // Release();
 
         /**
          * Unlocks the camera to allow another process to access it.
@@ -2094,8 +2095,8 @@ module
          * @throws IOException if the method fails (for example, if the surface
          *     is unavailable or unsuitable).
          */
-        SetPreviewDisplay(
-            [in] ISurfaceHolder* holder);
+        // SetPreviewDisplay(
+        //     [in] ISurfaceHolder* holder);
 
         /**
          * Sets the {@link SurfaceTexture} to be used for live preview.

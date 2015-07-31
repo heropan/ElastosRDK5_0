@@ -1,230 +1,235 @@
 
 module
 {
-//    merge("hardware/Camera.car");
-//    merge("hardware/ISerialManager.car");
-//    merge("hardware/Sensor.car");
-//    merge("hardware/SensorEvent.car");
-//    merge("hardware/SensorEventListener.car");
-//    merge("hardware/SensorListener.car");
-//    merge("hardware/SensorManager.car");
-//    merge("hardware/SerialManager.car");
-//    merge("hardware/SerialPort.car");
-//    merge("hardware/SystemSensorManager.car");
+    merge("hardware/Camera.car");
+    merge("hardware/ISerialManager.car");
+    merge("hardware/Sensor.car");
+    merge("hardware/SensorEvent.car");
+    merge("hardware/SensorEventListener.car");
+    merge("hardware/SensorListener.car");
+    merge("hardware/SensorManager.car");
+    merge("hardware/SerialManager.car");
+    merge("hardware/SerialPort.car");
+    merge("hardware/SystemSensorManager.car");
+    merge("hardware/ConsumerIrManager.car");
+    merge("hardware/GeomagneticField.car");
+    merge("hardware/SensorEventListener2.car");
+    merge("hardware/TriggerEvent.car");
+    merge("hardware/TriggerEventListener.car");
 
     merge("hardware/display/DisplayManager.car");
     merge("hardware/display/DisplayManagerGlobal.car");
-    merge("hardware/display/IDisplayManagerInternal.car");
     merge("hardware/display/IDisplayManagerCallback.car");
     merge("hardware/display/IDisplayManager.car");
-    merge("hardware/display/IDisplayViewport.car");
-    merge("hardware/display/IVirtualDisplayCallback.car");
-    merge("hardware/display/VirtualDisplay.car");
     merge("hardware/display/WifiDisplay.car");
-    merge("hardware/display/WifiDisplaySessionInfo.car");
     merge("hardware/display/WifiDisplayStatus.car");
-//    merge("hardware/input/IInputManager.car");
-//    merge("hardware/input/IInputDevicesChangedListener.car");
-//    merge("hardware/input/InputManager.car");
-//    merge("hardware/input/KeyboardLayout.car");
-//    merge("hardware/usb/IUsbManager.car");
-//    merge("hardware/usb/UsbAccessory.car");
-//    merge("hardware/usb/UsbConstants.car");
-//    merge("hardware/usb/UsbDevice.car");
-//    merge("hardware/usb/UsbDeviceConnection.car");
-//    merge("hardware/usb/UsbEndpoint.car");
-//    merge("hardware/usb/UsbInterface.car");
-//    merge("hardware/usb/UsbManager.car");
-//    merge("hardware/usb/UsbRequest.car");
-//    merge("hardware/usb/UsbCameraManager.car");
+    merge("hardware/display/VirtualDisplay.car");
 
-//    using interface Elastos.Core.IComparable;
+    merge("hardware/input/IInputManager.car");
+    merge("hardware/input/IInputDevicesChangedListener.car");
+    merge("hardware/input/InputManager.car");
+    merge("hardware/input/KeyboardLayout.car");
 
-//    interface Elastos.Droid.Content.IContext;
-//    interface Elastos.Droid.Os.IBinder;
-//    interface Elastos.Droid.Os.ILooper;
-//    interface Elastos.Droid.View.IRotationWatcher;
+    merge("hardware/usb/IUsbManager.car");
+    merge("hardware/usb/UsbAccessory.car");
+    merge("hardware/usb/UsbConstants.car");
+    merge("hardware/usb/UsbDevice.car");
+    merge("hardware/usb/UsbDeviceConnection.car");
+    merge("hardware/usb/UsbEndpoint.car");
+    merge("hardware/usb/UsbInterface.car");
+    merge("hardware/usb/UsbManager.car");
+    merge("hardware/usb/UsbRequest.car");
+    merge("hardware/usb/UsbCameraManager.car");
+    merge("hardware/usb/UsbConfiguration.car");
 
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Hardware {
-    //     class CSerialPort {
-    //         constructor(
-    //             [in] String name);
+    using interface Elastos.Core.IComparable;
 
-    //         interface ISerialPort;
-    //     }
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.ILooper;
+    // interface Elastos.Droid.View.IRotationWatcher;
 
-    //     [local]
-    //     class CSerialManager {
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] IISerialManager* service);
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
 
-    //         interface ISerialManager;
-    //     }
+        // class CSerialPort {
+        //     constructor(
+        //         [in] String name);
 
-    //     class CSensorEvent {
-    //         constructor(
-    //             [in] Int32 size);
+        //     interface ISerialPort;
+        // }
 
-    //         interface ISensorEvent;
-    //     }
+        // [local]
+        // class CSerialManager {
+        //     constructor(
+        //         [in] IContext* ctx,
+        //         [in] IISerialManager* service);
 
-    //     class CSensor {
-    //         constructor();
+        //     interface ISerialManager;
+        // }
 
-    //         interface ISensor;
-    //     }
+        // class CSensorEvent {
+        //     constructor(
+        //         [in] Int32 size);
 
-    //     class CSensorManager {
-    //         interface ISensorManager;
-    //     }
+        //     interface ISensorEvent;
+        // }
 
-    //     singleton class CSensorManagerHelper {
-    //         interface ISensorManagerHelper;
-    //     }
+        // class CSensor {
+        //     constructor();
 
-    //     [local]
-    //     class CSystemSensorManager {
-    //         constructor(
-    //             [in] IContext* ctx,
-    //             [in] ILooper* mainLooper);
+        //     interface ISensor;
+        // }
 
-    //         interface ISystemSensorManager;
-    //     }
+        // class CSensorManager {
+        //     interface ISensorManager;
+        // }
 
-    //     class CHardwareCamera {
-    //         constructor();
+        // singleton class CSensorManagerHelper {
+        //     interface ISensorManagerHelper;
+        // }
 
-    //         constructor(
-    //             [in] Int32 cameraId);
+        // [local]
+        // class CSystemSensorManager {
+        //     constructor(
+        //         [in] IContext* ctx,
+        //         [in] ILooper* mainLooper);
 
-    //         interface IHardwareCamera;
-    //     }
+        //     interface ISystemSensorManager;
+        // }
 
-    //     class CLegacySensorManagerRotationWatcher {
-    //         constructor();
+        // class CHardwareCamera {
+        //     constructor();
 
-    //         interface IRotationWatcher;
-    //     }
+        //     constructor(
+        //         [in] Int32 cameraId);
 
-    //     singleton class CHardwareCameraHelper {
-    //         interface IHardwareCameraHelper;
-    //     }
+        //     interface IHardwareCamera;
+        // }
 
-    // namespace Display {
-    //     /**
-    //      * Manages the properties of attached displays.
-    //      * <p>
-    //      * Get an instance of this class by calling
-    //      * {@link android.content.Context#getSystemService(java.lang.String)
-    //      * Context.getSystemService()} with the argument
-    //      * {@link android.content.Context#DISPLAY_SERVICE}.
-    //      * </p>
-    //      */
-    //     [local]
-    //     class CDisplayManager {
-    //         constructor(
-    //             [in] IContext* ctx);
+        // class CLegacySensorManagerRotationWatcher {
+        //     constructor();
 
-    //         interface IDisplayManager;
-    //     }
+        //     interface IRotationWatcher;
+        // }
 
-    //     class CDisplayManagerCallback {
-    //         constructor(
-    //             [in] Handle32 owner);
+        singleton class CHardwareCameraHelper {
+            interface IHardwareCameraHelper;
+        }
 
-    //         interface IDisplayManagerCallback;
-    //         interface IBinder;
-    //     }
+    namespace Display {
+        // /**
+        //  * Manages the properties of attached displays.
+        //  * <p>
+        //  * Get an instance of this class by calling
+        //  * {@link android.content.Context#getSystemService(java.lang.String)
+        //  * Context.getSystemService()} with the argument
+        //  * {@link android.content.Context#DISPLAY_SERVICE}.
+        //  * </p>
+        //  */
+        // [local]
+        // class CDisplayManager {
+        //     constructor(
+        //         [in] IContext* ctx);
 
-    //     /**
-    //      * Describes the properties of a Wifi display.
-    //      * <p>
-    //      * This object is immutable.
-    //      * </p>
-    //      *
-    //      * @hide
-    //      */
-    //     class CWifiDisplay {
-    //         constructor();
+        //     interface IDisplayManager;
+        // }
 
-    //         constructor(
-    //             [in] String deviceAddress,
-    //             [in] String deviceName,
-    //             [in] String deviceAlias);
+        // class CDisplayManagerCallback {
+        //     constructor(
+        //         [in] Handle32 owner);
 
-    //         interface IWifiDisplay;
-    //         interface IParcelable;
-    //     }
+        //     interface IDisplayManagerCallback;
+        //     interface IBinder;
+        // }
 
-    //     /**
-    //      * Describes the current global state of Wifi display connectivity, including the
-    //      * currently connected display and all available or remembered displays.
-    //      * <p>
-    //      * This object is immutable.
-    //      * </p>
-    //      *
-    //      * @hide
-    //      */
-    //     [deprecated]
-    //     class CWifiDisplayStatus {
-    //         constructor();
+        // /**
+        //  * Describes the properties of a Wifi display.
+        //  * <p>
+        //  * This object is immutable.
+        //  * </p>
+        //  *
+        //  * @hide
+        //  */
+        // class CWifiDisplay {
+        //     constructor();
 
-    //         constructor(
-    //             [in] Int32 featureState,
-    //             [in] Int32 scanState,
-    //             [in] Int32 activeDisplayState,
-    //             [in] IWifiDisplay* activeDisplay,
-    //             [in] ArrayOf<IWifiDisplay*>* availableDisplays,
-    //             [in] ArrayOf<IWifiDisplay*>* rememberedDisplays);
+        //     constructor(
+        //         [in] String deviceAddress,
+        //         [in] String deviceName,
+        //         [in] String deviceAlias);
 
-    //         interface IWifiDisplayStatus;
-    //         interface IParcelable;
-    //     }
+        //     interface IWifiDisplay;
+        //     interface IParcelable;
+        // }
 
-    //     singleton class CDisplayManagerGlobalHelper {
-    //         interface IDisplayManagerGlobalHelper;
-    //     }
-    // } // namespace Display
+        // /**
+        //  * Describes the current global state of Wifi display connectivity, including the
+        //  * currently connected display and all available or remembered displays.
+        //  * <p>
+        //  * This object is immutable.
+        //  * </p>
+        //  *
+        //  * @hide
+        //  */
+        // [deprecated]
+        // class CWifiDisplayStatus {
+        //     constructor();
 
-    // namespace Input {
+        //     constructor(
+        //         [in] Int32 featureState,
+        //         [in] Int32 scanState,
+        //         [in] Int32 activeDisplayState,
+        //         [in] IWifiDisplay* activeDisplay,
+        //         [in] ArrayOf<IWifiDisplay*>* availableDisplays,
+        //         [in] ArrayOf<IWifiDisplay*>* rememberedDisplays);
 
-    //     class CInputManagerInputDevicesChangedListener {
-    //         constructor(
-    //             [in] Handle32 inputManager);
+        //     interface IWifiDisplayStatus;
+        //     interface IParcelable;
+        // }
 
-    //         interface IInputDevicesChangedListener;
-    //     }
+        singleton class CDisplayManagerGlobalHelper {
+            interface IDisplayManagerGlobalHelper;
+        }
+    } // namespace Display
 
-    //     class CInputManager {
-    //         interface IInputManager;
-    //     }
+    namespace Input {
 
-    //     singleton class CInputManagerHelper {
-    //         interface IInputManagerHelper;
-    //     }
+        // class CInputManagerInputDevicesChangedListener {
+        //     constructor(
+        //         [in] Handle32 inputManager);
 
-    //     class CKeyboardLayout {
-    //         constructor();
+        //     interface IInputDevicesChangedListener;
+        // }
 
-    //         constructor(
-    //             [in] String descriptor,
-    //             [in] String label,
-    //             [in] String collection);
+        // class CInputManager {
+        //     interface IInputManager;
+        // }
 
-    //         constructor(
-    //             [in] IParcel* source);
+        // class CKeyboardLayout {
+        //     constructor();
 
-    //         interface IKeyboardLayout;
-    //         interface IComparable;
-    //         interface IParcelable;
-    //     }
+        //     constructor(
+        //         [in] String descriptor,
+        //         [in] String label,
+        //         [in] String collection);
 
-    // } // namespace Input
+        //     constructor(
+        //         [in] IParcel* source);
 
-    // namespace Usb {
+        //     interface IKeyboardLayout;
+        //     interface IComparable;
+        //     interface IParcelable;
+        // }
+
+        singleton class CInputManagerHelper {
+            interface IInputManagerHelper;
+        }
+
+    } // namespace Input
+
+    namespace Usb {
 
     // class CUsbAccessory {
     //     constructor();
@@ -271,10 +276,6 @@ module
 
     //     interface IUsbDevice;
     //     interface IParcelable;
-    // }
-
-    // singleton class CUsbDeviceHelper {
-    //     interface IUsbDeviceHelper;
     // }
 
     // class CUsbDeviceConnection {
@@ -343,8 +344,12 @@ module
     //     interface IUsbRequest;
     // }
 
-//    } // namespace Usb
-//    } // namespace Hardware
-//    } // namepsace Droid
-//    } // namespace Elastos
+    singleton class CUsbDeviceHelper {
+        interface IUsbDeviceHelper;
+    }
+
+    } // namespace Usb
+    } // namespace Hardware
+    } // namepsace Droid
+    } // namespace Elastos
 }

@@ -1,19 +1,23 @@
 
-#ifndef  __CHARDWARE_CCAMERAHELPER_H__
-#define  __CHARDWARE_CCAMERAHELPER_H__
+#ifndef  __ELASTOS_DROID_HARDWARE_CCAMERAHELPER_H__
+#define  __ELASTOS_DROID_HARDWARE_CCAMERAHELPER_H__
 
-
-#include "_CHardwareCameraHelper.h"
-
+#include "_Elastos_Droid_Hardware_CHardwareCameraHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 
-
 CarClass(CHardwareCameraHelper)
+    , public Singleton
+    , public IHardwareCameraHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetCameraInfo(
         /* [in] */ Int32 cameraId,
         /* [in] */ ICameraInfo* cameraInfo);
@@ -48,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CHARDWARE_CCAMERAHELPER_H__
+#endif //__ELASTOS_DROID_HARDWARE_CCAMERAHELPER_H__
