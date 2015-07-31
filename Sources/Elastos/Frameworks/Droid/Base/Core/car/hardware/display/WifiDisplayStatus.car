@@ -6,6 +6,10 @@ module
     namespace Hardware {
     namespace Display {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IWifiDisplayStatus {
         /** Feature state: Wifi display is not available on this device. */
         const Int32 FEATURE_STATE_UNAVAILABLE = 0;
@@ -64,23 +68,25 @@ module
             [out] IWifiDisplay** display);
 
         /**
-         * Gets the list of all available Wifi displays as reported by the most recent
-         * scan, never null.
-         * <p>
-         * Some of these displays may already be remembered, others may be unknown.
-         * </p>
+         * Gets the list of Wifi displays, returns a combined list of all available
+         * Wifi displays as reported by the most recent scan, and all remembered
+         * Wifi displays (not necessarily available at the time).
          */
-        GetAvailableDisplays(
+        GetDisplays(
             [out, callee] ArrayOf<IWifiDisplay*>* displays);
 
         /**
-         * Gets the list of all remembered Wifi displays, never null.
-         * <p>
-         * Not all remembered displays will necessarily be available.
-         * </p>
+         * Gets the Wifi display session info (required for certification only)
          */
-        GetRememberedDisplays(
-            [out, callee] ArrayOf<IWifiDisplay*>* displays);
+        GetSessionInfo(
+            [out] IWifiDisplaySessionInfo** result);
+
+        WriteToParcel(
+            [in] IParcel* dest,
+            [in] Int32 flags);
+
+        DescribeContents(
+            [out] Int32* result);
 
         ToString(
             [out] String* info);

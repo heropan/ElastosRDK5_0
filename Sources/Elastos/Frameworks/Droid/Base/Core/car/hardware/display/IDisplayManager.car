@@ -2,6 +2,8 @@
 module
 {
     interface Elastos.Droid.View.IDisplayInfo;
+    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
+    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -19,11 +21,14 @@ module
         RegisterCallback(
             [in] IDisplayManagerCallback* cb);
 
-        // No permissions required.
-        ScanWifiDisplays();
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        // The process must have previously registered a callback.
+        StartWifiDisplayScan();
 
-        // Requires CONFIGURE_WIFI_DISPLAY permission to connect to an unknown device.
-        // No permissions required to connect to a known device.
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        StopWifiDisplayScan();
+
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
         ConnectWifiDisplay(
             [in] String address);
 
@@ -39,9 +44,45 @@ module
         ForgetWifiDisplay(
             [in] String address);
 
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        PauseWifiDisplay();
+
+        // Requires CONFIGURE_WIFI_DISPLAY permission.
+        ResumeWifiDisplay();
+
         // No permissions required.
         GetWifiDisplayStatus(
             [out] IWifiDisplayStatus** wds);
+
+        // Requires CAPTURE_VIDEO_OUTPUT, CAPTURE_SECURE_VIDEO_OUTPUT, or an appropriate
+        // MediaProjection token for certain combinations of flags.
+//        CreateVirtualDisplay(
+//            [in] IIVirtualDisplayCallback* clbk,
+//            [in] IMediaProjection* projectionToken,
+//            [in] String packageName,
+//            [in] String name,
+//            [in] Int32 width,
+//            [in] Int32 height,
+//            [in] Int32 densityDpi,
+//            [in] ISurface* surface,
+//            [in] Int32 flags,
+//            [out] Int32* result);
+
+        // No permissions required, but must be same Uid as the creator.
+        ResizeVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi);
+
+        // No permissions required but must be same Uid as the creator.
+//        SetVirtualDisplaySurface(
+//            [in] IIVirtualDisplayCallback* token,
+//            [in] ISurface* surface);
+
+        // No permissions required but must be same Uid as the creator.
+        ReleaseVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token);
     }
 
     } // namespace Display

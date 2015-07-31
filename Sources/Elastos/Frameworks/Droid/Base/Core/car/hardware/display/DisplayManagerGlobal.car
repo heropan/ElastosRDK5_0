@@ -7,6 +7,8 @@ module
     interface Elastos.Droid.View.IDisplay;
 //    interface Elastos.Droid.View.IDisplayInfo;
 //    interface Elastos.Droid.content.IContext;
+    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
+    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
 
     namespace Elastos {
     namespace Droid {
@@ -101,8 +103,8 @@ module
         ForgetWifiDisplay(
             [in] String deviceAddress);
 
-//        GetWifiDisplayStatus(
-//            [out] IWifiDisplayStatus** status);
+        GetWifiDisplayStatus(
+            [out] IWifiDisplayStatus** status);
 
 //        CreateVirtualDisplay(
 //            [in] IContext* context,
@@ -113,22 +115,22 @@ module
 //            [in] Int32 densityDpi,
 //            [in] ISurface* surface,
 //            [in] Int32 flags,
-//            [in] IVirtualDisplayCallback* callback,
+//            [in] IIVirtualDisplayCallback* callback,
 //            [in] IHandler* handler,
 //            [out] IVirtualDisplay** result);
 
 //        SetVirtualDisplaySurface(
-//            [in] IVirtualDisplayCallback* token,
+//            [in] IIVirtualDisplayCallback* token,
 //            [in] ISurface* surface);
 
-//        ResizeVirtualDisplay(
-//            [in] IVirtualDisplayCallback* token,
-//            [in] Int32 width,
-//            [in] Int32 height,
-//            [in] Int32 densityDpi);
+        ResizeVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi);
 
-//        ReleaseVirtualDisplay(
-//            [in] IVirtualDisplayCallback* token);
+        ReleaseVirtualDisplay(
+            [in] IIVirtualDisplayCallback* token);
     }
 
     interface IDisplayManagerGlobalHelper {
