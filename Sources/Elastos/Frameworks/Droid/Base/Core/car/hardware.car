@@ -15,10 +15,14 @@ module
     merge("hardware/display/DisplayManager.car");
     merge("hardware/display/DisplayManagerGlobal.car");
     merge("hardware/display/IDisplayManagerInternal.car");
-//    merge("hardware/display/IDisplayManagerCallback.car");
-//    merge("hardware/display/IDisplayManager.car");
-//    merge("hardware/display/WifiDisplay.car");
-//    merge("hardware/display/WifiDisplayStatus.car");
+    merge("hardware/display/IDisplayManagerCallback.car");
+    merge("hardware/display/IDisplayManager.car");
+    merge("hardware/display/IDisplayViewport.car");
+    merge("hardware/display/IVirtualDisplayCallback.car");
+    merge("hardware/display/VirtualDisplay.car");
+    merge("hardware/display/WifiDisplay.car");
+    merge("hardware/display/WifiDisplaySessionInfo.car");
+    merge("hardware/display/WifiDisplayStatus.car");
 //    merge("hardware/input/IInputManager.car");
 //    merge("hardware/input/IInputDevicesChangedListener.car");
 //    merge("hardware/input/InputManager.car");

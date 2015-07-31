@@ -30,12 +30,34 @@ module
             [out] String* alias);
 
         /**
+         * Returns true if device is available, false otherwise.
+         */
+        IsAvailable(
+            [out] Boolean* result);
+
+        /**
+         * Returns true if device can be connected to (not in use), false otherwise.
+         */
+        CanConnect(
+            [out] Boolean* result);
+
+        /**
+         * Returns true if device has been remembered, false otherwise.
+         */
+        IsRemembered(
+            [out] Boolean* result);
+
+        /**
          * Gets the name to show in the UI.
          * Uses the device alias if available, otherwise uses the device name.
          */
         GetFriendlyDisplayName(
             [out] String* displayName);
 
+        /**
+         * Returns true if the two displays have the same identity (address, name and alias).
+         * This method does not compare the current status of the displays.
+         */
         Equals(
             [in] IWifiDisplay* other,
             [out] Boolean* res);
