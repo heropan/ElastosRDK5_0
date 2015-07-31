@@ -21,11 +21,11 @@ public:
     String();
     String(const String& other);
 
-    explicit String(const ArrayOf<Char32>& array, UInt32 offset = 0);
-    explicit String(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length);
+    explicit String(const ArrayOf<Char32>& array, Int32 offset = 0);
+    explicit String(const ArrayOf<Char32>& array, Int32 offset, Int32 length);
 
     explicit String(const char* other);
-    explicit String(const char* other, UInt32 numOfBytes);
+    explicit String(const char* other, Int32 numOfBytes);
 
     ~String();
 
@@ -38,25 +38,25 @@ public:
     /**
      * @return the number of characters in this string.
      */
-    UInt32 GetLength() const;
+    Int32 GetLength() const;
 
     /**
      * @return the number of bytes in this string.
      */
-    inline UInt32 GetByteLength() const;
+    inline Int32 GetByteLength() const;
 
     /*
      * @returns the character at the specified offset in this string.
      */
-    Char32 GetChar(UInt32 charIndex) const;
+    Char32 GetChar(Int32 charIndex) const;
 
     /**
      * @param start
      *           the offset of the first character.
      * @return the characters from start to last character.
      */
-    AutoPtr<ArrayOf<Char32> > GetChars(UInt32 start = 0) const;
-    AutoPtr<ArrayOf<Char16> > GetChar16s(UInt32 start = 0) const;
+    AutoPtr<ArrayOf<Char32> > GetChars(Int32 start = 0) const;
+    AutoPtr<ArrayOf<Char16> > GetChar16s(Int32 start = 0) const;
 
     /**
      * @param start
@@ -65,15 +65,15 @@ public:
      *           tthe offset one past the last character.
      * @return the characters from start to end - 1.
      */
-    AutoPtr<ArrayOf<Char32> > GetChars(UInt32 start, UInt32 end) const;
-    AutoPtr<ArrayOf<Char16> > GetChar16s(UInt32 start, UInt32 end) const;
+    AutoPtr<ArrayOf<Char32> > GetChars(Int32 start, Int32 end) const;
+    AutoPtr<ArrayOf<Char16> > GetChar16s(Int32 start, Int32 end) const;
 
     /**
      * @param start
      *           the offset of the first byte.
      * @return the bytes from start to last byte.
      */
-    AutoPtr<ArrayOf<Byte> > GetBytes(UInt32 start = 0) const;
+    AutoPtr<ArrayOf<Byte> > GetBytes(Int32 start = 0) const;
 
     /**
      * @param start
@@ -83,17 +83,17 @@ public:
      * @return the bytes from start to end - 1.
      */
 
-    AutoPtr<ArrayOf<Byte> > GetBytes(UInt32 start, UInt32 end) const;
+    AutoPtr<ArrayOf<Byte> > GetBytes(Int32 start, Int32 end) const;
 
     /*
      * @returns the byte offset of a specified character offset in this string.
      */
-    Int32 ToByteIndex(UInt32 charIndex) const;
+    Int32 ToByteIndex(Int32 charIndex) const;
 
     inline const char* string() const;
     inline operator const char*() const;
 
-    String Substring(UInt32 startChar) const;
+    String Substring(Int32 startChar) const;
 
     /**
      * @param start
@@ -102,7 +102,7 @@ public:
      *           the offset one past the last character.
      * @return a new string containing the characters from start to end - 1.
      */
-    String Substring(UInt32 startChar, UInt32 endChar) const;
+    String Substring(Int32 startChar, Int32 endChar) const;
 
     /**
      * Copies this string replacing occurrences of the specified character with
@@ -155,12 +155,12 @@ public:
     inline String operator+(Char32 other) const;
 
     ECode Append(const String& other);
-    ECode Append(const String& other, UInt32 startChar);
-    ECode Append(const String& other, UInt32 startChar, UInt32 numOfChars);
+    ECode Append(const String& other, Int32 startChar);
+    ECode Append(const String& other, Int32 startChar, Int32 numOfChars);
     ECode Append(const char* other);
     ECode Append(Char32 ch);
-    ECode Append(const ArrayOf<Char32>& array, UInt32 offset = 0);
-    ECode Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length);
+    ECode Append(const ArrayOf<Char32>& array, Int32 offset = 0);
+    ECode Append(const ArrayOf<Char32>& array, Int32 offset, Int32 length);
 
 #ifdef _GNUC_
     ECode AppendFormat(const char* fmt, ...)
@@ -176,9 +176,9 @@ public:
 
     //---- Case ----
     String ToLowerCase() const;
-    String ToLowerCase(UInt32 offset, UInt32 numChars) const;
+    String ToLowerCase(Int32 offset, Int32 numChars) const;
     String ToUpperCase() const;
-    String ToUpperCase(UInt32 offset, UInt32 numChars) const;
+    String ToUpperCase(Int32 offset, Int32 numChars) const;
 
     //---- Contains ----
     Boolean Contains(const char* str) const;
@@ -201,13 +201,13 @@ public:
      */
     Int32 ByteIndexOf(Char32 ch) const;
 
-    Int32 IndexOf(const char* str, UInt32 startChar = 0) const;
-    Int32 IndexOf(Char32 ch, UInt32 startChar = 0) const;
-    Int32 IndexOf(const String& str, UInt32 startChar = 0) const;
+    Int32 IndexOf(const char* str, Int32 startChar = 0) const;
+    Int32 IndexOf(Char32 ch, Int32 startChar = 0) const;
+    Int32 IndexOf(const String& str, Int32 startChar = 0) const;
 
-    Int32 IndexOfIgnoreCase(const char* str, UInt32 startChar = 0) const;
-    Int32 IndexOfIgnoreCase(Char32 ch, UInt32 startChar = 0) const;
-    Int32 IndexOfIgnoreCase(const String& str, UInt32 startChar = 0) const;
+    Int32 IndexOfIgnoreCase(const char* str, Int32 startChar = 0) const;
+    Int32 IndexOfIgnoreCase(Char32 ch, Int32 startChar = 0) const;
+    Int32 IndexOfIgnoreCase(const String& str, Int32 startChar = 0) const;
 
     Int32 LastIndexOf(Char32 ch) const;
     Int32 LastIndexOf(const char* str) const;
@@ -229,18 +229,18 @@ public:
      * @return the index of the first character of the specified string in this
      *         string , -1 if the specified string is not a substring.
      */
-    Int32 LastIndexOf(Char32 ch, UInt32 start) const;
-    Int32 LastIndexOf(const char* str, UInt32 start) const;
-    Int32 LastIndexOf(const String& str, UInt32 start) const;
+    Int32 LastIndexOf(Char32 ch, Int32 start) const;
+    Int32 LastIndexOf(const char* str, Int32 start) const;
+    Int32 LastIndexOf(const String& str, Int32 start) const;
 
-    Int32 LastIndexOfIgnoreCase(Char32 ch, UInt32 start) const;
-    Int32 LastIndexOfIgnoreCase(const char* str, UInt32 start) const;
-    Int32 LastIndexOfIgnoreCase(const String& str, UInt32 start) const;
+    Int32 LastIndexOfIgnoreCase(Char32 ch, Int32 start) const;
+    Int32 LastIndexOfIgnoreCase(const char* str, Int32 start) const;
+    Int32 LastIndexOfIgnoreCase(const String& str, Int32 start) const;
 
-    Boolean RegionMatches(UInt32 thisStartChar,
-        const String& otherStr, UInt32 startChar, UInt32 numOfChars) const;
-    Boolean RegionMatchesIgnoreCase(UInt32 thisStartChar,
-        const String& otherStr, UInt32 startChar, UInt32 numOfChars) const;
+    Boolean RegionMatches(Int32 thisStartChar,
+        const String& otherStr, Int32 startChar, Int32 numOfChars) const;
+    Boolean RegionMatchesIgnoreCase(Int32 thisStartChar,
+        const String& otherStr, Int32 startChar, Int32 numOfChars) const;
 
 public:
     // see UTF8.cpp
@@ -270,7 +270,7 @@ public:
         return !((c > MAX_CODE_POINT) || (MIN_HIGH_SURROGATE <= c && c <= MAX_LOW_SURROGATE));
     }
 
-    static inline UInt32 GetByteCount(Char32 c)
+    static inline Int32 GetByteCount(Char32 c)
     {
         if ((c > MAX_CODE_POINT) || (MIN_HIGH_SURROGATE <= c && c <= MAX_LOW_SURROGATE)) {
             return 0;
@@ -297,30 +297,30 @@ public:
     static Char32 ToUpperCase(Char32 codePoint);
 
 private:
-    void SetCounted(UInt32 charCount) const;
+    void SetCounted(Int32 charCount) const;
     void ClearCounted() const;
     Boolean IsCounted() const;
 
-    char* LockBuffer(UInt32 numOfBytes);
+    char* LockBuffer(Int32 numOfBytes);
     void UnlockBuffer();
-    ECode UnlockBuffer(UInt32 numOfBytes);
+    ECode UnlockBuffer(Int32 numOfBytes);
 
     ECode SetTo(const String& other);
     ECode SetTo(const char* other);
-    ECode SetTo(const char* other, UInt32 numOfBytes);
+    ECode SetTo(const char* other, Int32 numOfBytes);
 
-    ECode Append(const char* other, UInt32 numOfBytes);
-    ECode RealAppend(const char* other, UInt32 numOfBytes);
+    ECode Append(const char* other, Int32 numOfBytes);
+    ECode RealAppend(const char* other, Int32 numOfBytes);
 
-    static Char32 GetCharInternal(const char* cur, UInt32* numOfBytes);
+    static Char32 GetCharInternal(const char* cur, Int32* numOfBytes);
     static void WriteUTFBytesToBuffer(Byte* dstP, Char32 srcChar, Int32 bytes);
 
     static Boolean InsensitiveStartWith(const char* string, const char* subString);
 
-    static Int32 SensitiveIndexOf(const char* string, const char* subString, UInt32 startChar);
-    static Int32 InsensitiveIndexOf(const char* string, const char* subString, UInt32 startChar);
+    static Int32 SensitiveIndexOf(const char* string, const char* subString, Int32 startChar);
+    static Int32 InsensitiveIndexOf(const char* string, const char* subString, Int32 startChar);
 
-    static Int32 CharIndexToByteIndex(const char* string, UInt32 charIndex);
+    static Int32 CharIndexToByteIndex(const char* string, Int32 charIndex);
 
 public:
     static const Char32 INVALID_CHAR;
@@ -364,7 +364,7 @@ inline Boolean String::IsNullOrEmpty() const
     return (mString == NULL || mString[0] == '\0');
 }
 
-inline UInt32 String::GetByteLength() const
+inline Int32 String::GetByteLength() const
 {
     if (IsNullOrEmpty()) return 0;
     return (Int32)SharedBuffer::GetSizeFromData(mString) - 1;

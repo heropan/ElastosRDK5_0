@@ -23,7 +23,7 @@ static inline char* _getEmptyString()
     return gElEmptyString;
 }
 
-static char* _allocFromUTF8(const char* in, UInt32 numBytes)
+static char* _allocFromUTF8(const char* in, Int32 numBytes)
 {
     if (numBytes > 0) {
         SharedBuffer* buf = SharedBuffer::Alloc(numBytes + 1);
@@ -98,11 +98,11 @@ String::String(const char* other)
     }
 }
 
-String::String(const char* other, UInt32 numBytes)
+String::String(const char* other, Int32 numBytes)
     : mString(NULL)
     , mCharCount(0)
 {
-    if (other != NULL) {
+    if (other != NULL && numBytes > 0) {
         // assert(strlen(other) > numBytes);
         mString = _allocFromUTF8(other, numBytes);
         if (mString == NULL) {
@@ -111,14 +111,14 @@ String::String(const char* other, UInt32 numBytes)
     }
 }
 
-String::String(const ArrayOf<Char32>& array, UInt32 offset)
+String::String(const ArrayOf<Char32>& array, Int32 offset)
     : mCharCount(0)
 {
     mString = _getEmptyString();
     Append(array, offset, array.GetLength());
 }
 
-String::String(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
+String::String(const ArrayOf<Char32>& array, Int32 offset, Int32 length)
     : mCharCount(0)
 {
     mString = _getEmptyString();
@@ -145,7 +145,7 @@ Int32 String::GetHashCode() const
     return (Int32)h;
 }
 
-void String::SetCounted(UInt32 charCount) const
+void String::SetCounted(Int32 charCount) const
 {
     mCharCount = (0x7FFFFFFF & charCount);
     mCharCount |= (1 << 31); // set counted flag
@@ -165,12 +165,12 @@ Boolean String::IsCounted() const
 //              Getter
 //=======================================================================================
 
-UInt32 String::GetLength() const
+Int32 String::GetLength() const
 {
     if (IsNullOrEmpty()) return 0;
     if (IsCounted()) return (0x7FFFFFFF & mCharCount);
 
-    UInt32 charCount = 0;
+    Int32 charCount = 0;
     Int32 byteLength;
     const char* p = mString;
     const char *pEnd = mString + GetByteLength() + 1;
@@ -185,11 +185,11 @@ UInt32 String::GetLength() const
     return charCount;
 }
 
-Char32 String::GetChar(UInt32 index) const
+Char32 String::GetChar(Int32 index) const
 {
-    if (IsNullOrEmpty()) return INVALID_CHAR;
+    if (IsNullOrEmpty() || index < 0) return INVALID_CHAR;
 
-    UInt32 byteLength, i = 0;
+    Int32 byteLength, i = 0;
     const char* p = mString;
     const char *pEnd = mString + GetByteLength() + 1;
     while (p && *p && p < pEnd) {
@@ -205,25 +205,25 @@ Char32 String::GetChar(UInt32 index) const
     return INVALID_CHAR;
 }
 
-AutoPtr<ArrayOf<Char16> > String::GetChar16s(UInt32 start) const
+AutoPtr<ArrayOf<Char16> > String::GetChar16s(Int32 start) const
 {
-    UInt32 charCount = GetLength();
+    Int32 charCount = GetLength();
     return GetChar16s(start, charCount);
 }
 
-AutoPtr<ArrayOf<Char16> > String::GetChar16s(UInt32 start, UInt32 end) const
+AutoPtr<ArrayOf<Char16> > String::GetChar16s(Int32 start, Int32 end) const
 {
-    UInt32 charCount = GetLength();
+    Int32 charCount = GetLength();
     end = MIN(charCount, end);
 
     AutoPtr<ArrayOf<Char16> > array;
-    if (start >= end) {
+    if (start >= end || start < 0) {
         array = ArrayOf<Char16>::Alloc(0);
         return array;
     }
 
     array = ArrayOf<Char16>::Alloc(end - start);
-    UInt32 byteLength, i = 0, j = 0;
+    Int32 byteLength, i = 0, j = 0;
     const char* p = mString;
     const char *pEnd = mString + GetByteLength() + 1;
     Char16 ch;
@@ -252,25 +252,25 @@ AutoPtr<ArrayOf<Char16> > String::GetChar16s(UInt32 start, UInt32 end) const
     return array;
 }
 
-AutoPtr<ArrayOf<Char32> > String::GetChars(UInt32 start) const
+AutoPtr<ArrayOf<Char32> > String::GetChars(Int32 start) const
 {
-    UInt32 charCount = GetLength();
+    Int32 charCount = GetLength();
     return GetChars(start, charCount);
 }
 
-AutoPtr<ArrayOf<Char32> > String::GetChars(UInt32 start, UInt32 end) const
+AutoPtr<ArrayOf<Char32> > String::GetChars(Int32 start, Int32 end) const
 {
-    UInt32 charCount = GetLength();
+    Int32 charCount = GetLength();
     end = MIN(charCount, end);
 
     AutoPtr<ArrayOf<Char32> > array;
-    if (start >= end) {
+    if (start >= end || start < 0) {
         array = ArrayOf<Char32>::Alloc(0);
         return array;
     }
 
     array = ArrayOf<Char32>::Alloc(end - start);
-    UInt32 byteLength, i = 0, j = 0;
+    Int32 byteLength, i = 0, j = 0;
     const char* p = mString;
     const char *pEnd = mString + GetByteLength() + 1;
     Char32 ch;
@@ -299,8 +299,9 @@ AutoPtr<ArrayOf<Char32> > String::GetChars(UInt32 start, UInt32 end) const
     return array;
 }
 
-Char32 String::GetCharInternal(const char* cur, UInt32* numBytes)
+Char32 String::GetCharInternal(const char* cur, Int32* numBytes)
 {
+    assert(numBytes);
     if (IsASCII(*cur)) {
         *numBytes = 1;
         return *cur;
@@ -309,7 +310,7 @@ Char32 String::GetCharInternal(const char* cur, UInt32* numBytes)
     const char first_char = *cur++;
     Char32 result = first_char;
     Char32 mask, to_ignore_mask;
-    UInt32 num_to_read = 0;
+    Int32 num_to_read = 0;
     for (num_to_read = 1, mask = 0x40, to_ignore_mask = 0xFFFFFF80;
          (first_char & mask);
          num_to_read++, to_ignore_mask |= mask, mask >>= 1) {
@@ -322,43 +323,43 @@ Char32 String::GetCharInternal(const char* cur, UInt32* numBytes)
     return result;
 }
 
-AutoPtr<ArrayOf<Byte> > String::GetBytes(UInt32 start) const
+AutoPtr<ArrayOf<Byte> > String::GetBytes(Int32 start) const
 {
-    UInt32 byteCount = GetByteLength();
+    Int32 byteCount = GetByteLength();
     return GetBytes(start, byteCount);
 }
 
-AutoPtr<ArrayOf<Byte> > String::GetBytes(UInt32 start, UInt32 end) const
+AutoPtr<ArrayOf<Byte> > String::GetBytes(Int32 start, Int32 end) const
 {
-    UInt32 byteCount = GetByteLength();
+    Int32 byteCount = GetByteLength();
     end = MIN(byteCount, end);
 
     AutoPtr<ArrayOf<Byte> > array;
-    if (start >= end) {
+    if (start >= end || start < 0) {
         array = ArrayOf<Byte>::Alloc(0);
         return array;
     }
 
     const char* p = mString + start;
-    UInt32 length = end - start;
+    Int32 length = end - start;
     array = ArrayOf<Byte>::Alloc(end - start);
-    for (UInt32 i = 0; i < length; ++i) {
+    for (Int32 i = 0; i < length; ++i) {
         (*array)[i] = (Byte)(*(p + i));
     }
     return array;
 }
 
-Int32 String::ToByteIndex(UInt32 charIndex) const
+Int32 String::ToByteIndex(Int32 charIndex) const
 {
     return CharIndexToByteIndex(mString, charIndex);
 }
 
-Int32 String::CharIndexToByteIndex(const char* string, UInt32 charIndex)
+Int32 String::CharIndexToByteIndex(const char* string, Int32 charIndex)
 {
-    if (string == NULL || string[0] == '\0') return -1;
+    if (string == NULL || string[0] == '\0' || charIndex < 0) return -1;
 
-    UInt32 charlen = 0, i = 0;
-    UInt32 byteLength = strlen(string);
+    Int32 charlen = 0, i = 0;
+    Int32 byteLength = strlen(string);
     const char* p = string;
     const char* pEnd = p + byteLength + 1;
 
@@ -378,19 +379,19 @@ Int32 String::CharIndexToByteIndex(const char* string, UInt32 charIndex)
     return -1;
 }
 
-String String::Substring(UInt32 start) const
+String String::Substring(Int32 start) const
 {
     return Substring(start, GetLength());
 }
 
-String String::Substring(UInt32 start, UInt32 end) const
+String String::Substring(Int32 start, Int32 end) const
 {
     if (!mString) return String(NULL);
     if (start < 0 || end <= 0) return String("");
     if (IsEmpty()) return String("");
 
-    UInt32 byteCount = GetByteLength();
-    UInt32 charCount = GetLength();
+    Int32 byteCount = GetByteLength();
+    Int32 charCount = GetLength();
     if (end > charCount) {
         end = charCount;
     }
@@ -405,7 +406,7 @@ String String::Substring(UInt32 start, UInt32 end) const
 
     // NOTE last character not copied!
     // Fast range check.
-    UInt32 count = 0;
+    Int32 count = 0;
     const char *p = mString;
     const char *pEnd = p + byteCount + 1;
     const char *p1 = p, *p2 = pEnd;
@@ -415,7 +416,7 @@ String String::Substring(UInt32 start, UInt32 end) const
         p1 += byteCount;
     }
     else {
-        UInt32 charlen;
+        Int32 charlen;
         while (p && *p && p < pEnd) {
             charlen = UTF8SequenceLength(*p);
             if (!charlen || p + charlen >= pEnd) break;
@@ -434,7 +435,7 @@ String String::Substring(UInt32 start, UInt32 end) const
         }
     }
 
-    if ((UInt32)(p2 - mString) > byteCount) {
+    if ((Int32)(p2 - mString) > byteCount) {
         p2 = mString + byteCount;
     }
 
@@ -522,7 +523,7 @@ ECode String::SetTo(const char* other)
     return E_OUT_OF_MEMORY;
 }
 
-ECode String::SetTo(const char* other, UInt32 numBytes)
+ECode String::SetTo(const char* other, Int32 numBytes)
 {
     const char *newString = _allocFromUTF8(other, numBytes);
     if (mString != NULL) {
@@ -548,7 +549,7 @@ ECode String::Append(Char32 ch)
 
 ECode String::Append(const String& other)
 {
-    const UInt32 numBytes = other.GetByteLength();
+    const Int32 numBytes = other.GetByteLength();
     if (GetByteLength() == 0) {
         SetTo(other);
         return NOERROR;
@@ -560,7 +561,7 @@ ECode String::Append(const String& other)
     return RealAppend(other.string(), numBytes);
 }
 
-ECode String::Append(const String& other, UInt32 charOffset)
+ECode String::Append(const String& other, Int32 charOffset)
 {
     if (other.IsNullOrEmpty()) return NOERROR;
 
@@ -571,12 +572,13 @@ ECode String::Append(const String& other, UInt32 charOffset)
     return Append(other.mString + byteOffset, byteLength - byteOffset);
 }
 
-ECode String::Append(const String& other, UInt32 offset, UInt32 numOfChars)
+ECode String::Append(const String& other, Int32 offset, Int32 numOfChars)
 {
-    if (other.IsNullOrEmpty() || numOfChars == 0) return NOERROR;
+    if (other.IsNullOrEmpty()) return NOERROR;
+    if (numOfChars <= 0) return NOERROR;
 
-    UInt32 charlen = 0, i = 0, j = 0;
-    UInt32 byteLength = strlen(other.mString);
+    Int32 charlen = 0, i = 0, j = 0;
+    Int32 byteLength = strlen(other.mString);
     const char* p = other.mString;
     const char* pEnd = p + byteLength + 1;
     Int32 startByte = -1, endByte = -1;
@@ -612,10 +614,10 @@ ECode String::Append(const char* other)
     return Append(other, strlen(other));
 }
 
-ECode String::Append(const char* other, UInt32 numOfBytes)
+ECode String::Append(const char* other, Int32 numOfBytes)
 {
     if (!other) return E_INVALID_ARGUMENT;
-    if (numOfBytes == 0) return NOERROR;
+    if (numOfBytes <= 0) return NOERROR;
 
     if (GetByteLength() == 0) {
         return SetTo(other, numOfBytes);
@@ -635,7 +637,7 @@ ECode String::AppendFormat(const char* fmt, ...)
     Int32 result = NOERROR;
     Int32 n = vsnprintf(NULL, 0, fmt, ap);
     if (n != 0) {
-        UInt32 oldLength = GetByteLength();
+        Int32 oldLength = GetByteLength();
         char* buf = LockBuffer(oldLength + n);
         if (buf) {
             vsnprintf(buf + oldLength, n + 1, fmt, ap);
@@ -650,15 +652,15 @@ ECode String::AppendFormat(const char* fmt, ...)
     return result;
 }
 
-ECode String::RealAppend(const char* other, UInt32 numOfBytes)
+ECode String::RealAppend(const char* other, Int32 numOfBytes)
 {
-    if (other == NULL || numOfBytes == 0) {
+    if (other == NULL || numOfBytes <= 0) {
         return NOERROR;
     }
 
     ClearCounted();
 
-    UInt32 byteCount;
+    Int32 byteCount;
     SharedBuffer* buf;
     if (mString != NULL) {
         byteCount = GetByteLength();
@@ -681,24 +683,25 @@ ECode String::RealAppend(const char* other, UInt32 numOfBytes)
     return E_OUT_OF_MEMORY;
 }
 
-ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset)
+ECode String::Append(const ArrayOf<Char32>& array, Int32 offset)
 {
     return Append(array, offset, array.GetLength());
 }
 
-ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
+ECode String::Append(const ArrayOf<Char32>& array, Int32 offset, Int32 length)
 {
-    if (offset >= (UInt32)array.GetLength()) return E_INVALID_ARGUMENT;
+    offset = MAX(0, offset);
+    if (offset >= (Int32)array.GetLength()) return E_INVALID_ARGUMENT;
     length = MIN(array.GetLength() - offset, length);
-    if (length == 0) return NOERROR;
+    if (length <= 0) return NOERROR;
 
-    UInt32 isNullStr = IsNullOrEmpty();
-    UInt32 appendedCharCount = 0;
-    UInt32 totalByteLength = 0;
+    Int32 isNullStr = IsNullOrEmpty();
+    Int32 appendedCharCount = 0;
+    Int32 totalByteLength = 0;
 
-    AutoPtr<ArrayOf<UInt32> > byteCounts = ArrayOf<UInt32>::Alloc(length);
+    AutoPtr<ArrayOf<Int32> > byteCounts = ArrayOf<Int32>::Alloc(length);
     if (byteCounts == NULL) return E_OUT_OF_MEMORY;
-    for (UInt32 i = 0; i < length; ++i) {
+    for (Int32 i = 0; i < length; ++i) {
         (*byteCounts)[i] = GetByteCount(array[offset + i]);
         if ((*byteCounts)[i] > 0) {
             ++appendedCharCount;
@@ -712,7 +715,7 @@ ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
     if (byteArray == NULL) return E_OUT_OF_MEMORY;
 
     Byte* p = (Byte*)(byteArray->GetPayload());
-    for (UInt32 i = 0; i < length; ++i) {
+    for (Int32 i = 0; i < length; ++i) {
         if ((*byteCounts)[i] > 0) {
             WriteUTFBytesToBuffer(p, array[offset + i], (*byteCounts)[i]);
             p += (*byteCounts)[i];
@@ -734,8 +737,9 @@ ECode String::Append(const ArrayOf<Char32>& array, UInt32 offset, UInt32 length)
 
 //---- Lock/Unlock ----
 
-char* String::LockBuffer(UInt32 numBytes)
+char* String::LockBuffer(Int32 numBytes)
 {
+    assert(numBytes >= 0);
     SharedBuffer* buf;
     if (mString != NULL) {
         buf = SharedBuffer::GetBufferFromData(mString)
@@ -760,8 +764,9 @@ void String::UnlockBuffer()
     UnlockBuffer(strlen(mString));
 }
 
-ECode String::UnlockBuffer(UInt32 numBytes)
+ECode String::UnlockBuffer(Int32 numBytes)
 {
+    assert(numBytes >= 0);
     if (IsNull()) return NOERROR;
 
     if (numBytes != GetLength()) {
@@ -790,7 +795,7 @@ String String::TrimStart() const
         ++str;
     }
 
-    UInt32 byteCount = GetByteLength();
+    Int32 byteCount = GetByteLength();
     if (byteCount == (str - mString)) return String("");
     return String(str, byteCount - (str - mString));
 }
@@ -854,15 +859,16 @@ String String::ToLowerCase() const
     return ToLowerCase(0, GetLength());
 }
 
-String String::ToLowerCase(UInt32 offset, UInt32 numOfChars) const
+String String::ToLowerCase(Int32 offset, Int32 numOfChars) const
 {
+    offset = MAX(offset, 0);
     AutoPtr<ArrayOf<Char32> > chars = GetChars();
     Int32 length = chars->GetLength();
     if (length == 0) return String("");
 
     AutoPtr<ArrayOf<Char32> > newChars = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        if ((UInt32)i >= offset && (UInt32)i < offset + numOfChars) {
+        if ((Int32)i >= offset && (Int32)i < offset + numOfChars) {
             (*newChars)[i] = ToLowerCase((*chars)[i]);
         }
         else {
@@ -878,15 +884,16 @@ String String::ToUpperCase() const
     return ToUpperCase(0, GetLength());
 }
 
-String String::ToUpperCase(UInt32 offset, UInt32 numOfChars) const
+String String::ToUpperCase(Int32 offset, Int32 numOfChars) const
 {
+    offset = MAX(0, offset);
     AutoPtr<ArrayOf<Char32> > chars = GetChars();
     Int32 length = chars->GetLength();
     if (length == 0) return String("");
 
     AutoPtr<ArrayOf<Char32> > newChars = ArrayOf<Char32>::Alloc(length);
     for (Int32 i = 0; i < length; ++i) {
-        if ((UInt32)i >= offset && (UInt32)i < offset + numOfChars) {
+        if ((Int32)i >= offset && (Int32)i < offset + numOfChars) {
             (*newChars)[i] = ToUpperCase((*chars)[i]);
         }
         else {
@@ -914,14 +921,14 @@ Int32 String::CompareIgnoreCase(const char* other) const
     if (!mString) return -2;
     if (!other) return 2;
 
-    UInt32 strLength = strlen(mString);
-    UInt32 subLength = strlen(other);
+    Int32 strLength = strlen(mString);
+    Int32 subLength = strlen(other);
 
     const char* p1 = mString;
     const char* p1End = mString + strLength;
     const char* p2 = other;
     const char* p2End = other + subLength;
-    UInt32 len1, len2;
+    Int32 len1, len2;
     Char32 ch1, ch2;
 
     while (p1 < p1End && p2 < p2End) {
@@ -1023,15 +1030,15 @@ Boolean String::InsensitiveStartWith(const char* string, const char* subString)
     if (!string || !subString) return FALSE;
     if (subString[0] == '\0') return TRUE;
 
-    UInt32 strLength = strlen(string);
-    UInt32 subLength = strlen(subString);
+    Int32 strLength = strlen(string);
+    Int32 subLength = strlen(subString);
     if (strLength == 0 || subLength == 0 || strLength < subLength) return FALSE;
 
     const char* p1 = string;
     const char* p1End = string + strLength;
     const char* p2 = subString;
     const char* p2End = subString + subLength;
-    UInt32 len1, len2;
+    Int32 len1, len2;
     Char32 ch1, ch2;
 
     while (p1 < p1End && p2 < p2End) {
@@ -1059,7 +1066,7 @@ Int32 String::ByteIndexOf(Char32 target) const
     if (!IsValidChar(target)) return -1;
     if (IsNullOrEmpty()) return -1;
 
-    UInt32 byteLength, i = 0;
+    Int32 byteLength, i = 0;
     const char* p = mString;
     const char *pEnd = mString + GetByteLength() + 1;
 
@@ -1077,14 +1084,15 @@ Int32 String::ByteIndexOf(Char32 target) const
     return -1;
 }
 
-Int32 String::IndexOf(Char32 target, UInt32 start) const
+Int32 String::IndexOf(Char32 target, Int32 start) const
 {
     if (!IsValidChar(target)) return -1;
 
-    UInt32 byteCount = GetByteLength();
+    start = MAX(0, start);
+    Int32 byteCount = GetByteLength();
     if (start >= byteCount) return -1;
 
-    UInt32 byteLength, i = 0;
+    Int32 byteLength, i = 0;
     const char* p = mString;
     const char *pEnd = mString + byteCount + 1;
     Char32 ch;
@@ -1107,14 +1115,15 @@ Int32 String::IndexOf(Char32 target, UInt32 start) const
     return -1;
 }
 
-Int32 String::IndexOfIgnoreCase(Char32 target, UInt32 start) const
+Int32 String::IndexOfIgnoreCase(Char32 target, Int32 start) const
 {
     if (!IsValidChar(target)) return -1;
 
-    UInt32 byteCount = GetByteLength();
+    start = MAX(0, start);
+    Int32 byteCount = GetByteLength();
     if (start >= byteCount) return -1;
 
-    UInt32 byteLength, i = 0;
+    Int32 byteLength, i = 0;
     const char* p = mString;
     const char *pEnd = mString + byteCount + 1;
     const Char32 upperTarget = ToUpperCase(target);
@@ -1152,11 +1161,12 @@ Int32 String::LastIndexOf(Char32 target) const
     return LastIndexOf(target, GetLength());
 }
 
-Int32 String::LastIndexOf(Char32 target, UInt32 start) const
+Int32 String::LastIndexOf(Char32 target, Int32 start) const
 {
     if (IsNull()) return -1;
     if (!IsValidChar(target)) return -1;
 
+    start = MAX(0, start);
     AutoPtr<ArrayOf<Char32> > chars = GetChars(0, start + 1);
     for (Int32 i = chars->GetLength() - 1; i >= 0; --i) {
         if ((*chars)[i] == target) {
@@ -1172,11 +1182,12 @@ Int32 String::LastIndexOfIgnoreCase(Char32 target) const
     return LastIndexOfIgnoreCase(target, GetLength());
 }
 
-Int32 String::LastIndexOfIgnoreCase(Char32 target, UInt32 start) const
+Int32 String::LastIndexOfIgnoreCase(Char32 target, Int32 start) const
 {
     if (IsNull()) return -1;
     if (!IsValidChar(target)) return -1;
 
+    start = MAX(0, start);
     const Char32 upperTarget = ToUpperCase(target);
     AutoPtr<ArrayOf<Char32> > chars = GetChars(0, start + 1);
     for (Int32 i = chars->GetLength() - 1; i >= 0; --i) {
@@ -1188,22 +1199,22 @@ Int32 String::LastIndexOfIgnoreCase(Char32 target, UInt32 start) const
     return -1;
 }
 
-Int32 String::IndexOf(const char* subString, UInt32 start) const
+Int32 String::IndexOf(const char* subString, Int32 start) const
 {
     return SensitiveIndexOf(mString, subString, start);
 }
 
-Int32 String::IndexOf(const String& subString, UInt32 start) const
+Int32 String::IndexOf(const String& subString, Int32 start) const
 {
     return IndexOf(subString.string(), start);
 }
 
-Int32 String::IndexOfIgnoreCase(const char* subString, UInt32 start) const
+Int32 String::IndexOfIgnoreCase(const char* subString, Int32 start) const
 {
     return InsensitiveIndexOf(mString, subString, start);
 }
 
-Int32 String::IndexOfIgnoreCase(const String& subString, UInt32 start) const
+Int32 String::IndexOfIgnoreCase(const String& subString, Int32 start) const
 {
     return IndexOfIgnoreCase(subString.mString, start);
 }
@@ -1215,7 +1226,7 @@ Int32 String::LastIndexOf(const char* subString) const
     return LastIndexOf(subString, GetLength());
 }
 
-Int32 String::LastIndexOf(const char* subString, UInt32 start) const
+Int32 String::LastIndexOf(const char* subString, Int32 start) const
 {
     String sub(subString);
     return LastIndexOf(sub, start);
@@ -1227,7 +1238,7 @@ Int32 String::LastIndexOf(const String& subString) const
     return LastIndexOf(subString, GetLength());
 }
 
-Int32 String::LastIndexOf(const String& subString, UInt32 start) const
+Int32 String::LastIndexOf(const String& subString, Int32 start) const
 {
     if (IsNull() || subString.IsNull()) return -1;
 
@@ -1238,11 +1249,11 @@ Int32 String::LastIndexOf(const String& subString, UInt32 start) const
     Int32 subCount = subChars->GetLength();
     if (subCount <= count && start >= 0) {
         if (subCount > 0) {
-            if (start > (UInt32)(count - subCount)) {
+            if (start > (Int32)(count - subCount)) {
                 start = count - subCount;
             }
 
-            if (start >= (UInt32)count) {
+            if (start >= (Int32)count) {
                 start = count - 1;
             }
 
@@ -1274,7 +1285,7 @@ Int32 String::LastIndexOf(const String& subString, UInt32 start) const
                 start = index - 1;
             }
         }
-        return start < (UInt32)count ? start : count;
+        return start < (Int32)count ? start : count;
     }
     return -1;
 }
@@ -1286,7 +1297,7 @@ Int32 String::LastIndexOfIgnoreCase(const char* subString) const
     return LastIndexOfIgnoreCase(sub, GetLength());
 }
 
-Int32 String::LastIndexOfIgnoreCase(const char* subString, UInt32 start) const
+Int32 String::LastIndexOfIgnoreCase(const char* subString, Int32 start) const
 {
     String sub(subString);
     return LastIndexOfIgnoreCase(sub, start);
@@ -1298,7 +1309,7 @@ Int32 String::LastIndexOfIgnoreCase(const String& subString) const
     return LastIndexOfIgnoreCase(subString.mString, GetLength());
 }
 
-Int32 String::LastIndexOfIgnoreCase(const String& subString, UInt32 start) const
+Int32 String::LastIndexOfIgnoreCase(const String& subString, Int32 start) const
 {
     if (IsNull() || subString.IsNull()) return -1;
 
@@ -1309,11 +1320,11 @@ Int32 String::LastIndexOfIgnoreCase(const String& subString, UInt32 start) const
     Int32 subCount = subChars->GetLength();
     if (subCount <= count && start >= 0) {
         if (subCount > 0) {
-            if (start > (UInt32)(count - subCount)) {
+            if (start > (Int32)(count - subCount)) {
                 start = count - subCount;
             }
 
-            if (start >= (UInt32)count) {
+            if (start >= (Int32)count) {
                 start = count - 1;
             }
 
@@ -1349,22 +1360,22 @@ Int32 String::LastIndexOfIgnoreCase(const String& subString, UInt32 start) const
                 start = index - 1;
             }
         }
-        return start < (UInt32)count ? start : count;
+        return start < (Int32)count ? start : count;
     }
     return -1;
 }
 
-Boolean String::RegionMatches(UInt32 thisStart, const String& otherStr, UInt32 start, UInt32 length) const
+Boolean String::RegionMatches(Int32 thisStart, const String& otherStr, Int32 start, Int32 length) const
 {
     if (!mString || otherStr.IsNull()) return FALSE;
     if (otherStr.IsEmpty() && IsEmpty()) return TRUE;
 
-    UInt32 otherStrLen = otherStr.GetLength();
+    Int32 otherStrLen = otherStr.GetLength();
     if (start < 0 || start + length > otherStrLen) {
         return FALSE;
     }
 
-    UInt32 strLen = GetLength();
+    Int32 strLen = GetLength();
     if (thisStart < 0 || thisStart + length > strLen) {
         return FALSE;
     }
@@ -1378,17 +1389,17 @@ Boolean String::RegionMatches(UInt32 thisStart, const String& otherStr, UInt32 s
     return !strncmp(str1, str2, length);
 }
 
-Boolean String::RegionMatchesIgnoreCase(UInt32 thisStart, const String& otherStr, UInt32 start, UInt32 length) const
+Boolean String::RegionMatchesIgnoreCase(Int32 thisStart, const String& otherStr, Int32 start, Int32 length) const
 {
     if (!mString || otherStr.IsNull()) return FALSE;
     if (otherStr.IsEmpty() && IsEmpty()) return TRUE;
 
-    UInt32 otherStrLen = otherStr.GetLength();
+    Int32 otherStrLen = otherStr.GetLength();
     if (start < 0 || start + length > otherStrLen) {
         return FALSE;
     }
 
-    UInt32 strLen = GetLength();
+    Int32 strLen = GetLength();
     if (thisStart < 0 || thisStart + length > strLen) {
         return FALSE;
     }
@@ -1402,20 +1413,21 @@ Boolean String::RegionMatchesIgnoreCase(UInt32 thisStart, const String& otherStr
     return !subStr1.CompareIgnoreCase(subStr2);
 }
 
-Int32 String::SensitiveIndexOf(const char* string, const char* subString, UInt32 startChar)
+Int32 String::SensitiveIndexOf(const char* string, const char* subString, Int32 startChar)
 {
     if (!string || !subString) return -1;
     if (subString[0] == '\0') return 0;
 
-    UInt32 byteLength = strlen(string);
-    UInt32 subByteLength = strlen(subString);
+    startChar = MAX(0, startChar);
+    Int32 byteLength = strlen(string);
+    Int32 subByteLength = strlen(subString);
     if (startChar >= byteLength || subByteLength > byteLength) return -1;
 
     Int32 byteStart = CharIndexToByteIndex(string, startChar);
     if (byteStart < 0 || subByteLength + byteStart > byteLength) return -1;
 
-    UInt32 i = 0, j = 0, o1 = 0, o2 = 0;
-    UInt32 charStart = startChar, charlen1 = 0;
+    Int32 i = 0, j = 0, o1 = 0, o2 = 0;
+    Int32 charStart = startChar, charlen1 = 0;
     const char* p = string;
     const char* pEnd = p + byteLength + 1;
     Boolean found = FALSE;
@@ -1481,20 +1493,21 @@ Int32 String::SensitiveIndexOf(const char* string, const char* subString, UInt32
     return result;
 }
 
-Int32 String::InsensitiveIndexOf(const char* string, const char* subString, UInt32 startChar)
+Int32 String::InsensitiveIndexOf(const char* string, const char* subString, Int32 startChar)
 {
     if (!string || !subString) return -1;
     if (subString[0] == '\0') return 0;
 
-    UInt32 byteLength = strlen(string);
-    UInt32 subByteLength = strlen(subString);
+    startChar = MAX(0, startChar);
+    Int32 byteLength = strlen(string);
+    Int32 subByteLength = strlen(subString);
     if (subByteLength > byteLength) return -1;
 
     Int32 byteStart = CharIndexToByteIndex(string, startChar);
     if (byteStart < 0 || subByteLength + byteStart > byteLength) return -1;
 
-    UInt32 i = 0, j = 0, o1 = 0, o2 = 0;
-    UInt32 charStart = startChar, charlen1 = 0, charlen2 = 0, remainCharLen = 0;
+    Int32 i = 0, j = 0, o1 = 0, o2 = 0;
+    Int32 charStart = startChar, charlen1 = 0, charlen2 = 0, remainCharLen = 0;
     const char* p = string;
     const char* pEnd = p + byteLength + 1;
     Char32 ch1, ch2;
