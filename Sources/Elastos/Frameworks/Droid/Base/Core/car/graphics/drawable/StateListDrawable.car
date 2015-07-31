@@ -43,8 +43,7 @@ module
      *
      * @sa Drawable
      * @implements Elastos.Droid.Graphics.Drawable.IDrawableContainer
-     */
-    /**
+     *
      * @Involve
      * interface IDrawableContainer
      */
