@@ -1,7 +1,6 @@
 
 module
 {
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -11,8 +10,7 @@ module
      * ranges of it.  Not all text classes have mutable markup or text;
      * see {@link Spannable} for mutable markup and {@link Editable} for
      * mutable text.
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.Core.ICharSequence
      */

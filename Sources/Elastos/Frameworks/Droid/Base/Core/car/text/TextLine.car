@@ -1,0 +1,170 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Text.Layout.IDirections;
+    interface Elastos.Droid.Text.Layout.ITabStops;
+    interface Elastos.Droid.Graphics.ICanvas;
+    interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    /**
+     * Represents a line of styled text, for measuring in visual order and
+     * for rendering.
+     *
+     * <p>Get a new instance using obtain(), and when finished with it, return it
+     * to the pool using recycle().
+     *
+     * <p>Call set to prepare the instance for use, then either draw, measure,
+     * metrics, or caretToLeftRightOf.
+     *
+     * @hide
+     */
+    interface ITextLine {
+        /**
+         * Initializes a TextLine and prepares it for use.
+         *
+         * @param paint the base paint for the line
+         * @param text the text, can be Styled
+         * @param start the start of the line relative to the text
+         * @param limit the limit of the line relative to the text
+         * @param dir the paragraph direction of this line
+         * @param directions the directions information of this line
+         * @param hasTabs true if the line might contain tabs or emoji
+         * @param tabStops the tabStops. Can be null.
+         */
+        Set(
+            [in] ITextPaint* paint,
+            [in] ICharSequence* text,
+            [in] Int32 start,
+            [in] Int32 limit,
+            [in] Int32 dir,
+            [in] IDirections* directions,
+            [in] Boolean hasTabs,
+            [in] ITabStops* tabStops);
+
+        /**
+         * Renders the TextLine.
+         *
+         * @param c the canvas to render on
+         * @param x the leading margin position
+         * @param top the top of the line
+         * @param y the baseline
+         * @param bottom the bottom of the line
+         */
+        Draw(
+            [in] ICanvas* c,
+            [in] Float x,
+            [in] Int32 top,
+            [in] Int32 y,
+            [in] Int32 bottom);
+
+        /**
+         * Returns metrics information for the entire line.
+         *
+         * @param fmi receives font metrics information, can be null
+         * @return the signed width of the line
+         */
+        Metrics(
+            [in] IPaintFontMetricsInt* fmi,
+            [out] Float* ret);
+
+        /**
+         * Returns information about a position on the line.
+         *
+         * @param offset the line-relative character offset, between 0 and the
+         * line length, inclusive
+         * @param trailing true to measure the trailing edge of the character
+         * before offset, false to measure the leading edge of the character
+         * at offset.
+         * @param fmi receives metrics information about the requested
+         * character, can be null.
+         * @return the signed offset from the leading margin to the requested
+         * character edge.
+         */
+        Measure(
+            [in] Int32 offset,
+            [in] Boolean trailing,
+            [in] IPaintFontMetricsInt* fmi,
+            [out] Float* ret);
+
+        /**
+         * Walk the cursor through this line, skipping conjuncts and
+         * zero-width characters.
+         *
+         * <p>This function cannot properly walk the cursor off the ends of the line
+         * since it does not know about any shaping on the previous/following line
+         * that might affect the cursor position. Callers must either avoid these
+         * situations or handle the result specially.
+         *
+         * @param cursor the starting position of the cursor, between 0 and the
+         * length of the line, inclusive
+         * @param toLeft true if the caret is moving to the left.
+         * @return the new offset.  If it is less than 0 or greater than the length
+         * of the line, the previous/following line should be examined to get the
+         * actual offset.
+         */
+        GetOffsetToLeftRightOf(
+            [in] Int32 cursor,
+            [in] Boolean toLeft,
+            [out] Int32* ret);
+
+        /**
+         * Returns the ascent of the text at start.  This is used for scaling
+         * emoji.
+         *
+         * @param pos the line-relative position
+         * @return the ascent of the text at start
+         */
+        Ascent(
+            [in] Int32 pos,
+            [out] Float* ret);
+
+        /**
+         * Returns the next tab position.
+         *
+         * @param h the (unsigned) offset from the leading margin
+         * @return the (unsigned) tab position after this offset
+         */
+        NextTab(
+            [in] Float h,
+            [out] Float* ret);
+    }
+
+    interface ITextLineHelper {
+        /**
+         * Returns a new TextLine from the shared pool.
+         *
+         * @return an uninitialized TextLine
+         */
+        Obtain(
+            [out] ITextLine** ret);
+
+        /**
+         * Puts a TextLine back into the shared pool. Do not use this TextLine once
+         * it has been returned.
+         * @param tl the textLine
+         * @return null, as a convenience from clearing references to the provided
+         * TextLine
+         */
+        Recycle(
+            [in] ITextLine* tl,
+            [out] ITextLine** ret);
+
+        UpdateMetrics(
+            [in] IPaintFontMetricsInt* fmi,
+            [in] Int32 previousTop,
+            [in] Int32 previousAscent,
+            [in] Int32 previousDescent,
+            [in] Int32 previousBottom,
+            [in] Int32 previousLeading);
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

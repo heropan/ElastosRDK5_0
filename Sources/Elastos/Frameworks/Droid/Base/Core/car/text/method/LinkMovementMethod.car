@@ -1,6 +1,5 @@
 module
 {
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -9,9 +8,10 @@ module
     /**
      * A movement method that traverses links in the text buffer and scrolls if necessary.
      * Supports clicking on links with DPad Center or Enter.
-     */
-    /**
+     *
      * @Involve
+     * interface IMovementMethod
+     * interface IBaseMovementMethod
      * interface IScrollingMovementMethod
      */
     interface ILinkMovementMethod {}
@@ -20,11 +20,13 @@ module
      * @Involve
      * interface IScrollingMovementMethodHelper
      */
-    interface ILinkMovementMethodHelper{}
+    interface ILinkMovementMethodHelper{
+        GetInstance(
+            [out] IMovementMethod** ret);
+    }
 
     }//namespace Method
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

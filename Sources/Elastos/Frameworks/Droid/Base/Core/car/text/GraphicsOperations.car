@@ -11,8 +11,7 @@ module
      * Please implement this interface if your CharSequence can do quick
      * draw/measure/widths calculations from an internal array.
      * {@hide}
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.Core.ICharSequence
      */
@@ -72,26 +71,10 @@ module
             [in] Int32 end,
             [in] Int32 contextStart,
             [in] Int32 contextEnd,
-            [in] Int32 flags,
-            [in] ArrayOf<Float>* advances,
-            [in] Int32 AdvancesIndex,
-            [in] IPaint* paint,
-            [out] Float* result);
-
-        /**
-         * Just like {@link Paint#getTextRunAdvances}.
-         * @hide
-         */
-        GetTextRunAdvances(
-            [in] Int32 start,
-            [in] Int32 end,
-            [in] Int32 contextStart,
-            [in] Int32 contextEnd,
-            [in] Int32 flags,
+            [in] Boolean isRtl,
             [in] ArrayOf<Float>* advances,
             [in] Int32 advancesIndex,
             [in] IPaint* paint,
-            [in] Int32 reserved,
             [out] Float* result);
 
         /**
@@ -101,7 +84,7 @@ module
         GetTextRunCursor(
             [in] Int32 contextStart,
             [in] Int32 contextEnd,
-            [in] Int32 flags,
+            [in] Int32 dir,
             [in] Int32 offset,
             [in] Int32 cursorOpt,
             [in] IPaint* p,

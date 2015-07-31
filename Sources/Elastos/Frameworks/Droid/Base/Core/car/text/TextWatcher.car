@@ -1,14 +1,18 @@
 module
 {
-    interface Elastos.Droid.Text.IEditable;
+    using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Text.IEditable;
+    
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
     /**
+     * When an object of a type is attached to an Editable, its methods will
+     * be called when the text is changed.
+     *
      * @Involve
      * interface INoCopySpan
      */
@@ -56,7 +60,6 @@ module
         AfterTextChanged(
             [in] IEditable* s);
     }
-
 
     } // namespace Text
     } // namepsace Droid

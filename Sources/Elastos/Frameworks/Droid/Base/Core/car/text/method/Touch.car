@@ -51,6 +51,31 @@ module
             [in] ITextView* widget,
             [in] ISpannable* buffer,
             [out] Int32* ret);
+
+        /**
+         * Checks if selection is still active.
+         * This is useful for extending Selection span on buffer.
+         * @param buffer The text buffer.
+         * @return true if buffer has been marked for selection.
+         *
+         * @hide
+         */
+        IsActivelySelecting(
+            [in] ISpannable* buffer,
+            [out] Boolean* ret);
+
+        /**
+         * Checks if selection has begun (are we out of slop?).
+         * Note: DragState.mIsSelectionStarted goes back to false with the very next event.
+         * This is useful for starting Selection span on buffer.
+         * @param buffer The text buffer.
+         * @return true if selection has started on the buffer.
+         *
+         * @hide
+         */
+        IsSelectionStarted(
+            [in] ISpannable* buffer,
+            [out] Boolean* ret);
     }
 
     /**
@@ -65,5 +90,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

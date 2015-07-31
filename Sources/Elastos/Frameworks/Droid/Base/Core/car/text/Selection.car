@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Text.ISpannable;
     interface Elastos.Droid.Text.ILayout;
 
@@ -97,7 +98,8 @@ module
 
         /**
          * Move the cursor to the buffer offset physically above the current
-         * offset, or return false if the cursor is already on the top line.
+         * offset, to the beginning if it is on the top line but not at the
+         * start, or return false if the cursor is already on the top line.
          */
         MoveUp(
             [in] ISpannable* text,
@@ -106,7 +108,9 @@ module
 
         /**
          * Move the cursor to the buffer offset physically below the current
-         * offset, or return false if the cursor is already on the bottom line.
+         * offset, to the end of the buffer if it is on the bottom line but
+         * not at the end, or return false if the cursor is already at the
+         * end of the buffer.
          */
         MoveDown(
             [in] ISpannable* text,

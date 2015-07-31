@@ -36,8 +36,7 @@ module
      *     ...
      * }
      * </pre>
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.Utility.IIterator
      */
@@ -52,8 +51,7 @@ module
      * <p>If the final character in the string to split is the delimiter then no empty string will
      * be returned for the empty string after that delimeter. That is, splitting <tt>"a,b,"</tt> on
      * comma will return <tt>"a", "b"</tt>, not <tt>"a", "b", ""</tt>.
-     */
-    /**
+     *
      * @Involve
      * interface IStringSplitter
      */
@@ -78,6 +76,9 @@ module
     interface ITextUtils {
         /** @hide */
         const Int32 ALIGNMENT_SPAN = 1;
+
+        /** @hide */
+        const Int32 FIRST_SPAN = 1; //ALIGNMENT_SPAN;
 
         /** @hide */
         const Int32 FOREGROUND_COLOR_SPAN = 2;
@@ -144,6 +145,11 @@ module
 
         /** @hide */
         const Int32 LOCALE_SPAN = 23;
+
+        /** @hide */
+        const Int32 TTS_SPAN = 24;
+        /** @hide */
+        const Int32 LAST_SPAN = 24; //TTS_SPAN;
 
         /**
          * Capitalization mode for {@link #getCapsMode}: capitalize all

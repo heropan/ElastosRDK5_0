@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPath;
     interface Elastos.Droid.Graphics.IPaint;
@@ -285,12 +286,32 @@ module
             [out] Float* pos);
 
         /**
+         * Get the primary horizontal position for the specified text offset, but
+         * optionally clamp it so that it doesn't exceed the width of the layout.
+         * @hide
+         */
+        GetPrimaryHorizontal(
+            [in] Int32 offset,
+            [in] Boolean clamped,
+            [out] Float* pos);
+
+        /**
          * Get the secondary horizontal position for the specified text offset.
          * This is the location where a new character would be inserted in
          * the direction other than the paragraph's primary direction.
          */
         GetSecondaryHorizontal(
             [in] Int32 offset,
+            [out] Float* pos);
+
+        /**
+         * Get the secondary horizontal position for the specified text offset, but
+         * optionally clamp it so that it doesn't exceed the width of the layout.
+         * @hide
+         */
+        GetSecondaryHorizontal(
+            [in] Int32 offset,
+            [in] Boolean clamped,
             [out] Float* pos);
 
         /**
@@ -397,6 +418,15 @@ module
         GetOffsetToRightOf(
             [in] Int32 offset,
             [out] Int32* retOffset);
+
+        /**
+         * Determine whether we should clamp cursor position. Currently it's
+         * only robust for left-aligned displays.
+         * @hide
+         */
+        ShouldClampCursor(
+            [in] Int32 line,
+            [out] Boolean* cursor);
 
         /**
          * Fills in the specified Path with a representation of a cursor

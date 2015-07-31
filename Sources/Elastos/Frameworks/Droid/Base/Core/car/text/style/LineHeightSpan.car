@@ -2,6 +2,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
     interface Elastos.Droid.Text.ITextPaint;
 
@@ -12,9 +13,10 @@ module
 
     /**
      * @Involve
-     * interface 
+     * interface IWrapTogetherSpan
+     * interface IParagraphStyle
      */
-    interface ILineHeightSpan/*IParagraphStyle,*/ IWrapTogetherSpan {
+    interface ILineHeightSpan {
         ChooseHeight(
             [in] ICharSequence* text,
             [in] Int32 start,
@@ -26,6 +28,8 @@ module
 
     /**
      * @Involve
+     * interface IWrapTogetherSpan
+     * interface IParagraphStyle
      * interface ILineHeightSpan
      */
     interface ILineHeightSpanWithDensity {
@@ -43,5 +47,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

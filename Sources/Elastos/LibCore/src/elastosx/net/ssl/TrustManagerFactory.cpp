@@ -13,7 +13,7 @@ const String TrustManagerFactory::DEFAULT_PROPERTY = String("PKIX");
 CAR_INTERFACE_IMPL(TrustManagerFactory, Object, ITrustManagerFactory)
 
 ECode TrustManagerFactory::GetDefaultAlgorithm(
-        /* [out] */ String* algorithm)
+    /* [out] */ String* algorithm)
 {
     VALIDATE_NOT_NULL(algorithm)
 
@@ -25,8 +25,8 @@ ECode TrustManagerFactory::GetDefaultAlgorithm(
 }
 
 ECode TrustManagerFactory::GetInstance(
-        /* [in] */ const String& algorithm,
-        /* [out] */ ITrustManagerFactory** factory)
+    /* [in] */ const String& algorithm,
+    /* [out] */ ITrustManagerFactory** factory)
 {
     VALIDATE_NOT_NULL(factory)
 
@@ -41,9 +41,9 @@ ECode TrustManagerFactory::GetInstance(
 }
 
 ECode TrustManagerFactory::GetInstance(
-        /* [in] */ const String& algorithm,
-        /* [in] */ const String& provider,
-        /* [out] */ ITrustManagerFactory** factory)
+    /* [in] */ const String& algorithm,
+    /* [in] */ const String& provider,
+    /* [out] */ ITrustManagerFactory** factory)
 {
     VALIDATE_NOT_NULL(factory)
 
@@ -61,9 +61,9 @@ ECode TrustManagerFactory::GetInstance(
 }
 
 ECode TrustManagerFactory::GetInstance(
-        /* [in] */ const String& algorithm,
-        /* [in] */ IProvider* provider,
-        /* [out] */ ITrustManagerFactory** factory)
+    /* [in] */ const String& algorithm,
+    /* [in] */ IProvider* provider,
+    /* [out] */ ITrustManagerFactory** factory)
 {
     VALIDATE_NOT_NULL(factory)
 

@@ -11,9 +11,9 @@ module
      * This is the interface for text to which markup objects can be
      * attached and detached.  Not all Spannable classes have mutable text;
      * see {@link Editable} for that.
-     */
-    /**
+     *
      * @Involve
+     * interface ICharSequence
      * interface ISpanned
      */
     interface ISpannable {
@@ -48,6 +48,11 @@ module
         NewSpannable(
             [in] ICharSequence* source,
             [out] ISpannable** spannable);
+    }
+
+    interface ISpannableFactoryHelper {
+        GetInstance(
+            [out] ISpannableFactory** spannable);
     }
 
     } // namespace Text

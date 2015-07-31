@@ -9,8 +9,25 @@ module
      * An alternative to the {@link java.util.Calendar} and
      * {@link java.util.GregorianCalendar} classes. An instance of the Time class represents
      * a moment in time, specified with second precision. It is modelled after
-     * struct tm, and in fact, uses struct tm to implement most of the
-     * functionality.
+     * struct tm. This class is not thread-safe and does not consider leap seconds.
+     *
+     * <p>This class has a number of issues and it is recommended that
+     * {@link java.util.GregorianCalendar} is used instead.
+     *
+     * <p>Known issues:
+     * <ul>
+     *     <li>For historical reasons when performing time calculations all arithmetic currently takes
+     *     place using 32-bit integers. This limits the reliable time range representable from 1902
+     *     until 2037.See the wikipedia article on the
+     *     <a href="http://en.wikipedia.org/wiki/Year_2038_problem">Year 2038 problem</a> for details.
+     *     Do not rely on this behavior; it may change in the future.
+     *     </li>
+     *     <li>Calling {@link #switchTimezone(String)} on a date that cannot exist, such as a wall time
+     *     that was skipped due to a DST transition, will result in a date in 1969 (i.e. -1, or 1 second
+     *     before 1st Jan 1970 UTC).</li>
+     *     <li>Much of the formatting / parsing assumes ASCII text and is therefore not suitable for
+     *     use with non-ASCII scripts.</li>
+     * </ul>
      */
     interface ITime {
 
@@ -75,7 +92,7 @@ module
         /**
          * Clears all values, setting the timezone to the given timezone. Sets isDst
          * to a negative value to mean "unknown".
-         * @param timezone the timezone to use.
+         * @param timezoneId the timezone to use.
          */
         Clear(
             [in] String timezone);
@@ -92,10 +109,10 @@ module
             [out] String* ret);
 
         /**
-         * Format according to RFC 2445 DATETIME type.
+         * Format according to RFC 2445 DATE-TIME type.
          *
-         * <p>
-         * The same as format("%Y%m%dT%H%M%S").
+         * <p>The same as format("%Y%m%dT%H%M%S"), or format("%Y%m%dT%H%M%SZ") for a Time with a
+         * timezone set to "UTC".
          */
         Format2445(
             [out] String* ret);
@@ -108,7 +125,6 @@ module
          * Otherwise, if the timezone is UTC, expresses the time as Y-M-D-T-H-M-S UTC</p>
          * <p>
          * Otherwise the time is expressed the time as Y-M-D-T-H-M-S +- GMT</p>
-         * @param allDay
          * @return string in the RFC 3339 format.
          */
         Format3339(
@@ -353,7 +369,7 @@ module
          * <pre>
          * Time time = new Time();
          * time.set(4, 10, 2007);  // set the date to Nov 4, 2007, 12am
-         * time.normalize();       // this sets isDst = 1
+         * time.normalize(false);       // this sets isDst = 1
          * time.monthDay += 1;     // changes the date to Nov 5, 2007, 12am
          * millis = time.toMillis(false);   // millis is Nov 4, 2007, 11pm
          * millis = time.toMillis(true);    // millis is Nov 5, 2007, 12am
@@ -481,16 +497,18 @@ module
              [out] String* ret);
 
         /**
-         * Computes the Julian day number, given the UTC milliseconds
-         * and the offset (in seconds) from UTC.  The Julian day for a given
-         * date will be the same for every timezone.  For example, the Julian
-         * day for July 1, 2008 is 2454649.  This is the same value no matter
-         * what timezone is being used.  The Julian day is useful for testing
-         * if two events occur on the same day and for determining the relative
-         * time of an event from the present ("yesterday", "3 days ago", etc.).
+         * Computes the Julian day number for a point in time in a particular
+         * timezone. The Julian day for a given date is the same for every
+         * timezone. For example, the Julian day for July 1, 2008 is 2454649.
          *
-         * <p>
-         * Use {@link #toMillis(boolean)} to get the milliseconds.
+         * <p>Callers must pass the time in UTC millisecond (as can be returned
+         * by {@link #toMillis(boolean)} or {@link #normalize(boolean)})
+         * and the offset from UTC of the timezone in seconds (as might be in
+         * {@link #gmtoff}).
+         *
+         * <p>The Julian day is useful for testing if two events occur on the
+         * same calendar date and for determining the relative time of an event
+         * from the present ("yesterday", "3 days ago", etc.).
          *
          * @param millis the time in UTC milliseconds
          * @param gmtoff the offset from UTC in seconds
@@ -549,5 +567,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

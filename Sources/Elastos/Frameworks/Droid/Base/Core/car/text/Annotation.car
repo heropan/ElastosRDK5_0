@@ -10,8 +10,12 @@ module
      * Annotations are simple key-value pairs that are preserved across
      * TextView save/restore cycles and can be used to keep application-specific
      * data that needs to be maintained for regions of text.
+     *
+     * @Involve
+     * interface IParcelable
+     * interface IParcelableSpan
      */
-    interface IAnnotation /*implements IParcelableSpan*/ {
+    interface IAnnotation {
         GetKey(
             [out] String* ret);
 
@@ -22,5 +26,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

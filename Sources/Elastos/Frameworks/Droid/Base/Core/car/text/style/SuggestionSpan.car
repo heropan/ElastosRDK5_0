@@ -1,6 +1,7 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
+    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
@@ -18,13 +19,14 @@ module
      * for the text.
      *
      * @see TextView#isSuggestionsEnabled()
-     */
-    /**
+     *
      * @Involve
+     * interface IParcelable
+     * interface IParcelableSpan
      * interface ICharacterStyle
      */
-    [deprecated]
-    interface ISuggestionSpan /*implements IParcelableSpan*/ {
+    [deprecated, local]
+    interface ISuggestionSpan {
 
         /**
          * Sets this flag if the suggestions should be easily accessible with few interactions.
@@ -98,6 +100,16 @@ module
          */
         GetUnderlineColor(
             [out] Int32* ret);
+
+        /**
+         * Notifies a suggestion selection.
+         *
+         * @hide
+         */
+        NotifySelection(
+            [in] IContext* context,
+            [in] String original,
+            [in] Int32 index);
     }
 
     /**
@@ -105,6 +117,16 @@ module
      * interface ICharacterStyleHelper
      */
     interface ISuggestionSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
     }
 
     }//namespace Style

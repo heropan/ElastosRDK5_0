@@ -1,7 +1,8 @@
 
 module
 {
-    interface Elastos.Core.ICharSequence;
+    using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IPaint;
 
@@ -33,5 +34,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

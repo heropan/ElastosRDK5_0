@@ -2,7 +2,6 @@
 module
 {
     using interface Org.Xml.Sax.IXMLReader;
-//    interface Org.Xml.Sax.IContentHandler;
     using interface Org.Xml.Sax.ILocator;
     using interface Org.Xml.Sax.IAttributes;
     using interface Elastos.Core.ICharSequence;
@@ -100,9 +99,12 @@ module
             [in] ICharSequence* text,
             [out] String* ret);
     }
-
+    /*
+     * @Involve
+     * interface IContentHandler
+     */
     [deprecated]
-    interface IHtmlToSpannedConverter /*implements IContentHandler*/ {
+    interface IHtmlToSpannedConverter {
         Convert(
             [out] ISpanned** ret);
 

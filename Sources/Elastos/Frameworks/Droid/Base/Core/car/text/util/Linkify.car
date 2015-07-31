@@ -3,6 +3,7 @@ module
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.Regex.IPattern;
     using interface Elastos.Utility.Regex.IMatcher;
+
     interface Elastos.Droid.Widget.ITextView;
     interface Elastos.Droid.Text.ISpannable;
     interface Elastos.Droid.Text.Utility.ILinkifyMatchFilter;
@@ -247,5 +248,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

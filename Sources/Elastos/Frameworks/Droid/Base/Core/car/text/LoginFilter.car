@@ -1,13 +1,15 @@
 
 module
 {
-    interface Elastos.Droid.Text.IInputFilter;
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
-    interface ILoginFilter /*implements IInputFilter*/ {
+    /*
+     * @Involve
+     * interface IInputFilter
+     */
+    interface ILoginFilter {
         /**
          * Called when we start processing filter.
          */
@@ -32,6 +34,20 @@ module
         IsAllowed(
             [in] Char32 c,
             [out] Boolean* ret);
+    }
+
+    /*
+     * @Involve
+     * interface ILoginFilter
+     */
+    interface ILoginFilterUsernameFilterGMail {
+    }
+
+    /*
+     * @Involve
+     * interface ILoginFilter
+     */
+    interface ILoginFilterUsernameFilterGeneric {
     }
 
     }//namespace Text

@@ -235,6 +235,6 @@ module
     }
 
     } // namespace Ssl
-    } // namespace Crypto
+    } // namespace Net
     } // namespace Elastosx
 }

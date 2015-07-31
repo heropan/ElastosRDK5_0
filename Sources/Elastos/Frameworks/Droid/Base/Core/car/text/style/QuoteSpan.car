@@ -1,13 +1,18 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IQuoteSpan /*implements ILeadingMarginSpan, IParcelableSpan*/ {
+    /*
+     * @Involve
+     * interface IParcelable
+     * interface IParagraphStyle
+     * interface IParcelableSpan
+     * interface ILeadingMarginSpan
+     */
+    interface IQuoteSpan {
         GetColor(
             [out] Int32* ret);
     }
@@ -16,5 +21,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

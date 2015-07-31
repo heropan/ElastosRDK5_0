@@ -1,0 +1,63 @@
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    [deprecated]
+    interface ISpannableStringInternal {
+        GetLength(
+            [out] Int32* length);
+
+        CharAt(
+            [in] Int32 i,
+            [out] Char32* ret);
+
+        ToString(
+            [out] String* str);
+
+        /* subclasses must do subSequence() to preserve type */
+        GetChars(
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] ArrayOf<Char32>* dest,
+            [in] Int32 off);
+
+        SetSpan(
+            [in] IInterface* what,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] Int32 flags);
+
+        RemoveSpan(
+            [in] IInterface* what);
+
+        GetSpanStart(
+            [in] IInterface* what,
+            [out] Int32* ret);
+
+        GetSpanEnd(
+            [in] IInterface* what,
+            [out] Int32* ret);
+
+        GetSpanFlags(
+            [in] IInterface* what,
+            [out] Int32* ret);
+
+        GetSpans(
+            [in] Int32 queryStart,
+            [in] Int32 queryEnd,
+            [in] ClassID* kind,
+            [out, callee] ArrayOf<IInterface*>* spans);
+
+        NextSpanTransition(
+            [in] Int32 start,
+            [in] Int32 limit,
+            [in] ClassID* kind,
+            [out] Int32* ret);
+    }
+
+    }//namespace Text
+    }//namespace Droid
+    }//namespace Elastos
+}

@@ -10,14 +10,18 @@ module
 
     /**
      * This is the class for text whose content and markup can both be changed.
-     */
-    /**
+     *
      * @Involve
+     * interface IGraphicsOperations
+     * interface IAppendable
      * interface IEditable
+     * interface ISpanned
+     * interface ISpannable
+     * interface IGetChars
+     * interface ICharSequence
      */
     [deprecated]
     interface ISpannableStringBuilder {
-
         /**
          * Return a String containing a copy of the chars in this buffer, limited to the
          * [start, end[ range.
@@ -52,26 +56,10 @@ module
             [in] Int32 end,
             [in] Int32 contextStart,
             [in] Int32 contextEnd,
-            [in] Int32 flags,
+            [in] Boolean isRtl,
             [in] ArrayOf<Float>* advances,
             [in] Int32 advancesPos,
             [in] IPaint* p,
-            [out] Float* result);
-
-        /**
-         * Don't call this yourself -- exists for Paint to use internally.
-         * {@hide}
-         */
-        GetTextRunAdvances(
-            [in] Int32 start,
-            [in] Int32 end,
-            [in] Int32 contextStart,
-            [in] Int32 contextEnd,
-            [in] Int32 flags,
-            [in] ArrayOf<Float>* advances,
-            [in] Int32 advancesPos,
-            [in] IPaint* p,
-            [in] Int32 reserved,
             [out] Float* result);
 
         /**
@@ -90,7 +78,7 @@ module
          *
          * @param contextStart the start index of the context
          * @param contextEnd the (non-inclusive) end index of the context
-         * @param flags either DIRECTION_RTL or DIRECTION_LTR
+         * @param dir either DIRECTION_RTL or DIRECTION_LTR
          * @param offset the cursor position to move from
          * @param cursorOpt how to move the cursor, one of CURSOR_AFTER,
          * CURSOR_AT_OR_AFTER, CURSOR_BEFORE,

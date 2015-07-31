@@ -1,6 +1,6 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -9,22 +9,38 @@ module
 
     /**
      * @Involve
+     * interface IParcelable
+     * interface IParcelableSpan
+     * interface IUpdateAppearance
+     * interface IUpdateLayout
+     * interface ICharacterStyle
      * interface IMetricAffectingSpan
      */
-    interface IRelativeSizeSpan /*implements IParcelableSpan*/ {
+    interface IRelativeSizeSpan {
         GetSizeChange(
             [out] Float* ret);
     }
 
     /**
      * @Involve
+     * interface ICharacterStyleHelper
      * interface IMetricAffectingSpanHelper
      */
-    interface IRelativeSizeSpanHelper {}
+    interface IRelativeSizeSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
+    }
 
     }//namespace Style
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

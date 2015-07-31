@@ -9,8 +9,12 @@ module
      * This transformation method causes any newline characters (\n) to be
      * displayed as spaces instead of causing line breaks, and causes
      * carriage return characters (\r) to have no appearance.
+     *
+     * @Involve
+     * interface ITransformationMethod
+     * interface IReplacementTransformationMethod
      */
-    interface ISingleLineTransformationMethod /*extends ReplacementTransformationMethod*/ {}
+    interface ISingleLineTransformationMethod {}
 
     interface ISingleLineTransformationMethodHelper {
         GetInstance(
@@ -21,5 +25,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }
