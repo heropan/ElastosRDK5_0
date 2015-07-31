@@ -9,6 +9,15 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * Represents an icon that can be used as a mouse pointer.
+     * <p>
+     * Pointer icons can be provided either by the system using system styles,
+     * or by applications using bitmaps or application resources.
+     * </p>
+     *
+     * @hide
+     */
     [local, parcelable]
     interface IPointerIcon {
         /** Style constant: Custom icon with a user-supplied bitmap. */

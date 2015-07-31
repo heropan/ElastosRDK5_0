@@ -2,8 +2,10 @@
 module
 {
     interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IMenuItem;
+    interface Elastos.Droid.View.IMenuInflater;
 
     namespace Elastos {
     namespace Droid {

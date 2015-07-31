@@ -1,78 +1,12 @@
 
 module
 {
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Content.Res.ICompatibilityInfoTranslator;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ICanvas;
-    interface Elastos.Droid.Graphics.IRegion;
-    interface Elastos.Droid.Graphics.IBitmap;
-
 
     namespace Elastos {
     namespace Droid {
     namespace View {
-        /**
-         * Describes the properties of a physical display known to surface flinger.
-         * @hide
-         */
-        interface IPhysicalDisplayInfo {
-            Equals(
-                [in] IPhysicalDisplayInfo* other,
-                [out] Boolean* equals);
-
-            Equals(
-                [in] IInterface* other,
-                [out] Boolean* equals);
-
-            GetHashCode(
-                [out] Int32* hash);
-
-            CopyFrom(
-                [in] IPhysicalDisplayInfo* other);
-
-            GetWidth(
-                [out] Int32* width);
-
-            SetWidth(
-                [in] Int32 width);
-
-            GetHeight(
-                [out] Int32* height);
-
-            SetHeight(
-                [in] Int32 height);
-
-            GetRefreshRate(
-                [out] Float* refreshRate);
-
-            SetRefreshRate(
-                [in] Float refreshRate);
-
-            GetDensity(
-                [out] Float* density);
-
-            SetDensity(
-                [in] Float density);
-
-            GetXDpi(
-                [out] Float* xDpi);
-
-            SetXDpi(
-                [in] Float xDpi);
-
-            GetYDpi(
-                [out] Float* yDpi);
-
-            SetYDpi(
-                [in] Float yDpi);
-
-            GetSecure(
-                [out] Boolean* secure);
-
-            SetSecure(
-                [in] Boolean secure);
-        }
 
         /**
          * Handle onto a raw buffer that is being managed by the screen compositor.
@@ -97,145 +31,6 @@ module
              * Rotation constant: 270 degree rotation.
              */
             const Int32 ROTATION_270     = 3;
-
-            /* built-in physical display ids (keep in sync with ISurfaceComposer.h)
-             * these are different from the logical display ids used elsewhere in the framework */
-
-            /**
-             * Built-in physical display id: Main display.
-             * Use only with {@link #getBuiltInDisplay()}.
-             * @hide
-             */
-            const Int32 BUILT_IN_DISPLAY_ID_MAIN = 0;
-
-            /**
-             * Built-in physical display id: Attached HDMI display.
-             * Use only with {@link #getBuiltInDisplay()}.
-             * @hide
-             */
-            const Int32 BUILT_IN_DISPLAY_ID_HDMI = 1;
-
-            /* flags used in constructor (keep in sync with ISurfaceComposerClient.h) */
-
-            /**
-             * Surface creation flag: Surface is created hidden
-             * @hide */
-            const Int32 HIDDEN = 0x00000004;
-
-            /** The surface is to be used by hardware accelerators or DMA engines
-             * @deprecated this is ignored, this value is set automatically when needed.
-             */
-            // @Deprecated
-            const Int32 HARDWARE = 0x00000010;
-
-            /** Implies "HARDWARE", the surface is to be used by the GPU
-             * additionally the backbuffer is never preserved for these
-             * surfaces.
-             * @deprecated this is ignored, this value is set automatically when needed.
-             */
-            // @Deprecated
-            const Int32 GPU = 0x00000028;
-
-            /**
-             * Surface creation flag: The surface contains secure content, special
-             * measures will be taken to disallow the surface's content to be copied
-             * from another process. In particular, screenshots and VNC servers will
-             * be disabled, but other measures can take place, for instance the
-             * surface might not be hardware accelerated.
-             * @hide
-             */
-            const Int32 SECURE = 0x00000080;
-
-            /**
-             * Surface creation flag: Creates a surface where color components are interpreted
-             * as "non pre-multiplied" by their alpha channel. Of course this flag is
-             * meaningless for surfaces without an alpha channel. By default
-             * surfaces are pre-multiplied, which means that each color component is
-             * already multiplied by its alpha value. In this case the blending
-             * equation used is:
-             *
-             *    DEST = SRC + DEST * (1-SRC_ALPHA)
-             *
-             * By contrast, non pre-multiplied surfaces use the following equation:
-             *
-             *    DEST = SRC * SRC_ALPHA * DEST * (1-SRC_ALPHA)
-             *
-             * pre-multiplied surfaces must always be used if transparent pixels are
-             * composited on top of each-other into the surface. A pre-multiplied
-             * surface can never lower the value of the alpha component of a given
-             * pixel.
-             *
-             * In some rare situations, a non pre-multiplied surface is preferable.
-             * @hide
-             */
-            const Int32 NON_PREMULTIPLIED = 0x00000100;
-
-            /**
-             * Surface creation flag: Indicates that the surface must be considered opaque,
-             * even if its pixel format is set to translucent. This can be useful if an
-             * application needs full RGBA 8888 support for instance but will
-             * still draw every pixel opaque.
-             * @hide
-             */
-            const Int32 OPAQUE = 0x00000400;
-
-            /**
-             * Surface creation flag: Application requires a hardware-protected path to an
-             * external display sink. If a hardware-protected path is not available,
-             * then this surface will not be displayed on the external sink.
-             * @hide
-             */
-            const Int32 PROTECTED_APP = 0x00000800;
-
-
-            // 0x1000 is reserved for an independent DRM protected flag in framework
-
-            /**
-             * Surface creation flag: Creates a normal surface.
-             * This is the default.
-             * @hide
-             */
-            const Int32 FX_SURFACE_NORMAL = 0x00000000;
-
-            /**
-             * Surface creation flag: Creates a Blur surface.
-             * Everything behind this surface is blurred by some amount.
-             * The quality and refresh speed of the blur effect is not settable or guaranteed.
-             * It is an error to lock a Blur surface, since it doesn't have a backing store.
-             * @hide
-             * @deprecated
-             */
-            const Int32 FX_SURFACE_BLUR = 0x00010000;
-
-            /**
-             * Surface creation flag: Creates a Dim surface.
-             * Everything behind this surface is dimmed by the amount specified
-             * in {@link #setAlpha}.  It is an error to lock a Dim surface, since it
-             * doesn't have a backing store.
-             * @hide
-             */
-            const Int32 FX_SURFACE_DIM = 0x00020000;
-
-            /**
-             * @hide
-             */
-            const Int32 FX_SURFACE_SCREENSHOT = 0x00030000;
-
-            /**
-             * Mask used for FX values above.
-             * @hide
-             */
-            const Int32 FX_SURFACE_MASK = 0x000F0000;
-
-            /* flags used with setFlags() (keep in sync with ISurfaceComposer.h) */
-
-            /**
-             * Surface flag: Hide the surface.
-             * Equivalent to calling hide().
-             * @hide
-             */
-            const Int32 SURFACE_HIDDEN = 0x01;
-
 
 
             /**
@@ -317,51 +112,6 @@ module
                 [in] ICanvas * canvas);
 
             /**
-             * set surface parameters.
-             * needs to be inside open/closeTransaction block
-             */
-            SetLayer(
-                [in] Int32 zorder);
-
-            SetPosition(
-                [in] Float x,
-                [in] Float y);
-
-            SetSize(
-                [in] Int32 w,
-                [in] Int32 h);
-
-            GetWidth(
-                [out] Int32* w);
-
-            GetHeight(
-                [out] Int32* h);
-
-            Hide();
-
-            Show();
-
-            SetTransparentRegionHint(
-                [in] IRegion * region);
-
-            SetAlpha(
-                [in] Float alpha);
-
-            SetMatrix(
-                [in] Float dsdx,
-                [in] Float dtdx,
-                [in] Float dsdy,
-                [in] Float dtdy);
-
-            /** @hide */
-            SetWindowCrop(
-                [in] IRect* crop);
-
-            /** @hide */
-            SetLayerStack(
-                [in] Int32 layerStack);
-
-            /**
              * Copy another surface to this one.  This surface now holds a reference
              * to the same data as the original surface, and is -not- the owner.
              * This is for use by the window manager when returning a window surface
@@ -384,114 +134,19 @@ module
             TransferFrom(
                 [in] ISurface* other);
 
-            SetFlags(
-                [in] Int32 flags,
-                [in] Int32 mask);
+            /**
+             * Allocate buffers ahead of time to avoid allocation delays during rendering
+             * @hide
+             */
+            AllocateBuffers();
 
-            GetSurface(
-                [out] Handle32* surface);
-
-            SetSurface(
-                [in] Handle32 surface);
-
-            SetCompatibilityTranslator(
-                [in] ICompatibilityInfoTranslator* translator);
-
-            GetCanvas(
-                [out] ICanvas** canvas);
-
-            GetCanvasSaveCount(
-                [out] Int32* count);
-
-            GetNativeSurfaceControl(
-                [out] Handle32* surfaceControl);
         }
 
         interface ISurfaceHelper {
-            /**
-             * Like {@link #screenshot(int, int, int, int)} but includes all
-             * Surfaces in the screenshot.
-             *
-             * @hide
-             */
-            Screenshot(
-                [in] Int32 width,
-                [in] Int32 height,
-                [out] IBitmap** bitmap);
+            RotationToString(
+                [in] Int32 rotation,
+                [out] String* str);
 
-            /**
-             * Copy the current screen contents into a bitmap and return it.
-             *
-             * @param width The desired width of the returned bitmap; the raw
-             * screen will be scaled down to this size.
-             * @param height The desired height of the returned bitmap; the raw
-             * screen will be scaled down to this size.
-             * @param minLayer The lowest (bottom-most Z order) surface layer to
-             * include in the screenshot.
-             * @param maxLayer The highest (top-most Z order) surface layer to
-             * include in the screenshot.
-             * @return Returns a Bitmap containing the screen contents, or null
-             * if an error occurs.
-             *
-             * @hide
-             */
-            Screenshot(
-                [in] Int32 width,
-                [in] Int32 height,
-                [in] Int32 minLayer,
-                [in] Int32 maxLayer,
-                [out] IBitmap** bitmap);
-
-            /** start a transaction @hide */
-            OpenTransaction();
-
-            /** end a transaction @hide */
-            CloseTransaction();
-
-            /** flag the transaction as an animation @hide */
-            SetAnimationTransaction();
-
-            /** @hide */
-            GetBuiltInDisplay(
-                [in] Int32 builtInDisplayId,
-                [out] IBinder** binder);
-
-            /** @hide */
-            CreateDisplay(
-                [in] String name,
-                [in] Boolean secure,
-                [out] IBinder** binder);
-
-            /** @hide */
-            SetDisplaySurface(
-                [in] IBinder* displayToken,
-                [in] ISurface* surface);
-
-            /** @hide */
-            SetDisplayLayerStack(
-                [in] IBinder* displayToken,
-                [in] Int32 layerStack);
-
-            /** @hide */
-            SetDisplayProjection(
-                [in] IBinder* displayToken,
-                [in] Int32 orientation,
-                [in] IRect* layerStackRect,
-                [in] IRect* displayRect);
-
-            /** @hide */
-            GetDisplayInfo(
-                [in] IBinder* displayToken,
-                [in] IPhysicalDisplayInfo* outInfo,
-                [out] Boolean* result);
-
-            /** @hide */
-            BlankDisplay(
-                [in] IBinder* displayToken);
-
-            /** @hide */
-            UnblankDisplay(
-                [in] IBinder* displayToken);
         }
     } // namespace View
     } // namepsace Droid

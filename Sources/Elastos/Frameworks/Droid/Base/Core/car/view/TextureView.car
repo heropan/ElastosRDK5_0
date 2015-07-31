@@ -5,6 +5,7 @@ module
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.ICanvas;
     interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos {
     namespace Droid {
@@ -194,6 +195,29 @@ module
          * @see #unlockCanvasAndPost(android.graphics.Canvas)
          */
         LockCanvas(
+            [out] ICanvas** canvas);
+
+        /**
+         * Just like {@link #lockCanvas()} but allows specification of a dirty
+         * rectangle. Every pixel within that rectangle must be written; however
+         * pixels outside the dirty rectangle will be preserved by the next call
+         * to lockCanvas().
+         *
+         * This method can return null if the underlying surface texture is not
+         * available (see {@link #isAvailable()} or if the surface texture is
+         * already connected to an image producer (for instance: the camera,
+         * OpenGL, a media player, etc.)
+         *
+         * @param dirty Area of the surface that will be modified.
+
+         * @return A Canvas used to draw into the surface.
+         *
+         * @see #lockCanvas()
+         * @see #unlockCanvasAndPost(android.graphics.Canvas)
+         * @see #isAvailable()
+         */
+        LockCanvas(
+            [in] IRect* rect,
             [out] ICanvas** canvas);
 
         /**

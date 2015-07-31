@@ -1,30 +1,33 @@
 
 module
 {
-    enum Elastos.Droid.Graphics.BitmapConfig;
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IRunnable;
-    using interface Elastos.Utility.IObjectInt32Map;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IArrayList;
+    using interface Elastos.Utility.IMap;
+
+    enum Elastos.Droid.Graphics.BitmapConfig;
+    enum Elastos.Droid.Graphics.PorterDuffMode;
+
     interface Elastos.Droid.Content.IClipData;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Res.IResources;
     interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.Content.Res.IColorStateList;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.ICanvas;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Graphics.IPaint;
     interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IRegion;
     interface Elastos.Droid.Graphics.IInsets;
     interface Elastos.Droid.Graphics.IMatrix;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IHandler;
-    interface Elastos.Droid.View.Animation.IAnimation;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeProvider;
+    interface Elastos.Droid.View.IWindowInsets;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.ITouchDelegate;
     interface Elastos.Droid.View.IDispatcherState;
@@ -33,13 +36,148 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewTreeObserver;
     interface Elastos.Droid.View.IViewPropertyAnimator;
+    interface Elastos.Droid.View.IViewOverlay;
+    interface Elastos.Droid.View.IWindowId;
+    interface Elastos.Droid.View.IViewOutlineProvider;
+    interface Elastos.Droid.View.Animation.IAnimation;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeProvider;
     interface Elastos.Droid.View.InputMethod.IEditorInfo;
     interface Elastos.Droid.View.InputMethod.IInputConnection;
+    interface Elastos.Droid.Animation.IStateListAnimator;
     interface Elastos.Droid.Internal.Utility.IPredicate;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
+
+        /**
+         * Interface definition for a callback to be invoked when the layout bounds of a view
+         * changes due to layout processing.
+         */
+        interface IViewOnLayoutChangeListener {
+            /**
+             * Called when the focus state of a view has changed.
+             *
+             * @param v The view whose state has changed.
+             * @param left The new value of the view's left property.
+             * @param top The new value of the view's top property.
+             * @param right The new value of the view's right property.
+             * @param bottom The new value of the view's bottom property.
+             * @param oldLeft The previous value of the view's left property.
+             * @param oldTop The previous value of the view's top property.
+             * @param oldRight The previous value of the view's right property.
+             * @param oldBottom The previous value of the view's bottom property.
+             */
+            OnLayoutChange(
+                [in] IView* v,
+                [in] Int32 left,
+                [in] Int32 top,
+                [in] Int32 right,
+                [in] Int32 bottom,
+                [in] Int32 oldLeft,
+                [in] Int32 oldTop,
+                [in] Int32 oldRight,
+                [in] Int32 oldBottom);
+        }
+
+        /**
+         * Creates an image that the system displays during the drag and drop
+         * operation. This is called a &quot;drag shadow&quot;. The default implementation
+         * for a DragShadowBuilder based on a View returns an image that has exactly the same
+         * appearance as the given View. The default also positions the center of the drag shadow
+         * directly under the touch point. If no View is provided (the constructor with no parameters
+         * is used), and {@link #onProvideShadowMetrics(Point,Point) onProvideShadowMetrics()} and
+         * {@link #onDrawShadow(Canvas) onDrawShadow()} are not overriden, then the
+         * default is an invisible drag shadow.
+         * <p>
+         * You are not required to use the View you provide to the constructor as the basis of the
+         * drag shadow. The {@link #onDrawShadow(Canvas) onDrawShadow()} method allows you to draw
+         * anything you want as the drag shadow.
+         * </p>
+         * <p>
+         *  You pass a DragShadowBuilder object to the system when you start the drag. The system
+         *  calls {@link #onProvideShadowMetrics(Point,Point) onProvideShadowMetrics()} to get the
+         *  size and position of the drag shadow. It uses this data to construct a
+         *  {@link android.graphics.Canvas} object, then it calls {@link #onDrawShadow(Canvas) onDrawShadow()}
+         *  so that your application can draw the shadow image in the Canvas.
+         * </p>
+         *
+         * <div class="special reference">
+         * <h3>Developer Guides</h3>
+         * <p>For a guide to implementing drag and drop features, read the
+         * <a href="{@docRoot}guide/topics/ui/drag-drop.html">Drag and Drop</a> developer guide.</p>
+         * </div>
+         */
+        interface IDragShadowBuilder
+        {
+            /**
+             * Returns the View object that had been passed to the
+             * {@link #View.DragShadowBuilder(View)}
+             * constructor.  If that View parameter was {@code null} or if the
+             * {@link #View.DragShadowBuilder()}
+             * constructor was used to instantiate the builder object, this method will return
+             * null.
+             *
+             * @return The View object associate with this builder object.
+             */
+            //@SuppressWarnings({"JavadocReference"})
+            GetView(
+                [out] IView** view);
+
+            /**
+             * Provides the metrics for the shadow image. These include the dimensions of
+             * the shadow image, and the point within that shadow that should
+             * be centered under the touch location while dragging.
+             * <p>
+             * The default implementation sets the dimensions of the shadow to be the
+             * same as the dimensions of the View itself and centers the shadow under
+             * the touch point.
+             * </p>
+             *
+             * @param shadowSize A {@link android.graphics.Point} containing the width and height
+             * of the shadow image. Your application must set {@link android.graphics.Point#x} to the
+             * desired width and must set {@link android.graphics.Point#y} to the desired height of the
+             * image.
+             *
+             * @param shadowTouchPoint A {@link android.graphics.Point} for the position within the
+             * shadow image that should be underneath the touch point during the drag and drop
+             * operation. Your application must set {@link android.graphics.Point#x} to the
+             * X coordinate and {@link android.graphics.Point#y} to the Y coordinate of this position.
+             */
+            OnProvideShadowMetrics(
+                [in] IPoint* shadowSize,
+                [in] IPoint* shadowTouchPoint);
+
+            /**
+             * Draws the shadow image. The system creates the {@link android.graphics.Canvas} object
+             * based on the dimensions it received from the
+             * {@link #onProvideShadowMetrics(Point, Point)} callback.
+             *
+             * @param canvas A {@link android.graphics.Canvas} object in which to draw the shadow image.
+             */
+            OnDrawShadow(
+                [in] ICanvas* canvas);
+        }
+
+        /**
+         * Interface definition for a callback to be invoked when a view has been clicked and held.
+         */
+        interface IViewOnLongClickListener {
+            /**
+             * Called when a view has been clicked and held.
+             *
+             * @param v The view that was clicked and held.
+             *
+             * @return true if the callback consumed the long click, false otherwise.
+             */
+            OnLongClick(
+                [in] IView* v,
+                [out] Boolean* result);
+        }
+
+
         /**
          * Interface definition for a callback to be invoked when a hardware key event is
          * dispatched to this view. The callback will be invoked before the key event is
@@ -162,85 +300,6 @@ module
         }
 
         /**
-         * Creates an image that the system displays during the drag and drop
-         * operation. This is called a &quot;drag shadow&quot;. The default implementation
-         * for a DragShadowBuilder based on a View returns an image that has exactly the same
-         * appearance as the given View. The default also positions the center of the drag shadow
-         * directly under the touch point. If no View is provided (the constructor with no parameters
-         * is used), and {@link #onProvideShadowMetrics(Point,Point) onProvideShadowMetrics()} and
-         * {@link #onDrawShadow(Canvas) onDrawShadow()} are not overriden, then the
-         * default is an invisible drag shadow.
-         * <p>
-         * You are not required to use the View you provide to the constructor as the basis of the
-         * drag shadow. The {@link #onDrawShadow(Canvas) onDrawShadow()} method allows you to draw
-         * anything you want as the drag shadow.
-         * </p>
-         * <p>
-         *  You pass a DragShadowBuilder object to the system when you start the drag. The system
-         *  calls {@link #onProvideShadowMetrics(Point,Point) onProvideShadowMetrics()} to get the
-         *  size and position of the drag shadow. It uses this data to construct a
-         *  {@link android.graphics.Canvas} object, then it calls {@link #onDrawShadow(Canvas) onDrawShadow()}
-         *  so that your application can draw the shadow image in the Canvas.
-         * </p>
-         *
-         * <div class="special reference">
-         * <h3>Developer Guides</h3>
-         * <p>For a guide to implementing drag and drop features, read the
-         * <a href="{@docRoot}guide/topics/ui/drag-drop.html">Drag and Drop</a> developer guide.</p>
-         * </div>
-         */
-        interface IDragShadowBuilder
-        {
-            /**
-             * Returns the View object that had been passed to the
-             * {@link #View.DragShadowBuilder(View)}
-             * constructor.  If that View parameter was {@code null} or if the
-             * {@link #View.DragShadowBuilder()}
-             * constructor was used to instantiate the builder object, this method will return
-             * null.
-             *
-             * @return The View object associate with this builder object.
-             */
-            //@SuppressWarnings({"JavadocReference"})
-            GetView(
-                [out] IView** view);
-
-            /**
-             * Provides the metrics for the shadow image. These include the dimensions of
-             * the shadow image, and the point within that shadow that should
-             * be centered under the touch location while dragging.
-             * <p>
-             * The default implementation sets the dimensions of the shadow to be the
-             * same as the dimensions of the View itself and centers the shadow under
-             * the touch point.
-             * </p>
-             *
-             * @param shadowSize A {@link android.graphics.Point} containing the width and height
-             * of the shadow image. Your application must set {@link android.graphics.Point#x} to the
-             * desired width and must set {@link android.graphics.Point#y} to the desired height of the
-             * image.
-             *
-             * @param shadowTouchPoint A {@link android.graphics.Point} for the position within the
-             * shadow image that should be underneath the touch point during the drag and drop
-             * operation. Your application must set {@link android.graphics.Point#x} to the
-             * X coordinate and {@link android.graphics.Point#y} to the Y coordinate of this position.
-             */
-            OnProvideShadowMetrics(
-                [in] IPoint* shadowSize,
-                [in] IPoint* shadowTouchPoint);
-
-            /**
-             * Draws the shadow image. The system creates the {@link android.graphics.Canvas} object
-             * based on the dimensions it received from the
-             * {@link #onProvideShadowMetrics(Point, Point)} callback.
-             *
-             * @param canvas A {@link android.graphics.Canvas} object in which to draw the shadow image.
-             */
-            OnDrawShadow(
-                [in] ICanvas* canvas);
-        }
-
-        /**
          * Interface definition for a callback to be invoked when the focus state of
          * a view changed.
          */
@@ -257,36 +316,6 @@ module
         }
 
         /**
-         * Interface definition for a callback to be invoked when the layout bounds of a view
-         * changes due to layout processing.
-         */
-        interface IViewOnLayoutChangeListener {
-            /**
-             * Called when the focus state of a view has changed.
-             *
-             * @param v The view whose state has changed.
-             * @param left The new value of the view's left property.
-             * @param top The new value of the view's top property.
-             * @param right The new value of the view's right property.
-             * @param bottom The new value of the view's bottom property.
-             * @param oldLeft The previous value of the view's left property.
-             * @param oldTop The previous value of the view's top property.
-             * @param oldRight The previous value of the view's right property.
-             * @param oldBottom The previous value of the view's bottom property.
-             */
-            OnLayoutChange(
-                [in] IView* v,
-                [in] Int32 left,
-                [in] Int32 top,
-                [in] Int32 right,
-                [in] Int32 bottom,
-                [in] Int32 oldLeft,
-                [in] Int32 oldTop,
-                [in] Int32 oldRight,
-                [in] Int32 oldBottom);
-        }
-
-        /**
          * Interface definition for a callback to be invoked when a view is clicked.
          */
         interface IViewOnClickListener {
@@ -297,22 +326,6 @@ module
              */
             OnClick(
                 [in] IView* v);
-        }
-
-        /**
-         * Interface definition for a callback to be invoked when a view has been clicked and held.
-         */
-        interface IViewOnLongClickListener {
-            /**
-             * Called when a view has been clicked and held.
-             *
-             * @param v The view that was clicked and held.
-             *
-             * @return true if the callback consumed the long click, false otherwise.
-             */
-            OnLongClick(
-                [in] IView* v,
-                [out] Boolean* result);
         }
 
         /**
@@ -375,6 +388,34 @@ module
              */
             OnViewDetachedFromWindow(
                 [in] IView* v);
+        }
+
+        /**
+         * Listener for applying window insets on a view in a custom way.
+         *
+         * <p>Apps may choose to implement this interface if they want to apply custom policy
+         * to the way that window insets are treated for a view. If an OnApplyWindowInsetsListener
+         * is set, its
+         * {@link OnApplyWindowInsetsListener#onApplyWindowInsets(View, WindowInsets) onApplyWindowInsets}
+         * method will be called instead of the View's own
+         * {@link #onApplyWindowInsets(WindowInsets) onApplyWindowInsets} method. The listener
+         * may optionally call the parameter View's <code>onApplyWindowInsets</code> method to apply
+         * the View's normal behavior as part of its own.</p>
+         */
+        interface IViewOnApplyWindowInsetsListener {
+            /**
+             * When {@link View#setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener) set}
+             * on a View, this listener method will be called instead of the view's own
+             * {@link View#onApplyWindowInsets(WindowInsets) onApplyWindowInsets} method.
+             *
+             * @param v The view applying window insets
+             * @param insets The insets to apply
+             * @return The insets supplied, minus any insets that were consumed
+             */
+            OnApplyWindowInsets(
+                [in] IView* v,
+                [in] IWindowInsets* insets,
+                [out] IWindowInsets** result);
         }
 
         /**
@@ -572,7 +613,7 @@ module
                 [out] IAccessibilityNodeProvider** anp);
         }
 
-        [local]
+        [local, deprecated]
         interface IView {
             /**
              * When set to true, apps will draw debugging information about their layouts.
@@ -867,6 +908,37 @@ module
             const Int32 IMPORTANT_FOR_ACCESSIBILITY_NO = 0x00000002;
 
             /**
+             * The view is not important for accessibility, nor are any of its
+             * descendant views.
+             */
+            const Int32 IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS = 0x00000004;
+
+            /**
+             * Live region mode specifying that accessibility services should not
+             * automatically announce changes to this view. This is the default live
+             * region mode for most views.
+             * <p>
+             * Use with {@link #setAccessibilityLiveRegion(int)}.
+             */
+            const Int32 ACCESSIBILITY_LIVE_REGION_NONE = 0x00000000;
+
+            /**
+             * Live region mode specifying that accessibility services should announce
+             * changes to this view.
+             * <p>
+             * Use with {@link #setAccessibilityLiveRegion(int)}.
+             */
+            const Int32 ACCESSIBILITY_LIVE_REGION_POLITE = 0x00000001;
+
+            /**
+             * Live region mode specifying that accessibility services should interrupt
+             * ongoing speech to immediately announce changes to this view.
+             * <p>
+             * Use with {@link #setAccessibilityLiveRegion(int)}.
+             */
+            const Int32 ACCESSIBILITY_LIVE_REGION_ASSERTIVE = 0x00000002;
+
+            /**
              * Always allow a user to over-scroll this view, provided it is a
              * view that can scroll.
              *
@@ -1029,6 +1101,34 @@ module
             const Int32 SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN = 0x00000400;
 
             /**
+             * Flag for {@link #setSystemUiVisibility(int)}: View would like to remain interactive when
+             * hiding the navigation bar with {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION}.  If this flag is
+             * not set, {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION} will be force cleared by the system on any
+             * user interaction.
+             * <p>Since this flag is a modifier for {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION}, it only
+             * has an effect when used in combination with that flag.</p>
+             */
+            const Int32 SYSTEM_UI_FLAG_IMMERSIVE = 0x00000800;
+
+            /**
+             * Flag for {@link #setSystemUiVisibility(int)}: View would like to remain interactive when
+             * hiding the status bar with {@link #SYSTEM_UI_FLAG_FULLSCREEN} and/or hiding the navigation
+             * bar with {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION}.  Use this flag to create an immersive
+             * experience while also hiding the system bars.  If this flag is not set,
+             * {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION} will be force cleared by the system on any user
+             * interaction, and {@link #SYSTEM_UI_FLAG_FULLSCREEN} will be force-cleared by the system
+             * if the user swipes from the top of the screen.
+             * <p>When system bars are hidden in immersive mode, they can be revealed temporarily with
+             * system gestures, such as swiping from the top of the screen.  These transient system bars
+             * will overlay app’s content, may have some degree of transparency, and will automatically
+             * hide after a short timeout.
+             * </p><p>Since this flag is a modifier for {@link #SYSTEM_UI_FLAG_FULLSCREEN} and
+             * {@link #SYSTEM_UI_FLAG_HIDE_NAVIGATION}, it only has an effect when used in combination
+             * with one or both of those flags.</p>
+             */
+            const Int32 SYSTEM_UI_FLAG_IMMERSIVE_STICKY = 0x00001000;
+
+            /**
              * @deprecated Use {@link #SYSTEM_UI_FLAG_LOW_PROFILE} instead.
              */
             const Int32 STATUS_BAR_HIDDEN = SYSTEM_UI_FLAG_LOW_PROFILE;
@@ -1149,6 +1249,80 @@ module
 
             /**
              * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the status bar is displayed in transient mode.
+             */
+            const Int32 STATUS_BAR_TRANSIENT = 0x04000000;
+
+            /**
+             * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the navigation bar is displayed in transient mode.
+             */
+            const Int32 NAVIGATION_BAR_TRANSIENT = 0x08000000;
+
+            /**
+             * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the hidden status bar would like to be shown.
+             */
+            const Int32 STATUS_BAR_UNHIDE = 0x10000000;
+
+            /**
+             * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the hidden navigation bar would like to be shown.
+             */
+            const Int32 NAVIGATION_BAR_UNHIDE = 0x20000000;
+
+            /**
+             * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the status bar is displayed in translucent mode.
+             */
+            const Int32 STATUS_BAR_TRANSLUCENT = 0x40000000;
+
+            /**
+             * @hide
+             *
+             * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
+             * out of the public fields to keep the undefined bits out of the developer's way.
+             *
+             * Flag to specify that the navigation bar is displayed in translucent mode.
+             */
+            const Int32 NAVIGATION_BAR_TRANSLUCENT = 0x80000000;
+
+            /**
+             * @hide
+             *
+             * Whether Recents is visible or not.
+             */
+            const Int32 RECENT_APPS_VISIBLE = 0x00004000;
+
+            /**
+             * @hide
+             *
+             * Makes system ui transparent.
+             */
+            const Int32 SYSTEM_UI_TRANSPARENT = 0x00008000;
+
+            /**
+             * @hide
              */
             const Int32 PUBLIC_STATUS_BAR_VISIBILITY_MASK = 0x0000FFFF;
 
@@ -1199,6 +1373,13 @@ module
             const Int32 FIND_VIEWS_WITH_ACCESSIBILITY_NODE_PROVIDERS = 0x00000004;
 
             /**
+             * The undefined cursor position.
+             *
+             * @hide
+             */
+            const Int32 ACCESSIBILITY_CURSOR_POSITION_UNDEFINED = -1;
+
+            /**
              * Indicates that the screen has changed state and is now off.
              *
              * @see #onScreenStateChanged(int)
@@ -1211,6 +1392,21 @@ module
              * @see #onScreenStateChanged(int)
              */
             const Int32 SCREEN_STATE_ON = 0x1;
+
+            /**
+             * Indicates no axis of view scrolling.
+             */
+            const Int32 SCROLL_AXIS_NONE = 0;
+
+            /**
+             * Indicates scrolling along the horizontal axis.
+             */
+            const Int32 SCROLL_AXIS_HORIZONTAL = 1 << 0;
+
+            /**
+             * Indicates scrolling along the vertical axis.
+             */
+            const Int32 SCROLL_AXIS_VERTICAL = 1 << 1;
 
             /**
              * Flag indicating that a drag can cross window boundaries.  When
@@ -1574,6 +1770,16 @@ module
                 [in] IViewOnDragListener* l);
 
             /**
+             * Populates <code>outRect</code> with the hotspot bounds. By default,
+             * the hotspot bounds are identical to the screen bounds.
+             *
+             * @param outRect rect to populate with hotspot bounds
+             * @hide Only for internal use by views and widgets.
+             */
+            GetHotspotBounds(
+                [in] IRect* outRect);
+
+            /**
              * Request that a rectangle of this view be visible on the screen,
              * scrolling if necessary just enough.
              *
@@ -1646,6 +1852,36 @@ module
                 [out] Boolean* hasFocusable);
 
             /**
+             * Sends an accessibility event of the given type. If accessibility is
+             * not enabled this method has no effect. The default implementation calls
+             * {@link #onInitializeAccessibilityEvent(AccessibilityEvent)} first
+             * to populate information about the event source (this View), then calls
+             * {@link #dispatchPopulateAccessibilityEvent(AccessibilityEvent)} to
+             * populate the text content of the event source including its descendants,
+             * and last calls
+             * {@link ViewParent#requestSendAccessibilityEvent(View, AccessibilityEvent)}
+             * on its parent to resuest sending of the event to interested parties.
+             * <p>
+             * If an {@link AccessibilityDelegate} has been specified via calling
+             * {@link #setAccessibilityDelegate(AccessibilityDelegate)} its
+             * {@link AccessibilityDelegate#sendAccessibilityEvent(View, int)} is
+             * responsible for handling this call.
+             * </p>
+             *
+             * @param eventType The type of the event to send, as defined by several types from
+             * {@link android.view.accessibility.AccessibilityEvent}, such as
+             * {@link android.view.accessibility.AccessibilityEvent#TYPE_VIEW_CLICKED} or
+             * {@link android.view.accessibility.AccessibilityEvent#TYPE_VIEW_HOVER_ENTER}.
+             *
+             * @see #onInitializeAccessibilityEvent(AccessibilityEvent)
+             * @see #dispatchPopulateAccessibilityEvent(AccessibilityEvent)
+             * @see ViewParent#requestSendAccessibilityEvent(View, AccessibilityEvent)
+             * @see AccessibilityDelegate
+             */
+            SendAccessibilityEvent(
+                [in] Int32 eventType);
+
+            /**
              * Convenience method for sending a {@link AccessibilityEvent#TYPE_ANNOUNCEMENT}
              * {@link AccessibilityEvent} to make an announcement which is related to some
              * sort of a context change for which none of the events representing UI transitions
@@ -1656,6 +1892,24 @@ module
              */
             AnnounceForAccessibility(
                 [in] ICharSequence* text);
+
+            /**
+             * This method behaves exactly as {@link #sendAccessibilityEvent(int)} but
+             * takes as an argument an empty {@link AccessibilityEvent} and does not
+             * perform a check whether accessibility is enabled.
+             * <p>
+             * If an {@link AccessibilityDelegate} has been specified via calling
+             * {@link #setAccessibilityDelegate(AccessibilityDelegate)} its
+             * {@link AccessibilityDelegate#sendAccessibilityEventUnchecked(View, AccessibilityEvent)}
+             * is responsible for handling this call.
+             * </p>
+             *
+             * @param event The event to send.
+             *
+             * @see #sendAccessibilityEvent(int)
+             */
+            SendAccessibilityEventUnchecked(
+                [in] IAccessibilityEvent* event);
 
             /**
              * Dispatches an {@link AccessibilityEvent} to the {@link View} children
@@ -1784,6 +2038,9 @@ module
             OnInitializeAccessibilityNodeInfo(
                 [in] IAccessibilityNodeInfo* info);
 
+            GetBoundsOnScreen(
+                [in] IRect* outRect);
+
             /**
              * Returns the delegate for implementing accessibility support via
              * composition. For more details see {@link AccessibilityDelegate}.
@@ -1854,6 +2111,34 @@ module
                 [out] Int32* id);
 
             /**
+             * Gets the {@link View} description. It briefly describes the view and is
+             * primarily used for accessibility support. Set this property to enable
+             * better accessibility support for your application. This is especially
+             * true for views that do not have textual representation (For example,
+             * ImageButton).
+             *
+             * @return The content description.
+             *
+             * @attr ref android.R.styleable#View_contentDescription
+             */
+            GetContentDescription(
+                [out] ICharSequence** seq);
+
+            /**
+             * Sets the {@link View} description. It briefly describes the view and is
+             * primarily used for accessibility support. Set this property to enable
+             * better accessibility support for your application. This is especially
+             * true for views that do not have textual representation (For example,
+             * ImageButton).
+             *
+             * @param contentDescription The content description.
+             *
+             * @attr ref android.R.styleable#View_contentDescription
+             */
+            SetContentDescription(
+                [in] ICharSequence* seq);
+
+            /**
              * Gets the id of a view for which this view serves as a label for
              * accessibility purposes.
              *
@@ -1872,34 +2157,6 @@ module
             //@RemotableViewMethod
             SetLabelFor(
                 [in] Int32 id);
-
-            /**
-             * Gets the {@link View} description. It briefly describes the view and is
-             * primarily used for accessibility support. Set this property to enable
-             * better accessibility support for your application. This is especially
-             * true for views that do not have textual representation (For example,
-             * ImageButton).
-             *
-             * @return The content description.
-             *
-             * @attr ref android.R.styleable#Int32 contentDescription
-             */
-            GetContentDescription(
-                [out] ICharSequence** description);
-
-            /**
-             * Sets the {@link View} description. It briefly describes the view and is
-             * primarily used for accessibility support. Set this property to enable
-             * better accessibility support for your application. This is especially
-             * true for views that do not have textual representation (For example,
-             * ImageButton).
-             *
-             * @param contentDescription The content description.
-             *
-             * @attr ref android.R.styleable#Int32 contentDescription
-             */
-            SetContentDescription(
-                [in] ICharSequence* contentDescription);
 
             /**
              * Returns true if this view has focus
@@ -2104,6 +2361,86 @@ module
                 [out] Boolean* shown);
 
             /**
+             * Called when the view should apply {@link WindowInsets} according to its internal policy.
+             *
+             * <p>This method should be overridden by views that wish to apply a policy different from or
+             * in addition to the default behavior. Clients that wish to force a view subtree
+             * to apply insets should call {@link #dispatchApplyWindowInsets(WindowInsets)}.</p>
+             *
+             * <p>Clients may supply an {@link OnApplyWindowInsetsListener} to a view. If one is set
+             * it will be called during dispatch instead of this method. The listener may optionally
+             * call this method from its own implementation if it wishes to apply the view's default
+             * insets policy in addition to its own.</p>
+             *
+             * <p>Implementations of this method should either return the insets parameter unchanged
+             * or a new {@link WindowInsets} cloned from the supplied insets with any insets consumed
+             * that this view applied itself. This allows new inset types added in future platform
+             * versions to pass through existing implementations unchanged without being erroneously
+             * consumed.</p>
+             *
+             * <p>By default if a view's {@link #setFitsSystemWindows(boolean) fitsSystemWindows}
+             * property is set then the view will consume the system window insets and apply them
+             * as padding for the view.</p>
+             *
+             * @param insets Insets to apply
+             * @return The supplied insets with any applied insets consumed
+             */
+            OnApplyWindowInsets(
+                [in] IWindowInsets* insets);
+
+            /**
+             * Set an {@link OnApplyWindowInsetsListener} to take over the policy for applying
+             * window insets to this view. The listener's
+             * {@link OnApplyWindowInsetsListener#onApplyWindowInsets(View, WindowInsets) onApplyWindowInsets}
+             * method will be called instead of the view's
+             * {@link #onApplyWindowInsets(WindowInsets) onApplyWindowInsets} method.
+             *
+             * @param listener Listener to set
+             *
+             * @see #onApplyWindowInsets(WindowInsets)
+             */
+            SetOnApplyWindowInsetsListener(
+                [in] IViewOnApplyWindowInsetsListener* listener);
+
+            /**
+             * Request to apply the given window insets to this view or another view in its subtree.
+             *
+             * <p>This method should be called by clients wishing to apply insets corresponding to areas
+             * obscured by window decorations or overlays. This can include the status and navigation bars,
+             * action bars, input methods and more. New inset categories may be added in the future.
+             * The method returns the insets provided minus any that were applied by this view or its
+             * children.</p>
+             *
+             * <p>Clients wishing to provide custom behavior should override the
+             * {@link #onApplyWindowInsets(WindowInsets)} method or alternatively provide a
+             * {@link OnApplyWindowInsetsListener} via the
+             * {@link #setOnApplyWindowInsetsListener(View.OnApplyWindowInsetsListener) setOnApplyWindowInsetsListener}
+             * method.</p>
+             *
+             * <p>This method replaces the older {@link #fitSystemWindows(Rect) fitSystemWindows} method.
+             * </p>
+             *
+             * @param insets Insets to apply
+             * @return The provided insets minus the insets that were consumed
+             */
+            DispatchApplyWindowInsets(
+                [in] IWindowInsets* insets);
+
+            /**
+             * Compute insets that should be consumed by this view and the ones that should propagate
+             * to those under it.
+             *
+             * @param in Insets currently being processed by this View, likely received as a parameter
+             *           to {@link #onApplyWindowInsets(WindowInsets)}.
+             * @param outLocalInsets A Rect that will receive the insets that should be consumed
+             *                       by this view
+             * @return Insets that should be passed along to views under this one
+             */
+            ComputeSystemWindowInsets(
+                [in] IWindowInsets* insets,
+                [in] IRect* outLocalInsets);
+
+            /**
              * Sets whether or not this view should account for system screen decorations
              * such as the status bar and inset its content; that is, controlling whether
              * the default implementation of {@link #fitSystemWindows(Rect)} will be
@@ -2149,6 +2486,11 @@ module
              * Ask that a new dispatch of {@link #fitSystemWindows(Rect)} be performed.
              */
             RequestFitSystemWindows();
+
+            /**
+             * Ask that a new dispatch of {@link #onApplyWindowInsets(WindowInsets)} be performed.
+             */
+            RequestApplyInsets();
 
             /**
              * For use by PhoneWindow to make its own system window fitting optional.
@@ -2372,6 +2714,19 @@ module
              */
             SetHasTransientState(
                 [in] Boolean hasTransientState);
+
+            /**
+             * Returns true if this view is currently attached to a window.
+             */
+            IsAttachedToWindow(
+                [out] Boolean* result);
+
+            /**
+             * Returns true if this view has been through at least one layout since it
+             * was last attached to or detached from a window.
+             */
+            IsLaidOut(
+                [out] Boolean* result);
 
             /**
              * If this view doesn't do any drawing on its own, set this flag to
@@ -2633,7 +2988,7 @@ module
              */
             GetFocusables(
                 [in] Int32 direction,
-                [out] IObjectContainer** views);
+                [out] IArrayList** views);
 
             /**
              * Add any focusable views that are descendants of this view (possibly
@@ -2644,7 +2999,7 @@ module
              * @param direction The direction of the focus
              */
             AddFocusables(
-                [in] IObjectContainer* views,
+                [in] IArrayList* views,
                 [in] Int32 direction);
 
             /**
@@ -2664,7 +3019,7 @@ module
              * @see #FOCUSABLES_TOUCH_MODE
              */
             AddFocusables(
-                [in] IObjectContainer* views,
+                [in] IArrayList* views,
                 [in] Int32 direction,
                 [in] Int32 focusableMode);
 
@@ -2684,7 +3039,7 @@ module
              * @see #setContentDescription(CharSequence)
              */
             FindViewsWithText(
-                [in] IObjectContainer* outViews,
+                [in] IArrayList* outViews,
                 [in] ICharSequence* searched,
                 [in] Int32 flags);
 
@@ -2695,7 +3050,7 @@ module
              * @return A list of touchable views
              */
             GetTouchables(
-                [out] IObjectContainer** views);
+                [out] IArrayList** views);
 
             /**
              * Add any touchable views that are descendants of this view (possibly
@@ -2704,7 +3059,15 @@ module
              * @param views Touchable views found so far
              */
             AddTouchables(
-                [in] IObjectContainer* views);
+                [in] IArrayList* views);
+
+            /**
+             * Returns whether this View is accessibility focused.
+             *
+             * @return True if this View is accessibility focused.
+             */
+            IsAccessibilityFocused(
+                [out] Boolean* result);
 
             /**
              * Call this to try to give accessibility focus to this view.
@@ -2842,6 +3205,49 @@ module
                 [out] Int32* mode);
 
             /**
+             * Sets the live region mode for this view. This indicates to accessibility
+             * services whether they should automatically notify the user about changes
+             * to the view's content description or text, or to the content descriptions
+             * or text of the view's children (where applicable).
+             * <p>
+             * For example, in a login screen with a TextView that displays an "incorrect
+             * password" notification, that view should be marked as a live region with
+             * mode {@link #ACCESSIBILITY_LIVE_REGION_POLITE}.
+             * <p>
+             * To disable change notifications for this view, use
+             * {@link #ACCESSIBILITY_LIVE_REGION_NONE}. This is the default live region
+             * mode for most views.
+             * <p>
+             * To indicate that the user should be notified of changes, use
+             * {@link #ACCESSIBILITY_LIVE_REGION_POLITE}.
+             * <p>
+             * If the view's changes should interrupt ongoing speech and notify the user
+             * immediately, use {@link #ACCESSIBILITY_LIVE_REGION_ASSERTIVE}.
+             *
+             * @param mode The live region mode for this view, one of:
+             *        <ul>
+             *        <li>{@link #ACCESSIBILITY_LIVE_REGION_NONE}
+             *        <li>{@link #ACCESSIBILITY_LIVE_REGION_POLITE}
+             *        <li>{@link #ACCESSIBILITY_LIVE_REGION_ASSERTIVE}
+             *        </ul>
+             * @attr ref android.R.styleable#View_accessibilityLiveRegion
+             */
+            SetAccessibilityLiveRegion(
+                [in] Int32 mode);
+
+            /**
+             * Gets the live region mode for this View.
+             *
+             * @return The live region mode for the view.
+             *
+             * @attr ref android.R.styleable#View_accessibilityLiveRegion
+             *
+             * @see #setAccessibilityLiveRegion(int)
+             */
+            GetAccessibilityLiveRegion(
+                [out] Int32* result);
+
+            /**
              * Sets how to determine whether this view is important for accessibility
              * which is if it fires accessibility events and if it is reported to
              * accessibility services that query the screen.
@@ -2886,7 +3292,7 @@ module
              * @param children The list of children for accessibility.
              */
             AddChildrenForAccessibility(
-                [in] IObjectContainer* children);
+                [in] IArrayList* children);
 
             /**
              * Whether to regard this view for accessibility. A view is regarded for
@@ -2914,28 +3320,31 @@ module
                 [out] Boolean* actionable);
 
             /**
-             * Notifies accessibility services that some view's important for
-             * accessibility state has changed. Note that such notifications
-             * are made at most once every
+             * Notifies that the accessibility state of this view changed. The change
+             * is local to this view and does not represent structural changes such
+             * as children and parent. For example, the view became focusable. The
+             * notification is at at most once every
              * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
-             * to avoid unnecessary load to the system. Also once a view has
-             * made a notifucation this method is a NOP until the notification has
-             * been sent to clients.
+             * to avoid unnecessary load to the system. Also once a view has a pending
+             * notification this method is a NOP until the notification has been sent.
              *
              * @hide
-             *
-             * TODO: Makse sure this method is called for any view state change
-             *       that is interesting for accessilility purposes.
              */
-            NotifyAccessibilityStateChanged();
+            NotifyViewAccessibilityStateChangedIfNeeded(
+                [in] Int32 changeType);
 
             /**
-             * Reset the state indicating the this view has requested clients
-             * interested in its accessibility state to be notified.
+             * Notifies that the accessibility state of this view changed. The change
+             * is *not* local to this view and does represent structural changes such
+             * as children and parent. For example, the view size changed. The
+             * notification is at at most once every
+             * {@link ViewConfiguration#getSendRecurringAccessibilityEventsInterval()}
+             * to avoid unnecessary load to the system. Also once a view has a pending
+             * notification this method is a NOP until the notification has been sent.
              *
              * @hide
              */
-            ResetAccessibilityStateChanged();
+            NotifySubtreeAccessibilityStateChangedIfNeeded();
 
             /**
              * Performs the specified accessibility action on the view. For
@@ -2967,16 +3376,30 @@ module
                 [out] ICharSequence** text);
 
             /**
+             * Gets whether accessibility selection can be extended.
+             *
+             * @return If selection is extensible.
+             *
              * @hide
              */
-            GetAccessibilityCursorPosition(
-                [out] Int32* pos);
+            IsAccessibilitySelectionExtendable(
+                [out] Boolean* result);
 
             /**
              * @hide
              */
-            SetAccessibilityCursorPosition(
-                [in] Int32 position);
+            GetAccessibilitySelectionStart(
+                [out] Int32* result);
+
+            /**
+             * @hide
+             */
+            GetAccessibilitySelectionEnd(
+                [out] Int32* result);
+
+            SetAccessibilitySelection(
+                [in] Int32 start,
+                [in] Int32 end);
 
             /**
              * @hide
@@ -3249,6 +3672,75 @@ module
                 [out] Boolean* result);
 
             /**
+             * Default implementation of {@link KeyEvent.Callback#onKeyDown(int, KeyEvent)
+             * KeyEvent.Callback.onKeyDown()}: perform press of the view
+             * when {@link KeyEvent#KEYCODE_DPAD_CENTER} or {@link KeyEvent#KEYCODE_ENTER}
+             * is released, if the view is enabled and clickable.
+             *
+             * <p>Key presses in software keyboards will generally NOT trigger this listener,
+             * although some may elect to do so in some situations. Do not rely on this to
+             * catch software key presses.
+             *
+             * @param keyCode A key code that represents the button pressed, from
+             *                {@link android.view.KeyEvent}.
+             * @param event   The KeyEvent object that defines the button action.
+             */
+            OnKeyDown(
+                [in] Int32 keyCode,
+                [in] IKeyEvent* event,
+                [out] Boolean* result);
+
+            /**
+             * Default implementation of {@link KeyEvent.Callback#onKeyLongPress(int, KeyEvent)
+             * KeyEvent.Callback.onKeyLongPress()}: always returns false (doesn't handle
+             * the event).
+             * <p>Key presses in software keyboards will generally NOT trigger this listener,
+             * although some may elect to do so in some situations. Do not rely on this to
+             * catch software key presses.
+             */
+            OnKeyLongPress(
+                [in] Int32 keyCode,
+                [in] IKeyEvent* event,
+                [out] Boolean* result);
+
+            /**
+             * Default implementation of {@link KeyEvent.Callback#onKeyUp(int, KeyEvent)
+             * KeyEvent.Callback.onKeyUp()}: perform clicking of the view
+             * when {@link KeyEvent#KEYCODE_DPAD_CENTER} or
+             * {@link KeyEvent#KEYCODE_ENTER} is released.
+             * <p>Key presses in software keyboards will generally NOT trigger this listener,
+             * although some may elect to do so in some situations. Do not rely on this to
+             * catch software key presses.
+             *
+             * @param keyCode A key code that represents the button pressed, from
+             *                {@link android.view.KeyEvent}.
+             * @param event   The KeyEvent object that defines the button action.
+             */
+            OnKeyUp(
+                [in] Int32 keyCode,
+                [in] IKeyEvent* event,
+                [out] Boolean* result);
+
+            /**
+             * Default implementation of {@link KeyEvent.Callback#onKeyMultiple(int, int, KeyEvent)
+             * KeyEvent.Callback.onKeyMultiple()}: always returns false (doesn't handle
+             * the event).
+             * <p>Key presses in software keyboards will generally NOT trigger this listener,
+             * although some may elect to do so in some situations. Do not rely on this to
+             * catch software key presses.
+             *
+             * @param keyCode     A key code that represents the button pressed, from
+             *                    {@link android.view.KeyEvent}.
+             * @param repeatCount The number of times the action was made.
+             * @param event       The KeyEvent object that defines the button action.
+             */
+            OnKeyMultiple(
+                [in] Int32 keyCode,
+                [in] Int32 repeatCount,
+                [in] IKeyEvent* event,
+                [out] Boolean* result);
+
+            /**
              * Called when an unhandled key shortcut event occurs.
              *
              * @param keyCode The value in event.getKeyCode().
@@ -3483,6 +3975,14 @@ module
                 [out] Boolean* result);
 
             /**
+             * Cancels a pending long press.  Your subclass can use this if you
+             * want the context menu to come up if the user presses and holds
+             * at the same place, but you don't want it to come up if they press
+             * and then move around enough to cause scrolling.
+             */
+            CancelLongPress();
+
+            /**
              * Sets the TouchDelegate for this View.
              */
             SetTouchDelegate(
@@ -3495,12 +3995,21 @@ module
                 [out] ITouchDelegate** touchDelegate);
 
             /**
-             * Cancels a pending long press.  Your subclass can use this if you
-             * want the context menu to come up if the user presses and holds
-             * at the same place, but you don't want it to come up if they press
-             * and then move around enough to cause scrolling.
+             * Request unbuffered dispatch of the given stream of MotionEvents to this View.
+             *
+             * Until this View receives a corresponding {@link MotionEvent#ACTION_UP}, ask that the input
+             * system not batch {@link MotionEvent}s but instead deliver them as soon as they're
+             * available. This method should only be called for touch events.
+             *
+             * <p class="note">This api is not intended for most applications. Buffered dispatch
+             * provides many of benefits, and just requesting unbuffered dispatch on most MotionEvent
+             * streams will not improve your input latency. Side effects include: increased latency,
+             * jittery scrolls and inability to take advantage of system resampling. Talk to your input
+             * professional to see if {@link #requestUnbufferedDispatch(MotionEvent)} is right for
+             * you.</p>
              */
-            CancelLongPress();
+            RequestUnbufferedDispatch(
+                [in] IMotionEvent* event);
 
             /**
              * Change the view's z order in the tree, so it's on top of other sibling
@@ -3650,6 +4159,17 @@ module
              * @return The current transform matrix for the view
              */
             GetMatrix(
+                [out] IMatrix** matrix);
+
+           /**
+             * Utility method to retrieve the inverse of the current mMatrix property.
+             * We cache the matrix to avoid recalculating it when transform properties
+             * have not changed.
+             *
+             * @return The inverse of the current matrix of this view.
+             * @hide
+             */
+            GetInverseMatrix(
                 [out] IMatrix** matrix);
 
             /**
@@ -3975,6 +4495,30 @@ module
                 [in] Float alpha);
 
             /**
+             * This property is hidden and intended only for use by the Fade transition, which
+             * animates it to produce a visual translucency that does not side-effect (or get
+             * affected by) the real alpha property. This value is composited with the other
+             * alpha value (and the AlphaAnimation value, when that is present) to produce
+             * a final visual translucency result, which is what is passed into the DisplayList.
+             *
+             * @hide
+             */
+            SetTransitionAlpha(
+                [in] Float alpha);
+
+            /**
+             * This property is hidden and intended only for use by the Fade transition, which
+             * animates it to produce a visual translucency that does not side-effect (or get
+             * affected by) the real alpha property. This value is composited with the other
+             * alpha value (and the AlphaAnimation value, when that is present) to produce
+             * a final visual translucency result, which is what is passed into the DisplayList.
+             *
+             * @hide
+             */
+            GetTransitionAlpha(
+                [out] Float* alpha);
+
+            /**
              * Top position of this view relative to its parent.
              *
              * @return The top of this view, in pixels.
@@ -4097,6 +4641,42 @@ module
                 [in] Float y);
 
             /**
+             * The visual z position of this view, in pixels. This is equivalent to the
+             * {@link #setTranslationZ(float) translationZ} property plus the current
+             * {@link #getElevation() elevation} property.
+             *
+             * @return The visual z position of this view, in pixels.
+             */
+            GetZ(
+                [out] Float* z);
+
+            /**
+             * Sets the visual z position of this view, in pixels. This is equivalent to setting the
+             * {@link #setTranslationZ(float) translationZ} property to be the difference between
+             * the x value passed in and the current {@link #getElevation() elevation} property.
+             *
+             * @param z The visual z position of this view, in pixels.
+             */
+            SetZ(
+                [in] Float z);
+
+            /**
+             * The base elevation of this view relative to its parent, in pixels.
+             *
+             * @return The base depth position of the view, in pixels.
+             */
+            GetElevation(
+                [out] Float* result);
+
+            /**
+             * Sets the base elevation of this view, in pixels.
+             *
+             * @attr ref android.R.styleable#View_elevation
+             */
+            SetElevation(
+                [in] Float elevation);
+
+            /**
              * The horizontal location of this view relative to its {@link #getLeft() left} position.
              * This position is post-layout, in addition to wherever the object's
              * layout placed it.
@@ -4144,6 +4724,118 @@ module
              */
             SetTranslationY(
                 [in] Float translationY);
+
+            /**
+             * The depth location of this view relative to its {@link #getElevation() elevation}.
+             *
+             * @return The depth of this view relative to its elevation.
+             */
+            GetTranslationZ(
+                [out] Float* z);
+
+            /**
+             * Sets the depth location of this view relative to its {@link #getElevation() elevation}.
+             *
+             * @attr ref android.R.styleable#View_translationZ
+             */
+            SetTranslationZ(
+                [in] Float translationZ);
+
+            /** @hide */
+            SetAnimationMatrix(
+                [in] IMatrix* matrix);
+
+            /**
+             * Returns the current StateListAnimator if exists.
+             *
+             * @return StateListAnimator or null if it does not exists
+             * @see    #setStateListAnimator(android.animation.StateListAnimator)
+             */
+            GetStateListAnimator(
+                [out] IStateListAnimator** anim);
+
+            /**
+             * Attaches the provided StateListAnimator to this View.
+             * <p>
+             * Any previously attached StateListAnimator will be detached.
+             *
+             * @param stateListAnimator The StateListAnimator to update the view
+             * @see {@link android.animation.StateListAnimator}
+             */
+            SetStateListAnimator(
+                [in] IStateListAnimator* anim);
+
+            /**
+             * Returns whether the Outline should be used to clip the contents of the View.
+             * <p>
+             * Note that this flag will only be respected if the View's Outline returns true from
+             * {@link Outline#canClip()}.
+             *
+             * @see #setOutlineProvider(ViewOutlineProvider)
+             * @see #setClipToOutline(boolean)
+             */
+            GetClipToOutline(
+                [out] Boolean* result);
+
+            /**
+             * Sets whether the View's Outline should be used to clip the contents of the View.
+             * <p>
+             * Only a single non-rectangular clip can be applied on a View at any time.
+             * Circular clips from a {@link ViewAnimationUtils#createCircularReveal(View, int, int, float, float)
+             * circular reveal} animation take priority over Outline clipping, and
+             * child Outline clipping takes priority over Outline clipping done by a
+             * parent.
+             * <p>
+             * Note that this flag will only be respected if the View's Outline returns true from
+             * {@link Outline#canClip()}.
+             *
+             * @see #setOutlineProvider(ViewOutlineProvider)
+             * @see #getClipToOutline()
+             */
+            SetClipToOutline(
+                [in] Boolean result);
+
+            /**
+             * Sets the {@link ViewOutlineProvider} of the view, which generates the Outline that defines
+             * the shape of the shadow it casts, and enables outline clipping.
+             * <p>
+             * The default ViewOutlineProvider, {@link ViewOutlineProvider#BACKGROUND}, queries the Outline
+             * from the View's background drawable, via {@link Drawable#getOutline(Outline)}. Changing the
+             * outline provider with this method allows this behavior to be overridden.
+             * <p>
+             * If the ViewOutlineProvider is null, if querying it for an outline returns false,
+             * or if the produced Outline is {@link Outline#isEmpty()}, shadows will not be cast.
+             * <p>
+             * Only outlines that return true from {@link Outline#canClip()} may be used for clipping.
+             *
+             * @see #setClipToOutline(boolean)
+             * @see #getClipToOutline()
+             * @see #getOutlineProvider()
+             */
+            SetOutlineProvider(
+                [in] IViewOutlineProvider* provider);
+
+            /**
+             * Called to rebuild this View's Outline from its {@link ViewOutlineProvider outline provider}
+             *
+             * @see #setOutlineProvider(ViewOutlineProvider)
+             */
+            InvalidateOutline();
+
+            /**
+             * HierarchyViewer only
+             *
+             * @hide
+             */
+            HasShadow(
+                [out] Boolean* result);
+
+            /** @hide */
+            SetRevealClip(
+                [in] Boolean shouldClip,
+                [in] Float x,
+                [in] Float y,
+                [in] Float radius);
 
             /**
              * Hit rectangle in parent's coordinates
@@ -4343,6 +5035,75 @@ module
             Post(
                 [in] IRunnable* action,
                 [out] Boolean* result);
+
+            /**
+             * <p>Causes the Runnable to be added to the message queue, to be run
+             * after the specified amount of time elapses.
+             * The runnable will be run on the user interface thread.</p>
+             *
+             * @param action The Runnable that will be executed.
+             * @param delayMillis The delay (in milliseconds) until the Runnable
+             *        will be executed.
+             *
+             * @return true if the Runnable was successfully placed in to the
+             *         message queue.  Returns false on failure, usually because the
+             *         looper processing the message queue is exiting.  Note that a
+             *         result of true does not mean the Runnable will be processed --
+             *         if the looper is quit before the delivery time of the message
+             *         occurs then the message will be dropped.
+             *
+             * @see #post
+             * @see #removeCallbacks
+             */
+            PostDelayed(
+                [in] IRunnable* action,
+                [in] Int64 delayMillis,
+                [out] Boolean* result);
+
+            /**
+             * <p>Causes the Runnable to execute on the next animation time step.
+             * The runnable will be run on the user interface thread.</p>
+             *
+             * @param action The Runnable that will be executed.
+             *
+             * @see #postOnAnimationDelayed
+             * @see #removeCallbacks
+             */
+            PostOnAnimation(
+                [in] IRunnable* action);
+
+            /**
+             * <p>Causes the Runnable to execute on the next animation time step,
+             * after the specified amount of time elapses.
+             * The runnable will be run on the user interface thread.</p>
+             *
+             * @param action The Runnable that will be executed.
+             * @param delayMillis The delay (in milliseconds) until the Runnable
+             *        will be executed.
+             *
+             * @see #postOnAnimation
+             * @see #removeCallbacks
+             */
+            PostOnAnimationDelayed(
+                [in] IRunnable* action,
+                [in] Int64 delayMillis);
+
+            /**
+             * <p>Removes the specified Runnable from the message queue.</p>
+             *
+             * @param action The Runnable to remove from the message handling queue
+             *
+             * @return true if this view could ask the Handler to remove the Runnable,
+             *         false otherwise. When the returned value is true, the Runnable
+             *         may or may not have been actually removed from the message queue
+             *         (for instance, if the Runnable was not in the queue already.)
+             *
+             * @see #post
+             * @see #postDelayed
+             * @see #postOnAnimation
+             * @see #postOnAnimationDelayed
+             */
+            RemoveCallbacks();
 
             /**
              * Cause an invalidate to happen on a subsequent cycle through the event loop.
@@ -4770,6 +5531,20 @@ module
                 [out] Boolean*result);
 
             /**
+             * @return true if layout direction has been resolved.
+             */
+            IsLayoutDirectionResolved(
+                [out] Boolean*result);
+
+            /**
+             * Return if padding has been resolved
+             *
+             * @hide
+             */
+            IsPaddingResolved(
+                [out] Boolean*result);
+
+            /**
              * Resolve padding depending on layout direction.
              *
              * @hide
@@ -4783,13 +5558,6 @@ module
              */
             ResetResolvedPadding();
 
-            /*
-             * Caller is responsible for calling requestLayout if necessary.
-             * (This allows addViewInLayout to not request a new layout.)
-             */
-            AssignParent(
-                [in] IViewParent* parent);
-
             /**
              * Retrieve a unique token identifying the window this view is attached to.
              * @return Return the window's token for use in
@@ -4797,6 +5565,14 @@ module
              */
             GetWindowToken(
                 [out] IBinder** token);
+
+            /**
+             * Retrieve the {@link WindowId} for the window this view is
+             * currently attached to.
+             */
+            GetWindowId(
+                [out] IWindowId** id);
+
             /**
              * Retrieve a unique token identifying the top-level "real" window of
              * the window that this view is attached to.  That is, this is like
@@ -4819,6 +5595,42 @@ module
                 [out] IDisplay** display);
 
             /**
+             * Cancel any deferred high-level input events that were previously posted to the event queue.
+             *
+             * <p>Many views post high-level events such as click handlers to the event queue
+             * to run deferred in order to preserve a desired user experience - clearing visible
+             * pressed states before executing, etc. This method will abort any events of this nature
+             * that are currently in flight.</p>
+             *
+             * <p>Custom views that generate their own high-level deferred input events should override
+             * {@link #onCancelPendingInputEvents()} and remove those pending events from the queue.</p>
+             *
+             * <p>This will also cancel pending input events for any child views.</p>
+             *
+             * <p>Note that this may not be sufficient as a debouncing strategy for clicks in all cases.
+             * This will not impact newer events posted after this call that may occur as a result of
+             * lower-level input events still waiting in the queue. If you are trying to prevent
+             * double-submitted  events for the duration of some sort of asynchronous transaction
+             * you should also take other steps to protect against unexpected double inputs e.g. calling
+             * {@link #setEnabled(boolean) setEnabled(false)} and re-enabling the view when
+             * the transaction completes, tracking already submitted transaction IDs, etc.</p>
+             */
+            CancelPendingInputEvents();
+
+            /**
+             * Called as the result of a call to {@link #cancelPendingInputEvents()} on this view or
+             * a parent view.
+             *
+             * <p>This method is responsible for removing any pending high-level input events that were
+             * posted to the event queue to run later. Custom view classes that post their own deferred
+             * high-level events via {@link #post(Runnable)}, {@link #postDelayed(Runnable, long)} or
+             * {@link android.os.Handler} should override this method, call
+             * <code>super.onCancelPendingInputEvents()</code> and remove those callbacks as appropriate.
+             * </p>
+             */
+            OnCancelPendingInputEvents();
+
+            /**
              * Store this view hierarchy's frozen state into the given container.
              *
              * @param container The SparseArray in which to save the view's state.
@@ -4828,7 +5640,7 @@ module
              * @see #onSaveInstanceState()
              */
             SaveHierarchyState(
-                [in/*, out*/] IObjectInt32Map* container);
+                [in/*, out*/] IMap* container);
 
             /**
              * Restore this view hierarchy's frozen state from the given container.
@@ -4840,7 +5652,7 @@ module
              * @see #onRestoreInstanceState(android.os.Parcelable)
              */
             RestoreHierarchyState(
-                [in] IObjectInt32Map* container);
+                [in] IMap* container);
 
             /**
              * <p>Return the time at which the drawing of the view hierarchy started.</p>
@@ -5054,7 +5866,7 @@ module
              * @hide
              */
             GetDisplayList(
-                [out] IDisplayList** list);
+                [out] IRenderNode** list);
 
             /**
              * <p>Calling this method is equivalent to calling <code>getDrawingCache(false)</code>.</p>
@@ -5160,16 +5972,6 @@ module
                 [in] Boolean autoScale);
 
             /**
-             * Create a snapshot of the view into a bitmap.  We should probably make
-             * some form of this public, but should think about the API.
-             */
-            CreateSnapshot(
-                [in] BitmapConfig quality,
-                [in] Int32 backgroundColor,
-                [in] Boolean skipChildren,
-                [out] IBitmap** bitmap);
-
-            /**
              * Indicates whether this View is currently in edit mode. A View is usually
              * in edit mode when displayed within a developer tool. For instance, if
              * this View is being drawn by a visual user interface builder, this method
@@ -5203,7 +6005,27 @@ module
              *         hardware accelerated; false in any other case.
              */
             IsHardwareAccelerated(
-                [out] Boolean* attached);
+                [out] Boolean* result);
+
+            /**
+             * Sets a rectangular area on this view to which the view will be clipped
+             * when it is drawn. Setting the value to null will remove the clip bounds
+             * and the view will draw normally, using its full bounds.
+             *
+             * @param clipBounds The rectangular area, in the local coordinates of
+             * this view, to which future drawing operations will be clipped.
+             */
+            SetClipBounds(
+                [in] IRect* clipBounds);
+
+            /**
+             * Returns a copy of the current {@link #setClipBounds(Rect) clipBounds}.
+             *
+             * @return A copy of the current clip bounds if clip bounds are set,
+             * otherwise null.
+             */
+            GetClipBounds(
+                [out] IRect** rect);
 
             /**
              * Manually render this view (and all of its children) to the given Canvas.
@@ -5216,6 +6038,23 @@ module
              */
             Draw(
                 [in] ICanvas* canvas);
+
+            /**
+             * Returns the overlay for this view, creating it if it does not yet exist.
+             * Adding drawables to the overlay will cause them to be displayed whenever
+             * the view itself is redrawn. Objects in the overlay should be actively
+             * managed: remove them when they should not be displayed anymore. The
+             * overlay will always have the same size as its host view.
+             *
+             * <p>Note: Overlays do not currently work correctly with {@link
+             * SurfaceView} or {@link TextureView}; contents in overlays for these
+             * types of views may not display correctly.</p>
+             *
+             * @return The ViewOverlay object for this view.
+             * @see ViewOverlay
+             */
+            GetOverlay(
+                [out] IViewOverlay** overlay);
 
             /**
              * Override this if your view is known to always be drawn on top of a solid color background,
@@ -5231,15 +6070,6 @@ module
             //@ViewDebug.ExportedProperty(category = "drawing")
             GetSolidColor(
                 [out] Int32* color);
-
-            /**
-             * Finalize inflating a view from XML.  This is called as the last phase
-             * of inflation, after all child views have been added.
-             *
-             * <p>Even if the subclass overrides onFinishInflate, they should always be
-             * sure to call the super method, so that we get called.
-             */
-            OnFinishInflate();
 
             /**
              * <p>Indicates whether or not this view's layout will be requested during
@@ -5310,6 +6140,19 @@ module
              */
             OnResolveDrawables(
                 [in] Int64 layoutDirection);
+
+            /**
+             * This function is called whenever the view hotspot changes and needs to
+             * be propagated to drawables managed by the view.
+             * <p>
+             * Be sure to call through to the superclass when overriding this function.
+             *
+             * @param x hotspot x coordinate
+             * @param y hotspot y coordinate
+             */
+            DrawableHotspotChanged(
+                [in] Float x,
+                [in] Float y);
 
             /**
              * Call this to force a view to update its drawable state. This will cause
@@ -5393,6 +6236,59 @@ module
              */
             GetBackground(
                 [out] IDrawable** drawable);
+
+            /**
+             * Applies a tint to the background drawable. Does not modify the current tint
+             * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+             * <p>
+             * Subsequent calls to {@link #setBackground(Drawable)} will automatically
+             * mutate the drawable and apply the specified tint and tint mode using
+             * {@link Drawable#setTintList(ColorStateList)}.
+             *
+             * @param tint the tint to apply, may be {@code null} to clear tint
+             *
+             * @attr ref android.R.styleable#View_backgroundTint
+             * @see #getBackgroundTintList()
+             * @see Drawable#setTintList(ColorStateList)
+             */
+            SetBackgroundTintList(
+                [in] IColorStateList* tint);
+
+            /**
+             * Return the tint applied to the background drawable, if specified.
+             *
+             * @return the tint applied to the background drawable
+             * @attr ref android.R.styleable#View_backgroundTint
+             * @see #setBackgroundTintList(ColorStateList)
+             */
+            GetBackgroundTintList(
+                [out] IColorStateList** tint);
+
+            /**
+             * Specifies the blending mode used to apply the tint specified by
+             * {@link #setBackgroundTintList(ColorStateList)}} to the background
+             * drawable. The default mode is {@link PorterDuff.Mode#SRC_IN}.
+             *
+             * @param tintMode the blending mode used to apply the tint, may be
+             *                 {@code null} to clear tint
+             * @attr ref android.R.styleable#View_backgroundTintMode
+             * @see #getBackgroundTintMode()
+             * @see Drawable#setTintMode(PorterDuff.Mode)
+             */
+             SetBackgroundTintMode(
+                [in] PorterDuffMode tintMode);
+
+            /**
+             * Return the blending mode used to apply the tint to the background
+             * drawable, if specified.
+             *
+             * @return the blending mode used to apply the tint to the background
+             *         drawable
+             * @attr ref android.R.styleable#View_backgroundTintMode
+             * @see #setBackgroundTintMode(PorterDuff.Mode)
+             */
+             GetBackgroundTintMode(
+                [out] PorterDuffMode* tintMode);
 
             /**
              * Sets the padding. The view may add on the space required to display
@@ -5594,6 +6490,50 @@ module
                 [out] IView** view);
 
             /**
+             * Transforms a motion event from view-local coordinates to on-screen
+             * coordinates.
+             *
+             * @param ev the view-local motion event
+             * @return false if the transformation could not be applied
+             * @hide
+             */
+            ToGlobalMotionEvent(
+                [in] IMotionEvent* ev,
+                [out] Boolean* result);
+
+            /**
+             * Transforms a motion event from on-screen coordinates to view-local
+             * coordinates.
+             *
+             * @param ev the on-screen motion event
+             * @return false if the transformation could not be applied
+             * @hide
+             */
+            ToLocalMotionEvent(
+                [in] IMotionEvent* ev,
+                [out] Boolean* result);
+
+            /**
+             * Modifies the input matrix such that it maps view-local coordinates to
+             * on-screen coordinates.
+             *
+             * @param m input matrix to modify
+             * @hide
+             */
+            TransformMatrixToGlobal(
+                [in] IMatrix* m);
+
+            /**
+             * Modifies the input matrix such that it maps on-screen coordinates to
+             * view-local coordinates.
+             *
+             * @param m input matrix to modify
+             * @hide
+             */
+            TransformMatrixToLocal(
+                [in] IMatrix* m);
+
+            /**
              * <p>Computes the coordinates of this view on the screen. The argument
              * must be an array of two integers. After the method returns, the array
              * contains the x and y location in that order.</p>
@@ -5624,6 +6564,36 @@ module
              */
             FindViewById(
                 [in] Int32 id,
+                [out] IView** view);
+
+            /**
+             * Performs the traversal to find a view by its unuque and stable accessibility id.
+             *
+             * <strong>Note:</strong>This method does not stop at the root namespace
+             * boundary since the user can touch the screen at an arbitrary location
+             * potentially crossing the root namespace bounday which will send an
+             * accessibility event to accessibility services and they should be able
+             * to obtain the event source. Also accessibility ids are guaranteed to be
+             * unique in the window.
+             *
+             * @param accessibilityId The accessibility id.
+             * @return The found view.
+             *
+             * @hide
+             */
+            FindViewByAccessibilityIdTraversal(
+                [in] Int32 id,
+                [out] IView** view);
+
+            /**
+             * Look for a child view with the given tag.  If this view has the given
+             * tag, return this view.
+             *
+             * @param tag The tag to search for, using "tag.equals(getTag())".
+             * @return The View that has the given tag in the hierarchy or null
+             */
+            FindViewWithTag(
+                [in] IInterface* tag,
                 [out] IView** view);
 
             /**
@@ -5691,10 +6661,47 @@ module
             /**
              * {@hide}
              *
+             * @param isRoot true if the view belongs to the root namespace, false
+             *        otherwise
+             */
+            SetIsRootNamespace(
+                [in] Boolean result);
+
+            /**
+             * {@hide}
+             *
              * @return true if the view belongs to the root namespace, false otherwise
              */
             IsRootNamespace(
                 [out] Boolean* result);
+
+            GetTag(
+                [out] IInterface** tag);
+
+            SetTag(
+                [in] IInterface* tag);
+
+            /**
+             * Returns the tag associated with this view and the specified key.
+             *
+             * @param key The key identifying the tag
+             *
+             * @return the Object stored in this view as a tag
+             *
+             * @see #setTag(int, Object)
+             * @see #getTag()
+             */
+            GetTag(
+                [in] Int32 key,
+                [out] IInterface** tag);
+
+            SetTag(
+                [in] Int32 key,
+                [in] IInterface* tag);
+
+            SetTagInternal(
+                [in] Int32 key,
+                [in] IInterface* tag);
 
             /**
              * <p>Return the offset of the widget's text baseline from the widget's top
@@ -5706,6 +6713,16 @@ module
              */
             GetBaseline(
                 [out] Int32* result);
+
+            /**
+             * Returns whether the view hierarchy is currently undergoing a layout pass. This
+             * information is useful to avoid situations such as calling {@link #requestLayout()} during
+             * a layout pass.
+             *
+             * @return whether the view hierarchy is currently undergoing a layout pass
+             */
+            IsInLayout(
+                [out] Boolean* result);
 
             /**
              * Call this when something has changed which has invalidated the
@@ -6147,6 +7164,214 @@ module
                 [in] Int32 overScrollMode);
 
             /**
+             * Enable or disable nested scrolling for this view.
+             *
+             * <p>If this property is set to true the view will be permitted to initiate nested
+             * scrolling operations with a compatible parent view in the current hierarchy. If this
+             * view does not implement nested scrolling this will have no effect. Disabling nested scrolling
+             * while a nested scroll is in progress has the effect of {@link #stopNestedScroll() stopping}
+             * the nested scroll.</p>
+             *
+             * @param enabled true to enable nested scrolling, false to disable
+             *
+             * @see #isNestedScrollingEnabled()
+             */
+            SetNestedScrollingEnabled(
+                [in] Boolean enabled);
+
+            /**
+             * Returns true if nested scrolling is enabled for this view.
+             *
+             * <p>If nested scrolling is enabled and this View class implementation supports it,
+             * this view will act as a nested scrolling child view when applicable, forwarding data
+             * about the scroll operation in progress to a compatible and cooperating nested scrolling
+             * parent.</p>
+             *
+             * @return true if nested scrolling is enabled
+             *
+             * @see #setNestedScrollingEnabled(boolean)
+             */
+            IsNestedScrollingEnabled(
+                [out] Boolean* enabled);
+
+            /**
+             * Begin a nestable scroll operation along the given axes.
+             *
+             * <p>A view starting a nested scroll promises to abide by the following contract:</p>
+             *
+             * <p>The view will call startNestedScroll upon initiating a scroll operation. In the case
+             * of a touch scroll this corresponds to the initial {@link MotionEvent#ACTION_DOWN}.
+             * In the case of touch scrolling the nested scroll will be terminated automatically in
+             * the same manner as {@link ViewParent#requestDisallowInterceptTouchEvent(boolean)}.
+             * In the event of programmatic scrolling the caller must explicitly call
+             * {@link #stopNestedScroll()} to indicate the end of the nested scroll.</p>
+             *
+             * <p>If <code>startNestedScroll</code> returns true, a cooperative parent was found.
+             * If it returns false the caller may ignore the rest of this contract until the next scroll.
+             * Calling startNestedScroll while a nested scroll is already in progress will return true.</p>
+             *
+             * <p>At each incremental step of the scroll the caller should invoke
+             * {@link #dispatchNestedPreScroll(int, int, int[], int[]) dispatchNestedPreScroll}
+             * once it has calculated the requested scrolling delta. If it returns true the nested scrolling
+             * parent at least partially consumed the scroll and the caller should adjust the amount it
+             * scrolls by.</p>
+             *
+             * <p>After applying the remainder of the scroll delta the caller should invoke
+             * {@link #dispatchNestedScroll(int, int, int, int, int[]) dispatchNestedScroll}, passing
+             * both the delta consumed and the delta unconsumed. A nested scrolling parent may treat
+             * these values differently. See {@link ViewParent#onNestedScroll(View, int, int, int, int)}.
+             * </p>
+             *
+             * @param axes Flags consisting of a combination of {@link #SCROLL_AXIS_HORIZONTAL} and/or
+             *             {@link #SCROLL_AXIS_VERTICAL}.
+             * @return true if a cooperative parent was found and nested scrolling has been enabled for
+             *         the current gesture.
+             *
+             * @see #stopNestedScroll()
+             * @see #dispatchNestedPreScroll(int, int, int[], int[])
+             * @see #dispatchNestedScroll(int, int, int, int, int[])
+             */
+            StartNestedScroll(
+                [in] Int32 axes,
+                [out] Boolean* result);
+
+            /**
+             * Stop a nested scroll in progress.
+             *
+             * <p>Calling this method when a nested scroll is not currently in progress is harmless.</p>
+             *
+             * @see #startNestedScroll(int)
+             */
+            StopNestedScroll();
+
+            /**
+             * Returns true if this view has a nested scrolling parent.
+             *
+             * <p>The presence of a nested scrolling parent indicates that this view has initiated
+             * a nested scroll and it was accepted by an ancestor view further up the view hierarchy.</p>
+             *
+             * @return whether this view has a nested scrolling parent
+             */
+            HasNestedScrollingParent(
+                [out] Boolean* result);
+
+            /**
+             * Dispatch one step of a nested scroll in progress.
+             *
+             * <p>Implementations of views that support nested scrolling should call this to report
+             * info about a scroll in progress to the current nested scrolling parent. If a nested scroll
+             * is not currently in progress or nested scrolling is not
+             * {@link #isNestedScrollingEnabled() enabled} for this view this method does nothing.</p>
+             *
+             * <p>Compatible View implementations should also call
+             * {@link #dispatchNestedPreScroll(int, int, int[], int[]) dispatchNestedPreScroll} before
+             * consuming a component of the scroll event themselves.</p>
+             *
+             * @param dxConsumed Horizontal distance in pixels consumed by this view during this scroll step
+             * @param dyConsumed Vertical distance in pixels consumed by this view during this scroll step
+             * @param dxUnconsumed Horizontal scroll distance in pixels not consumed by this view
+             * @param dyUnconsumed Horizontal scroll distance in pixels not consumed by this view
+             * @param offsetInWindow Optional. If not null, on return this will contain the offset
+             *                       in local view coordinates of this view from before this operation
+             *                       to after it completes. View implementations may use this to adjust
+             *                       expected input coordinate tracking.
+             * @return true if the event was dispatched, false if it could not be dispatched.
+             * @see #dispatchNestedPreScroll(int, int, int[], int[])
+             */
+            DispatchNestedScroll(
+                [in] Int32 dxConsumed,
+                [in] Int32 dyConsumed,
+                [in] Int32 dxUnconsumed,
+                [in] Int32 dyUnconsumed,
+                [in] ArrayOf<Int32>* offsetInWindow,
+                [out] Boolean* result);
+
+            /**
+             * Dispatch one step of a nested scroll in progress before this view consumes any portion of it.
+             *
+             * <p>Nested pre-scroll events are to nested scroll events what touch intercept is to touch.
+             * <code>dispatchNestedPreScroll</code> offers an opportunity for the parent view in a nested
+             * scrolling operation to consume some or all of the scroll operation before the child view
+             * consumes it.</p>
+             *
+             * @param dx Horizontal scroll distance in pixels
+             * @param dy Vertical scroll distance in pixels
+             * @param consumed Output. If not null, consumed[0] will contain the consumed component of dx
+             *                 and consumed[1] the consumed dy.
+             * @param offsetInWindow Optional. If not null, on return this will contain the offset
+             *                       in local view coordinates of this view from before this operation
+             *                       to after it completes. View implementations may use this to adjust
+             *                       expected input coordinate tracking.
+             * @return true if the parent consumed some or all of the scroll delta
+             * @see #dispatchNestedScroll(int, int, int, int, int[])
+             */
+            DispatchNestedScroll(
+                [in] Int32 dx,
+                [in] Int32 dy,
+                [in] ArrayOf<Int32>* consumed,
+                [in] ArrayOf<Int32>* offsetInWindow,
+                [out] Boolean* result);
+
+            /**
+             * Dispatch a fling to a nested scrolling parent.
+             *
+             * <p>This method should be used to indicate that a nested scrolling child has detected
+             * suitable conditions for a fling. Generally this means that a touch scroll has ended with a
+             * {@link VelocityTracker velocity} in the direction of scrolling that meets or exceeds
+             * the {@link ViewConfiguration#getScaledMinimumFlingVelocity() minimum fling velocity}
+             * along a scrollable axis.</p>
+             *
+             * <p>If a nested scrolling child view would normally fling but it is at the edge of
+             * its own content, it can use this method to delegate the fling to its nested scrolling
+             * parent instead. The parent may optionally consume the fling or observe a child fling.</p>
+             *
+             * @param velocityX Horizontal fling velocity in pixels per second
+             * @param velocityY Vertical fling velocity in pixels per second
+             * @param consumed true if the child consumed the fling, false otherwise
+             * @return true if the nested scrolling parent consumed or otherwise reacted to the fling
+             */
+            DispatchNestedFling(
+                [in] Float velocityX,
+                [in] Float velocityY,
+                [in] Boolean consumed,
+                [out] Boolean* result);
+
+            /**
+             * Dispatch a fling to a nested scrolling parent before it is processed by this view.
+             *
+             * <p>Nested pre-fling events are to nested fling events what touch intercept is to touch
+             * and what nested pre-scroll is to nested scroll. <code>dispatchNestedPreFling</code>
+             * offsets an opportunity for the parent view in a nested fling to fully consume the fling
+             * before the child view consumes it. If this method returns <code>true</code>, a nested
+             * parent view consumed the fling and this view should not scroll as a result.</p>
+             *
+             * <p>For a better user experience, only one view in a nested scrolling chain should consume
+             * the fling at a time. If a parent view consumed the fling this method will return false.
+             * Custom view implementations should account for this in two ways:</p>
+             *
+             * <ul>
+             *     <li>If a custom view is paged and needs to settle to a fixed page-point, do not
+             *     call <code>dispatchNestedPreFling</code>; consume the fling and settle to a valid
+             *     position regardless.</li>
+             *     <li>If a nested parent does consume the fling, this view should not scroll at all,
+             *     even to settle back to a valid idle position.</li>
+             * </ul>
+             *
+             * <p>Views should also not offer fling velocities to nested parent views along an axis
+             * where scrolling is not currently supported; a {@link android.widget.ScrollView ScrollView}
+             * should not offer a horizontal fling velocity to its parents since scrolling along that
+             * axis is not permitted and carrying velocity along that motion does not make sense.</p>
+             *
+             * @param velocityX Horizontal fling velocity in pixels per second
+             * @param velocityY Vertical fling velocity in pixels per second
+             * @return true if a nested scrolling parent consumed the fling
+             */
+            DispatchNestedPreFling(
+                [in] Float velocityX,
+                [in] Float velocityY,
+                [out] Boolean* result);
+
+            /**
              * Return the value specifying the text direction or policy that was set with
              * {@link #setTextDirection(int)}.
              *
@@ -6216,6 +7441,14 @@ module
                 [out] Boolean* done);
 
             /**
+             * Check if text direction resolution can be done.
+             *
+             * @return true if text direction resolution can be done otherwise return false.
+             */
+            CanResolveTextDirection(
+                [out] Boolean* result);
+
+            /**
              * Reset resolved text direction. Text direction will be resolved during a call to
              * {@link #onMeasure(int, int)}.
              *
@@ -6229,6 +7462,12 @@ module
              * @hide
              */
             IsTextDirectionInherited(
+                [out] Boolean* inherited);
+
+            /**
+             * @return true if text direction is resolved.
+             */
+            IsTextDirectionResolved(
                 [out] Boolean* inherited);
 
             /**
@@ -6316,6 +7555,14 @@ module
                 [out] Boolean* done);
 
             /**
+             * Check if text alignment resolution can be done.
+             *
+             * @return true if text alignment resolution can be done otherwise return false.
+             */
+            CanResolveTextAlignment(
+                [out] Boolean* inherited);
+
+            /**
              * Reset resolved text alignment. Text alignment will be resolved during a call to
              * {@link #onMeasure(int, int)}.
              *
@@ -6331,33 +7578,30 @@ module
             IsTextAlignmentInherited(
                 [out] Boolean* inherited);
 
-            GetTag(
-                [out] IInterface** tag);
-
-            SetTag(
-                [in] IInterface* tag);
+            /**
+             * @return true if text alignment is resolved.
+             */
+            IsTextAlignmentResolved(
+                [out] Boolean* inherited);
 
             /**
-             * Returns the tag associated with this view and the specified key.
-             *
-             * @param key The key identifying the tag
-             *
-             * @return the Object stored in this view as a tag
-             *
-             * @see #setTag(int, Object)
-             * @see #getTag()
+             * Gets the Views in the hierarchy affected by entering and exiting Activity Scene transitions.
+             * @param transitioningViews This View will be added to transitioningViews if it is VISIBLE and
+             *                           a normal View or a ViewGroup with
+             *                           {@link android.view.ViewGroup#isTransitionGroup()} true.
+             * @hide
              */
-            GetTag(
-                [in] Int32 key,
-                [out] IInterface** tag);
+            CaptureTransitioningViews(
+                [in] IList* transitioningViews);
 
-            SetTag(
-                [in] Int32 key,
-                [in] IInterface* tag);
+            /**
+             * Adds all Views that have {@link #getTransitionName()} non-null to namedElements.
+             * @param namedElements Will contain all Views in the hierarchy having a transitionName.
+             * @hide
+             */
+            FindNamedViews(
+                [in] IMap* namedElements);
 
-            SetTagInternal(
-                [in] Int32 key,
-                [in] IInterface* tag);
 
             /** @hide */
             HackTurnOffWindowResizeAnim(
@@ -6371,6 +7615,27 @@ module
              */
             Animate(
                 [out] IViewPropertyAnimator** animator);
+
+            /**
+             * Sets the name of the View to be used to identify Views in Transitions.
+             * Names should be unique in the View hierarchy.
+             *
+             * @param transitionName The name of the View to uniquely identify it for Transitions.
+             */
+            SetTransitionName(
+                [in] String transitionName);
+
+            /**
+             * Returns the name of the View to be used to identify Views in Transitions.
+             * Names should be unique in the View hierarchy.
+             *
+             * <p>This returns null if the View has not been given a name.</p>
+             *
+             * @return The name used of the View to be used to identify Views in Transitions or null
+             * if no name has been given.
+             */
+            GetTransitionName(
+                [out] String* transitionName);
 
             GetInflaterContext(
                 [out] IContext** context);

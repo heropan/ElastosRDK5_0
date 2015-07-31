@@ -5,6 +5,22 @@ module
     namespace Droid {
     namespace View {
 
+    /**
+     * Detects scaling transformation gestures using the supplied {@link MotionEvent}s.
+     * The {@link OnScaleGestureListener} callback will notify users when a particular
+     * gesture event has occurred.
+     *
+     * This class should only be used with {@link MotionEvent}s reported via touch.
+     *
+     * To use this class:
+     * <ul>
+     *  <li>Create an instance of the {@code ScaleGestureDetector} for your
+     *      {@link View}
+     *  <li>In the {@link View#onTouchEvent(MotionEvent)} method ensure you call
+     *          {@link #onTouchEvent(MotionEvent)}. The methods defined in your
+     *          callback will be executed when the events occur.
+     * </ul>
+     */
     interface IScaleGestureDetector {
         /**
          * Accepts MotionEvents and dispatches events to a {@link OnScaleGestureListener}
@@ -20,6 +36,22 @@ module
          */
         OnTouchEvent(
             [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Set whether the associated {@link OnScaleGestureListener} should receive onScale callbacks
+         * when the user performs a doubleTap followed by a swipe. Note that this is enabled by default
+         * if the app targets API 19 and newer.
+         * @param scales true to enable quick scaling, false to disable
+         */
+        SetQuickScaleEnabled(
+            [in] Boolean scales);
+
+        /**
+         * Return whether the quick scale gesture, in which the user performs a double tap followed by a
+         * swipe, should perform scaling. {@see #setQuickScaleEnabled(boolean)}.
+         */
+        IsQuickScaleEnabled(
             [out] Boolean* result);
 
         /**
@@ -39,7 +71,7 @@ module
          * @return X coordinate of the focal point in pixels.
          */
         GetFocusX(
-            [out] Float* x);
+            [out] Float* result);
 
         /**
          * Get the Y coordinate of the current gesture's focal point.
@@ -52,7 +84,7 @@ module
          * @return Y coordinate of the focal point in pixels.
          */
         GetFocusY(
-            [out] Float* y);
+            [out] Float* result);
 
         /**
          * Return the average distance between each of the pointers forming the
@@ -197,6 +229,25 @@ module
         OnScaleEnd(
             [in] IScaleGestureDetector* detector);
     }
+
+
+    /**
+     * A convenience class to extend when you only want to listen for a subset
+     * of scaling-related events. This implements all methods in
+     * {@link OnScaleGestureListener} but does nothing.
+     * {@link OnScaleGestureListener#onScale(ScaleGestureDetector)} returns
+     * {@code false} so that a subclass can retrieve the accumulated scale
+     * factor in an overridden onScaleEnd.
+     * {@link OnScaleGestureListener#onScaleBegin(ScaleGestureDetector)} returns
+     * {@code true}.
+     */
+    /**
+     * @Involve
+     * interface IOnScaleGestureListener
+     */
+    interface ISimpleOnScaleGestureListener {
+    }
+
 
     } // namespace View
     } // namepsace Droid

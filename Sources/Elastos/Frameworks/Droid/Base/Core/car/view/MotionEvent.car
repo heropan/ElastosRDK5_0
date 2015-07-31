@@ -180,6 +180,12 @@ module
             [in] Float value);
     }
 
+    /**
+     * Transfer object for pointer properties.
+     *
+     * Objects of this type can be used to specify the pointer id and tool type
+     * when creating new {@link MotionEvent} objects and to query pointer properties in bulk.
+     */
     interface IPointerProperties {
         /**
          * The pointer id.
@@ -233,6 +239,7 @@ module
     /**
      * @Involve
      * interface IInputEvent
+     * interface IParcelable
      */
     [deprecated]
     interface IMotionEvent {
@@ -2177,6 +2184,22 @@ module
         Split(
             [in] Int32 idBits,
             [out] IMotionEvent** event);
+
+        /**
+         * Checks if a mouse or stylus button (or combination of buttons) is pressed.
+         * @param button Button (or combination of buttons).
+         * @return True if specified buttons are pressed.
+         *
+         * @see #BUTTON_PRIMARY
+         * @see #BUTTON_SECONDARY
+         * @see #BUTTON_TERTIARY
+         * @see #BUTTON_FORWARD
+         * @see #BUTTON_BACK
+         */
+        IsButtonPressed(
+            [in] Int32 button,
+            [out] Boolean* result);
+
 
         // add for JNI
         GetNative(

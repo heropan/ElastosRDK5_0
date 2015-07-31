@@ -43,27 +43,32 @@ module
     merge("view/KeyEvent.car");
     merge("view/LayoutInflater.car");
     merge("view/Menu.car");
-
+    merge("view/MenuInflater.car");
+    merge("view/MenuItem.car");
+    merge("view/MotionEvent.car");
+    merge("view/OrientationEventListener.car");
+    merge("view/PointerIcon.car");
+    merge("view/RenderNode.car");
+    merge("view/RenderNodeAnimator.car");
+    merge("view/ScaleGestureDetector.car");
+    merge("view/SubMenu.car");
+    merge("view/Surface.car");
+    merge("view/SurfaceHolder.car");
+    merge("view/SurfaceSession.car");
+    merge("view/SurfaceView.car");
+    merge("view/TextureView.car");
+    merge("view/TouchDelegate.car");
+    merge("view/VelocityTracker.car");
+    merge("view/View.car");
 
     // merge("view/CompatibilityInfoHolder.car");
     // merge("view/DisplayList.car");
     // merge("view/IDisplayContentChangeListener.car");
-
-    // merge("view/MenuInflater.car");
-    // merge("view/MenuItem.car");
-    // merge("view/MotionEvent.car");
-    // merge("view/PointerIcon.car");
     // merge("view/RootViewSurfaceTaker.car");
-    // merge("view/ScaleGestureDetector.car");
-    // merge("view/SubMenu.car");
-    // merge("view/Surface.car");
-    // merge("view/SurfaceHolder.car");
-    // merge("view/SurfaceSession.car");
-    // merge("view/TouchDelegate.car");
+    //
     // merge("view/ViewConfiguration.car");
-    // merge("view/View.car");
+    //
     // merge("view/ViewStub.car");
-    // merge("view/SurfaceView.car");
     // merge("view/ViewGroup.car");
     // merge("view/ViewManager.car");
     // merge("view/ViewParent.car");
@@ -74,7 +79,6 @@ module
     // merge("view/WindowManager.car");
     // merge("view/WindowManagerGlobal.car");
     // merge("view/WindowManagerPolicy.car");
-    // merge("view/TextureView.car");
     // merge("view/IInputMethodCallback.car");
     // merge("view/IInputMethodSession.car");
     // merge("view/IInputMethodClient.car");
@@ -87,7 +91,7 @@ module
     // merge("view/DisplayManagerAw.car");
     // merge("view/IDisplayManagerAw.car");
     // merge("view/DispList.car");
-    // merge("view/VelocityTracker.car");
+    //
 
 
     // merge("view/accessibility/AccessibilityRecord.car");

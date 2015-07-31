@@ -80,6 +80,7 @@ module
          * <a href="{@docRoot}guide/topics/ui/menus.html">Menus</a> developer guide.</p>
          * </div>
          */
+        [local]
         interface IMenuItem {
             /*
              * These should be kept in sync with attrs.xml enum constants for showAsAction

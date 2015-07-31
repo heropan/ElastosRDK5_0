@@ -16,6 +16,7 @@ module
          * it only works with an XmlPullParser returned from a compiled resource (R.
          * <em>something</em> file.)
          */
+        [local]
         interface IMenuInflater {
             /**
              * Inflate a menu hierarchy from the specified XML resource. Throws

@@ -7,6 +7,16 @@ module
     namespace View {
 
     /**
+     * Helper for tracking the velocity of touch events, for implementing
+     * flinging and other such gestures.
+     *
+     * Use {@link #obtain} to retrieve a new instance of the class when you are going
+     * to begin tracking.  Put the motion events you receive into it with
+     * {@link #addMovement(MotionEvent)}.  When you want to determine the velocity call
+     * {@link #computeCurrentVelocity(int)} and then call {@link #getXVelocity(int)}
+     * and {@link #getYVelocity(int)} to retrieve the velocity for each pointer id.
+     */
+    /**
      * @Involve
      * interface Elastos.Droid.Utility.IPoolable
      */

@@ -128,14 +128,6 @@ module
              */
             IsFixedSize(
                 [out] Boolean* size);
-
-            //todo: for gecko using input method
-            SetCreateInputConnectionDelegate(
-                [in] IView* view);
-
-            //todo: for gecko using input method
-            SetKeyEventCallbackDelegate(
-                [in] IKeyEventCallback* cb);
         }
 
         interface ISurfaceViewHelper {

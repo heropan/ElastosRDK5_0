@@ -25,6 +25,7 @@ module
          * @Involve
          * interface IMenu
          */
+        [local]
         interface ISubMenu {
             /**
              * Sets the submenu header's title to the title given in <var>titleRes</var>

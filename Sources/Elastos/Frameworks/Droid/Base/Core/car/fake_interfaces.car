@@ -84,6 +84,20 @@ module
 
     }}} // Elastos.Droid.Privacy
 
+
+    //
+    // Elastos.Droid.Animation
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Animation {
+
+        interface IStateListAnimator {
+        }
+
+    }}} // Elastos.Droid.Animation
+
+
     //
     // Elastos.Droid.View
     //
@@ -93,11 +107,7 @@ module
 
         interface ICompatibilityInfoHolder {}
 
-        interface IMenuInflater {}
-
-        interface IMenuItem {}
-
-        interface ISubMenu {}
+        interface IViewOutlineProvider {}
 
         interface IWindowManagerLayoutParams {}
 
@@ -105,23 +115,45 @@ module
 
         interface IIWindowId {}
 
-        interface IMotionEvent {}
+        interface IWindowId {}
 
-        interface IRenderNode {}
-
-        interface ISurface {}
+        interface IWindowInsets {}
 
         interface ICanvasProperty {}
 
-        interface IView {}
-
         interface IViewGroup {}
 
+        interface IViewParent {}
+
+        interface IViewOverlay {}
+
+        interface IViewGroupLayoutParams {}
+
+        interface IViewTreeObserver {}
+
+        interface IViewPropertyAnimator {}
+
         interface IMagnificationSpec {}
+
+        namespace Animation {
+            interface IAnimation {}
+        }
+
+        namespace InputMethod {
+            interface IEditorInfo {}
+
+            interface IInputConnection {}
+        }
 
         namespace Accessibility {
 
             interface IAccessibilityInteractionConnectionCallback {}
+
+            interface IAccessibilityEvent {}
+
+            interface IAccessibilityNodeInfo {}
+
+            interface IAccessibilityNodeProvider {}
 
         } // Elastos.Droid.View.Accessibility
 
@@ -136,7 +168,7 @@ module
     }}} // Elastos.Droid.View
 
     //
-    // Elastos.Droid.Widget
+    // Elastos.Droid.Internal
     //
     namespace Elastos {
     namespace Droid {
@@ -149,6 +181,12 @@ module
             interface IInputContext {}
 
         }// Elastos.Droid.Internal.View
+
+        namespace Telephony {
+
+            interface ICallerInfo {}
+
+        } //Elastos.Droid.Internal.Telephony
 
     }}} // Elastos.Droid.Internal
 
@@ -277,23 +315,6 @@ module
         }
 
     }}} // Elastos.Droid.telecom
-
-    //
-    // Elastos.Droid.Internal.Telephony
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-
-    namespace Telephony {
-
-        interface ICallerInfo {
-        }
-
-    } //Elastos.Droid.Internal.Telephony
-
-
-    }}} // Elastos.Droid.Internal
 
     //
     // Elastos.Droid.Hardware
