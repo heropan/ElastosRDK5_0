@@ -2,12 +2,17 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Text.ISpanned;
 
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
+    /**
+     * InputFilters can be attached to {@link Editable}s to constrain the
+     * changes that can be made to them.
+     */
     interface IInputFilter {
         /**
          * This method is called when the buffer is going to replace the
@@ -34,6 +39,31 @@ module
             [in] Int32 dstart,
             [in] Int32 dend,
             [out] ICharSequence** cs);
+    }
+
+    /**
+     * This filter will capitalize all the lower case letters that are added
+     * through edits.
+     *
+     * @Involve
+     * interface IInputFilter
+     */
+    interface IInputFilterAllCaps {
+    }
+
+    /**
+     * This filter will constrain edits not to make the length of the text
+     * greater than the specified length.
+     *
+     * @Involve
+     * interface IInputFilter
+     */
+    interface IInputFilterLengthFilter {
+        /**
+         * @return the maximum length enforced by this input filter
+         */
+        GetMax(
+            [out] Int32* max);
     }
 
     }//namespace Text

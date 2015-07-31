@@ -2,7 +2,7 @@
 module
 {
     interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.Text.Style.IUpdateAppearance;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -14,13 +14,13 @@ module
      * with a movement method of LinkMovementMethod, the affected spans of
      * text can be selected.  If clicked, the {@link #onClick} method will
      * be called.
-     */
-    /**
+     *
      * @Involve
+     * interface IUpdateAppearance
      * interface ICharacterStyle
      */
     [local]
-    interface IClickableSpan /*implements IUpdateAppearance*/ {
+    interface IClickableSpan {
         /**
          * Performs the click action associated with this span.
          */
@@ -32,11 +32,21 @@ module
      * @Involve
      * interface ICharacterStyleHelper
      */
-    interface IClickableSpanHelper {}
+    interface IClickableSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
+    }
 
     }//namespace Style
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

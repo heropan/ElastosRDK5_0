@@ -42,7 +42,7 @@ module
 
         /**
          * If the key listener wants to handle this key, return true,
-         * otherwise return false and the caller (i.e. the widget host)
+         * otherwise return false and the caller (i.e.&nbsp;the widget host)
          * will handle the key.
          */
         OnKeyDown(
@@ -54,7 +54,7 @@ module
 
         /**
          * If the key listener wants to handle this key release, return true,
-         * otherwise return false and the caller (i.e. the widget host)
+         * otherwise return false and the caller (i.e.&nbsp;the widget host)
          * will handle the key.
          */
         OnKeyUp(
@@ -66,7 +66,7 @@ module
 
         /**
          * If the key listener wants to other kinds of key events, return true,
-         * otherwise return false and the caller (i.e. the widget host)
+         * otherwise return false and the caller (i.e.&nbsp;the widget host)
          * will handle the key.
          */
         OnKeyOther(

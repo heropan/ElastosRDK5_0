@@ -4,16 +4,27 @@ module
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IAppendable;
 
+    interface Elastos.Droid.Text.IInputFilter;
+
     namespace Elastos {
     namespace Droid {
     namespace Text {
 
     /**
+     * This is the interface for text whose content and markup
+     * can be changed (as opposed
+     * to immutable text like Strings).  If you make a {@link DynamicLayout}
+     * of an Editable, the layout will be reflowed as the text is changed.
+     *
      * @Involve
+     * interface IAppendable
+     * interface ISpanned
      * interface ISpannable
+     * interface IGetChars
+     * interface ICharSequence
      */
     [deprecated]
-    interface IEditable /*implements IGetChars, IAppendable*/ {
+    interface IEditable {
         /**
          * Replaces the specified range (<code>st&hellip;en</code>) of text in this
          * Editable with a copy of the slice <code>start&hellip;end</code> from

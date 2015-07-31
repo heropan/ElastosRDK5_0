@@ -4,7 +4,9 @@ module
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Text.ITextPaint;
+    interface Elastos.Droid.Text.ILayoutDirections;
     interface Elastos.Droid.Text.ITextDirectionHeuristic;
+
     enum Elastos.Droid.Text.LayoutAlignment;
     enum Elastos.Droid.Text.TextUtilsTruncateAt;
 
@@ -26,10 +28,10 @@ module
 
     /**
      * @Involve
+     * interface ITextUtilsEllipsizeCallback
      * interface ILayout
      */
     interface IBoringLayout {
-
         /**
          * Returns a BoringLayout for the specified text, potentially reusing
          * this one if it is already suitable.  The caller must make sure that
@@ -117,6 +119,35 @@ module
             [in] ITextDirectionHeuristic* textDir,
             [in] IBoringLayoutMetrics* metrics,
             [out] IBoringLayoutMetrics** ret);
+
+        //------------ILayoutHelper------------------
+        /**
+         * Return how wide a layout must be in order to display the
+         * specified text with one line per paragraph.
+         */
+        //static
+        GetDesiredWidth(
+            [in] ICharSequence* source,
+            [in] ITextPaint* paint,
+            [out] Float* ret);
+
+        /**
+         * Return how wide a layout must be in order to display the
+         * specified text slice with one line per paragraph.
+         */
+        //static
+        GetDesiredWidth(
+            [in] ICharSequence* source,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] ITextPaint* paint,
+            [out] Float* ret);
+
+        GetDirsAllLeftToRight(
+            [out] ILayoutDirections** dir);
+
+        GetDirsAllRightToLeft(
+            [out] ILayoutDirections** dir);
     }
 
     } // namespace Text

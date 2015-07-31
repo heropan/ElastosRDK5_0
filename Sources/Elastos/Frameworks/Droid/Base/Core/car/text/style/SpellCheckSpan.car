@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
@@ -13,8 +11,12 @@ module
      * automatically removed once the spell check is completed.
      *
      * @hide
+     *
+     * @Involve
+     * interface IParcelable
+     * interface IParcelableSpan
      */
-    interface ISpellCheckSpan /*implements IParcelableSpan*/ {
+    interface ISpellCheckSpan {
         SetSpellCheckInProgress(
             [in] Boolean inProgress);
 
@@ -26,5 +28,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

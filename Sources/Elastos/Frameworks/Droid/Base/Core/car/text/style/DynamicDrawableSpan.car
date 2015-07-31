@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -8,11 +9,11 @@ module
     namespace Style {
 
     /**
-     *
-     */
-    //abstract class
-    /**
      * @Involve
+     * interface IUpdateAppearance
+     * interface IUpdateLayout
+     * interface ICharacterStyle
+     * interface IMetricAffectingSpan
      * interface IReplacementSpan
      */
     interface IDynamicDrawableSpan {
@@ -29,8 +30,6 @@ module
          */
         const Int32 ALIGN_BASELINE = 1;
 
-        //constructor();
-
         /**
          * Returns the vertical alignment of this span, one of {@link #ALIGN_BOTTOM} or
          * {@link #ALIGN_BASELINE}.
@@ -43,20 +42,31 @@ module
          * to be drawn.  The dimensions of the bitmap must be the same
          * from each call to the next.
          */
-        //abstract
         GetDrawable(
             [out] IDrawable** ret);
     }
 
     /**
      * @Involve
+     * interface ICharacterStyleHelper
+     * interface IMetricAffectingSpanHelper
      * interface IReplacementSpanHelper
      */
-    interface IDynamicDrawableSpanHelper {}
+    interface IDynamicDrawableSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
+    }
 
     }//namespace Style
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

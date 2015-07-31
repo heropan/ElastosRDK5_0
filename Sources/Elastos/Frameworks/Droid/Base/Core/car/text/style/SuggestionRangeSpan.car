@@ -1,6 +1,6 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -12,12 +12,13 @@ module
      * popup window.
      *
      * @hide
-     */
-    /**
+     *
      * @Involve
+     * interface IParcelable
+     * interface IParcelableSpan
      * interface ICharacterStyle
      */
-    interface ISuggestionRangeSpan /*implements IParcelableSpan*/ {
+    interface ISuggestionRangeSpan {
         SetBackgroundColor(
             [in] Int32 backgroundColor);
     }
@@ -26,7 +27,18 @@ module
      * @Involve
      * interface ICharacterStyleHelper
      */
-    interface ISuggestionRangeSpanHelper {}
+    interface ISuggestionRangeSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
+    }
 
     }//namespace Style
     }//namespace Text

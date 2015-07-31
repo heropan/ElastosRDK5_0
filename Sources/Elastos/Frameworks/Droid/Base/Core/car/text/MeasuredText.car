@@ -1,0 +1,67 @@
+
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Text.ITextDirectionHeuristic;
+    interface Elastos.Droid.Text.Style.IMetricAffectingSpan;
+    interface Elastos.Droid.Graphics.IPaintFontMetricsInt;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Text {
+
+    /**
+     * @hide
+     */
+    interface IMeasuredText {
+        SetPos(
+            [in] Int32 pos);
+
+        /**
+         * Analyzes text for bidirectional runs.  Allocates working buffers.
+         */
+        SetPara(
+            [in] ICharSequence* text,
+            [in] Int32 start,
+            [in] Int32 end,
+            [in] ITextDirectionHeuristic* textDir);
+
+        AddStyleRun(
+            [in] ITextPaint* paint,
+            [in] Int32 len,
+            [in] IPaintFontMetricsInt* fm,
+            [out] Float* ret);
+
+        AddStyleRun(
+            [in] ITextPaint* paint,
+            [in] IMetricAffectingSpan* spans,
+            [in] Int32 len,
+            [in] IPaintFontMetricsInt* fm,
+            [out] Float* ret);
+
+        BreakText(
+            [in] Int32 limit,
+            [in] Boolean forwards,
+            [in] Float width,
+            [out] Int32* ret);
+
+        Measure(
+            [in] Int32 start,
+            [in] Int32 limit,
+            [out] Float* ret);
+    }
+
+    interface IMeasuredTextHelper {
+        Obtain(
+            [out] IMeasuredText** ret);
+
+        Recycle(
+            [in] IMeasuredText* mt,
+            [out] IMeasuredText** ret);
+    }
+
+    } // namespace Text
+    } // namepsace Droid
+    } // namespace Elastos
+}

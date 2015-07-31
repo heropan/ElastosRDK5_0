@@ -8,8 +8,10 @@ module
      * A special kind of Parcelable for objects that will serve as text spans.
      * This can only be used by code in the framework; it is not intended for
      * applications to implement their own Parcelable spans.
+     *
+     * @Involve
+     * interface IParcelable
      */
-
     interface IParcelableSpan {
         /**
          * Return a special type identifier for this span class.
@@ -21,5 +23,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

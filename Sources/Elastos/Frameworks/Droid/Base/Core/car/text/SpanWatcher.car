@@ -11,8 +11,7 @@ module
      * When an object of this type is attached to a Spannable, its methods
      * will be called to notify it that other markup objects have been
      * added, changed, or removed.
-     */
-    /**
+     *
      * @Involve
      * interface INoCopySpan
      */
@@ -54,5 +53,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

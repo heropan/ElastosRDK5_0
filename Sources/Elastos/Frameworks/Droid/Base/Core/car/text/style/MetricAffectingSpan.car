@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Droid.Text.ITextPaint;
+    interface Elastos.Droid.Text.Style.ICharacterStyle;
 
     namespace Elastos {
     namespace Droid {
@@ -8,7 +9,12 @@ module
     namespace Style {
 
     /**
+     * The classes that affect character-level text formatting in a way that
+     * changes the width or height of characters extend this class.
+     *
      * @Involve
+     * interface IUpdateAppearance
+     * interface IUpdateLayout
      * interface ICharacterStyle
      */
     interface IMetricAffectingSpan {
@@ -20,7 +26,18 @@ module
      * @Involve
      * interface ICharacterStyleHelper
      */
-    interface IMetricAffectingSpanHelper {}
+    interface IMetricAffectingSpanHelper {
+        /**
+         * A given CharacterStyle can only applied to a single region of a given
+         * Spanned.  If you need to attach the same CharacterStyle to multiple
+         * regions, you can use this method to wrap it with a new object that
+         * will have the same effect but be a distinct object so that it can
+         * also be attached without conflict.
+         */
+        Wrap(
+            [in] ICharacterStyle* cs,
+            [out] ICharacterStyle** result);
+    }
 
     }//namespace Style
     }//namespace Text

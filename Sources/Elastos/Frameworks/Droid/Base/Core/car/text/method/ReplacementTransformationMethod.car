@@ -11,13 +11,15 @@ module
      * This transformation method causes the characters in the {@link #getOriginal}
      * array to be replaced by the corresponding characters in the
      * {@link #getReplacement} array.
+     *
+     * @Involve
+     * interface ITransformationMethod
      */
     //public abstract
-    interface IReplacementTransformationMethod /*implements ITransformationMethod*/ {}
+    interface IReplacementTransformationMethod {}
 
     }//namespace Method
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

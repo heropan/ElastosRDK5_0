@@ -7,8 +7,16 @@ module
     namespace Text {
 
     /**
+     * This is the class for text whose content is immutable but to which
+     * markup objects can be attached and detached.
+     * For mutable text, see {@link SpannableStringBuilder}.
+     *
      * @Involve
-     * interface Elastos.Droid.Text.ISpannable
+     * interface ISpanned
+     * interface ISpannable
+     * interface IGetChars
+     * interface ICharSequence
+     * interface ISpannable
      */
     interface ISpannableString {
     }

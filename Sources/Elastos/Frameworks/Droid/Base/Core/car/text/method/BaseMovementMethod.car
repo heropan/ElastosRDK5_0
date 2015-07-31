@@ -9,12 +9,14 @@ module
 
     /**
      * Base classes for movement methods.
+     *
+     * @Involve
+     * interface IMovementMethod;
      */
-    interface IBaseMovementMethod /*implements IMovementMethod*/ {}
+    interface IBaseMovementMethod {}
 
     }//namespace Method
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

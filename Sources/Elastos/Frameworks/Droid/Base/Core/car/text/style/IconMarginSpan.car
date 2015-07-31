@@ -1,17 +1,22 @@
 module
 {
-    interface Elastos.Droid.Text.Style.ILineHeightSpan;
-
     namespace Elastos {
     namespace Droid {
     namespace Text {
     namespace Style {
 
-    interface IIconMarginSpan /*implements ILeadingMarginSpan,  ILineHeightSpan*/ {}
+    /**
+     * @Involve
+     * interface IParagraphStyle
+     * interface IWrapTogetherSpan
+     * interface ILineHeightSpan
+     * interface ILeadingMarginSpan
+     */
+
+    interface IIconMarginSpan {}
 
     }//namespace Style
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

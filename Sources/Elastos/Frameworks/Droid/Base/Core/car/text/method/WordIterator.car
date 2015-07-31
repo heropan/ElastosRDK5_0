@@ -15,9 +15,11 @@ module
      *
      * Also provides methods to determine word boundaries.
      * {@hide}
+     *
+     * @Involve
+     * interface ISelectionPositionIterator
      */
-    interface IWordIterator /*implements ISelectionPositionIterator*/ {
-
+    interface IWordIterator {
         SetCharSequence(
             [in] ICharSequence* charSequence,
             [in] Int32 start,
@@ -60,5 +62,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

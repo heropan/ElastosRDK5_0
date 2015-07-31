@@ -9,9 +9,9 @@ module
 
     /**
      * A movement method that interprets movement keys by scrolling the text buffer.
-     */
-    /**
+     *
      * @Involve
+     * interface IMovementMethod
      * interface IBaseMovementMethod
      */
     interface IScrollingMovementMethod  {

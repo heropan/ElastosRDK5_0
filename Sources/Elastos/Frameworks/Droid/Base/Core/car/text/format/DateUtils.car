@@ -2,7 +2,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.ICalendar;
-//    using interface Elastos::Utility::IFormatter;
+    using interface Elastos.Utility.IFormatter;
 
     interface Elastos.Droid.Content.IContext;
 
@@ -70,14 +70,14 @@ module
         // translated.
         /**
          * This is not actually the preferred 24-hour date format in all locales.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const String HOUR_MINUTE_24 = "%H:%M";
         const String MONTH_FORMAT = "%B";
         /**
          * This is not actually a useful month name in all locales.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const String ABBREV_MONTH_FORMAT = "%b";
@@ -94,7 +94,7 @@ module
          *
          * @more <p>
          *       e.g. "Sunday" or "January"
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const Int32 LENGTH_LONG = 10;
@@ -105,7 +105,7 @@ module
          *
          * @more <p>
          *       e.g. "Sun" or "Jan"
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const Int32 LENGTH_MEDIUM = 20;
@@ -117,7 +117,7 @@ module
          * <p>e.g. "Su" or "Jan"
          * <p>In most languages, the results returned for LENGTH_SHORT will be the same as
          * the results returned for {@link #LENGTH_MEDIUM}.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const Int32 LENGTH_SHORT = 30;
@@ -126,7 +126,7 @@ module
          * Request an even shorter abbreviated version of the name.
          * Do not use this.  Currently this will always return the same result
          * as {@link #LENGTH_SHORT}.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const Int32 LENGTH_SHORTER = 40;
@@ -138,14 +138,14 @@ module
          * <p>e.g. "S", "T", "T" or "J"
          * <p>In some languages, the results returned for LENGTH_SHORTEST will be the same as
          * the results returned for {@link #LENGTH_SHORT}.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         const Int32 LENGTH_SHORTEST = 50;
 
         /**
          * @hide
-         * @deprecated use {@link android.text.format.Time}
+         * @deprecated Use {@link android.text.format.Time}
          */
         Assign(
             [in] ICalendar* rval,
@@ -197,11 +197,11 @@ module
          */
         FormatDateRange(
             [in] IContext* ctx,
-            [in] /*Elastos::Utility::IFormatter*/IInterface* formatter,
+            [in] IFormatter* formatter,
             [in] Int64 startMillis,
             [in] Int64 endMillis,
             [in] Int32 flags,
-            [out] /*Elastos::Utility::IFormatter*/IInterface** ret
+            [out] IFormatter** ret
             );
 
         /**
@@ -235,7 +235,6 @@ module
          *   <li>FORMAT_SHOW_TIME</li>
          *   <li>FORMAT_SHOW_WEEKDAY</li>
          *   <li>FORMAT_SHOW_YEAR</li>
-         *   <li>FORMAT_NO_YEAR</li>
          *   <li>FORMAT_SHOW_DATE</li>
          *   <li>FORMAT_NO_MONTH_DAY</li>
          *   <li>FORMAT_12HOUR</li>
@@ -263,11 +262,9 @@ module
          *
          * <p>
          * If FORMAT_SHOW_YEAR is set, then the year is always shown.
-         * If FORMAT_NO_YEAR is set, then the year is not shown.
-         * If neither FORMAT_SHOW_YEAR nor FORMAT_NO_YEAR are set, then the year
+         * If FORMAT_SHOW_YEAR is not set, then the year
          * is shown only if it is different from the current year, or if the start
-         * and end dates fall on different years.  If both are set,
-         * FORMAT_SHOW_YEAR takes precedence.
+         * and end dates fall on different years.
          *
          * <p>
          * Normally the date is shown unless the start and end day are the same.
@@ -372,12 +369,12 @@ module
          */
         FormatDateRange(
             [in] IContext* ctx,
-            [in] /*Elastos::Utility::IFormatter*/IInterface* formatter,
+            [in] IFormatter* formatter,
             [in] Int64 startMillis,
             [in] Int64 endMillis,
             [in] Int32 flags,
             [in] String timeZone,
-            [out] /*Elastos::Utility::IFormatter*/IInterface** ret
+            [out] IFormatter** ret
             );
 
         /**
@@ -449,10 +446,11 @@ module
             [out] String* ret);
 
         /**
-         * Formats an elapsed time in the form "MM:SS" or "H:MM:SS"
-         * for display on the call-in-progress screen.
+         * Formats an elapsed time in a format like "MM:SS" or "H:MM:SS" (using a form
+         * suited to the current locale), similar to that used on the call-in-progress
+         * screen.
          *
-         * @param recycle {@link StringBuilder} to recycle, if possible
+         * @param recycle {@link StringBuilder} to recycle, or null to use a temporary one.
          * @param elapsedSeconds the elapsed time in seconds.
          */
         FormatElapsedTime(
@@ -489,7 +487,7 @@ module
          * @param ampm Either {@link Calendar#AM Calendar.AM} or {@link Calendar#PM Calendar.PM}.
          * @throws IndexOutOfBoundsException if the ampm is out of bounds.
          * @return Localized version of "AM" or "PM".
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         GetAMPMString(
@@ -507,7 +505,7 @@ module
          *               Undefined lengths will return {@link #LENGTH_MEDIUM}
          *               but may return something different in the future.
          * @throws IndexOutOfBoundsException if the dayOfWeek is out of bounds.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         GetDayOfWeekString(
@@ -524,7 +522,7 @@ module
          *               Undefined lengths will return {@link #LENGTH_MEDIUM}
          *               but may return something different in the future.
          * @return Localized month of the year.
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
+         * @deprecated Use {@link java.text.SimpleDateFormat} instead.
          */
         //@Deprecated
         GetMonthString(
@@ -597,7 +595,7 @@ module
          * Time spans in the past are formatted like "42 minutes ago". Time spans in
          * the future are formatted like "in 42 minutes".
          * <p>
-         * Can use {@link #FORMAT_ABBREV_RELATIVE} flag to use abbreviated relative
+         * Can Use {@link #FORMAT_ABBREV_RELATIVE} flag to use abbreviated relative
          * times, like "42 mins ago".
          *
          * @param time the time to describe, in milliseconds
@@ -669,58 +667,11 @@ module
             [out, callee]ArrayOf<Int32>* sameYearTable);
 
         /**
-         * Return a localized string for the month of the year, for
-         * contexts where the month is not formatted together with
-         * a day of the month.
-         *
-         * @param month One of {@link Calendar#JANUARY Calendar.JANUARY},
-         *               {@link Calendar#FEBRUARY Calendar.FEBRUARY}, etc.
-         * @param abbrev One of {@link #LENGTH_LONG}, {@link #LENGTH_MEDIUM},
-         *               or {@link #LENGTH_SHORTEST}.
-         *               Undefined lengths will return {@link #LENGTH_MEDIUM}
-         *               but may return something different in the future.
-         * @return Localized month of the year.
-         * @hide Pending API council approval
-         * @deprecated use {@link java.text.SimpleDateFormat} instead.
-         */
-        //@Deprecated
-        GetStandaloneMonthString(
-            [in] Int32 month,
-            [in] Int32 abbrev,
-            [out] String* ret);
-
-        /**
          * @return true if the supplied when is today else false
          */
         IsToday(
             [in] Int64 when,
             [out] Boolean* ret);
-
-        /**
-         * @hide
-         * @deprecated use {@link android.text.format.Time}
-         * Return true if this date string is local time
-         */
-        IsUTC(
-            [in] String s,
-            [out] Boolean* ret);
-
-        /**
-         * @hide
-         * @deprecated use {@link android.text.format.Time}
-         */
-        NewCalendar(
-            [in] Boolean zulu,
-            [out] ICalendar** ret);
-
-        /**
-         * Format a time so it appears like it would in the status bar clock.
-         * @deprecated use {@link #DateFormat.getTimeFormat(Context)} instead.
-         * @hide
-         */
-        TimeString(
-            [in] Int64 millis,
-            [out] ICharSequence** ret);
 
         /**
          * Return a string containing the date and time in RFC2445 format.
@@ -729,7 +680,7 @@ module
          *
          * @param cal the date and time to write
          * @hide
-         * @deprecated use {@link android.text.format.Time}
+         * @deprecated Use {@link android.text.format.Time}
          */
         WriteDateTime(
             [in] ICalendar* cal,
@@ -743,7 +694,7 @@ module
          * be written at the end as per RFC2445.  Otherwise, the time is
          * considered in localtime.
          * @hide
-         * @deprecated use {@link android.text.format.Time}
+         * @deprecated Use {@link android.text.format.Time}
          */
         WriteDateTime(
             [in] ICalendar* cal,
@@ -758,7 +709,7 @@ module
          *           has already been called on sb to the appropriate length
          *           which is sb.setLength(zulu ? 16 : 15)
          * @hide
-         * @deprecated use {@link android.text.format.Time}
+         * @deprecated Use {@link android.text.format.Time}
          */
         WriteDateTime(
             [in] ICalendar* cal,
@@ -771,5 +722,4 @@ module
     }//namespace Text
     }//namespace Droid
     }//namespace Elastos
-
 }

@@ -14,7 +14,7 @@ module
     //merge("../car/location.car");
     merge("../car/view.car");
     merge("../car/hardware.car");
-    //merge("../car/text.car");
+    merge("../car/text.car");
     //merge("../car/app.car");
 
     merge("../car/net.car");
