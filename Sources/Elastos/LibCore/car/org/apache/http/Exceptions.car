@@ -28,4 +28,5 @@ module
     const E_NTLM_ENGINE_EXCEPTION                           = 0xB2030000;
     const E_UNSUPPORTED_DIGEST_ALGORITHM_EXCEPTION          = 0xB2040000;
     const E_TUNNEL_REFUSED_EXCEPTION                        = 0xB2050000;
+    const E_DATE_PARSE_EXCEPTION                            = 0xB2060000;
 }

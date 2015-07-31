@@ -57,7 +57,8 @@ module
          */
         Match(
             [in] ICookie* cookie,
-            [in] ICookieOrigin* origin);
+            [in] ICookieOrigin* origin,
+            [out] Boolean* result);
 
     }
 

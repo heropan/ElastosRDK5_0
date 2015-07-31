@@ -20,3 +20,4 @@ DIRS += impl/auth
 DIRS += impl/client
 DIRS += impl/conn
 DIRS += impl/conn/tsccm
+DIRS += impl/cookie

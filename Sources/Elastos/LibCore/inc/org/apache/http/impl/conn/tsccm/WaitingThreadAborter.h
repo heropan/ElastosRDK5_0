@@ -39,6 +39,7 @@ public:
 private:
     AutoPtr<WaitingThread> mWaitingThread;
     Boolean mAborted;
+};
 
 } // namespace Tsccm
 } // namespace Conn

@@ -77,7 +77,7 @@ module
          *  with given attributes, <tt>false</tt> otherwise.
          */
         Match(
-            [in] IHeader* header,
+            [in] ICookie* cookie,
             [in] ICookieOrigin* origin,
             [out] Boolean* result);
 

@@ -1,0 +1,38 @@
+
+TARGET_NAME= cookie
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/cookie
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/util
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/cookie
+
+SOURCES = AbstractCookieAttributeHandler.cpp
+SOURCES += AbstractCookieSpec.cpp
+SOURCES += BasicClientCookie.cpp
+SOURCES += BasicClientCookie2.cpp
+SOURCES += BasicCommentHandler.cpp
+SOURCES += BasicDomainHandler.cpp
+SOURCES += BasicExpiresHandler.cpp
+SOURCES += BasicMaxAgeHandler.cpp
+SOURCES += BasicPathHandler.cpp
+SOURCES += BasicSecureHandler.cpp
+SOURCES += BestMatchSpec.cpp
+SOURCES += BestMatchSpecFactory.cpp
+SOURCES += BrowserCompatSpecFactory.cpp
+SOURCES += CookieSpecBase.cpp
+SOURCES += DateUtils.cpp
+SOURCES += NetscapeDomainHandler.cpp
+SOURCES += NetscapeDraftHeaderParser.cpp
+SOURCES += NetScapeDraftSpec.cpp
+SOURCES += NetscapeDraftSpecFactory.cpp
+SOURCES += RFC2109DomainHandler.cpp
+SOURCES += RFC2109Spec.cpp
+SOURCES += RFC2109SpecFactory.cpp
+SOURCES += RFC2109VersionHandler.cpp
+SOURCES += RFC2965CommentUrlAttributeHandler.cpp
+SOURCES += RFC2965DiscardAttributeHandler.cpp
+SOURCES += RFC2965DomainAttributeHandler.cpp
+SOURCES += RFC2965PortAttributeHandler.cpp
+SOURCES += RFC2965Spec.cpp

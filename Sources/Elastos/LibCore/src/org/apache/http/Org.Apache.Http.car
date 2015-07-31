@@ -129,6 +129,7 @@ module
     merge("../../../../car/org/apache/http/cookie/CookieSpecRegistry.car");
     merge("../../../../car/org/apache/http/cookie/SetCookie.car");
     merge("../../../../car/org/apache/http/cookie/SetCookie2.car");
+    merge("../../../../car/org/apache/http/cookie/SM.car");
 
     merge("../../../../car/org/apache/http/cookie/params/CookieSpecParamBean.car");
     merge("../../../../car/org/apache/http/cookie/params/CookieSpecPNames.car");
