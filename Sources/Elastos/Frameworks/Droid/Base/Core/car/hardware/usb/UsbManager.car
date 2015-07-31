@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IMap;
     using interface Elastos.Droid.Os.IParcelFileDescriptor;
     using interface Elastos.Droid.App.IPendingIntent;
 
@@ -203,7 +203,7 @@ module
          * @return HashMap containing all connected USB devices.
          */
         GetDeviceList(
-            [out] IObjectStringMap** list);
+            [out] IMap** list);
 
         /**
          * Opens the device so it can be used to send and receive

@@ -27,9 +27,9 @@ module
          * @return Information about the specified display, or NULL if it does not exist.
          * This object belongs to an internal cache and should be treated as if it were immutable.
          */
-//        GetDisplayInfo(
-//            [in] Int32 displayId,
-//            [out] IDisplayInfo** displayInfo);
+        // GetDisplayInfo(
+        //     [in] Int32 displayId,
+        //     [out] IDisplayInfo** displayInfo);
 
         /**
          * Gets all currently valid logical display ids.
@@ -103,34 +103,35 @@ module
         ForgetWifiDisplay(
             [in] String deviceAddress);
 
-        GetWifiDisplayStatus(
+        /* GetWifiDisplayStatus(
             [out] IWifiDisplayStatus** status);
 
-//        CreateVirtualDisplay(
-//            [in] IContext* context,
-//            [in] IMediaProjection* projection,
-//            [in] String name,
-//            [in] Int32 width,
-//            [in] Int32 height,
-//            [in] Int32 densityDpi,
-//            [in] ISurface* surface,
-//            [in] Int32 flags,
-//            [in] IIVirtualDisplayCallback* callback,
-//            [in] IHandler* handler,
-//            [out] IVirtualDisplay** result);
+        CreateVirtualDisplay(
+            [in] IContext* context,
+            [in] IMediaProjection* projection,
+            [in] String name,
+            [in] Int32 width,
+            [in] Int32 height,
+            [in] Int32 densityDpi,
+            [in] ISurface* surface,
+            [in] Int32 flags,
+            [in] IVirtualDisplayCallback* callback,
+            [in] IHandler* handler,
+            [out] IVirtualDisplay** outvd);
 
-//        SetVirtualDisplaySurface(
-//            [in] IIVirtualDisplayCallback* token,
-//            [in] ISurface* surface);
+        SetVirtualDisplaySurface(
+            [in] IVirtualDisplayCallback* token,
+            [in] ISurface* surface);
 
         ResizeVirtualDisplay(
-            [in] IIVirtualDisplayCallback* token,
+            [in] IVirtualDisplayCallback* token,
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 densityDpi);
 
         ReleaseVirtualDisplay(
             [in] IIVirtualDisplayCallback* token);
+        */
     }
 
     interface IDisplayManagerGlobalHelper {

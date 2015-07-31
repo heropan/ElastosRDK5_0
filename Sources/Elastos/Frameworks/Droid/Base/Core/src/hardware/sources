@@ -9,18 +9,18 @@ INCLUDES += $(MAKEDIR)/../../inc/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES += CSerialPort.cpp
-SOURCES += CSerialManager.cpp
-SOURCES += CSensor.cpp
-SOURCES += CSensorEvent.cpp
-SOURCES += LegacySensorManager.cpp
-SOURCES += CSensorManager.cpp
-SOURCES += SensorManager.cpp
-SOURCES += CSensorManagerHelper.cpp
-SOURCES += CSystemSensorManager.cpp
-SOURCES += GeomagneticField.cpp
+// SOURCES += CSerialPort.cpp
+// SOURCES += CSerialManager.cpp
+// SOURCES += CSensor.cpp
+// SOURCES += CSensorEvent.cpp
+// SOURCES += LegacySensorManager.cpp
+// SOURCES += CSensorManager.cpp
+// SOURCES += SensorManager.cpp
+// SOURCES += CSensorManagerHelper.cpp
+// SOURCES += CSystemSensorManager.cpp
+// SOURCES += GeomagneticField.cpp
 SOURCES += CHardwareCameraHelper.cpp
-SOURCES += CHardwareCamera.cpp
-SOURCES += CLegacySensorManagerRotationWatcher.cpp
+// SOURCES += CHardwareCamera.cpp
+// SOURCES += CLegacySensorManagerRotationWatcher.cpp
 
-#LIBRARIES += display/display.lib
+LIBRARIES += display/display.lib

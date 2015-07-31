@@ -1,19 +1,23 @@
 
-#include "ext/frameworkdef.h"
+// #include "ext/frameworkdef.h"
 #include "hardware/display/CDisplayManagerGlobalHelper.h"
-#include "hardware/display/DisplayManagerGlobal.h"
+// #include "hardware/display/DisplayManagerGlobal.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Display {
 
+CAR_INTERFACE_IMPL(CDisplayManagerGlobalHelper, Singleton, IDisplayManagerGlobalHelper)
+
+CAR_SINGLETON_IMPL(CDisplayManagerGlobalHelper)
+
 ECode CDisplayManagerGlobalHelper::GetInstance(
     /* [out] */ IDisplayManagerGlobal** global)
 {
     VALIDATE_NOT_NULL(global);
-    AutoPtr<IDisplayManagerGlobal> temp = DisplayManagerGlobal::GetInstance();
-    *global = temp;
+    // AutoPtr<IDisplayManagerGlobal> temp = DisplayManagerGlobal::GetInstance();
+    // *global = temp;
     REFCOUNT_ADD(*global);
     return NOERROR;
 }

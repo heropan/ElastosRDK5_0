@@ -1,14 +1,12 @@
 
 module
 {
-
     interface Elastos.Droid.View.IDisplay;
 
     namespace Elastos {
     namespace Droid {
     namespace Hardware {
     namespace Display {
-
     /**
      * Represents a virtual display. The content of a virtual display is rendered to a
      * {@link android.view.Surface} that you must provide to {@link DisplayManager#createVirtualDisplay
