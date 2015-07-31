@@ -2,9 +2,11 @@
 module
 {
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.View.ICompatibilityInfoHolder;
     interface Elastos.Droid.View.IDisplay;
-    interface Elastos.Droid.View.IDisplayInfo;
+//    interface Elastos.Droid.View.IDisplayInfo;
+//    interface Elastos.Droid.content.IContext;
 
     namespace Elastos {
     namespace Droid {
@@ -23,9 +25,9 @@ module
          * @return Information about the specified display, or NULL if it does not exist.
          * This object belongs to an internal cache and should be treated as if it were immutable.
          */
-        GetDisplayInfo(
-            [in] Int32 displayId,
-            [out] IDisplayInfo** displayInfo);
+//        GetDisplayInfo(
+//            [in] Int32 displayId,
+//            [out] IDisplayInfo** displayInfo);
 
         /**
          * Gets all currently valid logical display ids.
@@ -45,10 +47,10 @@ module
          * @param cih The compatibility info, or NULL if none is required.
          * @return The display object, or NULL if there is no display with the given id.
          */
-        GetCompatibleDisplay(
-            [in] Int32 displayId,
-            [in] ICompatibilityInfoHolder* cih,
-            [out] IDisplay** display);
+//        GetCompatibleDisplay(
+//            [in] Int32 displayId,
+//            [in] IDisplayAdjustments* daj,
+//            [out] IDisplay** display);
 
         /**
          * Gets information about a logical display without applying any compatibility metrics.
@@ -60,6 +62,18 @@ module
             [in] Int32 displayId,
             [out] IDisplay** display);
 
+        /**
+         * Gets information about a logical display without applying any compatibility metrics.
+         *
+         * @param displayId The logical display id.
+         * @param IBinder the activity token for this display.
+         * @return The display object, or null if there is no display with the given id.
+         */
+        GetRealDisplay(
+            [in] Int32 displayId,
+            [in] IBinder* token,
+            [out] IDisplay** display);
+
         RegisterDisplayListener(
             [in] IDisplayListener* listener,
             [in] IHandler* handler);
@@ -67,10 +81,16 @@ module
         UnregisterDisplayListener(
             [in] IDisplayListener* listener);
 
-        ScanWifiDisplays();
+        StartWifiDisplayScan();
+
+        StopWifiDisplayScan();
 
         ConnectWifiDisplay(
             [in] String deviceAddress);
+
+        PauseWifiDisplay();
+
+        ResumeWifiDisplay();
 
         DisconnectWifiDisplay();
 
@@ -81,8 +101,34 @@ module
         ForgetWifiDisplay(
             [in] String deviceAddress);
 
-        GetWifiDisplayStatus(
-            [out] IWifiDisplayStatus** status);
+//        GetWifiDisplayStatus(
+//            [out] IWifiDisplayStatus** status);
+
+//        CreateVirtualDisplay(
+//            [in] IContext* context,
+//            [in] IMediaProjection* projection,
+//            [in] String name,
+//            [in] Int32 width,
+//            [in] Int32 height,
+//            [in] Int32 densityDpi,
+//            [in] ISurface* surface,
+//            [in] Int32 flags,
+//            [in] IVirtualDisplayCallback* callback,
+//            [in] IHandler* handler,
+//            [out] IVirtualDisplay** result);
+
+//        SetVirtualDisplaySurface(
+//            [in] IVirtualDisplayCallback* token,
+//            [in] ISurface* surface);
+
+//        ResizeVirtualDisplay(
+//            [in] IVirtualDisplayCallback* token,
+//            [in] Int32 width,
+//            [in] Int32 height,
+//            [in] Int32 densityDpi);
+
+//        ReleaseVirtualDisplay(
+//            [in] IVirtualDisplayCallback* token);
     }
 
     interface IDisplayManagerGlobalHelper {
