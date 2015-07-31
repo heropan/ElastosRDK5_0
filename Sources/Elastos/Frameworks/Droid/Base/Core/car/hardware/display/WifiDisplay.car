@@ -6,6 +6,10 @@ module
     namespace Hardware {
     namespace Display {
 
+    /**
+     * @Involve
+     * interface IParcelable;
+     */
     interface IWifiDisplay {
         /**
          * Gets the MAC address of the Wifi display device.
