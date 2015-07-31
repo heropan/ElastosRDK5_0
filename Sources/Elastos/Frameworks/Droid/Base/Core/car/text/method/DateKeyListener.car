@@ -35,6 +35,7 @@ module
      * interface IBaseKeyListenerHelper
      * interface INumberKeyListenerHelper
      */
+    [local]
     interface IDateKeyListenerHelper {
         //---------IDateKeyListenerHelper-----------
         /**

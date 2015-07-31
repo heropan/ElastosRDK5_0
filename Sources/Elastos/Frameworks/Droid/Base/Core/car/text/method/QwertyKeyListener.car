@@ -36,6 +36,7 @@ module
      * interface IMetaKeyKeyListenerHelper
      * interface IBaseKeyListenerHelper
      */
+    [local]
     interface IQwertyKeyListenerHelper{
         //---------IQwertyKeyListenerHelper---------
         /**

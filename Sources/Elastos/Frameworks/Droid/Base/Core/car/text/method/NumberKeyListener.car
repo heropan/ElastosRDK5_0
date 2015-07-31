@@ -43,6 +43,7 @@ module
      * interface IMetaKeyKeyListenerHelper
      * interface IBaseKeyListenerHelper
      */
+    [local]
     interface INumberKeyListenerHelper {
         //---------IMetaKeyKeyListenerHelper---------
         /**

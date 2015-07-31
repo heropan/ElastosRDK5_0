@@ -43,6 +43,7 @@ module
      * interface IBaseKeyListenerHelper
      * interface INumberKeyListenerHelper
      */
+    [local]
     interface IDialerKeyListenerHelper {
         //---------IDialerKeyListenerHelper---------
         /**

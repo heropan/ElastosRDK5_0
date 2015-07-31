@@ -22,6 +22,7 @@ module
      * interface IDialogInterface;
      * interface IDialog;
      */
+    [local]
     interface ICharacterPickerDialog {
         /**
          * Handles clicks on the character buttons.

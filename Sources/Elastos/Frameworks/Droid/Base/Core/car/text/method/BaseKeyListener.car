@@ -67,6 +67,7 @@ module
      * @Involve
      * interface IMetaKeyKeyListenerHelper
      */
+    [local]
     interface IBaseKeyListenerHelper{
         //---------IMetaKeyKeyListenerHelper---------
         /**
