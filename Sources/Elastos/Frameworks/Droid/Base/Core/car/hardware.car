@@ -24,12 +24,13 @@ module
     merge("hardware/display/WifiDisplay.car");
     merge("hardware/display/WifiDisplayStatus.car");
     merge("hardware/display/VirtualDisplay.car");
-
     merge("hardware/input/IInputManager.car");
     merge("hardware/input/IInputDevicesChangedListener.car");
+    merge("hardware/input/InputDeviceIdentifier.car");
     merge("hardware/input/InputManager.car");
+    merge("hardware/input/InputManagerInternal.car");
     merge("hardware/input/KeyboardLayout.car");
-
+    merge("hardware/input/TouchCalibration.car");
     merge("hardware/usb/IUsbManager.car");
     merge("hardware/usb/UsbAccessory.car");
     merge("hardware/usb/UsbConstants.car");

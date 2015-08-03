@@ -6,6 +6,7 @@ module
     // interface Elastos.Droid.View.IInputEvent;
     interface Elastos.Droid.Hardware.Input.IKeyboardLayout;
     interface Elastos.Droid.Hardware.Input.IInputDevicesChangedListener;
+    interface Elastos.Droid.Hardware.Input.ITouchCalibration;
 
     namespace Elastos {
     namespace Droid {
@@ -40,6 +41,17 @@ module
         //     [in] Int32 mode,
         //     [out] Boolean* res);
 
+        // Calibrate input device position
+        GetTouchCalibrationForInputDevice(
+            [in] String inputDeviceDescriptor,
+            [in] Int32 rotation,
+            [out] ITouchCalibration** result);
+
+        SetTouchCalibrationForInputDevice(
+            [in] String inputDeviceDescriptor,
+            [in] Int32 rotation,
+            [in] ITouchCalibration* calibration);
+
         // Keyboard layouts configuration.
         GetKeyboardLayouts(
             [out, callee] ArrayOf<IKeyboardLayout*>* layouts);
@@ -49,23 +61,23 @@ module
             [out] IKeyboardLayout** layout);
 
         GetCurrentKeyboardLayoutForInputDevice(
-            [in] String inputDeviceDescriptor,
+            [in] IInputDeviceIdentifier* identifier,
             [out] String* keyboardLayoutDescriptor);
 
         SetCurrentKeyboardLayoutForInputDevice(
-            [in] String inputDeviceDescriptor,
+            [in] IInputDeviceIdentifier* identifier,
             [in] String keyboardLayoutDescriptor);
 
         GetKeyboardLayoutsForInputDevice(
-            [in] String inputDeviceDescriptor,
+            [in] IInputDeviceIdentifier* identifier,
             [out, callee] ArrayOf<String>* keyboardLayoutDescriptors);
 
         AddKeyboardLayoutForInputDevice(
-            [in] String inputDeviceDescriptor,
+            [in] IInputDeviceIdentifier* identifier,
             [in] String keyboardLayoutDescriptor);
 
         RemoveKeyboardLayoutForInputDevice(
-            [in] String inputDeviceDescriptor,
+            [in] IInputDeviceIdentifier* identifier,
             [in] String keyboardLayoutDescriptor);
 
         // Registers an input devices changed listener.
