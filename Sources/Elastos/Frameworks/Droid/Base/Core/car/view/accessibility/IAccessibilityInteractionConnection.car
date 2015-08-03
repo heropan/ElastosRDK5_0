@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Graphics.IRegion;
+    interface Elastos.Droid.View.IMagnificationSpec;
     interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
     interface Elastos.Droid.Os.IBundle;
 
@@ -15,7 +17,7 @@ module
      *
      * @hide
      */
-    [oneway]
+    [local, oneway]
     interface IAccessibilityInteractionConnection {
         FindAccessibilityNodeInfoByAccessibilityId(
             [in] Int64 accessibilityNodeId,
@@ -23,7 +25,8 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
 
         FindAccessibilityNodeInfoByViewId(
             [in] Int64 accessibilityNodeId,
@@ -32,7 +35,8 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
 
         FindAccessibilityNodeInfosByText(
             [in] Int64 accessibilityNodeId,
@@ -41,7 +45,8 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
 
         FindFocus(
             [in] Int64 accessibilityNodeId,
@@ -50,7 +55,8 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
 
         FocusSearch(
             [in] Int64 accessibilityNodeId,
@@ -59,7 +65,8 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
 
         PerformAccessibilityAction(
             [in] Int64 accessibilityNodeId,
@@ -69,7 +76,17 @@ module
             [in] IAccessibilityInteractionConnectionCallback* cb,
             [in] Int32 flags,
             [in] Int32 interrogatingPid,
-            [in] Int64 interrogatingTid);
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
+
+        ComputeClickPointInScreen(
+            [in] Int64 accessibilityNodeId,
+            [in] IRegion* bounds,
+            [in] Int32 interactionId,
+            [in] IAccessibilityInteractionConnectionCallback* cb,
+            [in] Int32 interrogatingPid,
+            [in] Int64 interrogatingTid,
+            [in] IMagnificationSpec* spec);
     }
 
     } // namespace Accessibility

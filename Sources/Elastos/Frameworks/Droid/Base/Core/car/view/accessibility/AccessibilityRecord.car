@@ -1,15 +1,18 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
-    using interface Elastos.Core.ICharSequence;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Accessibility {
 
+    [local]
     interface IAccessibilityRecord {
         /**
          * Sets the event source.
@@ -378,7 +381,7 @@ module
          * @return The text.
          */
         GetText(
-            [out] IObjectContainer** container);
+            [out] IList** container);
 
         /**
          * Sets the text before a change.
@@ -475,6 +478,7 @@ module
         Recycle();
     }
 
+    [local]
     interface IAccessibilityRecordHelper {
         /**
          * Returns a cached instance if such is available or a new one is

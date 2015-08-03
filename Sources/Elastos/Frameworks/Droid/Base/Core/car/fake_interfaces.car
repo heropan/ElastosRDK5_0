@@ -32,6 +32,19 @@ module
 
     }}} // Elastos.Droid.Accounts
 
+    //
+    // Elastos.Droid.AccessibilityService
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace AccessibilityService {
+
+        interface IAccessibilityServiceInfo {}
+
+        interface IAccessibilityServiceClient {}
+
+    }}} // Elastos.Droid.AccessibilityService
+
 
     //
     // Elastos.Droid.Net
@@ -142,18 +155,6 @@ module
 
             interface ILayoutAnimationController {}
         }
-
-        namespace Accessibility {
-
-            interface IAccessibilityInteractionConnectionCallback {}
-
-            interface IAccessibilityEvent {}
-
-            interface IAccessibilityNodeInfo {}
-
-            interface IAccessibilityNodeProvider {}
-
-        } // Elastos.Droid.View.Accessibility
 
         namespace Internal {
 

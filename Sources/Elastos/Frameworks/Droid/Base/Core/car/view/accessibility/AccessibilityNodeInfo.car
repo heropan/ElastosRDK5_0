@@ -2,25 +2,346 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.IObjectInt32Map;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityWindowInfo;
+    interface Elastos.Droid.View.Accessibility.ICollectionInfo;
+    interface Elastos.Droid.View.Accessibility.ICollectionItemInfo;
+    interface Elastos.Droid.View.Accessibility.IRangeInfo;
+
 
     namespace Elastos {
     namespace Droid {
     namespace View {
     namespace Accessibility {
 
+
+    /**
+     * Class with information if a node is a collection. Use
+     * {@link CollectionInfo#obtain(int, int, boolean)} to get an instance.
+     * <p>
+     * A collection of items has rows and columns and may be hierarchical.
+     * For example, a horizontal list is a collection with one column, as
+     * many rows as the list items, and is not hierarchical; A table is a
+     * collection with several rows, several columns, and is not hierarchical;
+     * A vertical tree is a hierarchical collection with one column and
+     * as many rows as the first level children.
+     * </p>
+     */
+    interface ICollectionInfo {
+        /** Selection mode where items are not selectable. */
+        const Int32 SELECTION_MODE_NONE = 0;
+
+        /** Selection mode where a single item may be selected. */
+        const Int32 SELECTION_MODE_SINGLE = 1;
+
+        /** Selection mode where multiple items may be selected. */
+        const Int32 SELECTION_MODE_MULTIPLE = 2;
+
+        /**
+         * Gets the number of rows.
+         *
+         * @return The row count.
+         */
+        GetRowCount(
+            [out] Int32* rowCount);
+
+        /**
+         * Gets the number of columns.
+         *
+         * @return The column count.
+         */
+        GetColumnCount(
+            [out] Int32* rowCount);
+
+        /**
+         * Gets if the collection is a hierarchically ordered.
+         *
+         * @return Whether the collection is hierarchical.
+         */
+        IsHierarchical(
+            [out] Boolean* result);
+
+        /**
+         * Gets the collection's selection mode.
+         *
+         * @return The collection's selection mode, one of:
+         *         <ul>
+         *         <li>{@link #SELECTION_MODE_NONE}
+         *         <li>{@link #SELECTION_MODE_SINGLE}
+         *         <li>{@link #SELECTION_MODE_MULTIPLE}
+         *         </ul>
+         */
+        GetSelectionMode(
+            [out] Int32* mode);
+    }
+
+    interface ICollectionInfoHelper {
+
+        /**
+         * Obtains a pooled instance.
+         *
+         * @param rowCount The number of rows.
+         * @param columnCount The number of columns.
+         * @param hierarchical Whether the collection is hierarchical.
+         */
+        Obtain(
+            [in] Int32 rowCount,
+            [in] Int32 columnCount,
+            [in] Boolean hierarchical,
+            [out] ICollectionInfo** info);
+
+        /**
+         * Obtains a pooled instance.
+         *
+         * @param rowCount The number of rows.
+         * @param columnCount The number of columns.
+         * @param hierarchical Whether the collection is hierarchical.
+         * @param selectionMode The collection's selection mode, one of:
+         *            <ul>
+         *            <li>{@link #SELECTION_MODE_NONE}
+         *            <li>{@link #SELECTION_MODE_SINGLE}
+         *            <li>{@link #SELECTION_MODE_MULTIPLE}
+         *            </ul>
+         */
+        Obtain(
+            [in] Int32 rowCount,
+            [in] Int32 columnCount,
+            [in] Boolean hierarchical,
+            [in] Int32 selectionMode,
+            [out] ICollectionInfo** info);
+    }
+
+    /**
+     * Class with information if a node is a collection item. Use
+     * {@link CollectionItemInfo#obtain(int, int, int, int, boolean)}
+     * to get an instance.
+     * <p>
+     * A collection item is contained in a collection, it starts at
+     * a given row and column in the collection, and spans one or
+     * more rows and columns. For example, a header of two related
+     * table columns starts at the first row and the first column,
+     * spans one row and two columns.
+     * </p>
+     */
+    interface ICollectionItemInfo {
+        /**
+         * Gets the column index at which the item is located.
+         *
+         * @return The column index.
+         */
+        GetColumnIndex(
+            [out] Int32* result);
+
+        /**
+         * Gets the row index at which the item is located.
+         *
+         * @return The row index.
+         */
+        GetRowIndex(
+            [out] Int32* result);
+
+        /**
+         * Gets the number of columns the item spans.
+         *
+         * @return The column span.
+         */
+        GetColumnSpan(
+            [out] Int32* result);
+
+        /**
+         * Gets the number of rows the item spans.
+         *
+         * @return The row span.
+         */
+        GetRowSpan(
+            [out] Int32* result);
+
+        /**
+         * Gets if the collection item is a heading. For example, section
+         * heading, table header, etc.
+         *
+         * @return If the item is a heading.
+         */
+        IsHeading(
+            [out] Boolean* result);
+
+        /**
+         * Gets if the collection item is selected.
+         *
+         * @return If the item is selected.
+         */
+        IsSelected(
+            [out] Boolean* result);
+    }
+
+    interface ICollectionItemInfoHelper {
+
+        /**
+         * Obtains a pooled instance.
+         *
+         * @param rowIndex The row index at which the item is located.
+         * @param rowSpan The number of rows the item spans.
+         * @param columnIndex The column index at which the item is located.
+         * @param columnSpan The number of columns the item spans.
+         * @param heading Whether the item is a heading.
+         */
+        Obtain(
+            [in] Int32 rowIndex,
+            [in] Int32 rowSpan,
+            [in] Int32 columnIndex,
+            [in] Int32 columnSpan,
+            [in] Boolean heading,
+            [out] ICollectionItemInfo** info);
+
+        /**
+         * Obtains a pooled instance.
+         *
+         * @param rowIndex The row index at which the item is located.
+         * @param rowSpan The number of rows the item spans.
+         * @param columnIndex The column index at which the item is located.
+         * @param columnSpan The number of columns the item spans.
+         * @param heading Whether the item is a heading.
+         * @param selected Whether the item is selected.
+         */
+        Obtain(
+            [in] Int32 rowIndex,
+            [in] Int32 rowSpan,
+            [in] Int32 columnIndex,
+            [in] Int32 columnSpan,
+            [in] Boolean heading,
+            [in] Boolean selected,
+            [out] ICollectionItemInfo** info);
+    }
+
+    interface IAccessibilityAction {
+        GetId(
+            [out] Int32* id);
+
+        GetLabel(
+            [out] ICharSequence** seq);
+    }
+
+    interface IAccessibilityActionHelper {
+
+        GetACTION_FOCUS(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_CLEAR_FOCUS(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_SELECT(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_CLEAR_SELECTION(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_LONG_CLICK(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_ACCESSIBILITY_FOCUS(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_CLEAR_ACCESSIBILITY_FOCUS(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_NEXT_AT_MOVEMENT_GRANULARITY(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_NEXT_HTML_ELEMENT(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_PREVIOUS_HTML_ELEMENT(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_SCROLL_FORWARD(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_SCROLL_BACKWARD(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_COPY(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_PASTE(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_CUT(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_SET_SELECTION(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_EXPAND(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_COLLAPSE(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_DISMISS(
+            [out] IAccessibilityAction** action);
+
+        GetACTION_SET_TEXT(
+            [out] IAccessibilityAction** action);
+    }
+
+    interface IRangeInfo {
+        /** Range type: integer. */
+        const Int32 RANGE_TYPE_INT = 0;
+        /** Range type: float. */
+        const Int32 RANGE_TYPE_FLOAT = 1;
+        /** Range type: percent with values from zero to one.*/
+        const Int32 RANGE_TYPE_PERCENT = 2;
+
+        GetType(
+            [out] Int32* type);
+
+        GetMin(
+            [out] Float* value);
+
+        GetMax(
+            [out] Float* value);
+
+        GetCurrent(
+            [out] Float* value);
+    }
+
+    interface IRangeInfoHelper {
+        Obtain(
+            [in] Int32 type,
+            [in] Float min,
+            [in] Float max,
+            [in] Float current,
+            [out] IRangeInfo** result);
+    }
+
+    [local]
     interface IAccessibilityNodeInfo {
-        /** @hide */
-        const Int32 UNDEFINED = -1;
 
         /** @hide */
-        const Int64 ROOT_NODE_ID = UNDEFINED << 32 | UNDEFINED;//makeNodeId(UNDEFINED, UNDEFINED);
+        const Int32 UNDEFINED_CONNECTION_ID = -1;
 
         /** @hide */
-        const Int32 ACTIVE_WINDOW_ID = UNDEFINED;
+        const Int32 UNDEFINED_SELECTION_INDEX = -1;
+
+        /** @hide */
+        const Int32 UNDEFINED_ITEM_ID = 0x7FFFFFFF;
+
+        /** @hide */
+        const Int64 ROOT_NODE_ID = UNDEFINED_ITEM_ID << 32 | UNDEFINED_ITEM_ID;//makeNodeId(UNDEFINED_ITEM_ID, UNDEFINED_ITEM_ID);
+
+        /** @hide */
+        const Int32 ACTIVE_WINDOW_ID = UNDEFINED_ITEM_ID;
+
+        /** @hide */
+        const Int32 ANY_WINDOW_ID = -2;
 
         /** @hide */
         const Int32 FLAG_PREFETCH_PREDECESSORS = 0x00000001;
@@ -32,7 +353,10 @@ module
         const Int32 FLAG_PREFETCH_DESCENDANTS = 0x00000004;
 
         /** @hide */
-        const Int32 INCLUDE_NOT_IMPORTANT_VIEWS = 0x00000008;
+        const Int32 FLAG_INCLUDE_NOT_IMPORTANT_VIEWS = 0x00000008;
+
+        /** @hide */
+        const Int32 FLAG_REPORT_VIEW_IDS = 0x00000010;
 
         // Actions.
 
@@ -52,7 +376,7 @@ module
         const Int32 ACTION_SELECT = 0x00000004;
 
         /**
-         * Action that unselects the node.
+         * Action that deselects the node.
          */
         const Int32 ACTION_CLEAR_SELECTION = 0x00000008;
 
@@ -81,15 +405,21 @@ module
          * at a given movement granularity. For example, move to the next character,
          * word, etc.
          * <p>
-         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT}<br>
-         * <strong>Example:</strong>
+         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT}<,
+         * {@link #ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN}<br>
+         * <strong>Example:</strong> Move to the previous character and do not extend selection.
          * <code><pre><p>
          *   Bundle arguments = new Bundle();
          *   arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT,
          *           AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER);
+         *   arguments.putBoolean(AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN,
+         *           false);
          *   info.performAction(AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY, arguments);
          * </code></pre></p>
          * </p>
+         *
+         * @see #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT
+         * @see #ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN
          *
          * @see #setMovementGranularities(int)
          * @see #getMovementGranularities()
@@ -107,16 +437,22 @@ module
          * at a given movement granularity. For example, move to the next character,
          * word, etc.
          * <p>
-         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT}<br>
-         * <strong>Example:</strong>
+         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT}<,
+         * {@link #ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN}<br>
+         * <strong>Example:</strong> Move to the next character and do not extend selection.
          * <code><pre><p>
          *   Bundle arguments = new Bundle();
          *   arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT,
          *           AccessibilityNodeInfo.MOVEMENT_GRANULARITY_CHARACTER);
+         *   arguments.putBoolean(AccessibilityNodeInfo.ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN,
+         *           false);
          *   info.performAction(AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY,
          *           arguments);
          * </code></pre></p>
          * </p>
+         *
+         * @see #ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT
+         * @see #ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN
          *
          * @see #setMovementGranularities(int)
          * @see #getMovementGranularities()
@@ -170,15 +506,86 @@ module
         const Int32 ACTION_SCROLL_BACKWARD = 0x00002000;
 
         /**
+         * Action to copy the current selection to the clipboard.
+         */
+        const Int32 ACTION_COPY = 0x00004000;
+
+        /**
+         * Action to paste the current clipboard content.
+         */
+        const Int32 ACTION_PASTE = 0x00008000;
+
+        /**
+         * Action to cut the current selection and place it to the clipboard.
+         */
+        const Int32 ACTION_CUT = 0x00010000;
+
+        /**
+         * Action to set the selection. Performing this action with no arguments
+         * clears the selection.
+         * <p>
+         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_SELECTION_START_INT},
+         * {@link #ACTION_ARGUMENT_SELECTION_END_INT}<br>
+         * <strong>Example:</strong>
+         * <code><pre><p>
+         *   Bundle arguments = new Bundle();
+         *   arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_START_INT, 1);
+         *   arguments.putInt(AccessibilityNodeInfo.ACTION_ARGUMENT_SELECTION_END_INT, 2);
+         *   info.performAction(AccessibilityNodeInfo.ACTION_SET_SELECTION, arguments);
+         * </code></pre></p>
+         * </p>
+         *
+         * @see #ACTION_ARGUMENT_SELECTION_START_INT
+         * @see #ACTION_ARGUMENT_SELECTION_END_INT
+         */
+        const Int32 ACTION_SET_SELECTION = 0x00020000;
+
+        /**
+         * Action to expand an expandable node.
+         */
+        const Int32 ACTION_EXPAND = 0x00040000;
+
+        /**
+         * Action to collapse an expandable node.
+         */
+        const Int32 ACTION_COLLAPSE = 0x00080000;
+
+        /**
+         * Action to dismiss a dismissable node.
+         */
+        const Int32 ACTION_DISMISS = 0x00100000;
+
+        /**
+         * Action that sets the text of the node. Performing the action without argument, using <code>
+         * null</code> or empty {@link CharSequence} will clear the text. This action will also put the
+         * cursor at the end of text.
+         * <p>
+         * <strong>Arguments:</strong> {@link #ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE}<br>
+         * <strong>Example:</strong>
+         * <code><pre><p>
+         *   Bundle arguments = new Bundle();
+         *   arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE,
+         *       "android");
+         *   info.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, arguments);
+         * </code></pre></p>
+         */
+        const Int32 ACTION_SET_TEXT = 0x00200000;
+
+        // Action arguments
+
+        /**
          * Argument for which movement granularity to be used when traversing the node text.
          * <p>
          * <strong>Type:</strong> int<br>
          * <strong>Actions:</strong> {@link #ACTION_NEXT_AT_MOVEMENT_GRANULARITY},
          * {@link #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY}
          * </p>
+         *
+         * @see #ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+         * @see #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
          */
         const String ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT =
-            "ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT";
+                "ACTION_ARGUMENT_MOVEMENT_GRANULARITY_INT";
 
         /**
          * Argument for which HTML element to get moving to the next/previous HTML element.
@@ -187,9 +594,65 @@ module
          * <strong>Actions:</strong> {@link #ACTION_NEXT_HTML_ELEMENT},
          *         {@link #ACTION_PREVIOUS_HTML_ELEMENT}
          * </p>
+         *
+         * @see #ACTION_NEXT_HTML_ELEMENT
+         * @see #ACTION_PREVIOUS_HTML_ELEMENT
          */
         const String ACTION_ARGUMENT_HTML_ELEMENT_STRING =
-            "ACTION_ARGUMENT_HTML_ELEMENT_STRING";
+                "ACTION_ARGUMENT_HTML_ELEMENT_STRING";
+
+        /**
+         * Argument for whether when moving at granularity to extend the selection
+         * or to move it otherwise.
+         * <p>
+         * <strong>Type:</strong> boolean<br>
+         * <strong>Actions:</strong> {@link #ACTION_NEXT_AT_MOVEMENT_GRANULARITY},
+         * {@link #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY}
+         * </p>
+         *
+         * @see #ACTION_NEXT_AT_MOVEMENT_GRANULARITY
+         * @see #ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY
+         */
+        const String ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN =
+                "ACTION_ARGUMENT_EXTEND_SELECTION_BOOLEAN";
+
+        /**
+         * Argument for specifying the selection start.
+         * <p>
+         * <strong>Type:</strong> int<br>
+         * <strong>Actions:</strong> {@link #ACTION_SET_SELECTION}
+         * </p>
+         *
+         * @see #ACTION_SET_SELECTION
+         */
+        const String ACTION_ARGUMENT_SELECTION_START_INT =
+                "ACTION_ARGUMENT_SELECTION_START_INT";
+
+        /**
+         * Argument for specifying the selection end.
+         * <p>
+         * <strong>Type:</strong> int<br>
+         * <strong>Actions:</strong> {@link #ACTION_SET_SELECTION}
+         * </p>
+         *
+         * @see #ACTION_SET_SELECTION
+         */
+        const String ACTION_ARGUMENT_SELECTION_END_INT =
+                "ACTION_ARGUMENT_SELECTION_END_INT";
+
+        /**
+         * Argument for specifying the text content to set
+         * <p>
+         * <strong>Type:</strong> CharSequence<br>
+         * <strong>Actions:</strong> {@link #ACTION_SET_TEXT}
+         * </p>
+         *
+         * @see #ACTION_SET_TEXT
+         */
+        const String ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE =
+                "ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE";
+
+        // Focus types
 
         /**
          * The input focus.
@@ -228,6 +691,7 @@ module
          */
         const Int32 MOVEMENT_GRANULARITY_PAGE = 0x00000010;
 
+
         SetSource(
             [in] IView* source);
 
@@ -246,8 +710,20 @@ module
         GetWindowId(
             [out] Int32* id);
 
-        GetChildNodeIds(
-            [out] IObjectInt32Map** ids);
+        /**
+         * Refreshes this info with the latest state of the view it represents.
+         * <p>
+         * <strong>Note:</strong> If this method returns false this info is obsolete
+         * since it represents a view that is no longer in the view tree and should
+         * be recycled.
+         * </p>
+         * @return Whether the refresh succeeded.
+         */
+        Refresh(
+            [out] Boolean* bypassCache);
+
+        GetChildId(
+            [out] Int32* id);
 
         GetChildCount(
             [out] Int32* count);
@@ -260,8 +736,23 @@ module
             [in] IView* child);
 
         AddChild(
+            [in] IView* child,
+            [out] Boolean* result);
+
+        AddChild(
             [in] IView* root,
             [in] Int32 virtualDescendantId);
+
+        RemoveChild(
+            [in] IView* root,
+            [in] Int32 virtualDescendantId,
+            [out] Boolean* result);
+
+        /**
+         * Gets the actions that can be performed on the node.
+         */
+        GetActionList(
+            [out] IList** list);
 
         /**
          * Gets the actions that can be performed on the node.
@@ -286,8 +777,44 @@ module
         GetActions(
             [out] Int32* actions);
 
+        /**
+         * Adds an action that can be performed on the node.
+         * <p>
+         * To add a standard action use the static constants on {@link AccessibilityAction}.
+         * To add a custom action create a new {@link AccessibilityAction} by passing in a
+         * resource id from your application as the action id and an optional label that
+         * describes the action. To override one of the standard actions use as the action
+         * id of a standard action id such as {@link #ACTION_CLICK} and an optional label that
+         * describes the action.
+         * </p>
+         * <p>
+         *   <strong>Note:</strong> Cannot be called from an
+         *   {@link android.accessibilityservice.AccessibilityService}.
+         *   This class is made immutable before being delivered to an AccessibilityService.
+         * </p>
+         *
+         * @param action The action.
+         *
+         * @throws IllegalStateException If called from an AccessibilityService.
+         */
+        AddAction(
+            [in] IAccessibilityAction* action);
+
         AddAction(
             [in] Int32 action);
+
+        RemoveAction(
+            [in] Int32 action);
+
+        RemoveAction(
+            [in] IAccessibilityAction* action,
+            [out] Boolean* result);
+
+        SetMaxTextLength(
+            [in] Int32 max);
+
+        GetMaxTextLength(
+            [out] Int32* max);
 
         SetMovementGranularities(
             [in] Int32 granularities);
@@ -306,7 +833,21 @@ module
 
         FindAccessibilityNodeInfosByText(
             [in] String text,
-            [out] IObjectContainer** container);
+            [out] IList** container);
+
+        FindAccessibilityNodeInfosByViewId(
+            [in] String viewId,
+            [out] IList** container);
+
+        /**
+         * Gets the window to which this node belongs.
+         *
+         * @return The window.
+         *
+         * @see android.accessibilityservice.AccessibilityService#getWindows()
+         */
+        GetWindow(
+            [out] IAccessibilityWindowInfo** info);
 
         GetParent(
             [out] IAccessibilityNodeInfo** parent);
@@ -405,6 +946,71 @@ module
         SetScrollable(
             [in] Boolean scrollable);
 
+        IsEditable(
+            [out] Boolean* editable);
+
+        SetEditable(
+            [in] Boolean editable);
+
+        GetCollectionInfo(
+            [out] ICollectionInfo** info);
+
+        SetCollectionInfo(
+            [in] ICollectionInfo* info);
+
+        /**
+         * Gets the collection item info if the node is a collection item. A collection
+         * item is always a child of a collection.
+         *
+         * @return The collection item info.
+         */
+        GetCollectionItemInfo(
+            [out] ICollectionItemInfo** info);
+
+        SetCollectionItemInfo(
+            [in] ICollectionItemInfo* collectionItemInfo);
+
+        /**
+         * Gets the range info if this node is a range.
+         *
+         * @return The range.
+         */
+        GetRangeInfo(
+            [out] IRangeInfo** info);
+
+        SetRangeInfo(
+            [in] IRangeInfo* info);
+
+        IsContentInvalid(
+            [out] Boolean* result);
+
+        SetContentInvalid(
+            [in] Boolean contentInvalid);
+
+        GetLiveRegion(
+            [out] Int32* region);
+
+        GetLiveRegion(
+            [in] Int32 region);
+
+        IsMultiLine(
+            [out] Boolean* result);
+
+        SetMultiLine(
+            [in] Boolean result);
+
+        CanOpenPopup(
+            [out] Boolean* result);
+
+        SetCanOpenPopup(
+            [in] Boolean result);
+
+        IsDismissable(
+            [out] Boolean* dismissable);
+
+        SetDismissable(
+            [in] Boolean dismissable);
+
         GetPackageName(
             [out] ICharSequence** packageName);
 
@@ -420,8 +1026,14 @@ module
         GetText(
             [out] ICharSequence** text);
 
-        SetText(
+        SetError(
             [in] ICharSequence* text);
+
+        GetError(
+            [out] ICharSequence** error);
+
+        SetText(
+            [in] ICharSequence* error);
 
         GetContentDescription(
             [out] ICharSequence** description);
@@ -449,11 +1061,41 @@ module
         GetLabeledBy(
             [out] IAccessibilityNodeInfo** info);
 
+        SetViewIdResourceName(
+            [in] String viewIdResName);
+
+        GetViewIdResourceName(
+            [out] String* viewIdResName);
+
+        GetTextSelectionStart(
+            [out] Int32* start);
+
+        GetTextSelectionEnd(
+            [out] Int32* start);
+
+        SetTextSelection(
+            [in] Int32 start,
+            [in] Int32 end);
+
+        GetInputType(
+            [out] Int32* type);
+
+        SetInputType(
+            [in] Int32 inputType);
+
+        GetExtras(
+            [out] IBundle** bundle);
+
+        GetBooleanProperty(
+            [in] Int32 property,
+            [out] Boolean* result);
+
+        SetBooleanProperty(
+            [in] Int32 property,
+            [in] Boolean result);
+
         SetConnectionId(
             [in] Int32 connectionId);
-
-        DescribeContents(
-            [out] Int32* contents);
 
         GetSourceNodeId(
             [out] Int64* id);
@@ -465,18 +1107,9 @@ module
             [out] Boolean* sealed);
 
         Recycle();
-
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* hash);
-
-        ToString(
-            [out] String* s);
     }
 
+    [local]
     interface IAccessibilityNodeInfoHelper {
         /**
          * Gets the accessibility view id which identifies a View in the view three.

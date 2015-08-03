@@ -1,0 +1,129 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IRect;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Accessibility {
+
+    /**
+     * This class represents a state snapshot of a window for accessibility
+     * purposes. The screen content contains one or more windows where some
+     * windows can be descendants of other windows, which is the windows are
+     * hierarchically ordered. Note that there is no root window. Hence, the
+     * screen content can be seen as a collection of window trees.
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [local]
+    interface IAccessibilityWindowInfo {
+        /**
+         * Window type: This is an application window. Such a window shows UI for
+         * interacting with an application.
+         */
+        const Int32 TYPE_APPLICATION = 1;
+
+        /**
+         * Window type: This is an input method window. Such a window shows UI for
+         * inputting text such as keyboard, suggestions, etc.
+         */
+        const Int32 TYPE_INPUT_METHOD = 2;
+
+        /**
+         * Window type: This is an system window. Such a window shows UI for
+         * interacting with the system.
+         */
+        const Int32 TYPE_SYSTEM = 3;
+
+        GetType(
+            [out] Int32* type);
+
+        SetType(
+            [in] Int32 type);
+
+        GetLayer(
+            [out] Int32* layer);
+
+        SetLayer(
+            [in] Int32 layer);
+
+        GetRoot(
+            [out] IAccessibilityNodeInfo** info);
+
+        GetParent(
+            [out] IAccessibilityWindowInfo** info);
+
+        SetParentId(
+            [in] Int32 parentId);
+
+        GetId(
+            [out] Int32* id);
+
+        SetId(
+            [in] Int32 id);
+
+        SetConnectionId(
+            [in] Int32 connectionId);
+
+        GetBoundsInScreen(
+            [out] IRect** outBounds);
+
+        SetBoundsInScreen(
+            [in] IRect* bounds);
+
+        IsActive(
+            [out] Boolean* active);
+
+        SetActive(
+            [in] Boolean active);
+
+        IsFocused(
+            [out] Boolean* focused);
+
+        SetFocused(
+            [in] Boolean focused);
+
+        IsAccessibilityFocused(
+            [out] Boolean* focused);
+
+        SetAccessibilityFocused(
+            [in] Boolean focused);
+
+        GetChildCount(
+            [out] Int32* count);
+
+        AddChild(
+            [in] Int32 index,
+            [out] IAccessibilityWindowInfo** info);
+
+        AddChild(
+            [in] Int32 childId);
+
+        Recycle();
+
+        Changed(
+            [in] IAccessibilityWindowInfo* other,
+            [out] Boolean* result);
+    }
+
+    [local]
+    interface IAccessibilityWindowInfoHelper {
+        Obtain(
+            [out] IAccessibilityWindowInfo** info);
+
+        Obtain(
+            [in] IAccessibilityWindowInfo* other,
+            [out] IAccessibilityWindowInfo** info);
+
+    }
+
+    } // namespace Accessibility
+    } // namespace View
+    } // namepsace Droid
+    } // namespace Elastos
+}

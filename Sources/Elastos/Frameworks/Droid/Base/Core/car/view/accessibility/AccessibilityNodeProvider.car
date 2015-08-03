@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
@@ -8,7 +10,13 @@ module
     namespace View {
     namespace Accessibility {
 
+    [local]
     interface IAccessibilityNodeProvider {
+        /**
+         * The virtual id for the hosting View.
+         */
+        const Int32 HOST_VIEW_ID = -1;
+
         /**
          * Returns an {@link AccessibilityNodeInfo} representing a virtual view,
          * i.e. a descendant of the host View, with the given <code>virtualViewId</code>
@@ -73,7 +81,23 @@ module
         FindAccessibilityNodeInfosByText(
             [in] String text,
             [in] Int32 virtualViewId,
-            [out] IObjectContainer** nodeInfos);
+            [out] IList** nodeInfos);
+
+        /**
+         * Find the virtual view, i.e. a descendant of the host View, that has the
+         * specified focus type.
+         *
+         * @param focus The focus to find. One of
+         *            {@link AccessibilityNodeInfo#FOCUS_INPUT} or
+         *            {@link AccessibilityNodeInfo#FOCUS_ACCESSIBILITY}.
+         * @return The node info of the focused view or null.
+         * @see AccessibilityNodeInfo#FOCUS_INPUT
+         * @see AccessibilityNodeInfo#FOCUS_ACCESSIBILITY
+         */
+        FindFocus(
+            [in] Int32 focus,
+            [out] IAccessibilityNodeInfo** info);
+
 
     }
 

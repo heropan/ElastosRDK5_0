@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.View.IIWindow;
 
@@ -11,6 +13,7 @@ module
 
     interface IAccessibilityEvent;
     interface IAccessibilityInteractionConnection;
+
     /**
      * Listener for the system accessibility state. To listen for changes to the accessibility
      * state on the device, implement this interface and register it with the system by
@@ -28,6 +31,42 @@ module
             [in] Boolean enabled);
     }
 
+    /**
+     * Listener for the system touch exploration state. To listen for changes to
+     * the touch exploration state on the device, implement this interface and
+     * register it with the system by calling
+     * {@link #addTouchExplorationStateChangeListener}.
+     */
+     interface ITouchExplorationStateChangeListener {
+
+        /**
+         * Called when the touch exploration enabled state changes.
+         *
+         * @param enabled Whether touch exploration is enabled.
+         */
+        OnTouchExplorationStateChanged(
+            [in] Boolean enabled);
+    }
+
+    /**
+     * Listener for the system high text contrast state. To listen for changes to
+     * the high text contrast state on the device, implement this interface and
+     * register it with the system by calling
+     * {@link #addHighTextContrastStateChangeListener}.
+     *
+     * @hide
+     */
+    interface IHighTextContrastChangeListener {
+
+        /**
+         * Called when the high text contrast enabled state changes.
+         *
+         * @param enabled Whether high text contrast is enabled.
+         */
+        OnHighTextContrastStateChanged(
+            [in] Boolean enabled);
+    }
+
     [deprecated]
     interface IAccessibilityManager {
         /** @hide */
@@ -35,6 +74,18 @@ module
 
         /** @hide */
         const Int32 STATE_FLAG_TOUCH_EXPLORATION_ENABLED = 0x00000002;
+
+        /** @hide */
+        const Int32 STATE_FLAG_HIGH_TEXT_CONTRAST_ENABLED = 0x00000004;
+
+        /** @hide */
+        const Int32 DALTONIZER_DISABLED = -1;
+
+        /** @hide */
+        const Int32 DALTONIZER_SIMULATE_MONOCHROMACY = 0;
+
+        /** @hide */
+        const Int32 DALTONIZER_CORRECT_DEUTERANOMALY = 12;
 
         /**
          * Returns if the accessibility in the system is enabled.
@@ -50,6 +101,20 @@ module
          * @return True if touch exploration is enabled, false otherwise.
          */
         IsTouchExplorationEnabled(
+            [out] Boolean* result);
+
+        /**
+         * Returns if the high text contrast in the system is enabled.
+         * <p>
+         * <strong>Note:</strong> You need to query this only if you application is
+         * doing its own rendering and does not rely on the platform rendering pipeline.
+         * </p>
+         *
+         * @return True if high text contrast is enabled, false otherwise.
+         *
+         * @hide
+         */
+        IsHighTextContrastEnabled(
             [out] Boolean* result);
 
         /**
@@ -81,7 +146,7 @@ module
          * @deprecated Use {@link #getInstalledAccessibilityServiceList()}
          */
         GetAccessibilityServiceList(
-            [out] IObjectContainer** serviceList);
+            [out] IList** serviceList);
 
         /**
          * Returns the {@link AccessibilityServiceInfo}s of the installed accessibility services.
@@ -89,7 +154,7 @@ module
          * @return An unmodifiable list with {@link AccessibilityServiceInfo}s.
          */
         GetInstalledAccessibilityServiceList(
-            [out] IObjectContainer** serviceList);
+            [out] IList** serviceList);
 
         /**
          * Returns the {@link AccessibilityServiceInfo}s of the enabled accessibility services
@@ -106,7 +171,7 @@ module
          */
         GetEnabledAccessibilityServiceList(
             [in] Int32 feedbackTypeFlags,
-            [out] IObjectContainer** serviceList);
+            [out] IList** serviceList);
 
         /**
          * Registers an {@link AccessibilityStateChangeListener} for changes in
@@ -128,6 +193,48 @@ module
         RemoveAccessibilityStateChangeListener(
             [in] IAccessibilityStateChangeListener* listener,
             [out] Boolean* remove);
+
+        /**
+         * Registers a {@link TouchExplorationStateChangeListener} for changes in
+         * the global touch exploration state of the system.
+         *
+         * @param listener The listener.
+         * @return True if successfully registered.
+         */
+        AddTouchExplorationStateChangeListener(
+            [in] ITouchExplorationStateChangeListener* listener);
+
+        /**
+         * Unregisters a {@link TouchExplorationStateChangeListener}.
+         *
+         * @param listener The listener.
+         * @return True if successfully unregistered.
+         */
+        RemoveTouchExplorationStateChangeListener(
+            [in] ITouchExplorationStateChangeListener* listener);
+
+        /**
+         * Registers a {@link HighTextContrastChangeListener} for changes in
+         * the global high text contrast state of the system.
+         *
+         * @param listener The listener.
+         * @return True if successfully registered.
+         *
+         * @hide
+         */
+        AddHighTextContrastStateChangeListener(
+            [in] IHighTextContrastChangeListener* listener);
+
+        /**
+         * Unregisters a {@link HighTextContrastChangeListener}.
+         *
+         * @param listener The listener.
+         * @return True if successfully unregistered.
+         *
+         * @hide
+         */
+        RemoveHighTextContrastStateChangeListener(
+            [in] IHighTextContrastChangeListener* listener);
 
         /**
          * Adds an accessibility interaction connection interface for a given window.

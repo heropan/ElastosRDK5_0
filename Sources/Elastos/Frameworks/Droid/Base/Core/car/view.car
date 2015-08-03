@@ -98,17 +98,19 @@ module
     // merge("view/IDisplayManagerAw.car");
     // merge("view/DispList.car");
 
-    // merge("view/accessibility/AccessibilityRecord.car");
-    // merge("view/accessibility/AccessibilityEvent.car");
-    // merge("view/accessibility/AccessibilityEventSource.car");
-    // merge("view/accessibility/AccessibilityManager.car");
-    // merge("view/accessibility/AccessibilityNodeInfo.car");
-    // merge("view/accessibility/AccessibilityNodeProvider.car");
-    // merge("view/accessibility/IAccessibilityInteractionConnection.car");
-    // merge("view/accessibility/IAccessibilityInteractionConnectionCallback.car");
-    // merge("view/accessibility/IAccessibilityInteractionClient.car");
-    // merge("view/accessibility/IAccessibilityManagerClient.car");
-    // merge("view/accessibility/IAccessibilityManager.car");
+    merge("view/accessibility/AccessibilityEvent.car");
+    merge("view/accessibility/AccessibilityEventSource.car");
+    merge("view/accessibility/AccessibilityManager.car");
+    merge("view/accessibility/AccessibilityNodeInfo.car");
+    merge("view/accessibility/AccessibilityNodeProvider.car");
+    merge("view/accessibility/AccessibilityRecord.car");
+    merge("view/accessibility/AccessibilityWindowInfo.car");
+    merge("view/accessibility/CaptioningManager.car");
+    merge("view/accessibility/IAccessibilityInteractionCallback.car");
+    merge("view/accessibility/IAccessibilityInteractionConnection.car");
+    merge("view/accessibility/IAccessibilityInteractionConnectionCallback.car");
+    merge("view/accessibility/IAccessibilityManager.car");
+    merge("view/accessibility/IAccessibilityManagerClient.car");
 
     // merge("view/animation/Animation.car");
     // merge("view/animation/AnimationSet.car");

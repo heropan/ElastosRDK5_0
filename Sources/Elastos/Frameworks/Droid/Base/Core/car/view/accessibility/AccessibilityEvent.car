@@ -151,6 +151,35 @@ module
         const Int32 TYPE_TOUCH_INTERACTION_END = 0x00200000;
 
         /**
+         * Represents the event change in the windows shown on the screen.
+         */
+        const Int32 TYPE_WINDOWS_CHANGED = 0x00400000;
+
+        /**
+         * Change type for {@link #TYPE_WINDOW_CONTENT_CHANGED} event:
+         * The type of change is not defined.
+         */
+        const Int32 CONTENT_CHANGE_TYPE_UNDEFINED = 0x00000000;
+
+        /**
+         * Change type for {@link #TYPE_WINDOW_CONTENT_CHANGED} event:
+         * A node in the subtree rooted at the source node was added or removed.
+         */
+        const Int32 CONTENT_CHANGE_TYPE_SUBTREE = 0x00000001;
+
+        /**
+         * Change type for {@link #TYPE_WINDOW_CONTENT_CHANGED} event:
+         * The node's text changed.
+         */
+        const Int32 CONTENT_CHANGE_TYPE_TEXT = 0x00000002;
+
+        /**
+         * Change type for {@link #TYPE_WINDOW_CONTENT_CHANGED} event:
+         * The node's content description changed.
+         */
+        const Int32 CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION = 0x00000004;
+
+        /**
          * Mask for {@link AccessibilityEvent} all types.
          *
          * @see #TYPE_VIEW_CLICKED
@@ -173,6 +202,7 @@ module
          * @see #TYPE_GESTURE_DETECTION_END
          * @see #TYPE_TOUCH_INTERACTION_START
          * @see #TYPE_TOUCH_INTERACTION_END
+         * @see #TYPE_WINDOWS_CHANGED
          */
         const Int32 TYPES_ALL_MASK = 0xFFFFFFFF;
 
@@ -223,12 +253,39 @@ module
             [in] Int32 eventType);
 
         /**
+         * Gets the bit mask of change types signaled by an
+         * {@link #TYPE_WINDOW_CONTENT_CHANGED} event. A single event may represent
+         * multiple change types.
+         *
+         * @return The bit mask of change types. One or more of:
+         *         <ul>
+         *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_CONTENT_DESCRIPTION}
+         *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_SUBTREE}
+         *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_TEXT}
+         *         <li>{@link AccessibilityEvent#CONTENT_CHANGE_TYPE_UNDEFINED}
+         *         </ul>
+         */
+        GetContentChangeTypes(
+            [out] Int32* types);
+
+        /**
+         * Sets the bit mask of node tree changes signaled by an
+         * {@link #TYPE_WINDOW_CONTENT_CHANGED} event.
+         *
+         * @param changeTypes The bit mask of change types.
+         * @throws IllegalStateException If called from an AccessibilityService.
+         * @see #getContentChangeTypes()
+         */
+        SetContentChangeTypes(
+            [in] Int32 changeTypes);
+
+        /**
          * Gets the time in which this event was sent.
          *
          * @return The event time.
          */
         GetEventTime(
-            [out] Int64* eventTime);
+            [out] Int64* time);
 
         /**
          * Sets the time in which this event was sent.

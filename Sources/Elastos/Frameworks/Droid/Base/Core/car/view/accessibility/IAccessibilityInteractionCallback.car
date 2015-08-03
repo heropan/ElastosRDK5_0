@@ -3,8 +3,6 @@ module
 {
     using interface Elastos.Utility.IList;
 
-    interface Elastos.Droid.Graphics.IPoint;
-
     namespace Elastos {
     namespace Droid {
     namespace View {
@@ -16,8 +14,8 @@ module
      *
      * @hide
      */
-    [local]
-    interface IAccessibilityInteractionConnectionCallback {
+    [local, oneway]
+    interface IAccessibilityInteractionCallback {
         /**
          * Sets the result of an async request that returns an {@link AccessibilityNodeInfo}.
          *
@@ -46,16 +44,6 @@ module
          */
         SetPerformAccessibilityActionResult(
             [in] Boolean succeeded,
-            [in] Int32 interactionId);
-
-        /**
-         * Sets the result of a request to compute a point for clicking in a view.
-         *
-         * @param point The point of null if no such point.
-         * @param interactionId The interaction id to match the result with the request.
-         */
-        SetComputeClickPointInScreenActionResult(
-            [in] IPoint* point,
             [in] Int32 interactionId);
     }
 

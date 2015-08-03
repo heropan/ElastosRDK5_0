@@ -6,6 +6,13 @@ module
     namespace View {
     namespace Accessibility {
 
+    /**
+     * Interface a client of the IAccessibilityManager implements to
+     * receive information about changes in the manager state.
+     *
+     * @hide
+     */
+    [oneway]
     interface IAccessibilityManagerClient {
         SetState(
             [in] Int32 stateFlags);
