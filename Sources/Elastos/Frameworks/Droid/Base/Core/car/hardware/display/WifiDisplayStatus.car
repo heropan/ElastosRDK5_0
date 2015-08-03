@@ -78,8 +78,8 @@ module
         /**
          * Gets the Wifi display session info (required for certification only)
          */
-        GetSessionInfo(
-            [out] IWifiDisplaySessionInfo** result);
+        // GetSessionInfo(
+        //     [out] IWifiDisplaySessionInfo** result);
 
         WriteToParcel(
             [in] IParcel* dest,
