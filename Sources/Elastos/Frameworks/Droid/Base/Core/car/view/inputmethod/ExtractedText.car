@@ -10,6 +10,9 @@ module
 
     /**
      * Information about text that has been extracted for use by an input method.
+     *
+     * This contains information about a portion of the currently edited text,
+     * that the IME should display into its own interface while in extracted mode.
      */
     interface IExtractedText {
         /**
@@ -22,6 +25,12 @@ module
          * Bit for {@link #flags}: set if the editor is currently in selection mode.
          */
         const Int32 FLAG_SELECTING = 0x0002;
+
+        GetStartOffset(
+            [out] Int32* offset);
+
+        SetStartOffset(
+            [in] Int32 offset);
 
         SetText(
             [in] ICharSequence* text);
@@ -58,12 +67,6 @@ module
 
         GetFlags(
             [out] Int32* value);
-
-        GetStartOffset(
-            [out] Int32* offset);
-
-        SetStartOffset(
-            [in] Int32 offset);
     }
 
     } // namespace InputMethod

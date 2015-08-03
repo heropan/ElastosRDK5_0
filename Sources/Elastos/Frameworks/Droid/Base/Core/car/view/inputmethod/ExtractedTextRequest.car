@@ -10,6 +10,10 @@ module
      * Description of what an input method would like from an application when
      * extract text from its input editor.
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IExtractedTextRequest {
         GetToken(
             [out] Int32* token);

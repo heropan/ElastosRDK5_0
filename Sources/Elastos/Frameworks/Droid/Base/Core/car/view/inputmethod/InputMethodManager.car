@@ -1,7 +1,9 @@
 
 module
 {
-    using interface Elastos.Utility.IObjectMap;
+    using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
@@ -178,6 +180,40 @@ module
 
     [local, deprecated]
     interface IInputMethodManager {
+
+        /**
+         * @hide Flag for IInputMethodManager.windowGainedFocus: a view in
+         * the window has input focus.
+         */
+        const Int32 CONTROL_WINDOW_VIEW_HAS_FOCUS = 1<<0;
+
+        /**
+         * @hide Flag for IInputMethodManager.windowGainedFocus: the focus
+         * is a text editor.
+         */
+        const Int32 CONTROL_WINDOW_IS_TEXT_EDITOR = 1<<1;
+
+        /**
+         * @hide Flag for IInputMethodManager.windowGainedFocus: this is the first
+         * time the window has gotten focus.
+         */
+        const Int32 CONTROL_WINDOW_FIRST = 1<<2;
+
+        /**
+         * @hide Flag for IInputMethodManager.startInput: this is the first
+         * time the window has gotten focus.
+         */
+        const Int32 CONTROL_START_INITIAL = 1<<8;
+
+        /** @hide */
+        const Int32 DISPATCH_IN_PROGRESS = -1;
+
+        /** @hide */
+        const Int32 DISPATCH_NOT_HANDLED = 0;
+
+        /** @hide */
+        const Int32 DISPATCH_HANDLED = 1;
+
         /**
          * Flag for {@link #showSoftInput} to indicate that this is an implicit
          * request to show the input window, not as the result of a direct request
@@ -238,31 +274,6 @@ module
          */
         const Int32 HIDE_NOT_ALWAYS = 0x0002;
 
-        /**
-         * @hide Flag for IInputMethodManager.windowGainedFocus: a view in
-         * the window has input focus.
-         */
-        const Int32 CONTROL_WINDOW_VIEW_HAS_FOCUS = 1<<0;
-
-        /**
-         * @hide Flag for IInputMethodManager.windowGainedFocus: the focus
-         * is a text editor.
-         */
-        const Int32 CONTROL_WINDOW_IS_TEXT_EDITOR = 1<<1;
-
-        /**
-         * @hide Flag for IInputMethodManager.windowGainedFocus: this is the first
-         * time the window has gotten focus.
-         */
-        const Int32 CONTROL_WINDOW_FIRST = 1<<2;
-
-        /**
-         * @hide Flag for IInputMethodManager.startInput: this is the first
-         * time the window has gotten focus.
-         */
-        const Int32 CONTROL_START_INITIAL = 1<<8;
-
-
         /** @hide */
         GetClient(
             [out] IInputMethodClient** client);
@@ -272,10 +283,10 @@ module
             [out] IInputContext** context);
 
         GetInputMethodList(
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetEnabledInputMethodList(
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         /**
          * Returns a list of enabled input method subtypes for the specified input method info.
@@ -287,7 +298,7 @@ module
         GetEnabledInputMethodSubtypeList(
             [in] IInputMethodInfo* imi,
             [in] Boolean allowsImplicitlySelectedSubtypes,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         ShowStatusIcon(
             [in] IBinder* imeToken,
@@ -553,6 +564,23 @@ module
             [out] Boolean* ret);
 
         /**
+         * Return true if the current input method wants to be notified when cursor/anchor location
+         * is changed.
+         *
+         * @hide
+         */
+        IsCursorAnchorInfoEnabled(
+            [out] Boolean* result);
+
+        /**
+         * Set the requested mode for {@link #updateCursorAnchorInfo(View, CursorAnchorInfo)}.
+         *
+         * @hide
+         */
+        SetUpdateCursorAnchorInfoMode(
+            [in] Int32 flags);
+
+        /**
          * Report the current cursor location in its window.
          */
         UpdateCursor(
@@ -561,6 +589,14 @@ module
             [in] Int32 top,
             [in] Int32 right,
             [in] Int32 bottom);
+
+        /**
+         * Report positional change of the text insertion point and/or characters in the composition
+         * string.
+         */
+        UpdateCursorAnchorInfo(
+            [in] IView* view,
+            [in] ICursorAnchorInfo* cursorAnchorInfo);
 
         /**
          * Call {@link InputMethodSession#appPrivateCommand(String, Bundle)
@@ -693,6 +729,26 @@ module
             [out] Boolean* swithed);
 
         /**
+         * Notify that a user took some action with this input method.
+         * @hide
+         */
+        NotifyUserAction();
+
+        /**
+         * Returns a map of all shortcut input method info and their subtypes.
+         */
+        //Map<InputMethodInfo, List<InputMethodSubtype>>
+        GetShortcutInputMethodsAndSubtypes(
+            [out] IMap** map);
+
+        /**
+         * @return The current height of the input method window.
+         * @hide
+         */
+        GetInputMethodWindowVisibleHeight(
+            [out] Int32* height);
+
+        /**
          * Force switch to the last used input method and subtype. If the last input method didn't have
          * any subtypes, the framework will simply switch to the last input method with no subtype
          * specified.
@@ -721,6 +777,21 @@ module
             [out] Boolean* switched);
 
         /**
+         * Returns true if the current IME needs to offer the users ways to switch to a next input
+         * method (e.g. a globe key.).
+         * When an IME sets supportsSwitchingToNextInputMethod and this method returns true,
+         * the IME has to offer ways to to invoke {@link #switchToNextInputMethod} accordingly.
+         * <p> Note that the system determines the most appropriate next input method
+         * and subtype in order to provide the consistent user experience in switching
+         * between IMEs and subtypes.
+         * @param imeToken Supplies the identifying token given to an input method when it was started,
+         * which allows it to perform this operation on itself.
+         */
+        ShouldOfferSwitchingToNextInputMethod(
+            [in] IBinder* imeToken,
+            [out] Boolean* result);
+
+        /**
          * Set additional input method subtypes. Only a process which shares the same uid with the IME
          * can add additional input method subtypes to the IME.
          * Please note that a subtype's status is stored in the system.
@@ -740,12 +811,6 @@ module
 
         GetLastInputMethodSubtype(
             [out] IInputMethodSubtype** subTypes);
-
-        /**
-         * Returns a map of all shortcut input method info and their subtypes.
-         */
-        GetShortcutInputMethodsAndSubtypes(
-            [out] IObjectMap** subtypes);
     }
 
     } // namespace InputMethod

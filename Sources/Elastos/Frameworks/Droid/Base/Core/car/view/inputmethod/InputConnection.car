@@ -38,6 +38,26 @@ module
         const Int32 GET_EXTRACTED_TEXT_MONITOR = 0x0001;
 
         /**
+         * The editor is requested to call
+         * {@link InputMethodManager#updateCursorAnchorInfo(android.view.View, CursorAnchorInfo)} at
+         * once, as soon as possible, regardless of cursor/anchor position changes. This flag can be
+         * used together with {@link #CURSOR_UPDATE_MONITOR}.
+         */
+        const Int32 CURSOR_UPDATE_IMMEDIATE = 1 << 0;
+
+        /**
+         * The editor is requested to call
+         * {@link InputMethodManager#updateCursorAnchorInfo(android.view.View, CursorAnchorInfo)}
+         * whenever cursor/anchor position is changed. To disable monitoring, call
+         * {@link InputConnection#requestCursorUpdates(int)} again with this flag off.
+         * <p>
+         * This flag can be used together with {@link #CURSOR_UPDATE_IMMEDIATE}.
+         * </p>
+         */
+        const Int32 CURSOR_UPDATE_MONITOR = 1 << 1;
+
+
+        /**
          * Get <var>n</var> characters of text before the current cursor position.
          *
          * <p>This method may fail either if the input connection has become invalid
@@ -158,7 +178,7 @@ module
         DeleteSurroundingText(
             [in] Int32 beforeLength,
             [in] Int32 afterLength,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Set composing text around the current cursor position with the given text,
@@ -186,7 +206,7 @@ module
         SetComposingText(
             [in] ICharSequence* text,
             [in] Int32 newCursorPosition,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Mark a certain region of text as composing text. Any composing text set
@@ -201,7 +221,7 @@ module
         SetComposingRegion(
             [in] Int32 start,
             [in] Int32 end,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Have the text editor finish whatever composing text is currently
@@ -210,7 +230,7 @@ module
          * position remains unchanged.
          */
         FinishComposingText(
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Commit text to the text box and set the new cursor position.
@@ -234,7 +254,7 @@ module
         CommitText(
             [in] ICharSequence* text,
             [in] Int32 newCursorPosition,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Commit a completion the user has selected from the possible ones
@@ -250,7 +270,7 @@ module
          */
         CommitCompletion(
             [in] ICompletionInfo* text,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Commit a correction automatically performed on the raw user's input. A typical example would
@@ -273,7 +293,7 @@ module
         SetSelection(
             [in] Int32 start,
             [in] Int32 end,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Have the editor perform an action it has said it can do.
@@ -287,7 +307,7 @@ module
          */
         PerformEditorAction(
             [in] Int32 editorAction,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Perform a context menu action on the field.  The given id may be one of:
@@ -299,7 +319,7 @@ module
          */
         PerformContextMenuAction(
             [in] Int32 id,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Tell the editor that you are starting a batch of editor operations.
@@ -307,14 +327,14 @@ module
          * until {@link #endBatchEdit} is called.
          */
         BeginBatchEdit(
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Tell the editor that you are done with a batch edit previously
          * initiated with {@link #beginBatchEdit}.
          */
         EndBatchEdit(
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Send a key event to the process that is currently attached through
@@ -353,7 +373,7 @@ module
          */
         SendKeyEvent(
             [in] IKeyEvent* event,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Clear the given meta key pressed states in the given input connection.
@@ -366,7 +386,7 @@ module
          */
         ClearMetaKeyStates(
             [in] Int32 states,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * Called by the IME to tell the client when it switches between fullscreen
@@ -375,7 +395,7 @@ module
          */
         ReportFullscreenMode(
             [in] Boolean enabled,
-            [out] Boolean* flag);
+            [out] Boolean* result);
 
         /**
          * API to send private commands from an input method to its connected
@@ -397,7 +417,24 @@ module
         PerformPrivateCommand(
             [in] String action,
             [in] IBundle* data,
-            [out] Boolean* flag);
+            [out] Boolean* result);
+
+        /**
+         * Called by the input method to ask the editor for calling back
+         * {@link InputMethodManager#updateCursorAnchorInfo(android.view.View, CursorAnchorInfo)} to
+         * notify cursor/anchor locations.
+         *
+         * @param cursorUpdateMode {@link #CURSOR_UPDATE_IMMEDIATE} and/or
+         * {@link #CURSOR_UPDATE_MONITOR}. Pass {@code 0} to disable the effect of
+         * {@link #CURSOR_UPDATE_MONITOR}.
+         * @return {@code true} if the request is scheduled. {@code false} to indicate that when the
+         * application will not call
+         * {@link InputMethodManager#updateCursorAnchorInfo(android.view.View, CursorAnchorInfo)}.
+         */
+        RequestCursorUpdates(
+            [in] Int32 cursorUpdateMode,
+            [out] Boolean* result);
+
     }
 
     } // namespace InputMethod

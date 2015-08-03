@@ -79,7 +79,7 @@ module
     merge("view/WindowInsets.car");
     merge("view/WindowManager.car");
     merge("view/WindowManagerGlobal.car");
-    //merge("view/WindowManagerPolicy.car");
+    merge("view/WindowManagerPolicy.car");
 
     // merge("view/CompatibilityInfoHolder.car");
     // merge("view/DisplayList.car");
@@ -97,8 +97,6 @@ module
     // merge("view/DisplayManagerAw.car");
     // merge("view/IDisplayManagerAw.car");
     // merge("view/DispList.car");
-    //
-
 
     // merge("view/accessibility/AccessibilityRecord.car");
     // merge("view/accessibility/AccessibilityEvent.car");
@@ -133,20 +131,20 @@ module
     // merge("view/animation/TranslateAnimation.car");
     // merge("view/animation/RotateAnimation.car");
 
-    // merge("view/inputmethod/ExtractedText.car");
-    // merge("view/inputmethod/ExtractedTextRequest.car");
-    // merge("view/inputmethod/CompletionInfo.car");
-    // merge("view/inputmethod/EditorInfo.car");
-    // merge("view/inputmethod/InputConnection.car");
-    // merge("view/inputmethod/InputBinding.car");
-    // merge("view/inputmethod/InputMethod.car");
-    // merge("view/IInputMethod.car");
-    // merge("view/inputmethod/InputMethodInfo.car");
-    // merge("view/inputmethod/InputMethodSession.car");
-    // merge("view/inputmethod/InputMethodManager.car");
-    // merge("view/inputmethod/InputMethodSubtype.car");
-    // merge("view/inputmethod/CorrectionInfo.car");
-    // merge("view/inputmethod/BaseInputConnection.car");
+    merge("view/inputmethod/BaseInputConnection.car");
+    merge("view/inputmethod/CompletionInfo.car");
+    merge("view/inputmethod/CorrectionInfo.car");
+    merge("view/inputmethod/CursorAnchorInfo.car");
+    merge("view/inputmethod/EditorInfo.car");
+    merge("view/inputmethod/ExtractedText.car");
+    merge("view/inputmethod/ExtractedTextRequest.car");
+    merge("view/inputmethod/InputBinding.car");
+    merge("view/inputmethod/InputConnection.car");
+    merge("view/inputmethod/InputMethod.car");
+    merge("view/inputmethod/InputMethodInfo.car");
+    merge("view/inputmethod/InputMethodSession.car");
+    merge("view/inputmethod/InputMethodManager.car");
+    merge("view/inputmethod/InputMethodSubtype.car");
 
     // merge("view/textservice/TextInfo.car");
     // merge("view/textservice/SuggestionsInfo.car");

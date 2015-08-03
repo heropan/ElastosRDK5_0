@@ -104,7 +104,7 @@ ECode BigInt::PutDecString(
     FAIL_RETURN(CheckString(original, 10, &s));
     FAIL_RETURN(MakeValid());
     Int32 usedLen = NativeBN::BN_dec2bn(mBignum, s);
-    if ((UInt32)usedLen < s.GetByteLength()) {
+    if (usedLen < s.GetByteLength()) {
         //throw invalidBigInteger(original);
         return E_NUMBER_FORMAT_EXCEPTION;
     }
@@ -118,7 +118,7 @@ ECode BigInt::PutHexString(
     FAIL_RETURN(CheckString(original, 16, &s));
     FAIL_RETURN(MakeValid());
     Int32 usedLen = NativeBN::BN_hex2bn(mBignum, s);
-    if ((UInt32)usedLen < s.GetByteLength()) {
+    if (usedLen < s.GetByteLength()) {
         //throw invalidBigInteger(original);
         return E_NUMBER_FORMAT_EXCEPTION;
     }

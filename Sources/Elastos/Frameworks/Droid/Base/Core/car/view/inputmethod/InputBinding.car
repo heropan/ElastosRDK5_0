@@ -13,6 +13,10 @@ module
      * Information given to an {@link InputMethod} about a client connecting
      * to it.
      */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IInputBinding {
         /**
          * Return the connection for interacting back with the application.
@@ -39,12 +43,6 @@ module
          */
         GetPid(
             [out] Int32* pid);
-
-        ToString(
-            [out] String* str);
-
-        DescribeContents(
-            [out] Int32* content);
     }
 
     } // namespace InputMethod
