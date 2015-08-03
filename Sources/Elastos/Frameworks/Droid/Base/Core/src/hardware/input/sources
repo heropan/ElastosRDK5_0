@@ -7,7 +7,7 @@ include $(MAKEDIR)/../../../../../sources.inc
 INCLUDES += ../../
 INCLUDES += $(MAKEDIR)/../../../inc/
 
-SOURCES = CInputManager.cpp
+// SOURCES = CInputManager.cpp
 SOURCES += CInputManagerHelper.cpp
-SOURCES += CKeyboardLayout.cpp
-SOURCES += CInputManagerInputDevicesChangedListener.cpp
+// SOURCES += CKeyboardLayout.cpp
+// SOURCES += CInputManagerInputDevicesChangedListener.cpp

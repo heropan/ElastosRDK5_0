@@ -1,18 +1,22 @@
 
 #include "hardware/usb/CUsbDeviceHelper.h"
-#include "hardware/usb/UsbDevice.h"
+// #include "hardware/usb/UsbDevice.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Hardware {
 namespace Usb {
 
+CAR_INTERFACE_IMPL(CUsbDeviceHelper, Singleton, IUsbDeviceHelper)
+
+CAR_SINGLETON_IMPL(CUsbDeviceHelper)
+
 ECode CUsbDeviceHelper::GetDeviceId(
     /* [in] */ const String& name,
     /* [out] */ Int32* id)
 {
     VALIDATE_NOT_NULL(id);
-    *id = UsbDevice::NativeGetDeviceId(name);
+    // *id = UsbDevice::NativeGetDeviceId(name);
     return NOERROR;
 }
 
@@ -21,7 +25,7 @@ ECode CUsbDeviceHelper::GetDeviceName(
     /* [out] */ String* name)
 {
     VALIDATE_NOT_NULL(name);
-    *name = UsbDevice::NativeGetDeviceName(id);
+    // *name = UsbDevice::NativeGetDeviceName(id);
     return NOERROR;
 }
 

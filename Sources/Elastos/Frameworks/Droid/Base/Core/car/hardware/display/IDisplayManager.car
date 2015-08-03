@@ -11,9 +11,9 @@ module
     namespace Display {
 
     interface IIDisplayManager {
-        GetDisplayInfo(
-            [in] Int32 displayId,
-            [out] IDisplayInfo** displayInfo);
+        // GetDisplayInfo(
+        //     [in] Int32 displayId,
+        //     [out] IDisplayInfo** displayInfo);
 
         GetDisplayIds(
             [out, callee] ArrayOf<Int32>* displayIds);
@@ -51,9 +51,6 @@ module
         ResumeWifiDisplay();
 
         // No permissions required.
-        GetWifiDisplayStatus(
-            [out] IWifiDisplayStatus** wds);
-
         // Requires CAPTURE_VIDEO_OUTPUT, CAPTURE_SECURE_VIDEO_OUTPUT, or an appropriate
         // MediaProjection token for certain combinations of flags.
 //        CreateVirtualDisplay(
@@ -83,6 +80,9 @@ module
         // No permissions required but must be same Uid as the creator.
         ReleaseVirtualDisplay(
             [in] IIVirtualDisplayCallback* token);
+
+        // GetWifiDisplayStatus(
+        //     [out] IWifiDisplayStatus** wds);
     }
 
     } // namespace Display
