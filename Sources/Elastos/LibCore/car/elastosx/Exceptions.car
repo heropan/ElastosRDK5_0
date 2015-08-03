@@ -18,7 +18,7 @@ module
     const E_DATATYPE_CONFIGURATION_EXCEPTION                        = 0xB0070000;
     const E_FACTORY_CONFIGURATION_EXCEPTION                         = 0xB0080000;
     const E_INVALID_TRANSFORMATION                                  = 0xB0090000;
-    const E_PROVIDER_EXCEPTION                                      = 0x000a0000;
+    const E_PROVIDER_EXCEPTION                                      = 0xB00a0000;
     const E_XPATH_EXCEPTION                                       = 0xB0070000;
     const E_XPATH_EXPRESSION_EXCEPTION                 = 0xB0080000;
 

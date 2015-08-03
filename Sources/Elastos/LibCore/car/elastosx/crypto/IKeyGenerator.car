@@ -13,7 +13,6 @@ module
      * This class provides the public API for generating symmetric cryptographic
      * keys.
      */
-    [deprecated]
     interface IKeyGenerator {
 
         /**

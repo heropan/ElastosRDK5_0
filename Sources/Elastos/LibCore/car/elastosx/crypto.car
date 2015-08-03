@@ -13,6 +13,11 @@ module
     merge("crypto/IKeyAgreementSpi.car");
     merge("crypto/IKeyGenerator.car");
     merge("crypto/IKeyGeneratorSpi.car");
+    merge("crypto/IMac.car");
+    merge("crypto/IMacSpi.car");
+    merge("crypto/ISecretKeyFactory.car");
+    merge("crypto/ISecretKeyFactorySpi.car");
+    merge("crypto/ISealedObject.car");
     merge("crypto/INullCipher.car");
 
     merge("crypto/interfaces/IDHKey.car");
@@ -41,6 +46,8 @@ module
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
+    interface Elastos.IO.ISerializable;
+    interface Elastos.Core.ICloneable;
 
    namespace Elastosx {
    namespace Crypto {
@@ -125,6 +132,45 @@ module
 
     singleton class CKeyGeneratorHelper {
         interface IKeyGeneratorHelper;
+    }
+
+    [deprecated]
+    class CMac {
+        constructor(
+            [in] IMacSpi* keyGenSpi,
+            [in] IProvider* provider,
+            [in] String algorithm);
+
+        interface IMac;
+        interface ICloneable;
+    }
+
+    singleton class CMacHelper {
+        interface IMacHelper;
+    }
+
+    class CSecretKeyFactory {
+        constructor(
+            [in] ISecretKeyFactorySpi* keyFacSpi,
+            [in] IProvider* provider,
+            [in] String algorithm);
+
+        interface ISecretKeyFactory;
+    }
+
+    singleton class CSecretKeyFactoryHelper {
+        interface ISecretKeyFactoryHelper;
+    }
+
+    class CSealedObject {
+        constructor(
+            [in] ISerializable* object,
+            [in] ICipher* c);
+
+        constructor(
+            [in] ISealedObject* object);
+
+        interface ISecretKeyFactory;
     }
 
     class CNullCipher {
