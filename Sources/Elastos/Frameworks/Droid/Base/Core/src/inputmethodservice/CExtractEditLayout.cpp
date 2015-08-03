@@ -13,15 +13,14 @@ using Elastos::Droid::View::EIID_ViewGroup;
 using Elastos::Droid::View::Menu::EIID_IMenuBuilderCallback;
 using Elastos::Droid::View::Menu::CMenuBuilder;
 
-
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-
-ExtractEditLayout::ExtractActionMode::ExtractActionMode(
+CAR_INTERFACE_IMPL(CExtractEditLayout::ExtractActionMode, ActionMode, IMenuBuilderCallback);
+CExtractEditLayout::ExtractActionMode::ExtractActionMode(
     /* [in] */ IActionModeCallback* cb,
-    /* [in] */ ExtractEditLayout* host)
+    /* [in] */ CExtractEditLayout* host)
     : mHost(host)
 {
     CMenuBuilder::New(mHost->GetContext(), (IMenuBuilder**)&mMenu);
@@ -29,77 +28,35 @@ ExtractEditLayout::ExtractActionMode::ExtractActionMode(
     mCallback = cb;
 }
 
-PInterface ExtractEditLayout::ExtractActionMode::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IActionMode == riid) {
-        return (IActionMode*)this;
-    }
-    else if (EIID_IMenuBuilderCallback == riid) {
-        return (IMenuBuilderCallback*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 ExtractEditLayout::ExtractActionMode::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ExtractEditLayout::ExtractActionMode::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ExtractEditLayout::ExtractActionMode::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IActionMode*)this) {
-        *pIID = EIID_IActionMode;
-    }
-    else if (pObject == (IInterface*)(IMenuBuilderCallback*)this) {
-        *pIID = EIID_IMenuBuilderCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-ECode ExtractEditLayout::ExtractActionMode::SetTitle(
+ECode CExtractEditLayout::ExtractActionMode::SetTitle(
     /* [in] */ ICharSequence* title)
 {
     // Title will not be shown.
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetTitle(
+ECode CExtractEditLayout::ExtractActionMode::SetTitle(
     /* [in] */ Int32 resId)
 {
     // Title will not be shown.
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetSubtitle(
+ECode CExtractEditLayout::ExtractActionMode::SetSubtitle(
     /* [in] */ ICharSequence* subtitle)
 {
     // Subtitle will not be shown.
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetSubtitle(
+ECode CExtractEditLayout::ExtractActionMode::SetSubtitle(
     /* [in] */ Int32 resId)
 {
     // Subtitle will not be shown.
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::IsTitleOptional(
+ECode CExtractEditLayout::ExtractActionMode::IsTitleOptional(
     /* [out] */ Boolean* result)
 {
     assert(result != NULL);
@@ -108,14 +65,14 @@ ECode ExtractEditLayout::ExtractActionMode::IsTitleOptional(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetCustomView(
+ECode CExtractEditLayout::ExtractActionMode::SetCustomView(
     /* [in] */ IView* view)
 {
     // Custom view is not supported here.
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::Invalidate()
+ECode CExtractEditLayout::ExtractActionMode::Invalidate()
 {
     mMenu->StopDispatchingItemsChanged();
     // try {
@@ -126,7 +83,7 @@ ECode ExtractEditLayout::ExtractActionMode::Invalidate()
     // }
 }
 
-Boolean ExtractEditLayout::ExtractActionMode::DispatchOnCreate()
+Boolean CExtractEditLayout::ExtractActionMode::DispatchOnCreate()
 {
     mMenu->StopDispatchingItemsChanged();
     // try {
@@ -138,7 +95,7 @@ Boolean ExtractEditLayout::ExtractActionMode::DispatchOnCreate()
     return ret;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::Finish()
+ECode CExtractEditLayout::ExtractActionMode::Finish()
 {
     if (mHost->mActionMode.Get() != this) {
         // Not the active action mode - no-op
@@ -157,7 +114,7 @@ ECode ExtractEditLayout::ExtractActionMode::Finish()
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetMenu(
+ECode CExtractEditLayout::ExtractActionMode::GetMenu(
     /* [out] */ IMenu** menu)
 {
     assert(menu != NULL);
@@ -167,7 +124,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetMenu(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetTitle(
+ECode CExtractEditLayout::ExtractActionMode::GetTitle(
     /* [out] */ ICharSequence** title)
 {
     assert(title != NULL);
@@ -175,7 +132,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetTitle(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetSubtitle(
+ECode CExtractEditLayout::ExtractActionMode::GetSubtitle(
     /* [out] */ ICharSequence** subtitle)
 {
     assert(subtitle != NULL);
@@ -183,7 +140,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetSubtitle(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetCustomView(
+ECode CExtractEditLayout::ExtractActionMode::GetCustomView(
     /* [out] */ IView** view)
 {
     assert(view != NULL);
@@ -191,7 +148,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetCustomView(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetMenuInflater(
+ECode CExtractEditLayout::ExtractActionMode::GetMenuInflater(
     /* [out] */ IMenuInflater** inflater)
 {
     assert(inflater != NULL);
@@ -200,7 +157,7 @@ ECode ExtractEditLayout::ExtractActionMode::GetMenuInflater(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::OnMenuItemSelected(
+ECode CExtractEditLayout::ExtractActionMode::OnMenuItemSelected(
     /* [in] */ IMenuBuilder* menu,
     /* [in] */ IMenuItem* item,
     /* [out] */ Boolean* result)
@@ -215,86 +172,50 @@ ECode ExtractEditLayout::ExtractActionMode::OnMenuItemSelected(
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::OnMenuModeChange(
+ECode CExtractEditLayout::ExtractActionMode::OnMenuModeChange(
     /* [in] */ IMenuBuilder* menu)
 {
     return NOERROR;
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetTag(
+ECode CExtractEditLayout::ExtractActionMode::SetTag(
     /* [in] */ IInterface* tag)
 {
     return ActionMode::SetTag(tag);
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetTag(
+ECode CExtractEditLayout::ExtractActionMode::GetTag(
     /* [out] */ IInterface** tag)
 {
     return ActionMode::GetTag(tag);
 }
 
-ECode ExtractEditLayout::ExtractActionMode::SetTitleOptionalHint(
+ECode CExtractEditLayout::ExtractActionMode::SetTitleOptionalHint(
     /* [in] */ Boolean titleOptional)
 {
     return ActionMode::SetTitleOptionalHint(titleOptional);
 }
 
-ECode ExtractEditLayout::ExtractActionMode::GetTitleOptionalHint(
+ECode CExtractEditLayout::ExtractActionMode::GetTitleOptionalHint(
     /* [out] */ Boolean* titleOptionalHint)
 {
     return ActionMode::GetTitleOptionalHint(titleOptionalHint);
 }
 
-ECode ExtractEditLayout::ExtractActionMode::IsUiFocusable(
+ECode CExtractEditLayout::ExtractActionMode::IsUiFocusable(
     /* [out] */ Boolean* isUiFocusable)
 {
     return ActionMode::IsUiFocusable(isUiFocusable);
 }
 
-ExtractEditLayout::_OnClickListener::_OnClickListener(
-    /* [in] */ ExtractEditLayout* host)
+CAR_INTERFACE_IMPL(CExtractEditLayout::_OnClickListener, Object, IViewOnClickListener);
+CExtractEditLayout::_OnClickListener::_OnClickListener(
+    /* [in] */ CExtractEditLayout* host)
     : mHost(host)
 {
-
 }
 
-PInterface ExtractEditLayout::_OnClickListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IViewOnClickListener == riid) {
-        return (IViewOnClickListener*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 ExtractEditLayout::_OnClickListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 ExtractEditLayout::_OnClickListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode ExtractEditLayout::_OnClickListener::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IViewOnClickListener*)this) {
-        *pIID = EIID_IViewOnClickListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
-
-ECode ExtractEditLayout::_OnClickListener::OnClick(
+ECode CExtractEditLayout::_OnClickListener::OnClick(
     /* [in] */ IView* clicked)
 {
     if (mHost->mActionMode != NULL) {
@@ -306,7 +227,7 @@ ECode ExtractEditLayout::_OnClickListener::OnClick(
     return NOERROR;
 }
 
-AutoPtr<IActionMode> ExtractEditLayout::StartActionModeForChild(
+AutoPtr<IActionMode> CExtractEditLayout::StartActionModeForChild(
     /* [in] */ IView* sourceView,
     /* [in] */ IActionModeCallback* cb)
 {
@@ -323,7 +244,7 @@ AutoPtr<IActionMode> ExtractEditLayout::StartActionModeForChild(
     return NULL;
 }
 
-ECode ExtractEditLayout::OnFinishInflate()
+ECode CExtractEditLayout::OnFinishInflate()
 {
     LinearLayout::OnFinishInflate();
     mExtractActionButton = IButton::Probe(FindViewById(R::id::inputExtractAction));
@@ -332,16 +253,8 @@ ECode ExtractEditLayout::OnFinishInflate()
     return mEditButton->SetOnClickListener(listener);
 }
 
-
-
-IVIEW_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IVIEWGROUP_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IVIEWPARENT_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IVIEWMANAGER_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IDRAWABLECALLBACK_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IKEYEVENTCALLBACK_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CExtractEditLayout, ExtractEditLayout);
-
+CAR_OBJECT_IMPL(CExtractEditLayout);
+CAR_INTERFACE_IMPL(CExtractEditLayout, LinearLayout, IExtractEditLayout);
 PInterface CExtractEditLayout::Probe(
     /* [in] */ REIID riid)
 {
@@ -351,21 +264,24 @@ PInterface CExtractEditLayout::Probe(
     else if (riid == EIID_ViewGroup) {
         return reinterpret_cast<PInterface>((ViewGroup*)this);
     }
+    else if (riid == EIID_IExtractEditLayout) {
+        return reinterpret_cast<PInterface>((IExtractEditLayout*)this);
+    }
 
-    return _CExtractEditLayout::Probe(riid);
+    return LinearLayout::Probe(riid);
 }
 
 ECode CExtractEditLayout::constructor(
     /* [in] */ IContext* ctx)
 {
-    return ExtractEditLayout::Init(ctx);
+    return LinearLayout::constructor(ctx);
 }
 
 ECode CExtractEditLayout::constructor(
     /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ExtractEditLayout::Init(ctx, attrs);
+    return LinearLayout::constructor(ctx, attrs);
 }
 
 ECode CExtractEditLayout::IsActionModeStarted(
@@ -383,146 +299,6 @@ ECode CExtractEditLayout::FinishActionMode()
     }
 
     return NOERROR;
-}
-
-ECode CExtractEditLayout::SetShowDividers(
-    /* [in] */ Int32 showDividers)
-{
-    return ExtractEditLayout::SetShowDividers(showDividers);
-}
-
-ECode CExtractEditLayout::GetShowDividers(
-    /* [out] */ Int32* showDividers)
-{
-    VALIDATE_NOT_NULL(showDividers);
-    *showDividers = ExtractEditLayout::GetShowDividers();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::GetDividerDrawable(
-    /* [out] */ IDrawable** divider)
-{
-    VALIDATE_NOT_NULL(divider);
-    AutoPtr<IDrawable> d = ExtractEditLayout::GetDividerDrawable();
-    *divider = d;
-    REFCOUNT_ADD(*divider);
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetDividerDrawable(
-    /* [in] */ IDrawable* divider)
-{
-    return ExtractEditLayout::SetDividerDrawable(divider);
-}
-
-ECode CExtractEditLayout::SetDividerPadding(
-    /* [in] */ Int32 padding)
-{
-    return ExtractEditLayout::SetDividerPadding(padding);
-}
-
-ECode CExtractEditLayout::GetDividerPadding(
-    /* [out] */ Int32* padding)
-{
-    VALIDATE_NOT_NULL(padding);
-    *padding = ExtractEditLayout::GetDividerPadding();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::GetDividerWidth(
-    /* [out] */ Int32* width)
-{
-    VALIDATE_NOT_NULL(width);
-    *width = ExtractEditLayout::GetDividerWidth();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::IsBaselineAligned(
-    /* [out] */ Boolean* baselineAligned)
-{
-    VALIDATE_NOT_NULL(baselineAligned);
-    *baselineAligned = ExtractEditLayout::IsBaselineAligned();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetBaselineAligned(
-    /* [in] */ Boolean baselineAligned)
-{
-    return ExtractEditLayout::SetBaselineAligned(baselineAligned);
-}
-
-ECode CExtractEditLayout::IsMeasureWithLargestChildEnabled(
-    /* [out] */ Boolean* enabled)
-{
-    VALIDATE_NOT_NULL(enabled);
-    *enabled = ExtractEditLayout::IsMeasureWithLargestChildEnabled();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetMeasureWithLargestChildEnabled(
-    /* [in] */ Boolean enabled)
-{
-    return ExtractEditLayout::SetMeasureWithLargestChildEnabled(enabled);
-}
-
-ECode CExtractEditLayout::GetBaselineAlignedChildIndex(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    *index = ExtractEditLayout::GetBaselineAlignedChildIndex();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetBaselineAlignedChildIndex(
-    /* [in] */ Int32 index)
-{
-    return ExtractEditLayout::SetBaselineAlignedChildIndex(index);
-}
-
-ECode CExtractEditLayout::GetWeightSum(
-    /* [out] */ Float* weightSum)
-{
-    VALIDATE_NOT_NULL(weightSum);
-    *weightSum = ExtractEditLayout::GetWeightSum();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetWeightSum(
-    /* [in] */ Float weightSum)
-{
-    return ExtractEditLayout::SetWeightSum(weightSum);
-}
-
-ECode CExtractEditLayout::SetOrientation(
-    /* [in] */ Int32 orientation)
-{
-    return ExtractEditLayout::SetOrientation(orientation);
-}
-
-ECode CExtractEditLayout::GetOrientation(
-    /* [out] */ Int32* orientation)
-{
-    VALIDATE_NOT_NULL(orientation);
-    *orientation = ExtractEditLayout::GetOrientation();
-    return NOERROR;
-}
-
-ECode CExtractEditLayout::SetGravity(
-    /* [in] */ Int32 gravity)
-{
-    return ExtractEditLayout::SetGravity(gravity);
-}
-
-ECode CExtractEditLayout::SetHorizontalGravity(
-    /* [in] */ Int32 horizontalGravity)
-{
-    return ExtractEditLayout::SetHorizontalGravity(horizontalGravity);
-}
-
-ECode CExtractEditLayout::SetVerticalGravity(
-    /* [in] */ Int32 verticalGravity)
-{
-    return ExtractEditLayout::SetVerticalGravity(verticalGravity);
 }
 
 } // namespace InputMethodService

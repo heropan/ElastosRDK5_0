@@ -14,6 +14,9 @@ const Int32 CDecodingInfo::PY_STRING_MAX = 28;
 const Int32 CDecodingInfo::MAX_PAGE_SIZE_DISPLAY = 10;
 static String TAG("CDecodingInfo");
 
+CAR_OBJECT_IMPL(CDecodingInfo);
+CAR_INTERFACE_IMPL(CDecodingInfo, Object, IDecodingInfo);
+
 CDecodingInfo::CDecodingInfo()
     : mTotalChoicesNum(0)
     , mPosDelSpl(-1)

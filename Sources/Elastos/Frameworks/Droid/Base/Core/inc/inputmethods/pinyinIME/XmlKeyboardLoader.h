@@ -1,6 +1,6 @@
 
-#ifndef  __XMLKEYBOARDLOADER_H__
-#define  __XMLKEYBOARDLOADER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_XMLKEYBOARDLOADER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_XMLKEYBOARDLOADER_H__
 
 #include "SoftKeyToggle.h"
 
@@ -20,10 +20,10 @@ class SkbTemplate;
  * Class used to load a soft keyboard or a soft keyboard template from xml
  * files.
  */
-class XmlKeyboardLoader: public ElRefBase
+class XmlKeyboardLoader: public Object
 {
 public:
-    class KeyCommonAttributes : public ElRefBase
+    class KeyCommonAttributes : public Object
     {
     public:
         KeyCommonAttributes(
@@ -55,6 +55,9 @@ public:
         /* [in] */ Int32 resourceId,
         /* [in] */ Int32 skbWidth,
         /* [in] */ Int32 skbHeight);
+
+    CARAPI ToString(
+        /* [out] */ String* info);
 
 private:
     // Caller makes sure xrp and r are valid.
@@ -364,4 +367,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__XMLKEYBOARDLOADER_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_XMLKEYBOARDLOADER_H__

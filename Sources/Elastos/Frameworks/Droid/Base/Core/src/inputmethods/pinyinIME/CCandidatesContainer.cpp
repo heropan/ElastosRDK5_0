@@ -24,17 +24,17 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-Int32 CandidatesContainer::ARROW_ALPHA_ENABLED = 0xff;
-Int32 CandidatesContainer::ARROW_ALPHA_DISABLED = 0x40;
-Int32 CandidatesContainer::ANIMATION_TIME = 200;
+Int32 CCandidatesContainer::ARROW_ALPHA_ENABLED = 0xff;
+Int32 CCandidatesContainer::ARROW_ALPHA_DISABLED = 0x40;
+Int32 CCandidatesContainer::ANIMATION_TIME = 200;
 
-CandidatesContainer::CandidatesContainer()
+CCandidatesContainer::CCandidatesContainer()
     : mXOffsetForFlipper(0)
     , mCurrentPage(-1)
 {
 }
 
-ECode CandidatesContainer::Initialize(
+ECode CCandidatesContainer::Initialize(
     /* [in] */ ICandidateViewListener* cvListener,
     /* [in] */ IBalloonHint* balloonHint,
     /* [in] */ IGestureDetector* gestureDetector)
@@ -63,7 +63,7 @@ ECode CandidatesContainer::Initialize(
     return NOERROR;
 }
 
-ECode CandidatesContainer::ShowCandidates(
+ECode CCandidatesContainer::ShowCandidates(
     /* [in] */ IDecodingInfo* decInfo,
     /* [in] */ Boolean enableActiveHighlight)
 {
@@ -97,7 +97,7 @@ ECode CandidatesContainer::ShowCandidates(
     return RelativeLayout::Invalidate();
 }
 
-ECode CandidatesContainer::GetCurrentPage(
+ECode CCandidatesContainer::GetCurrentPage(
     /* [out] */ Int32* page)
 {
     VALIDATE_NOT_NULL(page);
@@ -105,7 +105,7 @@ ECode CandidatesContainer::GetCurrentPage(
     return NOERROR;
 }
 
-ECode CandidatesContainer::EnableActiveHighlight(
+ECode CCandidatesContainer::EnableActiveHighlight(
     /* [in] */ Boolean enableActiveHighlight)
 {
     AutoPtr<ICandidateView> cv;
@@ -114,7 +114,7 @@ ECode CandidatesContainer::EnableActiveHighlight(
     return RelativeLayout::Invalidate();
 }
 
-void CandidatesContainer::OnMeasure(
+void CCandidatesContainer::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -137,7 +137,7 @@ void CandidatesContainer::OnMeasure(
     }
 }
 
-ECode CandidatesContainer::ActiveCurseBackward(
+ECode CCandidatesContainer::ActiveCurseBackward(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -160,7 +160,7 @@ ECode CandidatesContainer::ActiveCurseBackward(
     return PageBackward(TRUE, TRUE, result);
 }
 
-ECode CandidatesContainer::ActiveCurseForward(
+ECode CCandidatesContainer::ActiveCurseForward(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -181,7 +181,7 @@ ECode CandidatesContainer::ActiveCurseForward(
     return PageForward(TRUE, TRUE, result);
 }
 
-ECode CandidatesContainer::PageBackward(
+ECode CCandidatesContainer::PageBackward(
     /* [in] */ Boolean animLeftRight,
     /* [in] */ Boolean enableActiveHighlight,
     /* [out] */ Boolean* result)
@@ -223,7 +223,7 @@ ECode CandidatesContainer::PageBackward(
     return NOERROR;
 }
 
-ECode CandidatesContainer::PageForward(
+ECode CCandidatesContainer::PageForward(
     /* [in] */ Boolean animLeftRight,
     /* [in] */ Boolean enableActiveHighlight,
     /* [out] */ Boolean* result)
@@ -263,7 +263,7 @@ ECode CandidatesContainer::PageForward(
     return NOERROR;
 }
 
-ECode CandidatesContainer::GetActiveCandiatePos(
+ECode CCandidatesContainer::GetActiveCandiatePos(
     /* [out] */ Int32* pos)
 {
     VALIDATE_NOT_NULL(pos);
@@ -276,7 +276,7 @@ ECode CandidatesContainer::GetActiveCandiatePos(
     return cv->GetActiveCandiatePosGlobal(pos);
 }
 
-ECode CandidatesContainer::UpdateArrowStatus()
+ECode CCandidatesContainer::UpdateArrowStatus()
 {
     if (mCurrentPage < 0) return NOERROR;
     Boolean forwardEnabled = FALSE;
@@ -297,7 +297,7 @@ ECode CandidatesContainer::UpdateArrowStatus()
     return NOERROR;
 }
 
-void CandidatesContainer::EnableArrow(
+void CCandidatesContainer::EnableArrow(
     /* [in] */ IImageButton* arrowBtn,
     /* [in] */ Boolean enabled)
 {
@@ -309,7 +309,7 @@ void CandidatesContainer::EnableArrow(
         arrowBtn->SetAlpha(ARROW_ALPHA_DISABLED);
 }
 
-void CandidatesContainer::ShowArrow(
+void CCandidatesContainer::ShowArrow(
     /* [in] */ IImageButton* arrowBtn,
     /* [in] */ Boolean show)
 {
@@ -320,7 +320,7 @@ void CandidatesContainer::ShowArrow(
         arrowBtn->SetVisibility(IView::INVISIBLE);
 }
 
-Boolean CandidatesContainer::OnTouchEvent(
+Boolean CCandidatesContainer::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
     assert(event != NULL);
@@ -332,7 +332,7 @@ Boolean CandidatesContainer::OnTouchEvent(
     return TRUE;
 }
 
-ECode CandidatesContainer::LoadAnimation(
+ECode CCandidatesContainer::LoadAnimation(
     /* [in] */ Boolean animLeftRight,
     /* [in] */ Boolean forward)
 {
@@ -385,7 +385,7 @@ ECode CandidatesContainer::LoadAnimation(
     return NOERROR;
 }
 
-AutoPtr<IAnimation> CandidatesContainer::CreateAnimation(
+AutoPtr<IAnimation> CCandidatesContainer::CreateAnimation(
     /* [in] */ Float xFrom,
     /* [in] */ Float xTo,
     /* [in] */ Float yFrom,
@@ -410,25 +410,15 @@ AutoPtr<IAnimation> CandidatesContainer::CreateAnimation(
     return animSet;
 }
 
-void CandidatesContainer::StartAnimation()
+void CCandidatesContainer::StartAnimation()
 {
     mFlipper->ShowNext();
 }
 
-void CandidatesContainer::StopAnimation()
+void CCandidatesContainer::StopAnimation()
 {
     mFlipper->StopFlipping();
 }
-
-
-//class CCandidatesContainer
-IVIEW_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IVIEWGROUP_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IVIEWPARENT_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IVIEWMANAGER_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IDRAWABLECALLBACK_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IKEYEVENTCALLBACK_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CCandidatesContainer, CandidatesContainer)
 
 PInterface CCandidatesContainer::Probe(
     /* [in] */ REIID riid)
@@ -439,19 +429,18 @@ PInterface CCandidatesContainer::Probe(
     else if (riid == EIID_ViewGroup) {
         return reinterpret_cast<PInterface>((ViewGroup*)this);
     }
-    return _CCandidatesContainer::Probe(riid);
+    else if (riid == EIID_ICandidatesContainer) {
+        return reinterpret_cast<PInterface>((ICandidatesContainer*)this);
+    }
+
+    return RelativeLayout::Probe(riid);
 }
 
 ECode CCandidatesContainer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return CandidatesContainer::Init(context, attrs);
-}
-
-ECode CCandidatesContainer::UpdateArrowStatus()
-{
-    return CandidatesContainer::UpdateArrowStatus();
+    return RelativeLayout::constructor(context, attrs);
 }
 
 ECode CCandidatesContainer::OnAnimationStart(
@@ -500,106 +489,6 @@ ECode CCandidatesContainer::OnTouch(
 
     *result = FALSE;
     return NOERROR;
-}
-
-ECode CCandidatesContainer::Initialize(
-    /* [in] */ ICandidateViewListener* cvListener,
-    /* [in] */ IBalloonHint* balloonHint,
-    /* [in] */ IGestureDetector* gestureDetector)
-{
-    return CandidatesContainer::Initialize(cvListener, balloonHint, gestureDetector);
-}
-
-ECode CCandidatesContainer::ShowCandidates(
-    /* [in] */ IDecodingInfo* decInfo,
-    /* [in] */ Boolean enableActiveHighlight)
-{
-    return CandidatesContainer::ShowCandidates(decInfo, enableActiveHighlight);
-}
-
-ECode CCandidatesContainer::GetCurrentPage(
-    /* [out] */ Int32* page)
-{
-    return CandidatesContainer::GetCurrentPage(page);
-}
-
-ECode CCandidatesContainer::EnableActiveHighlight(
-    /* [in] */ Boolean enableActiveHighlight)
-{
-    return CandidatesContainer::EnableActiveHighlight(enableActiveHighlight);
-}
-
-ECode CCandidatesContainer::ActiveCurseBackward(
-    /* [out] */ Boolean* result)
-{
-    return CandidatesContainer::ActiveCurseBackward(result);
-}
-
-ECode CCandidatesContainer::ActiveCurseForward(
-    /* [out] */ Boolean* result)
-{
-    return CandidatesContainer::ActiveCurseForward(result);
-}
-
-ECode CCandidatesContainer::PageBackward(
-    /* [in] */ Boolean animLeftRight,
-    /* [in] */ Boolean enableActiveHighlight,
-    /* [out] */ Boolean* result)
-{
-    return CandidatesContainer::PageBackward(animLeftRight, enableActiveHighlight, result);
-}
-
-ECode CCandidatesContainer::PageForward(
-    /* [in] */ Boolean animLeftRight,
-    /* [in] */ Boolean enableActiveHighlight,
-    /* [out] */ Boolean* result)
-{
-    return CandidatesContainer::PageForward(animLeftRight, enableActiveHighlight, result);
-}
-
-ECode CCandidatesContainer::GetActiveCandiatePos(
-    /* [out] */ Int32* pos)
-{
-    return CandidatesContainer::GetActiveCandiatePos(pos);
-}
-
-ECode CCandidatesContainer::LoadAnimation(
-    /* [in] */ Boolean animLeftRight,
-    /* [in] */ Boolean forward)
-{
-    return CandidatesContainer::LoadAnimation(animLeftRight, forward);
-}
-
-ECode CCandidatesContainer::SetIgnoreGravity(
-    /* [in] */ Int32 viewId)
-{
-    return CandidatesContainer::SetIgnoreGravity(viewId);
-}
-
-ECode CCandidatesContainer::GetGravity(
-    /* [out] */ Int32* gravity)
-{
-    VALIDATE_NOT_NULL(gravity);
-    *gravity = CandidatesContainer::GetGravity();
-    return NOERROR;
-}
-
-ECode CCandidatesContainer::SetGravity(
-    /* [in] */ Int32 gravity)
-{
-    return CandidatesContainer::SetGravity(gravity);
-}
-
-ECode CCandidatesContainer::SetHorizontalGravity(
-    /* [in] */ Int32 horizontalGravity)
-{
-    return CandidatesContainer::SetHorizontalGravity(horizontalGravity);
-}
-
-ECode CCandidatesContainer::SetVerticalGravity(
-    /* [in] */ Int32 verticalGravity)
-{
-    return CandidatesContainer::SetVerticalGravity(verticalGravity);
 }
 
 } // namespace PinyinIME

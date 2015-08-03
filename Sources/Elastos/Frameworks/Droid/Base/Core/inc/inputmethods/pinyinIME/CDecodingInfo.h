@@ -1,8 +1,8 @@
 
-#ifndef  __CDECODINGINFO_H__
-#define  __CDECODINGINFO_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CDECODINGINFO_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CDECODINGINFO_H__
 
-#include "_CDecodingInfo.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CDecodingInfo.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuffer.h>
@@ -23,8 +23,14 @@ namespace PinyinIME {
 class PinyinCandidateView;
 
 CarClass(CDecodingInfo)
+    , public Object
+    , public IDecodingInfo
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CDecodingInfo();
 
     CARAPI constructor(
@@ -350,4 +356,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CDECODINGINFO_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_CDECODINGINFO_H__

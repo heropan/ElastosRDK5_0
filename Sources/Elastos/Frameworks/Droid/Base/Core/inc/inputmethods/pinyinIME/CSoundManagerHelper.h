@@ -1,8 +1,9 @@
 
-#ifndef  __CSOUNDMANAGERHELPER_H__
-#define  __CSOUNDMANAGERHELPER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGERHELPER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGERHELPER_H__
 
-#include "_CSoundManagerHelper.h"
+#include <elastos/core/Singleton.h>
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CSoundManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Inputmethods::PinyinIME::ISoundManager;
@@ -13,8 +14,14 @@ namespace Inputmethods {
 namespace PinyinIME {
 
 CarClass(CSoundManagerHelper)
+    , public Singleton
+    , public ISoundManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetInstance(
         /* [in] */ IContext* context,
         /* [out] */ ISoundManager** sm);
@@ -28,4 +35,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CSOUNDMANAGERHELPER_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGERHELPER_H__

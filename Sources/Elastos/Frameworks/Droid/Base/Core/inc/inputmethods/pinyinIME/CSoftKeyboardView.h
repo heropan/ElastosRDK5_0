@@ -1,9 +1,8 @@
 
-#ifndef  __CSOFTKEYBOARDVIEW_H__
-#define  __CSOFTKEYBOARDVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOFTKEYBOARDVIEW_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOFTKEYBOARDVIEW_H__
 
-#include "_CSoftKeyboardView.h"
-
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CSoftKeyboardView.h"
 #include "CSkbContainer.h"
 #include "SoftKeyboard.h"
 
@@ -16,15 +15,37 @@ namespace PinyinIME {
 
 class SoftKey;
 
-class SoftKeyboardView: public Elastos::Droid::View::View
+/**
+ * Class used to show a soft keyboard.
+ *
+ * A soft keyboard view should not handle touch event itself, because we do bias
+ * correction, need a global strategy to map an event into a proper view to
+ * achieve better user experience.
+ */
+CarClass(CSoftKeyboardView)
+    , public Elastos::Droid::View::View
+    , public ISoftKeyboardView
 {
 public:
-    SoftKeyboardView();
+    CAR_OBJECT_DECL();
 
-    Boolean SetSoftKeyboard(
-        /* [in] */ ISoftKeyboard* softSkb);
+    CAR_INTERFACE_DECL();
 
-    AutoPtr<ISoftKeyboard> GetSoftKeyboard();
+    CSoftKeyboardView();
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI SetSoftKeyboard(
+        /* [in] */ ISoftKeyboard* softSkb,
+        /* [out] */ Boolean* result);
+
+    CARAPI GetSoftKeyboard(
+        /* [out] */ ISoftKeyboard** keyboard);
 
     CARAPI ResizeKeyboard(
         /* [in] */ Int32 skbWidth,
@@ -41,22 +62,25 @@ public:
     CARAPI ResetKeyPress(
         /* [in] */ Int64 balloonDelay);
 
-    // If movePress is TRUE, means that this function is called because user
-    // moves his finger to this button. If movePress is FALSE, means that this
+    // If movePress is true, means that this function is called because user
+    // moves his finger to this button. If movePress is false, means that this
     // function is called when user just presses this key.
-    AutoPtr<ISoftKey> OnKeyPress(
+    CARAPI OnKeyPress(
         /* [in] */ Int32 x,
         /* [in] */ Int32 y,
-        /* [in] */ /*SkbContainer.LongPressTimer*/ IHandler* longPressTimer,
-        /* [in] */ Boolean movePress);
+        /* [in] *//* SkbContainer.LongPressTimer*/ IHandler* longPressTimer,
+        /* [in] */ Boolean movePress,
+        /* [out] */ ISoftKey** key);
 
-    AutoPtr<ISoftKey> OnKeyRelease(
+    CARAPI OnKeyRelease(
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y,
+        /* [out] */ ISoftKey** key);
 
-    AutoPtr<ISoftKey> OnKeyMove(
+    CARAPI OnKeyMove(
         /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
+        /* [in] */ Int32 y,
+        /* [out] */ ISoftKey** key);
 
     CARAPI DimSoftKeyboard(
         /* [in] */ Boolean dimSkb);
@@ -170,78 +194,9 @@ protected:
     friend class SkbContainer;
 };
 
-
-/**
- * Class used to show a soft keyboard.
- *
- * A soft keyboard view should not handle touch event itself, because we do bias
- * correction, need a global strategy to map an event into a proper view to
- * achieve better user experience.
- */
-CarClass(CSoftKeyboardView), public SoftKeyboardView
-{
-public:
-    IVIEW_METHODS_DECL();
-    IDRAWABLECALLBACK_METHODS_DECL();
-    IKEYEVENTCALLBACK_METHODS_DECL();
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI SetSoftKeyboard(
-        /* [in] */ ISoftKeyboard* softSkb,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetSoftKeyboard(
-        /* [out] */ ISoftKeyboard** keyboard);
-
-    CARAPI ResizeKeyboard(
-        /* [in] */ Int32 skbWidth,
-        /* [in] */ Int32 skbHeight);
-
-    CARAPI SetBalloonHint(
-        /* [in] */ IBalloonHint* balloonOnKey,
-        /* [in] */ IBalloonHint* balloonPopup,
-        /* [in] */ Boolean movingNeverHidePopup);
-
-    CARAPI SetOffsetToSkbContainer(
-        /* [in] */ ArrayOf<Int32>* offsetToSkbContainer);
-
-    CARAPI ResetKeyPress(
-        /* [in] */ Int64 balloonDelay);
-
-    // If movePress is true, means that this function is called because user
-    // moves his finger to this button. If movePress is false, means that this
-    // function is called when user just presses this key.
-    CARAPI OnKeyPress(
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y,
-        /* [in] *//* SkbContainer.LongPressTimer*/ IHandler* longPressTimer,
-        /* [in] */ Boolean movePress,
-        /* [out] */ ISoftKey** key);
-
-    CARAPI OnKeyRelease(
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y,
-        /* [out] */ ISoftKey** key);
-
-    CARAPI OnKeyMove(
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y,
-        /* [out] */ ISoftKey** key);
-
-    CARAPI DimSoftKeyboard(
-        /* [in] */ Boolean dimSkb);
-};
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CSOFTKEYBOARDVIEW_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOFTKEYBOARDVIEW_H__

@@ -8,7 +8,6 @@
 #include "graphics/CPaint.h"
 #include "CBalloonHint.h"
 
-
 using Elastos::Droid::Graphics::CPaint;
 
 namespace Elastos {
@@ -16,8 +15,10 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
+CAR_OBJECT_IMPL(CSoftKeyboardView);
+CAR_INTERFACE_IMPL(CSoftKeyboardView, View, ISoftKeyboardView);
 
-SoftKeyboardView::SoftKeyboardView()
+CSoftKeyboardView::CSoftKeyboardView()
     : mKeyPressed(FALSE)
     , mNormalKeyTextSize(0)
     , mFunctionKeyTextSize(0)
@@ -33,24 +34,23 @@ SoftKeyboardView::SoftKeyboardView()
     CRect::New((IRect**)&mDirtyRect);
 }
 
-Boolean SoftKeyboardView::SetSoftKeyboard(
-    /* [in] */ ISoftKeyboard* softSkb)
+ECode CSoftKeyboardView::SetSoftKeyboard(
+    /* [in] */ ISoftKeyboard* softSkb,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (NULL == softSkb) {
-        return FALSE;
+        *result = FALSE;
+        return NOERROR;
     }
     mSoftKeyboard = (SoftKeyboard*)softSkb;
     AutoPtr<IDrawable> bg = mSoftKeyboard->GetSkbBackground();
     if (NULL != bg) SetBackgroundDrawable(bg);
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
-AutoPtr<ISoftKeyboard> SoftKeyboardView::GetSoftKeyboard()
-{
-    return mSoftKeyboard;
-}
-
-ECode SoftKeyboardView::ResizeKeyboard(
+ECode CSoftKeyboardView::ResizeKeyboard(
     /* [in] */ Int32 skbWidth,
     /* [in] */ Int32 skbHeight)
 {
@@ -58,7 +58,7 @@ ECode SoftKeyboardView::ResizeKeyboard(
     return NOERROR;
 }
 
-ECode SoftKeyboardView::SetBalloonHint(
+ECode CSoftKeyboardView::SetBalloonHint(
     /* [in] */ IBalloonHint* balloonOnKey,
     /* [in] */ IBalloonHint* balloonPopup,
     /* [in] */ Boolean movingNeverHidePopup)
@@ -69,7 +69,7 @@ ECode SoftKeyboardView::SetBalloonHint(
     return NOERROR;
 }
 
-ECode SoftKeyboardView::SetOffsetToSkbContainer(
+ECode CSoftKeyboardView::SetOffsetToSkbContainer(
     /* [in] */ ArrayOf<Int32>* offsetToSkbContainer)
 {
     assert(offsetToSkbContainer != NULL);
@@ -78,7 +78,7 @@ ECode SoftKeyboardView::SetOffsetToSkbContainer(
     return NOERROR;
 }
 
-void SoftKeyboardView::OnMeasure(
+void CSoftKeyboardView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -93,7 +93,7 @@ void SoftKeyboardView::OnMeasure(
     SetMeasuredDimension(measuredWidth, measuredHeight);
 }
 
-void SoftKeyboardView::ShowBalloon(
+void CSoftKeyboardView::ShowBalloon(
     /* [in] */ IBalloonHint* balloon,
     /* [in] */ ArrayOf<Int32>* balloonLocationToSkb,
     /* [in] */ Boolean movePress)
@@ -121,7 +121,7 @@ void SoftKeyboardView::ShowBalloon(
     // system->GetCurrentTimeMillis(&b);
 }
 
-ECode SoftKeyboardView::ResetKeyPress(
+ECode CSoftKeyboardView::ResetKeyPress(
     /* [in] */ Int64 balloonDelay)
 {
     if (!mKeyPressed) return NOERROR;
@@ -143,12 +143,14 @@ ECode SoftKeyboardView::ResetKeyPress(
     return mBalloonPopup->DelayedDismiss(balloonDelay);
 }
 
-AutoPtr<ISoftKey> SoftKeyboardView::OnKeyPress(
+ECode CSoftKeyboardView::OnKeyPress(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ /*SkbContainer.LongPressTimer*/ IHandler* longPressTimer,
-    /* [in] */ Boolean movePress)
+    /* [in] */ Boolean movePress,
+    /* [out] */ ISoftKey** key)
 {
+    VALIDATE_NOT_NULL(key);
     mKeyPressed = FALSE;
     Boolean moveWithinPreviousKey = FALSE;
     if (movePress) {
@@ -158,7 +160,12 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyPress(
     } else {
         mSoftKeyDown = mSoftKeyboard->MapToKey(x, y);
     }
-    if (moveWithinPreviousKey || NULL == mSoftKeyDown) return mSoftKeyDown;
+    if (moveWithinPreviousKey || NULL == mSoftKeyDown) {
+        *key = mSoftKeyDown;
+        REFCOUNT_ADD(*key);
+        return NOERROR;
+    }
+
     mKeyPressed = TRUE;
 
     if (!movePress) {
@@ -265,15 +272,22 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyPress(
     if (mRepeatForLongPress) {
         ((SkbContainer::LongPressTimer*)longPressTimer)->StartTimer();
     }
-    return mSoftKeyDown;
+    *key = mSoftKeyDown;
+    REFCOUNT_ADD(*key);
+    return NOERROR;
 }
 
-AutoPtr<ISoftKey> SoftKeyboardView::OnKeyRelease(
+ECode CSoftKeyboardView::OnKeyRelease(
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 y,
+    /* [out] */ ISoftKey** key)
 {
+    VALIDATE_NOT_NULL(key);
     mKeyPressed = FALSE;
-    if (NULL == mSoftKeyDown) return NULL;
+    if (NULL == mSoftKeyDown) {
+        *key = NULL;
+        return NOERROR;
+    }
 
     mLongPressTimer->RemoveTimer();
 
@@ -290,19 +304,29 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyRelease(
     }
 
     if (mSoftKeyDown->MoveWithinKey(x - mPaddingLeft, y - mPaddingTop)) {
-        return mSoftKeyDown;
+        *key = mSoftKeyDown;
+        REFCOUNT_ADD(*key);
+        return NOERROR;
     }
-    return NULL;
+    *key = NULL;
+    return NOERROR;
 }
 
-AutoPtr<ISoftKey> SoftKeyboardView::OnKeyMove(
+ECode CSoftKeyboardView::OnKeyMove(
     /* [in] */ Int32 x,
-    /* [in] */ Int32 y)
+    /* [in] */ Int32 y,
+    /* [out] */ ISoftKey** key)
 {
-    if (NULL == mSoftKeyDown) return NULL;
+    VALIDATE_NOT_NULL(key);
+    if (NULL == mSoftKeyDown) {
+        *key = NULL;
+        return NOERROR;
+    }
 
     if (mSoftKeyDown->MoveWithinKey(x - mPaddingLeft, y - mPaddingTop)) {
-        return mSoftKeyDown;
+        *key = mSoftKeyDown;
+        REFCOUNT_ADD(*key);
+        return NOERROR;
     }
 
     // The current key needs to be updated.
@@ -311,7 +335,7 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyMove(
 
     if (mRepeatForLongPress) {
         if (mMovingNeverHidePopupBalloon) {
-            return OnKeyPress(x, y, mLongPressTimer, TRUE);
+            return OnKeyPress(x, y, mLongPressTimer, TRUE, key);
         }
 
         if (NULL != mBalloonOnKey) {
@@ -327,14 +351,14 @@ AutoPtr<ISoftKey> SoftKeyboardView::OnKeyMove(
         if (NULL != mLongPressTimer) {
             mLongPressTimer->RemoveTimer();
         }
-        return OnKeyPress(x, y, mLongPressTimer, TRUE);
-    } else {
-        // When user moves between keys, repeated response is disabled.
-        return OnKeyPress(x, y, mLongPressTimer, TRUE);
+        return OnKeyPress(x, y, mLongPressTimer, TRUE, key);
     }
+
+    // When user moves between keys, repeated response is disabled.
+    return OnKeyPress(x, y, mLongPressTimer, TRUE, key);
 }
 
-void SoftKeyboardView::TryVibrate()
+void CSoftKeyboardView::TryVibrate()
 {
     AutoPtr<ISettings> settings;
     CPinyinSettings::AcquireSingleton((ISettings**)&settings);
@@ -352,7 +376,7 @@ void SoftKeyboardView::TryVibrate()
     mVibrator->Vibrate(*mVibratePattern, -1);
 }
 
-void SoftKeyboardView::TryPlayKeyDown()
+void CSoftKeyboardView::TryPlayKeyDown()
 {
     AutoPtr<ISettings> settings;
     CPinyinSettings::AcquireSingleton((ISettings**)&settings);
@@ -362,14 +386,14 @@ void SoftKeyboardView::TryPlayKeyDown()
     }
 }
 
-ECode SoftKeyboardView::DimSoftKeyboard(
+ECode CSoftKeyboardView::DimSoftKeyboard(
     /* [in] */ Boolean dimSkb)
 {
     mDimSkb = dimSkb;
     return Invalidate();
 }
 
-void SoftKeyboardView::OnDraw(
+void CSoftKeyboardView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
     if (NULL == mSoftKeyboard) return;
@@ -411,7 +435,7 @@ void SoftKeyboardView::OnDraw(
     mDirtyRect->SetEmpty();
 }
 
-void SoftKeyboardView::DrawSoftKey(
+void CSoftKeyboardView::DrawSoftKey(
     /* [in] */ ICanvas* canvas,
     /* [in] */ SoftKey* softKey,
     /* [in] */ Int32 keyXMargin,
@@ -462,26 +486,24 @@ void SoftKeyboardView::DrawSoftKey(
     }
 }
 
-
-IVIEW_METHODS_IMPL(CSoftKeyboardView, SoftKeyboardView);
-IDRAWABLECALLBACK_METHODS_IMPL(CSoftKeyboardView, SoftKeyboardView);
-IKEYEVENTCALLBACK_METHODS_IMPL(CSoftKeyboardView, SoftKeyboardView);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CSoftKeyboardView, SoftKeyboardView);
-
 PInterface CSoftKeyboardView::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == Elastos::Droid::View::EIID_View) {
         return reinterpret_cast<PInterface>((View*)this);
     }
-    return _CSoftKeyboardView::Probe(riid);
+    else if (riid == EIID_ISoftKeyboardView) {
+        return (IInterface*)(ISoftKeyboardView*)this;
+    }
+
+    return View::Probe(riid);
 }
 
 ECode CSoftKeyboardView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    SoftKeyboardView::Init(context, attrs);
+    View::constructor(context, attrs);
 
     AutoPtr<ISoundManagerHelper> helper;
     CSoundManagerHelper::AcquireSingleton((ISoundManagerHelper**)&helper);
@@ -492,96 +514,14 @@ ECode CSoftKeyboardView::constructor(
     return mPaint->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
 }
 
-ECode CSoftKeyboardView::SetSoftKeyboard(
-    /* [in] */ ISoftKeyboard* softSkb,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = SoftKeyboardView::SetSoftKeyboard(softSkb);
-    return NOERROR;
-}
-
 ECode CSoftKeyboardView::GetSoftKeyboard(
     /* [out] */ ISoftKeyboard** keyboard)
 {
     VALIDATE_NOT_NULL(keyboard);
-    AutoPtr<ISoftKeyboard> temp = SoftKeyboardView::GetSoftKeyboard();
-    *keyboard = temp;
+    *keyboard = mSoftKeyboard;
     REFCOUNT_ADD(*keyboard);
     return NOERROR;
 }
-
-ECode CSoftKeyboardView::ResizeKeyboard(
-    /* [in] */ Int32 skbWidth,
-    /* [in] */ Int32 skbHeight)
-{
-    return SoftKeyboardView::ResizeKeyboard(skbWidth, skbHeight);
-}
-
-ECode CSoftKeyboardView::SetBalloonHint(
-    /* [in] */ IBalloonHint* balloonOnKey,
-    /* [in] */ IBalloonHint* balloonPopup,
-    /* [in] */ Boolean movingNeverHidePopup)
-{
-    return SoftKeyboardView::SetBalloonHint(balloonOnKey, balloonPopup, movingNeverHidePopup);
-}
-
-ECode CSoftKeyboardView::SetOffsetToSkbContainer(
-    /* [in] */ ArrayOf<Int32>* offsetToSkbContainer)
-{
-    return SoftKeyboardView::SetOffsetToSkbContainer(offsetToSkbContainer);
-}
-
-ECode CSoftKeyboardView::ResetKeyPress(
-    /* [in] */ Int64 balloonDelay)
-{
-    return SoftKeyboardView::ResetKeyPress(balloonDelay);
-}
-
-ECode CSoftKeyboardView::OnKeyPress(
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y,
-    /* [in] *//* SkbContainer.LongPressTimer*/ IHandler* longPressTimer,
-    /* [in] */ Boolean movePress,
-    /* [out] */ ISoftKey** key)
-{
-    VALIDATE_NOT_NULL(key);
-    AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyPress(x, y, longPressTimer, movePress);
-    *key = sKey.Get();
-    REFCOUNT_ADD(*key);
-    return NOERROR;
-}
-
-ECode CSoftKeyboardView::OnKeyRelease(
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y,
-    /* [out] */ ISoftKey** key)
-{
-    VALIDATE_NOT_NULL(key);
-    AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyRelease(x, y);
-    *key = sKey.Get();
-    REFCOUNT_ADD(*key);
-    return NOERROR;
-}
-
-ECode CSoftKeyboardView::OnKeyMove(
-    /* [in] */ Int32 x,
-    /* [in] */ Int32 y,
-    /* [out] */ ISoftKey** key)
-{
-    VALIDATE_NOT_NULL(key);
-    AutoPtr<ISoftKey> sKey = SoftKeyboardView::OnKeyMove(x, y);
-    *key = sKey.Get();
-    REFCOUNT_ADD(*key);
-    return NOERROR;
-}
-
-ECode CSoftKeyboardView::DimSoftKeyboard(
-    /* [in] */ Boolean dimSkb)
-{
-    return SoftKeyboardView::DimSoftKeyboard(dimSkb);
-}
-
 
 } // namespace PinyinIME
 } // namespace Inputmethods

@@ -98,11 +98,10 @@ ECode CBalloonHint::BalloonTimer::Run()
     return NOERROR;
 }
 
-
-
 const Int32 CBalloonHint::TIME_DELAY_SHOW = 0;
 const Int32 CBalloonHint::TIME_DELAY_DISMISS = 200;
-
+CAR_OBJECT_IMPL(CBalloonHint);
+CAR_INTERFACE_IMPL(CBalloonHint, PopupWindow, IBalloonHint);
 CBalloonHint::CBalloonHint()
     : mMeasureSpecMode(0)
     , mForceDismiss(FALSE)

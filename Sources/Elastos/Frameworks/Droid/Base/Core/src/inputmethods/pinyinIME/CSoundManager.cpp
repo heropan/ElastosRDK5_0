@@ -6,6 +6,9 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
+CAR_OBJECT_IMPL(CSoundManager);
+CAR_INTERFACE_IMPL(CSoundManager, Object, ISoundManager);
+
 CSoundManager::CSoundManager()
     : FX_VOLUME(-1.0f)
     , mSilentMode(FALSE)

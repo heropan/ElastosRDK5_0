@@ -49,6 +49,8 @@ module
             [in] Int32 defStyle);
 
         interface IButton;
+        interface ITextView;
+        interface IView;
         interface IOnPreDrawListener;
         interface IDrawableCallback;
         interface IKeyEventCallback;
@@ -70,6 +72,8 @@ module
             [in] Int32 defStyle);
 
         interface IExtractEditText;
+        interface ITextView;
+        interface IView;
         interface IOnPreDrawListener;
         interface IDrawableCallback;
         interface IKeyEventCallback;
@@ -84,9 +88,12 @@ module
             [in] IDispatcherState* dispatcherState);
 
         interface ISoftInputWindow;
+        interface IDialog;
+        interface IDialogInterface;
         interface IWindowCallback;
         interface IKeyEventCallback;
         interface IViewOnCreateContextMenuListener;
+        interface IWindowOnWindowDismissedCallback;
     }
 
     [local]
@@ -101,6 +108,7 @@ module
             [in] Int32 defStyle);
 
         interface IKeyboardView;
+        interface IView;
         interface IViewOnClickListener;
         interface IDrawableCallback;
         interface IKeyEventCallback;
@@ -142,6 +150,7 @@ module
             [in] Int32 defStyle);
 
         interface IKeyboardView;
+        interface IView;
         interface IViewOnClickListener;
         interface IDrawableCallback;
         interface IKeyEventCallback;
@@ -154,10 +163,11 @@ module
         constructor(
             [in] IContext* ctx);
 
+        interface ICandidateView;
+        interface IView;
         interface IDrawableCallback;
         interface IKeyEventCallback;
         interface IAccessibilityEventSource;
-        interface ICandidateView;
     }
 
     [local]
@@ -170,6 +180,9 @@ module
             [in] IAttributeSet* attrs);
 
         interface IExtractEditLayout;
+        interface ILinearLayout;
+        interface IViewGroup;
+        interface IView;
         interface IViewParent;
         interface IViewManager;
         interface IDrawableCallback;

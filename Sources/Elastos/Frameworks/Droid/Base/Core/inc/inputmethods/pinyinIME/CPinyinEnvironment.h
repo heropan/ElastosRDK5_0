@@ -1,8 +1,8 @@
 
-#ifndef  __CPINYINENVIRONMENT_H__
-#define  __CPINYINENVIRONMENT_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINENVIRONMENT_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINENVIRONMENT_H__
 
-#include "_CPinyinEnvironment.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinEnvironment.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
@@ -19,8 +19,14 @@ namespace PinyinIME {
  * input method can work even when screen size is changed.
  */
 CarClass(CPinyinEnvironment)
+    , public Object
+    , public IPinyinEnvironment
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CPinyinEnvironment();
 
     CARAPI OnConfigurationChanged(
@@ -149,4 +155,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CPINYINENVIRONMENT_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINENVIRONMENT_H__

@@ -1,25 +1,22 @@
 
 #include "inputmethodservice/CExtractEditText.h"
 
+using Elastos::Droid::View::EIID_View;
+using Elastos::Droid::Widget::EIID_TextView;
+
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-using Elastos::Droid::View::EIID_View;
-using Elastos::Droid::Widget::EIID_TextView;
+CAR_OBJECT_IMPL(CExtractEditText);
+CAR_INTERFACE_IMPL(CExtractEditText, EditText, IExtractEditText);
 
-IVIEW_METHODS_IMPL(CExtractEditText, _ExtractEditText);
-IDRAWABLECALLBACK_METHODS_IMPL(CExtractEditText, _ExtractEditText);
-IKEYEVENTCALLBACK_METHODS_IMPL(CExtractEditText, _ExtractEditText);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CExtractEditText, _ExtractEditText);
-ITEXTVIEW_METHODS_IMPL(CExtractEditText, _ExtractEditText);
-
-_ExtractEditText::_ExtractEditText()
+CExtractEditText::CExtractEditText()
     : mSettingExtractedText(0)
 {
 }
 
-ECode _ExtractEditText::SetExtractedText(
+ECode CExtractEditText::SetExtractedText(
     /* [in] */ IExtractedText* text)
 {
     mSettingExtractedText++;
@@ -29,7 +26,7 @@ ECode _ExtractEditText::SetExtractedText(
     return NOERROR;
 }
 
-Boolean _ExtractEditText::PerformClick()
+Boolean CExtractEditText::PerformClick()
 {
     assert(mIME != NULL);
 
@@ -41,7 +38,7 @@ Boolean _ExtractEditText::PerformClick()
     return TRUE;
 }
 
-Boolean _ExtractEditText::OnTextContextMenuItem(
+Boolean CExtractEditText::OnTextContextMenuItem(
     /* [in] */ Int32 id)
 {
     Boolean state = FALSE;
@@ -55,27 +52,27 @@ Boolean _ExtractEditText::OnTextContextMenuItem(
     return EditText::OnTextContextMenuItem(id);
 }
 
-Boolean _ExtractEditText::IsInputMethodTarget()
+Boolean CExtractEditText::IsInputMethodTarget()
 {
     return TRUE;
 }
 
-Boolean _ExtractEditText::HasWindowFocus()
+Boolean CExtractEditText::HasWindowFocus()
 {
     return EditText::IsEnabled();
 }
 
-Boolean _ExtractEditText::IsFocused()
+Boolean CExtractEditText::IsFocused()
 {
     return EditText::IsEnabled();
 }
 
-Boolean _ExtractEditText::HasFocus()
+Boolean CExtractEditText::HasFocus()
 {
     return EditText::IsEnabled();
 }
 
-void _ExtractEditText::OnSelectionChanged(
+void CExtractEditText::OnSelectionChanged(
     /* [in] */ Int32 selStart,
     /* [in] */ Int32 selEnd)
 {
@@ -84,7 +81,7 @@ void _ExtractEditText::OnSelectionChanged(
     }
 }
 
-void _ExtractEditText::ViewClicked(
+void CExtractEditText::ViewClicked(
     /* [in] */ IInputMethodManager* imm)
 {
     // As an instance of this class is supposed to be owned by IMS,
@@ -96,7 +93,7 @@ void _ExtractEditText::ViewClicked(
     }
 }
 
-void _ExtractEditText::DeleteText_internal(
+void CExtractEditText::DeleteText_internal(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -105,7 +102,7 @@ void _ExtractEditText::DeleteText_internal(
     mIME->OnExtractedDeleteText(start, end);
 }
 
-void _ExtractEditText::ReplaceText_internal(
+void CExtractEditText::ReplaceText_internal(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [in] */ ICharSequence* text)
@@ -115,7 +112,7 @@ void _ExtractEditText::ReplaceText_internal(
     mIME->OnExtractedReplaceText(start, end, text);
 }
 
-void _ExtractEditText::SetSpan_internal(
+void CExtractEditText::SetSpan_internal(
     /* [in] */ IInterface* span,
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
@@ -126,7 +123,7 @@ void _ExtractEditText::SetSpan_internal(
     mIME->OnExtractedSetSpan(span, start, end, flags);
 }
 
-void _ExtractEditText::SetCursorPosition_internal(
+void CExtractEditText::SetCursorPosition_internal(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end)
 {
@@ -134,9 +131,6 @@ void _ExtractEditText::SetCursorPosition_internal(
     // This will change the source TextView instead, which will update the ExtractTextView.
     mIME->OnExtractedSelectionChanged(start, end);
 }
-
-CExtractEditText::CExtractEditText()
-{}
 
 PInterface CExtractEditText::Probe(
     /* [in] */ REIID riid)
@@ -147,54 +141,24 @@ PInterface CExtractEditText::Probe(
     else if (riid == EIID_TextView) {
         return reinterpret_cast<PInterface>((TextView*)this);
     }
+    else if (riid == EIID_IExtractEditText) {
+        return reinterpret_cast<PInterface>((IExtractEditText*)this);
+    }
 
-    return _CExtractEditText::Probe(riid);
-}
-
-ECode CExtractEditText::OnPreDraw(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = EditText::OnPreDraw();
-    return NOERROR;
-}
-
-ECode CExtractEditText::SetSelection(
-    /* [in] */ Int32 start,
-    /* [in] */ Int32 stop)
-{
-    return EditText::SetSelection(start, stop);
-}
-
-
-ECode CExtractEditText::SetSelection(
-    /* [in] */ Int32 index)
-{
-    return EditText::SetSelection(index);
-}
-
-ECode CExtractEditText::SelectAll()
-{
-    return EditText::SelectAll();
-}
-
-ECode CExtractEditText::ExtendSelection(
-    /* [in] */ Int32 index)
-{
-    return EditText::ExtendSelection(index);
+    return EditText::Probe(riid);
 }
 
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context)
 {
-    return EditText::Init(context, NULL);
+    return EditText::constructor(context, NULL);
 }
 
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return EditText::Init(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
+    return EditText::constructor(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
 }
 
 ECode CExtractEditText::constructor(
@@ -202,7 +166,7 @@ ECode CExtractEditText::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    return EditText::Init(context, attrs, defStyle);
+    return EditText::constructor(context, attrs, defStyle);
 }
 
 ECode CExtractEditText::SetIME(

@@ -1,13 +1,12 @@
 
-#ifndef  __ABSTRACTINPUTMETHODSESSIONIMPL_H__
-#define  __ABSTRACTINPUTMETHODSESSIONIMPL_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__
+#define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__
 
 #ifdef DROID_CORE
 #include "inputmethodservice/AbstractInputMethodService.h"
 #else
 #include "AbstractInputMethodService.h"
 #endif
-
 
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
@@ -17,26 +16,20 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-
 /**
  * Base class for derived classes to implement their {@link InputMethodSession}
  * interface.  This takes care of basic maintenance of the session,
  * but most behavior must be implemented in a derived class.
  */
 class AbstractInputMethodSessionImpl
-    : public ElRefBase
+    : public Object
     , public IAbstractInputMethodSessionImpl
 {
 public:
+    CAR_INTERFACE_DECL();
+
     AbstractInputMethodSessionImpl(
         /* [in] */ AbstractInputMethodService* host);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     /**
      * Check whether this session has been enabled by the system.  If not
@@ -101,4 +94,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ABSTRACTINPUTMETHODSESSIONIMPL_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSESSIONIMPL_H__

@@ -8,23 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-IVIEW_METHODS_IMPL(CExtractButton, _ExtractButton);
-IDRAWABLECALLBACK_METHODS_IMPL(CExtractButton, _ExtractButton);
-IKEYEVENTCALLBACK_METHODS_IMPL(CExtractButton, _ExtractButton);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CExtractButton, _ExtractButton);
-ITEXTVIEW_METHODS_IMPL(CExtractButton, _ExtractButton);
-
-
-_ExtractButton::_ExtractButton()
-{}
-
-_ExtractButton::~_ExtractButton()
-{}
-
-Boolean _ExtractButton::HasWindowFocus()
-{
-    return IsEnabled() && GetVisibility() == IView::VISIBLE;
-}
+CAR_OBJECT_IMPL(CExtractButton);
 
 CExtractButton::CExtractButton()
 {}
@@ -39,7 +23,7 @@ PInterface CExtractButton::Probe(
         return reinterpret_cast<PInterface>((TextView*)this);
     }
 
-    return _CExtractButton::Probe(riid);
+    return Button::Probe(riid);
 }
 
 ECode CExtractButton::constructor(
@@ -70,6 +54,11 @@ ECode CExtractButton::OnPreDraw(
     *result = Button::OnPreDraw();
 
     return NOERROR;
+}
+
+Boolean CExtractButton::HasWindowFocus()
+{
+    return IsEnabled() && GetVisibility() == IView::VISIBLE;
 }
 
 } // namespace InputMethodService

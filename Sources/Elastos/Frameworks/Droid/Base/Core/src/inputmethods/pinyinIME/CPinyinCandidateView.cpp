@@ -17,8 +17,11 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-PinyinCandidateView::PressTimer::PressTimer(
-    /* [in] */ PinyinCandidateView* host)
+CAR_OBJECT_IMPL(CPinyinCandidateView);
+CAR_INTERFACE_IMPL(CPinyinCandidateView, View, ICandidateView);
+
+CPinyinCandidateView::PressTimer::PressTimer(
+    /* [in] */ CPinyinCandidateView* host)
     : mTimerPending(FALSE)
     , mPageNoToShow(0)
     , mActiveCandOfPage(0)
@@ -26,7 +29,7 @@ PinyinCandidateView::PressTimer::PressTimer(
 {
 }
 
-void PinyinCandidateView::PressTimer::StartTimer(
+void CPinyinCandidateView::PressTimer::StartTimer(
     /* [in] */ Int64 afterMillis,
     /* [in] */ Int32 pageNo,
     /* [in] */ Int32 activeInPage)
@@ -39,17 +42,17 @@ void PinyinCandidateView::PressTimer::StartTimer(
     mActiveCandOfPage = activeInPage;
 }
 
-Int32 PinyinCandidateView::PressTimer::GetPageToShow()
+Int32 CPinyinCandidateView::PressTimer::GetPageToShow()
 {
     return mPageNoToShow;
 }
 
-Int32 PinyinCandidateView::PressTimer::GetActiveCandOfPageToShow()
+Int32 CPinyinCandidateView::PressTimer::GetActiveCandOfPageToShow()
 {
     return mActiveCandOfPage;
 }
 
-Boolean PinyinCandidateView::PressTimer::RemoveTimer()
+Boolean CPinyinCandidateView::PressTimer::RemoveTimer()
 {
     if (mTimerPending) {
         mTimerPending = FALSE;
@@ -59,12 +62,12 @@ Boolean PinyinCandidateView::PressTimer::RemoveTimer()
     return FALSE;
 }
 
-Boolean PinyinCandidateView::PressTimer::IsPending()
+Boolean CPinyinCandidateView::PressTimer::IsPending()
 {
     return mTimerPending;
 }
 
-ECode PinyinCandidateView::PressTimer::Run()
+ECode CPinyinCandidateView::PressTimer::Run()
 {
     if (mPageNoToShow >= 0 && mActiveCandOfPage >= 0) {
         // Always enable to highlight the clicked one.
@@ -76,10 +79,10 @@ ECode PinyinCandidateView::PressTimer::Run()
 }
 
 
-const Float PinyinCandidateView::MIN_ITEM_WIDTH = 22;
-String PinyinCandidateView::SUSPENSION_POINTS = String("...");
+const Float CPinyinCandidateView::MIN_ITEM_WIDTH = 22;
+String CPinyinCandidateView::SUSPENSION_POINTS = String("...");
 
-PinyinCandidateView::PinyinCandidateView()
+CPinyinCandidateView::CPinyinCandidateView()
     : mContentWidth(0)
     , mContentHeight(0)
     , mShowFootnote(TRUE)
@@ -104,7 +107,7 @@ PinyinCandidateView::PinyinCandidateView()
     memset(mLocationTmp, 0, sizeof(mLocationTmp));
 }
 
-void PinyinCandidateView::OnMeasure(
+void CPinyinCandidateView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -120,7 +123,7 @@ void PinyinCandidateView::OnMeasure(
     }
 }
 
-void PinyinCandidateView::OnSizeChanged()
+void CPinyinCandidateView::OnSizeChanged()
 {
     mContentWidth = GetMeasuredWidth() - mPaddingLeft - mPaddingRight;
     mContentHeight = (Int32) ((GetMeasuredHeight() - mPaddingTop - mPaddingBottom) * 0.95f);
@@ -173,7 +176,7 @@ void PinyinCandidateView::OnSizeChanged()
     // mActiveCandInPage = 0;
 }
 
-Boolean PinyinCandidateView::CalculatePage(
+Boolean CPinyinCandidateView::CalculatePage(
     /* [in] */ Int32 pageNo)
 {
     if (pageNo == mPageNoCalculated) return TRUE;
@@ -249,7 +252,7 @@ Boolean PinyinCandidateView::CalculatePage(
     return TRUE;
 }
 
-void PinyinCandidateView::OnDraw(
+void CPinyinCandidateView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
     View::OnDraw(canvas);
@@ -352,7 +355,7 @@ void PinyinCandidateView::OnDraw(
     }
 }
 
-String PinyinCandidateView::GetLimitedCandidateForDrawing(
+String CPinyinCandidateView::GetLimitedCandidateForDrawing(
     /* [in] */ const String& rawCandidate,
     /* [in] */ Float widthToDraw)
 {
@@ -368,7 +371,7 @@ String PinyinCandidateView::GetLimitedCandidateForDrawing(
     } while (TRUE);
 }
 
-Float PinyinCandidateView::DrawVerticalSeparator(
+Float CPinyinCandidateView::DrawVerticalSeparator(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Float xPos)
 {
@@ -380,7 +383,7 @@ Float PinyinCandidateView::DrawVerticalSeparator(
     return (mSeparatorDrawable->GetIntrinsicWidth(&value), value);
 }
 
-Int32 PinyinCandidateView::MapToItemInPage(
+Int32 CPinyinCandidateView::MapToItemInPage(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y)
 {
@@ -426,13 +429,13 @@ Int32 PinyinCandidateView::MapToItemInPage(
     return nearest;
 }
 
-Boolean PinyinCandidateView::OnTouchEvent(
+Boolean CPinyinCandidateView::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
     return View::OnTouchEvent(event);
 }
 
-void PinyinCandidateView::ShowBalloon(
+void CPinyinCandidateView::ShowBalloon(
     /* [in] */ Int32 candPos,
     /* [in] */ Boolean delayedShow)
 {
@@ -473,7 +476,7 @@ void PinyinCandidateView::ShowBalloon(
     }
 }
 
-ECode PinyinCandidateView::ShowPage(
+ECode CPinyinCandidateView::ShowPage(
     /* [in] */ Int32 pageNo,
     /* [in] */ Int32 activeCandInPage,
     /* [in] */ Boolean enableActiveHighlight)
@@ -494,7 +497,7 @@ ECode PinyinCandidateView::ShowPage(
     return View::Invalidate();
 }
 
-ECode PinyinCandidateView::SetDecodingInfo(
+ECode CPinyinCandidateView::SetDecodingInfo(
     /* [in] */ IDecodingInfo* decInfo)
 {
     if (NULL == decInfo) return NOERROR;
@@ -523,19 +526,17 @@ ECode PinyinCandidateView::SetDecodingInfo(
     return NOERROR;
 }
 
-
-IVIEW_METHODS_IMPL(CPinyinCandidateView, PinyinCandidateView);
-IDRAWABLECALLBACK_METHODS_IMPL(CPinyinCandidateView, PinyinCandidateView);
-IKEYEVENTCALLBACK_METHODS_IMPL(CPinyinCandidateView, PinyinCandidateView);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CPinyinCandidateView, PinyinCandidateView);
-
 PInterface CPinyinCandidateView::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == Elastos::Droid::View::EIID_View) {
         return reinterpret_cast<PInterface>((View*)this);
     }
-    return _CPinyinCandidateView::Probe(riid);
+    else if (riid == EIID_ICandidateView) {
+        return (IInterface*)(ICandidateView*)this;
+    }
+
+    return View::Probe(riid);
 }
 
 ECode CPinyinCandidateView::constructor(
@@ -588,12 +589,6 @@ ECode CPinyinCandidateView::Initialize(
     return NOERROR;
 }
 
-ECode CPinyinCandidateView::SetDecodingInfo(
-    /* [in] */ IDecodingInfo* decInfo)
-{
-    return PinyinCandidateView::SetDecodingInfo(decInfo);
-}
-
 ECode CPinyinCandidateView::GetActiveCandiatePosInPage(
     /* [out] */ Int32* pos)
 {
@@ -608,14 +603,6 @@ ECode CPinyinCandidateView::GetActiveCandiatePosGlobal(
     VALIDATE_NOT_NULL(pos);
     *pos = ((CDecodingInfo*)mDecInfo.Get())->mPageStart[mPageNo] + mActiveCandInPage;
     return NOERROR;
-}
-
-ECode CPinyinCandidateView::ShowPage(
-    /* [in] */ Int32 pageNo,
-    /* [in] */ Int32 activeCandInPage,
-    /* [in] */ Boolean enableActiveHighlight)
-{
-    return PinyinCandidateView::ShowPage(pageNo, activeCandInPage, enableActiveHighlight);
 }
 
 ECode CPinyinCandidateView::EnableActiveHighlight(

@@ -1,8 +1,8 @@
 
-#ifndef  __CPINYINGESTURELISTENER_H__
-#define  __CPINYINGESTURELISTENER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINGESTURELISTENER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINGESTURELISTENER_H__
 
-#include "_CPinyinGestureListener.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinGestureListener.h"
 #include "view/SimpleOnGestureListener.h"
 
 using Elastos::Droid::Inputmethods::PinyinIME::IPinyinIME;
@@ -16,6 +16,10 @@ namespace PinyinIME {
 CarClass(CPinyinGestureListener), public Elastos::Droid::View::SimpleOnGestureListener
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CPinyinGestureListener();
 
     CARAPI_(PInterface) Probe(
@@ -143,4 +147,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CPINYINGESTURELISTENER_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINGESTURELISTENER_H__

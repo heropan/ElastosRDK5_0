@@ -10,6 +10,9 @@ namespace PinyinIME {
 
 AutoPtr<IPinyinEnvironment> CPinyinEnvironmentHelper::mInstance;
 
+CAR_INTERFACE_IMPL(CPinyinEnvironmentHelper, Singleton, IPinyinEnvironmentHelper)
+CAR_SINGLETON_IMPL(CPinyinEnvironmentHelper)
+
 ECode CPinyinEnvironmentHelper::GetInstance(
     /* [out] */ IPinyinEnvironment** env)
 {

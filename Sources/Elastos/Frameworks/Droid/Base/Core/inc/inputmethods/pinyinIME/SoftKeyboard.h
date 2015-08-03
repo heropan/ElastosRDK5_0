@@ -1,6 +1,6 @@
 
-#ifndef  __SOFTKEYBOARD_H__
-#define  __SOFTKEYBOARD_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYBOARD_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYBOARD_H__
 
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
@@ -20,7 +20,7 @@ namespace PinyinIME {
  * background image, the image for high light, the keys, etc.
  */
 class SoftKeyboard
-    : public ElRefBase
+    : public Object
     , public ISoftKeyboard
 {
 public:
@@ -286,4 +286,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __SOFTKEYBOARD_H__
+#endif // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYBOARD_H__

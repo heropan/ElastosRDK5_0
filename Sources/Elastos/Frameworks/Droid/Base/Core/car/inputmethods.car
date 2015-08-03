@@ -42,6 +42,7 @@ module
                 [in] Int32 measureSpecMode);
 
             interface IBalloonHint;
+            interface IPopupWindow;
         }
 
         [local]
@@ -50,6 +51,7 @@ module
                 [in] IContext* ctx);
 
             interface IBalloonView;
+            interface IView;
             interface IDrawableCallback;
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;
@@ -82,6 +84,9 @@ module
                 [in] IAttributeSet* attrs);
 
             interface ICandidatesContainer;
+            interface IRelativeLayout;
+            interface IViewGroup;
+            interface IView;
             interface IViewParent;
             interface IViewManager;
             interface IDrawableCallback;
@@ -99,6 +104,7 @@ module
                 [in] IAttributeSet* attrs);
 
             interface ICandidateView;
+            interface IView;
             interface IDrawableCallback;
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;
@@ -111,6 +117,7 @@ module
                 [in] IAttributeSet* attrs);
 
             interface IComposingView;
+            interface IView;
             interface IDrawableCallback;
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;
@@ -123,6 +130,9 @@ module
                 [in] IAttributeSet* attrs);
 
             interface ISkbContainer;
+            interface IRelativeLayout;
+            interface IViewGroup;
+            interface IView;
             interface IViewParent;
             interface IViewManager;
             interface IDrawableCallback;
@@ -138,6 +148,7 @@ module
                 [in] IAttributeSet* attrs);
 
             interface ISoftKeyboardView;
+            interface IView;
             interface IDrawableCallback;
             interface IKeyEventCallback;
             interface IAccessibilityEventSource;

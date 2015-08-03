@@ -1,6 +1,6 @@
 
-#ifndef  __ABSTRACTINPUTMETHODIMPL_H__
-#define  __ABSTRACTINPUTMETHODIMPL_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODIMPL_H__
+#define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODIMPL_H__
 
 #ifdef DROID_CORE
 #include "inputmethodservice/AbstractInputMethodService.h"
@@ -18,27 +18,18 @@ namespace Droid {
 namespace InputMethodService {
 
 class AbstractInputMethodImpl
-    : public ElRefBase
+    : public Object
     , public IAbstractInputMethodImpl
     , public IWeakReferenceSource
 {
 public:
+    CAR_INTERFACE_DECL();
+
     AbstractInputMethodImpl(
         /* [in] */ AbstractInputMethodService* host);
 
     CARAPI GetWeakReference(
         /* [out] */ IWeakReference** weakReference);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     CARAPI CreateSession(
         /* [in] */ IInputMethodSessionEventCallback* callback);
@@ -50,6 +41,9 @@ public:
     CARAPI RevokeSession(
         /* [in] */ IInputMethodSession* session);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     AbstractInputMethodService* mHost;
 };
@@ -58,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ABSTRACTINPUTMETHODIMPL_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODIMPL_H__

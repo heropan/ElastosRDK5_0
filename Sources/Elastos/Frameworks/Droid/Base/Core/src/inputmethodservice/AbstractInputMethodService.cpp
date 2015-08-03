@@ -15,6 +15,7 @@ using Elastos::Droid::Internal::View::IIInputMethod;
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
+CAR_INTERFACE_IMPL(AbstractInputMethodService, Service, IKeyEventCallback);
 
 AbstractInputMethodService::AbstractInputMethodService()
 {

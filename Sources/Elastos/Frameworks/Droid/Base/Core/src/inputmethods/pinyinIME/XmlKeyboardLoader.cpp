@@ -739,6 +739,13 @@ AutoPtr<IDrawable> XmlKeyboardLoader::GetDrawable(
     return d;
 }
 
+ECode XmlKeyboardLoader::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("Elastos.Droid.Inputmethods.PinyinIME.XmlKeyboardLoader");
+    return NOERROR;
+}
 
 } // namespace PinyinIME
 } // namespace Inputmethods

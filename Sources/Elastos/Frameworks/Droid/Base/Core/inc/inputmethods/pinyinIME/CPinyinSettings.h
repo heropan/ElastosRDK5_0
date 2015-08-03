@@ -1,9 +1,9 @@
 
-#ifndef  __CPINYINSETTINGS_H__
-#define  __CPINYINSETTINGS_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINSETTINGS_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINSETTINGS_H__
 
 #include "ext/frameworkext.h"
-#include "_CPinyinSettings.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinSettings.h"
 
 using Elastos::Droid::Content::ISharedPreferences;
 using Elastos::Droid::Content::ISharedPreferencesEditor;
@@ -21,8 +21,14 @@ public:
 };
 
 CarClass(CPinyinSettings)
+    , public Object
+    , public ISettings
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetInstance(
         /* [in] */ ISharedPreferences* pref);
 
@@ -71,4 +77,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CPINYINSETTINGS_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINSETTINGS_H__

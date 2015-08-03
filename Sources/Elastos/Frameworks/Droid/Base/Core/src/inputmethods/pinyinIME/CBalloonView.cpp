@@ -10,19 +10,41 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-String BalloonView::SUSPENSION_POINTS = String("...");
-IVIEW_METHODS_IMPL(CBalloonView, BalloonView);
-IDRAWABLECALLBACK_METHODS_IMPL(CBalloonView, BalloonView);
-IKEYEVENTCALLBACK_METHODS_IMPL(CBalloonView, BalloonView);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CBalloonView, BalloonView);
+String CBalloonView::SUSPENSION_POINTS = String("...");
+CAR_OBJECT_IMPL(CBalloonView);
+CAR_INTERFACE_IMPL(CBalloonView, View, ICandidateView);
 
-BalloonView::BalloonView()
+CBalloonView::CBalloonView()
     : mLabeColor(0xff000000)
     , mSuspensionPointsWidth(0.f)
 {
 }
 
-void BalloonView::OnMeasure(
+PInterface CBalloonView::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == Elastos::Droid::View::EIID_View) {
+        return reinterpret_cast<PInterface>((View*)this);
+    }
+    else if (riid == EIID_IBalloonView) {
+        return (IInterface*)(IBalloonView*)this;
+    }
+
+    return View::Probe(riid);
+}
+
+ECode CBalloonView::constructor(
+    /* [in] */ IContext* context)
+{
+    View::constructor(context);
+    CPaint::New((IPaint**)&mPaintLabel);
+    mPaintLabel->SetColor(mLabeColor);
+    mPaintLabel->SetAntiAlias(TRUE);
+    mPaintLabel->SetFakeBoldText(TRUE);
+    return mPaintLabel->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
+}
+
+void CBalloonView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -73,7 +95,7 @@ void BalloonView::OnMeasure(
     SetMeasuredDimension(measuredWidth, measuredHeight);
 }
 
-void BalloonView::OnDraw(
+void CBalloonView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
     Int32 width = GetWidth();
@@ -112,7 +134,7 @@ void BalloonView::OnDraw(
     }
 }
 
-String BalloonView::GetLimitedLabelForDrawing(
+String CBalloonView::GetLimitedLabelForDrawing(
     /* [in] */ const String& rawLabel,
     /* [in] */ Float widthToDraw)
 {
@@ -126,27 +148,6 @@ String BalloonView::GetLimitedLabelForDrawing(
             return rawLabel.Substring(0, subLen) + SUSPENSION_POINTS;
         }
     } while (TRUE);
-}
-
-PInterface CBalloonView::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == Elastos::Droid::View::EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    }
-    return _CBalloonView::Probe(riid);
-}
-
-ECode CBalloonView::constructor(
-    /* [in] */ IContext* context)
-{
-    Init(context);
-    CPaint::New((IPaint**)&mPaintLabel);
-    mPaintLabel->SetColor(mLabeColor);
-    mPaintLabel->SetAntiAlias(TRUE);
-    mPaintLabel->SetFakeBoldText(TRUE);
-    mPaintLabel->GetFontMetricsInt((IPaintFontMetricsInt**)&mFmi);
-    return NOERROR;
 }
 
 ECode CBalloonView::SetIcon(

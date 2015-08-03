@@ -1,29 +1,49 @@
 
-#ifndef  __CBALLOONVIEW_H__
-#define  __CBALLOONVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONVIEW_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONVIEW_H__
 
-#include "_CBalloonView.h"
-
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CBalloonView.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-class BalloonView: public Elastos::Droid::View::View
+CarClass(CBalloonView)
+    , public Elastos::Droid::View::View
+    , public IBalloonView
 {
 public:
-    BalloonView();
+    CBalloonView();
+
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI SetIcon(
+        /* [in] */ IDrawable* icon);
+
+    CARAPI SetTextConfig(
+        /* [in] */ const String& label,
+        /* [in] */ Float fontSize,
+        /* [in] */ Boolean textBold,
+        /* [in] */ Int32 textColor);
 
 protected:
-    void OnMeasure(
+    CARAPI_(void) OnMeasure(
         /* [in] */ Int32 widthMeasureSpec,
         /* [in] */ Int32 heightMeasureSpec);
 
-    void OnDraw(
+    CARAPI_(void) OnDraw(
         /* [in] */ ICanvas* canvas);
 
-    String GetLimitedLabelForDrawing(
+    CARAPI_(String) GetLimitedLabelForDrawing(
         /* [in] */ const String& rawLabel,
         /* [in] */ Float widthToDraw);
 
@@ -54,33 +74,9 @@ protected:
     Float mSuspensionPointsWidth;
 };
 
-CarClass(CBalloonView), public BalloonView
-{
-public:
-    IVIEW_METHODS_DECL();
-    IDRAWABLECALLBACK_METHODS_DECL();
-    IKEYEVENTCALLBACK_METHODS_DECL();
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    CARAPI SetIcon(
-        /* [in] */ IDrawable* icon);
-
-    CARAPI SetTextConfig(
-        /* [in] */ const String& label,
-        /* [in] */ Float fontSize,
-        /* [in] */ Boolean textBold,
-        /* [in] */ Int32 textColor);
-};
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CBALLOONVIEW_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONVIEW_H__

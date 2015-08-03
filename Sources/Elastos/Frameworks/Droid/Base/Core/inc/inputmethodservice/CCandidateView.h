@@ -1,8 +1,8 @@
 
-#ifndef __CCANDIDATEVIEW_H__
-#define __CCANDIDATEVIEW_H__
+#ifndef __ELASTOS_DROID_INPUTMEHTODSERVICE_CCANDIDATEVIEW_H__
+#define __ELASTOS_DROID_INPUTMEHTODSERVICE_CCANDIDATEVIEW_H__
 
-#include "_CCandidateView.h"
+#include "_Elastos_Droid_InputMethodService_CCandidateView.h"
 
 #include "view/View.h"
 //#include "view/GestureDetector.h"
@@ -13,22 +13,20 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-class CandidateView : public Elastos::Droid::View::View
+CarClass(CCandidateView)
+    , public Elastos::Droid::View::View
+    , public ICandidateView
 {
 protected:
     class SelfSimpleOnGestureListener
-        : public ElRefBase
+        : public Object
         //, public GestureDetector::SimpleOnGestureListener
     {
     public:
         SelfSimpleOnGestureListener(
-            /* [in] */ CandidateView* host);
+            /* [in] */ CCandidateView* host);
 
         ~SelfSimpleOnGestureListener();
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
 
         Boolean OnScroll(
             /* [in] */ IMotionEvent* e1,
@@ -36,13 +34,20 @@ protected:
             /* [in] */ Float distanceX,
             /* [in] */ Float distanceY);
     private:
-        CandidateView* mHost;
+        CCandidateView* mHost;
     };
 
 public:
-    CandidateView();
+    CAR_OBJECT_DECL();
 
-    virtual ~CandidateView();
+    CAR_INTERFACE_DECL();
+
+    CCandidateView();
+
+    ~CCandidateView();
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx);
 
     /**
      * A connection back to the service to communicate with the text field
@@ -72,7 +77,7 @@ public:
         /* [in] */ IMotionEvent* event);
 
 protected:
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* ctx);
 
     /**
@@ -118,36 +123,8 @@ protected:
     //GestureDetector* mGestureDetector;
 };
 
-CarClass(CCandidateView), public CandidateView
-{
-public:
-    IVIEW_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    IKEYEVENTCALLBACK_METHODS_DECL()
-
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    CARAPI constructor(
-        /* [in] */ IContext* ctx);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI SetService(
-        /* [in] */ ISoftKeyboard* listener);
-
-    CARAPI SetSuggestions(
-        /* [in] */ ArrayOf<ICharSequence*>* suggestions,
-        /* [in] */ Boolean completions,
-        /* [in] */ Boolean typedWordValid);
-
-    CARAPI Clear();
-};
-
 } // namespace InputMethodService
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCANDIDATEVIEW_H__
+#endif // __ELASTOS_DROID_INPUTMEHTODSERVICE_CCANDIDATEVIEW_H__

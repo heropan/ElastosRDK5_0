@@ -12,7 +12,7 @@ const Int32 SoftKey::MAX_MOVE_TOLERANCE_Y = 0;
 const Int32 SoftKey::KEYMASK_REPEAT = 0x10000000;
 const Int32 SoftKey::KEYMASK_BALLOON = 0x20000000;
 
-CAR_INTERFACE_IMPL(SoftKey, ISoftKey);
+CAR_INTERFACE_IMPL(SoftKey, Object, ISoftKey);
 
 SoftKey::SoftKey()
     : mPopupSkbId(0)
@@ -225,6 +225,23 @@ Boolean SoftKey::MoveWithinKey(
         return TRUE;
     }
     return FALSE;
+}
+
+ECode NodeSet::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    String str("\n");
+    str += String("  keyCode: ") + StringUtils::ToString(mKeyCode) + String("\n");
+    str += String("  keyMask: ") + StringUtils::ToString(mKeyMask) + String("\n");
+    str += String("  keyLabel: ") + (mKeyLabel == NULL ? String("null") : mKeyLabel) + String("\n");
+    str += String("  popupResId: ") + StringUtils::ToString(mPopupSkbId) + String("\n");
+    str += String("  Position: ") + StringUtils::ToString(mLeftF) + String(", ")
+            + StringUtils::ToString(mTopF) + String(", ") + StringUtils::ToString(mRightF) + String(", ")
+            + StringUtils::ToString(mBottomF) + String("\n");
+
+    *info = str;
+    return NOERROR;
 }
 
 } // namespace PinyinIME

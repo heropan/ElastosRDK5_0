@@ -1,8 +1,8 @@
 
-#ifndef  __CBALLOONHINT_H__
-#define  __CBALLOONHINT_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONHINT_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONHINT_H__
 
-#include "_CBalloonHint.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CBalloonHint.h"
 #include "os/HandlerRunnable.h"
 #include "widget/PopupWindow.h"
 
@@ -19,14 +19,15 @@ namespace PinyinIME {
  * Subclass of PopupWindow used as the feedback when user presses on a soft key
  * or a candidate.
  */
-CarClass(CBalloonHint), public PopupWindow
+CarClass(CBalloonHint)
+    , public PopupWindow
+    , public IBalloonHint
 {
 private:
     class BalloonTimer
         : public HandlerRunnable
     {
     public:
-
         BalloonTimer(
             /* [in] */ CBalloonHint* host);
 
@@ -65,6 +66,10 @@ private:
     };
 
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CBalloonHint();
 
     CARAPI constructor(
@@ -397,4 +402,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CBALLOONHINT_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CBALLOONHINT_H__

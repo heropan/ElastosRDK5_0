@@ -1,6 +1,6 @@
 
-#ifndef  __SOFTKEYTOGGLE_H__
-#define  __SOFTKEYTOGGLE_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYTOGGLE_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYTOGGLE_H__
 
 #include "SoftKey.h"
 
@@ -20,7 +20,7 @@ class SoftKeyToggle
     , public ISoftKeyToggle
 {
 public:
-    class ToggleState : public ElRefBase
+    class ToggleState : public Object
     {
     public:
         ToggleState();
@@ -44,16 +44,7 @@ public:
     };
 
 public:
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    virtual  CARAPI GetInterfaceID(
-        /* [in] */ IInterface* object,
-        /* [out] */ InterfaceID* iid);
+    CAR_INTERFACE_DECL();
 
     Int32 GetToggleStateId();
 
@@ -118,6 +109,9 @@ public:
     Boolean SetToggleStates(
         /* [in] */ ToggleState* rootState);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     AutoPtr<ToggleState> GetToggleState();
 
@@ -138,4 +132,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __SOFTKEYTOGGLE_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEYTOGGLE_H__

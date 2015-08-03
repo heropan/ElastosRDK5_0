@@ -23,6 +23,9 @@ const Float CPinyinEnvironment::FUNCTION_KEY_TEXT_SIZE_RATIO = 0.055f;
 const Float CPinyinEnvironment::NORMAL_BALLOON_TEXT_SIZE_RATIO = 0.14f;
 const Float CPinyinEnvironment::FUNCTION_BALLOON_TEXT_SIZE_RATIO = 0.085f;
 
+CAR_OBJECT_IMPL(CPinyinEnvironment);
+CAR_INTERFACE_IMPL(CPinyinEnvironment, Object, IPinyinEnvironment);
+
 CPinyinEnvironment::CPinyinEnvironment()
     : mScreenWidth(0)
     , mScreenHeight(0)

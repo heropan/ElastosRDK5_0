@@ -1,10 +1,8 @@
 
-#ifndef  __CCANDIDATESCONTAINER_H__
-#define  __CCANDIDATESCONTAINER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CCANDIDATESCONTAINER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CCANDIDATESCONTAINER_H__
 
-#include "_CCandidatesContainer.h"
-
-
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CCandidatesContainer.h"
 #include "widget/RelativeLayout.h"
 
 using Elastos::Droid::View::IGestureDetector;
@@ -16,10 +14,57 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-class CandidatesContainer: public Elastos::Droid::Widget::RelativeLayout
+/**
+ * Container used to host the two candidate views. When user drags on candidate
+ * view, animation is used to dismiss the current candidate view and show a new
+ * one. These two candidate views and their parent are hosted by this container.
+ * <p>
+ * Besides the candidate views, there are two arrow views to show the page
+ * forward/backward arrows.
+ * </p>
+ */
+CarClass(CCandidatesContainer)
+    , public Elastos::Droid::Widget::RelativeLayout
+    , public ICandidatesContainer
 {
 public:
     CandidatesContainer();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI OnAnimationStart(
+        /* [in] */  IAnimation* animation);
+
+    CARAPI OnAnimationEnd(
+        /* [in] */  IAnimation* animation);
+
+    CARAPI OnAnimationRepeat(
+        /* [in] */  IAnimation* animation);
+
+    CARAPI OnTouch(
+        /* [in] */ IView* v,
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
+
+    CARAPI SetIgnoreGravity(
+        /* [in] */ Int32 viewId);
+
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
+
+    CARAPI SetGravity(
+        /* [in] */ Int32 gravity);
+
+    CARAPI SetHorizontalGravity(
+        /* [in] */ Int32 horizontalGravity);
+
+    CARAPI SetVerticalGravity(
+        /* [in] */ Int32 verticalGravity);
 
     CARAPI Initialize(
         /* [in] */ ICandidateViewListener* cvListener,
@@ -211,106 +256,9 @@ protected:
     Int32 mCurrentPage;
 };
 
-/**
- * Container used to host the two candidate views. When user drags on candidate
- * view, animation is used to dismiss the current candidate view and show a new
- * one. These two candidate views and their parent are hosted by this container.
- * <p>
- * Besides the candidate views, there are two arrow views to show the page
- * forward/backward arrows.
- * </p>
- */
-CarClass(CCandidatesContainer), public CandidatesContainer
-{
-public:
-    IVIEW_METHODS_DECL()
-    IVIEWGROUP_METHODS_DECL()
-    IVIEWPARENT_METHODS_DECL()
-    IVIEWMANAGER_METHODS_DECL()
-    IDRAWABLECALLBACK_METHODS_DECL()
-    IKEYEVENTCALLBACK_METHODS_DECL()
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI UpdateArrowStatus();
-
-    CARAPI OnAnimationStart(
-        /* [in] */  IAnimation* animation);
-
-    CARAPI OnAnimationEnd(
-        /* [in] */  IAnimation* animation);
-
-    CARAPI OnAnimationRepeat(
-        /* [in] */  IAnimation* animation);
-
-    CARAPI OnTouch(
-        /* [in] */ IView* v,
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* result);
-
-    CARAPI Initialize(
-        /* [in] */ ICandidateViewListener* cvListener,
-        /* [in] */ IBalloonHint* balloonHint,
-        /* [in] */ IGestureDetector* gestureDetector);
-
-    CARAPI ShowCandidates(
-        /* [in] */ IDecodingInfo* decInfo,
-        /* [in] */ Boolean enableActiveHighlight);
-
-    CARAPI GetCurrentPage(
-        /* [out] */ Int32* page);
-
-    CARAPI EnableActiveHighlight(
-        /* [in] */ Boolean enableActiveHighlight);
-
-    CARAPI ActiveCurseBackward(
-        /* [out] */ Boolean* result);
-
-    CARAPI ActiveCurseForward(
-        /* [out] */ Boolean* result);
-
-    CARAPI PageBackward(
-        /* [in] */ Boolean animLeftRight,
-        /* [in] */ Boolean enableActiveHighlight,
-        /* [out] */ Boolean* result);
-
-    CARAPI PageForward(
-        /* [in] */ Boolean animLeftRight,
-        /* [in] */ Boolean enableActiveHighlight,
-        /* [out] */ Boolean* result);
-
-    CARAPI GetActiveCandiatePos(
-        /* [out] */ Int32* pos);
-
-    CARAPI LoadAnimation(
-        /* [in] */ Boolean animLeftRight,
-        /* [in] */ Boolean forward);
-
-    CARAPI SetIgnoreGravity(
-        /* [in] */ Int32 viewId);
-
-    CARAPI GetGravity(
-        /* [out] */ Int32* gravity);
-
-    CARAPI SetGravity(
-        /* [in] */ Int32 gravity);
-
-    CARAPI SetHorizontalGravity(
-        /* [in] */ Int32 horizontalGravity);
-
-    CARAPI SetVerticalGravity(
-        /* [in] */ Int32 verticalGravity);
-};
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CCANDIDATESCONTAINER_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CCANDIDATESCONTAINER_H__

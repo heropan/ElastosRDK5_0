@@ -1,9 +1,8 @@
 
-#ifndef  __CPINYINCANDIDATEVIEW_H__
-#define  __CPINYINCANDIDATEVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINCANDIDATEVIEW_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINCANDIDATEVIEW_H__
 
-#include "_CPinyinCandidateView.h"
-
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CPinyinCandidateView.h"
 #include "os/HandlerRunnable.h"
 
 using Elastos::Droid::Os::HandlerRunnable;
@@ -14,15 +13,21 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-class PinyinCandidateView: public Elastos::Droid::View::View
+/**
+ * View to show candidate list. There two candidate view instances which are
+ * used to show animation when user navigates between pages.
+ */
+CarClass(CPinyinCandidateView)
+    , public Elastos::Droid::View::View
+    , public ICandidateView
 {
-    private:
+private:
     class PressTimer
         : public HandlerRunnable
     {
     public:
         PressTimer(
-            /* [in] */ PinyinCandidateView* host);
+            /* [in] */ CPinyinCandidateView* host);
 
         void StartTimer(
             /* [in] */ Int64 afterMillis,
@@ -43,17 +48,67 @@ class PinyinCandidateView: public Elastos::Droid::View::View
         Boolean mTimerPending;
         Int32 mPageNoToShow;
         Int32 mActiveCandOfPage;
-        PinyinCandidateView* mHost;
+        CPinyinCandidateView* mHost;
     };
 
 public:
-    PinyinCandidateView();
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    virtual CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs);
 
     // Because the candidate view under the current focused one may also get
     // touching events. Here we just bypass the event to the container and let
     // it decide which view should handle the event.
     Boolean OnTouchEvent(
         /* [in] */ IMotionEvent* event);
+
+    CARAPI Initialize(
+        /* [in] */ IArrowUpdater* arrowUpdater,
+        /* [in] */ IBalloonHint* balloonHint,
+        /* [in] */ IGestureDetector* gestureDetector,
+        /* [in] */ ICandidateViewListener* cvListener);
+
+    CARAPI SetDecodingInfo(
+        /* [in] */ IDecodingInfo* decInfo);
+
+    CARAPI GetActiveCandiatePosInPage(
+        /* [out] */ Int32* pos);
+
+    CARAPI GetActiveCandiatePosGlobal(
+        /* [out] */ Int32* pos);
+
+    /**
+     * Show a page in the decoding result set previously.
+     *
+     * @param pageNo Which page to show.
+     * @param activeCandInPage Which candidate should be set as active item.
+     * @param enableActiveHighlight When FALSE, active item will not be
+     *        highlighted.
+     */
+    CARAPI ShowPage(
+        /* [in] */ Int32 pageNo,
+        /* [in] */ Int32 activeCandInPage,
+        /* [in] */ Boolean enableActiveHighlight);
+
+    CARAPI EnableActiveHighlight(
+        /* [in] */ Boolean enableActiveHighlight);
+
+    CARAPI ActiveCursorForward(
+        /* [out] */ Boolean* active);
+
+    CARAPI ActiveCurseBackward(
+        /* [out] */ Boolean* active);
+
+    CARAPI OnTouchEventReal(
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
 
 protected:
     void OnMeasure(
@@ -83,14 +138,6 @@ protected:
     void ShowBalloon(
         /* [in] */ Int32 candPos,
         /* [in] */ Boolean delayedShow);
-
-    CARAPI ShowPage(
-        /* [in] */ Int32 pageNo,
-        /* [in] */ Int32 activeCandInPage,
-        /* [in] */ Boolean enableActiveHighlight);
-
-    CARAPI SetDecodingInfo(
-        /* [in] */ IDecodingInfo* decInfo);
 
 protected:
     /**
@@ -279,70 +326,9 @@ protected:
     Int32 mLocationTmp[2];
 };
 
-/**
- * View to show candidate list. There two candidate view instances which are
- * used to show animation when user navigates between pages.
- */
-CarClass(CPinyinCandidateView), public PinyinCandidateView
-{
-public:
-    IVIEW_METHODS_DECL();
-    IDRAWABLECALLBACK_METHODS_DECL();
-    IKEYEVENTCALLBACK_METHODS_DECL();
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI Initialize(
-        /* [in] */ IArrowUpdater* arrowUpdater,
-        /* [in] */ IBalloonHint* balloonHint,
-        /* [in] */ IGestureDetector* gestureDetector,
-        /* [in] */ ICandidateViewListener* cvListener);
-
-    CARAPI SetDecodingInfo(
-        /* [in] */ IDecodingInfo* decInfo);
-
-    CARAPI GetActiveCandiatePosInPage(
-        /* [out] */ Int32* pos);
-
-    CARAPI GetActiveCandiatePosGlobal(
-        /* [out] */ Int32* pos);
-
-    /**
-     * Show a page in the decoding result set previously.
-     *
-     * @param pageNo Which page to show.
-     * @param activeCandInPage Which candidate should be set as active item.
-     * @param enableActiveHighlight When FALSE, active item will not be
-     *        highlighted.
-     */
-    CARAPI ShowPage(
-        /* [in] */ Int32 pageNo,
-        /* [in] */ Int32 activeCandInPage,
-        /* [in] */ Boolean enableActiveHighlight);
-
-    CARAPI EnableActiveHighlight(
-        /* [in] */ Boolean enableActiveHighlight);
-
-    CARAPI ActiveCursorForward(
-        /* [out] */ Boolean* active);
-
-    CARAPI ActiveCurseBackward(
-        /* [out] */ Boolean* active);
-
-    CARAPI OnTouchEventReal(
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* result);
-};
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CPINYINCANDIDATEVIEW_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CPINYINCANDIDATEVIEW_H__

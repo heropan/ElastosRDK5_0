@@ -1,22 +1,67 @@
 
-#ifndef  _CEXTRACTEDITTEXT_H__
-#define  _CEXTRACTEDITTEXT_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITTEXT_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITTEXT_H__
 
-#include "_CExtractEditText.h"
+#include "_Elastos_Droid_InputMethodService_CExtractEditText.h"
 #include "widget/EditText.h"
-
-
 
 using Elastos::Droid::Widget::EditText;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
-
-class _ExtractEditText: public EditText
+/***
+ * Specialization of {@link EditText} for showing and interacting with the
+ * extracted text in a full-screen input method.
+ */
+CarClass(CExtractEditText)
+    , public EditText
+    , public IExtractEditText
 {
 public:
-    _ExtractEditText();
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CExtractEditText();
+
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
+
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
+
+    CARAPI SetIME(
+        /* [in] */ IInputMethodService* ime);
+
+    /**
+     * Start making changes that will not be reported to the client.  That
+     * is, {@link #onSelectionChanged(Int32, Int32)} will not result in sending
+     * the new selection to the client
+     */
+    CARAPI StartInternalChanges();
+
+    /**
+     * Finish making changes that will not be reported to the client.  That
+     * is, {@link #onSelectionChanged(Int32, Int32)} will not result in sending
+     * the new selection to the client
+     */
+    CARAPI FinishInternalChanges();
+
+    /**
+     * Return true if the edit text is currently showing a scroll bar.
+     */
+    CARAPI HasVerticalScrollBar(
+        /* [out] */ Boolean* has);
 
     /**
      * Implement just to keep track of when we are setting text from the
@@ -124,81 +169,8 @@ protected:
     Int32 mSettingExtractedText;
 };
 
-/***
- * Specialization of {@link EditText} for showing and interacting with the
- * extracted text in a full-screen input method.
- */
-CarClass(CExtractEditText), public _ExtractEditText
-{
-public:
-    IVIEW_METHODS_DECL()
-
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    IKEYEVENTCALLBACK_METHODS_DECL()
-
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    ITEXTVIEW_METHODS_DECL()
-
-    CExtractEditText();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI OnPreDraw(
-        /* [out] */ Boolean* result);
-
-    CARAPI SetSelection(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 stop);
-
-    CARAPI SetSelection(
-        /* [in] */ Int32 index);
-
-    CARAPI SelectAll();
-
-    CARAPI ExtendSelection(
-        /* [in] */ Int32 index);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
-
-    CARAPI SetIME(
-        /* [in] */ IInputMethodService* ime);
-
-    /**
-     * Start making changes that will not be reported to the client.  That
-     * is, {@link #onSelectionChanged(Int32, Int32)} will not result in sending
-     * the new selection to the client
-     */
-    CARAPI StartInternalChanges();
-
-    /**
-     * Finish making changes that will not be reported to the client.  That
-     * is, {@link #onSelectionChanged(Int32, Int32)} will not result in sending
-     * the new selection to the client
-     */
-    CARAPI FinishInternalChanges();
-
-    /**
-     * Return true if the edit text is currently showing a scroll bar.
-     */
-    CARAPI HasVerticalScrollBar(
-        /* [out] */ Boolean* has);
-};
-
 } // namespace InputMethodService
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //_CEXTRACTEDITTEXT_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITTEXT_H__

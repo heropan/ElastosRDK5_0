@@ -1,6 +1,6 @@
 
-#ifndef  __SKBTEMPLATE_H__
-#define  __SKBTEMPLATE_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBTEMPLATE_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBTEMPLATE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -19,7 +19,7 @@ class SoftKey;
  * Key icon definition. It is defined in soft keyboard template. A soft keyboard
  * can refer to such an icon in its xml file directly to improve performance.
  */
-class KeyIconRecord: public ElRefBase
+class KeyIconRecord: public Object
 {
 public:
     KeyIconRecord()
@@ -38,7 +38,7 @@ public:
  * template. A soft keyboard can refer to a default key in its xml file. Nothing
  * of the key can be overwritten, including the size.
  */
-class KeyRecord: public ElRefBase
+class KeyRecord: public Object
 {
 public:
     KeyRecord()
@@ -57,7 +57,7 @@ class SoftKeyType;
  * Soft keyboard template used by soft keyboards to share common resources. In
  * this way, memory cost is reduced.
  */
-class SkbTemplate : public ElRefBase
+class SkbTemplate : public Object
 {
 public:
     SkbTemplate(
@@ -135,7 +135,7 @@ private:
 };
 
 
-class SoftKeyType : public ElRefBase
+class SoftKeyType : public Object
 {
 public:
     SoftKeyType(
@@ -166,4 +166,4 @@ public:
 } // namespace Elastos
 
 
-#endif  //__SKBTEMPLATE_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBTEMPLATE_H__

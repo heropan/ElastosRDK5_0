@@ -9,6 +9,8 @@ namespace Inputmethods {
 namespace PinyinIME {
 
 AutoPtr<ISoundManager> CSoundManagerHelper::mInstance;
+CAR_INTERFACE_IMPL(CSoundManagerHelper, Singleton, ISoundManagerHelper)
+CAR_SINGLETON_IMPL(CSoundManagerHelper)
 
 ECode CSoundManagerHelper::GetInstance(
     /* [in] */ IContext* context,
@@ -26,9 +28,7 @@ ECode CSoundManagerHelper::GetInstance(
     return NOERROR;
 }
 
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
-

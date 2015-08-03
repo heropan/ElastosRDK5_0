@@ -10,18 +10,20 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-const Int32 ComposingView::LEFT_RIGHT_MARGIN = 5;
+const Int32 CComposingView::LEFT_RIGHT_MARGIN = 5;
 
-ComposingView::ComposingView()
+CAR_OBJECT_IMPL(CComposingView);
+CAR_INTERFACE_IMPL(CComposingView, View, IComposingView);
+
+CComposingView::CComposingView()
     : mStrColor(0)
     , mStrColorHl(0)
     , mStrColorIdle(0)
     , mFontSize(0)
 {
-
 }
 
-void ComposingView::OnMeasure(
+void CComposingView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -49,7 +51,7 @@ void ComposingView::OnMeasure(
     SetMeasuredDimension((Int32) (width + 0.5f), height);
 }
 
-void ComposingView::OnDraw(
+void CComposingView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
     if (ComposingStatus_EDIT_PINYIN == mComposingStatus
@@ -75,7 +77,7 @@ void ComposingView::OnDraw(
     canvas->DrawText(splStr, 0, splStr.GetLength(), x, y, mPaint);
 }
 
-void ComposingView::DrawCursor(
+void CComposingView::DrawCursor(
     /* [in] */ ICanvas* canvas,
     /* [in] */ Float x)
 {
@@ -85,7 +87,7 @@ void ComposingView::DrawCursor(
     mCursor->Draw(canvas);
 }
 
-void ComposingView::DrawForPinyin(
+void CComposingView::DrawForPinyin(
     /* [in] */ ICanvas* canvas)
 {
     Float x, y, value;
@@ -132,19 +134,17 @@ void ComposingView::DrawForPinyin(
     }
 }
 
-
-IVIEW_METHODS_IMPL(CComposingView, ComposingView);
-IDRAWABLECALLBACK_METHODS_IMPL(CComposingView, ComposingView);
-IKEYEVENTCALLBACK_METHODS_IMPL(CComposingView, ComposingView);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CComposingView, ComposingView);
-
 PInterface CComposingView::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == Elastos::Droid::View::EIID_View) {
         return reinterpret_cast<PInterface>((View*)this);
     }
-    return _CComposingView::Probe(riid);
+    else if (riid == EIID_IComposingView) {
+        return (IInterface*)(IComposingView*)this;
+    }
+
+    return View::Probe(riid);
 }
 
 ECode CComposingView::constructor(

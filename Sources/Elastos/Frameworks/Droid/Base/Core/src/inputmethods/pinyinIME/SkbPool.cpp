@@ -79,6 +79,14 @@ AutoPtr<SoftKeyboard> SkbPool::GetSoftKeyboard(
     return NULL;
 }
 
+ECode SkbPool::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("Elastos.Droid.Inputmethods.PinyinIME.SkbPool");
+    return NOERROR;
+}
+
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid

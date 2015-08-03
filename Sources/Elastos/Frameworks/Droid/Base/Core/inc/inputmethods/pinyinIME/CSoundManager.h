@@ -1,8 +1,8 @@
 
-#ifndef  __CSOUNDMANAGER_H__
-#define  __CSOUNDMANAGER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGER_H__
 
-#include "_CSoundManager.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CSoundManager.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Media::IAudioManager;
@@ -16,8 +16,14 @@ namespace PinyinIME {
  * Class used to manage related sound resources.
  */
 CarClass(CSoundManager)
+    , public Object
+    , public ISoundManager
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CSoundManager();
 
     CARAPI constructor(
@@ -40,4 +46,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CSOUNDMANAGER_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSOUNDMANAGER_H__

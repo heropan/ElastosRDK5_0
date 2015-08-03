@@ -16,8 +16,7 @@ namespace PinyinIME {
 const Int32 SoftKeyboard::KeyRow::ALWAYS_SHOW_ROW_ID = -1;
 const Int32 SoftKeyboard::KeyRow::DEFAULT_ROW_ID = 0;
 
-
-CAR_INTERFACE_IMPL(SoftKeyboard, ISoftKeyboard);
+CAR_INTERFACE_IMPL(SoftKeyboard, Object, ISoftKeyboard);
 
 SoftKeyboard::SoftKeyboard(
     /* [in] */ Int32 skbXmlId,

@@ -28,33 +28,33 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-const Int32 SkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT1 = 500;
-const Int32 SkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT2 = 100;
-const Int32 SkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT3 = 100;
-const Int32 SkbContainer::LongPressTimer::LONG_PRESS_KEYNUM1 = 1;
-const Int32 SkbContainer::LongPressTimer::LONG_PRESS_KEYNUM2 = 3;
+const Int32 CSkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT1 = 500;
+const Int32 CSkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT2 = 100;
+const Int32 CSkbContainer::LongPressTimer::LONG_PRESS_TIMEOUT3 = 100;
+const Int32 CSkbContainer::LongPressTimer::LONG_PRESS_KEYNUM1 = 1;
+const Int32 CSkbContainer::LongPressTimer::LONG_PRESS_KEYNUM2 = 3;
 
-SkbContainer::LongPressTimer::LongPressTimer(
-    /* [in] */ SkbContainer* skbContainer)
+CSkbContainer::LongPressTimer::LongPressTimer(
+    /* [in] */ CSkbContainer* skbContainer)
     : mSkbContainer(skbContainer)
     , mResponseTimes(0)
 {
 }
 
-void SkbContainer::LongPressTimer::StartTimer()
+void CSkbContainer::LongPressTimer::StartTimer()
 {
     Boolean result;
     PostDelayed(this, LONG_PRESS_TIMEOUT1, &result);
     mResponseTimes = 0;
 }
 
-Boolean SkbContainer::LongPressTimer::RemoveTimer()
+Boolean CSkbContainer::LongPressTimer::RemoveTimer()
 {
     RemoveCallbacks(this);
     return TRUE;
 }
 
-ECode SkbContainer::LongPressTimer::Run()
+ECode CSkbContainer::LongPressTimer::Run()
 {
     if (mSkbContainer->mWaitForTouchUp) {
         mResponseTimes++;
@@ -97,12 +97,14 @@ ECode SkbContainer::LongPressTimer::Run()
 }
 
 
-//class SkbContainer
-const Int32 SkbContainer::Y_BIAS_CORRECTION = -10;
-const Int32 SkbContainer::MOVE_TOLERANCE = 6;
-Boolean SkbContainer::POPUPWINDOW_FOR_PRESSED_UI = FALSE;
+//class CSkbContainer
+const Int32 CSkbContainer::Y_BIAS_CORRECTION = -10;
+const Int32 CSkbContainer::MOVE_TOLERANCE = 6;
+Boolean CSkbContainer::POPUPWINDOW_FOR_PRESSED_UI = FALSE;
+CAR_OBJECT_IMPL(CSkbContainer);
+CAR_INTERFACE_IMPL(CSkbContainer, RelativeLayout, ISkbContainer);
 
-SkbContainer::SkbContainer()
+CSkbContainer::CSkbContainer()
     : mSkbLayout(0)
     , mLastCandidatesShowing(FALSE)
     , mPopupSkbShow(FALSE)
@@ -119,28 +121,28 @@ SkbContainer::SkbContainer()
     memset(mXyPosTmp, 0, sizeof(mXyPosTmp));
 }
 
-ECode SkbContainer::SetService(
+ECode CSkbContainer::SetService(
     /* [in] */ IInputMethodService* service)
 {
     mService = service;
     return NOERROR;
 }
 
-ECode SkbContainer::SetInputModeSwitcher(
+ECode CSkbContainer::SetInputModeSwitcher(
     /* [in] */ IInputModeSwitcher* inputModeSwitcher)
 {
     mInputModeSwitcher = inputModeSwitcher;
     return NOERROR;
 }
 
-ECode SkbContainer::SetGestureDetector(
+ECode CSkbContainer::SetGestureDetector(
     /* [in] */ IGestureDetector* gestureDetector)
 {
     mGestureDetector = gestureDetector;
     return NOERROR;
 }
 
-ECode SkbContainer::IsCurrentSkbSticky(
+ECode CSkbContainer::IsCurrentSkbSticky(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
@@ -159,7 +161,7 @@ ECode SkbContainer::IsCurrentSkbSticky(
     return NOERROR;
 }
 
-ECode SkbContainer::ToggleCandidateMode(
+ECode CSkbContainer::ToggleCandidateMode(
     /* [in] */ Boolean candidatesShowing)
 {
     Boolean result = FALSE;
@@ -185,7 +187,7 @@ ECode SkbContainer::ToggleCandidateMode(
     return mMajorView->Invalidate();
 }
 
-ECode SkbContainer::UpdateInputMode()
+ECode CSkbContainer::UpdateInputMode()
 {
     Int32 skbLayout = 0;
     mInputModeSwitcher->GetSkbLayout(&skbLayout);
@@ -207,7 +209,7 @@ ECode SkbContainer::UpdateInputMode()
     return Invalidate();
 }
 
-void SkbContainer::UpdateSkbLayout()
+void CSkbContainer::UpdateSkbLayout()
 {
     Int32 screenWidth = 0;
     mEnvironment->GetScreenWidth(&screenWidth);
@@ -265,14 +267,14 @@ void SkbContainer::UpdateSkbLayout()
     mMajorView->Invalidate();
 }
 
-void SkbContainer::ResponseKeyEvent(
+void CSkbContainer::ResponseKeyEvent(
     /* [in] */ SoftKey* sKey)
 {
     if (NULL == sKey) return;
     (IPinyinIME::Probe(mService))->ResponseSoftKeyEvent(sKey);
 }
 
-AutoPtr<ISoftKeyboardView> SkbContainer::InKeyboardView(
+AutoPtr<ISoftKeyboardView> CSkbContainer::InKeyboardView(
     /* [in] */ Int32 x,
     /* [in] */ Int32 y,
     /* [in] */ ArrayOf<Int32>* positionInParent)
@@ -293,7 +295,7 @@ AutoPtr<ISoftKeyboardView> SkbContainer::InKeyboardView(
     return mMajorView;
 }
 
-void SkbContainer::PopupSymbols()
+void CSkbContainer::PopupSymbols()
 {
     Int32 popupResId = mSoftKeyDown->GetPopupResId();
     if (popupResId > 0) {
@@ -344,13 +346,13 @@ void SkbContainer::PopupSymbols()
     }
 }
 
-void SkbContainer::DimSoftKeyboard(
+void CSkbContainer::DimSoftKeyboard(
     /* [in] */ Boolean dimSkb)
 {
     mMajorView->DimSoftKeyboard(dimSkb);
 }
 
-void SkbContainer::DismissPopupSkb()
+void CSkbContainer::DismissPopupSkb()
 {
     mPopupSkb->Dismiss();
     mPopupSkbShow = FALSE;
@@ -358,7 +360,7 @@ void SkbContainer::DismissPopupSkb()
     ResetKeyPress(0);
 }
 
-void SkbContainer::ResetKeyPress(
+void CSkbContainer::ResetKeyPress(
     /* [in] */ Int64 delay)
 {
     mLongPressTimer->RemoveTimer();
@@ -368,7 +370,7 @@ void SkbContainer::ResetKeyPress(
     }
 }
 
-ECode SkbContainer::HandleBack(
+ECode CSkbContainer::HandleBack(
     /* [in] */ Boolean realAction,
     /* [out] */ Boolean* result)
 {
@@ -388,7 +390,7 @@ ECode SkbContainer::HandleBack(
     return NOERROR;
 }
 
-ECode SkbContainer::DismissPopups()
+ECode CSkbContainer::DismissPopups()
 {
     Boolean result = FALSE;
     HandleBack(TRUE, &result);
@@ -396,7 +398,7 @@ ECode SkbContainer::DismissPopups()
     return NOERROR;
 }
 
-void SkbContainer::OnMeasure(
+void CSkbContainer::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -415,7 +417,7 @@ void SkbContainer::OnMeasure(
     RelativeLayout::OnMeasure(widthMeasureSpec, heightMeasureSpec);
 }
 
-Boolean SkbContainer::OnTouchEvent(
+Boolean CSkbContainer::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
     RelativeLayout::OnTouchEvent(event);
@@ -553,14 +555,6 @@ Boolean SkbContainer::OnTouchEvent(
 
 
 //class CSkbContainer
-IVIEW_METHODS_IMPL(CSkbContainer, SkbContainer)
-IVIEWGROUP_METHODS_IMPL(CSkbContainer, SkbContainer)
-IVIEWPARENT_METHODS_IMPL(CSkbContainer, SkbContainer)
-IVIEWMANAGER_METHODS_IMPL(CSkbContainer, SkbContainer)
-IDRAWABLECALLBACK_METHODS_IMPL(CSkbContainer, SkbContainer)
-IKEYEVENTCALLBACK_METHODS_IMPL(CSkbContainer, SkbContainer)
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CSkbContainer, SkbContainer)
-
 PInterface CSkbContainer::Probe(
     /* [in] */ REIID riid)
 {
@@ -570,14 +564,18 @@ PInterface CSkbContainer::Probe(
     else if (riid == EIID_ViewGroup) {
         return reinterpret_cast<PInterface>((ViewGroup*)this);
     }
-    return _CSkbContainer::Probe(riid);
+    else if (riid == EIID_ISkbContainer) {
+        return (IInterface*)(ISkbContainer*)this;
+    }
+
+    return RelativeLayout::Probe(riid);
 }
 
 ECode CSkbContainer::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    SkbContainer::Init(context);
+    RelativeLayout::constructor(context);
 
     AutoPtr<IPinyinEnvironmentHelper> helper;
     CPinyinEnvironmentHelper::AcquireSingleton((IPinyinEnvironmentHelper**)&helper);
@@ -604,85 +602,6 @@ ECode CSkbContainer::constructor(
     CPopupWindow::New(mContext, (IPopupWindow**)&mPopupSkb);
     mPopupSkb->SetBackgroundDrawable(NULL);
     return mPopupSkb->SetClippingEnabled(FALSE);
-}
-
-ECode CSkbContainer::SetIgnoreGravity(
-    /* [in] */ Int32 viewId)
-{
-    return SkbContainer::SetIgnoreGravity(viewId);
-}
-
-ECode CSkbContainer::GetGravity(
-    /* [out] */ Int32* gravity)
-{
-    VALIDATE_NOT_NULL(gravity);
-    *gravity = SkbContainer::GetGravity();
-    return NOERROR;
-}
-
-ECode CSkbContainer::SetGravity(
-    /* [in] */ Int32 gravity)
-{
-    return SkbContainer::SetGravity(gravity);
-}
-
-ECode CSkbContainer::SetHorizontalGravity(
-    /* [in] */ Int32 horizontalGravity)
-{
-    return SkbContainer::SetHorizontalGravity(horizontalGravity);
-}
-
-ECode CSkbContainer::SetVerticalGravity(
-    /* [in] */ Int32 verticalGravity)
-{
-    return SkbContainer::SetVerticalGravity(verticalGravity);
-}
-
-ECode CSkbContainer::SetService(
-    /* [in] */ IInputMethodService* service)
-{
-    return SkbContainer::SetService(service);
-}
-
-ECode CSkbContainer::SetInputModeSwitcher(
-    /* [in] */ IInputModeSwitcher* inputModeSwitcher)
-{
-    return SkbContainer::SetInputModeSwitcher(inputModeSwitcher);
-}
-
-ECode CSkbContainer::SetGestureDetector(
-    /* [in] */ IGestureDetector* gestureDetector)
-{
-    return SkbContainer::SetGestureDetector(gestureDetector);
-}
-
-ECode CSkbContainer::IsCurrentSkbSticky(
-    /* [out] */ Boolean* result)
-{
-    return SkbContainer::IsCurrentSkbSticky(result);
-}
-
-ECode CSkbContainer::ToggleCandidateMode(
-    /* [in] */ Boolean candidatesShowing)
-{
-    return SkbContainer::ToggleCandidateMode(candidatesShowing);
-}
-
-ECode CSkbContainer::UpdateInputMode()
-{
-    return SkbContainer::UpdateInputMode();
-}
-
-ECode CSkbContainer::HandleBack(
-    /* [in] */ Boolean realAction,
-    /* [out] */ Boolean* result)
-{
-    return SkbContainer::HandleBack(realAction, result);
-}
-
-ECode CSkbContainer::DismissPopups()
-{
-    return SkbContainer::DismissPopups();
 }
 
 ECode CSkbContainer::OnTouch(
@@ -713,7 +632,7 @@ ECode CSkbContainer::OnTouch(
             (event->GetEdgeFlags(&value), value),
             (IMotionEvent**)&newEv);
 
-    *result = SkbContainer::OnTouchEvent(newEv);
+    *result = RelativeLayout::OnTouchEvent(newEv);
     return NOERROR;
 }
 

@@ -11,6 +11,7 @@ using Elastos::Droid::View::InputMethod::EIID_IInputMethodSession;
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
+CAR_INTERFACE_IMPL(AbstractInputMethodSessionImpl, Object, IAbstractInputMethodSessionImpl);
 
 AbstractInputMethodSessionImpl::AbstractInputMethodSessionImpl(
     /* [in] */ AbstractInputMethodService* host)
@@ -18,35 +19,6 @@ AbstractInputMethodSessionImpl::AbstractInputMethodSessionImpl(
     , mRevoked(FALSE)
     , mAbstractHost(host)
 {}
-
-PInterface AbstractInputMethodSessionImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInputMethodSession == riid) {
-        return (IInputMethodSession *)this;
-    }
-    else if (EIID_IAbstractInputMethodSessionImpl == riid) {
-        return (IAbstractInputMethodSessionImpl *)this;
-    }
-
-    return NULL;
-}
-
-ECode AbstractInputMethodSessionImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    assert(pIID != NULL);
-
-    if (pObject == (IInterface*)(IAbstractInputMethodSessionImpl*)this) {
-        *pIID = EIID_IAbstractInputMethodSessionImpl;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
 
 ECode AbstractInputMethodSessionImpl::IsEnabled(
     /* [out] */ Boolean* enabled)

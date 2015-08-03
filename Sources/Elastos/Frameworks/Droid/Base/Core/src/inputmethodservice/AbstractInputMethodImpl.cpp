@@ -14,6 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
+CAR_INTERFACE_IMPL_2(AbstractInputMethodImpl, Object, IAbstractInputMethodImpl, IWeakReferenceSource);
 
 AbstractInputMethodImpl::AbstractInputMethodImpl(
     /* [in] */ AbstractInputMethodService* host)
@@ -26,46 +27,6 @@ ECode AbstractInputMethodImpl::GetWeakReference(
     VALIDATE_NOT_NULL(weakReference)
     *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
     REFCOUNT_ADD(*weakReference)
-    return NOERROR;
-}
-
-UInt32 AbstractInputMethodImpl::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 AbstractInputMethodImpl::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface AbstractInputMethodImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (IAbstractInputMethodImpl*)this;
-    }
-    else if (riid == EIID_IInputMethod) {
-        return (IInputMethod*)this;
-    }
-    else if (riid == EIID_IAbstractInputMethodImpl) {
-        return (IAbstractInputMethodImpl*)this;
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-
-    return NULL;
-}
-
-ECode AbstractInputMethodImpl::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-    assert(0);
     return NOERROR;
 }
 
@@ -90,6 +51,14 @@ ECode AbstractInputMethodImpl::RevokeSession(
     /* [in] */ IInputMethodSession* session)
 {
     return ((AbstractInputMethodSessionImpl*)session)->RevokeSelf();
+}
+
+ECode AbstractInputMethodImpl::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("Elastos.Droid.InputMethodService.AbstractInputMethodImpl");
+    return NOERROR;
 }
 
 } // namespace InputMethodService

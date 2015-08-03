@@ -22,6 +22,9 @@ PinyinSettings::PinyinSettings(
     CPinyinSettings::sSharedPref = pref;
 }
 
+CAR_OBJECT_IMPL(CPinyinSettings);
+CAR_INTERFACE_IMPL(CPinyinSettings, Object, ISettings);
+
 ECode CPinyinSettings::GetInstance(
     /* [in] */ ISharedPreferences* pref)
 {

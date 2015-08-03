@@ -8,6 +8,7 @@ namespace Inputmethods {
 namespace PinyinIME {
 
 const Int32 SoftKeyToggle::KEYMASK_TOGGLE_STATE = 0x000000ff;
+CAR_INTERFACE_IMPL(SoftKeyToggle, SoftKey, ISoftKeyToggle);
 
 SoftKeyToggle::ToggleState::ToggleState()
     : mIdAndFlags(0)
@@ -36,46 +37,6 @@ void SoftKeyToggle::ToggleState::SetStateFlags(
     } else {
         mIdAndFlags &= (~KEYMASK_BALLOON);
     }
-}
-
-UInt32 SoftKeyToggle::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SoftKeyToggle::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface SoftKeyToggle::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (ISoftKeyToggle*)this;
-    }
-    else if (riid == EIID_ISoftKeyToggle) {
-        return (ISoftKeyToggle*)this;
-    }
-    else if (riid == EIID_ISoftKey) {
-        return (ISoftKeyToggle*)this;
-    }
-
-    return NULL;
-}
-
-ECode SoftKeyToggle::GetInterfaceID(
-    /* [in] */ IInterface* pObject,
-    /* [out] */ InterfaceID* pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(ISoftKeyToggle *)this) {
-        *pIID = EIID_ISoftKeyToggle;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
 }
 
 Int32 SoftKeyToggle::GetToggleStateId()
@@ -326,6 +287,13 @@ AutoPtr<SoftKeyToggle::ToggleState> SoftKeyToggle::GetToggleState()
     return state;
 }
 
+ECode SoftKeyToggle::ToString(
+    /* [out] */ String* info)
+{
+    VALIDATE_NOT_NULL(info);
+    *info = String("Elastos.Droid.Inputmethods.PinyinIME.SoftKeyToggle");
+    return NOERROR;
+}
 
 } // namespace PinyinIME
 } // namespace Inputmethods

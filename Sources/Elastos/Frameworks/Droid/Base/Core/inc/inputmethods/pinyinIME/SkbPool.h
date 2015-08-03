@@ -1,6 +1,6 @@
 
-#ifndef  __SKBPOOL_H__
-#define  __SKBPOOL_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBPOOL_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBPOOL_H__
 
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
@@ -19,7 +19,7 @@ class SoftKeyboard;
 /**
  * Class used to cache previously loaded soft keyboard layouts.
  */
-class SkbPool: public ElRefBase
+class SkbPool: public Object
 {
 public:
     static AutoPtr<SkbPool> GetInstance();
@@ -39,6 +39,9 @@ public:
         /* [in] */ Int32 skbHeight,
         /* [in] */ IContext* context);
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 private:
     SkbPool();
 
@@ -54,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__SKBPOOL_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODS_PINYINIME_SKBPOOL_H__

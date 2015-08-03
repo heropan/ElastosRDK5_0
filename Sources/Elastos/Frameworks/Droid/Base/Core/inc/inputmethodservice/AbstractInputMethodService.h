@@ -1,6 +1,6 @@
 
-#ifndef  __ABSTRACTINPUTMETHODSERVICE_H__
-#define  __ABSTRACTINPUTMETHODSERVICE_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
+#define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 
 #include "app/Service.h"
 
@@ -19,14 +19,9 @@ class AbstractInputMethodService
     , public IKeyEventCallback
 {
 public:
+    CAR_INTERFACE_DECL();
+
     AbstractInputMethodService();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
 
     /**
      * Return the global {@link KeyEvent.DispatcherState KeyEvent.DispatcherState}
@@ -81,4 +76,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ABSTRACTINPUTMETHODSERVICE_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__

@@ -1,12 +1,10 @@
 
-#ifndef  __CSKBCONTAINER_H__
-#define  __CSKBCONTAINER_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSKBCONTAINER_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSKBCONTAINER_H__
 
-#include "_CSkbContainer.h"
+#include "_Elastos_Droid_Inputmethods_PinyinIME_CSkbContainer.h"
 #include "SoftKey.h"
 #include "os/HandlerRunnable.h"
-
-
 #include "widget/RelativeLayout.h"
 
 using Elastos::Droid::InputMethodService::IInputMethodService;
@@ -20,7 +18,12 @@ namespace Droid {
 namespace Inputmethods {
 namespace PinyinIME {
 
-class SkbContainer: public Elastos::Droid::Widget::RelativeLayout
+/**
+ * The top container to host soft keyboard view(s).
+ */
+CarClass(CSkbContainer)
+    , public Elastos::Droid::Widget::RelativeLayout
+    , public ISkbContainer
 {
 public:
     class LongPressTimer
@@ -28,7 +31,7 @@ public:
     {
     public:
         LongPressTimer(
-            /* [in] */ SkbContainer* skbContainer);
+            /* [in] */ CSkbContainer* skbContainer);
 
         void StartTimer();
 
@@ -71,44 +74,36 @@ public:
          */
         static const Int32 LONG_PRESS_KEYNUM2;
 
-        SkbContainer* mSkbContainer;
+        CSkbContainer* mSkbContainer;
 
         Int32 mResponseTimes;
     };
 
 public:
-    SkbContainer();
+    CSkbContainer();
 
-    CARAPI SetService(
-        /* [in] */ IInputMethodService* service);
+    CAR_OBJECT_DECL();
 
-    CARAPI SetInputModeSwitcher(
-        /* [in] */ IInputModeSwitcher* inputModeSwitcher);
+    CAR_INTERFACE_DECL();
 
-    CARAPI SetGestureDetector(
-        /* [in] */ IGestureDetector* gestureDetector);
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
 
-    CARAPI IsCurrentSkbSticky(
-        /* [out] */ Boolean* result);
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
-    CARAPI ToggleCandidateMode(
-        /* [in] */ Boolean candidatesShowing);
-
-    CARAPI UpdateInputMode();
-
-    CARAPI HandleBack(
-        /* [in] */ Boolean realAction,
-        /* [out] */ Boolean* result);
-
-    CARAPI DismissPopups();
-
-    Boolean OnTouchEvent(
-        /* [in] */ IMotionEvent* event);
+    CARAPI SetIgnoreGravity(
+        /* [in] */ Int32 viewId);
 
     // Function for interface OnTouchListener, it is used to handle touch events
     // which will be delivered to the popup soft keyboard view.
-    Boolean OnTouch(
+    CARAPI OnTouch(
         /* [in] */ IView* v,
+        /* [in] */ IMotionEvent* event,
+        /* [out] */ Boolean* result);
+
+    Boolean OnTouchEvent(
         /* [in] */ IMotionEvent* event);
 
 protected:
@@ -281,75 +276,9 @@ protected:
     Int32 mXyPosTmp[2];
 };
 
-
-/**
- * The top container to host soft keyboard view(s).
- */
-CarClass(CSkbContainer), public SkbContainer
-{
-public:
-    IVIEW_METHODS_DECL()
-    IVIEWGROUP_METHODS_DECL()
-    IVIEWPARENT_METHODS_DECL()
-    IVIEWMANAGER_METHODS_DECL()
-    IDRAWABLECALLBACK_METHODS_DECL()
-    IKEYEVENTCALLBACK_METHODS_DECL()
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ IAttributeSet* attrs);
-
-    CARAPI SetIgnoreGravity(
-        /* [in] */ Int32 viewId);
-
-    CARAPI GetGravity(
-        /* [out] */ Int32* gravity);
-
-    CARAPI SetGravity(
-        /* [in] */ Int32 gravity);
-
-    CARAPI SetHorizontalGravity(
-        /* [in] */ Int32 horizontalGravity);
-
-    CARAPI SetVerticalGravity(
-        /* [in] */ Int32 verticalGravity);
-
-    CARAPI SetService(
-        /* [in] */ IInputMethodService* service);
-
-    CARAPI SetInputModeSwitcher(
-        /* [in] */ IInputModeSwitcher* inputModeSwitcher);
-
-    CARAPI SetGestureDetector(
-        /* [in] */ IGestureDetector* gestureDetector);
-
-    CARAPI IsCurrentSkbSticky(
-        /* [out] */ Boolean* result);
-
-    CARAPI ToggleCandidateMode(
-        /* [in] */ Boolean candidatesShowing);
-
-    CARAPI UpdateInputMode();
-
-    CARAPI HandleBack(
-        /* [in] */ Boolean realAction,
-        /* [out] */ Boolean* result);
-
-    CARAPI DismissPopups();
-
-    CARAPI OnTouch(
-        /* [in] */ IView* v,
-        /* [in] */ IMotionEvent* event,
-        /* [out] */ Boolean* result);
-};
-
 } // namespace PinyinIME
 } // namespace Inputmethods
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSKBCONTAINER_H__
+#endif // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_CSKBCONTAINER_H__

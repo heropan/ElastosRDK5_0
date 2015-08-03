@@ -1,6 +1,6 @@
 
-#ifndef  __SOFTKEY_H__
-#define  __SOFTKEY_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEY_H__
+#define  __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEY_H__
 
 #include "ext/frameworkext.h"
 
@@ -22,10 +22,12 @@ class SoftKeyboard;
  * @see com.android.inputmethod.pinyin.SoftKeyToggle
  */
 class SoftKey
-    : public ElRefBase
+    : public Object
     , public ISoftKey
 {
 public:
+    CAR_INTERFACE_DECL();
+
     SoftKey();
 
     CARAPI_(UInt32) AddRef();
@@ -125,6 +127,9 @@ public:
     //     return str;
     // }
 
+    CARAPI ToString(
+        /* [out] */ String* info);
+
 public:
     /**
      * For a finger touch device, after user presses a key, there will be some
@@ -188,6 +193,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-
-
-#endif  // __SOFTKEY_H__
+#endif  // __ELASTOS_DROID_INPUTMETHODS_PINYINIME_SOFTKEY_H__

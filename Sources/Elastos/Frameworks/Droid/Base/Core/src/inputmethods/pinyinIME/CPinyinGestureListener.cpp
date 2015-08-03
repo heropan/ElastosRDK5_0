@@ -18,6 +18,8 @@ const Float CPinyinGestureListener::VELOCITY_THRESHOLD_X2 = 0.7f;
 const Float CPinyinGestureListener::VELOCITY_THRESHOLD_Y1 = 0.2f;
 const Float CPinyinGestureListener::VELOCITY_THRESHOLD_Y2 = 0.45f;
 
+CAR_OBJECT_IMPL(CPinyinGestureListener);
+
 CPinyinGestureListener::CPinyinGestureListener()
     : mReponseGestures(FALSE)
     , mMinVelocityX(Elastos::Core::Math::FLOAT_MAX_VALUE)
@@ -206,47 +208,6 @@ void CPinyinGestureListener::OnDirectionGesture(
         }
     }
 }
-
-ECode CPinyinGestureListener::OnDoubleTap(
-    /* [in] */ IMotionEvent* e,
-    /* [out] */ Boolean* res)
-{
-    return SimpleOnGestureListener::OnDoubleTap(e, res);
-}
-
-ECode CPinyinGestureListener::OnDoubleTapEvent(
-    /* [in] */ IMotionEvent* e,
-    /* [out] */ Boolean* res)
-{
-    return SimpleOnGestureListener::OnDoubleTapEvent(e, res);
-}
-
-ECode CPinyinGestureListener::OnSingleTapConfirmed(
-    /* [in] */ IMotionEvent* e,
-    /* [out] */ Boolean* res)
-{
-    return SimpleOnGestureListener::OnSingleTapConfirmed(e, res);
-}
-
-ECode CPinyinGestureListener::OnShowPress(
-    /* [in] */ IMotionEvent* e)
-{
-    return SimpleOnGestureListener::OnShowPress(e);
-}
-
-ECode CPinyinGestureListener::OnSingleTapUp(
-    /* [in] */ IMotionEvent* e,
-    /* [out] */ Boolean* res)
-{
-    return SimpleOnGestureListener::OnSingleTapUp(e, res);
-}
-
-ECode CPinyinGestureListener::OnLongPress(
-    /* [in] */ IMotionEvent* e)
-{
-    return SimpleOnGestureListener::OnLongPress(e);
-}
-
 
 } // namespace PinyinIME
 } // namespace Inputmethods

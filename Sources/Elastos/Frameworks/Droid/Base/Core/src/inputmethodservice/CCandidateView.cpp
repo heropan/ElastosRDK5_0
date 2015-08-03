@@ -10,36 +10,21 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-IVIEW_METHODS_IMPL(CCandidateView, CandidateView);
-IDRAWABLECALLBACK_METHODS_IMPL(CCandidateView, CandidateView);
-IKEYEVENTCALLBACK_METHODS_IMPL(CCandidateView, CandidateView);
-IACCESSIBILITYEVENTSOURCE_METHODS_IMPL(CCandidateView, CandidateView);
+const Int32 CCandidateView::OUT_OF_BOUNDS;
+const Int32 CCandidateView::MAX_SUGGESTIONS;
+const Int32 CCandidateView::SCROLL_PIXELS;
+const Int32 CCandidateView::X_GAP;
+AutoPtr< ArrayOf<ICharSequence*> > CCandidateView::EMPTY_LIST = ArrayOf<ICharSequence*>::Alloc(0);
 
-const Int32 CandidateView::OUT_OF_BOUNDS;
-const Int32 CandidateView::MAX_SUGGESTIONS;
-const Int32 CandidateView::SCROLL_PIXELS;
-const Int32 CandidateView::X_GAP;
-AutoPtr< ArrayOf<ICharSequence*> > CandidateView::EMPTY_LIST = ArrayOf<ICharSequence*>::Alloc(0);
-
-CandidateView::SelfSimpleOnGestureListener::SelfSimpleOnGestureListener(
-    /* [in] */ CandidateView* host)
+CCandidateView::SelfSimpleOnGestureListener::SelfSimpleOnGestureListener(
+    /* [in] */ CCandidateView* host)
     : mHost(host)
 {}
 
-CandidateView::SelfSimpleOnGestureListener::~SelfSimpleOnGestureListener()
+CCandidateView::SelfSimpleOnGestureListener::~SelfSimpleOnGestureListener()
 {}
 
-UInt32 CandidateView::SelfSimpleOnGestureListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CandidateView::SelfSimpleOnGestureListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-Boolean CandidateView::SelfSimpleOnGestureListener::OnScroll(
+Boolean CCandidateView::SelfSimpleOnGestureListener::OnScroll(
     /* [in] */ IMotionEvent* e1,
     /* [in] */ IMotionEvent* e2,
     /* [in] */ Float distanceX,
@@ -61,8 +46,22 @@ Boolean CandidateView::SelfSimpleOnGestureListener::OnScroll(
     return TRUE;
 }
 
+CAR_OBJECT_IMPL(CCandidateView);
+CAR_INTERFACE_IMPL(CCandidateView, View, ICandidateView);
+PInterface CCandidateView::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_View) {
+        return reinterpret_cast<PInterface>((View*)this);
+    }
+    else if (riid == EIID_ICandidateView) {
+        return (IInterface*)(ICandidateView*)this;
+    }
 
-CandidateView::CandidateView()
+    return View::Probe(riid);
+}
+
+CCandidateView::CCandidateView()
     : mSuggestions(NULL)
     , mSelectedIndex(0)
     , mTouchX(OUT_OF_BOUNDS)
@@ -79,19 +78,19 @@ CandidateView::CandidateView()
     //, mGestureDetector(NULL)
 {}
 
-CandidateView::~CandidateView()
+CCandidateView::~CCandidateView()
 {
     // if (mGestureDetector != NULL) {
     //     delete mGestureDetector;
     // }
 }
 
-ECode CandidateView::Init(
+ECode CCandidateView::constructor(
     /* [in] */ IContext * context)
 {
-    PRINT_ENTER_LEAVE("CandidateView::Init");
+    PRINT_ENTER_LEAVE("CCandidateView::constructor");
     assert(context != NULL);
-    FAIL_RETURN(View::Init(context));
+    FAIL_RETURN(View::constructor(context));
     AutoPtr<IResources> r;
     FAIL_RETURN(context->GetResources((IResources**)&r));
     r->GetDrawable(R::drawable::list_selector_background,
@@ -130,14 +129,14 @@ ECode CandidateView::Init(
     return NOERROR;
 }
 
-ECode CandidateView::SetService(
+ECode CCandidateView::SetService(
     /* [in] */ ISoftKeyboard* listener)
 {
     mService = listener;
     return NOERROR;
 }
 
-ECode CandidateView::ComputeHorizontalScrollRange(
+ECode CCandidateView::ComputeHorizontalScrollRange(
     /* [out] */ Int32* range)
 {
     assert(range != NULL);
@@ -145,7 +144,7 @@ ECode CandidateView::ComputeHorizontalScrollRange(
     return NOERROR;
 }
 
-void CandidateView::OnMeasure(
+void CCandidateView::OnMeasure(
     /* [in] */ Int32 widthMeasureSpec,
     /* [in] */ Int32 heightMeasureSpec)
 {
@@ -169,7 +168,7 @@ void CandidateView::OnMeasure(
             ResolveSize(desiredHeight, heightMeasureSpec));
 }
 
-void CandidateView::OnDraw(
+void CCandidateView::OnDraw(
     /* [in] */ ICanvas* canvas)
 {
     if (canvas != NULL) {
@@ -245,7 +244,7 @@ void CandidateView::OnDraw(
     };
 }
 
-void CandidateView::ScrollToTarget()
+void CCandidateView::ScrollToTarget()
 {
     Int32 sx = GetScrollX();
     if (mTargetScrollX > sx) {
@@ -266,7 +265,7 @@ void CandidateView::ScrollToTarget()
     Invalidate();
 }
 
-ECode CandidateView::SetSuggestions(
+ECode CCandidateView::SetSuggestions(
     /* [in] */ ArrayOf<ICharSequence*>* suggestions,
     /* [in] */ Boolean completions,
     /* [in] */ Boolean typedWordValid)
@@ -285,7 +284,7 @@ ECode CandidateView::SetSuggestions(
     return NOERROR;
 }
 
-ECode CandidateView::Clear()
+ECode CCandidateView::Clear()
 {
     mSuggestions = EMPTY_LIST;
     mTouchX = OUT_OF_BOUNDS;
@@ -294,7 +293,7 @@ ECode CandidateView::Clear()
     return NOERROR;
 }
 
-Boolean CandidateView::OnTouchEvent(
+Boolean CCandidateView::OnTouchEvent(
     /* [in] */ IMotionEvent* event)
 {
     //TODO
@@ -340,7 +339,7 @@ Boolean CandidateView::OnTouchEvent(
     return TRUE;
 }
 
-void CandidateView::TakeSuggestionAt(
+void CCandidateView::TakeSuggestionAt(
     /* [in] */ Float x)
 {
     mTouchX = (Int32)x;
@@ -352,45 +351,10 @@ void CandidateView::TakeSuggestionAt(
     Invalidate();
 }
 
-void CandidateView::RemoveHighlight()
+void CCandidateView::RemoveHighlight()
 {
     mTouchX = OUT_OF_BOUNDS;
     Invalidate();
-}
-
-
-ECode CCandidateView::constructor(
-    /* [in] */ IContext * context)
-{
-    return CandidateView::Init(context);
-}
-
-PInterface CCandidateView::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    }
-    return _CCandidateView::Probe(riid);
-}
-
-ECode CCandidateView::SetService(
-    /* [in] */ ISoftKeyboard* listener)
-{
-    return CandidateView::SetService(listener);
-}
-
-ECode CCandidateView::SetSuggestions(
-    /* [in] */ ArrayOf<ICharSequence*>* suggestions,
-    /* [in] */ Boolean completions,
-    /* [in] */ Boolean typedWordValid)
-{
-    return CandidateView::SetSuggestions(suggestions, completions, typedWordValid);
-}
-
-ECode CCandidateView::Clear()
-{
-    return CandidateView::Clear();
 }
 
 } // namespace InputMethodService
