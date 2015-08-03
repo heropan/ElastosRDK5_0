@@ -7,7 +7,7 @@ module
     interface Elastos.Droid.View.IDisplay;
 //    interface Elastos.Droid.View.IDisplayInfo;
 //    interface Elastos.Droid.content.IContext;
-    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
+//    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
     interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
 
     namespace Elastos {
@@ -103,35 +103,34 @@ module
         ForgetWifiDisplay(
             [in] String deviceAddress);
 
-        /* GetWifiDisplayStatus(
-            [out] IWifiDisplayStatus** status);
+        // GetWifiDisplayStatus(
+        //     [out] IWifiDisplayStatus** status);
 
-        CreateVirtualDisplay(
-            [in] IContext* context,
-            [in] IMediaProjection* projection,
-            [in] String name,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] Int32 densityDpi,
-            [in] ISurface* surface,
-            [in] Int32 flags,
-            [in] IVirtualDisplayCallback* callback,
-            [in] IHandler* handler,
-            [out] IVirtualDisplay** outvd);
+        // CreateVirtualDisplay(
+        //     [in] IContext* context,
+        //     [in] IMediaProjection* projection,
+        //     [in] String name,
+        //     [in] Int32 width,
+        //     [in] Int32 height,
+        //     [in] Int32 densityDpi,
+        //     [in] ISurface* surface,
+        //     [in] Int32 flags,
+        //     [in] IVirtualDisplayCallback* callback,
+        //     [in] IHandler* handler,
+        //     [out] IVirtualDisplay** outvd);
 
-        SetVirtualDisplaySurface(
-            [in] IVirtualDisplayCallback* token,
-            [in] ISurface* surface);
+        // SetVirtualDisplaySurface(
+        //     [in] IVirtualDisplayCallback* token,
+        //     [in] ISurface* surface);
 
-        ResizeVirtualDisplay(
-            [in] IVirtualDisplayCallback* token,
-            [in] Int32 width,
-            [in] Int32 height,
-            [in] Int32 densityDpi);
+        // ResizeVirtualDisplay(
+        //     [in] IVirtualDisplayCallback* token,
+        //     [in] Int32 width,
+        //     [in] Int32 height,
+        //     [in] Int32 densityDpi);
 
-        ReleaseVirtualDisplay(
-            [in] IIVirtualDisplayCallback* token);
-        */
+        // ReleaseVirtualDisplay(
+        //     [in] IIVirtualDisplayCallback* token);
     }
 
     interface IDisplayManagerGlobalHelper {
