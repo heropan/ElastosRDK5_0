@@ -16,6 +16,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IRelativeLayout
      */
+    [local]
     interface ICandidatesContainer {
         Initialize(
             [in] ICandidateViewListener* cvListener,

@@ -13,6 +13,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IView
      */
+    [local]
     interface ICandidateView {
         Initialize(
             [in] IArrowUpdater* arrowUpdater,

@@ -20,12 +20,12 @@ module
     merge("../car/net.car");
     //merge("../car/media.car");
     //merge("../car/bluetooth.car");
-    //merge("../car/inputmethodservice2.car");
+    merge("../car/inputmethodservice2.car");
     //merge("../car/menu1.car");
     //merge("../car/widget.car");
     //merge("../car/gesture.car");
     //merge("../car/text2.car");
-    //merge("../car/inputmethodservice.car");
+    merge("../car/inputmethodservice.car");
     //merge("../car/menu2.car");
     //merge("../car/policy.car");
     //merge("../car/content2.car");
@@ -45,7 +45,7 @@ module
     //merge("../car/service.car");
     //merge("../car/systemui.car");
     //merge("../car/appwidget.car");
-    //merge("../car/inputmethods.car");
+    merge("../car/inputmethods.car");
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
     //merge("../car/opengl.car");

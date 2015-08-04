@@ -175,7 +175,7 @@ module
      * @Involve
      * interface IAbstractInputMethodService
      */
-    [deprecated]
+    [deprecated, local]
     interface IInputMethodService {
         /**
          * The back button will close the input window.

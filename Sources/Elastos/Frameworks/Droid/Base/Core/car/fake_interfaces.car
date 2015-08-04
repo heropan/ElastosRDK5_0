@@ -18,6 +18,8 @@ module
 
         interface IApplicationErrorReportCrashInfo {}
 
+        interface IDialog {}
+
     }}} // Elastos.Droid.App
 
     //
@@ -159,6 +161,18 @@ module
     namespace Droid {
     namespace Internal {
 
+        namespace View {
+
+            interface IInputMethodClient {}
+
+            interface IInputContext {}
+
+            interface IIInputMethod {}
+
+            interface IIInputMethodSession {}
+
+        }// Elastos.Droid.Internal.View
+
         namespace Telephony {
 
             interface ICallerInfo {}
@@ -181,6 +195,16 @@ module
         interface ITextView {}
 
         interface IAdapterView {}
+
+        interface IPopupWindow {}
+
+        interface IRelativeLayout {}
+
+        interface IButton {}
+
+        interface ITextView {}
+
+        interface ILinearLayout {}
 
     }}} // Elastos.Droid.Widget
 

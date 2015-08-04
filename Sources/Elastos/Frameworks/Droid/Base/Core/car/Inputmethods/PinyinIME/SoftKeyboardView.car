@@ -12,7 +12,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IView
      */
-    [deprecated]
+    [deprecated, local]
     interface ISoftKeyboardView {
         SetSoftKeyboard(
             [in] ISoftKeyboard* softSkb,

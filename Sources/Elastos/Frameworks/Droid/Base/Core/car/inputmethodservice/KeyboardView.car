@@ -10,7 +10,7 @@ module {
     /**
      * Listener for virtual keyboard events.
      */
-    [deprecated]
+    [deprecated, local]
     interface IOnKeyboardActionListener {
 
         /**
@@ -76,6 +76,7 @@ module {
      * @Involve
      * interface Elastos.Droid.View.IView
      */
+    [local]
     interface IKeyboardView {
         SetOnKeyboardActionListener(
             [in] IOnKeyboardActionListener* listener);

@@ -14,7 +14,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IPopupWindow
      */
-    [deprecated]
+    [deprecated, local]
     interface IBalloonHint {
         GetContext(
             [out] IContext** ctx);
