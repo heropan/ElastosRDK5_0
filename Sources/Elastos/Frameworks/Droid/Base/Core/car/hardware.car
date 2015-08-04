@@ -57,7 +57,7 @@ module
     merge("hardware/camera2/utils/SizeAreaComparator.car");
     merge("hardware/camera2/utils/TaskDrainer.car");
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
-    merge("hardware/camera2/utils/TaskSingleDrainer.car");
+    //merge("hardware/camera2/utils/TaskSingleDrainer.car");
 
     using interface Elastos.Core.IComparable;
 
