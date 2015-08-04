@@ -347,18 +347,4 @@ module
 
     }}} // Elastos.Droid.telecom
 
-    //
-    // Elastos.Droid.Hardware
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Hardware {
-
-        namespace Input {
-            interface IInputDeviceIdentifier {}
-        }
-
-    }}} // Elastos.Droid.Hardware
-
-
 }
