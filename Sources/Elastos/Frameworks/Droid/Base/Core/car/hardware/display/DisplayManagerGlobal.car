@@ -3,7 +3,6 @@ module
 {
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.View.ICompatibilityInfoHolder;
     interface Elastos.Droid.View.IDisplay;
 //    interface Elastos.Droid.View.IDisplayInfo;
 //    interface Elastos.Droid.content.IContext;

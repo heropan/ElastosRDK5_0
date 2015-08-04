@@ -13,6 +13,7 @@ module
         interface IAlphaAnimation
         {
         }
+
     }// namespace Animation
     }// namespace View
     }// namespace Droid

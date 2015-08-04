@@ -16,6 +16,10 @@ module
      * interface Elastos.Droid.Animation.ITimeInterpolator
      */
     interface IInterpolator {
+        // A new interface, TimeInterpolator, was introduced for the new android.animation
+        // package. This older Interpolator interface extends TimeInterpolator so that users of
+        // the new Animator-based animations can use either the old Interpolator implementations or
+        // new classes that implement TimeInterpolator directly.
     }
 
     }   //namespace Animation

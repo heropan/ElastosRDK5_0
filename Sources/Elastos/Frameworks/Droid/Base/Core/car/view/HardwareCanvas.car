@@ -3,7 +3,7 @@ module
 {
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.IPaint;
-    interface Elastos.Droid.View.ICanvasProperty;
+    interface Elastos.Droid.Graphics.ICanvasProperty;
     interface Elastos.Droid.View.IHardwareLayer;
     interface Elastos.Droid.View.IRenderNode;
 

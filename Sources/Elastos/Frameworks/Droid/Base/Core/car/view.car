@@ -43,6 +43,7 @@ module
     merge("view/KeyCharacterMap.car");
     merge("view/KeyEvent.car");
     merge("view/LayoutInflater.car");
+    merge("view/MagnificationSpec.car");
     merge("view/Menu.car");
     merge("view/MenuInflater.car");
     merge("view/MenuItem.car");
@@ -93,7 +94,6 @@ module
     // merge("view/IInputContext.car");
     // merge("view/WindowManagerPolicyThread.car");
     // merge("view/IInputContextCallback.car");
-    // merge("view/BaseIWindow.car");
     // merge("view/DisplayManagerAw.car");
     // merge("view/IDisplayManagerAw.car");
     // merge("view/DispList.car");
@@ -112,26 +112,27 @@ module
     merge("view/accessibility/IAccessibilityManager.car");
     merge("view/accessibility/IAccessibilityManagerClient.car");
 
-    // merge("view/animation/Animation.car");
-    // merge("view/animation/AnimationSet.car");
-    // merge("view/animation/AnimationUtils.car");
-    // merge("view/animation/LayoutAnimationController.car");
-    // merge("view/animation/GridLayoutAnimationController.car");
-    // merge("view/animation/Interpolator.car");
-    // merge("view/animation/AccelerateDecelerateInterpolator.car");
-    // merge("view/animation/AccelerateInterpolator.car");
-    // merge("view/animation/AnticipateInterpolator.car");
-    // merge("view/animation/AnticipateOvershootInterpolator.car");
-    // merge("view/animation/BounceInterpolator.car");
-    // merge("view/animation/CycleInterpolator.car");
-    // merge("view/animation/DecelerateInterpolator.car");
-    // merge("view/animation/OvershootInterpolator.car");
-    // merge("view/animation/LinearInterpolator.car");
-    // merge("view/animation/Transformation.car");
-    // merge("view/animation/AlphaAnimation.car");
-    // merge("view/animation/ScaleAnimation.car");
-    // merge("view/animation/TranslateAnimation.car");
-    // merge("view/animation/RotateAnimation.car");
+    merge("view/animation/AccelerateDecelerateInterpolator.car");
+    merge("view/animation/AccelerateInterpolator.car");
+    merge("view/animation/AlphaAnimation.car");
+    merge("view/animation/Animation.car");
+    merge("view/animation/AnimationSet.car");
+    merge("view/animation/AnimationUtils.car");
+    merge("view/animation/AnticipateInterpolator.car");
+    merge("view/animation/AnticipateOvershootInterpolator.car");
+    merge("view/animation/BounceInterpolator.car");
+    merge("view/animation/CycleInterpolator.car");
+    merge("view/animation/DecelerateInterpolator.car");
+    merge("view/animation/GridLayoutAnimationController.car");
+    merge("view/animation/Interpolator.car");
+    merge("view/animation/LayoutAnimationController.car");
+    merge("view/animation/LinearInterpolator.car");
+    merge("view/animation/OvershootInterpolator.car");
+    merge("view/animation/PathInterpolator.car");
+    merge("view/animation/RotateAnimation.car");
+    merge("view/animation/ScaleAnimation.car");
+    merge("view/animation/Transformation.car");
+    merge("view/animation/TranslateAnimation.car");
 
     merge("view/inputmethod/BaseInputConnection.car");
     merge("view/inputmethod/CompletionInfo.car");
@@ -205,11 +206,6 @@ module
     //     singleton class CChoreographerHelper {
     //         interface IChoreographerHelper;
     //     }
-
-    //     class CCompatibilityInfoHolder {
-    //         interface ICompatibilityInfoHolder;
-    //     }
-
     //     /**
     //      * Describes the characteristics of a particular logical display.
     //      * @hide

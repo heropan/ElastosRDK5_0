@@ -35,7 +35,6 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.View.IDisplay;
-    interface Elastos.Droid.View.ICompatibilityInfoHolder;
 
     namespace Elastos {
     namespace Droid {

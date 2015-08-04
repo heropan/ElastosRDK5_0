@@ -7,15 +7,19 @@ module
     namespace Animation {
 
     /**
-     * An interpolator defines the rate of change of an animation. This allows
-     * the basic animation effects (alpha, scale, translate, rotate) to be
-     * accelerated, decelerated, repeated, etc.
+     * An interpolator where the change starts backward then flings forward and overshoots
+     * the target value and finally goes back to the final value.
      */
     /**
      * @Involve
      * interface IInterpolator
+     * interface INativeInterpolatorFactory
+     * interface IHasNativeInterpolator
      */
     interface IAnticipateOvershootInterpolator {
+        GetInterpolation(
+            [in] Float t,
+            [out] Float* result);
     }
 
     }   //namespace Animation

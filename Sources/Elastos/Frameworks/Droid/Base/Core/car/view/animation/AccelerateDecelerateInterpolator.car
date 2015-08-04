@@ -14,8 +14,12 @@ module
     /**
      * @Involve
      * interface IInterpolator
+     * interface IHasNativeInterpolator
      */
     interface IAccelerateDecelerateInterpolator {
+        GetInterpolation(
+            [in] Float t,
+            [out] Float* result);
     }
 
     }   //namespace Animation

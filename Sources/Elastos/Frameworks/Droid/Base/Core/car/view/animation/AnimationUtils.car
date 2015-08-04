@@ -2,6 +2,8 @@
 module
 {
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Res.IResources;
+    interface Elastos.Droid.Content.Res.IResourcesTheme;
     interface Elastos.Droid.View.Animation.IAnimation;
     interface Elastos.Droid.View.Animation.IInterpolator;
     interface Elastos.Droid.View.Animation.ILayoutAnimationController;
@@ -101,6 +103,22 @@ module
             [in] IContext* ctx,
             [in] Int32 id,
             [out] IInterpolator** interpolator);
+
+        /**
+         * Loads an {@link Interpolator} object from a resource
+         *
+         * @param res The resources
+         * @param id The resource id of the animation to load
+         * @return The interpolator object reference by the specified id
+         * @throws NotFoundException
+         * @hide
+         */
+        LoadInterpolator(
+            [in] IResources* res,
+            [in] IResourcesTheme* theme,
+            [in] Int32 id,
+            [out] IInterpolator** interpolator);
+
     }
 
     }   //namespace Animation

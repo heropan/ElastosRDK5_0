@@ -8,6 +8,12 @@ module
 
 
     /**
+     * An animation that controls the position of an object. See the
+     * {@link android.view.animation full package} description for details and
+     * sample code.
+     *
+     */
+    /**
      * @Involve
      * interface IAnimation
      */

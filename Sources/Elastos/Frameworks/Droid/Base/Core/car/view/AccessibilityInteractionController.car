@@ -3,6 +3,7 @@ module
 {
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.IRegion;
+    interface Elastos.Droid.View.IMagnificationSpec;
     interface Elastos.Droid.View.Accessibility.IAccessibilityInteractionConnectionCallback;
 
     namespace Elastos {

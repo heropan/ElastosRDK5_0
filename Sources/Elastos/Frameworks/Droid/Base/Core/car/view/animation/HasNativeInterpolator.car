@@ -1,0 +1,28 @@
+
+module {
+
+    interface Elastos.Droid.Animation.ITimeInterpolator;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace View {
+    namespace Animation {
+
+    /**
+     * This is a class annotation that signals that it is safe to create
+     * a native interpolator counterpart via {@link NativeInterpolatorFactory}
+     *
+     * The idea here is to prevent subclasses of interpolators from being treated as a
+     * NativeInterpolatorFactory, and instead have them fall back to the LUT & LERP
+     * method like a custom interpolator.
+     *
+     * @hide
+     */
+    interface IHasNativeInterpolator {
+    }
+
+    }   //namespace Animation
+    }   //namespace View
+    }   //namespace Droid
+    }   //namespace Elastos
+}

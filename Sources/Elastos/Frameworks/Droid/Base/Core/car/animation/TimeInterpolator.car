@@ -1,5 +1,8 @@
 
 module {
+
+    interface Elastos.Droid.Animation.ITimeInterpolator;
+
     namespace Elastos {
     namespace Droid {
     namespace Animation {

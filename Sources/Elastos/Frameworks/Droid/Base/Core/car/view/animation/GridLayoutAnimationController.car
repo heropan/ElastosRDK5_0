@@ -38,6 +38,31 @@ module
         }
 
         /**
+         * A layout animation controller is used to animated a grid layout's children.
+         *
+         * While {@link LayoutAnimationController} relies only on the index of the child
+         * in the view group to compute the animation delay, this class uses both the
+         * X and Y coordinates of the child within a grid.
+         *
+         * In addition, the animation direction can be controlled. The default direction
+         * is <code>DIRECTION_LEFT_TO_RIGHT | DIRECTION_TOP_TO_BOTTOM</code>. You can
+         * also set the animation priority to columns or rows. The default priority is
+         * none.
+         *
+         * Information used to compute the animation delay of each child are stored
+         * in an instance of
+         * {@link android.view.animation.GridLayoutAnimationController.AnimationParameters},
+         * itself stored in the {@link android.view.ViewGroup.LayoutParams} of the view.
+         *
+         * @see LayoutAnimationController
+         * @see android.widget.GridView
+         *
+         * @attr ref android.R.styleable#GridLayoutAnimation_columnDelay
+         * @attr ref android.R.styleable#GridLayoutAnimation_rowDelay
+         * @attr ref android.R.styleable#GridLayoutAnimation_direction
+         * @attr ref android.R.styleable#GridLayoutAnimation_directionPriority
+         */
+        /**
          * @Involve
          * interface ILayoutAnimationController
          */

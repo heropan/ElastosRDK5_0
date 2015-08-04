@@ -7,6 +7,7 @@ module
     interface Elastos.Droid.View.Animation.ITransformation;
     interface Elastos.Droid.View.Animation.IInterpolator;
     interface Elastos.Droid.Graphics.IRectF;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
@@ -44,6 +45,15 @@ module
                 [in] IAnimation* animation);
         }
 
+        /**
+         * Abstraction for an Animation that can be applied to Views, Surfaces, or
+         * other objects. See the {@link android.view.animation animation package
+         * description file}.
+         */
+        /**
+         * @Involve
+         * interface ICloneable
+         */
         [local]
         interface IAnimation {
             /**
