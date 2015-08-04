@@ -1,0 +1,29 @@
+module
+{
+    using interface Elastos.Utility.IList;
+
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IIProcessStats {
+        GetCurrentStats(
+            [in/*out*/] IList* historic,
+            [out, callee] ArrayOf<Byte>* stats);
+
+        GetStatsOverTime(
+            [in] Int64 minTime,
+            [out] IParcelFileDescriptor** pfd);
+
+        GetCurrentMemoryState(
+            [out] Int32* state);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

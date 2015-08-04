@@ -152,38 +152,12 @@ module
 
     }}} // Elastos.Droid.Graphics
 
-
-    //
-    // Elastos.Droid.View
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace View {
-
-        namespace Internal {
-
-            interface IInputMethodClient {}
-
-            interface IInputContext {}
-
-        }// Elastos.Droid.View.Internal
-
-    }}} // Elastos.Droid.View
-
     //
     // Elastos.Droid.Internal
     //
     namespace Elastos {
     namespace Droid {
     namespace Internal {
-
-        namespace View {
-
-            interface IInputMethodClient {}
-
-            interface IInputContext {}
-
-        }// Elastos.Droid.Internal.View
 
         namespace Telephony {
 
@@ -342,4 +316,5 @@ module
         }
 
     }}} // Elastos.Droid.telecom
+
 }

@@ -1,0 +1,62 @@
+module
+{
+    interface Elastos.Droid.View.IInputChannel;
+    interface Elastos.Droid.Internal.View.IIInputMethodSession;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace View {
+
+    /**
+     * Bundle of information returned by input method manager about a successful
+     * binding to an input method.
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    interface IInputBindResult {
+        /**
+         * The input method service.
+         */
+        SetMethod(
+            [in] IIInputMethodSession* method);
+
+        GetMethod(
+            [out] IIInputMethodSession** method);
+
+        /**
+         * The input channel used to send input events to this IME.
+         */
+        SetChannel(
+            [in] IInputChannel* channel);
+
+        GetChannel(
+            [out] IInputChannel** channel);
+
+        /**
+         * The ID for this input method, as found in InputMethodInfo; null if
+         * no input method will be bound.
+         */
+        SetId(
+            [in] String id);
+
+        GetId(
+            [out] String* id);
+
+        /**
+         * Sequence number of this binding.
+         */
+        SetSequence(
+            [in] Int32 seq);
+
+        GetSequence(
+            [in] Int32 seq);
+    }
+
+    }//namespace View
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

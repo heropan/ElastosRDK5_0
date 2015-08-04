@@ -1,0 +1,14 @@
+
+module
+{
+    merge("view/IInputContext.car");
+    merge("view/IInputContextCallback.car");
+    merge("view/IInputMethodClient.car");
+    merge("view/IInputMethodSession.car");
+    merge("view/InputBindResult.car");
+
+
+
+
+
+}

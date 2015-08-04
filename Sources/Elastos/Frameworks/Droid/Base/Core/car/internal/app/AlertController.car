@@ -1,0 +1,85 @@
+module
+{
+    using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Os.IMessage;
+    interface Elastos.Droid.Content.IDialogInterfaceOnClickListener;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IListView;
+    interface Elastos.Droid.Widget.IButton;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IAlertActivity {
+
+        InstallContent();
+
+        SetTitle(
+            [in] ICharSequence* title);
+
+        SetCustomTitle(
+            [in] IView* customTitleView);
+
+        SetMessage(
+            [in] ICharSequence* message);
+
+        SetView(
+            [in] Int32 layoutResId);
+
+        SetView(
+            [in] IView* view);
+
+        SetView(
+            [in] IView* view,
+            [in] Int32 viewSpacingLeft,
+            [in] Int32 viewSpacingTop,
+            [in] Int32 viewSpacingRight,
+            [in] Int32 viewSpacingBottom);
+
+        SetButtonPanelLayoutHint(
+            [in] Int32 layoutHint);
+
+        SetButton(
+            [in] Int32 whichButton,
+            [in] ICharSequence* text,
+            [in] IDialogInterfaceOnClickListener* listener,
+            [in] IMessage* msg);
+
+        SetIcon(
+            [in] Int32 resId);
+
+        SetIcon(
+            [in] IDrawable* icon);
+
+        GetIconAttributeResId(
+            [in] Int32 attrId);
+
+        SetInverseBackgroundForced(
+            [in] Boolean forceInverseBackground);
+
+        GetListView(
+            [out] IListView** view);
+
+        GetButton(
+            [in] Int32 whichButton,
+            [out] IButton** button);
+
+        OnKeyDown(
+            [in] Int32 keyCode,
+            [in] Int32 KeyEvent event,
+            [out] Boolean* result);
+
+        OnKeyUp(
+            [in] Int32 keyCode,
+            [in] Int32 KeyEvent event,
+            [out] Boolean* result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}
