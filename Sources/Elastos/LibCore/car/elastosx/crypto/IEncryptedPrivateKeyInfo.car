@@ -84,6 +84,26 @@ module
          *
          * @param decryptKey
          *            the key to decrypt the encrypted data with.
+         * @return the extracted {@code PKCS8EncodedKeySpec}.
+         * @throws NoSuchAlgorithmException
+         *             if no usable cipher can be found to decrypt the encrypted
+         *             data.
+         * @throws InvalidKeyException
+         *             if {@code decryptKey} is not usable to decrypt the encrypted
+         *             data.
+         * @throws NullPointerException
+         *             if {@code decryptKey} is {@code null}.
+         */
+        GetKeySpec(
+            [in] IKey * decryptKey,
+            [out] IPKCS8EncodedKeySpec ** spec);
+
+        /**
+         * Returns the {@code PKCS8EncodedKeySpec} object extracted from the
+         * encrypted data.
+         *
+         * @param decryptKey
+         *            the key to decrypt the encrypted data with.
          * @param providerName
          *            the name of a provider whose cipher implementation should be
          *            used.

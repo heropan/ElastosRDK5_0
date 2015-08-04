@@ -7,6 +7,7 @@ include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += ../../elastos
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/security/spec
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/crypto
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/crypto
@@ -20,6 +21,7 @@ SOURCES =  CCipher.cpp
 SOURCES += Cipher.cpp
 SOURCES += CCipherHelper.cpp
 SOURCES += CipherSpi.cpp
+SOURCES += CEncryptedPrivateKeyInfo.cpp
 SOURCES += CCipherInputStream.cpp
 SOURCES += CCipherOutputStream.cpp
 SOURCES += ExemptionMechanismSpi.cpp

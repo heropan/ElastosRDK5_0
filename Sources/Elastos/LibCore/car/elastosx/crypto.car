@@ -41,13 +41,14 @@ module
     merge("crypto/spec/IRC5ParameterSpec.car");
     merge("crypto/spec/ISecretKeySpec.car");
 
-    interface Elastos.Security.IProvider;
     interface Elastos.IO.IInputStream;
     interface Elastos.IO.IOutputStream;
     interface Elastos.IO.IFilterInputStream;
     interface Elastos.IO.IFilterOutputStream;
     interface Elastos.IO.ISerializable;
     interface Elastos.Core.ICloneable;
+    interface Elastos.Security.IProvider;
+    interface Elastos.Security.IAlgorithmParameters;
 
    namespace Elastosx {
    namespace Crypto {
@@ -93,6 +94,22 @@ module
 
         interface ICipherOutputStream;
         interface IFilterOutputStream;
+    }
+
+    [deprecated]
+    class CEncryptedPrivateKeyInfo {
+        constructor(
+            [in] ArrayOf<Byte> * encoded);
+
+        constructor(
+            [in] String encryptionAlgorithmName,
+            [in] ArrayOf<Byte> * encryptedData);
+
+        constructor(
+            [in] IAlgorithmParameters * algParams,
+            [in] ArrayOf<Byte> * encryptedData);
+
+        interface IEncryptedPrivateKeyInfo;
     }
 
     class CExemptionMechanism {
