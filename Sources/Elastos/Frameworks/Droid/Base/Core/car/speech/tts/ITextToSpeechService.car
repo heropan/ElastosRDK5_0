@@ -1,6 +1,6 @@
 module
 {
-//    interface Elastos.Droid.Os.IIBinder;
+//    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Net.IUri;
@@ -28,7 +28,7 @@ module
          * @param param Request parameters.
          */
         Speak(
-            [in] /*IIBinder*/IBinder* callingInstance,
+            [in] IBinder* callingInstance,
             [in] String text,
             [in] Int32 queueMode,
             [in] IBundle* params,
@@ -44,7 +44,7 @@ module
          * @param param Request parameters.
          */
         SynthesizeToFile(
-            [in] /*IIBinder*/IBinder* callingInstance,
+            [in] IBinder* callingInstance,
             [in] String text,
             [in] String filename,
             [in] IBundle* params,
@@ -60,7 +60,7 @@ module
          * @param param Request parameters.
          */
         PlayAudio(
-            [in] /*IIBinder*/IBinder* callingInstance,
+            [in] IBinder* callingInstance,
             [in] IUri* audioUri,
             [in] Int32 queueMode,
             [in] IBundle* params,
@@ -76,7 +76,7 @@ module
          * @param param Request parameters.
          */
         PlaySilence(
-            [in] /*IIBinder*/IBinder* callingInstance,
+            [in] IBinder* callingInstance,
             [in] Int64 duration,
             [in] Int32 queueMode,
             [in] IBundle* params,
@@ -96,7 +96,7 @@ module
          *        TextToSpeech object.
          */
         Stop(
-            [in] /*IIBinder*/IBinder* callingInstance,
+            [in] IBinder* callingInstance,
             [out] Int32* ret);
 
         /**
@@ -177,7 +177,7 @@ module
          * @param cb The callback.
          */
         SetCallback(
-            [in] /*IIBinder*/IBinder* caller,
+            [in] IBinder* caller,
             [in] IITextToSpeechCallback* cb);
 
     }

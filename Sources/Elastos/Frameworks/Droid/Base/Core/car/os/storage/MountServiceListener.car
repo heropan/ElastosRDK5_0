@@ -7,29 +7,29 @@ module
     namespace Storage {
 
     /**
-     * Callback class for receiving events from MountService.
-     *
-     * @hide - Applications should use IStorageEventListener for storage event
-     *       callbacks.
+     * Callback class for receiving progress reports during a restore operation.  These
+     * methods will all be called on your application's main thread.
+     * @hide
      */
-    interface IIMountServiceListener {
+    interface IMountServiceListener {
         /**
-         * Detection state of USB Mass Storage has changed
+         * USB Mass storage connection state has changed.
          *
-         * @param available true if a UMS host is connected.
+         * @param connected True if UMS is connected.
          */
         OnUsbMassStorageConnectionChanged(
             [in] Boolean connected);
 
         /**
-         * Storage state has changed.
+         *  Storage state has changed.
          *
          * @param path The volume mount path.
          * @param oldState The old state of the volume.
-         * @param newState The new state of the volume. Note: State is one of the
-         *            values returned by Environment.getExternalStorageState()
+         * @param newState The new state of the volume.
+         *
+         * @Note: State is one of the values returned by Environment.getExternalStorageState()
          */
-        OnStorageStateChanged(
+        OnStorageStateChange(
             [in] String path,
             [in] String oldState,
             [in] String newState);

@@ -10,7 +10,16 @@ module
     namespace Os {
     namespace Storage {
 
+    /**
+     * @Involve
+     * interface IParcelable
+     */
     interface IStorageVolume {
+        // StorageVolume extra for ACTION_MEDIA_REMOVED, ACTION_MEDIA_UNMOUNTED, ACTION_MEDIA_CHECKING,
+        // ACTION_MEDIA_NOFS, ACTION_MEDIA_MOUNTED, ACTION_MEDIA_SHARED, ACTION_MEDIA_UNSHARED,
+        // ACTION_MEDIA_BAD_REMOVAL, ACTION_MEDIA_UNMOUNTABLE and ACTION_MEDIA_EJECT broadcasts.
+        const String EXTRA_STORAGE_VOLUME = "storage_volume";
+
         /**
          * Returns the mount path for the volume.
          *
@@ -102,19 +111,30 @@ module
         GetOwner(
             [out] IUserHandle** owner);
 
-        Equals(
-            [in] IStorageVolume* obj,
-            [out] Boolean* result);
+        SetUuid(
+            [in] String uuid);
 
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
+        GetUuid(
+            [out] String* uuid);
 
-        GetHashCode(
-            [out] Int32* pCode);
+        /**
+         * Parse and return volume UUID as FAT volume ID, or return -1 if unable to
+         * parse or UUID is unknown.
+         */
+        GetFatVolumeId(
+            [out] String* uuid);
 
-        ToString(
-            [out] String* pStr);
+        SetUserLabel(
+            [in] String userLabel);
+
+        GetUserLabel(
+            [out] String* userLabel);
+
+        SetState(
+            [in] String state);
+
+        GetState(
+            [out] String* state);
     }
 
     interface IStorageVolumeHelper {

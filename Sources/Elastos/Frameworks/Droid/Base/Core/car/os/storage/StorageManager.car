@@ -1,6 +1,7 @@
 
 module
 {
+    using interface Elastos.IO.IFile;
 
     interface Elastos.Droid.Content.IContext;
 
@@ -14,8 +15,25 @@ module
     interface IStorageVolume;
 
     [deprecated]
-    interface IStorageManager
-    {
+    interface IStorageManager {
+        /// Consts to match the password types in cryptfs.h
+        /** @hide */
+        const Int32 CRYPT_TYPE_PASSWORD = 0;
+        /** @hide */
+        const Int32 CRYPT_TYPE_DEFAULT = 1;
+        /** @hide */
+        const Int32 CRYPT_TYPE_PATTERN = 2;
+        /** @hide */
+        const Int32 CRYPT_TYPE_PIN = 3;
+
+        // Constants for the data available via MountService.getField.
+        /** @hide */
+        const String SYSTEM_LOCALE_KEY = "SystemLocale";
+        /** @hide */
+        const String OWNER_INFO_KEY = "OwnerInfo";
+        /** @hide */
+        const String PATTERN_VISIBLE_KEY = "PatternVisible";
+
         /**
         * Registers a {@link android.os.storage.StorageEventListener StorageEventListener}.
         *
@@ -169,6 +187,36 @@ module
         /** {@hide} */
         GetPrimaryVolume(
             [out] IStorageVolume** result);
+
+        /**
+         * Return the number of available bytes until the given path is considered
+         * running low on storage.
+         *
+         * @hide
+         */
+        GetStorageBytesUntilLow(
+            [in] IFile* path,
+            [out] Int64* result);
+
+        /**
+         * Return the number of available bytes at which the given path is
+         * considered running low on storage.
+         *
+         * @hide
+         */
+        GetStorageLowBytes(
+            [in] IFile* path,
+            [out] Int64* result);
+
+        /**
+         * Return the number of available bytes at which the given path is
+         * considered full.
+         *
+         * @hide
+         */
+        GetStorageFullBytes(
+            [in] IFile* path,
+            [out] Int64* result);
     }
 
     [deprecated]

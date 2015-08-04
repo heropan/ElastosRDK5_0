@@ -15,7 +15,7 @@ using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IMessenger;
-using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Droid::Os::INetworkManagementService;
 using Elastos::Utility::IHashMap;
 using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Utility::Logging::Logger;
@@ -1016,12 +1016,12 @@ private:
         /* [out] */ INetworkCallback** result);
 
     CARAPI GetNetworkManagementService(
-        /* [in] */ IINetworkManagementService* result);
+        /* [in] */ INetworkManagementService* result);
 
     static const String TAG;
     static const Boolean LEGACY_DBG; // STOPSHIP
     AutoPtr<IIConnectivityManager> mService;
-    AutoPtr<IINetworkManagementService> mNMService;
+    AutoPtr<INetworkManagementService> mNMService;
     static AutoPtr<IHashMap> sLegacyRequests;
     AutoPtr<IArrayMap> mNetworkActivityListeners;
 };

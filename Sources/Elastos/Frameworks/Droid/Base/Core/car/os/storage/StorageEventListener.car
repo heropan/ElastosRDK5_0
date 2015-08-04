@@ -21,9 +21,9 @@ module
           * @param newState the old state as returned by {@link android.os.Environment#getExternalStorageState()}.
          */
         OnStorageStateChanged(
-            [in] CString path,
-            [in] CString oldState,
-            [in] CString newState);
+            [in] String path,
+            [in] String oldState,
+            [in] String newState);
     }
 
     }//namespace Storage

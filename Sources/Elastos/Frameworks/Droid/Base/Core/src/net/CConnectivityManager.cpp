@@ -897,7 +897,7 @@ ECode CConnectivityManager::GetMobileDataEnabled(
 }
 
 ECode CConnectivityManager::GetNetworkManagementService(
-    /* [in] */ IINetworkManagementService* result)
+    /* [in] */ INetworkManagementService* result)
 {
     return E_NOT_IMPLEMENTED;
 #if 0 // TODO: Waiting for implementing.

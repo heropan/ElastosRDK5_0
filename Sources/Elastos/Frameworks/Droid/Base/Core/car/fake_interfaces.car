@@ -203,17 +203,6 @@ module
 
     }}} // Elastos.Droid.Media
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Os {
-
-        interface IIBinder {}
-        interface IINetworkManagementService {}
-
-    } // namespace Os
-    } // namespace Droid
-    } // namespace Elastos
-
     namespace Org {
     namespace Apache {
     namespace Http {
