@@ -97,6 +97,7 @@ ECode KeyboardView::MyHandler::HandleMessage(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(KeyboardView::_OnKeyboardActionListener, Object, IOnKeyboardActionListener);
 KeyboardView::_OnKeyboardActionListener::_OnKeyboardActionListener(
     /* [in] */ KeyboardView* host)
     : mHost(host)
@@ -104,42 +105,6 @@ KeyboardView::_OnKeyboardActionListener::_OnKeyboardActionListener(
 
 KeyboardView::_OnKeyboardActionListener::~_OnKeyboardActionListener()
 {}
-
-UInt32 KeyboardView::_OnKeyboardActionListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 KeyboardView::_OnKeyboardActionListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface KeyboardView::_OnKeyboardActionListener::Probe(
-   /* [in] */ REIID riid)
-{
-   if (riid == EIID_IOnKeyboardActionListener) {
-       return (IOnKeyboardActionListener*)this;
-   }
-
-   return NULL;
-}
-
-ECode KeyboardView::_OnKeyboardActionListener::GetInterfaceID(
-   /* [in] */ IInterface *pObject,
-   /* [out] */ InterfaceID *pIID)
-{
-   VALIDATE_NOT_NULL(pIID);
-
-   if (pObject == (IInterface*)(IOnKeyboardActionListener*)this) {
-       *pIID = EIID_IOnKeyboardActionListener;
-   }
-   else {
-       return E_INVALID_ARGUMENT;
-   }
-
-   return NOERROR;
-}
 
 ECode KeyboardView::_OnKeyboardActionListener::OnPress(
     /* [in] */ Int32 primaryCode)
@@ -442,6 +407,7 @@ Boolean KeyboardView::_SimpleOnGestureListener::OnFling(
     return FALSE;
 }
 
+CAR_INTERFACE_IMPL(KeyboardView, View, IKeyboardView);
 KeyboardView::KeyboardView()
     : mCurrentKeyIndex(NOT_A_KEY)
     , mLabelTextSize(0)
@@ -593,12 +559,12 @@ KeyboardView::~KeyboardView()
 //     a->GetDrawable(attr, (IDrawable**)&mKeyBackground);
 // }
 
-ECode KeyboardView::Init(
+ECode KeyboardView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    ASSERT_SUCCEEDED(View::Init(context, attrs, defStyle));
+    ASSERT_SUCCEEDED(View::constructor(context, attrs, defStyle));
     ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyle));
     return NOERROR;
 }

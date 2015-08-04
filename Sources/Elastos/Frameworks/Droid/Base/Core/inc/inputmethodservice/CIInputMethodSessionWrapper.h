@@ -1,8 +1,8 @@
 
-#ifndef  __CIINPUTMETHODSESSIONWRAPPER_H__
-#define  __CIINPUTMETHODSESSIONWRAPPER_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODSESSIONWRAPPER_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODSESSIONWRAPPER_H__
 
-#include "_CIInputMethodSessionWrapper.h"
+#include "_Elastos_Droid_InputMethodService_CIInputMethodSessionWrapper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;
@@ -23,13 +23,16 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-
 CarClass(CIInputMethodSessionWrapper)
+    , public Object
+    , public IIInputMethodSession
+    , public IBinder
+    , public IHandlerCallerCallback
 {
 protected:
     // NOTE: we should have a cache of these.
     class InputMethodEventCallbackWrapper
-        : public ElRefBase
+        : public Object
         , public ILocalInputMethodSessionEventCallback
     {
     public:
@@ -38,7 +41,7 @@ protected:
             : mCb(cb)
         {}
 
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         CARAPI FinishedEvent(
             /* [in] */ Int32 seq,
@@ -49,6 +52,10 @@ protected:
     };
 
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IInputMethodSession* inputMethodSession);
@@ -135,4 +142,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CIINPUTMETHODSESSIONWRAPPER_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODSESSIONWRAPPER_H__

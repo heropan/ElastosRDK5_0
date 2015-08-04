@@ -90,6 +90,7 @@ const Int32 InputMethodService::Insets::TOUCHABLE_INSETS_VISIBLE
 const Int32 InputMethodService::Insets::TOUCHABLE_INSETS_REGION
                 = IInternalInsetsInfo::TOUCHABLE_INSETS_REGION;
 
+CAR_INTERFACE_IMPL(InputMethodService::_OnComputeInternalInsetsListener, Object, IOnComputeInternalInsetsListener);
 InputMethodService::_OnComputeInternalInsetsListener::_OnComputeInternalInsetsListener(
     /* [in] */ InputMethodService* host)
     : mHost(host)
@@ -97,42 +98,6 @@ InputMethodService::_OnComputeInternalInsetsListener::_OnComputeInternalInsetsLi
 
 InputMethodService::_OnComputeInternalInsetsListener::~_OnComputeInternalInsetsListener()
 {}
-
-PInterface InputMethodService::_OnComputeInternalInsetsListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IOnComputeInternalInsetsListener) {
-        return (IOnComputeInternalInsetsListener*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 InputMethodService::_OnComputeInternalInsetsListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InputMethodService::_OnComputeInternalInsetsListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode InputMethodService::_OnComputeInternalInsetsListener::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IOnComputeInternalInsetsListener*)this) {
-        *pIID = EIID_IOnComputeInternalInsetsListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
 
 ECode InputMethodService::_OnComputeInternalInsetsListener::OnComputeInternalInsets(
     /* [in] */ IInternalInsetsInfo* info)
@@ -183,6 +148,7 @@ ECode InputMethodService::_OnComputeInternalInsetsListener::OnComputeInternalIns
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(InputMethodService::_OnClickListener, Object, IViewOnClickListener);
 InputMethodService::_OnClickListener::_OnClickListener(
     /* [in] */ InputMethodService* host)
     : mHost(host)
@@ -545,16 +511,6 @@ InputMethodService::Insets::Insets()
     CRegion::New((IRegion**)&mTouchableRegion);
 }
 
-UInt32 InputMethodService::Insets::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InputMethodService::Insets::Release()
-{
-    return ElRefBase::Release();
-}
-
 InputMethodService::InputMethodService()
     : mTheme(0)
     , mHardwareAccelerated(FALSE)
@@ -594,16 +550,6 @@ InputMethodService::~InputMethodService()
         mTmpLocation = NULL;
     }
 
-}
-
-UInt32 InputMethodService::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InputMethodService::Release()
-{
-    return ElRefBase::Release();
 }
 
 ECode InputMethodService::SetTheme(

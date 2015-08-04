@@ -1,10 +1,9 @@
 
-#ifndef  __CKEYBOARDVIEW_H__
-#define  __CKEYBOARDVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
 
-#include "_CKeyboardView.h"
+#include "_Elastos_Droid_InputMethodService_CKeyboardView.h"
 #include "inputmethodservice/KeyboardView.h"
-
 
 namespace Elastos {
 namespace Droid {
@@ -26,13 +25,9 @@ namespace InputMethodService {
 CarClass(CKeyboardView), public KeyboardView
 {
 public:
-    IVIEW_METHODS_DECL()
+    CAR_OBJECT_DECL();
 
-    IDRAWABLECALLBACK_METHODS_DECL()
-
-    IKEYEVENTCALLBACK_METHODS_DECL()
-
-    IACCESSIBILITYEVENTSOURCE_METHODS_DECL()
+    CAR_INTERFACE_DECL();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -45,64 +40,10 @@ public:
 
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
-
-    CARAPI OnClick(
-        /* [in] */ IView* v);
-
-    CARAPI SetOnKeyboardActionListener(
-        /* [in] */ IOnKeyboardActionListener* listener);
-
-    CARAPI GetOnKeyboardActionListener(
-        /* [out] */ IOnKeyboardActionListener** listener);
-
-    CARAPI Closing();
-
-    CARAPI HandleBack(
-        /* [out] */ Boolean* res);
-
-    CARAPI SetKeyboard(
-        /* [in] */ IKeyboard* keyboard);
-
-    CARAPI GetKeyboard(
-        /* [out] */ IKeyboard** keyboard);
-
-    CARAPI SetShifted(
-        /* [in] */ Boolean shifted,
-        /* [out] */ Boolean* res);
-
-    CARAPI IsShifted(
-        /* [out] */ Boolean* shifted);
-
-    CARAPI SetPreviewEnabled(
-        /* [in] */ Boolean previewEnabled);
-
-    CARAPI IsPreviewEnabled(
-        /* [out] */ Boolean* res);
-
-    CARAPI SetVerticalCorrection(
-        /* [in] */ Int32 verticalOffset);
-
-    CARAPI SetPopupParent(
-        /* [in] */ IView* v);
-
-    CARAPI SetPopupOffset(
-        /* [in] */ Int32 x,
-        /* [in] */ Int32 y);
-
-    CARAPI SetProximityCorrectionEnabled(
-        /* [in] */ Boolean enabled);
-
-    CARAPI IsProximityCorrectionEnabled(
-        /* [out] */ Boolean* res);
-
-    CARAPI InvalidateAllKeys();
-
-    CARAPI InvalidateKey(
-        /* [in] */ Int32 keyIndex);
 };
 
 } // namespace InputMethodService
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__KEYBOARDVIEW_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__

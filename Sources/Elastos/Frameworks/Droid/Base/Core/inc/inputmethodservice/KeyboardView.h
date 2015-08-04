@@ -1,6 +1,6 @@
 
-#ifndef  __KEYBOARDVIEW_H__
-#define  __KEYBOARDVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__
 
 #include "ext/frameworkext.h"
 //#include "view/GestureDetector.h"
@@ -31,7 +31,9 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-class KeyboardView : public Elastos::Droid::View::View
+class KeyboardView
+    : public Elastos::Droid::View::View
+    , public IKeyboardView
 {
 public:
     class MyHandler : public HandlerBase
@@ -49,25 +51,16 @@ public:
     };
 
     class _OnKeyboardActionListener
-        : public ElRefBase
+        : public Object
         , public IOnKeyboardActionListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         _OnKeyboardActionListener(
             /* [in] */ KeyboardView* host);
 
         ~_OnKeyboardActionListener();
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI_(PInterface) Probe(
-           /* [in] */ REIID riid);
-
-        CARAPI GetInterfaceID(
-           /* [in] */ IInterface *pObject,
-           /* [out] */ InterfaceID *pIID);
 
         CARAPI OnPress(
             /* [in] */ Int32 primaryCode);
@@ -95,7 +88,7 @@ public:
     };
 
 private:
-    class SwipeTracker : public ElRefBase
+    class SwipeTracker : public Object
     {
     public:
         SwipeTracker();
@@ -140,7 +133,7 @@ private:
     };
 
     class _SimpleOnGestureListener
-        : public ElRefBase
+        : public Object
         //TODO
         // , public GestureDetector::SimpleOnGestureListener
     {
@@ -165,6 +158,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     KeyboardView();
 
     KeyboardView(
@@ -342,7 +337,7 @@ protected:
 
     virtual CARAPI_(void) SwipeDown();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle = R::attr::keyboardViewStyle);
@@ -566,4 +561,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //_KEYBOARDVIEW_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARDVIEW_H__

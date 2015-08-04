@@ -1,6 +1,6 @@
 
-#ifndef  __INPUTMETHODSERVICE_H__
-#define  __INPUTMETHODSERVICE_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_INPUTMETHODSERVICE_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_INPUTMETHODSERVICE_H__
 
 #ifdef DROID_CORE
 #include "inputmethodservice/CSoftInputWindow.h"
@@ -51,25 +51,16 @@ class InputMethodService : public AbstractInputMethodService
 {
 private:
     class _OnComputeInternalInsetsListener
-        : public ElRefBase
+        : public Object
         , public IOnComputeInternalInsetsListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         _OnComputeInternalInsetsListener(
             /* [in] */ InputMethodService* host);
 
         ~_OnComputeInternalInsetsListener();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI OnComputeInternalInsets(
             /* [in] */ IInternalInsetsInfo* info);
@@ -79,25 +70,16 @@ private:
     };
 
     class _OnClickListener
-        : public ElRefBase
+        : public Object
         , public IViewOnClickListener
     {
     public:
+        CAR_INTERFACE_DECL();
+
         _OnClickListener(
             /* [in] */ InputMethodService* host);
 
         ~_OnClickListener();
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI OnClick(
             /* [in] */ IView* v);
@@ -259,14 +241,10 @@ public:
      * Information about where interesting parts of the input method UI appear.
      */
     // static final class Insets {
-    class Insets : public ElRefBase
+    class Insets : public Object
     {
     public:
         Insets();
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
 
     public:
         /**
@@ -336,10 +314,6 @@ public:
     InputMethodService();
 
     virtual ~InputMethodService();
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
 
     /**
      * You can call this to customize the theme used by your IME's window.
@@ -1333,4 +1307,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__INPUTMETHODSERVICE_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_INPUTMETHODSERVICE_H__

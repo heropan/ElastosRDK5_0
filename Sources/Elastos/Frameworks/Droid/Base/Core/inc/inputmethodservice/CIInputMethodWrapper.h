@@ -1,8 +1,8 @@
 
-#ifndef  __CIINPUTMETHODWRAPPER_H__
-#define  __CIINPUTMETHODWRAPPER_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__
 
-#include "_CIInputMethodWrapper.h"
+#include "_Elastos_Droid_InputMethodService_CIInputMethodWrapper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;
@@ -26,11 +26,9 @@ using Elastos::Droid::View::InputMethod::IInputMethodSubtype;
 using Elastos::Droid::View::InputMethod::IInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::IInputMethod;
 
-
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
-
 
 /**
  * Implements the internal IInputMethod interface to convert incoming calls
@@ -38,6 +36,10 @@ namespace InputMethodService {
  * them on the main thread of the process.
  */
 CarClass(CIInputMethodWrapper)
+    , public Object
+    , public IIInputMethod
+    , public IBinder
+    , public IHandlerCallerCallback
 {
 private:
     // static class Notifier {
@@ -46,24 +48,15 @@ private:
 
     // NOTE: we should have a cache of these.
     class InputMethodSessionCallbackWrapper
-        : public ElRefBase
+        : public Object
         , public IInputMethodSessionEventCallback
     {
     public:
+        CAR_INTERFACE_DECL();
+
         InputMethodSessionCallbackWrapper(
             /* [in] */ IContext* context,
             /* [in] */ IInputMethodCallback* cb);
-
-        CARAPI_(PInterface) Probe(
-            /* [in] */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         CARAPI SessionCreated(
             /* [in] */ IInputMethodSession* session);
@@ -74,6 +67,10 @@ private:
     };
 
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI constructor(
         /* [in] */ IAbstractInputMethodService* context,
         /* [in] */ IInputMethod* inputMethod);
@@ -151,4 +148,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CIINPUTMETHODWRAPPER_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_CIINPUTMETHODWRAPPER_H__

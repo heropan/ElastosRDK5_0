@@ -42,48 +42,13 @@ const Int32 CIInputMethodWrapper::DO_SHOW_SOFT_INPUT = 60;
 const Int32 CIInputMethodWrapper::DO_HIDE_SOFT_INPUT = 70;
 const Int32 CIInputMethodWrapper::DO_CHANGE_INPUTMETHOD_SUBTYPE = 80;
 
-
+CAR_INTERFACE_IMPL(CIInputMethodWrapper::InputMethodSessionCallbackWrapper, Object, IInputMethodSessionEventCallback)
 CIInputMethodWrapper::InputMethodSessionCallbackWrapper::InputMethodSessionCallbackWrapper(
     /* [in] */ IContext* context,
     /* [in] */ IInputMethodCallback* cb)
     : mContext(context)
     , mCb(cb)
 {}
-
-PInterface CIInputMethodWrapper::InputMethodSessionCallbackWrapper::Probe(
-    /* [in] */ REIID riid)
-{
-    if (EIID_IInputMethodSessionEventCallback == riid) {
-        return (IInputMethodSessionEventCallback *)this;
-    }
-
-    return NULL;
-}
-
-UInt32 CIInputMethodWrapper::InputMethodSessionCallbackWrapper::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CIInputMethodWrapper::InputMethodSessionCallbackWrapper::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode CIInputMethodWrapper::InputMethodSessionCallbackWrapper::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface*)(IInputMethodSessionEventCallback*)this) {
-        *pIID = EIID_IInputMethodSessionEventCallback;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-    return NOERROR;
-}
 
 ECode CIInputMethodWrapper::InputMethodSessionCallbackWrapper::SessionCreated(
     /* [in] */ IInputMethodSession* session)
@@ -101,6 +66,8 @@ ECode CIInputMethodWrapper::InputMethodSessionCallbackWrapper::SessionCreated(
     // }
 }
 
+CAR_OBJECT_IMPL(CIInputMethodWrapper);
+CAR_INTERFACE_IMPL_3(CIInputMethodWrapper, Object, IIInputMethod, IBinder, IHandlerCallerCallback);
 ECode CIInputMethodWrapper::constructor(
     /* [in] */ IAbstractInputMethodService* context,
     /* [in] */ IInputMethod* inputMethod)

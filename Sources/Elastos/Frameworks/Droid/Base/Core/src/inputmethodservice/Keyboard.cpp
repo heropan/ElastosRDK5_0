@@ -39,7 +39,7 @@ const Int32 Keyboard::GRID_HEIGHT = 5;
 const Int32 Keyboard::GRID_SIZE = GRID_WIDTH * GRID_HEIGHT;
 Float Keyboard::SEARCH_DISTANCE = 1.8f;
 
-
+CAR_INTERFACE_IMPL(Keyboard::Row, Object, IKeyboardRow);
 Keyboard::Row::Row(
     /* [in] */ Keyboard* parent)
     : mDefaultWidth(0)
@@ -94,47 +94,6 @@ Keyboard::Row::Row(
     a->GetResourceId(R::styleable::Keyboard_Row_keyboardMode,
             0, &mMode);
     a->Recycle();
-}
-
-PInterface Keyboard::Row::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IKeyboardRow*)this;
-    }
-    else if (riid == EIID_IKeyboardRow) {
-        return (IKeyboardRow*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Keyboard::Row::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Keyboard::Row::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Keyboard::Row::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(IKeyboardRow*)this) {
-        *pIID = EIID_IKeyboardRow;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
 }
 
 ECode Keyboard::Row::GetDefaultWidth(
@@ -255,6 +214,7 @@ Int32 Keyboard::Key::KEY_STATE_PRESSED[] = {
     R::attr::state_pressed,
 };
 
+CAR_INTERFACE_IMPL(Keyboard::Key, Object, IKeyboardKey);
 Keyboard::Key::Key(
     /* [in] */ Row* parent)
     : mWidth(parent->mDefaultWidth)
@@ -385,47 +345,6 @@ Keyboard::Key::Key(
 
 Keyboard::Key::~Key()
 {}
-
-PInterface Keyboard::Key::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IKeyboardKey*)this;
-    }
-    else if (riid == EIID_IKeyboardKey) {
-        return (IKeyboardKey*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Keyboard::Key::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Keyboard::Key::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Keyboard::Key::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) {
-        return E_INVALID_ARGUMENT;
-    }
-
-    if (pObject == (IInterface*)(IKeyboardKey*)this) {
-        *pIID = EIID_IKeyboardKey;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
 
 /**
  * Informs the key that it has been pressed, in case it needs to change its appearance or
@@ -740,6 +659,7 @@ ECode Keyboard::Key::IsRepeatable(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(Keyboard, Object, IKeyboard);
 Keyboard::Keyboard()
     : mDefaultHorizontalGap(0)
     , mDefaultWidth(0)

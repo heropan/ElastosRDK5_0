@@ -33,7 +33,7 @@ const Int32 CIInputMethodSessionWrapper::DO_FINISH_SESSION = 110;
 const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_GENERIC_MOTION_EVENT = 85;
 const Int32 CIInputMethodSessionWrapper::DO_VIEW_CLICKED = 115;
 
-CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper, ILocalInputMethodSessionEventCallback)
+CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper, Object, ILocalInputMethodSessionEventCallback)
 
 ECode CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper::FinishedEvent(
     /* [in] */ Int32 seq,
@@ -44,6 +44,9 @@ ECode CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper::FinishedEven
     // } catch (RemoteException e) {
     // }
 }
+
+CAR_OBJECT_IMPL(CIInputMethodSessionWrapper);
+CAR_INTERFACE_IMPL_3(CIInputMethodSessionWrapper, Object, IIInputMethodSession, IBinder, IHandlerCallerCallback);
 
 ECode CIInputMethodSessionWrapper::constructor(
     /* [in] */ IContext* context,

@@ -1,6 +1,6 @@
 
-#ifndef  __KEYBOARD_H__
-#define  __KEYBOARD_H__
+#ifndef  __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
+#define  __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -42,7 +42,7 @@ namespace InputMethodService {
  * @attr ref android.R.styleable#Keyboard_verticalGap
  */
 class Keyboard
-    : public ElRefBase
+    : public Object
     , public IKeyboard
 {
 public:
@@ -59,10 +59,12 @@ public:
      * @attr ref android.R.styleable#Keyboard_Row_keyboardMode
      */
     class Row
-        : public ElRefBase
+        : public Object
         , public IKeyboardRow
     {
     public:
+        CAR_INTERFACE_DECL();
+
         Row(
             /* [in] */ Keyboard* parent);
 
@@ -70,17 +72,6 @@ public:
             /* [in] */ IResources* res,
             /* [in] */ Keyboard* parent,
             /* [in] */ IXmlResourceParser* parser);
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         virtual CARAPI GetDefaultWidth(
             /* [out] */ Int32* value);
@@ -161,10 +152,12 @@ public:
      * @attr ref android.R.styleable#Keyboard_Key_keyEdgeFlags
      */
     class Key
-        : public ElRefBase
+        : public Object
         , public IKeyboardKey
     {
     public:
+        CAR_INTERFACE_DECL();
+
         /** Create an empty key with no attributes. */
         Key(
             /* [in] */ Row* parent);
@@ -186,17 +179,6 @@ public:
             /* [in] */ IXmlResourceParser* parser);
 
         virtual ~Key();
-
-        CARAPI_(PInterface) Probe(
-            /* [in]  */ REIID riid);
-
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
-        CARAPI GetInterfaceID(
-            /* [in] */ IInterface *pObject,
-            /* [out] */ InterfaceID *pIID);
 
         /**
          * Informs the key that it has been pressed, in case it needs to change its appearance or
@@ -386,6 +368,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a keyboard from the given xml key layout file.
      * @param context the application or service context
@@ -674,4 +658,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__KEYBOARD_H__
+#endif  // __ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__
