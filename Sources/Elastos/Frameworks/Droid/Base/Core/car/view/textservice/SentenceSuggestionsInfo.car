@@ -1,10 +1,12 @@
 
 module
 {
+    interface Elastos.Droid.View.TextService.ISuggestionsInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
-    namespace Textservice {
+    namespace TextService {
 
     /**
      * This class contains a metadata of suggestions returned from a text service
@@ -15,11 +17,11 @@ module
      * you to put multiple {@link SuggestionsInfo}s on a sentence with the offsets and the lengths
      * of all {@link SuggestionsInfo}s.
      */
+    /**
+     * @Invovle
+     * interface IParcelable
+     */
     interface ISentenceSuggestionsInfo {
-
-        //@Override
-        DescribeContents(
-            [out] Int32* contents);
 
         /**
          * @return the count of {@link SuggestionsInfo}s this instance holds.
@@ -52,7 +54,7 @@ module
             [out] Int32* length);
     }
 
-    }   //namespace Textservice
+    }   //namespace TextService
     }   //namespace View
     }   //namespace Droid
     }   //namespace Elastos

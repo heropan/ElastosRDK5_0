@@ -1,10 +1,19 @@
 
 module
 {
+    using interface Elastos.Utility.ILocale;
+
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.View.TextService.ISuggestionsInfo;
+    interface Elastos.Droid.View.TextService.ISpellCheckerInfo;
+    interface Elastos.Droid.View.TextService.ISpellCheckerSession;
+    interface Elastos.Droid.View.TextService.ISpellCheckerSubtype;
+    interface Elastos.Droid.View.TextService.ISpellCheckerSessionListener;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
-    namespace Textservice {
+    namespace TextService {
 
     /**
      * System API to the overall text services, which arbitrates interaction between applications
@@ -39,6 +48,7 @@ module
      * </ul>
      *
      */
+    [local]
     interface ITextServicesManager {
 
         /**
@@ -66,7 +76,7 @@ module
          * @hide
          */
         GetEnabledSpellCheckers(
-            [out] ArrayOf<ISpellCheckerInfo*>** infoArray);
+            [out, callee] ArrayOf<ISpellCheckerInfo*>* infoArray);
 
         /**
          * @hide
@@ -106,7 +116,7 @@ module
             [out] Boolean* enabled);
     }
 
-    }   //namespace Textservice
+    }   //namespace TextService
     }   //namespace View
     }   //namespace Droid
     }   //namespace Elastos

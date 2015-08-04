@@ -115,7 +115,7 @@ module
     // using interface Elastos.Droid.Net.Wifi.IIWifiManager;
     // using interface Elastos.Droid.StatusBar.IIStatusBarService;
     // using interface Elastos.Droid.Service.Wallpaper.IWallpaperConnection;
-    // using interface Elastos.Droid.View.Textservice.IITextServicesManager;
+    // using interface Elastos.Droid.View.TextService.IITextServicesManager;
     // using interface Elastos.Droid.Net.Pppoe.IPppoeStateTracker;
     // using interface Elastos.Droid.Net.Pppoe.IIPppoeManager;
     // using interface Elastos.Droid.Location.IILocationManager;

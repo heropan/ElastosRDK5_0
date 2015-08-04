@@ -70,8 +70,8 @@ module
     using interface Elastos.Droid.View.IOnKeyguardExitResult;
     using interface Elastos.Droid.View.IRotationWatcher;
     using interface Elastos.Droid.View.InputMethod.IInputMethodSession;
-    using interface Elastos.Droid.View.Textservice.ITextServicesSessionListener;
-    using interface Elastos.Droid.View.Textservice.ISpellCheckerSessionListener;
+    using interface Elastos.Droid.View.TextService.ITextServicesSessionListener;
+    using interface Elastos.Droid.View.TextService.ISpellCheckerSessionListener;
     using interface Elastos.Droid.Widget.Internal.IRemoteViewsAdapterConnection;
     using interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
     using interface Elastos.IO.ISerializable;

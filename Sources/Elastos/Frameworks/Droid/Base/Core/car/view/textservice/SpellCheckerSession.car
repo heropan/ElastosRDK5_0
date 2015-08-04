@@ -1,14 +1,18 @@
 
 module
 {
+    interface Elastos.Droid.View.TextService.ISuggestionsInfo;
+    interface Elastos.Droid.View.TextService.ITextInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace View {
-    namespace Textservice {
+    namespace TextService {
 
     /**
      * Callback for getting results from text services
      */
+    [deprecated]
     interface ISpellCheckerSessionListener {
         /**
          * Callback for {@link SpellCheckerSession#getSuggestions(TextInfo, int)}
@@ -79,13 +83,14 @@ module
      * </ul>
      *
      */
+    [deprecated, local]
     interface ISpellCheckerSession {
 
         /**
          * Name under which a SpellChecker service component publishes information about itself.
          * This meta-data must reference an XML resource.
          **/
-        const CString SERVICE_META_DATA = "android.view.textservice.scs";
+        const String SERVICE_META_DATA = "android.view.textservice.scs";
 
         /**
          * @return true if the connection to a text service of this session is disconnected and not
@@ -144,21 +149,9 @@ module
             [in] ArrayOf<ITextInfo*>* textInfos,
             [in] Int32 suggestionsLimit,
             [in] Boolean sequentialWords);
-
-        /**
-         * @hide
-         */
-        GetTextServicesSessionListener(
-            [out] ITextServicesSessionListener** listener);
-
-        /**
-         * @hide
-         */
-        GetSpellCheckerSessionListener(
-            [out] ISpellCheckerSessionListener** listener);
     }
 
-    }   //namespace Textservice
+    }   //namespace TextService
     }   //namespace View
     }   //namespace Droid
     }   //namespace Elastos

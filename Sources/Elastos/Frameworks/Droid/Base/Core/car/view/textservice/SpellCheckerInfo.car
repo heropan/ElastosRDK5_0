@@ -6,17 +6,21 @@ module
     interface Elastos.Droid.Content.Pm.IPackageManager;
     interface Elastos.Droid.Content.Pm.IServiceInfo;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.View.Textservice.ISpellCheckerSubtype;
+    interface Elastos.Droid.View.TextService.ISpellCheckerSubtype;
 
     namespace Elastos {
     namespace Droid {
     namespace View {
-    namespace Textservice {
+    namespace TextService {
 
     /**
      * This class is used to specify meta information of a spell checker.
      */
-    [deprecated]
+    /**
+     * @Invovle
+     * interface IParcelable
+     */
+    [deprecated, local]
     interface ISpellCheckerInfo {
 
         /**
@@ -89,16 +93,9 @@ module
         GetSubtypeAt(
             [in] Int32 index,
             [out] ISpellCheckerSubtype** subtype);
-
-        /**
-         * Used to make this class parcelable.
-         */
-        //@Override
-        DescribeContents(
-            [out] Int32* contents);
     }
 
-    }   //namespace Textservice
+    }   //namespace TextService
     }   //namespace View
     }   //namespace Droid
     }   //namespace Elastos

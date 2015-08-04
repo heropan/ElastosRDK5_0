@@ -148,19 +148,15 @@ module
     merge("view/inputmethod/InputMethodManager.car");
     merge("view/inputmethod/InputMethodSubtype.car");
 
-    // merge("view/textservice/TextInfo.car");
-    // merge("view/textservice/SuggestionsInfo.car");
-    // merge("view/textservice/SentenceSuggestionsInfo.car");
-    // merge("view/textservice/SpellCheckerSubtype.car");
-    // merge("view/textservice/SpellCheckerInfo.car");
-    // merge("view/textservice/ISpellCheckerSession.car");
-    // merge("view/textservice/SpellCheckerSessionListener.car");
-    // merge("view/textservice/TextServicesSessionListener.car");
-    // merge("view/textservice/ITextServicesManager.car");
-    // merge("view/textservice/ISpellCheckerService.car");
+    merge("view/textservice/SentenceSuggestionsInfo.car");
+    merge("view/textservice/SpellCheckerInfo.car");
+    merge("view/textservice/SpellCheckerSession.car");
+    merge("view/textservice/SpellCheckerSubtype.car");
+    merge("view/textservice/SuggestionsInfo.car");
+    merge("view/textservice/TextInfo.car");
+    merge("view/textservice/TextServicesManager.car");
 
     // using interface Elastos.Core.ICharSequence;
-    // using interface Elastos.Utility.IObjectStringMap;
     // interface Elastos.Droid.Content.IContext;
     // interface Elastos.Droid.Content.Pm.IResolveInfo;
     // interface Elastos.Droid.Graphics.ISurfaceTexture;
