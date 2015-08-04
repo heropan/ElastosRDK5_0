@@ -1,15 +1,14 @@
-
-module
-{
+module {
     namespace Elastos {
     namespace Droid {
     namespace Location {
-
     /**
      * @Involve
-     * interface Elastos.Droid.Location.IIGpsStatusListener
+     * interface IILocationManager
+     *
      */
-    interface IGpsStatusListenerTransport {
+    interface IElLocationManagerProxy {
+
     }
 
     }//namespace Location

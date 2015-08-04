@@ -1,7 +1,6 @@
 
 module
 {
-    //interface Elastos.Droid.Location.ILocale;
     using interface Elastos.Utility.ILocale;
 
     namespace Elastos {

@@ -31,21 +31,24 @@ module
         /** @hide */
         GetRadius(
             [out] Float* radius);
+    }
 
-        //@Override
-        DescribeContents(
-            [out] Int32* result);
+    interface IGeofenceHelper {
 
-        //@Override
-        ToString(
-            [out] String* strOut);
-
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* rst);
-
-        GetHashCode(
-            [out] Int32* hash);
+        /**
+         * Create a circular geofence (on a flat, horizontal plane).
+         *
+         * @param latitude latitude in degrees
+         * @param longitude longitude in degrees
+         * @param radius radius in meters
+         * @return a new geofence
+         * @throws IllegalArgumentException if any parameters are out of range
+         */
+        CreateCircle(
+            [in] Double latitude,
+            [in] Double longitude,
+            [in] Float radius,
+            [out] IGeofence** geofence);
     }
 
     }//namespace Location

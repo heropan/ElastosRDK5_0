@@ -58,9 +58,6 @@ module
         GetTimestamp(
             [out] Int64* timeStamp);
 
-        DescribeContents(
-            [out] Int32* result);
-
         /**
          * Compare the specified country to this country object ignoring the source
          * and timestamp fields, return true if the countryIso fields are equal
@@ -72,10 +69,6 @@ module
         EqualsIgnoreSource(
             [in] ICountry* country,
             [out] Boolean* result);
-
-        //@Override
-        ToString(
-            [out] String* str);
     }
 
     }//namespace Location

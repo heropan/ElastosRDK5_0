@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.Location.ICountryListener;
+    interface Elastos.Droid.Os.ILooper;
 
     namespace Elastos {
     namespace Droid {
@@ -53,9 +54,9 @@ module
          *        implement the callback mechanism. If looper is null then the
          *        callbacks will be called on the main thread.
          */
-//        AddCountryListener(
-//            [in] ICountryListener* listener,
-//            [in] IApartment* looper);
+        AddCountryListener(
+            [in] ICountryListener* listener,
+            [in] ILooper* looper);
 
         /**
          * Remove the listener

@@ -218,7 +218,8 @@ module
          * @return the same object, so that setters can be chained
          */
         SetFastestInterval(
-            [in] Int64 millis);
+            [in] Int64 millis,
+            [out] ILocationRequest** lr);
 
         /**
          * Get the fastest interval of this request, in milliseconds.
@@ -249,7 +250,8 @@ module
          * @return the same object, so that setters can be chained
          */
         SetExpireIn(
-            [in] Int64 millis);
+            [in] Int64 millis,
+            [out] ILocationRequest** lr);
 
         /**
          * Set the request expiration time, in millisecond since boot.
@@ -266,7 +268,8 @@ module
          * @return the same object, so that setters can be chained
          */
         SetExpireAt(
-            [in] Int64 millis);
+            [in] Int64 millis,
+            [out] ILocationRequest** lr);
 
         /**
          * Get the request expiration time, in milliseconds since boot.
@@ -293,7 +296,8 @@ module
          * @return the same object, so that setters can be chained
          */
         SetNumUpdates(
-            [in] Int32 numUpdates);
+            [in] Int32 numUpdates,
+            [out] ILocationRequest** lr);
 
         /**
          * Get the number of updates requested.
@@ -310,7 +314,8 @@ module
 
         /** @hide */
         SetProvider(
-            [in] String provider);
+            [in] String provider,
+            [out] ILocationRequest** lr);
 
         /** @hide */
         GetProvider(
@@ -318,15 +323,47 @@ module
 
         /** @hide */
         SetSmallestDisplacement(
-            [in] Float meters);
+            [in] Float meters,
+            [out] ILocationRequest** lr);
 
         /** @hide */
         GetSmallestDisplacement(
-            [in] Float* smallestDisplacement);
+            [out] Float* smallestDisplacement);
+    }
 
-        //@Override
-        DescribeContents(
-            [out] Int32* result);
+    interface ILocationRequestHelper {
+        /**
+         * Create a location request with default parameters.
+         *
+         * <p>Default parameters are for a low power, slowly updated location.
+         * It can then be adjusted as required by the applications before passing
+         * to the {@link LocationManager}
+         *
+         * @return a new location request
+         */
+        Create(
+            [out] ILocationRequest** lr);
+
+        /** @hide */
+        CreateFromDeprecatedProvider(
+            [in] String provider,
+            [in] Int64 minTime,
+            [in] Float minDistance,
+            [in] Boolean singleShot,
+            [out] ILocationRequest** lr);
+
+        /** @hide */
+        CreateFromDeprecatedCriteria(
+            [in] ICriteria* criteria,
+            [in] Int64 minTime,
+            [in] Float minDistance,
+            [in] Boolean singleShot,
+            [out] ILocationRequest** lr);
+
+        /** @hide */
+        QualityToString(
+            [in] Int32 quality,
+            [out] String* str);
     }
 
     }//namespace Location

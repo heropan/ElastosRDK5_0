@@ -395,18 +395,6 @@ module
         SetExtras(
             [in] IBundle* extras);
 
-        //@Override
-//        ToString(
-//            [out] String* str);
-
-//        Dump(
-//            [in] IPrinter* pw,
-//            [in] String prefix);
-
-        //@Override
-        DescribeContents(
-            [out] Int32* contents);
-
         /**
          * Returns one of the optional extra {@link Location}s that can be attached
          * to this Location.
@@ -429,6 +417,61 @@ module
         SetExtraLocation(
             [in] String key,
             [in] ILocation* value);
+    }
+    [deprecated]
+    interface ILocationHelper {
+        /**
+         * Converts a coordinate to a String representation. The outputType
+         * may be one of FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS.
+         * The coordinate must be a valid double between -180.0 and 180.0.
+         *
+         * @throws IllegalArgumentException if coordinate is less than
+         * -180.0, greater than 180.0, or is not a number.
+         * @throws IllegalArgumentException if outputType is not one of
+         * FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS.
+         */
+        Convert(
+            [in] Double coordinate,
+            [in] Int32 outputType,
+            [out] String* str);
+
+        /**
+         * Converts a String in one of the formats described by
+         * FORMAT_DEGREES, FORMAT_MINUTES, or FORMAT_SECONDS into a
+         * double.
+         *
+         * @throws NullPointerException if coordinate is null
+         * @throws IllegalArgumentException if the coordinate is not
+         * in one of the valid formats.
+         */
+        Convert(
+            [in] String coordinate,
+            [out] Double* d);
+
+        /**
+         * Computes the approximate distance in meters between two
+         * locations, and optionally the initial and final bearings of the
+         * shortest path between them.  Distance and bearing are defined using the
+         * WGS84 ellipsoid.
+         *
+         * <p> The computed distance is stored in results[0].  If results has length
+         * 2 or greater, the initial bearing is stored in results[1]. If results has
+         * length 3 or greater, the final bearing is stored in results[2].
+         *
+         * @param startLatitude the starting latitude
+         * @param startLongitude the starting longitude
+         * @param endLatitude the ending latitude
+         * @param endLongitude the ending longitude
+         * @param results an array of floats to hold the results
+         *
+         * @throws IllegalArgumentException if results is null or has length < 1
+         */
+        DistanceBetween(
+            [in] Double startLatitude,
+            [in] Double startLongitude,
+            [in] Double endLatitude,
+            [in] Double endLongitude,
+            [in] ArrayOf<Float>* results);
     }
 
     }//namespace Location

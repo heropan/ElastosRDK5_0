@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IIterable;
+
     namespace Elastos {
     namespace Droid {
     namespace Location {
@@ -112,7 +114,7 @@ module
          * @return the list of satellites
          */
         GetSatellites(
-            [out] IObjectContainer** satellites);
+            [out] IIterable** satellites);
 
         /**
          * Returns the maximum number of satellites that can be in the satellite

@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Location {
@@ -17,7 +19,7 @@ module
             [in] Double longitude,
             [in] Int32 maxResults,
             [in] IGeocoderParams* params,
-            [out] IObjectContainer** addrs,
+            [out] IList** addrs,
             [out] String* strOut);
 
         GetFromLocationName(
@@ -28,7 +30,7 @@ module
             [in] Double upperRightLongitude,
             [in] Int32 maxResults,
             [in] IGeocoderParams* params,
-            [out] IObjectContainer** addrs,
+            [out] IList** addrs,
             [out] String* strOut);
     }
 

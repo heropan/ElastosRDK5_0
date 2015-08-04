@@ -10,6 +10,12 @@ module
      * This class is used in conjunction with the {@link GpsStatus} class.
      */
     interface IGpsSatellite {
+        /**
+         * Used by {@link LocationManager#getGpsStatus} to copy LocationManager's
+         * cached GpsStatus instance to the client's copy.
+         */
+        SetStatus(
+            [in] IGpsSatellite* satellite);
 
         /**
          * Returns the PRN (pseudo-random number) for the satellite.
@@ -19,9 +25,6 @@ module
         GetPrn(
             [out] Int32* prn);
 
-        SetPrn(
-            [in] Int32 prn);
-
         /**
          * Returns the signal to noise ratio for the satellite.
          *
@@ -29,9 +32,6 @@ module
          */
         GetSnr(
             [out] Float* snr);
-
-        SetSnr(
-            [in] Float snr);
 
         /**
          * Returns the elevation of the satellite in degrees.
@@ -42,9 +42,6 @@ module
         GetElevation(
             [out] Float* elevation);
 
-        SetElevation(
-            [in] Float elevation);
-
         /**
          * Returns the azimuth of the satellite in degrees.
          * The azimuth can vary between 0 and 360.
@@ -54,9 +51,6 @@ module
         GetAzimuth(
             [out] Float* azimuth);
 
-        SetAzimuth(
-            [in] Float azimuth);
-
         /**
          * Returns true if the GPS engine has ephemeris data for the satellite.
          *
@@ -64,9 +58,6 @@ module
          */
         HasEphemeris(
             [out] Boolean* hasEphemeris);
-
-        SetHasEphemeris(
-            [in] Boolean hasEphemeris);
 
         /**
          * Returns true if the GPS engine has almanac data for the satellite.
@@ -76,9 +67,6 @@ module
         HasAlmanac(
             [out] Boolean* hasAlmanac);
 
-        SetHasAlmanac(
-            [in] Boolean hasAlmanac);
-
         /**
          * Returns true if the satellite was used by the GPS engine when
          * calculating the most recent GPS fix.
@@ -87,15 +75,6 @@ module
          */
         UsedInFix(
             [out] Boolean* usedInFix);
-
-        SetUsedInFix(
-            [in] Boolean usedInFix);
-
-        IsValid(
-            [out] Boolean* usedInFix);
-
-        SetValid(
-            [in] Boolean usedInFix);
     }
 
     }//namespace Location

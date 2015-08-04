@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Location {
@@ -35,7 +37,7 @@ module
             [in] Double latitude,
             [in] Double longitude,
             [in] Int32 maxResults,
-            [out] IObjectContainer** addressContainer);
+            [out] IList** addressContainer);
 
         /**
          * Returns an array of Addresses that are known to describe the
@@ -63,7 +65,7 @@ module
         GetFromLocationName(
             [in] String locationName,
             [in] Int32 maxResults,
-            [out] IObjectContainer** addressContainer);
+            [out] IList** addressContainer);
 
         /**
          * Returns an array of Addresses that are known to describe the
@@ -107,7 +109,7 @@ module
             [in] Double lowerLeftLongitude,
             [in] Double upperRightLatitude,
             [in] Double upperRightLongitude,
-            [out] IObjectContainer** addressContainer);
+            [out] IList** addressContainer);
     }
 
     interface IGeocoderHelper {
