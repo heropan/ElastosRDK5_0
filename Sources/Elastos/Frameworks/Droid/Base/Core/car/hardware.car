@@ -43,6 +43,22 @@ module
     merge("hardware/usb/UsbCameraManager.car");
     merge("hardware/usb/UsbConfiguration.car");
 
+    merge("hardware/camera2/CaptureRequest.car");
+
+    merge("hardware/camera2/dispatch/Dispatchable.car");
+
+    merge("hardware/camera2/impl/CallbackProxies.car");
+
+    merge("hardware/camera2/utils/ArrayUtils.car");
+    merge("hardware/camera2/utils/CloseableLock.car");
+    merge("hardware/camera2/utils/HashCodeHelpers.car");
+    merge("hardware/camera2/utils/ListUtils.car");
+    merge("hardware/camera2/utils/ParamsUtils.car");
+    merge("hardware/camera2/utils/SizeAreaComparator.car");
+    merge("hardware/camera2/utils/TaskDrainer.car");
+    merge("hardware/camera2/utils/TaskSingleDrainer.car");
+    merge("hardware/camera2/utils/TaskSingleDrainer.car");
+
     using interface Elastos.Core.IComparable;
 
     interface Elastos.Droid.Content.IContext;
