@@ -7,11 +7,17 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_INTERFACE_IMPL(CConnectivityManagerHelper, Singleton, IConnectivityManagerHelper)
+
+CAR_SINGLETON_IMPL(CConnectivityManagerHelper)
+
 ECode CConnectivityManagerHelper::IsNetworkTypeValid(
     /* [in] */ Int32 networkType,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     return CConnectivityManager::IsNetworkTypeValid(networkType, result);
 }
 
@@ -19,7 +25,9 @@ ECode CConnectivityManagerHelper::GetNetworkTypeName(
     /* [in] */ Int32 networkType,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
     return CConnectivityManager::GetNetworkTypeName(networkType, result);
 }
 
@@ -28,15 +36,46 @@ ECode CConnectivityManagerHelper::IsNetworkTypeMobile(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+
     return CConnectivityManager::IsNetworkTypeMobile(networkType, result);
+}
+
+ECode CConnectivityManagerHelper::IsNetworkTypeWifi(
+        /* [in] */ int networkType,
+        /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    return CConnectivityManager::IsNetworkTypeWifi(networkType, result);
+}
+
+ECode CConnectivityManagerHelper::MaybeMarkCapabilitiesRestricted(
+    /* [in] */ INetworkCapabilities* nc)
+{
+    VALIDATE_NOT_NULL(nc)
+
+    return CConnectivityManager::MaybeMarkCapabilitiesRestricted(nc);
 }
 
 ECode CConnectivityManagerHelper::From(
     /* [in] */ IContext* ctx,
     /* [out] */ IConnectivityManager** result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(*result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(ctx)
+
     return CConnectivityManager::From(ctx, result);
+}
+
+ECode CConnectivityManagerHelper::EnforceTetherChangePermission(
+    /* [in] */ IContext* context)
+{
+    VALIDATE_NOT_NULL(context)
+
+    return CConnectivityManager::EnforceTetherChangePermission(context);
 }
 
 } // namespace Net

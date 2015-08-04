@@ -3,186 +3,1027 @@
 #define __ELASTOS_DROID_NET_CCONNECTIVITYMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include "_CConnectivityManager.h"
+#include "_Elastos_Droid_Net_CConnectivityManager.h"
+#include <elastos/core/Object.h>
+#if 0 // TODO: Waiting for NetworkCallback
+#include "NetworkCallback.h"
+#endif
+#include <elastos/utility/logging/Logger.h>
 
+
+using Elastos::Core::Object;
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Os::IMessenger;
+using Elastos::Droid::Os::IINetworkManagementService;
+using Elastos::Utility::IHashMap;
+using Elastos::Droid::Utility::IArrayMap;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
 CarClass(CConnectivityManager)
+    , public Object
+    , public IConnectivityManager
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
+    CConnectivityManager();
+
+    /**
+     * Tests if a given integer represents a valid network type.
+     * @param networkType the type to be tested
+     * @return a boolean.  {@code true} if the type is valid, else {@code false}
+     */
     static CARAPI IsNetworkTypeValid(
         /* [in] */ Int32 networkType,
         /* [out] */ Boolean* result);
 
-    static CARAPI  GetNetworkTypeName(
+    /**
+     * Returns a non-localized string representing a given network type.
+     * ONLY used for debugging output.
+     * @param type the type needing naming
+     * @return a String for the given type, or a string version of the type ("87")
+     * if no name is known.
+     * {@hide}
+     */
+    static CARAPI GetNetworkTypeName(
         /* [in] */ Int32 networkType,
         /* [out] */ String* result);
 
-    static CARAPI  IsNetworkTypeMobile(
+    /**
+     * Checks if a given type uses the cellular data connection.
+     * This should be replaced in the future by a network property.
+     * @param networkType the type to check
+     * @return a boolean - {@code true} if uses cellular network, else {@code false}
+     * {@hide}
+     */
+    static CARAPI IsNetworkTypeMobile(
+        /* [in] */ Int32 networkType,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Checks if the given network type is backed by a Wi-Fi radio.
+     *
+     * @hide
+     */
+    static CARAPI IsNetworkTypeWifi(
         /* [in] */ Int32 networkType,
         /* [out] */ Boolean* result);
 
     CARAPI constructor(
         /* [in] */ IIConnectivityManager* service);
 
-    CARAPI  SetNetworkPreference(
+    /**
+     * Specifies the preferred network type.  When the device has more
+     * than one type available the preferred network type will be used.
+     *
+     * @param preference the network type to prefer over all others.  It is
+     *         unspecified what happens to the old preferred network in the
+     *         overall ordering.
+     * @deprecated Functionality has been removed as it no longer makes sense,
+     *             with many more than two networks - we'd need an array to express
+     *             preference.  Instead we use dynamic network properties of
+     *             the networks to describe their precedence.
+     */
+    CARAPI SetNetworkPreference(
         /* [in] */ Int32 preference);
 
-    CARAPI  GetNetworkPreference(
+    /**
+     * Retrieves the current preferred network type.
+     *
+     * @return an integer representing the preferred network type
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * @deprecated Functionality has been removed as it no longer makes sense,
+     *             with many more than two networks - we'd need an array to express
+     *             preference.  Instead we use dynamic network properties of
+     *             the networks to describe their precedence.
+     */
+    CARAPI GetNetworkPreference(
         /* [out] */ Int32* result);
 
-    CARAPI  GetActiveNetworkInfo(
+    /**
+     * Returns details about the currently active default data network. When
+     * connected, this network is the default route for outgoing connections.
+     * You should always check {@link NetworkInfo#isConnected()} before initiating
+     * network traffic. This may return {@code null} when there is no default
+     * network.
+     *
+     * @return a {@link NetworkInfo} object for the current default network
+     *        or {@code null} if no network default network is currently active
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI GetActiveNetworkInfo(
         /* [out] */ INetworkInfo** result);
 
-    CARAPI  GetActiveNetworkInfoForUid(
+    /**
+     * Returns details about the currently active default data network
+     * for a given uid.  This is for internal use only to avoid spying
+     * other apps.
+     *
+     * @return a {@link NetworkInfo} object for the current default network
+     *        for the given uid or {@code null} if no default network is
+     *        available for the specified uid.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#CONNECTIVITY_INTERNAL}
+     * {@hide}
+     */
+    CARAPI GetActiveNetworkInfoForUid(
         /* [in] */ Int32 uid,
         /* [out] */ INetworkInfo** result);
 
-    CARAPI  GetNetworkInfo(
+    /**
+     * Returns connection status information about a particular
+     * network type.
+     *
+     * @param networkType integer specifying which networkType in
+     *        which you're interested.
+     * @return a {@link NetworkInfo} object for the requested
+     *        network type or {@code null} if the type is not
+     *        supported by the device.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI GetNetworkInfo(
         /* [in] */ Int32 networkType,
         /* [out] */ INetworkInfo** result);
 
-    CARAPI  GetAllNetworkInfo(
+    /**
+     * Returns connection status information about a particular
+     * Network.
+     *
+     * @param network {@link Network} specifying which network
+     *        in which you're interested.
+     * @return a {@link NetworkInfo} object for the requested
+     *        network or {@code null} if the {@code Network}
+     *        is not valid.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI GetNetworkInfo(
+        /* [in] */ INetwork* network,
+        /* [out] */ INetworkInfo** result);
+
+    /**
+     * Returns connection status information about all network
+     * types supported by the device.
+     *
+     * @return an array of {@link NetworkInfo} objects.  Check each
+     * {@link NetworkInfo#getType} for which type each applies.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI GetAllNetworkInfo(
         /* [out, callee] */ ArrayOf<INetworkInfo*>** result);
 
-    CARAPI  GetActiveLinkProperties(
+    /**
+     * Returns the {@link Network} object currently serving a given type, or
+     * null if the given type is not connected.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     *
+     * @hide
+     */
+    CARAPI GetNetworkForType(
+        /* [in] */ Int32 networkType,
+        /* [out] */ INetwork** result);
+
+    /**
+     * Returns an array of all {@link Network} currently tracked by the
+     * framework.
+     *
+     * @return an array of {@link Network} objects.
+     *
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI GetAllNetworks(
+        /* [out] */ ArrayOf<INetwork*>** result);
+
+    /**
+     * Returns details about the Provisioning or currently active default data network. When
+     * connected, this network is the default route for outgoing connections.
+     * You should always check {@link NetworkInfo#isConnected()} before initiating
+     * network traffic. This may return {@code null} when there is no default
+     * network.
+     *
+     * @return a {@link NetworkInfo} object for the current default network
+     *        or {@code null} if no network default network is currently active
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     *
+     * {@hide}
+     */
+    CARAPI GetProvisioningOrActiveNetworkInfo(
+        /* [out] */ INetworkInfo** result);
+
+    /**
+     * Returns the IP information for the current default network.
+     *
+     * @return a {@link LinkProperties} object describing the IP info
+     *        for the current default network, or {@code null} if there
+     *        is no current default network.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetActiveLinkProperties(
         /* [out] */ ILinkProperties** result);
 
-    CARAPI  GetLinkProperties(
+    /**
+     * Returns the IP information for a given network type.
+     *
+     * @param networkType the network type of interest.
+     * @return a {@link LinkProperties} object describing the IP info
+     *        for the given networkType, or {@code null} if there is
+     *        no current default network.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetLinkProperties(
         /* [in] */ Int32 networkType,
         /* [out] */ ILinkProperties** result);
 
-    CARAPI  SetRadios(
-        /* [in] */ Boolean turnOn,
-        /* [out] */ Boolean* result);
+    /**
+     * Get the {@link LinkProperties} for the given {@link Network}.  This
+     * will return {@code null} if the network is unknown.
+     *
+     * @param network The {@link Network} object identifying the network in question.
+     * @return The {@link LinkProperties} for the network, or {@code null}.
+     **/
+    CARAPI GetLinkProperties(
+        /* [in] */ INetwork* network,
+        /* [out] */ ILinkProperties** result);
 
-    CARAPI  SetRadio(
-        /* [in] */ Int32 networkType,
-        /* [in] */ Boolean turnOn,
-        /* [out] */ Boolean* result);
+    /**
+     * Get the {@link NetworkCapabilities} for the given {@link Network}.  This
+     * will return {@code null} if the network is unknown.
+     *
+     * @param network The {@link Network} object identifying the network in question.
+     * @return The {@link NetworkCapabilities} for the network, or {@code null}.
+     */
+    CARAPI GetNetworkCapabilities(
+        /* [in] */ INetwork* network,
+        /* [out] */ INetworkCapabilities** result);
 
-    CARAPI  StartUsingNetworkFeature(
+    /**
+     * Tells the underlying networking system that the caller wants to
+     * begin using the named feature. The interpretation of {@code feature}
+     * is completely up to each networking implementation.
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * @param networkType specifies which network the request pertains to
+     * @param feature the name of the feature to be used
+     * @return an integer value representing the outcome of the request.
+     * The interpretation of this value is specific to each networking
+     * implementation+feature combination, except that the value {@code -1}
+     * always indicates failure.
+     *
+     * @deprecated Deprecated in favor of the cleaner {@link #requestNetwork} api.
+     */
+    CARAPI StartUsingNetworkFeature(
         /* [in] */ Int32 networkType,
         /* [in] */ const String& feature,
         /* [out] */ Int32* result);
 
-    CARAPI  StopUsingNetworkFeature(
+    /**
+     * Tells the underlying networking system that the caller is finished
+     * using the named feature. The interpretation of {@code feature}
+     * is completely up to each networking implementation.
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * @param networkType specifies which network the request pertains to
+     * @param feature the name of the feature that is no longer needed
+     * @return an integer value representing the outcome of the request.
+     * The interpretation of this value is specific to each networking
+     * implementation+feature combination, except that the value {@code -1}
+     * always indicates failure.
+     *
+     * @deprecated Deprecated in favor of the cleaner {@link #requestNetwork} api.
+     */
+    CARAPI StopUsingNetworkFeature(
         /* [in] */ Int32 networkType,
         /* [in] */ const String& feature,
         /* [out] */ Int32* result);
 
-    CARAPI  RequestRouteToHost(
+    /**
+     * Removes the NET_CAPABILITY_NOT_RESTRICTED capability from the given
+     * NetworkCapabilities object if all the capabilities it provides are
+     * typically provided by restricted networks.
+     *
+     * TODO: consider:
+     * - Moving to NetworkCapabilities
+     * - Renaming it to guessRestrictedCapability and make it set the
+     *   restricted capability bit in addition to clearing it.
+     * @hide
+     */
+    static CARAPI MaybeMarkCapabilitiesRestricted(
+        /* [in] */ INetworkCapabilities* nc);
+
+    /**
+     * Ensure that a network route exists to deliver traffic to the specified
+     * host via the specified network interface. An attempt to add a route that
+     * already exists is ignored, but treated as successful.
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * @param networkType the type of the network over which traffic to the specified
+     * host is to be routed
+     * @param hostAddress the IP address of the host to which the route is desired
+     * @return {@code true} on success, {@code false} on failure
+     *
+     * @deprecated Deprecated in favor of the {@link #requestNetwork},
+     *             {@link #setProcessDefaultNetwork} and {@link Network#getSocketFactory} api.
+     */
+    CARAPI RequestRouteToHost(
         /* [in] */ Int32 networkType,
         /* [in] */ Int32 hostAddress,
         /* [out] */ Boolean* result);
 
-    CARAPI  RequestRouteToHostAddress(
+    /**
+     * Ensure that a network route exists to deliver traffic to the specified
+     * host via the specified network interface. An attempt to add a route that
+     * already exists is ignored, but treated as successful.
+     * <p>This method requires the caller to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * @param networkType the type of the network over which traffic to the specified
+     * host is to be routed
+     * @param hostAddress the IP address of the host to which the route is desired
+     * @return {@code true} on success, {@code false} on failure
+     * @hide
+     * @deprecated Deprecated in favor of the {@link #requestNetwork} and
+     *             {@link #setProcessDefaultNetwork} api.
+     */
+    CARAPI RequestRouteToHostAddress(
         /* [in] */ Int32 networkType,
         /* [in] */ IInetAddress* hostAddress,
         /* [out] */ Boolean* result);
 
-    CARAPI  GetBackgroundDataSetting(
+    /**
+     * Returns the value of the setting for background data usage. If false,
+     * applications should not use the network if the application is not in the
+     * foreground. Developers should respect this setting, and check the value
+     * of this before performing any background data operations.
+     * <p>
+     * All applications that have background services that use the network
+     * should listen to {@link #ACTION_BACKGROUND_DATA_SETTING_CHANGED}.
+     * <p>
+     * @deprecated As of {@link VERSION_CODES#ICE_CREAM_SANDWICH}, availability of
+     * background data depends on several combined factors, and this method will
+     * always return {@code true}. Instead, when background data is unavailable,
+     * {@link #getActiveNetworkInfo()} will now appear disconnected.
+     *
+     * @return Whether background data usage is allowed.
+     */
+    // @Deprecated
+    CARAPI GetBackgroundDataSetting(
         /* [out] */ Boolean* result);
 
-    CARAPI  SetBackgroundDataSetting(
+    /**
+     * Sets the value of the setting for background data usage.
+     *
+     * @param allowBackgroundData Whether an application should use data while
+     *            it is in the background.
+     *
+     * @attr ref android.Manifest.permission#CHANGE_BACKGROUND_DATA_SETTING
+     * @see #getBackgroundDataSetting()
+     * @hide
+     */
+    // @Deprecated
+    CARAPI SetBackgroundDataSetting(
         /* [in] */ Boolean allowBackgroundData);
 
-    CARAPI  GetActiveNetworkQuotaInfo(
+    /**
+     * Return quota status for the current active network, or {@code null} if no
+     * network is active. Quota status can change rapidly, so these values
+     * shouldn't be cached.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     *
+     * @hide
+     */
+    CARAPI GetActiveNetworkQuotaInfo(
         /* [out] */ INetworkQuotaInfo** result);
 
-    CARAPI  GetMobileDataEnabled(
+    /**
+     * @hide
+     * @deprecated Talk to TelephonyManager directly
+     */
+     CARAPI GetMobileDataEnabled(
         /* [out] */ Boolean* result);
-
-    CARAPI  SetMobileDataEnabled(
-        /* [in] */ Boolean enabled);
 
     static CARAPI From(
         /* [in] */ IContext* ctx,
         /* [out] */ IConnectivityManager** result);
 
-    CARAPI  GetTetherableIfaces(
+    /** {@hide */
+    static CARAPI EnforceTetherChangePermission(
+        /* [in] */ IContext* context);
+
+
+    /**
+     * Get the set of tetherable, available interfaces.  This list is limited by
+     * device configuration and current interface existence.
+     *
+     * @return an array of 0 or more Strings of tetherable interface names.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetherableIfaces(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI  GetTetheredIfaces(
+    /**
+     * Get the set of tethered interfaces.
+     *
+     * @return an array of 0 or more String of currently tethered interface names.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetheredIfaces(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI  GetTetheringErroredIfaces(
+    /**
+     * Get the set of interface names which attempted to tether but
+     * failed.  Re-attempting to tether may cause them to reset to the Tethered
+     * state.  Alternatively, causing the interface to be destroyed and recreated
+     * may cause them to reset to the available state.
+     * {@link ConnectivityManager#getLastTetherError} can be used to get more
+     * information on the cause of the errors.
+     *
+     * @return an array of 0 or more String indicating the interface names
+     *        which failed to tether.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetheringErroredIfaces(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI   Tether(
+    /**
+     * Get the set of tethered dhcp ranges.
+     *
+     * @return an array of 0 or more {@code String} of tethered dhcp ranges.
+     * {@hide}
+     */
+    CARAPI GetTetheredDhcpRanges(
+        /* [out] */ ArrayOf<String>** result);
+
+    /**
+     * Attempt to tether the named interface.  This will setup a dhcp server
+     * on the interface, forward and NAT IP packets and forward DNS requests
+     * to the best active upstream network interface.  Note that if no upstream
+     * IP network interface is available, dhcp will still run and traffic will be
+     * allowed between the tethered devices and this device, though upstream net
+     * access will of course fail until an upstream network interface becomes
+     * active.
+     *
+     * @param iface the interface name to tether.
+     * @return error a {@code TETHER_ERROR} value indicating success or failure type
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI  Tether(
         /* [in] */ const String& iface,
         /* [out] */ Int32* result);
 
-    CARAPI  Untether(
+    /**
+     * Stop tethering the named interface.
+     *
+     * @param iface the interface name to untether.
+     * @return error a {@code TETHER_ERROR} value indicating success or failure type
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI Untether(
         /* [in] */ const String& iface,
         /* [out] */ Int32* result);
 
-   CARAPI  IsTetheringSupported(
+    /**
+     * Check if the device allows for tethering.  It may be disabled via
+     * {@code ro.tether.denied} system property, Settings.TETHER_SUPPORTED or
+     * due to device configuration.
+     *
+     * @return a boolean - {@code true} indicating Tethering is supported.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI IsTetheringSupported(
         /* [out] */ Boolean* result);
 
-    CARAPI  GetTetherableUsbRegexs(
+    /**
+     * Get the list of regular expressions that define any tetherable
+     * USB network interfaces.  If USB tethering is not supported by the
+     * device, this list should be empty.
+     *
+     * @return an array of 0 or more regular expression Strings defining
+     *        what interfaces are considered tetherable usb interfaces.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetherableUsbRegexs(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI  GetTetherableWifiRegexs(
+    /**
+     * Get the list of regular expressions that define any tetherable
+     * Wifi network interfaces.  If Wifi tethering is not supported by the
+     * device, this list should be empty.
+     *
+     * @return an array of 0 or more regular expression Strings defining
+     *        what interfaces are considered tetherable wifi interfaces.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetherableWifiRegexs(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI  GetTetherableBluetoothRegexs(
+    /**
+     * Get the list of regular expressions that define any tetherable
+     * Bluetooth network interfaces.  If Bluetooth tethering is not supported by the
+     * device, this list should be empty.
+     *
+     * @return an array of 0 or more regular expression Strings defining
+     *        what interfaces are considered tetherable bluetooth interfaces.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetTetherableBluetoothRegexs(
         /* [out, callee] */ ArrayOf<String>** result);
 
-    CARAPI  SetUsbTethering(
+    /**
+     * Attempt to both alter the mode of USB and Tethering of USB.  A
+     * utility method to deal with some of the complexity of USB - will
+     * attempt to switch to Rndis and subsequently tether the resulting
+     * interface on {@code true} or turn off tethering and switch off
+     * Rndis on {@code false}.
+     *
+     * @param enable a boolean - {@code true} to enable tethering
+     * @return error a {@code TETHER_ERROR} value indicating success or failure type
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CHANGE_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI SetUsbTethering(
         /* [in] */ Boolean enabled,
         /* [out] */ Int32* result);
 
-    CARAPI  GetLastTetherError(
+    /**
+     * Get a more detailed error code after a Tethering or Untethering
+     * request asynchronously failed.
+     *
+     * @param iface The name of the interface of interest
+     * @return error The error code of the last error tethering or untethering the named
+     *               interface
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     */
+    CARAPI GetLastTetherError(
         /* [in] */ const String& iface,
         /* [out] */ Int32* result);
 
-    CARAPI  RequestNetworkTransitionWakelock(
-        /* [in] */ const String& forWhom,
-        /* [out] */ Boolean* result);
-
-    CARAPI  ReportInetCondition(
+    /**
+     * Report network connectivity status.  This is currently used only
+     * to alter status bar UI.
+     *
+     * @param networkType The type of network you want to report on
+     * @param percentage The quality of the connection 0 is bad, 100 is good
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#STATUS_BAR}.
+     * {@hide}
+     */
+    CARAPI ReportInetCondition(
         /* [in] */ Int32 networkType,
         /* [in] */ Int32 percentage);
 
-    CARAPI  SetGlobalProxy(
-        /* [in] */ IProxyProperties* p);
+    /**
+     * Report a problem network to the framework.  This provides a hint to the system
+     * that there might be connectivity problems on this network and may cause
+     * the framework to re-evaluate network connectivity and/or switch to another
+     * network.
+     *
+     * @param network The {@link Network} the application was attempting to use
+     *                or {@code null} to indicate the current default network.
+     */
+    CARAPI ReportBadNetwork(
+        /* [in] */ INetwork* network);
 
-    CARAPI  GetGlobalProxy(
-        /* [out] */ IProxyProperties** p);
+    /**
+     * Set a network-independent global http proxy.  This is not normally what you want
+     * for typical HTTP proxies - they are general network dependent.  However if you're
+     * doing something unusual like general internal filtering this may be useful.  On
+     * a private network where the proxy is not accessible, you may break HTTP using this.
+     *
+     * @param p The a {@link ProxyInfo} object defining the new global
+     *        HTTP proxy.  A {@code null} value will clear the global HTTP proxy.
+     *
+     * <p>This method requires the call to hold the permission
+     * android.Manifest.permission#CONNECTIVITY_INTERNAL.
+     * @hide
+     */
+    CARAPI SetGlobalProxy(
+        /* [in] */ IProxyInfo* proxyp);
 
-    CARAPI  GetProxy(
-        /* [out] */ IProxyProperties** p);
+    /**
+     * Retrieve any network-independent global HTTP proxy.
+     *
+     * @return {@link ProxyInfo} for the current global HTTP proxy or {@code null}
+     *        if no global HTTP proxy is set.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * @hide
+     */
+    CARAPI GetGlobalProxy(
+        /* [out] */ IProxyInfo** p);
 
-    CARAPI  SetDataDependency(
+    /**
+     * Get the HTTP proxy settings for the current default network.  Note that
+     * if a global proxy is set, it will override any per-network setting.
+     *
+     * @return the {@link ProxyInfo} for the current HTTP proxy, or {@code null} if no
+     *        HTTP proxy is active.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * {@hide}
+     * @deprecated Deprecated in favor of {@link #getLinkProperties}
+     */
+    CARAPI GetProxy(
+        /* [out] */ IProxyInfo** p);
+
+    /**
+     * Sets a secondary requirement bit for the given networkType.
+     * This requirement bit is generally under the control of the carrier
+     * or its agents and is not directly controlled by the user.
+     *
+     * @param networkType The network who's dependence has changed
+     * @param met Boolean - true if network use is OK, false if not
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CONNECTIVITY_INTERNAL}.
+     * {@hide}
+     */
+    CARAPI SetDataDependency(
         /* [in] */ Int32 networkType,
         /* [in] */ Boolean met);
 
-    CARAPI  IsNetworkSupported(
+    /**
+     * Returns true if the hardware supports the given network type
+     * else it returns false.  This doesn't indicate we have coverage
+     * or are authorized onto a network, just whether or not the
+     * hardware supports it.  For example a GSM phone without a SIM
+     * should still return {@code true} for mobile data, but a wifi only
+     * tablet would return {@code false}.
+     *
+     * @param networkType The network type we'd like to check
+     * @return {@code true} if supported, else {@code false}
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     * @hide
+     */
+    CARAPI IsNetworkSupported(
         /* [in] */ Int32 networkType,
         /* [out] */ Boolean* result);
 
-    CARAPI  IsActiveNetworkMetered(
+    /**
+     * Returns if the currently active data network is metered. A network is
+     * classified as metered when the user is sensitive to heavy data usage on
+     * that connection due to monetary costs, data limitations or
+     * battery/performance issues. You should check this before doing large
+     * data transfers, and warn the user or delay the operation until another
+     * network is available.
+     *
+     * @return {@code true} if large transfers should be avoided, otherwise
+     *        {@code false}.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#ACCESS_NETWORK_STATE}.
+     */
+    CARAPI IsActiveNetworkMetered(
         /* [out] */ Boolean* result);
 
-    //CARAPI  SendMessage(
-    //    /* [in] */ Int32 what,
-    //   /* [in] */ INetworkInfo* info);
-
-    CARAPI  UpdateLockdownVpn(
+    /**
+     * If the LockdownVpn mechanism is enabled, updates the vpn
+     * with a reload of its profile.
+     *
+     * @return a boolean with {@code} indicating success
+     *
+     * <p>This method can only be called by the system UID
+     * {@hide}
+     */
+    CARAPI UpdateLockdownVpn(
         /* [out] */ Boolean* result);
 
-    CARAPI  CaptivePortalCheckComplete(
-        /* [in] */ INetworkInfo* info);
+    /**
+     * Signal that the captive portal check on the indicated network
+     * is complete and whether its a captive portal or not.
+     *
+     * @param info the {@link NetworkInfo} object for the networkType
+     *        in question.
+     * @param isCaptivePortal true/false.
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CONNECTIVITY_INTERNAL}.
+     * {@hide}
+     */
+    CARAPI CaptivePortalCheckCompleted(
+        /* [in] */ INetworkInfo* info,
+        /* [in] */ Boolean isCaptivePortal);
+
+    /**
+     * Supply the backend messenger for a network tracker
+     *
+     * @param networkType NetworkType to set
+     * @param messenger {@link Messenger}
+     * {@hide}
+     */
+    CARAPI SupplyMessenger(
+        /* [in] */ Int32 networkType,
+        /* [in] */ IMessenger* messenger);
+
+    /**
+     * Check mobile provisioning.
+     *
+     * @param suggestedTimeOutMs, timeout in milliseconds
+     *
+     * @return time out that will be used, maybe less that suggestedTimeOutMs
+     * -1 if an error.
+     *
+     * {@hide}
+     */
+    CARAPI CheckMobileProvisioning(
+        /* [in] */ Int32 suggestedTimeOutMs,
+        /* [out] */ Int32* result);
+
+    /**
+     * Get the mobile provisioning url.
+     * {@hide}
+     */
+    CARAPI GetMobileProvisioningUrl(
+        /* [out] */ String* result);
+
+    /**
+     * Get the mobile redirected provisioning url.
+     * {@hide}
+     */
+    CARAPI GetMobileRedirectedProvisioningUrl(
+        /* [out] */ String* result);
+
+    /**
+     * get the information about a specific network link
+     * @hide
+     */
+    CARAPI GetLinkQualityInfo(
+        /* [in] */ Int32 networkType,
+        /* [out] */ ILinkQualityInfo** result);
+
+    /**
+     * get the information of currently active network link
+     * @hide
+     */
+    CARAPI GetActiveLinkQualityInfo(
+        /* [out] */ ILinkQualityInfo** result);
+
+    /**
+     * get the information of all network links
+     * @hide
+     */
+    CARAPI GetAllLinkQualityInfo(
+        /* [out, callee] */ ArrayOf<ILinkQualityInfo>** result);
+
+    /**
+     * Set sign in error notification to visible or in visible
+     *
+     * @param visible
+     * @param networkType
+     *
+     * {@hide}
+     */
+    CARAPI SetProvisioningNotificationVisible(
+        /* [in] */ Boolean visible,
+        /* [in] */ Int32 networkType,
+        /* [in] */ const String& action);
+
+    /**
+     * Set the value for enabling/disabling airplane mode
+     *
+     * @param enable whether to enable airplane mode or not
+     *
+     * <p>This method requires the call to hold the permission
+     * {@link android.Manifest.permission#CONNECTIVITY_INTERNAL}.
+     * @hide
+     */
+    CARAPI SetAirplaneMode(
+        /* [in] */ Boolean enable);
+
+    /** {@hide} */
+    CARAPI RegisterNetworkFactory(
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ const String& name);
+
+    /** {@hide} */
+    CARAPI UnregisterNetworkFactory(
+        /* [in] */ IMessenger* messenger);
+
+    /** {@hide} */
+    CARAPI RegisterNetworkAgent(
+        /* [in] */ IMessenger* messenger,
+        /* [in] */ INetworkInfo* ni,
+        /* [in] */ ILinkProperties* lp,
+        /* [in] */ INetworkCapabilities* nc,
+        /* [in] */ Int32 score,
+        /* [in] */ INetworkMisc* misc);
+
+    /**
+     * Start listening to reports when the system's default data network is active, meaning it is
+     * a good time to perform network traffic.  Use {@link #isDefaultNetworkActive()}
+     * to determine the current state of the system's default network after registering the
+     * listener.
+     * <p>
+     * If the process default network has been set with
+     * {@link ConnectivityManager#setProcessDefaultNetwork} this function will not
+     * reflect the process's default, but the system default.
+     *
+     * @param l The listener to be told when the network is active.
+     */
+    CARAPI AddDefaultNetworkActiveListener(
+        /* [in] */ IOnNetworkActiveListener* l);
+
+    /**
+     * Remove network active listener previously registered with
+     * {@link #addDefaultNetworkActiveListener}.
+     *
+     * @param l Previously registered listener.
+     */
+    CARAPI RemoveDefaultNetworkActiveListener(
+        /* [in] */ IOnNetworkActiveListener* l);
+
+    /**
+     * Return whether the data network is currently active.  An active network means that
+     * it is currently in a high power state for performing data transmission.  On some
+     * types of networks, it may be expensive to move and stay in such a state, so it is
+     * more power efficient to batch network traffic together when the radio is already in
+     * this state.  This method tells you whether right now is currently a good time to
+     * initiate network traffic, as the network is already active.
+     */
+    CARAPI IsDefaultNetworkActive(
+        /* [out] */ Boolean* result);
 
 private:
+    CARAPI NetworkCapabilitiesForFeature(
+        /* [in] */ Int32 networkType,
+        /* [in] */ const String& feature,
+        /* [out] */ INetworkCapabilities** result);
+
+    CARAPI InferLegacyTypeForNetworkCapabilities(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [out] */ Int32* result);
+
+    CARAPI LegacyTypeForNetworkCapabilities(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [out] */ Int32* result);
+
+    class Inner_LegacyRequest
+        : public Object
+    {
+    public:
+        Inner_LegacyRequest()
+            : mDelay(-1)
+            , mNetworkCallback(new InnerSub_NetworkCallback(this))
+        {}
+        AutoPtr<INetworkCapabilities> mNetworkCapabilities;
+        AutoPtr<INetworkRequest> mNetworkRequest;
+        Int32 mExpireSequenceNumber;
+        AutoPtr<INetwork> mCurrentNetwork;
+        Int32 mDelay;
+        class InnerSub_NetworkCallback
+#if 0 // TODO: Waiting for NetworkCallback
+            : public NetworkCallback
+#endif
+        {
+        public:
+            InnerSub_NetworkCallback(Inner_LegacyRequest* const host)
+                :   mHost(host)
+            {}
+
+            // @Override
+            ECode OnAvailable(
+                /* [in] */ INetwork* network)
+            {
+                mHost->mCurrentNetwork = network;
+                // Log.d(TAG, "startUsingNetworkFeature got Network:" + network);
+                String s;
+#if 0 // TODO: Waiting for INetwork
+                network->ToString(&s);
+#endif
+                Logger::D(TAG, (String("startUsingNetworkFeature got Network:") + s).string());
+#if 0 // TODO: Waiting for NetworkCallback
+                SetProcessDefaultNetworkForHostResolution(network);
+#endif
+                return NOERROR;
+            }
+            // @Override
+            ECode OnLost(
+                /* [in] */ INetwork* network)
+            {
+#if 0 // TODO: Waiting for INetwork
+                if (network->Equals(mCurrentNetwork)) {
+                    mHost->mCurrentNetwork = NULL;
+#if 0 // TODO: Waiting for NetworkCallback
+                    SetProcessDefaultNetworkForHostResolution(NULL);
+#endif
+                }
+#endif
+                String s;
+#if 0 // TODO: Waiting for INetwork
+                network->ToString(&s);
+#endif
+                Logger::D(TAG, (String("startUsingNetworkFeature lost Network:") + s).string());
+                return NOERROR;
+            }
+        private:
+            Inner_LegacyRequest* const mHost;
+        };
+#if 0 // TODO: Waiting for NetworkCallback
+        AutoPtr<InnerSub_NetworkCallback> mNetworkCallback;
+#else
+        InnerSub_NetworkCallback* mNetworkCallback;
+#endif
+    };
+
+    CARAPI FindRequestForFeature(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [out] */ INetworkRequest** result);
+
+
+    CARAPI RenewRequestLocked(
+        /* [in] */ Inner_LegacyRequest& l);
+
+    CARAPI ExpireRequest(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [in] */ Int32 sequenceNum);
+
+    CARAPI RequestNetworkForFeatureLocked(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [out] */ INetworkRequest** result);
+
+    CARAPI SendExpireMsgForFeature(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [in] */ Int32 seqNum,
+        /* [in] */ Int32 delay);
+
+    CARAPI RemoveRequestForFeature(
+        /* [in] */ INetworkCapabilities* netCap,
+        /* [out] */ INetworkCallback** result);
+
+    CARAPI GetNetworkManagementService(
+        /* [in] */ IINetworkManagementService* result);
+
     static const String TAG;
+    static const Boolean LEGACY_DBG; // STOPSHIP
     AutoPtr<IIConnectivityManager> mService;
+    AutoPtr<IINetworkManagementService> mNMService;
+    static AutoPtr<IHashMap> sLegacyRequests;
+    AutoPtr<IArrayMap> mNetworkActivityListeners;
 };
 
 } // namespace Net

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_BASENETWORKSTATETRACKER_H__
 
 #include "ext/frameworkdef.h"
-#include "Object.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Core::Object;

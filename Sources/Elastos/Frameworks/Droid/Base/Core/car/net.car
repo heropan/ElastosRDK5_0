@@ -3,8 +3,8 @@ module
     merge("net/http/SslError.car");
 
     merge("net/BaseNetworkStateTracker.car");
-    merge("net/Credentials.car");
     merge("net/ConnectivityManager.car");
+    merge("net/Credentials.car");
     merge("net/DnsPinger.car");
     merge("net/DhcpInfo.car");
     merge("net/IConnectivityManager.car");
@@ -82,9 +82,9 @@ module
     merge("net/nsd/INsdManager.car");
     merge("net/nsd/DnsSdTxtRecord.car");
 
-//    namespace Elastos {
-//    namespace Droid {
-//    namespace Net {
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
 
 //    class CCredentials {
 //        constructor(
@@ -207,17 +207,17 @@ module
 //        interface INetworkStatsEntry;
 //    }
 
-//    [deprecated]
-//    class CConnectivityManager {
-//        constructor(
-//            [in] IIConnectivityManager* service);
+    [deprecated, local]
+    class CConnectivityManager {
+        constructor(
+            [in] IIConnectivityManager* service);
 
-//        interface IConnectivityManager;
-//    }
+        interface IConnectivityManager;
+    }
 
-//    singleton class CConnectivityManagerHelper {
-//        interface IConnectivityManagerHelper;
-//    }
+    singleton class CConnectivityManagerHelper {
+        interface IConnectivityManagerHelper;
+    }
 
 //    singleton class CProxy {
 //        interface IProxy;
@@ -544,9 +544,9 @@ module
 //        interface IThrottleManager;
 //    }
 
-//    } // namespace Net
-//    } // namespace Droid
-//    } // namespace Elastos
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 
 
 //    namespace Elastos {
