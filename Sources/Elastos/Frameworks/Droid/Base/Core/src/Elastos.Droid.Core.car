@@ -36,7 +36,7 @@ module
     //merge("../car/pppoe.car");
     //merge("../car/ethernet.car");
     //merge("../car/speech.car");
-    //merge("../car/accounts.car");
+    merge("../car/accounts.car");
     //merge("../car/webkit.car");
     //merge("../car/accessibilityservice.car");
     //merge("../car/privacy.car");

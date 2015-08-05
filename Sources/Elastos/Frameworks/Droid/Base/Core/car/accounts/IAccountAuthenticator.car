@@ -78,6 +78,22 @@ module
         GetAccountRemovalAllowed(
             [in] IIAccountAuthenticatorResponse* response,
             [in] IAccount* account);
+
+        /**
+         * Returns a Bundle containing the required credentials to copy the account across users.
+         */
+        GetAccountCredentialsForCloning(
+            [in] IAccountAuthenticatorResponse* response,
+            [in] IAccount* account);
+
+        /**
+         * Uses the Bundle containing credentials from another instance of the authenticator to create
+         * a copy of the account on this user.
+         */
+        AddAccountFromCredentials(
+            [in] IAccountAuthenticatorResponse* response,
+            [in] IAccount* account,
+            [in] IBundle* accountCredentials);
     }
 
     } // Accounts

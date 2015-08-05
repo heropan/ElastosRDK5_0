@@ -25,10 +25,21 @@ module
             [out] String* userData);
 
         GetAuthenticatorTypes(
+            [in] Int32 userId,
             [out, callee] ArrayOf<IAuthenticatorDescription*>* types);
 
         GetAccounts(
             [in] String accountType,
+            [out, callee] ArrayOf<IAccount*>* accounts);
+
+        GetAccountsForPackage(
+            [in] String packageName,
+            [in] Int32 uid,
+            [out, callee] ArrayOf<IAccount*>* accounts);
+
+        GetAccountsByTypeForPackage(
+            [in] String type,
+            [in] String packageName,
             [out, callee] ArrayOf<IAccount*>* accounts);
 
         GetAccountsAsUser(
@@ -46,7 +57,7 @@ module
             [in] String accountType,
             [in] ArrayOf<String>* features);
 
-        AddAccount(
+        AddAccountExplicitly(
             [in] IAccount* account,
             [in] String password,
             [in] IBundle* extras,
@@ -55,6 +66,11 @@ module
         RemoveAccount(
             [in] IAccountManagerResponse* response,
             [in] IAccount* account);
+
+        RemoveAccountAsUser(
+            [in] IAccountManagerResponse* response,
+            [in] IAccount* account,
+            [in] Int32 userId);
 
         InvalidateAuthToken(
             [in] String accountType,
@@ -96,13 +112,22 @@ module
             [in] Boolean expectActivityLaunch,
             [in] IBundle* options);
 
-        AddAcount(
+        AddAccount(
             [in] IAccountManagerResponse* response,
             [in] String accountType,
             [in] String authTokenType,
-            [in] ArrayOf<String> requiredFeatures,
+            [in] ArrayOf<String>* requiredFeatures,
             [in] Boolean expectActivityLaunch,
             [in] IBundle* options);
+
+        AddAccountAsUser(
+            [in] IAccountManagerResponse* response,
+            [in] String accountType,
+            [in] String authTokenType,
+            [in] ArrayOf<String>* requiredFeatures,
+            [in] Boolean expectActivityLaunch,
+            [in] IBundle* options,
+            [in] Int32 userId);
 
         UpdateCredentials(
             [in] IAccountManagerResponse* response,
@@ -127,6 +152,37 @@ module
             [in] IAccountManagerResponse* response,
             [in] String accountType,
             [in] String authTokenType);
+
+        /* Shared accounts */
+        AddSharedAccountAsUser(
+            [in] IAccount* account,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        GetSharedAccountsAsUser(
+            [in] Int32 userId,
+            [out, callee] ArrayOf<IAccount*>* result);
+
+        RemoveSharedAccountAsUser(
+            [in] IAccount* account,
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        /* Account renaming. */
+        RenameAccount(
+            [in] IAccountManagerResponse* response,
+            [in] IAccount* accountToRename,
+            [in] String newName);
+
+        GetPreviousName(
+            [in] IAccount* account,
+            [out] String* result);
+
+        RenameSharedAccountAsUser(
+            [in] IAccount* accountToRename,
+            [in] String newName,
+            [in] Int32 userId,
+            [out] Boolean* result);
     }
 
     [local]
