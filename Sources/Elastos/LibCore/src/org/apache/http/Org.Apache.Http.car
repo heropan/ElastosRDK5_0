@@ -143,6 +143,12 @@ module
     merge("../../../../car/org/apache/http/impl/conn/tsccm/RefQueueHandler.car");
     merge("../../../../car/org/apache/http/impl/conn/tsccm/PoolEntryRequest.car");
 
+    merge("../../../../car/org/apache/http/io/HttpMessageParser.car");
+    merge("../../../../car/org/apache/http/io/HttpMessageWriter.car");
+    merge("../../../../car/org/apache/http/io/HttpTransportMetrics.car");
+    merge("../../../../car/org/apache/http/io/SessionInputBuffer.car");
+    merge("../../../../car/org/apache/http/io/SessionOutputBuffer.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
