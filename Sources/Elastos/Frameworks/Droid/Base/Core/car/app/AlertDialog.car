@@ -16,12 +16,12 @@ module
     interface Elastos.Droid.Widget.IListView;
     interface Elastos.Droid.Widget.IListAdapter;
     interface Elastos.Droid.Widget.IAdapterViewOnItemSelectedListener;
+    interface Elastos.Droid.App.IDialog;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
 
-    interface IDialog;
 
     /**
      * A subclass of Dialog that can display one, two or three buttons. If you only
@@ -55,47 +55,50 @@ module
     /**
      * @Involve
      * interface IDialog
+     * interface IDialogInterface
      */
     interface IAlertDialog {
         /**
-         * Special theme constant for #AlertDialog(Context, int): use
+         * Special theme constant for {@link #AlertDialog(Context, int)}: use
          * the traditional (pre-Holo) alert dialog theme.
-         *
-         * @sa #AlertDialog(Context, int)
          */
         const Int32 THEME_TRADITIONAL = 1;
 
         /**
-         * Special theme constant for #AlertDialog(Context, int): use
+         * Special theme constant for {@link #AlertDialog(Context, int)}: use
          * the holographic alert theme with a dark background.
-         *
-         * @sa #AlertDialog(Context, int)
          */
         const Int32 THEME_HOLO_DARK = 2;
 
         /**
-         * Special theme constant for #AlertDialog(Context, int): use
+         * Special theme constant for {@link #AlertDialog(Context, int)}: use
          * the holographic alert theme with a light background.
-         *
-         * @sa #AlertDialog(Context, int)
          */
         const Int32 THEME_HOLO_LIGHT = 3;
 
         /**
-         * Special theme constant for #AlertDialog(Context, int): use
+         * Special theme constant for {@link #AlertDialog(Context, int)}: use
          * the device's default alert theme with a dark background.
-         *
-         * @sa #AlertDialog(Context, int)
          */
         const Int32 THEME_DEVICE_DEFAULT_DARK = 4;
 
         /**
-         * Special theme constant for #AlertDialog(Context, int): use
+         * Special theme constant for {@link #AlertDialog(Context, int)}: use
          * the device's default alert theme with a light background.
-         *
-         * @sa #AlertDialog(Context, int)
          */
         const Int32 THEME_DEVICE_DEFAULT_LIGHT = 5;
+
+        /**
+         * No layout hint.
+         * @hide
+         */
+        const Int32 LAYOUT_HINT_NONE = 0;
+
+        /**
+         * Hint layout to the side.
+         * @hide
+         */
+        const Int32 LAYOUT_HINT_SIDE = 1;
 
         /**
          * Gets one of the buttons used in the dialog.

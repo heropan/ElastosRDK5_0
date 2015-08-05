@@ -5,6 +5,23 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 
+#include <utils/Log.h>
+#include <utils/misc.h>
+#include <binder/Parcel.h>
+#include <utils/threads.h>
+#include <cutils/properties.h>
+
+//#include <SkGraphics.h>
+//#include <SkImageDecoder.h>
+
+#include <stdio.h>
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <dirent.h>
+#include <assert.h>
+
 using Elastos::Utility::Logging::Logger;
 
 #ifndef ASSERT_TRUE
@@ -46,13 +63,48 @@ static void BlockSigpipe()
     }
 }
 
-DroidRuntime::DroidRuntime()
+
+// ----------------------------------------------------------------------
+
+DroidRuntime::DroidRuntime(
+    /* [in] */ char* argBlockStart,
+    /* [in] */ const size_t argBlockLength) :
+    mExitWithoutCleanup(FALSE),
+    mArgBlockStart(argBlockStart),
+    mArgBlockLength(argBlockLength)
 {
+    //TODO SkGraphics::Init();
+    // There is also a global font cache, but its budget is specified in code
+    // see SkFontHost_android.cpp
+
+    // Pre-allocate enough space to hold a fair number of options.
+    //mOptions.setCapacity(20);
+
+    assert(sCurRuntime == NULL);        // one per process
     sCurRuntime = this;
 }
 
 DroidRuntime::~DroidRuntime()
-{}
+{
+    //TODO SkGraphics::Term();
+}
+
+void DroidRuntime::SetArgv0(
+    /* [in] */ const String& argv0)
+{
+    memset(mArgBlockStart, 0, mArgBlockLength);
+    strlcpy(mArgBlockStart, argv0.string(), mArgBlockLength);
+}
+
+void DroidRuntime::AddOption(
+    /* [in] */ const String& optionString,
+    /* [in] */ void* extraInfo)
+{
+    // JavaVMOption opt;
+    // opt.optionString = optionString;
+    // opt.extraInfo = extraInfo;
+    // mOptions.add(opt);
+}
 
 ECode DroidRuntime::CallMain(
     /* [in] */ const String& moduleName,
@@ -148,23 +200,28 @@ static void BlockSignals()
 void DroidRuntime::Start(
     /* [in] */ const String& moduleName,
     /* [in] */ const String& className,
-    /* [in] */ const String& options)
+    /* [in] */ ArrayOf<String>* options)
 {
-    Logger::D(TAG, "\n>>>>>> AndroidRuntime START %s - %s <<<<<<\n",
+    Logger::D(TAG, "\n>>>>>> DroidRuntime START %s - %s <<<<<<\n",
             !moduleName.IsNull() ? moduleName.string() : "(unknown)",
             !className.IsNull() ? className.string() : "(unknown)");
 
     BlockSigpipe();
 
+    static const String startSystemServer("start-system-server");
+
     /*
      * 'startSystemServer == true' means runtime is obsolete and not run from
      * init.rc anymore, so we print out the boot start event here.
      */
-    if (strcmp(options, "start-system-server") == 0) {
-//        /* track our progress through the boot sequence */
-//        const int LOG_BOOT_PROGRESS_START = 3000;
-//        LOG_EVENT_LONG(LOG_BOOT_PROGRESS_START,
-//                       ns2ms(systemTime(SYSTEM_TIME_MONOTONIC)));
+    if (options) {
+        for (Int32 i = 0; i < options->GetLength(); ++i) {
+            if ((*options)[i].Equals(startSystemServer)) {
+               /* track our progress through the boot sequence */
+               const int LOG_BOOT_PROGRESS_START = 3000;
+               LOG_EVENT_LONG(LOG_BOOT_PROGRESS_START,  ns2ms(systemTime(SYSTEM_TIME_MONOTONIC)));
+            }
+        }
     }
 
     const char* rootDir = getenv("ANDROID_ROOT");
@@ -183,18 +240,23 @@ void DroidRuntime::Start(
     // from startVm
     BlockSignals();
 
-    /*
-     * We want to call main() with a String array with arguments in it.
-     * At present we have two arguments, the class name and an option string.
-     * Create an array to hold them.
-     */
-    AutoPtr< ArrayOf<String> > args = ArrayOf<String>::Alloc(2);
-    args->Set(0, className);
-    args->Set(1, options);
-
-    CallMain(moduleName, className, args.Get());
+    CallMain(moduleName, className, options);
 
     Logger::D(TAG, "Shutting down\n");
+}
+
+void DroidRuntime::Exit(
+    /* [in] */ Int32 code)
+{
+    if (mExitWithoutCleanup) {
+        ALOGI("VM exiting with result code %d, cleanup skipped.", code);
+        ::_exit(code);
+    }
+    else {
+        ALOGI("VM exiting with result code %d.", code);
+        OnExit(code);
+        ::exit(code);
+    }
 }
 
 AutoPtr<DroidRuntime> DroidRuntime::GetRuntime()

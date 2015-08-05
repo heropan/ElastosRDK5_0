@@ -10,15 +10,45 @@ module
     namespace Droid {
     namespace App {
 
-        interface IPendingIntent {}
-
-        interface IAlarmManager {}
+        interface IApplication  {}
 
         interface IIActivityManager {}
+
+        interface IApplicationThread {}
 
         interface IApplicationErrorReportCrashInfo {}
 
         interface IDialog {}
+
+        interface IFragmentManager {}
+
+        interface IFragment {}
+
+        interface IFragmentTransaction {}
+
+        interface IInstrumentation {}
+
+        interface ILoaderManager {}
+
+        interface ILocalActivityManager {}
+
+        interface ILoadedPkg {}
+
+        interface IPendingIntent {}
+
+        interface IResultInfo {}
+
+        interface ISharedElementCallback {}
+
+        interface ITaskStackBuilder {}
+
+        interface IVoiceInteractor {}
+
+        interface IIVoiceInteractor {}
+
+        interface IOnActivityPausedListener {}
+
+        interface IContextImpl {}
 
     }}} // Elastos.Droid.App
 
@@ -175,12 +205,17 @@ module
     namespace Droid {
     namespace Widget {
 
-        interface IImageView {
-        }
+        interface IImageView {}
+
+        interface IAdapterView {}
+
+        interface ISpinnerAdapter {}
 
         interface ITextView {}
 
-        interface IAdapterView {}
+        interface IToolbar {}
+
+        interface IMediaController {}
 
         interface IPopupWindow {}
 
@@ -252,13 +287,13 @@ module
     namespace Droid {
     namespace Text {
 
-    namespace Layout {
+        namespace Layout {
 
-        interface IDirections {}
+            interface IDirections {}
 
-        interface ITabStops {}
+            interface ITabStops {}
 
-    }//Layout
+        }//Layout
 
     }
     }
@@ -294,10 +329,9 @@ module
     namespace Droid {
     namespace Webkit {
 
-        interface IWebIconDatabase {
-        }
-        interface IWebIconDatabaseIconListener {
-        }
+        interface IWebIconDatabase {}
+
+        interface IWebIconDatabaseIconListener {}
 
     }}} // Elastos.Droid.Webkit
 
@@ -309,9 +343,19 @@ module
     namespace Droid {
     namespace Telecom {
 
-        interface IPhoneAccountHandle {
-        }
+        interface IPhoneAccountHandle {}
 
     }}} // Elastos.Droid.telecom
+
+    //
+    // Elastos.Droid.Os
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Os {
+
+        interface IRemoteCallback {}
+
+    }}} // Elastos.Droid.Os
 
 }

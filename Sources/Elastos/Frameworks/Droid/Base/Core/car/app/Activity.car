@@ -1,18 +1,17 @@
 module
 {
-    /*
-     * activity related
-     */
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Core.IRunnable;
-    using interface Elastos.Utility.IObjectStringMap;
-    using interface Elastos.Utility.IObjectContainer;
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.Utility.IHashMap;
+    using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.App.IActivityThread;
+    interface Elastos.Droid.App.IActivityManagerTaskDescription;
     interface Elastos.Droid.App.IInstrumentation;
     interface Elastos.Droid.App.IApplication;
     interface Elastos.Droid.App.ILoaderManager;
@@ -20,6 +19,9 @@ module
     interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.App.ITaskStackBuilder;
     interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.App.ISharedElementCallback;
+    interface Elastos.Droid.App.IVoiceInteractor;
+    interface Elastos.Droid.App.IIVoiceInteractor;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Graphics.ICanvas;
@@ -40,6 +42,8 @@ module
     interface Elastos.Droid.View.IActionMode;
     interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
+    interface Elastos.Droid.Widget.IToolbar;
+    interface Elastos.Droid.Widget.IMediaController;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIntentSender;
@@ -48,7 +52,10 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Pm.IActivityInfo;
     interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.Transition.ITransitionManager;
+    interface Elastos.Droid.Transition.IScene;
     interface Elastos.Droid.Utility.IAttributeSet;
+    interface Elastos.Droid.Utility.IArrayMap;
 
     namespace Elastos {
     namespace Droid {
@@ -62,22 +69,55 @@ module
             [out] IInterface** activity);
 
         SetChildren(
-            [in] IObjectStringMap* children);
+            [in] IHashMap* children);
 
         GetChildren(
-            [out] IObjectStringMap** children);
+            [out] IHashMap** children);
 
         SetFragments(
-            [in] IObjectContainer* fragments);
+            [in] IArrayList* fragments);
 
         GetFragments(
-            [out] IObjectContainer** fragments);
+            [out] IArrayList** fragments);
 
         SetLoaders(
-            [in] IObjectStringMap* loaders);
+            [in] IArrayMap* loaders);
 
         GetLoaders(
-            [out] IObjectStringMap** loaders);
+            [out] IArrayMap** loaders);
+
+        SetVoiceInteractor(
+            [in] IVoiceInteractor* vi);
+
+        GetVoiceInteractor(
+            [out] IVoiceInteractor** vi);
+    }
+
+
+    /**
+     * Interface for informing a translucent {@link Activity} once all visible activities below it
+     * have completed drawing. This is necessary only after an {@link Activity} has been made
+     * opaque using {@link Activity#convertFromTranslucent()} and before it has been drawn
+     * translucent again following a call to {@link
+     * Activity#convertToTranslucent(android.app.Activity.TranslucentConversionListener,
+     * ActivityOptions)}
+     *
+     * @hide
+     */
+    interface ITranslucentConversionListener {
+        /**
+         * Callback made following {@link Activity#convertToTranslucent} once all visible Activities
+         * below the top one have been redrawn. Following this callback it is safe to make the top
+         * Activity translucent because the underlying Activity has been drawn.
+         *
+         * @param drawComplete True if the background Activity has drawn itself. False if a timeout
+         * occurred waiting for the Activity to complete drawing.
+         *
+         * @see Activity#convertFromTranslucent()
+         * @see Activity#convertToTranslucent(TranslucentConversionListener, ActivityOptions)
+         */
+        OnTranslucentConversionComplete(
+            [in] Boolean drawComplete);
     }
 
     /**
@@ -640,8 +680,14 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.View.IContextThemeWrapper
+     * interface ILayoutInflaterFactory2
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IComponentCallbacks2
+     * interface IWindowOnWindowDismissedCallback
      */
-    [deprecated]
+    [deprecated, local]
     interface IActivity {
         /** Standard activity result: operation canceled. */
         const Int32 RESULT_CANCELED     = 0;
@@ -766,6 +812,112 @@ module
             [out] IView** focus);
 
         /**
+         * Same as {@link #onCreate(android.os.Bundle)} but called for those activities created with
+         * the attribute {@link android.R.attr#persistableMode} set to
+         * <code>persistAcrossReboots</code>.
+         *
+         * @param savedInstanceState if the activity is being re-initialized after
+         *     previously being shut down then this Bundle contains the data it most
+         *     recently supplied in {@link #onSaveInstanceState}.
+         *     <b><i>Note: Otherwise it is null.</i></b>
+         * @param persistentState if the activity is being re-initialized after
+         *     previously being shut down or powered off then this Bundle contains the data it most
+         *     recently supplied to outPersistentState in {@link #onSaveInstanceState}.
+         *     <b><i>Note: Otherwise it is null.</i></b>
+         *
+         * @see #onCreate(android.os.Bundle)
+         * @see #onStart
+         * @see #onSaveInstanceState
+         * @see #onRestoreInstanceState
+         * @see #onPostCreate
+         */
+        OnCreate(
+            [in] IBundle* savedInstanceState,
+            [in] IPersistableBundle* persistentState);
+
+        /**
+         * This is the same as {@link #onRestoreInstanceState(Bundle)} but is called for activities
+         * created with the attribute {@link android.R.attr#persistableMode} set to
+         * <code>persistAcrossReboots</code>. The {@link android.os.PersistableBundle} passed
+         * came from the restored PersistableBundle first
+         * saved in {@link #onSaveInstanceState(Bundle, PersistableBundle)}.
+         *
+         * <p>This method is called between {@link #onStart} and
+         * {@link #onPostCreate}.
+         *
+         * <p>If this method is called {@link #onRestoreInstanceState(Bundle)} will not be called.
+         *
+         * @param savedInstanceState the data most recently supplied in {@link #onSaveInstanceState}.
+         * @param persistentState the data most recently supplied in {@link #onSaveInstanceState}.
+         *
+         * @see #onRestoreInstanceState(Bundle)
+         * @see #onCreate
+         * @see #onPostCreate
+         * @see #onResume
+         * @see #onSaveInstanceState
+         */
+        OnRestoreInstanceState(
+            [in] IBundle* savedInstanceState,
+            [in] IPersistableBundle* persistentState);
+
+        /**
+         * This is the same as {@link #onPostCreate(Bundle)} but is called for activities
+         * created with the attribute {@link android.R.attr#persistableMode} set to
+         * <code>persistAcrossReboots</code>.
+         *
+         * @param savedInstanceState The data most recently supplied in {@link #onSaveInstanceState}
+         * @param persistentState The data caming from the PersistableBundle first
+         * saved in {@link #onSaveInstanceState(Bundle, PersistableBundle)}.
+         *
+         * @see #onCreate
+         */
+        OnPostCreate(
+            [in] IBundle* savedInstanceState,
+            [in] IPersistableBundle* persistentState);
+
+        /**
+         * @hide
+         * Check whether this activity is running as part of a voice interaction with the user.
+         * If true, it should perform its interaction with the user through the
+         * {@link VoiceInteractor} returned by {@link #getVoiceInteractor}.
+         */
+        IsVoiceInteraction(
+            [out] Boolean* result);
+
+        /**
+         * @hide
+         * Retrieve the active {@link VoiceInteractor} that the user is going through to
+         * interact with this activity.
+         */
+        GetVoiceInteractor(
+            [out] IVoiceInteractor** result);
+
+        PerformSaveInstanceState(
+            [in] IBundle* outState);
+
+        PerformRestoreInstanceState(
+            [in] IBundle* savedInstanceState);
+
+        /**
+         * This is the same as {@link #onSaveInstanceState} but is called for activities
+         * created with the attribute {@link android.R.attr#persistableMode} set to
+         * <code>persistAcrossReboots</code>. The {@link android.os.PersistableBundle} passed
+         * in will be saved and presented in {@link #onCreate(Bundle, PersistableBundle)}
+         * the first time that this activity is restarted following the next device reboot.
+         *
+         * @param outState Bundle in which to place your saved state.
+         * @param outPersistentState State which will be saved across reboots.
+         *
+         * @see #onSaveInstanceState(Bundle)
+         * @see #onCreate
+         * @see #onRestoreInstanceState(Bundle, PersistableBundle)
+         * @see #onPause
+         */
+        OnSaveInstanceState(
+            [in] IBundle* outState,
+            [in] IPersistableBundle* outPersistentState);
+
+        /**
          * Generate a new thumbnail for this activity.  This method is called before
          * pausing the activity, and should draw into <var>outBitmap</var> the
          * imagery for the desired thumbnail in the dimensions of that bitmap.  It
@@ -809,6 +961,35 @@ module
          */
         OnCreateDescription(
             [out] ICharSequence** description);
+
+        /**
+         * This is called when the user is requesting an assist, to build a full
+         * {@link Intent#ACTION_ASSIST} Intent with all of the context of the current
+         * application.  You can override this method to place into the bundle anything
+         * you would like to appear in the {@link Intent#EXTRA_ASSIST_CONTEXT} part
+         * of the assist Intent.  The default implementation does nothing.
+         *
+         * <p>This function will be called after any global assist callbacks that had
+         * been registered with {@link Application#registerOnProvideAssistDataListener
+         * Application.registerOnProvideAssistDataListener}.
+         */
+        OnProvideAssistData(
+            [in] IBundle* data);
+
+        /**
+         * Report to the system that your app is now fully drawn, purely for diagnostic
+         * purposes (calling it does not impact the visible behavior of the activity).
+         * This is only used to help instrument application launch times, so that the
+         * app can report when it is fully in a usable state; without this, the only thing
+         * the system itself can determine is the point at which the activity's window
+         * is <em>first</em> drawn and displayed.  To participate in app launch time
+         * measurement, you should always call this method after first launch (when
+         * {@link #onCreate(android.os.Bundle)} is called), at the point where you have
+         * entirely drawn your UI and populated with all of the significant data.  You
+         * can safely call this method any time after first launch as well, in which case
+         * it will simply be ignored.
+         */
+        ReportFullyDrawn();
 
         /**
          * Called by the system when the device configuration changes while your
@@ -944,7 +1125,7 @@ module
          * {@sa #onRetainNonConfigurationChildInstances()}
          */
         GetLastNonConfigurationChildInstances(
-            [out] IObjectStringMap** data);
+            [out] IHashMap** data);
 
         /**
          * This method is similar to {@sa #onRetainNonConfigurationInstance()} except that
@@ -954,7 +1135,7 @@ module
          * as for {@sa #onRetainNonConfigurationInstance()}.  The default implementation returns null.
          */
         OnRetainNonConfigurationChildInstances(
-            [out] IObjectStringMap** objectStringMap);
+            [out] IHashMap** objectStringMap);
 
         RetainNonConfigurationInstances(
             [out] IActivityNonConfigurationInstances** instance);
@@ -1136,6 +1317,24 @@ module
             [out] IActionBar** bar);
 
         /**
+         * Set a {@link android.widget.Toolbar Toolbar} to act as the {@link ActionBar} for this
+         * Activity window.
+         *
+         * <p>When set to a non-null value the {@link #getActionBar()} method will return
+         * an {@link ActionBar} object that can be used to control the given toolbar as if it were
+         * a traditional window decor action bar. The toolbar's menu will be populated with the
+         * Activity's options menu and the navigation button will be wired through the standard
+         * {@link android.R.id#home home} menu select action.</p>
+         *
+         * <p>In order to use a Toolbar within the Activity's window content the application
+         * must not request the window feature {@link Window#FEATURE_ACTION_BAR FEATURE_ACTION_BAR}.</p>
+         *
+         * @param toolbar Toolbar to set as the Activity's action bar
+         */
+        SetActionBar(
+            [out] IToolbar** bar);
+
+        /**
          * Set the activity content from a layout resource.  The resource will be
          * inflated, adding all top-level views to the activity.
          *
@@ -1190,6 +1389,38 @@ module
         AddContentView(
             [in] IView* view,
             [in] IViewGroupLayoutParams* params);
+
+        /**
+         * Retrieve the {@link TransitionManager} responsible for default transitions in this window.
+         * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+         *
+         * <p>This method will return non-null after content has been initialized (e.g. by using
+         * {@link #setContentView}) if {@link Window#FEATURE_CONTENT_TRANSITIONS} has been granted.</p>
+         *
+         * @return This window's content TransitionManager or null if none is set.
+         */
+        GetContentTransitionManager(
+            [out] ITransitionManager** mgr);
+
+        /**
+         * Set the {@link TransitionManager} to use for default transitions in this window.
+         * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+         *
+         * @param tm The TransitionManager to use for scene changes.
+         */
+        SetContentTransitionManager(
+            [in] ITransitionManager* mgr);
+
+        /**
+         * Retrieve the {@link Scene} representing this window's current content.
+         * Requires {@link Window#FEATURE_CONTENT_TRANSITIONS}.
+         *
+         * <p>This method will return null if the current content is not represented by a Scene.</p>
+         *
+         * @return Current Scene being shown or null
+         */
+        GetContentScene(
+            [out] IScene** scene);
 
         /**
          * Sets whether this activity is finished when touched outside its window's
@@ -2175,61 +2406,52 @@ module
             [in] IBundle* options);
 
         /**
-         * Same as calling {@sa #startIntentSenderForResult(IntentSender, int,
-         * Intent, int, int, int, Bundle)} with no options.
+         * Same as calling {@link #startIntentSender(IntentSender, Intent, int, int, int, Bundle)}
+         * with no options.
          *
          * @param intent The IntentSender to launch.
-         * @param requestCode If >= 0, this code will be returned in
-         *                    onActivityResult() when the activity exits.
          * @param fillInIntent If non-null, this will be provided as the
-         * intent parameter to {@sa IntentSender#sendIntent}.
+         * intent parameter to {@link IntentSender#sendIntent}.
          * @param flagsMask Intent flags in the original IntentSender that you
          * would like to change.
          * @param flagsValues Desired values for any bits set in
          * <var>flagsMask</var>
          * @param extraFlags Always set to 0.
          */
-        StartIntentSenderForResult(
+        StartIntentSender(
             [in] IIntentSender* intent,
-            [in] Int32 requestCode,
             [in] IIntent* fillInIntent,
             [in] Int32 flagsMask,
             [in] Int32 flagsValues,
             [in] Int32 extraFlags);
 
         /**
-         * Like {@sa #startActivityForResult(Intent, int)}, but allowing you
-         * to use a IntentSender to describe the activity to be started.  If
-         * the IntentSender is for an activity, that activity will be started
-         * as if you had called the regular {@sa #startActivityForResult(Intent, int)}
-         * here; otherwise, its associated action will be executed (such as
-         * sending a broadcast) as if you had called
-         * {@sa IntentSender#sendIntent IntentSender.sendIntent} on it.
+         * Like {@link #startActivity(Intent, Bundle)}, but taking a IntentSender
+         * to start; see
+         * {@link #startIntentSenderForResult(IntentSender, int, Intent, int, int, int, Bundle)}
+         * for more information.
          *
          * @param intent The IntentSender to launch.
-         * @param requestCode If >= 0, this code will be returned in
-         *                    onActivityResult() when the activity exits.
          * @param fillInIntent If non-null, this will be provided as the
-         * intent parameter to {@sa IntentSender#sendIntent}.
+         * intent parameter to {@link IntentSender#sendIntent}.
          * @param flagsMask Intent flags in the original IntentSender that you
          * would like to change.
          * @param flagsValues Desired values for any bits set in
          * <var>flagsMask</var>
          * @param extraFlags Always set to 0.
          * @param options Additional options for how the Activity should be started.
-         * See {@sa android.content.Context#startActivity(Intent, Bundle)
+         * See {@link android.content.Context#startActivity(Intent, Bundle)
          * Context.startActivity(Intent, Bundle)} for more details.  If options
          * have also been supplied by the IntentSender, options given here will
          * override any that conflict with those given by the IntentSender.
          */
-        StartIntentSenderForResult(
+        StartIntentSender(
             [in] IIntentSender* intent,
-            [in] Int32 requestCode,
             [in] IIntent* fillInIntent,
             [in] Int32 flagsMask,
             [in] Int32 flagsValues,
             [in] Int32 extraFlags,
-            [in] IBundle* options);
+            [in] IBundle* bundle);
 
         /**
          * Same as calling {@sa #startActivityIfNeeded(Intent, int, Bundle)}
@@ -2562,6 +2784,8 @@ module
         SetVisible(
             [in] Boolean visible);
 
+        MakeVisible();
+
         SetCalled(
             [in] Boolean called);
 
@@ -2670,6 +2894,47 @@ module
         FinishActivityFromChild(
             [in] IActivity* child,
             [in] Int32 requestCode);
+
+        /**
+         * Call this when your activity is done and should be closed and the task should be completely
+         * removed as a part of finishing the Activity.
+         */
+        FinishAndRemoveTask();
+
+        /**
+         * Ask that the local app instance of this activity be released to free up its memory.
+         * This is asking for the activity to be destroyed, but does <b>not</b> finish the activity --
+         * a new instance of the activity will later be re-created if needed due to the user
+         * navigating back to it.
+         *
+         * @return Returns true if the activity was in a state that it has started the process
+         * of destroying its current instance; returns false if for any reason this could not
+         * be done: it is currently visible to the user, it is already being destroyed, it is
+         * being finished, it hasn't yet saved its state, etc.
+         */
+        ReleaseInstance();
+
+        /**
+         * Called when an activity you launched with an activity transition exposes this
+         * Activity through a returning activity transition, giving you the resultCode
+         * and any additional data from it. This method will only be called if the activity
+         * set a result code other than {@link #RESULT_CANCELED} and it supports activity
+         * transitions with {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+         *
+         * <p>The purpose of this function is to let the called Activity send a hint about
+         * its state so that this underlying Activity can prepare to be exposed. A call to
+         * this method does not guarantee that the called Activity has or will be exiting soon.
+         * It only indicates that it will expose this Activity's Window and it has
+         * some data to pass to prepare it.</p>
+         *
+         * @param resultCode The integer result code returned by the child activity
+         *                   through its setResult().
+         * @param data An Intent, which can return result data to the caller
+         *               (various data can be attached to Intent "extras").
+         */
+        OnActivityReenter(
+            [in] Int32 resultCode,
+            [in] IIntent* data);
 
         /**
          * Create a new PendingIntent object which you can hand to others
@@ -2823,13 +3088,20 @@ module
         GetTitleColor(
             [out] Int32* color);
 
-        OnTitleChanged(
-            [in] ICharSequence* title,
-            [in] Int32 color);
-
-        OnChildTitleChanged(
-            [in] IActivity* childActivity,
-            [in] ICharSequence* title);
+        /**
+         * Sets information describing the task with this activity for presentation inside the Recents
+         * System UI. When {@link ActivityManager#getRecentTasks} is called, the activities of each task
+         * are traversed in order from the topmost activity to the bottommost. The traversal continues
+         * for each property until a suitable value is found. For each task the taskDescription will be
+         * returned in {@link android.app.ActivityManager.TaskDescription}.
+         *
+         * @see ActivityManager#getRecentTasks
+         * @see android.app.ActivityManager.TaskDescription
+         *
+         * @param taskDescription The TaskDescription properties that describe the task with this activity
+         */
+        SetTaskDescription(
+            [in] IActivityManagerTaskDescription* taskDescription);
 
         /**
          * Sets the visibility of the progress bar in the title.
@@ -2925,6 +3197,37 @@ module
             [out] Int32* type);
 
         /**
+         * Sets a {@link MediaController} to send media keys and volume changes to.
+         * <p>
+         * The controller will be tied to the window of this Activity. Media key and
+         * volume events which are received while the Activity is in the foreground
+         * will be forwarded to the controller and used to invoke transport controls
+         * or adjust the volume. This may be used instead of or in addition to
+         * {@link #setVolumeControlStream} to affect a specific session instead of a
+         * specific stream.
+         * <p>
+         * It is not guaranteed that the hardware volume controls will always change
+         * this session's volume (for example, if a call is in progress, its
+         * stream's volume may be changed instead). To reset back to the default use
+         * null as the controller.
+         *
+         * @param controller The controller for the session which should receive
+         *            media keys and volume changes.
+         */
+        SetMediaController(
+            [in] IMediaController* controller);
+
+        /**
+         * Gets the controller which should be receiving media key and volume events
+         * while this activity is in the foreground.
+         *
+         * @return The controller which should receive events.
+         * @see #setMediaController(android.media.session.MediaController)
+         */
+        GetMediaController(
+            [out] IMediaController** controller);
+
+        /**
          * Runs the specified action on the UI thread. If the current thread is the UI
          * thread, then the action is executed immediately. If the current thread is
          * not the UI thread, the action is posted to the event queue of the UI thread.
@@ -2997,6 +3300,66 @@ module
          */
         IsImmersive(
             [out] Boolean* isImmersive);
+
+        /**
+         * Activities that want to remain visible behind a translucent activity above them must call
+         * this method anytime between the start of {@link #onResume()} and the return from
+         * {@link #onPause()}. If this call is successful then the activity will remain visible after
+         * {@link #onPause()} is called, and is allowed to continue playing media in the background.
+         *
+         * <p>The actions of this call are reset each time that this activity is brought to the
+         * front. That is, every time {@link #onResume()} is called the activity will be assumed
+         * to not have requested visible behind. Therefore, if you want this activity to continue to
+         * be visible in the background you must call this method again.
+         *
+         * <p>Only fullscreen opaque activities may make this call. I.e. this call is a nop
+         * for dialog and translucent activities.
+         *
+         * <p>Under all circumstances, the activity must stop playing and release resources prior to or
+         * within a call to {@link #onVisibleBehindCanceled()} or if this call returns false.
+         *
+         * <p>False will be returned any time this method is called between the return of onPause and
+         *      the next call to onResume.
+         *
+         * @param visible true to notify the system that the activity wishes to be visible behind other
+         *                translucent activities, false to indicate otherwise. Resources must be
+         *                released when passing false to this method.
+         * @return the resulting visibiity state. If true the activity will remain visible beyond
+         *      {@link #onPause()} if the next activity is translucent or not fullscreen. If false
+         *      then the activity may not count on being visible behind other translucent activities,
+         *      and must stop any media playback and release resources.
+         *      Returning false may occur in lieu of a call to {@link #onVisibleBehindCanceled()} so
+         *      the return value must be checked.
+         *
+         * @see #onVisibleBehindCanceled()
+         * @see #onBackgroundVisibleBehindChanged(boolean)
+         */
+        RequestVisibleBehind(
+            [in] Boolean visible,
+            [out] Boolean* result);
+
+        /**
+         * Called when a translucent activity over this activity is becoming opaque or another
+         * activity is being launched. Activities that override this method must call
+         * <code>super.onVisibleBehindCanceled()</code> or a SuperNotCalledException will be thrown.
+         *
+         * <p>When this method is called the activity has 500 msec to release any resources it may be
+         * using while visible in the background.
+         * If the activity has not returned from this method in 500 msec the system will destroy
+         * the activity and kill the process in order to recover the resources for another
+         * process. Otherwise {@link #onStop()} will be called following return.
+         *
+         * @see #requestVisibleBehind(boolean)
+         * @see #onBackgroundVisibleBehindChanged(boolean)
+         */
+        OnVisibleBehindCanceled();
+
+        /**
+         * Activities cannot draw during the period that their windows are animating in. In order
+         * to know when it is safe to begin drawing they can override this method which will be
+         * called when the entering animation has completed.
+         */
+        OnEnterAnimationComplete();
 
         /**
          * Adjust the current immersive mode setting.
@@ -3135,19 +3498,57 @@ module
         GetParentActivityIntent(
             [out] IIntent** intent);
 
-        Attach(
-            [in] IContext* ctx,
-            [in] IActivityThread* aThread,
-            [in] IInstrumentation* instr,
-            [in] IBinder* token,
-            [in] IApplication* application,
-            [in] IIntent* intent,
-            [in] IActivityInfo* info,
-            [in] ICharSequence* title,
-            [in] IActivity* parent,
-            [in] String id,
-            [in] IInterface* lastNonConfigurationInstance,
-            [in] IConfiguration* config);
+        /**
+         * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+         * android.view.View, String)} was used to start an Activity, <var>callback</var>
+         * will be called to handle shared elements on the <i>launched</i> Activity. This requires
+         * {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+         *
+         * @param callback Used to manipulate shared element transitions on the launched Activity.
+         */
+        SetEnterSharedElementCallback(
+            [in] ISharedElementCallback* cb);
+
+        /**
+         * When {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+         * android.view.View, String)} was used to start an Activity, <var>callback</var>
+         * will be called to handle shared elements on the <i>launching</i> Activity. Most
+         * calls will only come when returning from the started Activity.
+         * This requires {@link Window#FEATURE_ACTIVITY_TRANSITIONS}.
+         *
+         * @param callback Used to manipulate shared element transitions on the launching Activity.
+         */
+        SetExitSharedElementCallback(
+            [in] ISharedElementCallback* cb);
+
+        /**
+         * Postpone the entering activity transition when Activity was started with
+         * {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+         * android.util.Pair[])}.
+         * <p>This method gives the Activity the ability to delay starting the entering and
+         * shared element transitions until all data is loaded. Until then, the Activity won't
+         * draw into its window, leaving the window transparent. This may also cause the
+         * returning animation to be delayed until data is ready. This method should be
+         * called in {@link #onCreate(android.os.Bundle)} or in
+         * {@link #onActivityReenter(int, android.content.Intent)}.
+         * {@link #startPostponedEnterTransition()} must be called to allow the Activity to
+         * start the transitions. If the Activity did not use
+         * {@link android.app.ActivityOptions#makeSceneTransitionAnimation(Activity,
+         * android.util.Pair[])}, then this method does nothing.</p>
+         */
+        PostponeEnterTransition();
+
+        /**
+         * Begin postponed transitions after {@link #postponeEnterTransition()} was called.
+         * If postponeEnterTransition() was called, you must call startPostponedEnterTransition()
+         * to have your Activity start drawing.
+         */
+        StartPostponedEnterTransition();
+
+        // ------------------ Internal API ------------------
+
+        SetParent(
+            [in] IActivity* parent);
 
         Attach(
             [in] IContext* ctx,
@@ -3161,12 +3562,36 @@ module
             [in] ICharSequence* title,
             [in] IActivity* parent,
             [in] String id,
-            [in] IInterface* lastNonConfigurationInstance,
-            [in] IConfiguration* config);
+            [in] IActivityNonConfigurationInstances* lastNonConfigurationInstance,
+            [in] IConfiguration* config,
+            [in] IIVoiceInteractor* vi);
 
         /** @hide */
         GetActivityToken(
             [out] IBinder** token);
+
+        PerformCreateCommon();
+
+        PerformCreate(
+            [in] IBundle* icicle,
+            [in] IPersistableBundle* persistent);
+
+        PerformCreate(
+            [in] IBundle* icicle);
+
+        PerformStart();
+
+        PerformRestart();
+
+        PerformResume();
+
+        PerformPause();
+
+        PerformUserLeaving();
+
+        PerformStop();
+
+        PerformDestroy();
 
         /**
          * @hide
@@ -3174,8 +3599,35 @@ module
         IsResumed(
             [out] Boolean* isResumed);
 
-        SetParent(
-            [in] IActivity* parent);
+        /**
+         * Request to put this Activity in a mode where the user is locked to the
+         * current task.
+         *
+         * This will prevent the user from launching other apps, going to settings,
+         * or reaching the home screen.
+         *
+         * If {@link DevicePolicyManager#isLockTaskPermitted(String)} returns true
+         * for this component then the app will go directly into Lock Task mode.  The user
+         * will not be able to exit this mode until {@link Activity#stopLockTask()} is called.
+         *
+         * If {@link DevicePolicyManager#isLockTaskPermitted(String)} returns false
+         * then the system will prompt the user with a dialog requesting permission to enter
+         * this mode.  When entered through this method the user can exit at any time through
+         * an action described by the request dialog.  Calling stopLockTask will also exit the
+         * mode.
+         */
+        StartLockTask();
+
+        /**
+         * Allow the user to switch away from the current task.
+         *
+         * Called to end the mode started by {@link Activity#startLockTask}. This
+         * can only be called by activities that have successfully called
+         * startLockTask previously.
+         *
+         * This will allow the user to exit this app and move onto other activities.
+         */
+        StopLockTask();
 
         GetID(
             [out] String* id);
@@ -3183,11 +3635,11 @@ module
         GetToken(
             [out] IBinder** token);
 
+        SetStartedActivity(
+            [in] Boolean started);
+
         IsStartedActivity(
             [out] Boolean* isStartedActivity);
-
-        GetWindow(
-            [out] IWindow** window);
 
         SetDecorView(
             [in] IView* decor);
@@ -3206,45 +3658,15 @@ module
 
         SetWindowAdded(
             [in] Boolean added);
+
         IsWindowAdded(
             [out] Boolean* isAdded);
-
-        GetWindowManager(
-            [out] IWindowManager** mgr);
 
         SetConfigChangeFlags(
             [in] Int32 configChangeFlags);
 
         GetConfigChangeFlags(
             [out] Int32* configChangeFlags);
-
-        MakeVisible();
-
-        SetStartedActivity(
-            [in] Boolean started);
-
-        PerformSaveInstanceState(
-            [in] IBundle* outState);
-
-        PerformRestoreInstanceState(
-            [in] IBundle* savedInstanceState);
-
-        PerformCreate(
-            [in] IBundle* icicle);
-
-        PerformStart();
-
-        PerformRestart();
-
-        PerformResume();
-
-        PerformPause();
-
-        PerformUserLeaving();
-
-        PerformStop();
-
-        PerformDestroy();
     }
 
     } // namespace App

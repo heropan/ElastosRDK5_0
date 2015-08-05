@@ -65,6 +65,19 @@ ECode CZygoteInit::MethodAndArgsCaller::Run()
     return ec;
 }
 
+void CZygoteInit::Preload()
+{
+    ALOGD(TAG, "begin preload");
+    // preloadClasses();
+    // preloadResources();
+    // preloadOpenGL();
+    // preloadSharedLibraries();
+    // Ask the WebViewFactory to do any initialization that must run in the zygote process,
+    // for memory sharing purposes.
+    //WebViewFactory.prepareWebViewInZygote();
+    ALOGD(TAG, "end preload");
+}
+
 ECode CZygoteInit::RegisterZygoteSocket()
 {
     if (sServerSocket == NULL) {
@@ -229,62 +242,79 @@ ECode CZygoteInit::Main(
     /* [in] */ const ArrayOf<String>& argv)
 {
     // try {
-    // Start profiling the zygote initialization.
-//    SamplingProfilerIntegration.start();
-//
-    RegisterZygoteSocket();
-//    EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
-//        SystemClock.uptimeMillis());
-//    preload();
-//    EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
-//        SystemClock.uptimeMillis());
-//
-//    // Finish profiling the zygote initialization.
-//    SamplingProfilerIntegration.writeZygoteSnapshot();
-//
-//    // Do an initial gc to clean up after startup
-//    gc();
-//
-//    // If requested, start system server directly from Zygote
-//    if (argv.length != 2) {
-//        throw new RuntimeException(argv[0] + USAGE_STRING);
-//    }
+        // Start profiling the zygote initialization.
+        //SamplingProfilerIntegration.start();
 
-    AutoPtr<IRunnable> task;
+        AutoPtr<IRunnable> task;
+        Boolean startSystemServer = FALSE;
+        String socketName("zygote");
+        String abiList;
+        for (Int32 i = 1; i < argv.GetLength(); i++) {
+            if (argv[i].Equals("start-system-server")) {
+                startSystemServer = true;
+            }
+            else if (argv[i].startsWith(ABI_LIST_ARG)) {
+                abiList = argv[i].Substring(ABI_LIST_ARG.GetLength());
+            }
+            else if (argv[i].startsWith(SOCKET_NAME_ARG)) {
+                socketName = argv[i].Substring(SOCKET_NAME_ARG.GetLength());
+            }
+            else {
+                ALOGE(TAG, "Unknown command line argument: %s", argv[i].string());
+                goto _RUNTIME_EXCEPTION_EXIT_;
+                //throw new RuntimeException("Unknown command line argument: " + argv[i]);
+            }
+        }
 
-    if (argv[1].Equals("start-system-server")) {
-        FAIL_RETURN(StartSystemServer((IRunnable**)&task));
-        if (task != NULL) goto RUN_TASK;
-    }
-    else if (!argv[1].Equals("")) {
-        // throw new RuntimeException(argv[0] + USAGE_STRING);
-        return E_RUNTIME_EXCEPTION;
-    }
+        if (abiList.IsNull()) {
+            Logger::E(TAG, "No ABI list supplied.");
+            goto _RUNTIME_EXCEPTION_EXIT_;
+            //throw new RuntimeException("No ABI list supplied.");
+        }
 
-    Logger::I(TAG, "Accepting command socket connections");
+        RegisterZygoteSocket(socketName);
+        // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
+        //     SystemClock.uptimeMillis());
+        Preload();
+        // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
+        //     SystemClock.uptimeMillis());
 
-    if (ZYGOTE_FORK_MODE) {
-        RunForkMode();
-    }
-    else {
+        // Finish profiling the zygote initialization.
+        //SamplingProfilerIntegration.writeZygoteSnapshot();
+
+        // Do an initial gc to clean up after startup
+        //gc();
+
+        // Disable tracing so that forked processes do not inherit stale tracing tags from
+        // Zygote.
+        //Trace.setTracingEnabled(false);
+
+        if (startSystemServer) {
+            StartSystemServer(abiList, socketName, (IRunnable**)&task));
+            if (task != NULL) goto RUN_TASK;
+        }
+
+        ALOGV(TAG, "Accepting command socket connections");
         task = NULL;
-        RunSelectLoopMode((IRunnable**)&task);
+        RunSelectLoop(abiList, (IRunnable**)&task);
         if (task != NULL) goto RUN_TASK;
-    }
 
-    CloseServerSocket();
-    return NOERROR;
+        CloseServerSocket();
+        return NOERROR;
+
+_RUN_TASK_:
+        /* For child process */
+        return task->Run();
+
     // } catch (MethodAndArgsCaller caller) {
-    //     caller.run();
+    //    caller.run();
     // } catch (RuntimeException ex) {
-    //     Log.e(TAG, "Zygote died with exception", ex);
-    //     closeServerSocket();
-    //     throw ex;
+_RUNTIME_EXCEPTION_EXIT_:
+        ALOGE(TAG, "Zygote died with runtime exception");
+        CloseServerSocket();
+        //throw ex;
+        return E_RUNTIME_EXCEPTION;
     // }
-
-RUN_TASK:
-    /* For child process */
-    return task->Run();
 }
 
 ECode CZygoteInit::RunForkMode()

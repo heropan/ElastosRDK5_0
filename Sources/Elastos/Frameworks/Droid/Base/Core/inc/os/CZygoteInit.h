@@ -189,6 +189,8 @@ private:
     static CARAPI RunSelectLoopMode(
         /* [in] */ IRunnable** task);
 
+    static CARAPI_(void) Preload();
+
 private:
     static const String TAG;
 

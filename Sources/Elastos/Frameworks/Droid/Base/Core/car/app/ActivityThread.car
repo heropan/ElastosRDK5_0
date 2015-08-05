@@ -8,6 +8,7 @@ module
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.IIContentProvider;
     interface Elastos.Droid.Content.Res.IConfiguration;
+    interface Elastos.Droid.Content.Res.ICompatibilityInfo;
     interface Elastos.Droid.Content.Pm.IProviderInfo;
     interface Elastos.Droid.Content.Pm.IIPackageManager;
     interface Elastos.Droid.Content.Pm.IActivityInfo;
@@ -16,13 +17,62 @@ module
     interface Elastos.Droid.App.IOnActivityPausedListener;
     interface Elastos.Droid.App.IApplicationThread;
     interface Elastos.Droid.App.IContextImpl;
+    interface Elastos.Droid.App.ILoadedPkg;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
 
+    interface IActivityClientRecord {
+        IsPreHoneycomb(
+            [out] Boolean* result);
+
+        IsPersistable(
+            [out] Boolean* result);
+    }
+
+    interface IRequestAssistContextExtras {
+    }
+
+    /**
+     * This manages the execution of the main thread in an
+     * application process, scheduling and executing activities,
+     * broadcasts, and other operations on it as the activity
+     * manager requests.
+     *
+     * {@hide}
+     */
     [deprecated, local]
     interface IActivityThread {
+        GetPackageInfo(
+            [in] String packageName,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] Int32 flags,
+            [out] ILoadedPkg** pkg);
+
+        GetPackageInfo(
+            [in] String packageName,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] Int32 flags,
+            [in] Int32 userId,
+            [out] ILoadedPkg** pkg);
+
+        GetPackageInfo(
+            [in] IApplicationInfo* info,
+            [in] ICompatibilityInfo* compatInfo,
+            [in] Int32 flags,
+            [out] ILoadedPkg** pkg);
+
+        GetPackageInfoNoCheck(
+            [in] IApplicationInfo* info,
+            [in] ICompatibilityInfo* compatInfo,
+            [out] ILoadedPkg** pkg);
+
+        PeekPackageInfo(
+            [in] String packageName,
+            [in] Boolean includeCode,
+            [out] ILoadedPkg** pkg);
+
         GetHandler(
             [out] IHandler** h);
 
@@ -93,6 +143,37 @@ module
             [in] IBinder* token,
             [in] ArrayOf<IIntent*>* intents);
 
+        HandleRequestAssistContextExtras(
+            [in] IRequestAssistContextExtras* cmd);
+
+        HandleTranslucentConversionComplete(
+            [in] IBinder* token,
+            [in] Boolean drawComplete);
+
+        OnNewActivityOptions(
+            [in] IBinder* token,
+            [in] IActivityOptions* options);
+
+        HandleCancelVisibleBehind(
+            [in] IBinder* token);
+
+        HandleOnBackgroundVisibleBehindChanged(
+            [in] IBinder* token,
+            [in] Boolean visible);
+
+        HandleInstallProvider(
+            [in] IProviderInfo* info);
+
+        PerformResumeActivity(
+            [in] IBinder* token,
+            [in] Boolean clearHide,
+            [out] IActivityClientRecord** record);
+
+        PerformDestroyActivity(
+            [in] IBinder* token,
+            [in] Boolean finishing,
+            [out] IActivityClientRecord** record);
+
         RequestRelaunchActivity(
             [in] IBinder* token,
             [in] ArrayOf<IResultInfo*>* pendingResults,
@@ -112,13 +193,6 @@ module
             [in] Boolean stable,
             [out] IIContentProvider** provider);
 
-        AcquireExistingProvider(
-            [in] IContext* ctx,
-            [in] String auth,
-            [in] Int32 userId,
-            [in] Boolean stable,
-            [out] IIContentProvider** provider);
-
         ReleaseProvider(
             [in] IIContentProvider* provider,
             [in] Boolean stable,
@@ -131,10 +205,6 @@ module
             [in] String key,
             [in] Int32 defaultValue,
             [out] Int32* setting);
-
-        FinishInstrumentation(
-            [in] Int32 resultCode,
-            [in] IBundle* results);
     }
 
     [local]
@@ -143,6 +213,9 @@ module
             [out] IActivityThread** thread);
 
         GetCurrentPackageName(
+            [out] String* name);
+
+        GetCurrentProcessName(
             [out] String* name);
 
         GetCurrentApplication(

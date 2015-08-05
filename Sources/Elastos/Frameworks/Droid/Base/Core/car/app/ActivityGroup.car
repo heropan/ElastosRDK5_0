@@ -1,0 +1,30 @@
+module
+{
+    interface Elastos.Droid.App.ILocalActivityManager;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * A screen that contains and runs multiple embedded activities.
+     *
+     * @deprecated Use the new {@link Fragment} and {@link FragmentManager} APIs
+     * instead; these are also
+     * available on older platforms through the Android compatibility package.
+     */
+    //@Deprecated
+    /**
+     * @Involve
+     * interface IActivity
+     */
+    interface IActivityGroup {
+
+        GetLocalActivityManager(
+            [out] ILocalActivityManager** mgr);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

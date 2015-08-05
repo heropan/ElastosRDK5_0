@@ -1,10 +1,45 @@
 module
 {
+    interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.App.IPendingIntent;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
+
+    /**
+     * An immutable description of an alarm clock.
+     *
+     * @see AlarmManager#setAlarmClock
+     * @see AlarmManager#getNextAlarmClock
+     */
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    interface IAlarmManagerAlarmClockInfo {
+        /**
+         * Returns the time at which the alarm is going to trigger.
+         *
+         * This value is UTC wall clock time in milliseconds, as returned by
+         * {@link System#currentTimeMillis()} for example.
+         */
+        GetTriggerTime(
+            [out] Int64* time);
+
+        /**
+         * Returns an intent intent that can be used to show or edit details of the alarm clock in
+         * the application that scheduled it.
+         *
+         * <p class="note">Beware that any application can retrieve and send this intent,
+         * potentially with additional fields filled in. See
+         * {@link PendingIntent#send(android.content.Context, int, android.content.Intent)
+         * PendingIntent.send()} and {@link android.content.Intent#fillIn Intent.fillIn()}
+         * for details.
+         */
+        GetShowIntent(
+            [out] IPendingIntent** intent);
+    }
 
     /**
      * This class provides access to the system alarm services. These allow you to
@@ -40,57 +75,83 @@ module
 
     interface IAlarmManager {
         /**
-         * Alarm time in System#currentTimeMillis System.currentTimeMillis()
+         * Alarm time in {@link System#currentTimeMillis System.currentTimeMillis()}
          * (wall clock time in UTC), which will wake up the device when
          * it goes off.
-         *
-         * @sa System#currentTimeMillis System.currentTimeMillis()
          */
         const Int32 RTC_WAKEUP = 0;
-
-        const Int32 RTC_SHUTDOWN_WAKEUP = 4;
-
         /**
-         * Alarm time in System#currentTimeMillis System.currentTimeMillis()
+         * Alarm time in {@link System#currentTimeMillis System.currentTimeMillis()}
          * (wall clock time in UTC).  This alarm does not wake the
          * device up; if it goes off while the device is asleep, it will not be
          * delivered until the next time the device wakes up.
-         *
-         * @sa System#currentTimeMillis System.currentTimeMillis()
          */
         const Int32 RTC = 1;
-
         /**
-         * Alarm time in android.os.SystemClock#elapsedRealtime
-         * SystemClock.elapsedRealtime() (time since boot, including sleep),
+         * Alarm time in {@link android.os.SystemClock#elapsedRealtime
+         * SystemClock.elapsedRealtime()} (time since boot, including sleep),
          * which will wake up the device when it goes off.
-         *
-         * @sa android.os.SystemClock#elapsedRealtime SystemClock.elapsedRealtime()
          */
         const Int32 ELAPSED_REALTIME_WAKEUP = 2;
-
         /**
-         * Alarm time in android.os.SystemClock#elapsedRealtime
-         * SystemClock.elapsedRealtime() (time since boot, including sleep).
+         * Alarm time in {@link android.os.SystemClock#elapsedRealtime
+         * SystemClock.elapsedRealtime()} (time since boot, including sleep).
          * This alarm does not wake the device up; if it goes off while the device
          * is asleep, it will not be delivered until the next time the device
          * wakes up.
-         *
-         * @sa android.os.SystemClock#elapsedRealtime SystemClock.elapsedRealtime()
          */
         const Int32 ELAPSED_REALTIME = 3;
 
         /**
-         * Available inexact recurrence intervals recognized by
-         * #setInexactRepeating(int, long, long, PendingIntent)
+         * Broadcast Action: Sent after the value returned by
+         * {@link #getNextAlarmClock()} has changed.
          *
-         * @sa #setInexactRepeating(int, long, long, PendingIntent)
+         * <p class="note">This is a protected intent that can only be sent by the system.
+         * It is only sent to registered receivers.</p>
+         */
+        //@SdkConstant(SdkConstant.SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_NEXT_ALARM_CLOCK_CHANGED =
+                "android.app.action.NEXT_ALARM_CLOCK_CHANGED";
+
+        /** @hide */
+        const Int64 WINDOW_EXACT = 0;
+        /** @hide */
+        const Int64 WINDOW_HEURISTIC = -1;
+
+        /**
+         * Available inexact recurrence interval recognized by
+         * {@link #setInexactRepeating(int, long, long, PendingIntent)}
+         * when running on Android prior to API 19.
          */
         const Int64 INTERVAL_FIFTEEN_MINUTES = 15 * 60 * 1000;
-        const Int64 INTERVAL_HALF_HOUR = 2 * INTERVAL_FIFTEEN_MINUTES;
-        const Int64 INTERVAL_HOUR = 2 * INTERVAL_HALF_HOUR;
-        const Int64 INTERVAL_HALF_DAY = 12 * INTERVAL_HOUR;
-        const Int64 INTERVAL_DAY = 2 * INTERVAL_HALF_DAY;
+
+        /**
+         * Available inexact recurrence interval recognized by
+         * {@link #setInexactRepeating(int, long, long, PendingIntent)}
+         * when running on Android prior to API 19.
+         */
+        const Int64 INTERVAL_HALF_HOUR = 2*INTERVAL_FIFTEEN_MINUTES;
+
+        /**
+         * Available inexact recurrence interval recognized by
+         * {@link #setInexactRepeating(int, long, long, PendingIntent)}
+         * when running on Android prior to API 19.
+         */
+        const Int64 INTERVAL_HOUR = 2*INTERVAL_HALF_HOUR;
+
+        /**
+         * Available inexact recurrence interval recognized by
+         * {@link #setInexactRepeating(int, long, long, PendingIntent)}
+         * when running on Android prior to API 19.
+         */
+        const Int64 INTERVAL_HALF_DAY = 12*INTERVAL_HOUR;
+
+        /**
+         * Available inexact recurrence interval recognized by
+         * {@link #setInexactRepeating(int, long, long, PendingIntent)}
+         * when running on Android prior to API 19.
+         */
+        const Int64 INTERVAL_DAY = 2*INTERVAL_HALF_DAY;
 
         /**
          * Schedule an alarm.  <b>Note: for timing operations (ticks, timeouts,
@@ -210,6 +271,134 @@ module
             [in] IPendingIntent* operation);
 
         /**
+         * Schedule an alarm to be delivered within a given window of time.  This method
+         * is similar to {@link #set(int, long, PendingIntent)}, but allows the
+         * application to precisely control the degree to which its delivery might be
+         * adjusted by the OS. This method allows an application to take advantage of the
+         * battery optimizations that arise from delivery batching even when it has
+         * modest timeliness requirements for its alarms.
+         *
+         * <p>
+         * This method can also be used to achieve strict ordering guarantees among
+         * multiple alarms by ensuring that the windows requested for each alarm do
+         * not intersect.
+         *
+         * <p>
+         * When precise delivery is not required, applications should use the standard
+         * {@link #set(int, long, PendingIntent)} method.  This will give the OS the most
+         * flexibility to minimize wakeups and battery use.  For alarms that must be delivered
+         * at precisely-specified times with no acceptable variation, applications can use
+         * {@link #setExact(int, long, PendingIntent)}.
+         *
+         * @param type One of {@link #ELAPSED_REALTIME}, {@link #ELAPSED_REALTIME_WAKEUP},
+         *        {@link #RTC}, or {@link #RTC_WAKEUP}.
+         * @param windowStartMillis The earliest time, in milliseconds, that the alarm should
+         *        be delivered, expressed in the appropriate clock's units (depending on the alarm
+         *        type).
+         * @param windowLengthMillis The length of the requested delivery window,
+         *        in milliseconds.  The alarm will be delivered no later than this many
+         *        milliseconds after {@code windowStartMillis}.  Note that this parameter
+         *        is a <i>duration,</i> not the timestamp of the end of the window.
+         * @param operation Action to perform when the alarm goes off;
+         *        typically comes from {@link PendingIntent#getBroadcast
+         *        IntentSender.getBroadcast()}.
+         *
+         * @see #set
+         * @see #setExact
+         * @see #setRepeating
+         * @see #cancel
+         * @see android.content.Context#sendBroadcast
+         * @see android.content.Context#registerReceiver
+         * @see android.content.Intent#filterEquals
+         * @see #ELAPSED_REALTIME
+         * @see #ELAPSED_REALTIME_WAKEUP
+         * @see #RTC
+         * @see #RTC_WAKEUP
+         */
+        SetWindow(
+            [in] Int32 type,
+            [in] Int64 windowStartMillis,
+            [in] Int64 windowLengthMillis,
+            [in] IPendingIntent* operation);
+
+        /**
+         * Schedule an alarm to be delivered precisely at the stated time.
+         *
+         * <p>
+         * This method is like {@link #set(int, long, PendingIntent)}, but does not permit
+         * the OS to adjust the delivery time.  The alarm will be delivered as nearly as
+         * possible to the requested trigger time.
+         *
+         * <p>
+         * <b>Note:</b> only alarms for which there is a strong demand for exact-time
+         * delivery (such as an alarm clock ringing at the requested time) should be
+         * scheduled as exact.  Applications are strongly discouraged from using exact
+         * alarms unnecessarily as they reduce the OS's ability to minimize battery use.
+         *
+         * @param type One of {@link #ELAPSED_REALTIME}, {@link #ELAPSED_REALTIME_WAKEUP},
+         *        {@link #RTC}, or {@link #RTC_WAKEUP}.
+         * @param triggerAtMillis time in milliseconds that the alarm should go
+         *        off, using the appropriate clock (depending on the alarm type).
+         * @param operation Action to perform when the alarm goes off;
+         *        typically comes from {@link PendingIntent#getBroadcast
+         *        IntentSender.getBroadcast()}.
+         *
+         * @see #set
+         * @see #setRepeating
+         * @see #setWindow
+         * @see #cancel
+         * @see android.content.Context#sendBroadcast
+         * @see android.content.Context#registerReceiver
+         * @see android.content.Intent#filterEquals
+         * @see #ELAPSED_REALTIME
+         * @see #ELAPSED_REALTIME_WAKEUP
+         * @see #RTC
+         * @see #RTC_WAKEUP
+         */
+        SetExact(
+            [in] Int32 type,
+            [in] Int64 triggerAtMillis,
+            [in] IPendingIntent* operation);
+
+        /**
+         * Schedule an alarm that represents an alarm clock.
+         *
+         * The system may choose to display information about this alarm to the user.
+         *
+         * <p>
+         * This method is like {@link #setExact(int, long, PendingIntent)}, but implies
+         * {@link #RTC_WAKEUP}.
+         *
+         * @param info
+         * @param operation Action to perform when the alarm goes off;
+         *        typically comes from {@link PendingIntent#getBroadcast
+         *        IntentSender.getBroadcast()}.
+         *
+         * @see #set
+         * @see #setRepeating
+         * @see #setWindow
+         * @see #setExact
+         * @see #cancel
+         * @see #getNextAlarmClock()
+         * @see android.content.Context#sendBroadcast
+         * @see android.content.Context#registerReceiver
+         * @see android.content.Intent#filterEquals
+         */
+        SetAlarmClock(
+            [in] IAlarmManagerAlarmClockInfo* info,
+            [in] IPendingIntent* operation);
+
+        /** @hide */
+        //@SystemApi
+        Set(
+            [in] Int32 type,
+            [in] Int64 triggerAtMillis,
+            [in] Int64 windowMillis,
+            [in] Int64 intervalMillis,
+            [in] IPendingIntent* operation,
+            [in] IWorkSource* workSource);
+
+        /**
          * Schedule a repeating alarm that has inexact trigger time requirements;
          * for example, an alarm that repeats every hour, but not necessarily at
          * the top of every hour.  These alarms are more power-efficient than
@@ -304,6 +493,33 @@ module
          */
         SetTimeZone(
             [in] String timeZone);
+
+        /**
+         * Gets information about the next alarm clock currently scheduled.
+         *
+         * The alarm clocks considered are those scheduled by {@link #setAlarmClock}
+         * from any package of the calling user.
+         *
+         * @see #setAlarmClock
+         * @see AlarmClockInfo
+         */
+        GetNextAlarmClock(
+            [out] IAlarmManagerAlarmClockInfo** info);
+
+        /**
+         * Gets information about the next alarm clock currently scheduled.
+         *
+         * The alarm clocks considered are those scheduled by {@link #setAlarmClock}
+         * from any package of the given {@parm userId}.
+         *
+         * @see #setAlarmClock
+         * @see AlarmClockInfo
+         *
+         * @hide
+         */
+        GetNextAlarmClock(
+            [in] Int32 userId,
+            [out] IAlarmManagerAlarmClockInfo** info);
     }
 
     } // namespace App
