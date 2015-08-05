@@ -1,8 +1,9 @@
 module
 {
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IComponentCallbacks;
+    interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos {
     namespace Droid {
@@ -35,6 +36,24 @@ module
     }
 
     /**
+     * Callback interface for use with {@link Application#registerOnProvideAssistDataListener}
+     * and {@link Application#unregisterOnProvideAssistDataListener}.
+     */
+    [local]
+    interface IOnProvideAssistDataListener {
+        /**
+         * This is called when the user is requesting an assist, to build a full
+         * {@link Intent#ACTION_ASSIST} Intent with all of the context of the current
+         * application.  You can override this method to place into the bundle anything
+         * you would like to appear in the {@link Intent#EXTRA_ASSIST_CONTEXT} part
+         * of the assist Intent.
+         */
+        OnProvideAssistData(
+            [in] IActivity* activity,
+            [in] IBundle* savedInstanceState);
+    }
+
+    /**
      * Base class for those who need to maintain global application state. You can
      * provide your own implementation by specifying its name in your
      * AndroidManifest.xml's &lt;application&gt; tag, which will cause that class
@@ -55,7 +74,9 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.IContextWrapper
+     * interface IComponentCallbacks2
      */
+    [local]
     interface IApplication {
         /**
          * Called when the application is starting, before any other application
@@ -83,11 +104,23 @@ module
         OnTrimMemory(
             [in] Int32 level);
 
+        RegisterComponentCallbacks(
+            [in] IComponentCallbacks* cb);
+
+        UnregisterComponentCallbacks(
+            [in] IComponentCallbacks* cb);
+
         RegisterActivityLifecycleCallbacks(
             [in] IActivityLifecycleCallbacks* cb);
 
         UnregisterActivityLifecycleCallbacks(
             [in] IActivityLifecycleCallbacks* cb);
+
+        RegisterOnProvideAssistDataListener(
+            [in] IOnProvideAssistDataListener* cb);
+
+        UnregisterOnProvideAssistDataListener(
+            [in] IOnProvideAssistDataListener* cb);
 
         /**
          * @hide
@@ -125,6 +158,12 @@ module
         /* package */
         DispatchActivityDestroyed(
             [in] IActivity* activity);
+
+        /* package */
+        DispatchOnProvideAssistData(
+            [in] IActivity* activity,
+            [in] IBundle* data);
+
     }
 
     } // namespace App

@@ -2,11 +2,18 @@ module
 {
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.App.IDialog;
+    interface Elastos.Droid.Content.IDialogInterface;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
 
+    /**
+     * @Involve
+     * interface IFragment
+     * interface IDialogInterfaceOnCancelListener
+     * interface IDialogInterfaceOnDismissListener
+     */
     [local]
     interface IDialogFragment {
         /**
@@ -173,6 +180,12 @@ module
         OnCreateDialog(
             [in] IBundle* savedInstanceState,
             [out] IDialog** dialog);
+
+        OnCancel(
+            [in] IDialogInterface* dialog);
+
+        OnDismiss(
+            [in] IDialogInterface* dialog);
     }
 
     } // namespace App

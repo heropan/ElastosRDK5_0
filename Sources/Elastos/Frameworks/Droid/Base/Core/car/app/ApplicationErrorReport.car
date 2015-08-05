@@ -4,16 +4,14 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.Pm.IPackageManager;
-
+    interface Elastos.Droid.App.IApplicationErrorReportCrashInfo;
+    interface Elastos.Droid.App.IApplicationErrorReportAnrInfo;
+    interface Elastos.Droid.App.IApplicationErrorReportBatteryInfo;
+    interface Elastos.Droid.App.IApplicationErrorReportRunningServiceInfo;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
-
-    interface IApplicationErrorReportCrashInfo;
-    interface IApplicationErrorReportAnrInfo;
-    interface IApplicationErrorReportBatteryInfo;
-    interface IApplicationErrorReportRunningServiceInfo;
 
     /**
      * Describes an application error. A report has a type, which is one of
@@ -38,6 +36,10 @@ module
      * @sa anrInfo
      * @sa batteryInfo
      * @sa runningServiceInfo
+     */
+    /**
+     * @Involve
+     * interface IParcelable
      */
     interface IApplicationErrorReport {
         /**

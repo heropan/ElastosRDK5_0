@@ -9,18 +9,22 @@ module
     merge("app/ActivityThread.car");
     merge("app/ActivityTransitionCoordinator.car");
     merge("app/AlarmManager.car");
-    //merge("app/AlertDialog.car");
-
+    merge("app/AlertDialog.car");
+    merge("app/AliasActivity.car");
+    merge("app/AppOpsManager.car");
+    merge("app/Application.car");
+    merge("app/ApplicationErrorReport.car");
+    merge("app/ContextImpl.car");
+    merge("app/DatePickerDialog.car");
+    merge("app/Dialog.car");
+    merge("app/DialogFragment.car");
+    //merge("app/DownloadManager.car");
 
     merge("app/BackStackRecord.car");
 
     // merge("app/ListActivity.car");
     // merge("app/LocalActivityManager.car");
 
-    // merge("app/Dialog.car");
-    // merge("app/Application.car");
-    // merge("app/ApplicationErrorReport.car");
-    // merge("app/DownloadManager.car");
     // merge("app/FragmentTransaction.car");
     // merge("app/IActivityController.car");
     // merge("app/IActivityManager.car");
@@ -62,7 +66,7 @@ module
     // merge("app/ActionBarImpl.car");
     // merge("app/AlertController.car");
     // merge("app/Fragment.car");
-    // merge("app/DialogFragment.car");
+    //
     // merge("app/MediaRouteChooserDialogFragment.car");
     // merge("app/HeavyWeightSwitcherActivity.car");
     // merge("app/ListFragment.car");
@@ -154,14 +158,6 @@ module
 //     namespace Elastos {
 //     namespace Droid {
 //     namespace App {
-
-//     /**
-//      * @Involve
-//      * interface Elastos.Droid.Content.IContext
-//      */
-//     [local]
-//     interface IContextImpl {
-//     }
 
 //     [local]
 //     class CContextImpl {

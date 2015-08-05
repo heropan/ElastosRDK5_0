@@ -57,6 +57,7 @@ module
      * interface IDialog
      * interface IDialogInterface
      */
+    [local]
     interface IAlertDialog {
         /**
          * Special theme constant for {@link #AlertDialog(Context, int)}: use

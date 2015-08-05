@@ -4,12 +4,18 @@ module
 
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroupLayoutParams;
+    interface Elastos.Droid.View.IWindowManagerLayoutParams;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.ILayoutInflater;
     interface Elastos.Droid.View.IWindow;
+    interface Elastos.Droid.View.IContextMenu;
+    interface Elastos.Droid.View.IContextMenuInfo;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.View.IMenu;
     interface Elastos.Droid.View.IMenuItem;
+    interface Elastos.Droid.View.IActionMode;
+    interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener;
     interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
@@ -58,6 +64,10 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Content.IDialogInterface
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IWindowOnWindowDismissedCallback
      */
     [local]
     interface IDialog {
@@ -106,6 +116,14 @@ module
          */
         IsShowing(
             [out] Boolean* isShowing);
+
+        /**
+         * Forces immediate creation of the dialog.
+         * <p>
+         * Note that you should not override this method to perform dialog creation.
+         * Rather, override {@link #onCreate(Bundle)}.
+         */
+        Create();
 
         /**
          * Start the dialog and display it on screen.  The window is placed in the
@@ -247,6 +265,57 @@ module
             [in] Int32 titleId);
 
         /**
+         * A key was pressed down.
+         *
+         * <p>If the focused view didn't want this event, this method is called.
+         *
+         * <p>The default implementation consumed the KEYCODE_BACK to later
+         * handle it in {@link #onKeyUp}.
+         *
+         * @see #onKeyUp
+         * @see android.view.KeyEvent
+         */
+        OnKeyDown(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Default implementation of {@link KeyEvent.Callback#onKeyLongPress(int, KeyEvent)
+         * KeyEvent.Callback.onKeyLongPress()}: always returns false (doesn't handle
+         * the event).
+         */
+        OnKeyLongPress(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * A key was released.
+         *
+         * <p>The default implementation handles KEYCODE_BACK to close the
+         * dialog.
+         *
+         * @see #onKeyDown
+         * @see KeyEvent
+         */
+        OnKeyUp(
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Default implementation of {@link KeyEvent.Callback#onKeyMultiple(int, int, KeyEvent)
+         * KeyEvent.Callback.onKeyMultiple()}: always returns false (doesn't handle
+         * the event).
+         */
+        OnKeyUp(
+            [in] Int32 keyCode,
+            [in] Int32 repeatCount,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
          * Called when the dialog has detected the user's press of the back
          * key.  The default implementation simply cancels the dialog (only if
          * it is cancelable), but you can override this to do whatever you want.
@@ -334,6 +403,137 @@ module
             [in] IMotionEvent* event,
             [out] Boolean* res);
 
+        OnWindowAttributesChanged(
+            [in] IWindowManagerLayoutParams* params);
+
+        OnContentChanged();
+
+        OnWindowFocusChanged(
+            [in] Boolean hasFocus);
+
+        OnAttachedToWindow();
+
+        OnDetachedFromWindow();
+
+        /**
+         * Called to process key events.  You can override this to intercept all
+         * key events before they are dispatched to the window.  Be sure to call
+         * this implementation for key events that should be handled normally.
+         *
+         * @param event The key event.
+         *
+         * @return boolean Return true if this event was consumed.
+         */
+        DispatchKeyEvent(
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Called to process a key shortcut event.
+         * You can override this to intercept all key shortcut events before they are
+         * dispatched to the window.  Be sure to call this implementation for key shortcut
+         * events that should be handled normally.
+         *
+         * @param event The key shortcut event.
+         * @return True if this event was consumed.
+         */
+        DispatchKeyShortcutEvent(
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Called to process touch screen events.  You can override this to
+         * intercept all touch screen events before they are dispatched to the
+         * window.  Be sure to call this implementation for touch screen events
+         * that should be handled normally.
+         *
+         * @param ev The touch screen event.
+         *
+         * @return boolean Return true if this event was consumed.
+         */
+        DispatchTouchEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Called to process trackball events.  You can override this to
+         * intercept all trackball events before they are dispatched to the
+         * window.  Be sure to call this implementation for trackball events
+         * that should be handled normally.
+         *
+         * @param ev The trackball event.
+         *
+         * @return boolean Return true if this event was consumed.
+         */
+        DispatchTrackballEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * Called to process generic motion events.  You can override this to
+         * intercept all generic motion events before they are dispatched to the
+         * window.  Be sure to call this implementation for generic motion events
+         * that should be handled normally.
+         *
+         * @param ev The generic motion event.
+         *
+         * @return boolean Return true if this event was consumed.
+         */
+        DispatchGenericMotionEvent(
+            [in] IMotionEvent* event,
+            [out] Boolean* result);
+
+        DispatchPopulateAccessibilityEvent(
+            [in] IAccessibilityEvent* event,
+            [out] Boolean* result);
+
+        /**
+         * @see Activity#onCreatePanelView(int)
+         */
+        OnCreatePanelView(
+            [in] Int32 featureId,
+            [out] IView** result);
+
+        /**
+         * @see Activity#onCreatePanelMenu(int, Menu)
+         */
+        OnCreatePanelMenu(
+            [in] Int32 featureId,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /**
+         * @see Activity#onPreparePanel(int, View, Menu)
+         */
+        OnPreparePanel(
+            [in] Int32 featureId,
+            [in] IView* view,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /**
+         * @see Activity#onMenuOpened(int, Menu)
+         */
+        OnMenuOpened(
+            [in] Int32 featureId,
+            [in] IMenu* menu,
+            [out] Boolean* result);
+
+        /**
+         * @see Activity#onMenuItemSelected(int, MenuItem)
+         */
+        OnMenuItemSelected(
+            [in] Int32 featureId,
+            [in] IMenuItem* menu,
+            [out] Boolean* result);
+
+        /**
+         * @see Activity#onPanelClosed(int, Menu)
+         */
+        OnPanelClosed(
+            [in] Int32 featureId,
+            [in] IMenu* menu);
+
         /**
          * It is usually safe to proxy this call to the owner activity's
          * Activity#onCreateOptionsMenu(Menu) if the client desires the same
@@ -391,6 +591,14 @@ module
         InvalidateOptionsMenu();
 
         /**
+         * @see Activity#onCreateContextMenu(ContextMenu, View, ContextMenuInfo)
+         */
+        OnCreateContextMenu(
+            [in] IContextMenu* menu,
+            [in] IView* v,
+            [in] IContextMenuInfo* menuInfo);
+
+        /**
          * @see Activity#registerForContextMenu(View)
          */
         RegisterForContextMenu(
@@ -420,6 +628,34 @@ module
          */
         OnContextMenuClosed(
             [in] IMenu* menu);
+
+        /**
+         * This hook is called when the user signals the desire to start a search.
+         */
+        OnSearchRequested(
+            [out] Boolean* result);
+
+        OnWindowStartingActionMode(
+            [in] IActionModeCallback* cb,
+            [out] IActionMode** mode);
+
+        /**
+         * {@inheritDoc}
+         *
+         * Note that if you override this method you should always call through
+         * to the superclass implementation by calling super.onActionModeStarted(mode).
+         */
+        OnActionModeStarted(
+            [in] IActionMode* mode);
+
+        /**
+         * {@inheritDoc}
+         *
+         * Note that if you override this method you should always call through
+         * to the superclass implementation by calling super.onActionModeFinished(mode).
+         */
+        OnActionModeFinished(
+            [in] IActionMode* mode);
 
         /**
          * Request that key events come to this dialog. Use this if your
@@ -512,6 +748,12 @@ module
             [in] Boolean cancel);
 
         /**
+         * Cancel the dialog.  This is essentially the same as calling {@link #dismiss()}, but it will
+         * also call your {@link DialogInterface.OnCancelListener} (if registered).
+         */
+        Cancel();
+
+        /**
          * Set a listener to be invoked when the dialog is canceled.
          *
          * <p>This will only be invoked when the dialog is canceled.
@@ -591,7 +833,7 @@ module
             [in] IDialogInterfaceOnKeyListener* onKeyListener);
 
         DispatchOnCreate(
-            [in] IBundle* b);
+            [in] IBundle* savedInstanceState);
     }
 
     } // namespace App

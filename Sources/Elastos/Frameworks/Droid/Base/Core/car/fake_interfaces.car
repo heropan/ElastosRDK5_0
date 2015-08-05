@@ -10,15 +10,9 @@ module
     namespace Droid {
     namespace App {
 
-        interface IApplication  {}
-
         interface IIActivityManager {}
 
         interface IApplicationThread {}
-
-        interface IApplicationErrorReportCrashInfo {}
-
-        interface IDialog {}
 
         interface IFragmentManager {}
 
@@ -201,6 +195,12 @@ module
 
         interface ITextView {}
 
+        interface IListView {}
+
+        interface IListAdapter {}
+
+        interface IAdapterViewOnItemSelectedListener {}
+
         interface IToolbar {}
 
         interface IMediaController {}
@@ -212,6 +212,8 @@ module
         interface IButton {}
 
         interface ILinearLayout {}
+
+        interface IDatePicker {}
 
     }}} // Elastos.Droid.Widget
 

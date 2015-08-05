@@ -7,12 +7,13 @@ module
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.Net.IUri;
 
+    interface Elastos.Droid.App.IDownloadManagerRequest;
+    interface Elastos.Droid.App.IDownloadManagerQuery;
+
     namespace Elastos {
     namespace Droid {
     namespace App {
 
-    interface IDownloadManagerRequest;
-    interface IDownloadManagerQuery;
 
     /**
      * The download manager is a system service that handles long-running HTTP
@@ -32,7 +33,6 @@ module
      * @sa ACTION_NOTIFICATION_CLICKE
      * @sa INTERNET
      */
-
     [deprecated]
     interface IDownloadManager {
         /**

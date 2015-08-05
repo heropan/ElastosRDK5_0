@@ -1,0 +1,33 @@
+module
+{
+    using interface Elastos.IO.IFile;
+
+    interface Elastos.Droid.View.IActionMode;
+    interface Elastos.Droid.View.IActionModeCallback;
+    interface Elastos.Droid.Content.Res.IConfiguration;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * Common implementation of Context API, which provides the base
+     * context object for Activity and other application components.
+     */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IContext
+     */
+    interface IContextImpl {
+        GetSharedPrefsFile(
+            [in] String name,
+            [out] IFile** file);
+
+    }
+
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}
