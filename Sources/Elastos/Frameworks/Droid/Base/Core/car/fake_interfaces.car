@@ -137,18 +137,6 @@ module
 
     }}} // Elastos.Droid.Privacy
 
-
-    //
-    // Elastos.Droid.Animation
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Animation {
-
-        interface IStateListAnimator {}
-
-    }}} // Elastos.Droid.Animation
-
     //
     // Elastos.Droid.Transition
     //

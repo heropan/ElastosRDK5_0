@@ -1,6 +1,6 @@
 
-#ifndef  __ANIMATORINFLATER_H__
-#define  __ANIMATORINFLATER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_ANIMATORINFLATER_H__
+#define  __ELASTOS_DROID_ANIMATION_ANIMATORINFLATER_H__
 
 #include "ext/frameworkext.h"
 #include <Elastos.Droid.Core_server.h>
@@ -13,7 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-class AnimatorInflater{
+class AnimatorInflater {
 public:
     /**
      * Loads an {@link Animator} object from a resource
@@ -71,8 +71,8 @@ private:
     static const Int32 VALUE_TYPE_CUSTOM;
 };
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
-#endif  //__ANIMATORINFLATER_H__
+
+#endif  // __ELASTOS_DROID_ANIMATION_ANIMATORINFLATER_H__

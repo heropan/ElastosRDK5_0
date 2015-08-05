@@ -37,7 +37,7 @@ PInterface AnimatorSet::DependencyListener::Probe(
     else if( riid == EIID_DependencyListener) {
         return reinterpret_cast<PInterface>(this);
     }
-    return NULL;
+    return Object::Probe(riid);
 }
 
 UInt32 AnimatorSet::DependencyListener::AddRef()
@@ -59,7 +59,7 @@ ECode AnimatorSet::DependencyListener::GetInterfaceID(
         *iid = EIID_IAnimatorListener ;
     }
     else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return Object::GetInterfaceID(object, iid);
     }
     return NOERROR;
 }
@@ -160,7 +160,7 @@ PInterface AnimatorSet::AnimatorSetListener::Probe(
     else if( riid == EIID_AnimatorSetListener) {
         return reinterpret_cast<PInterface>(this);
     }
-    return NULL;
+    return Object::Probe(riid);
 }
 UInt32 AnimatorSet::AnimatorSetListener::AddRef()
 {
@@ -179,7 +179,7 @@ ECode AnimatorSet::AnimatorSetListener::GetInterfaceID(
         *iid = EIID_IAnimatorListener ;
     }
     else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        return Object::GetInterfaceID(object, iid);
     }
     return NOERROR;
 }
@@ -271,6 +271,7 @@ AnimatorSet::Dependency::Dependency(
 //==============================================================================
 //                  AnimatorSet::Node
 //==============================================================================
+CAR_INTERFACE_IMPL(AnimatorSet::Node, Object, ICloneable);
 AnimatorSet::Node::Node(
     /* [in] */ IAnimator* animation)
     : mAnimation(animation)
@@ -358,6 +359,34 @@ ECode AnimatorSet::AnimatorListenerAdapterIMPL::OnAnimationRepeat(
 //==============================================================================
 //                  AnimatorSet
 //==============================================================================
+
+ECode AnimatorSet::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(AnimatorSet *)this) {
+        *iid = EIID_AnimatorSet;
+    }
+    else if (object == (IInterface*)(IAnimatorSet *)this) {
+        *iid = EIID_IAnimatorSet;
+    }
+
+    return Animator::GetInterfaceID(object, iid);
+}
+
+PInterface AnimatorSet::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_AnimatorSet) {
+        return reinterpret_cast<PInterface>(this);
+    }
+    else if (riid == EIID_IAnimatorSet) {
+        return (IInterface*)(IAnimatorSet*)this;
+    }
+
+    return Animator::Probe(riid)
+}
 
 AnimatorSet::AnimatorSet()
     : mTerminated(FALSE)
@@ -521,16 +550,18 @@ ECode AnimatorSet::SetInterpolator(
     return NOERROR;
 }
 
-AutoPtr<IAnimatorSetBuilder> AnimatorSet::Play(
-    /* [in] */ IAnimator* anim)
+ECode AnimatorSet::Play(
+    /* [in] */ IAnimator* anim,
+    /* [out] */ IAnimatorSetBuilder** builder)
 {
-    AutoPtr<IAnimatorSetBuilder> builder;
+    VALIDATE_NOT_NULL(builder);
     if (anim != NULL) {
         mNeedsSort = TRUE;
-        CAnimatorSetBuilder::New(THIS_PROBE(IAnimatorSet), anim, (IAnimatorSetBuilder**)&builder);
-        return builder;
+        return CAnimatorSetBuilder::New(THIS_PROBE(IAnimatorSet), anim, builder);
     }
-    return NULL;
+
+    *builder = NULL;
+    return NOERROR;
 }
 
 ECode AnimatorSet::Cancel()
@@ -602,27 +633,37 @@ ECode AnimatorSet::End()
     return NOERROR;
 }
 
-Boolean AnimatorSet::IsRunning()
+ECode AnimatorSet::IsRunning(
+    /* [out] */ Boolean* _running)
 {
+    VALIDATE_NOT_NULL(_running);
     List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
     for (; it != mNodes.End(); it++) {
         Boolean running;
         (*it)->mAnimation->IsRunning(&running);
         if (running) {
-            return TRUE;
+            *_running = TRUE;
+            return NOERROR;
         }
     }
-    return FALSE;
+    *_running = FALSE;
+    return NOERROR
 }
 
-Boolean AnimatorSet::IsStarted()
+ECode AnimatorSet::IsStarted(
+    /* [out] */ Boolean* started)
 {
-    return mStarted;
+    VALIDATE_NOT_NULL(started);
+    *started = mStarted;
+    return NOERROR;
 }
 
-Int64 AnimatorSet::GetStartDelay()
+ECode AnimatorSet::GetStartDelay(
+    /* [out] */ Int64* delay)
 {
-    return mStartDelay;
+    VALIDATE_NOT_NULL(delay);
+    *delay = mStartDelay;
+    return NOERROR;
 }
 
 ECode AnimatorSet::SetStartDelay(
@@ -632,9 +673,12 @@ ECode AnimatorSet::SetStartDelay(
     return NOERROR;
 }
 
-Int64 AnimatorSet::GetDuration()
+ECode AnimatorSet::GetDuration(
+    /* [out] */ Int64* duration)
 {
-    return mDuration;
+    VALIDATE_NOT_NULL(duration);
+    *duration = mDuration;
+    return NOERROR;
 }
 
 ECode AnimatorSet::SetDuration(

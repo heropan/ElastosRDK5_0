@@ -6,6 +6,9 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CAnimatorSetBuilder);
+CAR_INTERFACE_IMPL(CAnimatorSetBuilder, Object, IAnimatorSetBuilder);
+
 ECode CAnimatorSetBuilder::constructor(
     /* [in] */ IAnimatorSet* host,
     /* [in] */ IAnimator* anim)

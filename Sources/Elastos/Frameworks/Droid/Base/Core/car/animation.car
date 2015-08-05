@@ -13,6 +13,7 @@ module
     merge("animation/LayoutTransition.car");
     merge("animation/ObjectAnimator.car");
     merge("animation/PropertyValuesHolder.car");
+    merge("animation/StateListAnimator.car");
 
     // namespace Elastos {
     // namespace Droid {

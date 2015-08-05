@@ -9,6 +9,9 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CArgbEvaluator);
+CAR_INTERFACE_IMPL_2(CArgbEvaluator, Object, IArgbEvaluator, ITypeEvaluator);
+
 ECode CArgbEvaluator::Evaluate(
     /* [in] */ Float fraction,
     /* [in] */ IInterface* startValue,

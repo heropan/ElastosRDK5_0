@@ -13,7 +13,10 @@ module
      * This is the superclass for classes which provide basic support for animations
      * which can be started, ended, and have AnimatorListeners added to them.
      */
-
+    /**
+     * @Involve
+     * interface ICloneable
+     */
     interface IAnimator {
         /**
          * Starts this animation. If the animation has a nonzero startDelay, the animation will start

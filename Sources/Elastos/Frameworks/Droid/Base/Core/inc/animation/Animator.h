@@ -1,6 +1,6 @@
 
-#ifndef  __ANIMATOR_H__
-#define  __ANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_ANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_ANIMATOR_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -18,15 +18,16 @@ class AnimatorSet;
  * This is the superclass for classes which provide basic support for animations which can be
  * started, ended, and have <code>AnimatorListeners</code> added to them.
  */
-class Animator /*implements Cloneable*/
+class Animator
+    : public Object
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Animator();
 
     virtual ~Animator();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
     /**
      * Starts this animation. If the animation has a nonzero startDelay, the animation will start
@@ -70,7 +71,8 @@ public:
      *
      * @return the number of milliseconds to delay running the animation
      */
-    virtual Int64 GetStartDelay() = 0;
+    virtual CARAPI GetStartDelay(
+        /* [out] */ Int64* delay) = 0;
 
     /**
      * The amount of time, in milliseconds, to delay starting the animation after
@@ -80,7 +82,6 @@ public:
      */
     virtual CARAPI SetStartDelay(
         /* [in] */ Int64 startDelay) = 0;
-
 
     /**
      * Sets the length of the animation.
@@ -95,7 +96,8 @@ public:
      *
      * @return The length of the animation, in milliseconds.
      */
-    virtual Int64 GetDuration() = 0;
+    virtual CARAPI GetDuration(
+        /* [out] */ Int64* duration) = 0;
 
     /**
      * The time interpolator used in calculating the elapsed fraction of this animation. The
@@ -114,7 +116,8 @@ public:
      *
      * @return Whether the Animator is running.
      */
-    virtual Boolean IsRunning() = 0;
+    virtual CARAPI IsRunning(
+        /* [out] */ Boolean* running) = 0;
 
     /**
      * Returns whether this Animator has been started and not yet ended. This state is a superset
@@ -125,7 +128,8 @@ public:
      *
      * @return Whether the Animator has been started and not yet ended.
      */
-    virtual Boolean IsStarted();
+    virtual CARAPI IsStarted(
+        /* [out] */ Boolean* started);
 
     /**
      * Adds a listener to the set of listeners that are sent events through the life of an
@@ -198,7 +202,6 @@ public:
         /* [in] */ IInterface* target);
 
 protected:
-
     //@Override
     CARAPI CloneSuperData(
         /* [in] */ Animator* anim);
@@ -211,9 +214,8 @@ protected:
     friend class AnimatorSet;
 };
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__ANIMATOR_H__
+#endif  // __ELASTOS_DROID_ANIMATION_ANIMATOR_H__

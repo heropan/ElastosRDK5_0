@@ -1,3 +1,4 @@
+
 #include "animation/AnimatorInflater.h"
 #include <elastos/utility/etl/List.h>
 #include "R.h"
@@ -350,7 +351,6 @@ AutoPtr<IValueAnimator> AnimatorInflater::LoadAnimator(
 
     return anim;
 }
-
 
 }   //namespace Animation
 }   //namespace Droid

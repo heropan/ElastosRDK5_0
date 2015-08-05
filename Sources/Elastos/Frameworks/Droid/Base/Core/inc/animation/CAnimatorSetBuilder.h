@@ -1,8 +1,8 @@
 
-#ifndef  __ANIMATORSETBUILDER_H__
-#define  __ANIMATORSETBUILDER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CANIMATORSETBUILDER_H__
+#define  __ELASTOS_DROID_ANIMATION_CANIMATORSETBUILDER_H__
 
-#include "_CAnimatorSetBuilder.h"
+#include "_Elastos_Droid_Animation_CAnimatorSetBuilder.h"
 #include "ext/frameworkext.h"
 #include "animation/AnimatorSet.h"
 
@@ -64,8 +64,14 @@ namespace Animation {
  */
 
 CarClass(CAnimatorSetBuilder)
+    , public Object
+    , public IAnimatorSetBuilder
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * package-private constructor. Builders are only constructed by AnimatorSet, when the
      * play() method is called.
@@ -130,9 +136,8 @@ private:
     AutoPtr<AnimatorSet::Node> mCurrentNode;
 };
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__ANIMATORSETBUILDER_H__
+#endif  // __ELASTOS_DROID_ANIMATION_CANIMATORSETBUILDER_H__

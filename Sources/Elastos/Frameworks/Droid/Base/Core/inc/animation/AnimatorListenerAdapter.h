@@ -1,6 +1,6 @@
 
-#ifndef  __ANIMATORLISTENERADAPTER_H__
-#define  __ANIMATORLISTENERADAPTER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_ANIMATORLISTENERADAPTER_H__
+#define  __ELASTOS_DROID_ANIMATION_ANIMATORLISTENERADAPTER_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -9,20 +9,11 @@ namespace Droid {
 namespace Animation {
 
 class AnimatorListenerAdapter
-    : public ElRefBase
+    : public Object
     , public IAnimatorListener
 {
 public:
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
+    CAR_INTERFACE_DECL();
 
     virtual CARAPI OnAnimationStart(
         /* [in] */ IAnimator* animation);

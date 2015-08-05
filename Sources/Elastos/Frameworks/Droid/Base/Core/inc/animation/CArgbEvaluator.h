@@ -1,8 +1,8 @@
 
-#ifndef  __CARGBEVALUATOR_H__
-#define  __CARGBEVALUATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CARGBEVALUATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_CARGBEVALUATOR_H__
 
-#include "_CArgbEvaluator.h"
+#include "_Elastos_Droid_Animation_CArgbEvaluator.h"
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +13,15 @@ namespace Animation {
  * values that represent ARGB colors.
  */
 CarClass(CArgbEvaluator)
+    , public Object
+    , public IArgbEvaluator
+    , public ITypeEvaluator
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * This function returns the calculated in-between value for a color
      * given integers that represent the start and end values in the four
@@ -42,11 +49,10 @@ public:
         /* [in] */ Int32 startValue,
         /* [in] */ Int32 endValue,
         /* [out] */ Int32* result);
-
 };
-
 
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
-#endif  //__ARGBEVALUATOR_H__
+
+#endif  //__ELASTOS_DROID_ANIMATION_CARGBEVALUATOR_H__

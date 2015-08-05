@@ -10,6 +10,34 @@ namespace Animation {
 extern "C" const InterfaceID EIID_Animator =
         { 0xbe5c79d5, 0x127b, 0x4b30, { 0x87, 0xde, 0xa8, 0x9c, 0xa9, 0x67, 0xd2, 0x39 } };
 
+ECode Animator::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(Animator *)this) {
+        *iid = EIID_Animator;
+    }
+    else if (object == (IInterface*)(ICloneable *)this) {
+        *iid = EIID_ICloneable;
+    }
+
+    return Object::GetInterfaceID(object, iid);
+}
+
+PInterface Animator::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_Animator) {
+        return reinterpret_cast<PInterface>(this);
+    }
+    else if (riid == EIID_ICloneable) {
+        return (IInterface*)(ICloneable*)this;
+    }
+
+    return Object::Probe(riid)
+}
+
 Animator::Animator()
 {
 }
@@ -34,9 +62,12 @@ ECode Animator::End()
     return NOERROR;
 }
 
-Boolean Animator::IsStarted()
+ECode Animator::IsStarted(
+    /* [out] */ Boolean* started)
 {
-    return IsRunning();
+    VALIDATE_NOT_NULL(started);
+
+    return IsRunning(started);
 }
 
 ECode Animator::AddListener(
@@ -111,9 +142,6 @@ ECode Animator::SetTarget(
     return NOERROR;
 }
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
-
-

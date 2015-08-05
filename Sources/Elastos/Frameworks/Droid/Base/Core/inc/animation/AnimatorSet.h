@@ -1,6 +1,6 @@
 
-#ifndef  __ANIMATORSET_H__
-#define  __ANIMATORSET_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__
+#define  __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__
 
 #include "animation/Animator.h"
 #include "ext/frameworkext.h"
@@ -8,7 +8,6 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-
 
 namespace Elastos {
 namespace Droid {
@@ -18,7 +17,9 @@ extern "C" const InterfaceID EIID_AnimatorSet;
 extern "C" const InterfaceID EIID_DependencyListener;
 extern "C" const InterfaceID EIID_AnimatorSetListener;
 
-class AnimatorSet : public Animator
+class AnimatorSet
+    : public Animator
+    , public IAnimatorSet
 {
 public:
     class Node;
@@ -29,7 +30,7 @@ private:
      * all dependencies must be satisfied before the animation is started.
      */
     class DependencyListener
-        : public ElRefBase
+        : public Object
         , public IAnimatorListener
     {
     public:
@@ -82,7 +83,7 @@ private:
 
     class AnimatorSetListener
         : public IAnimatorListener
-        , public ElRefBase
+        , public Object
     {
     public:
         CAR_INTERFACE_DECL()
@@ -110,7 +111,8 @@ private:
      * dependent upon and the nature of that dependency.
      *
      */
-    class Dependency : public ElRefBase {
+    class Dependency : public Object
+    {
     public:
         static const Int32 WITH = 0;    // dependent node must start with this dependency node
         static const Int32 AFTER = 1;   // dependent node must start when this dependency node finishes
@@ -132,10 +134,13 @@ private:
      * both dependencies upon other nodes (in the dependencies list) as
      * well as dependencies of other nodes upon this (in the nodeDependents list).
      */
-    public:
-    class Node : public ElRefBase /*, public ICloneable */
+    class Node
+        : public Object
+        , public ICloneable
     {
     public:
+        CAR_INTERFACE_DECL();
+
         Node(
             /* [in] */ IAnimator* animation);
 
@@ -199,7 +204,7 @@ private:
         Boolean mDone;
     };
 
-    private:
+private:
     class AnimatorListenerAdapterIMPL : public AnimatorListenerAdapter
     {
     public:
@@ -227,6 +232,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Sets up this AnimatorSet to play all of the supplied animations at the same time.
      *
@@ -325,8 +332,9 @@ public:
      * outlined in the calls to <code>play</code> and the other methods in the
      * <code>Builder</code object.
      */
-    virtual CARAPI_(AutoPtr<IAnimatorSetBuilder>) Play(
-        /* [in] */ IAnimator* anim);
+    virtual CARAPI Play(
+        /* [in] */ IAnimator* anim,
+        /* [out] */ IAnimatorSetBuilder** builder);
 
     /**
      * {@inheritDoc}
@@ -349,16 +357,20 @@ public:
      * not yet ended.
      * @return Whether this AnimatorSet has been started and has not yet ended.
      */
-    virtual Boolean IsRunning();
+    virtual CARAPI IsRunning(
+        /* [out] */ Boolean* running);
 
-    virtual Boolean IsStarted();
+    virtual CARAPI IsStarted(
+        /* [out] */ Boolean* started);
 
-    virtual Int64 GetStartDelay();
+    virtual CARAPI GetStartDelay(
+        /* [out] */ Int64* delay);
 
     virtual CARAPI SetStartDelay(
         /* [in] */ Int64 startDelay);
 
-    virtual Int64 GetDuration();
+    virtual CARAPI GetDuration(
+        /* [out] */ Int64* duration);
 
     virtual CARAPI SetDuration(
         /* [in] */ Int64 duration);
@@ -458,9 +470,8 @@ private:
     Int64 mDuration;
 };
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__ANIMATORSET_H__
+#endif  // __ELASTOS_DROID_ANIMATION_ANIMATORSET_H__
