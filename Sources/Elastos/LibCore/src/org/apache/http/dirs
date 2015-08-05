@@ -21,3 +21,5 @@ DIRS += impl/client
 DIRS += impl/conn
 DIRS += impl/conn/tsccm
 DIRS += impl/cookie
+DIRS += impl/entity
+DIRS += impl/io

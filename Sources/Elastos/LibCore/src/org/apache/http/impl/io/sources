@@ -1,0 +1,32 @@
+
+TARGET_NAME= io
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/io
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/message
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/params
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/utility
+INCLUDES += $(MAKEDIR)../../../../../inc/elastos/io
+
+VPATH := $(MAKEDIR)../../../../../src/elastos/io
+
+SOURCES = AbstractMessageParser.cpp
+SOURCES += AbstractMessageWriter.cpp
+SOURCES += AbstractSessionInputBuffer.cpp
+SOURCES += AbstractSessionOutputBuffer.cpp
+SOURCES += InputStream.cpp
+SOURCES += ChunkedInputStream.cpp
+SOURCES += OutputStream.cpp
+SOURCES += ChunkedOutputStream.cpp
+SOURCES += ContentLengthOutputStream.cpp
+SOURCES += ContentLengthInputStream.cpp
+SOURCES += HttpRequestParser.cpp
+SOURCES += HttpRequestWriter.cpp
+SOURCES += HttpResponseParser.cpp
+SOURCES += HttpResponseWriter.cpp
+SOURCES += HttpTransportMetricsImpl.cpp
+SOURCES += IdentityInputStream.cpp
+SOURCES += IdentityOutputStream.cpp
+SOURCES += SocketInputBuffer.cpp
+SOURCES += SocketOutputBuffer.cpp
