@@ -7,7 +7,7 @@ module
     merge("../car/fake_interfaces.car");
     merge("../car/util.car");
     merge("../car/os.car");
-    //merge("../car/animation.car");
+    merge("../car/animation.car");
     merge("../car/database.car");
     merge("../car/content.car");
     merge("../car/graphics.car");

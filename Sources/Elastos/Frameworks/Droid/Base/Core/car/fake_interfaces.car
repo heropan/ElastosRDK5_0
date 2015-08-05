@@ -117,14 +117,6 @@ module
 
         interface IStateListAnimator {}
 
-        interface ILayoutTransition {}
-
-        interface ITimeInterpolator {}
-
-        interface IAnimatorListener {}
-
-        interface IAnimatorUpdateListener{}
-
     }}} // Elastos.Droid.Animation
 
     //

@@ -1,5 +1,6 @@
 module
 {
+    using interface Elastos.Utility.IList;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IView;
 
@@ -531,7 +532,7 @@ module
          * @return
          */
         GetTransitionListeners(
-            [out] IObjectContainer** listeners);
+            [out] IList** listeners);
     }
 
     /**

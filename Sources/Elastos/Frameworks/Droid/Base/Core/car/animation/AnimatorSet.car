@@ -1,6 +1,10 @@
 
 module
 {
+    using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IArrayList;
+    using interface Elastos.Utility.IList;
+
     namespace Elastos {
     namespace Droid {
     namespace Animation {
@@ -60,7 +64,7 @@ module
          * @param items The animations that will be started simultaneously.
          */
         PlayTogether(
-            [in] IObjectContainer* items);
+            [in] ICollection* items);
 
         /**
          * Sets up this AnimatorSet to play each of the supplied animations when the
@@ -78,7 +82,7 @@ module
          * @param items The animations that will be started one after another.
          */
         PlaySequentially(
-            [in] IObjectContainer* items);
+            [in] IList* items);
 
         /**
          * Returns the current list of child Animator objects controlled by this
@@ -92,7 +96,7 @@ module
             [out, callee] ArrayOf<IAnimator*>* childAnimations);
 
         GetChildAnimations(
-            [out] IObjectContainer** childAnimations);
+            [out] IArrayList** childAnimations);
 
         /**
          * This method creates a <code>Builder</code> object, which is used to
