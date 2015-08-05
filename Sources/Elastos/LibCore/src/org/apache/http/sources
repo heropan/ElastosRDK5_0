@@ -73,5 +73,7 @@ LIBRARIES += impl/client/client.lib
 LIBRARIES += impl/conn/conn.lib
 LIBRARIES += impl/conn/tsccm/tsccm.lib
 LIBRARIES += impl/cookie/cookie.lib
+LIBRARIES += impl/entity/entity.lib
+LIBRARIES += impl/io/io.lib
 
 LIBRARIES += -lcutils

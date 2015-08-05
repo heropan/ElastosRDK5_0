@@ -36,3 +36,5 @@ SOURCES += RFC2965DiscardAttributeHandler.cpp
 SOURCES += RFC2965DomainAttributeHandler.cpp
 SOURCES += RFC2965PortAttributeHandler.cpp
 SOURCES += RFC2965Spec.cpp
+SOURCES += RFC2965SpecFactory.cpp
+SOURCES += RFC2965VersionAttributeHandler.cpp

@@ -1,0 +1,12 @@
+
+TARGET_NAME= entity
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/impl/entity
+INCLUDES += $(MAKEDIR)../../../../../inc/org/apache/http/entity
+
+SOURCES = EntityDeserializer.cpp
+SOURCES += EntitySerializer.cpp
+SOURCES += LaxContentLengthStrategy.cpp
+SOURCES += StrictContentLengthStrategy.cpp
