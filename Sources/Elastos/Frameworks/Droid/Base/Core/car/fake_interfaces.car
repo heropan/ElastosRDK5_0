@@ -163,13 +163,7 @@ module
 
         namespace View {
 
-            interface IInputMethodClient {}
-
-            interface IInputContext {}
-
             interface IIInputMethod {}
-
-            interface IIInputMethodSession {}
 
         }// Elastos.Droid.Internal.View
 
@@ -201,8 +195,6 @@ module
         interface IRelativeLayout {}
 
         interface IButton {}
-
-        interface ITextView {}
 
         interface ILinearLayout {}
 
