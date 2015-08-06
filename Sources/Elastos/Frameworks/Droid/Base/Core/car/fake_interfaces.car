@@ -46,17 +46,6 @@ module
 
     }}} // Elastos.Droid.App
 
-    //
-    // Elastos.Droid.Accounts
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Accounts {
-
-        interface IAccount {
-        }
-
-    }}} // Elastos.Droid.Accounts
 
     //
     // Elastos.Droid.AccessibilityService
@@ -198,6 +187,10 @@ module
         interface IListView {}
 
         interface IListAdapter {}
+
+        interface IExpandableListView {}
+
+        interface IExpandableListAdapter {}
 
         interface IAdapterViewOnItemSelectedListener {}
 
