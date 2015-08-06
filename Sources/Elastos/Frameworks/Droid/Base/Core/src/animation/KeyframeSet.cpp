@@ -3,6 +3,7 @@
 #include "animation/Int32KeyframeSet.h"
 #include "animation/FloatKeyframeSet.h"
 #include <elastos/core/Math.h>
+
 namespace Elastos {
 namespace Droid {
 namespace Animation {
@@ -11,7 +12,17 @@ CAR_INTERFACE_IMPL(KeyframeSet, IKeyframeSet)
 
 KeyframeSet::KeyframeSet(
     /* [in] */ ArrayOf<IKeyframe*>* keyframes)
-    : KeyframeSetBase(keyframes)
+{
+    assert(keyframes != NULL);
+    mNumKeyframes = keyframes->GetLength();
+    mKeyframes = keyframes->Clone();
+
+    mFirstKeyframe = (*mKeyframes)[0];
+    mLastKeyframe = (*mKeyframes)[mNumKeyframes - 1];
+    mLastKeyframe->GetInterpolator((ITimeInterpolator**)&mInterpolator);
+}
+
+KeyframeSet::~KeyframeSet()
 {}
 
 AutoPtr<IKeyframeSet> KeyframeSet::OfInt32(
@@ -146,17 +157,100 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfObject(
 ECode KeyframeSet::SetEvaluator(
     /* [in] */ ITypeEvaluator* evaluator)
 {
-    return KeyframeSetBase::SetEvaluator(evaluator);
+    mEvaluator = evaluator;
+    return NOERROR;
 }
 
 ECode KeyframeSet::GetValue(
     /* [in] */ Float fraction,
     /* [out] */ IInterface** value)
 {
-    AutoPtr<IInterface> temp = KeyframeSetBase::GetValue(fraction);
-    *value = temp;
-    REFCOUNT_ADD(*value)
-    return NOERROR;
+    VALIDATE_NOT_NULL(value);
+
+    // Special-case optimization for the common case of only two keyframes
+    Float fractionTemp = fraction;
+    if (mNumKeyframes == 2) {
+        if (mInterpolator != NULL) {
+            mInterpolator->GetInterpolation(fractionTemp, &fractionTemp);
+        }
+        AutoPtr<IInterface> fvTemp;
+        mFirstKeyframe->GetValue((IInterface**)&fvTemp);
+        AutoPtr<IInterface> lvTemp;
+        mLastKeyframe->GetValue((IInterface**)&lvTemp);
+        return mEvaluator->Evaluate(fractionTemp, fvTemp, lvTemp, value);
+    }
+
+    if (fractionTemp <= 0.0f) {
+        AutoPtr<IKeyframe> nextKeyframe = (*mKeyframes)[1];
+        AutoPtr<ITimeInterpolator> interpolator;
+        nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        if (interpolator != NULL) {
+            interpolator->GetInterpolation(fractionTemp, &fractionTemp);
+        }
+
+        Float prevFraction;
+        mFirstKeyframe->GetFraction(&prevFraction);
+        Float nextFraction;
+        nextKeyframe->GetFraction(&nextFraction);
+        Float intervalFraction = (fractionTemp - prevFraction) /
+            (nextFraction - prevFraction);
+
+        AutoPtr<IInterface> vTemp;
+        mFirstKeyframe->GetValue((IInterface**)&vTemp);
+        AutoPtr<IInterface> nvTemp;
+        nextKeyframe->GetValue((IInterface**)&nvTemp);
+        return mEvaluator->Evaluate(intervalFraction, vTemp, nvTemp, value);
+    }
+    else if (fractionTemp >= 1.0f) {
+        AutoPtr<IKeyframe> prevKeyframe = (*mKeyframes)[mNumKeyframes - 2];
+        AutoPtr<ITimeInterpolator> interpolator;
+        mLastKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+        if (interpolator != NULL) {
+            interpolator->GetInterpolation(fractionTemp, &fractionTemp);
+        }
+
+        Float prevFraction;
+        prevKeyframe->GetFraction(&prevFraction);
+        Float lastFraction;
+        mLastKeyframe->GetFraction(&lastFraction);
+        Float intervalFraction = (fractionTemp - prevFraction) /
+            (lastFraction - prevFraction);
+        AutoPtr<IInterface> vTemp;
+        prevKeyframe->GetValue((IInterface**)&vTemp);
+        AutoPtr<IInterface> lvTemp;
+        mLastKeyframe->GetValue((IInterface**)&lvTemp);
+        return mEvaluator->Evaluate(intervalFraction, vTemp, lvTemp, value);
+    }
+
+    AutoPtr<IKeyframe> prevKeyframe = mFirstKeyframe;
+    for (Int32 i = 1; i < mNumKeyframes; ++i) {
+        AutoPtr<IKeyframe> nextKeyframe = (*mKeyframes)[i];
+        Float nextFraction;
+        nextKeyframe->GetFraction(&nextFraction);
+        if (fractionTemp < nextFraction) {
+            AutoPtr<ITimeInterpolator> interpolator;
+            nextKeyframe->GetInterpolator((ITimeInterpolator**)&interpolator);
+            if (interpolator != NULL) {
+                interpolator->GetInterpolation(fractionTemp, &fractionTemp);
+            }
+
+            Float prevFraction;
+            prevKeyframe->GetFraction(&prevFraction);
+            Float nFraction;
+            prevKeyframe->GetFraction(&nFraction);
+            Float intervalFraction = (fractionTemp - prevFraction) /
+                (nFraction - prevFraction);
+            AutoPtr<IInterface> vTemp;
+            prevKeyframe->GetValue((IInterface**)&vTemp);
+            AutoPtr<IInterface> nvTemp;
+            nextKeyframe->GetValue((IInterface**)&nvTemp);
+            return mEvaluator->Evaluate(intervalFraction, vTemp, nvTemp, value);
+        }
+        prevKeyframe = nextKeyframe;
+    }
+
+    // shouldn't reach here
+    return mLastKeyframe->GetValue(value);
 }
 
 ECode KeyframeSet::Clone(

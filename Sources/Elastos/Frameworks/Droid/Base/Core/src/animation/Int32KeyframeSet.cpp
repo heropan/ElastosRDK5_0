@@ -11,31 +11,13 @@ CAR_INTERFACE_IMPL_2(Int32KeyframeSet, IInt32KeyframeSet, IKeyframeSet)
 
 Int32KeyframeSet::Int32KeyframeSet(
     /* [in] */ ArrayOf<IInt32Keyframe*>* keyframes)
-    : KeyframeSetBase((ArrayOf<IKeyframe*>*)keyframes)
+    : KeyframeSet((ArrayOf<IKeyframe*>*)keyframes)
     , mFirstValue(0)
     , mLastValue(0)
     , mDeltaValue(0)
     , mFirstTime(TRUE)
 {}
 
-ECode Int32KeyframeSet::SetEvaluator(
-    /* [in] */ ITypeEvaluator* evaluator)
-{
-    return KeyframeSetBase::SetEvaluator(evaluator);
-}
-
-/**
- * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
- * animation's interpolator) and the evaluator used to calculate in-between values. This
- * function maps the input fraction to the appropriate keyframe interval and a fraction
- * between them and returns the interpolated value. Note that the input fraction may fall
- * outside the [0-1] bounds, if the animation's interpolator made that happen (e.g., a
- * spring interpolation that might send the fraction past 1.0). We handle this situation by
- * just using the two keyframes at the appropriate end when the value is outside those bounds.
- *
- * @param fraction The elapsed fraction of the animation
- * @return The animated value.
- */
 ECode Int32KeyframeSet::GetValue(
     /* [in] */ Float fraction,
     /* [out] */ IInterface** value)

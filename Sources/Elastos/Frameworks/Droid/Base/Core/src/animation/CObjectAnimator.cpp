@@ -5,28 +5,12 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-IANIMATOR_METHOD_IMPL(CObjectAnimator, ObjectAnimator)
-IVALUEANIMATOR_METHOD_IMPL(CObjectAnimator, ObjectAnimator)
+CAR_OBJECT_IMPL(CObjectAnimator);
 
 ECode CObjectAnimator::constructor()
 {
     return NOERROR;
 }
-
-PInterface CObjectAnimator::Probe(
-    /* [in] */ REIID riid)
-{
-    if(riid == EIID_Animator)
-    {
-        return reinterpret_cast<PInterface>((Animator*)this);
-    }else if(riid == EIID_ValueAnimator) {
-        return reinterpret_cast<PInterface>((ValueAnimator*)this);
-    }
-
-    return _CObjectAnimator::Probe(riid);
-}
-
-
 
 AutoPtr<IObjectAnimator> CObjectAnimator::OfInt32(
     /* [in] */ IInterface* target,
@@ -113,36 +97,6 @@ AutoPtr<IObjectAnimator> CObjectAnimator::OfPropertyValuesHolder(
     anim->SetTarget(target);
     anim->SetValues(values);
     return anim;
-}
-
-ECode CObjectAnimator::SetPropertyName(
-    /* [in] */ const String& propertyName)
-{
-    return ObjectAnimator::SetPropertyName(propertyName);
-}
-
-ECode CObjectAnimator::SetProperty(
-    /* [in] */ IProperty* property)
-{
-    return ObjectAnimator::SetProperty(property);
-}
-
-ECode CObjectAnimator::GetPropertyName(
-    /* [out] */ String* propertyName)
-{
-    VALIDATE_NOT_NULL(propertyName);
-    *propertyName = ObjectAnimator::GetPropertyName();
-    return NOERROR;
-}
-
-ECode CObjectAnimator::GetTarget(
-    /* [out] */ IInterface** object)
-{
-    VALIDATE_NOT_NULL(object);
-    AutoPtr<IInterface> tmp = ObjectAnimator::GetTarget();
-    *object = tmp;
-    REFCOUNT_ADD(*object);
-    return NOERROR;
 }
 
 }   //namespace Animation

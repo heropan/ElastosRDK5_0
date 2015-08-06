@@ -6,11 +6,14 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-
+CAR_INTERFACE_IMPL(TimeAnimator, ValueAnimator, ITimeAnimator)
 TimeAnimator::TimeAnimator()
     : mPreviousTime(-1)
 {
 }
+
+TimeAnimator::~TimeAnimator()
+{}
 
 ECode TimeAnimator::Start()
 {

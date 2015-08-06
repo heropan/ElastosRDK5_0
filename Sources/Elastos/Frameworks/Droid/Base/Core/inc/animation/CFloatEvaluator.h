@@ -1,8 +1,8 @@
 
-#ifndef  __CFLOATEVALUATOR_H__
-#define  __CFLOATEVALUATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CFLOATEVALUATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_CFLOATEVALUATOR_H__
 
-#include "_CFloatEvaluator.h"
+#include "_Elastos_Droid_Animation_CFloatEvaluator.h"
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +14,15 @@ using Elastos::Core::INumber;
  * This evaluator can be used to perform type interpolation between <code>float</code> values.
  */
 CarClass(CFloatEvaluator)
+    , public Object
+    , public IFloatEvaluator
+    , public ITypeEvaluator
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * This function returns the result of linearly interpolating the start and end values, with
      * <code>fraction</code> representing the proportion between the start and end values. The
@@ -62,4 +69,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__FLOATEVALUATOR_H__
+#endif  // __ELASTOS_DROID_ANIMATION_CFLOATEVALUATOR_H__

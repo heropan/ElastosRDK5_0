@@ -1,6 +1,6 @@
 
-#ifndef  __VALUEANIMATOR_H__
-#define  __VALUEANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_VALUEANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_VALUEANIMATOR_H__
 
 #include "animation/Animator.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -15,15 +15,18 @@ namespace Animation {
 
 extern "C" const InterfaceID EIID_ValueAnimator;
 
-class ValueAnimator : public Animator
+class ValueAnimator
+    : public Animator
+    , public IValueAnimator
 {
 public:
     class AnimationHandler
-            : public IRunnable
-            , public ElRefBase
+        : public IRunnable
+        , public Object
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
         AnimationHandler();
 
         ~AnimationHandler();
@@ -66,6 +69,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new ValueAnimator object. This default constructor is primarily for
      * use internally; the factory methods which take parameters are more generally
@@ -168,7 +173,8 @@ public:
      *
      * @return The length of the animation, in milliseconds.
      */
-    virtual CARAPI_(Int64) GetDuration();
+    virtual CARAPI GetDuration(
+        /* [out] */ Int64* duration);
 
     /**
      * Sets the position of the animation to the specified point in time. This time should
@@ -190,7 +196,8 @@ public:
      *
      * @return The current position in time of the animation.
      */
-    virtual CARAPI_(Int64) GetCurrentPlayTime();
+    virtual CARAPI GetCurrentPlayTime(
+        /* [out] */ Int64* playTime);
 
     /**
      * The amount of time, in milliseconds, to delay starting the animation after
@@ -198,7 +205,8 @@ public:
      *
      * @return the number of milliseconds to delay running the animation
      */
-    virtual CARAPI_(Int64) GetStartDelay();
+    virtual CARAPI GetStartDelay(
+        /* [out] */ Int64* delay);
 
     /**
      * The amount of time, in milliseconds, to delay starting the animation after
@@ -221,7 +229,8 @@ public:
      * (specified by several PropertyValuesHolder objects in the constructor), this function
      * returns the animated value for the first of those objects.
      */
-    virtual CARAPI_(AutoPtr<IInterface>) GetAnimatedValue();
+    virtual CARAPI GetAnimatedValue(
+        /* [out] */ IInterface** value);
 
     /**
      * The most recent value calculated by this <code>ValueAnimator</code> for <code>propertyName</code>.
@@ -233,8 +242,9 @@ public:
      * @return animatedValue The value most recently calculated for the named property
      * by this <code>ValueAnimator</code>.
      */
-    virtual CARAPI_(AutoPtr<IInterface>) GetAnimatedValue(
-        /* [in] */ const String& propertyName);
+    virtual CARAPI GetAnimatedValue(
+        /* [in] */ const String& propertyName,
+        /* [out] */ IInterface** value);
 
     /**
      * Sets how many times the animation should be repeated. If the repeat
@@ -253,7 +263,8 @@ public:
      *
      * @return the number of times the animation should repeat, or {@link #INFINITE}
      */
-    virtual CARAPI_(Int32) GetRepeatCount();
+    virtual CARAPI GetRepeatCount(
+        /* [out] */ Int32* count);
 
     /**
      * Defines what this animation should do when it reaches the end. This
@@ -270,7 +281,8 @@ public:
      *
      * @return either one of {@link #REVERSE} or {@link #RESTART}
      */
-    virtual CARAPI_(Int32) GetRepeatMode();
+    virtual CARAPI GetRepeatMode(
+        /* [out] */ Int32* mode);
 
     /**
      * Adds a listener to the set of listeners that are sent update events through the life of
@@ -314,7 +326,8 @@ public:
      *
      * @return The timing interpolator for this ValueAnimator.
      */
-    virtual CARAPI_(AutoPtr<ITimeInterpolator>) GetInterpolator();
+    virtual CARAPI GetInterpolator(
+        /* [out] */ ITimeInterpolator** interpolator);
 
     /**
      * The type evaluator to be used when calculating the animated values of this animation.
@@ -345,10 +358,12 @@ public:
     virtual CARAPI End();
 
     //@Override
-    virtual CARAPI_(Boolean) IsRunning();
+    virtual CARAPI IsRunning(
+        /* [out] */ Boolean* running);
 
     //@Override
-    virtual CARAPI_(Boolean) IsStarted();
+    virtual CARAPI IsStarted(
+        /* [out] */ Boolean* started);
 
     /**
      * Plays the ValueAnimator in reverse. If the animation is already running,
@@ -365,7 +380,8 @@ public:
      *
      * @return Elapsed/interpolated fraction of the animation.
      */
-    virtual CARAPI_(Float) GetAnimatedFraction();
+    virtual CARAPI GetAnimatedFraction(
+        /* [out] */ Float* fraction);
 
     //@Override
     virtual CARAPI Clone(
@@ -705,4 +721,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__VALUEANIMATOR_H__
+#endif // __ELASTOS_DROID_ANIMATION_VALUEANIMATOR_H__

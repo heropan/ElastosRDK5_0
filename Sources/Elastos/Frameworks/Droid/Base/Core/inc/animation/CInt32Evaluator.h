@@ -1,8 +1,8 @@
 
-#ifndef  __CINT32EVALUATOR_H__
-#define  __CINT32EVALUATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CINT32EVALUATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_CINT32EVALUATOR_H__
 
-#include "_CInt32Evaluator.h"
+#include "_Elastos_Droid_Animation_CInt32Evaluator.h"
 
 using Elastos::Core::INumber;
 
@@ -14,8 +14,15 @@ namespace Animation {
  * This evaluator can be used to perform type interpolation between <code>int</code> values.
  */
 CarClass(CInt32Evaluator)
+    , public Object
+    , public Int32Evaluator
+    , public ITypeEvaluator
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * This function returns the result of linearly interpolating the start and end values, with
      * <code>fraction</code> representing the proportion between the start and end values. The
@@ -62,4 +69,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__CINT32EVALUATOR_H__
+#endif  // __ELASTOS_DROID_ANIMATION_CINT32EVALUATOR_H__

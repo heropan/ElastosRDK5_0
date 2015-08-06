@@ -5,23 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-IANIMATOR_METHOD_IMPL(CValueAnimator, ValueAnimator)
-IVALUEANIMATOR_METHOD_IMPL(CValueAnimator, ValueAnimator)
-
-PInterface CValueAnimator::Probe(
-    /* [in] */ REIID riid)
-{
-    if(riid == EIID_Animator)
-    {
-        return reinterpret_cast<PInterface>((Animator*)this);
-    }
-    if(riid == EIID_ValueAnimator)
-    {
-        return reinterpret_cast<PInterface>((ValueAnimator*)this);
-    }
-    return _CValueAnimator::Probe(riid);
-}
-
+CAR_OBJECT_IMPL(CValueAnimator);
 
 AutoPtr<IValueAnimator> CValueAnimator::OfInt32(
     /* [in] */ ArrayOf<Int32>* values)
@@ -60,7 +44,6 @@ AutoPtr<IValueAnimator> CValueAnimator::OfObject(
     anim->SetEvaluator(evaluator);
     return anim;
 }
-
 
 }   //namespace Animation
 }   //namespace Droid

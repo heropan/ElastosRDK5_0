@@ -5,6 +5,9 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+CAR_INTERFACE_IMPL(CPropertyValuesHolderHelper, Singleton, IPropertyValuesHolderHelper)
+CAR_SINGLETON_IMPL(CPropertyValuesHolderHelper)
+
 /**
  * Constructs and returns a PropertyValuesHolder with a given property name and
  * set of Int32 values.

@@ -1,7 +1,8 @@
-#ifndef __CPROPERTYVALUESHOLDERHELPER_H__
-#define __CPROPERTYVALUESHOLDERHELPER_H__
 
-#include "_CPropertyValuesHolderHelper.h"
+#ifndef __ELASTOS_DROID_ANIMATION_CPROPERTYVALUESHOLDERHELPER_H__
+#define __ELASTOS_DROID_ANIMATION_CPROPERTYVALUESHOLDERHELPER_H__
+
+#include "_Elastos_Droid_Animation_CPropertyValuesHolderHelper.h"
 
 using Elastos::Droid::Utility::IProperty;
 
@@ -10,8 +11,14 @@ namespace Droid {
 namespace Animation {
 
 CarClass(CPropertyValuesHolderHelper)
+    , public Singleton
+    , public IPropertyValuesHolderHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
      * set of Int32 values.
@@ -146,4 +153,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_ANIMATION_CPROPERTYVALUESHOLDERHELPER_H__
