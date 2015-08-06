@@ -46,7 +46,6 @@ module
 
     }}} // Elastos.Droid.App
 
-
     //
     // Elastos.Droid.AccessibilityService
     //
@@ -180,8 +179,6 @@ module
 
         interface IAdapterView {}
 
-        interface ISpinnerAdapter {}
-
         interface ITextView {}
 
         interface IListView {}
@@ -207,6 +204,18 @@ module
         interface ILinearLayout {}
 
         interface IDatePicker {}
+
+        interface IEditText {}
+
+        interface ISeekBar {}
+
+        interface IArrayAdapter {}
+
+        interface IFilterable {}
+
+        interface ISpinnerAdapter {}
+
+        interface IAdapterViewOnItemClickListener {}
 
     }}} // Elastos.Droid.Widget
 

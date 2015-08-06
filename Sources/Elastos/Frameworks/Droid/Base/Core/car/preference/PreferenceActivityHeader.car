@@ -1,138 +1,147 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Res.IResources;
-    interface Elastos.Droid.Os.IBundle;
+    
 
     namespace Elastos {
     namespace Droid {
     namespace Preference {
-        interface IPreferenceActivityHeader {
-            /**
-             * Return the currently set title.  If {@link #titleRes} is set,
-             * this resource is loaded from <var>res</var> and returned.  Otherwise
-             * {@link #title} is returned.
-             */
-            GetTitle(
-                [in] IResources* res,
-                [out] ICharSequence** title);
 
-            /**
-             * Return the currently set summary.  If {@link #summaryRes} is set,
-             * this resource is loaded from <var>res</var> and returned.  Otherwise
-             * {@link #summary} is returned.
-             */
-            GetSummary(
-                [in] IResources* res,
-                [out] ICharSequence** summary);
+    /**
+     * Description of a single Header item that the user can select.
+     *
+     * @Involve
+     * interface IParcelable
+     */
+    [local]
+    interface IPreferenceActivityHeader {
+        /**
+         * Return the currently set title.  If {@link #titleRes} is set,
+         * this resource is loaded from <var>res</var> and returned.  Otherwise
+         * {@link #title} is returned.
+         */
+        GetTitle(
+            [in] IResources* res,
+            [out] ICharSequence** title);
 
-            /**
-             * Return the currently set bread crumb title.  If {@link #breadCrumbTitleRes} is set,
-             * this resource is loaded from <var>res</var> and returned.  Otherwise
-             * {@link #breadCrumbTitle} is returned.
-             */
-            GetBreadCrumbTitle(
-                [in] IResources* res,
-                [out] ICharSequence** title);
+        /**
+         * Return the currently set summary.  If {@link #summaryRes} is set,
+         * this resource is loaded from <var>res</var> and returned.  Otherwise
+         * {@link #summary} is returned.
+         */
+        GetSummary(
+            [in] IResources* res,
+            [out] ICharSequence** summary);
 
-            /**
-             * Return the currently set bread crumb short title.  If
-             * {@link #breadCrumbShortTitleRes} is set,
-             * this resource is loaded from <var>res</var> and returned.  Otherwise
-             * {@link #breadCrumbShortTitle} is returned.
-             */
-            GetBreadCrumbShortTitle(
-                [in] IResources* res,
-                [out] ICharSequence** title);
+        /**
+         * Return the currently set bread crumb title.  If {@link #breadCrumbTitleRes} is set,
+         * this resource is loaded from <var>res</var> and returned.  Otherwise
+         * {@link #breadCrumbTitle} is returned.
+         */
+        GetBreadCrumbTitle(
+            [in] IResources* res,
+            [out] ICharSequence** title);
 
-            GetId(
-                [out] Int64* id);
+        /**
+         * Return the currently set bread crumb short title.  If
+         * {@link #breadCrumbShortTitleRes} is set,
+         * this resource is loaded from <var>res</var> and returned.  Otherwise
+         * {@link #breadCrumbShortTitle} is returned.
+         */
+        GetBreadCrumbShortTitle(
+            [in] IResources* res,
+            [out] ICharSequence** title);
 
-            SetId(
-                [in] Int64 id);
+        GetId(
+            [out] Int64* id);
 
-            GetTitleRes(
-                [out] Int32* titleRes);
+        SetId(
+            [in] Int64 id);
 
-            SetTitleRes(
-                [in] Int32 titleRes);
+        GetTitleRes(
+            [out] Int32* titleRes);
 
-            GetTitle(
-                [out] ICharSequence** title);
+        SetTitleRes(
+            [in] Int32 titleRes);
 
-            SetTitle(
-                [in] ICharSequence* title);
+        GetTitle(
+            [out] ICharSequence** title);
 
-            GetSummaryRes(
-                [out] Int32* summaryRes);
+        SetTitle(
+            [in] ICharSequence* title);
 
-            SetSummaryRes(
-                [in] Int32 summaryRes);
+        GetSummaryRes(
+            [out] Int32* summaryRes);
 
-            GetSummary(
-                [out] ICharSequence** summary);
+        SetSummaryRes(
+            [in] Int32 summaryRes);
 
-            SetSummary(
-                [in] ICharSequence* summary);
+        GetSummary(
+            [out] ICharSequence** summary);
 
-            GetBreadCrumbTitleRes(
-                [out] Int32* breadCrumbTitleRes);
+        SetSummary(
+            [in] ICharSequence* summary);
 
-            SetBreadCrumbTitleRes(
-                [in] Int32 breadCrumbTitleRes);
+        GetBreadCrumbTitleRes(
+            [out] Int32* breadCrumbTitleRes);
 
-            GetBreadCrumbTitle(
-                [out] ICharSequence** breadCrumbTitle);
+        SetBreadCrumbTitleRes(
+            [in] Int32 breadCrumbTitleRes);
 
-            SetBreadCrumbTitle(
-                [in] ICharSequence* breadCrumbTitle);
+        GetBreadCrumbTitle(
+            [out] ICharSequence** breadCrumbTitle);
 
-            GetBreadCrumbShortTitleRes(
-                [out] Int32* breadCrumbShortTitleRes);
+        SetBreadCrumbTitle(
+            [in] ICharSequence* breadCrumbTitle);
 
-            SetBreadCrumbShortTitleRes(
-                [in] Int32 breadCrumbShortTitleRes);
+        GetBreadCrumbShortTitleRes(
+            [out] Int32* breadCrumbShortTitleRes);
 
-            GetBreadCrumbShortTitle(
-                [out] ICharSequence** breadCrumbShortTitle);
+        SetBreadCrumbShortTitleRes(
+            [in] Int32 breadCrumbShortTitleRes);
 
-            SetBreadCrumbShortTitle(
-                [in] ICharSequence* breadCrumbShortTitle);
+        GetBreadCrumbShortTitle(
+            [out] ICharSequence** breadCrumbShortTitle);
 
-            GetIconRes(
-                [out] Int32* iconRes);
+        SetBreadCrumbShortTitle(
+            [in] ICharSequence* breadCrumbShortTitle);
 
-            SetIconRes(
-                [in] Int32 iconRes);
+        GetIconRes(
+            [out] Int32* iconRes);
 
-            GetFragment(
-                [out] String* fragment);
+        SetIconRes(
+            [in] Int32 iconRes);
 
-            SetFragment(
-                [in] String fragment);
+        GetFragment(
+            [out] String* fragment);
 
-            GetFragmentArguments(
-                [out] IBundle** fragmentArguments);
+        SetFragment(
+            [in] String fragment);
 
-            SetFragmentArguments(
-                [in] IBundle* fragmentArguments);
+        GetFragmentArguments(
+            [out] IBundle** fragmentArguments);
 
-            GetIntent(
-                [out] IIntent** intent);
+        SetFragmentArguments(
+            [in] IBundle* fragmentArguments);
 
-            SetIntent(
-                [in] IIntent* intent);
+        GetIntent(
+            [out] IIntent** intent);
 
-            GetExtras(
-                [out] IBundle** extras);
+        SetIntent(
+            [in] IIntent* intent);
 
-            SetExtras(
-                [in] IBundle* extras);
-        }
+        GetExtras(
+            [out] IBundle** extras);
+
+        SetExtras(
+            [in] IBundle* extras);
+    }
 
     } // Preference
     } // Droid
     } // Elastos
-
 }

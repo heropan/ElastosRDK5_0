@@ -1,28 +1,31 @@
 
 module
 {
-    merge("preference/OnDependencyChangeListener.car");
-    merge("preference/Preference.car");
-    merge("preference/TwoStatePreference.car");
     merge("preference/CheckBoxPreference.car");
     merge("preference/DialogPreference.car");
     merge("preference/EditTextPreference.car");
+    merge("preference/GenericInflater.car");
     merge("preference/ListPreference.car");
     merge("preference/MultiCheckPreference.car");
     merge("preference/MultiSelectListPreference.car");
+    merge("preference/Preference.car");
+    merge("preference/PreferenceActivity.car");
     merge("preference/PreferenceActivityHeader.car");
-    merge("preference/PreferenceGroup.car");
     merge("preference/PreferenceCategory.car");
     merge("preference/PreferenceFragment.car");
+    merge("preference/PreferenceFrameLayout.car");
+    merge("preference/PreferenceGroup.car");
+    merge("preference/PreferenceGroupAdapter.car");
+    merge("preference/PreferenceInflater.car");
     merge("preference/PreferenceManager.car");
     merge("preference/PreferenceScreen.car");
     merge("preference/RingtonePreference.car");
+    merge("preference/SeekBarDialogPreference.car");
     merge("preference/SeekBarPreference.car");
+    merge("preference/SeekBarVolumizer.car");
     merge("preference/SwitchPreference.car");
-    merge("preference/PreferenceActivity.car");
-    merge("preference/GenericInflater.car");
+    merge("preference/TwoStatePreference.car");
     merge("preference/VolumePreference.car");
-
 
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.Content.IContext;
@@ -35,311 +38,311 @@ module
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.ISeekBar;
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Preference {
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace Preference {
 
-        [local]
-        class CPreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
+    //     [local]
+    //     class CPreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
 
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CPreferenceBaseSavedState {
-            constructor();
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CPreferenceBaseSavedState {
+    //         constructor();
 
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IAbsSavedState;
-        }
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IAbsSavedState;
+    //     }
 
-        class CDialogPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IDialogPreferenceSavedState;
-        }
+    //     class CDialogPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IDialogPreferenceSavedState;
+    //     }
 
-        class CTwoStatePreferenceSavedState {
-            constructor();
+    //     class CTwoStatePreferenceSavedState {
+    //         constructor();
 
-            constructor(
-                [in] IParcelable* source);
+    //         constructor(
+    //             [in] IParcelable* source);
 
-            interface IParcelable;
-            interface ITwoStatePreferenceSavedState;
-        }
+    //         interface IParcelable;
+    //         interface ITwoStatePreferenceSavedState;
+    //     }
 
-        [local]
-        class CCheckBoxPreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
+    //     [local]
+    //     class CCheckBoxPreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
 
-            constructor(
-                [in] IContext* ctx);
-
-            interface ICheckBoxPreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CEditTextPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IEditTextPreferenceSavedState;
-        }
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface ICheckBoxPreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CEditTextPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IEditTextPreferenceSavedState;
+    //     }
 
-        [local]
-        class CEditTextPreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface IEditTextPreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CListPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IListPreferenceSavedState;
-        }
-
-        [local]
-        class CListPreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface IListPreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        [local]
-        class CMultiCheckPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IMultiCheckPreferenceSavedState;
-        }
-
-        class CMultiSelectListPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IParcelable;
-            interface IMultiSelectListPreferenceSavedState;
-        }
-
-        [local]
-        class CMultiSelectListPreference {
-            constructor(
-                [in] IContext* ctx);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            interface IMultiSelectListPreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CPreferenceActivityHeader {
-            constructor();
-
-            interface IParcelable;
-            interface IPreferenceActivityHeader;
-        }
-
-        [local]
-        class CPreferenceCategory {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface IPreferenceCategory;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        [local]
-        class CPreferenceManager {
-            constructor(
-                [in] IActivity* activity,
-                [in] Int32 firstRequestCode);
-
-            /**
-             * This constructor should ONLY be used when getting default values from
-             * an XML preference hierarchy.
-             * <p>
-             * The {@link PreferenceManager#PreferenceManager(Activity)}
-             * should be used ANY time a preference will be displayed, since some preference
-             * types need an Activity for managed queries.
-             */
-            constructor(
-                [in] IContext* ctx);
-
-            interface IPreferenceManager;
-        }
-
-        singleton class CPreferenceManagerHelper {
-
-            interface IPreferenceManagerHelper;
-        }
-
-        [local]
-        class CPreferenceScreen {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            interface IPreferenceScreen;
-            interface IAdapterViewOnItemClickListener;
-            interface IDialogInterfaceOnDismissListener;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CPreferenceScreenSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IPreferenceScreenSavedState;
-            interface IParcelable;
-        }
-
-        [local]
-        class CRingtonePreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface IRingtonePreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-            interface IPreferenceManagerOnActivityResultListener;
-        }
-
-        class CSeekBarPreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface ISeekBarPreferenceSavedState;
-            interface IParcelable;
-        }
-
-        [local]
-        class CSwitchPreference {
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs,
-                [in] Int32 defStyle);
-
-            constructor(
-                [in] IContext* ctx,
-                [in] IAttributeSet* attrs);
-
-            constructor(
-                [in] IContext* ctx);
-
-            interface ISwitchPreference;
-            interface IPreference;
-            interface IOnDependencyChangeListener;
-        }
-
-        class CVolumePreferenceSavedState {
-            constructor();
-
-            constructor(
-                [in] IParcelable* source);
-
-            interface IVolumePreferenceSavedState;
-            interface IParcelable;
-        }
-
-        [local]
-        class CPreferenceActivityHeaderAdapter {
-            constructor(
-               [in] IContext* ctx,
-               [in] IObjectContainer* objects);
-
-            interface IArrayAdapter;
-            interface IFilterable;
-            interface ISpinnerAdapter;
-        }
-
-    } // namespace Preference
-    } // namespace Droid
-    } // namespace Elastos
+    //     [local]
+    //     class CEditTextPreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IEditTextPreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CListPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IListPreferenceSavedState;
+    //     }
+
+    //     [local]
+    //     class CListPreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IListPreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     [local]
+    //     class CMultiCheckPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IMultiCheckPreferenceSavedState;
+    //     }
+
+    //     class CMultiSelectListPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IParcelable;
+    //         interface IMultiSelectListPreferenceSavedState;
+    //     }
+
+    //     [local]
+    //     class CMultiSelectListPreference {
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         interface IMultiSelectListPreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CPreferenceActivityHeader {
+    //         constructor();
+
+    //         interface IParcelable;
+    //         interface IPreferenceActivityHeader;
+    //     }
+
+    //     [local]
+    //     class CPreferenceCategory {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IPreferenceCategory;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     [local]
+    //     class CPreferenceManager {
+    //         constructor(
+    //             [in] IActivity* activity,
+    //             [in] Int32 firstRequestCode);
+
+    //         /**
+    //          * This constructor should ONLY be used when getting default values from
+    //          * an XML preference hierarchy.
+    //          * <p>
+    //          * The {@link PreferenceManager#PreferenceManager(Activity)}
+    //          * should be used ANY time a preference will be displayed, since some preference
+    //          * types need an Activity for managed queries.
+    //          */
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IPreferenceManager;
+    //     }
+
+    //     singleton class CPreferenceManagerHelper {
+
+    //         interface IPreferenceManagerHelper;
+    //     }
+
+    //     [local]
+    //     class CPreferenceScreen {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         interface IPreferenceScreen;
+    //         interface IAdapterViewOnItemClickListener;
+    //         interface IDialogInterfaceOnDismissListener;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CPreferenceScreenSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IPreferenceScreenSavedState;
+    //         interface IParcelable;
+    //     }
+
+    //     [local]
+    //     class CRingtonePreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface IRingtonePreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //         interface IPreferenceManagerOnActivityResultListener;
+    //     }
+
+    //     class CSeekBarPreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface ISeekBarPreferenceSavedState;
+    //         interface IParcelable;
+    //     }
+
+    //     [local]
+    //     class CSwitchPreference {
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs,
+    //             [in] Int32 defStyle);
+
+    //         constructor(
+    //             [in] IContext* ctx,
+    //             [in] IAttributeSet* attrs);
+
+    //         constructor(
+    //             [in] IContext* ctx);
+
+    //         interface ISwitchPreference;
+    //         interface IPreference;
+    //         interface IOnDependencyChangeListener;
+    //     }
+
+    //     class CVolumePreferenceSavedState {
+    //         constructor();
+
+    //         constructor(
+    //             [in] IParcelable* source);
+
+    //         interface IVolumePreferenceSavedState;
+    //         interface IParcelable;
+    //     }
+
+    //     [local]
+    //     class CPreferenceActivityHeaderAdapter {
+    //         constructor(
+    //            [in] IContext* ctx,
+    //            [in] IObjectContainer* objects);
+
+    //         interface IArrayAdapter;
+    //         interface IFilterable;
+    //         interface ISpinnerAdapter;
+    //     }
+
+    // } // namespace Preference
+    // } // namespace Droid
+    // } // namespace Elastos
 
 }

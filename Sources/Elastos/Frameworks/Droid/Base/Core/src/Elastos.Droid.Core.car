@@ -30,7 +30,7 @@ module
     //merge("../car/policy.car");
     //merge("../car/content2.car");
     //merge("../car/app/ResolverActivity.car");
-    //merge("../car/preference.car");
+    merge("../car/preference.car");
     //merge("../car/wifi.car");
     //merge("../car/wifidisplay.car");
     //merge("../car/pppoe.car");

@@ -1,12 +1,14 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Preference.IPreferenceActivityHeader;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewOnClickListener;
+    interface Elastos.Droid.Preference.IPreferenceActivityHeader;
 
     namespace Elastos {
     namespace Droid {
@@ -74,12 +76,30 @@ module
      *
      * <p>See {@link PreferenceFragment} for information on implementing the
      * fragments themselves.
+     *
+     * @Involve
+     * interface IWindowOnWindowDismissedCallback
+     * interface IComponentCallbacks2
+     * interface IOnCreateContextMenuListener
+     * interface IKeyEventCallback
+     * interface IWindowCallback
+     * interface ILayoutInflaterFactory2
+     * interface IPreferenceFragmentOnPreferenceStartFragmentCallback
+     * interface IPreferenceManagerOnPreferenceTreeClickListene
+     * interface IContext
+     * interface IContextWrapper
+     * interface IContextThemeWrapper
+     * interface IActivity
+     * interface IListActivity
      */
     [deprecated, local]
     interface IPreferenceActivity {
         /**
          * When starting this activity, the invoking Intent can contain this extra
          * string to specify which fragment should be initially displayed.
+         * <p/>Starting from Key Lime Pie, when this argument is passed in, the PreferenceActivity
+         * will call isValidFragment() to confirm that the fragment class name is valid for this
+         * activity.
          */
         const String EXTRA_SHOW_FRAGMENT = ":android:show_fragment";
 
@@ -186,7 +206,7 @@ module
          * @param target The list in which to place the headers.
          */
         OnBuildHeaders(
-            [in] IObjectContainer* target);
+            [in] IList* target);
 
         /**
          * Call when you need to change the headers being displayed.  Will result
@@ -203,7 +223,19 @@ module
          */
         LoadHeadersFromResource(
             [in] Int32 resid,
-            [in] IObjectContainer* target);
+            [in] IList* target);
+
+        /**
+         * Subclasses should override this method and verify that the given fragment is a valid type
+         * to be attached to this activity. The default implementation returns <code>true</code> for
+         * apps built for <code>android:targetSdkVersion</code> older than
+         * {@link android.os.Build.VERSION_CODES#KITKAT}. For later versions, it will throw an exception.
+         * @param fragmentName the class name of the Fragment about to be attached to this activity.
+         * @return true if the fragment class name is valid for this Activity and false otherwise.
+         */
+        IsValidFragment(
+            [in] String fragmentName,
+            [out] Boolean* ret);
 
         /**
          * Set a footer that should be shown at the bottom of the header list.
@@ -333,7 +365,7 @@ module
             [in] Boolean push);
 
         /**
-         * Start a new fragment containing a preference panel.  If the prefences
+         * Start a new fragment containing a preference panel.  If the preferences
          * are being displayed in multi-pane mode, the given fragment class will
          * be instantiated and placed in the appropriate pane.  If running in
          * single-pane mode, a new activity will be launched in which to show the

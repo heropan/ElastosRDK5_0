@@ -1,26 +1,35 @@
 module
 {
-
     namespace Elastos {
     namespace Droid {
     namespace Preference {
 
-        /**
-         * @Involve
-         * interface Elastos.Droid.View.IAbsSavedState
-         */
-        [deprecated]
-        interface IMultiCheckPreferenceSavedState {
-            GetValues(
-                [out, callee] ArrayOf<Boolean>* values);
+    /**
+     * @hide
+     * A {@link Preference} that displays a list of entries as
+     * a dialog which allow the user to toggle each individually on and off.
+     *
+     * @attr ref android.R.styleable#ListPreference_entries
+     * @attr ref android.R.styleable#ListPreference_entryValues
+     *
+     * @Involve
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
+     * interface IPreference
+     * interface Elastos.Droid.View.IAbsSavedState
+     */
+    [deprecated]
+    interface IMultiCheckPreferenceSavedState {
+        GetValues(
+            [out, callee] ArrayOf<Boolean>* values);
 
-            SetValues(
-                [in] ArrayOf<Boolean>* values);
-
-        }
+        SetValues(
+            [in] ArrayOf<Boolean>* values);
+    }
 
     } // Preference
     } // Droid
     } // Elastos
-
 }

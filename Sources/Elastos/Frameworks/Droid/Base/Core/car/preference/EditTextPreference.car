@@ -7,59 +7,75 @@ module
     namespace Droid {
     namespace Preference {
 
+    /**
+     * A base class for {@link Preference} objects that are
+     * dialog-based. These preferences will, when clicked, open a dialog showing the
+     * actual preference controls.
+     *
+     * @attr ref android.R.styleable#DialogPreference_dialogTitle
+     * @attr ref android.R.styleable#DialogPreference_dialogMessage
+     * @attr ref android.R.styleable#DialogPreference_dialogIcon
+     * @attr ref android.R.styleable#DialogPreference_dialogLayout
+     * @attr ref android.R.styleable#DialogPreference_positiveButtonText
+     * @attr ref android.R.styleable#DialogPreference_negativeButtonText
+     *
+     * @Involve
+     * interface IComparable
+     * interface IPreferenceManagerOnActivityDestroyListener
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnClickListener
+     * interface IPreference
+     * interface IDialogPreference
+     */
+    [local]
+    interface IEditTextPreference {
         /**
-         * @Involve
-         * interface IDialogPreference
+         * Saves the text to the {@link SharedPreferences}.
+         *
+         * @param text The text to save
          */
-        interface IEditTextPreference {
-            /**
-             * Saves the text to the {@link SharedPreferences}.
-             *
-             * @param text The text to save
-             */
-            SetText(
-                [in] String text);
-
-            /**
-             * Gets the text from the {@link SharedPreferences}.
-             *
-             * @return The current preference value.
-             */
-            GetText(
-                [out] String* text);
-
-            /**
-             * Adds the EditText widget of this preference to the dialog's view.
-             *
-             * @param dialogView The dialog view.
-             */
-            OnAddEditTextToDialogView(
-                [in] IView* dialogView,
-                [in] IEditText* editText);
-
-            /**
-             * Returns the {@link EditText} widget that will be shown in the dialog.
-             *
-             * @return The {@link EditText} widget that will be shown in the dialog.
-             */
-            GetEditText(
-                [out] IEditText** editText);
-        }
+        SetText(
+            [in] String text);
 
         /**
-         * @Involve
-         * interface Elastos.Droid.View.IAbsSavedState
+         * Gets the text from the {@link SharedPreferences}.
+         *
+         * @return The current preference value.
          */
-        interface IEditTextPreferenceSavedState {
-            GetText(
-                [out] String* text);
+        GetText(
+            [out] String* text);
 
-            SetText(
-                [in] String text);
-        }
+        /**
+         * Adds the EditText widget of this preference to the dialog's view.
+         *
+         * @param dialogView The dialog view.
+         */
+        OnAddEditTextToDialogView(
+            [in] IView* dialogView,
+            [in] IEditText* editText);
+
+        /**
+         * Returns the {@link EditText} widget that will be shown in the dialog.
+         *
+         * @return The {@link EditText} widget that will be shown in the dialog.
+         */
+        GetEditText(
+            [out] IEditText** editText);
+    }
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IAbsSavedState
+     */
+    interface IEditTextPreferenceSavedState {
+        GetText(
+            [out] String* text);
+
+        SetText(
+            [in] String text);
+    }
 
     } // Preference
     } // Droid
     } // Elastos
-
 }
