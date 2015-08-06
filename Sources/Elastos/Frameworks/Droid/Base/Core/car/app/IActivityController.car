@@ -11,8 +11,7 @@ module
      * while tests are running.  Not for normal application development.
      * {@hide}
      */
-    interface IActivityController
-    {
+    interface IActivityController {
         /**
          * The system is trying to start an activity.  Return true to allow
          * it to be started as normal, or false to cancel/reject this activity.
@@ -62,6 +61,15 @@ module
             [in] String processName,
             [in] Int32 pid,
             [in] String processStats,
+            [out] Int32* res);
+
+        /**
+         * The system process watchdog has detected that the system seems to be
+         * hung.  Return 1 to continue waiting, or -1 to let it continue with its
+         * normal kill.
+         */
+        SystemNotResponding(
+            [in] String msg,
             [out] Int32* res);
     }
 

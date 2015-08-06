@@ -24,6 +24,7 @@ module
     const E_REMOTE_SERVICE_EXCEPTION                    = 0xD1020000;
     const E_LAUNCH_EXCEPTION                            = 0xD1030000;
     const E_CANCELED_EXCEPTION                          = 0xD1040000;
+    const E_INSTANTIATION_EXCEPTION                     = 0xD1050000;
 
     //==========================================================================
     // Elastos View exception codes (Family: 0x52 - D2)

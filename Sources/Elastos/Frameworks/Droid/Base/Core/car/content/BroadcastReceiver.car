@@ -31,8 +31,6 @@ module
      * thread, which will be solely responsible for setting any results and finally
      * calling finish().
      */
-
-    [local]
     interface IPendingResult {
         /**
          * Version of BroadcastReceiver#setResultCode(int) BroadcastReceiver.setResultCode(int) for
@@ -135,18 +133,6 @@ module
          * next broadcast will proceed.
          */
         Finish();
-
-        /** @hide */
-        SetExtrasClassLoader(
-            [in] IClassLoader* cl);
-
-        /** @hide */
-        SendFinished(
-            [in] IIActivityManager* am);
-
-        /** @hide */
-        GetSendingUserId(
-            [out] Int32* userId);
 
         GetOrderedHint(
             [out] Boolean* orderedHint);
@@ -358,8 +344,6 @@ module
      *
      * @sa Service
      */
-
-    [local]
     interface IBroadcastReceiver {
         /**
          * This method is called when the BroadcastReceiver is receiving an Intent

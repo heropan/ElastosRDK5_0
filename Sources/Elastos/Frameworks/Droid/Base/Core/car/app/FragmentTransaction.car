@@ -2,12 +2,12 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
+    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.App.IFragment;
 
     namespace Elastos {
     namespace Droid {
     namespace App {
-
 
     /**
      * API for performing a set of Fragment operations.
@@ -18,7 +18,7 @@ module
      *
      * @sa Fragments
      */
-
+    [local]
     interface IFragmentTransaction {
         /**
          * Bit mask that is set for all enter transitions.
@@ -226,6 +226,18 @@ module
          */
         SetTransition(
             [in] Int32 transit);
+
+        /**
+         * Used with to map a View from a removed or hidden Fragment to a View from a shown
+         * or added Fragment.
+         * @param sharedElement A View in a disappearing Fragment to match with a View in an
+         *                      appearing Fragment.
+         * @param name The transitionName for a View in an appearing Fragment to match to the shared
+         *             element.
+         */
+        AddSharedElement(
+            [in] IView* sharedElement,
+            [in] String name);;
 
         /**
          * Set a custom style resource that will be used for resolving transit

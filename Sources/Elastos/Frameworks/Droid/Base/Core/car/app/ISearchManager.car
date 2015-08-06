@@ -1,5 +1,7 @@
 module {
 
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.App.ISearchableInfo;
 
@@ -7,16 +9,17 @@ module {
     namespace Droid {
     namespace App {
 
+    /** @hide */
     interface IISearchManager {
         GetSearchableInfo (
             [in] IComponentName* launchActivity,
             [out] ISearchableInfo** info);
 
         GetSearchablesInGlobalSearch(
-            [out] IObjectContainer** infos);
+            [out] IList** infos); // ISearchableInfo
 
         GetGlobalSearchActivities(
-            [out] IObjectContainer** infos);
+            [out] IList** infos); // IResolveInfo
 
         GetGlobalSearchActivity(
             [out] IComponentName** name);
@@ -27,6 +30,12 @@ module {
         GetAssistIntent(
             [in] Int32 userHandle,
             [out] IComponentName** name);
+
+        LaunchAssistAction(
+            [in] Int32 requestType,
+            [in] String hint,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
     }
 
     }

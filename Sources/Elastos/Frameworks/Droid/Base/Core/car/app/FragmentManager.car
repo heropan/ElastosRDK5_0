@@ -4,6 +4,8 @@ module
     using interface Elastos.IO.IFileDescriptor;
     using interface Elastos.Core.IRunnable;
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IView;
@@ -12,6 +14,8 @@ module
     interface Elastos.Droid.View.IMenuInflater;
     interface Elastos.Droid.App.IFragment;
     interface Elastos.Droid.App.IBackStackRecord;
+    interface Elastos.Droid.App.IFragmentManagerBackStackEntry;
+    interface Elastos.Droid.App.IFragmentManagerOnBackStackChangedListener;
     interface Elastos.Droid.Animation.IAnimator;
     interface Elastos.Droid.Content.Res.IConfiguration;
 
@@ -19,9 +23,23 @@ module
     namespace Droid {
     namespace App {
 
-    interface IFragmentManagerBackStackEntry;
-    interface IFragmentManagerOnBackStackChangedListener;
-
+    /**
+     * Interface for interacting with {@link Fragment} objects inside of an
+     * {@link Activity}
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about using fragments, read the
+     * <a href="{@docRoot}guide/topics/fundamentals/fragments.html">Fragments</a> developer guide.</p>
+     * </div>
+     *
+     * While the FragmentManager API was introduced in
+     * {@link android.os.Build.VERSION_CODES#HONEYCOMB}, a version of the API
+     * at is also available for use on older platforms through
+     * {@link android.support.v4.app.FragmentActivity}.  See the blog post
+     * <a href="http://android-developers.blogspot.com/2011/03/fragments-for-all.html">
+     * Fragments For All</a> for more details.
+     */
     [local, deprecated]
     interface IFragmentManager {
         /**
@@ -270,6 +288,14 @@ module
             [in] ArrayOf<String>* args);
 
         /**
+         * Control whether the framework's internal fragment manager debugging
+         * logs are turned on.  If enabled, you will see output in logcat as
+         * the framework performs fragment operations.
+         */
+        EnableDebugLogging(
+            [in] Boolean enabled);
+
+        /**
          * Invalidate the attached activity's options menu as necessary.
          * This may end up being deferred until we move to the resumed state.
          */
@@ -298,6 +324,7 @@ module
      * the identifier as returned by {@link #getId} is the only thing that
      * will be persisted across activity instances.
      */
+    [local]
     interface IFragmentManagerBackStackEntry {
         /**
          * Return the unique identifier for the entry.  This is the only
@@ -365,10 +392,13 @@ module
     }
 
     /**
+     * Container for fragments associated with an activity.
+     */
+    /**
      * @Involve
      * interface IFragmentManager
      */
-    [deprecated]
+    [local, deprecated]
     interface IFragmentManagerImpl {
         const String TAG = "FragmentManager";
 
@@ -376,9 +406,6 @@ module
         const String TARGET_STATE_TAG = "android:target_state";
         const String VIEW_STATE_TAG = "android:view_state";
         const String USER_VISIBLE_HINT_TAG = "android:user_visible_hint";
-
-        ToString(
-            [out] String* s);
 
         LoadAnimator(
             [in] IFragment* fragment,
@@ -447,6 +474,14 @@ module
             [in] Int32 transition,
             [in] Int32 transitionStyle);
 
+        FindFragmentById(
+            [in] Int32 id,
+            [out] IFragment** fragment);
+
+        FindFragmentByTag(
+            [in] String tag,
+            [out] IFragment** fragment);
+
         FindFragmentByWho(
             [in] String who,
             [out] IFragment** fragment);
@@ -485,7 +520,7 @@ module
             [out] Boolean* result);
 
         RetainNonConfig(
-            [out] IObjectContainer** retains);
+            [out] IArrayList** retains);
 
         SaveFragmentViewState(
             [in] IFragment* f);
@@ -499,7 +534,7 @@ module
 
         RestoreAllState(
             [in] IParcelable* state,
-            [in] IObjectContainer* nonConfig);
+            [in] IArrayList* nonConfig);
 
         AttachActivity(
             [in] IActivity* activity,

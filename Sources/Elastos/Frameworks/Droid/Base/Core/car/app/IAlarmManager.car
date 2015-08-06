@@ -1,6 +1,8 @@
 module
 {
+    interface Elastos.Droid.Os.IWorkSource;
     interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.App.IAlarmManagerAlarmClockInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -12,31 +14,29 @@ module
      * {@hide}
      */
     interface IIAlarmManager {
+        /** windowLength == 0 means exact; windowLength < 0 means the let the OS decide */
         Set(
             [in] Int32 type,
             [in] Int64 triggerAtTime,
-            [in] IPendingIntent* operation);
-
-        SetRepeating(
-            [in] Int32 type,
-            [in] Int64 triggerAtTime,
+            [in] Int64 windowLength,
             [in] Int64 interval,
-            [in] IPendingIntent* operation);
-
-        SetInexactRepeating(
-            [in] Int32 type,
-            [in] Int64 triggerAtTime,
-            [in] Int64 interval,
-            [in] IPendingIntent* operation);
+            [in] IPendingIntent* operation,
+            [in] IWorkSource* workSource,
+            [in] IAlarmManagerAlarmClockInfo* alarmClock);
 
         SetTime(
-            [in] Int64 millis);
+            [in] Int64 millis,
+            [out] Boolean* result);
 
         SetTimeZone(
             [in] String zone);
 
         Remove(
             [in] IPendingIntent* operation);
+
+        GetNextAlarmClock(
+            [in] Int32 userId,
+            [out] IAlarmManagerAlarmClockInfo** info);
     }
 
     } // namespace App

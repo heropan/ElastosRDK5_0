@@ -22,7 +22,6 @@ module
       *
       * @sa Context.startActivity(Intent, Bundle)
       */
-    [local]
     interface IActivityOptions {
 
         /**

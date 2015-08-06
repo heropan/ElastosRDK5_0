@@ -10,25 +10,17 @@ module
     namespace Droid {
     namespace App {
 
-        interface IIActivityManager {}
-
-        interface IApplicationThread {}
-
-        interface IFragmentManager {}
-
-        interface IFragment {}
-
-        interface IFragmentTransaction {}
-
-        interface IInstrumentation {}
-
         interface ILoaderManager {}
 
         interface ILocalActivityManager {}
 
         interface ILoadedPkg {}
 
+        interface INotification {}
+
         interface IPendingIntent {}
+
+        interface IProfilerInfo {}
 
         interface IResultInfo {}
 
@@ -42,7 +34,19 @@ module
 
         interface IOnActivityPausedListener {}
 
+        interface ISearchableInfo {}
+
+        interface IActivityManagerStackInfo {}
+
         interface IContextImpl {}
+
+        interface IUiAutomation {}
+
+        interface IWallpaperInfo {}
+
+        namespace Backup {
+            interface IIBackupManager {}
+        }
 
     }}} // Elastos.Droid.App
 
@@ -335,5 +339,35 @@ module
         interface IRemoteCallback {}
 
     }}} // Elastos.Droid.Os
+
+
+    //
+    // Elastos.Droid.Server
+    //
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+
+        namespace Voice {
+            interface IIVoiceInteractionSession {}
+        }
+
+        namespace Notification {
+            interface IStatusBarNotification {}
+
+            interface IINotificationListener {}
+
+            interface IZenModeConfig {}
+
+            interface IConditionProvider {}
+
+            interface ICondition {}
+
+            interface IConditionListener {}
+        }
+
+    }}} // Elastos.Droid.Os
+
+
 
 }

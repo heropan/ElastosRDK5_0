@@ -3,6 +3,7 @@ module
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.App.IWallpaperInfo;
     interface Elastos.Droid.App.IWallpaperManagerCallback;
 
@@ -70,6 +71,23 @@ module
          */
         GetHeightHint(
             [out] Int32* height);
+
+        /**
+         * Sets extra padding that we would like the wallpaper to have outside of the display.
+         */
+        SetDisplayPadding(
+            [in] IRect* padding);
+
+        /**
+         * Returns the name of the wallpaper. Private API.
+         */
+        GetName(
+            [out] String* name);
+
+        /**
+         * Informs the service that wallpaper settings have been restored. Private API.
+         */
+        SettingsRestored();
     }
 
     } // namespace App

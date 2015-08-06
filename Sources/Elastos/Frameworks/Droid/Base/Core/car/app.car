@@ -14,38 +14,49 @@ module
     merge("app/AppOpsManager.car");
     merge("app/Application.car");
     merge("app/ApplicationErrorReport.car");
+    merge("app/BackStackRecord.car");
     merge("app/ContextImpl.car");
     merge("app/DatePickerDialog.car");
     merge("app/Dialog.car");
     merge("app/DialogFragment.car");
-    //merge("app/DownloadManager.car");
+    merge("app/DownloadManager.car");
+    merge("app/ExpandableListActivity.car");
+    merge("app/Fragment.car");
+    //FragmentBreadCrumbs
+    merge("app/FragmentManager.car");
+    merge("app/FragmentTransaction.car");
+    merge("app/IActivityContainer.car");
+    merge("app/IActivityContainerCallback.car");
+    merge("app/IActivityController.car");
+    merge("app/IActivityManager.car");
+    merge("app/IAlarmManager.car");
+    merge("app/IAppTask.car");
+    merge("app/IApplicationThread.car");
+    merge("app/IBackupAgent.car");
+    merge("app/IInstrumentationWatcher.car");
+    merge("app/INotificationManager.car");
+    merge("app/IProcessObserver.car");
+    merge("app/ISearchManager.car");
+    merge("app/ISearchManagerCallback.car");
+    merge("app/IServiceConnection.car");
+    merge("app/IStopUserCallback.car");
+    merge("app/ITransientNotification.car");
+    merge("app/IUiAutomationConnection.car");
+    merge("app/IUiModeManager.car");
+    merge("app/IUserSwitchObserver.car");
+    merge("app/IWallpaperManager.car");
+    merge("app/IWallpaperManagerCallback.car");
+    merge("app/Instrumentation.car");
+    merge("app/IntentService.car");
 
-    merge("app/BackStackRecord.car");
 
     // merge("app/ListActivity.car");
     // merge("app/LocalActivityManager.car");
-
-    // merge("app/FragmentTransaction.car");
-    // merge("app/IActivityController.car");
-    // merge("app/IActivityManager.car");
-    // merge("app/IAlarmManager.car");
-    // merge("app/IApplicationThread.car");
-    // merge("app/IBackupAgent.car");
     // merge("app/IBatteryStats.car");
     // merge("app/IUsageStats.car");
-    // merge("app/IInstrumentationWatcher.car");
-    // merge("app/INotificationManager.car");
-    // merge("app/IProcessObserver.car");
-    // merge("app/IServiceConnection.car");
-    // merge("app/IStopUserCallback.car");
     // merge("app/IThumbnailReceiver.car");
     // merge("app/IThumbnailRetriever.car");
-    // merge("app/ITransientNotification.car");
-    // merge("app/IUiModeManager.car");
-    // merge("app/IUserSwitchObserver.car");
-    // merge("app/IWallpaperManager.car");
-    // merge("app/IWallpaperManagerCallback.car");
-    // merge("app/Instrumentation.car");
+    //
     // merge("app/KeyguardManager.car");
     // merge("app/Notification.car");
     // merge("app/NotificationManager.car");
@@ -65,15 +76,14 @@ module
     // merge("app/WallpaperManager.car");
     // merge("app/ActionBarImpl.car");
     // merge("app/AlertController.car");
-    // merge("app/Fragment.car");
+    //
     //
     // merge("app/MediaRouteChooserDialogFragment.car");
     // merge("app/HeavyWeightSwitcherActivity.car");
     // merge("app/ListFragment.car");
     // merge("app/LocalePicker.car");
     // merge("app/ReceiverRestrictedContext.car");
-    // merge("app/FragmentManager.car");
-    // merge("app/ISearchManager.car");
+    //
     // merge("app/SearchableInfo.car");
     // merge("app/IMediaContainerService.car");
     // merge("app/BackStackState.car");

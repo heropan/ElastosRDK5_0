@@ -43,7 +43,7 @@ module
      * @Involve
      * interface IParcelable;
      */
-    [deprecated, local]
+    [deprecated]
     interface IIntentFilter {
         /**
          * The filter {@link #setPriority} value at which system high-priority

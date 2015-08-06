@@ -48,7 +48,7 @@ module
      * up-calls for application-level operations such as launching activities,
      * broadcasting and receiving intents, etc.
      */
-    [deprecated, local]
+    [deprecated]
     interface IContext {
         /**
          * File creation mode: the default mode, where the created file can only
@@ -1230,8 +1230,8 @@ module
         /**
          * Return a class loader you can use to retrieve classes in this package.
          */
-        GetClassLoader(
-            [out] IClassLoader** loader);
+        //GetClassLoader(
+        //    [out] IClassLoader** loader);
 
         /** Return the name of this application's package. */
         GetPackageName(

@@ -6,6 +6,7 @@ module
     using interface Elastos.Core.ICharSequence;
 
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IPersistableBundle;
     interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Content.IIntent;
@@ -19,6 +20,8 @@ module
     interface Elastos.Droid.App.IActivity;
     interface Elastos.Droid.App.IActivityThread;
     interface Elastos.Droid.App.IInstrumentationWatcher;
+    interface Elastos.Droid.App.IUiAutomation;
+    interface Elastos.Droid.App.IWallpaperInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -693,6 +696,18 @@ module
             [in] IBundle* savedInstanceState);
 
         /**
+         * Perform calling of an activity's {@link Activity#onRestoreInstanceState}
+         * method.  The default implementation simply calls through to that method.
+         *
+         * @param activity The activity being restored.
+         * @param savedInstanceState The previously saved state being restored.
+         * @param persistentState The previously persisted state (or null)
+         */
+        CallActivityOnRestoreInstanceState(
+            [in] IActivity* activity,
+            [in] IPersistableBundle* savedInstanceState);
+
+        /**
          * Perform calling of an activity's {@link Activity#onPostCreate} method.
          * The default implementation simply calls through to that method.
          *
@@ -703,6 +718,18 @@ module
         CallActivityOnPostCreate(
             [in] IActivity* activity,
             [in] IBundle* icicle);
+
+        /**
+         * Perform calling of an activity's {@link Activity#onPostCreate} method.
+         * The default implementation simply calls through to that method.
+         *
+         * @param activity The activity being created.
+         * @param icicle The previously frozen state (or null) to pass through to
+         *               onPostCreate().
+         */
+        CallActivityOnPostCreate(
+            [in] IActivity* activity,
+            [in] IPersistableBundle* persistentState);
 
         /**
          * Perform calling of an activity's {@link Activity#onNewIntent}
@@ -761,6 +788,17 @@ module
         CallActivityOnSaveInstanceState(
             [in] IActivity* activity,
             [in] IBundle* outState);
+
+        /**
+         * Perform calling of an activity's {@link Activity#onSaveInstanceState}
+         * method.  The default implementation simply calls through to that method.
+         *  @param activity The activity being saved.
+         * @param outState The bundle to pass to the call.
+         * @param outPersistentState The persistent bundle to pass to the call.
+         */
+        CallActivityOnSaveInstanceState(
+            [in] IActivity* activity,
+            [in] IPersistableBundle* outPersistentState);
 
         /**
          * Perform calling of an activity's {@link Activity#onPause} method.  The
@@ -974,12 +1012,62 @@ module
             [in] IUserHandle* user,
             [out] IInstrumentationActivityResult** activityResult);
 
+        /**
+         * Special version!
+         * @hide
+         */
+        ExecStartActivityAsCaller(
+            [in] IContext* who,
+            [in] IBinder* contextThread,
+            [in] IBinder* token,
+            [in] IActivity* target,
+            [in] IIntent* intent,
+            [in] Int32 requestCode,
+            [in] IBundle* options,
+            [in] Int32 userId,
+            [out] IInstrumentationActivityResult** activityResult);
+
+        /**
+         * Special version!
+         * @hide
+         */
+        ExecStartActivityFromAppTask(
+            [in] IContext* who,
+            [in] IBinder* contextThread,
+            [in] IBinder* token,
+            [in] IAppTask* appTask,
+            [in] IIntent* intent,
+            [in] IBundle* options,
+            [out] IInstrumentationActivityResult** activityResult);
+
         Init(
             [in] IActivityThread* thread,
             [in] IContext* instrContext,
             [in] IContext* appContext,
             [in] IComponentName* component,
             [in] IInstrumentationWatcher* watcher);
+
+        /**
+         * Gets the {@link UiAutomation} instance.
+         * <p>
+         * <strong>Note:</strong> The APIs exposed via the returned {@link UiAutomation}
+         * work across application boundaries while the APIs exposed by the instrumentation
+         * do not. For example, {@link Instrumentation#sendPointerSync(MotionEvent)} will
+         * not allow you to inject the event in an app different from the instrumentation
+         * target, while {@link UiAutomation#injectInputEvent(android.view.InputEvent, boolean)}
+         * will work regardless of the current application.
+         * </p>
+         * <p>
+         * A typical test case should be using either the {@link UiAutomation} or
+         * {@link Instrumentation} APIs. Using both APIs at the same time is not
+         * a mistake by itself but a client has to be aware of the APIs limitations.
+         * </p>
+         * @return The UI automation instance.
+         *
+         * @see UiAutomation
+         */
+        GetUiAutomation(
+            [out] IUiAutomation** uia);
     }
 
     [local]

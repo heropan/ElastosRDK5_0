@@ -25,7 +25,7 @@ module
     namespace Droid {
     namespace Content {
 
-    [deprecated, local]
+    [deprecated]
     interface IIntent {
         // ---------------------------------------------------------------------
         // ---------------------------------------------------------------------
@@ -3338,8 +3338,8 @@ module
          * @param loader a ClassLoader, or null to use the default loader
          * at the time of unmarshalling.
          */
-        SetExtrasClassLoader(
-            [in] IClassLoader* loader);
+        //SetExtrasClassLoader(
+        //    [in] IClassLoader* loader);
 
         /**
          * Returns true if an extra value is associated with the given name.
