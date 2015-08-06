@@ -9,7 +9,7 @@ CAR_INTERFACE_IMPL_2(FloatKeyframeSet, IFloatKeyframeSet, IKeyframeSet)
 
 FloatKeyframeSet::FloatKeyframeSet(
     /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes)
-    : KeyframeSetBase((ArrayOf<IKeyframe*>*)keyframes)
+    : KeyframeSet((ArrayOf<IKeyframe*>*)keyframes)
     , mFirstValue(0.0f)
     , mLastValue(0.0f)
     , mDeltaValue(0.0f)
@@ -29,12 +29,6 @@ ECode FloatKeyframeSet::GetValue(
     *value = rst;
     REFCOUNT_ADD(*value);
     return NOERROR;
-}
-
-ECode FloatKeyframeSet::SetEvaluator(
-    /* [in] */ ITypeEvaluator* evaluator)
-{
-    return KeyframeSetBase::SetEvaluator(evaluator);
 }
 
 ECode FloatKeyframeSet::Clone(

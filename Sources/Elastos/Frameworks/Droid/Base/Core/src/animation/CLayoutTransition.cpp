@@ -36,8 +36,8 @@ AutoPtr<IObjectAnimator> CLayoutTransition::sDefaultFadeOut;
 
 Int64 CLayoutTransition::DEFAULT_DURATION = 300;
 
-CAR_INTERFACE_IMPL(CLayoutTransition::_OnPreDrawListener, IOnPreDrawListener)
-CAR_INTERFACE_IMPL(CLayoutTransition::ViewOnLayoutChangeListener, IViewOnLayoutChangeListener)
+CAR_INTERFACE_IMPL(CLayoutTransition::_OnPreDrawListener, Object, IOnPreDrawListener)
+CAR_INTERFACE_IMPL(CLayoutTransition::ViewOnLayoutChangeListener, Object, IViewOnLayoutChangeListener)
 
 CLayoutTransition::_AnimatorListenerAdapter::_AnimatorListenerAdapter(
     /* [in] */ CLayoutTransition* host,
@@ -285,6 +285,7 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(CLayoutTransition, Object, ILayoutTransition);
 CLayoutTransition::CLayoutTransition()
     : mChangingAppearingDuration(DEFAULT_DURATION)
     , mChangingDisappearingDuration(DEFAULT_DURATION)

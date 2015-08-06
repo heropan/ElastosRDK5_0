@@ -19,9 +19,9 @@ namespace Animation {
  * Object equivalents of these primitive types.</p>
  */
 class Int32KeyframeSet
-        : public IInt32KeyframeSet
-        , public KeyframeSetBase
-        , public ElRefBase
+    : public KeyframeSet
+    , public IInt32KeyframeSet
+
 {
 public:
     CAR_INTERFACE_DECL()

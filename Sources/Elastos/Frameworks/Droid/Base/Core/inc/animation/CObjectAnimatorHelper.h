@@ -1,7 +1,8 @@
-#ifndef  __COBJECTANIMATORHELPER_H__
-#define  __COBJECTANIMATORHELPER_H__
 
-#include "_CObjectAnimatorHelper.h"
+#ifndef  __ELASTOS_DROID_ANIMATION_COBJECTANIMATORHELPER_H__
+#define  __ELASTOS_DROID_ANIMATION_COBJECTANIMATORHELPER_H__
+
+#include "_Elastos_Droid_Animation_CObjectAnimatorHelper.h"
 
 using Elastos::Droid::Utility::IProperty;
 
@@ -9,8 +10,15 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CarClass(CObjectAnimatorHelper) {
+CarClass(CObjectAnimatorHelper)
+    , public Singleton
+    , public IObjectAnimatorHelper
+{
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI OfInt32(
         /* [in] */ IInterface* target,
         /* [in] */ const String& propertyName,
@@ -59,4 +67,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__COBJECTANIMATORHELPER_H__
+#endif // __ELASTOS_DROID_ANIMATION_COBJECTANIMATORHELPER_H__

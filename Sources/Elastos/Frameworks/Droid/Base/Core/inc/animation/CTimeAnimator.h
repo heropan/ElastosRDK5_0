@@ -1,10 +1,9 @@
-#ifndef  __CTIMEANIMATOR_H__
-#define  __CTIMEANIMATOR_H__
+
+#ifndef  __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__
 
 #include "_CTimeAnimator.h"
 #include "animation/TimeAnimator.h"
-
-
 
 namespace Elastos {
 namespace Droid {
@@ -13,19 +12,13 @@ namespace Animation {
 CarClass(CTimeAnimator) , public TimeAnimator
 {
 public:
-    IANIMATOR_METHOD_DECL()
-    IVALUEANIMATOR_METHOD_DECL()
+    CAR_OBJECT_DECL();
 
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI SetTimeListener(
-        /* [in] */ ITimeListener* listener);
-
+    CAR_INTERFACE_DECL();
 };
 
 } // namespace Animation
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CTIMEANIMATOR_H__
+#endif // __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__

@@ -1,8 +1,8 @@
 
-#ifndef  __CKEYFRAMEHELPER_H__
-#define  __CKEYFRAMEHELPER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CKEYFRAMEHELPER_H__
+#define  __ELASTOS_DROID_ANIMATION_CKEYFRAMEHELPER_H__
 
-#include "_CKeyframeHelper.h"
+#include "_Elastos_Droid_Animation_CKeyframeHelper.h"
 #include "animation/Keyframe.h"
 
 namespace Elastos {
@@ -10,8 +10,14 @@ namespace Droid {
 namespace Animation {
 
 CarClass(CKeyframeHelper)
+    , public Singleton
+    , public IKeyframeHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Constructs a Keyframe object with the given time and value. The time defines the
      * time, as a proportion of an overall animation's duration, at which the value will hold true
@@ -124,4 +130,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__CKEYFRAMEHELPER_H__
+#endif  // __ELASTOS_DROID_ANIMATION_CKEYFRAMEHELPER_H__

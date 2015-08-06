@@ -1,3 +1,4 @@
+
 #include "animation/ObjectAnimator.h"
 #include "animation/CObjectAnimator.h"
 #include "animation/PropertyValuesHolder.h"
@@ -6,9 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+CAR_INTERFACE_IMPL(ObjectAnimator, ValueAnimator, IObjectAnimator);
+
 ObjectAnimator::ObjectAnimator()
 {}
-
 
 ECode ObjectAnimator::SetPropertyName(
     /* [in] */ const String& propertyName)
@@ -182,9 +184,13 @@ ECode ObjectAnimator::SetDuration(
     return NOERROR;
 }
 
-AutoPtr<IInterface> ObjectAnimator::GetTarget()
+ECode ObjectAnimator::GetTarget(
+    /* [out] */ IInterface** object)
 {
-    return mTarget;
+    VALIDATE_NOT_NULL(object);
+    *object = mTarget;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 ECode ObjectAnimator::SetTarget(

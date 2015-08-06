@@ -1,8 +1,8 @@
 
-#ifndef  __CLAYOUTTRANSITION_H__
-#define  __CLAYOUTTRANSITION_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__
+#define  __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__
 
-#include "_CLayoutTransition.h"
+#include "_Elastos_Droid_Animation_CLayoutTransition.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
@@ -85,6 +85,8 @@ namespace Animation {
  * other animations appropriately.</p>
  */
 CarClass(CLayoutTransition)
+    , public Object
+    , public ILayoutTransition
 {
 private:
     class _AnimatorListenerAdapter : public AnimatorListenerAdapter
@@ -167,7 +169,7 @@ private:
 
     class _OnPreDrawListener
             : public IOnPreDrawListener
-            , public ElRefBase
+            , public Object
     {
     public:
 
@@ -187,7 +189,7 @@ private:
 
     class ViewOnLayoutChangeListener
             : public IViewOnLayoutChangeListener
-            , public ElRefBase
+            , public Object
     {
     public:
         CAR_INTERFACE_DECL()
@@ -221,6 +223,7 @@ private:
             /* [in] */ Int32 oldTop,
             /* [in] */ Int32 oldRight,
             /* [in] */ Int32 oldBottom);
+
     private:
         CLayoutTransition* mHost;
         Int32 mChangeReason;
@@ -229,7 +232,10 @@ private:
         AutoPtr<IAnimator> mAnim;
         AutoPtr<IViewGroup> mParent;
     };
+
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Constructs a LayoutTransition object. By default, the object will listen to layout
      * events on any ViewGroup that it is set on and will run default animations for each
@@ -875,4 +881,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLAYOUTTRANSITION_H__
+#endif // __ELASTOS_DROID_ANIMATION_CLAYOUTTRANSITION_H__

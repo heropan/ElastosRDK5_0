@@ -3,12 +3,10 @@
 #define  __KEYFRAMESET_H__
 
 #include "animation/Keyframe.h"
-#include "animation/KeyframeSetBase.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
-
 
 /**
  * This class holds a collection of Keyframe objects and is called by ValueAnimator to calculate
@@ -16,15 +14,16 @@ namespace Animation {
  * package because it is an implementation detail of how Keyframes are stored and used.
  */
 class KeyframeSet
-        : public IKeyframeSet
-        , public KeyframeSetBase
-        , public ElRefBase
+    : public Object
+    , public IKeyframeSet
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     KeyframeSet(
         /* [in] */ ArrayOf<IKeyframe*>* keyframes);
+
+    virtual ~KeyframeSet();
 
     static CARAPI_(AutoPtr<IKeyframeSet>) OfInt32(
         /* [in] */ ArrayOf<Int32>* values);
@@ -37,6 +36,7 @@ public:
 
     static CARAPI_(AutoPtr<IKeyframeSet>) OfObject(
         /* [in] */ ArrayOf<IInterface*>* values);
+
     /**
      * Sets the TypeEvaluator to be used when calculating animated values. This object
      * is required only for KeyframeSets that are not either IntKeyframeSet or FloatKeyframeSet,
@@ -45,7 +45,7 @@ public:
      *
      * @param evaluator The TypeEvaluator to be used to calculate animated values.
      */
-    CARAPI SetEvaluator(
+    virtual CARAPI SetEvaluator(
         /* [in] */ ITypeEvaluator* evaluator);
 
     /**
@@ -60,19 +60,28 @@ public:
      * @param fraction The elapsed fraction of the animation
      * @return The animated value.
      */
-    CARAPI GetValue(
+    virtual CARAPI GetValue(
         /* [in] */ Float fraction,
         /* [out] */ IInterface** value);
 
-    CARAPI Clone(
+    virtual CARAPI Clone(
         /* [out] */ IKeyframeSet** obj);
 
-    CARAPI GetKeyframes(
+    virtual CARAPI GetKeyframes(
         /* [out, callee] */ ArrayOf<IKeyframe*>** frames);
-};
 
+protected:
+    Int32 mNumKeyframes;
+
+    AutoPtr<IKeyframe> mFirstKeyframe;
+    AutoPtr<IKeyframe> mLastKeyframe;
+    AutoPtr<ITimeInterpolator> mInterpolator; // only used in the 2-keyframe case
+    AutoPtr<ArrayOf<IKeyframe*> > mKeyframes; // only used when there are not 2 keyframes
+    AutoPtr<ITypeEvaluator> mEvaluator;
+};
 
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
+
 #endif  //__KEYFRAMESET_H__

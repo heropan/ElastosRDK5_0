@@ -37,7 +37,7 @@ extern "C" const InterfaceID EIID_ValueAnimator =
 //==============================================================================
 //              ValueAnimator::AnimationHandler
 //==============================================================================
-
+CAR_INTERFACE_IMPL(ValueAnimator::AnimationHandler, Object, IRunnable);
 ValueAnimator::AnimationHandler::AnimationHandler()
     : mAnimationScheduled(FALSE)
 {
@@ -49,6 +49,7 @@ ValueAnimator::AnimationHandler::AnimationHandler()
 ValueAnimator::AnimationHandler::~AnimationHandler()
 {
 }
+
 void ValueAnimator::AnimationHandler::Start()
 {
     ScheduleAnimation();
@@ -198,6 +199,34 @@ Float ValueAnimator::sDurationScale = 1.0f;
 pthread_key_t ValueAnimator::sAnimationHandler;
 Boolean ValueAnimator::sHaveKey = InitTLS();
 const AutoPtr<ITimeInterpolator> ValueAnimator::sDefaultInterpolator = CreateInterPolator();
+
+ECode ValueAnimator::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(ValueAnimator *)this) {
+        *iid = EIID_ValueAnimator;
+    }
+    else if (object == (IInterface*)(IValueAnimator *)this) {
+        *iid = EIID_IValueAnimator;
+    }
+
+    return Animator::GetInterfaceID(object, iid);
+}
+
+PInterface ValueAnimator::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_ValueAnimator) {
+        return reinterpret_cast<PInterface>((ValueAnimator*)this);
+    }
+    else if (riid == EIID_IValueAnimator) {
+        return (IInterface*)(IValueAnimator*)this;
+    }
+
+    return Animator::Probe(riid)
+}
 
 ValueAnimator::ValueAnimator()
     : mStartTime(0)
@@ -358,9 +387,12 @@ ECode ValueAnimator::SetDuration(
     return NOERROR;
 }
 
-Int64 ValueAnimator::GetDuration()
+ECode ValueAnimator::GetDuration(
+    /* [out] */ Int64* duration)
 {
-    return mUnscaledDuration;
+    VALIDATE_NOT_NULL(duration);
+    *duration = mUnscaledDuration;
+    return NOERROR;
 }
 
 ECode ValueAnimator::SetCurrentPlayTime(
@@ -378,18 +410,25 @@ ECode ValueAnimator::SetCurrentPlayTime(
     return NOERROR;
 }
 
-Int64 ValueAnimator::GetCurrentPlayTime()
+ECode ValueAnimator::GetCurrentPlayTime(
+    /* [out] */ Int64* playTime)
 {
+    VALIDATE_NOT_NULL(playTime);
     if (!mInitialized || mPlayingState == STOPPED) {
-        return 0;
+        *playTime = 0;
+        return NOERROR;
     }
 
-    return AnimationUtils::CurrentAnimationTimeMillis() - mStartTime;
+    *playTime = AnimationUtils::CurrentAnimationTimeMillis() - mStartTime;
+    return NOERROR;
 }
 
-Int64 ValueAnimator::GetStartDelay()
+ECode ValueAnimator::GetStartDelay(
+    /* [out] */ Int64* delay)
 {
-    return mUnscaledStartDelay;
+    VALIDATE_NOT_NULL(delay);
+    *delay = mUnscaledStartDelay;
+    return NOERROR;
 }
 
 ECode ValueAnimator::SetStartDelay(
@@ -400,17 +439,22 @@ ECode ValueAnimator::SetStartDelay(
     return NOERROR;
 }
 
-AutoPtr<IInterface> ValueAnimator::GetAnimatedValue()
+ECode ValueAnimator::GetAnimatedValue(
+    /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value);
+    *value = NULL;
     AutoPtr<IInterface> obj;
     if (mValues != NULL && mValues->GetLength() > 0) {
         AutoPtr<IPropertyValuesHolder> holder = (*mValues)[0];
        PropertyValuesHolder* pvh = reinterpret_cast<PropertyValuesHolder*>(holder->Probe(EIID_PropertyValuesHolder));
-       return pvh->GetAnimatedValue();
+       *value = pvh->GetAnimatedValue();
+       REFCOUNT_ADD(*value);
+       return NOERROR;
     }
 
     // Shouldn't get here; should always have values unless ValueAnimator was set up wrong
-    return obj;
+    return NOERROR;
 }
 
 Int64 ValueAnimator::GetFrameDelay()
@@ -429,18 +473,23 @@ ECode ValueAnimator::SetFrameDelay(
     return helper->SetFrameDelay(delay);
 }
 
-AutoPtr<IInterface> ValueAnimator::GetAnimatedValue(
-    /* [in] */ const String& propertyName)
+ECode ValueAnimator::GetAnimatedValue(
+    /* [in] */ const String& propertyName,
+    /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value);
+    *value = NULL;
     StrMapIterator it = mValuesMap.Find(propertyName);
-    if (it != mValuesMap.End() && it->mSecond != NULL)
-    {
+    if (it != mValuesMap.End() && it->mSecond != NULL) {
        AutoPtr<IPropertyValuesHolder> valuesHolder = it->mSecond;
        PropertyValuesHolder* pvh = reinterpret_cast<PropertyValuesHolder*>(valuesHolder->Probe(EIID_PropertyValuesHolder));
-       return pvh->GetAnimatedValue();
+       *value = pvh->GetAnimatedValue();
+       REFCOUNT_ADD(*value);
+       return NOERROR;
     }
+
     // At least avoid crashing if called with bogus propertyName
-    return NULL;
+    return NOERROR;
 }
 
 ECode ValueAnimator::SetRepeatCount(
@@ -450,9 +499,12 @@ ECode ValueAnimator::SetRepeatCount(
     return NOERROR;
 }
 
-Int32 ValueAnimator::GetRepeatCount()
+ECode ValueAnimator::GetRepeatCount(
+    /* [out] */ Int32* count)
 {
-    return mRepeatCount;
+    VALIDATE_NOT_NULL(count);
+    *count = mRepeatCount;
+    return NOERROR;
 }
 
 ECode ValueAnimator::SetRepeatMode(
@@ -462,9 +514,12 @@ ECode ValueAnimator::SetRepeatMode(
     return NOERROR;
 }
 
-Int32 ValueAnimator::GetRepeatMode()
+ECode ValueAnimator::GetRepeatMode(
+    /* [out] */ Int32* mode)
 {
-    return mRepeatMode;
+    VALIDATE_NOT_NULL(mode);
+    *mode = mRepeatMode;
+    return NOERROR;
 }
 
 ECode ValueAnimator::AddUpdateListener(
@@ -502,9 +557,13 @@ ECode ValueAnimator::SetInterpolator(
     return NOERROR;
 }
 
-AutoPtr<ITimeInterpolator> ValueAnimator::GetInterpolator()
+ECode ValueAnimator::GetInterpolator(
+    /* [out] */ ITimeInterpolator** interpolator)
 {
-    return mInterpolator;
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = mInterpolator;
+    REFCOUNT_ADD(*interpolator);
+    return NOERROR;
 }
 
 ECode ValueAnimator::SetEvaluator(
@@ -626,14 +685,20 @@ ECode ValueAnimator::End()
     return NOERROR;
 }
 
-Boolean ValueAnimator::IsRunning()
+ECode ValueAnimator::IsRunning(
+    /* [out] */ Boolean* running)
 {
-    return (mPlayingState == RUNNING || mRunning);
+    VALIDATE_NOT_NULL(running);
+    *running = (mPlayingState == RUNNING || mRunning);
+    return NOERROR;
 }
 
-Boolean ValueAnimator::IsStarted()
+ECode ValueAnimator::IsStarted(
+    /* [out] */ Boolean* started)
 {
-    return mStarted;
+    VALIDATE_NOT_NULL(started);
+    *started = mStarted;
+    return NOERROR;
 }
 
 ECode ValueAnimator::Reverse()
@@ -777,9 +842,12 @@ Boolean ValueAnimator::DoAnimationFrame(
     return AnimationFrame(currentTime);
 }
 
-Float ValueAnimator::GetAnimatedFraction()
+ECode ValueAnimator::GetAnimatedFraction(
+    /* [out] */ Float* fraction)
 {
-    return mCurrentFraction;
+    VALIDATE_NOT_NULL(fraction);
+    *fraction = mCurrentFraction;
+    return NOERROR;
 }
 
 ECode ValueAnimator::AnimateValue(

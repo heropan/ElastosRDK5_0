@@ -2,12 +2,15 @@
 #include "animation/CFloatEvaluator.h"
 #include "ext/frameworkext.h"
 
+using Elastos::Core::IFloat;
+using Elastos::Core::CFloat;
+
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-using Elastos::Core::IFloat;
-using Elastos::Core::CFloat;
+CAR_OBJECT_IMPL(CFloatEvaluator);
+CAR_INTERFACE_IMPL_2(CFloatEvaluator, Object, IFloatEvaluator, ITypeEvaluator);
 
 ECode CFloatEvaluator::Evaluate(
     /* [in] */ Float fraction,

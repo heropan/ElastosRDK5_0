@@ -1,14 +1,12 @@
 
-#ifndef  __FLOATKEYFRAMESET_H__
-#define  __FLOATKEYFRAMESET_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_FLOATKEYFRAMESET_H__
+#define  __ELASTOS_DROID_ANIMATION_FLOATKEYFRAMESET_H__
 
 #include "animation/KeyframeSet.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
-
-
 /**
  * This class holds a collection of FloatKeyframe objects and is called by ValueAnimator to calculate
  * values between those keyframes for a given animation. The class internal to the animation
@@ -20,9 +18,8 @@ namespace Animation {
  * Object equivalents of these primitive types.</p>
  */
 class FloatKeyframeSet
-    : public IFloatKeyframeSet
-    , public KeyframeSetBase
-    , public ElRefBase
+    : public KeyframeSet
+    , public IFloatKeyframeSet
 {
 public:
     CAR_INTERFACE_DECL()
@@ -78,4 +75,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__FLOATKEYFRAMESET_H__
+#endif // __ELASTOS_DROID_ANIMATION_FLOATKEYFRAMESET_H__

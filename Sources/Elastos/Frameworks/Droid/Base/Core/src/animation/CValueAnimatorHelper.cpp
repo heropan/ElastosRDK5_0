@@ -5,6 +5,9 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
+CAR_SINGLETON_IMPL(CValueAnimatorHelper)
+CAR_INTERFACE_IMPL(CValueAnimatorHelper, Singleton, IValueAnimatorHelper)
+
 ECode CValueAnimatorHelper::SetDurationScale(
     /* [in] */ Float durationScale)
 {

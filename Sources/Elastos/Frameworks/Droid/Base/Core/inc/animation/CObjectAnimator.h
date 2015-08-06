@@ -1,18 +1,15 @@
 
-#ifndef  __COBJECTANIMATOR_H__
-#define  __COBJECTANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_COBJECTANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_COBJECTANIMATOR_H__
 
-#include "_CObjectAnimator.h"
+#include "_Elastos_Droid_Animation_CObjectAnimator.h"
 #include "animation/ObjectAnimator.h"
-
-
 
 using Elastos::Droid::Utility::IProperty;
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
-
 
 /**
  * This subclass of {@link ValueAnimator} provides support for animating properties on target objects.
@@ -34,10 +31,10 @@ namespace Animation {
 CarClass(CObjectAnimator) , public ObjectAnimator
 {
 public:
-    IANIMATOR_METHOD_DECL()
-    IVALUEANIMATOR_METHOD_DECL()
+    CAR_OBJECT_DECL();
 
-public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Constructs and returns an ObjectAnimator that animates between Int32 values. A single
      * value implies that that value is the one being animated to. Two values imply a starting
@@ -176,75 +173,11 @@ public:
         /* [in] */ ArrayOf<IPropertyValuesHolder*>* values);
 
 public:
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
     CARAPI constructor();
-
-    /**
-     * Sets the name of the property that will be animated. This name is used to derive
-     * a setter function that will be called to set animated values.
-     * For example, a property name of <code>foo</code> will result
-     * in a call to the function <code>setFoo()</code> on the target object. If either
-     * <code>valueFrom</code> or <code>valueTo</code> is null, then a getter function will
-     * also be derived and called.
-     *
-     * <p>For best performance of the mechanism that calls the setter function determined by the
-     * name of the property being animated, use <code>Float</code> or <code>Int32</code> typed values,
-     * and make the setter function for those properties have a <code>void</code> return value. This
-     * will cause the code to take an optimized path for these constrained circumstances. Other
-     * property types and return types will work, but will have more overhead in processing
-     * the requests due to normal reflection mechanisms.</p>
-     *
-     * <p>Note that the setter function derived from this property name
-     * must take the same parameter type as the
-     * <code>valueFrom</code> and <code>valueTo</code> properties, otherwise the call to
-     * the setter function will fail.</p>
-     *
-     * <p>If this ObjectAnimator has been set up to animate several properties together,
-     * using more than one PropertyValuesHolder objects, then setting the propertyName simply
-     * sets the propertyName in the first of those PropertyValuesHolder objects.</p>
-     *
-     * @param propertyName The name of the property being animated. Should not be null.
-     */
-    CARAPI SetPropertyName(
-        /* [in] */ const String& propertyName);
-
-    /**
-     * Sets the property that will be animated. Property objects will take precedence over
-     * properties specified by the #setPropertyName(String) method. Animations should
-     * be set up to use one or the other, not both.
-     *
-     * @sa #setPropertyName(String)
-     *
-     * @param property The property being animated. Should not be null.
-     */
-    CARAPI SetProperty(
-        /* [in] */ IProperty* property);
-
-    /**
-     * Gets the name of the property that will be animated. This name will be used to derive
-     * a setter function that will be called to set animated values.
-     * For example, a property name of <code>foo</code> will result
-     * in a call to the function <code>setFoo()</code> on the target object. If either
-     * <code>valueFrom</code> or <code>valueTo</code> is NULL, then a getter function will
-     * also be derived and called.
-     */
-    CARAPI GetPropertyName(
-        /* [out] */ String* propertyName);
-
-    /**
-     * The target object whose property will be animated by this animation
-     *
-     * @return The object being animated
-     */
-    CARAPI GetTarget(
-        /* [out] */ IInterface** object);
 };
 
 } // namespace Animation
 } // namepsace Droid
 } // namespace Elastos
 
-#endif  //__COBJECTANIMATOR_H__
+#endif  // __ELASTOS_DROID_ANIMATION_COBJECTANIMATOR_H__

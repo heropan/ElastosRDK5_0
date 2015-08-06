@@ -1,9 +1,13 @@
+
 #include "animation/CObjectAnimatorHelper.h"
 #include "animation/CObjectAnimator.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
+
+CAR_SINGLETON_IMPL(CObjectAnimatorHelper)
+CAR_INTERFACE_IMPL(CObjectAnimatorHelper, Singleton, IObjectAnimatorHelper)
 
 ECode CObjectAnimatorHelper::OfInt32(
     /* [in] */ IInterface* target,

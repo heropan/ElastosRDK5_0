@@ -1,14 +1,20 @@
-#ifndef  __CVALUEANIMATORHELPER_H__
-#define  __CVALUEANIMATORHELPER_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CVALUEANIMATORHELPER_H__
+#define  __ELASTOS_DROID_ANIMATION_CVALUEANIMATORHELPER_H__
 
-#include "_CValueAnimatorHelper.h"
+#include "_Elastos_Droid_Animation_CValueAnimatorHelper.h"
 
 namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CarClass(CValueAnimatorHelper) {
+CarClass(CValueAnimatorHelper)
+    , public Singleton
+    , public IValueAnimatorHelper
+{
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     /**
      * @hide
@@ -135,11 +141,10 @@ public:
      * @hide
      */
     CARAPI ClearAllAnimations();
-
 };
 
 } // namespace Animation
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVALUEANIMATORHELPER_H__
+#endif // __ELASTOS_DROID_ANIMATION_CVALUEANIMATORHELPER_H__

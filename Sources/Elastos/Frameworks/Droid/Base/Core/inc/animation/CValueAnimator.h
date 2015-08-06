@@ -1,11 +1,9 @@
 
-#ifndef  __CVALUEANIMATOR_H__
-#define  __CVALUEANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_CVALUEANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_CVALUEANIMATOR_H__
 
-#include "_CValueAnimator.h"
+#include "_Elastos_Droid_Animation_CValueAnimator.h"
 #include "animation/ValueAnimator.h"
-
-
 
 namespace Elastos {
 namespace Droid {
@@ -14,13 +12,9 @@ namespace Animation {
 CarClass(CValueAnimator) , public ValueAnimator
 {
 public:
-    IANIMATOR_METHOD_DECL()
-    IVALUEANIMATOR_METHOD_DECL()
+    CAR_OBJECT_DECL();
 
-public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
+    CAR_INTERFACE_DECL();
 
     /**
      * Constructs and returns a ValueAnimator that animates between Int32 values. A single
@@ -88,4 +82,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVALUEANIMATOR_H__
+#endif // __ELASTOS_DROID_ANIMATION_CVALUEANIMATOR_H__

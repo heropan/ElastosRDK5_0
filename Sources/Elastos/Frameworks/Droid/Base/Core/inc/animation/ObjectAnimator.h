@@ -1,6 +1,6 @@
 
-#ifndef  __OBJECTANIMATOR_H__
-#define  __OBJECTANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_OBJECTANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_OBJECTANIMATOR_H__
 
 #include "animation/ValueAnimator.h"
 
@@ -10,9 +10,13 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-class ObjectAnimator : public ValueAnimator
+class ObjectAnimator
+    : public ValueAnimator
+    , public IObjectAnimator
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ObjectAnimator();
 
     /**
@@ -112,7 +116,8 @@ public:
      *
      * @return The object being animated
      */
-    CARAPI_(AutoPtr<IInterface>) GetTarget();
+    virtual CARAPI GetTarget(
+        /* [out] */ IInterface** object);
 
     /**
      * Sets the target object whose property will be animated by this animation
@@ -174,4 +179,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__OBJECTANIMATOR_H__
+#endif  // __ELASTOS_DROID_ANIMATION_OBJECTANIMATOR_H__

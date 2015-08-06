@@ -1,6 +1,6 @@
 
-#ifndef  __TIMEANIMATOR_H__
-#define  __TIMEANIMATOR_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_TIMEANIMATOR_H__
+#define  __ELASTOS_DROID_ANIMATION_TIMEANIMATOR_H__
 
 #include "animation/ValueAnimator.h"
 
@@ -8,10 +8,16 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-class TimeAnimator : public ValueAnimator
+class TimeAnimator
+    : public ValueAnimator
+    , public ITimeAnimator
 {
 public:
+    CAR_INTERFACE_DECL();
+
     TimeAnimator();
+
+    virtual ~TimeAnimator();
 
     virtual CARAPI Start();
 
@@ -42,8 +48,8 @@ private:
     Int64 mPreviousTime;
 };
 
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
-#endif  //__TIMEANIMATOR_H__
+
+#endif  // __ELASTOS_DROID_ANIMATION_TIMEANIMATOR_H__
