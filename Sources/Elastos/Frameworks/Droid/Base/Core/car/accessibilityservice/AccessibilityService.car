@@ -488,7 +488,7 @@ module
     /**
      * @Involve
      * interface IHandlerCallerCallback
-     * interface IIAccessibilityServiceClient
+     * interface IAccessibilityServiceClient
      */
     interface IAccessibilityServiceClientWrapper {}
 

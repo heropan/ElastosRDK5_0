@@ -8,7 +8,7 @@ module
     interface Elastos.Droid.View.IIWindow;
     interface Elastos.Droid.View.Accessibility.IAccessibilityManagerClient;
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
-    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceClient;
+    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceClient;
 
     namespace Elastos {
     namespace Droid {
@@ -57,11 +57,11 @@ module
 
         RegisterUiTestAutomationService(
             [in] IBinder* owner,
-            [in] IIAccessibilityServiceClient* client,
+            [in] IAccessibilityServiceClient* client,
             [in] IAccessibilityServiceInfo* info);
 
         UnregisterUiTestAutomationService(
-            [in] IIAccessibilityServiceClient* client);
+            [in] IAccessibilityServiceClient* client);
 
         TemporaryEnableAccessibilityStateUntilKeyguardRemoved(
             [in] IComponentName* service,

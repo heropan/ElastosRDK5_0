@@ -15,7 +15,7 @@ module
      * @hide
      */
     [local]
-    interface IIAccessibilityServiceClient {
+    interface IAccessibilityServiceClient {
         SetConnection(
             [in] IIAccessibilityServiceConnection* connection,
             [in] Int32 connectionId);
