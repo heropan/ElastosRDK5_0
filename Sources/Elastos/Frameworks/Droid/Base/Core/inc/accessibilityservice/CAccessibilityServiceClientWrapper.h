@@ -23,7 +23,7 @@ public:
         /* [in] */ IAccessibilityServiceCallbacks* callback);
 
     CARAPI SetConnection(
-        /* [in] */ IAccessibilityServiceConnection* connection,
+        /* [in] */ IIAccessibilityServiceConnection* connection,
         /* [in] */ Int32 connectionId);
 
     CARAPI OnInterrupt();

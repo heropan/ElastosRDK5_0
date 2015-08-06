@@ -209,7 +209,7 @@ Boolean CAccessibilityServiceConnection::Unbind()
         CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
         {
             AutoLock lock(service->mLock);
-            service->TryRemoveServiceLocked(THIS_PROBE(IAccessibilityServiceConnection));
+            service->TryRemoveServiceLocked(THIS_PROBE(IIAccessibilityServiceConnection));
         }
         if (!mIsAutomation) {
             service->mContext->UnbindService(IServiceConnection::Probe(this));
@@ -265,7 +265,7 @@ ECode CAccessibilityServiceConnection::OnServiceConnected(
     /* [in] */ IBinder* binder)
 {
     mService = binder;
-    mServiceInterface = IAccessibilityServiceClient::Probe(binder);
+    mServiceInterface = IIAccessibilityServiceClient::Probe(binder);
     // try {
     ECode ec = mServiceInterface->SetConnection(this, mId);
     if (FAILED(ec)) {
@@ -661,7 +661,7 @@ ECode CAccessibilityServiceConnection::PerformAccessibilityAction(
         service->mSecurityPolicy->EnforceCanRetrieveWindowContent(this);
         resolvedWindowId = ResolveAccessibilityWindowIdLocked(accessibilityWindowId);
         Boolean permissionGranted = service->mSecurityPolicy->CanPerformActionLocked(
-            THIS_PROBE(IAccessibilityServiceConnection), resolvedWindowId, action, arguments);
+            THIS_PROBE(IIAccessibilityServiceConnection), resolvedWindowId, action, arguments);
         if (!permissionGranted) {
             *result = FALSE;
             return NOERROR;
@@ -776,7 +776,7 @@ ECode CAccessibilityServiceConnection::Dispose()
 {
     // try {
     // Clear the proxy in the other process so this
-    // IAccessibilityServiceConnection can be garbage collected.
+    // IIAccessibilityServiceConnection can be garbage collected.
     mServiceInterface->SetConnection(NULL, mId);
     // } catch (RemoteException re) {
     //     /* ignore */
@@ -791,7 +791,7 @@ ECode CAccessibilityServiceConnection::ProxyDied()
     CAccessibilityManagerService* service = (CAccessibilityManagerService*)mAccessibilityManager.Get();
     AutoLock lock(service->mLock);
     // The death recipient is unregistered in tryRemoveServiceLocked
-    service->TryRemoveServiceLocked(THIS_PROBE(IAccessibilityServiceConnection));
+    service->TryRemoveServiceLocked(THIS_PROBE(IIAccessibilityServiceConnection));
     // We no longer have an automation service, so restore
     // the state based on values in the settings database.
     if (mIsAutomation) {
@@ -837,7 +837,7 @@ void CAccessibilityServiceConnection::NotifyAccessibilityEvent(
 void CAccessibilityServiceConnection::NotifyAccessibilityEventInternal(
     /* [in] */ Int32 eventType)
 {
-    AutoPtr<IAccessibilityServiceClient> listener;
+    AutoPtr<IIAccessibilityServiceClient> listener;
     AutoPtr<IAccessibilityEvent> event;
 
     {
@@ -877,7 +877,7 @@ void CAccessibilityServiceConnection::NotifyAccessibilityEventInternal(
         }
 
         mPendingEvents.Erase(it);
-        if (service->mSecurityPolicy->CanRetrieveWindowContent(THIS_PROBE(IAccessibilityServiceConnection))) {
+        if (service->mSecurityPolicy->CanRetrieveWindowContent(THIS_PROBE(IIAccessibilityServiceConnection))) {
             event->SetConnectionId(mId);
         }
         else {
@@ -915,7 +915,7 @@ void CAccessibilityServiceConnection::NotifyGesture(
 void CAccessibilityServiceConnection::NotifyGestureInternal(
     /* [in] */ Int32 gestureId)
 {
-    AutoPtr<IAccessibilityServiceClient> listener = mServiceInterface;
+    AutoPtr<IIAccessibilityServiceClient> listener = mServiceInterface;
     if (listener != NULL) {
         // try {
         ECode ec =listener->OnGesture(gestureId);

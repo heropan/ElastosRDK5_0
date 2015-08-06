@@ -28,7 +28,7 @@ ECode CAccessibilityServiceClientWrapper::constructor(
 }
 
 ECode CAccessibilityServiceClientWrapper::SetConnection(
-    /* [in] */ IAccessibilityServiceConnection* connection,
+    /* [in] */ IIAccessibilityServiceConnection* connection,
     /* [in] */ Int32 connectionId)
 {
     AutoPtr<IMessage> message;
@@ -97,7 +97,7 @@ ECode CAccessibilityServiceClientWrapper::ExecuteMessage(
             const Int32 connectionId = arg1;
             AutoPtr<IInterface> obj;
             message->GetObj((IInterface**)&obj);
-            IAccessibilityServiceConnection* connection = IAccessibilityServiceConnection::Probe(obj);
+            IIAccessibilityServiceConnection* connection = IIAccessibilityServiceConnection::Probe(obj);
 
             if (connection != NULL) {
                 client->AddConnection(connectionId, connection);

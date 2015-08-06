@@ -37,7 +37,7 @@ const Int64 CAccessibilityInteractionClient::TIMEOUT_INTERACTION_MILLIS = 5000;
 
 Mutex CAccessibilityInteractionClient::sStaticLock;
 HashMap<Int64, AutoPtr<CAccessibilityInteractionClient> > CAccessibilityInteractionClient::sClients;
-HashMap<Int32, AutoPtr<IAccessibilityServiceConnection> > CAccessibilityInteractionClient::sConnectionCache;
+HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> > CAccessibilityInteractionClient::sConnectionCache;
 Mutex CAccessibilityInteractionClient::sConnectionCacheLock;
 const AutoPtr<AccessibilityNodeInfoCache> CAccessibilityInteractionClient::sAccessibilityNodeInfoCache
     = new AccessibilityNodeInfoCache();
@@ -108,8 +108,8 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByAccessibilityI
     *info = NULL;
 
     // try {
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         AutoPtr<IAccessibilityNodeInfo> cachedInfo = sAccessibilityNodeInfoCache->Get(accessibilityNodeId);
         if (cachedInfo != NULL) {
@@ -172,8 +172,8 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfoByViewId(
     *result = NULL;
 
     // try {
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
@@ -229,8 +229,8 @@ ECode CAccessibilityInteractionClient::FindAccessibilityNodeInfosByText(
     REFCOUNT_ADD(*result);
 
     // try {
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
@@ -288,8 +288,8 @@ ECode CAccessibilityInteractionClient::FindFocus(
     *result = NULL;
 
     // try {
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
@@ -337,8 +337,8 @@ ECode CAccessibilityInteractionClient::FocusSearch(
     VALIDATE_NOT_NULL(result);
     *result = NULL;
 
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
@@ -387,8 +387,8 @@ ECode CAccessibilityInteractionClient::PerformAccessibilityAction(
     VALIDATE_NOT_NULL(result);
     *result = FALSE;
 
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    GetConnection(connectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    GetConnection(connectionId, (IIAccessibilityServiceConnection**)&connection);
     if (connection != NULL) {
         Int32 interactionId;
         mInteractionIdCounter->GetAndIncrement(&interactionId);
@@ -638,13 +638,13 @@ AutoPtr<IMessage> CAccessibilityInteractionClient::GetSameProcessMessageAndClear
 
 ECode CAccessibilityInteractionClient::GetConnection(
     /* [in] */ Int32 connectionId,
-    /* [out] */ IAccessibilityServiceConnection** connection)
+    /* [out] */ IIAccessibilityServiceConnection** connection)
 {
     VALIDATE_NOT_NULL(connection);
     *connection = NULL;
 
     AutoLock lock(sConnectionCacheLock);
-    HashMap<Int32, AutoPtr<IAccessibilityServiceConnection> >::Iterator it
+    HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> >::Iterator it
         = sConnectionCache.Find(connectionId);
     if (it != sConnectionCache.End()) {
         *connection = it->mSecond.Get();
@@ -655,7 +655,7 @@ ECode CAccessibilityInteractionClient::GetConnection(
 
 ECode CAccessibilityInteractionClient::AddConnection(
     /* [in] */ Int32 connectionId,
-    /* [in] */ IAccessibilityServiceConnection* connection)
+    /* [in] */ IIAccessibilityServiceConnection* connection)
 {
     AutoLock lock(sConnectionCacheLock);
     sConnectionCache[connectionId] = connection;

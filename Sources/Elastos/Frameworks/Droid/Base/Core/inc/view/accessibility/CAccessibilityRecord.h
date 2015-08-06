@@ -453,7 +453,7 @@ public:
         /* [out] */ Int64* nodeId);
 
     /**
-     * Sets the unique id of the IAccessibilityServiceConnection over which
+     * Sets the unique id of the IIAccessibilityServiceConnection over which
      * this instance can send requests to the system.
      *
      * @param connectionId The connection id.

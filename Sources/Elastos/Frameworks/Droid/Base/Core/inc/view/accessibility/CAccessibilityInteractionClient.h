@@ -15,7 +15,7 @@ using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Graphics::IRect;
-using Elastos::Droid::AccessibilityService::IAccessibilityServiceConnection;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceConnection;
 
 namespace Elastos {
 namespace Droid {
@@ -226,7 +226,7 @@ public:
      */
     CARAPI GetConnection(
         /* [in] */ Int32 connectionId,
-        /* [out] */ IAccessibilityServiceConnection** connection);
+        /* [out] */ IIAccessibilityServiceConnection** connection);
 
     /**
      * Adds a cached accessibility service connection.
@@ -236,7 +236,7 @@ public:
      */
     CARAPI AddConnection(
         /* [in] */ Int32 connectionId,
-        /* [in] */ IAccessibilityServiceConnection* connection);
+        /* [in] */ IIAccessibilityServiceConnection* connection);
 
     /**
      * Removes a cached accessibility service connection.
@@ -371,7 +371,7 @@ private:
     AutoPtr<IRect> mTempBounds;
 
     // The connection cache is shared between all interrogating threads.
-    static HashMap<Int32, AutoPtr<IAccessibilityServiceConnection> > sConnectionCache;
+    static HashMap<Int32, AutoPtr<IIAccessibilityServiceConnection> > sConnectionCache;
     static Object sConnectionCacheLock;
 
     // The connection cache is shared between all interrogating threads since

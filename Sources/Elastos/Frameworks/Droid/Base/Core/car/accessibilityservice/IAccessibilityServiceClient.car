@@ -1,21 +1,23 @@
 
 module
 {
+    interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
-    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
+    interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceConnection;
 
     namespace Elastos {
     namespace Droid {
     namespace AccessibilityService {
 
     /**
-     * @Involve
-     * interface Elastos.Droid.Os.IBinder
+     * Top-level interface to an accessibility service component.
+     *
+     * @hide
      */
-    [deprecated]
-    interface IAccessibilityServiceClient {
+    [local]
+    interface IIAccessibilityServiceClient {
         SetConnection(
-            [in] IAccessibilityServiceConnection* connection,
+            [in] IIAccessibilityServiceConnection* connection,
             [in] Int32 connectionId);
 
         OnAccessibilityEvent(
@@ -25,6 +27,12 @@ module
 
         OnGesture(
             [in] Int32 gesture);
+
+        ClearAccessibilityCache();
+
+        OnKeyEvent(
+            [in] IKeyEvent* event,
+            [in] Int32 sequence);
     }
 
     } // namespace AccessibilityService

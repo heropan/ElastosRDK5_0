@@ -175,8 +175,8 @@ ECode AccessibilityService::PerformGlobalAction(
     CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
     AutoPtr<IAccessibilityInteractionClient> client;
     helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
     if (connection != NULL) {
         // try {
@@ -208,8 +208,8 @@ ECode AccessibilityService::GetServiceInfo(
     CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
     AutoPtr<IAccessibilityInteractionClient> client;
     helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
     if (connection != NULL) {
         // try {
@@ -270,7 +270,7 @@ ECode AccessibilityService::OnGesture(
 
 /**
  * Sets the {@link AccessibilityServiceInfo} for this service if the latter is
- * properly set and there is an {@link IAccessibilityServiceConnection} to the
+ * properly set and there is an {@link IIAccessibilityServiceConnection} to the
  * AccessibilityManagerService.
  */
 void AccessibilityService::SendServiceInfo()
@@ -279,8 +279,8 @@ void AccessibilityService::SendServiceInfo()
     CAccessibilityInteractionClientHelper::AcquireSingleton((IAccessibilityInteractionClientHelper**)&helper);
     AutoPtr<IAccessibilityInteractionClient> client;
     helper->GetInstance((IAccessibilityInteractionClient**)&client);
-    AutoPtr<IAccessibilityServiceConnection> connection;
-    client->GetConnection(mConnectionId, (IAccessibilityServiceConnection**)&connection);
+    AutoPtr<IIAccessibilityServiceConnection> connection;
+    client->GetConnection(mConnectionId, (IIAccessibilityServiceConnection**)&connection);
 
     if (mInfo != NULL && connection != NULL) {
         // try {

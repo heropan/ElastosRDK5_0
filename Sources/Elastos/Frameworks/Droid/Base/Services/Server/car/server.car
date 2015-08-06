@@ -104,7 +104,7 @@ module
     // using interface Elastos.Droid.Internal.View.IInputContext;
     // using interface Elastos.Droid.Privacy.IIPrivacySettingsManager;
     // using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
-    // using interface Elastos.Droid.AccessibilityService.IAccessibilityServiceConnection;
+    // using interface Elastos.Droid.AccessibilityService.IIAccessibilityServiceConnection;
     // using interface Elastos.Droid.Accounts.IIAccountManager;
     // using interface Elastos.Droid.Accounts.IAccountManagerResponse;
     // using interface Elastos.Droid.Accounts.IAccount;
@@ -905,7 +905,7 @@ module
 //                 [in] Boolean isAutomation,
 //                 [in] IIAccessibilityManager* accessibilityManager);
 
-//             interface IAccessibilityServiceConnection;
+//             interface IIAccessibilityServiceConnection;
 //             interface IServiceConnection;
 //             interface IProxyDeathRecipient;
 //         }

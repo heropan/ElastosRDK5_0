@@ -134,7 +134,7 @@ protected:
 private:
     /**
      * Sets the {@link AccessibilityServiceInfo} for this service if the latter is
-     * properly set and there is an {@link IAccessibilityServiceConnection} to the
+     * properly set and there is an {@link IIAccessibilityServiceConnection} to the
      * AccessibilityManagerService.
      */
     CARAPI_(void) SendServiceInfo();

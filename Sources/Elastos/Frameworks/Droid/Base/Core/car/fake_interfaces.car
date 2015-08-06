@@ -47,20 +47,6 @@ module
     }}} // Elastos.Droid.App
 
     //
-    // Elastos.Droid.AccessibilityService
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace AccessibilityService {
-
-        interface IAccessibilityServiceInfo {}
-
-        interface IAccessibilityServiceClient {}
-
-    }}} // Elastos.Droid.AccessibilityService
-
-
-    //
     // Elastos.Droid.Net
     //
     namespace Elastos {

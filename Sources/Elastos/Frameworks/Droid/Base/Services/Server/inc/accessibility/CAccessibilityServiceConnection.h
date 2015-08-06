@@ -15,7 +15,7 @@ using Elastos::Droid::Content::IComponentName;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IResolveInfo;
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
-using Elastos::Droid::AccessibilityService::IAccessibilityServiceClient;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceClient;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::HandlerBase;
@@ -223,7 +223,7 @@ public:
 
     AutoPtr<IBinder> mService;
 
-    AutoPtr<IAccessibilityServiceClient> mServiceInterface;
+    AutoPtr<IIAccessibilityServiceClient> mServiceInterface;
 
     Int32 mEventTypes;
 

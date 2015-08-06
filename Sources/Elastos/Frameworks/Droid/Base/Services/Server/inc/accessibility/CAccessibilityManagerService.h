@@ -30,8 +30,8 @@ using Elastos::Droid::View::Accessibility::IAccessibilityManagerClient;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnection;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionConnectionCallback;
 using Elastos::Droid::AccessibilityService::IAccessibilityServiceInfo;
-using Elastos::Droid::AccessibilityService::IAccessibilityServiceClient;
-using Elastos::Droid::AccessibilityService::IAccessibilityServiceConnection;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceClient;
+using Elastos::Droid::AccessibilityService::IIAccessibilityServiceConnection;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;
@@ -119,11 +119,11 @@ private:
     public:
         Int32 mUserId;
 
-        List<AutoPtr<IAccessibilityServiceConnection> > mServices;
+        List<AutoPtr<IIAccessibilityServiceConnection> > mServices;
 
         AutoPtr<IRemoteCallbackList> mClients;//= new RemoteCallbackList<IAccessibilityManagerClient>();
 
-        HashMap<AutoPtr<IComponentName>, AutoPtr<IAccessibilityServiceConnection> >
+        HashMap<AutoPtr<IComponentName>, AutoPtr<IIAccessibilityServiceConnection> >
                 mComponentNameToServiceMap;
 
         List<AutoPtr<IAccessibilityServiceInfo> > mInstalledServices;
@@ -249,7 +249,7 @@ private:
     public:
         OnDialogOKListener(
             /* [in] */ UserState* state,
-            /* [in] */ IAccessibilityServiceConnection* service,
+            /* [in] */ IIAccessibilityServiceConnection* service,
             /* [in] */ CAccessibilityManagerService* host);
 
         CAR_INTERFACE_DECL();
@@ -260,7 +260,7 @@ private:
 
     private:
         AutoPtr<UserState> mState;
-        AutoPtr<IAccessibilityServiceConnection> mService;
+        AutoPtr<IIAccessibilityServiceConnection> mService;
         AutoPtr<CAccessibilityManagerService> mHost;
     };
 
@@ -297,20 +297,20 @@ public:
         CARAPI_(Int32) GetRetrievalAllowingWindowLocked();
 
         CARAPI_(Boolean) CanGetAccessibilityNodeInfoLocked(
-            /* [in] */ IAccessibilityServiceConnection* service,
+            /* [in] */ IIAccessibilityServiceConnection* service,
             /* [in] */ Int32 windowId);
 
         CARAPI_(Boolean) CanPerformActionLocked(
-            /* [in] */ IAccessibilityServiceConnection* service,
+            /* [in] */ IIAccessibilityServiceConnection* service,
             /* [in] */ Int32 windowId,
             /* [in] */ Int32 action,
             /* [in] */ IBundle* arguments);
 
         CARAPI_(Boolean) CanRetrieveWindowContent(
-            /* [in] */ IAccessibilityServiceConnection* service);
+            /* [in] */ IIAccessibilityServiceConnection* service);
 
         CARAPI EnforceCanRetrieveWindowContent(
-            /* [in] */ IAccessibilityServiceConnection* service);
+            /* [in] */ IIAccessibilityServiceConnection* service);
 
         CARAPI ResolveCallingUserIdEnforcingPermissionsLocked(
             /* [in] */ Int32 userId,
@@ -397,7 +397,7 @@ public:
         /* [in] */ IIWindow* windowToken);
 
     CARAPI RegisterUiTestAutomationService(
-        /* [in] */ IAccessibilityServiceClient* serviceClient,
+        /* [in] */ IIAccessibilityServiceClient* serviceClient,
         /* [in] */ IAccessibilityServiceInfo* accessibilityServiceInfo);
 
     CARAPI TemporaryEnableAccessibilityStateUntilKeyguardRemoved(
@@ -405,7 +405,7 @@ public:
         /* [in] */ Boolean touchExplorationEnabled);
 
     CARAPI UnregisterUiTestAutomationService(
-        /* [in] */ IAccessibilityServiceClient* client);
+        /* [in] */ IIAccessibilityServiceClient* client);
 
     CARAPI_(Boolean) OnGesture(
         /* [in] */ Int32 gestureId);
@@ -455,7 +455,7 @@ private:
 
     CARAPI_(void) RestoreStateFromMementoIfNeeded();
 
-    CARAPI_(AutoPtr<IAccessibilityServiceConnection>) GetQueryBridge();
+    CARAPI_(AutoPtr<IIAccessibilityServiceConnection>) GetQueryBridge();
 
     CARAPI_(Boolean) NotifyGestureLocked(
         /* [in] */ Int32 gestureId,
@@ -499,7 +499,7 @@ private:
      * @param userId The user id.
      */
     CARAPI_(void) TryAddServiceLocked(
-        /* [in] */ IAccessibilityServiceConnection* service,
+        /* [in] */ IIAccessibilityServiceConnection* service,
         /* [in] */ Int32 userId);
 
     /**
@@ -509,7 +509,7 @@ private:
      * @return True if the service was removed, false otherwise.
      */
     CARAPI_(Boolean) TryRemoveServiceLocked(
-        /* [in] */ IAccessibilityServiceConnection* service);
+        /* [in] */ IIAccessibilityServiceConnection* service);
 
     /**
      * Determines if given event can be dispatched to a service based on the package of the
@@ -525,7 +525,7 @@ private:
      * @return True if the listener should be notified, false otherwise.
      */
     CARAPI_(Boolean) CanDispathEventLocked(
-        /* [in] */ IAccessibilityServiceConnection* service,
+        /* [in] */ IIAccessibilityServiceConnection* service,
         /* [in] */ IAccessibilityEvent* event,
         /* [in] */ Int32 handledFeedbackTypes);
 
@@ -585,7 +585,7 @@ private:
         /* [in] */ UserState* userState);
 
     CARAPI_(void) ShowEnableTouchExplorationDialog(
-        /* [in] */ IAccessibilityServiceConnection* service);
+        /* [in] */ IIAccessibilityServiceConnection* service);
 
     CARAPI_(Int32) GetClientState(
         /* [in] */ UserState* userState);
@@ -609,10 +609,10 @@ private:
         /* [in] */ UserState* userState);
 
     CARAPI_(void) TryEnableTouchExplorationLocked(
-        /* [in] */ IAccessibilityServiceConnection* service);
+        /* [in] */ IIAccessibilityServiceConnection* service);
 
     CARAPI_(void) TryDisableTouchExplorationLocked(
-        /* [in] */ IAccessibilityServiceConnection* service);
+        /* [in] */ IIAccessibilityServiceConnection* service);
 
     CARAPI_(void) HandleSendAccessibilityEventToInputFilter(
         /* [in] */ IAccessibilityEvent* event);
@@ -685,9 +685,9 @@ private:
 
     AutoPtr<IHandler> mMainHandler;
 
-    AutoPtr<IAccessibilityServiceConnection> mUiAutomationService;
+    AutoPtr<IIAccessibilityServiceConnection> mUiAutomationService;
 
-    AutoPtr<IAccessibilityServiceConnection> mQueryBridge;
+    AutoPtr<IIAccessibilityServiceConnection> mQueryBridge;
 
     AutoPtr<IAlertDialog> mEnableTouchExplorationDialog;
 

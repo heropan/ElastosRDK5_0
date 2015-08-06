@@ -38,7 +38,7 @@ module
     //merge("../car/speech.car");
     merge("../car/accounts.car");
     //merge("../car/webkit.car");
-    //merge("../car/accessibilityservice.car");
+    merge("../car/accessibilityservice.car");
     //merge("../car/privacy.car");
     merge("../car/provider.car");
     //merge("../car/statusbar.car");

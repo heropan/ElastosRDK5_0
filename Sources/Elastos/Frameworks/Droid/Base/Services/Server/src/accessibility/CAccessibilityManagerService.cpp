@@ -327,14 +327,14 @@ Int32 CAccessibilityManagerService::SecurityPolicy::GetRetrievalAllowingWindowLo
 }
 
 Boolean CAccessibilityManagerService::SecurityPolicy::CanGetAccessibilityNodeInfoLocked(
-    /* [in] */ IAccessibilityServiceConnection* service,
+    /* [in] */ IIAccessibilityServiceConnection* service,
     /* [in] */ Int32 windowId)
 {
     return CanRetrieveWindowContent(service) && IsRetrievalAllowingWindow(windowId);
 }
 
 Boolean CAccessibilityManagerService::SecurityPolicy::CanPerformActionLocked(
-    /* [in] */ IAccessibilityServiceConnection* service,
+    /* [in] */ IIAccessibilityServiceConnection* service,
     /* [in] */ Int32 windowId,
     /* [in] */ Int32 action,
     /* [in] */ IBundle* arguments)
@@ -345,14 +345,14 @@ Boolean CAccessibilityManagerService::SecurityPolicy::CanPerformActionLocked(
 }
 
 Boolean CAccessibilityManagerService::SecurityPolicy::CanRetrieveWindowContent(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     CAccessibilityServiceConnection* serviceObj;
     return serviceObj->mCanRetrieveScreenContent;
 }
 
 ECode CAccessibilityManagerService::SecurityPolicy::EnforceCanRetrieveWindowContent(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     // This happens due to incorrect registration so make it apparent.
     if (!CanRetrieveWindowContent(service)) {
@@ -1009,14 +1009,14 @@ ECode CAccessibilityManagerService::GetEnabledAccessibilityServiceList(
     Int32 resolvedUserId;
     mSecurityPolicy->ResolveCallingUserIdEnforcingPermissionsLocked(userId, &resolvedUserId);
     AutoPtr<UserState> userState = GetUserStateLocked(resolvedUserId);
-    List<AutoPtr<IAccessibilityServiceConnection> >& services = userState->mServices;
+    List<AutoPtr<IIAccessibilityServiceConnection> >& services = userState->mServices;
     Int32 notz, feedbackTypeBit;
     CAccessibilityServiceConnection* service;
     while (feedbackType != 0) {
         notz = Elastos::Core::Math::NumberOfTrailingZeros(feedbackType);
         feedbackTypeBit = (1 << notz);
         feedbackType &= ~feedbackTypeBit;
-        List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = services.Begin();
+        List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = services.Begin();
         for (; it != services.End(); ++it) {
             service = (CAccessibilityServiceConnection*)(*it).Get();
             if ((service->mFeedbackType & feedbackTypeBit) != 0) {
@@ -1035,7 +1035,7 @@ ECode CAccessibilityManagerService::Interrupt(
     /* [in] */ Int32 userId)
 {
     // CopyOnWriteArrayList<Service> services;
-    AutoPtr<List<AutoPtr<IAccessibilityServiceConnection> > > services;
+    AutoPtr<List<AutoPtr<IIAccessibilityServiceConnection> > > services;
     {
         AutoLock lock(mLock);
         Int32 resolvedUserId;
@@ -1045,12 +1045,12 @@ ECode CAccessibilityManagerService::Interrupt(
             return NOERROR;
         }
         AutoPtr<UserState> userState = GetUserStateLocked(resolvedUserId);
-        services = new List<AutoPtr<IAccessibilityServiceConnection> >(userState->mServices);
+        services = new List<AutoPtr<IIAccessibilityServiceConnection> >(userState->mServices);
     }
 
     CAccessibilityServiceConnection* service;
     ECode ec;
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = services->Begin();
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = services->Begin();
     for (; it != services->End(); ++it) {
         service = (CAccessibilityServiceConnection*)(*it).Get();
         // try {
@@ -1178,7 +1178,7 @@ Int32 CAccessibilityManagerService::RemoveAccessibilityInteractionConnectionInte
 }
 
 ECode CAccessibilityManagerService::RegisterUiTestAutomationService(
-    /* [in] */ IAccessibilityServiceClient* serviceClient,
+    /* [in] */ IIAccessibilityServiceClient* serviceClient,
     /* [in] */ IAccessibilityServiceInfo* accessibilityServiceInfo)
 {
     FAIL_RETURN(mSecurityPolicy->EnforceCallingPermission(
@@ -1208,7 +1208,7 @@ ECode CAccessibilityManagerService::RegisterUiTestAutomationService(
     mUiAutomationService = NULL;
     CAccessibilityServiceConnection::New(looper, mCurrentUserId, componentName,
         accessibilityServiceInfo, TRUE, THIS_PROBE(IIAccessibilityManager),
-        (IAccessibilityServiceConnection**)&mUiAutomationService);
+        (IIAccessibilityServiceConnection**)&mUiAutomationService);
     IServiceConnection* sc = IServiceConnection::Probe(mUiAutomationService);
     sc->OnServiceConnected(componentName, IBinder::Probe(serviceClient));
 
@@ -1253,7 +1253,7 @@ ECode CAccessibilityManagerService::TemporaryEnableAccessibilityStateUntilKeygua
 }
 
 ECode CAccessibilityManagerService::UnregisterUiTestAutomationService(
-    /* [in] */ IAccessibilityServiceClient* serviceClient)
+    /* [in] */ IIAccessibilityServiceClient* serviceClient)
 {
     AutoLock lock(mLock);
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)mUiAutomationService.Get();
@@ -1285,7 +1285,7 @@ Boolean CAccessibilityManagerService::GetAccessibilityFocusBoundsInActiveWindow(
     // window to be able to find the focus in the active window,
     // we take a stateless approach and look it up. This is fine
     // since we do this only when the user clicks/long presses.
-    AutoPtr<IAccessibilityServiceConnection> service = GetQueryBridge();
+    AutoPtr<IIAccessibilityServiceConnection> service = GetQueryBridge();
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)service.Get();
     Int32 connectionId = sc->mId;
     AutoPtr<IAccessibilityInteractionClient> client;
@@ -1293,7 +1293,7 @@ Boolean CAccessibilityManagerService::GetAccessibilityFocusBoundsInActiveWindow(
     CAccessibilityInteractionClientHelper::AcquireSingleton(
         (IAccessibilityInteractionClientHelper**)&helper);
     ASSERT_SUCCEEDED(helper->GetInstance((IAccessibilityInteractionClient**)&client));
-    client->AddConnection(connectionId, (IAccessibilityServiceConnection*)service);
+    client->AddConnection(connectionId, (IIAccessibilityServiceConnection*)service);
 
     // try {
     AutoPtr<IAccessibilityNodeInfo> root;
@@ -1459,7 +1459,7 @@ void CAccessibilityManagerService::RestoreStateFromMementoIfNeeded()
     }
 }
 
-AutoPtr<IAccessibilityServiceConnection> CAccessibilityManagerService::GetQueryBridge()
+AutoPtr<IIAccessibilityServiceConnection> CAccessibilityManagerService::GetQueryBridge()
 {
     if (mQueryBridge == NULL) {
         AutoPtr<ILooper> looper;
@@ -1469,7 +1469,7 @@ AutoPtr<IAccessibilityServiceConnection> CAccessibilityManagerService::GetQueryB
         ASSERT_SUCCEEDED(CAccessibilityServiceConnection::New(
             looper, IUserHandle::USER_NULL, NULL, info, TRUE,
             THIS_PROBE(IIAccessibilityManager),
-            (IAccessibilityServiceConnection**)&mQueryBridge));
+            (IIAccessibilityServiceConnection**)&mQueryBridge));
     }
     return mQueryBridge;
 }
@@ -1489,7 +1489,7 @@ Boolean CAccessibilityManagerService::NotifyGestureLocked(
     //       enabled accessibility services.
     AutoPtr<UserState> state = GetCurrentUserStateLocked();
     CAccessibilityServiceConnection* service;
-    List<AutoPtr<IAccessibilityServiceConnection> >::ReverseIterator rit = state->mServices.RBegin();
+    List<AutoPtr<IIAccessibilityServiceConnection> >::ReverseIterator rit = state->mServices.RBegin();
     for (; rit != state->mServices.REnd(); ++rit) {
         service = (CAccessibilityServiceConnection*)(*rit).Get();
         if (service->mRequestTouchExplorationMode && service->mIsDefault == isDefault) {
@@ -1588,7 +1588,7 @@ void CAccessibilityManagerService::NotifyAccessibilityServicesDelayedLocked(
     // try {
     CAccessibilityServiceConnection* service;
     AutoPtr<UserState> state = GetCurrentUserStateLocked();
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = state->mServices.Begin();
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = state->mServices.Begin();
     for (; it != state->mServices.End(); ++it) {
         service = (CAccessibilityServiceConnection*)(*it).Get();
         if (service->mIsDefault == isDefault) {
@@ -1607,12 +1607,12 @@ void CAccessibilityManagerService::NotifyAccessibilityServicesDelayedLocked(
 }
 
 void CAccessibilityManagerService::TryAddServiceLocked(
-    /* [in] */ IAccessibilityServiceConnection* service,
+    /* [in] */ IIAccessibilityServiceConnection* service,
     /* [in] */ Int32 userId)
 {
     // try {
     AutoPtr<UserState> userState = GetUserStateLocked(userId);
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
     for (; it != userState->mServices.End(); ++it) {
         if ((*it).Get() == service) {
             return;
@@ -1631,12 +1631,12 @@ void CAccessibilityManagerService::TryAddServiceLocked(
 }
 
 Boolean CAccessibilityManagerService::TryRemoveServiceLocked(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)service;
     AutoPtr<UserState> userState = GetUserStateLocked(sc->mUserId);
-    AutoPtr<IAccessibilityServiceConnection> as = service;
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it;
+    AutoPtr<IIAccessibilityServiceConnection> as = service;
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it;
     it = Find(userState->mServices.Begin(), userState->mServices.End(), as);
 
     Boolean removed  = FALSE;
@@ -1658,7 +1658,7 @@ Boolean CAccessibilityManagerService::TryRemoveServiceLocked(
 }
 
 Boolean CAccessibilityManagerService::CanDispathEventLocked(
-    /* [in] */ IAccessibilityServiceConnection* service,
+    /* [in] */ IIAccessibilityServiceConnection* service,
     /* [in] */ IAccessibilityEvent* event,
     /* [in] */ Int32 handledFeedbackTypes)
 {
@@ -1717,8 +1717,8 @@ void CAccessibilityManagerService::UnbindAllServicesLocked(
     /* [in] */ UserState* userState)
 {
     CAccessibilityServiceConnection* sc;
-    List<AutoPtr<IAccessibilityServiceConnection> > services(userState->mServices);
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = services.Begin();
+    List<AutoPtr<IIAccessibilityServiceConnection> > services(userState->mServices);
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = services.Begin();
     for (; it != services.End(); ++it) {
         sc = (CAccessibilityServiceConnection*)(*it).Get();
         sc->Unbind();
@@ -1788,7 +1788,7 @@ void CAccessibilityManagerService::PersistComponentNamesToSettingLocked(
 Int32 CAccessibilityManagerService::UpdateServicesStateLocked(
     /* [in] */ UserState* userState)
 {
-    HashMap<AutoPtr<IComponentName>, AutoPtr<IAccessibilityServiceConnection> >
+    HashMap<AutoPtr<IComponentName>, AutoPtr<IIAccessibilityServiceConnection> >
             componentNameToServiceMap = userState->mComponentNameToServiceMap;
     Boolean isEnabled = userState->mIsAccessibilityEnabled;
 
@@ -1806,9 +1806,9 @@ Int32 CAccessibilityManagerService::UpdateServicesStateLocked(
         installedService->GetId(&id);
         AutoPtr<IComponentName> componentName;
         helper->UnflattenFromString(id, (IComponentName**)&componentName);
-        HashMap<AutoPtr<IComponentName>, AutoPtr<IAccessibilityServiceConnection> >::Iterator
+        HashMap<AutoPtr<IComponentName>, AutoPtr<IIAccessibilityServiceConnection> >::Iterator
             it = componentNameToServiceMap.Find(componentName);
-        AutoPtr<IAccessibilityServiceConnection> service;
+        AutoPtr<IIAccessibilityServiceConnection> service;
         if (it != componentNameToServiceMap.End()) {
             service = it->mSecond;
         }
@@ -1819,7 +1819,7 @@ Int32 CAccessibilityManagerService::UpdateServicesStateLocked(
                 if (service == NULL) {
                     CAccessibilityServiceConnection::New(looper, userState->mUserId,
                         componentName, installedService, FALSE, THIS_PROBE(IIAccessibilityManager),
-                        (IAccessibilityServiceConnection**)&service);
+                        (IIAccessibilityServiceConnection**)&service);
                 }
                 sc = (CAccessibilityServiceConnection*)service.Get();
                 sc->Bind();
@@ -1914,7 +1914,7 @@ CAR_INTERFACE_IMPL(CAccessibilityManagerService::OnDialogOKListener, IDialogInte
 
 CAccessibilityManagerService::OnDialogOKListener::OnDialogOKListener(
     /* [in] */ UserState* state,
-    /* [in] */ IAccessibilityServiceConnection* service,
+    /* [in] */ IIAccessibilityServiceConnection* service,
     /* [in] */ CAccessibilityManagerService* host)
     : mState(state)
     , mService(service)
@@ -1954,7 +1954,7 @@ ECode CAccessibilityManagerService::OnDialogCancelListener::OnClick(
 }
 
 void CAccessibilityManagerService::ShowEnableTouchExplorationDialog(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)service;
     AutoPtr<IPackageManager> packageManager;
@@ -2089,7 +2089,7 @@ void CAccessibilityManagerService::HandleTouchExplorationGrantedAccessibilitySer
     /* [in] */ UserState* userState)
 {
     CAccessibilityServiceConnection* sc;
-    List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
+    List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
     for (; it != userState->mServices.End(); ++it) {
         sc = (CAccessibilityServiceConnection*)(*it).Get();
         if (sc->mRequestTouchExplorationMode
@@ -2112,7 +2112,7 @@ void CAccessibilityManagerService::HandleTouchExplorationGrantedAccessibilitySer
 }
 
 void CAccessibilityManagerService::TryEnableTouchExplorationLocked(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)service;
     AutoPtr<UserState> userState = GetUserStateLocked(sc->mUserId);
@@ -2140,13 +2140,13 @@ void CAccessibilityManagerService::TryEnableTouchExplorationLocked(
 }
 
 void CAccessibilityManagerService::TryDisableTouchExplorationLocked(
-    /* [in] */ IAccessibilityServiceConnection* service)
+    /* [in] */ IIAccessibilityServiceConnection* service)
 {
     CAccessibilityServiceConnection* sc = (CAccessibilityServiceConnection*)service;
     AutoPtr<UserState> userState = GetUserStateLocked(sc->mUserId);
     if (userState->mIsTouchExplorationEnabled) {
         CAccessibilityServiceConnection* other;
-        List<AutoPtr<IAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
+        List<AutoPtr<IIAccessibilityServiceConnection> >::Iterator it = userState->mServices.Begin();
         for (; it != userState->mServices.End(); ++it) {
             other = (CAccessibilityServiceConnection*)(*it).Get();
             if (other != sc && other->mRequestTouchExplorationMode) {
