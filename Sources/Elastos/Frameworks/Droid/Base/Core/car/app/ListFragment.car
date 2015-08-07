@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Widget.IListView;
     interface Elastos.Droid.Widget.IListAdapter;
@@ -9,6 +10,10 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * @Involve
+     * interface IFragment
+     */
     [local]
     interface IListFragment {
         OnListItemClick(

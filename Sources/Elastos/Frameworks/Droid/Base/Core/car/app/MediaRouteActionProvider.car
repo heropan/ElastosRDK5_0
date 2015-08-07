@@ -1,0 +1,73 @@
+module {
+
+    interface Elastos.Droid.Widget.IListAdapter;
+    interface Elastos.Droid.Widget.IListView;
+    interface Elastos.Droid.View.IViewOnClickListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+
+    /**
+     * The media route action provider displays a {@link MediaRouteButton media route button}
+     * in the application's {@link ActionBar} to allow the user to select routes and
+     * to control the currently selected route.
+     * <p>
+     * The application must specify the kinds of routes that the user should be allowed
+     * to select by specifying the route types with the {@link #setRouteTypes} method.
+     * </p><p>
+     * Refer to {@link MediaRouteButton} for a description of the button that will
+     * appear in the action bar menu.  Note that instead of disabling the button
+     * when no routes are available, the action provider will instead make the
+     * menu item invisible.  In this way, the button will only be visible when it
+     * is possible for the user to discover and select a matching route.
+     * </p>
+     */
+    /**
+     * @Involve
+     * interface IActionProvider
+     */
+    interface IMediaRouteActionProvider {
+
+        /**
+         * Sets the types of routes that will be shown in the media route chooser dialog
+         * launched by this button.
+         *
+         * @param types The route types to match.
+         */
+        SetRouteTypes(
+            [in] Int32 types);
+
+        SetExtendedSettingsClickListener(
+            [in] IViewOnClickListener* listener);
+
+         /**
+         * Get the position of the currently selected list item.
+         */
+        GetSelectedItemPosition(
+            [out] Int32* pos);
+
+        /**
+         * Get the cursor row ID of the currently selected list item.
+         */
+        GetSelectedItemId(
+            [out] Int64* id);
+
+        /**
+         * Get the activity's list view widget.
+         */
+        GetListView(
+            [out] IListView** listView);
+
+        /**
+         * Get the ListAdapter associated with this activity's ListView.
+         */
+        GetListAdapter(
+            [out] IListAdapter** listAdapter);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

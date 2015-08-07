@@ -16,7 +16,11 @@ module
     /**
      * This class is used to specify meta information of a wallpaper service.
      */
-
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [local]
     interface IWallpaperInfo {
         /**
          * Return the .apk package that implements this wallpaper.

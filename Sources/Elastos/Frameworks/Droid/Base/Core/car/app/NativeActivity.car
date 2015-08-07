@@ -1,0 +1,51 @@
+module {
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * Convenience for implementing an activity that will be implemented
+     * purely in native code.  That is, a game (or game-like thing).  There
+     * is no need to derive from this class; you can simply declare it in your
+     * manifest, and use the NDK APIs from there.
+     *
+     * <p>A typical manifest would look like:
+     *
+     * {@sample development/ndk/platforms/android-9/samples/native-activity/AndroidManifest.xml
+     *      manifest}
+     *
+     * <p>A very simple example of native code that is run by NativeActivity
+     * follows.  This reads input events from the user and uses OpenGLES to
+     * draw into the native activity's window.
+     *
+     * {@sample development/ndk/platforms/android-9/samples/native-activity/jni/main.c all}
+     */
+    /**
+     * @Involve
+     * interface IActivity
+     * interface ISurfaceHolderCallback2
+     * interface IInputQueueCallback
+     * interface IViewTreeObserverOnGlobalLayoutListener
+     */
+    interface INativeActivity {
+        /**
+         * Optional meta-that can be in the manifest for this component, specifying
+         * the name of the native shared library to load.  If not specified,
+         * "main" is used.
+         */
+        const String META_DATA_LIB_NAME = "android.app.lib_name";
+
+        /**
+         * Optional meta-that can be in the manifest for this component, specifying
+         * the name of the main entry point for this native activity in the
+         * {@link #META_DATA_LIB_NAME} native code.  If not specified,
+         * "ANativeActivity_onCreate" is used.
+         */
+        const String META_DATA_FUNC_NAME = "android.app.func_name";
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

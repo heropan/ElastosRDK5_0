@@ -157,6 +157,10 @@ module
      * @see #setListAdapter
      * @see android.widget.ListView
      */
+    /**
+     * @Invovle
+     * interface IActivity
+     */
     [local]
     interface IListActivity {
         /**

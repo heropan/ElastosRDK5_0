@@ -4,7 +4,13 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * Allows an app to control the status bar.
+     *
+     * @hide
+     */
     interface IStatusBarManager {
+
         const Int32 DISABLE_EXPAND = 0x00010000; //IView::STATUS_BAR_DISABLE_EXPAND;
         const Int32 DISABLE_NOTIFICATION_ICONS = 0x00020000; //IView::STATUS_BAR_DISABLE_NOTIFICATION_ICONS;
         const Int32 DISABLE_NOTIFICATION_ALERTS
@@ -29,10 +35,15 @@ module
                 | DISABLE_SYSTEM_INFO | DISABLE_RECENT | DISABLE_HOME | DISABLE_BACK | DISABLE_CLOCK
                 | DISABLE_SEARCH;
 
-        const Int32 NAVIGATION_HINT_BACK_NOP      = 1 << 0;
-        const Int32 NAVIGATION_HINT_HOME_NOP      = 1 << 1;
-        const Int32 NAVIGATION_HINT_RECENT_NOP    = 1 << 2;
-        const Int32 NAVIGATION_HINT_BACK_ALT      = 1 << 3;
+        const Int32 NAVIGATION_HINT_BACK_ALT      = 1 << 0;
+        const Int32 NAVIGATION_HINT_IME_SHOWN     = 1 << 1;
+
+        const Int32 WINDOW_STATUS_BAR = 1;
+        const Int32 WINDOW_NAVIGATION_BAR = 2;
+
+        const Int32 WINDOW_STATE_SHOWING = 0;
+        const Int32 WINDOW_STATE_HIDING = 1;
+        const Int32 WINDOW_STATE_HIDDEN = 2;
 
         /**
          * Disable some features in the status bar.  Pass the bitwise-or of the DISABLE_* flags.
