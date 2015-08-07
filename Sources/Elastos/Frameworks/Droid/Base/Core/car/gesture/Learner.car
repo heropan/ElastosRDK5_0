@@ -1,28 +1,35 @@
-module {
+module
+{
+    using interface Elastos.Utility.IArrayList;
+
     namespace Elastos {
     namespace Droid {
     namespace Gesture {
+
+    /**
+     * The abstract class of a gesture learner
+     */
+    [local]
     interface ILearner {
         /**
          * Add an instance to the learner
-         * 
+         *
          * @param instance
          */
         AddInstance(
-            [in] IInstance *instance);
+            [in] IInstance* instance);
 
         /**
          * Retrieve all the instances
-         * 
+         *
          * @return instances
          */
-//        ArrayList<Instance> getInstances();
         GetInstance(
-            [out] IObjectContainer **instances);
+            [out] IArrayList** instances);
 
         /**
          * Remove an instance based on its id
-         * 
+         *
          * @param id
          */
         RemoveInstance(
@@ -30,19 +37,17 @@ module {
 
         /**
          * Remove all the instances of a category
-         * 
+         *
          * @param name the category name
          */
         RemoveInstances(
             [in] String name);
 
-//        abstract ArrayList<Prediction> classify(int sequenceType, int orientationType, float[] vector);
         Classify(
             [in] Int32 sequenceType,
             [in] Int32 orientationType,
             [in] ArrayOf<Float> vec,
-            [out] IObjectContainer **predictions);
-
+            [out] IArrayList** predictions);
     }
 
     }//namespace Gesture

@@ -1,4 +1,5 @@
-module {
+module
+{
     using interface Elastos.IO.IDataInputStream;
 
     namespace Elastos {

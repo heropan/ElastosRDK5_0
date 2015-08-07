@@ -1,4 +1,5 @@
-module {
+module
+{
     namespace Elastos {
     namespace Droid {
     namespace Gesture {

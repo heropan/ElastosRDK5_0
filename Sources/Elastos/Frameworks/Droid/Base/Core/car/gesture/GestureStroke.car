@@ -25,11 +25,11 @@ module
          * @param canvas
          */
         Draw(
-            [in] ICanvas *canvas,
-            [in] IPaint *paint);
+            [in] ICanvas* canvas,
+            [in] IPaint* paint);
 
         GetPath(
-            [out] IPath **outPath);
+            [out] IPath** outPath);
 
         /**
          * Converts the stroke to a Path of a given number of points.
@@ -44,10 +44,10 @@ module
             [in] Float width,
             [in] Float height,
             [in] Int32 numSample,
-            [out] IPath **outPath);
+            [out] IPath** outPath);
 
         Serialize(
-            [in] IDataOutputStream * outStream);
+            [in] IDataOutputStream* outStream);
 
         /**
          * Invalidates the cached path that is used to render the stroke.
@@ -63,10 +63,10 @@ module
             [out] IOrientedBoundingBox** boundingBox);
 
         GetBoundingBox(
-            [out] IRectF **box);
+            [out] IRectF** box);
 
         GetLength(
-            [out] Float *length);
+            [out] Float* length);
 
         GetPoints(
             [out, callee] ArrayOf<Float>* points);
@@ -75,8 +75,8 @@ module
     [local]
     interface IGestureStrokeHelper {
         Deserialize(
-            [in] IDataInputStream * inStream,
-            [out] IGestureStroke ** stroke);
+            [in] IDataInputStream* inStream,
+            [out] IGestureStroke** stroke);
     }
 
     }//namespace Gesture

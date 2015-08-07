@@ -6,12 +6,12 @@ module
     namespace Droid {
     namespace Gesture {
 
-    interface IInstance {
-        Normalize();
-    }
-
+    /**
+     * An instance represents a sample if the label is available or a query if the
+     * label is null.
+     */
     [local]
-    interface IInstanceHelper {
+    interface IInstance {
         /**
          * create a learning instance for a single stroke gesture
          *
@@ -27,12 +27,12 @@ module
             [out] IInstance** obj);
 
         SpatialSampler(
-            [in] IGesture *gesture,
+            [in] IGesture* gesture,
             [out, callee] ArrayOf<Float>* sampler);
 
         TemporalSampler(
             [in] Int32 orientationType,
-            [in] IGesture *gesture,
+            [in] IGesture* gesture,
             [out, callee] ArrayOf<Float>* sampler);
     }
 

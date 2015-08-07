@@ -2,7 +2,9 @@ module
 {
     using interface Elastos.IO.IOutputStream;
     using interface Elastos.IO.IInputStream;
+    using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Gesture.IGesture;
 
     namespace Elastos {
@@ -13,6 +15,27 @@ module
      * GestureLibrary maintains gesture examples and makes predictions on a new
      * gesture
      */
+    //
+    //    File format for GestureStore:
+    //
+    //                Nb. bytes   Java type   Description
+    //                -----------------------------------
+    //    Header
+    //                2 bytes     short       File format version number
+    //                4 bytes     int         Number of entries
+    //    Entry
+    //                X bytes     UTF String  Entry name
+    //                4 bytes     int         Number of gestures
+    //    Gesture
+    //                8 bytes     long        Gesture ID
+    //                4 bytes     int         Number of strokes
+    //    Stroke
+    //                4 bytes     int         Number of points
+    //    Point
+    //                4 bytes     float       X coordinate of the point
+    //                4 bytes     float       Y coordinate of the point
+    //                8 bytes     long        Time stamp
+    //
     [local]
     interface IGestureStore {
         const Int32 GestureStore_SEQUENCE_INVARIANT = 1;
@@ -39,7 +62,7 @@ module
             [in] Int32 style);
 
         GetOrientationStyle(
-            [out] Int32 *style);
+            [out] Int32* style);
 
         /**
          * @param type SEQUENCE_INVARIANT or SEQUENCE_SENSITIVE
@@ -51,7 +74,7 @@ module
          * @return SEQUENCE_INVARIANT or SEQUENCE_SENSITIVE
          */
         GetSequenceType(
-            [out] Int32 *type);
+            [out] Int32* type);
 
         /**
          * Get all the gesture entry names in the library
@@ -59,7 +82,7 @@ module
          * @return a set of strings
          */
         GetGestureEntries(
-            [out] IObjectContainer **entries);
+            [out] IList** entries);
 
         /**
          * Recognize a gesture
@@ -68,8 +91,8 @@ module
          * @return a list of predictions of possible entries for a given gesture
          */
         Recognize(
-            [in] IGesture *gesture,
-            [out] IArrayList **list);
+            [in] IGesture* gesture,
+            [out] IArrayList** list);
 
         /**
          * Add a gesture for the entry
@@ -79,7 +102,7 @@ module
          */
         AddGesture(
             [in] String entryName,
-            [in] IGesture *gesture);
+            [in] IGesture* gesture);
 
         /**
          * Remove a gesture from the library. If there are no more gestures for the
@@ -90,7 +113,7 @@ module
          */
         RemoveGesture(
             [in] String entryName,
-            [in] IGesture *gesture);
+            [in] IGesture* gesture);
 
         /**
          * Remove a entry of gestures
@@ -108,29 +131,29 @@ module
          */
         GetGestures(
             [in] String entryName,
-            [out] IObjectContainer **gestures);
+            [out] IArrayList** gestures);
 
         HasChanged(
-            [out] Boolean *hasChanged);
+            [out] Boolean* hasChanged);
 
         /**
          * Save the gesture library
          */
         Save(
-            [in] IOutputStream *stream);
+            [in] IOutputStream* stream);
 
         Save(
-            [in] IOutputStream *stream,
+            [in] IOutputStream* stream,
             [in] Boolean closeStream);
 
         /**
          * Load the gesture library
          */
         Load(
-            [in] IInputStream *stream);
+            [in] IInputStream* stream);
 
         Load(
-            [in] IInputStream *stream,
+            [in] IInputStream* stream,
             [in] Boolean closeStream);
     }
 

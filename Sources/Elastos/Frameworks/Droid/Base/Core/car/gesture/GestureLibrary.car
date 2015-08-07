@@ -1,56 +1,63 @@
 module
 {
+    using interface Elastos.Utility.IList;
     using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Gesture.IGesture;
+    interface Elastos.Droid.Gesture.ILearner;
 
     namespace Elastos {
     namespace Droid {
     namespace Gesture {
 
-    [local]
+    [deprecated, local]
     interface IGestureLibrary {
         Save(
-            [out] Boolean *isSaved);
+            [out] Boolean* isSaved);
 
         Load(
-            [out] Boolean *isLoaded);
+            [out] Boolean* isLoaded);
 
         IsReadOnly(
-            [out] Boolean *isReadOnly);
+            [out] Boolean* isReadOnly);
+
+        /** @hide */
+        GetLearner(
+            [out] ILearner** learner);
 
         SetOrientationStyle(
             [in] Int32 style);
 
         GetOrientationStyle(
-            [out] Int32 *style);
+            [out] Int32* style);
 
         SetSequenceType(
             [in] Int32 type);
 
         GetSequenceType(
-            [out] Int32 *type);
+            [out] Int32* type);
 
         GetGestureEntries(
-            [out] IObjectContainer **entries);
+            [out] IList** entries);
 
         Recognize(
-            [in] IGesture *gesture,
-            [out] IArrayList **list);
+            [in] IGesture* gesture,
+            [out] IArrayList** list);
 
         AddGesture(
             [in] String entryName,
-            [in] IGesture *gesture);
+            [in] IGesture* gesture);
 
         RemoveGesture(
             [in] String entryName,
-            [in] IGesture *gesture);
+            [in] IGesture* gesture);
 
         RemoveEntry(
             [in] String entryName);
 
         GetGestures(
             [in] String entryName,
-            [out] IObjectContainer **gestures);
+            [out] IArrayList** gestures);
     }
 
     }//namespace Gesture

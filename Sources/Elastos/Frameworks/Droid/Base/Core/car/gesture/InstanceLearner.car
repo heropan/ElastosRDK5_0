@@ -1,12 +1,15 @@
-module {
+module
+{
     namespace Elastos {
     namespace Droid {
     namespace Gesture {
+
     /**
      * @Involve
      * interface ILearner
      */
     interface IInstanceLearner {}
+
     }//namespace Gesture
     }//namespace Droid
     }//namespace Elastos

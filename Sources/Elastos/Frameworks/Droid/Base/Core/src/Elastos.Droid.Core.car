@@ -23,7 +23,7 @@ module
     merge("../car/inputmethodservice2.car");
     //merge("../car/menu1.car");
     merge("../car/widget.car");
-    //merge("../car/gesture.car");
+    merge("../car/gesture.car");
     //merge("../car/text2.car");
     merge("../car/inputmethodservice.car");
     //merge("../car/menu2.car");

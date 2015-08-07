@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Utility.IArrayList;
     using interface Elastos.IO.IDataOutputStream;
     using interface Elastos.IO.IDataInputStream;
 
@@ -12,20 +12,27 @@ module
     namespace Droid {
     namespace Gesture {
 
+    /**
+     * A gesture is a hand-drawn shape on a touch screen. It can have one or multiple strokes.
+     * Each stroke is a sequence of timed points. A user-defined gesture can be recognized by
+     * a GestureLibrary.
+     *
+     * @Involve
+     * interface IParcelable
+     */
     [local]
     interface IGesture {
-       /**
+        /**
          * @return all the strokes of the gesture
          */
-//        public ArrayList<GestureStroke> getStrokes();
         GetStrokes(
-            [out] IObjectContainer **container);
+            [out] IArrayList** container);
 
         /**
          * @return the number of strokes included by this gesture
          */
         GetStrokesCount(
-            [out] Int32 *count);
+            [out] Int32* count);
 
         /**
          * Adds a stroke to the gesture.
@@ -33,7 +40,7 @@ module
          * @param stroke
          */
         AddStroke(
-            [in] IGestureStroke *stroke);
+            [in] IGestureStroke* stroke);
 
         /**
          * Calculates the total length of the gesture. When there are multiple strokes in
@@ -42,35 +49,35 @@ module
          * @return the length of the gesture
          */
         GetLength(
-            [out] Float *length);
+            [out] Float* length);
 
         /**
          * @return the bounding box of the gesture
          */
         GetBoundingBox(
-            [out] IRectF **box);
+            [out] IRectF** box);
 
         ToPath(
-            [out] IPath **outPath);
+            [out] IPath** outPath);
 
         ToPath(
-            [in] IPath * path,
-            [out] IPath ** outPath);
+            [in] IPath* path,
+            [out] IPath** outPath);
 
         ToPath(
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 edge,
             [in] Int32 numSample,
-            [out] IPath **outPath);
+            [out] IPath** outPath);
 
         ToPath(
-            [in] IPath *path,
+            [in] IPath* path,
             [in] Int32 width,
             [in] Int32 height,
             [in] Int32 edge,
             [in] Int32 numSample,
-            [out] IPath **outPath);
+            [out] IPath** outPath);
 
         /**
          * Sets the id of the gesture.
@@ -84,7 +91,7 @@ module
          * @return the id of the gesture
          */
         GetID(
-            [out] Int64 *id);
+            [out] Int64* id);
 
         /**
          * Creates a bitmap of the gesture with a transparent background.
@@ -102,7 +109,7 @@ module
             [in] Int32 edge,
             [in] Int32 numSample,
             [in] Int32 color,
-            [out] IBitmap **bm);
+            [out] IBitmap** bm);
 
         /**
          * Creates a bitmap of the gesture with a transparent background.
@@ -118,13 +125,13 @@ module
             [in] Int32 height,
             [in] Int32 inset,
             [in] Int32 color,
-            [out] IBitmap **bm);
+            [out] IBitmap** bm);
 
         Serialize(
-            [in] IDataOutputStream * outStream);
+            [in] IDataOutputStream* outStream);
 
         DescribeContents(
-            [out] Int32 *result);
+            [out] Int32* result);
     }
 
     [local]

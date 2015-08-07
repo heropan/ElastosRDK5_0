@@ -13,21 +13,21 @@ module
     interface IGestureLibraries {
         FromFile(
             [in] String path,
-            [out] IGestureLibrary **gestureLib);
+            [out] IGestureLibrary** gestureLib);
 
         FromFile(
-            [in] IFile *path,
-            [out] IGestureLibrary **gestureLib);
+            [in] IFile* path,
+            [out] IGestureLibrary** gestureLib);
 
         FromPrivateFile(
             [in] IContext* ctx,
             [in] String name,
-            [out] IGestureLibrary **gestureLib);
+            [out] IGestureLibrary** gestureLib);
 
         FromRawResource(
             [in] IContext* ctx,
             [in] Int32 resourceId,
-            [out] IGestureLibrary ** gestureLib);
+            [out] IGestureLibrary** gestureLib);
     }
 
     }//namespace Gesture
