@@ -70,6 +70,9 @@ public:
     virtual CARAPI GetKeyframes(
         /* [out, callee] */ ArrayOf<IKeyframe*>** frames);
 
+    CARAPI ToString(
+        /* [out] */ String* str);
+
 protected:
     Int32 mNumKeyframes;
 

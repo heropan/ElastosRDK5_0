@@ -278,6 +278,21 @@ ECode KeyframeSet::GetKeyframes(
     return NOERROR;
 }
 
+ECode KeyframeSet::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    String returnVal(" "), tmp;
+    for (Int32 i = 0; i < mNumKeyframes; ++i) {
+        AutoPtr<IInterface> obj;
+        (*mKeyframes)[i]->GetValue((IInterface**)&obj);
+        IObject::Probe(obj)->ToString(&tmp);
+        returnVal += tmp + String("  ");
+    }
+    *str = returnVal;
+    return NOERROR;
+}
+
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos

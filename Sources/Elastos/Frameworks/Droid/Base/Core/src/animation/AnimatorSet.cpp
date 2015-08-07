@@ -394,6 +394,7 @@ AnimatorSet::AnimatorSet()
     , mStarted(FALSE)
     , mStartDelay(0)
     , mDuration(-1)
+    , mReversible(TRUE)
 {
 }
 
@@ -450,6 +451,7 @@ ECode AnimatorSet::PlaySequentially(
         if (items->GetLength() == 1) {
             Play((*items)[0]);
         } else {
+            mReversible = FALSE;
             for (Int32 i = 0; i < items->GetLength() - 1; ++i) {
                 AutoPtr<IAnimatorSetBuilder> builder = Play((*items)[i]);
                 builder->Before((*items)[i+1]);

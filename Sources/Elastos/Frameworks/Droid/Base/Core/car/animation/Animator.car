@@ -8,6 +8,7 @@ module
     namespace Animation {
 
     interface IAnimatorListener;
+    interface IAnimatorPauseListener;
 
     /**
      * This is the superclass for classes which provide basic support for animations
@@ -63,10 +64,43 @@ module
         End();
 
         /**
-         * The amount of time, in milliseconds, to delay starting the animation after
-         * #start() is called.
+         * Pauses a running animation. This method should only be called on the same thread on
+         * which the animation was started. If the animation has not yet been {@link
+         * #isStarted() started} or has since ended, then the call is ignored. Paused
+         * animations can be resumed by calling {@link #resume()}.
          *
-         * @sa #start()
+         * @see #resume()
+         * @see #isPaused()
+         * @see AnimatorPauseListener
+         */
+        Pause();
+
+        /**
+         * Resumes a paused animation, causing the animator to pick up where it left off
+         * when it was paused. This method should only be called on the same thread on
+         * which the animation was started. Calls to resume() on an animator that is
+         * not currently paused will be ignored.
+         *
+         * @see #pause()
+         * @see #isPaused()
+         * @see AnimatorPauseListener
+         */
+        Resume();
+
+        /**
+         * Returns whether this animator is currently in a paused state.
+         *
+         * @return True if the animator is currently paused, false otherwise.
+         *
+         * @see #pause()
+         * @see #resume()
+         */
+        IsPaused(
+            [out] Boolean* paused);
+
+        /**
+         * The amount of time, in milliseconds, to delay processing the animation
+         * after {@link #start()} is called.
          *
          * @return the number of milliseconds to delay running the animation
          */
@@ -74,17 +108,16 @@ module
             [out] Int64* delay);
 
         /**
-         * The amount of time, in milliseconds, to delay starting the animation after
-         * #start() is called.
-         *
-         * @sa #start()
+         * The amount of time, in milliseconds, to delay processing the animation
+         * after {@link #start()} is called.
+
          * @param startDelay The amount of the delay, in milliseconds
          */
         SetStartDelay(
             [in] Int64 startDelay);
 
         /**
-         * Sets the length of the animation.
+         * Sets the duration of the animation.
          *
          * @param duration The length of the animation, in milliseconds.
          */
@@ -92,7 +125,7 @@ module
             [in] Int64 duration);
 
         /**
-         * Gets the length of the animation.
+         * Gets the duration of the animation.
          *
          * @return The length of the animation, in milliseconds.
          */
@@ -100,17 +133,23 @@ module
             [out] Int64* duration);
 
         /**
-         * The time interpolator used in calculating the elapsed fraction of this animation. The
-         * interpolator determines whether the animation runs with linear or non-linear motion,
-         * such as acceleration and deceleration. The default value is
-         * android.view.animation.AccelerateDecelerateInterpolator
-         *
-         * @sa android.view.animation.AccelerateDecelerateInterpolator
+         * The time interpolator used in calculating the elapsed fraction of the
+         * animation. The interpolator determines whether the animation runs with
+         * linear or non-linear motion, such as acceleration and deceleration. The
+         * default value is {@link android.view.animation.AccelerateDecelerateInterpolator}.
          *
          * @param value the interpolator to be used by this animation
          */
         SetInterpolator(
             [in] ITimeInterpolator* value);
+
+        /**
+         * Returns the timing interpolator that this animation uses.
+         *
+         * @return The timing interpolator for this animation.
+         */
+        GetInterpolator(
+            [out] ITimeInterpolator** interpolator);
 
         /**
          * Returns whether this Animator is currently running (having been started and gone past any
@@ -171,12 +210,29 @@ module
         //    [in] ArrayOf<IAnimatorListener*>* listeners);
 
         /**
-         * Removes all listeners from this object. This is equivalent to calling
-         * <code>getListeners()</code> followed by calling <code>clear()</code> on the
-         * returned list of listeners.
+         * Adds a pause listener to this animator.
+         *
+         * @param listener the listener to be added to the current set of pause listeners
+         * for this animation.
+         */
+        AddPauseListener(
+            [in] IAnimatorPauseListener* listener);
+
+        /**
+         * Removes a pause listener from the set listening to this animation.
+         *
+         * @param listener the listener to be removed from the current set of pause
+         * listeners for this animation.
+         */
+        RemovePauseListener(
+            [in] IAnimatorPauseListener* listener);
+
+        /**
+         * Removes all {@link #addListener(android.animation.Animator.AnimatorListener) listeners}
+         * and {@link #addPauseListener(android.animation.Animator.AnimatorPauseListener)
+         * pauseListeners} from this object.
          */
         RemoveAllListeners();
-
 
         Clone(
             [out] IAnimator** anim);
@@ -214,6 +270,54 @@ module
          */
         SetTarget(
             [in] IInterface* target);
+
+        // Hide reverse() and canReverse() for now since reverse() only work for simple
+        // cases, like we don't support sequential, neither startDelay.
+        // TODO: make reverse() works for all the Animators.
+        /**
+         * @hide
+         */
+        CanReverse(
+            [out] Boolean* can);
+
+        /**
+         * @hide
+         */
+        Reverse();
+
+        /**
+         * <p>Whether or not the Animator is allowed to run asynchronously off of
+         * the UI thread. This is a hint that informs the Animator that it is
+         * OK to run the animation off-thread, however the Animator may decide
+         * that it must run the animation on the UI thread anyway.
+         *
+         * <p>Regardless of whether or not the animation runs asynchronously, all
+         * listener callbacks will be called on the UI thread.</p>
+         *
+         * <p>To be able to use this hint the following must be true:</p>
+         * <ol>
+         * <li>The animator is immutable while {@link #isStarted()} is true. Requests
+         *    to change duration, delay, etc... may be ignored.</li>
+         * <li>Lifecycle callback events may be asynchronous. Events such as
+         *    {@link Animator.AnimatorListener#onAnimationEnd(Animator)} or
+         *    {@link Animator.AnimatorListener#onAnimationRepeat(Animator)} may end up delayed
+         *    as they must be posted back to the UI thread, and any actions performed
+         *    by those callbacks (such as starting new animations) will not happen
+         *    in the same frame.</li>
+         * <li>State change requests ({@link #cancel()}, {@link #end()}, {@link #reverse()}, etc...)
+         *    may be asynchronous. It is guaranteed that all state changes that are
+         *    performed on the UI thread in the same frame will be applied as a single
+         *    atomic update, however that frame may be the current frame,
+         *    the next frame, or some future frame. This will also impact the observed
+         *    state of the Animator. For example, {@link #isStarted()} may still return true
+         *    after a call to {@link #end()}. Using the lifecycle callbacks is preferred over
+         *    queries to {@link #isStarted()}, {@link #isRunning()}, and {@link #isPaused()}
+         *    for this reason.</li>
+         * </ol>
+         * @hide
+         */
+        SetAllowRunningAsynchronously(
+            [in] Boolean mayRunAsync);
     }
 
     /**
@@ -254,6 +358,33 @@ module
          * @param animation The animation which was repeated.
          */
         OnAnimationRepeat(
+            [in] IAnimator* animation);
+    }
+
+    /**
+     * A pause listener receives notifications from an animation when the
+     * animation is {@link #pause() paused} or {@link #resume() resumed}.
+     *
+     * @see #addPauseListener(AnimatorPauseListener)
+     */
+    interface IAnimatorPauseListener {
+        /**
+         * <p>Notifies that the animation was paused.</p>
+         *
+         * @param animation The animaton being paused.
+         * @see #pause()
+         */
+        OnAnimationPause(
+            [in] IAnimator* animation);
+
+        /**
+         * <p>Notifies that the animation was resumed, after being
+         * previously paused.</p>
+         *
+         * @param animation The animation being resumed.
+         * @see #resume()
+         */
+        OnAnimationResume(
             [in] IAnimator* animation);
     }
 

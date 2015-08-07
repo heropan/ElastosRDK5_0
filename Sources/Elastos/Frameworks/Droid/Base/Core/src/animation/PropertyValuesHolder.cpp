@@ -72,7 +72,7 @@ ECode PropertyValuesHolder::GetInterfaceID(
         *iid = EIID_PropertyValuesHolder;
         return NOERROR;
     }
-    else if (object == (IInterface*)(IPropertyValuesHolder*)this) {
+    else if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
         *iid = EIID_IPropertyValuesHolder;
         return NOERROR;
     }
@@ -84,7 +84,7 @@ PInterface PropertyValuesHolder::Probe(
     /* [in] */ REIID riid)
 {
     if (riid == EIID_PropertyValuesHolder) {
-        return reinterpret_cast<PInterface>(this);
+        return reinterpret_cast<PInterface>((PropertyValuesHolder*)this);
     }
     else if (riid == EIID_IInterface) {
         return (IInterface*)(IPropertyValuesHolder*)this;
@@ -680,6 +680,26 @@ ECode PropertyValuesHolder::GetAnimatedValue(
     return NOERROR;
 }
 
+ECode PropertyValuesHolder::Clone(
+    /* [out] */ IPropertyValuesHolder** holder)
+{
+    AutoPtr<PropertyValuesHolder> v = new PropertyValuesHolder(mPropertyName);
+    CloneSuperData(v);
+    *holder = v;
+    REFCOUNT_ADD(*holder)
+    return NOERROR;
+}
+
+ECode PropertyValuesHolder::ToString(
+    /* [out] */ String* str)
+{
+    VALIDATE_NOT_NULL(str);
+    String tmp;
+    mKeyframeSet->ToString(&tmp);
+    *str = mPropertyName + String(": ") + tmp;
+    return NOERROR;
+}
+
 String PropertyValuesHolder::GetMethodName(
     /* [in] */ const String& prefix,
     /* [in] */ const String& propertyName)
@@ -735,7 +755,6 @@ AutoPtr<IMethodInfo> PropertyValuesHolder::SetupSetterOrGetter(
     }
     return NULL;
 }
-
 
 AutoPtr<IClassInfo> PropertyValuesHolder::TransformClassInfo(
     /* [in] */ IInterface* o)

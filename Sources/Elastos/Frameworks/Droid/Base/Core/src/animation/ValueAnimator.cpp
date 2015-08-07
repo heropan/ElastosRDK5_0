@@ -28,8 +28,6 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(ValueAnimator::AnimationHandler, IRunnable)
-
 // {29cabe84-1c7e-421e-b87a-3be0c6ce913f}
 extern "C" const InterfaceID EIID_ValueAnimator =
         { 0x29cabe84, 0x1c7e, 0x421e, { 0xb8, 0x7a, 0x3b, 0xe0, 0xc6, 0xce, 0x91, 0x3f } };
@@ -205,7 +203,7 @@ ECode ValueAnimator::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(ValueAnimator *)this) {
+    if (object == reinterpret_cast<PInterface>((ValueAnimator *)this)) {
         *iid = EIID_ValueAnimator;
         return NOERROR;
     }

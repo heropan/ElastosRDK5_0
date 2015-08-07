@@ -2,6 +2,8 @@
 #include "animation/Animator.h"
 #include <elastos/utility/etl/Algorithm.h>
 
+using Elastos::Core::EIID_ICloneable;
+
 namespace Elastos {
 namespace Droid {
 namespace Animation {
@@ -15,7 +17,7 @@ ECode Animator::GetInterfaceID(
     /* [out] */ InterfaceID* iid)
 {
     VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(Animator *)this) {
+    if (object == reinterpret_cast<PInterface>((Animator *)this)) {
         *iid = EIID_Animator;
         return NOERROR;
     }
@@ -37,10 +39,11 @@ PInterface Animator::Probe(
         return (IInterface*)(ICloneable*)this;
     }
 
-    return Object::Probe(riid)
+    return Object::Probe(riid);
 }
 
 Animator::Animator()
+    : mPaused(FALSE)
 {
 }
 
@@ -61,6 +64,62 @@ ECode Animator::Cancel()
 
 ECode Animator::End()
 {
+    return NOERROR;
+}
+
+ECode Animator::Pause()
+{
+    Boolean started = FALSE;
+    IsStarted(&started);
+    if (started && !mPaused) {
+        mPaused = TRUE;
+        if (mPauseListeners != NULL) {
+            AutoPtr<IArrayList> tmpListeners;
+            mPauseListeners->Clone((IInterface**)&tmpListeners);
+            Int32 numListeners = 0;
+            tmpListeners->GetSize(&numListeners);
+            for (Int32 i = 0; i < numListeners; ++i) {
+                AutoPtr<IInterface> listener;
+                tmpListeners->Get(i, (IInterface**)&listener);
+                IAnimatorPauseListener::Probe(listener)->OnAnimationPause(this);
+            }
+        }
+    }
+    return NOERROR;
+}
+
+ECode Animator::Resume()
+{
+    if (mPaused) {
+        mPaused = FALSE;
+        if (mPauseListeners != NULL) {
+            AutoPtr<IArrayList> tmpListeners;
+            mPauseListeners->Clone((IInterface**)&tmpListeners);
+            Int32 numListeners = 0;
+            tmpListeners->GetSize(&numListeners);
+            for (Int32 i = 0; i < numListeners; ++i) {
+                AutoPtr<IInterface> listener;
+                tmpListeners->Get(i, (IInterface**)&listener);
+                IAnimatorPauseListener::Probe(listener)->OnAnimationResume(this);
+            }
+        }
+    }
+    return NOERROR;
+}
+
+ECode Animator::IsPaused(
+    /* [out] */ Boolean* paused)
+{
+    VALIDATE_NOT_NULL(paused);
+    *paused = mPaused;
+    return NOERROR;
+}
+
+ECode Animator::GetInterpolator(
+    /* [out] */ ITimeInterpolator** interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NULL;
     return NOERROR;
 }
 
@@ -111,9 +170,39 @@ ECode Animator::GetListeners(
     return NOERROR;
 }
 
+ECode Animator::AddPauseListener(
+    /* [in] */ IAnimatorPauseListener* listener)
+{
+    if (mPauseListeners == NULL) {
+        CArrayList::New((IAnimatorPauseListener**)&mPauseListeners);
+    }
+    return mPauseListeners->Add(listener);
+}
+
+ECode Animator::RemovePauseListener(
+    /* [in] */ IAnimatorPauseListener* listener)
+{
+    if (mPauseListeners == NULL) {
+        return NOERROR;
+    }
+    mPauseListeners->Remove(listener);
+    Int32 size = 0;
+    mPauseListeners->GetSize(&size);
+    if (size == 0) {
+        mPauseListeners = NULL;
+    }
+    return NOERROR;
+}
+
 ECode Animator::RemoveAllListeners()
 {
     mListeners.Clear();
+
+    if (mPauseListeners != NULL) {
+        mPauseListeners->Clear();
+        mPauseListeners = NULL;
+    }
+
     return NOERROR;
 }
 
@@ -125,6 +214,20 @@ ECode Animator::CloneSuperData(
         anim->mListeners.Clear();
         Copy(mListeners.Begin(), mListeners.End(), anim->mListeners.Begin());
     }
+
+    if (mPauseListeners != NULL) {
+        AutoPtr<IArrayList> oldListeners = mPauseListeners;
+        anim->mPauseListeners;
+        CArrayList::New((IArrayList**)&anim->mPauseListeners);
+        Int32 numListeners = 0;
+        oldListeners->GetSize(&numListeners);
+        for (Int32 i = 0; i < numListeners; ++i) {
+            AutoPtr<IInterface> listener;
+            oldListeners->Get(i, (IInterface**)&listener);
+            anim->mPauseListeners->Add(listener);
+        }
+    }
+
     return NOERROR;
 }
 
@@ -141,6 +244,27 @@ ECode Animator::SetupEndValues()
 ECode Animator::SetTarget(
     /* [in] */ IInterface* target)
 {
+    return NOERROR;
+}
+
+ECode Animator::CanReverse(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = FALSE;
+    return NOERROR;
+}
+
+ECode Animator::Reverse()
+{
+    // throw new IllegalStateException("Reverse is not supported");
+    return E_ILLEGAL_STATE_EXCEPTION;
+}
+
+ECode Animator::SetAllowRunningAsynchronously(
+        /* [in] */ Boolean mayRunAsync)
+{
+    // It is up to subclasses to support this, if they can.
     return NOERROR;
 }
 
