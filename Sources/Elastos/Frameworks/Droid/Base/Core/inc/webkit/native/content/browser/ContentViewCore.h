@@ -251,7 +251,7 @@ private:
 
         // mContainerView can change, but this ViewAndroidDelegate can only be used to
         // add and remove views from the mContainerViewAtCreation.
-        const AutoPtr<IViewGroup> mContainerViewAtCreation;
+        const IViewGroup* mContainerViewAtCreation;
     };
 
     class InnerImeAdapterDelegate
@@ -404,6 +404,173 @@ private:
         //@Override
         CARAPI_(void) OnPopupZoomerHidden(
             /* [in] */ const PopupZoomer* zoomer);
+
+    private:
+        ContentViewCore* mOwner;
+    };
+
+    class InnerOnTapListener
+        : public Object
+        , public PopupZoomer::OnTapListener
+    {
+    public:
+        InnerOnTapListener(
+            /* [in] */ ContentViewCore* owner,
+            /* [in] */ IViewGroup* vg);
+
+        //@Override
+        CARAPI_(Boolean) OnSingleTap(
+            /* [in] */ IView* v,
+            /* [in] */ IMotionEvent* e);
+
+        //@Override
+        CARAPI_(Boolean) OnLongPress(
+            /* [in] */ IView* v,
+            /* [in] */ IMotionEvent* e);
+
+    private:
+        ContentViewCore* mOwner;
+
+        // mContainerView can change, but this OnTapListener can only be used
+        // with the mContainerViewAtCreation.
+        const IViewGroup* mContainerViewAtCreation;
+    };
+
+    class FakeMouseMoveRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        FakeMouseMoveRunnable(
+            /* [in] */ ContentViewCore* owner,
+            /* [in] */ IMotionEvent* eventFakeMouseMove);
+
+        CARAPI Run();
+
+    private:
+        ContentViewCore* mOwner;
+        IMotionEvent* mEventFakeMouseMove
+    };
+
+    class InnerSelectionHandleController
+        : public Object
+        : public SelectionHandleController
+    {
+    public:
+        InnerSelectionHandleController(
+            /* [in] */ ContentViewCore* owner);
+
+        //@Override
+        CARAPI_(void) SelectBetweenCoordinates(
+            /* [in] */ Int32 x1,
+            /* [in] */ Int32 y1,
+            /* [in] */ Int32 x2,
+            /* [in] */ Int32 y2);
+
+        //@Override
+        CARAPI_(void) ShowHandles(
+            /* [in] */ Int32 startDir,
+            /* [in] */ Int32 endDir);
+
+    private:
+        ContentViewCore* mOwner;
+    };
+
+    class InnerInsertionHandleController
+        : public Object
+        , public InsertionHandleController
+    {
+    public:
+        InnerInsertionHandleController(
+            /* [in] */ ContentViewCore* owner);
+
+        //@Override
+        CARAPI_(void) SetCursorPosition(int x, int y);
+
+        //@Override
+        CARAPI_(void) Paste();
+
+        //@Override
+        CARAPI_(Int32) GetLineHeight();
+
+        //@Override
+        CARAPI_(void) ShowHandle();
+
+    private:
+        ContentViewCore* mOwner;
+        static const Int32 AVERAGE_LINE_HEIGHT = 14;
+    };
+
+    class InnerActionHandler
+        : public Object
+        , public SelectActionModeCallback::ActionHandler
+    {
+    public:
+        InnerActionHandler(
+            /* [in] */ ContentViewCore* owner);
+
+        //@Override
+        CARAPI_(void) SelectAll();
+
+        //@Override
+        CARAPI_(void) Cut();
+
+        //@Override
+        CARAPI_(void) Copy();
+
+        //@Override
+        CARAPI_(void) Paste();
+
+        //@Override
+        CARAPI_(void) Share();
+
+        //@Override
+        CARAPI_(void) Search();
+
+        //@Override
+        CARAPI_(Boolean) IsSelectionPassword();
+
+        //@Override
+        CARAPI_(Boolean) IsSelectionEditable();
+
+        //@Override
+        CARAPI_(void) OnDestroyActionMode();
+
+        //@Override
+        CARAPI_(Boolean) IsShareAvailable();
+
+        //@Override
+        CARAPI_(Boolean) IsWebSearchAvailable();
+
+    private:
+        ContentViewCore* mOwner;
+    };
+
+    class DeferredHandleFadeInRunnable
+        : public Object
+        , public IRunnable
+    {
+    public:
+        DeferredHandleFadeInRunnable(
+            /* [in] */ ContentViewCore* owner);
+
+        CARAPI Run();
+
+    private:
+        ContentViewCore* mOwner;
+    };
+
+    class InnerContentObserver
+        : public Object
+        , public IHandler
+    {
+    public:
+        InnerContentObserver(
+            /* [in] */ ContentViewCore* owner);
+
+        CARAPI OnChange(
+            /* [in] */ Boolean selfChange,
+            /* [in] */ IUri* uri)
 
     private:
         ContentViewCore* mOwner;
