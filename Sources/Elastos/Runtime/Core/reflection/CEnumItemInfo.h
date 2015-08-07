@@ -15,6 +15,8 @@ public:
         /* [in] */ const String& name,
         /* [in] */ Int32 value);
 
+    virtual ~CEnumItemInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 

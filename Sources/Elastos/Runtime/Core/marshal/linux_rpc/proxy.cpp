@@ -1066,7 +1066,8 @@ UInt32 CObjectProxy::Release()
 
         if (mCallbackConnector) {
             mCallbackConnector->DisconnectCallbackSink();
-            delete mCallbackConnector;
+            mCallbackConnector->Release();
+            mCallbackConnector = NULL;
         }
 
         //bugbug: maybe we don't need call release of stub,

@@ -14,6 +14,9 @@ CEnumItemInfo::CEnumItemInfo(
     , mValue(value)
 {}
 
+CEnumItemInfo::~CEnumItemInfo()
+{}
+
 UInt32 CEnumItemInfo::AddRef()
 {
     return mEnumInfo->AddRef();

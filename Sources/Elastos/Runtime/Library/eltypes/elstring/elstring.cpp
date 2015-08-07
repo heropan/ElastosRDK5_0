@@ -623,7 +623,7 @@ ECode String::Append(const char* other, Int32 numOfBytes)
         return SetTo(other, numOfBytes);
     }
 
-    numOfBytes = MIN(strlen(other), numOfBytes);
+    numOfBytes = MIN(strlen(other), (size_t)numOfBytes);
     return RealAppend(other, numOfBytes);
 }
 

@@ -15,7 +15,7 @@ CEnumInfo::~CEnumInfo()
     if (mItemInfos) {
         for (Int32 i = 0; i < mItemInfos->GetLength(); i++) {
             if ((*mItemInfos)[i]) {
-                delete (*mItemInfos)[i];
+                delete (CEnumItemInfo*)(*mItemInfos)[i];
                 (*mItemInfos)[i] = NULL;
             }
         }
@@ -222,7 +222,7 @@ ECode CEnumInfo::InitItemInfos()
 EExit:
     for (Int32 i = 0; i < count; i++) {
         if ((*mItemInfos)[i]) {
-            delete (*mItemInfos)[i];
+            delete (CEnumItemInfo*)(*mItemInfos)[i];
             (*mItemInfos)[i] = NULL;
         }
     }
@@ -254,7 +254,7 @@ ECode CEnumInfo::GetItemInfo(
 
     for (Int32 i = 0; i < mItemInfos->GetLength(); i++) {
         if (name.Equals((*mItemNames)[i].string())) {
-            *enumItemInfo = (IEnumItemInfo *)(*mItemInfos)[i];
+            *enumItemInfo = (*mItemInfos)[i];
             (*enumItemInfo)->AddRef();
             return NOERROR;
         }

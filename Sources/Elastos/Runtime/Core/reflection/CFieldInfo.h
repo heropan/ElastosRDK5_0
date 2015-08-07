@@ -15,6 +15,8 @@ public:
         /* [in] */ const String& name,
         /* [in] */ IDataTypeInfo* typeInfo);
 
+    virtual ~CFieldInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 

@@ -21,7 +21,7 @@ CStructInfo::~CStructInfo()
     if (mFieldInfos) {
         for (Int32 i = 0; i < mFieldInfos->GetLength(); i++) {
             if ((*mFieldInfos)[i]) {
-                delete (*mFieldInfos)[i];
+                delete (CFieldInfo*)(*mFieldInfos)[i];
                 (*mFieldInfos)[i] = NULL;
             }
         }
@@ -234,7 +234,7 @@ ECode CStructInfo::GetFieldInfo(
 
     for (Int32 i = 0; i < mFieldNames->GetLength(); i++) {
         if ((*mFieldNames)[i].Equals(name)) {
-            *fieldInfo = (IFieldInfo *)(*mFieldInfos)[i];
+            *fieldInfo = (*mFieldInfos)[i];
             (*fieldInfo)->AddRef();
             return NOERROR;
         }
@@ -295,7 +295,7 @@ ECode CStructInfo::InitFieldInfos()
 EExit:
     for (i = 0; i < count; i++) {
         if ((*mFieldInfos)[i]) {
-            delete (*mFieldInfos)[i];
+            delete (CFieldInfo*)(*mFieldInfos)[i];
             (*mFieldInfos)[i] = NULL;
         }
     }

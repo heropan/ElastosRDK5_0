@@ -17,6 +17,8 @@ public:
         /* [in] */ ParamDescriptor* paramDescriptor,
         /* [in] */ Int32 index);
 
+    virtual ~CParamInfo();
+
     CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
 

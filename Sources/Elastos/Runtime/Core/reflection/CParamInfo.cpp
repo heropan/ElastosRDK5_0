@@ -21,6 +21,9 @@ CParamInfo::CParamInfo(
     mIndex = index;
 }
 
+CParamInfo::~CParamInfo()
+{}
+
 UInt32 CParamInfo::AddRef()
 {
     return mMethodInfo->AddRef();

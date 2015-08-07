@@ -41,7 +41,7 @@ CMethodInfo::~CMethodInfo()
     if (mParameterInfos) {
         for (Int32 i = 0; i < count; i++) {
             if ((*mParameterInfos)[i]) {
-                delete (*mParameterInfos)[i];
+                delete (CParamInfo*)(*mParameterInfos)[i];
                 (*mParameterInfos)[i] = NULL;
             }
         }
@@ -150,7 +150,7 @@ ECode CMethodInfo::GetParamInfoByIndex(
         return E_DOES_NOT_EXIST;
     }
 
-    *paramInfo = (IParamInfo *)(*mParameterInfos)[index];
+    *paramInfo = (*mParameterInfos)[index];
     (*paramInfo)->AddRef();
 
     return NOERROR;
@@ -306,7 +306,7 @@ ECode CMethodInfo::InitParamInfos()
 EExit:
     for (i = 0; i < count; i++) {
         if ((*mParameterInfos)[i]) {
-            delete (*mParameterInfos)[i];
+            delete (CParamInfo*)(*mParameterInfos)[i];
             (*mParameterInfos)[i] = NULL;
         }
     }

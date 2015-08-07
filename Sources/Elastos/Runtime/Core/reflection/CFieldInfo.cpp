@@ -14,6 +14,9 @@ CFieldInfo::CFieldInfo(
     , mTypeInfo(typeInfo)
 {}
 
+CFieldInfo::~CFieldInfo()
+{}
+
 UInt32 CFieldInfo::AddRef()
 {
     return mStructInfo->AddRef();
