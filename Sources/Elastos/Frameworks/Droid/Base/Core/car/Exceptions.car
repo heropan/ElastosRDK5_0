@@ -35,6 +35,7 @@ module
     const E_BAD_TOKEN_EXCEPTION                         = 0xD2050000;
     const E_INVALID_DISPLAY_EXCEPTION                   = 0xD2060000;
     const E_CALLED_FROM_WRONG_THREAD_EXCEPTION          = 0xD2070000;
+    const E_PENDING_INTENT_CANCELED_EXCEPTION           = 0xD2080000;
 
     //==========================================================================
     // Elastos Accounts exception codes (Family: 0x53 - D3)

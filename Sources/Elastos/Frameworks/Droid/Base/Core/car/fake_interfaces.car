@@ -10,39 +10,9 @@ module
     namespace Droid {
     namespace App {
 
-        interface ILoaderManager {}
-
-        interface ILocalActivityManager {}
-
-        interface ILoadedPkg {}
-
-        interface INotification {}
-
-        interface IPendingIntent {}
-
-        interface IProfilerInfo {}
-
-        interface IResultInfo {}
-
-        interface ISharedElementCallback {}
-
-        interface ITaskStackBuilder {}
-
-        interface IVoiceInteractor {}
-
-        interface IIVoiceInteractor {}
-
-        interface IOnActivityPausedListener {}
-
-        interface ISearchableInfo {}
-
         interface IActivityManagerStackInfo {}
 
         interface IContextImpl {}
-
-        interface IUiAutomation {}
-
-        interface IWallpaperInfo {}
 
         namespace Backup {
             interface IIBackupManager {}
@@ -143,6 +113,10 @@ module
     namespace Droid {
     namespace Internal {
 
+        namespace App {
+            interface IIVoiceInteractor {}
+        }
+
         namespace View {
 
             interface IIInputMethod {}
@@ -197,6 +171,8 @@ module
 
         interface IEditText {}
 
+        interface IRemoteViews {}
+
         interface ISeekBar {}
 
         interface IArrayAdapter {}
@@ -204,6 +180,8 @@ module
         interface IFilterable {}
 
         interface ISpinnerAdapter {}
+
+        interface ITimePicker {}
 
         interface IAdapterViewOnItemClickListener {}
 
@@ -224,6 +202,8 @@ module
             interface IMediaController {}
 
             interface IMediaSession {}
+
+            interface IMediaSessionToken {}
         }
 
     }}} // Elastos.Droid.Media

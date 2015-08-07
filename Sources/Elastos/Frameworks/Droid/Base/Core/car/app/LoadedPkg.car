@@ -1,0 +1,36 @@
+
+module
+{
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
+    interface Elastos.Droid.Content.Res.ICompatibilityInfo;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+    /**
+     * Local state maintained about a currently loaded .apk.
+     * @hide
+     */
+    interface ILoadedPkg {
+
+        GetPackageName(
+            [out] String* info);
+
+        GetApplicationInfo(
+            [out] IApplicationInfo** info);
+
+        IsSecurityViolation(
+            [out] Boolean* result);
+
+        GetCompatibilityInfo(
+            [out] ICompatibilityInfo** info);
+
+        SetCompatibilityInfo(
+            [in] ICompatibilityInfo* compatInfo);
+    }
+
+    } // namespace App
+    } // namespace Droid
+    } // namespace Elastos
+}

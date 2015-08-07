@@ -38,7 +38,7 @@ module
     interface Elastos.Droid.App.IActivityManagerStackInfo;
     interface Elastos.Droid.App.IContentProviderHolder;
     interface Elastos.Droid.App.IProfilerInfo;
-    interface Elastos.Droid.App.IIVoiceInteractor;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractor;
     interface Elastos.Droid.App.IActivityContainerCallback;
     interface Elastos.Droid.Service.Voice.IIVoiceInteractionSession;
 

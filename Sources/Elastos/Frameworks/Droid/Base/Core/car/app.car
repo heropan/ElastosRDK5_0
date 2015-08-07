@@ -48,47 +48,52 @@ module
     merge("app/IWallpaperManagerCallback.car");
     merge("app/Instrumentation.car");
     merge("app/IntentService.car");
+    merge("app/KeyguardManager.car");
+    merge("app/LauncherActivity.car");
+    merge("app/ListActivity.car");
+    merge("app/ListFragment.car");
+    merge("app/LoadedPkg.car");
+    merge("app/LoaderManager.car");
+    merge("app/LocalActivityManager.car");
+    merge("app/MediaRouteActionProvider.car");
+    merge("app/MediaRouteButton.car");
+    merge("app/NativeActivity.car");
+    merge("app/Notification.car");
+    merge("app/NotificationManager.car");
+    merge("app/OnActivityPausedListener.car");
+    merge("app/PendingIntent.car");
+    merge("app/Presentation.car");
+    merge("app/ProfilerInfo.car");
+    merge("app/ProgressDialog.car");
+    merge("app/ResultInfo.car");
+    merge("app/SearchManager.car");
+    merge("app/SearchableInfo.car");
+    merge("app/Service.car");
+    merge("app/SharedElementCallback.car");
+    merge("app/StatusBarManager.car");
+    merge("app/TaskStackBuilder.car");
+    merge("app/TimePickerDialog.car");
+    merge("app/UiAutomation.car");
+    merge("app/UiModeManager.car");
+    merge("app/VoiceInteractor.car");
+    merge("app/WallpaperInfo.car");
+    merge("app/WallpaperManager.car");
 
-
-    // merge("app/ListActivity.car");
-    // merge("app/LocalActivityManager.car");
+    //
     // merge("app/IBatteryStats.car");
     // merge("app/IUsageStats.car");
     // merge("app/IThumbnailReceiver.car");
     // merge("app/IThumbnailRetriever.car");
-    //
-    // merge("app/KeyguardManager.car");
-    // merge("app/Notification.car");
-    // merge("app/NotificationManager.car");
-    // merge("app/OnActivityPausedListener.car");
-    // merge("app/PendingIntent.car");
     // merge("app/PermissionController.car");
-    // merge("app/Presentation.car");
-    // merge("app/ProgressDialog.car");
-    // merge("app/ResultInfo.car");
-    // merge("app/SearchManager.car");
-    // merge("app/LoaderManager.car");
-    // merge("app/Service.car");
-    // merge("app/StatusBarManager.car");
-    // merge("app/TaskStackBuilder.car");
-    // merge("app/UiModeManager.car");
-    // merge("app/WallpaperInfo.car");
-    // merge("app/WallpaperManager.car");
     // merge("app/ActionBarImpl.car");
     // merge("app/AlertController.car");
-    //
-    //
     // merge("app/MediaRouteChooserDialogFragment.car");
     // merge("app/HeavyWeightSwitcherActivity.car");
-    // merge("app/ListFragment.car");
     // merge("app/LocalePicker.car");
     // merge("app/ReceiverRestrictedContext.car");
     //
-    // merge("app/SearchableInfo.car");
     // merge("app/IMediaContainerService.car");
     // merge("app/BackStackState.car");
-    //
-
 
     // merge("app/admin/DeviceAdminInfo.car");
     // merge("app/admin/DeviceAdminReceiver.car");

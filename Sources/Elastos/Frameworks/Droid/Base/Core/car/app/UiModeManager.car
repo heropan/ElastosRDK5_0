@@ -86,7 +86,7 @@ module
         /** Constant for #setNightMode(int) and #getNightMode():
          * automatically switch night mode on and off based on the time.
          *
-         * @sa #setNightMode(int) 
+         * @sa #setNightMode(int)
          * @sa #getNightMode()
          */
         const Int32 MODE_NIGHT_AUTO = 0x00 >> 4; //Configuration.UI_MODE_NIGHT_UNDEFINED >> 4;
@@ -94,7 +94,7 @@ module
         /** Constant for #setNightMode(int) and #getNightMode():
          * never run in night mode.
          *
-         * @sa #setNightMode(int) 
+         * @sa #setNightMode(int)
          * @sa #getNightMode()
          */
         const Int32 MODE_NIGHT_NO = 0x10 >> 4; //Configuration.UI_MODE_NIGHT_NO >> 4;
@@ -102,7 +102,7 @@ module
         /** Constant for #setNightMode(int) and #getNightMode():
          * always run in night mode.
          *
-         * @sa #setNightMode(int) 
+         * @sa #setNightMode(int)
          * @sa #getNightMode()
          */
         const Int32 MODE_NIGHT_YES = 0x20 >> 4; //Configuration.UI_MODE_NIGHT_YES >> 4;
@@ -117,6 +117,17 @@ module
          * @sa #enableCarMode(int)
          */
         const Int32 ENABLE_CAR_MODE_GO_CAR_HOME = 0x0001;
+
+        /**
+         * Flag for use with {@link #enableCarMode(int)}: allow sleep mode while in car mode.
+         * By default, when this flag is not set, the system may hold a full wake lock to keep the
+         * screen turned on and prevent the system from entering sleep mode while in car mode.
+         * Setting this flag disables such behavior and the system may enter sleep mode
+         * if there is no other user activity and no other wake lock held.
+         * Setting this flag can be relevant for a car dock application that does not require the
+         * screen kept on.
+         */
+        const Int32 ENABLE_CAR_MODE_ALLOW_SLEEP = 0x0002;
 
         /**
          * Flag for use with #disableCarMode(int): go to the normal
@@ -189,7 +200,7 @@ module
          * @return #MODE_NIGHT_NO, #MODE_NIGHT_YES, or
          * #MODE_NIGHT_AUTO.  When an error occurred -1 is returned.
          *
-         * @sa #MODE_NIGHT_NO 
+         * @sa #MODE_NIGHT_NO
          * @sa #MODE_NIGHT_YES
          * @sa #MODE_NIGHT_AUTO
          */

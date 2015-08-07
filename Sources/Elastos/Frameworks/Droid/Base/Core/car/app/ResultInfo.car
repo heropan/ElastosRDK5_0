@@ -7,6 +7,13 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * {@hide}
+     */
+    /**
+     * @Invovle
+     * interface IParcelable
+     */
     interface IResultInfo {
         GetResultWho(
             [out] String* who);

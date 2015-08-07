@@ -1,6 +1,7 @@
 module
 {
-    using interface Elastos.Utility.IObjectStringMap;
+    using interface Elastos.Utility.IHashMap;
+
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.View.IWindow;
@@ -9,6 +10,18 @@ module
     namespace Droid {
     namespace App {
 
+    /**
+     * <p>Helper class for managing multiple running embedded activities in the same
+     * process. This class is not normally used directly, but rather created for
+     * you as part of the {@link android.app.ActivityGroup} implementation.
+     *
+     * @see ActivityGroup
+     *
+     * @deprecated Use the new {@link Fragment} and {@link FragmentManager} APIs
+     * instead; these are also
+     * available on older platforms through the Android compatibility package.
+     */
+    //@Deprecated
     [local]
     interface ILocalActivityManager {
         StartActivity(
@@ -45,7 +58,7 @@ module
         DispatchStop();
 
         DispatchRetainNonConfigurationInstance(
-            [out] IObjectStringMap** osMap);
+            [out] IHashMap** osMap);
 
         RemoveAllActivities();
 

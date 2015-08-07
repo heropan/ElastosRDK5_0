@@ -1,5 +1,7 @@
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Database.ICursor;
     interface Elastos.Droid.App.ISearchableInfo;
@@ -15,28 +17,32 @@ module
     interface ISearchManagerOnCancelListener;
     interface ISearchManagerOnDismissListener;
 
-     /**
+    /**
      * This class provides access to the system search services.
-     * <p>
-     * In practice, you won't interact with this class directly, as search services
-     * are provided through methods in Activity and the ACTION_SEARCH Intent. If
-     * you do require direct access to the SearchManager, do not instantiate this
-     * class directly. Instead, retrieve it through context.getSystemService(Context.SEARCH_SERVICE).
      *
-     * @sa Activity
-     * @sa ACTION_SEARCH
-     * @sa context.getSystemService(Context.SEARCH_SERVICE)
-     * <p>
+     * <p>In practice, you won't interact with this class directly, as search
+     * services are provided through methods in {@link android.app.Activity Activity}
+     * and the {@link android.content.Intent#ACTION_SEARCH ACTION_SEARCH}
+     * {@link android.content.Intent Intent}.
+     * If you do require direct access to the SearchManager, do not instantiate
+     * this class directly. Instead, retrieve it through
+     * {@link android.content.Context#getSystemService
+     * context.getSystemService(Context.SEARCH_SERVICE)}.
+     *
+     * <div class="special reference">
      * <h3>Developer Guides</h3>
-     * <p>
-     * For more information about using the search dialog and adding search suggestions in your application, read the Search developer guide.
-     *
-     * @sa Search
-     *
-     * @implements DialogInterface.OnDismissListener, DialogInterface.OnCancelListener
+     * <p>For more information about using the search dialog and adding search
+     * suggestions in your application, read the
+     * <a href="{@docRoot}guide/topics/search/index.html">Search</a> developer guide.</p>
+     * </div>
+     */
+    /**
+     * @Invovle
+     * interface IDialogInterfaceOnDismissListener
+     * interface IDialogInterfaceOnCancelListener
      */
     [local]
-    interface ISearchManager /* implements DialogInterface.OnDismissListener, DialogInterface.OnCancelListener */ {
+    interface ISearchManager {
         /**
          * This is a shortcut definition for the default menu key to use for invoking search.
          *
@@ -49,56 +55,44 @@ module
          *
          * See Menu.Item.setAlphabeticShortcut() for more information.
          */
-        const Int32 MENU_KEYCODE = 47; //KeyEvent.KEYCODE_S;
+        const Int32 MENU_KEYCODE = 47;//KeyEvent.KEYCODE_S;
 
         /**
          * Intent extra data key: Use this key with
-         * android.content.Intent#getStringExtra
-         *  content.Intent.getStringExtra()
+         * {@link android.content.Intent#getStringExtra
+         *  content.Intent.getStringExtra()}
          * to obtain the query string from Intent.ACTION_SEARCH.
-         *
-         * @sa android.content.Intent#getStringExtra content.Intent.getStringExtra()
          */
         const String QUERY = "query";
 
         /**
          * Intent extra data key: Use this key with
-         * android.content.Intent#getStringExtra
-         *  content.Intent.getStringExtra()
+         * {@link android.content.Intent#getStringExtra
+         *  content.Intent.getStringExtra()}
          * to obtain the query string typed in by the user.
-         * This may be different from the value of #QUERY
+         * This may be different from the value of {@link #QUERY}
          * if the intent is the result of selecting a suggestion.
-         * In that case, #QUERY will contain the value of
-         * #SUGGEST_COLUMN_QUERY for the suggestion, and
-         * #USER_QUERY will contain the string typed by the
+         * In that case, {@link #QUERY} will contain the value of
+         * {@link #SUGGEST_COLUMN_QUERY} for the suggestion, and
+         * {@link #USER_QUERY} will contain the string typed by the
          * user.
-         *
-         * @sa android.content.Intent#getStringExtra content.Intent.getStringExtra()
-         * @sa #QUERY
-         * @sa #SUGGEST_COLUMN_QUERY
-         * @sa #USER_QUERY
          */
         const String USER_QUERY = "user_query";
 
         /**
          * Intent extra data key: Use this key with Intent.ACTION_SEARCH and
-         * android.content.Intent#getBundleExtra
-         *  content.Intent.getBundleExtra()
+         * {@link android.content.Intent#getBundleExtra
+         *  content.Intent.getBundleExtra()}
          * to obtain any additional app-specific data that was inserted by the
          * activity that launched the search.
-         *
-         * @sa android.content.Intent#getBundleExtra content.Intent.getBundleExtra()
          */
         const String APP_DATA = "app_data";
 
         /**
-         * Intent extra data key: Use android.content.Intent#getBundleExtra
-         * content.Intent.getBundleExtra(SEARCH_MODE) to get the search mode used
+         * Intent extra data key: Use {@link android.content.Intent#getBundleExtra
+         * content.Intent.getBundleExtra(SEARCH_MODE)} to get the search mode used
          * to launch the intent.
-         * The only current value for this is #MODE_GLOBAL_SEARCH_SUGGESTION.
-         *
-         * @sa android.content.Intent#getBundleExtra content.Intent.getBundleExtra(SEARCH_MODE)
-         * @sa #MODE_GLOBAL_SEARCH_SUGGESTION
+         * The only current value for this is {@link #MODE_GLOBAL_SEARCH_SUGGESTION}.
          *
          * @hide
          */
@@ -106,72 +100,55 @@ module
 
         /**
          * Intent extra data key: Use this key with Intent.ACTION_SEARCH and
-         * android.content.Intent#getIntExtra content.Intent.getIntExtra()
+         * {@link android.content.Intent#getIntExtra content.Intent.getIntExtra()}
          * to obtain the keycode that the user used to trigger this query.  It will be zero if the
          * user simply pressed the "GO" button on the search UI.  This is primarily used in conjunction
          * with the keycode attribute in the actionkey element of your searchable.xml configuration
          * file.
-         *
-         * @sa android.content.Intent#getIntExtra content.Intent.getIntExtra()
          */
         const String ACTION_KEY = "action_key";
 
         /**
          * Intent extra data key: This key will be used for the extra populated by the
-         * #SUGGEST_COLUMN_INTENT_EXTRA_DATA column.
-         *
-         * @sa #SUGGEST_COLUMN_INTENT_EXTRA_DATA
+         * {@link #SUGGEST_COLUMN_INTENT_EXTRA_DATA} column.
          */
         const String EXTRA_DATA_KEY = "intent_extra_data_key";
 
         /**
-         * Boolean extra data key for #INTENT_ACTION_GLOBAL_SEARCH intents. If {true},
+         * Boolean extra data key for {@link #INTENT_ACTION_GLOBAL_SEARCH} intents. If {@code true},
          * the initial query should be selected when the global search activity is started, so
          * that the user can easily replace it with another query.
-         *
-         * @sa #INTENT_ACTION_GLOBAL_SEARCH
          */
         const String EXTRA_SELECT_QUERY = "select_query";
 
         /**
-         * Boolean extra data key for Intent#ACTION_WEB_SEARCH intents.  If {true},
+         * Boolean extra data key for {@link Intent#ACTION_WEB_SEARCH} intents.  If {@code true},
          * this search should open a new browser window, rather than using an existing one.
-         *
-         * @sa Intent#ACTION_WEB_SEARCH
          */
         const String EXTRA_NEW_SEARCH = "new_search";
 
         /**
-         * Extra data key for Intent#ACTION_WEB_SEARCH. If set, the value must be a
-         * PendingIntent. The search activity handling the Intent#ACTION_WEB_SEARCH
+         * Extra data key for {@link Intent#ACTION_WEB_SEARCH}. If set, the value must be a
+         * {@link PendingIntent}. The search activity handling the {@link Intent#ACTION_WEB_SEARCH}
          * intent will fill in and launch the pending intent. The data URI will be filled in with an
-         * http or https URI, and android.provider.Browser#EXTRA_HEADERS may be filled in.
-         *
-         * @sa Intent#ACTION_WEB_SEARCH
-         * @sa PendingIntent
-         * @sa Intent#ACTION_WEB_SEARCH
-         * @sa android.provider.Browser#EXTRA_HEADERS
+         * http or https URI, and {@link android.provider.Browser#EXTRA_HEADERS} may be filled in.
          */
         const String EXTRA_WEB_SEARCH_PENDINGINTENT = "web_search_pendingintent";
 
         /**
-         * Boolean extra data key for a suggestion provider to return in Cursor#getExtras to
+         * Boolean extra data key for a suggestion provider to return in {@link Cursor#getExtras} to
          * indicate that the search is not complete yet. This can be used by the search UI
          * to indicate that a search is in progress. The suggestion provider can return partial results
          * this way and send a change notification on the cursor when more results are available.
-         *
-         * @sa Cursor#getExtras
          */
         const String CURSOR_EXTRA_KEY_IN_PROGRESS = "in_progress";
 
         /**
          * Intent extra data key: Use this key with Intent.ACTION_SEARCH and
-         * android.content.Intent#getStringExtra content.Intent.getStringExtra()
+         * {@link android.content.Intent#getStringExtra content.Intent.getStringExtra()}
          * to obtain the action message that was defined for a particular search action key and/or
          * suggestion.  It will be null if the search was launched by typing "enter", touched the the
          * "GO" button, or other means not involving any action key.
-         *
-         * @sa android.content.Intent#getStringExtra content.Intent.getStringExtra()
          */
         const String ACTION_MSG = "action_msg";
 
@@ -179,9 +156,7 @@ module
          * Flag to specify that the entry can be used for query refinement, i.e., the query text
          * in the search field can be replaced with the text in this entry, when a query refinement
          * icon is clicked. The suggestion list should show such a clickable icon beside the entry.
-         * <p>Use this flag as a bit-field for #SUGGEST_COLUMN_FLAGS.
-         *
-         * @sa #SUGGEST_COLUMN_FLAGS
+         * <p>Use this flag as a bit-field for {@link #SUGGEST_COLUMN_FLAGS}.
          */
         const Int32 FLAG_QUERY_REFINEMENT = 1 << 0;
 
@@ -221,13 +196,11 @@ module
          * Column name for suggestions cursor.  <i>Unused - can be null or column can be omitted.</i>
          */
         const String SUGGEST_COLUMN_FORMAT = "suggest_format";
-
         /**
          * Column name for suggestions cursor.  <i>Required.</i>  This is the primary line of text that
          * will be presented to the user as the suggestion.
          */
         const String SUGGEST_COLUMN_TEXT_1 = "suggest_text_1";
-
         /**
          * Column name for suggestions cursor.  <i>Optional.</i>  If your cursor includes this column,
          *  then all suggestions will be provided in a two-line format.  The second line of text is in
@@ -237,12 +210,10 @@ module
 
         /**
          * Column name for suggestions cursor.  <i>Optional.</i> This is a URL that will be shown
-         * as the second line of text instead of #SUGGEST_COLUMN_TEXT_2. This is a separate
+         * as the second line of text instead of {@link #SUGGEST_COLUMN_TEXT_2}. This is a separate
          * column so that the search UI knows to display the text as a URL, e.g. by using a different
-         * color. If this column is absent, or has the value {null},
-         * #SUGGEST_COLUMN_TEXT_2 will be used instead.
-         *
-         * @sa #SUGGEST_COLUMN_TEXT_2
+         * color. If this column is absent, or has the value {@code null},
+         * {@link #SUGGEST_COLUMN_TEXT_2} will be used instead.
          */
         const String SUGGEST_COLUMN_TEXT_2_URL = "suggest_text_2_url";
 
@@ -253,19 +224,13 @@ module
          *  be a resource ID of a drawable, or a URI in one of the following formats:
          *
          * <ul>
-         * <li>content (android.content.ContentResolver#SCHEME_CONTENT)</li>
-         * <li>android.resource (android.content.ContentResolver#SCHEME_ANDROID_RESOURCE)</li>
-         * <li>file (android.content.ContentResolver#SCHEME_FILE)</li>
-         *
-         * @sa android.content.ContentResolver#SCHEME_CONTENT
-         * @sa android.content.ContentResolver#SCHEME_ANDROID_RESOURCE
-         * @sa android.content.ContentResolver#SCHEME_FILE
+         * <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})</li>
+         * <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})</li>
+         * <li>file ({@link android.content.ContentResolver#SCHEME_FILE})</li>
          * </ul>
          *
-         * See android.content.ContentResolver#openAssetFileDescriptor(Uri, String)
+         * See {@link android.content.ContentResolver#openAssetFileDescriptor(Uri, String)}
          * for more information on these schemes.
-         *
-         * @sa android.content.ContentResolver#openAssetFileDescriptor(Uri, String)
          */
         const String SUGGEST_COLUMN_ICON_1 = "suggest_icon_1";
 
@@ -276,21 +241,32 @@ module
          *  be a resource ID of a drawable, or a URI in one of the following formats:
          *
          * <ul>
-         * <li>content (android.content.ContentResolver#SCHEME_CONTENT)</li>
-         * <li>android.resource (android.content.ContentResolver#SCHEME_ANDROID_RESOURCE)</li>
-         * <li>file ({android.content.ContentResolver#SCHEME_FILE)</li>
+         * <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})</li>
+         * <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})</li>
+         * <li>file ({@link android.content.ContentResolver#SCHEME_FILE})</li>
          * </ul>
          *
-         * @sa android.content.ContentResolver#SCHEME_CONTENT
-         * @sa android.content.ContentResolver#SCHEME_ANDROID_RESOURCE
-         * @sa android.content.ContentResolver#SCHEME_FILE
-         *
-         * See android.content.ContentResolver#openAssetFileDescriptor(Uri, String)
+         * See {@link android.content.ContentResolver#openAssetFileDescriptor(Uri, String)}
          * for more information on these schemes.
-         *
-         * @sa android.content.ContentResolver#openAssetFileDescriptor(Uri, String)
          */
         const String SUGGEST_COLUMN_ICON_2 = "suggest_icon_2";
+
+        /**
+         * Column name for suggestions cursor.  <i>Optional.</i>  If your cursor includes this column,
+         * then the image will be displayed when forming the suggestion. The suggested dimension for
+         * the image is 270x400 px for portrait mode and 400x225 px for landscape mode. The data in the
+         * column must be a resource ID of a drawable, or a URI in one of the following formats:
+         *
+         * <ul>
+         * <li>content ({@link android.content.ContentResolver#SCHEME_CONTENT})</li>
+         * <li>android.resource ({@link android.content.ContentResolver#SCHEME_ANDROID_RESOURCE})</li>
+         * <li>file ({@link android.content.ContentResolver#SCHEME_FILE})</li>
+         * </ul>
+         *
+         * See {@link android.content.ContentResolver#openAssetFileDescriptor(Uri, String)}
+         * for more information on these schemes.
+         */
+        const String SUGGEST_COLUMN_RESULT_CARD_IMAGE = "suggest_result_card_image";
 
         /**
          * Column name for suggestions cursor.  <i>Optional.</i>  If this column exists <i>and</i>
@@ -319,9 +295,7 @@ module
          * this element exists at the given row, this is the data that will be used when
          * forming the suggestion's intent. If not provided, the Intent's extra data field will be null.
          * This column allows suggestions to provide additional arbitrary data which will be included as
-         * an extra under the key #EXTRA_DATA_KEY.
-         *
-         * @sa #EXTRA_DATA_KEY
+         * an extra under the key {@link #EXTRA_DATA_KEY}.
          */
         const String SUGGEST_COLUMN_INTENT_EXTRA_DATA = "suggest_intent_extra_data";
 
@@ -335,11 +309,9 @@ module
 
         /**
          * Column name for suggestions cursor.  <i>Required if action is
-         * android.content.Intent#ACTION_SEARCH ACTION_SEARCH, optional otherwise.</i>  If this
+         * {@link android.content.Intent#ACTION_SEARCH ACTION_SEARCH}, optional otherwise.</i>  If this
          * column exists <i>and</i> this element exists at the given row, this is the data that will be
          * used when forming the suggestion's query.
-         *
-         * @sa android.content.Intent#ACTION_SEARCH ACTION_SEARCH
          */
         const String SUGGEST_COLUMN_QUERY = "suggest_intent_query";
 
@@ -347,12 +319,9 @@ module
          * Column name for suggestions cursor. <i>Optional.</i>  This column is used to indicate whether
          * a search suggestion should be stored as a shortcut, and whether it should be refreshed.  If
          * missing, the result will be stored as a shortcut and never validated.  If set to
-         * #SUGGEST_NEVER_MAKE_SHORTCUT, the result will not be stored as a shortcut.
+         * {@link #SUGGEST_NEVER_MAKE_SHORTCUT}, the result will not be stored as a shortcut.
          * Otherwise, the shortcut id will be used to check back for an up to date suggestion using
-         * #SUGGEST_URI_PATH_SHORTCUT.
-         *
-         * @sa #SUGGEST_NEVER_MAKE_SHORTCUT
-         * @sa #SUGGEST_URI_PATH_SHORTCUT
+         * {@link #SUGGEST_URI_PATH_SHORTCUT}.
          */
         const String SUGGEST_COLUMN_SHORTCUT_ID = "suggest_shortcut_id";
 
@@ -365,32 +334,109 @@ module
                 "suggest_spinner_while_refreshing";
 
         /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is media type, you
+         * should provide this column so search app could understand more about your content. The data
+         * in the column must specify the MIME type of the content.
+         */
+        const String SUGGEST_COLUMN_CONTENT_TYPE = "suggest_content_type";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is media type, you
+         * should provide this column to specify whether your content is live media such as live video
+         * or live audio. The value in the column is of integer type with value of either 0 indicating
+         * non-live content or 1 indicating live content.
+         */
+        const String SUGGEST_COLUMN_IS_LIVE = "suggest_is_live";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is video, you should
+         * provide this column to specify the number of vertical lines. The data in the column is of
+         * integer type.
+         */
+        const String SUGGEST_COLUMN_VIDEO_WIDTH = "suggest_video_width";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is video, you should
+         * provide this column to specify the number of horizontal lines. The data in the column is of
+         * integer type.
+         */
+        const String SUGGEST_COLUMN_VIDEO_HEIGHT = "suggest_video_height";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content contains audio, you
+         * should provide this column to specify the audio channel configuration. The data in the
+         * column is string with format like "channels.subchannels" such as "1.0" or "5.1".
+         */
+        const String SUGGEST_COLUMN_AUDIO_CHANNEL_CONFIG = "suggest_audio_channel_config";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is purchasable, you
+         * should provide this column to specify the displayable string representation of the purchase
+         * price of your content including the currency and the amount. If it's free, you should
+         * provide localized string to specify that it's free. This column can be omitted if the content
+         * is not applicable to purchase.
+         */
+        const String SUGGEST_COLUMN_PURCHASE_PRICE = "suggest_purchase_price";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is rentable, you
+         * should provide this column to specify the displayable string representation of the rental
+         * price of your content including the currency and the amount. If it's free, you should
+         * provide localized string to specify that it's free. This column can be ommitted if the
+         * content is not applicable to rent.
+         */
+        const String SUGGEST_COLUMN_RENTAL_PRICE = "suggest_rental_price";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content has a rating, you
+         * should provide this column to specify the rating style of your content. The data in the
+         * column must be one of the constant values specified in {@link android.media.Rating}
+         */
+        const String SUGGEST_COLUMN_RATING_STYLE = "suggest_rating_style";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content has a rating, you
+         * should provide this column to specify the rating score of your content. The data in the
+         * column is of float type. See {@link android.media.Rating} about valid rating scores for each
+         * rating style.
+         */
+        const String SUGGEST_COLUMN_RATING_SCORE = "suggest_rating_score";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is video or audio and
+         * has a known production year, you should provide this column to specify the production year
+         * of your content. The data in the column is of integer type.
+         */
+        const String SUGGEST_COLUMN_PRODUCTION_YEAR = "suggest_production_year";
+
+        /**
+         * Column name for suggestions cursor. <i>Optional.</i>  If your content is video or audio, you
+         * should provide this column to specify the duration of your content in milliseconds. The data
+         * in the column is of long type.
+         */
+        const String SUGGEST_COLUMN_DURATION = "suggest_duration";
+
+        /**
          * Column name for suggestions cursor. <i>Optional.</i> This column is used to specify
          * additional flags per item. Multiple flags can be specified.
          * <p>
-         * Must be one of #FLAG_QUERY_REFINEMENT or 0 to indicate no flags.
-         *
-         * @sa #FLAG_QUERY_REFINEMENT
+         * Must be one of {@link #FLAG_QUERY_REFINEMENT} or 0 to indicate no flags.
          * </p>
          */
         const String SUGGEST_COLUMN_FLAGS = "suggest_flags";
 
         /**
          * Column name for suggestions cursor. <i>Optional.</i> This column may be
-         * used to specify the time in System#currentTimeMillis
-         * System.currentTImeMillis() (wall time in UTC) when an item was last
+         * used to specify the time in {@link System#currentTimeMillis
+         * System.currentTImeMillis()} (wall time in UTC) when an item was last
          * accessed within the results-providing application. If set, this may be
          * used to show more-recently-used items first.
-         *
-         * @sa System#currentTimeMillis System.currentTImeMillis()
          */
         const String SUGGEST_COLUMN_LAST_ACCESS_HINT = "suggest_last_access_hint";
 
         /**
-         * Column value for suggestion column #SUGGEST_COLUMN_SHORTCUT_ID when a suggestion
+         * Column value for suggestion column {@link #SUGGEST_COLUMN_SHORTCUT_ID} when a suggestion
          * should not be stored as a shortcut in global search.
-         *
-         * @sa #SUGGEST_COLUMN_SHORTCUT_ID
          */
         const String SUGGEST_NEVER_MAKE_SHORTCUT = "_-1";
 
@@ -404,11 +450,9 @@ module
          * Intent action for starting the global search activity.
          * The global search provider should handle this intent.
          *
-         * Supported extra data keys: #QUERY,#EXTRA_SELECT_QUERY,#APP_DATA.
-         *
-         * @sa #QUERY
-         * @sa #EXTRA_SELECT_QUERY
-         * @sa #APP_DATA
+         * Supported extra data keys: {@link #QUERY},
+         * {@link #EXTRA_SELECT_QUERY},
+         * {@link #APP_DATA}.
          */
         const String INTENT_ACTION_GLOBAL_SEARCH
                 = "android.search.action.GLOBAL_SEARCH";
@@ -543,7 +587,7 @@ module
          * @hide
          */
         GetGlobalSearchActivities(
-            [out] IObjectContainer** apps);
+            [out] IList** apps);
 
         /**
          * Gets the name of the global search activity.
@@ -678,7 +722,7 @@ module
          *         in their searchable meta-data.
          */
         GetSearchablesInGlobalSearch(
-            [out] IObjectContainer** info);
+            [out] IList** info);
 
         /**
          * Gets an intent for launching installed assistant activity, or null if not available.
@@ -700,6 +744,15 @@ module
             [in] IContext* ctx,
             [in] Int32 userHandle,
             [out] IIntent** intent);
+
+        /**
+         * Launch an assist action for the current top activity.
+         * @hide
+         */
+        LaunchAssistAction(
+            [in] Int32 requestType,
+            [in] String hint,
+            [in] Int32 userHandle);
     }
 
     /**
