@@ -1,0 +1,40 @@
+
+module
+{
+    using interface Elastos.Utility.IList;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    namespace Utils {
+
+    /**
+     * Super type token; allows capturing generic types at runtime by forcing them to be reified.
+     *
+     * <p>Usage example: <pre>{@code
+     *      // using anonymous classes (preferred)
+     *      TypeReference&lt;Integer> intToken = new TypeReference&lt;Integer>() {{ }};
+     *
+     *      // using named classes
+     *      class IntTypeReference extends TypeReference&lt;Integer> {...}
+     *      TypeReference&lt;Integer> intToken = new IntTypeReference();
+     * }</p></pre>
+     *
+     * <p>Unlike the reference implementation, this bans nested TypeVariables; that is all
+     * dynamic types must equal to the static types.</p>
+     *
+     * <p>See <a href="http://gafter.blogspot.com/2007/05/limitation-of-super-type-tokens.html">
+     * http://gafter.blogspot.com/2007/05/limitation-of-super-type-tokens.html</a>
+     * for more details.</p>
+     */
+    interface ITypeReference {
+
+    }
+
+    } // namespace Utils
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}
