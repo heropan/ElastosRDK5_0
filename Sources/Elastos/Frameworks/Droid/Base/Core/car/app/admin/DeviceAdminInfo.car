@@ -1,6 +1,7 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
+    using interface Elastos.Utility.IArrayList;
     using interface Org.Xmlpull.V1.IXmlPullParser;
     using interface Org.Xmlpull.V1.IXmlSerializer;
 
@@ -18,8 +19,28 @@ module
     /**
      * This class is used to specify meta information of a device administrator component.
      */
-
+    /**
+     * @Invovle
+     * interface IParcelable
+     */
+    [local]
     interface IDeviceAdminInfo {
+        /**
+         * A type of policy that this device admin can use: device owner meta-policy
+         * for an admin that is designated as owner of the device.
+         *
+         * @hide
+         */
+        const Int32 USES_POLICY_DEVICE_OWNER = -2;
+
+        /**
+         * A type of policy that this device admin can use: profile owner meta-policy
+         * for admins that have been installed as owner of some user profile.
+         *
+         * @hide
+         */
+        const Int32 USES_POLICY_PROFILE_OWNER = -1;
+
         /**
          * A type of policy that this device admin can use: limit the passwords
          * that the user can select, via DevicePolicyManager#setPasswordQuality
@@ -134,27 +155,21 @@ module
             [in] IPrinter* pw,
             [in] String prefix);
 
-        GetActivityInfo(
-            [out] IActivityInfo** info);
-
-        GetComponent(
-            [out] IComponentName** name);
-
         GetPackageName(
             [out] String* name);
 
         GetReceiverName(
             [out] String* name);
 
-        GetTagForPolicy(
-            [in] Int32 policyIdent,
-            [out] String* tag);
+        GetActivityInfo(
+            [out] IActivityInfo** info);
 
-        GetUsedPolicies(
-            [out] IObjectContainer** policies);
+        GetComponent(
+            [out] IComponentName** name);
 
-        IsVisible(
-            [out] Boolean* visible);
+        LoadLabel(
+            [in] IPackageManager* pm,
+            [out] ICharSequence** label);
 
         LoadDescription(
             [in] IPackageManager* pm,
@@ -164,19 +179,22 @@ module
             [in] IPackageManager* pm,
             [out] IDrawable** icon);
 
-        LoadLabel(
-            [in] IPackageManager* pm,
-            [out] ICharSequence** label);
-
-        ReadPoliciesFromXml(
-            [in] IXmlPullParser* parser);
-
-        ToString(
-            [out] String* string);
+        IsVisible(
+            [out] Boolean* visible);
 
         UsesPolicy(
             [in] Int32 policyIdent,
             [out] Boolean* result);
+
+        GetTagForPolicy(
+            [in] Int32 policyIdent,
+            [out] String* tag);
+
+        GetUsedPolicies(
+            [out] IArrayList** policies);
+
+        ReadPoliciesFromXml(
+            [in] IXmlPullParser* parser);
 
         WritePoliciesToXml(
             [in] IXmlSerializer* dest);

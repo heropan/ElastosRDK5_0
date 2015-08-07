@@ -2,13 +2,8 @@ module
 {
     using interface Elastos.IO.IFile;
 
-    interface Elastos.Droid.View.IActionMode;
-    interface Elastos.Droid.View.IActionModeCallback;
-    interface Elastos.Droid.Content.Res.IConfiguration;
-
     namespace Elastos {
     namespace Droid {
-    namespace Internal {
     namespace App {
 
     /**
@@ -27,7 +22,6 @@ module
     }
 
     } // namespace App
-    } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
 }

@@ -10,10 +10,6 @@ module
     namespace Droid {
     namespace App {
 
-        interface IActivityManagerStackInfo {}
-
-        interface IContextImpl {}
-
         namespace Backup {
             interface IIBackupManager {}
         }

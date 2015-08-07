@@ -95,10 +95,10 @@ module
     // merge("app/IMediaContainerService.car");
     // merge("app/BackStackState.car");
 
-    // merge("app/admin/DeviceAdminInfo.car");
-    // merge("app/admin/DeviceAdminReceiver.car");
-    // merge("app/admin/DevicePolicyManager.car");
-    // merge("app/admin/IDevicePolicyManager.car");
+    merge("app/admin/DeviceAdminInfo.car");
+    merge("app/admin/DeviceAdminReceiver.car");
+    merge("app/admin/DevicePolicyManager.car");
+    merge("app/admin/IDevicePolicyManager.car");
 
     // merge("app/backup/BackupAgent.car");
     // merge("app/backup/BackupAgentHelper.car");

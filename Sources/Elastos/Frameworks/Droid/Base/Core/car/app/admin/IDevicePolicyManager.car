@@ -1,6 +1,14 @@
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Os.IRemoteCallback;
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IProxyInfo;
+    interface Elastos.Droid.Content.IIntentFilter;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IComponentName;
 
     namespace Elastos {
@@ -178,6 +186,10 @@ module
             [in] Int32 userHandle,
             [out] IComponentName** component);
 
+        SetRecommendedGlobalProxy(
+            [in] IComponentName* admin,
+            [in] IProxyInfo* proxyInfo);
+
         SetStorageEncryption(
             [in] IComponentName* who,
             [in] Boolean encrypt,
@@ -203,6 +215,16 @@ module
             [in] Int32 userHandle,
             [out] Boolean* result);
 
+        SetScreenCaptureDisabled(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [in] Boolean disabled);
+
+        GetScreenCaptureDisabled(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [out] Int32* result);
+
         SetKeyguardDisabledFeatures(
             [in] IComponentName* who,
             [in] Int32 which,
@@ -225,7 +247,7 @@ module
 
         GetActiveAdmins(
             [in] Int32 userHandle,
-            [out] IObjectContainer** admins);
+            [out] IList** admins);
 
         PackageHasActiveAdmins(
             [in] String packageName,
@@ -263,6 +285,279 @@ module
 
         ReportSuccessfulPasswordAttempt(
             [in] Int32 userHandle);
+
+        SetDeviceOwner(
+            [in] String packageName,
+            [in] String ownerName,
+            [out] Boolean* result);
+
+        IsDeviceOwner(
+            [in] String packageName,
+            [out] Boolean* result);
+
+        GetDeviceOwner(
+            [out] String* result);
+
+        GetDeviceOwnerName(
+            [out] String* result);
+
+        ClearDeviceOwner(
+            [in] String packageName);
+
+        SetProfileOwner(
+            [in] IComponentName* who,
+            [in] String ownerName,
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        GetProfileOwner(
+            [in] Int32 userHandle,
+            [out] IComponentName** name);
+
+        GetProfileOwnerName(
+            [in] Int32 userHandle,
+            [out] String* str);
+
+        SetProfileEnabled(
+            [in] IComponentName* who);
+
+        SetProfileName(
+            [in] IComponentName* who,
+            [in] String profileName);
+
+        ClearProfileOwner(
+            [in] IComponentName* who);
+
+        HasUserSetupCompleted(
+            [out] Boolean* result);
+
+        InstallCaCert(
+            [in] IComponentName* admin,
+            [in] ArrayOf<Byte>* certBuffer,
+            [out] Boolean* result);
+
+        UninstallCaCert(
+            [in] IComponentName* admin,
+            [in] String alias);
+
+        EnforceCanManageCaCerts(
+            [in] IComponentName* admin);
+
+        InstallKeyPair(
+            [in] IComponentName* who,
+            [in] ArrayOf<Byte>* privKeyBuffer,
+            [in] ArrayOf<Byte>* certBuffer,
+            [in] String alias,
+            [out] Boolean* result);
+
+        AddPersistentPreferredActivity(
+            [in] IComponentName* admin,
+            [in] IIntentFilter* filter,
+            [in] IComponentName* activity);
+
+        ClearPackagePersistentPreferredActivities(
+            [in] IComponentName* admin,
+            [in] String packageName);
+
+        SetApplicationRestrictions(
+            [in] IComponentName* who,
+            [in] String packageName,
+            [in] IBundle* settings);
+
+        GetApplicationRestrictions(
+            [in] IComponentName* who,
+            [in] String packageName,
+            [out] IBundle** bundle);
+
+        SetRestrictionsProvider(
+            [in] IComponentName* who,
+            [in] IComponentName* provider);
+
+        GetRestrictionsProvider(
+            [in] Int32 userHandle,
+            [out] IComponentName** name);
+
+        SetUserRestriction(
+            [in] IComponentName* who,
+            [in] String key,
+            [in] Boolean value);
+
+        AddCrossProfileIntentFilter(
+            [in] IComponentName* admin,
+            [in] IIntentFilter* filter,
+            [in] Int32 flags);
+
+        ClearCrossProfileIntentFilters(
+            [in] IComponentName* admin);
+
+        SetPermittedAccessibilityServices(
+            [in] IComponentName* admin,
+            [in] IList* packageList);
+
+        GetPermittedAccessibilityServices(
+            [in] IComponentName* admin,
+            [out] IList** result);
+
+        GetPermittedAccessibilityServicesForUser(
+            [in] Int32 userId,
+            [out] IList** result);
+
+        SetPermittedInputMethods(
+            [in] IComponentName* admin,
+            [in] IList* packageList,
+            [out] Boolean* result);
+
+        GetPermittedInputMethods(
+            [in] IComponentName* admin,
+            [out] IList** list);
+
+        GetPermittedInputMethodsForCurrentUser(
+            [out] IList** result);
+
+        SetApplicationHidden(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [in] Boolean bval,
+            [out] Boolean* result);
+
+        IsApplicationHidden(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        CreateUser(
+            [in] IComponentName* who,
+            [in] String name,
+            [out] IUserHandle** result);
+
+        CreateAndInitializeUser(
+            [in] IComponentName* who,
+            [in] String name,
+            [in] String profileOwnerName,
+            [in] IComponentName* profileOwnerComponent,
+            [in] IBundle* adminExtras,
+            [out] IUserHandle** result);
+
+        RemoveUser(
+            [in] IComponentName* who,
+            [in] IUserHandle* userHandle,
+            [out] Boolean* result);
+
+        SwitchUser(
+            [in] IComponentName* who,
+            [in] IUserHandle* userHandle,
+            [out] Boolean* result);
+
+        EnableSystemApp(
+            [in] IComponentName* admin,
+            [in] String packageName);
+
+        EnableSystemAppWithIntent(
+            [in] IComponentName* admin,
+            [in] IIntent* intent,
+            [out] Int32* result);
+
+        SetAccountManagementDisabled(
+            [in] IComponentName* who,
+            [in] String accountType,
+            [in] Boolean disabled);
+
+        GetAccountTypesWithManagementDisabled(
+            [out, callee] ArrayOf<String>* result);
+
+        GetAccountTypesWithManagementDisabledAsUser(
+            [in] Int32 userId,
+            [out, callee] ArrayOf<String>* result);
+
+        SetLockTaskPackages(
+            [in] IComponentName* who,
+            [in] ArrayOf<String>* packages);
+
+        GetLockTaskPackages(
+            [in] IComponentName* who,
+            [out, callee] ArrayOf<String>* result);
+
+        IsLockTaskPermitted(
+            [in] String pkg,
+            [out] Boolean* result);
+
+        SetGlobalSetting(
+            [in] IComponentName* who,
+            [in] String setting,
+            [in] String value);
+
+        SetSecureSetting(
+            [in] IComponentName* who,
+            [in] String setting,
+            [in] String value);
+
+        SetMasterVolumeMuted(
+            [in] IComponentName* admin,
+            [in] Boolean on);
+        IsMasterVolumeMuted(
+            [in] IComponentName* admin,
+            [out] Boolean* result);
+
+        NotifyLockTaskModeChanged(
+            [in] Boolean isEnabled,
+            [in] String pkg,
+            [in] Int32 userId);
+
+        SetUninstallBlocked(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [in] Boolean uninstallBlocked);
+
+        IsUninstallBlocked(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        SetCrossProfileCallerIdDisabled(
+            [in] IComponentName* who,
+            [in] Boolean disabled);
+
+        GetCrossProfileCallerIdDisabled(
+            [in] IComponentName* who,
+            [out] Boolean* result);
+
+        GetCrossProfileCallerIdDisabledForUser(
+            [in] Int32 userId,
+            [out] Boolean* result);
+
+        SetTrustAgentFeaturesEnabled(
+            [in] IComponentName* admin,
+            [in] IComponentName* agent,
+            [in] IList* features,
+            [in] Int32 userId);
+
+        GetTrustAgentFeaturesEnabled(
+            [in] IComponentName* admin,
+            [in] IComponentName* agent,
+            [in] Int32 userId,
+            [out] IList** list);
+
+        AddCrossProfileWidgetProvider(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        RemoveCrossProfileWidgetProvider(
+            [in] IComponentName* admin,
+            [in] String packageName,
+            [out] Boolean* result);
+
+        GetCrossProfileWidgetProviders(
+            [in] IComponentName* admin,
+            [out] IList** result);
+
+        SetAutoTimeRequired(
+            [in] IComponentName* who,
+            [in] Int32 userHandle,
+            [in] Boolean required);
+
+        GetAutoTimeRequired(
+            [out] Boolean* result);
     }
 
     } // namespace Admin

@@ -81,31 +81,30 @@ module
      */
     [local]
     interface IDeviceAdminReceiver {
+
         /**
          * This is the primary action that a device administrator must implement to be
          * allowed to manage a device.  This will be set to the receiver
          * when the user enables it for administration.  You will generally
-         * handle this in DeviceAdminReceiver#onEnabled(Context, Intent).  To be
+         * handle this in {@link DeviceAdminReceiver#onEnabled(Context, Intent)}.  To be
          * supported, the receiver must also require the
-         * android.Manifest.permission#BIND_DEVICE_ADMIN permission so
+         * {@link android.Manifest.permission#BIND_DEVICE_ADMIN} permission so
          * that other applications can not abuse it.
-         *
-         * @sa DeviceAdminReceiver#onEnabled(Context, Intent)
-         * @sa rmission#BIND_DEVICE_ADMIN
          */
-        const String ACTION_DEVICE_ADMIN_ENABLED = "android.app.action.DEVICE_ADMIN_ENABLED";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_DEVICE_ADMIN_ENABLED
+                = "android.app.action.DEVICE_ADMIN_ENABLED";
 
         /**
          * Action sent to a device administrator when the user has requested to
          * disable it, but before this has actually been done.  This gives you
          * a chance to supply a message to the user about the impact of
          * disabling your admin, by setting the extra field
-         * #EXTRA_DISABLE_WARNING in the result Intent.  If not set,
+         * {@link #EXTRA_DISABLE_WARNING} in the result Intent.  If not set,
          * no warning will be displayed.  If set, the given text will be shown
          * to the user before they disable your admin.
-         *
-         * @sa #EXTRA_DISABLE_WARNING
          */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
         const String ACTION_DEVICE_ADMIN_DISABLE_REQUESTED
                 = "android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED";
 
@@ -121,77 +120,128 @@ module
          * Action sent to a device administrator when the user has disabled
          * it.  Upon return, the application no longer has access to the
          * protected device policy manager APIs.  You will generally
-         * handle this in DeviceAdminReceiver#onDisabled(Context, Intent).  Note
+         * handle this in {@link DeviceAdminReceiver#onDisabled(Context, Intent)}.  Note
          * that this action will be
          * sent the receiver regardless of whether it is explicitly listed in
          * its intent filter.
-         *
-         * @sa DeviceAdminReceiver#onDisabled(Context, Intent)
          */
-        const String ACTION_DEVICE_ADMIN_DISABLED = "android.app.action.DEVICE_ADMIN_DISABLED";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_DEVICE_ADMIN_DISABLED
+                = "android.app.action.DEVICE_ADMIN_DISABLED";
 
         /**
          * Action sent to a device administrator when the user has changed the
          * password of their device.  You can at this point check the characteristics
-         * of the new password with DevicePolicyManager#isActivePasswordSufficient()
-         * DevicePolicyManager.isActivePasswordSufficient().
+         * of the new password with {@link DevicePolicyManager#isActivePasswordSufficient()
+         * DevicePolicyManager.isActivePasswordSufficient()}.
          * You will generally
-         * handle this in DeviceAdminReceiver#onPasswordChanged.
-         *
-         * @sa DevicePolicyManager#isActivePasswordSufficient() DevicePolicyManager.isActivePasswordSufficient()
-         * @sa DeviceAdminReceiver#onPasswordChanged
+         * handle this in {@link DeviceAdminReceiver#onPasswordChanged}.
          *
          * <p>The calling device admin must have requested
-         * DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD to receive
+         * {@link DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD} to receive
          * this broadcast.
-         *
-         * @sa DeviceAdminInfo#USES_POLICY_LIMIT_PASSWORD
          */
-        const String ACTION_PASSWORD_CHANGED = "android.app.action.ACTION_PASSWORD_CHANGED";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_PASSWORD_CHANGED
+                = "android.app.action.ACTION_PASSWORD_CHANGED";
 
         /**
          * Action sent to a device administrator when the user has failed at
          * attempted to enter the password.  You can at this point check the
          * number of failed password attempts there have been with
-         * DevicePolicyManager#getCurrentFailedPasswordAttempts DevicePolicyManager.getCurrentFailedPasswordAttempts().  You will generally
-         * handle this in DeviceAdminReceiver#onPasswordFailed.
-         *
-         * @sa DevicePolicyManager#getCurrentFailedPasswordAttempts
-         * DevicePolicyManager.getCurrentFailedPasswordAttempts()
-         * @sa DeviceAdminReceiver#onPasswordFailed
+         * {@link DevicePolicyManager#getCurrentFailedPasswordAttempts
+         * DevicePolicyManager.getCurrentFailedPasswordAttempts()}.  You will generally
+         * handle this in {@link DeviceAdminReceiver#onPasswordFailed}.
          *
          * <p>The calling device admin must have requested
-         * DeviceAdminInfo#USES_POLICY_WATCH_LOGIN to receive
+         * {@link DeviceAdminInfo#USES_POLICY_WATCH_LOGIN} to receive
          * this broadcast.
-         *
-         * @sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN
-         *
          */
-        const String ACTION_PASSWORD_FAILED = "android.app.action.ACTION_PASSWORD_FAILED";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_PASSWORD_FAILED
+                = "android.app.action.ACTION_PASSWORD_FAILED";
 
         /**
          * Action sent to a device administrator when the user has successfully
          * entered their password, after failing one or more times.
          *
          * <p>The calling device admin must have requested
-         * DeviceAdminInfo#USES_POLICY_WATCH_LOGIN to receive
+         * {@link DeviceAdminInfo#USES_POLICY_WATCH_LOGIN} to receive
          * this broadcast.
-         *
-         * @sa DeviceAdminInfo#USES_POLICY_WATCH_LOGIN
          */
-        const String ACTION_PASSWORD_SUCCEEDED = "android.app.action.ACTION_PASSWORD_SUCCEEDED";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_PASSWORD_SUCCEEDED
+                = "android.app.action.ACTION_PASSWORD_SUCCEEDED";
 
         /**
          * Action periodically sent to a device administrator when the device password
          * is expiring.
          *
          * <p>The calling device admin must have requested
-         * DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD to receive
+         * {@link DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD} to receive
          * this broadcast.
-         *
-         * @sa DeviceAdminInfo#USES_POLICY_EXPIRE_PASSWORD
          */
-        const String ACTION_PASSWORD_EXPIRING = "android.app.action.ACTION_PASSWORD_EXPIRING";
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_PASSWORD_EXPIRING
+                = "android.app.action.ACTION_PASSWORD_EXPIRING";
+
+        /**
+         * Action sent to a device administrator to notify that the device is entering
+         * lock task mode from an authorized package.  The extra {@link #EXTRA_LOCK_TASK_PACKAGE}
+         * will describe the authorized package using lock task mode.
+         *
+         * @see DevicePolicyManager#isLockTaskPermitted(String)
+         *
+         * <p>The calling device admin must be the device owner or profile
+         * owner to receive this broadcast.
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_LOCK_TASK_ENTERING
+                = "android.app.action.LOCK_TASK_ENTERING";
+
+        /**
+         * Action sent to a device administrator to notify that the device is exiting
+         * lock task mode from an authorized package.
+         *
+         * @see DevicePolicyManager#isLockTaskPermitted(String)
+         *
+         * <p>The calling device admin must be the device owner or profile
+         * owner to receive this broadcast.
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_LOCK_TASK_EXITING
+                = "android.app.action.LOCK_TASK_EXITING";
+
+        /**
+         * A boolean describing whether the device is currently entering or exiting
+         * lock task mode.
+         *
+         * @see #ACTION_LOCK_TASK_CHANGED
+         */
+        const String EXTRA_LOCK_TASK_PACKAGE =
+                "android.app.extra.LOCK_TASK_PACKAGE";
+
+        /**
+         * Broadcast Action: This broadcast is sent to indicate that provisioning of a managed profile
+         * or managed device has completed successfully.
+         *
+         * <p>The broadcast is limited to the profile that will be managed by the application that
+         * requested provisioning. In the device owner case the profile is the primary user.
+         * The broadcast will also be limited to the {@link DeviceAdminReceiver} component
+         * specified in the original intent or NFC bump that started the provisioning process
+         * (@see DevicePolicyManager#ACTION_PROVISION_MANAGED_PROFILE).
+         *
+         * <p>A device admin application which listens to this intent can find out if the device was
+         * provisioned for the device owner or profile owner case by calling respectively
+         * {@link android.app.admin.DevicePolicyManager#isDeviceOwnerApp} and
+         * {@link android.app.admin.DevicePolicyManager#isProfileOwnerApp}.
+         *
+         * <p>Input: Nothing.</p>
+         * <p>Output: Nothing</p>
+         */
+        //@SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_PROFILE_PROVISIONING_COMPLETE =
+                "android.app.action.PROFILE_PROVISIONING_COMPLETE";
 
         /**
          * Name under which a DevicePolicy component publishes information
@@ -235,6 +285,56 @@ module
 
         OnPasswordExpiring(
             [in] IContext* ctx,
+            [in] IIntent* intent);
+
+        /**
+         * Called when provisioning of a managed profile or managed device has completed successfully.
+         *
+         * <p> As a prerequisit for the execution of this callback the (@link DeviceAdminReceiver} has
+         * to declare an intent filter for {@link #ACTION_PROFILE_PROVISIONING_COMPLETE}.
+         * Its component must also be specified in the {@link DevicePolicyManager#EXTRA_DEVICE_ADMIN}
+         * of the {@link DevicePolicyManager#ACTION_PROVISION_MANAGED_PROFILE} intent that started the
+         * managed provisioning.
+         *
+         * <p>When provisioning is complete, the managed profile is hidden until the profile owner
+         * calls {DevicePolicyManager#setProfileEnabled(ComponentName admin)}. Typically a profile
+         * owner will enable the profile when it has finished any additional setup such as adding an
+         * account by using the {@link AccountManager} and calling apis to bring the profile into the
+         * desired state.
+         *
+         * <p> Note that provisioning completes without waiting for any server interactions, so the
+         * profile owner needs to wait for data to be available if required (e.g android device ids or
+         * other data that is set as a result of server interactions).
+         *
+         * @param context The running context as per {@link #onReceive}.
+         * @param intent The received intent as per {@link #onReceive}.
+         */
+        OnProfileProvisioningComplete(
+            [in] IContext* context,
+            [in] IIntent* intent);
+
+        /**
+         * Called when a device is entering lock task mode by a package authorized
+         * by {@link DevicePolicyManager#isLockTaskPermitted(String)}
+         *
+         * @param context The running context as per {@link #onReceive}.
+         * @param intent The received intent as per {@link #onReceive}.
+         * @param pkg If entering, the authorized package using lock task mode, otherwise null.
+         */
+        OnLockTaskModeEntering(
+            [in] IContext* context,
+            [in] IIntent* intent,
+            [in] String pkg);
+
+        /**
+         * Called when a device is exiting lock task mode by a package authorized
+         * by {@link DevicePolicyManager#isLockTaskPermitted(String)}
+         *
+         * @param context The running context as per {@link #onReceive}.
+         * @param intent The received intent as per {@link #onReceive}.
+         */
+        OnLockTaskModeExiting(
+            [in] IContext* context,
             [in] IIntent* intent);
     }
 
