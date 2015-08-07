@@ -207,9 +207,11 @@ ECode ValueAnimator::GetInterfaceID(
     VALIDATE_NOT_NULL(iid);
     if (object == (IInterface*)(ValueAnimator *)this) {
         *iid = EIID_ValueAnimator;
+        return NOERROR;
     }
     else if (object == (IInterface*)(IValueAnimator *)this) {
         *iid = EIID_IValueAnimator;
+        return NOERROR;
     }
 
     return Animator::GetInterfaceID(object, iid);
@@ -448,9 +450,7 @@ ECode ValueAnimator::GetAnimatedValue(
     if (mValues != NULL && mValues->GetLength() > 0) {
         AutoPtr<IPropertyValuesHolder> holder = (*mValues)[0];
        PropertyValuesHolder* pvh = reinterpret_cast<PropertyValuesHolder*>(holder->Probe(EIID_PropertyValuesHolder));
-       *value = pvh->GetAnimatedValue();
-       REFCOUNT_ADD(*value);
-       return NOERROR;
+       return pvh->GetAnimatedValue(value);
     }
 
     // Shouldn't get here; should always have values unless ValueAnimator was set up wrong
@@ -483,9 +483,7 @@ ECode ValueAnimator::GetAnimatedValue(
     if (it != mValuesMap.End() && it->mSecond != NULL) {
        AutoPtr<IPropertyValuesHolder> valuesHolder = it->mSecond;
        PropertyValuesHolder* pvh = reinterpret_cast<PropertyValuesHolder*>(valuesHolder->Probe(EIID_PropertyValuesHolder));
-       *value = pvh->GetAnimatedValue();
-       REFCOUNT_ADD(*value);
-       return NOERROR;
+       return pvh->GetAnimatedValue(value);
     }
 
     // At least avoid crashing if called with bogus propertyName

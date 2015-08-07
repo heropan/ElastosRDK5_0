@@ -11,27 +11,27 @@ namespace Animation {
 //==============================================================================
 //                  Keyframe
 //==============================================================================
-IKEYFRAME_METHOD_IMPL(ObjectKeyframe, Keyframe)
-CAR_INTERFACE_IMPL_2(ObjectKeyframe, IObjectKeyframe, IKeyframe)
-IKEYFRAME_METHOD_IMPL(Int32Keyframe, Keyframe)
-CAR_INTERFACE_IMPL_2(Int32Keyframe, IInt32Keyframe, IKeyframe)
-IKEYFRAME_METHOD_IMPL(FloatKeyframe, Keyframe)
-CAR_INTERFACE_IMPL_2(FloatKeyframe, IFloatKeyframe, IKeyframe)
-
+CAR_INTERFACE_IMPL(Keyframe, Object, IKeyframe);
 Keyframe::Keyframe()
     : mFraction(0.0f)
     , mHasValue(FALSE)
 {
 }
 
-Boolean Keyframe::HasValue()
+ECode Keyframe::HasValue(
+    /* [out] */ Boolean* value)
 {
-    return mHasValue;
+    VALIDATE_NOT_NULL(value);
+    *value = mHasValue;
+    return NOERROR;
 }
 
-Float Keyframe::GetFraction()
+ECode Keyframe::GetFraction(
+    /* [out] */ Float* fraction)
 {
-    return mFraction;
+    VALIDATE_NOT_NULL(fraction);
+    *fraction = mFraction;
+    return NOERROR;
 }
 
 ECode Keyframe::SetFraction(
@@ -41,9 +41,13 @@ ECode Keyframe::SetFraction(
     return NOERROR;
 }
 
-AutoPtr<ITimeInterpolator> Keyframe::GetInterpolator()
+ECode Keyframe::GetInterpolator(
+    /* [out] */ ITimeInterpolator** interpolator)
 {
-    return mInterpolator;
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = mInterpolator;
+    REFCOUNT_ADD(*interpolator);
+    return NOERROR;
 }
 
 ECode Keyframe::SetInterpolator(
@@ -53,11 +57,13 @@ ECode Keyframe::SetInterpolator(
     return NOERROR;
 }
 
-ClassID Keyframe::GetType()
+ECode Keyframe::GetType(
+    /* [out] */ ClassID* id)
 {
-    return mValueType;
+    VALIDATE_NOT_NULL(id);
+    *id = mValueType;
+    return NOERROR;
 }
-
 
 /**
  * Constructs a Keyframe object with the given time and value. The time defines the
@@ -218,9 +224,13 @@ ObjectKeyframe::ObjectKeyframe(
     }
 }
 
-AutoPtr<IInterface> ObjectKeyframe::GetValue()
+ECode ObjectKeyframe::GetValue(
+    /* [out] */ IInterface** value)
 {
-    return mValue;
+    VALIDATE_NOT_NULL(value);
+    *value = mValue;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 ECode ObjectKeyframe::SetValue(
@@ -271,9 +281,13 @@ ECode Int32Keyframe::GetInt32Value(
     return NOERROR;
 }
 
-AutoPtr<IInterface> Int32Keyframe::GetValue()
+ECode Int32Keyframe::GetValue(
+    /* [out] */ IInterface** value)
 {
-    return mValue;
+    VALIDATE_NOT_NULL(value);
+    *value = mValue;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 ECode Int32Keyframe::SetValue(
@@ -335,9 +349,13 @@ ECode FloatKeyframe::GetFloatValue(
     return NOERROR;
 }
 
-AutoPtr<IInterface> FloatKeyframe::GetValue()
+ECode FloatKeyframe::GetValue(
+    /* [out] */ IInterface** value)
 {
-    return mValue;
+    VALIDATE_NOT_NULL(value);
+    *value = mValue;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 ECode FloatKeyframe::SetValue(

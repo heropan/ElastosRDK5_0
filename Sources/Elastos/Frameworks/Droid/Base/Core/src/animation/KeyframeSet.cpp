@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(KeyframeSet, IKeyframeSet)
+CAR_INTERFACE_IMPL(KeyframeSet, Object, IKeyframeSet)
 
 KeyframeSet::KeyframeSet(
     /* [in] */ ArrayOf<IKeyframe*>* keyframes)

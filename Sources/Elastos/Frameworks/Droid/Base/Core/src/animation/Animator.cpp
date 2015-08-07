@@ -17,9 +17,11 @@ ECode Animator::GetInterfaceID(
     VALIDATE_NOT_NULL(iid);
     if (object == (IInterface*)(Animator *)this) {
         *iid = EIID_Animator;
+        return NOERROR;
     }
     else if (object == (IInterface*)(ICloneable *)this) {
         *iid = EIID_ICloneable;
+        return NOERROR;
     }
 
     return Object::GetInterfaceID(object, iid);

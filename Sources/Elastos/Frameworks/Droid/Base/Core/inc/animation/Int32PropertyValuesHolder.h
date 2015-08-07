@@ -41,7 +41,8 @@ public:
     CARAPI CalculateValue(
         /* [in] */ Float fraction);
 
-    CARAPI_(AutoPtr<IInterface>) GetAnimatedValue();
+    virtual CARAPI GetAnimatedValue(
+        /* [out] */ IInterface** value);
 
     CARAPI Clone(
         /* [out] */ IPropertyValuesHolder** holder);

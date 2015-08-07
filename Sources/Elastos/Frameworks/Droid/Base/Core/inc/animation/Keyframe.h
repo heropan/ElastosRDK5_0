@@ -1,9 +1,8 @@
 
-#ifndef  __KEYFRAME_H__
-#define  __KEYFRAME_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_KEYFRAME_H__
+#define  __ELASTOS_DROID_ANIMATION_KEYFRAME_H__
 
 #include "ext/frameworkext.h"
-
 
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -33,9 +32,13 @@ namespace Animation {
  * of {@link TypeEvaluator}), you should stick to using float and int as animations using those
  * types have lower runtime overhead than other types.</p>
  */
-class Keyframe : public ElRefBase
+class Keyframe
+    : public Object
+    , public IKeyframe
 {
 public:
+    CAR_INTERFACE_DECL();
+
     Keyframe();
 
     /**
@@ -45,14 +48,16 @@ public:
      *
      * @return Boolean Whether this object has a value assigned.
      */
-    virtual CARAPI_(Boolean) HasValue();
+    virtual CARAPI HasValue(
+        /* [out] */ Boolean* value);
 
     /**
      * Gets the value for this Keyframe.
      *
      * @return The value for this Keyframe.
      */
-    virtual CARAPI_(AutoPtr<IInterface>) GetValue() = 0;
+    virtual CARAPI GetValue(
+        /* [out] */ IInterface** value) = 0;
 
     /**
      * Sets the value for this Keyframe.
@@ -68,7 +73,8 @@ public:
      * @return The time associated with this keyframe, as a fraction of the overall animation
      * duration. This should be a value between 0 and 1.
      */
-    virtual CARAPI_(Float) GetFraction();
+    virtual CARAPI GetFraction(
+        /* [out] */ Float* fraction);
 
     /**
      * Sets the time for this keyframe, as a fraction of the overall animation duration.
@@ -85,7 +91,8 @@ public:
      *
      * @return The optional interpolator for this Keyframe.
      */
-    virtual CARAPI_(AutoPtr<ITimeInterpolator>) GetInterpolator();
+    virtual CARAPI GetInterpolator(
+        /* [out] */ ITimeInterpolator** interpolator);
 
     /**
      * Sets the optional interpolator for this Keyframe. A value of <code>NULL</code> indicates
@@ -103,7 +110,8 @@ public:
      *
      * @return The type of the value stored in the Keyframe.
      */
-    virtual CARAPI_(ClassID) GetType();
+    virtual CARAPI GetType(
+        /* [out] */ ClassID* id);
 
     virtual CARAPI Clone(
         /* [out] */ IKeyframe** object) = 0;
@@ -256,7 +264,8 @@ public:
         /* [in] */ Float fraction,
         /* [in] */ IInterface* value);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetValue();
+    virtual CARAPI GetValue(
+        /* [out] */ IInterface** value);
 
     virtual CARAPI SetValue(
         /* [in] */ IInterface* value);
@@ -289,7 +298,8 @@ public:
         /* [in] */ Float fraction,
         /* [in] */ Int32 value);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetValue();
+    virtual CARAPI GetValue(
+        /* [out] */ IInterface** value);
 
     virtual CARAPI SetValue(
         /* [in] */ IInterface* value);
@@ -325,7 +335,8 @@ public:
         /* [in] */ Float fraction,
         /* [in] */ Float value);
 
-    virtual CARAPI_(AutoPtr<IInterface>) GetValue();
+    virtual CARAPI GetValue(
+        /* [out] */ IInterface** value);
 
     virtual CARAPI SetValue(
         /* [in] */ IInterface* value);
@@ -341,10 +352,10 @@ private:
      * The value of the animation at the time mFraction.
      */
     AutoPtr<IFloat> mValue;
-
 };
 
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos
-#endif  //__KEYFRAMEH__
+
+#endif  // __ELASTOS_DROID_ANIMATION_KEYFRAME_H__

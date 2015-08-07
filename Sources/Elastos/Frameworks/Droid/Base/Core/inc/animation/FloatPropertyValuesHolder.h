@@ -1,5 +1,6 @@
-#ifndef __FloatPropertyValuesHolder_H__
-#define __FloatPropertyValuesHolder_H__
+
+#ifndef __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__
+#define __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__
 
 #include "PropertyValuesHolder.h"
 
@@ -40,7 +41,8 @@ public:
     CARAPI CalculateValue(
         /* [in] */ Float fraction);
 
-    CARAPI_(AutoPtr<IInterface>) GetAnimatedValue();
+    virtual CARAPI GetAnimatedValue(
+        /* [out] */ IInterface** value);
 
     CARAPI Clone(
         /* [out] */ IPropertyValuesHolder** holder);
@@ -92,4 +94,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif
+#endif // __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__

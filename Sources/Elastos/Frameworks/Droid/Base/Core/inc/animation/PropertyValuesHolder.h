@@ -1,7 +1,6 @@
 
-#ifndef  __PROPERTYVALUESHOLDER_H__
-#define  __PROPERTYVALUESHOLDER_H__
-
+#ifndef  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
+#define  __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__
 
 #include "animation/Int32KeyframeSet.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -11,7 +10,6 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::Utility::IProperty;
 
-
 namespace Elastos {
 namespace Droid {
 namespace Animation {
@@ -19,12 +17,14 @@ namespace Animation {
 extern "C" const InterfaceID EIID_PropertyValuesHolder;
 
 class PropertyValuesHolder
+    : public Object
+    , public IPropertyValuesHolder
 {
 public:
     typedef HashMap< String, AutoPtr<IMethodInfo> > MethodMap;
     typedef HashMap< AutoPtr<IClassInfo>, AutoPtr<PropertyValuesHolder::MethodMap > > ClassMethodMap;
 
-    PropertyValuesHolder();
+    CAR_INTERFACE_DECL();
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
@@ -333,7 +333,8 @@ public:
      * most recently calculated in calculateValue().
      * @return
      */
-    virtual CARAPI_(AutoPtr<IInterface>) GetAnimatedValue();
+    virtual CARAPI GetAnimatedValue(
+        /* [out] */ IInterface** value);
 
     //TODO
     // @Override
@@ -363,14 +364,14 @@ protected:
      * Internal utility constructor, used by the factory methods to set the property name.
      * @param propertyName The name of the property for this holder.
      */
-    CARAPI InitProperty(
+    PropertyValuesHolder(
         /* [in] */ const String& propertyName);
 
     /**
      * Internal utility constructor, used by the factory methods to set the property.
      * @param property The property for this holder.
      */
-    CARAPI InitProperty(
+    PropertyValuesHolder(
         /* [in] */ IProperty* property);
 
     //The function will help you transform from a object to classInfo
@@ -528,4 +529,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif  //__PROPERTYVALUESHOLDER_H__
+#endif  // __ELASTOS_DROID_ANIMATION_PROPERTYVALUESHOLDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __INTKEYFRAMESET_H__
-#define  __INTKEYFRAMESET_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_INT32KEYFRAMESET_H__
+#define  __ELASTOS_DROID_ANIMATION_INT32KEYFRAMESET_H__
 
 #include "animation/KeyframeSet.h"
 
@@ -21,10 +21,9 @@ namespace Animation {
 class Int32KeyframeSet
     : public KeyframeSet
     , public IInt32KeyframeSet
-
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     Int32KeyframeSet(
         /* [in] */ ArrayOf<IInt32Keyframe*>* keyframes);
@@ -76,4 +75,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif  //__INTKEYFRAMESET_H__
+#endif  // __ELASTOS_DROID_ANIMATION_INT32KEYFRAMESET_H__

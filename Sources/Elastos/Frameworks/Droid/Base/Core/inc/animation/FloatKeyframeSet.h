@@ -22,7 +22,7 @@ class FloatKeyframeSet
     , public IFloatKeyframeSet
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     FloatKeyframeSet(
         /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes);

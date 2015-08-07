@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(FloatKeyframeSet, IFloatKeyframeSet, IKeyframeSet)
+CAR_INTERFACE_IMPL_2(FloatKeyframeSet, KeyframeSet, IFloatKeyframeSet)
 
 FloatKeyframeSet::FloatKeyframeSet(
     /* [in] */ ArrayOf<IFloatKeyframe*>* keyframes)
@@ -17,7 +17,6 @@ FloatKeyframeSet::FloatKeyframeSet(
 {
 }
 
-//@Override
 ECode FloatKeyframeSet::GetValue(
     /* [in] */ Float fraction,
     /* [out] */ IInterface** value)

@@ -11,8 +11,8 @@ Int32PropertyValuesHolder::ClassMethodMap Int32PropertyValuesHolder::sJNISetterP
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IInt32KeyframeSet* keyframeSet)
+    : PropertyValuesHolder(propertyName)
 {
-    PropertyValuesHolder::InitProperty(propertyName);
     mValueType = ECLSID_CInteger32;
     mKeyframeSet = keyframeSet;
     mInt32KeyframeSet = keyframeSet;
@@ -21,8 +21,8 @@ Int32PropertyValuesHolder::Int32PropertyValuesHolder(
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IInt32KeyframeSet* keyframeSet)
+    : PropertyValuesHolder(property)
 {
-    PropertyValuesHolder::InitProperty(property);
     mValueType = ECLSID_CInteger32;
     mKeyframeSet = keyframeSet;
     mInt32KeyframeSet = keyframeSet;
@@ -31,16 +31,16 @@ Int32PropertyValuesHolder::Int32PropertyValuesHolder(
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ ArrayOf<Int32>* values)
+    : PropertyValuesHolder(propertyName)
 {
-    PropertyValuesHolder::InitProperty(propertyName);
     SetInt32Values(values);
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Int32>* values)
+    : PropertyValuesHolder(property)
 {
-    PropertyValuesHolder::InitProperty(property);
     SetInt32Values(values);
    if(property->Probe(EIID_IInt32Property))
    {
@@ -103,11 +103,15 @@ ECode Int32PropertyValuesHolder::CalculateValue(
     return NOERROR;
 }
 
-AutoPtr<IInterface> Int32PropertyValuesHolder::GetAnimatedValue()
+ECode Int32PropertyValuesHolder::GetAnimatedValue(
+    /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value);
     AutoPtr<IInteger32> rst;
     CInteger32::New(mInt32AnimatedValue, (IInteger32**)&rst);
-    return rst;
+    *value = rst;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 ECode Int32PropertyValuesHolder::Clone(
@@ -131,7 +135,8 @@ ECode Int32PropertyValuesHolder::SetAnimatedValue(
         return mInt32Property->SetValue(target, mInt32AnimatedValue);
     }
 
-    AutoPtr<IInterface> animatedValue = GetAnimatedValue();
+    AutoPtr<IInterface> animatedValue;
+    GetAnimatedValue((IInterface**)&animatedValue);
     if (mProperty != NULL) {
         mProperty->Set(target, animatedValue);
         return NOERROR;

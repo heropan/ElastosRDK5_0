@@ -45,9 +45,55 @@ AutoPtr<ITypeEvaluator> PropertyValuesHolder::sFloatEvaluator = InitFloatEvaluat
 AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sSetterPropertyMap = new ClassMethodMap();
 AutoPtr< PropertyValuesHolder::ClassMethodMap > PropertyValuesHolder::sGetterPropertyMap = new ClassMethodMap();
 
-PropertyValuesHolder::PropertyValuesHolder()
+CAR_INTERFACE_IMPL(PropertyValuesHolder, Object, IPropertyValuesHolder);
+PropertyValuesHolder::PropertyValuesHolder(
+    /* [in] */ const String& propertyName)
+    : mPropertyName(propertyName)
 {
     mTmpValueArray = ArrayOf<IInterface*>::Alloc(1);
+}
+
+PropertyValuesHolder::PropertyValuesHolder(
+    /* [in] */ IProperty* property)
+    : mProperty(property)
+{
+    mTmpValueArray = ArrayOf<IInterface*>::Alloc(1);
+    if (property != NULL) {
+        property->GetName(&mPropertyName);
+    }
+}
+
+ECode PropertyValuesHolder::GetInterfaceID(
+    /* [in] */ IInterface* object,
+    /* [out] */ InterfaceID* iid)
+{
+    VALIDATE_NOT_NULL(iid);
+    if (object == (IInterface*)(PropertyValuesHolder*)this) {
+        *iid = EIID_PropertyValuesHolder;
+        return NOERROR;
+    }
+    else if (object == (IInterface*)(IPropertyValuesHolder*)this) {
+        *iid = EIID_IPropertyValuesHolder;
+        return NOERROR;
+    }
+
+    return Object::GetInterfaceID(object, iid);
+}
+
+PInterface PropertyValuesHolder::Probe(
+    /* [in] */ REIID riid)
+{
+    if (riid == EIID_PropertyValuesHolder) {
+        return reinterpret_cast<PInterface>(this);
+    }
+    else if (riid == EIID_IInterface) {
+        return (IInterface*)(IPropertyValuesHolder*)this;
+    }
+    else if (riid == EIID_IPropertyValuesHolder) {
+        return (IInterface*)(IPropertyValuesHolder*)this;
+    }
+
+    return Object::Probe(riid)
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfInt32(
@@ -477,7 +523,8 @@ ECode PropertyValuesHolder::CloneSuperData(
 ECode PropertyValuesHolder::SetAnimatedValue(
     /* [in] */ IInterface* target)
 {
-    AutoPtr<IInterface> animatedValue = GetAnimatedValue();
+    AutoPtr<IInterface> animatedValue;
+    GetAnimatedValue((IInterface**)&animatedValue);
     if(mProperty)
     {
         if(animatedValue)
@@ -624,9 +671,13 @@ ECode PropertyValuesHolder::GetPropertyName(
     return NOERROR;
 }
 
-AutoPtr<IInterface> PropertyValuesHolder::GetAnimatedValue()
+ECode PropertyValuesHolder::GetAnimatedValue(
+    /* [out] */ IInterface** value)
 {
-    return mAnimatedValue;
+    VALIDATE_NOT_NULL(value);
+    *value = mAnimatedValue;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 String PropertyValuesHolder::GetMethodName(
@@ -640,23 +691,6 @@ String PropertyValuesHolder::GetMethodName(
 
     String temp = propertyName.ToUpperCase(0, 1);
     return prefix + temp;
-}
-
-ECode PropertyValuesHolder::InitProperty(
-    /* [in] */ const String& propertyName)
-{
-    mPropertyName = propertyName;
-    return NOERROR;
-}
-
-ECode PropertyValuesHolder::InitProperty(
-    /* [in] */ IProperty* property)
-{
-    mProperty = property;
-    if (property != NULL) {
-       property->GetName(&mPropertyName);
-    }
-    return NOERROR;
 }
 
 AutoPtr<IMethodInfo> PropertyValuesHolder::GetPropertyFunction(

@@ -1,6 +1,6 @@
 
-#ifndef  __KEYFRAMESET_H__
-#define  __KEYFRAMESET_H__
+#ifndef  __ELASTOS_DROID_ANIMATION_KEYFRAMESET_H__
+#define  __ELASTOS_DROID_ANIMATION_KEYFRAMESET_H__
 
 #include "animation/Keyframe.h"
 
@@ -84,4 +84,4 @@ protected:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__KEYFRAMESET_H__
+#endif  // __ELASTOS_DROID_ANIMATION_KEYFRAMESET_H__

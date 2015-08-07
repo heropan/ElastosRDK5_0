@@ -13,8 +13,8 @@ FloatPropertyValuesHolder::ClassMethodMap FloatPropertyValuesHolder::sJNISetterP
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IFloatKeyframeSet* keyframeSet)
+    : PropertyValuesHolder(propertyName)
 {
-    PropertyValuesHolder::InitProperty(propertyName);
     mValueType = ECLSID_CFloat;
     mKeyframeSet = keyframeSet;
     mFloatKeyframeSet = keyframeSet;
@@ -23,8 +23,8 @@ FloatPropertyValuesHolder::FloatPropertyValuesHolder(
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IFloatKeyframeSet* keyframeSet)
+    : PropertyValuesHolder(property)
 {
-    PropertyValuesHolder::InitProperty(property);
     mValueType = ECLSID_CFloat;
     mKeyframeSet = keyframeSet;
     mFloatKeyframeSet = keyframeSet;
@@ -33,16 +33,16 @@ FloatPropertyValuesHolder::FloatPropertyValuesHolder(
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ ArrayOf<Float>* values)
+    : PropertyValuesHolder(propertyName)
 {
-    PropertyValuesHolder::InitProperty(propertyName);
     SetFloatValues(values);
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ ArrayOf<Float>* values)
+    : PropertyValuesHolder(property)
 {
-    PropertyValuesHolder::InitProperty(property);
     SetFloatValues(values);
     if(property->Probe(EIID_IFloatProperty))
     {
@@ -105,11 +105,15 @@ ECode FloatPropertyValuesHolder::CalculateValue(
     return NOERROR;
 }
 
-AutoPtr<IInterface> FloatPropertyValuesHolder::GetAnimatedValue()
+ECode FloatPropertyValuesHolder::GetAnimatedValue(
+    /* [out] */ IInterface** value)
 {
+    VALIDATE_NOT_NULL(value);
     AutoPtr<IFloat> rst;
-    CFloat::New(mFloatAnimatedValue, (IFloat**)&rst);
-    return rst;
+    return CFloat::New(mFloatAnimatedValue, (IFloat**)&rst);
+    *value = rst;
+    REFCOUNT_ADD(*value);
+    return NOERROR;
 }
 
 ECode FloatPropertyValuesHolder::Clone(
@@ -133,7 +137,8 @@ ECode FloatPropertyValuesHolder::SetAnimatedValue(
         return mFloatProperty->SetValue(target, mFloatAnimatedValue);
     }
 
-    AutoPtr<IInterface> animatedValue = GetAnimatedValue();
+    AutoPtr<IInterface> animatedValue;
+    GetAnimatedValue((IInterface**)&animatedValue);
     if (mProperty != NULL) {
         mProperty->Set(target, animatedValue);
         return NOERROR;
