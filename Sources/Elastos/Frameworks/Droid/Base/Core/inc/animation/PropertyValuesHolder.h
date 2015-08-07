@@ -336,11 +336,11 @@ public:
     virtual CARAPI GetAnimatedValue(
         /* [out] */ IInterface** value);
 
-    //TODO
-    // @Override
-    // public String toString() {
-    //     return mPropertyName + ": " + mKeyframeSet.toString();
-    // }
+    CARAPI Clone(
+        /* [out] */ IPropertyValuesHolder** holder);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
     /**
      * Utility method to derive a setter/getter method name from a property name, where the
@@ -396,9 +396,9 @@ private:
      */
 
     //TODO
-     AutoPtr<IMethodInfo> GetPropertyFunction(
-         /* [in] */ IClassInfo* targetClass,
-         /* [in] */ const String& prefix);
+    AutoPtr<IMethodInfo> GetPropertyFunction(
+        /* [in] */ IClassInfo* targetClass,
+        /* [in] */ const String& prefix);
 
     /**
      * Returns the setter or getter requested. This utility function checks whether the
@@ -411,19 +411,18 @@ private:
      * @return Method the method associated with mPropertyName.
      */
 
-
-     AutoPtr<IMethodInfo> SetupSetterOrGetter(
-         /* [in] */ IClassInfo* targetClass,
-         /* [in] */ PropertyValuesHolder::ClassMethodMap * propertyMapMap,
-         /* [in] */ const String& prefix);
+    AutoPtr<IMethodInfo> SetupSetterOrGetter(
+        /* [in] */ IClassInfo* targetClass,
+        /* [in] */ PropertyValuesHolder::ClassMethodMap * propertyMapMap,
+        /* [in] */ const String& prefix);
 
     /**
      * Utility function to get the getter from targetClass
      */
 
     //TODO
-     CARAPI SetupGetter(
-         /* [in] */ IInterface* target);
+    CARAPI SetupGetter(
+        /* [in] */ IInterface* target);
 
     /**
      * Utility function to set the value stored in a particular Keyframe. The value used is
@@ -434,9 +433,9 @@ private:
      */
 
     //TODO
-     CARAPI SetupValue(
-         /* [in] */ IInterface* target,
-         /* [in] */ IKeyframe* kf);
+    CARAPI SetupValue(
+        /* [in] */ IInterface* target,
+        /* [in] */ IKeyframe* kf);
 
 protected:
     /**

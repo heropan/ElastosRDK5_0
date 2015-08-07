@@ -4,7 +4,10 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
+using Elastos::Core::ICloneable;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -66,6 +69,41 @@ public:
     virtual CARAPI End();
 
     /**
+     * Pauses a running animation. This method should only be called on the same thread on
+     * which the animation was started. If the animation has not yet been {@link
+     * #isStarted() started} or has since ended, then the call is ignored. Paused
+     * animations can be resumed by calling {@link #resume()}.
+     *
+     * @see #resume()
+     * @see #isPaused()
+     * @see AnimatorPauseListener
+     */
+    virtual CARAPI Pause();
+
+    /**
+     * Resumes a paused animation, causing the animator to pick up where it left off
+     * when it was paused. This method should only be called on the same thread on
+     * which the animation was started. Calls to resume() on an animator that is
+     * not currently paused will be ignored.
+     *
+     * @see #pause()
+     * @see #isPaused()
+     * @see AnimatorPauseListener
+     */
+    virtual CARAPI Resume();
+
+    /**
+     * Returns whether this animator is currently in a paused state.
+     *
+     * @return True if the animator is currently paused, false otherwise.
+     *
+     * @see #pause()
+     * @see #resume()
+     */
+    virtual CARAPI IsPaused(
+        /* [out] */ Boolean* paused);
+
+    /**
      * The amount of time, in milliseconds, to delay starting the animation after
      * {@link #start()} is called.
      *
@@ -109,6 +147,9 @@ public:
      */
     virtual CARAPI SetInterpolator(
         /* [in] */ ITimeInterpolator* value) = 0;
+
+    virtual CARAPI GetInterpolator(
+        /* [out] */ ITimeInterpolator** interpolator);
 
     /**
      * Returns whether this Animator is currently running (having been started and gone past any
@@ -162,9 +203,27 @@ public:
 //        /* [in] */ ArrayOf<IAnimatorListener*>* listeners);
 
     /**
-     * Removes all listeners from this object. This is equivalent to calling
-     * <code>getListeners()</code> followed by calling <code>clear()</code> on the
-     * returned list of listeners.
+     * Adds a pause listener to this animator.
+     *
+     * @param listener the listener to be added to the current set of pause listeners
+     * for this animation.
+     */
+    virtual CARAPI AddPauseListener(
+        /* [in] */ IAnimatorPauseListener* listener);
+
+    /**
+     * Removes a pause listener from the set listening to this animation.
+     *
+     * @param listener the listener to be removed from the current set of pause
+     * listeners for this animation.
+     */
+    virtual CARAPI RemovePauseListener(
+        /* [in] */ IAnimatorPauseListener* listener);
+
+    /**
+     * Removes all {@link #addListener(android.animation.Animator.AnimatorListener) listeners}
+     * and {@link #addPauseListener(android.animation.Animator.AnimatorPauseListener)
+     * pauseListeners} from this object.
      */
     virtual CARAPI RemoveAllListeners();
 
@@ -201,6 +260,23 @@ public:
     virtual CARAPI SetTarget(
         /* [in] */ IInterface* target);
 
+    // Hide reverse() and canReverse() for now since reverse() only work for simple
+    // cases, like we don't support sequential, neither startDelay.
+    // TODO: make reverse() works for all the Animators.
+    /**
+     * @hide
+     */
+    virtual CARAPI CanReverse(
+        /* [out] */ Boolean* can);
+
+    /**
+     * @hide
+     */
+    virtual CARAPI Reverse();
+
+    virtual CARAPI SetAllowRunningAsynchronously(
+        /* [in] */ Boolean mayRunAsync)
+
 protected:
     //@Override
     CARAPI CloneSuperData(
@@ -210,6 +286,18 @@ protected:
      * The set of listeners to be sent events through the life of an animation.
      */
     List<AutoPtr<IAnimatorListener> > mListeners;
+
+    /**
+     * The set of listeners to be sent pause/resume events through the life
+     * of an animation.
+     */
+    // ArrayList<AnimatorPauseListener> mPauseListeners = null;
+    AutoPtr<IArrayList> mPauseListeners;
+
+    /**
+     * Whether this animator is currently in a paused state.
+     */
+    Boolean mPaused;
 
     friend class AnimatorSet;
 };

@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__
-#define __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__
+#ifndef __ELASTOS_DROID_ANIMATION_FLOATPROPERTYVALUESHOLDER_H__
+#define __ELASTOS_DROID_ANIMATION_FLOATPROPERTYVALUESHOLDER_H__
 
 #include "PropertyValuesHolder.h"
 
@@ -11,11 +11,11 @@ namespace Droid {
 namespace Animation {
 
 class FloatPropertyValuesHolder
-    : public IFloatPropertyValuesHolder
-    , public PropertyValuesHolder
-    , public ElRefBase
+    : public PropertyValuesHolder
+    , public IFloatPropertyValuesHolder
 {
 public:
+    CAR_INTERFACE_DECL();
 
     FloatPropertyValuesHolder(
         /* [in] */ const String& propertyName,
@@ -32,8 +32,6 @@ public:
     FloatPropertyValuesHolder(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Float>* values);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI SetFloatValues(
         /* [in] */ ArrayOf<Float>* values);
@@ -53,26 +51,6 @@ public:
     CARAPI SetupSetter(
             /* [in] */ IInterface* targetClass);
 
-    CARAPI SetInt32Values(
-        /* [in] */ ArrayOf<Int32>* values);
-
-    CARAPI SetKeyframes(
-        /* [in] */ ArrayOf<IKeyframe*>* values);
-
-    CARAPI SetObjectValues(
-        /* [in] */ ArrayOf<IInterface*>* values);
-
-    CARAPI SetEvaluator(
-        /* [in] */ ITypeEvaluator* evaluator);
-
-    CARAPI SetPropertyName(
-        /* [in] */ const String& propertyName);
-
-    CARAPI SetProperty(
-        /* [in] */ IProperty* property);
-
-    CARAPI GetPropertyName(
-        /* [out] */ String* name);
 protected:
 
     AutoPtr<IMethodInfo> mJniSetter;
@@ -94,4 +72,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_ANIMATION_FloatPropertyValuesHolder_H__
+#endif // __ELASTOS_DROID_ANIMATION_FLOATPROPERTYVALUESHOLDER_H__

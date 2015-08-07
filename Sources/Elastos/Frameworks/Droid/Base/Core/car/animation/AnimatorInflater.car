@@ -8,7 +8,6 @@ module
     namespace Droid {
     namespace Animation {
 
-
     /**
      * This class is used to instantiate animator XML files into Animator objects.
      * <p>

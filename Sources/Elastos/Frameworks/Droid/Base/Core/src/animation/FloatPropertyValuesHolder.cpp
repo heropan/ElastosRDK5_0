@@ -10,24 +10,25 @@ namespace Animation {
 
 FloatPropertyValuesHolder::ClassMethodMap FloatPropertyValuesHolder::sJNISetterPropertyMap;
 
+CAR_INTERFACE_IMPL(FloatPropertyValuesHolder, PropertyValuesHolder, IFloatPropertyValuesHolder);
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IFloatKeyframeSet* keyframeSet)
     : PropertyValuesHolder(propertyName)
+    , mValueType(ECLSID_CFloat)
+    , mKeyframeSet(keyframeSet)
+    , mFloatKeyframeSet(keyframeSet)
 {
-    mValueType = ECLSID_CFloat;
-    mKeyframeSet = keyframeSet;
-    mFloatKeyframeSet = keyframeSet;
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IFloatKeyframeSet* keyframeSet)
     : PropertyValuesHolder(property)
+    , mValueType(ECLSID_CFloat)
+    , mKeyframeSet(keyframeSet)
+    , mFloatKeyframeSet(keyframeSet)
 {
-    mValueType = ECLSID_CFloat;
-    mKeyframeSet = keyframeSet;
-    mFloatKeyframeSet = keyframeSet;
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
@@ -44,49 +45,8 @@ FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     : PropertyValuesHolder(property)
 {
     SetFloatValues(values);
-    if(property->Probe(EIID_IFloatProperty))
-    {
+    if(property->Probe(EIID_IFloatProperty)) {
         mFloatProperty = IFloatProperty::Probe(mProperty);
-    }
-}
-
-UInt32 FloatPropertyValuesHolder::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 FloatPropertyValuesHolder::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode FloatPropertyValuesHolder::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IInterface*)(IFloatPropertyValuesHolder *)this) {
-        *pIID = EIID_IFloatPropertyValuesHolder;
-    } else if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
-        *pIID = EIID_PropertyValuesHolder;
-    } else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-PInterface FloatPropertyValuesHolder::Probe(
-    /* [in] */ REIID riid)
-{
-    if(riid == EIID_PropertyValuesHolder) {
-        return reinterpret_cast<PInterface>((PropertyValuesHolder*)this);
-    } else if (riid == EIID_IInterface) {
-        return (IInterface*)this;
-    } else if (riid == EIID_IPropertyValuesHolder) {
-        return (IPropertyValuesHolder*)this;
-    } else if (riid == EIID_IFloatPropertyValuesHolder) {
-        return (IFloatPropertyValuesHolder*)this;
-    }  else {
-        return NULL;
     }
 }
 
@@ -243,48 +203,6 @@ ECode FloatPropertyValuesHolder::SetupSetter(
         return PropertyValuesHolder::SetupSetter(target);
     }
     return NOERROR;
-}
-
-ECode FloatPropertyValuesHolder::SetInt32Values(
-    /* [in] */ ArrayOf<Int32>* values)
-{
-    return PropertyValuesHolder::SetInt32Values(values);
-}
-
-ECode FloatPropertyValuesHolder::SetKeyframes(
-    /* [in] */ ArrayOf<IKeyframe*>* values)
-{
-    return PropertyValuesHolder::SetKeyframes(values);
-}
-
-ECode FloatPropertyValuesHolder::SetObjectValues(
-    /* [in] */ ArrayOf<IInterface*>* values)
-{
-    return PropertyValuesHolder::SetObjectValues(values);
-}
-
-ECode FloatPropertyValuesHolder::SetEvaluator(
-    /* [in] */ ITypeEvaluator* evaluator)
-{
-    return PropertyValuesHolder::SetEvaluator(evaluator);
-}
-
-ECode FloatPropertyValuesHolder::SetPropertyName(
-    /* [in] */ const String& propertyName)
-{
-    return PropertyValuesHolder::SetPropertyName(propertyName);
-}
-
-ECode FloatPropertyValuesHolder::SetProperty(
-    /* [in] */ IProperty* property)
-{
-    return PropertyValuesHolder::SetProperty(property);
-}
-
-ECode FloatPropertyValuesHolder::GetPropertyName(
-    /* [out] */ String* name)
-{
-    return PropertyValuesHolder::GetPropertyName(name);
 }
 
 } // namespace Animation

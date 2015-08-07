@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(AnimatorListenerAdapter, Object, IAnimatorListener);
+CAR_INTERFACE_IMPL_2(AnimatorListenerAdapter, Object, IAnimatorListener, AnimatorPauseListener);
 ECode AnimatorListenerAdapter::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {
@@ -25,6 +25,18 @@ ECode AnimatorListenerAdapter::OnAnimationCancel(
 }
 
 ECode AnimatorListenerAdapter::OnAnimationRepeat(
+    /* [in] */ IAnimator* animation)
+{
+    return NOERROR;
+}
+
+ECode AnimatorListenerAdapter::OnAnimationPause(
+    /* [in] */ IAnimator* animation)
+{
+    return NOERROR;
+}
+
+ECode AnimatorListenerAdapter::OnAnimationResume(
     /* [in] */ IAnimator* animation)
 {
     return NOERROR;

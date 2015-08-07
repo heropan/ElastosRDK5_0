@@ -8,24 +8,25 @@ namespace Animation {
 
 Int32PropertyValuesHolder::ClassMethodMap Int32PropertyValuesHolder::sJNISetterPropertyMap;
 
+CAR_INTERFACE_IMPL(Int32PropertyValuesHolder, PropertyValuesHolder, IInt32PropertyValuesHolder);
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ const String& propertyName,
     /* [in] */ IInt32KeyframeSet* keyframeSet)
     : PropertyValuesHolder(propertyName)
+    , mValueType(ECLSID_CInteger32)
+    , mKeyframeSet(keyframeSet)
+    , mInt32KeyframeSet(keyframeSet)
 {
-    mValueType = ECLSID_CInteger32;
-    mKeyframeSet = keyframeSet;
-    mInt32KeyframeSet = keyframeSet;
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ IProperty* property,
     /* [in] */ IInt32KeyframeSet* keyframeSet)
     : PropertyValuesHolder(property)
+    , mValueType(ECLSID_CInteger32)
+    , mKeyframeSet(keyframeSet)
+    , mInt32KeyframeSet(keyframeSet)
 {
-    mValueType = ECLSID_CInteger32;
-    mKeyframeSet = keyframeSet;
-    mInt32KeyframeSet = keyframeSet;
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
@@ -42,50 +43,9 @@ Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     : PropertyValuesHolder(property)
 {
     SetInt32Values(values);
-   if(property->Probe(EIID_IInt32Property))
-   {
+   if(property->Probe(EIID_IInt32Property)) {
        mInt32Property = IInt32Property::Probe(mProperty);
    }
-}
-
-UInt32 Int32PropertyValuesHolder::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Int32PropertyValuesHolder::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Int32PropertyValuesHolder::GetInterfaceID(
-    /* [in] */ IInterface *object,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (object == (IInterface*)(IInt32PropertyValuesHolder *)this) {
-        *pIID = EIID_IInt32PropertyValuesHolder;
-    } else if (object == reinterpret_cast<PInterface>((PropertyValuesHolder*)this)) {
-        *pIID = EIID_PropertyValuesHolder;
-    } else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
-PInterface Int32PropertyValuesHolder::Probe(
-    /* [in] */ REIID riid)
-{
-    if(riid == EIID_PropertyValuesHolder) {
-        return reinterpret_cast<PInterface>((PropertyValuesHolder*)this);
-    } else if (riid == EIID_IInterface) {
-        return (IInterface*)this;
-    } else if (riid == EIID_IPropertyValuesHolder) {
-        return (IPropertyValuesHolder*)this;
-    } else if (riid == EIID_IInt32PropertyValuesHolder) {
-        return (IInt32PropertyValuesHolder*)this;
-    }  else {
-        return NULL;
-    }
 }
 
 ECode Int32PropertyValuesHolder::SetInt32Values(
@@ -99,8 +59,7 @@ ECode Int32PropertyValuesHolder::SetInt32Values(
 ECode Int32PropertyValuesHolder::CalculateValue(
     /* [in] */ Float fraction)
 {
-    mInt32KeyframeSet->GetIntValue(fraction, &mInt32AnimatedValue);
-    return NOERROR;
+    return mInt32KeyframeSet->GetIntValue(fraction, &mInt32AnimatedValue);
 }
 
 ECode Int32PropertyValuesHolder::GetAnimatedValue(
@@ -237,48 +196,6 @@ ECode Int32PropertyValuesHolder::SetupSetter(
         return PropertyValuesHolder::SetupSetter(target);
     }
     return NOERROR;
-}
-
-ECode Int32PropertyValuesHolder::SetFloatValues(
-    /* [in] */ ArrayOf<Float>* values)
-{
-    return PropertyValuesHolder::SetFloatValues(values);
-}
-
-ECode Int32PropertyValuesHolder::SetKeyframes(
-    /* [in] */ ArrayOf<IKeyframe*>* values)
-{
-    return PropertyValuesHolder::SetKeyframes(values);
-}
-
-ECode Int32PropertyValuesHolder::SetObjectValues(
-    /* [in] */ ArrayOf<IInterface*>* values)
-{
-    return PropertyValuesHolder::SetObjectValues(values);
-}
-
-ECode Int32PropertyValuesHolder::SetEvaluator(
-    /* [in] */ ITypeEvaluator* evaluator)
-{
-    return PropertyValuesHolder::SetEvaluator(evaluator);
-}
-
-ECode Int32PropertyValuesHolder::SetPropertyName(
-    /* [in] */ const String& propertyName)
-{
-    return PropertyValuesHolder::SetPropertyName(propertyName);
-}
-
-ECode Int32PropertyValuesHolder::SetProperty(
-    /* [in] */ IProperty* property)
-{
-    return PropertyValuesHolder::SetProperty(property);
-}
-
-ECode Int32PropertyValuesHolder::GetPropertyName(
-    /* [out] */ String* name)
-{
-    return PropertyValuesHolder::GetPropertyName(name);
 }
 
 } // namespace Animation

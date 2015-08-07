@@ -236,6 +236,12 @@ public:
 
     /**
      * Sets up this AnimatorSet to play all of the supplied animations at the same time.
+     * This is equivalent to calling {@link #play(Animator)} with the first animator in the
+     * set and then {@link Builder#with(Animator)} with each of the other animators. Note that
+     * an Animator with a {@link Animator#setStartDelay(long) startDelay} will not actually
+     * start until that delay elapses, which means that if the first animator in the list
+     * supplied to this constructor has a startDelay, none of the other animators will start
+     * until that first animator's startDelay has elapsed.
      *
      * @param items The animations that will be started simultaneously.
      */
@@ -468,6 +474,12 @@ private:
     // simply means that there is no duration set on the AnimatorSet. When a real duration is
     // set, it is passed along to the child animations.
     Int64 mDuration;
+
+    // Records the interpolator for the set. Null value indicates that no interpolator
+    // was set on this AnimatorSet, so it should not be passed down to the children.
+    AutoPtr<ITimeInterpolator> mInterpolator;
+
+    Boolean mReversible;
 };
 
 }   //namespace Animation

@@ -11,6 +11,7 @@ namespace Animation {
 class AnimatorListenerAdapter
     : public Object
     , public IAnimatorListener
+    , public IAnimatorPauseListener
 {
 public:
     CAR_INTERFACE_DECL();
@@ -25,6 +26,12 @@ public:
         /* [in] */ IAnimator* animation);
 
     virtual CARAPI OnAnimationRepeat(
+        /* [in] */ IAnimator* animation);
+
+    virtual CARAPI OnAnimationPause(
+        /* [in] */ IAnimator* animation);
+
+    virtual CARAPI OnAnimationResume(
         /* [in] */ IAnimator* animation);
 };
 
