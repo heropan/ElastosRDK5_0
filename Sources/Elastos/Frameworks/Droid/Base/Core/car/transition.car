@@ -1,0 +1,25 @@
+
+module
+{
+    merge("transition/IArcMotion.car");
+    merge("transition/IChangeBounds.car");
+    merge("transition/IChangeText.car");
+    merge("transition/IChangeTransform.car");
+    merge("transition/ICircularPropagation.car");
+    merge("transition/ICrossfade.car");
+    merge("transition/IPathMotion.car");
+    merge("transition/IPatternPathMotion.car");
+    merge("transition/IScene.car");
+    merge("transition/ISidePropagation.car");
+    merge("transition/ISlide.car");
+    merge("transition/ITransition.car");
+    merge("transition/ITransitionInflater.car");
+    merge("transition/ITransitionManager.car");
+    merge("transition/ITransitionPropagation.car");
+    merge("transition/ITransitionSet.car");
+    merge("transition/ITransitionUtils.car");
+    merge("transition/ITransitionValues.car");
+    merge("transition/ITranslationAnimationCreator.car");
+    merge("transition/IVisibility.car");
+    merge("transition/IVisibilityPropagation.car");
+}

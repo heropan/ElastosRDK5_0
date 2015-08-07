@@ -50,6 +50,7 @@ module
     //merge("../car/telephony.car");
     //merge("../car/opengl.car");
     //merge("../car/sax.car");
+    merge("../car/transition.car");
 
     merge("../car/internal/app.car");
     merge("../car/internal/view.car");
