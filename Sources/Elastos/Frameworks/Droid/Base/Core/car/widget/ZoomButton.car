@@ -6,9 +6,17 @@ module
     namespace Droid {
     namespace Widget {
 
+
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IImageButton
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.Widget.IImageView
+     * extends Elastos.Droid.Widget.IImageButton
+     *
+     * interface Elastos.Droid.View.IViewOnLongClickListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IZoomButton
     {

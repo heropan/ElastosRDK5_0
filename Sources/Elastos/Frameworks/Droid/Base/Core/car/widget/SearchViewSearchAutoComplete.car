@@ -8,6 +8,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IAutoCompleteTextView
      */
+     [local]
     interface ISearchViewSearchAutoComplete {
 
         SetSearchView(

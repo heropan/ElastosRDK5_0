@@ -8,6 +8,7 @@ module
     namespace Droid{
     namespace Widget{
 
+    [local]
     interface IEdgeEffect {
 
         /**
@@ -61,6 +62,23 @@ module
             [in] Float deltaDistance);
 
         /**
+         * A view should call this when content is pulled away from an edge by the user.
+         * This will update the state of the current visual effect and its associated animation.
+         * The host view should always {@link android.view.View#invalidate()} after this
+         * and draw the results accordingly.
+         *
+         * @param deltaDistance Change in distance since the last call. Values may be 0 (no change) to
+         *                      1.f (full length of the view) or negative values to express change
+         *                      back toward the edge reached to initiate the effect.
+         * @param displacement The displacement from the starting side of the effect of the point
+         *                     initiating the pull. In the case of touch this is the finger position.
+         *                     Values may be from 0-1.
+         */
+        OnPull(
+            [in] Float deltaDistance,
+            [in] Float displacement);
+
+        /**
          * Call when the object is released after being pulled.
          * This will begin the "decay" phase of the effect. After calling this method
          * the host view should {@link android.view.View#invalidate()} and thereby
@@ -81,6 +99,20 @@ module
         OnAbsorb(
             [in] Int32 velocity);
 
+        /**
+         * Set the color of this edge effect in argb.
+         *
+         * @param color Color in argb
+         */
+        SetColor(
+            [in] Int32 color);
+
+        /**
+         * Return the color of this edge effect in argb.
+         * @return The color of this edge effect in argb
+         */
+        GetColor(
+            [out] Int32* color);
 
         /**
          * Draw into the provided canvas. Assumes that the canvas has been rotated
@@ -97,13 +129,12 @@ module
             [out] Boolean* res);
 
         /**
-         * Returns the bounds of the edge effect.
-         *
-         * @hide
+         * Return the maximum height that the edge effect will be drawn at given the original
+         * {@link #setSize(int, int) input size}.
+         * @return The maximum height of the edge effect
          */
-        GetBounds(
-            [in] Boolean reverse,
-            [out] IRect** rect);
+        GetMaxHeight(
+            [out] Int32* height);
     }
 
     }// namespace Widget

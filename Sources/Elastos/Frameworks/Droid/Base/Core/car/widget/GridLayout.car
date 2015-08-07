@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IGridLayoutAlignment;
 
     namespace Elastos{
     namespace Droid{
@@ -95,15 +96,38 @@ module
          */
         SetGravity(
             [in] Int32 gravity);
-
-        GetHashCode(
-            [out] Int32* hash);
-
-        Equals(
-            [in] IInterface* layout,
-            [out] Boolean* result);
     }
 
+    /**
+     * An Interval represents a contiguous range of values that lie between
+     * the interval's {@link #min} and {@link #max} values.
+     * <p>
+     * Intervals are immutable so may be passed as values and used as keys in hash tables.
+     * It is not necessary to have multiple instances of Intervals which have the same
+     * {@link #min} and {@link #max} values.
+     * <p>
+     * Intervals are often written as {@code [min, max]} and represent the set of values
+     * {@code x} such that {@code min <= x < max}.
+     */
+    interface IInterval {
+        /**
+         * The minimum value.
+         */
+        GetMin(
+            [out] Int32* min);
+
+        /**
+         * The maximum value.
+         */
+        GetMax(
+            [out] Int32* max);
+
+        Size(
+            [out] Int32* size);
+
+        Inverse(
+            [out] IInterval** interval);
+    }
     /**
      * A Spec defines the horizontal or vertical characteristics of a group of
      * cells. Each spec. defines the <em>grid indices</em> and <em>alignment</em>
@@ -126,20 +150,54 @@ module
      * </ul>
      *
      */
-    interface ISpec
+    interface IGridLayoutSpec
     {
         Equals(
-            [in] ISpec* that,
+            [in] IGridLayoutSpec* that,
             [out] Boolean* res);
 
-        Equals(
-            [in] IInterface* that,
-            [out] Boolean* res);
+        CopyWriteSpan(
+            [in] IInterval* span,
+            [out] IGridLayoutSpec** spec);
 
-        GetHashCode(
-            [out] Int32* code);
+        CopyWriteAlignment(
+            [in] IGridLayoutAlignment* alignment,
+            [out] IGridLayoutSpec** spec);
+
+        GetFlexibility(
+            [out] Int32* rst);
     }
 
+    /*
+    For each group (with a given alignment) we need to store the amount of space required
+    before the alignment point and the amount of space required after it. One side of this
+    calculation is always 0 for START and END alignments but we don't make use of this.
+    For CENTER and BASELINE alignments both sides are needed and in the BASELINE case no
+    simple optimisations are possible.
+
+    The general algorithm therefore is to create a Map (actually a PackedMap) from
+    group to Bounds and to loop through all Views in the group taking the maximum
+    of the values for each View.
+    */
+    interface IBounds {
+        GetBefore(
+            [out] Int32* before);
+
+        GetAfter(
+            [out] Int32* after);
+
+        GetFlexibility(
+            [out] Int32* flexibility);
+
+        SetBefore(
+            [in] Int32 before);
+
+        SetAfter(
+            [in] Int32 after);
+
+        SetFlexibility(
+            [in] Int32 flexibility);
+    }
     /**
      * Alignments specify where a view should be placed within a cell group and
      * what size it should be.
@@ -203,12 +261,23 @@ module
             [in] Int32 viewSize,
             [in] Int32 cellSize,
             [out] Int32* size);
+
+        GetBounds(
+            [out] IBounds** bounds);
     }
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+     [local]
     interface IGridLayout
     {
         /**
@@ -463,6 +532,162 @@ module
             [in] IView* c,
             [in] Boolean horizontal,
             [out] Int32* margin);
+    }
+
+    [local]
+    interface IGridLayoutHelper {
+        GetTopAlignment(
+            [out] IGridLayoutAlignment** top);
+
+        GetBottomAlignment(
+            [out] IGridLayoutAlignment** bottom);
+
+        GetStartAlignment(
+            [out] IGridLayoutAlignment** start);
+
+        GetEndAlignment(
+            [out] IGridLayoutAlignment** end);
+
+        GetLeftAlignment(
+            [out] IGridLayoutAlignment** left);
+
+        GetRightAlignment(
+            [out] IGridLayoutAlignment** right);
+
+        GetCenterAlignment(
+            [out] IGridLayoutAlignment** center);
+
+        GetBaselineAlignment(
+            [out] IGridLayoutAlignment** baseline);
+
+        GetFillAlignment(
+            [out] IGridLayoutAlignment** fill);
+
+        /**
+         * Return a Spec, {@code spec}, where:
+         * <ul>
+         *     <li> {@code spec.span = [start, start + size]} </li>
+         *     <li> {@code spec.alignment = alignment} </li>
+         *     <li> {@code spec.weight = weight} </li>
+         * </ul>
+         * <p>
+         * To leave the start index undefined, use the value {@link #UNDEFINED}.
+         *
+         * @param start     the start
+         * @param size      the size
+         * @param alignment the alignment
+         * @param weight    the weight
+         */
+        Spec(
+            [in] Int32 start,
+            [in] Int32 size,
+            [in] IGridLayoutAlignment* alignment,
+            [in] Float weight,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Equivalent to: {@code spec(start, 1, alignment, weight)}.
+         *
+         * @param start     the start
+         * @param alignment the alignment
+         * @param weight    the weight
+         */
+        Spec(
+            [in] Int32 start,
+            [in] IGridLayoutAlignment* alignment,
+            [in] Float weight,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Equivalent to: {@code spec(start, 1, default_alignment, weight)} -
+         * where {@code default_alignment} is specified in
+         * {@link android.widget.GridLayout.LayoutParams}.
+         *
+         * @param start  the start
+         * @param size   the size
+         * @param weight the weight
+         */
+        Spec(
+            [in] Int32 start,
+            [in] Int32 size,
+            [in] Float weight,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Equivalent to: {@code spec(start, 1, weight)}.
+         *
+         * @param start  the start
+         * @param weight the weight
+         */
+        Spec(
+            [in] Int32 start,
+            [in] Float weight,
+            [out] IGridLayoutSpec** spec);
+        /**
+         * Equivalent to: {@code spec(start, size, alignment, 0f)}.
+         *
+         * @param start     the start
+         * @param size      the size
+         * @param alignment the alignment
+         */
+        Spec(
+            [in] Int32 start,
+            [in] Int32 size,
+            [in] IGridLayoutAlignment* alignment,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Return a Spec, {@code spec}, where:
+         * <ul>
+         *     <li> {@code spec.span = [start, start + 1]} </li>
+         *     <li> {@code spec.alignment = alignment} </li>
+         * </ul>
+         * <p>
+         * To leave the start index undefined, use the value {@link #UNDEFINED}.
+         *
+         * @param start     the start index
+         * @param alignment the alignment
+         *
+         * @see #spec(int, int, Alignment)
+         */
+        Spec(
+            [in] Int32 start,
+            [in] IGridLayoutAlignment* alignment,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Return a Spec, {@code spec}, where:
+         * <ul>
+         *     <li> {@code spec.span = [start, start + size]} </li>
+         * </ul>
+         * <p>
+         * To leave the start index undefined, use the value {@link #UNDEFINED}.
+         *
+         * @param start     the start
+         * @param size      the size
+         *
+         * @see #spec(int, Alignment)
+         */
+        Spec(
+            [in] Int32 start,
+            [in] Int32 size,
+            [out] IGridLayoutSpec** spec);
+
+        /**
+         * Return a Spec, {@code spec}, where:
+         * <ul>
+         *     <li> {@code spec.span = [start, start + 1]} </li>
+         * </ul>
+         * <p>
+         * To leave the start index undefined, use the value {@link #UNDEFINED}.
+         *
+         * @param start     the start index
+         *
+         * @see #spec(int, int)
+         */
+        Spec(
+            [in] Int32 start,
+            [out] IGridLayoutSpec** spec);
     }
 
     }// namespace Widget

@@ -7,11 +7,25 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
     interface Elastos.Droid.Text.Method.IWordIterator;
-
+    interface Elastos.Droid.Text.IInputFilter;
 
     namespace Elastos {
     namespace Droid {
     namespace Widget {
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.Text.IInputFilter;
+     */
+    interface IUndoInputFilter {
+    }
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IUndoOperation;
+     */
+    interface ITextModifyOperation {
+    }
 
     interface IEditor {
 

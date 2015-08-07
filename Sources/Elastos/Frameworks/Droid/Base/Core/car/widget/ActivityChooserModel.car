@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Widget.IActivityChooserModel;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Content.Pm.IResolveInfo;
@@ -28,6 +30,7 @@ module
      * Defines a sorter that is responsible for sorting the activities
      * based on the provided historical choices and an intent.
      */
+     [local]
     interface IActivitySorter {
 
         /**
@@ -42,13 +45,14 @@ module
         // is computed from history. Note that Activity implements Comparable.
         Sort(
             [in] IIntent* intent,
-            [in] IObjectContainer* activities,
-            [in] IObjectContainer* historicalRecords);
+            [in] IList* activities,
+            [in] IList* historicalRecords);
     }
 
     /**
      * Listener for choosing an activity.
      */
+     [local]
     interface IOnChooseActivityListener {
 
         /**
@@ -75,8 +79,10 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Database.IDataSetObservable
+     * extends Elastos.Droid.Database.IObservable
+     * extends Elastos.Droid.Database.IDataSetObservable
      */
+     [local]
     interface IActivityChooserModel {
         /**
          * Sets an intent for which to choose a activity.

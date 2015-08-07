@@ -10,7 +10,10 @@ module
 
     /**
      * @Involve
-     * interface IBaseExpandableListAdapter
+     * extends Elastos.Droid.Widget.IBaseExpandableListAdapter
+     *
+     * interface Elastos.Droid.Widget.IExpandableListAdapter
+     * interface Elastos.Droid.Widget.HeterogeneousExpandableList
      */
     [local]
     interface ISimpleExpandableListAdapter

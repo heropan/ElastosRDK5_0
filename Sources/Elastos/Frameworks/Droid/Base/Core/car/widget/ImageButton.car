@@ -1,5 +1,5 @@
 
-module 
+module
 {
 
     namespace Elastos{
@@ -54,7 +54,15 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IImageView
+     */
+    /**
+     * @Involve
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.Widget.IImageView
+     *
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IImageButton {
     }

@@ -27,7 +27,14 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     *
+     * interface Elastos.Droid.View.ViewParent
+     * interface Elastos.Droid.View.ViewManager
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      */
     interface IAbsoluteLayout {
 

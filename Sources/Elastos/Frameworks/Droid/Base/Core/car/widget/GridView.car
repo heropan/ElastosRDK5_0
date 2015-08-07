@@ -22,9 +22,55 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IAbsListView
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.Widget.IAdapterView
+     * extends Elastos.Droid.Widget.IAbsListView
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IOnGlobalLayoutListener
+     * interface Elastos.Droid.View.IOnTouchModeChangeListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Text.ITextWatcher
+     * interface Elastos.Droid.Text.INoCopySpan
+     * interface Elastos.Droid.Widget.IFilterListener
+     * interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IGridView {
+        /**
+         * Disables stretching.
+         *
+         * @see #setStretchMode(int)
+         */
+        const Int32 NO_STRETCH = 0;
+        /**
+         * Stretches the spacing between columns.
+         *
+         * @see #setStretchMode(int)
+         */
+        const Int32 STRETCH_SPACING = 1;
+        /**
+         * Stretches columns.
+         *
+         * @see #setStretchMode(int)
+         */
+        const Int32 STRETCH_COLUMN_WIDTH = 2;
+        /**
+         * Stretches the spacing between columns. The spacing is uniform.
+         *
+         * @see #setStretchMode(int)
+         */
+        const Int32 STRETCH_SPACING_UNIFORM = 3;
+
+        /**
+         * Creates as many columns as can fit on screen.
+         *
+         * @see #setNumColumns(int)
+         */
+        const Int32 AUTO_FIT = -1;
 
         /**
          * Describes how the child views are horizontally aligned. Defaults to Gravity.LEFT

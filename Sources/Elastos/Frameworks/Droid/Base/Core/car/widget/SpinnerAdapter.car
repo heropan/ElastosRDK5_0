@@ -18,6 +18,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IAdapter
      */
+     [local]
     interface ISpinnerAdapter {
         /**
          * <p>Get a {@link android.view.View} that displays in the drop down popup

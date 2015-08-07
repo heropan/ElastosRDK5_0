@@ -20,6 +20,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Widget.IExpandableListAdapter
+     * interface Elastos.Droid.Widget.HeterogeneousExpandableList
      */
     interface IBaseExpandableListAdapter {
         /**

@@ -37,7 +37,7 @@ module
      */
     /**
      * @Involve
-     * interface IFilter
+     * interface Elastos.Droid.Widget.IFilter
      */
     interface ICursorFilter
     {

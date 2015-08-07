@@ -1,5 +1,5 @@
 
-module 
+module
 {
     namespace Elastos {
     namespace Droid {
@@ -15,14 +15,14 @@ module
      */
     interface IOnRatingBarChangeListener
     {
-        
+
         /**
          * Notification that the rating has changed. Clients can use the
          * fromUser parameter to distinguish user-initiated changes from those
          * that occurred programmatically. This will not be called continuously
          * while the user is dragging, only when the user finalizes a rating by
          * lifting the touch.
-         * 
+         *
          * @param ratingBar The RatingBar whose rating has changed.
          * @param rating The current rating. This will be in the range
          *            0..numStars.
@@ -30,26 +30,32 @@ module
          *            touch gesture or arrow key/horizontal trackbell movement.
          */
         OnRatingChanged(
-            [in] IRatingBar* ratingBar, 
-            [in] Float rating, 
+            [in] IRatingBar* ratingBar,
+            [in] Float rating,
             [in] Boolean fromUser);
 
     }
 
     /**
      * @Involve
-     * interface IAbsSeekBar
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.Widget.IProgressBar
+     * extends Elastos.Droid.Widget.IAbsSeekBar
+     *
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     interface IRatingBar
     {
         /**
          * Sets the listener to be called when the rating changes.
-         * 
+         *
          * @param listener The listener.
          */
         SetOnRatingBarChangeListener(
             [in] IOnRatingBarChangeListener* listener);
-        
+
         /**
          * @return The listener (may be null) that is listening for rating change
          *         events.
@@ -60,14 +66,14 @@ module
         /**
          * Whether this rating bar should only be an indicator (thus non-changeable
          * by the user).
-         * 
+         *
          * @param isIndicator Whether it should be an indicator.
          *
          * @attr ref android.R.styleable#RatingBar_isIndicator
          */
         SetIsIndicator(
             [in] Boolean isIndicator);
-        
+
         /**
          * @return Whether this rating bar is only an indicator.
          *
@@ -75,12 +81,12 @@ module
          */
         IsIndicator(
             [out] Boolean* isIndicator);
-        
+
         /**
          * Sets the number of stars to show. In order for these to be shown
          * properly, it is recommended the layout width of this widget be wrap
          * content.
-         * 
+         *
          * @param numStars The number of stars.
          */
         SetNumStars(
@@ -92,10 +98,10 @@ module
          */
         GetNumStars(
             [out] Int32* numStars);
-        
+
         /**
          * Sets the rating (the number of stars filled).
-         * 
+         *
          * @param rating The rating to set.
          */
         SetRating(
@@ -103,7 +109,7 @@ module
 
         /**
          * Gets the current rating (number of stars filled).
-         * 
+         *
          * @return The current rating.
          */
         GetRating(
@@ -111,7 +117,7 @@ module
 
         /**
          * Sets the step size (granularity) of this rating bar.
-         * 
+         *
          * @param stepSize The step size of this rating bar. For example, if
          *            half-star granularity is wanted, this would be 0.5.
          */
@@ -120,7 +126,7 @@ module
 
         /**
          * Gets the step size of this rating bar.
-         * 
+         *
          * @return The step size.
          */
         GetStepSize(

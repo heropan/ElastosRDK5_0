@@ -14,6 +14,13 @@ module
      *<p>This is intended as a base class; you will probably not need to
      * use this class directly in your own code.
      */
+    /**
+     * @Involve
+     * interface Elastos.Droid.Widget.IWrapperListAdapter
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Widget.IFilterable
+     */
     [local]
     interface IHeaderViewListAdapter {
         GetHeadersCount(

@@ -3,6 +3,9 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.IObjectInt32Map;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.IHashMap;
+
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
@@ -10,6 +13,7 @@ module
     interface Elastos.Droid.Widget.IRemoteViewsOnClickHandler;
     interface Elastos.Droid.Widget.IAbsListView;
     interface Elastos.Droid.View.IActionMode;
+    interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
 
     namespace Elastos{
     namespace Droid{
@@ -181,8 +185,24 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IAdapterView
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.Widget.IAdapterView
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IOnGlobalLayoutListener
+     * interface Elastos.Droid.View.IOnTouchModeChangeListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Text.ITextWatcher
+     * interface Elastos.Droid.Text.INoCopySpan
+     * interface Elastos.Droid.Widget.IFilterListener
+     * interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+
+    [local]
     interface IAbsListView {
 
         /**
@@ -238,6 +258,15 @@ module
          */
         SetFastScrollEnabled(
             [in] Boolean enabled);
+
+        /**
+         * Specifies the style of the fast scroller decorations.
+         *
+         * @param styleResId style resource containing fast scroller properties
+         * @see android.R.styleable#FastScroll
+         */
+        SetFastScrollStyle(
+            [in] Int32 styleResId);
 
         /**
          * Returns the current state of the fast scroll feature.
@@ -418,6 +447,19 @@ module
             [out] Int32* right);
 
         /**
+         * Initializes an {@link AccessibilityNodeInfo} with information about a
+         * particular item in the list.
+         *
+         * @param view View representing the list item.
+         * @param position Position of the list item within the adapter.
+         * @param info Node info to populate.
+         */
+        OnInitializeAccessibilityNodeInfoForItem(
+            [in] IView* view,
+            [in] Int32 position,
+            [in] IAccessibilityNodeInfo* info);
+
+        /**
          * Controls whether the selection highlight drawable should be drawn on top of the item or
          * behind it.
          *
@@ -469,6 +511,25 @@ module
             [out] Int32* position);
 
         /**
+         * Initiate a fling with the given velocity.
+         *
+         * <p>Applications can use this method to manually initiate a fling as if the user
+         * initiated it via touch interaction.</p>
+         *
+         * @param velocityY Vertical velocity in pixels per second. Note that this is velocity of
+         *                  content, not velocity of a touch that initiated the fling.
+         */
+        Fling(
+            [in] Int32 velocityY);
+
+        /**
+         * @hide
+         */
+        SetOverScrollEffectPadding(
+            [in] Int32 leftPadding,
+            [in] Int32 rightPadding);
+
+        /**
          * Maps a point to a the rowId of the item which intersects that point.
          *
          * @param x X in local coordinate
@@ -510,6 +571,55 @@ module
         SmoothScrollBy(
             [in] Int32 distance,
             [in] Int32 duration);
+
+        /**
+         * Scrolls the list items within the view by a specified number of pixels.
+         *
+         * @param y the amount of pixels to scroll by vertically
+         * @see #canScrollList(int)
+         */
+        ScrollListBy(
+            [in] Int32 y);
+
+        /**
+         * Check if the items in the list can be scrolled in a certain direction.
+         *
+         * @param direction Negative to check scrolling up, positive to check
+         *            scrolling down.
+         * @return true if the list can be scrolled in the specified direction,
+         *         false otherwise.
+         * @see #scrollListBy(int)
+         */
+        CanScrollList(
+            [in] Int32 direction,
+            [out] Boolean* canScrollList);
+
+        /**
+         * Sets the recycler listener to be notified whenever a View is set aside in
+         * the recycler for later reuse. This listener can be used to free resources
+         * associated to the View.
+         *
+         * @param listener The recycler listener to be notified of views set aside
+         *        in the recycler.
+         *
+         * @see android.widget.AbsListView.RecycleBin
+         * @see android.widget.AbsListView.RecyclerListener
+         */
+        SetRecyclerListener(
+            [in] IRecyclerListener* listener);
+
+        /**
+         * Sets the selected item and positions the selection y pixels from the top edge
+         * of the ListView. (If in touch mode, the item will not be selected but it will
+         * still be positioned appropriately.)
+         *
+         * @param position Index (starting at 0) of the data item to be selected.
+         * @param y The distance from the top edge of the ListView (plus padding) that the
+         *        item will be positioned.
+         */
+        SetSelectionFromTop(
+            [in] Int32 position,
+            [in] Int32 y);
 
         /**
          * Causes all the views to be rebuilt and redrawn.
@@ -575,21 +685,7 @@ module
          * @param views A list into which to put the reclaimed views
          */
         ReclaimViews(
-            [in] IObjectContainer* views);
-
-        /**
-         * Sets the recycler listener to be notified whenever a View is set aside in
-         * the recycler for later reuse. This listener can be used to free resources
-         * associated to the View::
-         *
-         * @param listener The recycler listener to be notified of views set aside
-         *        in the recycler.
-         *
-         * @see android.widget.AbsListView.RecycleBin
-         * @see android.widget.AbsListView.RecyclerListener
-         */
-        SetRecyclerListener(
-            [in] IRecyclerListener* listener);
+            [in] IList* views);
 
         /**
          * Returns the number of items currently selected. This will only be valid
@@ -644,7 +740,7 @@ module
          *          {@link #CHOICE_MODE_NONE}.
          */
         GetCheckedItemPositions(
-            [out] IObjectInt32Map** arr);
+            [out] IHashMap** arr);
 
         /**
          * Returns the set of checked items ids. The result is only valid if the

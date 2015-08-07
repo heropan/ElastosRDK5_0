@@ -83,9 +83,15 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.ITextView
+     *
+     * interface Elastos.Droid.View.OnPreDrawListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    [deprecated]
+    [deprecated, local]
     interface ITextView {
 
         /**
@@ -503,6 +509,66 @@ module
          */
         GetTextSize(
             [out] Float* size);
+
+        /**
+         * Set the TextView's elegant height metrics flag. This setting selects font
+         * variants that have not been compacted to fit Latin-based vertical
+         * metrics, and also increases top and bottom bounds to provide more space.
+         *
+         * @param elegant set the paint's elegant metrics flag.
+         *
+         * @attr ref android.R.styleable#TextView_elegantTextHeight
+         */
+        SetElegantTextHeight(
+            [in] Boolean elegant);
+
+        /**
+         * @return the extent by which text is currently being letter-spaced.
+         * This will normally be 0.
+         *
+         * @see #setLetterSpacing(float)
+         * @see Paint#setLetterSpacing
+         */
+        GetLetterSpacing(
+            [out] Float* spacing);
+
+        /**
+         * Sets text letter-spacing.  The value is in 'EM' units.  Typical values
+         * for slight expansion will be around 0.05.  Negative values tighten text.
+         *
+         * @see #getLetterSpacing()
+         * @see Paint#getLetterSpacing
+         *
+         * @attr ref android.R.styleable#TextView_letterSpacing
+         * @android.view.RemotableViewMethod
+         */
+        SetLetterSpacing(
+            [in] Float letterSpacing);
+
+        /**
+         * @return the currently set font feature settings.  Default is null.
+         *
+         * @see #setFontFeatureSettings(String)
+         * @see Paint#setFontFeatureSettings
+         * @Nullable
+         */
+        GetFontFeatureSettings(
+            [out] String* settings);
+
+        /**
+         * Sets font feature settings.  The format is the same as the CSS
+         * font-feature-settings attribute:
+         * http://dev.w3.org/csswg/css-fonts/#propdef-font-feature-settings
+         *
+         * @param fontFeatureSettings font feature settings represented as CSS compatible string
+         * @see #getFontFeatureSettings()
+         * @see Paint#getFontFeatureSettings
+         *
+         * @attr ref android.R.styleable#TextView_fontFeatureSettings
+         * @android.view.RemotableViewMethod
+         */
+        SetFontFeatureSettings(
+            [in] String fontFeatureSettings);
 
         /**
          * Set the default text size to the given value, interpreted as "scaled

@@ -7,6 +7,14 @@ module {
     namespace Droid{
     namespace Widget{
 
+    /**
+     * @Involve
+     * extends Elastos.Droid.Database.IObservable
+     * extends Elastos.Droid.Database.IDataSetObservable
+     *
+     * interface Elastos.Droid.Widget.ISectionIndexer
+     */
+
     interface IAlphabetIndexer
     {
         /**

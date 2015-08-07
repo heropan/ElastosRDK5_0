@@ -40,7 +40,22 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IAbsListView
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.Widget.IAdapterView
+     * extends Elastos.Droid.Widget.IAbsListView
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IOnGlobalLayoutListener
+     * interface Elastos.Droid.View.IOnTouchModeChangeListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Text.ITextWatcher
+     * interface Elastos.Droid.Text.INoCopySpan
+     * interface Elastos.Droid.Widget.IFilterListener
+     * interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     [local]
     interface IListView {
@@ -145,19 +160,6 @@ module
             [in] Int32 position);
 
         /**
-         * Sets the selected item and positions the selection y pixels from the top edge
-         * of the ListView. (If in touch mode, the item will not be selected but it will
-         * still be positioned appropriately.)
-         *
-         * @param position Index (starting at 0) of the data item to be selected.
-         * @param y The distance from the top edge of the ListView (plus padding) that the
-         *        item will be positioned.
-         */
-        SetSelectionFromTop(
-            [in] Int32 position,
-            [in] Int32 y);
-
-        /**
          * setSelectionAfterHeaderView set the selection to be the first list item
          * after the header views.
          */
@@ -221,6 +223,22 @@ module
          */
         SetHeaderDividersEnabled(
             [in] Boolean headerDividersEnabled);
+
+        /**
+         * @return Whether the drawing of the divider for header views is enabled
+         *
+         * @see #setHeaderDividersEnabled(boolean)
+         */
+        AreHeaderDividersEnabled(
+            [out] Boolean* enabled);
+
+        /**
+         * @return Whether the drawing of the divider for footer views is enabled
+         *
+         * @see #setFooterDividersEnabled(boolean)
+         */
+        AreFooterDividersEnabled(
+            [out] Boolean* enabled);
 
         /**
          * Enables or disables the drawing of the divider for footer views.

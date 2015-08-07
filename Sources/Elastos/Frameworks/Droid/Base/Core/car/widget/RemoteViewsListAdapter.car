@@ -1,0 +1,34 @@
+module
+{
+    using interface Elastos.Utility.IArrayList;
+
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Widget.Internal.IIRemoteViewsFactory;
+
+    namespace Elastos{
+    namespace Droid{
+    namespace Widget{
+
+    /**
+     * @Involve
+     * extends Elastos.Droid.Widget.IBaseAdapter
+     *
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.ISpinnerAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Os.IHandlerCallback
+     */
+    interface IRemoteViewsListAdapter {
+        SetViewsList(
+            [in] IArrayList* remoteViews);
+
+        GetViewTypeCount(
+            [out] Int32* count);
+    }
+
+    }// namespace Widget
+    }// namespace Droid
+    }// namespace Elastos
+
+}

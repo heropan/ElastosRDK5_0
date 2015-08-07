@@ -6,6 +6,7 @@ module
     interface Elastos.Droid.Graphics.IMatrix;
     interface Elastos.Droid.Graphics.IColorFilter;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.Content.Res.IColorStateList;
     interface Elastos.Droid.Net.IUri;
 
     namespace Elastos {
@@ -83,7 +84,11 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IView
+     *
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     [deprecated]
     interface IImageView {
@@ -219,6 +224,55 @@ module
          */
         SetImageDrawable(
             [in] IDrawable* drawable);
+
+        /**
+         * Applies a tint to the image drawable. Does not modify the current tint
+         * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+         * <p>
+         * Subsequent calls to {@link #setImageDrawable(Drawable)} will automatically
+         * mutate the drawable and apply the specified tint and tint mode using
+         * {@link Drawable#setTintList(ColorStateList)}.
+         *
+         * @param tint the tint to apply, may be {@code null} to clear tint
+         *
+         * @attr ref android.R.styleable#ImageView_tint
+         * @see #getImageTintList()
+         * @see Drawable#setTintList(ColorStateList)
+         */
+        SetImageTintList(
+            [in] IColorStateList* tint);
+
+        /**
+         * @return the tint applied to the image drawable
+         * @attr ref android.R.styleable#ImageView_tint
+         * @see #setImageTintList(ColorStateList)
+         * @Nullable
+         */
+        GetImageTintList(
+            [out] IColorStateList** tint);
+
+        /**
+         * Specifies the blending mode used to apply the tint specified by
+         * {@link #setImageTintList(ColorStateList)}} to the image drawable. The default
+         * mode is {@link PorterDuff.Mode#SRC_IN}.
+         *
+         * @param tintMode the blending mode used to apply the tint, may be
+         *                 {@code null} to clear tint
+         * @attr ref android.R.styleable#ImageView_tintMode
+         * @see #getImageTintMode()
+         * @see Drawable#setTintMode(PorterDuff.Mode)
+         */
+        SetImageTintMode(
+            [in] PorterDuffMode tintMode);
+
+        /**
+         * @return the blending mode used to apply the tint to the image drawable
+         * @attr ref android.R.styleable#ImageView_tintMode
+         * @see #setImageTintMode(PorterDuff.Mode)
+         * @Nullable
+         */
+        GetImageTintMode(
+            [out] PorterDuffMode* tintMode);
 
         /**
          * Sets a Bitmap as the content of this ImageView.

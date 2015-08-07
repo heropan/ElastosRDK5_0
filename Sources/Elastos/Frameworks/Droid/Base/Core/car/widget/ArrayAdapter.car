@@ -3,6 +3,8 @@
 module
 {
     using interface Elastos.Core.IComparator;
+    using interface Elastos.Utility.ICollection;
+
     interface Elastos.Droid.Content.IContext;
 
     namespace Elastos{
@@ -17,7 +19,11 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IBaseAdapter
+     * extends Elastos.Droid.Widget.IListAdapter
+     * extends Elastos.Droid.Widget.ISpinnerAdapter
+     * extends Elastos.Droid.Widget.IBaseAdapter
+     *
+     * interface Elastos.Droid.Widget.IAdapter
      */
     [local, deprecated]
     interface IArrayAdapter {
@@ -37,7 +43,7 @@ module
          */
 
         AddAll(
-            [in] IObjectContainer* collection);
+            [in] ICollection* collection);
 
         /**
          * Adds the specified items at the end of the array.

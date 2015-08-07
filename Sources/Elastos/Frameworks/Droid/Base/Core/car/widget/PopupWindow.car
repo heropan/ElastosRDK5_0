@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IView;
@@ -61,6 +62,24 @@ module
          */
         SetBackgroundDrawable(
             [in] IDrawable* background);
+
+        /**
+         * @return the elevation for this popup window in pixels
+         * @see #setElevation(float)
+         * @attr ref android.R.styleable#PopupWindow_popupElevation
+         */
+        GetElevation(
+            [out] Float* elevation);
+
+        /**
+         * Specifies the elevation for this popup window.
+         *
+         * @param elevation the popup's elevation in pixels
+         * @see #getElevation()
+         * @attr ref android.R.styleable#PopupWindow_popupElevation
+         */
+        SetElevation(
+            [in] Float elevation);
 
         /**
          * <p>Return the animation style to use the popup appears and disappears</p>
@@ -521,6 +540,29 @@ module
          */
         ShowAsDropDown(
             [in] IView* anchor);
+
+        /**
+         * <p>Display the content view in a popup window anchored to the bottom-left
+         * corner of the anchor view offset by the specified x and y coordinates.
+         * If there is not enough room on screen to show
+         * the popup in its entirety, this method tries to find a parent scroll
+         * view to scroll. If no parent scroll view can be scrolled, the bottom-left
+         * corner of the popup is pinned at the top left corner of the anchor view.</p>
+         * <p>If the view later scrolls to move <code>anchor</code> to a different
+         * location, the popup will be moved correspondingly.</p>
+         *
+         * @param anchor the view on which to pin the popup window
+         * @param xoff A horizontal offset from the anchor in pixels
+         * @param yoff A vertical offset from the anchor in pixels
+         * @param gravity Alignment of the popup relative to the anchor
+         *
+         * @see #dismiss()
+         */
+        ShowAsDropDown(
+            [in] IView* anchor,
+            [in] Int32 xoff,
+            [in] Int32 yoff,
+            [in] Int32 gravity);
 
         /**
          * <p>Display the content view in a popup window anchored to the bottom-left

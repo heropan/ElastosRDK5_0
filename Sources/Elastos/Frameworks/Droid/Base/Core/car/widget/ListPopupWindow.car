@@ -2,6 +2,7 @@ module
 {
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
     interface Elastos.Droid.Widget.IPopupWindowOnDismissListener;
@@ -277,6 +278,15 @@ module
             [in] Int32 offset);
 
         /**
+         * Set the gravity of the dropdown list. This is commonly used to
+         * set gravity to START or END for alignment with the anchor.
+         *
+         * @param gravity Gravity value to use
+         */
+        SetDropDownGravity(
+            [in] Int32 gravity);
+
+        /**
          * @return The width of the popup window in pixels.
          */
         GetWidth(
@@ -523,6 +533,30 @@ module
             [in] Int32 keyCode,
             [in] IKeyEvent* event,
             [out] Boolean* res);
+
+        /**
+         * Returns an {@link OnTouchListener} that can be added to the source view
+         * to implement drag-to-open behavior. Generally, the source view should be
+         * the same view that was passed to {@link #setAnchorView}.
+         * <p>
+         * When the listener is set on a view, touching that view and dragging
+         * outside of its bounds will open the popup window. Lifting will select the
+         * currently touched list item.
+         * <p>
+         * Example usage:
+         * <pre>
+         * ListPopupWindow myPopup = new ListPopupWindow(context);
+         * myPopup.setAnchor(myAnchor);
+         * OnTouchListener dragListener = myPopup.createDragToOpenListener(myAnchor);
+         * myAnchor.setOnTouchListener(dragListener);
+         * </pre>
+         *
+         * @param src the view on which the resulting listener will be set
+         * @return a touch listener that controls drag-to-open behavior
+         */
+        CreateDragToOpenListener(
+            [in] IView* src,
+            [out] IViewOnTouchListener** l);
     }
 
     } // namespace Widget

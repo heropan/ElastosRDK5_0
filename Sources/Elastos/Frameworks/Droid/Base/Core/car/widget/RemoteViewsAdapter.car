@@ -34,9 +34,15 @@ module
      * to be later inflated as child views.
      */
     /** @hide */
+
     /**
      * @Involve
-     * interface IBaseAdapter
+     * extends Elastos.Droid.Widget.IBaseAdapter
+     *
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.ISpinnerAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Os.IHandlerCallback
      */
     [local]
     interface IRemoteViewsAdapter

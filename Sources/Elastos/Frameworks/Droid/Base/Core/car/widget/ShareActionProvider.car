@@ -11,6 +11,7 @@ module
     /**
      * Listener for the event of selecting a share target.
      */
+     [local]
     interface IOnShareTargetSelectedListener
     {
 
@@ -43,6 +44,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IActionProvider
      */
+     [local]
     interface IShareActionProvider
     {
         /**

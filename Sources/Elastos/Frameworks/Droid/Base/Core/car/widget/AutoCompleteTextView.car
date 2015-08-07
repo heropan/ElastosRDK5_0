@@ -63,8 +63,17 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IEditText
+     * extends Elastos.Droid.Widget.IView
+     * extends Elastos.Droid.Widget.ITextView
+     * extends Elastos.Droid.Widget.IEditText
+     *
+     * interface Elastos.Droid.View.IOnPreDrawListener
+     * interface Elastos.Droid.Widget.IFilterListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+
     [local]
     interface IAutoCompleteTextView
     {

@@ -13,7 +13,15 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IResourceCursorAdapter
+     * extends Elastos.Droid.Widget.IBaseAdapter
+     * extends Elastos.Droid.Widget.ICursorAdapter
+     * extends Elastos.Droid.Widget.IResourceCursorAdapter
+     *
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.ISpinnerAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Widget.IFilterable
+     * interface Elastos.Droid.Widget.ICursorFilterClient
      */
     interface ISuggestionsAdapter
     {

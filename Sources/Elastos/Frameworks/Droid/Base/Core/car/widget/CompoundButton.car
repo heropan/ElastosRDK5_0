@@ -1,7 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Content.Res.IColorStateList;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    enum Elastos.Droid.Graphics.PorterDuffMode;
 
     namespace Elastos {
     namespace Droid {
@@ -27,8 +29,16 @@ module
 
     /**
      * @Involve
-     * interface IButton
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.Widget.ITextView
+     *
+     * interface Elastos.Droid.View.OnPreDrawListener
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
+     * interface Elastos.Droid.Widget.ICheckable
      */
+
     interface ICompoundButton {
         /**
              * Register a callback to be invoked when the checked state of this button
@@ -64,6 +74,57 @@ module
              */
         SetButtonDrawable(
             [in] IDrawable* d);
+
+        /**
+         * Applies a tint to the button drawable. Does not modify the current tint
+         * mode, which is {@link PorterDuff.Mode#SRC_IN} by default.
+         * <p>
+         * Subsequent calls to {@link #setButtonDrawable(Drawable)} will
+         * automatically mutate the drawable and apply the specified tint and tint
+         * mode using
+         * {@link Drawable#setTintList(ColorStateList)}.
+         *
+         * @param tint the tint to apply, may be {@code null} to clear tint
+         *
+         * @attr ref android.R.styleable#CompoundButton_buttonTint
+         * @see #setButtonTintList(ColorStateList)
+         * @see Drawable#setTintList(ColorStateList)
+         */
+        SetButtonTintList(
+            [in] IColorStateList* tint);
+
+        /**
+         * @return the tint applied to the button drawable
+         * @attr ref android.R.styleable#CompoundButton_buttonTint
+         * @see #setButtonTintList(ColorStateList)
+         * @Nullable
+         */
+        GetButtonTintList(
+            [out] IColorStateList** tint);
+
+
+        /**
+         * Specifies the blending mode used to apply the tint specified by
+         * {@link #setButtonTintList(ColorStateList)}} to the button drawable. The
+         * default mode is {@link PorterDuff.Mode#SRC_IN}.
+         *
+         * @param tintMode the blending mode used to apply the tint, may be
+         *                 {@code null} to clear tint
+         * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+         * @see #getButtonTintMode()
+         * @see Drawable#setTintMode(PorterDuff.Mode)
+         */
+        SetButtonTintMode(
+            [in] PorterDuffMode tintMode);
+
+        /**
+         * @return the blending mode used to apply the tint to the button drawable
+         * @attr ref android.R.styleable#CompoundButton_buttonTintMode
+         * @see #setButtonTintMode(PorterDuff.Mode)
+         * @Nullable
+         */
+        GetButtonTintMode(
+            [out] PorterDuffMode* tintMode);
 
         GetButtonDrawable(
             [out] IDrawable** d);

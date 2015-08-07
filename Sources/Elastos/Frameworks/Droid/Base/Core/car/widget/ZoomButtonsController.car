@@ -32,6 +32,10 @@ module
             [in] Boolean zoomIn);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewOnTouchListener
+     */
     [local]
     interface IZoomButtonsController
     {

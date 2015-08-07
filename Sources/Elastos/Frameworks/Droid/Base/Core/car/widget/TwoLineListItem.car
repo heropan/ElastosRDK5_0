@@ -8,8 +8,17 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IRelativeLayout
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.View.IViewGroup
+     * extends Elastos.Droid.Widget.IRelativeLayout
+     *
+     * interface Elastos.Droid.View.IViewParent
+     * interface Elastos.Droid.View.IViewManager
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+     [local]
     interface ITwoLineListItem
     {
         /**
@@ -18,7 +27,7 @@ module
          */
         GetText1(
             [out] ITextView** tv);
-        
+
         /**
          * Returns a handle to the item with ID text2.
          * @return A handle to the item with ID text2.

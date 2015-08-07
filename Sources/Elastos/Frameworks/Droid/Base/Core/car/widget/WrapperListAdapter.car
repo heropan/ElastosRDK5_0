@@ -15,8 +15,10 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Droid.Widget.IAdapter
      * interface Elastos.Droid.Widget.IListAdapter
      */
+     [local]
     interface IWrapperListAdapter {
         /**
          * Returns the adapter wrapped by this list adapter.

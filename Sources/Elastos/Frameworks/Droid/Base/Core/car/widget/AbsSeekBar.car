@@ -10,8 +10,14 @@ module {
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IProgressBar
+     * extends Elastos.Droid.View.IView
+     * extends Elastos.Droid.Widget.IProgressBar
+     *
+     * interface Elastos.Droid.View.IKeyEventCallback
+     * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
+     * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
+
     interface IAbsSeekBar {
         /**
          * Sets the thumb that will be drawn at the end of the progress meter within the SeekBar.

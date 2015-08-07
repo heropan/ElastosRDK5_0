@@ -8,7 +8,13 @@ module
 
     /**
      * @Involve
-     * interface ICursorTreeAdapter
+     * extends Elastos.Droid.Widget.IBaseExpandableListAdapter
+     * extends Elastos.Droid.Widget.ICursorTreeAdapter
+     *
+     * interface Elastos.Droid.Widget.IExpandableListAdapter
+     * interface Elastos.Droid.Widget.HeterogeneousExpandableList
+     * interface Elastos.Droid.Widget.IFilterable
+     * interface Elastos.Droid.Widget.ICursorFilterClient
      */
     interface IResourceCursorTreeAdapter
     {

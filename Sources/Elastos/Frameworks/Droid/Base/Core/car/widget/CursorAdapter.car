@@ -19,8 +19,15 @@ module
      */
     /**
      * @Involve
-     * interface IBaseAdapter
+     * extends Elastos.Droid.Widget.IBaseAdapter
+     *
+     * interface Elastos.Droid.Widget.IListAdapter
+     * interface Elastos.Droid.Widget.ISpinnerAdapter
+     * interface Elastos.Droid.Widget.IAdapter
+     * interface Elastos.Droid.Widget.IFilterable
+     * interface Elastos.Droid.Widget.ICursorFilterClient
      */
+
     [local]
     interface ICursorAdapter
     {
