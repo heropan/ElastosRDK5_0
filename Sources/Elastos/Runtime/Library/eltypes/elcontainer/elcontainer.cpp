@@ -6,7 +6,8 @@ _ELASTOS_NAMESPACE_BEGIN
 //-----------------------------------------------------
 // DoubleLinkNode
 //-----------------------------------------------------
-DoubleLinkNode *DoubleLinkNode::InsertPrev(DoubleLinkNode *prevNode)
+DoubleLinkNode* DoubleLinkNode::InsertPrev(
+    /* [in] */ DoubleLinkNode* prevNode)
 {
     assert(prevNode);
 
@@ -18,7 +19,8 @@ DoubleLinkNode *DoubleLinkNode::InsertPrev(DoubleLinkNode *prevNode)
     return prevNode;
 }
 
-DoubleLinkNode *DoubleLinkNode::InsertNext(DoubleLinkNode *nextNode)
+DoubleLinkNode* DoubleLinkNode::InsertNext(
+    /* [in] */ DoubleLinkNode* nextNode)
 {
     assert(nextNode);
 
@@ -30,7 +32,7 @@ DoubleLinkNode *DoubleLinkNode::InsertNext(DoubleLinkNode *nextNode)
     return nextNode;
 }
 
-DoubleLinkNode *DoubleLinkNode::Detach()
+DoubleLinkNode* DoubleLinkNode::Detach()
 {
     mPrev->mNext = mNext;
     mNext->mPrev = mPrev;
@@ -42,7 +44,8 @@ DoubleLinkNode *DoubleLinkNode::Detach()
 //-----------------------------------------------------
 // SingleLinkNode
 //-----------------------------------------------------
-SingleLinkNode *SingleLinkNode::InsertNext(SingleLinkNode *nextNode)
+SingleLinkNode* SingleLinkNode::InsertNext(
+    /* [in] */ SingleLinkNode* nextNode)
 {
     assert(nextNode);
 
@@ -53,7 +56,8 @@ SingleLinkNode *SingleLinkNode::InsertNext(SingleLinkNode *nextNode)
 }
 
 
-SingleLinkNode *SingleLinkNode::Detach(SingleLinkNode *prevNode)
+SingleLinkNode* SingleLinkNode::Detach(
+    /* [in] */ SingleLinkNode* prevNode)
 {
     prevNode->mNext = mNext;
     mNext = NULL;
@@ -70,7 +74,8 @@ SimpleContainer::SimpleContainer()
     mCurrent = &mHead;
 }
 
-ECode SimpleContainer::Current(DLinkNode **node)
+ECode SimpleContainer::Current(
+    /* [out] */ DLinkNode** node)
 {
     assert(NULL != node);
 
@@ -100,13 +105,15 @@ ECode SimpleContainer::Reset()
     return NOERROR;
 }
 
-ECode SimpleContainer::Add(DLinkNode *node)
+ECode SimpleContainer::Add(
+    /* [in] */ DLinkNode* node)
 {
     mHead.InsertPrev(node);
     return NOERROR;
 }
 
-ECode SimpleContainer::Remove(DLinkNode *node)
+ECode SimpleContainer::Remove(
+    /* [in] */ DLinkNode* node)
 {
     if (mCurrent == node) {
         mCurrent = mCurrent->Prev();
@@ -120,9 +127,7 @@ ECode SimpleContainer::Remove(DLinkNode *node)
 //-----------------------------------------------------
 ECode ObjectContainer::Dispose()
 {
-    ObjectNode *node;
-
-    node = (ObjectNode *)mHead.Next();
+    ObjectNode* node = (ObjectNode *)mHead.Next();
     while (&mHead != (DLinkNode *)node) {
         node->Detach();
         delete node;
@@ -132,21 +137,20 @@ ECode ObjectContainer::Dispose()
     return NOERROR;
 }
 
-ECode ObjectContainer::Current(PInterface *obj)
+ECode ObjectContainer::Current(
+    /* [out] */ PInterface* obj)
 {
-    ECode ec;
-    ObjectNode *node;
-
-    ec = SimpleContainer::Current((DLinkNode **)&node);
-    if (NOERROR == ec) *obj = node->mObject;
+    *obj = NULL;
+    ObjectNode* node;
+    ECode ec = SimpleContainer::Current((DLinkNode **)&node);
+    if (SUCCEEDED(ec)) *obj = node->mObject;
     return ec;
 }
 
-ECode ObjectContainer::Add(PInterface pObj)
+ECode ObjectContainer::Add(
+    /* [in] */ PInterface pObj)
 {
-    ObjectNode *node;
-
-    node = new ObjectNode(pObj);
+    ObjectNode* node = new ObjectNode(pObj);
     if (NULL == node) return E_OUT_OF_MEMORY;
 
     return SimpleContainer::Add(node);
@@ -154,8 +158,7 @@ ECode ObjectContainer::Add(PInterface pObj)
 
 ECode ObjectContainer::Remove(PInterface pObj)
 {
-    ObjectNode *node;
-
+    ObjectNode* node;
     ForEachDLinkNode(ObjectNode *, node, &mHead) {
         if (node->mObject == pObj) {
             SimpleContainer::Remove(node);

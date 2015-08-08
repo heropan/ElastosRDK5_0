@@ -11,4 +11,3 @@ SOURCES = clserr.cpp
 SOURCES += comprcls.cpp
 SOURCES += reloc.cpp
 SOURCES += datatype.cpp
-

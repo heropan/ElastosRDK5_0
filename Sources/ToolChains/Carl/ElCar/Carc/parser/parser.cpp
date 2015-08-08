@@ -6053,7 +6053,7 @@ int P_CAR(const char *pszModuleName, BOOL bNested)
 {
     CARToken token;
     char szNakedUunm[c_nMaxTokenSize];
-    char* pszUunm;
+    const char* pszUunm;
     int nUunmlen;
 
     token = GetToken(s_pFile);

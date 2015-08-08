@@ -13,12 +13,6 @@ typedef struct UCaseProps UCaseProps;
 
 /* single-code point functions */
 
-//UChar32
-//ucase_tolower(const UCaseProps *csp, UChar32 c);
-//
-//UChar32
-//ucase_toupper(const UCaseProps *csp, UChar32 c);
-
 Char32 u_toupper(Char32 c);
 
 Char32 u_tolower(Char32 c);

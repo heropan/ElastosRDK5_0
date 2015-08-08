@@ -9,46 +9,43 @@
 
 #include <clsbase.h>
 
-
-int CompressCLS(void *pvDest)
+int CompressCLS(
+    /* [in] */ void* dest)
 {
-    int nDataSize;
-    CLSModule *pSrc, *pDest;
+    CLSModule* destModule = (CLSModule *)dest;
+    CLSModule* srcModule = (CLSModule *)alloca(destModule->nSize);
+    if (!srcModule) _ReturnError(CLSError_OutOfMemory);
 
-    pDest = (CLSModule *)pvDest;
-    pSrc = (CLSModule *)alloca(pDest->nSize);
-    if (!pSrc) _ReturnError (CLSError_OutOfMemory);
-
-    memcpy(pSrc, pDest, pDest->nSize);
-    nDataSize = pSrc->nSize - sizeof(CLSModule);
+    memcpy(srcModule, destModule, destModule->nSize);
+    int dataSize = srcModule->nSize - sizeof(CLSModule);
 
     if (compress(
-        (BYTE *)pDest + sizeof(CLSModule),
-        (uLongf *)&nDataSize,
-        (BYTE *)pSrc + sizeof(CLSModule),
-        (uLongf)nDataSize) != Z_OK) {
-        _ReturnError (CLSError_Compress);
+        (Bytef *)destModule + sizeof(CLSModule),
+        (uLongf *)&dataSize,
+        (Bytef *)srcModule + sizeof(CLSModule),
+        (uLongf)dataSize) != Z_OK) {
+        _ReturnError(CLSError_Compress);
     }
 
-    _ReturnOK (nDataSize + sizeof(CLSModule));
+    _ReturnOK(dataSize + sizeof(CLSModule));
 }
 
-int UncompressCLS(const void *pvSrc, int nSize, CLSModule *pDest)
+int UncompressCLS(
+    /* [in] */ const void* src,
+    /* [in] */ int size,
+    /* [in] */ CLSModule* destModule)
 {
-    int nDataSize;
-    CLSModule *pSrc;
-
-    pSrc = (CLSModule *)pvSrc;
-    nDataSize = pSrc->nSize - sizeof(CLSModule);
+    CLSModule* srcModule = (CLSModule *)src;
+    int dataSize = srcModule->nSize - sizeof(CLSModule);
 
     if (uncompress(
-        (BYTE *)pDest + sizeof(CLSModule),
-        (uLongf *)&nDataSize,
-        (BYTE *)pSrc + sizeof(CLSModule),
-        (uLongf)nSize - sizeof(CLSModule)) != Z_OK) {
-        _ReturnError (CLSError_Uncompress);
+        (Bytef *)destModule + sizeof(CLSModule),
+        (uLongf *)&dataSize,
+        (Bytef *)srcModule + sizeof(CLSModule),
+        (uLongf)size - sizeof(CLSModule)) != Z_OK) {
+        _ReturnError(CLSError_Uncompress);
     }
 
-    memcpy(pDest, pSrc, sizeof(CLSModule));
-    _ReturnOK (nDataSize + sizeof(CLSModule));
+    memcpy(destModule, srcModule, sizeof(CLSModule));
+    _ReturnOK(dataSize + sizeof(CLSModule));
 }

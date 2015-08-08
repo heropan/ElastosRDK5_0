@@ -7,46 +7,52 @@
 
 #include "clsbase.h"
 
-int GetOriginalType(const CLSModule *pModule,
-    const TypeDescriptor *pSrc, TypeDescriptor *pDest)
+int GetOriginalType(
+    /* [in] */ const CLSModule* module,
+    /* [in] */ const TypeDescriptor* srcDescriptor,
+    /* [in] */ TypeDescriptor* destDescriptor)
 {
-    pDest->nPointer = pSrc->nPointer;
-    pDest->bUnsigned = pSrc->bUnsigned;
+    destDescriptor->nPointer = srcDescriptor->nPointer;
+    destDescriptor->bUnsigned = srcDescriptor->bUnsigned;
 
-    while (pSrc->type == Type_alias) {
-        pSrc = &pModule->ppAliasDir[pSrc->sIndex]->type;
-        pDest->nPointer += pSrc->nPointer;
-        pDest->bUnsigned |= pSrc->bUnsigned;
+    while (srcDescriptor->type == Type_alias) {
+        srcDescriptor = &module->ppAliasDir[srcDescriptor->sIndex]->type;
+        destDescriptor->nPointer += srcDescriptor->nPointer;
+        destDescriptor->bUnsigned |= srcDescriptor->bUnsigned;
     }
 
-    pDest->type = pSrc->type;
-    pDest->sIndex = pSrc->sIndex;
-    pDest->pNestedType = pSrc->pNestedType;
+    destDescriptor->type = srcDescriptor->type;
+    destDescriptor->sIndex = srcDescriptor->sIndex;
+    destDescriptor->pNestedType = srcDescriptor->pNestedType;
 
-    _ReturnOK (CLS_NoError);
+    _ReturnOK(CLS_NoError);
 }
 
-int GetArrayBaseType(const CLSModule *pModule,
-    const TypeDescriptor *pSrc, TypeDescriptor *pDest)
+int GetArrayBaseType(
+    /* [in] */ const CLSModule* module,
+    /* [in] */ const TypeDescriptor* srcDescriptor,
+    /* [in] */ TypeDescriptor* destDescriptor)
 {
-    TypeDescriptor *pType = (TypeDescriptor *)pSrc;
+    TypeDescriptor* type = (TypeDescriptor *)srcDescriptor;
 
-    while (Type_Array == pType->type) {
-        pType = &pModule->ppArrayDir[pType->sIndex]->type;
+    while (Type_Array == type->type) {
+        type = &module->ppArrayDir[type->sIndex]->type;
     }
 
-    memcpy(pDest, pType, sizeof(TypeDescriptor));
+    memcpy(destDescriptor, type, sizeof(TypeDescriptor));
 
-    _ReturnOK (CLS_NoError);
+    _ReturnOK(CLS_NoError);
 }
 
-BOOL IsEqualType(const CLSModule *pModule,
-    const TypeDescriptor *pSrc, const TypeDescriptor *pDest)
+BOOL IsEqualType(
+    /* [in] */ const CLSModule* module,
+    /* [in] */ const TypeDescriptor* descriptor1,
+    /* [in] */ const TypeDescriptor* descriptor2)
 {
     TypeDescriptor src, dest;
 
-    GetOriginalType(pModule, pSrc, &src);
-    GetOriginalType(pModule, pDest, &dest);
+    GetOriginalType(module, descriptor1, &src);
+    GetOriginalType(module, descriptor2, &dest);
 
     _Return (!memcmp(&src, &dest, sizeof(src)));
 }

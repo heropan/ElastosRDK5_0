@@ -6,7 +6,6 @@
 #define __CLSBASE_H__
 
 #include <stdint.h>
-//#include <stdlib.h>
 #include <elatypes.h>
 #include <string.h>
 #include <clsdef.h>
@@ -22,28 +21,29 @@ inline int RoundUp4(int n)
     return ((n) + 4 - 1) & ~(4 - 1);
 }
 
-namespace ErrRec {
-    extern int nNumber;
-    extern char szName[];
-    extern char szMessage[];
-}
+extern int sCLSErrorNumber;
+extern char sCLSErrorName[];
+extern char sCLSErrorMessage[];
 
 #define _Return(ret) return ret
 
 #define _ReturnOK(ret)                  \
 {                                       \
-    ErrRec::nNumber = CLS_NoError;      \
+    sCLSErrorNumber = CLS_NoError;      \
     return ret;                         \
 }
 
 #define _ReturnError(err)                   \
 {                                           \
-    ErrRec::nNumber = err;                  \
-    strcpy(ErrRec::szName, #err);           \
+    sCLSErrorNumber = err;                  \
+    strcpy(sCLSErrorName, #err);           \
     return err;                             \
 }
 
-extern void ExtraMessage(const char *, const char *s2 = NULL,
-                const char *s3 = NULL, const char *s4 = NULL);
+extern void ExtraMessage(
+    /* [in] */ const char*,
+    /* [in] */ const char* s2 = NULL,
+    /* [in] */ const char* s3 = NULL,
+    /* [in] */ const char* s4 = NULL);
 
 #endif // __CLSBASE_H__

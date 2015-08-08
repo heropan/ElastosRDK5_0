@@ -6,7 +6,7 @@
 #include <string.h>
 #include <ctype.h>
 
-static char * s_elatypes[] = {
+static const char * s_elatypes[] = {
     "ECode",    "PVoid",
     "Int8",     "UInt8",    "Byte",     "PInt8",    "PByte",    "PUInt8",
     "Char8",    "Char16",   "Char32",   "PChar8",   "PChar16",  "PChar32",
@@ -38,7 +38,7 @@ static char * s_elatypes[] = {
 
 const unsigned int c_elatypes = sizeof(s_elatypes) / sizeof(s_elatypes[0]);
 
-char * s_replstr = "_ELASTOS ";
+const char * s_replstr = "_ELASTOS ";
 
 static int IsWordBoundary(int c)
 {
@@ -51,7 +51,7 @@ static int IsWordBoundary(int c)
 //
 static BOOL AddNamespacePrefix(
     /* [in] */ char *instr,
-    /* [in] */ char *substr,
+    /* [in] */ const char *substr,
     /* [out] */ char * outstr)
 {
     assert(instr != NULL);

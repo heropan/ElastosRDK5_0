@@ -50,12 +50,14 @@ static LibUtilsFirstStatics gFirstStatics;
 
 extern "C" {
 
-Char32 __cdecl _String_ToLowerCase(Char32 ch)
+Char32 __cdecl _String_ToLowerCase(
+    /* [in] */ Char32 ch)
 {
     return u_tolower(ch);
 }
 
-Char32 __cdecl _String_ToUpperCase(_ELASTOS Char32 ch)
+Char32 __cdecl _String_ToUpperCase(
+    /* [in] */ Char32 ch)
 {
     return u_toupper(ch);
 }

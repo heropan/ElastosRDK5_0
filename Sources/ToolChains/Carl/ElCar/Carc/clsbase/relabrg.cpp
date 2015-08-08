@@ -23,7 +23,7 @@ void RelocAbridgedCLS(void *pvAbrgCLS)
     pInfo = (AbridgedModuleInfo *)pvAbrgCLS;
     nBase = (int)pvAbrgCLS;
 
-    if ((int)(pInfo->pClasses) > nBase) return; // has relocated
+    if ((size_t)(pInfo->pClasses) > nBase) return; // has relocated
 
     RELOC(pInfo->pClasses, AbridgedClass *, nBase);
     RELOC(pInfo->pInterfaces, AbridgedInterface *, nBase);

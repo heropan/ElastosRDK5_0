@@ -28,7 +28,7 @@ extern "C" {
     _ELASTOS PCarQuintet __cdecl _ArrayOf_Alloc_Box(_ELASTOS PVoid pBuf,
             _ELASTOS Int32 size, _ELASTOS CarQuintetFlags flags);
     _ELASTOS Int32 __cdecl _ArrayOf_Replace(_ELASTOS PCarQuintet pCq,
-            _ELASTOS Int32 offset, const _ELASTOS PByte p, _ELASTOS Int32 n);
+            _ELASTOS Int32 offset, const _ELASTOS Byte* p, _ELASTOS Int32 n);
 }
 
 //

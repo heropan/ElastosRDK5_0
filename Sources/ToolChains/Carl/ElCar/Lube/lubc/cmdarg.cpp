@@ -272,7 +272,7 @@ const char *UserFuncArgString(DWORD dwArg)
 
     ObjectType object;
     MemberType member;
-    char *p;
+    const char *p;
 
     if ((DWORD)-1 == dwArg) return "string";
 
@@ -352,6 +352,9 @@ const char *UserFuncArgString(DWORD dwArg)
             break;
         case Object_ClassConstructor:
             p = "constructor";
+            break;
+        case Object_IntfConst:
+            p = "interfaceconst";
             break;
     }
     strcpy(s_szArgString, p);

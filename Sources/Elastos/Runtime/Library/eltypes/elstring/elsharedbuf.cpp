@@ -110,5 +110,4 @@ Int32 SharedBuffer::Release(UInt32 flags) const
     return curr;
 }
 
-
 _ELASTOS_NAMESPACE_END
