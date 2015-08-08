@@ -4,8 +4,9 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <malloc.h>
 
-#include <eltypes.h>
+#include <elatypes.h>
 #include "clsbase.h"
 
 //alignment = 4;

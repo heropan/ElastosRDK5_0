@@ -7,7 +7,7 @@
 #include "clsbase.h"
 
 //#ifdef _win32
-#include <eltypes.h>
+#include <elatypes.h>
 
 #ifndef _WINDEF_H
 typedef unsigned long long  UINT64;
