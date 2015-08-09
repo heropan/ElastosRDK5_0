@@ -162,7 +162,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
         if (clsDesc->clsid == clsid.clsid) {
             for (Int32 j = 0; j < clsDesc->mInterfaceCount; j++) {
                 cifDir = getCIFAddr(base, clsDesc->ppInterfaces, j);
-                index = cifDir->sIndex;
+                index = cifDir->mIndex;
                 ifDir = getInterfaceDirAddr(base,
                         moduleInfo->mClsMod->mInterfaceDirs, index);
                 ifDesc = adjustInterfaceDescAddr(base, ifDir->pDesc);

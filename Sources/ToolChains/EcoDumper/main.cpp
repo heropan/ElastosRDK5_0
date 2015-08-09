@@ -81,7 +81,7 @@ void dump_param_type(ParamDescriptor* paramDesc)
         break;
     }
 
-    switch(paramDesc->type.nPointer) {
+    switch(paramDesc->type.mPointer) {
     case 0:
         printf("\n");
         break;
@@ -136,7 +136,7 @@ void dump_class_interface(ClassDescriptor* clsDesc)
     printf("[%d interfaces]\n", clsDesc->mInterfaceCount);
     for (int i = 0; i < clsDesc->mInterfaceCount; ++i) {
         ClassInterface* clsItf = clsDesc->ppInterfaces[i];
-        printf("%s\n", sModule->mInterfaceDirs[clsItf->sIndex]->pszName);
+        printf("%s\n", sModule->mInterfaceDirs[clsItf->mIndex]->pszName);
     }
     printf("[end]\n");
 }

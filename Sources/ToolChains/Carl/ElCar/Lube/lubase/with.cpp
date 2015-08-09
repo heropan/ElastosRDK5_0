@@ -378,7 +378,7 @@ int CondWithClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
                 [pCtx->m_pClass->pDesc->mInterfaceCount - 1];
     }
     pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
-                    [pCtx->m_pClsIntf->sIndex];
+                    [pCtx->m_pClsIntf->mIndex];
     pCtx->m_pIntfParent = pCtx->m_pModule-> \
             mInterfaceDirs[pCtx->m_pInterface->pDesc->sParentIndex];
     nRet = pCtx->ExecStatements(pDesc->pBlockette);

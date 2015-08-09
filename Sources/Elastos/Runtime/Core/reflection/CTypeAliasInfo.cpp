@@ -95,6 +95,6 @@ ECode CTypeAliasInfo::GetPtrLevel(
         return E_INVALID_ARGUMENT;
     }
 
-    *level = mAliasDirEntry->type.nPointer;
+    *level = mAliasDirEntry->type.mPointer;
     return NOERROR;
 }

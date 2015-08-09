@@ -442,7 +442,7 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
 
             for (m = 0; m < pClass->mInterfaceCount; m++) {
                 pClsIntf = pClass->ppInterfaces[m];
-                pIEntry = pModule->mInterfaceDirs[pClsIntf->sIndex];
+                pIEntry = pModule->mInterfaceDirs[pClsIntf->mIndex];
 
                 if (pClsIntf->wAttribs & ClassInterfaceAttrib_outer)
                     continue;

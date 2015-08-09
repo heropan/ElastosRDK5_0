@@ -68,28 +68,28 @@ int GetIdentifyType(
     n = SelectAliasDirEntry(pszName, pModule);
     if (n >= 0) {
         pType->mType = Type_alias;
-        pType->sIndex = n;
+        pType->mIndex = n;
         _Return (CLS_NoError);
     }
 
     n = SelectInterfaceDirEntry(pszName, pszNamespaces, pModule);
     if (n >= 0) {
         pType->mType = Type_interface;
-        pType->sIndex = n;
+        pType->mIndex = n;
         _Return (CLS_NoError);
     }
 
     n = SelectEnumDirEntry(pszName, pszNamespaces, pModule);
     if (n >= 0) {
         pType->mType = Type_enum;
-        pType->sIndex = n;
+        pType->mIndex = n;
         _Return (CLS_NoError);
     }
 
     n = SelectStructDirEntry(pszName, pModule);
     if (n >= 0) {
         pType->mType = Type_struct;
-        pType->sIndex = n;
+        pType->mIndex = n;
         _Return (CLS_NoError);
     }
 
@@ -116,11 +116,11 @@ Loop:
             goto Loop;
         }
 
-        if (pt->nPointer) return TRUE;
+        if (pt->mPointer) return TRUE;
 
         if (!STRUCT_IS_PRIMARY_TYPE(pt->mType)) {
             if (pt->mType == Type_struct) {
-                if (IsLocalStruct(pModule, pModule->mStructDirs[pt->sIndex]->pDesc)) {
+                if (IsLocalStruct(pModule, pModule->mStructDirs[pt->mIndex]->pDesc)) {
                     return TRUE;
                 }
                 else continue;
@@ -144,12 +144,12 @@ BOOL IsLocalCarQuintet(const CLSModule *pModule,
             _ReturnOK (TRUE);
 
         case Type_interface:
-            if (pModule->mInterfaceDirs[pType->sIndex]->pDesc->dwAttribs
+            if (pModule->mInterfaceDirs[pType->mIndex]->pDesc->dwAttribs
                     & InterfaceAttrib_local) _ReturnOK (TRUE);
             break;
 
         default:
-            if (1 <= pType->nPointer) _ReturnOK (TRUE);
+            if (1 <= pType->mPointer) _ReturnOK (TRUE);
             break;
     }
 
@@ -186,7 +186,7 @@ static UINT GetMaxAlignmentOfStructElems(const CLSModule *pModule, StructDescrip
         GetTypeFromIndex(pModule, pDesc, i, &typeDesc);
 
         if (Type_struct == typeDesc.mType) {
-            uAlign = GetMaxAlignmentOfStructElems(pModule, pModule->mStructDirs[typeDesc.sIndex]->pDesc);
+            uAlign = GetMaxAlignmentOfStructElems(pModule, pModule->mStructDirs[typeDesc.mIndex]->pDesc);
         }
         else {
             uAlign = STRUCT_TYPE_ALIGNMENT(typeDesc.mType);
@@ -205,12 +205,12 @@ static UINT CalcArrayElements(const CLSModule *pModule, TypeDescriptor *pDesc)
     UINT nElements;
     TypeDescriptor *pSubDesc;
 
-    pSubDesc = &pModule->mArrayDirs[pDesc->sIndex]->type;
-    nElements = pModule->mArrayDirs[pDesc->sIndex]->nElements;
+    pSubDesc = &pModule->mArrayDirs[pDesc->mIndex]->type;
+    nElements = pModule->mArrayDirs[pDesc->mIndex]->nElements;
 
     while (Type_Array == pSubDesc->mType) {
-        nElements *= pModule->mArrayDirs[pSubDesc->sIndex]->nElements;
-        pSubDesc = &pModule->mArrayDirs[pSubDesc->sIndex]->type;
+        nElements *= pModule->mArrayDirs[pSubDesc->mIndex]->nElements;
+        pSubDesc = &pModule->mArrayDirs[pSubDesc->mIndex]->type;
     }
 
     return nElements;
@@ -233,7 +233,7 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
     GetTypeFromIndex(pModule, pDesc, 0, &orgTypeDesc);
     if (Type_struct == orgTypeDesc.mType) {
         uCurSize = SizeOfStruct(pModule, \
-                    pModule->mStructDirs[orgTypeDesc.sIndex]->pDesc, NULL);
+                    pModule->mStructDirs[orgTypeDesc.mIndex]->pDesc, NULL);
     }
     else {
         uCurSize = STRUCT_TYPE_TO_SIZE(orgTypeDesc.mType);
@@ -255,7 +255,7 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
                 GetTypeFromIndex(pModule, pDesc, i, &orgTypeDesc);
                 if (Type_struct == orgTypeDesc.mType) {
                     uCurSize = SizeOfStruct(pModule, \
-                                pModule->mStructDirs[orgTypeDesc.sIndex]->pDesc, NULL);
+                                pModule->mStructDirs[orgTypeDesc.mIndex]->pDesc, NULL);
                 }
                 else {
                     uCurSize = STRUCT_TYPE_TO_SIZE(orgTypeDesc.mType);
@@ -281,7 +281,7 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
         //Get the next element size
         GetTypeFromIndex(pModule, pDesc, i + 1, &orgTypeDesc);
         if (Type_struct == orgTypeDesc.mType) {
-            uNextSize = SizeOfStruct(pModule, pModule->mStructDirs[orgTypeDesc.sIndex]->pDesc, &uNextAlignment);
+            uNextSize = SizeOfStruct(pModule, pModule->mStructDirs[orgTypeDesc.mIndex]->pDesc, &uNextAlignment);
         }
         else {
             uNextSize = STRUCT_TYPE_TO_SIZE(orgTypeDesc.mType);
@@ -369,7 +369,7 @@ int ClassDescriptorCopy(
 
     for (n = 0; n < pSrc->mInterfaceCount; n++) {
         i = InterfaceCopy(pSrcModule,
-                    pSrc->ppInterfaces[n]->sIndex, pDestModule, bNameSpace);
+                    pSrc->ppInterfaces[n]->mIndex, pDestModule, bNameSpace);
         if (i < 0) _Return (i);
 
         m = CreateClassInterface(i, pDest);
@@ -384,7 +384,7 @@ int ClassDescriptorCopy(
                                                 ClassInterfaceAttrib_callback) {
                 char szName[255];
                 strcpy(szName,
-                    pSrcModule->mInterfaceDirs[pSrc->ppInterfaces[n]->sIndex]->
+                    pSrcModule->mInterfaceDirs[pSrc->ppInterfaces[n]->mIndex]->
                                                                     pszName);
                 strcat(szName, "Handler");
                 i = SelectInterfaceDirEntry(szName, NULL, pSrcModule);
@@ -433,7 +433,7 @@ int ClassDescriptorXCopy(
     }
 
     for (n = 0; n < pSrc->mInterfaceCount; n++) {
-        m = CreateClassInterface(pSrc->ppInterfaces[n]->sIndex, pDest);
+        m = CreateClassInterface(pSrc->ppInterfaces[n]->mIndex, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
         pDest->ppInterfaces[m]->wAttribs = pSrc->ppInterfaces[n]->wAttribs;
@@ -1104,46 +1104,46 @@ int TypeCopy(
     switch (pSrcType->mType) {
         case Type_interface:
             n = InterfaceCopy(
-                pSrcModule, pSrcType->sIndex, pDestModule, bNameSpace);
+                pSrcModule, pSrcType->mIndex, pDestModule, bNameSpace);
             if (n < 0) _Return (n);
-            pDestType->sIndex = n;
+            pDestType->mIndex = n;
             _Return (CLS_NoError);
         case Type_Array:
-            n = ArrayCopy(pSrcModule, pSrcType->sIndex, pDestModule, bNameSpace);
+            n = ArrayCopy(pSrcModule, pSrcType->mIndex, pDestModule, bNameSpace);
             if (n < 0) _Return (n);
-            pDestType->sIndex = n;
+            pDestType->mIndex = n;
             _Return (CLS_NoError);
 
         case Type_struct:
-            n = StructCopy(pSrcModule, pSrcType->sIndex, pDestModule, bNameSpace);
+            n = StructCopy(pSrcModule, pSrcType->mIndex, pDestModule, bNameSpace);
             if (n < 0) _Return (n);
-            pDestType->sIndex = n;
+            pDestType->mIndex = n;
             _Return (CLS_NoError);
 
         case Type_enum:
-            n = EnumCopy(pSrcModule, pSrcType->sIndex, pDestModule, bNameSpace);
+            n = EnumCopy(pSrcModule, pSrcType->mIndex, pDestModule, bNameSpace);
             if (n < 0) _Return (n);
-            pDestType->sIndex = n;
+            pDestType->mIndex = n;
             _Return (CLS_NoError);
 
         case Type_alias:
-            n = AliasCopy(pSrcModule, pSrcType->sIndex, pDestModule, bNameSpace);
+            n = AliasCopy(pSrcModule, pSrcType->mIndex, pDestModule, bNameSpace);
             if (n < 0) _Return (n);
-            pDestType->sIndex = n;
+            pDestType->mIndex = n;
             _Return (CLS_NoError);
 
         default:
             break;
     }
 
-    if (pSrcType->pNestedType) {
-        pDestType->pNestedType = new TypeDescriptor;
-        if (!pDestType->pNestedType) _ReturnError (CLSError_OutOfMemory);
-        n = TypeCopy(pSrcModule, pSrcType->pNestedType,
-                    pDestModule, pDestType->pNestedType, bNameSpace);
+    if (pSrcType->mNestedType) {
+        pDestType->mNestedType = new TypeDescriptor;
+        if (!pDestType->mNestedType) _ReturnError (CLSError_OutOfMemory);
+        n = TypeCopy(pSrcModule, pSrcType->mNestedType,
+                    pDestModule, pDestType->mNestedType, bNameSpace);
         if (n < 0) {
-            delete pDestType->pNestedType;
-            pDestType->pNestedType = NULL;
+            delete pDestType->mNestedType;
+            pDestType->mNestedType = NULL;
             _Return (n);
         }
     }
@@ -1168,21 +1168,21 @@ int TypeXCopy(
         case Type_struct:
         case Type_enum:
         case Type_alias:
-            pDestType->sIndex = pSrcType->sIndex;
+            pDestType->mIndex = pSrcType->mIndex;
             _Return (CLS_NoError);
 
         default:
             break;
     }
 
-    if (pSrcType->pNestedType) {
-        pDestType->pNestedType = new TypeDescriptor;
-        if (!pDestType->pNestedType) _ReturnError (CLSError_OutOfMemory);
-        n = TypeXCopy(pSrcModule, pSrcType->pNestedType,
-                    pDestModule, pDestType->pNestedType, bNameSpace);
+    if (pSrcType->mNestedType) {
+        pDestType->mNestedType = new TypeDescriptor;
+        if (!pDestType->mNestedType) _ReturnError (CLSError_OutOfMemory);
+        n = TypeXCopy(pSrcModule, pSrcType->mNestedType,
+                    pDestModule, pDestType->mNestedType, bNameSpace);
         if (n < 0) {
-            delete pDestType->pNestedType;
-            pDestType->pNestedType = NULL;
+            delete pDestType->mNestedType;
+            pDestType->mNestedType = NULL;
             _Return (n);
         }
     }
@@ -1193,10 +1193,10 @@ int TypeXCopy(
 int TypeCopy(const TypeDescriptor *pSrc, TypeDescriptor *pDest)
 {
     memcpy(pDest, pSrc, sizeof(TypeDescriptor));
-    if (pSrc->pNestedType) {
-        pDest->pNestedType = new TypeDescriptor;
-        if (!pDest->pNestedType) _ReturnError (CLSError_OutOfMemory);
-        memcpy(pDest->pNestedType, pSrc->pNestedType, sizeof(TypeDescriptor));
+    if (pSrc->mNestedType) {
+        pDest->mNestedType = new TypeDescriptor;
+        if (!pDest->mNestedType) _ReturnError (CLSError_OutOfMemory);
+        memcpy(pDest->mNestedType, pSrc->mNestedType, sizeof(TypeDescriptor));
     }
     _ReturnOK (CLS_NoError);
 }

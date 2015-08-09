@@ -167,9 +167,9 @@ int CFlatBuffer::WriteMethodDescriptor(MethodDescriptor *pDesc)
         for (n = 0; n < d.cParams; n++) {
             memcpy(&param, d.ppParams[n], sizeof(ParamDescriptor));
             param.pszName = (char *)WriteString(param.pszName);
-            if (param.type.pNestedType) {
-                param.type.pNestedType = (TypeDescriptor *)WriteData( \
-                    param.type.pNestedType, sizeof(TypeDescriptor));
+            if (param.type.mNestedType) {
+                param.type.mNestedType = (TypeDescriptor *)WriteData( \
+                    param.type.mNestedType, sizeof(TypeDescriptor));
             }
             p[n] = WriteData(&param, sizeof(ParamDescriptor));
         }
@@ -244,9 +244,9 @@ int CFlatBuffer::WriteArrayDirEntry(ArrayDirEntry *pArrayDirEntry)
         entry.pszNameSpace = (char *)WriteString(entry.pszNameSpace);
     }
 
-    if (entry.type.pNestedType) {
-        entry.type.pNestedType = (TypeDescriptor *)WriteData( \
-            entry.type.pNestedType, sizeof(TypeDescriptor));
+    if (entry.type.mNestedType) {
+        entry.type.mNestedType = (TypeDescriptor *)WriteData( \
+            entry.type.mNestedType, sizeof(TypeDescriptor));
     }
 
     return WriteData(&entry, sizeof(ArrayDirEntry));
@@ -266,9 +266,9 @@ int CFlatBuffer::WriteStructDescriptor(StructDescriptor *pDesc)
         for (n = 0; n < d.cElems; n++) {
             memcpy(&elem, d.ppElems[n], sizeof(StructElement));
             elem.pszName = (char *)WriteString(elem.pszName);
-            if (elem.type.pNestedType) {
-                elem.type.pNestedType = (TypeDescriptor *)WriteData( \
-                    elem.type.pNestedType, sizeof(TypeDescriptor));
+            if (elem.type.mNestedType) {
+                elem.type.mNestedType = (TypeDescriptor *)WriteData( \
+                    elem.type.mNestedType, sizeof(TypeDescriptor));
             }
             p[n] = WriteData(&elem, sizeof(StructElement));
         }
@@ -344,9 +344,9 @@ int CFlatBuffer::WriteAliasDirEntry(AliasDirEntry *pAliasDirEntry)
 
     memcpy(&entry, pAliasDirEntry, sizeof(AliasDirEntry));
 
-    if (entry.type.pNestedType) {
-        entry.type.pNestedType = (TypeDescriptor *)WriteData( \
-            entry.type.pNestedType, sizeof(TypeDescriptor));
+    if (entry.type.mNestedType) {
+        entry.type.mNestedType = (TypeDescriptor *)WriteData( \
+            entry.type.mNestedType, sizeof(TypeDescriptor));
     }
 
     entry.pszName = (char *)WriteString(entry.pszName);
@@ -561,7 +561,7 @@ int CalcMethodSize(MethodDescriptor *p)
     size += StringAlignSize(p->pszSignature);
 
     for (n = 0; n < p->cParams; n++) {
-        if (p->ppParams[n]->type.pNestedType) {
+        if (p->ppParams[n]->type.mNestedType) {
             size += sizeof(TypeDescriptor);
         }
         size += StringAlignSize(p->ppParams[n]->pszName);
@@ -600,7 +600,7 @@ int CalcArraySize(ArrayDirEntry *p)
     if (p->pszNameSpace)
         size += StringAlignSize(p->pszNameSpace);
 
-    if (p->type.pNestedType)
+    if (p->type.mNestedType)
         size += sizeof(TypeDescriptor);
 
     return size;
@@ -616,7 +616,7 @@ int CalcStructSize(StructDirEntry *p)
     size += sizeof(StructDescriptor);
 
     for (n = 0; n < p->pDesc->cElems; n++) {
-        if (p->pDesc->ppElems[n]->type.pNestedType) {
+        if (p->pDesc->ppElems[n]->type.mNestedType) {
             size += sizeof(TypeDescriptor);
         }
         size += StringAlignSize(p->pDesc->ppElems[n]->pszName);
@@ -649,7 +649,7 @@ int CalcAliasSize(AliasDirEntry *p)
 
     size += StringAlignSize(p->pszName);
     if (p->pszNameSpace) size += StringAlignSize(p->pszNameSpace);
-    if (p->type.pNestedType) size += sizeof(TypeDescriptor);
+    if (p->type.mNestedType) size += sizeof(TypeDescriptor);
 
     return size;
 }

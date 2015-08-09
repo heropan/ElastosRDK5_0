@@ -82,7 +82,7 @@ int WithAllClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc)
     for (n = 0; n < pCtx->m_pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pClsIntf = pCtx->m_pClass->pDesc->ppInterfaces[n];
         pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
-                        [pCtx->m_pClsIntf->sIndex];
+                        [pCtx->m_pClsIntf->mIndex];
         pCtx->m_pIntfParent = pCtx->m_pModule-> \
                 mInterfaceDirs[pCtx->m_pInterface->pDesc->sParentIndex];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
@@ -92,7 +92,7 @@ int WithAllClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc)
     if (pCtx->m_pClass->pDesc->sCtorIndex) {
         ClassInterface clsCtorInterface;
         memset(&clsCtorInterface, 0, sizeof(ClassInterface));
-        clsCtorInterface.sIndex= pCtx->m_pClass->pDesc->sCtorIndex;
+        clsCtorInterface.mIndex= pCtx->m_pClass->pDesc->sCtorIndex;
         pCtx->m_pClsIntf = &clsCtorInterface;
         pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->sCtorIndex];
         pCtx->m_pIntfParent = pCtx->m_pModule-> \
@@ -275,7 +275,7 @@ int _WithAllClassMethod(
 
     for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
-                [pClass->pDesc->ppInterfaces[n]->sIndex];
+                [pClass->pDesc->ppInterfaces[n]->mIndex];
         if (!(pClass->pDesc->ppInterfaces[n]->wAttribs
                                            & ClassInterfaceAttrib_callback)
             &&!(pClass->pDesc->ppInterfaces[n]->wAttribs
@@ -327,7 +327,7 @@ int _WithAllCoalescenceMethod(
 
     for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
-                [pClass->pDesc->ppInterfaces[n]->sIndex];
+                [pClass->pDesc->ppInterfaces[n]->mIndex];
         if (pClass->pDesc->ppInterfaces[n]->wAttribs
                                            & ClassInterfaceAttrib_callback) {
             for (m = 0; m < pCtx->m_pInterface->pDesc->cMethods; ++m) {

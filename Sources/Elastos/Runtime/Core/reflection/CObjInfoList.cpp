@@ -918,11 +918,11 @@ ECode CObjInfoList::AcquireDataTypeInfo(
 
     ECode ec = NOERROR;
     CLSModule* clsMod = clsModule->mClsMod;
-    Int32 pointer = typeDesc->nPointer;
+    Int32 pointer = typeDesc->mPointer;
     if (typeDesc->mType == Type_alias) {
         ec = clsModule->AliasToOriginal(typeDesc, &typeDesc);
         if (FAILED(ec)) return ec;
-        if (isCheckLocalPtr) pointer += typeDesc->nPointer;
+        if (isCheckLocalPtr) pointer += typeDesc->mPointer;
     }
 
     CarDataType type = GetCarDataType(typeDesc->mType);
@@ -952,19 +952,19 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     //StructInfo
     else if (type == CarDataType_Struct) {
         StructDirEntry* structDir = getStructDirAddr(clsModule->mBase,
-                clsModule->mClsMod->mStructDirs, typeDesc->sIndex);
+                clsModule->mClsMod->mStructDirs, typeDesc->mIndex);
         ec = AcquireStaticStructInfo(clsModule,
                 structDir, (IInterface **)dataTypeInfo);
     }
     //InterfaceInfo
     else if (type == CarDataType_Interface) {
         ec = AcquireInterfaceInfo(clsModule,
-                typeDesc->sIndex, (IInterface **)dataTypeInfo);
+                typeDesc->mIndex, (IInterface **)dataTypeInfo);
     }
     //EnumInfo
     else if (type == CarDataType_Enum) {
         EnumDirEntry* enumDir = getEnumDirAddr(clsModule->mBase,
-                clsMod->mEnumDirs, typeDesc->sIndex);
+                clsMod->mEnumDirs, typeDesc->mIndex);
         ec = AcquireStaticEnumInfo(clsModule,
                 enumDir, (IInterface **)dataTypeInfo);
     }
@@ -972,7 +972,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     else if (type == CarDataType_CppVector) {
         AutoPtr<IDataTypeInfo> elemInfo;
         ArrayDirEntry* arrayDir = getArrayDirAddr(clsModule->mBase,
-                clsMod->mArrayDirs, typeDesc->sIndex);
+                clsMod->mArrayDirs, typeDesc->mIndex);
         Int32 length = arrayDir->nElements;
         TypeDescriptor* type = &arrayDir->type;
         ec = AcquireDataTypeInfo(clsModule, type, (IDataTypeInfo**)&elemInfo,
@@ -1177,7 +1177,7 @@ ECode CObjInfoList::AcquireCarArrayElementTypeInfo(
     switch (typeDesc->mType) {
         case Type_ArrayOf:
             return AcquireDataTypeInfo(clsModule,
-                    adjustNestedTypeAddr(clsModule->mBase, typeDesc->pNestedType),
+                    adjustNestedTypeAddr(clsModule->mBase, typeDesc->mNestedType),
                     elementTypeInfo);
         default:
             return E_INVALID_OPERATION;

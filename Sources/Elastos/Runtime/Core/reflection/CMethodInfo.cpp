@@ -9,7 +9,7 @@
 
 #define INVALID_PARAM_COUNT 0xFFFFFFFF
 
-EXTERN_C int invoke(void* func, int* param, int nSize);
+EXTERN_C int invoke(void* func, int* param, int size);
 
 struct VTable
 {
@@ -184,7 +184,7 @@ ECode CMethodInfo::SetParamElem(
     /* [in] */ ParmElement* parmElement)
 {
     TypeDescriptor* typeDesc = &paramDescriptor->type;
-    parmElement->mPointer = typeDesc->nPointer;
+    parmElement->mPointer = typeDesc->mPointer;
 
     ECode ec = NOERROR;
     if (typeDesc->mType == Type_alias) {
@@ -192,7 +192,7 @@ ECode CMethodInfo::SetParamElem(
         if (FAILED(ec)) {
             return ec;
         }
-        parmElement->mPointer += typeDesc->nPointer;
+        parmElement->mPointer += typeDesc->mPointer;
     }
 
     CarDataType type = GetCarDataType(typeDesc->mType);

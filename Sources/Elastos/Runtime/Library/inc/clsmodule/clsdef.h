@@ -80,12 +80,12 @@ typedef struct CLSModule
 typedef struct TypeDescriptor
 {
     CARDataType         mType;
-    unsigned short      sIndex;
-    unsigned char       nPointer;
-    unsigned char       bUnsigned;
-    int                 nSize;          //n value in the Char8Array_<n> etc
-    unsigned char       bNested;
-    TypeDescriptor      *pNestedType;   // just for EzArry and EzEnum
+    unsigned short      mIndex;
+    unsigned char       mPointer;
+    unsigned char       mUnsigned;
+    int                 mSize;          //n value in the Char8Array_<n> etc
+    unsigned char       mNested;
+    TypeDescriptor*     mNestedType;   // just for EzArry and EzEnum
 } TypeDescriptor;
 
 typedef struct ClassDescriptor ClassDescriptor;
@@ -127,7 +127,7 @@ struct ClassDescriptor
 
 struct ClassInterface
 {
-    unsigned short      sIndex;
+    unsigned short      mIndex;
     unsigned short      wAttribs;
 
     union

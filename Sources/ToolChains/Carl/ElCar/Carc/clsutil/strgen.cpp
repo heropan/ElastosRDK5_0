@@ -73,7 +73,7 @@ void GenerateTypeString(
             strcat(pszBuf, "UInt64");
             break;
         case Type_String:
-            if ((!pType->bNested) && (0 == pType->nPointer)) {
+            if ((!pType->mNested) && (0 == pType->mPointer)) {
                 strcat(pszBuf, "const String&");
             }
             else {
@@ -99,16 +99,16 @@ void GenerateTypeString(
             strcat(pszBuf, "EGuid");
             break;
         case Type_ArrayOf:
-            if (0 > pType->nSize) {
+            if (0 > pType->mSize) {
                 strcat(pszBuf, "ArrayOf<");
-                GenerateTypeString(pModule, pType->pNestedType, pszBuf);
+                GenerateTypeString(pModule, pType->mNestedType, pszBuf);
                 strcat(pszBuf, ">");
             }
             else {
                 strcat(pszBuf, "ArrayOf_<");
-                GenerateTypeString(pModule, pType->pNestedType, pszBuf);
+                GenerateTypeString(pModule, pType->mNestedType, pszBuf);
                 strcat(pszBuf, ",");
-                sprintf(buf, "%d", pType->nSize);
+                sprintf(buf, "%d", pType->mSize);
                 strcat(pszBuf, buf);
                 strcat(pszBuf, ">");
             }
@@ -118,11 +118,11 @@ void GenerateTypeString(
             break;
         case Type_interface:
         {
-            if (pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace != NULL &&
-                pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace[0] != '\0' &&
-                strcmp(pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(pszNamespace, pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace);
+            if (pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace != NULL &&
+                pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace[0] != '\0' &&
+                strcmp(pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace) + 1);
+                strcpy(pszNamespace, pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -137,20 +137,20 @@ void GenerateTypeString(
                 free(pszNamespace);
                 strcat(pszBuf, buffer);
             }
-            strcat(pszBuf, pModule->mInterfaceDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->pszName);
             break;
         }
         case Type_struct:
             strcat(pszBuf, "struct ");
-            strcat(pszBuf, pModule->mStructDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->pszName);
             break;
         case Type_enum:
         {
-            if (pModule->mEnumDirs[pType->sIndex]->pszNameSpace != NULL &&
-                pModule->mEnumDirs[pType->sIndex]->pszNameSpace[0] != '\0' &&
-                strcmp(pModule->mEnumDirs[pType->sIndex]->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(pModule->mEnumDirs[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(pszNamespace, pModule->mEnumDirs[pType->sIndex]->pszNameSpace);
+            if (pModule->mEnumDirs[pType->mIndex]->pszNameSpace != NULL &&
+                pModule->mEnumDirs[pType->mIndex]->pszNameSpace[0] != '\0' &&
+                strcmp(pModule->mEnumDirs[pType->mIndex]->pszNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(pModule->mEnumDirs[pType->mIndex]->pszNameSpace) + 1);
+                strcpy(pszNamespace, pModule->mEnumDirs[pType->mIndex]->pszNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -165,11 +165,11 @@ void GenerateTypeString(
                 free(pszNamespace);
                 strcat(pszBuf, buffer);
             }
-            strcat(pszBuf, pModule->mEnumDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->pszName);
             break;
         }
         case Type_alias:
-            strcat(pszBuf, pModule->mAliasDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->pszName);
             break;
         case Type_Array:
             break;
@@ -177,10 +177,10 @@ void GenerateTypeString(
             break;
     }
 
-    if (1 == pType->nPointer) {
+    if (1 == pType->mPointer) {
         strcat(pszBuf, " *");
     }
-    else if (2 == pType->nPointer) {
+    else if (2 == pType->mPointer) {
         strcat(pszBuf, " **");
     }
 }
@@ -190,10 +190,10 @@ void GenerateTypeStringForParam(
     const TypeDescriptor *pType,
     char *pszBuf)
 {
-    if (1 == pType->nPointer) {
+    if (1 == pType->mPointer) {
         strcat(pszBuf, "P");
     }
-    else if (2 == pType->nPointer) {
+    else if (2 == pType->mPointer) {
         strcat(pszBuf, "PP");
     }
 
@@ -254,22 +254,22 @@ void GenerateTypeStringForParam(
             break;
         case Type_ArrayOf:
             strcat(pszBuf, "ArrayOf");
-            GenerateTypeStringForParam(pModule, pType->pNestedType, pszBuf);
+            GenerateTypeStringForParam(pModule, pType->mNestedType, pszBuf);
             break;
         case Type_EventHandler:
             strcat(pszBuf, "EventHandler");
             break;
         case Type_interface:
-            strcat(pszBuf, pModule->mInterfaceDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->pszName);
             break;
         case Type_struct:
-            strcat(pszBuf, pModule->mStructDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->pszName);
             break;
         case Type_enum:
-            strcat(pszBuf, pModule->mEnumDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->pszName);
             break;
         case Type_alias:
-            strcat(pszBuf, pModule->mAliasDirs[pType->sIndex]->pszName);
+            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->pszName);
             break;
         case Type_Array:
             {
@@ -299,10 +299,10 @@ inline void GenerateArrayDims(
 
     do {
         strcat(pBuf, "[");
-        sprintf(szNum, "%d", pModule->mArrayDirs[pType->sIndex]->nElements);
+        sprintf(szNum, "%d", pModule->mArrayDirs[pType->mIndex]->nElements);
         strcat(pBuf, szNum);
         strcat(pBuf, "]");
-        pType = &(pModule->mArrayDirs[pType->sIndex]->type);
+        pType = &(pModule->mArrayDirs[pType->mIndex]->type);
     } while (Type_Array == pType->mType);
 }
 
@@ -352,7 +352,7 @@ const char *CStyleStructParamType2CString(
     s_szStringBuf[0] = 0;
     // If struct parameter type is't pointer, we have to change its type
     // to a pointer of a const struct object.
-    if (0 == pType->nPointer) {
+    if (0 == pType->mPointer) {
         strcat(s_szStringBuf, "const ");
         GenerateTypeString(pModule, pType, s_szStringBuf);
         strcat(s_szStringBuf, " *");
@@ -382,8 +382,8 @@ const char *StructType2CString(
     s_szStringBuf[0] = 0;
     // If struct parameter type is't pointer, we have to change its type
     // to a reference of a const struct object.
-    if (((Type_alias == pType->mType) && (0 == type.nPointer))
-        || (!(Type_alias == pType->mType) && (0 == pType->nPointer))) {
+    if (((Type_alias == pType->mType) && (0 == type.mPointer))
+        || (!(Type_alias == pType->mType) && (0 == pType->mPointer))) {
         strcat(s_szStringBuf, "const ");
         GenerateTypeString(pModule, pType, s_szStringBuf);
         strcat(s_szStringBuf, " &");
@@ -414,10 +414,10 @@ void GenerateITypeString(
             return;
     }
 
-    if (1 == pType->nPointer) {
+    if (1 == pType->mPointer) {
         strcat(pszBuf, " *");
     }
-    else if (2 == pType->nPointer) {
+    else if (2 == pType->mPointer) {
         strcat(pszBuf, " **");
     }
 }

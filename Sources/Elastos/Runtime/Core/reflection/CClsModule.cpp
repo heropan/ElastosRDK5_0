@@ -136,14 +136,14 @@ ECode CClsModule::AliasToOriginal(
     }
 
 //    while (typeDype->type == Type_alias) {
-//        typeDype = &mClsMod->mAliasDirs[typeDype->sIndex]->type;
+//        typeDype = &mClsMod->mAliasDirs[typeDype->mIndex]->type;
 //    }
 
-    if (typeDype->sIndex >= mClsMod->mAliasCount) {
+    if (typeDype->mIndex >= mClsMod->mAliasCount) {
         return E_INVALID_ARGUMENT;
     }
 
-    *orgTypeDesc = mTypeAliasList[typeDype->sIndex].mOrgTypeDesc;
+    *orgTypeDesc = mTypeAliasList[typeDype->mIndex].mOrgTypeDesc;
 
     return NOERROR;
 }

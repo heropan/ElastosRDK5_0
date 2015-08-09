@@ -154,14 +154,14 @@ int SelectAliasDirEntry(const char *pszName, const CLSModule *pModule)
     _ReturnError (CLSError_NotFound);
 }
 
-int SelectClassInterface(USHORT sIndex, const ClassDescriptor *pDesc)
+int SelectClassInterface(USHORT index, const ClassDescriptor *pDesc)
 {
     int n;
 
     assert(pDesc != NULL);
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (pDesc->ppInterfaces[n]->sIndex == sIndex) {
+        if (pDesc->ppInterfaces[n]->mIndex == index) {
             _ReturnOK (n);
         }
     }

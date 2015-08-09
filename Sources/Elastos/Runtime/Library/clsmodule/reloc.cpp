@@ -9,20 +9,21 @@ static int sBase;
 void MapClassDescriptor(
     /* [in] */ ClassDescriptor* p)
 {
-    if (0 != p->cAggregates)
+    if (0 != p->cAggregates) {
         p->pAggrIndexs = (USHORT *)((int)p->pAggrIndexs + sBase);
-    if (0 != p->cAspects)
+    }
+    if (0 != p->cAspects) {
         p->pAspectIndexs = (USHORT *)((int)p->pAspectIndexs + sBase);
-    if (0 != p->cClasses)
+    }
+    if (0 != p->cClasses) {
         p->pClassIndexs = (USHORT *)((int)p->pClassIndexs + sBase);
+    }
 
     if (0 != p->mInterfaceCount) {
-        p->ppInterfaces = \
-            (ClassInterface **)((int)p->ppInterfaces + sBase);
+        p->ppInterfaces = (ClassInterface **)((int)p->ppInterfaces + sBase);
 
         for (int n = 0; n < p->mInterfaceCount; n++) {
-            p->ppInterfaces[n] = \
-                (ClassInterface *)((int)p->ppInterfaces[n] + sBase);
+            p->ppInterfaces[n] = (ClassInterface *)((int)p->ppInterfaces[n] + sBase);
         }
     }
 }
@@ -55,13 +56,12 @@ void MapMethodDescriptor(
         p->ppParams = (ParamDescriptor **)((int)p->ppParams + sBase);
 
         for (int n = 0; n < p->cParams; n++) {
-            p->ppParams[n] = \
-                (ParamDescriptor *)((int)p->ppParams[n] + sBase);
+            p->ppParams[n] = (ParamDescriptor *)((int)p->ppParams[n] + sBase);
             p->ppParams[n]->pszName += sBase;
 
-            if (p->ppParams[n]->type.pNestedType) {
-                p->ppParams[n]->type.pNestedType = (TypeDescriptor *) \
-                    ((int)p->ppParams[n]->type.pNestedType + sBase);
+            if (p->ppParams[n]->type.mNestedType) {
+                p->ppParams[n]->type.mNestedType =
+                        (TypeDescriptor *)((int)p->ppParams[n]->type.mNestedType + sBase);
             }
         }
     }
@@ -74,8 +74,7 @@ void MapInterfaceDescriptor(
         p->ppConsts = (InterfaceConstDescriptor **)((int)p->ppConsts + sBase);
 
         for (int n = 0; n < p->mConstCount; n++) {
-            p->ppConsts[n] = \
-                (InterfaceConstDescriptor *)((int)p->ppConsts[n] + sBase);
+            p->ppConsts[n] = (InterfaceConstDescriptor *)((int)p->ppConsts[n] + sBase);
             MapInterfaceConstDescriptor(p->ppConsts[n]);
         }
     }
@@ -84,8 +83,7 @@ void MapInterfaceDescriptor(
         p->ppMethods = (MethodDescriptor **)((int)p->ppMethods + sBase);
 
         for (int n = 0; n < p->cMethods; n++) {
-            p->ppMethods[n] = \
-                (MethodDescriptor *)((int)p->ppMethods[n] + sBase);
+            p->ppMethods[n] = (MethodDescriptor *)((int)p->ppMethods[n] + sBase);
             MapMethodDescriptor(p->ppMethods[n]);
         }
     }
@@ -107,9 +105,8 @@ void MapArrayDirEntry(
 {
     if (p->pszNameSpace) p->pszNameSpace += sBase;
 
-    if (p->type.pNestedType) {
-        p->type.pNestedType = (TypeDescriptor *) \
-            ((int)p->type.pNestedType + sBase);
+    if (p->type.mNestedType) {
+        p->type.mNestedType = (TypeDescriptor *)((int)p->type.mNestedType + sBase);
     }
 }
 
@@ -123,9 +120,9 @@ void MapStructDescriptor(
             p->ppElems[n] = (StructElement *)((int)p->ppElems[n] + sBase);
             p->ppElems[n]->pszName += sBase;
 
-            if (p->ppElems[n]->type.pNestedType) {
-                p->ppElems[n]->type.pNestedType = (TypeDescriptor *) \
-                    ((int)p->ppElems[n]->type.pNestedType + sBase);
+            if (p->ppElems[n]->type.mNestedType) {
+                p->ppElems[n]->type.mNestedType =
+                        (TypeDescriptor *)((int)p->ppElems[n]->type.mNestedType + sBase);
             }
         }
     }
@@ -180,9 +177,8 @@ void MapAliasDirEntry(
     p->pszName += sBase;
     if (p->pszNameSpace) p->pszNameSpace += sBase;
 
-    if (p->type.pNestedType) {
-        p->type.pNestedType = \
-            (TypeDescriptor *)((int)p->type.pNestedType + sBase);
+    if (p->type.mNestedType) {
+        p->type.mNestedType = (TypeDescriptor *)((int)p->type.mNestedType + sBase);
     }
 }
 
@@ -195,16 +191,14 @@ void DoRelocCLS(
     if (p->mUunm) p->mUunm += sBase;
     if (p->mServiceName) p->mServiceName += sBase;
     if (p->mDefinedInterfaceCount > 0) {
-        p->mDefinedInterfaceIndexes =
-            (int *)((int)(p->mDefinedInterfaceIndexes) + sBase);
+        p->mDefinedInterfaceIndexes = (int *)((int)(p->mDefinedInterfaceIndexes) + sBase);
     }
 
     if (0 != p->mClassCount) {
         p->mClassDirs = (ClassDirEntry **)((int)p->mClassDirs + sBase);
 
         for (int n = 0; n < p->mClassCount; n++) {
-            p->mClassDirs[n] = \
-                (ClassDirEntry *)((int)p->mClassDirs[n] + sBase);
+            p->mClassDirs[n] = (ClassDirEntry *)((int)p->mClassDirs[n] + sBase);
             MapClassDirEntry(p->mClassDirs[n]);
         }
     }
@@ -213,12 +207,10 @@ void DoRelocCLS(
     }
 
     if (0 != p->mInterfaceCount) {
-        p->mInterfaceDirs = \
-            (InterfaceDirEntry **)((int)p->mInterfaceDirs + sBase);
+        p->mInterfaceDirs = (InterfaceDirEntry **)((int)p->mInterfaceDirs + sBase);
 
         for (int n = 0; n < p->mInterfaceCount; n++) {
-            p->mInterfaceDirs[n] = \
-                (InterfaceDirEntry *)((int)p->mInterfaceDirs[n] + sBase);
+            p->mInterfaceDirs[n] = (InterfaceDirEntry *)((int)p->mInterfaceDirs[n] + sBase);
             MapInterfaceDirEntry(p->mInterfaceDirs[n]);
         }
     }
@@ -230,8 +222,7 @@ void DoRelocCLS(
         p->mArrayDirs = (ArrayDirEntry **)((int)p->mArrayDirs + sBase);
 
         for (int n = 0; n < p->mArrayCount; n++) {
-            p->mArrayDirs[n] = \
-                (ArrayDirEntry *)((int)p->mArrayDirs[n] + sBase);
+            p->mArrayDirs[n] = (ArrayDirEntry *)((int)p->mArrayDirs[n] + sBase);
             MapArrayDirEntry(p->mArrayDirs[n]);
         }
     }
@@ -243,8 +234,7 @@ void DoRelocCLS(
         p->mStructDirs = (StructDirEntry **)((int)p->mStructDirs + sBase);
 
         for (int n = 0; n < p->mStructCount; n++) {
-            p->mStructDirs[n] = \
-                (StructDirEntry *)((int)p->mStructDirs[n] + sBase);
+            p->mStructDirs[n] = (StructDirEntry *)((int)p->mStructDirs[n] + sBase);
             MapStructDirEntry(p->mStructDirs[n]);
         }
     }
@@ -256,8 +246,7 @@ void DoRelocCLS(
         p->mEnumDirs = (EnumDirEntry **)((int)p->mEnumDirs + sBase);
 
         for (int n = 0; n < p->mEnumCount; n++) {
-            p->mEnumDirs[n] = \
-                (EnumDirEntry *)((int)p->mEnumDirs[n] + sBase);
+            p->mEnumDirs[n] = (EnumDirEntry *)((int)p->mEnumDirs[n] + sBase);
             MapEnumDirEntry(p->mEnumDirs[n]);
         }
     }
@@ -269,8 +258,7 @@ void DoRelocCLS(
         p->mConstDirs = (ConstDirEntry **)((int)p->mConstDirs + sBase);
 
         for (int n = 0; n < p->mConstCount; n++) {
-            p->mConstDirs[n] = \
-                (ConstDirEntry *)((int)p->mConstDirs[n] + sBase);
+            p->mConstDirs[n] = (ConstDirEntry *)((int)p->mConstDirs[n] + sBase);
             MapConstDirEntry(p->mConstDirs[n]);
         }
     }
@@ -282,8 +270,7 @@ void DoRelocCLS(
         p->mAliasDirs = (AliasDirEntry **)((int)p->mAliasDirs + sBase);
 
         for (int n = 0; n < p->mAliasCount; n++) {
-            p->mAliasDirs[n] = \
-                (AliasDirEntry *)((int)p->mAliasDirs[n] + sBase);
+            p->mAliasDirs[n] = (AliasDirEntry *)((int)p->mAliasDirs[n] + sBase);
             MapAliasDirEntry(p->mAliasDirs[n]);
         }
     }

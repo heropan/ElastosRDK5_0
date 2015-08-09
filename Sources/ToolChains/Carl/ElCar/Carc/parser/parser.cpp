@@ -296,7 +296,7 @@ long long int Hexstr2Int(const char *pszHex)
     return nResult;
 }
 
-#define IS_ECODE(t)    ((t).type == Type_ECODE && (t).nPointer == 0)
+#define IS_ECODE(t)    ((t).type == Type_ECODE && (t).mPointer == 0)
 
 BOOL IsValidParamTypeAttrib(
     const CLSModule *pModule, const TypeDescriptor *pType,
@@ -317,7 +317,7 @@ BOOL IsValidParamTypeAttrib(
         case Type_PVoid:
             if (isLocal) {
                 if (dwAttribs & ParamAttrib_in) {
-                    if (0 == pType->nPointer) return TRUE;
+                    if (0 == pType->mPointer) return TRUE;
                     ErrorReport(CAR_E_IllegalTypeUsage, "Type cann't have '*' when it modifies [in] parameter.");
                     return FALSE;
                 }
@@ -327,7 +327,7 @@ BOOL IsValidParamTypeAttrib(
                         return FALSE;
                     }
 
-                    if (1 >= pType->nPointer) return TRUE;
+                    if (1 >= pType->mPointer) return TRUE;
 
                     ErrorReport(CAR_E_IllegalTypeUsage, "Type cann't have more than "
                             "one '*' when it modifies [out] parameter.");
@@ -343,9 +343,9 @@ BOOL IsValidParamTypeAttrib(
          * local|unlocal: [out] IInterface **;
          */
         case Type_interface:
-            if (pModule->mInterfaceDirs[pType->sIndex]->pDesc->dwAttribs
+            if (pModule->mInterfaceDirs[pType->mIndex]->pDesc->dwAttribs
                     & InterfaceAttrib_local) {
-                if (!(pModule->mInterfaceDirs[pType->sIndex]->pDesc->dwAttribs
+                if (!(pModule->mInterfaceDirs[pType->mIndex]->pDesc->dwAttribs
                     & InterfaceAttrib_parcelable) && (!isLocal)) {
                     ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                     return FALSE;
@@ -353,8 +353,8 @@ BOOL IsValidParamTypeAttrib(
             }
 
             if (dwAttribs & ParamAttrib_in) {
-                if (1 == pType->nPointer) return TRUE;
-                if (2 == pType->nPointer) {
+                if (1 == pType->mPointer) return TRUE;
+                if (2 == pType->mPointer) {
                     if (isDeprecated) {
                         ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                         return TRUE;
@@ -368,7 +368,7 @@ BOOL IsValidParamTypeAttrib(
             }
 
             if (dwAttribs & ParamAttrib_out) {
-                if ((2 == pType->nPointer)
+                if ((2 == pType->mPointer)
                         && !(dwAttribs & ParamAttrib_callee)) return TRUE;
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type should have only two '*' "
                         "when it modifies [out] parameter.");
@@ -385,14 +385,14 @@ BOOL IsValidParamTypeAttrib(
          * local|unlocal, deprecated: [in] ArrayOf<Type, size> *; //warning
          */
         case Type_ArrayOf:
-            if (IsLocalCarQuintet(pModule, pType->pNestedType, dwAttribs) && (!isLocal)) {
+            if (IsLocalCarQuintet(pModule, pType->mNestedType, dwAttribs) && (!isLocal)) {
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                 return FALSE;
             }
 
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == pType->nPointer) return TRUE;
-                if (1 == pType->nPointer) {
+                if (0 == pType->mPointer) return TRUE;
+                if (1 == pType->mPointer) {
                     if (isDeprecated) {
                         ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                         return TRUE;
@@ -404,12 +404,12 @@ BOOL IsValidParamTypeAttrib(
                 return FALSE;
             }
             if (dwAttribs & ParamAttrib_out) {
-                if (0 == pType->nPointer) {
+                if (0 == pType->mPointer) {
                     if (!(dwAttribs & ParamAttrib_callee)) return TRUE;
                     ErrorReport(CAR_E_IllegalTypeUsage, "Attribute [callee] is illegal.");
                     return FALSE;
                 }
-                if (1 == pType->nPointer) {
+                if (1 == pType->mPointer) {
                     if (dwAttribs & ParamAttrib_callee) return TRUE;
                     ErrorReport(CAR_E_IllegalTypeUsage, "Attribute should be [callee].");
                     return FALSE;
@@ -431,8 +431,8 @@ BOOL IsValidParamTypeAttrib(
         case Type_UInt64:
             if (isLocal) {
                 if (dwAttribs & ParamAttrib_in) {
-                    if (0 == pType->nPointer) return TRUE;
-                    if (1 == pType->nPointer) {
+                    if (0 == pType->mPointer) return TRUE;
+                    if (1 == pType->mPointer) {
                         if (isDeprecated) {
                             ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                             return TRUE;
@@ -449,9 +449,9 @@ BOOL IsValidParamTypeAttrib(
                         return FALSE;
                     }
 
-                    if (1 == pType->nPointer) return TRUE;
+                    if (1 == pType->mPointer) return TRUE;
 
-                    if (2 == pType->nPointer) {
+                    if (2 == pType->mPointer) {
                         if (isDeprecated) {
                             ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                             return TRUE;
@@ -474,15 +474,15 @@ BOOL IsValidParamTypeAttrib(
          */
         case Type_struct:
             //check if struct is local based on its elements;
-            if (IsLocalStruct(pModule, pModule->mStructDirs[pType->sIndex]->pDesc)
+            if (IsLocalStruct(pModule, pModule->mStructDirs[pType->mIndex]->pDesc)
                     && (!isLocal)) {
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                 return FALSE;
             }
 
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == pType->nPointer) return TRUE;
-                if (1 == pType->nPointer) {
+                if (0 == pType->mPointer) return TRUE;
+                if (1 == pType->mPointer) {
                     if (isDeprecated) {
                         ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                         return TRUE;
@@ -499,9 +499,9 @@ BOOL IsValidParamTypeAttrib(
                     return FALSE;
                 }
 
-                if (1 == pType->nPointer) return TRUE;
+                if (1 == pType->mPointer) return TRUE;
 
-                if (2 == pType->nPointer) {
+                if (2 == pType->mPointer) {
                     if (isLocal) return TRUE;
                     else {
                         ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
@@ -521,8 +521,8 @@ BOOL IsValidParamTypeAttrib(
          */
         default:
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == pType->nPointer) return TRUE;
-                if (1 == pType->nPointer) {
+                if (0 == pType->mPointer) return TRUE;
+                if (1 == pType->mPointer) {
                     if (isDeprecated) {
                         ErrorReport(CAR_W_DecrepitTypeUsage, "The usage is deprecated, and will be removed.");
                         return TRUE;
@@ -539,14 +539,14 @@ BOOL IsValidParamTypeAttrib(
                     return FALSE;
                 }
 
-                if (0 == pType->nPointer) {
+                if (0 == pType->mPointer) {
                     ErrorReport(CAR_E_IllegalTypeUsage, "Type should have one or two '*'.");
                     return FALSE;
                 }
 
-                if (1 == pType->nPointer) return TRUE;
+                if (1 == pType->mPointer) return TRUE;
 
-                if (2 == pType->nPointer) {
+                if (2 == pType->mPointer) {
                     if (!isLocal) {
                         ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                         return FALSE;
@@ -665,7 +665,7 @@ int P_Type(TypeDescriptor *pType)
                 break; // continue on error
             }
             pType->mType = Type_enum;
-            pType->sIndex = n;
+            pType->mIndex = n;
             break;
         }
 
@@ -680,7 +680,7 @@ int P_Type(TypeDescriptor *pType)
                 break; // continue on error
             }
             pType->mType = Type_struct;
-            pType->sIndex = n;
+            pType->mIndex = n;
             break;
 
         default:
@@ -691,10 +691,10 @@ int P_Type(TypeDescriptor *pType)
 
     if (PeekToken(s_pFile) == Token_S_star) {
         GetToken(s_pFile);
-        pType->nPointer++;
+        pType->mPointer++;
         if (PeekToken(s_pFile) == Token_S_star) {
             GetToken(s_pFile);
-            pType->nPointer++;
+            pType->mPointer++;
         }
     }
     return Ret_Continue;
@@ -709,7 +709,7 @@ int P_CarQuient(TypeDescriptor *pType)
 {
     int s, token;
 
-    pType->nSize = -1;
+    pType->mSize = -1;
     if (GetToken(s_pFile) != Token_S_langle) {
         ErrorReport(CAR_E_ExpectSymbol, "<");
         return Ret_AbortOnError;
@@ -717,19 +717,19 @@ int P_CarQuient(TypeDescriptor *pType)
 
     if (Type_ArrayOf == pType->mType){
 
-        pType->pNestedType = new TypeDescriptor;
-        if (!pType->pNestedType) {
+        pType->mNestedType = new TypeDescriptor;
+        if (!pType->mNestedType) {
             ErrorReport(CAR_E_OutOfMemory);
             return Ret_AbortOnError;
         }
-        memset(pType->pNestedType, 0, sizeof(TypeDescriptor));
-        pType->pNestedType->bNested = 1;
+        memset(pType->mNestedType, 0, sizeof(TypeDescriptor));
+        pType->mNestedType->mNested = 1;
 
-        if (P_Type(pType->pNestedType) == Ret_AbortOnError) {
+        if (P_Type(pType->mNestedType) == Ret_AbortOnError) {
             goto ErrorExit;
         }
 
-        if (Type_ArrayOf == pType->pNestedType->mType) {
+        if (Type_ArrayOf == pType->mNestedType->mType) {
             ErrorReport(CAR_E_NestedCARQuient);
             return Ret_AbortOnError;
         }
@@ -746,7 +746,7 @@ int P_CarQuient(TypeDescriptor *pType)
 
     token = GetToken(s_pFile);
     if (token == Token_integer) {
-        pType->nSize = atoi(g_szCurrentToken);
+        pType->mSize = atoi(g_szCurrentToken);
 
         token = GetToken(s_pFile);
     }
@@ -760,7 +760,7 @@ int P_CarQuient(TypeDescriptor *pType)
             ErrorReport(CAR_E_NotIntegerConst, g_szCurrentToken);
             return Ret_AbortOnError;
         }
-        pType->nSize = s_pModule->mConstDirs[s]->v.intValue.nValue;
+        pType->mSize = s_pModule->mConstDirs[s]->v.intValue.nValue;
 
         token = GetToken(s_pFile);
     }
@@ -773,8 +773,8 @@ int P_CarQuient(TypeDescriptor *pType)
     return Ret_Continue;
 
 ErrorExit:
-    delete pType->pNestedType;
-    pType->pNestedType = NULL;
+    delete pType->mNestedType;
+    pType->mNestedType = NULL;
 
     return Ret_AbortOnError;
 }
@@ -1195,7 +1195,7 @@ int P_Array(TypeDescriptor &type)
     memset(&type, 0, sizeof(TypeDescriptor));
 
     type.mType = Type_Array;
-    type.sIndex = r;
+    type.mIndex = r;
 
     return r;
 }
@@ -1217,12 +1217,12 @@ int P_StructElement(StructDescriptor *pDesc)
         memcpy(&tempType, &type, sizeof(type));
         token = GetToken(s_pFile);
 
-        tempType.nPointer = 0;
+        tempType.mPointer = 0;
         if (Token_S_star == token) {
-            tempType.nPointer++;
+            tempType.mPointer++;
             token = GetToken(s_pFile);
             if (Token_S_star == token) {
-                tempType.nPointer++;
+                tempType.mPointer++;
                 token = GetToken(s_pFile);
             }
         }
@@ -1235,8 +1235,8 @@ int P_StructElement(StructDescriptor *pDesc)
         strcpy(szElementName, g_szCurrentToken);
 
         if (Type_struct == tempType.mType
-            && s_pModule->mStructDirs[tempType.sIndex]->pDesc == pDesc
-            && 0 == tempType.nPointer) {
+            && s_pModule->mStructDirs[tempType.mIndex]->pDesc == pDesc
+            && 0 == tempType.mPointer) {
             ErrorReport(CAR_E_NestedStruct, g_szCurrentToken);
             // continue on error
         }
@@ -1355,12 +1355,12 @@ int P_Typedef()
     do {
         token = GetToken(s_pFile);
 
-        type.nPointer = 0;
+        type.mPointer = 0;
         if (Token_S_star == token) {
-            type.nPointer++;
+            type.mPointer++;
             token = GetToken(s_pFile);
             if (Token_S_star == token) {
-                type.nPointer++;
+                type.mPointer++;
                 token = GetToken(s_pFile);
             }
         }
@@ -1573,7 +1573,7 @@ void GenerateSinkClass(
     AddConstClassInterface("ICallbackSink", NULL, pModule, pSinkDesc);
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback){
-            strcpy(szInterfaceName, pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]->pszName);
+            strcpy(szInterfaceName, pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]->pszName);
             strcat(szInterfaceName, "Callback");
             int x = SelectInterfaceDirEntry(szInterfaceName, NULL, pModule);
             if (x < 0) continue;
@@ -1731,7 +1731,7 @@ int GenerateHandlerInterface(
         pParam->dwAttribs = ParamAttrib_in;
         memset(&pParam->type, 0, sizeof(pParam->type));
         pParam->type.mType = Type_EventHandler;
-        pParam->type.nPointer = 0;
+        pParam->type.mPointer = 0;
 
         BuildMethodSignature(pSinkDesc->ppMethods[n]);
         pSinkDesc->cMethods -= 1;
@@ -1757,7 +1757,7 @@ int GenerateHandlerInterface(
         pParam->dwAttribs = ParamAttrib_in;
         memset(&pParam->type, 0, sizeof(pParam->type));
         pParam->type.mType = Type_EventHandler;
-        pParam->type.nPointer = 0;
+        pParam->type.mPointer = 0;
 
         BuildMethodSignature(pSinkDesc->ppMethods[n]);
         pSinkDesc->cMethods -= 1;
@@ -1782,8 +1782,8 @@ int GenerateHandlerInterface(
         pParam->dwAttribs = ParamAttrib_out;
         memset(&pParam->type, 0, sizeof(pParam->type));
         pParam->type.mType = Type_interface;
-        pParam->type.nPointer = 2;
-        pParam->type.sIndex = r;
+        pParam->type.mPointer = 2;
+        pParam->type.mIndex = r;
 
         BuildMethodSignature(pSinkDesc->ppMethods[n]);
         pSinkDesc->cMethods -= 1;
@@ -1919,7 +1919,7 @@ int GenerateEnums(CLSModule *pModule)
         if (pDesc->dwAttribs & ClassAttrib_hascallback) {
             for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
-                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex];
+                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex];
                     pIntfDesc = pIntf->pDesc;
 
                     /*
@@ -1994,7 +1994,7 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
 
             for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
-                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex];
+                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex];
 
                     /*
                      * check callback interface of original class
@@ -3520,7 +3520,7 @@ int P_InterfaceConst(InterfaceDirEntry *pItfDirEntry)
 int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
 {
     CARDataType type = pType->mType;
-    int pointer = pType->nPointer;
+    int pointer = pType->mPointer;
     switch(type) {
         case Type_Char16:
             sb.Append("C16");
@@ -3575,9 +3575,9 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
             break;
         case Type_enum: {
             sb.Append("L");
-            if (s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace != NULL) {
-                char* ns = (char*)malloc(strlen(s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(ns, s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace);
+            if (s_pModule->mEnumDirs[pType->mIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->mEnumDirs[pType->mIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->mEnumDirs[pType->mIndex]->pszNameSpace);
 
                 char* c;
                 while ((c = strchr(ns, '.')) != NULL) {
@@ -3588,20 +3588,20 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
                 sb.Append("/");
                 free(ns);
             }
-            sb.Append(s_pModule->mEnumDirs[pType->sIndex]->pszName);
+            sb.Append(s_pModule->mEnumDirs[pType->mIndex]->pszName);
             sb.Append(";");
             break;
         }
         case Type_ArrayOf: {
             sb.Append("[");
-            if (TypeSignature(pType->pNestedType, sb) == Ret_AbortOnError) return Ret_AbortOnError;
+            if (TypeSignature(pType->mNestedType, sb) == Ret_AbortOnError) return Ret_AbortOnError;
             break;
         }
         case Type_interface: {
             sb.Append("L");
-            if (s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace != NULL) {
-                char* ns = (char*)malloc(strlen(s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(ns, s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace);
+            if (s_pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace);
 
                 char* c;
                 while ((c = strchr(ns, '.')) != NULL) {
@@ -3612,12 +3612,12 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
                 sb.Append("/");
                 free(ns);
             }
-            sb.Append(s_pModule->mInterfaceDirs[pType->sIndex]->pszName);
+            sb.Append(s_pModule->mInterfaceDirs[pType->mIndex]->pszName);
             sb.Append(";");
             break;
         }
         case Type_alias:
-            if (TypeSignature(&s_pModule->mAliasDirs[pType->sIndex]->type, sb) == Ret_AbortOnError) {
+            if (TypeSignature(&s_pModule->mAliasDirs[pType->mIndex]->type, sb) == Ret_AbortOnError) {
                 return Ret_AbortOnError;
             }
             break;
@@ -4094,7 +4094,7 @@ void GenerateDispatchInterface(ClassDescriptor *pDesc)
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         pIntf = s_pModule-> \
-            mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]->pDesc;
+            mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]->pDesc;
         if (!(pDesc->ppInterfaces[n]->\
             wAttribs & ClassInterfaceAttrib_callback)) {
             if (InterfaceMethodsAppend(s_pModule, pIntf, pDisp) < 0) {
@@ -4223,9 +4223,9 @@ void CheckClassDupMethodName(ClassDescriptor *pDesc)
         for (m = n + 1; m < pDesc->mInterfaceCount; m++)
             CheckInterfaceDupMethodName(
                 s_pModule->mInterfaceDirs \
-                    [pDesc->ppInterfaces[n]->sIndex]->pDesc,
+                    [pDesc->ppInterfaces[n]->mIndex]->pDesc,
                 s_pModule->mInterfaceDirs \
-                    [pDesc->ppInterfaces[m]->sIndex]->pDesc);
+                    [pDesc->ppInterfaces[m]->mIndex]->pDesc);
 }
 
 void CheckClassAttribs(ClassDescriptor *pDesc)
@@ -4411,7 +4411,7 @@ BOOL IsClsIntfParent(ClassDescriptor *pDesc, int nIndex)
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (IsInterfaceParent(s_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->sIndex]->pDesc, nIndex))
+            [pDesc->ppInterfaces[n]->mIndex]->pDesc, nIndex))
             return TRUE;
     }
     return FALSE;
@@ -4424,7 +4424,7 @@ int TryGetParentClsIntf(ClassDescriptor *pDesc, InterfaceDescriptor *pIntf)
     if (0 == pIntf->sParentIndex) return -1;
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (IsInterfaceParent(pIntf, pDesc->ppInterfaces[n]->sIndex))
+        if (IsInterfaceParent(pIntf, pDesc->ppInterfaces[n]->mIndex))
             return n;
     }
     return -1;
@@ -4436,11 +4436,11 @@ BOOL IsClassInterfaceVirtuallyImplementedByAnyone(
     assert(pClsIntf && s_pModule->mClassDirs[clsIndex]);
     ClassDescriptor* pDesc = s_pModule->mClassDirs[clsIndex]->pDesc;
 
-    int index = pClsIntf->sIndex;
+    int index = pClsIntf->mIndex;
 
     for (int n = 0; n < pDesc->mInterfaceCount; n++) {
         ClassInterface* pClsIntfn = pDesc->ppInterfaces[n];
-        if (index == pClsIntfn->sIndex) {
+        if (index == pClsIntfn->mIndex) {
             return (pClsIntfn->wAttribs & ClassInterfaceAttrib_virtual);
         }
     }
@@ -4936,8 +4936,8 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
 
     memset(&type, 0, sizeof(type));
     type.mType = Type_interface;
-    type.sIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
-    type.nPointer = 2;
+    type.mIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
+    type.mPointer = 2;
 
     i = CreateMethodParam("newObj", pIntfDesc->ppMethods[n]);
     if (i < 0) {
@@ -5002,8 +5002,8 @@ int AddTrivialClassCtorMethod(ClassDirEntry *pClass)
 
     memset(&type, 0, sizeof(type));
     type.mType = Type_interface;
-    type.sIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
-    type.nPointer = 2;
+    type.mIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
+    type.mPointer = 2;
 
     i = CreateMethodParam("newObj", pIntfDesc->ppMethods[n]);
     if (i < 0) {
@@ -5037,7 +5037,7 @@ int AddCallbackCoalesceMethod(char* pszMethodName, ClassDirEntry *pClass)
                                                     pClsDesc->ppInterfaces[n]);
             if (x < 0) continue;
 
-            pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->ppInterfaces[n]->sIndex]->pDesc;
+            pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->ppInterfaces[n]->mIndex]->pDesc;
             pMethod = pIntfDesc->ppMethods[x];
 
             if (0 == pMethod->cParams) {
@@ -5871,8 +5871,8 @@ void ClassLastCheck(ClassDirEntry *pClass)
             for (int i = 0; i < pParent->pDesc->mInterfaceCount; ++i) {
                 bool bFound = FALSE;
                 for (int j = 0; j < pDesc->mInterfaceCount; ++j) {
-                    if (pDesc->ppInterfaces[j]->sIndex ==
-                            pParent->pDesc->ppInterfaces[i]->sIndex) {
+                    if (pDesc->ppInterfaces[j]->mIndex ==
+                            pParent->pDesc->ppInterfaces[i]->mIndex) {
                         bFound = TRUE;
                         break;
                     }
@@ -5880,7 +5880,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
                 if (!bFound) {
                     ErrorReport(CAR_E_NoImplIntfOfGeneric,
                         s_pModule->mInterfaceDirs[pParent->pDesc->
-                        ppInterfaces[i]->sIndex]->pszName, pClass->pszName);
+                        ppInterfaces[i]->mIndex]->pszName, pClass->pszName);
                     return;
                 }
             }
@@ -5895,7 +5895,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
             if ((pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
                 && !(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_delegate)) {
                 pIntfDesc = s_pModule->mInterfaceDirs\
-                            [pDesc->ppInterfaces[n]->sIndex]->pDesc;
+                            [pDesc->ppInterfaces[n]->mIndex]->pDesc;
                 for (m = 0; m < pIntfDesc->cMethods; m++) {
                     pMethod = pIntfDesc->ppMethods[m];
                     for (i = 0; i < pMethod->cParams; i++) {
@@ -5919,7 +5919,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
 
     if (pDesc->dwAttribs & ClassAttrib_t_clsobj) {
         if (s_pModule->mInterfaceDirs[pDesc->ppInterfaces[0]->\
-            sIndex]->pDesc->dwAttribs & InterfaceAttrib_local) {
+            mIndex]->pDesc->dwAttribs & InterfaceAttrib_local) {
             pDesc->dwAttribs |= ClassAttrib_classlocal;
         }
     }
@@ -5930,13 +5930,13 @@ void ClassLastCheck(ClassDirEntry *pClass)
         InterfaceDirEntry *pIntf;
 
         pClsIntf = pDesc->ppInterfaces[0];
-        pIntf = s_pModule->mInterfaceDirs[pClsIntf->sIndex];
+        pIntf = s_pModule->mInterfaceDirs[pClsIntf->mIndex];
 
         if ((pIntf->pDesc->dwAttribs & InterfaceAttrib_local)
             || (pClsIntf->wAttribs & ClassInterfaceAttrib_callback)) {
             for (n = 1; n < pDesc->mInterfaceCount; n++) {
                 if (!(s_pModule->mInterfaceDirs
-                    [pDesc->ppInterfaces[n]->sIndex]->pDesc->\
+                    [pDesc->ppInterfaces[n]->mIndex]->pDesc->\
                     dwAttribs & InterfaceAttrib_local)
                     && !(pDesc->ppInterfaces[n]->wAttribs &
                     ClassInterfaceAttrib_callback)) {

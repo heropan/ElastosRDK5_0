@@ -138,12 +138,12 @@ ECode CParamInfo::GetAdvisedCapacity(
         return E_INVALID_OPERATION;
     }
 
-    if (mParamDescriptor->type.nSize <= 0) {
+    if (mParamDescriptor->type.mSize <= 0) {
         //if the size of carquient isn't assigned, then it's -1;
         return E_INVALID_OPERATION;
     }
 
-    *advisedCapacity = mParamDescriptor->type.nSize;
+    *advisedCapacity = mParamDescriptor->type.mSize;
 
     return NOERROR;
 }
@@ -155,7 +155,7 @@ ECode CParamInfo::IsUsingTypeAlias(
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 index = mParamDescriptor->type.sIndex;
+    UInt32 index = mParamDescriptor->type.mIndex;
     if ((mParamDescriptor->type.mType == Type_alias)
         && !IsSysAlaisType(mClsModule, index)) {
         *usingTypeAlias = TRUE;
@@ -174,7 +174,7 @@ ECode CParamInfo::GetUsedTypeAliasInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 index = mParamDescriptor->type.sIndex;
+    UInt32 index = mParamDescriptor->type.mIndex;
     if ((mParamDescriptor->type.mType != Type_alias) ||
         IsSysAlaisType(mClsModule, index)) {
         return E_DOES_NOT_EXIST;

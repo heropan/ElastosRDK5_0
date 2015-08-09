@@ -12,18 +12,18 @@ int GetOriginalType(
     /* [in] */ const TypeDescriptor* srcDescriptor,
     /* [in] */ TypeDescriptor* destDescriptor)
 {
-    destDescriptor->nPointer = srcDescriptor->nPointer;
-    destDescriptor->bUnsigned = srcDescriptor->bUnsigned;
+    destDescriptor->mPointer = srcDescriptor->mPointer;
+    destDescriptor->mUnsigned = srcDescriptor->mUnsigned;
 
     while (srcDescriptor->mType == Type_alias) {
-        srcDescriptor = &module->mAliasDirs[srcDescriptor->sIndex]->type;
-        destDescriptor->nPointer += srcDescriptor->nPointer;
-        destDescriptor->bUnsigned |= srcDescriptor->bUnsigned;
+        srcDescriptor = &module->mAliasDirs[srcDescriptor->mIndex]->type;
+        destDescriptor->mPointer += srcDescriptor->mPointer;
+        destDescriptor->mUnsigned |= srcDescriptor->mUnsigned;
     }
 
     destDescriptor->mType = srcDescriptor->mType;
-    destDescriptor->sIndex = srcDescriptor->sIndex;
-    destDescriptor->pNestedType = srcDescriptor->pNestedType;
+    destDescriptor->mIndex = srcDescriptor->mIndex;
+    destDescriptor->mNestedType = srcDescriptor->mNestedType;
 
     _ReturnOK(CLS_NoError);
 }
@@ -36,7 +36,7 @@ int GetArrayBaseType(
     TypeDescriptor* type = (TypeDescriptor *)srcDescriptor;
 
     while (Type_Array == type->mType) {
-        type = &module->mArrayDirs[type->sIndex]->type;
+        type = &module->mArrayDirs[type->mIndex]->type;
     }
 
     memcpy(destDescriptor, type, sizeof(TypeDescriptor));

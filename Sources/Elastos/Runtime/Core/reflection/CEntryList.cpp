@@ -282,22 +282,22 @@ ECode CEntryList::AcquireObjByIndex(
         if (index != i) return E_INVALID_ARGUMENT;
     }
 
-    UInt32 sIndex = 0;
+    UInt32 adjIndex = 0;
 
     switch (mType) {
         case EntryType_Aspect:
-            sIndex = adjustIndexsAddr(mBase,
+            adjIndex = adjustIndexsAddr(mBase,
                     ((ClassDescriptor *)mDesc)->pAspectIndexs)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
-                    getClassDirAddr(mBase, mClsMod->mClassDirs, sIndex),
+                    getClassDirAddr(mBase, mClsMod->mClassDirs, adjIndex),
                     &mObjElement[index].mObject);
             break;
 
         case EntryType_Aggregatee:
-            sIndex = adjustIndexsAddr(mBase,
+            adjIndex = adjustIndexsAddr(mBase,
                     ((ClassDescriptor *)mDesc)->pAggrIndexs)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
-                    getClassDirAddr(mBase, mClsMod->mClassDirs, sIndex),
+                    getClassDirAddr(mBase, mClsMod->mClassDirs, adjIndex),
                     &mObjElement[index].mObject);
             break;
 
@@ -308,8 +308,8 @@ ECode CEntryList::AcquireObjByIndex(
             break;
 
         case EntryType_ClassInterface:
-            sIndex = mObjElement[index].mIndex;
-            ec = g_objInfoList.AcquireInterfaceInfo(mClsModule, sIndex,
+            adjIndex = mObjElement[index].mIndex;
+            ec = g_objInfoList.AcquireInterfaceInfo(mClsModule, adjIndex,
                     &mObjElement[index].mObject);
             break;
 
@@ -331,9 +331,9 @@ ECode CEntryList::AcquireObjByIndex(
             break;
 
         case EntryType_TypeAliase:
-            sIndex = mObjElement[index].mIndex;
+            adjIndex = mObjElement[index].mIndex;
             ec = g_objInfoList.AcquireTypeAliasInfo(mClsModule,
-                    getAliasDirAddr(mBase, mClsMod->mAliasDirs, sIndex),
+                    getAliasDirAddr(mBase, mClsMod->mAliasDirs, adjIndex),
                     &mObjElement[index].mObject);
             break;
 

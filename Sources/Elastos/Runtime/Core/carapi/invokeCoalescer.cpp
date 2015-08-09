@@ -8,14 +8,14 @@ extern "C" {
 
 #ifdef _MSC_VER
 __declspec(naked)
-int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int nSize)
+int invokeCoalescer(void* funcPtr, void* oldParam, void* newParam, int size)
 {
     __asm {
         push    ebp
         mov     ebp, esp
 
-        mov     ecx, nSize
-        mov     eax, pNewParam
+        mov     ecx, size
+        mov     eax, newParam
         add     eax, ecx
         sub     eax, 4
 push_NewParam:
@@ -29,8 +29,8 @@ push_NewParam:
         jmp     push_NewParam
 
 next:
-        mov     ecx, nSize
-        mov     eax, pOldParam
+        mov     ecx, size
+        mov     eax, oldParam
         add     eax, ecx
         sub     eax, 4
 push_OldParam:
@@ -44,7 +44,7 @@ push_OldParam:
         jmp     push_OldParam
 
 do_call:
-        mov     ecx, pFunc              // function pointer
+        mov     ecx, funcPtr              // function pointer
         call    ecx
 
         mov     esp, ebp
@@ -53,7 +53,7 @@ do_call:
     }
 }
 #else // __GNUC__
-int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int nSize)
+int invokeCoalescer(void* funcPtr, void* oldParam, void* newParam, int size)
 {
     int rval;
     __asm__ (
@@ -88,10 +88,10 @@ int invokeCoalescer(void* pFunc, void* pOldParam, void* pNewParam, int nSize)
         "movl   %%ebp, %%esp\n"
         "movl   %%eax, %0"
         : "=r" (rval)
-        : "m" (pFunc)
-        , "m" (pOldParam)
-        , "m" (pNewParam)
-        , "m" (nSize)
+        : "m" (funcPtr)
+        , "m" (oldParam)
+        , "m" (newParam)
+        , "m" (size)
         : "eax"
         , "ecx"
         , "edx"

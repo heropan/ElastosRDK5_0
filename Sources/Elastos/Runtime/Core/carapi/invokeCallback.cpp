@@ -8,14 +8,14 @@ extern "C" {
 
 #ifdef _MSC_VER
 __declspec(naked)
-int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* pFunc, void* pParam, int nSize)
+int invokeCallback(CallbackEventFlags flags, void* sender, void* thisPtr, void* funcPtr, void* param, int size)
 {
     __asm {
         push    ebp
         mov     ebp, esp
 
-        mov     ecx, nSize
-        mov     eax, pParam
+        mov     ecx, size
+        mov     eax, param
         add     eax, ecx
         sub     eax, 4
 push_param:
@@ -28,15 +28,15 @@ push_param:
         sub     ecx, 4
         jmp     push_param
 do_call:
-        mov     edx, cFlags
+        mov     edx, flags
         and     edx, CallbackEventFlag_DirectCall
         jne      next
-        mov     edx, pSender
+        mov     edx, sender
         push    edx
 next:
-        mov     edx, pThis
+        mov     edx, thisPtr
         push    edx
-        mov     ecx, pFunc
+        mov     ecx, funcPtr
         call    ecx
 
         mov     esp, ebp
@@ -46,7 +46,7 @@ next:
 }
 
 #else // __GNUC__
-int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* pFunc, void* pParam, int nSize)
+int invokeCallback(CallbackEventFlags flags, void* sender, void* thisPtr, void* funcPtr, void* param, int size)
 {
     int rval;
     __asm__ (
@@ -77,12 +77,12 @@ int invokeCallback(CallbackEventFlags cFlags, void* pSender, void* pThis, void* 
         "popl   %%ebp\n"
         "ret\n"
         : "=r" (rval)
-        : "m" (cFlags)
-        , "m" (pSender)
-        , "m" (pThis)
-        , "m" (pFunc)
-        , "m" (pParam)
-        , "m" (nSize)
+        : "m" (flags)
+        , "m" (sender)
+        , "m" (thisPtr)
+        , "m" (funcPtr)
+        , "m" (param)
+        , "m" (size)
         , "n" (CallbackEventFlag_DirectCall)
         : "eax"
         , "ecx"

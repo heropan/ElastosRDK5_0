@@ -136,13 +136,13 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
         case Type_Int8:
         case Type_Boolean:
             *pStackSize += 1;
-            return pType->nPointer ? Param_Type_puint8:Param_Type_uint8;
+            return pType->mPointer ? Param_Type_puint8:Param_Type_uint8;
 
         case Type_Int16:
         case Type_UInt16:
         case Type_Char16:
             *pStackSize += 1;
-            return pType->nPointer ? Param_Type_puint16:Param_Type_uint16;
+            return pType->mPointer ? Param_Type_puint16:Param_Type_uint16;
 
         case Type_Char32:
         case Type_Int32:
@@ -151,12 +151,12 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
         case Type_enum:
         case Type_ECode:
             *pStackSize += 1;
-            return pType->nPointer ? Param_Type_puint32:Param_Type_uint32;
+            return pType->mPointer ? Param_Type_puint32:Param_Type_uint32;
 
         case Type_Int64:
         case Type_UInt64:
         case Type_Double:
-            if (pType->nPointer) {
+            if (pType->mPointer) {
                 *pStackSize += 1;
                 return Param_Type_puint64;
             }
@@ -176,10 +176,10 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
 
         case Type_struct:
         {
-            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->sIndex]->pDesc->nAlignSize);
+            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->mIndex]->pDesc->nAlignSize);
             uSize = (uSize % 4 == 0 ? uSize / 4 : (uSize / 4 + 1));
             AbridgedParamsInfo pa = (AbridgedParamsInfo)uSize;
-            if (pType->nPointer) {
+            if (pType->mPointer) {
                 *pStackSize += 1;
                 return (Param_Type_pstructure | PUSH_SIZE(pa));
             }
@@ -199,18 +199,18 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             if (dwAttribs & ParamAttrib_in) {
                 *pStackSize |= 0x80;
             }
-            return pType->nPointer ? Param_Type_pString:Param_Type_String;
+            return pType->mPointer ? Param_Type_pString:Param_Type_String;
 
         case Type_ArrayOf:
             *pStackSize += 1;
-            if (pType->pNestedType && (Type_interface == pType->\
-                pNestedType->mType) && (dwAttribs & ParamAttrib_in)) {
+            if (pType->mNestedType && (Type_interface == pType->\
+                mNestedType->mType) && (dwAttribs & ParamAttrib_in)) {
                 *pStackSize |= 0x80;
             }
             return Param_Type_ArrayOf;
 
         case Type_EventHandler:
-            if (pType->nPointer) {
+            if (pType->mPointer) {
                 *pStackSize += 1;
                 return Param_Type_peventhandler;
             }
@@ -225,7 +225,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
             if (dwAttribs & ParamAttrib_out) {
                 *pStackSize |= 0x40;
             }
-            return 1==pType->nPointer ? Param_Type_interface:Param_Type_pinterface;
+            return 1==pType->mPointer ? Param_Type_interface:Param_Type_pinterface;
 
         case Type_alias:
             GetOriginalType(m_pModule, pType, &type);
@@ -307,12 +307,12 @@ int CAbridgedBuffer::WriteClsIntfs(ClassDescriptor *pDesc, int interfaceCount)
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]
+            && (!(m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
             ->pDesc->dwAttribs & InterfaceAttrib_local)
-                || (m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]
+                || (m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
             ->pDesc->dwAttribs & InterfaceAttrib_parcelable))) {
             WriteInt(nAddr + (n - cLocal) * sizeof(int),
-                    m_interfaceAddrs[pDesc->ppInterfaces[n]->sIndex]);
+                    m_interfaceAddrs[pDesc->ppInterfaces[n]->mIndex]);
         }
         else {
             cLocal++;
@@ -408,7 +408,7 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
     InterfaceDescriptor *pIntfDesc;
 
     for (n = 0; n < pClass->mInterfaceCount; n++) {
-        nIndex = pClass->ppInterfaces[n]->sIndex;
+        nIndex = pClass->ppInterfaces[n]->mIndex;
         pEntry = m_pModule->mInterfaceDirs[nIndex];
         pIntfDesc = pEntry->pDesc;
 
@@ -452,9 +452,9 @@ int CAbridgedBuffer::ClsIntfNumber(ClassDescriptor *pDesc)
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
             && (!(m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->sIndex]->pDesc->dwAttribs
+            [pDesc->ppInterfaces[n]->mIndex]->pDesc->dwAttribs
             & InterfaceAttrib_local) || (m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->sIndex]->pDesc->dwAttribs
+            [pDesc->ppInterfaces[n]->mIndex]->pDesc->dwAttribs
             & InterfaceAttrib_parcelable))) {
             c++;
         }

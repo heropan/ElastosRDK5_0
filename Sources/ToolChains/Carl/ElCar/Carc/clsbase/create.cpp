@@ -24,14 +24,14 @@ int IsValidCLS(CLSModule *pModule, int nSize, const char *pszName)
     _ReturnError (CLS_NoError);
 }
 
-ClassInterface *NewClassInterface(USHORT sIndex)
+ClassInterface *NewClassInterface(USHORT index)
 {
     ClassInterface *pClassInterface;
 
     pClassInterface = new ClassInterface;
     if (!pClassInterface) return NULL;
     memset(pClassInterface, 0, sizeof(ClassInterface));
-    pClassInterface->sIndex = sIndex;
+    pClassInterface->mIndex = index;
 
     return pClassInterface;
 }
@@ -160,7 +160,7 @@ void DeleteParam(ParamDescriptor *pParam)
     assert(pParam != NULL);
     assert(pParam->pszName != NULL);
 
-    if (pParam->type.pNestedType) delete pParam->type.pNestedType;
+    if (pParam->type.mNestedType) delete pParam->type.mNestedType;
     delete pParam->pszName;
     delete pParam;
 }
@@ -291,7 +291,7 @@ void DeleteStructElement(StructElement *pElement)
     assert(pElement != NULL);
     assert(pElement->pszName != NULL);
 
-    if (pElement->type.pNestedType) delete pElement->type.pNestedType;
+    if (pElement->type.mNestedType) delete pElement->type.mNestedType;
     delete pElement->pszName;
     delete pElement;
 }
@@ -366,9 +366,9 @@ void DeleteArrayDirEntry(ArrayDirEntry *pArray)
         pArray->pszNameSpace = NULL;
     }
 
-    if (pArray->type.pNestedType) {
-        delete pArray->type.pNestedType;
-        pArray->type.pNestedType = NULL;
+    if (pArray->type.mNestedType) {
+        delete pArray->type.mNestedType;
+        pArray->type.mNestedType = NULL;
     }
 
     delete pArray;
@@ -520,7 +520,7 @@ void DeleteAliasDirEntry(AliasDirEntry *pAlias)
     assert(pAlias != NULL);
     assert(pAlias->pszName != NULL);
 
-    if (pAlias->type.pNestedType) delete pAlias->type.pNestedType;
+    if (pAlias->type.mNestedType) delete pAlias->type.mNestedType;
     delete pAlias->pszName;
     if (pAlias->pszNameSpace) delete pAlias->pszNameSpace;
     delete pAlias;
@@ -858,7 +858,7 @@ int CreateAliasDirEntry(
 
         memset(&type, 0, sizeof(type));
         type.mType = (CARDataType)gType;
-        type.sIndex = n;
+        type.mIndex = n;
         if (!IsEqualType(pModule, &type, pType)) {
             _ReturnError (CLSError_NameConflict);
         }
@@ -874,20 +874,20 @@ int CreateAliasDirEntry(
     _ReturnOK (pModule->mAliasCount++);
 }
 
-int CreateClassInterface(USHORT sIndex, ClassDescriptor *pDesc)
+int CreateClassInterface(USHORT index, ClassDescriptor *pDesc)
 {
     int n;
     ClassInterface *pClassInterface;
 
     assert(pDesc != NULL);
 
-    n = SelectClassInterface(sIndex, pDesc);
+    n = SelectClassInterface(index, pDesc);
     if (n >= 0) _ReturnError (CLSError_DupEntry);
 
     if (pDesc->mInterfaceCount >= c_nMaxClassInterfaces)
         _ReturnError (CLSError_FullEntry);
 
-    pClassInterface = NewClassInterface(sIndex);
+    pClassInterface = NewClassInterface(index);
     if (!pClassInterface) _ReturnError (CLSError_OutOfMemory);
     pDesc->ppInterfaces[pDesc->mInterfaceCount] = pClassInterface;
 

@@ -885,7 +885,7 @@ ECode CClassInfo::CreateObjInRgm(
     /* [in] */ PRegime rgm,
     /* [out] */ PInterface* object)
 {
-    Int32 index = getCIFAddr(mBase, mDesc->ppInterfaces, 0)->sIndex;
+    Int32 index = getCIFAddr(mBase, mDesc->ppInterfaces, 0)->mIndex;
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
             mClsMod->mInterfaceDirs, index);
     EIID iid = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->iid;
@@ -949,7 +949,7 @@ ECode CClassInfo::CreateIFList()
             isCallBack = FALSE;
         }
 
-        index = cifDir->sIndex;
+        index = cifDir->mIndex;
 
         iNo = 0;
         while (index != 0) {

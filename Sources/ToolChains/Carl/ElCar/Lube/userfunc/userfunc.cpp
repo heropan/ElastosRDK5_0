@@ -349,8 +349,8 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                     || (Type_EGuid == type.mType)
                     || (Type_struct == type.mType)){
                 if (dwAttribs & ParamAttrib_in) {
-                    if (0 == type.nPointer) {
-                        assert(0 == pType->nPointer);
+                    if (0 == type.mPointer) {
+                        assert(0 == pType->mPointer);
                         sprintf(szType, "const %s *", Type2CString(pCtx->m_pModule, pType));
                         pszType = szType;
                     }
@@ -360,8 +360,8 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }
             else if (Type_ArrayOf == type.mType) {
                 if (dwAttribs & ParamAttrib_in) {
-                    if (0 == type.nPointer) {
-                        assert(0 == pType->nPointer);
+                    if (0 == type.mPointer) {
+                        assert(0 == pType->mPointer);
                         sprintf(szType, "const %s *", Type2CString(pCtx->m_pModule, pType));
                         pszType = szType;
                     }
@@ -369,19 +369,19 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                 }
                 else {
                     if (dwAttribs & ParamAttrib_callee) {
-                        if (0 == pType->nPointer) {
-                            assert(1 == type.nPointer);
+                        if (0 == pType->mPointer) {
+                            assert(1 == type.mPointer);
                             sprintf(szType, "%s *", Type2CString(pCtx->m_pModule, pType));
                         }
-                        else if (1 == pType->nPointer) {
-                            assert(0 == type.nPointer);
+                        else if (1 == pType->mPointer) {
+                            assert(0 == type.mPointer);
                             sprintf(szType, "%s **", Type2CString(pCtx->m_pModule, pType));
                         }
                         pszType = szType;
                     }
                     else {
-                        assert(0 == type.nPointer);
-                        assert(0 == pType->nPointer);
+                        assert(0 == type.mPointer);
+                        assert(0 == pType->mPointer);
                         sprintf(szType, "%s *", Type2CString(pCtx->m_pModule, pType));
                         pszType = szType;
                     }
@@ -394,7 +394,7 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         case Type_EGuid:
         case Type_struct:
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == pType->nPointer) {
+                if (0 == pType->mPointer) {
                     sprintf(szType, "const %s *", Type2CString(pCtx->m_pModule, pType));
                     pszType = szType;
                 }
@@ -414,11 +414,11 @@ IMPL_USERFUNC(CStyleParamType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             break;
 
         case Type_String:
-            assert(pType->nPointer <= 1);
-            if (1 == pType->nPointer) {
+            assert(pType->mPointer <= 1);
+            if (1 == pType->mPointer) {
                 pszType = "String*";
             }
-            else if (0 == pType->nPointer) {
+            else if (0 == pType->mPointer) {
                 pszType = "String";
             }
             break;
@@ -474,7 +474,7 @@ Restart:
             break;
 
         case Type_ArrayOf:
-            if (Type_String == pType->pNestedType->mType) {
+            if (Type_String == pType->mNestedType->mType) {
                 pszType = "ArrayOfString";
             }
             else {
@@ -575,7 +575,7 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                         GetOriginalType(pCtx->m_pModule, &type, &OrigType);\
                         if ((Type_struct == OrigType.mType || Type_EMuid == OrigType.mType ||\
                              Type_EGuid == OrigType.mType || Type_ArrayOf == type.mType)\
-                             && OrigType.nPointer == 0) {\
+                             && OrigType.mPointer == 0) {\
                             string = StructType2CString(pCtx->m_pModule, &type);\
                         }\
                         else {\
@@ -592,8 +592,8 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                 }\
                 memset(szBuf, 0, c_nStrBufSize);\
                 sprintf(szBuf, "/*[out]*/ %s **pp%s", \
-                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->sIndex]->pszName, \
-                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);\
+                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName, \
+                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
                 pCtx->PutString(ImplNamespaceType(szBuf));\
 
 #define CTOR_LOOP_END() \
@@ -665,7 +665,7 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         if (pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
             continue;\
         }\
-        pszName = pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName;\
+        pszName = pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName;\
         if (!strcmp(pszName, "IObject")) {\
             continue;\
         }\
@@ -689,8 +689,8 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }\
             memset(szBuf, 0, c_nStrBufSize);\
             sprintf(szBuf, "/*[out]*/ %s **pp%s", \
-                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName, \
-                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);\
+                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName, \
+                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
             pCtx->PutString(ImplNamespaceType(szBuf));\
 
 /* Here will be main method body codes or nothing */
@@ -709,7 +709,7 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }\
             pCtx->PutString("pp");\
             pCtx->PutString(pCtx->m_pModule->\
-                    mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);\
+                    mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
 
 //Create the method name combined with paramter names
 #define GENERIC_UPPER_CASE_PARAMS(pCtorInterface) \
@@ -747,18 +747,18 @@ IMPL_USERFUNC(ImplOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID 
             pCtx->PutString("    if (FAILED(ec)) return ec;\n");
 
             sprintf(szBuf, "    pClsid = (EMuid*)(*pp%s)->Probe(EIID_GENERIC_INFO);\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
             pCtx->PutString(szBuf);
             pCtx->PutString("    if (!pClsid) {\n");
             sprintf(szBuf, "        (*pp%s)->Release();\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
             pCtx->PutString(szBuf);
             pCtx->PutString("        return E_WRONG_GENERIC;\n");
             pCtx->PutString("    }\n");
             sprintf(szBuf, "    if (*pClsid != ECLSID_%s) {\n", szName);
             pCtx->PutString(szBuf);
             sprintf(szBuf, "        (*pp%s)->Release();\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
             pCtx->PutString(szBuf);
             pCtx->PutString("        return E_WRONG_GENERIC;\n");
             pCtx->PutString("    }\n");
@@ -1040,7 +1040,7 @@ int GetCStyleStructParamName(PLUBECTX pCtx, const ParamDescriptor *pParamDesc)
     szName[0] = 0;
     // If struct parameter type is't pointer, we have to change its type
     // to a pointer and prefix 'p' to its name.
-    if (0 == pParamDesc->type.nPointer) {
+    if (0 == pParamDesc->type.mPointer) {
         sprintf(szName, "p%s", pParamDesc->pszName);
         pCtx->PutString(szName);
     }
@@ -1078,7 +1078,7 @@ IMPL_USERFUNC(DefaultInterface)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         if (pCtx->m_pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {
             continue;
         }
-        pCtx->PutString(pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->sIndex]->pszName);
+        pCtx->PutString(pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
         return LUBE_OK;
     }
 
@@ -1141,15 +1141,15 @@ IMPL_USERFUNC(PrefixingNameByName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     pszVarName = pParamDesc->pszName;
     if (pParamDesc->dwAttribs & ParamAttrib_in) {
         if ((Type_PVoid == paramType.mType)
-                || (1 == paramType.nPointer)) {
+                || (1 == paramType.mPointer)) {
             pszPrefix = GeneratePrefixalVarName("p", pszVarName);
         }
     }
     else if (pParamDesc->dwAttribs & ParamAttrib_out) {
-        if (1 == paramType.nPointer) { // Considered as caller
+        if (1 == paramType.mPointer) { // Considered as caller
             pszPrefix = GeneratePrefixalVarName(pszPrefix1, pszVarName);
         }
-        else if (2 == paramType.nPointer) { // Considered as callee
+        else if (2 == paramType.mPointer) { // Considered as callee
             pszPrefix = GeneratePrefixalVarName(pszPrefix2, pszVarName);
         }
         else {
@@ -1228,15 +1228,15 @@ IMPL_USERFUNC(PrefixingName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     if (pParamDesc->dwAttribs & ParamAttrib_in) {
         if ((Type_PVoid == paramType.mType)
-                || (1 == paramType.nPointer)) {
+                || (1 == paramType.mPointer)) {
             pszPrefix = GeneratePrefixalVarName("p", pszVarName);
         }
     }
     else if (pParamDesc->dwAttribs & ParamAttrib_out) {
-        if (1 == paramType.nPointer) {
+        if (1 == paramType.mPointer) {
             pszPrefix = GeneratePrefixalVarName(pszPrefix1, pszVarName);
         }
-        else if (2 == paramType.nPointer) {
+        else if (2 == paramType.mPointer) {
             pszPrefix = GeneratePrefixalVarName(pszPrefix2, pszVarName);
         }
         else {
@@ -1271,7 +1271,7 @@ IMPL_USERFUNC(ParamAddRef)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     if (Type_interface == pType->mType &&
         pParamDesc->dwAttribs & ParamAttrib_in &&
-        1 == pType->nPointer) {
+        1 == pType->mPointer) {
 
         char* pszVarName;
         char szValName[12];
@@ -1314,7 +1314,7 @@ IMPL_USERFUNC(ParamRelease)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     if (Type_interface == pType->mType &&
         pParamDesc->dwAttribs & ParamAttrib_in &&
-        1 == pType->nPointer) {
+        1 == pType->mPointer) {
         char* pszVarName;
         char szValName[12];
         int nParam = 0;
@@ -1354,14 +1354,14 @@ IMPL_USERFUNC(ParamOrigType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     switch (pType->mType) {
         case Type_ArrayOf:
-            assert(pType->pNestedType);
+            assert(pType->mNestedType);
             if (dwAttribs & ParamAttrib_in) {
                 sprintf(szType, "ArrayOf<%s>",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
+                    Type2CString(pCtx->m_pModule, pType->mNestedType));
             }
             else {
                 sprintf(szType, "ArrayOf<%s>*",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
+                    Type2CString(pCtx->m_pModule, pType->mNestedType));
             }
             pszType = szType;
             break;
@@ -1370,7 +1370,7 @@ IMPL_USERFUNC(ParamOrigType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             GetOriginalType(pCtx->m_pModule, pType, &type);
             if ((type.mType == Type_EGuid ||
                 type.mType == Type_EMuid) &&
-                1 == type.nPointer) {
+                1 == type.mPointer) {
                 if (type.mType == Type_EGuid) strcpy(szType, "EGuid");
                 else if (type.mType == Type_EMuid) strcpy(szType, "EMuid");
                 pszType = szType;
@@ -1422,7 +1422,7 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     if ((Type_struct == pType->mType)
             || (Type_EMuid == pType->mType)
             || (Type_EGuid == pType->mType)) {
-        if (0 == pType->nPointer) {
+        if (0 == pType->mPointer) {
             sprintf(szType, "const %s &",
                     Type2CString(pCtx->m_pModule, pType));
             pszType = szType;
@@ -1437,8 +1437,8 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                 || (Type_EGuid == type.mType)
                 || (Type_struct == type.mType)) {
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == type.nPointer) {
-                    assert(0 == pType->nPointer);
+                if (0 == type.mPointer) {
+                    assert(0 == pType->mPointer);
                     sprintf(szType, "const %s &",
                             Type2CString(pCtx->m_pModule, pType));
                     pszType = szType;
@@ -1451,8 +1451,8 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         }
         else if (Type_ArrayOf == type.mType) {
             if (dwAttribs & ParamAttrib_in) {
-                if (0 == type.nPointer) {
-                    assert(0 == pType->nPointer);
+                if (0 == type.mPointer) {
+                    assert(0 == pType->mPointer);
                     sprintf(szType, "const %s &",
                             Type2CString(pCtx->m_pModule, pType));
                     pszType = szType;
@@ -1463,19 +1463,19 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             }
             else {
                 if (dwAttribs & ParamAttrib_callee) {
-                    if (0 == pType->nPointer) {
-                        assert(1 == type.nPointer);
+                    if (0 == pType->mPointer) {
+                        assert(1 == type.mPointer);
                         sprintf(szType, "%s *", Type2CString(pCtx->m_pModule, pType));
                     }
-                    else if (1 == pType->nPointer) {
-                        assert(0 == type.nPointer);
+                    else if (1 == pType->mPointer) {
+                        assert(0 == type.mPointer);
                         sprintf(szType, "%s **", Type2CString(pCtx->m_pModule, pType));
                     }
                     pszType = szType;
                 }
                 else {
-                    assert(0 == pType->nPointer);
-                    assert(0 == type.nPointer);
+                    assert(0 == pType->mPointer);
+                    assert(0 == type.mPointer);
                     sprintf(szType, "%s *", Type2CString(pCtx->m_pModule, pType));
                     pszType = szType;
                 }
@@ -1485,17 +1485,17 @@ IMPL_USERFUNC(ParamNamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     }
     else if (Type_ArrayOf == pType->mType) {
         if (dwAttribs & ParamAttrib_in) {
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 sprintf(szType, "const ArrayOf<%s> &",
-                        Type2CString(pCtx->m_pModule, pType->pNestedType));
+                        Type2CString(pCtx->m_pModule, pType->mNestedType));
             }
             else sprintf(szType, "%s", Type2CString(pCtx->m_pModule, pType));
         }
         else {
             //dwAttribs == ParamAttrib_out
             sprintf(szType, "ArrayOf<%s>",
-                    Type2CString(pCtx->m_pModule, pType->pNestedType));
-            if (0 == pType->nPointer) strcat(szType, " *");
+                    Type2CString(pCtx->m_pModule, pType->mNestedType));
+            if (0 == pType->mPointer) strcat(szType, " *");
             else strcat(szType, " **");
         }
         pszType = szType;
@@ -1521,10 +1521,10 @@ IMPL_USERFUNC(NamespaceType)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     switch(pType->mType) {
         case Type_ArrayOf:
             strcpy(szType, "ArrayOf<");
-            strcat(szType, Type2CString(pCtx->m_pModule, pType->pNestedType));
+            strcat(szType, Type2CString(pCtx->m_pModule, pType->mNestedType));
             strcat(szType, ">");
-            if (1 == pType->nPointer) strcat(szType, " *");
-            else if (2 == pType->nPointer) strcat(szType, " **");
+            if (1 == pType->mPointer) strcat(szType, " *");
+            else if (2 == pType->mPointer) strcat(szType, " **");
             pszType = szType;
             break;
 
@@ -1571,7 +1571,7 @@ IMPL_USERFUNC(IsFiltered)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     ClassDescriptor *pClsDesc = pCtx->m_pOrigClass->pDesc;
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
-        if ((pClsDesc->ppInterfaces[i]->sIndex == pClsIntf->sIndex)
+        if ((pClsDesc->ppInterfaces[i]->mIndex == pClsIntf->mIndex)
                 || (pClsDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_filter)) {
             return true;
         }
@@ -1592,7 +1592,7 @@ IMPL_USERFUNC(HasTrivialConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
-        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->sIndex]->pDesc;
+        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->pDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {
             if (pIntfDesc->ppMethods[j]->dwAttribs & MethodAttrib_TrivialCtor) {
                 return true;
@@ -1615,7 +1615,7 @@ IMPL_USERFUNC(HasDefaultConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
-        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->sIndex]->pDesc;
+        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->pDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {
             if (pIntfDesc->ppMethods[j]->dwAttribs & MethodAttrib_DefaultCtor) {
                 return true;
@@ -1653,9 +1653,9 @@ Restart:
             goto Restart;
 
         case Type_Byte:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteByte(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1666,9 +1666,9 @@ Restart:
             break;
 
         case Type_Char16:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteChar16(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1679,9 +1679,9 @@ Restart:
             break;
 
         case Type_Char32:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteChar32(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1694,7 +1694,7 @@ Restart:
             break;
 
         case Type_String:
-            assert(0 == pType->nPointer);
+            assert(0 == pType->mPointer);
 
             pCtx->PutString("pParams->WriteString(");
             UserFunc_PrefixingName(pCtx, pDesc, pvArg);
@@ -1702,9 +1702,9 @@ Restart:
             break;
 
         case Type_Boolean:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteBoolean(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1715,9 +1715,9 @@ Restart:
             break;
 
         case Type_ECode:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInt32(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1728,9 +1728,9 @@ Restart:
             break;
 
         case Type_Int16:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInt16(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1741,9 +1741,9 @@ Restart:
             break;
 
         case Type_Int32:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInt32(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1754,9 +1754,9 @@ Restart:
             break;
 
         case Type_Int64:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInt64(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1767,9 +1767,9 @@ Restart:
             break;
 
         case Type_Float:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteFloat(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1780,9 +1780,9 @@ Restart:
             break;
 
         case Type_Double:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteDouble(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1793,9 +1793,9 @@ Restart:
             break;
 
         case Type_enum:
-            assert(1 >= pType->nPointer);
+            assert(1 >= pType->mPointer);
 
-            if (0 == pType->nPointer) {
+            if (0 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInt32(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
@@ -1814,7 +1814,7 @@ Restart:
             break;
 
         case Type_EMuid:
-            assert(0 == pType->nPointer);
+            assert(0 == pType->mPointer);
 
             pCtx->PutString("pParams->WriteEMuid(");
             UserFunc_PrefixingName(pCtx, pDesc, pvArg);
@@ -1822,7 +1822,7 @@ Restart:
             break;
 
         case Type_EGuid:
-            assert(0 == pType->nPointer);
+            assert(0 == pType->mPointer);
 
             pCtx->PutString("pParams->WriteEGuid(");
             UserFunc_PrefixingName(pCtx, pDesc, pvArg);
@@ -1830,12 +1830,12 @@ Restart:
             break;
 
         case Type_interface:
-            if (1 == pType->nPointer) {
+            if (1 == pType->mPointer) {
                 pCtx->PutString("pParams->WriteInterfacePtr(");
                 UserFunc_PrefixingName(pCtx, pDesc, pvArg);
                 pCtx->PutString(");");
             }
-            else if (2 == pType->nPointer) {
+            else if (2 == pType->mPointer) {
                 assert(0);
             }
             else assert(0);
@@ -1843,16 +1843,16 @@ Restart:
             break;
 
         case Type_ArrayOf:
-            assert(0 == pType->nPointer);
+            assert(0 == pType->mPointer);
 
-            if (Type_String == pType->pNestedType->mType) {
+            if (Type_String == pType->mNestedType->mType) {
                 pCtx->PutString("pParams->WriteArrayOfString(const_cast<ArrayOf<String>*>(&");
             }
             else {
                 pCtx->PutString("pParams->WriteArrayOf((Handle32)&");
             }
             UserFunc_PrefixingName(pCtx, pDesc, pvArg);
-            if (Type_String == pType->pNestedType->mType) {
+            if (Type_String == pType->mNestedType->mType) {
                 pCtx->PutString("));");
             }
             else {

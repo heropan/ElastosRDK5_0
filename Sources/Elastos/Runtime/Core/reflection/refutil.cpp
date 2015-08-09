@@ -118,21 +118,21 @@ void _GetOriginalType(
     /* [in] */ const TypeDescriptor* src,
     /* [in] */ TypeDescriptor* dest)
 {
-    dest->nPointer = src->nPointer;
-    dest->bUnsigned = src->bUnsigned;
+    dest->mPointer = src->mPointer;
+    dest->mUnsigned = src->mUnsigned;
 
     AliasDirEntry* aliasDir = NULL;
     while (src->mType == Type_alias) {
         aliasDir = getAliasDirAddr(clsModule->mBase,
-                clsModule->mClsMod->mAliasDirs, src->sIndex);
+                clsModule->mClsMod->mAliasDirs, src->mIndex);
         src = &aliasDir->type;
-        dest->nPointer += src->nPointer;
-        dest->bUnsigned |= src->bUnsigned;
+        dest->mPointer += src->mPointer;
+        dest->mUnsigned |= src->mUnsigned;
     }
 
     dest->mType = src->mType;
-    dest->sIndex = src->sIndex;
-    dest->pNestedType = src->pNestedType;
+    dest->mIndex = src->mIndex;
+    dest->mNestedType = src->mNestedType;
 }
 
 UInt32 GetDataTypeSize(
@@ -148,7 +148,7 @@ UInt32 GetDataTypeSize(
         typeDesc = &orgTypeDesc;
     }
 
-    if (typeDesc->nPointer) {
+    if (typeDesc->mPointer) {
         return sizeof(void *);
     }
 
@@ -219,12 +219,12 @@ UInt32 GetDataTypeSize(
             break;
         case Type_struct:
             structDir = getStructDirAddr(base,
-                    module->mStructDirs, typeDesc->sIndex);
+                    module->mStructDirs, typeDesc->mIndex);
             size = adjustStructDescAddr(base, structDir->pDesc)->nAlignSize;
             break;
         case Type_Array:
             arrayDir = getArrayDirAddr(base,
-                    module->mArrayDirs, typeDesc->sIndex);
+                    module->mArrayDirs, typeDesc->mIndex);
             size = GetDataTypeSize(clsModule, &arrayDir->type) * arrayDir->nElements;
             break;
         case Type_enum:
@@ -232,7 +232,7 @@ UInt32 GetDataTypeSize(
             break;
         case Type_ArrayOf:
             size = GetDataTypeSize(clsModule,
-                    adjustNestedTypeAddr(base, typeDesc->pNestedType));
+                    adjustNestedTypeAddr(base, typeDesc->mNestedType));
             break;
 //        case Type_EzEnum:
 //            size = sizeof(EzEnum);
@@ -293,7 +293,7 @@ UInt32 GetDataTypeSize(
 //            type = Type_ECode;
 //            break;
 //        case Type_ArrayOf:
-//            type = GetBasicType(typeDesc->pNestedType);
+//            type = GetBasicType(typeDesc->mNestedType);
 //            break;
 //        default:
 //            type = typeDesc->type;

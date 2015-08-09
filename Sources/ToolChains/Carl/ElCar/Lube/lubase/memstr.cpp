@@ -546,14 +546,14 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
                 }
                 else if (Type_ArrayOf == type.mType) {
                     if (m_pParam->dwAttribs & ParamAttrib_in) {
-                        if (0 == type.nPointer) {
+                        if (0 == type.mPointer) {
                             strcpy(pszBuffer, "const ");
                             strcat(pszBuffer, Type2CString(m_pModule, &m_pParam->type));
                             strcat(pszBuffer, " &");
                             return LUBE_OK;
                         }
                         else {
-                            assert(1 == type.nPointer);
+                            assert(1 == type.mPointer);
                             strcpy(pszBuffer, Type2CString(m_pModule, &m_pParam->type));
                             return LUBE_OK;
                         }
@@ -570,20 +570,20 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
             }
             else if (Type_ArrayOf == m_pParam->type.mType) {
                 if ((m_pParam->dwAttribs & ParamAttrib_in)
-                    && (0 == m_pParam->type.nPointer)) pszOutput = "const ArrayOf";
+                    && (0 == m_pParam->type.mPointer)) pszOutput = "const ArrayOf";
                 else pszOutput = "ArrayOf";
                 strcpy(pszBuffer, pszOutput);
                 strcat(pszBuffer, "<");
-                strcat(pszBuffer, Type2CString(m_pModule, m_pParam->type.pNestedType));
+                strcat(pszBuffer, Type2CString(m_pModule, m_pParam->type.mNestedType));
                 strcat(pszBuffer, ">");
                 if (m_pParam->dwAttribs & ParamAttrib_in) {
-                    if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " &");
+                    if (0 == m_pParam->type.mPointer) strcat(pszBuffer, " &");
                     else {
-                       assert (1 == m_pParam->type.nPointer);
+                       assert (1 == m_pParam->type.mPointer);
                        strcat(pszBuffer, " *");
                     }
                 }
-                else if (0 == m_pParam->type.nPointer) strcat(pszBuffer, " *");
+                else if (0 == m_pParam->type.mPointer) strcat(pszBuffer, " *");
                 else strcat(pszBuffer, " **");
                 return LUBE_OK;
             }
