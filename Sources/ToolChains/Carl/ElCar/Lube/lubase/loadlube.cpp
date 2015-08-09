@@ -52,7 +52,7 @@ void RelocateState(PSTATEDESC pDesc)
 
 void RelocateTemplate(LubeTemplate *pTemplate)
 {
-    pTemplate->pszName = (char *)((int)pTemplate->pszName + s_nOffset);
+    pTemplate->mName = (char *)((int)pTemplate->mName + s_nOffset);
     if (pTemplate->tRoot.pBlockette) {
         pTemplate->tRoot.pBlockette = (PSTATEDESC)
                     ((int)pTemplate->tRoot.pBlockette + s_nOffset);

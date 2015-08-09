@@ -73,7 +73,7 @@ int CLubeBuffer::WriteTemplate(LubeTemplate *pTemplate)
     LubeTemplate tmp;
 
     memcpy(&tmp, pTemplate, sizeof(LubeTemplate));
-    tmp.pszName = (char *)WriteString(tmp.pszName);
+    tmp.mName = (char *)WriteString(tmp.mName);
     if (tmp.tRoot.pBlockette) {
         tmp.tRoot.pBlockette = (PSTATEDESC)WriteState(tmp.tRoot.pBlockette);
     }
@@ -119,7 +119,7 @@ int CalcTemplateSize(LubeTemplate *pTemplate)
     int nSize = sizeof(LubeTemplate);
 
     nSize += CalcStatementsSize(pTemplate->tRoot.pBlockette);
-    nSize += RoundUp4(strlen(pTemplate->pszName) + 1);
+    nSize += RoundUp4(strlen(pTemplate->mName) + 1);
 
     return nSize;
 }

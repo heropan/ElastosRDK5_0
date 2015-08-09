@@ -543,30 +543,30 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 }
 
 #define CTOR_LOOP_BEGIN() \
-    assert(pCtx->m_pClass->pDesc->sCtorIndex);\
+    assert(pCtx->m_pClass->mDesc->sCtorIndex);\
     InterfaceDirEntry *pCtorInterface = \
-                pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->sCtorIndex];\
+                pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->mDesc->sCtorIndex];\
     int m, p, i;\
     char szBuf[c_nStrBufSize];\
     int nLoopNum = 0;\
     int nLoopEnd = 3;\
     TypeDescriptor type, OrigType;\
     const char *string;\
-    for (i = 0; i < pCtx->m_pClass->pDesc->mInterfaceCount; i++) {\
-        if (pCtx->m_pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
+    for (i = 0; i < pCtx->m_pClass->mDesc->mInterfaceCount; i++) {\
+        if (pCtx->m_pClass->mDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
             continue;\
         }\
         /*For all constructor methods*/ \
-        for (m = 0; m < pCtorInterface->pDesc->cMethods; m++) {\
+        for (m = 0; m < pCtorInterface->mDesc->cMethods; m++) {\
             nLoopNum = 0;\
             do {\
                 ++nLoopNum;
 
 #define CTOR_PARAMS() \
                 pCtx->PutString("        ");\
-                for (p = 0; p < pCtorInterface->pDesc->ppMethods[m]->cParams - 1; p++) {\
+                for (p = 0; p < pCtorInterface->mDesc->ppMethods[m]->cParams - 1; p++) {\
                     memset(szBuf, 0, c_nStrBufSize);\
-                    type = pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->type;\
+                    type = pCtorInterface->mDesc->ppMethods[m]->ppParams[p]->type;\
                     if (Type_struct == type.mType || Type_EMuid == type.mType ||\
                         Type_EGuid == type.mType || Type_ArrayOf == type.mType) {\
                         string = StructType2CString(pCtx->m_pModule, &type);\
@@ -586,14 +586,14 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
                         string = Type2CString(pCtx->m_pModule, &type);\
                     }\
                     sprintf(szBuf, "/*[in]*/  %s %s,\n", string, \
-                            pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->pszName);\
+                            pCtorInterface->mDesc->ppMethods[m]->ppParams[p]->mName);\
                     pCtx->PutString(ImplNamespaceType(szBuf));\
                     pCtx->PutString("        ");\
                 }\
                 memset(szBuf, 0, c_nStrBufSize);\
                 sprintf(szBuf, "/*[out]*/ %s **pp%s", \
-                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName, \
-                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
+                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->mDesc->ppInterfaces[i]->mIndex]->mName, \
+                  pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->mDesc->ppInterfaces[i]->mIndex]->mName);\
                 pCtx->PutString(ImplNamespaceType(szBuf));\
 
 #define CTOR_LOOP_END() \
@@ -604,29 +604,29 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     CTOR_LOOP_BEGIN()
-                if (pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_singleton) {
+                if (pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_singleton) {
                     if (1 == nLoopNum) {
                         //pCtx->PutString("static _ELASTOS ECode ");
-                        pCtx->PutString(pCtx->m_pClass->pszName);
+                        pCtx->PutString(pCtx->m_pClass->mName);
                         pCtx->PutString("::AcquireSingletonInDomain(\n");
                         pCtx->PutString("        /*[in]*/  PRegime pRegime,\n");
                     }
                     else {
                         //pCtx->PutString("static _ELASTOS ECode ");
-                        pCtx->PutString(pCtx->m_pClass->pszName);
+                        pCtx->PutString(pCtx->m_pClass->mName);
                         pCtx->PutString("::AcquireSingleton(\n");
                     }
                 }
                 else {
                     if (1 == nLoopNum) {
                         //pCtx->PutString("static _ELASTOS ECode ");
-                        pCtx->PutString(pCtx->m_pClass->pszName);
+                        pCtx->PutString(pCtx->m_pClass->mName);
                         pCtx->PutString("::NewInRegime(\n");
                         pCtx->PutString("        /*[in]*/  PRegime pRegime,\n");
                     }
                     else {
                         //pCtx->PutString("static _ELASTOS ECode ");
-                        pCtx->PutString(pCtx->m_pClass->pszName);
+                        pCtx->PutString(pCtx->m_pClass->mName);
                         pCtx->PutString("::New(\n");
                     }
                 }
@@ -650,7 +650,7 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         return LUBE_OK;\
     }\
     pClass = pCtx->m_pModule->mClassDirs[r];\
-    if (0 == (pClass->pDesc->dwAttribs & ClassAttrib_t_generic)) {\
+    if (0 == (pClass->mDesc->dwAttribs & ClassAttrib_t_generic)) {\
         return LUBE_OK;\
     }\
 
@@ -660,17 +660,17 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     char szBuf[c_nStrBufSize];\
     char *pszName;\
     InterfaceDirEntry *pCtorInterface = NULL;\
-    pCtorInterface = pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->sCtorIndex];\
-    for (i = 0; i < pClass->pDesc->mInterfaceCount; i++) {\
-        if (pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
+    pCtorInterface = pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->sCtorIndex];\
+    for (i = 0; i < pClass->mDesc->mInterfaceCount; i++) {\
+        if (pClass->mDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
             continue;\
         }\
-        pszName = pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName;\
+        pszName = pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName;\
         if (!strcmp(pszName, "IObject")) {\
             continue;\
         }\
         /*For all constructor methods*/ \
-        length = pCtorInterface->pDesc->cMethods;\
+        length = pCtorInterface->mDesc->cMethods;\
         for (m = 0; m < length; m++) {\
 
 /* generate method declaration sources */
@@ -678,19 +678,19 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 #define DECLARE_PARAMS(pClass, spaces) \
             pCtx->PutString("\n");\
             pCtx->PutString(spaces);\
-            for (p = 0; p < pCtorInterface->pDesc->ppMethods[m]->cParams - 1; p++) {\
+            for (p = 0; p < pCtorInterface->mDesc->ppMethods[m]->cParams - 1; p++) {\
                 memset(szBuf, 0, c_nStrBufSize);\
                 sprintf(szBuf, "/*[in]*/  %s %s,\n", \
                         Type2CString(pCtx->m_pModule, \
-                        &(pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->type)), \
-                        pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->pszName);\
+                        &(pCtorInterface->mDesc->ppMethods[m]->ppParams[p]->type)), \
+                        pCtorInterface->mDesc->ppMethods[m]->ppParams[p]->mName);\
                 pCtx->PutString(ImplNamespaceType(szBuf));\
                 pCtx->PutString(spaces);\
             }\
             memset(szBuf, 0, c_nStrBufSize);\
             sprintf(szBuf, "/*[out]*/ %s **pp%s", \
-                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName, \
-                pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
+                pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName, \
+                pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName);\
             pCtx->PutString(ImplNamespaceType(szBuf));\
 
 /* Here will be main method body codes or nothing */
@@ -702,26 +702,26 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 #define INVOKE_PARAMS(pClass, spaces) \
             pCtx->PutString("\n");\
             pCtx->PutString(spaces);\
-            for (p = 0; p < pCtorInterface->pDesc->ppMethods[m]->cParams - 1; p++) {\
-                pCtx->PutString(pCtorInterface->pDesc->ppMethods[m]->ppParams[p]->pszName);\
+            for (p = 0; p < pCtorInterface->mDesc->ppMethods[m]->cParams - 1; p++) {\
+                pCtx->PutString(pCtorInterface->mDesc->ppMethods[m]->ppParams[p]->mName);\
                 pCtx->PutString(",\n");\
                 pCtx->PutString(spaces);\
             }\
             pCtx->PutString("pp");\
             pCtx->PutString(pCtx->m_pModule->\
-                    mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);\
+                    mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName);\
 
 //Create the method name combined with paramter names
 #define GENERIC_UPPER_CASE_PARAMS(pCtorInterface) \
     char szMethodName[c_nStrBufSize];\
     pCtx->PutString("GenericCreateClassObjectWith");\
     int nMeth;\
-    for (nMeth = 0; nMeth < pCtorInterface->pDesc->ppMethods[m]->cParams - 1; nMeth++) {\
-        if (pCtorInterface->pDesc->ppMethods[m]->ppParams[nMeth]->dwAttribs & ParamAttrib_out) {\
+    for (nMeth = 0; nMeth < pCtorInterface->mDesc->ppMethods[m]->cParams - 1; nMeth++) {\
+        if (pCtorInterface->mDesc->ppMethods[m]->ppParams[nMeth]->dwAttribs & ParamAttrib_out) {\
             continue;\
         }\
         memset(szMethodName, 0, c_nStrBufSize);\
-        strcpy(szMethodName, pCtorInterface->pDesc->ppMethods[m]->ppParams[nMeth]->pszName);\
+        strcpy(szMethodName, pCtorInterface->mDesc->ppMethods[m]->ppParams[nMeth]->mName);\
         if (szMethodName[0] >= 'a' && szMethodName[0] <= 'z') {\
             szMethodName[0] -= 'a' - 'A';\
         }\
@@ -730,9 +730,9 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
 IMPL_USERFUNC(ImplOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
-    PREPARE_CLASS(pCtx->m_pClass->pszName, 0, 11)
+    PREPARE_CLASS(pCtx->m_pClass->mName, 0, 11)
     START_FOR_LOOP(pClass)
-            sprintf(szBuf, "ECode %s::", pCtx->m_pClass->pszName);
+            sprintf(szBuf, "ECode %s::", pCtx->m_pClass->mName);
             pCtx->PutString(szBuf);
             GENERIC_UPPER_CASE_PARAMS(pCtorInterface)
             pCtx->PutString("(");
@@ -747,18 +747,18 @@ IMPL_USERFUNC(ImplOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID 
             pCtx->PutString("    if (FAILED(ec)) return ec;\n");
 
             sprintf(szBuf, "    pClsid = (EMuid*)(*pp%s)->Probe(EIID_GENERIC_INFO);\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName);
             pCtx->PutString(szBuf);
             pCtx->PutString("    if (!pClsid) {\n");
             sprintf(szBuf, "        (*pp%s)->Release();\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName);
             pCtx->PutString(szBuf);
             pCtx->PutString("        return E_WRONG_GENERIC;\n");
             pCtx->PutString("    }\n");
             sprintf(szBuf, "    if (*pClsid != ECLSID_%s) {\n", szName);
             pCtx->PutString(szBuf);
             sprintf(szBuf, "        (*pp%s)->Release();\n",
-                    pCtx->m_pModule->mInterfaceDirs[pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
+                    pCtx->m_pModule->mInterfaceDirs[pClass->mDesc->ppInterfaces[i]->mIndex]->mName);
             pCtx->PutString(szBuf);
             pCtx->PutString("        return E_WRONG_GENERIC;\n");
             pCtx->PutString("    }\n");
@@ -771,7 +771,7 @@ IMPL_USERFUNC(ImplOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID 
 
 IMPL_USERFUNC(NewHeaderOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
-    PREPARE_CLASS(pCtx->m_pClass->pszName, 0, 11)
+    PREPARE_CLASS(pCtx->m_pClass->mName, 0, 11)
     START_FOR_LOOP(pClass)
             pCtx->PutString("    CARAPI ");
             GENERIC_UPPER_CASE_PARAMS(pCtorInterface)
@@ -784,7 +784,7 @@ IMPL_USERFUNC(NewHeaderOfGenericClassObjects)(PLUBECTX pCtx, PSTATEDESC pDesc, P
 
 IMPL_USERFUNC(NewHeaderOfGenericInterfaces)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
-    PREPARE_CLASS(pCtx->m_pInterface->pszName, 1, 11)
+    PREPARE_CLASS(pCtx->m_pInterface->mName, 1, 11)
     START_FOR_LOOP(pClass)
             pCtx->PutString("    virtual CARAPI ");
             GENERIC_UPPER_CASE_PARAMS(pCtorInterface)
@@ -808,7 +808,7 @@ IMPL_USERFUNC(NewHeaderOfGeneric)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 IMPL_USERFUNC(EmptyImplOfGeneric)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     START_FOR_LOOP(pCtx->m_pClass)
-            sprintf(szBuf, "ECode %s::New(", pCtx->m_pClass->pszName);
+            sprintf(szBuf, "ECode %s::New(", pCtx->m_pClass->mName);
             pCtx->PutString(szBuf);
             DECLARE_PARAMS(pCtx->m_pClass, "    ")
             pCtx->PutString(")\n{\n");
@@ -828,23 +828,23 @@ IMPL_USERFUNC(NewOfGeneric)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             pCtx->PutString("        _ELASTOS ECode _ecode = NOERROR;\n");
             memset(szBuf, 0, c_nStrBufSize);
             sprintf(szBuf, "        %s *_p%s = NULL;\n\n",
-                    pCtorInterface->pszName, pCtorInterface->pszName);
+                    pCtorInterface->mName, pCtorInterface->mName);
             pCtx->PutString(szBuf);
             pCtx->PutString("        _ecode = _CObject_AcquireClassFactory(ECLSID_");
-            pCtx->PutString(pCtx->m_pClass->pszName);
+            pCtx->PutString(pCtx->m_pClass->mName);
 //            pCtx->PutString("ClassObject,\n");
             pCtx->PutString(",\n");
             pCtx->PutString("                ");
             pCtx->PutString("RGM_SAME_DOMAIN, ");
             pCtx->PutString("EIID_I");
-            pCtx->PutString(pCtx->m_pClass->pszName);
+            pCtx->PutString(pCtx->m_pClass->mName);
             pCtx->PutString("ClassObject, ");
             pCtx->PutString("(IInterface**)&_p");
-            pCtx->PutString(pCtorInterface->pszName);
+            pCtx->PutString(pCtorInterface->mName);
             pCtx->PutString(");\n");
             pCtx->PutString("        if (FAILED(_ecode)) goto Exit;\n\n");
             pCtx->PutString("        _ecode = _p");
-            pCtx->PutString(pCtorInterface->pszName);
+            pCtx->PutString(pCtorInterface->mName);
             pCtx->PutString("->");
             GENERIC_UPPER_CASE_PARAMS(pCtorInterface)
             pCtx->PutString("(");
@@ -853,9 +853,9 @@ IMPL_USERFUNC(NewOfGeneric)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
             pCtx->PutString("        if (FAILED(_ecode)) goto Exit;\n\n");
             pCtx->PutString("    Exit:\n");
             pCtx->PutString("        if (_p");
-            pCtx->PutString(pCtorInterface->pszName);
+            pCtx->PutString(pCtorInterface->mName);
             pCtx->PutString(") _p");
-            pCtx->PutString(pCtorInterface->pszName);
+            pCtx->PutString(pCtorInterface->mName);
             pCtx->PutString("->Release();\n");
             pCtx->PutString("        return _ecode;\n");
             pCtx->PutString("    }\n\n");
@@ -867,7 +867,7 @@ IMPL_USERFUNC(UsageNewOfGeneric)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     START_FOR_LOOP(pCtx->m_pClass)
             //pCtx->PutString("static _ELASTOS ECode ");
-            pCtx->PutString(pCtx->m_pClass->pszName);
+            pCtx->PutString(pCtx->m_pClass->mName);
             pCtx->PutString("::New(");
             DECLARE_PARAMS(pCtx->m_pClass, "        ")
             pCtx->PutString(")\n");
@@ -880,13 +880,13 @@ IMPL_USERFUNC(GenericInfoQI)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     ClassDirEntry *pClass = pCtx->m_pClass;
 
     /* generic class, if existed, will always be the root parent */
-    while (pClass->pDesc->dwAttribs & ClassAttrib_hasparent) {
-        pClass = pCtx->m_pModule->mClassDirs[pClass->pDesc->sParentIndex];
+    while (pClass->mDesc->dwAttribs & ClassAttrib_hasparent) {
+        pClass = pCtx->m_pModule->mClassDirs[pClass->mDesc->sParentIndex];
     }
     pCtx->PutString("        return ");
-    if (pClass->pDesc->dwAttribs & ClassAttrib_t_generic) {
+    if (pClass->mDesc->dwAttribs & ClassAttrib_t_generic) {
         pCtx->PutString("(IInterface *)&ECLSID_");
-        pCtx->PutString(pClass->pszName);
+        pCtx->PutString(pClass->mName);
         pCtx->PutString(";\n");
     }
     else {
@@ -1041,11 +1041,11 @@ int GetCStyleStructParamName(PLUBECTX pCtx, const ParamDescriptor *pParamDesc)
     // If struct parameter type is't pointer, we have to change its type
     // to a pointer and prefix 'p' to its name.
     if (0 == pParamDesc->type.mPointer) {
-        sprintf(szName, "p%s", pParamDesc->pszName);
+        sprintf(szName, "p%s", pParamDesc->mName);
         pCtx->PutString(szName);
     }
     else {
-        pCtx->PutString(pParamDesc->pszName);
+        pCtx->PutString(pParamDesc->mName);
     }
 
     return LUBE_OK;
@@ -1063,7 +1063,7 @@ IMPL_USERFUNC(CStyleName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         case Type_struct:
             return GetCStyleStructParamName(pCtx, pParamDesc);
         default:
-            pCtx->PutString(pParamDesc->pszName);
+            pCtx->PutString(pParamDesc->mName);
             break;
     }
 
@@ -1074,11 +1074,11 @@ IMPL_USERFUNC(DefaultInterface)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     int i;
 
-    for (i = 0; i < pCtx->m_pClass->pDesc->mInterfaceCount; i++) {
-        if (pCtx->m_pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {
+    for (i = 0; i < pCtx->m_pClass->mDesc->mInterfaceCount; i++) {
+        if (pCtx->m_pClass->mDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {
             continue;
         }
-        pCtx->PutString(pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->ppInterfaces[i]->mIndex]->pszName);
+        pCtx->PutString(pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->mDesc->ppInterfaces[i]->mIndex]->mName);
         return LUBE_OK;
     }
 
@@ -1138,7 +1138,7 @@ IMPL_USERFUNC(PrefixingNameByName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 
     char* pszVarName;
 
-    pszVarName = pParamDesc->pszName;
+    pszVarName = pParamDesc->mName;
     if (pParamDesc->dwAttribs & ParamAttrib_in) {
         if ((Type_PVoid == paramType.mType)
                 || (1 == paramType.mPointer)) {
@@ -1214,11 +1214,11 @@ IMPL_USERFUNC(PrefixingName)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     char szValName[12];
     int nParam = 0;
 
-    if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
+    if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
 
     for (; nParam < pCtx->m_pMethod->cParams; ++nParam) {
         if (pParamDesc == pCtx->m_pMethod->ppParams[nParam]) {
-            if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
+            if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
             break;
         }
     }
@@ -1277,11 +1277,11 @@ IMPL_USERFUNC(ParamAddRef)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         char szValName[12];
         int nParam = 0;
 
-        if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
+        if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
 
         for (; nParam < pCtx->m_pMethod->cParams; ++nParam) {
             if (pParamDesc == pCtx->m_pMethod->ppParams[nParam]) {
-                if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
+                if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
                 break;
             }
         }
@@ -1319,11 +1319,11 @@ IMPL_USERFUNC(ParamRelease)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         char szValName[12];
         int nParam = 0;
 
-        if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
+        if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam = 1;
 
         for (; nParam < pCtx->m_pMethod->cParams; ++nParam) {
             if (pParamDesc == pCtx->m_pMethod->ppParams[nParam]) {
-                if (pCtx->m_pClass && pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
+                if (pCtx->m_pClass && pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) nParam -= 1;
                 break;
             }
         }
@@ -1548,7 +1548,7 @@ IMPL_USERFUNC(ParamType2String)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     strcpy(szOutput, "ParamType_");
 
     int i = 0;
-    if (pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_t_sink) i = 1;
+    if (pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_t_sink) i = 1;
     else i = 0;
 
     for (; i < pMethod->cParams; ++i) {
@@ -1568,7 +1568,7 @@ IMPL_USERFUNC(IsFiltered)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pOrigClass);
 
     ClassInterface *pClsIntf = pCtx->m_pClsIntf;
-    ClassDescriptor *pClsDesc = pCtx->m_pOrigClass->pDesc;
+    ClassDescriptor *pClsDesc = pCtx->m_pOrigClass->mDesc;
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         if ((pClsDesc->ppInterfaces[i]->mIndex == pClsIntf->mIndex)
@@ -1584,7 +1584,7 @@ IMPL_USERFUNC(HasTrivialConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 {
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
 
-    ClassDescriptor *pClsDesc = pCtx->m_pClass->pDesc;
+    ClassDescriptor *pClsDesc = pCtx->m_pClass->mDesc;
     assert(pClsDesc->dwAttribs & ClassAttrib_t_clsobj);
 
     ClassInterface *pClsIntf;
@@ -1592,7 +1592,7 @@ IMPL_USERFUNC(HasTrivialConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
-        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->pDesc;
+        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->mDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {
             if (pIntfDesc->ppMethods[j]->dwAttribs & MethodAttrib_TrivialCtor) {
                 return true;
@@ -1607,7 +1607,7 @@ IMPL_USERFUNC(HasDefaultConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 {
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
 
-    ClassDescriptor *pClsDesc = pCtx->m_pClass->pDesc;
+    ClassDescriptor *pClsDesc = pCtx->m_pClass->mDesc;
     assert(pClsDesc->dwAttribs & ClassAttrib_t_clsobj);
 
     ClassInterface *pClsIntf;
@@ -1615,7 +1615,7 @@ IMPL_USERFUNC(HasDefaultConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
 
     for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
-        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->pDesc;
+        pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsIntf->mIndex]->mDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {
             if (pIntfDesc->ppMethods[j]->dwAttribs & MethodAttrib_DefaultCtor) {
                 return true;
@@ -1631,9 +1631,9 @@ IMPL_USERFUNC(OrgClassIsAspect)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
 
     ClassDirEntry *pClsDir = pCtx->m_pClass;
-    assert(pClsDir->pDesc->dwAttribs & ClassAttrib_t_sink);
+    assert(pClsDir->mDesc->dwAttribs & ClassAttrib_t_sink);
 
-    if (pClsDir->pszName[0] == 'A') return true;
+    if (pClsDir->mName[0] == 'A') return true;
     else return false;
 }
 
@@ -1883,9 +1883,9 @@ IMPL_USERFUNC(ClassNamespaceBegin)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
 
     ClassDirEntry *pClsDir = pCtx->m_pClass;
-    if (pClsDir->pszNameSpace != NULL && pClsDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pClsDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pClsDir->pszNameSpace);
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pClsDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pClsDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');
@@ -1907,9 +1907,9 @@ IMPL_USERFUNC(ClassNamespaceEnd)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pClass && pvArg == pCtx->m_pClass);
 
     ClassDirEntry *pClsDir = pCtx->m_pClass;
-    if (pClsDir->pszNameSpace != NULL && pClsDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pClsDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pClsDir->pszNameSpace);
+    if (pClsDir->mNameSpace != NULL && pClsDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pClsDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pClsDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');
@@ -1929,9 +1929,9 @@ IMPL_USERFUNC(InterfaceNamespaceBegin)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pv
     assert(NULL != pCtx->m_pInterface && pvArg == pCtx->m_pInterface);
 
     InterfaceDirEntry *pItfDir = pCtx->m_pInterface;
-    if (pItfDir->pszNameSpace != NULL && pItfDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pItfDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pItfDir->pszNameSpace);
+    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pItfDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pItfDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');
@@ -1953,9 +1953,9 @@ IMPL_USERFUNC(InterfaceNamespaceEnd)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
     assert(NULL != pCtx->m_pInterface && pvArg == pCtx->m_pInterface);
 
     InterfaceDirEntry *pItfDir = pCtx->m_pInterface;
-    if (pItfDir->pszNameSpace != NULL && pItfDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pItfDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pItfDir->pszNameSpace);
+    if (pItfDir->mNameSpace != NULL && pItfDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pItfDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pItfDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');
@@ -1975,9 +1975,9 @@ IMPL_USERFUNC(EnumNamespaceBegin)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pEnum && pvArg == pCtx->m_pEnum);
 
     EnumDirEntry *pEnumDir = pCtx->m_pEnum;
-    if (pEnumDir->pszNameSpace != NULL && pEnumDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pEnumDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pEnumDir->pszNameSpace);
+    if (pEnumDir->mNameSpace != NULL && pEnumDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pEnumDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pEnumDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');
@@ -1999,9 +1999,9 @@ IMPL_USERFUNC(EnumNamespaceEnd)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     assert(NULL != pCtx->m_pEnum && pvArg == pCtx->m_pEnum);
 
     EnumDirEntry *pEnumDir = pCtx->m_pEnum;
-    if (pEnumDir->pszNameSpace != NULL && pEnumDir->pszNameSpace[0] != '\0') {
-        char *pszNamespace = (char*)malloc(strlen(pEnumDir->pszNameSpace) + 1);
-        strcpy(pszNamespace, pEnumDir->pszNameSpace);
+    if (pEnumDir->mNameSpace != NULL && pEnumDir->mNameSpace[0] != '\0') {
+        char *pszNamespace = (char*)malloc(strlen(pEnumDir->mNameSpace) + 1);
+        strcpy(pszNamespace, pEnumDir->mNameSpace);
         char *begin = pszNamespace;
         while (begin != NULL) {
             char *dot = strchr(begin, '.');

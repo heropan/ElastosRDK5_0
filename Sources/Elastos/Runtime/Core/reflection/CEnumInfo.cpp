@@ -79,9 +79,9 @@ ECode CEnumInfo::InitStatic(
 
     Int32 base = mClsModule->mBase;
     mEnumDirEntry = enumDirEntry;
-    mName = adjustNameAddr(base, mEnumDirEntry->pszName);
-    mNamespace = adjustNameAddr(base, mEnumDirEntry->pszNameSpace);
-    EnumDescriptor* desc = adjustEnumDescAddr(base, enumDirEntry->pDesc);
+    mName = adjustNameAddr(base, mEnumDirEntry->mName);
+    mNamespace = adjustNameAddr(base, mEnumDirEntry->mNameSpace);
+    EnumDescriptor* desc = adjustEnumDescAddr(base, enumDirEntry->mDesc);
 
     mItemValues = ArrayOf<Int32>::Alloc(desc->cElems);
     if (!mItemValues) {
@@ -98,7 +98,7 @@ ECode CEnumInfo::InitStatic(
     for (Int32 i = 0; i < desc->cElems; i++) {
         elem = getEnumElementAddr(base, desc->ppElems, i);
         (*mItemValues)[i] = elem->nValue;
-        (*mItemNames)[i] = adjustNameAddr(base, elem->pszName);
+        (*mItemNames)[i] = adjustNameAddr(base, elem->mName);
     }
 
     ECode ec = InitItemInfos();

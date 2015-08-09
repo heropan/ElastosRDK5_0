@@ -136,7 +136,7 @@ int RetrieveMethod(const char *pszName,
     assert(pszName && pDesc);
 
     return SelectInterfaceMethod(pszName,
-                                pModule->mInterfaceDirs[pDesc->mIndex]->pDesc);
+                                pModule->mInterfaceDirs[pDesc->mIndex]->mDesc);
 }
 
 int RetrieveIdentifyType(const char *pszName, const char *pszNamespaces,

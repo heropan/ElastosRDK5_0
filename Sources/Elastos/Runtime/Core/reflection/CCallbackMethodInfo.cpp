@@ -66,7 +66,7 @@ ECode CCallbackMethodInfo::GetName(
     }
 
     *name = adjustNameAddr(mMethodInfo->mClsModule->mBase,
-            mMethodDescriptor->pszName);
+            mMethodDescriptor->mName);
     return NOERROR;
 }
 

@@ -34,8 +34,8 @@ LubeContext::LubeContext(
     }
     for (n = 0; n < pModule->mClassCount; n++) {
         ClassDirEntry *pClass = pModule->mClassDirs[n];
-        if (!pClass->pszNameSpace
-            && !(pClass->pDesc->dwAttribs & ClassAttrib_t_generic)) {
+        if (!pClass->mNameSpace
+            && !(pClass->mDesc->dwAttribs & ClassAttrib_t_generic)) {
             if (!m_pFirstClass) m_pFirstClass = pClass;
             m_pLastClass = pClass;
         }
@@ -46,25 +46,25 @@ LubeContext::LubeContext(
         m_pLastInterface = pIntf;
     }
     for (n = 0; n < pModule->mStructCount; n++) {
-        if (!pModule->mStructDirs[n]->pszNameSpace) {
+        if (!pModule->mStructDirs[n]->mNameSpace) {
             if (!m_pFirstStruct) m_pFirstStruct = pModule->mStructDirs[n];
             m_pLastStruct = pModule->mStructDirs[n];
         }
     }
     for (n = 0; n < pModule->mEnumCount; n++) {
-        if (!pModule->mEnumDirs[n]->pszNameSpace) {
+        if (!pModule->mEnumDirs[n]->mNameSpace) {
             if (!m_pFirstEnum) m_pFirstEnum = pModule->mEnumDirs[n];
             m_pLastEnum = pModule->mEnumDirs[n];
         }
     }
     for (n = 0; n < pModule->mConstCount; n++) {
-        if (!pModule->mConstDirs[n]->pszNameSpace) {
+        if (!pModule->mConstDirs[n]->mNameSpace) {
             if (!m_pFirstConst) m_pFirstConst = pModule->mConstDirs[n];
             m_pLastConst = pModule->mConstDirs[n];
         }
     }
     for (n = 0; n < pModule->mAliasCount; n++) {
-        if (!pModule->mAliasDirs[n]->pszNameSpace) {
+        if (!pModule->mAliasDirs[n]->mNameSpace) {
             if (!m_pFirstTypedef) m_pFirstTypedef = pModule->mAliasDirs[n];
             m_pLastTypedef = pModule->mAliasDirs[n];
         }
@@ -89,7 +89,7 @@ int LubeContext::PutData(PVOID pvData, int nSize)
 int LubeContext::ExecTemplate(const char *pszName)
 {
     for (int n = 0; n < m_pHeader->cTemplates; n++) {
-        if (!_stricmp(pszName, m_pHeader->ppTemplates[n]->pszName)) {
+        if (!_stricmp(pszName, m_pHeader->ppTemplates[n]->mName)) {
             return this->ExecTemplate(n);
         }
     }
@@ -226,7 +226,7 @@ void LubeContext::ErrMsg(
 {
     fprintf(stderr, "[ERROR] lube (0x0201)");
     if (m_pTemplate) {
-        fprintf(stderr, "template %s", m_pTemplate->pszName);
+        fprintf(stderr, "template %s", m_pTemplate->mName);
     }
     fputs(" : ", stderr);
     fprintf(stderr, pMsg, pArg1, pArg2);
@@ -238,7 +238,7 @@ void LubeContext::WarnMsg(
 {
     fprintf(stderr, "[WARN] lube (0x0202)");
     if (m_pTemplate) {
-        fprintf(stderr, "template %s", m_pTemplate->pszName);
+        fprintf(stderr, "template %s", m_pTemplate->mName);
     }
     fputs(" : ", stderr);
     fprintf(stderr, pMsg, pArg1, pArg2);

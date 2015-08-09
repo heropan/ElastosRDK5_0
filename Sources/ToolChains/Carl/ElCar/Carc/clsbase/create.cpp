@@ -53,45 +53,45 @@ ClassDirEntry *NewClassDirEntry(const char *pszName, const char *pszNamespace)
     if (!pClass) return NULL;
     memset(pClass, 0, sizeof(ClassDirEntry));
 
-    pClass->pDesc = new ClassDescriptor;
-    if (!pClass->pDesc) goto ErrorExit;
-    memset(pClass->pDesc, 0, sizeof(ClassDescriptor));
+    pClass->mDesc = new ClassDescriptor;
+    if (!pClass->mDesc) goto ErrorExit;
+    memset(pClass->mDesc, 0, sizeof(ClassDescriptor));
 
-    pClass->pDesc->ppInterfaces = \
+    pClass->mDesc->ppInterfaces = \
         new ClassInterface *[c_nMaxClassInterfaces];
-    if (!pClass->pDesc->ppInterfaces) goto ErrorExit;
+    if (!pClass->mDesc->ppInterfaces) goto ErrorExit;
 
-    pClass->pDesc->pAggrIndexs = new USHORT[c_nMaxClassAspects];
-    if (!pClass->pDesc->pAggrIndexs) goto ErrorExit;
+    pClass->mDesc->pAggrIndexs = new USHORT[c_nMaxClassAspects];
+    if (!pClass->mDesc->pAggrIndexs) goto ErrorExit;
 
-    pClass->pDesc->pAspectIndexs = new USHORT[c_nMaxClassAspects];
-    if (!pClass->pDesc->pAspectIndexs) goto ErrorExit;
+    pClass->mDesc->pAspectIndexs = new USHORT[c_nMaxClassAspects];
+    if (!pClass->mDesc->pAspectIndexs) goto ErrorExit;
 
-    pClass->pDesc->pClassIndexs = new USHORT[c_nMaxAggrClassesOfAspect];
-    if (!pClass->pDesc->pClassIndexs) goto ErrorExit;
+    pClass->mDesc->pClassIndexs = new USHORT[c_nMaxAggrClassesOfAspect];
+    if (!pClass->mDesc->pClassIndexs) goto ErrorExit;
 
-    pClass->pszName = new char[strlen(pszName) + 1];
-    if (!pClass->pszName) goto ErrorExit;
-    strcpy(pClass->pszName, pszName);
+    pClass->mName = new char[strlen(pszName) + 1];
+    if (!pClass->mName) goto ErrorExit;
+    strcpy(pClass->mName, pszName);
     if (pszNamespace != NULL) {
-        pClass->pszNameSpace = new char[strlen(pszNamespace) + 1];
-        if (!pClass->pszNameSpace) goto ErrorExit;
-        strcpy(pClass->pszNameSpace, pszNamespace);
+        pClass->mNameSpace = new char[strlen(pszNamespace) + 1];
+        if (!pClass->mNameSpace) goto ErrorExit;
+        strcpy(pClass->mNameSpace, pszNamespace);
     }
 
     return pClass;
 
 ErrorExit:
-    if (pClass->pDesc) {
-        if (pClass->pDesc->pClassIndexs)
-            delete [] pClass->pDesc->pClassIndexs;
-        if (pClass->pDesc->pAspectIndexs)
-            delete [] pClass->pDesc->pAspectIndexs;
-        if (pClass->pDesc->pAggrIndexs)
-            delete [] pClass->pDesc->pAggrIndexs;
-        if (pClass->pDesc->ppInterfaces)
-            delete [] pClass->pDesc->ppInterfaces;
-        delete pClass->pDesc;
+    if (pClass->mDesc) {
+        if (pClass->mDesc->pClassIndexs)
+            delete [] pClass->mDesc->pClassIndexs;
+        if (pClass->mDesc->pAspectIndexs)
+            delete [] pClass->mDesc->pAspectIndexs;
+        if (pClass->mDesc->pAggrIndexs)
+            delete [] pClass->mDesc->pAggrIndexs;
+        if (pClass->mDesc->ppInterfaces)
+            delete [] pClass->mDesc->ppInterfaces;
+        delete pClass->mDesc;
     }
     delete pClass;
     return NULL;
@@ -100,20 +100,20 @@ ErrorExit:
 void DeleteClassDirEntry(ClassDirEntry *pClass)
 {
     assert(pClass != NULL);
-    assert(pClass->pDesc != NULL);
-    assert(pClass->pDesc->ppInterfaces != NULL);
-    assert(pClass->pDesc->pAggrIndexs != NULL);
-    assert(pClass->pDesc->pAspectIndexs != NULL);
+    assert(pClass->mDesc != NULL);
+    assert(pClass->mDesc->ppInterfaces != NULL);
+    assert(pClass->mDesc->pAggrIndexs != NULL);
+    assert(pClass->mDesc->pAspectIndexs != NULL);
 
-    for (int n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
-        DeleteClassInterface(pClass->pDesc->ppInterfaces[n]);
+    for (int n = 0; n < pClass->mDesc->mInterfaceCount; n++) {
+        DeleteClassInterface(pClass->mDesc->ppInterfaces[n]);
     }
-    delete [] pClass->pDesc->ppInterfaces;
-    delete [] pClass->pDesc->pAggrIndexs;
-    delete [] pClass->pDesc->pAspectIndexs;
-    delete pClass->pDesc;
-    if (pClass->pszName) delete pClass->pszName;
-    if (pClass->pszNameSpace) delete pClass->pszNameSpace;
+    delete [] pClass->mDesc->ppInterfaces;
+    delete [] pClass->mDesc->pAggrIndexs;
+    delete [] pClass->mDesc->pAspectIndexs;
+    delete pClass->mDesc;
+    if (pClass->mName) delete pClass->mName;
+    if (pClass->mNameSpace) delete pClass->mNameSpace;
     delete pClass;
 }
 
@@ -127,12 +127,12 @@ InterfaceConstDescriptor *NewInterfaceConstDirEntry(const char *pszName)
     if (!pConst) return NULL;
     memset(pConst, 0, sizeof(InterfaceConstDescriptor));
 
-    pConst->pszName = new char[strlen(pszName) + 1];
-    if (!pConst->pszName) {
+    pConst->mName = new char[strlen(pszName) + 1];
+    if (!pConst->mName) {
         delete pConst;
         return NULL;
     }
-    strcpy(pConst->pszName, pszName);
+    strcpy(pConst->mName, pszName);
     return pConst;
 }
 
@@ -146,22 +146,22 @@ ParamDescriptor *NewParam(const char *pszName)
     if (!pParam) return NULL;
     memset(pParam, 0, sizeof(ParamDescriptor));
 
-    pParam->pszName = new char[strlen(pszName) + 1];
-    if (!pParam->pszName) {
+    pParam->mName = new char[strlen(pszName) + 1];
+    if (!pParam->mName) {
         delete pParam;
         return NULL;
     }
-    strcpy(pParam->pszName, pszName);
+    strcpy(pParam->mName, pszName);
     return pParam;
 }
 
 void DeleteParam(ParamDescriptor *pParam)
 {
     assert(pParam != NULL);
-    assert(pParam->pszName != NULL);
+    assert(pParam->mName != NULL);
 
     if (pParam->type.mNestedType) delete pParam->type.mNestedType;
-    delete pParam->pszName;
+    delete pParam->mName;
     delete pParam;
 }
 
@@ -179,9 +179,9 @@ MethodDescriptor *NewMethod(const char *pszName)
         new ParamDescriptor *[c_nMaxParams];
     if (!pMethod->ppParams) goto ErrorExit;
 
-    pMethod->pszName = new char[strlen(pszName) + 1];
-    if (!pMethod->pszName) goto ErrorExit;
-    strcpy(pMethod->pszName, pszName);
+    pMethod->mName = new char[strlen(pszName) + 1];
+    if (!pMethod->mName) goto ErrorExit;
+    strcpy(pMethod->mName, pszName);
 
     return pMethod;
 
@@ -195,7 +195,7 @@ ErrorExit:
 void DeleteMethods(MethodDescriptor *pMethod)
 {
     assert(pMethod != NULL);
-    assert(pMethod->pszName != NULL);
+    assert(pMethod->mName != NULL);
     assert(pMethod->ppParams != NULL);
 
     for (int n = 0; n < pMethod->cParams; n++) {
@@ -203,7 +203,7 @@ void DeleteMethods(MethodDescriptor *pMethod)
     }
     delete [] pMethod->ppParams;
     delete pMethod->pszSignature;
-    delete pMethod->pszName;
+    delete pMethod->mName;
     delete pMethod;
 }
 
@@ -217,34 +217,34 @@ InterfaceDirEntry *NewInterfaceDirEntry(const char *pszName, const char *pszName
     if (!pInterface) return NULL;
     memset(pInterface, 0, sizeof(InterfaceDirEntry));
 
-    pInterface->pDesc = new InterfaceDescriptor;
-    if (!pInterface->pDesc) goto ErrorExit;
-    memset(pInterface->pDesc, 0, sizeof(InterfaceDescriptor));
+    pInterface->mDesc = new InterfaceDescriptor;
+    if (!pInterface->mDesc) goto ErrorExit;
+    memset(pInterface->mDesc, 0, sizeof(InterfaceDescriptor));
 
-    pInterface->pDesc->ppConsts = \
+    pInterface->mDesc->ppConsts = \
         new InterfaceConstDescriptor *[c_nMaxInterfaceConsts];
-    if (!pInterface->pDesc->ppConsts) goto ErrorExit;
+    if (!pInterface->mDesc->ppConsts) goto ErrorExit;
 
-    pInterface->pDesc->ppMethods = \
+    pInterface->mDesc->ppMethods = \
         new MethodDescriptor *[c_nMaxMethods];
-    if (!pInterface->pDesc->ppMethods) goto ErrorExit;
+    if (!pInterface->mDesc->ppMethods) goto ErrorExit;
 
-    pInterface->pszName = new char[strlen(pszName) + 1];
-    if (!pInterface->pszName) goto ErrorExit;
-    strcpy(pInterface->pszName, pszName);
+    pInterface->mName = new char[strlen(pszName) + 1];
+    if (!pInterface->mName) goto ErrorExit;
+    strcpy(pInterface->mName, pszName);
     if (pszNamespace != NULL) {
-        pInterface->pszNameSpace = new char[strlen(pszNamespace) + 1];
-        if (!pInterface->pszNameSpace) goto ErrorExit;
-        strcpy(pInterface->pszNameSpace, pszNamespace);
+        pInterface->mNameSpace = new char[strlen(pszNamespace) + 1];
+        if (!pInterface->mNameSpace) goto ErrorExit;
+        strcpy(pInterface->mNameSpace, pszNamespace);
     }
 
     return pInterface;
 
 ErrorExit:
-    if (pInterface->pDesc) {
-        if (pInterface->pDesc->ppMethods)
-            delete [] pInterface->pDesc->ppMethods;
-        delete pInterface->pDesc;
+    if (pInterface->mDesc) {
+        if (pInterface->mDesc->ppMethods)
+            delete [] pInterface->mDesc->ppMethods;
+        delete pInterface->mDesc;
     }
     delete pInterface;
     return NULL;
@@ -253,17 +253,17 @@ ErrorExit:
 void DeleteInterfaceDirEntry(InterfaceDirEntry *pInterface)
 {
     assert(pInterface != NULL);
-    assert(pInterface->pszName != NULL);
-    assert(pInterface->pDesc != NULL);
-    assert(pInterface->pDesc->ppMethods != NULL);
+    assert(pInterface->mName != NULL);
+    assert(pInterface->mDesc != NULL);
+    assert(pInterface->mDesc->ppMethods != NULL);
 
-    for (int n = 0; n < pInterface->pDesc->cMethods; n++) {
-        DeleteMethods(pInterface->pDesc->ppMethods[n]);
+    for (int n = 0; n < pInterface->mDesc->cMethods; n++) {
+        DeleteMethods(pInterface->mDesc->ppMethods[n]);
     }
-    delete [] pInterface->pDesc->ppMethods;
-    delete pInterface->pDesc;
-    delete pInterface->pszName;
-    if (pInterface->pszNameSpace) delete pInterface->pszNameSpace;
+    delete [] pInterface->mDesc->ppMethods;
+    delete pInterface->mDesc;
+    delete pInterface->mName;
+    if (pInterface->mNameSpace) delete pInterface->mNameSpace;
     delete pInterface;
 }
 
@@ -277,22 +277,22 @@ StructElement *NewStructElement(const char *pszName)
     if (!pElement) return NULL;
     memset(pElement, 0, sizeof(StructElement));
 
-    pElement->pszName = new char[strlen(pszName) + 1];
-    if (!pElement->pszName) {
+    pElement->mName = new char[strlen(pszName) + 1];
+    if (!pElement->mName) {
         delete pElement;
         return NULL;
     }
-    strcpy(pElement->pszName, pszName);
+    strcpy(pElement->mName, pszName);
     return pElement;
 }
 
 void DeleteStructElement(StructElement *pElement)
 {
     assert(pElement != NULL);
-    assert(pElement->pszName != NULL);
+    assert(pElement->mName != NULL);
 
     if (pElement->type.mNestedType) delete pElement->type.mNestedType;
-    delete pElement->pszName;
+    delete pElement->mName;
     delete pElement;
 }
 
@@ -306,24 +306,24 @@ StructDirEntry *NewStructDirEntry(const char *pszName)
     if (!pStruct) return NULL;
     memset(pStruct, 0, sizeof(StructDirEntry));
 
-    pStruct->pDesc = new StructDescriptor;
-    if (!pStruct->pDesc) goto ErrorExit;
-    memset(pStruct->pDesc, 0, sizeof(StructDescriptor));
+    pStruct->mDesc = new StructDescriptor;
+    if (!pStruct->mDesc) goto ErrorExit;
+    memset(pStruct->mDesc, 0, sizeof(StructDescriptor));
 
-    pStruct->pDesc->ppElems = new StructElement *[c_nMaxStructElements];
-    if (!pStruct->pDesc->ppElems) goto ErrorExit;
+    pStruct->mDesc->ppElems = new StructElement *[c_nMaxStructElements];
+    if (!pStruct->mDesc->ppElems) goto ErrorExit;
 
-    pStruct->pszName = new char[strlen(pszName) + 1];
-    if (!pStruct->pszName) goto ErrorExit;
-    strcpy(pStruct->pszName, pszName);
+    pStruct->mName = new char[strlen(pszName) + 1];
+    if (!pStruct->mName) goto ErrorExit;
+    strcpy(pStruct->mName, pszName);
 
     return pStruct;
 
 ErrorExit:
-    if (pStruct->pDesc) {
-        if (pStruct->pDesc->ppElems)
-            delete [] pStruct->pDesc->ppElems;
-        delete pStruct->pDesc;
+    if (pStruct->mDesc) {
+        if (pStruct->mDesc->ppElems)
+            delete [] pStruct->mDesc->ppElems;
+        delete pStruct->mDesc;
     }
     delete pStruct;
     return NULL;
@@ -332,17 +332,17 @@ ErrorExit:
 void DeleteStructDirEntry(StructDirEntry *pStruct)
 {
     assert(pStruct != NULL);
-    assert(pStruct->pszName != NULL);
-    assert(pStruct->pDesc != NULL);
-    assert(pStruct->pDesc->ppElems != NULL);
+    assert(pStruct->mName != NULL);
+    assert(pStruct->mDesc != NULL);
+    assert(pStruct->mDesc->ppElems != NULL);
 
-    for (int n = 0; n < pStruct->pDesc->cElems; n++) {
-        DeleteStructElement(pStruct->pDesc->ppElems[n]);
+    for (int n = 0; n < pStruct->mDesc->cElems; n++) {
+        DeleteStructElement(pStruct->mDesc->ppElems[n]);
     }
-    delete [] pStruct->pDesc->ppElems;
-    delete pStruct->pDesc;
-    delete pStruct->pszName;
-    if (pStruct->pszNameSpace) delete pStruct->pszNameSpace;
+    delete [] pStruct->mDesc->ppElems;
+    delete pStruct->mDesc;
+    delete pStruct->mName;
+    if (pStruct->mNameSpace) delete pStruct->mNameSpace;
     delete pStruct;
 }
 
@@ -361,9 +361,9 @@ void DeleteArrayDirEntry(ArrayDirEntry *pArray)
 {
     assert(pArray);
 
-    if (pArray->pszNameSpace) {
-        delete pArray->pszNameSpace;
-        pArray->pszNameSpace = NULL;
+    if (pArray->mNameSpace) {
+        delete pArray->mNameSpace;
+        pArray->mNameSpace = NULL;
     }
 
     if (pArray->type.mNestedType) {
@@ -384,9 +384,9 @@ ConstDirEntry *NewConstDirEntry(const char *pszName)
 
     memset(pConst, 0, sizeof(ConstDirEntry));
 
-    pConst->pszName = new char[strlen(pszName) + 1];
-    if (!pConst->pszName) goto ErrorExit;
-    strcpy(pConst->pszName, pszName);
+    pConst->mName = new char[strlen(pszName) + 1];
+    if (!pConst->mName) goto ErrorExit;
+    strcpy(pConst->mName, pszName);
 
     return pConst;
 
@@ -398,14 +398,14 @@ ErrorExit:
 void DeleteConstDirEntry(ConstDirEntry *pConst)
 {
     assert(pConst != NULL);
-    assert(pConst->pszName != NULL);
+    assert(pConst->mName != NULL);
 
-    if (pConst->pszNameSpace) {
-        delete pConst->pszNameSpace;
-        pConst->pszNameSpace = NULL;
+    if (pConst->mNameSpace) {
+        delete pConst->mNameSpace;
+        pConst->mNameSpace = NULL;
     }
 
-    delete pConst->pszName;
+    delete pConst->mName;
     if (pConst->type == TYPE_STRING && pConst->v.strValue.pszValue != NULL) {
         free(pConst->v.strValue.pszValue);
     }
@@ -422,21 +422,21 @@ EnumElement *NewEnumElement(const char *pszName)
     if (!pElement) return NULL;
     memset(pElement, 0, sizeof(EnumElement));
 
-    pElement->pszName = new char[strlen(pszName) + 1];
-    if (!pElement->pszName) {
+    pElement->mName = new char[strlen(pszName) + 1];
+    if (!pElement->mName) {
         delete pElement;
         return NULL;
     }
-    strcpy(pElement->pszName, pszName);
+    strcpy(pElement->mName, pszName);
     return pElement;
 }
 
 void DeleteEnumElement(EnumElement *pElement)
 {
     assert(pElement != NULL);
-    assert(pElement->pszName != NULL);
+    assert(pElement->mName != NULL);
 
-    delete pElement->pszName;
+    delete pElement->mName;
     delete pElement;
 }
 
@@ -450,29 +450,29 @@ EnumDirEntry *NewEnumDirEntry(const char *pszName, const char *pszNamespace)
     if (!pEnum) return NULL;
     memset(pEnum, 0, sizeof(EnumDirEntry));
 
-    pEnum->pDesc = new EnumDescriptor;
-    if (!pEnum->pDesc) goto ErrorExit;
-    memset(pEnum->pDesc, 0, sizeof(EnumDescriptor));
+    pEnum->mDesc = new EnumDescriptor;
+    if (!pEnum->mDesc) goto ErrorExit;
+    memset(pEnum->mDesc, 0, sizeof(EnumDescriptor));
 
-    pEnum->pDesc->ppElems = new EnumElement *[c_nMaxEnumElements];
-    if (!pEnum->pDesc->ppElems) goto ErrorExit;
+    pEnum->mDesc->ppElems = new EnumElement *[c_nMaxEnumElements];
+    if (!pEnum->mDesc->ppElems) goto ErrorExit;
 
-    pEnum->pszName = new char[strlen(pszName) + 1];
-    if (!pEnum->pszName) goto ErrorExit;
-    strcpy(pEnum->pszName, pszName);
+    pEnum->mName = new char[strlen(pszName) + 1];
+    if (!pEnum->mName) goto ErrorExit;
+    strcpy(pEnum->mName, pszName);
     if (pszNamespace != NULL) {
-        pEnum->pszNameSpace = new char[strlen(pszNamespace) + 1];
-        if (!pEnum->pszNameSpace) goto ErrorExit;
-        strcpy(pEnum->pszNameSpace, pszNamespace);
+        pEnum->mNameSpace = new char[strlen(pszNamespace) + 1];
+        if (!pEnum->mNameSpace) goto ErrorExit;
+        strcpy(pEnum->mNameSpace, pszNamespace);
     }
 
     return pEnum;
 
 ErrorExit:
-    if (pEnum->pDesc) {
-        if (pEnum->pDesc->ppElems)
-            delete [] pEnum->pDesc->ppElems;
-        delete pEnum->pDesc;
+    if (pEnum->mDesc) {
+        if (pEnum->mDesc->ppElems)
+            delete [] pEnum->mDesc->ppElems;
+        delete pEnum->mDesc;
     }
     delete pEnum;
     return NULL;
@@ -481,17 +481,17 @@ ErrorExit:
 void DeleteEnumDirEntry(EnumDirEntry *pEnum)
 {
     assert(pEnum != NULL);
-    assert(pEnum->pszName != NULL);
-    assert(pEnum->pDesc != NULL);
-    assert(pEnum->pDesc->ppElems != NULL);
+    assert(pEnum->mName != NULL);
+    assert(pEnum->mDesc != NULL);
+    assert(pEnum->mDesc->ppElems != NULL);
 
-    for (int n = 0; n < pEnum->pDesc->cElems; n++) {
-        DeleteEnumElement(pEnum->pDesc->ppElems[n]);
+    for (int n = 0; n < pEnum->mDesc->cElems; n++) {
+        DeleteEnumElement(pEnum->mDesc->ppElems[n]);
     }
-    delete [] pEnum->pDesc->ppElems;
-    delete pEnum->pDesc;
-    delete pEnum->pszName;
-    if (pEnum->pszNameSpace) delete pEnum->pszNameSpace;
+    delete [] pEnum->mDesc->ppElems;
+    delete pEnum->mDesc;
+    delete pEnum->mName;
+    if (pEnum->mNameSpace) delete pEnum->mNameSpace;
     delete pEnum;
 }
 
@@ -505,12 +505,12 @@ AliasDirEntry *NewAliasDirEntry(const char *pszName)
     if (!pAlias) return NULL;
     memset(pAlias, 0, sizeof(AliasDirEntry));
 
-    pAlias->pszName = new char[strlen(pszName) + 1];
-    if (!pAlias->pszName) {
+    pAlias->mName = new char[strlen(pszName) + 1];
+    if (!pAlias->mName) {
         delete pAlias;
         return NULL;
     }
-    strcpy(pAlias->pszName, pszName);
+    strcpy(pAlias->mName, pszName);
 
     return pAlias;
 }
@@ -518,11 +518,11 @@ AliasDirEntry *NewAliasDirEntry(const char *pszName)
 void DeleteAliasDirEntry(AliasDirEntry *pAlias)
 {
     assert(pAlias != NULL);
-    assert(pAlias->pszName != NULL);
+    assert(pAlias->mName != NULL);
 
     if (pAlias->type.mNestedType) delete pAlias->type.mNestedType;
-    delete pAlias->pszName;
-    if (pAlias->pszNameSpace) delete pAlias->pszNameSpace;
+    delete pAlias->mName;
+    if (pAlias->mNameSpace) delete pAlias->mNameSpace;
     delete pAlias;
 }
 
@@ -648,18 +648,18 @@ int CreateClassDirEntry(
     }
     n = SelectClassDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
-        pDesc = pModule->mClassDirs[n]->pDesc;
+        pDesc = pModule->mClassDirs[n]->mDesc;
         if (pszNamespace != NULL) free(pszNamespace);
 
         if (CLASS_TYPE(dwAttribs) != CLASS_TYPE(pDesc->dwAttribs)) {
-            ExtraMessage(pModule->mClassDirs[n]->pszNameSpace,
+            ExtraMessage(pModule->mClassDirs[n]->mNameSpace,
                         "class", pszName);
             _ReturnError (CLSError_NameConflict);
         }
         if (pDesc->mInterfaceCount > 0
             || (pDesc->dwAttribs & ClassAttrib_hasparent) > 0
             || IsValidUUID(&pDesc->clsid)) {
-            ExtraMessage(pModule->mClassDirs[n]->pszNameSpace,
+            ExtraMessage(pModule->mClassDirs[n]->mNameSpace,
                         "class", pszName);
             _ReturnError (CLSError_DupEntry);
         }
@@ -701,19 +701,19 @@ int CreateInterfaceDirEntry(
     }
     n = SelectInterfaceDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
-        pDesc = pModule->mInterfaceDirs[n]->pDesc;
+        pDesc = pModule->mInterfaceDirs[n]->mDesc;
         if (pszNamespace != NULL) free(pszNamespace);
 
         if (INTERFACE_TYPE(dwAttribs) != \
             INTERFACE_TYPE(pDesc->dwAttribs)) {
-            ExtraMessage(pModule->mInterfaceDirs[n]->pszNameSpace,
-                        "interface", pModule->mInterfaceDirs[n]->pszName);
+            ExtraMessage(pModule->mInterfaceDirs[n]->mNameSpace,
+                        "interface", pModule->mInterfaceDirs[n]->mName);
             _ReturnError (CLSError_NameConflict);
         }
         if (pDesc->cMethods > 0 || pDesc->sParentIndex != 0
             || IsValidUUID(&pDesc->iid)) {
-            ExtraMessage(pModule->mInterfaceDirs[n]->pszNameSpace,
-                        "interface", pModule->mInterfaceDirs[n]->pszName);
+            ExtraMessage(pModule->mInterfaceDirs[n]->mNameSpace,
+                        "interface", pModule->mInterfaceDirs[n]->mName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -757,9 +757,9 @@ int CreateStructDirEntry(
 
     n = SelectStructDirEntry(pszName, pModule);
     if (n >= 0) {
-        if (pModule->mStructDirs[n]->pDesc->cElems > 0) {
-            ExtraMessage(pModule->mStructDirs[n]->pszNameSpace,
-                        "struct", pModule->mStructDirs[n]->pszName);
+        if (pModule->mStructDirs[n]->mDesc->cElems > 0) {
+            ExtraMessage(pModule->mStructDirs[n]->mNameSpace,
+                        "struct", pModule->mStructDirs[n]->mName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -794,9 +794,9 @@ int CreateEnumDirEntry(
     n = SelectEnumDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
         if (pszNamespace != NULL) free(pszNamespace);
-        if (pModule->mEnumDirs[n]->pDesc->cElems > 0) {
-            ExtraMessage(pModule->mEnumDirs[n]->pszNameSpace,
-                        "enum", pModule->mEnumDirs[n]->pszName);
+        if (pModule->mEnumDirs[n]->mDesc->cElems > 0) {
+            ExtraMessage(pModule->mEnumDirs[n]->mNameSpace,
+                        "enum", pModule->mEnumDirs[n]->mName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -1018,7 +1018,7 @@ int MethodAppend(
     MethodDescriptor *pDest;
     ParamDescriptor *pParam;
 
-    n = CreateInterfaceMethod(pSrc->pszName, pDesc);
+    n = CreateInterfaceMethod(pSrc->mName, pDesc);
     if (n < 0) _Return (n);
 
     pDest = pDesc->ppMethods[n];
@@ -1028,7 +1028,7 @@ int MethodAppend(
     TypeCopy(&pSrc->type, &pDest->type);
 
     for (n = 0; n < pSrc->cParams; n++) {
-        m = CreateMethodParam(pSrc->ppParams[n]->pszName, pDest);
+        m = CreateMethodParam(pSrc->ppParams[n]->mName, pDest);
         if (m < 0) _Return (m);
         pParam = pDest->ppParams[m];
         pParam->dwAttribs = pSrc->ppParams[n]->dwAttribs;
@@ -1045,7 +1045,7 @@ int InterfaceMethodsAppend(const CLSModule *pModule,
 
     if (0 != pSrc->sParentIndex) {
         n = InterfaceMethodsAppend(pModule,
-                pModule->mInterfaceDirs[pSrc->sParentIndex]->pDesc,
+                pModule->mInterfaceDirs[pSrc->sParentIndex]->mDesc,
                 pDest);
         if (n < 0) _Return (n);
     }

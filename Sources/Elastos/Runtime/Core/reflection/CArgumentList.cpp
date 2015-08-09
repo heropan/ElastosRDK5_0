@@ -289,7 +289,7 @@ ECode CArgumentList::SetInputArgumentOfObjectPtr(
 
         InterfaceDirEntry* ifDir = getInterfaceDirAddr(base,
                 methodInfo->mClsMod->mInterfaceDirs, typeDesc->mIndex);
-        EIID iid = adjustInterfaceDescAddr(base, ifDir->pDesc)->iid;
+        EIID iid = adjustInterfaceDescAddr(base, ifDir->mDesc)->iid;
         value = value->Probe(iid);
         if (!value) return E_NO_INTERFACE;
     }

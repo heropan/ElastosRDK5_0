@@ -426,7 +426,7 @@ void ListAllUserFuncs()
     for (int n = 0; n < c_cUserFuncs; n++) {
         printf("%-4d%-18s%-18s%s\n",
             n,
-            g_userFuncs[n].pszName,
+            g_userFuncs[n].mName,
             UserFuncArgString(g_userFuncs[n].dwArgType),
             g_userFuncs[n].pszDesc);
     }

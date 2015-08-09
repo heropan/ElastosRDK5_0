@@ -176,7 +176,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
 
         case Type_struct:
         {
-            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->mIndex]->pDesc->nAlignSize);
+            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->mIndex]->mDesc->nAlignSize);
             uSize = (uSize % 4 == 0 ? uSize / 4 : (uSize / 4 + 1));
             AbridgedParamsInfo pa = (AbridgedParamsInfo)uSize;
             if (pType->mPointer) {
@@ -265,9 +265,9 @@ int CAbridgedBuffer::WriteMethodInfos(int nAddr, InterfaceDescriptor *pDesc)
 {
     int n;
 
-    if (pDesc != m_pModule->mInterfaceDirs[0]->pDesc) {
+    if (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         nAddr = WriteMethodInfos(nAddr, m_pModule-> \
-                    mInterfaceDirs[pDesc->sParentIndex]->pDesc);
+                    mInterfaceDirs[pDesc->sParentIndex]->mDesc);
     }
     for (n = 0; n < pDesc->cMethods; n++) {
         WriteMethodInfo(nAddr, pDesc->ppMethods[n]);
@@ -285,7 +285,7 @@ void CAbridgedBuffer::WriteInterfaces()
 
     for (n = 0; n < m_pModule->mInterfaceCount; n++) {
         if (m_methodNumbers[n] != -1) {
-            pDesc = m_pModule->mInterfaceDirs[n]->pDesc;
+            pDesc = m_pModule->mInterfaceDirs[n]->mDesc;
 
             nAddr = AllocData(m_methodNumbers[n] * sizeof(AbridgedMethodInfo));
             WriteMethodInfos(nAddr, pDesc);
@@ -308,9 +308,9 @@ int CAbridgedBuffer::WriteClsIntfs(ClassDescriptor *pDesc, int interfaceCount)
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
             && (!(m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
-            ->pDesc->dwAttribs & InterfaceAttrib_local)
+            ->mDesc->dwAttribs & InterfaceAttrib_local)
                 || (m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
-            ->pDesc->dwAttribs & InterfaceAttrib_parcelable))) {
+            ->mDesc->dwAttribs & InterfaceAttrib_parcelable))) {
             WriteInt(nAddr + (n - cLocal) * sizeof(int),
                     m_interfaceAddrs[pDesc->ppInterfaces[n]->mIndex]);
         }
@@ -330,13 +330,12 @@ void CAbridgedBuffer::WriteClasses()
     for (n = 0; n < m_pModule->mClassCount; n++) {
         if (m_interfaceNumbers[n] != 0) {
             nAddr = WriteClsIntfs(
-                m_pModule->mClassDirs[n]->pDesc, m_interfaceNumbers[n]);
+                m_pModule->mClassDirs[n]->mDesc, m_interfaceNumbers[n]);
 
             entry.mInterfaceCount = m_interfaceNumbers[n];
             entry.ppInterfaces = (AbridgedInterfaceInfo **)nAddr;
 
-            memcpy(&entry.clsid, &m_pModule->mClassDirs[n]-> \
-                pDesc->clsid, sizeof(InterfaceID));
+            memcpy(&entry.clsid, &m_pModule->mClassDirs[n]->mDesc->clsid, sizeof(InterfaceID));
             entry.pszUunm = (char*)offsetof(AbridgedModuleInfo, szUunm);
 
             CWriteInfo(&entry);
@@ -371,9 +370,9 @@ int CAbridgedBuffer::CalcMethodNumber(InterfaceDescriptor *pDesc)
 {
     int cMethods = pDesc->cMethods;
 
-    while (pDesc != m_pModule->mInterfaceDirs[0]->pDesc) {
+    while (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         pDesc = m_pModule-> \
-                    mInterfaceDirs[pDesc->sParentIndex]->pDesc;
+                    mInterfaceDirs[pDesc->sParentIndex]->mDesc;
         cMethods += pDesc->cMethods;
     }
 
@@ -390,10 +389,10 @@ void CAbridgedBuffer::InitInterfaceIndexTable()
 
     for (n = 0; n < m_pModule->mInterfaceCount; n++) {
         pEntry = m_pModule->mInterfaceDirs[n];
-        if ((!(pEntry->pDesc->dwAttribs & InterfaceAttrib_t_external) &&
-            !(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)) ||
-            (pEntry->pDesc->dwAttribs & InterfaceAttrib_parcelable)) {
-            cMethods = CalcMethodNumber(pEntry->pDesc);
+        if ((!(pEntry->mDesc->dwAttribs & InterfaceAttrib_t_external) &&
+            !(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)) ||
+            (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable)) {
+            cMethods = CalcMethodNumber(pEntry->mDesc);
             m_cInterfaces++;
             m_methodNumbers[n] = cMethods;
         }
@@ -410,14 +409,14 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
     for (n = 0; n < pClass->mInterfaceCount; n++) {
         nIndex = pClass->ppInterfaces[n]->mIndex;
         pEntry = m_pModule->mInterfaceDirs[nIndex];
-        pIntfDesc = pEntry->pDesc;
+        pIntfDesc = pEntry->mDesc;
 
         if (!(pClass->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)
-                || (pEntry->pDesc->dwAttribs & InterfaceAttrib_parcelable))
-            && (pEntry->pDesc->dwAttribs & InterfaceAttrib_t_external)
+            && (!(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)
+                || (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable))
+            && (pEntry->mDesc->dwAttribs & InterfaceAttrib_t_external)
             && -1 == m_methodNumbers[nIndex]) {
-            cMethods = CalcMethodNumber(pEntry->pDesc);
+            cMethods = CalcMethodNumber(pEntry->mDesc);
             if (cMethods >= 0) {
                 m_cInterfaces++;
                 m_methodNumbers[nIndex] = cMethods;
@@ -426,15 +425,15 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
         // add parents interface to abridge cls
         while (pIntfDesc->sParentIndex != 0
             && !(pClass->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(pEntry->pDesc->dwAttribs & InterfaceAttrib_local)
-                || (pEntry->pDesc->dwAttribs & InterfaceAttrib_parcelable))) {
+            && (!(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)
+                || (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable))) {
             CreateClassInterface(pIntfDesc->sParentIndex, pClass);
             pIntfEntry = m_pModule->mInterfaceDirs[pIntfDesc->sParentIndex];
             m_classVirTable[pIntfDesc->sParentIndex] = nVirTable;
-            pIntfDesc = pIntfEntry->pDesc;
+            pIntfDesc = pIntfEntry->mDesc;
 
             if (m_methodNumbers[pIntfDesc->sParentIndex] == -1) {
-                cMethods = CalcMethodNumber(m_pModule->mInterfaceDirs[pIntfDesc->sParentIndex]->pDesc);
+                cMethods = CalcMethodNumber(m_pModule->mInterfaceDirs[pIntfDesc->sParentIndex]->mDesc);
                 if (cMethods >= 0) {
                     m_cInterfaces++;
                     m_methodNumbers[pIntfDesc->sParentIndex] = cMethods;
@@ -452,9 +451,9 @@ int CAbridgedBuffer::ClsIntfNumber(ClassDescriptor *pDesc)
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
             && (!(m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->mIndex]->pDesc->dwAttribs
+            [pDesc->ppInterfaces[n]->mIndex]->mDesc->dwAttribs
             & InterfaceAttrib_local) || (m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->mIndex]->pDesc->dwAttribs
+            [pDesc->ppInterfaces[n]->mIndex]->mDesc->dwAttribs
             & InterfaceAttrib_parcelable))) {
             c++;
         }
@@ -473,13 +472,13 @@ void CAbridgedBuffer::InitClassIndexTable()
 
     for (n = 0; n < m_pModule->mClassCount; n++) {
         pEntry = m_pModule->mClassDirs[n];
-        if (!(pEntry->pDesc->dwAttribs & ClassAttrib_t_external)
-            && !(pEntry->pDesc->dwAttribs & ClassAttrib_classlocal)
-            && !(pEntry->pDesc->dwAttribs & ClassAttrib_t_generic)
-            && 0 != pEntry->pDesc->mInterfaceCount) {
-            AddClassInterfaceToIndex(pEntry->pDesc);
+        if (!(pEntry->mDesc->dwAttribs & ClassAttrib_t_external)
+            && !(pEntry->mDesc->dwAttribs & ClassAttrib_classlocal)
+            && !(pEntry->mDesc->dwAttribs & ClassAttrib_t_generic)
+            && 0 != pEntry->mDesc->mInterfaceCount) {
+            AddClassInterfaceToIndex(pEntry->mDesc);
             m_cClasses++;
-            m_interfaceNumbers[n] = ClsIntfNumber(pEntry->pDesc);
+            m_interfaceNumbers[n] = ClsIntfNumber(pEntry->mDesc);
         }
     }
 }
@@ -488,9 +487,9 @@ int CAbridgedBuffer::TotalParamSize(InterfaceDescriptor *pDesc)
 {
     int n, size = 0;
 
-    if (pDesc != m_pModule->mInterfaceDirs[0]->pDesc) {
+    if (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         size += TotalParamSize(m_pModule-> \
-                        mInterfaceDirs[pDesc->sParentIndex]->pDesc);
+                        mInterfaceDirs[pDesc->sParentIndex]->mDesc);
     }
 
     for (n = 0; n < pDesc->cMethods; n++) {
@@ -528,7 +527,7 @@ int CAbridgedBuffer::Prepare(const CLSModule *pModule)
     for (n = 0; n < m_pModule->mInterfaceCount; n++) {
         if (m_methodNumbers[n] != 0) {
             size += RoundUp4(m_methodNumbers[n] * sizeof(AbridgedMethodInfo));
-            size += TotalParamSize(m_pModule->mInterfaceDirs[n]->pDesc);
+            size += TotalParamSize(m_pModule->mInterfaceDirs[n]->mDesc);
         }
     }
 

@@ -109,7 +109,7 @@ Boolean IsSysAlaisType(
     Int32 base = clsModule->mBase;
     CLSModule* module = clsModule->mClsMod;
     AliasDirEntry* aliasDir = getAliasDirAddr(base, module->mAliasDirs, index);
-    char* nameSpace = adjustNameAddr(base, aliasDir->pszNameSpace);
+    char* nameSpace = adjustNameAddr(base, aliasDir->mNameSpace);
     return (nameSpace) && !strcmp(nameSpace, "systypes");
 }
 
@@ -220,7 +220,7 @@ UInt32 GetDataTypeSize(
         case Type_struct:
             structDir = getStructDirAddr(base,
                     module->mStructDirs, typeDesc->mIndex);
-            size = adjustStructDescAddr(base, structDir->pDesc)->nAlignSize;
+            size = adjustStructDescAddr(base, structDir->mDesc)->nAlignSize;
             break;
         case Type_Array:
             arrayDir = getArrayDirAddr(base,

@@ -184,7 +184,7 @@ void ListAllTemplates(PLUBEHEADER pLube)
         nSize = CalcNodeSize(pLube->ppTemplates[n]->tRoot.pBlockette);
 
         printf("%-6d%-16s%-10s%6d%8d\n",
-                n, pLube->ppTemplates[n]->pszName,
+                n, pLube->ppTemplates[n]->mName,
                 pszInput, cNodes, nSize);
     }
 }

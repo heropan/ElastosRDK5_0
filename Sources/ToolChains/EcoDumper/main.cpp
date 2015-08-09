@@ -102,7 +102,7 @@ void dump_method_params(MethodDescriptor* mtdDesc)
     printf("[%d params]\n", mtdDesc->cParams);
     for (int i = 0; i < mtdDesc->cParams; ++i) {
         ParamDescriptor* paramDesc = mtdDesc->ppParams[i];
-        printf("%s:", paramDesc->pszName);
+        printf("%s:", paramDesc->mName);
         dump_param_type(paramDesc);
     }
     printf("[end]\n");
@@ -113,7 +113,7 @@ void dump_interface_method(InterfaceDescriptor* itfDesc)
     printf("[%d methods]\n", itfDesc->cMethods);
     for (int i = 0; i < itfDesc->cMethods; ++i) {
         MethodDescriptor* mtdDesc = itfDesc->ppMethods[i];
-        printf("%s\n", mtdDesc->pszName);
+        printf("%s\n", mtdDesc->mName);
         dump_method_params(mtdDesc);
     }
     printf("[end]\n");
@@ -125,8 +125,8 @@ void dump_interface(CLSModule* clsmod)
     for (int i = 0; i < clsmod->mDefinedInterfaceCount; ++i) {
         int itfIndex = clsmod->mDefinedInterfaceIndexes[i];
         InterfaceDirEntry* itfDirEntry = clsmod->mInterfaceDirs[itfIndex];
-        printf("%s\n", itfDirEntry->pszName);
-        dump_interface_method(itfDirEntry->pDesc);
+        printf("%s\n", itfDirEntry->mName);
+        dump_interface_method(itfDirEntry->mDesc);
     }
     printf("[end]\n");
 }
@@ -136,7 +136,7 @@ void dump_class_interface(ClassDescriptor* clsDesc)
     printf("[%d interfaces]\n", clsDesc->mInterfaceCount);
     for (int i = 0; i < clsDesc->mInterfaceCount; ++i) {
         ClassInterface* clsItf = clsDesc->ppInterfaces[i];
-        printf("%s\n", sModule->mInterfaceDirs[clsItf->mIndex]->pszName);
+        printf("%s\n", sModule->mInterfaceDirs[clsItf->mIndex]->mName);
     }
     printf("[end]\n");
 }
@@ -146,8 +146,8 @@ void dump_class(CLSModule* clsmod)
     printf("[%d classes]\n", clsmod->cClasses);
     for (int i = 0; i < clsmod->cClasses; ++i) {
         ClassDirEntry* clsDirEntry = clsmod->mClassDirs[i];
-        printf("%s\n", clsDirEntry->pszName);
-        dump_class_interface(clsDirEntry->pDesc);
+        printf("%s\n", clsDirEntry->mName);
+        dump_class_interface(clsDirEntry->mDesc);
     }
     printf("[end]\n");
 }
@@ -155,7 +155,7 @@ void dump_class(CLSModule* clsmod)
 void dump_eco(CLSModule* clsmod)
 {
     printf("[name]\n");
-    printf("%s.eco\n", clsmod->pszName);
+    printf("%s.eco\n", clsmod->mName);
     dump_interface(clsmod);
     dump_class(clsmod);
     printf("[end]\n");

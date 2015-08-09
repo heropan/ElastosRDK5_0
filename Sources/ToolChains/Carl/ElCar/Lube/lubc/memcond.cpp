@@ -7,7 +7,7 @@
 
 typedef struct AttribEntry {
     DWORD           dwValue;
-    const char *    pszName;
+    const char*     mName;
 }   AttribEntry;
 
 #define _ATTRIB_ENTRY(obj, attrib) { obj##Attrib_##attrib, #attrib }
@@ -109,7 +109,7 @@ _ATTRIB_ENTRY(Param, out),
 
 typedef struct ObjectAttribs {
     ObjectType      object;
-    const char *    pszName;
+    const char*     mName;
     AttribEntry *   pAttribs;
     int             cAttribs;
 }   ObjectAttribs;
@@ -159,14 +159,14 @@ void CheckObjectAttrib(PSTATEDESC pDesc, const char *pszConst)
         if (pDesc->object == s_attribTable[n].object) {
             for (m = 0; m < s_attribTable[n].cAttribs; m++) {
                 pAttribs = &s_attribTable[n].pAttribs[m];
-                if (!_stricmp(pszConst, pAttribs->pszName)) {
+                if (!_stricmp(pszConst, pAttribs->mName)) {
                     pDesc->dwExtra |= pAttribs->dwValue;
                     return;
                 }
             }
             if (Object_ClsIntf == pDesc->object) {
                 for (m = 0; m < c_cIntfAttribs; m++) {
-                    if (!_stricmp(pszConst, s_aInterfaceAttribs[m].pszName)) {
+                    if (!_stricmp(pszConst, s_aInterfaceAttribs[m].mName)) {
                         pDesc->object = Object_Interface;
                         pDesc->dwExtra |= s_aInterfaceAttribs[m].dwValue;
                         return;
@@ -174,7 +174,7 @@ void CheckObjectAttrib(PSTATEDESC pDesc, const char *pszConst)
                 }
             }
             ErrorReport(Lube_E_HasNoAttrib,
-                        s_attribTable[n].pszName, pszConst);
+                        s_attribTable[n].mName, pszConst);
             return;
         }
     }
@@ -203,19 +203,19 @@ int CheckObjectType(PSTATEDESC pDesc, const char *pszConst)
         if (pDesc->object == s_typeTable[n].object) {
             for (m = 0; m < s_typeTable[n].cAttribs; m++) {
                 pAttribs = &s_typeTable[n].pAttribs[m];
-                if (!_stricmp(pszConst, pAttribs->pszName)) {
+                if (!_stricmp(pszConst, pAttribs->mName)) {
                     pDesc->dwExtra |= pAttribs->dwValue;
                     return LUBE_OK;
                 }
             }
             ErrorReport(Lube_E_HasNoType,
-                        s_attribTable[n].pszName, pszConst);
+                        s_attribTable[n].mName, pszConst);
             return LUBE_OK;
         }
     }
     if (Object_ClsIntf == pDesc->object) {
         for (m = 0; m < c_cIntfTypes; m++) {
-            if (!_stricmp(pszConst, s_aInterfaceTypes[m].pszName)) {
+            if (!_stricmp(pszConst, s_aInterfaceTypes[m].mName)) {
                 pDesc->object = Object_Interface;
                 pDesc->dwExtra |= s_aInterfaceTypes[m].dwValue;
                 return LUBE_OK;

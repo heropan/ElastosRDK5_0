@@ -75,7 +75,7 @@ ECode CParamInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *name = adjustNameAddr(mClsModule->mBase, mParamDescriptor->pszName);
+    *name = adjustNameAddr(mClsModule->mBase, mParamDescriptor->mName);
     return NOERROR;
 }
 

@@ -15,7 +15,7 @@ typedef int (*UserFn_t)(PLUBECTX, PSTATEDESC, PVOID);
 #define CALL_USERFUNC(func) UserFunc_##func
 
 typedef struct UserFuncEntry {
-    const char *    pszName;
+    const char *    mName;
     DWORD           dwArgType;
     UserFn_t        fnUserFunc;
     const char *    pszDesc;
@@ -37,7 +37,7 @@ inline UserFn_t GetUserFunction(int nIndex)
 inline int GetUserFuncIndex(const char * pszName)
 {
     for (int n = 0; n < c_cUserFuncs; n++) {
-        if (!_stricmp(g_userFuncs[n].pszName, pszName)) return n;
+        if (!_stricmp(g_userFuncs[n].mName, pszName)) return n;
     }
     return LUBE_FAIL;
 }

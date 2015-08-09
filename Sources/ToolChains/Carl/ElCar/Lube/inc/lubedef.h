@@ -78,7 +78,7 @@ const int c_nEmbedPrefix = 0x1f;
 const int c_nStrBufSize = 1024;
 
 typedef struct LubeTemplate {
-    char *              pszName;
+    char *              mName;
     StateDesc           tRoot;
 }   LubeTemplate;
 

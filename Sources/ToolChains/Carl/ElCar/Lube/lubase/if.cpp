@@ -64,19 +64,19 @@ inline BOOL TypedefCondition(PLUBECTX pCtx, BOOL bFirst)
 inline BOOL InterfaceConstCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pInterfaceConst == pCtx->m_pInterface->pDesc->ppConsts[0];
+        return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->ppConsts[0];
     }
-    return pCtx->m_pInterfaceConst == pCtx->m_pInterface->pDesc->ppConsts
-                [pCtx->m_pInterface->pDesc->mConstCount - 1];
+    return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->ppConsts
+                [pCtx->m_pInterface->mDesc->mConstCount - 1];
 }
 
 inline BOOL MethodCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pMethod == pCtx->m_pInterface->pDesc->ppMethods[0];
+        return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->ppMethods[0];
     }
-    return pCtx->m_pMethod == pCtx->m_pInterface->pDesc->ppMethods
-                [pCtx->m_pInterface->pDesc->cMethods - 1];
+    return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->ppMethods
+                [pCtx->m_pInterface->mDesc->cMethods - 1];
 }
 
 inline BOOL ParamCondition(PLUBECTX pCtx, BOOL bFirst)
@@ -112,7 +112,7 @@ inline BOOL ClsIntfCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     ClassInterface *pFirst, *pLast;
 
-    FirstLastClsIntf(pCtx->m_pModule, pCtx->m_pClass->pDesc, &pFirst, &pLast);
+    FirstLastClsIntf(pCtx->m_pModule, pCtx->m_pClass->mDesc, &pFirst, &pLast);
 
     if (bFirst) {
         return pCtx->m_pClsIntf == pFirst;
@@ -124,7 +124,7 @@ inline BOOL AspectCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     ClassDescriptor *pDesc;
 
-    pDesc = pCtx->m_pClass->pDesc;
+    pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pAspect == pCtx->m_pModule->mClassDirs
                 [pDesc->pAspectIndexs[0]];
@@ -137,7 +137,7 @@ inline BOOL AggregateCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     ClassDescriptor *pDesc;
 
-    pDesc = pCtx->m_pClass->pDesc;
+    pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pAggregate == pCtx->m_pModule->mClassDirs
                     [pDesc->pAggrIndexs[0]];
@@ -150,7 +150,7 @@ inline BOOL ClassForAspectCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     ClassDescriptor *pDesc;
 
-    pDesc = pCtx->m_pClass->pDesc;
+    pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pForClass== pCtx->m_pModule->mClassDirs
                     [pDesc->pClassIndexs[0]];
@@ -162,19 +162,19 @@ inline BOOL ClassForAspectCondition(PLUBECTX pCtx, BOOL bFirst)
 inline BOOL StcMemberCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pStructMember == pCtx->m_pStruct->pDesc->ppElems[0];
+        return pCtx->m_pStructMember == pCtx->m_pStruct->mDesc->ppElems[0];
     }
     return pCtx->m_pStructMember == pCtx->m_pStruct-> \
-                pDesc->ppElems[pCtx->m_pStruct->pDesc->cElems - 1];
+                mDesc->ppElems[pCtx->m_pStruct->mDesc->cElems - 1];
 }
 
 inline BOOL EnumMemberCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pEnumMember == pCtx->m_pEnum->pDesc->ppElems[0];
+        return pCtx->m_pEnumMember == pCtx->m_pEnum->mDesc->ppElems[0];
     }
     return pCtx->m_pEnumMember == pCtx->m_pEnum-> \
-                pDesc->ppElems[pCtx->m_pEnum->pDesc->cElems - 1];
+                mDesc->ppElems[pCtx->m_pEnum->mDesc->cElems - 1];
 }
 
 BOOL ObjectConditionValue(PLUBECTX pCtx, PSTATEDESC pDesc)
@@ -262,51 +262,51 @@ BOOL NameConditionValue(PLUBECTX pCtx, ObjectType object, const char *pszDest)
             }
             return ((0 == *pszSource || '.' == *pszSource) && 0 == *pszDest);
         case Object_Class:
-            pszSource = pCtx->m_pClass->pszName;
+            pszSource = pCtx->m_pClass->mName;
             break;
         case Object_Aspect:
-            pszSource = pCtx->m_pAspect->pszName;
+            pszSource = pCtx->m_pAspect->mName;
             break;
         case Object_Aggregate:
-            pszSource = pCtx->m_pAggregate->pszName;
+            pszSource = pCtx->m_pAggregate->mName;
             break;
         case Object_ClassForAspect:
-            pszSource = pCtx->m_pForClass->pszName;
+            pszSource = pCtx->m_pForClass->mName;
             break;
         case Object_ClsIntf:
         case Object_Interface:
-            pszSource = pCtx->m_pInterface->pszName;
+            pszSource = pCtx->m_pInterface->mName;
             break;
         case Object_Struct:
-            pszSource = pCtx->m_pStruct->pszName;
+            pszSource = pCtx->m_pStruct->mName;
             break;
         case Object_Enum:
-            pszSource = pCtx->m_pEnum->pszName;
+            pszSource = pCtx->m_pEnum->mName;
             break;
         case Object_Typedef:
-            pszSource = pCtx->m_pTypedef->pszName;
+            pszSource = pCtx->m_pTypedef->mName;
             break;
         case Object_IntfConst:
-            pszSource = pCtx->m_pInterfaceConst->pszName;
+            pszSource = pCtx->m_pInterfaceConst->mName;
             break;
         case Object_ClassMethod:
         case Object_IntfMethod:
-            pszSource = pCtx->m_pMethod->pszName;
+            pszSource = pCtx->m_pMethod->mName;
             break;
         case Object_Param:
-            pszSource = pCtx->m_pParam->pszName;
+            pszSource = pCtx->m_pParam->mName;
             break;
         case Object_StcMember:
-            pszSource = pCtx->m_pStructMember->pszName;
+            pszSource = pCtx->m_pStructMember->mName;
             break;
         case Object_EnumMember:
-            pszSource = pCtx->m_pEnumMember->pszName;
+            pszSource = pCtx->m_pEnumMember->mName;
             break;
         case Object_Parent:
-            pszSource = pCtx->m_pIntfParent->pszName;
+            pszSource = pCtx->m_pIntfParent->mName;
             break;
         case Object_Super:
-            pszSource = pCtx->m_pClassParent->pszName;
+            pszSource = pCtx->m_pClassParent->mName;
             break;
         case Object_LubeOption:
             retVal = false;
@@ -435,31 +435,31 @@ BOOL AttribConditionValue(PLUBECTX pCtx, PSTATEDESC pDesc)
         case Object_Module:
             return pCtx->m_pModule->mAttribs & pDesc->dwExtra;
         case Object_Class:
-            return pCtx->m_pClass->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClass->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_Aspect:
-            return pCtx->m_pAspect->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pAspect->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_Aggregate:
-            return pCtx->m_pAggregate->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pAggregate->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_ClassForAspect:
-            return pCtx->m_pClass->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClass->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_ClsIntf:
         case Object_ClsIntfAndParents:
             return pCtx->m_pClsIntf->wAttribs & pDesc->dwExtra;
         case Object_Interface:
-            return pCtx->m_pInterface->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pInterface->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_Param:
             return pCtx->m_pParam->dwAttribs & pDesc->dwExtra;
         case Object_Super:
-            return pCtx->m_pClassParent->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClassParent->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_Parent:
-            return pCtx->m_pIntfParent->pDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pIntfParent->mDesc->dwAttribs & pDesc->dwExtra;
         case Object_ClassMethod:
         case Object_IntfMethod:
             return pCtx->m_pMethod->dwAttribs & pDesc->dwExtra;
         case Object_Typedef:
             return !pCtx->m_pTypedef->bDummyType == !pDesc->dwExtra;
         case Object_Enum: // callback enums
-            pszName = pCtx->m_pEnum->pDesc->ppElems[pCtx->m_pEnum->pDesc->cElems - 1]->pszName;
+            pszName = pCtx->m_pEnum->mDesc->ppElems[pCtx->m_pEnum->mDesc->cElems - 1]->mName;
             nLength = strlen(pszName);
             if (nLength > 14 && !strcmp(pszName + (nLength - 14), "Sink_MaxEvents")) {
                 return TRUE;

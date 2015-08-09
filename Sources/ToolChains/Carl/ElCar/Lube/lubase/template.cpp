@@ -45,7 +45,7 @@ void DestroyLube(PLUBEHEADER pLube)
 {
     for (int n = 0; n < pLube->cTemplates; n++) {
         DestroyStatement(pLube->ppTemplates[n]->tRoot.pBlockette);
-        delete [] pLube->ppTemplates[n]->pszName;
+        delete [] pLube->ppTemplates[n]->mName;
         delete pLube->ppTemplates[n];
     }
     delete [] pLube->ppTemplates;
@@ -81,9 +81,9 @@ int CreateTemplate(PLUBEHEADER pLube, const char *pszName)
     memset(pTemplate, 0, sizeof(LubeTemplate));
 
     GetTemplateName(pszName, szBuf);
-    pTemplate->pszName = new char[strlen(szBuf) + 1];
-    if (!pTemplate->pszName) goto ErrorExit;
-    strcpy(pTemplate->pszName, szBuf);
+    pTemplate->mName = new char[strlen(szBuf) + 1];
+    if (!pTemplate->mName) goto ErrorExit;
+    strcpy(pTemplate->mName, szBuf);
 
     pLube->ppTemplates[pLube->cTemplates] = pTemplate;
     return pLube->cTemplates++;
@@ -99,7 +99,7 @@ int FindTemplate(PLUBEHEADER pLube, const char *pszName)
 
     GetTemplateName(pszName, szBuf);
     for (int n = 0; n < pLube->cTemplates; n++) {
-        if (!_stricmp(szBuf, pLube->ppTemplates[n]->pszName)) {
+        if (!_stricmp(szBuf, pLube->ppTemplates[n]->mName)) {
             return n;
         }
     }

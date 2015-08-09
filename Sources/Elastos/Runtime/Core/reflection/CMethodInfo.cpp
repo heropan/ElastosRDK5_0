@@ -111,7 +111,7 @@ ECode CMethodInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *name = adjustNameAddr(mBase, mMethodDescriptor->pszName);
+    *name = adjustNameAddr(mBase, mMethodDescriptor->mName);
     return NOERROR;
 }
 
@@ -171,7 +171,7 @@ ECode CMethodInfo::GetParamInfoByName(
     ParamDescriptor* param = NULL;
     for (Int32 i = 0; i < mMethodDescriptor->cParams; i++) {
         param = getParamDescAddr(mBase, mMethodDescriptor->ppParams, i);
-        if (name.Equals(adjustNameAddr(mBase, param->pszName))) {
+        if (name.Equals(adjustNameAddr(mBase, param->mName))) {
             return GetParamInfoByIndex(i, paramInfo);
         }
     }
@@ -418,7 +418,7 @@ ECode CMethodInfo::Invoke(
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
             mClsMod->mInterfaceDirs, INTERFACE_INDEX(mIndex));
-    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->iid;
+    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->iid;
     PInterface object = target->Probe(iid);
     if (!object) {
         return E_NO_INTERFACE;

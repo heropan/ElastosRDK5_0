@@ -91,13 +91,13 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            if (m_pClass->pDesc->dwAttribs & ClassAttrib_t_generic) {
+            if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_generic) {
                 pszOutput = "generic";
             }
-            else if (m_pClass->pDesc->dwAttribs & ClassAttrib_t_aspect) {
+            else if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_aspect) {
                 pszOutput = "aspect";
             }
-            else if (m_pClass->pDesc->dwAttribs & ClassAttrib_t_regime) {
+            else if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_regime) {
                 pszOutput = "regime";
             }
             else {
@@ -105,13 +105,13 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
             }
             break;
         case Member_Name:
-            pszOutput = m_pClass->pszName;
+            pszOutput = m_pClass->mName;
             break;
         case Member_NameSpace:
-            if (m_pClass->pszNameSpace != NULL && m_pClass->pszNameSpace[0] != '\0' &&
-                strcmp(m_pClass->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(m_pClass->pszNameSpace) + 1);
-                strcpy(pszNamespace, m_pClass->pszNameSpace);
+            if (m_pClass->mNameSpace != NULL && m_pClass->mNameSpace[0] != '\0' &&
+                strcmp(m_pClass->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(m_pClass->mNameSpace) + 1);
+                strcpy(pszNamespace, m_pClass->mNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -130,10 +130,10 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
         case Member_FullName:
             char buffer[1024];
             buffer[0] = '\0';
-            if (m_pClass->pszNameSpace != NULL && m_pClass->pszNameSpace[0] != '\0' &&
-                strcmp(m_pClass->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(m_pClass->pszNameSpace) + 1);
-                strcpy(pszNamespace, m_pClass->pszNameSpace);
+            if (m_pClass->mNameSpace != NULL && m_pClass->mNameSpace[0] != '\0' &&
+                strcmp(m_pClass->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(m_pClass->mNameSpace) + 1);
+                strcpy(pszNamespace, m_pClass->mNameSpace);
                 char *begin = pszNamespace;
                 while (begin != NULL) {
                     char *dot = strchr(begin, '.');
@@ -145,21 +145,21 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
                 }
                 free(pszNamespace);
             }
-            strcat(buffer, m_pClass->pszName);
+            strcat(buffer, m_pClass->mName);
             sprintf(pszBuffer, "%s", buffer);
             return LUBE_OK;
         case Member_Attrib:
-            sprintf(pszBuffer, "%08x", m_pClass->pDesc->dwAttribs);
+            sprintf(pszBuffer, "%08x", m_pClass->mDesc->dwAttribs);
             return LUBE_OK;
         case Member_Uuid:
-            pszOutput = Uuid2CString(&m_pClass->pDesc->clsid, TRUE);
+            pszOutput = Uuid2CString(&m_pClass->mDesc->clsid, TRUE);
             break;
         case Member_Clsid:
             if (m_pModule->mUunm) {
                 sprintf(pszBuffer,
                     "    {%s, \\\n"
                     "    \"%s\"}",
-                    Uuid2CString(&m_pClass->pDesc->clsid, TRUE),
+                    Uuid2CString(&m_pClass->mDesc->clsid, TRUE),
                     m_pModule->mUunm);
                 return LUBE_OK;
             }
@@ -184,13 +184,13 @@ int LubeContext::InterfaceMember(MemberType member, char *pszBuffer)
             pszOutput = "interface";
             break;
         case Member_Name:
-            pszOutput = m_pInterface->pszName;
+            pszOutput = m_pInterface->mName;
             break;
         case Member_NameSpace:
-            if (m_pInterface->pszNameSpace != NULL && m_pInterface->pszNameSpace[0] != '\0' &&
-                strcmp(m_pInterface->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(m_pInterface->pszNameSpace) + 1);
-                strcpy(pszNamespace, m_pInterface->pszNameSpace);
+            if (m_pInterface->mNameSpace != NULL && m_pInterface->mNameSpace[0] != '\0' &&
+                strcmp(m_pInterface->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(m_pInterface->mNameSpace) + 1);
+                strcpy(pszNamespace, m_pInterface->mNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -209,10 +209,10 @@ int LubeContext::InterfaceMember(MemberType member, char *pszBuffer)
         case Member_FullName:
             char buffer[1024];
             buffer[0] = '\0';
-            if (m_pInterface->pszNameSpace != NULL && m_pInterface->pszNameSpace[0] != '\0' &&
-                strcmp(m_pInterface->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(m_pInterface->pszNameSpace) + 1);
-                strcpy(pszNamespace, m_pInterface->pszNameSpace);
+            if (m_pInterface->mNameSpace != NULL && m_pInterface->mNameSpace[0] != '\0' &&
+                strcmp(m_pInterface->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(m_pInterface->mNameSpace) + 1);
+                strcpy(pszNamespace, m_pInterface->mNameSpace);
                 char *begin = pszNamespace;
                 while (begin != NULL) {
                     char *dot = strchr(begin, '.');
@@ -224,15 +224,15 @@ int LubeContext::InterfaceMember(MemberType member, char *pszBuffer)
                 }
                 free(pszNamespace);
             }
-            strcat(buffer, m_pInterface->pszName);
+            strcat(buffer, m_pInterface->mName);
             sprintf(pszBuffer, "%s", buffer);
             return LUBE_OK;
         case Member_Attrib:
-            sprintf(pszBuffer, "%08x", m_pInterface->pDesc->dwAttribs);
+            sprintf(pszBuffer, "%08x", m_pInterface->mDesc->dwAttribs);
             return LUBE_OK;
         case Member_Iid:
         case Member_Uuid:
-            pszOutput = Uuid2CString(&m_pInterface->pDesc->iid, TRUE);
+            pszOutput = Uuid2CString(&m_pInterface->mDesc->iid, TRUE);
             break;
         default:
             assert(TRUE == FALSE);
@@ -253,7 +253,7 @@ int LubeContext::StructMember(MemberType member, char *pszBuffer)
             pszOutput = "struct";
             break;
         case Member_Name:
-            pszOutput = m_pStruct->pszName;
+            pszOutput = m_pStruct->mName;
             break;
         case Member_Attrib:
             return LUBE_OK;
@@ -276,7 +276,7 @@ int LubeContext::ConstMember(MemberType member, char *pszBuffer)
             pszOutput = "const";
             break;
         case Member_Name:
-            pszOutput = m_pConst->pszName;
+            pszOutput = m_pConst->mName;
             break;
         case Member_Value:
             if (m_pConst->type == TYPE_INTEGER32) {
@@ -309,15 +309,15 @@ int LubeContext::EnumMember(MemberType member, char *pszBuffer)
             pszOutput = "enum";
             break;
         case Member_Name:
-            pszOutput = m_pEnum->pszName;
+            pszOutput = m_pEnum->mName;
             break;
         case Member_FullName:
             char buffer[1024];
             buffer[0] = '\0';
-            if (m_pEnum->pszNameSpace != NULL && m_pEnum->pszNameSpace[0] != '\0' &&
-                strcmp(m_pEnum->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(m_pEnum->pszNameSpace) + 1);
-                strcpy(pszNamespace, m_pEnum->pszNameSpace);
+            if (m_pEnum->mNameSpace != NULL && m_pEnum->mNameSpace[0] != '\0' &&
+                strcmp(m_pEnum->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(m_pEnum->mNameSpace) + 1);
+                strcpy(pszNamespace, m_pEnum->mNameSpace);
                 char *begin = pszNamespace;
                 while (begin != NULL) {
                     char *dot = strchr(begin, '.');
@@ -329,7 +329,7 @@ int LubeContext::EnumMember(MemberType member, char *pszBuffer)
                 }
                 free(pszNamespace);
             }
-            strcat(buffer, m_pEnum->pszName);
+            strcat(buffer, m_pEnum->mName);
             sprintf(pszBuffer, "%s", buffer);
             return LUBE_OK;
         case Member_Attrib:
@@ -353,7 +353,7 @@ int LubeContext::TypedefMember(MemberType member, char *pszBuffer)
             pszOutput = Type2CString(m_pModule, &m_pTypedef->type);
             break;
         case Member_Name:
-            pszOutput = m_pTypedef->pszName;
+            pszOutput = m_pTypedef->mName;
             break;
         case Member_Attrib:
             if (m_pTypedef->bDummyType) {
@@ -409,7 +409,7 @@ int LubeContext::InterfaceConstMember(MemberType member, char *pszBuffer)
                 break;
             }
         case Member_Name:
-            pszOutput = m_pInterfaceConst->pszName;
+            pszOutput = m_pInterfaceConst->mName;
             break;
         case Member_Value:
             {
@@ -511,7 +511,7 @@ int LubeContext::MethodMember(MemberType member, char *pszBuffer)
             pszOutput = Type2CString(m_pModule, &m_pMethod->type);
             break;
         case Member_Name:
-            pszOutput = m_pMethod->pszName;
+            pszOutput = m_pMethod->mName;
             break;
         case Member_Attrib:
             return LUBE_OK;
@@ -592,7 +592,7 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
             }
             break;
         case Member_Name:
-            pszOutput = m_pParam->pszName;
+            pszOutput = m_pParam->mName;
             break;
         case Member_Attrib:
             pszOutput = ParamAttrib2String(m_pParam->dwAttribs);
@@ -627,7 +627,7 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
             }
             break;
         case Member_Name:
-            pszOutput = m_pStructMember->pszName;
+            pszOutput = m_pStructMember->mName;
             break;
         case Member_Dimention:
             //Handle the case of [m][n]...
@@ -660,7 +660,7 @@ int LubeContext::EnumMemMember(MemberType member, char *pszBuffer)
         case Member_Attrib:
             return LUBE_OK;
         case Member_Name:
-            pszOutput = m_pEnumMember->pszName;
+            pszOutput = m_pEnumMember->mName;
             break;
         case Member_Value:
             sprintf(pszBuffer, (m_pEnumMember->bHexFormat ? "0x%08x":"%d"),
@@ -681,7 +681,7 @@ int LubeContext::ClassParentMember(MemberType member, char *pszBuffer)
     int nRet;
     ClassDirEntry *pOrigClass;
 
-    if (!(m_pClass->pDesc->dwAttribs & ClassAttrib_hasparent)) return LUBE_OK;
+    if (!(m_pClass->mDesc->dwAttribs & ClassAttrib_hasparent)) return LUBE_OK;
 
     pOrigClass = m_pClass;
     m_pClass = m_pClassParent;
@@ -759,8 +759,8 @@ int LubeContext::IntfParentParentMember(MemberType member, char *pszBuffer)
     InterfaceDirEntry *pOrigInterface;
 
     pOrigInterface = m_pInterface;
-    if (0 != m_pInterface->pDesc->sParentIndex) {
-        m_pInterface = this->m_pModule->mInterfaceDirs[m_pIntfParent->pDesc->sParentIndex];
+    if (0 != m_pInterface->mDesc->sParentIndex) {
+        m_pInterface = this->m_pModule->mInterfaceDirs[m_pIntfParent->mDesc->sParentIndex];
     }
     nRet = InterfaceMember(member, pszBuffer);
 

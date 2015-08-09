@@ -93,9 +93,9 @@ typedef struct ClassInterface ClassInterface;
 
 struct ClassDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
-    ClassDescriptor     *pDesc;
+    char*               mName;
+    char*               mNameSpace;
+    ClassDescriptor*    mDesc;
 };
 
 const char c_nMaxClassInterfaces = 32;
@@ -147,9 +147,9 @@ const int c_nMaxMethods = 512;
 
 struct InterfaceDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
-    InterfaceDescriptor *pDesc;
+    char                *mName;
+    char                *mNameSpace;
+    InterfaceDescriptor *mDesc;
 };
 
 struct InterfaceDescriptor
@@ -174,7 +174,7 @@ const int c_nMaxParams = 32;
 
 struct MethodDescriptor
 {
-    char                *pszName;
+    char                *mName;
     char                *pszSignature;
     TypeDescriptor      type;
     unsigned short      cParams;
@@ -190,7 +190,7 @@ struct MethodDescriptor
 
 struct ParamDescriptor
 {
-    char                *pszName;
+    char                *mName;
     TypeDescriptor      type;
     DWORD               dwAttribs;
 
@@ -208,9 +208,9 @@ const int c_nMaxStructElements = 128;
 
 struct StructDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
-    StructDescriptor    *pDesc;
+    char                *mName;
+    char                *mNameSpace;
+    StructDescriptor    *mDesc;
 };
 
 struct StructDescriptor
@@ -227,7 +227,7 @@ struct StructDescriptor
 
 struct StructElement
 {
-    char                *pszName;
+    char                *mName;
     TypeDescriptor      type;
 
     union
@@ -244,9 +244,9 @@ const int c_nMaxEnumElements = 512;
 
 struct EnumDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
-    EnumDescriptor      *pDesc;
+    char                *mName;
+    char                *mNameSpace;
+    EnumDescriptor      *mDesc;
 };
 
 struct EnumDescriptor
@@ -263,7 +263,7 @@ struct EnumDescriptor
 
 struct EnumElement
 {
-    char                *pszName;
+    char                *mName;
     int                 nValue;
     BOOL                bHexFormat;
 
@@ -276,8 +276,8 @@ struct EnumElement
 
 struct AliasDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
+    char                *mName;
+    char                *mNameSpace;
 
     TypeDescriptor      type;
     BOOL                bDummyType;
@@ -291,7 +291,7 @@ struct AliasDirEntry
 
 struct ArrayDirEntry
 {
-    char                *pszNameSpace;
+    char                *mNameSpace;
     unsigned short      nElements;
     TypeDescriptor      type;
 };
@@ -311,8 +311,8 @@ struct ArrayDirEntry
 
 struct ConstDirEntry
 {
-    char                *pszName;
-    char                *pszNameSpace;
+    char                *mName;
+    char                *mNameSpace;
     unsigned char       type;     // type == 0 integer; type == 1 string;
     union
     {
@@ -334,7 +334,7 @@ struct ConstDirEntry
 
 struct InterfaceConstDescriptor
 {
-    char                *pszName;
+    char                *mName;
     unsigned char      type;
     union
     {
@@ -450,7 +450,7 @@ extern BOOL IsEqualType(const CLSModule *,
                 const TypeDescriptor *, const TypeDescriptor *);
 EXTERN_C BOOL IsLocalCarQuintet(const CLSModule *pModule,
     const TypeDescriptor *pType, DWORD dwAttribs);
-EXTERN_C BOOL IsLocalStruct(const CLSModule *pModule, StructDescriptor *pDesc);
+EXTERN_C BOOL IsLocalStruct(const CLSModule *pModule, StructDescriptor* desc);
 
 extern int TypeCopy(const TypeDescriptor *, TypeDescriptor *);
 EXTERN_C int TypeCopy(const CLSModule *, const TypeDescriptor *,

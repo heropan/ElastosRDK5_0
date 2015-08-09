@@ -118,11 +118,11 @@ void GenerateTypeString(
             break;
         case Type_interface:
         {
-            if (pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace != NULL &&
-                pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace[0] != '\0' &&
-                strcmp(pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace) + 1);
-                strcpy(pszNamespace, pModule->mInterfaceDirs[pType->mIndex]->pszNameSpace);
+            if (pModule->mInterfaceDirs[pType->mIndex]->mNameSpace != NULL &&
+                pModule->mInterfaceDirs[pType->mIndex]->mNameSpace[0] != '\0' &&
+                strcmp(pModule->mInterfaceDirs[pType->mIndex]->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(pModule->mInterfaceDirs[pType->mIndex]->mNameSpace) + 1);
+                strcpy(pszNamespace, pModule->mInterfaceDirs[pType->mIndex]->mNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -137,20 +137,20 @@ void GenerateTypeString(
                 free(pszNamespace);
                 strcat(pszBuf, buffer);
             }
-            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->mName);
             break;
         }
         case Type_struct:
             strcat(pszBuf, "struct ");
-            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->mName);
             break;
         case Type_enum:
         {
-            if (pModule->mEnumDirs[pType->mIndex]->pszNameSpace != NULL &&
-                pModule->mEnumDirs[pType->mIndex]->pszNameSpace[0] != '\0' &&
-                strcmp(pModule->mEnumDirs[pType->mIndex]->pszNameSpace, "systypes")) {
-                char *pszNamespace = (char*)malloc(strlen(pModule->mEnumDirs[pType->mIndex]->pszNameSpace) + 1);
-                strcpy(pszNamespace, pModule->mEnumDirs[pType->mIndex]->pszNameSpace);
+            if (pModule->mEnumDirs[pType->mIndex]->mNameSpace != NULL &&
+                pModule->mEnumDirs[pType->mIndex]->mNameSpace[0] != '\0' &&
+                strcmp(pModule->mEnumDirs[pType->mIndex]->mNameSpace, "systypes")) {
+                char *pszNamespace = (char*)malloc(strlen(pModule->mEnumDirs[pType->mIndex]->mNameSpace) + 1);
+                strcpy(pszNamespace, pModule->mEnumDirs[pType->mIndex]->mNameSpace);
                 char buffer[1024];
                 buffer[0] = '\0';
                 char *begin = pszNamespace;
@@ -165,11 +165,11 @@ void GenerateTypeString(
                 free(pszNamespace);
                 strcat(pszBuf, buffer);
             }
-            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->mName);
             break;
         }
         case Type_alias:
-            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->mName);
             break;
         case Type_Array:
             break;
@@ -260,16 +260,16 @@ void GenerateTypeStringForParam(
             strcat(pszBuf, "EventHandler");
             break;
         case Type_interface:
-            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mInterfaceDirs[pType->mIndex]->mName);
             break;
         case Type_struct:
-            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mStructDirs[pType->mIndex]->mName);
             break;
         case Type_enum:
-            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mEnumDirs[pType->mIndex]->mName);
             break;
         case Type_alias:
-            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->pszName);
+            strcat(pszBuf, pModule->mAliasDirs[pType->mIndex]->mName);
             break;
         case Type_Array:
             {

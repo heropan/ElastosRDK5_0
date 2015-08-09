@@ -85,8 +85,8 @@ ECode CStructInfo::InitStatic(
 
     Int32 base = mClsModule->mBase;
     mStructDirEntry = structDirEntry;
-    mName = adjustNameAddr(base, mStructDirEntry->pszName);
-    StructDescriptor* desc = adjustStructDescAddr(base, structDirEntry->pDesc);
+    mName = adjustNameAddr(base, mStructDirEntry->mName);
+    StructDescriptor* desc = adjustStructDescAddr(base, structDirEntry->mDesc);
     StructElement* elem = NULL;
 
     ECode ec = NOERROR;
@@ -104,7 +104,7 @@ ECode CStructInfo::InitStatic(
 
     for (Int32 i = 0; i < desc->cElems; i++) {
         elem = getStructElementAddr(base, desc->ppElems, i);
-        (*mFieldNames)[i] = adjustNameAddr(base, elem->pszName);
+        (*mFieldNames)[i] = adjustNameAddr(base, elem->mName);
 
         AutoPtr<IDataTypeInfo> dataTypeInfo;
         ec = g_objInfoList.AcquireDataTypeInfo(mClsModule,

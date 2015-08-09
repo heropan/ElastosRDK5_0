@@ -49,7 +49,7 @@ ECode CConstantInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *name = adjustNameAddr(mClsModule->mBase, mConstDirEntry->pszName);
+    *name = adjustNameAddr(mClsModule->mBase, mConstDirEntry->mName);
     return NOERROR;
 }
 

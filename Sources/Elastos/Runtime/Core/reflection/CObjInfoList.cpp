@@ -798,7 +798,7 @@ ECode CObjInfoList::AcquireInterfaceInfo(
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(clsModule->mBase,
             clsModule->mClsMod->mInterfaceDirs, index);
-    EIID iid = adjustInterfaceDescAddr(clsModule->mBase, ifDir->pDesc)->iid;
+    EIID iid = adjustInterfaceDescAddr(clsModule->mBase, ifDir->mDesc)->iid;
 
     IInterface** obj = mIFInfos.Get(&iid);
     if (!obj) {

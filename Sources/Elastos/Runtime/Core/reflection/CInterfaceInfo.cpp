@@ -12,7 +12,7 @@ CInterfaceInfo::CInterfaceInfo(
     mClsMod = mClsModule->mClsMod;
     mBase = mClsModule->mBase;
     mInterfaceDirEntry = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
-    mDesc = adjustInterfaceDescAddr(mBase, mInterfaceDirEntry->pDesc);
+    mDesc = adjustInterfaceDescAddr(mBase, mInterfaceDirEntry->mDesc);
     mIndex = index;
     mIFList = NULL;
 }
@@ -99,7 +99,7 @@ ECode CInterfaceInfo::GetName(
         return E_INVALID_ARGUMENT;
     }
 
-    *name = adjustNameAddr(mBase, mInterfaceDirEntry->pszName);
+    *name = adjustNameAddr(mBase, mInterfaceDirEntry->mName);
     return NOERROR;
 }
 
@@ -110,7 +110,7 @@ ECode CInterfaceInfo::GetNamespace(
         return E_INVALID_ARGUMENT;
     }
 
-    *ns = adjustNameAddr(mBase, mInterfaceDirEntry->pszNameSpace);
+    *ns = adjustNameAddr(mBase, mInterfaceDirEntry->mNameSpace);
     return NOERROR;
 }
 
@@ -262,7 +262,7 @@ ECode CInterfaceInfo::CreateIFList()
     while (index != 0) {
         indexList[mIFCount++] = index;
         ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
-        index = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->sParentIndex;
+        index = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->sParentIndex;
     }
 
     indexList[mIFCount] = 0;
@@ -279,9 +279,9 @@ ECode CInterfaceInfo::CreateIFList()
         mIFList[j].mIndex = index;
         mIFList[j].mBeginNo = beginNo;
         ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
-        mIFList[j].mName = adjustNameAddr(mBase, ifDir->pszName);
-        mIFList[j].mNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
-        mIFList[j].mDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);
+        mIFList[j].mName = adjustNameAddr(mBase, ifDir->mName);
+        mIFList[j].mNameSpace = adjustNameAddr(mBase, ifDir->mNameSpace);
+        mIFList[j].mDesc = adjustInterfaceDescAddr(mBase, ifDir->mDesc);
         beginNo += mIFList[j].mDesc->cMethods;
     }
 
