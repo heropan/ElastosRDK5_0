@@ -219,7 +219,7 @@ static UINT CalcArrayElements(const CLSModule *pModule, TypeDescriptor *pDesc)
 static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT *pAlignment)
 {
     UINT uAlignment = GetMaxAlignmentOfStructElems(pModule, pDesc);
-    if (uAlignment > c_nStructMaxAlignSize) uAlignment = c_nStructMaxAlignSize;
+    if (uAlignment > STRUCT_MAX_ALIGN_SIZE) uAlignment = STRUCT_MAX_ALIGN_SIZE;
     if (pAlignment) *pAlignment = uAlignment;
     if (pDesc->nAlignSize) return pDesc->nAlignSize;
 
@@ -367,7 +367,7 @@ int ClassDescriptorCopy(
         pDest->pClassIndexs[pDest->cClasses++] = m;
     }
 
-    for (n = 0; n < pSrc->cInterfaces; n++) {
+    for (n = 0; n < pSrc->mInterfaceCount; n++) {
         i = InterfaceCopy(pSrcModule,
                     pSrc->ppInterfaces[n]->sIndex, pDestModule, bNameSpace);
         if (i < 0) _Return (i);
@@ -379,7 +379,7 @@ int ClassDescriptorCopy(
     }
 
     if (pSrc->dwAttribs & ClassAttrib_hascallback) {
-        for (n = 0; n < pSrc->cInterfaces; n++) {
+        for (n = 0; n < pSrc->mInterfaceCount; n++) {
             if (pSrc->ppInterfaces[n]->wAttribs &
                                                 ClassInterfaceAttrib_callback) {
                 char szName[255];
@@ -432,7 +432,7 @@ int ClassDescriptorXCopy(
         pDest->pClassIndexs[pDest->cClasses++] = pSrc->pClassIndexs[n];
     }
 
-    for (n = 0; n < pSrc->cInterfaces; n++) {
+    for (n = 0; n < pSrc->mInterfaceCount; n++) {
         m = CreateClassInterface(pSrc->ppInterfaces[n]->sIndex, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
@@ -457,7 +457,7 @@ int ClassCopy(
     pSrc = pSrcModule->ppClassDir[nIndex];
     n = SelectClassDirEntry(pSrc->pszName, NULL, pDestModule);
     if (n >= 0) {
-        if (pDestModule->ppClassDir[n]->pDesc->cInterfaces > 0)
+        if (pDestModule->ppClassDir[n]->pDesc->mInterfaceCount > 0)
             _Return (n);
     }
     else {
@@ -499,7 +499,7 @@ int ClassXCopy(
     pSrc = pSrcModule->ppClassDir[nIndex];
     n = SelectClassDirEntry(pSrc->pszName, NULL, pDestModule);
     if (n >= 0) {
-        if (pDestModule->ppClassDir[n]->pDesc->cInterfaces > 0)
+        if (pDestModule->ppClassDir[n]->pDesc->mInterfaceCount > 0)
             _Return (n);
     }
     else {
@@ -638,7 +638,7 @@ int InterfaceDescriptorCopy(
     pDest->dwAttribs = pSrc->dwAttribs;
     memcpy(&pDest->iid, &pSrc->iid, sizeof(IID));
 
-    for (n = 0; n < pSrc->cConsts; n++) {
+    for (n = 0; n < pSrc->mConstCount; n++) {
         m = CreateInterfaceConstDirEntry(pSrc->ppConsts[n]->pszName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
@@ -671,7 +671,7 @@ int InterfaceDescriptorXCopy(
     pDest->dwAttribs = pSrc->dwAttribs;
     memcpy(&pDest->iid, &pSrc->iid, sizeof(IID));
 
-    for (n = 0; n < pSrc->cConsts; n++) {
+    for (n = 0; n < pSrc->mConstCount; n++) {
         m = CreateInterfaceConstDirEntry(pSrc->ppConsts[n]->pszName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
@@ -714,7 +714,7 @@ int InterfaceCopy(
 
     n = SelectInterfaceDirEntry(pSrc->pszName, pSrc->pszNameSpace, pDestModule);
     if (n >= 0) {
-        if (pDestModule->ppInterfaceDir[n]->pDesc->cConsts > 0 ||
+        if (pDestModule->ppInterfaceDir[n]->pDesc->mConstCount > 0 ||
                 pDestModule->ppInterfaceDir[n]->pDesc->cMethods > 0)
             _Return (n);
     }
@@ -723,7 +723,7 @@ int InterfaceCopy(
                 pSrc->pszName, pDestModule, pSrc->pDesc->dwAttribs);
         if (n < 0) _Return (n);
         if (!bNameSpace) {
-            pDestModule->pDefinedInterfaceIndex[pDestModule->cDefinedInterfaces++] = n;
+            pDestModule->pDefinedInterfaceIndex[pDestModule->mDefinedInterfaceCount++] = n;
         }
     }
     pDest = pDestModule->ppInterfaceDir[n];

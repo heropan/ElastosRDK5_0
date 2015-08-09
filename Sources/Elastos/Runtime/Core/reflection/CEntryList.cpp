@@ -77,7 +77,7 @@ ECode CEntryList::InitElemList()
     if (mType == EntryType_TypeAliase) {
         AliasDirEntry* aliasDir = NULL;
         mObjElement[i].mIndex = 0;
-        for (i = 0; i < mClsMod->cAliases; i++) {
+        for (i = 0; i < mClsMod->mAliasCount; i++) {
             if (!IsSysAlaisType(mClsModule, i)) {
                 aliasDir = getAliasDirAddr(mBase, mClsMod->ppAliasDir, i);
                 mObjElement[j].mIndex = i;

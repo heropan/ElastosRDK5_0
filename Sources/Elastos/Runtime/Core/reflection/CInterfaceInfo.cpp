@@ -250,7 +250,7 @@ ECode CInterfaceInfo::CreateIFList()
     }
 
     UInt32* indexList = (UInt32 *)alloca(
-            mClsMod->cInterfaces * sizeof(UInt32));
+            mClsMod->mInterfaceCount * sizeof(UInt32));
     if (indexList == NULL) {
         return E_OUT_OF_MEMORY;
     }

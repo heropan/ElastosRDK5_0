@@ -1571,7 +1571,7 @@ void GenerateSinkClass(
 
     AddConstClassInterface("IObject", NULL, pModule, pSinkDesc);
     AddConstClassInterface("ICallbackSink", NULL, pModule, pSinkDesc);
-    for (n = 0; n < pDesc->cInterfaces; n++) {
+    for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback){
             strcpy(szInterfaceName, pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex]->pszName);
             strcat(szInterfaceName, "Callback");
@@ -1594,7 +1594,7 @@ void GenerateSinkClass(
         }
     }
     pSinkDesc->dwAttribs |= ClassAttrib_t_sink | ClassAttrib_naked;
-    pModule->dwAttribs |= CARAttrib_hasSinkObject;
+    pModule->mAttribs |= CARAttrib_hasSinkObject;
 }
 
 int GenerateSinkInterface(
@@ -1620,7 +1620,7 @@ int GenerateSinkInterface(
         return 0;
     }
     pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->cDefinedInterfaces++] = n;
+    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
     InterfaceDescriptorCopy(pModule, pSrcDesc, pModule, pSinkDesc, TRUE);
 
     pSinkDesc->dwAttribs |= InterfaceAttrib_sink;
@@ -1667,7 +1667,7 @@ int GenerateAsyncCallbackInterface(
         return 0;
     }
     pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->cDefinedInterfaces++] = n;
+    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
     InterfaceDescriptorCopy(pModule, pSrcDesc, pModule, pSinkDesc, TRUE);
 
     for (n = 0; n < pSrcDesc->cMethods; n++) {
@@ -1707,7 +1707,7 @@ int GenerateHandlerInterface(
     if (r < 0) return 0;
 
     pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->cDefinedInterfaces++] = n;
+    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
 
     pSinkDesc->dwAttribs |= InterfaceAttrib_defined;
     pSinkDesc->dwAttribs |= InterfaceAttrib_sink;
@@ -1913,11 +1913,11 @@ int GenerateEnums(CLSModule *pModule)
     EnumDescriptor *pEnumDesc;
     char enumToken[c_nMaxTokenSize + 1];
 
-    for (k = 0; k < pModule->cClasses; k++) {
+    for (k = 0; k < pModule->mClassCount; k++) {
         pClass = pModule->ppClassDir[k];
         pDesc = pClass->pDesc;
         if (pDesc->dwAttribs & ClassAttrib_hascallback) {
-            for (n = 0; n < pDesc->cInterfaces; n++) {
+            for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
                     pIntf = pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex];
                     pIntfDesc = pIntf->pDesc;
@@ -1977,7 +1977,7 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
     char szSeedBuf[c_nMaxTokenSize + 1];
     CLSModule *pModuleTmp;
 
-    for (k = 0; k < pModule->cClasses; k++) {
+    for (k = 0; k < pModule->mClassCount; k++) {
         pClass = pModule->ppClassDir[k];
         pDesc = pClass->pDesc;
         if ((pDesc->dwAttribs & ClassAttrib_hascallback) &&
@@ -1992,7 +1992,7 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
                 }
             }
 
-            for (n = 0; n < pDesc->cInterfaces; n++) {
+            for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
                     pIntf = pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex];
 
@@ -2097,14 +2097,14 @@ int ImportProc(char *pszName)
 
     // check same entry
     //
-    for (n = 0; n < s_pModule->cLibraries; n++) {
+    for (n = 0; n < s_pModule->mLibraryCount; n++) {
         if (!_stricmp(pszName, s_pModule->ppLibNames[n]))
             return Ret_Continue;
     }
 
     // add library name to module
     //
-    if (c_nMaxLibNumber == n) {
+    if (MAX_LIBRARY_NUMBER == n) {
         ErrorReport(CAR_W_TooManyLibraries);
         return Ret_Continue;
     }
@@ -2114,7 +2114,7 @@ int ImportProc(char *pszName)
         return Ret_AbortOnError;
     }
     strcpy(s_pModule->ppLibNames[n], pszName);
-    s_pModule->cLibraries++;
+    s_pModule->mLibraryCount++;
 
     strcpy(pszName + nNameLen - 4, ".car");
     return ImportCAR(pszName);
@@ -2153,14 +2153,14 @@ int ImportLibrary(const char *pszName)
 
     // check same entry
     //
-    for (n = 0; n < s_pModule->cLibraries; n++) {
+    for (n = 0; n < s_pModule->mLibraryCount; n++) {
         if (!_stricmp(pszName, s_pModule->ppLibNames[n]))
             return Ret_Continue;
     }
 
     // add library name to module
     //
-    if (c_nMaxLibNumber == n) {
+    if (MAX_LIBRARY_NUMBER == n) {
         ErrorReport(CAR_W_TooManyLibraries);
         return Ret_Continue;
     }
@@ -2170,7 +2170,7 @@ int ImportLibrary(const char *pszName)
         return Ret_AbortOnError;
     }
     strcpy(s_pModule->ppLibNames[n], pszName);
-    s_pModule->cLibraries++;
+    s_pModule->mLibraryCount++;
 
     // load it from file and add it to library
     //
@@ -2186,8 +2186,8 @@ int ImportLibrary(const char *pszName)
 typedef struct ModuleInfo {
     char        *pszUunm;
     GUID        uuid;
-    unsigned char       cMajorVersion;
-    unsigned char       cMinorVersion;
+    unsigned char       mMajorVersion;
+    unsigned char       mMinorVersion;
     DWORD       dwAttribs;
     char        *pszName;
 }   ModuleInfo;
@@ -2215,7 +2215,7 @@ int MergeCAR(const char *pszFile)
 
     // Save module info of current file
     //
-    pInfo = (ModuleInfo *)&s_pModule->pszUunm;
+    pInfo = (ModuleInfo *)&s_pModule->mUunm;
     memcpy(&info, pInfo, sizeof(ModuleInfo));
     memset(pInfo, 0, sizeof(ModuleInfo));
 
@@ -4051,7 +4051,7 @@ int P_Interface(CARToken token, DWORD properties)
     }
     pDesc = s_pModule->ppInterfaceDir[r]->pDesc;
     pDesc->dwAttribs = dwAttribs;
-    s_pModule->pDefinedInterfaceIndex[s_pModule->cDefinedInterfaces++] = r;
+    s_pModule->pDefinedInterfaceIndex[s_pModule->mDefinedInterfaceCount++] = r;
 
     ret = P_InterfaceBody(s_pModule->ppInterfaceDir[r], isDeprecated);
     if (ret != Ret_Continue) return ret;
@@ -4092,7 +4092,7 @@ void GenerateDispatchInterface(ClassDescriptor *pDesc)
     pDisp->sParentIndex = n;
     pDisp->dwAttribs = InterfaceAttrib_dual;
 
-    for (n = 0; n < pDesc->cInterfaces; n++) {
+    for (n = 0; n < pDesc->mInterfaceCount; n++) {
         pIntf = s_pModule-> \
             ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex]->pDesc;
         if (!(pDesc->ppInterfaces[n]->\
@@ -4219,8 +4219,8 @@ void CheckClassDupMethodName(ClassDescriptor *pDesc)
 {
     int n, m;
 
-    for (n = 0; n < pDesc->cInterfaces; n++)
-        for (m = n + 1; m < pDesc->cInterfaces; m++)
+    for (n = 0; n < pDesc->mInterfaceCount; n++)
+        for (m = n + 1; m < pDesc->mInterfaceCount; m++)
             CheckInterfaceDupMethodName(
                 s_pModule->ppInterfaceDir \
                     [pDesc->ppInterfaces[n]->sIndex]->pDesc,
@@ -4409,7 +4409,7 @@ BOOL IsClsIntfParent(ClassDescriptor *pDesc, int nIndex)
 
     if (0 == nIndex) return TRUE;
 
-    for (n = 0; n < pDesc->cInterfaces; n++) {
+    for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (IsInterfaceParent(s_pModule->ppInterfaceDir
             [pDesc->ppInterfaces[n]->sIndex]->pDesc, nIndex))
             return TRUE;
@@ -4423,7 +4423,7 @@ int TryGetParentClsIntf(ClassDescriptor *pDesc, InterfaceDescriptor *pIntf)
 
     if (0 == pIntf->sParentIndex) return -1;
 
-    for (n = 0; n < pDesc->cInterfaces; n++) {
+    for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (IsInterfaceParent(pIntf, pDesc->ppInterfaces[n]->sIndex))
             return n;
     }
@@ -4438,7 +4438,7 @@ BOOL IsClassInterfaceVirtuallyImplementedByAnyone(
 
     int index = pClsIntf->sIndex;
 
-    for (int n = 0; n < pDesc->cInterfaces; n++) {
+    for (int n = 0; n < pDesc->mInterfaceCount; n++) {
         ClassInterface* pClsIntfn = pDesc->ppInterfaces[n];
         if (index == pClsIntfn->sIndex) {
             return (pClsIntfn->wAttribs & ClassInterfaceAttrib_virtual);
@@ -4733,7 +4733,7 @@ int GenerateClassObject(ClassDirEntry *pClass)
     }
     s_pModule->ppInterfaceDir[pDesc->sCtorIndex]->pDesc->sParentIndex = n;
 
-    s_pModule->pDefinedInterfaceIndex[s_pModule->cDefinedInterfaces++] = r;
+    s_pModule->pDefinedInterfaceIndex[s_pModule->mDefinedInterfaceCount++] = r;
 
     //need to add namespace
     if (pClass->pszNameSpace != NULL) {
@@ -5031,7 +5031,7 @@ int AddCallbackCoalesceMethod(char* pszMethodName, ClassDirEntry *pClass)
     pClsDesc = pClass->pDesc;
     int n, x;
 
-    for (n = 0; n < pClsDesc->cInterfaces; n++) {
+    for (n = 0; n < pClsDesc->mInterfaceCount; n++) {
         if (pClsDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
             x = RetrieveMethod(pszMethodName, s_pModule,
                                                     pClsDesc->ppInterfaces[n]);
@@ -5632,7 +5632,7 @@ int P_CARVersion()
         ErrorReport(CAR_E_UnexpectSymbol, g_szCurrentToken);
         return Ret_AbortOnError;
     }
-    if (0 == s_pModule->cMajorVersion && 0 == s_pModule->cMinorVersion) {
+    if (0 == s_pModule->mMajorVersion && 0 == s_pModule->mMinorVersion) {
         int len = strlen(g_szCurrentToken);
         int dotIdx = -1;
         for (int k = 0; k < len; k++) {
@@ -5647,13 +5647,13 @@ int P_CARVersion()
             return Ret_AbortOnError;
         }
         if (dotIdx == -1 || dotIdx == len - 1) {
-            s_pModule->cMajorVersion = (unsigned char)version;
-            s_pModule->cMinorVersion = 0;
+            s_pModule->mMajorVersion = (unsigned char)version;
+            s_pModule->mMinorVersion = 0;
         }
         else {
-            s_pModule->cMajorVersion = (unsigned char)version;
+            s_pModule->mMajorVersion = (unsigned char)version;
             char* digits = (g_szCurrentToken + dotIdx + 1);
-            s_pModule->cMinorVersion = (unsigned char)atoi(digits);
+            s_pModule->mMinorVersion = (unsigned char)atoi(digits);
         }
     }
 
@@ -5837,7 +5837,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
     if (NULL != pClass->pszNameSpace && !strcmp(pClass->pszNameSpace, "systypes")) return;
 
     //Void class name being duplicated with module name.
-    if (strcmp(pClass->pszName, s_pModule->pszName) == 0) {
+    if (strcmp(pClass->pszName, s_pModule->mName) == 0) {
         ErrorReport(CAR_E_DupNameWithModule);
         return ;
     }
@@ -5857,7 +5857,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
     if (!(pDesc->dwAttribs & ClassAttrib_t_sink)) {
         strcpy(szSeedBuf, pClass->pszName);
         strcat(szSeedBuf, "/");
-        strcat(szSeedBuf, s_pModule->pszName);
+        strcat(szSeedBuf, s_pModule->mName);
         GuidFromSeedString(szSeedBuf, &pDesc->clsid);
     }
 
@@ -5868,9 +5868,9 @@ void ClassLastCheck(ClassDirEntry *pClass)
         if (pParent->pDesc->dwAttribs & ClassAttrib_t_generic) {
             // the 'parent' is generic
             // the interfaces of generic all must have implemented in 'child'
-            for (int i = 0; i < pParent->pDesc->cInterfaces; ++i) {
+            for (int i = 0; i < pParent->pDesc->mInterfaceCount; ++i) {
                 bool bFound = FALSE;
-                for (int j = 0; j < pDesc->cInterfaces; ++j) {
+                for (int j = 0; j < pDesc->mInterfaceCount; ++j) {
                     if (pDesc->ppInterfaces[j]->sIndex ==
                             pParent->pDesc->ppInterfaces[i]->sIndex) {
                         bFound = TRUE;
@@ -5891,7 +5891,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
     // Callback interface can't support method with [out] parameter.
     //
     if (pDesc->dwAttribs & ClassAttrib_hascallback) {
-        for (n = 0; n < pDesc->cInterfaces; n++) {
+        for (n = 0; n < pDesc->mInterfaceCount; n++) {
             if ((pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
                 && !(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_delegate)) {
                 pIntfDesc = s_pModule->ppInterfaceDir\
@@ -5934,7 +5934,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
 
         if ((pIntf->pDesc->dwAttribs & InterfaceAttrib_local)
             || (pClsIntf->wAttribs & ClassInterfaceAttrib_callback)) {
-            for (n = 1; n < pDesc->cInterfaces; n++) {
+            for (n = 1; n < pDesc->mInterfaceCount; n++) {
                 if (!(s_pModule->ppInterfaceDir
                     [pDesc->ppInterfaces[n]->sIndex]->pDesc->\
                     dwAttribs & InterfaceAttrib_local)
@@ -5945,7 +5945,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
                     break;
                 }
             }
-            assert(n != pDesc->cInterfaces);
+            assert(n != pDesc->mInterfaceCount);
         }
     }
 }
@@ -5953,35 +5953,35 @@ void CalcStructAlignedSize(const CLSModule *pModule, StructDescriptor *pDesc);
 void LastCheck()
 {
     int n;
-    DWORD dwAttribs = s_pModule->dwAttribs;
+    DWORD dwAttribs = s_pModule->mAttribs;
 
     // Auto generate uuid base on uunm or name.
     //
-    if (s_pModule->pszUunm) {
-        GuidFromSeedString(s_pModule->pszUunm, &s_pModule->uuid);
+    if (s_pModule->mUunm) {
+        GuidFromSeedString(s_pModule->mUunm, &s_pModule->mUuid);
     }
     else {
-        GuidFromSeedString(s_pModule->pszName, &s_pModule->uuid);
+        GuidFromSeedString(s_pModule->mName, &s_pModule->mUuid);
     }
 
-    if (0 == s_pModule->cClasses && !(dwAttribs & CARAttrib_library)) {
+    if (0 == s_pModule->mClassCount && !(dwAttribs & CARAttrib_library)) {
         ErrorReport(CAR_E_NoClasses);
     }
 
-    for (n = 0; n < s_pModule->cEnums; n++) {
+    for (n = 0; n < s_pModule->mEnumCount; n++) {
         EnumLastCheck(s_pModule->ppEnumDir[n]);
     }
 
-    for (n = 0; n < s_pModule->cStructs; n++) {
+    for (n = 0; n < s_pModule->mStructCount; n++) {
         StructLastCheck(s_pModule->ppStructDir[n]);
         CalcStructAlignedSize(s_pModule, s_pModule->ppStructDir[n]->pDesc);
     }
 
-    for (n = 0; n < s_pModule->cInterfaces; n++) {
+    for (n = 0; n < s_pModule->mInterfaceCount; n++) {
         InterfaceLastCheck(s_pModule->ppInterfaceDir[n]);
     }
 
-    for (n = 0; n < s_pModule->cClasses; n++) {
+    for (n = 0; n < s_pModule->mClassCount; n++) {
         ClassLastCheck(s_pModule->ppClassDir[n]);
     }
 
@@ -6019,26 +6019,26 @@ int LoadSystemLibrary(BOOL bNoElastos)
 
 int GenerateModuleName(const char *pszModuleName)
 {
-    s_pModule->pszName = new char[strlen(pszModuleName) + 1];
-    if (!s_pModule->pszName) goto OutOfMemoryError;
-    strcpy(s_pModule->pszName, pszModuleName);
+    s_pModule->mName = new char[strlen(pszModuleName) + 1];
+    if (!s_pModule->mName) goto OutOfMemoryError;
+    strcpy(s_pModule->mName, pszModuleName);
 
-    if (NULL != s_pModule->pszUunm) return Ret_Continue;
-    if (s_pModule->dwAttribs & CARAttrib_library) return Ret_Continue;
+    if (NULL != s_pModule->mUunm) return Ret_Continue;
+    if (s_pModule->mAttribs & CARAttrib_library) return Ret_Continue;
 
-        s_pModule->pszUunm = new char
-                [strlen(s_pszFactoryUrl) + strlen(pszModuleName) + 6];
-    if (!s_pModule->pszUunm) goto OutOfMemoryError;
+    s_pModule->mUunm = new char
+            [strlen(s_pszFactoryUrl) + strlen(pszModuleName) + 6];
+    if (!s_pModule->mUunm) goto OutOfMemoryError;
     if (0 != *s_pszFactoryUrl) {
-        strcpy(s_pModule->pszUunm, s_pszFactoryUrl);
-        strcat(s_pModule->pszUunm, "/");
+        strcpy(s_pModule->mUunm, s_pszFactoryUrl);
+        strcat(s_pModule->mUunm, "/");
     }
     else {
-        *s_pModule->pszUunm = 0;
+        *s_pModule->mUunm = 0;
     }
 
-    strcat(s_pModule->pszUunm, pszModuleName);
-    strcat(s_pModule->pszUunm, ".eco");
+    strcat(s_pModule->mUunm, pszModuleName);
+    strcat(s_pModule->mUunm, ".eco");
     return Ret_Continue;
 
 OutOfMemoryError:
@@ -6070,7 +6070,7 @@ int P_CAR(const char *pszModuleName, BOOL bNested)
     // CAR_ID
     //
     if (Token_K_library == token) {
-        s_pModule->dwAttribs |= CARAttrib_library;
+        s_pModule->mAttribs |= CARAttrib_library;
     }
     else if (Token_K_module != token) {
         if (token != Token_Error) {
@@ -6087,7 +6087,7 @@ int P_CAR(const char *pszModuleName, BOOL bNested)
     if (Token_S_lbrace != token && Token_Nothing != token) {
         token = GetUunm(s_pFile); // must be uunm in the next!
         if (Token_uunm == token) {
-            if (!s_pModule->pszUunm) {
+            if (!s_pModule->mUunm) {
                 GetNakedFileName(g_szCurrentToken, szNakedUunm);
                 if (strcmp("elastos", szNakedUunm)) {
                     if (strcmp(pszModuleName, szNakedUunm)) {
@@ -6104,12 +6104,12 @@ int P_CAR(const char *pszModuleName, BOOL bNested)
                 }
 
                 nUunmlen = strlen(pszUunm);
-                s_pModule->pszUunm = new char[nUunmlen + 1];
-                if (!s_pModule->pszUunm) {
+                s_pModule->mUunm = new char[nUunmlen + 1];
+                if (!s_pModule->mUunm) {
                     ErrorReport(CAR_E_OutOfMemory);
                     return Ret_AbortOnError;
                 }
-                strcpy(s_pModule->pszUunm, pszUunm);
+                strcpy(s_pModule->mUunm, pszUunm);
             }
         }
         else { // Token_Error == token

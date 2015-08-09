@@ -80,7 +80,7 @@ bool GenCarChecksum(const char *pszName, CLSModule *pModule)
     fclose(pFile);
 
     checksum = rabin(pBuf, len);
-    pModule->nChecksum = checksum;
+    pModule->mChecksum = checksum;
 
     free(pBuf);
 
@@ -102,7 +102,7 @@ bool GenCarBarcode(CLSModule *pModule)
 
     barcode = (unsigned long)(difftime(nowtime,eltime) / 60);
 
-    pModule->nBarcode = barcode;
+    pModule->mBarcode = barcode;
 
     return true;
 }
@@ -135,7 +135,7 @@ CLSModule * CompileCAR(const char *pszName, DWORD dwAttribs)
     if (dwAttribs & Command_e_NoElastos)
         DisableWarning(0x000f);
     if (dwAttribs & Command_a_Compress)
-        pModule->dwAttribs |= CARAttrib_compress;
+        pModule->mAttribs |= CARAttrib_compress;
     if (dwAttribs & Command_A_FreeModel)
         SetDefaultThreadModel(ClassAttrib_naked);
     if (dwAttribs & Command_i_IgrName)

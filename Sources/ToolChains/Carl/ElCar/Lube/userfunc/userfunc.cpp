@@ -552,7 +552,7 @@ IMPL_USERFUNC(ClassNameOfClassObj)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     int nLoopEnd = 3;\
     TypeDescriptor type, OrigType;\
     const char *string;\
-    for (i = 0; i < pCtx->m_pClass->pDesc->cInterfaces; i++) {\
+    for (i = 0; i < pCtx->m_pClass->pDesc->mInterfaceCount; i++) {\
         if (pCtx->m_pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
             continue;\
         }\
@@ -661,7 +661,7 @@ IMPL_USERFUNC(UsageNewOfCtor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     char *pszName;\
     InterfaceDirEntry *pCtorInterface = NULL;\
     pCtorInterface = pCtx->m_pModule->ppInterfaceDir[pClass->pDesc->sCtorIndex];\
-    for (i = 0; i < pClass->pDesc->cInterfaces; i++) {\
+    for (i = 0; i < pClass->pDesc->mInterfaceCount; i++) {\
         if (pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {\
             continue;\
         }\
@@ -975,7 +975,7 @@ IMPL_USERFUNC(CreateHFiles)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
         return LUBE_FAIL;
 
     pCtx->PutString("#include <");
-    pCtx->PutString(pModule->pszName);
+    pCtx->PutString(pModule->mName);
     pCtx->PutString(".h>\n");
 
     PLUBEHEADER pLube;
@@ -1074,7 +1074,7 @@ IMPL_USERFUNC(DefaultInterface)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
 {
     int i;
 
-    for (i = 0; i < pCtx->m_pClass->pDesc->cInterfaces; i++) {
+    for (i = 0; i < pCtx->m_pClass->pDesc->mInterfaceCount; i++) {
         if (pCtx->m_pClass->pDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_callback) {
             continue;
         }
@@ -1570,7 +1570,7 @@ IMPL_USERFUNC(IsFiltered)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvArg)
     ClassInterface *pClsIntf = pCtx->m_pClsIntf;
     ClassDescriptor *pClsDesc = pCtx->m_pOrigClass->pDesc;
 
-    for(int i = 0; i < pClsDesc->cInterfaces; i++) {
+    for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         if ((pClsDesc->ppInterfaces[i]->sIndex == pClsIntf->sIndex)
                 || (pClsDesc->ppInterfaces[i]->wAttribs & ClassInterfaceAttrib_filter)) {
             return true;
@@ -1590,7 +1590,7 @@ IMPL_USERFUNC(HasTrivialConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
     ClassInterface *pClsIntf;
     InterfaceDescriptor *pIntfDesc;
 
-    for(int i = 0; i < pClsDesc->cInterfaces; i++) {
+    for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
         pIntfDesc = pCtx->m_pModule->ppInterfaceDir[pClsIntf->sIndex]->pDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {
@@ -1613,7 +1613,7 @@ IMPL_USERFUNC(HasDefaultConstructor)(PLUBECTX pCtx, PSTATEDESC pDesc, PVOID pvAr
     ClassInterface *pClsIntf;
     InterfaceDescriptor *pIntfDesc;
 
-    for(int i = 0; i < pClsDesc->cInterfaces; i++) {
+    for(int i = 0; i < pClsDesc->mInterfaceCount; i++) {
         pClsIntf = pClsDesc->ppInterfaces[i];
         pIntfDesc = pCtx->m_pModule->ppInterfaceDir[pClsIntf->sIndex]->pDesc;
         for (int j = 0; j < pIntfDesc->cMethods; j++) {

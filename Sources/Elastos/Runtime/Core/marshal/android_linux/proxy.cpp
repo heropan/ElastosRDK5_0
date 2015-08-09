@@ -922,7 +922,7 @@ ECode CObjectProxy::GetInterface(
         return NOERROR;
     }
     MARSHAL_DBGOUT(MSHDBG_WARNING, ALOGW(
-            "Proxy: IndexQI failed - idx(%d), cInterfaces(%d)\n",
+            "Proxy: IndexQI failed - idx(%d), mInterfaceCount(%d)\n",
             index, mInterfaceNum));
 
     return E_NO_INTERFACE;

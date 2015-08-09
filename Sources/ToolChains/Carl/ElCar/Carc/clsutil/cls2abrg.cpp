@@ -101,7 +101,7 @@ void AbrgMethod(FILE *pFile, int n, const AbridgedMethod *pMethod)
 
 const char *AbrgInterfaceName(const CLSModule *pModule, const GUID *pIID)
 {
-    for (int n = 0; n < pModule->cInterfaces; n++) {
+    for (int n = 0; n < pModule->mInterfaceCount; n++) {
         if (IsEqualUUID(pIID, &pModule->ppInterfaceDir[n]->pDesc->iid)) {
             return pModule->ppInterfaceDir[n]->pszName;
         }
@@ -128,7 +128,7 @@ void AbrgInterface(FILE *pFile,
 
 const char *AbrgClassName(const CLSModule *pModule, const GUID *pIID)
 {
-    for (int n = 0; n < pModule->cClasses; n++) {
+    for (int n = 0; n < pModule->mClassCount; n++) {
         if (IsEqualUUID(pIID, &pModule->ppClassDir[n]->pDesc->clsid)) {
             return pModule->ppClassDir[n]->pszName;
         }
@@ -148,7 +148,7 @@ void AbrgClass(FILE *pFile,
             pClass->pszUunm,
             AbrgClassName(pModule, &pClass->clsid));
 
-    for (int n = 0; n < pClass->cInterfaces; n++) {
+    for (int n = 0; n < pClass->mInterfaceCount; n++) {
         fprintf(pFile,
             "//        interface %s;\n",
             AbrgInterfaceName(pModule, &pClass->ppInterfaces[n]->iid));
@@ -177,10 +177,10 @@ void Abrg2Comment(FILE * pFile,
             "//\n",
             pAbridged->nTotalSize,
             pAbridged->cClasses,
-            pAbridged->cInterfaces,
-            pModule->pszName);
+            pAbridged->mInterfaceCount,
+            pModule->mName);
 
-    for (n = 0; n < pAbridged->cInterfaces; n++) {
+    for (n = 0; n < pAbridged->mInterfaceCount; n++) {
         AbrgInterface(pFile, pModule, &pAbridged->pInterfaces[n]);
     }
 
@@ -207,7 +207,7 @@ int CLS2AbrgCpp_(FILE *pFile, const CLSModule *pModule)
     char *pszName = NULL;
     char *pszUpperName = NULL;
 
-    pszName = strdup(pModule->pszName);
+    pszName = strdup(pModule->mName);
     if (!pszName) goto ErrorExit;
     n = strlen(pszName);
     for(i = 0; i < n; i++) {

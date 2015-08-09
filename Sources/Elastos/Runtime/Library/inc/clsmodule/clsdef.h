@@ -8,11 +8,11 @@
 #include <string.h>
 #include "clstype.h"
 
-const char * const c_szMagic = "CAR ClassInfo\r\n\x1a";
-const int c_nMagicSize = 16;
-const unsigned short c_sMajorVersion = 2;
-const unsigned short c_sMinorVersion = 0;
-const int c_nCLSModuleVersion = 1;
+const char * const MAGIC_STRING = "CAR ClassInfo\r\n\x1a";
+const int MAGIC_STRING_LENGTH = 16;
+const unsigned short MAJOR_VERSION = 5;
+const unsigned short MINOR_VERSION = 0;
+const int CLSMODULE_VERSION = 1;
 
 typedef struct ClassDirEntry ClassDirEntry;
 typedef struct InterfaceDirEntry InterfaceDirEntry;
@@ -22,43 +22,43 @@ typedef struct AliasDirEntry AliasDirEntry;
 typedef struct ArrayDirEntry ArrayDirEntry;
 typedef struct ConstDirEntry ConstDirEntry;
 
-const int c_nMaxClassNumber = 4096;
-const int c_nMaxInterfaceNumber = 4096;
-const int c_nMaxDefinedInterfaceNumber = 4096;
-const int c_nMaxStructNumber = 4096;
-const int c_nMaxEnumNumber = 4096;
-const int c_nMaxAliasNumber = 4096;
-const int c_nMaxLibNumber = 32;
-const int c_nMaxArrayNumber = 4096;
-const int c_nMaxConstNumber = 4096;
+const int MAX_CLASS_NUMBER = 4096;
+const int MAX_INTERFACE_NUMBER = 4096;
+const int MAX_DEFINED_INTERFACE_NUMBER = 4096;
+const int MAX_STRUCT_NUMBER = 4096;
+const int MAX_ENUM_NUMBER = 4096;
+const int MAX_ALIAS_NUMBER = 4096;
+const int MAX_LIBRARY_NUMBER = 32;
+const int MAX_ARRAY_NUMBER = 4096;
+const int MAX_CONST_NUMBER = 4096;
 
-const unsigned int c_nStructMaxAlignSize = 4;
+const unsigned int STRUCT_MAX_ALIGN_SIZE = 4;
 
 typedef struct CLSModule
 {
-    char                szMagic[c_nMagicSize];
-    unsigned char       cMajorVersion; // Major version of given version(*.*)
-    unsigned char       cMinorVersion; // Minor version
-    int                 nCLSModuleVersion; //version of this CLSModule struct
-    int                 nSize;
-    unsigned int        nChecksum;
-    unsigned int        nBarcode;
+    char                mMagic[MAGIC_STRING_LENGTH];
+    unsigned char       mMajorVersion; // Major version of given version(*.*)
+    unsigned char       mMinorVersion; // Minor version
+    int                 mCLSModuleVersion; //version of this CLSModule struct
+    int                 mSize;
+    unsigned int        mChecksum;
+    unsigned int        mBarcode;
 
-    char                *pszUunm;
-    GUID                uuid;
-    DWORD               dwAttribs;
-    char                *pszName;
-    char                *pszServiceName;
+    char*               mUunm;
+    GUID                mUuid;
+    DWORD               mAttribs;
+    char*               mName;
+    char*               mServiceName;
 
-    unsigned short      cClasses;
-    unsigned short      cInterfaces;
-    unsigned short      cDefinedInterfaces;
-    unsigned short      cStructs;
-    unsigned short      cEnums;
-    unsigned short      cAliases;
-    unsigned short      cLibraries;
-    unsigned short      cArrays;
-    unsigned short      cConsts;
+    unsigned short      mClassCount;
+    unsigned short      mInterfaceCount;
+    unsigned short      mDefinedInterfaceCount;
+    unsigned short      mStructCount;
+    unsigned short      mEnumCount;
+    unsigned short      mAliasCount;
+    unsigned short      mLibraryCount;
+    unsigned short      mArrayCount;
+    unsigned short      mConstCount;
 
     ClassDirEntry       **ppClassDir;
     InterfaceDirEntry   **ppInterfaceDir;
@@ -107,7 +107,7 @@ struct ClassDescriptor
     CLSID               clsid;
     unsigned short      sParentIndex;
     unsigned short      sCtorIndex;
-    unsigned short      cInterfaces;
+    unsigned short      mInterfaceCount;
     unsigned short      cAggregates;
     unsigned short      cClasses;               // only for aspect
     unsigned short      cAspects;
@@ -155,7 +155,7 @@ struct InterfaceDirEntry
 struct InterfaceDescriptor
 {
     IID                 iid;
-    unsigned short      cConsts;
+    unsigned short      mConstCount;
     unsigned short      cMethods;
     unsigned short      sParentIndex;
     DWORD               dwAttribs;

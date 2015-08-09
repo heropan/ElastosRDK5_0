@@ -121,7 +121,7 @@ typedef struct AbridgedClass
 {
     char                    *pszUunm;
     CLSID                   clsid;
-    unsigned short          cInterfaces;
+    unsigned short          mInterfaceCount;
     AbridgedInterface       **ppInterfaces;
 } AbridgedClassInfo, AbridgedClass;
 
@@ -129,7 +129,7 @@ typedef struct AbridgedModuleInfo
 {
     unsigned int            nTotalSize;
     unsigned short          cClasses;
-    unsigned short          cInterfaces;
+    unsigned short          mInterfaceCount;
     AbridgedClass           *pClasses;
     AbridgedInterface       *pInterfaces;
     char                    szUunm[1];

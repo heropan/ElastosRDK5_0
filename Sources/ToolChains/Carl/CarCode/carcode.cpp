@@ -48,9 +48,9 @@ int getCarCodeFromCls(const char *pszName, CarCode *pCarCode)
     else if (nRet < 0)
         return 0;
 
-    pCarCode->cModuleName = pModule->pszUunm;
-    pCarCode->nChecksum = pModule->nChecksum;
-    pCarCode->nBarcode = pModule->nBarcode;
+    pCarCode->cModuleName = pModule->mUunm;
+    pCarCode->nChecksum = pModule->mChecksum;
+    pCarCode->nBarcode = pModule->mBarcode;
 
     return 1;
 }
@@ -68,9 +68,9 @@ int getCarCodeFromDll(const char *pszName, CarCode *pCarCode)
     else if (nRet < 0)
         return 0;
 
-    pCarCode->cModuleName = pModule->pszUunm;
-    pCarCode->nChecksum = pModule->nChecksum;
-    pCarCode->nBarcode = pModule->nBarcode;
+    pCarCode->cModuleName = pModule->mUunm;
+    pCarCode->nChecksum = pModule->mChecksum;
+    pCarCode->nBarcode = pModule->mBarcode;
 
     return 1;
 }
@@ -123,7 +123,7 @@ int getDependenceFromDll(const char *pszName)
         return 0;
 
     printf("Dependences: \n");
-    for(int i = 0; i < pModule->cLibraries; i++) {
+    for(int i = 0; i < pModule->mLibraryCount; i++) {
         pStr = pModule->ppLibNames[i] + strlen(pModule->ppLibNames[i]) - 4;
         if(!strcmp(pStr, ".dll") | !strcmp(pStr, ".eco"))
             printf("%s\n", pModule->ppLibNames[i]);
@@ -147,7 +147,7 @@ int getDependenceFromCls(const char *pszName)
         return 0;
 
     printf("Dependences: \n");
-    for(int i = 0; i < pModule->cLibraries; i++) {
+    for(int i = 0; i < pModule->mLibraryCount; i++) {
         pStr = pModule->ppLibNames[i] + strlen(pModule->ppLibNames[i]) - 4;
         if(!strcmp(pStr, ".dll") | !strcmp(pStr, ".eco"))
             printf("%s\n", pModule->ppLibNames[i]);

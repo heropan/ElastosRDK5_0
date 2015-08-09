@@ -13,11 +13,11 @@ int CompressCLS(
     /* [in] */ void* dest)
 {
     CLSModule* destModule = (CLSModule *)dest;
-    CLSModule* srcModule = (CLSModule *)alloca(destModule->nSize);
+    CLSModule* srcModule = (CLSModule *)alloca(destModule->mSize);
     if (!srcModule) _ReturnError(CLSError_OutOfMemory);
 
-    memcpy(srcModule, destModule, destModule->nSize);
-    int dataSize = srcModule->nSize - sizeof(CLSModule);
+    memcpy(srcModule, destModule, destModule->mSize);
+    int dataSize = srcModule->mSize - sizeof(CLSModule);
 
     if (compress(
         (Bytef *)destModule + sizeof(CLSModule),
@@ -36,7 +36,7 @@ int UncompressCLS(
     /* [in] */ CLSModule* destModule)
 {
     CLSModule* srcModule = (CLSModule *)src;
-    int dataSize = srcModule->nSize - sizeof(CLSModule);
+    int dataSize = srcModule->mSize - sizeof(CLSModule);
 
     if (uncompress(
         (Bytef *)destModule + sizeof(CLSModule),

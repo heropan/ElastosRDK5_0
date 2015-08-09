@@ -28,7 +28,7 @@ CClassInfo::CClassInfo(
 
     mClsId.pUunm = mUrn;
     mClsId.clsid = mDesc->clsid;
-    strcpy(mClsId.pUunm, adjustNameAddr(mBase, mClsMod->pszUunm));
+    strcpy(mClsId.pUunm, adjustNameAddr(mBase, mClsMod->mUunm));
 }
 
 CClassInfo::~CClassInfo()
@@ -113,7 +113,7 @@ ECode CClassInfo::GetId(
     }
 
     clsid->clsid =  mDesc->clsid;
-    strcpy(clsid->pUunm,  adjustNameAddr(mBase, mClsMod->pszUunm));
+    strcpy(clsid->pUunm,  adjustNameAddr(mBase, mClsMod->mUunm));
 
     return NOERROR;
 }
@@ -921,13 +921,13 @@ ECode CClassInfo::CreateIFList()
     }
 
     UInt32* indexList =
-            (UInt32 *)alloca(mClsMod->cInterfaces * sizeof(UInt32));
+            (UInt32 *)alloca(mClsMod->mInterfaceCount * sizeof(UInt32));
     if (indexList == NULL) {
         return E_OUT_OF_MEMORY;
     }
 
     IFIndexEntry* allIFList = (IFIndexEntry *)
-            alloca(mClsMod->cInterfaces * sizeof(IFIndexEntry));
+            alloca(mClsMod->mInterfaceCount * sizeof(IFIndexEntry));
     if (allIFList == NULL) {
         return E_OUT_OF_MEMORY;
     }
@@ -940,7 +940,7 @@ ECode CClassInfo::CreateIFList()
     ClassInterface* cifDir = NULL;
     InterfaceDirEntry* ifDir = NULL;
 
-    for (i = 0; i < mDesc->cInterfaces; i++) {
+    for (i = 0; i < mDesc->mInterfaceCount; i++) {
         cifDir = getCIFAddr(mBase, mDesc->ppInterfaces, i);
         if (cifDir->wAttribs & ClassInterfaceAttrib_callback) {
             isCallBack = TRUE;

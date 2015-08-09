@@ -67,7 +67,7 @@ inline BOOL InterfaceConstCondition(PLUBECTX pCtx, BOOL bFirst)
         return pCtx->m_pInterfaceConst == pCtx->m_pInterface->pDesc->ppConsts[0];
     }
     return pCtx->m_pInterfaceConst == pCtx->m_pInterface->pDesc->ppConsts
-                [pCtx->m_pInterface->pDesc->cConsts - 1];
+                [pCtx->m_pInterface->pDesc->mConstCount - 1];
 }
 
 inline BOOL MethodCondition(PLUBECTX pCtx, BOOL bFirst)
@@ -97,7 +97,7 @@ void FirstLastClsIntf(
 
     pFirst = pLast = NULL;
 
-    for (n = 0; n < pClass->cInterfaces; n++) {
+    for (n = 0; n < pClass->mInterfaceCount; n++) {
         if (!(pClass->ppInterfaces[n]->wAttribs
             & ClassInterfaceAttrib_callback)) {
             pLast = pClass->ppInterfaces[n];
@@ -251,7 +251,7 @@ BOOL NameConditionValue(PLUBECTX pCtx, ObjectType object, const char *pszDest)
 
     switch (object) {
         case Object_Module:
-            pszSource = pCtx->m_pModule->pszName;
+            pszSource = pCtx->m_pModule->mName;
             break;
         case Object_Library:
             pszSource = pCtx->m_pLibrary;
@@ -433,7 +433,7 @@ BOOL AttribConditionValue(PLUBECTX pCtx, PSTATEDESC pDesc)
     int nLength;
     switch (pDesc->object) {
         case Object_Module:
-            return pCtx->m_pModule->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pModule->mAttribs & pDesc->dwExtra;
         case Object_Class:
             return pCtx->m_pClass->pDesc->dwAttribs & pDesc->dwExtra;
         case Object_Aspect:

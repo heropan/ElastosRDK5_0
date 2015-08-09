@@ -11,23 +11,23 @@ PVOID ModuleArg(PLUBECTX pCtx, MemberType member)
             return (PVOID)pCtx->m_pModule;
         case Member_Type:
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pModule->dwAttribs;
+            return (PVOID)&pCtx->m_pModule->mAttribs;
         case Member_Name:
-            return (PVOID)pCtx->m_pModule->pszName;
+            return (PVOID)pCtx->m_pModule->mName;
         case Member_Major_Version:
-            return (PVOID)&pCtx->m_pModule->cMajorVersion;
+            return (PVOID)&pCtx->m_pModule->mMajorVersion;
         case Member_Minor_Version:
-            return (PVOID)&pCtx->m_pModule->cMinorVersion;
+            return (PVOID)&pCtx->m_pModule->mMinorVersion;
         case Member_Version:
             return NULL; // version is not a true member, so it should be used as argument
         case Member_Uuid:
-            return (PVOID)&pCtx->m_pModule->uuid;
+            return (PVOID)&pCtx->m_pModule->mUuid;
         case Member_Uunm:
-            return (PVOID)pCtx->m_pModule->pszUunm;
+            return (PVOID)pCtx->m_pModule->mUunm;
         case Member_CarCode:
-            return (PVOID)pCtx->m_pModule->nChecksum;
+            return (PVOID)pCtx->m_pModule->mChecksum;
         case Member_BuildDate:
-            return (PVOID)pCtx->m_pModule->nBarcode;
+            return (PVOID)pCtx->m_pModule->mBarcode;
         default:
             return NULL;
     }

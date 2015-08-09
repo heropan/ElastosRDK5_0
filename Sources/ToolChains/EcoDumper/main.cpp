@@ -121,8 +121,8 @@ void dump_interface_method(InterfaceDescriptor* itfDesc)
 
 void dump_interface(CLSModule* clsmod)
 {
-    printf("[%d interfaces]\n", clsmod->cDefinedInterfaces);
-    for (int i = 0; i < clsmod->cDefinedInterfaces; ++i) {
+    printf("[%d interfaces]\n", clsmod->mDefinedInterfaceCount);
+    for (int i = 0; i < clsmod->mDefinedInterfaceCount; ++i) {
         int itfIndex = clsmod->pDefinedInterfaceIndex[i];
         InterfaceDirEntry* itfDirEntry = clsmod->ppInterfaceDir[itfIndex];
         printf("%s\n", itfDirEntry->pszName);
@@ -133,8 +133,8 @@ void dump_interface(CLSModule* clsmod)
 
 void dump_class_interface(ClassDescriptor* clsDesc)
 {
-    printf("[%d interfaces]\n", clsDesc->cInterfaces);
-    for (int i = 0; i < clsDesc->cInterfaces; ++i) {
+    printf("[%d interfaces]\n", clsDesc->mInterfaceCount);
+    for (int i = 0; i < clsDesc->mInterfaceCount; ++i) {
         ClassInterface* clsItf = clsDesc->ppInterfaces[i];
         printf("%s\n", sModule->ppInterfaceDir[clsItf->sIndex]->pszName);
     }

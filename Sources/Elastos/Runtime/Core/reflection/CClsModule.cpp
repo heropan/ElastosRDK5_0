@@ -32,7 +32,7 @@ CClsModule::CClsModule(
 CClsModule::~CClsModule()
 {
     if (mTypeAliasList) {
-        for (Int32 i = 0; i < mClsMod->cAliases; i++) {
+        for (Int32 i = 0; i < mClsMod->mAliasCount; i++) {
             if (mTypeAliasList[i].mOrgTypeDesc) {
                 delete mTypeAliasList[i].mOrgTypeDesc;
             }
@@ -75,24 +75,24 @@ ECode CClsModule::GetModuleInfo(
     }
 
     return _CReflector_AcquireModuleInfo(
-            String(adjustNameAddr(mBase, mClsMod->pszUunm)), moduleInfo);
+            String(adjustNameAddr(mBase, mClsMod->mUunm)), moduleInfo);
 }
 
 ECode CClsModule::InitOrgType()
 {
-    if (!mClsMod->cAliases) {
+    if (!mClsMod->mAliasCount) {
         return NOERROR;
     }
 
     Int32 i = 0;
-    mTypeAliasList = new TypeAliasDesc[mClsMod->cAliases];
+    mTypeAliasList = new TypeAliasDesc[mClsMod->mAliasCount];
     if (!mTypeAliasList) {
         return E_OUT_OF_MEMORY;
     }
 
-    memset(mTypeAliasList, 0, sizeof(TypeAliasDesc) * mClsMod->cAliases);
+    memset(mTypeAliasList, 0, sizeof(TypeAliasDesc) * mClsMod->mAliasCount);
 
-    for (i = 0; i < mClsMod->cAliases; i++) {
+    for (i = 0; i < mClsMod->mAliasCount; i++) {
         mTypeAliasList[i].mOrgTypeDesc = new TypeDescriptor;
         if (!mTypeAliasList[i].mOrgTypeDesc) goto EExit;
         mTypeAliasList[i].mTypeDesc = &(getAliasDirAddr(mBase,
@@ -104,7 +104,7 @@ ECode CClsModule::InitOrgType()
     return NOERROR;
 
 EExit:
-    for (i = 0; i < mClsMod->cAliases; i++) {
+    for (i = 0; i < mClsMod->mAliasCount; i++) {
         if (mTypeAliasList[i].mOrgTypeDesc) {
             delete mTypeAliasList[i].mOrgTypeDesc;
         }
@@ -120,7 +120,7 @@ ECode CClsModule::AliasToOriginal(
     /* [in] */ TypeDescriptor* typeDype,
     /* [out] */ TypeDescriptor** orgTypeDesc)
 {
-    if (!mClsMod->cAliases) {
+    if (!mClsMod->mAliasCount) {
         return E_INVALID_OPERATION;
     }
 
@@ -139,7 +139,7 @@ ECode CClsModule::AliasToOriginal(
 //        typeDype = &mClsMod->ppAliasDir[typeDype->sIndex]->type;
 //    }
 
-    if (typeDype->sIndex >= mClsMod->cAliases) {
+    if (typeDype->sIndex >= mClsMod->mAliasCount) {
         return E_INVALID_ARGUMENT;
     }
 

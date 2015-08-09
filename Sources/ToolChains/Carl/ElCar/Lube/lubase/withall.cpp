@@ -9,7 +9,7 @@ int WithAllLibrary(PLUBECTX pCtx, PSTATEDESC pDesc)
     int n, nRet = LUBE_OK;
     char *pOrigLib = pCtx->m_pLibrary;
 
-    for (n = 0; n < pCtx->m_pModule->cLibraries; n++) {
+    for (n = 0; n < pCtx->m_pModule->mLibraryCount; n++) {
         pCtx->m_pLibrary = pCtx->m_pModule->ppLibNames[n];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
@@ -27,7 +27,7 @@ int WithAllClass(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigClass = pCtx->m_pClass;
     pOrigParent = pCtx->m_pClassParent;
 
-    for (n = 0; n < pCtx->m_pModule->cClasses; n++) {
+    for (n = 0; n < pCtx->m_pModule->mClassCount; n++) {
         if (!(pCtx->m_pModule->ppClassDir[n]->pDesc->dwAttribs & ClassAttrib_t_external) &&
             (pCtx->m_pModule->ppClassDir[n]->pszNameSpace == NULL ||
             strcmp("systypes", pCtx->m_pModule->ppClassDir[n]->pszNameSpace))) {
@@ -54,7 +54,7 @@ int WithAllInterface(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigInterface = pCtx->m_pInterface;
     pOrigParent = pCtx->m_pIntfParent;
 
-    for (n = 0; n < pCtx->m_pModule->cDefinedInterfaces; n++) {
+    for (n = 0; n < pCtx->m_pModule->mDefinedInterfaceCount; n++) {
         pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir\
                     [pCtx->m_pModule->pDefinedInterfaceIndex[n]];
         pCtx->m_pIntfParent = pCtx->m_pModule->\
@@ -79,7 +79,7 @@ int WithAllClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigInterface = pCtx->m_pInterface;
     pOrigParent = pCtx->m_pIntfParent;
 
-    for (n = 0; n < pCtx->m_pClass->pDesc->cInterfaces; n++) {
+    for (n = 0; n < pCtx->m_pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pClsIntf = pCtx->m_pClass->pDesc->ppInterfaces[n];
         pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
                         [pCtx->m_pClsIntf->sIndex];
@@ -113,7 +113,7 @@ int WithAllStruct(PLUBECTX pCtx, PSTATEDESC pDesc)
 
     pOrigStruct = pCtx->m_pStruct;
 
-    for (n = 0; n < pCtx->m_pModule->cStructs; n++) {
+    for (n = 0; n < pCtx->m_pModule->mStructCount; n++) {
         if (!(pCtx->m_pModule->ppStructDir[n]->pDesc->r.nReserved & StructAttrib_t_external) &&
             (pCtx->m_pModule->ppStructDir[n]->pszNameSpace == NULL ||
             strcmp("systypes", pCtx->m_pModule->ppStructDir[n]->pszNameSpace))) {
@@ -133,7 +133,7 @@ int WithAllEnum(PLUBECTX pCtx, PSTATEDESC pDesc)
 
     pOrigEnum = pCtx->m_pEnum;
 
-    for (n = 0; n < pCtx->m_pModule->cEnums; n++) {
+    for (n = 0; n < pCtx->m_pModule->mEnumCount; n++) {
         if (!(pCtx->m_pModule->ppEnumDir[n]->pDesc->r.nReserved & EnumAttrib_t_external) &&
             (pCtx->m_pModule->ppEnumDir[n]->pszNameSpace == NULL ||
             strcmp("systypes", pCtx->m_pModule->ppEnumDir[n]->pszNameSpace))) {
@@ -153,7 +153,7 @@ int WithAllConst(PLUBECTX pCtx, PSTATEDESC pDesc)
 
     pOrigConst = pCtx->m_pConst;
 
-    for (n = 0; n < pCtx->m_pModule->cConsts; n++) {
+    for (n = 0; n < pCtx->m_pModule->mConstCount; n++) {
         if (NULL == pCtx->m_pModule->ppConstDir[n]->pszNameSpace) {
             pCtx->m_pConst = pCtx->m_pModule->ppConstDir[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
@@ -171,7 +171,7 @@ int WithAllTypedef(PLUBECTX pCtx, PSTATEDESC pDesc)
 
     pOrigTypedef = pCtx->m_pTypedef;
 
-    for (n = 0; n < pCtx->m_pModule->cAliases; n++) {
+    for (n = 0; n < pCtx->m_pModule->mAliasCount; n++) {
         if (NULL == pCtx->m_pModule->ppAliasDir[n]->pszNameSpace) {
             pCtx->m_pTypedef = pCtx->m_pModule->ppAliasDir[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
@@ -188,7 +188,7 @@ int _WithAllIntfConst(
     int n, nRet = LUBE_OK;
     InterfaceConstDescriptor *pOrigInterfaceConst = pCtx->m_pInterfaceConst;
 
-    for (n = 0; n < pIntf->pDesc->cConsts; n++) {
+    for (n = 0; n < pIntf->pDesc->mConstCount; n++) {
         pCtx->m_pInterfaceConst = pIntf->pDesc->ppConsts[n];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
@@ -233,7 +233,7 @@ int WithAllIParentMtd(PLUBECTX pCtx, PSTATEDESC pDesc)
 }
 
 static int s_cCheckedIntfs = 0;
-static int s_checkedIntfs[c_nMaxInterfaceNumber];
+static int s_checkedIntfs[MAX_INTERFACE_NUMBER];
 
 BOOL IsCheckedInterface(int nIndex)
 {
@@ -273,7 +273,7 @@ int _WithAllClassMethod(
     InterfaceDirEntry *pOrigIntf = pCtx->m_pInterface;
     MethodDescriptor *pOrigMethod = pCtx->m_pMethod;
 
-    for (n = 0; n < pClass->pDesc->cInterfaces; n++) {
+    for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
                 [pClass->pDesc->ppInterfaces[n]->sIndex];
         if (!(pClass->pDesc->ppInterfaces[n]->wAttribs
@@ -325,7 +325,7 @@ int _WithAllCoalescenceMethod(
     InterfaceDirEntry *pOrigIntf = pCtx->m_pInterface;
     MethodDescriptor *pOrigMethod = pCtx->m_pMethod;
 
-    for (n = 0; n < pClass->pDesc->cInterfaces; n++) {
+    for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
                 [pClass->pDesc->ppInterfaces[n]->sIndex];
         if (pClass->pDesc->ppInterfaces[n]->wAttribs

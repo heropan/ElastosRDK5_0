@@ -9,7 +9,7 @@ int CondWithInterface(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     InterfaceDirEntry *pOrigInterface, *pOrigParent;
 
-    if (0 == pCtx->m_pModule->cInterfaces) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mInterfaceCount) return LUBE_OK;
 
     pOrigInterface = pCtx->m_pInterface;
     pOrigParent = pCtx->m_pIntfParent;
@@ -34,7 +34,7 @@ int CondWithClass(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     ClassDirEntry *pOrigClass, *pOrigParent;
 
-    if (0 == pCtx->m_pModule->cClasses) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mClassCount) return LUBE_OK;
 
     pOrigClass = pCtx->m_pClass;
     pOrigParent = pCtx->m_pClassParent;
@@ -61,7 +61,7 @@ int CondWithSuper(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     ClassDirEntry *pOrigClass, *pOrigParent;
 
-    if (0 == pCtx->m_pModule->cClasses) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mClassCount) return LUBE_OK;
 
     pOrigClass = pCtx->m_pClass;
     pOrigParent = pCtx->m_pClassParent;
@@ -89,7 +89,7 @@ int CondWithStruct(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     StructDirEntry *pOrigStruct;
 
-    if (0 == pCtx->m_pModule->cStructs) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mStructCount) return LUBE_OK;
 
     pOrigStruct = pCtx->m_pStruct;
 
@@ -110,7 +110,7 @@ int CondWithEnum(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     EnumDirEntry *pOrigEnum;
 
-    if (0 == pCtx->m_pModule->cEnums) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mEnumCount) return LUBE_OK;
 
     pOrigEnum = pCtx->m_pEnum;
 
@@ -131,7 +131,7 @@ int CondWithConst(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     ConstDirEntry *pOrigConst;
 
-    if (0 == pCtx->m_pModule->cConsts) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mConstCount) return LUBE_OK;
 
     pOrigConst = pCtx->m_pConst;
 
@@ -152,7 +152,7 @@ int CondWithTypedef(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     AliasDirEntry *pOrigTypedef;
 
-    if (0 == pCtx->m_pModule->cAliases) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mAliasCount) return LUBE_OK;
 
     pOrigTypedef = pCtx->m_pTypedef;
 
@@ -251,7 +251,7 @@ int CondWithLibrary(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     int nRet;
     char *pOrigLib;
 
-    if (0 == pCtx->m_pModule->cLibraries) return LUBE_OK;
+    if (0 == pCtx->m_pModule->mLibraryCount) return LUBE_OK;
 
     pOrigLib = pCtx->m_pLibrary;
 
@@ -375,7 +375,7 @@ int CondWithClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc, BOOL bFirst)
     }
     else {
         pCtx->m_pClsIntf = pCtx->m_pClass->pDesc->ppInterfaces
-                [pCtx->m_pClass->pDesc->cInterfaces - 1];
+                [pCtx->m_pClass->pDesc->mInterfaceCount - 1];
     }
     pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
                     [pCtx->m_pClsIntf->sIndex];

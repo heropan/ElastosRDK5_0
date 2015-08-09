@@ -316,7 +316,7 @@ ECode CObjInfoList::AcquireModuleInfo(
             goto Exit;
         }
 
-        if (((CLSModule *)lockRes)->dwAttribs & CARAttrib_compress) {
+        if (((CLSModule *)lockRes)->mAttribs & CARAttrib_compress) {
             if (RelocFlattedCLS((CLSModule *)lockRes, size, &clsMod) < 0) {
                 ec = E_OUT_OF_MEMORY;
                 goto Exit;

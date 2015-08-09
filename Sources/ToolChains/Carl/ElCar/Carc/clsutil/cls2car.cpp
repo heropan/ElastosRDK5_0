@@ -14,20 +14,20 @@ void CGenerateCARAttribs(FILE *pFile, const CLSModule *pModule)
 {
     BOOL bBracket;
 
-    if (0 == CAR_ATTR(pModule->dwAttribs)
-        && !pModule->pszUunm
-        && 0 == pModule->cMajorVersion
-        && 0 == pModule->cMinorVersion)
+    if (0 == CAR_ATTR(pModule->mAttribs)
+        && !pModule->mUunm
+        && 0 == pModule->mMajorVersion
+        && 0 == pModule->mMinorVersion)
         return;
 
     bBracket = FALSE;
 
-    if (0 != pModule->cMajorVersion || 0 != pModule->cMinorVersion) {
+    if (0 != pModule->mMajorVersion || 0 != pModule->mMinorVersion) {
         if (!bBracket) {
             fputs("[\n", pFile);
             bBracket = TRUE;
         }
-        fprintf(pFile, "    version(%d.%d)", pModule->cMajorVersion, pModule->cMinorVersion);
+        fprintf(pFile, "    version(%d.%d)", pModule->mMajorVersion, pModule->mMinorVersion);
     }
     if (bBracket) {
         fputs("\n]\n", pFile);
@@ -38,7 +38,7 @@ void CGenerateLibraries(FILE *pFile, const CLSModule *pModule)
 {
     int n;
 
-    for (n = 0; n < pModule->cLibraries; n++) {
+    for (n = 0; n < pModule->mLibraryCount; n++) {
         fprintf(pFile,
                 "    importlib(\"%s\");\n",
                 pModule->ppLibNames[n]);
@@ -51,7 +51,7 @@ void CGenerateInterfaceDecls(FILE *pFile, const CLSModule *pModule)
     InterfaceDirEntry *pEntry;
     BOOL bFirst = TRUE;
 
-    for (n = 0; n < pModule->cInterfaces; n++) {
+    for (n = 0; n < pModule->mInterfaceCount; n++) {
         pEntry = pModule->ppInterfaceDir[n];
 
         if (!pEntry->pszNameSpace \
@@ -72,7 +72,7 @@ void CGenerateAliases(FILE *pFile, const CLSModule *pModule)
     AliasDirEntry *pEntry;
     BOOL bFirst = TRUE;
 
-    for (n = 0; n < pModule->cAliases; n++) {
+    for (n = 0; n < pModule->mAliasCount; n++) {
         pEntry = pModule->ppAliasDir[n];
         if (!pEntry->pszNameSpace) {
             if (bFirst) {
@@ -93,7 +93,7 @@ void CGenerateEnums(FILE *pFile, const CLSModule *pModule)
     int n, m;
     EnumDescriptor *pDesc;
 
-    for (n = 0; n < pModule->cEnums; n++) {
+    for (n = 0; n < pModule->mEnumCount; n++) {
         if (!pModule->ppEnumDir[n]->pszNameSpace) {
             fprintf(pFile,
                         "\n"
@@ -124,7 +124,7 @@ void CGenerateConsts(FILE *pFile, const CLSModule *pModule)
 {
     int n;
 
-    for (n = 0; n < pModule->cConsts; n++) {
+    for (n = 0; n < pModule->mConstCount; n++) {
         if (!pModule->ppConstDir[n]->pszNameSpace) {
             fprintf(pFile,
                         "\n"
@@ -160,7 +160,7 @@ void CGenerateStructs(FILE *pFile, const CLSModule *pModule)
     StructDescriptor *pDesc;
     TypeDescriptor elemType;
 
-    for (n = 0; n < pModule->cStructs; n++) {
+    for (n = 0; n < pModule->mStructCount; n++) {
         if (!pModule->ppStructDir[n]->pszNameSpace) {
             fprintf(pFile,
                     "\n"
@@ -309,7 +309,7 @@ void CGenerateInterfaces(FILE *pFile, const CLSModule *pModule)
     int n, m;
     InterfaceDescriptor *pDesc;
 
-    for (n = 0; n < pModule->cInterfaces; n++) {
+    for (n = 0; n < pModule->mInterfaceCount; n++) {
         pDesc = pModule->ppInterfaceDir[n]->pDesc;
 
         if (!pModule->ppInterfaceDir[n]->pszNameSpace
@@ -327,7 +327,7 @@ void CGenerateInterfaces(FILE *pFile, const CLSModule *pModule)
             }
             fputs(" {\n", pFile);
 
-            for (m = 0; m < pDesc->cConsts; m++) {
+            for (m = 0; m < pDesc->mConstCount; m++) {
                 if (0 != m) fputs("\n", pFile);
                 CGenerateInterfaceConst(pFile, pModule, pDesc->ppConsts[m]);
             }
@@ -396,7 +396,7 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
     InterfaceDirEntry *pIEntry;
     ClassInterface *pClsIntf;
 
-    for (n = 0; n < pModule->cClasses; n++) {
+    for (n = 0; n < pModule->mClassCount; n++) {
         pClass = pModule->ppClassDir[n]->pDesc;
         if (!pModule->ppClassDir[n]->pszNameSpace
             && !(pClass->dwAttribs & ClassAttrib_t_sink)
@@ -440,7 +440,7 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
 
 // TODO: ctors
 
-            for (m = 0; m < pClass->cInterfaces; m++) {
+            for (m = 0; m < pClass->mInterfaceCount; m++) {
                 pClsIntf = pClass->ppInterfaces[m];
                 pIEntry = pModule->ppInterfaceDir[pClsIntf->sIndex];
 
@@ -469,15 +469,19 @@ int CLS2CAR_(FILE *pFile, const CLSModule *pModule)
 {
     CGenerateCARAttribs(pFile, pModule);
 
-    if (pModule->dwAttribs & CARAttrib_library)
+    if (pModule->mAttribs & CARAttrib_library) {
         fprintf(pFile, "library");
-    else
+    }
+    else {
         fprintf(pFile, "module");
+    }
 
-    if (pModule->pszUunm)
-        fprintf(pFile, " %s\n{\n", pModule->pszUunm);
-    else
+    if (pModule->mUunm) {
+        fprintf(pFile, " %s\n{\n", pModule->mUunm);
+    }
+    else {
         fprintf(pFile, "\n{\n");
+    }
 
     CGenerateLibraries(pFile, pModule);
     CGenerateInterfaceDecls(pFile, pModule);

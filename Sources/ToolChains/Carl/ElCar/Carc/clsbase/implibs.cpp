@@ -8,7 +8,7 @@
 #include <clsdef.h>
 
 static int s_cModules = 0;
-static CLSModule *s_modules[c_nMaxLibNumber + 2];
+static CLSModule *s_modules[MAX_LIBRARY_NUMBER + 2];
 
 int AddCLSLibrary(CLSModule *pModule)
 {
@@ -21,7 +21,7 @@ void DestroyAllLibraries()
     int n;
 
     for (n = 0; n < s_cModules; n++) {
-        if (s_modules[n]->dwAttribs & CARAttrib_inheap)
+        if (s_modules[n]->mAttribs & CARAttrib_inheap)
             DisposeFlattedCLS(s_modules[n]);
         else
             DestroyCLS(s_modules[n]);
@@ -186,23 +186,23 @@ int MergeCLS(const CLSModule *pSrc, CLSModule *pDest)
 {
     int n;
 
-    for (n = 0; n < pSrc->cEnums; n++) {
+    for (n = 0; n < pSrc->mEnumCount; n++) {
         if (EnumCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    for (n = 0; n < pSrc->cStructs; n++) {
+    for (n = 0; n < pSrc->mStructCount; n++) {
         if (StructCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    for (n = 0; n < pSrc->cAliases; n++) {
+    for (n = 0; n < pSrc->mAliasCount; n++) {
         if (AliasCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    for (n = 0; n < pSrc->cInterfaces; n++) {
+    for (n = 0; n < pSrc->mInterfaceCount; n++) {
         if (InterfaceCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    for (n = 0; n < pSrc->cClasses; n++) {
+    for (n = 0; n < pSrc->mClassCount; n++) {
         if (ClassCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
@@ -213,82 +213,82 @@ int CopyCLS(const CLSModule *pSrc, CLSModule *pDest)
 {
     int n;
 
-    memcpy(pDest->szMagic, pSrc->szMagic, c_nMagicSize);
-    pDest->cMajorVersion = pSrc->cMajorVersion;
-    pDest->cMinorVersion = pSrc->cMinorVersion;
-    pDest->nCLSModuleVersion = pSrc->nCLSModuleVersion;
-    pDest->nSize = pSrc->nSize;
+    memcpy(pDest->mMagic, pSrc->mMagic, MAGIC_STRING_LENGTH);
+    pDest->mMajorVersion = pSrc->mMajorVersion;
+    pDest->mMinorVersion = pSrc->mMinorVersion;
+    pDest->mCLSModuleVersion = pSrc->mCLSModuleVersion;
+    pDest->mSize = pSrc->mSize;
 
-    if (pSrc->pszUunm) {
-        pDest->pszUunm = new char[strlen(pSrc->pszUunm)+1];
-        strcpy(pDest->pszUunm, pSrc->pszUunm);
+    if (pSrc->mUunm) {
+        pDest->mUunm = new char[strlen(pSrc->mUunm)+1];
+        strcpy(pDest->mUunm, pSrc->mUunm);
     }
     else {
-        pDest->pszUunm = NULL;
+        pDest->mUunm = NULL;
     }
 
-    memcpy(&pDest->uuid, &pSrc->uuid, sizeof(pSrc->uuid));
-    pDest->dwAttribs = pSrc->dwAttribs;
-    if (pSrc->pszName) {
-        pDest->pszName = new char[strlen(pSrc->pszName)+1];
-        strcpy(pDest->pszName, pSrc->pszName);
+    memcpy(&pDest->mUuid, &pSrc->mUuid, sizeof(pSrc->mUuid));
+    pDest->mAttribs = pSrc->mAttribs;
+    if (pSrc->mName) {
+        pDest->mName = new char[strlen(pSrc->mName)+1];
+        strcpy(pDest->mName, pSrc->mName);
     }
     else {
-        pDest->pszName = NULL;
+        pDest->mName = NULL;
     }
 
-    if (pSrc->pszServiceName) {
-        pDest->pszServiceName = new char[strlen(pSrc->pszServiceName)+1];
-        strcpy(pDest->pszServiceName, pSrc->pszServiceName);
+    if (pSrc->mServiceName) {
+        pDest->mServiceName = new char[strlen(pSrc->mServiceName)+1];
+        strcpy(pDest->mServiceName, pSrc->mServiceName);
     }
     else {
-        pDest->pszServiceName = NULL;
+        pDest->mServiceName = NULL;
     }
 
-    pDest->cDefinedInterfaces = 0;
-    for (n = 0; n < pSrc->cDefinedInterfaces; n++) {
-        pDest->pDefinedInterfaceIndex[pDest->cDefinedInterfaces++] = pSrc->pDefinedInterfaceIndex[n];
+    pDest->mDefinedInterfaceCount = 0;
+    for (n = 0; n < pSrc->mDefinedInterfaceCount; n++) {
+        pDest->pDefinedInterfaceIndex[pDest->mDefinedInterfaceCount++] = pSrc->pDefinedInterfaceIndex[n];
     }
 
-    pDest->cLibraries = 0;
-    for (n = 0; n < pSrc->cLibraries; n++) {
+    pDest->mLibraryCount = 0;
+    for (n = 0; n < pSrc->mLibraryCount; n++) {
         pDest->ppLibNames[n] = new char[strlen(pSrc->ppLibNames[n])+1];
         strcpy(pDest->ppLibNames[n], pSrc->ppLibNames[n]);
-        pDest->cLibraries++;
+        pDest->mLibraryCount++;
     }
 
-    pDest->cArrays = 0;
-    for (n = 0; n < pSrc->cArrays; n++) {
+    pDest->mArrayCount = 0;
+    for (n = 0; n < pSrc->mArrayCount; n++) {
         if (ArrayXCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cConsts = 0;
-    for (n = 0; n < pSrc->cConsts; n++) {
+    pDest->mConstCount = 0;
+    for (n = 0; n < pSrc->mConstCount; n++) {
         if (ConstCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cEnums = 0;
-    for (n = 0; n < pSrc->cEnums; n++) {
+    pDest->mEnumCount = 0;
+    for (n = 0; n < pSrc->mEnumCount; n++) {
         if (EnumCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cStructs = 0;
-    for (n = 0; n < pSrc->cStructs; n++) {
+    pDest->mStructCount = 0;
+    for (n = 0; n < pSrc->mStructCount; n++) {
         if (StructXCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cAliases = 0;
-    for (n = 0; n < pSrc->cAliases; n++) {
+    pDest->mAliasCount = 0;
+    for (n = 0; n < pSrc->mAliasCount; n++) {
         if (AliasXCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cInterfaces = 0;
-    for (n = 0; n < pSrc->cInterfaces; n++) {
+    pDest->mInterfaceCount = 0;
+    for (n = 0; n < pSrc->mInterfaceCount; n++) {
         if (InterfaceXCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 
-    pDest->cClasses = 0;
-    for (n = 0; n < pSrc->cClasses; n++) {
+    pDest->mClassCount = 0;
+    for (n = 0; n < pSrc->mClassCount; n++) {
         if (ClassXCopy(pSrc, n, pDest, FALSE) < 0) return -1;
     }
 

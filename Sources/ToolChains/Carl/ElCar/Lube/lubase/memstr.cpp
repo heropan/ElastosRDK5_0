@@ -11,7 +11,7 @@ int LubeContext::ModuleMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            if (m_pModule->dwAttribs & CARAttrib_library) {
+            if (m_pModule->mAttribs & CARAttrib_library) {
                 pszOutput = "library";
             }
             else {
@@ -19,33 +19,32 @@ int LubeContext::ModuleMember(MemberType member, char *pszBuffer)
             }
             break;
         case Member_Name:
-            pszOutput = m_pModule->pszName;
+            pszOutput = m_pModule->mName;
             break;
         case Member_Attrib:
-            sprintf(pszBuffer, "%08x", m_pModule->dwAttribs);
+            sprintf(pszBuffer, "%08x", m_pModule->mAttribs);
             return LUBE_OK;
         case Member_Version:
-            sprintf(pszBuffer, "%d.%d", m_pModule->cMajorVersion, m_pModule->cMinorVersion);
+            sprintf(pszBuffer, "%d.%d", m_pModule->mMajorVersion, m_pModule->mMinorVersion);
             return LUBE_OK;
         case Member_Major_Version:
-            sprintf(pszBuffer, "%d", m_pModule->cMajorVersion);
+            sprintf(pszBuffer, "%d", m_pModule->mMajorVersion);
             return LUBE_OK;
         case Member_Minor_Version:
-            sprintf(pszBuffer, "%d", m_pModule->cMinorVersion);
+            sprintf(pszBuffer, "%d", m_pModule->mMinorVersion);
             return LUBE_OK;
         case Member_CarCode:
-            sprintf(pszBuffer, "%08x", m_pModule->nChecksum);
+            sprintf(pszBuffer, "%08x", m_pModule->mChecksum);
             return LUBE_OK;
         case Member_BuildDate:
-            sprintf(pszBuffer, "%08x", m_pModule->nBarcode);
+            sprintf(pszBuffer, "%08x", m_pModule->mBarcode);
             return LUBE_OK;
         case Member_Uuid:
-            pszOutput = Uuid2CString(&m_pModule->uuid, TRUE);
+            pszOutput = Uuid2CString(&m_pModule->mUuid, TRUE);
             break;
         case Member_Uunm:
-            if (m_pModule->pszUunm) {
-                sprintf(pszBuffer, "\"%s\"",
-                    m_pModule->pszUunm);
+            if (m_pModule->mUunm) {
+                sprintf(pszBuffer, "\"%s\"", m_pModule->mUunm);
                 return LUBE_OK;
             }
             pszOutput = "(null uunm)";
@@ -156,12 +155,12 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
             pszOutput = Uuid2CString(&m_pClass->pDesc->clsid, TRUE);
             break;
         case Member_Clsid:
-            if (m_pModule->pszUunm) {
+            if (m_pModule->mUunm) {
                 sprintf(pszBuffer,
                     "    {%s, \\\n"
                     "    \"%s\"}",
                     Uuid2CString(&m_pClass->pDesc->clsid, TRUE),
-                    m_pModule->pszUunm);
+                    m_pModule->mUunm);
                 return LUBE_OK;
             }
             pszOutput = "(null uunm)";

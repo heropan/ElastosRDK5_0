@@ -15,7 +15,7 @@ int SelectClassDirEntry(const char *pszName, const char *pszNamespaces, const CL
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cClasses; n++) {
+    for (n = 0; n < pModule->mClassCount; n++) {
         if (!strcmp(pszName, pModule->ppClassDir[n]->pszName)) {
             if (pModule->ppClassDir[n]->pszNameSpace == NULL) _ReturnOK (n);
             //temp
@@ -43,7 +43,7 @@ int SelectInterfaceDirEntry(const char *pszName, const char *pszNamespaces, cons
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cInterfaces; n++) {
+    for (n = 0; n < pModule->mInterfaceCount; n++) {
         if (!strcmp(pszName, pModule->ppInterfaceDir[n]->pszName)) {
             if (pModule->ppInterfaceDir[n]->pszNameSpace == NULL) _ReturnOK (n);
             //temp
@@ -71,7 +71,7 @@ int SelectArrayDirEntry(unsigned short nElems, const TypeDescriptor &desp,
     assert(nElems > 0);
     assert(pModule != NULL);
 
-    for (n = 0; n < pModule->cArrays; n++) {
+    for (n = 0; n < pModule->mArrayCount; n++) {
         if (nElems == pModule->ppArrayDir[n]->nElements
             && 0 == memcmp(&desp, &(pModule->ppArrayDir[n]->type), sizeof(TypeDescriptor)))
             _ReturnOK (n);
@@ -87,7 +87,7 @@ int SelectStructDirEntry(const char *pszName, const CLSModule *pModule)
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cStructs; n++) {
+    for (n = 0; n < pModule->mStructCount; n++) {
         if (!strcmp(pszName, pModule->ppStructDir[n]->pszName))
             _ReturnOK (n);
     }
@@ -102,7 +102,7 @@ int SelectEnumDirEntry(const char *pszName, const char *pszNamespaces, const CLS
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cEnums; n++) {
+    for (n = 0; n < pModule->mEnumCount; n++) {
         if (!strcmp(pszName, pModule->ppEnumDir[n]->pszName)) {
             if (pModule->ppEnumDir[n]->pszNameSpace == NULL) _ReturnOK (n);
             //temp
@@ -130,7 +130,7 @@ int SelectConstDirEntry(const char *pszName, const CLSModule *pModule)
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cConsts; n++) {
+    for (n = 0; n < pModule->mConstCount; n++) {
         if (!strcmp(pszName, pModule->ppConstDir[n]->pszName)) {
             _ReturnOK (n);
         }
@@ -146,7 +146,7 @@ int SelectAliasDirEntry(const char *pszName, const CLSModule *pModule)
     assert(pModule != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pModule->cAliases; n++) {
+    for (n = 0; n < pModule->mAliasCount; n++) {
         if (!strcmp(pszName, pModule->ppAliasDir[n]->pszName))
             _ReturnOK (n);
     }
@@ -160,7 +160,7 @@ int SelectClassInterface(USHORT sIndex, const ClassDescriptor *pDesc)
 
     assert(pDesc != NULL);
 
-    for (n = 0; n < pDesc->cInterfaces; n++) {
+    for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (pDesc->ppInterfaces[n]->sIndex == sIndex) {
             _ReturnOK (n);
         }
@@ -177,7 +177,7 @@ int SelectInterfaceConstDirEntry(
     assert(pDesc != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pDesc->cConsts; n++) {
+    for (n = 0; n < pDesc->mConstCount; n++) {
         if (!strcmp(pszName, pDesc->ppConsts[n]->pszName)) {
             _ReturnOK (n);
         }
@@ -319,7 +319,7 @@ EnumElement *GlobalSelectEnumElement(
 {
     int n, m;
 
-    for (n = 0; n < pModule->cEnums; n++) {
+    for (n = 0; n < pModule->mEnumCount; n++) {
         m = SelectEnumElement(pszName, pModule->ppEnumDir[n]->pDesc);
         if (m >= 0) {
             ExtraMessage(pModule->ppEnumDir[n]->pszNameSpace,
@@ -338,7 +338,7 @@ int SelectInterfaceMemberSymbol(
     assert(pszName != NULL);
     assert(pDesc != NULL);
 
-    for (n = 0; n < pDesc->cConsts; ++n) {
+    for (n = 0; n < pDesc->mConstCount; ++n) {
         if (!strcmp(pszName, pDesc->ppConsts[n]->pszName)) _Return (n);
     }
 

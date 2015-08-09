@@ -16,11 +16,11 @@ void MapClassDescriptor(
     if (0 != p->cClasses)
         p->pClassIndexs = (USHORT *)((int)p->pClassIndexs + sBase);
 
-    if (0 != p->cInterfaces) {
+    if (0 != p->mInterfaceCount) {
         p->ppInterfaces = \
             (ClassInterface **)((int)p->ppInterfaces + sBase);
 
-        for (int n = 0; n < p->cInterfaces; n++) {
+        for (int n = 0; n < p->mInterfaceCount; n++) {
             p->ppInterfaces[n] = \
                 (ClassInterface *)((int)p->ppInterfaces[n] + sBase);
         }
@@ -70,10 +70,10 @@ void MapMethodDescriptor(
 void MapInterfaceDescriptor(
     /* [in] */ InterfaceDescriptor* p)
 {
-    if (0 != p->cConsts) {
+    if (0 != p->mConstCount) {
         p->ppConsts = (InterfaceConstDescriptor **)((int)p->ppConsts + sBase);
 
-        for (int n = 0; n < p->cConsts; n++) {
+        for (int n = 0; n < p->mConstCount; n++) {
             p->ppConsts[n] = \
                 (InterfaceConstDescriptor *)((int)p->ppConsts[n] + sBase);
             MapInterfaceConstDescriptor(p->ppConsts[n]);
@@ -191,18 +191,18 @@ void DoRelocCLS(
 {
     sBase = (int)p;
 
-    p->pszName += sBase;
-    if (p->pszUunm) p->pszUunm += sBase;
-    if (p->pszServiceName) p->pszServiceName += sBase;
-    if (p->cDefinedInterfaces) {
+    p->mName += sBase;
+    if (p->mUunm) p->mUunm += sBase;
+    if (p->mServiceName) p->mServiceName += sBase;
+    if (p->mDefinedInterfaceCount > 0) {
         p->pDefinedInterfaceIndex =
             (int *)((int)(p->pDefinedInterfaceIndex) + sBase);
     }
 
-    if (0 != p->cClasses) {
+    if (0 != p->mClassCount) {
         p->ppClassDir = (ClassDirEntry **)((int)p->ppClassDir + sBase);
 
-        for (int n = 0; n < p->cClasses; n++) {
+        for (int n = 0; n < p->mClassCount; n++) {
             p->ppClassDir[n] = \
                 (ClassDirEntry *)((int)p->ppClassDir[n] + sBase);
             MapClassDirEntry(p->ppClassDir[n]);
@@ -212,11 +212,11 @@ void DoRelocCLS(
         p->ppClassDir = NULL;
     }
 
-    if (0 != p->cInterfaces) {
+    if (0 != p->mInterfaceCount) {
         p->ppInterfaceDir = \
             (InterfaceDirEntry **)((int)p->ppInterfaceDir + sBase);
 
-        for (int n = 0; n < p->cInterfaces; n++) {
+        for (int n = 0; n < p->mInterfaceCount; n++) {
             p->ppInterfaceDir[n] = \
                 (InterfaceDirEntry *)((int)p->ppInterfaceDir[n] + sBase);
             MapInterfaceDirEntry(p->ppInterfaceDir[n]);
@@ -226,10 +226,10 @@ void DoRelocCLS(
         p->ppInterfaceDir = NULL;
     }
 
-    if (0 != p->cArrays) {
+    if (0 != p->mArrayCount) {
         p->ppArrayDir = (ArrayDirEntry **)((int)p->ppArrayDir + sBase);
 
-        for (int n = 0; n < p->cArrays; n++) {
+        for (int n = 0; n < p->mArrayCount; n++) {
             p->ppArrayDir[n] = \
                 (ArrayDirEntry *)((int)p->ppArrayDir[n] + sBase);
             MapArrayDirEntry(p->ppArrayDir[n]);
@@ -239,10 +239,10 @@ void DoRelocCLS(
         p->ppArrayDir = NULL;
     }
 
-    if (0 != p->cStructs) {
+    if (0 != p->mStructCount) {
         p->ppStructDir = (StructDirEntry **)((int)p->ppStructDir + sBase);
 
-        for (int n = 0; n < p->cStructs; n++) {
+        for (int n = 0; n < p->mStructCount; n++) {
             p->ppStructDir[n] = \
                 (StructDirEntry *)((int)p->ppStructDir[n] + sBase);
             MapStructDirEntry(p->ppStructDir[n]);
@@ -252,10 +252,10 @@ void DoRelocCLS(
         p->ppStructDir = NULL;
     }
 
-    if (0 != p->cEnums) {
+    if (0 != p->mEnumCount) {
         p->ppEnumDir = (EnumDirEntry **)((int)p->ppEnumDir + sBase);
 
-        for (int n = 0; n < p->cEnums; n++) {
+        for (int n = 0; n < p->mEnumCount; n++) {
             p->ppEnumDir[n] = \
                 (EnumDirEntry *)((int)p->ppEnumDir[n] + sBase);
             MapEnumDirEntry(p->ppEnumDir[n]);
@@ -265,10 +265,10 @@ void DoRelocCLS(
         p->ppEnumDir = NULL;
     }
 
-    if (0 != p->cConsts) {
+    if (0 != p->mConstCount) {
         p->ppConstDir = (ConstDirEntry **)((int)p->ppConstDir + sBase);
 
-        for (int n = 0; n < p->cConsts; n++) {
+        for (int n = 0; n < p->mConstCount; n++) {
             p->ppConstDir[n] = \
                 (ConstDirEntry *)((int)p->ppConstDir[n] + sBase);
             MapConstDirEntry(p->ppConstDir[n]);
@@ -278,10 +278,10 @@ void DoRelocCLS(
         p->ppConstDir = NULL;
     }
 
-    if (0 != p->cAliases) {
+    if (0 != p->mAliasCount) {
         p->ppAliasDir = (AliasDirEntry **)((int)p->ppAliasDir + sBase);
 
-        for (int n = 0; n < p->cAliases; n++) {
+        for (int n = 0; n < p->mAliasCount; n++) {
             p->ppAliasDir[n] = \
                 (AliasDirEntry *)((int)p->ppAliasDir[n] + sBase);
             MapAliasDirEntry(p->ppAliasDir[n]);
@@ -291,9 +291,9 @@ void DoRelocCLS(
         p->ppAliasDir = NULL;
     }
 
-    if (0 != p->cLibraries) {
+    if (0 != p->mLibraryCount) {
         p->ppLibNames = (char **)((int)p->ppLibNames + sBase);
-        for (int n = 0; n < p->cLibraries; n++) {
+        for (int n = 0; n < p->mLibraryCount; n++) {
             p->ppLibNames[n] += sBase;
         }
     }
@@ -309,12 +309,12 @@ int RelocFlattedCLS(
 {
     CLSModule* srcModule = (CLSModule *)src;
 
-    CLSModule* destModule = (CLSModule *)new char[srcModule->nSize];
+    CLSModule* destModule = (CLSModule *)new char[srcModule->mSize];
     if (!destModule) _ReturnError(CLSError_OutOfMemory);
 
-    if (srcModule->dwAttribs & CARAttrib_compress) {
+    if (srcModule->mAttribs & CARAttrib_compress) {
         int n = UncompressCLS(src, size, destModule);
-        if (n != srcModule->nSize) {
+        if (n != srcModule->mSize) {
             delete [] (char *)destModule;
             _ReturnError(CLSError_FormatSize);
         }
@@ -324,7 +324,7 @@ int RelocFlattedCLS(
     }
 
     DoRelocCLS(destModule);
-    destModule->dwAttribs |= CARAttrib_inheap;
+    destModule->mAttribs |= CARAttrib_inheap;
 
     *outDest = destModule;
     _ReturnOK(CLS_NoError);
@@ -333,7 +333,7 @@ int RelocFlattedCLS(
 int DisposeFlattedCLS(
     /* [in] */ void* dest)
 {
-    if (((CLSModule *)dest)->dwAttribs & CARAttrib_inheap) {
+    if (((CLSModule *)dest)->mAttribs & CARAttrib_inheap) {
         delete [] (char *)dest;
     }
     _ReturnOK(CLS_NoError);
