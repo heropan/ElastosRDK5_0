@@ -187,7 +187,7 @@ ECode CMethodInfo::SetParamElem(
     parmElement->mPointer = typeDesc->nPointer;
 
     ECode ec = NOERROR;
-    if (typeDesc->type == Type_alias) {
+    if (typeDesc->mType == Type_alias) {
         ec = mClsModule->AliasToOriginal(typeDesc, &typeDesc);
         if (FAILED(ec)) {
             return ec;
@@ -195,7 +195,7 @@ ECode CMethodInfo::SetParamElem(
         parmElement->mPointer += typeDesc->nPointer;
     }
 
-    CarDataType type = GetCarDataType(typeDesc->type);
+    CarDataType type = GetCarDataType(typeDesc->mType);
     //Set type and IO attrib
     if (paramDescriptor->dwAttribs & ParamAttrib_in) {
         if (type == CarDataType_Interface) {
@@ -232,11 +232,11 @@ ECode CMethodInfo::SetParamElem(
     parmElement->mType = type;
 
     //Set size
-    if (typeDesc->type == Type_struct
-        || typeDesc->type == Type_EMuid
-        || typeDesc->type == Type_EGuid
-        || typeDesc->type == Type_ArrayOf
-        || typeDesc->type == Type_Array) {
+    if (typeDesc->mType == Type_struct
+        || typeDesc->mType == Type_EMuid
+        || typeDesc->mType == Type_EGuid
+        || typeDesc->mType == Type_ArrayOf
+        || typeDesc->mType == Type_Array) {
         parmElement->mSize = sizeof(PVoid);
     }
     else {
@@ -244,7 +244,7 @@ ECode CMethodInfo::SetParamElem(
     }
 
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
-    if ((typeDesc->type == Type_Double || typeDesc->type == Type_Int64)
+    if ((typeDesc->mType == Type_Double || typeDesc->mType == Type_Int64)
         && parmElement->mAttrib != ParamIOAttribute_CallerAllocOut) {
         mParamBufSize = ROUND8(mParamBufSize);
     }
@@ -417,7 +417,7 @@ ECode CMethodInfo::Invoke(
     }
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
-            mClsMod->ppInterfaceDir, INTERFACE_INDEX(mIndex));
+            mClsMod->mInterfaceDirs, INTERFACE_INDEX(mIndex));
     EIID iid = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->iid;
     PInterface object = target->Probe(iid);
     if (!object) {

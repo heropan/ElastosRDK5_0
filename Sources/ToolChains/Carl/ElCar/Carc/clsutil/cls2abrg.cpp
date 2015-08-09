@@ -102,8 +102,8 @@ void AbrgMethod(FILE *pFile, int n, const AbridgedMethod *pMethod)
 const char *AbrgInterfaceName(const CLSModule *pModule, const GUID *pIID)
 {
     for (int n = 0; n < pModule->mInterfaceCount; n++) {
-        if (IsEqualUUID(pIID, &pModule->ppInterfaceDir[n]->pDesc->iid)) {
-            return pModule->ppInterfaceDir[n]->pszName;
+        if (IsEqualUUID(pIID, &pModule->mInterfaceDirs[n]->pDesc->iid)) {
+            return pModule->mInterfaceDirs[n]->pszName;
         }
     }
     assert(TRUE == FALSE);
@@ -129,8 +129,8 @@ void AbrgInterface(FILE *pFile,
 const char *AbrgClassName(const CLSModule *pModule, const GUID *pIID)
 {
     for (int n = 0; n < pModule->mClassCount; n++) {
-        if (IsEqualUUID(pIID, &pModule->ppClassDir[n]->pDesc->clsid)) {
-            return pModule->ppClassDir[n]->pszName;
+        if (IsEqualUUID(pIID, &pModule->mClassDirs[n]->pDesc->clsid)) {
+            return pModule->mClassDirs[n]->pszName;
         }
     }
     assert(TRUE == FALSE);

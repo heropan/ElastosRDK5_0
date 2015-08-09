@@ -232,7 +232,7 @@ ECode CClassInfo::GetBaseClassInfo(
 
     *baseClassInfo = NULL;
     return g_objInfoList.AcquireClassInfo(mClsModule,
-            getClassDirAddr(mBase, mClsMod->ppClassDir, mDesc->sParentIndex),
+            getClassDirAddr(mBase, mClsMod->mClassDirs, mDesc->sParentIndex),
             (IInterface **)baseClassInfo);
 }
 
@@ -887,7 +887,7 @@ ECode CClassInfo::CreateObjInRgm(
 {
     Int32 index = getCIFAddr(mBase, mDesc->ppInterfaces, 0)->sIndex;
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
-            mClsMod->ppInterfaceDir, index);
+            mClsMod->mInterfaceDirs, index);
     EIID iid = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->iid;
 
     return _CObject_CreateInstance(mClsId, rgm, iid, object);
@@ -955,7 +955,7 @@ ECode CClassInfo::CreateIFList()
         while (index != 0) {
             indexList[iNo++] = index;
             ifDir = getInterfaceDirAddr(mBase,
-                    mClsMod->ppInterfaceDir, index);
+                    mClsMod->mInterfaceDirs, index);
             index = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->sParentIndex;
         }
 
@@ -994,7 +994,7 @@ ECode CClassInfo::CreateIFList()
 
             allIFList[listCount].mIndex = index;
             allIFList[listCount].mBeginNo = beginNo;
-            ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+            ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
             allIFList[listCount].mName = adjustNameAddr(mBase, ifDir->pszName);
             allIFList[listCount].mNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
             allIFList[listCount].mDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);

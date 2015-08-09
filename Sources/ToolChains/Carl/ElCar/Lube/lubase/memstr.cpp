@@ -532,19 +532,19 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            if (Type_struct == m_pParam->type.type
-                    || Type_EMuid == m_pParam->type.type
-                    || Type_EGuid == m_pParam->type.type) {
+            if (Type_struct == m_pParam->type.mType
+                    || Type_EMuid == m_pParam->type.mType
+                    || Type_EGuid == m_pParam->type.mType) {
                 pszOutput = StructType2CString(m_pModule, &m_pParam->type);
             }
-            else if (Type_alias == m_pParam->type.type) {
+            else if (Type_alias == m_pParam->type.mType) {
                 GetOriginalType(m_pModule, &m_pParam->type, &type);
-                if ((Type_EMuid == type.type)
-                        || (Type_EGuid == type.type)
-                        || (Type_struct == type.type)) {
+                if ((Type_EMuid == type.mType)
+                        || (Type_EGuid == type.mType)
+                        || (Type_struct == type.mType)) {
                     pszOutput = StructType2CString(m_pModule, &m_pParam->type);
                 }
-                else if (Type_ArrayOf == type.type) {
+                else if (Type_ArrayOf == type.mType) {
                     if (m_pParam->dwAttribs & ParamAttrib_in) {
                         if (0 == type.nPointer) {
                             strcpy(pszBuffer, "const ");
@@ -568,7 +568,7 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
                     pszOutput = Type2CString(m_pModule, &m_pParam->type);
                 }
             }
-            else if (Type_ArrayOf == m_pParam->type.type) {
+            else if (Type_ArrayOf == m_pParam->type.mType) {
                 if ((m_pParam->dwAttribs & ParamAttrib_in)
                     && (0 == m_pParam->type.nPointer)) pszOutput = "const ArrayOf";
                 else pszOutput = "ArrayOf";
@@ -616,7 +616,7 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
     switch (member) {
         case Member_Type:
             pType = &m_pStructMember->type;
-            if (Type_Array == pType->type) {
+            if (Type_Array == pType->mType) {
                 //Get base type of Array
                 memset(&baseType, 0, sizeof(TypeDescriptor));
                 GetArrayBaseType(m_pModule, pType, &baseType);
@@ -631,7 +631,7 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
             break;
         case Member_Dimention:
             //Handle the case of [m][n]...
-            if (Type_Array == m_pStructMember->type.type) {
+            if (Type_Array == m_pStructMember->type.mType) {
                 pszOutput = Dims2CString(m_pModule,  &m_pStructMember->type);
                 break;
             }
@@ -760,7 +760,7 @@ int LubeContext::IntfParentParentMember(MemberType member, char *pszBuffer)
 
     pOrigInterface = m_pInterface;
     if (0 != m_pInterface->pDesc->sParentIndex) {
-        m_pInterface = this->m_pModule->ppInterfaceDir[m_pIntfParent->pDesc->sParentIndex];
+        m_pInterface = this->m_pModule->mInterfaceDirs[m_pIntfParent->pDesc->sParentIndex];
     }
     nRet = InterfaceMember(member, pszBuffer);
 

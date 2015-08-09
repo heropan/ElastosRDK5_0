@@ -436,7 +436,7 @@ ECode CModuleInfo::GetAllImportModuleInfos(
     Int32 count = capacity < totalCount ? capacity : totalCount;
     ECode ec = NOERROR;
     for (Int32 i = 0; i < count; i++) {
-        String libNames(getLibNameAddr(mClsModule->mBase, mClsMod->ppLibNames, i));
+        String libNames(getLibNameAddr(mClsModule->mBase, mClsMod->mLibraryNames, i));
         AutoPtr<IModuleInfo> object;
         ec = g_objInfoList.AcquireModuleInfo(libNames, (IModuleInfo**)&object);
         if (FAILED(ec)) return ec;

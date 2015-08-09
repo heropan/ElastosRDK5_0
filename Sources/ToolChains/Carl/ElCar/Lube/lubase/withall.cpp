@@ -10,7 +10,7 @@ int WithAllLibrary(PLUBECTX pCtx, PSTATEDESC pDesc)
     char *pOrigLib = pCtx->m_pLibrary;
 
     for (n = 0; n < pCtx->m_pModule->mLibraryCount; n++) {
-        pCtx->m_pLibrary = pCtx->m_pModule->ppLibNames[n];
+        pCtx->m_pLibrary = pCtx->m_pModule->mLibraryNames[n];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
     }
@@ -28,13 +28,13 @@ int WithAllClass(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigParent = pCtx->m_pClassParent;
 
     for (n = 0; n < pCtx->m_pModule->mClassCount; n++) {
-        if (!(pCtx->m_pModule->ppClassDir[n]->pDesc->dwAttribs & ClassAttrib_t_external) &&
-            (pCtx->m_pModule->ppClassDir[n]->pszNameSpace == NULL ||
-            strcmp("systypes", pCtx->m_pModule->ppClassDir[n]->pszNameSpace))) {
-            pCtx->m_pClass = pCtx->m_pModule->ppClassDir[n];
+        if (!(pCtx->m_pModule->mClassDirs[n]->pDesc->dwAttribs & ClassAttrib_t_external) &&
+            (pCtx->m_pModule->mClassDirs[n]->pszNameSpace == NULL ||
+            strcmp("systypes", pCtx->m_pModule->mClassDirs[n]->pszNameSpace))) {
+            pCtx->m_pClass = pCtx->m_pModule->mClassDirs[n];
             if (pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_hasparent) {
                 pCtx->m_pClassParent = pCtx->m_pModule-> \
-                        ppClassDir[pCtx->m_pClass->pDesc->sParentIndex];
+                        mClassDirs[pCtx->m_pClass->pDesc->sParentIndex];
             }
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
             if (nRet < 0) break;
@@ -55,10 +55,10 @@ int WithAllInterface(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigParent = pCtx->m_pIntfParent;
 
     for (n = 0; n < pCtx->m_pModule->mDefinedInterfaceCount; n++) {
-        pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir\
-                    [pCtx->m_pModule->pDefinedInterfaceIndex[n]];
+        pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs\
+                    [pCtx->m_pModule->mDefinedInterfaceIndexes[n]];
         pCtx->m_pIntfParent = pCtx->m_pModule->\
-                    ppInterfaceDir[pCtx->m_pInterface->pDesc->sParentIndex];
+                    mInterfaceDirs[pCtx->m_pInterface->pDesc->sParentIndex];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
     }
@@ -81,10 +81,10 @@ int WithAllClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc)
 
     for (n = 0; n < pCtx->m_pClass->pDesc->mInterfaceCount; n++) {
         pCtx->m_pClsIntf = pCtx->m_pClass->pDesc->ppInterfaces[n];
-        pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
+        pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
                         [pCtx->m_pClsIntf->sIndex];
         pCtx->m_pIntfParent = pCtx->m_pModule-> \
-                ppInterfaceDir[pCtx->m_pInterface->pDesc->sParentIndex];
+                mInterfaceDirs[pCtx->m_pInterface->pDesc->sParentIndex];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
     }
@@ -94,9 +94,9 @@ int WithAllClsIntf(PLUBECTX pCtx, PSTATEDESC pDesc)
         memset(&clsCtorInterface, 0, sizeof(ClassInterface));
         clsCtorInterface.sIndex= pCtx->m_pClass->pDesc->sCtorIndex;
         pCtx->m_pClsIntf = &clsCtorInterface;
-        pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir[pCtx->m_pClass->pDesc->sCtorIndex];
+        pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs[pCtx->m_pClass->pDesc->sCtorIndex];
         pCtx->m_pIntfParent = pCtx->m_pModule-> \
-                ppInterfaceDir[pCtx->m_pInterface->pDesc->sParentIndex];
+                mInterfaceDirs[pCtx->m_pInterface->pDesc->sParentIndex];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
     }
 
@@ -114,10 +114,10 @@ int WithAllStruct(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigStruct = pCtx->m_pStruct;
 
     for (n = 0; n < pCtx->m_pModule->mStructCount; n++) {
-        if (!(pCtx->m_pModule->ppStructDir[n]->pDesc->r.nReserved & StructAttrib_t_external) &&
-            (pCtx->m_pModule->ppStructDir[n]->pszNameSpace == NULL ||
-            strcmp("systypes", pCtx->m_pModule->ppStructDir[n]->pszNameSpace))) {
-            pCtx->m_pStruct = pCtx->m_pModule->ppStructDir[n];
+        if (!(pCtx->m_pModule->mStructDirs[n]->pDesc->mR.mReserved & StructAttrib_t_external) &&
+            (pCtx->m_pModule->mStructDirs[n]->pszNameSpace == NULL ||
+            strcmp("systypes", pCtx->m_pModule->mStructDirs[n]->pszNameSpace))) {
+            pCtx->m_pStruct = pCtx->m_pModule->mStructDirs[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
             if (nRet < 0) break;
         }
@@ -134,10 +134,10 @@ int WithAllEnum(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigEnum = pCtx->m_pEnum;
 
     for (n = 0; n < pCtx->m_pModule->mEnumCount; n++) {
-        if (!(pCtx->m_pModule->ppEnumDir[n]->pDesc->r.nReserved & EnumAttrib_t_external) &&
-            (pCtx->m_pModule->ppEnumDir[n]->pszNameSpace == NULL ||
-            strcmp("systypes", pCtx->m_pModule->ppEnumDir[n]->pszNameSpace))) {
-            pCtx->m_pEnum = pCtx->m_pModule->ppEnumDir[n];
+        if (!(pCtx->m_pModule->mEnumDirs[n]->pDesc->mR.mReserved & EnumAttrib_t_external) &&
+            (pCtx->m_pModule->mEnumDirs[n]->pszNameSpace == NULL ||
+            strcmp("systypes", pCtx->m_pModule->mEnumDirs[n]->pszNameSpace))) {
+            pCtx->m_pEnum = pCtx->m_pModule->mEnumDirs[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
             if (nRet < 0) break;
         }
@@ -154,8 +154,8 @@ int WithAllConst(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigConst = pCtx->m_pConst;
 
     for (n = 0; n < pCtx->m_pModule->mConstCount; n++) {
-        if (NULL == pCtx->m_pModule->ppConstDir[n]->pszNameSpace) {
-            pCtx->m_pConst = pCtx->m_pModule->ppConstDir[n];
+        if (NULL == pCtx->m_pModule->mConstDirs[n]->pszNameSpace) {
+            pCtx->m_pConst = pCtx->m_pModule->mConstDirs[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
             if (nRet < 0) break;
         }
@@ -172,8 +172,8 @@ int WithAllTypedef(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigTypedef = pCtx->m_pTypedef;
 
     for (n = 0; n < pCtx->m_pModule->mAliasCount; n++) {
-        if (NULL == pCtx->m_pModule->ppAliasDir[n]->pszNameSpace) {
-            pCtx->m_pTypedef = pCtx->m_pModule->ppAliasDir[n];
+        if (NULL == pCtx->m_pModule->mAliasDirs[n]->pszNameSpace) {
+            pCtx->m_pTypedef = pCtx->m_pModule->mAliasDirs[n];
             nRet = pCtx->ExecStatements(pDesc->pBlockette);
             if (nRet < 0) break;
         }
@@ -254,7 +254,7 @@ int WithClsIntfMethod(
     if (0 != pIntf->sParentIndex) {
         if (!IsCheckedInterface(pIntf->sParentIndex)) {
             WithClsIntfMethod(pCtx, pDesc,
-                pCtx->m_pModule->ppInterfaceDir[pIntf->sParentIndex]->pDesc);
+                pCtx->m_pModule->mInterfaceDirs[pIntf->sParentIndex]->pDesc);
         }
     }
 
@@ -274,7 +274,7 @@ int _WithAllClassMethod(
     MethodDescriptor *pOrigMethod = pCtx->m_pMethod;
 
     for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
-        pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
+        pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
                 [pClass->pDesc->ppInterfaces[n]->sIndex];
         if (!(pClass->pDesc->ppInterfaces[n]->wAttribs
                                            & ClassInterfaceAttrib_callback)
@@ -307,7 +307,7 @@ int WithAllClassCtorMethod(PLUBECTX pCtx, PSTATEDESC pDesc)
     InterfaceDescriptor *pIntfDesc;
 
     pClsDesc = pCtx->m_pClass->pDesc;
-    pIntfDesc = pCtx->m_pModule->ppInterfaceDir[pClsDesc->sCtorIndex]->pDesc;
+    pIntfDesc = pCtx->m_pModule->mInterfaceDirs[pClsDesc->sCtorIndex]->pDesc;
 
     for (n = 0; n < pIntfDesc->cMethods; n++) {
         pCtx->m_pMethod = pIntfDesc->ppMethods[n];
@@ -326,7 +326,7 @@ int _WithAllCoalescenceMethod(
     MethodDescriptor *pOrigMethod = pCtx->m_pMethod;
 
     for (n = 0; n < pClass->pDesc->mInterfaceCount; n++) {
-        pCtx->m_pInterface = pCtx->m_pModule->ppInterfaceDir
+        pCtx->m_pInterface = pCtx->m_pModule->mInterfaceDirs
                 [pClass->pDesc->ppInterfaces[n]->sIndex];
         if (pClass->pDesc->ppInterfaces[n]->wAttribs
                                            & ClassInterfaceAttrib_callback) {
@@ -422,7 +422,7 @@ int WithAllAspect(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigAspect = pCtx->m_pAspect;
 
     for (n = 0; n < pCtx->m_pClass->pDesc->cAspects; n++) {
-        pCtx->m_pAspect = pCtx->m_pModule->ppClassDir
+        pCtx->m_pAspect = pCtx->m_pModule->mClassDirs
                         [pCtx->m_pClass->pDesc->pAspectIndexs[n]];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
@@ -441,7 +441,7 @@ int WithAllAggregate(PLUBECTX pCtx, PSTATEDESC pDesc)
     pOrigAggregate = pCtx->m_pAggregate;
 
     for (n = 0; n < pCtx->m_pClass->pDesc->cAggregates; n++) {
-        pCtx->m_pAggregate = pCtx->m_pModule->ppClassDir
+        pCtx->m_pAggregate = pCtx->m_pModule->mClassDirs
                     [pCtx->m_pClass->pDesc->pAggrIndexs[n]];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
@@ -460,7 +460,7 @@ int WithAllClassForAspect(PLUBECTX pCtx, PSTATEDESC pDesc)
     pForClass = pCtx->m_pForClass;
 
     for (n = 0; n < pCtx->m_pClass->pDesc->cClasses; n++) {
-        pCtx->m_pForClass = pCtx->m_pModule->ppClassDir
+        pCtx->m_pForClass = pCtx->m_pModule->mClassDirs
                     [pCtx->m_pClass->pDesc->pClassIndexs[n]];
         nRet = pCtx->ExecStatements(pDesc->pBlockette);
         if (nRet < 0) break;
@@ -475,7 +475,7 @@ int _WithAllClassParent(
     ClassDirEntry *pParent;
 
     if (pClass->pDesc->dwAttribs & ClassAttrib_hasparent) {
-        pParent = pCtx->m_pModule->ppClassDir[pClass->pDesc->sParentIndex];
+        pParent = pCtx->m_pModule->mClassDirs[pClass->pDesc->sParentIndex];
         if (_WithAllClassParent(pCtx, pDesc, pParent) < 0) return LUBE_FAIL;
         pCtx->m_pClassParent = pParent;
         return pCtx->ExecStatements(pDesc->pBlockette);
@@ -499,11 +499,11 @@ inline int WithAllClassParent(PLUBECTX pCtx, PSTATEDESC pDesc)
     pCtx->m_pOrigClass = pOrigClass;
 
     if (pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_hasparent) {
-        pCtx->m_pClass = pCtx->m_pModule->ppClassDir[pCtx->m_pClass->pDesc->sParentIndex];
+        pCtx->m_pClass = pCtx->m_pModule->mClassDirs[pCtx->m_pClass->pDesc->sParentIndex];
         pCtx->m_pFirstClass = pCtx->m_pClass;
         pCtx->m_pLastClass = pCtx->m_pClass;
         while(pCtx->m_pClass->pDesc->dwAttribs & ClassAttrib_hasparent) {
-            pCtx->m_pClass = pCtx->m_pModule->ppClassDir[pCtx->m_pClass->pDesc->sParentIndex];
+            pCtx->m_pClass = pCtx->m_pModule->mClassDirs[pCtx->m_pClass->pDesc->sParentIndex];
             if (pCtx->m_pClass) pCtx->m_pFirstClass = pCtx->m_pClass;
             else break;
         }
@@ -526,12 +526,12 @@ int _WithAllIntfParent(
     InterfaceDirEntry *pParent;
 
     if (0 != pIntf->pDesc->sParentIndex) {
-        pParent = pCtx->m_pModule->ppInterfaceDir[pIntf->pDesc->sParentIndex];
+        pParent = pCtx->m_pModule->mInterfaceDirs[pIntf->pDesc->sParentIndex];
         if (_WithAllIntfParent(pCtx, pDesc, pParent) < 0) return LUBE_FAIL;
         pCtx->m_pIntfChild = pCtx->m_pInterface;
         pCtx->m_pInterface = pParent;
         pCtx->m_pIntfParent = pCtx->m_pModule->
-                        ppInterfaceDir[pParent->pDesc->sParentIndex];
+                        mInterfaceDirs[pParent->pDesc->sParentIndex];
         int nRet = pCtx->ExecStatements(pDesc->pBlockette);
 
         pCtx->m_pIntfParent = pCtx->m_pInterface;
@@ -562,7 +562,7 @@ int _WithOneClsIntfAndAllItsParents(
     InterfaceDirEntry *pParent;
 
     if (pIntf->pDesc->sParentIndex != 0) {
-        pParent = pCtx->m_pModule->ppInterfaceDir[pIntf->pDesc->sParentIndex];
+        pParent = pCtx->m_pModule->mInterfaceDirs[pIntf->pDesc->sParentIndex];
         if (_WithOneClsIntfAndAllItsParents(pCtx, pDesc, pParent) < 0) {
             return LUBE_FAIL;
         }
@@ -572,7 +572,7 @@ int _WithOneClsIntfAndAllItsParents(
     }
     else {
         pCtx->m_pIntfParent = pCtx->m_pModule->\
-                ppInterfaceDir[pIntf->pDesc->sParentIndex];
+                mInterfaceDirs[pIntf->pDesc->sParentIndex];
         pCtx->m_pInterface = pIntf;
         return pCtx->ExecStatements(pDesc->pBlockette);
     }

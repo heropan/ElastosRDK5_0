@@ -156,7 +156,7 @@ ECode CParamInfo::IsUsingTypeAlias(
     }
 
     UInt32 index = mParamDescriptor->type.sIndex;
-    if ((mParamDescriptor->type.type == Type_alias)
+    if ((mParamDescriptor->type.mType == Type_alias)
         && !IsSysAlaisType(mClsModule, index)) {
         *usingTypeAlias = TRUE;
     }
@@ -175,7 +175,7 @@ ECode CParamInfo::GetUsedTypeAliasInfo(
     }
 
     UInt32 index = mParamDescriptor->type.sIndex;
-    if ((mParamDescriptor->type.type != Type_alias) ||
+    if ((mParamDescriptor->type.mType != Type_alias) ||
         IsSysAlaisType(mClsModule, index)) {
         return E_DOES_NOT_EXIST;
     }
@@ -183,6 +183,6 @@ ECode CParamInfo::GetUsedTypeAliasInfo(
     *usedTypeAliasInfo = NULL;
     return g_objInfoList.AcquireTypeAliasInfo(mClsModule,
             getAliasDirAddr(mClsModule->mBase,
-                    mClsModule->mClsMod->ppAliasDir, index),
+                    mClsModule->mClsMod->mAliasDirs, index),
             (IInterface **)usedTypeAliasInfo);
 }

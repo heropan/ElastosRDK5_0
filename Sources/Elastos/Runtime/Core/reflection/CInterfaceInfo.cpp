@@ -11,7 +11,7 @@ CInterfaceInfo::CInterfaceInfo(
     mClsModule = clsModule;
     mClsMod = mClsModule->mClsMod;
     mBase = mClsModule->mBase;
-    mInterfaceDirEntry = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+    mInterfaceDirEntry = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
     mDesc = adjustInterfaceDescAddr(mBase, mInterfaceDirEntry->pDesc);
     mIndex = index;
     mIFList = NULL;
@@ -261,7 +261,7 @@ ECode CInterfaceInfo::CreateIFList()
     InterfaceDirEntry* ifDir = NULL;
     while (index != 0) {
         indexList[mIFCount++] = index;
-        ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+        ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
         index = adjustInterfaceDescAddr(mBase, ifDir->pDesc)->sParentIndex;
     }
 
@@ -278,7 +278,7 @@ ECode CInterfaceInfo::CreateIFList()
         index = indexList[i];
         mIFList[j].mIndex = index;
         mIFList[j].mBeginNo = beginNo;
-        ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, index);
+        ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
         mIFList[j].mName = adjustNameAddr(mBase, ifDir->pszName);
         mIFList[j].mNameSpace = adjustNameAddr(mBase, ifDir->pszNameSpace);
         mIFList[j].mDesc = adjustInterfaceDescAddr(mBase, ifDir->pDesc);

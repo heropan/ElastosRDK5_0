@@ -304,7 +304,7 @@ BOOL IsValidParamTypeAttrib(
 {
     TypeDescriptor type;
 
-    switch (pType->type) {
+    switch (pType->mType) {
         case Type_alias:
             GetOriginalType(pModule, pType, &type);
             return IsValidParamTypeAttrib(pModule, &type, dwAttribs, isLocal, isDeprecated);
@@ -343,9 +343,9 @@ BOOL IsValidParamTypeAttrib(
          * local|unlocal: [out] IInterface **;
          */
         case Type_interface:
-            if (pModule->ppInterfaceDir[pType->sIndex]->pDesc->dwAttribs
+            if (pModule->mInterfaceDirs[pType->sIndex]->pDesc->dwAttribs
                     & InterfaceAttrib_local) {
-                if (!(pModule->ppInterfaceDir[pType->sIndex]->pDesc->dwAttribs
+                if (!(pModule->mInterfaceDirs[pType->sIndex]->pDesc->dwAttribs
                     & InterfaceAttrib_parcelable) && (!isLocal)) {
                     ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                     return FALSE;
@@ -474,7 +474,7 @@ BOOL IsValidParamTypeAttrib(
          */
         case Type_struct:
             //check if struct is local based on its elements;
-            if (IsLocalStruct(pModule, pModule->ppStructDir[pType->sIndex]->pDesc)
+            if (IsLocalStruct(pModule, pModule->mStructDirs[pType->sIndex]->pDesc)
                     && (!isLocal)) {
                 ErrorReport(CAR_E_IllegalTypeUsage, "Type is a local type.");
                 return FALSE;
@@ -664,7 +664,7 @@ int P_Type(TypeDescriptor *pType)
                 ErrorReport(CAR_E_NotFound, "enum", g_szCurrentToken);
                 break; // continue on error
             }
-            pType->type = Type_enum;
+            pType->mType = Type_enum;
             pType->sIndex = n;
             break;
         }
@@ -679,7 +679,7 @@ int P_Type(TypeDescriptor *pType)
                 ErrorReport(CAR_E_NotFound, "struct", g_szCurrentToken);
                 break; // continue on error
             }
-            pType->type = Type_struct;
+            pType->mType = Type_struct;
             pType->sIndex = n;
             break;
 
@@ -715,7 +715,7 @@ int P_CarQuient(TypeDescriptor *pType)
         return Ret_AbortOnError;
     }
 
-    if (Type_ArrayOf == pType->type){
+    if (Type_ArrayOf == pType->mType){
 
         pType->pNestedType = new TypeDescriptor;
         if (!pType->pNestedType) {
@@ -729,7 +729,7 @@ int P_CarQuient(TypeDescriptor *pType)
             goto ErrorExit;
         }
 
-        if (Type_ArrayOf == pType->pNestedType->type) {
+        if (Type_ArrayOf == pType->pNestedType->mType) {
             ErrorReport(CAR_E_NestedCARQuient);
             return Ret_AbortOnError;
         }
@@ -756,11 +756,11 @@ int P_CarQuient(TypeDescriptor *pType)
             ErrorReport(CAR_E_NotFound, "const", g_szCurrentToken);
             return Ret_AbortOnError;
         }
-        if (s_pModule->ppConstDir[s]->type != TYPE_INTEGER32) {
+        if (s_pModule->mConstDirs[s]->type != TYPE_INTEGER32) {
             ErrorReport(CAR_E_NotIntegerConst, g_szCurrentToken);
             return Ret_AbortOnError;
         }
-        pType->nSize = s_pModule->ppConstDir[s]->v.intValue.nValue;
+        pType->nSize = s_pModule->mConstDirs[s]->v.intValue.nValue;
 
         token = GetToken(s_pFile);
     }
@@ -786,64 +786,64 @@ int P_BaseType(CARToken token, TypeDescriptor *pType)
 
     switch (token) {
         case Token_K_ECode:
-            pType->type = Type_ECode;
+            pType->mType = Type_ECode;
             break;
         case Token_K_Byte:
-            pType->type = Type_Byte;
+            pType->mType = Type_Byte;
             break;
         case Token_K_Boolean:
-            pType->type = Type_Boolean;
+            pType->mType = Type_Boolean;
             break;
         case Token_K_Int8:
-            pType->type = Type_Int8;
+            pType->mType = Type_Int8;
             break;
         case Token_K_Int16:
-            pType->type = Type_Int16;
+            pType->mType = Type_Int16;
             break;
         case Token_K_UInt16:
-            pType->type = Type_UInt16;
+            pType->mType = Type_UInt16;
             break;
         case Token_K_Int32:
-            pType->type = Type_Int32;
+            pType->mType = Type_Int32;
             break;
         case Token_K_UInt32:
-            pType->type = Type_UInt32;
+            pType->mType = Type_UInt32;
             break;
         case Token_K_Int64:
-            pType->type = Type_Int64;
+            pType->mType = Type_Int64;
             break;
         case Token_K_UInt64:
-            pType->type = Type_UInt64;
+            pType->mType = Type_UInt64;
             break;
         case Token_K_PVoid:
-            pType->type = Type_PVoid;
+            pType->mType = Type_PVoid;
             break;
         case Token_K_Char16:
-            pType->type = Type_Char16;
+            pType->mType = Type_Char16;
             break;
         case Token_K_Char32:
-            pType->type = Type_Char32;
+            pType->mType = Type_Char32;
             break;
         case Token_K_Float:
-            pType->type = Type_Float;
+            pType->mType = Type_Float;
             break;
         case Token_K_Double:
-            pType->type = Type_Double;
+            pType->mType = Type_Double;
             break;
         case Token_K_EMuid:
-            pType->type = Type_EMuid;
+            pType->mType = Type_EMuid;
             break;
         case Token_K_EGuid:
-            pType->type = Type_EGuid;
+            pType->mType = Type_EGuid;
             break;
         case Token_K_EventHandler:
-            pType->type = Type_EventHandler;
+            pType->mType = Type_EventHandler;
             break;
         case Token_K_String:
-            pType->type = Type_String;
+            pType->mType = Type_String;
             break;
         case Token_K_ArrayOf:
-            pType->type = Type_ArrayOf;
+            pType->mType = Type_ArrayOf;
             return P_CarQuient(pType);
         default:
             ErrorReport(CAR_E_UndefType, g_szCurrentToken);
@@ -1031,8 +1031,8 @@ int P_Enum()
         }
         GetToken(s_pFile); // ignore "{"
 
-        if (P_EnumBody(s_pModule->ppEnumDir[r]->pszName,
-            s_pModule->ppEnumDir[r]->pDesc) == Ret_AbortOnError) {
+        if (P_EnumBody(s_pModule->mEnumDirs[r]->pszName,
+            s_pModule->mEnumDirs[r]->pDesc) == Ret_AbortOnError) {
             return Ret_AbortOnError;
         }
     }
@@ -1084,23 +1084,23 @@ int P_Const()
     }
     switch (GetToken(s_pFile)) {
         case Token_integer:
-            s_pModule->ppConstDir[r]->type = TYPE_INTEGER32;
-            s_pModule->ppConstDir[r]->v.intValue.nValue = atoi(g_szCurrentToken);
-            s_pModule->ppConstDir[r]->v.intValue.bHexFormat = FALSE;
+            s_pModule->mConstDirs[r]->type = TYPE_INTEGER32;
+            s_pModule->mConstDirs[r]->v.intValue.nValue = atoi(g_szCurrentToken);
+            s_pModule->mConstDirs[r]->v.intValue.bHexFormat = FALSE;
             break;
 
         case Token_hinteger:
-            s_pModule->ppConstDir[r]->type = TYPE_INTEGER32;
-            s_pModule->ppConstDir[r]->v.intValue.nValue = Hexstr2Int(g_szCurrentToken);
-            s_pModule->ppConstDir[r]->v.intValue.bHexFormat = TRUE;
+            s_pModule->mConstDirs[r]->type = TYPE_INTEGER32;
+            s_pModule->mConstDirs[r]->v.intValue.nValue = Hexstr2Int(g_szCurrentToken);
+            s_pModule->mConstDirs[r]->v.intValue.bHexFormat = TRUE;
             break;
 
         case Token_string:
             {
-                s_pModule->ppConstDir[r]->type = TYPE_STRING;
+                s_pModule->mConstDirs[r]->type = TYPE_STRING;
                 char *str = (char*)malloc(strlen(g_szCurrentToken) + 1);
                 strcpy(str, g_szCurrentToken);
-                s_pModule->ppConstDir[r]->v.strValue.pszValue = str;
+                s_pModule->mConstDirs[r]->v.strValue.pszValue = str;
                 break;
             }
         default:
@@ -1144,11 +1144,11 @@ int P_Array(TypeDescriptor &type)
                 ErrorReport(CAR_E_NotFound, "const", g_szCurrentToken);
                 return Ret_AbortOnError;
             }
-            if (s_pModule->ppConstDir[r]->type != TYPE_INTEGER32) {
+            if (s_pModule->mConstDirs[r]->type != TYPE_INTEGER32) {
                 ErrorReport(CAR_E_NotIntegerConst, g_szCurrentToken);
                 return Ret_AbortOnError;
             }
-            nElements = s_pModule->ppConstDir[r]->v.intValue.nValue;
+            nElements = s_pModule->mConstDirs[r]->v.intValue.nValue;
         }
     }
     else {
@@ -1188,13 +1188,13 @@ int P_Array(TypeDescriptor &type)
             ErrorReport(CAR_E_OutOfMemory);
             return Ret_AbortOnError;
         }
-        memcpy(&s_pModule->ppArrayDir[r]->type, &type, sizeof(TypeDescriptor));
-        s_pModule->ppArrayDir[r]->nElements = nElements;
+        memcpy(&s_pModule->mArrayDirs[r]->type, &type, sizeof(TypeDescriptor));
+        s_pModule->mArrayDirs[r]->nElements = nElements;
     }
 
     memset(&type, 0, sizeof(TypeDescriptor));
 
-    type.type = Type_Array;
+    type.mType = Type_Array;
     type.sIndex = r;
 
     return r;
@@ -1234,8 +1234,8 @@ int P_StructElement(StructDescriptor *pDesc)
 
         strcpy(szElementName, g_szCurrentToken);
 
-        if (Type_struct == tempType.type
-            && s_pModule->ppStructDir[tempType.sIndex]->pDesc == pDesc
+        if (Type_struct == tempType.mType
+            && s_pModule->mStructDirs[tempType.sIndex]->pDesc == pDesc
             && 0 == tempType.nPointer) {
             ErrorReport(CAR_E_NestedStruct, g_szCurrentToken);
             // continue on error
@@ -1306,7 +1306,7 @@ int P_Struct()
         GetToken(s_pFile); // ignore "{"
 
         if (P_StructBody(
-            s_pModule->ppStructDir[r]->pDesc) == Ret_AbortOnError) {
+            s_pModule->mStructDirs[r]->pDesc) == Ret_AbortOnError) {
             return Ret_AbortOnError;
         }
     }
@@ -1376,7 +1376,7 @@ int P_Typedef()
             // continue on error
         }
         else {
-            s_pModule->ppAliasDir[r]->bDummyType = bDummyType;
+            s_pModule->mAliasDirs[r]->bDummyType = bDummyType;
         }
 
         token = GetToken(s_pFile);
@@ -1520,7 +1520,7 @@ void GenIIDSeedString(
         }
         if (0 == pDesc->sParentIndex) break;
 
-        pInterface = pModule->ppInterfaceDir[pDesc->sParentIndex];
+        pInterface = pModule->mInterfaceDirs[pDesc->sParentIndex];
         pDesc = pInterface->pDesc;
     }
 
@@ -1548,12 +1548,12 @@ void GenerateSinkClass(
         return;
     }
     if (NULL != pClass->pszNameSpace) {
-        pModule->ppClassDir[n]->pszNameSpace =
+        pModule->mClassDirs[n]->pszNameSpace =
                         (char *)malloc(strlen(pClass->pszNameSpace) + 1);
-        if (!pModule->ppClassDir[n]->pszNameSpace) return;
-        strcpy(pModule->ppClassDir[n]->pszNameSpace, pClass->pszNameSpace);
+        if (!pModule->mClassDirs[n]->pszNameSpace) return;
+        strcpy(pModule->mClassDirs[n]->pszNameSpace, pClass->pszNameSpace);
     }
-    pSinkDesc = pModule->ppClassDir[n]->pDesc;
+    pSinkDesc = pModule->mClassDirs[n]->pDesc;
 
     pClsid = &pDesc->clsid;
     pSinkClsid = &pSinkDesc->clsid;
@@ -1573,7 +1573,7 @@ void GenerateSinkClass(
     AddConstClassInterface("ICallbackSink", NULL, pModule, pSinkDesc);
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback){
-            strcpy(szInterfaceName, pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex]->pszName);
+            strcpy(szInterfaceName, pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]->pszName);
             strcat(szInterfaceName, "Callback");
             int x = SelectInterfaceDirEntry(szInterfaceName, NULL, pModule);
             if (x < 0) continue;
@@ -1619,8 +1619,8 @@ int GenerateSinkInterface(
         //CreateError(n, "interfcace", szSinkName);
         return 0;
     }
-    pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
+    pSinkDesc = pModule->mInterfaceDirs[n]->pDesc;
+    pModule->mDefinedInterfaceIndexes[pModule->mDefinedInterfaceCount++] = n;
     InterfaceDescriptorCopy(pModule, pSrcDesc, pModule, pSinkDesc, TRUE);
 
     pSinkDesc->dwAttribs |= InterfaceAttrib_sink;
@@ -1637,7 +1637,7 @@ int GenerateSinkInterface(
         pSinkDesc->ppMethods[n]->ppParams[0] = pParam;
         pParam->dwAttribs = ParamAttrib_in;
         memset(&pParam->type, 0, sizeof(pParam->type));
-        pParam->type.type = Type_Int32;
+        pParam->type.mType = Type_Int32;
     }
 
     return x;
@@ -1666,8 +1666,8 @@ int GenerateAsyncCallbackInterface(
         //CreateError(n, "interfcace", szSinkName);
         return 0;
     }
-    pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
+    pSinkDesc = pModule->mInterfaceDirs[n]->pDesc;
+    pModule->mDefinedInterfaceIndexes[pModule->mDefinedInterfaceCount++] = n;
     InterfaceDescriptorCopy(pModule, pSrcDesc, pModule, pSinkDesc, TRUE);
 
     for (n = 0; n < pSrcDesc->cMethods; n++) {
@@ -1706,8 +1706,8 @@ int GenerateHandlerInterface(
     r = RetrieveInterface("ICallbackRendezvous", NULL, pModule, FALSE);
     if (r < 0) return 0;
 
-    pSinkDesc = pModule->ppInterfaceDir[n]->pDesc;
-    pModule->pDefinedInterfaceIndex[pModule->mDefinedInterfaceCount++] = n;
+    pSinkDesc = pModule->mInterfaceDirs[n]->pDesc;
+    pModule->mDefinedInterfaceIndexes[pModule->mDefinedInterfaceCount++] = n;
 
     pSinkDesc->dwAttribs |= InterfaceAttrib_defined;
     pSinkDesc->dwAttribs |= InterfaceAttrib_sink;
@@ -1721,7 +1721,7 @@ int GenerateHandlerInterface(
         n = CreateInterfaceMethod(szMethodName, pSinkDesc);
         if (m < 0) return 0;
 
-        pSinkDesc->ppMethods[n]->type.type = Type_ECode;
+        pSinkDesc->ppMethods[n]->type.mType = Type_ECode;
 
         m = CreateMethodParam("handler", pSinkDesc->ppMethods[n]);
         if (m < 0) return 0;
@@ -1730,7 +1730,7 @@ int GenerateHandlerInterface(
         pSinkDesc->ppMethods[n]->ppParams[0] = pParam;
         pParam->dwAttribs = ParamAttrib_in;
         memset(&pParam->type, 0, sizeof(pParam->type));
-        pParam->type.type = Type_EventHandler;
+        pParam->type.mType = Type_EventHandler;
         pParam->type.nPointer = 0;
 
         BuildMethodSignature(pSinkDesc->ppMethods[n]);
@@ -1747,7 +1747,7 @@ int GenerateHandlerInterface(
 
         n = CreateInterfaceMethod(szMethodName, pSinkDesc);
         if (m < 0) return 0;
-        pSinkDesc->ppMethods[n]->type.type = Type_ECode;
+        pSinkDesc->ppMethods[n]->type.mType = Type_ECode;
 
         m = CreateMethodParam("handler", pSinkDesc->ppMethods[n]);
         if (m < 0) return 0;
@@ -1756,7 +1756,7 @@ int GenerateHandlerInterface(
         pSinkDesc->ppMethods[n]->ppParams[0] = pParam;
         pParam->dwAttribs = ParamAttrib_in;
         memset(&pParam->type, 0, sizeof(pParam->type));
-        pParam->type.type = Type_EventHandler;
+        pParam->type.mType = Type_EventHandler;
         pParam->type.nPointer = 0;
 
         BuildMethodSignature(pSinkDesc->ppMethods[n]);
@@ -1773,7 +1773,7 @@ int GenerateHandlerInterface(
 
         n = CreateInterfaceMethod(szMethodName, pSinkDesc);
         if (m < 0) return 0;
-        pSinkDesc->ppMethods[n]->type.type = Type_ECode;
+        pSinkDesc->ppMethods[n]->type.mType = Type_ECode;
 
         m = CreateMethodParam("ppRendezvous", pSinkDesc->ppMethods[n]);
         if (m < 0) return 0;
@@ -1781,7 +1781,7 @@ int GenerateHandlerInterface(
         pSinkDesc->ppMethods[n]->ppParams[0] = pParam;
         pParam->dwAttribs = ParamAttrib_out;
         memset(&pParam->type, 0, sizeof(pParam->type));
-        pParam->type.type = Type_interface;
+        pParam->type.mType = Type_interface;
         pParam->type.nPointer = 2;
         pParam->type.sIndex = r;
 
@@ -1810,8 +1810,8 @@ int CreateEnumElems(
 
     //if callback interface have parent
     if (pIntf->sParentIndex > 0) {
-        CreateEnumElems(pModule->ppInterfaceDir[pIntf->sParentIndex]->pDesc->cMethods,
-            pModule->ppInterfaceDir[pIntf->sParentIndex]->pDesc, pEnumDesc, pElemName, pModule);
+        CreateEnumElems(pModule->mInterfaceDirs[pIntf->sParentIndex]->pDesc->cMethods,
+            pModule->mInterfaceDirs[pIntf->sParentIndex]->pDesc, pEnumDesc, pElemName, pModule);
     }
 
     // the name of the enum element
@@ -1864,7 +1864,7 @@ int CreateEnum(
         }
     }
 
-    pEnumDesc = pModule->ppEnumDir[m]->pDesc;
+    pEnumDesc = pModule->mEnumDirs[m]->pDesc;
 
     //begin of the callback interface enum
     strcpy(enumToken, pClass->pszName);
@@ -1914,12 +1914,12 @@ int GenerateEnums(CLSModule *pModule)
     char enumToken[c_nMaxTokenSize + 1];
 
     for (k = 0; k < pModule->mClassCount; k++) {
-        pClass = pModule->ppClassDir[k];
+        pClass = pModule->mClassDirs[k];
         pDesc = pClass->pDesc;
         if (pDesc->dwAttribs & ClassAttrib_hascallback) {
             for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
-                    pIntf = pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex];
+                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex];
                     pIntfDesc = pIntf->pDesc;
 
                     /*
@@ -1949,7 +1949,7 @@ int GenerateEnums(CLSModule *pModule)
                 return -2;
             }
 
-            pEnumDesc = pModule->ppEnumDir[m]->pDesc;
+            pEnumDesc = pModule->mEnumDirs[m]->pDesc;
 
             strcpy(enumToken, pClass->pszName);
             strcat(enumToken, "Sink_MaxEvents");
@@ -1978,7 +1978,7 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
     CLSModule *pModuleTmp;
 
     for (k = 0; k < pModule->mClassCount; k++) {
-        pClass = pModule->ppClassDir[k];
+        pClass = pModule->mClassDirs[k];
         pDesc = pClass->pDesc;
         if ((pDesc->dwAttribs & ClassAttrib_hascallback) &&
                 !(pDesc->dwAttribs & ClassAttrib_t_generic) &&
@@ -1994,7 +1994,7 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
 
             for (n = 0; n < pDesc->mInterfaceCount; n++) {
                 if (pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
-                    pIntf = pModule->ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex];
+                    pIntf = pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex];
 
                     /*
                      * check callback interface of original class
@@ -2008,10 +2008,10 @@ int ExtendCLS(CLSModule *pModule, BOOL bNoElastos)
                     /*
                      * generate enum and interface for callback
                      */
-                    x = GenerateSinkInterface(szInterfaceName, pModule, pModule->ppInterfaceDir[j]);
+                    x = GenerateSinkInterface(szInterfaceName, pModule, pModule->mInterfaceDirs[j]);
 
-                    GenIIDSeedString(pModule, pModule->ppInterfaceDir[x], szSeedBuf);
-                    GuidFromSeedString(szSeedBuf, &pModule->ppInterfaceDir[x]->pDesc->iid);
+                    GenIIDSeedString(pModule, pModule->mInterfaceDirs[x], szSeedBuf);
+                    GuidFromSeedString(szSeedBuf, &pModule->mInterfaceDirs[x]->pDesc->iid);
                 }
             }
             /*
@@ -2098,7 +2098,7 @@ int ImportProc(char *pszName)
     // check same entry
     //
     for (n = 0; n < s_pModule->mLibraryCount; n++) {
-        if (!_stricmp(pszName, s_pModule->ppLibNames[n]))
+        if (!_stricmp(pszName, s_pModule->mLibraryNames[n]))
             return Ret_Continue;
     }
 
@@ -2108,12 +2108,12 @@ int ImportProc(char *pszName)
         ErrorReport(CAR_W_TooManyLibraries);
         return Ret_Continue;
     }
-    s_pModule->ppLibNames[n] = new char[nNameLen + 1];
-    if (!s_pModule->ppLibNames[n]) {
+    s_pModule->mLibraryNames[n] = new char[nNameLen + 1];
+    if (!s_pModule->mLibraryNames[n]) {
         ErrorReport(CAR_E_OutOfMemory);
         return Ret_AbortOnError;
     }
-    strcpy(s_pModule->ppLibNames[n], pszName);
+    strcpy(s_pModule->mLibraryNames[n], pszName);
     s_pModule->mLibraryCount++;
 
     strcpy(pszName + nNameLen - 4, ".car");
@@ -2154,7 +2154,7 @@ int ImportLibrary(const char *pszName)
     // check same entry
     //
     for (n = 0; n < s_pModule->mLibraryCount; n++) {
-        if (!_stricmp(pszName, s_pModule->ppLibNames[n]))
+        if (!_stricmp(pszName, s_pModule->mLibraryNames[n]))
             return Ret_Continue;
     }
 
@@ -2164,12 +2164,12 @@ int ImportLibrary(const char *pszName)
         ErrorReport(CAR_W_TooManyLibraries);
         return Ret_Continue;
     }
-    s_pModule->ppLibNames[n] = new char[strlen(pszName) + 1];
-    if (!s_pModule->ppLibNames[n]) {
+    s_pModule->mLibraryNames[n] = new char[strlen(pszName) + 1];
+    if (!s_pModule->mLibraryNames[n]) {
         ErrorReport(CAR_E_OutOfMemory);
         return Ret_AbortOnError;
     }
-    strcpy(s_pModule->ppLibNames[n], pszName);
+    strcpy(s_pModule->mLibraryNames[n], pszName);
     s_pModule->mLibraryCount++;
 
     // load it from file and add it to library
@@ -3519,7 +3519,7 @@ int P_InterfaceConst(InterfaceDirEntry *pItfDirEntry)
 
 int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
 {
-    CARDataType type = pType->type;
+    CARDataType type = pType->mType;
     int pointer = pType->nPointer;
     switch(type) {
         case Type_Char16:
@@ -3575,9 +3575,9 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
             break;
         case Type_enum: {
             sb.Append("L");
-            if (s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace != NULL) {
-                char* ns = (char*)malloc(strlen(s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(ns, s_pModule->ppEnumDir[pType->sIndex]->pszNameSpace);
+            if (s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->mEnumDirs[pType->sIndex]->pszNameSpace);
 
                 char* c;
                 while ((c = strchr(ns, '.')) != NULL) {
@@ -3588,7 +3588,7 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
                 sb.Append("/");
                 free(ns);
             }
-            sb.Append(s_pModule->ppEnumDir[pType->sIndex]->pszName);
+            sb.Append(s_pModule->mEnumDirs[pType->sIndex]->pszName);
             sb.Append(";");
             break;
         }
@@ -3599,9 +3599,9 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
         }
         case Type_interface: {
             sb.Append("L");
-            if (s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace != NULL) {
-                char* ns = (char*)malloc(strlen(s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace) + 1);
-                strcpy(ns, s_pModule->ppInterfaceDir[pType->sIndex]->pszNameSpace);
+            if (s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace != NULL) {
+                char* ns = (char*)malloc(strlen(s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace) + 1);
+                strcpy(ns, s_pModule->mInterfaceDirs[pType->sIndex]->pszNameSpace);
 
                 char* c;
                 while ((c = strchr(ns, '.')) != NULL) {
@@ -3612,12 +3612,12 @@ int TypeSignature(TypeDescriptor* pType, StringBuilder& sb)
                 sb.Append("/");
                 free(ns);
             }
-            sb.Append(s_pModule->ppInterfaceDir[pType->sIndex]->pszName);
+            sb.Append(s_pModule->mInterfaceDirs[pType->sIndex]->pszName);
             sb.Append(";");
             break;
         }
         case Type_alias:
-            if (TypeSignature(&s_pModule->ppAliasDir[pType->sIndex]->type, sb) == Ret_AbortOnError) {
+            if (TypeSignature(&s_pModule->mAliasDirs[pType->sIndex]->type, sb) == Ret_AbortOnError) {
                 return Ret_AbortOnError;
             }
             break;
@@ -3734,7 +3734,7 @@ int P_MethodArg(MethodDescriptor *pMethod, BOOL isLocal, BOOL isDeprecated)
     }
 
     if ((dwAttribs & ParamAttrib_callee) && !isLocal &&
-        (type.type != Type_ArrayOf)) {
+        (type.mType != Type_ArrayOf)) {
         ErrorReport(CAR_E_CalleeParam, g_szCurrentToken, pMethod->pszName);
         return Ret_AbortOnError;
     }
@@ -3771,7 +3771,7 @@ BOOL IsMethodDuplicated(InterfaceDescriptor* pIntfDesc, MethodDescriptor* pMetho
     int n;
 
     if (0 != pIntfDesc->sParentIndex) {
-        if (IsMethodDuplicated(s_pModule->ppInterfaceDir[pIntfDesc->sParentIndex]->pDesc, pMethod)) {
+        if (IsMethodDuplicated(s_pModule->mInterfaceDirs[pIntfDesc->sParentIndex]->pDesc, pMethod)) {
             return true;
         }
     }
@@ -3822,7 +3822,7 @@ int P_Method(InterfaceDirEntry *pItfDirEntry, BOOL isDeprecated)
         CreateError(n, "interface method", g_szCurrentToken);
         return Ret_AbortOnError;
     }
-    pDesc->ppMethods[n]->type.type = Type_ECode;
+    pDesc->ppMethods[n]->type.mType = Type_ECode;
     if (pDesc->dwAttribs & InterfaceAttrib_oneway) dwAttribs |= MethodAttrib_Oneway;
     pDesc->ppMethods[n]->dwAttribs = dwAttribs;
 
@@ -3897,7 +3897,7 @@ void AddInterfaceParent(const char *pszName, InterfaceDescriptor *pDesc)
         ErrorReport(CAR_E_NotFound, "interface", pszName);
         return;
     }
-    pParent = s_pModule->ppInterfaceDir[n]->pDesc;
+    pParent = s_pModule->mInterfaceDirs[n]->pDesc;
 
     if (pParent == pDesc) {
         ErrorReport(CAR_E_NestedInherit, "interface", pszName);
@@ -3905,7 +3905,7 @@ void AddInterfaceParent(const char *pszName, InterfaceDescriptor *pDesc)
     }
     if (!(pParent->dwAttribs & InterfaceAttrib_defined)) {
         ErrorReport(CAR_E_NotFound, "interface",
-                s_pModule->ppInterfaceDir[n]->pszName);
+                s_pModule->mInterfaceDirs[n]->pszName);
         return;
     }
     pDesc->sParentIndex = n;
@@ -4040,7 +4040,7 @@ int P_Interface(CARToken token, DWORD properties)
                 CreateError(r, "interface", g_szCurrentToken);
         }
         else {
-            s_pModule->ppInterfaceDir[r]->pDesc->dwAttribs |= dwAttribs;
+            s_pModule->mInterfaceDirs[r]->pDesc->dwAttribs |= dwAttribs;
         }
         return Ret_Continue;
     }
@@ -4049,19 +4049,19 @@ int P_Interface(CARToken token, DWORD properties)
         CreateError(r, "interface", g_szCurrentToken);
         return Ret_AbortOnError;
     }
-    pDesc = s_pModule->ppInterfaceDir[r]->pDesc;
+    pDesc = s_pModule->mInterfaceDirs[r]->pDesc;
     pDesc->dwAttribs = dwAttribs;
-    s_pModule->pDefinedInterfaceIndex[s_pModule->mDefinedInterfaceCount++] = r;
+    s_pModule->mDefinedInterfaceIndexes[s_pModule->mDefinedInterfaceCount++] = r;
 
-    ret = P_InterfaceBody(s_pModule->ppInterfaceDir[r], isDeprecated);
+    ret = P_InterfaceBody(s_pModule->mInterfaceDirs[r], isDeprecated);
     if (ret != Ret_Continue) return ret;
 
     if ((dwAttribs & InterfaceAttrib_t_callbacks)
             || (dwAttribs & InterfaceAttrib_t_delegates)) {
         GenerateHandlerInterface(
-            s_pModule->ppInterfaceDir[r]->pszName,
+            s_pModule->mInterfaceDirs[r]->pszName,
             s_pModule,
-            s_pModule->ppInterfaceDir[r]);
+            s_pModule->mInterfaceDirs[r]);
     }
 
     return Ret_Continue;
@@ -4088,13 +4088,13 @@ void GenerateDispatchInterface(ClassDescriptor *pDesc)
         return;
     }
 
-    pDisp = s_pModule->ppInterfaceDir[nDispIndex]->pDesc;
+    pDisp = s_pModule->mInterfaceDirs[nDispIndex]->pDesc;
     pDisp->sParentIndex = n;
     pDisp->dwAttribs = InterfaceAttrib_dual;
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
         pIntf = s_pModule-> \
-            ppInterfaceDir[pDesc->ppInterfaces[n]->sIndex]->pDesc;
+            mInterfaceDirs[pDesc->ppInterfaces[n]->sIndex]->pDesc;
         if (!(pDesc->ppInterfaces[n]->\
             wAttribs & ClassInterfaceAttrib_callback)) {
             if (InterfaceMethodsAppend(s_pModule, pIntf, pDisp) < 0) {
@@ -4153,20 +4153,20 @@ void CheckInterfaceDupMethodNameEx(InterfaceDirEntry *pientry)
         int nParentIndex = pDesc->sParentIndex;
         do {
             for (n = 0; n < pDesc->cMethods; n++) {
-                for (m = 0; m < s_pModule->ppInterfaceDir[nParentIndex]->\
+                for (m = 0; m < s_pModule->mInterfaceDirs[nParentIndex]->\
                     pDesc->cMethods; m++) {
                     if (!strcmp(pDesc->ppMethods[n]->pszName,
-                        s_pModule->ppInterfaceDir[nParentIndex]->\
+                        s_pModule->mInterfaceDirs[nParentIndex]->\
                         pDesc->ppMethods[m]->pszName)
                         && !strcmp(pDesc->ppMethods[n]->pszSignature,
-                            s_pModule->ppInterfaceDir[nParentIndex]->\
+                            s_pModule->mInterfaceDirs[nParentIndex]->\
                             pDesc->ppMethods[m]->pszSignature)) {
                         ErrorReport(CAR_E_DupMethodName,
                                     pDesc->ppMethods[n]->pszName);
                     }
                 }
             }
-            nParentIndex = s_pModule->ppInterfaceDir[nParentIndex]->\
+            nParentIndex = s_pModule->mInterfaceDirs[nParentIndex]->\
                            pDesc->sParentIndex;
         } while (nParentIndex != 0);
     }
@@ -4183,11 +4183,11 @@ void CheckInterfaceDupMethodName(
 
     if (0 != pSrc->sParentIndex) {
         CheckInterfaceDupMethodName(
-            s_pModule->ppInterfaceDir[pSrc->sParentIndex]->pDesc, pDest);
+            s_pModule->mInterfaceDirs[pSrc->sParentIndex]->pDesc, pDest);
     }
     if (0 != pDest->sParentIndex) {
         CheckInterfaceDupMethodName(
-            pSrc, s_pModule->ppInterfaceDir[pDest->sParentIndex]->pDesc);
+            pSrc, s_pModule->mInterfaceDirs[pDest->sParentIndex]->pDesc);
     }
 
     for (n = 0; n < pSrc->cMethods; n++)
@@ -4203,7 +4203,7 @@ void CheckClassDupCtorSignature(ClassDescriptor *pClsDesc)
 {
     int n, m;
     InterfaceDescriptor *pIntfDesc =
-            s_pModule->ppInterfaceDir[pClsDesc->sCtorIndex]->pDesc;
+            s_pModule->mInterfaceDirs[pClsDesc->sCtorIndex]->pDesc;
 
     for (n = 0; n < pIntfDesc->cMethods; n++) {
         for (m = n + 1; m < pIntfDesc->cMethods; m++) {
@@ -4222,9 +4222,9 @@ void CheckClassDupMethodName(ClassDescriptor *pDesc)
     for (n = 0; n < pDesc->mInterfaceCount; n++)
         for (m = n + 1; m < pDesc->mInterfaceCount; m++)
             CheckInterfaceDupMethodName(
-                s_pModule->ppInterfaceDir \
+                s_pModule->mInterfaceDirs \
                     [pDesc->ppInterfaces[n]->sIndex]->pDesc,
-                s_pModule->ppInterfaceDir \
+                s_pModule->mInterfaceDirs \
                     [pDesc->ppInterfaces[m]->sIndex]->pDesc);
 }
 
@@ -4289,7 +4289,7 @@ int GetClasses(USHORT *pClassIndexs)
             goto ErrorSkip;
         }
 
-        if (s_pModule->ppClassDir[n]->pDesc->dwAttribs & \
+        if (s_pModule->mClassDirs[n]->pDesc->dwAttribs & \
             (ClassAttrib_t_aspect | ClassAttrib_t_generic
              | ClassAttrib_t_sink | ClassAttrib_t_clsobj)) {
             ErrorReport(CAR_E_NotClass, g_szCurrentToken);
@@ -4351,7 +4351,7 @@ int GetAspects(USHORT *pAspectIndexs)
             goto ErrorSkip;
         }
 
-        if (!(s_pModule->ppClassDir[n]->pDesc->dwAttribs & \
+        if (!(s_pModule->mClassDirs[n]->pDesc->dwAttribs & \
             ClassAttrib_t_aspect)) {
             ErrorReport(CAR_E_NotAspect, g_szCurrentToken);
             goto ErrorSkip;
@@ -4398,7 +4398,7 @@ BOOL IsInterfaceParent(InterfaceDescriptor *pDesc, int nIndex)
 {
     while (0 != pDesc->sParentIndex) {
         if (nIndex == pDesc->sParentIndex) return TRUE;
-        pDesc = s_pModule->ppInterfaceDir[pDesc->sParentIndex]->pDesc;
+        pDesc = s_pModule->mInterfaceDirs[pDesc->sParentIndex]->pDesc;
     }
     return FALSE;
 }
@@ -4410,7 +4410,7 @@ BOOL IsClsIntfParent(ClassDescriptor *pDesc, int nIndex)
     if (0 == nIndex) return TRUE;
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (IsInterfaceParent(s_pModule->ppInterfaceDir
+        if (IsInterfaceParent(s_pModule->mInterfaceDirs
             [pDesc->ppInterfaces[n]->sIndex]->pDesc, nIndex))
             return TRUE;
     }
@@ -4433,8 +4433,8 @@ int TryGetParentClsIntf(ClassDescriptor *pDesc, InterfaceDescriptor *pIntf)
 BOOL IsClassInterfaceVirtuallyImplementedByAnyone(
     ClassInterface* pClsIntf, int clsIndex)
 {
-    assert(pClsIntf && s_pModule->ppClassDir[clsIndex]);
-    ClassDescriptor* pDesc = s_pModule->ppClassDir[clsIndex]->pDesc;
+    assert(pClsIntf && s_pModule->mClassDirs[clsIndex]);
+    ClassDescriptor* pDesc = s_pModule->mClassDirs[clsIndex]->pDesc;
 
     int index = pClsIntf->sIndex;
 
@@ -4572,8 +4572,8 @@ int P_ClassInterface(ClassDirEntry *pClass)
         goto ErrorSkip;
     }
 
-    strcpy(szInterfaceName, s_pModule->ppInterfaceDir[n]->pszName);
-    pIntf = s_pModule->ppInterfaceDir[n]->pDesc;
+    strcpy(szInterfaceName, s_pModule->mInterfaceDirs[n]->pszName);
+    pIntf = s_pModule->mInterfaceDirs[n]->pDesc;
 
     //checking whether the interfaces declared in class and the interfaces
     //defined in module match.
@@ -4601,14 +4601,14 @@ int P_ClassInterface(ClassDirEntry *pClass)
     if (!(pDesc->dwAttribs & ClassAttrib_t_aspect) &&
             (wAttribs & ClassInterfaceAttrib_privileged)) {
         ErrorReport(CAR_E_IllegalPrivilegedInterface,
-                pClass->pszName, s_pModule->ppInterfaceDir[n]->pszName);
+                pClass->pszName, s_pModule->mInterfaceDirs[n]->pszName);
         return Ret_AbortOnError;
     }
 
     if ((pDesc->dwAttribs & ClassAttrib_t_generic) &&
             (pDesc->dwAttribs & ClassAttrib_hasvirtual)) {
         ErrorReport(CAR_E_GenericCouldntHaveVirtualInterface,
-                pClass->pszName, s_pModule->ppInterfaceDir[n]->pszName);
+                pClass->pszName, s_pModule->mInterfaceDirs[n]->pszName);
         return Ret_AbortOnError;
     }
 
@@ -4651,23 +4651,23 @@ int P_ClassInterface(ClassDirEntry *pClass)
 
     if ((wAttribs & ClassInterfaceAttrib_callback)
         && !(wAttribs & ClassInterfaceAttrib_delegate)) {
-        if (s_pModule->ppInterfaceDir[nIndexOfInterface]->pDesc->dwAttribs & InterfaceAttrib_local) {
+        if (s_pModule->mInterfaceDirs[nIndexOfInterface]->pDesc->dwAttribs & InterfaceAttrib_local) {
             ErrorReport(CAR_E_LocalConflict);
             goto ErrorSkip;
         }
-        GenerateHandlerInterface(szInterfaceName, s_pModule, s_pModule->ppInterfaceDir[nIndexOfInterface]);
+        GenerateHandlerInterface(szInterfaceName, s_pModule, s_pModule->mInterfaceDirs[nIndexOfInterface]);
     }
     else if (wAttribs & ClassInterfaceAttrib_async) {
-        if (s_pModule->ppInterfaceDir[nIndexOfInterface]->pDesc->dwAttribs & InterfaceAttrib_local) {
+        if (s_pModule->mInterfaceDirs[nIndexOfInterface]->pDesc->dwAttribs & InterfaceAttrib_local) {
             ErrorReport(CAR_E_LocalConflict);
             goto ErrorSkip;
         }
         x = GenerateAsyncCallbackInterface(
                 szInterfaceName,
                 s_pModule,
-                s_pModule->ppInterfaceDir[nIndexOfInterface]);
+                s_pModule->mInterfaceDirs[nIndexOfInterface]);
 
-        if (x > 0) s_pModule->ppInterfaceDir[x]->pDesc->dwAttribs |= InterfaceAttrib_defined;
+        if (x > 0) s_pModule->mInterfaceDirs[x]->pDesc->dwAttribs |= InterfaceAttrib_defined;
         strcat(szInterfaceName, "Async");
         x = AddConstClassInterface(szInterfaceName, NULL, pDesc);
         if (x > 0) {
@@ -4725,15 +4725,15 @@ int GenerateClassObject(ClassDirEntry *pClass)
     }
     pDesc->sCtorIndex = r;
 
-    s_pModule->ppInterfaceDir[pDesc->sCtorIndex]->pDesc->dwAttribs  = attr;
+    s_pModule->mInterfaceDirs[pDesc->sCtorIndex]->pDesc->dwAttribs  = attr;
 
     n = RetrieveInterface("IClassObject", NULL, s_pModule, TRUE);
     if (n < 0) {
         return Ret_AbortOnError;
     }
-    s_pModule->ppInterfaceDir[pDesc->sCtorIndex]->pDesc->sParentIndex = n;
+    s_pModule->mInterfaceDirs[pDesc->sCtorIndex]->pDesc->sParentIndex = n;
 
-    s_pModule->pDefinedInterfaceIndex[s_pModule->mDefinedInterfaceCount++] = r;
+    s_pModule->mDefinedInterfaceIndexes[s_pModule->mDefinedInterfaceCount++] = r;
 
     //need to add namespace
     if (pClass->pszNameSpace != NULL) {
@@ -4744,11 +4744,11 @@ int GenerateClassObject(ClassDirEntry *pClass)
     }
     r = CreateClassDirEntry(szName, s_pModule, 0);
 
-    n = CreateClassInterface(pDesc->sCtorIndex, s_pModule->ppClassDir[r]->pDesc);
+    n = CreateClassInterface(pDesc->sCtorIndex, s_pModule->mClassDirs[r]->pDesc);
     if (n < 0) {
         if (n != CLSError_DupEntry)
             CreateError(n, "class interface",
-                s_pModule->ppInterfaceDir[pDesc->sCtorIndex]->pszName);
+                s_pModule->mInterfaceDirs[pDesc->sCtorIndex]->pszName);
         return Ret_AbortOnError;
     }
 
@@ -4757,7 +4757,7 @@ int GenerateClassObject(ClassDirEntry *pClass)
             CreateError(r, "class", szName);
     }
     else {
-        s_pModule->ppClassDir[r]->pDesc->dwAttribs = classAttr;
+        s_pModule->mClassDirs[r]->pDesc->dwAttribs = classAttr;
     }
     return Ret_Continue;
 }
@@ -4774,11 +4774,11 @@ void AddClassParent(
         ErrorReport(CAR_E_NotFound, "class", pszName);
         return;
     }
-    pParent = s_pModule->ppClassDir[n]->pDesc;
+    pParent = s_pModule->mClassDirs[n]->pDesc;
 
     if (pDesc == pParent) {
         ErrorReport(CAR_E_NestedInherit,
-                "class", s_pModule->ppClassDir[n]->pszName);
+                "class", s_pModule->mClassDirs[n]->pszName);
         return;
     }
     if (!(pParent->dwAttribs & ClassAttrib_defined)) {
@@ -4810,11 +4810,11 @@ void AddGenericParent(
         ErrorReport(CAR_E_NotFound, "Generic", pszName);
         return;
     }
-    pParent = s_pModule->ppClassDir[n]->pDesc;
+    pParent = s_pModule->mClassDirs[n]->pDesc;
 
     if (pDesc == pParent) {
         ErrorReport(CAR_E_NestedInherit,
-                "Generic", s_pModule->ppClassDir[n]->pszName);
+                "Generic", s_pModule->mClassDirs[n]->pszName);
         return;
     }
     if (!(pParent->dwAttribs & ClassAttrib_defined)) {
@@ -4843,7 +4843,7 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
             return Ret_AbortOnError;
     }
 
-    pIntfDesc = s_pModule->ppInterfaceDir[pClsDesc->sCtorIndex]->pDesc;
+    pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->sCtorIndex]->pDesc;
 
     int n;
     CARToken token;
@@ -4855,7 +4855,7 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
         CreateError(n, "interface method", g_szCurrentToken);
         return Ret_AbortOnError;
     }
-    pIntfDesc->ppMethods[n]->type.type = Type_ECode;
+    pIntfDesc->ppMethods[n]->type.mType = Type_ECode;
 
     if (GetToken(s_pFile) != Token_S_lparen) {
         ErrorReport(CAR_E_ExpectSymbol, "(");
@@ -4935,7 +4935,7 @@ int P_ClassCtorMethod(ClassDirEntry *pClass, BOOL isDeprecated)
     int i;
 
     memset(&type, 0, sizeof(type));
-    type.type = Type_interface;
+    type.mType = Type_interface;
     type.sIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
     type.nPointer = 2;
 
@@ -4968,7 +4968,7 @@ int AddTrivialClassCtorMethod(ClassDirEntry *pClass)
             return Ret_AbortOnError;
     }
 
-    pIntfDesc = s_pModule->ppInterfaceDir[pClsDesc->sCtorIndex]->pDesc;
+    pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->sCtorIndex]->pDesc;
 
     int n;
 
@@ -4977,7 +4977,7 @@ int AddTrivialClassCtorMethod(ClassDirEntry *pClass)
         CreateError(n, "interface method", g_szCurrentToken);
         return Ret_AbortOnError;
     }
-    pIntfDesc->ppMethods[n]->type.type = Type_ECode;
+    pIntfDesc->ppMethods[n]->type.mType = Type_ECode;
 
     pIntfDesc->ppMethods[n]->dwAttribs |= MethodAttrib_TrivialCtor | MethodAttrib_DefaultCtor;
     pClass->pDesc->dwAttribs |= ClassAttrib_hasTrivialCtor | ClassAttrib_hasDefaultCtor;
@@ -5001,7 +5001,7 @@ int AddTrivialClassCtorMethod(ClassDirEntry *pClass)
     int i;
 
     memset(&type, 0, sizeof(type));
-    type.type = Type_interface;
+    type.mType = Type_interface;
     type.sIndex = SelectInterfaceDirEntry("IInterface", NULL, s_pModule);
     type.nPointer = 2;
 
@@ -5037,7 +5037,7 @@ int AddCallbackCoalesceMethod(char* pszMethodName, ClassDirEntry *pClass)
                                                     pClsDesc->ppInterfaces[n]);
             if (x < 0) continue;
 
-            pIntfDesc = s_pModule->ppInterfaceDir[pClsDesc->ppInterfaces[n]->sIndex]->pDesc;
+            pIntfDesc = s_pModule->mInterfaceDirs[pClsDesc->ppInterfaces[n]->sIndex]->pDesc;
             pMethod = pIntfDesc->ppMethods[x];
 
             if (0 == pMethod->cParams) {
@@ -5219,7 +5219,7 @@ int P_ClassBody(ClassDirEntry *pClass, BOOL isDeprecated)
     }
 
     if (pDesc->dwAttribs & ClassAttrib_hasparent) {
-        ClassDirEntry* pParent = s_pModule->ppClassDir[pDesc->sParentIndex];
+        ClassDirEntry* pParent = s_pModule->mClassDirs[pDesc->sParentIndex];
         if (!(pParent->pDesc->dwAttribs & ClassAttrib_t_generic)) {
             if ((pParent->pDesc->dwAttribs & ClassAttrib_hasctor) &&
                 !(pParent->pDesc->dwAttribs & ClassAttrib_hasDefaultCtor)) {
@@ -5379,7 +5379,7 @@ int P_Class(CARToken token, DWORD properties)
                 CreateError(r, "class", g_szCurrentToken);
         }
         else {
-            s_pModule->ppClassDir[r]-> \
+            s_pModule->mClassDirs[r]-> \
                         pDesc->dwAttribs |= dwAttribs;
         }
         return Ret_Continue;
@@ -5389,11 +5389,11 @@ int P_Class(CARToken token, DWORD properties)
         return Ret_AbortOnError;
     }
 
-    pClass = s_pModule->ppClassDir[r];
+    pClass = s_pModule->mClassDirs[r];
     pDesc = pClass->pDesc;
     pDesc->dwAttribs = dwAttribs;
 
-    return P_ClassBody(s_pModule->ppClassDir[r], isDeprecated);
+    return P_ClassBody(s_pModule->mClassDirs[r], isDeprecated);
 }
 
 // PROPERTY  -> k_scriptable | k_monitor | k_singleton
@@ -5768,7 +5768,7 @@ void GenIIDSeedString(InterfaceDirEntry *pInterface, char *pszBuf)
         }
         if (0 == pDesc->sParentIndex) break;
 
-        pInterface = s_pModule->ppInterfaceDir[pDesc->sParentIndex];
+        pInterface = s_pModule->mInterfaceDirs[pDesc->sParentIndex];
         pDesc = pInterface->pDesc;
     }
 
@@ -5864,7 +5864,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
     // check if all interfaces of generic have implemented in 'child'.
     //
     if (pDesc->dwAttribs & ClassAttrib_hasparent) {
-        ClassDirEntry* pParent = s_pModule->ppClassDir[pDesc->sParentIndex];
+        ClassDirEntry* pParent = s_pModule->mClassDirs[pDesc->sParentIndex];
         if (pParent->pDesc->dwAttribs & ClassAttrib_t_generic) {
             // the 'parent' is generic
             // the interfaces of generic all must have implemented in 'child'
@@ -5879,7 +5879,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
                 }
                 if (!bFound) {
                     ErrorReport(CAR_E_NoImplIntfOfGeneric,
-                        s_pModule->ppInterfaceDir[pParent->pDesc->
+                        s_pModule->mInterfaceDirs[pParent->pDesc->
                         ppInterfaces[i]->sIndex]->pszName, pClass->pszName);
                     return;
                 }
@@ -5894,7 +5894,7 @@ void ClassLastCheck(ClassDirEntry *pClass)
         for (n = 0; n < pDesc->mInterfaceCount; n++) {
             if ((pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
                 && !(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_delegate)) {
-                pIntfDesc = s_pModule->ppInterfaceDir\
+                pIntfDesc = s_pModule->mInterfaceDirs\
                             [pDesc->ppInterfaces[n]->sIndex]->pDesc;
                 for (m = 0; m < pIntfDesc->cMethods; m++) {
                     pMethod = pIntfDesc->ppMethods[m];
@@ -5913,12 +5913,12 @@ void ClassLastCheck(ClassDirEntry *pClass)
     if ((pDesc->dwAttribs & ClassAttrib_classlocal)
         && (pDesc->dwAttribs & ClassAttrib_hasctor)) {
         pDesc->dwAttribs |= ClassAttrib_local;
-        s_pModule->ppInterfaceDir[pDesc->sCtorIndex]-> \
+        s_pModule->mInterfaceDirs[pDesc->sCtorIndex]-> \
             pDesc->dwAttribs |= InterfaceAttrib_local;
     }
 
     if (pDesc->dwAttribs & ClassAttrib_t_clsobj) {
-        if (s_pModule->ppInterfaceDir[pDesc->ppInterfaces[0]->\
+        if (s_pModule->mInterfaceDirs[pDesc->ppInterfaces[0]->\
             sIndex]->pDesc->dwAttribs & InterfaceAttrib_local) {
             pDesc->dwAttribs |= ClassAttrib_classlocal;
         }
@@ -5930,12 +5930,12 @@ void ClassLastCheck(ClassDirEntry *pClass)
         InterfaceDirEntry *pIntf;
 
         pClsIntf = pDesc->ppInterfaces[0];
-        pIntf = s_pModule->ppInterfaceDir[pClsIntf->sIndex];
+        pIntf = s_pModule->mInterfaceDirs[pClsIntf->sIndex];
 
         if ((pIntf->pDesc->dwAttribs & InterfaceAttrib_local)
             || (pClsIntf->wAttribs & ClassInterfaceAttrib_callback)) {
             for (n = 1; n < pDesc->mInterfaceCount; n++) {
-                if (!(s_pModule->ppInterfaceDir
+                if (!(s_pModule->mInterfaceDirs
                     [pDesc->ppInterfaces[n]->sIndex]->pDesc->\
                     dwAttribs & InterfaceAttrib_local)
                     && !(pDesc->ppInterfaces[n]->wAttribs &
@@ -5969,20 +5969,20 @@ void LastCheck()
     }
 
     for (n = 0; n < s_pModule->mEnumCount; n++) {
-        EnumLastCheck(s_pModule->ppEnumDir[n]);
+        EnumLastCheck(s_pModule->mEnumDirs[n]);
     }
 
     for (n = 0; n < s_pModule->mStructCount; n++) {
-        StructLastCheck(s_pModule->ppStructDir[n]);
-        CalcStructAlignedSize(s_pModule, s_pModule->ppStructDir[n]->pDesc);
+        StructLastCheck(s_pModule->mStructDirs[n]);
+        CalcStructAlignedSize(s_pModule, s_pModule->mStructDirs[n]->pDesc);
     }
 
     for (n = 0; n < s_pModule->mInterfaceCount; n++) {
-        InterfaceLastCheck(s_pModule->ppInterfaceDir[n]);
+        InterfaceLastCheck(s_pModule->mInterfaceDirs[n]);
     }
 
     for (n = 0; n < s_pModule->mClassCount; n++) {
-        ClassLastCheck(s_pModule->ppClassDir[n]);
+        ClassLastCheck(s_pModule->mClassDirs[n]);
     }
 
     GenerateEnums(s_pModule);

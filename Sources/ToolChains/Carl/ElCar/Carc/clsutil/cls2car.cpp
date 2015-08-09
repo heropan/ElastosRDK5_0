@@ -41,7 +41,7 @@ void CGenerateLibraries(FILE *pFile, const CLSModule *pModule)
     for (n = 0; n < pModule->mLibraryCount; n++) {
         fprintf(pFile,
                 "    importlib(\"%s\");\n",
-                pModule->ppLibNames[n]);
+                pModule->mLibraryNames[n]);
     }
 }
 
@@ -52,7 +52,7 @@ void CGenerateInterfaceDecls(FILE *pFile, const CLSModule *pModule)
     BOOL bFirst = TRUE;
 
     for (n = 0; n < pModule->mInterfaceCount; n++) {
-        pEntry = pModule->ppInterfaceDir[n];
+        pEntry = pModule->mInterfaceDirs[n];
 
         if (!pEntry->pszNameSpace \
             && !(pEntry->pDesc->dwAttribs & InterfaceAttrib_dual)
@@ -73,7 +73,7 @@ void CGenerateAliases(FILE *pFile, const CLSModule *pModule)
     BOOL bFirst = TRUE;
 
     for (n = 0; n < pModule->mAliasCount; n++) {
-        pEntry = pModule->ppAliasDir[n];
+        pEntry = pModule->mAliasDirs[n];
         if (!pEntry->pszNameSpace) {
             if (bFirst) {
                 bFirst = FALSE;
@@ -94,13 +94,13 @@ void CGenerateEnums(FILE *pFile, const CLSModule *pModule)
     EnumDescriptor *pDesc;
 
     for (n = 0; n < pModule->mEnumCount; n++) {
-        if (!pModule->ppEnumDir[n]->pszNameSpace) {
+        if (!pModule->mEnumDirs[n]->pszNameSpace) {
             fprintf(pFile,
                         "\n"
                         "    enum %s {\n",
-                        pModule->ppEnumDir[n]->pszName);
+                        pModule->mEnumDirs[n]->pszName);
 
-            pDesc = pModule->ppEnumDir[n]->pDesc;
+            pDesc = pModule->mEnumDirs[n]->pDesc;
             for (m = 0; m < pDesc->cElems; m++) {
                 if (pDesc->ppElems[m]->bHexFormat) {
                     fprintf(pFile,
@@ -125,29 +125,29 @@ void CGenerateConsts(FILE *pFile, const CLSModule *pModule)
     int n;
 
     for (n = 0; n < pModule->mConstCount; n++) {
-        if (!pModule->ppConstDir[n]->pszNameSpace) {
+        if (!pModule->mConstDirs[n]->pszNameSpace) {
             fprintf(pFile,
                         "\n"
                         "    const %s = ",
-                        pModule->ppConstDir[n]->pszName);
-            if (pModule->ppConstDir[n]->type == TYPE_INTEGER32) {
-                if (pModule->ppConstDir[n]->v.intValue.bHexFormat) {
+                        pModule->mConstDirs[n]->pszName);
+            if (pModule->mConstDirs[n]->type == TYPE_INTEGER32) {
+                if (pModule->mConstDirs[n]->v.intValue.bHexFormat) {
                     fprintf(pFile,
                             "0x%08x;\n",
-                            pModule->ppConstDir[n]->v.intValue.nValue);
+                            pModule->mConstDirs[n]->v.intValue.nValue);
                 }
                 else {
                     fprintf(pFile,
                             "%d;\n",
-                            pModule->ppConstDir[n]->v.intValue.nValue);
+                            pModule->mConstDirs[n]->v.intValue.nValue);
                 }
             }
             else {
-                assert(pModule->ppConstDir[n]->type == TYPE_STRING);
-                if (pModule->ppConstDir[n]->v.strValue.pszValue != NULL) {
+                assert(pModule->mConstDirs[n]->type == TYPE_STRING);
+                if (pModule->mConstDirs[n]->v.strValue.pszValue != NULL) {
                      fprintf(pFile,
                             "\"%s\";\n",
-                            pModule->ppConstDir[n]->v.strValue.pszValue);
+                            pModule->mConstDirs[n]->v.strValue.pszValue);
                 }
             }
         }
@@ -161,16 +161,16 @@ void CGenerateStructs(FILE *pFile, const CLSModule *pModule)
     TypeDescriptor elemType;
 
     for (n = 0; n < pModule->mStructCount; n++) {
-        if (!pModule->ppStructDir[n]->pszNameSpace) {
+        if (!pModule->mStructDirs[n]->pszNameSpace) {
             fprintf(pFile,
                     "\n"
                     "    struct %s {\n",
-                    pModule->ppStructDir[n]->pszName);
+                    pModule->mStructDirs[n]->pszName);
 
-            pDesc = pModule->ppStructDir[n]->pDesc;
+            pDesc = pModule->mStructDirs[n]->pDesc;
             for (m = 0; m < pDesc->cElems; m++) {
                 elemType = pDesc->ppElems[m]->type;
-                if (Type_Array == elemType.type) { //Handle Array
+                if (Type_Array == elemType.mType) { //Handle Array
                     fprintf(pFile,
                             "        %s;\n",
                             Array2CString(pModule, &elemType, pDesc->ppElems[m]->pszName));
@@ -310,20 +310,20 @@ void CGenerateInterfaces(FILE *pFile, const CLSModule *pModule)
     InterfaceDescriptor *pDesc;
 
     for (n = 0; n < pModule->mInterfaceCount; n++) {
-        pDesc = pModule->ppInterfaceDir[n]->pDesc;
+        pDesc = pModule->mInterfaceDirs[n]->pDesc;
 
-        if (!pModule->ppInterfaceDir[n]->pszNameSpace
+        if (!pModule->mInterfaceDirs[n]->pszNameSpace
             && !(pDesc->dwAttribs & InterfaceAttrib_dual)
             && !(pDesc->dwAttribs & InterfaceAttrib_clsobj)) {
             fputs("\n", pFile);
             CGenerateInterfaceAttribs(pFile, pDesc);
 
             fprintf(pFile, "    interface %s",
-                    pModule->ppInterfaceDir[n]->pszName);
+                    pModule->mInterfaceDirs[n]->pszName);
 
             if (0 != pDesc->sParentIndex) {
                 fprintf(pFile, " : %s",
-                        pModule->ppInterfaceDir[pDesc->sParentIndex]->pszName);
+                        pModule->mInterfaceDirs[pDesc->sParentIndex]->pszName);
             }
             fputs(" {\n", pFile);
 
@@ -367,10 +367,10 @@ void CGenerateClassAttribs(
         if (bComma) fputs(",\n", pFile);
         fprintf(pFile,
                 "        aggregate(%s",
-                pModule->ppClassDir[pDesc->pAggrIndexs[0]]->pszName);
+                pModule->mClassDirs[pDesc->pAggrIndexs[0]]->pszName);
         for (n = 1; n < pDesc->cAggregates; n++) {
             fprintf(pFile, ", %s",
-                    pModule->ppClassDir[pDesc->pAggrIndexs[n]]->pszName);
+                    pModule->mClassDirs[pDesc->pAggrIndexs[n]]->pszName);
         }
         fputs(")", pFile);
     }
@@ -379,10 +379,10 @@ void CGenerateClassAttribs(
         if (bComma) fputs(",\n", pFile);
         fprintf(pFile,
                 "        aspect(%s",
-                pModule->ppClassDir[pDesc->pAspectIndexs[0]]->pszName);
+                pModule->mClassDirs[pDesc->pAspectIndexs[0]]->pszName);
         for (n = 1; n < pDesc->cAspects; n++) {
             fprintf(pFile, ", %s",
-                    pModule->ppClassDir[pDesc->pAspectIndexs[n]]->pszName);
+                    pModule->mClassDirs[pDesc->pAspectIndexs[n]]->pszName);
         }
         fputs(")", pFile);
     }
@@ -397,8 +397,8 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
     ClassInterface *pClsIntf;
 
     for (n = 0; n < pModule->mClassCount; n++) {
-        pClass = pModule->ppClassDir[n]->pDesc;
-        if (!pModule->ppClassDir[n]->pszNameSpace
+        pClass = pModule->mClassDirs[n]->pDesc;
+        if (!pModule->mClassDirs[n]->pszNameSpace
             && !(pClass->dwAttribs & ClassAttrib_t_sink)
             && !(pClass->dwAttribs & ClassAttrib_t_clsobj)
             && !(pClass->dwAttribs & ClassAttrib_t_external)) {
@@ -422,17 +422,17 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
                     assert(TRUE == FALSE);
                     break;
             }
-            fputs(pModule->ppClassDir[n]->pszName, pFile);
+            fputs(pModule->mClassDirs[n]->pszName, pFile);
 
             if (pClass->dwAttribs & ClassAttrib_hasparent) {
-                if (pModule->ppClassDir[pClass->sParentIndex]->pDesc->dwAttribs
+                if (pModule->mClassDirs[pClass->sParentIndex]->pDesc->dwAttribs
                     & ClassAttrib_t_generic) {
                     fprintf(pFile, " :: %s",
-                        pModule->ppClassDir[pClass->sParentIndex]->pszName);
+                        pModule->mClassDirs[pClass->sParentIndex]->pszName);
                 }
                 else {
                     fprintf(pFile, " : %s",
-                        pModule->ppClassDir[pClass->sParentIndex]->pszName);
+                        pModule->mClassDirs[pClass->sParentIndex]->pszName);
                 }
             }
 
@@ -442,7 +442,7 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
 
             for (m = 0; m < pClass->mInterfaceCount; m++) {
                 pClsIntf = pClass->ppInterfaces[m];
-                pIEntry = pModule->ppInterfaceDir[pClsIntf->sIndex];
+                pIEntry = pModule->mInterfaceDirs[pClsIntf->sIndex];
 
                 if (pClsIntf->wAttribs & ClassInterfaceAttrib_outer)
                     continue;

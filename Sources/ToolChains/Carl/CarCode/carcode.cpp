@@ -124,9 +124,9 @@ int getDependenceFromDll(const char *pszName)
 
     printf("Dependences: \n");
     for(int i = 0; i < pModule->mLibraryCount; i++) {
-        pStr = pModule->ppLibNames[i] + strlen(pModule->ppLibNames[i]) - 4;
+        pStr = pModule->mLibraryNames[i] + strlen(pModule->mLibraryNames[i]) - 4;
         if(!strcmp(pStr, ".dll") | !strcmp(pStr, ".eco"))
-            printf("%s\n", pModule->ppLibNames[i]);
+            printf("%s\n", pModule->mLibraryNames[i]);
     }
 
     return 1;
@@ -148,9 +148,9 @@ int getDependenceFromCls(const char *pszName)
 
     printf("Dependences: \n");
     for(int i = 0; i < pModule->mLibraryCount; i++) {
-        pStr = pModule->ppLibNames[i] + strlen(pModule->ppLibNames[i]) - 4;
+        pStr = pModule->mLibraryNames[i] + strlen(pModule->mLibraryNames[i]) - 4;
         if(!strcmp(pStr, ".dll") | !strcmp(pStr, ".eco"))
-            printf("%s\n", pModule->ppLibNames[i]);
+            printf("%s\n", pModule->mLibraryNames[i]);
     }
 
     return 1;

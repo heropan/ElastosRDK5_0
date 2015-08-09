@@ -96,7 +96,7 @@ ECode CClsModule::InitOrgType()
         mTypeAliasList[i].mOrgTypeDesc = new TypeDescriptor;
         if (!mTypeAliasList[i].mOrgTypeDesc) goto EExit;
         mTypeAliasList[i].mTypeDesc = &(getAliasDirAddr(mBase,
-                mClsMod->ppAliasDir, i)->type);
+                mClsMod->mAliasDirs, i)->type);
         _GetOriginalType(this, mTypeAliasList[i].mTypeDesc,
                 mTypeAliasList[i].mOrgTypeDesc);
     }
@@ -124,7 +124,7 @@ ECode CClsModule::AliasToOriginal(
         return E_INVALID_OPERATION;
     }
 
-    if (typeDype->type != Type_alias) {
+    if (typeDype->mType != Type_alias) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -136,7 +136,7 @@ ECode CClsModule::AliasToOriginal(
     }
 
 //    while (typeDype->type == Type_alias) {
-//        typeDype = &mClsMod->ppAliasDir[typeDype->sIndex]->type;
+//        typeDype = &mClsMod->mAliasDirs[typeDype->sIndex]->type;
 //    }
 
     if (typeDype->sIndex >= mClsMod->mAliasCount) {

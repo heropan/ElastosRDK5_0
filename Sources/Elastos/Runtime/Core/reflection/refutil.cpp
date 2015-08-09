@@ -108,7 +108,7 @@ Boolean IsSysAlaisType(
 {
     Int32 base = clsModule->mBase;
     CLSModule* module = clsModule->mClsMod;
-    AliasDirEntry* aliasDir = getAliasDirAddr(base, module->ppAliasDir, index);
+    AliasDirEntry* aliasDir = getAliasDirAddr(base, module->mAliasDirs, index);
     char* nameSpace = adjustNameAddr(base, aliasDir->pszNameSpace);
     return (nameSpace) && !strcmp(nameSpace, "systypes");
 }
@@ -122,15 +122,15 @@ void _GetOriginalType(
     dest->bUnsigned = src->bUnsigned;
 
     AliasDirEntry* aliasDir = NULL;
-    while (src->type == Type_alias) {
+    while (src->mType == Type_alias) {
         aliasDir = getAliasDirAddr(clsModule->mBase,
-                clsModule->mClsMod->ppAliasDir, src->sIndex);
+                clsModule->mClsMod->mAliasDirs, src->sIndex);
         src = &aliasDir->type;
         dest->nPointer += src->nPointer;
         dest->bUnsigned |= src->bUnsigned;
     }
 
-    dest->type = src->type;
+    dest->mType = src->mType;
     dest->sIndex = src->sIndex;
     dest->pNestedType = src->pNestedType;
 }
@@ -142,7 +142,7 @@ UInt32 GetDataTypeSize(
     UInt32 size = 0;
 
     CLSModule* module = clsModule->mClsMod;
-    if (typeDesc->type == Type_alias) {
+    if (typeDesc->mType == Type_alias) {
         TypeDescriptor orgTypeDesc;
         _GetOriginalType(clsModule, typeDesc, &orgTypeDesc);
         typeDesc = &orgTypeDesc;
@@ -155,7 +155,7 @@ UInt32 GetDataTypeSize(
     ArrayDirEntry* arrayDir = NULL;
     StructDirEntry* structDir = NULL;
     Int32 base = clsModule->mBase;
-    switch (typeDesc->type) {
+    switch (typeDesc->mType) {
         case Type_Char16:
             size = sizeof(Char16);
             break;
@@ -219,12 +219,12 @@ UInt32 GetDataTypeSize(
             break;
         case Type_struct:
             structDir = getStructDirAddr(base,
-                    module->ppStructDir, typeDesc->sIndex);
+                    module->mStructDirs, typeDesc->sIndex);
             size = adjustStructDescAddr(base, structDir->pDesc)->nAlignSize;
             break;
         case Type_Array:
             arrayDir = getArrayDirAddr(base,
-                    module->ppArrayDir, typeDesc->sIndex);
+                    module->mArrayDirs, typeDesc->sIndex);
             size = GetDataTypeSize(clsModule, &arrayDir->type) * arrayDir->nElements;
             break;
         case Type_enum:

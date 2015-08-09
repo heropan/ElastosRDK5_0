@@ -60,26 +60,26 @@ typedef struct CLSModule
     unsigned short      mArrayCount;
     unsigned short      mConstCount;
 
-    ClassDirEntry       **ppClassDir;
-    InterfaceDirEntry   **ppInterfaceDir;
-    int                 *pDefinedInterfaceIndex;
-    StructDirEntry      **ppStructDir;
-    EnumDirEntry        **ppEnumDir;
-    AliasDirEntry       **ppAliasDir;
-    char                **ppLibNames;
-    ArrayDirEntry       **ppArrayDir;
-    ConstDirEntry       **ppConstDir;
+    ClassDirEntry**     mClassDirs;
+    InterfaceDirEntry** mInterfaceDirs;
+    int*                mDefinedInterfaceIndexes;
+    StructDirEntry**    mStructDirs;
+    EnumDirEntry**      mEnumDirs;
+    AliasDirEntry**     mAliasDirs;
+    char**              mLibraryNames;
+    ArrayDirEntry**     mArrayDirs;
+    ConstDirEntry**     mConstDirs;
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void*           mBindData;
+    } mR;
 } CLSModule;
 
 typedef struct TypeDescriptor
 {
-    CARDataType         type;
+    CARDataType         mType;
     unsigned short      sIndex;
     unsigned char       nPointer;
     unsigned char       bUnsigned;
@@ -120,9 +120,9 @@ struct ClassDescriptor
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct ClassInterface
@@ -132,9 +132,9 @@ struct ClassInterface
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 typedef struct InterfaceDescriptor InterfaceDescriptor;
@@ -165,9 +165,9 @@ struct InterfaceDescriptor
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 const int c_nMaxParams = 32;
@@ -183,9 +183,9 @@ struct MethodDescriptor
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct ParamDescriptor
@@ -196,9 +196,9 @@ struct ParamDescriptor
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 typedef struct StructDescriptor StructDescriptor;
@@ -220,9 +220,9 @@ struct StructDescriptor
     unsigned int        nAlignSize;
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct StructElement
@@ -232,9 +232,9 @@ struct StructElement
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 typedef struct EnumDescriptor EnumDescriptor;
@@ -256,9 +256,9 @@ struct EnumDescriptor
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct EnumElement
@@ -269,9 +269,9 @@ struct EnumElement
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct AliasDirEntry
@@ -284,9 +284,9 @@ struct AliasDirEntry
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct ArrayDirEntry
@@ -327,9 +327,9 @@ struct ConstDirEntry
 
     union
     {
-        int             nReserved;
-        void            *pvBindData;
-    } r;
+        int             mReserved;
+        void            *mBindData;
+    } mR;
 };
 
 struct InterfaceConstDescriptor

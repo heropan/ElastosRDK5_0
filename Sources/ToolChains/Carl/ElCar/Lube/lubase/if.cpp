@@ -126,10 +126,10 @@ inline BOOL AspectCondition(PLUBECTX pCtx, BOOL bFirst)
 
     pDesc = pCtx->m_pClass->pDesc;
     if (bFirst) {
-        return pCtx->m_pAspect == pCtx->m_pModule->ppClassDir
+        return pCtx->m_pAspect == pCtx->m_pModule->mClassDirs
                 [pDesc->pAspectIndexs[0]];
     }
-    return pCtx->m_pAspect == pCtx->m_pModule->ppClassDir
+    return pCtx->m_pAspect == pCtx->m_pModule->mClassDirs
                 [pDesc->pAspectIndexs[pDesc->cAspects - 1]];
 }
 
@@ -139,10 +139,10 @@ inline BOOL AggregateCondition(PLUBECTX pCtx, BOOL bFirst)
 
     pDesc = pCtx->m_pClass->pDesc;
     if (bFirst) {
-        return pCtx->m_pAggregate == pCtx->m_pModule->ppClassDir
+        return pCtx->m_pAggregate == pCtx->m_pModule->mClassDirs
                     [pDesc->pAggrIndexs[0]];
     }
-    return pCtx->m_pAggregate == pCtx->m_pModule->ppClassDir
+    return pCtx->m_pAggregate == pCtx->m_pModule->mClassDirs
                     [pDesc->pAggrIndexs[pDesc->cAggregates - 1]];
 }
 
@@ -152,10 +152,10 @@ inline BOOL ClassForAspectCondition(PLUBECTX pCtx, BOOL bFirst)
 
     pDesc = pCtx->m_pClass->pDesc;
     if (bFirst) {
-        return pCtx->m_pForClass== pCtx->m_pModule->ppClassDir
+        return pCtx->m_pForClass== pCtx->m_pModule->mClassDirs
                     [pDesc->pClassIndexs[0]];
     }
-    return pCtx->m_pForClass == pCtx->m_pModule->ppClassDir
+    return pCtx->m_pForClass == pCtx->m_pModule->mClassDirs
                     [pDesc->pClassIndexs[pDesc->cClasses - 1]];
 }
 

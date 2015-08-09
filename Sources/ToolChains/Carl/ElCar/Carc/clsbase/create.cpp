@@ -537,21 +537,21 @@ CLSModule *CreateCLS()
     memcpy(pModule->mMagic, MAGIC_STRING, MAGIC_STRING_LENGTH);
     pModule->mCLSModuleVersion = CLSMODULE_VERSION;
 
-    pModule->ppClassDir = new ClassDirEntry *[MAX_CLASS_NUMBER];
-    pModule->ppInterfaceDir = new InterfaceDirEntry *[MAX_INTERFACE_NUMBER];
-    pModule->pDefinedInterfaceIndex = new int[MAX_DEFINED_INTERFACE_NUMBER];
-    pModule->ppStructDir = new StructDirEntry *[MAX_STRUCT_NUMBER];
-    pModule->ppEnumDir = new EnumDirEntry *[MAX_ENUM_NUMBER];
-    pModule->ppAliasDir = new AliasDirEntry *[MAX_ALIAS_NUMBER];
-    pModule->ppLibNames = new char *[MAX_LIBRARY_NUMBER];
-    pModule->ppArrayDir = new ArrayDirEntry *[MAX_ARRAY_NUMBER];
-    pModule->ppConstDir = new ConstDirEntry *[MAX_CONST_NUMBER];
+    pModule->mClassDirs = new ClassDirEntry *[MAX_CLASS_NUMBER];
+    pModule->mInterfaceDirs = new InterfaceDirEntry *[MAX_INTERFACE_NUMBER];
+    pModule->mDefinedInterfaceIndexes = new int[MAX_DEFINED_INTERFACE_NUMBER];
+    pModule->mStructDirs = new StructDirEntry *[MAX_STRUCT_NUMBER];
+    pModule->mEnumDirs = new EnumDirEntry *[MAX_ENUM_NUMBER];
+    pModule->mAliasDirs = new AliasDirEntry *[MAX_ALIAS_NUMBER];
+    pModule->mLibraryNames = new char *[MAX_LIBRARY_NUMBER];
+    pModule->mArrayDirs = new ArrayDirEntry *[MAX_ARRAY_NUMBER];
+    pModule->mConstDirs = new ConstDirEntry *[MAX_CONST_NUMBER];
 
-    if (!pModule->ppClassDir || !pModule->ppInterfaceDir ||
-        !pModule->ppStructDir || !pModule->ppEnumDir ||
-        !pModule->ppAliasDir || !pModule->ppLibNames ||
-        !pModule->ppArrayDir || !pModule->ppConstDir ||
-        !pModule->pDefinedInterfaceIndex) {
+    if (!pModule->mClassDirs || !pModule->mInterfaceDirs ||
+        !pModule->mStructDirs || !pModule->mEnumDirs ||
+        !pModule->mAliasDirs || !pModule->mLibraryNames ||
+        !pModule->mArrayDirs || !pModule->mConstDirs ||
+        !pModule->mDefinedInterfaceIndexes) {
         DestroyCLS(pModule);
         return NULL;
     }
@@ -565,64 +565,64 @@ void DestroyCLS(CLSModule *pModule)
 
     assert(pModule != NULL);
 
-    if (pModule->ppClassDir) {
+    if (pModule->mClassDirs) {
         for (n = 0; n < pModule->mClassCount; n++) {
-            DeleteClassDirEntry(pModule->ppClassDir[n]);
+            DeleteClassDirEntry(pModule->mClassDirs[n]);
         }
-        delete [] pModule->ppClassDir;
+        delete [] pModule->mClassDirs;
     }
 
-    if (pModule->ppInterfaceDir) {
+    if (pModule->mInterfaceDirs) {
         for (n = 0; n < pModule->mInterfaceCount; n++) {
-            DeleteInterfaceDirEntry(pModule->ppInterfaceDir[n]);
+            DeleteInterfaceDirEntry(pModule->mInterfaceDirs[n]);
         }
-        delete [] pModule->ppInterfaceDir;
+        delete [] pModule->mInterfaceDirs;
     }
 
-    if (pModule->pDefinedInterfaceIndex) {
-        delete [] pModule->pDefinedInterfaceIndex;
+    if (pModule->mDefinedInterfaceIndexes) {
+        delete [] pModule->mDefinedInterfaceIndexes;
     }
 
-    if (pModule->ppArrayDir) {
+    if (pModule->mArrayDirs) {
         for (n = 0; n < pModule->mArrayCount; n++) {
-            DeleteArrayDirEntry(pModule->ppArrayDir[n]);
+            DeleteArrayDirEntry(pModule->mArrayDirs[n]);
         }
-        delete [] pModule->ppArrayDir;
+        delete [] pModule->mArrayDirs;
     }
 
-    if (pModule->ppStructDir) {
+    if (pModule->mStructDirs) {
         for (n = 0; n < pModule->mStructCount; n++) {
-            DeleteStructDirEntry(pModule->ppStructDir[n]);
+            DeleteStructDirEntry(pModule->mStructDirs[n]);
         }
-        delete [] pModule->ppStructDir;
+        delete [] pModule->mStructDirs;
     }
 
-    if (pModule->ppEnumDir) {
+    if (pModule->mEnumDirs) {
         for (n = 0; n < pModule->mEnumCount; n++) {
-            DeleteEnumDirEntry(pModule->ppEnumDir[n]);
+            DeleteEnumDirEntry(pModule->mEnumDirs[n]);
         }
-        delete [] pModule->ppEnumDir;
+        delete [] pModule->mEnumDirs;
     }
 
-    if (pModule->ppAliasDir) {
+    if (pModule->mAliasDirs) {
         for (n = 0; n < pModule->mAliasCount; n++) {
-            DeleteAliasDirEntry(pModule->ppAliasDir[n]);
+            DeleteAliasDirEntry(pModule->mAliasDirs[n]);
         }
-        delete [] pModule->ppAliasDir;
+        delete [] pModule->mAliasDirs;
     }
 
-    if (pModule->ppConstDir) {
+    if (pModule->mConstDirs) {
         for (n = 0; n < pModule->mConstCount; n++) {
-            DeleteConstDirEntry(pModule->ppConstDir[n]);
+            DeleteConstDirEntry(pModule->mConstDirs[n]);
         }
-        delete [] pModule->ppConstDir;
+        delete [] pModule->mConstDirs;
     }
 
-    if (pModule->ppLibNames) {
+    if (pModule->mLibraryNames) {
         for (n = 0; n < pModule->mLibraryCount; n++) {
-            delete pModule->ppLibNames[n];
+            delete pModule->mLibraryNames[n];
         }
-        delete [] pModule->ppLibNames;
+        delete [] pModule->mLibraryNames;
     }
 
     if (pModule->mUunm) delete pModule->mUunm;
@@ -648,18 +648,18 @@ int CreateClassDirEntry(
     }
     n = SelectClassDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
-        pDesc = pModule->ppClassDir[n]->pDesc;
+        pDesc = pModule->mClassDirs[n]->pDesc;
         if (pszNamespace != NULL) free(pszNamespace);
 
         if (CLASS_TYPE(dwAttribs) != CLASS_TYPE(pDesc->dwAttribs)) {
-            ExtraMessage(pModule->ppClassDir[n]->pszNameSpace,
+            ExtraMessage(pModule->mClassDirs[n]->pszNameSpace,
                         "class", pszName);
             _ReturnError (CLSError_NameConflict);
         }
         if (pDesc->mInterfaceCount > 0
             || (pDesc->dwAttribs & ClassAttrib_hasparent) > 0
             || IsValidUUID(&pDesc->clsid)) {
-            ExtraMessage(pModule->ppClassDir[n]->pszNameSpace,
+            ExtraMessage(pModule->mClassDirs[n]->pszNameSpace,
                         "class", pszName);
             _ReturnError (CLSError_DupEntry);
         }
@@ -679,7 +679,7 @@ int CreateClassDirEntry(
     pClass = NewClassDirEntry(pszName, pszNamespace);
     if (pszNamespace != NULL) free(pszNamespace);
     if (!pClass) _ReturnError (CLSError_OutOfMemory);
-    pModule->ppClassDir[pModule->mClassCount] = pClass;
+    pModule->mClassDirs[pModule->mClassCount] = pClass;
 
     _ReturnOK (pModule->mClassCount++);
 }
@@ -701,19 +701,19 @@ int CreateInterfaceDirEntry(
     }
     n = SelectInterfaceDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
-        pDesc = pModule->ppInterfaceDir[n]->pDesc;
+        pDesc = pModule->mInterfaceDirs[n]->pDesc;
         if (pszNamespace != NULL) free(pszNamespace);
 
         if (INTERFACE_TYPE(dwAttribs) != \
             INTERFACE_TYPE(pDesc->dwAttribs)) {
-            ExtraMessage(pModule->ppInterfaceDir[n]->pszNameSpace,
-                        "interface", pModule->ppInterfaceDir[n]->pszName);
+            ExtraMessage(pModule->mInterfaceDirs[n]->pszNameSpace,
+                        "interface", pModule->mInterfaceDirs[n]->pszName);
             _ReturnError (CLSError_NameConflict);
         }
         if (pDesc->cMethods > 0 || pDesc->sParentIndex != 0
             || IsValidUUID(&pDesc->iid)) {
-            ExtraMessage(pModule->ppInterfaceDir[n]->pszNameSpace,
-                        "interface", pModule->ppInterfaceDir[n]->pszName);
+            ExtraMessage(pModule->mInterfaceDirs[n]->pszNameSpace,
+                        "interface", pModule->mInterfaceDirs[n]->pszName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -732,7 +732,7 @@ int CreateInterfaceDirEntry(
     pInterface = NewInterfaceDirEntry(pszName, pszNamespace);
     if (pszNamespace != NULL) free(pszNamespace);
     if (!pInterface) _ReturnError (CLSError_OutOfMemory);
-    pModule->ppInterfaceDir[pModule->mInterfaceCount] = pInterface;
+    pModule->mInterfaceDirs[pModule->mInterfaceCount] = pInterface;
 
     _ReturnOK (pModule->mInterfaceCount++);
 }
@@ -744,7 +744,7 @@ int CreateArrayDirEntry(CLSModule *pModule)
     pArray = NewArrayDirEntry();
     if (!pArray) _ReturnError (CLSError_OutOfMemory);
 
-    pModule->ppArrayDir[pModule->mArrayCount] = pArray;
+    pModule->mArrayDirs[pModule->mArrayCount] = pArray;
 
     _ReturnOK (pModule->mArrayCount++);
 }
@@ -757,9 +757,9 @@ int CreateStructDirEntry(
 
     n = SelectStructDirEntry(pszName, pModule);
     if (n >= 0) {
-        if (pModule->ppStructDir[n]->pDesc->cElems > 0) {
-            ExtraMessage(pModule->ppStructDir[n]->pszNameSpace,
-                        "struct", pModule->ppStructDir[n]->pszName);
+        if (pModule->mStructDirs[n]->pDesc->cElems > 0) {
+            ExtraMessage(pModule->mStructDirs[n]->pszNameSpace,
+                        "struct", pModule->mStructDirs[n]->pszName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -772,7 +772,7 @@ int CreateStructDirEntry(
 
     pStruct = NewStructDirEntry(pszName);
     if (!pStruct) _ReturnError (CLSError_OutOfMemory);
-    pModule->ppStructDir[pModule->mStructCount] = pStruct;
+    pModule->mStructDirs[pModule->mStructCount] = pStruct;
 
     _ReturnOK (pModule->mStructCount++);
 }
@@ -794,9 +794,9 @@ int CreateEnumDirEntry(
     n = SelectEnumDirEntry(pszName, pszNamespace, pModule);
     if (n >= 0) {
         if (pszNamespace != NULL) free(pszNamespace);
-        if (pModule->ppEnumDir[n]->pDesc->cElems > 0) {
-            ExtraMessage(pModule->ppEnumDir[n]->pszNameSpace,
-                        "enum", pModule->ppEnumDir[n]->pszName);
+        if (pModule->mEnumDirs[n]->pDesc->cElems > 0) {
+            ExtraMessage(pModule->mEnumDirs[n]->pszNameSpace,
+                        "enum", pModule->mEnumDirs[n]->pszName);
             _ReturnError (CLSError_DupEntry);
         }
         _ReturnOK (n);
@@ -815,7 +815,7 @@ int CreateEnumDirEntry(
     pEnum = NewEnumDirEntry(pszName, pszNamespace);
     if (pszNamespace != NULL) free(pszNamespace);
     if (!pEnum) _ReturnError (CLSError_OutOfMemory);
-    pModule->ppEnumDir[pModule->mEnumCount] = pEnum;
+    pModule->mEnumDirs[pModule->mEnumCount] = pEnum;
 
     _ReturnOK (pModule->mEnumCount++);
 }
@@ -837,7 +837,7 @@ int CreateConstDirEntry(
 
     pConst = NewConstDirEntry(pszName);
     if (!pConst) _ReturnError (CLSError_OutOfMemory);
-    pModule->ppConstDir[pModule->mConstCount] = pConst;
+    pModule->mConstDirs[pModule->mConstCount] = pConst;
 
     _ReturnOK (pModule->mConstCount++);
 }
@@ -857,7 +857,7 @@ int CreateAliasDirEntry(
         }
 
         memset(&type, 0, sizeof(type));
-        type.type = (CARDataType)gType;
+        type.mType = (CARDataType)gType;
         type.sIndex = n;
         if (!IsEqualType(pModule, &type, pType)) {
             _ReturnError (CLSError_NameConflict);
@@ -869,7 +869,7 @@ int CreateAliasDirEntry(
     pAlias = NewAliasDirEntry(pszName);
     if (!pAlias) _ReturnError (CLSError_OutOfMemory);
     memcpy(&pAlias->type, pType, sizeof(TypeDescriptor));
-    pModule->ppAliasDir[pModule->mAliasCount] = pAlias;
+    pModule->mAliasDirs[pModule->mAliasCount] = pAlias;
 
     _ReturnOK (pModule->mAliasCount++);
 }
@@ -1045,7 +1045,7 @@ int InterfaceMethodsAppend(const CLSModule *pModule,
 
     if (0 != pSrc->sParentIndex) {
         n = InterfaceMethodsAppend(pModule,
-                pModule->ppInterfaceDir[pSrc->sParentIndex]->pDesc,
+                pModule->mInterfaceDirs[pSrc->sParentIndex]->pDesc,
                 pDest);
         if (n < 0) _Return (n);
     }

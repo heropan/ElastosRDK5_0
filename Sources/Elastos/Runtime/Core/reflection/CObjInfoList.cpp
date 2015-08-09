@@ -797,7 +797,7 @@ ECode CObjInfoList::AcquireInterfaceInfo(
     }
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(clsModule->mBase,
-            clsModule->mClsMod->ppInterfaceDir, index);
+            clsModule->mClsMod->mInterfaceDirs, index);
     EIID iid = adjustInterfaceDescAddr(clsModule->mBase, ifDir->pDesc)->iid;
 
     IInterface** obj = mIFInfos.Get(&iid);
@@ -919,13 +919,13 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     ECode ec = NOERROR;
     CLSModule* clsMod = clsModule->mClsMod;
     Int32 pointer = typeDesc->nPointer;
-    if (typeDesc->type == Type_alias) {
+    if (typeDesc->mType == Type_alias) {
         ec = clsModule->AliasToOriginal(typeDesc, &typeDesc);
         if (FAILED(ec)) return ec;
         if (isCheckLocalPtr) pointer += typeDesc->nPointer;
     }
 
-    CarDataType type = GetCarDataType(typeDesc->type);
+    CarDataType type = GetCarDataType(typeDesc->mType);
     if (isCheckLocalPtr) {
         if (type == CarDataType_Interface) {
             if (pointer > 1) {
@@ -947,12 +947,12 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     //LocalType
     else if (type == CarDataType_LocalType) {
         MemorySize size = GetDataTypeSize(clsModule, typeDesc);
-        return AcquireLocalTypeInfo(typeDesc->type, size, dataTypeInfo);
+        return AcquireLocalTypeInfo(typeDesc->mType, size, dataTypeInfo);
     }
     //StructInfo
     else if (type == CarDataType_Struct) {
         StructDirEntry* structDir = getStructDirAddr(clsModule->mBase,
-                clsModule->mClsMod->ppStructDir, typeDesc->sIndex);
+                clsModule->mClsMod->mStructDirs, typeDesc->sIndex);
         ec = AcquireStaticStructInfo(clsModule,
                 structDir, (IInterface **)dataTypeInfo);
     }
@@ -964,7 +964,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     //EnumInfo
     else if (type == CarDataType_Enum) {
         EnumDirEntry* enumDir = getEnumDirAddr(clsModule->mBase,
-                clsMod->ppEnumDir, typeDesc->sIndex);
+                clsMod->mEnumDirs, typeDesc->sIndex);
         ec = AcquireStaticEnumInfo(clsModule,
                 enumDir, (IInterface **)dataTypeInfo);
     }
@@ -972,7 +972,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     else if (type == CarDataType_CppVector) {
         AutoPtr<IDataTypeInfo> elemInfo;
         ArrayDirEntry* arrayDir = getArrayDirAddr(clsModule->mBase,
-                clsMod->ppArrayDir, typeDesc->sIndex);
+                clsMod->mArrayDirs, typeDesc->sIndex);
         Int32 length = arrayDir->nElements;
         TypeDescriptor* type = &arrayDir->type;
         ec = AcquireDataTypeInfo(clsModule, type, (IDataTypeInfo**)&elemInfo,
@@ -991,7 +991,7 @@ ECode CObjInfoList::AcquireDataTypeInfo(
     }
     //IntrinsicInfo
     else {
-        CarDataType type = GetCarDataType(typeDesc->type);
+        CarDataType type = GetCarDataType(typeDesc->mType);
 
         if (type != CarDataType_LocalType) {
             UInt32 size = GetDataTypeSize(clsModule, typeDesc);
@@ -1174,7 +1174,7 @@ ECode CObjInfoList::AcquireCarArrayElementTypeInfo(
     /* [out] */ IDataTypeInfo** elementTypeInfo)
 {
     CarDataType type;
-    switch (typeDesc->type) {
+    switch (typeDesc->mType) {
         case Type_ArrayOf:
             return AcquireDataTypeInfo(clsModule,
                     adjustNestedTypeAddr(clsModule->mBase, typeDesc->pNestedType),

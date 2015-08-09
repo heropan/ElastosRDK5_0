@@ -79,7 +79,7 @@ ECode CEntryList::InitElemList()
         mObjElement[i].mIndex = 0;
         for (i = 0; i < mClsMod->mAliasCount; i++) {
             if (!IsSysAlaisType(mClsModule, i)) {
-                aliasDir = getAliasDirAddr(mBase, mClsMod->ppAliasDir, i);
+                aliasDir = getAliasDirAddr(mBase, mClsMod->mAliasDirs, i);
                 mObjElement[j].mIndex = i;
                 mObjElement[j].mName = adjustNameAddr(mBase, aliasDir->pszName);
                 if (!mHTIndexs.Put(mObjElement[j].mName, j)) {
@@ -152,7 +152,7 @@ ECode CEntryList::InitElemList()
             case EntryType_Aspect:
                 index = adjustIndexsAddr(mBase,
                         ((ClassDescriptor *)mDesc)->pAspectIndexs)[i];
-                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, index);
+                classDir = getClassDirAddr(mBase, mClsMod->mClassDirs, index);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         classDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = NULL;
@@ -160,13 +160,13 @@ ECode CEntryList::InitElemList()
             case EntryType_Aggregatee:
                 index = adjustIndexsAddr(mBase,
                         ((ClassDescriptor *)mDesc)->pAggrIndexs)[i];
-                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, index);
+                classDir = getClassDirAddr(mBase, mClsMod->mClassDirs, index);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         classDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             case EntryType_Class:
-                classDir = getClassDirAddr(mBase, mClsMod->ppClassDir, i);
+                classDir = getClassDirAddr(mBase, mClsMod->mClassDirs, i);
                 mObjElement[i].mName  = adjustNameAddr(mBase,
                         classDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
@@ -175,34 +175,34 @@ ECode CEntryList::InitElemList()
             case EntryType_ClassInterface:
                 index = mObjElement[i].mIndex;
                 ifDir = getInterfaceDirAddr(mBase,
-                        mClsMod->ppInterfaceDir, index);
+                        mClsMod->mInterfaceDirs, index);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         ifDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
                         ifDir->pszNameSpace);
                 break;
             case EntryType_Interface:
-                ifDir = getInterfaceDirAddr(mBase, mClsMod->ppInterfaceDir, i);
+                ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, i);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         ifDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
                         ifDir->pszNameSpace);
                 break;
             case EntryType_Struct:
-                structDir = getStructDirAddr(mBase, mClsMod->ppStructDir, i);
+                structDir = getStructDirAddr(mBase, mClsMod->mStructDirs, i);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         structDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = NULL;
                 break;
             case EntryType_Enum:
-                enumDir = getEnumDirAddr(mBase, mClsMod->ppEnumDir, i);
+                enumDir = getEnumDirAddr(mBase, mClsMod->mEnumDirs, i);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         enumDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = adjustNameAddr(mBase,
                         enumDir->pszNameSpace);
                 break;
             case EntryType_Constant:
-                constDir = getConstDirAddr(mBase, mClsMod->ppConstDir, i);
+                constDir = getConstDirAddr(mBase, mClsMod->mConstDirs, i);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         constDir->pszName);
                 mObjElement[i].mNamespaceOrSignature = NULL;
@@ -289,7 +289,7 @@ ECode CEntryList::AcquireObjByIndex(
             sIndex = adjustIndexsAddr(mBase,
                     ((ClassDescriptor *)mDesc)->pAspectIndexs)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
-                    getClassDirAddr(mBase, mClsMod->ppClassDir, sIndex),
+                    getClassDirAddr(mBase, mClsMod->mClassDirs, sIndex),
                     &mObjElement[index].mObject);
             break;
 
@@ -297,13 +297,13 @@ ECode CEntryList::AcquireObjByIndex(
             sIndex = adjustIndexsAddr(mBase,
                     ((ClassDescriptor *)mDesc)->pAggrIndexs)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
-                    getClassDirAddr(mBase, mClsMod->ppClassDir, sIndex),
+                    getClassDirAddr(mBase, mClsMod->mClassDirs, sIndex),
                     &mObjElement[index].mObject);
             break;
 
         case EntryType_Class:
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
-                    getClassDirAddr(mBase, mClsMod->ppClassDir, index),
+                    getClassDirAddr(mBase, mClsMod->mClassDirs, index),
                     &mObjElement[index].mObject);
             break;
 
@@ -320,26 +320,26 @@ ECode CEntryList::AcquireObjByIndex(
 
         case EntryType_Struct:
             ec = g_objInfoList.AcquireStaticStructInfo(mClsModule,
-                    getStructDirAddr(mBase, mClsMod->ppStructDir, index),
+                    getStructDirAddr(mBase, mClsMod->mStructDirs, index),
                     &mObjElement[index].mObject);
             break;
 
         case EntryType_Enum:
             ec = g_objInfoList.AcquireStaticEnumInfo(mClsModule,
-                    getEnumDirAddr(mBase, mClsMod->ppEnumDir, index),
+                    getEnumDirAddr(mBase, mClsMod->mEnumDirs, index),
                     &mObjElement[index].mObject);
             break;
 
         case EntryType_TypeAliase:
             sIndex = mObjElement[index].mIndex;
             ec = g_objInfoList.AcquireTypeAliasInfo(mClsModule,
-                    getAliasDirAddr(mBase, mClsMod->ppAliasDir, sIndex),
+                    getAliasDirAddr(mBase, mClsMod->mAliasDirs, sIndex),
                     &mObjElement[index].mObject);
             break;
 
         case EntryType_Constant:
             ec = g_objInfoList.AcquireConstantInfo(mClsModule,
-                    getConstDirAddr(mBase, mClsMod->ppConstDir, index),
+                    getConstDirAddr(mBase, mClsMod->mConstDirs, index),
                     &mObjElement[index].mObject);
             break;
 

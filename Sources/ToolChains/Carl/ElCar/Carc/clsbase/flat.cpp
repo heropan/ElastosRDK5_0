@@ -390,116 +390,116 @@ int CFlatBuffer::Flat(CLSModule *pModule, void *pvDest)
         p = (int *)_alloca(pModule->mClassCount * sizeof(int));
 
         for (n = 0; n < pModule->mClassCount; n++)
-            p[n] = WriteClassDirEntry(pModule->ppClassDir[n]);
+            p[n] = WriteClassDirEntry(pModule->mClassDirs[n]);
 
-        pModule->ppClassDir = (ClassDirEntry **) \
+        pModule->mClassDirs = (ClassDirEntry **) \
             WriteData(p, pModule->mClassCount * sizeof(int));
     }
     else {
-        pModule->ppClassDir = NULL;
+        pModule->mClassDirs = NULL;
     }
 
     if (pModule->mInterfaceCount > 0) {
         p = (int *)_alloca(pModule->mInterfaceCount * sizeof(int));
 
         for (n = 0; n < pModule->mInterfaceCount; n++)
-            p[n] = WriteInterfaceDirEntry(pModule->ppInterfaceDir[n]);
+            p[n] = WriteInterfaceDirEntry(pModule->mInterfaceDirs[n]);
 
-        pModule->ppInterfaceDir = (InterfaceDirEntry **) \
+        pModule->mInterfaceDirs = (InterfaceDirEntry **) \
             WriteData(p, pModule->mInterfaceCount * sizeof(int));
     }
     else {
-        pModule->ppInterfaceDir = NULL;
+        pModule->mInterfaceDirs = NULL;
     }
 
     if (pModule->mDefinedInterfaceCount > 0) {
         p = (int *)_alloca(pModule->mDefinedInterfaceCount * sizeof(int));
 
         for (n = 0; n < pModule->mDefinedInterfaceCount; n++)
-            p[n] = pModule->pDefinedInterfaceIndex[n];
+            p[n] = pModule->mDefinedInterfaceIndexes[n];
 
-        pModule->pDefinedInterfaceIndex = (int *) \
+        pModule->mDefinedInterfaceIndexes = (int *) \
             WriteData(p, pModule->mDefinedInterfaceCount * sizeof(int));
     }
     else {
-        pModule->pDefinedInterfaceIndex = NULL;
+        pModule->mDefinedInterfaceIndexes = NULL;
     }
 
     if (pModule->mStructCount > 0) {
         p = (int *)_alloca(pModule->mStructCount * sizeof(int));
 
         for (n = 0; n < pModule->mStructCount; n++)
-            p[n] = WriteStructDirEntry(pModule->ppStructDir[n]);
+            p[n] = WriteStructDirEntry(pModule->mStructDirs[n]);
 
-        pModule->ppStructDir = (StructDirEntry **) \
+        pModule->mStructDirs = (StructDirEntry **) \
             WriteData(p, pModule->mStructCount * sizeof(int));
     }
     else {
-        pModule->ppStructDir = NULL;
+        pModule->mStructDirs = NULL;
     }
     if (pModule->mArrayCount > 0) {
         p = (int *)_alloca(pModule->mArrayCount * sizeof(int));
 
         for (n = 0; n < pModule->mArrayCount; n++)
-            p[n] = WriteArrayDirEntry(pModule->ppArrayDir[n]);
+            p[n] = WriteArrayDirEntry(pModule->mArrayDirs[n]);
 
-        pModule->ppArrayDir = (ArrayDirEntry **) \
+        pModule->mArrayDirs = (ArrayDirEntry **) \
             WriteData(p, pModule->mArrayCount * sizeof(int));
     }
     else {
-        pModule->ppArrayDir = NULL;
+        pModule->mArrayDirs = NULL;
     }
 
     if (pModule->mEnumCount > 0) {
         p = (int *)_alloca(pModule->mEnumCount * sizeof(int));
 
         for (n = 0; n < pModule->mEnumCount; n++)
-            p[n] = WriteEnumDirEntry(pModule->ppEnumDir[n]);
+            p[n] = WriteEnumDirEntry(pModule->mEnumDirs[n]);
 
-        pModule->ppEnumDir = (EnumDirEntry **) \
+        pModule->mEnumDirs = (EnumDirEntry **) \
             WriteData(p, pModule->mEnumCount * sizeof(int));
     }
     else {
-        pModule->ppEnumDir = NULL;
+        pModule->mEnumDirs = NULL;
     }
 
     if (pModule->mAliasCount > 0) {
         p = (int *)_alloca(pModule->mAliasCount * sizeof(int));
 
         for (n = 0; n < pModule->mAliasCount; n++)
-            p[n] = WriteAliasDirEntry(pModule->ppAliasDir[n]);
+            p[n] = WriteAliasDirEntry(pModule->mAliasDirs[n]);
 
-        pModule->ppAliasDir = (AliasDirEntry **) \
+        pModule->mAliasDirs = (AliasDirEntry **) \
             WriteData(p, pModule->mAliasCount * sizeof(int));
     }
     else {
-        pModule->ppAliasDir = NULL;
+        pModule->mAliasDirs = NULL;
     }
 
     if (pModule->mConstCount > 0) {
         p = (int *)_alloca(pModule->mConstCount * sizeof(int));
 
         for (n = 0; n < pModule->mConstCount; n++)
-            p[n] = WriteConstDirEntry(pModule->ppConstDir[n]);
+            p[n] = WriteConstDirEntry(pModule->mConstDirs[n]);
 
-        pModule->ppConstDir = (ConstDirEntry **) \
+        pModule->mConstDirs = (ConstDirEntry **) \
             WriteData(p, pModule->mConstCount * sizeof(int));
     }
     else {
-        pModule->ppConstDir = NULL;
+        pModule->mConstDirs = NULL;
     }
 
     if (pModule->mLibraryCount > 0) {
         p = (int *)_alloca(pModule->mLibraryCount * sizeof(int));
 
         for (n = 0; n < pModule->mLibraryCount; n++)
-            p[n] = WriteString(pModule->ppLibNames[n]);
+            p[n] = WriteString(pModule->mLibraryNames[n]);
 
-        pModule->ppLibNames = (char **) \
+        pModule->mLibraryNames = (char **) \
             WriteData(p, pModule->mLibraryCount * sizeof(int));
     }
     else {
-        pModule->ppLibNames = NULL;
+        pModule->mLibraryNames = NULL;
     }
 
     pModule->mName = (char *)WriteString(pModule->mName);
@@ -673,12 +673,12 @@ int CFlatBuffer::CalcBufferSize(const CLSModule *pModule)
     int n, size = sizeof(CLSModule);
 
     for (n = 0; n < pModule->mClassCount; n++) {
-        size += CalcClassSize(pModule->ppClassDir[n]);
+        size += CalcClassSize(pModule->mClassDirs[n]);
     }
     size += n * sizeof(ClassDirEntry *);
 
     for (n = 0; n < pModule->mInterfaceCount; n++) {
-        size += CalcInterfaceSize(pModule->ppInterfaceDir[n]);
+        size += CalcInterfaceSize(pModule->mInterfaceDirs[n]);
     }
     size += n * sizeof(InterfaceDirEntry *);
 
@@ -687,32 +687,32 @@ int CFlatBuffer::CalcBufferSize(const CLSModule *pModule)
     }
 
     for (n = 0; n < pModule->mArrayCount; n++) {
-        size += CalcArraySize(pModule->ppArrayDir[n]);
+        size += CalcArraySize(pModule->mArrayDirs[n]);
     }
     size += n * sizeof(ArrayDirEntry *);
 
     for (n = 0; n < pModule->mStructCount; n++) {
-        size += CalcStructSize(pModule->ppStructDir[n]);
+        size += CalcStructSize(pModule->mStructDirs[n]);
     }
     size += n * sizeof(StructDirEntry *);
 
     for (n = 0; n < pModule->mEnumCount; n++) {
-        size += CalcEnumSize(pModule->ppEnumDir[n]);
+        size += CalcEnumSize(pModule->mEnumDirs[n]);
     }
     size += n * sizeof(EnumDirEntry *);
 
     for (n = 0; n < pModule->mAliasCount; n++) {
-        size += CalcAliasSize(pModule->ppAliasDir[n]);
+        size += CalcAliasSize(pModule->mAliasDirs[n]);
     }
     size += n * sizeof(AliasDirEntry *);
 
     for (n = 0; n < pModule->mConstCount; n++) {
-        size += CalcConstSize(pModule->ppConstDir[n]);
+        size += CalcConstSize(pModule->mConstDirs[n]);
     }
     size += n * sizeof(ConstDirEntry *);
 
     for (n = 0; n < pModule->mLibraryCount; n++) {
-        size += StringAlignSize(pModule->ppLibNames[n]);
+        size += StringAlignSize(pModule->mLibraryNames[n]);
     }
     size += n * sizeof(char *);
 

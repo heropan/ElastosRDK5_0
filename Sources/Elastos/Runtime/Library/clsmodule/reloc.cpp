@@ -195,110 +195,110 @@ void DoRelocCLS(
     if (p->mUunm) p->mUunm += sBase;
     if (p->mServiceName) p->mServiceName += sBase;
     if (p->mDefinedInterfaceCount > 0) {
-        p->pDefinedInterfaceIndex =
-            (int *)((int)(p->pDefinedInterfaceIndex) + sBase);
+        p->mDefinedInterfaceIndexes =
+            (int *)((int)(p->mDefinedInterfaceIndexes) + sBase);
     }
 
     if (0 != p->mClassCount) {
-        p->ppClassDir = (ClassDirEntry **)((int)p->ppClassDir + sBase);
+        p->mClassDirs = (ClassDirEntry **)((int)p->mClassDirs + sBase);
 
         for (int n = 0; n < p->mClassCount; n++) {
-            p->ppClassDir[n] = \
-                (ClassDirEntry *)((int)p->ppClassDir[n] + sBase);
-            MapClassDirEntry(p->ppClassDir[n]);
+            p->mClassDirs[n] = \
+                (ClassDirEntry *)((int)p->mClassDirs[n] + sBase);
+            MapClassDirEntry(p->mClassDirs[n]);
         }
     }
     else {
-        p->ppClassDir = NULL;
+        p->mClassDirs = NULL;
     }
 
     if (0 != p->mInterfaceCount) {
-        p->ppInterfaceDir = \
-            (InterfaceDirEntry **)((int)p->ppInterfaceDir + sBase);
+        p->mInterfaceDirs = \
+            (InterfaceDirEntry **)((int)p->mInterfaceDirs + sBase);
 
         for (int n = 0; n < p->mInterfaceCount; n++) {
-            p->ppInterfaceDir[n] = \
-                (InterfaceDirEntry *)((int)p->ppInterfaceDir[n] + sBase);
-            MapInterfaceDirEntry(p->ppInterfaceDir[n]);
+            p->mInterfaceDirs[n] = \
+                (InterfaceDirEntry *)((int)p->mInterfaceDirs[n] + sBase);
+            MapInterfaceDirEntry(p->mInterfaceDirs[n]);
         }
     }
     else {
-        p->ppInterfaceDir = NULL;
+        p->mInterfaceDirs = NULL;
     }
 
     if (0 != p->mArrayCount) {
-        p->ppArrayDir = (ArrayDirEntry **)((int)p->ppArrayDir + sBase);
+        p->mArrayDirs = (ArrayDirEntry **)((int)p->mArrayDirs + sBase);
 
         for (int n = 0; n < p->mArrayCount; n++) {
-            p->ppArrayDir[n] = \
-                (ArrayDirEntry *)((int)p->ppArrayDir[n] + sBase);
-            MapArrayDirEntry(p->ppArrayDir[n]);
+            p->mArrayDirs[n] = \
+                (ArrayDirEntry *)((int)p->mArrayDirs[n] + sBase);
+            MapArrayDirEntry(p->mArrayDirs[n]);
         }
     }
     else {
-        p->ppArrayDir = NULL;
+        p->mArrayDirs = NULL;
     }
 
     if (0 != p->mStructCount) {
-        p->ppStructDir = (StructDirEntry **)((int)p->ppStructDir + sBase);
+        p->mStructDirs = (StructDirEntry **)((int)p->mStructDirs + sBase);
 
         for (int n = 0; n < p->mStructCount; n++) {
-            p->ppStructDir[n] = \
-                (StructDirEntry *)((int)p->ppStructDir[n] + sBase);
-            MapStructDirEntry(p->ppStructDir[n]);
+            p->mStructDirs[n] = \
+                (StructDirEntry *)((int)p->mStructDirs[n] + sBase);
+            MapStructDirEntry(p->mStructDirs[n]);
         }
     }
     else {
-        p->ppStructDir = NULL;
+        p->mStructDirs = NULL;
     }
 
     if (0 != p->mEnumCount) {
-        p->ppEnumDir = (EnumDirEntry **)((int)p->ppEnumDir + sBase);
+        p->mEnumDirs = (EnumDirEntry **)((int)p->mEnumDirs + sBase);
 
         for (int n = 0; n < p->mEnumCount; n++) {
-            p->ppEnumDir[n] = \
-                (EnumDirEntry *)((int)p->ppEnumDir[n] + sBase);
-            MapEnumDirEntry(p->ppEnumDir[n]);
+            p->mEnumDirs[n] = \
+                (EnumDirEntry *)((int)p->mEnumDirs[n] + sBase);
+            MapEnumDirEntry(p->mEnumDirs[n]);
         }
     }
     else {
-        p->ppEnumDir = NULL;
+        p->mEnumDirs = NULL;
     }
 
     if (0 != p->mConstCount) {
-        p->ppConstDir = (ConstDirEntry **)((int)p->ppConstDir + sBase);
+        p->mConstDirs = (ConstDirEntry **)((int)p->mConstDirs + sBase);
 
         for (int n = 0; n < p->mConstCount; n++) {
-            p->ppConstDir[n] = \
-                (ConstDirEntry *)((int)p->ppConstDir[n] + sBase);
-            MapConstDirEntry(p->ppConstDir[n]);
+            p->mConstDirs[n] = \
+                (ConstDirEntry *)((int)p->mConstDirs[n] + sBase);
+            MapConstDirEntry(p->mConstDirs[n]);
         }
     }
     else {
-        p->ppConstDir = NULL;
+        p->mConstDirs = NULL;
     }
 
     if (0 != p->mAliasCount) {
-        p->ppAliasDir = (AliasDirEntry **)((int)p->ppAliasDir + sBase);
+        p->mAliasDirs = (AliasDirEntry **)((int)p->mAliasDirs + sBase);
 
         for (int n = 0; n < p->mAliasCount; n++) {
-            p->ppAliasDir[n] = \
-                (AliasDirEntry *)((int)p->ppAliasDir[n] + sBase);
-            MapAliasDirEntry(p->ppAliasDir[n]);
+            p->mAliasDirs[n] = \
+                (AliasDirEntry *)((int)p->mAliasDirs[n] + sBase);
+            MapAliasDirEntry(p->mAliasDirs[n]);
         }
     }
     else {
-        p->ppAliasDir = NULL;
+        p->mAliasDirs = NULL;
     }
 
     if (0 != p->mLibraryCount) {
-        p->ppLibNames = (char **)((int)p->ppLibNames + sBase);
+        p->mLibraryNames = (char **)((int)p->mLibraryNames + sBase);
         for (int n = 0; n < p->mLibraryCount; n++) {
-            p->ppLibNames[n] += sBase;
+            p->mLibraryNames[n] += sBase;
         }
     }
     else {
-        p->ppLibNames = NULL;
+        p->mLibraryNames = NULL;
     }
 }
 

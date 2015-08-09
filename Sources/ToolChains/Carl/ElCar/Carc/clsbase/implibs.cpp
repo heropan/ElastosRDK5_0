@@ -136,7 +136,7 @@ int RetrieveMethod(const char *pszName,
     assert(pszName && pDesc);
 
     return SelectInterfaceMethod(pszName,
-                                pModule->ppInterfaceDir[pDesc->sIndex]->pDesc);
+                                pModule->mInterfaceDirs[pDesc->sIndex]->pDesc);
 }
 
 int RetrieveIdentifyType(const char *pszName, const char *pszNamespaces,
@@ -247,13 +247,13 @@ int CopyCLS(const CLSModule *pSrc, CLSModule *pDest)
 
     pDest->mDefinedInterfaceCount = 0;
     for (n = 0; n < pSrc->mDefinedInterfaceCount; n++) {
-        pDest->pDefinedInterfaceIndex[pDest->mDefinedInterfaceCount++] = pSrc->pDefinedInterfaceIndex[n];
+        pDest->mDefinedInterfaceIndexes[pDest->mDefinedInterfaceCount++] = pSrc->mDefinedInterfaceIndexes[n];
     }
 
     pDest->mLibraryCount = 0;
     for (n = 0; n < pSrc->mLibraryCount; n++) {
-        pDest->ppLibNames[n] = new char[strlen(pSrc->ppLibNames[n])+1];
-        strcpy(pDest->ppLibNames[n], pSrc->ppLibNames[n]);
+        pDest->mLibraryNames[n] = new char[strlen(pSrc->mLibraryNames[n])+1];
+        strcpy(pDest->mLibraryNames[n], pSrc->mLibraryNames[n]);
         pDest->mLibraryCount++;
     }
 

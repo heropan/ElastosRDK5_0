@@ -282,13 +282,13 @@ ECode CArgumentList::SetInputArgumentOfObjectPtr(
         Int32 base = methodInfo->mClsModule->mBase;
         TypeDescriptor* typeDesc = &(getParamDescAddr(base,
                 methodInfo->mMethodDescriptor->ppParams, index)->type);
-        if (typeDesc->type == Type_alias) {
+        if (typeDesc->mType == Type_alias) {
             ec = methodInfo->mClsModule->AliasToOriginal(typeDesc, &typeDesc);
             if (FAILED(ec)) return ec;
         }
 
         InterfaceDirEntry* ifDir = getInterfaceDirAddr(base,
-                methodInfo->mClsMod->ppInterfaceDir, typeDesc->sIndex);
+                methodInfo->mClsMod->mInterfaceDirs, typeDesc->sIndex);
         EIID iid = adjustInterfaceDescAddr(base, ifDir->pDesc)->iid;
         value = value->Probe(iid);
         if (!value) return E_NO_INTERFACE;

@@ -29,11 +29,11 @@ LubeContext::LubeContext(
     memset(this, 0, sizeof(LubeContext));
 
     if (pModule->mLibraryCount > 0) {
-        m_pFirstLibrary = pModule->ppLibNames[0];
-        m_pLastLibrary = pModule->ppLibNames[pModule->mLibraryCount - 1];
+        m_pFirstLibrary = pModule->mLibraryNames[0];
+        m_pLastLibrary = pModule->mLibraryNames[pModule->mLibraryCount - 1];
     }
     for (n = 0; n < pModule->mClassCount; n++) {
-        ClassDirEntry *pClass = pModule->ppClassDir[n];
+        ClassDirEntry *pClass = pModule->mClassDirs[n];
         if (!pClass->pszNameSpace
             && !(pClass->pDesc->dwAttribs & ClassAttrib_t_generic)) {
             if (!m_pFirstClass) m_pFirstClass = pClass;
@@ -41,32 +41,32 @@ LubeContext::LubeContext(
         }
     }
     for (n = 0; n < pModule->mDefinedInterfaceCount; n++) {
-        InterfaceDirEntry *pIntf = pModule->ppInterfaceDir[pModule->pDefinedInterfaceIndex[n]];
+        InterfaceDirEntry *pIntf = pModule->mInterfaceDirs[pModule->mDefinedInterfaceIndexes[n]];
         if (!m_pFirstInterface) m_pFirstInterface = pIntf;
         m_pLastInterface = pIntf;
     }
     for (n = 0; n < pModule->mStructCount; n++) {
-        if (!pModule->ppStructDir[n]->pszNameSpace) {
-            if (!m_pFirstStruct) m_pFirstStruct = pModule->ppStructDir[n];
-            m_pLastStruct = pModule->ppStructDir[n];
+        if (!pModule->mStructDirs[n]->pszNameSpace) {
+            if (!m_pFirstStruct) m_pFirstStruct = pModule->mStructDirs[n];
+            m_pLastStruct = pModule->mStructDirs[n];
         }
     }
     for (n = 0; n < pModule->mEnumCount; n++) {
-        if (!pModule->ppEnumDir[n]->pszNameSpace) {
-            if (!m_pFirstEnum) m_pFirstEnum = pModule->ppEnumDir[n];
-            m_pLastEnum = pModule->ppEnumDir[n];
+        if (!pModule->mEnumDirs[n]->pszNameSpace) {
+            if (!m_pFirstEnum) m_pFirstEnum = pModule->mEnumDirs[n];
+            m_pLastEnum = pModule->mEnumDirs[n];
         }
     }
     for (n = 0; n < pModule->mConstCount; n++) {
-        if (!pModule->ppConstDir[n]->pszNameSpace) {
-            if (!m_pFirstConst) m_pFirstConst = pModule->ppConstDir[n];
-            m_pLastConst = pModule->ppConstDir[n];
+        if (!pModule->mConstDirs[n]->pszNameSpace) {
+            if (!m_pFirstConst) m_pFirstConst = pModule->mConstDirs[n];
+            m_pLastConst = pModule->mConstDirs[n];
         }
     }
     for (n = 0; n < pModule->mAliasCount; n++) {
-        if (!pModule->ppAliasDir[n]->pszNameSpace) {
-            if (!m_pFirstTypedef) m_pFirstTypedef = pModule->ppAliasDir[n];
-            m_pLastTypedef = pModule->ppAliasDir[n];
+        if (!pModule->mAliasDirs[n]->pszNameSpace) {
+            if (!m_pFirstTypedef) m_pFirstTypedef = pModule->mAliasDirs[n];
+            m_pLastTypedef = pModule->mAliasDirs[n];
         }
     }
     m_pModule = pModule;

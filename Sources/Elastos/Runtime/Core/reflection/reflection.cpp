@@ -109,7 +109,7 @@ ELAPI _CObject_ReflectClassInfo(
 
     *classInfo = NULL;
     for (Int32 i = 0; i < moduleInfo->mClsMod->mClassCount; i++) {
-        classDir = getClassDirAddr(base, moduleInfo->mClsMod->ppClassDir, i);
+        classDir = getClassDirAddr(base, moduleInfo->mClsMod->mClassDirs, i);
         clsDesc = adjustClassDescAddr(base, classDir->pDesc);
         if (clsDesc->clsid == clsid.clsid) {
             ec = g_objInfoList.AcquireClassInfo(moduleInfo->mClsModule,
@@ -156,7 +156,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
 
     *interfaceInfo = NULL;
     for (Int32 i = 0; i < moduleInfo->mClsMod->mClassCount; i++) {
-        classDir = getClassDirAddr(base, moduleInfo->mClsMod->ppClassDir, i);
+        classDir = getClassDirAddr(base, moduleInfo->mClsMod->mClassDirs, i);
         clsDesc = adjustClassDescAddr(base, classDir->pDesc);
         //find the class
         if (clsDesc->clsid == clsid.clsid) {
@@ -164,7 +164,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
                 cifDir = getCIFAddr(base, clsDesc->ppInterfaces, j);
                 index = cifDir->sIndex;
                 ifDir = getInterfaceDirAddr(base,
-                        moduleInfo->mClsMod->ppInterfaceDir, index);
+                        moduleInfo->mClsMod->mInterfaceDirs, index);
                 ifDesc = adjustInterfaceDescAddr(base, ifDir->pDesc);
                 //find the interface
                 if (ifDesc->iid == iid) {
