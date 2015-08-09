@@ -8,7 +8,7 @@
 extern "C" {
 
 typedef interface IClassObject IClassObject;
-typedef interface IClassObject *PClassObject;
+typedef interface IClassObject* PClassObject;
 
 #ifdef _UNDEFDLLEXP
 #define DLLEXP
@@ -23,58 +23,60 @@ CAR_INTERFACE("00000001-0000-0000-C000-000000000046")
 IClassObject : public IInterface
 {
     virtual CARAPI_(PInterface) Probe(
-            /* [in] */ _ELASTOS REIID riid) = 0;
+        /* [in] */ _ELASTOS REIID riid) = 0;
 
     virtual CARAPI CreateObject(
-            /* [in] */ PInterface pOuter,
-            /* [in] */ _ELASTOS REIID riid,
-            /* [out] */ PInterface *ppObject) = 0;
+        /* [in] */ PInterface outerObject,
+        /* [in] */ _ELASTOS REIID riid,
+        /* [out] */ PInterface* object) = 0;
 
     virtual CARAPI StayResident(
-            /* [in] */ _ELASTOS Boolean bIsStayResident) = 0;
+        /* [in] */ _ELASTOS Boolean isStayResident) = 0;
 };
 
-typedef _ELASTOS ECode (CARAPICALLTYPE *_CreateObjectFn)(
-        PInterface *ppObject);
+typedef _ELASTOS ECode (CARAPICALLTYPE *CreateObjectFunc)(PInterface* object);
 
-class _CBaseClassObject :
-    public IObject,
-    public IClassObject
+class _CBaseClassObject
+    : public IObject
+    , public IClassObject
 {
 public:
     CARAPI_(PInterface) Probe(
-                /* [in] */ _ELASTOS REIID riid);
+        /* [in] */ _ELASTOS REIID riid);
 
     CARAPI_(_ELASTOS UInt32) AddRef();
 
     CARAPI_(_ELASTOS UInt32) Release();
 
     CARAPI GetInterfaceID(
-                /* [in] */ IInterface *pObject,
-                /* [out] */ _ELASTOS InterfaceID *pIID);
+        /* [in] */ IInterface* object,
+        /* [out] */ _ELASTOS InterfaceID* iid);
 
     CARAPI Aggregate(
-                /* [in] */ AggrType type,
-                /* [in] */ PInterface pObj);
+        /* [in] */ AggrType type,
+        /* [in] */ PInterface object);
 
     CARAPI GetDomain(
-                /* [out] */ PInterface *ppObj);
+        /* [out] */ PInterface* object);
 
     CARAPI GetClassID(
-                /* [out] */ _ELASTOS ClassID *pCLSID);
+        /* [out] */ _ELASTOS ClassID* clsid);
 
     CARAPI CreateObject(
-                /* [in] */ PInterface pOuter,
-                /* [in] */ _ELASTOS REIID riid,
-                /* [out] */ PInterface *ppObject);
+        /* [in] */ PInterface outerObject,
+        /* [in] */ _ELASTOS REIID riid,
+        /* [out] */ PInterface* object);
 
     CARAPI StayResident(
-                /* [in] */ _ELASTOS Boolean bIsStayResident);
+        /* [in] */ _ELASTOS Boolean isStayResident);
 
-    _CBaseClassObject(_CreateObjectFn fn) : m_fnCreateObject(fn) {}
+    _CBaseClassObject(
+        /* [in] */ CreateObjectFunc fn)
+        : mCreateObjectFunc(fn)
+    {}
 
 private:
-    _CreateObjectFn m_fnCreateObject;
+    CreateObjectFunc mCreateObjectFunc;
 };
 
 struct _IInterface : IInterface {};

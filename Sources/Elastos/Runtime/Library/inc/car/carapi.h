@@ -11,13 +11,13 @@
 
 extern "C" {
 
-struct EzMultiQI
+struct CarMultiQI
 {
     const _ELASTOS InterfaceID* mIID;
     PInterface mObject;
     _ELASTOS ECode mEC;
 };
-typedef struct EzMultiQI EzMultiQI, *PMULTIQI;
+typedef struct CarMultiQI CarMultiQI, *PMULTIQI;
 
 #define RGM_INVALID_DOMAIN          ((PRegime)0x0000)
 #define RGM_SAME_DOMAIN             ((PRegime)0x0001)
@@ -28,75 +28,75 @@ typedef struct EzMultiQI EzMultiQI, *PMULTIQI;
 #define RGM_DIFF_PROCESS            RGM_DIFF_DOMAIN
 
 #define RGM_MAX_NUMBER              ((PRegime)0xFFFF)
-#define IS_INVALID_REGIME(dw)      ((dw == RGM_INVALID_DOMAIN))
+#define IS_INVALID_REGIME(dw)       ((dw == RGM_INVALID_DOMAIN))
 #define IS_RGM_NUMBER(dw)           ((!IS_INVALID_REGIME(dw)) && \
-                                     ((dw == RGM_SAME_DOMAIN) || \
-                                      (dw == RGM_DIFF_DOMAIN) || \
-                                      (dw == RGM_DEFAULT) || \
-                                      (dw == RGM_DIFF_MACHINE)))
+                                        ((dw == RGM_SAME_DOMAIN) || \
+                                        (dw == RGM_DIFF_DOMAIN) || \
+                                        (dw == RGM_DEFAULT) || \
+                                        (dw == RGM_DIFF_MACHINE)))
 
 ELAPI _CObject_CreateInstance(
     /* [in] */ _ELASTOS RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS REIID riid,
-    /* [out] */ PInterface *ppObject);
+    /* [out] */ PInterface* object);
 
 ELAPI _CObject_CreateInstanceEx(
     /* [in] */ _ELASTOS RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS UInt32 cmq,
-    /* [out] */ PMULTIQI pResults);
+    /* [out] */ PMULTIQI results);
 
 ELAPI _CObject_AcquireClassFactory(
     /* [in] */ _ELASTOS RClassID rclsid,
-    /* [in] */ PRegime pRegime,
+    /* [in] */ PRegime regime,
     /* [in] */ _ELASTOS REIID iid,
-    /* [out] */ PInterface *ppObject);
+    /* [out] */ PInterface* object);
 
 ELAPI_(_ELASTOS Boolean) _CObject_Compare(
-    /* [in] */ PInterface pObjectA,
-    /* [in] */ PInterface pObjectB);
+    /* [in] */ PInterface objectA,
+    /* [in] */ PInterface objectB);
 
 ELAPI _CObject_AttachAspect(
-    /* [in] */ PInterface pAggregator,
-    /* [in] */ _ELASTOS RClassID rAspectClsid);
+    /* [in] */ PInterface aggregator,
+    /* [in] */ _ELASTOS RClassID aspectClsid);
 
 ELAPI _CObject_DetachAspect(
-    /* [in] */ PInterface pAggregator,
-    /* [in] */ _ELASTOS RClassID rAspectClsid);
+    /* [in] */ PInterface aggregator,
+    /* [in] */ _ELASTOS RClassID aspectClsid);
 
 ELAPI _CObject_EnterRegime(
-    /* [in] */ PInterface pObj,
-    /* [in] */ PRegime pRgm);
+    /* [in] */ PInterface object,
+    /* [in] */ PRegime regime);
 
 ELAPI _CObject_LeaveRegime(
-    /* [in] */ PInterface pObj,
-    /* [in] */ PRegime pRgm);
+    /* [in] */ PInterface object,
+    /* [in] */ PRegime regime);
 
 typedef interface ICallbackSink *PCALLBACKSINK;
 typedef interface ICallbackRendezvous* PCallbackRendezvous;
 
 ELAPI _CObject_AcquireCallbackSink(
-    /* [in] */ PInterface pObject,
-    /* [out] */ PCALLBACKSINK *ppCallbackSink);
+    /* [in] */ PInterface object,
+    /* [out] */ PCALLBACKSINK* callbackSink);
 
 ELAPI _CObject_AddCallback(
-    /* [in] */ PInterface pServerObj,
-    /* [in] */ _ELASTOS Int32 dwEvent,
+    /* [in] */ PInterface serverObj,
+    /* [in] */ _ELASTOS Int32 event,
     /* [in] */ _ELASTOS EventHandler delegate);
 
 ELAPI _CObject_RemoveCallback(
-    /* [in] */ PInterface pServerObj,
-    /* [in] */ _ELASTOS Int32 dwEvent,
+    /* [in] */ PInterface serverObj,
+    /* [in] */ _ELASTOS Int32 event,
     /* [in] */ _ELASTOS EventHandler delegate);
 
 ELAPI _CObject_RemoveAllCallbacks(
-    /* [in] */ PInterface pServerObj);
+    /* [in] */ PInterface serverObj);
 
 ELAPI _CObject_AcquireCallbackRendezvous(
-    /* [in] */ PInterface pServerObj,
-    /* [in] */ _ELASTOS Int32 dwEvent,
-    /* [out] */ PCallbackRendezvous* ppCallbackRendezvous);
+    /* [in] */ PInterface serverObj,
+    /* [in] */ _ELASTOS Int32 event,
+    /* [out] */ PCallbackRendezvous* callbackRendezvous);
 
 ELAPI_(_ELASTOS Boolean) _CModule_CanUnloadAllModules();
 

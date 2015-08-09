@@ -6,19 +6,20 @@
 #define __ELDELEGATE_H__
 
 #include <assert.h>
+#include <elautoptr.h>
 
 #define _Impl_Memset memset
 
-typedef struct tagDelegate
+typedef struct _Delegate
 {
     union
     {
         struct
         {
-            void *pFunc;
-            void *pThis;
+            void* mFunc;
+            void* mThis;
         };
-        _ELASTOS UInt64 delegate;
+        _ELASTOS UInt64 mDelegate;
     };
 } _Delegate;
 
@@ -26,63 +27,64 @@ typedef enum {
     CallbackType_PlainC = 0x00,
     CallbackType_CPP = 0x01,
     CallbackType_CAR = 0x02,
-}CallbackType;
+} CallbackType;
 
 #define CallbackTypeMask 0x00000003
 #define CallbackPtrMask  0xFFFFFFFC
 /*
 * The pointer must align at 4-byte boundary, so its lowest 2 bits
 * are always 0. So, we can use that 2 bits saving FunctionType
-* of _Delegate.pFunc
+* of _Delegate.mFunc
 *
-* if ((_Delegate.pFunc & CallbackTypeMask) == 0x00)
-*     pFunc is a C style function
-* else if ((_Delegate.pFunc & CallbackTypeMask) == 0x01)
-*     pFunc is a normal CPP class member method
-* else if ((_Delegate.pFunc & CallbackTypeMask) == 0x02)
-*     pFunc is a car Class member method
+* if ((_Delegate.mFunc & CallbackTypeMask) == 0x00)
+*     mFunc is a C style function
+* else if ((_Delegate.mFunc & CallbackTypeMask) == 0x01)
+*     mFunc is a normal CPP class member method
+* else if ((_Delegate.mFunc & CallbackTypeMask) == 0x02)
+*     mFunc is a car Class member method
 */
 
 _ELASTOS_NAMESPACE_BEGIN
+
 class EventHandler
 {
 public:
     EventHandler()
     {
-        _Impl_Memset(&m_value, 0, sizeof(_Delegate));
-        m_hackDomain = NULL;
-        m_pCarObjClient = NULL;
+        mValue.mThis = NULL;
+        mValue.mFunc = NULL;
     }
 
-    EventHandler(void *pvFunc)
+    EventHandler(
+        /* [in] */ void* funcPtr)
     {
-        m_value.pThis = NULL;
-        m_value.pFunc = pvFunc;
-        m_hackDomain = NULL;
-        m_pCarObjClient = NULL;
+        mValue.mThis = NULL;
+        mValue.mFunc = funcPtr;
     }
 
-    _ELASTOS Boolean operator == (EventHandler & er)
+    _ELASTOS Boolean operator ==(
+        /* [in] */ EventHandler & er)
    {
-        return ((m_value.pThis == er.m_value.pThis)
-               && (GetFuncPtr() == er.GetFuncPtr()));
+        return ((mValue.mThis == er.mValue.mThis)
+                && (GetFuncPtr() == er.GetFuncPtr()));
     }
 
-    _ELASTOS Boolean operator != (EventHandler & er)
+    _ELASTOS Boolean operator !=(
+        /* [in] */ EventHandler & er)
     {
         return !(*this == er);
     }
 
     void *GetThisPtr()
     {
-        return m_value.pThis;
+        return mValue.mThis;
     }
 
     void *GetFuncPtr()
     {
-        if (NULL == m_value.pFunc) return NULL;
+        if (NULL == mValue.mFunc) return NULL;
 #ifndef _GNUC
-        return (void *)((Elastos::UInt32)m_value.pFunc & CallbackPtrMask);
+        return (void *)((Elastos::UInt32)mValue.mFunc & CallbackPtrMask);
 #else
 #if defined(_arm) || defined(_x86)
         // for gnu-arm-pe compiler, it is another story
@@ -90,16 +92,16 @@ public:
         //
         // In gnu-x86 compiler, the value of pointer pointing to virtual function
         // is index * 4 + 1. The code below calculates the true address of
-        // function according to pThis and pFunc.
+        // function according to mThis and mFunc.
         //
-        if (*(int*)&m_value.pFunc & 0xFFFFF000) {
-            return (void *)((Elastos::UInt32)m_value.pFunc & CallbackPtrMask);
+        if (*(int*)&mValue.mFunc & 0xFFFFF000) {
+            return (void *)((Elastos::UInt32)mValue.mFunc & CallbackPtrMask);
         }
         else {
-            m_value.pFunc = (void*)(
-                    (int)(*(*(void***)m_value.pThis + ((int)m_value.pFunc >> 2)))
-                    | ((int)m_value.pFunc & CallbackTypeMask) );
-            return (void *)((Elastos::UInt32)m_value.pFunc & CallbackPtrMask);
+            mValue.mFunc = (void*)(
+                    (int)(*(*(void***)mValue.mThis + ((int)mValue.mFunc >> 2)))
+                    | ((int)mValue.mFunc & CallbackTypeMask) );
+            return (void *)((Elastos::UInt32)mValue.mFunc & CallbackPtrMask);
         }
 #else
         assert(0 && "your compiler is not support yet!\n");
@@ -110,41 +112,48 @@ public:
 
     CallbackType GetFuncType()
     {
-        return (CallbackType)(CallbackTypeMask & (_ELASTOS Int32)m_value.pFunc);
+        return (CallbackType)(CallbackTypeMask & (_ELASTOS Int32)mValue.mFunc);
     }
 
-    static EventHandler Make(void* pvThis, void* pvFunc)
+    static EventHandler Make(
+        /* [in] */ void* thisPtr,
+        /* [in] */ void* funcPtr)
     {
-        return EventHandler(pvThis, pvFunc, CallbackType_PlainC, NULL);
+        return EventHandler(thisPtr, funcPtr, CallbackType_PlainC, NULL);
     }
 
     template <class T>
-    static EventHandler Make(T* pvThis, void* pvFunc, CallbackType type)
+    static EventHandler Make(
+        /* [in] */ T* thisPtr,
+        /* [in] */ void* funcPtr,
+        /* [in] */ CallbackType type)
     {
         assert(((type == CallbackType_CAR)
-                                && Conversion<T, CCarObject>::exists)
-                                || (type != CallbackType_CAR));
-        return EventHandler(pvThis, pvFunc, type, (_IInterface*)pvThis);
+                && Conversion<T, CCarObject>::exists) || (type != CallbackType_CAR));
+        return EventHandler(thisPtr, funcPtr, type, (_IInterface*)thisPtr);
     }
 
 private:
-
-    EventHandler(void *pvThis, void *pvFunc, CallbackType type, PInterface pObj)
+    EventHandler(
+        /* [in] */ void* thisPtr,
+        /* [in] */ void* funcPtr,
+        /* [in] */ CallbackType type,
+        /* [in] */ PInterface object)
     {
-        m_value.pThis = pvThis;
-        m_value.pFunc = pvFunc;
-        m_hackDomain = NULL;
+        mValue.mThis = thisPtr;
+        mValue.mFunc = funcPtr;
 
-        m_value.pFunc = (_ELASTOS PVoid)((_ELASTOS Int32)m_value.pFunc | (CallbackTypeMask & type));
-        m_pCarObjClient = pObj;
+        mValue.mFunc = (_ELASTOS PVoid)((_ELASTOS Int32)mValue.mFunc | (CallbackTypeMask & type));
+        mCarObjClient = object;
     }
-    _Delegate m_value;
 
 public:
-    PInterface m_pCarObjClient;
-    // Delete it after we implement domain, initialize it in ctor is enough now
-    void* m_hackDomain;
+    AutoPtr<IInterface> mCarObjClient;
+
+private:
+    _Delegate mValue;
 };
+
 _ELASTOS_NAMESPACE_END
 
 #endif // __ELDELEGATE_H__

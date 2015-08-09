@@ -39,7 +39,7 @@ ELAPI _CObject_CreateInstance(
     DUMP_CLSID(rclsid, "_CObject_CreateInstance")
     if (NULL == obj || IS_INVALID_REGIME(regime)) return E_INVALID_ARGUMENT;
 
-    EzMultiQI mq = { &riid, NULL, 0 };
+    CarMultiQI mq = { &riid, NULL, 0 };
     ECode ec;
 
     if (!IS_RGM_NUMBER(regime)) {

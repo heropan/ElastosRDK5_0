@@ -83,9 +83,9 @@ _ELASTOS_NAMESPACE_END
 
 _ELASTOS_NAMESPACE_BEGIN
 
-CAR_INLINE Boolean IsEqualUunm(const char *pUunm1, const char *pUunm2)
+CAR_INLINE Boolean IsEqualUunm(const char* uunm1, const char* uunm2)
 {
-    return !_Impl_Strcmp(pUunm1, pUunm2);
+    return !_Impl_Strcmp(uunm1, uunm2);
 }
 
 CAR_INLINE Boolean IsEqualClassId(RClassID r1, RClassID r2)

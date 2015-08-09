@@ -7,7 +7,7 @@
 #endif
 
 ELAPI_(void) _Impl_CallbackSink_FreeCallbackEvent(
-            _ELASTOS PVoid pCallbackEvent);
+            _ELASTOS PVoid callbackEvent);
 
 #include <semaphore.h>
 #include <time.h>
@@ -27,9 +27,9 @@ typedef _ELASTOS Int32 CallbackEventFlags;
 #define CallingStatus_Completed     0x03
 #define CallingStatus_Cancelled     0x04
 
-typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCallbackEventHandleRoutine)(_ELASTOS PVoid pvThis);
+typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCallbackEventHandleRoutine)(_ELASTOS PVoid thisObj);
 
-typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCoalesceEventFunc)(_ELASTOS PVoid* ppOld, _ELASTOS PVoid* ppNew);
+typedef _ELASTOS ECode (ELFUNCCALLTYPE *PCoalesceEventFunc)(_ELASTOS PVoid* oldEvent, _ELASTOS PVoid* newEvent);
 
 class CarCallbackEvent
 {

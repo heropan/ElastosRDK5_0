@@ -83,8 +83,8 @@ ECode _CBaseClassObject::CreateObject(
     /* [out] */ IInterface** retObject)
 {
     IInterface* object;
-    if (NULL == m_fnCreateObject) return E_CLASS_NOT_AVAILABLE;
-    ECode ec = (*m_fnCreateObject)(&object);
+    if (NULL == mCreateObjectFunc) return E_CLASS_NOT_AVAILABLE;
+    ECode ec = (*mCreateObjectFunc)(&object);
     if (FAILED(ec)) return ec;
     *retObject = object->Probe(riid);
     if (!(*retObject)) {
