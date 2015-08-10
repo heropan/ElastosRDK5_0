@@ -49,6 +49,20 @@ module
 
     merge("hardware/camera2/impl/CallbackProxies.car");
 
+    merge("hardware/camera2/marshal/Marshaler.car");
+    merge("hardware/camera2/marshal/MarshalHelpers.car");
+    merge("hardware/camera2/marshal/MarshalQueryable.car");
+    merge("hardware/camera2/marshal/MarshalRegistry.car");
+
+    merge("hardware/camera2/params/BlackLevelPattern.car");
+    merge("hardware/camera2/params/ColorSpaceTransform.car");
+    merge("hardware/camera2/params/Face.car");
+    merge("hardware/camera2/params/RggbChannelVector.car");
+    merge("hardware/camera2/params/LensShadingMap.car");
+    merge("hardware/camera2/params/MeteringRectangle.car");
+    merge("hardware/camera2/params/StreamConfigurationMap.car");
+    merge("hardware/camera2/params/TonemapCurve.car");
+
     merge("hardware/camera2/utils/ArrayUtils.car");
     merge("hardware/camera2/utils/CloseableLock.car");
     merge("hardware/camera2/utils/HashCodeHelpers.car");
@@ -57,7 +71,7 @@ module
     merge("hardware/camera2/utils/SizeAreaComparator.car");
     merge("hardware/camera2/utils/TaskDrainer.car");
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
-    //merge("hardware/camera2/utils/TaskSingleDrainer.car");
+    merge("hardware/camera2/utils/TypeReference.car");
 
     using interface Elastos.Core.IComparable;
 

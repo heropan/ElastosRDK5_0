@@ -1,0 +1,142 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    namespace Params {
+
+    /**
+     * Immutable class for describing a {@code 2 x M x 3} tonemap curve of floats.
+     *
+     * <p>This defines red, green, and blue curves that the {@link CameraDevice} will
+     * use as the tonemapping/contrast/gamma curve when {@link CaptureRequest#TONEMAP_MODE} is
+     * set to {@link CameraMetadata#TONEMAP_MODE_CONTRAST_CURVE}.</p>
+     *
+     * <p>The total number of points {@code (Pin, Pout)} for each color channel can be no more than
+     * {@link CameraCharacteristics#TONEMAP_MAX_CURVE_POINTS}.</p>
+     *
+     * <p>The coordinate system for each point is within the inclusive range
+     * [{@value #LEVEL_BLACK}, {@value #LEVEL_WHITE}].</p>
+     *
+     * @see CaptureRequest#TONEMAP_CURVE_BLUE
+     * @see CaptureRequest#TONEMAP_CURVE_GREEN
+     * @see CaptureRequest#TONEMAP_CURVE_RED
+     * @see CameraMetadata#TONEMAP_MODE_CONTRAST_CURVE
+     * @see CameraCharacteristics#TONEMAP_MAX_CURVE_POINTS
+     */
+    [deprecated]
+    interface ITonemapCurve {
+
+        /**
+         * Get the number of points stored in this tonemap curve for the specified color channel.
+         *
+         * @param colorChannel one of {@link #CHANNEL_RED}, {@link #CHANNEL_GREEN}, {@link #CHANNEL_BLUE}
+         * @return number of points stored in this tonemap for that color's curve (>= 0)
+         *
+         * @throws IllegalArgumentException if {@code colorChannel} was out of range
+         */
+        GetPointCount(
+            [in] Int32 colorChannel,
+            [out] Int32* value);
+
+        /**
+         * Get the point for a color channel at a specified index.
+         *
+         * <p>The index must be at least 0 but no greater than {@link #getPointCount(int)} for
+         * that {@code colorChannel}.</p>
+         *
+         * <p>All returned coordinates in the point are between the range of
+         * [{@value #LEVEL_BLACK}, {@value #LEVEL_WHITE}].</p>
+         *
+         * @param colorChannel {@link #CHANNEL_RED}, {@link #CHANNEL_GREEN}, or {@link #CHANNEL_BLUE}
+         * @param index at least 0 but no greater than {@code getPointCount(colorChannel)}
+         * @return the {@code (Pin, Pout)} pair mapping the tone for that index
+         *
+         * @throws IllegalArgumentException if {@code colorChannel} or {@code index} was out of range
+         *
+         * @see #LEVEL_BLACK
+         * @see #LEVEL_WHITE
+         */
+//        GetPoint(
+//            [in] Int32 colorChannel,
+//            [in] Int32 index,
+//            [out] IPointF* outpf);
+
+        /**
+         * Copy the color curve for a single color channel from this tonemap curve into the destination.
+         *
+         * <p>
+         * <!--The output is encoded the same as in the constructor -->
+         * Values are stored as packed {@code (Pin, Pout}) points, and there are a total of
+         * {@link #getPointCount} points for that respective channel.</p>
+         *
+         * <p>All returned coordinates are between the range of
+         * [{@value #LEVEL_BLACK}, {@value #LEVEL_WHITE}].</p>
+         *
+         * @param destination
+         *          an array big enough to hold at least {@link #getPointCount} {@code *}
+         *          {@link #POINT_SIZE} elements after the {@code offset}
+         * @param offset
+         *          a non-negative offset into the array
+         * @throws NullPointerException
+         *          If {@code destination} was {@code null}
+         * @throws IllegalArgumentException
+         *          If offset was negative
+         * @throws ArrayIndexOutOfBoundsException
+         *          If there's not enough room to write the elements at the specified destination and
+         *          offset.
+         *
+         * @see CaptureRequest#TONEMAP_CURVE_BLUE
+         * @see CaptureRequest#TONEMAP_CURVE_RED
+         * @see CaptureRequest#TONEMAP_CURVE_GREEN
+         * @see #LEVEL_BLACK
+         * @see #LEVEL_WHITE
+         */
+        CopyColorCurve(
+            [in] Int32 colorChannel,
+            [in] ArrayOf<Float>* destination,
+            [in] Int32 offset);
+
+        /**
+         * Check if this TonemapCurve is equal to another TonemapCurve.
+         *
+         * <p>Two matrices are equal if and only if all of their elements are
+         * {@link Object#equals equal}.</p>
+         *
+         * @return {@code true} if the objects were equal, {@code false} otherwise
+         */
+        // @Override
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* value);
+
+        /**
+         * {@inheritDoc}
+         */
+        // @Override
+        GetHashCode(
+            [out] Int32* value);
+
+        /**
+         * Return the TonemapCurve as a string representation.
+         *
+         * <p> {@code "TonemapCurve{R:[(%f, %f), (%f, %f) ... (%f, %f)], G:[(%f, %f), (%f, %f) ...
+         * (%f, %f)], B:[(%f, %f), (%f, %f) ... (%f, %f)]}"},
+         * where each {@code (%f, %f)} respectively represents one point of the corresponding
+         * tonemap curve. </p>
+         *
+         * @return string representation of {@link TonemapCurve}
+         */
+        // @Override
+        ToString(
+            [out] String* str);
+    }
+
+    } // namespace Params
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}
