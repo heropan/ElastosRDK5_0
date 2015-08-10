@@ -107,22 +107,6 @@ module
     }}} // Elastos.Droid.Privacy
 
     //
-    // Elastos.Droid.Transition
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Transition {
-
-        interface ITransitionManager {}
-
-        interface ITransition {}
-
-        interface IScene {}
-
-    }}} // Elastos.Droid.Transition
-
-
-    //
     // Elastos.Droid.Graphics
     //
     namespace Elastos {
