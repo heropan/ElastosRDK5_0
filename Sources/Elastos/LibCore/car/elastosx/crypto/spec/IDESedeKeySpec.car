@@ -12,7 +12,7 @@ module
      * @Involve
      * interface Elastos.Security.Spec.IKeySpec;
      */
-    interface IDESedeKeySpecSpec {
+    interface IDESedeKeySpec {
         /**
          * The length of a DES key in bytes.
          */
