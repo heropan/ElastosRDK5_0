@@ -1,0 +1,7 @@
+module
+{
+    merge("backup/IBackupTransport.car");
+    merge("backup/LocalTransport.car");
+    merge("backup/LocalTransportService.car");
+
+}

@@ -107,6 +107,7 @@ module
     merge("app/backup/BackupHelper.car");
     merge("app/backup/BackupHelperDispatcher.car");
     merge("app/backup/BackupManager.car");
+    merge("app/backup/BackupTransport.car");
     merge("app/backup/FileBackupHelper.car");
     merge("app/backup/FileBackupHelperBase.car");
     merge("app/backup/FullBackup.car");
@@ -115,6 +116,7 @@ module
     merge("app/backup/IFullBackupRestoreObserver.car");
     merge("app/backup/IRestoreObserver.car");
     merge("app/backup/IRestoreSession.car");
+    merge("app/backup/RestoreDescription.car");
     merge("app/backup/RestoreObserver.car");
     merge("app/backup/RestoreSession.car");
     merge("app/backup/RestoreSet.car");

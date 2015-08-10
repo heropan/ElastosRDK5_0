@@ -53,5 +53,6 @@ module
     merge("../car/transition.car");
 
     merge("../car/internal/app.car");
+    merge("../car/internal/backup.car");
     merge("../car/internal/view.car");
 }
