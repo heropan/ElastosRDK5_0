@@ -1,0 +1,28 @@
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    interface IBitmapHelper {
+        /**
+         * Generate a new bitmap (width x height pixels, ARGB_8888) with the input bitmap scaled
+         * to fit and clipped to an inscribed circle.
+         * @param input Bitmap to resize and clip
+         * @param width Width of output bitmap (and diameter of circle)
+         * @param height Height of output bitmap
+         * @return A shiny new bitmap for you to use
+         */
+        CreateCircularClip(
+            [in] IBitmap* input,
+            [in] Int32 width,
+            [in] Int32 height,
+            [out] IBitmap** result);
+    }
+
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

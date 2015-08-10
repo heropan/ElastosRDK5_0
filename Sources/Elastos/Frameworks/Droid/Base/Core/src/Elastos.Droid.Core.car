@@ -26,6 +26,7 @@ module
     merge("../car/provider.car");
     merge("../car/inputmethods.car");
     merge("../car/transition.car");
+    merge("../car/systemui.car");
 
     merge("../car/internal/app.car");
     merge("../car/internal/backup.car");
@@ -38,19 +39,14 @@ module
     //merge("../car/menu1.car");
     //merge("../car/text2.car");
     //merge("../car/menu2.car");
-    //
     //merge("../car/content2.car");
     //merge("../car/app/ResolverActivity.car");
-    //merge("../car/wifi.car");
-    //merge("../car/wifidisplay.car");
     //merge("../car/pppoe.car");
     //merge("../car/ethernet.car");
     //merge("../car/speech.car");
     //merge("../car/webkit.car");
     //merge("../car/privacy.car");
-    //merge("../car/statusbar.car");
     //merge("../car/service.car");
-    //merge("../car/systemui.car");
     //merge("../car/appwidget.car");
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
