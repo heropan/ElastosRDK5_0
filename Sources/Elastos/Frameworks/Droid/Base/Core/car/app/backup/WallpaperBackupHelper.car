@@ -13,12 +13,14 @@ module
     /**
      * @Involve
      * interface IFileBackupHelperBase
+     * interface IBackupHelper
      */
     interface IWallpaperBackupHelper {
         // Use old keys to keep legacy data compatibility and avoid writing two wallpapers
         const String WALLPAPER_IMAGE_KEY =
                 "/data/data/com.android.settings/files/wallpaper";
         const String WALLPAPER_INFO_KEY = "/data/system/wallpaper_info.xml";
+
         /**
          * Based on oldState, determine which of the files from the application's data directory
          * need to be backed up, write them to the data stream, and fill in newState with the

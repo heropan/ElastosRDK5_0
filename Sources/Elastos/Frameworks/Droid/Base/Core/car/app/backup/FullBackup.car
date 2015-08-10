@@ -10,21 +10,25 @@ module
     namespace Backup {
 
     interface IFullBackup {
+
         const String APK_TREE_TOKEN = "a";
         const String OBB_TREE_TOKEN = "obb";
         const String ROOT_TREE_TOKEN = "r";
         const String DATA_TREE_TOKEN = "f";
+        const String NO_BACKUP_TREE_TOKEN = "nb";
         const String DATABASE_TREE_TOKEN = "db";
         const String SHAREDPREFS_TREE_TOKEN = "sp";
+        const String MANAGED_EXTERNAL_TREE_TOKEN = "ef";
         const String CACHE_TREE_TOKEN = "c";
         const String SHARED_STORAGE_TOKEN = "shared";
 
         const String APPS_PREFIX = "apps/";
-        const String SHARED_PREFIX = "shared/"; //SHARED_STORAGE_TOKEN + "/";
+        const String SHARED_PREFIX = "shared/";//SHARED_STORAGE_TOKEN + "/";
 
         const String FULL_BACKUP_INTENT_ACTION = "fullback";
         const String FULL_RESTORE_INTENT_ACTION = "fullrest";
         const String CONF_TOKEN_INTENT_EXTRA = "conftoken";
+
 
         BackupToTar(
             [in] String packageName,
@@ -69,7 +73,7 @@ module
          * @return ECode = NOERROR(0) if success, else as follows:
          * Value | Meaning |
          * :-|:------------|
-         * IOException | 
+         * IOException |
          */
         RestoreFile(
             [in] IParcelFileDescriptor* data,

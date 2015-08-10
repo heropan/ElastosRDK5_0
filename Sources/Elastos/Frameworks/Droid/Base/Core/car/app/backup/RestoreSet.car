@@ -5,6 +5,10 @@ module
     namespace App {
     namespace Backup {
 
+    /*
+     * @Involve
+     * interface IParcelable
+     */
     interface IRestoreSet {
         /**
          * Name of this restore set.  May be user generated, may simply be the name

@@ -147,7 +147,7 @@ module
         Read(
             [in] ArrayOf<Byte>* buffer,
             [in] Int32 offset,
-            [in] Int32 length,
+            [in] Int32 size,
             [out] Int32* number);
 
         /**

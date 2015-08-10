@@ -8,13 +8,10 @@ module
     namespace Backup {
 
     /**
-     * Provides the interface through which a BackupAgent writes entire files to a full
-     * backup data set, via its onFullBackup(FullBackupDataOutput) method.
-     *
-     * @sa BackupAgent
-     * @sa onFullBackup(FullBackupDataOutput)
+     * Provides the interface through which a {@link BackupAgent} writes entire files
+     * to a full backup data set, via its {@link BackupAgent#onFullBackup(FullBackupDataOutput)}
+     * method.
      */
-
     interface IFullBackupDataOutput {
         GetData(
             [out] IBackupDataOutput** data);

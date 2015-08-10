@@ -4,19 +4,6 @@ module
     interface Elastos.Droid.Os.ILooper;
 
     //
-    // Elastos.Droid.App
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace App {
-
-        namespace Backup {
-            interface IIBackupManager {}
-        }
-
-    }}} // Elastos.Droid.App
-
-    //
     // Elastos.Droid.Net
     //
     namespace Elastos {
@@ -193,12 +180,12 @@ module
 
         interface IStatusLine {}
 
-    namespace Conn {
-    namespace Routing {
+        namespace Conn {
+        namespace Routing {
 
-        interface IHttpRoutePlanner {}
+            interface IHttpRoutePlanner {}
 
-    }
+        }
     }
 
     namespace Params {

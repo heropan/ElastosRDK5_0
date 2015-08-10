@@ -22,7 +22,6 @@ module
     merge("app/DownloadManager.car");
     merge("app/ExpandableListActivity.car");
     merge("app/Fragment.car");
-    //FragmentBreadCrumbs
     merge("app/FragmentManager.car");
     merge("app/FragmentTransaction.car");
     merge("app/IActivityContainer.car");
@@ -91,7 +90,6 @@ module
     // merge("app/HeavyWeightSwitcherActivity.car");
     // merge("app/LocalePicker.car");
     // merge("app/ReceiverRestrictedContext.car");
-    //
     // merge("app/IMediaContainerService.car");
     // merge("app/BackStackState.car");
 
@@ -100,31 +98,28 @@ module
     merge("app/admin/DevicePolicyManager.car");
     merge("app/admin/IDevicePolicyManager.car");
 
-    // merge("app/backup/BackupAgent.car");
-    // merge("app/backup/BackupAgentHelper.car");
-    // merge("app/backup/BackupConstants.car");
-    // merge("app/backup/BackupDataInput.car");
-    // merge("app/backup/BackupDataInputStream.car");
-    // merge("app/backup/BackupDataOutput.car");
-    // merge("app/backup/BackupManager.car");
-    // merge("app/backup/BackupHelper.car");
-    // merge("app/backup/FileBackupHelperBase.car");
-    // merge("app/backup/FileBackupHelper.car");
-    // merge("app/backup/FullBackup.car");
-    // merge("app/backup/FullBackupDataOutput.car");
-    // merge("app/backup/IBackupManager.car");
-    // merge("app/backup/IBackupTransport.car");
-    // merge("app/backup/IFullBackupRestoreObserver.car");
-    // merge("app/backup/IRestoreObserver.car");
-    // merge("app/backup/IRestoreSession.car");
-    // merge("app/backup/RestoreSet.car");
-    // merge("app/backup/AbsoluteFileBackupHelper.car");
-    // merge("app/backup/SharedPreferencesBackupHelper.car");
-    // merge("app/backup/RestoreObserver.car");
-    // merge("app/backup/RestoreSession.car");
-    // merge("app/backup/WallpaperBackupHelper.car");
-    // merge("app/backup/BackupHelperDispatcher.car");
-
+    merge("app/backup/AbsoluteFileBackupHelper.car");
+    merge("app/backup/BackupAgent.car");
+    merge("app/backup/BackupAgentHelper.car");
+    merge("app/backup/BackupDataInput.car");
+    merge("app/backup/BackupDataInputStream.car");
+    merge("app/backup/BackupDataOutput.car");
+    merge("app/backup/BackupHelper.car");
+    merge("app/backup/BackupHelperDispatcher.car");
+    merge("app/backup/BackupManager.car");
+    merge("app/backup/FileBackupHelper.car");
+    merge("app/backup/FileBackupHelperBase.car");
+    merge("app/backup/FullBackup.car");
+    merge("app/backup/FullBackupDataOutput.car");
+    merge("app/backup/IBackupManager.car");
+    merge("app/backup/IFullBackupRestoreObserver.car");
+    merge("app/backup/IRestoreObserver.car");
+    merge("app/backup/IRestoreSession.car");
+    merge("app/backup/RestoreObserver.car");
+    merge("app/backup/RestoreSession.car");
+    merge("app/backup/RestoreSet.car");
+    merge("app/backup/SharedPreferencesBackupHelper.car");
+    merge("app/backup/WallpaperBackupHelper.car");
 
 //     using interface Elastos.Utility.IObjectStringMap;
 //     using interface Elastos.Utility.IObjectContainer;

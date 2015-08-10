@@ -176,8 +176,19 @@ module
             [in] IParcelFileDescriptor* fd,
             [in] Boolean includeApks,
             [in] Boolean includeShared,
+            [in] Boolean doWidgets,
             [in] Boolean allApps,
             [in] Boolean allIncludesSystem,
+            [in] Boolean doCompress,
+            [in] ArrayOf<String>* packageNames);
+
+        /**
+         * Perform a full-dataset backup of the given applications via the currently active
+         * transport.
+         *
+         * @param packageNames The package names of the apps whose data are to be backed up.
+         */
+        FullTransportBackup(
             [in] ArrayOf<String>* packageNames);
 
         /**
@@ -265,6 +276,22 @@ module
         GetDestinationString(
             [in] String transport,
             [out] String* string);
+
+        /**
+         * Get the manage-data UI intent, if any, from the given transport.  Callers must
+         * hold the android.permission.BACKUP permission in order to use this method.
+         */
+        GetDataManagementIntent(
+            [in] String transport,
+            [out] IIntent** intent);
+
+        /**
+         * Get the manage-data menu label, if any, from the given transport.  Callers must
+         * hold the android.permission.BACKUP permission in order to use this method.
+         */
+        GetDataManagementLabel(
+            [in] String transport,
+            [out] String* label);
 
         /**
          * Begin a restore session.  Either or both of packageName and transportID

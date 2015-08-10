@@ -22,7 +22,6 @@ module
      * @see BackupAgentHelper
      * @see BackupHelper
      */
-
     /**
      * @Involve
      * interface Elastos.IO.IInputStream

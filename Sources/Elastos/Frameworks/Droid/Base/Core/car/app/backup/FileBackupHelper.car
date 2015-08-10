@@ -40,7 +40,6 @@ module
          * {@link android.app.backup.BackupAgent#onBackup(ParcelFileDescriptor, BackupDataOutput, ParcelFileDescriptor)}
          * for a description of parameter meanings.
          */
-
         PerformBackup(
             [in] IParcelFileDescriptor* oldState,
             [in] IBackupDataOutput* data,
