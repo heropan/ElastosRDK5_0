@@ -37,7 +37,7 @@ CMethodInfo::CMethodInfo(
 
 CMethodInfo::~CMethodInfo()
 {
-    Int32 count = mMethodDescriptor->cParams;
+    Int32 count = mMethodDescriptor->mParamCount;
     if (mParameterInfos) {
         for (Int32 i = 0; i < count; i++) {
             if ((*mParameterInfos)[i]) {
@@ -122,7 +122,7 @@ ECode CMethodInfo::GetParamCount(
         return E_INVALID_ARGUMENT;
     }
 
-    *count = mMethodDescriptor->cParams;
+    *count = mMethodDescriptor->mParamCount;
     return NOERROR;
 }
 
@@ -164,13 +164,13 @@ ECode CMethodInfo::GetParamInfoByName(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!mMethodDescriptor->cParams) {
+    if (!mMethodDescriptor->mParamCount) {
         return E_DOES_NOT_EXIST;
     }
 
     ParamDescriptor* param = NULL;
-    for (Int32 i = 0; i < mMethodDescriptor->cParams; i++) {
-        param = getParamDescAddr(mBase, mMethodDescriptor->ppParams, i);
+    for (Int32 i = 0; i < mMethodDescriptor->mParamCount; i++) {
+        param = getParamDescAddr(mBase, mMethodDescriptor->mParams, i);
         if (name.Equals(adjustNameAddr(mBase, param->mName))) {
             return GetParamInfoByIndex(i, paramInfo);
         }
@@ -183,7 +183,7 @@ ECode CMethodInfo::SetParamElem(
     /* [in] */ ParamDescriptor* paramDescriptor,
     /* [in] */ ParmElement* parmElement)
 {
-    TypeDescriptor* typeDesc = &paramDescriptor->type;
+    TypeDescriptor* typeDesc = &paramDescriptor->mType;
     parmElement->mPointer = typeDesc->mPointer;
 
     ECode ec = NOERROR;
@@ -197,7 +197,7 @@ ECode CMethodInfo::SetParamElem(
 
     CarDataType type = GetCarDataType(typeDesc->mType);
     //Set type and IO attrib
-    if (paramDescriptor->dwAttribs & ParamAttrib_in) {
+    if (paramDescriptor->mAttribs & ParamAttrib_in) {
         if (type == CarDataType_Interface) {
             if (parmElement->mPointer > 1) {
                 type = CarDataType_LocalPtr;
@@ -224,7 +224,7 @@ ECode CMethodInfo::SetParamElem(
                 parmElement->mPointer = 1;
             }
         }
-        else if (paramDescriptor->dwAttribs & ParamAttrib_callee) {
+        else if (paramDescriptor->mAttribs & ParamAttrib_callee) {
             parmElement->mAttrib = ParamIOAttribute_CalleeAllocOut;
             parmElement->mPointer = 2;
         }
@@ -258,7 +258,7 @@ ECode CMethodInfo::SetParamElem(
 
 ECode CMethodInfo::InitParmElement()
 {
-    Int32 count = mMethodDescriptor->cParams;
+    Int32 count = mMethodDescriptor->mParamCount;
     mParamElem = new ParmElement[count];
     if (!mParamElem) {
         return E_OUT_OF_MEMORY;
@@ -269,7 +269,7 @@ ECode CMethodInfo::InitParmElement()
     ECode ec = NOERROR;
     for (Int32 i = 0; i < count; i++) {
         ec = SetParamElem(
-                getParamDescAddr(mBase, mMethodDescriptor->ppParams, i),
+                getParamDescAddr(mBase, mMethodDescriptor->mParams, i),
                 &mParamElem[i]);
         if (FAILED(ec)) goto EExit;
     }
@@ -285,7 +285,7 @@ EExit:
 
 ECode CMethodInfo::InitParamInfos()
 {
-    Int32 i = 0, count = mMethodDescriptor->cParams;
+    Int32 i = 0, count = mMethodDescriptor->mParamCount;
     mParameterInfos = ArrayOf<IParamInfo *>::Alloc(count);
     if (mParameterInfos == NULL) {
         return E_OUT_OF_MEMORY;
@@ -296,7 +296,7 @@ ECode CMethodInfo::InitParamInfos()
         // call xxx->AddRef()
         (*mParameterInfos)[i] = new CParamInfo(mClsModule, this,
                 &mParamElem[i],
-                getParamDescAddr(mBase, mMethodDescriptor->ppParams, i),
+                getParamDescAddr(mBase, mMethodDescriptor->mParams, i),
                 i);
         if (!(*mParameterInfos)[i]) goto EExit;
     }
@@ -325,7 +325,7 @@ ECode CMethodInfo::CreateFunctionArgumentList(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!mMethodDescriptor->cParams) {
+    if (!mMethodDescriptor->mParamCount) {
         return E_INVALID_OPERATION;
     }
 
@@ -339,7 +339,7 @@ ECode CMethodInfo::CreateFunctionArgumentList(
 #endif
 
     ECode ec = argumentListObj->Init(functionInfo, mParamElem,
-            mMethodDescriptor->cParams, mParamBufSize, isMethodInfo);
+            mMethodDescriptor->mParamCount, mParamBufSize, isMethodInfo);
     if FAILED(ec) {
         return ec;
     }
@@ -365,7 +365,7 @@ The GCC4 is 64-bit types (like long long) alignment and m_pHandlerThis(4-Byte)
 */
 #if defined(_arm) && defined(__GNUC__) && (__GNUC__ >= 4)
     Int32 position = 4;
-    for (Int32 i = 0; i < mMethodDescriptor->cParams; i++) {
+    for (Int32 i = 0; i < mMethodDescriptor->mParamCount; i++) {
         if (mParamElem[i].mType == CarDataType_Double ||
                 mParamElem[i].mType == CarDataType_Int64) {
             mParamElem[i].mPos = ROUND8(position + 4) - 4;
@@ -380,7 +380,7 @@ The GCC4 is 64-bit types (like long long) alignment and m_pHandlerThis(4-Byte)
 #endif
 
     ECode ec = cbArgumentListObj->Init(callbackMethodInfo, mParamElem,
-            mMethodDescriptor->cParams, mParamBufSize);
+            mMethodDescriptor->mParamCount, mParamBufSize);
     if FAILED(ec) {
         return ec;
     }
@@ -407,7 +407,7 @@ ECode CMethodInfo::Invoke(
 
     Int32* paramBuf = NULL;
     if (!argumentList) {
-        if (mMethodDescriptor->cParams) return E_INVALID_ARGUMENT;
+        if (mMethodDescriptor->mParamCount) return E_INVALID_ARGUMENT;
         paramBuf = (Int32 *)alloca(4);
         if (!paramBuf) return E_OUT_OF_MEMORY;
         mParamBufSize = 4;
@@ -418,7 +418,7 @@ ECode CMethodInfo::Invoke(
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
             mClsMod->mInterfaceDirs, INTERFACE_INDEX(mIndex));
-    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->iid;
+    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->mIID;
     PInterface object = target->Probe(iid);
     if (!object) {
         return E_NO_INTERFACE;

@@ -192,11 +192,11 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
 
             switch (c = stream.GetChar()) {
                 case 'o':
-                    if (pArgs->dwAttribs & Command_o_GenLBO) {
+                    if (pArgs->mAttribs & Command_o_GenLBO) {
                         CmdError(CommandError_DupSwitch, c);
                         return CommandError_DupSwitch;
                     }
-                    pArgs->dwAttribs |= Command_o_GenLBO;
+                    pArgs->mAttribs |= Command_o_GenLBO;
 
                     if (!IsCommandSwitch(stream.PeekChar())) {
                         GetFileName(&stream, ".lbo", pArgs, &pArgs->pszLBO);
@@ -204,11 +204,11 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'u':
-                    pArgs->dwAttribs |= Command_u_ListUserFuncs;
+                    pArgs->mAttribs |= Command_u_ListUserFuncs;
                     break;
 
                 case 'p':
-                    pArgs->dwAttribs |= Command_p_Preview;
+                    pArgs->mAttribs |= Command_p_Preview;
                     break;
 
                 case 'I':
@@ -246,7 +246,7 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
         }
     }
 
-    if (pArgs->dwAttribs & Command_u_ListUserFuncs) {
+    if (pArgs->mAttribs & Command_u_ListUserFuncs) {
         ListAllUserFuncs();
         if (!pArgs->pszSource) exit(0);
     }
@@ -255,7 +255,7 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
         CmdError(CommandError_NoSource, c);
         return CommandError_NoSource;
     }
-    if ((pArgs->dwAttribs & Command_o_GenLBO) && NULL == pArgs->pszLBO) {
+    if ((pArgs->mAttribs & Command_o_GenLBO) && NULL == pArgs->pszLBO) {
         pArgs->pszLBO = GenFileName(pArgs->pszSource, ".lbo");
         if (NULL == pArgs->pszLBO) {
             CmdError(CommandError_OutOfMemory, 0);

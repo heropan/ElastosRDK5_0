@@ -110,14 +110,14 @@ bool GenCarBarcode(CLSModule *pModule)
 extern void InitNamespace();
 extern void UninitNamespace();
 
-CLSModule * CompileCAR(const char *pszName, DWORD dwAttribs)
+CLSModule * CompileCAR(const char *pszName, DWORD attribs)
 {
     CLSModule *pModule;
     char *psztmp;
     int len;
 
-    if (!(dwAttribs & Command_s_NoSys)) {
-        if (LoadSystemLibrary(dwAttribs & Command_e_NoElastos) < 0) {
+    if (!(attribs & Command_s_NoSys)) {
+        if (LoadSystemLibrary(attribs & Command_e_NoElastos) < 0) {
             return NULL;
         }
     }
@@ -128,21 +128,21 @@ CLSModule * CompileCAR(const char *pszName, DWORD dwAttribs)
         return NULL;
     }
 
-    if (dwAttribs & Command_w_SuppWarn)
+    if (attribs & Command_w_SuppWarn)
         SuppressWarning();
-    if (dwAttribs & Command_t_Warn2Err)
+    if (attribs & Command_t_Warn2Err)
         TreatWarningAsError();
-    if (dwAttribs & Command_e_NoElastos)
+    if (attribs & Command_e_NoElastos)
         DisableWarning(0x000f);
-    if (dwAttribs & Command_a_Compress)
+    if (attribs & Command_a_Compress)
         pModule->mAttribs |= CARAttrib_compress;
-    if (dwAttribs & Command_A_FreeModel)
+    if (attribs & Command_A_FreeModel)
         SetDefaultThreadModel(ClassAttrib_naked);
-    if (dwAttribs & Command_i_IgrName)
+    if (attribs & Command_i_IgrName)
         s_bLenientNaming = true;
-    if (dwAttribs & Command_k_InKernel)
+    if (attribs & Command_k_InKernel)
         s_bInKernel = true;
-    if (dwAttribs & Command_d_Depend) {
+    if (attribs & Command_d_Depend) {
         s_bMakeDependence = true;
         len = strlen(pszName);
         psztmp = new char[len + 1];
@@ -156,9 +156,9 @@ CLSModule * CompileCAR(const char *pszName, DWORD dwAttribs)
         GenCarDependences(psztmp, 0);
         delete psztmp;
     }
-    if (dwAttribs & Command_u_WeakRef)
+    if (attribs & Command_u_WeakRef)
         s_bSupportWeakRef = true;
-    if (dwAttribs & Command_n_NakedMode)
+    if (attribs & Command_n_NakedMode)
         s_bInNakedMode = true;
 
     InitNamespace();
@@ -217,7 +217,7 @@ int main(int nArgc, char **ppArgv)
     if (args.pszSourcePath) SetSourcePath(args.pszSourcePath);
     if (args.pszLibraryPath) SetLibraryPath(args.pszLibraryPath);
 
-    pModule = CompileCAR(args.pszSource, args.dwAttribs);
+    pModule = CompileCAR(args.pszSource, args.mAttribs);
     if (!pModule) exit(1);
 
     // generate file(s) specified by command line
@@ -228,7 +228,7 @@ int main(int nArgc, char **ppArgv)
     if (args.pszCLS) {
         if (SaveCLS(args.pszCLS, pModule) < 0) goto ErrorExit;
     }
-    if (args.dwAttribs & Command_E_GenExCLS) {
+    if (args.mAttribs & Command_E_GenExCLS) {
         if (ExtendCLS(pModule, TRUE) < 0) goto ErrorExit;
         if (SaveCLS(args.pszExCLS, pModule) < 0) goto ErrorExit;
     }

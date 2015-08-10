@@ -101,8 +101,8 @@ BOOL IsLocalStruct(const CLSModule *pModule, StructDescriptor *pDesc)
     unsigned short i;
     TypeDescriptor orgtype, basetype, *pt = NULL;
 
-    for (i = 0; i < pDesc->cElems; i++) {
-        pt = &(pDesc->ppElems[i]->type);
+    for (i = 0; i < pDesc->mElementCount; i++) {
+        pt = &(pDesc->mElements[i]->mType);
 Loop:
         if (pt->mType == Type_Array) {
             memset(&basetype, 0, sizeof(TypeDescriptor));
@@ -133,7 +133,7 @@ Loop:
 }
 
 BOOL IsLocalCarQuintet(const CLSModule *pModule,
-    const TypeDescriptor *pType, DWORD dwAttribs)
+    const TypeDescriptor *pType, DWORD attribs)
 {
     switch (pType->mType) {
         case Type_Int8:
@@ -144,7 +144,7 @@ BOOL IsLocalCarQuintet(const CLSModule *pModule,
             _ReturnOK (TRUE);
 
         case Type_interface:
-            if (pModule->mInterfaceDirs[pType->mIndex]->mDesc->dwAttribs
+            if (pModule->mInterfaceDirs[pType->mIndex]->mDesc->mAttribs
                     & InterfaceAttrib_local) _ReturnOK (TRUE);
             break;
 
@@ -160,7 +160,7 @@ static void GetTypeFromIndex(const CLSModule *pModule,
     StructDescriptor *pDesc, unsigned short index, TypeDescriptor *pTypeDesc)
 {
     TypeDescriptor basetype, orgtype, *pt = NULL;
-    pt = &(pDesc->ppElems[index]->type);
+    pt = &(pDesc->mElements[index]->mType);
     if (pt->mType == Type_Array) {
         memset(&basetype, 0, sizeof(TypeDescriptor));
         GetArrayBaseType(pModule, pt, &basetype);
@@ -182,7 +182,7 @@ static UINT GetMaxAlignmentOfStructElems(const CLSModule *pModule, StructDescrip
     UINT uAlign;
     TypeDescriptor typeDesc;
 
-    for (i = 0; i < pDesc->cElems; i++) {
+    for (i = 0; i < pDesc->mElementCount; i++) {
         GetTypeFromIndex(pModule, pDesc, i, &typeDesc);
 
         if (Type_struct == typeDesc.mType) {
@@ -202,18 +202,18 @@ static UINT GetMaxAlignmentOfStructElems(const CLSModule *pModule, StructDescrip
 static UINT CalcArrayElements(const CLSModule *pModule, TypeDescriptor *pDesc)
 {
     assert(Type_Array == pDesc->mType);
-    UINT nElements;
+    UINT elementCount;
     TypeDescriptor *pSubDesc;
 
-    pSubDesc = &pModule->mArrayDirs[pDesc->mIndex]->type;
-    nElements = pModule->mArrayDirs[pDesc->mIndex]->nElements;
+    pSubDesc = &pModule->mArrayDirs[pDesc->mIndex]->mType;
+    elementCount = pModule->mArrayDirs[pDesc->mIndex]->mElementCount;
 
     while (Type_Array == pSubDesc->mType) {
-        nElements *= pModule->mArrayDirs[pSubDesc->mIndex]->nElements;
-        pSubDesc = &pModule->mArrayDirs[pSubDesc->mIndex]->type;
+        elementCount *= pModule->mArrayDirs[pSubDesc->mIndex]->mElementCount;
+        pSubDesc = &pModule->mArrayDirs[pSubDesc->mIndex]->mType;
     }
 
-    return nElements;
+    return elementCount;
 }
 
 static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT *pAlignment)
@@ -221,7 +221,7 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
     UINT uAlignment = GetMaxAlignmentOfStructElems(pModule, pDesc);
     if (uAlignment > STRUCT_MAX_ALIGN_SIZE) uAlignment = STRUCT_MAX_ALIGN_SIZE;
     if (pAlignment) *pAlignment = uAlignment;
-    if (pDesc->nAlignSize) return pDesc->nAlignSize;
+    if (pDesc->mAlignSize) return pDesc->mAlignSize;
 
     UINT uSizeOfStruct = 0, uTryAlignSize = 0;
     UINT uNextAlignment = 0;
@@ -239,11 +239,11 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
         uCurSize = STRUCT_TYPE_TO_SIZE(orgTypeDesc.mType);
     }
 
-    if (Type_Array == pDesc->ppElems[0]->type.mType) {
-        uCurSize *= CalcArrayElements(pModule, &pDesc->ppElems[0]->type);
+    if (Type_Array == pDesc->mElements[0]->mType.mType) {
+        uCurSize *= CalcArrayElements(pModule, &pDesc->mElements[0]->mType);
     }
 
-    while (i < pDesc->cElems) {
+    while (i < pDesc->mElementCount) {
         if (uCurSize && ((uCurSize % uAlignment) == 0)) {
             if (uTryAlignSize) {
                 uSizeOfStruct += STRUCT_ALIGN_SIZE(uTryAlignSize, uAlignment);
@@ -251,7 +251,7 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
             }
             uSizeOfStruct += uCurSize;
             i++;
-            if (i < pDesc->cElems) {
+            if (i < pDesc->mElementCount) {
                 GetTypeFromIndex(pModule, pDesc, i, &orgTypeDesc);
                 if (Type_struct == orgTypeDesc.mType) {
                     uCurSize = SizeOfStruct(pModule, \
@@ -261,14 +261,14 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
                     uCurSize = STRUCT_TYPE_TO_SIZE(orgTypeDesc.mType);
                 }
 
-                if (Type_Array == pDesc->ppElems[i]->type.mType) {
-                    uCurSize *= CalcArrayElements(pModule, &pDesc->ppElems[i]->type);
+                if (Type_Array == pDesc->mElements[i]->mType.mType) {
+                    uCurSize *= CalcArrayElements(pModule, &pDesc->mElements[i]->mType);
                 }
             }
             continue;
         }
 
-        if ((i + 1) >= pDesc->cElems) {
+        if ((i + 1) >= pDesc->mElementCount) {
             if (uTryAlignSize && ((uTryAlignSize % uAlignment) == 0)) {
                 uSizeOfStruct += uTryAlignSize;
                 uTryAlignSize = 0;
@@ -288,8 +288,8 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
             uNextAlignment = STRUCT_TYPE_ALIGNMENT(orgTypeDesc.mType);
         }
 
-        if (Type_Array == pDesc->ppElems[i + 1]->type.mType) {
-            uNextSize *= CalcArrayElements(pModule, &pDesc->ppElems[i+1]->type);
+        if (Type_Array == pDesc->mElements[i + 1]->mType.mType) {
+            uNextSize *= CalcArrayElements(pModule, &pDesc->mElements[i+1]->mType);
         }
 
         //align size of the next alignment
@@ -309,8 +309,8 @@ static UINT SizeOfStruct(const CLSModule *pModule, StructDescriptor *pDesc, UINT
 
 void CalcStructAlignedSize(const CLSModule *pModule, StructDescriptor *pDesc)
 {
-    if ((pDesc->nAlignSize != 0) || IsLocalStruct(pModule, pDesc)) return;
-    pDesc->nAlignSize = SizeOfStruct(pModule, pDesc, NULL);
+    if ((pDesc->mAlignSize != 0) || IsLocalStruct(pModule, pDesc)) return;
+    pDesc->mAlignSize = SizeOfStruct(pModule, pDesc, NULL);
 }
 
 #define NAMESPACE_COPY(pSrcCLS, pSrc, pDest, bNameSpace)                \
@@ -329,60 +329,60 @@ int ClassDescriptorCopy(
 {
     int n, m, i;
 
-    memcpy(&pDest->clsid, &pSrc->clsid, sizeof(CLSID));
-    pDest->dwAttribs = pSrc->dwAttribs;
+    memcpy(&pDest->mClsid, &pSrc->mClsid, sizeof(CLSID));
+    pDest->mAttribs = pSrc->mAttribs;
 
-    if (pSrc->dwAttribs & ClassAttrib_hasparent) {
-        m = ClassCopy(pSrcModule, pSrc->sParentIndex,
+    if (pSrc->mAttribs & ClassAttrib_hasparent) {
+        m = ClassCopy(pSrcModule, pSrc->mParentIndex,
                     pDestModule, bNameSpace);
         if (m < 0) _Return (m);
-        pDest->sParentIndex = m;
+        pDest->mParentIndex = m;
     }
 
-    if (pSrc->dwAttribs & ClassAttrib_hasctor) {
+    if (pSrc->mAttribs & ClassAttrib_hasctor) {
         i = InterfaceCopy(pSrcModule,
-                    pSrc->sCtorIndex, pDestModule, bNameSpace);
+                    pSrc->mCtorIndex, pDestModule, bNameSpace);
         if (i < 0) _Return (i);
-        pDest->sCtorIndex = i;
+        pDest->mCtorIndex = i;
     }
 
-    for (n = 0; n < pSrc->cAggregates; n++) {
+    for (n = 0; n < pSrc->mAggregateCount; n++) {
         m = ClassCopy(pSrcModule,
-                    pSrc->pAggrIndexs[n], pDestModule, bNameSpace);
+                    pSrc->mAggrIndexes[n], pDestModule, bNameSpace);
         if (m < 0) _Return (m);
-        pDest->pAggrIndexs[pDest->cAggregates++] = m;
+        pDest->mAggrIndexes[pDest->mAggregateCount++] = m;
     }
 
-    for (n = 0; n < pSrc->cAspects; n++) {
+    for (n = 0; n < pSrc->mAspectCount; n++) {
         m = ClassCopy(pSrcModule,
-                    pSrc->pAspectIndexs[n], pDestModule, bNameSpace);
+                    pSrc->mAspectIndexes[n], pDestModule, bNameSpace);
         if (m < 0) _Return (m);
-        pDest->pAspectIndexs[pDest->cAspects++] = m;
+        pDest->mAspectIndexes[pDest->mAspectCount++] = m;
     }
 
-    for (n = 0; n < pSrc->cClasses; n++) {
+    for (n = 0; n < pSrc->mClassCount; n++) {
         m = ClassCopy(pSrcModule,
-                    pSrc->pClassIndexs[n], pDestModule, bNameSpace);
+                    pSrc->mClassIndexes[n], pDestModule, bNameSpace);
         if (m < 0) _Return (m);
-        pDest->pClassIndexs[pDest->cClasses++] = m;
+        pDest->mClassIndexes[pDest->mClassCount++] = m;
     }
 
     for (n = 0; n < pSrc->mInterfaceCount; n++) {
         i = InterfaceCopy(pSrcModule,
-                    pSrc->ppInterfaces[n]->mIndex, pDestModule, bNameSpace);
+                    pSrc->mInterfaces[n]->mIndex, pDestModule, bNameSpace);
         if (i < 0) _Return (i);
 
         m = CreateClassInterface(i, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        pDest->ppInterfaces[m]->wAttribs = pSrc->ppInterfaces[n]->wAttribs;
+        pDest->mInterfaces[m]->mAttribs = pSrc->mInterfaces[n]->mAttribs;
     }
 
-    if (pSrc->dwAttribs & ClassAttrib_hascallback) {
+    if (pSrc->mAttribs & ClassAttrib_hascallback) {
         for (n = 0; n < pSrc->mInterfaceCount; n++) {
-            if (pSrc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback) {
+            if (pSrc->mInterfaces[n]->mAttribs & ClassInterfaceAttrib_callback) {
                 char szName[255];
-                strcpy(szName, pSrcModule->mInterfaceDirs[pSrc->ppInterfaces[n]->mIndex]->mName);
+                strcpy(szName, pSrcModule->mInterfaceDirs[pSrc->mInterfaces[n]->mIndex]->mName);
                 strcat(szName, "Handler");
                 i = SelectInterfaceDirEntry(szName, NULL, pSrcModule);
                 if (i < 0) _Return (i);
@@ -405,37 +405,37 @@ int ClassDescriptorXCopy(
 {
     int n, m;
 
-    memcpy(&pDest->clsid, &pSrc->clsid, sizeof(CLSID));
-    pDest->dwAttribs = pSrc->dwAttribs;
+    memcpy(&pDest->mClsid, &pSrc->mClsid, sizeof(CLSID));
+    pDest->mAttribs = pSrc->mAttribs;
 
-    if (pSrc->dwAttribs & ClassAttrib_hasparent) {
-        pDest->sParentIndex = pSrc->sParentIndex;
+    if (pSrc->mAttribs & ClassAttrib_hasparent) {
+        pDest->mParentIndex = pSrc->mParentIndex;
     }
 
-    if (pSrc->dwAttribs & ClassAttrib_hasctor) {
-        pDest->sCtorIndex = pSrc->sCtorIndex;
+    if (pSrc->mAttribs & ClassAttrib_hasctor) {
+        pDest->mCtorIndex = pSrc->mCtorIndex;
     }
 
-    for (n = 0; n < pSrc->cAggregates; n++) {
-        pDest->pAggrIndexs[pDest->cAggregates++] = pSrc->pAggrIndexs[n];
+    for (n = 0; n < pSrc->mAggregateCount; n++) {
+        pDest->mAggrIndexes[pDest->mAggregateCount++] = pSrc->mAggrIndexes[n];
     }
 
-    for (n = 0; n < pSrc->cAspects; n++) {
-        pDest->pAspectIndexs[pDest->cAspects++] = pSrc->pAspectIndexs[n];
+    for (n = 0; n < pSrc->mAspectCount; n++) {
+        pDest->mAspectIndexes[pDest->mAspectCount++] = pSrc->mAspectIndexes[n];
     }
 
-    for (n = 0; n < pSrc->cClasses; n++) {
-        pDest->pClassIndexs[pDest->cClasses++] = pSrc->pClassIndexs[n];
+    for (n = 0; n < pSrc->mClassCount; n++) {
+        pDest->mClassIndexes[pDest->mClassCount++] = pSrc->mClassIndexes[n];
     }
 
     for (n = 0; n < pSrc->mInterfaceCount; n++) {
-        m = CreateClassInterface(pSrc->ppInterfaces[n]->mIndex, pDest);
+        m = CreateClassInterface(pSrc->mInterfaces[n]->mIndex, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        pDest->ppInterfaces[m]->wAttribs = pSrc->ppInterfaces[n]->wAttribs;
+        pDest->mInterfaces[m]->mAttribs = pSrc->mInterfaces[n]->mAttribs;
     }
 
-    pDest->sParentIndex = pSrc->sParentIndex;
+    pDest->mParentIndex = pSrc->mParentIndex;
 
     _ReturnOK (CLS_NoError);
 }
@@ -458,7 +458,7 @@ int ClassCopy(
     }
     else {
         n = CreateClassDirEntry(pSrc->mName,
-                        pDestModule, pSrc->mDesc->dwAttribs);
+                        pDestModule, pSrc->mDesc->mAttribs);
         if (n < 0) _Return (n);
     }
     pDest = pDestModule->mClassDirs[n];
@@ -469,10 +469,10 @@ int ClassCopy(
                     pDestModule, pDest->mDesc, bNameSpace);
     if (r < 0) _Return (r);
 
-    if (bNameSpace) pDest->mDesc->dwAttribs |= ClassAttrib_t_external;
+    if (bNameSpace) pDest->mDesc->mAttribs |= ClassAttrib_t_external;
 
-    if ((pDest->mDesc->dwAttribs & ClassAttrib_hasctor) &&
-        !(pDest->mDesc->dwAttribs & ClassAttrib_t_clsobj)) {
+    if ((pDest->mDesc->mAttribs & ClassAttrib_hasctor) &&
+        !(pDest->mDesc->mAttribs & ClassAttrib_t_clsobj)) {
         sprintf(szClassObjName, "_%sClassObject_", pDest->mName);
         r = SelectClassDirEntry(szClassObjName, NULL, pSrcModule);
         if (r >= 0) {
@@ -500,7 +500,7 @@ int ClassXCopy(
     }
     else {
         n = CreateClassDirEntry(pSrc->mName,
-                        pDestModule, pSrc->mDesc->dwAttribs);
+                        pDestModule, pSrc->mDesc->mAttribs);
         if (n < 0) _Return (n);
     }
     pDest = pDestModule->mClassDirs[n];
@@ -511,7 +511,7 @@ int ClassXCopy(
                     pDestModule, pDest->mDesc, bNameSpace);
     if (r < 0) _Return (r);
 
-    if (bNameSpace) pDest->mDesc->dwAttribs |= ClassAttrib_t_external;
+    if (bNameSpace) pDest->mDesc->mAttribs |= ClassAttrib_t_external;
 
     _Return (n);
 }
@@ -523,37 +523,37 @@ int InterfaceConstCopy(
     InterfaceConstDescriptor *pDest,
     BOOL bNameSpace)
 {
-    pDest->type = pSrc->type;
-    if (pDest->type == TYPE_BOOLEAN) {
-        pDest->v.bValue = pSrc->v.bValue;
+    pDest->mType = pSrc->mType;
+    if (pDest->mType == TYPE_BOOLEAN) {
+        pDest->mV.mBoolValue = pSrc->mV.mBoolValue;
     }
-    else if (pDest->type == TYPE_CHAR32) {
-        pDest->v.int32Value.nValue = pSrc->v.int32Value.nValue;
+    else if (pDest->mType == TYPE_CHAR32) {
+        pDest->mV.mInt32Value.mValue = pSrc->mV.mInt32Value.mValue;
     }
-    else if (pDest->type == TYPE_BYTE) {
-        pDest->v.int32Value.nValue = pSrc->v.int32Value.nValue;
-        pDest->v.int32Value.format = pSrc->v.int32Value.format;
+    else if (pDest->mType == TYPE_BYTE) {
+        pDest->mV.mInt32Value.mValue = pSrc->mV.mInt32Value.mValue;
+        pDest->mV.mInt32Value.mFormat = pSrc->mV.mInt32Value.mFormat;
     }
-    else if (pDest->type == TYPE_INTEGER16) {
-        pDest->v.int32Value.nValue = pSrc->v.int32Value.nValue;
-        pDest->v.int32Value.format = pSrc->v.int32Value.format;
+    else if (pDest->mType == TYPE_INTEGER16) {
+        pDest->mV.mInt32Value.mValue = pSrc->mV.mInt32Value.mValue;
+        pDest->mV.mInt32Value.mFormat = pSrc->mV.mInt32Value.mFormat;
     }
-    else if (pDest->type == TYPE_INTEGER32) {
-        pDest->v.int32Value.nValue = pSrc->v.int32Value.nValue;
-        pDest->v.int32Value.format = pSrc->v.int32Value.format;
+    else if (pDest->mType == TYPE_INTEGER32) {
+        pDest->mV.mInt32Value.mValue = pSrc->mV.mInt32Value.mValue;
+        pDest->mV.mInt32Value.mFormat = pSrc->mV.mInt32Value.mFormat;
     }
-    else if (pDest->type == TYPE_INTEGER64) {
-        pDest->v.int64Value.nValue = pSrc->v.int64Value.nValue;
-        pDest->v.int64Value.format = pSrc->v.int64Value.format;
+    else if (pDest->mType == TYPE_INTEGER64) {
+        pDest->mV.mInt64Value.mValue = pSrc->mV.mInt64Value.mValue;
+        pDest->mV.mInt64Value.mFormat = pSrc->mV.mInt64Value.mFormat;
     }
-    else if (pDest->type == TYPE_FLOAT || pDest->type == TYPE_DOUBLE) {
-        pDest->v.dValue = pSrc->v.dValue;
+    else if (pDest->mType == TYPE_FLOAT || pDest->mType == TYPE_DOUBLE) {
+        pDest->mV.mDoubleValue = pSrc->mV.mDoubleValue;
     }
     else {
-        assert(pDest->type == TYPE_STRING);
-        if (pSrc->v.pStrValue != NULL) {
-            pDest->v.pStrValue = (char*)malloc(strlen(pSrc->v.pStrValue) + 1);
-            strcpy(pDest->v.pStrValue, pSrc->v.pStrValue);
+        assert(pDest->mType == TYPE_STRING);
+        if (pSrc->mV.mStrValue != NULL) {
+            pDest->mV.mStrValue = (char*)malloc(strlen(pSrc->mV.mStrValue) + 1);
+            strcpy(pDest->mV.mStrValue, pSrc->mV.mStrValue);
         }
     }
 
@@ -569,24 +569,24 @@ int MethodCopy(
 {
     int n, m;
 
-    pDest->pszSignature = new char[strlen(pSrc->pszSignature) + 1];
-    strcpy(pDest->pszSignature, pSrc->pszSignature);
+    pDest->mSignature = new char[strlen(pSrc->mSignature) + 1];
+    strcpy(pDest->mSignature, pSrc->mSignature);
 
-    n = TypeCopy(pSrcModule, &pSrc->type,
-                pDestModule, &pDest->type, bNameSpace);
+    n = TypeCopy(pSrcModule, &pSrc->mType,
+                pDestModule, &pDest->mType, bNameSpace);
     if (n < 0) _Return (n);
 
-    for (n = 0; n < pSrc->cParams; n++) {
-        m = CreateMethodParam(pSrc->ppParams[n]->mName, pDest);
+    for (n = 0; n < pSrc->mParamCount; n++) {
+        m = CreateMethodParam(pSrc->mParams[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        pDest->ppParams[m]->dwAttribs = pSrc->ppParams[n]->dwAttribs;
-        m = TypeCopy(pSrcModule, &pSrc->ppParams[n]->type,
-                    pDestModule, &pDest->ppParams[m]->type, bNameSpace);
+        pDest->mParams[m]->mAttribs = pSrc->mParams[n]->mAttribs;
+        m = TypeCopy(pSrcModule, &pSrc->mParams[n]->mType,
+                    pDestModule, &pDest->mParams[m]->mType, bNameSpace);
         if (m < 0) _Return (m);
     }
 
-    pDest->dwAttribs = pSrc->dwAttribs;
+    pDest->mAttribs = pSrc->mAttribs;
 
     _Return (CLS_NoError);
 }
@@ -600,24 +600,24 @@ int MethodXCopy(
 {
     int n, m;
 
-    pDest->pszSignature = new char[strlen(pSrc->pszSignature) + 1];
-    strcpy(pDest->pszSignature, pSrc->pszSignature);
+    pDest->mSignature = new char[strlen(pSrc->mSignature) + 1];
+    strcpy(pDest->mSignature, pSrc->mSignature);
 
-    n = TypeXCopy(pSrcModule, &pSrc->type,
-                pDestModule, &pDest->type, bNameSpace);
+    n = TypeXCopy(pSrcModule, &pSrc->mType,
+                pDestModule, &pDest->mType, bNameSpace);
     if (n < 0) _Return (n);
 
-    for (n = 0; n < pSrc->cParams; n++) {
-        m = CreateMethodParam(pSrc->ppParams[n]->mName, pDest);
+    for (n = 0; n < pSrc->mParamCount; n++) {
+        m = CreateMethodParam(pSrc->mParams[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        pDest->ppParams[m]->dwAttribs = pSrc->ppParams[n]->dwAttribs;
-        m = TypeXCopy(pSrcModule, &pSrc->ppParams[n]->type,
-                    pDestModule, &pDest->ppParams[m]->type, bNameSpace);
+        pDest->mParams[m]->mAttribs = pSrc->mParams[n]->mAttribs;
+        m = TypeXCopy(pSrcModule, &pSrc->mParams[n]->mType,
+                    pDestModule, &pDest->mParams[m]->mType, bNameSpace);
         if (m < 0) _Return (m);
     }
 
-    pDest->dwAttribs = pSrc->dwAttribs;
+    pDest->mAttribs = pSrc->mAttribs;
 
     _Return (CLS_NoError);
 }
@@ -631,24 +631,24 @@ int InterfaceDescriptorCopy(
 {
     int n, m;
 
-    pDest->dwAttribs = pSrc->dwAttribs;
-    memcpy(&pDest->iid, &pSrc->iid, sizeof(IID));
+    pDest->mAttribs = pSrc->mAttribs;
+    memcpy(&pDest->mIID, &pSrc->mIID, sizeof(IID));
 
     for (n = 0; n < pSrc->mConstCount; n++) {
-        m = CreateInterfaceConstDirEntry(pSrc->ppConsts[n]->mName, pDest);
+        m = CreateInterfaceConstDirEntry(pSrc->mConsts[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = InterfaceConstCopy(pSrcModule, pSrc->ppConsts[n],
-                    pDestModule, pDest->ppConsts[m], bNameSpace);
+        m = InterfaceConstCopy(pSrcModule, pSrc->mConsts[n],
+                    pDestModule, pDest->mConsts[m], bNameSpace);
         if (m < 0) _Return (m);
     }
 
-    for (n = 0; n < pSrc->cMethods; n++) {
-        m = CreateInterfaceMethod(pSrc->ppMethods[n]->mName, pDest);
+    for (n = 0; n < pSrc->mMethodCount; n++) {
+        m = CreateInterfaceMethod(pSrc->mMethods[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = MethodCopy(pSrcModule, pSrc->ppMethods[n],
-                    pDestModule, pDest->ppMethods[m], bNameSpace);
+        m = MethodCopy(pSrcModule, pSrc->mMethods[n],
+                    pDestModule, pDest->mMethods[m], bNameSpace);
         if (m < 0) _Return (m);
     }
 
@@ -664,24 +664,24 @@ int InterfaceDescriptorXCopy(
 {
     int n, m;
 
-    pDest->dwAttribs = pSrc->dwAttribs;
-    memcpy(&pDest->iid, &pSrc->iid, sizeof(IID));
+    pDest->mAttribs = pSrc->mAttribs;
+    memcpy(&pDest->mIID, &pSrc->mIID, sizeof(IID));
 
     for (n = 0; n < pSrc->mConstCount; n++) {
-        m = CreateInterfaceConstDirEntry(pSrc->ppConsts[n]->mName, pDest);
+        m = CreateInterfaceConstDirEntry(pSrc->mConsts[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = InterfaceConstCopy(pSrcModule, pSrc->ppConsts[n],
-                    pDestModule, pDest->ppConsts[m], bNameSpace);
+        m = InterfaceConstCopy(pSrcModule, pSrc->mConsts[n],
+                    pDestModule, pDest->mConsts[m], bNameSpace);
         if (m < 0) _Return (m);
     }
 
-    for (n = 0; n < pSrc->cMethods; n++) {
-        m = CreateInterfaceMethod(pSrc->ppMethods[n]->mName, pDest);
+    for (n = 0; n < pSrc->mMethodCount; n++) {
+        m = CreateInterfaceMethod(pSrc->mMethods[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = MethodXCopy(pSrcModule, pSrc->ppMethods[n],
-                    pDestModule, pDest->ppMethods[m], bNameSpace);
+        m = MethodXCopy(pSrcModule, pSrc->mMethods[n],
+                    pDestModule, pDest->mMethods[m], bNameSpace);
         if (m < 0) _Return (m);
     }
 
@@ -699,8 +699,8 @@ int InterfaceCopy(
 
     pSrc = pSrcModule->mInterfaceDirs[nIndex];
 
-    if (0 != pSrc->mDesc->sParentIndex) {
-        nParent = InterfaceCopy(pSrcModule, pSrc->mDesc->sParentIndex,
+    if (0 != pSrc->mDesc->mParentIndex) {
+        nParent = InterfaceCopy(pSrcModule, pSrc->mDesc->mParentIndex,
                             pDestModule, bNameSpace);
         if (nParent < 0) _Return (nParent);
     }
@@ -711,19 +711,19 @@ int InterfaceCopy(
     n = SelectInterfaceDirEntry(pSrc->mName, pSrc->mNameSpace, pDestModule);
     if (n >= 0) {
         if (pDestModule->mInterfaceDirs[n]->mDesc->mConstCount > 0 ||
-                pDestModule->mInterfaceDirs[n]->mDesc->cMethods > 0)
+                pDestModule->mInterfaceDirs[n]->mDesc->mMethodCount > 0)
             _Return (n);
     }
     else {
         n = CreateInterfaceDirEntry(
-                pSrc->mName, pDestModule, pSrc->mDesc->dwAttribs);
+                pSrc->mName, pDestModule, pSrc->mDesc->mAttribs);
         if (n < 0) _Return (n);
         if (!bNameSpace) {
             pDestModule->mDefinedInterfaceIndexes[pDestModule->mDefinedInterfaceCount++] = n;
         }
     }
     pDest = pDestModule->mInterfaceDirs[n];
-    pDest->mDesc->sParentIndex = nParent;
+    pDest->mDesc->mParentIndex = nParent;
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
 
@@ -731,7 +731,7 @@ int InterfaceCopy(
                     pDestModule, pDest->mDesc, bNameSpace);
     if (r < 0) _Return (r);
 
-    if (bNameSpace) pDest->mDesc->dwAttribs |= InterfaceAttrib_t_external;
+    if (bNameSpace) pDest->mDesc->mAttribs |= InterfaceAttrib_t_external;
 
     _Return (n);
 }
@@ -747,22 +747,22 @@ int InterfaceXCopy(
 
     pSrc = pSrcModule->mInterfaceDirs[nIndex];
 
-    nParent = pSrc->mDesc->sParentIndex;
+    nParent = pSrc->mDesc->mParentIndex;
 
     n = SelectInterfaceDirEntry(pSrc->mName, NULL, pDestModule);
     if (n >= 0) {
-        if (pDestModule->mInterfaceDirs[n]->mDesc->cMethods > 0)
+        if (pDestModule->mInterfaceDirs[n]->mDesc->mMethodCount > 0)
             _Return (n);
     }
     else {
         n = CreateInterfaceDirEntry(
-                pSrc->mName, pDestModule, pSrc->mDesc->dwAttribs);
+                pSrc->mName, pDestModule, pSrc->mDesc->mAttribs);
         if (n < 0) {
             _Return (n);
         }
     }
     pDest = pDestModule->mInterfaceDirs[n];
-    pDest->mDesc->sParentIndex = nParent;
+    pDest->mDesc->mParentIndex = nParent;
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
 
@@ -772,7 +772,7 @@ int InterfaceXCopy(
         _Return (r);
     }
 
-    if (bNameSpace) pDest->mDesc->dwAttribs |= InterfaceAttrib_t_external;
+    if (bNameSpace) pDest->mDesc->mAttribs |= InterfaceAttrib_t_external;
 
     _Return (n);
 }
@@ -787,7 +787,7 @@ int ArrayCopy(
     ArrayDirEntry *pSrc, *pDest;
 
     pSrc = pSrcModule->mArrayDirs[nIndex];
-    n = SelectArrayDirEntry(pSrc->nElements, pSrc->type, pDestModule);
+    n = SelectArrayDirEntry(pSrc->mElementCount, pSrc->mType, pDestModule);
     if (n >= 0) {
         _Return (n);
     }
@@ -798,9 +798,9 @@ int ArrayCopy(
 
     pDest = pDestModule->mArrayDirs[n];
 
-    pDest->nElements = pSrc->nElements;
-    m = TypeCopy(pSrcModule, &pSrc->type,
-            pDestModule, &pDest->type, bNameSpace);
+    pDest->mElementCount = pSrc->mElementCount;
+    m = TypeCopy(pSrcModule, &pSrc->mType,
+            pDestModule, &pDest->mType, bNameSpace);
     if (m < 0) _Return (m);
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
@@ -818,7 +818,7 @@ int ArrayXCopy(
     ArrayDirEntry *pSrc, *pDest;
 
     pSrc = pSrcModule->mArrayDirs[nIndex];
-    n = SelectArrayDirEntry(pSrc->nElements, pSrc->type, pDestModule);
+    n = SelectArrayDirEntry(pSrc->mElementCount, pSrc->mType, pDestModule);
     if (n >= 0) {
         _Return (n);
     }
@@ -829,9 +829,9 @@ int ArrayXCopy(
 
     pDest = pDestModule->mArrayDirs[n];
 
-    pDest->nElements = pSrc->nElements;
-    m = TypeXCopy(pSrcModule, &pSrc->type,
-            pDestModule, &pDest->type, bNameSpace);
+    pDest->mElementCount = pSrc->mElementCount;
+    m = TypeXCopy(pSrcModule, &pSrc->mType,
+            pDestModule, &pDest->mType, bNameSpace);
     if (m < 0) _Return (m);
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
@@ -848,15 +848,15 @@ int StructDescriptorCopy(
 {
     int n, m;
 
-    for (n = 0; n < pSrc->cElems; n++) {
-        m = CreateStructElement(pSrc->ppElems[n]->mName, pDest);
+    for (n = 0; n < pSrc->mElementCount; n++) {
+        m = CreateStructElement(pSrc->mElements[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = TypeCopy(pSrcModule, &pSrc->ppElems[n]->type,
-                    pDestModule, &pDest->ppElems[m]->type, bNameSpace);
+        m = TypeCopy(pSrcModule, &pSrc->mElements[n]->mType,
+                    pDestModule, &pDest->mElements[m]->mType, bNameSpace);
         if (m < 0) _Return (m);
     }
-    pDest->nAlignSize = pSrc->nAlignSize;
+    pDest->mAlignSize = pSrc->mAlignSize;
 
     _ReturnOK (CLS_NoError);
 }
@@ -870,15 +870,15 @@ int StructDescriptorXCopy(
 {
     int n, m;
 
-    for (n = 0; n < pSrc->cElems; n++) {
-        m = CreateStructElement(pSrc->ppElems[n]->mName, pDest);
+    for (n = 0; n < pSrc->mElementCount; n++) {
+        m = CreateStructElement(pSrc->mElements[n]->mName, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        m = TypeXCopy(pSrcModule, &pSrc->ppElems[n]->type,
-                    pDestModule, &pDest->ppElems[m]->type, bNameSpace);
+        m = TypeXCopy(pSrcModule, &pSrc->mElements[n]->mType,
+                    pDestModule, &pDest->mElements[m]->mType, bNameSpace);
         if (m < 0) _Return (m);
     }
-    pDest->nAlignSize = pSrc->nAlignSize;
+    pDest->mAlignSize = pSrc->mAlignSize;
 
     _ReturnOK (CLS_NoError);
 }
@@ -895,7 +895,7 @@ int StructCopy(
     pSrc = pSrcModule->mStructDirs[nIndex];
     n = SelectStructDirEntry(pSrc->mName, pDestModule);
     if (n >= 0) {
-        if (pDestModule->mStructDirs[n]->mDesc->cElems > 0)
+        if (pDestModule->mStructDirs[n]->mDesc->mElementCount > 0)
             _Return (n);
     }
     else {
@@ -927,7 +927,7 @@ int StructXCopy(
     pSrc = pSrcModule->mStructDirs[nIndex];
     n = SelectStructDirEntry(pSrc->mName, pDestModule);
     if (n >= 0) {
-        if (pDestModule->mStructDirs[n]->mDesc->cElems > 0)
+        if (pDestModule->mStructDirs[n]->mDesc->mElementCount > 0)
             _Return (n);
     }
     else {
@@ -954,12 +954,12 @@ int EnumDescriptorCopy(
 {
     int n, m;
 
-    for (n = 0; n < pSrc->cElems; n++) {
-        m = CreateEnumElement(pSrc->ppElems[n]->mName, pDestModule, pDest);
+    for (n = 0; n < pSrc->mElementCount; n++) {
+        m = CreateEnumElement(pSrc->mElements[n]->mName, pDestModule, pDest);
         if (m < 0) _Return (m);
         assert(m == n);
-        pDest->ppElems[m]->nValue = pSrc->ppElems[n]->nValue;
-        pDest->ppElems[m]->bHexFormat = pSrc->ppElems[n]->bHexFormat;
+        pDest->mElements[m]->mValue = pSrc->mElements[n]->mValue;
+        pDest->mElements[m]->mIsHexFormat = pSrc->mElements[n]->mIsHexFormat;
     }
     _ReturnOK (CLS_NoError);
 }
@@ -976,7 +976,7 @@ int EnumCopy(
     pSrc = pSrcModule->mEnumDirs[nIndex];
     n = SelectEnumDirEntry(pSrc->mName, pSrc->mNameSpace, pDestModule);
     if (n >= 0) {
-        if (pDestModule->mEnumDirs[n]->mDesc->cElems > 0)
+        if (pDestModule->mEnumDirs[n]->mDesc->mElementCount > 0)
             _Return (n);
     }
     else {
@@ -1010,14 +1010,14 @@ int AliasCopy(
     n = SelectAliasDirEntry(pSrc->mName, pDestModule);
     if (n >= 0) _Return (n);
 
-    GetOriginalType(pSrcModule, &pSrc->type, &orgType);
+    GetOriginalType(pSrcModule, &pSrc->mType, &orgType);
     n = TypeCopy(pSrcModule, &orgType, pDestModule, &destType, bNameSpace);
     if (n < 0) _Return (n);
 
     n = CreateAliasDirEntry(pSrc->mName, pDestModule, &destType);
     if (n < 0) _Return (n);
     pDest = pDestModule->mAliasDirs[n];
-    pDest->bDummyType = pSrc->bDummyType;
+    pDest->mIsDummyType = pSrc->mIsDummyType;
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
 
@@ -1038,14 +1038,14 @@ int AliasXCopy(
     n = SelectAliasDirEntry(pSrc->mName, pDestModule);
     if (n >= 0) _Return (n);
 
-    GetOriginalType(pSrcModule, &pSrc->type, &orgType);
+    GetOriginalType(pSrcModule, &pSrc->mType, &orgType);
     n = TypeXCopy(pSrcModule, &orgType, pDestModule, &destType, bNameSpace);
     if (n < 0) _Return (n);
 
     n = CreateAliasDirEntry(pSrc->mName, pDestModule, &destType);
     if (n < 0) _Return (n);
     pDest = pDestModule->mAliasDirs[n];
-    pDest->bDummyType = pSrc->bDummyType;
+    pDest->mIsDummyType = pSrc->mIsDummyType;
 
     NAMESPACE_COPY(pSrcModule, pSrc, pDest, bNameSpace);
 
@@ -1068,16 +1068,16 @@ int ConstCopy(
     n = CreateConstDirEntry(pSrc->mName, pDestModule);
     if (n < 0) _Return (n);
     pDest = pDestModule->mConstDirs[n];
-    pDest->type = pSrc->type;
-    if (pDest->type == TYPE_INTEGER32) {
-        pDest->v.intValue.nValue = pSrc->v.intValue.nValue;
-        pDest->v.intValue.bHexFormat = pSrc->v.intValue.bHexFormat;
+    pDest->mType = pSrc->mType;
+    if (pDest->mType == TYPE_INTEGER32) {
+        pDest->mV.mInt32Value.mValue = pSrc->mV.mInt32Value.mValue;
+        pDest->mV.mInt32Value.mIsHexFormat = pSrc->mV.mInt32Value.mIsHexFormat;
     }
     else {
-        assert(pDest->type == TYPE_STRING);
-        if (pSrc->v.strValue.pszValue != NULL) {
-            pDest->v.strValue.pszValue = (char*)malloc(strlen(pSrc->v.strValue.pszValue) + 1);
-            strcpy(pDest->v.strValue.pszValue, pSrc->v.strValue.pszValue);
+        assert(pDest->mType == TYPE_STRING);
+        if (pSrc->mV.mStrValue.mValue != NULL) {
+            pDest->mV.mStrValue.mValue = (char*)malloc(strlen(pSrc->mV.mStrValue.mValue) + 1);
+            strcpy(pDest->mV.mStrValue.mValue, pSrc->mV.mStrValue.mValue);
         }
     }
 

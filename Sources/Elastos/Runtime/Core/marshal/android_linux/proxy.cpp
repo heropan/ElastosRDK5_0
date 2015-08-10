@@ -454,7 +454,7 @@ Boolean CInterfaceProxy::MethodHasOutArgs(
 Boolean CInterfaceProxy::IsMethodOneway(
     /* [in] */ UInt32 methodIndex)
 {
-    return BT_IS_ONEWAY((mInfo->methods[methodIndex]).dwAttribs);
+    return BT_IS_ONEWAY((mInfo->methods[methodIndex]).mAttribs);
 }
 
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)

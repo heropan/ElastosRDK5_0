@@ -8,7 +8,7 @@
 #include <lube.h>
 
 typedef struct CommandArgs {
-    DWORD       dwAttribs;
+    DWORD       mAttribs;
 
     char        *pszTemplates;
     char        *pszInputLBO;

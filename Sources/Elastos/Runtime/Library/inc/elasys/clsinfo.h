@@ -113,7 +113,7 @@ typedef _ELASTOS UInt32  CIBaseType;
 typedef struct _CIMethodInfo
 {
     _ELASTOS UInt8  paramNum;
-    _ELASTOS UInt8  dwAttribs;
+    _ELASTOS UInt8  mAttribs;
     _ELASTOS UInt8  reserved1;  // the  highest digit for mark [in] interface
                                 // the next for [out] interface
                                 // the others is the stack length

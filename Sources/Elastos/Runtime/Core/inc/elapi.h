@@ -74,7 +74,7 @@ ELAPI_(_ELASTOS Boolean) _Impl_CheckHelperInfoFlag(
 
 ELAPI_(void) _Impl_SetHelperInfoFlag(
     /* [in] */ _ELASTOS UInt32 flag,
-    /* [in] */ _ELASTOS Boolean bValue);
+    /* [in] */ _ELASTOS Boolean value);
 
 ELAPI _Impl_EnterProtectedZone();
 

@@ -44,7 +44,7 @@ ECode CConstructorInfo::Init(
     /* [in] */ UInt32 index,
     /* [in] */ ClassID* clsId)
 {
-    mOutParamIndex = methodDescriptor->cParams - 1;
+    mOutParamIndex = methodDescriptor->mParamCount - 1;
 
     mInstClsId.pUunm = mUrn2;
     mClsId.pUunm = mUrn;

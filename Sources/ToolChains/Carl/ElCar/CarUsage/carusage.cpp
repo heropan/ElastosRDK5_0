@@ -11,7 +11,7 @@
 #include <carusage.h>
 
 #define APPEND_TEMPLATE(opt, tmplt) \
-        if (args.dwAttribs & Command_r_ ##opt) {\
+        if (args.mAttribs & Command_r_ ##opt) {\
             strcat(szBuf, tmplt);\
             bExisted = TRUE;\
         }\
@@ -40,13 +40,13 @@ int main(int argc, char *argv[])
     else {
         strcat(szBuf, " -v");
     }
-    if (args.dwAttribs & Command_r_ForceOverride) {
+    if (args.mAttribs & Command_r_ForceOverride) {
         strcat(szBuf, " -f");
     }
-    if (args.dwAttribs & Command_r_All) {
+    if (args.mAttribs & Command_r_All) {
         strcat(szBuf, " -T carusage");
     }
-    else if (args.dwAttribs & Command_r_Method) {
+    else if (args.mAttribs & Command_r_Method) {
         strcat(szBuf, " -T methodusage");
     }
     else {

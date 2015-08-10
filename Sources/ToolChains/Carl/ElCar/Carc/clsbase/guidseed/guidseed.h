@@ -14,7 +14,7 @@ typedef unsigned char     BYTE;
 typedef unsigned short int    WORD;
 typedef unsigned int    DWORD;
 
-const int c_nMaxSeedSize = 255;
+const int MAX_SEED_SIZE = 255;
 
 EXTERN_C int GuidFromSeedString(const char *, GUID *);
 EXTERN_C int SeedStringFromGuid(REFGUID, char *);

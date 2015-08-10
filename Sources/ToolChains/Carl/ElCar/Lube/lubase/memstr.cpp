@@ -91,13 +91,13 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_generic) {
+            if (m_pClass->mDesc->mAttribs & ClassAttrib_t_generic) {
                 pszOutput = "generic";
             }
-            else if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_aspect) {
+            else if (m_pClass->mDesc->mAttribs & ClassAttrib_t_aspect) {
                 pszOutput = "aspect";
             }
-            else if (m_pClass->mDesc->dwAttribs & ClassAttrib_t_regime) {
+            else if (m_pClass->mDesc->mAttribs & ClassAttrib_t_regime) {
                 pszOutput = "regime";
             }
             else {
@@ -149,17 +149,17 @@ int LubeContext::ClassMember(MemberType member, char *pszBuffer)
             sprintf(pszBuffer, "%s", buffer);
             return LUBE_OK;
         case Member_Attrib:
-            sprintf(pszBuffer, "%08x", m_pClass->mDesc->dwAttribs);
+            sprintf(pszBuffer, "%08x", m_pClass->mDesc->mAttribs);
             return LUBE_OK;
         case Member_Uuid:
-            pszOutput = Uuid2CString(&m_pClass->mDesc->clsid, TRUE);
+            pszOutput = Uuid2CString(&m_pClass->mDesc->mClsid, TRUE);
             break;
         case Member_Clsid:
             if (m_pModule->mUunm) {
                 sprintf(pszBuffer,
                     "    {%s, \\\n"
                     "    \"%s\"}",
-                    Uuid2CString(&m_pClass->mDesc->clsid, TRUE),
+                    Uuid2CString(&m_pClass->mDesc->mClsid, TRUE),
                     m_pModule->mUunm);
                 return LUBE_OK;
             }
@@ -228,11 +228,11 @@ int LubeContext::InterfaceMember(MemberType member, char *pszBuffer)
             sprintf(pszBuffer, "%s", buffer);
             return LUBE_OK;
         case Member_Attrib:
-            sprintf(pszBuffer, "%08x", m_pInterface->mDesc->dwAttribs);
+            sprintf(pszBuffer, "%08x", m_pInterface->mDesc->mAttribs);
             return LUBE_OK;
         case Member_Iid:
         case Member_Uuid:
-            pszOutput = Uuid2CString(&m_pInterface->mDesc->iid, TRUE);
+            pszOutput = Uuid2CString(&m_pInterface->mDesc->mIID, TRUE);
             break;
         default:
             assert(TRUE == FALSE);
@@ -279,13 +279,13 @@ int LubeContext::ConstMember(MemberType member, char *pszBuffer)
             pszOutput = m_pConst->mName;
             break;
         case Member_Value:
-            if (m_pConst->type == TYPE_INTEGER32) {
-                sprintf(pszBuffer, (m_pConst->v.intValue.bHexFormat ? "0x%08x":"%d"),
-                    m_pConst->v.intValue.nValue);
+            if (m_pConst->mType == TYPE_INTEGER32) {
+                sprintf(pszBuffer, (m_pConst->mV.mInt32Value.mIsHexFormat ? "0x%08x":"%d"),
+                    m_pConst->mV.mInt32Value.mValue);
             }
             else {
-                assert(m_pConst->type == TYPE_STRING);
-                sprintf(pszBuffer, "\"%s\"", m_pConst->v.strValue.pszValue);
+                assert(m_pConst->mType == TYPE_STRING);
+                sprintf(pszBuffer, "\"%s\"", m_pConst->mV.mStrValue.mValue);
             }
             return LUBE_OK;
         case Member_Attrib:
@@ -350,13 +350,13 @@ int LubeContext::TypedefMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            pszOutput = Type2CString(m_pModule, &m_pTypedef->type);
+            pszOutput = Type2CString(m_pModule, &m_pTypedef->mType);
             break;
         case Member_Name:
             pszOutput = m_pTypedef->mName;
             break;
         case Member_Attrib:
-            if (m_pTypedef->bDummyType) {
+            if (m_pTypedef->mIsDummyType) {
                 strcpy(pszBuffer, "dummytype");
             }
             return LUBE_OK;
@@ -377,7 +377,7 @@ int LubeContext::InterfaceConstMember(MemberType member, char *pszBuffer)
     switch (member) {
         case Member_Type:
             {
-                unsigned char type = m_pInterfaceConst->type;
+                unsigned char type = m_pInterfaceConst->mType;
                 if (type == TYPE_BOOLEAN) {
                     pszOutput = "Boolean";
                 }
@@ -414,18 +414,18 @@ int LubeContext::InterfaceConstMember(MemberType member, char *pszBuffer)
         case Member_Value:
             {
                 InterfaceConstDescriptor *pDesc = m_pInterfaceConst;
-                if (pDesc->type == TYPE_BOOLEAN) {
-                    sprintf(pszBuffer, pDesc->v.bValue ? "TRUE" : "FALSE");
+                if (pDesc->mType == TYPE_BOOLEAN) {
+                    sprintf(pszBuffer, pDesc->mV.mBoolValue ? "TRUE" : "FALSE");
                 }
-                else if (pDesc->type == TYPE_CHAR32) {
-                    if (pDesc->v.int32Value.format == FORMAT_DECIMAL) {
-                        sprintf(pszBuffer, "%d", pDesc->v.int32Value.nValue);
+                else if (pDesc->mType == TYPE_CHAR32) {
+                    if (pDesc->mV.mInt32Value.mFormat == FORMAT_DECIMAL) {
+                        sprintf(pszBuffer, "%d", pDesc->mV.mInt32Value.mValue);
                     }
-                    else if (pDesc->v.int32Value.format == FORMAT_HEX) {
-                        sprintf(pszBuffer, "0x%08x", pDesc->v.int32Value.nValue);
+                    else if (pDesc->mV.mInt32Value.mFormat == FORMAT_HEX) {
+                        sprintf(pszBuffer, "0x%08x", pDesc->mV.mInt32Value.mValue);
                     }
                     else {
-                        switch(pDesc->v.int32Value.nValue) {
+                        switch(pDesc->mV.mInt32Value.mValue) {
                             case '\a' :
                                 sprintf(pszBuffer, "\'\\a\'");
                                 break;
@@ -460,35 +460,35 @@ int LubeContext::InterfaceConstMember(MemberType member, char *pszBuffer)
                                 sprintf(pszBuffer, "\'\\0\'");
                                 break;
                             default:
-                                sprintf(pszBuffer, "\'%c\'", pDesc->v.int32Value.nValue);
+                                sprintf(pszBuffer, "\'%c\'", pDesc->mV.mInt32Value.mValue);
                         }
                     }
                 }
-                else if (pDesc->type == TYPE_BYTE) {
-                    sprintf(pszBuffer, pDesc->v.int32Value.format == FORMAT_HEX ? "0x%08x":"%d",
-                            (unsigned char)pDesc->v.int32Value.nValue);
+                else if (pDesc->mType == TYPE_BYTE) {
+                    sprintf(pszBuffer, pDesc->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x":"%d",
+                            (unsigned char)pDesc->mV.mInt32Value.mValue);
                 }
-                else if (pDesc->type == TYPE_INTEGER16) {
-                    sprintf(pszBuffer, pDesc->v.int32Value.format == FORMAT_HEX ? "0x%08x":"%d",
-                            (short)pDesc->v.int32Value.nValue);
+                else if (pDesc->mType == TYPE_INTEGER16) {
+                    sprintf(pszBuffer, pDesc->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x":"%d",
+                            (short)pDesc->mV.mInt32Value.mValue);
                 }
-                else if (pDesc->type == TYPE_INTEGER32) {
-                    sprintf(pszBuffer, pDesc->v.int32Value.format == FORMAT_HEX ? "0x%08x":"%d",
-                            pDesc->v.int32Value.nValue);
+                else if (pDesc->mType == TYPE_INTEGER32) {
+                    sprintf(pszBuffer, pDesc->mV.mInt32Value.mFormat == FORMAT_HEX ? "0x%08x":"%d",
+                            pDesc->mV.mInt32Value.mValue);
                 }
-                else if (pDesc->type == TYPE_INTEGER64) {
-                    sprintf(pszBuffer, pDesc->v.int64Value.format == FORMAT_HEX ? "0x%llx":"%lld",
-                            pDesc->v.int64Value.nValue);
+                else if (pDesc->mType == TYPE_INTEGER64) {
+                    sprintf(pszBuffer, pDesc->mV.mInt64Value.mFormat == FORMAT_HEX ? "0x%llx":"%lld",
+                            pDesc->mV.mInt64Value.mValue);
                 }
-                else if (pDesc->type == TYPE_FLOAT) {
-                    sprintf(pszBuffer, "%f", pDesc->v.dValue);
+                else if (pDesc->mType == TYPE_FLOAT) {
+                    sprintf(pszBuffer, "%f", pDesc->mV.mDoubleValue);
                 }
-                else if (pDesc->type == TYPE_DOUBLE) {
-                    sprintf(pszBuffer, "%f", pDesc->v.dValue);
+                else if (pDesc->mType == TYPE_DOUBLE) {
+                    sprintf(pszBuffer, "%f", pDesc->mV.mDoubleValue);
                 }
                 else {
-                    assert(pDesc->type == TYPE_STRING);
-                    sprintf(pszBuffer, "String(\"%s\")", pDesc->v.pStrValue);
+                    assert(pDesc->mType == TYPE_STRING);
+                    sprintf(pszBuffer, "String(\"%s\")", pDesc->mV.mStrValue);
                 }
                 return LUBE_OK;
             }
@@ -508,7 +508,7 @@ int LubeContext::MethodMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            pszOutput = Type2CString(m_pModule, &m_pMethod->type);
+            pszOutput = Type2CString(m_pModule, &m_pMethod->mType);
             break;
         case Member_Name:
             pszOutput = m_pMethod->mName;
@@ -532,70 +532,70 @@ int LubeContext::ParamMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            if (Type_struct == m_pParam->type.mType
-                    || Type_EMuid == m_pParam->type.mType
-                    || Type_EGuid == m_pParam->type.mType) {
-                pszOutput = StructType2CString(m_pModule, &m_pParam->type);
+            if (Type_struct == m_pParam->mType.mType
+                    || Type_EMuid == m_pParam->mType.mType
+                    || Type_EGuid == m_pParam->mType.mType) {
+                pszOutput = StructType2CString(m_pModule, &m_pParam->mType);
             }
-            else if (Type_alias == m_pParam->type.mType) {
-                GetOriginalType(m_pModule, &m_pParam->type, &type);
+            else if (Type_alias == m_pParam->mType.mType) {
+                GetOriginalType(m_pModule, &m_pParam->mType, &type);
                 if ((Type_EMuid == type.mType)
                         || (Type_EGuid == type.mType)
                         || (Type_struct == type.mType)) {
-                    pszOutput = StructType2CString(m_pModule, &m_pParam->type);
+                    pszOutput = StructType2CString(m_pModule, &m_pParam->mType);
                 }
                 else if (Type_ArrayOf == type.mType) {
-                    if (m_pParam->dwAttribs & ParamAttrib_in) {
+                    if (m_pParam->mAttribs & ParamAttrib_in) {
                         if (0 == type.mPointer) {
                             strcpy(pszBuffer, "const ");
-                            strcat(pszBuffer, Type2CString(m_pModule, &m_pParam->type));
+                            strcat(pszBuffer, Type2CString(m_pModule, &m_pParam->mType));
                             strcat(pszBuffer, " &");
                             return LUBE_OK;
                         }
                         else {
                             assert(1 == type.mPointer);
-                            strcpy(pszBuffer, Type2CString(m_pModule, &m_pParam->type));
+                            strcpy(pszBuffer, Type2CString(m_pModule, &m_pParam->mType));
                             return LUBE_OK;
                         }
                     }
-                    if (m_pParam->dwAttribs & ParamAttrib_out) {
-                        strcpy(pszBuffer, Type2CString(m_pModule, &m_pParam->type));
+                    if (m_pParam->mAttribs & ParamAttrib_out) {
+                        strcpy(pszBuffer, Type2CString(m_pModule, &m_pParam->mType));
                         strcpy(pszBuffer, " *");
                         return LUBE_OK;
                     }
                 }
                 else {
-                    pszOutput = Type2CString(m_pModule, &m_pParam->type);
+                    pszOutput = Type2CString(m_pModule, &m_pParam->mType);
                 }
             }
-            else if (Type_ArrayOf == m_pParam->type.mType) {
-                if ((m_pParam->dwAttribs & ParamAttrib_in)
-                    && (0 == m_pParam->type.mPointer)) pszOutput = "const ArrayOf";
+            else if (Type_ArrayOf == m_pParam->mType.mType) {
+                if ((m_pParam->mAttribs & ParamAttrib_in)
+                    && (0 == m_pParam->mType.mPointer)) pszOutput = "const ArrayOf";
                 else pszOutput = "ArrayOf";
                 strcpy(pszBuffer, pszOutput);
                 strcat(pszBuffer, "<");
-                strcat(pszBuffer, Type2CString(m_pModule, m_pParam->type.mNestedType));
+                strcat(pszBuffer, Type2CString(m_pModule, m_pParam->mType.mNestedType));
                 strcat(pszBuffer, ">");
-                if (m_pParam->dwAttribs & ParamAttrib_in) {
-                    if (0 == m_pParam->type.mPointer) strcat(pszBuffer, " &");
+                if (m_pParam->mAttribs & ParamAttrib_in) {
+                    if (0 == m_pParam->mType.mPointer) strcat(pszBuffer, " &");
                     else {
-                       assert (1 == m_pParam->type.mPointer);
+                       assert (1 == m_pParam->mType.mPointer);
                        strcat(pszBuffer, " *");
                     }
                 }
-                else if (0 == m_pParam->type.mPointer) strcat(pszBuffer, " *");
+                else if (0 == m_pParam->mType.mPointer) strcat(pszBuffer, " *");
                 else strcat(pszBuffer, " **");
                 return LUBE_OK;
             }
             else {
-                pszOutput = Type2CString(m_pModule, &m_pParam->type);
+                pszOutput = Type2CString(m_pModule, &m_pParam->mType);
             }
             break;
         case Member_Name:
             pszOutput = m_pParam->mName;
             break;
         case Member_Attrib:
-            pszOutput = ParamAttrib2String(m_pParam->dwAttribs);
+            pszOutput = ParamAttrib2String(m_pParam->mAttribs);
             break;
         default:
             assert(TRUE == FALSE);
@@ -615,7 +615,7 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
 
     switch (member) {
         case Member_Type:
-            pType = &m_pStructMember->type;
+            pType = &m_pStructMember->mType;
             if (Type_Array == pType->mType) {
                 //Get base type of Array
                 memset(&baseType, 0, sizeof(TypeDescriptor));
@@ -623,7 +623,7 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
                 pszOutput = Type2CString(m_pModule, &baseType);
             }
             else {
-                pszOutput = Type2CString(m_pModule, &m_pStructMember->type);
+                pszOutput = Type2CString(m_pModule, &m_pStructMember->mType);
             }
             break;
         case Member_Name:
@@ -631,8 +631,8 @@ int LubeContext::StructMemMember(MemberType member, char *pszBuffer)
             break;
         case Member_Dimention:
             //Handle the case of [m][n]...
-            if (Type_Array == m_pStructMember->type.mType) {
-                pszOutput = Dims2CString(m_pModule,  &m_pStructMember->type);
+            if (Type_Array == m_pStructMember->mType.mType) {
+                pszOutput = Dims2CString(m_pModule,  &m_pStructMember->mType);
                 break;
             }
             else {
@@ -663,8 +663,8 @@ int LubeContext::EnumMemMember(MemberType member, char *pszBuffer)
             pszOutput = m_pEnumMember->mName;
             break;
         case Member_Value:
-            sprintf(pszBuffer, (m_pEnumMember->bHexFormat ? "0x%08x":"%d"),
-                m_pEnumMember->nValue);
+            sprintf(pszBuffer, (m_pEnumMember->mIsHexFormat ? "0x%08x":"%d"),
+                m_pEnumMember->mValue);
             return LUBE_OK;
         default:
             assert(TRUE == FALSE);
@@ -681,7 +681,7 @@ int LubeContext::ClassParentMember(MemberType member, char *pszBuffer)
     int nRet;
     ClassDirEntry *pOrigClass;
 
-    if (!(m_pClass->mDesc->dwAttribs & ClassAttrib_hasparent)) return LUBE_OK;
+    if (!(m_pClass->mDesc->mAttribs & ClassAttrib_hasparent)) return LUBE_OK;
 
     pOrigClass = m_pClass;
     m_pClass = m_pClassParent;
@@ -759,8 +759,8 @@ int LubeContext::IntfParentParentMember(MemberType member, char *pszBuffer)
     InterfaceDirEntry *pOrigInterface;
 
     pOrigInterface = m_pInterface;
-    if (0 != m_pInterface->mDesc->sParentIndex) {
-        m_pInterface = this->m_pModule->mInterfaceDirs[m_pIntfParent->mDesc->sParentIndex];
+    if (0 != m_pInterface->mDesc->mParentIndex) {
+        m_pInterface = this->m_pModule->mInterfaceDirs[m_pIntfParent->mDesc->mParentIndex];
     }
     nRet = InterfaceMember(member, pszBuffer);
 

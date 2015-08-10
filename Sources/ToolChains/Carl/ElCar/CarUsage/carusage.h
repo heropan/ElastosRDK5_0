@@ -14,7 +14,7 @@
 #define USAGE_FAIL        -1
 
 typedef struct CommandArgs {
-    int        dwAttribs;
+    int        mAttribs;
 
     char        *pszInputFile;
     char        *pszOutputFile; /* output into one file! */

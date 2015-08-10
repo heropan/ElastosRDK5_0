@@ -798,7 +798,7 @@ ECode CObjInfoList::AcquireInterfaceInfo(
 
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(clsModule->mBase,
             clsModule->mClsMod->mInterfaceDirs, index);
-    EIID iid = adjustInterfaceDescAddr(clsModule->mBase, ifDir->mDesc)->iid;
+    EIID iid = adjustInterfaceDescAddr(clsModule->mBase, ifDir->mDesc)->mIID;
 
     IInterface** obj = mIFInfos.Get(&iid);
     if (!obj) {
@@ -973,8 +973,8 @@ ECode CObjInfoList::AcquireDataTypeInfo(
         AutoPtr<IDataTypeInfo> elemInfo;
         ArrayDirEntry* arrayDir = getArrayDirAddr(clsModule->mBase,
                 clsMod->mArrayDirs, typeDesc->mIndex);
-        Int32 length = arrayDir->nElements;
-        TypeDescriptor* type = &arrayDir->type;
+        Int32 length = arrayDir->mElementCount;
+        TypeDescriptor* type = &arrayDir->mType;
         ec = AcquireDataTypeInfo(clsModule, type, (IDataTypeInfo**)&elemInfo,
                 isCheckLocalPtr);
         if (FAILED(ec)) return ec;

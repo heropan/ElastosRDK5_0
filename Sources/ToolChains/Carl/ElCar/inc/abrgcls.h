@@ -104,8 +104,8 @@ inline BOOL IsValidResult(int nParam)
 
 typedef struct AbridgedMethod
 {
-    unsigned char           cParams;
-    unsigned char           dwAttribs;
+    unsigned char           mParamCount;
+    unsigned char           mAttribs;
     unsigned char           nStackSize;
     AbridgedParamsInfo      *pParams;
 } AbridgedMethodInfo, AbridgedMethod;
@@ -113,7 +113,7 @@ typedef struct AbridgedMethod
 typedef struct AbridgedInterface
 {
     IID                     iid;
-    unsigned short          cMethods;       // exclude IInterface's 4 methods
+    unsigned short          mMethodCount;       // exclude IInterface's 4 methods
     AbridgedMethod          *pMethods;
 } AbridgedInterfaceInfo, AbridgedInterface;
 
@@ -122,13 +122,13 @@ typedef struct AbridgedClass
     char                    *pszUunm;
     CLSID                   clsid;
     unsigned short          mInterfaceCount;
-    AbridgedInterface       **ppInterfaces;
+    AbridgedInterface       **mInterfaces;
 } AbridgedClassInfo, AbridgedClass;
 
 typedef struct AbridgedModuleInfo
 {
     unsigned int            nTotalSize;
-    unsigned short          cClasses;
+    unsigned short          mClassCount;
     unsigned short          mInterfaceCount;
     AbridgedClass           *pClasses;
     AbridgedInterface       *pInterfaces;

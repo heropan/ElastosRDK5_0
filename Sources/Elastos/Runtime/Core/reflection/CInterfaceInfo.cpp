@@ -33,7 +33,7 @@ UInt32 CInterfaceInfo::Release()
     Int32 ref = atomic_dec(&mRef);
 
     if (0 == ref) {
-        g_objInfoList.RemoveInterfaceInfo(mDesc->iid);
+        g_objInfoList.RemoveInterfaceInfo(mDesc->mIID);
         delete this;
     }
     g_objInfoList.UnlockHashTable(EntryType_Interface);
@@ -121,7 +121,7 @@ ECode CInterfaceInfo::GetId(
         return E_INVALID_ARGUMENT;
     }
 
-    *id = mDesc->iid;
+    *id = mDesc->mIID;
     return NOERROR;
 }
 
@@ -138,7 +138,7 @@ ECode CInterfaceInfo::IsLocal(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & InterfaceAttrib_local) {
+    if (mDesc->mAttribs & InterfaceAttrib_local) {
         *local = TRUE;
     }
     else {
@@ -155,7 +155,7 @@ ECode CInterfaceInfo::HasBase(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mIndex != mDesc->sParentIndex) {
+    if (mIndex != mDesc->mParentIndex) {
         *hasBase = TRUE;
     }
     else {
@@ -173,7 +173,7 @@ ECode CInterfaceInfo::GetBaseInfo(
     }
 
     *baseInfo = NULL;
-    UInt32 index = mDesc->sParentIndex;
+    UInt32 index = mDesc->mParentIndex;
     return g_objInfoList.AcquireInterfaceInfo(mClsModule, index,
             (IInterface**)baseInfo);
 }
@@ -192,7 +192,7 @@ ECode CInterfaceInfo::GetMethodCount(
 
     *count = 0;
     for (UInt32 i = 0; i < mIFCount; i++) {
-        *count += mIFList[i].mDesc->cMethods;
+        *count += mIFList[i].mDesc->mMethodCount;
     }
 
     return NOERROR;
@@ -262,7 +262,7 @@ ECode CInterfaceInfo::CreateIFList()
     while (index != 0) {
         indexList[mIFCount++] = index;
         ifDir = getInterfaceDirAddr(mBase, mClsMod->mInterfaceDirs, index);
-        index = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->sParentIndex;
+        index = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->mParentIndex;
     }
 
     indexList[mIFCount] = 0;
@@ -282,12 +282,12 @@ ECode CInterfaceInfo::CreateIFList()
         mIFList[j].mName = adjustNameAddr(mBase, ifDir->mName);
         mIFList[j].mNameSpace = adjustNameAddr(mBase, ifDir->mNameSpace);
         mIFList[j].mDesc = adjustInterfaceDescAddr(mBase, ifDir->mDesc);
-        beginNo += mIFList[j].mDesc->cMethods;
+        beginNo += mIFList[j].mDesc->mMethodCount;
     }
 
     mMethodCount = 0;
     for (i = 0; i < (int)mIFCount; i++) {
-        mMethodCount += mIFList[i].mDesc->cMethods;
+        mMethodCount += mIFList[i].mDesc->mMethodCount;
     }
 
     return NOERROR;

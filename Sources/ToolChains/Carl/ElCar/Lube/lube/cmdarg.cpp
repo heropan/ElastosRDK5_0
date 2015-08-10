@@ -245,19 +245,19 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'e':
-                    pArgs->dwAttribs |= Command_e_NoElastos;
+                    pArgs->mAttribs |= Command_e_NoElastos;
                     break;
                 case 'k':
-                    pArgs->dwAttribs |= Command_k_InKernel;
+                    pArgs->mAttribs |= Command_k_InKernel;
                     break;
                 case 's':
-                    pArgs->dwAttribs |= Command_k_InSDK;
+                    pArgs->mAttribs |= Command_k_InSDK;
                     break;
 
                 case 'T':
                     pszStr = stream.GetWord();
                     if (strcmp(pszStr, "foreground") == 0) {
-                        pArgs->dwAttribs |= Command_r_Foreground;
+                        pArgs->mAttribs |= Command_r_Foreground;
                     }
                     if (!pszStr) {
                         CmdError(CommandError_NoTemplate, c);
@@ -318,31 +318,31 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'l':
-                    pArgs->dwAttribs |= Command_l_ListTemplates;
+                    pArgs->mAttribs |= Command_l_ListTemplates;
                     break;
 
                 case 'f':
-                    pArgs->dwAttribs |= Command_r_Overwrite;
+                    pArgs->mAttribs |= Command_r_Overwrite;
                     break;
 
                 case 'v':
-                    pArgs->dwAttribs |= Command_r_Redirect;
+                    pArgs->mAttribs |= Command_r_Redirect;
                     break;
 
                 case 'z':
-                    pArgs->dwAttribs |= Command_z_UseCustomClassObject;
+                    pArgs->mAttribs |= Command_z_UseCustomClassObject;
                     break;
 
                 case 'w':
-                    pArgs->dwAttribs |= Command_w_HaveSandwichMethod;
+                    pArgs->mAttribs |= Command_w_HaveSandwichMethod;
                     break;
 
                 case 'n':
-                    pArgs->dwAttribs |= Command_n_UseNakedMode;
+                    pArgs->mAttribs |= Command_n_UseNakedMode;
                     break;
 
                 case 'u':
-                    pArgs->dwAttribs |= Command_u_WeakRef;
+                    pArgs->mAttribs |= Command_u_WeakRef;
                     break;
 
                 case '?':
@@ -361,7 +361,7 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
         }
     }
 
-    if (!(pArgs->dwAttribs & Command_l_ListTemplates)
+    if (!(pArgs->mAttribs & Command_l_ListTemplates)
         && (!pArgs->pszTemplates || !pArgs->pszInputCLS)) {
         CmdError(CommandError_NoSource, c);
         return CommandError_NoSource;

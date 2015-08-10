@@ -116,18 +116,18 @@ ECode CEntryList::InitElemList()
 
         n = 0;
         for (i = 0; i < mListCount; i++) {
-            for (j = 0; j < mIFList[i].mDesc->cMethods; j++, n++) {
+            for (j = 0; j < mIFList[i].mDesc->mMethodCount; j++, n++) {
                 if (n == mTotalCount) return E_INVALID_ARGUMENT;
 
                 mObjElement[n].mIndex = MK_METHOD_INDEX(mIFList[i].mIndex,
                         mIFList[i].mBeginNo + j);
                 mObjElement[n].mObject = NULL;
                 mObjElement[n].mDesc = getMethodDescAddr(mBase,
-                        mIFList[i].mDesc->ppMethods, j);
+                        mIFList[i].mDesc->mMethods, j);
                 mObjElement[n].mName = adjustNameAddr(mBase,
                         ((MethodDescriptor *)mObjElement[n].mDesc)->mName);
                 mObjElement[n].mNamespaceOrSignature = adjustNameAddr(mBase,
-                        ((MethodDescriptor *)mObjElement[n].mDesc)->pszSignature);
+                        ((MethodDescriptor *)mObjElement[n].mDesc)->mSignature);
                 String strKey = String(mObjElement[n].mName) + String(mObjElement[n].mNamespaceOrSignature);
                 if (!mHTIndexs.Put(const_cast<char*>(strKey.string()), n)) {
                     return E_OUT_OF_MEMORY;
@@ -151,7 +151,7 @@ ECode CEntryList::InitElemList()
         switch (mType) {
             case EntryType_Aspect:
                 index = adjustIndexsAddr(mBase,
-                        ((ClassDescriptor *)mDesc)->pAspectIndexs)[i];
+                        ((ClassDescriptor *)mDesc)->mAspectIndexes)[i];
                 classDir = getClassDirAddr(mBase, mClsMod->mClassDirs, index);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         classDir->mName);
@@ -159,7 +159,7 @@ ECode CEntryList::InitElemList()
                 break;
             case EntryType_Aggregatee:
                 index = adjustIndexsAddr(mBase,
-                        ((ClassDescriptor *)mDesc)->pAggrIndexs)[i];
+                        ((ClassDescriptor *)mDesc)->mAggrIndexes)[i];
                 classDir = getClassDirAddr(mBase, mClsMod->mClassDirs, index);
                 mObjElement[i].mName = adjustNameAddr(mBase,
                         classDir->mName);
@@ -287,7 +287,7 @@ ECode CEntryList::AcquireObjByIndex(
     switch (mType) {
         case EntryType_Aspect:
             adjIndex = adjustIndexsAddr(mBase,
-                    ((ClassDescriptor *)mDesc)->pAspectIndexs)[index];
+                    ((ClassDescriptor *)mDesc)->mAspectIndexes)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
                     getClassDirAddr(mBase, mClsMod->mClassDirs, adjIndex),
                     &mObjElement[index].mObject);
@@ -295,7 +295,7 @@ ECode CEntryList::AcquireObjByIndex(
 
         case EntryType_Aggregatee:
             adjIndex = adjustIndexsAddr(mBase,
-                    ((ClassDescriptor *)mDesc)->pAggrIndexs)[index];
+                    ((ClassDescriptor *)mDesc)->mAggrIndexes)[index];
             ec = g_objInfoList.AcquireClassInfo(mClsModule,
                     getClassDirAddr(mBase, mClsMod->mClassDirs, adjIndex),
                     &mObjElement[index].mObject);

@@ -35,7 +35,7 @@ LubeContext::LubeContext(
     for (n = 0; n < pModule->mClassCount; n++) {
         ClassDirEntry *pClass = pModule->mClassDirs[n];
         if (!pClass->mNameSpace
-            && !(pClass->mDesc->dwAttribs & ClassAttrib_t_generic)) {
+            && !(pClass->mDesc->mAttribs & ClassAttrib_t_generic)) {
             if (!m_pFirstClass) m_pFirstClass = pClass;
             m_pLastClass = pClass;
         }
