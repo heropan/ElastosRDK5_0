@@ -12,6 +12,12 @@ module
     namespace Internal {
     namespace Policy {
 
+    /**
+     * {@hide}
+     */
+    /* The implementation of this interface must be called Policy and contained
+     * within the com.android.internal.policy.impl package
+     */
     [local]
     interface IPolicy {
         MakeNewWindow(

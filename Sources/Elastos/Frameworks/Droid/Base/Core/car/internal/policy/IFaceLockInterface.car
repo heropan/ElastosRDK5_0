@@ -2,12 +2,14 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Internal.Policy.IFaceLockCallback;
 
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace Policy {
 
+    /** {@hide} */
     interface IFaceLockInterface {
         StartUi(
             [in] IBinder* containingWindowToken,
@@ -18,6 +20,8 @@ module
             [in] Boolean useLiveliness);
 
         StopUi();
+
+        StartWithoutUi();
 
         RegisterCallback(
             [in] IFaceLockCallback* cb);

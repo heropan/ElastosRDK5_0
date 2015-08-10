@@ -1,0 +1,28 @@
+
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.View.ILayoutInflater;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.ILayoutInflater
+     */
+    interface IPhoneLayoutInflater {
+        CloneInContext(
+            [in] IContext* newContext,
+            [out] ILayoutInflater** li);
+    }
+
+    } // namespace Impl
+    } // namespace Policy
+    } // namespace Internal
+    } // namepsace Droid
+    } // namespace Elastos
+}

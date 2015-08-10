@@ -10,14 +10,9 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.App.IDialog
+     * interface IInterpolator
      */
-    [local]
-    interface IRecentApplicationsDialog {
-        /**
-         * Dismiss the dialog and switch to the selected application.
-         */
-        DismissAndSwitch();
+    interface ILogDecelerateInterpolator {
     }
 
 

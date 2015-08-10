@@ -7,6 +7,7 @@ module
     namespace Droid {
     namespace Internal {
     namespace Policy {
+    namespace Impl {
 
     /**
      * @Involve
@@ -24,6 +25,7 @@ module
             [out] Boolean *res);
     }
 
+    } // namespace Impl
     } // namespace Policy
     } // namespace Internal
     } // namepsace Droid

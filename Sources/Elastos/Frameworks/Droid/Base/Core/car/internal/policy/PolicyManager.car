@@ -12,6 +12,9 @@ module
     namespace Internal {
     namespace Policy {
 
+    /**
+     * {@hide}
+     */
     [local]
     interface IPolicyManager {
         MakeNewWindow(

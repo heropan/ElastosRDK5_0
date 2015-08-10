@@ -1,0 +1,64 @@
+
+module
+{
+    interface Elastos.Droid.View.IWindowState;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Policy {
+    namespace Impl {
+
+    /**
+     * Controls state/behavior specific to a system bar window.
+     */
+    [local]
+    interface IBarController {
+
+        SetWindow(
+            [in] IWindowState* win);
+
+        ShowTransient();
+
+        IsTransientShowing(
+            [out] Boolean* result);
+
+        IsTransientShowRequested(
+            [out] Boolean* result);
+
+        WasRecentlyTranslucent(
+            [out] Boolean* result);
+
+        AdjustSystemUiVisibilityLw(
+            [in] Int32  oldVis,
+            [in] Int32  vis);
+
+        ApplyTranslucentFlagLw(
+            [in] IWindowState* win,
+            [in] Int32 vis,
+            [in] Int32 oldVis);
+
+        SetBarShowingLw(
+            [in] Boolean show,
+            [out] Boolean* result);
+
+        CheckHiddenLw(
+            [out] Boolean* result);
+
+        CheckShowTransientBarLw(
+            [out] Boolean* result);
+
+        UpdateVisibilityLw(
+            [in] Boolean transientAllowed,
+            [in] Int32 oldVis,
+            [in] Int32 vis,
+            [out] Int32* result);
+    }
+
+
+    } // Impl
+    } // Policy
+    } // Internal
+    } // Droid
+    } // Elastos
+}

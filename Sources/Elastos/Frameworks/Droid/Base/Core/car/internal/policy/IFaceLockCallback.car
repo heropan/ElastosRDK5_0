@@ -6,6 +6,8 @@ module
     namespace Internal {
     namespace Policy {
 
+    /** {@hide} */
+    [oneway]
     interface IFaceLockCallback {
         Unlock();
 
