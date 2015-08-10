@@ -1,45 +1,60 @@
 
 module
 {
-    using interface Elastos.Net.IInetAddress;
+
     using interface Elastos.Utility.IList;
+    using interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
     /**
-     * Async response packet for dns pings.
-     * arg1 is the ID of the ping, also returned by {@link #pingDnsAsync(InetAddress, int, int)}
-     * arg2 is the delay, or is negative on error.
+     * Performs a simple DNS "ping" by sending a "server status" query packet to the
+     * DNS server. As long as the server replies, we consider it a success.
+     * <p>
+     * We do not use a simple hostname lookup because that could be cached and the
+     * API may not differentiate between a time out and a failure lookup (which we
+     * really care about).
+     * <p>
+     *
+     * @hide
      */
     /**
-     * @Involve
-     * interface Elastos.Droid.Os.IHandler
+     * @Involved
+     * interface IHandler;
+     * interface IExpr;
+     * interface IOpcode;
      */
     interface IDnsPinger {
+        /**
+         * Async response packet for dns pings.
+         * arg1 is the ID of the ping, also returned by {@link #pingDnsAsync(InetAddress, int, int)}
+         * arg2 is the delay, or is negative on error.
+         */
+        const Int32 DNS_PING_RESULT =  0x00050000;
 
-        const Int32 DNS_PING_RESULT = 0x00050000; // BASE;
         /** An error code for a {@link #DNS_PING_RESULT} packet */
-        const Int32 _TIMEOUT = -1;
+        const Int32 TIMEOUT =  -1;
+
         /** An error code for a {@link #DNS_PING_RESULT} packet */
-        const Int32 SOCKET_EXCEPTION = -2;
+        const Int32 SOCKET_EXCEPTION =  -2;
 
         /**
-         * Returns a list of DNS addresses, coming from either the link properties of the
-         * specified connection or the default system DNS if the link properties has no dnses.
-         * @return a non-empty non-null list
-         */
+             * Returns a list of DNS addresses, coming from either the link properties of the
+             * specified connection or the default system DNS if the link properties has no dnses.
+             * @return a non-empty non-null list
+             */
         GetDnsList(
             [out] IList** result);
 
         /**
-         * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
-         * specified at creation.
-         * @param dns address of dns server to ping
-         * @param timeout timeout for ping
-         * @return an ID field, which will also be included in the {@link #DNS_PING_RESULT} message.
-         */
+             * Send a ping.  The response will come via a {@link #DNS_PING_RESULT} to the handler
+             * specified at creation.
+             * @param dns address of dns server to ping
+             * @param timeout timeout for ping
+             * @return an ID field, which will also be included in the {@link #DNS_PING_RESULT} message.
+             */
         PingDnsAsync(
             [in] IInetAddress* dns,
             [in] Int32 timeout,
@@ -47,6 +62,7 @@ module
             [out] Int32* result);
 
         CancelPings();
+
     }
 
     } // namespace Net

@@ -1,18 +1,26 @@
 
 module
 {
+
+    using interface Elastos.Utility.IIterable;
     interface Elastos.Droid.Net.ILinkAddress;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Configuration details for a network interface.
+     *
+     * @hide
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IInterfaceConfiguration {
-//        ToString(
-//            [out] String* result);
-
         GetFlags(
-            [out, callee] ArrayOf<String>* result);
+            [out] IIterable** result);
 
         HasFlag(
             [in] String flag,
@@ -25,36 +33,46 @@ module
             [in] String flag);
 
         /**
-         * Set flags to mark interface as up.
-         */
+             * Set flags to mark interface as up.
+             */
         SetInterfaceUp();
 
         /**
-         * Set flags to mark interface as down.
-         */
+             * Set flags to mark interface as down.
+             */
         SetInterfaceDown();
 
         GetLinkAddress(
-            [out] ILinkAddress** addr);
+            [out] ILinkAddress** result);
 
         SetLinkAddress(
             [in] ILinkAddress* addr);
 
         GetHardwareAddress(
-            [out] String* hwAddr);
+            [out] String* result);
 
         SetHardwareAddress(
             [in] String hwAddr);
 
         /**
-         * This function determines if the interface is up and has a valid IP
-         * configuration (IP address has a non zero octet).
-         *
-         * Note: It is supposed to be quick and hence should not initiate
-         * any network activity
-         */
+             * This function determines if the interface is up and has a valid IP
+             * configuration (IP address has a non zero octet).
+             *
+             * Note: It is supposed to be quick and hence should not initiate
+             * any network activity
+             */
         IsActive(
             [out] Boolean* result);
+
+        /** {@inheritDoc} */
+        DescribeContents(
+            [out] Int32* result);
+
+        /** {@inheritDoc} */
+        WriteToParcel(
+            [in] IParcel* dest,
+            [in] Int32 flags);
+
     }
 
     } // namespace Net

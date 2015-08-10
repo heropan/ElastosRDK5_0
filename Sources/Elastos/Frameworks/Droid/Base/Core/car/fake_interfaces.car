@@ -54,8 +54,6 @@ module
     namespace Droid {
     namespace Net {
 
-        interface IDhcpStateMachine {}
-
         interface ILinkCapabilities {}
 
         interface ILinkSocket {}
@@ -79,6 +77,10 @@ module
         interface IProxyInfo {}
 
         interface INetworkCallback {}
+
+        interface IScoredNetwork {}
+
+        interface IStaticIpConfiguration {}
 
         namespace Wifi {
 
@@ -286,6 +288,7 @@ module
     namespace Os {
 
         interface IRemoteCallback {}
+        interface ICreator {}
 
     }}} // Elastos.Droid.Os
 
@@ -317,6 +320,17 @@ module
 
     }}} // Elastos.Droid.Os
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Util {
+
+        interface IStateMachine {}
+
+    } // namespace Util
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 
 
 }

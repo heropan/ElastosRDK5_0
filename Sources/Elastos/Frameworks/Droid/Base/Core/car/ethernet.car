@@ -12,7 +12,7 @@ module
     merge("net/nsd/DnsSdTxtRecord.car");
 
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Net.INetworkManagementEventObserver;
+    interface Elastos.Droid.Net.IINetworkManagementEventObserver;
 
     namespace Elastos {
     namespace Droid {
@@ -36,7 +36,7 @@ module
             constructor(
                 [in] Handle32 tracker);
 
-            interface INetworkManagementEventObserver;
+            interface IINetworkManagementEventObserver;
             interface IBinder;
         }
     }

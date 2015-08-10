@@ -5,7 +5,8 @@ module
     namespace Droid {
     namespace Net {
 
-    interface INetworkManagementEventObserver {
+    [deprecated]
+    interface IINetworkManagementEventObserver {
         /**
          * Interface configuration status has changed.
          *
@@ -44,6 +45,26 @@ module
             [in] String iface);
 
         /**
+         * An interface address has been added or updated.
+         *
+         * @param iface The interface.
+         * @param address The address.
+         */
+        AddressUpdated(
+            [in] String iface,
+            [in] ILinkAddress* address);
+
+        /**
+         * An interface address has been removed.
+         *
+         * @param iface The interface.
+         * @param address The address.
+         */
+        AddressRemoved(
+            [in] String iface,
+            [in] ILinkAddress* address);
+
+        /**
          * A networking quota limit has been reached. The quota might not
          * be specific to an interface.
          *
@@ -63,6 +84,31 @@ module
         InterfaceClassDataActivityChanged(
             [in] String label,
             [in] Boolean active);
+
+        /**
+         * Information about available DNS servers has been received.
+         *
+         * @param iface The interface on which the information was received.
+         * @param lifetime The time in seconds for which the DNS servers may be used.
+         * @param servers The IP addresses of the DNS servers.
+         */
+        InterfaceDnsServerInfo(
+            [in] String iface,
+            [in] Int64 lifetime,
+            [in] ArrayOf<String>* servers);
+
+        /**
+         * A route has been added or updated.
+         */
+        RouteUpdated(
+            [in] IRouteInfo* route);
+
+        /**
+         * A route has been removed.
+         */
+        RouteRemoved(
+            [in] IRouteInfo* route);
+
     }
 
     } // namespace Net

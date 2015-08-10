@@ -6,7 +6,7 @@ module
     namespace Net {
 
     [deprecated]
-    interface INetworkPolicyListener {
+    interface IINetworkPolicyListener {
         OnUidRulesChanged(
             [in] Int32 uid,
             [in] Int32 uidRules);

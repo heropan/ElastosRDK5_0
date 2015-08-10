@@ -4,7 +4,7 @@ module
     using interface Elastos.IO.IPrintWriter;
 
     interface Elastos.Droid.Net.INetworkPolicy;
-    interface Elastos.Droid.Net.INetworkPolicyListener;
+    interface Elastos.Droid.Net.IINetworkPolicyListener;
     interface Elastos.Droid.Text.Format.ITime;
     interface Elastos.Droid.Content.IContext;
 
@@ -44,10 +44,10 @@ module
             [out, callee] ArrayOf<Int32>* result);
 
         RegisterListener(
-            [in] INetworkPolicyListener* listener);
+            [in] IINetworkPolicyListener* listener);
 
         UnregisterListener(
-            [in] INetworkPolicyListener* listener);
+            [in] IINetworkPolicyListener* listener);
 
         SetNetworkPolicies(
             [in] ArrayOf<INetworkPolicy*>* policies);

@@ -9,7 +9,7 @@ module
     namespace Droid {
     namespace Net {
 
-    interface INetworkStatsSession {
+    interface IINetworkStatsSession {
         /** Return network layer usage summary for traffic that matches template. */
         GetSummaryForNetwork(
             [in] INetworkTemplate* template,

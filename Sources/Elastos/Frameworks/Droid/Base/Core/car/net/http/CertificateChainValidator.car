@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Droid.Net.Http.ISslError;
+    interface Elastos.Droid.Net.Http.ISslError;
     using interface Elastosx.Net.Ssl.ISSLSocket;
     using interface Elastos.Core.IArrayOf;
 

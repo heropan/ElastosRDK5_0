@@ -1,0 +1,22 @@
+
+module
+{
+
+    interface Elastos.Droid.Os.ICreator;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface IDhcpInfoHelper {
+
+        /** Implement the Parcelable interface {@hide} */
+        GetCREATOR(
+            [out] ICreator** result);
+
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

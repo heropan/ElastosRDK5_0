@@ -1,21 +1,33 @@
 module
 {
-    merge("net/http/SslError.car");
-
     merge("net/BaseNetworkStateTracker.car");
     merge("net/ConnectivityManager.car");
     merge("net/Credentials.car");
     merge("net/DnsPinger.car");
     merge("net/DhcpInfo.car");
+    merge("net/DhcpInfoHelper.car");
+    merge("net/DhcpResults.car");
+    merge("net/DhcpResultsHelper.car");
+    merge("net/DhcpStateMachine.car");
+    merge("net/DhcpStateMachineHelper.car");
+    merge("net/EthernetManager.car");
+    merge("net/InterfaceConfiguration.car");
+    merge("net/InterfaceConfigurationHelper.car");
+    merge("net/IEthernetManager.car");
     merge("net/IConnectivityManager.car");
-    merge("net/INetworkStatsSession.car");
-    merge("net/INetworkStatsService.car");
     merge("net/INetworkManagementEventObserver.car");
     merge("net/INetworkPolicyListener.car");
     merge("net/INetworkPolicyManager.car");
-    merge("net/InterfaceConfiguration.car");
-    merge("net/LegacyVpnInfo.car");
+    merge("net/INetworkScoreCache.car");
+    merge("net/INetworkScoreService.car");
+    merge("net/INetworkStatsSession.car");
+    merge("net/INetworkStatsService.car");
+    merge("net/IpConfiguration.car");
+    merge("net/IpConfigurationHelper.car");
+    merge("net/IpPrefix.car");
     merge("net/LinkAddress.car");
+
+    merge("net/LegacyVpnInfo.car");
     merge("net/LinkProperties.car");
     merge("net/LinkSocketNotifier.car");
     merge("net/LocalServerSocket.car");
@@ -43,8 +55,6 @@ module
     merge("net/TrafficStats.car");
     merge("net/Uri.car");
     merge("net/SntpClient.car");
-    merge("net/IThrottleManager.car");
-    merge("net/ThrottleManager.car");
     merge("net/VpnConfig.car");
     merge("net/VpnProfile.car");
     merge("net/VpnService.car");
@@ -76,6 +86,7 @@ module
     merge("net/http/RequestHandle.car");
     merge("net/http/RequestQueue.car");
     merge("net/http/SslCertificate.car");
+    merge("net/http/SslError.car");
 
     merge("net/nsd/NsdServiceInfo.car");
     merge("net/nsd/NsdManager.car");

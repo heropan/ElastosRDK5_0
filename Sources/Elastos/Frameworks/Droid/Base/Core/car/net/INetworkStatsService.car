@@ -1,7 +1,7 @@
 
 module
 {
-    interface Elastos.Droid.Net.INetworkStatsSession;
+    interface Elastos.Droid.Net.IINetworkStatsSession;
     interface Elastos.Droid.Net.INetworkStats;
     interface Elastos.Droid.Net.INetworkTemplate;
 
@@ -10,10 +10,10 @@ module
     namespace Net {
 
     [deprecated]
-    interface INetworkStatsService {
+    interface IINetworkStatsService {
         /** Start a statistics query session. */
         OpenSession(
-            [out] INetworkStatsSession** result);
+            [out] IINetworkStatsSession** result);
 
         /** Return network layer usage total for traffic that matches template. */
         GetNetworkTotalBytes(

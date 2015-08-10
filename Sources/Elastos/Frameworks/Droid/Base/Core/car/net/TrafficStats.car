@@ -7,7 +7,7 @@ using interface Elastos.Net.ISocket;
 
 interface Elastos.Droid.Content.IContext;
 interface Elastos.Droid.Net.INetworkStats;
-interface Elastos.Droid.Net.INetworkStatsSession;
+interface Elastos.Droid.Net.IINetworkStatsSession;
 
 
 namespace Elastos {
@@ -169,7 +169,7 @@ namespace Net {
         [in] Int32 operationCount);
 
     CloseQuietly(
-         [in] INetworkStatsSession* session);
+         [in] IINetworkStatsSession* session);
 
     /**
      * Get the total number of packets transmitted through the mobile interface.
