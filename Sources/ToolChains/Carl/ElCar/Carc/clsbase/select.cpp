@@ -72,8 +72,8 @@ int SelectArrayDirEntry(unsigned short nElems, const TypeDescriptor &desp,
     assert(pModule != NULL);
 
     for (n = 0; n < pModule->mArrayCount; n++) {
-        if (nElems == pModule->mArrayDirs[n]->nElements
-            && 0 == memcmp(&desp, &(pModule->mArrayDirs[n]->type), sizeof(TypeDescriptor)))
+        if (nElems == pModule->mArrayDirs[n]->mElementCount
+            && 0 == memcmp(&desp, &(pModule->mArrayDirs[n]->mType), sizeof(TypeDescriptor)))
             _ReturnOK (n);
     }
 
@@ -161,7 +161,7 @@ int SelectClassInterface(USHORT index, const ClassDescriptor *pDesc)
     assert(pDesc != NULL);
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (pDesc->ppInterfaces[n]->mIndex == index) {
+        if (pDesc->mInterfaces[n]->mIndex == index) {
             _ReturnOK (n);
         }
     }
@@ -178,7 +178,7 @@ int SelectInterfaceConstDirEntry(
     assert(pszName != NULL);
 
     for (n = 0; n < pDesc->mConstCount; n++) {
-        if (!strcmp(pszName, pDesc->ppConsts[n]->mName)) {
+        if (!strcmp(pszName, pDesc->mConsts[n]->mName)) {
             _ReturnOK (n);
         }
     }
@@ -194,8 +194,8 @@ int SelectInterfaceMethod(
     assert(pDesc != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pDesc->cMethods; n++) {
-        if (!strcmp(pszName, pDesc->ppMethods[n]->mName)) {
+    for (n = 0; n < pDesc->mMethodCount; n++) {
+        if (!strcmp(pszName, pDesc->mMethods[n]->mName)) {
             _ReturnOK (n);
         }
     }
@@ -210,8 +210,8 @@ int SelectMethodParam(const char *pszName, const MethodDescriptor *pDesc)
     assert(pDesc != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pDesc->cParams; n++) {
-        if (!strcmp(pszName, pDesc->ppParams[n]->mName)) {
+    for (n = 0; n < pDesc->mParamCount; n++) {
+        if (!strcmp(pszName, pDesc->mParams[n]->mName)) {
             _ReturnOK (n);
         }
     }
@@ -227,8 +227,8 @@ int SelectStructElement(
     assert(pDesc != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pDesc->cElems; n++) {
-        if (!strcmp(pszName, pDesc->ppElems[n]->mName)) {
+    for (n = 0; n < pDesc->mElementCount; n++) {
+        if (!strcmp(pszName, pDesc->mElements[n]->mName)) {
             _ReturnOK (n);
         }
     }
@@ -243,8 +243,8 @@ int SelectEnumElement(const char *pszName, const EnumDescriptor *pDesc)
     assert(pDesc != NULL);
     assert(pszName != NULL);
 
-    for (n = 0; n < pDesc->cElems; n++) {
-        if (!strcmp(pszName, pDesc->ppElems[n]->mName)) {
+    for (n = 0; n < pDesc->mElementCount; n++) {
+        if (!strcmp(pszName, pDesc->mElements[n]->mName)) {
             _ReturnOK (n);
         }
     }
@@ -324,7 +324,7 @@ EnumElement *GlobalSelectEnumElement(
         if (m >= 0) {
             ExtraMessage(pModule->mEnumDirs[n]->mNameSpace,
                         "enum", pModule->mEnumDirs[n]->mName);
-            return pModule->mEnumDirs[n]->mDesc->ppElems[m];
+            return pModule->mEnumDirs[n]->mDesc->mElements[m];
         }
     }
     return NULL;
@@ -339,11 +339,11 @@ int SelectInterfaceMemberSymbol(
     assert(pDesc != NULL);
 
     for (n = 0; n < pDesc->mConstCount; ++n) {
-        if (!strcmp(pszName, pDesc->ppConsts[n]->mName)) _Return (n);
+        if (!strcmp(pszName, pDesc->mConsts[n]->mName)) _Return (n);
     }
 
-    for (n = 0; n < pDesc->cMethods; ++n) {
-        if (!strcmp(pszName, pDesc->ppMethods[n]->mName)) _Return (n);
+    for (n = 0; n < pDesc->mMethodCount; ++n) {
+        if (!strcmp(pszName, pDesc->mMethods[n]->mName)) _Return (n);
     }
 
     _ReturnError (CLSError_NotFound);

@@ -98,42 +98,42 @@ struct ClassDirEntry
     ClassDescriptor*    mDesc;
 };
 
-const char c_nMaxClassInterfaces = 32;
-const char c_nMaxClassAspects = 32;
-const char c_nMaxAggrClassesOfAspect = 32;
+const int MAX_CLASS_INTERFACE_NUMBER = 32;
+const int MAX_CLASS_ASPECT_NUMBER = 32;
+const int MAX_AGGRCLASSE_OF_ASPECT_NUMBER = 32;
 
 struct ClassDescriptor
 {
-    CLSID               clsid;
-    unsigned short      sParentIndex;
-    unsigned short      sCtorIndex;
+    CLSID               mClsid;
+    unsigned short      mParentIndex;
+    unsigned short      mCtorIndex;
     unsigned short      mInterfaceCount;
-    unsigned short      cAggregates;
-    unsigned short      cClasses;               // only for aspect
-    unsigned short      cAspects;
-    unsigned long       dwAttribs;
+    unsigned short      mAggregateCount;
+    unsigned short      mClassCount;               // only for aspect
+    unsigned short      mAspectCount;
+    unsigned long       mAttribs;
 
-    ClassInterface      **ppInterfaces;
-    unsigned short      *pAggrIndexs;
-    unsigned short      *pAspectIndexs;
-    unsigned short      *pClassIndexs;          // only for aspect
+    ClassInterface**    mInterfaces;
+    unsigned short*     mAggrIndexes;
+    unsigned short*     mAspectIndexes;
+    unsigned short*     mClassIndexes;          // only for aspect
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct ClassInterface
 {
     unsigned short      mIndex;
-    unsigned short      wAttribs;
+    unsigned short      mAttribs;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
@@ -142,158 +142,158 @@ typedef struct InterfaceConstDescriptor InterfaceConstDescriptor;
 typedef struct MethodDescriptor MethodDescriptor;
 typedef struct ParamDescriptor ParamDescriptor;
 
-const int c_nMaxInterfaceConsts = 512;
-const int c_nMaxMethods = 512;
+const int MAX_INTERFACE_CONST_NUMBER = 512;
+const int MAX_METHOD_NUMBER = 512;
 
 struct InterfaceDirEntry
 {
-    char                *mName;
-    char                *mNameSpace;
-    InterfaceDescriptor *mDesc;
+    char*                   mName;
+    char*                   mNameSpace;
+    InterfaceDescriptor*    mDesc;
 };
 
 struct InterfaceDescriptor
 {
-    IID                 iid;
+    IID                 mIID;
     unsigned short      mConstCount;
-    unsigned short      cMethods;
-    unsigned short      sParentIndex;
-    DWORD               dwAttribs;
+    unsigned short      mMethodCount;
+    unsigned short      mParentIndex;
+    DWORD               mAttribs;
 
-    InterfaceConstDescriptor **ppConsts;
-    MethodDescriptor    **ppMethods;
+    InterfaceConstDescriptor**  mConsts;
+    MethodDescriptor**  mMethods;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
-const int c_nMaxParams = 32;
+const int MAX_PARAM_NUMBER = 32;
 
 struct MethodDescriptor
 {
-    char                *mName;
-    char                *pszSignature;
-    TypeDescriptor      type;
-    unsigned short      cParams;
-    ParamDescriptor     **ppParams;
-    DWORD               dwAttribs;
+    char*               mName;
+    char*               mSignature;
+    TypeDescriptor      mType;
+    unsigned short      mParamCount;
+    ParamDescriptor**   mParams;
+    DWORD               mAttribs;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct ParamDescriptor
 {
-    char                *mName;
-    TypeDescriptor      type;
-    DWORD               dwAttribs;
+    char*               mName;
+    TypeDescriptor      mType;
+    DWORD               mAttribs;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 typedef struct StructDescriptor StructDescriptor;
 typedef struct StructElement StructElement;
 
-const int c_nMaxStructElements = 128;
+const int MAX_STRUCT_ELEMENT_NUMBER = 128;
 
 struct StructDirEntry
 {
-    char                *mName;
-    char                *mNameSpace;
-    StructDescriptor    *mDesc;
+    char*               mName;
+    char*               mNameSpace;
+    StructDescriptor*   mDesc;
 };
 
 struct StructDescriptor
 {
-    unsigned short      cElems;
-    StructElement       **ppElems;
-    unsigned int        nAlignSize;
+    unsigned short      mElementCount;
+    StructElement**     mElements;
+    unsigned int        mAlignSize;
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct StructElement
 {
-    char                *mName;
-    TypeDescriptor      type;
+    char*               mName;
+    TypeDescriptor      mType;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 typedef struct EnumDescriptor EnumDescriptor;
 typedef struct EnumElement EnumElement;
 
-const int c_nMaxEnumElements = 512;
+const int MAX_ENUM_ELEMENT_NUMBER = 512;
 
 struct EnumDirEntry
 {
-    char                *mName;
-    char                *mNameSpace;
-    EnumDescriptor      *mDesc;
+    char*               mName;
+    char*               mNameSpace;
+    EnumDescriptor*     mDesc;
 };
 
 struct EnumDescriptor
 {
-    unsigned short      cElems;
-    EnumElement         **ppElems;
+    unsigned short      mElementCount;
+    EnumElement**       mElements;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct EnumElement
 {
-    char                *mName;
-    int                 nValue;
-    BOOL                bHexFormat;
+    char*               mName;
+    int                 mValue;
+    BOOL                mIsHexFormat;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct AliasDirEntry
 {
-    char                *mName;
-    char                *mNameSpace;
+    char*               mName;
+    char*               mNameSpace;
 
-    TypeDescriptor      type;
-    BOOL                bDummyType;
+    TypeDescriptor      mType;
+    BOOL                mIsDummyType;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct ArrayDirEntry
 {
-    char                *mNameSpace;
-    unsigned short      nElements;
-    TypeDescriptor      type;
+    char*               mNameSpace;
+    unsigned short      mElementCount;
+    TypeDescriptor      mType;
 };
 
 #define TYPE_BOOLEAN 0
@@ -311,60 +311,63 @@ struct ArrayDirEntry
 
 struct ConstDirEntry
 {
-    char                *mName;
-    char                *mNameSpace;
-    unsigned char       type;     // type == 0 integer; type == 1 string;
+    char*               mName;
+    char*               mNameSpace;
+    unsigned char       mType;     // type == 0 integer; type == 1 string;
     union
     {
         struct {
-            int         nValue;
-            BOOL        bHexFormat;
-        }               intValue;
+            int         mValue;
+            BOOL        mIsHexFormat;
+        }               mInt32Value;
         struct {
-            char        *pszValue;
-        }               strValue;
-    }                   v;
+            char*       mValue;
+        }               mStrValue;
+    }                   mV;
 
     union
     {
         int             mReserved;
-        void            *mBindData;
+        void*           mBindData;
     } mR;
 };
 
 struct InterfaceConstDescriptor
 {
-    char                *mName;
-    unsigned char      type;
+    char*               mName;
+    unsigned char       mType;
     union
     {
         struct
         {
-            int         nValue;
-            unsigned char format;
-        }                int32Value;
+            int         mValue;
+            unsigned char mFormat;
+        }               mInt32Value;
         struct
         {
-            long long int nValue;
-            unsigned char format;
-        }                int64Value;
-        BOOL            bValue;
-        double          dValue;
-        char            *pStrValue;
-    }                    v;
+            long long int mValue;
+            unsigned char mFormat;
+        }               mInt64Value;
+        BOOL            mBoolValue;
+        double          mDoubleValue;
+        char*           mStrValue;
+    }                   mV;
 };
 
-inline BOOL IsValidUUID(const GUID *pGUID)
+inline BOOL IsValidUUID(
+    /* [in] */ const GUID* guid)
 {
-    return memcmp(pGUID,
+    return memcmp(guid,
         "\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0\x0", sizeof(GUID));
 }
 
 #define IsNullUUID(uuid)    !IsValidUUID(uuid)
 
-inline BOOL IsEqualUUID(const GUID *pSrc, const GUID *pDest)
+inline BOOL IsEqualUUID(
+    /* [in] */ const GUID* src,
+    /* [in] */ const GUID* dest)
 {
-    return !memcmp(pSrc, pDest, sizeof(GUID));
+    return !memcmp(src, dest, sizeof(GUID));
 }
 
 typedef enum CLSError
@@ -414,8 +417,7 @@ extern int SelectInterfaceDirEntry(const char *, const char *, const CLSModule *
 extern int SelectStructDirEntry(const char *, const CLSModule *);
 extern int SelectEnumDirEntry(const char *, const char *, const CLSModule *);
 extern int SelectAliasDirEntry(const char *, const CLSModule *);
-extern int SelectArrayDirEntry(unsigned short nElems,
-    const TypeDescriptor &desp, const CLSModule *pModule);
+extern int SelectArrayDirEntry(unsigned short, const TypeDescriptor&, const CLSModule *);
 extern int SelectConstDirEntry(const char *, const CLSModule *);
 
 extern int SelectClassInterface(unsigned short, const ClassDescriptor *);
@@ -436,25 +438,19 @@ typedef enum GlobalSymbolType
     GType_Const             = Type_const,
 }   GlobalObjectType;
 
-extern int GlobalSelectSymbol(const char *, const char *,
-                const CLSModule *, GlobalSymbolType, GlobalSymbolType *);
+extern int GlobalSelectSymbol(const char *, const char *, const CLSModule *, GlobalSymbolType, GlobalSymbolType *);
 extern EnumElement *GlobalSelectEnumElement(const char *, const CLSModule *);
 extern int SelectInterfaceMemberSymbol(const char *, InterfaceDescriptor *);
 
 extern int GetIdentifyType(const char *, const char*, const CLSModule *, TypeDescriptor *);
-int GetArrayBaseType(const CLSModule *pModule,
-    const TypeDescriptor *pSrc, TypeDescriptor *pDest);
-extern int GetOriginalType(const CLSModule *,
-                const TypeDescriptor *, TypeDescriptor *);
-extern BOOL IsEqualType(const CLSModule *,
-                const TypeDescriptor *, const TypeDescriptor *);
-EXTERN_C BOOL IsLocalCarQuintet(const CLSModule *pModule,
-    const TypeDescriptor *pType, DWORD dwAttribs);
-EXTERN_C BOOL IsLocalStruct(const CLSModule *pModule, StructDescriptor* desc);
+int GetArrayBaseType(const CLSModule *, const TypeDescriptor *, TypeDescriptor *);
+extern int GetOriginalType(const CLSModule *, const TypeDescriptor *, TypeDescriptor *);
+extern BOOL IsEqualType(const CLSModule *, const TypeDescriptor *, const TypeDescriptor *);
+EXTERN_C BOOL IsLocalCarQuintet(const CLSModule *, const TypeDescriptor *, DWORD);
+EXTERN_C BOOL IsLocalStruct(const CLSModule *, StructDescriptor *);
 
 extern int TypeCopy(const TypeDescriptor *, TypeDescriptor *);
-EXTERN_C int TypeCopy(const CLSModule *, const TypeDescriptor *,
-                CLSModule *, TypeDescriptor *, BOOL);
+EXTERN_C int TypeCopy(const CLSModule *, const TypeDescriptor *, CLSModule *, TypeDescriptor *, BOOL);
 EXTERN_C int ArrayCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int AliasCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int EnumCopy(const CLSModule *, int, CLSModule *, BOOL);
@@ -463,19 +459,17 @@ EXTERN_C int InterfaceCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int ClassCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int ConstCopy(const CLSModule *, int, CLSModule *, BOOL);
 
-EXTERN_C int TypeXCopy(const CLSModule *, const TypeDescriptor *,
-                CLSModule *, TypeDescriptor *, BOOL);
+EXTERN_C int TypeXCopy(const CLSModule *, const TypeDescriptor *, CLSModule *, TypeDescriptor *, BOOL);
 EXTERN_C int ArrayXCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int AliasXCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int StructXCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int InterfaceXCopy(const CLSModule *, int, CLSModule *, BOOL);
 EXTERN_C int ClassXCopy(const CLSModule *, int, CLSModule *, BOOL);
 
-extern int InterfaceMethodsAppend(const CLSModule *,
-                const InterfaceDescriptor *, InterfaceDescriptor *);
+extern int InterfaceMethodsAppend(const CLSModule *, const InterfaceDescriptor *, InterfaceDescriptor *);
 extern int MethodAppend(const MethodDescriptor *, InterfaceDescriptor *);
 
-const int c_nMaxSeedSize = 255;
+const int MAX_SEED_SIZE = 255;
 EXTERN_C int GuidFromSeedString(const char *, GUID *);
 EXTERN_C int SeedStringFromGuid(REFGUID, char *);
 

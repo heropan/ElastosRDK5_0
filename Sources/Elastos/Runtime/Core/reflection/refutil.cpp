@@ -125,7 +125,7 @@ void _GetOriginalType(
     while (src->mType == Type_alias) {
         aliasDir = getAliasDirAddr(clsModule->mBase,
                 clsModule->mClsMod->mAliasDirs, src->mIndex);
-        src = &aliasDir->type;
+        src = &aliasDir->mType;
         dest->mPointer += src->mPointer;
         dest->mUnsigned |= src->mUnsigned;
     }
@@ -220,12 +220,12 @@ UInt32 GetDataTypeSize(
         case Type_struct:
             structDir = getStructDirAddr(base,
                     module->mStructDirs, typeDesc->mIndex);
-            size = adjustStructDescAddr(base, structDir->mDesc)->nAlignSize;
+            size = adjustStructDescAddr(base, structDir->mDesc)->mAlignSize;
             break;
         case Type_Array:
             arrayDir = getArrayDirAddr(base,
                     module->mArrayDirs, typeDesc->mIndex);
-            size = GetDataTypeSize(clsModule, &arrayDir->type) * arrayDir->nElements;
+            size = GetDataTypeSize(clsModule, &arrayDir->mType) * arrayDir->mElementCount;
             break;
         case Type_enum:
             size = sizeof(int);

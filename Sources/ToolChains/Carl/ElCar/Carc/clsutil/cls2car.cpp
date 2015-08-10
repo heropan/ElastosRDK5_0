@@ -55,8 +55,8 @@ void CGenerateInterfaceDecls(FILE *pFile, const CLSModule *pModule)
         pEntry = pModule->mInterfaceDirs[n];
 
         if (!pEntry->mNameSpace \
-            && !(pEntry->mDesc->dwAttribs & InterfaceAttrib_dual)
-            && !(pEntry->mDesc->dwAttribs & InterfaceAttrib_clsobj)) {
+            && !(pEntry->mDesc->mAttribs & InterfaceAttrib_dual)
+            && !(pEntry->mDesc->mAttribs & InterfaceAttrib_clsobj)) {
             if (bFirst) {
                 bFirst = FALSE;
                 fputs("\n", pFile);
@@ -81,8 +81,8 @@ void CGenerateAliases(FILE *pFile, const CLSModule *pModule)
             }
             fprintf(pFile,
                 "    typedef %s%s %s;\n",
-                (pEntry->bDummyType ? "[dummytype] ":""),
-                Type2CString(pModule, &pEntry->type),
+                (pEntry->mIsDummyType ? "[dummytype] ":""),
+                Type2CString(pModule, &pEntry->mType),
                 pEntry->mName);
         }
     }
@@ -101,18 +101,18 @@ void CGenerateEnums(FILE *pFile, const CLSModule *pModule)
                         pModule->mEnumDirs[n]->mName);
 
             pDesc = pModule->mEnumDirs[n]->mDesc;
-            for (m = 0; m < pDesc->cElems; m++) {
-                if (pDesc->ppElems[m]->bHexFormat) {
+            for (m = 0; m < pDesc->mElementCount; m++) {
+                if (pDesc->mElements[m]->mIsHexFormat) {
                     fprintf(pFile,
                             "        %s = 0x%08x,\n",
-                            pDesc->ppElems[m]->mName,
-                            pDesc->ppElems[m]->nValue);
+                            pDesc->mElements[m]->mName,
+                            pDesc->mElements[m]->mValue);
                 }
                 else {
                     fprintf(pFile,
                             "        %s = %d,\n",
-                            pDesc->ppElems[m]->mName,
-                            pDesc->ppElems[m]->nValue);
+                            pDesc->mElements[m]->mName,
+                            pDesc->mElements[m]->mValue);
                 }
             }
             fputs("    }\n", pFile);
@@ -130,24 +130,24 @@ void CGenerateConsts(FILE *pFile, const CLSModule *pModule)
                         "\n"
                         "    const %s = ",
                         pModule->mConstDirs[n]->mName);
-            if (pModule->mConstDirs[n]->type == TYPE_INTEGER32) {
-                if (pModule->mConstDirs[n]->v.intValue.bHexFormat) {
+            if (pModule->mConstDirs[n]->mType == TYPE_INTEGER32) {
+                if (pModule->mConstDirs[n]->mV.mInt32Value.mIsHexFormat) {
                     fprintf(pFile,
                             "0x%08x;\n",
-                            pModule->mConstDirs[n]->v.intValue.nValue);
+                            pModule->mConstDirs[n]->mV.mInt32Value.mValue);
                 }
                 else {
                     fprintf(pFile,
                             "%d;\n",
-                            pModule->mConstDirs[n]->v.intValue.nValue);
+                            pModule->mConstDirs[n]->mV.mInt32Value.mValue);
                 }
             }
             else {
-                assert(pModule->mConstDirs[n]->type == TYPE_STRING);
-                if (pModule->mConstDirs[n]->v.strValue.pszValue != NULL) {
+                assert(pModule->mConstDirs[n]->mType == TYPE_STRING);
+                if (pModule->mConstDirs[n]->mV.mStrValue.mValue != NULL) {
                      fprintf(pFile,
                             "\"%s\";\n",
-                            pModule->mConstDirs[n]->v.strValue.pszValue);
+                            pModule->mConstDirs[n]->mV.mStrValue.mValue);
                 }
             }
         }
@@ -168,18 +168,18 @@ void CGenerateStructs(FILE *pFile, const CLSModule *pModule)
                     pModule->mStructDirs[n]->mName);
 
             pDesc = pModule->mStructDirs[n]->mDesc;
-            for (m = 0; m < pDesc->cElems; m++) {
-                elemType = pDesc->ppElems[m]->type;
+            for (m = 0; m < pDesc->mElementCount; m++) {
+                elemType = pDesc->mElements[m]->mType;
                 if (Type_Array == elemType.mType) { //Handle Array
                     fprintf(pFile,
                             "        %s;\n",
-                            Array2CString(pModule, &elemType, pDesc->ppElems[m]->mName));
+                            Array2CString(pModule, &elemType, pDesc->mElements[m]->mName));
                 }
                 else {
                     fprintf(pFile,
                             "        %s %s;\n",
-                            Type2CString(pModule, &pDesc->ppElems[m]->type),
-                            pDesc->ppElems[m]->mName);
+                            Type2CString(pModule, &pDesc->mElements[m]->mType),
+                            pDesc->mElements[m]->mName);
                 }
             }
             fputs("    }\n", pFile);
@@ -190,17 +190,17 @@ void CGenerateStructs(FILE *pFile, const CLSModule *pModule)
 void CGenerateInterfaceAttribs(
     FILE *pFile, const InterfaceDescriptor *pDesc)
 {
-    if (0 == INTERFACE_ATTR(pDesc->dwAttribs))
+    if (0 == INTERFACE_ATTR(pDesc->mAttribs))
         return;
 
     fputs("    [\n", pFile);
-    if (pDesc->dwAttribs & InterfaceAttrib_local) {
+    if (pDesc->mAttribs & InterfaceAttrib_local) {
         fputs("        local", pFile);
     }
-    if (pDesc->dwAttribs & InterfaceAttrib_oneway) {
+    if (pDesc->mAttribs & InterfaceAttrib_oneway) {
         fputs("        oneway", pFile);
     }
-    if (pDesc->dwAttribs & InterfaceAttrib_parcelable) {
+    if (pDesc->mAttribs & InterfaceAttrib_parcelable) {
         fputs("        parcelable", pFile);
     }
 
@@ -212,60 +212,60 @@ void CGenerateInterfaceConst(FILE *pFile,
 {
     fprintf(pFile,
             "        const ");
-    if (pConst->type == TYPE_BOOLEAN) {
-        fprintf(pFile, "Boolean %s = %s;\n", pConst->mName, pConst->v.bValue ? "TRUE" : "FALSE");
+    if (pConst->mType == TYPE_BOOLEAN) {
+        fprintf(pFile, "Boolean %s = %s;\n", pConst->mName, pConst->mV.mBoolValue ? "TRUE" : "FALSE");
     }
-    else if (pConst->type == TYPE_CHAR32) {
-        fprintf(pFile, "Char32 %s = \'%c\'\n", pConst->mName, pConst->v.int32Value.nValue);
+    else if (pConst->mType == TYPE_CHAR32) {
+        fprintf(pFile, "Char32 %s = \'%c\'\n", pConst->mName, pConst->mV.mInt32Value.mValue);
     }
-    else if (pConst->type == TYPE_BYTE) {
+    else if (pConst->mType == TYPE_BYTE) {
         fprintf(pFile, "Byte %s = ", pConst->mName);
-        if (pConst->v.int32Value.format == FORMAT_HEX) {
-            fprintf(pFile, "0x%08x;\n", (unsigned char)pConst->v.int32Value.nValue);
+        if (pConst->mV.mInt32Value.mFormat == FORMAT_HEX) {
+            fprintf(pFile, "0x%08x;\n", (unsigned char)pConst->mV.mInt32Value.mValue);
         }
         else {
-            fprintf(pFile, "%d;\n", (unsigned char)pConst->v.int32Value.nValue);
+            fprintf(pFile, "%d;\n", (unsigned char)pConst->mV.mInt32Value.mValue);
         }
     }
-    else if (pConst->type == TYPE_INTEGER16) {
+    else if (pConst->mType == TYPE_INTEGER16) {
         fprintf(pFile, "Int16 %s = ", pConst->mName);
-        if (pConst->v.int32Value.format == FORMAT_HEX) {
-            fprintf(pFile, "0x%08x;\n", (short)pConst->v.int32Value.nValue);
+        if (pConst->mV.mInt32Value.mFormat == FORMAT_HEX) {
+            fprintf(pFile, "0x%08x;\n", (short)pConst->mV.mInt32Value.mValue);
         }
         else {
-            fprintf(pFile, "%d;\n", (short)pConst->v.int32Value.nValue);
+            fprintf(pFile, "%d;\n", (short)pConst->mV.mInt32Value.mValue);
         }
     }
-    else if (pConst->type == TYPE_INTEGER32) {
+    else if (pConst->mType == TYPE_INTEGER32) {
         fprintf(pFile, "Int32 %s = ", pConst->mName);
-        if (pConst->v.int32Value.format == FORMAT_HEX) {
-            fprintf(pFile, "0x%08x;\n", pConst->v.int32Value.nValue);
+        if (pConst->mV.mInt32Value.mFormat == FORMAT_HEX) {
+            fprintf(pFile, "0x%08x;\n", pConst->mV.mInt32Value.mValue);
         }
         else {
-            fprintf(pFile, "%d;\n", pConst->v.int32Value.nValue);
+            fprintf(pFile, "%d;\n", pConst->mV.mInt32Value.mValue);
         }
     }
-    else if (pConst->type == TYPE_INTEGER64) {
+    else if (pConst->mType == TYPE_INTEGER64) {
         fprintf(pFile, "Int64 ");
         fprintf(pFile, "%s = ", pConst->mName);
-        if (pConst->v.int64Value.format == FORMAT_HEX) {
-            fprintf(pFile, "0x%llx;\n", pConst->v.int64Value.nValue);
+        if (pConst->mV.mInt64Value.mFormat == FORMAT_HEX) {
+            fprintf(pFile, "0x%llx;\n", pConst->mV.mInt64Value.mValue);
         }
         else {
-            fprintf(pFile, "%lld;\n", pConst->v.int64Value.nValue);
+            fprintf(pFile, "%lld;\n", pConst->mV.mInt64Value.mValue);
         }
     }
-    else if (pConst->type == TYPE_FLOAT) {
-        fprintf(pFile, "Float %s = %f;\n", pConst->mName, pConst->v.dValue);
+    else if (pConst->mType == TYPE_FLOAT) {
+        fprintf(pFile, "Float %s = %f;\n", pConst->mName, pConst->mV.mDoubleValue);
     }
-    else if (pConst->type == TYPE_DOUBLE) {
-        fprintf(pFile, "Double %s = %f;\n", pConst->mName, pConst->v.dValue);
+    else if (pConst->mType == TYPE_DOUBLE) {
+        fprintf(pFile, "Double %s = %f;\n", pConst->mName, pConst->mV.mDoubleValue);
     }
     else {
-        assert(pConst->type == TYPE_STRING);
+        assert(pConst->mType == TYPE_STRING);
 
-        if (pConst->v.pStrValue != NULL) {
-             fprintf(pFile, "String %s = \"%s\";\n", pConst->mName, pConst->v.pStrValue);
+        if (pConst->mV.mStrValue != NULL) {
+             fprintf(pFile, "String %s = \"%s\";\n", pConst->mName, pConst->mV.mStrValue);
         }
     }
 }
@@ -273,7 +273,7 @@ void CGenerateInterfaceConst(FILE *pFile,
 void CGenerateMethodAttribs(
     FILE *pFile, const MethodDescriptor *pMethod)
 {
-    if (pMethod->dwAttribs & MethodAttrib_Oneway) {
+    if (pMethod->mAttribs & MethodAttrib_Oneway) {
         fprintf(pFile, "        [oneway] ");
     }
     else {
@@ -291,14 +291,14 @@ void CGenerateMethod(FILE *pFile,
     fprintf(pFile,
             "%s(",
             pMethod->mName);
-    for (n = 0; n < pMethod->cParams; n++) {
+    for (n = 0; n < pMethod->mParamCount; n++) {
         if (0 != n) fputs(", ", pFile);
-        pParam = pMethod->ppParams[n];
+        pParam = pMethod->mParams[n];
 
         fprintf(pFile,
                 "\n            [%s] %s %s",
-                ParamAttrib2String(pParam->dwAttribs),
-                Type2CString(pModule, &pParam->type),
+                ParamAttrib2String(pParam->mAttribs),
+                Type2CString(pModule, &pParam->mType),
                 pParam->mName);
     }
     fputs(");\n", pFile);
@@ -313,28 +313,28 @@ void CGenerateInterfaces(FILE *pFile, const CLSModule *pModule)
         pDesc = pModule->mInterfaceDirs[n]->mDesc;
 
         if (!pModule->mInterfaceDirs[n]->mNameSpace
-            && !(pDesc->dwAttribs & InterfaceAttrib_dual)
-            && !(pDesc->dwAttribs & InterfaceAttrib_clsobj)) {
+            && !(pDesc->mAttribs & InterfaceAttrib_dual)
+            && !(pDesc->mAttribs & InterfaceAttrib_clsobj)) {
             fputs("\n", pFile);
             CGenerateInterfaceAttribs(pFile, pDesc);
 
             fprintf(pFile, "    interface %s",
                     pModule->mInterfaceDirs[n]->mName);
 
-            if (0 != pDesc->sParentIndex) {
+            if (0 != pDesc->mParentIndex) {
                 fprintf(pFile, " : %s",
-                        pModule->mInterfaceDirs[pDesc->sParentIndex]->mName);
+                        pModule->mInterfaceDirs[pDesc->mParentIndex]->mName);
             }
             fputs(" {\n", pFile);
 
             for (m = 0; m < pDesc->mConstCount; m++) {
                 if (0 != m) fputs("\n", pFile);
-                CGenerateInterfaceConst(pFile, pModule, pDesc->ppConsts[m]);
+                CGenerateInterfaceConst(pFile, pModule, pDesc->mConsts[m]);
             }
 
-            for (m = 0; m < pDesc->cMethods; m++) {
+            for (m = 0; m < pDesc->mMethodCount; m++) {
                 if (0 != m) fputs("\n", pFile);
-                CGenerateMethod(pFile, pModule, pDesc->ppMethods[m]);
+                CGenerateMethod(pFile, pModule, pDesc->mMethods[m]);
             }
             fputs("    }\n", pFile);
         }
@@ -347,42 +347,42 @@ void CGenerateClassAttribs(
     int n;
     BOOL bComma;
 
-    if (0 == CLASS_ATTR(pDesc->dwAttribs))
+    if (0 == CLASS_ATTR(pDesc->mAttribs))
         return;
 
     bComma = FALSE;
     fputs("    [\n", pFile);
 
-    if (pDesc->dwAttribs & ClassAttrib_singleton) {
+    if (pDesc->mAttribs & ClassAttrib_singleton) {
         if (bComma) fputs(",\n", pFile);
         fputs("        singleton", pFile);
         bComma = TRUE;
     }
-    if (pDesc->dwAttribs & ClassAttrib_private) {
+    if (pDesc->mAttribs & ClassAttrib_private) {
         if (bComma) fputs(",\n", pFile);
         fputs("        private", pFile);
         bComma = TRUE;
     }
-    if (pDesc->dwAttribs & ClassAttrib_aggregate) {
+    if (pDesc->mAttribs & ClassAttrib_aggregate) {
         if (bComma) fputs(",\n", pFile);
         fprintf(pFile,
                 "        aggregate(%s",
-                pModule->mClassDirs[pDesc->pAggrIndexs[0]]->mName);
-        for (n = 1; n < pDesc->cAggregates; n++) {
+                pModule->mClassDirs[pDesc->mAggrIndexes[0]]->mName);
+        for (n = 1; n < pDesc->mAggregateCount; n++) {
             fprintf(pFile, ", %s",
-                    pModule->mClassDirs[pDesc->pAggrIndexs[n]]->mName);
+                    pModule->mClassDirs[pDesc->mAggrIndexes[n]]->mName);
         }
         fputs(")", pFile);
     }
 
-    if (pDesc->dwAttribs & ClassAttrib_aspect) {
+    if (pDesc->mAttribs & ClassAttrib_aspect) {
         if (bComma) fputs(",\n", pFile);
         fprintf(pFile,
                 "        aspect(%s",
-                pModule->mClassDirs[pDesc->pAspectIndexs[0]]->mName);
-        for (n = 1; n < pDesc->cAspects; n++) {
+                pModule->mClassDirs[pDesc->mAspectIndexes[0]]->mName);
+        for (n = 1; n < pDesc->mAspectCount; n++) {
             fprintf(pFile, ", %s",
-                    pModule->mClassDirs[pDesc->pAspectIndexs[n]]->mName);
+                    pModule->mClassDirs[pDesc->mAspectIndexes[n]]->mName);
         }
         fputs(")", pFile);
     }
@@ -399,13 +399,13 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
     for (n = 0; n < pModule->mClassCount; n++) {
         pClass = pModule->mClassDirs[n]->mDesc;
         if (!pModule->mClassDirs[n]->mNameSpace
-            && !(pClass->dwAttribs & ClassAttrib_t_sink)
-            && !(pClass->dwAttribs & ClassAttrib_t_clsobj)
-            && !(pClass->dwAttribs & ClassAttrib_t_external)) {
+            && !(pClass->mAttribs & ClassAttrib_t_sink)
+            && !(pClass->mAttribs & ClassAttrib_t_clsobj)
+            && !(pClass->mAttribs & ClassAttrib_t_external)) {
             fputs("\n", pFile);
             CGenerateClassAttribs(pFile, pModule, pClass);
 
-            switch (CLASS_TYPE(pClass->dwAttribs)) {
+            switch (CLASS_TYPE(pClass->mAttribs)) {
                 case ClassAttrib_t_aspect:
                     fputs("    aspect ", pFile);
                     break;
@@ -424,15 +424,15 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
             }
             fputs(pModule->mClassDirs[n]->mName, pFile);
 
-            if (pClass->dwAttribs & ClassAttrib_hasparent) {
-                if (pModule->mClassDirs[pClass->sParentIndex]->mDesc->dwAttribs
+            if (pClass->mAttribs & ClassAttrib_hasparent) {
+                if (pModule->mClassDirs[pClass->mParentIndex]->mDesc->mAttribs
                     & ClassAttrib_t_generic) {
                     fprintf(pFile, " :: %s",
-                        pModule->mClassDirs[pClass->sParentIndex]->mName);
+                        pModule->mClassDirs[pClass->mParentIndex]->mName);
                 }
                 else {
                     fprintf(pFile, " : %s",
-                        pModule->mClassDirs[pClass->sParentIndex]->mName);
+                        pModule->mClassDirs[pClass->mParentIndex]->mName);
                 }
             }
 
@@ -441,20 +441,20 @@ void CGenerateClasses(FILE *pFile, const CLSModule *pModule)
 // TODO: ctors
 
             for (m = 0; m < pClass->mInterfaceCount; m++) {
-                pClsIntf = pClass->ppInterfaces[m];
+                pClsIntf = pClass->mInterfaces[m];
                 pIEntry = pModule->mInterfaceDirs[pClsIntf->mIndex];
 
-                if (pClsIntf->wAttribs & ClassInterfaceAttrib_outer)
+                if (pClsIntf->mAttribs & ClassInterfaceAttrib_outer)
                     continue;
 
                 fputs("        ", pFile);
-                if (pClsIntf->wAttribs & ClassInterfaceAttrib_virtual) {
+                if (pClsIntf->mAttribs & ClassInterfaceAttrib_virtual) {
                     fputs("virtual ", pFile);
                 }
-                else if (pClsIntf->wAttribs & ClassInterfaceAttrib_hidden) {
+                else if (pClsIntf->mAttribs & ClassInterfaceAttrib_hidden) {
                     fputs("hidden ", pFile);
                 }
-                else if (pClsIntf->wAttribs & ClassInterfaceAttrib_callback) {
+                else if (pClsIntf->mAttribs & ClassInterfaceAttrib_callback) {
                     fputs("callback ", pFile);
                 }
 

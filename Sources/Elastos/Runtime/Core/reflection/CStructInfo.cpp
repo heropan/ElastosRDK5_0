@@ -90,25 +90,25 @@ ECode CStructInfo::InitStatic(
     StructElement* elem = NULL;
 
     ECode ec = NOERROR;
-    mFieldTypeInfos = ArrayOf<IDataTypeInfo*>::Alloc(desc->cElems);
+    mFieldTypeInfos = ArrayOf<IDataTypeInfo*>::Alloc(desc->mElementCount);
     if (!mFieldTypeInfos) {
         ec = E_OUT_OF_MEMORY;
         goto EExit;
     }
 
-    mFieldNames = ArrayOf<String>::Alloc(desc->cElems);
+    mFieldNames = ArrayOf<String>::Alloc(desc->mElementCount);
     if (!mFieldNames) {
         ec = E_OUT_OF_MEMORY;
         goto EExit;
     }
 
-    for (Int32 i = 0; i < desc->cElems; i++) {
-        elem = getStructElementAddr(base, desc->ppElems, i);
+    for (Int32 i = 0; i < desc->mElementCount; i++) {
+        elem = getStructElementAddr(base, desc->mElements, i);
         (*mFieldNames)[i] = adjustNameAddr(base, elem->mName);
 
         AutoPtr<IDataTypeInfo> dataTypeInfo;
         ec = g_objInfoList.AcquireDataTypeInfo(mClsModule,
-                &elem->type, (IDataTypeInfo**)&dataTypeInfo, TRUE);
+                &elem->mType, (IDataTypeInfo**)&dataTypeInfo, TRUE);
         if (FAILED(ec)) goto EExit;
         mFieldTypeInfos->Set(i, dataTypeInfo);
     }

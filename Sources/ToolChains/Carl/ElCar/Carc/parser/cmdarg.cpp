@@ -220,32 +220,32 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
 
             switch (c = stream.GetChar()) {
                 case 'c':
-                    if (pArgs->dwAttribs & Command_c_GenCLS) {
+                    if (pArgs->mAttribs & Command_c_GenCLS) {
                         CmdError(CommandError_DupSwitch, c);
                         return CommandError_DupSwitch;
                     }
-                    pArgs->dwAttribs |= Command_c_GenCLS;
+                    pArgs->mAttribs |= Command_c_GenCLS;
 
                     if (!IsCommandSwitch(stream.PeekChar()))
                         GetFileName(&stream, ".cls", pArgs, &pArgs->pszCLS);
                     break;
                 case 'E':
-                    if (pArgs->dwAttribs & Command_E_GenExCLS) {
+                    if (pArgs->mAttribs & Command_E_GenExCLS) {
                         CmdError(CommandError_DupSwitch, c);
                         return CommandError_DupSwitch;
                     }
-                    pArgs->dwAttribs |= Command_E_GenExCLS;
+                    pArgs->mAttribs |= Command_E_GenExCLS;
 
                     if (!IsCommandSwitch(stream.PeekChar()))
                         GetFileName(&stream, ".cls", pArgs, &pArgs->pszExCLS);
                     break;
 
                 case 'r':
-                    if (pArgs->dwAttribs & Command_r_GenCAR) {
+                    if (pArgs->mAttribs & Command_r_GenCAR) {
                         CmdError(CommandError_DupSwitch, c);
                         return CommandError_DupSwitch;
                     }
-                    pArgs->dwAttribs |= Command_r_GenCAR;
+                    pArgs->mAttribs |= Command_r_GenCAR;
 
                     pArgs->pszCAR = stream.GetWord();
                     if (!pArgs->pszCAR) {
@@ -255,31 +255,31 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'a':
-                    pArgs->dwAttribs |= Command_a_Compress;
+                    pArgs->mAttribs |= Command_a_Compress;
                     break;
 
                 case 't':
-                    pArgs->dwAttribs |= Command_t_Warn2Err;
+                    pArgs->mAttribs |= Command_t_Warn2Err;
                     break;
 
                 case 'w':
-                    pArgs->dwAttribs |= Command_w_SuppWarn;
+                    pArgs->mAttribs |= Command_w_SuppWarn;
                     break;
 
                 case 's':
-                    pArgs->dwAttribs |= Command_s_NoSys;
+                    pArgs->mAttribs |= Command_s_NoSys;
                     break;
 
                 case 'e':
-                    pArgs->dwAttribs |= Command_e_NoElastos;
+                    pArgs->mAttribs |= Command_e_NoElastos;
                     break;
 
                 case 'd':
-                    pArgs->dwAttribs |= Command_d_Depend;
+                    pArgs->mAttribs |= Command_d_Depend;
                     break;
 
                 case 'k':
-                    pArgs->dwAttribs |= Command_k_InKernel;
+                    pArgs->mAttribs |= Command_k_InKernel;
                     break;
 
                 case 'L':
@@ -315,22 +315,22 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'A':
-                    pArgs->dwAttribs |= Command_A_FreeModel;
+                    pArgs->mAttribs |= Command_A_FreeModel;
 
                     break;
 
                 case 'i':
-                    pArgs->dwAttribs |= Command_i_IgrName;
+                    pArgs->mAttribs |= Command_i_IgrName;
 
                     break;
 
                 case 'u':
-                    pArgs->dwAttribs |= Command_u_WeakRef;
+                    pArgs->mAttribs |= Command_u_WeakRef;
 
                     break;
 
                 case 'n':
-                    pArgs->dwAttribs |= Command_n_NakedMode;
+                    pArgs->mAttribs |= Command_n_NakedMode;
 
                     break;
 
@@ -361,7 +361,7 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
         CmdError(CommandError_NoSource, c);
         return CommandError_NoSource;
     }
-    if ((pArgs->dwAttribs & Command_c_GenCLS) && NULL == pArgs->pszCLS) {
+    if ((pArgs->mAttribs & Command_c_GenCLS) && NULL == pArgs->pszCLS) {
         pArgs->pszCLS = GenFileName(pArgs->pszSource, ".cls");
         if (NULL == pArgs->pszCLS) {
             CmdError(CommandError_OutOfMemory, 0);

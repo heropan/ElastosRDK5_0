@@ -83,21 +83,21 @@ ECode CEnumInfo::InitStatic(
     mNamespace = adjustNameAddr(base, mEnumDirEntry->mNameSpace);
     EnumDescriptor* desc = adjustEnumDescAddr(base, enumDirEntry->mDesc);
 
-    mItemValues = ArrayOf<Int32>::Alloc(desc->cElems);
+    mItemValues = ArrayOf<Int32>::Alloc(desc->mElementCount);
     if (!mItemValues) {
         return E_OUT_OF_MEMORY;
     }
 
-    mItemNames = ArrayOf<String>::Alloc(desc->cElems);
+    mItemNames = ArrayOf<String>::Alloc(desc->mElementCount);
     if (!mItemNames) {
         mItemValues = NULL;
         return E_OUT_OF_MEMORY;
     }
 
     EnumElement* elem = NULL;
-    for (Int32 i = 0; i < desc->cElems; i++) {
-        elem = getEnumElementAddr(base, desc->ppElems, i);
-        (*mItemValues)[i] = elem->nValue;
+    for (Int32 i = 0; i < desc->mElementCount; i++) {
+        elem = getEnumElementAddr(base, desc->mElements, i);
+        (*mItemValues)[i] = elem->mValue;
         (*mItemNames)[i] = adjustNameAddr(base, elem->mName);
     }
 

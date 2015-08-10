@@ -6,7 +6,7 @@
 #define __CLSTYPE_H__
 
 #ifndef _WINDEF_H
-// typedef byte                BYTE;
+typedef byte                BYTE;
 typedef unsigned short      WORD;
 typedef unsigned int        DWORD;
 typedef int                 BOOL;

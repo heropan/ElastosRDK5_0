@@ -14,16 +14,16 @@ typedef unsigned char  byte;
 
 static char s_szStringBuf[128];
 
-const char *ParamAttrib2String(DWORD dwAttribs)
+const char *ParamAttrib2String(DWORD attribs)
 {
     static char s_szAttrib[16];
 
-    if (dwAttribs & ParamAttrib_in) {
+    if (attribs & ParamAttrib_in) {
         strcpy(s_szAttrib, "in");
     }
     else {
         strcpy(s_szAttrib, "out");
-        if (dwAttribs & ParamAttrib_callee) {
+        if (attribs & ParamAttrib_callee) {
             strcat(s_szAttrib, ", callee");
         }
     }
@@ -299,10 +299,10 @@ inline void GenerateArrayDims(
 
     do {
         strcat(pBuf, "[");
-        sprintf(szNum, "%d", pModule->mArrayDirs[pType->mIndex]->nElements);
+        sprintf(szNum, "%d", pModule->mArrayDirs[pType->mIndex]->mElementCount);
         strcat(pBuf, szNum);
         strcat(pBuf, "]");
-        pType = &(pModule->mArrayDirs[pType->mIndex]->type);
+        pType = &(pModule->mArrayDirs[pType->mIndex]->mType);
     } while (Type_Array == pType->mType);
 }
 

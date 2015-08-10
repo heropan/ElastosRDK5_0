@@ -8,7 +8,7 @@
 #include "parser.h"
 
 typedef struct CommandArgs {
-    DWORD       dwAttribs;
+    DWORD       mAttribs;
 
     char        *pszSource;
     char        *pszLBO;

@@ -28,12 +28,12 @@ void RelocAbridgedCLS(void *pvAbrgCLS)
     RELOC(pInfo->pClasses, AbridgedClass *, nBase);
     RELOC(pInfo->pInterfaces, AbridgedInterface *, nBase);
 
-    for (n = 0; n < pInfo->cClasses; n++) {
+    for (n = 0; n < pInfo->mClassCount; n++) {
         pClass = &pInfo->pClasses[n];
-        RELOC(pClass->ppInterfaces, AbridgedInterface **, nBase);
+        RELOC(pClass->mInterfaces, AbridgedInterface **, nBase);
 
         for (m = 0; m < pClass->mInterfaceCount; m++) {
-            RELOC(pClass->ppInterfaces[m], AbridgedInterface *, nBase);
+            RELOC(pClass->mInterfaces[m], AbridgedInterface *, nBase);
         }
         RELOC(pClass->pszUunm, char *, nBase);
     }
@@ -41,7 +41,7 @@ void RelocAbridgedCLS(void *pvAbrgCLS)
     for (n = 0; n < pInfo->mInterfaceCount; n++) {
         pIntf = &pInfo->pInterfaces[n];
         RELOC(pIntf->pMethods, AbridgedMethod *, nBase);
-        for (m = 0; m < pIntf->cMethods; m++) {
+        for (m = 0; m < pIntf->mMethodCount; m++) {
             RELOC(pIntf->pMethods[m].pParams, AbridgedParamsInfo *, nBase);
         }
     }

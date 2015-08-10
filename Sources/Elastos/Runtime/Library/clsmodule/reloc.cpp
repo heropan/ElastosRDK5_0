@@ -9,21 +9,21 @@ static int sBase;
 void MapClassDescriptor(
     /* [in] */ ClassDescriptor* p)
 {
-    if (0 != p->cAggregates) {
-        p->pAggrIndexs = (USHORT *)((int)p->pAggrIndexs + sBase);
+    if (0 != p->mAggregateCount) {
+        p->mAggrIndexes = (USHORT *)((int)p->mAggrIndexes + sBase);
     }
-    if (0 != p->cAspects) {
-        p->pAspectIndexs = (USHORT *)((int)p->pAspectIndexs + sBase);
+    if (0 != p->mAspectCount) {
+        p->mAspectIndexes = (USHORT *)((int)p->mAspectIndexes + sBase);
     }
-    if (0 != p->cClasses) {
-        p->pClassIndexs = (USHORT *)((int)p->pClassIndexs + sBase);
+    if (0 != p->mClassCount) {
+        p->mClassIndexes = (USHORT *)((int)p->mClassIndexes + sBase);
     }
 
     if (0 != p->mInterfaceCount) {
-        p->ppInterfaces = (ClassInterface **)((int)p->ppInterfaces + sBase);
+        p->mInterfaces = (ClassInterface **)((int)p->mInterfaces + sBase);
 
         for (int n = 0; n < p->mInterfaceCount; n++) {
-            p->ppInterfaces[n] = (ClassInterface *)((int)p->ppInterfaces[n] + sBase);
+            p->mInterfaces[n] = (ClassInterface *)((int)p->mInterfaces[n] + sBase);
         }
     }
 }
@@ -43,25 +43,25 @@ void MapInterfaceConstDescriptor(
     /* [in] */ InterfaceConstDescriptor* p)
 {
     p->mName += sBase;
-    if (p->type == TYPE_STRING && p->v.pStrValue != NULL) p->v.pStrValue += sBase;
+    if (p->mType == TYPE_STRING && p->mV.mStrValue != NULL) p->mV.mStrValue += sBase;
 }
 
 void MapMethodDescriptor(
     /* [in] */ MethodDescriptor* p)
 {
     p->mName += sBase;
-    p->pszSignature += sBase;
+    p->mSignature += sBase;
 
-    if (0 != p->cParams) {
-        p->ppParams = (ParamDescriptor **)((int)p->ppParams + sBase);
+    if (0 != p->mParamCount) {
+        p->mParams = (ParamDescriptor **)((int)p->mParams + sBase);
 
-        for (int n = 0; n < p->cParams; n++) {
-            p->ppParams[n] = (ParamDescriptor *)((int)p->ppParams[n] + sBase);
-            p->ppParams[n]->mName += sBase;
+        for (int n = 0; n < p->mParamCount; n++) {
+            p->mParams[n] = (ParamDescriptor *)((int)p->mParams[n] + sBase);
+            p->mParams[n]->mName += sBase;
 
-            if (p->ppParams[n]->type.mNestedType) {
-                p->ppParams[n]->type.mNestedType =
-                        (TypeDescriptor *)((int)p->ppParams[n]->type.mNestedType + sBase);
+            if (p->mParams[n]->mType.mNestedType) {
+                p->mParams[n]->mType.mNestedType =
+                        (TypeDescriptor *)((int)p->mParams[n]->mType.mNestedType + sBase);
             }
         }
     }
@@ -71,20 +71,20 @@ void MapInterfaceDescriptor(
     /* [in] */ InterfaceDescriptor* p)
 {
     if (0 != p->mConstCount) {
-        p->ppConsts = (InterfaceConstDescriptor **)((int)p->ppConsts + sBase);
+        p->mConsts = (InterfaceConstDescriptor **)((int)p->mConsts + sBase);
 
         for (int n = 0; n < p->mConstCount; n++) {
-            p->ppConsts[n] = (InterfaceConstDescriptor *)((int)p->ppConsts[n] + sBase);
-            MapInterfaceConstDescriptor(p->ppConsts[n]);
+            p->mConsts[n] = (InterfaceConstDescriptor *)((int)p->mConsts[n] + sBase);
+            MapInterfaceConstDescriptor(p->mConsts[n]);
         }
     }
 
-    if (0 != p->cMethods) {
-        p->ppMethods = (MethodDescriptor **)((int)p->ppMethods + sBase);
+    if (0 != p->mMethodCount) {
+        p->mMethods = (MethodDescriptor **)((int)p->mMethods + sBase);
 
-        for (int n = 0; n < p->cMethods; n++) {
-            p->ppMethods[n] = (MethodDescriptor *)((int)p->ppMethods[n] + sBase);
-            MapMethodDescriptor(p->ppMethods[n]);
+        for (int n = 0; n < p->mMethodCount; n++) {
+            p->mMethods[n] = (MethodDescriptor *)((int)p->mMethods[n] + sBase);
+            MapMethodDescriptor(p->mMethods[n]);
         }
     }
 }
@@ -105,24 +105,24 @@ void MapArrayDirEntry(
 {
     if (p->mNameSpace) p->mNameSpace += sBase;
 
-    if (p->type.mNestedType) {
-        p->type.mNestedType = (TypeDescriptor *)((int)p->type.mNestedType + sBase);
+    if (p->mType.mNestedType) {
+        p->mType.mNestedType = (TypeDescriptor *)((int)p->mType.mNestedType + sBase);
     }
 }
 
 void MapStructDescriptor(
     /* [in] */ StructDescriptor* p)
 {
-    if (0 != p->cElems) {
-        p->ppElems = (StructElement **)((int)p->ppElems + sBase);
+    if (0 != p->mElementCount) {
+        p->mElements = (StructElement **)((int)p->mElements + sBase);
 
-        for (int n = 0; n < p->cElems; n++) {
-            p->ppElems[n] = (StructElement *)((int)p->ppElems[n] + sBase);
-            p->ppElems[n]->mName += sBase;
+        for (int n = 0; n < p->mElementCount; n++) {
+            p->mElements[n] = (StructElement *)((int)p->mElements[n] + sBase);
+            p->mElements[n]->mName += sBase;
 
-            if (p->ppElems[n]->type.mNestedType) {
-                p->ppElems[n]->type.mNestedType =
-                        (TypeDescriptor *)((int)p->ppElems[n]->type.mNestedType + sBase);
+            if (p->mElements[n]->mType.mNestedType) {
+                p->mElements[n]->mType.mNestedType =
+                        (TypeDescriptor *)((int)p->mElements[n]->mType.mNestedType + sBase);
             }
         }
     }
@@ -142,12 +142,12 @@ void MapStructDirEntry(
 void MapEnumDescriptor(
     /* [in] */ EnumDescriptor* p)
 {
-    if (0 != p->cElems) {
-        p->ppElems = (EnumElement **)((int)p->ppElems + sBase);
+    if (0 != p->mElementCount) {
+        p->mElements = (EnumElement **)((int)p->mElements + sBase);
 
-        for (int n = 0; n < p->cElems; n++) {
-            p->ppElems[n] = (EnumElement *)((int)p->ppElems[n] + sBase);
-            p->ppElems[n]->mName += sBase;
+        for (int n = 0; n < p->mElementCount; n++) {
+            p->mElements[n] = (EnumElement *)((int)p->mElements[n] + sBase);
+            p->mElements[n]->mName += sBase;
         }
     }
 }
@@ -168,7 +168,7 @@ void MapConstDirEntry(
 {
     p->mName += sBase;
     if (p->mNameSpace) p->mNameSpace += sBase;
-    if (p->type == TYPE_STRING && p->v.strValue.pszValue != NULL) p->v.strValue.pszValue += sBase;
+    if (p->mType == TYPE_STRING && p->mV.mStrValue.mValue != NULL) p->mV.mStrValue.mValue += sBase;
 }
 
 void MapAliasDirEntry(
@@ -177,8 +177,8 @@ void MapAliasDirEntry(
     p->mName += sBase;
     if (p->mNameSpace) p->mNameSpace += sBase;
 
-    if (p->type.mNestedType) {
-        p->type.mNestedType = (TypeDescriptor *)((int)p->type.mNestedType + sBase);
+    if (p->mType.mNestedType) {
+        p->mType.mNestedType = (TypeDescriptor *)((int)p->mType.mNestedType + sBase);
     }
 }
 

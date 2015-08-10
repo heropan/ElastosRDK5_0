@@ -86,9 +86,9 @@ const char *AbrgParamAttrib(AbridgedParamsInfo param)
 
 void AbrgMethod(FILE *pFile, int n, const AbridgedMethod *pMethod)
 {
-    fprintf(pFile, "//        [0X%08X, 0x%02x] Method_%02d(", pMethod->dwAttribs, pMethod->nStackSize, n);
+    fprintf(pFile, "//        [0X%08X, 0x%02x] Method_%02d(", pMethod->mAttribs, pMethod->nStackSize, n);
 
-    for (n = 0; n < pMethod->cParams; n++) {
+    for (n = 0; n < pMethod->mParamCount; n++) {
         if (0 != n) fputs(",", pFile);
         fprintf(pFile,
                 "\n//                    [%s] %s",
@@ -102,7 +102,7 @@ void AbrgMethod(FILE *pFile, int n, const AbridgedMethod *pMethod)
 const char *AbrgInterfaceName(const CLSModule *pModule, const GUID *pIID)
 {
     for (int n = 0; n < pModule->mInterfaceCount; n++) {
-        if (IsEqualUUID(pIID, &pModule->mInterfaceDirs[n]->mDesc->iid)) {
+        if (IsEqualUUID(pIID, &pModule->mInterfaceDirs[n]->mDesc->mIID)) {
             return pModule->mInterfaceDirs[n]->mName;
         }
     }
@@ -119,7 +119,7 @@ void AbrgInterface(FILE *pFile,
             "//    interface %s {\n",
             AbrgInterfaceName(pModule, &pInterface->iid));
 
-    for (int n = 0; n < pInterface->cMethods; n++) {
+    for (int n = 0; n < pInterface->mMethodCount; n++) {
         AbrgMethod(pFile, n, &pInterface->pMethods[n]);
     }
 
@@ -129,7 +129,7 @@ void AbrgInterface(FILE *pFile,
 const char *AbrgClassName(const CLSModule *pModule, const GUID *pIID)
 {
     for (int n = 0; n < pModule->mClassCount; n++) {
-        if (IsEqualUUID(pIID, &pModule->mClassDirs[n]->mDesc->clsid)) {
+        if (IsEqualUUID(pIID, &pModule->mClassDirs[n]->mDesc->mClsid)) {
             return pModule->mClassDirs[n]->mName;
         }
     }
@@ -151,7 +151,7 @@ void AbrgClass(FILE *pFile,
     for (int n = 0; n < pClass->mInterfaceCount; n++) {
         fprintf(pFile,
             "//        interface %s;\n",
-            AbrgInterfaceName(pModule, &pClass->ppInterfaces[n]->iid));
+            AbrgInterfaceName(pModule, &pClass->mInterfaces[n]->iid));
     }
 
     fputs("//    }\n//\n", pFile);
@@ -176,7 +176,7 @@ void Abrg2Comment(FILE * pFile,
             "//\n"
             "//\n",
             pAbridged->nTotalSize,
-            pAbridged->cClasses,
+            pAbridged->mClassCount,
             pAbridged->mInterfaceCount,
             pModule->mName);
 
@@ -184,7 +184,7 @@ void Abrg2Comment(FILE * pFile,
         AbrgInterface(pFile, pModule, &pAbridged->pInterfaces[n]);
     }
 
-    for (n = 0; n < pAbridged->cClasses; n++) {
+    for (n = 0; n < pAbridged->mClassCount; n++) {
         AbrgClass(pFile, pModule, &pAbridged->pClasses[n]);
     }
 }

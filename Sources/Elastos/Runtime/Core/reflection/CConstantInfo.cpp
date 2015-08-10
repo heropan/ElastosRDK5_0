@@ -60,8 +60,8 @@ ECode CConstantInfo::GetValue(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mConstDirEntry->type == TYPE_INTEGER32) {
-        *value = mConstDirEntry->v.intValue.nValue;
+    if (mConstDirEntry->mType == TYPE_INTEGER32) {
+        *value = mConstDirEntry->mV.mInt32Value.mValue;
         return NOERROR;
     }
     else return E_INVALID_OPERATION;

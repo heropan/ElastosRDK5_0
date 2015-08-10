@@ -99,9 +99,9 @@ void dump_param_type(ParamDescriptor* paramDesc)
 
 void dump_method_params(MethodDescriptor* mtdDesc)
 {
-    printf("[%d params]\n", mtdDesc->cParams);
-    for (int i = 0; i < mtdDesc->cParams; ++i) {
-        ParamDescriptor* paramDesc = mtdDesc->ppParams[i];
+    printf("[%d params]\n", mtdDesc->mParamCount);
+    for (int i = 0; i < mtdDesc->mParamCount; ++i) {
+        ParamDescriptor* paramDesc = mtdDesc->mParams[i];
         printf("%s:", paramDesc->mName);
         dump_param_type(paramDesc);
     }
@@ -110,9 +110,9 @@ void dump_method_params(MethodDescriptor* mtdDesc)
 
 void dump_interface_method(InterfaceDescriptor* itfDesc)
 {
-    printf("[%d methods]\n", itfDesc->cMethods);
-    for (int i = 0; i < itfDesc->cMethods; ++i) {
-        MethodDescriptor* mtdDesc = itfDesc->ppMethods[i];
+    printf("[%d methods]\n", itfDesc->mMethodCount);
+    for (int i = 0; i < itfDesc->mMethodCount; ++i) {
+        MethodDescriptor* mtdDesc = itfDesc->mMethods[i];
         printf("%s\n", mtdDesc->mName);
         dump_method_params(mtdDesc);
     }
@@ -135,7 +135,7 @@ void dump_class_interface(ClassDescriptor* clsDesc)
 {
     printf("[%d interfaces]\n", clsDesc->mInterfaceCount);
     for (int i = 0; i < clsDesc->mInterfaceCount; ++i) {
-        ClassInterface* clsItf = clsDesc->ppInterfaces[i];
+        ClassInterface* clsItf = clsDesc->mInterfaces[i];
         printf("%s\n", sModule->mInterfaceDirs[clsItf->mIndex]->mName);
     }
     printf("[end]\n");
@@ -143,8 +143,8 @@ void dump_class_interface(ClassDescriptor* clsDesc)
 
 void dump_class(CLSModule* clsmod)
 {
-    printf("[%d classes]\n", clsmod->cClasses);
-    for (int i = 0; i < clsmod->cClasses; ++i) {
+    printf("[%d classes]\n", clsmod->mClassCount);
+    for (int i = 0; i < clsmod->mClassCount; ++i) {
         ClassDirEntry* clsDirEntry = clsmod->mClassDirs[i];
         printf("%s\n", clsDirEntry->mName);
         dump_class_interface(clsDirEntry->mDesc);

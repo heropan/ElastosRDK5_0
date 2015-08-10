@@ -64,12 +64,12 @@ PVOID ClassArg(PLUBECTX pCtx, MemberType member)
             return (PVOID)pCtx->m_pClass;
         case Member_Type:
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pClass->mDesc->dwAttribs;
+            return (PVOID)&pCtx->m_pClass->mDesc->mAttribs;
         case Member_Name:
             return (PVOID)pCtx->m_pClass->mName;
         case Member_Uuid:
         case Member_Clsid:
-            return (PVOID)&pCtx->m_pClass->mDesc->clsid;
+            return (PVOID)&pCtx->m_pClass->mDesc->mClsid;
         default:
             return NULL;
     }
@@ -81,14 +81,14 @@ PVOID ClsIntfArg(PLUBECTX pCtx, MemberType member)
         case Member_None:
             return (PVOID)pCtx->m_pClsIntf;
         case Member_Type:
-            return (PVOID)&pCtx->m_pInterface->mDesc->dwAttribs;
+            return (PVOID)&pCtx->m_pInterface->mDesc->mAttribs;
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pClsIntf->wAttribs;
+            return (PVOID)&pCtx->m_pClsIntf->mAttribs;
         case Member_Name:
             return (PVOID)pCtx->m_pInterface->mName;
         case Member_Uuid:
         case Member_Iid:
-            return (PVOID)&pCtx->m_pInterface->mDesc->iid;
+            return (PVOID)&pCtx->m_pInterface->mDesc->mIID;
         default:
             return NULL;
     }
@@ -101,12 +101,12 @@ PVOID InterfaceArg(PLUBECTX pCtx, MemberType member)
             return (PVOID)pCtx->m_pInterface;
         case Member_Type:
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pInterface->mDesc->dwAttribs;
+            return (PVOID)&pCtx->m_pInterface->mDesc->mAttribs;
         case Member_Name:
             return (PVOID)pCtx->m_pInterface->mName;
         case Member_Uuid:
         case Member_Iid:
-            return (PVOID)&pCtx->m_pInterface->mDesc->iid;
+            return (PVOID)&pCtx->m_pInterface->mDesc->mIID;
         default:
             return NULL;
     }
@@ -144,9 +144,9 @@ PVOID TypedefArg(PLUBECTX pCtx, MemberType member)
         case Member_Name:
             return (PVOID)pCtx->m_pTypedef->mName;
         case Member_Type:
-            return (PVOID)&pCtx->m_pTypedef->type;
+            return (PVOID)&pCtx->m_pTypedef->mType;
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pTypedef->bDummyType;
+            return (PVOID)&pCtx->m_pTypedef->mIsDummyType;
         default:
             return NULL;
     }
@@ -160,9 +160,9 @@ PVOID MethodArg(PLUBECTX pCtx, MemberType member)
         case Member_Name:
             return (PVOID)pCtx->m_pMethod->mName;
         case Member_Type:
-            return (PVOID)&pCtx->m_pMethod->type;
+            return (PVOID)&pCtx->m_pMethod->mType;
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pMethod->dwAttribs;
+            return (PVOID)&pCtx->m_pMethod->mAttribs;
         default:
             return NULL;
     }
@@ -176,9 +176,9 @@ PVOID ParamArg(PLUBECTX pCtx, MemberType member)
         case Member_Name:
             return (PVOID)pCtx->m_pParam->mName;
         case Member_Type:
-            return (PVOID)&pCtx->m_pParam->type;
+            return (PVOID)&pCtx->m_pParam->mType;
         case Member_Attrib:
-            return (PVOID)&pCtx->m_pParam->dwAttribs;
+            return (PVOID)&pCtx->m_pParam->mAttribs;
         default:
             return NULL;
     }
@@ -192,7 +192,7 @@ PVOID StructMemberArg(PLUBECTX pCtx, MemberType member)
         case Member_Name:
             return (PVOID)pCtx->m_pStructMember->mName;
         case Member_Type:
-            return (PVOID)&pCtx->m_pStructMember->type;
+            return (PVOID)&pCtx->m_pStructMember->mType;
         default:
             return NULL;
     }
@@ -206,7 +206,7 @@ PVOID EnumMemberArg(PLUBECTX pCtx, MemberType member)
         case Member_Name:
             return (PVOID)pCtx->m_pEnumMember->mName;
         case Member_Value:
-            return (PVOID)&pCtx->m_pEnumMember->nValue;
+            return (PVOID)&pCtx->m_pEnumMember->mValue;
         default:
             return NULL;
     }
@@ -217,7 +217,7 @@ PVOID ClassParentArg(PLUBECTX pCtx, MemberType member)
     ClassDirEntry *pOrigClass;
     PVOID pvArg;
 
-    if (!(pCtx->m_pClass->mDesc->dwAttribs & ClassAttrib_hasparent)) {
+    if (!(pCtx->m_pClass->mDesc->mAttribs & ClassAttrib_hasparent)) {
         return NULL;
     }
 

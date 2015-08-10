@@ -100,23 +100,23 @@ int CFlatBuffer::WriteClassDescriptor(ClassDescriptor *pDesc)
         p = (int *)_alloca(d.mInterfaceCount * sizeof(int));
 
         for (n = 0; n < d.mInterfaceCount; n++)
-            p[n] = WriteData(d.ppInterfaces[n], sizeof(ClassInterface));
+            p[n] = WriteData(d.mInterfaces[n], sizeof(ClassInterface));
 
-        d.ppInterfaces = (ClassInterface **) \
+        d.mInterfaces = (ClassInterface **) \
             WriteData(p, d.mInterfaceCount * sizeof(int));
     }
 
-    if (d.cAggregates > 0) {
-        d.pAggrIndexs = (USHORT *)WriteData( \
-            d.pAggrIndexs, d.cAggregates * sizeof(USHORT));
+    if (d.mAggregateCount > 0) {
+        d.mAggrIndexes = (USHORT *)WriteData( \
+            d.mAggrIndexes, d.mAggregateCount * sizeof(USHORT));
     }
-    if (d.cAspects > 0) {
-        d.pAspectIndexs = (USHORT *)WriteData( \
-            d.pAspectIndexs, d.cAspects * sizeof(USHORT));
+    if (d.mAspectCount > 0) {
+        d.mAspectIndexes = (USHORT *)WriteData( \
+            d.mAspectIndexes, d.mAspectCount * sizeof(USHORT));
     }
-    if (d.cClasses > 0) {
-        d.pClassIndexs = (USHORT *)WriteData( \
-            d.pClassIndexs, d.cClasses * sizeof(USHORT));
+    if (d.mClassCount > 0) {
+        d.mClassIndexes = (USHORT *)WriteData( \
+            d.mClassIndexes, d.mClassCount * sizeof(USHORT));
     }
 
     return WriteData(&d, sizeof(ClassDescriptor));
@@ -146,8 +146,8 @@ int CFlatBuffer::WriteInterfaceConstDescriptor(InterfaceConstDescriptor *pDesc)
     memcpy(&d, pDesc, sizeof(InterfaceConstDescriptor));
 
     d.mName = (char *)WriteString(d.mName);
-    if (d.type == TYPE_STRING && d.v.pStrValue != NULL) {
-        d.v.pStrValue = (char *)WriteString(d.v.pStrValue);
+    if (d.mType == TYPE_STRING && d.mV.mStrValue != NULL) {
+        d.mV.mStrValue = (char *)WriteString(d.mV.mStrValue);
     }
 
     return WriteData(&d, sizeof(InterfaceConstDescriptor));
@@ -161,24 +161,24 @@ int CFlatBuffer::WriteMethodDescriptor(MethodDescriptor *pDesc)
 
     memcpy(&d, pDesc, sizeof(MethodDescriptor));
 
-    if (d.cParams > 0) {
-        p = (int *)_alloca(d.cParams * sizeof(int));
+    if (d.mParamCount > 0) {
+        p = (int *)_alloca(d.mParamCount * sizeof(int));
 
-        for (n = 0; n < d.cParams; n++) {
-            memcpy(&param, d.ppParams[n], sizeof(ParamDescriptor));
+        for (n = 0; n < d.mParamCount; n++) {
+            memcpy(&param, d.mParams[n], sizeof(ParamDescriptor));
             param.mName = (char *)WriteString(param.mName);
-            if (param.type.mNestedType) {
-                param.type.mNestedType = (TypeDescriptor *)WriteData( \
-                    param.type.mNestedType, sizeof(TypeDescriptor));
+            if (param.mType.mNestedType) {
+                param.mType.mNestedType = (TypeDescriptor *)WriteData( \
+                    param.mType.mNestedType, sizeof(TypeDescriptor));
             }
             p[n] = WriteData(&param, sizeof(ParamDescriptor));
         }
 
-        d.ppParams = (ParamDescriptor **) \
-            WriteData(p, d.cParams * sizeof(int));
+        d.mParams = (ParamDescriptor **) \
+            WriteData(p, d.mParamCount * sizeof(int));
     }
     d.mName = (char *)WriteString(d.mName);
-    d.pszSignature = (char *)WriteString(d.pszSignature);
+    d.mSignature = (char *)WriteString(d.mSignature);
 
     return WriteData(&d, sizeof(MethodDescriptor));
 }
@@ -195,22 +195,22 @@ int CFlatBuffer::WriteInterfaceDescriptor(
         p = (int *)_alloca(d.mConstCount * sizeof(int));
 
         for (n = 0; n < d.mConstCount; n++) {
-            p[n] = WriteInterfaceConstDescriptor(d.ppConsts[n]);
+            p[n] = WriteInterfaceConstDescriptor(d.mConsts[n]);
         }
 
-        d.ppConsts = (InterfaceConstDescriptor **) \
+        d.mConsts = (InterfaceConstDescriptor **) \
             WriteData(p, d.mConstCount * sizeof(int));
     }
 
-    if (d.cMethods > 0) {
-        p = (int *)_alloca(d.cMethods * sizeof(int));
+    if (d.mMethodCount > 0) {
+        p = (int *)_alloca(d.mMethodCount * sizeof(int));
 
-        for (n = 0; n < d.cMethods; n++) {
-            p[n] = WriteMethodDescriptor(d.ppMethods[n]);
+        for (n = 0; n < d.mMethodCount; n++) {
+            p[n] = WriteMethodDescriptor(d.mMethods[n]);
         }
 
-        d.ppMethods = (MethodDescriptor **) \
-            WriteData(p, d.cMethods * sizeof(int));
+        d.mMethods = (MethodDescriptor **) \
+            WriteData(p, d.mMethodCount * sizeof(int));
     }
 
     return WriteData(&d, sizeof(InterfaceDescriptor));
@@ -244,9 +244,9 @@ int CFlatBuffer::WriteArrayDirEntry(ArrayDirEntry *pArrayDirEntry)
         entry.mNameSpace = (char *)WriteString(entry.mNameSpace);
     }
 
-    if (entry.type.mNestedType) {
-        entry.type.mNestedType = (TypeDescriptor *)WriteData( \
-            entry.type.mNestedType, sizeof(TypeDescriptor));
+    if (entry.mType.mNestedType) {
+        entry.mType.mNestedType = (TypeDescriptor *)WriteData( \
+            entry.mType.mNestedType, sizeof(TypeDescriptor));
     }
 
     return WriteData(&entry, sizeof(ArrayDirEntry));
@@ -260,21 +260,21 @@ int CFlatBuffer::WriteStructDescriptor(StructDescriptor *pDesc)
 
     memcpy(&d, pDesc, sizeof(StructDescriptor));
 
-    if (d.cElems > 0) {
-        p = (int *)_alloca(d.cElems * sizeof(int));
+    if (d.mElementCount > 0) {
+        p = (int *)_alloca(d.mElementCount * sizeof(int));
 
-        for (n = 0; n < d.cElems; n++) {
-            memcpy(&elem, d.ppElems[n], sizeof(StructElement));
+        for (n = 0; n < d.mElementCount; n++) {
+            memcpy(&elem, d.mElements[n], sizeof(StructElement));
             elem.mName = (char *)WriteString(elem.mName);
-            if (elem.type.mNestedType) {
-                elem.type.mNestedType = (TypeDescriptor *)WriteData( \
-                    elem.type.mNestedType, sizeof(TypeDescriptor));
+            if (elem.mType.mNestedType) {
+                elem.mType.mNestedType = (TypeDescriptor *)WriteData( \
+                    elem.mType.mNestedType, sizeof(TypeDescriptor));
             }
             p[n] = WriteData(&elem, sizeof(StructElement));
         }
 
-        d.ppElems = (StructElement **) \
-            WriteData(p, d.cElems * sizeof(int));
+        d.mElements = (StructElement **) \
+            WriteData(p, d.mElementCount * sizeof(int));
     }
 
     return WriteData(&d, sizeof(StructDescriptor));
@@ -305,17 +305,17 @@ int CFlatBuffer::WriteEnumDescriptor(EnumDescriptor *pDesc)
 
     memcpy(&d, pDesc, sizeof(EnumDescriptor));
 
-    if (d.cElems > 0) {
-        p = (int *)_alloca(d.cElems * sizeof(int));
+    if (d.mElementCount > 0) {
+        p = (int *)_alloca(d.mElementCount * sizeof(int));
 
-        for (n = 0; n < d.cElems; n++) {
-            memcpy(&elem, d.ppElems[n], sizeof(EnumElement));
+        for (n = 0; n < d.mElementCount; n++) {
+            memcpy(&elem, d.mElements[n], sizeof(EnumElement));
             elem.mName = (char *)WriteString(elem.mName);
             p[n] = WriteData(&elem, sizeof(EnumElement));
         }
 
-        d.ppElems = (EnumElement **) \
-            WriteData(p, d.cElems * sizeof(int));
+        d.mElements = (EnumElement **) \
+            WriteData(p, d.mElementCount * sizeof(int));
     }
 
     return WriteData(&d, sizeof(EnumDescriptor));
@@ -344,9 +344,9 @@ int CFlatBuffer::WriteAliasDirEntry(AliasDirEntry *pAliasDirEntry)
 
     memcpy(&entry, pAliasDirEntry, sizeof(AliasDirEntry));
 
-    if (entry.type.mNestedType) {
-        entry.type.mNestedType = (TypeDescriptor *)WriteData( \
-            entry.type.mNestedType, sizeof(TypeDescriptor));
+    if (entry.mType.mNestedType) {
+        entry.mType.mNestedType = (TypeDescriptor *)WriteData( \
+            entry.mType.mNestedType, sizeof(TypeDescriptor));
     }
 
     entry.mName = (char *)WriteString(entry.mName);
@@ -367,8 +367,8 @@ int CFlatBuffer::WriteConstDirEntry(ConstDirEntry *pConstDirEntry)
     if (entry.mNameSpace) {
         entry.mNameSpace = (char *)WriteString(entry.mNameSpace);
     }
-    if (entry.type == TYPE_STRING && entry.v.strValue.pszValue != NULL) {
-        entry.v.strValue.pszValue = (char*)WriteString(entry.v.strValue.pszValue);
+    if (entry.mType == TYPE_STRING && entry.mV.mStrValue.mValue != NULL) {
+        entry.mV.mStrValue.mValue = (char*)WriteString(entry.mV.mStrValue.mValue);
     }
 
     return WriteData(&entry, sizeof(ConstDirEntry));
@@ -533,9 +533,9 @@ int CalcClassSize(ClassDirEntry *p)
     size += p->mDesc->mInterfaceCount * \
         (sizeof(ClassInterface) + sizeof(ClassInterface *));
 
-    size += RoundUp4(p->mDesc->cAggregates * sizeof(USHORT));
-    size += RoundUp4(p->mDesc->cAspects * sizeof(USHORT));
-    size += RoundUp4(p->mDesc->cClasses * sizeof(USHORT));
+    size += RoundUp4(p->mDesc->mAggregateCount * sizeof(USHORT));
+    size += RoundUp4(p->mDesc->mAspectCount * sizeof(USHORT));
+    size += RoundUp4(p->mDesc->mClassCount * sizeof(USHORT));
 
     return size;
 }
@@ -546,8 +546,8 @@ int CalcInterfaceConstSize(InterfaceConstDescriptor *p)
 
     size += StringAlignSize(p->mName);
 
-    if (p->type == TYPE_STRING && p->v.pStrValue != NULL) {
-        size += StringAlignSize(p->v.pStrValue);
+    if (p->mType == TYPE_STRING && p->mV.mStrValue != NULL) {
+        size += StringAlignSize(p->mV.mStrValue);
     }
 
     return size;
@@ -558,13 +558,13 @@ int CalcMethodSize(MethodDescriptor *p)
     int n, size = sizeof(MethodDescriptor);
 
     size += StringAlignSize(p->mName);
-    size += StringAlignSize(p->pszSignature);
+    size += StringAlignSize(p->mSignature);
 
-    for (n = 0; n < p->cParams; n++) {
-        if (p->ppParams[n]->type.mNestedType) {
+    for (n = 0; n < p->mParamCount; n++) {
+        if (p->mParams[n]->mType.mNestedType) {
             size += sizeof(TypeDescriptor);
         }
-        size += StringAlignSize(p->ppParams[n]->mName);
+        size += StringAlignSize(p->mParams[n]->mName);
     }
     size += n * (sizeof(ParamDescriptor) + sizeof(ParamDescriptor *));
 
@@ -581,12 +581,12 @@ int CalcInterfaceSize(InterfaceDirEntry *p)
     size += sizeof(InterfaceDescriptor);
 
     for (n = 0; n < p->mDesc->mConstCount; n++) {
-        size += CalcInterfaceConstSize(p->mDesc->ppConsts[n]);
+        size += CalcInterfaceConstSize(p->mDesc->mConsts[n]);
     }
     size += n * sizeof(InterfaceConstDescriptor *);
 
-    for (n = 0; n < p->mDesc->cMethods; n++) {
-        size += CalcMethodSize(p->mDesc->ppMethods[n]);
+    for (n = 0; n < p->mDesc->mMethodCount; n++) {
+        size += CalcMethodSize(p->mDesc->mMethods[n]);
     }
     size += n * sizeof(MethodDescriptor *);
 
@@ -600,7 +600,7 @@ int CalcArraySize(ArrayDirEntry *p)
     if (p->mNameSpace)
         size += StringAlignSize(p->mNameSpace);
 
-    if (p->type.mNestedType)
+    if (p->mType.mNestedType)
         size += sizeof(TypeDescriptor);
 
     return size;
@@ -615,11 +615,11 @@ int CalcStructSize(StructDirEntry *p)
 
     size += sizeof(StructDescriptor);
 
-    for (n = 0; n < p->mDesc->cElems; n++) {
-        if (p->mDesc->ppElems[n]->type.mNestedType) {
+    for (n = 0; n < p->mDesc->mElementCount; n++) {
+        if (p->mDesc->mElements[n]->mType.mNestedType) {
             size += sizeof(TypeDescriptor);
         }
-        size += StringAlignSize(p->mDesc->ppElems[n]->mName);
+        size += StringAlignSize(p->mDesc->mElements[n]->mName);
     }
     size += n * (sizeof(StructElement) + sizeof(StructElement *));
 
@@ -635,8 +635,8 @@ int CalcEnumSize(EnumDirEntry *p)
 
     size += sizeof(EnumDescriptor);
 
-    for (n = 0; n < p->mDesc->cElems; n++) {
-        size += StringAlignSize(p->mDesc->ppElems[n]->mName);
+    for (n = 0; n < p->mDesc->mElementCount; n++) {
+        size += StringAlignSize(p->mDesc->mElements[n]->mName);
     }
     size += n * (sizeof(EnumElement) + sizeof(EnumElement *));
 
@@ -649,7 +649,7 @@ int CalcAliasSize(AliasDirEntry *p)
 
     size += StringAlignSize(p->mName);
     if (p->mNameSpace) size += StringAlignSize(p->mNameSpace);
-    if (p->type.mNestedType) size += sizeof(TypeDescriptor);
+    if (p->mType.mNestedType) size += sizeof(TypeDescriptor);
 
     return size;
 }
@@ -661,8 +661,8 @@ int CalcConstSize(ConstDirEntry *p)
     size += StringAlignSize(p->mName);
     if (p->mNameSpace) size += StringAlignSize(p->mNameSpace);
 
-    if (p->type == TYPE_STRING && p->v.strValue.pszValue != NULL) {
-        size += StringAlignSize(p->v.strValue.pszValue);
+    if (p->mType == TYPE_STRING && p->mV.mStrValue.mValue != NULL) {
+        size += StringAlignSize(p->mV.mStrValue.mValue);
     }
 
     return size;

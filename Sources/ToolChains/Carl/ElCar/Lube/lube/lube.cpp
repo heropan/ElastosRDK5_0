@@ -39,35 +39,35 @@ int main(int argc, char **argv)
         SetLubePath(args.pszInputPath);
         SetLibraryPath(args.pszInputPath);
     }
-    if (args.dwAttribs & Command_r_Overwrite) {
+    if (args.mAttribs & Command_r_Overwrite) {
         dwLubeOpt |= LubeOpt_Overwrite;
     }
-    if (args.dwAttribs & Command_r_Redirect) {
+    if (args.mAttribs & Command_r_Redirect) {
         dwLubeOpt |= LubeOpt_Redirect;
     }
-    if (args.dwAttribs & Command_k_InKernel) {
+    if (args.mAttribs & Command_k_InKernel) {
         dwLubeOpt |= LubeOpt_InKernel;
     }
-    if (args.dwAttribs & Command_k_InSDK) {
+    if (args.mAttribs & Command_k_InSDK) {
         dwLubeOpt |= LubeOpt_InSDK;
     }
-    if (args.dwAttribs & Command_z_UseCustomClassObject) {
+    if (args.mAttribs & Command_z_UseCustomClassObject) {
         dwLubeOpt |= LubeOpt_UseCustomClassObject;
     }
-    if (args.dwAttribs & Command_w_HaveSandwichMethod) {
+    if (args.mAttribs & Command_w_HaveSandwichMethod) {
         dwLubeOpt |= LubeOpt_HaveSandwichMethod;
     }
-    if (args.dwAttribs & Command_n_UseNakedMode) {
+    if (args.mAttribs & Command_n_UseNakedMode) {
         dwLubeOpt |= LubeOpt_UseNakedMode;
     }
-    if (args.dwAttribs & Command_u_WeakRef) {
+    if (args.mAttribs & Command_u_WeakRef) {
         dwLubeOpt |= LubeOpt_WeakRef;
     }
 
     if (LoadLube(args.pszInputLBO, &pLube) < 0) {
         return LUBE_FAIL;
     }
-    if (args.dwAttribs & Command_l_ListTemplates) {
+    if (args.mAttribs & Command_l_ListTemplates) {
         ListAllTemplates(pLube);
         if (!args.pszInputCLS) return LUBE_OK;
     }

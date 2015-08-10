@@ -118,12 +118,12 @@ ECode CParamInfo::GetTypeInfo(
 
     if (mParmElement->mType == CarDataType_LocalPtr) {
         return g_objInfoList.AcquireLocalPtrInfo(mClsModule,
-                &mParamDescriptor->type,
+                &mParamDescriptor->mType,
                 mParmElement->mPointer, (ILocalPtrInfo **)typeInfo);
     }
     else {
         return g_objInfoList.AcquireDataTypeInfo(mClsModule,
-                &mParamDescriptor->type, typeInfo);
+                &mParamDescriptor->mType, typeInfo);
     }
 }
 
@@ -138,12 +138,12 @@ ECode CParamInfo::GetAdvisedCapacity(
         return E_INVALID_OPERATION;
     }
 
-    if (mParamDescriptor->type.mSize <= 0) {
+    if (mParamDescriptor->mType.mSize <= 0) {
         //if the size of carquient isn't assigned, then it's -1;
         return E_INVALID_OPERATION;
     }
 
-    *advisedCapacity = mParamDescriptor->type.mSize;
+    *advisedCapacity = mParamDescriptor->mType.mSize;
 
     return NOERROR;
 }
@@ -155,8 +155,8 @@ ECode CParamInfo::IsUsingTypeAlias(
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 index = mParamDescriptor->type.mIndex;
-    if ((mParamDescriptor->type.mType == Type_alias)
+    UInt32 index = mParamDescriptor->mType.mIndex;
+    if ((mParamDescriptor->mType.mType == Type_alias)
         && !IsSysAlaisType(mClsModule, index)) {
         *usingTypeAlias = TRUE;
     }
@@ -174,8 +174,8 @@ ECode CParamInfo::GetUsedTypeAliasInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    UInt32 index = mParamDescriptor->type.mIndex;
-    if ((mParamDescriptor->type.mType != Type_alias) ||
+    UInt32 index = mParamDescriptor->mType.mIndex;
+    if ((mParamDescriptor->mType.mType != Type_alias) ||
         IsSysAlaisType(mClsModule, index)) {
         return E_DOES_NOT_EXIST;
     }

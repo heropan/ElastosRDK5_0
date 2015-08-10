@@ -52,17 +52,17 @@ WORD GenerateGuidCheckSum(REFGUID guid)
 
 int GuidFromSeedString(const char *pszSeed, GUID *pGuid)
 {
-    char szLongSeed[c_nMaxSeedSize + 1];
+    char szLongSeed[MAX_SEED_SIZE + 1];
     BYTE *p;
     DWORD result[3];
     int n, nEncoder, cEncoded, cPrevEncoded;
 
     n = strlen(pszSeed);
-    if (n > c_nMaxSeedSize) {
-        memcpy(szLongSeed, pszSeed, c_nMaxSeedSize);
-        szLongSeed[c_nMaxSeedSize] = 0;
+    if (n > MAX_SEED_SIZE) {
+        memcpy(szLongSeed, pszSeed, MAX_SEED_SIZE);
+        szLongSeed[MAX_SEED_SIZE] = 0;
         pszSeed = szLongSeed;
-        n = c_nMaxSeedSize;
+        n = MAX_SEED_SIZE;
     }
     p = (BYTE *)pGuid;
     p[1] = n;

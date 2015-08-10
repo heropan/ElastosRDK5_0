@@ -213,36 +213,36 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                     break;
 
                 case 'i': // interface
-                    pArgs->dwAttribs |= Command_r_Interface;
+                    pArgs->mAttribs |= Command_r_Interface;
                     break;
 
                 case 'c':
                     if (stream.PeekCharAt(2) == 'a') { // callback
-                        pArgs->dwAttribs |= Command_r_Callback;
+                        pArgs->mAttribs |= Command_r_Callback;
                     }
                     else if (stream.PeekCharAt(2) == 'o') { // const
-                        pArgs->dwAttribs |= Command_r_Const;
+                        pArgs->mAttribs |= Command_r_Const;
                     }
                     else {
-                        pArgs->dwAttribs |= Command_r_Class;
+                        pArgs->mAttribs |= Command_r_Class;
                     }
                     break;
 
                 case 'b':
-                    pArgs->dwAttribs |= Command_r_BaseClass;
+                    pArgs->mAttribs |= Command_r_BaseClass;
                     break;
 
                 case 'a':
                     if (stream.PeekCharAt(2) == 'l') { // all
-                        pArgs->dwAttribs |= Command_r_All;
+                        pArgs->mAttribs |= Command_r_All;
                     }
                     else { // aspect
-                        pArgs->dwAttribs |= Command_r_Aspect;
+                        pArgs->mAttribs |= Command_r_Aspect;
                     }
                     break;
 
                 case 'g': // generic
-                    pArgs->dwAttribs |= Command_r_Generic;
+                    pArgs->mAttribs |= Command_r_Generic;
                     break;
 
                 case 'h':
@@ -252,32 +252,32 @@ int ParseArgs(int nArgc, char *ppArgv[], CommandArgs *pArgs)
                         exit(0);
                     }
                     else { // callback handler
-                        pArgs->dwAttribs |= Command_r_Callback;
+                        pArgs->mAttribs |= Command_r_Callback;
                     }
                     break;
 
                 case 'n':
-                    pArgs->dwAttribs |= Command_r_Const;
+                    pArgs->mAttribs |= Command_r_Const;
                     break;
 
                 case 'e': // enum
-                    pArgs->dwAttribs |= Command_r_Enum;
+                    pArgs->mAttribs |= Command_r_Enum;
                     break;
 
                 case 'r': // regime
-                    pArgs->dwAttribs |= Command_r_Regime;
+                    pArgs->mAttribs |= Command_r_Regime;
                     break;
 
                 case 's': // struct
-                    pArgs->dwAttribs |= Command_r_Struct;
+                    pArgs->mAttribs |= Command_r_Struct;
                     break;
 
                 case 'm': // method
-                    pArgs->dwAttribs |= Command_r_Method;
+                    pArgs->mAttribs |= Command_r_Method;
                     break;
 
                 case 'f':
-                    pArgs->dwAttribs |= Command_r_ForceOverride;
+                    pArgs->mAttribs |= Command_r_ForceOverride;
                     break;
 
                 case '?':

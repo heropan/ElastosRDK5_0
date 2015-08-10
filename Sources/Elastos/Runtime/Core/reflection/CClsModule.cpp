@@ -96,7 +96,7 @@ ECode CClsModule::InitOrgType()
         mTypeAliasList[i].mOrgTypeDesc = new TypeDescriptor;
         if (!mTypeAliasList[i].mOrgTypeDesc) goto EExit;
         mTypeAliasList[i].mTypeDesc = &(getAliasDirAddr(mBase,
-                mClsMod->mAliasDirs, i)->type);
+                mClsMod->mAliasDirs, i)->mType);
         _GetOriginalType(this, mTypeAliasList[i].mTypeDesc,
                 mTypeAliasList[i].mOrgTypeDesc);
     }

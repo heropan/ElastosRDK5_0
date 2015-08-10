@@ -36,9 +36,9 @@ private:
     inline int IWriteInfo(AbridgedInterfaceInfo *pEntry);
     inline void CWriteInfo(AbridgedClassInfo *pEntry);
 
-    AbridgedParamsInfo GetParamAttrib(DWORD dwAttribs);
+    AbridgedParamsInfo GetParamAttrib(DWORD attribs);
     AbridgedParamsInfo GetParamType(TypeDescriptor *pType,
-                        DWORD dwAttribs, unsigned char *pStackSize);
+                        DWORD attribs, unsigned char *pStackSize);
     void WriteMethodInfo(int nAddr, MethodDescriptor *pDesc);
     int WriteMethodInfos(int nAddr, InterfaceDescriptor *pDesc);
     int WriteClsIntfs(ClassDescriptor *pDesc, int interfaceCount);
@@ -114,19 +114,19 @@ void CAbridgedBuffer::CWriteInfo(AbridgedClassInfo *pInfo)
     m_nClassOffset += sizeof(AbridgedClassInfo);
 }
 
-AbridgedParamsInfo CAbridgedBuffer::GetParamAttrib(DWORD dwAttribs)
+AbridgedParamsInfo CAbridgedBuffer::GetParamAttrib(DWORD attribs)
 {
     AbridgedParamsInfo attr = 0;
 
-    if (dwAttribs & ParamAttrib_in) attr |= Param_Attrib_in;
-    if (dwAttribs & ParamAttrib_out) attr |= Param_Attrib_out;
-    if (dwAttribs & ParamAttrib_callee) attr |= Param_Attrib_callee;
+    if (attribs & ParamAttrib_in) attr |= Param_Attrib_in;
+    if (attribs & ParamAttrib_out) attr |= Param_Attrib_out;
+    if (attribs & ParamAttrib_callee) attr |= Param_Attrib_callee;
 
     return attr;
 }
 
 AbridgedParamsInfo CAbridgedBuffer::GetParamType(
-    TypeDescriptor *pType, DWORD dwAttribs, unsigned char *pStackSize)
+    TypeDescriptor *pType, DWORD attribs, unsigned char *pStackSize)
 {
     char *pszArch;
     TypeDescriptor type;
@@ -176,7 +176,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
 
         case Type_struct:
         {
-            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->mIndex]->mDesc->nAlignSize);
+            UINT uSize = (UINT)(m_pModule->mStructDirs[pType->mIndex]->mDesc->mAlignSize);
             uSize = (uSize % 4 == 0 ? uSize / 4 : (uSize / 4 + 1));
             AbridgedParamsInfo pa = (AbridgedParamsInfo)uSize;
             if (pType->mPointer) {
@@ -196,7 +196,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
 
         case Type_String:
             *pStackSize += 1;
-            if (dwAttribs & ParamAttrib_in) {
+            if (attribs & ParamAttrib_in) {
                 *pStackSize |= 0x80;
             }
             return pType->mPointer ? Param_Type_pString:Param_Type_String;
@@ -204,7 +204,7 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
         case Type_ArrayOf:
             *pStackSize += 1;
             if (pType->mNestedType && (Type_interface == pType->\
-                mNestedType->mType) && (dwAttribs & ParamAttrib_in)) {
+                mNestedType->mType) && (attribs & ParamAttrib_in)) {
                 *pStackSize |= 0x80;
             }
             return Param_Type_ArrayOf;
@@ -219,17 +219,17 @@ AbridgedParamsInfo CAbridgedBuffer::GetParamType(
 
         case Type_interface:
             *pStackSize += 1;
-            if (dwAttribs & ParamAttrib_in) {
+            if (attribs & ParamAttrib_in) {
                 *pStackSize |= 0x80;
             }
-            if (dwAttribs & ParamAttrib_out) {
+            if (attribs & ParamAttrib_out) {
                 *pStackSize |= 0x40;
             }
             return 1==pType->mPointer ? Param_Type_interface:Param_Type_pinterface;
 
         case Type_alias:
             GetOriginalType(m_pModule, pType, &type);
-            return GetParamType(&type, dwAttribs, pStackSize);
+            return GetParamType(&type, attribs, pStackSize);
 
         default:
             assert(TRUE == FALSE);
@@ -244,16 +244,16 @@ void CAbridgedBuffer::WriteMethodInfo(int nAddr, MethodDescriptor *pDesc)
     int n, nParamAddr;
     AbridgedMethodInfo entry;
 
-    nParamAddr = AllocData(pDesc->cParams * sizeof(AbridgedParamsInfo));
-    entry.cParams = (unsigned char)pDesc->cParams;
+    nParamAddr = AllocData(pDesc->mParamCount * sizeof(AbridgedParamsInfo));
+    entry.mParamCount = (unsigned char)pDesc->mParamCount;
     entry.pParams = (AbridgedParamsInfo *)nParamAddr;
-    entry.dwAttribs = pDesc->dwAttribs;
+    entry.mAttribs = pDesc->mAttribs;
     entry.nStackSize = 0;
 
-    for (n = 0; n < pDesc->cParams; n++) {
-        param = GetParamAttrib(pDesc->ppParams[n]->dwAttribs);
-        param |= GetParamType(&pDesc->ppParams[n]->type,
-                        pDesc->ppParams[n]->dwAttribs, &entry.nStackSize);
+    for (n = 0; n < pDesc->mParamCount; n++) {
+        param = GetParamAttrib(pDesc->mParams[n]->mAttribs);
+        param |= GetParamType(&pDesc->mParams[n]->mType,
+                        pDesc->mParams[n]->mAttribs, &entry.nStackSize);
         WriteParams(nParamAddr, param);
         nParamAddr += sizeof(AbridgedParamsInfo);
     }
@@ -267,10 +267,10 @@ int CAbridgedBuffer::WriteMethodInfos(int nAddr, InterfaceDescriptor *pDesc)
 
     if (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         nAddr = WriteMethodInfos(nAddr, m_pModule-> \
-                    mInterfaceDirs[pDesc->sParentIndex]->mDesc);
+                    mInterfaceDirs[pDesc->mParentIndex]->mDesc);
     }
-    for (n = 0; n < pDesc->cMethods; n++) {
-        WriteMethodInfo(nAddr, pDesc->ppMethods[n]);
+    for (n = 0; n < pDesc->mMethodCount; n++) {
+        WriteMethodInfo(nAddr, pDesc->mMethods[n]);
         nAddr += sizeof(AbridgedMethodInfo);
     }
 
@@ -290,9 +290,9 @@ void CAbridgedBuffer::WriteInterfaces()
             nAddr = AllocData(m_methodNumbers[n] * sizeof(AbridgedMethodInfo));
             WriteMethodInfos(nAddr, pDesc);
 
-            entry.cMethods = m_methodNumbers[n];
+            entry.mMethodCount = m_methodNumbers[n];
             entry.pMethods = (AbridgedMethodInfo *)nAddr;
-            memcpy(&entry.iid, &pDesc->iid, sizeof(InterfaceID));
+            memcpy(&entry.iid, &pDesc->mIID, sizeof(InterfaceID));
 
             m_interfaceAddrs[n] = IWriteInfo(&entry);
         }
@@ -306,13 +306,13 @@ int CAbridgedBuffer::WriteClsIntfs(ClassDescriptor *pDesc, int interfaceCount)
     nAddr = AllocData(interfaceCount * sizeof(AbridgedInterfaceInfo *));
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
-            ->mDesc->dwAttribs & InterfaceAttrib_local)
-                || (m_pModule->mInterfaceDirs[pDesc->ppInterfaces[n]->mIndex]
-            ->mDesc->dwAttribs & InterfaceAttrib_parcelable))) {
+        if (!(pDesc->mInterfaces[n]->mAttribs & ClassInterfaceAttrib_callback)
+            && (!(m_pModule->mInterfaceDirs[pDesc->mInterfaces[n]->mIndex]
+            ->mDesc->mAttribs & InterfaceAttrib_local)
+                || (m_pModule->mInterfaceDirs[pDesc->mInterfaces[n]->mIndex]
+            ->mDesc->mAttribs & InterfaceAttrib_parcelable))) {
             WriteInt(nAddr + (n - cLocal) * sizeof(int),
-                    m_interfaceAddrs[pDesc->ppInterfaces[n]->mIndex]);
+                    m_interfaceAddrs[pDesc->mInterfaces[n]->mIndex]);
         }
         else {
             cLocal++;
@@ -333,9 +333,9 @@ void CAbridgedBuffer::WriteClasses()
                 m_pModule->mClassDirs[n]->mDesc, m_interfaceNumbers[n]);
 
             entry.mInterfaceCount = m_interfaceNumbers[n];
-            entry.ppInterfaces = (AbridgedInterfaceInfo **)nAddr;
+            entry.mInterfaces = (AbridgedInterfaceInfo **)nAddr;
 
-            memcpy(&entry.clsid, &m_pModule->mClassDirs[n]->mDesc->clsid, sizeof(InterfaceID));
+            memcpy(&entry.clsid, &m_pModule->mClassDirs[n]->mDesc->mClsid, sizeof(InterfaceID));
             entry.pszUunm = (char*)offsetof(AbridgedModuleInfo, szUunm);
 
             CWriteInfo(&entry);
@@ -349,7 +349,7 @@ void CAbridgedBuffer::GenerateAbridged(void *pvBuffer)
 
     m_pBuffer = (char *)pvBuffer;
 
-    pInfo->cClasses = m_cClasses;
+    pInfo->mClassCount = m_cClasses;
     pInfo->mInterfaceCount = m_cInterfaces;
     pInfo->pClasses = (AbridgedClassInfo *)m_nClassOffset;
     pInfo->pInterfaces = (AbridgedInterfaceInfo *)m_nInterfaceOffset;
@@ -368,12 +368,12 @@ void CAbridgedBuffer::GenerateAbridged(void *pvBuffer)
 
 int CAbridgedBuffer::CalcMethodNumber(InterfaceDescriptor *pDesc)
 {
-    int cMethods = pDesc->cMethods;
+    int cMethods = pDesc->mMethodCount;
 
     while (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         pDesc = m_pModule-> \
-                    mInterfaceDirs[pDesc->sParentIndex]->mDesc;
-        cMethods += pDesc->cMethods;
+                    mInterfaceDirs[pDesc->mParentIndex]->mDesc;
+        cMethods += pDesc->mMethodCount;
     }
 
     return cMethods;
@@ -389,9 +389,9 @@ void CAbridgedBuffer::InitInterfaceIndexTable()
 
     for (n = 0; n < m_pModule->mInterfaceCount; n++) {
         pEntry = m_pModule->mInterfaceDirs[n];
-        if ((!(pEntry->mDesc->dwAttribs & InterfaceAttrib_t_external) &&
-            !(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)) ||
-            (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable)) {
+        if ((!(pEntry->mDesc->mAttribs & InterfaceAttrib_t_external) &&
+            !(pEntry->mDesc->mAttribs & InterfaceAttrib_local)) ||
+            (pEntry->mDesc->mAttribs & InterfaceAttrib_parcelable)) {
             cMethods = CalcMethodNumber(pEntry->mDesc);
             m_cInterfaces++;
             m_methodNumbers[n] = cMethods;
@@ -407,14 +407,14 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
     InterfaceDescriptor *pIntfDesc;
 
     for (n = 0; n < pClass->mInterfaceCount; n++) {
-        nIndex = pClass->ppInterfaces[n]->mIndex;
+        nIndex = pClass->mInterfaces[n]->mIndex;
         pEntry = m_pModule->mInterfaceDirs[nIndex];
         pIntfDesc = pEntry->mDesc;
 
-        if (!(pClass->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)
-                || (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable))
-            && (pEntry->mDesc->dwAttribs & InterfaceAttrib_t_external)
+        if (!(pClass->mInterfaces[n]->mAttribs & ClassInterfaceAttrib_callback)
+            && (!(pEntry->mDesc->mAttribs & InterfaceAttrib_local)
+                || (pEntry->mDesc->mAttribs & InterfaceAttrib_parcelable))
+            && (pEntry->mDesc->mAttribs & InterfaceAttrib_t_external)
             && -1 == m_methodNumbers[nIndex]) {
             cMethods = CalcMethodNumber(pEntry->mDesc);
             if (cMethods >= 0) {
@@ -423,20 +423,20 @@ void CAbridgedBuffer::AddClassInterfaceToIndex(ClassDescriptor *pClass)
             }
         }
         // add parents interface to abridge cls
-        while (pIntfDesc->sParentIndex != 0
-            && !(pClass->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
-            && (!(pEntry->mDesc->dwAttribs & InterfaceAttrib_local)
-                || (pEntry->mDesc->dwAttribs & InterfaceAttrib_parcelable))) {
-            CreateClassInterface(pIntfDesc->sParentIndex, pClass);
-            pIntfEntry = m_pModule->mInterfaceDirs[pIntfDesc->sParentIndex];
-            m_classVirTable[pIntfDesc->sParentIndex] = nVirTable;
+        while (pIntfDesc->mParentIndex != 0
+            && !(pClass->mInterfaces[n]->mAttribs & ClassInterfaceAttrib_callback)
+            && (!(pEntry->mDesc->mAttribs & InterfaceAttrib_local)
+                || (pEntry->mDesc->mAttribs & InterfaceAttrib_parcelable))) {
+            CreateClassInterface(pIntfDesc->mParentIndex, pClass);
+            pIntfEntry = m_pModule->mInterfaceDirs[pIntfDesc->mParentIndex];
+            m_classVirTable[pIntfDesc->mParentIndex] = nVirTable;
             pIntfDesc = pIntfEntry->mDesc;
 
-            if (m_methodNumbers[pIntfDesc->sParentIndex] == -1) {
-                cMethods = CalcMethodNumber(m_pModule->mInterfaceDirs[pIntfDesc->sParentIndex]->mDesc);
+            if (m_methodNumbers[pIntfDesc->mParentIndex] == -1) {
+                cMethods = CalcMethodNumber(m_pModule->mInterfaceDirs[pIntfDesc->mParentIndex]->mDesc);
                 if (cMethods >= 0) {
                     m_cInterfaces++;
-                    m_methodNumbers[pIntfDesc->sParentIndex] = cMethods;
+                    m_methodNumbers[pIntfDesc->mParentIndex] = cMethods;
                 }
             }
         }
@@ -449,11 +449,11 @@ int CAbridgedBuffer::ClsIntfNumber(ClassDescriptor *pDesc)
     int n, c = 0;
 
     for (n = 0; n < pDesc->mInterfaceCount; n++) {
-        if (!(pDesc->ppInterfaces[n]->wAttribs & ClassInterfaceAttrib_callback)
+        if (!(pDesc->mInterfaces[n]->mAttribs & ClassInterfaceAttrib_callback)
             && (!(m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->mIndex]->mDesc->dwAttribs
+            [pDesc->mInterfaces[n]->mIndex]->mDesc->mAttribs
             & InterfaceAttrib_local) || (m_pModule->mInterfaceDirs
-            [pDesc->ppInterfaces[n]->mIndex]->mDesc->dwAttribs
+            [pDesc->mInterfaces[n]->mIndex]->mDesc->mAttribs
             & InterfaceAttrib_parcelable))) {
             c++;
         }
@@ -472,9 +472,9 @@ void CAbridgedBuffer::InitClassIndexTable()
 
     for (n = 0; n < m_pModule->mClassCount; n++) {
         pEntry = m_pModule->mClassDirs[n];
-        if (!(pEntry->mDesc->dwAttribs & ClassAttrib_t_external)
-            && !(pEntry->mDesc->dwAttribs & ClassAttrib_classlocal)
-            && !(pEntry->mDesc->dwAttribs & ClassAttrib_t_generic)
+        if (!(pEntry->mDesc->mAttribs & ClassAttrib_t_external)
+            && !(pEntry->mDesc->mAttribs & ClassAttrib_classlocal)
+            && !(pEntry->mDesc->mAttribs & ClassAttrib_t_generic)
             && 0 != pEntry->mDesc->mInterfaceCount) {
             AddClassInterfaceToIndex(pEntry->mDesc);
             m_cClasses++;
@@ -489,11 +489,11 @@ int CAbridgedBuffer::TotalParamSize(InterfaceDescriptor *pDesc)
 
     if (pDesc != m_pModule->mInterfaceDirs[0]->mDesc) {
         size += TotalParamSize(m_pModule-> \
-                        mInterfaceDirs[pDesc->sParentIndex]->mDesc);
+                        mInterfaceDirs[pDesc->mParentIndex]->mDesc);
     }
 
-    for (n = 0; n < pDesc->cMethods; n++) {
-        size += RoundUp4(pDesc->ppMethods[n]->cParams * sizeof(AbridgedParamsInfo));
+    for (n = 0; n < pDesc->mMethodCount; n++) {
+        size += RoundUp4(pDesc->mMethods[n]->mParamCount * sizeof(AbridgedParamsInfo));
     }
 
     return size;

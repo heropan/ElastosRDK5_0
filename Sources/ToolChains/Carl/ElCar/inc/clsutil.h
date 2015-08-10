@@ -8,7 +8,7 @@
 #include <clsdef.h>
 #include <namelist.h>
 
-extern const char *ParamAttrib2String(DWORD dwAttribs);
+extern const char *ParamAttrib2String(DWORD attribs);
 extern const char *StructType2CString(
     const CLSModule *pModule,
     const TypeDescriptor *pType);

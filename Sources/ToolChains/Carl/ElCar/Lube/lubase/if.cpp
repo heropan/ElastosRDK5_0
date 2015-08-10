@@ -64,28 +64,28 @@ inline BOOL TypedefCondition(PLUBECTX pCtx, BOOL bFirst)
 inline BOOL InterfaceConstCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->ppConsts[0];
+        return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->mConsts[0];
     }
-    return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->ppConsts
+    return pCtx->m_pInterfaceConst == pCtx->m_pInterface->mDesc->mConsts
                 [pCtx->m_pInterface->mDesc->mConstCount - 1];
 }
 
 inline BOOL MethodCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->ppMethods[0];
+        return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->mMethods[0];
     }
-    return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->ppMethods
-                [pCtx->m_pInterface->mDesc->cMethods - 1];
+    return pCtx->m_pMethod == pCtx->m_pInterface->mDesc->mMethods
+                [pCtx->m_pInterface->mDesc->mMethodCount - 1];
 }
 
 inline BOOL ParamCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pParam == pCtx->m_pMethod->ppParams[0];
+        return pCtx->m_pParam == pCtx->m_pMethod->mParams[0];
     }
-    return pCtx->m_pParam == pCtx->m_pMethod->ppParams
-                [pCtx->m_pMethod->cParams - 1];
+    return pCtx->m_pParam == pCtx->m_pMethod->mParams
+                [pCtx->m_pMethod->mParamCount - 1];
 }
 
 void FirstLastClsIntf(
@@ -98,9 +98,9 @@ void FirstLastClsIntf(
     pFirst = pLast = NULL;
 
     for (n = 0; n < pClass->mInterfaceCount; n++) {
-        if (!(pClass->ppInterfaces[n]->wAttribs
+        if (!(pClass->mInterfaces[n]->mAttribs
             & ClassInterfaceAttrib_callback)) {
-            pLast = pClass->ppInterfaces[n];
+            pLast = pClass->mInterfaces[n];
             if (NULL == pFirst) pFirst = pLast;
         }
     }
@@ -127,10 +127,10 @@ inline BOOL AspectCondition(PLUBECTX pCtx, BOOL bFirst)
     pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pAspect == pCtx->m_pModule->mClassDirs
-                [pDesc->pAspectIndexs[0]];
+                [pDesc->mAspectIndexes[0]];
     }
     return pCtx->m_pAspect == pCtx->m_pModule->mClassDirs
-                [pDesc->pAspectIndexs[pDesc->cAspects - 1]];
+                [pDesc->mAspectIndexes[pDesc->mAspectCount - 1]];
 }
 
 inline BOOL AggregateCondition(PLUBECTX pCtx, BOOL bFirst)
@@ -140,10 +140,10 @@ inline BOOL AggregateCondition(PLUBECTX pCtx, BOOL bFirst)
     pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pAggregate == pCtx->m_pModule->mClassDirs
-                    [pDesc->pAggrIndexs[0]];
+                    [pDesc->mAggrIndexes[0]];
     }
     return pCtx->m_pAggregate == pCtx->m_pModule->mClassDirs
-                    [pDesc->pAggrIndexs[pDesc->cAggregates - 1]];
+                    [pDesc->mAggrIndexes[pDesc->mAggregateCount - 1]];
 }
 
 inline BOOL ClassForAspectCondition(PLUBECTX pCtx, BOOL bFirst)
@@ -153,28 +153,28 @@ inline BOOL ClassForAspectCondition(PLUBECTX pCtx, BOOL bFirst)
     pDesc = pCtx->m_pClass->mDesc;
     if (bFirst) {
         return pCtx->m_pForClass== pCtx->m_pModule->mClassDirs
-                    [pDesc->pClassIndexs[0]];
+                    [pDesc->mClassIndexes[0]];
     }
     return pCtx->m_pForClass == pCtx->m_pModule->mClassDirs
-                    [pDesc->pClassIndexs[pDesc->cClasses - 1]];
+                    [pDesc->mClassIndexes[pDesc->mClassCount - 1]];
 }
 
 inline BOOL StcMemberCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pStructMember == pCtx->m_pStruct->mDesc->ppElems[0];
+        return pCtx->m_pStructMember == pCtx->m_pStruct->mDesc->mElements[0];
     }
     return pCtx->m_pStructMember == pCtx->m_pStruct-> \
-                mDesc->ppElems[pCtx->m_pStruct->mDesc->cElems - 1];
+                mDesc->mElements[pCtx->m_pStruct->mDesc->mElementCount - 1];
 }
 
 inline BOOL EnumMemberCondition(PLUBECTX pCtx, BOOL bFirst)
 {
     if (bFirst) {
-        return pCtx->m_pEnumMember == pCtx->m_pEnum->mDesc->ppElems[0];
+        return pCtx->m_pEnumMember == pCtx->m_pEnum->mDesc->mElements[0];
     }
     return pCtx->m_pEnumMember == pCtx->m_pEnum-> \
-                mDesc->ppElems[pCtx->m_pEnum->mDesc->cElems - 1];
+                mDesc->mElements[pCtx->m_pEnum->mDesc->mElementCount - 1];
 }
 
 BOOL ObjectConditionValue(PLUBECTX pCtx, PSTATEDESC pDesc)
@@ -361,40 +361,40 @@ BOOL TypeConditionValue(PLUBECTX pCtx, ObjectType object, const char *pszDest)
             }
             return !_stricmp(pszSource, pszDest);
         case Object_Typedef:
-            pType = &pCtx->m_pTypedef->type;
+            pType = &pCtx->m_pTypedef->mType;
             break;
         case Object_IntfConst:
         {
-            if (pCtx->m_pInterfaceConst->type == TYPE_BOOLEAN)
+            if (pCtx->m_pInterfaceConst->mType == TYPE_BOOLEAN)
                 return !_stricmp("Boolean", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_CHAR32)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_CHAR32)
                 return !_stricmp("Char32", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_BYTE)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_BYTE)
                 return !_stricmp("Byte", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_INTEGER16)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_INTEGER16)
                 return !_stricmp("Int16", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_INTEGER32)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_INTEGER32)
                 return !_stricmp("Int32", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_INTEGER64)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_INTEGER64)
                 return !_stricmp("Int64", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_FLOAT)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_FLOAT)
                 return !_stricmp("Float", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_DOUBLE)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_DOUBLE)
                 return !_stricmp("Double", pszDest);
-            else if (pCtx->m_pInterfaceConst->type == TYPE_STRING)
+            else if (pCtx->m_pInterfaceConst->mType == TYPE_STRING)
                 return !_stricmp("String", pszDest);
             assert(TRUE == FALSE);
             return FALSE;
         }
         case Object_ClassMethod:
         case Object_IntfMethod:
-            pType = &pCtx->m_pMethod->type;
+            pType = &pCtx->m_pMethod->mType;
             break;
         case Object_Param:
-            pType = &pCtx->m_pParam->type;
+            pType = &pCtx->m_pParam->mType;
             break;
         case Object_StcMember:
-            pType = &pCtx->m_pStructMember->type;
+            pType = &pCtx->m_pStructMember->mType;
             break;
         default:
             assert(TRUE == FALSE);
@@ -435,31 +435,31 @@ BOOL AttribConditionValue(PLUBECTX pCtx, PSTATEDESC pDesc)
         case Object_Module:
             return pCtx->m_pModule->mAttribs & pDesc->dwExtra;
         case Object_Class:
-            return pCtx->m_pClass->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClass->mDesc->mAttribs & pDesc->dwExtra;
         case Object_Aspect:
-            return pCtx->m_pAspect->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pAspect->mDesc->mAttribs & pDesc->dwExtra;
         case Object_Aggregate:
-            return pCtx->m_pAggregate->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pAggregate->mDesc->mAttribs & pDesc->dwExtra;
         case Object_ClassForAspect:
-            return pCtx->m_pClass->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClass->mDesc->mAttribs & pDesc->dwExtra;
         case Object_ClsIntf:
         case Object_ClsIntfAndParents:
-            return pCtx->m_pClsIntf->wAttribs & pDesc->dwExtra;
+            return pCtx->m_pClsIntf->mAttribs & pDesc->dwExtra;
         case Object_Interface:
-            return pCtx->m_pInterface->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pInterface->mDesc->mAttribs & pDesc->dwExtra;
         case Object_Param:
-            return pCtx->m_pParam->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pParam->mAttribs & pDesc->dwExtra;
         case Object_Super:
-            return pCtx->m_pClassParent->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pClassParent->mDesc->mAttribs & pDesc->dwExtra;
         case Object_Parent:
-            return pCtx->m_pIntfParent->mDesc->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pIntfParent->mDesc->mAttribs & pDesc->dwExtra;
         case Object_ClassMethod:
         case Object_IntfMethod:
-            return pCtx->m_pMethod->dwAttribs & pDesc->dwExtra;
+            return pCtx->m_pMethod->mAttribs & pDesc->dwExtra;
         case Object_Typedef:
-            return !pCtx->m_pTypedef->bDummyType == !pDesc->dwExtra;
+            return !pCtx->m_pTypedef->mIsDummyType == !pDesc->dwExtra;
         case Object_Enum: // callback enums
-            pszName = pCtx->m_pEnum->mDesc->ppElems[pCtx->m_pEnum->mDesc->cElems - 1]->mName;
+            pszName = pCtx->m_pEnum->mDesc->mElements[pCtx->m_pEnum->mDesc->mElementCount - 1]->mName;
             nLength = strlen(pszName);
             if (nLength > 14 && !strcmp(pszName + (nLength - 14), "Sink_MaxEvents")) {
                 return TRUE;

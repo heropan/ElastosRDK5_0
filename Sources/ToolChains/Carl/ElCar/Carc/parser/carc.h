@@ -14,7 +14,7 @@
 #include "carerr.h"
 
 typedef struct CommandArgs {
-    DWORD       dwAttribs;
+    DWORD       mAttribs;
 
     char        *pszSource;
     char        *pszCLS;

@@ -68,7 +68,7 @@ ECode CTypeAliasInfo::GetTypeInfo(
     /* [out] */ IDataTypeInfo** typeInfo)
 {
     return g_objInfoList.AcquireDataTypeInfo(mClsModule,
-            &mAliasDirEntry->type, typeInfo);
+            &mAliasDirEntry->mType, typeInfo);
 }
 
 ECode CTypeAliasInfo::GetModuleInfo(
@@ -84,7 +84,7 @@ ECode CTypeAliasInfo::IsDummy(
         return E_INVALID_ARGUMENT;
     }
 
-    *isDummy = mAliasDirEntry->bDummyType;
+    *isDummy = mAliasDirEntry->mIsDummyType;
     return NOERROR;
 }
 
@@ -95,6 +95,6 @@ ECode CTypeAliasInfo::GetPtrLevel(
         return E_INVALID_ARGUMENT;
     }
 
-    *level = mAliasDirEntry->type.mPointer;
+    *level = mAliasDirEntry->mType.mPointer;
     return NOERROR;
 }

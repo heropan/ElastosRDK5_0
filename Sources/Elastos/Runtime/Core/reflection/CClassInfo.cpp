@@ -27,7 +27,7 @@ CClassInfo::CClassInfo(
     mDesc = adjustClassDescAddr(mBase, mClassDirEntry->mDesc);
 
     mClsId.pUunm = mUrn;
-    mClsId.clsid = mDesc->clsid;
+    mClsId.clsid = mDesc->mClsid;
     strcpy(mClsId.pUunm, adjustNameAddr(mBase, mClsMod->mUunm));
 }
 
@@ -112,7 +112,7 @@ ECode CClassInfo::GetId(
         return E_INVALID_ARGUMENT;
     }
 
-    clsid->clsid =  mDesc->clsid;
+    clsid->clsid =  mDesc->mClsid;
     strcpy(clsid->pUunm,  adjustNameAddr(mBase, mClsMod->mUunm));
 
     return NOERROR;
@@ -131,7 +131,7 @@ ECode CClassInfo::IsSingleton(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_singleton) {
+    if (mDesc->mAttribs & ClassAttrib_singleton) {
         *isSingleton = TRUE;
     }
     else {
@@ -148,10 +148,10 @@ ECode CClassInfo::GetThreadingModel(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_freethreaded) {
+    if (mDesc->mAttribs & ClassAttrib_freethreaded) {
         *threadingModel = ThreadingModel_ThreadSafe;
     }
-    else if (mDesc->dwAttribs & ClassAttrib_naked) {
+    else if (mDesc->mAttribs & ClassAttrib_naked) {
         *threadingModel = ThreadingModel_Naked;
     }
     else {
@@ -168,7 +168,7 @@ ECode CClassInfo::IsPrivate(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_private) {
+    if (mDesc->mAttribs & ClassAttrib_private) {
         *isPrivate = TRUE;
     }
     else {
@@ -192,7 +192,7 @@ ECode CClassInfo::IsBaseClass(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_hasvirtual) {
+    if (mDesc->mAttribs & ClassAttrib_hasvirtual) {
         *isBaseClass = TRUE;
     }
     else {
@@ -209,7 +209,7 @@ ECode CClassInfo::HasBaseClass(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_hasparent) {
+    if (mDesc->mAttribs & ClassAttrib_hasparent) {
         *hasBaseClass = TRUE;
     }
     else {
@@ -226,13 +226,13 @@ ECode CClassInfo::GetBaseClassInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(mDesc->dwAttribs & ClassAttrib_hasparent)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasparent)) {
         return E_DOES_NOT_EXIST;
     }
 
     *baseClassInfo = NULL;
     return g_objInfoList.AcquireClassInfo(mClsModule,
-            getClassDirAddr(mBase, mClsMod->mClassDirs, mDesc->sParentIndex),
+            getClassDirAddr(mBase, mClsMod->mClassDirs, mDesc->mParentIndex),
             (IInterface **)baseClassInfo);
 }
 
@@ -243,7 +243,7 @@ ECode CClassInfo::IsGeneric(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_t_generic) {
+    if (mDesc->mAttribs & ClassAttrib_t_generic) {
         *isGeneric = TRUE;
     }
     else {
@@ -313,7 +313,7 @@ ECode CClassInfo::IsRegime(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_t_regime) {
+    if (mDesc->mAttribs & ClassAttrib_t_regime) {
         *isRegime = TRUE;
     }
     else {
@@ -330,7 +330,7 @@ ECode CClassInfo::GetAspectCount(
         return E_INVALID_ARGUMENT;
     }
 
-    *count = mDesc->cAspects;
+    *count = mDesc->mAspectCount;
 
     return NOERROR;
 }
@@ -341,7 +341,7 @@ ECode CClassInfo::AcquireAspectList()
     g_objInfoList.LockHashTable(EntryType_Aspect);
     if (!mAspectList) {
         mAspectList = new CEntryList(EntryType_Aspect,
-            mDesc, mDesc->cAspects, mClsModule);
+            mDesc, mDesc->mAspectCount, mClsModule);
         if (!mAspectList) {
             ec = E_OUT_OF_MEMORY;
         }
@@ -368,7 +368,7 @@ ECode CClassInfo::GetAspectInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!mDesc->cAspects) {
+    if (!mDesc->mAspectCount) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -385,7 +385,7 @@ ECode CClassInfo::IsAspect(
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDesc->dwAttribs & ClassAttrib_t_aspect) {
+    if (mDesc->mAttribs & ClassAttrib_t_aspect) {
         *isAspect = TRUE;
     }
     else {
@@ -402,7 +402,7 @@ ECode CClassInfo::GetAggregateeCount(
         return E_INVALID_ARGUMENT;
     }
 
-    *count = mDesc->cAggregates;
+    *count = mDesc->mAggregateCount;
 
     return NOERROR;
 }
@@ -413,7 +413,7 @@ ECode CClassInfo::AcquireAggregateeList()
     g_objInfoList.LockHashTable(EntryType_Aggregatee);
     if (!mAggregateeList) {
         mAggregateeList = new CEntryList(EntryType_Aggregatee,
-                mDesc, mDesc->cAggregates, mClsModule);
+                mDesc, mDesc->mAggregateCount, mClsModule);
         if (!mAggregateeList) {
             ec = E_OUT_OF_MEMORY;
         }
@@ -440,7 +440,7 @@ ECode CClassInfo::GetAggregateeInfo(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!mDesc->cAggregates) {
+    if (!mDesc->mAggregateCount) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -453,7 +453,7 @@ ECode CClassInfo::GetAggregateeInfo(
 
 ECode CClassInfo::AcquireConstructorList()
 {
-    if (!(mDesc->dwAttribs & ClassAttrib_hasctor)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasctor)) {
         return NOERROR;
     }
 
@@ -490,7 +490,7 @@ ECode CClassInfo::GetConstructorCount(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(mDesc->dwAttribs & ClassAttrib_hasctor)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasctor)) {
         *count = 0;
     }
     else {
@@ -510,7 +510,7 @@ ECode CClassInfo::GetAllConstructorInfos(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(mDesc->dwAttribs & ClassAttrib_hasctor)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasctor)) {
         return NOERROR;
     }
 
@@ -538,7 +538,7 @@ ECode CClassInfo::GetConstructorInfoByParamNames(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(mDesc->dwAttribs & ClassAttrib_hasctor)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasctor)) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -571,7 +571,7 @@ ECode CClassInfo::GetConstructorInfoByParamCount(
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(mDesc->dwAttribs & ClassAttrib_hasctor)) {
+    if (!(mDesc->mAttribs & ClassAttrib_hasctor)) {
         return E_DOES_NOT_EXIST;
     }
 
@@ -757,10 +757,10 @@ ECode CClassInfo::AcquireSpecialMethodList(
         UInt32 methodCount = mMethodCount;
         if (type == EntryType_Constructor) {
             //delete functions of IInterface
-            methodCount -= mIFList[0].mDesc->cMethods;
+            methodCount -= mIFList[0].mDesc->mMethodCount;
 
             //delete functions of IClassObject
-            methodCount -= mIFList[1].mDesc->cMethods;
+            methodCount -= mIFList[1].mDesc->mMethodCount;
         }
 
         IFIndexEntry* ifList = NULL;
@@ -885,10 +885,10 @@ ECode CClassInfo::CreateObjInRgm(
     /* [in] */ PRegime rgm,
     /* [out] */ PInterface* object)
 {
-    Int32 index = getCIFAddr(mBase, mDesc->ppInterfaces, 0)->mIndex;
+    Int32 index = getCIFAddr(mBase, mDesc->mInterfaces, 0)->mIndex;
     InterfaceDirEntry* ifDir = getInterfaceDirAddr(mBase,
             mClsMod->mInterfaceDirs, index);
-    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->iid;
+    EIID iid = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->mIID;
 
     return _CObject_CreateInstance(mClsId, rgm, iid, object);
 }
@@ -941,8 +941,8 @@ ECode CClassInfo::CreateIFList()
     InterfaceDirEntry* ifDir = NULL;
 
     for (i = 0; i < mDesc->mInterfaceCount; i++) {
-        cifDir = getCIFAddr(mBase, mDesc->ppInterfaces, i);
-        if (cifDir->wAttribs & ClassInterfaceAttrib_callback) {
+        cifDir = getCIFAddr(mBase, mDesc->mInterfaces, i);
+        if (cifDir->mAttribs & ClassInterfaceAttrib_callback) {
             isCallBack = TRUE;
         }
         else {
@@ -956,7 +956,7 @@ ECode CClassInfo::CreateIFList()
             indexList[iNo++] = index;
             ifDir = getInterfaceDirAddr(mBase,
                     mClsMod->mInterfaceDirs, index);
-            index = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->sParentIndex;
+            index = adjustInterfaceDescAddr(mBase, ifDir->mDesc)->mParentIndex;
         }
 
         indexList[iNo] = 0;
@@ -969,7 +969,7 @@ ECode CClassInfo::CreateIFList()
                 for (k = 0; k < listCount; k++) {
                     if (allIFList[k].mIndex == index) {
                         beginNo = allIFList[k].mBeginNo
-                                + allIFList[k].mDesc->cMethods;
+                                + allIFList[k].mDesc->mMethodCount;
                         if (!isCallBack) {
                             if (!(allIFList[k].mAttribs & IFAttrib_normal)) {
                                 mIFCount++;
@@ -1007,7 +1007,7 @@ ECode CClassInfo::CreateIFList()
                 mCBIFCount++;
                 allIFList[listCount].mAttribs = IFAttrib_callback;
             }
-            beginNo +=  allIFList[listCount].mDesc->cMethods;
+            beginNo +=  allIFList[listCount].mDesc->mMethodCount;
 
             listCount++;
         }
@@ -1029,12 +1029,12 @@ ECode CClassInfo::CreateIFList()
     for (i = 0; i < listCount; i++) {
         if (allIFList[i].mAttribs & IFAttrib_normal) {
             memcpy(&mIFList[j], &allIFList[i], sizeof(IFIndexEntry));
-            mMethodCount += allIFList[i].mDesc->cMethods;
+            mMethodCount += allIFList[i].mDesc->mMethodCount;
             j++;
         }
         if (i && mCBIFCount && (allIFList[i].mAttribs & IFAttrib_callback)) {
             memcpy(&mCBIFList[k], &allIFList[i], sizeof(IFIndexEntry));
-            mCBMethodCount += allIFList[i].mDesc->cMethods;
+            mCBMethodCount += allIFList[i].mDesc->mMethodCount;
             k++;
         }
     }
@@ -1045,9 +1045,9 @@ ECode CClassInfo::CreateIFList()
     memset(mCBMethodDesc, 0, mCBMethodCount * sizeof(CBMethodDesc));
 
     for (i = 0; i < k; i++) {
-        for (j = 0; j < mCBIFList[i].mDesc->cMethods; j++) {
+        for (j = 0; j < mCBIFList[i].mDesc->mMethodCount; j++) {
             mCBMethodDesc[n].mDesc = getMethodDescAddr(mBase,
-                    mCBIFList[i].mDesc->ppMethods, j);
+                    mCBIFList[i].mDesc->mMethods, j);
             mCBMethodDesc[n].mIndex = MK_METHOD_INDEX(mCBIFList[i].mIndex,
                     mCBIFList[i].mBeginNo + j);
             mCBMethodDesc[n].mEventNum = eventNum;

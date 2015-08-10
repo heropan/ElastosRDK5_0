@@ -23,10 +23,10 @@ int main(int argc, char **argv)
         exit(g_nErrorNumber);
     }
 
-    if (args.dwAttribs & Command_p_Preview) {
+    if (args.mAttribs & Command_p_Preview) {
         PreviewResult(context.m_pLube);
     }
-    if (args.dwAttribs & Command_o_GenLBO) {
+    if (args.mAttribs & Command_o_GenLBO) {
         SaveLube(context.m_pLube, args.pszLBO);
     }
     return LUBE_OK;
