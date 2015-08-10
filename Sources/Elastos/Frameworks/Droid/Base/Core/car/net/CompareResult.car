@@ -1,0 +1,27 @@
+
+module
+{
+
+    using interface Elastos.Utility.IList;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+
+    interface ICompareResult {
+        // @Override
+        ToString(
+            [out] String* result);
+
+        GetRemoved(
+            [out] IList** result);
+
+        GetAdded(
+            [out] IList** result);
+    }
+
+    } // namespace Net
+    } // namepsace Droid
+    } // namespace Elastos
+}

@@ -23,6 +23,10 @@ module
         LocalSocketAddressNamespace_FILESYSTEM= 2
     }
 
+    /**
+     * @Involved
+     * none super interface
+     */
     interface ILocalSocketAddress {
         GetName(
             [out] String* name);

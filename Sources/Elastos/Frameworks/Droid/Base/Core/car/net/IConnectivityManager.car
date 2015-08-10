@@ -1,25 +1,27 @@
 
 module
 {
-
-    interface Elastos.Droid.Net.INetworkInfo;
-    interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.INetworkState;
-    interface Elastos.Droid.Net.INetworkQuotaInfo;
-    interface Elastos.Droid.Net.IProxyProperties;
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Internal.Net.IVpnConfig;
     interface Elastos.Droid.Internal.Net.IVpnProfile;
-    interface Elastos.Droid.Internal.Net.ILegacyVpnInfo;
+    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IMessenger;
-    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IIBinder;
     interface Elastos.Droid.App.IPendingIntent;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Interface that answers queries about, and allows changing, the
+     * state of network connectivity.
+     */
+    /** {@hide} */
+    /**
+     * @Involved
+     * none super interface
+     */
     [deprecated, local]
     interface IIConnectivityManager {
         GetActiveNetworkInfo(
@@ -62,7 +64,7 @@ module
             [out] ILinkProperties** result);
 
         GetLinkProperties(
-            [in] Int32 networkType,
+            [in] INetwork* network,
             [out] ILinkProperties** result);
 
         GetNetworkCapabilities(
@@ -125,7 +127,7 @@ module
             [out, callee] ArrayOf<String>* result);
 
         SetUsbTethering(
-            [in] Boolean enabled,
+            [in] Boolean bEnable,
             [out] Int32* result);
 
         ReportInetCondition(
@@ -136,13 +138,13 @@ module
             [in] INetwork* network);
 
         GetGlobalProxy(
-            [out] IProxyProperties** result);
+            [out] IProxyInfo** result);
 
         SetGlobalProxy(
-            [in] IProxyProperties* p);
+            [in] IProxyInfo* p);
 
         GetProxy(
-            [out] IProxyProperties** result);
+            [out] IProxyInfo** result);
 
         SetDataDependency(
             [in] Int32 networkType,
@@ -210,7 +212,7 @@ module
             [in] String action);
 
         SetAirplaneMode(
-            [in] Boolean isEnable);
+            [in] Boolean bEnable);
 
         RegisterNetworkFactory(
             [in] IMessenger* messenger,
@@ -231,7 +233,7 @@ module
             [in] INetworkCapabilities* networkCapabilities,
             [in] IMessenger* messenger,
             [in] Int32 timeoutSec,
-            [in] IBinder* binder,
+            [in] IIBinder* binder,
             [in] Int32 legacy,
             [out] INetworkRequest** result);
 
@@ -243,7 +245,7 @@ module
         ListenForNetwork(
             [in] INetworkCapabilities* networkCapabilities,
             [in] IMessenger* messenger,
-            [in] IBinder* binder,
+            [in] IIBinder* binder,
             [out] INetworkRequest** result);
 
         PendingListenForNetwork(
@@ -270,6 +272,6 @@ module
     }
 
     } // namespace Net
-    } // namepsace Droid
+    } // namespace Droid
     } // namespace Elastos
 }

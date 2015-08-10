@@ -26,14 +26,20 @@ module
     merge("net/IpConfigurationHelper.car");
     merge("net/IpPrefix.car");
     merge("net/LinkAddress.car");
-
-    merge("net/LegacyVpnInfo.car");
+    merge("net/LinkAddressHelper.car");
+    merge("net/CompareResult.car");
     merge("net/LinkProperties.car");
-    merge("net/LinkSocketNotifier.car");
+    merge("net/LinkPropertiesHelper.car");
+    merge("net/LinkQualityInfo.car");
+    merge("net/LinkQualityInfoHelper.car");
     merge("net/LocalServerSocket.car");
     merge("net/LocalSocket.car");
     merge("net/LocalSocketAddress.car");
+    merge("net/LocalSocketImpl.car");
     merge("net/MailTo.car");
+    merge("net/MobileDataStateTracker.car");
+    merge("net/MobileDataStateTrackerHelper.car");
+
     merge("net/NetworkConfig.car");
     merge("net/NetworkIdentity.car");
     merge("net/NetworkInfo.car");
