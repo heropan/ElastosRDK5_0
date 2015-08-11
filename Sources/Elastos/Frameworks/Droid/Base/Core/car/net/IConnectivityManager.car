@@ -4,6 +4,7 @@ module
     interface Elastos.Droid.Net.INetworkState;
     interface Elastos.Droid.Internal.Net.IVpnConfig;
     interface Elastos.Droid.Internal.Net.IVpnProfile;
+    interface Elastos.Droid.Internal.Net.ILegacyVpnInfo;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IMessenger;
     interface Elastos.Droid.Os.IIBinder;
