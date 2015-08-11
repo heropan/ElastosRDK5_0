@@ -128,8 +128,6 @@ private:
 
     String              mPath;
     Int32               mAliasCount;
-
-    CRITICAL_SECTION    mLockList;
 };
 
 #endif // __CMODULEINFO_H__

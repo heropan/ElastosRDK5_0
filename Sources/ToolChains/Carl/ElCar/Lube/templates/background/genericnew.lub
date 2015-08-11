@@ -4,7 +4,7 @@ $with all interface do
 $ IF attrib is not "callback" and attrib is not "clsobj" and attrib is not "filter"
 $
     static CARAPI NewViaDynamicBinding(
-        /*[in]*/ CString name,
+        /*[in]*/ const String& name,
         /*[out]*/ ${name} ** pp${name})
     {
         if (NULL == pp${name}) return E_INVALID_ARGUMENT;

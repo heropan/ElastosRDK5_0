@@ -305,17 +305,17 @@ ECode GetRemoteClassInfo(
     }
 
     ec = E_DOES_NOT_EXIST;
-    for (Int32 m = 0; m < modInfo->classNum; m++) {
-        if (modInfo->classes[m].clsid == clsId) {
-            *classInfo = &(modInfo->classes[m]);
+    for (Int32 m = 0; m < modInfo->mClassNum; m++) {
+        if (modInfo->mClasses[m].mCLSID == clsId) {
+            *classInfo = &(modInfo->mClasses[m]);
 
             MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD("iid: "));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    DUMP_GUID((*classInfo)->clsid));
+                    DUMP_GUID((*classInfo)->mCLSID));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    ALOGD("UUNM: %s.\n", (*classInfo)->pszUunm));
+                    ALOGD("UUNM: %s.\n", (*classInfo)->mUunm));
             MARSHAL_DBGOUT(MSHDBG_NORMAL,
-                    ALOGD("InterfaceNumber: %d.\n", (*classInfo)->interfaceNum));
+                    ALOGD("InterfaceNumber: %d.\n", (*classInfo)->mInterfaceNum));
 
             ec = NOERROR;
             goto Exit;
@@ -360,7 +360,7 @@ ECode CInterfaceProxy::BufferSize(
     /* [out] */ UInt32* inSize,
     /* [out] */ UInt32* outSize)
 {
-    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
+    const CIMethodInfo* methodInfo = &(mInfo->mMethods[methodIndex]);
 
     ECode ec = Proxy_ProcessMsh_BufferSize(
             methodInfo, args, inSize, outSize);
@@ -379,7 +379,7 @@ ECode CInterfaceProxy::MarshalIn(
     /* [in] */ UInt32* args,
     /* [in, out] */ CRemoteParcel* parcel)
 {
-    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
+    const CIMethodInfo* methodInfo = &(mInfo->mMethods[methodIndex]);
 
     ECode ec = Proxy_ProcessMsh_In(
             methodInfo, args, (IParcel*)parcel);
@@ -425,7 +425,7 @@ ECode CInterfaceProxy::UnmarshalOut(
 
     // TODO:
     return Proxy_ProcessUnmsh_Out(
-            &(mInfo->methods[methodIndex]),
+            &(mInfo->mMethods[methodIndex]),
             (IParcel*)parcel,
             0/*header->mOutSize - sizeof(MarshalHeader)*/,
             args);
@@ -434,15 +434,15 @@ ECode CInterfaceProxy::UnmarshalOut(
 UInt32 CInterfaceProxy::CountMethodArgs(
     /* [in] */ UInt32 methodIndex)
 {
-    return GET_LENGTH((mInfo->methods[methodIndex]).reserved1);
+    return GET_LENGTH((mInfo->mMethods[methodIndex]).mReserved1);
 }
 
 Boolean CInterfaceProxy::MethodHasOutArgs(
     /* [in] */ UInt32 methodIndex)
 {
-    const CIMethodInfo* methodInfo = &(mInfo->methods[methodIndex]);
-    Int32 cParams = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    const CIMethodInfo* methodInfo = &(mInfo->mMethods[methodIndex]);
+    Int32 cParams = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     for (Int32 n = 0; n < cParams; n++) {
         if (BT_IS_OUT(params[n])) return TRUE;
@@ -454,29 +454,29 @@ Boolean CInterfaceProxy::MethodHasOutArgs(
 Boolean CInterfaceProxy::IsMethodOneway(
     /* [in] */ UInt32 methodIndex)
 {
-    return BT_IS_ONEWAY((mInfo->methods[methodIndex]).mAttribs);
+    return BT_IS_ONEWAY((mInfo->mMethods[methodIndex]).mAttribs);
 }
 
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
 int _DumpGUID(REIID riid)
 {
     ALOGD("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
     return printf("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
 }
 
 int _DumpCLSID(RClassID rclsid)
 {
     _DumpGUID((REIID)rclsid);
-    ALOGD("%s\n", rclsid.pUunm);
-    return printf("%s\n", rclsid.pUunm);
+    ALOGD("%s\n", rclsid.mUunm);
+    return printf("%s\n", rclsid.mUunm);
 }
 #endif // _DEBUG || _MARSHAL_DEBUG
 
@@ -503,7 +503,7 @@ ECode CInterfaceProxy::ProxyEntry(
     MARSHAL_DBGOUT(MSHDBG_NORMAL,
             ALOGD("*args = %x, args = %x, ", *args, (UInt32)args));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, ALOGD("iid: "));
-    MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(thisPtr->mInfo->iid));
+    MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(thisPtr->mInfo->mIID));
 
 #ifdef _x86
     methodIndex = CalcMethodIndex(*(UInt32 *)((UInt32)&args - 4));
@@ -563,10 +563,10 @@ ECode CInterfaceProxy::ProxyEntry(
                 != android::NO_ERROR) {
             if (thisPtr->mOwner && thisPtr->mOwner->mInfo) {
                 MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("package : %s, interfaceNum: %d",
-                    thisPtr->mOwner->mInfo->pszUunm, thisPtr->mOwner->mInfo->interfaceNum));
+                    thisPtr->mOwner->mInfo->mUunm, thisPtr->mOwner->mInfo->mInterfaceNum));
             }
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("iid: "));
-            MARSHAL_DBGOUT(MSHDBG_ERROR, DUMP_GUID(thisPtr->mInfo->iid));
+            MARSHAL_DBGOUT(MSHDBG_ERROR, DUMP_GUID(thisPtr->mInfo->mIID));
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Method index(%d), args size(%d)\n", methodIndex + 4, argNum * 4));
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Buffer size: inSize(%d), outSize(%d)\n", inSize, outSize));
             MARSHAL_DBGOUT(MSHDBG_ERROR, ALOGE("Remote invoke failed. <status: 0x%x>\n", st));
@@ -605,12 +605,12 @@ ECode CInterfaceProxy::ProxyEntry(
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
         if (thisPtr->mOwner && thisPtr->mOwner->mInfo) {
             ALOGE(" >>> package : %s, interfaceNum: %d",
-                thisPtr->mOwner->mInfo->pszUunm, thisPtr->mOwner->mInfo->interfaceNum);
+                thisPtr->mOwner->mInfo->mUunm, thisPtr->mOwner->mInfo->mInterfaceNum);
         }
 
         if (thisPtr->mInfo) {
             ALOGE(" >>> interface id");
-            _DumpGUID(thisPtr->mInfo->iid);
+            _DumpGUID(thisPtr->mInfo->mIID);
         }
 
         ALOGD(" >>> Method index(%d), args size(%d)\n", methodIndex + 4, argNum * 4);
@@ -810,22 +810,22 @@ PInterface CObjectProxy::Probe(REIID riid)
         if (NULL == mCallbackConnector) {
             ClassID ezclsid;
             IInterface* temp = (IInterface *)&(mInterfaces[0].mVTPtr);
-            this->GetClassID(&ezclsid.clsid);
+            this->GetClassID(&ezclsid.mClsid);
 
-            ezclsid.clsid.Data1    ^= ECLSID_XOR_CallbackSink.Data1;
-            ezclsid.clsid.Data2    ^= ECLSID_XOR_CallbackSink.Data2;
-            ezclsid.clsid.Data3    ^= ECLSID_XOR_CallbackSink.Data3;
-            ezclsid.clsid.Data4[0] ^= ECLSID_XOR_CallbackSink.Data4[0];
-            ezclsid.clsid.Data4[1] ^= ECLSID_XOR_CallbackSink.Data4[1];
-            ezclsid.clsid.Data4[2] ^= ECLSID_XOR_CallbackSink.Data4[2];
-            ezclsid.clsid.Data4[3] ^= ECLSID_XOR_CallbackSink.Data4[3];
-            ezclsid.clsid.Data4[4] ^= ECLSID_XOR_CallbackSink.Data4[4];
-            ezclsid.clsid.Data4[5] ^= ECLSID_XOR_CallbackSink.Data4[5];
-            ezclsid.clsid.Data4[6] ^= ECLSID_XOR_CallbackSink.Data4[6];
-            ezclsid.clsid.Data4[7] ^= ECLSID_XOR_CallbackSink.Data4[7];
-            ezclsid.pUunm = (char*)alloca(sizeof(char) \
-                    * (strlen(((CIClassInfo*)mInfo)->pszUunm) + 1));
-            strcpy(ezclsid.pUunm, ((CIClassInfo*)mInfo)->pszUunm);
+            ezclsid.mClsid.mData1    ^= ECLSID_XOR_CallbackSink.mData1;
+            ezclsid.mClsid.mData2    ^= ECLSID_XOR_CallbackSink.mData2;
+            ezclsid.mClsid.mData3    ^= ECLSID_XOR_CallbackSink.mData3;
+            ezclsid.mClsid.mData4[0] ^= ECLSID_XOR_CallbackSink.mData4[0];
+            ezclsid.mClsid.mData4[1] ^= ECLSID_XOR_CallbackSink.mData4[1];
+            ezclsid.mClsid.mData4[2] ^= ECLSID_XOR_CallbackSink.mData4[2];
+            ezclsid.mClsid.mData4[3] ^= ECLSID_XOR_CallbackSink.mData4[3];
+            ezclsid.mClsid.mData4[4] ^= ECLSID_XOR_CallbackSink.mData4[4];
+            ezclsid.mClsid.mData4[5] ^= ECLSID_XOR_CallbackSink.mData4[5];
+            ezclsid.mClsid.mData4[6] ^= ECLSID_XOR_CallbackSink.mData4[6];
+            ezclsid.mClsid.mData4[7] ^= ECLSID_XOR_CallbackSink.mData4[7];
+            ezclsid.mUunm = (char*)alloca(sizeof(char) \
+                    * (strlen(((CIClassInfo*)mInfo)->mUunm) + 1));
+            strcpy(ezclsid.mUunm, ((CIClassInfo*)mInfo)->mUunm);
             _CObject_AcquireClassFactory(ezclsid, RGM_SAME_DOMAIN, EIID_CALLBACK_CONNECTOR, &temp);
             mCallbackConnector = (ICallbackConnector*)temp;
         }
@@ -833,7 +833,7 @@ PInterface CObjectProxy::Probe(REIID riid)
     }
 
     for (n = 0; n < mInterfaceNum; n++) {
-        if (riid == mInterfaces[n].mInfo->iid) {
+        if (riid == mInterfaces[n].mInfo->mIID) {
             break;
         }
     }
@@ -950,7 +950,7 @@ ECode CObjectProxy::GetClassID(
 {
     assert(clsid != NULL);
 
-    *clsid = ((CIClassInfo*)mInfo)->clsid;
+    *clsid = ((CIClassInfo*)mInfo)->mCLSID;
     return NOERROR;
 }
 
@@ -1091,7 +1091,7 @@ ECode CObjectProxy::S_CreateObject(
         if (FAILED(ec)) goto ErrorExit;
     }
 
-    proxyObj->mInterfaceNum = ((CIClassInfo*)(proxyObj->mInfo))->interfaceNum;
+    proxyObj->mInterfaceNum = ((CIClassInfo*)(proxyObj->mInfo))->mInterfaceNum;
     interfaces = new CInterfaceProxy[proxyObj->mInterfaceNum];
     if (!interfaces) {
         MARSHAL_DBGOUT(MSHDBG_ERROR,
@@ -1106,7 +1106,7 @@ ECode CObjectProxy::S_CreateObject(
         interfaces[n].mOwner = proxyObj;
         CIInterfaceInfo *pInterfaceInfo =
             (CIInterfaceInfo *)GetUnalignedPtr(
-                    proxyObj->mInfo->interfaces + n);
+                    proxyObj->mInfo->mInterfaces + n);
         interfaces[n].mInfo = pInterfaceInfo;
         interfaces[n].mVTPtr = g_marshalVtbl;
 

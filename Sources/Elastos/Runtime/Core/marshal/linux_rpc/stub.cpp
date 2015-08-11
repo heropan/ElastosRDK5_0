@@ -139,19 +139,19 @@
         intf->GetInterfaceID(intf, &iid); \
         printf("======== DUMP_ITFID ========\n"); \
         printf("{%p, %p, %p, {%p, %p, %p, %p, %p, %p, %p, %p} }\n", \
-                iid.Data1, iid.Data2, iid.Data3, \
-                iid.Data4[0], iid.Data4[1], \
-                iid.Data4[2], iid.Data4[3], \
-                iid.Data4[4], iid.Data4[5], \
-                iid.Data4[6], iid.Data4[7]); \
+                iid.mData1, iid.mData2, iid.mData3, \
+                iid.mData4[0], iid.mData4[1], \
+                iid.mData4[2], iid.mData4[3], \
+                iid.mData4[4], iid.mData4[5], \
+                iid.mData4[6], iid.mData4[7]); \
         printf("============================\n"); \
         ALOGD("======== DUMP_ITFID ========\n"); \
         ALOGD("{%p, %p, %p, {%p, %p, %p, %p, %p, %p, %p, %p} }\n", \
-                iid.Data1, iid.Data2, iid.Data3, \
-                iid.Data4[0], iid.Data4[1], \
-                iid.Data4[2], iid.Data4[3], \
-                iid.Data4[4], iid.Data4[5], \
-                iid.Data4[6], iid.Data4[7]); \
+                iid.mData1, iid.mData2, iid.mData3, \
+                iid.mData4[0], iid.mData4[1], \
+                iid.mData4[2], iid.mData4[3], \
+                iid.mData4[4], iid.mData4[5], \
+                iid.mData4[6], iid.mData4[7]); \
         ALOGD("============================\n"); \
     } while(0);
 
@@ -197,7 +197,7 @@ ECode CInterfaceStub::MarshalOut(
 //    MarshalHeader *pHeader;
 
     ECode ec = Stub_ProcessMsh_Out(
-            &(mInfo->methods[inHeader->mMethodIndex - 4]),
+            &(mInfo->mMethods[inHeader->mMethodIndex - 4]),
             args, (UInt32 *)outHeader, onlyReleaseIn, (IParcel*)parcel);
 
     if (parcel && SUCCEEDED(ec)) {
@@ -248,7 +248,7 @@ PInterface CObjectStub::Probe(
     }
 
     for (n = 0; n < mInterfaceNum; n++) {
-        if (riid == mInterfaces[n].mInfo->iid) {
+        if (riid == mInterfaces[n].mInfo->mIID) {
             break;
         }
     }
@@ -372,11 +372,11 @@ ECode CObjectStub::Invoke(
         // Uncomment the follow line to enable IPC invoke log.
         // PrintIpcLog(inHeader);
         uMethodIndex = inHeader->mMethodIndex - 4;
-        if (uMethodIndex >= curInterface->mInfo->methodNumMinus4) {
+        if (uMethodIndex >= curInterface->mInfo->mMethodNumMinus4) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Stub: method index out of range - %d:%d\n",
                     uMethodIndex,
-                    curInterface->mInfo->methodNumMinus4));
+                    curInterface->mInfo->mMethodNumMinus4));
             goto ErrorExit;
         }
 
@@ -393,8 +393,8 @@ ECode CObjectStub::Invoke(
             }
         }
 
-        methodInfo = &((curInterface->mInfo)->methods[uMethodIndex]);
-        inSize = GET_LENGTH(methodInfo->reserved1) * 4 + 4;
+        methodInfo = &((curInterface->mInfo)->mMethods[uMethodIndex]);
+        inSize = GET_LENGTH(methodInfo->mReserved1) * 4 + 4;
         MARSHAL_DBGOUT(MSHDBG_NORMAL,
                 printf("Stub: method args stack size (%d)\n", inSize));
         args = (UInt32 *)alloca(inSize);
@@ -528,14 +528,14 @@ ECode CObjectStub::Invoke(
 #error unknown architecture
 #endif
 
-        if (FAILED(ec) && GET_IN_INTERFACE_MARK(methodInfo->reserved1)) {
+        if (FAILED(ec) && GET_IN_INTERFACE_MARK(methodInfo->mReserved1)) {
             onlyReleaseIn = TRUE;
         }
 
         reply->WriteInt32((int32_t)ec);
         // args + 1 , skip this pointer
         if ((outHeader && SUCCEEDED(ec))
-            || GET_IN_INTERFACE_MARK(methodInfo->reserved1)) {
+            || GET_IN_INTERFACE_MARK(methodInfo->mReserved1)) {
 
             if (outHeader && SUCCEEDED(ec)) {
                 replyParcel = reply;
@@ -586,22 +586,22 @@ ErrorExit:
 static void __DumpGUID(REIID riid)
 {
     PFL_EX("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
     ALOGD("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
 }
 
 void CObjectStub::PrintIpcLog(
     /* [in] */ MarshalHeader* header)
 {
     CInterfaceStub* curInterface = &(mInterfaces[header->mInterfaceIndex]);
-    InterfaceID temp = curInterface->mInfo->iid;
+    InterfaceID temp = curInterface->mInfo->mIID;
     __DumpGUID(temp);
     PFL_EX("Interface Index = %d", header->mInterfaceIndex)
     PFL_EX("Method Index = %d", header->mMethodIndex)
@@ -614,7 +614,7 @@ ECode CObjectStub::GetClassID(
 {
     assert(clsid != NULL);
 
-    *clsid = ((CIClassInfo*)mInfo)->clsid;
+    *clsid = ((CIClassInfo*)mInfo)->mCLSID;
     return NOERROR;
 }
 
@@ -665,12 +665,12 @@ ECode CObjectStub::OnTransact(
             return NOERROR;
         }
 
-        destModInfo = (CIModuleInfo *)calloc(srcModInfo->totalSize, 1);
+        destModInfo = (CIModuleInfo *)calloc(srcModInfo->mTotalSize, 1);
         FlatModuleInfo(srcModInfo, destModInfo);
 
         reply->WriteInt32((int32_t)NOERROR);
-        reply->WriteInt32(destModInfo->totalSize);
-        reply->Write((void*)destModInfo, destModInfo->totalSize);
+        reply->WriteInt32(destModInfo->mTotalSize);
+        reply->Write((void*)destModInfo, destModInfo->mTotalSize);
 
         free(destModInfo);
         return NOERROR;
@@ -852,7 +852,7 @@ ECode CObjectStub::S_CreateObject(
             "QI EIID info ok. EIID is:\n"));
     MARSHAL_DBGOUT(MSHDBG_NORMAL, DUMP_GUID(iid));
 
-    ec = LookupClassInfo(clsid.clsid, &(stubObj->mInfo));
+    ec = LookupClassInfo(clsid.mClsid, &(stubObj->mInfo));
     if (FAILED(ec)) {
         ec = AcquireClassInfo(clsid, &(stubObj->mInfo));
         if (FAILED(ec)) {
@@ -867,20 +867,20 @@ ECode CObjectStub::S_CreateObject(
     MARSHAL_DBGOUT(MSHDBG_NORMAL, printf(
             "Create stub: Get class info ok.\n"));
 
-    interfaces = new CInterfaceStub[(*classInfo)->interfaceNum];
+    interfaces = new CInterfaceStub[(*classInfo)->mInterfaceNum];
     if (!interfaces) {
         MARSHAL_DBGOUT(MSHDBG_ERROR, printf("Create stub: out of memory.\n"));
         ec = E_OUT_OF_MEMORY;
         goto ErrorExit;
     }
-    stubObj->mInterfaceNum = (*classInfo)->interfaceNum;
+    stubObj->mInterfaceNum = (*classInfo)->mInterfaceNum;
     stubObj->mInterfaces = interfaces;
     object->AddRef();
-    for (n = 0; n < (*classInfo)->interfaceNum; n++) {
+    for (n = 0; n < (*classInfo)->mInterfaceNum; n++) {
         CIInterfaceInfo *pInterfaceInfo =
                 (CIInterfaceInfo *)GetUnalignedPtr(
-                        (*classInfo)->interfaces + n);
-        tempObj = object->Probe(pInterfaceInfo->iid);
+                        (*classInfo)->mInterfaces + n);
+        tempObj = object->Probe(pInterfaceInfo->mIID);
         if (!tempObj) {
             MARSHAL_DBGOUT(MSHDBG_ERROR,
                     printf("Create stub: no such interface.\n"));

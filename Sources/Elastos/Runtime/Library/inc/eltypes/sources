@@ -10,6 +10,5 @@ EXPORT_HEADERS += elautoptr.h
 EXPORT_HEADERS += elquintettype.h
 EXPORT_HEADERS += elquintet.h
 EXPORT_HEADERS += elalloc.h
-EXPORT_HEADERS += _pubcrt.h
 EXPORT_HEADERS += elcontainer.h
 EXPORT_HEADERS += eldebugdef.h

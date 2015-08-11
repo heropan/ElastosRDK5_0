@@ -112,43 +112,43 @@ typedef _ELASTOS UInt32  CIBaseType;
   */
 typedef struct _CIMethodInfo
 {
-    _ELASTOS UInt8  paramNum;
+    _ELASTOS UInt8  mParamNum;
     _ELASTOS UInt8  mAttribs;
-    _ELASTOS UInt8  reserved1;  // the  highest digit for mark [in] interface
+    _ELASTOS UInt8  mReserved1; // the  highest digit for mark [in] interface
                                 // the next for [out] interface
                                 // the others is the stack length
-    CIBaseType      *params;    // size_is(paramNum)
+    CIBaseType*     mParams;    // size_is(paramNum)
 } CIMethodInfo;
 
 typedef struct _CIInterfaceInfo
 {
-    _ELASTOS InterfaceID    iid;
-    _ELASTOS UInt16         methodNumMinus4;    // exclude IInterface's 4 methods
-    CIMethodInfo            *methods;           // size_is(methodNumMinus4)
+    _ELASTOS InterfaceID    mIID;
+    _ELASTOS UInt16         mMethodNumMinus4;    // exclude IInterface's 4 methods
+    CIMethodInfo*           mMethods;           // size_is(mMethodNumMinus4)
 } CIInterfaceInfo;
 
 typedef struct _CIClassInfo
 {
-    char                *pszUunm;
-    _ELASTOS EMuid      clsid;
-    _ELASTOS UInt16     interfaceNum;
-    CIInterfaceInfo     **interfaces;   // size_is(interfaceNum)
+    char*               mUunm;
+    _ELASTOS EMuid      mCLSID;
+    _ELASTOS UInt16     mInterfaceNum;
+    CIInterfaceInfo**   mInterfaces;   // size_is(interfaceNum)
 } CIClassInfo;
 
 typedef struct _CIModuleInfo
 {
-    _ELASTOS UInt32     totalSize;
-    _ELASTOS UInt16     classNum;
-    _ELASTOS UInt16     interfaceNum;
-    CIClassInfo         *classes;      // size_is(classNum)
-    CIInterfaceInfo     *interfaces;   // size_is(interfaceNum)
-    char                szUunm[1];
+    _ELASTOS UInt32     mTotalSize;
+    _ELASTOS UInt16     mClassNum;
+    _ELASTOS UInt16     mInterfaceNum;
+    CIClassInfo*        mClasses;      // size_is(classNum)
+    CIInterfaceInfo*    mInterfaces;   // size_is(interfaceNum)
+    char                mUunm[1];
 } CIModuleInfo;
 
 typedef struct _CIModuleInfoNode
 {
-    CIModuleInfo *m_pModInfo;
-    _CIModuleInfoNode *m_pNext;
+    CIModuleInfo*       mModInfo;
+    _CIModuleInfoNode*  mNext;
 } CIModuleInfoNode;
 
 /** @} */

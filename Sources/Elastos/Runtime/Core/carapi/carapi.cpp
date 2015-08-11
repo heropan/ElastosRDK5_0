@@ -5,7 +5,7 @@
 #include <locmod.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <_pubcrt.h>
+// #include <_pubcrt.h>
 #include <utils/Log.h>
 
 #define STATUS_WIN32_ERROR(u) ((ECode)((u)|0x80070000))
@@ -19,11 +19,11 @@
         ALOGD("> INSIDE %s\n", info); \
         ALOGD("======== DUMP_CLSID ========\n"); \
         ALOGD("{%p, %p, %p, {%p, %p, %p, %p, %p, %p, %p, %p} }\n", \
-                CLSID.clsid.Data1, CLSID.clsid.Data2, CLSID.clsid.Data3, \
-                CLSID.clsid.Data4[0], CLSID.clsid.Data4[1], \
-                CLSID.clsid.Data4[2], CLSID.clsid.Data4[3], \
-                CLSID.clsid.Data4[4], CLSID.clsid.Data4[5], \
-                CLSID.clsid.Data4[6], CLSID.clsid.Data4[7]); \
+                CLSID.mClsid.mData1, CLSID.mClsid.mData2, CLSID.mClsid.mData3, \
+                CLSID.mClsid.mData4[0], CLSID.mClsid.mData4[1], \
+                CLSID.mClsid.mData4[2], CLSID.mClsid.mData4[3], \
+                CLSID.mClsid.mData4[4], CLSID.mClsid.mData4[5], \
+                CLSID.mClsid.mData4[6], CLSID.mClsid.mData4[7]); \
         ALOGD("============================\n"); \
     } while(0);
 #else

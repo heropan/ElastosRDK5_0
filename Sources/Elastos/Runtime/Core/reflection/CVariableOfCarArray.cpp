@@ -24,7 +24,7 @@ CVariableOfCarArray::CVariableOfCarArray(
     elementTypeInfo->GetDataType(&mDataType);
     elementTypeInfo->GetSize(&mElementSize);
     assert(mElementSize);
-    mLength = cq->m_size / mElementSize;
+    mLength = cq->mSize / mElementSize;
 }
 
 CVariableOfCarArray::~CVariableOfCarArray()
@@ -99,7 +99,7 @@ ECode CVariableOfCarArray::Rebox(
 {
     CarQuintetFlag flag = DataTypeToFlag(mDataType);
     PCarQuintet cq = (PCarQuintet)localVariablePtr;
-    if (!cq || !(cq->m_flags & flag) || cq->m_size < mElementSize) {
+    if (!cq || !(cq->mFlags & flag) || cq->mSize < mElementSize) {
         return E_INVALID_ARGUMENT;
     }
 
@@ -146,7 +146,7 @@ ECode CVariableOfCarArray::SetUsed(
         return E_INVALID_ARGUMENT;
     }
 
-    mCq->m_used = used * mElementSize;
+    mCq->mUsed = used * mElementSize;
 
     return NOERROR;
 }
@@ -161,15 +161,15 @@ ECode CVariableOfCarArray::SetElementValue(
     }
 
     if (index >= mLength
-            || index >= (Int32)(mCq->m_used / mElementSize)) {
+            || index >= (Int32)(mCq->mUsed / mElementSize)) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDataType != type || !mCq->m_pBuf) {
+    if (mDataType != type || !mCq->mBuf) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy((PByte)mCq->m_pBuf + mElementSize * index,
+    memcpy((PByte)mCq->mBuf + mElementSize * index,
             param, mElementSize);
 
     return NOERROR;
@@ -298,7 +298,7 @@ ECode CVariableOfCarArray::GetStructElementSetter(
 
     AutoPtr<IVariableOfStruct> variable;
     ec = structInfo->CreateVariableBox(
-            (PByte)mCq->m_pBuf + mElementSize * index, (IVariableOfStruct **)&variable);
+            (PByte)mCq->mBuf + mElementSize * index, (IVariableOfStruct **)&variable);
     if (FAILED(ec)) {
         return ec;
     }
@@ -327,7 +327,7 @@ ECode CVariableOfCarArray::GetUsed(
         return E_INVALID_ARGUMENT;
     }
 
-    *used = mCq->m_used / mElementSize;
+    *used = mCq->mUsed / mElementSize;
 
     return NOERROR;
 }
@@ -339,7 +339,7 @@ ECode CVariableOfCarArray::IsEmpty(
         return E_INVALID_ARGUMENT;
     }
 
-    *isEmpty = (mCq->m_pBuf == NULL);
+    *isEmpty = (mCq->mBuf == NULL);
 
     return NOERROR;
 }
@@ -354,15 +354,15 @@ ECode CVariableOfCarArray::GetElementValue(
     }
 
     if (index >= mLength
-            || index >= (Int32)(mCq->m_used / mElementSize)) {
+            || index >= (Int32)(mCq->mUsed / mElementSize)) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (mDataType != type || !mCq->m_pBuf) {
+    if (mDataType != type || !mCq->mBuf) {
         return E_INVALID_OPERATION;
     }
 
-    memcpy(param, (PByte)mCq->m_pBuf + mElementSize * index,
+    memcpy(param, (PByte)mCq->mBuf + mElementSize * index,
             mElementSize);
 
     return NOERROR;
@@ -491,7 +491,7 @@ ECode CVariableOfCarArray::GetStructElementGetter(
 
     AutoPtr<IVariableOfStruct> variable;
     ec = structInfo->CreateVariableBox(
-            (PByte)mCq->m_pBuf + mElementSize * index, (IVariableOfStruct **)&variable);
+            (PByte)mCq->mBuf + mElementSize * index, (IVariableOfStruct **)&variable);
     if (FAILED(ec)) {
         return ec;
     }

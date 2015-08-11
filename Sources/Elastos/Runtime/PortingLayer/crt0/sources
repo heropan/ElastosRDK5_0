@@ -8,10 +8,6 @@ SPECIAL_TARGET = cptarget
 
 SOURCES+=dllentry.c
 
-ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-  SOURCES+=dsohandle.c
-endif
-
 ifeq "$(XDK_TARGET_PLATFORM)" "win32"
   ifeq "$(XDK_COMPILER)" "msvc"
     SOURCES+=atexit.c

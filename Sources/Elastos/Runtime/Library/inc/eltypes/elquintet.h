@@ -99,7 +99,7 @@ DECL_TYPE2FLAG_TMPL(ElRefBase *,        CarQuintetFlag_Type_RefObject);
 DECL_TYPE2FLAG_TMPL(ElLightRefBase *,   CarQuintetFlag_Type_LightRefObject);
 
 #define _MAX_CARQUINTET_SIZE_  (0x7FFFFFFF - sizeof(CarQuintet) - sizeof(SharedBuffer))
-#define IS_QUINTENT_FLAG(pcq, flag)     ((pcq) && ((pcq)->m_flags & (flag)))
+#define IS_QUINTENT_FLAG(pcq, flag)     ((pcq) && ((pcq)->mFlags & (flag)))
 
 template <class T>
 class ArrayOf;
@@ -152,7 +152,7 @@ class ArrayOf : public CarQuintet
 {
 public:
     T* GetPayload() const {
-        return (T*)m_pBuf;
+        return (T*)mBuf;
     };
 
     operator PCarQuintet() {
@@ -160,7 +160,7 @@ public:
     }
 
     Int32 GetLength() const {
-        return m_pBuf ? m_size / sizeof(T) : 0;
+        return mBuf ? mSize / sizeof(T) : 0;
     }
 
     Int32 Copy(T const* pBuf, Int32 n) {
@@ -208,18 +208,18 @@ public:
     }
 
     ArrayOf<T> *Clone() const {
-        PCarQuintet pNewCq = _CarQuintet_Alloc(m_size);
+        PCarQuintet pNewCq = _CarQuintet_Alloc(mSize);
         if (pNewCq) {
-            CarQuintetFlags flags = m_flags & CarQuintetFlag_TypeMask;
+            CarQuintetFlags flags = mFlags & CarQuintetFlag_TypeMask;
             flags |= CarQuintetFlag_HeapAlloced;
-            _CarQuintet_Init(pNewCq, pNewCq + 1, m_size, m_used, flags);
-            if (this->m_pBuf) {
-                if (pNewCq) memset(pNewCq->m_pBuf, 0x0, m_size);
+            _CarQuintet_Init(pNewCq, pNewCq + 1, mSize, mUsed, flags);
+            if (this->mBuf) {
+                if (pNewCq) memset(pNewCq->mBuf, 0x0, mSize);
                 QuintetObjectCopyOp copyOp;
                 copyOp((ArrayOf<T> *)pNewCq, 0, (T const*)GetPayload(), 0, this->GetLength());
             }
             else {
-                pNewCq->m_pBuf = NULL;
+                pNewCq->mBuf = NULL;
             }
         }
 
@@ -250,8 +250,8 @@ public:
             else {
                 ELA_ASSERT_WITH_BLOCK(buf->RefCount() == 0) {
                     printf(" >> %s %d\n >> Ref count of share buffer %d isn't zero,"
-                            " and CarQuintetFlag_AutoRefCounted isn't set too. m_flags:%08x, m_size:%d\n",
-                            __FILE__, __LINE__, buf->RefCount(), m_flags, m_size);
+                            " and CarQuintetFlag_AutoRefCounted isn't set too. mFlags:%08x, mSize:%d\n",
+                            __FILE__, __LINE__, buf->RefCount(), mFlags, mSize);
                 }
 
                 SharedBuffer::Dealloc(buf, releaseOp);
@@ -265,13 +265,13 @@ public:
     }
 
     T& operator[](Int32 index) {
-        assert(m_pBuf && index >= 0 && index < GetLength());
-        return ((T*)(m_pBuf))[index];
+        assert(mBuf && index >= 0 && index < GetLength());
+        return ((T*)(mBuf))[index];
     }
 
     const T& operator[](Int32 index) const {
-        assert(m_pBuf && index >= 0 && index < GetLength());
-        return ((T*)(m_pBuf))[index];
+        assert(mBuf && index >= 0 && index < GetLength());
+        return ((T*)(mBuf))[index];
     }
 
     static ArrayOf<T> *Alloc(Int32 capacity) {
@@ -296,7 +296,7 @@ public:
 
     Int32 IndexOf(T const& value) {
         for (Int32 i = 0; i < GetLength(); ++i) {
-            if (((T*)(m_pBuf))[i] == value) {
+            if (((T*)(mBuf))[i] == value) {
                 return i;
             }
         }
@@ -338,7 +338,7 @@ void ReleaseFunc(void const * buf)
 {
     ArrayOf<OrigT>* pcq = (ArrayOf<OrigT>*)buf;
     Int32 length = pcq->GetLength();
-    OrigT* p = (OrigT*)(pcq->m_pBuf);
+    OrigT* p = (OrigT*)(pcq->mBuf);
 
     for(Int32 i = 0; i < length; ++i) {
         TargetT* prb = (TargetT*)(*p);
@@ -468,7 +468,7 @@ inline void QuintetObjectReleaseOp<String>::operator()(void const* buf)
 template<class OrigT, class TargetT>
 Int32 CopyFunc(ArrayOf<OrigT>* dstArray, Int32 dstOffset, OrigT const* src, Int32 srcOffset, Int32 count)
 {
-    OrigT* dst = (OrigT*)(dstArray->m_pBuf);
+    OrigT* dst = (OrigT*)(dstArray->mBuf);
     Int32 copyCount = MIN(count, dstArray->GetLength() - dstOffset);
 
     // self-copy to the same position.
@@ -556,7 +556,7 @@ struct CopyOpImpl
     Int32 operator()(ArrayOf<T>* dst, Int32 dstOffset, T const* src, Int32 srcOffset, Int32 count)
     {
         Int32 copyCount = MIN(count, dst->GetLength() - dstOffset);
-        return PlainCopy((T*)(dst->m_pBuf), dstOffset, src, srcOffset, copyCount);
+        return PlainCopy((T*)(dst->mBuf), dstOffset, src, srcOffset, copyCount);
     }
 };
 
@@ -628,8 +628,8 @@ inline Int32 QuintetObjectCopyOp::operator()(
     ArrayOf<T>* dst, Int32 offset, T const* src, Int32 srcOffset, Int32 count)
 {
     Int32 realOffset = offset * sizeof(T);
-    if (!dst || !dst->m_pBuf || !(src + srcOffset) || count <= 0
-            || offset < 0  || dst->m_size < realOffset) {
+    if (!dst || !dst->mBuf || !(src + srcOffset) || count <= 0
+            || offset < 0  || dst->mSize < realOffset) {
         return -1;
     }
 
@@ -644,25 +644,25 @@ template <class T>
 inline Int32 QuintetObjectCopyOp::operator()(
     ArrayOf<AutoPtr<T> >* dst, Int32 dstOffset, AutoPtr<T> const* src, Int32 srcOffset, Int32 count)
 {
-    if (!dst || !dst->m_pBuf || !(src + srcOffset) || count <= 0
+    if (!dst || !dst->mBuf || !(src + srcOffset) || count <= 0
             || dstOffset < 0 || dst->GetLength() < dstOffset) {
         return -1;
     }
 
     Int32 copyCount = MIN(count, dst->GetLength() - dstOffset);
-    return PlainCopy((AutoPtr<T>*)(dst->m_pBuf), dstOffset, src, srcOffset, copyCount);
+    return PlainCopy((AutoPtr<T>*)(dst->mBuf), dstOffset, src, srcOffset, copyCount);
 }
 
 inline Int32 QuintetObjectCopyOp::operator()(
     ArrayOf<String>* dst, Int32 dstOffset, String const* src, Int32 srcOffset, Int32 count)
 {
-    if (!dst || !dst->m_pBuf || !(src + srcOffset) || count <= 0
+    if (!dst || !dst->mBuf || !(src + srcOffset) || count <= 0
             || dstOffset < 0 || dst->GetLength() < dstOffset) {
         return -1;
     }
 
     Int32 copyCount = MIN(count, dst->GetLength() - dstOffset);
-    return PlainCopy((String*)(dst->m_pBuf), dstOffset, src, srcOffset, copyCount);
+    return PlainCopy((String*)(dst->mBuf), dstOffset, src, srcOffset, copyCount);
 }
 
 _ELASTOS_NAMESPACE_END

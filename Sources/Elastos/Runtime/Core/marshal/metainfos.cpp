@@ -22,22 +22,22 @@ static pthread_mutex_t sModuleInfoLock;
 int _DumpGUID(REIID riid)
 {
     ALOGD("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
     return printf("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X\n",
-        riid.Data1, riid.Data2, riid.Data3,
-        riid.Data4[0], riid.Data4[1], riid.Data4[2],
-        riid.Data4[3], riid.Data4[4], riid.Data4[5],
-        riid.Data4[6], riid.Data4[7]);
+        riid.mData1, riid.mData2, riid.mData3,
+        riid.mData4[0], riid.mData4[1], riid.mData4[2],
+        riid.mData4[3], riid.mData4[4], riid.mData4[5],
+        riid.mData4[6], riid.mData4[7]);
 }
 
 int _DumpCLSID(RClassID rclsid)
 {
     _DumpGUID((REIID)rclsid);
-    ALOGD("%s\n", rclsid.pUunm);
-    return printf("%s\n", rclsid.pUunm);
+    ALOGD("%s\n", rclsid.mUunm);
+    return printf("%s\n", rclsid.mUunm);
 }
 #endif // _DEBUG || _MARSHAL_DEBUG
 
@@ -70,30 +70,30 @@ ECode RegisterModuleInfo(
     // prevent from registering same ClassInfo again
     //
     pthread_mutex_lock(&sModuleInfoLock);
-    if (srcModuleInfo->classNum != 0) {
-        CIClassInfo* classInfo = (CIClassInfo *)((UInt32)srcModuleInfo->classes \
+    if (srcModuleInfo->mClassNum != 0) {
+        CIClassInfo* classInfo = (CIClassInfo *)((UInt32)srcModuleInfo->mClasses \
                 + (UInt32)srcModuleInfo);
         curNode = sModuleInfoList;
         while (curNode != NULL) {
-            if (curNode->m_pModInfo->classNum != 0 \
-                && classInfo[0].clsid == \
-                curNode->m_pModInfo->classes[0].clsid) {
+            if (curNode->mModInfo->mClassNum != 0 \
+                && classInfo[0].mCLSID == \
+                curNode->mModInfo->mClasses[0].mCLSID) {
                 break;
             }
-            curNode = curNode->m_pNext;
+            curNode = curNode->mNext;
         }
     }
-    else if (srcModuleInfo->interfaceNum != 0) {
-        CIInterfaceInfo* interfaceInfo = (CIInterfaceInfo *)((UInt32)srcModuleInfo->interfaces \
+    else if (srcModuleInfo->mInterfaceNum != 0) {
+        CIInterfaceInfo* interfaceInfo = (CIInterfaceInfo *)((UInt32)srcModuleInfo->mInterfaces \
                 + (UInt32)srcModuleInfo);
         curNode = sModuleInfoList;
         while (curNode != NULL) {
-            if (curNode->m_pModInfo->interfaceNum != 0 \
-                && interfaceInfo[0].iid == \
-                curNode->m_pModInfo->interfaces[0].iid) {
+            if (curNode->mModInfo->mInterfaceNum != 0 \
+                && interfaceInfo[0].mIID == \
+                curNode->mModInfo->mInterfaces[0].mIID) {
                 break;
             }
-            curNode = curNode->m_pNext;
+            curNode = curNode->mNext;
         }
     }
     else {
@@ -107,7 +107,7 @@ ECode RegisterModuleInfo(
         return NOERROR;
     }
 
-    CIModuleInfo* moduleInfo = (CIModuleInfo *)malloc(srcModuleInfo->totalSize);
+    CIModuleInfo* moduleInfo = (CIModuleInfo *)malloc(srcModuleInfo->mTotalSize);
     if (NULL == moduleInfo) {
         pthread_mutex_unlock(&sModuleInfoLock);
         return E_OUT_OF_MEMORY;
@@ -120,14 +120,14 @@ ECode RegisterModuleInfo(
         pthread_mutex_unlock(&sModuleInfoLock);
         return E_OUT_OF_MEMORY;
     }
-    newNode->m_pModInfo = (CIModuleInfo *)moduleInfo;
-    newNode->m_pNext = NULL;
+    newNode->mModInfo = (CIModuleInfo *)moduleInfo;
+    newNode->mNext = NULL;
     if (sModuleInfoList == NULL) {
         sModuleInfoList = newNode;
     }
     else {
-        newNode->m_pNext = sModuleInfoList->m_pNext;
-        sModuleInfoList->m_pNext = newNode;
+        newNode->mNext = sModuleInfoList->mNext;
+        sModuleInfoList->mNext = newNode;
     }
     pthread_mutex_unlock(&sModuleInfoLock);
 
@@ -143,19 +143,19 @@ ECode UnregisterModuleInfo(
     CIModuleInfoNode* preNode = NULL;
     CIModuleInfoNode* curNode = sModuleInfoList;
     while (curNode != NULL) {
-        if ((*curNode).m_pModInfo == moduleInfo) {
+        if ((*curNode).mModInfo == moduleInfo) {
             break;
         }
         preNode = curNode;
-        curNode = curNode->m_pNext;
+        curNode = curNode->mNext;
     }
 
     if (curNode != NULL) {
         if (preNode == NULL) {
-            sModuleInfoList = curNode->m_pNext;
+            sModuleInfoList = curNode->mNext;
         }
         else {
-            preNode->m_pNext = curNode->m_pNext;
+            preNode->mNext = curNode->mNext;
         }
         pthread_mutex_unlock(&sModuleInfoLock);
         free(curNode);
@@ -176,15 +176,15 @@ ECode LookupClassInfo(
     pthread_mutex_lock(&sModuleInfoLock);
     CIModuleInfoNode* curNode = sModuleInfoList;
     while (curNode != NULL) {
-        CIModuleInfo* modInfo = curNode->m_pModInfo;
-        for (Int32 m = 0; m < modInfo->classNum; m++) {
-            if (modInfo->classes[m].clsid == rclsid) {
-                *classInfo = &(modInfo->classes[m]);
+        CIModuleInfo* modInfo = curNode->mModInfo;
+        for (Int32 m = 0; m < modInfo->mClassNum; m++) {
+            if (modInfo->mClasses[m].mCLSID == rclsid) {
+                *classInfo = &(modInfo->mClasses[m]);
                 pthread_mutex_unlock(&sModuleInfoLock);
                 return NOERROR;
             }
         }
-        curNode = curNode->m_pNext;
+        curNode = curNode->mNext;
     }
     pthread_mutex_unlock(&sModuleInfoLock);
 
@@ -200,15 +200,15 @@ ECode LookupModuleInfo(
     pthread_mutex_lock(&sModuleInfoLock);
     CIModuleInfoNode* curNode = sModuleInfoList;
     while (curNode != NULL) {
-        CIModuleInfo* modInfo = curNode->m_pModInfo;
-        for (Int32 m = 0; m < modInfo->classNum; m++) {
-            if (modInfo->classes[m].clsid == rclsid) {
+        CIModuleInfo* modInfo = curNode->mModInfo;
+        for (Int32 m = 0; m < modInfo->mClassNum; m++) {
+            if (modInfo->mClasses[m].mCLSID == rclsid) {
                 *moduleInfo = modInfo;
                 pthread_mutex_unlock(&sModuleInfoLock);
                 return NOERROR;
             }
         }
-        curNode = curNode->m_pNext;
+        curNode = curNode->mNext;
     }
     pthread_mutex_unlock(&sModuleInfoLock);
 
@@ -245,7 +245,7 @@ ECode AcquireClassInfo(
     if (clsInfo == NULL) return E_INVALID_ARGUMENT;
 
     char path[260];
-    strcpy(path, classId.pUunm);
+    strcpy(path, classId.mUunm);
     void* module = dlopen(path, RTLD_NOW);
 
     strcpy(path, "DllGetClassObject");
@@ -258,30 +258,30 @@ ECode AcquireClassInfo(
     if (FAILED(ec)) {
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
         _DumpCLSID(classId);
-        ALOGD("Failed to RegisterModuleInfo in %s", classId.pUunm);
+        ALOGD("Failed to RegisterModuleInfo in %s", classId.mUunm);
 #endif
         return ec;
     }
 
-    ec = LookupModuleInfo(classId.clsid, &modInfo);
+    ec = LookupModuleInfo(classId.mClsid, &modInfo);
     if (FAILED(ec)) {
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
         _DumpCLSID(classId);
-        ALOGD("Failed to LookupModuleInfo in %s", classId.pUunm);
+        ALOGD("Failed to LookupModuleInfo in %s", classId.mUunm);
 #endif
         return ec;
     }
 
-    for (Int32 m = 0; m < modInfo->classNum; m++) {
-        if (modInfo->classes[m].clsid == classId.clsid) {
-            *clsInfo = &(modInfo->classes[m]);
+    for (Int32 m = 0; m < modInfo->mClassNum; m++) {
+        if (modInfo->mClasses[m].mCLSID == classId.mClsid) {
+            *clsInfo = &(modInfo->mClasses[m]);
             return NOERROR;
         }
     }
 
 #if defined(_DEBUG) || defined(_MARSHAL_DEBUG)
     _DumpCLSID(classId);
-    ALOGD("Failed to AcquireClassInfo in %s", classId.pUunm);
+    ALOGD("Failed to AcquireClassInfo in %s", classId.mUunm);
 #endif
     return E_DOES_NOT_EXIST;
 }

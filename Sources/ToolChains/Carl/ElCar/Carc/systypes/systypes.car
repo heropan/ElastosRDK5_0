@@ -13,24 +13,6 @@ library
 
     typedef [dummytype] Int32 MemorySize;
 
-    typedef [dummytype] Int32 Second32;
-    typedef [dummytype] Int32 Millisecond32;
-    typedef [dummytype] Int32 Microsecond32;
-
-    typedef [dummytype] Int64 Second64;
-    typedef [dummytype] Int64 Millisecond64;
-    typedef [dummytype] Int64 Microsecond64;
-
-    typedef [dummytype] Second32*      PSecond32;
-    typedef [dummytype] Millisecond32* PMillisecond32;
-    typedef [dummytype] Microsecond32* PMicrosecond32;
-
-    typedef [dummytype] Second64*      PSecond64;
-    typedef [dummytype] Millisecond64* PMillisecond64;
-    typedef [dummytype] Microsecond64* PMicrosecond64;
-
-    typedef [dummytype] Int64 Timestamp64;
-
     typedef [dummytype] Int32 Handle32;
     typedef [dummytype] Int64 Handle64;
 

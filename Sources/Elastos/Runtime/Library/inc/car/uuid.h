@@ -53,12 +53,12 @@ CAR_INLINE Boolean operator ==(REMuid rguid1, REMuid rguid2)
 
 CAR_INLINE Boolean operator ==(REMuid rguid, RClassID rclsid)
 {
-    return IsEqualEMuid(rguid, rclsid.clsid);
+    return IsEqualEMuid(rguid, rclsid.mClsid);
 }
 
 CAR_INLINE Boolean operator ==(RClassID rclsid, REMuid rguid)
 {
-    return IsEqualEMuid(rguid, rclsid.clsid);
+    return IsEqualEMuid(rguid, rclsid.mClsid);
 }
 
 CAR_INLINE Boolean operator !=(REMuid rguid1, REMuid rguid2)
@@ -68,12 +68,12 @@ CAR_INLINE Boolean operator !=(REMuid rguid1, REMuid rguid2)
 
 CAR_INLINE Boolean operator !=(REMuid rguid, RClassID rclsid)
 {
-    return !IsEqualEMuid(rguid, rclsid.clsid);
+    return !IsEqualEMuid(rguid, rclsid.mClsid);
 }
 
 CAR_INLINE Boolean operator !=(RClassID rclsid, REMuid rguid)
 {
-    return !IsEqualEMuid(rguid, rclsid.clsid);
+    return !IsEqualEMuid(rguid, rclsid.mClsid);
 }
 
 _ELASTOS_NAMESPACE_END
@@ -90,7 +90,7 @@ CAR_INLINE Boolean IsEqualUunm(const char* uunm1, const char* uunm2)
 
 CAR_INLINE Boolean IsEqualClassId(RClassID r1, RClassID r2)
 {
-    return IsEqualEMuid(r1.clsid, r2.clsid) && IsEqualUunm(r1.pUunm, r2.pUunm);
+    return IsEqualEMuid(r1.mClsid, r2.mClsid) && IsEqualUunm(r1.mUunm, r2.mUunm);
 }
 
 CAR_INLINE Boolean operator ==(RClassID r1, RClassID r2)

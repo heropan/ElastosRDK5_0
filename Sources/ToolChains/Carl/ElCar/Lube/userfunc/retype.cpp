@@ -17,21 +17,16 @@ static const char * s_elatypes[] = {
     "Handle32", "Handle64",
     "PHandle32", "PHandle64",
     "Boolean",  "PBoolean",
-    "CString", "String",
+    "String",
 
     "CarQuintet",  "ArrayOf",
 
     "PCarQuintet",
 
     "MemorySize",
-    "Address",      "Timestamp64",
+    "Address",
 
     "EventHandler",
-
-    "Second32",   "Millisecond32",   "Microsecond32",
-    "Second64",   "Millisecond64",   "Microsecond64",
-    "Psecond32",  "PMillisecond32",  "PMicrosecond32",
-    "PSecond64",  "PMillisecond64",  "PMicrosecond64",
 
     "EGuid",       "EMuid",         "EIID",        "ClassID",      "InterfaceID",
 };

@@ -70,7 +70,7 @@ static ECode StdUnmarshalCustomInterface(
 
     ClassID proxyClsid;
     char uunmbuf[80];
-    proxyClsid.pUunm = uunmbuf;
+    proxyClsid.mUunm = uunmbuf;
 
     ECode ec = customMarshal->GetClsid(&proxyClsid);
     if (SUCCEEDED(ec)) {

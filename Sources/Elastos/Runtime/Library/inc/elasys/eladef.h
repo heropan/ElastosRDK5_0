@@ -36,10 +36,8 @@
 
 //path separator
 #define CH_PATH_SEPARATOR '/'
-#define WC_PATH_SEPARATOR L'/'
 #define IS_PATH_SEPARATOR(x) ((x) == '/' || (x) == '\\')
 #define STR_PATH_SEPARATOR "/"
-#define WCS_PATH_SEPARATOR L"/"
 
 #if defined(_RELEASE) && !defined(_PRERELEASE) && !defined(_TEST_TYPE)
 //#define ELASTOS_RC
@@ -194,6 +192,8 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
+
+#define _MAX_PATH     260     /* max length of full pathname */
 
 template <class type>
 CAR_INLINE const type &Max(const type &a, const type &b)

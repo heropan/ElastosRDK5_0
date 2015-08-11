@@ -13,7 +13,7 @@
 #include <clsbase.h>
 #include "adjustaddr.h"
 
-#include <_pubcrt.h>
+// #include <_pubcrt.h>
 
 _ELASTOS_NAMESPACE_USING
 

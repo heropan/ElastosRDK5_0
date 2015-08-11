@@ -76,7 +76,7 @@ ELAPI _CObject_ReflectModuleInfo(
         return E_NO_INTERFACE;
     }
 
-    return _CReflector_AcquireModuleInfo(String(clsid.pUunm), moduleInfo);
+    return _CReflector_AcquireModuleInfo(String(clsid.mUunm), moduleInfo);
 }
 
 ELAPI _CObject_ReflectClassInfo(
@@ -97,7 +97,7 @@ ELAPI _CObject_ReflectClassInfo(
     }
 
     AutoPtr<CModuleInfo> moduleInfo;
-    ec = g_objInfoList.AcquireModuleInfo(String(clsid.pUunm),
+    ec = g_objInfoList.AcquireModuleInfo(String(clsid.mUunm),
             (IModuleInfo **)&moduleInfo);
     if (FAILED(ec)) {
         return ec;
@@ -111,7 +111,7 @@ ELAPI _CObject_ReflectClassInfo(
     for (Int32 i = 0; i < moduleInfo->mClsMod->mClassCount; i++) {
         classDir = getClassDirAddr(base, moduleInfo->mClsMod->mClassDirs, i);
         clsDesc = adjustClassDescAddr(base, classDir->mDesc);
-        if (clsDesc->mClsid == clsid.clsid) {
+        if (clsDesc->mClsid == clsid.mClsid) {
             ec = g_objInfoList.AcquireClassInfo(moduleInfo->mClsModule,
                     classDir, (IInterface **)classInfo);
             return ec;
@@ -141,7 +141,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
     if (FAILED(ec)) return E_INVALID_ARGUMENT;
 
     AutoPtr<CModuleInfo> moduleInfo;
-    ec = _CReflector_AcquireModuleInfo(String(clsid.pUunm), (IModuleInfo **)&moduleInfo);
+    ec = _CReflector_AcquireModuleInfo(String(clsid.mUunm), (IModuleInfo **)&moduleInfo);
     if (FAILED(ec)) {
         return ec;
     }
@@ -159,7 +159,7 @@ ELAPI _CObject_ReflectInterfaceInfo(
         classDir = getClassDirAddr(base, moduleInfo->mClsMod->mClassDirs, i);
         clsDesc = adjustClassDescAddr(base, classDir->mDesc);
         //find the class
-        if (clsDesc->mClsid == clsid.clsid) {
+        if (clsDesc->mClsid == clsid.mClsid) {
             for (Int32 j = 0; j < clsDesc->mInterfaceCount; j++) {
                 cifDir = getCIFAddr(base, clsDesc->mInterfaces, j);
                 index = cifDir->mIndex;

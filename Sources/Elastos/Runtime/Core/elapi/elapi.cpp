@@ -56,7 +56,7 @@ public:
     }
 
     CARAPI Wait(
-        /* in */ Millisecond32 msTimeout,
+        /* in */ Int32 msTimeout,
         /* out */ WaitResult* result);
 
 public:
@@ -92,7 +92,7 @@ CCallbackRendezvous::~CCallbackRendezvous()
 }
 
 ECode CCallbackRendezvous::Wait(
-    /* [in] */ Millisecond32 msTimeOut,
+    /* [in] */ Int32 msTimeOut,
     /* [in] */ WaitResult* result)
 {
     return _Impl_CallbackSink_WaitForCallbackEvent(

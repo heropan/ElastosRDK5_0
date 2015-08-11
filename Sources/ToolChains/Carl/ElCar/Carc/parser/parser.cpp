@@ -1557,17 +1557,17 @@ void GenerateSinkClass(
 
     pClsid = &pDesc->mClsid;
     pSinkClsid = &pSinkDesc->mClsid;
-    pSinkClsid->Data1 = pClsid->Data1 ^ CLSID_XOR_CallbackSink.Data1;
-    pSinkClsid->Data2 = pClsid->Data2 ^ CLSID_XOR_CallbackSink.Data2;
-    pSinkClsid->Data3 = pClsid->Data3 ^ CLSID_XOR_CallbackSink.Data3;
-    pSinkClsid->Data4[0] = pClsid->Data4[0] ^ CLSID_XOR_CallbackSink.Data4[0];
-    pSinkClsid->Data4[1] = pClsid->Data4[1] ^ CLSID_XOR_CallbackSink.Data4[1];
-    pSinkClsid->Data4[2] = pClsid->Data4[2] ^ CLSID_XOR_CallbackSink.Data4[2];
-    pSinkClsid->Data4[3] = pClsid->Data4[3] ^ CLSID_XOR_CallbackSink.Data4[3];
-    pSinkClsid->Data4[4] = pClsid->Data4[4] ^ CLSID_XOR_CallbackSink.Data4[4];
-    pSinkClsid->Data4[5] = pClsid->Data4[5] ^ CLSID_XOR_CallbackSink.Data4[5];
-    pSinkClsid->Data4[6] = pClsid->Data4[6] ^ CLSID_XOR_CallbackSink.Data4[6];
-    pSinkClsid->Data4[7] = pClsid->Data4[7] ^ CLSID_XOR_CallbackSink.Data4[7];
+    pSinkClsid->mData1 = pClsid->mData1 ^ CLSID_XOR_CallbackSink.mData1;
+    pSinkClsid->mData2 = pClsid->mData2 ^ CLSID_XOR_CallbackSink.mData2;
+    pSinkClsid->mData3 = pClsid->mData3 ^ CLSID_XOR_CallbackSink.mData3;
+    pSinkClsid->mData4[0] = pClsid->mData4[0] ^ CLSID_XOR_CallbackSink.mData4[0];
+    pSinkClsid->mData4[1] = pClsid->mData4[1] ^ CLSID_XOR_CallbackSink.mData4[1];
+    pSinkClsid->mData4[2] = pClsid->mData4[2] ^ CLSID_XOR_CallbackSink.mData4[2];
+    pSinkClsid->mData4[3] = pClsid->mData4[3] ^ CLSID_XOR_CallbackSink.mData4[3];
+    pSinkClsid->mData4[4] = pClsid->mData4[4] ^ CLSID_XOR_CallbackSink.mData4[4];
+    pSinkClsid->mData4[5] = pClsid->mData4[5] ^ CLSID_XOR_CallbackSink.mData4[5];
+    pSinkClsid->mData4[6] = pClsid->mData4[6] ^ CLSID_XOR_CallbackSink.mData4[6];
+    pSinkClsid->mData4[7] = pClsid->mData4[7] ^ CLSID_XOR_CallbackSink.mData4[7];
 
     AddConstClassInterface("IObject", NULL, pModule, pSinkDesc);
     AddConstClassInterface("ICallbackSink", NULL, pModule, pSinkDesc);

@@ -161,7 +161,7 @@ public:
     _ELASTOS AutoPtr<IParcel>       mParameters;
     CarCallbackEvent*               mPrev;
     CarCallbackEvent*               mNext;
-    _ELASTOS Millisecond64          mWhen;
+    _ELASTOS Int64          mWhen;
 
 private:
     _ELASTOS Int32                  mRef;
@@ -192,16 +192,16 @@ ELAPI _Impl_CallbackSink_PostCallbackEvent(
 ELAPI _Impl_CallbackSink_PostCallbackEventAtTime(
     /* [in] */ PInterface callbackContext,
     /* [in] */ PCallbackEvent callbackEvent,
-    /* [in] */ _ELASTOS Millisecond64 uptimeMillis);
+    /* [in] */ _ELASTOS Int64 uptimeMillis);
 
 ELAPI _Impl_CallbackSink_SendCallbackEvent(
     /* [in] */ PInterface callbackContext,
     /* [in] */ PCallbackEvent callbackEvent,
-    /* [in] */ _ELASTOS Millisecond32 timeOut);
+    /* [in] */ _ELASTOS Int32 timeOut);
 
 ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
     /* [in] */ PInterface callbackContext,
-    /* [in] */ _ELASTOS Millisecond32 msTimeOut,
+    /* [in] */ _ELASTOS Int32 msTimeOut,
     /* [in] */ WaitResult* result,
     /* [out] */ _ELASTOS Boolean* eventOccured,
     /* [in] */ _ELASTOS UInt32 priority);

@@ -15,11 +15,11 @@
         ALOGD("> %s\n", info); \
         ALOGD("======== DUMP_CLSID ========\n"); \
         ALOGD("{%p, %p, %p, {%p, %p, %p, %p, %p, %p, %p, %p} }\n", \
-                CLSID.clsid.Data1, CLSID.clsid.Data2, CLSID.clsid.Data3, \
-                CLSID.clsid.Data4[0], CLSID.clsid.Data4[1], \
-                CLSID.clsid.Data4[2], CLSID.clsid.Data4[3], \
-                CLSID.clsid.Data4[4], CLSID.clsid.Data4[5], \
-                CLSID.clsid.Data4[6], CLSID.clsid.Data4[7]); \
+                CLSID.mClsid.mData1, CLSID.mClsid.mData2, CLSID.mClsid.mData3, \
+                CLSID.mClsid.mData4[0], CLSID.mClsid.mData4[1], \
+                CLSID.mClsid.mData4[2], CLSID.mClsid.mData4[3], \
+                CLSID.mClsid.mData4[4], CLSID.mClsid.mData4[5], \
+                CLSID.mClsid.mData4[6], CLSID.mClsid.mData4[7]); \
         ALOGD("============================\n"); \
     } while(0);
 #else
@@ -41,7 +41,7 @@ ECode AcquireClassObjectFromLocalModule(
     /* [in] */ REIID riid,
     /* [out] */ PInterface* object)
 {
-    const char* uunm = rclsid.pUunm;
+    const char* uunm = rclsid.mUunm;
     PDLLGETCLASSOBJECT dllGetClassObjectFunc;
 
     assert(uunm);
@@ -52,7 +52,7 @@ ECode AcquireClassObjectFromLocalModule(
     LocalModule* localModule = (LocalModule *)(g_LocModList.mNext);
     while ((DLinkNode *)localModule != &g_LocModList) {
         if (IsEqualUunm(localModule->mUunm.string(), uunm)) {
-            ec = (*localModule->mDllGetClassObjectFunc)(rclsid.clsid,
+            ec = (*localModule->mDllGetClassObjectFunc)(rclsid.mClsid,
                     EIID_IClassObject, object);
             localModule->mAskCount = 0;
             pthread_mutex_unlock(&g_LocModListLock);
@@ -63,7 +63,7 @@ ECode AcquireClassObjectFromLocalModule(
     pthread_mutex_unlock(&g_LocModListLock);
 
     if (IsRuntimeUunm(uunm)) {
-        return DllGetClassObject(rclsid.clsid, EIID_IClassObject, object);
+        return DllGetClassObject(rclsid.mClsid, EIID_IClassObject, object);
     }
 
     localModule = NULL;
@@ -94,7 +94,7 @@ ECode AcquireClassObjectFromLocalModule(
     localModule->mAskCount = 0;
     localModule->mDllCanUnloadNowFunc = (PDLLCANUNLOADNOW)dlsym(module, "DllCanUnloadNow");
 
-    ec = (*dllGetClassObjectFunc)(rclsid.clsid, riid, object);
+    ec = (*dllGetClassObjectFunc)(rclsid.mClsid, riid, object);
 
     if (FAILED(ec)) goto ErrorExit;
 

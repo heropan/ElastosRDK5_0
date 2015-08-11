@@ -8,13 +8,4 @@ EXPORT_HEADERS += elaatomics.h
 EXPORT_HEADERS += elaerror.h
 EXPORT_HEADERS += eladef.h
 EXPORT_HEADERS += clsinfo.h
-EXPORT_HEADERS += queue.h
 EXPORT_HEADERS += asm.h
-EXPORT_HEADERS += debugdef.h
-
-ifneq "$(XDK_COMPILER)" "gnu"
-    ifeq "$(XDK_TARGET_CPU)" "arm"
-        EXPORT_HEADERS += kxarm.h
-    endif
-endif
-

@@ -2,7 +2,7 @@
 // Copyright (c) 2000-2008,  Elastos, Inc.  All Rights Reserved.
 //==========================================================================
 #include "CModuleInfo.h"
-#include "_pubcrt.h"
+// #include "_pubcrt.h"
 
 CModuleInfo::CModuleInfo(
     /* [in] */ CClsModule* clsModule,

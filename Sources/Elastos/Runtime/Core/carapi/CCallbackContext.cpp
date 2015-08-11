@@ -267,7 +267,7 @@ Next:
 
 ECode CCallbackContext::SendCallbackEvent(
     /* [in] */ PCallbackEvent callbackEvent,
-    /* [in] */ Millisecond32 timeOut)
+    /* [in] */ Int32 timeOut)
 {
     ECode ec;
     Int32 CCStatus = 0;
@@ -543,7 +543,7 @@ again:
 }
 
 Int32 CCallbackContext::HandleCallbackEvents(
-    /* [in] */ Millisecond32 msTimeOut,
+    /* [in] */ Int32 msTimeOut,
     /* [in] */ WaitResult* result,
     /* [in] */ Boolean* occured,
     /* [in] */ UInt32 priority)
@@ -555,8 +555,8 @@ Int32 CCallbackContext::HandleCallbackEvents(
     struct timespec ts;
     struct timeval tp;
 
-    Millisecond32 msBegPoint = clock();
-    Millisecond32 msLapsedTime = 0;
+    Int32 msBegPoint = clock();
+    Int32 msLapsedTime = 0;
 
     PInterface callbackContext;
     callbackContext = (PInterface)pthread_getspecific(TL_CALLBACK_SLOT);

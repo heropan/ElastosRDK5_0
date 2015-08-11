@@ -22,9 +22,9 @@ void AbrgUuid(const GUID *puuid, FILE *pFile)
 {
     fprintf(pFile,
             "//    [ %08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x ]\n",
-            puuid->Data1, puuid->Data2, puuid->Data3,
-            puuid->Data4[0], puuid->Data4[1], puuid->Data4[2], puuid->Data4[3],
-            puuid->Data4[4], puuid->Data4[5], puuid->Data4[6], puuid->Data4[7]
+            puuid->mData1, puuid->mData2, puuid->mData3,
+            puuid->mData4[0], puuid->mData4[1], puuid->mData4[2], puuid->mData4[3],
+            puuid->mData4[4], puuid->mData4[5], puuid->mData4[6], puuid->mData4[7]
             );
 }
 

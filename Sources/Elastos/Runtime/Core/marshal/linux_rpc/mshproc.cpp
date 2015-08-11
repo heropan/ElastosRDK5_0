@@ -16,8 +16,8 @@ ECode Proxy_ProcessMsh_BufferSize(
     UInt32 size = 0;
     UInt32 inSize = 0;
     UInt32 outSize = 0;
-    Int32 paramNum = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    Int32 paramNum = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     for (Int32 n = 0; n < paramNum; n++) {
         if (BT_IS_OUT(params[n])) {    // [out]
@@ -206,17 +206,17 @@ ECode Proxy_ProcessMsh_BufferSize(
                 case BT_TYPE_ARRAYOF:
                     if (*args) {
                         if (CarQuintetFlag_Type_IObject
-                            != (((PCARQUINTET)*args)->m_flags
+                            != (((PCARQUINTET)*args)->mFlags
                                     & CarQuintetFlag_TypeMask)) {
                             inSize += MSH_ALIGN_4(sizeof(UInt32)
                                     + sizeof(CarQuintet)
-                                    + ((PCARQUINTET)*args)->m_size);
+                                    + ((PCARQUINTET)*args)->mSize);
                         }
                         else {
                             inSize += MSH_ALIGN_4(sizeof(UInt32) + sizeof(CarQuintet));
-                            Int32 used = ((PCARQUINTET)*args)->m_used /
+                            Int32 used = ((PCARQUINTET)*args)->mUsed /
                                     sizeof(IInterface *);
-                            Int32* int32Buf = (Int32*)((PCARQUINTET)*args)->m_pBuf;
+                            Int32* int32Buf = (Int32*)((PCARQUINTET)*args)->mBuf;
                             uint_t usedSize = 0;
                             for (Int32 i = 0; i < used; i++) {
                                 if (int32Buf[i]) {
@@ -227,7 +227,7 @@ ECode Proxy_ProcessMsh_BufferSize(
                                 }
                             }
                             inSize += MAX((MemorySize)usedSize, \
-                                    MSH_ALIGN_4(((PCARQUINTET)*args)->m_size));
+                                    MSH_ALIGN_4(((PCARQUINTET)*args)->mSize));
                         }
                     }
                     else {  // null pointer
@@ -265,8 +265,8 @@ ECode Proxy_ProcessMsh_In(
     /* [in] */ UInt32* args,
     /* [in, out] */ IParcel* parcel)
 {
-    Int32 paramNum = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    Int32 paramNum = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     for (Int32 n = 0; n < paramNum; n++) {
         if (BT_IS_IN(params[n])) { // [in] or [in, out]
@@ -363,7 +363,7 @@ ECode Proxy_ProcessMsh_In(
             if (((BT_TYPE(params[n]) == BT_TYPE_BUFFEROF) ||
                 (BT_TYPE(params[n]) == BT_TYPE_ARRAYOF) ||
                 (BT_TYPE(params[n]) == BT_TYPE_STRINGBUF)) && !BT_IS_CALLEE(params[n]) && *args) {
-                    parcel->WriteInt32(((PCARQUINTET)*args)->m_size);
+                    parcel->WriteInt32(((PCARQUINTET)*args)->mSize);
             }
             args++;
         }
@@ -378,8 +378,8 @@ ECode Proxy_ProcessUnmsh_Out(
     /* [in] */ UInt32 dataSize,
     /* [in, out] */ UInt32* args)
 {
-    Int32 paramNum = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    Int32 paramNum = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     for (Int32 n = 0; n < paramNum; n++) {
         if (BT_IS_OUT(params[n])) {   // [out] or [in, out]
@@ -432,8 +432,8 @@ ECode Proxy_ProcessUnmsh_Out(
                             PCARQUINTET p;
                             parcel->ReadArrayOf((Handle32*)&p);
                             PCARQUINTET qArg = (PCARQUINTET)*args;
-                            qArg->m_used = p->m_used;
-                            memcpy(qArg->m_pBuf, p->m_pBuf, p->m_size);
+                            qArg->mUsed = p->mUsed;
+                            memcpy(qArg->mBuf, p->mBuf, p->mSize);
                             _CarQuintet_Release(p);
                         }
                         else {
@@ -505,8 +505,8 @@ ECode Stub_ProcessUnmsh_In(
     if (outBuffer) {
         outBuffer = (UInt32 *)((MarshalHeader *)outBuffer + 1);
     }
-    Int32 paramNum = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    Int32 paramNum = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     for (Int32 n = 0; n < paramNum; n++) {
         if (BT_IS_OUT(params[n])) {    // [out] or [in, out]
@@ -562,8 +562,8 @@ ECode Stub_ProcessUnmsh_In(
                             parcel->ReadInt32(&size);
                             *outBuffer = (UInt32)malloc(sizeof(CarQuintet));
                             *(PCARQUINTET*)args = (PCARQUINTET)*outBuffer;
-                            ((PCARQUINTET)*args)->m_size = size;
-                            ((PCARQUINTET)*args)->m_pBuf = malloc(size);
+                            ((PCARQUINTET)*args)->mSize = size;
+                            ((PCARQUINTET)*args)->mBuf = malloc(size);
                         }
                         else {
                             *outBuffer = 0;
@@ -636,7 +636,7 @@ ECode Stub_ProcessUnmsh_In(
                 case BT_TYPE_EGUID:
                     parcel->ReadEGuid((EGuid*)args);
                     args += (sizeof(EGuid) +
-                            MSH_ALIGN_4(strlen(((EGuid*)args)->pUunm) + 1)) / 4;
+                            MSH_ALIGN_4(strlen(((EGuid*)args)->mUunm) + 1)) / 4;
                     break;
 
                 case BT_TYPE_PEMUID:
@@ -701,8 +701,8 @@ ECode Stub_ProcessMsh_Out(
     /* [in] */ Boolean onlyReleaseIn,
     /* [in, out] */ IParcel* parcel)
 {
-    Int32 paramNum = methodInfo->paramNum;
-    const CIBaseType* params = methodInfo->params;
+    Int32 paramNum = methodInfo->mParamNum;
+    const CIBaseType* params = methodInfo->mParams;
 
     // skip the Out Marshal Header;
     if (outBuffer) {
@@ -751,7 +751,7 @@ ECode Stub_ProcessMsh_Out(
                         parcel->WriteArrayOf((Handle32)*outBuffer);
                         if (!BT_IS_CALLEE(params[n])) {
                             PCARQUINTET p = (PCARQUINTET)*outBuffer;
-                            free(p->m_pBuf);
+                            free(p->mBuf);
                             free(p);
                         }
                         outBuffer++;
@@ -863,11 +863,11 @@ ECode Stub_ProcessMsh_Out(
                 case BT_TYPE_BUFFEROF:
                 case BT_TYPE_ARRAYOF:
                     if (*args) {
-                        if (CarQuintetFlag_Type_IObject == (((PCARQUINTET)*args)->m_flags
+                        if (CarQuintetFlag_Type_IObject == (((PCARQUINTET)*args)->mFlags
                                 & CarQuintetFlag_TypeMask)) {
-                            Int32 used = ((PCARQUINTET)*args)->m_used /
+                            Int32 used = ((PCARQUINTET)*args)->mUsed /
                                     sizeof(IInterface *);
-                            IInterface** itfBuf = (IInterface**)((PCARQUINTET)*args)->m_pBuf;
+                            IInterface** itfBuf = (IInterface**)((PCARQUINTET)*args)->mBuf;
                             for (Int32 i = 0; i < used; i++) {
                                 if (itfBuf[i]) {
                                     itfBuf[i]->Release();
@@ -875,11 +875,11 @@ ECode Stub_ProcessMsh_Out(
                                 }
                             }
                         }
-                        else if (CarQuintetFlag_Type_String == (((PCARQUINTET)*args)->m_flags
+                        else if (CarQuintetFlag_Type_String == (((PCARQUINTET)*args)->mFlags
                                 & CarQuintetFlag_TypeMask)) {
-                            Int32 size = ((PCARQUINTET)*args)->m_size /
+                            Int32 size = ((PCARQUINTET)*args)->mSize /
                                     sizeof(String);
-                            String* strBuf = (String*)((PCARQUINTET)*args)->m_pBuf;
+                            String* strBuf = (String*)((PCARQUINTET)*args)->mBuf;
                             for (Int32 i = 0; i < size; i++) {
                                 if (!strBuf[i].IsNull()) {
                                     strBuf[i] = NULL;

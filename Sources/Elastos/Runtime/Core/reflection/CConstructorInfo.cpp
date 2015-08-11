@@ -46,11 +46,11 @@ ECode CConstructorInfo::Init(
 {
     mOutParamIndex = methodDescriptor->mParamCount - 1;
 
-    mInstClsId.pUunm = mUrn2;
-    mClsId.pUunm = mUrn;
+    mInstClsId.mUunm = mUrn2;
+    mClsId.mUunm = mUrn;
 
-    mClsId.clsid =  clsId->clsid;
-    strcpy(mClsId.pUunm, clsId->pUunm);
+    mClsId.mClsid =  clsId->mClsid;
+    strcpy(mClsId.mUunm, clsId->mUunm);
 
     mMethodInfo = NULL;
     return g_objInfoList.AcquireMethodInfo(clsModule, methodDescriptor,

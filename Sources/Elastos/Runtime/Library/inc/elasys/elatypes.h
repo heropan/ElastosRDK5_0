@@ -109,44 +109,9 @@ typedef Handle64 *PHandle64;
 /** @addtogroup CARTypesRef
   *   @{
   */
-typedef Int32 Second32;
-typedef Int32 Millisecond32;
-typedef Int32 Microsecond32;
-
-typedef Int64 Second64;
-typedef Int64 Millisecond64;
-typedef Int64 Microsecond64;
-/** @} */
-
-typedef Second32*      PSecond32;
-typedef Millisecond32* PMillisecond32;
-typedef Microsecond32* PMicrosecond32;
-
-typedef Second64*      PSecond64;
-typedef Millisecond64* PMillisecond64;
-typedef Microsecond64* PMicrosecond64;
-
-/** @addtogroup CARTypesRef
-  *   @{
-  */
 //System Type
 typedef Int32 MemorySize;
 typedef UInt32 Address;
-
-/** @addtogroup SystemRef
-  *   @{
-  */
-typedef struct CriticalSection
-{
-    Int32   cWaiters;
-    Int32   cNested;
-    Int32   nOwnerId;
-    PVoid   event;
-    Int32   bLocked;
-    PVoid   reserved;
-    PVoid   sequenced;
-} CriticalSection, *PCriticalSection, CRITICAL_SECTION, *PCRITICAL_SECTION;
-/** @} */
 
 /** @} */
 
@@ -155,18 +120,18 @@ typedef struct CriticalSection
   */
 typedef struct _EMuid
 {
-    UInt32 Data1;
-    UInt16 Data2;
-    UInt16 Data3;
-    UInt8  Data4[8];
-}EMuid, *PEMuid;
+    UInt32  mData1;
+    UInt16  mData2;
+    UInt16  mData3;
+    UInt8   mData4[8];
+} EMuid, *PEMuid;
 
 typedef struct _EGuid
 {
-    EMuid   clsid;
-    char    *pUunm;
-    UInt32 carcode;
-}EGuid, *PEGuid;
+    EMuid   mClsid;
+    char*   mUunm;
+    UInt32  mCarcode;
+} EGuid, *PEGuid;
 
 typedef EGuid ClassID;
 typedef EMuid InterfaceID;
@@ -176,138 +141,6 @@ typedef InterfaceID EIID;
 typedef ClassID *PClassID;
 typedef InterfaceID *PInterfaceID;
 typedef EIID* PEIID;
-
-#if defined (_arm)
-typedef struct
-{
-    _ELASTOS UInt32    r0;
-    _ELASTOS UInt32    r1;
-    _ELASTOS UInt32    r2;
-    _ELASTOS UInt32    r3;
-    _ELASTOS UInt32    r4;
-    _ELASTOS UInt32    r5;
-    _ELASTOS UInt32    r6;
-    _ELASTOS UInt32    r7;
-    _ELASTOS UInt32    r8;
-    _ELASTOS UInt32    r9;
-    _ELASTOS UInt32    r10;
-    _ELASTOS UInt32    r11;
-    _ELASTOS UInt32    r12;
-    _ELASTOS UInt32    sp;
-    _ELASTOS UInt32    lr;
-    _ELASTOS UInt32    pc;
-    _ELASTOS UInt32    cpsr;
-} ThreadContext;
-#elif defined (_x86)
-#if defined(_win32)
-
-#define DBG_CONTINUE                     (0x00010002L)
-#define DBG_EXCEPTION_NOT_HANDLED        (0x80010001L)
-
-// this assumes that i386 has identical context records
-#define CONTEXT_i386    0x00010000
-
-// SS:SP, CS:IP, FLAGS, BP
-#define CONTEXT_CONTROL         (CONTEXT_i386 | 0x00000001L)
-
-// AX, BX, CX, DX, SI, DI
-#define CONTEXT_INTEGER         (CONTEXT_i386 | 0x00000002L)
-
-// DS, ES, FS, GS
-#define CONTEXT_SEGMENTS        (CONTEXT_i386 | 0x00000004L)
-
-// 387 state
-#define CONTEXT_FLOATING_POINT  (CONTEXT_i386 | 0x00000008L)
-
-// DB 0-3,6,7
-#define CONTEXT_DEBUG_REGISTERS (CONTEXT_i386 | 0x00000010L)
-
-// cpu specific extensions
-#define CONTEXT_EXTENDED_REGISTERS  (CONTEXT_i386 | 0x00000020L)
-
-#define CONTEXT_FULL (CONTEXT_CONTROL | CONTEXT_INTEGER | \
-                      CONTEXT_SEGMENTS)
-
-#define CONTEXT_ALL (CONTEXT_CONTROL | CONTEXT_INTEGER | CONTEXT_SEGMENTS | \
-                    CONTEXT_FLOATING_POINT | CONTEXT_DEBUG_REGISTERS | \
-                    CONTEXT_EXTENDED_REGISTERS)
-
-#define SIZE_OF_80387_REGISTERS         80
-
-#define MAXIMUM_SUPPORTED_EXTENSION     512
-
-typedef struct _FLOATING_SAVE_AREA
-{
-    _ELASTOS UInt32   ControlWord;
-    _ELASTOS UInt32   StatusWord;
-    _ELASTOS UInt32   TagWord;
-    _ELASTOS UInt32   ErrorOffset;
-    _ELASTOS UInt32   ErrorSelector;
-    _ELASTOS UInt32   DataOffset;
-    _ELASTOS UInt32   DataSelector;
-    _ELASTOS Byte    RegisterArea[SIZE_OF_80387_REGISTERS];
-    _ELASTOS UInt32   Cr0NpxState;
-} FLOATING_SAVE_AREA;
-
-typedef FLOATING_SAVE_AREA *PFLOATING_SAVE_AREA;
-
-typedef struct _Context
-{
-    _ELASTOS UInt32   ContextFlags;
-    _ELASTOS UInt32   Dr0;
-    _ELASTOS UInt32   Dr1;
-    _ELASTOS UInt32   Dr2;
-    _ELASTOS UInt32   Dr3;
-    _ELASTOS UInt32   Dr6;
-    _ELASTOS UInt32   Dr7;
-    FLOATING_SAVE_AREA FloatSave;
-    _ELASTOS UInt32   SegGs;
-    _ELASTOS UInt32   SegFs;
-    _ELASTOS UInt32   SegEs;
-    _ELASTOS UInt32   SegDs;
-    _ELASTOS UInt32   Edi;
-    _ELASTOS UInt32   Esi;
-    _ELASTOS UInt32   Ebx;
-    _ELASTOS UInt32   Edx;
-    _ELASTOS UInt32   Ecx;
-    _ELASTOS UInt32   Eax;
-    _ELASTOS UInt32   Ebp;
-    _ELASTOS UInt32   Eip;
-    _ELASTOS UInt32   SegCs;
-    _ELASTOS UInt32   EFlags;
-    _ELASTOS UInt32   Esp;
-    _ELASTOS UInt32   SegSs;
-    _ELASTOS Byte    ExtendedRegisters[MAXIMUM_SUPPORTED_EXTENSION];
-} ThreadContext;
-
-#else
-
-typedef struct
-{
-    _ELASTOS UInt32  ebx;
-    _ELASTOS UInt32  ecx;
-    _ELASTOS UInt32  edx;
-    _ELASTOS UInt32  esi;
-    _ELASTOS UInt32  edi;
-    _ELASTOS UInt32  ebp;
-    _ELASTOS UInt32  eax;
-    _ELASTOS UInt32  ds;
-    _ELASTOS UInt32  es;
-    union
-    {
-        uint8_t   irq;
-        _ELASTOS UInt32  errorcode;
-        _ELASTOS UInt32  uSystemCallNo;
-    } u;
-    _ELASTOS UInt32  eip;
-    _ELASTOS UInt32  cs;
-    _ELASTOS UInt32  eflags;
-    _ELASTOS UInt32  _esp;
-    _ELASTOS UInt32  _ss;
-} ThreadContext;
-
-#endif // _win32
-#endif // _arm
 
 typedef const EMuid&        REMuid;
 typedef const ClassID&      RClassID;
@@ -402,9 +235,9 @@ EXTERN_C void __asm(char*, ...);
 #define CARAPI              _ELASTOS ECode CARAPICALLTYPE
 #define CARAPI_(type)       type CARAPICALLTYPE
 
-#define ELFUNCCALLTYPE          CDECL
-#define ELFUNC                  _ELASTOS ECode ELFUNCCALLTYPE
-#define ELFUNC_(type)           type ELFUNCCALLTYPE
+#define ELFUNCCALLTYPE      CDECL
+#define ELFUNC              _ELASTOS ECode ELFUNCCALLTYPE
+#define ELFUNC_(type)       type ELFUNCCALLTYPE
 
 }
 

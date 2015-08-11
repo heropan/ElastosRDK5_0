@@ -26,9 +26,9 @@ CClassInfo::CClassInfo(
     mBase = mClsModule->mBase;
     mDesc = adjustClassDescAddr(mBase, mClassDirEntry->mDesc);
 
-    mClsId.pUunm = mUrn;
-    mClsId.clsid = mDesc->mClsid;
-    strcpy(mClsId.pUunm, adjustNameAddr(mBase, mClsMod->mUunm));
+    mClsId.mUunm = mUrn;
+    mClsId.mClsid = mDesc->mClsid;
+    strcpy(mClsId.mUunm, adjustNameAddr(mBase, mClsMod->mUunm));
 }
 
 CClassInfo::~CClassInfo()
@@ -112,8 +112,8 @@ ECode CClassInfo::GetId(
         return E_INVALID_ARGUMENT;
     }
 
-    clsid->clsid =  mDesc->mClsid;
-    strcpy(clsid->pUunm,  adjustNameAddr(mBase, mClsMod->mUunm));
+    clsid->mClsid =  mDesc->mClsid;
+    strcpy(clsid->mUunm,  adjustNameAddr(mBase, mClsMod->mUunm));
 
     return NOERROR;
 }
@@ -523,8 +523,8 @@ ECode CClassInfo::GetAllConstructorInfos(
     Int32 size = constructorInfos->GetLength();
     for (Int32 i = 0; i < size; i++) {
         CConstructorInfo* consInfoObj = (CConstructorInfo*)(*constructorInfos)[i];
-        consInfoObj->mInstClsId.clsid = mClsId.clsid;
-        strcpy(consInfoObj->mInstClsId.pUunm, mClsId.pUunm);
+        consInfoObj->mInstClsId.mClsid = mClsId.mClsid;
+        strcpy(consInfoObj->mInstClsId.mUunm, mClsId.mUunm);
     }
 
     return NOERROR;
@@ -553,8 +553,8 @@ ECode CClassInfo::GetConstructorInfoByParamNames(
     if (FAILED(ec)) return ec;
 
     CConstructorInfo* consInfoObj = (CConstructorInfo*)(*constructorInfo);
-    consInfoObj->mInstClsId.clsid = mClsId.clsid;
-    strcpy(consInfoObj->mInstClsId.pUunm, mClsId.pUunm);
+    consInfoObj->mInstClsId.mClsid = mClsId.mClsid;
+    strcpy(consInfoObj->mInstClsId.mUunm, mClsId.mUunm);
 
     return NOERROR;
 }
@@ -607,8 +607,8 @@ ECode CClassInfo::GetConstructorInfoByParamCount(
     }
 
     CConstructorInfo* consInfoObj = (CConstructorInfo*)(*retConstructorInfo);
-    consInfoObj->mInstClsId.clsid = mClsId.clsid;
-    strcpy(consInfoObj->mInstClsId.pUunm, mClsId.pUunm);
+    consInfoObj->mInstClsId.mClsid = mClsId.mClsid;
+    strcpy(consInfoObj->mInstClsId.mUunm, mClsId.mUunm);
 
     return NOERROR;
 }

@@ -53,11 +53,11 @@ typedef Int32 CarQuintetLocks;
 
 typedef struct CarQuintet
 {
-    CarQuintetFlags m_flags;
-    CarQuintetLocks m_reserve;
-    MemorySize      m_used;
-    MemorySize      m_size;
-    PVoid           m_pBuf;
+    CarQuintetFlags mFlags;
+    CarQuintetLocks mReserve;
+    MemorySize      mUsed;
+    MemorySize      mSize;
+    PVoid           mBuf;
 } CarQuintet, *PCarQuintet, *PCARQUINTET;
 
 /** @} */

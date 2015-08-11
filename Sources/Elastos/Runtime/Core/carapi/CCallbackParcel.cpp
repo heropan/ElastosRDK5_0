@@ -200,25 +200,25 @@ ECode CCallbackParcel::GrowDataBuffer(
 
             case Type_EGuid:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
-                offset2 = (Byte*)(*(EGuid**)elemPtr)->pUunm - orgDataBuf;
+                offset2 = (Byte*)(*(EGuid**)elemPtr)->mUunm - orgDataBuf;
                 *(Byte**)elemPtr = mDataBuf + offset1;
-                (*(EGuid**)elemPtr)->pUunm = (char*)(mDataBuf + offset2);
+                (*(EGuid**)elemPtr)->mUunm = (char*)(mDataBuf + offset2);
                 elemPtr += 4;
                 break;
 
             case Type_ArrayOf:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
-                offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
+                offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->mBuf - orgDataBuf;
                 *(Byte**)elemPtr = mDataBuf + offset1;
-                (*(CarQuintet**)(elemPtr))->m_pBuf = (void*)(mDataBuf + offset2);
+                (*(CarQuintet**)(elemPtr))->mBuf = (void*)(mDataBuf + offset2);
                 elemPtr += 4;
                 break;
 
             case Type_ArrayOfString:
                 offset1 = *(Byte**)elemPtr - orgDataBuf;
-                offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->m_pBuf - orgDataBuf;
+                offset2 = (Byte*)(*(CarQuintet**)(elemPtr))->mBuf - orgDataBuf;
                 tmpPtr = mDataBuf + offset1;
-                ((CarQuintet*)tmpPtr)->m_pBuf = mDataBuf + offset2;
+                ((CarQuintet*)tmpPtr)->mBuf = mDataBuf + offset2;
                 used = (*(ArrayOf<String>**)elemPtr)->GetLength();
 
                 for (Int32 i = 0; i < used; i++) {
@@ -355,8 +355,8 @@ ECode CCallbackParcel::WriteValue(
             *(EGuid**)(mElemPtr) = (EGuid*)mDataPtr;
             mElemPtr += 4;
             memcpy(mDataPtr, value, sizeof(EGuid));
-            ((EGuid*)mDataPtr)->pUunm = (char*)(mDataPtr + sizeof(EGuid));
-            strcpy(((EGuid*)mDataPtr)->pUunm, ((EGuid*)value)->pUunm);
+            ((EGuid*)mDataPtr)->mUunm = (char*)(mDataPtr + sizeof(EGuid));
+            strcpy(((EGuid*)mDataPtr)->mUunm, ((EGuid*)value)->mUunm);
             mDataPtr += ROUND4(size);
             break;
 
@@ -376,8 +376,8 @@ ECode CCallbackParcel::WriteValue(
                 mElemPtr += 4;
                 memcpy(mDataPtr, value, sizeof(CarQuintet));
                 mDataPtr += ROUND4(sizeof(CarQuintet));
-                (*(CarQuintet**)(mElemPtr - 4))->m_pBuf = (PVoid)(mDataPtr);
-                memcpy(mDataPtr, ((CarQuintet*)value)->m_pBuf, size - sizeof(CarQuintet));
+                (*(CarQuintet**)(mElemPtr - 4))->mBuf = (PVoid)(mDataPtr);
+                memcpy(mDataPtr, ((CarQuintet*)value)->mBuf, size - sizeof(CarQuintet));
                 mDataPtr += ROUND4(size - sizeof(CarQuintet));
             }
             break;
@@ -396,8 +396,8 @@ ECode CCallbackParcel::WriteValue(
 
             memcpy(mDataPtr, value, sizeof(CarQuintet));
             mDataPtr += ROUND4(sizeof(CarQuintet));
-            (*(CarQuintet**)(mElemPtr - 4))->m_pBuf = (PVoid)(mDataPtr);
-            mDataPtr += ROUND4(((CarQuintet*)value)->m_size);
+            (*(CarQuintet**)(mElemPtr - 4))->mBuf = (PVoid)(mDataPtr);
+            mDataPtr += ROUND4(((CarQuintet*)value)->mSize);
 
             for(Int32 i = 0; i < used; i++) {
                 (**(ArrayOf<String>**)(mElemPtr - 4))[i] = (const char*)mDataPtr;
@@ -679,7 +679,7 @@ ECode CCallbackParcel::WriteEMuid(
 ECode CCallbackParcel::WriteEGuid(
     /* [in] */ const EGuid& id)
 {
-    return WriteValue((PVoid)&id, Type_EGuid, sizeof(EGuid) + strlen(id.pUunm) + 1);
+    return WriteValue((PVoid)&id, Type_EGuid, sizeof(EGuid) + strlen(id.mUunm) + 1);
 }
 
 ECode CCallbackParcel::WriteInterfacePtr(
@@ -691,14 +691,14 @@ ECode CCallbackParcel::WriteInterfacePtr(
 ECode CCallbackParcel::WriteArrayOf(
     /* [in] */ Handle32 pArray)
 {
-    Int32 size = pArray != 0 ? sizeof(CarQuintet) + ((CarQuintet*)pArray)->m_size : 0;
+    Int32 size = pArray != 0 ? sizeof(CarQuintet) + ((CarQuintet*)pArray)->mSize : 0;
     return WriteValue((PVoid)pArray, Type_ArrayOf, size);
 }
 
 ECode CCallbackParcel::WriteArrayOfString(
     /* [in] */ ArrayOf<String>* array)
 {
-    Int32 size = sizeof(CarQuintet) + array->m_size;
+    Int32 size = sizeof(CarQuintet) + array->mSize;
     Int32 len = array->GetLength();
 
     for (Int32 i = 0; i < len; i++) {

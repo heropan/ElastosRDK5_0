@@ -134,13 +134,13 @@ ECode CCarArrayInfo::CreateVariable(
         return E_OUT_OF_MEMORY;
     }
 
-    carQuintet->m_flags = DataTypeToFlag(mElementDataType);
+    carQuintet->mFlags = DataTypeToFlag(mElementDataType);
     if (mQuintetType == CarDataType_ArrayOf) {
-        carQuintet->m_used = bufSize;
+        carQuintet->mUsed = bufSize;
     }
 
-    carQuintet->m_size = bufSize;
-    carQuintet->m_pBuf = (Byte *)carQuintet + sizeof(CarQuintet);
+    carQuintet->mSize = bufSize;
+    carQuintet->mBuf = (Byte *)carQuintet + sizeof(CarQuintet);
 
     CVariableOfCarArray* carArrayBox = new CVariableOfCarArray(this,
             carQuintet, TRUE);
@@ -166,11 +166,11 @@ ECode CCarArrayInfo::CreateVariableBox(
     Int32 size = 0;
     ECode ec = mElementTypeInfo->GetSize(&size);
     if (FAILED(ec)) return ec;
-    if (variableDescriptor->m_size < size) {
+    if (variableDescriptor->mSize < size) {
         return E_INVALID_ARGUMENT;
     }
 
-    if (!(variableDescriptor->m_flags & DataTypeToFlag(mElementDataType))) {
+    if (!(variableDescriptor->mFlags & DataTypeToFlag(mElementDataType))) {
         return E_INVALID_ARGUMENT;
     }
 

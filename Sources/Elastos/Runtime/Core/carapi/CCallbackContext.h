@@ -41,7 +41,7 @@ public:
 
     CARAPI SendCallbackEvent(
         /* [in] */ PCallbackEvent callbackEvent,
-        /* [in] */ Millisecond32 timeOut);
+        /* [in] */ Int32 timeOut);
 
     CARAPI RequestToFinish(
         /* [in] */ Int32 flag);
@@ -60,7 +60,7 @@ public:
         /* [in] */ PVoid handlerFunc);
 
     CARAPI_(Int32) HandleCallbackEvents(
-        /* [in] */ Millisecond32 msTimeOut = INFINITE,
+        /* [in] */ Int32 msTimeOut = INFINITE,
         /* [in] */ WaitResult* result = NULL,
         /* [in] */ Boolean* occured = NULL,
         /* [in] */ UInt32 priority = 0);

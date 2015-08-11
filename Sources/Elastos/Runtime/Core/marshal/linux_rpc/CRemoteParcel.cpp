@@ -315,7 +315,7 @@ ECode CRemoteParcel::WriteEGuid(
 {
     ECode ec = Write(&id, sizeof(EGuid));
     if (FAILED(ec)) return ec;
-    return WriteCStringInner(id.pUunm);
+    return WriteCStringInner(id.mUunm);
 }
 
 ECode CRemoteParcel::WriteArrayOf(
@@ -333,8 +333,8 @@ ECode CRemoteParcel::WriteArrayOfString(
 
     Write((void*)array, sizeof(CarQuintet));
 
-    Int32 size = ((PCARQUINTET)array)->m_size / sizeof(String);
-    String* strBuf = (String*)((PCARQUINTET)array)->m_pBuf;
+    Int32 size = ((PCARQUINTET)array)->mSize / sizeof(String);
+    String* strBuf = (String*)((PCARQUINTET)array)->mBuf;
     for (Int32 i = 0; i < size; i++) {
         if (!strBuf[i].IsNull()) {
             WriteInt32(MSH_NOT_NULL);
@@ -358,14 +358,14 @@ ECode CRemoteParcel::WriteArrayOfInner(
     Write((void*)value, sizeof(CarQuintet));
 
     if (CarQuintetFlag_Type_IObject
-            != (((PCARQUINTET)value)->m_flags
+            != (((PCARQUINTET)value)->mFlags
                     & CarQuintetFlag_TypeMask)) {
         // copy the storaged data
         //
-        if (CarQuintetFlag_Type_String == (((PCARQUINTET)value)->m_flags
+        if (CarQuintetFlag_Type_String == (((PCARQUINTET)value)->mFlags
                 & CarQuintetFlag_TypeMask)) {
-            Int32 size = ((PCARQUINTET)value)->m_size / sizeof(String);
-            String* strBuf = (String*)((PCARQUINTET)value)->m_pBuf;
+            Int32 size = ((PCARQUINTET)value)->mSize / sizeof(String);
+            String* strBuf = (String*)((PCARQUINTET)value)->mBuf;
             for (Int32 i = 0; i < size; ++i) {
                 // ALOGD("i: %d, str: %s", i, strBuf[i].string());
                 if (!strBuf[i].IsNull()) {
@@ -378,14 +378,14 @@ ECode CRemoteParcel::WriteArrayOfInner(
             }
         }
         else {
-            Write(((PCARQUINTET)value)->m_pBuf,
-                    ((PCARQUINTET)value)->m_size);
+            Write(((PCARQUINTET)value)->mBuf,
+                    ((PCARQUINTET)value)->mSize);
         }
     }
     else {
-        Int32 size = ((PCARQUINTET)value)->m_size
+        Int32 size = ((PCARQUINTET)value)->mSize
                 / sizeof(IInterface *);
-        IInterface** itfBuf = (IInterface**)((PCARQUINTET)value)->m_pBuf;
+        IInterface** itfBuf = (IInterface**)((PCARQUINTET)value)->mBuf;
         for (Int32 i = 0; i < size; i++) {
             if (itfBuf[i]) {
                 WriteInt32(MSH_NOT_NULL);
@@ -686,8 +686,8 @@ ECode CRemoteParcel::ReadEGuid(
     ECode ec = Read((void*)id, sizeof(EGuid));
     if (FAILED(ec)) return ec;
     const char* str = ReadCStringInner();
-    id->pUunm = (char*)malloc(strlen(str) + 1);
-    strcpy(id->pUunm, str);
+    id->mUunm = (char*)malloc(strlen(str) + 1);
+    strcpy(id->mUunm, str);
     return NOERROR;
 }
 
@@ -710,7 +710,7 @@ ECode CRemoteParcel::ReadArrayOfString(
         CarQuintet buf;
 
         Read((void*)&buf, sizeof(buf));
-        Int32 size = buf.m_size / sizeof(String);
+        Int32 size = buf.mSize / sizeof(String);
         ArrayOf<String>* strArray = ArrayOf<String>::Alloc(size);
         for (Int32 i = 0; i < size; i++) {
             ReadInt32(&tag);
@@ -733,8 +733,8 @@ ECode CRemoteParcel::ReadArrayOfInner(
     if (tag != MSH_NULL) {
         CarQuintet q;
         Read((void*)&q, sizeof(CarQuintet));
-        Int32 size = q.m_size;
-        PCarQuintet qq = _ArrayOf_Alloc(size, q.m_flags);
+        Int32 size = q.mSize;
+        PCarQuintet qq = _ArrayOf_Alloc(size, q.mFlags);
         if (qq == NULL) {
             *value = NULL;
             return NOERROR;
@@ -743,9 +743,9 @@ ECode CRemoteParcel::ReadArrayOfInner(
         *value = qq;
         if (size != 0) {
             if (CarQuintetFlag_Type_IObject
-                != (q.m_flags & CarQuintetFlag_TypeMask)) {
+                != (q.mFlags & CarQuintetFlag_TypeMask)) {
                 if (CarQuintetFlag_Type_String
-                    == (q.m_flags & CarQuintetFlag_TypeMask)) {
+                    == (q.mFlags & CarQuintetFlag_TypeMask)) {
                     ArrayOf<String>* strArr = (ArrayOf<String>*)(*value);
                     for (Int32 i = 0; i < (Int32)(size / sizeof(String)); i++) {
                         ReadInt32(&tag);
@@ -756,11 +756,11 @@ ECode CRemoteParcel::ReadArrayOfInner(
                     }
                 }
                 else {
-                    Read((void*)qq->m_pBuf, size);
+                    Read((void*)qq->mBuf, size);
                 }
             }
             else {
-                IInterface** itfBuf = (IInterface**)qq->m_pBuf;
+                IInterface** itfBuf = (IInterface**)qq->mBuf;
                 size = size / sizeof(IInterface *);
                 for (Int32 i = 0; i < size; i++) {
                     ReadInt32(&tag);
@@ -777,15 +777,15 @@ ECode CRemoteParcel::ReadArrayOfInner(
                         Read((void *)&ipack, sizeof(InterfacePack));
                         ipack.mNetAddress = netAddress;
                         if (IsParcelable(&ipack, &classInfo)) {
-                            classId.clsid = ipack.mClsid;
-                            classId.pUunm = classInfo->pszUunm;
+                            classId.mClsid = ipack.mClsid;
+                            classId.mUunm = classInfo->mUunm;
 
                             ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
                                     EIID_IParcelable, (IInterface**)&parcelable);
                             if (FAILED(ec)) return ec;
 
                             parcelable->ReadFromParcel(this);
-                            iid = classInfo->interfaces[ipack.mIndex]->iid;
+                            iid = classInfo->mInterfaces[ipack.mIndex]->mIID;
                             *((IInterface**)itfBuf + i) = parcelable->Probe(iid);
                         }
                         else {
@@ -844,8 +844,8 @@ ECode CRemoteParcel::ReadInterfacePtr(
         CIClassInfo* classInfo = NULL;
         if (IsParcelable(itfPack, &classInfo)) {
             ClassID classId;
-            classId.clsid = itfPack->mClsid;
-            classId.pUunm = classInfo->pszUunm;
+            classId.mClsid = itfPack->mClsid;
+            classId.mUunm = classInfo->mUunm;
 
             IParcelable* parcelable = NULL;
             ec = _CObject_CreateInstance(classId, RGM_SAME_DOMAIN,
@@ -853,7 +853,7 @@ ECode CRemoteParcel::ReadInterfacePtr(
             if (FAILED(ec)) return ec;
 
             parcelable->ReadFromParcel(this);
-            InterfaceID iid = classInfo->interfaces[itfPack->mIndex]->iid;
+            InterfaceID iid = classInfo->mInterfaces[itfPack->mIndex]->mIID;
             *(IInterface**)itfPtr = parcelable->Probe(iid);
         }
         else {
@@ -1238,9 +1238,9 @@ Boolean CRemoteParcel::IsParcelable(
         if (FAILED(ec)) return FALSE;
     }
 
-    for (UInt16 i = 0; i < (*classInfo)->interfaceNum; i++) {
-        CIInterfaceInfo* interfaceInfo = (*classInfo)->interfaces[i];
-        if (interfaceInfo->iid == EIID_IParcelable) {
+    for (UInt16 i = 0; i < (*classInfo)->mInterfaceNum; i++) {
+        CIInterfaceInfo* interfaceInfo = (*classInfo)->mInterfaces[i];
+        if (interfaceInfo->mIID == EIID_IParcelable) {
             return TRUE;
         }
     }

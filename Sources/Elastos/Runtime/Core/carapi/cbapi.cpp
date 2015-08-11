@@ -82,7 +82,7 @@ ELAPI _Impl_CallbackSink_AcquireCallbackContext(
 ELAPI _Impl_CallbackSink_PostCallbackEventAtTime(
     /* [in] */ PInterface callbackContext,
     /* [in] */ PCallbackEvent callbackEvent,
-    /* [in] */ Millisecond64 uptimeMillis)
+    /* [in] */ Int64 uptimeMillis)
 {
     if (NULL == callbackContext || NULL == callbackEvent) {
         return E_INVALID_ARGUMENT;
@@ -99,7 +99,7 @@ ELAPI _Impl_CallbackSink_PostCallbackEvent(
     /* [in] */ PCallbackEvent callbackEvent)
 {
     struct timeval now;
-    Millisecond64 when;
+    Int64 when;
 
     gettimeofday(&now, NULL);
     when = (now.tv_sec * 1000 + now.tv_usec/1000.0) + 0.5;
@@ -111,7 +111,7 @@ ELAPI _Impl_CallbackSink_PostCallbackEvent(
 ELAPI _Impl_CallbackSink_SendCallbackEvent(
     /* [in] */ PInterface callbackContext,
     /* [in] */ PCallbackEvent callbackEvent,
-    /* [in] */ Millisecond32 msTimeOut)
+    /* [in] */ Int32 msTimeOut)
 {
     if (NULL == callbackContext || NULL == callbackEvent) {
         return E_INVALID_ARGUMENT;
@@ -123,7 +123,7 @@ ELAPI _Impl_CallbackSink_SendCallbackEvent(
 
 ELAPI _Impl_CallbackSink_WaitForCallbackEvent(
     /* [in] */ PInterface callbackContext,
-    /* [in] */ Millisecond32 msTimeOut,
+    /* [in] */ Int32 msTimeOut,
     /* [out] */ WaitResult* result,
     /* [out] */ Boolean* eventOccured,
     /* [in] */ UInt32 priority)
@@ -228,7 +228,7 @@ ELAPI _Impl_CheckClsId(
     IObject* object;
     char str[80];
     ClassID clsid;
-    clsid.pUunm = str;
+    clsid.mUunm = str;
 
     object = (IObject*)serverObj->Probe(EIID_IObject);
     if (NULL == object) return E_INVALID_ARGUMENT;

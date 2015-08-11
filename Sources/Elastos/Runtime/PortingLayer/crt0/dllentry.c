@@ -27,10 +27,6 @@ BOOL WINAPI DllMain(
         DWORD dwReason,
         LPVOID lpvReserved);
 
-#ifdef _openkode
-int __dso_handle;
-#endif
-
 BOOL WINAPI _DllMainCRTStartup(
         HANDLE  hDllHandle,
         DWORD   dwReason,

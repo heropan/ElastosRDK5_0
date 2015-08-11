@@ -439,10 +439,10 @@ const char *Uuid2IString(const GUID *pUuid, BOOL bUpper)
     const char *pszFormat = bUpper ? c_szIUpperFmt:c_szILowerFmt;
 
     sprintf(s_szStringBuf, pszFormat,
-            pUuid->Data1, pUuid->Data2, pUuid->Data3,
-            pUuid->Data4[0], pUuid->Data4[1], pUuid->Data4[2],
-            pUuid->Data4[3], pUuid->Data4[4], pUuid->Data4[5],
-            pUuid->Data4[6], pUuid->Data4[7]);
+            pUuid->mData1, pUuid->mData2, pUuid->mData3,
+            pUuid->mData4[0], pUuid->mData4[1], pUuid->mData4[2],
+            pUuid->mData4[3], pUuid->mData4[4], pUuid->mData4[5],
+            pUuid->mData4[6], pUuid->mData4[7]);
 
     return s_szStringBuf;
 }
@@ -457,10 +457,10 @@ const char *Uuid2CString(const GUID *pUuid, BOOL bUpper)
     const char *pszFormat = bUpper ? c_szCUpperFmt:c_szCLowerFmt;
 
     sprintf(s_szStringBuf, pszFormat,
-            pUuid->Data1, pUuid->Data2, pUuid->Data3,
-            pUuid->Data4[0], pUuid->Data4[1], pUuid->Data4[2],
-            pUuid->Data4[3], pUuid->Data4[4], pUuid->Data4[5],
-            pUuid->Data4[6], pUuid->Data4[7]);
+            pUuid->mData1, pUuid->mData2, pUuid->mData3,
+            pUuid->mData4[0], pUuid->mData4[1], pUuid->mData4[2],
+            pUuid->mData4[3], pUuid->mData4[4], pUuid->mData4[5],
+            pUuid->mData4[6], pUuid->mData4[7]);
 
     return s_szStringBuf;
 }
