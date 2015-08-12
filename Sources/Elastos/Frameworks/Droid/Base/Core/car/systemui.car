@@ -20,6 +20,26 @@ module
     merge("systemui/SystemUIApplication.car");
     merge("systemui/SystemUIService.car");
 
+    merge("systemui/statusbar/ActivatableNotificationView.car");
+    merge("systemui/statusbar/AlphaImageView.car");
+    merge("systemui/statusbar/AlphaOptimizedFrameLayout.car");
+    merge("systemui/statusbar/AnimatedImageView.car");
+    merge("systemui/statusbar/BaseStatusBar.car");
+    merge("systemui/statusbar/CommandQueue.car");
+//
+//     merge("systemui/statusbar/StatusBarIconView.car");
+//     merge("systemui/statusbar/SignalClusterView.car");
+//     merge("systemui/statusbar/RotationToggle.car");
+//     merge("systemui/statusbar/LatestItemView.car");
+
+//     merge("systemui/statusbar/phone/FastColorDrawable.car");
+//     merge("systemui/statusbar/phone/IconMerger.car");
+//     merge("systemui/statusbar/phone/NavigationBarView.car");
+//     merge("systemui/statusbar/phone/PhoneStatusBar.car");
+//     merge("systemui/statusbar/phone/Ticker.car");
+//     merge("systemui/statusbar/phone/TickerView.car");
+//     merge("systemui/statusbar/phone/Panel.car");
+
     merge("systemui/statusbar/policy/AccessibilityController.car");
     merge("systemui/statusbar/policy/BatteryController.car");
     merge("systemui/statusbar/policy/BluetoothController.car");
@@ -65,20 +85,6 @@ module
 //     merge("systemui/recent/TaskDescriptionAdapter.car");
 //     merge("systemui/recent/RecentsVerticalScrollView.car");
 //     merge("systemui/recent/RecentsHorizontalScrollView.car");
-//     merge("systemui/statusbar/BaseStatusBar.car");
-//     merge("systemui/statusbar/CommandQueue.car");
-//     merge("systemui/statusbar/AnimatedImageView.car");
-//     merge("systemui/statusbar/StatusBarIconView.car");
-//     merge("systemui/statusbar/SignalClusterView.car");
-//     merge("systemui/statusbar/RotationToggle.car");
-//     merge("systemui/statusbar/LatestItemView.car");
-//     merge("systemui/statusbar/phone/FastColorDrawable.car");
-//     merge("systemui/statusbar/phone/IconMerger.car");
-//     merge("systemui/statusbar/phone/NavigationBarView.car");
-//     merge("systemui/statusbar/phone/PhoneStatusBar.car");
-//     merge("systemui/statusbar/phone/Ticker.car");
-//     merge("systemui/statusbar/phone/TickerView.car");
-//     merge("systemui/statusbar/phone/Panel.car");
 
 //     merge("systemui/statusbar/tablet/StatusBarPanel.car");
 //     merge("systemui/statusbar/tablet/TabletStatusBar.car");

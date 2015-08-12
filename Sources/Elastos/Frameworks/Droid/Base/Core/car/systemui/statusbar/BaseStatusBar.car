@@ -1,7 +1,11 @@
 module
 {
-    interface Elastos.Droid.StatusBar.IIStatusBarService;
-    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.View.IMotionEvent;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Service.Notification.IStatusBarNotification;
+    interface Elastos.Droid.SystemUI.StatusBar.INotificationDataEntry;
+    interface Elastos.Droid.Service.Notification.INotificationListenerServiceRankingMap;
 
     namespace Elastos {
     namespace Droid {
@@ -10,7 +14,29 @@ module
 
     /**
      * @Involve
+     * interface Elastos.Droid.View.IViewOnTouchListener
+     */
+    [local]
+    interface IBaseStatusBarTouchOutsideListener {
+        OnTouch(
+            [in] IView* v,
+            [in] IMotionEvent* ev);
+    }
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IViewOnClickListener
+     */
+    interface INotificationClicker {
+    }
+
+    /**
+     * @Involve
      * interface Elastos.Droid.SystemUI.ISystemUI
+     * interface Elastos.Droid.ICommandQueueCallbacks
+     * interface Elastos.Droid.IActivatableNotificationViewOnActivatedListener
+     * interface Elastos.Droid.IRecentsComponentCallbacks
+     * interface Elastos.Droid.IExpandableNotificationRowExpansionLogger
+     * interface Elastos.Droid.INotificationDataEnvironment
      */
     interface IBaseStatusBar {
 
@@ -20,29 +46,92 @@ module
         const Int32 EXPANDED_LEAVE_ALONE = -10000;
         const Int32 EXPANDED_FULL_OPEN = -10001;
 
-        GetStatusBarService(
-            [out] IIStatusBarService** service);
-
         IsDeviceProvisioned(
             [out] Boolean* isDeviceProvisioned);
+
+        Start();
 
         UserSwitched(
             [in] Int32 newUserId);
 
-        NotificationIsForCurrentUser(
-            [in] IStatusBarNotification* notification,
+        IsHeadsUp(
+            [in] String key,
+            [out] Boolean* result);
+
+        IsMediaNotification(
+            [in] INotificationDataEntry* entry,
             [out] Boolean* result);
 
         DismissPopups();
 
-        DismissIntruder();
+        OnHeadsUpDismissed();
+
+        ResetHeadsUpDecayTimer();
+
+        ScheduleHeadsUpOpen();
+
+        ScheduleHeadsUpClose();
+
+        ScheduleHeadsUpEscalation();
+
+        /**
+         * Save the current "public" (locked and secure) state of the lockscreen.
+         */
+        SetLockscreenPublicMode(
+            [in] Boolean publicMode);
+
+        IsLockscreenPublicMode(
+            [out] Boolean* result);
+
+        /**
+         * Has the given user chosen to allow their private (full) notifications to be shown even
+         * when the lockscreen is in "public" (secure & locked) mode?
+         */
+        UserAllowsPrivateNotificationsInPublic(
+            [in] Int32 userHandle,
+            [out] Boolean* result);
+
+        OnNotificationClear(
+            [out] IStatusBarNotification** notification);
+
+        MakeClicker(
+            [in] IPendingIntent* intent,
+            [in] String notificationKey,
+            [in] Boolean forHun,
+            [out] INotificationClicker** clicker);
+
+        AnimateCollapsePanels(
+            [in] Int32 flags,
+            [in] Boolean force);
+
+        OverrideActivityPendingAppTransition(
+            [in] Boolean keyguardShowing);
+
+        AddNotification(
+            [in] IStatusBarNotification* notification,
+            [in] INotificationListenerServiceRankingMap* ranking);
+
+        UpdateNotificationRanking(
+            [in] INotificationListenerServiceRankingMap* ranking);
+
+        UpdateNotification(
+            [in] IStatusBarNotification* notification,
+            [in] INotificationListenerServiceRankingMap* ranking);
 
         InKeyguardRestrictedInputMode(
             [out] Boolean* result);
 
-        //protected
-        ShouldDisableNavbarGestures(
-            [out] Boolean* result);
+        SetInteracting(
+            [in] Int32 barWindow,
+            [in] Boolean interacting);
+
+        SetBouncerShowing(
+            [in] Boolean bouncerShowing);
+
+        IsBouncerShowing(
+            [out] Boolean* showing);
+
+        Destroy();
     }
 
     } // namespace StatusBar

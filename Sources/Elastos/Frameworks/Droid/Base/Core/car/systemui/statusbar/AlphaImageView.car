@@ -6,21 +6,14 @@ module
     namespace StatusBar {
 
     /**
-     * @Involve
-     * interface Elastos.Droid.Widget.IImageView
-     */
-    interface IAnimatedImageView {
-
-    }
-
-    /**
-     * A view who contains media artwork.
+     * An ImageView which does not have overlapping renderings commands and therefore does not need a
+     * layer when alpha is changed.
      */
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IFrameLayout
+     * interface Elastos.Droid.Widget.ImageView
      */
-    interface IBackDropView {
+    interface IAlphaImageView {
 
     }
 
