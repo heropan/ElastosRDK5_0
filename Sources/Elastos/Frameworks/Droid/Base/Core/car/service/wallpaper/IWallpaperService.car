@@ -1,6 +1,7 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Service.Wallpaper.IWallpaperConnection;
 
     namespace Elastos {
@@ -8,6 +9,9 @@ module
     namespace Service {
     namespace Wallpaper {
 
+    /**
+     * @hide
+     */
     interface IIWallpaperService {
         Attach(
             [in] IWallpaperConnection* connection,
@@ -15,7 +19,8 @@ module
             [in] Int32 windowType,
             [in] Boolean isPreview,
             [in] Int32 reqWidth,
-            [in] Int32 reqHeight);
+            [in] Int32 reqHeight,
+            [in] IRect* padding);
     }
 
     } //Wallpaper

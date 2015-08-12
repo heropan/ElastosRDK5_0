@@ -46,7 +46,7 @@ module
     //merge("../car/speech.car");
     //merge("../car/webkit.car");
     //merge("../car/privacy.car");
-    //merge("../car/service.car");
+    merge("../car/service.car");
     //merge("../car/appwidget.car");
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
