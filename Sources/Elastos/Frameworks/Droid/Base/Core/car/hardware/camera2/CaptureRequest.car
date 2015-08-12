@@ -26,6 +26,10 @@ module
     interface ICaptureRequestKey {
     }
 
+    interface ICaptureRequestBuilder {
+
+    }
+
     /**
      * <p>An immutable package of settings and outputs needed to capture a single
      * image from the camera device.</p>

@@ -1,0 +1,28 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    namespace Legacy {
+
+    /**
+     * Hold important data necessary to build the camera1 parameters up from a capture request.
+     */
+    interface ILegacyRequest {
+        /**
+         * Update the current parameters in-place to be a copy of the new parameters.
+         *
+         * @param parameters non-{@code null} parameters for api1 camera
+         */
+//        SetParameters(
+//            [in] IParameters* parameters);
+    }
+
+    } // namespace Legacy
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

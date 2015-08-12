@@ -1,0 +1,103 @@
+
+module
+{
+    using interface Elastos.Utility.IList;
+    interface Elastos.Droid.Hardware.Camera2.IICameraDeviceCallbacks;
+    interface Elastos.Droid.Hardware.Camera2.IICameraDeviceUser;
+    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
+    interface Elastos.Droid.Os.IHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    namespace Impl {
+
+    interface IStateCallbackKK {
+
+    }
+
+    interface ICaptureCallback {
+
+    }
+
+    /**
+     * HAL2.1+ implementation of CameraDevice. Use CameraManager#open to instantiate
+     */
+    interface ICameraDeviceImpl {
+        GetCallbacks(
+            [out] IICameraDeviceCallbacks** outcd);
+
+        SetRemoteDevice(
+            [in] IICameraDeviceUser* remoteDevice);
+
+        /**
+         * Call to indicate failed connection to a remote camera device.
+         *
+         * <p>This places the camera device in the error state and informs the callback.
+         * Use in place of setRemoteDevice() when startup fails.</p>
+         */
+        SetRemoteFailure(
+            [in] ECode failure);
+
+        ConfigureOutputs(
+            [in] IList* outputs);
+
+        /**
+         * Attempt to configure the outputs; the device goes to idle and then configures the
+         * new outputs if possible.
+         *
+         * <p>The configuration may gracefully fail, if there are too many outputs, if the formats
+         * are not supported, or if the sizes for that format is not supported. In this case this
+         * function will return {@code false} and the unconfigured callback will be fired.</p>
+         *
+         * <p>If the configuration succeeds (with 1 or more outputs), then the idle callback is fired.
+         * Unconfiguring the device always fires the idle callback.</p>
+         *
+         * @param outputs a list of one or more surfaces, or {@code null} to unconfigure
+         * @return whether or not the configuration was successful
+         *
+         * @throws CameraAccessException if there were any unexpected problems during configuration
+         */
+        ConfigureOutputsChecked(
+            [in] IList* outputs,
+            [out] Boolean* value);
+
+        /**
+         * For use by backwards-compatibility code only.
+         */
+        SetSessionListener(
+            [in] IStateCallbackKK* sessionCallback);
+
+        Capture(
+            [in] ICaptureRequest* request,
+            [in] ICaptureCallback* ccallback,
+            [in] IHandler* handler,
+            [out] Int32* value);
+
+        CaptureBurst(
+            [in] IList* requests,
+            [in] ICaptureCallback* ccallback,
+            [in] IHandler* handler,
+            [out] Int32* value);
+
+        SetRepeatingRequest(
+            [in] ICaptureRequest* request,
+            [in] ICaptureCallback* ccallback,
+            [in] IHandler* handler,
+            [out] Int32* value);
+
+        SetRepeatingBurst(
+            [in] IList* requests,
+            [in] ICaptureCallback* ccallback,
+            [in] IHandler* handler);
+
+        StopRepeating();
+    }
+
+    } // namespace Impl
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

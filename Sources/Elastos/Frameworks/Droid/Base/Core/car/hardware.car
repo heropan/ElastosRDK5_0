@@ -44,10 +44,42 @@ module
     merge("hardware/usb/UsbConfiguration.car");
 
     merge("hardware/camera2/CaptureRequest.car");
+    merge("hardware/camera2/CameraDevice.car");
+    merge("hardware/camera2/CameraCaptureSession.car");
+    merge("hardware/camera2/CameraCharacteristics.car");
+    merge("hardware/camera2/CameraManager.car");
+    merge("hardware/camera2/CameraMetadata.car");
+    merge("hardware/camera2/CaptureFailure.car");
+    merge("hardware/camera2/CaptureResult.car");
+    merge("hardware/camera2/DngCreator.car");
+    merge("hardware/camera2/TotalCaptureResult.car");
+    merge("hardware/camera2/ICameraDeviceCallbacks.car");
+    merge("hardware/camera2/ICameraDeviceUser.car");
 
     merge("hardware/camera2/dispatch/Dispatchable.car");
 
     merge("hardware/camera2/impl/CallbackProxies.car");
+    merge("hardware/camera2/impl/CameraMetadataNative.car");
+    merge("hardware/camera2/impl/CameraCaptureSessionImpl.car");
+    merge("hardware/camera2/impl/CameraDeviceImpl.car");
+    merge("hardware/camera2/impl/GetCommand.car");
+    merge("hardware/camera2/impl/SetCommand.car");
+
+    merge("hardware/camera2/legacy/BurstHolder.car");
+    merge("hardware/camera2/legacy/RequestHolder.car");
+    merge("hardware/camera2/legacy/LegacyRequest.car");
+    merge("hardware/camera2/legacy/CameraDeviceState.car");
+    merge("hardware/camera2/legacy/CaptureCollector.car");
+    merge("hardware/camera2/legacy/GLThreadManager.car");
+    merge("hardware/camera2/legacy/LegacyCameraDevice.car");
+    merge("hardware/camera2/legacy/LegacyFaceDetectMapper.car");
+    merge("hardware/camera2/legacy/LegacyFocusStateMapper.car");
+    merge("hardware/camera2/legacy/LegacyMetadataMapper.car");
+    merge("hardware/camera2/legacy/LegacyRequestMapper.car");
+    merge("hardware/camera2/legacy/LegacyResultMapper.car");
+    merge("hardware/camera2/legacy/ParameterUtils.car");
+    merge("hardware/camera2/legacy/RequestHandlerThread.car");
+    merge("hardware/camera2/legacy/RequestQueue.car");
 
     merge("hardware/camera2/marshal/Marshaler.car");
     merge("hardware/camera2/marshal/MarshalHelpers.car");

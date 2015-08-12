@@ -1,0 +1,52 @@
+
+module
+{
+    using interface Elastos.Utility.IList;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    /**
+     * The base class for camera controls and information.
+     *
+     * <p>
+     * This class defines the basic key/value map used for querying for camera
+     * characteristics or capture results, and for setting camera request
+     * parameters.
+     * </p>
+     *
+     * <p>
+     * All instances of CameraMetadata are immutable. The list of keys with {@link #getKeys()}
+     * never changes, nor do the values returned by any key with {@code #get} throughout
+     * the lifetime of the object.
+     * </p>
+     *
+     * @see CameraDevice
+     * @see CameraManager
+     * @see CameraCharacteristics
+     **/
+    interface ICameraMetadata {
+
+        /**
+         * Returns a list of the keys contained in this map.
+         *
+         * <p>The list returned is not modifiable, so any attempts to modify it will throw
+         * a {@code UnsupportedOperationException}.</p>
+         *
+         * <p>All values retrieved by a key from this list with {@code #get} are guaranteed to be
+         * non-{@code null}. Each key is only listed once in the list. The order of the keys
+         * is undefined.</p>
+         *
+         * @return List of the keys contained in this map.
+         */
+        // @SuppressWarnings("unchecked")
+        GetKeys(
+            [out] IList** outlist);
+    }
+
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}

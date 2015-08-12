@@ -1694,7 +1694,7 @@ module
      *
      * @see FaceDetectionListener
      */
-    interface IFace {
+    interface ICameraFace {
     }
 
     /**
@@ -1710,7 +1710,7 @@ module
          * @param camera  The {@link Camera} service object
          */
         OnFaceDetection(
-            [in] ArrayOf<IFace>* faces,
+            [in] ArrayOf<ICameraFace>* faces,
             [in] IHardwareCamera* camera);
     }
 

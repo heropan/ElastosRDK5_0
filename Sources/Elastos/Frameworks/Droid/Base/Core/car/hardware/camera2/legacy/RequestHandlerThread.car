@@ -1,0 +1,44 @@
+
+module
+{
+    interface Elastos.Droid.Os.IHandler;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+    namespace Camera2 {
+    namespace Legacy {
+
+    [deprecated]
+    interface IRequestHandlerThread {
+
+        // Blocks until thread has started
+        WaitUntilStarted();
+
+        // May return null if the handler is not set up yet.
+        GetHandler(
+            [out] IHandler** outhand);
+
+        // Blocks until thread has started
+        WaitAndGetHandler(
+            [out] IHandler** outhand);
+
+        // Atomic multi-type message existence check
+        HasAnyMessages(
+            [in] ArrayOf<Int32>* what,
+            [out] Boolean* value);
+
+        // Atomic multi-type message remove
+        RemoveMessages(
+            [in] ArrayOf<Int32>* what);
+
+        // Blocks until thread is idling
+        WaitUntilIdle();
+    }
+
+    } // namespace Legacy
+    } // namespace Camera2
+    } // namespace Hardware
+    } // namespace Droid
+    } // namespace Elastos
+}
