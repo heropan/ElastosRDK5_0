@@ -285,7 +285,7 @@ module
 
 
     //
-    // Elastos.Droid.Server
+    // Elastos.Droid.Service
     //
     namespace Elastos {
     namespace Droid {
@@ -309,7 +309,7 @@ module
             interface IConditionListener {}
         }
 
-    }}} // Elastos.Droid.Os
+    }}} // Elastos.Droid.Service
 
     namespace Elastos {
     namespace Droid {
@@ -361,10 +361,14 @@ module
 
             interface IBaseStatusBar {}
 
+            interface INotificationDataEntry {}
+
+            namespace Phone {
+                interface IPhoneStatusBar {}
+            }
+
             namespace Policy {
                 interface IScrollAdapter {}
-
-                interface IBatteryController {}
             }
         }
 
@@ -387,5 +391,16 @@ module
         interface IAppOpsManager {}
 
     }}} // Elastos.Droid.App
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Bluetooth {
+
+        interface IBluetoothDevice {}
+
+        interface IBluetoothProfile {}
+
+    }}} // Elastos.Droid.Bluetooth
+
 
 }

@@ -1,4 +1,3 @@
-
 module
 {
     namespace Elastos {
@@ -8,15 +7,15 @@ module
     namespace Policy {
 
     /**
-     * @Involve
-     * interface Elastos.Droid.Graphics.Drawable.IDrawable
+     * Gradient background for the user switcher on Keyguard.
      */
-    interface IFixedSizeDrawable {
-        SetFixedBounds(
-            [in] Int32 l,
-            [in] Int32 t,
-            [in] Int32 r,
-            [in] Int32 b);
+    /**
+     * @Invovle
+     * interface IDrawable
+     * interface IViewOnLayoutChangeListener
+     */
+    interface IKeyguardUserSwitcherScrim {
+
     }
 
     } // namespace Policy

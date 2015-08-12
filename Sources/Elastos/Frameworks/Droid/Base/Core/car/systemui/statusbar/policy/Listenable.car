@@ -1,21 +1,17 @@
 module
 {
-    interface Elastos.Droid.View.IView;
-
     namespace Elastos {
     namespace Droid {
     namespace SystemUI {
     namespace StatusBar {
     namespace Policy {
 
-    [local]
-    interface IOnSizeChangedListener {
-        OnSizeChanged(
-            [in] IView* v,
-            [in] Int32 w,
-            [in] Int32 h,
-            [in] Int32 oldw,
-            [in] Int32 oldh);
+    /**
+     * Common interface for components with an active listening state.
+     */
+    interface IListenable {
+        SetListening(
+            [in] Boolean listening);
     }
 
     } // namespace Policy

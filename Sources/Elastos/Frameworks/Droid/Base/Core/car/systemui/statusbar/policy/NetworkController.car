@@ -10,31 +10,79 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface INetworkControllerSignalCluster {
-        SetWifiIndicators(
-            [in] Boolean visible,
-            [in] Int32 strengthIcon,
-            [in] Int32 activityIcon,
-            [in] String contentDescription);
+    interface INetworkControllerDataUsageInfo {
+        SetCarrier(
+            [in] String carrier);
 
-        SetMobileDataIndicators(
-            [in] Boolean visible,
-            [in] Int32 strengthIcon,
-            [in] Int32 activityIcon,
-            [in] Int32 typeIcon,
-            [in] String contentDescription,
-            [in] String typeContentDescription);
+        GetCarrier(
+            [out] String* carrier);
 
-        SetEthernetIndicators(
-            [in] Boolean visible,
-            [in] Int32 strengthIcon,
-            [in] Int32 activityIcon,
-            [in] String contentDescription);
+        SetPeriod(
+            [in] String period);
 
-        SetIsAirplaneMode(
-            [in] Boolean is,
-            [in] Int32 airplaneIcon);
+        GetPeriod(
+            [out] String* period);
+
+        SetLimitLevel(
+            [in] Int64 level);
+
+        GetLimitLevel(
+            [out] Int64* level);
+
+        SetWarningLevel(
+            [in] Int64 level);
+
+        GetWarningLevel(
+            [out] Int64* level);
+
+        SetUsageLevel(
+            [in] Int64 level);
+
+        GetUsageLevel(
+            [out] Int64* level);
     }
+
+    interface INetworkControllerAccessPoint {
+        const Int32 NO_NETWORK = -1;  // see WifiManager
+
+        SetNetworkId(
+            [in] Int32 id);
+
+        GetNetworkId(
+            [out] Int32* id);
+
+        SetIconId(
+            [in] Int32 id);
+
+        GetIconId(
+            [out] Int32* id);
+
+        SetSsid(
+            [in] String ssid);
+
+        GetSsid(
+            [out] String* ssid);
+
+        IsConnected(
+            [out] Boolean* result);
+
+        SetIsConnected(
+            [in] Boolean connected);
+
+        // 0 - 5
+        SetLevel(
+            [in] Int32 id);
+
+        GetLevel(
+            [out] Int32* id);
+    }
+
+    [deprecated]
+    interface INetworkControllerAccessPointCallback {
+        OnAccessPointsChanged(
+            [in] ArrayOf<INetworkControllerAccessPoint*>* accessPoints);
+    }
+
 
     interface INetworkSignalChangedCallback {
         OnWifiSignalChanged(
@@ -56,57 +104,41 @@ module
     }
 
     [local]
-    interface INetworkController { /*extends Elastos.Droid.Content.IBroadcastReceiver*/
+    interface INetworkController {
         HasMobileDataFeature(
             [out] Boolean* result);
-
-        IsEmergencyOnly(
-            [out] Boolean* result);
-
-        AddPhoneSignalIconView(
-            [in] IImageView* v);
-
-        AddDataDirectionIconView(
-            [in] IImageView* v);
-
-        AddDataDirectionOverlayIconView(
-            [in] IImageView* v);
-
-        AddWifiIconView(
-            [in] IImageView* v);
-
-        AddWimaxIconView(
-            [in] IImageView* v);
-
-        AddCombinedSignalIconView(
-            [in] IImageView* v);
-
-        AddDataTypeIconView(
-            [in] IImageView* v);
-
-        AddCombinedLabelView(
-            [in] ITextView* v);
-
-        AddMobileLabelView(
-            [in] ITextView* v);
-
-        AddWifiLabelView(
-            [in] ITextView* v);
-
-        AddEmergencyLabelView(
-            [in] ITextView* v);
-
-        AddSignalCluster(
-            [in] INetworkControllerSignalCluster* cluster);
 
         AddNetworkSignalChangedCallback(
             [in] INetworkSignalChangedCallback* cb);
 
-        RefreshSignalCluster(
-            [in] INetworkControllerSignalCluster* cluster);
+        RemoveNetworkSignalChangedCallback(
+            [in] INetworkSignalChangedCallback* cb);
 
-        SetStackedMode(
+        SetWifiEnabled(
             [in] Boolean stacked);
+
+        AddAccessPointCallback(
+            [in] INetworkControllerAccessPointCallback* cb);
+
+        RemoveAccessPointCallback(
+            [in] INetworkControllerAccessPointCallback* cb);
+
+        ScanForAccessPoints();
+
+        Connect(
+            [in] INetworkControllerAccessPoint* ap);
+
+        IsMobileDataSupported(
+            [out] Boolean* result);
+
+        IsMobileDataEnabled(
+            [out] Boolean* result);
+
+        SetMobileDataEnabled(
+            [in] Boolean enabled);
+
+        GetDataUsageInfo(
+            [out] INetworkControllerDataUsageInfo** result);
     }
 
     } // namespace Policy

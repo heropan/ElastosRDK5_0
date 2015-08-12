@@ -7,10 +7,18 @@ module
     namespace Policy {
 
     /**
-     * @Involve
-     * interface Elastos.Droid.View.IView
+     * Manages the user switcher on the Keyguard.
      */
-    interface IEventHole {
+    interface IKeyguardUserSwitcher {
+        SetKeyguard(
+            [in] Boolean keyguard,
+            [in] Boolean animate);
+
+        Show(
+            [in] Boolean animate);
+
+        Hide(
+            [in] Boolean animate);
     }
 
     } // namespace Policy
@@ -19,4 +27,3 @@ module
     } // namespace Droid
     } // namespace Elastos
 }
-

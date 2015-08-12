@@ -1,0 +1,70 @@
+module
+{
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Service.Notification.ICondition;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface IZenModeControllerCallback {
+        OnZenChanged(
+            [in] Int32 zen);
+
+        OnExitConditionChanged(
+            [in] ICondition* exitCondition);
+
+        OnConditionsChanged(
+            [in] ArrayOf<ICondition*>* conditions);
+
+        OnNextAlarmChanged();
+
+        OnZenAvailableChanged(
+            [in] Boolean available);
+
+        OnEffectsSupressorChanged();
+    }
+
+    interface IZenModeController {
+        AddCallback(
+            [in] IZenModeControllerCallback* cb);
+
+        RemoveCallback(
+            [in] IZenModeControllerCallback* cb);
+
+        SetZen(
+            [in] Int32 zen);
+
+        GetZen(
+            [in] Int32* result);
+
+        RequestConditions(
+            [in] Boolean* request);
+
+        SetExitCondition(
+            [in] ICondition* exitCondition);
+
+        GetExitCondition(
+            [out] ICondition** condition);
+
+        GetNextAlarm(
+            [out] Int64* alarm);
+
+        SetUserId(
+            [in] Int32 userId);
+
+        IsZenAvailable(
+            [out] Boolean* result);
+
+        GetEffectsSuppressor(
+            [out] IComponentName** name);
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

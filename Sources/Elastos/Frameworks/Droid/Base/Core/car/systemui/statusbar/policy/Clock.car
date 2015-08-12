@@ -10,6 +10,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Widget.ITextView
+     * interface IDemoMode
      */
     interface IClock {
 

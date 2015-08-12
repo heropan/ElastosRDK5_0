@@ -1,4 +1,3 @@
-
 module
 {
     namespace Elastos {
@@ -7,9 +6,14 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface IRotationLockCallbacks {
-        SetRotationLockControlVisibility(
-            [in] Boolean show);
+    interface IPrefs {
+        Read(
+            [in] IContext* context,
+            [out] ISharedPreferences** prefs);
+
+        Edit(
+            [in] IContext* context,
+            [out] ISharedPreferences** prefs);
     }
 
     } // namespace Policy

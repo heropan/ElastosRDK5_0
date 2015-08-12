@@ -13,6 +13,9 @@ module
      * interface Elastos.Droid.View.IView
      */
     interface IDeadZone {
+        const String TAG = "DeadZone";
+
+        const Boolean DEBUG = FALSE;
 
         const Int32 HORIZONTAL  = 0;
         const Int32 VERTICAL    = 1;

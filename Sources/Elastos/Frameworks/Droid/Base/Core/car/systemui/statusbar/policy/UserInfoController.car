@@ -1,0 +1,30 @@
+module
+{
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Policy {
+
+    interface ISplitClockViewOnUserInfoChangedListener {
+        OnUserInfoChanged(
+            [in] String name,
+            [in] IDrawable* picture);
+    }
+
+    interface ISplitClockView {
+        AddListener(
+            [in] ISplitClockViewOnUserInfoChangedListener* listener);
+
+        ReloadUserInfo();
+
+    }
+
+    } // namespace Policy
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
