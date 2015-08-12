@@ -49,6 +49,7 @@ module
     interface Elastos.Core.ICloneable;
     interface Elastos.Security.IProvider;
     interface Elastos.Security.IAlgorithmParameters;
+    interface Elastos.Security.Spec.IAlgorithmParameterSpec;
     interface Elastos.Math.IBigInteger;
 
    namespace Elastosx {
@@ -286,6 +287,35 @@ module
         }
 
         [deprecated]
+        class CIvParameterSpec {
+            constructor(
+                [in] ArrayOf<Byte> * iv);
+
+            constructor(
+                [in] ArrayOf<Byte> * iv,
+                [in] Int32 offset,
+                [in] Int32 byteCount);
+
+            interface IIvParameterSpec;
+        }
+
+        class COAEPParameterSpec {
+            constructor();
+
+            constructor(
+                [in] String mdName,
+                [in] String mgfName,
+                [in] IAlgorithmParameterSpec * mgfSpec,
+                [in] IPSource * pSrc);
+
+            interface IOAEPParameterSpec;
+        }
+
+        singleton class COAEPParameterSpecHelper {
+            interface IOAEPParameterSpecHelper;
+        }
+
+        [deprecated]
         class CPBEKeySpec {
             constructor(
                 [in] ArrayOf<Char32> * password);
@@ -304,6 +334,90 @@ module
             interface IPBEKeySpec;
         }
 
+        [deprecated]
+        class CPBEParameterSpec {
+            constructor(
+                [in] ArrayOf<Byte> * salt,
+                [in] Int32 iterationCount);
+
+            interface IPBEParameterSpec;
+        }
+
+        class CPSource {
+            constructor(
+                [in] String pSrcName);
+
+            interface IPSource;
+        }
+
+        [deprecated]
+        class CPSpecified {
+            constructor();
+
+            constructor(
+            [in] ArrayOf<Byte> * p);;
+
+            interface IPSpecified;
+        }
+
+        singleton class CPSpecifiedHelper {
+            interface IPSpecifiedHelper;
+        }
+
+        [deprecated]
+        class CRC2ParameterSpec {
+            constructor(
+                [in] Int32 effectiveKeyBits);
+
+            constructor(
+                [in] Int32 effectiveKeyBits,
+                [in] ArrayOf<Byte> * iv);
+
+            constructor(
+                [in] Int32 effectiveKeyBits,
+                [in] ArrayOf<Byte> * iv,
+                [in] Int32 offset);
+
+            interface IRC2ParameterSpec;
+        }
+
+        [deprecated]
+        class CRC5ParameterSpec {
+            constructor(
+                [in] Int32 ver,
+                [in] Int32 rounds,
+                [in] Int32 wordSize);
+
+            constructor(
+                [in] Int32 ver,
+                [in] Int32 rounds,
+                [in] Int32 wordSize,
+                [in] ArrayOf<Byte> * iv);
+
+            constructor(
+                [in] Int32 ver,
+                [in] Int32 rounds,
+                [in] Int32 wordSize,
+                [in] ArrayOf<Byte> * iv,
+                [in] Int32 offset);
+
+            interface IRC5ParameterSpec;
+        }
+
+        [deprecated]
+        class CSecretKeySpec {
+            constructor(
+                [in] ArrayOf<Byte> * key,
+                [in] String algorithm);
+
+            constructor(
+                [in] ArrayOf<Byte> * key,
+                [in] Int32 offset,
+                [in] Int32 len,
+                [in] Int32 algorithm);
+
+            interface ISecretKeySpec;
+        }
 
     }
 
