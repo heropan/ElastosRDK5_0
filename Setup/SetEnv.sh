@@ -124,7 +124,7 @@ else
             else
                 TITLE=$XDK_TARGET_PLATFORM-$XDK_TARGET_CPU.$XDK_COMPILER-$XDK_TARGET_PRODUCT-$XDK_VERSION
             fi
-            export PS1='\[\e]0;$TITLE \w\a\]${debian_chroot:+($debian_chroot)}\w\$'
+            export PS1='\[\e]0;$TITLE \w\a\]${debian_chroot:+($debian_chroot)}\w\$ '
             #clear
         fi
 fi
