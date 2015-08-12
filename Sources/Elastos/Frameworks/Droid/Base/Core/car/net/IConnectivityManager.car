@@ -9,7 +9,7 @@ module
     interface Elastos.Droid.Internal.Net.ILegacyVpnInfo;
     interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Os.IMessenger;
-    interface Elastos.Droid.Os.IIBinder;
+    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.App.IPendingIntent;
 
     namespace Elastos {
@@ -236,7 +236,7 @@ module
             [in] INetworkCapabilities* networkCapabilities,
             [in] IMessenger* messenger,
             [in] Int32 timeoutSec,
-            [in] IIBinder* binder,
+            [in] IBinder* binder,
             [in] Int32 legacy,
             [out] INetworkRequest** result);
 
@@ -248,7 +248,7 @@ module
         ListenForNetwork(
             [in] INetworkCapabilities* networkCapabilities,
             [in] IMessenger* messenger,
-            [in] IIBinder* binder,
+            [in] IBinder* binder,
             [out] INetworkRequest** result);
 
         PendingListenForNetwork(

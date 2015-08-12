@@ -9,6 +9,7 @@ module
     namespace StatusBar {
     namespace Policy {
 
+    [deprecated]
     interface IZenModeControllerCallback {
         OnZenChanged(
             [in] Int32 zen);
@@ -38,10 +39,10 @@ module
             [in] Int32 zen);
 
         GetZen(
-            [in] Int32* result);
+            [out] Int32* result);
 
         RequestConditions(
-            [in] Boolean* request);
+            [in] Boolean request);
 
         SetExitCondition(
             [in] ICondition* exitCondition);

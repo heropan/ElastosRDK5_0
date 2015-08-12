@@ -1,7 +1,7 @@
 module
 {
-    interface Elastos.Droid.SystemUI.StatusBar.INetworkControllerAccessPointCallback;
-    interface Elastos.Droid.SystemUI.StatusBar.INetworkControllerAccessPoint;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerAccessPointCallback;
+    interface Elastos.Droid.SystemUI.StatusBar.Policy.INetworkControllerAccessPoint;
 
     namespace Elastos {
     namespace Droid {

@@ -8,15 +8,15 @@ module
     namespace StatusBar {
     namespace Policy {
 
-    interface ISplitClockViewOnUserInfoChangedListener {
+    interface IUserInfoControllerOnUserInfoChangedListener {
         OnUserInfoChanged(
             [in] String name,
             [in] IDrawable* picture);
     }
 
-    interface ISplitClockView {
+    interface IUserInfoController {
         AddListener(
-            [in] ISplitClockViewOnUserInfoChangedListener* listener);
+            [in] IUserInfoControllerOnUserInfoChangedListener* listener);
 
         ReloadUserInfo();
 
