@@ -45,10 +45,6 @@ module
 
         interface ILinkCapabilities {}  // deleted in V5
 
-        interface INetworkMisc {}
-
-        interface INetworkRequest {}
-
         interface ISamplingSnapshot {}
 
         interface IUidRange {}
@@ -62,6 +58,8 @@ module
         interface IScoredNetwork {}
 
         interface IStaticIpConfiguration {}
+
+        interface IWifiKey {}
 
         namespace Wifi {
 
@@ -355,7 +353,6 @@ module
 
     }}} // Elastos.Droid.Telephony
 
-
     namespace Elastos {
     namespace Droid {
     namespace SystemUI {
@@ -382,5 +379,13 @@ module
         }
 
     }}} // Elastos.Droid.SystemUI
+
+    namespace Elastos {
+    namespace Droid {
+    namespace App {
+
+        interface IAppOpsManager {}
+
+    }}} // Elastos.Droid.App
 
 }

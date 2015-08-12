@@ -1,26 +1,40 @@
 
 module
 {
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
+
+    /**
+     * Snapshot of network state.
+     *
+     * @hide
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     [local]
     interface INetworkState {
 
         GetNetworkInfo(
-            [out] INetworkInfo** networkInfo);
+            [out] INetworkInfo** result);
 
         GetLinkProperties(
-            [out] ILinkProperties** linkProperties);
+            [out] ILinkProperties** result);
 
-        GetLinkCapabilities(
-            [out] ILinkCapabilities** linkCapabilities);
+        GetNetworkCapabilities(
+            [out] INetworkCapabilities** result);
 
+        /** Currently only used by testing. */
         GetSubscriberId(
-            [out] String* subscriberId);
+            [out] String* result);
 
         GetNetworkId(
-            [out] String* networkId);
+            [out] String* result);
 
     }
 

@@ -149,15 +149,9 @@ module
     /**
      * @Involved
      * interface IHandler;
-     * interface IExpr;
-     * interface IOpcode;
      */
     [deprecated]
     interface IMdstHandler {
-        // @Override
-        HandleMessage(
-            [in] IMessage* msg);
-
     }
 
     /**

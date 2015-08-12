@@ -1,27 +1,44 @@
 
 module
 {
-    using interface Elastos.IO.IPrintWriter;
 
-    interface Elastos.Droid.Net.INetworkPolicy;
-    interface Elastos.Droid.Net.IINetworkPolicyListener;
-    interface Elastos.Droid.Text.Format.ITime;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
+    interface Elastos.Droid.Content.Pm.ISignature;
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.Text.Format.ITime;
+
+    using interface Elastos.Io.IPrintWriter;
+    using interface Elastos.Utility.IHashSet;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Manager for creating and modifying network policy rules.
+     *
+     * {@hide}
+     */
+    /**
+     * @Involved
+     * none super interface
+     */
     [deprecated]
     interface INetworkPolicyManager {
-
         /** No specific network policy, use system default. */
         const Int32 POLICY_NONE = 0x0;
+
         /** Reject network usage on metered networks when application in background. */
         const Int32 POLICY_REJECT_METERED_BACKGROUND = 0x1;
 
+        /** Allow network use (metered or not) in the background in battery save mode. */
+        const Int32 POLICY_ALLOW_BACKGROUND_BATTERY_SAVE = 0x2;
+
         /** All network traffic should be allowed. */
         const Int32 RULE_ALLOW_ALL = 0x0;
+
         /** Reject traffic on metered networks. */
         const Int32 RULE_REJECT_METERED = 0x1;
 
@@ -31,7 +48,31 @@ module
          */
         const String EXTRA_NETWORK_TEMPLATE = "android.net.NETWORK_TEMPLATE";
 
+        /**
+         * Set policy flags for specific UID.
+         *
+         * @param policy {@link #POLICY_NONE} or combination of flags like
+         * {@link #POLICY_REJECT_METERED_BACKGROUND}, {@link #POLICY_ALLOW_BACKGROUND_BATTERY_SAVE}.
+         */
         SetUidPolicy(
+            [in] Int32 uid,
+            [in] Int32 policy);
+
+        /**
+         * Add policy flags for specific UID.  The given policy bits will be set for
+         * the uid.  Policy flags may be either
+         * {@link #POLICY_REJECT_METERED_BACKGROUND} or {@link #POLICY_ALLOW_BACKGROUND_BATTERY_SAVE}.
+         */
+        AddUidPolicy(
+            [in] Int32 uid,
+            [in] Int32 policy);
+
+        /**
+         * Clear/remove policy flags for specific UID.  The given policy bits will be set for
+         * the uid.  Policy flags may be either
+         * {@link #POLICY_REJECT_METERED_BACKGROUND} or {@link #POLICY_ALLOW_BACKGROUND_BATTERY_SAVE}.
+         */
+        RemoveUidPolicy(
             [in] Int32 uid,
             [in] Int32 policy);
 
@@ -41,6 +82,9 @@ module
 
         GetUidsWithPolicy(
             [in] Int32 policy,
+            [out, callee] ArrayOf<Int32>* result);
+
+        GetPowerSaveAppIdWhitelist(
             [out, callee] ArrayOf<Int32>* result);
 
         RegisterListener(
@@ -60,44 +104,10 @@ module
 
         GetRestrictBackground(
             [out] Boolean* result);
-    }
 
-    [local]
-    interface INetworkPolicyManagerHelper {
-
-        From(
-            [in] IContext* ctx,
-            [out] INetworkPolicyManager** result);
-
-        ComputeLastCycleBoundary(
-            [in] Int64 currentTime,
-            [in] INetworkPolicy* policy,
-            [out] Int64* result);
-
-        ComputeNextCycleBoundary(
-            [in] Int64 currentTime,
-            [in] INetworkPolicy* policy,
-            [out] Int64* result);
-
-        SnapToCycleDay(
-            [in] ITime* time,
-            [in] Int32 cycleDay);
-
-        IsUidValidForPolicy(
-            [in] IContext* ctx,
-            [in] Int32 uid,
-            [out] Boolean* result);
-
-        DumpPolicy(
-            [in] IPrintWriter* fout,
-            [in] Int32 policy);
-
-        DumpRules(
-            [in] IPrintWriter* fout,
-            [in] Int32 rules);
     }
 
     } // namespace Net
-    } // namepsace Droid
+    } // namespace Droid
     } // namespace Elastos
 }

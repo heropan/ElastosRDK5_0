@@ -1,10 +1,27 @@
 
 module
 {
+
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+
+    using interface Elastos.Utility.IObjects;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Policy for networks matching a {@link NetworkTemplate}, including usage cycle
+     * and limits to be enforced.
+     *
+     * @hide
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     * interface IComparable;
+     */
     interface INetworkPolicy {
 
         const Int32 CYCLE_NONE = -1;
@@ -24,24 +41,6 @@ module
 
         HasCycle(
             [out] Boolean* result);
-
-        CompareTo(
-            [in] INetworkPolicy* another,
-            [out] Int32* result);
-
-        GetHashCode(
-            [out] Int32* result);
-
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
-
-        Equals(
-            [in] INetworkPolicy* obj,
-            [out] Boolean* result);
-
-        ToString(
-            [out] String* result);
 
         GetTemplate(
             [out] INetworkTemplate** result);

@@ -52,17 +52,30 @@ module
     merge("net/NetworkIdentityHelper.car");
     merge("net/NetworkInfo.car");
     merge("net/NetworkInfoHelper.car");
-
-
+    merge("net/NetworkKey.car");
+    merge("net/NetworkKeyHelper.car");
+    merge("net/NetworkMisc.car");
+    merge("net/NetworkMiscHelper.car");
+    merge("net/NetworkPolicy.car");
+    merge("net/NetworkPolicyHelper.car");
+    merge("net/NetworkPolicyManager.car");
+    merge("net/NetworkPolicyManagerHelper.car");
+    merge("net/NetworkQuotaInfo.car");
+    merge("net/NetworkQuotaInfoHelper.car");
+    merge("net/Builder.car");
+    merge("net/NetworkRequest.car");
+    merge("net/NetworkRequestHelper.car");
+    merge("net/NetworkScoreManager.car");
+    merge("net/NetworkScorerAppManager.car");
+    merge("net/NetworkScorerAppManagerHelper.car");
     merge("net/NetworkState.car");
+    merge("net/NetworkStateHelper.car");
+
     merge("net/NetworkStats.car");
     merge("net/NetworkStatsFactory.car");
     merge("net/NetworkStatsHistory.car");
     merge("net/NetworkStateTracker.car");
     merge("net/NetworkTemplate.car");
-    merge("net/NetworkPolicy.car");
-    merge("net/NetworkPolicyManager.car");
-    merge("net/NetworkQuotaInfo.car");
     merge("net/ParseException.car");
     merge("net/Proxy.car");
     merge("net/ProxyProperties.car");

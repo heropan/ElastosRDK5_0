@@ -1,0 +1,63 @@
+
+module
+{
+
+    interface Elastos.Droid.App.IAppOpsManager;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.Pm.IActivityInfo;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
+    interface Elastos.Droid.Content.Pm.IResolveInfo;
+    interface Elastos.Droid.Os.IUserHandle;
+    interface Elastos.Droid.Provider.ISettings;
+    interface Elastos.Droid.Text.ITextUtils;
+    interface Elastos.Droid.Util.ILog;
+    interface Elastos.Core.ICharSequence;
+
+    using interface Elastos.Utility.IArrayList;
+    using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IList;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    /**
+     * Internal class for managing the primary network scorer application.
+     *
+     * TODO: Rename this to something more generic.
+     *
+     * @hide
+     */
+    /**
+     * @Involved
+     * none super interface
+     */
+    interface INetworkScorerAppManager {
+    }
+
+    interface INetworkScorerAppData {
+
+        /** Package name of this scorer app. */
+        GetPackageName(
+            [out] String* result);
+
+        /** Name of this scorer app for display. */
+        GetScorerName(
+            [out] ICharSequence** result);
+
+        /**
+         * Optional class name of a configuration activity. Null if none is set.
+         *
+         * @see NetworkScoreManager#ACTION_CUSTOM_ENABLE
+         */
+        GetConfigurationActivityClassName(
+            [out] String* result);
+
+
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

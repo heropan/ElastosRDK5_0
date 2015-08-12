@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.Net.INetworkRequest;
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.ILooper;

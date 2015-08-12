@@ -1,0 +1,22 @@
+
+module
+{
+
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+    interface Elastos.Droid.Os.ICreator;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface INetworkStateHelper {
+        GetCREATOR(
+            [out] ICreator** result);
+
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

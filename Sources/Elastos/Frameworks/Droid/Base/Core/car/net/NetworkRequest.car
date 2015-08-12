@@ -1,0 +1,37 @@
+
+module
+{
+
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+    using interface Elastos.Utility.Concurrent.Atomic.IAtomicInteger;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    /**
+     * Defines a request for a network, made through {@link NetworkRequest.Builder} and used
+     * to request a network via {@link ConnectivityManager#requestNetwork} or listen for changes
+     * via {@link ConnectivityManager#registerNetworkCallback}.
+     */
+    /**
+     * @Involved
+     * interface ;
+     */
+    interface INetworkRequest {
+
+        // implement the Parcelable interface
+        DescribeContents(
+            [out] Int32* result);
+
+        WriteToParcel(
+            [in] IParcel* dest,
+            [in] Int32 flags);
+
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}

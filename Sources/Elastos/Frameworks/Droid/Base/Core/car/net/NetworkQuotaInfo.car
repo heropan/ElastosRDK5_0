@@ -1,12 +1,24 @@
 
 module
 {
+
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Information about quota status on a specific network.
+     *
+     * @hide
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface INetworkQuotaInfo {
-
         const Int64 NO_LIMIT = -1;
 
         GetEstimatedBytes(
@@ -17,9 +29,10 @@ module
 
         GetHardLimitBytes(
             [out] Int64* result);
+
     }
 
     } // namespace Net
-    } // namepsace Droid
+    } // namespace Droid
     } // namespace Elastos
 }

@@ -8,12 +8,11 @@ module
     namespace Droid {
     namespace Net {
 
-
+    /**
+     * @Involved
+     * none super interface
+     */
     interface ICompareResult {
-        // @Override
-        ToString(
-            [out] String* result);
-
         GetRemoved(
             [out] IList** result);
 

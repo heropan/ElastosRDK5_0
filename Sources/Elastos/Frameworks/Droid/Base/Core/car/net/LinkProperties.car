@@ -322,10 +322,6 @@ module
         DescribeContents(
             [out] Int32* result);
 
-        // @Override
-        ToString(
-            [out] String* result);
-
         /**
          * Returns true if this link has an IPv4 address.
          *
