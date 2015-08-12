@@ -12,8 +12,7 @@ module
     interface IAbsSpinner;
 
     [local]
-    interface ISpinnerPopup
-    {
+    interface ISpinnerPopup {
         SetAdapter(
             [in] IListAdapter* adapter);
 
@@ -62,8 +61,7 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface ISpinner
-    {
+    interface ISpinner {
         /**
          * Set the background drawable for the spinner's popup window of choices.
          * Only valid in {@link #MODE_DROPDOWN}; this method is a no-op in other modes.

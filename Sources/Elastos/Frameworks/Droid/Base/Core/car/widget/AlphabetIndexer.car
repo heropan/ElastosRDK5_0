@@ -15,8 +15,7 @@ module {
      * interface Elastos.Droid.Widget.ISectionIndexer
      */
 
-    interface IAlphabetIndexer
-    {
+    interface IAlphabetIndexer {
         /**
          * Sets a new cursor as the data set and resets the cache of indices.
          * @param cursor the new cursor to use as the data set

@@ -6,7 +6,6 @@ module
     namespace Widget{
 
     interface IAccessibilityIterators {
-
     }
 
     }// namespace Widget

@@ -37,7 +37,6 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      */
     interface IAbsoluteLayout {
-
     }
 
     }// namespace Widget

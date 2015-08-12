@@ -15,8 +15,7 @@ module
     /**
      * Interface definition for a callback to be invoked when tab changed
      */
-    interface ITabHostOnTabChangeListener
-    {
+    interface ITabHostOnTabChangeListener {
         OnTabChanged(
             [in] String tabId);
     }
@@ -27,16 +26,14 @@ module
      * existing view or starting an activity.
      */
     [local]
-    interface ITabHostTabContentFactory
-    {
+    interface ITabHostTabContentFactory {
         CreateTabContent(
             [in] String tag,
             [out] IView** view);
     }
 
     [local]
-    interface ITabSpec
-    {
+    interface ITabSpec {
         SetIndicator(
             [in] ICharSequence* label);
 
@@ -73,8 +70,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
     [local]
-    interface ITabHost
-    {
+    interface ITabHost {
         NewTabSpec(
             [in] String tag,
             [out] ITabSpec** tabspec);

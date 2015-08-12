@@ -18,8 +18,7 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface IZoomButton
-    {
+    interface IZoomButton {
         SetZoomSpeed(
             [in] Int64 speed);
     }

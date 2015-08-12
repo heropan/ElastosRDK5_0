@@ -84,8 +84,7 @@ module
      * @Involve
      * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
      */
-    interface IGridLayoutLayoutParams
-    {
+    interface IGridLayoutLayoutParams {
         /**
          * Describes how the child views are positioned. Default is {@code LEFT | BASELINE}.
          * See {@link Gravity}.
@@ -150,8 +149,7 @@ module
      * </ul>
      *
      */
-    interface IGridLayoutSpec
-    {
+    interface IGridLayoutSpec {
         Equals(
             [in] IGridLayoutSpec* that,
             [out] Boolean* res);
@@ -220,8 +218,7 @@ module
      * <p>
      */
     [local]
-    interface IGridLayoutAlignment
-    {
+    interface IGridLayoutAlignment {
         GetGravityOffset(
             [in] IView* view,
             [in] Int32 cellDelta,
@@ -278,8 +275,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
      [local]
-    interface IGridLayout
-    {
+    interface IGridLayout {
         /**
          * Returns the current orientation.
          *

@@ -14,8 +14,7 @@ module
     /**
      * Callbacks for changes to the query text.
      */
-    interface ISearchViewOnQueryTextListener
-    {
+    interface ISearchViewOnQueryTextListener {
 
         /**
          * Called when the user submits the query. This could be due to a key press on the
@@ -46,8 +45,7 @@ module
             [out] Boolean* res);
     }
 
-    interface IOnCloseListener
-    {
+    interface IOnCloseListener {
 
         /**
          * The user is attempting to close the SearchView.
@@ -63,8 +61,7 @@ module
      * Callback interface for selection events on suggestions. These callbacks
      * are only relevant when a SearchableInfo has been specified by {@link #setSearchableInfo}.
      */
-    interface ISearchViewOnSuggestionListener
-    {
+    interface ISearchViewOnSuggestionListener {
 
         /**
          * Called when a suggestion was selected by navigating to it.
@@ -103,8 +100,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
      [local]
-    interface ISearchView
-    {
+    interface ISearchView {
         /**
          * Sets the SearchableInfo for this SearchView. Properties in the SearchableInfo are used
          * to display labels, hints, suggestions, create intents for launching search results screens

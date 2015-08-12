@@ -21,17 +21,14 @@ module
      * interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback
      * interface Elastos.Droid.Widget.IAdvanceable
      */
-    interface IStackView
-    {
-
+    interface IStackView {
     }
 
     /**
      * @Involve
      * interface Elastos.Droid.View.IViewGroupLayoutParams
      */
-    interface IStackViewLayoutParams
-    {
+    interface IStackViewLayoutParams {
         GetInvalidateRect(
             [out] IRect** rect);
 

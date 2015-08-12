@@ -15,8 +15,7 @@ module
      * @see android.appwidget.AppWidgetManager
      */
     [local]
-    interface IRemoteViewsFactory
-    {
+    interface IRemoteViewsFactory {
         /**
          * Called when your factory is first constructed. The same factory may be shared across
          * multiple RemoteViewAdapters depending on the intent passed.

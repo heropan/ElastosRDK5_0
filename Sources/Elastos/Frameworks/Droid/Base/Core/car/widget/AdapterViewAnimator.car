@@ -25,8 +25,7 @@ module
      * interface Elastos.Droid.Widget.IAdvanceable
      */
      [local]
-    interface IAdapterViewAnimator
-    {
+    interface IAdapterViewAnimator {
         /**
          * Sets which child view will be displayed.
          *

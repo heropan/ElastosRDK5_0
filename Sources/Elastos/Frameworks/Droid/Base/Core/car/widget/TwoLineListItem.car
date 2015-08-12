@@ -19,8 +19,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
      [local]
-    interface ITwoLineListItem
-    {
+    interface ITwoLineListItem {
         /**
          * Returns a handle to the item with ID text1.
          * @return A handle to the item with ID text1.

@@ -116,7 +116,6 @@ module
     merge("widget/SearchViewSearchAutoComplete.car");
     merge("widget/VolumePanel.car");
     merge("widget/NumberPickerCustomEditText.car");
-    merge("widget/internal/IRemoteViewsAdapterConnection.car");
     merge("widget/RemoteViewsAdapterServiceConnection.car");
     merge("widget/ActionMenuView.car");
     merge("widget/OnDateChangedListener.car");
@@ -126,39 +125,6 @@ module
     merge("widget/RemoteViewsListAdapter.car");
     merge("widget/Toolbar.car");
     merge("widget/ActionMenuPresenter.car");
-    merge("widget/internal/IRemoteViewsFactory.car");
-
-   //  merge("widget/internal/AbsActionBarView.car");
-   //  merge("widget/internal/ActionBarContainer.car");
-   //  merge("widget/internal/ActionBarContextView.car");
-   //  merge("widget/internal/ActionBarOverlayLayout.car");
-   //  merge("widget/internal/ActionBarView.car");
-   //  merge("widget/internal/DialogTitle.car");
-   //  merge("widget/internal/DigitalClock.car");
-   //  merge("widget/internal/DrawableHolder.car");
-   //  merge("widget/internal/EditableInputConnection.car");
-   //  merge("widget/internal/FaceUnlockView.car");
-   //  merge("widget/internal/ILockSettings.car");
-   //  merge("widget/internal/IRemoteViewsFactory.car");
-   //  merge("widget/internal/LinearLayoutWithDefaultTouchRecepient.car");
-   //  merge("widget/internal/LockPatternUtils.car");
-   //  merge("widget/internal/LockPatternView.car");
-   //  merge("widget/internal/LockScreenWidgetCallback.car");
-   //  merge("widget/internal/LockScreenWidgetInterface.car");
-   //  merge("widget/internal/PasswordEntryKeyboard.car");
-   //  merge("widget/internal/PasswordEntryKeyboardHelper.car");
-   //  merge("widget/internal/PasswordEntryKeyboardView.car");
-   //  merge("widget/internal/PointerLocationView.car");
-   //  merge("widget/internal/RotarySelector.car");
-   //  merge("widget/internal/ScrollingTabContainerView.car");
-   //  merge("widget/internal/SizeAdaptiveLayout.car");
-   //  merge("widget/internal/SlidingTab.car");
-   //  merge("widget/internal/Smileys.car");
-   //  merge("widget/internal/TextProgressBar.car");
-   //  merge("widget/internal/TransportControlView.car");
-   //  merge("widget/internal/WaveView.car");
-   //  merge("widget/internal/WeightedLinearLayout.car");
-   //  merge("widget/internal/ActionBarViewHomeView.car");
 
    //  using interface Elastos.Core.ICharSequence;
 

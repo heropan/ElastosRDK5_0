@@ -19,8 +19,7 @@ module
      * interface Elastos.Droid.Widget.IFilterable
      * interface Elastos.Droid.Widget.ICursorFilterClient
      */
-    interface ICursorTreeAdapter
-    {
+    interface ICursorTreeAdapter {
         /**
          * Sets the group Cursor.
          *

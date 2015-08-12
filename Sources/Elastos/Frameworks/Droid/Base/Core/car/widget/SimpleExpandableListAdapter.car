@@ -16,8 +16,7 @@ module
      * interface Elastos.Droid.Widget.HeterogeneousExpandableList
      */
     [local]
-    interface ISimpleExpandableListAdapter
-    {
+    interface ISimpleExpandableListAdapter {
         /**
          * Instantiates a new View for a child.
          * @param isLastChild Whether the child is the last child within its group.

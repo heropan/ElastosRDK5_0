@@ -24,8 +24,7 @@ module
      * interface Elastos.Droid.Widget.ICheckable
      */
     [local]
-    interface ISwitch
-    {
+    interface ISwitch {
         /**
          * Sets the switch text color, size, style, hint color, and highlight color
          * from the specified TextAppearance resource.

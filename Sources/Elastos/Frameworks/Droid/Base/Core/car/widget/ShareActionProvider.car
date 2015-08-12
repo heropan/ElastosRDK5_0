@@ -12,8 +12,7 @@ module
      * Listener for the event of selecting a share target.
      */
      [local]
-    interface IOnShareTargetSelectedListener
-    {
+    interface IOnShareTargetSelectedListener {
 
         /**
          * Called when a share target has been selected. The client can
@@ -45,8 +44,7 @@ module
      * interface Elastos.Droid.View.IActionProvider
      */
      [local]
-    interface IShareActionProvider
-    {
+    interface IShareActionProvider {
         /**
          * Sets a listener to be notified when a share target has been selected.
          * The listener can optionally decide to handle the selection and

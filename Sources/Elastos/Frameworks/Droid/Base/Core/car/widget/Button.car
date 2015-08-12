@@ -88,7 +88,8 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface IButton {}
+    interface IButton {
+    }
 
     } // namespace Widget
     } // namespace Droid

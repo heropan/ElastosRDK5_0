@@ -20,8 +20,7 @@ module
      * interface Elastos.Droid.Widget.ICheckable
      */
 
-    interface IToggleButton
-    {
+    interface IToggleButton {
         /**
          * Returns the text for when the button is in the checked state.
          *

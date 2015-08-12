@@ -7,7 +7,7 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IMenuItem;
-    interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.IContextMenuInfo;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IKeyEvent;

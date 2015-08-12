@@ -29,8 +29,7 @@ module
      */
 
     [local]
-    interface ICursorAdapter
-    {
+    interface ICursorAdapter {
         /**
          * If set the adapter will call requery() on the cursor whenever a content change
          * notification is delivered. Implies {@link #FLAG_REGISTER_CONTENT_OBSERVER}.

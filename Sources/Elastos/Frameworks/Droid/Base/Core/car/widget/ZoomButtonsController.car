@@ -12,8 +12,7 @@ module
      * Interface that will be called when the user performs an interaction that
      * triggers some action, for example zooming.
      */
-    interface IOnZoomListener
-    {
+    interface IOnZoomListener {
 
         /**
          * Called when the zoom controls' visibility changes.
@@ -37,8 +36,7 @@ module
      * interface Elastos.Droid.View.IViewOnTouchListener
      */
     [local]
-    interface IZoomButtonsController
-    {
+    interface IZoomButtonsController {
         /**
          * Whether to enable the zoom in control.
          *

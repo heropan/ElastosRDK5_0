@@ -41,7 +41,6 @@ module
      * interface Elastos.Droid.Widget.ITokenizer
      */
     interface ICommaTokenizer {
-
     }
 
     /**

@@ -1,0 +1,46 @@
+module
+{
+    merge("widget/IRemoteViewsAdapterConnection.car");
+    merge("widget/IRemoteViewsFactory.car");
+    merge("widget/AbsActionBarView.car");
+    merge("widget/ActionBarContainer.car");
+    merge("widget/ActionBarContextView.car");
+    merge("widget/ActionBarOverlayLayout.car");
+    merge("widget/ActionBarView.car");
+    merge("widget/DialogTitle.car");
+    merge("widget/DrawableHolder.car");
+    merge("widget/EditableInputConnection.car");
+    merge("widget/FaceUnlockView.car");
+    merge("widget/ILockSettingsObserver.car");
+    merge("widget/ILockSettings.car");
+    merge("widget/LinearLayoutWithDefaultTouchRecepient.car");
+    merge("widget/LockPatternUtils.car");
+    merge("widget/LockPatternView.car");
+    merge("widget/LockScreenWidgetCallback.car");
+    merge("widget/LockScreenWidgetInterface.car");
+    merge("widget/PasswordEntryKeyboard.car");
+    merge("widget/PasswordEntryKeyboardHelper.car");
+    merge("widget/PasswordEntryKeyboardView.car");
+    merge("widget/PointerLocationView.car");
+    merge("widget/RotarySelector.car");
+    merge("widget/ScrollingTabContainerView.car");
+    merge("widget/SizeAdaptiveLayout.car");
+    merge("widget/SlidingTab.car");
+    merge("widget/Smileys.car");
+    merge("widget/TextProgressBar.car");
+    merge("widget/WaveView.car");
+    merge("widget/WeightedLinearLayout.car");
+    merge("widget/ActionBarViewHomeView.car");
+    merge("widget/AccessibleDateAnimator.car");
+    merge("widget/AutoScrollHelper.car");
+    merge("widget/BackgroundFallback.car");
+    merge("widget/DecorContentParent.car");
+    merge("widget/DecorToolbar.car");
+    merge("widget/ExploreByTouchHelper.car");
+    merge("widget/LockPatternUtilsCache.car");
+    merge("widget/PreferenceImageView.car");
+    merge("widget/ResolverDrawerLayout.car");
+    merge("widget/SubtitleView.car");
+    merge("widget/SwipeDismissLayout.car");
+    merge("widget/ToolbarWidgetWrapper.car");
+}

@@ -11,8 +11,7 @@ module
      * taking responsibility for automatically advancing such collections.
      *
      */
-    interface IAdvanceable
-    {
+    interface IAdvanceable {
 
         /**
          * Advances this collection, eg. shows the next view.

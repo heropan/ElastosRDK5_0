@@ -29,8 +29,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      * interface Elastos.Droid.Widget.ICheckable
      */
-    interface ICheckedTextView
-    {
+    interface ICheckedTextView {
         /**
          * Set the checkmark to a given Drawable, identified by its resourece id. This will be drawn
          * when {@link #isChecked()} is true.

@@ -1,8 +1,8 @@
 module
 {
     interface Elastos.Droid.View.IActionProvider;
-    interface Elastos.Droid.View.Menu.IBaseMenuPresenter;
-    interface Elastos.Droid.View.Menu.IMenuPresenter;
+    interface Elastos.Droid.Internal.View.Menu.IBaseMenuPresenter;
+    interface Elastos.Droid.Internal.View.Menu.IMenuPresenter;
     interface Elastos.Droid.View.ISubUiVisibilityListener;
     interface Elastos.Droid.Content.Res.IConfiguration;
 
@@ -13,7 +13,7 @@ module
      * @Involve
      * extends Elastos.Droid.View.Menu.IBaseMenuPresenter;
      *
-     * interface Elastos.Droid.View.Menu.IMenuPresenter;
+     * interface Elastos.Droid.Internal.View.Menu.IMenuPresenter;
      * interface Elastos.Droid.View.ISubUiVisibilityListener;
      */
      [local]

@@ -30,8 +30,7 @@ module
      * interface Elastos.Droid.Widget.IRemoteAdapterConnectionCallback
      * interface Elastos.Droid.Widget.IAdvanceable
      */
-    interface IAdapterViewFlipper
-    {
+    interface IAdapterViewFlipper {
         /**
          * Returns the flip interval, in milliseconds.
          *

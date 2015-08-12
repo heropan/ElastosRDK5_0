@@ -17,8 +17,7 @@ module
      * interface Elastos.Droid.Widget.IFilterable
      * interface Elastos.Droid.Widget.ICursorFilterClient
      */
-    interface IResourceCursorAdapter
-    {
+    interface IResourceCursorAdapter {
         /**
          * <p>Sets the layout resource of the item views.</p>
          *

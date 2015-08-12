@@ -14,8 +14,7 @@ module
     /**
      * Callback interface used to notify the application that the menu has closed.
      */
-    interface IPopupMenuOnDismissListener
-    {
+    interface IPopupMenuOnDismissListener {
         /**
          * Called when the associated menu has been dismissed.
          *
@@ -30,8 +29,7 @@ module
      * do not have individual item click listeners.
      */
      [local]
-    interface IPopupMenuOnMenuItemClickListener
-    {
+    interface IPopupMenuOnMenuItemClickListener {
         /**
          * This method will be invoked when a menu item is clicked if the item itself did
          * not already handle the event.
@@ -46,12 +44,11 @@ module
 
     /**
      * @Involve
-     * interface Elastos.Droid.View.Menu.IMenuBuilderCallback
-     * interface Elastos.Droid.View.Menu.IMenuPresenterCallback
+     * interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback
+     * interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback
      */
     [local]
-    interface IPopupMenu
-    {
+    interface IPopupMenu {
         /**
          * @return the {@link Menu} associated with this popup. Populate the returned Menu with
          * items before calling {@link #show()}.

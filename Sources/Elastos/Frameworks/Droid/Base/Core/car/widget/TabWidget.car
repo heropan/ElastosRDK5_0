@@ -11,8 +11,7 @@ module
     /**
      * Let {@link TabHost} know that the user clicked on a tab indicator.
      */
-    interface ITabWidgetOnTabSelectionChanged
-    {
+    interface ITabWidgetOnTabSelectionChanged {
         /**
          * Informs the TabHost which tab was selected. It also indicates
          * if the tab was clicked/pressed or just focused into.
@@ -41,8 +40,7 @@ module
      * interface Elastos.Droid.View.IViewOnFocusChangeListener
      */
      [local]
-    interface ITabWidget
-    {
+    interface ITabWidget {
         /**
          * Returns the tab indicator view at the given index.
          *

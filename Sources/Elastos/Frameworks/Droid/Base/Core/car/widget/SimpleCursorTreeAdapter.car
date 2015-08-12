@@ -29,8 +29,7 @@ module
      * interface Elastos.Droid.Widget.ICursorFilterClient
      */
     [local]
-    interface ISimpleCursorTreeAdapter
-    {
+    interface ISimpleCursorTreeAdapter {
         /**
          * Returns the {@link ViewBinder} used to bind data to views.
          *

@@ -11,8 +11,7 @@ module
      * An interface for the RemoteAdapter to notify other classes when adapters
      * are actually connected to/disconnected from their actual services.
      */
-    interface IRemoteAdapterConnectionCallback
-    {
+    interface IRemoteAdapterConnectionCallback {
         /**
          * @return whether the adapter was set or not.
          */
@@ -45,8 +44,7 @@ module
      * interface Elastos.Droid.Os.IHandlerCallback
      */
     [local]
-    interface IRemoteViewsAdapter
-    {
+    interface IRemoteViewsAdapter {
         IsDataReady(
             [out] Boolean* res);
 

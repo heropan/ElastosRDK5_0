@@ -78,8 +78,7 @@ module
      * @see android.widget.CursorAdapter#convertToString(android.database.Cursor)
      */
     [local]
-    interface ICursorToStringConverter
-    {
+    interface ICursorToStringConverter {
         /**
          * Returns a CharSequence representing the specified Cursor.
          *
@@ -106,8 +105,7 @@ module
      * interface Elastos.Droid.Widget.ICursorFilterClient
      */
     [deprecated, local]
-    interface ISimpleCursorAdapter
-    {
+    interface ISimpleCursorAdapter {
         /**
          * Returns the {@link ViewBinder} used to bind data to views.
          *

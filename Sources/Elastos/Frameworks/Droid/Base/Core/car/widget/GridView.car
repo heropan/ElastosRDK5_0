@@ -248,7 +248,7 @@ module
          */
         GetNumColumns(
             [out] Int32* columns);
-        }
+    }
 
     }// namespace Widget
     }// namespace Droid

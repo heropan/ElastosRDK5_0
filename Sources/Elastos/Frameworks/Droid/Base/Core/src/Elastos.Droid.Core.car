@@ -32,6 +32,7 @@ module
     merge("../car/internal/backup.car");
     merge("../car/internal/view.car");
     merge("../car/internal/policy.car");
+    merge("../car/internal/widget.car");
 
 
     //merge("../car/media.car");

@@ -13,7 +13,6 @@ module
 
         SetSearchView(
             [in] ISearchView* searchView);
-
     }
 
     }// namespace Widget

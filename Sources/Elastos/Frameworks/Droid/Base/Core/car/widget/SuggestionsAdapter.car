@@ -23,8 +23,7 @@ module
      * interface Elastos.Droid.Widget.IFilterable
      * interface Elastos.Droid.Widget.ICursorFilterClient
      */
-    interface ISuggestionsAdapter
-    {
+    interface ISuggestionsAdapter {
         const Int32 REFINE_NONE = 0;
         const Int32 REFINE_BY_ENTRY = 1;
         const Int32 REFINE_ALL = 2;

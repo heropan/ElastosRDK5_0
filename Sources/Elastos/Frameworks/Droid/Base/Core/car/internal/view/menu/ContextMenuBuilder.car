@@ -16,7 +16,7 @@ module
          */
         /**
          * @Involve
-         * interface Elastos.Droid.View.Menu.IMenuBuilder
+         * interface Elastos.Droid.Internal.View.Menu.IMenuBuilder
          */
         [local]
         interface IContextMenuBuilder {

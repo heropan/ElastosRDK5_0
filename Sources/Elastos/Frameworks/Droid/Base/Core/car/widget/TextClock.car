@@ -17,8 +17,7 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface ITextClock
-    {
+    interface ITextClock {
         /**
          * Returns the formatting pattern used to display the date and/or time
          * in 12-hour mode. The formatting pattern syntax is described in

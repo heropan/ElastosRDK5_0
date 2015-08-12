@@ -41,8 +41,7 @@ module
      * interface Elastos.Droid.View.ILayoutInflaterFilter
      */
     [local, parcelable]
-    interface IRemoteViews
-    {
+    interface IRemoteViews {
         /**
          * Merges the passed RemoteViews actions with this RemoteViews actions according to
          * action-specific merge rules.
@@ -727,7 +726,7 @@ module
     }
 
     [local]
-    interface IRemoteViewsOnClickHandler{
+    interface IRemoteViewsOnClickHandler {
         OnClickHandler(
             [in] IView* view,
             [in] IPendingIntent* pending,

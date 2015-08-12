@@ -3,13 +3,13 @@ module
     interface Elastos.Droid.Widget.IActionMenuPresenter;
     interface Elastos.Droid.Widget.IActionMenuViewOnMenuItemClickListener;
     interface Elastos.Droid.View.IMenu;
-    interface Elastos.Droid.View.Menu.IMenuBuilder;
-    interface Elastos.Droid.View.Menu.IMenuItemImpl;
-    interface Elastos.Droid.View.Menu.IMenuPresenter;
-    interface Elastos.Droid.View.Menu.IMenuPresenterCallback;
-    interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
+    interface Elastos.Droid.Internal.View.Menu.IMenuBuilder;
+    interface Elastos.Droid.Internal.View.Menu.IMenuItemImpl;
+    interface Elastos.Droid.Internal.View.Menu.IMenuPresenter;
+    interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
+    interface Elastos.Droid.Internal.View.Menu.IMenuBuilderCallback;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
-    interface Elastos.Droid.View.Menu.IMenuView;
+    interface Elastos.Droid.Internal.View.Menu.IMenuView;
     interface Elastos.Droid.View.IMenuItem;
 
     namespace Elastos {

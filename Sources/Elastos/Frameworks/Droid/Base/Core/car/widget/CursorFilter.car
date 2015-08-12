@@ -12,8 +12,7 @@ module
     interface IFilter;
 
     [local]
-    interface ICursorFilterClient
-    {
+    interface ICursorFilterClient {
         ConvertToString(
             [in] ICursor* cursor,
             [out] ICharSequence** charSequence);
@@ -39,8 +38,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IFilter
      */
-    interface ICursorFilter
-    {
+    interface ICursorFilter {
     }
 
     } // namespace Widget

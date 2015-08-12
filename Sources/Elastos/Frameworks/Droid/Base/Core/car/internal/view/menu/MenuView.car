@@ -3,7 +3,7 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.View.Menu.IMenuBuilder;
+    interface Elastos.Droid.Internal.View.Menu.IMenuBuilder;
     interface Elastos.Droid.View.Menu.IMenuItemImpl;
 
     namespace Elastos {

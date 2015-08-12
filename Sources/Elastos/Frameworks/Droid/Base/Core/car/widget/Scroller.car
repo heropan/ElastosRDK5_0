@@ -5,8 +5,7 @@ module
     namespace Droid {
     namespace Widget {
 
-    interface IScroller
-    {
+    interface IScroller {
         /**
          * The amount of friction applied to flings. The default value
          * is {@link ViewConfiguration#getScrollFriction}.

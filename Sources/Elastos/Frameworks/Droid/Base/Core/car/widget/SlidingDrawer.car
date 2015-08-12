@@ -10,8 +10,7 @@ module
     /**
      * Callback invoked when the drawer is opened.
      */
-    interface IOnDrawerOpenListener
-    {
+    interface IOnDrawerOpenListener {
         /**
          * Invoked when the drawer becomes fully open.
          */
@@ -21,8 +20,7 @@ module
     /**
      * Callback invoked when the drawer is closed.
      */
-    interface IOnDrawerCloseListener
-    {
+    interface IOnDrawerCloseListener {
         /**
          * Invoked when the drawer becomes fully closed.
          */
@@ -32,8 +30,7 @@ module
     /**
      * Callback invoked when the drawer is scrolled.
      */
-    interface IOnDrawerScrollListener
-    {
+    interface IOnDrawerScrollListener {
         /**
          * Invoked when the user starts dragging/flinging the drawer's handle.
          */
@@ -57,8 +54,7 @@ module
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
      [local]
-    interface ISlidingDrawer
-    {
+    interface ISlidingDrawer {
         const Int32 ORIENTATION_HORIZONTAL = 0;
         const Int32 ORIENTATION_VERTICAL = 1;
 

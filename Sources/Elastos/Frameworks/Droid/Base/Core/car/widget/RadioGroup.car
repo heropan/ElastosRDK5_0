@@ -19,7 +19,6 @@ module
      * interface Elastos.Droid.Widget.ILinearLayoutLayoutParams
      */
     interface IRadioGroupLayoutParams {
-
     }
 
     /**

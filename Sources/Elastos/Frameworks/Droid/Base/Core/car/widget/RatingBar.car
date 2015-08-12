@@ -13,8 +13,7 @@ module
      * or arrow key/trackball as well as changes that were initiated
      * programmatically.
      */
-    interface IOnRatingBarChangeListener
-    {
+    interface IOnRatingBarChangeListener {
 
         /**
          * Notification that the rating has changed. Clients can use the
@@ -46,8 +45,7 @@ module
      * interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource
      * interface Elastos.Droid.Graphics.Drawable.IDrawableCallback
      */
-    interface IRatingBar
-    {
+    interface IRatingBar {
         /**
          * Sets the listener to be called when the rating changes.
          *
