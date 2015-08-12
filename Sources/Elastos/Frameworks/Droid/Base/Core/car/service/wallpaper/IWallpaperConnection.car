@@ -1,24 +1,26 @@
 module
 {
     interface Elastos.Droid.Os.IParcelFileDescriptor;
-    interface Elastos.Droid.Service.Wallpaper.IWallpaperEngine;
+    interface Elastos.Droid.Service.Wallpaper.IIWallpaperEngine;
 
     namespace Elastos {
     namespace Droid {
     namespace Service {
     namespace Wallpaper {
 
+    /**
+     * @hide
+     */
     interface IWallpaperConnection {
         AttachEngine(
-            [in] IWallpaperEngine* engine);
+            [in] IIWallpaperEngine* engine);
 
         EngineShown(
-            [in] IWallpaperEngine* engine);
+            [in] IIWallpaperEngine* engine);
 
         SetWallpaper(
             [in] String name,
             [out] IParcelFileDescriptor** fd);
-
     }
 
     } //Wallpaper

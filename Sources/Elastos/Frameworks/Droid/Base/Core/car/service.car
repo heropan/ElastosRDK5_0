@@ -1,9 +1,9 @@
 
 module
 {
-    merge("service/dreams/DreamService.car");
-    merge("service/dreams/IDreamManager.car");
-    merge("service/dreams/IDreamService.car");
+    // merge("service/dreams/DreamService.car");
+    // merge("service/dreams/IDreamManager.car");
+    // merge("service/dreams/IDreamService.car");
     // merge("service/dreams/Sandman.car");
 
     // merge("service/textservice/SpellCheckerService.car");
@@ -11,70 +11,72 @@ module
     merge("service/wallpaper/IWallpaperConnection.car");
     merge("service/wallpaper/IWallpaperEngine.car");
     merge("service/wallpaper/IWallpaperService.car");
+    merge("service/wallpaper/WallpaperService.car");
+    merge("service/wallpaper/WallpaperSettingsActivity.car");
 
-    interface Elastos.Droid.View.IBaseIWindow;
+    //interface Elastos.Droid.View.IBaseIWindow;
     interface Elastos.Droid.Os.IHandlerCallerCallback;
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Service {
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace Service {
 
-  //       class CDreamService {
-  //           interface IDreamService;
-  //       }
+    // class CDreamService {
+    //     interface IDreamService;
+    // }
 
-  //       class CSandman {
-  //           interface ISandman;
-  //       }
+    // class CSandman {
+    //     interface ISandman;
+    // }
 
-  //       singleton class CSandmanHelper {
-  //           interface ISandmanHelper;
-  //       }
+    // singleton class CSandmanHelper {
+    //     interface ISandmanHelper;
+    // }
 
-  //       class CSpellCheckerService {
-  //           interface ISpellCheckerService;
-  //       }
+    // class CSpellCheckerService {
+    //     interface ISpellCheckerService;
+    // }
 
-    namespace Wallpaper {
+    // namespace Wallpaper {
 
-    [local]
-    class CWallpaperEngineWrapper {
-        constructor(
-            [in] Handle32 context,
-            [in] IWallpaperConnection* conn,
-            [in] IBinder* windowToken,
-            [in] Int32 windowType,
-            [in] Boolean isPreview,
-            [in] Int32 reqWidth,
-            [in] Int32 reqHeight);
+    // [local]
+    // class CWallpaperEngineWrapper {
+    //     constructor(
+    //         [in] Handle32 context,
+    //         [in] IWallpaperConnection* conn,
+    //         [in] IBinder* windowToken,
+    //         [in] Int32 windowType,
+    //         [in] Boolean isPreview,
+    //         [in] Int32 reqWidth,
+    //         [in] Int32 reqHeight);
 
-        interface IWallpaperEngineWrapper;
-        interface IBinder;
-        interface IHandlerCallerCallback;
-    }
+    //     interface IWallpaperEngineWrapper;
+    //     interface IBinder;
+    //     interface IHandlerCallerCallback;
+    // }
 
-    class CWallpaperServiceWrapper {
-        constructor(
-            [in] Handle32 context);
+    // class CWallpaperServiceWrapper {
+    //     constructor(
+    //         [in] Handle32 context);
 
-        interface IIWallpaperService;
-        interface IBinder;
-    }
+    //     interface IIWallpaperService;
+    //     interface IBinder;
+    // }
 
-    class CWallpaperServiceEngineWindow {
-        constructor(
-            [in] Handle32 engine);
+    // class CWallpaperServiceEngineWindow {
+    //     constructor(
+    //         [in] Handle32 engine);
 
-        interface IBaseIWindow;
-        interface IBinder;
-    }
-        // class CWallpaperSettingsActivity {
+    //     interface IBaseIWindow;
+    //     interface IBinder;
+    // }
 
-  //           interface IWallpaperSettingsActivity;
-  //       }
+    // class CWallpaperSettingsActivity {
+    //     interface IWallpaperSettingsActivity;
+    // }
 
-    } // namespace Wallpaper
-    } // namespace service
-    } // namepsace Droid
-    } // namespace Elastos
+    // } // namespace Wallpaper
+    // } // namespace service
+    // } // namepsace Droid
+    // } // namespace Elastos
 }
