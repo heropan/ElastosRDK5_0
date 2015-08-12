@@ -1,0 +1,24 @@
+module
+{
+    interface Elastos.Droid.Content.IContext;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    /**
+     * Manages notification when a guest session is resumed.
+     */
+    /**
+     * @Involve
+     * interface IBroadcastReceiver
+     */
+    interface IGuestResumeSessionReceiver {
+        Register(
+            [in] IContext* context);
+    }
+
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

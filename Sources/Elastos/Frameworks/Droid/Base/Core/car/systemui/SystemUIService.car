@@ -1,0 +1,19 @@
+module
+{
+    interface Elastos.Droid.SystemUI.ISystemUI;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IService
+     */
+    interface ISystemUIService {
+    }
+
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

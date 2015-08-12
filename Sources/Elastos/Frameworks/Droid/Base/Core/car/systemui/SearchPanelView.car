@@ -1,6 +1,8 @@
 module
 {
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IImageView;
+    interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar;
 
     namespace Elastos {
@@ -10,8 +12,14 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.Widget.IFrameLayout
+     * interface Elastos.Droid.SystemUI.StatusBar.IStatusBarPanel
      */
     interface ISearchPanelView {
+        ReplaceDrawable(
+            [in] IImageView* v,
+            [in] IComponentName* component,
+            [in] String name);
+
         Show(
             [in] Boolean show,
             [in] Boolean animate);
@@ -25,11 +33,12 @@ module
         SetBar(
             [in] IBaseStatusBar* bar);
 
-        SetStatusBarView(
-            [in] IView* statusBarView);
-
         IsAssistantAvailable(
             [out] Boolean* result);
+
+        SetHorizontal(
+            [in] Boolean horizontal);
+
     }
 
     } // namespace SystemUI

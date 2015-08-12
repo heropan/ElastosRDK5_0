@@ -1,21 +1,39 @@
 module
 {
-    //merge("systemui/BatteryMeterView.car");
+    merge("systemui/BatteryMeterView.car");
     merge("systemui/BitmapHelper.car");
     merge("systemui/DemoMode.car");
     merge("systemui/DessertCase.car");
     merge("systemui/DessertCaseDream.car");
     merge("systemui/DessertCaseView.car");
-    //merge("systemui/ExpandHelper.car");
-
+    merge("systemui/ExpandHelper.car");
+    merge("systemui/FontSizeUtils.car");
     merge("systemui/Gefingerpoken.car");
+    merge("systemui/GuestResumeSessionReceiver.car");
+    merge("systemui/ImageWallpaper.car");
+    merge("systemui/LoadAverageService.car");
+    merge("systemui/RecentsComponent.car");
+    merge("systemui/SearchPanelCircleView.car");
+    merge("systemui/SearchPanelView.car");
+    merge("systemui/SwipeHelper.car");
+    merge("systemui/SystemUI.car");
+    merge("systemui/SystemUIApplication.car");
+    merge("systemui/SystemUIService.car");
 
-//     merge("systemui/Gefingerpoken.car");
-//     merge("systemui/SystemUI.car");
-//
-//     merge("systemui/SearchPanelView.car");
-//     merge("systemui/UniverseBackground.car");
-//     merge("systemui/SwipeHelper.car");
+//     merge("systemui/statusbar/policy/Clock.car");
+//     merge("systemui/statusbar/policy/DeadZone.car");
+//     merge("systemui/statusbar/policy/KeyButtonView.car");
+//     merge("systemui/statusbar/policy/NetworkController.car");
+//     merge("systemui/statusbar/policy/ToggleSlider.car");
+//     merge("systemui/statusbar/policy/CompatModeButton.car");
+//     merge("systemui/statusbar/policy/NotificationRowLayout.car");
+//     merge("systemui/statusbar/policy/EventHole.car");
+//     merge("systemui/statusbar/policy/DateView.car");
+//     merge("systemui/statusbar/policy/OnSizeChangedListener.car");
+//     merge("systemui/statusbar/policy/IntruderAlertView.car");
+//     merge("systemui/statusbar/policy/FixedSizeDrawable.car");
+//     merge("systemui/statusbar/policy/AutoRotateController.car");
+
 
 //     merge("systemui/media/NotificationPlayer.car");
 //     merge("systemui/media/RingtonePlayer.car");
@@ -43,19 +61,7 @@ module
 //     merge("systemui/statusbar/phone/Ticker.car");
 //     merge("systemui/statusbar/phone/TickerView.car");
 //     merge("systemui/statusbar/phone/Panel.car");
-//     merge("systemui/statusbar/policy/Clock.car");
-//     merge("systemui/statusbar/policy/DeadZone.car");
-//     merge("systemui/statusbar/policy/KeyButtonView.car");
-//     merge("systemui/statusbar/policy/NetworkController.car");
-//     merge("systemui/statusbar/policy/ToggleSlider.car");
-//     merge("systemui/statusbar/policy/CompatModeButton.car");
-//     merge("systemui/statusbar/policy/NotificationRowLayout.car");
-//     merge("systemui/statusbar/policy/EventHole.car");
-//     merge("systemui/statusbar/policy/DateView.car");
-//     merge("systemui/statusbar/policy/OnSizeChangedListener.car");
-//     merge("systemui/statusbar/policy/IntruderAlertView.car");
-//     merge("systemui/statusbar/policy/FixedSizeDrawable.car");
-//     merge("systemui/statusbar/policy/AutoRotateController.car");
+
 //     merge("systemui/statusbar/tablet/StatusBarPanel.car");
 //     merge("systemui/statusbar/tablet/TabletStatusBar.car");
 //     merge("systemui/statusbar/tablet/CompatModePanel.car");

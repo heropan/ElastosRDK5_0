@@ -14,9 +14,6 @@ module
     namespace DevSamples {
     namespace SystemUI {
 
-    interface IImageWallpaper extends Elastos.Droid.App.IService {
-    }
-
     class CImageWallpaper {
         interface IImageWallpaper;
         interface IComponentCallbacks2;

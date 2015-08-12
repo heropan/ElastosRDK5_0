@@ -353,4 +353,32 @@ module
 
     }}} // Elastos.Droid.Telephony
 
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+
+        namespace StatusBar {
+
+            interface IBaseStatusBar {}
+
+            namespace Policy {
+                interface IScrollAdapter {}
+
+                interface IBatteryController {}
+            }
+        }
+
+    }}} // Elastos.Droid.SystemUI
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Service {
+
+        namespace Wallpaper {
+            interface IImageWallpaper {}
+        }
+
+    }}} // Elastos.Droid.SystemUI
+
 }
