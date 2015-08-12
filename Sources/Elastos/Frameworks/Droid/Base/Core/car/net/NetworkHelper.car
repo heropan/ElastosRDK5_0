@@ -8,7 +8,7 @@ module
     namespace Droid {
     namespace Net {
 
-    interface IDhcpResultsHelper {
+    interface INetworkHelper {
 
         GetCREATOR(
             [out] ICreator** result);

@@ -41,15 +41,7 @@ module
     namespace Droid {
     namespace Net {
 
-        interface ILegacyVpnInfo {}
-
-        interface ILinkCapabilities {}
-
-        interface ILinkSocket {}
-
-        interface INetwork {}
-
-        interface INetworkCapabilities {}
+        interface ILinkCapabilities {}  // deleted in V5
 
         interface INetworkMisc {}
 
@@ -72,6 +64,10 @@ module
         namespace Wifi {
 
             interface IWifiConfiguration {}
+
+            interface IWifiInfo {}
+
+            interface IWifiManager {}
         }
 
     }}} // Elastos.Droid.Net
@@ -128,6 +124,12 @@ module
             interface ICallerInfo {}
 
         } //Elastos.Droid.Internal.Telephony
+
+        namespace Annotations {
+
+            interface IVisibleForTesting {}
+
+        }   // Elastos.Droid.Internal.Annotations
 
     }}} // Elastos.Droid.Internal
 
@@ -277,6 +279,7 @@ module
         interface IRemoteCallback {}
         interface ICreator {}
         interface IIBinder {}
+        interface IBuild {}
 
     }}} // Elastos.Droid.Os
 
@@ -311,14 +314,43 @@ module
     namespace Elastos {
     namespace Droid {
     namespace Internal {
+
+    namespace Net {
+
+        interface ILegacyVpnInfo {}
+
+    } // namespace Net
+
     namespace Util {
 
         interface IStateMachine {}
+        interface IAsyncChannel {}
+        interface IProtocol {}
 
     } // namespace Util
+
     } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Util {
+
+        interface ILog {}
+
+        interface ISparseArray {}
+
+    } // namespace Util
+    } // namespace Droid
+    } // namespace Elastos
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Telephony {
+
+        interface ITelephonyManager {}
+
+    }}} // Elastos.Droid.Telephony
 
 }

@@ -1,4 +1,3 @@
-
 module
 {
 
@@ -8,14 +7,17 @@ module
     namespace Droid {
     namespace Net {
 
-    interface IDhcpResultsHelper {
-
+    interface INetworkInfoHelper {
+        /**
+         * Implement the Parcelable interface.
+         * @hide
+         */
         GetCREATOR(
             [out] ICreator** result);
-
     }
 
     } // namespace Net
-    } // namespace Droid
+    } // namepsace Droid
     } // namespace Elastos
+
 }

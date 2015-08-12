@@ -23,8 +23,6 @@ module
     /**
      * @Involved
      * interface IHandler;
-     * interface IExpr;
-     * interface IOpcode;
      */
     interface IDnsPinger {
         /**

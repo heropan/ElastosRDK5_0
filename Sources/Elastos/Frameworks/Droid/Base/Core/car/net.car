@@ -39,10 +39,21 @@ module
     merge("net/MailTo.car");
     merge("net/MobileDataStateTracker.car");
     merge("net/MobileDataStateTrackerHelper.car");
-
+    merge("net/MobileLinkQualityInfo.car");
+    merge("net/MobileLinkQualityInfoHelper.car");
+    merge("net/Network.car");
+    merge("net/NetworkHelper.car");
+    merge("net/NetworkAgent.car");
+    merge("net/NetworkCapabilities.car");
+    merge("net/NetworkCapabilitiesHelper.car");
     merge("net/NetworkConfig.car");
+    merge("net/NetworkFactory.car");
     merge("net/NetworkIdentity.car");
+    merge("net/NetworkIdentityHelper.car");
     merge("net/NetworkInfo.car");
+    merge("net/NetworkInfoHelper.car");
+
+
     merge("net/NetworkState.car");
     merge("net/NetworkStats.car");
     merge("net/NetworkStatsFactory.car");
