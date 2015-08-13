@@ -1,0 +1,27 @@
+
+module
+{
+    interface Elastos.Droid.Content.IIntent;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * @Involve
+     * interface IResolverActivity
+     */
+    interface IChooserActivity {
+
+        GetReplacementIntent(
+            [in] String packageName,
+            [in] IIntent* defIntent,
+            [out] IIntent** result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

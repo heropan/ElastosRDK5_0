@@ -1,0 +1,37 @@
+module
+{
+    interface Elastos.Droid.View.IWindowCallback;
+    interface Elastos.Droid.Widget.IToolbarOnMenuItemClickListener;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * @Involve
+     * interface IActionBar
+     */
+    [local]
+    interface IToolbarActionBar {
+
+        GetWrappedWindowCallback(
+            [out] IWindowCallback** result);
+
+        PopulateOptionsMenu();
+
+        AddOnMenuVisibilityListener(
+            [in] IToolbarOnMenuItemClickListener* listener);
+
+        RemoveOnMenuVisibilityListener(
+            [in] IToolbarOnMenuItemClickListener* listener);
+
+        DispatchMenuVisibilityChanged(
+            [in] Boolean isVisible);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

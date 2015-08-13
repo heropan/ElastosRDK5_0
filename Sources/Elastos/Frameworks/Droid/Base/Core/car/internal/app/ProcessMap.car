@@ -1,0 +1,35 @@
+module
+{
+    interface Elastos.Droid.Utility.IArrayMap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface IProcessMap {
+
+        Get(
+            [in] String name,
+            [in] Int32 uid,
+            [out] IInterface** result);
+
+        Put(
+            [in] String name,
+            [in] Int32 uid,
+            [in] IInterface* value,
+            [out] IInterface** result);
+
+        Remove(
+            [in] String name,
+            [in] Int32 uid);
+
+        GetMap(
+            [out] IArrayMap** result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

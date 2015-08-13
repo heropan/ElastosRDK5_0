@@ -1,0 +1,33 @@
+module
+{
+    interface Elastos.Droid.Content.IDialogInterface;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * This activity is shown to the user to confirm formatting of external media.
+     * It uses the alert dialog style. It will be launched from a notification, or from settings
+     */
+    /**
+     * @Involve
+     * interface IAlertActivity
+     * interface IOnClickListener
+     */
+    interface IExternalMediaFormatActivity {
+
+        /**
+         * {@inheritDoc}
+         */
+        OnClick(
+            [in] IDialogInterface* dialog,
+            [in] Int32 which);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

@@ -1,0 +1,78 @@
+module
+{
+    interface Elastos.Droid.Os.IBundle;
+//    interface Elastos.Droid.Media.IRouteInfo;
+    interface Elastos.Droid.View.IView;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * This class implements the route controller dialog for {@link MediaRouter}.
+     * <p>
+     * This dialog allows the user to control or disconnect from the currently selected route.
+     * </p>
+     *
+     * @see MediaRouteButton
+     * @see MediaRouteActionProvider
+     *
+     * TODO: Move this back into the API, as in the support library media router.
+     */
+    /**
+     * @Involve
+     * interface IDialog
+     */
+    [local]
+    interface IMediaRouteControllerDialog {
+
+        /**
+         * Gets the route that this dialog is controlling.
+         */
+//        GetRoute(
+//            [out] IRouteInfo** result);
+
+        /**
+         * Provides the subclass an opportunity to create a view that will
+         * be included within the body of the dialog to offer additional media controls
+         * for the currently playing content.
+         *
+         * @param savedInstanceState The dialog's saved instance state.
+         * @return The media control view, or null if none.
+         */
+        OnCreateMediaControlView(
+            [in] IBundle* savedInstanceState,
+            [out] IView** result);
+
+        /**
+         * Gets the media control view that was created by {@link #onCreateMediaControlView(Bundle)}.
+         *
+         * @return The media control view, or null if none.
+         */
+        GetMediaControlView(
+            [out] IView** result);
+
+        /**
+         * Sets whether to enable the volume slider and volume control using the volume keys
+         * when the route supports it.
+         * <p>
+         * The default value is true.
+         * </p>
+         */
+        SetVolumeControlEnabled(
+            [in] Boolean bEnable);
+
+        /**
+         * Returns whether to enable the volume slider and volume control using the volume keys
+         * when the route supports it.
+         */
+        IsVolumeControlEnabled(
+            [out] Boolean* result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

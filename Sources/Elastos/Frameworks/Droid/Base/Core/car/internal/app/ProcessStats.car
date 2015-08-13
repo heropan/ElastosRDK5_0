@@ -1,0 +1,702 @@
+module
+{
+    using interface Elastos.IO.IPrintWriter;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.Utility.IArrayList;
+
+    interface Elastos.Droid.Utility.IArrayMap;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    interface ITotalMemoryUseCollection {
+    }
+
+    interface IPackageState {
+    }
+
+    interface IProcessDataCollection {
+
+        Print(
+            [in] IPrintWriter* pw,
+            [in] Int64 overallTime,
+            [in] Boolean full);
+    }
+
+    /**
+     * @Involve
+     * interface IDurationsTable
+     */
+    interface IProcessState {
+
+        Clone(
+            [in] String pkg,
+            [in] Int64 now,
+            [out] IProcessState** result);
+
+        Add(
+            [in] IProcessState* other);
+
+        ResetSafely(
+            [in] Int64 now);
+
+        MakeDead();
+
+        WriteToParcel(
+            [in] IParcel* outer,
+            [in] Int64 now);
+
+        ReadFromParcel(
+            [in] IParcel* inner,
+            [in] Boolean fully,
+            [out] Boolean* result);
+
+        MakeActive();
+
+        MakeInactive();
+
+        IsInUse(
+            [out] Boolean* result);
+
+        /**
+         * Update the current state of the given list of processes.
+         *
+         * @param state Current ActivityManager.PROCESS_STATE_*
+         * @param memFactor Current mem factor constant.
+         * @param now Current time.
+         * @param pkgList Processes to update.
+         */
+        SetState(
+            [in] Int32 state,
+            [in] Int32 memFactor,
+            [in] Int64 now,
+            [in] IArrayMap* pkgList);
+
+        SetState(
+            [in] Int32 state,
+            [in] Int64 now);
+
+        CommitStateTime(
+            [in] Int64 now);
+
+        IncActiveServices(
+            [in] String serviceName);
+
+        DecActiveServices(
+            [in] String serviceName);
+
+        IncStartedServices(
+            [in] Int32 memFactor,
+            [in] Int64 now,
+            [in] String serviceName);
+
+        DecStartedServices(
+            [in] Int32 memFactor,
+            [in] Int64 now,
+            [in] String serviceName);
+
+        AddPss(
+            [in] Int64 pss,
+            [in] Int64 uss,
+            [in] Boolean always,
+            [in] IArrayMap* pkgList);
+
+        AddPss(
+            [in] Int32 state,
+            [in] Int32 inCount,
+            [in] Int64 minPss,
+            [in] Int64 avgPss,
+            [in] Int64 maxPss,
+            [in] Int64 minUss,
+            [in] Int64 avgUss,
+            [in] Int64 maxUss);
+
+        ReportExcessiveWake(
+            [in] IArrayMap* pkgList);
+
+        ReportExcessiveCpu(
+            [in] IArrayMap* pkgList);
+
+        ReportCachedKill(
+            [in] IArrayMap* pkgList,
+            [in] Int64 pss);
+
+        PullFixedProc(
+            [in] String pkgName,
+            [out] IProcessState** result);
+
+        GetDuration(
+            [in] Int32 state,
+            [in] Int64 now,
+            [out] Int64* result);
+
+        GetPssSampleCount(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssMinimum(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssAverage(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssMaximum(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssUssMinimum(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssUssAverage(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        GetPssUssMaximum(
+            [in] Int32 state,
+            [out] Int64* result);
+
+        ToString(
+            [out] String* result);
+    }
+
+    /**
+     * @Involve
+     * interface IDurationsTable
+     */
+    interface IServiceState {
+
+        const Int32 SERVICE_RUN = 0;
+        const Int32 SERVICE_STARTED = 1;
+        const Int32 SERVICE_BOUND = 2;
+        const Int32 SERVICE_EXEC = 3;
+
+        ApplyNewOwner(
+            [in] IInterface* newOwner);
+
+        ClearCurrentOwner(
+            [in] IInterface* owner,
+            [in] Boolean silently);
+
+        IsInUse(
+            [out] Boolean* result);
+
+        IsRestarting(
+            [out] Boolean* result);
+
+        Add(
+            [in] IServiceState* other);
+
+        ResetSafely(
+            [in] Int64 now);
+
+        WriteToParcel(
+            [in] IParcel* outer,
+            [in] Int64 now);
+
+        ReadFromParcel(
+            [in] IParcel* inner,
+            [out] Boolean* result);
+
+        CommitStateTime(
+            [in] Int64 now);
+
+        SetStarted(
+            [in] Boolean started,
+            [in] Int32 memFactor,
+            [in] Int64 now);
+
+        SetRestarting(
+            [in] Boolean restarting,
+            [in] Int32 memFactor,
+            [in] Int64 now);
+
+        UpdateStartedState(
+            [in] Int32 memFactor,
+            [in] Int64 now);
+
+        SetBound(
+            [in] Boolean bound,
+            [in] Int32 memFactor,
+            [in] Int64 now);
+
+        SetExecuting(
+            [in] Boolean executing,
+            [in] Int32 memFactor,
+            [in] Int64 now);
+
+        ToString(
+            [out] String* result);
+    }
+
+    /**
+     * @Involve
+     * interface IParcelable
+     */
+    [deprecated]
+    interface IProcessStats {
+
+        const String SERVICE_NAME = "procstats";
+
+        // How often the service commits its data, giving the minimum batching
+        // that is done.
+        const Int64 COMMIT_PERIOD = 3*60*60*1000;  // Commit current stats every 3 hours
+
+        // Minimum uptime period before committing.  If the COMMIT_PERIOD has elapsed but
+        // the total uptime has not exceeded this amount, then the commit will be held until
+        // it is reached.
+        const Int64 COMMIT_UPTIME_PERIOD = 60*60*1000;  // Must have at least 1 hour elapsed
+
+        const Int32 STATE_NOTHING = -1;
+        const Int32 STATE_PERSISTENT = 0;
+        const Int32 STATE_TOP = 1;
+        const Int32 STATE_IMPORTANT_FOREGROUND = 2;
+        const Int32 STATE_IMPORTANT_BACKGROUND = 3;
+        const Int32 STATE_BACKUP = 4;
+        const Int32 STATE_HEAVY_WEIGHT = 5;
+        const Int32 STATE_SERVICE = 6;
+        const Int32 STATE_SERVICE_RESTARTING = 7;
+        const Int32 STATE_RECEIVER = 8;
+        const Int32 STATE_HOME = 9;
+        const Int32 STATE_LAST_ACTIVITY = 10;
+        const Int32 STATE_CACHED_ACTIVITY = 11;
+        const Int32 STATE_CACHED_ACTIVITY_CLIENT = 12;
+        const Int32 STATE_CACHED_EMPTY = 13;
+//        const Int32 STATE_COUNT = STATE_CACHED_EMPTY + 1;
+
+        const Int32 PSS_SAMPLE_COUNT = 0;
+        const Int32 PSS_MINIMUM = 1;
+        const Int32 PSS_AVERAGE = 2;
+        const Int32 PSS_MAXIMUM = 3;
+        const Int32 PSS_USS_MINIMUM = 4;
+        const Int32 PSS_USS_AVERAGE = 5;
+        const Int32 PSS_USS_MAXIMUM = 6;
+//        const Int32 PSS_COUNT = PSS_USS_MAXIMUM+1;
+
+        const Int32 SYS_MEM_USAGE_SAMPLE_COUNT = 0;
+        const Int32 SYS_MEM_USAGE_CACHED_MINIMUM = 1;
+        const Int32 SYS_MEM_USAGE_CACHED_AVERAGE = 2;
+        const Int32 SYS_MEM_USAGE_CACHED_MAXIMUM = 3;
+        const Int32 SYS_MEM_USAGE_FREE_MINIMUM = 4;
+        const Int32 SYS_MEM_USAGE_FREE_AVERAGE = 5;
+        const Int32 SYS_MEM_USAGE_FREE_MAXIMUM = 6;
+        const Int32 SYS_MEM_USAGE_ZRAM_MINIMUM = 7;
+        const Int32 SYS_MEM_USAGE_ZRAM_AVERAGE = 8;
+        const Int32 SYS_MEM_USAGE_ZRAM_MAXIMUM = 9;
+        const Int32 SYS_MEM_USAGE_KERNEL_MINIMUM = 10;
+        const Int32 SYS_MEM_USAGE_KERNEL_AVERAGE = 11;
+        const Int32 SYS_MEM_USAGE_KERNEL_MAXIMUM = 12;
+        const Int32 SYS_MEM_USAGE_NATIVE_MINIMUM = 13;
+        const Int32 SYS_MEM_USAGE_NATIVE_AVERAGE = 14;
+        const Int32 SYS_MEM_USAGE_NATIVE_MAXIMUM = 15;
+//        const Int32 SYS_MEM_USAGE_COUNT = SYS_MEM_USAGE_NATIVE_MAXIMUM+1;
+
+        const Int32 ADJ_NOTHING = -1;
+        const Int32 ADJ_MEM_FACTOR_NORMAL = 0;
+        const Int32 ADJ_MEM_FACTOR_MODERATE = 1;
+        const Int32 ADJ_MEM_FACTOR_LOW = 2;
+        const Int32 ADJ_MEM_FACTOR_CRITICAL = 3;
+//        const Int32 ADJ_MEM_FACTOR_COUNT = ADJ_MEM_FACTOR_CRITICAL+1;
+//        const Int32 ADJ_SCREEN_MOD = ADJ_MEM_FACTOR_COUNT;
+        const Int32 ADJ_SCREEN_OFF = 0;
+//        const Int32 ADJ_SCREEN_ON = ADJ_SCREEN_MOD;
+//        const Int32 ADJ_COUNT = ADJ_SCREEN_ON*2;
+
+        const Int32 FLAG_COMPLETE = 1<<0;
+        const Int32 FLAG_SHUTDOWN = 1<<1;
+        const Int32 FLAG_SYSPROPS = 1<<2;
+
+        Add(
+            [in] IProcessStats* other);
+
+        AddSysMemUsage(
+            [in] Int64 cachedMem,
+            [in] Int64 freeMem,
+            [in] Int64 zramMem,
+            [in] Int64 kernelMem,
+            [in] Int64 nativeMem);
+
+        AddSysMemUsage(
+            [in] Int32 state,
+            [in] ArrayOf<Int64>* data,
+            [in] Int32 dataOff);
+
+        ComputeTotalMemoryUse(
+            [in] ITotalMemoryUseCollection* data,
+            [in] Int64 now);
+
+        GetSysMemUsageValue(
+            [in] Int32 state,
+            [in] Int32 index,
+            [out] Int64* result);
+
+        DumpSysMemUsageCategory(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] String label,
+            [in] Int32 bucket,
+            [in] Int32 index);
+
+        DumpSysMemUsage(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates);
+
+        Reset();
+
+        ResetSafely();
+
+        EvaluateSystemProperties(
+            [in] Boolean update,
+            [out] Boolean* result);
+
+        /** @hide */
+        WriteToParcel(
+            [in] IParcel* outer,
+            [in] Int64 now,
+            [in] Int32 flags);
+
+        Read(
+            [in] IInputStream* stream);
+
+        ReadFromParcel(
+            [in] IParcel* inner);
+
+        AddLongData(
+            [in] Int32 index,
+            [in] Int32 type,
+            [in] Int32 num,
+            [out] Int32* result);
+
+        AllocLongData(
+            [in] Int32 num,
+            [out] Int32* result);
+
+        ValidateLongOffset(
+            [in] Int32 off,
+            [out] Boolean* result);
+
+        SetLong(
+            [in] Int32 off,
+            [in] Int32 index,
+            [in] Int64 value);
+
+        GetLong(
+            [in] Int32 off,
+            [in] Int32 index,
+            [out] Int64* result);
+
+        GetPackageStateLocked(
+            [in] String packageName,
+            [in] Int32 uid,
+            [in] Int32 vers,
+            [out] IPackageState** result);
+
+        GetProcessStateLocked(
+            [in] String packageName,
+            [in] Int32 uid,
+            [in] Int32 vers,
+            [in] String processName,
+            [out] IPackageState** result);
+
+        GetServiceStateLocked(
+            [in] String packageName,
+            [in] Int32 uid,
+            [in] Int32 vers,
+            [in] String processName,
+            [in] String className,
+            [out] IServiceState** result);
+
+        DumpLocked(
+            [in] IPrintWriter* pw,
+            [in] String reqPackage,
+            [in] Int64 now,
+            [in] Boolean dumpSummary,
+            [in] Boolean dumpAll,
+            [in] Boolean activeOnly);
+
+        DumpServiceStats(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] String prefixInner,
+            [in] String headerPrefix,
+            [in] String header,
+            [in] IServiceState* service,
+            [in] Int32 count,
+            [in] Int32 serviceType,
+            [in] Int32 state,
+            [in] Int64 startTime,
+            [in] Int64 now,
+            [in] Int64 totalTime,
+            [in] Boolean dumpAll);
+
+        DumpSummaryLocked(
+            [in] IPrintWriter* pw,
+            [in] String reqPackage,
+            [in] Int64 now,
+            [in] Boolean activeOnly);
+
+        PrintMemoryCategory(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] String label,
+            [in] Double memWeight,
+            [in] Int64 totalTime,
+            [in] Int64 curTotalMem,
+            [in] Int32 samples,
+            [out] Int64* result);
+
+        DumpTotalsLocked(
+            [in] IPrintWriter* pw,
+            [in] Int64 now);
+
+        DumpFilteredSummaryLocked(
+            [in] IPrintWriter* pw,
+            [in] String header,
+            [in] String prefix,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] ArrayOf<Int32>* sortProcStates,
+            [in] Int64 now,
+            [in] Int64 totalTime,
+            [in] String reqPackage,
+            [in] Boolean activeOnly);
+
+        CollectProcessesLocked(
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int32 sortProcStates,
+            [in] Int64 now,
+            [in] String reqPackage,
+            [in] Boolean activeOnly,
+            [out] IArrayList** result);
+
+        CollapseString(
+            [in] String pkgName,
+            [in] String itemName,
+            [out] String* result);
+
+        DumpCheckinLocked(
+            [in] IPrintWriter* pw,
+            [in] String reqPackage);
+    }
+
+    [deprecated]
+    interface IProcessStatsHelper {
+
+        AddSysMemUsage(
+            [in] ArrayOf<Int64>* dstData,
+            [in] Int32 dstOff,
+            [in] ArrayOf<Int64>* addData,
+            [in] Int32 addOff);
+
+        PrintScreenLabelCsv(
+            [in] IPrintWriter* pw,
+            [in] Int32 offset);
+
+        PrintMemLabelCsv(
+            [in] IPrintWriter* pw,
+            [in] Int32 offset);
+
+        DumpSingleTime(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] ArrayOf<Int64>* durations,
+            [in] Int32 curState,
+            [in] Int64 curStartTime,
+            [in] Int64 now,
+            [out] Int64* result);
+
+        DumpAdjTimesCheckin(
+            [in] IPrintWriter* pw,
+            [in] String sep,
+            [in] ArrayOf<Int64>* durations,
+            [in] Int32 curState,
+            [in] Int64 curStartTime,
+            [in] Int64 now);
+
+        DumpServiceTimeCheckin(
+            [in] IPrintWriter* pw,
+            [in] String label,
+            [in] String packageName,
+            [in] Int32 uid,
+            [in] Int32 vers,
+            [in] String serviceName,
+            [in] IServiceState* svc,
+            [in] Int32 serviceType,
+            [in] Int32 opCount,
+            [in] Int32 curState,
+            [in] Int64 curStartTime,
+            [in] Int64 now);
+
+        ComputeProcessData(
+            [in] IProcessState* proc,
+            [in] IProcessDataCollection* data,
+            [in] Int64 now);
+
+        ComputeProcessTimeLocked(
+            [in] IProcessState* proc,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now,
+            [out] Int64* result);
+
+        DumpProcessState(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] IProcessState* proc,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now);
+
+        DumpProcessPss(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] IProcessState* proc,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates);
+
+        DumpStateHeadersCsv(
+            [in] IPrintWriter* pw,
+            [in] String sep,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates);
+
+        DumpProcessStateCsv(
+            [in] IPrintWriter* pw,
+            [in] IProcessState* proc,
+            [in] Boolean sepScreenStates,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] Boolean sepMemStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] Boolean sepProcStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now);
+
+        DumpProcessList(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] IArrayList* procs,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now);
+
+        DumpProcessSummaryDetails(
+            [in] IPrintWriter* pw,
+            [in] IProcessState* proc,
+            [in] String prefix,
+            [in] String label,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now,
+            [in] Int64 totalTime,
+            [in] Boolean full);
+
+        DumpProcessSummaryLocked(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] IArrayList* procs,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Boolean inclUidVers,
+            [in] Int64 now,
+            [in] Int64 totalTime);
+
+        PrintPercent(
+            [in] IPrintWriter* pw,
+            [in] Double fraction);
+
+        PrintSizeValue(
+            [in] IPrintWriter* pw,
+            [in] Int64 number);
+
+        DumpProcessListCsv(
+            [in] IPrintWriter* pw,
+            [in] IArrayList* procs,
+            [in] Boolean sepScreenStates,
+            [in] ArrayOf<Int32>* screenStates,
+            [in] Boolean sepMemStates,
+            [in] ArrayOf<Int32>* memStates,
+            [in] Boolean sepProcStates,
+            [in] ArrayOf<Int32>* procStates,
+            [in] Int64 now);
+
+        PrintArrayEntry(
+            [in] IPrintWriter* pw,
+            [in] ArrayOf<String>* array,
+            [in] Int32 value,
+            [in] Int32 mod,
+            [out] Int32* result);
+
+        PrintProcStateTag(
+            [in] IPrintWriter* pw,
+            [in] Int32 state);
+
+        PrintAdjTag(
+            [in] IPrintWriter* pw,
+            [in] Int32 state);
+
+        PrintProcStateTagAndValue(
+            [in] IPrintWriter* pw,
+            [in] Int32 state,
+            [in] Int64 value);
+
+        PrintAdjTagAndValue(
+            [in] IPrintWriter* pw,
+            [in] Int32 state,
+            [in] Int64 value);
+
+        DumpAllProcessStateCheckin(
+            [in] IPrintWriter* pw,
+            [in] IProcessState* proc,
+            [in] Int64 now);
+
+        DumpAllProcessPssCheckin(
+            [in] IPrintWriter* pw,
+            [in] IProcessState* proc);
+
+        ReadFully(
+            [in] IInputStream* stream,
+            [in] ArrayOf<Int32>* outLen,
+            [out, callee] ArrayOf<Byte>* result);
+
+        PrintLongOffset(
+            [in] Int32 off,
+            [out] String* result);
+
+        BinarySearch(
+            [in] ArrayOf<Int32>* array,
+            [in] Int32 size,
+            [in] Int32 value,
+            [out] Int32* result);
+
+        DumpSingleServiceTime(
+            [in] IPrintWriter* pw,
+            [in] String prefix,
+            [in] IServiceState* service,
+            [in] Int32 serviceType,
+            [in] Int32 curState,
+            [in] Int64 curStartTime,
+            [in] Int64 now,
+            [out] Int64* result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}

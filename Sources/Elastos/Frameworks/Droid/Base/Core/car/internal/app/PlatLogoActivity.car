@@ -1,0 +1,30 @@
+module
+{
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace App {
+
+    /**
+     * @Involve
+     * interface IActivity
+     */
+    interface IPlatLogoActivity {
+
+        MakeRipple(
+            [out] IDrawable** result);
+    }
+
+    interface IPlatLogoActivityHelper {
+
+        NewColorIndex(
+            [out] Int32* result);
+    }
+
+    }//namespace App
+    }//namespace Internal
+    }//namespace Droid
+    }//namespace Elastos
+}
