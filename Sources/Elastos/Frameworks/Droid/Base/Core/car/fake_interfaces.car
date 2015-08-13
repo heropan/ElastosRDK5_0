@@ -292,28 +292,8 @@ module
     namespace Droid {
     namespace Service {
 
-        namespace Wallpaper {
-            interface IImageWallpaper {}
-        }
-
         namespace Voice {
             interface IIVoiceInteractionSession {}
-        }
-
-        namespace Notification {
-            interface IStatusBarNotification {}
-
-            interface IINotificationListener {}
-
-            interface IZenModeConfig {}
-
-            interface IConditionProvider {}
-
-            interface ICondition {}
-
-            interface IConditionListener {}
-
-            interface INotificationListenerServiceRankingMap {}
         }
 
     }}} // Elastos.Droid.Service

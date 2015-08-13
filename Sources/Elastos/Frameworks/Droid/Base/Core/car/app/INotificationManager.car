@@ -9,9 +9,9 @@ module
     interface Elastos.Droid.Service.Notification.IStatusBarNotification;
     interface Elastos.Droid.Service.Notification.IINotificationListener;
     interface Elastos.Droid.Service.Notification.IZenModeConfig;
-    interface Elastos.Droid.Service.Notification.IConditionProvider;
+    interface Elastos.Droid.Service.Notification.IIConditionProvider;
     interface Elastos.Droid.Service.Notification.ICondition;
-    interface Elastos.Droid.Service.Notification.IConditionListener;
+    interface Elastos.Droid.Service.Notification.IIConditionListener;
 
     namespace Elastos {
     namespace Droid {
@@ -148,11 +148,11 @@ module
 
         [oneway] NotifyConditions(
             [in] String pkg,
-            [in] IConditionProvider* provider,
+            [in] IIConditionProvider* provider,
             [in] ArrayOf<ICondition*>* conditions);
 
         [oneway] RequestZenModeConditions(
-            [in] IConditionListener* cb,
+            [in] IIConditionListener* cb,
             [in] Int32 relevance);
 
         [oneway] SetZenModeCondition(

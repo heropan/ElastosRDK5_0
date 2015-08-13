@@ -8,6 +8,17 @@ module
 
     // merge("service/textservice/SpellCheckerService.car");
 
+    merge("service/notification/Condition.car");
+    merge("service/notification/ConditionProviderService.car");
+    merge("service/notification/IConditionListener.car");
+    merge("service/notification/IConditionProvider.car");
+    merge("service/notification/INotificationListener.car");
+    merge("service/notification/IStatusBarNotificationHolder.car");
+    merge("service/notification/NotificationListenerService.car");
+    merge("service/notification/NotificationRankingUpdate.car");
+    merge("service/notification/StatusBarNotification.car");
+    merge("service/notification/ZenModeConfig.car");
+
     merge("service/wallpaper/IWallpaperConnection.car");
     merge("service/wallpaper/IWallpaperEngine.car");
     merge("service/wallpaper/IWallpaperService.car");
