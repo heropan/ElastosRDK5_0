@@ -227,7 +227,7 @@ void TimeZone::AppendNumber(
 {
     String string = StringUtils::ToString(value);
     Char32 c = '0';
-    for (UInt32 i = 0; i < count - string.GetLength(); i++) {
+    for (Int32 i = 0; i < count - string.GetLength(); i++) {
         buffer->AppendChar(c);
     }
 

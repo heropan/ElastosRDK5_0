@@ -33,7 +33,7 @@ const Int32 AbstractQueuedSynchronizer::Node::PROPAGATE;
 ECode AbstractQueuedSynchronizer::Node::Predecessor(
     /* [out] */ Node** node)
 {
-    volatile AutoPtr<Node> p = mPrev;
+    AutoPtr<Node> p = mPrev;
     if (p == NULL) {
         // throw new NullPointerException();
         return E_NULL_POINTER_EXCEPTION;
@@ -430,7 +430,7 @@ ECode AbstractQueuedSynchronizer::ConditionObject::GetWaitingThreads(
     //     }
     // }
     // return list;
-    return NULL;
+    return NOERROR;
 }
 
 
@@ -700,17 +700,18 @@ Boolean AbstractQueuedSynchronizer::AcquireQueued(
             if (failed) {
                 CancelAcquire(node);
             }
-            return ec;
+            return interrupted;
         }
         if (p == mHead && TryAcquire(arg)) {
             SetHead(node);
-            p->mNext = NULL; // help GC
+            p->mNext = NULL;
             failed = FALSE;
-            return NOERROR;
+            return interrupted;
         }
         if (ShouldParkAfterFailedAcquire(p, node) &&
-            ParkAndCheckInterrupt())
+            ParkAndCheckInterrupt()) {
             interrupted = TRUE;
+        }
     }
 }
 
@@ -1113,11 +1114,12 @@ ECode AbstractQueuedSynchronizer::IsQueued(
         *value = FALSE;
         return E_NULL_POINTER_EXCEPTION;
     }
-    for (AutoPtr<Node> p = mTail; p != NULL; p = p->mPrev)
-        if (p->mThread == thread) {
+    for (AutoPtr<Node> p = mTail; p != NULL; p = p->mPrev) {
+        if (p->mThread.Get() == thread) {
             *value = TRUE;
             return NOERROR;
         }
+    }
     *value = FALSE;
     return NOERROR;
 }

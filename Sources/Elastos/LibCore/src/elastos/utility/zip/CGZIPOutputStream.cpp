@@ -38,8 +38,8 @@ ECode CGZIPOutputStream::constructor(
 
 ECode CGZIPOutputStream::constructor(
     /* [in] */ IOutputStream* os,
-    /* [in] */ Boolean syncFlush,
-    /* [in] */ Int32 size)
+    /* [in] */ Int32 size,
+    /* [in] */ Boolean syncFlush)
 {
     AutoPtr<CDeflater> deflater;
     CDeflater::NewByFriend(IDeflater::DEFAULT_COMPRESSION, TRUE, (CDeflater**)&deflater);

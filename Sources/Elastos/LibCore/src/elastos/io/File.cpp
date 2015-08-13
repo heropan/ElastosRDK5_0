@@ -790,7 +790,7 @@ static Boolean ReadDirectory(const String& path, DirEntries& entries)
     while ((filename = dir.next()) != NULL) {
         if (strcmp(filename, ".") != 0 && strcmp(filename, "..") != 0) {
             // TODO: this hides allocation failures from us. Push directory iteration up into Java?
-            entries.PushBack(String(filename));
+            // entries.PushBack(String(filename));
         }
     }
     return !dir.isBad();

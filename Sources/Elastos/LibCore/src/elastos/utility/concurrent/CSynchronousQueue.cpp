@@ -649,6 +649,7 @@ ECode CSynchronousQueue::Put(
         Thread::Interrupted();
         return E_INTERRUPTED_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode CSynchronousQueue::Offer(

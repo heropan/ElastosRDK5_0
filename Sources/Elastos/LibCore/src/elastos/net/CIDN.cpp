@@ -113,7 +113,7 @@ ECode CIDN::NativeConvert(
     }
 
     AutoPtr< ArrayOf<Char32> > outarr = ArrayOf<Char32>::Alloc(resultLength);
-    for (Int32 i = 0; i < resultLength; ++i) {
+    for (size_t i = 0; i < resultLength; ++i) {
         (*outarr)[i] = dst[i];
     }
     *result = String(*outarr);

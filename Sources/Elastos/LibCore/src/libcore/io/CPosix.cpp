@@ -668,20 +668,23 @@ ECode CPosix::Execve(
     }
 
     Int32 argvLength = argv->GetLength();
-    char const* argvArray[argvLength + 1];
+    char** argvArray = new char*[argvLength + 1];
     argvArray[argvLength] = NULL;
     for (Int32 i = 0; i < argvLength; i++) {
-        argvArray[i] = (*argv)[i].string();
+        argvArray[i] = (char*)(*argv)[i].string();
     }
 
     Int32 envpLength = envp->GetLength();
-    char const* envpArray[envpLength + 1];
+    char** envpArray = new char*[envpLength + 1];
     envpArray[envpLength] = NULL;
     for (Int32 i = 0; i < envpLength; i++) {
-        envpArray[i] = (*envp)[i].string();
+        envpArray[i] = (char*)(*envp)[i].string();
     }
 
     execve(filename, argvArray, envpArray);
+
+    delete[] argvArray;
+    delete[] envpArray;
 
     ALOGE("execve returned errno = %d", errno);
     return E_ERRNO_EXCEPTION;
@@ -1641,7 +1644,7 @@ ECode CPosix::Readv(
     Vector<iovec> ioVec;
     Vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
     Int32 length = buffers->GetLength();
-    for (size_t i = 0; i < length; ++i) {
+    for (Int32 i = 0; i < length; ++i) {
         AutoPtr<IInterface> buffer = (*buffers)[i];
         AutoPtr<IByteBuffer> byteBuffer = IByteBuffer::Probe(buffer);
         if (byteBuffer == NULL) {
@@ -2286,7 +2289,7 @@ ECode CPosix::Writev(
     Vector<iovec> ioVec;
     Vector<AutoPtr<ArrayOf<Byte> > > buffersVec;
     Int32 length = buffers->GetLength();
-    for (size_t i = 0; i < length; ++i) {
+    for (Int32 i = 0; i < length; ++i) {
         AutoPtr<IInterface> buffer = (*buffers)[i];
         AutoPtr<IByteBuffer> byteBuffer = IByteBuffer::Probe(buffer);
         if (byteBuffer == NULL) {

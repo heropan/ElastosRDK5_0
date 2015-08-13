@@ -58,14 +58,11 @@ ECode FileOutputStream::constructor(
     mMode = OsConstants::_O_WRONLY
         | OsConstants::_O_CREAT
         | (append ? OsConstants::_O_APPEND : OsConstants::_O_TRUNC);
-    String path;
-    file->GetPath(&path);
-    CFileDescriptor::NewByFriend((CFileDescriptor**)&mFd);
     AutoPtr<CIoBridge> ioBridge;
     CIoBridge::AcquireSingletonByFriend((CIoBridge**)&ioBridge);
-    AutoPtr<IFileDescriptor> fd;
-    FAIL_RETURN(ioBridge->Open(path, mMode, (IFileDescriptor**)&fd))
-    mFd->SetDescriptor(fd);
+    String path;
+    file->GetPath(&path);
+    FAIL_RETURN(ioBridge->Open(path, mMode, (IFileDescriptor**)&mFd))
     mShouldClose = TRUE;
     return NOERROR;
 }

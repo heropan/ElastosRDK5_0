@@ -99,7 +99,7 @@ ECode CHttpCookie::CookieParser::Parse(
         AutoPtr<ArrayOf<Char32> > charArray = mInput.GetChars();
         while (TRUE) {
             SkipWhitespace();
-            if ((UInt32)mPos == charArray->GetLength()) {
+            if (mPos == charArray->GetLength()) {
                 break;
             }
 
@@ -224,7 +224,7 @@ String CHttpCookie::CookieParser::ReadAttributeName(
 Boolean CHttpCookie::CookieParser::ReadEqualsSign()
 {
     SkipWhitespace();
-    if ((UInt32)mPos < mInput.GetLength() && mInput.GetChar(mPos) == '=') {
+    if (mPos < mInput.GetLength() && mInput.GetChar(mPos) == '=') {
         mPos++;
         return TRUE;
     }
@@ -245,7 +245,7 @@ ECode CHttpCookie::CookieParser::ReadAttributeValue(
      * but RI bug 6901170 claims that 'single quotes' are also used.
      */
      AutoPtr<ArrayOf<Char32> > charArray = mInput.GetChars();
-    if ((UInt32)mPos < charArray->GetLength() && ((*charArray)[mPos] == '"' || (*charArray)[mPos] == '\'')) {
+    if (mPos < charArray->GetLength() && ((*charArray)[mPos] == '"' || (*charArray)[mPos] == '\'')) {
         Char32 quoteCharacter = (*charArray)[mPos++];
         Int32 closeQuote = mInput.IndexOf(quoteCharacter, mPos);
         if (closeQuote == -1) {
@@ -267,9 +267,9 @@ Int32 CHttpCookie::CookieParser::Find(
     /* [in] */ const String& chars)
 {
     AutoPtr<ArrayOf<Char32> > charArray = mInput.GetChars();
-    for (UInt32 c = mPos; c < charArray->GetLength(); c++) {
-        if (chars.IndexOf((*charArray)[c]) != -1) {
-            return c;
+    for (Int32 i = mPos; i < charArray->GetLength(); i++) {
+        if (chars.IndexOf((*charArray)[i]) != -1) {
+            return i;
         }
     }
     return mInput.GetLength();
@@ -278,7 +278,7 @@ Int32 CHttpCookie::CookieParser::Find(
 void CHttpCookie::CookieParser::SkipWhitespace()
 {
     AutoPtr<ArrayOf<Char32> > charArray = mInput.GetChars();
-    for (; (UInt32)mPos < charArray->GetLength(); mPos++) {
+    for (; mPos < charArray->GetLength(); mPos++) {
         if (WHITESPACE.IndexOf((*charArray)[mPos]) == -1) {
             break;
         }
@@ -426,7 +426,7 @@ Boolean CHttpCookie::IsFullyQualifiedDomainName(
     /* [in] */ Int32 firstCharacter)
 {
     Int32 dotPosition = s.IndexOf('.', firstCharacter + 1);
-    return dotPosition != -1 && (UInt32)dotPosition < s.GetLength() - 1;
+    return dotPosition != -1 && dotPosition < s.GetLength() - 1;
 }
 
 ECode CHttpCookie::Parse(

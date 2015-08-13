@@ -82,7 +82,7 @@ public:
     public:
         Int32 mHash;
         AutoPtr<IInterface> mKey;
-        volatile AutoPtr<IInterface> mVal;
+        AutoPtr<IInterface> mVal;
         AutoPtr<Node> mNext;
     };
 
@@ -176,7 +176,7 @@ public:
         CARAPI_(AutoPtr<TreeNode>) FindTreeNode(
             /* [in] */ Int32 h,
             /* [in] */ IInterface* k,
-            /* [in] */ const InterfaceID& kc);
+            /* [in] */ InterfaceID kc);
 
     public:
         AutoPtr<TreeNode> mParent;  // red-black tree links
@@ -282,9 +282,9 @@ public:
 
     public:
         AutoPtr<TreeNode> mRoot;
-        volatile AutoPtr<TreeNode> mFirst;
-        volatile AutoPtr<IThread> mWaiter;
-        volatile Int32 mLockState;
+        AutoPtr<TreeNode> mFirst;
+        AutoPtr<IThread> mWaiter;
+        Int32 mLockState;
         // values for lockState
         static Int32 WRITER; // set while holding write lock
         static Int32 WAITER; // set when waiting for write lock
@@ -866,9 +866,9 @@ public:
         }
 
     public:
-        volatile Int64 mP0, mP1, mP2, mP3, mP4, mP5, mP6;
-        volatile Int64 mValue;
-        volatile Int64 mQ0, mQ1, mQ2, mQ3, mQ4, mQ5, mQ6;
+        Int64 mP0, mP1, mP2, mP3, mP4, mP5, mP6;
+        Int64 mValue;
+        Int64 mQ0, mQ1, mQ2, mQ3, mQ4, mQ5, mQ6;
     };
 
     /**
@@ -1602,7 +1602,7 @@ public:
      * The array of bins. Lazily initialized upon first insertion.
      * Size is always a power of two. Accessed directly by iterators.
      */
-    /* transient */ volatile AutoPtr<ArrayOf<Node*> > mTable;
+    /* transient */ AutoPtr<ArrayOf<Node*> > mTable;
 
     /**
      * Generates initial value for per-thread CounterHashCodes.
@@ -1624,14 +1624,14 @@ private:
     /**
      * The next table to use; non-null only while resizing.
      */
-    /* transient */ volatile AutoPtr<ArrayOf<Node*> > mNextTable;
+    /* transient */ AutoPtr<ArrayOf<Node*> > mNextTable;
 
     /**
      * Base counter value, used mainly when there is no contention,
      * but also as a fallback during table initialization
      * races. Updated via CAS.
      */
-    /* transient */ volatile Int64 mBaseCount;
+    /* transient */ Int64 mBaseCount;
 
     /**
      * Table initialization and resizing control.  When negative, the
@@ -1641,27 +1641,27 @@ private:
      * creation, or 0 for default. After initialization, holds the
      * next element count value upon which to resize the table.
      */
-    /* transient */ volatile Int32 mSizeCtl;
+    /* transient */ Int32 mSizeCtl;
 
     /**
      * The next table index (plus one) to split while resizing.
      */
-    /* transient */ volatile Int32 mTransferIndex;
+    /* transient */ Int32 mTransferIndex;
 
     /**
      * The least available table index to split while resizing.
      */
-    /* transient */ volatile Int32 mTransferOrigin;
+    /* transient */ Int32 mTransferOrigin;
 
     /**
      * Spinlock (locked via CAS) used when resizing and/or creating CounterCells.
      */
-    /* transient */ volatile Int32 mCellsBusy;
+    /* transient */ Int32 mCellsBusy;
 
     /**
      * Table of counter cells. When non-null, size is a power of 2.
      */
-    /* transient */ volatile AutoPtr<ArrayOf<CounterCell*> > mCounterCells;
+    /* transient */ AutoPtr<ArrayOf<CounterCell*> > mCounterCells;
 
     // views
     /* transient */ AutoPtr<KeySetView> mKeySet;

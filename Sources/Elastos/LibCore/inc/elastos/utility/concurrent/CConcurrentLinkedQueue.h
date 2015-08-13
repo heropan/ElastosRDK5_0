@@ -40,7 +40,7 @@ private:
 
     public:
         AutoPtr<IInterface> mItem;
-        volatile AutoPtr<Node> mNext;
+        AutoPtr<Node> mNext;
 
     private:
 //        static sun.misc.Unsafe UNSAFE;
@@ -185,8 +185,8 @@ private:
 
 private:
 //    static long serialVersionUID = 196745693267521676L;
-    volatile AutoPtr<Node> mHead;
-    volatile AutoPtr<Node> mTail;
+    AutoPtr<Node> mHead;
+    AutoPtr<Node> mTail;
 //    static sun.misc.Unsafe UNSAFE;
     static Int64 sHeadOffset;
     static Int64 sTailOffset;

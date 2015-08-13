@@ -77,11 +77,11 @@ ECode HttpURLConnection::GetResponseCode(
         return NOERROR;
     }
     Int32 last = mark + 3;
-    if ((UInt32)last > response.GetLength()) {
+    if (last > response.GetLength()) {
         last = response.GetLength();
     }
     mResponseCode = StringUtils::ParseInt32(response.Substring(mark, last));
-    if ((UInt32)(last + 1) <= response.GetLength()) {
+    if ((last + 1) <= response.GetLength()) {
         mResponseMessage = response.Substring(last + 1);
     }
     *responseCode = mResponseCode;

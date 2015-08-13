@@ -33,7 +33,7 @@ ECode Certificate::Equals(
     *isEqual = Arrays::Equals(encode, oEncode);
     return NOERROR;
 ERROR_PROCESS:
-    if(E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
+    if ((ECode)E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
         *isEqual = FALSE;
         return NOERROR;
     }
@@ -54,7 +54,7 @@ ECode Certificate::GetHashCode(
         res += (*encode)[i];
     }
 ERROR_PROCESS:
-    if (E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
+    if ((ECode)E_CERTIFICATE_ENCODING_EXCEPTION == ec) {
         ;
     }
     else {

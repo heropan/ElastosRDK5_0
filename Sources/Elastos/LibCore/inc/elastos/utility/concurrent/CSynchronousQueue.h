@@ -89,9 +89,9 @@ public:
             CARAPI_(Boolean) IsCancelled();
 
         public:
-            volatile AutoPtr<SNode> mNext;        // next node in stack
-            volatile AutoPtr<SNode> mMatch;       // the node matched to this
-            volatile AutoPtr<IThread> mWaiter;     // to control park/unpark
+            AutoPtr<SNode> mNext;        // next node in stack
+            AutoPtr<SNode> mMatch;       // the node matched to this
+            AutoPtr<IThread> mWaiter;     // to control park/unpark
             AutoPtr<IInterface> mItem;                // data; or null for REQUESTs
             Int32 mMode;
 
@@ -182,7 +182,7 @@ public:
         static Int32 FULFILLING;
 
         /** The head (top) of the stack */
-        volatile AutoPtr<SNode> mHead;
+        AutoPtr<SNode> mHead;
 
         // // Unsafe mechanics
         // private static final sun.misc.Unsafe UNSAFE;
@@ -247,9 +247,9 @@ public:
             CARAPI_(Boolean) IsOffList();
 
         public:
-            volatile AutoPtr<QNode> mNext;          // next node in queue
-            volatile AutoPtr<IInterface> mItem;         // CAS'ed to or from null
-            volatile AutoPtr<IThread> mWaiter;       // to control park/unpark
+            AutoPtr<QNode> mNext;          // next node in queue
+            AutoPtr<IInterface> mItem;         // CAS'ed to or from null
+            AutoPtr<IThread> mWaiter;       // to control park/unpark
             Boolean mIsData;
 
             // // Unsafe mechanics
@@ -330,15 +330,15 @@ public:
 
     public:
         /** Head of queue */
-        volatile AutoPtr<QNode> mHead;
+        AutoPtr<QNode> mHead;
         /** Tail of queue */
-        volatile AutoPtr<QNode> mTail;
+        AutoPtr<QNode> mTail;
         /**
          * Reference to a cancelled node that might not yet have been
          * unlinked from queue because it was the last inserted node
          * when it was cancelled.
          */
-        volatile AutoPtr<QNode> mCleanMe;
+        AutoPtr<QNode> mCleanMe;
 
         // private static final sun.misc.Unsafe UNSAFE;
         // private static final long headOffset;
@@ -565,7 +565,7 @@ private:
      * isn't a noticeable performance penalty for using volatile
      * instead of final here.
      */
-    volatile AutoPtr<Transferer> mTransferer;
+    AutoPtr<Transferer> mTransferer;
 
     // // Unsafe mechanics
     // static long objectFieldOffset(sun.misc.Unsafe UNSAFE,

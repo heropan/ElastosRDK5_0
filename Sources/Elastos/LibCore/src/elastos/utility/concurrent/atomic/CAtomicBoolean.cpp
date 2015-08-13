@@ -76,6 +76,7 @@ ECode CAtomicBoolean::LazySet(
     /* [in] */ Boolean newValue)
 {
     Int32 v = newValue ? 1 : 0;
+//  TODO:
 //    unsafe.putOrderedInt(this, valueOffset, v);
     return NOERROR;
 }

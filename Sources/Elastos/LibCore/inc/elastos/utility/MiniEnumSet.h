@@ -134,7 +134,7 @@ public:
 private:
     static const Int32 MAX_ELEMENTS;// = 64;
 
-    const AutoPtr< ArrayOf<IInterface*> > mEnums;
+    AutoPtr< ArrayOf<IInterface*> > mEnums;
 
     Int32 mSize;
 

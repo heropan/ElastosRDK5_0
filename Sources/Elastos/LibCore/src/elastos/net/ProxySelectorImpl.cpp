@@ -163,7 +163,7 @@ Boolean ProxySelectorImpl::IsNonProxyHost(
     Char32 ch;
     StringBuilder buf;
     AutoPtr<ArrayOf<Char32> > char32Array = nonProxyHosts.GetChars();
-    for (Int32 i = 0; (UInt32)i < char32Array->GetLength(); i++) {
+    for (Int32 i = 0; i < char32Array->GetLength(); i++) {
         ch = (*char32Array)[i];
         switch (ch) {
             case '.':

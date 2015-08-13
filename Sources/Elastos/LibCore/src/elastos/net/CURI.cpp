@@ -412,7 +412,7 @@ ECode CURI::IsValidHost(
     }
 
     Int32 index = host.LastIndexOf('.');
-    if (index < 0 || (UInt32)index == host.GetLength() - 1
+    if (index < 0 || index == host.GetLength() - 1
             || !Character::IsDigit(host.GetChar(index + 1))) {
         // domain name
         if (IsValidDomainName(host)) {
@@ -1272,7 +1272,7 @@ ECode CURI::ToString(
     }
     else {
         if (!mAuthority.IsNull()) {
-            result->AppendChar('//');
+            result->Append(String("//"));
             result->Append(mAuthority);
         }
 
@@ -1309,7 +1309,7 @@ String CURI::GetHashString()
     }
     else {
         if (!mAuthority.IsNull()) {
-            result.AppendChar('//');
+            result.Append(String("//"));
             if (mHost.IsNull()) {
                 result.Append(mAuthority);
             }

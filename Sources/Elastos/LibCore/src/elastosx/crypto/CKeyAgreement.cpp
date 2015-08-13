@@ -234,6 +234,7 @@ ECode CKeyAgreement::GetSpi(
         REFCOUNT_ADD(*spi)
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode CKeyAgreement::GetSpi(

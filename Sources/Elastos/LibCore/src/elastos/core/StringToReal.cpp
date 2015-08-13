@@ -1234,7 +1234,7 @@ ECode StringToReal::Parse(
     }
 
     Float floatValue = ParseFltImpl(info->mStr, (Int32) info->mE);
-    if (Math::FloatToRawInt32Bits(floatValue) == 0xffffffff) {
+    if (Math::FloatToRawInt32Bits(floatValue) == (Int32)0xffffffff) {
         return E_NUMBER_FORMAT_EXCEPTION;
     }
 
@@ -1280,7 +1280,7 @@ ECode StringToReal::Parse(
         return NOERROR;
     }
     Double result = ParseDblImpl(info->mStr, (Int32) info->mE);
-    if (Math::DoubleToRawInt64Bits(result) == 0xffffffffffffffffL) {
+    if (Math::DoubleToRawInt64Bits(result) == (Int64)0xffffffffffffffffLL) {
         return E_NUMBER_FORMAT_EXCEPTION;
     }
     *resultValue = info->mNegative ? -result : result;

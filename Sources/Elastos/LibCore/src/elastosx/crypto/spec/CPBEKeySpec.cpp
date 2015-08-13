@@ -35,8 +35,8 @@ ECode CPBEKeySpec::constructor(
 ECode CPBEKeySpec::constructor(
     /* [in] */ ArrayOf<Char32> * password,
     /* [in] */ ArrayOf<Byte> * salt,
-    /* [in] */ Int32 * iterationCount,
-    /* [in] */ Int32 * keyLength)
+    /* [in] */ Int32 iterationCount,
+    /* [in] */ Int32 keyLength)
 {
     if (salt == NULL) {
         // throw new NullPointerException("salt == NULL");
@@ -73,7 +73,7 @@ ECode CPBEKeySpec::constructor(
 ECode CPBEKeySpec::constructor(
     /* [in] */ ArrayOf<Char32> * password,
     /* [in] */ ArrayOf<Byte> * salt,
-    /* [in] */ Int32 * iterationCount)
+    /* [in] */ Int32 iterationCount)
 {
     if (salt == NULL) {
         // throw new NullPointerException("salt == NULL");

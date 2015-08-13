@@ -24,25 +24,25 @@ public:
      * impossible) zero byte to U+0000, that's what the RI does too
      */
     CARAPI Decode(
-        /* [in] */ ArrayOf<Byte>*   bytes,
-        /* [in] */ ArrayOf<Char32>*   chars,
-        /* [in] */ Int32            offset,
-        /* [in] */ Int32            utfSize,
-        /* [out] */ String*         string);
+        /* [in] */ ArrayOf<Byte>* bytes,
+        /* [in] */ ArrayOf<Char32>* chars,
+        /* [in] */ Int32 offset,
+        /* [in] */ Int32 utfSize,
+        /* [out] */ String* string);
 
     CARAPI CountBytes(
-        /* [in] */  String*   s,
-        /* [in] */  Boolean   shortLength,
-        /* [out] */ Int64*    num);
+        /* [in] */ const String& s,
+        /* [in] */ Boolean shortLength,
+        /* [out] */ Int64* num);
 
     CARAPI Encode(
-        /* [in] */          String*         s,
-        /* [out, callee] */ ArrayOf<Byte>**  bytes);
+        /* [in] */ const String& s,
+        /* [out, callee] */ ArrayOf<Byte>** bytes);
 
     CARAPI Encode(
         /* [in] */ ArrayOf<Byte>* dst,
-        /* [in] */ Int32          offset,
-        /* [out] */ String*        s);
+        /* [in] */ Int32 offset,
+        /* [out] */ String* s);
 };
 
 } // namespace Charset

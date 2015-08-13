@@ -1160,9 +1160,9 @@ Boolean CLocale::IsAsciiAlphaNum(
     AutoPtr<ArrayOf<Char32> > chars = string.GetChars();
     for (Int32 i = 0; i < chars->GetLength(); i++) {
         Char32 character = (*chars)[i];
-        if (!(character >= 'a' && character <= 'z' ||
-                character >= 'A' && character <= 'Z' ||
-                character >= '0' && character <= '9')) {
+        if (!((character >= 'a' && character <= 'z') ||
+                (character >= 'A' && character <= 'Z') ||
+                (character >= '0' && character <= '9'))) {
             return FALSE;
         }
     }
@@ -1183,8 +1183,8 @@ Boolean CLocale::IsValidBcp47Alpha(
 
     for (Int32 i = 0; i < length; ++i) {
         Char32 character = (*chars)[i];
-        if (!(character >= 'a' && character <= 'z' ||
-                character >= 'A' && character <= 'Z')) {
+        if (!((character >= 'a' && character <= 'z') ||
+                (character >= 'A' && character <= 'Z'))) {
             return FALSE;
         }
     }

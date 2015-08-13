@@ -49,9 +49,9 @@ protected:
             /* [in] */ Node* val);
 
     public:
-        volatile AutoPtr<Node> mPrev;
-        volatile AutoPtr<IInterface> mItem;
-        volatile AutoPtr<Node> mNext;
+        AutoPtr<Node> mPrev;
+        AutoPtr<IInterface> mItem;
+        AutoPtr<Node> mNext;
 
     private:
         // Unsafe mechanics
@@ -446,9 +446,9 @@ private:
 private:
 //    static Int64 serialVersionUID = 876323262645176354L;
 
-    volatile AutoPtr<Node> mHead;
+    AutoPtr<Node> mHead;
 
-    volatile AutoPtr<Node> mTail;
+    AutoPtr<Node> mTail;
 
     static AutoPtr<Node> sPREV_TERMINATOR;
     static AutoPtr<Node> sNEXT_TERMINATOR;

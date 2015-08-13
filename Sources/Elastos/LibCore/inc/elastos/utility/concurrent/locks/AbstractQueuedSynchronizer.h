@@ -189,7 +189,7 @@ public:
          * CONDITION for condition nodes.  It is modified using CAS
          * (or when possible, unconditional volatile writes).
          */
-        volatile Int32 mWaitStatus;
+        Int32 mWaitStatus;
 
         /**
          * Link to predecessor node that current node/thread relies on
@@ -202,7 +202,7 @@ public:
          * cancelled thread never succeeds in acquiring, and a thread only
          * cancels itself, not any other node.
          */
-        volatile AutoPtr<Node> mPrev;
+        AutoPtr<Node> mPrev;
 
         /**
          * Link to the successor node that the current node/thread
@@ -217,13 +217,13 @@ public:
          * point to the node itself instead of null, to make life
          * easier for isOnSyncQueue.
          */
-        volatile AutoPtr<Node> mNext;
+        AutoPtr<Node> mNext;
 
         /**
          * The thread that enqueued this node.  Initialized on
          * construction and nulled out after use.
          */
-        volatile AutoPtr<IThread> mThread;
+        AutoPtr<IThread> mThread;
 
         /**
          * Link to next node waiting on condition, or the special
@@ -1311,18 +1311,18 @@ private:
      * If head exists, its waitStatus is guaranteed not to be
      * CANCELLED.
      */
-    volatile AutoPtr<Node> mHead;
+    AutoPtr<Node> mHead;
 
     /**
      * Tail of the wait queue, lazily initialized.  Modified only via
      * method enq to add new wait node.
      */
-    volatile AutoPtr<Node> mTail;
+    AutoPtr<Node> mTail;
 
     /**
      * The synchronization state.
      */
-    volatile Int32 mState;
+    Int32 mState;
 
     /**
      * The number of nanoseconds for which it is faster to spin

@@ -113,7 +113,7 @@ void Properties::DumpString(
             else {
                 String hex = StringUtils::ToHexString((Int32)ch);
                 buffer->Append(String("\\u"));
-                for (UInt32 j = 0; j < 4 - hex.GetLength(); j++) {
+                for (Int32 j = 0; j < 4 - hex.GetLength(); j++) {
                     buffer->Append(String("0"));
                 }
                 buffer->Append(hex);

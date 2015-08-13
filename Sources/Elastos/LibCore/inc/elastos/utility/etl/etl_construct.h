@@ -35,6 +35,17 @@ inline void Construct(T1* p)
 
 /**
  * @maint
+ * Destroy the object pointed to by a pointer type.
+ * @endmaint
+ */
+template <typename T>
+inline void Destroy(T* pointer)
+{
+    pointer->~T();
+}
+
+/**
+ * @maint
  * Destroy a range of objects with nontrivial destructors.
  *
  * This is a helper function used only by _Destroy().
@@ -60,17 +71,6 @@ inline void DestroyAux(ForwardIterator first, ForwardIterator last, FalseType)
 template <typename ForwardIterator>
 inline void DestroyAux(ForwardIterator, ForwardIterator, TrueType)
 {}
-
-/**
- * @maint
- * Destroy the object pointed to by a pointer type.
- * @endmaint
- */
-template <typename T>
-inline void Destroy(T* pointer)
-{
-    pointer->~T();
-}
 
 /**
  * @maint

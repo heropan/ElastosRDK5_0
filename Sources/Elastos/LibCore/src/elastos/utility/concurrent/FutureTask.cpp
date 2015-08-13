@@ -32,10 +32,6 @@ const Int32 FutureTask::CANCELLED    = 4;
 const Int32 FutureTask::INTERRUPTING = 5;
 const Int32 FutureTask::INTERRUPTED  = 6;
 
-const Int64 FutureTask::mStateOffset;
-const Int64 FutureTask::mRunnerOffset;
-const Int64 FutureTask::mWaitersOffset;
-
 FutureTask::FutureTask()
 {}
 
@@ -142,7 +138,7 @@ ECode FutureTask::Cancel(
     VALIDATE_NOT_NULL(result)
 
     if (!(mState == NEW &&
-          CompareAndSwapInt32((volatile int32_t*)&mStateOffset, NEW,
+          CompareAndSwapInt32((volatile int32_t*)&mState, NEW,
               mayInterruptIfRunning ? INTERRUPTING : CANCELLED))) {
         *result = FALSE;
         return NOERROR;
@@ -154,7 +150,7 @@ ECode FutureTask::Cancel(
                 if (t != NULL)
                     t->Interrupt();
 //            } finally { // final state
-                PutOrderedInt32((volatile int32_t*)&mStateOffset, INTERRUPTED);
+                PutOrderedInt32((volatile int32_t*)&mState, INTERRUPTED);
 //            }
         }
 //    } finally {

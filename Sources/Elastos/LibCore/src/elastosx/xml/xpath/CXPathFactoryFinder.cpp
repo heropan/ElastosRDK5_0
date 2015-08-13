@@ -66,7 +66,7 @@ void CXPathFactoryFinder::DebugPrintln(
 ECode CXPathFactoryFinder::constructor(
     /* [in] */ IClassLoader* loader)
 {
-    this->classLoader = loader;
+    classLoader = loader;
     if (debug) {
         DebugDisplayClassLoader();
     }

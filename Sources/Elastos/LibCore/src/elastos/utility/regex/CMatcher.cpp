@@ -201,7 +201,7 @@ ECode CMatcher::AppendEvaluated(
     Char32 c;
     String text;
     AutoPtr<ArrayOf<Char32> > array = s.GetChars();
-    for (UInt32 i = 0; i < array->GetLength(); i++) {
+    for (Int32 i = 0; i < array->GetLength(); i++) {
         c = (*array)[i];
         if (c == '\\' && !escape) {
             escape = TRUE;
@@ -487,7 +487,7 @@ String CMatcher::QuoteReplacement(
     StringBuilder result(s.GetByteLength());
     AutoPtr<ArrayOf<Char32> > charArray = s.GetChars();
     Char32 c;
-    for (UInt32 i = 0; i < charArray->GetLength(); i++) {
+    for (Int32 i = 0; i < charArray->GetLength(); i++) {
         c = (*charArray)[i];
         if (c == '\\' || c == '$') {
             result.AppendChar('\\');
@@ -696,7 +696,7 @@ ECode CMatcher::OpenImpl(
 Boolean CMatcher::RequireEndImpl(
     /* [in] */ RegexMatcher* matcher)
 {
-    VALIDATE_NOT_NULL(matcher);
+    assert(matcher != NULL);
     MatcherAccessor matcherAccessor(matcher);
     return matcherAccessor->requireEnd();
 }

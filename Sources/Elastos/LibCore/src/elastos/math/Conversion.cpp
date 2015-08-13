@@ -25,7 +25,7 @@ const Int32 Conversion::DigitFitInInt[] = {
 };
 
 const Int32 Conversion::BigRadices[] = {
-    -2147483648, 1162261467,
+    (Int32)0x80000000, 1162261467,
     1073741824, 1220703125, 362797056, 1977326743, 1073741824,
     387420489, 1000000000, 214358881, 429981696, 815730721, 1475789056,
     170859375, 268435456, 410338673, 612220032, 893871739, 1280000000,
@@ -126,7 +126,7 @@ String Conversion::BigInteger2String(
         (*result)[--currentChar] = '-';
     }
 
-    const char* resultStr = result->GetPayload();
+    const char* resultStr = (const char*)result->GetPayload();
     return String(resultStr + currentChar, resLengthInChars - currentChar);
 }
 
@@ -298,12 +298,12 @@ String Conversion::ToDecimalScaledString(
         result1.AppendChar((*result)[currentChar]);
         result1.AppendChar('.');
 
-        String str(result->GetPayload() + currentChar + 1, resLengthInChars
+        String str((const char*)result->GetPayload() + currentChar + 1, resLengthInChars
                 - currentChar - 1);
         result1.Append(str);
     }
     else {
-        String str(result->GetPayload() + currentChar, resLengthInChars
+        String str((const char*)result->GetPayload() + currentChar, resLengthInChars
                 - currentChar);
         result1.Append(str);
     }

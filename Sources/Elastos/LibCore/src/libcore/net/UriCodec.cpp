@@ -294,7 +294,8 @@ ECode UriCodec::Decode(
                     return E_ILLEGAL_ARGUMENT_EXCEPTION;
                 }
                 else {
-                    char* chars = "\ufffd";
+                    // TODO: unicode escape
+                    const char* chars = "\ufffd";
                     AutoPtr<ArrayOf<Byte> > replacement = GetBytes(chars, charset);
                     os->Write(replacement, 0, replacement->GetLength());
                 }

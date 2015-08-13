@@ -23,9 +23,10 @@ static AutoPtr<IPreferencesFactory> InitFactory()
     // }
     // // Finally return a default...
     // return new FilePreferencesFactoryImpl();
+    return NULL;
 }
 
-volatile AutoPtr<IPreferencesFactory> Preferences::mFactory = InitFactory();
+AutoPtr<IPreferencesFactory> Preferences::mFactory = InitFactory();
 
 CAR_INTERFACE_IMPL(Preferences, Object, IPreferences);
 

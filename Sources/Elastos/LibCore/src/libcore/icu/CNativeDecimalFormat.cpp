@@ -239,7 +239,7 @@ ECode CNativeDecimalFormat::constructor(
             monetaryDecimalSeparator, naN, patternSeparator,
             percent, perMill, zeroDigit, &mAddress);
     if (FAILED(ec)) {
-        return ec == E_RUNTIME_EXCEPTION ? E_ILLEGAL_ARGUMENT_EXCEPTION : ec;
+        return ec == (ECode)E_RUNTIME_EXCEPTION ? E_ILLEGAL_ARGUMENT_EXCEPTION : ec;
     }
     mLastPattern = pattern;
     //} catch (NullPointerException npe) {

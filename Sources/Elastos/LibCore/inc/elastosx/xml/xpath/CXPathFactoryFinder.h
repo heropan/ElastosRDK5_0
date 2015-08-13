@@ -81,7 +81,7 @@ private:
     const static Int32 DEFAULT_LINE_LENGTH = 80;
     static AutoPtr<IProperties> cacheProps;
     static Boolean firstTime;
-    const AutoPtr<IClassLoader> classLoader;
+    AutoPtr<IClassLoader> classLoader;
 
     //private static final Class SERVICE_CLASS = XPathFactory.class;
     //private static final String SERVICE_ID = "META-INF/services/" + SERVICE_CLASS.getName();

@@ -96,7 +96,6 @@ ECode AbstractSelectableChannel::Register(
     }
 
     AutoLock lock(mBlockingLock);
-    ECode ec = NOERROR;
     if (mIsBlocking) {
         return E_ILLEGAL_BLOCKING_MODE_EXCEPTION;
     }

@@ -65,8 +65,8 @@ public:
 
     public:
         AutoPtr<IInterface> mKey;
-        volatile AutoPtr<IInterface> mValue;
-        volatile AutoPtr<Node> mNext;
+        AutoPtr<IInterface> mValue;
+        AutoPtr<Node> mNext;
 
         // UNSAFE mechanics
 
@@ -126,7 +126,7 @@ public:
     public:
         AutoPtr<Node> mNode;
         AutoPtr<Index> mDown;
-        volatile AutoPtr<Index> mRight;
+        AutoPtr<Index> mRight;
     };
 
     /* ---------------- Head nodes -------------- */
@@ -1149,7 +1149,7 @@ private:
 
     static AutoPtr<IInterface> sBASE_HEADER;
 
-    volatile AutoPtr<HeadIndex> mHead;
+    AutoPtr<HeadIndex> mHead;
 
     AutoPtr<IComparator> mComparator;
 

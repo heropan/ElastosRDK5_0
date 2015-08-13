@@ -302,7 +302,7 @@ ECode CStmt::Bind(
     if (v && v->vm && v->h) {
         Int32 npar = sqlite3_bind_parameter_count((sqlite3_stmt *) v->vm);
         Int32 ret = 0;
-        UInt32 len = 0, count = 0;
+        UInt32 len = 0;
 
         if (pos < 1 || pos > npar) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -576,16 +576,13 @@ ECode CStmt::ColumnString(
 
     if (v && v->vm && v->h) {
         Int32 ncol = sqlite3_data_count((sqlite3_stmt *) v->vm);
-        Int32 nbytes = 0;
         const char *data = NULL;
 
         if (col < 0 || col >= ncol) {
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         data = (const char *)sqlite3_column_text((sqlite3_stmt *) v->vm, col);
-        if (data) {
-            nbytes = sqlite3_column_bytes((sqlite3_stmt *) v->vm, col);
-        } else {
+        if (data == NULL) {
             *str = String(NULL);
             return E_SQL_EXCEPTION;
         }

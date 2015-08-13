@@ -548,7 +548,7 @@ ECode AbstractPreferences::GetNodeFromBackend(
 {
     VALIDATE_NOT_NULL(apfs);
     *apfs = NULL;
-    if (name.GetLength() > (UInt32)MAX_NAME_LENGTH) {
+    if (name.GetLength() > MAX_NAME_LENGTH) {
         // throw new IllegalArgumentException("Name '" + name + "' too long");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
@@ -645,7 +645,7 @@ ECode AbstractPreferences::Put(
         // throw new NullPointerException("value == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (key.GetLength() > (UInt32)MAX_KEY_LENGTH || value.GetLength() > (UInt32)MAX_VALUE_LENGTH) {
+    if (key.GetLength() > MAX_KEY_LENGTH || value.GetLength() > MAX_VALUE_LENGTH) {
         // throw new IllegalArgumentException();
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

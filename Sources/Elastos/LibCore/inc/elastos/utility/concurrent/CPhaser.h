@@ -48,7 +48,7 @@ public:
         Boolean mWasInterrupted;
         Int64 mNanos;
         Int64 mDeadLine;
-        volatile AutoPtr<IThread> mThread; // nulled to cancel wait
+        AutoPtr<IThread> mThread; // nulled to cancel wait
         AutoPtr<QNode> mNext;
     };
 
@@ -317,7 +317,7 @@ public:
     static Int32 SPINS_PER_ARRIVAL;
 
 private:
-    volatile Int64 mState;
+    Int64 mState;
 
     static Int32  MAX_PARTIES;
     static Int32  MAX_PHASE;

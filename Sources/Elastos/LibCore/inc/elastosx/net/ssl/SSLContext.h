@@ -385,11 +385,11 @@ private:
      */
     static AutoPtr<ISSLContext> sDEFAULT;
 
-    const AutoPtr<IProvider> mProvider;
+    AutoPtr<IProvider> mProvider;
 
-    const AutoPtr<ISSLContextSpi> mSpiImpl;
+    AutoPtr<ISSLContextSpi> mSpiImpl;
 
-    const String mProtocol;
+    String mProtocol;
 
     static Object mLock;
 };

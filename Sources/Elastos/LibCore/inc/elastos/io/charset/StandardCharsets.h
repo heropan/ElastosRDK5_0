@@ -42,9 +42,10 @@ public:
     * The UTF-16LE (little-endian) charset.
     */
     static const AutoPtr<ICharset> UTF_16LE;
+
 private:
-    static Boolean isInit();
-    static Boolean isinitflag;
+    static Boolean Init();
+    static Boolean sIsInit;
 };
 
 } // namespace Charset

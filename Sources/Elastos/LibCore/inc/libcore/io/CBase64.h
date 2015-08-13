@@ -32,7 +32,7 @@ public:
         /* [out] */ String* outData);
 
 private:
-    // TODO: Add your private member variables here.
+    static const Byte sMap[];
 };
 
 } // namespace IO

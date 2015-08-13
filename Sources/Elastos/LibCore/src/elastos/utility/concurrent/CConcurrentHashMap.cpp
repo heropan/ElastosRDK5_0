@@ -181,6 +181,7 @@ Int32 CConcurrentHashMap::CompareComparables(
     /* [in] */ IInterface* x)
 {
     Int32 res, id = 0;
+    // TODO:
     return (x == NULL/* || (x->GetClassID(&id) ,id) != kc */ ? 0 :
             (IComparable::Probe(k)->CompareTo(x, &res), res));
 }
@@ -788,32 +789,40 @@ AutoPtr<CConcurrentHashMap::Node> CConcurrentHashMap::TreeNode::Find(
 AutoPtr<CConcurrentHashMap::TreeNode> CConcurrentHashMap::TreeNode::FindTreeNode(
     /* [in] */ Int32 h,
     /* [in] */ IInterface* k,
-    /* [in] */ const InterfaceID& kc)
+    /* [in] */ InterfaceID kc)
 {
     if (k != NULL) {
         AutoPtr<TreeNode> p = this;
         do {
             Int32 ph, dir; AutoPtr<IInterface> pk; AutoPtr<TreeNode> q;
             AutoPtr<TreeNode> pl = p->mLeft, pr = p->mRight;
-            if ((ph = p->mHash) > h)
+            if ((ph = p->mHash) > h) {
                 p = pl;
-            else if (ph < h)
+            }
+            else if (ph < h) {
                 p = pr;
-            else if ((pk = p->mKey).Get() == k || (pk != NULL && Object::Equals(k, pk)))
+            }
+            else if ((pk = p->mKey).Get() == k || (pk != NULL && Object::Equals(k, pk))) {
                 return p;
-            else if (pl == NULL && pr == NULL)
+            }
+            else if (pl == NULL && pr == NULL) {
                 break;
+            }
             else if ((kc != EIID_IInterface ||
-                      (kc = ComparableClassFor(k)) != EIID_IInterface) &&
-                     (dir = CompareComparables(kc, k, pk)) != 0)
+                    (kc = ComparableClassFor(k)) != EIID_IInterface) &&
+                    (dir = CompareComparables(kc, k, pk)) != 0) {
                 p = (dir < 0) ? pl : pr;
-            else if (pl == NULL)
+            }
+            else if (pl == NULL) {
                 p = pr;
+            }
             else if (pr == NULL ||
-                     (q = pr->FindTreeNode(h, k, kc)) == NULL)
+                    (q = pr->FindTreeNode(h, k, kc)) == NULL) {
                 p = pl;
-            else
+            }
+            else {
                 return q;
+            }
         } while (p != NULL);
     }
     return NULL;
@@ -834,7 +843,7 @@ CConcurrentHashMap::TreeBin::TreeBin(
     mFirst = b;
     AutoPtr<TreeNode> r;
     for (AutoPtr<TreeNode> x = b, next; x != NULL; x = next) {
-        next = ITreeNode::Probe(x->mNext);
+        next = (TreeNode*)ITreeNode::Probe(x->mNext);
         x->mLeft = x->mRight = NULL;
         if (r == NULL) {
             x->mParent = NULL;

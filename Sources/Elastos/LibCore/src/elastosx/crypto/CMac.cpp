@@ -153,7 +153,8 @@ ECode CMac::Update(
     if (input != NULL) {
         AutoPtr<IMacSpi> spi;
         GetSpi((IMacSpi**)&spi);
-        spi->EngineUpdate(input);
+        // TODO:
+        // spi->EngineUpdate(input);
     } else {
         // throw new IllegalArgumentException("input == NULL");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -203,6 +204,7 @@ ECode CMac::DoFinal(
     spi->EngineDoFinal((ArrayOf<Byte>**)&result);
     // System.arraycopy(result, 0, output, outOffset, result->GetLength());
     output->Copy(outOffset, result, 0, result->GetLength());
+    return NOERROR;
 }
 
 ECode CMac::DoFinal(
@@ -412,6 +414,7 @@ ECode CMac::GetSpi(
         REFCOUNT_ADD(*spi)
         return NOERROR;
     }
+    return NOERROR;
 }
 
 /**

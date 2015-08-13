@@ -67,14 +67,12 @@ ECode CModifiedUtf8::Decode(
 }
 
 ECode CModifiedUtf8::CountBytes(
-    /* [in] */  String* s,
-    /* [in] */  Boolean shortLength,
+    /* [in] */ const String& s,
+    /* [in] */ Boolean shortLength,
     /* [out] */ Int64* num)
 {
     VALIDATE_NOT_NULL(num);
-    *num = 0;
-    VALIDATE_NOT_NULL(s);
-    *num = s->GetByteLength();
+    *num = s.GetByteLength();
     return NOERROR;
 }
 
@@ -105,22 +103,22 @@ ECode CModifiedUtf8::Encode(
 }
 
 ECode CModifiedUtf8::Encode(
-    /* [in] */ String* s,
+    /* [in] */ const String& s,
     /* [out, callee] */ ArrayOf<Byte>** bytes)
 {
     VALIDATE_NOT_NULL(bytes);
     *bytes = NULL;
-    VALIDATE_NOT_NULL(s);
 
-    Int32 size = s->GetByteLength();
+    Int32 size = s.GetByteLength();
     AutoPtr<ArrayOf<Byte> > buf = ArrayOf<Byte>::Alloc(sizeof(Int16) + size);
-    if (NULL == buf)
+    if (NULL == buf) {
         return E_BUFFER_OVER_FLOW_EXCEPTION;
+    }
 
     Byte* dstPtr = buf->GetPayload();
     dstPtr[0] = ((Int16)size >> 8) & 0X00FF;
     dstPtr[1] = (Int16)size & 0X00FF;
-    Byte* srcPtr = (Byte*)(s->string());
+    Byte* srcPtr = (Byte*)(s.string());
     dstPtr += sizeof(Int16);
     memcpy(dstPtr, srcPtr, size);
 

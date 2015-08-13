@@ -458,7 +458,7 @@ ifeq "$(XDK_TARGET_CPU)" "arm"
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "android"
 #    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -fpermissive $(C_FLAGS)
-    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)
+    C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector -Wno-unused-local-typedefs $(C_FLAGS)
   endif
   ifeq "$(XDK_TARGET_PLATFORM)" "linux"
     C_FLAGS:= -msoft-float -fPIC -mthumb-interwork -ffunction-sections -funwind-tables -fstack-protector $(C_FLAGS)

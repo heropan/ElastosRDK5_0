@@ -205,7 +205,7 @@ private:
      * online, Figure 5-18 (http://www.hackersdelight.org/revisions.pdf)
      * The entries whose value is -1 are never referenced.
      */
-    static const Byte IntegerNtzTable[];
+    static const Int32 IntegerNtzTable[];
 
 public:
     static CARAPI_(Boolean) Constrain(Int32 amount, Int32 low, Int32 high);

@@ -35,8 +35,6 @@ CAR_INTERFACE_IMPL_2(CSealedObject, Object, ISealedObject, ISerializable)
 Int64 CSealedObject::mSerialVersionUID = 4482838265551344752;
 
 CSealedObject::CSealedObject()
-    : mParamsAlg(String(NULL))
-    , mSealAlg(String(NULL))
 {
 }
 

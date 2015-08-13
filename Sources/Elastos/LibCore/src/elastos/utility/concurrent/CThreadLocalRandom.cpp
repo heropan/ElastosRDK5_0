@@ -9,11 +9,11 @@ namespace Concurrent {
 //====================================================================
 // CThreadLocalRandom::
 //====================================================================
-const Int64 CThreadLocalRandom::mSerialVersionUID = -5851777807851030925L;
+const Int64 CThreadLocalRandom::mSerialVersionUID = -5851777807851030925LL;
 // same constants as Random, but must be redeclared because private
-const Int64 CThreadLocalRandom::mMultiplier = 0x5DEECE66DL;
+const Int64 CThreadLocalRandom::mMultiplier = 0x5DEECE66DLL;
 const Int64 CThreadLocalRandom::mAddend = 0xBL;
-const Int64 CThreadLocalRandom::mMask = (1L << 48) - 1;
+const Int64 CThreadLocalRandom::mMask = (1LL << 48) - 1;
 
 // AutoPtr<IThreadLocal> mLocalRandom =
 //     new ThreadLocal() {

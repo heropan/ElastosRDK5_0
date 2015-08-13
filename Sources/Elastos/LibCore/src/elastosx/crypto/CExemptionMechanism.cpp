@@ -16,7 +16,6 @@ CAR_INTERFACE_IMPL(CExemptionMechanism, Object, IExemptionMechanism)
 CExemptionMechanism::CExemptionMechanism()
     : mIsInit(FALSE)
     , mGenerated(FALSE)
-    , mMechanism(String(NULL))
 {
 //TODO: Need IEngine
     // CEngine::New("ExemptionMechanism", (IEngine**)&mEngine);

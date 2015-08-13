@@ -146,7 +146,7 @@ ECode CharsetDecoder::Decode(
     while (TRUE) {
         AutoPtr<ICodingErrorAction> action;
         ECode ec = DecodeLoop(byteBuffer, charBuffer, result);
-        if (ec == (ECode)E_BUFFER_OVER_FLOW_EXCEPTION || ec == E_BUFFER_UNDER_FLOW_EXCEPTION) {
+        if (ec == (ECode)E_BUFFER_OVER_FLOW_EXCEPTION || ec == (ECode)E_BUFFER_UNDER_FLOW_EXCEPTION) {
             // unexpected exception
             // throw new CoderMalfunctionError(ex);
             return E_CODER_MALFUNCTION_ERROR;

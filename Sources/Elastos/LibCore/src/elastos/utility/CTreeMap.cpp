@@ -291,6 +291,9 @@ AutoPtr<CTreeMap::Node> CTreeMap::Find(
                     return nearest;
                 case HIGHER:
                     return nearest->GetNext();
+                default:
+                    assert(0);
+                    return NULL;
             }
         }
 
@@ -314,13 +317,17 @@ AutoPtr<CTreeMap::Node> CTreeMap::Find(
                     return nearest;
                 case EQUAL:
                     return NULL;
-                case CREATE:
+                case CREATE: {
                     AutoPtr<Node> created = new Node(nearest, key);
                     nearest->mLeft = created;
                     mSize++;
                     mModCount++;
                     Rebalance(nearest, TRUE);
                     return created;
+                }
+                default:
+                    assert(0);
+                    return NULL;
             }
         }
         else { // comparison > 0, nearest.key is lower
@@ -333,13 +340,17 @@ AutoPtr<CTreeMap::Node> CTreeMap::Find(
                     return nearest->GetNext();
                 case EQUAL:
                     return NULL;
-                case CREATE:
+                case CREATE: {
                     AutoPtr<Node> created = new Node(nearest, key);
                     nearest->mRight = created;
                     mSize++;
                     mModCount++;
                     Rebalance(nearest, TRUE);
                     return created;
+                }
+                default:
+                    assert(0);
+                    return NULL;
             }
         }
     }

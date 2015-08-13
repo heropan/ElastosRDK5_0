@@ -669,7 +669,7 @@ ECode CRandomAccessFile::WriteUTF(
     AutoPtr<IModifiedUtf8> utf8help;
     CModifiedUtf8::AcquireSingleton((IModifiedUtf8**)&utf8help);
     AutoPtr<ArrayOf<Byte> > bytes;
-    utf8help->Encode(&str, (ArrayOf<Byte>**)&bytes);
+    utf8help->Encode(str, (ArrayOf<Byte>**)&bytes);
     return Write(bytes);
 }
 

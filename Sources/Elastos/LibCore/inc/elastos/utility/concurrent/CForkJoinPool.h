@@ -263,26 +263,26 @@ public:
         static Int32 MAXIMUM_QUEUE_CAPACITY;
 
         // Heuristic padding to ameliorate unfortunate memory placements
-        volatile Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
+        Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
 
-        volatile Int32 mEventCount;   // encoded inactivation count; < 0 if inactive
+        Int32 mEventCount;   // encoded inactivation count; < 0 if inactive
         Int32 mNextWait;              // encoded record of next event waiter
         Int32 mNsteals;               // number of steals
         Int32 mHint;                  // steal index hint
         Int16 mPoolIndex;           // index of this queue in pool
         Int16 mMode;          // 0: lifo, > 0: fifo, < 0: shared
-        volatile Int32 mQlock;        // 1: locked, -1: terminate; else 0
-        volatile Int32 mBase;         // index of next slot for poll
+        Int32 mQlock;        // 1: locked, -1: terminate; else 0
+        Int32 mBase;         // index of next slot for poll
         Int32 mTop;                   // index of next slot for push
         AutoPtr<ArrayOf<IForkJoinTask*> > mArray;   // the elements (initially unallocated)
         AutoPtr<IForkJoinPool> mPool;   // the containing pool (may be null)
         AutoPtr<IForkJoinWorkerThread> mOwner; // owning thread or null if shared
-        volatile AutoPtr<IThread> mParker;    // == owner during call to park; else null
-        volatile AutoPtr<IForkJoinTask> mCurrentJoin;  // task being joined in awaitJoin
+        AutoPtr<IThread> mParker;    // == owner during call to park; else null
+        AutoPtr<IForkJoinTask> mCurrentJoin;  // task being joined in awaitJoin
         AutoPtr<IForkJoinTask> mCurrentSteal; // current non-local task being executed
 
-        volatile AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
-        volatile AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b, mPad1c, mPad1d;
+        AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
+        AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b, mPad1c, mPad1d;
 
         // // Unsafe mechanics
         // private static final sun.misc.Unsafe U;
@@ -1034,13 +1034,13 @@ public:
     static Int32 PL_SPINS;
 
     // Heuristic padding to ameliorate unfortunate memory placements
-    volatile Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
+    Int64 mPad00, mPad01, mPad02, mPad03, mPad04, mPad05, mPad06;
 
     // Instance fields
-    volatile Int64 mStealCount;                  // collects worker counts
-    volatile Int64 mCtl;                         // main pool control
-    volatile Int32 mPlock;                        // shutdown status and seqLock
-    volatile Int32 mIndexSeed;                    // worker/submitter index seed
+    Int64 mStealCount;                  // collects worker counts
+    Int64 mCtl;                         // main pool control
+    Int32 mPlock;                        // shutdown status and seqLock
+    Int32 mIndexSeed;                    // worker/submitter index seed
     Int16 mParallelism;                   // parallelism level
     Int16 mMode;                          // LIFO/FIFO
     AutoPtr<ArrayOf<WorkQueue*> > mWorkQueues;                    // main registry
@@ -1048,8 +1048,8 @@ public:
     AutoPtr<IThreadUncaughtExceptionHandler> mUeh;        // per-worker UEH
     String mWorkerNamePrefix;             // to create worker name string
 
-    volatile AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
-    volatile AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b;
+    AutoPtr<IInterface> mPad10, mPad11, mPad12, mPad13, mPad14, mPad15, mPad16, mPad17;
+    AutoPtr<IInterface> mPad18, mPad19, mPad1a, mPad1b;
 
 private:
     /**

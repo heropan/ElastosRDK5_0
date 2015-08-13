@@ -54,8 +54,8 @@ public:
     CARAPI constructor(
         /* [in] */ ArrayOf<Char32> * password,
         /* [in] */ ArrayOf<Byte> * salt,
-        /* [in] */ Int32 * iterationCount,
-        /* [in] */ Int32 * keyLength);
+        /* [in] */ Int32 iterationCount,
+        /* [in] */ Int32 keyLength);
 
     /**
      * Creates a new <code>PBEKeySpec</code> with the specified password, salt
@@ -75,7 +75,7 @@ public:
     CARAPI constructor(
         /* [in] */ ArrayOf<Char32> * password,
         /* [in] */ ArrayOf<Byte> * salt,
-        /* [in] */ Int32 * iterationCount);
+        /* [in] */ Int32 iterationCount);
 
     /**
      * Clears the password by overwriting it.

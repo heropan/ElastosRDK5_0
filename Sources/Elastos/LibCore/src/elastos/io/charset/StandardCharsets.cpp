@@ -6,22 +6,18 @@ namespace Elastos {
 namespace IO {
 namespace Charset {
 
-static const AutoPtr<ICharset> StandardCharsets::ISO_8859_1;
-
-static const AutoPtr<ICharset> StandardCharsets::US_ASCII;
-
-static const AutoPtr<ICharset> StandardCharsets::UTF_8;
-
-static const AutoPtr<ICharset> StandardCharsets::UTF_16;
-
-static const AutoPtr<ICharset> StandardCharsets::UTF_16BE;
-
-static const AutoPtr<ICharset> StandardCharsets::UTF_16LE;
+const AutoPtr<ICharset> StandardCharsets::ISO_8859_1;
+const AutoPtr<ICharset> StandardCharsets::US_ASCII;
+const AutoPtr<ICharset> StandardCharsets::UTF_8;
+const AutoPtr<ICharset> StandardCharsets::UTF_16;
+const AutoPtr<ICharset> StandardCharsets::UTF_16BE;
+const AutoPtr<ICharset> StandardCharsets::UTF_16LE;
+Boolean StandardCharsets::sIsInit = Init();
 
 StandardCharsets::StandardCharsets()
 {}
 
-Boolean StandardCharsets::isInit()
+Boolean StandardCharsets::Init()
 {
     Charset::ForName(String("ISO-8859-1"), (ICharset**)&ISO_8859_1);
     Charset::ForName(String("US-ASCII"), (ICharset**)&US_ASCII);
@@ -31,8 +27,6 @@ Boolean StandardCharsets::isInit()
     Charset::ForName(String("UTF-16LE"), (ICharset**)&UTF_16LE);
     return TRUE;
 }
-
-Boolean StandardCharsets::isinitflag = isInit();
 
 } // namespace Charset
 } // namespace IO

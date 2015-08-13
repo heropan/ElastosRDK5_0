@@ -3265,8 +3265,8 @@ module
          */
         constructor(
             [in] IOutputStream* os,
-            [in] Boolean syncFlush,
-            [in] Int32 size);
+            [in] Int32 size,
+            [in] Boolean syncFlush);
 
         interface IGZIPOutputStream;
         interface IDeflaterOutputStream;

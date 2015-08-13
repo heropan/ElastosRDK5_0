@@ -460,7 +460,7 @@ Double StrictMath::Scalb(
             result = ShiftInt64Bits(bits & Math::DOUBLE_MANTISSA_MASK, digits);
         } else {
             // origin d is not sub-normal, change mantissa to sub-normal
-            result = ShiftInt64Bits(bits & Math::DOUBLE_MANTISSA_MASK | 0x0010000000000000L, digits - 1);
+            result = ShiftInt64Bits((bits & Math::DOUBLE_MANTISSA_MASK) | 0x0010000000000000LL, digits - 1);
         }
     } else {
         if (Math::Abs(d) >= Math::DOUBLE_MIN_NORMAL) {
@@ -511,7 +511,7 @@ Float StrictMath::Scalb(
             result = ShiftInt32Bits(bits & Math::FLOAT_MANTISSA_MASK, digits);
         } else {
             // origin d is not sub-normal, change mantissa to sub-normal
-            result = ShiftInt32Bits(bits & Math::FLOAT_MANTISSA_MASK | 0x00800000, digits - 1);
+            result = ShiftInt32Bits((bits & Math::FLOAT_MANTISSA_MASK) | 0x00800000, digits - 1);
         }
     } else {
         if (Math::Abs(d) >= Math::FLOAT_MIN_NORMAL) {

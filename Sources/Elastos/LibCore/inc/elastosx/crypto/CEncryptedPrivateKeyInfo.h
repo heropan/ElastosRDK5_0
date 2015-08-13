@@ -227,7 +227,7 @@ private:
     // Encryption algorithm OID
     String mOid;
     // This EncryptedPrivateKeyInfo ASN.1 DER encoding
-    volatile AutoPtr<ArrayOf<Byte> > mEncoded;
+    AutoPtr<ArrayOf<Byte> > mEncoded;
 
     //
     // EncryptedPrivateKeyInfo DER encoder/decoder.

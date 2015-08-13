@@ -427,9 +427,11 @@ NEXT:
                         return FALSE;
                     //    throw new IllegalThreadStateException();
 //                    workers->Add(w);
+                    // TODO:
                     Int32 s;// = workers->Size();
-                    if (s > mLargestPoolSize)
+                    if (s > mLargestPoolSize) {
                         mLargestPoolSize = s;
+                    }
                     workerAdded = TRUE;
                 }
             }

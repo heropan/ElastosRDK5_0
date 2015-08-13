@@ -1056,7 +1056,7 @@ Int32 CForkJoinPool::HelpComplete(
         joiner != NULL && task != NULL) {
         Int32 j = joiner->mPoolIndex;
         Int32 scans = m + m + 1;
-        Int64 c = 0L;              // for stability check
+        Int64 c = 0LL;              // for stability check
         for (Int32 k = scans; ; j += 2) {
             AutoPtr<CountedCompleter> ct = (CountedCompleter*)task;
             AutoPtr<WorkQueue> q;
@@ -1069,8 +1069,10 @@ Int32 CForkJoinPool::HelpComplete(
             else if ((q = (*ws)[j & m]) != NULL && q->PollAndExecCC(task))
                 k = scans;
             else if (--k < 0) {
-                if (c == (c = mCtl))
+                if (c == mCtl) {
                     break;
+                }
+                c = mCtl;
                 k = scans;
             }
         }
@@ -1372,6 +1374,7 @@ AutoPtr<CForkJoinPool::WorkQueue> CForkJoinPool::CommonSubmitterQueue()
 {
     AutoPtr<Submitter> z; AutoPtr<IForkJoinPool> p;
     AutoPtr<ArrayOf<WorkQueue*> > ws; Int32 m, r;
+    //TODO:
     // return ((z = submitters->Get()) != NULL &&
     //         (p = mCommon) != NULL &&
     //         (ws = p->mWorkQueues) != NULL &&

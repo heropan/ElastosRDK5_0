@@ -171,7 +171,7 @@ ECode PlainSocketImpl::Available(
 {
     VALIDATE_NOT_NULL(value)
 
-    ECode ec = CheckNotClosed();
+    FAIL_RETURN(CheckNotClosed());
     // we need to check if the input has been shutdown. If so
     // we should return that there is no data to be read
     if (mShutdownInput) {

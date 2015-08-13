@@ -138,7 +138,7 @@ ECode CSplitter::Split(
     FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
     FAIL_RETURN(CMatcher::NewByFriend(pattern, inputSeq, (CMatcher**)&matcher));
 
-    Int32 begin = 0, end, size = 0;
+    Int32 begin = 0, end;
     Boolean result;
     String subStr;
 
@@ -162,7 +162,7 @@ ECode CSplitter::FinishSplit(
     *array = NULL;
 
     // Add trailing text.
-    if ((UInt32)begin < input.GetLength()) {
+    if (begin < input.GetLength()) {
         list.PushBack(input.Substring(begin));
     }
     else if (limit != 0) {

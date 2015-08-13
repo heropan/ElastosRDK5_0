@@ -59,8 +59,6 @@ ECode MacSpi::CloneImpl(
 {
     assert(spi);
 
-    MacSpi* ms = (MacSpi*)spi;
-
     return NOERROR;
 }
 

@@ -19,8 +19,8 @@ const Int16 Math::INT16_MAX_VALUE           = (Int16)0x7FFF;
 const Int16 Math::INT16_MIN_VALUE           = (Int16)0x8000;
 const Int32 Math::INT32_MAX_VALUE           = 0x7FFFFFFF;
 const Int32 Math::INT32_MIN_VALUE           = 0x80000000;
-const Int64 Math::INT64_MAX_VALUE           = 0x7FFFFFFFFFFFFFFFL;
-const Int64 Math::INT64_MIN_VALUE           = 0x8000000000000000L;
+const Int64 Math::INT64_MAX_VALUE           = 0x7FFFFFFFFFFFFFFFLL;
+const Int64 Math::INT64_MIN_VALUE           = 0x8000000000000000LL;
 
 const Int32 Math::FLOAT_EXPONENT_BIAS       = 127;
 const Int32 Math::FLOAT_EXPONENT_BITS       = 9;
@@ -44,9 +44,9 @@ const Int32 Math::DOUBLE_EXPONENT_BIAS      = 1023;
 const Int32 Math::DOUBLE_EXPONENT_BITS      = 12;
 const Int32 Math::DOUBLE_MANTISSA_BITS      = 52;
 const Int32 Math::DOUBLE_NON_MANTISSA_BITS  = 12;
-const Int64 Math::DOUBLE_SIGN_MASK          = 0x8000000000000000L;
-const Int64 Math::DOUBLE_EXPONENT_MASK      = 0x7ff0000000000000L;
-const Int64 Math::DOUBLE_MANTISSA_MASK      = 0x000fffffffffffffL;
+const Int64 Math::DOUBLE_SIGN_MASK          = 0x8000000000000000LL;
+const Int64 Math::DOUBLE_EXPONENT_MASK      = 0x7ff0000000000000LL;
+const Int64 Math::DOUBLE_MANTISSA_MASK      = 0x000fffffffffffffLL;
 
 const Double Math::DOUBLE_MAX_VALUE         = 1.79769313486231570E+308;
 const Double Math::DOUBLE_MIN_VALUE         = 5E-324;
@@ -61,7 +61,7 @@ const Int32 Math::DOUBLE_MIN_EXPONENT       = -1022;
 const Double Math::E                        = 2.718281828459045;
 const Double Math::PI                       = 3.141592653589793;
 
-const Byte Math::IntegerNtzTable[] = {
+const Int32 Math::IntegerNtzTable[] = {
     32,  0,  1, 12,  2,  6, -1, 13,   3, -1,  7, -1, -1, -1, -1, 14,
     10,  4, -1, -1,  8, -1, -1, 25,  -1, -1, -1, -1, -1, 21, 27, 15,
     31, 11,  5, -1, -1, -1, -1, -1,   9, -1, -1, 24, -1, -1, 20, 26,
@@ -69,25 +69,25 @@ const Byte Math::IntegerNtzTable[] = {
 };
 
 const Int64 Math::LongPowersOfTen[] = {
-    1L,
-    10L,
-    100L,
-    1000L,
-    10000L,
-    100000L,
-    1000000L,
-    10000000L,
-    100000000L,
-    1000000000L,
-    10000000000L,
-    100000000000L,
-    1000000000000L,
-    10000000000000L,
-    100000000000000L,
-    1000000000000000L,
-    10000000000000000L,
-    100000000000000000L,
-    1000000000000000000L,
+    1LL,
+    10LL,
+    100LL,
+    1000LL,
+    10000LL,
+    100000LL,
+    1000000LL,
+    10000000LL,
+    100000000LL,
+    1000000000LL,
+    10000000000LL,
+    100000000000LL,
+    1000000000000LL,
+    10000000000000LL,
+    100000000000000LL,
+    1000000000000000LL,
+    10000000000000000LL,
+    100000000000000000LL,
+    1000000000000000000LL,
 };
 
 AutoPtr<IRandom> Math::mRandom;
@@ -355,7 +355,7 @@ Float Math::Min(
     }
     /* Min(+0.0,-0.0) == -0.0 */
     /* 0X80000000 == FloatToRawInt32Bits(-0.0F) */
-    if (FloatToRawInt32Bits(f1) == 0X80000000) {
+    if (FloatToRawInt32Bits(f1) == (Int32)0X80000000) {
         return -0.0F;
     }
     return f2;

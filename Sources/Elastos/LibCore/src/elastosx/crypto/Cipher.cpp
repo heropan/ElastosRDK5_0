@@ -780,9 +780,10 @@ ECode Cipher::GetCipher(
 }
 
 ECode Cipher::CheckTransformation(
-    /* [in] */ const String& transformation,
+    /* [in] */ const String& _transformation,
     /* [out] */ ArrayOf<String>** out)
 {
+    String transformation = _transformation;
     VALIDATE_NOT_NULL(out);
     *out = NULL;
     // ignore an extra prefix / characters such as in
@@ -852,6 +853,7 @@ ECode Cipher::GetSpi(
         REFCOUNT_ADD(*spi);
         return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode Cipher::GetSpi(
@@ -991,6 +993,7 @@ ECode Cipher::CheckMode(
         // throw new InvalidParameterException("Invalid mode: " + mode);
         return E_INVALID_PARAMETER_EXCEPTION;
     }
+    return NOERROR;
 }
 
 ECode Cipher::CheckInputOffsetAndCount(
@@ -1006,6 +1009,7 @@ ECode Cipher::CheckInputOffsetAndCount(
         //                                    + "; inputLen=" + inputLen);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    return NOERROR;
 }
 
 } // Crypto

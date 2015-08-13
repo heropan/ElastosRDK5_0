@@ -202,7 +202,7 @@ ECode CharsetDecoderICU::GetArray(
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = NULL;
+    *result = 0;
     VALIDATE_NOT_NULL(outBuffer)
 
     Boolean has = FALSE;

@@ -1051,7 +1051,7 @@ ECode SimpleDateFormat::Parse(
                 count = 0;
             }
             last = -1;
-            if (offset >= length || (*strCharArray)[offset] != next) {
+            if (offset >= length || (*strCharArray)[offset] != (Char32)next) {
                 return Error(position, offset, (ITimeZone*)zone, date);
             }
             offset++;

@@ -407,9 +407,9 @@ ECode AbstractStringBuilder::Insert(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    char str[12];
-    sprintf(str, "%d", i);
-    return Insert(offset, String(str));
+    String str("");
+    str.AppendFormat("%d", i);
+    return Insert(offset, str);
 }
 
 ECode AbstractStringBuilder::Insert(
@@ -420,9 +420,9 @@ ECode AbstractStringBuilder::Insert(
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
-    char str[24];
-    sprintf(str, "%lld", l);
-    return Insert(offset, String(str));
+    String str("");
+    str.AppendFormat("%lld", l);
+    return Insert(offset, str);
 }
 
 ECode AbstractStringBuilder::Insert(

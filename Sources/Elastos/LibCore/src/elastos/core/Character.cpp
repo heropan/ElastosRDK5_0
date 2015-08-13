@@ -513,7 +513,7 @@ ECode Character::GetCharAt(
     if (seq.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (index < 0 || (UInt32)index >= seq.GetLength()) {
+    if (index < 0 || index >= seq.GetLength()) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
@@ -560,7 +560,7 @@ ECode Character::GetCharBefore(
     if (seq.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    if (index < 1 || (UInt32)index > seq.GetLength()) {
+    if (index < 1 || index > seq.GetLength()) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
 
@@ -630,7 +630,7 @@ ECode Character::ToChars(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
-    *number = NULL;
+    *number = 0;
     VALIDATE_NOT_NULL(dst);
 
     if (offset < 0 || count < 0 || offset > src.GetLength() - count)

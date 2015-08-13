@@ -437,7 +437,7 @@ AutoPtr<ICharset> Charset::GetDefaultCharset()
         system->GetProperty(String("file.encoding"), &encoding);
         AutoPtr<ICharset> result;
         ECode ec = ForName(encoding, (ICharset**)&result);
-        if (result == NULL || ec == E_UNSUPPORTED_CHARSET_EXCEPTION) {
+        if (result == NULL || ec == (ECode)E_UNSUPPORTED_CHARSET_EXCEPTION) {
             result = NULL;
             ForName(String("UTF-8"), (ICharset**)&result);
         }

@@ -1,24 +1,14 @@
 
 #include "CBase64.h"
 
-static const AutoPtr<ArrayOf<Byte> > InitStatic()
-{
-    const Byte map[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-         'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
-         'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
-         'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
-         '4', '5', '6', '7', '8', '9', '+', '/'};
-    const AutoPtr<ArrayOf<Byte> > ret = ArrayOf<Byte>::Alloc(sizeof(map)/sizeof(map[0]));
-    for(Int32 i = 0; i < sizeof(map)/sizeof(map[0]); i++) {
-        (*ret)[i] = map[i];
-    }
-    return ret;
-}
-
-static const AutoPtr<ArrayOf<Byte> > map = InitStatic();
-
 namespace Libcore {
 namespace IO {
+
+const Byte CBase64::sMap[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
+        'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p',
+        'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
+        '4', '5', '6', '7', '8', '9', '+', '/'};
 
 CAR_SINGLETON_IMPL(CBase64)
 
@@ -137,22 +127,22 @@ ECode CBase64::Encode(
     AutoPtr<ArrayOf<Byte> > out = ArrayOf<Byte>::Alloc(length);
     Int32 index = 0, end = inData->GetLength() - inData->GetLength() % 3;
     for (Int32 i = 0; i < end; i += 3) {
-        (*out)[index++] = (*map)[((*inData)[i] & 0xff) >> 2];
-        (*out)[index++] = (*map)[(((*inData)[i] & 0x03) << 4) | (((*inData)[i+1] & 0xff) >> 4)];
-        (*out)[index++] = (*map)[(((*inData)[i+1] & 0x0f) << 2) | (((*inData)[i+2] & 0xff) >> 6)];
-        (*out)[index++] = (*map)[((*inData)[i+2] & 0x3f)];
+        (*out)[index++] = sMap[((*inData)[i] & 0xff) >> 2];
+        (*out)[index++] = sMap[(((*inData)[i] & 0x03) << 4) | (((*inData)[i+1] & 0xff) >> 4)];
+        (*out)[index++] = sMap[(((*inData)[i+1] & 0x0f) << 2) | (((*inData)[i+2] & 0xff) >> 6)];
+        (*out)[index++] = sMap[((*inData)[i+2] & 0x3f)];
     }
     switch (inData->GetLength() % 3) {
         case 1:
-            (*out)[index++] = (*map)[((*inData)[end] & 0xff) >> 2];
-            (*out)[index++] = (*map)[((*inData)[end] & 0x03) << 4];
+            (*out)[index++] = sMap[((*inData)[end] & 0xff) >> 2];
+            (*out)[index++] = sMap[((*inData)[end] & 0x03) << 4];
             (*out)[index++] = '=';
             (*out)[index++] = '=';
             break;
         case 2:
-            (*out)[index++] = (*map)[((*inData)[end] & 0xff) >> 2];
-            (*out)[index++] = (*map)[(((*inData)[end] & 0x03) << 4) | (((*inData)[end+1] & 0xff) >> 4)];
-            (*out)[index++] = (*map)[(((*inData)[end+1] & 0x0f) << 2)];
+            (*out)[index++] = sMap[((*inData)[end] & 0xff) >> 2];
+            (*out)[index++] = sMap[(((*inData)[end] & 0x03) << 4) | (((*inData)[end+1] & 0xff) >> 4)];
+            (*out)[index++] = sMap[(((*inData)[end+1] & 0x0f) << 2)];
             (*out)[index++] = '=';
             break;
     } // end switch

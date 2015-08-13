@@ -353,7 +353,7 @@ String XMLParser::HtmlEncode(
     /* [in] */ const String& s)
 {
     StringBuilder sb/* = new StringBuilder()*/;
-    for (UInt32 i = 0; i < s.GetLength(); i++) {
+    for (Int32 i = 0; i < s.GetLength(); i++) {
         Char32 c = s.GetChar(i);
         switch (c) {
         case '<':

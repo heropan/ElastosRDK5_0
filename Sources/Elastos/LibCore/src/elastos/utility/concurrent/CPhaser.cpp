@@ -29,9 +29,9 @@ Int32  CPhaser::MAX_PHASE       = Elastos::Core::Math::INT32_MAX_VALUE;
 Int32  CPhaser::PARTIES_SHIFT   = 16;
 Int32  CPhaser::PHASE_SHIFT     = 32;
 Int32  CPhaser::UNARRIVED_MASK  = 0xffff;      // to mask ints
-Int64 CPhaser::PARTIES_MASK    = 0xffff0000L; // to mask longs
-Int64 CPhaser::COUNTS_MASK     = 0xffffffffL;
-Int64 CPhaser::TERMINATION_BIT = 1L << 63;
+Int64 CPhaser::PARTIES_MASK    = 0xffff0000LL; // to mask longs
+Int64 CPhaser::COUNTS_MASK     = 0xffffffffLL;
+Int64 CPhaser::TERMINATION_BIT = 1LL << 63;
 
 Int32  CPhaser::ONE_ARRIVAL     = 1;
 Int32  CPhaser::ONE_PARTY       = 1 << PARTIES_SHIFT;
@@ -148,6 +148,7 @@ Int32 CPhaser::DoRegister(
         Int32 counts = (Int32)s;
         Int32 parties = counts >> PARTIES_SHIFT;
         Int32 unarrived = counts & UNARRIVED_MASK;
+        // TODO:
         if (registrations > MAX_PARTIES - parties)
             assert(0);
         //     throw new IllegalStateException(badRegister(s));

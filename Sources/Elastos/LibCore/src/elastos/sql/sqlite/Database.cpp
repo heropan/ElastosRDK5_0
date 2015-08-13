@@ -8,12 +8,14 @@
 #include "CFunctionContext.h"
 #include "StringUtils.h"
 #include "AutoLock.h"
+#include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Sql::SQLite::CFunctionContext;
 using Elastos::Sql::SQLite::CVm;
 using Elastos::Sql::SQLite::CStmt;
 using Elastos::Sql::SQLite::EIID_IDatabase;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Sql {
@@ -1233,7 +1235,7 @@ ECode Database::_Exec(
     if (h->sqlite) {
         Int32 rc = 0;
         char *err = NULL;
-        ICallback * oldcb = h->cb;
+        AutoPtr<ICallback> oldcb = h->cb;
         h->cb = cb;
         h->row1 = 1;
         String sqlstr(sql);
@@ -1260,17 +1262,18 @@ ECode Database::_Exec(
 
 #endif
 #endif
+        h->cb = oldcb;
         if (rc != SQLITE_OK) {
             char msg[128];
 
             mError_code = rc;
             if (!err) {
-                printf("error %d in sqlite*_exec \n", rc);
+                snprintf(msg, 128, "error %d in sqlite*_exec", rc);
             }
             return E_SQL_EXCEPTION;
         }
         if (err) {
-        freeproc(err);
+            freeproc(err);
         }
         return NOERROR;
     }
@@ -1501,7 +1504,7 @@ ECode Database::_Exec(
         if (rc != SQLITE_OK) {
             char msg[128];
             if (!err) {
-                sprintf(msg, "error %d in sqlite*_exec", rc);
+                snprintf(msg, 128, "error %d in sqlite*_exec", rc);
             }
             return E_SQL_EXCEPTION;
         }
@@ -2164,11 +2167,11 @@ ECode Database::Vm_compile(
 {
 #if HAVE_SQLITE_COMPILE
     handle *h = (handle *)mHandle;
-    void *svm = 0;
+    void *svm = NULL;
     hvm *v;
-    char *err = 0;
+    char *err = NULL;
 #if HAVE_SQLITE2
-    char *errfr = 0;
+    char *errfr = NULL;
 #endif
     const char *tail = NULL;
     Int32 ret = 0;
@@ -2238,6 +2241,7 @@ ECode Database::Vm_compile(
 #endif
 #endif
     if (ret != SQLITE_OK) {
+        Logger::E("Database", err);
 #if HAVE_SQLITE2
     if (errfr) {
         sqlite_freemem(errfr);
@@ -2501,16 +2505,16 @@ ECode Database::Stmt_prepare(
     }
     if (ret != SQLITE_OK) {
         const char *err = sqlite3_errmsg((sqlite3*)h->sqlite);
-
+        Logger::E("Database", err);
         ((CStmt *)stmt.Get())->mError_code = ret;
         return E_SQL_EXCEPTION;
     }
     if (!svm) {
         return E_NULL_POINTER_EXCEPTION;
     }
-    len16 = len16 + sizeof (char) - ((char *) tail - (char *) sql16);
-    if (len16 < sizeof (char)) {
-        len16 = sizeof (char);
+    len16 = len16 + sizeof(char) - ((char *) tail - (char *) sql16);
+    if (len16 < (Int32)sizeof(char)) {
+        len16 = sizeof(char);
     }
     v = (hvm*)malloc(sizeof (hvm) + len16);
     if (!v) {

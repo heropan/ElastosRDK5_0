@@ -80,7 +80,9 @@ ECode ServiceLoader::ServiceIterator::GetNext(
 
 ECode ServiceLoader::ServiceIterator::ReadClass()
 {
-    for (Int32 size, i = 0; i < ((ICollection::Probe(mServicesIt))->GetSize(&size), size); i++) {
+    Int32 size;
+    ICollection::Probe(mServicesIt)->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
         AutoPtr<IInterface> element;
         (IList::Probe(mQueue))->Get(i, (IInterface**)&element);
         AutoPtr<IURL> url = IURL::Probe(element);
@@ -121,8 +123,8 @@ ECode ServiceLoader::ServiceIterator::ReadClass()
         }
         mIsRead = TRUE;
         //IoUtils::CloseQuietly(reader);
-        return NOERROR;
     }
+    return NOERROR;
 }
 
 ECode ServiceLoader::ServiceIterator::Remove()
@@ -140,6 +142,7 @@ ECode ServiceLoader::ServiceIterator::CheckValidJavaClassName(
             return NOERROR;
         }
     }
+    return NOERROR;
 }
 
 ///////////////////////////////////////

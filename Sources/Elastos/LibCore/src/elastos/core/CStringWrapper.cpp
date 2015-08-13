@@ -35,7 +35,7 @@ ECode CStringWrapper::GetCharAt(
 {
     VALIDATE_NOT_NULL(c);
 
-    if (index < 0 || (UInt32)index >= mString.GetLength()) {
+    if (index < 0 || index >= mString.GetLength()) {
         *c = '\0';
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }

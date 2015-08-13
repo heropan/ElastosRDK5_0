@@ -34,6 +34,7 @@ ECode SSLEngineResult::constructor(
     mHandshakeStatus = handshakeStatus;
     mBytesConsumed = bytesConsumed;
     mBytesProduced = bytesProduced;
+    return NOERROR;
 }
 
 ECode SSLEngineResult::GetStatus(

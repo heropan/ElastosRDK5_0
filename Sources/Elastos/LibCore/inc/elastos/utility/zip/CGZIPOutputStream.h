@@ -57,8 +57,8 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IOutputStream* os,
-        /* [in] */ Boolean syncFlush,
-        /* [in] */ Int32 size);
+        /* [in] */ Int32 size,
+        /* [in] */ Boolean syncFlush);
 
     /**
      * Indicates to the stream that all data has been written out, and any GZIP

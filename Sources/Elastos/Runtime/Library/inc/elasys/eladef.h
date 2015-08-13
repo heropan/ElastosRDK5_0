@@ -177,8 +177,12 @@ EXTERN_C pthread_key_t *getTlSystemSlotBase();
 #define __32BIT(n)              (1ul << (n))
 #define __64BIT(n)              (1ull << (n))
 
+#ifndef MAX
 #define MAX(a, b)               (((a) > (b))? (a) : (b))
+#endif
+#ifndef MIN
 #define MIN(a, b)               (((a) < (b))? (a) : (b))
+#endif
 
 #define ROUNDUP(n, size)        ((((n) + (size) - 1) / (size)) * (size))
 #define ROUNDUP2(n, size)       (((n) + (size) - 1) & ~((size) - 1))

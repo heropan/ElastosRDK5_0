@@ -5,9 +5,10 @@ namespace Net {
 namespace Url {
 
 String UrlUtils::CanonicalizePath(
-    /* [in] */ const String& path,
+    /* [in] */ const String& _path,
     /* [in] */ Boolean discardRelativePrefix)
 {
+    String path = _path;
     // the first character of the current path segment
     Int32 segmentStart = 0;
 

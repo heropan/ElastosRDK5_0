@@ -32,7 +32,7 @@ ECode CCheckedInputStream::Read(
 
     FAIL_RETURN(mIn->Read(value));
     if (*value != -1) {
-        mCheck->Update(value);
+        mCheck->Update(*value);
     }
     return NOERROR;
 }

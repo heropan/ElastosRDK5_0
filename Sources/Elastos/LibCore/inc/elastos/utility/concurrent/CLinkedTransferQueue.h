@@ -89,9 +89,9 @@ public:
 
     public:
         Boolean mIsData;   // false if this is a request node
-        volatile AutoPtr<IInterface> mItem;   // initially non-null if isData; CASed to match
-        volatile AutoPtr<Node> mNext;
-        volatile AutoPtr<IThread> mWaiter; // null until waiting
+        AutoPtr<IInterface> mItem;   // initially non-null if isData; CASed to match
+        AutoPtr<Node> mNext;
+        AutoPtr<IThread> mWaiter; // null until waiting
 
     private:
         static Int64 sSerialVersionUID;
@@ -440,7 +440,7 @@ public:
     static Int32 SWEEP_THRESHOLD;
 
     /** head of the queue; null until first enqueue */
-    volatile AutoPtr<Node> mHead;
+    AutoPtr<Node> mHead;
 
 private:
     static Int64 sSerialVersionUID;
@@ -468,10 +468,10 @@ private:
     static Int32 CHAINED_SPINS;
 
     /** tail of the queue; null until first append */
-    volatile AutoPtr<Node> mTail;
+    AutoPtr<Node> mTail;
 
     /** The number of apparent failures to unsplice removed nodes */
-    volatile Int32 mSweepVotes;
+    Int32 mSweepVotes;
 
     /*
      * Possible values for "how" argument in xfer method.

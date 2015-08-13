@@ -910,7 +910,7 @@ public:
 
 private:
     // factory used to get user/system prefs root
-    static volatile AutoPtr<IPreferencesFactory> mFactory;
+    static AutoPtr<IPreferencesFactory> mFactory;
 };
 
 } // namespace Prefs
