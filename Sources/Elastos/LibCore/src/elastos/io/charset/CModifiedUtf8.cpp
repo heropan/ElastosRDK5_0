@@ -79,14 +79,12 @@ ECode CModifiedUtf8::CountBytes(
 ECode CModifiedUtf8::Encode(
     /* [in] */ ArrayOf<Byte>* dst,
     /* [in] */ Int32 offset,
-    /* [in] */ String* s)
+    /* [in] */ const String& s)
 {
-    VALIDATE_NOT_NULL(s);
-    *s = String(NULL);
     VALIDATE_NOT_NULL(dst);
 
     Int32 dstLen = dst->GetLength();
-    Int32 srcLen = s->GetByteLength();
+    Int32 srcLen = s.GetByteLength();
     if ((0 > offset) || (offset > dstLen)) {
         return E_INDEX_OUT_OF_BOUNDS_EXCEPTION;
     }
@@ -96,7 +94,7 @@ ECode CModifiedUtf8::Encode(
     }
 
     Byte* dstPtr = dst->GetPayload() + offset;
-    const Byte* srcPtr = reinterpret_cast<const Byte*>(s->string());
+    const Byte* srcPtr = reinterpret_cast<const Byte*>(s.string());
     memcpy(dstPtr, srcPtr, srcLen);
 
     return NOERROR;

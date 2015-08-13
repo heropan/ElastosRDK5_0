@@ -42,7 +42,7 @@ public:
     CARAPI Encode(
         /* [in] */ ArrayOf<Byte>* dst,
         /* [in] */ Int32 offset,
-        /* [out] */ String* s);
+        /* [in] */ const String& s);
 };
 
 } // namespace Charset
