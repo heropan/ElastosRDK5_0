@@ -60,7 +60,6 @@ CAR数据类型的签名规则如下表:
 | EMuid                          | IID                        |
 | EGuid                          | CID                        |
 | String                         | LElastos/String;           |
-| CString                        | LElastos/CString;          |
 | ArrayOf<Int32\>                | [I32                       |
 | ArrayOf<String\>               | [LElastos/String;          |
 | Enum Elastos.Core.ThreadState  | LElastos/Core/ThreadState; |
