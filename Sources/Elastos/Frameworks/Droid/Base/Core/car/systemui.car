@@ -43,6 +43,8 @@ module
     merge("systemui/statusbar/StatusBarIconView.car");
     merge("systemui/statusbar/SystemBars.car");
 
+    merge("systemui/statusbar/phone/ActivityStarter.car");
+
 //     merge("systemui/statusbar/phone/FastColorDrawable.car");
 //     merge("systemui/statusbar/phone/IconMerger.car");
 //     merge("systemui/statusbar/phone/NavigationBarView.car");
@@ -59,6 +61,8 @@ module
     merge("systemui/statusbar/stack/StackScrollAlgorithm.car");
     merge("systemui/statusbar/stack/StackScrollState.car");
     merge("systemui/statusbar/stack/StackStateAnimator.car");
+
+    merge("systemui/statusbar/tv/TvStatusBar.car");
 
 
     merge("systemui/statusbar/policy/AccessibilityController.car");
@@ -107,22 +111,6 @@ module
 //     merge("systemui/recent/RecentsVerticalScrollView.car");
 //     merge("systemui/recent/RecentsHorizontalScrollView.car");
 
-//     merge("systemui/statusbar/tablet/StatusBarPanel.car");
-//     merge("systemui/statusbar/tablet/TabletStatusBar.car");
-//     merge("systemui/statusbar/tablet/CompatModePanel.car");
-//     merge("systemui/statusbar/tablet/InputMethodButton.car");
-//     merge("systemui/statusbar/tablet/InputMethodsPanel.car");
-//     merge("systemui/statusbar/tablet/NotificationArea.car");
-//     merge("systemui/statusbar/tablet/NotificationIconArea.car");
-//     merge("systemui/statusbar/tablet/NotificationLinearLayout.car");
-//     merge("systemui/statusbar/tablet/NotificationPanel.car");
-//     merge("systemui/statusbar/tablet/NotificationPanelTitle.car");
-//     merge("systemui/statusbar/tablet/NotificationPeekPanel.car");
-//     merge("systemui/statusbar/tablet/PanelBackgroundView.car");
-//     merge("systemui/statusbar/tablet/SettingsView.car");
-//     merge("systemui/statusbar/tablet/ShirtPocket.car");
-//     merge("systemui/statusbar/tablet/TabletStatusBarView.car");
-//     merge("systemui/statusbar/tablet/DropZone.car");
 
 //     interface Elastos.Core.ICharSequence;
 //     interface Elastos.Droid.Content.IContext;
