@@ -48,7 +48,7 @@ module
     //merge("../car/webkit.car");
     //merge("../car/privacy.car");
     merge("../car/service.car");
-    //merge("../car/appwidget.car");
+    merge("../car/appwidget.car");
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
     //merge("../car/opengl.car");

@@ -1,136 +1,212 @@
 
 module
 {
+    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {
     namespace AppWidget {
 
+    /**
+     * Describes the meta data for an installed AppWidget provider. The fields in this class correspond to the fields in the <appwidget-provider> xml tag.
+     */
+    [local]
+    interface IAppWidgetProviderInfo {
         /**
-         * Describes the meta data for an installed AppWidget provider. The fields in this class correspond to the fields in the <appwidget-provider> xml tag.
+         * Widget is not resizable.
          */
-        interface IAppWidgetProviderInfo {
-            /**
-             * Widget is not resizable.
-             */
-            const Int32 RESIZE_NONE             = 0;
-            /**
-             * Widget is resizable in the horizontal axis only.
-             */
-            const Int32 RESIZE_HORIZONTAL       = 1;
-            /**
-             * Widget is resizable in the vertical axis only.
-             */
-            const Int32 RESIZE_VERTICAL         = 2;
-            /**
-             * Widget is resizable in both the horizontal and vertical axes.
-             */
-            const Int32 RESIZE_BOTH = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
+        const Int32 RESIZE_NONE             = 0;
+        /**
+         * Widget is resizable in the horizontal axis only.
+         */
+        const Int32 RESIZE_HORIZONTAL       = 1;
+        /**
+         * Widget is resizable in the vertical axis only.
+         */
+        const Int32 RESIZE_VERTICAL         = 2;
+        /**
+         * Widget is resizable in both the horizontal and vertical axes.
+         */
+        const Int32 RESIZE_BOTH = RESIZE_HORIZONTAL | RESIZE_VERTICAL;
 
-            /**
-             * Indicates that the widget can be displayed on the home screen. This is the default value.
-             */
-            const Int32 WIDGET_CATEGORY_HOME_SCREEN = 1;
+        /**
+         * Indicates that the widget can be displayed on the home screen. This is the default value.
+         */
+        const Int32 WIDGET_CATEGORY_HOME_SCREEN = 1;
 
-            /**
-             * Indicates that the widget can be displayed on the keyguard.
-             */
-            const Int32 WIDGET_CATEGORY_KEYGUARD = 2;
+        /**
+         * Indicates that the widget can be displayed on the keyguard.
+         */
+        const Int32 WIDGET_CATEGORY_KEYGUARD = 2;
 
-            SetProvider(
-                [in] IComponentName* name);
+        /**
+         * Indicates that the widget can be displayed within a space reserved for the search box.
+         */
+        const Int32 WIDGET_CATEGORY_SEARCHBOX = 4;
 
-            GetProvider(
-                [out] IComponentName** name);
+        /**
+         * Loads the localized label to display to the user in the AppWidget picker.
+         *
+         * @param packageManager Package manager instance for loading resources.
+         * @return The label for the current locale.
+         */
+        LoadLabel(
+            [in] IPackageManager* packageManager,
+            [out] String* result);
 
-            SetMinWidth(
-                [in] Int32 width);
+        /**
+         * Loads the icon to display for this AppWidget in the AppWidget picker. If not
+         * supplied in the xml, the application icon will be used. A client can optionally
+         * provide a desired density such as {@link android.util.DisplayMetrics#DENSITY_LOW}
+         * {@link android.util.DisplayMetrics#DENSITY_MEDIUM}, etc. If no density is
+         * provided, the density of the current display will be used.
+         * <p>
+         * The loaded icon corresponds to the <code>android:icon</code> attribute in
+         * the <code>&lt;receiver&gt;</code> element in the AndroidManifest.xml file.
+         * </p>
+         *
+         * @param context Context for accessing resources.
+         * @param density The optional desired density as per
+         *         {@link android.util.DisplayMetrics#densityDpi}.
+         * @return The provider icon.
+         */
+        LoadIcon(
+            [in] IContext* context,
+            [in] Int32 density,
+            [out] IDrawable** result);
 
-            GetMinWidth(
-                [out] Int32* width);
+        /**
+         * Loads a preview of what the AppWidget will look like after it's configured.
+         * A client can optionally provide a desired density such as
+         * {@link android.util.DisplayMetrics#DENSITY_LOW}
+         * {@link android.util.DisplayMetrics#DENSITY_MEDIUM}, etc. If no density is
+         * provided, the density of the current display will be used.
+         * <p>
+         * The loaded image corresponds to the <code>android:previewImage</code> attribute
+         * in the <code>&lt;receiver&gt;</code> element in the AndroidManifest.xml file.
+         * </p>
+         *
+         * @param context Context for accessing resources.
+         * @param density The optional desired density as per
+         *         {@link android.util.DisplayMetrics#densityDpi}.
+         * @return The widget preview image or null if preview image is not available.
+         */
+        LoadPreviewImage(
+            [in] IContext* context,
+            [in] Int32 density,
+            [out] IDrawable** result);
 
-            SetMinHeight(
-                [in] Int32 height);
+        /**
+         * Gets the user profile in which the provider resides.
+         *
+         * @return The hosting user profile.
+         */
+        GetProfile(
+            [out] IUserHandle** result);
 
-            GetMinHeight(
-                [out] Int32* height);
+        DescribeContents(
+            [out] Int32* result);
 
-            SetMinResizeWidth(
-                [in] Int32 width);
+        ToString(
+            [out] String* result);
 
-            GetMinResizeWidth(
-                [out] Int32* width);
+        SetProvider(
+            [in] IComponentName* name);
 
-            SetMinResizeHeight(
-                [in] Int32 height);
+        GetProvider(
+            [out] IComponentName** name);
 
-            GetMinResizeHeight(
-                [out] Int32* height);
+        SetMinWidth(
+            [in] Int32 width);
 
-            SetUpdatePeriodMillis(
-                [in] Int32 period);
+        GetMinWidth(
+            [out] Int32* width);
 
-            GetUpdatePeriodMillis(
-                [out] Int32* period);
+        SetMinHeight(
+            [in] Int32 height);
 
-            SetInitialLayout(
-                [in] Int32 layout);
+        GetMinHeight(
+            [out] Int32* height);
 
-            GetInitialLayout(
-                [out] Int32* layout);
+        SetMinResizeWidth(
+            [in] Int32 width);
 
-            SetInitialKeyguardLayout(
-                [in] Int32 layout);
+        GetMinResizeWidth(
+            [out] Int32* width);
 
-            GetInitialKeyguardLayout(
-                [out] Int32* layout);
+        SetMinResizeHeight(
+            [in] Int32 height);
 
-            SetConfigure(
-                [in] IComponentName* name);
+        GetMinResizeHeight(
+            [out] Int32* height);
 
-            GetConfigure(
-                [out] IComponentName** name);
+        SetUpdatePeriodMillis(
+            [in] Int32 period);
 
-            SetLabel(
-                [in] String label);
+        GetUpdatePeriodMillis(
+            [out] Int32* period);
 
-            GetLabel(
-                [out] String* label);
+        SetInitialLayout(
+            [in] Int32 layout);
 
-            SetIcon(
-                [in] Int32 icon);
+        GetInitialLayout(
+            [out] Int32* layout);
 
-            GetIcon(
-                [out] Int32* icon);
+        SetInitialKeyguardLayout(
+            [in] Int32 layout);
 
-            SetAutoAdvanceViewId(
-                [in] Int32 id);
+        GetInitialKeyguardLayout(
+            [out] Int32* layout);
 
-            GetAutoAdvanceViewId(
-                [out] Int32* id);
+        SetConfigure(
+            [in] IComponentName* name);
 
-            SetPreviewImage(
-                [in] Int32 image);
+        GetConfigure(
+            [out] IComponentName** name);
 
-            GetPreviewImage(
-                [out] Int32* image);
+        SetLabel(
+            [in] String label);
 
-            SetResizeMode(
-                [in] Int32 mode);
+        GetLabel(
+            [out] String* label);
 
-            GetResizeMode(
-                [out] Int32* mode);
+        SetIcon(
+            [in] Int32 icon);
 
-            SetWidgetCategory(
-                [in] Int32 category);
+        GetIcon(
+            [out] Int32* icon);
 
-            GetWidgetCategory(
-                [out] Int32* category);
+        SetAutoAdvanceViewId(
+            [in] Int32 id);
 
-            Clone(
-                [out] IAppWidgetProviderInfo** info);
-        }
+        GetAutoAdvanceViewId(
+            [out] Int32* id);
+
+        SetPreviewImage(
+            [in] Int32 image);
+
+        GetPreviewImage(
+            [out] Int32* image);
+
+        SetResizeMode(
+            [in] Int32 mode);
+
+        GetResizeMode(
+            [out] Int32* mode);
+
+        SetWidgetCategory(
+            [in] Int32 category);
+
+        GetWidgetCategory(
+            [out] Int32* category);
+
+        Clone(
+            [out] IAppWidgetProviderInfo** info);
+    }
 
     }//namespace AppWidget
     }//namespace Droid

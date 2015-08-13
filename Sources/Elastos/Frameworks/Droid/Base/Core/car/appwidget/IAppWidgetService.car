@@ -1,134 +1,140 @@
 
 module
 {
-    interface Elastos.Utility.IObjectContainer;
+    using interface Elastos.Utility.IList;
+
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IIIntentSender;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Widget.IRemoteViews;
 
     namespace Elastos {
     namespace Droid {
     namespace AppWidget {
 
-        [deprecated]
-        interface IIAppWidgetService {
-            //
-            // for AppWidgetHost
-            //
-            StartListening(
-                [in] IIAppWidgetHost* host,
-                [in] String packageName,
-                [in] Int32 hostId,
-                [out] IObjectContainer** views,
-                [out, callee] ArrayOf<Int32>* values);
+    [local, deprecated]
+    interface IIAppWidgetService {
+        //
+        // for AppWidgetHost
+        //
+        StartListening(
+            [in] IIAppWidgetHost* host,
+            [in] String callingPackage,
+            [in] Int32 hostId,
+            [in/*out*/] IList* updatedViews,
+            [out, callee] ArrayOf<Int32>* result);
 
-            StartListeningAsUser(
-                [in] IIAppWidgetHost* host,
-                [in] String packageName,
-                [in] Int32 hostId,
-                [out] IObjectContainer** updatedViews,
-                [in] Int32 userId,
-                [out, callee] ArrayOf<Int32>* values);
+        StopListening(
+            [in] String callingPackage,
+            [in] Int32 hostId);
 
-            StopListening(
-                [in] Int32 hostId);
+        AllocateAppWidgetId(
+            [in] String callingPackage,
+            [in] Int32 hostId,
+            [out] Int32* result);
 
-            StopListeningAsUser(
-                [in] Int32 hostId,
-                [in] Int32 userId);
+        DeleteAppWidgetId(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId);
 
-            AllocateAppWidgetId(
-                [in] String packageName,
-                [in] Int32 hostId,
-                [out] Int32* id);
+        DeleteHost(
+            [in] String packageName,
+            [in] Int32 hostId);
 
-            GetAppWidgetIdsForHost(
-                [in] Int32 hostId,
-                [out, callee] ArrayOf<Int32>* ids);
+        DeleteAllHosts();
 
-            DeleteAppWidgetId(
-                [in] Int32 appWidgetId);
+        GetAppWidgetViews(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [out] IRemoteViews** result);
 
-            DeleteHost(
-                [in] Int32 hostId);
+        GetAppWidgetIdsForHost(
+            [in] String callingPackage,
+            [in] Int32 hostId,
+            [out, callee] ArrayOf<Int32>* result);
 
-            DeleteAllHosts();
+        CreateAppWidgetConfigIntentSender(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [in] Int32 intentFlags,
+            [out] IIIntentSender** result);
 
-            GetAppWidgetViews(
-                [in] Int32 appWidgetId,
-                [out] IParcelable** views);
+        //
+        // for AppWidgetManager
+        //
+        UpdateAppWidgetIds(
+            [in] String callingPackage,
+            [in] ArrayOf<Int32>* appWidgetIds,
+            [in] IRemoteViews* views);
 
-            //
-            // for AppWidgetManager
-            //
-            UpdateAppWidgetIds(
-                [in] ArrayOf<Int32>* appWidgetIds,
-                [in] IParcelable* views);
+        UpdateAppWidgetOptions(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [in] IBundle* extras);
 
-            UpdateAppWidgetOptions(
-                [in] Int32 appWidgetId,
-                [in] IBundle* extras);
+        GetAppWidgetOptions(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [out] IBundle** result);
 
-            GetAppWidgetOptions(
-                [in] Int32 appWidgetId,
-                [out] IBundle** options);
+        PartiallyUpdateAppWidgetIds(
+            [in] String callingPackage,
+            [in] ArrayOf<Int32>* appWidgetIds,
+            [in] IRemoteViews* views);
 
-            PartiallyUpdateAppWidgetIds(
-                [in] ArrayOf<Int32>* appWidgetIds,
-                [in] IParcelable* views);
+        UpdateAppWidgetProvider(
+            [in] IComponentName* provider,
+            [in] IRemoteViews* views);
 
-            UpdateAppWidgetProvider(
-                [in] IComponentName* provider,
-                [in] IParcelable* views);
+        NotifyAppWidgetViewDataChanged(
+            [in] String packageName,
+            [in] ArrayOf<Int32>* appWidgetIds,
+            [in] Int32 viewId);
 
-            NotifyAppWidgetViewDataChanged(
-                [in] ArrayOf<Int32>* appWidgetIds,
-                [in] Int32 viewId);
+        GetInstalledProvidersForProfile(
+            [in] Int32 categoryFilter,
+            [in] Int32 profileId,
+            [out] IList** result);
 
-            GetInstalledProviders(
-                [in] Int32 categoryFilter,
-                [out] IObjectContainer** providers);
+        GetAppWidgetInfo(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [out] IAppWidgetProviderInfo** result);
 
-            GetAppWidgetInfo(
-                [in] Int32 appWidgetId,
-                [out] IAppWidgetProviderInfo** info);
+        HasBindAppWidgetPermission(
+            [in] String packageName,
+            [in] Int32 userId,
+            [out] Boolean* result);
 
-            HasBindAppWidgetPermission(
-                [in] String packageName,
-                [out] Boolean* result);
+        SetBindAppWidgetPermission(
+            [in] String packageName,
+            [in] Int32 userId,
+            [in] Boolean permission);
 
-            SetBindAppWidgetPermission(
-                [in] String packageName,
-                [in] Boolean permission);
+        BindAppWidgetId(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [in] Int32 providerProfileId,
+            [in] IComponentName* providerComponent,
+            [in] IBundle* options);
 
-            BindAppWidgetId(
-                [in] Int32 appWidgetId,
-                [in] IComponentName* provider,
-                [in] IBundle* options);
+        BindRemoteViewsService(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [in] IIntent* intent,
+            [in] IBinder* connection);
 
-            BindAppWidgetIdIfAllowed(
-                [in] String packageName,
-                [in] Int32 appWidgetId,
-                [in] IComponentName* provider,
-                [in] IBundle* options,
-                [out] Boolean* result);
+        UnbindRemoteViewsService(
+            [in] String callingPackage,
+            [in] Int32 appWidgetId,
+            [in] IIntent* intent);
 
-            BindRemoteViewsService(
-                [in] Int32 appWidgetId,
-                [in] IIntent* intent,
-                [in] IBinder* connection,
-                [in] Int32 userId);
-
-            UnbindRemoteViewsService(
-                [in] Int32 appWidgetId,
-                [in] IIntent* intent,
-                [in] Int32 userId);
-
-            GetAppWidgetIds(
-                [in] IComponentName* provider,
-                [out, callee] ArrayOf<Int32>* ids);
-        }
+        GetAppWidgetIds(
+            [in] IComponentName* providerComponent,
+            [out, callee] ArrayOf<Int32>* result);
+    }
 
     }//namespace AppWidget
     }//namespace Droid

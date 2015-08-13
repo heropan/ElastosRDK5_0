@@ -4,7 +4,7 @@ module
     namespace Droid {
     namespace AppWidget {
 
-    [oneway]
+    [local, oneway]
     interface IIAppWidgetHost {
         UpdateAppWidget(
             [in] Int32 appWidgetId,
