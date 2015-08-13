@@ -1,31 +1,32 @@
 module
 {
+    interface Elastos.Droid.View.IViewOnClickListener;
 
     namespace Elastos {
     namespace Droid {
     namespace SystemUI {
     namespace StatusBar {
-    namespace Tablet {
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.IRelativeLayout
+     * interface IStackScrollerDecorView
      */
-    interface INotificationIconArea {
+    interface IDismissView {
+        SetOnButtonClickListener(
+            [in] IViewOnClickListener* listener);
     }
-
 
     /**
      * @Involve
-     * interface Elastos.Droid.Widget.ILinearLayout
+     * interface IImageButton
      */
-    interface INotificationIconAreaIconLayout {
+    interface IDismissViewImageButton {
+
     }
 
-    } // namespace Tablet
+
     } // namespace StatusBar
     } // namespace SystemUI
     } // namespace Droid
     } // namespace Elastos
 }
-

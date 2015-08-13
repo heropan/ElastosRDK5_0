@@ -32,10 +32,10 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.SystemUI.ISystemUI
-     * interface Elastos.Droid.ICommandQueueCallbacks
-     * interface Elastos.Droid.IActivatableNotificationViewOnActivatedListener
-     * interface Elastos.Droid.IRecentsComponentCallbacks
-     * interface Elastos.Droid.IExpandableNotificationRowExpansionLogger
+     * ICommandQueueCallbacks
+     * IActivatableNotificationViewOnActivatedListener
+     * interface Elastos.Droid.RecentsComponentCallbacks
+     * inIExpandableNotificationRowExpansionLogger
      * interface Elastos.Droid.INotificationDataEnvironment
      */
     interface IBaseStatusBar {

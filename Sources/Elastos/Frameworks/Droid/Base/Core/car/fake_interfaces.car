@@ -350,8 +350,6 @@ module
 
         namespace StatusBar {
 
-            interface INotificationDataEntry {}
-
             namespace Phone {
                 interface IPhoneStatusBar {}
             }

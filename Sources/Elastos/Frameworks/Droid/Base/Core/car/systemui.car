@@ -26,11 +26,22 @@ module
     merge("systemui/statusbar/AnimatedImageView.car");
     merge("systemui/statusbar/BaseStatusBar.car");
     merge("systemui/statusbar/CommandQueue.car");
-//
-//     merge("systemui/statusbar/StatusBarIconView.car");
-//     merge("systemui/statusbar/SignalClusterView.car");
-//     merge("systemui/statusbar/RotationToggle.car");
-//     merge("systemui/statusbar/LatestItemView.car");
+    merge("systemui/statusbar/DelegateViewHelper.car");
+    merge("systemui/statusbar/DismissView.car");
+    merge("systemui/statusbar/DragDownHelper.car");
+    merge("systemui/statusbar/ExpandableNotificationRow.car");
+    merge("systemui/statusbar/ExpandableView.car");
+    merge("systemui/statusbar/FlingAnimationUtils.car");
+    merge("systemui/statusbar/GestureRecorder.car");
+    merge("systemui/statusbar/KeyguardAffordanceView.car");
+    merge("systemui/statusbar/KeyguardIndicationController.car");
+    merge("systemui/statusbar/NotificationBackgroundView.car");
+    merge("systemui/statusbar/NotificationData.car");
+    merge("systemui/statusbar/NotificationGuts.car");
+    merge("systemui/statusbar/ServiceMonitor.car");
+    merge("systemui/statusbar/SignalClusterView.car");
+    merge("systemui/statusbar/StatusBarIconView.car");
+    merge("systemui/statusbar/SystemBars.car");
 
 //     merge("systemui/statusbar/phone/FastColorDrawable.car");
 //     merge("systemui/statusbar/phone/IconMerger.car");
@@ -39,6 +50,11 @@ module
 //     merge("systemui/statusbar/phone/Ticker.car");
 //     merge("systemui/statusbar/phone/TickerView.car");
 //     merge("systemui/statusbar/phone/Panel.car");
+
+
+    merge("systemui/statusbar/stack/AmbientState.car");
+    merge("systemui/statusbar/stack/NotificationStackScrollLayout.car");
+
 
     merge("systemui/statusbar/policy/AccessibilityController.car");
     merge("systemui/statusbar/policy/BatteryController.car");
