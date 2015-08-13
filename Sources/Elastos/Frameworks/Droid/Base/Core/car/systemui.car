@@ -53,7 +53,12 @@ module
 
 
     merge("systemui/statusbar/stack/AmbientState.car");
+    merge("systemui/statusbar/stack/AnimationFilter.car");
     merge("systemui/statusbar/stack/NotificationStackScrollLayout.car");
+    merge("systemui/statusbar/stack/StackIndentationFunctor.car");
+    merge("systemui/statusbar/stack/StackScrollAlgorithm.car");
+    merge("systemui/statusbar/stack/StackScrollState.car");
+    merge("systemui/statusbar/stack/StackStateAnimator.car");
 
 
     merge("systemui/statusbar/policy/AccessibilityController.car");
