@@ -82,7 +82,7 @@ void Properties::DumpString(
     /* [in] */ Boolean key)
 {
     AutoPtr<ArrayOf<Char32> > charArray = string.GetChars();
-    UInt32 i = 0;
+    Int32 i = 0;
     if (!key && i < charArray->GetLength() && (*charArray)[i] == ' ') {
         buffer->Append(String("\\ "));
         i++;
