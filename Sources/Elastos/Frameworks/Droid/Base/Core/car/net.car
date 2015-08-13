@@ -27,7 +27,6 @@ module
     merge("net/IpPrefix.car");
     merge("net/LinkAddress.car");
     merge("net/LinkAddressHelper.car");
-    merge("net/CompareResult.car");
     merge("net/LinkProperties.car");
     merge("net/LinkPropertiesHelper.car");
     merge("net/LinkQualityInfo.car");
@@ -62,7 +61,6 @@ module
     merge("net/NetworkPolicyManagerHelper.car");
     merge("net/NetworkQuotaInfo.car");
     merge("net/NetworkQuotaInfoHelper.car");
-    merge("net/Builder.car");
     merge("net/NetworkRequest.car");
     merge("net/NetworkRequestHelper.car");
     merge("net/NetworkScoreManager.car");
@@ -70,17 +68,26 @@ module
     merge("net/NetworkScorerAppManagerHelper.car");
     merge("net/NetworkState.car");
     merge("net/NetworkStateHelper.car");
-
-    merge("net/NetworkStats.car");
-    merge("net/NetworkStatsFactory.car");
-    merge("net/NetworkStatsHistory.car");
     merge("net/NetworkStateTracker.car");
+    merge("net/NetworkStats.car");
+    merge("net/NetworkStatsHelper.car");
+    merge("net/NetworkStatsHistory.car");
+    merge("net/NetworkStatsHistoryHelper.car");
     merge("net/NetworkTemplate.car");
-    merge("net/ParseException.car");
+    merge("net/NetworkUtils.car");
+    merge("net/PacProxySelector.car");
     merge("net/Proxy.car");
+    merge("net/ProxyDataTracker.car");
+    merge("net/ProxyInfo.car");
     merge("net/ProxyProperties.car");
+    merge("net/PskKeyManager.car");
     merge("net/RouteInfo.car");
+    merge("net/RssiCurve.car");
     merge("net/SSLCertificateSocketFactory.car");
+
+
+
+
     merge("net/SSLSessionCache.car");
     merge("net/TrafficStats.car");
     merge("net/Uri.car");

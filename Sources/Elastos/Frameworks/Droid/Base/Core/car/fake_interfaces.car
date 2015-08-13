@@ -51,8 +51,6 @@ module
 
         interface IWebAddress {}
 
-        interface IProxyInfo {}
-
         interface INetworkCallback {}
 
         interface IScoredNetwork {}
@@ -186,6 +184,7 @@ module
         }
     }
 
+
     namespace Params {
 
         interface IHttpParams {}
@@ -200,6 +199,16 @@ module
     } // namespace Http
     } // namespace Apache
     } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Conn {
+    namespace Ssl {
+
+        interface ISSLSocketFactory {}
+
+    }}}}} // Org.Apache.Http.Conn.Ssl.ISSLSocketFactory
 
     namespace Elastos {
     namespace Droid {
@@ -278,6 +287,8 @@ module
 
         interface IBuild {}
 
+        interface ISystemClock {}
+
     }}} // Elastos.Droid.Os
 
 
@@ -313,6 +324,8 @@ module
         interface IStateMachine {}
         interface IAsyncChannel {}
         interface IProtocol {}
+        interface IArrayUtils {}
+        interface IIndentingPrintWriter {}
 
     } // namespace Util
 
@@ -327,6 +340,12 @@ module
         interface ILog {}
 
         interface ISparseArray {}
+
+        interface ISparseBooleanArray {}
+
+        interface IMathUtils {}
+
+        interface IPair {}
 
     } // namespace Util
     } // namespace Droid

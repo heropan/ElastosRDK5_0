@@ -1,71 +1,226 @@
+
 module
 {
-    using interface Elastos.Utility.ICollection;
-    using interface Elastos.Net.IInetAddress;
 
-    interface Elastos.Droid.Net.ILinkAddress;
+    interface Elastos.Droid.Os.ICreator;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+
+    using interface Elastos.Net.IInetAddress;
+    using interface Elastos.Net.IInet4Address;
+    using interface Elastos.Net.IInet6Address;
+    using interface Elastos.Utility.ICollection;
+    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * Represents a network route.
+     * <p>
+     * This is used both to describe static network configuration and live network
+     * configuration information.
+     *
+     * A route contains three pieces of information:
+     * <ul>
+     * <li>a destination {@link IpPrefix} specifying the network destinations covered by this route.
+     *     If this is {@code null} it indicates a default route of the address family (IPv4 or IPv6)
+     *     implied by the gateway IP address.
+     * <li>a gateway {@link InetAddress} indicating the next hop to use.  If this is {@code null} it
+     *     indicates a directly-connected route.
+     * <li>an interface (which may be unspecified).
+     * </ul>
+     * Either the destination or the gateway may be {@code null}, but not both.  If the
+     * destination and gateway are both specified, they must be of the same address family
+     * (IPv4 or IPv6).
+     */
+    /**
+     * @Involved
+     * interface IParcelable;
+     */
     interface IRouteInfo {
+        /** Unicast route. @hide */
+        const Int32 RTN_UNICAST = 1;
+
+        /** Unreachable route. @hide */
+        const Int32 RTN_UNREACHABLE = 7;
+
+        /** Throw route. @hide */
+        const Int32 RTN_THROW = 9;
+
+        /**
+         * Retrieves the destination address and prefix length in the form of an {@link IpPrefix}.
+         *
+         * @return {@link IpPrefix} specifying the destination.  This is never {@code null}.
+         */
         GetDestination(
-            [out] ILinkAddress** address);
+            [out] IIpPrefix** result);
 
+        /**
+         * TODO: Convert callers to use IpPrefix and then remove.
+         * @hide
+         */
+        GetDestinationLinkAddress(
+            [out] ILinkAddress** result);
+
+        /**
+         * Retrieves the gateway or next hop {@link InetAddress} for this route.
+         *
+         * @return {@link InetAddress} specifying the gateway or next hop.  This may be
+         *                             {@code null} for a directly-connected route."
+         */
         GetGateway(
-            [out] IInetAddress** address);
+            [out] IInetAddress** result);
 
+        /**
+         * Retrieves the interface used for this route if specified, else {@code null}.
+         *
+         * @return The name of the interface used for this route.
+         */
+        GetInterface(
+            [out] String* result);
+
+        /**
+         * Retrieves the type of this route.
+         *
+         * @return The type of this route; one of the {@code RTN_xxx} constants defined in this class.
+         *
+         * @hide
+         */
+        GetType(
+            [out] Int32* result);
+
+        /**
+         * Indicates if this route is a default route (ie, has no destination specified).
+         *
+         * @return {@code true} if the destination has a prefix length of 0.
+         */
         IsDefaultRoute(
-            [out] Boolean* value);
+            [out] Boolean* result);
 
+        /**
+         * Indicates if this route is an IPv4 default route.
+         * @hide
+         */
+        IsIPv4Default(
+            [out] Boolean* result);
+
+        /**
+         * Indicates if this route is an IPv6 default route.
+         * @hide
+         */
+        IsIPv6Default(
+            [out] Boolean* result);
+
+        /**
+         * Indicates if this route is a host route (ie, matches only a single host address).
+         *
+         * @return {@code true} if the destination has a prefix length of 32 or 128 for IPv4 or IPv6,
+         * respectively.
+         * @hide
+         */
         IsHostRoute(
-            [out] Boolean* value);
-
-        ToString(
-            [out] String* str);
-
-        Equals(
-            [in] IInterface* obj,
             [out] Boolean* result);
 
-        Equals(
-            [in] IRouteInfo* obj,
+        /**
+         * Indicates if this route has a next hop ({@code true}) or is directly-connected
+         * ({@code false}).
+         *
+         * @return {@code true} if a gateway is specified
+         * @hide
+         */
+        HasGateway(
             [out] Boolean* result);
 
-        GetHashCode(
-            [out] Int32* code);
-
+        /**
+         * Determines whether the destination and prefix of this route includes the specified
+         * address.
+         *
+         * @param destination A {@link InetAddress} to test to see if it would match this route.
+         * @return {@code true} if the destination and prefix length cover the given address.
+         */
         Matches(
             [in] IInetAddress* destination,
-            [out] Boolean* isMatch);
+            [out] Boolean* result);
+
+        /**
+         * Returns a human-readable description of this object.
+         */
+        ToString(
+            [out] String* result);
+
+        /**
+         * Compares this RouteInfo object against the specified object and indicates if they are equal.
+         * @return {@code true} if the objects are equal, {@code false} otherwise.
+         */
+        Equals(
+            [in] IObject* obj,
+            [out] Boolean* result);
+
+        /**
+         *  Returns a hashcode for this <code>RouteInfo</code> object.
+         */
+        HashCode(
+            [out] Int32* result);
+
+        /**
+         * Implement the Parcelable interface
+         */
+        DescribeContents(
+            [out] Int32* result);
+
+        /**
+         * Implement the Parcelable interface
+         */
+        WriteToParcel(
+            [in] IParcel* dest,
+            [in] Int32 flags);
+
     }
 
     interface IRouteInfoHelper {
+        /**
+         * @hide
+         */
         MakeHostRoute(
             [in] IInetAddress* host,
-            [out] IRouteInfo** info);
+            [in] String iface,
+            [out] IRouteInfo** result);
 
+        /**
+         * @hide
+         */
         MakeHostRoute(
             [in] IInetAddress* host,
             [in] IInetAddress* gateway,
-            [out] IRouteInfo** info);
+            [in] String iface,
+            [out] IRouteInfo** result);
 
         /**
-        * Find the route from a Collection of routes that best matches a given address.
-        * May return null if no routes are applicable.
-        * @param routes a Collection of RouteInfos to chose from
-        * @param dest the InetAddress your trying to get to
-        * @return the RouteInfo from the Collection that best fits the given address
-        */
-        //To-do: confirm the use of Collection<> (that is originally used here) in Elastos and replace List<>
+         * Find the route from a Collection of routes that best matches a given address.
+         * May return null if no routes are applicable.
+         * @param routes a Collection of RouteInfos to chose from
+         * @param dest the InetAddress your trying to get to
+         * @return the RouteInfo from the Collection that best fits the given address
+         *
+         * @hide
+         */
         SelectBestRoute(
             [in] ICollection* routes,
             [in] IInetAddress* dest,
-            [out] IRouteInfo** info);
+            [out] IRouteInfo** result);
+
+        /**
+         * Implement the Parcelable interface.
+         */
+        GetCREATOR(
+            [out] ICreator** result);
+
     }
 
-    } //namespace Net
-    } //namespace Droid
-    } //namespace Elastos
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 }
+

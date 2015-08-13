@@ -1,29 +1,78 @@
+
 module
 {
-    using interface Elastos.Net.ISocket;
-    using interface Elastos.Net.IInetAddress;
-    using interface Elastosx.Net.ISocketFactory;
-    using interface Elastosx.Net.Ssl.ISSLSocketFactory;
+
     interface Elastos.Droid.Net.ISSLSessionCache;
-    using interface Elastosx.Net.Ssl.ITrustManager;
+
+    interface Elastos.Droid.Os.ISystemProperties;
+    interface Elastos.Droid.Util.ILog;
+
+    using interface Elastos.Core.IArrayOf;
+    using interface Elastos.IO.IIOException;
+    using interface Elastos.Net.IInetAddress;
+    using interface Elastos.Net.ISocket;
+    using interface Elastos.Net.ISocketException;
+    using interface Elastos.Security.IKeyManagementException;
+    using interface Elastos.Security.IPrivateKey;
+    using interface Elastos.Security.Cert.IX509Certificate;
+    using interface Elastosx.Net.ISocketFactory;
+    using interface Elastosx.Net.Ssl.IHostnameVerifier;
+    using interface Elastosx.Net.Ssl.IHttpsURLConnection;
     using interface Elastosx.Net.Ssl.IKeyManager;
+    using interface Elastosx.Net.Ssl.ISSLException;
+    using interface Elastosx.Net.Ssl.ISSLPeerUnverifiedException;
+    using interface Elastosx.Net.Ssl.ISSLSession;
+    using interface Elastosx.Net.Ssl.ISSLSocket;
+    using interface Elastosx.Net.Ssl.ISSLSocketFactory;
+    using interface Elastosx.Net.Ssl.ITrustManager;
+    using interface Elastosx.Net.Ssl.IX509TrustManager;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
     /**
-     * @Involve
-     * interface Elastosx.Net.Ssl.ISSLSocketFactory
+     * SSLSocketFactory implementation with several extra features:
+     *
+     * <ul>
+     * <li>Timeout specification for SSL handshake operations
+     * <li>Hostname verification in most cases (see WARNINGs below)
+     * <li>Optional SSL session caching with {@link SSLSessionCache}
+     * <li>Optionally bypass all SSL certificate checks
+     * </ul>
+     *
+     * The handshake timeout does not apply to actual TCP socket connection.
+     * If you want a connection timeout as well, use {@link #createSocket()}
+     * and {@link Socket#connect(SocketAddress, int)}, after which you
+     * must verify the identity of the server you are connected to.
+     *
+     * <p class="caution"><b>Most {@link SSLSocketFactory} implementations do not
+     * verify the server's identity, allowing man-in-the-middle attacks.</b>
+     * This implementation does check the server's certificate hostname, but only
+     * for createSocket variants that specify a hostname.  When using methods that
+     * use {@link InetAddress} or which return an unconnected socket, you MUST
+     * verify the server's identity yourself to ensure a secure connection.</p>
+     *
+     * <p>One way to verify the server's identity is to use
+     * {@link HttpsURLConnection#getDefaultHostnameVerifier()} to get a
+     * {@link HostnameVerifier} to verify the certificate hostname.
+     *
+     * <p>On development devices, "setprop socket.relaxsslcheck yes" bypasses all
+     * SSL certificate and hostname checks for testing purposes.  This setting
+     * requires root access.
      */
-    [deprecated, local]
+    /**
+     * @Involved
+     * interface ISSLSocketFactory;
+     * interface ISocketFactory;
+     */
+    [deprecated]
     interface ISSLCertificateSocketFactory {
-
         /**
          * Sets the {@link TrustManager}s to be used for connections made by this factory.
          */
         SetTrustManagers(
-           [in] ArrayOf<ITrustManager*>* trustManager);
+            [in] ArrayOf<ITrustManager*>* trustManager);
 
         /**
          * Sets the <a href="http://technotes.googlecode.com/git/nextprotoneg.html">Next
@@ -42,7 +91,29 @@ module
          *     must be non-empty and of length less than 256.
          */
         SetNpnProtocols(
-            [in] ArrayOf<Byte>* npnProtocols);
+            [in] ArrayOf<IArrayOf>* npnProtocols);
+
+        /**
+         * Sets the
+         * <a href="http://tools.ietf.org/html/draft-ietf-tls-applayerprotoneg-01">
+         * Application Layer Protocol Negotiation (ALPN)</a> protocols that this peer
+         * is interested in.
+         *
+         * <p>For servers this is the sequence of protocols to advertise as
+         * supported, in order of preference. This list is sent unencrypted to
+         * all clients that support ALPN.
+         *
+         * <p>For clients this is a list of supported protocols to match against the
+         * server's list. If there is no protocol supported by both client and
+         * server then the first protocol in the client's list will be selected.
+         * The order of the client's protocols is otherwise insignificant.
+         *
+         * @param protocols a non-empty list of protocol byte arrays. All arrays
+         *     must be non-empty and of length less than 256.
+         * @hide
+         */
+        SetAlpnProtocols(
+            [in] ArrayOf<IArrayOf>* protocols);
 
         /**
          * Returns the <a href="http://technotes.googlecode.com/git/nextprotoneg.html">Next
@@ -54,13 +125,40 @@ module
          */
         GetNpnSelectedProtocol(
             [in] ISocket* socket,
-            [out, callee] ArrayOf<Byte>* protocol);
+            [out, callee] ArrayOf<Byte>* result);
+
+        /**
+         * Returns the
+         * <a href="http://tools.ietf.org/html/draft-ietf-tls-applayerprotoneg-01">Application
+         * Layer Protocol Negotiation (ALPN)</a> protocol selected by client and server, or null
+         * if no protocol was negotiated.
+         *
+         * @param socket a socket created by this factory.
+         * @throws IllegalArgumentException if the socket was not created by this factory.
+         * @hide
+         */
+        GetAlpnSelectedProtocol(
+            [in] ISocket* socket,
+            [out, callee] ArrayOf<Byte>* result);
 
         /**
          * Sets the {@link KeyManager}s to be used for connections made by this factory.
          */
         SetKeyManagers(
             [in] ArrayOf<IKeyManager*>* keyManagers);
+
+        /**
+         * Sets the private key to be used for TLS Channel ID by connections made by this
+         * factory.
+         *
+         * @param privateKey private key (enables TLS Channel ID) or {@code null} for no key (disables
+         *        TLS Channel ID). The private key has to be an Elliptic Curve (EC) key based on the
+         *        NIST P-256 curve (aka SECG secp256r1 or ANSI X9.62 prime256v1).
+         *
+         * @hide
+         */
+        SetChannelIdPrivateKey(
+            [in] IPrivateKey* privateKey);
 
         /**
          * Enables <a href="http://tools.ietf.org/html/rfc5077#section-3.2">session ticket</a>
@@ -86,7 +184,7 @@ module
             [in] ISocket* socket,
             [in] String hostName);
 
-         /**
+        /**
          * Sets this socket's SO_SNDTIMEO write timeout in milliseconds.
          * Use 0 for no timeout.
          * To take effect, this option must be set before the blocking method was called.
@@ -113,7 +211,7 @@ module
          */
         GetDefault(
             [in] Int32 handshakeTimeoutMillis,
-            [out] ISocketFactory** socketFactory);
+            [out] ISocketFactory** result);
 
         /**
          * Returns a new socket factory instance with an optional handshake timeout
@@ -127,7 +225,7 @@ module
         GetDefault(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] ISSLSocketFactory** result);
 
         /**
          * Returns a new instance of a socket factory with all SSL security checks
@@ -144,7 +242,7 @@ module
         GetInsecure(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] ISSLSocketFactory** result);
 
         /**
          * Returns a socket factory (also named SSLSocketFactory, but in a different
@@ -158,7 +256,7 @@ module
         GetHttpSocketFactory(
             [in] Int32 handshakeTimeoutMillis,
             [in] ISSLSessionCache* cache,
-            [out] Elastosx.Net.Ssl.ISSLSocketFactory** sslSocketFactory);
+            [out] Org.Apache.Http.Conn.Ssl.ISSLSocketFactory** result);
 
         /**
          * Verify the hostname of the certificate used by the other end of a
@@ -177,14 +275,13 @@ module
          *
          * @hide
          */
-         VerifyHostname(
+        VerifyHostname(
             [in] ISocket* socket,
             [in] String hostname);
 
-
     }
 
-    } //namespace Net
-    } //namespace Droid
-    } //namespace Elastos
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 }

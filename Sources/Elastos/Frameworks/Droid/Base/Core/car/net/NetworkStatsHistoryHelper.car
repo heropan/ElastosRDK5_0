@@ -1,0 +1,94 @@
+
+module
+{
+
+    interface Elastos.Droid.Net.INetworkStats;
+    interface Elastos.Droid.Net.INetworkStatsHistoryEntry;
+
+    interface Elastos.Droid.Internal.Util.IArrayUtils;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+    interface Elastos.Droid.Util.IMathUtils;
+    interface Elastos.Droid.Internal.Util.IIndentingPrintWriter;
+
+    using interface Elastos.IO.ICharArrayWriter;
+    using interface Elastos.IO.IDataInputStream;
+    using interface Elastos.IO.IDataOutputStream;
+    using interface Elastos.Utility.IArrays;
+    using interface Elastos.Utility.IRandom;
+
+    interface Elastos.Droid.Os.ICreator;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Net {
+
+    interface INetworkStatsHistoryHelper {
+        RandomLong(
+            [in] IRandom* r,
+            [in] Int64 start,
+            [in] Int64 end,
+            [out] Int64* result);
+
+        GetCREATOR(
+            [out] ICreator** result);
+
+    }
+
+    /**
+     * Utility methods for interacting with {@link DataInputStream} and
+     * {@link DataOutputStream}, mostly dealing with writing partial arrays.
+     */
+    [deprecated]
+    interface INetworkStatsHistoryDataStreamUtilsHelper {
+        // @Deprecated
+        ReadFullLongArray(
+            [in] IDataInputStream* dis,
+            [out, callee] ArrayOf<Int64>* result);
+
+        /**
+         * Read variable-length {@link Long} using protobuf-style approach.
+         */
+        ReadVarLong(
+            [in] IDataInputStream* dis,
+            [out] Int64* result);
+
+        /**
+         * Write variable-length {@link Long} using protobuf-style approach.
+         */
+        WriteVarLong(
+            [in] IDataOutputStream* dos,
+            [in] Int64 value);
+
+        ReadVarLongArray(
+            [in] IDataInputStream* dis,
+            [out, callee] ArrayOf<Int64>* result);
+
+        WriteVarLongArray(
+            [in] IDataOutputStream* dos,
+            [in] ArrayOf<Int64>* values,
+            [in] Int32 size);
+
+    }
+
+    /**
+     * Utility methods for interacting with {@link Parcel} structures, mostly
+     * dealing with writing partial arrays.
+     */
+    [deprecated]
+    interface INetworkStatsHistoryParcelUtilsHelper {
+        ReadLongArray(
+            [in] IParcel* parcel,
+            [out, callee] ArrayOf<Int64>* result);
+
+        WriteLongArray(
+            [in] IParcel* parcel,
+            [in] ArrayOf<Int64>* values,
+            [in] Int32 size);
+
+    }
+
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
+}
