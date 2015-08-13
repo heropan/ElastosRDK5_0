@@ -109,10 +109,6 @@ module
     namespace Droid {
     namespace Internal {
 
-        namespace App {
-            interface IIVoiceInteractor {}
-        }
-
         namespace View {
 
             interface IIInputMethod {}
