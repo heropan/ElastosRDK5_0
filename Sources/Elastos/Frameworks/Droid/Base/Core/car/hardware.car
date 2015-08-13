@@ -57,6 +57,7 @@ module
     merge("hardware/camera2/ICameraDeviceUser.car");
 
     merge("hardware/camera2/dispatch/Dispatchable.car");
+    merge("hardware/camera2/dispatch/MethodNameInvoker.car");
 
     merge("hardware/camera2/impl/CallbackProxies.car");
     merge("hardware/camera2/impl/CameraMetadataNative.car");
@@ -80,6 +81,8 @@ module
     merge("hardware/camera2/legacy/ParameterUtils.car");
     merge("hardware/camera2/legacy/RequestHandlerThread.car");
     merge("hardware/camera2/legacy/RequestQueue.car");
+    merge("hardware/camera2/legacy/RequestThreadManager.car");
+    merge("hardware/camera2/legacy/SurfaceTextureRenderer.car");
 
     merge("hardware/camera2/marshal/Marshaler.car");
     merge("hardware/camera2/marshal/MarshalHelpers.car");
