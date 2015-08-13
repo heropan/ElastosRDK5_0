@@ -9,6 +9,7 @@ module
     namespace Service {
     namespace Dreams {
 
+    /** @hide */
     [deprecated]
     interface IDreamManager {
         Dream();
@@ -31,6 +32,15 @@ module
             [out] Boolean* result);
 
         FinishSelf(
+            [in] IBinder* token,
+            [in] Boolean immediate);
+
+        StartDozing(
+            [in] IBinder* token,
+            [in] Int32 screenState,
+            [in] Int32 screenBrightness);
+
+        StopDozing(
             [in] IBinder* token);
     }
 

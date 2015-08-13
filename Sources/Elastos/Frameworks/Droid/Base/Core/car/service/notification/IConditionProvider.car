@@ -9,6 +9,7 @@ module
     namespace Notification {
 
     /** @hide */
+    [oneway]
     interface IIConditionProvider {
         OnConnected();
 

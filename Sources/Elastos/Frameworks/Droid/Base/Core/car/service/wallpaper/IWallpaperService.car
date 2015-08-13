@@ -12,6 +12,7 @@ module
     /**
      * @hide
      */
+    [oneway]
     interface IIWallpaperService {
         Attach(
             [in] IWallpaperConnection* connection,

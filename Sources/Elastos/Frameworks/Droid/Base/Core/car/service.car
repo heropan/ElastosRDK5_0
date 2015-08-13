@@ -1,12 +1,13 @@
 
 module
 {
-    // merge("service/dreams/DreamService.car");
-    // merge("service/dreams/IDreamManager.car");
-    // merge("service/dreams/IDreamService.car");
-    // merge("service/dreams/Sandman.car");
+    merge("service/dreams/DreamManagerInternal.car");
+    merge("service/dreams/DreamService.car");
+    merge("service/dreams/IDreamManager.car");
+    merge("service/dreams/IDreamService.car");
+    merge("service/dreams/Sandman.car");
 
-    // merge("service/textservice/SpellCheckerService.car");
+    merge("service/textservice/SpellCheckerService.car");
 
     merge("service/notification/Condition.car");
     merge("service/notification/ConditionProviderService.car");

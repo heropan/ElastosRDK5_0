@@ -1,13 +1,20 @@
 
 module
 {
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntent;
+
     namespace Elastos {
     namespace Droid {
     namespace service {
 
-    interface IContext;
-
-    interface ISandman;
+    /**
+     * Internal helper for launching dreams to ensure consistency between the
+     * <code>UiModeManagerService</code> system service and the <code>Somnambulator</code> activity.
+     *
+     * @hide
+     */
+    interface ISandman {}
 
     interface ISandmanHelper
     {

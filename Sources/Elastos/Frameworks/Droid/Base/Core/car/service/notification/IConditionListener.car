@@ -9,7 +9,7 @@ module
     namespace Notification {
 
     /** @hide */
-    [deprecated]
+    [deprecated, oneway]
     interface IIConditionListener {
         OnConditionsReceived(
            [in] ArrayOf<ICondition*>* conditions);

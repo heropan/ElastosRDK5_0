@@ -14,6 +14,7 @@ module
     /**
      * @hide
      */
+    [oneway]
     interface IIWallpaperEngine {
         SetDesiredSize(
             [in] Int32 width,

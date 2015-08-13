@@ -1,31 +1,30 @@
 
 module
 {
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.View.TextService.ITextInfo;
+    interface Elastos.Droid.View.TextService.ISuggestionsInfo;
+    interface Elastos.Droid.View.TextService.ISentenceSuggestionsInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace service {
 
-    const SpellCheckerService_SERVICE_INTERFACE = "android.service.textservice.SpellCheckerService";
-
-    interface IInternalISpellCheckerSession;
-    interface ITextInfo;
-    interface ISuggestionsInfo;
-    interface ISentenceSuggestionsInfo;
-    interface IBundle;
-
-    interface ISession
+    [deprecated]
+    interface ISpellCheckerServiceSession
     {
         /**
          * @hide
          */
         SetInternalISpellCheckerSession(
-            [in] IInternalISpellCheckerSession* session);
+            [in] Handle32* session);
 
         /**
          * This is called after the class is initialized, at which point it knows it can call
          * getLocale() etc...
          */
-        /*abstract*/ OnCreate();
+        /*abstract*/
+        OnCreate();
 
         /**
          * Get suggestions for specified text in TextInfo.
@@ -36,7 +35,8 @@ module
          * @param suggestionsLimit the maximum number of suggestions to be returned
          * @return SuggestionsInfo which contains suggestions for textInfo
          */
-        /*abstract*/ OnGetSuggestions(
+        /*abstract*/
+        OnGetSuggestions(
             [in] ITextInfo* textInfo,
             [in] Int32 suggestionsLimit,
             [out] ISuggestionsInfo** result);
@@ -56,7 +56,7 @@ module
             [in] ArrayOf<ITextInfo> textInfos,
             [in] Int32 suggestionsLimit,
             [in] Boolean sequentialWords,
-            [out,callee] ArrayOf<ISuggestionsInfo*>* result);
+            [out, callee] ArrayOf<ISuggestionsInfo*>* result);
 
         /**
          * Get sentence suggestions for specified texts in an array of TextInfo.
@@ -75,7 +75,7 @@ module
         OnGetSentenceSuggestionsMultiple(
             [in] ArrayOf<ITextInfo> textInfos,
             [in] Int32 suggestionsLimit,
-            [out,callee] ArrayOf<ISentenceSuggestionsInfo*>* result);
+            [out, callee] ArrayOf<ISentenceSuggestionsInfo*>* result);
 
         /**
          * Request to abort all tasks executed in SpellChecker.
@@ -106,22 +106,46 @@ module
             [out] IBundle** result);
     }
 
-    interface ISpellCheckerService
-    {
-        /**
-         * Implement to return the implementation of the internal spell checker
-         * service interface. Subclasses should not override.
-         */
-        OnBind(
-            [in] IIntent* intent,
-            [out] IBinder** result);
+    /**
+     * SpellCheckerService provides an abstract base class for a spell checker.
+     * This class combines a service to the system with the spell checker service interface that
+     * spell checker must implement.
+     *
+     * <p>In addition to the normal Service lifecycle methods, this class
+     * introduces a new specific callback that subclasses should override
+     * {@link #createSession()} to provide a spell checker session that is corresponding
+     * to requested language and so on. The spell checker session returned by this method
+     * should extend {@link SpellCheckerService.Session}.
+     * </p>
+     *
+     * <h3>Returning spell check results</h3>
+     *
+     * <p>{@link SpellCheckerService.Session#onGetSuggestions(TextInfo, int)}
+     * should return spell check results.
+     * It receives {@link android.view.textservice.TextInfo} and returns
+     * {@link android.view.textservice.SuggestionsInfo} for the input.
+     * You may want to override
+     * {@link SpellCheckerService.Session#onGetSuggestionsMultiple(TextInfo[], int, boolean)} for
+     * better performance and quality.
+     * </p>
+     *
+     * <p>Please note that {@link SpellCheckerService.Session#getLocale()} does not return a valid
+     * locale before {@link SpellCheckerService.Session#onCreate()} </p>
+     *
+     * @Involve
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface IComponentCallbacks2
+     * interface IService
+     */
+    interface ISpellCheckerService {
+        const String SERVICE_INTERFACE = "android.service.textservice.SpellCheckerService";
 
         /**
          * Factory method to create a spell checker session impl
          * @return SpellCheckerSessionImpl which should be overridden by a concrete implementation.
          */
-        /*abstract*/ CreateSession(
-            [out] ISession** result);
+        CreateSession(
+            [out] ISpellCheckerServiceSession** result);
     }
 
     } // namespace service

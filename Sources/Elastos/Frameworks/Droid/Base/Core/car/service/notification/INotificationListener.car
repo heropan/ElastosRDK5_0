@@ -10,6 +10,7 @@ module
     namespace Notification {
 
     /** @hide */
+    [oneway]
     interface IINotificationListener {
         OnListenerConnected(
             [in] INotificationRankingUpdate* update);

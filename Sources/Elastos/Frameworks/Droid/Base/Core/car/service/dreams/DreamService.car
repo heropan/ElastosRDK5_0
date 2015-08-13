@@ -1,5 +1,8 @@
 module
 {
+    using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IPrintWriter;
+
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
@@ -19,11 +22,107 @@ module
     namespace Dreams {
 
     /**
+     * Extend this class to implement a custom dream (available to the user as a "Daydream").
+     *
+     * <p>Dreams are interactive screensavers launched when a charging device is idle, or docked in a
+     * desk dock. Dreams provide another modality for apps to express themselves, tailored for
+     * an exhibition/lean-back experience.</p>
+     *
+     * <p>The {@code DreamService} lifecycle is as follows:</p>
+     * <ol>
+     *   <li>{@link #onAttachedToWindow}
+     *     <p>Use this for initial setup, such as calling {@link #setContentView setContentView()}.</li>
+     *   <li>{@link #onDreamingStarted}
+     *     <p>Your dream has started, so you should begin animations or other behaviors here.</li>
+     *   <li>{@link #onDreamingStopped}
+     *     <p>Use this to stop the things you started in {@link #onDreamingStarted}.</li>
+     *   <li>{@link #onDetachedFromWindow}
+     *     <p>Use this to dismantle resources (for example, detach from handlers
+     *        and listeners).</li>
+     * </ol>
+     *
+     * <p>In addition, onCreate and onDestroy (from the Service interface) will also be called, but
+     * initialization and teardown should be done by overriding the hooks above.</p>
+     *
+     * <p>To be available to the system, your {@code DreamService} should be declared in the
+     * manifest as follows:</p>
+     * <pre>
+     * &lt;service
+     *     android:name=".MyDream"
+     *     android:exported="true"
+     *     android:icon="@drawable/my_icon"
+     *     android:label="@string/my_dream_label" >
+     *
+     *     &lt;intent-filter>
+     *         &lt;action android:name="android.service.dreams.DreamService" />
+     *         &lt;category android:name="android.intent.category.DEFAULT" />
+     *     &lt;/intent-filter>
+     *
+     *     &lt;!-- Point to additional information for this dream (optional) -->
+     *     &lt;meta-data
+     *         android:name="android.service.dream"
+     *         android:resource="@xml/my_dream" />
+     * &lt;/service>
+     * </pre>
+     *
+     * <p>If specified with the {@code &lt;meta-data&gt;} element,
+     * additional information for the dream is defined using the
+     * {@link android.R.styleable#Dream &lt;dream&gt;} element in a separate XML file.
+     * Currently, the only addtional
+     * information you can provide is for a settings activity that allows the user to configure
+     * the dream behavior. For example:</p>
+     * <p class="code-caption">res/xml/my_dream.xml</p>
+     * <pre>
+     * &lt;dream xmlns:android="http://schemas.android.com/apk/res/android"
+     *     android:settingsActivity="com.example.app/.MyDreamSettingsActivity" />
+     * </pre>
+     * <p>This makes a Settings button available alongside your dream's listing in the
+     * system settings, which when pressed opens the specified activity.</p>
+     *
+     *
+     * <p>To specify your dream layout, call {@link #setContentView}, typically during the
+     * {@link #onAttachedToWindow} callback. For example:</p>
+     * <pre>
+     * public class MyDream extends DreamService {
+     *
+     *     &#64;Override
+     *     public void onAttachedToWindow() {
+     *         super.onAttachedToWindow();
+     *
+     *         // Exit dream upon user touch
+     *         setInteractive(false);
+     *         // Hide system UI
+     *         setFullscreen(true);
+     *         // Set the dream layout
+     *         setContentView(R.layout.dream);
+     *     }
+     * }
+     * </pre>
+     *
+     * <p>When targeting api level 21 and above, you must declare the service in your manifest file
+     * with the {@link android.Manifest.permission#BIND_DREAM_SERVICE} permission. For example:</p>
+     * <pre>
+     * &lt;service
+     *     android:name=".MyDream"
+     *     android:exported="true"
+     *     android:icon="@drawable/my_icon"
+     *     android:label="@string/my_dream_label"
+     *     android:permission="android.permission.BIND_DREAM_SERVICE">
+     *   &lt;intent-filter>
+     *     &lt;action android:name=”android.service.dreams.DreamService” />
+     *     &lt;category android:name=”android.intent.category.DEFAULT” />
+     *   &lt;/intent-filter>
+     * &lt;/service>
+     * </pre>
+     *
      * @Involve
+     * interface IWindowCallback
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface IComponentCallbacks2
      * interface Elastos.Droid.App.IService
      */
-    interface IDreamService // implements Window.Callback
-    {
+    [deprecated, local]
+    interface IDreamService {
 
         /**
          * The name of the dream manager service.
@@ -320,6 +419,184 @@ module
             [out] Boolean* result);
 
         /**
+         * Marks this dream as windowless.  Only available to doze dreams.
+         *
+         * @hide
+         */
+        SetWindowless(
+            [in] Boolean windowless);
+
+        /**
+         * Returns whether or not this dream is windowless.  Only available to doze dreams.
+         *
+         * @hide
+         */
+        IsWindowless(
+            [out] Boolean* ret);
+
+        /**
+         * Returns true if this dream is allowed to doze.
+         * <p>
+         * The value returned by this method is only meaningful when the dream has started.
+         * </p>
+         *
+         * @return True if this dream can doze.
+         * @see #startDozing
+         * @hide For use by system UI components only.
+         */
+        CanDoze(
+            [out] Boolean* ret);
+
+        /**
+         * Starts dozing, entering a deep dreamy sleep.
+         * <p>
+         * Dozing enables the system to conserve power while the user is not actively interacting
+         * with the device.  While dozing, the display will remain on in a low-power state
+         * and will continue to show its previous contents but the application processor and
+         * other system components will be allowed to suspend when possible.
+         * </p><p>
+         * While the application processor is suspended, the dream may stop executing code
+         * for long periods of time.  Prior to being suspended, the dream may schedule periodic
+         * wake-ups to render new content by scheduling an alarm with the {@link AlarmManager}.
+         * The dream may also keep the CPU awake by acquiring a
+         * {@link android.os.PowerManager#PARTIAL_WAKE_LOCK partial wake lock} when necessary.
+         * Note that since the purpose of doze mode is to conserve power (especially when
+         * running on battery), the dream should not wake the CPU very often or keep it
+         * awake for very long.
+         * </p><p>
+         * It is a good idea to call this method some time after the dream's entry animation
+         * has completed and the dream is ready to doze.  It is important to completely
+         * finish all of the work needed before dozing since the application processor may
+         * be suspended at any moment once this method is called unless other wake locks
+         * are being held.
+         * </p><p>
+         * Call {@link #stopDozing} or {@link #finish} to stop dozing.
+         * </p>
+         *
+         * @see #stopDozing
+         * @hide For use by system UI components only.
+         */
+        StartDozing();
+
+        /**
+         * Stops dozing, returns to active dreaming.
+         * <p>
+         * This method reverses the effect of {@link #startDozing}.  From this moment onward,
+         * the application processor will be kept awake as long as the dream is running
+         * or until the dream starts dozing again.
+         * </p>
+         *
+         * @see #startDozing
+         * @hide For use by system UI components only.
+         */
+        StopDozing();
+
+        /**
+         * Returns true if the dream will allow the system to enter a low-power state while
+         * it is running without actually turning off the screen.  Defaults to false,
+         * keeping the application processor awake while the dream is running.
+         *
+         * @return True if the dream is dozing.
+         *
+         * @see #setDozing(boolean)
+         * @hide For use by system UI components only.
+         */
+        IsDozing(
+            [out] Boolean* ret);
+
+        /**
+         * Gets the screen state to use while dozing.
+         *
+         * @return The screen state to use while dozing, such as {@link Display#STATE_ON},
+         * {@link Display#STATE_DOZE}, {@link Display#STATE_DOZE_SUSPEND},
+         * or {@link Display#STATE_OFF}, or {@link Display#STATE_UNKNOWN} for the default
+         * behavior.
+         *
+         * @see #setDozeScreenState
+         * @hide For use by system UI components only.
+         */
+        GetDozeScreenState(
+            [out] Int32* state);
+
+        /**
+         * Sets the screen state to use while dozing.
+         * <p>
+         * The value of this property determines the power state of the primary display
+         * once {@link #startDozing} has been called.  The default value is
+         * {@link Display#STATE_UNKNOWN} which lets the system decide.
+         * The dream may set a different state before starting to doze and may
+         * perform transitions between states while dozing to conserve power and
+         * achieve various effects.
+         * </p><p>
+         * It is recommended that the state be set to {@link Display#STATE_DOZE_SUSPEND}
+         * once the dream has completely finished drawing and before it releases its wakelock
+         * to allow the display hardware to be fully suspended.  While suspended, the
+         * display will preserve its on-screen contents or hand off control to dedicated
+         * doze hardware if the devices supports it.  If the doze suspend state is
+         * used, the dream must make sure to set the mode back
+         * to {@link Display#STATE_DOZE} or {@link Display#STATE_ON} before drawing again
+         * since the display updates may be ignored and not seen by the user otherwise.
+         * </p><p>
+         * The set of available display power states and their behavior while dozing is
+         * hardware dependent and may vary across devices.  The dream may therefore
+         * need to be modified or configured to correctly support the hardware.
+         * </p>
+         *
+         * @param state The screen state to use while dozing, such as {@link Display#STATE_ON},
+         * {@link Display#STATE_DOZE}, {@link Display#STATE_DOZE_SUSPEND},
+         * or {@link Display#STATE_OFF}, or {@link Display#STATE_UNKNOWN} for the default
+         * behavior.
+         *
+         * @hide For use by system UI components only.
+         */
+        SetDozeScreenState(
+            [in] Int32 state);
+
+        /**
+         * Gets the screen brightness to use while dozing.
+         *
+         * @return The screen brightness while dozing as a value between
+         * {@link PowerManager#BRIGHTNESS_OFF} (0) and {@link PowerManager#BRIGHTNESS_ON} (255),
+         * or {@link PowerManager#BRIGHTNESS_DEFAULT} (-1) to ask the system to apply
+         * its default policy based on the screen state.
+         *
+         * @see #setDozeScreenBrightness
+         * @hide For use by system UI components only.
+         */
+        GetDozeScreenBrightness(
+            [out] Int32* ret);
+
+        /**
+         * Sets the screen brightness to use while dozing.
+         * <p>
+         * The value of this property determines the power state of the primary display
+         * once {@link #startDozing} has been called.  The default value is
+         * {@link PowerManager#BRIGHTNESS_DEFAULT} which lets the system decide.
+         * The dream may set a different brightness before starting to doze and may adjust
+         * the brightness while dozing to conserve power and achieve various effects.
+         * </p><p>
+         * Note that dream may specify any brightness in the full 0-255 range, including
+         * values that are less than the minimum value for manual screen brightness
+         * adjustments by the user.  In particular, the value may be set to 0 which may
+         * turn off the backlight entirely while still leaving the screen on although
+         * this behavior is device dependent and not guaranteed.
+         * </p><p>
+         * The available range of display brightness values and their behavior while dozing is
+         * hardware dependent and may vary across devices.  The dream may therefore
+         * need to be modified or configured to correctly support the hardware.
+         * </p>
+         *
+         * @param brightness The screen brightness while dozing as a value between
+         * {@link PowerManager#BRIGHTNESS_OFF} (0) and {@link PowerManager#BRIGHTNESS_ON} (255),
+         * or {@link PowerManager#BRIGHTNESS_DEFAULT} (-1) to ask the system to apply
+         * its default policy based on the screen state.
+         *
+         * @hide For use by system UI components only.
+         */
+        SetDozeScreenBrightness(
+            [in] Int32 brightness);
+
+        /**
          * Called when the dream's window has been created and is visible and animation may now begin.
          */
         OnDreamingStarted();
@@ -331,9 +608,32 @@ module
         OnDreamingStopped();
 
         /**
-         * Stops the dream, detaches from the window, and wakes up.
+         * Called when the dream is being asked to stop itself and wake.
+         * <p>
+         * The default implementation simply calls {@link #finish} which ends the dream
+         * immediately.  Subclasses may override this function to perform a smooth exit
+         * transition then call {@link #finish} afterwards.
+         * </p><p>
+         * Note that the dream will only be given a short period of time (currently about
+         * five seconds) to wake up.  If the dream does not finish itself in a timely manner
+         * then the system will forcibly finish it once the time allowance is up.
+         * </p>
+         */
+        OnWakeUp();
+
+        /**
+         * Stops the dream and detaches from the window.
+         * <p>
+         * When the dream ends, the system will be allowed to go to sleep fully unless there
+         * is a reason for it to be awake such as recent user activity or wake locks being held.
+         * </p>
          */
         Finish();
+
+        DumpOnHandler(
+            [in] IFileDescriptor* fd,
+            [in] IPrintWriter* pw,
+            [in] ArrayOf<String>* args);
     }
 
     } // namespace Dreams

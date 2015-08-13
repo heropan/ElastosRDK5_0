@@ -1,7 +1,6 @@
 
 module
 {
-
     interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
@@ -9,12 +8,17 @@ module
     namespace Service {
     namespace Dreams {
 
+    /**
+     * @hide
+     */
     [oneway]
     interface IIDreamService {
         Attach(
             [in] IBinder* windowToken);
 
         Detach();
+
+        WakeUp();
     }
 
     } // namespace Dreams
