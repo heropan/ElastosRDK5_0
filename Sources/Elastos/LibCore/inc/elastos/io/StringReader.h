@@ -1,6 +1,6 @@
 
-#ifndef __STRINGREADER_H__
-#define __STRINGREADER_H__
+#ifndef __ELASTOS_IO_STRINGREADER_H__
+#define __ELASTOS_IO_STRINGREADER_H__
 
 #include "Reader.h"
 
@@ -167,4 +167,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __STRINGREADER_H__
+#endif // __ELASTOS_IO_STRINGREADER_H__

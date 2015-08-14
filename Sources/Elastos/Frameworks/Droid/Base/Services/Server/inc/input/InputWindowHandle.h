@@ -1,6 +1,6 @@
 
-#ifndef __INPUTWINDOWHANDLE_H__
-#define __INPUTWINDOWHANDLE_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
+#define __ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__
 
 #include "ext/frameworkext.h"
 #include "InputApplicationHandle.h"
@@ -106,4 +106,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INPUTWINDOWHANDLE_H__
+#endif //__ELASTOS_DROID_SERVER_INPUT_INPUTWINDOWHANDLE_H__

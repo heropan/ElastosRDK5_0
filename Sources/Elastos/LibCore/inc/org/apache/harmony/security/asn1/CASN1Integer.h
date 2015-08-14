@@ -1,6 +1,6 @@
 
-#ifndef __CASN1INTEGER_H__
-#define __CASN1INTEGER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGER_H__
 
 #include "_CASN1Integer.h"
 #include <ASN1Primitive.h>
@@ -104,4 +104,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1INTEGER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGER_H__

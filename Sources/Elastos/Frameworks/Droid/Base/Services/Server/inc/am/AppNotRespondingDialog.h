@@ -1,6 +1,6 @@
 
-#ifndef __APPNOTRESPONDINGDIALOG_H__
-#define __APPNOTRESPONDINGDIALOG_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_APPNOTRESPONDINGDIALOG_H__
+#define __ELASTOS_DROID_SERVER_AM_APPNOTRESPONDINGDIALOG_H__
 
 #include "BaseErrorDialog.h"
 #include "ProcessRecord.h"
@@ -67,4 +67,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPNOTRESPONDINGDIALOG_H__
+#endif //__ELASTOS_DROID_SERVER_AM_APPNOTRESPONDINGDIALOG_H__

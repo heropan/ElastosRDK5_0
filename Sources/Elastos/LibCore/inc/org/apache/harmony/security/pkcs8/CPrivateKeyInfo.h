@@ -1,6 +1,6 @@
 
-#ifndef __CPRIVATEKEYINFO_H__
-#define __CPRIVATEKEYINFO_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS8_CPRIVATEKEYINFO_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS8_CPRIVATEKEYINFO_H__
 
 #include "_CPrivateKeyInfo.h"
 
@@ -82,4 +82,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CPRIVATEKEYINFO_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS8_CPRIVATEKEYINFO_H__

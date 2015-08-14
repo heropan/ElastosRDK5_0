@@ -1,6 +1,6 @@
 
-#ifndef __LAUNCHWARNINTWINDOW_H__
-#define __LAUNCHWARNINTWINDOW_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__
+#define __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__
 
 #include "ext/frameworkext.h"
 #include "am/ActivityRecord.h"
@@ -83,4 +83,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __LAUNCHWARNINTWINDOW_H__
+#endif // __ELASTOS_DROID_SERVER_AM_LAUNCHWARNINTWINDOW_H__

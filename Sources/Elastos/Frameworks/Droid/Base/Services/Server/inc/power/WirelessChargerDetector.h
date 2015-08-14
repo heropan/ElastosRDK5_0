@@ -1,6 +1,6 @@
 
-#ifndef __WIRELESSCHARGERDETECTOR_H__
-#define __WIRELESSCHARGERDETECTOR_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__
+#define __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
@@ -199,4 +199,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __WIRELESSCHARGERDETECTOR_H__
+#endif // __ELASTOS_DROID_SERVER_POWER_WIRELESSCHARGERDETECTOR_H__

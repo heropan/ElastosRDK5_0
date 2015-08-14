@@ -1,5 +1,5 @@
-#ifndef __CSTRICTLINEREADER_H__
-#define __CSTRICTLINEREADER_H__
+#ifndef __LIBCORE_IO_CSTRICTLINEREADER_H__
+#define __LIBCORE_IO_CSTRICTLINEREADER_H__
 
 #include "_Libcore_IO_CStrictLineReader.h"
 #include "Object.h"

@@ -1,6 +1,6 @@
 
-#ifndef __SECRETKEYFACTORYSPI_H__
-#define __SECRETKEYFACTORYSPI_H__
+#ifndef __ELASTOSX_CRYPTO_SECRETKEYFACTORYSPI_H__
+#define __ELASTOSX_CRYPTO_SECRETKEYFACTORYSPI_H__
 
 #include <elastos/core/Object.h>
 
@@ -78,4 +78,4 @@ public:
 }
 }
 
-#endif // __SECRETKEYFACTORYSPI_H__
+#endif // __ELASTOSX_CRYPTO_SECRETKEYFACTORYSPI_H__

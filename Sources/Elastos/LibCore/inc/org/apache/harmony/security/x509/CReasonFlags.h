@@ -1,6 +1,6 @@
 
-#ifndef __CREASONFLAGS_H__
-#define __CREASONFLAGS_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CREASONFLAGS_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CREASONFLAGS_H__
 
 #include "_CReasonFlags.h"
 
@@ -30,4 +30,4 @@ private:
 }
 }
 
-#endif // __CREASONFLAGS_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CREASONFLAGS_H__

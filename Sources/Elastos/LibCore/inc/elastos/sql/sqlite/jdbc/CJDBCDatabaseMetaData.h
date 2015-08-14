@@ -1,6 +1,6 @@
 
-#ifndef __CJDBCDATABASEMETADATA_H__
-#define __CJDBCDATABASEMETADATA_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CJDBCDATABASEMETADATA_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CJDBCDATABASEMETADATA_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCDatabaseMetaData.h"
 #include "CJDBCConnection.h"
@@ -674,4 +674,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCDATABASEMETADATA_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CJDBCDATABASEMETADATA_H__

@@ -1,5 +1,5 @@
-#ifndef __DatatypeFactory_H__
-#define __DatatypeFactory_H__
+#ifndef __ELASTOSX_XML_DATATYPE_DATATYPEFACTORY_H__
+#define __ELASTOSX_XML_DATATYPE_DATATYPEFACTORY_H__
 
 #include "Object.h"
 

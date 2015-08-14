@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTINFOHELPER_H__
-#define __CCONTENTINFOHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFOHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFOHELPER_H__
 
 #include "_CContentInfoHelper.h"
 
@@ -43,4 +43,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CCONTENTINFOHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFOHELPER_H__

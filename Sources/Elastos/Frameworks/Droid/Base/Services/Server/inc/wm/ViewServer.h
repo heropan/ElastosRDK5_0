@@ -1,5 +1,5 @@
-#ifndef __VIEWSERVER_H__
-#define __VIEWSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_VIEWSERVER_H__
+#define __ELASTOS_DROID_SERVER_WM_VIEWSERVER_H__
 
 #include "wm/CWindowManagerService.h"
 
@@ -172,4 +172,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__VIEWSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_WM_VIEWSERVER_H__

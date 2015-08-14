@@ -1,6 +1,6 @@
 
-#ifndef __APPERRORDIALOG_H__
-#define __APPERRORDIALOG_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_APPERRORDIALOG_H__
+#define __ELASTOS_DROID_SERVER_AM_APPERRORDIALOG_H__
 
 #include "os/HandlerBase.h"
 #include "am/BaseErrorDialog.h"
@@ -66,4 +66,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPERRORDIALOG_H__
+#endif //__ELASTOS_DROID_SERVER_AM_APPERRORDIALOG_H__

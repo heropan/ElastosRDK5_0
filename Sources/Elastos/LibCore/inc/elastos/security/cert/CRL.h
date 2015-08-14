@@ -1,6 +1,6 @@
 
-#ifndef __CRL_H__
-#define __CRL_H__
+#ifndef __ELASTOS_SECURITY_CERT_CRL_H__
+#define __ELASTOS_SECURITY_CERT_CRL_H__
 
 
 using Elastos::Security::ICertificate;
@@ -57,4 +57,4 @@ private:
 } // end Security
 } // end Elastos
 
-#endif // __CRL_H__
+#endif // __ELASTOS_SECURITY_CERT_CRL_H__

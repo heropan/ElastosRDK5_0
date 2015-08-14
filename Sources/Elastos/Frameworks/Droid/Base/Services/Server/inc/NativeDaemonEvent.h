@@ -1,5 +1,5 @@
-#ifndef __NATIVEDAEMONEVENT_H__
-#define __NATIVEDAEMONEVENT_H__
+#ifndef __ELASTOS_DROID_SERVER_NATIVEDAEMONEVENT_H__
+#define __ELASTOS_DROID_SERVER_NATIVEDAEMONEVENT_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkext.h"
@@ -79,4 +79,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NATIVEDAEMONEVENT_H__
+#endif //__ELASTOS_DROID_SERVER_NATIVEDAEMONEVENT_H__

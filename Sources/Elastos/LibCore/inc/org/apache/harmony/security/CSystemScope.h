@@ -1,6 +1,6 @@
 
-#ifndef __CSYSTEMSCOPE_H__
-#define __CSYSTEMSCOPE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_CSYSTEMSCOPE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_CSYSTEMSCOPE_H__
 
 #include "_CSystemScope.h"
 
@@ -82,4 +82,4 @@ private:
 }
 }
 
-#endif // __CSYSTEMSCOPE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_CSYSTEMSCOPE_H__

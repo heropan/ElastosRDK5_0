@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CPHASER_H__
-#define __ELASTOS_UTILITY_CPHASER_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CPHASER_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CPHASER_H__
 
 #include "_Elastos_Utility_Concurrent_CPhaser.h"
 #include "Object.h"
@@ -376,4 +376,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CPHASER_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CPHASER_H__

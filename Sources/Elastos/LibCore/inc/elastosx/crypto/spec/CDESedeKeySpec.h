@@ -1,6 +1,6 @@
 
-#ifndef __CDESEDEKEYSPEC_H__
-#define __CDESEDEKEYSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CDESEDEKEYSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CDESEDEKEYSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CDESedeKeySpec.h"
 #include <elastos/core/Object.h>
@@ -92,4 +92,4 @@ private:
 }
 }
 
-#endif // __CDESEDEKEYSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CDESEDEKEYSPEC_H__

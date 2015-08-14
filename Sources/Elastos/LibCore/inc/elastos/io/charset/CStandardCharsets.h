@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_CSTANDARDCHARSETS_H__
-#define __ELASTOS_IO_CSTANDARDCHARSETS_H__
+#ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CSTANDARDCHARSETS_H__
+#define __ELASTOS_IO_CHARSET_ELASTOS_IO_CSTANDARDCHARSETS_H__
 
 #include "_Elastos_IO_Charset_CStandardCharsets.h"
 #include "Singleton.h"
@@ -41,4 +41,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__ELASTOS_IO_CSTANDARDCHARSETS_H__
+#endif //__ELASTOS_IO_CHARSET_ELASTOS_IO_CSTANDARDCHARSETS_H__

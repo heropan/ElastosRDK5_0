@@ -1,6 +1,6 @@
 
-#ifndef __MACSPI_H__
-#define __MACSPI_H__
+#ifndef __ELASTOSX_CRYPTO_MACSPI_H__
+#define __ELASTOSX_CRYPTO_MACSPI_H__
 
 #include <elastos/core/Object.h>
 
@@ -119,4 +119,4 @@ protected:
 }
 }
 
-#endif // __MACSPI_H__
+#endif // __ELASTOSX_CRYPTO_MACSPI_H__

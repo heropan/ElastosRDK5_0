@@ -1,6 +1,6 @@
 
-#ifndef __TWILIGHTSERVICE_H__
-#define __TWILIGHTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
@@ -311,4 +311,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TWILIGHTSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_TWILIGHTSERVICE_H__

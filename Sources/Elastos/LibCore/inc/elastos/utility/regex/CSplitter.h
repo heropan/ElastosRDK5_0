@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_SPLITTER_H__
-#define __REGEX_SPLITTER_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_SPLITTER_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_SPLITTER_H__
 
 #include "_Elastos_Utility_Regex_CSplitter.h"
 #include "Singleton.h"

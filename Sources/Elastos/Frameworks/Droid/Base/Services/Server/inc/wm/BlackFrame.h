@@ -1,5 +1,5 @@
-#ifndef __BLACKFRAME_H__
-#define __BLACKFRAME_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_BLACKFRAME_H__
+#define __ELASTOS_DROID_SERVER_WM_BLACKFRAME_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -79,4 +79,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__BLACKFRAME_H__
+#endif //__ELASTOS_DROID_SERVER_WM_BLACKFRAME_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSPIANDPROVIDER_H__
-#define __CSPIANDPROVIDER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSPIANDPROVIDER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSPIANDPROVIDER_H__
 
 #include "_CSpiAndProvider.h"
 
@@ -42,4 +42,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSPIANDPROVIDER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSPIANDPROVIDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __URIPERMISSION_H__
-#define __URIPERMISSION_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_URIPERMISSION_H__
+#define __ELASTOS_DROID_SERVER_AM_URIPERMISSION_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -17,7 +17,6 @@ namespace Am {
 class UriPermissionOwner;
 }}}}
 
-#ifndef HASH_FUNC_FOR_PTR_URIPERMISSIONOWNER
 #define HASH_FUNC_FOR_PTR_URIPERMISSIONOWNER
 DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR(Elastos::Droid::Server::Am::UriPermissionOwner)
 #endif
@@ -63,9 +62,8 @@ public:
 } // namespace Elastos
 
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_URIPERMISSION
 #define HASH_FUNC_FOR_AUTOPTR_URIPERMISSION
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::UriPermission)
 #endif
 
-#endif //__URIPERMISSION_H__
+#endif //__ELASTOS_DROID_SERVER_AM_URIPERMISSION_H__

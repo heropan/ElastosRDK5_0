@@ -1,6 +1,6 @@
 
-#ifndef __CJARUTILS_H__
-#define __CJARUTILS_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_UTILS_CJARUTILS_H__
+#define __ORG_APACHE_HARMONY_SECURITY_UTILS_CJARUTILS_H__
 
 #include "_CJarUtils.h"
 
@@ -28,4 +28,4 @@ private:
 }
 }
 
-#endif // __CJARUTILS_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_UTILS_CJARUTILS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __LANDISPATCHER_H__
-#define __LANDISPATCHER_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_LANDISPATCHER_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_LANDISPATCHER_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
@@ -89,4 +89,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__LANDISPATCHER_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_LANDISPATCHER_H__

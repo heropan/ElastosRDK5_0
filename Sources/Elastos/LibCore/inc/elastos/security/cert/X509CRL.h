@@ -1,6 +1,6 @@
 
-#ifndef __X509CRL_H__
-#define __X509CRL_H__
+#ifndef __ELASTOS_SECURITY_CERT_X509CRL_H__
+#define __ELASTOS_SECURITY_CERT_X509CRL_H__
 
 #include "CRL.h"
 
@@ -87,4 +87,4 @@ protected:
 }
 }
 
-#endif // __X509CRL_H__
+#endif // __ELASTOS_SECURITY_CERT_X509CRL_H__

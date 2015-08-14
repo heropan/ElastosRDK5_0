@@ -1,6 +1,6 @@
 
-#ifndef __ZIGBEEDEVICE_H__
-#define __ZIGBEEDEVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDEVICE_H__
+#define __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDEVICE_H__
 
 #include "ext/frameworkext.h"
 
@@ -92,4 +92,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ZIGBEEDEVICE_H__
+#endif //__ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDEVICE_H__

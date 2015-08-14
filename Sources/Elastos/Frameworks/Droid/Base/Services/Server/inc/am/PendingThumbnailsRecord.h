@@ -1,6 +1,6 @@
 
-#ifndef __PENDINGTHUMBNAILSRECORD_H__
-#define __PENDINGTHUMBNAILSRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_PENDINGTHUMBNAILSRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_PENDINGTHUMBNAILSRECORD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -36,4 +36,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PENDINGTHUMBNAILSRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_PENDINGTHUMBNAILSRECORD_H__

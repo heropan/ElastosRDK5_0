@@ -1,6 +1,6 @@
 
-#ifndef __NATIVEINPUTMANAGER_H__
-#define __NATIVEINPUTMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_NATIVEINPUTMANAGER_H__
+#define __ELASTOS_DROID_SERVER_INPUT_NATIVEINPUTMANAGER_H__
 
 #include "InputApplicationHandle.h"
 #include "InputWindowHandle.h"
@@ -204,4 +204,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NATIVEINPUTMANAGER_H__
+#endif //__ELASTOS_DROID_SERVER_INPUT_NATIVEINPUTMANAGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTINFO_H__
-#define __CCONTENTINFO_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFO_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFO_H__
 
 #include "_CContentInfo.h"
 
@@ -93,4 +93,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CCONTENTINFO_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFO_H__

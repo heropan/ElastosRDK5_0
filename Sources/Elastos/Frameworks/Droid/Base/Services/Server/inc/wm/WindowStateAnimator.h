@@ -1,5 +1,5 @@
-#ifndef __WINDOWSTATEANIMATOR_H__
-#define __WINDOWSTATEANIMATOR_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
+#define __ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__
 
 #include "ext/frameworkext.h"
 #include "wm/CWindowManagerService.h"
@@ -277,4 +277,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__WINDOWSTATEANIMATOR_H__
+#endif //__ELASTOS_DROID_SERVER_WM_WINDOWSTATEANIMATOR_H__

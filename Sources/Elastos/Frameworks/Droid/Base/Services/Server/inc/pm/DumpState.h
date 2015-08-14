@@ -1,6 +1,6 @@
 
-#ifndef __DUMPSTATE_H__
-#define __DUMPSTATE_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_DUMPSTATE_H__
+#define __ELASTOS_DROID_SERVER_PM_DUMPSTATE_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "pm/SharedUserSetting.h"
@@ -79,4 +79,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DUMPSTATE_H__
+#endif //__ELASTOS_DROID_SERVER_PM_DUMPSTATE_H__

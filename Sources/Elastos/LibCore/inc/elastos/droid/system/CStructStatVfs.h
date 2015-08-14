@@ -1,6 +1,6 @@
 
-#ifndef __CStructStatVfs_H__
-#define __CStructStatVfs_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTSTATVFS_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTSTATVFS_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructStatVfs.h"
@@ -110,4 +110,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CStructStatVfs_H__
+#endif // __ELASTOS_DROID_SYSTEM_CSTRUCTSTATVFS_H__

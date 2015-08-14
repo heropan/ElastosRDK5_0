@@ -1,6 +1,6 @@
 
-#ifndef __CASN1INTEGERHELPER_H__
-#define __CASN1INTEGERHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGERHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGERHELPER_H__
 
 #include "_CASN1IntegerHelper.h"
 
@@ -40,4 +40,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1INTEGERHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1INTEGERHELPER_H__

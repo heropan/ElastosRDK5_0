@@ -1,6 +1,6 @@
 
-#ifndef __PROCESSLIST_H__
-#define __PROCESSLIST_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_PROCESSLIST_H__
+#define __ELASTOS_DROID_SERVER_WM_PROCESSLIST_H__
 
 #include <elastos.h>
 
@@ -169,4 +169,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PROCESSLIST_H__
+#endif //__ELASTOS_DROID_SERVER_WM_PROCESSLIST_H__

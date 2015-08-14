@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CDELAYQUEUE_H__
-#define __ELASTOS_UTILITY_CDELAYQUEUE_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CDELAYQUEUE_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CDELAYQUEUE_H__
 
 #include "_Elastos_Utility_Concurrent_CDelayQueue.h"
 #include "AbstractQueue.h"
@@ -182,4 +182,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CDELAYQUEUE_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CDELAYQUEUE_H__

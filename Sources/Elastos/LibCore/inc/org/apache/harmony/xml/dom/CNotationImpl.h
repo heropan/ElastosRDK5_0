@@ -1,6 +1,6 @@
 
-#ifndef __CNOTATIONIMPL_H__
-#define __CNOTATIONIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CNOTATIONIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CNOTATIONIMPL_H__
 
 #include "_CNotationImpl.h"
 
@@ -164,4 +164,4 @@ private:
 }
 }
 
-#endif // __CNOTATIONIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CNOTATIONIMPL_H__

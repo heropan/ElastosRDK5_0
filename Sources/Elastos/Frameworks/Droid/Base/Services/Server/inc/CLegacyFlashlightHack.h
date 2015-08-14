@@ -1,5 +1,5 @@
-#ifndef __CLEGACYFLASHLIGHTHACK_H__
-#define __CLEGACYFLASHLIGHTHACK_H__
+#ifndef __ELASTOS_DROID_SERVER_CLEGACYFLASHLIGHTHACK_H__
+#define __ELASTOS_DROID_SERVER_CLEGACYFLASHLIGHTHACK_H__
 
 #include "ext/frameworkext.h"
 #include "_CLegacyFlashlightHack.h"
@@ -34,4 +34,4 @@ private:
 }
 }
 
-#endif //__CLEGACYFLASHLIGHTHACK_H__
+#endif //__ELASTOS_DROID_SERVER_CLEGACYFLASHLIGHTHACK_H__

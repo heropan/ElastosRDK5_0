@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_LINENUMBER_INPUTSTREAM_H__
-#define __ELASTOS_LINENUMBER_INPUTSTREAM_H__
+#ifndef __ELASTOS_IO_ELASTOS_LINENUMBER_INPUTSTREAM_H__
+#define __ELASTOS_IO_ELASTOS_LINENUMBER_INPUTSTREAM_H__
 
 #include "FilterInputStream.h"
 
@@ -173,4 +173,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__ELASTOS_LINENUMBER_INPUTSTREAM_H__
+#endif //__ELASTOS_IO_ELASTOS_LINENUMBER_INPUTSTREAM_H__

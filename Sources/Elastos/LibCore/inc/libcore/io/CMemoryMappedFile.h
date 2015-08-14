@@ -1,5 +1,5 @@
-#ifndef __CMEMORYMAPPEDFILE_H__
-#define __CMEMORYMAPPEDFILE_H__
+#ifndef __LIBCORE_IO_CMEMORYMAPPEDFILE_H__
+#define __LIBCORE_IO_CMEMORYMAPPEDFILE_H__
 
 #include "_Libcore_IO_CMemoryMappedFile.h"
 #include "Object.h"

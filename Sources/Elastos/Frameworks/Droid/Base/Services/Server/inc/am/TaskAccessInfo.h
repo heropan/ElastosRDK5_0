@@ -1,6 +1,6 @@
 
-#ifndef __TASKACCESSINFO_H__
-#define __TASKACCESSINFO_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_TASKACCESSINFO_H__
+#define __ELASTOS_DROID_SERVER_AM_TASKACCESSINFO_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -73,4 +73,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TASKACCESSINFO_H__
+#endif //__ELASTOS_DROID_SERVER_AM_TASKACCESSINFO_H__

@@ -1,6 +1,6 @@
 
-#ifndef __APPERRORRESULT_H__
-#define __APPERRORRESULT_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__
+#define __ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPERRORRESULT_H__
+#endif //__ELASTOS_DROID_SERVER_AM_APPERRORRESULT_H__

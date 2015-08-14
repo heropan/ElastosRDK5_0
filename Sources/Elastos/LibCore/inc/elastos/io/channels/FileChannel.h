@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_CFILECHANNEL_H__
-#define __ELASTOS_IO_CFILECHANNEL_H__
+#ifndef __ELASTOS_IO_CHANNELS_ELASTOS_IO_CFILECHANNEL_H__
+#define __ELASTOS_IO_CHANNELS_ELASTOS_IO_CFILECHANNEL_H__
 
 #include "AbstractInterruptibleChannel.h"
 
@@ -660,4 +660,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //end of #ifndef __ELASTOS_IO_CFILECHANNEL_H__
+#endif //end of #ifndef __ELASTOS_IO_CHANNELS_ELASTOS_IO_CFILECHANNEL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __COBJECTIDENTIFIER_H__
-#define __COBJECTIDENTIFIER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_COBJECTIDENTIFIER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_COBJECTIDENTIFIER_H__
 
 #include "_CObjectIdentifier.h"
 
@@ -66,4 +66,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __COBJECTIDENTIFIER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_COBJECTIDENTIFIER_H__

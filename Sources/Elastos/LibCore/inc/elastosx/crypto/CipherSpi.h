@@ -1,6 +1,6 @@
 
-#ifndef __CIPHERSPI_H__
-#define __CIPHERSPI_H__
+#ifndef __ELASTOSX_CRYPTO_CIPHERSPI_H__
+#define __ELASTOSX_CRYPTO_CIPHERSPI_H__
 
 #include <elastos/core/Object.h>
 
@@ -501,4 +501,4 @@ public:
 }
 }
 
-#endif // __CIPHERSPI_H__
+#endif // __ELASTOSX_CRYPTO_CIPHERSPI_H__

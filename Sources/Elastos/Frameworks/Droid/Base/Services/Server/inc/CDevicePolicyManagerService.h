@@ -1,6 +1,6 @@
 
-#ifndef __CDEVICEPOLICYMANAGERSERVICE_H__
-#define __CDEVICEPOLICYMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CDEVICEPOLICYMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CDEVICEPOLICYMANAGERSERVICE_H__
 
 #include "_CDevicePolicyManagerService.h"
 #include "ext/frameworkext.h"
@@ -770,4 +770,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CDEVICEPOLICYMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CDEVICEPOLICYMANAGERSERVICE_H__

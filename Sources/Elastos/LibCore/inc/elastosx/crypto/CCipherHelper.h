@@ -1,6 +1,6 @@
 
-#ifndef __CCIPHERHELPER_H__
-#define __CCIPHERHELPER_H__
+#ifndef __ELASTOSX_CRYPTO_CCIPHERHELPER_H__
+#define __ELASTOSX_CRYPTO_CCIPHERHELPER_H__
 
 #include "_Elastosx_Crypto_CCipherHelper.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
 #include <elastos/core/Singleton.h>             // include 单例基类
@@ -131,4 +131,4 @@ public:
 }
 }
 
-#endif // __CCIPHERHELPER_H__
+#endif // __ELASTOSX_CRYPTO_CCIPHERHELPER_H__

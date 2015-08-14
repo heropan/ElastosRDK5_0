@@ -1,6 +1,6 @@
 
-#ifndef __LIBCORE_NET_URI_CURLUTILSHELPER_H__
-#define __LIBCORE_NET_URI_CURLUTILSHELPER_H__
+#ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_CURLUTILSHELPER_H__
+#define __LIBCORE_NET_URL_LIBCORE_NET_URI_CURLUTILSHELPER_H__
 
 #include "_Libcore_Net_Url_CUrlUtilsHelper.h"
 #include "Singleton.h"
@@ -50,4 +50,4 @@ public:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__LIBCORE_NET_URI_CURLUTILSHELPER_H__
+#endif //__LIBCORE_NET_URL_LIBCORE_NET_URI_CURLUTILSHELPER_H__

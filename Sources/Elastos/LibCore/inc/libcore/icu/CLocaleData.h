@@ -1,6 +1,6 @@
 
-#ifndef __ICU_CLOCALEDATA_H__
-#define __ICU_CLOCALEDATA_H__
+#ifndef __LIBCORE_ICU_ICU_CLOCALEDATA_H__
+#define __LIBCORE_ICU_ICU_CLOCALEDATA_H__
 
 #include "_Libcore_ICU_CLocaleData.h"
 #include "LocaleData.h"
@@ -20,5 +20,5 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CLOCALEDATA_H__
+#endif //__LIBCORE_ICU_ICU_CLOCALEDATA_H__
 

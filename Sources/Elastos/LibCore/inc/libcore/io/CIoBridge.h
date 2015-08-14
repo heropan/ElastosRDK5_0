@@ -1,6 +1,6 @@
 
-#ifndef __CIOBRIDGE_H__
-#define __CIOBRIDGE_H__
+#ifndef __LIBCORE_IO_CIOBRIDGE_H__
+#define __LIBCORE_IO_CIOBRIDGE_H__
 
 #include "Singleton.h"
 #include "_Libcore_IO_CIoBridge.h"
@@ -279,4 +279,4 @@ private:
 } // namespace IO
 } // namespace Libcore
 
-#endif // __CIOBRIDGE_H__
+#endif // __LIBCORE_IO_CIOBRIDGE_H__

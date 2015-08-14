@@ -1,6 +1,6 @@
 
-#ifndef __CKEYGENERATOR_H__
-#define __CKEYGENERATOR_H__
+#ifndef __ELASTOSX_CRYPTO_CKEYGENERATOR_H__
+#define __ELASTOSX_CRYPTO_CKEYGENERATOR_H__
 
 #include "_Elastosx_Crypto_CKeyGenerator.h"
 #include <elastos/core/Object.h>
@@ -213,4 +213,4 @@ private:
 }
 }
 
-#endif // __CKEYGENERATOR_H__
+#endif // __ELASTOSX_CRYPTO_CKEYGENERATOR_H__

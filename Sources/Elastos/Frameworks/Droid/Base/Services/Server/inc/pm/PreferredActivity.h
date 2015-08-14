@@ -1,5 +1,5 @@
-#ifndef __PREFERREDACTIVITY_H__
-#define __PREFERREDACTIVITY_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_PREFERREDACTIVITY_H__
+#define __ELASTOS_DROID_SERVER_PM_PREFERREDACTIVITY_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "content/IntentFilter.h"
@@ -234,4 +234,4 @@ struct Conversion<Elastos::Droid::Server::Pm::PreferredActivity*, IInterface*>
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif //__PREFERREDACTIVITY_H__
+#endif //__ELASTOS_DROID_SERVER_PM_PREFERREDACTIVITY_H__

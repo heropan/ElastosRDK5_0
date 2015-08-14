@@ -1,5 +1,5 @@
-#ifndef __CDROPBOX_H__
-#define __CDROPBOX_H__
+#ifndef __LIBCORE_IO_CDROPBOX_H__
+#define __LIBCORE_IO_CDROPBOX_H__
 
 #include "core/Object.h"
 #include "Singleton.h"

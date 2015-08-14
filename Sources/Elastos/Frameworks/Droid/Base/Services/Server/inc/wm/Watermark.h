@@ -1,5 +1,5 @@
-#ifndef __WATERMARK_H__
-#define __WATERMARK_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_WATERMARK_H__
+#define __ELASTOS_DROID_SERVER_WM_WATERMARK_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -55,4 +55,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__WATERMARK_H__
+#endif //__ELASTOS_DROID_SERVER_WM_WATERMARK_H__

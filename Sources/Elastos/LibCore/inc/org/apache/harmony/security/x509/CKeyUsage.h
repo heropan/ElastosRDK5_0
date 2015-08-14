@@ -1,6 +1,6 @@
 
-#ifndef __CKEYUSAGE_H__
-#define __CKEYUSAGE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CKEYUSAGE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CKEYUSAGE_H__
 
 #include "_CKeyUsage.h"
 
@@ -39,4 +39,4 @@ private:
 }
 }
 
-#endif // __CKEYUSAGE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CKEYUSAGE_H__

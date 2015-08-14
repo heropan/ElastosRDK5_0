@@ -1,6 +1,6 @@
 
-#ifndef __CLOCATIONMANAGERSERVICE_H__
-#define __CLOCATIONMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CLocationManagerService.h"
@@ -660,4 +660,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CLOCATIONMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__

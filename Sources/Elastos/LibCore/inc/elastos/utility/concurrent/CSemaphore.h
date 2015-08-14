@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CSEMAPHORE_H__
-#define __ELASTOS_UTILITY_CSEMAPHORE_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CSEMAPHORE_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CSEMAPHORE_H__
 
 #include "_Elastos_Utility_Concurrent_CSemaphore.h"
 #include "AbstractQueuedSynchronizer.h"
@@ -173,4 +173,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CSEMAPHORE_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CSEMAPHORE_H__

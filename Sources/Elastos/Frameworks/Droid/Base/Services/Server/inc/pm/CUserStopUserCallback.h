@@ -1,6 +1,6 @@
 
-#ifndef __CUSERSTOPUSERCALLBACK_H__
-#define __CUSERSTOPUSERCALLBACK_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__
+#define __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__
 
 #include "_CUserStopUserCallback.h"
 #include "pm/CUserManagerService.h"
@@ -33,4 +33,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSERSTOPUSERCALLBACK_H__
+#endif // __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CMAC_H__
-#define __CMAC_H__
+#ifndef __ELASTOSX_CRYPTO_CMAC_H__
+#define __ELASTOSX_CRYPTO_CMAC_H__
 
 #include "_Elastosx_Crypto_CMac.h"
 #include <elastos/core/Object.h>
@@ -356,4 +356,4 @@ private:
 }
 }
 
-#endif // __CMAC_H__
+#endif // __ELASTOSX_CRYPTO_CMAC_H__

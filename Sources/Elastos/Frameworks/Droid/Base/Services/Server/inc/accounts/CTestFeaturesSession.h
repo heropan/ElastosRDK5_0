@@ -1,6 +1,6 @@
 
-#ifndef __CTESTFEATURESSESSION_H__
-#define __CTESTFEATURESSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CTESTFEATURESSESSION_H__
+#define __ELASTOS_DROID_SERVER_ACCOUNTS_CTESTFEATURESSESSION_H__
 
 #include "_CTestFeaturesSession.h"
 #include "accounts/AccountManagerServiceSession.h"
@@ -65,4 +65,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTESTFEATURESSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_ACCOUNTS_CTESTFEATURESSESSION_H__

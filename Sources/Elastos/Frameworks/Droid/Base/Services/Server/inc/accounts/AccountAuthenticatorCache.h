@@ -1,5 +1,5 @@
-#ifndef __ACCOUNTAUTHENTICATORCACHE_H__
-#define __ACCOUNTAUTHENTICATORCACHE_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_ACCOUNTAUTHENTICATORCACHE_H__
+#define __ELASTOS_DROID_SERVER_ACCOUNTS_ACCOUNTAUTHENTICATORCACHE_H__
 
 #include "content/pm/RegisteredServicesCache.h"
 #include "accounts/IAccountAuthenticatorCache.h"

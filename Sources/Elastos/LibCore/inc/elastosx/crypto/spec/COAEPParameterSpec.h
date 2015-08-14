@@ -1,6 +1,6 @@
 
-#ifndef __COAEPPARAMETERSPEC_H__
-#define __COAEPPARAMETERSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_COAEPPARAMETERSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_COAEPPARAMETERSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_COAEPParameterSpec.h"
 #include <elastos/core/Object.h>
@@ -96,4 +96,4 @@ private:
 }
 }
 
-#endif // __COAEPPARAMETERSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_COAEPPARAMETERSPEC_H__

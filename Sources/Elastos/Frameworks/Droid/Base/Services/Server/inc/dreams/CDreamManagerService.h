@@ -1,6 +1,6 @@
 
-#ifndef __CDREAMMANAGERSERVICE_H__
-#define __CDREAMMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__
 
 #include "_CDreamManagerService.h"
 #include "ext/frameworkext.h"
@@ -218,4 +218,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDREAMMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__

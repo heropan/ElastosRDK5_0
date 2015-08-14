@@ -1,6 +1,6 @@
 
-#ifndef __LOCALDISPLAYADAPTER_H__
-#define __LOCALDISPLAYADAPTER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_LOCALDISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_LOCALDISPLAYADAPTER_H__
 
 #include "ext/frameworkdef.h"
 #include "display/DisplayAdapter.h"
@@ -114,4 +114,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__LOCALDISPLAYADAPTER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_LOCALDISPLAYADAPTER_H__

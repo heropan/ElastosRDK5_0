@@ -1,6 +1,6 @@
 
-#ifndef __PROCESSRECORD_H__
-#define __PROCESSRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -205,4 +205,4 @@ public:
 } // namespace Elastos
 
 
-#endif //__PROCESSRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_PROCESSRECORD_H__

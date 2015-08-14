@@ -1,5 +1,5 @@
-#ifndef __DIMANIMATOR_H__
-#define __DIMANIMATOR_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_DIMANIMATOR_H__
+#define __ELASTOS_DROID_SERVER_WM_DIMANIMATOR_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -90,4 +90,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__DIMANIMATOR_H__
+#endif //__ELASTOS_DROID_SERVER_WM_DIMANIMATOR_H__

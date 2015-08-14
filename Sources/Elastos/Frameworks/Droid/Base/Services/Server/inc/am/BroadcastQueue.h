@@ -1,6 +1,6 @@
 
-#ifndef __BROADCASTQUEUE_H__
-#define __BROADCASTQUEUE_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
+#define __ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__
 
 #include "am/CActivityManagerService.h"
 #include <elastos/utility/etl/List.h>
@@ -251,4 +251,4 @@ public:
 } // namespace Elastos
 
 
-#endif //__BROADCASTQUEUE_H__
+#endif //__ELASTOS_DROID_SERVER_AM_BROADCASTQUEUE_H__

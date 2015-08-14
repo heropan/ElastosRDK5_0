@@ -1,6 +1,6 @@
 
-#ifndef __APPBINDRECORD_H__
-#define __APPBINDRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_APPBINDRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_APPBINDRECORD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -47,4 +47,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPBINDRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_APPBINDRECORD_H__

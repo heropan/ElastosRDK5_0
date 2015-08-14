@@ -1,6 +1,6 @@
 
-#ifndef __CBATTERYSTATSSERVICE_H__
-#define __CBATTERYSTATSSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CBATTERYSTATSSERVICE_H__
+#define __ELASTOS_DROID_SERVER_AM_CBATTERYSTATSSERVICE_H__
 
 #include "_CBatteryStatsService.h"
 #include "os/BatteryStatsImpl.h"
@@ -251,4 +251,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBATTERYSTATSSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CBATTERYSTATSSERVICE_H__

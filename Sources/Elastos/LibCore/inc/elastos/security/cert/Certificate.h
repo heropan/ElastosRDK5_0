@@ -1,6 +1,6 @@
 
-#ifndef __CERTIFICATE_H__
-#define __CERTIFICATE_H__
+#ifndef __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
+#define __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
 
 
 
@@ -201,4 +201,4 @@ private:
 } // end Security
 } // end Elastos
 
-#endif // __CERTIFICATE_H__
+#endif // __ELASTOS_SECURITY_CERT_CERTIFICATE_H__

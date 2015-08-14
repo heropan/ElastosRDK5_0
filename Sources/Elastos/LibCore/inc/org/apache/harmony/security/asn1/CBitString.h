@@ -1,6 +1,6 @@
 
-#ifndef __CBITSTRING_H__
-#define __CBITSTRING_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBITSTRING_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBITSTRING_H__
 
 #include "_CBitString.h"
 
@@ -64,4 +64,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CBITSTRING_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CBITSTRING_H__

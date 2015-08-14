@@ -1,6 +1,6 @@
 
-#ifndef __CARRAYHELPER_H__
-#define __CARRAYHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_UTILS_CARRAYHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_UTILS_CARRAYHELPER_H__
 
 #include "_CArrayHelper.h"
 
@@ -32,4 +32,4 @@ private:
 }
 }
 
-#endif // __CARRAYHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_UTILS_CARRAYHELPER_H__

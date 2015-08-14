@@ -1,6 +1,6 @@
 
-#ifndef __CBITSET_H__
-#define __CBITSET_H__
+#ifndef __ELASTOS_UTILITY_CBITSET_H__
+#define __ELASTOS_UTILITY_CBITSET_H__
 
 #include "_Elastos_Utility_CBitSet.h"
 #include "Object.h"
@@ -373,4 +373,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CBITSET_H__
+#endif //__ELASTOS_UTILITY_CBITSET_H__

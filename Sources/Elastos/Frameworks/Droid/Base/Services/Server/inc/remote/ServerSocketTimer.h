@@ -1,6 +1,6 @@
 
-#ifndef __SERVERSOCKETTIMER_H__
-#define __SERVERSOCKETTIMER_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_SERVERSOCKETTIMER_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_SERVERSOCKETTIMER_H__
 
 #include "os/HandlerThread.h"
 #include "os/HandlerBase.h"
@@ -131,4 +131,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__SERVERSOCKETTIMER_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_SERVERSOCKETTIMER_H__

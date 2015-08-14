@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKIDENTITYSET_H__
-#define __NETWORKIDENTITYSET_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_NETWORKIDENTITYSET_H__
+#define __ELASTOS_DROID_SERVER_NET_NETWORKIDENTITYSET_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -52,4 +52,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __NETWORKIDENTITYSET_H__
+#endif // __ELASTOS_DROID_SERVER_NET_NETWORKIDENTITYSET_H__

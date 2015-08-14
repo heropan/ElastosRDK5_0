@@ -1,6 +1,6 @@
 
-#ifndef __CUSAGESTATSSERVICE_H__
-#define __CUSAGESTATSSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CUSAGESTATSSERVICE_H__
+#define __ELASTOS_DROID_SERVER_AM_CUSAGESTATSSERVICE_H__
 
 #include "_CUsageStatsService.h"
 #include "content/PackageMonitor.h"
@@ -292,4 +292,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUSAGESTATSSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CUSAGESTATSSERVICE_H__

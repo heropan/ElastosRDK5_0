@@ -1,6 +1,6 @@
 
-#ifndef __GPSLOCATIONPROVIDER_H__
-#define __GPSLOCATIONPROVIDER_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_GPSLOCATIONPROVIDER_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_GPSLOCATIONPROVIDER_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -723,4 +723,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GPSLOCATIONPROVIDER_H__
+#endif //__ELASTOS_DROID_SERVER_LOCATION_GPSLOCATIONPROVIDER_H__

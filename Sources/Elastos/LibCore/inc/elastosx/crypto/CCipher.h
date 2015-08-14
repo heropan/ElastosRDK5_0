@@ -1,6 +1,6 @@
 
-#ifndef __CCIPHER_H__
-#define __CCIPHER_H__
+#ifndef __ELASTOSX_CRYPTO_CCIPHER_H__
+#define __ELASTOSX_CRYPTO_CCIPHER_H__
 
 #include "_Elastosx_Crypto_CCipher.h"
 #include "Cipher.h"
@@ -18,4 +18,4 @@ public:
 }
 }
 
-#endif // __CCIPHER_H__
+#endif // __ELASTOSX_CRYPTO_CCIPHER_H__

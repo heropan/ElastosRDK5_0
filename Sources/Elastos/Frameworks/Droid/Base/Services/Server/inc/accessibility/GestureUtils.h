@@ -1,5 +1,5 @@
-#ifndef __GESTUREUTILS_H__
-#define __GESTUREUTILS_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_GESTUREUTILS_H__
+#define __ELASTOS_DROID_SERVER_ACCESSIBILITY_GESTUREUTILS_H__
 
 #include "ext/frameworkext.h"
 
@@ -76,4 +76,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__GESTUREUTILS_H__
+#endif //__ELASTOS_DROID_SERVER_ACCESSIBILITY_GESTUREUTILS_H__

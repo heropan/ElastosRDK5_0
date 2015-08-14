@@ -1,6 +1,6 @@
 
-#ifndef __ICU_ICUUTIL_H__
-#define __ICU_ICUUTIL_H__
+#ifndef __LIBCORE_ICU_ICU_ICUUTIL_H__
+#define __LIBCORE_ICU_ICU_ICUUTIL_H__
 
 #include "LocaleData.h"
 
@@ -264,4 +264,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_ICUUTIL_H__
+#endif //__LIBCORE_ICU_ICU_ICUUTIL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PACKAGEMANAGERBACKUPAGENT_H__
-#define __PACKAGEMANAGERBACKUPAGENT_H__
+#ifndef __ELASTOS_DROID_SERVER_PACKAGEMANAGERBACKUPAGENT_H__
+#define __ELASTOS_DROID_SERVER_PACKAGEMANAGERBACKUPAGENT_H__
 
 #include "ext/frameworkext.h"
 #include "app/backup/BackupAgent.h"

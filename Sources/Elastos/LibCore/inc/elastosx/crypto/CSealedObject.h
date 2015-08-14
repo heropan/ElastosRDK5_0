@@ -1,6 +1,6 @@
 
-#ifndef __CSEALEDOBJECT_H__
-#define __CSEALEDOBJECT_H__
+#ifndef __ELASTOSX_CRYPTO_CSEALEDOBJECT_H__
+#define __ELASTOSX_CRYPTO_CSEALEDOBJECT_H__
 
 #include "_Elastosx_Crypto_CSealedObject.h"
 #include <elastos/core/Object.h>
@@ -165,4 +165,4 @@ private:
 }
 }
 
-#endif // __CSEALEDOBJECT_H__
+#endif // __ELASTOSX_CRYPTO_CSEALEDOBJECT_H__

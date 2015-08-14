@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKPOLICYMANAGERSERVICE_H__
-#define __CNETWORKPOLICYMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CNetworkPolicyManagerService.h"
@@ -802,4 +802,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNETWORKPOLICYMANAGERSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__

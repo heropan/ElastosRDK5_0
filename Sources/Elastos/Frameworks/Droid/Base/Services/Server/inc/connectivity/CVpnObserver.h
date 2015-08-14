@@ -1,6 +1,6 @@
 
-#ifndef __CVPNOBSERVER_H__
-#define __CVPNOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CONNECTIVITY_CVPNOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_CONNECTIVITY_CVPNOBSERVER_H__
 
 #include "_CVpnObserver.h"
 
@@ -64,4 +64,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CVPNOBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_CONNECTIVITY_CVPNOBSERVER_H__

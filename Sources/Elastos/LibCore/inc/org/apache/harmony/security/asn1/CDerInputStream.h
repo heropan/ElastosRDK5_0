@@ -1,6 +1,6 @@
 
-#ifndef __CDERINPUTSTREAM_H__
-#define __CDERINPUTSTREAM_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CDERINPUTSTREAM_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CDERINPUTSTREAM_H__
 
 #include "_CDerInputStream.h"
 #include <BerInputStream.h>
@@ -137,4 +137,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CDERINPUTSTREAM_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CDERINPUTSTREAM_H__

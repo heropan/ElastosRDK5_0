@@ -1,6 +1,6 @@
 
-#ifndef __GPSXTRADOWNLOADER_H__
-#define __GPSXTRADOWNLOADER_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_GPSXTRADOWNLOADER_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_GPSXTRADOWNLOADER_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -56,4 +56,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GPSXTRADOWNLOADER_H__
+#endif //__ELASTOS_DROID_SERVER_LOCATION_GPSXTRADOWNLOADER_H__

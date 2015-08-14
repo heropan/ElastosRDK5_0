@@ -1,6 +1,6 @@
 
-#ifndef __WIREDACCESSORYMANAGER_H__
-#define __WIREDACCESSORYMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_WIREDACCESSORYMANAGER_H__
+#define __ELASTOS_DROID_SERVER_WIREDACCESSORYMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "input/CInputManagerService.h"
@@ -202,4 +202,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIREDACCESSORYMANAGER_H__
+#endif //__ELASTOS_DROID_SERVER_WIREDACCESSORYMANAGER_H__

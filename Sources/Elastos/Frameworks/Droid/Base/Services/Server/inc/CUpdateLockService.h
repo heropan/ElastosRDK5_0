@@ -1,5 +1,5 @@
-#ifndef __CUPDATELOCKSERVICE_H__
-#define __CUPDATELOCKSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CUPDATELOCKSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CUPDATELOCKSERVICE_H__
 
 #include "_CUpdateLockService.h"
 #include "os/TokenWatcher.h"
@@ -81,4 +81,4 @@ protected:
 }//Droid
 }//Elastos
 
-#endif //__CUPDATELOCKSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CUPDATELOCKSERVICE_H__

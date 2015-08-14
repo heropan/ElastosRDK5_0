@@ -1,5 +1,5 @@
-#ifndef __CCLIPBOARDSERVICE_H__
-#define __CCLIPBOARDSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CCLIPBOARDSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CCLIPBOARDSERVICE_H__
 
 #include "_CClipboardService.h"
 #include "ext/frameworkext.h"
@@ -153,4 +153,4 @@ private:
 }//namesapce Droid
 }//namespace Elastos
 
-#endif //__CCLIPBOARDSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CCLIPBOARDSERVICE_H__

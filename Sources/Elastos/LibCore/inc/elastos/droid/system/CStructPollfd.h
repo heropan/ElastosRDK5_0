@@ -1,6 +1,6 @@
 
-#ifndef __CSTRUCTPOLLFD_H__
-#define __CSTRUCTPOLLFD_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTPOLLFD_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTPOLLFD_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructPollfd.h"
@@ -84,4 +84,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRUCTPOLLFD_H__
+#endif //__ELASTOS_DROID_SYSTEM_CSTRUCTPOLLFD_H__

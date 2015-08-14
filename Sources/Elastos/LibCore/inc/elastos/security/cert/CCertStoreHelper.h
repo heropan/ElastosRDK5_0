@@ -1,6 +1,6 @@
 
-#ifndef __CCERTSTOREHELPER_H__
-#define __CCERTSTOREHELPER_H__
+#ifndef __ELASTOS_SECURITY_CERT_CCERTSTOREHELPER_H__
+#define __ELASTOS_SECURITY_CERT_CCERTSTOREHELPER_H__
 
 #include "_CCertStoreHelper.h"
 
@@ -41,4 +41,4 @@ private:
 }
 }
 
-#endif // __CCERTSTOREHELPER_H__
+#endif // __ELASTOS_SECURITY_CERT_CCERTSTOREHELPER_H__

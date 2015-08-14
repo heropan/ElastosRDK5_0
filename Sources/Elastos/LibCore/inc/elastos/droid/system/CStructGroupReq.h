@@ -1,6 +1,6 @@
 
-#ifndef __CSTRUCTGROUPREQ_H__
-#define __CSTRUCTGROUPREQ_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPREQ_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPREQ_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructGroupReq.h"
@@ -45,4 +45,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSTRUCTGROUPREQ_H__
+#endif // __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPREQ_H__

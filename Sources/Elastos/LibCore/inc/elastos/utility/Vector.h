@@ -1,4 +1,4 @@
-#ifndef __UTILITYVector_H__
+#ifndef __ELASTOS_UTILITY_UTILITYVECTOR_H__
 #define __ELASTOS_UTILITY_Vector_H__
 
 #include "AbstractList.h"

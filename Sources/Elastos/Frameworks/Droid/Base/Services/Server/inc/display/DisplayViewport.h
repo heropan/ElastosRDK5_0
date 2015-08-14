@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAYVIEWPORT_H__
-#define __DISPLAYVIEWPORT_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYVIEWPORT_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYVIEWPORT_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkext.h"
@@ -105,4 +105,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DISPLAYVIEWPORT_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_DISPLAYVIEWPORT_H__

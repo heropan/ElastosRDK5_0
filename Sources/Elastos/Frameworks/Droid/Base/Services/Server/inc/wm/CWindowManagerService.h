@@ -1,6 +1,6 @@
 
-#ifndef __CWINDOWMANAGERSERVICE_H__
-#define __CWINDOWMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CWindowManagerService.h"
@@ -2323,4 +2323,4 @@ struct Conversion<Elastos::Droid::Server::Wm::CWindowManagerService*, IInterface
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif //__CWINDOWMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__

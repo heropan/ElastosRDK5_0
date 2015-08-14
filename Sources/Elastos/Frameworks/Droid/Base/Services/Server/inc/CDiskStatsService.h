@@ -1,5 +1,5 @@
-#ifndef __CDISKSTATSSERVICE_H__
-#define __CDISKSTATSSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CDISKSTATSSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CDISKSTATSSERVICE_H__
 
 #include "_CDiskStatsService.h"
 
@@ -43,4 +43,4 @@ private:
 }//Droid
 }//Elastos
 
-#endif //__CDISKSTATSSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CDISKSTATSSERVICE_H__

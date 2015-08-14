@@ -1,6 +1,6 @@
 
-#ifndef __CENGINE_H__
-#define __CENGINE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__
 
 #include "_CEngine.h"
 
@@ -72,4 +72,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CENGINE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __THUMBNAILHOLDER_H__
-#define __THUMBNAILHOLDER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_THUMBNAILHOLDER_H__
+#define __ELASTOS_DROID_SERVER_AM_THUMBNAILHOLDER_H__
 
 #include <Elastos.Droid.Core.h>
 
@@ -24,4 +24,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__THUMBNAILHOLDER_H__
+#endif //__ELASTOS_DROID_SERVER_AM_THUMBNAILHOLDER_H__

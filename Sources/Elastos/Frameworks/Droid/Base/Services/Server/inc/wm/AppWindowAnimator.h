@@ -1,5 +1,5 @@
-#ifndef __APPWINDOWANIMATOR_H__
-#define __APPWINDOWANIMATOR_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_APPWINDOWANIMATOR_H__
+#define __ELASTOS_DROID_SERVER_WM_APPWINDOWANIMATOR_H__
 
 #include "wm/CWindowManagerService.h"
 #include "wm/WindowStateAnimator.h"
@@ -285,4 +285,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__APPWINDOWANIMATOR_H__
+#endif //__ELASTOS_DROID_SERVER_WM_APPWINDOWANIMATOR_H__

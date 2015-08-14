@@ -1,6 +1,6 @@
 
-#ifndef __LINENUMBERREADER_H__
-#define __LINENUMBERREADER_H__
+#ifndef __ELASTOS_IO_LINENUMBERREADER_H__
+#define __ELASTOS_IO_LINENUMBERREADER_H__
 
 #include "BufferedReader.h"
 
@@ -185,4 +185,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__LINENUMBERREADER_H__
+#endif //__ELASTOS_IO_LINENUMBERREADER_H__

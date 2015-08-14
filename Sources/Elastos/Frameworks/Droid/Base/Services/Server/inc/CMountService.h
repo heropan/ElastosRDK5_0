@@ -1,6 +1,6 @@
 
-#ifndef __CMOUNTSERVICE_H__
-#define __CMOUNTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CMOUNTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CMOUNTSERVICE_H__
 
 #include "ext/frameworkdef.h"
 #include "_CMountService.h"
@@ -881,4 +881,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CMOUNTSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CMOUNTSERVICE_H__

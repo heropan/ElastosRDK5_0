@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CATTRIBUTES_H__
-#define __ELASTOS_UTILITY_CATTRIBUTES_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CATTRIBUTES_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CATTRIBUTES_H__
 
 #include "_Elastos_Utility_Jar_CAttributes.h"
 #include "Object.h"
@@ -123,4 +123,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CATTRIBUTES_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CATTRIBUTES_H__

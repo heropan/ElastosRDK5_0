@@ -1,6 +1,6 @@
 
-#ifndef __ZIGBEEGROUP_H__
-#define __ZIGBEEGROUP_H__
+#ifndef __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEGROUP_H__
+#define __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEGROUP_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -84,4 +84,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ZIGBEEGROUP_H__
+#endif //__ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEGROUP_H__

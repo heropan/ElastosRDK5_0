@@ -1,6 +1,6 @@
 
-#ifndef __CWMSWALLPAPERCONNECTION_H__
-#define __CWMSWALLPAPERCONNECTION_H__
+#ifndef __ELASTOS_DROID_SERVER_CWMSWALLPAPERCONNECTION_H__
+#define __ELASTOS_DROID_SERVER_CWMSWALLPAPERCONNECTION_H__
 
 #include "_CWMSWallpaperConnection.h"
 #include "CWallpaperManagerService.h"
@@ -52,4 +52,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CWMSWALLPAPERCONNECTION_H__
+#endif //__ELASTOS_DROID_SERVER_CWMSWALLPAPERCONNECTION_H__

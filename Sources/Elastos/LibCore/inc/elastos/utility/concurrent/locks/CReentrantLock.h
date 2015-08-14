@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CREENTRANTLOCK_H__
-#define __ELASTOS_UTILITY_CREENTRANTLOCK_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_LOCKS_ELASTOS_UTILITY_CREENTRANTLOCK_H__
+#define __ELASTOS_UTILITY_CONCURRENT_LOCKS_ELASTOS_UTILITY_CREENTRANTLOCK_H__
 
 #include "_Elastos_Utility_Concurrent_Locks_CReentrantLock.h"
 #include "ReentrantLock.h"
@@ -21,4 +21,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CREENTRANTLOCK_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_LOCKS_ELASTOS_UTILITY_CREENTRANTLOCK_H__

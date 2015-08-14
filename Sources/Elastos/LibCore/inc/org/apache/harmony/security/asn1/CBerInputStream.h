@@ -1,6 +1,6 @@
 
-#ifndef __CBERINPUTSTREAM_H__
-#define __CBERINPUTSTREAM_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAM_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAM_H__
 
 #include "_CBerInputStream.h"
 #include <BerInputStream.h>
@@ -156,4 +156,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CBERINPUTSTREAM_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAM_H__

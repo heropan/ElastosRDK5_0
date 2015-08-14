@@ -1,6 +1,6 @@
 
-#ifndef __GEOFENCEMANAGER_H__
-#define __GEOFENCEMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_GEOFENCEMANAGER_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_GEOFENCEMANAGER_H__
 
 #include "location/LocationBlacklist.h"
 #include "location/GeofenceState.h"
@@ -221,4 +221,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GEOFENCEMANAGER_H__
+#endif //__ELASTOS_DROID_SERVER_LOCATION_GEOFENCEMANAGER_H__

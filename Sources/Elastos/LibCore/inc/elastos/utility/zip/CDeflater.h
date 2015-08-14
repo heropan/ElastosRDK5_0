@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CDEFLATER_H__
-#define __ELASTOS_UTILITY_CDEFLATER_H__
+#ifndef __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CDEFLATER_H__
+#define __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CDEFLATER_H__
 
 #include "_Elastos_Utility_Zip_CDeflater.h"
 #include "NativeZipStream.h"
@@ -407,4 +407,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CDEFLATER_H__
+#endif //__ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CDEFLATER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ICU_CLOCALEDATAHELPER_H__
-#define __ICU_CLOCALEDATAHELPER_H__
+#ifndef __LIBCORE_ICU_ICU_CLOCALEDATAHELPER_H__
+#define __LIBCORE_ICU_ICU_CLOCALEDATAHELPER_H__
 
 #include "_Libcore_ICU_CLocaleDataHelper.h"
 #include "Singleton.h"
@@ -34,4 +34,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif // __ICU_CLOCALEDATAHELPER_H__
+#endif // __LIBCORE_ICU_ICU_CLOCALEDATAHELPER_H__

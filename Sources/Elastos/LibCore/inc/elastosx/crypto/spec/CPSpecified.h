@@ -1,6 +1,6 @@
 
-#ifndef __CPSPECIFIED_H__
-#define __CPSPECIFIED_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CPSPECIFIED_H__
+#define __ELASTOSX_CRYPTO_SPEC_CPSPECIFIED_H__
 
 #include "_Elastosx_Crypto_Spec_CPSpecified.h"
 #include <elastos/core/Object.h>
@@ -51,4 +51,4 @@ private:
 }
 }
 
-#endif // __CPSPECIFIED_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CPSPECIFIED_H__

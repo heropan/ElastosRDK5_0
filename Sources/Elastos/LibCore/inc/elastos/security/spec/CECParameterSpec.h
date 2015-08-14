@@ -1,6 +1,6 @@
 
-#ifndef __CECPARAMETERSPEC_H__
-#define __CECPARAMETERSPEC_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CECPARAMETERSPEC_H__
+#define __ELASTOS_SECURITY_SPEC_CECPARAMETERSPEC_H__
 
 #include "_CECParameterSpec.h"
 
@@ -46,4 +46,4 @@ private:
 }
 }
 
-#endif // __CECPARAMETERSPEC_H__
+#endif // __ELASTOS_SECURITY_SPEC_CECPARAMETERSPEC_H__

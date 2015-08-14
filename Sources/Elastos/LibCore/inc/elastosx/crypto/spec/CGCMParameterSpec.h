@@ -1,6 +1,6 @@
 
-#ifndef __CGCMPARAMETERSPEC_H__
-#define __CGCMPARAMETERSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CGCMPARAMETERSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CGCMPARAMETERSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CGCMParameterSpec.h"
 #include <elastos/core/Object.h>
@@ -75,4 +75,4 @@ private:
 }
 }
 
-#endif // __CGCMPARAMETERSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CGCMPARAMETERSPEC_H__

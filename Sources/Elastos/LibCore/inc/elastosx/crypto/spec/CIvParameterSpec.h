@@ -1,6 +1,6 @@
 
-#ifndef __CIVPARAMETERSPEC_H__
-#define __CIVPARAMETERSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CIVPARAMETERSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CIVPARAMETERSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CIvParameterSpec.h"
 #include <elastos/core/Object.h>
@@ -69,4 +69,4 @@ private:
 }
 }
 
-#endif // __CIVPARAMETERSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CIVPARAMETERSPEC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CTSTINFO_H__
-#define __CTSTINFO_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTSTINFO_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTSTINFO_H__
 
 #include "_CTSTInfo.h"
 
@@ -70,4 +70,4 @@ private:
 }
 }
 
-#endif // __CTSTINFO_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTSTINFO_H__

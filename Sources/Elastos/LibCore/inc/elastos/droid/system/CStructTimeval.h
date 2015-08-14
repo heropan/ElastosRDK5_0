@@ -1,6 +1,6 @@
 
-#ifndef __CSTRUCTTIMEVAL_H__
-#define __CSTRUCTTIMEVAL_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTTIMEVAL_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTTIMEVAL_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructTimeval.h"
@@ -52,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSTRUCTTIMEVAL_H__
+#endif // __ELASTOS_DROID_SYSTEM_CSTRUCTTIMEVAL_H__

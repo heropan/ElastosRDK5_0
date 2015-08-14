@@ -1,6 +1,6 @@
 
-#ifndef __CASN1OCTETSTRING_H__
-#define __CASN1OCTETSTRING_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRING_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRING_H__
 
 #include "_CASN1OctetString.h"
 #include <ASN1StringType.h>
@@ -92,4 +92,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1OCTETSTRING_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRING_H__

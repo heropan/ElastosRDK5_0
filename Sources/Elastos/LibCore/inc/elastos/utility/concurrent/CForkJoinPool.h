@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CFORKJOINPOOL_H__
-#define __ELASTOS_UTILITY_CFORKJOINPOOL_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CFORKJOINPOOL_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CFORKJOINPOOL_H__
 
 #include "_Elastos_Utility_Concurrent_CForkJoinPool.h"
 #include "AbstractExecutorService.h"
@@ -1155,4 +1155,4 @@ private:
 
 DEFINE_CONVERSION_FOR(Elastos::Utility::Concurrent::CForkJoinPool::WorkQueue, IInterface)
 
-#endif //__ELASTOS_UTILITY_CFORKJOINPOOL_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CFORKJOINPOOL_H__

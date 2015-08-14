@@ -1,6 +1,6 @@
 
-#ifndef __ACTIVITYSTACK_H__
-#define __ACTIVITYSTACK_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
+#define __ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
@@ -835,4 +835,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACTIVITYSTACK_H__
+#endif //__ELASTOS_DROID_SERVER_AM_ACTIVITYSTACK_H__

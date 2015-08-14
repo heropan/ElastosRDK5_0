@@ -1,6 +1,6 @@
 
-#ifndef __CGENERALNAME_H__
-#define __CGENERALNAME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CGENERALNAME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CGENERALNAME_H__
 
 #include "_CGeneralName.h"
 
@@ -75,4 +75,4 @@ private:
 }
 }
 
-#endif // __CGENERALNAME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CGENERALNAME_H__

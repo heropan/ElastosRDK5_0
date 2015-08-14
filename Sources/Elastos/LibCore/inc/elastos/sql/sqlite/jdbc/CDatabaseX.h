@@ -1,6 +1,6 @@
 
-#ifndef __CDATABASEX_H__
-#define __CDATABASEX_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CDATABASEX_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CDATABASEX_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CDatabaseX.h"
 #include "Database.h"
@@ -51,4 +51,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CDATABASEX_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CDATABASEX_H__

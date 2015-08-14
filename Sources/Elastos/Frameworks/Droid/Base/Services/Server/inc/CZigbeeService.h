@@ -1,5 +1,5 @@
-#ifndef __CZIGBEESERVICE_H__
-#define __CZIGBEESERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CZIGBEESERVICE_H__
+#define __ELASTOS_DROID_SERVER_CZIGBEESERVICE_H__
 
 #include "_CZigbeeService.h"
 #include "zigbee/ZigbeeTHSensor.h"
@@ -1121,4 +1121,4 @@ private:
 }//Droid
 }//Elastos
 
-#endif //__CZIGBEESERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CZIGBEESERVICE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __X509CERTIFICATE_H__
-#define __X509CERTIFICATE_H__
+#ifndef __ELASTOS_SECURITY_CERT_X509CERTIFICATE_H__
+#define __ELASTOS_SECURITY_CERT_X509CERTIFICATE_H__
 
 #include "Certificate.h"
 
@@ -379,4 +379,4 @@ private:
 } // end Security
 } // end Elastos
 
-#endif // __X509CERTIFICATE_H__
+#endif // __ELASTOS_SECURITY_CERT_X509CERTIFICATE_H__

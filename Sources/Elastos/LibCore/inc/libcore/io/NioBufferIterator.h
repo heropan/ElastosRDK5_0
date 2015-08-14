@@ -1,5 +1,5 @@
-#ifndef __NIOBUFFERITERATOR_H__
-#define __NIOBUFFERITERATOR_H__
+#ifndef __LIBCORE_IO_NIOBUFFERITERATOR_H__
+#define __LIBCORE_IO_NIOBUFFERITERATOR_H__
 
 #include "Object.h"
 

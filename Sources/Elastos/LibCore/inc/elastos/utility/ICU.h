@@ -1,6 +1,6 @@
 
-#ifndef __ICU_H__
-#define __ICU_H__
+#ifndef __ELASTOS_UTILITY_ICU_H__
+#define __ELASTOS_UTILITY_ICU_H__
 
 #include "Elastos.Utility_server.h"
 #include "LocaleData.h"
@@ -171,4 +171,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ICU_H__
+#endif //__ELASTOS_UTILITY_ICU_H__

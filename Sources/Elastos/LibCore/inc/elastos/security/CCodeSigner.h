@@ -1,6 +1,6 @@
 
-#ifndef __CCODESIGNER_H__
-#define __CCODESIGNER_H__
+#ifndef __ELASTOS_SECURITY_CCODESIGNER_H__
+#define __ELASTOS_SECURITY_CCODESIGNER_H__
 
 #include "_CCodeSigner.h"
 
@@ -49,4 +49,4 @@ private:
 
 } // end Security
 } // end Elastos
-#endif // __CCODESIGNER_H__
+#endif // __ELASTOS_SECURITY_CCODESIGNER_H__

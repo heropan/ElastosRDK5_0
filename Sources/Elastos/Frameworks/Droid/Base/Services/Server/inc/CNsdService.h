@@ -1,5 +1,5 @@
-#ifndef __CNSDSERVICE_H__
-#define __CNSDSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CNSDSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CNSDSERVICE_H__
 
 #include "_CNsdService.h"
 #include "ext/frameworkext.h"
@@ -349,4 +349,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__CNSDSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CNSDSERVICE_H__

@@ -1,5 +1,5 @@
-#ifndef __CPACKAGEMANAGERSERVICE_H__
-#define __CPACKAGEMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CPackageManagerService.h"
@@ -2407,4 +2407,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPACKAGEMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__

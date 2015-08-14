@@ -1,5 +1,5 @@
-#ifndef __Vpn_H__
-#define __Vpn_H__
+#ifndef __ELASTOS_DROID_SERVER_CONNECTIVITY_VPN_H__
+#define __ELASTOS_DROID_SERVER_CONNECTIVITY_VPN_H__
 
 #include "CConnectivityService.h"
 #include <net/BaseNetworkStateTracker.h>

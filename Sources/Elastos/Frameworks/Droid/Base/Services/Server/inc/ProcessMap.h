@@ -1,6 +1,6 @@
 
-#ifndef __PROCESSMAP_H__
-#define __PROCESSMAP_H__
+#ifndef __ELASTOS_DROID_SERVER_PROCESSMAP_H__
+#define __ELASTOS_DROID_SERVER_PROCESSMAP_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -118,4 +118,4 @@ AutoPtr<HashMap<String, AutoPtr<HashMap<Int32, E> > > > ProcessMap<E>::GetMap()
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PROCESSMAP_H__
+#endif //__ELASTOS_DROID_SERVER_PROCESSMAP_H__

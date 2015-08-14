@@ -1,6 +1,6 @@
 
-#ifndef __CJDBCCONNECTION_H__
-#define __CJDBCCONNECTION_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CJDBCCONNECTION_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CJDBCCONNECTION_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCConnection.h"
 #include "Object.h"
@@ -269,4 +269,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCCONNECTION_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CJDBCCONNECTION_H__

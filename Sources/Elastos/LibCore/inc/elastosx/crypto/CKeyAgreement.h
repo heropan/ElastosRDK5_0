@@ -1,6 +1,6 @@
 
-#ifndef __CKEYAGREEMENT_H__
-#define __CKEYAGREEMENT_H__
+#ifndef __ELASTOSX_CRYPTO_CKEYAGREEMENT_H__
+#define __ELASTOSX_CRYPTO_CKEYAGREEMENT_H__
 
 #include "_Elastosx_Crypto_CKeyAgreement.h"
 #include <elastos/core/Object.h>
@@ -319,4 +319,4 @@ private:
 }
 }
 
-#endif // __CKEYAGREEMENT_H__
+#endif // __ELASTOSX_CRYPTO_CKEYAGREEMENT_H__

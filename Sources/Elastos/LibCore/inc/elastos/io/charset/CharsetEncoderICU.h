@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_Charset_CHARSETENCODERICU_H__
-#define __ELASTOS_IO_Charset_CHARSETENCODERICU_H__
+#ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CHARSET_CHARSETENCODERICU_H__
+#define __ELASTOS_IO_CHARSET_ELASTOS_IO_CHARSET_CHARSETENCODERICU_H__
 
 #include "CharsetEncoder.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -109,4 +109,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__ELASTOS_IO_Charset_CHARSETENCODERICU_H__
+#endif //__ELASTOS_IO_CHARSET_ELASTOS_IO_CHARSET_CHARSETENCODERICU_H__

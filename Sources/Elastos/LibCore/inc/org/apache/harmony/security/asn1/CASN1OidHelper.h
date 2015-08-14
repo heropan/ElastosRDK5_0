@@ -1,6 +1,6 @@
 
-#ifndef __CASN1OIDHELPER_H__
-#define __CASN1OIDHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OIDHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OIDHELPER_H__
 
 #include "_CASN1OidHelper.h"
 
@@ -29,4 +29,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1OIDHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OIDHELPER_H__

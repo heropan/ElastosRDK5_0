@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_CSTREAMS_H__
-#define __ELASTOS_IO_CSTREAMS_H__
+#ifndef __LIBCORE_IO_ELASTOS_IO_CSTREAMS_H__
+#define __LIBCORE_IO_ELASTOS_IO_CSTREAMS_H__
 
 #include "_Libcore_IO_CStreams.h"
 #include "Singleton.h"
@@ -124,4 +124,4 @@ private:
 } // namespace IO
 } // namespace Libcore
 
-#endif //__ELASTOS_IO_CSTREAMS_H__
+#endif //__LIBCORE_IO_ELASTOS_IO_CSTREAMS_H__

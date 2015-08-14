@@ -1,6 +1,6 @@
 
-#ifndef __COMPATMODEDIALOG_H__
-#define __COMPATMODEDIALOG_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_COMPATMODEDIALOG_H__
+#define __ELASTOS_DROID_SERVER_AM_COMPATMODEDIALOG_H__
 
 #include "ext/frameworkext.h"
 #include "am/CActivityManagerService.h"
@@ -128,4 +128,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COMPATMODEDIALOG_H__
+#endif //__ELASTOS_DROID_SERVER_AM_COMPATMODEDIALOG_H__

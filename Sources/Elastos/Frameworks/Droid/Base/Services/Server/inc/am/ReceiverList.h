@@ -1,6 +1,6 @@
 
-#ifndef __RECEIVERLIST_H__
-#define __RECEIVERLIST_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
+#define __ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__
 
 #include "ext/frameworkext.h"
 #include "am/BroadcastFilter.h"
@@ -68,11 +68,10 @@ public:
 } // namespace Elastos
 
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_RECEIVERLIST
 #define HASH_FUNC_FOR_AUTOPTR_RECEIVERLIST
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ReceiverList)
 #endif
 
 
 
-#endif //__RECEIVERLIST_H__
+#endif //__ELASTOS_DROID_SERVER_AM_RECEIVERLIST_H__

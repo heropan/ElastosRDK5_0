@@ -1,6 +1,6 @@
 
-#ifndef __CEXTENSION_H__
-#define __CEXTENSION_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CEXTENSION_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CEXTENSION_H__
 
 #include "_CExtension.h"
 
@@ -81,4 +81,4 @@ private:
 }
 }
 
-#endif // __CEXTENSION_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CEXTENSION_H__

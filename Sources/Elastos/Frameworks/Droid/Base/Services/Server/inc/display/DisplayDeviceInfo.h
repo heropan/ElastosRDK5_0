@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAYDEVICEINFO_H__
-#define __DISPLAYDEVICEINFO_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYDEVICEINFO_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYDEVICEINFO_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -170,4 +170,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DISPLAYDEVICEINFO_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_DISPLAYDEVICEINFO_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ACTIVESERVICES_H__
-#define __ACTIVESERVICES_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_ACTIVESERVICES_H__
+#define __ELASTOS_DROID_SERVER_AM_ACTIVESERVICES_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>

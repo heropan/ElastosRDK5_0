@@ -1,6 +1,6 @@
 
-#ifndef __CDHPUBLICKEYSPEC_H__
-#define __CDHPUBLICKEYSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CDHPUBLICKEYSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CDHPUBLICKEYSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CDHPublicKeySpec.h"
 #include <elastos/core/Object.h>
@@ -77,4 +77,4 @@ private:
 }
 }
 
-#endif // __CDHPUBLICKEYSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CDHPUBLICKEYSPEC_H__

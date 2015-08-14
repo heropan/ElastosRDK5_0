@@ -1,5 +1,5 @@
-#ifndef __KEYGURADDISABLEHANDLER_H__
-#define __KEYGURADDISABLEHANDLER_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__
+#define __ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__
 
 #include "wm/CWindowManagerService.h"
 // #include "input/InputApplicationHandle.h"
@@ -68,4 +68,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__KEYGURADDISABLEHANDLER_H__
+#endif //__ELASTOS_DROID_SERVER_WM_KEYGURADDISABLEHANDLER_H__

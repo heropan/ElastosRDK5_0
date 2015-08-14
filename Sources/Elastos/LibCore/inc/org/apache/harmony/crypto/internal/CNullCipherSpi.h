@@ -1,6 +1,6 @@
 
-#ifndef __CNULLCIPHERSPI_H__
-#define __CNULLCIPHERSPI_H__
+#ifndef __ORG_APACHE_HARMONY_CRYPTO_INTERNAL_CNULLCIPHERSPI_H__
+#define __ORG_APACHE_HARMONY_CRYPTO_INTERNAL_CNULLCIPHERSPI_H__
 
 #include "_CNullCipherSpi.h"
 
@@ -117,4 +117,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CNULLCIPHERSPI_H__
+#endif // __ORG_APACHE_HARMONY_CRYPTO_INTERNAL_CNULLCIPHERSPI_H__

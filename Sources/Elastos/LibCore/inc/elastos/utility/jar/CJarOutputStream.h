@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
-#define __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
 
 #include "_Elastos_Utility_Jar_CJarOutputStream.h"
 #include "ZipOutputStream.h"
@@ -38,4 +38,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJAROUTPUTSTREAM_H__

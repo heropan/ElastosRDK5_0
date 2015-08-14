@@ -1,6 +1,6 @@
 
-#ifndef __PKIXPARAMETERS_H__
-#define __PKIXPARAMETERS_H__
+#ifndef __ELASTOS_SECURITY_CERT_PKIXPARAMETERS_H__
+#define __ELASTOS_SECURITY_CERT_PKIXPARAMETERS_H__
 
 #include "Elastos.CoreLibrary_server.h"
 

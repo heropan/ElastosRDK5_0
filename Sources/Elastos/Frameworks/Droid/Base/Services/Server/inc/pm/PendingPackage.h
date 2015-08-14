@@ -1,5 +1,5 @@
-#ifndef __PENDINGPACKAGE_H__
-#define __PENDINGPACKAGE_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_PENDINGPACKAGE_H__
+#define __ELASTOS_DROID_SERVER_PM_PENDINGPACKAGE_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "pm/PackageSettingBase.h"
@@ -37,4 +37,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PENDINGPACKAGE_H__
+#endif //__ELASTOS_DROID_SERVER_PM_PENDINGPACKAGE_H__

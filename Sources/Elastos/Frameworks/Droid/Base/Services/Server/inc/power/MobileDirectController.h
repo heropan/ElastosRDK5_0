@@ -1,6 +1,6 @@
 
-#ifndef __MOBILEDIRECTCONTROLLER_H__
-#define __MOBILEDIRECTCONTROLLER_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_MOBILEDIRECTCONTROLLER_H__
+#define __ELASTOS_DROID_SERVER_POWER_MOBILEDIRECTCONTROLLER_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
@@ -37,4 +37,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __MOBILEDIRECTCONTROLLER_H__
+#endif // __ELASTOS_DROID_SERVER_POWER_MOBILEDIRECTCONTROLLER_H__

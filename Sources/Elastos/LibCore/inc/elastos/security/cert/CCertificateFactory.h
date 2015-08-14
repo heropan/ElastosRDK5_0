@@ -1,6 +1,6 @@
 
-#ifndef __CCERTIFICATEFACTORY_H__
-#define __CCERTIFICATEFACTORY_H__
+#ifndef __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
+#define __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
 
 #include "_CCertificateFactory.h"
 
@@ -93,4 +93,4 @@ private:
 } // end Cert
 } // end Security
 } // end Elastos
-#endif // __CCERTIFICATEFACTORY_H__
+#endif // __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__

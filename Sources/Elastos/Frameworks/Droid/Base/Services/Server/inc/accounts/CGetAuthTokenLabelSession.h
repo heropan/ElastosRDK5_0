@@ -1,6 +1,6 @@
 
-#ifndef __CGETAUTHTOKENLABELSESSION_H__
-#define __CGETAUTHTOKENLABELSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CGETAUTHTOKENLABELSESSION_H__
+#define __ELASTOS_DROID_SERVER_ACCOUNTS_CGETAUTHTOKENLABELSESSION_H__
 
 #include "_CGetAuthTokenLabelSession.h"
 #include "accounts/AccountManagerServiceSession.h"
@@ -63,4 +63,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGETAUTHTOKENLABELSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_ACCOUNTS_CGETAUTHTOKENLABELSESSION_H__

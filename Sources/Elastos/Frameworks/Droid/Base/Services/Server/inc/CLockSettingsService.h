@@ -1,5 +1,5 @@
 
-#ifndef __CLOCKSETTINGSSERVICE_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
 #define __CLOCKSWETTINGSERVICE_H__
 
 #include "_CLockSettingsService.h"

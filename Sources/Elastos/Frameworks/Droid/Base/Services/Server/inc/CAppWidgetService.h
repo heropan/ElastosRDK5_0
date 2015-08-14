@@ -1,6 +1,6 @@
 
-#ifndef __CAPPWIDGETSERVICE_H__
-#define __CAPPWIDGETSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CAPPWIDGETSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CAPPWIDGETSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CAppWidgetService.h"
@@ -254,4 +254,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CAPPWIDGETSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CAPPWIDGETSERVICE_H__

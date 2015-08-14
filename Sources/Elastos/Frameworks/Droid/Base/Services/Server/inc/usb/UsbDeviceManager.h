@@ -1,6 +1,6 @@
 
-#ifndef __USBDEVICEMANAGER_H__
-#define __USBDEVICEMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_USB_USBDEVICEMANAGER_H__
+#define __ELASTOS_DROID_SERVER_USB_USBDEVICEMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "os/UEventObserver.h"
@@ -381,4 +381,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __USBDEVICEMANAGER_H__
+#endif // __ELASTOS_DROID_SERVER_USB_USBDEVICEMANAGER_H__

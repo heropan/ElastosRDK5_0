@@ -1,6 +1,6 @@
 
-#ifndef __APPWAITINGFORDEBUGGERDIALOG_H__
-#define __APPWAITINGFORDEBUGGERDIALOG_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_APPWAITINGFORDEBUGGERDIALOG_H__
+#define __ELASTOS_DROID_SERVER_AM_APPWAITINGFORDEBUGGERDIALOG_H__
 
 #include "ext/frameworkext.h"
 #include "am/BaseErrorDialog.h"
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPWAITINGFORDEBUGGERDIALOG_H__
+#endif //__ELASTOS_DROID_SERVER_AM_APPWAITINGFORDEBUGGERDIALOG_H__

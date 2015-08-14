@@ -1,6 +1,6 @@
 
-#ifndef __CCRLNUMBER_H__
-#define __CCRLNUMBER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CCRLNUMBER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CCRLNUMBER_H__
 
 #include "_CCRLNumber.h"
 
@@ -39,4 +39,4 @@ private:
 }
 }
 
-#endif // __CCRLNUMBER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CCRLNUMBER_H__

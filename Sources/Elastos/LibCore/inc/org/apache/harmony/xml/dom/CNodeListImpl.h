@@ -1,6 +1,6 @@
 
-#ifndef __CNODELISTIMPL_H__
-#define __CNODELISTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CNODELISTIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CNODELISTIMPL_H__
 
 #include "_CNodeListImpl.h"
 
@@ -30,4 +30,4 @@ private:
 }
 }
 
-#endif // __CNODELISTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CNODELISTIMPL_H__

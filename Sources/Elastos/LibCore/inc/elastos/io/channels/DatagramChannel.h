@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_DATAGRAMCHANNEL_H__
-#define __ELASTOS_IO_DATAGRAMCHANNEL_H__
+#ifndef __ELASTOS_IO_CHANNELS_ELASTOS_IO_DATAGRAMCHANNEL_H__
+#define __ELASTOS_IO_CHANNELS_ELASTOS_IO_DATAGRAMCHANNEL_H__
 
 #include <Elastos.CoreLibrary_server.h>
 #include "ByteBuffer.h"
@@ -425,4 +425,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_DATAGRAMCHANNEL_H__
+#endif // __ELASTOS_IO_CHANNELS_ELASTOS_IO_DATAGRAMCHANNEL_H__

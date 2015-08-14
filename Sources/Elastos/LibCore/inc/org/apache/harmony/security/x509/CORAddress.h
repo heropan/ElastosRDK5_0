@@ -1,6 +1,6 @@
 
-#ifndef __CORADDRESS_H__
-#define __CORADDRESS_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CORADDRESS_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CORADDRESS_H__
 
 #include "_CORAddress.h"
 
@@ -26,4 +26,4 @@ private:
 }
 }
 
-#endif // __CORADDRESS_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CORADDRESS_H__

@@ -1,5 +1,5 @@
-#ifndef __TOSTRINGARRAY_H__
-#define __TOSTRINGARRAY_H__
+#ifndef __LIBCORE_IO_TOSTRINGARRAY_H__
+#define __LIBCORE_IO_TOSTRINGARRAY_H__
 
 #include <coredef.h>
 #include <elastos/utility/etl/Vector.h>
@@ -32,4 +32,4 @@ AutoPtr< ArrayOf<String> > ToStringArray(const Vector<String>& strings);
 AutoPtr< ArrayOf<String> > ToStringArray(const char* const* strings);
 }
 }
-#endif //__TOSTRINGARRAY_H__
+#endif //__LIBCORE_IO_TOSTRINGARRAY_H__

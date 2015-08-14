@@ -1,6 +1,6 @@
 
-#ifndef __CPSOURCE_H__
-#define __CPSOURCE_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CPSOURCE_H__
+#define __ELASTOSX_CRYPTO_SPEC_CPSOURCE_H__
 
 #include "_Elastosx_Crypto_Spec_CPSource.h"
 #include "PSource.h"
@@ -21,4 +21,4 @@ public:
 }
 }
 
-#endif // __CPSOURCE_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CPSOURCE_H__

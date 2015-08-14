@@ -1,6 +1,6 @@
 
-#ifndef __HEADLESSDISPLAYADAPTER_H__
-#define __HEADLESSDISPLAYADAPTER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__
 
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
@@ -54,4 +54,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__HEADLESSDISPLAYADAPTER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_HEADLESSDISPLAYADAPTER_H__

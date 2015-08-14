@@ -1,5 +1,5 @@
-#ifndef __STRINGCHARACTERITERATOR_H__
-#define __STRINGCHARACTERITERATOR_H__
+#ifndef __ELASTOS_TEXT_STRINGCHARACTERITERATOR_H__
+#define __ELASTOS_TEXT_STRINGCHARACTERITERATOR_H__
 
 #include "Object.h"
 
@@ -92,4 +92,4 @@ protected:
 } // namespace Text
 } // namespace Elastos
 
-#endif //__STRINGCHARACTERITERATOR_H__
+#endif //__ELASTOS_TEXT_STRINGCHARACTERITERATOR_H__

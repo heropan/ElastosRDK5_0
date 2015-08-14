@@ -1,5 +1,5 @@
-#ifndef __SEARCHABLES_H__
-#define __SEARCHABLES_H__
+#ifndef __ELASTOS_DROID_SERVER_SEARCH_SEARCHABLES_H__
+#define __ELASTOS_DROID_SERVER_SEARCH_SEARCHABLES_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core.h"

@@ -1,6 +1,6 @@
 
-#ifndef __ASN1TYPE_H__
-#define __ASN1TYPE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
 
 #include <elastos.h>
 #include <Org.Apache.Harmony_server.h>
@@ -133,4 +133,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1TYPE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__

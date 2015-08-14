@@ -1,6 +1,6 @@
 
-#ifndef __KORTIDEREMOTESERVICE_H__
-#define __KORTIDEREMOTESERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_KORTIDEREMOTESERVICE_H__
+#define __ELASTOS_DROID_SERVER_KORTIDEREMOTESERVICE_H__
 
 #include "_CKortideRemoteService.h"
 #include "remote/RemoteCmdListener.h"
@@ -50,4 +50,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__KORTIDEREMOTESERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_KORTIDEREMOTESERVICE_H__

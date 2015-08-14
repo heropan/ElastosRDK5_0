@@ -1,6 +1,6 @@
 
-#ifndef __OVERLAYDISPLAYADAPTER_H__
-#define __OVERLAYDISPLAYADAPTER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYADAPTER_H__
 
 #include "ext/frameworkext.h"
 #include "display/DisplayAdapter.h"
@@ -239,4 +239,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__OVERLAYDISPLAYADAPTER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYADAPTER_H__

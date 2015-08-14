@@ -1,5 +1,5 @@
-#ifndef __DURATION_H__
-#define __DURATION_H__
+#ifndef __ELASTOSX_XML_DATATYPE_DURATION_H__
+#define __ELASTOSX_XML_DATATYPE_DURATION_H__
 
 #include "Object.h"
 

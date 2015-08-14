@@ -1,6 +1,6 @@
 
-#ifndef __USBSETTINGSMANAGER_H__
-#define __USBSETTINGSMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_USB_USBSETTINGSMANAGER_H__
+#define __ELASTOS_DROID_SERVER_USB_USBSETTINGSMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Binder.h"
@@ -399,4 +399,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __USBSETTINGSMANAGER_H__
+#endif // __ELASTOS_DROID_SERVER_USB_USBSETTINGSMANAGER_H__

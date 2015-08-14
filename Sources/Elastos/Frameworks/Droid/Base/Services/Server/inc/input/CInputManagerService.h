@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTMANAGERSERVICE_H__
-#define __CINPUTMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_CINPUTMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_INPUT_CINPUTMANAGERSERVICE_H__
 
 #include "_CInputManagerService.h"
 #include "NativeInputManager.h"
@@ -1050,4 +1050,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CINPUTMANAGERSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_INPUT_CINPUTMANAGERSERVICE_H__

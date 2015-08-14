@@ -1,6 +1,6 @@
 
-#ifndef __CELLIPTICCURVE_H__
-#define __CELLIPTICCURVE_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CELLIPTICCURVE_H__
+#define __ELASTOS_SECURITY_SPEC_CELLIPTICCURVE_H__
 
 #include "_CEllipticCurve.h"
 
@@ -65,4 +65,4 @@ private:
 }
 }
 
-#endif // __CELLIPTICCURVE_H__
+#endif // __ELASTOS_SECURITY_SPEC_CELLIPTICCURVE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CDEROUTPUTSTREAM_H__
-#define __CDEROUTPUTSTREAM_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__
 
 #include "_CDerOutputStream.h"
 #include <BerOutputStream.h>
@@ -117,4 +117,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CDEROUTPUTSTREAM_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CTRUSTANCHOR_H__
-#define __CTRUSTANCHOR_H__
+#ifndef __ELASTOS_SECURITY_CERT_CTRUSTANCHOR_H__
+#define __ELASTOS_SECURITY_CERT_CTRUSTANCHOR_H__
 
 #include "_CTrustAnchor.h"
 
@@ -69,4 +69,4 @@ private:
 }
 }
 
-#endif // __CTRUSTANCHOR_H__
+#endif // __ELASTOS_SECURITY_CERT_CTRUSTANCHOR_H__

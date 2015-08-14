@@ -1,5 +1,5 @@
-#ifndef __NOTIFIER_H__
-#define __NOTIFIER_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
+#define __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
@@ -295,4 +295,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __NOTIFIER_H__
+#endif // __ELASTOS_DROID_SERVER_POWER_NOTIFIER_H__

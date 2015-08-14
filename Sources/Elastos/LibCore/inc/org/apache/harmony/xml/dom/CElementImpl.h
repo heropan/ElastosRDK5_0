@@ -1,6 +1,6 @@
 
-#ifndef __CELEMENTIMPL_H__
-#define __CELEMENTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CELEMENTIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CELEMENTIMPL_H__
 
 #include "_CElementImpl.h"
 
@@ -241,4 +241,4 @@ private:
 }
 }
 
-#endif // __CELEMENTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CELEMENTIMPL_H__

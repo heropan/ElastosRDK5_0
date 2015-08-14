@@ -1,5 +1,5 @@
-#ifndef __CSOCKETTAGGERhELPER_H__
-#define __CSOCKETTAGGERhELPER_H__
+#ifndef __LIBCORE_IO_CSOCKETTAGGERHELPER_H__
+#define __LIBCORE_IO_CSOCKETTAGGERHELPER_H__
 
 #include "Singleton.h"
 #include "_Libcore_IO_CSocketTaggerHelper.h"
@@ -33,4 +33,4 @@ public:
 } // namespace IO
 } // namespace Libcore
 
-#endif // __CSOCKETTAGGERhELPER_H__
+#endif // __LIBCORE_IO_CSOCKETTAGGERHELPER_H__

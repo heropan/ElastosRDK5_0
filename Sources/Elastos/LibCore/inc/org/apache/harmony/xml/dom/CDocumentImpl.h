@@ -1,6 +1,6 @@
 
-#ifndef __CDOCUMENTIMPL_H__
-#define __CDOCUMENTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CDOCUMENTIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CDOCUMENTIMPL_H__
 
 #include "_CDocumentImpl.h"
 
@@ -279,4 +279,4 @@ private:
 }
 }
 
-#endif // __CDOCUMENTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CDOCUMENTIMPL_H__

@@ -1,5 +1,5 @@
-#ifndef __LIBCORE_NET_URI_URLUTILS_H__
-#define __LIBCORE_NET_URI_URLUTILS_H__
+#ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_URLUTILS_H__
+#define __LIBCORE_NET_URL_LIBCORE_NET_URI_URLUTILS_H__
 
 #include "Object.h"
 
@@ -40,4 +40,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif // __LIBCORE_NET_URI_URLUTILS_H__
+#endif // __LIBCORE_NET_URL_LIBCORE_NET_URI_URLUTILS_H__

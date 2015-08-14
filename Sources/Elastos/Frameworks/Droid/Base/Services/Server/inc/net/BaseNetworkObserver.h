@@ -1,6 +1,6 @@
 
-#ifndef __BASENETWORKOBSERVER_H__
-#define __BASENETWORKOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_BASENETWORKOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_NET_BASENETWORKOBSERVER_H__
 
 #include "ext/frameworkdef.h"
 #include <elastos.h>
@@ -51,4 +51,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __BASENETWORKOBSERVER_H__
+#endif // __ELASTOS_DROID_SERVER_NET_BASENETWORKOBSERVER_H__

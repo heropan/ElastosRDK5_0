@@ -1,6 +1,6 @@
 
-#ifndef __PREFERREDCOMPONENT_H__
-#define __PREFERREDCOMPONENT_H__
+#ifndef __ELASTOS_DROID_SERVER_PREFERREDCOMPONENT_H__
+#define __ELASTOS_DROID_SERVER_PREFERREDCOMPONENT_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -68,4 +68,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PREFERREDCOMPONENT_H__
+#endif //__ELASTOS_DROID_SERVER_PREFERREDCOMPONENT_H__

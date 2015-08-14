@@ -1,6 +1,6 @@
 
-#ifndef __WINDOWBINDER_H__
-#define __WINDOWBINDER_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__
+#define __ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -27,4 +27,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WINDOWBINDER_H__
+#endif //__ELASTOS_DROID_SERVER_WM_WINDOWBINDER_H__

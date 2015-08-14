@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTSERVICESMANAGERSERVICE_H__
-#define __CTEXTSERVICESMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CTEXTSERVICESMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CTEXTSERVICESMANAGERSERVICE_H__
 
 #include "ext/frameworkdef.h"
 #include "_CTextServicesManagerService.h"
@@ -368,4 +368,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CTEXTSERVICESMANAGERSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CTEXTSERVICESMANAGERSERVICE_H__

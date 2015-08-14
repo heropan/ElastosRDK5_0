@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_IO_CCHANNELS_H__
-#define __ELASTOS_IO_CCHANNELS_H__
+#ifndef __ELASTOS_IO_CHANNELS_ELASTOS_IO_CCHANNELS_H__
+#define __ELASTOS_IO_CHANNELS_ELASTOS_IO_CCHANNELS_H__
 
 #include "_Elastos_IO_Channels_CChannels.h"
 #include "Singleton.h"
@@ -211,4 +211,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CCHANNELS_H__
+#endif // __ELASTOS_IO_CHANNELS_ELASTOS_IO_CCHANNELS_H__

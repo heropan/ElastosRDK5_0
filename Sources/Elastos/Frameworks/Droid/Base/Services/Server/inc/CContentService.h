@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTSERVICE_H__
-#define __CCONTENTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
 
 #include "_CContentService.h"
 #include "ext/frameworkdef.h"
@@ -332,4 +332,4 @@ private:
 }
 }
 
-#endif // __CCONTENTSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__

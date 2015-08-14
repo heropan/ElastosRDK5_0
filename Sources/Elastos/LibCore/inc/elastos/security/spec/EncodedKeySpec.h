@@ -1,6 +1,6 @@
 
-#ifndef __ENCODEDKEYSPEC_H__
-#define __ENCODEDKEYSPEC_H__
+#ifndef __ELASTOS_SECURITY_SPEC_ENCODEDKEYSPEC_H__
+#define __ELASTOS_SECURITY_SPEC_ENCODEDKEYSPEC_H__
 
 #include "_CX509EncodedKeySpec.h"
 
@@ -38,4 +38,4 @@ private:
 }
 }
 
-#endif // __ENCODEDKEYSPEC_H__
+#endif // __ELASTOS_SECURITY_SPEC_ENCODEDKEYSPEC_H__

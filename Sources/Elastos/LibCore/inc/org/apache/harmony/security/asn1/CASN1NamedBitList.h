@@ -1,6 +1,6 @@
 
-#ifndef __CASN1NAMEDBITLIST_H__
-#define __CASN1NAMEDBITLIST_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1NAMEDBITLIST_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1NAMEDBITLIST_H__
 
 #include "_CASN1NamedBitList.h"
 #include "ASN1BitString.h"
@@ -96,4 +96,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1NAMEDBITLIST_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1NAMEDBITLIST_H__

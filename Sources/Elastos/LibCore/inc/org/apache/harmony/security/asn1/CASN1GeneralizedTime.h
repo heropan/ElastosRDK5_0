@@ -1,6 +1,6 @@
 
-#ifndef __CASN1GENERALIZEDTIME_H__
-#define __CASN1GENERALIZEDTIME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIME_H__
 
 #include "_CASN1GeneralizedTime.h"
 #include <ASN1Time.h>
@@ -100,4 +100,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1GENERALIZEDTIME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIME_H__

@@ -1,6 +1,6 @@
 
-#ifndef __KEYAGREEMENTSPI_H__
-#define __KEYAGREEMENTSPI_H__
+#ifndef __ELASTOSX_CRYPTO_KEYAGREEMENTSPI_H__
+#define __ELASTOSX_CRYPTO_KEYAGREEMENTSPI_H__
 
 #include <elastos/core/Object.h>
 
@@ -142,4 +142,4 @@ public:
 }
 }
 
-#endif // __KEYAGREEMENTSPI_H__
+#endif // __ELASTOSX_CRYPTO_KEYAGREEMENTSPI_H__

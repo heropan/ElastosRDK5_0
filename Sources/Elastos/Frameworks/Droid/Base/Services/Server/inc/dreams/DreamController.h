@@ -1,6 +1,6 @@
 
-#ifndef __DREAMCONTROLLER_H__
-#define __DREAMCONTROLLER_H__
+#ifndef __ELASTOS_DROID_SERVER_DREAMS_DREAMCONTROLLER_H__
+#define __ELASTOS_DROID_SERVER_DREAMS_DREAMCONTROLLER_H__
 
 #include "ext/frameworkext.h"
 
@@ -213,4 +213,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DREAMCONTROLLER_H__
+#endif //__ELASTOS_DROID_SERVER_DREAMS_DREAMCONTROLLER_H__

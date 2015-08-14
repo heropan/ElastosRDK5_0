@@ -1,6 +1,6 @@
 
-#ifndef __INPUT_PERSISTENTDATASTORE_H__
-#define __INPUT_PERSISTENTDATASTORE_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__
+#define __ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -147,4 +147,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INPUT_PERSISTENTDATASTORE_H__
+#endif //__ELASTOS_DROID_SERVER_INPUT_INPUT_PERSISTENTDATASTORE_H__

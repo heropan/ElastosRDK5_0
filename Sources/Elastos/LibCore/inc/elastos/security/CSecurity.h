@@ -1,6 +1,6 @@
 
-#ifndef __CSECURITY_H__
-#define __CSECURITY_H__
+#ifndef __ELASTOS_SECURITY_CSECURITY_H__
+#define __ELASTOS_SECURITY_CSECURITY_H__
 
 #include "_CSecurity.h"
 #include "elastos/Object.h"
@@ -102,4 +102,4 @@ private:
 }
 }
 
-#endif // __CSECURITY_H__
+#endif // __ELASTOS_SECURITY_CSECURITY_H__

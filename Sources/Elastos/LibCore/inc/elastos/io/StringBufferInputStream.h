@@ -1,6 +1,6 @@
 
-#ifndef __STRINGBUFFERINPUTSTREAM_H__
-#define __STRINGBUFFERINPUTSTREAM_H__
+#ifndef __ELASTOS_IO_STRINGBUFFERINPUTSTREAM_H__
+#define __ELASTOS_IO_STRINGBUFFERINPUTSTREAM_H__
 
 #include "InputStream.h"
 
@@ -81,4 +81,4 @@ protected:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__STRINGBUFFERINPUTSTREAM_H__
+#endif //__ELASTOS_IO_STRINGBUFFERINPUTSTREAM_H__

@@ -1,6 +1,6 @@
 
-#ifndef __DEVICEMONITOR_H__
-#define __DEVICEMONITOR_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_DEVICEMONITOR_H__
+#define __ELASTOS_DROID_SERVER_AM_DEVICEMONITOR_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
@@ -99,4 +99,4 @@ public:
 }
 }
 }
-#endif //__DEVICEMONITOR_H__
+#endif //__ELASTOS_DROID_SERVER_AM_DEVICEMONITOR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CIPHER_H__
-#define __CIPHER_H__
+#ifndef __ELASTOSX_CRYPTO_CIPHER_H__
+#define __ELASTOSX_CRYPTO_CIPHER_H__
 
 #include <elastos/core/Object.h>
 
@@ -1135,4 +1135,4 @@ private:
 }
 }
 
-#endif // __CIPHER_H__
+#endif // __ELASTOSX_CRYPTO_CIPHER_H__

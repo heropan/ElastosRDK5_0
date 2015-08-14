@@ -1,5 +1,5 @@
-#ifndef __WINDOWSTATE_H__
-#define __WINDOWSTATE_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
+#define __ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__
 
 #include "wm/CWindowManagerService.h"
 #include "wm/CSession.h"
@@ -657,4 +657,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__WINDOWSTATE_H__
+#endif //__ELASTOS_DROID_SERVER_WM_WINDOWSTATE_H__

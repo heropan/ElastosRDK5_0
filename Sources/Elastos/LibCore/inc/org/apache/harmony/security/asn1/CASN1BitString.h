@@ -1,6 +1,6 @@
 
-#ifndef __CASN1BITSTRING_H__
-#define __CASN1BITSTRING_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRING_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRING_H__
 
 #include "_CASN1BitString.h"
 #include "ASN1BitString.h"
@@ -88,4 +88,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1BITSTRING_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRING_H__

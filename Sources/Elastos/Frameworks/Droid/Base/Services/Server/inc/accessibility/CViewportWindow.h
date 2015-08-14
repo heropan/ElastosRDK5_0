@@ -1,7 +1,7 @@
 
 
-#ifndef __CVIEWPORTWINDOW_H__
-#define __CVIEWPORTWINDOW_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_CVIEWPORTWINDOW_H__
+#define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CVIEWPORTWINDOW_H__
 
 #include "_CViewportWindow.h"
 #include "ext/frameworkext.h"
@@ -112,4 +112,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CVIEWPORTWINDOW_H__
+#endif //__ELASTOS_DROID_SERVER_ACCESSIBILITY_CVIEWPORTWINDOW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __COMPATMODEPACKAGES_H__
-#define __COMPATMODEPACKAGES_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_COMPATMODEPACKAGES_H__
+#define __ELASTOS_DROID_SERVER_AM_COMPATMODEPACKAGES_H__
 
 #include "ext/frameworkext.h"
 #include "am/CActivityManagerService.h"
@@ -112,4 +112,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COMPATMODEPACKAGES_H__
+#endif //__ELASTOS_DROID_SERVER_AM_COMPATMODEPACKAGES_H__

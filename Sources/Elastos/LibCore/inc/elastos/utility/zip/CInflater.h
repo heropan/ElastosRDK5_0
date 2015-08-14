@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CINFLATER_H__
-#define __ELASTOS_UTILITY_CINFLATER_H__
+#ifndef __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CINFLATER_H__
+#define __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CINFLATER_H__
 
 #include "_Elastos_Utility_Zip_CInflater.h"
 #include "NativeZipStream.h"
@@ -310,4 +310,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CINFLATER_H__
+#endif //__ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CINFLATER_H__

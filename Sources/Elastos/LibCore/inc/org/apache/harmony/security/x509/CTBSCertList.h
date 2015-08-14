@@ -1,6 +1,6 @@
 
-#ifndef __CTBSCERTLIST_H__
-#define __CTBSCERTLIST_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CTBSCERTLIST_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CTBSCERTLIST_H__
 
 #include "_CTBSCertList.h"
 
@@ -57,4 +57,4 @@ private:
 }
 }
 
-#endif // __CTBSCERTLIST_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CTBSCERTLIST_H__

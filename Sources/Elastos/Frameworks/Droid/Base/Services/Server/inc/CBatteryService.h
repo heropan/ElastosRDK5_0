@@ -1,5 +1,5 @@
-#ifndef __CBATTERYSERVICE_H__
-#define __CBATTERYSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__
 
 #include "_CBatteryService.h"
 #include "ext/frameworkext.h"
@@ -330,4 +330,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBATTERYSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__

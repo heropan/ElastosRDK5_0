@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKMANAGEMENTSERVICE_H__
-#define __CNETWORKMANAGEMENTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CNETWORKMANAGEMENTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CNETWORKMANAGEMENTSERVICE_H__
 
 #include "ext/frameworkdef.h"
 #include "_CNetworkManagementService.h"
@@ -511,4 +511,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNETWORKMANAGEMENTSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CNETWORKMANAGEMENTSERVICE_H__

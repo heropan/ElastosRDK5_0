@@ -1,6 +1,6 @@
 
-#ifndef __CORESETTINGSOBSERVER_H__
-#define __CORESETTINGSOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CORESETTINGSOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_AM_CORESETTINGSOBSERVER_H__
 
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
@@ -58,4 +58,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CORESETTINGSOBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CORESETTINGSOBSERVER_H__

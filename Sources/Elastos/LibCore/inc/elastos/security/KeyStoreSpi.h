@@ -1,6 +1,6 @@
 
-#ifndef __KEYSTORESPI_H__
-#define __KEYSTORESPI_H__
+#ifndef __ELASTOS_SECURITY_KEYSTORESPI_H__
+#define __ELASTOS_SECURITY_KEYSTORESPI_H__
 
 
 
@@ -372,4 +372,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __KEYSTORESPI_H__
+#endif // __ELASTOS_SECURITY_KEYSTORESPI_H__

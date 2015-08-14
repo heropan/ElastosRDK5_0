@@ -1,6 +1,6 @@
 
-#ifndef __APPWIDGETSERVICEIMPL_H__
-#define __APPWIDGETSERVICEIMPL_H__
+#ifndef __ELASTOS_DROID_SERVER_APPWIDGETSERVICEIMPL_H__
+#define __ELASTOS_DROID_SERVER_APPWIDGETSERVICEIMPL_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -43,7 +43,6 @@ using Elastos::Droid::Utility::IAtomicFile;
 
 _ETL_NAMESPACE_BEGIN
 
-#ifndef AUTOPTR_APPWIDGETSERVICEIMPL_HASH_FUNC
 #define AUTOPTR_APPWIDGETSERVICEIMPL_HASH_FUNC
 
 // Hash functor for Pair<Int32, AutoPtr<IIntentFilterComparison> >
@@ -589,4 +588,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __APPWIDGETSERVICEIMPL_H__
+#endif // __ELASTOS_DROID_SERVER_APPWIDGETSERVICEIMPL_H__

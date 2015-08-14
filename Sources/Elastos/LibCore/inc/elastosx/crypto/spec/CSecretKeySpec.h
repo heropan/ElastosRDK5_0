@@ -1,6 +1,6 @@
 
-#ifndef __CSECRETKEYSPEC_H__
-#define __CSECRETKEYSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CSECRETKEYSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CSECRETKEYSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CSecretKeySpec.h"
 #include <elastos/core/Object.h>
@@ -131,4 +131,4 @@ private:
 }
 }
 
-#endif // __CSECRETKEYSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CSECRETKEYSPEC_H__

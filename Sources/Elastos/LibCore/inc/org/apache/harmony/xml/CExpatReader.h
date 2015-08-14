@@ -1,6 +1,6 @@
 
-#ifndef __CEXPATREADER_H__
-#define __CEXPATREADER_H__
+#ifndef __ORG_APACHE_HARMONY_XML_CEXPATREADER_H__
+#define __ORG_APACHE_HARMONY_XML_CEXPATREADER_H__
 
 #include "_CExpatReader.h"
 
@@ -79,4 +79,4 @@ private:
 }
 }
 
-#endif // __CEXPATREADER_H__
+#endif // __ORG_APACHE_HARMONY_XML_CEXPATREADER_H__

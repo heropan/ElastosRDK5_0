@@ -1,6 +1,6 @@
 
-#ifndef __RESULTMSG_H__
-#define __RESULTMSG_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_RESULTMSG_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_RESULTMSG_H__
 
 #include <elastos.h>
 
@@ -76,4 +76,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__RESULTMSG_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_RESULTMSG_H__

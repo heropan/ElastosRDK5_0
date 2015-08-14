@@ -1,6 +1,6 @@
 
-#ifndef __CWIFISERVICE_H__
-#define __CWIFISERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CWIFISERVICE_H__
+#define __ELASTOS_DROID_SERVER_CWIFISERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CWifiService.h"
@@ -845,4 +845,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CWIFISERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CWIFISERVICE_H__

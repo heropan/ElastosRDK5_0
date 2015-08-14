@@ -1,5 +1,5 @@
-#ifndef __BLOCKGUARDOS_H__
-#define __BLOCKGUARDOS_H__
+#ifndef __LIBCORE_IO_BLOCKGUARDOS_H__
+#define __LIBCORE_IO_BLOCKGUARDOS_H__
 
 #include "ForwardingOs.h"
 
@@ -276,4 +276,4 @@ private:
 } // namespace IO
 } // namespace Libcore
 
-#endif // __BLOCKGUARDOS_H__
+#endif // __LIBCORE_IO_BLOCKGUARDOS_H__

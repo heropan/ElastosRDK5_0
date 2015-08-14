@@ -1,6 +1,6 @@
 
-#ifndef __CASN1OID_H__
-#define __CASN1OID_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OID_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OID_H__
 
 #include "_CASN1Oid.h"
 #include <ASN1Oid.h>
@@ -28,4 +28,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1OID_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OID_H__

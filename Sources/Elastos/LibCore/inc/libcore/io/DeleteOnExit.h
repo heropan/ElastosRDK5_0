@@ -1,6 +1,6 @@
 
-#ifndef __DELETEONEXIT_H__
-#define __DELETEONEXIT_H__
+#ifndef __LIBCORE_IO_DELETEONEXIT_H__
+#define __LIBCORE_IO_DELETEONEXIT_H__
 
 #include "Thread.h"
 #include "utility/CArrayList.h"

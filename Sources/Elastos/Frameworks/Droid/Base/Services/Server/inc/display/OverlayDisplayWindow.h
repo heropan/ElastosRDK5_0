@@ -1,6 +1,6 @@
 
-#ifndef __OVERLAYDISPLAYWINDOW_H__
-#define __OVERLAYDISPLAYWINDOW_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYWINDOW_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYWINDOW_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -248,4 +248,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__OVERLAYDISPLAYWINDOW_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_OVERLAYDISPLAYWINDOW_H__

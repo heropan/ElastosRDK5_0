@@ -1,6 +1,6 @@
 
-#ifndef __CTIMEHELPER_H__
-#define __CTIMEHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CTIMEHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CTIMEHELPER_H__
 
 #include "_CTimeHelper.h"
 
@@ -26,4 +26,4 @@ private:
 }
 }
 
-#endif // __CTIMEHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CTIMEHELPER_H__

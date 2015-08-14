@@ -1,5 +1,5 @@
-#ifndef __CThrottleService_H__
-#define __CThrottleService_H__
+#ifndef __ELASTOS_DROID_SERVER_CTHROTTLESERVICE_H__
+#define __ELASTOS_DROID_SERVER_CTHROTTLESERVICE_H__
 
 #include "_CThrottleService.h"
 #include "ext/frameworkext.h"
@@ -429,4 +429,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CThrottleService_H__
+#endif //__ELASTOS_DROID_SERVER_CTHROTTLESERVICE_H__

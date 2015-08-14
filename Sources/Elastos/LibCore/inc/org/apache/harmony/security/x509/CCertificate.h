@@ -1,6 +1,6 @@
 
-#ifndef __CCERTIFICATE_H__
-#define __CCERTIFICATE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CCERTIFICATE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CCERTIFICATE_H__
 
 #include "_CCertificate.h"
 
@@ -40,4 +40,4 @@ private:
 }
 }
 
-#endif // __CCERTIFICATE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CCERTIFICATE_H__

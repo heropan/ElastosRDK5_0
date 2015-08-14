@@ -1,6 +1,6 @@
 
-#ifndef __CNAMEHELPER_H__
-#define __CNAMEHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X501_CNAMEHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X501_CNAMEHELPER_H__
 
 #include "_CNameHelper.h"
 
@@ -35,4 +35,4 @@ private:
 }
 }
 
-#endif // __CNAMEHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X501_CNAMEHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __STRICTMODEVIOLATIONDIALOG_H__
-#define __STRICTMODEVIOLATIONDIALOG_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__
+#define __ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__
 
 #include "ext/frameworkext.h"
 #include "am/BaseErrorDialog.h"
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__STRICTMODEVIOLATIONDIALOG_H__
+#endif //__ELASTOS_DROID_SERVER_AM_STRICTMODEVIOLATIONDIALOG_H__

@@ -1,9 +1,8 @@
-#ifndef __ELASTOS_UTILITY_LOGGER_H__
-#define __ELASTOS_UTILITY_LOGGER_H__
+#ifndef __ELASTOS_UTILITY_LOGGING_ELASTOS_UTILITY_LOGGER_H__
+#define __ELASTOS_UTILITY_LOGGING_ELASTOS_UTILITY_LOGGER_H__
 
 #include <elastos.h>
 
-#ifndef __LOGGER_MACRO__
 #define __LOGGER_MACRO__
 #define LOGGERD(tag, ...)  Elastos::Utility::Logging::Logger::D(tag, __VA_ARGS__);
 #define LOGGERE(tag, ...)  Elastos::Utility::Logging::Logger::E(tag, __VA_ARGS__);
@@ -137,4 +136,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_LOGGER_H__
+#endif // __ELASTOS_UTILITY_LOGGING_ELASTOS_UTILITY_LOGGER_H__

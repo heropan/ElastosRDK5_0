@@ -1,6 +1,6 @@
 
-#ifndef __CENGINEHELPER_H__
-#define __CENGINEHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINEHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINEHELPER_H__
 
 #include "_CEngineHelper.h"
 
@@ -26,4 +26,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CENGINEHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINEHELPER_H__

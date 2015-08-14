@@ -1,6 +1,6 @@
 
-#ifndef __CSERVICESHELPER_H__
-#define __CSERVICESHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
 
 #include "_CServicesHelper.h"
 
@@ -102,4 +102,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSERVICESHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__

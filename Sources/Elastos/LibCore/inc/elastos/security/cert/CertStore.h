@@ -1,6 +1,6 @@
 
-#ifndef __CERTSTORE_H__
-#define __CERTSTORE_H__
+#ifndef __ELASTOS_SECURITY_CERT_CERTSTORE_H__
+#define __ELASTOS_SECURITY_CERT_CERTSTORE_H__
 
 
 
@@ -102,4 +102,4 @@ private:
 }
 }
 
-#endif // __CERTSTORE_H__
+#endif // __ELASTOS_SECURITY_CERT_CERTSTORE_H__

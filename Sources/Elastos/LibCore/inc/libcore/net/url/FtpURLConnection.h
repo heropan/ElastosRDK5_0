@@ -1,6 +1,6 @@
 
-#ifndef __LIBCORE_NET_URI_FTPHANDLER_H__
-#define __LIBCORE_NET_URI_FTPHANDLER_H__
+#ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_FTPHANDLER_H__
+#define __LIBCORE_NET_URL_LIBCORE_NET_URI_FTPHANDLER_H__
 
 #include "URLConnection.h"
 
@@ -147,4 +147,4 @@ private:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__LIBCORE_NET_URI_FTPHANDLER_H__
+#endif //__LIBCORE_NET_URL_LIBCORE_NET_URI_FTPHANDLER_H__

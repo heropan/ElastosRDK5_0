@@ -1,5 +1,5 @@
-#ifndef __CSEARCHMANAGERSERVICE_H__
-#define __CSEARCHMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_SEARCH_CSEARCHMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_SEARCH_CSEARCHMANAGERSERVICE_H__
 
 #include "Elastos.Droid.Core.h"
 #include "ext/frameworkext.h"

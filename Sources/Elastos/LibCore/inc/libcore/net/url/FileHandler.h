@@ -1,6 +1,6 @@
 
-#ifndef __LIBCORE_NET_URI_FILEHANDLER_H__
-#define __LIBCORE_NET_URI_FILEHANDLER_H__
+#ifndef __LIBCORE_NET_URL_LIBCORE_NET_URI_FILEHANDLER_H__
+#define __LIBCORE_NET_URL_LIBCORE_NET_URI_FILEHANDLER_H__
 
 #include "URLStreamHandler.h"
 
@@ -41,4 +41,4 @@ public:
 } // namespace Net
 } // namespace Libcore
 
-#endif //__LIBCORE_NET_URI_FILEHANDLER_H__
+#endif //__LIBCORE_NET_URL_LIBCORE_NET_URI_FILEHANDLER_H__

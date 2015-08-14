@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNERINFOHELPER_H__
-#define __CSIGNERINFOHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFOHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFOHELPER_H__
 
 #include "_CSignerInfoHelper.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSIGNERINFOHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFOHELPER_H__

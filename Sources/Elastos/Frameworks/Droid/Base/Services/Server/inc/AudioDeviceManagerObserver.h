@@ -1,6 +1,6 @@
 
-#ifndef __AUDIODEVICEMANAGEROBSERVER_H__
-#define __AUDIODEVICEMANAGEROBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_AUDIODEVICEMANAGEROBSERVER_H__
+#define __ELASTOS_DROID_SERVER_AUDIODEVICEMANAGEROBSERVER_H__
 
 #include "content/BroadcastReceiver.h"
 #include "os/UEventObserver.h"
@@ -174,4 +174,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__AUDIODEVICEMANAGEROBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_AUDIODEVICEMANAGEROBSERVER_H__

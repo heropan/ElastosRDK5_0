@@ -1,6 +1,6 @@
 
-#ifndef __TASKRECORD_H__
-#define __TASKRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_TASKRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_TASKRECORD_H__
 
 #include "am/ThumbnailHolder.h"
 
@@ -59,4 +59,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TASKRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_TASKRECORD_H__

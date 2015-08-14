@@ -1,6 +1,6 @@
 
-#ifndef __BACKUPRECORD_H__
-#define __BACKUPRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_BACKUPRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_BACKUPRECORD_H__
 
 #include "am/ProcessRecord.h"
 
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BACKUPRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_BACKUPRECORD_H__

@@ -1,6 +1,6 @@
 
-#ifndef __LOCKDOWNVPNTRACKER_H__
-#define __LOCKDOWNVPNTRACKER_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCKDOWNVPNTRACKER_H__
+#define __ELASTOS_DROID_SERVER_LOCKDOWNVPNTRACKER_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkext.h"
@@ -131,4 +131,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __LOCKDOWNVPNTRACKER_H__
+#endif // __ELASTOS_DROID_SERVER_LOCKDOWNVPNTRACKER_H__

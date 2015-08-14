@@ -1,6 +1,6 @@
 
-#ifndef __COUNTRYDETECTORBASE_H__
-#define __COUNTRYDETECTORBASE_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_COUNTRYDETECTORBASE_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_COUNTRYDETECTORBASE_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -85,4 +85,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COUNTRYDETECTORBASE_H__
+#endif //__ELASTOS_DROID_SERVER_LOCATION_COUNTRYDETECTORBASE_H__

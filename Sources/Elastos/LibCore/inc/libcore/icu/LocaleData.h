@@ -1,5 +1,5 @@
-#ifndef __IO_LOCALEDATA_H__
-#define __IO_LOCALEDATA_H__
+#ifndef __LIBCORE_ICU_IO_LOCALEDATA_H__
+#define __LIBCORE_ICU_IO_LOCALEDATA_H__
 
 #include <Object.h>
 #include <elastos/utility/etl/HashMap.h>

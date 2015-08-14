@@ -1,6 +1,6 @@
 
-#ifndef __NATIVEDAEMONCONNECTOR_H__
-#define __NATIVEDAEMONCONNECTOR_H__
+#ifndef __ELASTOS_DROID_SERVER_NATIVEDAEMONCONNECTOR_H__
+#define __ELASTOS_DROID_SERVER_NATIVEDAEMONCONNECTOR_H__
 
 #include "ext/frameworkdef.h"
 #include "NativeDaemonEvent.h"
@@ -237,4 +237,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NATIVEDAEMONCONNECTOR_H__
+#endif //__ELASTOS_DROID_SERVER_NATIVEDAEMONCONNECTOR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PSOURCE_H__
-#define __PSOURCE_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_PSOURCE_H__
+#define __ELASTOSX_CRYPTO_SPEC_PSOURCE_H__
 
 #include <elastos/core/Object.h>
 
@@ -45,4 +45,4 @@ private:
 }
 }
 
-#endif // __PSOURCE_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_PSOURCE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_PATTERN_H__
-#define __REGEX_PATTERN_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_PATTERN_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_PATTERN_H__
 
 #include <unicode/regex.h>
 #include "Object.h"
@@ -176,4 +176,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REGEX_PATTERN_H__
+#endif //__ELASTOS_UTILITY_REGEX_REGEX_PATTERN_H__

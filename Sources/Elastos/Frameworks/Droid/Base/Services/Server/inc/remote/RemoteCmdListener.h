@@ -1,6 +1,6 @@
 
-#ifndef __REMOTECMDLISTENER_H__
-#define __REMOTECMDLISTENER_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_REMOTECMDLISTENER_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_REMOTECMDLISTENER_H__
 
 #include <ext/frameworkext.h>
 
@@ -44,4 +44,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__REMOTECMDLISTENER_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_REMOTECMDLISTENER_H__

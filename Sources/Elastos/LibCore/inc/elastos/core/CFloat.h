@@ -1,6 +1,6 @@
 
-#ifndef __CFLOAT_H__
-#define __CFLOAT_H__
+#ifndef __ELASTOS_CORE_CFLOAT_H__
+#define __ELASTOS_CORE_CFLOAT_H__
 
 #include "_Elastos_Core_CFloat.h"
 #include "Object.h"
@@ -121,4 +121,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif //__CFLOAT_H__
+#endif //__ELASTOS_CORE_CFLOAT_H__

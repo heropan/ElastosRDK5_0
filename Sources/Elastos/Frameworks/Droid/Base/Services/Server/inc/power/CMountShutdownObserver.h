@@ -1,6 +1,6 @@
 
-#ifndef __CMOUNTSHUTDOWNOBSERVER_H__
-#define __CMOUNTSHUTDOWNOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_CMOUNTSHUTDOWNOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_POWER_CMOUNTSHUTDOWNOBSERVER_H__
 
 #include "_CMountShutdownObserver.h"
 #include "power/ShutdownThread.h"
@@ -29,4 +29,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMOUNTSHUTDOWNOBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_POWER_CMOUNTSHUTDOWNOBSERVER_H__

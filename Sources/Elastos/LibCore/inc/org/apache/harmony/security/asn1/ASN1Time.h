@@ -1,6 +1,6 @@
 
-#ifndef __ASN1TIME_H__
-#define __ASN1TIME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TIME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TIME_H__
 
 #include <elastos.h>
 #include <ASN1StringType.h>
@@ -35,4 +35,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1TIME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TIME_H__

@@ -1,5 +1,5 @@
-#ifndef __CASYNCHRONOUSCLOSEMONITOR_H__
-#define __CASYNCHRONOUSCLOSEMONITOR_H__
+#ifndef __LIBCORE_IO_CASYNCHRONOUSCLOSEMONITOR_H__
+#define __LIBCORE_IO_CASYNCHRONOUSCLOSEMONITOR_H__
 
 #include "Singleton.h"
 #include "_Libcore_IO_CAsynchronousCloseMonitor.h"

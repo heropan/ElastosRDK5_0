@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_SQL_SQLLITE_CBACKUP_H__
-#define __ELASTOS_SQL_SQLLITE_CBACKUP_H__
+#ifndef __ELASTOS_SQL_SQLITE_ELASTOS_SQL_SQLLITE_CBACKUP_H__
+#define __ELASTOS_SQL_SQLITE_ELASTOS_SQL_SQLLITE_CBACKUP_H__
 
 #include "_Elastos_Sql_SQLite_CBackup.h"
 #include "Object.h"
@@ -57,4 +57,4 @@ protected:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __ELASTOS_SQL_SQLLITE_CBACKUP_H__
+#endif // __ELASTOS_SQL_SQLITE_ELASTOS_SQL_SQLLITE_CBACKUP_H__

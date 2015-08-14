@@ -1,5 +1,5 @@
-#ifndef __CSTATUSBARMANAGERSERVICE_H__
-#define __CSTATUSBARMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 
 #include "_CStatusBarManagerService.h"
 #include "ext/frameworkext.h"
@@ -411,4 +411,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CSTATUSBARMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__

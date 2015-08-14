@@ -1,6 +1,6 @@
 
-#ifndef __CASN1IMPLICIT_H__
-#define __CASN1IMPLICIT_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1IMPLICIT_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1IMPLICIT_H__
 
 #include "_CASN1Implicit.h"
 #include <ASN1Type.h>
@@ -106,4 +106,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1IMPLICIT_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1IMPLICIT_H__

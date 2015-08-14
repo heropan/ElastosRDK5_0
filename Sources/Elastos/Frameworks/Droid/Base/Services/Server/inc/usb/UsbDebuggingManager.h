@@ -1,6 +1,6 @@
 
-#ifndef __USBDEBUGGINGMANAGER_H__
-#define __USBDEBUGGINGMANAGER_H__
+#ifndef __ELASTOS_DROID_SERVER_USB_USBDEBUGGINGMANAGER_H__
+#define __ELASTOS_DROID_SERVER_USB_USBDEBUGGINGMANAGER_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "os/HandlerBase.h"
@@ -136,4 +136,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __USBDEBUGGINGMANAGER_H__
+#endif // __ELASTOS_DROID_SERVER_USB_USBDEBUGGINGMANAGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CECFIELDFP_H__
-#define __CECFIELDFP_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CECFIELDFP_H__
+#define __ELASTOS_SECURITY_SPEC_CECFIELDFP_H__
 
 #include "_CECFieldFp.h"
 
@@ -38,4 +38,4 @@ private:
 }
 }
 
-#endif // __CECFIELDFP_H__
+#endif // __ELASTOS_SECURITY_SPEC_CECFIELDFP_H__

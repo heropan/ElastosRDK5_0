@@ -1,5 +1,5 @@
-#ifndef __SERVICEWATCHER_H__
-#define __SERVICEWATCHER_H__
+#ifndef __ELASTOS_DROID_SERVER_LOCATION_SERVICEWATCHER_H__
+#define __ELASTOS_DROID_SERVER_LOCATION_SERVICEWATCHER_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/core/Math.h>

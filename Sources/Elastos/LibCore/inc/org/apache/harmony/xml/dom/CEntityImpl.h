@@ -1,6 +1,6 @@
 
-#ifndef __CENTITYIMPL_H__
-#define __CENTITYIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CENTITYIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CENTITYIMPL_H__
 
 #include "_CEntityImpl.h"
 
@@ -172,4 +172,4 @@ private:
 }
 }
 
-#endif // __CENTITYIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CENTITYIMPL_H__

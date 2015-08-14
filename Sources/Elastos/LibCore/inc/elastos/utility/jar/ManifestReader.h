@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_MANIFEST_READER_H__
-#define __ELASTOS_UTILITY_MANIFEST_READER_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_MANIFEST_READER_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_MANIFEST_READER_H__
 
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -69,4 +69,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_MANIFEST_READER_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_MANIFEST_READER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ICU_CNATIVECOLLATIONHELPER_H__
-#define __ICU_CNATIVECOLLATIONHELPER_H__
+#ifndef __LIBCORE_ICU_ICU_CNATIVECOLLATIONHELPER_H__
+#define __LIBCORE_ICU_ICU_CNATIVECOLLATIONHELPER_H__
 
 #include "_Libcore_ICU_CNativeCollationHelper.h"
 #include "Singleton.h"
@@ -101,4 +101,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ICU_CNATIVECOLLATIONHELPER_H__
+#endif //__LIBCORE_ICU_ICU_CNATIVECOLLATIONHELPER_H__

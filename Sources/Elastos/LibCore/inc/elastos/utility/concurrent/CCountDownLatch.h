@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
-#define __ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
 
 #include "_Elastos_Utility_Concurrent_CCountDownLatch.h"
 #include "AbstractQueuedSynchronizer.h"
@@ -157,4 +157,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_CCOUNTDOWNLATCH_H__

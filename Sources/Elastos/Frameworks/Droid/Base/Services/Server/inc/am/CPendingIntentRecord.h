@@ -1,6 +1,6 @@
 
-#ifndef __CPENDINGINTENTRECORD_H__
-#define __CPENDINGINTENTRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__
 
 #include "_CPendingIntentRecord.h"
 #include <Elastos.Droid.Core.h>
@@ -85,9 +85,8 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_USING_ADDR_CPENDINGINTENTRECORD
 #define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_CPENDINGINTENTRECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::CPendingIntentRecord)
 #endif
 
-#endif //__CPENDINGINTENTRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__

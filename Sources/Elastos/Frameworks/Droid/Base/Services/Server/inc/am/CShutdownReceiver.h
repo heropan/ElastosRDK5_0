@@ -1,6 +1,6 @@
 
-#ifndef __CSHUTDOWNRECEIVER_H__
-#define __CSHUTDOWNRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CSHUTDOWNRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_AM_CSHUTDOWNRECEIVER_H__
 
 #include "ext/frameworkext.h"
 #include "_CShutdownReceiver.h"
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSHUTDOWNRECEIVER_H__
+#endif // __ELASTOS_DROID_SERVER_AM_CSHUTDOWNRECEIVER_H__

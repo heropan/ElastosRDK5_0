@@ -1,6 +1,6 @@
 
-#ifndef __CONNECTIONRECORD_H__
-#define __CONNECTIONRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__
 
 #include "ext/frameworkext.h"
 
@@ -49,9 +49,8 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_CONNECTIONRECORD
 #define HASH_FUNC_FOR_AUTOPTR_CONNECTIONRECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ConnectionRecord)
 #endif
 
-#endif //__CONNECTIONRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CONNECTIONRECORD_H__

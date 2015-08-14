@@ -1,6 +1,6 @@
 
-#ifndef __CSERVICERECORD_H__
-#define __CSERVICERECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
 
 #include "_CServiceRecord.h"
 #include "ext/frameworkext.h"
@@ -227,9 +227,8 @@ private:
 } // namespace Elastos
 
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_CSERVICERECORD
 #define HASH_FUNC_FOR_AUTOPTR_CSERVICERECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::CServiceRecord)
 #endif
 
-#endif //__CSERVICERECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__

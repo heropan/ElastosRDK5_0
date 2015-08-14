@@ -1,5 +1,5 @@
-#ifndef __ACTIVEADMIN_H__
-#define __ACTIVEADMIN_H__
+#ifndef __ELASTOS_DROID_SERVER_ACTIVEADMIN_H__
+#define __ELASTOS_DROID_SERVER_ACTIVEADMIN_H__
 
 namespace Elastos {
 namespace Droid {
@@ -212,4 +212,4 @@ _ELASTOS_NAMESPACE_END
 }// Droid
 }// Elastos
 
-#endif //__ACTIVEADMIN_H__
+#endif //__ELASTOS_DROID_SERVER_ACTIVEADMIN_H__

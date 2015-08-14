@@ -1,6 +1,6 @@
 
-#ifndef __CCONNECTIVITYSERVICE_H__
-#define __CCONNECTIVITYSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CConnectivityService.h"
@@ -1089,4 +1089,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CCONNECTIVITYSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__

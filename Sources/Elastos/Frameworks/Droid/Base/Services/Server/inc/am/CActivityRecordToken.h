@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYRECORDTOKEN_H__
-#define __CACTIVITYRECORDTOKEN_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CACTIVITYRECORDTOKEN_H__
+#define __ELASTOS_DROID_SERVER_AM_CACTIVITYRECORDTOKEN_H__
 
 #include "_CActivityRecordToken.h"
 
@@ -48,4 +48,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYRECORDTOKEN_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CACTIVITYRECORDTOKEN_H__

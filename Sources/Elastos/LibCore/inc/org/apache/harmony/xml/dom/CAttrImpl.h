@@ -1,6 +1,6 @@
 
-#ifndef __CATTRIMPL_H__
-#define __CATTRIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CATTRIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CATTRIMPL_H__
 
 #include "_CAttrImpl.h"
 
@@ -175,4 +175,4 @@ private:
 }
 }
 
-#endif // __CATTRIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CATTRIMPL_H__

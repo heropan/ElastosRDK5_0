@@ -1,6 +1,6 @@
 
-#ifndef __ICU_CCOLLATIONKEYICU_H__
-#define __ICU_CCOLLATIONKEYICU_H__
+#ifndef __LIBCORE_ICU_ICU_CCOLLATIONKEYICU_H__
+#define __LIBCORE_ICU_ICU_CCOLLATIONKEYICU_H__
 
 #include "_Libcore_ICU_CCollationKeyICU.h"
 #include "CollationKeyICU.h"
@@ -18,4 +18,4 @@ public:
 } // namespace ICU
 } // namespace Libcore
 
-#endif // __ICU_CCOLLATIONKEYICU_H__
+#endif // __LIBCORE_ICU_ICU_CCOLLATIONKEYICU_H__

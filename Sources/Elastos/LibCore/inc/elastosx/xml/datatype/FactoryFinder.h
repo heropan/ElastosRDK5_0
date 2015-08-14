@@ -1,5 +1,5 @@
-#ifndef __FACTORYFINDER_H__
-#define __FACTORYFINDER_H__
+#ifndef __ELASTOSX_XML_DATATYPE_FACTORYFINDER_H__
+#define __ELASTOSX_XML_DATATYPE_FACTORYFINDER_H__
 
 #include "Object.h"
 

@@ -1,5 +1,5 @@
-#ifndef __TOSTRINGARRAY_S_H__
-#define __TOSTRINGARRAY_S_H__
+#ifndef __ELASTOS_IO_TOSTRINGARRAY_S_H__
+#define __ELASTOS_IO_TOSTRINGARRAY_S_H__
 
 #include <elquintet.h>
 #include <elastos/utility/etl/Vector.h>

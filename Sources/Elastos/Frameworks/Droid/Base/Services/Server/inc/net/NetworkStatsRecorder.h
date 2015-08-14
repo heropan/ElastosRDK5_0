@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKSTATSRECORDER_H__
-#define __NETWORKSTATSRECORDER_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_NETWORKSTATSRECORDER_H__
+#define __ELASTOS_DROID_SERVER_NET_NETWORKSTATSRECORDER_H__
 
 #include "NetworkStatsCollection.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -192,4 +192,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __NETWORKSTATSRECORDER_H__
+#endif // __ELASTOS_DROID_SERVER_NET_NETWORKSTATSRECORDER_H__

@@ -1,5 +1,5 @@
-#ifndef __SHAREDUSERSETTING_H__
-#define __SHAREDUSERSETTING_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_SHAREDUSERSETTING_H__
+#define __ELASTOS_DROID_SERVER_PM_SHAREDUSERSETTING_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -64,4 +64,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SHAREDUSERSETTING_H__
+#endif //__ELASTOS_DROID_SERVER_PM_SHAREDUSERSETTING_H__

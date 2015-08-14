@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTPROVIDERRECORD_H__
-#define __CONTENTPROVIDERRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__
 
 #include "ext/frameworkext.h"
 #include "am/CContentProviderConnection.h"
@@ -149,10 +149,9 @@ public:
 } // namespace Elastos
 
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_CONTENTPROVIDERRECORD
 #define HASH_FUNC_FOR_AUTOPTR_CONTENTPROVIDERRECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ContentProviderRecord)
 #endif
 
 
-#endif //__CONTENTPROVIDERRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_CONTENTPROVIDERRECORD_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ACTIVITYRECORD_H__
-#define __ACTIVITYRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -274,9 +274,8 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_ACTIVITYRECORD
 #define HASH_FUNC_FOR_AUTOPTR_ACTIVITYRECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ActivityRecord)
 #endif
 
-#endif // __ACTIVITYRECORD_H__
+#endif // __ELASTOS_DROID_SERVER_AM_ACTIVITYRECORD_H__

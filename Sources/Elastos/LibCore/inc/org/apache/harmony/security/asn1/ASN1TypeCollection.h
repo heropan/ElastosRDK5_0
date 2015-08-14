@@ -1,6 +1,6 @@
 
-#ifndef __ASN1TYPECOLLECTION_H__
-#define __ASN1TYPECOLLECTION_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPECOLLECTION_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPECOLLECTION_H__
 
 #include <elastos.h>
 #include "ASN1Constructed.h"
@@ -80,4 +80,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1TYPECOLLECTION_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPECOLLECTION_H__

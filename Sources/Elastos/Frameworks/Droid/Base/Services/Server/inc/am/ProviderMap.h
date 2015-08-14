@@ -1,6 +1,6 @@
 
-#ifndef __PROVIDERMAP_H__
-#define __PROVIDERMAP_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_PROVIDERMAP_H__
+#define __ELASTOS_DROID_SERVER_AM_PROVIDERMAP_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -109,4 +109,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PROVIDERMAP_H__
+#endif //__ELASTOS_DROID_SERVER_AM_PROVIDERMAP_H__

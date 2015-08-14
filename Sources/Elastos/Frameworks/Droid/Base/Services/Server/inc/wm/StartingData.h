@@ -1,5 +1,5 @@
-#ifndef __STARTINGDATA_H__
-#define __STARTINGDATA_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__
+#define __ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -38,4 +38,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__STARTINGDATA_H__
+#endif //__ELASTOS_DROID_SERVER_WM_STARTINGDATA_H__

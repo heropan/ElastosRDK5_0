@@ -1,6 +1,6 @@
 
-#ifndef __MESSAGEDIGEST_H__
-#define __MESSAGEDIGEST_H__
+#ifndef __ELASTOS_SECURITY_MESSAGEDIGEST_H__
+#define __ELASTOS_SECURITY_MESSAGEDIGEST_H__
 
 
 
@@ -110,4 +110,4 @@ private:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __MESSAGEDIGEST_H__
+#endif // __ELASTOS_SECURITY_MESSAGEDIGEST_H__

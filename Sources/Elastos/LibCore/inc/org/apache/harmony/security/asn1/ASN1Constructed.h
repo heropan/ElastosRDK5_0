@@ -1,6 +1,6 @@
 
-#ifndef __ASN1CONSTRUCTED_H__
-#define __ASN1CONSTRUCTED_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1CONSTRUCTED_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1CONSTRUCTED_H__
 
 #include <elastos.h>
 #include "ASN1Type.h"
@@ -58,4 +58,4 @@ protected:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1CONSTRUCTED_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1CONSTRUCTED_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CREASONCODE_H__
-#define __CREASONCODE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CREASONCODE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CREASONCODE_H__
 
 #include "_CReasonCode.h"
 
@@ -36,4 +36,4 @@ private:
 }
 }
 
-#endif // __CREASONCODE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CREASONCODE_H__

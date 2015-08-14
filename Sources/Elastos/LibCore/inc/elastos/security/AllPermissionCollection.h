@@ -1,6 +1,6 @@
 
-#ifndef __ALLPERMISSIONCOLLECTION_H__
-#define __ALLPERMISSIONCOLLECTION_H__
+#ifndef __ELASTOS_SECURITY_ALLPERMISSIONCOLLECTION_H__
+#define __ELASTOS_SECURITY_ALLPERMISSIONCOLLECTION_H__
 
 #include "PermissionCollection.h"
 #include "Object.h"
@@ -35,4 +35,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __ALLPERMISSIONCOLLECTION_H__
+#endif // __ELASTOS_SECURITY_ALLPERMISSIONCOLLECTION_H__

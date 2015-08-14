@@ -1,6 +1,6 @@
 
-#ifndef __CECPUBLICKEYSPEC_H__
-#define __CECPUBLICKEYSPEC_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CECPUBLICKEYSPEC_H__
+#define __ELASTOS_SECURITY_SPEC_CECPUBLICKEYSPEC_H__
 
 #include "_CECPublicKeySpec.h"
 
@@ -32,4 +32,4 @@ private:
 }
 }
 
-#endif // __CECPUBLICKEYSPEC_H__
+#endif // __ELASTOS_SECURITY_SPEC_CECPUBLICKEYSPEC_H__

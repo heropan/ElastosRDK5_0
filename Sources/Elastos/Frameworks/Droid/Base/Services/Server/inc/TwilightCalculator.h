@@ -1,6 +1,6 @@
 
-#ifndef __TWILIGHTCALCULATOR_H__
-#define __TWILIGHTCALCULATOR_H__
+#ifndef __ELASTOS_DROID_SERVER_TWILIGHTCALCULATOR_H__
+#define __ELASTOS_DROID_SERVER_TWILIGHTCALCULATOR_H__
 
 #include "ext/frameworkdef.h"
 #include <elastos/core/Math.h>
@@ -78,4 +78,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TWILIGHTCALCULATOR_H__
+#endif //__ELASTOS_DROID_SERVER_TWILIGHTCALCULATOR_H__

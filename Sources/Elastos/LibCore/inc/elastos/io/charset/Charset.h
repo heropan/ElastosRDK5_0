@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_IO_CHAARSET_CHAARSET_H__
-#define __ELASTOS_IO_CHAARSET_CHAARSET_H__
+#ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CHAARSET_CHAARSET_H__
+#define __ELASTOS_IO_CHARSET_ELASTOS_IO_CHAARSET_CHAARSET_H__
 
 #include "Object.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -139,4 +139,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif //__ELASTOS_IO_CHAARSET_CHAARSET_H__
+#endif //__ELASTOS_IO_CHARSET_ELASTOS_IO_CHAARSET_CHAARSET_H__

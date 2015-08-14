@@ -1,6 +1,6 @@
 
-#ifndef __CETHERNETSERVICE_H__
-#define __CETHERNETSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CETHERNETSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CETHERNETSERVICE_H__
 
 #include "_CEthernetService.h"
 #include "content/BroadcastReceiver.h"
@@ -157,4 +157,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CETHERNETSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CETHERNETSERVICE_H__

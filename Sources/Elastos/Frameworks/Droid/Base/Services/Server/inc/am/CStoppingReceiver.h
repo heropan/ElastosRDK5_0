@@ -1,6 +1,6 @@
 
-#ifndef __CSTOPPINGRECEIVER_H__
-#define __CSTOPPINGRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_CSTOPPINGRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_AM_CSTOPPINGRECEIVER_H__
 
 #include "ext/frameworkext.h"
 #include "_CStoppingReceiver.h"
@@ -49,4 +49,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSTOPPINGRECEIVER_H__
+#endif // __ELASTOS_DROID_SERVER_AM_CSTOPPINGRECEIVER_H__

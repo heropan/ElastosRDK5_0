@@ -1,6 +1,6 @@
 
-#ifndef __CDNPARSER_H__
-#define __CDNPARSER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CDNPARSER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CDNPARSER_H__
 
 #include "_CDNParser.h"
 
@@ -29,4 +29,4 @@ private:
 }
 }
 
-#endif // __CDNPARSER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CDNPARSER_H__

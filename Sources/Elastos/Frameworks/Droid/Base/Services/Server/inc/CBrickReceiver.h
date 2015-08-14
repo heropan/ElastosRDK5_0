@@ -1,5 +1,5 @@
-#ifndef __CBRICKRECEIVER_H__
-#define __CBRICKRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__
 
 #include "_CBrickReceiver.h"
 #include "ext/frameworkdef.h"
@@ -34,4 +34,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__CBRICKRECEIVER_H__
+#endif //__ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__

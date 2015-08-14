@@ -1,6 +1,6 @@
 
-#ifndef __CFINISHED_H__
-#define __CFINISHED_H__
+#ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CFINISHED_H__
+#define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CFINISHED_H__
 
 #include "_CFinished.h"
 
@@ -38,4 +38,4 @@ private:
 }
 }
 
-#endif // __CFINISHED_H__
+#endif // __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CFINISHED_H__

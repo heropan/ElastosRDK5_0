@@ -1,6 +1,6 @@
 
-#ifndef __CPUBLICKEYIMPL_H__
-#define __CPUBLICKEYIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_CPUBLICKEYIMPL_H__
+#define __ORG_APACHE_HARMONY_SECURITY_CPUBLICKEYIMPL_H__
 
 #include "_CPublicKeyImpl.h"
 
@@ -39,4 +39,4 @@ private:
 }
 }
 
-#endif // __CPUBLICKEYIMPL_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_CPUBLICKEYIMPL_H__

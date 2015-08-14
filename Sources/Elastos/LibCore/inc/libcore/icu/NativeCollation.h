@@ -1,6 +1,6 @@
 
-#ifndef __NATIVECOLLATION_H__
-#define __NATIVECOLLATION_H__
+#ifndef __LIBCORE_ICU_NATIVECOLLATION_H__
+#define __LIBCORE_ICU_NATIVECOLLATION_H__
 
 #include <unicode/unistr.h>
 #include "coredef.h"
@@ -111,4 +111,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__NATIVECOLLATION_H__
+#endif //__LIBCORE_ICU_NATIVECOLLATION_H__

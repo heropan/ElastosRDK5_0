@@ -1,6 +1,6 @@
 
-#ifndef __CSECRETKEYFACTORYHELPER_H__
-#define __CSECRETKEYFACTORYHELPER_H__
+#ifndef __ELASTOSX_CRYPTO_CSECRETKEYFACTORYHELPER_H__
+#define __ELASTOSX_CRYPTO_CSECRETKEYFACTORYHELPER_H__
 
 #include "_Elastosx_Crypto_CSecretKeyFactoryHelper.h"    // include 编译器生成的夹壁墙头文件，文件名格式：_命名空间_CAR类名称.h
 #include <elastos/core/Singleton.h>             // include 单例基类
@@ -88,4 +88,4 @@ public:
 }
 }
 
-#endif // __CSECRETKEYFACTORYHELPER_H__
+#endif // __ELASTOSX_CRYPTO_CSECRETKEYFACTORYHELPER_H__

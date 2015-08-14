@@ -1,5 +1,5 @@
-#ifndef __SCREENROTATIONANIMATION_H__
-#define __SCREENROTATIONANIMATION_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
+#define __ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__
 
 #include "wm/CWindowManagerService.h"
 #include "wm/BlackFrame.h"
@@ -208,4 +208,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__SCREENROTATIONANIMATION_H__
+#endif //__ELASTOS_DROID_SERVER_WM_SCREENROTATIONANIMATION_H__

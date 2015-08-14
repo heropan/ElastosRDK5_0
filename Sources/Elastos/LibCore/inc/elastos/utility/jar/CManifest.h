@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CMANIFEST_H__
-#define __ELASTOS_UTILITY_CMANIFEST_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CMANIFEST_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CMANIFEST_H__
 
 #include "_Elastos_Utility_Jar_CManifest.h"
 #include "Object.h"
@@ -219,4 +219,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CMANIFEST_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CMANIFEST_H__

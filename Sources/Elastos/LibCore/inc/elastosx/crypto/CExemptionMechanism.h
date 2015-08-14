@@ -1,6 +1,6 @@
 
-#ifndef __CEXEMPTIONMECHANISM_H__
-#define __CEXEMPTIONMECHANISM_H__
+#ifndef __ELASTOSX_CRYPTO_CEXEMPTIONMECHANISM_H__
+#define __ELASTOSX_CRYPTO_CEXEMPTIONMECHANISM_H__
 
 #include "_Elastosx_Crypto_CExemptionMechanism.h"
 #include <elastos/core/Object.h>
@@ -288,4 +288,4 @@ private:
 }
 }
 
-#endif // __CEXEMPTIONMECHANISM_H__
+#endif // __ELASTOSX_CRYPTO_CEXEMPTIONMECHANISM_H__

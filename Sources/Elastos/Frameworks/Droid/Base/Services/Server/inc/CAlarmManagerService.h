@@ -1,6 +1,6 @@
 
-#ifndef __CALARMMANAGERSERVICE_H__
-#define __CALARMMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CAlarmManagerService.h"
@@ -446,4 +446,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CALARMMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__

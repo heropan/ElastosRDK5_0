@@ -1,6 +1,6 @@
 
-#ifndef __ZIGBEETHSENSOR_H__
-#define __ZIGBEETHSENSOR_H__
+#ifndef __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEETHSENSOR_H__
+#define __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEETHSENSOR_H__
 
 #include "zigbee/ZigbeeTemperatureSensor.h"
 #include "zigbee/ZigbeeHumiditySensor.h"
@@ -138,4 +138,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ZIGBEETHSENSOR_H__
+#endif //__ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEETHSENSOR_H__

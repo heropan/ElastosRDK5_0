@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTTYPE_H__
-#define __CONTENTTYPE_H__
+#ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CONTENTTYPE_H__
+#define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CONTENTTYPE_H__
 
 #include <elastos.h>
 
@@ -50,4 +50,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CONTENTTYPE_H__
+#endif // __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CONTENTTYPE_H__

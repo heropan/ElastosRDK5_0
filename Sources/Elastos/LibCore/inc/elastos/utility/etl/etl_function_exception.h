@@ -1,6 +1,6 @@
 
-#ifndef __EFUNCTEXCEPT_H__
-#define __EFUNCTEXCEPT_H__
+#ifndef __STD_EFUNCTEXCEPT_H__
+#define __STD_EFUNCTEXCEPT_H__
 
 #include <elastos/utility/etl/etl_exception_defines.h>
 #include <stdlib.h>
@@ -93,4 +93,4 @@ namespace std
 
 
 
-#endif //__EFUNCTEXCEPT_H__
+#endif //__STD_EFUNCTEXCEPT_H__

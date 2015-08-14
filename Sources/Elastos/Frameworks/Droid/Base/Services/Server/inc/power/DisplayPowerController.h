@@ -1,5 +1,5 @@
-#ifndef __DISPLAYPOWERCONTROLLER_H__
-#define __DISPLAYPOWERCONTROLLER_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERCONTROLLER_H__
+#define __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERCONTROLLER_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
@@ -669,4 +669,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __DISPLAYPOWERCONTROLLER_H__
+#endif // __ELASTOS_DROID_SERVER_POWER_DISPLAYPOWERCONTROLLER_H__

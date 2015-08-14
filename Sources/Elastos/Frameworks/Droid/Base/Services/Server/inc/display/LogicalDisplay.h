@@ -1,6 +1,6 @@
 
-#ifndef __LOGICALDISPLAY_H__
-#define __LOGICALDISPLAY_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_LOGICALDISPLAY_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_LOGICALDISPLAY_H__
 
 #include "ext/frameworkdef.h"
 #include "display/DisplayDevice.h"
@@ -178,4 +178,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__LOGICALDISPLAY_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_LOGICALDISPLAY_H__

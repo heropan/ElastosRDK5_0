@@ -1,5 +1,5 @@
-#ifndef __SCREENMAGNIFIER_H__
-#define __SCREENMAGNIFIER_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_SCREENMAGNIFIER_H__
+#define __ELASTOS_DROID_SERVER_ACCESSIBILITY_SCREENMAGNIFIER_H__
 
 #include "ext/frameworkdef.h"
 #include "content/BroadcastReceiver.h"
@@ -732,4 +732,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__SCREENMAGNIFIER_H__
+#endif //__ELASTOS_DROID_SERVER_ACCESSIBILITY_SCREENMAGNIFIER_H__

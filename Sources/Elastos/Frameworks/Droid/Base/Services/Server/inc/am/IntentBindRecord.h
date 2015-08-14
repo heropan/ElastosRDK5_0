@@ -1,6 +1,6 @@
 
-#ifndef __INTENTBINDRECORD_H__
-#define __INTENTBINDRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_INTENTBINDRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_INTENTBINDRECORD_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -11,7 +11,6 @@ using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IIntentFilterComparison;
 
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_USING_ADDR_PROCESSRECORD
 #define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_PROCESSRECORD
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Server::Am::ProcessRecord)
 #endif
@@ -72,4 +71,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INTENTBINDRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_INTENTBINDRECORD_H__

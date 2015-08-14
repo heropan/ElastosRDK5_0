@@ -1,6 +1,6 @@
 
-#ifndef __BROADCASTRECORD_H__
-#define __BROADCASTRECORD_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__
+#define __ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__
 
 #include "ext/frameworkdef.h"
 #include "am/BroadcastFilter.h"
@@ -107,4 +107,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BROADCASTRECORD_H__
+#endif //__ELASTOS_DROID_SERVER_AM_BROADCASTRECORD_H__

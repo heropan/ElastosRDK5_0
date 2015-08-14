@@ -1,6 +1,6 @@
 
-#ifndef __CBITSETHELPER_H__
-#define __CBITSETHELPER_H__
+#ifndef __ELASTOS_UTILITY_CBITSETHELPER_H__
+#define __ELASTOS_UTILITY_CBITSETHELPER_H__
 
 #include "_Elastos_Utility_CBitSetHelper.h"
 #include "Singleton.h"
@@ -59,4 +59,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__CBITSETHELPER_H__
+#endif //__ELASTOS_UTILITY_CBITSETHELPER_H__

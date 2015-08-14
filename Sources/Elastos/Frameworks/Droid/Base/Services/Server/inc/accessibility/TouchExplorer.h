@@ -1,5 +1,5 @@
-#ifndef __TouchExplorer_H__
-#define __TouchExplorer_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_TOUCHEXPLORER_H__
+#define __ELASTOS_DROID_SERVER_ACCESSIBILITY_TOUCHEXPLORER_H__
 
 #include "ext/frameworkdef.h"
 #include "os/Runnable.h"
@@ -830,4 +830,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__TouchExplorer_H__
+#endif //__ELASTOS_DROID_SERVER_ACCESSIBILITY_TOUCHEXPLORER_H__

@@ -1,5 +1,5 @@
-#ifndef __FILEPATHTOURI_H__
-#define __FILEPATHTOURI_H__
+#ifndef __ELASTOSX_XML_PARSERS_FILEPATHTOURI_H__
+#define __ELASTOSX_XML_PARSERS_FILEPATHTOURI_H__
 
 #include "Object.h"
 

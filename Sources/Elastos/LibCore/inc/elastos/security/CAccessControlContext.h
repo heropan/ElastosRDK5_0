@@ -1,6 +1,6 @@
 
-#ifndef __CACCESSCONTROLCONTEXT_H__
-#define __CACCESSCONTROLCONTEXT_H__
+#ifndef __ELASTOS_SECURITY_CACCESSCONTROLCONTEXT_H__
+#define __ELASTOS_SECURITY_CACCESSCONTROLCONTEXT_H__
 
 #include "_Elastos_Security_CAccessControlContext.h"
 
@@ -27,4 +27,4 @@ public:
 }
 }
 
-#endif // __CACCESSCONTROLCONTEXT_H__
+#endif // __ELASTOS_SECURITY_CACCESSCONTROLCONTEXT_H__

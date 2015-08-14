@@ -1,5 +1,5 @@
-#ifndef __MAGNIFICATIONSPEC_H__
-#define __MAGNIFICATIONSPEC_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_MAGNIFICATIONSPEC_H__
+#define __ELASTOS_DROID_SERVER_WM_MAGNIFICATIONSPEC_H__
 
 
 namespace Elastos {
@@ -32,4 +32,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__MAGNIFICATIONSPEC_H__
+#endif //__ELASTOS_DROID_SERVER_WM_MAGNIFICATIONSPEC_H__

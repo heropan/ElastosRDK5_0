@@ -1,6 +1,6 @@
 
-#ifndef __SHUTDOWNTHREAD_H__
-#define __SHUTDOWNTHREAD_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__
+#define __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
@@ -327,4 +327,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __SHUTDOWNTHREAD_H__
+#endif // __ELASTOS_DROID_SERVER_POWER_SHUTDOWNTHREAD_H__

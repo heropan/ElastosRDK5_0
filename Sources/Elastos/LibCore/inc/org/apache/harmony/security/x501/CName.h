@@ -1,6 +1,6 @@
 
-#ifndef __CNAME_H__
-#define __CNAME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X501_CNAME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X501_CNAME_H__
 
 #include "_CName.h"
 
@@ -42,4 +42,4 @@ private:
 }
 }
 
-#endif // __CNAME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X501_CNAME_H__

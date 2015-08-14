@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKPOLICYLISTENER_H__
-#define __CNETWORKPOLICYLISTENER_H__
+#ifndef __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__
+#define __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__
 
 #include "_CNetworkPolicyListener.h"
 
@@ -34,4 +34,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNETWORKPOLICYLISTENER_H__
+#endif // __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__

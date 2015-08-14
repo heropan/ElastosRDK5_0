@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CJARFILE_H__
-#define __ELASTOS_UTILITY_CJARFILE_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJARFILE_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJARFILE_H__
 
 #include "_Elastos_Utility_Jar_CJarFile.h"
 #include "ZipFile.h"
@@ -225,4 +225,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CJARFILE_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CJARFILE_H__

@@ -1,5 +1,5 @@
-#ifndef __NETWORKTIMEUPDATESERVICE_H__
-#define __NETWORKTIMEUPDATESERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
+#define __ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -214,4 +214,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__NETWORKTIMEUPDATESERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_NETWORKTIMEUPDATESERVICE_H__

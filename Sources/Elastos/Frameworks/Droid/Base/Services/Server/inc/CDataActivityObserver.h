@@ -1,6 +1,6 @@
 
-#ifndef __CDATAACTIVITYOBSERVER_H__
-#define __CDATAACTIVITYOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__
 
 #include "_CDataActivityObserver.h"
 #include "CConnectivityService.h"
@@ -84,4 +84,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CDATAACTIVITYOBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__

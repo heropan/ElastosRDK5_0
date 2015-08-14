@@ -1,6 +1,6 @@
 
-#ifndef __LIGHTSSERVICE_H__
-#define __LIGHTSSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_LIGHTSSERVICE_H__
+#define __ELASTOS_DROID_SERVER_LIGHTSSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -154,4 +154,4 @@ private:
 }
 }
 
-#endif //__LIGHTSSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_LIGHTSSERVICE_H__

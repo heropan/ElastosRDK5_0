@@ -1,6 +1,6 @@
 
-#ifndef __CSAMPLINGPROFILERSERVICE_H__
-#define __CSAMPLINGPROFILERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CSAMPLINGPROFILERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CSAMPLINGPROFILERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CSamplingProfilerService.h"
@@ -97,4 +97,4 @@ private:
 }// Droid
 }// Elastos
 
-#endif // __CSAMPLINGPROFILERSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CSAMPLINGPROFILERSERVICE_H__

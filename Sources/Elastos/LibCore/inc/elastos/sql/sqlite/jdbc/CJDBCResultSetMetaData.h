@@ -1,6 +1,6 @@
 
-#ifndef __CJDBCRESULTSETMETADATA_H__
-#define __CJDBCRESULTSETMETADATA_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSETMETADATA_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSETMETADATA_H__
 
 #include <elastos/core/Object.h>
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCResultSetMetaData.h"
@@ -128,4 +128,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCRESULTSETMETADATA_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CJDBCRESULTSETMETADATA_H__

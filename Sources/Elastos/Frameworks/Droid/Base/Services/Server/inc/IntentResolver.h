@@ -1,5 +1,5 @@
-#ifndef __INTENTRESOLVER_H__
-#define __INTENTRESOLVER_H__
+#ifndef __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
+#define __ELASTOS_DROID_SERVER_INTENTRESOLVER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Set.h>
@@ -838,4 +838,4 @@ void IntentResolver<F, R>::BuildResolveList(
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INTENTRESOLVER_H__
+#endif //__ELASTOS_DROID_SERVER_INTENTRESOLVER_H__

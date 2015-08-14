@@ -1,6 +1,6 @@
 
-#ifndef __CKEYSTOREHELPER_H__
-#define __CKEYSTOREHELPER_H__
+#ifndef __ELASTOS_SECURITY_CKEYSTOREHELPER_H__
+#define __ELASTOS_SECURITY_CKEYSTOREHELPER_H__
 
 #include "_CKeyStoreHelper.h"
 
@@ -33,4 +33,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __CKEYSTOREHELPER_H__
+#endif // __ELASTOS_SECURITY_CKEYSTOREHELPER_H__

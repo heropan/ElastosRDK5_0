@@ -1,6 +1,6 @@
 
-#ifndef __X509CRLENTRY_H__
-#define __X509CRLENTRY_H__
+#ifndef __ELASTOS_SECURITY_CERT_X509CRLENTRY_H__
+#define __ELASTOS_SECURITY_CERT_X509CRLENTRY_H__
 
 
 using Elastos::Math::IBigInteger;
@@ -103,4 +103,4 @@ private:
 } // end Security
 } // end Elastos
 
-#endif // __X509CRLENTRY_H__
+#endif // __ELASTOS_SECURITY_CERT_X509CRLENTRY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CMGF1PARAMETERSPEC_H__
-#define __CMGF1PARAMETERSPEC_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CMGF1PARAMETERSPEC_H__
+#define __ELASTOS_SECURITY_SPEC_CMGF1PARAMETERSPEC_H__
 
 #include "_CMGF1ParameterSpec.h"
 
@@ -54,4 +54,4 @@ private:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __CMGF1PARAMETERSPEC_H__
+#endif // __ELASTOS_SECURITY_SPEC_CMGF1PARAMETERSPEC_H__

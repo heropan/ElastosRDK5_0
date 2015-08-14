@@ -1,6 +1,6 @@
 
-#ifndef __CWALLPAPERMANAGERSERVICE_H__
-#define __CWALLPAPERMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CWALLPAPERMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CWALLPAPERMANAGERSERVICE_H__
 
 #include "_CWallpaperManagerService.h"
 #include "os/FileObserver.h"
@@ -331,4 +331,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CWALLPAPERMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CWALLPAPERMANAGERSERVICE_H__

@@ -1,5 +1,5 @@
-#ifndef __CDELETEONEXITHELPER_H__
-#define __CDELETEONEXITHELPER_H__
+#ifndef __LIBCORE_IO_CDELETEONEXITHELPER_H__
+#define __LIBCORE_IO_CDELETEONEXITHELPER_H__
 
 #include "Singleton.h"
 #include "_Libcore_IO_CDeleteOnExitHelper.h"

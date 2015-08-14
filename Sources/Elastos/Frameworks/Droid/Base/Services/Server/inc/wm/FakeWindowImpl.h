@@ -1,5 +1,5 @@
-#ifndef __FAKEWINDOWIMPL_H__
-#define __FAKEWINDOWIMPL_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
+#define __ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__
 
 #include "wm/CWindowManagerService.h"
 #include "input/InputApplicationHandle.h"
@@ -72,4 +72,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__FAKEWINDOWIMPL_H__
+#endif //__ELASTOS_DROID_SERVER_WM_FAKEWINDOWIMPL_H__

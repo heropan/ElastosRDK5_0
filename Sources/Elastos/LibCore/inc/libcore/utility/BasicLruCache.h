@@ -1,6 +1,6 @@
 
-#ifndef __BASICLRUCACHE_H__
-#define __BASICLRUCACHE_H__
+#ifndef __LIBCORE_UTILITY_BASICLRUCACHE_H__
+#define __LIBCORE_UTILITY_BASICLRUCACHE_H__
 
 #include "Object.h"
 
@@ -90,4 +90,4 @@ private:
 } // namespace Utility
 } // namespace Libcore
 
-#endif //__BASICLRUCACHE_H__
+#endif //__LIBCORE_UTILITY_BASICLRUCACHE_H__

@@ -1,5 +1,5 @@
-#ifndef __CSESSION_H__
-#define __CSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_CSESSION_H__
+#define __ELASTOS_DROID_SERVER_WM_CSESSION_H__
 
 #include "_CSession.h"
 #include "wm/CWindowManagerService.h"
@@ -322,4 +322,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__CSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_WM_CSESSION_H__

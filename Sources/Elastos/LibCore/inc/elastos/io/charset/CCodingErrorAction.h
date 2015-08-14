@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_IO_CCODINGERRORACTION_H__
-#define __ELASTOS_IO_CCODINGERRORACTION_H__
+#ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CCODINGERRORACTION_H__
+#define __ELASTOS_IO_CHARSET_ELASTOS_IO_CCODINGERRORACTION_H__
 
 #include "_Elastos_IO_Charset_CCodingErrorAction.h"
 #include "Object.h"
@@ -48,4 +48,4 @@ private:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CCODINGERRORACTION_H__
+#endif // __ELASTOS_IO_CHARSET_ELASTOS_IO_CCODINGERRORACTION_H__

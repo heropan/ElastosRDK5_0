@@ -1,6 +1,6 @@
 
-#ifndef __INPUTAPPLICATIONHANDLE_H__
-#define __INPUTAPPLICATIONHANDLE_H__
+#ifndef __ELASTOS_DROID_SERVER_INPUT_INPUTAPPLICATIONHANDLE_H__
+#define __ELASTOS_DROID_SERVER_INPUT_INPUTAPPLICATIONHANDLE_H__
 
 #include <elastos.h>
 #include "NativeInputApplicationHandle.h"
@@ -50,4 +50,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INPUTAPPLICATIONHANDLE_H__
+#endif //__ELASTOS_DROID_SERVER_INPUT_INPUTAPPLICATIONHANDLE_H__

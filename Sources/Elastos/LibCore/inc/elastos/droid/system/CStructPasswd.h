@@ -1,6 +1,6 @@
 
-#ifndef __CSTRUCTPASSWD_H__
-#define __CSTRUCTPASSWD_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTPASSWD_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTPASSWD_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructPasswd.h"
@@ -58,4 +58,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSTRUCTPASSWD_H__
+#endif // __ELASTOS_DROID_SYSTEM_CSTRUCTPASSWD_H__

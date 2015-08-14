@@ -1,6 +1,6 @@
 
-#ifndef __CUPDATECREDENTIALSSESSION_H__
-#define __CUPDATECREDENTIALSSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CUPDATECREDENTIALSSESSION_H__
+#define __ELASTOS_DROID_SERVER_ACCOUNTS_CUPDATECREDENTIALSSESSION_H__
 
 #include "_CUpdateCredentialsSession.h"
 #include "accounts/AccountManagerServiceSession.h"
@@ -68,4 +68,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUPDATECREDENTIALSSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_ACCOUNTS_CUPDATECREDENTIALSSESSION_H__

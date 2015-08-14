@@ -1,5 +1,5 @@
-#ifndef __CSTRUCTGROUPSOURCEREQ_H__
-#define __CSTRUCTGROUPSOURCEREQ_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPSOURCEREQ_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTGROUPSOURCEREQ_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructGroupSourceReq.h"

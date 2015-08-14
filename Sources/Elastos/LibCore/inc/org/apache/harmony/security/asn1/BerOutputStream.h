@@ -1,6 +1,6 @@
 
-#ifndef __BEROUTPUTSTREAM_H__
-#define __BEROUTPUTSTREAM_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_BEROUTPUTSTREAM_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_BEROUTPUTSTREAM_H__
 
 namespace Org {
 namespace Apache {
@@ -107,4 +107,4 @@ protected:
 } // namespace Apache
 } // namespace Org
 
-#endif // __BEROUTPUTSTREAM_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_BEROUTPUTSTREAM_H__

@@ -1,5 +1,5 @@
-#ifndef __INPUTMONITOR_H__
-#define __INPUTMONITOR_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_INPUTMONITOR_H__
+#define __ELASTOS_DROID_SERVER_WM_INPUTMONITOR_H__
 
 #include "wm/WindowState.h"
 #include "wm/AppWindowToken.h"
@@ -161,4 +161,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__INPUTMONITOR_H__
+#endif //__ELASTOS_DROID_SERVER_WM_INPUTMONITOR_H__

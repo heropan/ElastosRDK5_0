@@ -1,6 +1,6 @@
 
-#ifndef __CBLUETOOTHMANAGERSERVICE_H__
-#define __CBLUETOOTHMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__
 
 #include "_CBluetoothManagerService.h"
 #include <elastos/core/Thread.h>
@@ -299,4 +299,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBLUETOOTHMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__

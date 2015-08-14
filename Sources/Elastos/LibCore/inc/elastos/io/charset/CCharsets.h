@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_IO_CCHARSETS_H__
-#define __ELASTOS_IO_CCHARSETS_H__
+#ifndef __ELASTOS_IO_CHARSET_ELASTOS_IO_CCHARSETS_H__
+#define __ELASTOS_IO_CHARSET_ELASTOS_IO_CCHARSETS_H__
 
 #include "_Elastos_IO_Charset_CCharsets.h"
 #include "Singleton.h"
@@ -166,4 +166,4 @@ public:
 } // namespace IO
 } // namespace Elastos
 
-#endif // __ELASTOS_IO_CCHARSETS_H__
+#endif // __ELASTOS_IO_CHARSET_ELASTOS_IO_CCHARSETS_H__

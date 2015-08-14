@@ -1,5 +1,5 @@
-#ifndef __STRICTMODEFLASH_H__
-#define __STRICTMODEFLASH_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_STRICTMODEFLASH_H__
+#define __ELASTOS_DROID_SERVER_WM_STRICTMODEFLASH_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -47,4 +47,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__STRICTMODEFLASH_H__
+#endif //__ELASTOS_DROID_SERVER_WM_STRICTMODEFLASH_H__

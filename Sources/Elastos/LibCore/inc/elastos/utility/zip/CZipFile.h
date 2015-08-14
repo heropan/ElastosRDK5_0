@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CZIPFILE_H__
-#define __ELASTOS_UTILITY_CZIPFILE_H__
+#ifndef __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CZIPFILE_H__
+#define __ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CZIPFILE_H__
 
 #include "_Elastos_Utility_Zip_CZipFile.h"
 #include "ZipFile.h"
@@ -19,4 +19,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CZIPFILE_H__
+#endif //__ELASTOS_UTILITY_ZIP_ELASTOS_UTILITY_CZIPFILE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CERTPATH_H__
-#define __CERTPATH_H__
+#ifndef __ELASTOS_SECURITY_CERT_CERTPATH_H__
+#define __ELASTOS_SECURITY_CERT_CERTPATH_H__
 
 
 
@@ -179,4 +179,4 @@ private:
 } // end Security
 } // end Elastos
 
-#endif // __CERTPATH_H__
+#endif // __ELASTOS_SECURITY_CERT_CERTPATH_H__

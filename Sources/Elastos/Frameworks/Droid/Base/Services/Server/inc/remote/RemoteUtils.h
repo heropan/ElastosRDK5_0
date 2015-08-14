@@ -1,6 +1,6 @@
 
-#ifndef __REMOTEUTILS_H__
-#define __REMOTEUTILS_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_REMOTEUTILS_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_REMOTEUTILS_H__
 
 #include <elastos.h>
 
@@ -35,4 +35,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__REMOTEUTILS_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_REMOTEUTILS_H__

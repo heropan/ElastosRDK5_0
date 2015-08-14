@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNERINFO_H__
-#define __CSIGNERINFO_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFO_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFO_H__
 
 #include "_CSignerInfo.h"
 #include <ASN1SequenceMacro.h>
@@ -108,4 +108,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSIGNERINFO_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFO_H__

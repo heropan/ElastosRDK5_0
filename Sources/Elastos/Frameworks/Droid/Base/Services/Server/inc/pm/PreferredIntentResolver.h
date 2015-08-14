@@ -1,5 +1,5 @@
-#ifndef __PREFERREDINTENTRESOLVER_H__
-#define __PREFERREDINTENTRESOLVER_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_PREFERREDINTENTRESOLVER_H__
+#define __ELASTOS_DROID_SERVER_PM_PREFERREDINTENTRESOLVER_H__
 
 #include "IntentResolver.h"
 #include "pm/PreferredActivity.h"
@@ -47,5 +47,5 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PREFERREDINTENTRESOLVER_H__
+#endif //__ELASTOS_DROID_SERVER_PM_PREFERREDINTENTRESOLVER_H__
 

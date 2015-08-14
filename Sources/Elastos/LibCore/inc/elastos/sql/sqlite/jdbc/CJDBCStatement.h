@@ -1,6 +1,6 @@
 
-#ifndef __CJDBCSTATEMENT_H__
-#define __CJDBCSTATEMENT_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_CJDBCSTATEMENT_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_CJDBCSTATEMENT_H__
 
 #include "_Elastos_Sql_SQLite_JDBC_CJDBCStatement.h"
 #include "JDBCStatement.h"
@@ -21,4 +21,4 @@ public:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __CJDBCSTATEMENT_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_CJDBCSTATEMENT_H__

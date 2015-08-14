@@ -1,6 +1,6 @@
 
-#ifndef __CPKIXPARAMETERS_H__
-#define __CPKIXPARAMETERS_H__
+#ifndef __ELASTOS_SECURITY_CERT_CPKIXPARAMETERS_H__
+#define __ELASTOS_SECURITY_CERT_CPKIXPARAMETERS_H__
 
 #include "_CPKIXParameters.h"
 #include "PKIXParameters.h"
@@ -112,4 +112,4 @@ public:
 }
 }
 
-#endif // __CPKIXPARAMETERS_H__
+#endif // __ELASTOS_SECURITY_CERT_CPKIXPARAMETERS_H__

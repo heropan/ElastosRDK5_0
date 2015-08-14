@@ -1,6 +1,6 @@
 
-#ifndef __CASN1SEQUENCEOF_H__
-#define __CASN1SEQUENCEOF_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SEQUENCEOF_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SEQUENCEOF_H__
 
 #include "_CASN1SequenceOf.h"
 #include <Asn1TypeMacro.h>
@@ -42,4 +42,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1SEQUENCEOF_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SEQUENCEOF_H__

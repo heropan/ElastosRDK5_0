@@ -1,5 +1,5 @@
-#ifndef __DRAGSTATE_H__
-#define __DRAGSTATE_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__
+#define __ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__
 
 #include "wm/CWindowManagerService.h"
 #include "wm/WindowState.h"
@@ -139,4 +139,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__DRAGSTATE_H__
+#endif //__ELASTOS_DROID_SERVER_WM_DRAGSTATE_H__

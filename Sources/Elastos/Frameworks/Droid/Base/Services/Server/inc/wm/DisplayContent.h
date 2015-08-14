@@ -1,5 +1,5 @@
-#ifndef __DISPLAYCONTENT_H__
-#define __DISPLAYCONTENT_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_DISPLAYCONTENT_H__
+#define __ELASTOS_DROID_SERVER_WM_DISPLAYCONTENT_H__
 
 #include "wm/MagnificationSpec.h"
 #include "wm/WindowState.h"
@@ -97,4 +97,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__DISPLAYCONTENT_H__
+#endif //__ELASTOS_DROID_SERVER_WM_DISPLAYCONTENT_H__

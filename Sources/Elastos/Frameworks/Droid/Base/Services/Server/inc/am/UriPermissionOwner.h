@@ -1,6 +1,6 @@
 
-#ifndef __URIPERMISSIONOWNER_H__
-#define __URIPERMISSIONOWNER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_URIPERMISSIONOWNER_H__
+#define __ELASTOS_DROID_SERVER_AM_URIPERMISSIONOWNER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -70,4 +70,4 @@ public:
 
 
 
-#endif //__URIPERMISSIONOWNER_H__
+#endif //__ELASTOS_DROID_SERVER_AM_URIPERMISSIONOWNER_H__

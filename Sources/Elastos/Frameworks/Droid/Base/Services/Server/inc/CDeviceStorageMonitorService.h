@@ -1,5 +1,5 @@
-#ifndef __CDEVICESTORAGEMONITORSERVICE_H__
-#define __CDEVICESTORAGEMONITORSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CDEVICESTORAGEMONITORSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CDEVICESTORAGEMONITORSERVICE_H__
 
 #include "_CDeviceStorageMonitorService.h"
 #include "ext/frameworkext.h"
@@ -225,4 +225,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CDEVICESTORAGEMONITORSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CDEVICESTORAGEMONITORSERVICE_H__

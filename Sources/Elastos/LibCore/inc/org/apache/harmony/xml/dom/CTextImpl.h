@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTIMPL_H__
-#define __CTEXTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CTEXTIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CTEXTIMPL_H__
 
 #include "_CTextImpl.h"
 
@@ -205,4 +205,4 @@ private:
 }
 }
 
-#endif // __CTEXTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CTEXTIMPL_H__

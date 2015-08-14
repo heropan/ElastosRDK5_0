@@ -1,6 +1,6 @@
 
-#ifndef __CSERIALSERVICE_H__
-#define __CSERIALSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CSERIALSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CSERIALSERVICE_H__
 
 #include "_CSerialService.h"
 
@@ -42,4 +42,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CSERIALSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CSERIALSERVICE_H__

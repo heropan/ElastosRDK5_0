@@ -1,6 +1,6 @@
 
-#ifndef __CASN1UTCTIME_H__
-#define __CASN1UTCTIME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1UTCTIME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1UTCTIME_H__
 
 #include "_CASN1UTCTime.h"
 #include <ASN1Time.h>
@@ -35,4 +35,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1UTCTIME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1UTCTIME_H__

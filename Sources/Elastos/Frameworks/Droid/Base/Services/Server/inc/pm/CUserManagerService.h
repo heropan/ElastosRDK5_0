@@ -1,5 +1,5 @@
-#ifndef __CUSERMANAGERSERVICE_H__
-#define __CUSERMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_CUSERMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_PM_CUSERMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CUserManagerService.h"
@@ -315,4 +315,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUSERMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_PM_CUSERMANAGERSERVICE_H__

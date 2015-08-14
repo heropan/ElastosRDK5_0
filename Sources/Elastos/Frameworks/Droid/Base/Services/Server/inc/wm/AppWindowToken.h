@@ -1,5 +1,5 @@
-#ifndef __APPWINDOWTOKEN_H__
-#define __APPWINDOWTOKEN_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
+#define __ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__
 
 #include "wm/WindowState.h"
 #include "wm/WindowToken.h"
@@ -105,4 +105,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__APPWINDOWTOKEN_H__
+#endif //__ELASTOS_DROID_SERVER_WM_APPWINDOWTOKEN_H__

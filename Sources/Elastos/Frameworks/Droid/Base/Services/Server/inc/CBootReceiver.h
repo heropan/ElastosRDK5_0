@@ -1,6 +1,6 @@
 
-#ifndef __CBOOTRECEIVER_H__
-#define __CBOOTRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__
 
 #include "_CBootReceiver.h"
 #include "content/BroadcastReceiver.h"
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBOOTRECEIVER_H__
+#endif //__ELASTOS_DROID_SERVER_CBOOTRECEIVER_H__

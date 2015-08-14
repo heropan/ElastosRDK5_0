@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAYADAPTER_H__
-#define __DISPLAYADAPTER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include <elastos/Core/Object.h>
@@ -141,4 +141,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DISPLAYADAPTER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_DISPLAYADAPTER_H__

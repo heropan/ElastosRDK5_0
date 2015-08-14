@@ -1,6 +1,6 @@
 
-#ifndef __CMESSAGEDIGESTHELPER_H__
-#define __CMESSAGEDIGESTHELPER_H__
+#ifndef __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__
+#define __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__
 
 #include "_CMessageDigestHelper.h"
 
@@ -35,4 +35,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __CMESSAGEDIGESTHELPER_H__
+#endif // __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__

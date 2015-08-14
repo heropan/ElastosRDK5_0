@@ -1,6 +1,6 @@
 
-#ifndef __CDOMERRORIMPL_H__
-#define __CDOMERRORIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CDOMERRORIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CDOMERRORIMPL_H__
 
 #include "_CDOMErrorImpl.h"
 
@@ -45,4 +45,4 @@ private:
 }
 }
 
-#endif // __CDOMERRORIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CDOMERRORIMPL_H__

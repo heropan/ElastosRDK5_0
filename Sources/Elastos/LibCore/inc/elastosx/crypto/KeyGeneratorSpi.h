@@ -1,6 +1,6 @@
 
-#ifndef __KEYGENERATORSPI_H__
-#define __KEYGENERATORSPI_H__
+#ifndef __ELASTOSX_CRYPTO_KEYGENERATORSPI_H__
+#define __ELASTOSX_CRYPTO_KEYGENERATORSPI_H__
 
 #include <elastos/core/Object.h>
 
@@ -79,4 +79,4 @@ public:
 }
 }
 
-#endif // __KEYGENERATORSPI_H__
+#endif // __ELASTOSX_CRYPTO_KEYGENERATORSPI_H__

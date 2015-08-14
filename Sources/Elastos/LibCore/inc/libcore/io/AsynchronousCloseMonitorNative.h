@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef ASYNCHRONOUS_CLOSE_MONITOR_H_included
-#define ASYNCHRONOUS_CLOSE_MONITOR_H_included
+#ifndef __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__
+#define __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__
 
 #include "core/Object.h"
 #include "ScopedPthreadMutexLock.h"
@@ -73,4 +73,4 @@ private:
 
 } // namespace IO
 } // namespace Libcore
-#endif  // ASYNCHRONOUS_CLOSE_MONITOR_H_included
+#endif  // __LIBCORE_IO_ASYNCHRONOUS_CLOSE_MONITOR_H_INCLUDED__

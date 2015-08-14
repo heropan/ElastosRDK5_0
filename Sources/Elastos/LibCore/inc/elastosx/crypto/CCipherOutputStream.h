@@ -1,6 +1,6 @@
 
-#ifndef __CCIPHEROUTPUTSTREAM_H__
-#define __CCIPHEROUTPUTSTREAM_H__
+#ifndef __ELASTOSX_CRYPTO_CCIPHEROUTPUTSTREAM_H__
+#define __ELASTOSX_CRYPTO_CCIPHEROUTPUTSTREAM_H__
 
 #include "_Elastosx_Crypto_CCipherOutputStream.h"
 #include "FilterOutputStream.h"
@@ -101,4 +101,4 @@ private:
 }
 }
 
-#endif // __CCIPHEROUTPUTSTREAM_H__
+#endif // __ELASTOSX_CRYPTO_CCIPHEROUTPUTSTREAM_H__

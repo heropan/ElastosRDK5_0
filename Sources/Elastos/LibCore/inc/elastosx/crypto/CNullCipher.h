@@ -1,6 +1,6 @@
 
-#ifndef __CNULLCIPHER_H__
-#define __CNULLCIPHER_H__
+#ifndef __ELASTOSX_CRYPTO_CNULLCIPHER_H__
+#define __ELASTOSX_CRYPTO_CNULLCIPHER_H__
 
 #include "_Elastosx_Crypto_CNullCipher.h"
 #include "Cipher.h"
@@ -27,4 +27,4 @@ public:
 }
 }
 
-#endif // __CNULLCIPHER_H__
+#endif // __ELASTOSX_CRYPTO_CNULLCIPHER_H__

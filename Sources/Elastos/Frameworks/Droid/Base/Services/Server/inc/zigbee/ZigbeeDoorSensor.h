@@ -1,6 +1,6 @@
 
-#ifndef __ZIGBEEDOORSENSOR_H__
-#define __ZIGBEEDOORSENSOR_H__
+#ifndef __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDOORSENSOR_H__
+#define __ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDOORSENSOR_H__
 
 #include "zigbee/ZigbeeDevice.h"
 #include <elastos/utility/etl/List.h>
@@ -95,4 +95,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ZIGBEEDOORSENSOR_H__
+#endif //__ELASTOS_DROID_SERVER_ZIGBEE_ZIGBEEDOORSENSOR_H__

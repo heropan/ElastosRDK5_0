@@ -1,6 +1,6 @@
 
-#ifndef __WIFIDISPLAYCONTROLLER_H__
-#define __WIFIDISPLAYCONTROLLER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYCONTROLLER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYCONTROLLER_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkext.h"
@@ -601,4 +601,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIFIDISPLAYCONTROLLER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYCONTROLLER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CERTPATHVALIDATOR_H__
-#define __CERTPATHVALIDATOR_H__
+#ifndef __ELASTOS_SECURITY_CERT_CERTPATHVALIDATOR_H__
+#define __ELASTOS_SECURITY_CERT_CERTPATHVALIDATOR_H__
 
 
 using Elastos::Security::IProvider;
@@ -83,4 +83,4 @@ private:
 }
 }
 
-#endif // __CERTPATHVALIDATOR_H__
+#endif // __ELASTOS_SECURITY_CERT_CERTPATHVALIDATOR_H__

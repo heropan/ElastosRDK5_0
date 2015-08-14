@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_EXECUTORS_H__
-#define __ELASTOS_UTILITY_EXECUTORS_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_EXECUTORS_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_EXECUTORS_H__
 
 #include "Object.h"
 #include "AbstractExecutorService.h"
@@ -400,4 +400,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_EXECUTORS_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_EXECUTORS_H__

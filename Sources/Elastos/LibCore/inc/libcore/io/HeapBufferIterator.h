@@ -1,5 +1,5 @@
-#ifndef __HEAPBUFFERITERATOR_H__
-#define __HEAPBUFFERITERATOR_H__
+#ifndef __LIBCORE_IO_HEAPBUFFERITERATOR_H__
+#define __LIBCORE_IO_HEAPBUFFERITERATOR_H__
 
 #include "core/Object.h"
 

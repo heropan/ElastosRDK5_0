@@ -1,6 +1,6 @@
 
-#ifndef __COTHERNAME_H__
-#define __COTHERNAME_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_COTHERNAME_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_COTHERNAME_H__
 
 #include "_COtherName.h"
 
@@ -33,4 +33,4 @@ private:
 }
 }
 
-#endif // __COTHERNAME_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_COTHERNAME_H__

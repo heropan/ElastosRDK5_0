@@ -1,5 +1,5 @@
-#ifndef __CSTRUCTFLOCK_H__
-#define __CSTRUCTFLOCK_H__
+#ifndef __ELASTOS_DROID_SYSTEM_CSTRUCTFLOCK_H__
+#define __ELASTOS_DROID_SYSTEM_CSTRUCTFLOCK_H__
 
 #include "core/Object.h"
 #include "_Elastos_Droid_System_CStructFlock.h"

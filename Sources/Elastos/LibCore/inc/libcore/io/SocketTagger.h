@@ -1,7 +1,6 @@
-#ifndef __SOCKETTAGGER_H__
-#define __SOCKETTAGGER_H__
+#ifndef __LIBCORE_IO_SOCKETTAGGER_H__
+#define __LIBCORE_IO_SOCKETTAGGER_H__
 
-#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
 #define __UUNM_Elastos_CoreLibrary_DEFINED__
 #define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
 #endif // __UUNM_Elastos_CoreLibrary_DEFINED__
@@ -68,4 +67,4 @@ public:
 } // namespace IO
 } // namespace Libcore
 
-#endif // __SOCKETTAGGER_H__
+#endif // __LIBCORE_IO_SOCKETTAGGER_H__

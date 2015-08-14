@@ -1,6 +1,6 @@
 
-#ifndef __CX509CERTIMPL_H__
-#define __CX509CERTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTIMPL_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTIMPL_H__
 
 #include "_CX509CertImpl.h"
 
@@ -193,4 +193,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CX509CERTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTIMPL_H__

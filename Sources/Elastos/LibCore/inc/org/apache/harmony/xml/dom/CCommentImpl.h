@@ -1,6 +1,6 @@
 
-#ifndef __CCOMMENTIMPL_H__
-#define __CCOMMENTIMPL_H__
+#ifndef __ORG_APACHE_HARMONY_XML_DOM_CCOMMENTIMPL_H__
+#define __ORG_APACHE_HARMONY_XML_DOM_CCOMMENTIMPL_H__
 
 #include "_CCommentImpl.h"
 
@@ -194,4 +194,4 @@ private:
 }
 }
 
-#endif // __CCOMMENTIMPL_H__
+#endif // __ORG_APACHE_HARMONY_XML_DOM_CCOMMENTIMPL_H__

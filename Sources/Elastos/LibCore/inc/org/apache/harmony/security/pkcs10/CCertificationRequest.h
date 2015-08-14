@@ -1,6 +1,6 @@
 
-#ifndef __CCERTIFICATIONREQUEST_H__
-#define __CCERTIFICATIONREQUEST_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUEST_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUEST_H__
 
 #include "_CCertificationRequest.h"
 #include <ASN1Sequence.h>
@@ -97,4 +97,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CCERTIFICATIONREQUEST_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUEST_H__

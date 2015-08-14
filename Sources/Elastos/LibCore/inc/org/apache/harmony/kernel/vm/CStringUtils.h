@@ -1,6 +1,6 @@
 
-#ifndef __CSTRINGUTILS_H__
-#define __CSTRINGUTILS_H__
+#ifndef __ORG_APACHE_HARMONY_KERNEL_VM_CSTRINGUTILS_H__
+#define __ORG_APACHE_HARMONY_KERNEL_VM_CSTRINGUTILS_H__
 
 #include "_CStringUtils.h"
 
@@ -27,4 +27,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSTRINGUTILS_H__
+#endif // __ORG_APACHE_HARMONY_KERNEL_VM_CSTRINGUTILS_H__

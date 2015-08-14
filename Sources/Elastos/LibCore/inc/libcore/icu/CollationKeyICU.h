@@ -1,5 +1,5 @@
-#ifndef __COLLATIONKEYICU_H__
-#define __COLLATIONKEYICU_H__
+#ifndef __LIBCORE_ICU_COLLATIONKEYICU_H__
+#define __LIBCORE_ICU_COLLATIONKEYICU_H__
 
 #include "text/CollationKey.h"
 
@@ -46,4 +46,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__COLLATIONKEYICU_H__
+#endif //__LIBCORE_ICU_COLLATIONKEYICU_H__

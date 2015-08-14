@@ -1,6 +1,6 @@
 
-#ifndef __CECPOINT_H__
-#define __CECPOINT_H__
+#ifndef __ELASTOS_SECURITY_SPEC_CECPOINT_H__
+#define __ELASTOS_SECURITY_SPEC_CECPOINT_H__
 
 #include "_CECPoint.h"
 
@@ -50,4 +50,4 @@ private:
 }
 }
 
-#endif // __CECPOINT_H__
+#endif // __ELASTOS_SECURITY_SPEC_CECPOINT_H__

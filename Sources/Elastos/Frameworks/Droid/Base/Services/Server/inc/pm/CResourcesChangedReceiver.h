@@ -1,6 +1,6 @@
 
-#ifndef __CRESOURCESCHANGEDRECEIVER_H__
-#define __CRESOURCESCHANGEDRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
 
 #include "_CResourcesChangedReceiver.h"
 #include "ext/frameworkext.h"
@@ -45,4 +45,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CRESOURCESCHANGEDRECEIVER_H__
+#endif // __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef SCOPED_PTHREAD_MUTEX_LOCK_H_included
-#define SCOPED_PTHREAD_MUTEX_LOCK_H_included
+#ifndef __LIBCORE_IO_SCOPED_PTHREAD_MUTEX_LOCK_H_INCLUDED__
+#define __LIBCORE_IO_SCOPED_PTHREAD_MUTEX_LOCK_H_INCLUDED__
 
 #include <pthread.h>
 
@@ -46,4 +46,4 @@ private:
 
 } // namespace IO
 } // namespace Libcore
-#endif  // SCOPED_PTHREAD_MUTEX_LOCK_H_included
+#endif  // __LIBCORE_IO_SCOPED_PTHREAD_MUTEX_LOCK_H_INCLUDED__

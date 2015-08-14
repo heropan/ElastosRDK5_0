@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_MATCHRESULTIMPL_H__
-#define __REGEX_MATCHRESULTIMPL_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_MATCHRESULTIMPL_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_MATCHRESULTIMPL_H__
 
 #include "Object.h"
 
@@ -69,4 +69,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REGEX_MATCHRESULTIMPL_H__
+#endif //__ELASTOS_UTILITY_REGEX_REGEX_MATCHRESULTIMPL_H__

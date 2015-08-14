@@ -1,6 +1,6 @@
 
-#ifndef __CTETHERING_H__
-#define __CTETHERING_H__
+#ifndef __ELASTOS_DROID_SERVER_CONNECTIVITY_CTETHERING_H__
+#define __ELASTOS_DROID_SERVER_CONNECTIVITY_CTETHERING_H__
 
 #include "_CTethering.h"
 #include "content/BroadcastReceiver.h"

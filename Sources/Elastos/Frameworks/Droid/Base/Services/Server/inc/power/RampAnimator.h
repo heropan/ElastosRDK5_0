@@ -1,6 +1,6 @@
 
-#ifndef __RAMPANIMATOR_H__
-#define __RAMPANIMATOR_H__
+#ifndef __ELASTOS_DROID_SERVER_POWER_RAMPANIMATOR_H__
+#define __ELASTOS_DROID_SERVER_POWER_RAMPANIMATOR_H__
 
 #include "Elastos.Droid.Server_server.h"
 #include "ext/frameworkdef.h"
@@ -267,4 +267,4 @@ void RampAnimator<T>::PostCallback()
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__RAMPANIMATOR_H__
+#endif //__ELASTOS_DROID_SERVER_POWER_RAMPANIMATOR_H__

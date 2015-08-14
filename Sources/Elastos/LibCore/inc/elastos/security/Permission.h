@@ -1,6 +1,6 @@
 
-#ifndef __PERMISSION_H__
-#define __PERMISSION_H__
+#ifndef __ELASTOS_SECURITY_PERMISSION_H__
+#define __ELASTOS_SECURITY_PERMISSION_H__
 
 #include "Object.h"
 
@@ -42,4 +42,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __PERMISSION_H__
+#endif // __ELASTOS_SECURITY_PERMISSION_H__

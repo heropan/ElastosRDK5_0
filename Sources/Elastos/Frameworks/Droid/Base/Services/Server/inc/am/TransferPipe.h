@@ -1,6 +1,6 @@
 
-#ifndef __TRANSFERPIPE_H__
-#define __TRANSFERPIPE_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__
+#define __ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -114,4 +114,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TRANSFERPIPE_H__
+#endif //__ELASTOS_DROID_SERVER_AM_TRANSFERPIPE_H__

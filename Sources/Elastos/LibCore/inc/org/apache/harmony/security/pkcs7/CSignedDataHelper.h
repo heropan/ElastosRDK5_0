@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNEDDATAHELPER_H__
-#define __CSIGNEDDATAHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATAHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATAHELPER_H__
 
 #include "_CSignedDataHelper.h"
 
@@ -25,4 +25,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSIGNEDDATAHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATAHELPER_H__

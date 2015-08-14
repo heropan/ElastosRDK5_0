@@ -1,5 +1,5 @@
-#ifndef __DIMSURFACE_H__
-#define __DIMSURFACE_H__
+#ifndef __ELASTOS_DROID_SERVER_WM_DIMSURFACE_H__
+#define __ELASTOS_DROID_SERVER_WM_DIMSURFACE_H__
 
 #include "Elastos.Droid.Server_server.h"
 
@@ -49,4 +49,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__DIMSURFACE_H__
+#endif //__ELASTOS_DROID_SERVER_WM_DIMSURFACE_H__

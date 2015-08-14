@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNEDDATA_H__
-#define __CSIGNEDDATA_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATA_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATA_H__
 
 #include "_CSignedData.h"
 
@@ -93,4 +93,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CSIGNEDDATA_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATA_H__

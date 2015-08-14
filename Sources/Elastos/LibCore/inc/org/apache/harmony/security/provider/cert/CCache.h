@@ -1,6 +1,6 @@
 
-#ifndef __CCACHE_H__
-#define __CCACHE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CCACHE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CCACHE_H__
 
 #include "_CCache.h"
 
@@ -110,4 +110,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CCACHE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CCACHE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CVALIDITY_H__
-#define __CVALIDITY_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CVALIDITY_H__
+#define __ORG_APACHE_HARMONY_SECURITY_X509_CVALIDITY_H__
 
 #include "_CValidity.h"
 
@@ -36,4 +36,4 @@ private:
 }
 }
 
-#endif // __CVALIDITY_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_X509_CVALIDITY_H__

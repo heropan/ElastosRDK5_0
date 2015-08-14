@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKMANAGEMENTSOCKETTAGGER_H__
-#define __NETWORKMANAGEMENTSOCKETTAGGER_H__
+#ifndef __ELASTOS_DROID_SERVER_NETWORKMANAGEMENTSOCKETTAGGER_H__
+#define __ELASTOS_DROID_SERVER_NETWORKMANAGEMENTSOCKETTAGGER_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Server_server.h"
@@ -140,4 +140,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NETWORKMANAGEMENTSOCKETTAGGER_H__
+#endif //__ELASTOS_DROID_SERVER_NETWORKMANAGEMENTSOCKETTAGGER_H__

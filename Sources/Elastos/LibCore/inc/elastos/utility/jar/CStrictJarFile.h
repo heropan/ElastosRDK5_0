@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
-#define __ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
+#ifndef __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
+#define __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
 
 #include "_Elastos_Utility_Jar_CStrictJarFile.h"
 #include "Object.h"
@@ -137,4 +137,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif // __ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__
+#endif // __ELASTOS_UTILITY_JAR_ELASTOS_UTILITY_CSTRICT_JAR_FILE_H__

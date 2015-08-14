@@ -1,6 +1,6 @@
 
-#ifndef __ATTRIBUTECACHE_H__
-#define __ATTRIBUTECACHE_H__
+#ifndef __ELASTOS_DROID_SERVER_ATTRIBUTECACHE_H__
+#define __ELASTOS_DROID_SERVER_ATTRIBUTECACHE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -11,7 +11,6 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::ITypedArray;
 
-#ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_INTARRAY
 #define HASH_EQUALTO_FUNC_FOR_AUTOPTR_INTARRAY
 _ETL_NAMESPACE_BEGIN
 template<> struct Hash<AutoPtr<ArrayOf<Int32> > >
@@ -120,4 +119,4 @@ private:
 }// Droid
 }// Elastos
 
-#endif // __ATTRIBUTECACHE_H__
+#endif // __ELASTOS_DROID_SERVER_ATTRIBUTECACHE_H__

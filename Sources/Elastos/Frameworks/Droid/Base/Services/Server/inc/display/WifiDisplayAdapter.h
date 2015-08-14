@@ -1,6 +1,6 @@
 
-#ifndef __WIFIDISPLAYADAPTER_H__
-#define __WIFIDISPLAYADAPTER_H__
+#ifndef __ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYADAPTER_H__
+#define __ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYADAPTER_H__
 
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
@@ -342,4 +342,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIFIDISPLAYADAPTER_H__
+#endif //__ELASTOS_DROID_SERVER_DISPLAY_WIFIDISPLAYADAPTER_H__

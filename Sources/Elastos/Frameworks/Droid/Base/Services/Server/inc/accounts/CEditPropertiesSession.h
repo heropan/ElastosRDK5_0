@@ -1,6 +1,6 @@
 
-#ifndef __CEDITPROPERTIESSESSION_H__
-#define __CEDITPROPERTIESSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CEDITPROPERTIESSESSION_H__
+#define __ELASTOS_DROID_SERVER_ACCOUNTS_CEDITPROPERTIESSESSION_H__
 
 #include "_CEditPropertiesSession.h"
 #include "accounts/AccountManagerServiceSession.h"
@@ -60,4 +60,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEDITPROPERTIESSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_ACCOUNTS_CEDITPROPERTIESSESSION_H__

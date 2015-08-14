@@ -1,6 +1,6 @@
 
-#ifndef __ELSTRINGBYTESINK_H__
-#define __ELSTRINGBYTESINK_H__
+#ifndef __LIBCORE_ICU_ELSTRINGBYTESINK_H__
+#define __LIBCORE_ICU_ELSTRINGBYTESINK_H__
 
 #include <elastos.h>
 #include <unicode/bytestream.h>
@@ -69,4 +69,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__ELSTRINGBYTESINK_H__
+#endif //__LIBCORE_ICU_ELSTRINGBYTESINK_H__

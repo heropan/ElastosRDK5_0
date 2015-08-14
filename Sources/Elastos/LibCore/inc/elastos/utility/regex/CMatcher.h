@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_CMATCHER_H__
-#define __REGEX_CMATCHER_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_CMATCHER_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_CMATCHER_H__
 
 #include "_Elastos_Utility_Regex_CMatcher.h"
 #include "Object.h"
@@ -560,4 +560,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REGEX_CMATCHER_H__
+#endif //__ELASTOS_UTILITY_REGEX_REGEX_CMATCHER_H__

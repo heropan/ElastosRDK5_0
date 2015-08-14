@@ -1,6 +1,6 @@
 
-#ifndef __CUIMODEMANAGERSERVICE_H__
-#define __CUIMODEMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
 
 #include "_CUiModeManagerService.h"
 #include "ext/frameworkext.h"
@@ -255,4 +255,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CUIMODEMANAGERSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__

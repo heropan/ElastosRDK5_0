@@ -1,6 +1,6 @@
 
-#ifndef __CPPPOESERVICE_H__
-#define __CPPPOESERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__
+#define __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__
 
 #include "ext/frameworkdef.h"
 #include "_CPppoeService.h"
@@ -128,4 +128,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPPPOESERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__

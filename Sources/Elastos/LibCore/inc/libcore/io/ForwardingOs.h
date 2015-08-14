@@ -1,8 +1,7 @@
 
-#ifndef __FORWARDINGOS_H__
-#define __FORWARDINGOS_H__
+#ifndef __LIBCORE_IO_FORWARDINGOS_H__
+#define __LIBCORE_IO_FORWARDINGOS_H__
 
-#ifndef __UUNM_Elastos_CoreLibrary_DEFINED__
 #define __UUNM_Elastos_CoreLibrary_DEFINED__
 #define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
 #endif // __UUNM_Elastos_CoreLibrary_DEFINED__
@@ -614,4 +613,4 @@ protected:
 } // namespace IO
 } // namespace Libcore
 
-#endif // __FORWARDINGOS_H__
+#endif // __LIBCORE_IO_FORWARDINGOS_H__

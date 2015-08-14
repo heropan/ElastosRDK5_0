@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_NET_CSOCKETFACTORYHELPER_H__
-#define __ELASTOS_NET_CSOCKETFACTORYHELPER_H__
+#ifndef __ELASTOSX_NET_ELASTOS_NET_CSOCKETFACTORYHELPER_H__
+#define __ELASTOSX_NET_ELASTOS_NET_CSOCKETFACTORYHELPER_H__
 
 #include "_Elastosx_Net_CSocketFactoryHelper.h"
 #include "Singleton.h"
@@ -24,4 +24,4 @@ public:
 } // namespace Net
 } // namespace Elastosx
 
-#endif //__ELASTOS_NET_CSOCKETFACTORYHELPER_H__
+#endif //__ELASTOSX_NET_ELASTOS_NET_CSOCKETFACTORYHELPER_H__

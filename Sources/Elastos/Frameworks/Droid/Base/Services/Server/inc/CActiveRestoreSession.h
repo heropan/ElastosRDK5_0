@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVERESTORESESSION_H__
-#define __CACTIVERESTORESESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_CACTIVERESTORESESSION_H__
+#define __ELASTOS_DROID_SERVER_CACTIVERESTORESESSION_H__
 
 #include "ext/frameworkext.h"
 #include "_CActiveRestoreSession.h"

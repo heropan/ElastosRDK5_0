@@ -1,6 +1,6 @@
 
-#ifndef __ZIGBEEFACTORY_H__
-#define __ZIGBEEFACTORY_H__
+#ifndef __ELASTOS_DROID_SERVER_REMOTE_ZIGBEEFACTORY_H__
+#define __ELASTOS_DROID_SERVER_REMOTE_ZIGBEEFACTORY_H__
 
 #include "remote/AbstractDeviceFactory.h"
 #include "os/AsyncTask.h"
@@ -99,4 +99,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ZIGBEEFACTORY_H__
+#endif //__ELASTOS_DROID_SERVER_REMOTE_ZIGBEEFACTORY_H__

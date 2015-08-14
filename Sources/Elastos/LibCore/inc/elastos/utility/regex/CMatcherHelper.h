@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_CMATCHERHELPER_H__
-#define __REGEX_CMATCHERHELPER_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_CMATCHERHELPER_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_CMATCHERHELPER_H__
 
 #include "_Elastos_Utility_Regex_CMatcherHelper.h"
 #include "Singleton.h"
@@ -41,4 +41,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REGEX_CMATCHERHELPER_H__
+#endif //__ELASTOS_UTILITY_REGEX_REGEX_CMATCHERHELPER_H__

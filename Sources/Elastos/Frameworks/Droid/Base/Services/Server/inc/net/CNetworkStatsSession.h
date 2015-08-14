@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKSTATSSESSION_H__
-#define __CNETWORKSTATSSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSESSION_H__
+#define __ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSESSION_H__
 
 #include "_CNetworkStatsSession.h"
 #include "net/CNetworkStatsService.h"
@@ -65,4 +65,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CNETWORKSTATSSESSION_H__
+#endif //__ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSESSION_H__

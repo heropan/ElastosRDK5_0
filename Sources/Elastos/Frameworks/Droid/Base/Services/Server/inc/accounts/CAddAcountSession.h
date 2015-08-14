@@ -1,5 +1,5 @@
 
-#ifndef __CADDACOUNTSESSION_H__
+#ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CADDACOUNTSESSION_H__
 #define __CAddAcountSession_H__
 
 #include "_CAddAcountSession.h"

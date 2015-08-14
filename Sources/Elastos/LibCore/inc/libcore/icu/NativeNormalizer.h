@@ -1,6 +1,6 @@
 
-#ifndef __NATIVENORMALIZER_H__
-#define __NATIVENORMALIZER_H__
+#ifndef __LIBCORE_ICU_NATIVENORMALIZER_H__
+#define __LIBCORE_ICU_NATIVENORMALIZER_H__
 
 #include <elastos.h>
 #include "Elastos.CoreLibrary_server.h"
@@ -44,4 +44,4 @@ private:
 } // namespace ICU
 } // namespace Libcore
 
-#endif //__NATIVENORMALIZER_H__
+#endif //__LIBCORE_ICU_NATIVENORMALIZER_H__

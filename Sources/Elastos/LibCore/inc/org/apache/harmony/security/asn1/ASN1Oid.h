@@ -1,6 +1,6 @@
 
-#ifndef __ASN1OID_H__
-#define __ASN1OID_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1OID_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1OID_H__
 
 #include <ASN1Primitive.h>
 
@@ -52,4 +52,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1OID_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1OID_H__

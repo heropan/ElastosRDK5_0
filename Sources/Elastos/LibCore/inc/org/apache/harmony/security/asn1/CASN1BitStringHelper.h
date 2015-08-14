@@ -1,6 +1,6 @@
 
-#ifndef __CASN1BITSTRINGHELPER_H__
-#define __CASN1BITSTRINGHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRINGHELPER_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRINGHELPER_H__
 
 #include "_CASN1BitStringHelper.h"
 #include "CASN1BitString.h"
@@ -27,4 +27,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1BITSTRINGHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRINGHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __BROADCASTFILTER_H__
-#define __BROADCASTFILTER_H__
+#ifndef __ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__
+#define __ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__
 
 #include <Elastos.Droid.Core.h>
 #include "content/IntentFilter.h"
@@ -244,4 +244,4 @@ struct Conversion<Elastos::Droid::Server::Am::BroadcastFilter*, IInterface*>
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif //__BROADCASTFILTER_H__
+#endif //__ELASTOS_DROID_SERVER_AM_BROADCASTFILTER_H__

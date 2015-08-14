@@ -1,6 +1,6 @@
 
-#ifndef __CRC5PARAMETERSPEC_H__
-#define __CRC5PARAMETERSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CRC5PARAMETERSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CRC5PARAMETERSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CRC5ParameterSpec.h"
 #include <elastos/core/Object.h>
@@ -161,4 +161,4 @@ private:
 }
 }
 
-#endif // __CRC5PARAMETERSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CRC5PARAMETERSPEC_H__

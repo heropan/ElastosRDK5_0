@@ -1,6 +1,6 @@
 
-#ifndef __CUSBSERVICE_H__
-#define __CUSBSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__
+#define __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__
 
 #include "_CUsbService.h"
 #include "ext/frameworkdef.h"
@@ -190,4 +190,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CUSBSERVICE_H__
+#endif // __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__

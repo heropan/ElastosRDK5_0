@@ -1,6 +1,6 @@
 
-#ifndef __REGEX_CPATTERNHELPER_H__
-#define __REGEX_CPATTERNHELPER_H__
+#ifndef __ELASTOS_UTILITY_REGEX_REGEX_CPATTERNHELPER_H__
+#define __ELASTOS_UTILITY_REGEX_REGEX_CPATTERNHELPER_H__
 
 #include "_Elastos_Utility_Regex_CPatternHelper.h"
 #include "Singleton.h"
@@ -82,4 +82,4 @@ public:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__REGEX_CPATTERNHELPER_H__
+#endif //__ELASTOS_UTILITY_REGEX_REGEX_CPATTERNHELPER_H__

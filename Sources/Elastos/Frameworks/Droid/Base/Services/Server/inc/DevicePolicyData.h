@@ -1,5 +1,5 @@
-#ifndef __DEVICEPOLICYDATA_H__
-#define __DEVICEPOLICYDATA_H__
+#ifndef __ELASTOS_DROID_SERVER_DEVICEPOLICYDATA_H__
+#define __ELASTOS_DROID_SERVER_DEVICEPOLICYDATA_H__
 
 namespace Elastos {
 namespace Droid {
@@ -100,4 +100,4 @@ private:
 }// Droid
 }// Elastos
 
-#endif //__DEVICEPOLICYDATA_H__
+#endif //__ELASTOS_DROID_SERVER_DEVICEPOLICYDATA_H__

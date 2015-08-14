@@ -1,6 +1,6 @@
 
-#ifndef __CPROCESSOBSERVER_H__
-#define __CPROCESSOBSERVER_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_CPROCESSOBSERVER_H__
+#define __ELASTOS_DROID_SERVER_NET_CPROCESSOBSERVER_H__
 
 #include "_CProcessObserver.h"
 
@@ -40,4 +40,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPROCESSOBSERVER_H__
+#endif //__ELASTOS_DROID_SERVER_NET_CPROCESSOBSERVER_H__

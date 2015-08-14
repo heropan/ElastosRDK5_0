@@ -1,6 +1,6 @@
 
-#ifndef __CMASTERCLEARRECEIVER_H__
-#define __CMASTERCLEARRECEIVER_H__
+#ifndef __ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__
+#define __ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__
 
 #include "_CMasterClearReceiver.h"
 #include "ext/frameworkext.h"
@@ -49,4 +49,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMASTERCLEARRECEIVER_H__
+#endif //__ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__

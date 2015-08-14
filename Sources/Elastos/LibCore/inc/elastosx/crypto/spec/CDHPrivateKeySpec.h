@@ -1,6 +1,6 @@
 
-#ifndef __CDHPRIVATEKEYSPEC_H__
-#define __CDHPRIVATEKEYSPEC_H__
+#ifndef __ELASTOSX_CRYPTO_SPEC_CDHPRIVATEKEYSPEC_H__
+#define __ELASTOSX_CRYPTO_SPEC_CDHPRIVATEKEYSPEC_H__
 
 #include "_Elastosx_Crypto_Spec_CDHPrivateKeySpec.h"
 #include <elastos/core/Object.h>
@@ -77,4 +77,4 @@ private:
 }
 }
 
-#endif // __CDHPRIVATEKEYSPEC_H__
+#endif // __ELASTOSX_CRYPTO_SPEC_CDHPRIVATEKEYSPEC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ASN1BITSTRING_H__
-#define __ASN1BITSTRING_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1BITSTRING_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1BITSTRING_H__
 
 #include "ASN1StringType.h"
 
@@ -92,4 +92,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1BITSTRING_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1BITSTRING_H__

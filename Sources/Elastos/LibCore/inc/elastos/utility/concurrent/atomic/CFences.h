@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_UTILITY_CFENCES_H__
-#define __ELASTOS_UTILITY_CFENCES_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_ATOMIC_ELASTOS_UTILITY_CFENCES_H__
+#define __ELASTOS_UTILITY_CONCURRENT_ATOMIC_ELASTOS_UTILITY_CFENCES_H__
 
 #include "_Elastos_Utility_Concurrent_Atomic_CFences.h"
 #include "Singleton.h"
@@ -97,4 +97,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CFENCES_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_ATOMIC_ELASTOS_UTILITY_CFENCES_H__

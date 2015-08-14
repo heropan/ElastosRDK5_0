@@ -1,6 +1,6 @@
 
-#ifndef __CKEYSTOREBUILDERHELPER_H__
-#define __CKEYSTOREBUILDERHELPER_H__
+#ifndef __ELASTOS_SECURITY_CKEYSTOREBUILDERHELPER_H__
+#define __ELASTOS_SECURITY_CKEYSTOREBUILDERHELPER_H__
 
 #include "_CKeyStoreBuilderHelper.h"
 
@@ -34,4 +34,4 @@ public:
 } // namespace Security
 } // namespace Elastos
 
-#endif // __CKEYSTOREBUILDERHELPER_H__
+#endif // __ELASTOS_SECURITY_CKEYSTOREBUILDERHELPER_H__

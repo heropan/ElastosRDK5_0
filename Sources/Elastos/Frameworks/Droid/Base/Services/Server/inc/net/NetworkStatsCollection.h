@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKSTATSCOLLECTION_H__
-#define __NETWORKSTATSCOLLECTION_H__
+#ifndef __ELASTOS_DROID_SERVER_NET_NETWORKSTATSCOLLECTION_H__
+#define __ELASTOS_DROID_SERVER_NET_NETWORKSTATSCOLLECTION_H__
 
 #include "ext/frameworkext.h"
 #include "net/NetworkIdentitySet.h"
@@ -239,4 +239,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __NETWORKSTATSCOLLECTION_H__
+#endif // __ELASTOS_DROID_SERVER_NET_NETWORKSTATSCOLLECTION_H__

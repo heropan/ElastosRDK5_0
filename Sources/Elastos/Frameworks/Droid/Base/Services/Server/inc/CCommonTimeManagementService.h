@@ -1,5 +1,5 @@
-#ifndef __CCOMMONTIMEMANAGEMENTSERVICE_H__
-#define __CCOMMONTIMEMANAGEMENTSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__
+#define __ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__
 
 #include "_CCommonTimeManagementService.h"
 #include "ext/frameworkext.h"
@@ -246,4 +246,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CCOMMONTIMEMANAGEMENTSERVICE_H__
+#endif //__ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __RSAPRIVATEKEYSPEC_H__
-#define __RSAPRIVATEKEYSPEC_H__
+#ifndef __ELASTOS_SECURITY_SPEC_RSAPRIVATEKEYSPEC_H__
+#define __ELASTOS_SECURITY_SPEC_RSAPRIVATEKEYSPEC_H__
 
 #include "Elastos.CoreLibrary_server.h"
 

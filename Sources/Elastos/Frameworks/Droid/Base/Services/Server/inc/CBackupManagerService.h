@@ -1,6 +1,6 @@
 
-#ifndef  __CBACKUPMANAGERSERVICE_H__
-#define  __CBACKUPMANAGERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVER_CBACKUPMANAGERSERVICE_H__
+#define  __ELASTOS_DROID_SERVER_CBACKUPMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "_CBackupManagerService.h"
@@ -1470,4 +1470,4 @@ private:
 }// namespace Droid {
 }// namespace Elastos {
 
-#endif  //__CBACKUPMANAGERSERVICE_H__
+#endif  //__ELASTOS_DROID_SERVER_CBACKUPMANAGERSERVICE_H__

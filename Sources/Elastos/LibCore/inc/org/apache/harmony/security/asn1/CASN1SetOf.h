@@ -1,6 +1,6 @@
 
-#ifndef __CASN1SETOF_H__
-#define __CASN1SETOF_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SETOF_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SETOF_H__
 
 #include "_CASN1SetOf.h"
 #include <ASN1SetOf.h>
@@ -42,4 +42,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __CASN1SETOF_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SETOF_H__

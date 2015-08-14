@@ -1,6 +1,6 @@
 
-#ifndef __JDBCSTATEMENT_H__
-#define __JDBCSTATEMENT_H__
+#ifndef __ELASTOS_SQL_SQLITE_JDBC_JDBCSTATEMENT_H__
+#define __ELASTOS_SQL_SQLITE_JDBC_JDBCSTATEMENT_H__
 
 #include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
@@ -192,4 +192,4 @@ private:
 } // namespace Sql
 } // namespace Elastos
 
-#endif // __JDBCSTATEMENT_H__
+#endif // __ELASTOS_SQL_SQLITE_JDBC_JDBCSTATEMENT_H__

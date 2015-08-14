@@ -1,6 +1,6 @@
 
-#ifndef __ASN1STRINGTYPE_H__
-#define __ASN1STRINGTYPE_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1STRINGTYPE_H__
+#define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1STRINGTYPE_H__
 
 #include <elastos.h>
 #include "ASN1Type.h"
@@ -80,4 +80,4 @@ public:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ASN1STRINGTYPE_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1STRINGTYPE_H__
