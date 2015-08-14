@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.SystemUI.StatusBar.Policy.IListenable;
 
     namespace Elastos {
     namespace Droid {

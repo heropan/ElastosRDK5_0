@@ -34,8 +34,6 @@ module
     merge("database/ContentObserverTransport.car");
     merge("database/sqlite/SQLiteCursor.car");
 
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.ICancellationSignal;
 
     namespace Elastos {
     namespace Droid {

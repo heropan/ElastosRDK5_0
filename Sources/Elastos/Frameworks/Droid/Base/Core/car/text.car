@@ -180,12 +180,6 @@ module
     // }//namespace Elastos
 
 
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Text.IInputFilter;
-    interface Elastos.Droid.Text.ITextWatcher;
-    interface Elastos.Droid.Text.ISpanWatcher;
-    interface Elastos.Droid.Text.ISelectionPositionIterator;
-    interface Elastos.Utility.ILocale;
 
     // namespace Elastos {
     // namespace Droid {
@@ -407,13 +401,6 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
-    interface Elastos.Droid.Text.IParcelableSpan;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.Graphics.IBitmap;
-    interface Elastos.Droid.Net.IUri;
-    interface Elastos.Droid.Graphics.IMaskFilter;
-    interface Elastos.Droid.Graphics.IRasterizer;
-    interface Elastos.Droid.Content.Res.IColorStateList;
     enum Elastos.Droid.Text.LayoutAlignment;
 
     // namespace Elastos {
@@ -1099,10 +1086,7 @@ module
     // } // namepsace Droid
     // } // namespace Elastos
 
-    using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Graphics.IPaint;
-    interface Elastos.Droid.Content.Res.IResources;
 
     // namespace Elastos {
     // namespace Droid {

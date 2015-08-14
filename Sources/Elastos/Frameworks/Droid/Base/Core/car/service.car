@@ -38,7 +38,6 @@ module
     merge("service/wallpaper/WallpaperSettingsActivity.car");
 
     //interface Elastos.Droid.View.IBaseIWindow;
-    interface Elastos.Droid.Os.IHandlerCallerCallback;
 
     // namespace Elastos {
     // namespace Droid {

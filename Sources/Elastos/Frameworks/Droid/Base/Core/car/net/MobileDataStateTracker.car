@@ -4,10 +4,7 @@ module
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IHandler;
-    interface Elastos.Droid.Os.IMessage;
     interface Elastos.Droid.Os.IMessenger;
-    interface Elastos.Droid.Net.ISamplingSnapshot;
-    interface Elastos.Droid.Content.IIntent;
 
     namespace Elastos {
     namespace Droid {

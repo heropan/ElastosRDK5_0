@@ -9,7 +9,6 @@ module {
     interface Elastos.Droid.Graphics.IPoint;
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Os.ICancellationSignal;
-    interface Elastos.Droid.Os.IParcelFileDescriptor;
     interface Elastos.Droid.Net.IUri;
 
     namespace Elastos {

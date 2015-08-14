@@ -3,8 +3,6 @@ module
 {
 
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    using interface Elastos.Utility.Concurrent.Atomic.IAtomicInteger;
 
     namespace Elastos {
     namespace Droid {

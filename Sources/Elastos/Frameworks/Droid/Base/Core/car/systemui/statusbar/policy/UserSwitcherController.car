@@ -3,7 +3,6 @@ module
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.Pm.IUserInfo;
     interface Elastos.Droid.Graphics.IBitmap;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {

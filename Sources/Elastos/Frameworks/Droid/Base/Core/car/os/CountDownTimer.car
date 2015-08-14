@@ -1,8 +1,6 @@
 module
 {
-    using interface Elastos.Net.IInetSocketAddress;
 
-    interface Elastos.Droid.Os.IUserHandle;
 
     namespace Elastos {
     namespace Droid {

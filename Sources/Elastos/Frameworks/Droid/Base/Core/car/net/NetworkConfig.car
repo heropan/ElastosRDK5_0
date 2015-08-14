@@ -2,7 +2,6 @@
 module
 {
 
-    using interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {

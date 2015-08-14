@@ -7,7 +7,6 @@ module
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.InputMethod.ICorrectionInfo;
     interface Elastos.Droid.Text.Method.IWordIterator;
-    interface Elastos.Droid.Text.IInputFilter;
 
     namespace Elastos {
     namespace Droid {

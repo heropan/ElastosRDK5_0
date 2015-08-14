@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.ITransformationMethod;
 
     namespace Elastos {
     namespace Droid {

@@ -21,7 +21,6 @@ module
     interface Elastos.Droid.App.IActivityThread;
     interface Elastos.Droid.App.IInstrumentationWatcher;
     interface Elastos.Droid.App.IUiAutomation;
-    interface Elastos.Droid.App.IWallpaperInfo;
 
     namespace Elastos {
     namespace Droid {

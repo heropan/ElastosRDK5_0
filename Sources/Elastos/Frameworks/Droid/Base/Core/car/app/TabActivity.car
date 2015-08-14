@@ -1,11 +1,5 @@
 module
 {
-    interface Elastos.Droid.Os.IWorkSource;
-    interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.App.IPendingIntent;
-    interface Elastos.Droid.App.IAlarmManagerAlarmClockInfo;
 
     namespace Elastos {
     namespace Droid {

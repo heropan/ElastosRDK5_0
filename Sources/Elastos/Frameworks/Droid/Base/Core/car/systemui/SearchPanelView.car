@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Widget.IImageView;
     interface Elastos.Droid.Content.IComponentName;
     interface Elastos.Droid.SystemUI.StatusBar.IBaseStatusBar;

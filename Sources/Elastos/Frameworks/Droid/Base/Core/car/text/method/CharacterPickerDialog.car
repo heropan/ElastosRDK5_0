@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.IMovementMethod;
     interface Elastos.Droid.Widget.IAdapterView;
     interface Elastos.Droid.View.IView;
 

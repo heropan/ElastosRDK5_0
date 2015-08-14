@@ -4,7 +4,6 @@ module
 
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.App.IPendingIntent;
 
     namespace Elastos {
     namespace Droid {

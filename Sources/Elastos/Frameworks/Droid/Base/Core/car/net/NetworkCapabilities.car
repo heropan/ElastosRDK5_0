@@ -3,17 +3,7 @@ module
 {
 
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    interface Elastos.Droid.Text.ITextUtils;
-    interface Elastos.Droid.Util.ILog;
 
-    using interface Elastos.Utility.IArrayList;
-    using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IHashMap;
-    using interface Elastos.Utility.IIterator;
-    using interface Elastos.Utility.IMap;
-    using interface Elastos.Utility.IMap.Entry;
-    using interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {

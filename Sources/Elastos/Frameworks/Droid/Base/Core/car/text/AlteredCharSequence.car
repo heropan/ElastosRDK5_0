@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
 
-    interface Elastos.Droid.Text.IGetChars;
 
     namespace Elastos {
     namespace Droid {

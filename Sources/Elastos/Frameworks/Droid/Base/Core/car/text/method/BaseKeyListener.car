@@ -6,8 +6,6 @@ module
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Text.IEditable;
     interface Elastos.Droid.Text.ISpannable;
-    interface Elastos.Droid.Text.Method.IKeyListener;
-    interface Elastos.Droid.Text.Method.IMetaKeyKeyListener;
 
     namespace Elastos {
     namespace Droid {

@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Core.IAppendable;
 
     interface Elastos.Droid.Text.IInputFilter;
 

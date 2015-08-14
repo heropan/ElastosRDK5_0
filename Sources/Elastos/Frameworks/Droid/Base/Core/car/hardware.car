@@ -108,11 +108,7 @@ module
     merge("hardware/camera2/utils/TaskSingleDrainer.car");
     merge("hardware/camera2/utils/TypeReference.car");
 
-    using interface Elastos.Core.IComparable;
 
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.ILooper;
     // interface Elastos.Droid.View.IRotationWatcher;
 
     namespace Elastos {

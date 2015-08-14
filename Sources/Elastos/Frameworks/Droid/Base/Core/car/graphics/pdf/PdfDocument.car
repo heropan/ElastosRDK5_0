@@ -6,10 +6,8 @@ module
 
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ICanvas;
-    interface Elastos.Droid.Graphics.Pdf.IPdfDocument;
     interface Elastos.Droid.Graphics.Pdf.IPdfDocumentPage;
     interface Elastos.Droid.Graphics.Pdf.IPdfDocumentPageInfo;
-    interface Elastos.Droid.Graphics.Pdf.IPdfDocumentPageInfoBuilder;
 
     namespace Elastos {
     namespace Droid {

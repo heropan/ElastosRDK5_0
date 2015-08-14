@@ -1,31 +1,15 @@
 
 module
 {
-
-    interface Elastos.Droid.Net.ISSLSessionCache;
-
-    interface Elastos.Droid.Os.ISystemProperties;
-    interface Elastos.Droid.Util.ILog;
-
     using interface Elastos.Core.IArrayOf;
-    using interface Elastos.IO.IIOException;
-    using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.ISocket;
-    using interface Elastos.Net.ISocketException;
-    using interface Elastos.Security.IKeyManagementException;
     using interface Elastos.Security.IPrivateKey;
-    using interface Elastos.Security.Cert.IX509Certificate;
     using interface Elastosx.Net.ISocketFactory;
-    using interface Elastosx.Net.Ssl.IHostnameVerifier;
-    using interface Elastosx.Net.Ssl.IHttpsURLConnection;
     using interface Elastosx.Net.Ssl.IKeyManager;
-    using interface Elastosx.Net.Ssl.ISSLException;
-    using interface Elastosx.Net.Ssl.ISSLPeerUnverifiedException;
-    using interface Elastosx.Net.Ssl.ISSLSession;
-    using interface Elastosx.Net.Ssl.ISSLSocket;
     using interface Elastosx.Net.Ssl.ISSLSocketFactory;
     using interface Elastosx.Net.Ssl.ITrustManager;
-    using interface Elastosx.Net.Ssl.IX509TrustManager;
+
+    interface Elastos.Droid.Net.ISSLSessionCache;
 
     namespace Elastos {
     namespace Droid {

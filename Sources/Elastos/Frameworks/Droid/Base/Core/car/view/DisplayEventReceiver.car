@@ -1,8 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Content.Res.ICompatibilityInfo;
-    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {

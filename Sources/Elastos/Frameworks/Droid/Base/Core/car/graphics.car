@@ -96,10 +96,7 @@ module
     merge("graphics/pdf/PdfEditor.car");
     merge("graphics/pdf/PdfRenderer.car");
 
-    using interface Elastos.IO.IInputStream;
 
-    interface Elastos.Droid.Content.Res.IResources;
-    interface Elastos.Droid.Graphics.Drawable.Shapes.IShape;
 
     // namespace Elastos {
     // namespace Droid {

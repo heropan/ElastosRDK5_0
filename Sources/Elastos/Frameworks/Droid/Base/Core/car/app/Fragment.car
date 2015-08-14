@@ -1,8 +1,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.IO.IPrintWriter;
     using interface Elastos.Utility.IHashMap;
 
     interface Elastos.Droid.Os.IBundle;

@@ -2,8 +2,6 @@
 module
 {
     using interface Elastos.IO.IInt32Buffer;
-    using interface Elastos.IO.IInt64Buffer;
-    using interface Elastos.IO.IBuffer;
     using interface Elastos.IO.IFloatBuffer;
 
     namespace Elastos {

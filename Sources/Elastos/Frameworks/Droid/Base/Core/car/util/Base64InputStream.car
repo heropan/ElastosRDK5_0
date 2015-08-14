@@ -1,8 +1,5 @@
 module
 {
-    using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IMap;
-    using interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {

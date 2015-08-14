@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Graphics.ICanvas;
-    interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos{
     namespace Droid{

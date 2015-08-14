@@ -1,11 +1,8 @@
 module
 {
 
-    interface Elastos.Droid.Os.IParcelable;
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Internal.Annotations.IVisibleForTesting;
 
-    using interface Elastos.Utility.IEnumMap;
 
     namespace Elastos {
     namespace Droid {

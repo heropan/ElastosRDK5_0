@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.View.IView;
 
     namespace Elastos {
     namespace Droid {

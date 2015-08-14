@@ -6,7 +6,6 @@ module
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.Text.ISpannable;
     interface Elastos.Droid.Text.IEditable;
-    interface Elastos.Droid.Text.ISpanWatcher;
 
     enum Elastos.Droid.Text.Method.Capitalize;
 

@@ -2,7 +2,6 @@
 module
 {
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
     interface Elastos.Droid.View.IViewOnTouchListener;
     interface Elastos.Droid.View.IView;

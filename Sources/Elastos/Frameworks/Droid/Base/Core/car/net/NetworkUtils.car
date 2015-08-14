@@ -2,16 +2,11 @@
 module
 {
 
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Util.ILog;
     interface Elastos.Droid.Util.IPair;
 
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInet4Address;
-    using interface Elastos.Net.IInet6Address;
-    using interface Elastos.Net.IUnknownHostException;
     using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {

@@ -4,13 +4,9 @@ module
 
     interface Elastos.Droid.Os.ICreator;
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
 
     using interface Elastos.Net.IInetAddress;
-    using interface Elastos.Net.IInet4Address;
-    using interface Elastos.Net.IInet6Address;
     using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {

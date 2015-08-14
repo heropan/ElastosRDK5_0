@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Core.IClassLoader;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IFileInputStream;
     using interface Elastos.IO.IFileOutputStream;

@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.App.Backup.IRestoreSession;
     interface Elastos.Droid.App.Backup.IRestoreObserver;
 
     namespace Elastos {

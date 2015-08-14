@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Internal.Widget.IActionBarContainer;
     interface Elastos.Droid.View.IViewGroup;
 
     namespace Elastos{

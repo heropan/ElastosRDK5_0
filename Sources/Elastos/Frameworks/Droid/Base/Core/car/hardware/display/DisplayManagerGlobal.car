@@ -7,7 +7,6 @@ module
 //    interface Elastos.Droid.View.IDisplayInfo;
 //    interface Elastos.Droid.content.IContext;
 //    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
-    interface Elastos.Droid.Hardware.Display.IWifiDisplayStatus;
 
     namespace Elastos {
     namespace Droid {

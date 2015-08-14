@@ -6,11 +6,6 @@ module
     merge("accessibilityservice/IAccessibilityServiceClient.car");
     merge("accessibilityservice/AccessibilityService.car");
 
-    interface Elastos.Droid.Os.ILooper;
-    interface Elastos.Droid.Os.IHandlerCallerCallback;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.Pm.IResolveInfo;
-    interface Elastos.Droid.AccessibilityService.IAccessibilityServiceCallbacks;
 
     // namespace Elastos {
     // namespace Droid {

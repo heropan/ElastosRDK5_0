@@ -16,7 +16,6 @@ module
     interface Elastos.Droid.Widget.IListView;
     interface Elastos.Droid.Widget.IListAdapter;
     interface Elastos.Droid.Widget.IAdapterViewOnItemSelectedListener;
-    interface Elastos.Droid.App.IDialog;
 
     namespace Elastos {
     namespace Droid {

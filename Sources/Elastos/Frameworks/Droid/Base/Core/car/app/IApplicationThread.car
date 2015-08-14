@@ -20,7 +20,6 @@ module
     interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.Content.Res.ICompatibilityInfo;
     interface Elastos.Droid.App.IInstrumentationWatcher;
-    interface Elastos.Droid.App.IResultInfo;
     interface Elastos.Droid.App.IIUiAutomationConnection;
     interface Elastos.Droid.Internal.App.IIVoiceInteractor;
 

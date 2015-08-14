@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.SystemUI.ISystemUI;
 
     namespace Elastos {
     namespace Droid {

@@ -1,44 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Os.ILooper;
-
-    //
-    // Elastos.Droid.Net
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-    namespace View {
-    namespace Menu {
-
-        interface IMenuBuilder {
-        }
-
-        interface IMenuItemImpl {
-        }
-
-        interface IMenuPresenter {
-        }
-
-        interface IMenuPresenterCallback {
-        }
-
-        interface IMenuBuilderCallback {
-        }
-
-        interface IMenuView {
-        }
-
-        interface IBaseMenuPresenter {
-        }
-
-    } // namespace Menu
-    } // namespace View
-    } // namespace Internal
-    } // namespace Droid
-    } // namespace Elastos
-
     namespace Elastos {
     namespace Droid {
     namespace Net {
@@ -78,14 +40,11 @@ module
     namespace Droid {
     namespace Privacy {
 
-        interface IIPrivacySettingsManager {
-        }
+        interface IIPrivacySettingsManager {}
 
-        interface IPrivacySettingsManager {
-        }
+        interface IPrivacySettingsManager {}
 
-        interface IPrivacySettings {
-        }
+        interface IPrivacySettings {}
 
     }}} // Elastos.Droid.Privacy
 
@@ -109,23 +68,17 @@ module
 
         interface IRouteInfo {}
 
-        interface IAudioAttributes {
-        }
+        interface IAudioAttributes {}
 
-        interface IMediaPlayerOnInfoListener {
-        }
+        interface IMediaPlayerOnInfoListener {}
 
-        interface IMediaPlayerOnErrorListener {
-        }
+        interface IMediaPlayerOnErrorListener {}
 
-        interface IMediaPlayerOnPreparedListener {
-        }
+        interface IMediaPlayerOnPreparedListener {}
 
-        interface IMediaPlayerOnCompletionListener {
-        }
+        interface IMediaPlayerOnCompletionListener {}
 
-        interface IMediaFormat {
-        }
+        interface IMediaFormat {}
 
         namespace Session {
             interface IMediaController {}
@@ -152,25 +105,21 @@ module
         interface IStatusLine {}
 
         namespace Conn {
-        namespace Routing {
-
-            interface IHttpRoutePlanner {}
-
+            namespace Routing {
+                interface IHttpRoutePlanner {}
+            }
         }
-    }
 
+        namespace Params {
+            interface IHttpParams {}
+        }
 
-    namespace Params {
+        namespace Util {
 
-        interface IHttpParams {}
+            interface ICharArrayBuffer {}
 
-    }
+        } // namespace Util
 
-    namespace Util {
-
-        interface ICharArrayBuffer {}
-
-    } // namespace Util
     } // namespace Http
     } // namespace Apache
     } // namespace Org
@@ -260,10 +209,6 @@ module
 
         interface ICreator {}
 
-        interface IBuild {}
-
-        interface ISystemClock {}
-
     }}} // Elastos.Droid.Os
 
 
@@ -288,6 +233,24 @@ module
 
         namespace View {
             interface IIInputMethod {}
+
+            namespace Menu {
+
+                interface IMenuBuilder {}
+
+                interface IMenuItemImpl {}
+
+                interface IMenuPresenter {}
+
+                interface IMenuPresenterCallback {}
+
+                interface IMenuBuilderCallback {}
+
+                interface IMenuView {}
+
+                interface IBaseMenuPresenter {}
+
+            }
         }
 
         namespace Telephony {
@@ -358,23 +321,13 @@ module
     namespace SystemUI {
 
         namespace StatusBar {
-
             namespace Phone {
                 interface IPhoneStatusBar {}
             }
-
         }
 
     }}} // Elastos.Droid.SystemUI
 
-
-    namespace Elastos {
-    namespace Droid {
-    namespace App {
-
-        interface IAppOpsManager {}
-
-    }}} // Elastos.Droid.App
 
     namespace Elastos {
     namespace Droid {

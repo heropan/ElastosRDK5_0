@@ -1,7 +1,6 @@
 
 module
 {
-    interface Elastos.Droid.Hardware.Camera2.ICaptureRequest;
     interface Elastos.Droid.Hardware.Camera2.Impl.ICameraMetadataNative;
 
     namespace Elastos {

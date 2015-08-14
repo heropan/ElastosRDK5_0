@@ -1,13 +1,11 @@
 
 module
 {
-    using interface Elastos.Core.IClassLoader;
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.Os.IBinder;
-    interface Elastos.Droid.App.IIActivityManager;
 
     namespace Elastos {
     namespace Droid {

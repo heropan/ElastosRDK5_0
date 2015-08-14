@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.IParcelableSpan;
 
     namespace Elastos {
     namespace Droid {

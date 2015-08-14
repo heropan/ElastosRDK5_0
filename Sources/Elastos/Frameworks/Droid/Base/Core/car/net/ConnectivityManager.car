@@ -6,7 +6,6 @@ module
     interface Elastos.Droid.Net.ILinkProperties;
     interface Elastos.Droid.Net.ILinkQualityInfo;
     interface Elastos.Droid.Net.INetworkQuotaInfo;
-    interface Elastos.Droid.Net.IProxyProperties;
     interface Elastos.Droid.Net.INetworkCapabilities;
     interface Elastos.Droid.Net.INetworkMisc;
     interface Elastos.Droid.Net.IOnNetworkActiveListener;

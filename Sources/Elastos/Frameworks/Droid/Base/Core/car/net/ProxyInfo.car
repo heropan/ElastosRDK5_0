@@ -3,15 +3,10 @@ module
 {
 
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    interface Elastos.Droid.Text.ITextUtils;
     interface Elastos.Droid.Os.ICreator;
 
-    using interface Org.Apache.Http.Client.IHttpClient;
     using interface Elastos.Net.IInetSocketAddress;
-    using interface Elastos.Net.IURLConnection;
     using interface Elastos.Utility.IList;
-    using interface Elastos.Utility.ILocale;
 
     namespace Elastos {
     namespace Droid {

@@ -6,8 +6,6 @@ module
     interface Elastos.Droid.View.Animation.IAnimationListener;
     interface Elastos.Droid.View.Animation.ILayoutAnimationController;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
-    interface Elastos.Droid.View.IActionMode;
-    interface Elastos.Droid.View.IActionModeCallback;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Graphics.IRect;
     interface Elastos.Droid.Graphics.ICanvas;

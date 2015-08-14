@@ -27,16 +27,6 @@ module
     merge("preference/TwoStatePreference.car");
     merge("preference/VolumePreference.car");
 
-    interface Elastos.Droid.App.IActivity;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener;
-    interface Elastos.Droid.Utility.IAttributeSet;
-    interface Elastos.Droid.View.IAbsSavedState;
-    interface Elastos.Droid.Widget.IArrayAdapter;
-    interface Elastos.Droid.Widget.IFilterable;
-    interface Elastos.Droid.Widget.ISpinnerAdapter;
-    interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener;
-    interface Elastos.Droid.Widget.ISeekBar;
 
     // namespace Elastos {
     // namespace Droid {

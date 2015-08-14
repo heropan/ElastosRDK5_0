@@ -8,7 +8,6 @@ module
 //    interface Elastos.Droid.Media.IImage;
     interface Elastos.Droid.Location.ILocation;
     interface Elastos.Droid.Utility.ISize;
-    interface Elastos.Droid.Os.IHandler;
 
     namespace Elastos {
     namespace Droid {

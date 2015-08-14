@@ -2,8 +2,6 @@
 module
 {
     interface Elastos.Droid.Os.IParcelFileDescriptor;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.Pm.IPackageInstallObserver2;
     interface Elastos.Droid.Content.IIntentSender;
 
     namespace Elastos {

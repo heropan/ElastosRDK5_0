@@ -2,7 +2,6 @@
 module
 {
     using interface Elastos.Core.IRunnable;
-    using interface Elastos.Utility.IArrayList;
 
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IViewGroup;

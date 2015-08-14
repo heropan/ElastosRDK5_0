@@ -6,7 +6,6 @@ module
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IWindowCallback;
     interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
-    interface Elastos.Droid.App.IActionBarOnNavigationListener;
     interface Elastos.Droid.Internal.Widget.IScrollingTabContainerView;
     interface Elastos.Droid.Internal.Widget.IActionBarContextView;
     interface Elastos.Droid.View.IMenu;

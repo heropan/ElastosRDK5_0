@@ -17,8 +17,6 @@ module
     interface Elastos.Droid.Content.Pm.IPackageInstallObserver;
     interface Elastos.Droid.Content.Pm.IPackageDeleteObserver;
     interface Elastos.Droid.Content.Pm.IPackageCleanItem;
-    interface Elastos.Droid.Content.Pm.IManifestDigest;
-    interface Elastos.Droid.Content.Pm.IContainerEncryptionParams;
     interface Elastos.Droid.Content.Pm.IVerificationParams;
     interface Elastos.Droid.Content.Pm.IVerifierDeviceIdentity;
     interface Elastos.Droid.Content.Pm.IPackageStatsObserver;

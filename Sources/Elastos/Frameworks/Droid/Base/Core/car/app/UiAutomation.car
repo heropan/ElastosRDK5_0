@@ -13,7 +13,6 @@ module
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityNodeInfo;
     interface Elastos.Droid.AccessibilityService.IAccessibilityServiceInfo;
-    interface Elastos.Droid.Widget.ITimePicker;
 
     namespace Elastos {
     namespace Droid {

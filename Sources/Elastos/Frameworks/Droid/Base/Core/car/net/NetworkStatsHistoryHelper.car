@@ -2,19 +2,11 @@
 module
 {
 
-    interface Elastos.Droid.Net.INetworkStats;
-    interface Elastos.Droid.Net.INetworkStatsHistoryEntry;
 
-    interface Elastos.Droid.Internal.Util.IArrayUtils;
     interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    interface Elastos.Droid.Util.IMathUtils;
-    interface Elastos.Droid.Internal.Util.IIndentingPrintWriter;
 
-    using interface Elastos.IO.ICharArrayWriter;
     using interface Elastos.IO.IDataInputStream;
     using interface Elastos.IO.IDataOutputStream;
-    using interface Elastos.Utility.IArrays;
     using interface Elastos.Utility.IRandom;
 
     interface Elastos.Droid.Os.ICreator;

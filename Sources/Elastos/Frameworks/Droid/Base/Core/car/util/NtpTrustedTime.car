@@ -1,7 +1,6 @@
 
 module
 {
-    using interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {

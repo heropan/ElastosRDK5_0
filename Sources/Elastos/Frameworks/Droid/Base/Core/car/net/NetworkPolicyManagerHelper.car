@@ -3,14 +3,9 @@ module
 {
 
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.Pm.IPackageManager;
-    interface Elastos.Droid.Content.Pm.ISignature;
-    interface Elastos.Droid.Os.IUserHandle;
     interface Elastos.Droid.Text.Format.ITime;
 
     using interface Elastos.IO.IPrintWriter;
-    using interface Elastos.Utility.IHashSet;
 
     namespace Elastos {
     namespace Droid {

@@ -3,17 +3,8 @@ module
 {
 
     interface Elastos.Droid.Os.ICreator;
-    interface Elastos.Droid.Net.IConnectivityManager;
     interface Elastos.Droid.Net.INetworkIdentity;
-    interface Elastos.Droid.Net.Wifi.IWifiInfo;
-    interface Elastos.Droid.Telephony.ITelephonyManager;
-    interface Elastos.Droid.Internal.Util.IArrayUtils;
-    interface Elastos.Droid.Content.Res.IResources;
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    interface Elastos.Droid.Internal.Annotations.IVisibleForTesting;
 
-    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {

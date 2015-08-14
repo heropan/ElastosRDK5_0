@@ -2,9 +2,6 @@
 module
 {
 
-    using interface Elastos.Net.ISocket;
-    using interface Elastosx.Crypto.ISecretKey;
-    using interface Elastosx.Net.Ssl.ISSLEngine;
 
     namespace Elastos {
     namespace Droid {

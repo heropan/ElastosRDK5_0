@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.Text.Method.IMovementMethod;
 
     namespace Elastos {
     namespace Droid {

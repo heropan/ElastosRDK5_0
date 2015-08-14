@@ -6,7 +6,6 @@ module
     interface Elastos.Droid.View.IWindowManagerLayoutParams;
     interface Elastos.Droid.View.IApplicationToken;
     interface Elastos.Droid.View.IInputEventReceiverFactory;
-    interface Elastos.Droid.View.IInputChannel;
     interface Elastos.Droid.View.IDisplay;
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.View.IKeyEvent;

@@ -4,21 +4,8 @@ module
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IProxyInfo;
-    interface Elastos.Droid.Text.ITextUtils;
-    interface Elastos.Droid.Util.ILog;
 
     using interface Org.Apache.Http.IHttpHost;
-    using interface Org.Apache.Http.IHttpRequest;
-    using interface Org.Apache.Http.Conn.Routing.IHttpRoute;
-    using interface Org.Apache.Http.Conn.Routing.IHttpRoutePlanner;
-    using interface Org.Apache.Http.Conn.Scheme.ISchemeRegistry;
-    using interface Org.Apache.Http.Protocol.IHttpContext;
-    using interface Elastos.Net.IInetSocketAddress;
-    using interface Elastos.Net.IProxySelector;
-    using interface Elastos.Net.IURI;
-    using interface Elastos.Utility.IList;
-    using interface Elastos.Utility.Regex.IMatcher;
-    using interface Elastos.Utility.Regex.IPattern;
 
     namespace Elastos {
     namespace Droid {

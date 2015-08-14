@@ -2,7 +2,6 @@ module
 {
     using interface Elastos.Core.ICharSequence;
     using interface Elastos.Utility.ICollection;
-    using interface Elastos.Utility.IObjectContainer;
 
     interface Elastos.Droid.Text.Utility.IRfc822Token;
 

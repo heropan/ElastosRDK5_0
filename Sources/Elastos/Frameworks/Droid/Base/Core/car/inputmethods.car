@@ -18,20 +18,6 @@ module
     merge("Inputmethods/PinyinIME/SoftKeyboardView.car");
     merge("Inputmethods/PinyinIME/SoundManager.car");
 
-    interface Elastos.Droid.Graphics.Drawable.IDrawableCallback;
-    interface Elastos.Droid.View.Animation.IAnimationListener;
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.View.IViewParent;
-    interface Elastos.Droid.View.IViewManager;
-    interface Elastos.Droid.View.IViewOnTouchListener;
-    interface Elastos.Droid.View.IKeyEventCallback;
-    interface Elastos.Droid.View.IOnGestureListener;
-    interface Elastos.Droid.View.IOnDoubleTapListener;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityEventSource;
-    interface Elastos.Droid.Widget.IPopupWindow;
-    interface Elastos.Droid.Widget.IRelativeLayout;
-    interface Elastos.Droid.Utility.IAttributeSet;
 
     // namespace Elastos {
     // namespace Droid {

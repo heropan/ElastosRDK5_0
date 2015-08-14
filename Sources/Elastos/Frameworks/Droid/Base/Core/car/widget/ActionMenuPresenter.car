@@ -1,9 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IActionProvider;
-    interface Elastos.Droid.Internal.View.Menu.IBaseMenuPresenter;
-    interface Elastos.Droid.Internal.View.Menu.IMenuPresenter;
-    interface Elastos.Droid.View.ISubUiVisibilityListener;
     interface Elastos.Droid.Content.Res.IConfiguration;
 
     namespace Elastos{

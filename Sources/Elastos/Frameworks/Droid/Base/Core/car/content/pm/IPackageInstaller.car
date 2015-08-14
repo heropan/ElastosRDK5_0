@@ -2,10 +2,8 @@
 module
 {
     interface Elastos.Droid.Content.Pm.IPackageInstallerSessionInfo;
-    interface Elastos.Droid.Content.Pm.IPackageDeleteObserver2;
     interface Elastos.Droid.Content.Pm.IPackageInstallerCallback;
     interface Elastos.Droid.Content.Pm.IPackageInstallerSession;
-    interface Elastos.Droid.Content.Pm.IPackageInstaller;
     interface Elastos.Droid.Content.Pm.IParceledListSlice;
     interface Elastos.Droid.Content.Pm.IPackageInstallerSessionParams;
     interface Elastos.Droid.Content.IIntentSender;

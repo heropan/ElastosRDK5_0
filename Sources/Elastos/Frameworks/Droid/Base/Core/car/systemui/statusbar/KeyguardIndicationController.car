@@ -1,6 +1,5 @@
 module
 {
-    interface Elastos.Droid.View.IViewOnClickListener;
 
     namespace Elastos {
     namespace Droid {

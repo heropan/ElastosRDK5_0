@@ -5,7 +5,6 @@ module
 
     interface Elastos.Droid.Graphics.ITypeface;
     interface Elastos.Droid.Content.IContentResolver;
-    interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
 
     namespace Elastos {
     namespace Droid {

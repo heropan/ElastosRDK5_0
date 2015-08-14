@@ -10,10 +10,6 @@ module
 
     interface IDhcpInfoHelper {
 
-        /** Implement the Parcelable interface {@hide} */
-        GetCREATOR(
-            [out] ICreator** result);
-
     }
 
     } // namespace Net

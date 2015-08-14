@@ -4,20 +4,8 @@ module
 
     interface Elastos.Droid.Net.INetworkStatsNonMonotonicObserver;
 
-    interface Elastos.Droid.Os.IParcel;
-    interface Elastos.Droid.Os.IParcelable;
-    interface Elastos.Droid.Os.ISystemClock;
-    interface Elastos.Droid.Util.ISparseBooleanArray;
-    interface Elastos.Droid.Internal.Annotations.IVisibleForTesting;
-    interface Elastos.Droid.Internal.Util.IArrayUtils;
     interface Elastos.Droid.Os.ICreator;
 
-    using interface Libcore.Utility.IEmptyArray;
-    using interface Elastos.IO.ICharArrayWriter;
-    using interface Elastos.IO.IPrintWriter;
-    using interface Elastos.Utility.IArrays;
-    using interface Elastos.Utility.IHashSet;
-    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {

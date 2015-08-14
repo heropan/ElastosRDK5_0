@@ -2,13 +2,7 @@
 module
 {
 
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Net.Wifi.IWifiInfo;
-    interface Elastos.Droid.Net.Wifi.IWifiManager;
-    interface Elastos.Droid.Os.IBuild;
-    interface Elastos.Droid.Telephony.ITelephonyManager;
 
-    using interface Elastos.Utility.IObjects;
 
     namespace Elastos {
     namespace Droid {
