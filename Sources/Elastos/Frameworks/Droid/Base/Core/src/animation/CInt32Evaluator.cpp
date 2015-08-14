@@ -30,18 +30,6 @@ ECode CInt32Evaluator::Evaluate(
     return CInteger32::New(retValue, (IInteger32**)result);
 }
 
-
-ECode CInt32Evaluator::Evaluate(
-    /* [in] */ Float fraction,
-    /* [in] */ Int32 startValue,
-    /* [in] */ Int32 endValue,
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = (Int32)(startValue + fraction * (endValue - startValue));
-    return NOERROR;
-}
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos

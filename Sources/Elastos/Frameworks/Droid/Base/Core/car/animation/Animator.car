@@ -16,7 +16,7 @@ module
      */
     /**
      * @Involve
-     * interface ICloneable
+     * implements ICloneable
      */
     interface IAnimator {
         /**

@@ -357,6 +357,12 @@ public:
     //@Override
     virtual CARAPI End();
 
+    // @Override
+    virtual CARAPI Resume();
+
+    // @Override
+    virtual CARAPI Pause();
+
     //@Override
     virtual CARAPI IsRunning(
         /* [out] */ Boolean* running);
@@ -373,6 +379,13 @@ public:
      * of the animation will use the default behavior of playing forward.
      */
     virtual CARAPI Reverse();
+
+    /**
+     * @hide
+     */
+    // @Override
+    virtual CARAPI CanReverse(
+        /* [out] */ Boolean* can);
 
     /**
      * Returns the current animation fraction, which is the elapsed/interpolated fraction used in
@@ -441,8 +454,22 @@ public:
      */
     static CARAPI_(void) ClearAllAnimations();
 
-    static CARAPI_(AutoPtr<IValueAnimator>) OfInt(
+    static CARAPI_(AutoPtr<IValueAnimator>) OfInt32(
             /* [in] */ ArrayOf<Int32>* values);
+
+    /**
+     * Constructs and returns a ValueAnimator that animates between color values. A single
+     * value implies that that value is the one being animated to. However, this is not typically
+     * useful in a ValueAnimator object because there is no way for the object to determine the
+     * starting value for the animation (unlike ObjectAnimator, which can derive that value
+     * from the target object and property being animated). Therefore, there should typically
+     * be two or more values.
+     *
+     * @param values A set of values that the animation will animate between over time.
+     * @return A ValueAnimator object that is set up to animate between the given values.
+     */
+    static CARAPI_(AutoPtr<IValueAnimator>) OfArgb(
+        /* [in] */ ArrayOf<Int32>* values);
 
     static CARAPI_(AutoPtr<IValueAnimator>) OfFloat(
             /* [in] */ ArrayOf<Float>* values);
@@ -453,6 +480,45 @@ public:
     static CARAPI_(AutoPtr<IValueAnimator>) OfObject(
             /* [in] */ ITypeEvaluator* evaluator,
             /* [in] */ ArrayOf<IInterface*>* values);
+
+    /**
+     * <p>Whether or not the ValueAnimator is allowed to run asynchronously off of
+     * the UI thread. This is a hint that informs the ValueAnimator that it is
+     * OK to run the animation off-thread, however ValueAnimator may decide
+     * that it must run the animation on the UI thread anyway. For example if there
+     * is an {@link AnimatorUpdateListener} the animation will run on the UI thread,
+     * regardless of the value of this hint.</p>
+     *
+     * <p>Regardless of whether or not the animation runs asynchronously, all
+     * listener callbacks will be called on the UI thread.</p>
+     *
+     * <p>To be able to use this hint the following must be true:</p>
+     * <ol>
+     * <li>{@link #getAnimatedFraction()} is not needed (it will return undefined values).</li>
+     * <li>The animator is immutable while {@link #isStarted()} is true. Requests
+     *    to change values, duration, delay, etc... may be ignored.</li>
+     * <li>Lifecycle callback events may be asynchronous. Events such as
+     *    {@link Animator.AnimatorListener#onAnimationEnd(Animator)} or
+     *    {@link Animator.AnimatorListener#onAnimationRepeat(Animator)} may end up delayed
+     *    as they must be posted back to the UI thread, and any actions performed
+     *    by those callbacks (such as starting new animations) will not happen
+     *    in the same frame.</li>
+     * <li>State change requests ({@link #cancel()}, {@link #end()}, {@link #reverse()}, etc...)
+     *    may be asynchronous. It is guaranteed that all state changes that are
+     *    performed on the UI thread in the same frame will be applied as a single
+     *    atomic update, however that frame may be the current frame,
+     *    the next frame, or some future frame. This will also impact the observed
+     *    state of the Animator. For example, {@link #isStarted()} may still return true
+     *    after a call to {@link #end()}. Using the lifecycle callbacks is preferred over
+     *    queries to {@link #isStarted()}, {@link #isRunning()}, and {@link #isPaused()}
+     *    for this reason.</li>
+     * </ol>
+     * @hide
+     */
+    // @Override
+    virtual CARAPI SetAllowRunningAsynchronously(
+        /* [in] */ Boolean mayRunAsync);
+
 protected:
     /**
      * This function is called immediately before processing the first animation
@@ -539,6 +605,11 @@ private:
         /* [in] */ AnimationHandler* handler);
 
     /**
+     * Returns the name of this animator for debugging purposes.
+     */
+    CARAPI_(String) GetNameForTrace();
+
+    /**
      * Internal function called to process an animation frame on an animation that is currently
      * sleeping through its <code>startDelay</code> phase. The return value indicates whether it
      * should be woken up and put on the active animations queue.
@@ -552,6 +623,8 @@ private:
         /* [in] */ Int64 currentTime);
 
     CARAPI_(AutoPtr<AnimationHandler>) GetOrCreateAnimationHandler();
+
+    CARAPI_(void) UpdateScaledDuration();
 
 protected:
     CARAPI_(void) CloneInternal(
@@ -583,6 +656,19 @@ protected:
      * to a value.
      */
     Int64 mSeekTime;
+
+    /**
+     * Set on the next frame after pause() is called, used to calculate a new startTime
+     * or delayStartTime which allows the animator to continue from the point at which
+     * it was paused. If negative, has not yet been set.
+     */
+    Int64 mPauseTime;
+
+    /**
+     * Set when an animator is resumed. This triggers logic in the next frame which
+     * actually resumes the animator.
+     */
+    Boolean mResumed;
 
     /**
      * Flag that represents the current state of the animation. Used to figure out when to start
@@ -671,7 +757,7 @@ private:
     Boolean mStarted;
 
     /**
-     * Tracks whether we've notified listeners of the onAnimationSTart() event. This can be
+     * Tracks whether we've notified listeners of the onAnimationStart() event. This can be
      * complex to keep track of since we notify listeners at different times depending on
      * startDelay and whether start() was called before end().
      */

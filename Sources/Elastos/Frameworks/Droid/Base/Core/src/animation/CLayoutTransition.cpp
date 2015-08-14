@@ -35,6 +35,30 @@ AutoPtr<IObjectAnimator> CLayoutTransition::sDefaultFadeIn;
 AutoPtr<IObjectAnimator> CLayoutTransition::sDefaultFadeOut;
 
 Int64 CLayoutTransition::DEFAULT_DURATION = 300;
+AutoPtr<ITimeInterpolator> CLayoutTransition::ACCEL_DECEL_INTERPOLATOR;
+AutoPtr<ITimeInterpolator> CLayoutTransition::DECEL_INTERPOLATOR;
+AutoPtr<ITimeInterpolator> CLayoutTransition::sAppearingInterpolator;
+AutoPtr<ITimeInterpolator> CLayoutTransition::sDisappearingInterpolator;
+AutoPtr<ITimeInterpolator> CLayoutTransition::sChangingAppearingInterpolator;
+AutoPtr<ITimeInterpolator> CLayoutTransition::sChangingDisappearingInterpolator;
+AutoPtr<ITimeInterpolator> CLayoutTransition::sChangingInterpolator;
+Boolean CLayoutTransition::sInit = CLayoutTransition::InitStatics();
+
+Boolean CLayoutTransition::InitStatics()
+{
+    AutoPtr<IAccelerateDecelerateInterpolator> tmp;
+    CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&tmp);
+    ACCEL_DECEL_INTERPOLATOR = ITimeInterpolator::Probe(tmp);
+
+    AutoPtr<IDecelerateInterpolator> di;
+    CDecelerateInterpolator::New((IDecelerateInterpolator**)&di);
+    DECEL_INTERPOLATOR = IDecelerateInterpolator::Probe(di);
+    sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
+    sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
+    sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
+    sChangingDisappearingInterpolator = DECEL_INTERPOLATOR;
+    sChangingInterpolator = DECEL_INTERPOLATOR;
+}
 
 CAR_INTERFACE_IMPL(CLayoutTransition::_OnPreDrawListener, Object, IOnPreDrawListener)
 CAR_INTERFACE_IMPL(CLayoutTransition::ViewOnLayoutChangeListener, Object, IViewOnLayoutChangeListener)
@@ -252,14 +276,26 @@ ECode CLayoutTransition::ViewOnLayoutChangeListener::OnLayoutChange(
         case ILayoutTransition::APPEARING:
             startDelay = mHost->mChangingAppearingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingAppearingStagger;
+            if (mChangingAppearingInterpolator != sChangingAppearingInterpolator) {
+                anim->SetInterpolator(mChangingAppearingInterpolator);
+            }
+
             break;
         case ILayoutTransition::DISAPPEARING:
             startDelay = mHost->mChangingDisappearingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingDisappearingStagger;
+            if (mChangingDisappearingInterpolator !=
+                    sChangingDisappearingInterpolator) {
+                anim->SetInterpolator(mChangingDisappearingInterpolator);
+            }
+
             break;
         case ILayoutTransition::CHANGING:
             startDelay = mHost->mChangingDelay + mHost->mStaggerDelay;
             mHost->mStaggerDelay += mHost->mChangingStagger;
+            if (mChangingInterpolator != sChangingInterpolator) {
+                anim->SetInterpolator(mChangingInterpolator);
+            }
             break;
     }
     mAnim->SetStartDelay(startDelay);
@@ -300,16 +336,16 @@ CLayoutTransition::CLayoutTransition()
     , mChangingAppearingStagger(0)
     , mChangingDisappearingStagger(0)
     , mChangingStagger(0)
+    , mAppearingInterpolator(sAppearingInterpolator)
+    , mDisappearingInterpolator(sDisappearingInterpolator)
+    , mChangingAppearingInterpolator(sChangingAppearingInterpolator)
+    , mChangingDisappearingInterpolator(sChangingDisappearingInterpolator)
+    , mChangingInterpolator(sChangingInterpolator)
     , mStaggerDelay(0)
     , mTransitionTypes(FLAG_CHANGE_APPEARING | FLAG_CHANGE_DISAPPEARING |
             FLAG_APPEARING | FLAG_DISAPPEARING)
     , mAnimateParentHierarchy(TRUE)
 {
-    CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&mAppearingInterpolator);
-    CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&mDisappearingInterpolator);
-    CDecelerateInterpolator::New((IDecelerateInterpolator**)&mChangingAppearingInterpolator);
-    CDecelerateInterpolator::New((IDecelerateInterpolator**)&mChangingDisappearingInterpolator);
-    CDecelerateInterpolator::New((IDecelerateInterpolator**)&mChangingInterpolator);
     if (sDefaultChangeIn == NULL) {
         // "left" is just a placeholder; we'll put real properties/values in when needed
         AutoPtr<ArrayOf<Int32> > parmInt32 = ArrayOf<Int32>::Alloc(2);
@@ -1081,6 +1117,9 @@ void CLayoutTransition::RunAppearingTransition(
     anim->SetTarget(child);
     anim->SetStartDelay(mAppearingDelay);
     anim->SetDuration(mAppearingDuration);
+    if (mAppearingInterpolator != sAppearingInterpolator) {
+        anim->SetInterpolator(mAppearingInterpolator);
+    }
     if (IObjectAnimator::Probe(anim) != NULL) {
         AutoPtr<IObjectAnimator> temp = (IObjectAnimator*)(anim->Probe(EIID_IObjectAnimator));
         temp->SetCurrentPlayTime(0);
@@ -1119,6 +1158,9 @@ void CLayoutTransition::RunDisappearingTransition(
     mDisappearingAnim->Clone((IAnimator**)&anim);
     anim->SetStartDelay(mDisappearingDelay);
     anim->SetDuration(mDisappearingDuration);
+    if (mDisappearingInterpolator != sDisappearingInterpolator) {
+        anim->SetInterpolator(mDisappearingInterpolator);
+    }
     anim->SetTarget(child);
     Float preAnimAlpha = 0.0;
     child->GetAlpha(&preAnimAlpha);

@@ -1,6 +1,6 @@
 
 #include "animation/CObjectAnimatorHelper.h"
-#include "animation/CObjectAnimator.h"
+#include "animation/ObjectAnimator.h"
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +15,7 @@ ECode CObjectAnimatorHelper::OfInt32(
     /* [in] */ ArrayOf<Int32>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfInt32(target, propertyName, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfInt32(target, propertyName, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -27,7 +27,7 @@ ECode CObjectAnimatorHelper::OfInt32(
     /* [in] */ ArrayOf<Int32>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfInt32(target, property, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfInt32(target, property, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -39,7 +39,7 @@ ECode CObjectAnimatorHelper::OfFloat(
     /* [in] */ ArrayOf<Float>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfFloat(target, propertyName, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfFloat(target, propertyName, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -51,7 +51,7 @@ ECode CObjectAnimatorHelper::OfFloat(
     /* [in] */ ArrayOf<Float>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfFloat(target, property, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfFloat(target, property, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -64,7 +64,7 @@ ECode CObjectAnimatorHelper::OfObject(
     /* [in] */ ArrayOf<IInterface*>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfObject(target, propertyName, evaluator, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfObject(target, propertyName, evaluator, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -77,7 +77,7 @@ ECode CObjectAnimatorHelper::OfObject(
     /* [in] */ ArrayOf<IInterface*>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfObject(target, property, evaluator, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfObject(target, property, evaluator, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;
@@ -88,7 +88,7 @@ ECode CObjectAnimatorHelper::OfPropertyValuesHolder(
     /* [in] */ ArrayOf<IPropertyValuesHolder*>* values,
     /* [out] */ IObjectAnimator** anim)
 {
-    AutoPtr<IObjectAnimator> animTemp = CObjectAnimator::OfPropertyValuesHolder(target, values);
+    AutoPtr<IObjectAnimator> animTemp = ObjectAnimator::OfPropertyValuesHolder(target, values);
     *anim = animTemp;
     REFCOUNT_ADD(*anim)
     return NOERROR;

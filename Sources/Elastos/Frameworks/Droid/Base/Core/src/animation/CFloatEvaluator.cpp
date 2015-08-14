@@ -34,17 +34,6 @@ ECode CFloatEvaluator::Evaluate(
     return NOERROR;
 }
 
-ECode CFloatEvaluator::Evaluate(
-    /* [in] */ Float fraction,
-    /* [in] */ Float startValue,
-    /* [in] */ Float endValue,
-    /* [out] */ Float* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = startValue + fraction * (endValue - startValue);
-    return NOERROR;
-}
-
 }   //namespace Animation
 }   //namespace Droid
 }   //namespace Elastos

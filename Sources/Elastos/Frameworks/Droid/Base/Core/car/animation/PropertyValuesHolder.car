@@ -149,6 +149,20 @@ module
     interface IFloatPropertyValuesHolder {
     }
 
+    /**
+     * @Involve
+     * interface IPropertyValuesHolder
+     */
+    interface IMultiFloatValuesHolder {
+    }
+
+    /**
+     * @Involve
+     * interface IPropertyValuesHolder
+     */
+    interface IMultiInt32ValuesHolder {
+    }
+
     [deprecated, local]
     interface IPropertyValuesHolderHelper {
         /**

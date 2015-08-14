@@ -46,6 +46,12 @@ ECode FloatKeyframeSet::Clone(
     return NOERROR;
 }
 
+ECode FloatKeyframeSet::InvalidateCache()
+{
+    mFirstTime = TRUE;
+    return NOERROR;
+}
+
 ECode FloatKeyframeSet::GetFloatValue(
     /* [in] */ Float frc,
     /* [out] */ Float* value)
@@ -201,6 +207,14 @@ ECode FloatKeyframeSet::GetKeyframes(
     VALIDATE_NOT_NULL(frames);
     *frames = mKeyframes;
     REFCOUNT_ADD(*frames);
+    return NOERROR;
+}
+
+ECode FloatKeyframeSet::GetType(
+    /* [out] */ ClassID* type)
+{
+    VALIDATE_NOT_NULL(type);
+    *type = ECLSID_CFloat;
     return NOERROR;
 }
 

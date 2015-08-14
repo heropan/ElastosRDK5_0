@@ -23,6 +23,16 @@ public:
     CAR_INTERFACE_DECL();
 
     /**
+     * Returns an instance of <code>ArgbEvaluator</code> that may be used in
+     * {@link ValueAnimator#setEvaluator(TypeEvaluator)}. The same instance may
+     * be used in multiple <code>Animator</code>s because it holds no state.
+     * @return An instance of <code>ArgbEvalutor</code>.
+     *
+     * @hide
+     */
+    static CARAPI_(AutoPtr<IArgbEvaluator>) GetInstance();
+
+    /**
      * This function returns the calculated in-between value for a color
      * given integers that represent the start and end values in the four
      * bytes of the 32-bit int. Each channel is separately linearly interpolated
@@ -44,11 +54,8 @@ public:
         /* [in] */ IInterface* endValue,
         /* [out] */ IInterface** result);
 
-    CARAPI Evaluate(
-        /* [in] */ Float fraction,
-        /* [in] */ Int32 startValue,
-        /* [in] */ Int32 endValue,
-        /* [out] */ Int32* result);
+private:
+    static AutoPtr<IArgbEvaluator> sInstance;
 };
 
 }   //namespace Animation

@@ -23,7 +23,7 @@ ECode Int32KeyframeSet::GetValue(
     /* [out] */ IInterface** value)
 {
     Int32 vTemp;
-    GetIntValue(fraction, &vTemp);
+    GetInt32Value(fraction, &vTemp);
     AutoPtr<IInterface> iv;
     CInteger32::New(vTemp, (IInteger32**)&iv);
     *value = iv;
@@ -31,7 +31,7 @@ ECode Int32KeyframeSet::GetValue(
     return NOERROR;
 }
 
-ECode Int32KeyframeSet::GetIntValue(
+ECode Int32KeyframeSet::GetInt32Value(
     /* [in] */ Float frac,
     /* [out] */ Int32* value)
 {
@@ -178,6 +178,12 @@ ECode Int32KeyframeSet::GetIntValue(
     return NOERROR;
 }
 
+ECode Int32KeyframeSet::InvalidateCache()
+{
+    mFirstTime = TRUE;
+    return NOERROR;
+}
+
 ECode Int32KeyframeSet::Clone(
     /* [out] */ IKeyframeSet** obj)
 {
@@ -200,6 +206,14 @@ ECode Int32KeyframeSet::GetKeyframes(
     VALIDATE_NOT_NULL(frames);
     *frames = mKeyframes;
     REFCOUNT_ADD(*frames);
+    return NOERROR;
+}
+
+ECode Int32KeyframeSet::GetType(
+    /* [out] */ ClassID* type)
+{
+    VALIDATE_NOT_NULL(type);
+    *type = ECLSID_CInteger32;
     return NOERROR;
 }
 

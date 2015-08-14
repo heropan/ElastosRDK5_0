@@ -11,21 +11,21 @@ Int32PropertyValuesHolder::ClassMethodMap Int32PropertyValuesHolder::sJNISetterP
 CAR_INTERFACE_IMPL(Int32PropertyValuesHolder, PropertyValuesHolder, IInt32PropertyValuesHolder);
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ const String& propertyName,
-    /* [in] */ IInt32KeyframeSet* keyframeSet)
+    /* [in] */ IInt32Keyframes* keyframes)
     : PropertyValuesHolder(propertyName)
     , mValueType(ECLSID_CInteger32)
-    , mKeyframeSet(keyframeSet)
-    , mInt32KeyframeSet(keyframeSet)
+    , mKeyframes(keyframes)
+    , mInt32Keyframes(keyframes)
 {
 }
 
 Int32PropertyValuesHolder::Int32PropertyValuesHolder(
     /* [in] */ IProperty* property,
-    /* [in] */ IInt32KeyframeSet* keyframeSet)
+    /* [in] */ IInt32Keyframes* keyframes)
     : PropertyValuesHolder(property)
     , mValueType(ECLSID_CInteger32)
-    , mKeyframeSet(keyframeSet)
-    , mInt32KeyframeSet(keyframeSet)
+    , mKeyframes(keyframes)
+    , mInt32Keyframes(keyframes)
 {
 }
 
@@ -52,14 +52,14 @@ ECode Int32PropertyValuesHolder::SetInt32Values(
     /* [in] */ ArrayOf<Int32>* values)
 {
     PropertyValuesHolder::SetInt32Values(values);
-    mInt32KeyframeSet = (IInt32KeyframeSet*)(mKeyframeSet->Probe(EIID_IInt32KeyframeSet));
+    mInt32Keyframes = IInt32Keyframes::Probe(mKeyframes);
     return NOERROR;
 }
 
 ECode Int32PropertyValuesHolder::CalculateValue(
     /* [in] */ Float fraction)
 {
-    return mInt32KeyframeSet->GetIntValue(fraction, &mInt32AnimatedValue);
+    return mInt32Keyframes->GetInt32Value(fraction, &mInt32AnimatedValue);
 }
 
 ECode Int32PropertyValuesHolder::GetAnimatedValue(
@@ -76,10 +76,10 @@ ECode Int32PropertyValuesHolder::GetAnimatedValue(
 ECode Int32PropertyValuesHolder::Clone(
     /* [out] */ IPropertyValuesHolder** holder)
 {
-    AutoPtr<Int32PropertyValuesHolder> v = new Int32PropertyValuesHolder(mPropertyName, mInt32KeyframeSet);
+    AutoPtr<Int32PropertyValuesHolder> v = new Int32PropertyValuesHolder(mPropertyName, mInt32Keyframes);
     CloneSuperData(v);
     v->mJniSetter = mJniSetter;
-    v->mInt32KeyframeSet = mInt32KeyframeSet;
+    v->mInt32Keyframes = mInt32Keyframes;
     v->mInt32AnimatedValue = mInt32AnimatedValue;
     *holder = v;
     REFCOUNT_ADD(*holder);
@@ -161,24 +161,20 @@ ECode Int32PropertyValuesHolder::SetupSetter(
         AutoPtr<IClassInfo> clInfo = TransformClassInfo(target);
         ClassMethodMapIterator exit = sJNISetterPropertyMap.Find(clInfo);
         AutoPtr<MethodMap> propertyMap = NULL;
-        if(exit != sJNISetterPropertyMap.End())
-        {
+        if(exit != sJNISetterPropertyMap.End()) {
             propertyMap = exit->mSecond;
-            if(propertyMap != NULL)
-            {
+            if(propertyMap != NULL) {
                 MethodMapIterator it = propertyMap->Find(mPropertyName);
-                if(it != propertyMap->End())
-                {
+                if(it != propertyMap->End()) {
                     AutoPtr<IMethodInfo> mtInfo = it->mSecond;
-                    if(mtInfo != NULL)
-                    {
+                    if(mtInfo != NULL) {
                         mJniSetter = mtInfo;
                     }
                 }
             }
         }
-        if(mJniSetter == NULL)
-        {
+
+        if(mJniSetter == NULL) {
             String methodName = GetMethodName(String("Set"), mPropertyName);
             clInfo->GetMethodInfo(methodName, (IMethodInfo**)&mJniSetter);
             if(mJniSetter != NULL) {

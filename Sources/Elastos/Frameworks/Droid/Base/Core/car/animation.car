@@ -5,6 +5,7 @@ module
     merge("animation/AnimatorInflater.car");
     merge("animation/AnimatorSet.car");
     merge("animation/Keyframe.car");
+    merge("animation/Keyframes.car");
     merge("animation/KeyframeSet.car");
     merge("animation/TypeEvaluator.car");
     merge("animation/TimeInterpolator.car");

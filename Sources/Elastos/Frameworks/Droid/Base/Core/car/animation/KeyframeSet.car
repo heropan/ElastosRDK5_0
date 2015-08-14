@@ -1,46 +1,16 @@
 
 module
 {
-    interface Elastos.Droid.Animation.ITypeEvaluator;
 
     namespace Elastos {
     namespace Droid {
     namespace Animation {
 
+    /**
+     * @Involve
+     * @implements Elastos.Droid.Animation.IKeyframes
+     */
     interface IKeyframeSet {
-        /**
-         * Sets the TypeEvaluator to be used when calculating animated values. This object
-         * is required only for KeyframeSets that are not either IntKeyframeSet or FloatKeyframeSet,
-         * both of which assume their own evaluator to speed up calculations with those primitive
-         * types.
-         *
-         * @param evaluator The TypeEvaluator to be used to calculate animated values.
-         */
-        SetEvaluator(
-            [in] ITypeEvaluator* evaluator);
-
-        /**
-         * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
-         * animation's interpolator) and the evaluator used to calculate in-between values. This
-         * function maps the input fraction to the appropriate keyframe interval and a fraction
-         * between them and returns the interpolated value. Note that the input fraction may fall
-         * outside the [0-1] bounds, if the animation's interpolator made that happen (e.g., a
-         * spring interpolation that might send the fraction past 1.0). We handle this situation by
-         * just using the two keyframes at the appropriate end when the value is outside those bounds.
-         *
-         * @param fraction The elapsed fraction of the animation
-         * @return The animated value.
-         */
-        GetValue(
-            [in] Float fraction,
-            [out] IInterface** value);
-
-        Clone(
-            [out] IKeyframeSet** obj);
-
-        GetKeyframes(
-            [out, callee] ArrayOf<IKeyframe*>* frames);
-
     }
 
     [deprecated]
@@ -63,29 +33,17 @@ module
     }
 
     /**
-     * @implements Elastos.Droid.Animation.IKeyframeSet
-     */
-    /**
      * @Involve
-     * interface IKeyframeSet
+     * @extends Elastos.Droid.Animation.IInt32Keyframes
      */
     interface IInt32KeyframeSet {
-        GetIntValue(
-            [in] Float fraction,
-            [out] Int32* value);
     }
 
     /**
-     * @implements Elastos.Droid.Animation.IKeyframeSet
-     */
-    /**
      * @Involve
-     * interface IKeyframeSet
+     * @extends Elastos.Droid.Animation.IFloatKeyframes
      */
     interface IFloatKeyframeSet {
-        GetFloatValue(
-            [in] Float fraction,
-            [out] Float* value);
     }
 
     } // namespace Animation
