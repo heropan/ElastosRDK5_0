@@ -1,6 +1,6 @@
 
-#ifndef __ASYNCTASK_H__
-#define __ASYNCTASK_H__
+#ifndef __ELASTOS_DROID_OS_ASYNCTASK_H__
+#define __ELASTOS_DROID_OS_ASYNCTASK_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/FutureTask.h>
@@ -8,8 +8,8 @@
 #include "os/HandlerBase.h"
 
 using Elastos::Core::IRunnable;
-using Elastos::Utility::Deque;
 using Elastos::Core::IThread;
+using Elastos::Utility::Deque;
 using Elastos::Utility::Concurrent::FutureTask;
 using Elastos::Utility::Concurrent::IThreadFactory;
 using Elastos::Utility::Concurrent::IExecutor;
@@ -688,4 +688,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ASYNCTASK_H__
+#endif //__ELASTOS_DROID_OS_ASYNCTASK_H__

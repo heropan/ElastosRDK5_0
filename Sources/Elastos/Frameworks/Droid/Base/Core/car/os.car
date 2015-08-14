@@ -44,6 +44,7 @@ module
     merge("os/PowerManager.car");
     merge("os/Process.car");
     merge("os/RecoverySystem.car");
+    merge("os/RemoteCallback.car");
     merge("os/RemoteCallbackList.car");
     merge("os/ResultReceiver.car");
     merge("os/IResultReceiver.car");

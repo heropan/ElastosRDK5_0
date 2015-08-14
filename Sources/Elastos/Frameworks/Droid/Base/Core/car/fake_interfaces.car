@@ -205,8 +205,6 @@ module
     namespace Droid {
     namespace Os {
 
-        interface IRemoteCallback {}
-
         interface ICreator {}
 
     }}} // Elastos.Droid.Os

@@ -11,6 +11,7 @@ INCLUDES += $(PREBUILD_INC)/binder
 INCLUDES += $(PREBUILD_INC)/utils
 
 SOURCES += os.cpp
+SOURCES += AsyncResult.cpp
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
