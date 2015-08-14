@@ -231,6 +231,8 @@ PInterface ValueAnimator::Probe(
 ValueAnimator::ValueAnimator()
     : mStartTime(0)
     , mSeekTime(-1)
+    , mPauseTime(0)
+    , mResumed(FALSE)
     , mPlayingState(STOPPED)
     , mInitialized(FALSE)
     , mPlayingBackwards(FALSE)
@@ -277,9 +279,7 @@ ECode ValueAnimator::SetInt32Values(
 
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfInt32(String(""), values);
-        AutoPtr<ArrayOf<IPropertyValuesHolder*> > pvhs = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
-        pvhs->Set(0, pvh);
-        SetValues(pvhs);
+        SetValues(pvh);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetInt32Values(values);
@@ -298,9 +298,7 @@ ECode ValueAnimator::SetFloatValues(
     }
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfFloat(String(""), values);
-        AutoPtr<ArrayOf<IPropertyValuesHolder*> > pvhs = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
-        pvhs->Set(0, pvh);
-        SetValues(pvhs);
+        SetValues(pvh);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetFloatValues(values);
@@ -319,9 +317,7 @@ ECode ValueAnimator::SetObjectValues(
     }
     if (mValues == NULL || mValues->GetLength() == 0) {
         AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfObject(String(""), NULL, values);
-        AutoPtr<ArrayOf<IPropertyValuesHolder*> > pvhs = ArrayOf<IPropertyValuesHolder*>::Alloc(1);
-        pvhs->Set(0, pvh);
-        SetValues(pvhs);
+        SetValues(pvh);
     } else {
         AutoPtr<IPropertyValuesHolder> valuesHolder = (*mValues)[0];
         valuesHolder->SetObjectValues(values);
@@ -383,8 +379,12 @@ ECode ValueAnimator::SetDuration(
     }
 
     mUnscaledDuration = duration;
-    mDuration = (Int64)(duration * sDurationScale);
+    UpdateScaledDuration();
     return NOERROR;
+}
+
+void ValueAnimator::UpdateScaledDuration() {
+    mDuration = (Int64)(mUnscaledDuration * sDurationScale);
 }
 
 ECode ValueAnimator::GetDuration(
@@ -602,6 +602,8 @@ void ValueAnimator::Start(
     mPlayingState = STOPPED;
     mStarted = TRUE;
     mStartedDelay = FALSE;
+    mPaused = FALSE;
+    UpdateScaledDuration(); // in case the scale factor has changed since creation time
     AutoPtr<AnimationHandler> animationHandler = GetOrCreateAnimationHandler();
     AutoPtr<IValueAnimator> anim = THIS_PROBE(IValueAnimator);
     animationHandler->mPendingAnimations.PushBack(anim);
@@ -681,6 +683,25 @@ ECode ValueAnimator::End()
     return NOERROR;
 }
 
+ECode ValueAnimator::Resume()
+{
+    if (mPaused) {
+        mResumed = TRUE;
+    }
+    return Animator::Resume();
+}
+
+ECode ValueAnimator::Pause()
+{
+    Boolean previouslyPaused = mPaused;
+    Animator::Pause();
+    if (!previouslyPaused && mPaused) {
+        mPauseTime = -1;
+        mResumed = FALSE;
+    }
+    return NOERROR;
+}
+
 ECode ValueAnimator::IsRunning(
     /* [out] */ Boolean* running)
 {
@@ -705,10 +726,20 @@ ECode ValueAnimator::Reverse()
         Int64 currentPlayTime = currentTime - mStartTime;
         Int64 timeLeft = mDuration - currentPlayTime;
         mStartTime = currentTime - timeLeft;
+    } else if (mStarted) {
+        End();
     } else {
         Start(TRUE);
     }
 
+    return NOERROR;
+}
+
+ECode ValueAnimator::CanReverse(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = TRUE;
     return NOERROR;
 }
 
@@ -722,6 +753,7 @@ void ValueAnimator::EndAnimation(
     handler->mDelayedAnims.Remove(anim);
 
     mPlayingState = STOPPED;
+    mPaused = FALSE;
     if ((mStarted || mRunning) && mListeners.IsEmpty() == FALSE) {
         if (!mRunning) {
             // If it's not yet running, then start listeners weren't called. Call them now.
@@ -737,12 +769,21 @@ void ValueAnimator::EndAnimation(
     mRunning = FALSE;
     mStarted = FALSE;
     mStartListenersCalled = FALSE;
+    mPlayingBackwards = FALSE;
+    if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+        Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+                System.identityHashCode(this));
+    }
 }
 
 void ValueAnimator::StartAnimation(
     /* [in] */ AnimationHandler* handler)
 {
     assert(handler != NULL);
+    if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+        Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+                System.identityHashCode(this));
+    }
 
     InitAnimation();
     AutoPtr<IValueAnimator> anim = THIS_PROBE(IValueAnimator);
@@ -754,21 +795,37 @@ void ValueAnimator::StartAnimation(
     }
 }
 
+String ValueAnimator::GetNameForTrace()
+{
+    return String("animator");
+}
+
 Boolean ValueAnimator::DelayedAnimationFrame(
     /* [in] */ Int64 currentTime)
 {
     if (!mStartedDelay) {
         mStartedDelay = TRUE;
         mDelayStartTime = currentTime;
-    } else {
-        Int64 deltaTime = currentTime - mDelayStartTime;
-        if (deltaTime > mStartDelay) {
-            // startDelay ended - start the anim and record the
-            // mStartTime appropriately
-            mStartTime = currentTime - (deltaTime - mStartDelay);
-            mPlayingState = RUNNING;
-            return TRUE;
+    }
+    if (mPaused) {
+        if (mPauseTime < 0) {
+            mPauseTime = currentTime;
         }
+        return FALSE;
+    } else if (mResumed) {
+        mResumed = FALSE;
+        if (mPauseTime > 0) {
+            // Offset by the duration that the animation was paused
+            mDelayStartTime += (currentTime - mPauseTime);
+        }
+    }
+    Int64 deltaTime = currentTime - mDelayStartTime;
+    if (deltaTime > mStartDelay) {
+        // startDelay ended - start the anim and record the
+        // mStartTime appropriately
+        mStartTime = currentTime - (deltaTime - mStartDelay);
+        mPlayingState = RUNNING;
+        return TRUE;
     }
     return FALSE;
 }
@@ -792,7 +849,7 @@ Boolean ValueAnimator::AnimationFrame(
                     }
 
                     if (mRepeatMode == IValueAnimator::ANIMATION_REVERSE) {
-                        mPlayingBackwards = mPlayingBackwards ? FALSE : TRUE;
+                        mPlayingBackwards = !mPlayingBackwards;
                     }
 
                     mCurrentIteration += (Int32)fraction;
@@ -827,6 +884,19 @@ Boolean ValueAnimator::DoAnimationFrame(
             mStartTime = frameTime - mSeekTime;
             // Now that we're playing, reset the seek time
             mSeekTime = -1;
+        }
+    }
+
+    if (mPaused) {
+        if (mPauseTime < 0) {
+            mPauseTime = frameTime;
+        }
+        return FALSE;
+    } else if (mResumed) {
+        mResumed = FALSE;
+        if (mPauseTime > 0) {
+            // Offset by the duration that the animation was paused
+            mStartTime += (frameTime - mPauseTime);
         }
     }
 
@@ -939,12 +1009,22 @@ AutoPtr<ValueAnimator::AnimationHandler> ValueAnimator::GetOrCreateAnimationHand
     return handler;
 }
 
-AutoPtr<IValueAnimator> ValueAnimator::OfInt(
+AutoPtr<IValueAnimator> ValueAnimator::OfInt32(
         /* [in] */ ArrayOf<Int32>* values)
 {
     AutoPtr<IValueAnimator> anim;
     CValueAnimator::New((IValueAnimator**)&anim);
     anim->SetInt32Values(values);
+    return anim;
+}
+
+AutoPtr<IValueAnimator> ValueAnimator::OfArgb(
+    /* [in] */ ArrayOf<Int32>* values)
+{
+    AutoPtr<IValueAnimator> anim;
+    CValueAnimator::New((IValueAnimator**)&anim);
+    anim->SetIntValues(values);
+    anim->SetEvaluator(CArgbEvaluator::GetInstance());
     return anim;
 }
 
@@ -975,6 +1055,13 @@ AutoPtr<IValueAnimator> ValueAnimator::OfObject(
     anim->SetObjectValues(values);
     anim->SetEvaluator(evaluator);
     return anim;
+}
+
+ECode ValueAnimator::SetAllowRunningAsynchronously(
+    /* [in] */ Boolean mayRunAsync)
+{
+    // It is up to subclasses to support this, if they can.
+    return NOERROR;
 }
 
 }   //namespace Animation

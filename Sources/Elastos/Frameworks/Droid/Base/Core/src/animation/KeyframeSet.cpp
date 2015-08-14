@@ -8,7 +8,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(KeyframeSet, Object, IKeyframeSet)
+CAR_INTERFACE_IMPL_2(KeyframeSet, Object, IKeyframeSet, IKeyframes)
 
 KeyframeSet::KeyframeSet(
     /* [in] */ ArrayOf<IKeyframe*>* keyframes)
@@ -58,6 +58,7 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfFloat(
 {
     assert(values != NULL);
 
+    Boolean badValue = FALSE;
     Int32 numKeyframes = values->GetLength();
     AutoPtr<ArrayOf<IFloatKeyframe*> > keyframes =
             ArrayOf<IFloatKeyframe*>::Alloc(Elastos::Core::Math::Max(numKeyframes, 2));
@@ -68,6 +69,9 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfFloat(
         keyframes->Set(0, temp); temp = NULL;
         Keyframe::OfFloat(1.0f, (*values)[0], (IKeyframe**)&temp);
         keyframes->Set(1, temp);
+        if (Elastos::Core::Math::IsNaN((*values)[0])) {
+            badValue = TRUE;
+        }
     } else {
         AutoPtr<IFloatKeyframe> temp;
         Keyframe::OfFloat(0.0f, (*values)[0], (IKeyframe**)&temp);
@@ -76,7 +80,14 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfFloat(
             temp = NULL;
             Keyframe::OfFloat((Float) i / (numKeyframes - 1), (*values)[i], (IKeyframe**)&temp);
             keyframes->Set(i, temp);
+            if (Elastos::Core::Math::IsNaN((*values)[i])) {
+                badValue = TRUE;
+            }
         }
+    }
+
+    if (badValue) {
+        Log::W(String("Animator"), String("Bad value (NaN) in float animator"));
     }
 
     return new FloatKeyframeSet(keyframes);
@@ -154,11 +165,33 @@ AutoPtr<IKeyframeSet> KeyframeSet::OfObject(
     return new KeyframeSet((ArrayOf<IKeyframe*>*)(keyframes.Get()));
 }
 
+AutoPtr<IPathKeyframes> KeyframeSet::OfPath(
+    /* [in] */ IPath* path)
+{
+    AutoPtr<IPathKeyframes> pf = new PathKeyframes(path);
+    return pf;
+}
+
+AutoPtr<IPathKeyframes> KeyframeSet::OfPath(
+    /* [in] */ IPath* path,
+    /* [in] */ Float error)
+{
+    AutoPtr<IPathKeyframes> pf = new PathKeyframes(path, error);
+    return pf;
+}
+
 ECode KeyframeSet::SetEvaluator(
     /* [in] */ ITypeEvaluator* evaluator)
 {
     mEvaluator = evaluator;
     return NOERROR;
+}
+
+ECode KeyframeSet::GetType(
+    /* [out] */ ClassID* type)
+{
+    VALIDATE_NOT_NULL(type);
+    return mFirstKeyframe->GetType(type);
 }
 
 ECode KeyframeSet::GetValue(
@@ -266,6 +299,11 @@ ECode KeyframeSet::Clone(
     AutoPtr<IKeyframeSet> newSet = new KeyframeSet(newKeyframes);
     *object = newSet;
     REFCOUNT_ADD(*object)
+    return NOERROR;
+}
+
+ECode KeyframeSet::InvalidateCache()
+{
     return NOERROR;
 }
 

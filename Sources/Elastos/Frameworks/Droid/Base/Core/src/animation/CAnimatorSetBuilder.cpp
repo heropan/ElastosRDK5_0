@@ -47,6 +47,7 @@ ECode CAnimatorSetBuilder::Before(
     /* [in] */ IAnimator* anim)
 {
     assert(mHost != NULL);
+    mHost->mReversible = FALSE;
     AutoPtr<IAnimator> key = anim;
     AutoPtr<AnimatorSet::Node> node = mHost->mNodeMap[key];
     if (node == NULL) {
@@ -65,6 +66,7 @@ ECode CAnimatorSetBuilder::After(
     /* [in] */ IAnimator* anim)
 {
     assert(mHost != NULL);
+    mHost->mReversible = FALSE;
     AutoPtr<IAnimator> key = anim;
     AutoPtr<AnimatorSet::Node> node = mHost->mNodeMap[key];
     if (node == NULL) {

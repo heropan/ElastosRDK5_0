@@ -5,7 +5,7 @@ namespace Elastos {
 namespace Droid {
 namespace Animation {
 
-CAR_INTERFACE_IMPL_2(AnimatorListenerAdapter, Object, IAnimatorListener, AnimatorPauseListener);
+CAR_INTERFACE_IMPL_2(AnimatorListenerAdapter, Object, IAnimatorListener, IAnimatorPauseListener);
 ECode AnimatorListenerAdapter::OnAnimationStart(
     /* [in] */ IAnimator* animation)
 {

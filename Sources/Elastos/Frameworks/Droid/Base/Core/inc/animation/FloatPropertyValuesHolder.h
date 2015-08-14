@@ -54,7 +54,7 @@ public:
 protected:
 
     AutoPtr<IMethodInfo> mJniSetter;
-    AutoPtr<IFloatKeyframeSet> mFloatKeyframeSet;
+    AutoPtr<IFloatKeyframes> mFloatKeyframes;
     Float mFloatAnimatedValue;
 private:
     typedef HashMap<String, AutoPtr<IMethodInfo> > MethodMap;

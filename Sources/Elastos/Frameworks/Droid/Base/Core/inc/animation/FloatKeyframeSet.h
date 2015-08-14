@@ -57,12 +57,18 @@ public:
     CARAPI Clone(
         /* [out] */ IKeyframeSet** obj);
 
+    virtual CARAPI InvalidateCache();
+
     CARAPI GetFloatValue(
         /* [in] */ Float frc,
         /* [out] */ Float* value);
 
     CARAPI GetKeyframes(
         /* [out, callee] */ ArrayOf<IKeyframe*>** frames);
+
+    // @Override
+    virtual CARAPI GetType(
+        /* [out] */ ClassID* type);
 
 private:
     Float mFirstValue;

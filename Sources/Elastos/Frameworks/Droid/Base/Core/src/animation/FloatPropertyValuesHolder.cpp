@@ -13,21 +13,21 @@ FloatPropertyValuesHolder::ClassMethodMap FloatPropertyValuesHolder::sJNISetterP
 CAR_INTERFACE_IMPL(FloatPropertyValuesHolder, PropertyValuesHolder, IFloatPropertyValuesHolder);
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ const String& propertyName,
-    /* [in] */ IFloatKeyframeSet* keyframeSet)
+    /* [in] */ IFloatKeyframes* keyframes)
     : PropertyValuesHolder(propertyName)
     , mValueType(ECLSID_CFloat)
-    , mKeyframeSet(keyframeSet)
-    , mFloatKeyframeSet(keyframeSet)
+    , mKeyframes(keyframes)
+    , mFloatKeyframes(keyframes)
 {
 }
 
 FloatPropertyValuesHolder::FloatPropertyValuesHolder(
     /* [in] */ IProperty* property,
-    /* [in] */ IFloatKeyframeSet* keyframeSet)
+    /* [in] */ IFloatKeyframes* keyframes)
     : PropertyValuesHolder(property)
     , mValueType(ECLSID_CFloat)
-    , mKeyframeSet(keyframeSet)
-    , mFloatKeyframeSet(keyframeSet)
+    , mKeyframes(keyframes)
+    , mFloatKeyframes(keyframes)
 {
 }
 
@@ -54,14 +54,14 @@ ECode FloatPropertyValuesHolder::SetFloatValues(
     /* [in] */ ArrayOf<Float>* values)
 {
     PropertyValuesHolder::SetFloatValues(values);
-    mFloatKeyframeSet = (IFloatKeyframeSet*)(mKeyframeSet->Probe(EIID_IFloatKeyframeSet));
+    mFloatKeyframes = IFloatKeyframes::Probe(mKeyframes);
     return NOERROR;
 }
 
 ECode FloatPropertyValuesHolder::CalculateValue(
     /* [in] */ Float fraction)
 {
-    mFloatKeyframeSet->GetFloatValue(fraction, &mFloatAnimatedValue);
+    mFloatKeyframes->GetFloatValue(fraction, &mFloatAnimatedValue);
     return NOERROR;
 }
 
@@ -79,10 +79,10 @@ ECode FloatPropertyValuesHolder::GetAnimatedValue(
 ECode FloatPropertyValuesHolder::Clone(
     /* [out] */ IPropertyValuesHolder** holder)
 {
-    AutoPtr<FloatPropertyValuesHolder> v = new FloatPropertyValuesHolder(mPropertyName, mFloatKeyframeSet);
+    AutoPtr<FloatPropertyValuesHolder> v = new FloatPropertyValuesHolder(mPropertyName, mFloatKeyframes);
     CloneSuperData(v);
     v->mJniSetter = mJniSetter;
-    v->mFloatKeyframeSet = mFloatKeyframeSet;
+    v->mFloatKeyframes = mFloatKeyframes;
     v->mFloatAnimatedValue = mFloatAnimatedValue;
     *holder = v;
     REFCOUNT_ADD(*holder);

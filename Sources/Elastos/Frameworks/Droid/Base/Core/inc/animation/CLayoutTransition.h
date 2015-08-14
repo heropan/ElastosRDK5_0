@@ -739,6 +739,9 @@ private:
         /* [in] */ IViewGroup* parent,
         /* [in] */ IView* child,
         /* [in] */ Boolean changesLayout);
+
+    static CARAPI_(Boolean) InitStatics();
+
 private:
     /**
      * Private bit fields used to set the collection of enabled transition types for
@@ -805,13 +808,26 @@ private:
     Int64 mChangingStagger;
 
     /**
+     * Static interpolators - these are stateless and can be shared across the instances
+     */
+    static AutoPtr<ITimeInterpolator> ACCEL_DECEL_INTERPOLATOR =
+            new AccelerateDecelerateInterpolator();
+    static AutoPtr<ITimeInterpolator> DECEL_INTERPOLATOR = new DecelerateInterpolator();
+    static AutoPtr<ITimeInterpolator> sAppearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> sDisappearingInterpolator = ACCEL_DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> sChangingAppearingInterpolator = DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> sChangingDisappearingInterpolator = DECEL_INTERPOLATOR;
+    static AutoPtr<ITimeInterpolator> sChangingInterpolator = DECEL_INTERPOLATOR;
+    static Boolean sInit;
+
+    /**
      * The default interpolators used for the animations
      */
-    AutoPtr<ITimeInterpolator> mAppearingInterpolator;// = new AccelerateDecelerateInterpolator();
-    AutoPtr<ITimeInterpolator> mDisappearingInterpolator;// = new AccelerateDecelerateInterpolator();
-    AutoPtr<ITimeInterpolator> mChangingAppearingInterpolator;// = new DecelerateInterpolator();
-    AutoPtr<ITimeInterpolator> mChangingDisappearingInterpolator;// = new DecelerateInterpolator();
-    AutoPtr<ITimeInterpolator> mChangingInterpolator;// = new DecelerateInterpolator();
+    AutoPtr<ITimeInterpolator> mAppearingInterpolator;
+    AutoPtr<ITimeInterpolator> mDisappearingInterpolator;
+    AutoPtr<ITimeInterpolator> mChangingAppearingInterpolator;
+    AutoPtr<ITimeInterpolator> mChangingDisappearingInterpolator;
+    AutoPtr<ITimeInterpolator> mChangingInterpolator;
 
     /**
      * These hashmaps are used to store the animations that are currently running as part of

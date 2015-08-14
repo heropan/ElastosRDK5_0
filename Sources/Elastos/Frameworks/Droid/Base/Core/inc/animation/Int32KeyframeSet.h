@@ -54,15 +54,21 @@ public:
         /* [in] */ Float fraction,
         /* [out] */ IInterface** value);
 
-    CARAPI GetIntValue(
+    CARAPI GetInt32Value(
         /* [in] */ Float fraction,
         /* [out] */ Int32* value);
 
     CARAPI Clone(
         /* [out] */ IKeyframeSet** obj);
 
+    // @Override
+    virtual CARAPI InvalidateCache();
+
     CARAPI GetKeyframes(
         /* [out, callee] */ ArrayOf<IKeyframe*>** frames);
+
+    virtual CARAPI GetType(
+        /* [out] */ ClassID* type);
 
 private:
     Int32 mFirstValue;

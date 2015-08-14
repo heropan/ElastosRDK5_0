@@ -224,6 +224,18 @@ public:
 
 protected:
     /**
+     * If the Keyframe's value was acquired from the target object, this flag should be set so that,
+     * if target changes, value will be reset.
+     *
+     * @return boolean Whether this Keyframe's value was retieved from the target object or not.
+     */
+    virtual CARAPI_(Boolean) ValueWasSetOnStart();
+
+    virtual CARAPI_(void) SetValueWasSetOnStart(
+        /* [in] */ Boolean valueWasSetOnStart);
+
+protected:
+    /**
      * The time at which mValue will hold TRUE.
      */
     Float mFraction;
@@ -241,6 +253,12 @@ protected:
      */
     Boolean mHasValue;
 
+    /**
+     * Flag to indicate whether the value in the keyframe was read from the target object or not.
+     * If so, its value will be recalculated if target changes.
+     */
+    Boolean mValueWasSetOnStart;
+
 private:
     /**
      * The optional time interpolator for the interval preceding this keyframe. A NULL interpolator
@@ -253,12 +271,11 @@ private:
  * This internal subclass is used for all types which are not int or float.
  */
 class ObjectKeyframe
-        : public IObjectKeyframe
-        , public Keyframe
+    : public Keyframe
+    , public IObjectKeyframe
 {
 public:
     CAR_INTERFACE_DECL()
-    IKEYFRAME_METHOD_DECL()
 
     ObjectKeyframe(
         /* [in] */ Float fraction,
@@ -284,11 +301,10 @@ private:
  * Internal subclass used when the keyframe value is of type int.
  */
 class Int32Keyframe
-        : public IInt32Keyframe
-        , public Keyframe
+    : public Keyframe
+    , public IInt32Keyframe
 {
 public:
-    IKEYFRAME_METHOD_DECL()
     CAR_INTERFACE_DECL()
 
     Int32Keyframe(
@@ -321,8 +337,8 @@ private:
  * Internal subclass used when the keyframe value is of type float.
  */
 class FloatKeyframe
-        : public IFloatKeyframe
-        , public Keyframe
+    : public Keyframe
+    , public IFloatKeyframe
 {
 public:
     IKEYFRAME_METHOD_DECL()

@@ -20,6 +20,47 @@ class PropertyValuesHolder
     : public Object
     , public IPropertyValuesHolder
 {
+private:
+    /**
+     * Convert from PointF to float[] for multi-float setters along a Path.
+     */
+    class PointFToFloatArray
+        : public TypeConverter/*<PointF, float[]>*/
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        PointFToFloatArray();
+
+        // @Override
+        virtual CARAPI Convert(
+            /* [in] */ IPointF* value,
+            /* [out] */ IInterface** values);
+
+    private:
+        AutoPtr<ArrayOf<Float> > mCoordinates;
+    };
+
+    /**
+     * Convert from PointF to int[] for multi-int setters along a Path.
+     */
+    class PointFToIntArray
+        : public TypeConverter/*<PointF, int[]>*/
+    {
+    public:
+        CAR_INTERFACE_DECL();
+
+        PointFToIntArray();
+
+        // @Override
+        virtual CARAPI convert(
+            /* [in] */ IPointF* value,
+            /* [out] */ IInterface** values);
+
+    private:
+        AutoPtr<ArrayOf<Int32> > mCoordinates;
+    };
+
 public:
     typedef HashMap< String, AutoPtr<IMethodInfo> > MethodMap;
     typedef HashMap< AutoPtr<IClassInfo>, AutoPtr<PropertyValuesHolder::MethodMap > > ClassMethodMap;
@@ -47,6 +88,283 @@ public:
     static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfInt32(
         /* [in] */ IProperty* property,
         /* [in] */ ArrayOf<Int32>* values);
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property name and
+     * set of <code>int[]</code> values. At least two <code>int[]</code> values must be supplied,
+     * a start and end value. If more values are supplied, the values will be animated from the
+     * start, through all intermediate values to the end value. When used with ObjectAnimator,
+     * the elements of the array represent the parameters of the setter function.
+     *
+     * @param propertyName The name of the property being animated. Can also be the
+     *                     case-sensitive name of the entire setter method. Should not be null.
+     * @param values The values that the property will animate between.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see IntArrayEvaluator#IntArrayEvaluator(int[])
+     * @see ObjectAnimator#ofMultiInt(Object, String, TypeConverter, TypeEvaluator, Object[])
+     */
+    public static PropertyValuesHolder ofMultiInt(String propertyName, int[][] values) {
+        if (values.length < 2) {
+            throw new IllegalArgumentException("At least 2 values must be supplied");
+        }
+        int numParameters = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == null) {
+                throw new IllegalArgumentException("values must not be null");
+            }
+            int length = values[i].length;
+            if (i == 0) {
+                numParameters = length;
+            } else if (length != numParameters) {
+                throw new IllegalArgumentException("Values must all have the same length");
+            }
+        }
+        IntArrayEvaluator evaluator = new IntArrayEvaluator(new int[numParameters]);
+        return new MultiIntValuesHolder(propertyName, null, evaluator, (Object[]) values);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property name to use
+     * as a multi-int setter. The values are animated along the path, with the first
+     * parameter of the setter set to the x coordinate and the second set to the y coordinate.
+     *
+     * @param propertyName The name of the property being animated. Can also be the
+     *                     case-sensitive name of the entire setter method. Should not be null.
+     *                     The setter must take exactly two <code>int</code> parameters.
+     * @param path The Path along which the values should be animated.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
+     */
+    public static PropertyValuesHolder ofMultiInt(String propertyName, Path path) {
+        Keyframes keyframes = KeyframeSet.ofPath(path);
+        PointFToIntArray converter = new PointFToIntArray();
+        return new MultiIntValuesHolder(propertyName, converter, null, keyframes);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property and
+     * set of Object values for use with ObjectAnimator multi-value setters. The Object
+     * values are converted to <code>int[]</code> using the converter.
+     *
+     * @param propertyName The property being animated or complete name of the setter.
+     *                     Should not be null.
+     * @param converter Used to convert the animated value to setter parameters.
+     * @param evaluator A TypeEvaluator that will be called on each animation frame to
+     * provide the necessary interpolation between the Object values to derive the animated
+     * value.
+     * @param values The values that the property will animate between.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see ObjectAnimator#ofMultiInt(Object, String, TypeConverter, TypeEvaluator, Object[])
+     * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
+     */
+    public static <V> PropertyValuesHolder ofMultiInt(String propertyName,
+            TypeConverter<V, int[]> converter, TypeEvaluator<V> evaluator, V... values) {
+        return new MultiIntValuesHolder(propertyName, converter, evaluator, values);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder object with the specified property name or
+     * setter name for use in a multi-int setter function using ObjectAnimator. The values can be
+     * of any type, but the type should be consistent so that the supplied
+     * {@link android.animation.TypeEvaluator} can be used to to evaluate the animated value. The
+     * <code>converter</code> converts the values to parameters in the setter function.
+     *
+     * <p>At least two values must be supplied, a start and an end value.</p>
+     *
+     * @param propertyName The name of the property to associate with the set of values. This
+     *                     may also be the complete name of a setter function.
+     * @param converter    Converts <code>values</code> into int parameters for the setter.
+     *                     Can be null if the Keyframes have int[] values.
+     * @param evaluator    Used to interpolate between values.
+     * @param values       The values at specific fractional times to evaluate between
+     * @return A PropertyValuesHolder for a multi-int parameter setter.
+     */
+    public static <T> PropertyValuesHolder ofMultiInt(String propertyName,
+            TypeConverter<T, int[]> converter, TypeEvaluator<T> evaluator, Keyframe... values) {
+        KeyframeSet keyframeSet = KeyframeSet.ofKeyframe(values);
+        return new MultiIntValuesHolder(propertyName, converter, evaluator, keyframeSet);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property name and
+     * set of <code>float[]</code> values. At least two <code>float[]</code> values must be supplied,
+     * a start and end value. If more values are supplied, the values will be animated from the
+     * start, through all intermediate values to the end value. When used with ObjectAnimator,
+     * the elements of the array represent the parameters of the setter function.
+     *
+     * @param propertyName The name of the property being animated. Can also be the
+     *                     case-sensitive name of the entire setter method. Should not be null.
+     * @param values The values that the property will animate between.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see FloatArrayEvaluator#FloatArrayEvaluator(float[])
+     * @see ObjectAnimator#ofMultiFloat(Object, String, TypeConverter, TypeEvaluator, Object[])
+     */
+    public static PropertyValuesHolder ofMultiFloat(String propertyName, float[][] values) {
+        if (values.length < 2) {
+            throw new IllegalArgumentException("At least 2 values must be supplied");
+        }
+        int numParameters = 0;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == null) {
+                throw new IllegalArgumentException("values must not be null");
+            }
+            int length = values[i].length;
+            if (i == 0) {
+                numParameters = length;
+            } else if (length != numParameters) {
+                throw new IllegalArgumentException("Values must all have the same length");
+            }
+        }
+        FloatArrayEvaluator evaluator = new FloatArrayEvaluator(new float[numParameters]);
+        return new MultiFloatValuesHolder(propertyName, null, evaluator, (Object[]) values);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property name to use
+     * as a multi-float setter. The values are animated along the path, with the first
+     * parameter of the setter set to the x coordinate and the second set to the y coordinate.
+     *
+     * @param propertyName The name of the property being animated. Can also be the
+     *                     case-sensitive name of the entire setter method. Should not be null.
+     *                     The setter must take exactly two <code>float</code> parameters.
+     * @param path The Path along which the values should be animated.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
+     */
+    public static PropertyValuesHolder ofMultiFloat(String propertyName, Path path) {
+        Keyframes keyframes = KeyframeSet.ofPath(path);
+        PointFToFloatArray converter = new PointFToFloatArray();
+        return new MultiFloatValuesHolder(propertyName, converter, null, keyframes);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property and
+     * set of Object values for use with ObjectAnimator multi-value setters. The Object
+     * values are converted to <code>float[]</code> using the converter.
+     *
+     * @param propertyName The property being animated or complete name of the setter.
+     *                     Should not be null.
+     * @param converter Used to convert the animated value to setter parameters.
+     * @param evaluator A TypeEvaluator that will be called on each animation frame to
+     * provide the necessary interpolation between the Object values to derive the animated
+     * value.
+     * @param values The values that the property will animate between.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see ObjectAnimator#ofMultiFloat(Object, String, TypeConverter, TypeEvaluator, Object[])
+     */
+    public static <V> PropertyValuesHolder ofMultiFloat(String propertyName,
+            TypeConverter<V, float[]> converter, TypeEvaluator<V> evaluator, V... values) {
+        return new MultiFloatValuesHolder(propertyName, converter, evaluator, values);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder object with the specified property name or
+     * setter name for use in a multi-float setter function using ObjectAnimator. The values can be
+     * of any type, but the type should be consistent so that the supplied
+     * {@link android.animation.TypeEvaluator} can be used to to evaluate the animated value. The
+     * <code>converter</code> converts the values to parameters in the setter function.
+     *
+     * <p>At least two values must be supplied, a start and an end value.</p>
+     *
+     * @param propertyName The name of the property to associate with the set of values. This
+     *                     may also be the complete name of a setter function.
+     * @param converter    Converts <code>values</code> into float parameters for the setter.
+     *                     Can be null if the Keyframes have float[] values.
+     * @param evaluator    Used to interpolate between values.
+     * @param values       The values at specific fractional times to evaluate between
+     * @return A PropertyValuesHolder for a multi-float parameter setter.
+     */
+    public static <T> PropertyValuesHolder ofMultiFloat(String propertyName,
+            TypeConverter<T, float[]> converter, TypeEvaluator<T> evaluator, Keyframe... values) {
+        KeyframeSet keyframeSet = KeyframeSet.ofKeyframe(values);
+        return new MultiFloatValuesHolder(propertyName, converter, evaluator, keyframeSet);
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property name and
+     * a Path along which the values should be animated. This variant supports a
+     * <code>TypeConverter</code> to convert from <code>PointF</code> to the target
+     * type.
+     *
+     * <p>The PointF passed to <code>converter</code> or <code>property</code>, if
+     * <code>converter</code> is <code>null</code>, is reused on each animation frame and should
+     * not be stored by the setter or TypeConverter.</p>
+     *
+     * @param propertyName The name of the property being animated.
+     * @param converter Converts a PointF to the type associated with the setter. May be
+     *                  null if conversion is unnecessary.
+     * @param path The Path along which the values should be animated.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     */
+    public static PropertyValuesHolder ofObject(String propertyName,
+            TypeConverter<PointF, ?> converter, Path path) {
+        PropertyValuesHolder pvh = new PropertyValuesHolder(propertyName);
+        pvh.mKeyframes = KeyframeSet.ofPath(path);
+        pvh.mValueType = PointF.class;
+        pvh.setConverter(converter);
+        return pvh;
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property and
+     * set of Object values. This variant also takes a TypeEvaluator because the system
+     * cannot automatically interpolate between objects of unknown type. This variant also
+     * takes a <code>TypeConverter</code> to convert from animated values to the type
+     * of the property. If only one value is supplied, the <code>TypeConverter</code>
+     * must be a {@link android.animation.BidirectionalTypeConverter} to retrieve the current
+     * value.
+     *
+     * @param property The property being animated. Should not be null.
+     * @param converter Converts the animated object to the Property type.
+     * @param evaluator A TypeEvaluator that will be called on each animation frame to
+     * provide the necessary interpolation between the Object values to derive the animated
+     * value.
+     * @param values The values that the property will animate between.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     * @see #setConverter(TypeConverter)
+     * @see TypeConverter
+     */
+    public static <T, V> PropertyValuesHolder ofObject(Property<?, V> property,
+            TypeConverter<T, V> converter, TypeEvaluator<T> evaluator, T... values) {
+        PropertyValuesHolder pvh = new PropertyValuesHolder(property);
+        pvh.setConverter(converter);
+        pvh.setObjectValues(values);
+        pvh.setEvaluator(evaluator);
+        return pvh;
+    }
+
+    /**
+     * Constructs and returns a PropertyValuesHolder with a given property and
+     * a Path along which the values should be animated. This variant supports a
+     * <code>TypeConverter</code> to convert from <code>PointF</code> to the target
+     * type.
+     *
+     * <p>The PointF passed to <code>converter</code> or <code>property</code>, if
+     * <code>converter</code> is <code>null</code>, is reused on each animation frame and should
+     * not be stored by the setter or TypeConverter.</p>
+     *
+     * @param property The property being animated. Should not be null.
+     * @param converter Converts a PointF to the type associated with the setter. May be
+     *                  null if conversion is unnecessary.
+     * @param path The Path along which the values should be animated.
+     * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
+     */
+    public static <V> PropertyValuesHolder ofObject(Property<?, V> property,
+            TypeConverter<PointF, V> converter, Path path) {
+        PropertyValuesHolder pvh = new PropertyValuesHolder(property);
+        pvh.mKeyframes = KeyframeSet.ofPath(path);
+        pvh.mValueType = PointF.class;
+        pvh.setConverter(converter);
+        return pvh;
+    }
+
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfKeyframes(
+        /* [in] */ const String& propertyName,
+        /* [in] */ IKeyframes* keyframes);
+
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfKeyframes(
+        /* [in] */ IProperty* property,
+        /* [in] */ IKeyframes* keyframes);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
@@ -205,6 +523,15 @@ public:
      */
     virtual CARAPI SetObjectValues(
         /* [in] */ ArrayOf<IInterface*>* values);
+
+    /**
+     * Sets the converter to convert from the values type to the setter's parameter type.
+     * If only one value is supplied, <var>converter</var> must be a
+     * {@link android.animation.BidirectionalTypeConverter}.
+     * @param converter The converter to use to convert values.
+     */
+    virtual CARAPI SetConverter(
+        /* [in] */ ITypeConverter* converter);
 
     /**
      * Utility function to get the setter from targetClass
@@ -376,8 +703,75 @@ protected:
 
     //The function will help you transform from a object to classInfo
 
-     CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
-         /* [in] */ IInterface* o);
+    CARAPI_(AutoPtr<IClassInfo>) TransformClassInfo(
+        /* [in] */ IInterface* o);
+
+    static CARAPI_(AutoPtr<IMethodInfo>) nGetInt32Method(
+        /* [in] */ IInterface* targetClass,
+        /* [in] */ const String& methodName);
+
+    static CARAPI_(AutoPtr<IMethodInfo>) nGetFloatMethod(
+        /* [in] */ IInterface* targetClass,
+        /* [in] */ const String& methodName);
+
+    static CARAPI_(AutoPtr<IMethodInfo>) nGetMultipleInt32Method(
+        /* [in] */ IInterface* targetClass,
+        /* [in] */ const String& methodName,
+        /* [in] */ Int32 numParams);
+
+    static CARAPI_(AutoPtr<IMethodInfo>) nGetMultipleFloatMethod(
+        /* [in] */ IInterface* targetClass,
+        /* [in] */ const String& methodName,
+        /* [in] */ Int32 numParams);
+
+    static CARAPI_(void) nCallInt32Method(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Int32 arg);
+
+    static CARAPI_(void) nCallFloatMethod(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Float arg);
+
+    static CARAPI_(void) nCallTwoInt32Method(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2);
+
+    static CARAPI_(void) nCallFourInt32Method(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Int32 arg1,
+        /* [in] */ Int32 arg2,
+        /* [in] */ Int32 arg3,
+        /* [in] */ Int32 arg4);
+
+    static CARAPI_(void) nCallMultipleInt32Method(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ ArrayOf<Int32>* args);
+
+    static CARAPI_(void) nCallTwoFloatMethod(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Float arg1,
+        /* [in] */ Float arg2);
+
+    static CARAPI_(void) nCallFourFloatMethod(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ Float arg1,
+        /* [in] */ Float arg2,
+        /* [in] */ Float arg3,
+        /* [in] */ Float arg4);
+
+    static CARAPI_(void) nCallMultipleFloatMethod(
+        /* [in] */ IInterface* target,
+        /* [in] */ IMethodInfo* methodID,
+        /* [in] */ ArrayOf<Float>* args);
+
 private:
     /**
      * Determine the setter or getter function using the JavaBeans convention of setFoo or
@@ -437,6 +831,10 @@ private:
         /* [in] */ IInterface* target,
         /* [in] */ IKeyframe* kf);
 
+    virtual CARAPI ConvertBack(
+        /* [in] */ IInterface* value,
+        /* [out] */ IInterface** outValue);
+
 protected:
     /**
      * The name of the property associated with the values. This need not be a real property,
@@ -467,7 +865,7 @@ protected:
     /**
      * The set of keyframes (time/value pairs) that define this animation.
      */
-    AutoPtr<IKeyframeSet> mKeyframeSet;
+    AutoPtr<IKeyframes> mKeyframes;
 
     // This lock is used to ensure that only one thread is accessing the property maps
     // at a time.
@@ -522,6 +920,11 @@ private:
      * by the property-setting logic in ObjectAnimator.animatedValue().
      */
     AutoPtr<IInterface> mAnimatedValue;
+
+    /**
+     * Converts from the source Object type to the setter Object type.
+     */
+    AutoPtr<ITypeConverter> mConverter;
 };
 
 } // namespace Animation

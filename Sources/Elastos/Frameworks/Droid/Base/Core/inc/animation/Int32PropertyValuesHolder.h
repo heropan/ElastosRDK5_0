@@ -19,11 +19,11 @@ public:
 
     Int32PropertyValuesHolder(
         /* [in] */ const String& propertyName,
-        /* [in] */ IInt32KeyframeSet* keyframeSet);
+        /* [in] */ IInt32Keyframes* keyframes);
 
     Int32PropertyValuesHolder(
         /* [in] */ IProperty* property,
-        /* [in] */ IInt32KeyframeSet* keyframeSet);
+        /* [in] */ IInt32Keyframes* keyframes);
 
     Int32PropertyValuesHolder(
         /* [in] */ const String& propertyName,
@@ -54,7 +54,7 @@ public:
 protected:
 
     AutoPtr<IMethodInfo> mJniSetter;
-    AutoPtr<IInt32KeyframeSet> mInt32KeyframeSet;
+    AutoPtr<IInt32Keyframes> mInt32Keyframes;
     Int32 mInt32AnimatedValue;
 private:
     typedef HashMap<String, AutoPtr<IMethodInfo> > MethodMap;

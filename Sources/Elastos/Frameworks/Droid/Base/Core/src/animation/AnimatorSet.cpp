@@ -239,6 +239,7 @@ ECode AnimatorSet::AnimatorSetListener::OnAnimationEnd(
                 }
             }
             mAnimatorSet->mStarted = FALSE;
+            mAnimatorSet->mPaused = FALSE;
         }
     }
     mAnimatorSet->Probe(EIID_IAnimatorSet)->Release();
@@ -340,6 +341,7 @@ ECode AnimatorSet::AnimatorListenerAdapterIMPL::OnAnimationEnd(
             mHost->mPlayingSet.PushBack(node->mAnimation);
         }
     }
+    mHost->mDelayAnim = NULL;
     return NOERROR;
 }
 
@@ -468,27 +470,27 @@ ECode AnimatorSet::PlaySequentially(
  * @param items The animations that will be started one after another.
  */
 ECode AnimatorSet::PlaySequentially(
-    /* [in] */ IObjectContainer* items)
+    /* [in] */ IList* items)
 {
-    if (items != NULL) {
-        Int32 count;
-        items->GetObjectCount(&count);
-
-        if (count > 0) {
-            mNeedsSort = TRUE;
-            AutoPtr<ArrayOf<IAnimator*> > array = ArrayOf<IAnimator*>::Alloc(count);
-
-            AutoPtr<IObjectEnumerator> enumerator;
-            items->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
-            Boolean hasNext = FALSE;
-            Int32 i = 0;
-            while (enumerator->MoveNext(&hasNext), hasNext) {
-                AutoPtr<IAnimator> current;
-                enumerator->Current((IInterface**)&current);
-                array->Set(i++, current);
+    Int32 size = 0;
+    if (items != NULL && (items->GetSize(&size), size) > 0) {
+        mNeedsSort = TRUE;
+        if (size == 1) {
+            AutoPtr<IInterface> animator;
+            items->Get(0, (IInterface**)&animator);
+            AutoPtr<IAnimatorSetBuilder> as;
+            Play(animator, (IAnimatorSetBuilder**)&as);
+        } else {
+            mReversible = FALSE;
+            for (Int32 i = 0; i < size - 1; ++i) {
+                AutoPtr<IInterface> animator;
+                items->Get(i, (IInterface**)&animator);
+                AutoPtr<IInterface> animator2;
+                items->Get(i + 1, (IInterface**)&animator2);
+                AutoPtr<IAnimatorSetBuilder> as;
+                Play(animator, (IAnimatorSetBuilder**)&as);
+                as->Before(animator2);
             }
-
-            return PlaySequentially(array);
         }
     }
 
@@ -544,11 +546,16 @@ ECode AnimatorSet::SetTarget(
 ECode AnimatorSet::SetInterpolator(
     /* [in] */ ITimeInterpolator* interpolator)
 {
-    List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
-    for (; it != mNodes.End(); ++it) {
-        AutoPtr<IAnimator> animation = (*it)->mAnimation;
-        animation->SetInterpolator(interpolator);
-    }
+    mInterpolator = interpolator;
+    return NOERROR;
+}
+
+ECode AnimatorSet::GetInterpolator(
+    /* [out] */ ITimeInterpolator** interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = mInterpolator;
+    REFCOUNT_ADD(*interpolator);
     return NOERROR;
 }
 
@@ -671,6 +678,9 @@ ECode AnimatorSet::GetStartDelay(
 ECode AnimatorSet::SetStartDelay(
     /* [in] */ Int64 startDelay)
 {
+    if (mStartDelay > 0) {
+        mReversible = FALSE;
+    }
     mStartDelay = startDelay;
     return NOERROR;
 }
@@ -712,10 +722,48 @@ ECode AnimatorSet::SetupEndValues()
     return NOERROR;
 }
 
+ECode AnimatorSet::Pause()
+{
+    Boolean previouslyPaused = mPaused;
+    Animator::Pause();
+    if (!previouslyPaused && mPaused) {
+        if (mDelayAnim != NULL) {
+            mDelayAnim->Pause();
+        } else {
+            List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+            for (; it != mNodes.End(); it++) {
+                (*it)->mAnimation->Pause();
+            }
+        }
+    }
+}
+
+ECode AnimatorSet::Resume()
+{
+    Boolean previouslyPaused = mPaused;
+    Animator::Resume();
+    if (previouslyPaused && !mPaused) {
+        if (mDelayAnim != NULL) {
+            mDelayAnim->Resume();
+        } else {
+            List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+            for (; it != mNodes.End(); it++) {
+                (*it)->mAnimation->Resume();
+            }
+        }
+    }
+}
+
 ECode AnimatorSet::Start()
 {
     mTerminated = FALSE;
     mStarted = TRUE;
+    mPaused = FALSE;
+
+    List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+    for (; it != mNodes.End(); it++) {
+        (*it)->mAnimation->SetAllowRunningAsynchronously(FALSE);
+    }
 
     if (mDuration >= 0) {
         // If the duration was set on this AnimatorSet, pass it along to all child animations
@@ -726,6 +774,14 @@ ECode AnimatorSet::Start()
             (*it)->mAnimation->SetDuration(mDuration);
         }
     }
+
+    if (mInterpolator != NULL) {
+        List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+        for (; it != mNodes.End(); it++) {
+            (*it)->mAnimation->SetInterpolator(mInterpolator);
+        }
+    }
+
     // First, sort the nodes (if necessary). This will ensure that sortedNodes
     // contains the animation nodes in the correct order.
     SortNodes();
@@ -832,6 +888,8 @@ ECode AnimatorSet::Clone(
     anim->mNeedsSort = TRUE;
     anim->mTerminated = FALSE;
     anim->mStarted = FALSE;
+    anim->mReversible = mReversible;
+    anim->mSetListener = NULL;
 
     // Walk through the old nodes list, cloning each node and adding it to the new nodemap.
     // One problem is that the old node dependencies point to nodes in the old AnimatorSet.
@@ -954,6 +1012,39 @@ ECode AnimatorSet::SortNodes()
             // nodes are 'done' by default; they become un-done when started, and done
             // again when ended
             node->mDone = FALSE;
+        }
+    }
+    return NOERROR;
+}
+
+ECode AnimatorSet::CanReverse(
+    /* [out] */ Boolean* can)
+{
+    VALIDATE_NOT_NULL(can);
+    *can = FALSE;
+    if (!mReversible)  {
+        return NOERROR;
+    }
+    // Loop to make sure all the Nodes can reverse.
+    List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+    for (; it != mNodes.End(); it++) {
+        Boolean tmp = FALSE;
+        Int64 delay = 0;
+        if (!(node->mAnimation->CanReverse(&tmp), tmp) || (node->mAnimation->GetStartDelay(&delay), delay) > 0) {
+            return NOERROR;
+        }
+    }
+    *can = TRUE;
+    return NOERROR;
+}
+
+ECode AnimatorSet::Reverse()
+{
+    Boolean can = FALSE;
+    if (CanReverse(&can), can) {
+        List<AutoPtr<Node> >::Iterator it = mNodes.Begin();
+        for (; it != mNodes.End(); it++) {
+            (*it)->mAnimation->Reverse();
         }
     }
     return NOERROR;

@@ -16,6 +16,7 @@ namespace Animation {
 class KeyframeSet
     : public Object
     , public IKeyframeSet
+    , public IKeyframes
 {
 public:
     CAR_INTERFACE_DECL();
@@ -37,6 +38,13 @@ public:
     static CARAPI_(AutoPtr<IKeyframeSet>) OfObject(
         /* [in] */ ArrayOf<IInterface*>* values);
 
+    static CARAPI_(AutoPtr<IPathKeyframes>) OfPath(
+        /* [in] */ IPath* path);
+
+    static CARAPI_(AutoPtr<IPathKeyframes>) OfPath(
+        /* [in] */ IPath* path,
+        /* [in] */ Float error);
+
     /**
      * Sets the TypeEvaluator to be used when calculating animated values. This object
      * is required only for KeyframeSets that are not either IntKeyframeSet or FloatKeyframeSet,
@@ -47,6 +55,9 @@ public:
      */
     virtual CARAPI SetEvaluator(
         /* [in] */ ITypeEvaluator* evaluator);
+
+    virtual CARAPI GetType(
+        /* [out] */ ClassID* type);
 
     /**
      * Gets the animated value, given the elapsed fraction of the animation (interpolated by the
@@ -66,6 +77,13 @@ public:
 
     virtual CARAPI Clone(
         /* [out] */ IKeyframeSet** obj);
+
+    /**
+     * If subclass has variables that it calculates based on the Keyframes, it should reset them
+     * when this method is called because Keyframe contents might have changed.
+     */
+    // @Override
+    virtual CARAPI InvalidateCache();
 
     virtual CARAPI GetKeyframes(
         /* [out, callee] */ ArrayOf<IKeyframe*>** frames);

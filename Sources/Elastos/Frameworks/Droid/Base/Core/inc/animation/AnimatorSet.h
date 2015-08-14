@@ -272,7 +272,7 @@ public:
      * @param items The animations that will be started one after another.
      */
     virtual CARAPI PlaySequentially(
-        /* [in] */ IObjectContainer* items);
+        /* [in] */ IList* items);
 
     /**
      * Returns the current list of child Animator objects controlled by this
@@ -303,12 +303,18 @@ public:
 
     /**
      * Sets the TimeInterpolator for all current {@link #getChildAnimations() child animations}
-     * of this AnimatorSet.
+     * of this AnimatorSet. The default value is null, which means that no interpolator
+     * is set on this AnimatorSet. Setting the interpolator to any non-null value
+     * will cause that interpolator to be set on the child animations
+     * when the set is started.
      *
      * @param interpolator the interpolator to be used by each child animation of this AnimatorSet
      */
     virtual CARAPI SetInterpolator(
         /* [in] */ ITimeInterpolator* interpolator);
+
+    virtual CARAPI GetInterpolator(
+        /* [out] */ ITimeInterpolator** interpolator);
 
     /**
      * This method creates a <code>Builder</code> object, which is used to
@@ -385,10 +391,27 @@ public:
 
     virtual CARAPI SetupEndValues();
 
+    virtual CARAPI Pause();
+
+    virtual CARAPI Resume();
+
     virtual CARAPI Start();
 
     virtual CARAPI Clone(
         /* [out] */ IAnimator** object);
+
+    /**
+     * @hide
+     */
+    // @Override
+    virtual CARAPI CanReverse(
+        /* [out] */ Boolean* can);
+
+    /**
+     * @hide
+     */
+    // @Override
+    virtual CARAPI Reverse();
 
     ~AnimatorSet();
 

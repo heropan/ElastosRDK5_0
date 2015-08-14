@@ -28,6 +28,8 @@ module
     /**
      * @Involve
      * interface IValueAnimator
+     * interface IAnimator
+     * implements ICloneable
      */
      [local]
     interface IObjectAnimator {
