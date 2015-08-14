@@ -4,6 +4,9 @@ module
 
     interface Elastos.Droid.Net.INetworkInfo;
     interface Elastos.Droid.Net.ILinkProperties;
+    interface Elastos.Droid.Net.ILinkCapabilities;
+    interface Elastos.Droid.Net.ISamplingDataTrackerSamplingSnapshot;
+
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IHandler;
     interface Elastos.Droid.Os.IMessenger;
@@ -240,13 +243,13 @@ module
          * Save the starting sample
          */
         StartSampling(
-            [in] ISamplingSnapshot* s);
+            [in] ISamplingDataTrackerSamplingSnapshot* s);
 
         /*
          * Save the ending sample
          */
         StopSampling(
-            [in] ISamplingSnapshot* s);
+            [in] ISamplingDataTrackerSamplingSnapshot* s);
 
         /*
          * Record the current netId

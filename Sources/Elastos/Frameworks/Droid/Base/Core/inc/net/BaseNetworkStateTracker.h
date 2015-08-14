@@ -100,11 +100,11 @@ public:
 
     // @Override
     virtual CARAPI StartSampling(
-        /* [in] */ ISamplingSnapshot* s);
+        /* [in] */ ISamplingDataTrackerSamplingSnapshot* s);
 
     // @Override
     virtual CARAPI StopSampling(
-        /* [in] */ ISamplingSnapshot* s);
+        /* [in] */ ISamplingDataTrackerSamplingSnapshot* s);
 
     // @Override
     virtual CARAPI SetNetId(

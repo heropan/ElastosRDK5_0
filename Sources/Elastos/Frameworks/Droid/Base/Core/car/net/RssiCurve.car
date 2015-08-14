@@ -2,7 +2,8 @@
 module
 {
 
-    interface Elastos.Droid.Os.ICreator;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
 
 
     namespace Elastos {
@@ -65,12 +66,6 @@ module
         LookupScore(
             [in] Int32 rssi,
             [out] Byte* result);
-
-    }
-
-    interface IRssiCurveHelper {
-        GetCREATOR(
-            [out] ICreator** result);
 
     }
 
