@@ -16,6 +16,9 @@ module
         SendObjectRemoved(
             [in] Int32 handle);
 
+        SendDevicePropertyChanged(
+            [in] Int32 property);
+
         AddStorage(
             [in] IMtpStorage* storage);
 
