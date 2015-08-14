@@ -44,13 +44,13 @@ private:
     /**
      * Convert from PointF to int[] for multi-int setters along a Path.
      */
-    class PointFToIntArray
+    class PointFToInt32Array
         : public TypeConverter/*<PointF, int[]>*/
     {
     public:
         CAR_INTERFACE_DECL();
 
-        PointFToIntArray();
+        PointFToInt32Array();
 
         // @Override
         virtual CARAPI convert(
@@ -103,25 +103,10 @@ public:
      * @see IntArrayEvaluator#IntArrayEvaluator(int[])
      * @see ObjectAnimator#ofMultiInt(Object, String, TypeConverter, TypeEvaluator, Object[])
      */
-    public static PropertyValuesHolder ofMultiInt(String propertyName, int[][] values) {
-        if (values.length < 2) {
-            throw new IllegalArgumentException("At least 2 values must be supplied");
-        }
-        int numParameters = 0;
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] == null) {
-                throw new IllegalArgumentException("values must not be null");
-            }
-            int length = values[i].length;
-            if (i == 0) {
-                numParameters = length;
-            } else if (length != numParameters) {
-                throw new IllegalArgumentException("Values must all have the same length");
-            }
-        }
-        IntArrayEvaluator evaluator = new IntArrayEvaluator(new int[numParameters]);
-        return new MultiIntValuesHolder(propertyName, null, evaluator, (Object[]) values);
-    }
+    static CARAPI OfMultiInt32(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ArrayOf<ArrayOf<Int32>* >* values,
+        /* [out] */ IPropertyValuesHolder** holder);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name to use
@@ -135,11 +120,9 @@ public:
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
      */
-    public static PropertyValuesHolder ofMultiInt(String propertyName, Path path) {
-        Keyframes keyframes = KeyframeSet.ofPath(path);
-        PointFToIntArray converter = new PointFToIntArray();
-        return new MultiIntValuesHolder(propertyName, converter, null, keyframes);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiInt32(
+        /* [in] */ const String& propertyName,
+        /* [in] */ IPath* path);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property and
@@ -157,10 +140,11 @@ public:
      * @see ObjectAnimator#ofMultiInt(Object, String, TypeConverter, TypeEvaluator, Object[])
      * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
      */
-    public static <V> PropertyValuesHolder ofMultiInt(String propertyName,
-            TypeConverter<V, int[]> converter, TypeEvaluator<V> evaluator, V... values) {
-        return new MultiIntValuesHolder(propertyName, converter, evaluator, values);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiInt32(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IInterface*>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder object with the specified property name or
@@ -179,11 +163,11 @@ public:
      * @param values       The values at specific fractional times to evaluate between
      * @return A PropertyValuesHolder for a multi-int parameter setter.
      */
-    public static <T> PropertyValuesHolder ofMultiInt(String propertyName,
-            TypeConverter<T, int[]> converter, TypeEvaluator<T> evaluator, Keyframe... values) {
-        KeyframeSet keyframeSet = KeyframeSet.ofKeyframe(values);
-        return new MultiIntValuesHolder(propertyName, converter, evaluator, keyframeSet);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiInt32(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IKeyframe*>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
@@ -199,25 +183,10 @@ public:
      * @see FloatArrayEvaluator#FloatArrayEvaluator(float[])
      * @see ObjectAnimator#ofMultiFloat(Object, String, TypeConverter, TypeEvaluator, Object[])
      */
-    public static PropertyValuesHolder ofMultiFloat(String propertyName, float[][] values) {
-        if (values.length < 2) {
-            throw new IllegalArgumentException("At least 2 values must be supplied");
-        }
-        int numParameters = 0;
-        for (int i = 0; i < values.length; i++) {
-            if (values[i] == null) {
-                throw new IllegalArgumentException("values must not be null");
-            }
-            int length = values[i].length;
-            if (i == 0) {
-                numParameters = length;
-            } else if (length != numParameters) {
-                throw new IllegalArgumentException("Values must all have the same length");
-            }
-        }
-        FloatArrayEvaluator evaluator = new FloatArrayEvaluator(new float[numParameters]);
-        return new MultiFloatValuesHolder(propertyName, null, evaluator, (Object[]) values);
-    }
+    static CARAPI OfMultiFloat(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ArrayOf<ArrayOf<Float>* >* values,
+        /* [out] */ IPropertyValuesHolder** holder);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name to use
@@ -231,11 +200,9 @@ public:
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      * @see ObjectAnimator#ofPropertyValuesHolder(Object, PropertyValuesHolder...)
      */
-    public static PropertyValuesHolder ofMultiFloat(String propertyName, Path path) {
-        Keyframes keyframes = KeyframeSet.ofPath(path);
-        PointFToFloatArray converter = new PointFToFloatArray();
-        return new MultiFloatValuesHolder(propertyName, converter, null, keyframes);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiFloat(
+        /* [in] */ const String& propertyName,
+        /* [in] */ IPath* path);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property and
@@ -252,10 +219,11 @@ public:
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      * @see ObjectAnimator#ofMultiFloat(Object, String, TypeConverter, TypeEvaluator, Object[])
      */
-    public static <V> PropertyValuesHolder ofMultiFloat(String propertyName,
-            TypeConverter<V, float[]> converter, TypeEvaluator<V> evaluator, V... values) {
-        return new MultiFloatValuesHolder(propertyName, converter, evaluator, values);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiFloat(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IInterface>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder object with the specified property name or
@@ -274,11 +242,11 @@ public:
      * @param values       The values at specific fractional times to evaluate between
      * @return A PropertyValuesHolder for a multi-float parameter setter.
      */
-    public static <T> PropertyValuesHolder ofMultiFloat(String propertyName,
-            TypeConverter<T, float[]> converter, TypeEvaluator<T> evaluator, Keyframe... values) {
-        KeyframeSet keyframeSet = KeyframeSet.ofKeyframe(values);
-        return new MultiFloatValuesHolder(propertyName, converter, evaluator, keyframeSet);
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfMultiFloat(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IKeyframe*>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property name and
@@ -296,14 +264,10 @@ public:
      * @param path The Path along which the values should be animated.
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      */
-    public static PropertyValuesHolder ofObject(String propertyName,
-            TypeConverter<PointF, ?> converter, Path path) {
-        PropertyValuesHolder pvh = new PropertyValuesHolder(propertyName);
-        pvh.mKeyframes = KeyframeSet.ofPath(path);
-        pvh.mValueType = PointF.class;
-        pvh.setConverter(converter);
-        return pvh;
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfObject(
+        /* [in] */ const String& propertyName,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ IPath* path);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property and
@@ -324,14 +288,11 @@ public:
      * @see #setConverter(TypeConverter)
      * @see TypeConverter
      */
-    public static <T, V> PropertyValuesHolder ofObject(Property<?, V> property,
-            TypeConverter<T, V> converter, TypeEvaluator<T> evaluator, T... values) {
-        PropertyValuesHolder pvh = new PropertyValuesHolder(property);
-        pvh.setConverter(converter);
-        pvh.setObjectValues(values);
-        pvh.setEvaluator(evaluator);
-        return pvh;
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfObject(
+        /* [in] */ IProperty* property,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ ITypeEvaluator* evaluator,
+        /* [in] */ ArrayOf<IInterface*>* values);
 
     /**
      * Constructs and returns a PropertyValuesHolder with a given property and
@@ -349,14 +310,10 @@ public:
      * @param path The Path along which the values should be animated.
      * @return PropertyValuesHolder The constructed PropertyValuesHolder object.
      */
-    public static <V> PropertyValuesHolder ofObject(Property<?, V> property,
-            TypeConverter<PointF, V> converter, Path path) {
-        PropertyValuesHolder pvh = new PropertyValuesHolder(property);
-        pvh.mKeyframes = KeyframeSet.ofPath(path);
-        pvh.mValueType = PointF.class;
-        pvh.setConverter(converter);
-        return pvh;
-    }
+    static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfObject(
+        /* [in] */ IProperty* property,
+        /* [in] */ ITypeConverter* converter,
+        /* [in] */ IPath* path);
 
     static CARAPI_(AutoPtr<IPropertyValuesHolder>) OfKeyframes(
         /* [in] */ const String& propertyName,

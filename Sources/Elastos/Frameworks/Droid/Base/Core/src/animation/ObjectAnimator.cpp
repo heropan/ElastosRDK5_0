@@ -402,7 +402,7 @@ AutoPtr<IObjectAnimator> ObjectAnimator::OfInt32(
 AutoPtr<IObjectAnimator> ObjectAnimator::OfMultiInt32(
     /* [in] */ IInterface* target,
     /* [in] */ const String& propertyName,
-    /* [in] */ int[][] values)
+    /* [in] */ ArrayOf<ArrayOf<Int32>* > values)
 {
     AutoPtr<IPropertyValuesHolder> pvh = PropertyValuesHolder::OfMultiInt32(propertyName, values);
     return OfPropertyValuesHolder(target, pvh);
