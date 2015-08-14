@@ -1,51 +1,82 @@
 
 module
 {
-    using interface Elastos.IO.IFile;
 
-    interface Elastos.Droid.Net.IUriBuilder;
+    interface Elastos.Droid.Os.IEnvironment;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+    interface Elastos.Droid.Os.IStrictMode;
+    interface Elastos.Droid.Util.ILog;
+
+    using interface Elastos.IO.IFile;
+    using interface Elastos.IO.IIOException;
+    using interface Elastos.IO.IUnsupportedEncodingException;
+    using interface Elastos.Net.IURLEncoder;
+    using interface Elastos.IO.Charset.IStandardCharsets;
+    using interface Elastos.Utility.IAbstractList;
+    using interface Elastos.Utility.IArrayList;
+    using interface Elastos.Utility.ICollections;
+    using interface Elastos.Utility.ILinkedHashSet;
+    using interface Elastos.Utility.IList;
+    using interface Elastos.Utility.ILocale;
+    using interface Elastos.Utility.IObjects;
+    using interface Elastos.Utility.IRandomAccess;
+    using interface Elastos.Utility.ISet;
+    using interface Libcore.Net.IUriCodec;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
     /**
-     * @Involve
-     * interface IComparable
+     * Immutable URI reference. A URI reference includes a URI and a fragment, the
+     * component of the URI following a '#'. Builds and parses URI references
+     * which conform to
+     * <a href="http://www.faqs.org/rfcs/rfc2396.html">RFC 2396</a>.
+     *
+     * <p>In the interest of performance, this class performs little to no
+     * validation. Behavior is undefined for invalid input. This class is very
+     * forgiving--in the face of invalid input, it will return garbage
+     * rather than throw an exception unless otherwise specified.
      */
-    interface IUri {// {
+    /**
+     * @Involved
+     * interface IParcelable;
+     * interface IComparable;
+     */
+    interface IUri {
         /**
          * Returns true if this URI is hierarchical like "http://google.com".
          * Absolute URIs are hierarchical if the scheme-specific part starts with
          * a '/'. Relative URIs are always hierarchical.
          */
         IsHierarchical(
-            [out] Boolean* isHierarchical);
+            [out] Boolean* result);
 
         /**
          * Returns true if this URI is opaque like "mailto:nobody@google.com". The
          * scheme-specific part of an opaque URI cannot start with a '/'.
          */
         IsOpaque(
-            [out] Boolean* isOpaque);
+            [out] Boolean* result);
 
         /**
-         * Returns true if this URI is relative, i.e. if it doesn't contain an
+         * Returns true if this URI is relative, i.e.&nbsp;if it doesn't contain an
          * explicit scheme.
          *
          * @return true if this URI is relative, false if it's absolute
          */
         IsRelative(
-            [out] Boolean* isRelative);
+            [out] Boolean* result);
 
         /**
-         * Returns true if this URI is absolute, i.e. if it contains an
+         * Returns true if this URI is absolute, i.e.&nbsp;if it contains an
          * explicit scheme.
          *
          * @return true if this URI is absolute, false if it's relative
          */
         IsAbsolute(
-            [out] Boolean* isAbsolute);
+            [out] Boolean* result);
 
         /**
          * Gets the scheme of this URI. Example: "http"
@@ -53,11 +84,11 @@ module
          * @return the scheme or null if this is a relative URI
          */
         GetScheme(
-            [out] String* scheme);
+            [out] String* result);
 
         /**
-         * Gets the scheme-specific part of this URI, i.e. everything between the
-         * scheme separator ':' and the fragment separator '#'. If this is a
+         * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
+         * the scheme separator ':' and the fragment separator '#'. If this is a
          * relative URI, this method returns the entire URI. Decodes escaped octets.
          *
          * <p>Example: "//www.google.com/search?q=android"
@@ -65,11 +96,11 @@ module
          * @return the decoded scheme-specific-part
          */
         GetSchemeSpecificPart(
-            [out] String* ssp);
+            [out] String* result);
 
         /**
-         * Gets the scheme-specific part of this URI, i.e. everything between the
-         * scheme separator ':' and the fragment separator '#'. If this is a
+         * Gets the scheme-specific part of this URI, i.e.&nbsp;everything between
+         * the scheme separator ':' and the fragment separator '#'. If this is a
          * relative URI, this method returns the entire URI. Leaves escaped octets
          * intact.
          *
@@ -78,7 +109,7 @@ module
          * @return the decoded scheme-specific-part
          */
         GetEncodedSchemeSpecificPart(
-            [out] String* essp);
+            [out] String* result);
 
         /**
          * Gets the decoded authority part of this URI. For
@@ -90,7 +121,7 @@ module
          * @return the authority for this URI or null if not present
          */
         GetAuthority(
-            [out] String* authority);
+            [out] String* result);
 
         /**
          * Gets the encoded authority part of this URI. For
@@ -102,7 +133,7 @@ module
          * @return the authority for this URI or null if not present
          */
         GetEncodedAuthority(
-            [out] String* authority);
+            [out] String* result);
 
         /**
          * Gets the decoded user information from the authority.
@@ -112,7 +143,7 @@ module
          * @return the user info for this URI or null if not present
          */
         GetUserInfo(
-            [out] String* userInfo);
+            [out] String* result);
 
         /**
          * Gets the encoded user information from the authority.
@@ -122,7 +153,7 @@ module
          * @return the user info for this URI or null if not present
          */
         GetEncodedUserInfo(
-            [out] String* userInfo);
+            [out] String* result);
 
         /**
          * Gets the encoded host from the authority for this URI. For example,
@@ -132,7 +163,7 @@ module
          * @return the host for this URI or null if not present
          */
         GetHost(
-            [out] String* host);
+            [out] String* result);
 
         /**
          * Gets the port from the authority for this URI. For example,
@@ -141,7 +172,7 @@ module
          * @return the port for this URI or -1 if invalid or not present
          */
         GetPort(
-            [out] Int32* port);
+            [out] Int32* result);
 
         /**
          * Gets the decoded path.
@@ -150,7 +181,7 @@ module
          * (like "mailto:nobody@google.com") or the URI is invalid
          */
         GetPath(
-            [out] String* path);
+            [out] String* result);
 
         /**
          * Gets the encoded path.
@@ -159,7 +190,7 @@ module
          * (like "mailto:nobody@google.com") or the URI is invalid
          */
         GetEncodedPath(
-            [out] String* path);
+            [out] String* result);
 
         /**
          * Gets the decoded query component from this URI. The query comes after
@@ -170,7 +201,7 @@ module
          * @return the decoded query or null if there isn't one
          */
         GetQuery(
-            [out] String* query);
+            [out] String* result);
 
         /**
          * Gets the encoded query component from this URI. The query comes after
@@ -181,7 +212,7 @@ module
          * @return the encoded query or null if there isn't one
          */
         GetEncodedQuery(
-            [out] String* query);
+            [out] String* result);
 
         /**
          * Gets the decoded fragment part of this URI, everything after the '#'.
@@ -189,7 +220,7 @@ module
          * @return the decoded fragment or null if there isn't one
          */
         GetFragment(
-            [out] String* fragment);
+            [out] String* result);
 
         /**
          * Gets the encoded fragment part of this URI, everything after the '#'.
@@ -197,7 +228,7 @@ module
          * @return the encoded fragment or null if there isn't one
          */
         GetEncodedFragment(
-            [out] String* fragment);
+            [out] String* result);
 
         /**
          * Gets the decoded path segments.
@@ -205,7 +236,7 @@ module
          * @return decoded path segments, each without a leading or trailing '/'
          */
         GetPathSegments(
-            [out, callee] ArrayOf<String>* pathSegments);
+            [out] IList** result);
 
         /**
          * Gets the decoded last segment in the path.
@@ -213,36 +244,6 @@ module
          * @return the decoded last segment or null if the path is empty
          */
         GetLastPathSegment(
-            [out] String* pathSegment);
-
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* isEqual);
-
-        Equals(
-            [in] IUri* other,
-            [out] Boolean* isEqual);
-
-        /**
-         * Hashes the encoded string represention of this Uri consistently with
-         * {@link #equals(Object)}.
-         */
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        /**
-         * Compares the string representation of this Uri with that of
-         * another.
-         */
-        CompareTo(
-            [in] IUri* other,
-            [out] Int32* result);
-
-        /**
-         * Returns the encoded string representation of this URI.
-         * Example: "http://google.com/"
-         */
-        ToString(
             [out] String* result);
 
         /**
@@ -268,7 +269,7 @@ module
          * @return a set of decoded names
          */
         GetQueryParameterNames(
-            [out, callee] ArrayOf<String>* aSet);
+            [out] ISet** result);
 
         /**
          * Searches the query string for parameter values with the given key.
@@ -281,7 +282,7 @@ module
          */
         GetQueryParameters(
             [in] String key,
-            [out, callee] ArrayOf<String>* aList);
+            [out] IList** result);
 
         /**
          * Searches the query string for the first value with the given key.
@@ -296,7 +297,7 @@ module
          */
         GetQueryParameter(
             [in] String key,
-            [out] String* param);
+            [out] String* result);
 
         /**
          * Searches the query string for the first value with the given key and interprets it
@@ -307,7 +308,7 @@ module
          * @param defaultValue the default value to return if there is no query parameter for key
          * @return the boolean interpretation of the query parameter key
          */
-         GetBooleanQueryParameter(
+        GetBooleanQueryParameter(
             [in] String key,
             [in] Boolean defaultValue,
             [out] Boolean* result);
@@ -334,7 +335,7 @@ module
          * @see {@link #setNormalizedData}
          */
         NormalizeScheme(
-            [out] IUri** uri);
+            [out] IUri** result);
 
         /**
          * If this {@link Uri} is {@code file://}, then resolve and return its
@@ -345,12 +346,35 @@ module
          * @hide
          */
         GetCanonicalUri(
-            [out] IUri** uri);
+            [out] IUri** result);
+
+        /**
+         * If this is a {@code file://} Uri, it will be reported to
+         * {@link StrictMode}.
+         *
+         * @hide
+         */
+        CheckFileUriExposed(
+            [in] String location);
+
+        /**
+         * Test if this is a path prefix match against the given Uri. Verifies that
+         * scheme, authority, and atomic path segments match.
+         *
+         * @hide
+         */
+        IsPathPrefixMatch(
+            [in] IUri* prefix,
+            [out] Boolean* result);
+
     }
 
     interface IUriHelper {
-        GetEMPTY(
-            [out] IUri** uri);
+        /**
+         * The empty URI, equivalent to "".
+         */
+        GetUri(
+            [out] IUri** result);
 
         /**
          * Creates a Uri which parses the given encoded URI string.
@@ -360,8 +384,8 @@ module
          * @return Uri for this given uri string
          */
         Parse(
-            [in] String str,
-            [out] IUri** uri);
+            [in] String uriString,
+            [out] IUri** result);
 
         /**
          * Creates a Uri from a file. The URI has the form
@@ -375,7 +399,7 @@ module
          */
         FromFile(
             [in] IFile* file,
-            [out] IUri** uri);
+            [out] IUri** result);
 
         /**
          * Creates an opaque Uri from the given components. Encodes the ssp
@@ -397,7 +421,7 @@ module
             [in] String scheme,
             [in] String ssp,
             [in] String fragment,
-            [out] IUri** uri);
+            [out] IUri** result);
 
         /**
          * Writes a Uri to a Parcel.
@@ -406,7 +430,7 @@ module
          * @param uri to write, can be null
          */
         WriteToParcel(
-            [in] IParcel* p,
+            [in] IParcel* outParcel,
             [in] IUri* uri);
 
         /**
@@ -421,7 +445,7 @@ module
          */
         Encode(
             [in] String s,
-            [out] String* encoded);
+            [out] String* result);
 
         /**
          * Encodes characters in the given string as '%'-escaped octets
@@ -468,17 +492,38 @@ module
             [in] IUri* baseUri,
             [in] String pathSegment,
             [out] IUri** result);
+
     }
 
+    /**
+     * Helper class for building or manipulating URI references. Not safe for
+     * concurrent use.
+     *
+     * <p>An absolute hierarchical URI reference follows the pattern:
+     * {@code <scheme>://<authority><absolute path>?<query>#<fragment>}
+     *
+     * <p>Relative URI references (which are always hierarchical) follow one
+     * of two patterns: {@code <relative or absolute path>?<query>#<fragment>}
+     * or {@code //<authority><absolute path>?<query>#<fragment>}
+     *
+     * <p>An opaque URI follows this pattern:
+     * {@code <scheme>:<opaque part>#<fragment>}
+     *
+     * <p>Use {@link Uri#buildUpon()} to obtain a builder representing an existing URI.
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface IUriBuilder {
-
         /**
          * Sets the scheme.
          *
          * @param scheme name or {@code null} if this is a relative Uri
          */
         Scheme(
-            [in] String scheme);
+            [in] String scheme,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes and sets the given opaque scheme-specific-part.
@@ -486,10 +531,8 @@ module
          * @param opaquePart decoded opaque part
          */
         OpaquePart(
-            [in] String opaquePart);
-
-        OpaquePart(
-            [in] Handle32 opaquePart);
+            [in] String opaquePart,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the previously encoded opaque scheme-specific-part.
@@ -497,22 +540,22 @@ module
          * @param opaquePart encoded opaque part
          */
         EncodedOpaquePart(
-            [in] String opaquePart);
+            [in] String opaquePart,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes and sets the authority.
          */
         Authority(
-            [in] String authority);
-
-        Authority(
-            [in] Handle32 authority);
+            [in] String authority,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the previously encoded authority.
          */
         EncodedAuthority(
-            [in] String authority);
+            [in] String authority,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the path. Leaves '/' characters intact but encodes others as
@@ -523,10 +566,8 @@ module
          * given path with a '/'.
          */
         Path(
-            [in] String path);
-
-        Path(
-            [in] Handle32 path);
+            [in] String path,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the previously encoded path.
@@ -536,49 +577,50 @@ module
          * given path with a '/'.
          */
         EncodedPath(
-            [in] String path);
+            [in] String path,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes the given segment and appends it to the path.
          */
         AppendPath(
-            [in] String newSegment);
+            [in] String newSegment,
+            [out] IUriBuilder** result);
 
         /**
          * Appends the given segment to the path.
          */
         AppendEncodedPath(
-            [in] String newSegment);
+            [in] String newSegment,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes and sets the query.
          */
         Query(
-            [in] String query);
-
-        Query(
-            [in] Handle32 query);
+            [in] String query,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the previously encoded query.
          */
         EncodedQuery(
-            [in] String query);
+            [in] String query,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes and sets the fragment.
          */
         Fragment(
-            [in] String fragment);
-
-        Fragment(
-            [in] Handle32 fragment);
+            [in] String fragment,
+            [out] IUriBuilder** result);
 
         /**
          * Sets the previously encoded fragment.
          */
         EncodedFragment(
-            [in] String fragment);
+            [in] String fragment,
+            [out] IUriBuilder** result);
 
         /**
          * Encodes the key and value and then appends the parameter to the
@@ -589,12 +631,14 @@ module
          */
         AppendQueryParameter(
             [in] String key,
-            [in] String value);
+            [in] String value,
+            [out] IUriBuilder** result);
 
         /**
          * Clears the the previously set query.
          */
-        ClearQuery();
+        ClearQuery(
+            [out] IUriBuilder** result);
 
         /**
          * Constructs a Uri with the current attributes.
@@ -603,13 +647,11 @@ module
          *  scheme is null
          */
         Build(
-            [out] IUri** uri);
+            [out] IUri** result);
 
-        ToString(
-            [out] String* info);
     }
 
     } // namespace Net
-    } // namepsace Droid
+    } // namespace Droid
     } // namespace Elastos
 }

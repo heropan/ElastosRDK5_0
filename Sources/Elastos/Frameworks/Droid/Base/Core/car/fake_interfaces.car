@@ -7,19 +7,7 @@ module
 
         interface ILinkCapabilities {}  // deleted in V5
 
-        interface ISamplingSnapshot {}
-
-        interface IUidRange {}
-
-        interface IWebAddress {}
-
         interface INetworkCallback {}
-
-        interface IScoredNetwork {}
-
-        interface IStaticIpConfiguration {}
-
-        interface IWifiKey {}
 
         namespace Wifi {
 
@@ -205,7 +193,15 @@ module
     namespace Droid {
     namespace Os {
 
+<<<<<<< HEAD
         interface ICreator {}
+=======
+        interface IRemoteCallback {}
+
+        interface IBuild {}
+
+        interface ISystemClock {}
+>>>>>>> Add all car files.
 
     }}} // Elastos.Droid.Os
 
@@ -236,7 +232,15 @@ module
 
                 interface IMenuBuilder {}
 
+<<<<<<< HEAD
                 interface IMenuItemImpl {}
+=======
+        interface IVpnConfig {}
+
+        interface IVpnProfile {}
+
+    } // namespace Net
+>>>>>>> Add all car files.
 
                 interface IMenuPresenter {}
 
@@ -293,6 +297,8 @@ module
     namespace Util {
 
         interface ILog {}
+
+        interface ISlog {}
 
         interface ISparseArray {}
 

@@ -1,6 +1,8 @@
 
 module
 {
+    interface Elastos.Droid.Net.IStaticIpConfiguration;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {

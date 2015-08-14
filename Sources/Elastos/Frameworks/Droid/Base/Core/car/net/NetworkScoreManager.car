@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.Net.INetworkScorerAppManager;
+    interface Elastos.Droid.Net.IScoredNetwork;
 
 
     namespace Elastos {

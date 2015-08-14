@@ -9,8 +9,6 @@ module
     using interface Elastos.IO.IDataOutputStream;
     using interface Elastos.Utility.IRandom;
 
-    interface Elastos.Droid.Os.ICreator;
-
     namespace Elastos {
     namespace Droid {
     namespace Net {
@@ -22,9 +20,6 @@ module
             [in] Int64 end,
             [out] Int64* result);
 
-        GetCREATOR(
-            [out] ICreator** result);
-
     }
 
     /**
@@ -32,7 +27,7 @@ module
      * {@link DataOutputStream}, mostly dealing with writing partial arrays.
      */
     [deprecated]
-    interface INetworkStatsHistoryDataStreamUtilsHelper {
+    interface INetworkStatsHistoryDataStreamUtils {
         // @Deprecated
         ReadFullLongArray(
             [in] IDataInputStream* dis,
@@ -68,7 +63,7 @@ module
      * dealing with writing partial arrays.
      */
     [deprecated]
-    interface INetworkStatsHistoryParcelUtilsHelper {
+    interface INetworkStatsHistoryParcelUtils {
         ReadLongArray(
             [in] IParcel* parcel,
             [out, callee] ArrayOf<Int64>* result);
