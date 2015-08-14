@@ -295,7 +295,7 @@ ECode BaseNetworkStateTracker::GetNetworkInterfaceName(
 
 
 ECode BaseNetworkStateTracker::StartSampling(
-    /* [in] */ ISamplingSnapshot* s)
+    /* [in] */ ISamplingDataTrackerSamplingSnapshot* s)
 {
     VALIDATE_NOT_NULL(s)
 
@@ -305,7 +305,7 @@ ECode BaseNetworkStateTracker::StartSampling(
 
 
 ECode BaseNetworkStateTracker::StopSampling(
-    /* [in] */ ISamplingSnapshot* s)
+    /* [in] */ ISamplingDataTrackerSamplingSnapshot* s)
 {
     VALIDATE_NOT_NULL(s)
 

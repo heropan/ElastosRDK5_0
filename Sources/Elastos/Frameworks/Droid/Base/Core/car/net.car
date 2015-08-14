@@ -5,14 +5,11 @@ module
     merge("net/Credentials.car");
     merge("net/DnsPinger.car");
     merge("net/DhcpInfo.car");
-    merge("net/DhcpInfoHelper.car");
     merge("net/DhcpResults.car");
-    merge("net/DhcpResultsHelper.car");
     merge("net/DhcpStateMachine.car");
     merge("net/DhcpStateMachineHelper.car");
     merge("net/EthernetManager.car");
     merge("net/InterfaceConfiguration.car");
-    merge("net/InterfaceConfigurationHelper.car");
     merge("net/IEthernetManager.car");
     merge("net/IConnectivityManager.car");
     merge("net/INetworkManagementEventObserver.car");
@@ -23,14 +20,10 @@ module
     merge("net/INetworkStatsSession.car");
     merge("net/INetworkStatsService.car");
     merge("net/IpConfiguration.car");
-    merge("net/IpConfigurationHelper.car");
     merge("net/IpPrefix.car");
     merge("net/LinkAddress.car");
-    merge("net/LinkAddressHelper.car");
     merge("net/LinkProperties.car");
-    merge("net/LinkPropertiesHelper.car");
     merge("net/LinkQualityInfo.car");
-    merge("net/LinkQualityInfoHelper.car");
     merge("net/LocalServerSocket.car");
     merge("net/LocalSocket.car");
     merge("net/LocalSocketAddress.car");
@@ -41,33 +34,24 @@ module
     merge("net/MobileLinkQualityInfo.car");
     merge("net/MobileLinkQualityInfoHelper.car");
     merge("net/Network.car");
-    merge("net/NetworkHelper.car");
     merge("net/NetworkAgent.car");
     merge("net/NetworkCapabilities.car");
-    merge("net/NetworkCapabilitiesHelper.car");
     merge("net/NetworkConfig.car");
     merge("net/NetworkFactory.car");
     merge("net/NetworkIdentity.car");
     merge("net/NetworkIdentityHelper.car");
     merge("net/NetworkInfo.car");
-    merge("net/NetworkInfoHelper.car");
     merge("net/NetworkKey.car");
-    merge("net/NetworkKeyHelper.car");
     merge("net/NetworkMisc.car");
-    merge("net/NetworkMiscHelper.car");
     merge("net/NetworkPolicy.car");
-    merge("net/NetworkPolicyHelper.car");
     merge("net/NetworkPolicyManager.car");
     merge("net/NetworkPolicyManagerHelper.car");
     merge("net/NetworkQuotaInfo.car");
-    merge("net/NetworkQuotaInfoHelper.car");
     merge("net/NetworkRequest.car");
-    merge("net/NetworkRequestHelper.car");
     merge("net/NetworkScoreManager.car");
     merge("net/NetworkScorerAppManager.car");
     merge("net/NetworkScorerAppManagerHelper.car");
     merge("net/NetworkState.car");
-    merge("net/NetworkStateHelper.car");
     merge("net/NetworkStateTracker.car");
     merge("net/NetworkStats.car");
     merge("net/NetworkStatsHelper.car");
@@ -84,18 +68,19 @@ module
     merge("net/RouteInfo.car");
     merge("net/RssiCurve.car");
     merge("net/SSLCertificateSocketFactory.car");
-
-
-
-
     merge("net/SSLSessionCache.car");
-    merge("net/TrafficStats.car");
-    merge("net/Uri.car");
+    merge("net/SamplingDataTracker.car");
+    merge("net/ScoredNetwork.car");
     merge("net/SntpClient.car");
-    merge("net/VpnConfig.car");
-    merge("net/VpnProfile.car");
-    merge("net/VpnService.car");
+    merge("net/StaticIpConfiguration.car");
+    merge("net/TrafficStats.car");
+    merge("net/UidRange.car");
+    merge("net/Uri.car");
     merge("net/UrlQuerySanitizer.car");
+    merge("net/VpnService.car");
+    merge("net/WebAddress.car");
+    merge("net/WifiKey.car");
+    merge("net/WifiLinkQualityInfo.car");
 
     merge("net/http/AndroidHttpClient.car");
     merge("net/http/CertificateChainValidator.car");

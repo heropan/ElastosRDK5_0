@@ -1,11 +1,35 @@
+
 module
 {
+
+    interface Elastos.Droid.Os.ISystemClock;
+    interface Elastos.Droid.Util.ILog;
+
+    using interface Elastos.Net.IDatagramPacket;
+    using interface Elastos.Net.IDatagramSocket;
+    using interface Elastos.Net.IInetAddress;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
 
+    /**
+     * {@hide}
+     *
+     * Simple SNTP client class for retrieving network time.
+     *
+     * Sample usage:
+     * <pre>SntpClient client = new SntpClient();
+     * if (client.requestTime("time.foo.com")) {
+     *     long now = client.getNtpTime() + SystemClock.elapsedRealtime() - client.getNtpTimeReference();
+     * }
+     * </pre>
+     */
+    /**
+     * @Involved
+     * no super interface
+     */
     interface ISntpClient {
-
         /**
          * Sends an SNTP request to the given host and processes the response.
          *
@@ -24,7 +48,7 @@ module
          * @return time value computed from NTP server response.
          */
         GetNtpTime(
-            [out] Int64* time);
+            [out] Int64* result);
 
         /**
          * Returns the reference clock value (value of SystemClock.elapsedRealtime())
@@ -33,7 +57,7 @@ module
          * @return reference clock corresponding to the NTP time.
          */
         GetNtpTimeReference(
-            [out] Int64* time);
+            [out] Int64* result);
 
         /**
          * Returns the round trip time of the NTP transaction
@@ -41,10 +65,11 @@ module
          * @return round trip time in milliseconds.
          */
         GetRoundTripTime(
-            [out] Int64* time);
+            [out] Int64* result);
+
     }
 
-    } //namespace Net
-    } //namespace Droid
-    } //namespace Elastos
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 }

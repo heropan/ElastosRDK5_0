@@ -4,7 +4,12 @@ module
 
     interface Elastos.Droid.Net.INetworkStatsNonMonotonicObserver;
 
-    interface Elastos.Droid.Os.ICreator;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Os.IParcelable;
+    interface Elastos.Droid.Os.ISystemClock;
+    interface Elastos.Droid.Util.ISparseBooleanArray;
+    interface Elastos.Droid.Internal.Annotations.IVisibleForTesting;
+    interface Elastos.Droid.Internal.Util.IArrayUtils;
 
 
     namespace Elastos {
@@ -65,9 +70,6 @@ module
         TagToString(
             [in] Int32 tag,
             [out] String* result);
-
-        GetCREATOR(
-            [out] ICreator** result);
 
     }
 
