@@ -1,11 +1,11 @@
-TARGET_NAME= security
+TARGET_NAME= elastosx.security
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/callback
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/security/auth/x500
@@ -16,16 +16,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security/cert
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility
 
-VPATH := $(MAKEDIR)/auth/callback:$(MAKEDIR)/auth/x500:$(MAKEDIR)/auth:$(MAKEDIR)/cert
-
 SOURCES = security.cpp
-SOURCES += CPasswordCallback.cpp
-SOURCES += CX500Principal.cpp
-SOURCES += CAuthPermission.cpp
-SOURCES += CPrivateCredentialPermission.cpp
-SOURCES += CSubject.cpp
-SOURCES += CSubjectHelper.cpp
-SOURCES += CSubjectDomainCombiner.cpp
-SOURCES += CertificateX.cpp
-SOURCES += X509CertificateX.cpp
-SOURCES += CX509CertificateHelper.cpp
+
+LIBRARIES += auth/auth.lib
+LIBRARIES += cert/cert.lib

@@ -1,5 +1,5 @@
 
-TARGET_NAME= icu
+TARGET_NAME= libcore.icu
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
@@ -7,7 +7,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;

@@ -6,7 +6,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../
+INCLUDES += ../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
@@ -30,3 +30,5 @@ SOURCES += CCharsets.cpp
 SOURCES += CModifiedUtf8.cpp
 SOURCES += StandardCharsets.cpp
 SOURCES += CStandardCharsets.cpp
+
+LIBRARIES += spi/spi.lib

@@ -1,13 +1,13 @@
 
-TARGET_NAME= utility
-TARGET_TYPE= lib
+TARGET_NAME = libcore.utility
+TARGET_TYPE = lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;

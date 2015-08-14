@@ -4,7 +4,7 @@ TARGET_TYPE= lib
 C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../../sources.inc
 
-INCLUDES += ../../../elastos
+INCLUDES += ../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/dom
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/xml/transform/sax
@@ -14,22 +14,9 @@ INCLUDES += $(MAKEDIR)/../../../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/io
 
-VPATH := $(MAKEDIR)/dom:$(MAKEDIR)/sax:$(MAKEDIR)/stream
-
-#transform
 SOURCES += TransformerFactory.cpp
-SOURCES += SAXTransformerFactory.cpp
 SOURCES += Transformer.cpp
 
-#transform/dom
-SOURCES += CDOMResult.cpp
-SOURCES += CDOMSource.cpp
-
-#transform/sax
-SOURCES += CSAXResult.cpp
-SOURCES += CSAXSource.cpp
-
-#transform/stream
-SOURCES += FilePathToURI.cpp
-SOURCES += CStreamSource.cpp
-SOURCES += CStreamResult.cpp
+LIBRARIES += dom/dom.lib
+LIBRARIES += sax/sax.lib
+LIBRARIES += stream/stream.lib

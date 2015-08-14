@@ -1,11 +1,11 @@
-TARGET_NAME= crypto
+TARGET_NAME= elastosx.crypto
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security/spec
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility
@@ -41,3 +41,5 @@ SOURCES += CSecretKeyFactory.cpp
 SOURCES += CSecretKeyFactoryHelper.cpp
 SOURCES += CSealedObject.cpp
 SOURCES += CNullCipher.cpp
+
+LIBRARIES += spec/spec.lib

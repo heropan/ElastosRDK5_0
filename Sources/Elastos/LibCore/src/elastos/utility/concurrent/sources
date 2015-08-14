@@ -7,33 +7,13 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../
+INCLUDES += ../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/atomic;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/utility/concurrent/locks;
-
-VPATH := $(MAKEDIR)/atomic:$(MAKEDIR)/locks
-SOURCES = AtomicReference.cpp
-SOURCES += CAtomicBoolean.cpp
-SOURCES += CAtomicInteger32.cpp
-SOURCES += CAtomicInteger32Array.cpp
-SOURCES += CAtomicInteger64.cpp
-SOURCES += CAtomicInteger64Array.cpp
-SOURCES += CAtomicMarkableReference.cpp
-SOURCES += CAtomicReference.cpp
-SOURCES += CAtomicReferenceArray.cpp
-SOURCES += CAtomicStampedReference.cpp
-SOURCES += CFences.cpp
-
-SOURCES += AbstractQueuedSynchronizer.cpp
-SOURCES += CLockSupport.cpp
-SOURCES += CReentrantLock.cpp
-SOURCES += CReentrantReadWriteLock.cpp
-SOURCES += LockSupport.cpp
-SOURCES += ReentrantLock.cpp
 
 SOURCES += AbstractExecutorService.cpp
 SOURCES += CArrayBlockingQueue.cpp
@@ -74,5 +54,7 @@ SOURCES += TimeUnit.cpp
 SOURCES += ThreadPoolExecutor.cpp
 SOURCES += RecursiveAction.cpp
 SOURCES += RecursiveTask.cpp
-
 SOURCES += concurrent.cpp
+
+LIBRARIES += atomic/atomic.lib
+LIBRARIES += locks/locks.lib

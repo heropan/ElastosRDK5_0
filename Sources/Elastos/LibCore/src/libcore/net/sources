@@ -1,13 +1,13 @@
 
-TARGET_NAME= net
-TARGET_TYPE= lib
+TARGET_NAME = libcore.net
+TARGET_TYPE = lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/libcore;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/net;
 INCLUDES += $(MAKEDIR)/../../../inc/libcore/net/http;
@@ -21,12 +21,11 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/net;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
-VPATH := $(MAKEDIR)/http:$(MAKEDIR)/event
-
-SOURCES += CHttpDate.cpp
 SOURCES += MimeUtils.cpp
 SOURCES += CMimeUtils.cpp
 SOURCES += UriCodec.cpp
 SOURCES += CUriCodecHelper.cpp
-SOURCES += NetworkEventDispatcher.cpp
-SOURCES += NetworkEventListener.cpp
+
+LIBRARIES += event/event.lib
+LIBRARIES += http/http.lib
+LIBRARIES += url/url.lib

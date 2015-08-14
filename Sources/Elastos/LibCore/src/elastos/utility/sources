@@ -1,5 +1,5 @@
 
-TARGET_NAME= utility
+TARGET_NAME= elastos.utility
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
@@ -7,7 +7,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
@@ -89,5 +89,11 @@ SOURCES += CUUIDHelper.cpp
 SOURCES += UnsafeArrayList.cpp
 SOURCES += Vector.cpp
 SOURCES += CWeakHashMap.cpp
-
 SOURCES += utility.cpp
+
+LIBRARIES += concurrent/concurrent.lib
+LIBRARIES += jar/jar.lib
+LIBRARIES += logging/logging.lib
+LIBRARIES += prefs/prefs.lib
+LIBRARIES += regex/regex.lib
+LIBRARIES += zip/zip.lib

@@ -1,5 +1,4 @@
 DIRS = core
-DIRS += droid
 DIRS += io
 DIRS += math
 DIRS += net
@@ -8,7 +7,3 @@ DIRS += sql
 DIRS += text
 DIRS += utility
 DIRS += droid
-
-DIRS += ../libcore
-DIRS += ../org
-DIRS += ../elastosx

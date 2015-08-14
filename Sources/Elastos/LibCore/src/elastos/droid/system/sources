@@ -1,5 +1,5 @@
 
-TARGET_NAME= system
+TARGET_NAME= elastos.droid.system
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
@@ -7,7 +7,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../../
+INCLUDES += ../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../inc/libcore/io;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/droid;

@@ -1,11 +1,11 @@
-TARGET_NAME= net
+TARGET_NAME= elastosx.net
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../sources.inc
 
-INCLUDES += ../../elastos
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastosx/net
 INCLUDES += $(MAKEDIR)/../../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core/
@@ -17,3 +17,5 @@ SOURCES += ServerSocketFactory.cpp
 SOURCES += CServerSocketFactoryHelper.cpp
 SOURCES += CDefaultServerSocketFactory.cpp
 SOURCES += CDefaultSocketFactory.cpp
+
+LIBRARIES += ssl/ssl.lib

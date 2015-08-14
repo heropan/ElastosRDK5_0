@@ -5,7 +5,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 
 include $(MAKEDIR)/../../../sources.inc
 
-INCLUDES += ../../../elastos
+INCLUDES += ../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/crypto/spec
 INCLUDES += $(MAKEDIR)/../../../../inc/elastosx/crypto
 INCLUDES += $(MAKEDIR)/../../../../inc/elastos/crypto

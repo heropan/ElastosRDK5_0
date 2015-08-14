@@ -1,5 +1,5 @@
 
-TARGET_NAME= io
+TARGET_NAME= elastos.io
 TARGET_TYPE= lib
 
 C_DEFINES += -DELASTOS_CORELIBRARY
@@ -7,7 +7,7 @@ C_DEFINES += -DELASTOS_CORELIBRARY
 include $(MAKEDIR)/../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;
-INCLUDES += ../
+INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
@@ -87,3 +87,7 @@ SOURCES += StreamTokenizer.cpp
 # SerializablePermission
 # SerializationHandleMap
 #
+
+LIBRARIES += channels/channels.lib
+LIBRARIES += charset/charset.lib
+LIBRARIES += nio/nio.lib
