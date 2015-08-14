@@ -53,14 +53,14 @@ ECode PropertyValuesHolder::PointFToFloatArray::Convert(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(PropertyValuesHolder::PointFToIntArray, TypeConverter, IPropertyValuesHolder);
-PropertyValuesHolder::PointFToIntArray::PointFToIntArray()
+CAR_INTERFACE_IMPL(PropertyValuesHolder::PointFToInt32Array, TypeConverter, IPropertyValuesHolder);
+PropertyValuesHolder::PointFToInt32Array::PointFToInt32Array()
 {
     super(PointF.class, int[].class);
     mCoordinates = ArrayOf<Int32>::Alloc(2);
 }
 
-ECode PropertyValuesHolder::PointFToIntArray::Convert(
+ECode PropertyValuesHolder::PointFToInt32Array::Convert(
     /* [in] */ IPointF* value,
     /* [out] */ IInterface** values)
 {
@@ -257,6 +257,185 @@ AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframe(
     //     temp->mValueType = id;
     //     return pvh;
     // }
+}
+
+ECode PropertyValuesHolder::OfMultiInt32(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ArrayOf<ArrayOf<Int32>* >* values,
+    /* [out] */ IPropertyValuesHolder** holder)
+{
+    VALIDATE_NOT_NULL(holder);
+    if (values->GetLength() < 2) {
+        // throw new IllegalArgumentException("At least 2 values must be supplied");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 numParameters = 0;
+    AutoPtr<ArrayOf<IInterface*> > arrays = ArrayOf<IInterface*>::Alloc(values->GetLength());
+    for (Int32 i = 0; i < values->GetLength(); i++) {
+        if ((*values)[i] == NULL) {
+            // throw new IllegalArgumentException("values must not be null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        Int32 length = (*values)[i]->GetLength();
+        if (i == 0) {
+            numParameters = length;
+        } else if (length != numParameters) {
+            // throw new IllegalArgumentException("Values must all have the same length");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        AutoPtr<IArrayOf> items;
+        CArrayOf::New(length, (IArrayOf**)&item);
+        for (Int32 n = 0; n < length; n++) {
+            AutoPtr<IInteger32> item;
+            CInteger32::New((*((*values)[i]))[n], (IInteger32**)&item);
+            items->Set(n, item);
+        }
+        arrays->Set(i, items);
+    }
+
+    AutoPtr<ArrayOf<Int32> > array = ArrayOf<Int32>::Alloc(numParameters);
+    AutoPtr<Int32ArrayEvaluator> evaluator = new Int32ArrayEvaluator(array);
+    AutoPtr<IPropertyValuesHolder> v = new MultiInt32ValuesHolder(propertyName, NULL, evaluator, arrays);
+    *holder = v;
+    REFCOUNT_ADD(*holder);
+    return NOERROR;
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiInt32(
+    /* [in] */ const String& propertyName,
+    /* [in] */ IPath* path)
+{
+    AutoPtr<IKeyframes> keyframes = KeyframeSet::OfPath(path);
+    AutoPtr<PointFToInt32Array> converter = new PointFToInt32Array();
+    return new MultiInt32ValuesHolder(propertyName, converter, NULL, keyframes);
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiInt32(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ ITypeEvaluator* evaluator,
+    /* [in] */ ArrayOf<IInterface*>* values)
+{
+    return new MultiInt32ValuesHolder(propertyName, converter, evaluator, values);
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiInt32(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ ITypeEvaluator* evaluator,
+    /* [in] */ ArrayOf<IKeyframe*>* values)
+{
+    AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
+    return new MultiInt32ValuesHolder(propertyName, converter, evaluator, keyframeSet);
+}
+
+ECode PropertyValuesHolder::OfMultiFloat(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ArrayOf<ArrayOf<Float>* >* values,
+    /* [out] */ IPropertyValuesHolder** holder)
+{
+    VALIDATE_NOT_NULL(holder);
+    if (values->GetLength() < 2) {
+        // throw new IllegalArgumentException("At least 2 values must be supplied");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    Int32 numParameters = 0;
+    AutoPtr<ArrayOf<IInterface*> > arrays = ArrayOf<IInterface*>::Alloc(values->GetLength());
+    for (Int32 i = 0; i < values.length; i++) {
+        if (values[i] == null) {
+            // throw new IllegalArgumentException("values must not be null");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        Int32 length = (*values)[i]->GetLength();
+        if (i == 0) {
+            numParameters = length;
+        } else if (length != numParameters) {
+            // throw new IllegalArgumentException("Values must all have the same length");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+
+        AutoPtr<IArrayOf> items;
+        CArrayOf::New(length, (IArrayOf**)&items);
+        for (Int32 n = 0; n < length; n++) {
+            AutoPtr<IFloat> item;
+            CFloat::New((*((*values)[i]))[n], (IFloat**)&item);
+            items->Set(n, item);
+        }
+        arrays->Set(i, items);
+    }
+
+    AutoPtr<ArrayOf<Float> > array = ArrayOf<Float>::Alloc(numParameters);
+    AutoPtr<FloatArrayEvaluator> evaluator = new FloatArrayEvaluator(array);
+    AutoPtr<IPropertyValuesHolder> v = new MultiFloatValuesHolder(propertyName, NULL, evaluator, arrays);
+    *holder = v;
+    REFCOUNT_ADD(*holder);
+    return NOERROR;
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
+    /* [in] */ const String& propertyName,
+    /* [in] */ IPath* path)
+{
+    AutoPtr<IKeyframes> keyframes = KeyframeSet::OfPath(path);
+    AutoPtr<PointFToFloatArray> converter = new PointFToFloatArray();
+    return new MultiFloatValuesHolder(propertyName, converter, NULL, keyframes);
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ ITypeEvaluator* evaluator,
+    /* [in] */ ArrayOf<IInterface>* values)
+{
+    return new MultiFloatValuesHolder(propertyName, converter, evaluator, values);
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfMultiFloat(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ ITypeEvaluator* evaluator,
+    /* [in] */ ArrayOf<IKeyframe*>* values)
+{
+    AutoPtr<IKeyframeSet> keyframeSet = KeyframeSet::OfKeyframe(values);
+    return new MultiFloatValuesHolder(propertyName, converter, evaluator, keyframeSet);
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
+    /* [in] */ const String& propertyName,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ IPath* path)
+{
+    AutoPtr<PropertyValuesHolder> pvh = new PropertyValuesHolder(propertyName);
+    pvh->mKeyframes = KeyframeSet::OfPath(path);
+    pvh->mValueType = PointF.class;
+    pvh->SetConverter(converter);
+    return pvh;
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
+    /* [in] */ IProperty* property,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ ITypeEvaluator* evaluator,
+    /* [in] */ ArrayOf<IInterface*>* values)
+{
+    AutoPtr<IPropertyValuesHolder> pvh = new PropertyValuesHolder(property);
+    pvh->SetConverter(converter);
+    pvh->SetObjectValues(values);
+    pvh->SetEvaluator(evaluator);
+    return pvh;
+}
+
+AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfObject(
+    /* [in] */ IProperty* property,
+    /* [in] */ ITypeConverter* converter,
+    /* [in] */ IPath* path)
+{
+    AutoPtr<PropertyValuesHolder> pvh = new PropertyValuesHolder(property);
+    pvh->mKeyframes = KeyframeSet::OfPath(path);
+    pvh->mValueType = PointF.class;
+    pvh->SetConverter(converter);
+    return pvh;
 }
 
 AutoPtr<IPropertyValuesHolder> PropertyValuesHolder::OfKeyframes(
