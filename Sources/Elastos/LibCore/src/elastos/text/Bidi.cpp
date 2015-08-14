@@ -74,7 +74,15 @@ ECode Bidi::constructor(
     Int32 end = 0;
     ICharacterIterator::Probe(paragraph)->GetEndIndex(&end);
     Int32 length = end - begin;
+    if (length < 0)  {
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
     AutoPtr< ArrayOf<Char32> > text = ArrayOf<Char32>::Alloc(length + 1) ; // One more char for AttributedCharacterIterator.DONE
+    if (text == NULL) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
     if (length != 0) {
         ICharacterIterator::Probe(paragraph)->GetFirst(&(*text)[0]);
     } else {
@@ -89,7 +97,7 @@ ECode Bidi::constructor(
     //     (IAttributedCharacterIteratorAttribute*)TextAttribute::RUN_DIRECTION->Probe(EIID_IAttributedCharacterIteratorAttribute),
     //     (IInterface**)&direction);
     if (direction != NULL && direction->Probe(EIID_IBoolean) != NULL) {
-        AutoPtr<IBoolean> b = (IBoolean*)direction->Probe(EIID_IBoolean);
+        AutoPtr<IBoolean> b = (IBoolean *)direction->Probe(EIID_IBoolean);
         Boolean value;
         b->GetValue(&value);
         // if (value == TextAttribute::RUN_DIRECTION_LTR) {
@@ -109,7 +117,7 @@ ECode Bidi::constructor(
         //     (IAttributedCharacterIteratorAttribute*)TextAttribute::BIDI_EMBEDDING->Probe(EIID_IAttributedCharacterIteratorAttribute),
         //     (IInterface**)&embedding);
         if (embedding != NULL && embedding->Probe(EIID_IInteger32) != NULL) {
-            AutoPtr<IInteger32> integer = (IInteger32*)embedding->Probe(EIID_IInteger32);
+            AutoPtr<IInteger32> integer = (IInteger32 *)embedding->Probe(EIID_IInteger32);
             Int32 embLevel;
             integer->GetValue(&embLevel);
 
@@ -235,6 +243,10 @@ ECode Bidi::CreateUBiDi(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     realText = ArrayOf<Char32>::Alloc(paragraphLength);
+    if (realText == NULL) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
     for (Int32 i = 0; i < paragraphLength; ++i) {
         (*realText)[i] = (*text)[textStart + i];
     }
@@ -335,6 +347,10 @@ ECode Bidi::CreateLineBidi(
     }
 
     AutoPtr< ArrayOf<Char32> > text = ArrayOf<Char32>::Alloc(mLength);
+    if (text == NULL) {
+        return E_OUT_OF_MEMORY_ERROR;
+    }
+
     for (Int32 i = 0; i < mLength; i++) {
         (*text)[i] = 'a';
     }
