@@ -193,15 +193,9 @@ module
     namespace Droid {
     namespace Os {
 
-<<<<<<< HEAD
-        interface ICreator {}
-=======
-        interface IRemoteCallback {}
-
         interface IBuild {}
 
         interface ISystemClock {}
->>>>>>> Add all car files.
 
     }}} // Elastos.Droid.Os
 
@@ -232,15 +226,7 @@ module
 
                 interface IMenuBuilder {}
 
-<<<<<<< HEAD
                 interface IMenuItemImpl {}
-=======
-        interface IVpnConfig {}
-
-        interface IVpnProfile {}
-
-    } // namespace Net
->>>>>>> Add all car files.
 
                 interface IMenuPresenter {}
 
@@ -275,6 +261,10 @@ module
         namespace Net {
 
             interface ILegacyVpnInfo {}
+
+            interface IVpnConfig {}
+
+            interface IVpnProfile {}
 
         } // namespace Net
 
