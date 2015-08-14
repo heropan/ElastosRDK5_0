@@ -12,14 +12,6 @@ module
      * @Involved
      * none super interface
      */
-    interface ICompareResult {
-        GetRemoved(
-            [out] IList** result);
-
-        GetAdded(
-            [out] IList** result);
-    }
-
     } // namespace Net
     } // namepsace Droid
     } // namespace Elastos
