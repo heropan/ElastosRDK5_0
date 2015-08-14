@@ -26,7 +26,7 @@ module
             [out] String* label);
 
         GetLocale(
-            [out] ILocale* locale);
+            [out] ILocale** locale);
     }
 
     /**

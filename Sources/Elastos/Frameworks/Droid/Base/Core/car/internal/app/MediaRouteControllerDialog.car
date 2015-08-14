@@ -35,7 +35,7 @@ module
          * Gets the route that this dialog is controlling.
          */
         GetRoute(
-            [out] IRouteInfo* route);
+            [out] IRouteInfo** route);
 
         /**
          * Provides the subclass an opportunity to create a view that will
@@ -65,7 +65,7 @@ module
          * </p>
          */
         SetVolumeControlEnabled(
-            [in] Boolean enable);
+            [in] Boolean bval);
 
         /**
          * Returns whether to enable the volume slider and volume control using the volume keys

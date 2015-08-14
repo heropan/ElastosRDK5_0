@@ -101,38 +101,13 @@ module
     }}} // Elastos.Droid.Graphics
 
     //
-    // Elastos.Droid.Internal
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-
-        namespace View {
-
-            interface IIInputMethod {}
-
-        }// Elastos.Droid.Internal.View
-
-        namespace Telephony {
-
-            interface ICallerInfo {}
-
-        } //Elastos.Droid.Internal.Telephony
-
-        namespace Annotations {
-
-            interface IVisibleForTesting {}
-
-        }   // Elastos.Droid.Internal.Annotations
-
-    }}} // Elastos.Droid.Internal
-
-    //
     // Elastos.Droid.Media
     //
     namespace Elastos {
     namespace Droid {
     namespace Media {
+
+        interface IRouteInfo {}
 
         interface IAudioAttributes {
         }
@@ -301,6 +276,8 @@ module
 
         namespace Voice {
             interface IIVoiceInteractionSession {}
+
+            interface IIVoiceInteractionService {}
         }
 
     }}} // Elastos.Droid.Service
@@ -309,25 +286,42 @@ module
     namespace Droid {
     namespace Internal {
 
-    namespace StatusBar {
-        interface IStatusBarIcon {}
-    }
+        namespace View {
+            interface IIInputMethod {}
+        }
 
-    namespace Net {
+        namespace Telephony {
+            interface ICallerInfo {}
+        }
 
-        interface ILegacyVpnInfo {}
+        namespace Annotations {
 
-    } // namespace Net
+            interface IVisibleForTesting {}
+        }
 
-    namespace Util {
+        namespace Os {
+            interface IParcelFileDescriptorFactory {}
+        }
 
-        interface IStateMachine {}
-        interface IAsyncChannel {}
-        interface IProtocol {}
-        interface IArrayUtils {}
-        interface IIndentingPrintWriter {}
+        namespace StatusBar {
+            interface IStatusBarIcon {}
+        }
 
-    } // namespace Util
+        namespace Net {
+
+            interface ILegacyVpnInfo {}
+
+        } // namespace Net
+
+        namespace Util {
+
+            interface IStateMachine {}
+            interface IAsyncChannel {}
+            interface IProtocol {}
+            interface IArrayUtils {}
+            interface IIndentingPrintWriter {}
+
+        } // namespace Util
 
     } // namespace Internal
     } // namespace Droid
@@ -392,5 +386,22 @@ module
 
     }}} // Elastos.Droid.Bluetooth
 
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Hardware {
+
+        namespace Soundtrigger {
+            interface IIRecognitionStatusCallback {}
+
+            interface ISoundTriggerModuleProperties {}
+
+            interface ISoundTriggerKeyphraseSoundModel {}
+
+            interface ISoundTriggerRecognitionConfig {}
+        }
+
+
+    }}} // Elastos.Droid.Hardware
 
 }

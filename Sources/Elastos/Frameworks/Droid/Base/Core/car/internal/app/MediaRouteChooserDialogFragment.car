@@ -28,6 +28,7 @@ module
      * interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener
      * interface Elastos.Droid.App.IDialogFragment
      */
+    [local]
     interface IMediaRouteChooserDialogFragment {
         GetRouteTypes(
             [out] Int32* types);

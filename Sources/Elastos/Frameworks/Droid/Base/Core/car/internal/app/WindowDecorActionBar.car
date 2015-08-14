@@ -1,9 +1,5 @@
 module
 {
-    interface Elastos.Droid.App.IActionBarOnMenuVisibilityListener;
-    interface Elastos.Droid.View.IWindowCallback;
-    interface Elastos.Droid.Interanl.Widget. IActionBarVisibilityCallback;
-
     namespace Elastos {
     namespace Droid {
     namespace Internal {

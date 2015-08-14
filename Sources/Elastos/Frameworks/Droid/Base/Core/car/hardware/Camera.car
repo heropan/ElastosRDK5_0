@@ -2212,7 +2212,7 @@ module
          * calling this method -- or no callbacks will received.</p>
          *
          * <p>The buffer queue will be cleared if this method is called with a null
-         * callback, {@link #setPreviewCallback(Camera.PreviewCallback)} is called,
+         * cb, {@link #setPreviewCallback(Camera.PreviewCallback)} is called,
          * or {@link #setOneShotPreviewCallback(Camera.PreviewCallback)} is
          * called.</p>
          *

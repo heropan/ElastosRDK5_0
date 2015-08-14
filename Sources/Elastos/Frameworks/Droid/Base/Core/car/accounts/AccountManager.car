@@ -398,7 +398,7 @@ module
 //        RenameAccount(
 //            [in] IAccount* account,
 //            [in] String newName,
-//            [in] IAccountManagerCallback* callback,
+//            [in] IAccountManagerCallback* cb,
 //            [in] IHandler* handler,
 //            [out] IAccountManagerFuture** result);
 
@@ -451,7 +451,7 @@ module
          */
 //        RemoveAccountAsUser(
 //            [in] IAccount* account,
-//            [in] IAccountManagerCallback* callback,
+//            [in] IAccountManagerCallback* cb,
 //            [in] IHandler* handler,
 //            [in] IUserHandle* userHandle,
 //            [out] IAccountManagerFuture** result);
@@ -891,7 +891,7 @@ module
 //            [in] ArrayOf<String>* requiredFeatures,
 //            [in] IBundle* addAccountOptions,
 //            [in] IActivity* activity,
-//            [in] IAccountManagerCallback* callback,
+//            [in] IAccountManagerCallback* cb,
 //            [in] IHandler* handler,
 //            [in] IUserHandle* userHandle,
 //            [out] IAccountManagerFuture** result);

@@ -114,7 +114,7 @@ module
         //     [in] Int32 densityDpi,
         //     [in] ISurface* surface,
         //     [in] Int32 flags,
-        //     [in] IVirtualDisplayCallback* callback,
+        //     [in] IVirtualDisplayCallback* cb,
         //     [in] IHandler* handler,
         //     [out] IVirtualDisplay** outvd);
 

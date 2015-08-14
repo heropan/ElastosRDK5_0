@@ -1,6 +1,6 @@
 module
 {
-    using interface Elastos.Utility.IArrayMap;
+    interface Elastos.Droid.Utility.IArrayMap;
 
     namespace Elastos {
     namespace Droid {

@@ -46,7 +46,7 @@ module
         GetKeyphraseSoundModel(
             [in] Int32 keyphraseId,
             [in] String bcp47Locale,
-            [out] ISoundTriggerKeyphraseSoundModel* soundModel);
+            [out] ISoundTriggerKeyphraseSoundModel** soundModel);
 
         /**
          * Add/Update the given keyphrase sound model.
@@ -82,7 +82,7 @@ module
          * @param bcp47Locale The BCP47 language tag  for the keyphrase's locale.
          */
         IsEnrolledForKeyphrase(
-            [in] IVoiceInteractionService* service,
+            [in] IIVoiceInteractionService* service,
             [in] Int32 keyphraseId,
             [in] String bcp47Locale,
             [out] Boolean* result);
@@ -94,7 +94,7 @@ module
             [in] IIVoiceInteractionService* service,
             [in] Int32 keyphraseId,
             [in] String bcp47Locale,
-            [in] IIRecognitionStatusCallback* callback,
+            [in] IIRecognitionStatusCallback* cb,
             [in] ISoundTriggerRecognitionConfig* recognitionConfig,
             [out] Int32* result);
 
@@ -104,7 +104,7 @@ module
         StopRecognition(
             [in] IIVoiceInteractionService* service,
             [in] Int32 keyphraseId,
-            [in] IIRecognitionStatusCallback* callback,
+            [in] IIRecognitionStatusCallback* cb,
             [out] Int32* result);
     }
 
