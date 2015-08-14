@@ -12,34 +12,34 @@ module
 
     [deprecated]
     interface IGL {
-        GlEnable(
+        glEnable(
             [in] Int32 cap);
 
-        GlEnableClientState(
+        glEnableClientState(
             [in] Int32 array);
 
 
-        GlTexParameterf(
+        glTexParameterf(
             [in] Int32 target,
             [in] Int32 pname,
             [in] Float param);
 
-        GlTexParameterfv(
+        glTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexParameterfv(
+        glTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlBindTexture(
+        glBindTexture(
             [in] Int32 target,
             [in] Int32 texture);
 
-        GlCompressedTexImage2D(
+        glCompressedTexImage2D(
             [in] Int32 target,
             [in] Int32 level,
             [in] Int32 internalformat,
@@ -49,7 +49,7 @@ module
             [in] Int32 imageSize,
             [in] IBuffer* data);
 
-        GlCopyTexImage2D(
+        glCopyTexImage2D(
             [in] Int32 target,
             [in] Int32 level,
             [in] Int32 internalformat,
@@ -59,48 +59,48 @@ module
             [in] Int32 height,
             [in] Int32 border);
 
-        GlGetIntegerv(
+        glGetIntegerv(
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetIntegerv(
+        glGetIntegerv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlStencilOp(
+        glStencilOp(
             [in] Int32 fail,
             [in] Int32 zfail,
             [in] Int32 zpass);
 
-        GlTexEnvf(
+        glTexEnvf(
             [in] Int32 target,
             [in] Int32 pname,
             [in] Float param);
 
-        GlTexEnvfv(
+        glTexEnvfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexEnvfv(
+        glTexEnvfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlTexEnvx(
+        glTexEnvx(
             [in] Int32 target,
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlTexEnvxv(
+        glTexEnvxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexEnvxv(
+        glTexEnvxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);

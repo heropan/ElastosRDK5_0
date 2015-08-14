@@ -6,6 +6,10 @@ module
     namespace Opengl {
 
     /**
+     * Wrapper class for native EGLSurface objects.
+     *
+     */
+    /**
      * @Involve
      * interface IEGLObjectHandle
      */

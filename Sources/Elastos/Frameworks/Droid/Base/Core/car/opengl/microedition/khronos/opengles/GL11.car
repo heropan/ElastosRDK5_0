@@ -139,334 +139,334 @@ module
         const Int32 _GL_VIEWPORT                                = 0x0BA2;
         const Int32 _GL_WRITE_ONLY                              = 0x88B9;
 
-        GlGetPointerv(
+        glGetPointerv(
             [in] Int32 pname,
             [in] ArrayOf<IBuffer*>* params);
 
-        GlBindBuffer(
+        glBindBuffer(
             [in] Int32 target,
             [in] Int32 buffer);
 
-        GlBufferData(
+        glBufferData(
             [in] Int32 target,
             [in] Int32 size,
             [in] IBuffer* data,
             [in] Int32 usage);
 
-        GlBufferSubData(
+        glBufferSubData(
             [in] Int32 target,
             [in] Int32 offset,
             [in] Int32 size,
             [in] IBuffer* data);
 
-        GlClipPlanef(
+        glClipPlanef(
             [in] Int32 plane,
             [in] ArrayOf<Float>* equation,
             [in] Int32 offset);
 
-        GlClipPlanef(
+        glClipPlanef(
             [in] Int32 plane,
             [in] IFloatBuffer* equation);
 
-        GlClipPlanex(
+        glClipPlanex(
             [in] Int32 plane,
             [in] ArrayOf<Int32>* equation,
             [in] Int32 offset);
 
-        GlClipPlanex(
+        glClipPlanex(
             [in] Int32 plane,
             [in] IInt32Buffer* equation);
 
-        GlColor4ub(
+        glColor4ub(
             [in] Byte red,
             [in] Byte green,
             [in] Byte blue,
             [in] Byte alpha);
 
-        GlColorPointer(
+        glColorPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,
             [in] Int32 offset);
 
-        GlDeleteBuffers(
+        glDeleteBuffers(
             [in] Int32 n,
             [in] ArrayOf<Int32>* buffers,
             [in] Int32 offset);
 
-        GlDeleteBuffers(
+        glDeleteBuffers(
             [in] Int32 n,
             [in] IInt32Buffer* buffers
         );
 
-        GlDrawElements(
+        glDrawElements(
             [in] Int32 mode,
             [in] Int32 count,
             [in] Int32 type,
             [in] Int32 offset);
 
-        GlGenBuffers(
+        glGenBuffers(
             [in] Int32 n,
             [in] ArrayOf<Int32>* buffers,
             [in] Int32 offset);
 
-        GlGenBuffers(
+        glGenBuffers(
             [in] Int32 n,
             [in] IInt32Buffer* buffers);
 
-        GlGetBooleanv(
+        glGetBooleanv(
             [in] Int32 pname,
             [in] ArrayOf<Boolean>* params,
             [in] Int32 offset);
 
-        GlGetBooleanv(
+        glGetBooleanv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetBufferParameteriv(
+        glGetBufferParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetBufferParameteriv(
+        glGetBufferParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetClipPlanef(
+        glGetClipPlanef(
             [in] Int32 pname,
             [in] ArrayOf<Float>* eqn,
             [in] Int32 offset);
 
-        GlGetClipPlanef(
+        glGetClipPlanef(
             [in] Int32 pname,
             [in] IFloatBuffer* eqn);
 
-        GlGetClipPlanex(
+        glGetClipPlanex(
             [in] Int32 pname,
             [in] ArrayOf<Int32>* eqn,
             [in] Int32 offset);
 
-        GlGetClipPlanex(
+        glGetClipPlanex(
             [in] Int32 pname,
             [in] IInt32Buffer* eqn);
 
-        GlGetFixedv(
+        glGetFixedv(
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetFixedv(
+        glGetFixedv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetFloatv(
+        glGetFloatv(
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetFloatv(
+        glGetFloatv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlGetLightfv(
+        glGetLightfv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetLightfv(
+        glGetLightfv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlGetLightxv(
+        glGetLightxv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetLightxv(
+        glGetLightxv(
             [in] Int32 light,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetMaterialfv(
+        glGetMaterialfv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetMaterialfv(
+        glGetMaterialfv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlGetMaterialxv(
+        glGetMaterialxv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetMaterialxv(
+        glGetMaterialxv(
             [in] Int32 face,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexEnviv(
+        glGetTexEnviv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexEnviv(
+        glGetTexEnviv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexEnvxv(
+        glGetTexEnvxv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexEnvxv(
+        glGetTexEnvxv(
             [in] Int32 env,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexParameterfv(
+        glGetTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetTexParameterfv(
+        glGetTexParameterfv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlGetTexParameteriv(
+        glGetTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexParameteriv(
+        glGetTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexParameterxv(
+        glGetTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexParameterxv(
+        glGetTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlIsBuffer(
+        glIsBuffer(
             [in] Int32 buffer,
             [out] Boolean* result);
 
-        GlIsEnabled(
+        glIsEnabled(
             [in] Int32 cap,
             [out] Boolean* result);
 
-        GlIsTexture(
+        glIsTexture(
             [in] Int32 texture,
             [out] Boolean* result);
 
-        GlNormalPointer(
+        glNormalPointer(
             [in] Int32 type,
             [in] Int32 stride,
             [in] Int32 offset);
 
-        GlPointParameterf(
+        glPointParameterf(
             [in] Int32 pname,
             [in] Float param);
 
-        GlPointParameterfv(
+        glPointParameterfv(
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlPointParameterfv(
+        glPointParameterfv(
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlPointParameterx(
+        glPointParameterx(
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlPointParameterxv(
+        glPointParameterxv(
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlPointParameterxv(
+        glPointParameterxv(
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlPointSizePointerOES(
+        glPointSizePointerOES(
             [in] Int32 type,
             [in] Int32 stride,
             [in] IBuffer* pointer);
 
-        GlTexCoordPointer(
+        glTexCoordPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,
             [in] Int32 offset);
 
-        GlTexEnvi(
+        glTexEnvi(
             [in] Int32 target,
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlTexEnviv(
+        glTexEnviv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexEnviv(
+        glTexEnviv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlTexParameteri(
+        glTexParameteri(
             [in] Int32 target,
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlTexParameteriv(
+        glTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexParameteriv(
+        glTexParameteriv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlTexParameterxv(
+        glTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexParameterxv(
+        glTexParameterxv(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlVertexPointer(
+        glVertexPointer(
             [in] Int32 size,
             [in] Int32 type,
             [in] Int32 stride,

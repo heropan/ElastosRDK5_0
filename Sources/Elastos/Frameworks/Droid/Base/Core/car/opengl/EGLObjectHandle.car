@@ -7,6 +7,14 @@ module
 
     interface IEGLObjectHandle {
         /**
+         * @deprecated Use {@link #getNativeHandle()} instead. Handles on
+         *     64 bit platforms will be wider than java ints.
+         */
+        //@Deprecated
+        GetHandle(
+            [out] Int32* handle);
+
+        /**
          * Returns the native handle of the wrapped EGL object. This handle can be
          * cast to the corresponding native type on the native side.
          *
@@ -14,11 +22,8 @@ module
          *
          * @return the native handle of the wrapped EGL object.
          */
-        GetHandle(
-            [out] Int32* handle);
-
-        GetHashCode(
-            [out] Int32* code);
+        GetNativeHandle(
+            [out] Int64* handle);
     }
 
     } // namespace Opengl

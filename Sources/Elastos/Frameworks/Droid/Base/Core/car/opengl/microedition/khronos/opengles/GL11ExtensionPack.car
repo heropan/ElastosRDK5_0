@@ -102,198 +102,198 @@ module
         const Int32 _GL_TEXTURE_GEN_MODE                                 = 0x2500;
         const Int32 _GL_TEXTURE_GEN_STR                                  = 0x8D60;
 
-        GlBindFramebufferOES(
+        glBindFramebufferOES(
             [in] Int32 target,
             [in] Int32 framebuffer);
 
-        GlBindRenderbufferOES(
+        glBindRenderbufferOES(
             [in] Int32 target,
             [in] Int32 renderbuffer);
 
-        GlBlendEquation(
+        glBlendEquation(
             [in] Int32 mode);
 
-        GlBlendEquationSeparate(
+        glBlendEquationSeparate(
             [in] Int32 modeRGB,
             [in] Int32 modeAlpha);
 
-        GlBlendFuncSeparate(
+        glBlendFuncSeparate(
             [in] Int32 srcRGB,
             [in] Int32 dstRGB,
             [in] Int32 srcAlpha,
             [in] Int32 dstAlpha);
 
-        GlCheckFramebufferStatusOES(
+        glCheckFramebufferStatusOES(
             [in] Int32 target,
             [out] Int32* status);
 
-        GlDeleteFramebuffersOES(
+        glDeleteFramebuffersOES(
             [in] Int32 n,
             [in] ArrayOf<Int32>* framebuffers,
             [in] Int32 offset);
 
-        GlDeleteFramebuffersOES(
+        glDeleteFramebuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* framebuffers);
 
-        GlDeleteRenderbuffersOES(
+        glDeleteRenderbuffersOES(
             [in] Int32 n,
             [in] ArrayOf<Int32>* renderbuffers,
             [in] Int32 offset);
 
-        GlDeleteRenderbuffersOES(
+        glDeleteRenderbuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* renderbuffers);
 
-        GlFramebufferRenderbufferOES(
+        glFramebufferRenderbufferOES(
             [in] Int32 target,
             [in] Int32 attachment,
             [in] Int32 renderbuffertarget,
             [in] Int32 renderbuffer);
 
-        GlFramebufferTexture2DOES(
+        glFramebufferTexture2DOES(
             [in] Int32 target,
             [in] Int32 attachment,
             [in] Int32 textarget,
             [in] Int32 texture,
             [in] Int32 level);
 
-        GlGenerateMipmapOES(
+        glGenerateMipmapOES(
             [in] Int32 target);
 
-        GlGenFramebuffersOES(
+        glGenFramebuffersOES(
             [in] Int32 n,
             [in] ArrayOf<Int32>* framebuffers,
             [in] Int32 offset);
 
-        GlGenFramebuffersOES(
+        glGenFramebuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* framebuffers);
 
-        GlGenRenderbuffersOES(
+        glGenRenderbuffersOES(
             [in] Int32 n,
             [in] ArrayOf<Int32>* renderbuffers,
             [in] Int32 offset);
 
-        GlGenRenderbuffersOES(
+        glGenRenderbuffersOES(
             [in] Int32 n,
             [in] IInt32Buffer* renderbuffers);
 
-        GlGetFramebufferAttachmentParameterivOES(
+        glGetFramebufferAttachmentParameterivOES(
             [in] Int32 target,
             [in] Int32 attachment,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetFramebufferAttachmentParameterivOES(
+        glGetFramebufferAttachmentParameterivOES(
             [in] Int32 target,
             [in] Int32 attachment,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetRenderbufferParameterivOES(
+        glGetRenderbufferParameterivOES(
             [in] Int32 target,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetRenderbufferParameterivOES(
+        glGetRenderbufferParameterivOES(
             [in] Int32 target,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexGenfv(
+        glGetTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlGetTexGenfv(
+        glGetTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlGetTexGeniv(
+        glGetTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexGeniv(
+        glGetTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlGetTexGenxv(
+        glGetTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlGetTexGenxv(
+        glGetTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlIsFramebufferOES(
+        glIsFramebufferOES(
             [in] Int32 framebuffer,
             [out] Boolean* result);
 
-        GlIsRenderbufferOES(
+        glIsRenderbufferOES(
             [in] Int32 renderbuffer,
             [out] Boolean* result);
 
-        GlRenderbufferStorageOES(
+        glRenderbufferStorageOES(
             [in] Int32 target,
             [in] Int32 internalformat,
             [in] Int32 width,
             [in] Int32 height);
 
-        GlTexGenf(
+        glTexGenf(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] Float param);
 
-        GlTexGenfv(
+        glTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Float>* params,
             [in] Int32 offset);
 
-        GlTexGenfv(
+        glTexGenfv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IFloatBuffer* params);
 
-        GlTexGeni(
+        glTexGeni(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlTexGeniv(
+        glTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexGeniv(
+        glTexGeniv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);
 
-        GlTexGenx(
+        glTexGenx(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] Int32 param);
 
-        GlTexGenxv(
+        glTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] ArrayOf<Int32>* params,
             [in] Int32 offset);
 
-        GlTexGenxv(
+        glTexGenxv(
             [in] Int32 coord,
             [in] Int32 pname,
             [in] IInt32Buffer* params);

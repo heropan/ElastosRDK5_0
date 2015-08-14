@@ -59,7 +59,12 @@ module
             [in] Int32 error,
             [out] String* str);
 
-        EnableTracing();
+        /**
+         * Set OpenGL Tracing level for this application.
+         * @hide
+         */
+        SetTracingLevel(
+            [in] Int32 level);
     }
 
     } // namespace Opengl
