@@ -30,6 +30,7 @@ module
     merge("../car/opengl.car");
 
     merge("../car/internal/app.car");
+    merge("../car/internal/appwidget.car");
     merge("../car/internal/backup.car");
     merge("../car/internal/view.car");
     merge("../car/internal/policy.car");

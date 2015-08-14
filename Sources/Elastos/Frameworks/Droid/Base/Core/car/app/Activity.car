@@ -687,6 +687,7 @@ module
      * interface IWindowCallback
      * interface IKeyEventCallback
      * interface IOnCreateContextMenuListener
+     * interface IComponentCallbacks
      * interface IComponentCallbacks2
      * interface IWindowOnWindowDismissedCallback
      */

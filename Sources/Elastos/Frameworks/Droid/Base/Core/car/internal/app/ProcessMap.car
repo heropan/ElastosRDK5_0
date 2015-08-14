@@ -7,6 +7,7 @@ module
     namespace Internal {
     namespace App {
 
+    [local]
     interface IProcessMap {
         Get(
             [in] String name,

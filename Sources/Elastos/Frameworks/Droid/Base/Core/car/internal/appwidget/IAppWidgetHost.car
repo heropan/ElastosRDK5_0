@@ -1,10 +1,13 @@
 module
 {
+    interface Elastos.Droid.AppWidget.IAppWidgetProviderInfo;
+
     namespace Elastos {
     namespace Droid {
+    namespace Internal {
     namespace AppWidget {
 
-    [local, oneway]
+    [oneway]
     interface IIAppWidgetHost {
         UpdateAppWidget(
             [in] Int32 appWidgetId,
@@ -21,7 +24,8 @@ module
             [in] Int32 viewId);
     }
 
-    }//namespace AppWidget
-    }//namespace Droid
-    }//namespace Elastos
+    } //namespace AppWidget
+    } //namespace Internal
+    } //namespace Droid
+    } //namespace Elastos
 }
