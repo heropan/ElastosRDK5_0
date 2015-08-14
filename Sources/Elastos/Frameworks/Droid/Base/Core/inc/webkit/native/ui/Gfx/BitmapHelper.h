@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_BITMAPHELPER_H_
-#define _ELASTOS_DROID_WEBKIT_UI_BITMAPHELPER_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPHELPER_H_
+#define _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPHELPER_H_
 
 // package org.chromium.ui.gfx;
 // import android.content.res.Resources;
@@ -17,6 +17,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gfx {
 
 /**
  * Helper class to decode and sample down bitmap resources.
@@ -28,9 +29,9 @@ public:
 private:
     // @CalledByNative
     static CARAPI_(AutoPtr<IBitmap>) CreateBitmap(
-    	/* in */ Int32 width,
-    	/* in */ Int32 height,
-    	/* in */ Int32 bitmapFormatValue);
+        /* [in] */ Int32 width,
+        /* [in] */ Int32 height,
+        /* [in] */ Int32 bitmapFormatValue);
 
     /**
      * Decode and sample down a bitmap resource to the requested width and height.
@@ -43,15 +44,15 @@ private:
      */
     // @CalledByNative
     static CARAPI_(AutoPtr<IBitmap>) DecodeDrawableResource(
-    	/* in */ String name,
-    	/* in */ Int32 reqWidth,
-    	/* in */ Int32 reqHeight);
+        /* [in] */ String name,
+        /* [in] */ Int32 reqWidth,
+        /* [in] */ Int32 reqHeight);
 
     // http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
     static CARAPI_(Int32) CalculateInSampleSize(
-    	/* in */ IBitmapFactory::Options* options,
-    	/* in */ Int32 reqWidth,
-    	/* in */ Int32 reqHeight);
+        /* [in] */ IBitmapFactory::Options* options,
+        /* [in] */ Int32 reqWidth,
+        /* [in] */ Int32 reqHeight);
 
     /**
      * Provides a matching integer constant for the Bitmap.Config value passed.
@@ -61,7 +62,7 @@ private:
      */
     // @CalledByNative
     static CARAPI_(Int32) GetBitmapFormatForConfig(
-    	/* in */ IBitmap::Config* bitmapConfig);
+        /* [in] */ IBitmap::Config* bitmapConfig);
 
      /**
      * Provides a matching Bitmap.Config for the enum config value passed.
@@ -70,13 +71,14 @@ private:
      * @return Matching Bitmap.Config  for the enum value passed.
      */
     static AutoPtr<IBitmap::Config> GetBitmapConfigForFormat(
-    	/* in */ Int32 bitmapFormatValue);
+        /* [in] */ Int32 bitmapFormatValue);
 };
 
+} // namespace Gfx
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_BITMAPHELPER_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_GFX_BITMAPHELPER_H_
 

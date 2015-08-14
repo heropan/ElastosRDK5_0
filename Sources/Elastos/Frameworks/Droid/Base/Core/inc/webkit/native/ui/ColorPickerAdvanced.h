@@ -31,16 +31,16 @@ class ColorPickerAdvanced
 {
 public:
     ColorPickerAdvanced(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
     ColorPickerAdvanced(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs,
-        /* in */ Int32 defStyle);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
 
     ColorPickerAdvanced(
-        /* in */ IContext* context);
+        /* [in] */ IContext* context);
 
     /**
      * Creates a new GradientDetails object from the parameters provided, initializes it,
@@ -53,9 +53,9 @@ public:
      * @return A new GradientDetails object initialized with the given parameters.
      */
     virtual CARAPI_(AutoPtr<ColorPickerAdvancedComponent>) CreateAndAddNewGradient(
-        /* in */ Int32 textResourceId,
-        /* in */ Int32 seekBarMax,
-        /* in */ IOnSeekBarChangeListener* seekBarListener);
+        /* [in] */ Int32 textResourceId,
+        /* [in] */ Int32 seekBarMax,
+        /* [in] */ IOnSeekBarChangeListener* seekBarListener);
 
     /**
      * Sets the listener for when the user changes the color.
@@ -63,7 +63,7 @@ public:
      * @param onColorChangedListener The object listening for the change in color.
      */
     virtual CARAPI SetListener(
-        /* in */ OnColorChangedListener* onColorChangedListener);
+        /* [in] */ OnColorChangedListener* onColorChangedListener);
 
     /**
      * @return The color the user has currently chosen.
@@ -76,7 +76,7 @@ public:
      * @param color The currently chosen color.
      */
     virtual CARAPI SetColor(
-        /* in */ Int32 color);
+        /* [in] */ Int32 color);
 
     /**
      * Callback for when a slider is updated on the advanced view.
@@ -88,17 +88,17 @@ public:
      */
     //@Override
     CARAPI OnProgressChanged(
-        /* in */ ISeekBar* seekBar,
-        /* in */ Int32 progress,
-        /* in */ Boolean fromUser);
+        /* [in] */ ISeekBar* seekBar,
+        /* [in] */ Int32 progress,
+        /* [in] */ Boolean fromUser);
 
     //@Override
     CARAPI OnStartTrackingTouch(
-        /* in */ ISeekBar* seekBar);
+        /* [in] */ ISeekBar* seekBar);
 
     //@Override
     CARAPI OnStopTrackingTouch(
-        /* in */ ISeekBar* seekBar);
+        /* [in] */ ISeekBar* seekBar);
 
 private:
     /**

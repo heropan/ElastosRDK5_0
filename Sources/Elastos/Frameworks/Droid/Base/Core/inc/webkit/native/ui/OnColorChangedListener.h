@@ -24,7 +24,7 @@ public:
      * @param color The color that was set.
      */
     virtual CARAPI OnColorChanged(
-        /* in */ Int32 color) = 0;
+        /* [in] */ Int32 color) = 0;
 };
 
 } // namespace Ui

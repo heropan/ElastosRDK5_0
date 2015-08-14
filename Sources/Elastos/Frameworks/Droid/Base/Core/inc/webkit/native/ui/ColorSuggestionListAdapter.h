@@ -45,37 +45,37 @@ public:
          * @param suggestion The suggestion that was clicked.
          */
         virtual CARAPI OnColorSuggestionClick(
-            /* in */ ColorSuggestion* suggestion) = 0;
+            /* [in] */ ColorSuggestion* suggestion) = 0;
     };
 
 public:
     ColorSuggestionListAdapter(
-        /* in */ IContext* context,
-        /* in */ ArrayOf< AutoPtr< ColorSuggestion > >* suggestions);
+        /* [in] */ IContext* context,
+        /* [in] */ ArrayOf< AutoPtr< ColorSuggestion > >* suggestions);
 
     /**
      * Sets the listener that will be notified upon a click on a suggestion.
      */
     virtual CARAPI SetOnColorSuggestionClickListener(
-        /* in */ OnColorSuggestionClickListener* listener);
+        /* [in] */ OnColorSuggestionClickListener* listener);
 
     //@Override
     CARAPI OnClick(
-        /* in */ IView* v);
+        /* [in] */ IView* v);
 
     //@Override
     CARAPI_(AutoPtr<IView>) GetView(
-        /* in */ Int32 position,
-        /* in */ IView* convertView,
-        /* in */ IViewGroup* parent);
+        /* [in] */ Int32 position,
+        /* [in] */ IView* convertView,
+        /* [in] */ IViewGroup* parent);
 
     //@Override
     CARAPI_(Int64) GetItemId(
-        /* in */ Int32 position);
+        /* [in] */ Int32 position);
 
     //@Override
     CARAPI_(AutoPtr<Object>) GetItem(
-        /* in */ Int32 position);
+        /* [in] */ Int32 position);
 
     //@Override
     CARAPI_(Int32) GetCount();
@@ -88,8 +88,8 @@ private:
      * @param index The index of the suggestion in mSuggestions.
      */
     CARAPI SetUpColorButton(
-        /* in */ IView* button,
-        /* in */ Int32 index);
+        /* [in] */ IView* button,
+        /* [in] */ Int32 index);
 
 private:
     static const Int32 COLORS_PER_ROW = 4;

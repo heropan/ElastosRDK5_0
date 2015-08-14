@@ -26,7 +26,7 @@ ColorPickerMoreButton::ColorPickerMoreButton(
  */
 ECode ColorPickerMoreButton::Init()
 {
-	CPaint::New((IPaint**)&mBorderPaint);
+    CPaint::New((IPaint**)&mBorderPaint);
     mBorderPaint->SetStyle(IPaint::Style::STROKE);
     mBorderPaint->SetColor(IColor::WHITE);
     // Set the width to one pixel.
@@ -45,7 +45,7 @@ ECode ColorPickerMoreButton::Init()
 ECode ColorPickerMoreButton::OnDraw(
     /* in */ ICanvas* canvas)
 {
-	VALIDATE_NOT_NULL(canvas);
+    VALIDATE_NOT_NULL(canvas);
     canvas->DrawRect(0.5f, 0.5f, GetWidth() - 1.5f, GetHeight() - 1.5f, mBorderPaint);
     Button::OnDraw(canvas);
     return NOERROR;

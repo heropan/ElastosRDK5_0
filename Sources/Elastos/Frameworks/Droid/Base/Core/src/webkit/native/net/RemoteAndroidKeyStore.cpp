@@ -5,7 +5,7 @@ namespace Webkit {
 namespace Net {
 
 //===============================================================
-// 				RemoteAndroidKeyStore::RemotePrivateKey
+//                 RemoteAndroidKeyStore::RemotePrivateKey
 //===============================================================
 Int32 RemoteAndroidKeyStore::RemotePrivateKey::GetHandle()
 {
@@ -26,7 +26,7 @@ RemoteAndroidKeyStore::RemotePrivateKey::RemotePrivateKey(
 }
 
 //===============================================================
-// 					RemoteAndroidKeyStore
+//                     RemoteAndroidKeyStore
 //===============================================================
 const RemoteAndroidKeyStore::String TAG("AndroidKeyStoreRemoteImpl");
 
@@ -40,7 +40,7 @@ RemoteAndroidKeyStore::RemoteAndroidKeyStore(
 AutoPtr< ArrayOf<Byte> > RemoteAndroidKeyStore::GetRSAKeyModulus(
     /* [in] */ AndroidPrivateKey* key)
 {
-	RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
+    RemotePrivateKey* remoteKey = (RemotePrivateKey*)key;
     //try {
         //Log.d(TAG, "getRSAKeyModulus");
         AutoPtr< ArrayOf<Byte> > ret = mRemoteManager->GetRSAKeyModulus(remoteKey->GetHandle());
@@ -146,7 +146,7 @@ AutoPtr<AndroidPrivateKey> RemoteAndroidKeyStore::CreateKey(
 ECode RemoteAndroidKeyStore::ReleaseKey(
     /* [in] */ AndroidPrivateKey* key)
 {
-	VALIDATE_NOT_NULL(key);
+    VALIDATE_NOT_NULL(key);
     RemotePrivateKey* remoteKey = (RemotePrivateKey*) key;
     //try {
         //Log.d(TAG, "releaseKey");

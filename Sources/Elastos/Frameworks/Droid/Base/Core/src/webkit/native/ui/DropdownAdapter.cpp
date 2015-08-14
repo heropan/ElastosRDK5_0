@@ -40,7 +40,7 @@ AutoPtr<IView> DropdownAdapter::GetView(
     AutoPtr<IView> layout = convertView;
     if (NULL == convertView) {
         AutoPtr<ILayoutInflater> inflater;
-		mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (ILayoutInflater**)&inflater);
+        mContext->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (ILayoutInflater**)&inflater);
         inflater->Inflate(R::layout::dropdown_item, NULL, (IView**)&layout);
         AutoPtr<DropdownDividerDrawable> drawable = new DropdownDividerDrawable();
         ApiCompatibilityUtils::SetBackgroundForView(layout, drawable);
@@ -70,21 +70,21 @@ AutoPtr<IView> DropdownAdapter::GetView(
     else {
         Int32 dividerHeight;
         AutoPtr<IResources> resources;
-    	CResources::New((IResources**)&resources);
-    	mContext->GetResources((IResources**)&resources);
-    	resources->GetDimensionPixelSize(R::dimen::dropdown_item_divider_height, &dividerHeight);
+        CResources::New((IResources**)&resources);
+        mContext->GetResources((IResources**)&resources);
+        resources->GetDimensionPixelSize(R::dimen::dropdown_item_divider_height, &dividerHeight);
         height += dividerHeight;
         divider->SetHeight(dividerHeight);
 
         Boolean contain = FALSE;
         mSeparators->Contains(position, &contain);
 
-		Int32 color;
-		AutoPtr<IResources> res;
-		CResources::New((IResources**)&res);
-		mContext->GetResources((IResources**)&res);
+        Int32 color;
+        AutoPtr<IResources> res;
+        CResources::New((IResources**)&res);
+        mContext->GetResources((IResources**)&res);
         if (NULL != mSeparators && contain) {
-	    	res->GetColor(R::color::dropdown_dark_divider_color, &color);
+            res->GetColor(R::color::dropdown_dark_divider_color, &color);
             divider->SetColor(color);
         }
         else {
@@ -122,7 +122,7 @@ Boolean DropdownAdapter::IsEnabled(
     /* in */ Int32 position)
 {
     if (position < 0 || position >= GetCount())
-    	return FALSE;
+        return FALSE;
     AutoPtr<DropdownItem> item = GetItem(position);
     return item->IsEnabled() && !item->IsGroupHeader();
 }

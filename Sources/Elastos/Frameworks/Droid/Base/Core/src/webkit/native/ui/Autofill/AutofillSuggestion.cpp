@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Autofill {
 
 AutofillSuggestion::AutofillSuggestion(
     /* in */ String name,
@@ -43,6 +44,7 @@ Int32 AutofillSuggestion::GetUniqueId()
     return mUniqueId;
 }
 
+} // namespace Autofill
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

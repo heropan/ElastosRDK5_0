@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_VIEWANDROID_H_
-#define _ELASTOS_DROID_WEBKIT_UI_VIEWANDROID_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 
 // package org.chromium.ui.base;
 // import android.view.View;
@@ -14,6 +14,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * From the Chromium architecture point of view, ViewAndroid and its native counterpart
@@ -32,8 +33,8 @@ public:
      * Constructs a View object.
      */
     ViewAndroid(
-    	/* in */ WindowAndroid* nativeWindow,
-    	/* in */ ViewAndroidDelegate* viewAndroidDelegate);
+        /* [in] */ WindowAndroid* nativeWindow,
+        /* [in] */ ViewAndroidDelegate* viewAndroidDelegate);
 
     virtual CARAPI_(AutoPtr<ViewAndroidDelegate>) GetViewAndroidDelegate();
 
@@ -60,10 +61,10 @@ public:
 
 private:
     CARAPI_(Int64) NativeInit(
-    	/* in */ Int64 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI NativeDestroy(
-    	/* in */ Int64 nativeViewAndroid);
+        /* [in] */ Int64 nativeViewAndroid);
 
 private:
     // Native pointer to the c++ ViewAndroid object.
@@ -74,10 +75,11 @@ private:
     AutoPtr<IView> mKeepScreenOnView;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_VIEWANDROID_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROID_H_
 

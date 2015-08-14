@@ -5,7 +5,7 @@ namespace Webkit {
 namespace Ui {
 
 //===============================================================
-// 			DropdownPopupWindow::InnerLayoutChangeListener
+//             DropdownPopupWindow::InnerLayoutChangeListener
 //===============================================================
 DropdownPopupWindow::InnerLayoutChangeListener::InnerLayoutChangeListener(
     /* in */ DropdownPopupWindow* window)
@@ -24,14 +24,14 @@ ECode DropdownPopupWindow::InnerLayoutChangeListener::OnLayoutChange(
     /* in */ Int32 oldRight,
     /* in */ Int32 oldBottom)
 {
-	VALIDATE_NOT_NULL(v);
+    VALIDATE_NOT_NULL(v);
     if (v == mAnchorView)
-    	mWindow->Show();
-   	return NOERROR;
+        mWindow->Show();
+       return NOERROR;
 }
 
 //===============================================================
-// 				DropdownPopupWindow::InnerDismissListener
+//                 DropdownPopupWindow::InnerDismissListener
 //===============================================================
 DropdownPopupWindow::InnerDismissListener::InnerDismissListener(
     /* in */ DropdownPopupWindow* window)
@@ -47,11 +47,11 @@ ECode DropdownPopupWindow::InnerDismissListener::OnDismiss()
     mWindow->mAnchorView->RemoveOnLayoutChangeListener(mWindow->mLayoutChangeListener);
     mWindow->mAnchorView->SetTag(NULL);
     mWindow->mViewAndroidDelegate->ReleaseAnchorView(mWindow->mAnchorView);
-   	return NOERROR;
+       return NOERROR;
 }
 
 //===============================================================
-// 						DropdownPopupWindow
+//                         DropdownPopupWindow
 //===============================================================
 DropdownPopupWindow::DropdownPopupWindow(
     /* in */ IContext* context,
@@ -71,7 +71,7 @@ DropdownPopupWindow::DropdownPopupWindow(
     mLayoutChangeListenerChange = new InnerLayoutChangeListener();
     mAnchorView->AddOnLayoutChangeListener(mLayoutChangeListener);
 
-	AutoPtr<InnerDismissListener> dismissListener = new InnerDismissListener();
+    AutoPtr<InnerDismissListener> dismissListener = new InnerDismissListener();
     SetOnDismissListener(dismissListener);
     SetAnchorView(mAnchorView);
 }
@@ -96,7 +96,7 @@ ECode DropdownPopupWindow::SetAnchorRect(
 ECode DropdownPopupWindow::SetAdapter(
     /* in */ IListAdapter* adapter)
 {
-	VALIDATE_NOT_NULL(adapter);
+    VALIDATE_NOT_NULL(adapter);
     mAdapter = adapter;
     SetAdapter(adapter);
     return NOERROR;
@@ -110,14 +110,14 @@ ECode DropdownPopupWindow::Show()
     Int32 contentWidth = MeasureContentWidth();
 
     AutoPtr<IResources> resources;
-	CResources::New((IResources**)&resources);
-	mContext->GetResources((IResources**)&resources);
+    CResources::New((IResources**)&resources);
+    mContext->GetResources((IResources**)&resources);
 
-	AutoPtr<IDisplayMetrics> metrics;
-	CDisplayMetrics::New((IDisplayMetrics**)&metrics);
-	resources->GetDisplayMetrics((IDisplayMetrics**)&&metrics);
-	Float density = 0.0f;
-	metrics->Density(&density);
+    AutoPtr<IDisplayMetrics> metrics;
+    CDisplayMetrics::New((IDisplayMetrics**)&metrics);
+    resources->GetDisplayMetrics((IDisplayMetrics**)&&metrics);
+    Float density = 0.0f;
+    metrics->Density(&density);
     Float contentWidthInDip = ContentWidth() / density;
 
     if (contentWidthInDip > mAnchorWidth) {
@@ -148,7 +148,7 @@ ECode DropdownPopupWindow::Show()
 ECode DropdownPopupWindow::SetOnDismissListener(
     /* in */ IPopupWindow::OnDismissListener* listener)
 {
-	VALIDATE_NOT_NULL(listener);
+    VALIDATE_NOT_NULL(listener);
     mOnDismissListener = listener;
     return NOERROR;
 }

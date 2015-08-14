@@ -10,7 +10,7 @@ const Int64 VSyncMonitor::NANOSECONDS_PER_MILLISECOND;
 const Int64 VSyncMonitor::NANOSECONDS_PER_MICROSECOND;
 
 //===============================================================
-// 		VSyncMonitor::InnerChoreographerFrameCallback
+//         VSyncMonitor::InnerChoreographerFrameCallback
 //===============================================================
 VSyncMonitor::InnerChoreographerFrameCallback::InnerChoreographerFrameCallback(
     /* in */ VSyncMonitor* owner)
@@ -30,7 +30,7 @@ ECode VSyncMonitor::InnerChoreographerFrameCallback::DoFrame(
 }
 
 //===============================================================
-// 					VSyncMonitor::InnerVSyncRunnable
+//                     VSyncMonitor::InnerVSyncRunnable
 //===============================================================
 VSyncMonitor::InnerVSyncRunnable::InnerVSyncRunnable(
     /* in */ VSyncMonitor* owner)
@@ -49,7 +49,7 @@ ECode VSyncMonitor::InnerVSyncRunnable::Run()
 }
 
 //===============================================================
-// 					VSyncMonitor::SyntheticVSyncRunnable
+//                     VSyncMonitor::SyntheticVSyncRunnable
 //===============================================================
 VSyncMonitor::SyntheticVSyncRunnable::SyntheticVSyncRunnable(
     /* in */ VSyncMonitor* owner)
@@ -68,7 +68,7 @@ ECode VSyncMonitor::SyntheticVSyncRunnable::Run()
 }
 
 //===============================================================
-// 		                    VSyncMonitor
+//                             VSyncMonitor
 //===============================================================
 VSyncMonitor::VSyncMonitor(
     /* in */ IContext* context,
@@ -90,15 +90,15 @@ VSyncMonitor::VSyncMonitor(
     , mLastPostedNano(0)
     , mLastVSyncCpuTimeNano(0)
 {
-	AutoPtr<IWindowManager> winManager;
-	context->GetSystemService(IContext::WINDOW_SERVICE, (IWindowManager**)&winManager);
-	AutoPtr<IDisplay> defaultDisplay;
-	winManager->GetDefaultDisplay((IDisplay**)&defaultDisplay);
+    AutoPtr<IWindowManager> winManager;
+    context->GetSystemService(IContext::WINDOW_SERVICE, (IWindowManager**)&winManager);
+    AutoPtr<IDisplay> defaultDisplay;
+    winManager->GetDefaultDisplay((IDisplay**)&defaultDisplay);
     Float refreshRate;
     defaultDisplay->GetRefreshRate(&refreshRate);
 
     if (refreshRate <= 0)
-    	refreshRate = 60;
+        refreshRate = 60;
 
     mRefreshPeriodNano = (Int64) (NANOSECONDS_PER_SECOND / refreshRate);
     mTriggerNextVSyncCount = 0;
@@ -177,11 +177,11 @@ ECode VSyncMonitor::OnVSyncCallback(
 ECode VSyncMonitor::PostCallback()
 {
     if (mHaveRequestInFlight)
-    	return NOERROR;
+        return NOERROR;
 
     mHaveRequestInFlight = TRUE;
     if (postSyntheticVSync())
-    	return NOERROR;
+        return NOERROR;
 
     if (IsVSyncSignalAvailable()) {
         mChoreographer->PostFrameCallback(mVSyncFrameCallback);
@@ -225,9 +225,9 @@ ECode VSyncMonitor::PostRunnableCallback()
 
     mLastPostedNano = currentTime + delay;
     if (delay == 0)
-    	mHandler->Post(mVSyncRunnableCallback);
+        mHandler->Post(mVSyncRunnableCallback);
     else
-    	mHandler->PostDelayed(mVSyncRunnableCallback, delay / NANOSECONDS_PER_MILLISECOND);
+        mHandler->PostDelayed(mVSyncRunnableCallback, delay / NANOSECONDS_PER_MILLISECOND);
 
     return NOERROR;
 }

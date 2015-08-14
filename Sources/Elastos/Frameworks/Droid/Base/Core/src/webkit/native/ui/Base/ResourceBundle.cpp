@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 //@CalledByNative
 Boolean ResourceBundle::AssetContainedInApk(
@@ -21,6 +22,7 @@ Boolean ResourceBundle::AssetContainedInApk(
     //}
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

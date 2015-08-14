@@ -4,6 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gfx {
 
 AutoPtr<IBitmap> BitmapHelper::CreateBitmap(
     /* in */ Int32 width,
@@ -57,16 +58,16 @@ Int32 BitmapHelper::GetBitmapFormatForConfig(
     /* in */ IBitmap::Config* bitmapConfig)
 {
     switch (bitmapConfig) {
-		case ALPHA_8:
-	        return IBitmapFormat::FORMAT_ALPHA_8;
-		case ARGB_4444:
-	        return IBitmapFormat::FORMAT_ARGB_4444;
-		case ARGB_8888:
-	        return IBitmapFormat::FORMAT_ARGB_8888;
-		case RGB_565:
-	        return IBitmapFormat::FORMAT_RGB_565;
-		default:
-	        return IBitmapFormat::FORMAT_NO_CONFIG;
+        case ALPHA_8:
+            return IBitmapFormat::FORMAT_ALPHA_8;
+        case ARGB_4444:
+            return IBitmapFormat::FORMAT_ARGB_4444;
+        case ARGB_8888:
+            return IBitmapFormat::FORMAT_ARGB_8888;
+        case RGB_565:
+            return IBitmapFormat::FORMAT_RGB_565;
+        default:
+            return IBitmapFormat::FORMAT_NO_CONFIG;
     }
 }
 
@@ -74,19 +75,20 @@ AutoPtr<IBitmap::Config> BitmapHelper::GetBitmapConfigForFormat(
     /* in */ Int32 bitmapFormatValue)
 {
     switch (bitmapFormatValue) {
-		case IBitmapFormat::FORMAT_ALPHA_8:
+        case IBitmapFormat::FORMAT_ALPHA_8:
             return IBitmap::Config::ALPHA_8;
-		case IBitmapFormat::FORMAT_ARGB_4444:
+        case IBitmapFormat::FORMAT_ARGB_4444:
             return IBitmap::Config::ARGB_4444;
-		case IBitmapFormat::FORMAT_RGB_565:
+        case IBitmapFormat::FORMAT_RGB_565:
             return IBitmap::Config::RGB_565;
-		case IBitmapFormat::FORMAT_ARGB_8888:
-		case IBitmapFormat::FORMAT_ARGB_8888:
+        case IBitmapFormat::FORMAT_ARGB_8888:
+        case IBitmapFormat::FORMAT_ARGB_8888:
         default:
             return IBitmap::Config::ARGB_8888;
     }
 }
 
+} // namespace Gfx
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

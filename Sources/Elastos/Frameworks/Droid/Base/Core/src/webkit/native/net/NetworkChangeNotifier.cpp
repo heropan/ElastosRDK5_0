@@ -5,24 +5,24 @@ namespace Webkit {
 namespace Net {
 
 //===============================================================
-// 			NetworkChangeNotifier::InnerObserver
+//             NetworkChangeNotifier::InnerObserver
 //===============================================================
 NetworkChangeNotifier::InnerObserver::InnerObserver(
-	/* [in] */ NetworkChangeNotifier* owner)
-	: mOwner(owner)
+    /* [in] */ NetworkChangeNotifier* owner)
+    : mOwner(owner)
 {
 }
 
 ECode NetworkChangeNotifier::InnerObserver::OnConnectionTypeChanged(
-	/* [in] */ Int32 newConnectionType)
+    /* [in] */ Int32 newConnectionType)
 {
-	assert(NULL == mOwner);
-	mOwner->UpdateCurrentConnectionType(newConnectionType);
-	return NOERROR;
+    assert(NULL == mOwner);
+    mOwner->UpdateCurrentConnectionType(newConnectionType);
+    return NOERROR;
 }
 
 //===============================================================
-// 					NetworkChangeNotifier
+//                     NetworkChangeNotifier
 //===============================================================
 const Int32 NetworkChangeNotifier::CONNECTION_UNKNOWN;
 const Int32 NetworkChangeNotifier::CONNECTION_ETHERNET;
@@ -113,7 +113,7 @@ ECode NetworkChangeNotifier::ForceConnectivityState(
 ECode NetworkChangeNotifier::AddConnectionTypeObserver(
     /* [in] */ ConnectionTypeObserver* observer)
 {
-	VALIDATE_NOT_NULL(observer);
+    VALIDATE_NOT_NULL(observer);
     GetInstance()->AddConnectionTypeObserverInternal(observer);
     return NOERROR;
 }
@@ -121,7 +121,7 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserver(
 ECode NetworkChangeNotifier::RemoveConnectionTypeObserver(
     /* [in] */ ConnectionTypeObserver* observer)
 {
-	VALIDATE_NOT_NULL(observer);
+    VALIDATE_NOT_NULL(observer);
     GetInstance()->RemoveConnectionTypeObserverInternal(observer);
     return NOERROR;
 }
@@ -153,7 +153,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
 ECode NetworkChangeNotifier::ResetInstanceForTests(
     /* [in] */ IContext* context)
 {
-	VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(context);
     sInstance = new NetworkChangeNotifier(context);
     return NOERROR;
 }
@@ -172,7 +172,7 @@ ECode NetworkChangeNotifier::SetAutoDetectConnectivityStateInternal(
 {
     if (shouldAutoDetect) {
 
-		// question: how to translate a function in funciton
+        // question: how to translate a function in funciton
         if (NULL == mAutoDetector) {
             mAutoDetector = new NetworkChangeNotifierAutoDetect(new InnerObserver(this), mContext);
             UpdateCurrentConnectionType(mAutoDetector->GetCurrentConnectionType());
@@ -214,19 +214,19 @@ ECode NetworkChangeNotifier::UpdateCurrentConnectionType(
 ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
     /* [in] */ Int32 newConnectionType)
 {
-	Int64 nativeChangeNotifier;
-	for (Int32 i=0; i<mNativeChangeNotifiers->GetLength(); ++i)
-	{
-		nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
-		NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
-	}
+    Int64 nativeChangeNotifier;
+    for (Int32 i=0; i<mNativeChangeNotifiers->GetLength(); ++i)
+    {
+        nativeChangeNotifier = (*mNativeChangeNotifiers)[i];
+        NativeNotifyConnectionTypeChanged(nativeChangeNotifier, newConnectionType);
+    }
 
-	for (Int32 i=0; i<mConnectionTypeObservers->GetLength(); ++i)
-	{
-		AutoPtr<ConnectionTypeObserver> observer = (*mConnectionTypeObservers)[i];
-		observer->OnConnectionTypeChanged(newConnectionType);
-	}
-	return NOERROR;
+    for (Int32 i=0; i<mConnectionTypeObservers->GetLength(); ++i)
+    {
+        AutoPtr<ConnectionTypeObserver> observer = (*mConnectionTypeObservers)[i];
+        observer->OnConnectionTypeChanged(newConnectionType);
+    }
+    return NOERROR;
 }
 
 /**
@@ -235,7 +235,7 @@ ECode NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange(
 ECode NetworkChangeNotifier::AddConnectionTypeObserverInternal(
     /* [in] */ ConnectionTypeObserver* observer)
 {
-	VALIDATE_NOT_NULL(observer);
+    VALIDATE_NOT_NULL(observer);
     mConnectionTypeObservers->AddObserver(observer);
     return NOERROR;
 }
@@ -246,7 +246,7 @@ ECode NetworkChangeNotifier::AddConnectionTypeObserverInternal(
 ECode NetworkChangeNotifier::RemoveConnectionTypeObserverInternal(
     /* [in] */ ConnectionTypeObserver* observer)
 {
-	VALIDATE_NOT_NULL(observer);
+    VALIDATE_NOT_NULL(observer);
     mConnectionTypeObservers->RemoveObserver(observer);
     return NOERROR;
 }
@@ -260,7 +260,7 @@ ECode NetworkChangeNotifier::NativeNotifyConnectionTypeChanged(
     /* [in] */ Int64 nativePtr,
     /* [in] */ Int32 newConnectionType)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 } // namespace Net

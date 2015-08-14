@@ -34,12 +34,12 @@ private:
     {
     public:
         InnerPositiveButtonClickListener(
-            /* in */ ColorPickerDialog* dialog);
+            /* [in] */ ColorPickerDialog* dialog);
 
         //@Override
         CARAPI OnClick(
-            /* in */ IDialogInterface* dialogInterface,
-            /* in */ Int32 i);
+            /* [in] */ IDialogInterface* dialogInterface,
+            /* [in] */ Int32 i);
 
     private:
         ColorPickerDialog* mColorPickerDialog;
@@ -49,12 +49,12 @@ private:
     {
     public:
         InnerNegativeButtonClickListener(
-            /* in */ ColorPickerDialog* dialog);
+            /* [in] */ ColorPickerDialog* dialog);
 
         //@Override
         CARAPI OnClick(
-            /* in */ IDialogInterface* dialogInterface,
-            /* in */ Int32 i);
+            /* [in] */ IDialogInterface* dialogInterface,
+            /* [in] */ Int32 i);
 
     private:
         ColorPickerDialog* mColorPickerDialog;
@@ -64,11 +64,11 @@ private:
     {
     public:
         InnerOnCancelListener(
-            /* in */ ColorPickerDialog* dialog);
+            /* [in] */ ColorPickerDialog* dialog);
 
         //@Override
         CARAPI OnCancel(
-            /* in */ IDialogInterface* arg0);
+            /* [in] */ IDialogInterface* arg0);
 
     private:
         ColorPickerDialog* mColorPickerDialog;
@@ -78,11 +78,11 @@ private:
     {
     public:
         InnerOnClickListener(
-            /* in */ ColorPickerDialog* dialog);
+            /* [in] */ ColorPickerDialog* dialog);
 
         //@Override
         CARAPI OnClick(
-            /* in */ IView* v);
+            /* [in] */ IView* v);
 
     private:
         ColorPickerDialog* mColorPickerDialog;
@@ -101,10 +101,10 @@ public:
      * @param suggestions The list of suggestions.
      */
     ColorPickerDialog(
-        /* in */ IContext* context,
-        /* in */ OnColorChangedListener* listener,
-        /* in */ Int32 color,
-        /* in */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions);
+        /* [in] */ IContext* context,
+        /* [in] */ OnColorChangedListener* listener,
+        /* [in] */ Int32 color,
+        /* [in] */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions);
 
     /**
      * Listens to the ColorPicker for when the user has changed the selected color, and
@@ -114,7 +114,7 @@ public:
      */
     //@Override
     CARAPI OnColorChanged(
-        /* in */ Int32 color);
+        /* [in] */ Int32 color);
 
 private:
     /**
@@ -127,14 +127,14 @@ private:
      * Tries to notify any listeners that the color has been set.
      */
     CARAPI TryNotifyColorSet(
-        /* in */ Int32 color);
+        /* [in] */ Int32 color);
 
     /**
      * Updates the internal cache of the currently selected color, updating the colorful little
      * box in the title at the same time.
      */
     CARAPI UpdateCurrentColor(
-        /* in */ Int32 color);
+        /* [in] */ Int32 color);
 
 private:
     /* const */ AutoPtr<ColorPickerAdvanced> mAdvancedColorPicker;

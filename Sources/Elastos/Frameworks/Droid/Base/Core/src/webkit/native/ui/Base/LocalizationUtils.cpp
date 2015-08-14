@@ -4,6 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 const Int32 LocalizationUtils::UNKNOWN_DIRECTION;
 const Int32 LocalizationUtils::RIGHT_TO_LEFT;
@@ -104,6 +105,7 @@ String LocalizationUtils::NativeGetDurationString(
 {
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

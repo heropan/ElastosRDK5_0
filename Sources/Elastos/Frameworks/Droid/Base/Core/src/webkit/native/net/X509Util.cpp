@@ -5,37 +5,37 @@ namespace Webkit {
 namespace Net {
 
 //===============================================================
-// 				X509Util::TrustStorageListener
+//                 X509Util::TrustStorageListener
 //===============================================================
 ECode X509Util::TrustStorageListener::OnReceive(
-	/* [in] */ IContext* context,
-	/* [in] */ IIntent* intent)
+    /* [in] */ IContext* context,
+    /* [in] */ IIntent* intent)
 {
-	VALIDATE_NOT_NULL(context);
-	VALIDATE_NOT_NULL(intent);
+    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(intent);
 
-	String action;
-	intent->GetAction(&action);
-	if (action.Equals(IKeyChain::ACTION_STORAGE_CHANGED)) {
-	    //try {
-	        ReloadDefaultTrustManager();
-	    //}
-	    //catch (CertificateException e) {
-	    //    Log.e(TAG, "Unable to reload the default TrustManager", e);
-	    //}
-	    //catch (KeyStoreException e) {
-	    //    Log.e(TAG, "Unable to reload the default TrustManager", e);
-	    //}
-	    //catch (NoSuchAlgorithmException e) {
-	    //    Log.e(TAG, "Unable to reload the default TrustManager", e);
-	    //}
-	}
-	return NOERROR;
+    String action;
+    intent->GetAction(&action);
+    if (action.Equals(IKeyChain::ACTION_STORAGE_CHANGED)) {
+        //try {
+            ReloadDefaultTrustManager();
+        //}
+        //catch (CertificateException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+        //catch (KeyStoreException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+        //catch (NoSuchAlgorithmException e) {
+        //    Log.e(TAG, "Unable to reload the default TrustManager", e);
+        //}
+    }
+    return NOERROR;
 }
 
 
 //===============================================================
-// 			X509Util::X509TrustManagerIceCreamSandwich
+//             X509Util::X509TrustManagerIceCreamSandwich
 //===============================================================
 X509Util::X509TrustManagerIceCreamSandwich::X509TrustManagerIceCreamSandwich(
     /* [in] */ IX509TrustManager* trustManager)
@@ -50,20 +50,20 @@ AutoPtr< List< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerIceCreamS
     /* [in] */ String host)
 {
     mTrustManager->CheckServerTrusted(chain, authType);
-	//return ICollections.<X509Certificate>emptyList();
-	AutoPtr< List< AutoPtr<IX509Certificate> > > ret = new List<AutoPtr<IX509Certificate> >();
-	return ret;
+    //return ICollections.<X509Certificate>emptyList();
+    AutoPtr< List< AutoPtr<IX509Certificate> > > ret = new List<AutoPtr<IX509Certificate> >();
+    return ret;
 }
 
 //===============================================================
-// 				X509Util::X509TrustManagerJellyBean
+//                 X509Util::X509TrustManagerJellyBean
 //===============================================================
 //@SuppressLint("NewApi")
 X509Util::X509TrustManagerJellyBean::X509TrustManagerJellyBean(
     /* [in] */ IX509TrustManager* trustManager)
 {
-	// question: init
-	//CX509TrustManagerExtensions::New((IX509TrustManagerExtensions**)&mTrustManagerExtensions);
+    // question: init
+    //CX509TrustManagerExtensions::New((IX509TrustManagerExtensions**)&mTrustManagerExtensions);
     mTrustManagerExtensions = new X509TrustManagerExtensions(trustManager);
 }
 
@@ -73,13 +73,13 @@ AutoPtr< List< AutoPtr<IX509Certificate> > > X509Util::X509TrustManagerJellyBean
     /* [in] */ String authType,
     /* [in] */ String host)
 {
-	AutoPtr<List<AutoPtr<IX509Certificate> > > lst = new List<X509Certificate>();
+    AutoPtr<List<AutoPtr<IX509Certificate> > > lst = new List<X509Certificate>();
     mTrustManagerExtensions->CheckServerTrusted(chain, authType, host, &lst);
     return lst;
 }
 
 //===============================================================
-// 							X509Util
+//                             X509Util
 //===============================================================
 const String X509Util::TAG("X509Util");
 
@@ -121,11 +121,11 @@ const AutoPtr< ArrayOf<Char16> > X509Util::HEX_DIGITS = X509Util::InitHexDigits(
 AutoPtr<IX509Certificate> X509Util::CreateCertificateFromBytes(
     /* [in] */ ArrayOf<Byte>* derBytes)
 {
-	EnsureInitialized();
-	AutoPtr<IX509Certificate> cert;
+    EnsureInitialized();
+    AutoPtr<IX509Certificate> cert;
     AutoPtr<IX509CertificateHelper> helper;
     CX509CertificateHelper::AcquireSingleton((IX509CertificateHelper**)&helper);
-	hepler->CreateInstallIntent((IX509Certificate**)&cert);
+    hepler->CreateInstallIntent((IX509Certificate**)&cert);
     (IX509Certificate*) sCertificateFactory->GenerateCertificate(new ByteArrayInputStream(derBytes), &cert);
     return cert;
 }
@@ -133,13 +133,13 @@ AutoPtr<IX509Certificate> X509Util::CreateCertificateFromBytes(
 ECode X509Util::AddTestRootCertificate(
     /* [in] */ ArrayOf<Byte>* rootCertBytes)
 {
-	VALIDATE_NOT_NULL(rootCertBytes);
+    VALIDATE_NOT_NULL(rootCertBytes);
     EnsureInitialized();
     AutoPtr<IX509Certificate> rootCert = CreateCertificateFromBytes(rootCertBytes);
 
     {
-    	Object::AutoLock lock(sLock);
-    	sTestKeyStore->SetCertificateEntry(String("root_cert_") + IInteger32::ToString(sTestKeyStore->GetLenght()), rootCert);
+        Object::AutoLock lock(sLock);
+        sTestKeyStore->SetCertificateEntry(String("root_cert_") + IInteger32::ToString(sTestKeyStore->GetLenght()), rootCert);
         ReloadTestTrustManager();
     }
 
@@ -151,7 +151,7 @@ ECode X509Util::ClearTestRootCertificates()
     EnsureInitialized();
 
     {
-    	Object::AutoLock lock(sLock);
+        Object::AutoLock lock(sLock);
         //try {
             sTestKeyStore->Load(NULL);
             ReloadTestTrustManager();
@@ -171,7 +171,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     if (certChain == NULL || certChain->GetLenght() == 0 || certChain[0] == NULL) {
         //throw new IllegalArgumentException("Expected non-null and non-empty certificate " +
         //        "chain passed as |certChain|. |certChain|=" + Arrays.deepToString(certChain));
-		AutoPtr<AndroidCertVerifyResult> ret = NULL;
+        AutoPtr<AndroidCertVerifyResult> ret = NULL;
         return ret;
     }
 
@@ -197,7 +197,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //try {
         serverCertificates[0]->CheckValidity();
         if (!VerifyKeyUsage(serverCertificates[0])) {
-        	AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_INCORRECT_KEY_USAGE);
+            AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_INCORRECT_KEY_USAGE);
             return ret;
         }
     //} catch (CertificateExpiredException e) {
@@ -209,10 +209,10 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
     //}
 
     {
-    	Object::AutoLock lock(sLock);
+        Object::AutoLock lock(sLock);
         // If no trust manager was found, fail without crashing on the null pointer.
         if (sDefaultTrustManager == NULL) {
-        	AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_FAILED);
+            AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_FAILED);
             return ret;
         }
 
@@ -238,7 +238,7 @@ AutoPtr<AndroidCertVerifyResult> X509Util::VerifyServerCertificates(
             isIssuedByKnownRoot = IsKnownRoot(root);
         }
 
-		AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_OK,
+        AutoPtr<AndroidCertVerifyResult> ret = new AndroidCertVerifyResult(ICertVerifyStatusAndroid::VERIFY_OK,
                                            isIssuedByKnownRoot, verifiedChain);
         return ret;
     }
@@ -254,7 +254,7 @@ ECode X509Util::SetDisableNativeCodeForTest(
 ECode X509Util::EnsureInitialized()
 {
     {
-    	Object::AutoLock lock(sLock);
+        Object::AutoLock lock(sLock);
 
         if (sCertificateFactory == NULL) {
             CCertificateFactory::New(String("X.509"), (ICertificateFactory**)&sCertificateFactory);
@@ -272,9 +272,9 @@ ECode X509Util::EnsureInitialized()
                 //}
                 String sysEnv;
                 AutoPtr<ISystem> sys;
-				CSystem::New((ISystem**)&sys);
-				sys->GetEnv(String("ANDROID_ROOT") + String("/etc/security/cacerts"), &sysEnv);
-				CFile::New(sysEnv, (IFile**)&sSystemCertificateDirectory);
+                CSystem::New((ISystem**)&sys);
+                sys->GetEnv(String("ANDROID_ROOT") + String("/etc/security/cacerts"), &sysEnv);
+                CFile::New(sysEnv, (IFile**)&sSystemCertificateDirectory);
             //} catch (KeyStoreException e) {
                 // Could not load AndroidCAStore. Continue anyway; isKnownRoot will always
                 // return false.
@@ -287,10 +287,10 @@ ECode X509Util::EnsureInitialized()
             sSystemTrustAnchorCache = new HashSet< Pair< AutoPtr<IX500Principal>, AutoPtr<IPublicKey> > >();
         }
         if (NULL == sTestKeyStore) {
-        	AutoPtr<IKeyStoreHelper> keyStore;
-        	CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&keyStore);
-        	Int32 type;
-        	keyStore->GetDefaultType(&type);
+            AutoPtr<IKeyStoreHelper> keyStore;
+            CKeyStoreHelper::AcquireSingleton((IKeyStoreHelper**)&keyStore);
+            Int32 type;
+            keyStore->GetDefaultType(&type);
             keyStore->GetInstance(type, (IKeyStore**)&sTestKeyStore);
 
             //try {
@@ -322,10 +322,10 @@ AutoPtr<X509TrustManagerImplementation> X509Util::CreateTrustManager(
     /* [in] */ IKeyStore* keyStore)
 {
 
-	AutoPtr<IKeyManagerFactoryHelper> helper;
-	CKeyManagerFactoryHelper::AcquireSingleton((IKeyManagerFactoryHelper**)&helper);
-	String algorithm;
-	helper->GetDefaultAlgorithm(&algorithm);
+    AutoPtr<IKeyManagerFactoryHelper> helper;
+    CKeyManagerFactoryHelper::AcquireSingleton((IKeyManagerFactoryHelper**)&helper);
+    String algorithm;
+    helper->GetDefaultAlgorithm(&algorithm);
 
     AutoPtr<ITrustManagerFactory> tmf;
     helper->GetInstance(algorithm, (ITrustManagerFactory**)&&tmf);
@@ -338,16 +338,16 @@ AutoPtr<X509TrustManagerImplementation> X509Util::CreateTrustManager(
     AutoPtr<ITrustManager> tm = NULL;
     AutoPtr<IX509TrustManager> x509tm = NULL;
     for (Int32 i=0; i<managers->GetLenght(); ++i) {
-    	tm = (*managers)[i];
-    	x509tm = (IX509TrustManager**)tm->Probe(EIID_IX509TrustManager);
-    	if (NULL != x509tm) {
+        tm = (*managers)[i];
+        x509tm = (IX509TrustManager**)tm->Probe(EIID_IX509TrustManager);
+        if (NULL != x509tm) {
             //try {
                 if (IBuild::VERSION::SDK_INT >= IBuild::VERSION_CODES::JELLY_BEAN_MR1) {
-                	ret = new X509TrustManagerJellyBean((X509TrustManager*)x509tm);
+                    ret = new X509TrustManagerJellyBean((X509TrustManager*)x509tm);
                     return ret;
                 }
                 else {
-                	ret = new X509TrustManagerIceCreamSandwich((X509TrustManager*)x509tm);
+                    ret = new X509TrustManagerIceCreamSandwich((X509TrustManager*)x509tm);
                     return ret;
                 }
             //} catch (IllegalArgumentException e) {
@@ -388,12 +388,12 @@ String X509Util::HashPrincipal(
     // Android hashes a principal as the first four bytes of its MD5 digest, encoded in
     // lowercase hex and reversed. Verified in 4.2, 4.3, and 4.4.
     AutoPtr<IMessageDigestHelper> helper;
-	CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
     AutoPtr<IMessageDigest> msgDigest;
     helper->GetInstance(String("MD5"), (IMessageDigest**)&&msgDigest);
     String encoded;
-	principal->GetEncoded(&encoded);
-	AutoPtr< ArrayOf<Byte> > digest;
+    principal->GetEncoded(&encoded);
+    AutoPtr< ArrayOf<Byte> > digest;
     msgDigest->Digest(encoded, &digest);
 
     Char16 dig[8];
@@ -413,13 +413,13 @@ Boolean X509Util::IsKnownRoot(
 
     // Check the in-memory cache first; avoid decoding the anchor from disk
     // if it has been seen before.
-	AutoPtr<IX500Principal> principal;
-	CX500Principal::New((IX500Principal**)&principal);
-	root->GetSubjectX500Principal((IX500Principal**)&principal);
+    AutoPtr<IX500Principal> principal;
+    CX500Principal::New((IX500Principal**)&principal);
+    root->GetSubjectX500Principal((IX500Principal**)&principal);
 
-	AutoPtr<IPublicKey> publicKey;
-	CPublicKey::New((IPublicKey**)&publicKey);
-	root->GetPublicKey((IPublicKey**)&publicKey);
+    AutoPtr<IPublicKey> publicKey;
+    CPublicKey::New((IPublicKey**)&publicKey);
+    root->GetPublicKey((IPublicKey**)&publicKey);
 
     Pair< AutoPtr<IX500Principal>, AutoPtr<IPublicKey> > key =
         new Pair< AutoPtr<IX500Principal>, AutoPtr<IPublicKey> >(principal, publicKey);
@@ -441,24 +441,24 @@ Boolean X509Util::IsKnownRoot(
     for (Int32 i = 0; TRUE; ++i) {
         String alias = hash + String('.') + Char32(i);
 
-		AutoPtr<IFileHelper> helper;
-		CFileHelper::AcquireSingleton((IFileHelper**)&helper);
+        AutoPtr<IFileHelper> helper;
+        CFileHelper::AcquireSingleton((IFileHelper**)&helper);
 
-		AutoPtr<IFile> temp;
-		helper->CreateTempFile(sSystemCertificateDirectory, alias, (IFile**)&temp);
+        AutoPtr<IFile> temp;
+        helper->CreateTempFile(sSystemCertificateDirectory, alias, (IFile**)&temp);
         if (!temp)
             break;
 
-		AutoPtr<ICertificate> anchor;
-		sSystemKeyStore->GetCertificate(String("system:") + alias, (ICertificate**)&anchor);
-		// It is possible for this to return null if the user deleted a trust anchor. In
+        AutoPtr<ICertificate> anchor;
+        sSystemKeyStore->GetCertificate(String("system:") + alias, (ICertificate**)&anchor);
+        // It is possible for this to return null if the user deleted a trust anchor. In
         // that case, the certificate remains in the system directory but is also added to
         // another file. Continue iterating as there may be further collisions after the
         // deleted anchor.
         if (anchor == NULL)
             continue;
 
-		x509Cert = (IX509Certificate*)anchor->Probe(EIID_IX509Certificate);
+        x509Cert = (IX509Certificate*)anchor->Probe(EIID_IX509Certificate);
         if (NULL != x509Cert) {
             // This should never happen.
             String className;
@@ -469,12 +469,12 @@ Boolean X509Util::IsKnownRoot(
 
         // If the subject and public key match, this is a system root.
         AutoPtr<IX500Principal> anchorx509Principal;
-		x509Cert->GetSubjectX500Principal((IX500Principal**)&anchorx509Principal);
+        x509Cert->GetSubjectX500Principal((IX500Principal**)&anchorx509Principal);
 
-		AutoPtr<IPublicKey> anchorx509PublicKey;
-		x509Cert->GetPublicKey((IPublicKey**)&anchorx509PublicKey);
+        AutoPtr<IPublicKey> anchorx509PublicKey;
+        x509Cert->GetPublicKey((IPublicKey**)&anchorx509PublicKey);
 
-	    if (principal->Equal(anchorx509Principal) && publicKey->Equals(anchorx509PublicKey)) {
+        if (principal->Equal(anchorx509Principal) && publicKey->Equals(anchorx509PublicKey)) {
             sSystemTrustAnchorCache->Add(key);
             return TRUE;
         }
@@ -508,16 +508,16 @@ Boolean X509Util::VerifyKeyUsage(
     if (ekuOids->IsEmpty())
         return TRUE;
 
-	String ekuOid;
-	for (Int32 i=0; i<ekuOids->GetLength(); ++i) {
-		ekuOid = ekuOids[i];
-		if (ekuOid.Equals(OID_TLS_SERVER_AUTH) ||
+    String ekuOid;
+    for (Int32 i=0; i<ekuOids->GetLength(); ++i) {
+        ekuOid = ekuOids[i];
+        if (ekuOid.Equals(OID_TLS_SERVER_AUTH) ||
             ekuOid.Equals(OID_ANY_EKU) ||
             ekuOid.Equals(OID_SERVER_GATED_NETSCAPE) ||
             ekuOid.Equals(OID_SERVER_GATED_MICROSOFT)) {
             return TRUE;
         }
-	}
+    }
 
     return FALSE;
 }
@@ -528,7 +528,7 @@ Boolean X509Util::VerifyKeyUsage(
 //private static native void nativeNotifyKeyChainChanged();
 ECode X509Util::NativeNotifyKeyChainChanged()
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 /**
@@ -536,9 +536,9 @@ ECode X509Util::NativeNotifyKeyChainChanged()
  */
 //private static native void nativeRecordCertVerifyCapabilitiesHistogram(boolean foundSystemTrustRoots);
 ECode X509Util::NativeRecordCertVerifyCapabilitiesHistogram(
-	/* [in] */ Boolean foundSystemTrustRoots)
+    /* [in] */ Boolean foundSystemTrustRoots)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 /**
@@ -547,21 +547,21 @@ ECode X509Util::NativeRecordCertVerifyCapabilitiesHistogram(
 //private static native Context nativeGetApplicationContext();
 AutoPtr<IContext> X509Util::NativeGetApplicationContext()
 {
-	AutoPtr<IContext> context;
-	return context;
+    AutoPtr<IContext> context;
+    return context;
 }
 
 AutoPtr< ArrayOf<Char16> > X509Util::InitHexDigits()
 {
-	Char16 tmps[] = {
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-    	'a', 'b', 'c', 'd', 'e', 'f'
+    Char16 tmps[] = {
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'a', 'b', 'c', 'd', 'e', 'f'
     };
 
     Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Char16> > result = ArrayOf<Char16>::Alloc(count);
     for (Int32 i=0; i<count; ++i) {
-    	result->Set(i, tmps[i]);
+        result->Set(i, tmps[i]);
     }
 
     return result;

@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_VIEWANDROIDDELEGATE_H_
-#define _ELASTOS_DROID_WEBKIT_UI_VIEWANDROIDDELEGATE_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
 
 // package org.chromium.ui.base;
 // import android.view.View;
@@ -13,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * Interface to acquire and release anchor views from the implementing View.
@@ -34,24 +35,25 @@ public:
      * @param height The height of the anchor view.
      */
     virtual CARAPI SetAnchorViewPosition(
-    	/* in */ IView* view,
-    	/* in */ Float x,
-    	/* in */ Float y,
-    	/* in */ Float width,
-    	/* in */ Float height) = 0;
+        /* [in] */ IView* view,
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Float width,
+        /* [in] */ Float height) = 0;
 
     /**
      * Release given anchor view.
      * @param anchorView The anchor view that needs to be released.
      */
     virtual CARAPI ReleaseAnchorView(
-    	/* in */ IView* anchorView) = 0;
+        /* [in] */ IView* anchorView) = 0;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_VIEWANDROIDDELEGATE_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_VIEWANDROIDDELEGATE_H_
 

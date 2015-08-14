@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_CLIPBOARD_H_
-#define _ELASTOS_DROID_WEBKIT_UI_CLIPBOARD_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_CLIPBOARD_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_CLIPBOARD_H_
 
 // package org.chromium.ui.base;
 // import android.content.ClipData;
@@ -19,6 +19,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * Simple proxy that provides C++ code with an access pathway to the Android
@@ -34,7 +35,7 @@ public:
      * @param context for accessing the clipboard
      */
     Clipboard(
-        /* in */ const IContext* context);
+        /* [in] */ const IContext* context);
 
     /**
      * Emulates the behavior of the now-deprecated
@@ -46,8 +47,8 @@ public:
      * @param text  will become the content of the clipboard's primary clip
      */
     virtual CARAPI SetText(
-        /* in */ const String& label,
-        /* in */ const String& text);
+        /* [in] */ const String& label,
+        /* [in] */ const String& text);
 
     /**
      * Emulates the behavior of the now-deprecated
@@ -59,7 +60,7 @@ public:
      */
     //@CalledByNative
     virtual CARAPI SetText(
-        /* in */ const String& text);
+        /* [in] */ const String& text);
 
     /**
      * Writes HTML to the clipboard, together with a plain-text representation
@@ -71,9 +72,9 @@ public:
      * @param text  Plain-text representation of the HTML content.
      */
     virtual CARAPI SetHTMLText(
-        /* in */ const String& html,
-        /* in */ const String& label,
-        /* in */ const String& text);
+        /* [in] */ const String& html,
+        /* [in] */ const String& label,
+        /* [in] */ const String& text);
 
     /**
      * Writes HTML to the clipboard, together with a plain-text representation
@@ -85,8 +86,8 @@ public:
      */
     //@CalledByNative
     virtual CARAPI SetHTMLText(
-        /* in */ const String& html,
-        /* in */ const String& text);
+        /* [in] */ const String& html,
+        /* [in] */ const String& text);
 
 private:
     /**
@@ -97,7 +98,7 @@ private:
      */
     //@CalledByNative
     static CARAPI_(AutoPtr<IClipboard>) Create(
-        /* in */ const IContext* context);
+        /* [in] */ const IContext* context);
 
     /**
      * Emulates the behavior of the now-deprecated
@@ -132,7 +133,7 @@ private:
     static CARAPI_(Boolean) IsHTMLClipboardSupported();
 
     CARAPI SetPrimaryClipNoException(
-        /* in */ IClipData* clip);
+        /* [in] */ IClipData* clip);
 
 private:
     // Necessary for coercing clipboard contents to text if they require
@@ -141,10 +142,11 @@ private:
     AutoPtr<IClipboardManager> mClipboardManager;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_CLIPBOARD_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_CLIPBOARD_H_
 

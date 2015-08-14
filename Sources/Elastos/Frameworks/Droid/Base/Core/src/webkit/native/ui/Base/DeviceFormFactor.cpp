@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 const Int32 DeviceFormFactor::MINIMUM_TABLET_WIDTH_DP;
 Boolean DeviceFormFactor::sIsTablet = FALSE;
@@ -23,6 +24,7 @@ Boolean DeviceFormFactor::IsTablet(
     return sIsTablet;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

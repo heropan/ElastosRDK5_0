@@ -25,13 +25,13 @@ class ColorPickerMoreButton : public Button
 {
 public:
     ColorPickerMoreButton(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
     ColorPickerMoreButton(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs,
-        /* in */ Int32 defStyle);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
 
     /**
      * Sets up the paint to use for drawing the border.
@@ -46,7 +46,7 @@ protected:
      */
     //@Override
     CARAPI OnDraw(
-        /* in */ ICanvas* canvas);
+        /* [in] */ ICanvas* canvas);
 
 private:
     // A cache for the paint used to draw the border, so it doesn't have to be created in

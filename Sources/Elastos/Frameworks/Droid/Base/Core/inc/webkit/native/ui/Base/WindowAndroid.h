@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_WINDOWANDROID_H_
-#define _ELASTOS_DROID_WEBKIT_UI_WINDOWANDROID_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_WINDOWANDROID_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_WINDOWANDROID_H_
 
 // package org.chromium.ui.base;
 // import android.annotation.SuppressLint;
@@ -27,6 +27,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * The window base class that has the minimum functionality.
@@ -49,22 +50,22 @@ public:
          * @param data The data returned by the intent.
          */
         virtual CARAPI OnIntentCompleted(
-        	/* in */ WindowAndroid* window,
-        	/* in */ Int32 resultCode,
-        	/* in */ IContentResolver* contentResolver,
-        	/* in */ IIntent* data) = 0;
+            /* [in] */ WindowAndroid* window,
+            /* [in] */ Int32 resultCode,
+            /* [in] */ IContentResolver* contentResolver,
+            /* [in] */ IIntent* data) = 0;
     };
 
     class InnerVSyncMonitorListener : public VSyncMonitor::Listener
     {
     public:
         InnerVSyncMonitorListener(
-               /* in */ WindowAndroid* owner);
+               /* [in] */ WindowAndroid* owner);
 
         //@Override
         CARAPI OnVSync(
-    	    /* in */ VSyncMonitor* monitor,
-    	    /* in */ Int64 vsyncTimeMicros);
+            /* [in] */ VSyncMonitor* monitor,
+            /* [in] */ Int64 vsyncTimeMicros);
 
     private:
         WindowAndroid* mOwner;
@@ -76,7 +77,7 @@ public:
      */
     // @SuppressLint("UseSparseArrays")
     WindowAndroid(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 
     /**
      * Shows an intent and returns the results to the callback object.
@@ -87,9 +88,9 @@ public:
      * @return Whether the intent was shown.
      */
     virtual CARAPI_(Boolean) ShowIntent(
-    	/* in */ IPendingIntent* intent,
-    	/* in */ IntentCallback* callback,
-    	/* in */ Int32 errorId);
+        /* [in] */ IPendingIntent* intent,
+        /* [in] */ IntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     /**
      * Shows an intent and returns the results to the callback object.
@@ -100,9 +101,9 @@ public:
      * @return Whether the intent was shown.
      */
     virtual CARAPI_(Boolean) ShowIntent(
-    	/* in */ IIntent* intent,
-    	/* in */ IntentCallback* callback,
-    	/* in */ Int32 errorId);
+        /* [in] */ IIntent* intent,
+        /* [in] */ IntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     /**
      * Shows an intent that could be canceled and returns the results to the callback object.
@@ -114,9 +115,9 @@ public:
      *         START_INTENT_FAILURE if failed.
      */
     virtual CARAPI_(Int32) ShowCancelableIntent(
-    	/* in */ IPendingIntent* intent,
-    	/* in */ IntentCallback* callback,
-    	/* in */ Int32 errorId);
+        /* [in] */ IPendingIntent* intent,
+        /* [in] */ IntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     /**
      * Shows an intent that could be canceled and returns the results to the callback object.
@@ -128,16 +129,16 @@ public:
      *         START_INTENT_FAILURE if failed.
      */
     virtual CARAPI_(Int32) ShowCancelableIntent(
-    	/* in */ IIntent* intent,
-    	/* in */ IntentCallback* callback,
-    	/* in */ Int32 errorId);
+        /* [in] */ IIntent* intent,
+        /* [in] */ IntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     /**
      * Force finish another activity that you had previously started with showCancelableIntent.
      * @param requestCode The request code returned from showCancelableIntent.
      */
     virtual CARAPI CancelIntent(
-    	/* in */ Int32 requestCode);
+        /* [in] */ Int32 requestCode);
 
     /**
      * Removes a callback from the list of pending intents, so that nothing happens if/when the
@@ -146,27 +147,27 @@ public:
      * @return True if the callback was removed, false if it was not found.
     */
     virtual CARAPI_(Boolean) RemoveIntentCallback(
-    	/* in */ IntentCallback* callback);
+        /* [in] */ IntentCallback* callback);
 
     /**
      * Displays an error message with a provided error message string.
      * @param error The error message string to be displayed.
      */
     virtual CARAPI ShowError(
-    	/* in */ String error);
+        /* [in] */ String error);
 
     /**
      * Displays an error message from the given resource id.
      * @param resId The error message string's resource id.
      */
     virtual CARAPI ShowError(
-    	/* in */ Int32 resId);
+        /* [in] */ Int32 resId);
 
     /**
      * Broadcasts the given intent to all interested BroadcastReceivers.
      */
     virtual CARAPI SendBroadcast(
-    	/* in */ IIntent* intent);
+        /* [in] */ IIntent* intent);
 
     /**
      * @return The application context for this activity.
@@ -179,7 +180,7 @@ public:
      * @param bundle The bundle to save the information in onPause
      */
     virtual CARAPI SaveInstanceState(
-    	/* in */ IBundle* bundle);
+        /* [in] */ IBundle* bundle);
 
     /**
      * Restores the error messages that should be shown if any pending intents would return
@@ -187,7 +188,7 @@ public:
      * @param bundle The bundle to restore the information from onResume
      */
     virtual CARAPI RestoreInstanceState(
-    	/* in */ IBundle* bundle);
+        /* [in] */ IBundle* bundle);
 
     /**
      * Responds to the intent result if the intent was created by the native window.
@@ -197,9 +198,9 @@ public:
      * @return Boolean value of whether the intent was started by the native window.
      */
     virtual CARAPI_(Boolean) OnActivityResult(
-    	/* in */ Int32 requestCode,
-    	/* in */ Int32 resultCode,
-    	/* in */ IIntent* data);
+        /* [in] */ Int32 requestCode,
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IIntent* data);
 
     /**
      * Tests that an activity is available to handle the passed in intent.
@@ -208,7 +209,7 @@ public:
      *         Context.startActivity will not throw ActivityNotFoundException.
      */
     virtual CARAPI_(Boolean) CanResolveActivity(
-    	/* in */ IIntent* intent);
+        /* [in] */ IIntent* intent);
 
     /**
      * Destroys the c++ WindowAndroid object if one has been created.
@@ -228,21 +229,21 @@ protected:
      * @param error The error message string to be displayed.
      */
     virtual CARAPI ShowCallbackNonExistentError(
-    	/* in */ String error);
+        /* [in] */ String error);
 
 private:
     // @CalledByNative
     CARAPI RequestVSyncUpdate();
 
     CARAPI_(Int64) NativeInit(
-    	/* in */ Int64 vsyncPeriod);
+        /* [in] */ Int64 vsyncPeriod);
 
     CARAPI NativeOnVSync(
-    	/* in */ Int64 nativeWindowAndroid,
-    	/* in */ Int64 vsyncTimeMicros);
+        /* [in] */ Int64 nativeWindowAndroid,
+        /* [in] */ Int64 vsyncTimeMicros);
 
     CARAPI NativeDestroy(
-    	/* in */ Int64 nativeWindowAndroid);
+        /* [in] */ Int64 nativeWindowAndroid);
 
 public:
     // A string used as a key to store intent errors in a bundle
@@ -266,10 +267,11 @@ private:
     const AutoPtr<VSyncMonitor::Listener> mVSyncListener;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_WINDOWANDROID_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_WINDOWANDROID_H_
 

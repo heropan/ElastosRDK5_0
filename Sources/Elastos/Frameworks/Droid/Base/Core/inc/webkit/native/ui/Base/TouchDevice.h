@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_TOUCHDEVICE_H_
-#define _ELASTOS_DROID_WEBKIT_UI_TOUCHDEVICE_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_TOUCHDEVICE_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_TOUCHDEVICE_H_
 
 // package org.chromium.ui.base;
 // import android.content.Context;
@@ -16,6 +16,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * Simple proxy to let us query the touch device from C++
@@ -36,13 +37,14 @@ private:
      */
     // @CalledByNative
     static CARAPI_(Int32) MaxTouchPoints(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_TOUCHDEVICE_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_TOUCHDEVICE_H_
 

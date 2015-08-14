@@ -42,8 +42,8 @@ ColorPickerAdvancedComponent::ColorPickerAdvancedComponent(
 
 Float ColorPickerAdvancedComponent::ColorPickerAdvancedComponent::GetValue()
 {
-	Float progress = 0.0f;
-	mSeekBar->GetProgress(&progress);
+    Float progress = 0.0f;
+    mSeekBar->GetProgress(&progress);
     return progress;
 }
 
@@ -67,7 +67,7 @@ ECode ColorPickerAdvancedComponent::SetValue(
 ECode ColorPickerAdvancedComponent::SetGradientColors(
     /* in */ ArrayOf<Int32>* newColors)
 {
-	VALIDATE_NOT_NULL(newColors);
+    VALIDATE_NOT_NULL(newColors);
     mGradientColors = newColors->Clone();
     if (IBuild::VERSION::SDK_INT < IBuild::VERSION_CODES::JELLY_BEAN) {
         AutoPtr<IOrientation> currentOrientation = IOrientation::LEFT_RIGHT;

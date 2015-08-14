@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 const Int32 ActivityWindowAndroid::REQUEST_CODE_PREFIX;
 const Int32 ActivityWindowAndroid::REQUEST_CODE_RANGE_SIZE;
@@ -130,7 +131,7 @@ ECode ActivityWindowAndroid::StoreCallbackData(
     /* in */ IIntentCallback* callback,
     /* in */ Int32 errorId)
 {
-	VALIDATE_NOT_NULL(callback);
+    VALIDATE_NOT_NULL(callback);
     String errorStr;
     mApplicationContext->GetString(errorId, &errorStr);
     mOutstandingIntents->Put(requestCode, callback);
@@ -138,6 +139,7 @@ ECode ActivityWindowAndroid::StoreCallbackData(
     return NOERROR;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

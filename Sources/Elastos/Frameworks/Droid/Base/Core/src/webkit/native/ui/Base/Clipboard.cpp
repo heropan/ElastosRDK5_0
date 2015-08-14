@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 Clipboard::Clipboard(
     /* in */ const IContext* context)
@@ -113,7 +114,7 @@ Boolean Clipboard::IsHTMLClipboardSupported()
 ECode Clipboard::SetPrimaryClipNoException(
     /* in */ IClipData* clip)
 {
-	VALIDATE_NOT_NULL(clip);
+    VALIDATE_NOT_NULL(clip);
     //try {
         mClipboardManager->SetPrimaryClip(clip);
     //} catch (Exception ex) {
@@ -124,7 +125,9 @@ ECode Clipboard::SetPrimaryClipNoException(
     return NOERROR;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+

@@ -6,15 +6,15 @@ namespace Ui {
 
 DropdownDividerDrawable::DropdownDividerDrawable()
 {
-	CPaint::New((IPaint**)&mPaint);
-	CRect::New((IRect**)&mDividerRect);
+    CPaint::New((IPaint**)&mPaint);
+    CRect::New((IRect**)&mDividerRect);
 }
 
 //@Override
 ECode DropdownDividerDrawable::Draw(
     /* in */ ICanvas* canvas)
 {
-	VALIDATE_NOT_NULL(canvas);
+    VALIDATE_NOT_NULL(canvas);
     canvas->DrawRect(mDividerRect, mPaint);
     return NOERROR;
 }
@@ -22,7 +22,7 @@ ECode DropdownDividerDrawable::Draw(
 ECode DropdownDividerDrawable::OnBoundsChange(
     /* in */ IRect* bounds)
 {
-	VALIDATE_NOT_NULL(bounds);
+    VALIDATE_NOT_NULL(bounds);
     mDividerRect->Set(0, 0, bounds->Width(), mDividerRect->Height());
     return NOERROR;
 }
@@ -45,15 +45,15 @@ ECode DropdownDividerDrawable::SetColor(
 ECode DropdownDividerDrawable::SetAlpha(
     /* in */ Int32 alpha)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 //@Override
 ECode DropdownDividerDrawable::SetColorFilter(
     /* in */ IColorFilter* cf)
 {
-	VALIDATE_NOT_NULL(cf);
-	return NOERROR;
+    VALIDATE_NOT_NULL(cf);
+    return NOERROR;
 }
 
 //@Override

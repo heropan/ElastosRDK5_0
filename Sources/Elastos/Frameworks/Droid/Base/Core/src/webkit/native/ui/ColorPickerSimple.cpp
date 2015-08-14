@@ -43,18 +43,18 @@ ECode ColorPickerSimple::Init(
     /* in */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions,
     /* in */ OnColorChangedListener* onColorChangedListener)
 {
-	VALIDATE_NOT_NULL(suggestions);
-	VALIDATE_NOT_NULL(onColorChangedListener);
+    VALIDATE_NOT_NULL(suggestions);
+    VALIDATE_NOT_NULL(onColorChangedListener);
 
     mOnColorChangedListener = onColorChangedListener;
-	AutoPtr<IContext> context;
-	GetContext(&context);
+    AutoPtr<IContext> context;
+    GetContext(&context);
 
     if (NULL == suggestions) {
         suggestions = ArrayOf< AutoPtr<ColorSuggestion> >::Alloc(sizeof(DEFAULT_COLORS) / sizeof(DEFAULT_COLORS[0]));
-		String idsTemp;
+        String idsTemp;
         for (Int32 i = 0; i < suggestions->GetLength(); ++i) {
-        	context->GetString(DEFAULT_COLOR_LABEL_IDS[i], &idsTemp);
+            context->GetString(DEFAULT_COLOR_LABEL_IDS[i], &idsTemp);
             (*suggestions)[i] = new ColorSuggestion(DEFAULT_COLORS[i], idsTemp);
         }
     }
@@ -69,15 +69,15 @@ ECode ColorPickerSimple::Init(
 ECode ColorPickerSimple::OnColorSuggestionClick(
     /* in */ ColorSuggestion* suggestion)
 {
-	VALIDATE_NOT_NULL(suggestion);
+    VALIDATE_NOT_NULL(suggestion);
     mOnColorChangedListener->OnColorChanged(suggestion->mColor);
     return NOERROR;
 }
 
 AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColors()
 {
-	Int32 tmps[] = {
-		IColor::RED,
+    Int32 tmps[] = {
+        IColor::RED,
         IColor::CYAN,
         IColor::BLUE,
         IColor::GREEN,
@@ -90,7 +90,7 @@ AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColors()
     Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(count);
     for (Int32 i=0; i<count; ++i) {
-    	result->Set(i, tmps[i]);
+        result->Set(i, tmps[i]);
     }
 
     return result;
@@ -98,8 +98,8 @@ AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColors()
 
 AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColorLabelIds()
 {
-	Int32 tmps[] = {
-		R::string::color_picker_button_red,
+    Int32 tmps[] = {
+        R::string::color_picker_button_red,
         R::string::color_picker_button_cyan,
         R::string::color_picker_button_blue,
         R::string::color_picker_button_green,
@@ -112,7 +112,7 @@ AutoPtr< ArrayOf<Int32> > ColorPickerSimple::InitDefaultColorLabelIds()
     Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Int32> > result = ArrayOf<Int32>::Alloc(count);
     for (Int32 i=0; i<count; ++i) {
-    	result->Set(i, tmps[i]);
+        result->Set(i, tmps[i]);
     }
 
     return result;

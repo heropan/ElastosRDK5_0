@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_VIEWCONFIGURATIONHELPER_H_
-#define _ELASTOS_DROID_WEBKIT_UI_VIEWCONFIGURATIONHELPER_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
+#define _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 
 // package org.chromium.ui.gfx;
 // import android.content.ComponentCallbacks;
@@ -21,6 +21,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gfx {
 
 /**
  * This class facilitates access to ViewConfiguration-related properties, also
@@ -35,11 +36,11 @@ private:
     {
     public:
         InnerComponentCallbacks(
-               /* in */ ViewConfigurationHelper* owner);
+               /* [in] */ ViewConfigurationHelper* owner);
 
         //@Override
         CARAPI OnConfigurationChanged(
-            /* in */ IConfiguration* configuration);
+            /* [in] */ IConfiguration* configuration);
 
         //@Override
         CARAPI OnLowMemory();
@@ -50,7 +51,7 @@ private:
 
 private:
     ViewConfigurationHelper(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 
     CARAPI RegisterListener();
 
@@ -88,15 +89,15 @@ private:
 
     // @CalledByNative
     static CARAPI_(AutoPtr<ViewConfigurationHelper>) CreateWithListener(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 
     CARAPI NativeUpdateSharedViewConfiguration(
-    	/* in */ Int32 scaledMaximumFlingVelocity,
-    	/* in */ Int32 scaledMinimumFlingVelocity,
-    	/* in */ Int32 scaledTouchSlop,
-    	/* in */ Int32 scaledDoubleTapSlop,
-    	/* in */ Int32 scaledMinScalingSpan,
-    	/* in */ Int32 scaledMinScalingTouchMajor);
+        /* [in] */ Int32 scaledMaximumFlingVelocity,
+        /* [in] */ Int32 scaledMinimumFlingVelocity,
+        /* [in] */ Int32 scaledTouchSlop,
+        /* [in] */ Int32 scaledDoubleTapSlop,
+        /* [in] */ Int32 scaledMinScalingSpan,
+        /* [in] */ Int32 scaledMinScalingTouchMajor);
 
 private:
     // Fallback constants when resource lookup fails, see
@@ -107,10 +108,11 @@ private:
     AutoPtr<IViewConfiguration> mViewConfiguration;
 };
 
+} // namespace Gfx
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_VIEWCONFIGURATIONHELPER_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_GFX_VIEWCONFIGURATIONHELPER_H_
 

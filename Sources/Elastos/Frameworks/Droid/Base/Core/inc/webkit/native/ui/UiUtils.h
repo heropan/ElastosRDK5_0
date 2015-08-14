@@ -42,8 +42,8 @@ public:
          * @return        Whether or not the keyboard check should be disabled.
          */
         virtual CARAPI_(Boolean) DisableKeyboardCheck(
-        	/* in */ IContext* context,
-        	/* in */ IView* view) = 0;
+            /* [in] */ IContext* context,
+            /* [in] */ IView* view) = 0;
     };
 
 public:
@@ -52,14 +52,14 @@ public:
      * @param delegate A {@link KeyboardShowingDelegate} instance.
      */
     static CARAPI SetKeyboardShowingDelegate(
-        /* in */ KeyboardShowingDelegate* delegate);
+        /* [in] */ KeyboardShowingDelegate* delegate);
 
     /**
      * Shows the software keyboard if necessary.
      * @param view The currently focused {@link View}, which would receive soft keyboard input.
      */
     static CARAPI ShowKeyboard(
-        /* in */ IView* view);
+        /* [in] */ IView* view);
 
     /**
      * Hides the keyboard.
@@ -67,7 +67,7 @@ public:
      * @return Whether the keyboard was visible before.
      */
     static CARAPI_(Boolean) HideKeyboard(
-        /* in */ IView* view);
+        /* [in] */ IView* view);
 
     /**
      * Detects whether or not the keyboard is showing.  This is a best guess as there is no
@@ -77,8 +77,8 @@ public:
      * @return        Whether or not the software keyboard is visible and taking up screen space.
      */
     static CARAPI_(Boolean) IsKeyboardShowing(
-        /* in */ IContext* context,
-        /* in */ IView* view);
+        /* [in] */ IContext* context,
+        /* [in] */ IView* view);
 
     /**
      * Inserts a {@link View} into a {@link ViewGroup} after directly before a given {@View}.
@@ -88,9 +88,9 @@ public:
      * @return The index where newView was inserted, or -1 if it was not inserted.
      */
     static CARAPI_(Int32) InsertBefore(
-        /* in */ IViewGroup* container,
-        /* in */ IView* newView,
-        /* in */ IView* existingView);
+        /* [in] */ IViewGroup* container,
+        /* [in] */ IView* newView,
+        /* [in] */ IView* existingView);
 
     /**
      * Inserts a {@link View} into a {@link ViewGroup} after directly after a given {@View}.
@@ -100,9 +100,9 @@ public:
      * @return The index where newView was inserted, or -1 if it was not inserted.
      */
     static CARAPI_(Int32) InsertAfter(
-        /* in */ IViewGroup* container,
-        /* in */ IView* newView,
-        /* in */ IView* existingView);
+        /* [in] */ IViewGroup* container,
+        /* [in] */ IView* newView,
+        /* [in] */ IView* existingView);
 
     /**
      * Generates a scaled screenshot of the given view.  The maximum size of the screenshot is
@@ -116,9 +116,9 @@ public:
      * @return The screen bitmap of the view or null if a problem was encountered.
      */
     static CARAPI_(AutoPtr<IBitmap>) GenerateScaledScreenshot(
-        /* in */ IView* currentView,
-        /* in */ Int32 maximumDimension,
-        /* in */ IBitmap::IConfig* bitmapConfig);
+        /* [in] */ IView* currentView,
+        /* [in] */ Int32 maximumDimension,
+        /* [in] */ IBitmap::IConfig* bitmapConfig);
 
 private:
     /**
@@ -127,14 +127,14 @@ private:
     UiUtils();
 
     static CARAPI_(Int32) InsertView(
-        /* in */ IViewGroup* container,
-        /* in */ IView* newView,
-        /* in */ IView* existingView,
-        /* in */ Boolean after);
+        /* [in] */ IViewGroup* container,
+        /* [in] */ IView* newView,
+        /* [in] */ IView* existingView,
+        /* [in] */ Boolean after);
 
     static CARAPI PrepareViewHierarchyForScreenshot(
-        /* in */ IView* view,
-        /* in */ Boolean takingScreenshot);
+        /* [in] */ IView* view,
+        /* [in] */ Boolean takingScreenshot);
 
 private:
     static const String TAG;
