@@ -1,14 +1,8 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
-
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IActionMode;
-    interface Elastos.Droid.View.IActionModeCallback;
-    interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Content.Res.IConfiguration;
     interface Elastos.Droid.App.IActionBarOnMenuVisibilityListener;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IWindowCallback;
+    interface Elastos.Droid.Interanl.Widget. IActionBarVisibilityCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -25,114 +19,18 @@ module
     /**
      * @Involve
      * interface IActionBar
-     * interface IActionBarOverlayLayoutActionBarVisibilityCallback
+     * interface IActionBarVisibilityCallback
      */
     [local]
     interface IWindowDecorActionBar {
-
-        OnConfigurationChanged(
-            [in] IConfiguration* newConfig);
-
-        CompleteDeferredDestroyActionMode();
-
-        OnWindowVisibilityChanged(
-            [in] Int32 visibility);
-
-        /**
-         * Enables or disables animation between show/hide states.
-         * If animation is disabled using this method, animations in progress
-         * will be finished.
-         *
-         * @param enabled true to animate, false to not animate.
-         */
-        SetShowHideAnimationEnabled(
-            [in] Boolean enabled);
-
-        AddOnMenuVisibilityListener(
-            [in] IActionBarOnMenuVisibilityListener* listener);
-
-        RemoveOnMenuVisibilityListener(
-            [in] IActionBarOnMenuVisibilityListener* listener);
-
-        DispatchMenuVisibilityChanged(
-            [in] Boolean isVisible);
-
-        SetSelectedNavigationItem(
-            [in] Int32 position);
-
-        RemoveAllTabs();
-
-        SetTitle(
-            [in] ICharSequence* title);
-
-        SetSubtitle(
-            [in] ICharSequence* subtitle);
-
-        SetDisplayOptions(
-            [in] Int32 options);
-
-        SetDisplayOptions(
-            [in] Int32 options,
-            [in] Int32 mask);
-
-        SetBackgroundDrawable(
-            [in] IDrawable* d);
-
-        SetStackedBackgroundDrawable(
-            [in] IDrawable* d);
-
-        SetSplitBackgroundDrawable(
-            [in] IDrawable* d);
-
-        GetCustomView(
-            [out] IView** result);
-
-        GetTitle(
-            [out] ICharSequence** title);
-
-        GetSubtitle(
-            [out] ICharSequence** subTitle);
-
-        GetNavigationMode(
-            [out] Int32* mode);
-
-        GetDisplayOptions(
-            [out] Int32* opt);
-
-        StartActionMode(
-            [in] IActionModeCallback* clbk,
-            [out] IActionMode** result);
-
-        EnableContentAnimations(
-            [in] Boolean enabled);
-
-        ShowForSystem();
-
-        HideForSystem();
-
         DoShow(
             [in] Boolean fromSystem);
 
         DoHide(
             [in] Boolean fromSystem);
 
-        IsShowing(
-            [out] Boolean* result);
-
-        AnimateToMode(
-            [in] Boolean toActionMode);
-
-        GetThemedContext(
-            [out] IContext** result);
-
-        HasIcon(
-            [out] Boolean* result);
-
         HasLogo(
             [out] Boolean* result);
-
-        SetDefaultDisplayHomeAsUpEnabled(
-            [in] Boolean enbl);
     }
 
     }//namespace App

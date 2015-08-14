@@ -20,7 +20,13 @@ module
      */
     /**
      * @Involve
-     * interface IDialogFragment
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
+     * interface Elastos.Droid.App.IFragment
+     * interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener
+     * interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener
+     * interface Elastos.Droid.App.IDialogFragment
      */
     [local]
     interface IMediaRouteControllerDialogFragment {

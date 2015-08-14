@@ -1,7 +1,5 @@
 module
 {
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
-
     namespace Elastos {
     namespace Droid {
     namespace Internal {
@@ -9,18 +7,21 @@ module
 
     /**
      * @Involve
+     * interface Elastos.Droid.Content.IContext
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface Elastos.Droid.View.IContextThemeWrapper
+     * interface ILayoutInflaterFactory
+     * interface ILayoutInflaterFactory2
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IComponentCallbacks2
+     * interface IWindowOnWindowDismissedCallback
      * interface IActivity
+     * interface IDialogInterface
      */
+    [local]
     interface IPlatLogoActivity {
-
-        MakeRipple(
-            [out] IDrawable** result);
-    }
-
-    interface IPlatLogoActivityHelper {
-
-        NewColorIndex(
-            [out] Int32* result);
     }
 
     }//namespace App

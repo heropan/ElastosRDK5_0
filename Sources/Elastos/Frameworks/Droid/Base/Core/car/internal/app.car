@@ -10,7 +10,6 @@ module
     merge("app/IAppOpsService.car");
     merge("app/IBatteryStats.car");
     merge("app/IMediaContainerService.car");
-    merge("app/IProcessStats.car");
     merge("app/IVoiceInteractionManagerService.car");
     merge("app/IVoiceInteractor.car");
     merge("app/IVoiceInteractorCallback.car");
@@ -21,7 +20,6 @@ module
     merge("app/MediaRouteChooserDialogFragment.car");
     merge("app/MediaRouteControllerDialog.car");
     merge("app/MediaRouteControllerDialogFragment.car");
-    merge("app/MediaRouteDialogPresenter.car");
     merge("app/NetInitiatedActivity.car");
     merge("app/PlatLogoActivity.car");
     merge("app/ProcessMap.car");

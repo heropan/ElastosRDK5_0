@@ -1,8 +1,8 @@
 module
 {
     interface Elastos.Droid.Os.IBundle;
-//    interface Elastos.Droid.Media.IRouteInfo;
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Media.IRouteInfo;
 
     namespace Elastos {
     namespace Droid {
@@ -22,16 +22,20 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Droid.Content.IDialogInterface
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IWindowOnWindowDismissedCallback
      * interface IDialog
      */
     [local]
     interface IMediaRouteControllerDialog {
-
         /**
          * Gets the route that this dialog is controlling.
          */
-//        GetRoute(
-//            [out] IRouteInfo** result);
+        GetRoute(
+            [out] IRouteInfo* route);
 
         /**
          * Provides the subclass an opportunity to create a view that will
@@ -43,7 +47,7 @@ module
          */
         OnCreateMediaControlView(
             [in] IBundle* savedInstanceState,
-            [out] IView** result);
+            [out] IView** view);
 
         /**
          * Gets the media control view that was created by {@link #onCreateMediaControlView(Bundle)}.
@@ -51,7 +55,7 @@ module
          * @return The media control view, or null if none.
          */
         GetMediaControlView(
-            [out] IView** result);
+            [out] IView** view);
 
         /**
          * Sets whether to enable the volume slider and volume control using the volume keys
@@ -61,18 +65,18 @@ module
          * </p>
          */
         SetVolumeControlEnabled(
-            [in] Boolean bEnable);
+            [in] Boolean enable);
 
         /**
          * Returns whether to enable the volume slider and volume control using the volume keys
          * when the route supports it.
          */
         IsVolumeControlEnabled(
-            [out] Boolean* result);
+            [out] Boolean* enabled);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

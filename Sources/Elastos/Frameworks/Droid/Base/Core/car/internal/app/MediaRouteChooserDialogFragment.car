@@ -20,12 +20,17 @@ module
      */
     /**
      * @Involve
-     * interface IDialogFragment
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
+     * interface Elastos.Droid.App.IFragment
+     * interface Elastos.Droid.Content.IDialogInterfaceOnCancelListener
+     * interface Elastos.Droid.Content.IDialogInterfaceOnDismissListener
+     * interface Elastos.Droid.App.IDialogFragment
      */
     interface IMediaRouteChooserDialogFragment {
-
         GetRouteTypes(
-            [out] Int32* result);
+            [out] Int32* types);
 
         SetRouteTypes(
             [in] Int32 types);
@@ -42,11 +47,12 @@ module
         OnCreateChooserDialog(
             [in] IContext* context,
             [in] IBundle* savedInstanceState,
-            [out] IMediaRouteChooserDialog** result);
+            [out] IMediaRouteChooserDialog** dialog);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } //namespace App
+    } //namespace Internal
+    } //namespace Droid
+    } //namespace Elastos
+
 }

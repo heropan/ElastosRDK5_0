@@ -9,12 +9,11 @@ module
      * IPC interface identifying a request from an application calling through an IVoiceInteractor.
      */
     interface IIVoiceInteractorRequest {
-
         Cancel();
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

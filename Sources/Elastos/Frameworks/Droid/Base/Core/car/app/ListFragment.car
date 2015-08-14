@@ -12,6 +12,9 @@ module
 
     /**
      * @Involve
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
      * interface IFragment
      */
     [local]

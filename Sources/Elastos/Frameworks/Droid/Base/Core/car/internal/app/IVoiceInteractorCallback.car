@@ -1,17 +1,18 @@
 module
 {
+    interface Elastos.Droid.Internal.App.IIVoiceInteractorRequest;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractorCallback;
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
     namespace Internal {
     namespace App {
-
     /**
      * IPC interface for an application to receive callbacks from the voice system.
      */
+    [oneway]
     interface IIVoiceInteractorCallback {
-
         DeliverConfirmationResult(
             [in] IIVoiceInteractorRequest* request,
             [in] Boolean confirmed,
@@ -34,8 +35,8 @@ module
             [in] IIVoiceInteractorRequest* request);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

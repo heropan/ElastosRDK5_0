@@ -12,7 +12,6 @@ module
     namespace App {
 
     interface ILocaleSelectionListener {
-
         // You can add any argument if you really need it...
         OnLocaleSelected(
             [in] ILocale* locale);
@@ -20,17 +19,32 @@ module
 
     /**
      * @Involve
-     * interface IListFragment
+     * interface IComparable
      */
-    interface ILocalePicker {
+    interface ILocaleInfo {
+        GetLabel(
+            [out] String* label);
 
+        GetLocale(
+            [out] ILocale* locale);
+    }
+
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
+     * interface Elastos.Droid.App.IFragment
+     * interface Elastos.Droid.App.IListFragment
+     */
+    [local]
+    interface ILocalePicker {
         SetLocaleSelectionListener(
             [in] ILocaleSelectionListener* listener);
     }
 
     [local]
     interface ILocalePickerHelper {
-
         GetAllAssetLocales(
             [in] IContext* context,
             [in] Boolean isInDeveloperMode,
@@ -58,8 +72,8 @@ module
             [in] ILocale* locale);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -45,6 +45,12 @@ module
             [in] IBundle* state);
     }
 
+    /**
+     * @Involve
+     * interface Elastos.Droid.Content.IComponentCallbacks
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IViewOnCreateContextMenuListener
+     */
     [local, deprecated]
     interface IFragment {
         const Int32 INVALID_STATE = -1;   // Invalid state used as a null value.

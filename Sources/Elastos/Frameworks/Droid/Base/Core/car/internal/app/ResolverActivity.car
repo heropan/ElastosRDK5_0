@@ -2,9 +2,6 @@ module
 {
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.Res.IResources;
-    interface Elastos.Droid.Content.Pm.IResolveInfo;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
 
     namespace Elastos {
     namespace Droid {
@@ -18,8 +15,18 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Droid.Content.IContext
+     * interface Elastos.Droid.Content.IContextWrapper
+     * interface Elastos.Droid.View.IContextThemeWrapper
+     * interface ILayoutInflaterFactory
+     * interface ILayoutInflaterFactory2
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IComponentCallbacks2
+     * interface IWindowOnWindowDismissedCallback
      * interface IActivity
-     * interface IAdapterViewOnItemClickListener
+     * interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener
      */
     [local]
     interface IResolverActivity {
@@ -39,42 +46,20 @@ module
         SetSafeForwardingMode(
             [in] Boolean safeForwarding);
 
-        Dismiss();
-
-        GetIcon(
-            [in] IResources* res,
-            [in] Int32 resId,
-            [out] IDrawable** result);
-
-        LoadIconForResolveInfo(
-            [in] IResolveInfo* ri,
-            [out] IDrawable** result);
-
         OnButtonClick(
             [in] IView* v);
 
-        StartSelected(
-            [in] Int32 which,
-            [in] Boolean always,
-            [in] Boolean filtered);
-
-        /**
-         * Replace me in subclasses!
-         */
         GetReplacementIntent(
             [in] String packageName,
             [in] IIntent* defIntent,
-            [out] IIntent** result);
+            [out] IIntent** intent);
 
         SafelyStartActivity(
             [in] IIntent* intent);
-
-        ShowAppDetails(
-            [in] IResolveInfo* ri);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }

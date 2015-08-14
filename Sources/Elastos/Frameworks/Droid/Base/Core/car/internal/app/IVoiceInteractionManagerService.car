@@ -1,7 +1,15 @@
 module
 {
-    interface Elastos.Droid.Os.IBinder;
     interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Internal.App.IIVoiceInteractor;
+    interface Elastos.Droid.Hardware.Soundtrigger.IIRecognitionStatusCallback;
+    interface Elastos.Droid.Hardware.Soundtrigger.ISoundTriggerKeyphraseSoundModel;
+    interface Elastos.Droid.Hardware.Soundtrigger.ISoundTriggerModuleProperties;
+    interface Elastos.Droid.Hardware.Soundtrigger.ISoundTriggerRecognitionConfig;
+    interface Elastos.Droid.Service.Voice.IIVoiceInteractionService;
+    interface Elastos.Droid.Service.Voice.IIVoiceInteractionSession;
 
     namespace Elastos {
     namespace Droid {
@@ -9,16 +17,15 @@ module
     namespace App {
 
     interface IIVoiceInteractionManagerService {
+        StartSession(
+            [in] IIVoiceInteractionService* service,
+            [in] IBundle* sessionArgs);
 
-//        StartSession(
-//            [in] IIVoiceInteractionService* service,
-//            [in] IBundle* sessionArgs);
-
-//        DeliverNewSession(
-//            [in] IBinder* token,
-//            [in] IIVoiceInteractionSession* session,
-//            [in] IIVoiceInteractor* interactor,
-//            [out] Boolean* result);
+        DeliverNewSession(
+            [in] IBinder* token,
+            [in] IIVoiceInteractionSession* session,
+            [in] IIVoiceInteractor* interactor,
+            [out] Boolean* result);
 
         StartVoiceActivity(
             [in] IBinder* token,
@@ -36,17 +43,17 @@ module
          * @param keyphraseId The unique identifier for the keyphrase.
          * @param bcp47Locale The BCP47 language tag  for the keyphrase's locale.
          */
-//        GetKeyphraseSoundModel(
-//            [in] Int32 keyphraseId,
-//            [in] String bcp47Locale,
-//            [out] ISoundTriggerKeyphraseSoundModel* result);
+        GetKeyphraseSoundModel(
+            [in] Int32 keyphraseId,
+            [in] String bcp47Locale,
+            [out] ISoundTriggerKeyphraseSoundModel* soundModel);
 
         /**
          * Add/Update the given keyphrase sound model.
          */
-//        UpdateKeyphraseSoundModel(
-//            [in] ISoundTriggerKeyphraseSoundModel* model,
-//            [out] Int32* result);
+        UpdateKeyphraseSoundModel(
+            [in] ISoundTriggerKeyphraseSoundModel* model,
+            [out] Int32* result);
 
         /**
          * Deletes the given keyphrase sound model for the current user.
@@ -62,9 +69,9 @@ module
         /**
          * Gets the properties of the DSP hardware on this device, null if not present.
          */
-//        GetDspModuleProperties(
-//            [in] IIVoiceInteractionService* service,
-//            [out] ISoundTriggerModuleProperties** result);
+        GetDspModuleProperties(
+            [in] IIVoiceInteractionService* service,
+            [out] ISoundTriggerModuleProperties** properties);
 
         /**
          * Indicates if there's a keyphrase sound model available for the given keyphrase ID.
@@ -74,35 +81,35 @@ module
          * @param keyphraseId The unique identifier for the keyphrase.
          * @param bcp47Locale The BCP47 language tag  for the keyphrase's locale.
          */
-//        IsEnrolledForKeyphrase(
-//            [in] IIVoiceInteractionService* service,
-//            [in] Int32 keyphraseId,
-//            [in] String bcp47Locale,
-//            [out] Boolean* result);
+        IsEnrolledForKeyphrase(
+            [in] IVoiceInteractionService* service,
+            [in] Int32 keyphraseId,
+            [in] String bcp47Locale,
+            [out] Boolean* result);
 
         /**
          * Starts a recognition for the given keyphrase.
          */
-//        StartRecognition(
-//            [in] IIVoiceInteractionService* service,
-//            [in] Int32 keyphraseId,
-//            [in] String bcp47Locale,
-//            [in] IIRecognitionStatusCallback* callback,
-//            [in] ISoundTriggerRecognitionConfig* recognitionConfig,
-//            [out] Int32* result);
+        StartRecognition(
+            [in] IIVoiceInteractionService* service,
+            [in] Int32 keyphraseId,
+            [in] String bcp47Locale,
+            [in] IIRecognitionStatusCallback* callback,
+            [in] ISoundTriggerRecognitionConfig* recognitionConfig,
+            [out] Int32* result);
 
         /**
          * Stops a recognition for the given keyphrase.
          */
-//        StopRecognition(
-//            [in] IIVoiceInteractionService* service,
-//            [in] Int32 keyphraseId,
-//            [in] IIRecognitionStatusCallback* callback,
-//            [out] Int32* result);
+        StopRecognition(
+            [in] IIVoiceInteractionService* service,
+            [in] Int32 keyphraseId,
+            [in] IIRecognitionStatusCallback* callback,
+            [out] Int32* result);
     }
 
-    }//namespace App
-    }//namespace Internal
-    }//namespace Droid
-    }//namespace Elastos
+    } // namespace App
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
 }
