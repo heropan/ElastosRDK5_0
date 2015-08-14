@@ -2,82 +2,92 @@
 # -: run job without fork
 # <: merge then fork new job
 # >: merge then run job without fork
+# ==== build CAR Runtime ====
 - Elastos/Runtime/PortingLayer/crt0
-- Elastos/Runtime/PortingLayer
-  Elastos/Runtime/Library/inc/eltypes
+- Elastos/Runtime/Core/inc
   Elastos/Runtime/Library/inc/car
-  Elastos/Runtime/Library/inc/elasys
   Elastos/Runtime/Library/inc/clsmodule
-  Elastos/Runtime/Library/inc/driver
-< Elastos/Runtime/Library/inc
-  Elastos/Runtime/Library/syscar
-# !!!!!
-< Elastos/Runtime/Library/elasys
-  Elastos/Runtime/Library/eltypes/elstring
+  Elastos/Runtime/Library/inc/elasys
+  Elastos/Runtime/Library/inc/eltypes
+> Elastos/Runtime/Library/syscar
+- Elastos/Runtime/Library/elasys
   Elastos/Runtime/Library/eltypes/elrefbase
+  Elastos/Runtime/Library/eltypes/elstring
+  Elastos/Runtime/Library/eltypes/elcontainer
 < Elastos/Runtime/Library/eltypes
   Elastos/Runtime/Library/clsmodule
-> Elastos/Runtime/Library
-# !!!!
-- Elastos/Runtime/Core/inc
   Elastos/Runtime/Core/reflection
   Elastos/Runtime/Core/marshal/android_linux
   Elastos/Runtime/Core/marshal/linux_rpc
-> Elastos/Runtime/Core/marshal
-- Elastos/Runtime/Core/libusr/lib4car/lib4ela
-- Elastos/Runtime/Core/libusr/lib4car
-- Elastos/Runtime/Core/libusr
+  Elastos/Runtime/Core/marshal
+  Elastos/Runtime/Core/libusr/lib4car/lib4ela
+  Elastos/Runtime/Core/libusr/lib4car
   Elastos/Runtime/Core/carapi
   Elastos/Runtime/Core/elapi
 > Elastos/Runtime/Core/eladll/dll
 - Elastos/Runtime/Core/eladll/lib
-- Elastos/Runtime/Core/eladll
-- Elastos/Runtime/Core
-- Elastos/Runtime
-- Elastos/LibCore/car
-  Elastos/LibCore/inc/Elastos/Core
-  Elastos/LibCore/inc/Elastos/Math
-  Elastos/LibCore/inc/Elastos/IO
-  Elastos/LibCore/inc/Elastos/Utility/Concurrent
-  Elastos/LibCore/inc/Elastos/Utility/Logging
-  Elastos/LibCore/inc/Elastos/Utility
-  Elastos/LibCore/inc/Elastos
-  Elastos/LibCore/inc/common
-  Elastos/LibCore/inc/Libcore
-  Elastos/LibCore/inc/Org/Xml/Sax/Helpers
-  Elastos/LibCore/inc/Org/Xml/Sax/Ext
-  Elastos/LibCore/inc/Org/Xml/Sax
-  Elastos/LibCore/inc/Org/Xml
-  Elastos/LibCore/inc/Org
-  Elastos/LibCore/inc
-> Elastos/LibCore/src/Elastos/Core/eco
-- Elastos/LibCore/src/Elastos/Core/lib Elastos.CoreLibrary.eco
-- Elastos/LibCore/src/Elastos/Core/lib
-- Elastos/LibCore/src/Elastos/Core
-> Elastos/LibCore/src/Elastos/Math
-- Elastos/LibCore/src/Org/Xml/Sax Org.Xml.Sax.car
-  Elastos/LibCore/src/Org/Xml/Sax/Ext
-  Elastos/LibCore/src/Org/Xml/Sax/Helpers
-> Elastos/LibCore/src/Org/Xml/Sax
-  Elastos/LibCore/src/Org/Xml
-  Elastos/LibCore/src/Org/Kxml2/IO
-  Elastos/LibCore/src/Org/Xmlpull/V1
-  Elastos/LibCore/src/Org/Xmlpull
-- Elastos/LibCore/src/Org/W3c/Dom Org.W3c.Dom.car
-  Elastos/LibCore/src/Org/W3c/Dom Elastos.CoreLibrary.eco
-> Elastos/LibCore/src/Org/W3c/Dom
-- Elastos/LibCore/src/Elastosx/Xml Elastosx.Xml.car
-  Elastos/LibCore/src/Elastosx/Xml Elastos.CoreLibrary.eco Org.Xml.Sax.eco Org.W3c.Dom.eco
-> Elastos/LibCore/src/Elastosx/Xml
-#  Elastos/LibCore/src/Org/Apache/Harmony Org.Apache.Harmony.car
-#  Elastos/LibCore/src/Org/Apache/Harmony Elastos.CoreLibrary.eco
-#  Elastos/LibCore/src/Org/Apache/Harmony
-#> Elastos/LibCore/src/Org/Apache
-  Elastos/LibCore/src/Org
-- Elastos/LibCore/src/Elastos/Droid/System Elastos.Droid.System.car
-- Elastos/LibCore/src/Elastos/Droid/System Elastos.Core.eco
-  Elastos/LibCore/src/Elastos/Droid/System
-  Elastos/LibCore/src
+# ==== buid LibCore ====
+> Elastos/LibCore/inc
+- Elastos/LibCore/src/corelibrary Elastos.CoreLibrary.car
+  Elastos/LibCore/src/libcore/net/event
+  Elastos/LibCore/src/libcore/net/http
+  Elastos/LibCore/src/libcore/net/url
+> Elastos/LibCore/src/libcore/net
+  Elastos/LibCore/src/libcore/icu
+  Elastos/LibCore/src/libcore/io
+  Elastos/LibCore/src/libcore/utility
+  Elastos/LibCore/src/elastos/core
+  Elastos/LibCore/src/elastos/io/channels/spi
+> Elastos/LibCore/src/elastos/io/channels
+  Elastos/LibCore/src/elastos/io/charset/spi
+> Elastos/LibCore/src/elastos/io/charset
+  Elastos/LibCore/src/elastos/io/nio
+> Elastos/LibCore/src/elastos/io
+  Elastos/LibCore/src/elastos/math
+  Elastos/LibCore/src/elastos/sql/sqlite/jdbc
+> Elastos/LibCore/src/elastos/sql/sqlite
+> Elastos/LibCore/src/elastos/sql
+  Elastos/LibCore/src/elastos/net
+  Elastos/LibCore/src/elastos/text
+  Elastos/LibCore/src/elastos/utility/concurrent/atomic
+  Elastos/LibCore/src/elastos/utility/concurrent/locks
+> Elastos/LibCore/src/elastos/utility/concurrent
+  Elastos/LibCore/src/elastos/utility/jar
+  Elastos/LibCore/src/elastos/utility/logging
+  Elastos/LibCore/src/elastos/utility/prefs
+  Elastos/LibCore/src/elastos/utility/regex
+  Elastos/LibCore/src/elastos/utility/zip
+> Elastos/LibCore/src/elastos/utility
+  Elastos/LibCore/src/elastos/droid/system
+  Elastos/LibCore/src/elastosx/crypto/spec
+> Elastos/LibCore/src/elastosx/crypto
+  Elastos/LibCore/src/elastosx/net/ssl
+> Elastos/LibCore/src/elastosx/net
+  Elastos/LibCore/src/elastosx/security/auth/callback
+  Elastos/LibCore/src/elastosx/security/auth/x500
+> Elastos/LibCore/src/elastosx/security/auth
+  Elastos/LibCore/src/elastosx/security/cert
+> Elastos/LibCore/src/elastosx/security
+  Elastos/LibCore/src/elastosx/sql
+  Elastos/LibCore/src/elastosx/xml/datatype
+  Elastos/LibCore/src/elastosx/xml/namespace
+  Elastos/LibCore/src/elastosx/xml/parsers
+  Elastos/LibCore/src/elastosx/xml/validation
+  Elastos/LibCore/src/elastosx/xml/xpath
+  Elastos/LibCore/src/elastosx/xml/transform/dom
+  Elastos/LibCore/src/elastosx/xml/transform/sax
+  Elastos/LibCore/src/elastosx/xml/transform/stream
+> Elastos/LibCore/src/elastosx/xml/transform
+> Elastos/LibCore/src/elastosx/xml
+  Elastos/LibCore/src/org/xml/sax/ext
+  Elastos/LibCore/src/org/xml/sax/helpers
+> Elastos/LibCore/src/org/xml/sax
+  Elastos/LibCore/src/org/xmlpull/v1/sax2
+> Elastos/LibCore/src/org/xmlpull/v1
+  Elastos/LibCore/src/org/kxml2/io
+  Elastos/LibCore/src/org/w3c/dom
+> Elastos/LibCore/src/corelibrary
+# ==== buid Framework ====
 > Elastos/Frameworks/Droid/ServiceManager
 - Elastos/Frameworks/Droid/DroidRuntime/lib
 > Elastos/Frameworks/Droid/DroidRuntime

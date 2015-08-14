@@ -241,7 +241,7 @@ parse_args() {
 
         [[ 0 == $# ]] || shift
     done
-    if [[ "$XDK_VERSION" = "rls" ]]; then 
+    if [[ "$XDK_VERSION" = "rls" ]]; then
         build_version=rls
     fi
     [[ 0 != ${#build_targets[@]} ]] || build_targets[0]=build
@@ -331,7 +331,8 @@ build_car() {
 
     cleanup_stack_push "rm -f '$mirror_path/$cls_file' \
                               '$mirror_path/$ext_cls_file'"
-    carc -u \
+    carc -n \
+        -u \
         -I"$src_path" \
         -c "$cls_file" \
         -E "$ext_cls_file" \

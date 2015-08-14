@@ -3,6 +3,7 @@
 
 #include <elastos.h>
 
+#ifndef __LOGGER_MACRO__
 #define __LOGGER_MACRO__
 #define LOGGERD(tag, ...)  Elastos::Utility::Logging::Logger::D(tag, __VA_ARGS__);
 #define LOGGERE(tag, ...)  Elastos::Utility::Logging::Logger::E(tag, __VA_ARGS__);

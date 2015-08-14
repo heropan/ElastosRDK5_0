@@ -15,7 +15,9 @@ module
     merge("../../car/libcore/io.car");
     merge("../../car/libcore/utility.car");
     merge("../../car/libcore/net.car");
+
     merge("../../car/elastosx/elastosx.car");
+
     merge("../../car/org/w3c.car");
     merge("../../car/org/xml.car");
     merge("../../car/org/xmlpull.car");

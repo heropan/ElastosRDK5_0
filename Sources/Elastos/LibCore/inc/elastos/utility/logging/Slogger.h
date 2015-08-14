@@ -4,6 +4,7 @@
 
 #include <elastos.h>
 
+#ifndef __SLOGGER_MACRO__
 #define __SLOGGER_MACRO__
 #define SLOGGERD(tag, ...)  Elastos::Utility::Logging::Slogger::D(tag, __VA_ARGS__);
 #define SLOGGERE(tag, ...)  Elastos::Utility::Logging::Slogger::E(tag, __VA_ARGS__);

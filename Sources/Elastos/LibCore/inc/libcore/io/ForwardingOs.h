@@ -2,10 +2,6 @@
 #ifndef __LIBCORE_IO_FORWARDINGOS_H__
 #define __LIBCORE_IO_FORWARDINGOS_H__
 
-#define __UUNM_Elastos_CoreLibrary_DEFINED__
-#define c_pElastos_CoreLibraryUunm "Elastos.CoreLibrary.eco"
-#endif // __UUNM_Elastos_CoreLibrary_DEFINED__
-
 #include "core/Object.h"
 
 using Libcore::IO::IOs;
