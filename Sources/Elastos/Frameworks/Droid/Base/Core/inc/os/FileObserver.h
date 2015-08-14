@@ -1,6 +1,6 @@
 
-#ifndef __FILEOBSERVER_H__
-#define __FILEOBSERVER_H__
+#ifndef __ELASTOS_DROID_OS_FILEOBSERVER_H__
+#define __ELASTOS_DROID_OS_FILEOBSERVER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -122,4 +122,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__FILEOBSERVER_H__
+#endif //__ELASTOS_DROID_OS_FILEOBSERVER_H__

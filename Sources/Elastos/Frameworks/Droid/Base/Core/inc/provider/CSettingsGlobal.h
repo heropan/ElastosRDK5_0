@@ -1,5 +1,5 @@
-#ifndef __CSETTINGSGLOBAL_H__
-#define __CSETTINGSGLOBAL_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__
+#define __ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__
 
 #include "_CSettingsGlobal.h"
 
@@ -287,4 +287,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CSETTINGSGLOBAL_H__
+#endif //__ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__

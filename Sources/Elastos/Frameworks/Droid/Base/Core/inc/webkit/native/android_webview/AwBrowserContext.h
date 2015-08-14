@@ -1,6 +1,6 @@
 
-#ifndef __AWBROWSERCONTEXT_H__
-#define __AWBROWSERCONTEXT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__
 
 // import android.content.Context;
 // import android.content.SharedPreferences;
@@ -64,4 +64,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWBROWSERCONTEXT_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERCONTEXT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSCANRESULT_H__
-#define __CSCANRESULT_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CSCANRESULT_H__
+#define __ELASTOS_DROID_NET_WIFI_CSCANRESULT_H__
 
 #include "_CScanResult.h"
 
@@ -91,4 +91,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSCANRESULT_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CSCANRESULT_H__

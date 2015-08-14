@@ -1,5 +1,5 @@
-#ifndef __MetaKeyKeyListener_H__
-#define __MetaKeyKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__
+#define __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -340,4 +340,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MetaKeyKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_MetaKeyKeyListener_H__

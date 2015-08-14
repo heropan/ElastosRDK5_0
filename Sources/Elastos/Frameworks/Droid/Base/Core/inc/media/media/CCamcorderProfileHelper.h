@@ -1,6 +1,6 @@
 
-#ifndef __CCAMCORDERPROFILEHELPER_H__
-#define __CCAMCORDERPROFILEHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CCAMCORDERPROFILEHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CCAMCORDERPROFILEHELPER_H__
 
 #include "_CCamcorderProfileHelper.h"
 #include "ext/frameworkext.h"
@@ -93,4 +93,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CCAMCORDERPROFILEHELPER_H__
+#endif //__ELASTOS_DROID_MEDIA_CCAMCORDERPROFILEHELPER_H__

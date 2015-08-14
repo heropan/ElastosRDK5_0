@@ -1,5 +1,5 @@
-#ifndef __TABLESTATUSBARVIEW_H_
-#define __TABLESTATUSBARVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLESTATUSBARVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLESTATUSBARVIEW_H__
 
 #include "widget/FrameLayout.h"
 #include "systemui/statusbar/DelegateViewHelper.h"
@@ -112,4 +112,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__TABLESTATUSBARVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLESTATUSBARVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __SPANNABLESTRINGINTERNAL_H__
-#define __SPANNABLESTRINGINTERNAL_H__
+#ifndef __ELASTOS_DROID_TEXT_SPANNABLESTRINGINTERNAL_H__
+#define __ELASTOS_DROID_TEXT_SPANNABLESTRINGINTERNAL_H__
 
 #include "ext/frameworkext.h"
 
@@ -127,4 +127,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__SPANNABLESTRINGINTERNAL_H__
+#endif //__ELASTOS_DROID_TEXT_SPANNABLESTRINGINTERNAL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __HANDLEVIEW_H__
-#define __HANDLEVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_HANDLEVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_HANDLEVIEW_H__
 
 // import android.content.Context;
 // import android.content.res.TypedArray;
@@ -199,4 +199,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__HANDLEVIEW_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_HANDLEVIEW_H__

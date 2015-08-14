@@ -1,5 +1,5 @@
-#ifndef __CLINEARLAYOUT_H_
-#define __CLINEARLAYOUT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CLINEARLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CLINEARLAYOUT_H__
 
 #include "_CLinearLayout.h"
 
@@ -238,4 +238,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CLINEARLAYOUT_H_
+#endif //__ELASTOS_DROID_WIDGET_CLINEARLAYOUT_H__

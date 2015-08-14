@@ -1,6 +1,6 @@
 
-#ifndef __CCURSORLOADER_H__
-#define __CCURSORLOADER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
+#define __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
 
 #include "_CCursorLoader.h"
 #include <ext/frameworkext.h>
@@ -192,4 +192,4 @@ private:
 }
 }
 
-#endif // __CCURSORLOADER_H__
+#endif // __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__

@@ -1,5 +1,5 @@
-#ifndef __CSQLITESTATEMENT_H__
-#define __CSQLITESTATEMENT_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITESTATEMENT_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITESTATEMENT_H__
 
 #include "_CSQLiteStatement.h"
 #include "database/sqlite/SQLiteProgram.h"
@@ -78,4 +78,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif // __CSQLITESTATEMENT_H__
+#endif // __ELASTOS_DROID_DATABASE_SQLITE_CSQLITESTATEMENT_H__

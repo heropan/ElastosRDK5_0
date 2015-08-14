@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOSYSTEMHELPER_H__
-#define __CAUDIOSYSTEMHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOSYSTEMHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOSYSTEMHELPER_H__
 
 #include "_CAudioSystemHelper.h"
 #include "ext/frameworkext.h"
@@ -149,4 +149,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CAUDIOSYSTEMHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIOSYSTEMHELPER_H__

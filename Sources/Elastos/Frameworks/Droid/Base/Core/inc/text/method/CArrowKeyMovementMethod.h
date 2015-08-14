@@ -1,6 +1,6 @@
 
-#ifndef __CARROWKEYMOVEMENTMETHOD_H__
-#define __CARROWKEYMOVEMENTMETHOD_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CARROWKEYMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CARROWKEYMOVEMENTMETHOD_H__
 
 #include "_CArrowKeyMovementMethod.h"
 #include "text/method/ArrowKeyMovementMethod.h"
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CARROWKEYMOVEMENTMETHOD_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CARROWKEYMOVEMENTMETHOD_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __RESTORESESSION_H__
-#define  __RESTORESESSION_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_RESTORESESSION_H__
+#define  __ELASTOS_DROID_APP_BACKUP_RESTORESESSION_H__
 
 #include "ext/frameworkext.h"
 
@@ -119,4 +119,4 @@ private:
 }
 }
 }
-#endif  //__RESTORESESSION_H__
+#endif  //__ELASTOS_DROID_APP_BACKUP_RESTORESESSION_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CVIEWCONFIGURATION_H__
-#define __CVIEWCONFIGURATION_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEWCONFIGURATION_H__
+#define __ELASTOS_DROID_VIEW_CVIEWCONFIGURATION_H__
 
 #include "_CViewConfiguration.h"
 #include "ext/frameworkdef.h"
@@ -535,4 +535,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVIEWCONFIGURATION_H__
+#endif //__ELASTOS_DROID_VIEW_CVIEWCONFIGURATION_H__

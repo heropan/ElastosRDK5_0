@@ -1,6 +1,6 @@
 
-#ifndef  __CVIEWSTUB_H__
-#define  __CVIEWSTUB_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEWSTUB_H__
+#define  __ELASTOS_DROID_VIEW_CVIEWSTUB_H__
 
 #include "_CViewStub.h"
 #include "view/ViewStub.h"
@@ -69,4 +69,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CVIEWSTUB_H__
+#endif  //__ELASTOS_DROID_VIEW_CVIEWSTUB_H__

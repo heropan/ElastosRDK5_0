@@ -1,6 +1,6 @@
 
-#ifndef __MEMORYPRESSURELISTENER_H__
-#define __MEMORYPRESSURELISTENER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__
 
 // import android.app.Activity;
 // import android.content.ComponentCallbacks2;
@@ -101,4 +101,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__MEMORYPRESSURELISTENER_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_MEMORYPRESSURELISTENER_H__

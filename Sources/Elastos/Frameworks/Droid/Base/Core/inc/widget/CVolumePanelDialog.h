@@ -1,6 +1,6 @@
 
-#ifndef __CVOLUMEPANELDIALOG_H__
-#define __CVOLUMEPANELDIALOG_H__
+#ifndef __ELASTOS_DROID_WIDGET_CVOLUMEPANELDIALOG_H__
+#define __ELASTOS_DROID_WIDGET_CVOLUMEPANELDIALOG_H__
 
 #include "_CVolumePanelDialog.h"
 #include "widget/VolumePanelDialog.h"
@@ -40,4 +40,4 @@ public:
 }
 }
 
-#endif // __CVOLUMEPANELDIALOG_H__
+#endif // __ELASTOS_DROID_WIDGET_CVOLUMEPANELDIALOG_H__

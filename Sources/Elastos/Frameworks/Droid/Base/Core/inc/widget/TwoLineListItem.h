@@ -1,5 +1,5 @@
-#ifndef __TWOLINELISTITEM_H__
-#define __TWOLINELISTITEM_H__
+#ifndef __ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
+#define __ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
 
 #include "ext/frameworkext.h"
 #include "widget/RelativeLayout.h"
@@ -47,6 +47,6 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TWOLINELISTITEM_H__
+#endif //__ELASTOS_DROID_WIDGET_TWOLINELISTITEM_H__
 
 

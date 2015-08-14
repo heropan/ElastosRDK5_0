@@ -1,5 +1,5 @@
-#ifndef __CSWITCH_H_
-#define __CSWITCH_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSWITCH_H__
+#define __ELASTOS_DROID_WIDGET_CSWITCH_H__
 
 #include "_CSwitch.h"
 #include "widget/Switch.h"
@@ -108,4 +108,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSWITCH_H_
+#endif //__ELASTOS_DROID_WIDGET_CSWITCH_H__

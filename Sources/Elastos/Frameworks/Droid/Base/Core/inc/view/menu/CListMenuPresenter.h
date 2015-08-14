@@ -1,5 +1,5 @@
-#ifndef __CLISTMENUPRESENTER_H__
-#define __CLISTMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CLISTMENUPRESENTER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CLISTMENUPRESENTER_H__
 
 #include "_CListMenuPresenter.h"
 #include "view/menu/ListMenuPresenter.h"

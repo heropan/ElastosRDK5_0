@@ -1,6 +1,6 @@
 
-#ifndef __SELECTION_H__
-#define __SELECTION_H__
+#ifndef __ELASTOS_DROID_TEXT_SELECTION_H__
+#define __ELASTOS_DROID_TEXT_SELECTION_H__
 
 #include "ext/frameworkext.h"
 
@@ -220,4 +220,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__SELECTION_H__
+#endif //__ELASTOS_DROID_TEXT_SELECTION_H__

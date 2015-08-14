@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAY_H__
-#define __DISPLAY_H__
+#ifndef __ELASTOS_DROID_VIEW_DISPLAY_H__
+#define __ELASTOS_DROID_VIEW_DISPLAY_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <ext/frameworkext.h>
@@ -372,4 +372,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__DISPLAY_H__
+#endif //__ELASTOS_DROID_VIEW_DISPLAY_H__

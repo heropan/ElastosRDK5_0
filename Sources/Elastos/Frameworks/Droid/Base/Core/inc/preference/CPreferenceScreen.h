@@ -1,6 +1,6 @@
 
-#ifndef __CPREFERENCESCREEN_H__
-#define __CPREFERENCESCREEN_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREEN_H__
+#define __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREEN_H__
 
 #include "_CPreferenceScreen.h"
 #include "PreferenceGroup.h"
@@ -110,4 +110,4 @@ private:
 }
 }
 
-#endif // __CPREFERENCESCREEN_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREEN_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSURFACESESSION_H__
-#define __CSURFACESESSION_H__
+#ifndef __ELASTOS_DROID_VIEW_CSURFACESESSION_H__
+#define __ELASTOS_DROID_VIEW_CSURFACESESSION_H__
 
 #include "_CSurfaceSession.h"
 #include <gui/SurfaceComposerClient.h>
@@ -34,4 +34,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSURFACESESSION_H__
+#endif //__ELASTOS_DROID_VIEW_CSURFACESESSION_H__

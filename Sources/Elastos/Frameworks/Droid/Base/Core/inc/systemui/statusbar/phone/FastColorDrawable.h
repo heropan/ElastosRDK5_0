@@ -1,5 +1,5 @@
-#ifndef __FASTCOLORDRAWABLE_H_
-#define __FASTCOLORDRAWABLE_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_FASTCOLORDRAWABLE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_FASTCOLORDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 
@@ -56,4 +56,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__FASTCOLORDRAWABLE_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_FASTCOLORDRAWABLE_H__

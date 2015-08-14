@@ -1,6 +1,6 @@
 
-#ifndef __MENUBUILDER_H__
-#define __MENUBUILDER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_MENUBUILDER_H__
+#define __ELASTOS_DROID_VIEW_MENU_MENUBUILDER_H__
 
 #include "ext/frameworkext.h"
 #include "_CMenuBuilder.h"

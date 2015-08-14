@@ -1,5 +1,5 @@
-#ifndef __SOUNDEFFECTCONSTANT_H__
-#define __SOUNDEFFECTCONSTANT_H__
+#ifndef __ELASTOS_DROID_VIEW_SOUNDEFFECTCONSTANT_H__
+#define __ELASTOS_DROID_VIEW_SOUNDEFFECTCONSTANT_H__
 
 #include "ext/frameworkext.h"
 
@@ -38,4 +38,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SOUNDEFFECTCONSTANT_H__
+#endif //__ELASTOS_DROID_VIEW_SOUNDEFFECTCONSTANT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __AWPICTURE_H__
-#define __AWPICTURE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__
 
 // import android.graphics.Canvas;
 // import android.graphics.Picture;
@@ -96,4 +96,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWPICTURE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPICTURE_H__

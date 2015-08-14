@@ -1,6 +1,6 @@
 
-#ifndef __MUSTOVERRIDEEXCEPTION_H__
-#define __MUSTOVERRIDEEXCEPTION_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MUSTOVERRIDEEXCEPTION_H__
+#define __ELASTOS_DROID_WEBKIT_MUSTOVERRIDEEXCEPTION_H__
 
 #include "ext/frameworkext.h"
 
@@ -20,4 +20,4 @@ class MustOverrideException : public RuntimeException
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__MUSTOVERRIDEEXCEPTION_H__
+#endif //__ELASTOS_DROID_WEBKIT_MUSTOVERRIDEEXCEPTION_H__

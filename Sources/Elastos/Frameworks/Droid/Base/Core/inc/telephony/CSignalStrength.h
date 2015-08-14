@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNALSTRENGTH_H__
-#define __CSIGNALSTRENGTH_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CSIGNALSTRENGTH_H__
+#define __ELASTOS_DROID_TELEPHONY_CSIGNALSTRENGTH_H__
 
 #include "_CSignalStrength.h"
 
@@ -214,4 +214,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSIGNALSTRENGTH_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CSIGNALSTRENGTH_H__

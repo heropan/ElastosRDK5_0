@@ -1,6 +1,6 @@
 
-#ifndef __CODECCAPABILITIES_H__
-#define __CODECCAPABILITIES_H__
+#ifndef __ELASTOS_DROID_MEDIA_CODECCAPABILITIES_H__
+#define __ELASTOS_DROID_MEDIA_CODECCAPABILITIES_H__
 
 #include "_CCodecCapabilities.h"
 
@@ -34,4 +34,4 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CODECCAPABILITIES_H__
+#endif // __ELASTOS_DROID_MEDIA_CODECCAPABILITIES_H__

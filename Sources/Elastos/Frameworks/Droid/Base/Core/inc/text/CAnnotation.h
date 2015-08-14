@@ -1,6 +1,6 @@
 
-#ifndef __CANNOTATION_H__
-#define __CANNOTATION_H__
+#ifndef __ELASTOS_DROID_TEXT_CANNOTATION_H__
+#define __ELASTOS_DROID_TEXT_CANNOTATION_H__
 
 #include "_CAnnotation.h"
 #include "text/Annotation.h"
@@ -35,4 +35,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CANNOTATION_H__
+#endif // __ELASTOS_DROID_TEXT_CANNOTATION_H__

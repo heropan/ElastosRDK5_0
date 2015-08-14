@@ -1,6 +1,6 @@
 
-#ifndef __CPRIVACYLOCATIONMANAGER_H__
-#define __CPRIVACYLOCATIONMANAGER_H__
+#ifndef __ELASTOS_DROID_PRIVACY_SURROGATE_CPRIVACYLOCATIONMANAGER_H__
+#define __ELASTOS_DROID_PRIVACY_SURROGATE_CPRIVACYLOCATIONMANAGER_H__
 
 #include "_CPrivacyLocationManager.h"
 #include "location/LocationManager.h"
@@ -303,4 +303,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPRIVACYLOCATIONMANAGER_H__
+#endif // __ELASTOS_DROID_PRIVACY_SURROGATE_CPRIVACYLOCATIONMANAGER_H__

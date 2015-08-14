@@ -1,6 +1,6 @@
 
-#ifndef __WEBICONDATABASE_H__
-#define __WEBICONDATABASE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBICONDATABASE_H__
+#define __ELASTOS_DROID_WEBKIT_WEBICONDATABASE_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/WebViewFactory.h"
@@ -41,4 +41,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBICONDATABASE_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBICONDATABASE_H__

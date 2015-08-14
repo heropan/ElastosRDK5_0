@@ -1,5 +1,5 @@
-#ifndef __CharacterStyle_H__
-#define __CharacterStyle_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CharacterStyle_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CharacterStyle_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -101,4 +101,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CharacterStyle_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CharacterStyle_H__

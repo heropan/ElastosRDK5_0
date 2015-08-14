@@ -1,6 +1,6 @@
 
-#ifndef __CCHOREOGRAPHERHELPER_H__
-#define __CCHOREOGRAPHERHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__
+#define __ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__
 
 #include "_CChoreographerHelper.h"
 
@@ -88,4 +88,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCHOREOGRAPHERHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__

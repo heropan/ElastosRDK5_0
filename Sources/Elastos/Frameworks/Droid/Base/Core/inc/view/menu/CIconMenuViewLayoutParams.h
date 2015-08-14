@@ -1,6 +1,6 @@
 
-#ifndef _CICONMENUVIEWLAYOUTPARAMS_H__
-#define _CICONMENUVIEWLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CICONMENUVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_VIEW_MENU_CICONMENUVIEWLAYOUTPARAMS_H__
 
 #include "_CIconMenuViewLayoutParams.h"
 #include "view/menu/IconMenuViewLayoutParams.h"
@@ -68,4 +68,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif   //_CICONMENUVIEWLAYOUTPARAMS_H__
+#endif   //__ELASTOS_DROID_VIEW_MENU_CICONMENUVIEWLAYOUTPARAMS_H__

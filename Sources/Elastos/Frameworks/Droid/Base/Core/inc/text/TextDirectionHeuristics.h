@@ -1,6 +1,6 @@
 
-#ifndef __TEXTDIRECTIONHEURISTICS_H__
-#define __TEXTDIRECTIONHEURISTICS_H__
+#ifndef __ELASTOS_DROID_TEXT_TEXTDIRECTIONHEURISTICS_H__
+#define __ELASTOS_DROID_TEXT_TEXTDIRECTIONHEURISTICS_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/core/Character.h>
@@ -486,4 +486,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__TEXTDIRECTIONHEURISTICS_H__
+#endif //__ELASTOS_DROID_TEXT_TEXTDIRECTIONHEURISTICS_H__

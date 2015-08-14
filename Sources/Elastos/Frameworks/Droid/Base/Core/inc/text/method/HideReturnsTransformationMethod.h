@@ -1,5 +1,5 @@
-#ifndef __HideReturnsTransformationMethod_H__
-#define __HideReturnsTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__
 
 #include "text/method/ReplacementTransformationMethod.h"
 #include "Elastos.Droid.Core_server.h"
@@ -43,4 +43,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __HideReturnsTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_HideReturnsTransformationMethod_H__

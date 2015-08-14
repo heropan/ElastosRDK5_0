@@ -1,6 +1,6 @@
 
-#ifndef __HH_NINEPATCH_H
-#define __HH_NINEPATCH_H
+#ifndef __ELASTOS_DROID_GRAPHICS_HH_NINEPATC_H__
+#define __ELASTOS_DROID_GRAPHICS_HH_NINEPATC_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -122,4 +122,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __HH_NINEPATCH_H
+#endif // __ELASTOS_DROID_GRAPHICS_HH_NINEPATC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CKEYBOARDLAYOUT_H__
-#define __CKEYBOARDLAYOUT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
+#define __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
 
 #include "_CKeyboardLayout.h"
 
@@ -89,4 +89,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CKEYBOARDLAYOUT_H__
+#endif // __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__

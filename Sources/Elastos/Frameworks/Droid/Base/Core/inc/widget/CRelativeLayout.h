@@ -1,5 +1,5 @@
-#ifndef __CRELATIVELAYOUT_H_
-#define __CRELATIVELAYOUT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CRELATIVELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CRELATIVELAYOUT_H__
 
 #include "_CRelativeLayout.h"
 
@@ -78,4 +78,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CRELATIVELAYOUT_H_
+#endif //__ELASTOS_DROID_WIDGET_CRELATIVELAYOUT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCAMERA_H__
-#define __CCAMERA_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCAMERA_H__
+#define __ELASTOS_DROID_GRAPHICS_CCAMERA_H__
 
 #include "_CCamera.h"
 
@@ -83,4 +83,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCAMERA_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCAMERA_H__

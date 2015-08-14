@@ -1,5 +1,5 @@
-#ifndef __AMRINPUTSTREAM_H__
-#define __AMRINPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_MEDIA_AMRINPUTSTREAM_H__
+#define __ELASTOS_DROID_MEDIA_AMRINPUTSTREAM_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/io/InputStream.h>

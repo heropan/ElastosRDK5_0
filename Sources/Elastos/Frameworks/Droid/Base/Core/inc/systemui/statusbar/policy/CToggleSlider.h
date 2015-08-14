@@ -1,5 +1,5 @@
-#ifndef __CTOGGLESLIDER_H_
-#define __CTOGGLESLIDER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CTOGGLESLIDER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CTOGGLESLIDER_H__
 
 #include "_CToggleSlider.h"
 
@@ -77,4 +77,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTOGGLESLIDER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CTOGGLESLIDER_H__

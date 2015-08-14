@@ -1,6 +1,6 @@
 
-#ifndef __MEDIAROUTEINFO_H__
-#define __MEDIAROUTEINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_MEDIAROUTEINFO_H__
+#define __ELASTOS_DROID_MEDIA_MEDIAROUTEINFO_H__
 
 #include "ext/frameworkext.h"
 #include "media/media/CMediaRouter.h"
@@ -328,4 +328,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MEDIAROUTEINFO_H__
+#endif // __ELASTOS_DROID_MEDIA_MEDIAROUTEINFO_H__

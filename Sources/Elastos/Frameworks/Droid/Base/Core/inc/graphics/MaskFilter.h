@@ -1,5 +1,5 @@
-#ifndef __MASKFILTER_H__
-#define __MASKFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_MASKFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_MASKFILTER_H__
 
 #include <elastos.h>
 
@@ -35,4 +35,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__MASKFILTER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_MASKFILTER_H__

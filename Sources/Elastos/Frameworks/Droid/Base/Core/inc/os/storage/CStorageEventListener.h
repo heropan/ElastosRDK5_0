@@ -1,6 +1,6 @@
 
-#ifndef __CSTORAGEEVENTLISTENER_H__
-#define __CSTORAGEEVENTLISTENER_H__
+#ifndef __ELASTOS_DROID_OS_STORAGE_CSTORAGEEVENTLISTENER_H__
+#define __ELASTOS_DROID_OS_STORAGE_CSTORAGEEVENTLISTENER_H__
 
 #include "_CStorageEventListener.h"
 
@@ -29,4 +29,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSTORAGEEVENTLISTENER_H__
+#endif // __ELASTOS_DROID_OS_STORAGE_CSTORAGEEVENTLISTENER_H__

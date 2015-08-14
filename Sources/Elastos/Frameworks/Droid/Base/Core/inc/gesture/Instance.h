@@ -1,5 +1,5 @@
-#ifndef __INSTANCE_H__
-#define __INSTANCE_H__
+#ifndef __ELASTOS_DROID_GESTURE_INSTANCE_H__
+#define __ELASTOS_DROID_GESTURE_INSTANCE_H__
 
 #include "ext/frameworkext.h"
 
@@ -68,4 +68,4 @@ private:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__INSTANCE_H__
+#endif //__ELASTOS_DROID_GESTURE_INSTANCE_H__

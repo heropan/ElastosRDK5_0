@@ -1,5 +1,5 @@
-#ifndef __CENVIRONMENTALREVERB_H__
-#define __CENVIRONMENTALREVERB_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERB_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERB_H__
 
 #include "_CEnvironmentalReverb.h"
 #include "ext/frameworkext.h"
@@ -375,4 +375,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CENVIRONMENTALREVERB_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERB_H__

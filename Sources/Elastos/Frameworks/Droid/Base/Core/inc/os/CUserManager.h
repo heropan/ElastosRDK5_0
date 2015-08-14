@@ -1,6 +1,6 @@
 
-#ifndef __CUSERMANAGER_H__
-#define __CUSERMANAGER_H__
+#ifndef __ELASTOS_DROID_OS_CUSERMANAGER_H__
+#define __ELASTOS_DROID_OS_CUSERMANAGER_H__
 
 #include "_CUserManager.h"
 
@@ -265,5 +265,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUSERMANAGER_H__
+#endif //__ELASTOS_DROID_OS_CUSERMANAGER_H__
 

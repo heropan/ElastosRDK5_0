@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSFORMATION_H__
-#define __CTRANSFORMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
 
 #include "_CTransformation.h"
 #include "ext/frameworkext.h"
@@ -57,4 +57,4 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CTRANSFORMATION_H__
+#endif // __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__

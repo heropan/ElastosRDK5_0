@@ -1,5 +1,5 @@
-#ifndef __DATABASEUTILS_H__
-#define __DATABASEUTILS_H__
+#ifndef __ELASTOS_DROID_DATABASE_DATABASEUTILS_H__
+#define __ELASTOS_DROID_DATABASE_DATABASEUTILS_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -877,4 +877,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__DATABASEUTILS_H__
+#endif //__ELASTOS_DROID_DATABASE_DATABASEUTILS_H__

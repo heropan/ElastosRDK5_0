@@ -1,6 +1,6 @@
 
-#ifndef __AUDIOMANAGERANDROID_H__
-#define __AUDIOMANAGERANDROID_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__
 
 // import android.bluetooth.BluetoothAdapter;
 // import android.bluetooth.BluetoothManager;
@@ -504,4 +504,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AUDIOMANAGERANDROID_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_AUDIOMANAGERANDROID_H__

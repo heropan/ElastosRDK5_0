@@ -1,5 +1,5 @@
-#ifndef __CGALLERY_H_
-#define __CGALLERY_H_
+#ifndef __ELASTOS_DROID_WIDGET_CGALLERY_H__
+#define __ELASTOS_DROID_WIDGET_CGALLERY_H__
 
 #include "_CGallery.h"
 
@@ -158,4 +158,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGALLERY_H_
+#endif //__ELASTOS_DROID_WIDGET_CGALLERY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CGLES11EXT_H__
-#define __CGLES11EXT_H__
+#ifndef __ELASTOS_DROID_OPENGL_CGLES11EXT_H__
+#define __ELASTOS_DROID_OPENGL_CGLES11EXT_H__
 
 #include "_CGLES11Ext.h"
 
@@ -638,4 +638,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGLES11EXT_H__
+#endif // __ELASTOS_DROID_OPENGL_CGLES11EXT_H__

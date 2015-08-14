@@ -1,6 +1,6 @@
 
-#ifndef __CRASTERIZERSPANHELPER_H__
-#define __CRASTERIZERSPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPANHELPER_H__
 
 #include "_CRasterizerSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CRASTERIZERSPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPANHELPER_H__

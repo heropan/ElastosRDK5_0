@@ -1,5 +1,5 @@
-#ifndef __PROPERTYHELPER_H__
-#define __PROPERTYHELPER_H__
+#ifndef __ELASTOS_DROID_UTILITY_PROPERTYHELPER_H__
+#define __ELASTOS_DROID_UTILITY_PROPERTYHELPER_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"

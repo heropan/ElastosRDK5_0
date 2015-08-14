@@ -1,6 +1,6 @@
 
-#ifndef __CPACKAGEITEMINFO_H__
-#define __CPACKAGEITEMINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__
 
 #include "_CPackageItemInfo.h"
 #include "content/pm/PackageItemInfo.h"
@@ -136,4 +136,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPACKAGEITEMINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__

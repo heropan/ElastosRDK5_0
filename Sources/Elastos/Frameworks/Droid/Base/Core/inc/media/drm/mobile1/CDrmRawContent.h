@@ -1,6 +1,6 @@
 
-#ifndef __CDRMRAWCONTENT_H__
-#define __CDRMRAWCONTENT_H__
+#ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMRAWCONTENT_H__
+#define __ELASTOS_DROID_DRM_MOBILE1_CDRMRAWCONTENT_H__
 
 #include "_CDrmRawContent.h"
 #include <Elastos.CoreLibrary.h>
@@ -257,4 +257,4 @@ private:
 } // namespace Elastos
 
 
-#endif // __CDRMRAWCONTENT_H__
+#endif // __ELASTOS_DROID_DRM_MOBILE1_CDRMRAWCONTENT_H__

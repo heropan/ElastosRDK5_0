@@ -1,6 +1,6 @@
 
-#ifndef __CACCOUNTANDUSER_H__
-#define __CACCOUNTANDUSER_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTANDUSER_H__
+#define __ELASTOS_DROID_ACCOUNTS_CACCOUNTANDUSER_H__
 
 #include "_CAccountAndUser.h"
 
@@ -40,4 +40,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACCOUNTANDUSER_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CACCOUNTANDUSER_H__

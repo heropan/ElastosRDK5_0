@@ -1,6 +1,6 @@
 
-#ifndef __CHOREOGRAPHER_H__
-#define __CHOREOGRAPHER_H__
+#ifndef __ELASTOS_DROID_VIEW_CHOREOGRAPHER_H__
+#define __ELASTOS_DROID_VIEW_CHOREOGRAPHER_H__
 
 #include <ext/frameworkext.h>
 #include "view/DisplayEventReceiver.h"
@@ -482,4 +482,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CHOREOGRAPHER_H__
+#endif //__ELASTOS_DROID_VIEW_CHOREOGRAPHER_H__

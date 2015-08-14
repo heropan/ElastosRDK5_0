@@ -1,6 +1,6 @@
 
-#ifndef __PAINTDRAWABLE_H__
-#define __PAINTDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_PAINTDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_PAINTDRAWABLE_H__
 
 #include "graphics/drawable/ShapeDrawable.h"
 
@@ -57,4 +57,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PAINTDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_PAINTDRAWABLE_H__

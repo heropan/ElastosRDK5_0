@@ -1,6 +1,6 @@
 
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#ifndef __ELASTOS_DROID_VIEW_WINDOW_H__
+#define __ELASTOS_DROID_VIEW_WINDOW_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "view/CWindowManagerLayoutParams.h"
@@ -742,4 +742,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__WINDOW_H__
+#endif //__ELASTOS_DROID_VIEW_WINDOW_H__

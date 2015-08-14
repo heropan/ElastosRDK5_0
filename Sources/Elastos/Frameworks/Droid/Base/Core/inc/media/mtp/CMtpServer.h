@@ -1,6 +1,6 @@
 
-#ifndef __CMTPSERVER_H__
-#define __CMTPSERVER_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPSERVER_H__
+#define __ELASTOS_DROID_MTP_CMTPSERVER_H__
 
 #include "_CMtpServer.h"
 
@@ -64,4 +64,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMTPSERVER_H__
+#endif // __ELASTOS_DROID_MTP_CMTPSERVER_H__

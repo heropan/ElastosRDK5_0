@@ -1,6 +1,6 @@
 
-#ifndef __CSINGLELINETRANSFORMATIONMETHOD_H__
-#define __CSINGLELINETRANSFORMATIONMETHOD_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__
 
 #include "_CSingleLineTransformationMethod.h"
 #include "text/method/ReplacementTransformationMethod.h"
@@ -52,4 +52,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSINGLELINETRANSFORMATIONMETHOD_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CSINGLELINETRANSFORMATIONMETHOD_H__

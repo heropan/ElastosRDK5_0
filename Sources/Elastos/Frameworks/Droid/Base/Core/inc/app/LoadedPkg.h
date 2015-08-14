@@ -1,6 +1,6 @@
 
-#ifndef __LOADEDPKG_H__
-#define __LOADEDPKG_H__
+#ifndef __ELASTOS_DROID_APP_LOADEDPKG_H__
+#define __ELASTOS_DROID_APP_LOADEDPKG_H__
 
 #include "ext/frameworkext.h"
 #include "app/CActivityThread.h"
@@ -476,4 +476,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__LOADEDPKG_H__
+#endif //__ELASTOS_DROID_APP_LOADEDPKG_H__

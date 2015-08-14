@@ -1,6 +1,6 @@
 
-#ifndef __PLUGINSTUB_H__
-#define __PLUGINSTUB_H__
+#ifndef __ELASTOS_DROID_WEBKIT_PLUGINSTUB_H__
+#define __ELASTOS_DROID_WEBKIT_PLUGINSTUB_H__
 
 #include "ext/frameworkext.h"
 
@@ -45,4 +45,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PLUGINSTUB_H__
+#endif //__ELASTOS_DROID_WEBKIT_PLUGINSTUB_H__

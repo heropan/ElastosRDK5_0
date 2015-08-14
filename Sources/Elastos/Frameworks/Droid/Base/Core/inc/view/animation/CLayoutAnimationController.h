@@ -1,6 +1,6 @@
 
-#ifndef __CLAYOUTANIMATIONCONTROLLER_H__
-#define __CLAYOUTANIMATIONCONTROLLER_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CLAYOUTANIMATIONCONTROLLER_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CLAYOUTANIMATIONCONTROLLER_H__
 
 #include "_CLayoutAnimationController.h"
 #include "view/animation/LayoutAnimationController.h"
@@ -77,4 +77,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif // __CLAYOUTANIMATIONCONTROLLER_H__
+#endif // __ELASTOS_DROID_VIEW_ANIMATION_CLAYOUTANIMATIONCONTROLLER_H__

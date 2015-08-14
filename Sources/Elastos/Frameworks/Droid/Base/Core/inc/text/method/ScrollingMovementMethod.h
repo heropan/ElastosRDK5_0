@@ -1,5 +1,5 @@
-#ifndef __ScrollingMovementMethod_H__
-#define __ScrollingMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__
 
 #include "text/method/BaseMovementMethod.h"
 //#include "os/ElObject.h"
@@ -99,4 +99,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ScrollingMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_ScrollingMovementMethod_H__

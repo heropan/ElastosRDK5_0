@@ -1,6 +1,6 @@
 
-#ifndef __CMICROPHONEINPUTSTREAM_H__
-#define __CMICROPHONEINPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__
+#define __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__
 
 #include "_CMicrophoneInputStream.h"
 #include "speech/srec/MicrophoneInputStream.h"
@@ -60,4 +60,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CMICROPHONEINPUTSTREAM_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__

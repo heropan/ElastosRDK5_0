@@ -1,6 +1,6 @@
 
-#ifndef __VIEWMANAGER_H__
-#define __VIEWMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_VIEWMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_VIEWMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -169,4 +169,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__VIEWMANAGER_H__
+#endif //__ELASTOS_DROID_WEBKIT_VIEWMANAGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CNINEPATCHDRAWABLE_H__
-#define __CNINEPATCHDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__
 
 #include "_CNinePatchDrawable.h"
 #include "graphics/drawable/NinePatchDrawable.h"
@@ -71,4 +71,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNINEPATCHDRAWABLE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__

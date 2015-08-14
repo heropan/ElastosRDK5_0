@@ -1,6 +1,6 @@
 
-#ifndef __VOLUMEPANELDIALOG_H__
-#define __VOLUMEPANELDIALOG_H__
+#ifndef __ELASTOS_DROID_WIDGET_VOLUMEPANELDIALOG_H__
+#define __ELASTOS_DROID_WIDGET_VOLUMEPANELDIALOG_H__
 
 #include "app/Dialog.h"
 
@@ -35,4 +35,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__VOLUMEPANELDIALOG_H__
+#endif //__ELASTOS_DROID_WIDGET_VOLUMEPANELDIALOG_H__

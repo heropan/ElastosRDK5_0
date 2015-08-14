@@ -1,6 +1,6 @@
 
-#ifndef __NULLAWVIEWMETHODS_H__
-#define __NULLAWVIEWMETHODS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__
 
 // import android.content.res.Configuration;
 // import android.graphics.Canvas;
@@ -121,4 +121,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__NULLAWVIEWMETHODS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_NULLAWVIEWMETHODS_H__

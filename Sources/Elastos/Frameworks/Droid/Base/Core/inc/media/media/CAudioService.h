@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOSERVICE_H__
-#define __CAUDIOSERVICE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOSERVICE_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOSERVICE_H__
 
 #include "_CAudioService.h"
 #include "ext/frameworkext.h"
@@ -2162,4 +2162,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUDIOSERVICE_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIOSERVICE_H__

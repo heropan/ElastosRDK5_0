@@ -1,5 +1,5 @@
-#ifndef __CPOSITIONMETADATAHELPER_H_
-#define __CPOSITIONMETADATAHELPER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CPOSITIONMETADATAHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CPOSITIONMETADATAHELPER_H__
 
 #include "_CPositionMetadataHelper.h"
 #include "widget/PositionMetadata.h"

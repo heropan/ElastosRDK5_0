@@ -1,6 +1,6 @@
 
-#ifndef  __CBASEINPUTCONNECTION_H__
-#define  __CBASEINPUTCONNECTION_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CBASEINPUTCONNECTION_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CBASEINPUTCONNECTION_H__
 
 #include "_CBaseInputConnection.h"
 #include "view/inputmethod/BaseInputConnection.h"
@@ -39,4 +39,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CBASEINPUTCONNECTION_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CBASEINPUTCONNECTION_H__

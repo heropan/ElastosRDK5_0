@@ -1,6 +1,6 @@
 
-#ifndef __CDEVICEADMININFO_H__
-#define __CDEVICEADMININFO_H__
+#ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFO_H__
+#define __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFO_H__
 
 #include "_CDeviceAdminInfo.h"
 #include "ext/frameworkext.h"
@@ -188,4 +188,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDEVICEADMININFO_H__
+#endif //__ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFO_H__

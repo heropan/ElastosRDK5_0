@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOTRACKHELPER_H__
-#define __CAUDIOTRACKHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOTRACKHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOTRACKHELPER_H__
 
 #include "_CAudioTrackHelper.h"
 
@@ -31,4 +31,4 @@ public:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif //__CAUDIOTRACKHELPER_H__
+#endif //__ELASTOS_DROID_MEDIA_CAUDIOTRACKHELPER_H__

@@ -1,5 +1,5 @@
-#ifndef __CACTIONMENUPRESENTER_H__
-#define __CACTIONMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CACTIONMENUPRESENTER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CACTIONMENUPRESENTER_H__
 #include "_CActionMenuPresenter.h"
 #include "ActionMenuPresenter.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef __LOCALEPICKER_H__
-#define __LOCALEPICKER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
+#define __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__
 
 #include "ext/frameworkdef.h"
 #include "app/ListFragment.h"
@@ -163,4 +163,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __LOCALEPICKER_H__
+#endif // __ELASTOS_DROID_INTERNAL_APP_LOCALEPICKER_H__

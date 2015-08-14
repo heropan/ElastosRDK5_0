@@ -1,6 +1,6 @@
 
-#ifndef __CPACKAGEUSERSTATE_H__
-#define __CPACKAGEUSERSTATE_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEUSERSTATE_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPACKAGEUSERSTATE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -41,4 +41,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPACKAGEUSERSTATE_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPACKAGEUSERSTATE_H__

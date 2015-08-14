@@ -1,6 +1,6 @@
 
-#ifndef __DROID_UTIL_PATTERNS_H_
-#define __DROID_UTIL_PATTERNS_H_
+#ifndef __ELASTOS_DROID_UTILITY_DROID_UTIL_PATTERNS_H__
+#define __ELASTOS_DROID_UTILITY_DROID_UTIL_PATTERNS_H__
 
 #include <Elastos.CoreLibrary.h>
 
@@ -114,4 +114,4 @@ public:
 }
 }
 
-#endif //__DROID_UTIL_PATTERNS_H_
+#endif //__ELASTOS_DROID_UTILITY_DROID_UTIL_PATTERNS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CDATEFORMAT_H__
-#define __CDATEFORMAT_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 
 #include "_CDateFormat.h"
 #include "text/format/DateFormat.h"
@@ -72,4 +72,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDATEFORMAT_H__
+#endif // __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__

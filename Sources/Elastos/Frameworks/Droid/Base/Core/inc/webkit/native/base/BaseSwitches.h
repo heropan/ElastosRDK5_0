@@ -1,6 +1,6 @@
 
-#ifndef __BASESWITCHES_H__
-#define __BASESWITCHES_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_BASESWITCHES_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_BASESWITCHES_H__
 
 namespace Elastos {
 namespace Droid {
@@ -36,4 +36,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BASESWITCHES_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_BASESWITCHES_H__

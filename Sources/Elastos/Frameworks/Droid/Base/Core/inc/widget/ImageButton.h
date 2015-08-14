@@ -1,6 +1,6 @@
 
-#ifndef __IMAGEBUTTON_H__
-#define __IMAGEBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_IMAGEBUTTON_H__
 
 #include "widget/ImageView.h"
 #include "ext/frameworkext.h"

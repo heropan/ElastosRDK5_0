@@ -1,6 +1,6 @@
 
-#ifndef __ACTIVITYMANAGERNATIVE_H__
-#define __ACTIVITYMANAGERNATIVE_H__
+#ifndef __ELASTOS_DROID_APP_ACTIVITYMANAGERNATIVE_H__
+#define __ELASTOS_DROID_APP_ACTIVITYMANAGERNATIVE_H__
 
 #include "ext/frameworkext.h"
 
@@ -42,4 +42,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACTIVITYMANAGERNATIVE_H__
+#endif //__ELASTOS_DROID_APP_ACTIVITYMANAGERNATIVE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CExtractedText_h__
-#define __CExtractedText_h__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__
+#define __ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__
 
 #include "_CExtractedText.h"
 
@@ -130,4 +130,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CExtractedText_h__
+#endif //__ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__

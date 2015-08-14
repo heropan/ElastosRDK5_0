@@ -1,6 +1,6 @@
 
-#ifndef __SCALEDRAWABLE_H__
-#define __SCALEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SCALEDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SCALEDRAWABLE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "graphics/drawable/Drawable.h"
@@ -167,4 +167,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SCALEDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SCALEDRAWABLE_H__

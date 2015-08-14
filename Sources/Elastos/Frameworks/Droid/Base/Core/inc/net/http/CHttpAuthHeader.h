@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPAUTHHEADER_H__
-#define __CHTTPAUTHHEADER_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CHTTPAUTHHEADER_H__
+#define __ELASTOS_DROID_NET_HTTP_CHTTPAUTHHEADER_H__
 
 #include "_CHttpAuthHeader.h"
 
@@ -272,4 +272,4 @@ private:
 }
 }
 
-#endif // __CHTTPAUTHHEADER_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CHTTPAUTHHEADER_H__

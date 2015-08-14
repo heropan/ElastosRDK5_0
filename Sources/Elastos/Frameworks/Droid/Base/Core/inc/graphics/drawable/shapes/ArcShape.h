@@ -1,6 +1,6 @@
 
-#ifndef __ARCSHAPE_H__
-#define __ARCSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ARCSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ARCSHAPE_H__
 
 #include "graphics/drawable/shapes/RectShape.h"
 
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ARCSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_ARCSHAPE_H__

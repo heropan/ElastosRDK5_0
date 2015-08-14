@@ -1,6 +1,6 @@
 
-#ifndef __LISTVIEW_H__
-#define __LISTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_LISTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_LISTVIEW_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/Vector.h>
@@ -617,4 +617,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__LISTVIEW_H__
+#endif//__ELASTOS_DROID_WIDGET_LISTVIEW_H__

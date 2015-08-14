@@ -1,6 +1,6 @@
 
-#ifndef __CUSERROUTEINFO_H__
-#define __CUSERROUTEINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
+#define __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
 
 #include "_CUserRouteInfo.h"
 #include "ext/frameworkext.h"

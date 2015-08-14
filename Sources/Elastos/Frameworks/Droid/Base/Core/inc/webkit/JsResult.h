@@ -1,6 +1,6 @@
 
-#ifndef __JSRESULT_H__
-#define __JSRESULT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_JSRESULT_H__
+#define __ELASTOS_DROID_WEBKIT_JSRESULT_H__
 
 #include "ext/frameworkext.h"
 
@@ -66,4 +66,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__JSRESULT_H__
+#endif //__ELASTOS_DROID_WEBKIT_JSRESULT_H__

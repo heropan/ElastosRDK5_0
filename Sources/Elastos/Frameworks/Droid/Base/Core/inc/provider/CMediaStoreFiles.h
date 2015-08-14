@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIASTOREFILES_H__
-#define __CMEDIASTOREFILES_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREFILES_H__
+#define __ELASTOS_DROID_PROVIDER_CMEDIASTOREFILES_H__
 
 #include "_CMediaStoreFiles.h"
 
@@ -68,4 +68,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CMEDIASTOREFILES_H__
+#endif //__ELASTOS_DROID_PROVIDER_CMEDIASTOREFILES_H__

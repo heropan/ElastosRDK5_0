@@ -1,6 +1,6 @@
 
-#ifndef __CEQUALIZERSETTINGS_H__
-#define __CEQUALIZERSETTINGS_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CEQUALIZERSETTINGS_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CEQUALIZERSETTINGS_H__
 
 #include "_CEqualizerSettings.h"
 #include "ext/frameworkext.h"
@@ -62,4 +62,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CEQUALIZERSETTINGS_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CEQUALIZERSETTINGS_H__

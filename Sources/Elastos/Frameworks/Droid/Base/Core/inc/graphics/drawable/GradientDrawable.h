@@ -1,6 +1,6 @@
 
-#ifndef __GRADIENTDRAWABLE_H__
-#define __GRADIENTDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 #include "graphics/CRect.h"
@@ -367,4 +367,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __GRADIENTDRAWABLE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_GRADIENTDRAWABLE_H__

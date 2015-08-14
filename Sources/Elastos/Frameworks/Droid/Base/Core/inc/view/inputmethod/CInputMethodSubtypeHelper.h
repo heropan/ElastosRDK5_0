@@ -1,6 +1,6 @@
 
-#ifndef  __CINPUTMETHODSUBTYPEHELPER_H__
-#define  __CINPUTMETHODSUBTYPEHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__
 
 #include "ext/frameworkext.h"
 #include "_CInputMethodSubtypeHelper.h"
@@ -32,4 +32,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CINPUTMETHODSUBTYPEHELPER_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__

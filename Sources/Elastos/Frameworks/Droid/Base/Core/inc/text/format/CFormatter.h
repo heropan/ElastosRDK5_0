@@ -1,5 +1,5 @@
-#ifndef __CFormatter_H__
-#define __CFormatter_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__
 
 #include "_CFormatter.h"
 #include "Elastos.Droid.Core_server.h"
@@ -33,4 +33,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CFormatter_H__
+#endif // __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__

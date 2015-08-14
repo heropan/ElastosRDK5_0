@@ -1,5 +1,5 @@
-#ifndef __CGPSNINOTIFICATION_H__
-#define __CGPSNINOTIFICATION_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGPSNINOTIFICATION_H__
+#define __ELASTOS_DROID_LOCATION_CGPSNINOTIFICATION_H__
 #include "_CGpsNiNotification.h"
 using Elastos::Droid::Os::IBundle;
 

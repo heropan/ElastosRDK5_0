@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTURIS_H__
-#define __CCONTENTURIS_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
 
 #include "_CContentUris.h"
 #include "ext/frameworkext.h"
@@ -64,4 +64,4 @@ private:
 }
 }
 
-#endif // __CCONTENTURIS_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__

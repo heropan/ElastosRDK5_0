@@ -1,5 +1,5 @@
-#ifndef __CHARARRAYBUFFER_H__
-#define __CHARARRAYBUFFER_H__
+#ifndef __ELASTOS_DROID_DATABASE_CHARARRAYBUFFER_H__
+#define __ELASTOS_DROID_DATABASE_CHARARRAYBUFFER_H__
 
 #include "ext/frameworkext.h"
 

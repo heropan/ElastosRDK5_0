@@ -1,6 +1,6 @@
 
-#ifndef __TELEPHONEYICONS_H__
-#define __TELEPHONEYICONS_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TELEPHONEYICONS_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TELEPHONEYICONS_H__
 
 #include "ext/frameworkext.h"
 
@@ -57,4 +57,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__TELEPHONEYICONS_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TELEPHONEYICONS_H__

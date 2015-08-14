@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTAPPEARANCESPAN_H__
-#define __CTEXTAPPEARANCESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CTEXTAPPEARANCESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CTEXTAPPEARANCESPAN_H__
 
 #include "_CTextAppearanceSpan.h"
 #include "text/style/TextAppearanceSpan.h"
@@ -67,4 +67,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTEXTAPPEARANCESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CTEXTAPPEARANCESPAN_H__

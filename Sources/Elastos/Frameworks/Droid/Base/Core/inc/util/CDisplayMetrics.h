@@ -1,5 +1,5 @@
-#ifndef __CDISPLAYMETRICS_H__
-#define __CDISPLAYMETRICS_H__
+#ifndef __ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__
+#define __ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__
 
 #include "_CDisplayMetrics.h"
 
@@ -245,4 +245,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDISPLAYMETRICS_H__
+#endif //__ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__

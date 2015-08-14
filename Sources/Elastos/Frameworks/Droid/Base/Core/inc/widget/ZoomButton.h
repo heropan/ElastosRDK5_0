@@ -1,6 +1,6 @@
 
-#ifndef __ZOOMBUTTON_H__
-#define __ZOOMBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_ZOOMBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_ZOOMBUTTON_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ImageButton.h"
@@ -86,4 +86,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__ZOOMBUTTON_H__
+#endif //__ELASTOS_DROID_WIDGET_ZOOMBUTTON_H__

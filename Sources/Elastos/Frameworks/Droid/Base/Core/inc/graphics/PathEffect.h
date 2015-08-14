@@ -1,6 +1,6 @@
 
-#ifndef __PATHEFFECT_H__
-#define __PATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_PATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_PATHEFFECT_H__
 
 #include <elastos.h>
 
@@ -36,4 +36,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__PATHEFFECT_H__
+#endif //__ELASTOS_DROID_GRAPHICS_PATHEFFECT_H__

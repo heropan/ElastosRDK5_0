@@ -1,5 +1,5 @@
-#ifndef __CNTPTRUSTEDTIMEHELPER_H__
-#define __CNTPTRUSTEDTIMEHELPER_H__
+#ifndef __ELASTOS_DROID_UTILITY_CNTPTRUSTEDTIMEHELPER_H__
+#define __ELASTOS_DROID_UTILITY_CNTPTRUSTEDTIMEHELPER_H__
 
 #include "_CNtpTrustedTimeHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNTPTRUSTEDTIMEHELPER_H__
+#endif //__ELASTOS_DROID_UTILITY_CNTPTRUSTEDTIMEHELPER_H__

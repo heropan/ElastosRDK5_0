@@ -1,5 +1,5 @@
-#ifndef __CHOOSEACCOUNTACTIVITY_H__
-#define __CHOOSEACCOUNTACTIVITY_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CHOOSEACCOUNTACTIVITY_H__
+#define __ELASTOS_DROID_ACCOUNTS_CHOOSEACCOUNTACTIVITY_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "app/Activity.h"
@@ -248,4 +248,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CHOOSEACCOUNTACTIVITY_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CHOOSEACCOUNTACTIVITY_H__

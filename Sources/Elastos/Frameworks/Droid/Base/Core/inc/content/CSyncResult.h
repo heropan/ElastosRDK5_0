@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCRESULT_H__
-#define __CSYNCRESULT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__
 
 #include "_CSyncResult.h"
 
@@ -281,4 +281,4 @@ private:
 }
 }
 
-#endif // __CSYNCRESULT_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__

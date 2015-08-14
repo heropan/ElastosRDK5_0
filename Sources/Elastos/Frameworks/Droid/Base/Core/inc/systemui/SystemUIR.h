@@ -4,8 +4,8 @@
  * aapt tool from the resource data it found.  It
  * should not be modified by hand.
  */
-#ifndef __SYSTEMUI_R_H__
-#define __SYSTEMUI_R_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_SYSTEMUI_R_H__
+#define __ELASTOS_DROID_SYSTEMUI_SYSTEMUI_R_H__
 
 namespace Elastos {
 namespace Droid {
@@ -2206,5 +2206,5 @@ containing a value of this type.
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SYSTEMUI_R_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_SYSTEMUI_R_H__
 

@@ -1,6 +1,6 @@
 
-#ifndef __CBITMAPREGIONDECODERHELPER_H__
-#define __CBITMAPREGIONDECODERHELPER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPREGIONDECODERHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_CBITMAPREGIONDECODERHELPER_H__
 
 #include "_CBitmapRegionDecoderHelper.h"
 #include <Elastos.CoreLibrary.h>
@@ -42,4 +42,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CBITMAPREGIONDECODERHELPER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CBITMAPREGIONDECODERHELPER_H__

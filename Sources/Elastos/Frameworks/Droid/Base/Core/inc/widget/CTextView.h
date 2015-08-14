@@ -1,5 +1,5 @@
-#ifndef __CTEXTVIEW_H_
-#define __CTEXTVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CTEXTVIEW_H__
 
 #include "_CTextView.h"
 
@@ -1884,4 +1884,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTEXTVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CTEXTVIEW_H__

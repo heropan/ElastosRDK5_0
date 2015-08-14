@@ -1,6 +1,6 @@
 
-#ifndef __HTTPCONNECTION_H__
-#define __HTTPCONNECTION_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__
+#define __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__
 
 #include "Connection.h"
 #include "RequestFeeder.h"
@@ -90,4 +90,4 @@ private:
 }
 }
 
-#endif // __HTTPCONNECTION_H__
+#endif // __ELASTOS_DROID_NET_HTTP_HTTPCONNECTION_H__

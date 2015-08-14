@@ -1,6 +1,6 @@
 
-#ifndef  __CHARDWARE_CCAMERA_H__
-#define  __CHARDWARE_CCAMERA_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CHARDWARE_CCAMERA_H__
+#define  __ELASTOS_DROID_HARDWARE_CHARDWARE_CCAMERA_H__
 
 #include "ext/frameworkext.h"
 #include "_CHardwareCamera.h"
@@ -1802,4 +1802,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CHARDWARE_CCAMERA_H__
+#endif  //__ELASTOS_DROID_HARDWARE_CHARDWARE_CCAMERA_H__

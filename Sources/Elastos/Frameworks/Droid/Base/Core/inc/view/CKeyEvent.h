@@ -1,6 +1,6 @@
 
-#ifndef __CKEYEVENT_H__
-#define __CKEYEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_CKEYEVENT_H__
+#define __ELASTOS_DROID_VIEW_CKEYEVENT_H__
 
 #include "_CKeyEvent.h"
 #include "view/InputEvent.h"
@@ -1054,4 +1054,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CKEYEVENT_H__
+#endif //__ELASTOS_DROID_VIEW_CKEYEVENT_H__

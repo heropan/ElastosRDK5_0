@@ -1,6 +1,6 @@
 
-#ifndef __CEGLSURFACEIMPL_H__
-#define __CEGLSURFACEIMPL_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLES_CEGLSURFACEIMPL_H__
+#define __ELASTOS_DROID_OPENGL_GLES_CEGLSURFACEIMPL_H__
 
 #include "_CEGLSurfaceImpl.h"
 
@@ -38,4 +38,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CEGLSURFACEIMPL_H__
+#endif // __ELASTOS_DROID_OPENGL_GLES_CEGLSURFACEIMPL_H__

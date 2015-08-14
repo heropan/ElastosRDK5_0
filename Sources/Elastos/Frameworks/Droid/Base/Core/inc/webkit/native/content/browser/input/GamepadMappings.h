@@ -1,6 +1,6 @@
 
-#ifndef __GAMEPADMAPPINGS_H__
-#define __GAMEPADMAPPINGS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADMAPPINGS_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADMAPPINGS_H__
 
 // import android.view.KeyEvent;
 // import android.view.MotionEvent;
@@ -131,4 +131,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__GAMEPADMAPPINGS_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADMAPPINGS_H__

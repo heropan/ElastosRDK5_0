@@ -1,6 +1,6 @@
 
-#ifndef __DIALOGFRAGMENT_H__
-#define __DIALOGFRAGMENT_H__
+#ifndef __ELASTOS_DROID_APP_DIALOGFRAGMENT_H__
+#define __ELASTOS_DROID_APP_DIALOGFRAGMENT_H__
 
 #include "app/Fragment.h"
 
@@ -154,4 +154,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DIALOGFRAGMENT_H__
+#endif //__ELASTOS_DROID_APP_DIALOGFRAGMENT_H__

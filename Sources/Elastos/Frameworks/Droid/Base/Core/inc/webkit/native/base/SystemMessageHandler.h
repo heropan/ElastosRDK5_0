@@ -1,6 +1,6 @@
 
-#ifndef __SYSTEMMESSAGEHANDLER_H__
-#define __SYSTEMMESSAGEHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__
 
 // import android.os.Handler;
 // import android.os.Message;
@@ -59,4 +59,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__SYSTEMMESSAGEHANDLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_SYSTEMMESSAGEHANDLER_H__

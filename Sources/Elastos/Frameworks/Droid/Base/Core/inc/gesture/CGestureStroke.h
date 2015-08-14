@@ -1,5 +1,5 @@
-#ifndef __CGESTURESTROKE_H__
-#define __CGESTURESTROKE_H__
+#ifndef __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
+#define __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
 
 #include "_CGestureStroke.h"
 

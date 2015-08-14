@@ -1,6 +1,6 @@
 
-#ifndef __CSERVICEMANAGER_H__
-#define __CSERVICEMANAGER_H__
+#ifndef __ELASTOS_DROID_OS_CSERVICEMANAGER_H__
+#define __ELASTOS_DROID_OS_CSERVICEMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "_CServiceManager.h"
@@ -52,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSERVICEMANAGER_H__
+#endif // __ELASTOS_DROID_OS_CSERVICEMANAGER_H__

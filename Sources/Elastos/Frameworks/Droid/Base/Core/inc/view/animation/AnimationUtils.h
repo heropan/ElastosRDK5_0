@@ -1,6 +1,6 @@
 
-#ifndef __ANIMATIONUTILS_H__
-#define __ANIMATIONUTILS_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__
 
 #include "ext/frameworkext.h"
 #include "os/SystemClock.h"
@@ -149,4 +149,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__ANIMATIONUTILS_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONUTILS_H__

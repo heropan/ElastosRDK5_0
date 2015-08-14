@@ -1,6 +1,6 @@
 
-#ifndef __CTIMEKEYLISTENER_H__
-#define __CTIMEKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CTIMEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CTIMEKEYLISTENER_H__
 
 #include "_CTimeKeyListener.h"
 #include "text/method/TimeKeyListener.h"
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTIMEKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CTIMEKEYLISTENER_H__

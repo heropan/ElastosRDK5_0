@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSEXTENSIONS_H__
-#define __CCONTACTSEXTENSIONS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSEXTENSIONS_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSEXTENSIONS_H__
 
 #include "_CContactsExtensions.h"
 
@@ -31,4 +31,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__CCONTACTSEXTENSIONS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTSEXTENSIONS_H__

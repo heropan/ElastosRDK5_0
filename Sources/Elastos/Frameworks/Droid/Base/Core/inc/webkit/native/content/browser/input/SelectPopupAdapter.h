@@ -1,6 +1,6 @@
 
-#ifndef __SELECTPOPUPADAPTER_H__
-#define __SELECTPOPUPADAPTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPADAPTER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPADAPTER_H__
 
 // import android.content.Context;
 // import android.view.View;
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__SELECTPOPUPADAPTER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUPADAPTER_H__

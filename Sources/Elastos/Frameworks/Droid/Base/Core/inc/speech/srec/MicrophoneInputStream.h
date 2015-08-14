@@ -1,5 +1,5 @@
-#ifndef __MicrophoneInputStream_H__
-#define __MicrophoneInputStream_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_MicrophoneInputStream_H__
+#define __ELASTOS_DROID_SPEECH_SREC_MicrophoneInputStream_H__
 
 #include <elastos/io/InputStream.h>
 
@@ -101,4 +101,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MicrophoneInputStream_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_MicrophoneInputStream_H__

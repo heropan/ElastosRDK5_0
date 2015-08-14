@@ -1,6 +1,6 @@
 
-#ifndef __CMTPPROPERTYLIST_H__
-#define __CMTPPROPERTYLIST_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPPROPERTYLIST_H__
+#define __ELASTOS_DROID_MTP_CMTPPROPERTYLIST_H__
 
 #include "_CMtpPropertyList.h"
 
@@ -54,4 +54,4 @@ public:
 } // namespace Mtp
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMTPPROPERTYLIST_H__
+#endif // __ELASTOS_DROID_MTP_CMTPPROPERTYLIST_H__

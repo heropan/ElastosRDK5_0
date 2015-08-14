@@ -1,6 +1,6 @@
 
-#ifndef __DEVICEORIENTATIONSERVICE_H__
-#define __DEVICEORIENTATIONSERVICE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_DEVICEORIENTATIONSERVICE_H__
+#define __ELASTOS_DROID_WEBKIT_DEVICEORIENTATIONSERVICE_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/DeviceMotionAndOrientationManager.h"
@@ -129,4 +129,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DEVICEORIENTATIONSERVICE_H__
+#endif //__ELASTOS_DROID_WEBKIT_DEVICEORIENTATIONSERVICE_H__

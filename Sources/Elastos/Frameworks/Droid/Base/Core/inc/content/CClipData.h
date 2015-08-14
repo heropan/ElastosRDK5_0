@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPDATA_H__
-#define __CCLIPDATA_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCLIPDATA_H__
+#define __ELASTOS_DROID_CONTENT_CCLIPDATA_H__
 
 #include "_CClipData.h"
 #include "ext/frameworkext.h"
@@ -191,4 +191,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CCLIPDATA_H__
+#endif // __ELASTOS_DROID_CONTENT_CCLIPDATA_H__

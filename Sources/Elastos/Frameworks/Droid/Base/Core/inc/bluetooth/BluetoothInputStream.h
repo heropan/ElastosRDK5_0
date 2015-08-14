@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHINPUTSTREAM_H__
-#define __BLUETOOTHINPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTSTREAM_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTSTREAM_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
@@ -67,4 +67,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __BLUETOOTHINPUTSTREAM_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTSTREAM_H__

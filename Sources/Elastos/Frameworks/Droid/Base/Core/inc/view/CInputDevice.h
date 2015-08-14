@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTDEVICE_H__
-#define __CINPUTDEVICE_H__
+#ifndef __ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
+#define __ELASTOS_DROID_VIEW_CINPUTDEVICE_H__
 
 #include "_CInputDevice.h"
 #include "ext/frameworkext.h"
@@ -362,4 +362,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CINPUTDEVICE_H__
+#endif //__ELASTOS_DROID_VIEW_CINPUTDEVICE_H__

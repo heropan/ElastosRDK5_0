@@ -1,6 +1,6 @@
 
-#ifndef __COBBINFO_H__
-#define __COBBINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__
+#define __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__
 
 #include "_CObbInfo.h"
 
@@ -89,4 +89,4 @@ public:
 } // namespace Content
 } // namespace Res
 
-#endif // __COBBINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__

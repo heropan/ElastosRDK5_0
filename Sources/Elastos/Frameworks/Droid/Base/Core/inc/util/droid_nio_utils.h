@@ -1,5 +1,5 @@
-#ifndef __HH_DROID_NIO_UTILS_H
-#define __HH_DROID_NIO_UTILS_H
+#ifndef __ELASTOS_DROID_UTILITY_H_H__
+#define __ELASTOS_DROID_UTILITY_H_H__
 
 #include <Elastos.CoreLibrary.h>
 
@@ -31,4 +31,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_DROID_NIO_UTILS_H
+#endif // __ELASTOS_DROID_UTILITY_H_H__

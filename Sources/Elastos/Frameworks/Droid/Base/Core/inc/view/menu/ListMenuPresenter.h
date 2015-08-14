@@ -1,6 +1,6 @@
 
-#ifndef  __LISTMENUPRESENTER_H__
-#define  __LISTMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_LISTMENUPRESENTER_H__
+#define  __ELASTOS_DROID_VIEW_MENU_LISTMENUPRESENTER_H__
 
 #include "widget/BaseAdapter.h"
 
@@ -250,4 +250,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__LISTMENUPRESENTER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_LISTMENUPRESENTER_H__

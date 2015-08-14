@@ -1,6 +1,6 @@
 
-#ifndef __CDRMSTOREIMAGES_H__
-#define __CDRMSTOREIMAGES_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CDRMSTOREIMAGES_H__
+#define __ELASTOS_DROID_PROVIDER_CDRMSTOREIMAGES_H__
 
 #include "_CDrmStoreImages.h"
 
@@ -19,4 +19,4 @@ public:
 }
 }
 
-#endif //__CDRMSTOREIMAGES_H__
+#endif //__ELASTOS_DROID_PROVIDER_CDRMSTOREIMAGES_H__

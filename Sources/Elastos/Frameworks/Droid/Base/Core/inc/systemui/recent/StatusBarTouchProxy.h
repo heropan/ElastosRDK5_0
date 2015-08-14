@@ -1,6 +1,6 @@
 
-#ifndef __STATISBARTOUCHPROXY_H_
-#define __STATISBARTOUCHPROXY_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_STATISBARTOUCHPROXY_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_STATISBARTOUCHPROXY_H__
 
 #include "widget/FrameLayout.h"
 
@@ -38,4 +38,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__STATISBARTOUCHPROXY_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_STATISBARTOUCHPROXY_H__

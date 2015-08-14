@@ -1,6 +1,6 @@
 
-#ifndef __XFERMODE_H__
-#define __XFERMODE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_XFERMODE_H__
+#define __ELASTOS_DROID_GRAPHICS_XFERMODE_H__
 
 #include "ext/frameworkext.h"
 
@@ -36,4 +36,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__XFERMODE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_XFERMODE_H__

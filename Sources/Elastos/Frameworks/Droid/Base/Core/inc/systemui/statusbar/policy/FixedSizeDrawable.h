@@ -1,6 +1,6 @@
 
-#ifndef __FIXEDSIZEDRAWABLE_H__
-#define __FIXEDSIZEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_FIXEDSIZEDRAWABLE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_FIXEDSIZEDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 
@@ -67,4 +67,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__FIXEDSIZEDRAWABLE_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_FIXEDSIZEDRAWABLE_H__

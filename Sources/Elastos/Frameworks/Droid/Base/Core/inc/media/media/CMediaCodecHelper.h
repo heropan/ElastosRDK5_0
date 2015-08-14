@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIACODECHELPER_H__
-#define __CMEDIACODECHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIACODECHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIACODECHELPER_H__
 
 #include "_CMediaCodecHelper.h"
 #include <ext/frameworkext.h>
@@ -31,4 +31,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIACODECHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIACODECHELPER_H__

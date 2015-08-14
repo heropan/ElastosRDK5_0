@@ -1,6 +1,6 @@
 
-#ifndef __L10NUTILS_H__
-#define __L10NUTILS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_L10NUTILS_H__
+#define __ELASTOS_DROID_WEBKIT_L10NUTILS_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__L10NUTILS_H__
+#endif //__ELASTOS_DROID_WEBKIT_L10NUTILS_H__

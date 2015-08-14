@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIP2PWFDINFO_H__
-#define __CWIFIP2PWFDINFO_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
+#define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
 
 #include "_CWifiP2pWfdInfo.h"
 
@@ -105,4 +105,4 @@ private:
 }
 }
 }
-#endif // __CWIFIP2PWFDINFO_H__
+#endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__

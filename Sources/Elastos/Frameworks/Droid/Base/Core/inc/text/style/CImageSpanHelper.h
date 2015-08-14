@@ -1,6 +1,6 @@
 
-#ifndef __CIMAGESPANHELPER_H__
-#define __CIMAGESPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CIMAGESPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CIMAGESPANHELPER_H__
 
 #include "_CImageSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CIMAGESPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CIMAGESPANHELPER_H__

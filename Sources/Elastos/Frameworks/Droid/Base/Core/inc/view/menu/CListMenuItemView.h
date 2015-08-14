@@ -1,6 +1,6 @@
 
-#ifndef _CLISTMENUITEMVIEW_H__
-#define _CLISTMENUITEMVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CLISTMENUITEMVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_CLISTMENUITEMVIEW_H__
 
 #include "_CListMenuItemView.h"
 
@@ -138,4 +138,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif   //_CLISTMENUITEMVIEW_H__
+#endif   //__ELASTOS_DROID_VIEW_MENU_CLISTMENUITEMVIEW_H__

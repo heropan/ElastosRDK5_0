@@ -1,6 +1,6 @@
 
-#ifndef __AWCONTENTSCLIENT_H__
-#define __AWCONTENTSCLIENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENT_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENT_H__
 
 // import android.content.pm.ActivityInfo;
 // import android.graphics.Bitmap;
@@ -332,4 +332,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWCONTENTSCLIENT_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENT_H__

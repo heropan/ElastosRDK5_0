@@ -1,6 +1,6 @@
 
-#ifndef __COVERSHOOTINTERPOLATOR_H__
-#define __COVERSHOOTINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_COVERSHOOTINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_COVERSHOOTINTERPOLATOR_H__
 
 #include "_COvershootInterpolator.h"
 #include "R.h"
@@ -40,4 +40,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__COVERSHOOTINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_COVERSHOOTINTERPOLATOR_H__

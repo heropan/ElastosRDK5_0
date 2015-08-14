@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIASYNCEVENTHELPER_H__
-#define __CMEDIASYNCEVENTHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENTHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENTHELPER_H__
 
 #include "_CMediaSyncEventHelper.h"
 
@@ -30,4 +30,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIASYNCEVENTHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENTHELPER_H__

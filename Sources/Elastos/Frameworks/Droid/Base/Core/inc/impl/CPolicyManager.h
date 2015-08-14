@@ -1,6 +1,6 @@
 
-#ifndef __CPOLICYMANAGER_H__
-#define __CPOLICYMANAGER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_CPOLICYMANAGER_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_CPOLICYMANAGER_H__
 
 #include "_CPolicyManager.h"
 
@@ -44,4 +44,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPOLICYMANAGER_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_CPOLICYMANAGER_H__

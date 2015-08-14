@@ -1,5 +1,5 @@
-#ifndef __CTWOLINELISTITEM_H_
-#define __CTWOLINELISTITEM_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTWOLINELISTITEM_H__
+#define __ELASTOS_DROID_WIDGET_CTWOLINELISTITEM_H__
 
 #include "_CTwoLineListItem.h"
 #include "widget/TwoLineListItem.h"
@@ -49,4 +49,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTWOLINELISTITEM_H_
+#endif //__ELASTOS_DROID_WIDGET_CTWOLINELISTITEM_H__

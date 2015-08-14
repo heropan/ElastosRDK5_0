@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYMANAGER_H__
-#define __CACTIVITYMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 
 #include "_CActivityManager.h"
 
@@ -568,4 +568,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYMANAGER_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGER_H__

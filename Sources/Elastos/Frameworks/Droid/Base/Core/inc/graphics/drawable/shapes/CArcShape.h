@@ -1,6 +1,6 @@
 
-#ifndef __CARCSHAPE_H__
-#define __CARCSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CARCSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CARCSHAPE_H__
 
 #include "graphics/drawable/shapes/ArcShape.h"
 #include "_CArcShape.h"
@@ -52,4 +52,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CARCSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CARCSHAPE_H__

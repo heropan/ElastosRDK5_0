@@ -1,6 +1,6 @@
 
-#ifndef __CHECKEDTEXTVIEW_H__
-#define __CHECKEDTEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_CHECKEDTEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CHECKEDTEXTVIEW_H__
 
 #include "widget/TextView.h"
 #include "R.h"

@@ -1,6 +1,6 @@
 
-#ifndef  __CSERIALPORT_H__
-#define  __CSERIALPORT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
+#define  __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
 
 #include "_CSerialPort.h"
 
@@ -117,4 +117,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CSERIALPORT_H__
+#endif  //__ELASTOS_DROID_HARDWARE_CSERIALPORT_H__

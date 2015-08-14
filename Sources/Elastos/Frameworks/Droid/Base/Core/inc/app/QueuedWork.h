@@ -1,5 +1,5 @@
-#ifndef __QUEUEDWORK_H__
-#define __QUEUEDWORK_H__
+#ifndef __ELASTOS_DROID_APP_QUEUEDWORK_H__
+#define __ELASTOS_DROID_APP_QUEUEDWORK_H__
 
 #include <Elastos.CoreLibrary.h>
 
@@ -68,4 +68,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __QUEUEDWORK_H__
+#endif // __ELASTOS_DROID_APP_QUEUEDWORK_H__

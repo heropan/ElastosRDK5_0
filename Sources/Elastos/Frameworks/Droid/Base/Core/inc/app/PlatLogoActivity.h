@@ -1,6 +1,6 @@
 
-#ifndef __PLATLOGOACTIVITY_H__
-#define __PLATLOGOACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__
 
 #include "app/Activity.h"
 #include "os/CHandler.h"
@@ -89,4 +89,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__PLATLOGOACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_PLATLOGOACTIVITY_H__

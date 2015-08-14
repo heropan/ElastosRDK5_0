@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPOSEPATHEFFECT_H__
-#define __CCOMPOSEPATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCOMPOSEPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CCOMPOSEPATHEFFECT_H__
 
 #include "_CComposePathEffect.h"
 #include "graphics/PathEffect.h"
@@ -33,4 +33,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCOMPOSEPATHEFFECT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCOMPOSEPATHEFFECT_H__

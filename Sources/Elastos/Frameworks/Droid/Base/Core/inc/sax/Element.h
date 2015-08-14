@@ -1,5 +1,5 @@
-#ifndef __ELEMENT_H__
-#define __ELEMENT_H__
+#ifndef __ELASTOS_DROID_SAX_ELEMENT_H__
+#define __ELASTOS_DROID_SAX_ELEMENT_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -134,4 +134,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELEMENT_H__
+#endif //__ELASTOS_DROID_SAX_ELEMENT_H__

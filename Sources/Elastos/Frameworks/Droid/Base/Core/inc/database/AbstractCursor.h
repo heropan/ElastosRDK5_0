@@ -1,5 +1,5 @@
-#ifndef __ABSTRACTCURSOR_H__
-#define __ABSTRACTCURSOR_H__
+#ifndef __ELASTOS_DROID_DATABASE_ABSTRACTCURSOR_H__
+#define __ELASTOS_DROID_DATABASE_ABSTRACTCURSOR_H__
 
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
@@ -324,4 +324,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__ABSTRACTCURSOR_H__
+#endif //__ELASTOS_DROID_DATABASE_ABSTRACTCURSOR_H__

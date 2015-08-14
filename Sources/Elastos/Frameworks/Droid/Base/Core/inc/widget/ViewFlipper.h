@@ -1,6 +1,6 @@
 
-#ifndef __VIEWFLIPPER_H__
-#define __VIEWFLIPPER_H__
+#ifndef __ELASTOS_DROID_WIDGET_VIEWFLIPPER_H__
+#define __ELASTOS_DROID_WIDGET_VIEWFLIPPER_H__
 
 #include "widget/ViewAnimator.h"
 #include "content/BroadcastReceiver.h"
@@ -154,4 +154,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __VIEWFLIPPER_H__
+#endif // __ELASTOS_DROID_WIDGET_VIEWFLIPPER_H__

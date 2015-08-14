@@ -1,6 +1,6 @@
 
-#ifndef __CONSOLEMESSAGE_H__
-#define __CONSOLEMESSAGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONSOLEMESSAGE_H__
+#define __ELASTOS_DROID_WEBKIT_CONSOLEMESSAGE_H__
 
 #include "ext/frameworkext.h"
 
@@ -52,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CONSOLEMESSAGE_H__
+#endif //__ELASTOS_DROID_WEBKIT_CONSOLEMESSAGE_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __RESTOREOBSERVER_H__
-#define  __RESTOREOBSERVER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_RESTOREOBSERVER_H__
+#define  __ELASTOS_DROID_APP_BACKUP_RESTOREOBSERVER_H__
 
 #include "ext/frameworkext.h"
 
@@ -72,4 +72,4 @@ public:
 }
 }
 }
-#endif  //__RESTOREOBSERVER_H__
+#endif  //__ELASTOS_DROID_APP_BACKUP_RESTOREOBSERVER_H__

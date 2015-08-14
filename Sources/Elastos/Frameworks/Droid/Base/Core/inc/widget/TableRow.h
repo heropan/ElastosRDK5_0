@@ -1,6 +1,6 @@
 
-#ifndef __TABLEROW_H__
-#define __TABLEROW_H__
+#ifndef __ELASTOS_DROID_WIDGET_TABLEROW_H__
+#define __ELASTOS_DROID_WIDGET_TABLEROW_H__
 
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"

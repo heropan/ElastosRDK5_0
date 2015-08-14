@@ -1,6 +1,6 @@
 
-#ifndef __CPAINTFLAGSDRAWFILTER_H__
-#define __CPAINTFLAGSDRAWFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPAINTFLAGSDRAWFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_CPAINTFLAGSDRAWFILTER_H__
 
 #include "_CPaintFlagsDrawFilter.h"
 #include "graphics/DrawFilter.h"
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPAINTFLAGSDRAWFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CPAINTFLAGSDRAWFILTER_H__

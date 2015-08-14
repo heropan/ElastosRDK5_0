@@ -1,5 +1,5 @@
-#ifndef __CCURSORWINDOW_H__
-#define __CCURSORWINDOW_H__
+#ifndef __ELASTOS_DROID_DATABASE_CCURSORWINDOW_H__
+#define __ELASTOS_DROID_DATABASE_CCURSORWINDOW_H__
 
 #include "_CCursorWindow.h"
 #include "database/CursorWindow.h"
@@ -163,4 +163,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif // __CCURSORWINDOW_H__
+#endif // __ELASTOS_DROID_DATABASE_CCURSORWINDOW_H__

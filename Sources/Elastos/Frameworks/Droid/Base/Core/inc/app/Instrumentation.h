@@ -1,6 +1,6 @@
 
-#ifndef __INSTRUMENTATION_H__
-#define __INSTRUMENTATION_H__
+#ifndef __ELASTOS_DROID_APP_INSTRUMENTATION_H__
+#define __ELASTOS_DROID_APP_INSTRUMENTATION_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>

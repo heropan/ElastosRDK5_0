@@ -1,6 +1,6 @@
 
-#ifndef __POOLS_H__
-#define __POOLS_H__
+#ifndef __ELASTOS_DROID_UTILITY_POOLS_H__
+#define __ELASTOS_DROID_UTILITY_POOLS_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -37,4 +37,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif//__POOLS_H__
+#endif//__ELASTOS_DROID_UTILITY_POOLS_H__

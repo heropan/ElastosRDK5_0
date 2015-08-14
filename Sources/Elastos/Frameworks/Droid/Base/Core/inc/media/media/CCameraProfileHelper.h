@@ -1,6 +1,6 @@
 
-#ifndef __CCAMERAPROFILEHELPER_H__
-#define __CCAMERAPROFILEHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CCAMERAPROFILEHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CCAMERAPROFILEHELPER_H__
 
 #include "_CCameraProfileHelper.h"
 #include "ext/frameworkext.h"

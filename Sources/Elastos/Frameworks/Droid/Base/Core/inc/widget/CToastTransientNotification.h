@@ -1,5 +1,5 @@
-#ifndef __CTOASTTRANSIENTNOTIFICATION_H_
-#define __CTOASTTRANSIENTNOTIFICATION_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__
+#define __ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__
 
 #include "_CToastTransientNotification.h"
 #include "ext/frameworkext.h"
@@ -122,4 +122,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTOASTTRANSIENTNOTIFICATION_H_
+#endif //__ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__

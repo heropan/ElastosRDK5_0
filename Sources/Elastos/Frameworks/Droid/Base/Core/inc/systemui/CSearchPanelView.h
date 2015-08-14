@@ -1,5 +1,5 @@
-#ifndef __CSEARCHPANELVIEW_H_
-#define __CSEARCHPANELVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_CSEARCHPANELVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_CSEARCHPANELVIEW_H__
 
 #include "_CSearchPanelView.h"
 
@@ -66,4 +66,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSEARCHPANELVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_CSEARCHPANELVIEW_H__

@@ -1,5 +1,5 @@
-#ifndef __PANELVIEW_H_
-#define __PANELVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELVIEW_H__
 
 #include "widget/FrameLayout.h"
 #include "os/Runnable.h"
@@ -224,4 +224,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__PANELVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELVIEW_H__

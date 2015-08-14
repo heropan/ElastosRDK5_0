@@ -1,5 +1,5 @@
-#ifndef __DYNAMICLAYOUT_H__
-#define __DYNAMICLAYOUT_H__
+#ifndef __ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__
+#define __ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "text/Layout.h"
@@ -401,4 +401,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__DYNAMICLAYOUT_H__
+#endif //__ELASTOS_DROID_TEXT_DYNAMICLAYOUT_H__

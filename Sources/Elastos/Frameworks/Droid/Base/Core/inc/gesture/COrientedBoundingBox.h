@@ -1,5 +1,5 @@
-#ifndef __ORIENTEDBOUNDINGBOX_H__
-#define __ORIENTEDBOUNDINGBOX_H__
+#ifndef __ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__
+#define __ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__
 
 #include "_COrientedBoundingBox.h"
 
@@ -66,4 +66,4 @@ public:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__ORIENTEDBOUNDINGBOX_H__
+#endif //__ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__

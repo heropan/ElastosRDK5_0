@@ -1,5 +1,5 @@
-#ifndef __CFRAGMENTMANAGERSTATE_H__
-#define __CFRAGMENTMANAGERSTATE_H__
+#ifndef __ELASTOS_DROID_APP_CFRAGMENTMANAGERSTATE_H__
+#define __ELASTOS_DROID_APP_CFRAGMENTMANAGERSTATE_H__
 
 #include "_CFragmentManagerState.h"
 #include "app/Fragment.h"
@@ -33,4 +33,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CFRAGMENTMANAGERSTATE_H__
+#endif // __ELASTOS_DROID_APP_CFRAGMENTMANAGERSTATE_H__

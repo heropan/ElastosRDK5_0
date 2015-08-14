@@ -1,6 +1,6 @@
 
-#ifndef __CWIFISSIDHELPER_H__
-#define __CWIFISSIDHELPER_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFISSIDHELPER_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFISSIDHELPER_H__
 
 #include "_CWifiSsidHelper.h"
 
@@ -29,4 +29,4 @@ private:
 }
 }
 
-#endif // __CWIFISSIDHELPER_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CWIFISSIDHELPER_H__

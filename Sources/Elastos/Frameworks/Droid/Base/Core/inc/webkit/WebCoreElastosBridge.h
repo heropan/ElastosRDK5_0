@@ -1,5 +1,5 @@
-#ifndef __WEBCOREELASTOSBRIDGE_H__
-#define __WEBCOREELASTOSBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBCOREELASTOSBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_WEBCOREELASTOSBRIDGE_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -283,4 +283,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBCOREELASTOSBRIDGE_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBCOREELASTOSBRIDGE_H__

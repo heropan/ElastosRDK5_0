@@ -1,6 +1,6 @@
 
-#ifndef __SHAPE_H__
-#define __SHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_SHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_SHAPE_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -86,4 +86,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_SHAPE_H__

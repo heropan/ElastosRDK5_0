@@ -1,6 +1,6 @@
 
-#ifndef __CENCODERCAPABILITIES_H__
-#define __CENCODERCAPABILITIES_H__
+#ifndef __ELASTOS_DROID_MEDIA_CENCODERCAPABILITIES_H__
+#define __ELASTOS_DROID_MEDIA_CENCODERCAPABILITIES_H__
 
 #include "_CEncoderCapabilities.h"
 #include "ext/frameworkext.h"
@@ -146,4 +146,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CENCODERCAPABILITIES_H__
+#endif // __ELASTOS_DROID_MEDIA_CENCODERCAPABILITIES_H__

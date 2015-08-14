@@ -1,5 +1,5 @@
-#ifndef __LEARNER_H__
-#define __LEARNER_H__
+#ifndef __ELASTOS_DROID_GESTURE_LEARNER_H__
+#define __ELASTOS_DROID_GESTURE_LEARNER_H__
 
 #include "ext/frameworkext.h"
 #include "gesture/Instance.h"
@@ -61,4 +61,4 @@ private:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__LEARNER_H__
+#endif //__ELASTOS_DROID_GESTURE_LEARNER_H__

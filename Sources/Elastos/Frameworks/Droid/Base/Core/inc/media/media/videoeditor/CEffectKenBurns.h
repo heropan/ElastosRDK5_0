@@ -1,6 +1,6 @@
 
-#ifndef __CEFFECTKENBURNS_H__
-#define __CEFFECTKENBURNS_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTKENBURNS_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTKENBURNS_H__
 
 #include "_CEffectKenBurns.h"
 #include <ext/frameworkext.h>
@@ -86,5 +86,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CEFFECTKENBURNS_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTKENBURNS_H__
 

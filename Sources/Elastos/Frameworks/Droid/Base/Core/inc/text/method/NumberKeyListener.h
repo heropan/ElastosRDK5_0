@@ -1,5 +1,5 @@
-#ifndef __NumberKeyListener_H__
-#define __NumberKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__
+#define __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__
 
 #include "text/method/BaseKeyListener.h"
 
@@ -54,4 +54,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __NumberKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_NumberKeyListener_H__

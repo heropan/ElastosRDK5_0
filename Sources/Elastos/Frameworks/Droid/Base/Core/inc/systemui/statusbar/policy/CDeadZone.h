@@ -1,5 +1,5 @@
-#ifndef __CDEADZONE_H_
-#define __CDEADZONE_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDEADZONE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDEADZONE_H__
 
 #include "_CDeadZone.h"
 
@@ -50,4 +50,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDEADZONE_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDEADZONE_H__

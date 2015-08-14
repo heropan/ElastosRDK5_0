@@ -1,6 +1,6 @@
 
-#ifndef __CRELATIVESIZESPANHELPER_H__
-#define __CRELATIVESIZESPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPANHELPER_H__
 
 #include "_CRelativeSizeSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CRELATIVESIZESPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPANHELPER_H__

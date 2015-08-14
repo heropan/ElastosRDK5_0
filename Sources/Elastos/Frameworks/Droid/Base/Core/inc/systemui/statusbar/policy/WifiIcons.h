@@ -1,6 +1,6 @@
 
-#ifndef __WIFIICONS_H__
-#define __WIFIICONS_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_WIFIICONS_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_WIFIICONS_H__
 
 #include "ext/frameworkext.h"
 
@@ -31,4 +31,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__WIFIICONS_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_WIFIICONS_H__

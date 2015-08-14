@@ -1,6 +1,6 @@
 
-#ifndef  __SUPPLICANTSTATETRACKER_H__
-#define  __SUPPLICANTSTATETRACKER_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_SUPPLICANTSTATETRACKER_H__
+#define  __ELASTOS_DROID_NET_WIFI_SUPPLICANTSTATETRACKER_H__
 
 #include "ext/frameworkdef.h"
 #ifdef DROID_CORE
@@ -233,4 +233,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__SUPPLICANTSTATETRACKER_H__
+#endif  //__ELASTOS_DROID_NET_WIFI_SUPPLICANTSTATETRACKER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPOSESHADER_H__
-#define __CCOMPOSESHADER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCOMPOSESHADER_H__
+#define __ELASTOS_DROID_GRAPHICS_CCOMPOSESHADER_H__
 
 #include "_CComposeShader.h"
 #include "graphics/Shader.h"
@@ -97,4 +97,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCOMPOSESHADER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCOMPOSESHADER_H__

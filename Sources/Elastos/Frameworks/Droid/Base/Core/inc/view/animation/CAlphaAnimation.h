@@ -1,6 +1,6 @@
 
-#ifndef __CALPHAANIMATION_H__
-#define __CALPHAANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__
 
 #include "_CAlphaAnimation.h"
 #include "view/animation/AlphaAnimation.h"
@@ -36,4 +36,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CALPHAANIMATION_H__
+#endif // __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__

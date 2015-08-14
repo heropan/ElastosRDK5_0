@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKUPDATERESULT_H__
-#define __NETWORKUPDATERESULT_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_NETWORKUPDATERESULT_H__
+#define __ELASTOS_DROID_NET_WIFI_NETWORKUPDATERESULT_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -55,4 +55,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __NETWORKUPDATERESULT_H__
+#endif // __ELASTOS_DROID_NET_WIFI_NETWORKUPDATERESULT_H__

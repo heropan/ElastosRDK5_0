@@ -1,6 +1,6 @@
 
-#ifndef __RADIOGROUPLAYOUTPARAMS_H__
-#define __RADIOGROUPLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__
 
 #include "widget/LinearLayoutLayoutParams.h"
 
@@ -44,4 +44,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __RADIOGROUPLAYOUTPARAMS_H__
+#endif // __ELASTOS_DROID_WIDGET_RADIOGROUPLAYOUTPARAMS_H__

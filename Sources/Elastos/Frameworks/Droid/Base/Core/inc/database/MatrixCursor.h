@@ -1,5 +1,5 @@
-#ifndef __MATRIXCURSOR_H__
-#define __MATRIXCURSOR_H__
+#ifndef __ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__
+#define __ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__
 
 #include "database/AbstractCursor.h"
 
@@ -187,4 +187,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__MATRIXCURSOR_H__
+#endif //__ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__

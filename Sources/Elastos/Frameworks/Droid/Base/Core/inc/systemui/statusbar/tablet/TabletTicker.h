@@ -1,5 +1,5 @@
-#ifndef __TABLETTICKER_H_
-#define __TABLETTICKER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETTICKER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETTICKER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ImageView.h"
@@ -132,4 +132,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__TABLETTICKER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETTICKER_H__

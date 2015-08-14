@@ -1,5 +1,5 @@
-#ifndef __CFILEGESTURELIBRARY_H__
-#define __CFILEGESTURELIBRARY_H__
+#ifndef __ELASTOS_DROID_GESTURE_CFILEGESTURELIBRARY_H__
+#define __ELASTOS_DROID_GESTURE_CFILEGESTURELIBRARY_H__
 
 #include "_CFileGestureLibrary.h"
 #include "GestureLibraries.h"

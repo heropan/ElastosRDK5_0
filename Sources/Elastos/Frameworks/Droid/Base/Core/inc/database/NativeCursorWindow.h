@@ -1,6 +1,6 @@
 
-#ifndef __NATIVECURSORWINDOW_H__
-#define __NATIVECURSORWINDOW_H__
+#ifndef __ELASTOS_DROID_DATABASE_NATIVECURSORWINDOW_H__
+#define __ELASTOS_DROID_DATABASE_NATIVECURSORWINDOW_H__
 
 #include <elastos.h>
 #include <cutils/log.h>
@@ -179,4 +179,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__NATIVECURSORWINDOW_H__
+#endif //__ELASTOS_DROID_DATABASE_NATIVECURSORWINDOW_H__

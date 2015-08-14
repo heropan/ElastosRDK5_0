@@ -1,6 +1,6 @@
 
-#ifndef __HH_BITMAPDRAWABLE_H
-#define __HH_BITMAPDRAWABLE_H
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
 
 #include <ext/frameworkext.h>
 #include "graphics/drawable/Drawable.h"
@@ -305,5 +305,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_BITMAPDRAWABLE_H
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
 

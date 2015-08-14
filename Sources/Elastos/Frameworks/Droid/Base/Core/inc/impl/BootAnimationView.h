@@ -1,6 +1,6 @@
 
-#ifndef __BOOTANIMATIONVIEW_H__
-#define __BOOTANIMATIONVIEW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_BOOTANIMATIONVIEW_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_BOOTANIMATIONVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"

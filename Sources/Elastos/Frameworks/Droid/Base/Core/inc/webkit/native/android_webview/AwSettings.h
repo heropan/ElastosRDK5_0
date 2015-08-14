@@ -1,6 +1,6 @@
 
-#ifndef __AWSETTINGS_H__
-#define __AWSETTINGS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSETTINGS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSETTINGS_H__
 
 // import android.content.Context;
 // import android.content.pm.PackageManager;
@@ -1034,4 +1034,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWSETTINGS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSETTINGS_H__

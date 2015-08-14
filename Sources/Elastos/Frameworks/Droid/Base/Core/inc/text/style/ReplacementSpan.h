@@ -1,5 +1,5 @@
-#ifndef __ReplacementSpan_H__
-#define __ReplacementSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__
 
 #include "text/style/MetricAffectingSpan.h"
 #include "Elastos.Droid.Core_server.h"
@@ -56,4 +56,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ReplacementSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_ReplacementSpan_H__

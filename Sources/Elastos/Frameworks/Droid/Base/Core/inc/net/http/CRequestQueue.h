@@ -1,6 +1,6 @@
 
-#ifndef __CREQUESTQUEUE_H__
-#define __CREQUESTQUEUE_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CREQUESTQUEUE_H__
+#define __ELASTOS_DROID_NET_HTTP_CREQUESTQUEUE_H__
 
 #include "_CRequestQueue.h"
 #include "RequestQueue.h"
@@ -158,4 +158,4 @@ private:
 }
 }
 
-#endif // __CREQUESTQUEUE_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CREQUESTQUEUE_H__

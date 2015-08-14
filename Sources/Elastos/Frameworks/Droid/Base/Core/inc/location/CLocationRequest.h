@@ -1,6 +1,6 @@
 
-#ifndef __CLOCATIONREQUEST_H__
-#define __CLOCATIONREQUEST_H__
+#ifndef __ELASTOS_DROID_LOCATION_CLOCATIONREQUEST_H__
+#define __ELASTOS_DROID_LOCATION_CLOCATIONREQUEST_H__
 
 #include "_CLocationRequest.h"
 #include "ext/frameworkext.h"
@@ -363,4 +363,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CLOCATIONREQUEST_H__
+#endif //__ELASTOS_DROID_LOCATION_CLOCATIONREQUEST_H__

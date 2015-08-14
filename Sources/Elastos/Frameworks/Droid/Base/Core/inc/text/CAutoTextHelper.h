@@ -1,6 +1,6 @@
 
-#ifndef __CAUTOTEXTHELPER_H__
-#define __CAUTOTEXTHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__
+#define __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__
 
 #include "_CAutoTextHelper.h"
 #include "Elastos.Droid.Core_server.h"
@@ -32,4 +32,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUTOTEXTHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__

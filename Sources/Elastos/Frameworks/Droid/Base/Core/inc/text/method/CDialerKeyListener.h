@@ -1,6 +1,6 @@
 
-#ifndef __CDIALERKEYLISTENER_H__
-#define __CDIALERKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENER_H__
 
 #include "_CDialerKeyListener.h"
 #include "text/method/DialerKeyListener.h"
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDIALERKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENER_H__

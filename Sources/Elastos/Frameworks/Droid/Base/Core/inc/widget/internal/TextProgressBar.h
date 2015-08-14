@@ -1,6 +1,6 @@
 
-#ifndef __TEXTPROGRESSBAR_H__
-#define __TEXTPROGRESSBAR_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_TEXTPROGRESSBAR_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_TEXTPROGRESSBAR_H__
 
 #include "widget/RelativeLayout.h"
 #include "R.h"

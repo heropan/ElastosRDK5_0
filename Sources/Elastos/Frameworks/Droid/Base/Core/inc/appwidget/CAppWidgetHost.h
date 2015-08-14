@@ -1,6 +1,6 @@
 
-#ifndef  __CAPPWIDGETHOST_H__
-#define  __CAPPWIDGETHOST_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOST_H__
+#define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOST_H__
 
 #include "_CAppWidgetHost.h"
 #include "ext/frameworkext.h"
@@ -237,4 +237,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CAPPWIDGETHOST_H__
+#endif //__ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOST_H__

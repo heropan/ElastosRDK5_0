@@ -1,6 +1,6 @@
 
-#ifndef __CETC1UTIL_H__
-#define __CETC1UTIL_H__
+#ifndef __ELASTOS_DROID_OPENGL_CETC1UTIL_H__
+#define __ELASTOS_DROID_OPENGL_CETC1UTIL_H__
 
 #include "_CETC1Util.h"
 
@@ -54,4 +54,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CETC1UTIL_H__
+#endif // __ELASTOS_DROID_OPENGL_CETC1UTIL_H__

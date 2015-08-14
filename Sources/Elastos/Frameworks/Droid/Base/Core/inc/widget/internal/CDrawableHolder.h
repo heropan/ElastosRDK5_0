@@ -1,5 +1,5 @@
-#ifndef __CDRAWABLEHOLDER_H_
-#define __CDRAWABLEHOLDER_H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CDRAWABLEHOLDER_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CDRAWABLEHOLDER_H__
 
 #include "_CDrawableHolder.h"
 #include "widget/internal/DrawableHolder.h"
@@ -100,4 +100,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDRAWABLEHOLDER_H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CDRAWABLEHOLDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPDATAITEM_H__
-#define __CCLIPDATAITEM_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
+#define __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 
 #include "_CClipDataItem.h"
 
@@ -193,4 +193,4 @@ private:
 }
 }
 
-#endif // __CCLIPDATAITEM_H__
+#endif // __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__

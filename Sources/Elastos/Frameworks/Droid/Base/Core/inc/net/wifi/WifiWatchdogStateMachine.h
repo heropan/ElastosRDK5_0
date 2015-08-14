@@ -1,6 +1,6 @@
 
-#ifndef  __WIFIWATCHDOGSTATEMACHINE_H__
-#define  __WIFIWATCHDOGSTATEMACHINE_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__
 
 #include "ext/frameworkext.h"
 #include "util/AsyncChannel.h"
@@ -752,4 +752,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIFIWATCHDOGSTATEMACHINE_H__
+#endif //__ELASTOS_DROID_NET_WIFI_WIFIWATCHDOGSTATEMACHINE_H__

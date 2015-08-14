@@ -1,5 +1,5 @@
-#ifndef __CTEXTVIEWHELPER_H_
-#define __CTEXTVIEWHELPER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTEXTVIEWHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CTEXTVIEWHELPER_H__
 
 #include "_CTextViewHelper.h"
 #ifdef DROID_CORE
@@ -43,4 +43,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTEXTVIEWHELPER_H_
+#endif //__ELASTOS_DROID_WIDGET_CTEXTVIEWHELPER_H__

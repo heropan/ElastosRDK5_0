@@ -1,5 +1,5 @@
-#ifndef __ICONMERGER_H_
-#define __ICONMERGER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_ICONMERGER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_ICONMERGER_H__
 
 #include "os/Runnable.h"
 #include "widget/LinearLayout.h"
@@ -77,4 +77,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ICONMERGER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_ICONMERGER_H__

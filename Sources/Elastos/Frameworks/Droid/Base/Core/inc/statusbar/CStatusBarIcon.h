@@ -1,5 +1,5 @@
-#ifndef __CSTATUSBARICON_H__
-#define __CSTATUSBARICON_H__
+#ifndef __ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__
+#define __ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__
 
 #include "_CStatusBarIcon.h"
 #include "ext/frameworkdef.h"
@@ -117,4 +117,4 @@ public:
 }//namespace Elastos
 
 
-#endif //__CSTATUSBARICON_H__
+#endif //__ELASTOS_DROID_STATUSBAR_CSTATUSBARICON_H__

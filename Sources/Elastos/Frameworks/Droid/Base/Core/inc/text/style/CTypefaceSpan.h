@@ -1,6 +1,6 @@
 
-#ifndef __CTYPEFACESPAN_H__
-#define __CTYPEFACESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CTYPEFACESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CTYPEFACESPAN_H__
 
 #include "_CTypefaceSpan.h"
 #include "text/style/TypefaceSpan.h"
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTYPEFACESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CTYPEFACESPAN_H__

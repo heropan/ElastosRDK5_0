@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPDESCRIPTION_H__
-#define __CCLIPDESCRIPTION_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTION_H__
+#define __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTION_H__
 
 #include "_CClipDescription.h"
 #include <ext/frameworkext.h>
@@ -117,4 +117,4 @@ private:
 }
 }
 
-#endif // __CCLIPDESCRIPTION_H__
+#endif // __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTION_H__

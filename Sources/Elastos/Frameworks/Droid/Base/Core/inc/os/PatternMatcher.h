@@ -1,5 +1,5 @@
-#ifndef __PATTERNMATCHER_H__
-#define __PATTERNMATCHER_H__
+#ifndef __ELASTOS_DROID_OS_PATTERNMATCHER_H__
+#define __ELASTOS_DROID_OS_PATTERNMATCHER_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -84,4 +84,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PATTERNMATCHER_H__
+#endif //__ELASTOS_DROID_OS_PATTERNMATCHER_H__

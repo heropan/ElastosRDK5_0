@@ -1,6 +1,6 @@
 
-#ifndef __CQWERTYKEYLISTENER_H__
-#define __CQWERTYKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CQWERTYKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CQWERTYKEYLISTENER_H__
 
 #include "_CQwertyKeyListener.h"
 #include "text/method/QwertyKeyListener.h"
@@ -50,4 +50,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CQWERTYKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CQWERTYKEYLISTENER_H__

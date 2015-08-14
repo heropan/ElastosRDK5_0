@@ -1,5 +1,5 @@
-#ifndef __INTERNALCDIGITALCLOCK_H__
-#define __INTERNALCDIGITALCLOCK_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALCDIGITALCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALCDIGITALCLOCK_H__
 
 #include "_CDigitalClock2.h"
 #include "DigitalClock.h"
@@ -62,4 +62,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__INTERNALCDIGITALCLOCK_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_INTERNALCDIGITALCLOCK_H__

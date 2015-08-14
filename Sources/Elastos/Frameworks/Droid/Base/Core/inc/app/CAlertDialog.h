@@ -1,6 +1,6 @@
 
-#ifndef __CALERTDIALOG_H__
-#define __CALERTDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_CALERTDIALOG_H__
+#define __ELASTOS_DROID_APP_CALERTDIALOG_H__
 
 #include "_CAlertDialog.h"
 
@@ -59,4 +59,4 @@ public:
 }
 }
 
-#endif // __CALERTDIALOG_H__
+#endif // __ELASTOS_DROID_APP_CALERTDIALOG_H__

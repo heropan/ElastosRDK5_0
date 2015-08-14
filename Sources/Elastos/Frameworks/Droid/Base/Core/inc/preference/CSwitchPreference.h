@@ -1,6 +1,6 @@
 
-#ifndef __CSWITCHPREFERENCE_H__
-#define __CSWITCHPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CSWITCHPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CSWITCHPREFERENCE_H__
 
 #include "_CSwitchPreference.h"
 #include "TwoStatePreference.h"
@@ -116,4 +116,4 @@ private:
 }
 }
 
-#endif // __CSWITCHPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CSWITCHPREFERENCE_H__

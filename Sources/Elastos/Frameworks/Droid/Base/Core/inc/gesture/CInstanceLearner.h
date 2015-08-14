@@ -1,5 +1,5 @@
-#ifndef __CINSTANCELEARNER_H__
-#define __CINSTANCELEARNER_H__
+#ifndef __ELASTOS_DROID_GESTURE_CINSTANCELEARNER_H__
+#define __ELASTOS_DROID_GESTURE_CINSTANCELEARNER_H__
 
 #include "_CInstanceLearner.h"
 #include "InsatnceLearner.h"

@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTPAINT_H__
-#define __CTEXTPAINT_H__
+#ifndef __ELASTOS_DROID_TEXT_CTEXTPAINT_H__
+#define __ELASTOS_DROID_TEXT_CTEXTPAINT_H__
 
 #include "_CTextPaint.h"
 #include "graphics/Paint.h"
@@ -1427,4 +1427,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTEXTPAINT_H__
+#endif // __ELASTOS_DROID_TEXT_CTEXTPAINT_H__

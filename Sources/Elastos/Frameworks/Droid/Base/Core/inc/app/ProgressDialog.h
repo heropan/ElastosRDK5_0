@@ -1,6 +1,6 @@
 
-#ifndef __PROGRESSDIALOG_H__
-#define __PROGRESSDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
+#define __ELASTOS_DROID_APP_PROGRESSDIALOG_H__
 
 #include "ext/frameworkext.h"
 #include "app/AlertDialog.h"
@@ -125,4 +125,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __PROGRESSDIALOG_H__
+#endif // __ELASTOS_DROID_APP_PROGRESSDIALOG_H__

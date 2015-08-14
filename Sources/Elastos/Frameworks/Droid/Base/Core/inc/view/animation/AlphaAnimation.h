@@ -1,6 +1,6 @@
 
-#ifndef __ALPHAANIMATION_H__
-#define __ALPHAANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_ALPHAANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_ALPHAANIMATION_H__
 
 #include "view/animation/Animation.h"
 
@@ -54,4 +54,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ALPHAANIMATION_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_ALPHAANIMATION_H__

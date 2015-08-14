@@ -1,6 +1,6 @@
 
-#ifndef __CVIRTUALIZERSETTINGS_H__
-#define __CVIRTUALIZERSETTINGS_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZERSETTINGS_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZERSETTINGS_H__
 
 #include "_CVirtualizerSettings.h"
 #include "ext/frameworkext.h"
@@ -48,4 +48,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVIRTUALIZERSETTINGS_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZERSETTINGS_H__

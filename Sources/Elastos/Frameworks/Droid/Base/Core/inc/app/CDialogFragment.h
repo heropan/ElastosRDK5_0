@@ -1,6 +1,6 @@
 
-#ifndef __CDIALOGFRAGMENT_H__
-#define __CDIALOGFRAGMENT_H__
+#ifndef __ELASTOS_DROID_APP_CDIALOGFRAGMENT_H__
+#define __ELASTOS_DROID_APP_CDIALOGFRAGMENT_H__
 
 #include "_CDialogFragment.h"
 #include "app/DialogFragment.h"
@@ -113,4 +113,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDIALOGFRAGMENT_H__
+#endif //__ELASTOS_DROID_APP_CDIALOGFRAGMENT_H__

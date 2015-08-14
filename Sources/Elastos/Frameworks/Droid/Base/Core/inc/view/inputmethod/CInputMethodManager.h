@@ -1,6 +1,6 @@
 
-#ifndef  __CLOCALINPUTMETHODMANAGER_H__
-#define  __CLOCALINPUTMETHODMANAGER_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
 
 #include "ext/frameworkdef.h"
 #include "_CInputMethodManager.h"
@@ -778,4 +778,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif   //__CLOCALINPUTMETHODMANAGER_H__
+#endif   //__ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__

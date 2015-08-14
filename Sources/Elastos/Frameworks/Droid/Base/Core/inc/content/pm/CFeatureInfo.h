@@ -1,6 +1,6 @@
 
-#ifndef __CFEATUREINFO_H__
-#define __CFEATUREINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__
 
 #include "_CFeatureInfo.h"
 
@@ -88,4 +88,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CFEATUREINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__

@@ -1,5 +1,5 @@
-#ifndef __Recognizer_H__
-#define __Recognizer_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_Recognizer_H__
+#define __ELASTOS_DROID_SPEECH_SREC_Recognizer_H__
 
 #include <elastos/io/InputStream.h>
 
@@ -660,4 +660,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __Recognizer_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_Recognizer_H__

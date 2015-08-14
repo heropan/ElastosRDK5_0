@@ -1,6 +1,6 @@
 
-#ifndef __CICONMARGINSPAN_H__
-#define __CICONMARGINSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CICONMARGINSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CICONMARGINSPAN_H__
 
 #include "_CIconMarginSpan.h"
 #include "text/style/IconMarginSpan.h"
@@ -39,4 +39,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CICONMARGINSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CICONMARGINSPAN_H__

@@ -1,5 +1,5 @@
-#ifndef __CDIALERFILTER_H_
-#define __CDIALERFILTER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CDIALERFILTER_H__
+#define __ELASTOS_DROID_WIDGET_CDIALERFILTER_H__
 
 #include "_CDialerFilter.h"
 #include "widget/DialerFilter.h"
@@ -94,4 +94,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDIALERFILTER_H_
+#endif //__ELASTOS_DROID_WIDGET_CDIALERFILTER_H__

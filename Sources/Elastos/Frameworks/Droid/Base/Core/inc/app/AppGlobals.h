@@ -1,6 +1,6 @@
 
-#ifndef __APPGLOBALS_H__
-#define __APPGLOBALS_H__
+#ifndef __ELASTOS_DROID_APP_APPGLOBALS_H__
+#define __ELASTOS_DROID_APP_APPGLOBALS_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -52,4 +52,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPGLOBALS_H__
+#endif //__ELASTOS_DROID_APP_APPGLOBALS_H__

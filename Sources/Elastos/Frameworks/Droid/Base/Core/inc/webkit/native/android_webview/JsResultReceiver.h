@@ -1,6 +1,6 @@
 
-#ifndef __JSRESULTRECEIVER_H__
-#define __JSRESULTRECEIVER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTRECEIVER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTRECEIVER_H__
 
 namespace Elastos {
 namespace Droid {
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__JSRESULTRECEIVER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTRECEIVER_H__

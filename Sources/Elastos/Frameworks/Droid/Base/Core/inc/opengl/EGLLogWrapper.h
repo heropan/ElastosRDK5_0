@@ -1,5 +1,5 @@
-#ifndef __EGLLOGWRAPPER_H__
-#define __EGLLOGWRAPPER_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLLOGWRAPPER_H__
+#define __ELASTOS_DROID_OPENGL_EGLLOGWRAPPER_H__
 
 #include "ext/frameworkext.h"
 

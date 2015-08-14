@@ -1,5 +1,5 @@
-#ifndef __CARRAYADAPTER_H__
-#define __CARRAYADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CARRAYADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CARRAYADAPTER_H__
 
 #include "_CArrayAdapter.h"
 #include "widget/ArrayAdapter.h"
@@ -129,4 +129,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CARRAYADAPTER_H__
+#endif // __ELASTOS_DROID_WIDGET_CARRAYADAPTER_H__

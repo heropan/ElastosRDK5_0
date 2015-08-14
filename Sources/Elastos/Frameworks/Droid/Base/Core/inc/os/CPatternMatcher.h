@@ -1,5 +1,5 @@
-#ifndef __CPATTERNMATCHER_H__
-#define __CPATTERNMATCHER_H__
+#ifndef __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
+#define __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
 
 #include "_CPatternMatcher.h"
 #include "os/PatternMatcher.h"
@@ -41,4 +41,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPATTERNMATCHER_H__
+#endif // __ELASTOS_DROID_OS_CPATTERNMATCHER_H__

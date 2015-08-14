@@ -1,6 +1,6 @@
 
-#ifndef __WEBSTORAGECLASSIC_H__
-#define __WEBSTORAGECLASSIC_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBSTORAGECLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_WEBSTORAGECLASSIC_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -206,4 +206,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBSTORAGECLASSIC_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBSTORAGECLASSIC_H__

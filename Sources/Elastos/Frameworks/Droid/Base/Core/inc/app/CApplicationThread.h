@@ -1,6 +1,6 @@
 
-#ifndef __CAPPLICATIONTHREAD_H__
-#define __CAPPLICATIONTHREAD_H__
+#ifndef __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
+#define __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
 
 #include "_CApplicationThread.h"
 #include "app/CActivityThread.h"

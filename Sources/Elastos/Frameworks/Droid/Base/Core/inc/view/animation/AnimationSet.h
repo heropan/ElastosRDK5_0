@@ -1,6 +1,6 @@
 
-#ifndef __ANIMATIONSET_H__
-#define __ANIMATIONSET_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONSET_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONSET_H__
 
 #include "view/animation/Animation.h"
 #include <elastos/utility/etl/List.h>
@@ -136,4 +136,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__ANIMATIONSET_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_ANIMATIONSET_H__

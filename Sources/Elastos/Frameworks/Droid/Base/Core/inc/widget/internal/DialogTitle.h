@@ -1,6 +1,6 @@
 
-#ifndef __DIALOGTITLE_H__
-#define __DIALOGTITLE_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_DIALOGTITLE_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_DIALOGTITLE_H__
 
 #include "widget/TextView.h"
 
@@ -56,4 +56,4 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__DIALOGTITLE_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_DIALOGTITLE_H__

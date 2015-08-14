@@ -1,6 +1,6 @@
 
-#ifndef __CSPEECHRECOGNIZERHELPER_H__
-#define __CSPEECHRECOGNIZERHELPER_H__
+#ifndef __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__
+#define __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__
 
 #include "_CSpeechRecognizerHelper.h"
 
@@ -36,4 +36,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CSPEECHRECOGNIZERHELPER_H__
+#endif // __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZERHELPER_H__

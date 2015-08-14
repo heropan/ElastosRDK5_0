@@ -1,6 +1,6 @@
 
-#ifndef __SSLERRORHANDLER_H__
-#define __SSLERRORHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_SSLERRORHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_SSLERRORHANDLER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Handler.h"
@@ -40,4 +40,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SSLERRORHANDLER_H__
+#endif //__ELASTOS_DROID_WEBKIT_SSLERRORHANDLER_H__

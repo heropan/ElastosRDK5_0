@@ -1,6 +1,6 @@
 
-#ifndef __CAPPLICATIONINFO_H__
-#define __CAPPLICATIONINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CAPPLICATIONINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CAPPLICATIONINFO_H__
 
 #include "_CApplicationInfo.h"
 #include "PackageItemInfo.h"
@@ -465,4 +465,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CAPPLICATIONINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CAPPLICATIONINFO_H__

@@ -1,5 +1,5 @@
-#ifndef __CSETTINGSSECURE_H__
-#define __CSETTINGSSECURE_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__
+#define __ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__
 
 #include "_CSettingsSecure.h"
 #include "provider/Settings.h"
@@ -387,4 +387,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CSETTINGSSECURE_H__
+#endif //__ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__

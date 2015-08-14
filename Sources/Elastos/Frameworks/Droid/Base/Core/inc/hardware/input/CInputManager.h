@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTMANAGER_H__
-#define __CINPUTMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__
 
 #include "_CInputManager.h"
 #include "ext/frameworkext.h"
@@ -383,4 +383,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CINPUTMANAGER_H__
+#endif // __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__

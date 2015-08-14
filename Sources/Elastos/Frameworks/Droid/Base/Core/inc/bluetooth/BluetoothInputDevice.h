@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHINPUTDEVICE_H__
-#define __BLUETOOTHINPUTDEVICE_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTDEVICE_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTDEVICE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
@@ -271,4 +271,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __BLUETOOTHINPUTDEVICE_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_BLUETOOTHINPUTDEVICE_H__

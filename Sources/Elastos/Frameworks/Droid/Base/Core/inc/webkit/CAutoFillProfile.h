@@ -1,6 +1,6 @@
 
-#ifndef __CAUTOFILLPROFILE_H__
-#define __CAUTOFILLPROFILE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CAUTOFILLPROFILE_H__
+#define __ELASTOS_DROID_WEBKIT_CAUTOFILLPROFILE_H__
 
 #include "ext/frameworkext.h"
 #include "_CAutoFillProfile.h"
@@ -88,4 +88,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CAUTOFILLPROFILE_H__
+#endif // __ELASTOS_DROID_WEBKIT_CAUTOFILLPROFILE_H__

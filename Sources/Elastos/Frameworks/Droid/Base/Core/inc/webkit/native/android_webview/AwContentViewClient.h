@@ -1,6 +1,6 @@
 
-#ifndef __AWCONTENTVIEWCLIENT_H__
-#define __AWCONTENTVIEWCLIENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTVIEWCLIENT_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTVIEWCLIENT_H__
 
 // import android.content.Context;
 // import android.view.KeyEvent;
@@ -138,4 +138,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWCONTENTVIEWCLIENT_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTVIEWCLIENT_H__

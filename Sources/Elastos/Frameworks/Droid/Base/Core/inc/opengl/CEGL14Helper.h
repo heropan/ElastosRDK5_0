@@ -1,5 +1,5 @@
-#ifndef __CEGL14HELPER_H__
-#define __CEGL14HELPER_H__
+#ifndef __ELASTOS_DROID_OPENGL_CEGL14HELPER_H__
+#define __ELASTOS_DROID_OPENGL_CEGL14HELPER_H__
 
 #include "_CEGL14Helper.h"
 

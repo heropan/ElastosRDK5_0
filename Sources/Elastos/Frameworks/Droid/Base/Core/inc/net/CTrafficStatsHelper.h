@@ -1,6 +1,6 @@
 
-#ifndef __CTrafficStatsHelper_H__
-#define __CTrafficStatsHelper_H__
+#ifndef __ELASTOS_DROID_NET_CTrafficStatsHelper_H__
+#define __ELASTOS_DROID_NET_CTrafficStatsHelper_H__
 
 #include "_CTrafficStats.h"
 #include "elautptr.h"
@@ -396,4 +396,4 @@ public:
 } // namespace Elastos
 
 
-#endif // __CTrafficStatsHelper_H__
+#endif // __ELASTOS_DROID_NET_CTrafficStatsHelper_H__

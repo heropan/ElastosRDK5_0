@@ -1,5 +1,5 @@
-#ifndef __CRECENTAPPLICATIONSDIALOG_H__
-#define __CRECENTAPPLICATIONSDIALOG_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__
 
 #include "_CRecentApplicationsDialog.h"
 #include "impl/RecentApplicationsDialog.h"
@@ -46,4 +46,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CRECENTAPPLICATIONSDIALOG_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__

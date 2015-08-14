@@ -1,6 +1,6 @@
 
-#ifndef __SPINNER_H__
-#define __SPINNER_H__
+#ifndef __ELASTOS_DROID_WIDGET_SPINNER_H__
+#define __ELASTOS_DROID_WIDGET_SPINNER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/AbsSpinner.h"
@@ -551,4 +551,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SPINNER_H__
+#endif //__ELASTOS_DROID_WIDGET_SPINNER_H__

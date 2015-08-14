@@ -1,6 +1,6 @@
 
-#ifndef  __CSENSOREVENT_H__
-#define  __CSENSOREVENT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__
+#define  __ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__
 
 #include "_CSensorEvent.h"
 
@@ -67,4 +67,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CSENSOREVENT_H__
+#endif  //__ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__

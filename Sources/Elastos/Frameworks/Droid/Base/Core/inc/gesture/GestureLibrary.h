@@ -1,5 +1,5 @@
-#ifndef __GESTURELIBRARY_H__
-#define __GESTURELIBRARY_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
+#define __ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__
 
 #include "gesture/CGestureStore.h"
 #include "gesture/Learner.h"
@@ -68,4 +68,4 @@ public:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__GESTURELIBRARY_H__
+#endif //__ELASTOS_DROID_GESTURE_GESTURELIBRARY_H__

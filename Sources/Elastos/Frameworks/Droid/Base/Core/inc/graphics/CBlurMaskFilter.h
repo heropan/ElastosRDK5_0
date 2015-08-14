@@ -1,6 +1,6 @@
 
-#ifndef __CBLURMASKFILTER_H__
-#define __CBLURMASKFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__
 
 #include "_CBlurMaskFilter.h"
 #include "graphics/MaskFilter.h"
@@ -42,4 +42,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CBLURMASKFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__

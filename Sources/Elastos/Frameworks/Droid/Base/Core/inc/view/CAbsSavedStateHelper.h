@@ -1,5 +1,5 @@
-#ifndef __CABSSAVEDSTATEHELPER_H__
-#define __CABSSAVEDSTATEHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CABSSAVEDSTATEHELPER_H__
+#define __ELASTOS_DROID_VIEW_CABSSAVEDSTATEHELPER_H__
 
 #include "_CAbsSavedStateHelper.h"
 
@@ -18,4 +18,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CABSSAVEDSTATEHELPER_H__
+#endif // __ELASTOS_DROID_VIEW_CABSSAVEDSTATEHELPER_H__

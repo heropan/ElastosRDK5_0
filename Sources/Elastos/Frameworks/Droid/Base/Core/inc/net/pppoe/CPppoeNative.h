@@ -1,6 +1,6 @@
 
-#ifndef __CPPPOENATIVE_H__
-#define __CPPPOENATIVE_H__
+#ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOENATIVE_H__
+#define __ELASTOS_DROID_NET_PPPOE_CPPPOENATIVE_H__
 
 #include "_CPppoeNative.h"
 
@@ -40,4 +40,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CPPPOENATIVE_H__
+#endif // __ELASTOS_DROID_NET_PPPOE_CPPPOENATIVE_H__

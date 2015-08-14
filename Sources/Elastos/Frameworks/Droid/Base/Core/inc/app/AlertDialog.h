@@ -1,6 +1,6 @@
 
-#ifndef __ALERTDIALOG_H__
-#define __ALERTDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_ALERTDIALOG_H__
+#define __ELASTOS_DROID_APP_ALERTDIALOG_H__
 
 #include "app/Dialog.h"
 
@@ -195,4 +195,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ALERTDIALOG_H__
+#endif //__ELASTOS_DROID_APP_ALERTDIALOG_H__

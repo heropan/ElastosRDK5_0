@@ -1,5 +1,5 @@
-#ifndef __CLAYOUTHELPER_H__
-#define __CLAYOUTHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_CLAYOUTHELPER_H__
+#define __ELASTOS_DROID_TEXT_CLAYOUTHELPER_H__
 
 #include "_CLayoutHelper.h"
 
@@ -19,4 +19,4 @@ CarClass(CLayoutHelper)
 } // namepsace Droid
 } // namespace Elastos
 
-#endif//__CLAYOUTHELPER_H__
+#endif//__ELASTOS_DROID_TEXT_CLAYOUTHELPER_H__

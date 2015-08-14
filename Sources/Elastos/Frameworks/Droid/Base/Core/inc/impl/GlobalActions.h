@@ -1,6 +1,6 @@
 
-#ifndef __GLOBALACTIONS_H__
-#define __GLOBALACTIONS_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_GLOBALACTIONS_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_GLOBALACTIONS_H__
 
 #include "ext/frameworkext.h"
 #include "app/Dialog.h"
@@ -769,4 +769,4 @@ private:
 } // namespace Policy
 } // namespace Impl
 
-#endif // __GLOBALACTIONS_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_GLOBALACTIONS_H__

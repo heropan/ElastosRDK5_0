@@ -1,5 +1,5 @@
-#ifndef __STATUSBARICONVIEW_H__
-#define __STATUSBARICONVIEW_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_STATUSBARICONVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_STATUSBARICONVIEW_H__
 
 #include "systemui/statusbar/AnimatedImageView.h"
 
@@ -108,4 +108,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__STATUSBARICONVIEW_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_STATUSBARICONVIEW_H__

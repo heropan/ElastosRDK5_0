@@ -1,5 +1,5 @@
-#ifndef __CDRAWABLEHELPER__H_
-#define __CDRAWABLEHELPER__H_
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__
 
 #include "_CDrawableHelper.h"
 #include "graphics/drawable/Drawable.h"
@@ -54,4 +54,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDRAWABLEHELPER__H_
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__

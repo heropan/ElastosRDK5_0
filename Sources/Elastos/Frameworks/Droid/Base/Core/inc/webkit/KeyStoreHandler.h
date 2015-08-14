@@ -1,6 +1,6 @@
 
-#ifndef __KEHSTOREHANDLER_H__
-#define __KEHSTOREHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_KEHSTOREHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_KEHSTOREHANDLER_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -48,4 +48,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__KEHSTOREHANDLER_H__
+#endif //__ELASTOS_DROID_WEBKIT_KEHSTOREHANDLER_H__

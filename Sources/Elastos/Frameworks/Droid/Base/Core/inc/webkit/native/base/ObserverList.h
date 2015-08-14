@@ -1,6 +1,6 @@
 
-#ifndef __OBSERVERLIST_H__
-#define __OBSERVERLIST_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__
 
 // import java.util.ArrayList;
 // import java.util.Iterator;
@@ -250,4 +250,4 @@ public class ObserverList<E> implements Iterable<E> {
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__OBSERVERLIST_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_OBSERVERLIST_H__

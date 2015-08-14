@@ -1,5 +1,5 @@
-#ifndef __TabStopSpan_H__
-#define __TabStopSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_TabStopSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_TabStopSpan_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -57,4 +57,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __TabStopSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_TabStopSpan_H__

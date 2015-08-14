@@ -1,6 +1,6 @@
 
-#ifndef __SYNCQUEUE_H__
-#define __SYNCQUEUE_H__
+#ifndef __ELASTOS_DROID_CONTENT_SYNCQUEUE_H__
+#define __ELASTOS_DROID_CONTENT_SYNCQUEUE_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -94,4 +94,4 @@ private:
 }
 }
 
-#endif // __SYNCQUEUE_H__
+#endif // __ELASTOS_DROID_CONTENT_SYNCQUEUE_H__

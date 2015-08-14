@@ -1,6 +1,6 @@
 
-#ifndef __INPUTSTREAMUTIL_H__
-#define __INPUTSTREAMUTIL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_INPUTSTREAMUTIL_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_INPUTSTREAMUTIL_H__
 
 // import android.util.Log;
 
@@ -59,4 +59,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__INPUTSTREAMUTIL_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_INPUTSTREAMUTIL_H__

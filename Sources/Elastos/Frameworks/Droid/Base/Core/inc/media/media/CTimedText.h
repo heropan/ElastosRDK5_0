@@ -1,6 +1,6 @@
 
-#ifndef __CTIMEDTEXT_H__
-#define __CTIMEDTEXT_H__
+#ifndef __ELASTOS_DROID_MEDIA_CTIMEDTEXT_H__
+#define __ELASTOS_DROID_MEDIA_CTIMEDTEXT_H__
 
 #include "_CTimedText.h"
 #include "ext/frameworkext.h"
@@ -485,4 +485,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTIMEDTEXT_H__
+#endif // __ELASTOS_DROID_MEDIA_CTIMEDTEXT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __SKIAIOSTREAMADAPTOR_H__
-#define __SKIAIOSTREAMADAPTOR_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_SKIAIOSTREAMADAPTOR_H__
+#define __ELASTOS_DROID_GRAPHICS_SKIAIOSTREAMADAPTOR_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <skia/core/SkStream.h>
@@ -25,4 +25,4 @@ CARAPI_(SkWStream*) CreateSkiaOutputStreamAdaptor(
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SKIAIOSTREAMADAPTOR_H__
+#endif //__ELASTOS_DROID_GRAPHICS_SKIAIOSTREAMADAPTOR_H__

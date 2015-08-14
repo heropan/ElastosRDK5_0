@@ -1,6 +1,6 @@
 
-#ifndef __HH_CONFIG_H
-#define __HH_CONFIG_H
+#ifndef __ELASTOS_DROID_UTILITY_H_H__
+#define __ELASTOS_DROID_UTILITY_H_H__
 
 #include <elastos.h>
 
@@ -50,4 +50,4 @@ public:
 }
 }
 
-#endif // __HH_CONFIG_H
+#endif // __ELASTOS_DROID_UTILITY_H_H__

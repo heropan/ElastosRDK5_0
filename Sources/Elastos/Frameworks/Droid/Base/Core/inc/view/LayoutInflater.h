@@ -1,6 +1,6 @@
 
-#ifndef __LAYOUTINFLATER_H__
-#define __LAYOUTINFLATER_H__
+#ifndef __ELASTOS_DROID_VIEW_LAYOUTINFLATER_H__
+#define __ELASTOS_DROID_VIEW_LAYOUTINFLATER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -264,4 +264,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __LAYOUTINFLATER_H__
+#endif // __ELASTOS_DROID_VIEW_LAYOUTINFLATER_H__

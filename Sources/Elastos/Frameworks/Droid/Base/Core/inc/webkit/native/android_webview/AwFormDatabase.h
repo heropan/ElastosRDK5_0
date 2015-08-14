@@ -1,6 +1,6 @@
 
-#ifndef __AWFORMDATABASE_H__
-#define __AWFORMDATABASE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWFORMDATABASE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWFORMDATABASE_H__
 
 //import org.chromium.base.JNINamespace;
 
@@ -35,4 +35,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWFORMDATABASE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWFORMDATABASE_H__

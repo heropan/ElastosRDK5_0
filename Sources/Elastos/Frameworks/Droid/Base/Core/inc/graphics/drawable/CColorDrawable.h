@@ -1,6 +1,6 @@
 
-#ifndef __CCOLORDRAWABLE_H__
-#define __CCOLORDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__
 
 #include "_CColorDrawable.h"
 #include "graphics/drawable/ColorDrawable.h"
@@ -42,4 +42,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOLORDRAWABLE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__

@@ -1,5 +1,5 @@
-#ifndef __STATE_H__
-#define __STATE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__
 
 #include "ext/frameworkext.h"
 #include "util/IState.h"
@@ -113,9 +113,8 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_STATE
 #define HASH_EQUALTO_FUNC_FOR_AUTOPTR_STATE
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Internal::Utility::State)
 #endif
 
-#endif //__STATE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_STATE_H__

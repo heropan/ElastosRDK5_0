@@ -1,5 +1,5 @@
-#ifndef __SEARCHPANELVIEW_H_
-#define __SEARCHPANELVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__
 
 #include "widget/FrameLayout.h"
 #include "view/VelocityTracker.h"
@@ -154,4 +154,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__SEARCHPANELVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_SEARCHPANELVIEW_H__

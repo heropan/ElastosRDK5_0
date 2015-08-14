@@ -1,6 +1,6 @@
 
-#ifndef __COBBSCANNER_H__
-#define __COBBSCANNER_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_COBBSCANNER_H__
+#define __ELASTOS_DROID_CONTENT_RES_COBBSCANNER_H__
 
 #include "_CObbScanner.h"
 
@@ -27,4 +27,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __COBBSCANNER_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_COBBSCANNER_H__

@@ -1,5 +1,5 @@
-#ifndef __CONTENTOBSERVER_H__
-#define __CONTENTOBSERVER_H__
+#ifndef __ELASTOS_DROID_DATABASE_CONTENTOBSERVER_H__
+#define __ELASTOS_DROID_DATABASE_CONTENTOBSERVER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -170,4 +170,4 @@ protected:
 } //Droid
 } //Elastos
 
-#endif //__CONTENTOBSERVER_H__
+#endif //__ELASTOS_DROID_DATABASE_CONTENTOBSERVER_H__

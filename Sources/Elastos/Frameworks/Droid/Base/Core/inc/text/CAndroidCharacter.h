@@ -1,6 +1,6 @@
 
-#ifndef __CANDROIDCHARACTER_H__
-#define __CANDROIDCHARACTER_H__
+#ifndef __ELASTOS_DROID_TEXT_CANDROIDCHARACTER_H__
+#define __ELASTOS_DROID_TEXT_CANDROIDCHARACTER_H__
 
 #include "_CAndroidCharacter.h"
 
@@ -39,4 +39,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CANDROIDCHARACTER_H__
+#endif // __ELASTOS_DROID_TEXT_CANDROIDCHARACTER_H__

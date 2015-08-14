@@ -1,6 +1,6 @@
 
-#ifndef __ZOOMBUTTONSCONTROLLER_H__
-#define __ZOOMBUTTONSCONTROLLER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__
+#define __ELASTOS_DROID_WIDGET_ZOOMBUTTONSCONTROLLER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"

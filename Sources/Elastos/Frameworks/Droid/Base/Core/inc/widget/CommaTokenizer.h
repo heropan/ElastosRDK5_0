@@ -1,5 +1,5 @@
-#ifndef __COMMATOKENIZER_H__
-#define __COMMATOKENIZER_H__
+#ifndef __ELASTOS_DROID_WIDGET_COMMATOKENIZER_H__
+#define __ELASTOS_DROID_WIDGET_COMMATOKENIZER_H__
 
 #include "ext/frameworkext.h"
 
@@ -29,4 +29,4 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__COMMATOKENIZER_H__
+#endif //__ELASTOS_DROID_WIDGET_COMMATOKENIZER_H__

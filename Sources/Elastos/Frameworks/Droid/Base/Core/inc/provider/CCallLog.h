@@ -1,6 +1,6 @@
 
-#ifndef __CCALLLOG_H__
-#define __CCALLLOG_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCALLLOG_H__
+#define __ELASTOS_DROID_PROVIDER_CCALLLOG_H__
 
 #include "_CCallLog.h"
 
@@ -27,4 +27,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CCALLLOG_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCALLLOG_H__

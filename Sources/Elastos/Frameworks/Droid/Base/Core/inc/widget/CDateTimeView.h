@@ -1,5 +1,5 @@
-#ifndef __CDATETIMEVIEW_H_
-#define __CDATETIMEVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CDATETIMEVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CDATETIMEVIEW_H__
 
 #include "_CDateTimeView.h"
 #include "widget/DateTimeView.h"
@@ -41,4 +41,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDATETIMEVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CDATETIMEVIEW_H__

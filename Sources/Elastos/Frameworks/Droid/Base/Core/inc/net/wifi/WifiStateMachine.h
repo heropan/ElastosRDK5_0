@@ -1,6 +1,6 @@
 
-#ifndef  __WIFISTATEMACHINE_H__
-#define  __WIFISTATEMACHINE_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFISTATEMACHINE_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFISTATEMACHINE_H__
 
 #include "ext/frameworkdef.h"
 #include "net/DhcpInfoInternal.h"
@@ -1963,4 +1963,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__WIFISTATEMACHINE_H__
+#endif  //__ELASTOS_DROID_NET_WIFI_WIFISTATEMACHINE_H__

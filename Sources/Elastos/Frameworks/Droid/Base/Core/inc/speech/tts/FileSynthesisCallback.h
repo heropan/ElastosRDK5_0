@@ -1,5 +1,5 @@
-#ifndef __FileSynthesisCallback_H__
-#define __FileSynthesisCallback_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_FileSynthesisCallback_H__
+#define __ELASTOS_DROID_SPEECH_TTS_FileSynthesisCallback_H__
 
 #include "speech/tts/AbstractSynthesisCallback.h"
 #include <Elastos.CoreLibrary.h>
@@ -95,4 +95,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __FileSynthesisCallback_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_FileSynthesisCallback_H__

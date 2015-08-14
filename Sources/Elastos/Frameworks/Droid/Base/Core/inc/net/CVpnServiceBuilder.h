@@ -1,6 +1,6 @@
 
-#ifndef __CVPNSERVICEBUILDER_H__
-#define __CVPNSERVICEBUILDER_H__
+#ifndef __ELASTOS_DROID_NET_CVPNSERVICEBUILDER_H__
+#define __ELASTOS_DROID_NET_CVPNSERVICEBUILDER_H__
 
 #include "_CVpnServiceBuilder.h"
 #include <Logger.h>
@@ -185,4 +185,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CVPNSERVICEBUILDER_H__
+#endif // __ELASTOS_DROID_NET_CVPNSERVICEBUILDER_H__

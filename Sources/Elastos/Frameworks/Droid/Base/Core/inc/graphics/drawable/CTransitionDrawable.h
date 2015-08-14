@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSITIONDRAWABLE_H__
-#define __CTRANSITIONDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CTRANSITIONDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CTRANSITIONDRAWABLE_H__
 
 #include "_CTransitionDrawable.h"
 #include "graphics/drawable/TransitionDrawable.h"
@@ -127,4 +127,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTRANSITIONDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CTRANSITIONDRAWABLE_H__

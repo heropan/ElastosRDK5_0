@@ -1,6 +1,6 @@
 
-#ifndef __CCALLERINFO_H__
-#define __CCALLERINFO_H__
+#ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFO_H__
+#define __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFO_H__
 
 #include "_CCallerInfo.h"
 
@@ -247,4 +247,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCALLERINFO_H__
+#endif // __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFO_H__

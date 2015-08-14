@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSCONTRACTGROUPS_H__
-#define __CCONTACTSCONTRACTGROUPS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
 
 #include "_CContactsContractGroups.h"
 #include "content/CursorEntityIterator.h"
@@ -73,4 +73,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CCONTACTSCONTRACTGROUPS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__

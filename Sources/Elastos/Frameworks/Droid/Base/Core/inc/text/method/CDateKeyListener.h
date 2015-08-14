@@ -1,6 +1,6 @@
 
-#ifndef __CDATEKEYLISTENER_H__
-#define __CDATEKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CDATEKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CDATEKEYLISTENER_H__
 
 #include "_CDateKeyListener.h"
 #include "text/method/DateKeyListener.h"
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDATEKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CDATEKEYLISTENER_H__

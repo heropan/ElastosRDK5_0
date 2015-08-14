@@ -1,6 +1,6 @@
 
-#ifndef __CMTPOBJECTINFO_H__
-#define __CMTPOBJECTINFO_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPOBJECTINFO_H__
+#define __ELASTOS_DROID_MTP_CMTPOBJECTINFO_H__
 
 #include "_CMtpObjectInfo.h"
 
@@ -160,4 +160,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMTPOBJECTINFO_H__
+#endif // __ELASTOS_DROID_MTP_CMTPOBJECTINFO_H__

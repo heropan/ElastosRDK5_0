@@ -1,6 +1,6 @@
 
-#ifndef __CSHIRTPOCKET_H__
-#define __CSHIRTPOCKET_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSHIRTPOCKET_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSHIRTPOCKET_H__
 
 #include "_CShirtPocket.h"
 
@@ -50,4 +50,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CSHIRTPOCKET_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSHIRTPOCKET_H__

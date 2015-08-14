@@ -1,5 +1,5 @@
-#ifndef __CPROGRESSBARSAVEDSTATE_H__
-#define __CPROGRESSBARSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
 
 #include "_CProgressBarSavedState.h"
 #include "ProgressBarSavedState.h"

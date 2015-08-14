@@ -1,6 +1,6 @@
 
-#ifndef  __CSOFTINPUTWINDOW_H__
-#define  __CSOFTINPUTWINDOW_H__
+#ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
+#define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
 #include "_CSoftInputWindow.h"
 #include "app/Dialog.h"

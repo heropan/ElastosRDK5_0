@@ -1,6 +1,6 @@
 
-#ifndef __CCONFIGURATION_H__
-#define __CCONFIGURATION_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__
+#define __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__
 
 #include "_CConfiguration.h"
 
@@ -511,4 +511,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCONFIGURATION_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__

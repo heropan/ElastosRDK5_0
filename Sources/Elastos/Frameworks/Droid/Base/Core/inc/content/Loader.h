@@ -1,6 +1,6 @@
 
-#ifndef __LOADER_H__
-#define __LOADER_H__
+#ifndef __ELASTOS_DROID_CONTENT_LOADER_H__
+#define __ELASTOS_DROID_CONTENT_LOADER_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
@@ -345,4 +345,4 @@ private:
 }
 }
 
-#endif //__LOADER_H__
+#endif //__ELASTOS_DROID_CONTENT_LOADER_H__

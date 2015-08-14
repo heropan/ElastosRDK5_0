@@ -1,6 +1,6 @@
 
-#ifndef __CREGION_H__
-#define __CREGION_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CREGION_H__
+#define __ELASTOS_DROID_GRAPHICS_CREGION_H__
 
 #include "_CRegion.h"
 
@@ -363,4 +363,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CREGION_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CREGION_H__

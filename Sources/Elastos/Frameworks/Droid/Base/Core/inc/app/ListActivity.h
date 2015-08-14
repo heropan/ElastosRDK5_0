@@ -1,6 +1,6 @@
 
-#ifndef  __LISTACTIVITY_H__
-#define  __LISTACTIVITY_H__
+#ifndef __ELASTOS_DROID_APP_LISTACTIVITY_H__
+#define  __ELASTOS_DROID_APP_LISTACTIVITY_H__
 
 #include "app/Activity.h"
 #include "os/Runnable.h"
@@ -174,4 +174,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __LISTACTIVITY_H__
+#endif  // __ELASTOS_DROID_APP_LISTACTIVITY_H__

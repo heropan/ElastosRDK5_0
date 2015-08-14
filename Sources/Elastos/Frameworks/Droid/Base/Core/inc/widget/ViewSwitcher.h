@@ -1,6 +1,6 @@
 
-#ifndef __VIEWSWITCHER_H__
-#define __VIEWSWITCHER_H__
+#ifndef __ELASTOS_DROID_WIDGET_VIEWSWITCHER_H__
+#define __ELASTOS_DROID_WIDGET_VIEWSWITCHER_H__
 
 #include "ViewAnimator.h"
 

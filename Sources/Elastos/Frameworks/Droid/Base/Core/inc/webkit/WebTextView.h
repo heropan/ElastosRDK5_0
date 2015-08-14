@@ -1,6 +1,6 @@
 
-#ifndef __WEBTEXTVIEW_H__
-#define __WEBTEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBTEXTVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_WEBTEXTVIEW_H__
 
 #include "ext/frameworkext.h"
 
@@ -36,4 +36,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBTEXTVIEW_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBTEXTVIEW_H__

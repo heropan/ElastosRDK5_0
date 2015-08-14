@@ -1,6 +1,6 @@
 
-#ifndef __ABSSAVEDSTATE_H__
-#define __ABSSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__
+#define __ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <ext/frameworkext.h>
@@ -51,4 +51,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ABSSAVEDSTATE_H__
+#endif //__ELASTOS_DROID_VIEW_ABSSAVEDSTATE_H__

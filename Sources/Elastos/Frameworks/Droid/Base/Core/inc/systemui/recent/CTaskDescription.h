@@ -1,5 +1,5 @@
-#ifndef __CTASKDESCRIPTION_H_
-#define __CTASKDESCRIPTION_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CTASKDESCRIPTION_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_CTASKDESCRIPTION_H__
 
 #include "_CTaskDescription.h"
 
@@ -116,4 +116,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTASKDESCRIPTION_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_CTASKDESCRIPTION_H__

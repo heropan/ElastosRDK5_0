@@ -1,6 +1,6 @@
 
-#ifndef __SPELLCHECKER_H__
-#define __SPELLCHECKER_H__
+#ifndef __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
+#define __ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 
 #include "ext/frameworkext.h"
 
@@ -160,5 +160,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SPELLCHECKER_H__
+#endif //__ELASTOS_DROID_WIDGET_SPELLCHECKER_H__
 

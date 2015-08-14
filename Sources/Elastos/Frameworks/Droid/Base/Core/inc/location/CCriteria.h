@@ -1,6 +1,6 @@
 
-#ifndef __CCRITERIA_H__
-#define __CCRITERIA_H__
+#ifndef __ELASTOS_DROID_LOCATION_CCRITERIA_H__
+#define __ELASTOS_DROID_LOCATION_CCRITERIA_H__
 
 #include "ext/frameworkext.h"
 #include "_CCriteria.h"
@@ -159,4 +159,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CCRITERIA_H__
+#endif // __ELASTOS_DROID_LOCATION_CCRITERIA_H__

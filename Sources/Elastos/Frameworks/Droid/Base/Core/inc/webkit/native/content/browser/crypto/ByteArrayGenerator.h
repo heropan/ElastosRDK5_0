@@ -1,6 +1,6 @@
 
-#ifndef __BYTEARRAYGENERATOR_H__
-#define __BYTEARRAYGENERATOR_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__
 
 // import java.io.FileInputStream;
 // import java.io.IOException;
@@ -34,4 +34,4 @@ class ByteArrayGenerator {
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BYTEARRAYGENERATOR_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_BYTEARRAYGENERATOR_H__

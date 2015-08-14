@@ -1,6 +1,6 @@
 
-#ifndef __CDRAGEVENT_H__
-#define __CDRAGEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
+#define __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
 
 #include "ext/frameworkdef.h"
 #include "_CDragEvent.h"
@@ -193,4 +193,4 @@ private:
 }
 }
 
-#endif // __CDRAGEVENT_H__
+#endif // __ELASTOS_DROID_VIEW_CDRAGEVENT_H__

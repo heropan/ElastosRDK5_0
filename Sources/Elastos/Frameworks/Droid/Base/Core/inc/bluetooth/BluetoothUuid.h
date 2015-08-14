@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHUUID_H__
-#define __BLUETOOTHUUID_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHUUID_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHUUID_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -85,4 +85,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif // __BLUETOOTHUUID_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_BLUETOOTHUUID_H__

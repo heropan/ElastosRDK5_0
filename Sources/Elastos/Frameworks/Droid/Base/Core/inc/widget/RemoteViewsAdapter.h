@@ -1,5 +1,5 @@
-#ifndef __REMOTEVIEWSADAPTER_H__
-#define __REMOTEVIEWSADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_REMOTEVIEWSADAPTER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/BaseAdapter.h"
@@ -110,7 +110,6 @@ template<> struct Hash<AutoPtr<Elastos::Droid::Widget::RemoteViewsCacheKey> >
 };
 _ETL_NAMESPACE_END
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_REMOTEVIEWFRAMELAYOUT
 #define HASH_FUNC_FOR_AUTOPTR_REMOTEVIEWFRAMELAYOUT
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Widget::RemoteViewsFrameLayout)
 #endif

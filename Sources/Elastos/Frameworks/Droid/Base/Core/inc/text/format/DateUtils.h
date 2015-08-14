@@ -1,6 +1,6 @@
 
-#ifndef __DateUtils_H__
-#define __DateUtils_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_DateUtils_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_DateUtils_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/StringBuilder.h>
@@ -740,4 +740,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DateUtils_H__
+#endif // __ELASTOS_DROID_TEXT_FORMAT_DateUtils_H__

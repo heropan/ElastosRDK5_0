@@ -1,6 +1,6 @@
 
-#ifndef __CWEBSETTINGSHELPER_H__
-#define __CWEBSETTINGSHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBSETTINGSHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBSETTINGSHELPER_H__
 
 #include "_CWebSettingsHelper.h"
 
@@ -22,4 +22,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBSETTINGSHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBSETTINGSHELPER_H__

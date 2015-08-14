@@ -1,6 +1,6 @@
 
-#ifndef __IMAGEVIEW_H__
-#define __IMAGEVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_IMAGEVIEW_H__
+#define __ELASTOS_DROID_WIDGET_IMAGEVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "view/View.h"
@@ -253,4 +253,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__IMAGEVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_IMAGEVIEW_H__

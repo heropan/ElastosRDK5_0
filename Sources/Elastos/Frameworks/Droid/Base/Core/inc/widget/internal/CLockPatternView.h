@@ -1,5 +1,5 @@
-#ifndef __CLOCKPATTERNVIEW__H_
-#define __CLOCKPATTERNVIEW__H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEW_H__
 
 #include "_CLockPatternView.h"
 
@@ -63,4 +63,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CLOCKPATTERNVIEW__H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEW_H__

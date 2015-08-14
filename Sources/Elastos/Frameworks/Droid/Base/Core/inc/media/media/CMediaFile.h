@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAFILE_H__
-#define __CMEDIAFILE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAFILE_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAFILE_H__
 
 #include "_CMediaFile.h"
 #include "ext/frameworkext.h"
@@ -134,4 +134,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAFILE_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAFILE_H__

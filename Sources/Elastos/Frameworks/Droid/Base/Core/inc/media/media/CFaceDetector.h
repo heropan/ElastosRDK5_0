@@ -1,6 +1,6 @@
 
-#ifndef __CFACEDETECTOR_H__
-#define __CFACEDETECTOR_H__
+#ifndef __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
+#define __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
 
 #include "_CFaceDetector.h"
 #include "ext/frameworkext.h"
@@ -94,5 +94,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CFACEDETECTOR_H__
+#endif // __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
 

@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTOBSERVABLE_H__
-#define __CONTENTOBSERVABLE_H__
+#ifndef __ELASTOS_DROID_DATABASE_CONTENTOBSERVABLE_H__
+#define __ELASTOS_DROID_DATABASE_CONTENTOBSERVABLE_H__
 
 #include "database/Observable.h"
 
@@ -73,4 +73,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CONTENTOBSERVABLE_H__
+#endif //__ELASTOS_DROID_DATABASE_CONTENTOBSERVABLE_H__

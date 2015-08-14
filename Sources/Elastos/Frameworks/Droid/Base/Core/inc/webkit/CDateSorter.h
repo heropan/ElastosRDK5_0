@@ -1,6 +1,6 @@
 
-#ifndef __CDATESORTER_H__
-#define __CDATESORTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CDATESORTER_H__
+#define __ELASTOS_DROID_WEBKIT_CDATESORTER_H__
 
 #include "_CDateSorter.h"
 #include "webkit/DateSorter.h"
@@ -35,4 +35,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CDATESORTER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CDATESORTER_H__

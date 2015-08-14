@@ -1,6 +1,6 @@
 
-#ifndef __CPACKAGECLEANITEM_H__
-#define __CPACKAGECLEANITEM_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__
 
 #include "_CPackageCleanItem.h"
 
@@ -57,4 +57,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPACKAGECLEANITEM_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__

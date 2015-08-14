@@ -1,6 +1,6 @@
 
-#ifndef __RECEIVERRESTRICTEDCONTEXT_H__
-#define __RECEIVERRESTRICTEDCONTEXT_H__
+#ifndef __ELASTOS_DROID_APP_RECEIVERRESTRICTEDCONTEXT_H__
+#define __ELASTOS_DROID_APP_RECEIVERRESTRICTEDCONTEXT_H__
 
 #include "content/ContextWrapper.h"
 
@@ -61,4 +61,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __RECEIVERRESTRICTEDCONTEXT_H__
+#endif // __ELASTOS_DROID_APP_RECEIVERRESTRICTEDCONTEXT_H__

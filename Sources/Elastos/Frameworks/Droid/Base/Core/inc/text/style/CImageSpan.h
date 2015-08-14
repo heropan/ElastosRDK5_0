@@ -1,6 +1,6 @@
 
-#ifndef __CIMAGESPAN_H__
-#define __CIMAGESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CIMAGESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CIMAGESPAN_H__
 
 #include "_CImageSpan.h"
 #include "text/style/ImageSpan.h"
@@ -109,4 +109,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CIMAGESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CIMAGESPAN_H__

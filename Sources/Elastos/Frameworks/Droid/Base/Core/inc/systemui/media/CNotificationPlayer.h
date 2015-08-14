@@ -1,5 +1,5 @@
-#ifndef __CNOTIFICATIONPLAYER_H__
-#define __CNOTIFICATIONPLAYER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
+#define __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
 
 #include "_CNotificationPlayer.h"
 #include "ext/frameworkext.h"
@@ -167,4 +167,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNOTIFICATIONPLAYER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__

@@ -1,5 +1,5 @@
-#ifndef __CLISTVIEW_H_
-#define __CLISTVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CLISTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CLISTVIEW_H__
 
 #include "_CListView.h"
 
@@ -342,4 +342,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CLISTVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CLISTVIEW_H__

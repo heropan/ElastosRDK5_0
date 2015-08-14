@@ -1,6 +1,6 @@
 
-#ifndef __WEBVIEWCLIENTCLASSICEXT_H__
-#define __WEBVIEWCLIENTCLASSICEXT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBVIEWCLIENTCLASSICEXT_H__
+#define __ELASTOS_DROID_WEBKIT_WEBVIEWCLIENTCLASSICEXT_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/WebViewClient.h"
@@ -57,4 +57,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBVIEWCLIENTCLASSICEXT_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBVIEWCLIENTCLASSICEXT_H__

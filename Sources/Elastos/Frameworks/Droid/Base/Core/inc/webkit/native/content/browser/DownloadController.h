@@ -1,6 +1,6 @@
 
-#ifndef __DOWNLOADCONTROLLER_H__
-#define __DOWNLOADCONTROLLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADCONTROLLER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADCONTROLLER_H__
 
 // import android.content.Context;
 
@@ -144,4 +144,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__DOWNLOADCONTROLLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DOWNLOADCONTROLLER_H__

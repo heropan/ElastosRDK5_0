@@ -1,6 +1,6 @@
 
-#ifndef __CBORINGLAYOUTMETRICS_H__
-#define __CBORINGLAYOUTMETRICS_H__
+#ifndef __ELASTOS_DROID_TEXT_CBORINGLAYOUTMETRICS_H__
+#define __ELASTOS_DROID_TEXT_CBORINGLAYOUTMETRICS_H__
 
 #include "_CBoringLayoutMetrics.h"
 
@@ -62,4 +62,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CBORINGLAYOUTMETRICS_H__
+#endif //__ELASTOS_DROID_TEXT_CBORINGLAYOUTMETRICS_H__

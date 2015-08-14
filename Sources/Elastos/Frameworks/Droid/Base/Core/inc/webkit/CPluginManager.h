@@ -1,6 +1,6 @@
 
-#ifndef __CPLUGINMANAGER_H__
-#define __CPLUGINMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CPLUGINMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_CPLUGINMANAGER_H__
 
 #include "_CPluginManager.h"
 #include "webkit/PluginManager.h"
@@ -26,4 +26,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPLUGINMANAGER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CPLUGINMANAGER_H__

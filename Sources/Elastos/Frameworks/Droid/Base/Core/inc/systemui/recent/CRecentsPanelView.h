@@ -1,5 +1,5 @@
-#ifndef __CRECENTSPANELVIEW_H_
-#define __CRECENTSPANELVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSPANELVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSPANELVIEW_H__
 
 #include "_CRecentsPanelView.h"
 
@@ -135,4 +135,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CRECENTSPANELVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSPANELVIEW_H__

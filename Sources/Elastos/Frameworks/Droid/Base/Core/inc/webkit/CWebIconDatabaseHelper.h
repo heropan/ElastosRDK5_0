@@ -1,6 +1,6 @@
 
-#ifndef __CWEBICONDATABASEHELPER_H__
-#define __CWEBICONDATABASEHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBICONDATABASEHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBICONDATABASEHELPER_H__
 
 #include "_CWebIconDatabaseHelper.h"
 
@@ -19,4 +19,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBICONDATABASEHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBICONDATABASEHELPER_H__

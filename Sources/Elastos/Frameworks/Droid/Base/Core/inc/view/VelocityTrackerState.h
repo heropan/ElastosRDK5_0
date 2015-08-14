@@ -1,5 +1,5 @@
-#ifndef __VELOCITYTRACKERSTATE_H__
-#define __VELOCITYTRACKERSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKERSTATE_H__
+#define __ELASTOS_DROID_VIEW_VELOCITYTRACKERSTATE_H__
 
 #include <ext/frameworkext.h>
 #include "androidfw/VelocityTracker.h"

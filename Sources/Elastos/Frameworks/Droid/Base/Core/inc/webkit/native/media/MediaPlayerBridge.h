@@ -1,6 +1,6 @@
 
-#ifndef __MEDIAPLAYERBRIDGE_H__
-#define __MEDIAPLAYERBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__
 
 // import android.content.Context;
 // import android.media.MediaPlayer;
@@ -209,4 +209,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__MEDIAPLAYERBRIDGE_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERBRIDGE_H__

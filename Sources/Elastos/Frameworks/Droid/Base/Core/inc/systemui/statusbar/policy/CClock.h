@@ -1,6 +1,6 @@
 
-#ifndef __POLICY_CCLOCK_H__
-#define __POLICY_CCLOCK_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CCLOCK_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CCLOCK_H__
 
 #include "_CClock.h"
 
@@ -47,4 +47,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __POLICY_CCLOCK_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CCLOCK_H__

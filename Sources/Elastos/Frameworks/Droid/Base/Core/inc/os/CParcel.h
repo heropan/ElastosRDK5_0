@@ -1,5 +1,5 @@
-#ifndef __CPARCEL_H__
-#define __CPARCEL_H__
+#ifndef __ELASTOS_DROID_OS_CPARCEL_H__
+#define __ELASTOS_DROID_OS_CPARCEL_H__
 
 #include "_CParcel.h"
 
@@ -321,4 +321,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPARCEL_H__
+#endif //__ELASTOS_DROID_OS_CPARCEL_H__

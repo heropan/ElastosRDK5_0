@@ -1,6 +1,6 @@
 
-#ifndef __CGEOCODERPARAMS_H__
-#define __CGEOCODERPARAMS_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGEOCODERPARAMS_H__
+#define __ELASTOS_DROID_LOCATION_CGEOCODERPARAMS_H__
 
 #include "_CGeocoderParams.h"
 
@@ -65,4 +65,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CGEOCODERPARAMS_H__
+#endif //__ELASTOS_DROID_LOCATION_CGEOCODERPARAMS_H__

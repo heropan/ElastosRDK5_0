@@ -1,6 +1,6 @@
 
-#ifndef __CWALLPAPERENGINEWRAPPER_H__
-#define __CWALLPAPERENGINEWRAPPER_H__
+#ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERENGINEWRAPPER_H__
+#define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERENGINEWRAPPER_H__
 
 #include "_CWallpaperEngineWrapper.h"
 #include "service/wallpaper/WallpaperService.h"
@@ -136,4 +136,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CWALLPAPERENGINEWRAPPER_H__
+#endif //__ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERENGINEWRAPPER_H__

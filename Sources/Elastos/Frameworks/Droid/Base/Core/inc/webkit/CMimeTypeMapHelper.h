@@ -1,6 +1,6 @@
 
-#ifndef __CMIMETYPEMAPHELPER_H__
-#define __CMIMETYPEMAPHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CMIMETYPEMAPHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CMIMETYPEMAPHELPER_H__
 
 #include "_CMimeTypeMapHelper.h"
 
@@ -23,4 +23,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CMIMETYPEMAPHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CMIMETYPEMAPHELPER_H__

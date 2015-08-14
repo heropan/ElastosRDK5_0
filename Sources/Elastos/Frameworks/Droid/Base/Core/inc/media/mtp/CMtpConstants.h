@@ -1,6 +1,6 @@
 
-#ifndef __CMTPCONSTANTS_H__
-#define __CMTPCONSTANTS_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPCONSTANTS_H__
+#define __ELASTOS_DROID_MTP_CMTPCONSTANTS_H__
 
 #include "_CMtpConstants.h"
 
@@ -18,4 +18,4 @@ public:
 } // namespace Mtp
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMTPCONSTANTS_H__
+#endif // __ELASTOS_DROID_MTP_CMTPCONSTANTS_H__

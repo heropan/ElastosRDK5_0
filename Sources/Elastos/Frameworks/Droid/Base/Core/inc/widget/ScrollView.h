@@ -1,6 +1,6 @@
 
-#ifndef __SCROLLVIEW_h__
-#define __SCROLLVIEW_h__
+#ifndef __ELASTOS_DROID_WIDGET_SCROLLVIEW_H__
+#define __ELASTOS_DROID_WIDGET_SCROLLVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
@@ -430,4 +430,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SCROLLVIEW_h__
+#endif //__ELASTOS_DROID_WIDGET_SCROLLVIEW_H__

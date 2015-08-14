@@ -1,7 +1,7 @@
 
 
-#ifndef __CLAYOUTDIRECTIONS_H__
-#define __CLAYOUTDIRECTIONS_H__
+#ifndef __ELASTOS_DROID_TEXT_CLAYOUTDIRECTIONS_H__
+#define __ELASTOS_DROID_TEXT_CLAYOUTDIRECTIONS_H__
 
 #include "_CLayoutDirections.h"
 
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLAYOUTDIRECTIONS_H__
+#endif //__ELASTOS_DROID_TEXT_CLAYOUTDIRECTIONS_H__

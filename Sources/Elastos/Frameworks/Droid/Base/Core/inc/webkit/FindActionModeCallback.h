@@ -1,6 +1,6 @@
 
-#ifndef __FINDACTIONMODECALLBACK_H__
-#define __FINDACTIONMODECALLBACK_H__
+#ifndef __ELASTOS_DROID_WEBKIT_FINDACTIONMODECALLBACK_H__
+#define __ELASTOS_DROID_WEBKIT_FINDACTIONMODECALLBACK_H__
 
 #include "ext/frameworkext.h"
 
@@ -172,4 +172,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__FINDACTIONMODECALLBACK_H__
+#endif //__ELASTOS_DROID_WEBKIT_FINDACTIONMODECALLBACK_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPOINTERICONHELPER_H__
-#define __CPOINTERICONHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
+#define __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 
 #include "_CPointerIconHelper.h"
 
@@ -102,4 +102,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPOINTERICONHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__

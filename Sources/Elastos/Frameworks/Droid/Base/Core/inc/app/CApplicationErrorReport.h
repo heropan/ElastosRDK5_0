@@ -1,6 +1,6 @@
 
-#ifndef __CAPPLICATIONERRORREPORT_H__
-#define __CAPPLICATIONERRORREPORT_H__
+#ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__
+#define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__
 
 #include "_CApplicationErrorReport.h"
 
@@ -219,4 +219,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CAPPLICATIONERRORREPORT_H__
+#endif //__ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__

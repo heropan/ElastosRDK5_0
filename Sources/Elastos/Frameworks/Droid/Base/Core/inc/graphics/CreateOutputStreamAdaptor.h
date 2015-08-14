@@ -1,5 +1,5 @@
-#ifndef __HH_CREATEOUTPUTSTREAMADAPTOR_H
-#define __HH_CREATEOUTPUTSTREAMADAPTOR_H
+#ifndef __ELASTOS_DROID_GRAPHICS_H_H__
+#define __ELASTOS_DROID_GRAPHICS_H_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
@@ -25,4 +25,4 @@ SkWStream* CreateOutputStreamAdaptor(
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_CREATEOUTPUTSTREAMADAPTOR_H
+#endif // __ELASTOS_DROID_GRAPHICS_H_H__

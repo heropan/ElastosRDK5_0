@@ -1,5 +1,5 @@
-#ifndef __ReplacementTransformationMethod_H__
-#define __ReplacementTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -171,4 +171,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ReplacementTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_ReplacementTransformationMethod_H__

@@ -1,6 +1,6 @@
 
-#ifndef __TABHOST_H__
-#define __TABHOST_H__
+#ifndef __ELASTOS_DROID_WIDGET_TABHOST_H__
+#define __ELASTOS_DROID_WIDGET_TABHOST_H__
 
 #include "widget/FrameLayout.h"
 

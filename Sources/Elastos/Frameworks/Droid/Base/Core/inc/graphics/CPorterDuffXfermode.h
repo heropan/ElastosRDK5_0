@@ -1,6 +1,6 @@
 
-#ifndef __CPORTERDUFFXFERMODE_H__
-#define __CPORTERDUFFXFERMODE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPORTERDUFFXFERMODE_H__
+#define __ELASTOS_DROID_GRAPHICS_CPORTERDUFFXFERMODE_H__
 
 #include "_CPorterDuffXfermode.h"
 #include "graphics/Xfermode.h"
@@ -38,4 +38,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPORTERDUFFXFERMODE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CPORTERDUFFXFERMODE_H__

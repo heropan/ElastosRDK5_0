@@ -1,6 +1,6 @@
 
-#ifndef __CPREFERENCEMANAGER_H__
-#define __CPREFERENCEMANAGER_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__
+#define __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__
 
 #include "_CPreferenceManager.h"
 #include "ext/frameworkext.h"
@@ -323,4 +323,4 @@ private:
 }
 }
 
-#endif // __CPREFERENCEMANAGER_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__

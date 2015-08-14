@@ -1,5 +1,5 @@
-#ifndef __CYUVIMAGE_H__
-#define __CYUVIMAGE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CYUVIMAGE_H__
+#define __ELASTOS_DROID_GRAPHICS_CYUVIMAGE_H__
 
 #include "_CYuvImage.h"
 #include <Elastos.CoreLibrary.h>
@@ -157,4 +157,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CYUVIMAGE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CYUVIMAGE_H__

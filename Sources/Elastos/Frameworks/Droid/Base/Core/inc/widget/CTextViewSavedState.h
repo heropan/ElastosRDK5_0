@@ -1,5 +1,5 @@
-#ifndef __CTEXTVIEWSAVEDSTATE_H_
-#define __CTEXTVIEWSAVEDSTATE_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTEXTVIEWSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_CTEXTVIEWSAVEDSTATE_H__
 
 #include "_CTextViewSavedState.h"
 #include "widget/TextViewSavedState.h"
@@ -31,4 +31,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTEXTVIEWSAVEDSTATE_H_
+#endif //__ELASTOS_DROID_WIDGET_CTEXTVIEWSAVEDSTATE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CANIMATEDROTATEDRAWABLE_H__
-#define __CANIMATEDROTATEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
 
 #include "_CAnimatedRotateDrawable.h"
 #include "graphics/drawable/AnimatedRotateDrawable.h"
@@ -51,5 +51,5 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CANIMATEDROTATEDRAWABLE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
 

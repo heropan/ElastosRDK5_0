@@ -1,5 +1,5 @@
-#ifndef __CSCROLLER_H_
-#define __CSCROLLER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSCROLLER_H__
+#define __ELASTOS_DROID_WIDGET_CSCROLLER_H__
 
 #include "_CScroller.h"
 #include "widget/Scroller.h"
@@ -107,4 +107,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSCROLLER_H_
+#endif //__ELASTOS_DROID_WIDGET_CSCROLLER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ZOOMCONTROLEMBEDDED_H__
-#define __ZOOMCONTROLEMBEDDED_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ZOOMCONTROLEMBEDDED_H__
+#define __ELASTOS_DROID_WEBKIT_ZOOMCONTROLEMBEDDED_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/ZoomControlBase.h"
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ZOOMCONTROLEMBEDDED_H__
+#endif //__ELASTOS_DROID_WEBKIT_ZOOMCONTROLEMBEDDED_H__

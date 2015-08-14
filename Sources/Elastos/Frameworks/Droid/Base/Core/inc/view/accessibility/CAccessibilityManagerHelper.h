@@ -1,6 +1,6 @@
 
-#ifndef _CAccessibilityManagerHelper_
-#define _CAccessibilityManagerHelper_
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__
 
 #include "_CAccessibilityManagerHelper.h"
 
@@ -48,4 +48,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //_CAccessibilityManagerHelper_
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__

@@ -1,5 +1,5 @@
-#ifndef __CCONTENTPROVIDERHOLDER_H__
-#define __CCONTENTPROVIDERHOLDER_H__
+#ifndef __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__
+#define __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__
 
 #include "_CContentProviderHolder.h"
 
@@ -63,4 +63,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCONTENTPROVIDERHOLDER_H__
+#endif // __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__

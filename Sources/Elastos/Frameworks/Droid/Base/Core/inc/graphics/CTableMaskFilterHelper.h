@@ -1,6 +1,6 @@
 
-#ifndef __CTABLEMASKFILTERHELPER_H__
-#define __CTABLEMASKFILTERHELPER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CTABLEMASKFILTERHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_CTABLEMASKFILTERHELPER_H__
 
 #include "_CTableMaskFilterHelper.h"
 
@@ -25,4 +25,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTABLEMASKFILTERHELPER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CTABLEMASKFILTERHELPER_H__

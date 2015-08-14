@@ -1,6 +1,6 @@
 
-#ifndef __COUNTRY_H__
-#define __COUNTRY_H__
+#ifndef __ELASTOS_DROID_LOCATION_COUNTRY_H__
+#define __ELASTOS_DROID_LOCATION_COUNTRY_H__
 
 #include "ext/frameworkext.h"
 
@@ -132,4 +132,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__COUNTRY_H__
+#endif //__ELASTOS_DROID_LOCATION_COUNTRY_H__

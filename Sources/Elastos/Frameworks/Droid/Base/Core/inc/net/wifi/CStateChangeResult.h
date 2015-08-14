@@ -1,6 +1,6 @@
 
-#ifndef __STATECHANGERESULT_H__
-#define __STATECHANGERESULT_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_STATECHANGERESULT_H__
+#define __ELASTOS_DROID_NET_WIFI_STATECHANGERESULT_H__
 
 #include "_CStateChangeResult.h"
 
@@ -56,4 +56,4 @@ private:
 } // namespace Droid
 } // namepsace Elastos
 
-#endif // __STATECHANGERESULT_H__
+#endif // __ELASTOS_DROID_NET_WIFI_STATECHANGERESULT_H__

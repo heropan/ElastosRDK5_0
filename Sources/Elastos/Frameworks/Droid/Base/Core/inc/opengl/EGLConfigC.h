@@ -1,6 +1,6 @@
 
-#ifndef __EGLCONFIGC_H__
-#define __EGLCONFIGC_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLCONFIGC_H__
+#define __ELASTOS_DROID_OPENGL_EGLCONFIGC_H__
 
 #include "EGLObjectHandle.h"
 

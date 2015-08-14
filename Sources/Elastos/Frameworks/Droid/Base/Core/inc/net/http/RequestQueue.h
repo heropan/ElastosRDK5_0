@@ -1,6 +1,6 @@
 
-#ifndef __REQUESTQUEUE_H__
-#define __REQUESTQUEUE_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__
+#define __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -286,4 +286,4 @@ private:
 }
 }
 
-#endif // __REQUESTQUEUE_H__
+#endif // __ELASTOS_DROID_NET_HTTP_REQUESTQUEUE_H__

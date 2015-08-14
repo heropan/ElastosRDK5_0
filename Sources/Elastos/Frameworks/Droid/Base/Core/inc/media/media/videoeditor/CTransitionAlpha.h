@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSITIONALPHA_H__
-#define __CTRANSITIONALPHA_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONALPHA_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONALPHA_H__
 
 #include "_CTransitionAlpha.h"
 #include <ext/frameworkext.h>
@@ -134,5 +134,5 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CTRANSITIONALPHA_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONALPHA_H__
 

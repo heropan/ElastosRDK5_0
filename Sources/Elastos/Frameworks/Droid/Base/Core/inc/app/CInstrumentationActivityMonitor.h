@@ -1,6 +1,6 @@
 
-#ifndef __CINSTRUMENTATIONACTIVITYMONITOR_H__
-#define __CINSTRUMENTATIONACTIVITYMONITOR_H__
+#ifndef __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__
+#define __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__
 
 #include "_CInstrumentationActivityMonitor.h"
 #include <elastos/Core/Object.h>
@@ -139,4 +139,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CINSTRUMENTATIONACTIVITYMONITOR_H__
+#endif //__ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__

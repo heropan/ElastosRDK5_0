@@ -1,6 +1,6 @@
 
-#ifndef __COBBACTIONLISTENER_H__
-#define __COBBACTIONLISTENER_H__
+#ifndef __ELASTOS_DROID_OS_STORAGE_COBBACTIONLISTENER_H__
+#define __ELASTOS_DROID_OS_STORAGE_COBBACTIONLISTENER_H__
 
 #include "_CObbActionListener.h"
 #include "os/storage/CStorageManager.h"
@@ -40,4 +40,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __COBBACTIONLISTENER_H__
+#endif // __ELASTOS_DROID_OS_STORAGE_COBBACTIONLISTENER_H__

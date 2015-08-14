@@ -1,6 +1,6 @@
 
-#ifndef __VELOCITYTRACKER_H__
-#define __VELOCITYTRACKER_H__
+#ifndef __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
+#define __ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__
 
 #include "util/Pools.h"
 #include "util/Config.h"
@@ -280,4 +280,4 @@ private:
 } // namespace View
 } // namespace Droid
 } // namespace Elastos
-#endif //__VELOCITYTRACKER_H__
+#endif //__ELASTOS_DROID_VIEW_VELOCITYTRACKER_H__

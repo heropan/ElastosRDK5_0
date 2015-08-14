@@ -1,6 +1,6 @@
 
-#ifndef __CBITMAPFACTORYOPTIONS_H__
-#define __CBITMAPFACTORYOPTIONS_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__
+#define __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__
 
 #include "_CBitmapFactoryOptions.h"
 
@@ -357,4 +357,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CBITMAPFACTORYOPTIONS_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__

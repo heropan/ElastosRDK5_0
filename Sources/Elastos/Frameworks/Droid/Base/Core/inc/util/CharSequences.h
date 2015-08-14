@@ -1,5 +1,5 @@
-#ifndef __CHARSEQUENCES_H__
-#define __CHARSEQUENCES_H__
+#ifndef __ELASTOS_DROID_UTILITY_CHARSEQUENCES_H__
+#define __ELASTOS_DROID_UTILITY_CHARSEQUENCES_H__
 
 #include "ext/frameworkext.h"
 
@@ -68,4 +68,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CHARSEQUENCES_H__
+#endif //__ELASTOS_DROID_UTILITY_CHARSEQUENCES_H__

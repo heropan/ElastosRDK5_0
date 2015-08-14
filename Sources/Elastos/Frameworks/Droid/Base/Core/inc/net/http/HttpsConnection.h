@@ -1,6 +1,6 @@
 
-#ifndef __HTTPSCONNECTION_H__
-#define __HTTPSCONNECTION_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
+#define __ELASTOS_DROID_NET_HTTP_HTTPSCONNECTION_H__
 
 #include "Connection.h"
 

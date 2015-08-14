@@ -1,5 +1,5 @@
-#ifndef __CPARCELFILEDESCRIPTOR_H__
-#define __CPARCELFILEDESCRIPTOR_H__
+#ifndef __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTOR_H__
+#define __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTOR_H__
 
 #include "_CParcelFileDescriptor.h"
 #include "os/ParcelFileDescriptor.h"
@@ -48,4 +48,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPARCELFILEDESCRIPTOR_H__
+#endif // __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTOR_H__

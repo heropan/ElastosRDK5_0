@@ -1,6 +1,6 @@
 
-#ifndef __CSTRICTMODEVOILATIONINFO_H__
-#define __CSTRICTMODEVOILATIONINFO_H__
+#ifndef __ELASTOS_DROID_OS_CSTRICTMODEVOILATIONINFO_H__
+#define __ELASTOS_DROID_OS_CSTRICTMODEVOILATIONINFO_H__
 
 #include "_CStrictModeViolationInfo.h"
 #include "ext/frameworkdef.h"
@@ -133,4 +133,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRICTMODEVOILATIONINFO_H__
+#endif //__ELASTOS_DROID_OS_CSTRICTMODEVOILATIONINFO_H__

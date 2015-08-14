@@ -1,5 +1,5 @@
-#ifndef __ArrowKeyMovementMethod_H__
-#define __ArrowKeyMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__
 
 //#include "Elastos.Droid.Core_server.h"
 #include "text/method/BaseMovementMethod.h"
@@ -149,4 +149,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ArrowKeyMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_ArrowKeyMovementMethod_H__

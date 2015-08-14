@@ -1,6 +1,6 @@
 
-#ifndef __ViewGroup_h__
-#define __ViewGroup_h__
+#ifndef __ELASTOS_DROID_VIEW_ViewGroup_H__
+#define __ELASTOS_DROID_VIEW_ViewGroup_H__
 
 #include "view/View.h"
 
@@ -16,11 +16,9 @@ namespace View {
 
 extern "C" const InterfaceID EIID_ViewGroup;
 
-#ifndef VIEWGROUP_PROBE
 #define VIEWGROUP_PROBE(expr) reinterpret_cast<ViewGroup*>((expr)->Probe(EIID_ViewGroup))
 #endif
 
-#ifndef IVIEWGROUP_PROBE
 #define IVIEWGROUP_PROBE(expr) ((IViewGroup*)(expr)->Probe(EIID_IViewGroup))
 #endif
 
@@ -1955,4 +1953,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif // __ViewGroup_h__
+#endif // __ELASTOS_DROID_VIEW_ViewGroup_H__

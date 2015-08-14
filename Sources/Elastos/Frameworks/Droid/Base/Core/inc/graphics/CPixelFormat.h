@@ -1,6 +1,6 @@
 
-#ifndef __CPIXELFORMAT_H__
-#define __CPIXELFORMAT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPIXELFORMAT_H__
+#define __ELASTOS_DROID_GRAPHICS_CPIXELFORMAT_H__
 
 #include "_CPixelFormat.h"
 #include "graphics/PixelFormat.h"
@@ -25,4 +25,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPIXELFORMAT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CPIXELFORMAT_H__

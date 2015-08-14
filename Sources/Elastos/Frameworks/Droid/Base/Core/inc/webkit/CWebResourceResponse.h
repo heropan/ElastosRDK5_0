@@ -1,6 +1,6 @@
 
-#ifndef __CWEBRESOURCERESPONSE_H__
-#define __CWEBRESOURCERESPONSE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBRESOURCERESPONSE_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBRESOURCERESPONSE_H__
 
 #include "_CWebResourceResponse.h"
 #include "webkit/WebResourceResponse.h"
@@ -60,4 +60,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBRESOURCERESPONSE_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBRESOURCERESPONSE_H__

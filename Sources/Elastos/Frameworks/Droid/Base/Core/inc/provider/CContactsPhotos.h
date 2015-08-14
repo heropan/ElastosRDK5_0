@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSPHOTOS_H__
-#define __CCONTACTSPHOTOS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPHOTOS_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSPHOTOS_H__
 
 #include "_CContactsPhotos.h"
 
@@ -28,4 +28,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__CCONTACTSPHOTOS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTSPHOTOS_H__

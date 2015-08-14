@@ -1,5 +1,5 @@
-#ifndef __SYSTEMCLOCK_H__
-#define __SYSTEMCLOCK_H__
+#ifndef __ELASTOS_DROID_OS_SYSTEMCLOCK_H__
+#define __ELASTOS_DROID_OS_SYSTEMCLOCK_H__
 
 #include <elatypes.h>
 
@@ -88,4 +88,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SYSTEMCLOCK_H__
+#endif //__ELASTOS_DROID_OS_SYSTEMCLOCK_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CBORINGLAYOUT_H__
-#define __CBORINGLAYOUT_H__
+#ifndef __ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__
+#define __ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__
 
 #include "_CBoringLayout.h"
 #include "text/BoringLayout.h"
@@ -83,4 +83,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif//__CBORINGLAYOUT_H__
+#endif//__ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__

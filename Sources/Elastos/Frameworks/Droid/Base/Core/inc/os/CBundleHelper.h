@@ -1,6 +1,6 @@
 
-#ifndef  __CBUNDLEHELPER_H__
-#define  __CBUNDLEHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CBUNDLEHELPER_H__
+#define  __ELASTOS_DROID_OS_CBUNDLEHELPER_H__
 
 #include "_CBundleHelper.h"
 
@@ -25,4 +25,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CBUNDLEHELPER_H__
+#endif  //__ELASTOS_DROID_OS_CBUNDLEHELPER_H__

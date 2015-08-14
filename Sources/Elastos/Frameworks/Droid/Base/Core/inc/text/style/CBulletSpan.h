@@ -1,6 +1,6 @@
 
-#ifndef __CBULLETSPAN_H__
-#define __CBULLETSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CBULLETSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CBULLETSPAN_H__
 
 #include "_CBulletSpan.h"
 #include "text/style/BulletSpan.h"
@@ -54,4 +54,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CBULLETSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CBULLETSPAN_H__

@@ -1,6 +1,6 @@
 
-#ifndef __EGLContextC_H__
-#define __EGLContextC_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLCONTEXTC_H__
+#define __ELASTOS_DROID_OPENGL_EGLCONTEXTC_H__
 
 #include "EGLObjectHandle.h"
 

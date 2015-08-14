@@ -1,6 +1,6 @@
 
-#ifndef __PHONESTATUSBAR_H__
-#define __PHONESTATUSBAR_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONESTATUSBAR_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONESTATUSBAR_H__
 
 #include "systemui/statusbar/BaseStatusBar.h"
 
@@ -938,4 +938,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__PHONESTATUSBAR_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONESTATUSBAR_H__

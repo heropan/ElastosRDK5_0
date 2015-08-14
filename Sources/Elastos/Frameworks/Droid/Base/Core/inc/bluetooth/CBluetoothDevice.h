@@ -1,6 +1,6 @@
 
-#ifndef __CBLUETOOTHDEVICE_H__
-#define __CBLUETOOTHDEVICE_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHDEVICE_H__
+#define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHDEVICE_H__
 
 #include "_CBluetoothDevice.h"
 #include "CBluetoothDeviceManagerCallback.h"
@@ -155,4 +155,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CBLUETOOTHDEVICE_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHDEVICE_H__

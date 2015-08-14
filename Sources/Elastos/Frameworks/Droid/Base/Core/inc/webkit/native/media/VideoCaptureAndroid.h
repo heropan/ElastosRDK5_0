@@ -1,6 +1,6 @@
 
-#ifndef __VIDEOCAPTUREANDROID_H__
-#define __VIDEOCAPTUREANDROID_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__
 
 // import android.content.Context;
 // import android.graphics.ImageFormat;
@@ -104,4 +104,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__VIDEOCAPTUREANDROID_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREANDROID_H__

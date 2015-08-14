@@ -1,6 +1,6 @@
 
-#ifndef __VOLUMEPREFERENCE_H__
-#define __VOLUMEPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_VOLUMEPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_VOLUMEPREFERENCE_H__
 
 #include "SeekBarDialogPreference.h"
 #include "database/ContentObserver.h"

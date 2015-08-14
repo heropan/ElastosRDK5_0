@@ -1,6 +1,6 @@
 
-#ifndef __COOKIEMANAGERCLASSIC_H__
-#define __COOKIEMANAGERCLASSIC_H__
+#ifndef __ELASTOS_DROID_WEBKIT_COOKIEMANAGERCLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_COOKIEMANAGERCLASSIC_H__
 
 #include "ext/frameworkext.h"
 
@@ -148,4 +148,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COOKIEMANAGERCLASSIC_H__
+#endif //__ELASTOS_DROID_WEBKIT_COOKIEMANAGERCLASSIC_H__

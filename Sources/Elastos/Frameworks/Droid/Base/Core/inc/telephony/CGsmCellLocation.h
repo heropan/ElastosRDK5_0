@@ -1,6 +1,6 @@
 
-#ifndef __CGSMCELLLOCATION_H__
-#define __CGSMCELLLOCATION_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CGSMCELLLOCATION_H__
+#define __ELASTOS_DROID_TELEPHONY_CGSMCELLLOCATION_H__
 
 #include "_CGsmCellLocation.h"
 #include "telephony/CellLocation.h"
@@ -77,4 +77,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGSMCELLLOCATION_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CGSMCELLLOCATION_H__

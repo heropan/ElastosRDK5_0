@@ -1,6 +1,6 @@
 
-#ifndef __CMASKFILTERSPANHELPER_H__
-#define __CMASKFILTERSPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPANHELPER_H__
 
 #include "_CMaskFilterSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMASKFILTERSPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPANHELPER_H__

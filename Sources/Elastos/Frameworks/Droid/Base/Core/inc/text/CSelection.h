@@ -1,6 +1,6 @@
 
-#ifndef __CSELECTION_H__
-#define __CSELECTION_H__
+#ifndef __ELASTOS_DROID_TEXT_CSELECTION_H__
+#define __ELASTOS_DROID_TEXT_CSELECTION_H__
 
 #include "_CSelection.h"
 

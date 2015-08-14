@@ -1,6 +1,6 @@
 
-#ifndef __CVIDEOEDITORFACTORYHELPER_H__
-#define __CVIDEOEDITORFACTORYHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORFACTORYHELPER_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORFACTORYHELPER_H__
 
 #include "_CVideoEditorFactoryHelper.h"
 #include <ext/frameworkext.h>
@@ -66,5 +66,5 @@ public:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CVIDEOEDITORFACTORYHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORFACTORYHELPER_H__
 

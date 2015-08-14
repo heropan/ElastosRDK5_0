@@ -1,5 +1,5 @@
-#ifndef __CPANELBAR_H_
-#define __CPANELBAR_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CPANELBAR_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CPANELBAR_H__
 
 #include "_CPanelBar.h"
 
@@ -83,4 +83,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CPANELBAR_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CPANELBAR_H__

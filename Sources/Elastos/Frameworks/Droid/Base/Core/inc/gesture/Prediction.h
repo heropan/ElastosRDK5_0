@@ -1,5 +1,5 @@
-#ifndef __PREDICTION_H__
-#define __PREDICTION_H__
+#ifndef __ELASTOS_DROID_GESTURE_PREDICTION_H__
+#define __ELASTOS_DROID_GESTURE_PREDICTION_H__
 
 namespace Elastos {
 namespace Droid {
@@ -22,4 +22,4 @@ public:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__PREDICTION_H__
+#endif //__ELASTOS_DROID_GESTURE_PREDICTION_H__

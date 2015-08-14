@@ -1,5 +1,5 @@
-#ifndef __CABSOLUTELAYOUTLAYOUTPARAMS_H_
-#define __CABSOLUTELAYOUTLAYOUTPARAMS_H_
+#ifndef __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUTLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUTLAYOUTPARAMS_H__
 
 #include "_CAbsoluteLayoutLayoutParams.h"
 #include "widget/AbsoluteLayoutLayoutParams.h"
@@ -48,4 +48,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CABSOLUTELAYOUTLAYOUTPARAMS_H_
+#endif //__ELASTOS_DROID_WIDGET_CABSOLUTELAYOUTLAYOUTPARAMS_H__

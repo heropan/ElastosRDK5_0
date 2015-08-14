@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIP2PDEVICELIST_H__
-#define __CWIFIP2PDEVICELIST_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__
+#define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__
 
 #include "_CWifiP2pDeviceList.h"
 #include "CWifiP2pDevice.h"
@@ -83,4 +83,4 @@ private:
 }
 }
 }
-#endif // __CWIFIP2PDEVICELIST_H__
+#endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PDEVICELIST_H__

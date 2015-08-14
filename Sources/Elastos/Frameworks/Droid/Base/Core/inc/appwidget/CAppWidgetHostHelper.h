@@ -1,6 +1,6 @@
 
-#ifndef  __CAPPWIDGETHOSTHELPER_H__
-#define  __CAPPWIDGETHOSTHELPER_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__
+#define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__
 
 #include "_CAppWidgetHostHelper.h"
 
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CAPPWIDGETHOSTHELPER_H__
+#endif  // __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__

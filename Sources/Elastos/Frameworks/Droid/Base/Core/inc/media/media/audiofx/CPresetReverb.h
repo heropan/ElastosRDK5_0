@@ -1,5 +1,5 @@
-#ifndef __CPRESETREVERB_H__
-#define __CPRESETREVERB_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CPRESETREVERB_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CPRESETREVERB_H__
 
 #include "_CPresetReverb.h"
 #include "ext/frameworkext.h"
@@ -177,4 +177,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPRESETREVERB_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CPRESETREVERB_H__

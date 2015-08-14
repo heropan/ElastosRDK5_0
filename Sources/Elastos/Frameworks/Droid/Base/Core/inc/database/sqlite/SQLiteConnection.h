@@ -1,6 +1,6 @@
 
-#ifndef __SQLITECONNECTION_H__
-#define __SQLITECONNECTION_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -728,4 +728,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__SQLITECONNECTION_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCSTATS_H__
-#define __CSYNCSTATS_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__
 
 #include "_CSyncStats.h"
 
@@ -208,4 +208,4 @@ private:
 }
 }
 
-#endif // __CSYNCSTATS_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__

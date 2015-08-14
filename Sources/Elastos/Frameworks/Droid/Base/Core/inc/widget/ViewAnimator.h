@@ -1,6 +1,6 @@
 
-#ifndef __VIEWANIMATOR_H__
-#define __VIEWANIMATOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__
+#define __ELASTOS_DROID_WIDGET_VIEWANIMATOR_H__
 
 #include "widget/FrameLayout.h"
 /**

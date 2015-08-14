@@ -1,6 +1,6 @@
 
-#ifndef __IACCOUNTAUTHENTICATORCACHE_H__
-#define __IACCOUNTAUTHENTICATORCACHE_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_IACCOUNTAUTHENTICATORCACHE_H__
+#define __ELASTOS_DROID_ACCOUNTS_IACCOUNTAUTHENTICATORCACHE_H__
 
 #include "ext/frameworkext.h"
 #include "content/pm/RegisteredServicesCache.h"
@@ -68,4 +68,4 @@ interface IAccountAuthenticatorCache : public IInterface
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__IACCOUNTAUTHENTICATORCACHE_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_IACCOUNTAUTHENTICATORCACHE_H__

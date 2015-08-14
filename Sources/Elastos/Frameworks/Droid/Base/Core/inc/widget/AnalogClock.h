@@ -1,6 +1,6 @@
 
-#ifndef __ANALOGCLOCK_H__
-#define __ANALOGCLOCK_H__
+#ifndef __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_ANALOGCLOCK_H__
 
 #include <ext/frameworkext.h>
 #include "content/BroadcastReceiver.h"

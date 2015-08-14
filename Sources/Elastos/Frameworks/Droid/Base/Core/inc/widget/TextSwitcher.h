@@ -1,6 +1,6 @@
 
-#ifndef __TEXTSWITCHER_H__
-#define __TEXTSWITCHER_H__
+#ifndef __ELASTOS_DROID_WIDGET_TEXTSWITCHER_H__
+#define __ELASTOS_DROID_WIDGET_TEXTSWITCHER_H__
 
 #include "ViewSwitcher.h"
 

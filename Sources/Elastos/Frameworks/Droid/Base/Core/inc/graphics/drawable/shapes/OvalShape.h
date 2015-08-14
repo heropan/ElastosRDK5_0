@@ -1,6 +1,6 @@
 
-#ifndef __OVALSHAPE_H__
-#define __OVALSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_OVALSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_OVALSHAPE_H__
 
 #include "graphics/drawable/shapes/RectShape.h"
 
@@ -42,4 +42,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__OVALSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_OVALSHAPE_H__

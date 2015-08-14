@@ -1,6 +1,6 @@
 
-#ifndef __TEXTVIEWSAVEDSTATE_H__
-#define __TEXTVIEWSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_TEXTVIEWSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_TEXTVIEWSAVEDSTATE_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewBaseSavedState.h"
@@ -50,4 +50,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TEXTVIEWSAVEDSTATE_H__
+#endif //__ELASTOS_DROID_WIDGET_TEXTVIEWSAVEDSTATE_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __CSENSORMANAGERHELPER_H__
-#define  __CSENSORMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
+#define  __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
 
 #include "_CSensorManagerHelper.h"
 
@@ -187,4 +187,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSENSORMANAGERHELPER_H__
+#endif //__ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__

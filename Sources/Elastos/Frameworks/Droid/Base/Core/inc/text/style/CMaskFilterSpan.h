@@ -1,6 +1,6 @@
 
-#ifndef __CMASKFILTERSPAN_H__
-#define __CMASKFILTERSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPAN_H__
 
 #include "_CMaskFilterSpan.h"
 #include "text/style/MaskFilterSpan.h"
@@ -31,4 +31,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMASKFILTERSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPAN_H__

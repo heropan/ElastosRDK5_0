@@ -1,5 +1,5 @@
-#ifndef __CDISPLISTHELPER_H__
-#define __CDISPLISTHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CDISPLISTHELPER_H__
+#define __ELASTOS_DROID_VIEW_CDISPLISTHELPER_H__
 
 #include "_CDispListHelper.h"
 #include "ext/frameworkext.h"
@@ -19,7 +19,6 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::Etl::HashMap;
 
-#ifndef HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT
 #define HASH_EQUALTO_FUNC_FOR_AUTOPTR_IDISPLISTDISPFORMAT
 DEFINE_EQUALTO_FUNC_FOR_AUTOPTR(Elastos::Droid::View::IDispListDispFormat)
 #endif

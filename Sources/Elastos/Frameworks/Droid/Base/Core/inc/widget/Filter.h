@@ -1,6 +1,6 @@
 
-#ifndef __FILTER_H__
-#define __FILTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_FILTER_H__
+#define __ELASTOS_DROID_WIDGET_FILTER_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -207,4 +207,4 @@ private:
 } // namespace Elastos
 
 
-#endif //__FILTER_H__
+#endif //__ELASTOS_DROID_WIDGET_FILTER_H__

@@ -1,5 +1,5 @@
-#ifndef __CEXPANDHELPER_H__
-#define __CEXPANDHELPER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
+#define __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
 
 #include "_CExpandHelper.h"
 #include "systemui/CViewScaller.h"
@@ -224,4 +224,4 @@ private:
 }// namespace Elastos
 
 
-#endif //__CEXPANDHELPER_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__

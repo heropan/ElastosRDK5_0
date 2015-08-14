@@ -1,6 +1,6 @@
 
-#ifndef __CKEYCHARACTERMAP_H__
-#define __CKEYCHARACTERMAP_H__
+#ifndef __ELASTOS_DROID_VIEW_CKEYCHARACTERMAP_H__
+#define __ELASTOS_DROID_VIEW_CKEYCHARACTERMAP_H__
 
 #include "_CKeyCharacterMap.h"
 #include "ext/frameworkext.h"
@@ -507,4 +507,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CKEYCHARACTERMAP_H__
+#endif //__ELASTOS_DROID_VIEW_CKEYCHARACTERMAP_H__

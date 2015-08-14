@@ -1,6 +1,6 @@
 
-#ifndef  __CBACKUPHELPERDISPATCHER_H__
-#define  __CBACKUPHELPERDISPATCHER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPHELPERDISPATCHER_H__
+#define  __ELASTOS_DROID_APP_BACKUP_CBACKUPHELPERDISPATCHER_H__
 
 #include "_CBackupHelperDispatcher.h"
 #include "ext/frameworkext.h"
@@ -82,4 +82,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CBACKUPHELPERDISPATCHER_H__
+#endif  //__ELASTOS_DROID_APP_BACKUP_CBACKUPHELPERDISPATCHER_H__

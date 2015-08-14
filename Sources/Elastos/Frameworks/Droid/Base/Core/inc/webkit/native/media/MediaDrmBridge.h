@@ -1,6 +1,6 @@
 
-#ifndef __MEDIADRMBRIDGE_H__
-#define __MEDIADRMBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__
 
 // import android.media.MediaCrypto;
 // import android.media.MediaDrm;
@@ -536,4 +536,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__MEDIADRMBRIDGE_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_MEDIADRMBRIDGE_H__

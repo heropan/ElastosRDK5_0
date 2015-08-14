@@ -1,6 +1,6 @@
 
-#ifndef __AWQUOTAMANAGERBRIDGE_H__
-#define __AWQUOTAMANAGERBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__
 
 // import android.util.SparseArray;
 // import android.webkit.ValueCallback;
@@ -154,4 +154,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWQUOTAMANAGERBRIDGE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWQUOTAMANAGERBRIDGE_H__

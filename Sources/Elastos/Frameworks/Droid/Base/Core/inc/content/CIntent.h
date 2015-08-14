@@ -1,6 +1,6 @@
 
-#ifndef __CINTENT_H__
-#define __CINTENT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CINTENT_H__
+#define __ELASTOS_DROID_CONTENT_CINTENT_H__
 
 #include "_CIntent.h"
 #include "content/Intent.h"
@@ -126,4 +126,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif // __CINTENT_H__
+#endif // __ELASTOS_DROID_CONTENT_CINTENT_H__

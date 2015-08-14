@@ -1,5 +1,5 @@
-#ifndef __CBLINKLAYOUT_H_
-#define __CBLINKLAYOUT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CBLINKLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CBLINKLAYOUT_H__
 
 #include "_CBlinkLayout.h"
 
@@ -102,4 +102,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CBLINKLAYOUT_H_
+#endif //__ELASTOS_DROID_WIDGET_CBLINKLAYOUT_H__

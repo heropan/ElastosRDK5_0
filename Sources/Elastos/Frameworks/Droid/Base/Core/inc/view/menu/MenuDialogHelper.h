@@ -1,6 +1,6 @@
 
-#ifndef __MENUDIALOGHELPER_H_
-#define __MENUDIALOGHELPER_H_
+#ifndef __ELASTOS_DROID_VIEW_MENU_MENUDIALOGHELPER_H__
+#define __ELASTOS_DROID_VIEW_MENU_MENUDIALOGHELPER_H__
 
 
 #include "ext/frameworkext.h"
@@ -90,4 +90,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__MENUDIALOGHELPER_H_
+#endif //__ELASTOS_DROID_VIEW_MENU_MENUDIALOGHELPER_H__

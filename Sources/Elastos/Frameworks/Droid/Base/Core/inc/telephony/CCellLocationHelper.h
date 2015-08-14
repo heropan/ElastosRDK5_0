@@ -1,6 +1,6 @@
 
-#ifndef __CCELLLOCATIONHELPER_H__
-#define __CCELLLOCATIONHELPER_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCELLLOCATIONHELPER_H__
+#define __ELASTOS_DROID_TELEPHONY_CCELLLOCATIONHELPER_H__
 
 #include "_CCellLocationHelper.h"
 
@@ -28,4 +28,4 @@ public:
 } //namespace Droid
 } //namespace Telephony
 
-#endif // __CCELLLOCATIONHELPER_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCELLLOCATIONHELPER_H__

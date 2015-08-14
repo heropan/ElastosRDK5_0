@@ -1,5 +1,5 @@
-#ifndef __QuoteSpan_H__
-#define __QuoteSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -70,4 +70,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __QuoteSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_QuoteSpan_H__

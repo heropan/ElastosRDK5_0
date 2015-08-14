@@ -1,5 +1,5 @@
-#ifndef __CEXPANDABLELISTPOSITIONHELPER_H_
-#define __CEXPANDABLELISTPOSITIONHELPER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__
 
 #include "_CExpandableListPositionHelper.h"
 #include "widget/ExpandableListPosition.h"
@@ -38,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEXPANDABLELISTPOSITIONHELPER_H_
+#endif //__ELASTOS_DROID_WIDGET_CEXPANDABLELISTPOSITIONHELPER_H__

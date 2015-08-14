@@ -1,4 +1,4 @@
-#ifndef __DATASETONSERVER_H__
+#ifndef __ELASTOS_DROID_DATABASE_DATASETONSERVER_H__
 #define __DATASETOBSERVER_H__
 
 #include "ext/frameworkext.h"
@@ -32,4 +32,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__DATASETONSERVER_H__
+#endif //__ELASTOS_DROID_DATABASE_DATASETONSERVER_H__

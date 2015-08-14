@@ -1,6 +1,6 @@
 
-#ifndef __URLINTERCEPTHANDLER_H__
-#define __URLINTERCEPTHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_URLINTERCEPTHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_URLINTERCEPTHANDLER_H__
 
 #include "ext/frameworkext.h"
 
@@ -56,4 +56,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__URLINTERCEPTHANDLER_H__
+#endif //__ELASTOS_DROID_WEBKIT_URLINTERCEPTHANDLER_H__

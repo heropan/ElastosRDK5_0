@@ -1,6 +1,6 @@
 
-#ifndef __CPLUGINDATA_H__
-#define __CPLUGINDATA_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
+#define __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 
 #include "_CPluginData.h"
 
@@ -61,4 +61,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPLUGINDATA_H__
+#endif // __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__

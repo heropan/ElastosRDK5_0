@@ -1,6 +1,6 @@
 
-#ifndef __SELECTPOPUP_H__
-#define __SELECTPOPUP_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUP_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUP_H__
 
 namespace Elastos {
 namespace Droid {
@@ -33,4 +33,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__SELECTPOPUP_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_SELECTPOPUP_H__

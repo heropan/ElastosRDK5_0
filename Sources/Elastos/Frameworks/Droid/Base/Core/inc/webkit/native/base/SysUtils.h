@@ -1,6 +1,6 @@
 
-#ifndef __SYSUTILS_H__
-#define __SYSUTILS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__
 
 // import android.os.Build;
 // import android.os.StrictMode;
@@ -63,4 +63,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__SYSUTILS_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_SYSUTILS_H__

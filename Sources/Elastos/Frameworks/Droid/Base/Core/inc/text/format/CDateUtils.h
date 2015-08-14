@@ -1,5 +1,5 @@
-#ifndef __CDATEUTILS_H__
-#define __CDATEUTILS_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_CDATEUTILS_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_CDATEUTILS_H__
 
 #include "_CDateUtils.h"
 #include "Elastos.Droid.Core_server.h"
@@ -169,4 +169,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDATEUTILS_H__
+#endif // __ELASTOS_DROID_TEXT_FORMAT_CDATEUTILS_H__

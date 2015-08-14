@@ -1,6 +1,6 @@
 
-#ifndef __CPHONENUMBERUTILS_H__
-#define __CPHONENUMBERUTILS_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CPHONENUMBERUTILS_H__
+#define __ELASTOS_DROID_TELEPHONY_CPHONENUMBERUTILS_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/StringBuilder.h>
@@ -460,4 +460,4 @@ private:
 }
 }
 
-#endif // __CPHONENUMBERUTILS_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CPHONENUMBERUTILS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPATH_H__
-#define __CPATH_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPATH_H__
+#define __ELASTOS_DROID_GRAPHICS_CPATH_H__
 
 #include "_CPath.h"
 
@@ -655,4 +655,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPATH_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CPATH_H__

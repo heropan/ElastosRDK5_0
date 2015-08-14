@@ -1,6 +1,6 @@
 
-#ifndef __SHADER_H__
-#define __SHADER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_SHADER_H__
+#define __ELASTOS_DROID_GRAPHICS_SHADER_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -60,4 +60,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__SHADER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_SHADER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ACTIVITY_H__
-#define __ACTIVITY_H__
+#ifndef __ELASTOS_DROID_APP_ACTIVITY_H__
+#define __ELASTOS_DROID_APP_ACTIVITY_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -3711,4 +3711,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACTIVITY_H__
+#endif //__ELASTOS_DROID_APP_ACTIVITY_H__

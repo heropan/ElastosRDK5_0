@@ -1,6 +1,6 @@
 
-#ifndef __CREMOTECALLBACKLIST_H__
-#define __CREMOTECALLBACKLIST_H__
+#ifndef __ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__
+#define __ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__
 
 #include "ext/frameworkext.h"
 #include "_CRemoteCallbackList.h"
@@ -130,4 +130,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CREMOTECALLBACKLIST_H__
+#endif //__ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__

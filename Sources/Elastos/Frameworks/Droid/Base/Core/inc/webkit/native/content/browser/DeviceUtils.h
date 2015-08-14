@@ -1,6 +1,6 @@
 
-#ifndef __DEVICEUTILS_H__
-#define __DEVICEUTILS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICEUTILS_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICEUTILS_H__
 
 // import android.content.Context;
 
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__DEVICEUTILS_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICEUTILS_H__

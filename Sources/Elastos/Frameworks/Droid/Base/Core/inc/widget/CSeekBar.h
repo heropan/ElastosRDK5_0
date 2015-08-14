@@ -1,6 +1,6 @@
 
-#ifndef __CSEEKBAR_H__
-#define __CSEEKBAR_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSEEKBAR_H__
+#define __ELASTOS_DROID_WIDGET_CSEEKBAR_H__
 
 #include "_CSeekBar.h"
 #include "widget/SeekBar.h"
@@ -137,4 +137,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSEEKBAR_H__
+#endif //__ELASTOS_DROID_WIDGET_CSEEKBAR_H__

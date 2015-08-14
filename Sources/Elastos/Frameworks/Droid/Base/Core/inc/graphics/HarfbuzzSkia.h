@@ -24,8 +24,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HarfbuzzSkia_h
-#define HarfbuzzSkia_h
+#ifndef __ANDROID__H__
+#define __ANDROID__H__
 
 #include "SkScalar.h"
 #include "SkTypeface.h"

@@ -1,6 +1,6 @@
 
-#ifndef __CROUNDRECTSHAPE_H__
-#define __CROUNDRECTSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CROUNDRECTSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CROUNDRECTSHAPE_H__
 
 #include "graphics/drawable/shapes/RoundRectShape.h"
 #include "_CRoundRectShape.h"
@@ -66,4 +66,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CROUNDRECTSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CROUNDRECTSHAPE_H__

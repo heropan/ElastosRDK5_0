@@ -1,6 +1,6 @@
 
-#ifndef __CASYNCPLAYER_H__
-#define __CASYNCPLAYER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__
+#define __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__
 
 #include "_CAsyncPlayer.h"
 #include "ext/frameworkext.h"
@@ -131,4 +131,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CASYNCPLAYER_H__
+#endif // __ELASTOS_DROID_MEDIA_CASYNCPLAYER_H__

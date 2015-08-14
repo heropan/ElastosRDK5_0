@@ -1,6 +1,6 @@
 
-#ifndef __CUSBREQUEST_H__
-#define __CUSBREQUEST_H__
+#ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBREQUEST_H__
+#define __ELASTOS_DROID_HARDWARE_USB_CUSBREQUEST_H__
 
 #include "_CUsbRequest.h"
 #include "ext/frameworkext.h"
@@ -166,4 +166,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSBREQUEST_H__
+#endif // __ELASTOS_DROID_HARDWARE_USB_CUSBREQUEST_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CURLINTERCEPTREGISTRY_H__
-#define __CURLINTERCEPTREGISTRY_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__
+#define __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__
 
 #include "_CUrlInterceptRegistry.h"
 #include "ext/frameworkext.h"
@@ -45,4 +45,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CURLINTERCEPTREGISTRY_H__
+#endif // __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CEGL14_H__
-#define __CEGL14_H__
+#ifndef __ELASTOS_DROID_OPENGL_CEGL14_H__
+#define __ELASTOS_DROID_OPENGL_CEGL14_H__
 
 #include "_CEGL14.h"
 #include <gui/Surface.h>
@@ -244,4 +244,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CEGL14_H__
+#endif // __ELASTOS_DROID_OPENGL_CEGL14_H__

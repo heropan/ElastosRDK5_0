@@ -1,5 +1,5 @@
-#ifndef __SynthesisPlaybackQueueItem_H__
-#define __SynthesisPlaybackQueueItem_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
+#define __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__
 
 #include "speech/tts/PlaybackQueueItem.h"
 #include "speech/tts/BlockingAudioTrack.h"
@@ -103,4 +103,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __SynthesisPlaybackQueueItem_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_SynthesisPlaybackQueueItem_H__

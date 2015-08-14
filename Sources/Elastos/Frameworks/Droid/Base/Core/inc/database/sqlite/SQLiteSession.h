@@ -1,5 +1,5 @@
-#ifndef __SQLITESESSION_H__
-#define __SQLITESESSION_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITESESSION_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITESESSION_H__
 
 #include "ext/frameworkdef.h"
 #include "database/sqlite/SQLiteConnectionPool.h"
@@ -661,4 +661,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__SQLITESESSION_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITESESSION_H__

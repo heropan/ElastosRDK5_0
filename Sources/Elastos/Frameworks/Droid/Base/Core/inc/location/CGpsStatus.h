@@ -1,6 +1,6 @@
 
-#ifndef __CGPSSTATUS_H__
-#define __CGPSSTATUS_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGPSSTATUS_H__
+#define __ELASTOS_DROID_LOCATION_CGPSSTATUS_H__
 
 #include "ext/frameworkext.h"
 #include "_CGpsStatus.h"
@@ -54,4 +54,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CGPSSTATUS_H__
+#endif // __ELASTOS_DROID_LOCATION_CGPSSTATUS_H__

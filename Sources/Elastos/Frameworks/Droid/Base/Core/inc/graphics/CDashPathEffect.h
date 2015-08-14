@@ -1,6 +1,6 @@
 
-#ifndef __CDASHPATHEFFECT_H__
-#define __CDASHPATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CDASHPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CDASHPATHEFFECT_H__
 
 #include "_CDashPathEffect.h"
 #include "graphics/PathEffect.h"
@@ -42,4 +42,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CDASHPATHEFFECT_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CDASHPATHEFFECT_H__

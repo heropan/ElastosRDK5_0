@@ -1,5 +1,5 @@
-#ifndef __CTABLEROWLAYOUTPRARAMS_H_
-#define __CTABLEROWLAYOUTPRARAMS_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTABLEROWLAYOUTPRARAMS_H__
+#define __ELASTOS_DROID_WIDGET_CTABLEROWLAYOUTPRARAMS_H__
 
 #include "_CTableRowLayoutParams.h"
 
@@ -63,4 +63,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTABLEROWLAYOUTPRARAMS_H_
+#endif //__ELASTOS_DROID_WIDGET_CTABLEROWLAYOUTPRARAMS_H__

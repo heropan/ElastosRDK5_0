@@ -1,6 +1,6 @@
 
-#ifndef  __MENUPOPUPHELPER_H__
-#define  __MENUPOPUPHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_MENUPOPUPHELPER_H__
+#define  __ELASTOS_DROID_VIEW_MENU_MENUPOPUPHELPER_H__
 
 #include "widget/BaseAdapter.h"
 
@@ -272,4 +272,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__MENUPOPUPHELPER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_MENUPOPUPHELPER_H__

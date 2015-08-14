@@ -1,5 +1,5 @@
-#ifndef __CINSTANCE_H__
-#define __CINSTANCE_H__
+#ifndef __ELASTOS_DROID_GESTURE_CINSTANCE_H__
+#define __ELASTOS_DROID_GESTURE_CINSTANCE_H__
 
 #include "_CInstance.h"
 #include "Instance.h"

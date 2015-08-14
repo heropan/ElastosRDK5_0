@@ -1,6 +1,6 @@
 
-#ifndef __WEBICONDATABASECLASSIC_H__
-#define __WEBICONDATABASECLASSIC_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBICONDATABASECLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_WEBICONDATABASECLASSIC_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -206,4 +206,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBICONDATABASECLASSIC_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBICONDATABASECLASSIC_H__

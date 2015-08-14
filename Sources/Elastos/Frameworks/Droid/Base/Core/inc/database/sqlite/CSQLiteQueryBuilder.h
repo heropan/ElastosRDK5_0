@@ -1,5 +1,5 @@
-#ifndef __CSQLITEQUERYBUILDER_H__
-#define __CSQLITEQUERYBUILDER_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDER_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDER_H__
 
 #include "_CSQLiteQueryBuilder.h"
 #include "database/sqlite/SQLiteQueryBuilder.h"
@@ -125,4 +125,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif // __CSQLITEQUERYBUILDER_H__
+#endif // __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDER_H__

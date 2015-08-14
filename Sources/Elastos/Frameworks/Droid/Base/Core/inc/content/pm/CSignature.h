@@ -1,6 +1,6 @@
 
-#ifndef __CSIGNATURE_H__
-#define __CSIGNATURE_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CSIGNATURE_H__
+#define __ELASTOS_DROID_CONTENT_PM_CSIGNATURE_H__
 
 #include "_CSignature.h"
 
@@ -109,4 +109,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSIGNATURE_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CSIGNATURE_H__

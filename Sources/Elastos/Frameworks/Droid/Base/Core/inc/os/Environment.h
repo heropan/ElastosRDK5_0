@@ -1,5 +1,5 @@
-#ifndef __ENVIRONMENT_H__
-#define __ENVIRONMENT_H__
+#ifndef __ELASTOS_DROID_OS_ENVIRONMENT_H__
+#define __ELASTOS_DROID_OS_ENVIRONMENT_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -302,4 +302,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ENVIRONMENT_H__
+#endif //__ELASTOS_DROID_OS_ENVIRONMENT_H__

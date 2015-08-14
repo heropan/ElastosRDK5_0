@@ -1,6 +1,6 @@
 
-#ifndef __CDEFAULTDATAHANDLER_H__
-#define __CDEFAULTDATAHANDLER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CDEFAULTDATAHANDLER_H__
+#define __ELASTOS_DROID_CONTENT_CDEFAULTDATAHANDLER_H__
 
 #include "_CDefaultDataHandler.h"
 #include <ext/frameworkext.h>
@@ -100,4 +100,4 @@ private:
 }
 }
 
-#endif // __CDEFAULTDATAHANDLER_H__
+#endif // __ELASTOS_DROID_CONTENT_CDEFAULTDATAHANDLER_H__

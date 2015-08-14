@@ -1,6 +1,6 @@
 
-#ifndef __PROVIDERPROPERTIES_H__
-#define __PROVIDERPROPERTIES_H__
+#ifndef __ELASTOS_DROID_LOCATION_PROVIDERPROPERTIES_H__
+#define __ELASTOS_DROID_LOCATION_PROVIDERPROPERTIES_H__
 
 #include "_CProviderProperties.h"
 #include "ext/frameworkext.h"
@@ -221,4 +221,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__PROVIDERPROPERTIES_H__
+#endif //__ELASTOS_DROID_LOCATION_PROVIDERPROPERTIES_H__

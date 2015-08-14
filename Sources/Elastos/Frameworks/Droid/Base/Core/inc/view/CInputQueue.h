@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTQUEUE_H__
-#define __CINPUTQUEUE_H__
+#ifndef __ELASTOS_DROID_VIEW_CINPUTQUEUE_H__
+#define __ELASTOS_DROID_VIEW_CINPUTQUEUE_H__
 
 #include "_CInputQueue.h"
 
@@ -30,4 +30,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CINPUTQUEUE_H__
+#endif //__ELASTOS_DROID_VIEW_CINPUTQUEUE_H__

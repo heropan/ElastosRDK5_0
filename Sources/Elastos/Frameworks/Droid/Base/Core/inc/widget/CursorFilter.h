@@ -1,6 +1,6 @@
 
-#ifndef __CURSORFILTER_H__
-#define __CURSORFILTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CURSORFILTER_H__
+#define __ELASTOS_DROID_WIDGET_CURSORFILTER_H__
 
 #include "widget/Filter.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef __CDOWNLOADMANAGERQUERY_H__
-#define __CDOWNLOADMANAGERQUERY_H__
+#ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERQUERY_H__
+#define __ELASTOS_DROID_APP_CDOWNLOADMANAGERQUERY_H__
 
 #include "ext/frameworkext.h"
 #include "_CDownloadManagerQuery.h"
@@ -91,4 +91,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDOWNLOADMANAGERQUERY_H__
+#endif //__ELASTOS_DROID_APP_CDOWNLOADMANAGERQUERY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCELLIDENTITYGSM_H__
-#define __CCELLIDENTITYGSM_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYGSM_H__
+#define __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYGSM_H__
 
 #include "_CCellIdentityGsm.h"
 
@@ -82,4 +82,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCELLIDENTITYGSM_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYGSM_H__

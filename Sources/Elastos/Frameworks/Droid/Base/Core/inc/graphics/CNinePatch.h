@@ -1,6 +1,6 @@
 
-#ifndef __CNINEPATCH_H__
-#define __CNINEPATCH_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
+#define __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
 
 #include "_CNinePatch.h"
 #include "graphics/NinePatch.h"
@@ -108,5 +108,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNINEPATCH_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
 

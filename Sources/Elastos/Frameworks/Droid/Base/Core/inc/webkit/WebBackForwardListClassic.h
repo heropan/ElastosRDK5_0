@@ -1,6 +1,6 @@
 
-#ifndef __WEBBACKFORWARDLISTCLASSIC_H__
-#define __WEBBACKFORWARDLISTCLASSIC_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLASSIC_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/WebHistoryItemClassic.h"
@@ -156,4 +156,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBBACKFORWARDLISTCLASSIC_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLASSIC_H__

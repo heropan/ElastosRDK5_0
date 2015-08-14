@@ -1,6 +1,6 @@
 
-#ifndef __CALERTCONTROLLER_H__
-#define __CALERTCONTROLLER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__
+#define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__
 
 #include "_CAlertController.h"
 #include "os/HandlerBase.h"
@@ -300,4 +300,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CALERTCONTROLLER_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLER_H__

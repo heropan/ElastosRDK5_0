@@ -1,6 +1,6 @@
 
-#ifndef __CWEBSTORAGEHELPER_H__
-#define __CWEBSTORAGEHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBSTORAGEHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBSTORAGEHELPER_H__
 
 #include "_CWebStorageHelper.h"
 
@@ -19,4 +19,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBSTORAGEHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBSTORAGEHELPER_H__

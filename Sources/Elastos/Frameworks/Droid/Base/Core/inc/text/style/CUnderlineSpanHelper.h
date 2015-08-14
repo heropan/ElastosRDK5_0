@@ -1,6 +1,6 @@
 
-#ifndef __CUNDERLINESPANHELPER_H__
-#define __CUNDERLINESPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CUNDERLINESPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CUNDERLINESPANHELPER_H__
 
 #include "_CUnderlineSpanHelper.h"
 
@@ -22,4 +22,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CUNDERLINESPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CUNDERLINESPANHELPER_H__

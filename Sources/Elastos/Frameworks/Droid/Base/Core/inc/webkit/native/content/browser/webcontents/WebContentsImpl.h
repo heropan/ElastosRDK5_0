@@ -1,6 +1,6 @@
 
-#ifndef __WEBCONTENTSIMPL_H__
-#define __WEBCONTENTSIMPL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTS_WEBCONTENTSIMPL_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTS_WEBCONTENTSIMPL_H__
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -74,4 +74,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__WEBCONTENTSIMPL_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_WEBCONTENTS_WEBCONTENTSIMPL_H__

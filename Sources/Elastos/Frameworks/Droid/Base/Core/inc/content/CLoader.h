@@ -1,6 +1,6 @@
 
-#ifndef __CLOADER_H__
-#define __CLOADER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CLOADER_H__
+#define __ELASTOS_DROID_CONTENT_CLOADER_H__
 
 #include "_CLoader.h"
 #include <ext/frameworkext.h>
@@ -275,4 +275,4 @@ private:
 }
 }
 
-#endif // __CLOADER_H__
+#endif // __ELASTOS_DROID_CONTENT_CLOADER_H__

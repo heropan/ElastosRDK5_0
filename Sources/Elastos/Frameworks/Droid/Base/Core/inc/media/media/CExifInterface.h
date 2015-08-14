@@ -1,6 +1,6 @@
 
-#ifndef __CEXIFINTERFACE_H__
-#define __CEXIFINTERFACE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__
+#define __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__
 
 #include "_CExifInterface.h"
 #include "ext/frameworkext.h"
@@ -190,4 +190,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CEXIFINTERFACE_H__
+#endif // __ELASTOS_DROID_MEDIA_CEXIFINTERFACE_H__

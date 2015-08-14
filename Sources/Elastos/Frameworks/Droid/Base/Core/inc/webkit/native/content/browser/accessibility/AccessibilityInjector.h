@@ -1,6 +1,6 @@
 
-#ifndef __ACCESSIBILITYINJECTOR_H__
-#define __ACCESSIBILITYINJECTOR_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITYINJECTOR_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITYINJECTOR_H__
 
 // import android.accessibilityservice.AccessibilityServiceInfo;
 // import android.content.Context;
@@ -290,4 +290,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__ACCESSIBILITYINJECTOR_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITYINJECTOR_H__

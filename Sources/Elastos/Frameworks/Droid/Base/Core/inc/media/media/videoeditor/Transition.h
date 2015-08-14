@@ -1,6 +1,6 @@
 
-#ifndef __TRANSITION_H__
-#define __TRANSITION_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_TRANSITION_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_TRANSITION_H__
 
 #include <ext/frameworkext.h>
 #include "MediaArtistNativeHelper.h"
@@ -239,5 +239,5 @@ protected:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __TRANSITION_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_TRANSITION_H__
 

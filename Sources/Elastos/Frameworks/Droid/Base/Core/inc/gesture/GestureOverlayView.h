@@ -1,5 +1,5 @@
-#ifndef __GESTUREOVERLAYVIEW_H__
-#define __GESTUREOVERLAYVIEW_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__
+#define __ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__
 
 namespace Elastos {
 namespace Droid {
@@ -291,4 +291,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__GESTUREOVERLAYVIEW_H__
+#endif //__ELASTOS_DROID_GESTURE_GESTUREOVERLAYVIEW_H__

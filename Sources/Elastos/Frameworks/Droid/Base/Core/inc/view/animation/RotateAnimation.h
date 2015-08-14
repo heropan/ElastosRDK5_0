@@ -1,6 +1,6 @@
 
-#ifndef __ROTATEANIMATION_H__
-#define __ROTATEANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_ROTATEANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_ROTATEANIMATION_H__
 
 #include "view/animation/Animation.h"
 
@@ -99,4 +99,4 @@ private:
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
-#endif //__ROTATEANIMATION_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_ROTATEANIMATION_H__

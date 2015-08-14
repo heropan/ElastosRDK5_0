@@ -1,5 +1,5 @@
-#ifndef __RATINGBAR_H__
-#define __RATINGBAR_H__
+#ifndef __ELASTOS_DROID_WIDGET_RATINGBAR_H__
+#define __ELASTOS_DROID_WIDGET_RATINGBAR_H__
 
 #include "ext/frameworkext.h"
 #include "widget/AbsSeekBar.h"
@@ -99,4 +99,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RATINGBAR_H__
+#endif //__ELASTOS_DROID_WIDGET_RATINGBAR_H__

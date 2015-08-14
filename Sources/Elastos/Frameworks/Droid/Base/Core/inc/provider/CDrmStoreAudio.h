@@ -1,6 +1,6 @@
 
-#ifndef __CDRMSTOREAUDIO_H__
-#define __CDRMSTOREAUDIO_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CDRMSTOREAUDIO_H__
+#define __ELASTOS_DROID_PROVIDER_CDRMSTOREAUDIO_H__
 
 #include "_CDrmStoreAudio.h"
 

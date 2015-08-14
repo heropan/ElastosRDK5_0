@@ -1,6 +1,6 @@
 
-#ifndef __CSPANNABLESTRING_H__
-#define __CSPANNABLESTRING_H__
+#ifndef __ELASTOS_DROID_TEXT_CSPANNABLESTRING_H__
+#define __ELASTOS_DROID_TEXT_CSPANNABLESTRING_H__
 
 #include "_CSpannableString.h"
 #include "text/SpannableStringInternal.h"
@@ -85,4 +85,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CSPANNABLESTRING_H__
+#endif //__ELASTOS_DROID_TEXT_CSPANNABLESTRING_H__

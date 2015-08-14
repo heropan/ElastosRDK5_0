@@ -1,6 +1,6 @@
 
-#ifndef __CSERVICESTATE_H__
-#define __CSERVICESTATE_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CSERVICESTATE_H__
+#define __ELASTOS_DROID_TELEPHONY_CSERVICESTATE_H__
 
 #include "_CServiceState.h"
 
@@ -192,4 +192,4 @@ private:
 }
 }
 
-#endif // __CSERVICESTATE_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CSERVICESTATE_H__

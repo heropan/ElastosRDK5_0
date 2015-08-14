@@ -1,5 +1,5 @@
-#ifndef __CSTATUSBARMANAGER_H__
-#define __CSTATUSBARMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
+#define __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 
 #include "_CStatusBarManager.h"
 
@@ -67,4 +67,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSTATUSBARMANAGER_H__
+#endif // __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__

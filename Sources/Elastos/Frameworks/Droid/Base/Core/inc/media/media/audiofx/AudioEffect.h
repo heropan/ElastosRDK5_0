@@ -1,6 +1,6 @@
 
-#ifndef __AUDIOEFFECT_H__
-#define __AUDIOEFFECT_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_AUDIOEFFECT_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_AUDIOEFFECT_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -663,4 +663,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__AUDIOEFFECT_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_AUDIOEFFECT_H__

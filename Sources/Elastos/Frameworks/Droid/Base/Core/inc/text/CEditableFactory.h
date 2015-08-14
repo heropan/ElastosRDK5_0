@@ -1,6 +1,6 @@
 
-#ifndef __CEDITABLEFACTORY_H__
-#define __CEDITABLEFACTORY_H__
+#ifndef __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
+#define __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 
 #include "_CEditableFactory.h"
 
@@ -23,4 +23,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CEDITABLEFACTORY_H__
+#endif //__ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CWIFICONFIGURATIONSTATUS_H__
-#define __CWIFICONFIGURATIONSTATUS_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONSTATUS_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONSTATUS_H__
 
 #include "_CWifiConfigurationStatus.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWIFICONFIGURATIONSTATUS_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONSTATUS_H__

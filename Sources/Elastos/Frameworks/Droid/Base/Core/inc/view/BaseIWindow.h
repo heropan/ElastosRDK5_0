@@ -1,6 +1,6 @@
 
-#ifndef __BASEIWINDOW_H__
-#define __BASEIWINDOW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__
 
 #include "ext/frameworkext.h"
 #include "elautoptr.h"
@@ -95,4 +95,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BASEIWINDOW_H__
+#endif //__ELASTOS_DROID_INTERNAL_VIEW_BASEIWINDOW_H__

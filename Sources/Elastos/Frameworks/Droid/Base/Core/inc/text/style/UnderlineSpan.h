@@ -1,5 +1,5 @@
-#ifndef __UnderlineSpan_H__
-#define __UnderlineSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_UnderlineSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_UnderlineSpan_H__
 
 #include "text/style/CharacterStyle.h"
 
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __UnderlineSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_UnderlineSpan_H__

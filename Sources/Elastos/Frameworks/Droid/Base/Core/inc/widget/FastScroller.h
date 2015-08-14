@@ -1,6 +1,6 @@
 
-#ifndef __FASTSCROLLER_H__
-#define __FASTSCROLLER_H__
+#ifndef __ELASTOS_DROID_WIDGET_FASTSCROLLER_H__
+#define __ELASTOS_DROID_WIDGET_FASTSCROLLER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -254,4 +254,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__FASTSCROLLER_H__
+#endif //__ELASTOS_DROID_WIDGET_FASTSCROLLER_H__

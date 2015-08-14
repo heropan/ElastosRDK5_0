@@ -1,6 +1,6 @@
 
-#ifndef __KITKATBROWSERACCESSIBILITYManager_H__
-#define __KITKATBROWSERACCESSIBILITYManager_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_KITKATBROWSERACCESSIBILITYManager_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_KITKATBROWSERACCESSIBILITYManager_H__
 
 // import android.view.accessibility.AccessibilityEvent;
 // import android.view.accessibility.AccessibilityNodeInfo;
@@ -112,4 +112,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__KITKATBROWSERACCESSIBILITYManager_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_ACCESSIBILITY_KITKATBROWSERACCESSIBILITYManager_H__

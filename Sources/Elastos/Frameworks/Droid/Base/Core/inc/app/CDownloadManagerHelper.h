@@ -1,6 +1,6 @@
 
-#ifndef __CDOWNLOADMANAGERHELPER_H__
-#define __CDOWNLOADMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
+#define __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
 
 #include "_CDownloadManagerHelper.h"
 
@@ -55,4 +55,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDOWNLOADMANAGERHELPER_H__
+#endif //__ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__

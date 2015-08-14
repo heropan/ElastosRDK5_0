@@ -1,5 +1,5 @@
-#ifndef __CSETTINGS_H__
-#define __CSETTINGS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CSETTINGS_H__
+#define __ELASTOS_DROID_PROVIDER_CSETTINGS_H__
 
 #include "_CSettings.h"
 
@@ -31,4 +31,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CSETTINGS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CSETTINGS_H__

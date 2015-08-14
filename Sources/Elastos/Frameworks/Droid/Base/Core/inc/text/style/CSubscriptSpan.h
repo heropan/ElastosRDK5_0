@@ -1,6 +1,6 @@
 
-#ifndef __CSUBSCRIPTSPAN_H__
-#define __CSUBSCRIPTSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPAN_H__
 
 #include "_CSubscriptSpan.h"
 #include "text/style/SubscriptSpan.h"
@@ -35,4 +35,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSUBSCRIPTSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPAN_H__

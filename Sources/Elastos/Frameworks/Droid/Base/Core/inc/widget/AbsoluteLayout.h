@@ -1,6 +1,6 @@
 
-#ifndef __ABSOLUTELAYOUT_H__
-#define __ABSOLUTELAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSOLUTELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_ABSOLUTELAYOUT_H__
 
 #include "view/ViewGroup.h"
 
@@ -100,5 +100,5 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __ABSOLUTELAYOUT_H__
+#endif // __ELASTOS_DROID_WIDGET_ABSOLUTELAYOUT_H__
 

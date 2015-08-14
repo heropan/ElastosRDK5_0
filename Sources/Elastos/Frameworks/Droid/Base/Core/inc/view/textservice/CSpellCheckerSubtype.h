@@ -1,6 +1,6 @@
 
-#ifndef __CSPELLCHECKERSUBTYPE_H__
-#define __CSPELLCHECKERSUBTYPE_H__
+#ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSUBTYPE_H__
+#define __ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSUBTYPE_H__
 
 namespace Elastos {
 namespace Droid {
@@ -137,4 +137,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CSPELLCHECKERSUBTYPE_H__
+#endif //__ELASTOS_DROID_VIEW_TEXTSERVICE_CSPELLCHECKERSUBTYPE_H__

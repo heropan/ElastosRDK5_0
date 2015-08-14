@@ -1,6 +1,6 @@
 
-#ifndef __AWBROWSERPROCESS_H__
-#define __AWBROWSERPROCESS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERPROCESS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERPROCESS_H__
 
 // import android.content.Context;
 // import android.util.Log;
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWBROWSERPROCESS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWBROWSERPROCESS_H__

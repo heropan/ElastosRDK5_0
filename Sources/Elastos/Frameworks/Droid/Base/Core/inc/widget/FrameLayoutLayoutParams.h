@@ -1,6 +1,6 @@
 
-#ifndef __FRAMELAYOUTLAYOUTPARAMS_H__
-#define __FRAMELAYOUTLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_WIDGET_FRAMELAYOUTLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_FRAMELAYOUTLAYOUTPARAMS_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewGroupMarginLayoutParams.h"
@@ -100,4 +100,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __FRAMELAYOUTLAYOUTPARAMS_H__
+#endif // __ELASTOS_DROID_WIDGET_FRAMELAYOUTLAYOUTPARAMS_H__

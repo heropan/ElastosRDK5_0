@@ -1,6 +1,6 @@
 
-#ifndef __APPLICATION_H__
-#define __APPLICATION_H__
+#ifndef __ELASTOS_DROID_APP_APPLICATION_H__
+#define __ELASTOS_DROID_APP_APPLICATION_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -2438,4 +2438,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPLICATION_H__
+#endif //__ELASTOS_DROID_APP_APPLICATION_H__

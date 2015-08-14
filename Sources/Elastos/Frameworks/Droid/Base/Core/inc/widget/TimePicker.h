@@ -1,6 +1,6 @@
 
-#ifndef __TIMEPICKER_H__
-#define __TIMEPICKER_H__
+#ifndef __ELASTOS_DROID_WIDGET_TIMEPICKER_H__
+#define __ELASTOS_DROID_WIDGET_TIMEPICKER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
@@ -235,4 +235,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TIMEPICKER_H__
+#endif //__ELASTOS_DROID_WIDGET_TIMEPICKER_H__

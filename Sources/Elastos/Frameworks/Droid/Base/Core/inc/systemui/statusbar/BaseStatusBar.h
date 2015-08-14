@@ -1,5 +1,5 @@
-#ifndef __BASESTATUSBAR_H__
-#define __BASESTATUSBAR_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__
 
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
@@ -530,4 +530,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__BASESTATUSBAR_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_BASESTATUSBAR_H__

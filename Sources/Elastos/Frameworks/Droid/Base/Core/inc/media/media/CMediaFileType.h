@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAFILETYPE_H__
-#define __CMEDIAFILETYPE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__
 
 #include "_CMediaFileType.h"
 
@@ -40,4 +40,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAFILETYPE_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__

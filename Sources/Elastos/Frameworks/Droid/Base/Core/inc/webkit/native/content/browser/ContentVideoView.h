@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIDEOVIEW_H__
-#define __CONTENTVIDEOVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEW_H__
 
 // import android.app.Activity;
 // import android.app.AlertDialog;
@@ -325,4 +325,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIDEOVIEW_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEW_H__

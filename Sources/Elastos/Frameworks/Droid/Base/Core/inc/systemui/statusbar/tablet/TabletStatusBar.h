@@ -1,5 +1,5 @@
-#ifndef __TABLETSTATUSBAR_H__
-#define __TABLETSTATUSBAR_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETSTATUSBAR_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETSTATUSBAR_H__
 
 #include "systemui/statusbar/BaseStatusBar.h"
 #include "systemui/statusbar/DoNotDisturb.h"
@@ -600,4 +600,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __TABLETSTATUSBAR_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_TABLETSTATUSBAR_H__

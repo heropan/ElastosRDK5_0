@@ -1,6 +1,6 @@
 
-#ifndef __QUICKCONTACTBADGE_H__
-#define __QUICKCONTACTBADGE_H__
+#ifndef __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
+#define __ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ImageView.h"
@@ -114,4 +114,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__QUICKCONTACTBADGE_H__
+#endif //__ELASTOS_DROID_WIDGET_QUICKCONTACTBADGE_H__

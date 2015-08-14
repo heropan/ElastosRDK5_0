@@ -1,6 +1,6 @@
 
-#ifndef __CTRAFFICSTATS_H__
-#define __CTRAFFICSTATS_H__
+#ifndef __ELASTOS_DROID_NET_CTRAFFICSTATS_H__
+#define __ELASTOS_DROID_NET_CTRAFFICSTATS_H__
 
 #include "_CTrafficStats.h"
 #include "ext/frameworkext.h"
@@ -527,4 +527,4 @@ private:
 } // namepsace Droid
 } // namespace Elasto
 
-#endif // __CTRAFFICSTATS_H__
+#endif // __ELASTOS_DROID_NET_CTRAFFICSTATS_H__

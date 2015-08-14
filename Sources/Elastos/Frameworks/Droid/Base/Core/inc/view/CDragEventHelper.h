@@ -1,5 +1,5 @@
-#ifndef __CDRAGEVENTHELPER_H__
-#define __CDRAGEVENTHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CDRAGEVENTHELPER_H__
+#define __ELASTOS_DROID_VIEW_CDRAGEVENTHELPER_H__
 
 #include "_CDragEventHelper.h"
 
@@ -36,4 +36,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif // __CDRAGEVENTHELPER_H__
+#endif // __ELASTOS_DROID_VIEW_CDRAGEVENTHELPER_H__

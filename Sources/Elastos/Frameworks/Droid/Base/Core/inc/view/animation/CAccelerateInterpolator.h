@@ -1,6 +1,6 @@
 
-#ifndef __CACCELERATEINTERPOLATOR_H__
-#define __CACCELERATEINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CACCELERATEINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CACCELERATEINTERPOLATOR_H__
 
 #include "_CAccelerateInterpolator.h"
 #include "R.h"
@@ -41,4 +41,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CACCELERATEINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CACCELERATEINTERPOLATOR_H__

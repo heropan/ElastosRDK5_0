@@ -1,6 +1,6 @@
 
-#ifndef __CCURSORFILTER_H__
-#define __CCURSORFILTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CCURSORFILTER_H__
+#define __ELASTOS_DROID_WIDGET_CCURSORFILTER_H__
 
 #include "_CCursorFilter.h"
 #include "widget/CursorFilter.h"
@@ -37,4 +37,4 @@ private:
 }// namespace Droid
 }// namespace Widget
 
-#endif // __CCURSORFILTER_H__
+#endif // __ELASTOS_DROID_WIDGET_CCURSORFILTER_H__

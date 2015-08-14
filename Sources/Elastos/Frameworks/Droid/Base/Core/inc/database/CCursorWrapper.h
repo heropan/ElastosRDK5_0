@@ -1,5 +1,5 @@
-#ifndef __CCURSORWRAPPER_H__
-#define __CCURSORWRAPPER_H__
+#ifndef __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__
+#define __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__
 
 #include "_CCursorWrapper.h"
 #include "database/CursorWrapper.h"
@@ -157,4 +157,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif // __CCURSORWRAPPER_H__
+#endif // __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__

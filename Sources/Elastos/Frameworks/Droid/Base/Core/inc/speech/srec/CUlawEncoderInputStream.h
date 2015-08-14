@@ -1,6 +1,6 @@
 
-#ifndef __CULAWENCODERINPUTSTREAM_H__
-#define __CULAWENCODERINPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_CULAWENCODERINPUTSTREAM_H__
+#define __ELASTOS_DROID_SPEECH_SREC_CULAWENCODERINPUTSTREAM_H__
 
 #include "_CUlawEncoderInputStream.h"
 #include "speech/srec/UlawEncoderInputStream.h"
@@ -61,4 +61,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CULAWENCODERINPUTSTREAM_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_CULAWENCODERINPUTSTREAM_H__

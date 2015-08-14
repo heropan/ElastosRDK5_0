@@ -1,6 +1,6 @@
 
-#ifndef __SHORTCUTMANAGER_H__
-#define __SHORTCUTMANAGER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__
 
 #include "database/ContentObserver.h"
 #include "util/SparseArray.h"
@@ -85,4 +85,4 @@ private:
 } // namespace Policy
 } // namespace Impl
 
-#endif // __SHORTCUTMANAGER_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_SHORTCUTMANAGER_H__

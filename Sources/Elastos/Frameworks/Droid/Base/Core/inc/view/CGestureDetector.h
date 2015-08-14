@@ -1,6 +1,6 @@
 
-#ifndef __CGESTUREDETECTOR_H__
-#define __CGESTUREDETECTOR_H__
+#ifndef __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
+#define __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
 
 #include "_CGestureDetector.h"
 #include "os/HandlerBase.h"
@@ -241,4 +241,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGESTUREDETECTOR_H__
+#endif //__ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__

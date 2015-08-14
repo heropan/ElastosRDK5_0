@@ -1,5 +1,5 @@
-#ifndef __CACCESSIBILITYEVENT_H__
-#define __CACCESSIBILITYEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYEVENT_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYEVENT_H__
 
 #include "ext/frameworkdef.h"
 #include "_CAccessibilityEvent.h"
@@ -721,4 +721,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CACCESSIBILITYEVENT_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYEVENT_H__

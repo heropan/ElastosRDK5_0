@@ -1,6 +1,6 @@
 
-#ifndef __CSTORAGEVOLUMEHELPER_H__
-#define __CSTORAGEVOLUMEHELPER_H__
+#ifndef __ELASTOS_DROID_OS_STORAGE_CSTORAGEVOLUMEHELPER_H__
+#define __ELASTOS_DROID_OS_STORAGE_CSTORAGEVOLUMEHELPER_H__
 
 #include "_CStorageVolumeHelper.h"
 #include "os/storage/CStorageVolume.h"
@@ -32,4 +32,4 @@ public:
 } // namespace Elastos
 
 
-#endif // __CSTORAGEVOLUMEHELPER_H__
+#endif // __ELASTOS_DROID_OS_STORAGE_CSTORAGEVOLUMEHELPER_H__

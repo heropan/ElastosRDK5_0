@@ -1,6 +1,6 @@
 
-#ifndef __CBLUETOOTHCLASS_H__
-#define __CBLUETOOTHCLASS_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHCLASS_H__
+#define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHCLASS_H__
 
 #include "_CBluetoothClass.h"
 
@@ -57,4 +57,4 @@ private:
 }
 }
 
-#endif // __CBLUETOOTHCLASS_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHCLASS_H__

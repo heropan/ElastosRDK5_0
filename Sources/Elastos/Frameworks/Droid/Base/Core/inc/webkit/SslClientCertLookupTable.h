@@ -1,6 +1,6 @@
 
-#ifndef __SSLCLIENTCERTLOOKUPTABLE_H__
-#define __SSLCLIENTCERTLOOKUPTABLE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_SSLCLIENTCERTLOOKUPTABLE_H__
+#define __ELASTOS_DROID_WEBKIT_SSLCLIENTCERTLOOKUPTABLE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Set.h>
@@ -56,4 +56,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SSLCLIENTCERTLOOKUPTABLE_H__
+#endif //__ELASTOS_DROID_WEBKIT_SSLCLIENTCERTLOOKUPTABLE_H__

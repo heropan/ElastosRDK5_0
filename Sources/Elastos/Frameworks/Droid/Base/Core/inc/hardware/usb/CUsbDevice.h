@@ -1,6 +1,6 @@
 
-#ifndef __CUSBDEVICE_H__
-#define __CUSBDEVICE_H__
+#ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICE_H__
+#define __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICE_H__
 
 #include "_CUsbDevice.h"
 #include "ext/frameworkext.h"
@@ -161,4 +161,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSBDEVICE_H__
+#endif // __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICE_H__

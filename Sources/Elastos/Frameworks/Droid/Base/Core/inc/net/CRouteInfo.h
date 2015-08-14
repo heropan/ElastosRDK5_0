@@ -1,6 +1,6 @@
 
-#ifndef __CROUTEINFO_H__
-#define __CROUTEINFO_H__
+#ifndef __ELASTOS_DROID_NET_CROUTEINFO_H__
+#define __ELASTOS_DROID_NET_CROUTEINFO_H__
 
 #include "ext/frameworkdef.h"
 #include "_CRouteInfo.h"
@@ -105,4 +105,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CROUTEINFO_H__
+#endif // __ELASTOS_DROID_NET_CROUTEINFO_H__

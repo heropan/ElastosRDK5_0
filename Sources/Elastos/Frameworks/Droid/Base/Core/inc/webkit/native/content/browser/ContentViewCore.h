@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIEWCORE_H__
-#define __CONTENTVIEWCORE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__
 
 // import android.annotation.SuppressLint;
 // import android.app.Activity;
@@ -2429,4 +2429,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIEWCORE_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCORE_H__

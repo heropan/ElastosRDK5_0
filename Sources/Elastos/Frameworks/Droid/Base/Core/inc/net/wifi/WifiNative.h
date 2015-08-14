@@ -1,6 +1,6 @@
 
-#ifndef  __WIFINATIVE_H__
-#define  __WIFINATIVE_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFINATIVE_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFINATIVE_H__
 
 #include "ext/frameworkext.h"
 
@@ -436,4 +436,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIFINATIVE_H__
+#endif //__ELASTOS_DROID_NET_WIFI_WIFINATIVE_H__

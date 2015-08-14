@@ -1,6 +1,6 @@
 
-#ifndef __CWINDOWMANAGERLAYOUTPARAMS_H__
-#define __CWINDOWMANAGERLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__
 
 #include "_CWindowManagerLayoutParams.h"
 #include "view/ViewGroupLayoutParams.h"
@@ -457,4 +457,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CWINDOWMANAGERLAYOUTPARAMS_H__
+#endif //__ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMS_H__

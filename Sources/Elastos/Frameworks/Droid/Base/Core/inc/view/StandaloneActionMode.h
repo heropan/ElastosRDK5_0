@@ -1,5 +1,5 @@
-#ifndef __STANDALONEACTIONMODE_H__
-#define __STANDALONEACTIONMODE_H__
+#ifndef __ELASTOS_DROID_VIEW_STANDALONEACTIONMODE_H__
+#define __ELASTOS_DROID_VIEW_STANDALONEACTIONMODE_H__
 
 #include "view/ActionMode.h"
 
@@ -103,4 +103,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __STANDALONEACTIONMODE_H__
+#endif // __ELASTOS_DROID_VIEW_STANDALONEACTIONMODE_H__

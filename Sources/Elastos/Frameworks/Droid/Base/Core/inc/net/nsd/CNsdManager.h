@@ -1,5 +1,5 @@
-#ifndef __CNSDMANAGER_H__
-#define __CNSDMANAGER_H__
+#ifndef __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__
+#define __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__
 
 #include "_CNsdManager.h"
 #include "ext/frameworkdef.h"
@@ -271,4 +271,4 @@ public:
 }
 }
 
-#endif // __CNSDMANAGER_H__
+#endif // __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__

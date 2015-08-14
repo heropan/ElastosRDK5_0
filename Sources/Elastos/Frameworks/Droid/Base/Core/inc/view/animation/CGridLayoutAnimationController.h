@@ -1,6 +1,6 @@
 
-#ifndef __CGRIDLAYOUTANIMATIONCONTROLLER_H__
-#define __CGRIDLAYOUTANIMATIONCONTROLLER_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CGRIDLAYOUTANIMATIONCONTROLLER_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CGRIDLAYOUTANIMATIONCONTROLLER_H__
 
 #include "_CGridLayoutAnimationController.h"
 #include "view/animation/GridLayoutAnimationController.h"
@@ -102,4 +102,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif // __CGRIDLAYOUTANIMATIONCONTROLLER_H__
+#endif // __ELASTOS_DROID_VIEW_ANIMATION_CGRIDLAYOUTANIMATIONCONTROLLER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CLISTENERTRANSPORT_H__
-#define __CLISTENERTRANSPORT_H__
+#ifndef __ELASTOS_DROID_LOCATION_CLISTENERTRANSPORT_H__
+#define __ELASTOS_DROID_LOCATION_CLISTENERTRANSPORT_H__
 
 #include "_CListenerTransport.h"
 #include "os/HandlerBase.h"
@@ -79,4 +79,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLISTENERTRANSPORT_H__
+#endif //__ELASTOS_DROID_LOCATION_CLISTENERTRANSPORT_H__

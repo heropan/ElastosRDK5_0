@@ -1,5 +1,5 @@
-#ifndef __PANELHOLDER_H_
-#define __PANELHOLDER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELHOLDER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELHOLDER_H__
 
 #include "widget/FrameLayout.h"
 
@@ -57,4 +57,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__PANELHOLDER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PANELHOLDER_H__

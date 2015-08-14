@@ -1,6 +1,6 @@
 
-#ifndef __CMATRIXGL_H__
-#define __CMATRIXGL_H__
+#ifndef __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
+#define __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
 
 #include "_CMatrixGL.h"
 #include "elastos/Mutex.h"
@@ -232,4 +232,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CMATRIXGL_H__
+#endif // __ELASTOS_DROID_OPENGL_CMATRIXGL_H__

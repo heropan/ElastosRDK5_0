@@ -1,6 +1,6 @@
 
-#ifndef __CPROCESSSTARTRESULT_H__
-#define __CPROCESSSTARTRESULT_H__
+#ifndef __ELASTOS_DROID_OS_CPROCESSSTARTRESULT_H__
+#define __ELASTOS_DROID_OS_CPROCESSSTARTRESULT_H__
 
 #include "_CProcessStartResult.h"
 
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPROCESSSTARTRESULT_H__
+#endif //__ELASTOS_DROID_OS_CPROCESSSTARTRESULT_H__

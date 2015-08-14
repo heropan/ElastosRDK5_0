@@ -1,6 +1,6 @@
 
-#ifndef __SCALEANIMATION_H__
-#define __SCALEANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__
 
 #include "view/animation/Animation.h"
 
@@ -134,4 +134,4 @@ private:
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
-#endif //__SCALEANIMATION_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_SCALEANIMATION_H__

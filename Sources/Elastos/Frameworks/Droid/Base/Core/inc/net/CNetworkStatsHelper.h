@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKSTATSHELPER_H__
-#define __CNETWORKSTATSHELPER_H__
+#ifndef __ELASTOS_DROID_NET_CNETWORKSTATSHELPER_H__
+#define __ELASTOS_DROID_NET_CNETWORKSTATSHELPER_H__
 
 #include "_CNetworkStatsHelper.h"
 #include "ext/frameworkext.h"

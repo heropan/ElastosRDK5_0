@@ -1,6 +1,6 @@
 
-#ifndef __ABSLISTVIEWLAYOUTPARAMS_H__
-#define __ABSLISTVIEWLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_ABSLISTVIEWLAYOUTPARAMS_H__
 
 #include "view/ViewGroupLayoutParams.h"
 #include <ext/frameworkext.h>
@@ -132,4 +132,4 @@ public:
 }// namespace Elastos
 }// namespace Droid
 }// namespace Widget
-#endif // __ABSLISTVIEWLAYOUTPARAMS_H__
+#endif // __ELASTOS_DROID_WIDGET_ABSLISTVIEWLAYOUTPARAMS_H__

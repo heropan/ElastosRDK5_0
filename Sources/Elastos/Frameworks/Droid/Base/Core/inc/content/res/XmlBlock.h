@@ -1,6 +1,6 @@
 
-#ifndef __XMLBLOCK_H__
-#define __XMLBLOCK_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
+#define __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__
 
 #include "content/res/StringBlock.h"
 
@@ -406,4 +406,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __XMLBLOCK_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_XMLBLOCK_H__

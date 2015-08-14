@@ -1,5 +1,5 @@
-#ifndef __CBACKSTACKSTATE_H__
-#define __CBACKSTACKSTATE_H__
+#ifndef __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
+#define __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__
 
 #include "_CBackStackState.h"
 #include "ext/frameworkdef.h"
@@ -283,4 +283,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CBACKSTACKSTATE_H__
+#endif // __ELASTOS_DROID_APP_CBACKSTACKSTATE_H__

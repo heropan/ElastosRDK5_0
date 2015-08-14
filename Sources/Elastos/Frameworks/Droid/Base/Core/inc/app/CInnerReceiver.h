@@ -1,5 +1,5 @@
-#ifndef __CINNERRECEIVER_H__
-#define __CINNERRECEIVER_H__
+#ifndef __ELASTOS_DROID_APP_CINNERRECEIVER_H__
+#define __ELASTOS_DROID_APP_CINNERRECEIVER_H__
 
 #include "_CInnerReceiver.h"
 #include "app/LoadedPkg.h"
@@ -39,4 +39,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CINNERRECEIVER_H__
+#endif // __ELASTOS_DROID_APP_CINNERRECEIVER_H__

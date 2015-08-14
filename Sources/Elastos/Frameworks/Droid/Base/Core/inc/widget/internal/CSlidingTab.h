@@ -1,5 +1,5 @@
-#ifndef __CSLIDINGTAB_H_
-#define __CSLIDINGTAB_H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CSLIDINGTAB_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CSLIDINGTAB_H__
 
 #include "_CSlidingTab.h"
 
@@ -114,4 +114,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSLIDINGTAB_H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CSLIDINGTAB_H__

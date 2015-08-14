@@ -1,6 +1,6 @@
 
-#ifndef __TRACEEVENT_H__
-#define __TRACEEVENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__
 
 // import android.os.Looper;
 // import android.os.MessageQueue;
@@ -314,4 +314,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__TRACEEVENT_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_TRACEEVENT_H__

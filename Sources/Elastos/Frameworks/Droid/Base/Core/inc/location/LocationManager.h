@@ -1,5 +1,5 @@
-#ifndef __LOCATIONMANAGER_H__
-#define __LOCATIONMANAGER_H__
+#ifndef __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
+#define __ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__
 
 #ifdef DROID_CORE
 #include "location/CGpsStatusListenerTransport.h"
@@ -1015,4 +1015,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__LOCATIONMANAGER_H__
+#endif //__ELASTOS_DROID_LOCATION_LOCATIONMANAGER_H__

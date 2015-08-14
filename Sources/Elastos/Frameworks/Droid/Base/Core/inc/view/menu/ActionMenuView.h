@@ -1,6 +1,6 @@
 
-#ifndef  __ACTIONMENUVIEW_H__
-#define  __ACTIONMENUVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENUVIEW_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUVIEW_H__
 
 
 #include "widget/LinearLayoutLayoutParams.h"
@@ -155,4 +155,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ACTIONMENUVIEW_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ACTIONMENUVIEW_H__

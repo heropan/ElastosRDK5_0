@@ -1,6 +1,6 @@
 
-#ifndef __DEVICEMOTIONSERVICE_H_
-#define __DEVICEMOTIONSERVICE_H_
+#ifndef __ELASTOS_DROID_WEBKIT_DEVICEMOTIONSERVICE_H__
+#define __ELASTOS_DROID_WEBKIT_DEVICEMOTIONSERVICE_H__
 
 #include "ext/frameworkext.h"
 
@@ -136,4 +136,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DEVICEMOTIONSERVICE_H_
+#endif //__ELASTOS_DROID_WEBKIT_DEVICEMOTIONSERVICE_H__

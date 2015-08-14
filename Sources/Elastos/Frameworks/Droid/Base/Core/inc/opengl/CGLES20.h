@@ -1,6 +1,6 @@
 
-#ifndef __CGLES20_H__
-#define __CGLES20_H__
+#ifndef __ELASTOS_DROID_OPENGL_CGLES20_H__
+#define __ELASTOS_DROID_OPENGL_CGLES20_H__
 
 #include "_CGLES20.h"
 

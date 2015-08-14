@@ -1,6 +1,6 @@
 
-#ifndef __ELDATAINTERFACE_H__
-#define __ELDATAINTERFACE_H__
+#ifndef __ELASTOS_DROID_OS_ELDATAINTERFACE_H__
+#define __ELASTOS_DROID_OS_ELDATAINTERFACE_H__
 
 
 namespace Elastos {
@@ -61,4 +61,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELDATAINTERFACE_H__
+#endif //__ELASTOS_DROID_OS_ELDATAINTERFACE_H__

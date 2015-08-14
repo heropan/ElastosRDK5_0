@@ -1,6 +1,6 @@
 
-#ifndef __CLINEARGRADIENT_H__
-#define __CLINEARGRADIENT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CLINEARGRADIENT_H__
+#define __ELASTOS_DROID_GRAPHICS_CLINEARGRADIENT_H__
 
 #include "_CLinearGradient.h"
 #include "graphics/Shader.h"
@@ -104,4 +104,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLINEARGRADIENT_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CLINEARGRADIENT_H__

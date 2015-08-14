@@ -1,6 +1,6 @@
 
-#ifndef __CASSETMANAGERHELPER_H__
-#define __CASSETMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__
+#define __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__
 
 #include "_CAssetManagerHelper.h"
 
@@ -35,4 +35,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CASSETMANAGERHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__

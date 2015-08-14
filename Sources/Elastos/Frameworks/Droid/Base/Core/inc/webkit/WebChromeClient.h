@@ -1,6 +1,6 @@
 
-#ifndef __WEBCHROMECLIENT_H__
-#define __WEBCHROMECLIENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBCHROMECLIENT_H__
+#define __ELASTOS_DROID_WEBKIT_WEBCHROMECLIENT_H__
 
 #include "ext/frameworkext.h"
 
@@ -401,4 +401,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBCHROMECLIENT_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBCHROMECLIENT_H__

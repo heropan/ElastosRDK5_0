@@ -1,6 +1,6 @@
 
-#ifndef __CWINDOWMANAGERGLOBAL_H__
-#define __CWINDOWMANAGERGLOBAL_H__
+#ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
+#define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
 #include "_CWindowManagerGlobal.h"
 #include "os/Runnable.h"
@@ -126,4 +126,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CWINDOWMANAGERGLOBAL_H__
+#endif //__ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__

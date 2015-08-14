@@ -1,6 +1,6 @@
 
-#ifndef __CSUMPATHEFFECT_H__
-#define __CSUMPATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CSUMPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CSUMPATHEFFECT_H__
 
 #include "_CSumPathEffect.h"
 #include "graphics/PathEffect.h"
@@ -33,4 +33,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSUMPATHEFFECT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CSUMPATHEFFECT_H__

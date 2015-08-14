@@ -1,6 +1,6 @@
 
-#ifndef __CAMRINPUTSTREAM_H__
-#define __CAMRINPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAMRINPUTSTREAM_H__
+#define __ELASTOS_DROID_MEDIA_CAMRINPUTSTREAM_H__
 
 #include "_CAmrInputStream.h"
 #include "AmrInputStream.h"
@@ -62,4 +62,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAMRINPUTSTREAM_H__
+#endif // __ELASTOS_DROID_MEDIA_CAMRINPUTSTREAM_H__

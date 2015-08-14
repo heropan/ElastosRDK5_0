@@ -1,6 +1,6 @@
 
-#ifndef __RASTERIZER_H__
-#define __RASTERIZER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_RASTERIZER_H__
+#define __ELASTOS_DROID_GRAPHICS_RASTERIZER_H__
 
 #include <elastos.h>
 
@@ -31,4 +31,4 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__RASTERIZER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_RASTERIZER_H__

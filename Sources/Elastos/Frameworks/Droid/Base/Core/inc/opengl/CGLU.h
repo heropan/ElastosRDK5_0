@@ -1,6 +1,6 @@
 
-#ifndef __CGLU_H__
-#define __CGLU_H__
+#ifndef __ELASTOS_DROID_OPENGL_CGLU_H__
+#define __ELASTOS_DROID_OPENGL_CGLU_H__
 
 #include "_CGLU.h"
 #include "elastos/Mutex.h"
@@ -180,4 +180,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGLU_H__
+#endif // __ELASTOS_DROID_OPENGL_CGLU_H__

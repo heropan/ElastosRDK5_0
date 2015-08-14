@@ -1,6 +1,6 @@
 
-#ifndef __CVIEWCONFIGURATIONHELPER_H__
-#define __CVIEWCONFIGURATIONHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__
+#define __ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__
 
 #include "_CViewConfigurationHelper.h"
 
@@ -230,4 +230,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CVIEWCONFIGURATIONHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__

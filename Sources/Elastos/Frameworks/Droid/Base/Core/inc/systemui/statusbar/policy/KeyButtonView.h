@@ -1,6 +1,6 @@
 
-#ifndef __KEYBUTTONVIEW_H__
-#define __KEYBUTTONVIEW_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_KEYBUTTONVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_KEYBUTTONVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -113,4 +113,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__KEYBUTTONVIEW_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_KEYBUTTONVIEW_H__

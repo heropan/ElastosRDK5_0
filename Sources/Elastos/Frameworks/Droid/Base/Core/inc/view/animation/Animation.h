@@ -1,6 +1,6 @@
 
-#ifndef __ANIMATION_H__
-#define __ANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_ANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_ANIMATION_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/core/Math.h>
@@ -396,4 +396,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ANIMATION_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_ANIMATION_H__

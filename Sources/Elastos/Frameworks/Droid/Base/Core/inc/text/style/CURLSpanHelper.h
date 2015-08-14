@@ -1,6 +1,6 @@
 
-#ifndef __CURLSPANHELPER_H__
-#define __CURLSPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CURLSPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CURLSPANHELPER_H__
 
 #include "_CURLSpanHelper.h"
 
@@ -22,4 +22,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CURLSPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CURLSPANHELPER_H__

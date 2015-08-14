@@ -1,6 +1,6 @@
 
-#ifndef __CUrlQuerySanitizer_H__
-#define __CUrlQuerySanitizer_H__
+#ifndef __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
+#define __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
 
 #include "_CUrlQuerySanitizer.h"
 #include <Elastos/HashMap.h>
@@ -479,4 +479,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CUrlQuerySanitizer_H__
+#endif // __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__

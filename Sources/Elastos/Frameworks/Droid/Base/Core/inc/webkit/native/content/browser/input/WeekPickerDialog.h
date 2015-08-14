@@ -1,6 +1,6 @@
 
-#ifndef __WEEKPICKERDIALOG_H__
-#define __WEEKPICKERDIALOG_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKERDIALOG_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKERDIALOG_H__
 
 // import android.content.Context;
 
@@ -69,4 +69,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__WEEKPICKERDIALOG_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_WEEKPICKERDIALOG_H__

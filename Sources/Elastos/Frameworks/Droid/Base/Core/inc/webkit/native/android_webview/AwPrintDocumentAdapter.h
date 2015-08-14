@@ -1,6 +1,6 @@
 
-#ifndef __AWPRINTDOCUMENTADAPTER_H__
-#define __AWPRINTDOCUMENTADAPTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPRINTDOCUMENTADAPTER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPRINTDOCUMENTADAPTER_H__
 
 // import android.os.Bundle;
 // import android.os.CancellationSignal;
@@ -87,4 +87,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWPRINTDOCUMENTADAPTER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPRINTDOCUMENTADAPTER_H__

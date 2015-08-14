@@ -1,6 +1,6 @@
 
-#ifndef __CCOLORSTATELISTHELPER_H__
-#define __CCOLORSTATELISTHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELISTHELPER_H__
+#define __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELISTHELPER_H__
 
 #include "_CColorStateListHelper.h"
 #include "content/res/CColorStateList.h"
@@ -34,4 +34,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOLORSTATELISTHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELISTHELPER_H__

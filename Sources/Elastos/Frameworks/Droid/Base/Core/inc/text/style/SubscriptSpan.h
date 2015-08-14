@@ -1,5 +1,5 @@
-#ifndef __SubscriptSpan_H__
-#define __SubscriptSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_SubscriptSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_SubscriptSpan_H__
 
 #include "text/style/MetricAffectingSpan.h"
 
@@ -45,4 +45,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __SubscriptSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_SubscriptSpan_H__

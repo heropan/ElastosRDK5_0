@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTPROVIDERRESULT_H__
-#define __CCONTENTPROVIDERRESULT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__
 
 #include "_CContentProviderResult.h"
 #include "ext/frameworkext.h"
@@ -51,4 +51,4 @@ private:
 }
 }
 
-#endif // __CCONTENTPROVIDERRESULT_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__

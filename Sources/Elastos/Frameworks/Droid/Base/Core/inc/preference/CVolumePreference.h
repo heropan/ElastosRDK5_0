@@ -1,6 +1,6 @@
 
-#ifndef __CVOLUMEPREFERENCE_H__
-#define __CVOLUMEPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CVOLUMEPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CVOLUMEPREFERENCE_H__
 
 #include "_CVolumePreference.h"
 #include "SeekBarDialogPreference.h"
@@ -463,4 +463,4 @@ private:
 }
 }
 
-#endif // __CVOLUMEPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CVOLUMEPREFERENCE_H__

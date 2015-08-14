@@ -1,6 +1,6 @@
 
-#ifndef __CACTIONBARLAYOUTPARAMS_H__
-#define __CACTIONBARLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
 
 #include "_CActionBarLayoutParams.h"
 #include "view/ViewGroupMarginLayoutParams.h"
@@ -154,4 +154,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIONBARLAYOUTPARAMS_H__
+#endif //__ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__

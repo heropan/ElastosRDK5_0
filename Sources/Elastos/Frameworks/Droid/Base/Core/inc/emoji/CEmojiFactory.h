@@ -1,6 +1,6 @@
 
-#ifndef __EMOJIFACTORY_H__
-#define __EMOJIFACTORY_H__
+#ifndef __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
+#define __ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -203,4 +203,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__EMOJIFACTORY_H__
+#endif //__ELASTOS_DROID_EMOJI_EMOJIFACTORY_H__

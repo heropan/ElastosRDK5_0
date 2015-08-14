@@ -1,6 +1,6 @@
 
-#ifndef __ICONMENIITEMVIEW_H__
-#define __ICONMENIITEMVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENIITEMVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_ICONMENIITEMVIEW_H__
 
 
 #include "ext/frameworkext.h"
@@ -146,4 +146,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ICONMENIITEMVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_MENU_ICONMENIITEMVIEW_H__

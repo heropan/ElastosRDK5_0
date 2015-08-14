@@ -1,5 +1,5 @@
-#ifndef __CALENDARVIEW_H__
-#define __CALENDARVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_CALENDARVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CALENDARVIEW_H__
 
 #include "FrameLayout.h"
 #include "BaseAdapter.h"

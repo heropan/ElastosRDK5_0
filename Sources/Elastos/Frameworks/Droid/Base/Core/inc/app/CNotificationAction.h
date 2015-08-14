@@ -1,5 +1,5 @@
-#ifndef __CNOTIFICATIONACTION_H__
-#define __CNOTIFICATIONACTION_H__
+#ifndef __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
+#define __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
 
 #include "_CNotificationAction.h"
 #include "ext/frameworkext.h"
@@ -54,4 +54,4 @@ public:
 }
 }
 
-#endif // __CNOTIFICATIONACTION_H__
+#endif // __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__

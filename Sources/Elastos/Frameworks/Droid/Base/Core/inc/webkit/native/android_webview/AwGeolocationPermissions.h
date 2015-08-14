@@ -1,6 +1,6 @@
 
-#ifndef __AWGEOLOCATIONPERMISSIONS_H__
-#define __AWGEOLOCATIONPERMISSIONS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWGEOLOCATIONPERMISSIONS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWGEOLOCATIONPERMISSIONS_H__
 
 // import android.content.SharedPreferences;
 // import android.webkit.ValueCallback;
@@ -129,4 +129,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWGEOLOCATIONPERMISSIONS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWGEOLOCATIONPERMISSIONS_H__

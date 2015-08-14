@@ -1,6 +1,6 @@
 
-#ifndef __CMANIFESTDIGEST_H__
-#define __CMANIFESTDIGEST_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__
+#define __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__
 
 #include "_CManifestDigest.h"
 
@@ -61,4 +61,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CMANIFESTDIGEST_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__

@@ -1,6 +1,6 @@
 
-#ifndef __POLICY_CLOCK_H__
-#define __POLICY_CLOCK_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__
 
 #include "ext/frameworkext.h"
 #include "widget/TextView.h"
@@ -108,4 +108,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__POLICY_CLOCK_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CLOCK_H__

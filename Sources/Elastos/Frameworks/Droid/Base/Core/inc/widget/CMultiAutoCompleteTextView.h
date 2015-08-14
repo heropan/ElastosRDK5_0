@@ -1,5 +1,5 @@
-#ifndef  __CMULTIAUTOCOMPLETETEXTVIEW_H_
-#define __CMULTIAUTOCOMPLETETEXTVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CMULTIAUTOCOMPLETETEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CMULTIAUTOCOMPLETETEXTVIEW_H__
 
 #include "_CMultiAutoCompleteTextView.h"
 #include "widget/MultiAutoCompleteTextView.h"
@@ -63,4 +63,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CMULTIAUTOCOMPLETETEXTVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CMULTIAUTOCOMPLETETEXTVIEW_H__

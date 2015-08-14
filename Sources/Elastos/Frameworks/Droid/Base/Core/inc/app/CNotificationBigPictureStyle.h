@@ -1,5 +1,5 @@
-#ifndef __CNOTIFICATIONBIGPICTURESTYLE_H__
-#define __CNOTIFICATIONBIGPICTURESTYLE_H__
+#ifndef __ELASTOS_DROID_APP_CNOTIFICATIONBIGPICTURESTYLE_H__
+#define __ELASTOS_DROID_APP_CNOTIFICATIONBIGPICTURESTYLE_H__
 
 #include "_CNotificationBigPictureStyle.h"
 #include "app/NotificationStyle.h"
@@ -87,4 +87,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNOTIFICATIONBIGPICTURESTYLE_H__
+#endif // __ELASTOS_DROID_APP_CNOTIFICATIONBIGPICTURESTYLE_H__

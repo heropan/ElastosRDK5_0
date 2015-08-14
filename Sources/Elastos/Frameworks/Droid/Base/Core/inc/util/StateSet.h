@@ -1,6 +1,6 @@
 
-#ifndef __STATESET_H__
-#define __STATESET_H__
+#ifndef __ELASTOS_DROID_UTILITY_STATESET_H__
+#define __ELASTOS_DROID_UTILITY_STATESET_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -37,4 +37,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__STATESET_H__
+#endif //__ELASTOS_DROID_UTILITY_STATESET_H__

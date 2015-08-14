@@ -1,6 +1,6 @@
 
-#ifndef __CNINEPATCHHELPER_H__
-#define __CNINEPATCHHELPER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CNINEPATCHHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_CNINEPATCHHELPER_H__
 
 #include "_CNinePatchHelper.h"
 
@@ -20,5 +20,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNINEPATCHHELPER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CNINEPATCHHELPER_H__
 

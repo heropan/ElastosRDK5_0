@@ -1,6 +1,6 @@
 
-#ifndef __POWERSTATUSRECEIVER_H__
-#define __POWERSTATUSRECEIVER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__
 
 // import android.content.BroadcastReceiver;
 // import android.content.Context;
@@ -33,4 +33,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__POWERSTATUSRECEIVER_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_POWERSTATUSRECEIVER_H__

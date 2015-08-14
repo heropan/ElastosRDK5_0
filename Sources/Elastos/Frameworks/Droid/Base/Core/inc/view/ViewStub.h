@@ -1,6 +1,6 @@
 
-#ifndef  __VIEWSTUB_H__
-#define  __VIEWSTUB_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWSTUB_H__
+#define  __ELASTOS_DROID_VIEW_VIEWSTUB_H__
 
 #include "view/View.h"
 
@@ -171,4 +171,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__VIEWSTUB_H__
+#endif  //__ELASTOS_DROID_VIEW_VIEWSTUB_H__

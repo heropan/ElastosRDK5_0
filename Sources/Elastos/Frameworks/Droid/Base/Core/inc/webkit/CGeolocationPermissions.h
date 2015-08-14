@@ -1,6 +1,6 @@
 
-#ifndef __CGEOLOCATIONPERMISSIONS_H__
-#define __CGEOLOCATIONPERMISSIONS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CGEOLOCATIONPERMISSIONS_H__
+#define __ELASTOS_DROID_WEBKIT_CGEOLOCATIONPERMISSIONS_H__
 
 #include "_CGeolocationPermissions.h"
 #include "webkit/GeolocationPermissions.h"
@@ -34,4 +34,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGEOLOCATIONPERMISSIONS_H__
+#endif // __ELASTOS_DROID_WEBKIT_CGEOLOCATIONPERMISSIONS_H__

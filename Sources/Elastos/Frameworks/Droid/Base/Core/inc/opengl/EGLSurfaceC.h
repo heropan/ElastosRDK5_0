@@ -1,6 +1,6 @@
 
-#ifndef __EGLSURFACEC_H__
-#define __EGLSURFACEC_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLSURFACEC_H__
+#define __ELASTOS_DROID_OPENGL_EGLSURFACEC_H__
 
 #include "EGLObjectHandle.h"
 

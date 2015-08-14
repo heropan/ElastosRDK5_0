@@ -1,6 +1,6 @@
 
-#ifndef  __WIFICONFIGSTORE_H__
-#define  __WIFICONFIGSTORE_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__
 
 #include "ext/frameworkext.h"
 #include "net/DhcpInfoInternal.h"
@@ -449,4 +449,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__WIFICONFIGSTORE_H__
+#endif  //__ELASTOS_DROID_NET_WIFI_WIFICONFIGSTORE_H__

@@ -1,5 +1,5 @@
-#ifndef __CCHILDRENT_H__
-#define __CCHILDRENT_H__
+#ifndef __ELASTOS_DROID_SAX_CCHILDRENT_H__
+#define __ELASTOS_DROID_SAX_CCHILDRENT_H__
 
 #include "_CChildren.h"
 #include "sax/Element.h"
@@ -142,4 +142,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCHILDRENT_H__
+#endif //__ELASTOS_DROID_SAX_CCHILDRENT_H__

@@ -1,5 +1,5 @@
-#ifndef __CTABLEROW_H_
-#define __CTABLEROW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTABLEROW_H__
+#define __ELASTOS_DROID_WIDGET_CTABLEROW_H__
 
 #include "_CTableRow.h"
 
@@ -46,4 +46,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTABLEROW_H_
+#endif //__ELASTOS_DROID_WIDGET_CTABLEROW_H__

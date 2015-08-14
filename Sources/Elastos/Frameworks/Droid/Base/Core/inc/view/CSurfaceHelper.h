@@ -1,6 +1,6 @@
 
-#ifndef __CSURFACEHELPER_H__
-#define __CSURFACEHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CSURFACEHELPER_H__
+#define __ELASTOS_DROID_VIEW_CSURFACEHELPER_H__
 
 #include "_CSurfaceHelper.h"
 
@@ -88,4 +88,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSURFACEHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CSURFACEHELPER_H__

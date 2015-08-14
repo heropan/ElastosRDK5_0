@@ -1,6 +1,6 @@
 
-#ifndef __VIEWROOTIMPL_H__
-#define __VIEWROOTIMPL_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
+#define __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__
 
 #include "ext/frameworkext.h"
 #include "view/CWindowManagerLayoutParams.h"
@@ -1424,4 +1424,4 @@ struct Conversion<Elastos::Droid::View::ViewRootImpl*, IInterface*>
     enum { exists = TRUE, exists2Way = FALSE, sameType = FALSE };
 };
 
-#endif // __VIEWROOTIMPL_H__
+#endif // __ELASTOS_DROID_VIEW_VIEWROOTIMPL_H__

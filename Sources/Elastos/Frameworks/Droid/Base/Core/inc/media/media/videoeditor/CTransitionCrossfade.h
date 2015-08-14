@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSITIONCROSSFADE_H__
-#define __CTRANSITIONCROSSFADE_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONCROSSFADE_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONCROSSFADE_H__
 
 #include "_CTransitionCrossfade.h"
 #include <ext/frameworkext.h>
@@ -57,5 +57,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTRANSITIONCROSSFADE_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONCROSSFADE_H__
 

@@ -5,8 +5,8 @@
  * should not be modified by hand.
  */
 
-#ifndef __Elastos_Droid_Manifest_H__
-#define __Elastos_Droid_Manifest_H__
+#ifndef __ELASTOS_DROID_Elastos_Droid_Manifest_H__
+#define __ELASTOS_DROID_Elastos_Droid_Manifest_H__
 
 #include "ext/frameworkext.h"
 
@@ -1016,4 +1016,4 @@ class Manifest {
 };
 };
 };
-#endif // __Elastos_Droid_Manifest_H__
+#endif // __ELASTOS_DROID_Elastos_Droid_Manifest_H__

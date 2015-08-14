@@ -1,6 +1,6 @@
 
-#ifndef __CBOUNCEINTERPOLATOR_H__
-#define __CBOUNCEINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CBOUNCEINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CBOUNCEINTERPOLATOR_H__
 
 #include "_CBounceInterpolator.h"
 
@@ -33,4 +33,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CBOUNCEINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CBOUNCEINTERPOLATOR_H__

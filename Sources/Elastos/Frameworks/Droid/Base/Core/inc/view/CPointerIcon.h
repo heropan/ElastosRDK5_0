@@ -1,6 +1,6 @@
 
-#ifndef __CPOINTERICON_H__
-#define __CPOINTERICON_H__
+#ifndef __ELASTOS_DROID_VIEW_CPOINTERICON_H__
+#define __ELASTOS_DROID_VIEW_CPOINTERICON_H__
 
 #include "_CPointerIcon.h"
 
@@ -227,4 +227,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPOINTERICON_H__
+#endif //__ELASTOS_DROID_VIEW_CPOINTERICON_H__

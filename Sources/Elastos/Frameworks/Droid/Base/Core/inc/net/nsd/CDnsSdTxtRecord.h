@@ -1,5 +1,5 @@
-#ifndef __CDNSSDTXTRECORD_H__
-#define __CDNSSDTXTRECORD_H__
+#ifndef __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__
+#define __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__
 
 #include "_CDnsSdTxtRecord.h"
 
@@ -141,4 +141,4 @@ public:
 }
 }
 
-#endif // __CDNSSDTXTRECORD_H__
+#endif // __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__

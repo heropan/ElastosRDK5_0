@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTCHANNEL_H__
-#define __CINPUTCHANNEL_H__
+#ifndef __ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__
+#define __ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__
 
 #include "_CInputChannel.h"
 #include "view/NativeInputChannel.h"
@@ -67,4 +67,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CINPUTCHANNEL_H__
+#endif //__ELASTOS_DROID_VIEW_CINPUTCHANNEL_H__

@@ -75,7 +75,7 @@ module
          *     must be non-empty and of length less than 256.
          */
         SetNpnProtocols(
-            [in] ArrayOf<IArrayOf>* npnProtocols);
+            [in] ArrayOf<IArrayOf*>* npnProtocols);
 
         /**
          * Sets the
@@ -97,7 +97,7 @@ module
          * @hide
          */
         SetAlpnProtocols(
-            [in] ArrayOf<IArrayOf>* protocols);
+            [in] ArrayOf<IArrayOf*>* protocols);
 
         /**
          * Returns the <a href="http://technotes.googlecode.com/git/nextprotoneg.html">Next

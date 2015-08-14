@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIASCANNERCONNECTION_H__
-#define __CMEDIASCANNERCONNECTION_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__
 
 #include "_CMediaScannerConnection.h"
 #include "ext/frameworkext.h"
@@ -162,4 +162,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIASCANNERCONNECTION_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__

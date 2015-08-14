@@ -1,6 +1,6 @@
 
-#ifndef __CPHONESTATELISTENER_H__
-#define __CPHONESTATELISTENER_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__
+#define __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__
 
 #include "_CPhoneStateListener.h"
 #include "os/HandlerBase.h"
@@ -148,4 +148,4 @@ private:
 }
 }
 
-#endif // __CPHONESTATELISTENER_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CPHONESTATELISTENER_H__

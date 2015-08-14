@@ -1,6 +1,6 @@
 
-#ifndef __ANDROIDPROTOCOLHANDLER_H__
-#define __ANDROIDPROTOCOLHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ANDROIDPROTOCOLHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ANDROIDPROTOCOLHANDLER_H__
 
 // import android.content.Context;
 // import android.content.res.AssetManager;
@@ -110,4 +110,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__ANDROIDPROTOCOLHANDLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_ANDROIDPROTOCOLHANDLER_H__

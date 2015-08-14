@@ -1,6 +1,6 @@
 
-#ifndef __CPPPOEMANAGER_H__
-#define __CPPPOEMANAGER_H__
+#ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOEMANAGER_H__
+#define __ELASTOS_DROID_NET_PPPOE_CPPPOEMANAGER_H__
 
 #include "_CPppoeManager.h"
 #include "CPppoeStateTracker.h"
@@ -80,4 +80,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CPPPOEMANAGER_H__
+#endif // __ELASTOS_DROID_NET_PPPOE_CPPPOEMANAGER_H__

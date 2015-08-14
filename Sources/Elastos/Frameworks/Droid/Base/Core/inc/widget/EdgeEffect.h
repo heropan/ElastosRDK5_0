@@ -1,6 +1,6 @@
 
-#ifndef __EDGEEFFECT_H__
-#define __EDGEEFFECT_H__
+#ifndef __ELASTOS_DROID_WIDGET_EDGEEFFECT_H__
+#define __ELASTOS_DROID_WIDGET_EDGEEFFECT_H__
 
 #include "ext/frameworkext.h"
 
@@ -147,4 +147,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__EDGEEFFECT_H__
+#endif //__ELASTOS_DROID_WIDGET_EDGEEFFECT_H__

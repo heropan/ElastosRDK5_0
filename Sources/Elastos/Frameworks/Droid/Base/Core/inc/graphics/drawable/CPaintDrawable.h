@@ -1,6 +1,6 @@
 
-#ifndef __CPAINTDRAWABLE_H__
-#define __CPAINTDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CPAINTDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CPAINTDRAWABLE_H__
 
 #include "_CPaintDrawable.h"
 #include "graphics/drawable/PaintDrawable.h"
@@ -77,4 +77,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPAINTDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CPAINTDRAWABLE_H__

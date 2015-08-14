@@ -1,6 +1,6 @@
 
-#ifndef __CTABLETSTATUSBAR_H__
-#define __CTABLETSTATUSBAR_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__
 
 #include "_CTabletStatusBar.h"
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
@@ -121,4 +121,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CTABLETSTATUSBAR_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__

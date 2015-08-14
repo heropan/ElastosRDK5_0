@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSPRESENCE_H__
-#define __CCONTACTSPRESENCE_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPRESENCE_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSPRESENCE_H__
 
 #include "_CContactsPresence.h"
 
@@ -53,4 +53,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif //__CCONTACTSPRESENCE_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTSPRESENCE_H__

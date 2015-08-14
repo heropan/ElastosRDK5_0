@@ -1,6 +1,6 @@
 
-#ifndef __CBASE64_H__
-#define __CBASE64_H__
+#ifndef __ELASTOS_DROID_UTILITY_CBASE64_H__
+#define __ELASTOS_DROID_UTILITY_CBASE64_H__
 
 #include "_CBase64.h"
 
@@ -59,4 +59,4 @@ private:
 }
 }
 }
-#endif // __CBASE64_H__
+#endif // __ELASTOS_DROID_UTILITY_CBASE64_H__

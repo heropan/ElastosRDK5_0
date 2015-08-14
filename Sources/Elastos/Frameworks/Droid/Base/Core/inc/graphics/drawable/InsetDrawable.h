@@ -1,6 +1,6 @@
 
-#ifndef __INSETDRAWABLE_H__
-#define __INSETDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_INSETDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_INSETDRAWABLE_H__
 
 #include "ext/frameworkext.h"
 #include "graphics/drawable/Drawable.h"
@@ -162,4 +162,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INSETDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_INSETDRAWABLE_H__

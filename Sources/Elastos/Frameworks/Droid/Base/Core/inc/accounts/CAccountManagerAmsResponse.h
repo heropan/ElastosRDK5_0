@@ -1,6 +1,6 @@
 
-#ifndef __CACCOUNTMANAGERAMSRESPONSE_H__
-#define __CACCOUNTMANAGERAMSRESPONSE_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__
+#define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__
 
 #include "_CAccountManagerAmsResponse.h"
 #include "accounts/CAccountManager.h"
@@ -32,4 +32,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACCOUNTMANAGERAMSRESPONSE_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__

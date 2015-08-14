@@ -1,6 +1,6 @@
 
-#ifndef __SQLITEDEBUGHELPER_H__
-#define __SQLITEDEBUGHELPER_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDEBUGHELPER_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDEBUGHELPER_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -168,4 +168,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__SQLITEDEBUGHELPER_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITEDEBUGHELPER_H__

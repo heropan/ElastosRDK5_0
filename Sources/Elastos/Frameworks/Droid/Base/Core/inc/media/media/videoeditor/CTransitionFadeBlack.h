@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSITIONFADEBLACK_H__
-#define __CTRANSITIONFADEBLACK_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONFADEBLACK_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONFADEBLACK_H__
 
 #include "_CTransitionFadeBlack.h"
 #include <ext/frameworkext.h>
@@ -56,5 +56,5 @@ public:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CTRANSITIONFADEBLACK_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONFADEBLACK_H__
 

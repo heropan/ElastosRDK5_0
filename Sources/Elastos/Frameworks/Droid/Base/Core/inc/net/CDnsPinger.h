@@ -1,6 +1,6 @@
 
-#ifndef __CDNSPINGER_H__
-#define __CDNSPINGER_H__
+#ifndef __ELASTOS_DROID_NET_CDNSPINGER_H__
+#define __ELASTOS_DROID_NET_CDNSPINGER_H__
 
 #include "_CDnsPinger.h"
 #include "ext/frameworkdef.h"
@@ -165,4 +165,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDNSPINGER_H__
+#endif //__ELASTOS_DROID_NET_CDNSPINGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __DATESORTER_H__
-#define __DATESORTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_DATESORTER_H__
+#define __ELASTOS_DROID_WEBKIT_DATESORTER_H__
 
 #include "ext/frameworkext.h"
 
@@ -75,4 +75,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DATESORTER_H__
+#endif //__ELASTOS_DROID_WEBKIT_DATESORTER_H__

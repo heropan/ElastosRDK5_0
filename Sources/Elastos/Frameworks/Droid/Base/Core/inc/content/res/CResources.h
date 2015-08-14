@@ -1,6 +1,6 @@
 
-#ifndef __CRESOURCES_H__
-#define __CRESOURCES_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CRESOURCES_H__
+#define __ELASTOS_DROID_CONTENT_RES_CRESOURCES_H__
 
 #include "_CResources.h"
 #include "content/res/XmlBlock.h"
@@ -1180,4 +1180,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CRESOURCES_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CRESOURCES_H__

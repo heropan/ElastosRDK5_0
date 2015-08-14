@@ -1,6 +1,6 @@
 
-#ifndef  __CIINPUTMETHODCLIENT_H__
-#define  __CIINPUTMETHODCLIENT_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CIINPUTMETHODCLIENT_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CIINPUTMETHODCLIENT_H__
 
 #include "_CIInputMethodClient.h"
 #include "view/inputmethod/CInputMethodManager.h"
@@ -43,4 +43,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CIINPUTMETHODCLIENT_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CIINPUTMETHODCLIENT_H__

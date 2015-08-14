@@ -1,5 +1,5 @@
-#ifndef __CPASSWORDENTRYKEYBOARD_H__
-#define __CPASSWORDENTRYKEYBOARD_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARD_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARD_H__
 
 #include "_CPasswordEntryKeyboard.h"
 #include "widget/internal/PasswordEntryKeyboard.h"

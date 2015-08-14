@@ -1,6 +1,6 @@
 
-#ifndef __GAMEPADLIST_H__
-#define __GAMEPADLIST_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__
 
 // import android.annotation.SuppressLint;
 // import android.annotation.TargetApi;
@@ -210,4 +210,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__GAMEPADLIST_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADLIST_H__

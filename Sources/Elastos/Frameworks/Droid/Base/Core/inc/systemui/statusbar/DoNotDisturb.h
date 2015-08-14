@@ -1,5 +1,5 @@
-#ifndef __DONOTDISTURB_H__
-#define __DONOTDISTURB_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_DONOTDISTURB_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_DONOTDISTURB_H__
 
 #include "ext/frameworkext.h"
 
@@ -44,4 +44,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__DONOTDISTURB_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_DONOTDISTURB_H__

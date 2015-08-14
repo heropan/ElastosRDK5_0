@@ -1,5 +1,5 @@
-#ifndef __CDIGITALCLOCK__H_
-#define __CDIGITALCLOCK__H_
+#ifndef __ELASTOS_DROID_WIDGET_CDIGITALCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_CDIGITALCLOCK_H__
 
 #include "_CDigitalClock.h"
 #include "widget/DigitalClock.h"
@@ -37,4 +37,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDIGITALCLOCK__H_
+#endif //__ELASTOS_DROID_WIDGET_CDIGITALCLOCK_H__

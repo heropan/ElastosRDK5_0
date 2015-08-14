@@ -1,5 +1,5 @@
-#ifndef __CSTATICLAYOUT_H__
-#define __CSTATICLAYOUT_H__
+#ifndef __ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__
+#define __ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__
 
 #include "_CStaticLayout.h"
 #include "text/StaticLayout.h"
@@ -116,4 +116,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CSTATICLAYOUT_H__
+#endif //__ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __TRANSITIONDRAWABLE_H__
-#define __TRANSITIONDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_TRANSITIONDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_TRANSITIONDRAWABLE_H__
 
 #include "ext/frameworkext.h"
 #include "graphics/drawable/LayerDrawable.h"
@@ -162,4 +162,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TRANSITIONDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_TRANSITIONDRAWABLE_H__

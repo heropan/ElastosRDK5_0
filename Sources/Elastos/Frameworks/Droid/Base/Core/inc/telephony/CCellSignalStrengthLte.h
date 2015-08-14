@@ -1,6 +1,6 @@
 
-#ifndef __CCELLSIGNALSTRENGTHLTE_H__
-#define __CCELLSIGNALSTRENGTHLTE_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCELLSIGNALSTRENGTHLTE_H__
+#define __ELASTOS_DROID_TELEPHONY_CCELLSIGNALSTRENGTHLTE_H__
 
 #include "_CCellSignalStrengthLte.h"
 #include "CellSignalStrength.h"
@@ -137,4 +137,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCELLSIGNALSTRENGTHLTE_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCELLSIGNALSTRENGTHLTE_H__

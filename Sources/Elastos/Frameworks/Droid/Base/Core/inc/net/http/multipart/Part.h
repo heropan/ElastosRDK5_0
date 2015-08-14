@@ -1,6 +1,6 @@
 
-#ifndef __PART_H__
-#define __PART_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PART_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PART_H__
 
 #include <elastos.h>
 #ifdef DROID_CORE
@@ -327,4 +327,4 @@ private:
 }
 }
 
-#endif // __PART_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PART_H__

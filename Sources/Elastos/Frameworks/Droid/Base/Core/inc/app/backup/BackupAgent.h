@@ -1,6 +1,6 @@
 
-#ifndef  __BACKUPAGENT_H__
-#define  __BACKUPAGENT_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_BACKUPAGENT_H__
+#define  __ELASTOS_DROID_APP_BACKUP_BACKUPAGENT_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -841,4 +841,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__BACKUPAGENT_H__
+#endif  //__ELASTOS_DROID_APP_BACKUP_BACKUPAGENT_H__

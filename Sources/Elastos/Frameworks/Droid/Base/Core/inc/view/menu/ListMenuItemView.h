@@ -1,6 +1,6 @@
 
-#ifndef  _ListMenuItemView_H__
-#define  _ListMenuItemView_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ListMenuItemView_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ListMenuItemView_H__
 
 #include "view/menu/MenuItemImpl.h"
 #include "widget/LinearLayout.h"
@@ -111,4 +111,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //_ListMenuItemView_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ListMenuItemView_H__

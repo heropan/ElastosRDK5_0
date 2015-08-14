@@ -1,5 +1,5 @@
-#ifndef __CICONMENUPRESENTER_H__
-#define __CICONMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CICONMENUPRESENTER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CICONMENUPRESENTER_H__
 #include "_CIconMenuPresenter.h"
 #include "view/menu/IconMenuPresenter.h"
 

@@ -1,6 +1,6 @@
 
-#ifndef __CPHONELAYOUTINFLATER_H__
-#define __CPHONELAYOUTINFLATER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONELAYOUTINFLATER_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONELAYOUTINFLATER_H__
 
 #include "_CPhoneLayoutInflater.h"
 #include "view/LayoutInflater.h"
@@ -97,4 +97,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPHONELAYOUTINFLATER_H__
+#endif //__ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONELAYOUTINFLATER_H__

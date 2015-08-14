@@ -1,6 +1,6 @@
 
-#ifndef __CVISIBILITYGL_H__
-#define __CVISIBILITYGL_H__
+#ifndef __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
+#define __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
 
 #include "_CVisibilityGL.h"
 #include "CMatrixGL.h"
@@ -74,4 +74,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CVISIBILITYGL_H__
+#endif // __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__

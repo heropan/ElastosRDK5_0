@@ -1,6 +1,6 @@
 
-#ifndef __APPWIDGETPROVIDER_H__
-#define __APPWIDGETPROVIDER_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__
+#define __ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__
 
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
@@ -158,4 +158,4 @@ public:
 } // namespace AppWidget
 } // namespace Droid
 } // namespace Elastos
-#endif //__APPWIDGETPROVIDER_H__
+#endif //__ELASTOS_DROID_APPWIDGET_APPWIDGETPROVIDER_H__

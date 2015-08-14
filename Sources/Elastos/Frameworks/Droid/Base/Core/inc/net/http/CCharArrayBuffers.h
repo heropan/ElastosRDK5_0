@@ -1,6 +1,6 @@
 
-#ifndef __CCHARARRAYBUFFERS_H__
-#define __CCHARARRAYBUFFERS_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CCHARARRAYBUFFERS_H__
+#define __ELASTOS_DROID_NET_HTTP_CCHARARRAYBUFFERS_H__
 
 #include "_CCharArrayBuffers.h"
 
@@ -28,4 +28,4 @@ private:
 }
 }
 
-#endif // __CCHARARRAYBUFFERS_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CCHARARRAYBUFFERS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CTYPEDARRAY_H__
-#define __CTYPEDARRAY_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CTYPEDARRAY_H__
+#define __ELASTOS_DROID_CONTENT_RES_CTYPEDARRAY_H__
 
 #include "_CTypedArray.h"
 #include "content/res/XmlBlock.h"
@@ -454,4 +454,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CTYPEDARRAY_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CTYPEDARRAY_H__

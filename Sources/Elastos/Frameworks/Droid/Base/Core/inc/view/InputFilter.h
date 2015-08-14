@@ -1,5 +1,5 @@
-#ifndef __INPUTEVENT_H__
-#define __INPUTEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTEVENT_H__
+#define __ELASTOS_DROID_VIEW_INPUTEVENT_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -141,4 +141,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__INPUTEVENT_H__
+#endif //__ELASTOS_DROID_VIEW_INPUTEVENT_H__

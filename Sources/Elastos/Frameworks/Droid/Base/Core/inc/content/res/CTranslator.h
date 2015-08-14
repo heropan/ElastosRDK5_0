@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSLATOR_H__
-#define __CTRANSLATOR_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CTRANSLATOR_H__
+#define __ELASTOS_DROID_CONTENT_RES_CTRANSLATOR_H__
 
 #include "_CTranslator.h"
 
@@ -27,4 +27,4 @@ private:
 }
 }
 
-#endif // __CTRANSLATOR_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CTRANSLATOR_H__

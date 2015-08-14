@@ -1,6 +1,6 @@
 
-#ifndef __CRINGTONEPREFERENCE_H__
-#define __CRINGTONEPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CRINGTONEPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CRINGTONEPREFERENCE_H__
 
 #include "_CRingtonePreference.h"
 #include "Preference.h"
@@ -95,4 +95,4 @@ private:
 }
 }
 
-#endif // __CRINGTONEPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CRINGTONEPREFERENCE_H__

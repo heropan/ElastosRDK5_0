@@ -1,5 +1,5 @@
-#ifndef __CVideoView_h__
-#define __CVideoView_h__
+#ifndef __ELASTOS_DROID_WIDGET_CVideoView_H__
+#define __ELASTOS_DROID_WIDGET_CVideoView_H__
 
 #include "_CVideoView.h"
 
@@ -128,4 +128,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CVideoView_h__
+#endif //__ELASTOS_DROID_WIDGET_CVideoView_H__

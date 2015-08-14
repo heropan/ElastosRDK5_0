@@ -1,6 +1,6 @@
 
-#ifndef __HTTPLOG_H__
-#define __HTTPLOG_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_HTTPLOG_H__
+#define __ELASTOS_DROID_NET_HTTP_HTTPLOG_H__
 
 #include <elastos.h>
 
@@ -33,4 +33,4 @@ private:
 }
 }
 
-#endif // __HTTPLOG_H__
+#endif // __ELASTOS_DROID_NET_HTTP_HTTPLOG_H__

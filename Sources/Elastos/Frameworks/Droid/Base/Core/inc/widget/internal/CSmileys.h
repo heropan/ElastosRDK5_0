@@ -1,6 +1,6 @@
 
-#ifndef __SMILEYS_H__
-#define __SMILEYS_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SMILEYS_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_SMILEYS_H__
 
 #include "ext/frameworkext.h"
 #include "R.h"

@@ -1,5 +1,5 @@
-#ifndef __CFULLBACKUPDATAOUTPUT_H__
-#define __CFULLBACKUPDATAOUTPUT_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__
+#define __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__
 
 #include "_CFullBackupDataOutput.h"
 #include "ext/frameworkext.h"
@@ -30,4 +30,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CFULLBACKUPDATAOUTPUT_H__
+#endif // __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__

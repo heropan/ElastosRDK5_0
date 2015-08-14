@@ -1,5 +1,5 @@
-#ifndef __CACITONKEYINFO_H__
-#define __CACITONKEYINFO_H__
+#ifndef __ELASTOS_DROID_APP_CACITONKEYINFO_H__
+#define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
 
 #include "_CActionKeyInfo.h"
 

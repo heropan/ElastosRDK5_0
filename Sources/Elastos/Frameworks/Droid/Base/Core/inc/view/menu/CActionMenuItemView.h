@@ -1,6 +1,6 @@
 
-#ifndef  __CACTIONMENUITEMVIEW_H__
-#define  __CACTIONMENUITEMVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CACTIONMENUITEMVIEW_H__
+#define  __ELASTOS_DROID_VIEW_MENU_CACTIONMENUITEMVIEW_H__
 
 #include "_CActionMenuItemView.h"
 #include "view/menu/ActionMenuItemView.h"
@@ -102,4 +102,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CACTIONMENUITEMVIEW_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_CACTIONMENUITEMVIEW_H__

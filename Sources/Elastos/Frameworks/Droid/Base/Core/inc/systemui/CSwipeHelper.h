@@ -1,5 +1,5 @@
-#ifndef __CSWIPEHELPER_H__
-#define __CSWIPEHELPER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_CSWIPEHELPER_H__
+#define __ELASTOS_DROID_SYSTEMUI_CSWIPEHELPER_H__
 
 #include "_CSwipeHelper.h"
 #include "ext/frameworkext.h"
@@ -200,4 +200,4 @@ private:
 }// namespace Elastos
 
 
-#endif //__CSWIPEHELPER_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_CSWIPEHELPER_H__

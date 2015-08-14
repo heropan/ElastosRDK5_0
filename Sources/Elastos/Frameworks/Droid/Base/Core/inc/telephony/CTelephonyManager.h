@@ -1,6 +1,6 @@
 
-#ifndef __CTELEPHONYMANAGER_H__
-#define __CTELEPHONYMANAGER_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CTELEPHONYMANAGER_H__
+#define __ELASTOS_DROID_TELEPHONY_CTELEPHONYMANAGER_H__
 
 #include "_CTelephonyManager.h"
 #include "ext/frameworkdef.h"
@@ -215,4 +215,4 @@ private:
 }
 }
 
-#endif // __CTELEPHONYMANAGER_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CTELEPHONYMANAGER_H__

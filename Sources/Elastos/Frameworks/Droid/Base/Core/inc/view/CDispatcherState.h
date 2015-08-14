@@ -1,6 +1,6 @@
 
-#ifndef __CDISPATCHERSTATE_H__
-#define __CDISPATCHERSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_CDISPATCHERSTATE_H__
+#define __ELASTOS_DROID_VIEW_CDISPATCHERSTATE_H__
 
 #include "_CDispatcherState.h"
 #include "ext/frameworkext.h"
@@ -84,4 +84,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CDISPATCHERSTATE_H__
+#endif //__ELASTOS_DROID_VIEW_CDISPATCHERSTATE_H__

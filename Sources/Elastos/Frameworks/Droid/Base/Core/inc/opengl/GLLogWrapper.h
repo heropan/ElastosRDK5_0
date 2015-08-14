@@ -1,5 +1,5 @@
-#ifndef __GLLOGWRAPPER_H__
-#define __GLLOGWRAPPER_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLLOGWRAPPER_H__
+#define __ELASTOS_DROID_OPENGL_GLLOGWRAPPER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>

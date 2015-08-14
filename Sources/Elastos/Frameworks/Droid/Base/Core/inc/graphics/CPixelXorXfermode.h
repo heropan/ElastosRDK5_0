@@ -1,6 +1,6 @@
 
-#ifndef __CPIXELXORXFERMODE_H__
-#define __CPIXELXORXFERMODE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPIXELXORXFERMODE_H__
+#define __ELASTOS_DROID_GRAPHICS_CPIXELXORXFERMODE_H__
 
 #include "_CPixelXorXfermode.h"
 #include "graphics/Xfermode.h"
@@ -33,4 +33,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPIXELXORXFERMODE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CPIXELXORXFERMODE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPARERESULT_H__
-#define __CCOMPARERESULT_H__
+#ifndef __ELASTOS_DROID_NET_CCOMPARERESULT_H__
+#define __ELASTOS_DROID_NET_CCOMPARERESULT_H__
 
 #include "_CCompareResult.h"
 #include "ext/frameworkext.h"
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOMPARERESULT_H__
+#endif // __ELASTOS_DROID_NET_CCOMPARERESULT_H__

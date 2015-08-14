@@ -1,6 +1,6 @@
 
-#ifndef __VIDEOCAPTURETANGO_H__
-#define __VIDEOCAPTURETANGO_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURETANGO_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURETANGO_H__
 
 // import android.content.Context;
 // import android.graphics.ImageFormat;
@@ -92,4 +92,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__VIDEOCAPTURETANGO_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTURETANGO_H__

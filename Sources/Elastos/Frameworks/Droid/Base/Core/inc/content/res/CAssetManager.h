@@ -1,6 +1,6 @@
 
-#ifndef __CASSETMANAGER_H__
-#define __CASSETMANAGER_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CASSETMANAGER_H__
+#define __ELASTOS_DROID_CONTENT_RES_CASSETMANAGER_H__
 
 #include "_CAssetManager.h"
 #include "content/res/StringBlock.h"
@@ -666,4 +666,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CASSETMANAGER_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CASSETMANAGER_H__

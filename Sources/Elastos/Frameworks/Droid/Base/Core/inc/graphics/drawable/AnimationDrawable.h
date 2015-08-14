@@ -1,6 +1,6 @@
 
-#ifndef __ANIMATIONDRAWABLE_H__
-#define __ANIMATIONDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATIONDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATIONDRAWABLE_H__
 
 #include "graphics/drawable/DrawableContainer.h"
 
@@ -226,4 +226,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ANIMATIONDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_ANIMATIONDRAWABLE_H__

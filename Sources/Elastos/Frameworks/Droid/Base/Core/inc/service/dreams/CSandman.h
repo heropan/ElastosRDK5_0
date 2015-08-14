@@ -1,6 +1,6 @@
 
-#ifndef __CSANDMAN_H__
-#define __CSANDMAN_H__
+#ifndef __ELASTOS_DROID_SERVICE_CSANDMAN_H__
+#define __ELASTOS_DROID_SERVICE_CSANDMAN_H__
 
 #include "_CSandman.h"
 #include <ext/frameworkext.h>
@@ -65,4 +65,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSANDMAN_H__
+#endif // __ELASTOS_DROID_SERVICE_CSANDMAN_H__

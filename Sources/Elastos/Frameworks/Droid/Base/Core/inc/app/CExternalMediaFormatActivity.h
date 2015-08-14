@@ -1,6 +1,6 @@
 
-#ifndef __EXTERNALMEDIAFORMATACTIVITY_H__
-#define __EXTERNALMEDIAFORMATACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__
 
 #include "content/BroadcastReceiver.h"
 #include "app/AlertActivity.h"
@@ -77,4 +77,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__EXTERNALMEDIAFORMATACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_EXTERNALMEDIAFORMATACTIVITY_H__

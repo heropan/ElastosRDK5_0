@@ -5,8 +5,8 @@
  * should not be modified by hand.
  */
 
-#ifndef __Elastos_Droid_R_H__
-#define __Elastos_Droid_R_H__
+#ifndef __ELASTOS_DROID_ELASTOS_DROID_R_H__
+#define __ELASTOS_DROID_ELASTOS_DROID_R_H__
 namespace Elastos {
 namespace Droid {
 class R {
@@ -54526,4 +54526,4 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
 };
 };
 
-#endif // __Elastos_Droid_R_H__
+#endif // __ELASTOS_DROID_ELASTOS_DROID_R_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOROUTESINFO_H__
-#define __CAUDIOROUTESINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOROUTESINFO_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOROUTESINFO_H__
 
 #include "_CAudioRoutesInfo.h"
 #include "ext/frameworkext.h"
@@ -73,4 +73,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUDIOROUTESINFO_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIOROUTESINFO_H__

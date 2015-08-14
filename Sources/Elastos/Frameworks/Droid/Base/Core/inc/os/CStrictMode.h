@@ -1,5 +1,5 @@
-#ifndef __CSTRICTMODE_H__
-#define __CSTRICTMODE_H__
+#ifndef __ELASTOS_DROID_OS_CSTRICTMODE_H__
+#define __ELASTOS_DROID_OS_CSTRICTMODE_H__
 
 #include "_CStrictMode.h"
 #include "ext/frameworkext.h"
@@ -550,4 +550,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRICTMODE_H__
+#endif //__ELASTOS_DROID_OS_CSTRICTMODE_H__

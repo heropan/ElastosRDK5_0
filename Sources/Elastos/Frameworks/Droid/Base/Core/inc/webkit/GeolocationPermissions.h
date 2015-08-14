@@ -1,6 +1,6 @@
 
-#ifndef __GEOLOCATIONPERMISSIONS_H__
-#define __GEOLOCATIONPERMISSIONS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_GEOLOCATIONPERMISSIONS_H__
+#define __ELASTOS_DROID_WEBKIT_GEOLOCATIONPERMISSIONS_H__
 
 #include "ext/frameworkext.h"
 
@@ -99,4 +99,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GEOLOCATIONPERMISSIONS_H__
+#endif //__ELASTOS_DROID_WEBKIT_GEOLOCATIONPERMISSIONS_H__

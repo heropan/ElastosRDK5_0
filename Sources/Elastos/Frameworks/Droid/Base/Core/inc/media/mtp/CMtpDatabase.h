@@ -1,6 +1,6 @@
 
-#ifndef __CMTPDATABASE_H__
-#define __CMTPDATABASE_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPDATABASE_H__
+#define __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 
 #include "_CMtpDatabase.h"
 #include "ext/frameworkext.h"
@@ -210,4 +210,4 @@ private:
 } // namespace Mtp
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMTPDATABASE_H__
+#endif // __ELASTOS_DROID_MTP_CMTPDATABASE_H__

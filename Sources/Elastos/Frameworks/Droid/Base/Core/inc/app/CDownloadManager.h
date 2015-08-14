@@ -1,6 +1,6 @@
 
-#ifndef __CDOWNLOADMANAGER_H__
-#define __CDOWNLOADMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__
+#define __ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__
 
 #include "_CDownloadManager.h"
 #include "database/CursorWrapper.h"
@@ -390,4 +390,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDOWNLOADMANAGER_H__
+#endif //__ELASTOS_DROID_APP_CDOWNLOADMANAGER_H__

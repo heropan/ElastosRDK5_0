@@ -1,6 +1,6 @@
 
-#ifndef __AWWEBCONTENTSDELEGATE_H__
-#define __AWWEBCONTENTSDELEGATE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__
 
 // import com.google.common.annotations.VisibleForTesting;
 
@@ -68,4 +68,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWWEBCONTENTSDELEGATE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWWEBCONTENTSDELEGATE_H__

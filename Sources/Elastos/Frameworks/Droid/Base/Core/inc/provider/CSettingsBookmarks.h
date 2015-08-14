@@ -1,5 +1,5 @@
-#ifndef __CSETTINGSBOOKMARKS_H__
-#define __CSETTINGSBOOKMARKS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__
+#define __ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__
 
 #include "_CSettingsBookmarks.h"
 
@@ -96,4 +96,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CSETTINGSBOOKMARKS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__

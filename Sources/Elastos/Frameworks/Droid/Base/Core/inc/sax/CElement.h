@@ -1,5 +1,5 @@
-#ifndef __CELEMENT_H__
-#define __CELEMENT_H__
+#ifndef __ELASTOS_DROID_SAX_CELEMENT_H__
+#define __ELASTOS_DROID_SAX_CELEMENT_H__
 
 #include "_CElement.h"
 #include "sax/Element.h"
@@ -111,4 +111,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CELEMENT_H__
+#endif //__ELASTOS_DROID_SAX_CELEMENT_H__

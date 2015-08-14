@@ -1,6 +1,6 @@
 
-#ifndef __JSRESULTHANDLER_H__
-#define __JSRESULTHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__
 
 // import org.chromium.base.ThreadUtils;
 
@@ -69,4 +69,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__JSRESULTHANDLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_JSRESULTHANDLER_H__

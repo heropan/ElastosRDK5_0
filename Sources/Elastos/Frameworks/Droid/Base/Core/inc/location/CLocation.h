@@ -1,6 +1,6 @@
 
-#ifndef __CLOCATION_H__
-#define __CLOCATION_H__
+#ifndef __ELASTOS_DROID_LOCATION_CLOCATION_H__
+#define __ELASTOS_DROID_LOCATION_CLOCATION_H__
 
 #include "ext/frameworkext.h"
 #include "_CLocation.h"
@@ -563,4 +563,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLOCATION_H__
+#endif //__ELASTOS_DROID_LOCATION_CLOCATION_H__

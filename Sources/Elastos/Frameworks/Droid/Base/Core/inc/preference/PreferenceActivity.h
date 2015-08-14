@@ -1,6 +1,6 @@
 
-#ifndef __PREFERENCEACTIVITY_H__
-#define __PREFERENCEACTIVITY_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEACTIVITY_H__
+#define __ELASTOS_DROID_PREFERENCE_PREFERENCEACTIVITY_H__
 
 #include "ext/frameworkdef.h"
 #include "app/ListActivity.h"
@@ -652,4 +652,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __PREFERENCEACTIVITY_H__
+#endif // __ELASTOS_DROID_PREFERENCE_PREFERENCEACTIVITY_H__

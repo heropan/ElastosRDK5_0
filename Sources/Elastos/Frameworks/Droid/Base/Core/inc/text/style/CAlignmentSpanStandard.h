@@ -1,5 +1,5 @@
-#ifndef __CALIGNMENTSPANSTANDARD_H__
-#define __CALIGNMENTSPANSTANDARD_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CALIGNMENTSPANSTANDARD_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CALIGNMENTSPANSTANDARD_H__
 
 #include "_CAlignmentSpanStandard.h"
 
@@ -43,4 +43,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CALIGNMENTSPANSTANDARD_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CALIGNMENTSPANSTANDARD_H__

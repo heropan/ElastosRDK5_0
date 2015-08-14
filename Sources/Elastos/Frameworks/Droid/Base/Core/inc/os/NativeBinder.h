@@ -1,5 +1,5 @@
-#ifndef __NATIVEBINDER_H__
-#define __NATIVEBINDER_H__
+#ifndef __ELASTOS_DROID_OS_NATIVEBINDER_H__
+#define __ELASTOS_DROID_OS_NATIVEBINDER_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <binder/IBinder.h>
@@ -16,4 +16,4 @@ extern android::sp<android::IBinder> IBinderForDroidObject(IBinder* obj);
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NATIVEBINDER_H__
+#endif //__ELASTOS_DROID_OS_NATIVEBINDER_H__

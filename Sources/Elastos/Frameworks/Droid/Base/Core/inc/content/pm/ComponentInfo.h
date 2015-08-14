@@ -1,5 +1,5 @@
-#ifndef __COMPONENTINFO_H__
-#define __COMPONENTINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_COMPONENTINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_COMPONENTINFO_H__
 
 #include "PackageItemInfo.h"
 
@@ -157,4 +157,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COMPONENTINFO_H__
+#endif //__ELASTOS_DROID_CONTENT_PM_COMPONENTINFO_H__

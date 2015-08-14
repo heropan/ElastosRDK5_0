@@ -1,6 +1,6 @@
 
-#ifndef __NINEPATCHPEEKER_H__
-#define __NINEPATCHPEEKER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_NINEPATCHPEEKER_H__
+#define __ELASTOS_DROID_GRAPHICS_NINEPATCHPEEKER_H__
 
 #include <skia/images/SkImageDecoder.h>
 #include <androidfw/ResourceTypes.h>
@@ -44,4 +44,4 @@ public:
 } // namepsace Droid
 } // namespace Elast
 
-#endif //__NINEPATCHPEEKER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_NINEPATCHPEEKER_H__

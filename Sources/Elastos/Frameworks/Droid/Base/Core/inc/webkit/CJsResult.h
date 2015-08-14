@@ -1,6 +1,6 @@
 
-#ifndef __CJSRESULT_H__
-#define __CJSRESULT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CJSRESULT_H__
+#define __ELASTOS_DROID_WEBKIT_CJSRESULT_H__
 
 #include "_CJsResult.h"
 #include "webkit/JsResult.h"
@@ -31,4 +31,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CJSRESULT_H__
+#endif // __ELASTOS_DROID_WEBKIT_CJSRESULT_H__

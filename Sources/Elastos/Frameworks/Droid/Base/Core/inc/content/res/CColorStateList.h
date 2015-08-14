@@ -1,6 +1,6 @@
 
-#ifndef __CCOLORSTATELIST_H__
-#define __CCOLORSTATELIST_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELIST_H__
+#define __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELIST_H__
 
 #include "_CColorStateList.h"
 #include "ext/frameworkext.h"
@@ -141,4 +141,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOLORSTATELIST_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CCOLORSTATELIST_H__

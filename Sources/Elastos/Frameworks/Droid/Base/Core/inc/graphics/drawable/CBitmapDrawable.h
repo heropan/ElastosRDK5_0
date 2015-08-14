@@ -1,6 +1,6 @@
 
-#ifndef __CBITMAPDRAWABLE_H__
-#define __CBITMAPDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__
 
 #include "_CBitmapDrawable.h"
 #include "graphics/drawable/BitmapDrawable.h"
@@ -95,4 +95,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBITMAPDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__

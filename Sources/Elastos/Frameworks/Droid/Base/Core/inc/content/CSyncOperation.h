@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCOPERATION_H__
-#define __CSYNCOPERATION_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCOPERATION_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCOPERATION_H__
 
 #include "_CSyncOperation.h"
 #include <ext/frameworkext.h>
@@ -158,4 +158,4 @@ private:
 }
 }
 
-#endif // __CSYNCOPERATION_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCOPERATION_H__

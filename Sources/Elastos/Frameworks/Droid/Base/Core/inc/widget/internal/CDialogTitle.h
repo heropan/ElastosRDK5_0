@@ -1,5 +1,5 @@
-#ifndef __CDIALOGTITLE_H_
-#define __CDIALOGTITLE_H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CDIALOGTITLE_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CDIALOGTITLE_H__
 
 #include "_CDialogTitle.h"
 
@@ -44,4 +44,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDIALOGTITLE_H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CDIALOGTITLE_H__

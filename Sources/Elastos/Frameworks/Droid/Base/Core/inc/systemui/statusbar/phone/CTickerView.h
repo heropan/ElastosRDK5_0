@@ -1,5 +1,5 @@
-#ifndef __CTICKERVIEW_H_
-#define __CTICKERVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERVIEW_H__
 
 #include "_CTickerView.h"
 
@@ -43,4 +43,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTICKERVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __QUADF_H__
-#define __QUADF_H__
+#ifndef __ELASTOS_DROID_WEBKIT_QUADF_H__
+#define __ELASTOS_DROID_WEBKIT_QUADF_H__
 
 #include "ext/frameworkext.h"
 
@@ -78,4 +78,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__QUADF_H__
+#endif //__ELASTOS_DROID_WEBKIT_QUADF_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTVALUES_H__
-#define __CCONTENTVALUES_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__
 
 #include "_CContentValues.h"
 #include "ext/frameworkext.h"
@@ -358,4 +358,4 @@ private:
 }
 }
 
-#endif // __CCONTENTVALUES_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__

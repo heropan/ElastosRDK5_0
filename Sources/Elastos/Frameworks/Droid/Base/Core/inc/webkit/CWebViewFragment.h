@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWFRAGMENT_H__
-#define __CWEBVIEWFRAGMENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWFRAGMENT_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWFRAGMENT_H__
 
 #include "_CWebViewFragment.h"
 #include "ext/frameworkext.h"
@@ -29,4 +29,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBVIEWFRAGMENT_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBVIEWFRAGMENT_H__

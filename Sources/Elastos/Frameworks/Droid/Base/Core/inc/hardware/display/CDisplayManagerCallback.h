@@ -1,5 +1,5 @@
-#ifndef __CDISPLAYMANAGERCALLBACK_H__
-#define __CDISPLAYMANAGERCALLBACK_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__
 
 #include "_CDisplayManagerCallback.h"
 #include "hardware/display/DisplayManagerGlobal.h"
@@ -32,4 +32,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CDISPLAYMANAGERCALLBACK_H__
+#endif //__ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__

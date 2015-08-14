@@ -1,6 +1,6 @@
 
-#ifndef __CINTERPOLATOR_H__
-#define __CINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__
+#define __ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__
 
 #include "_CInterpolator.h"
 
@@ -118,4 +118,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__

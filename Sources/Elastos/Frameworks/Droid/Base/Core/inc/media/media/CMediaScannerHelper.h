@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIASCANNERHELPER_H__
-#define __CMEDIASCANNERHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNERHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIASCANNERHELPER_H__
 
 #include "_CMediaScannerHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIASCANNERHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIASCANNERHELPER_H__

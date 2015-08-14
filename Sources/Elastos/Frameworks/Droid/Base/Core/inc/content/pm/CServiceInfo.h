@@ -1,6 +1,6 @@
 
-#ifndef __CSERVICEINFO_H__
-#define __CSERVICEINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CSERVICEINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CSERVICEINFO_H__
 
 #include "_CServiceInfo.h"
 #include "ComponentInfo.h"
@@ -169,4 +169,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSERVICEINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CSERVICEINFO_H__

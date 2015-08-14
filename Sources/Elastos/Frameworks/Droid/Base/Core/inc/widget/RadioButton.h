@@ -1,6 +1,6 @@
 
-#ifndef __RADIOBUTTON_H__
-#define __RADIOBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_RADIOBUTTON_H__
 
 #include "widget/CompoundButton.h"
 

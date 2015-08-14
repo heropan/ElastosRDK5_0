@@ -1,6 +1,6 @@
 
-#ifndef __EXPANDEDMENUVIEW_H__
-#define __EXPANDEDMENUVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_EXPANDEDMENUVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_EXPANDEDMENUVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ListView.h"
@@ -88,4 +88,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__EXPANDEDMENUVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_MENU_EXPANDEDMENUVIEW_H__

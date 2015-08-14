@@ -1,5 +1,5 @@
-#ifndef __IMAGESWITCHER_H_
-#define __IMAGESWITCHER_H_
+#ifndef __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
+#define __ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__
 
 #include "widget/ViewSwitcher.h"
 
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__IMAGESWITCHER_H_
+#endif //__ELASTOS_DROID_WIDGET_IMAGESWITCHER_H__

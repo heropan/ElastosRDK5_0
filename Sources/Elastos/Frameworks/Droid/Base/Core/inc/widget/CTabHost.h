@@ -1,6 +1,6 @@
 
-#ifndef __CTABHOST_H_
-#define __CTABHOST_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTABHOST_H__
+#define __ELASTOS_DROID_WIDGET_CTABHOST_H__
 
 #include "_CTabHost.h"
 
@@ -91,4 +91,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTABHOST_H_
+#endif //__ELASTOS_DROID_WIDGET_CTABHOST_H__

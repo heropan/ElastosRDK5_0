@@ -1,6 +1,6 @@
 
-#ifndef __CRESOLVEINFO_H__
-#define __CRESOLVEINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
 
 #include "_CResolveInfo.h"
 
@@ -260,4 +260,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CRESOLVEINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__

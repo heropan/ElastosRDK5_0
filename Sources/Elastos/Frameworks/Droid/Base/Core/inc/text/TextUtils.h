@@ -1,5 +1,5 @@
-#ifndef __TEXTUTILS_H__
-#define __TEXTUTILS_H__
+#ifndef __ELASTOS_DROID_TEXT_TEXTUTILS_H__
+#define __ELASTOS_DROID_TEXT_TEXTUTILS_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -628,4 +628,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__TEXTUTILS_H__
+#endif //__ELASTOS_DROID_TEXT_TEXTUTILS_H__

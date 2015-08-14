@@ -1,6 +1,6 @@
 
-#ifndef __PROGRESSBAR_H__
-#define __PROGRESSBAR_H__
+#ifndef __ELASTOS_DROID_WIDGET_PROGRESSBAR_H__
+#define __ELASTOS_DROID_WIDGET_PROGRESSBAR_H__
 
 #include "R.h"
 #include "view/View.h"
@@ -542,4 +542,4 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__PROGRESSBAR_H__
+#endif //__ELASTOS_DROID_WIDGET_PROGRESSBAR_H__

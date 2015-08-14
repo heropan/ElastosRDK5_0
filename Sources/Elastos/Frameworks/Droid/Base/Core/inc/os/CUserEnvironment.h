@@ -1,6 +1,6 @@
 
-#ifndef __CUSERENVIRONMENT_H__
-#define __CUSERENVIRONMENT_H__
+#ifndef __ELASTOS_DROID_OS_CUSERENVIRONMENT_H__
+#define __ELASTOS_DROID_OS_CUSERENVIRONMENT_H__
 
 #include "_CUserEnvironment.h"
 #include "os/Environment.h"
@@ -59,4 +59,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUSERENVIRONMENT_H__
+#endif //__ELASTOS_DROID_OS_CUSERENVIRONMENT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIEWRENDERVIEW_H__
-#define __CONTENTVIEWRENDERVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__
 
 // import android.content.Context;
 // import android.graphics.Color;
@@ -222,4 +222,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIEWRENDERVIEW_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWRENDERVIEW_H__

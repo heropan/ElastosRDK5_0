@@ -1,6 +1,6 @@
 
-#ifndef __CPHONEWINDOWMANAGER_H__
-#define __CPHONEWINDOWMANAGER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__
 
 #include "_CPhoneWindowManager.h"
 #include "app/CProgressDialog.h"
@@ -1681,4 +1681,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPHONEWINDOWMANAGER_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __SIZEADAPTIVELAYOUT_H__
-#define __SIZEADAPTIVELAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SIZEADAPTIVELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_SIZEADAPTIVELAYOUT_H__
 
 #include "view/ViewGroup.h"
 #include "ext/frameworkext.h"

@@ -1,6 +1,6 @@
 
-#ifndef __CROUTEGROUP_H__
-#define __CROUTEGROUP_H__
+#ifndef __ELASTOS_DROID_MEDIA_CROUTEGROUP_H__
+#define __ELASTOS_DROID_MEDIA_CROUTEGROUP_H__
 
 #include "_CRouteGroup.h"
 #include "ext/frameworkext.h"
@@ -333,4 +333,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CROUTEGROUP_H__
+#endif // __ELASTOS_DROID_MEDIA_CROUTEGROUP_H__

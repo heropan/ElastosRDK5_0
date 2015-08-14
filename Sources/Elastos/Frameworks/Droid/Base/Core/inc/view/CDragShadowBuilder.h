@@ -1,6 +1,6 @@
 
-#ifndef  __CDRAGSHADOWBUILDER_H__
-#define __CDRAGSHADOWBUILDER_H__
+#ifndef __ELASTOS_DROID_VIEW_CDRAGSHADOWBUILDER_H__
+#define __ELASTOS_DROID_VIEW_CDRAGSHADOWBUILDER_H__
 
 #include "_CDragShadowBuilder.h"
 
@@ -89,4 +89,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif  //__CDRAGSHADOWBUILDER_H__
+#endif  //__ELASTOS_DROID_VIEW_CDRAGSHADOWBUILDER_H__

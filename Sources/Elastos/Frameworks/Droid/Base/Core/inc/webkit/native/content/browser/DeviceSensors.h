@@ -1,6 +1,6 @@
 
-#ifndef __DEVICESENSORS_H__
-#define __DEVICESENSORS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICESENSORS_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICESENSORS_H__
 
 // import android.content.Context;
 // import android.hardware.Sensor;
@@ -343,4 +343,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__DEVICESENSORS_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_DEVICESENSORS_H__

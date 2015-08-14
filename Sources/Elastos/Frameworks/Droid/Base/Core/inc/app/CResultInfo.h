@@ -1,6 +1,6 @@
 
-#ifndef __CRESULTINFO_H__
-#define __CRESULTINFO_H__
+#ifndef __ELASTOS_DROID_APP_CRESULTINFO_H__
+#define __ELASTOS_DROID_APP_CRESULTINFO_H__
 
 #include "_CResultInfo.h"
 
@@ -62,4 +62,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CRESULTINFO_H__
+#endif // __ELASTOS_DROID_APP_CRESULTINFO_H__

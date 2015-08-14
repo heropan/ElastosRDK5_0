@@ -1,6 +1,6 @@
 
-#ifndef __GPSNETINITIATEDHANDLER_H__
-#define __GPSNETINITIATEDHANDLER_H__
+#ifndef __ELASTOS_DROID_LOCATION_GPSNETINITIATEDHANDLER_H__
+#define __ELASTOS_DROID_LOCATION_GPSNETINITIATEDHANDLER_H__
 #include "_CGpsNetInitiatedHandler.h"
 #include "ext/frameworkext.h"
 
@@ -154,4 +154,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__GPSNETINITIATEDHANDLER_H__
+#endif //__ELASTOS_DROID_LOCATION_GPSNETINITIATEDHANDLER_H__

@@ -1,5 +1,5 @@
-#ifndef __ACCESSIBILITYRECORD_H__
-#define __ACCESSIBILITYRECORD_H__
+#ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__
+#define __ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/List.h>
@@ -620,4 +620,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__ACCESSIBILITYRECORD_H__
+#endif //__ELASTOS_DROID_VIEW_ACCESSIBILITY_ACCESSIBILITYRECORD_H__

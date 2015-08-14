@@ -1,6 +1,6 @@
 
-#ifndef __CGRAVITY_H__
-#define __CGRAVITY_H__
+#ifndef __ELASTOS_DROID_VIEW_CGRAVITY_H__
+#define __ELASTOS_DROID_VIEW_CGRAVITY_H__
 
 #include "_CGravity.h"
 
@@ -211,4 +211,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGRAVITY_H__
+#endif //__ELASTOS_DROID_VIEW_CGRAVITY_H__

@@ -1,5 +1,5 @@
-#ifndef __CGLIMPL_H__
-#define __CGLIMPL_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLES_CGLIMPL_H__
+#define __ELASTOS_DROID_OPENGL_GLES_CGLIMPL_H__
 
 #include "_CGLImpl.h"
 

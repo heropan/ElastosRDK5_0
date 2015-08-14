@@ -1,6 +1,6 @@
 
-#ifndef __CROTATEDRAWABLE_H__
-#define __CROTATEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__
 
 #include "_CRotateDrawable.h"
 #include "graphics/drawable/RotateDrawable.h"
@@ -49,4 +49,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CROTATEDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__

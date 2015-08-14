@@ -1,6 +1,6 @@
 
-#ifndef __COPAQUEURI_H__
-#define __COPAQUEURI_H__
+#ifndef __ELASTOS_DROID_NET_COPAQUEURI_H__
+#define __ELASTOS_DROID_NET_COPAQUEURI_H__
 
 #include "_COpaqueUri.h"
 #include "net/Uri.h"
@@ -142,4 +142,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __COPAQUEURI_H__
+#endif // __ELASTOS_DROID_NET_COPAQUEURI_H__

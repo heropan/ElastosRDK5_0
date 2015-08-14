@@ -1,5 +1,5 @@
-#ifndef __PACKEDOBJECTVECTOR_H__
-#define __PACKEDOBJECTVECTOR_H__
+#ifndef __ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__
+#define __ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__
 
 #include "ext/frameworkdef.h"
 #include "util/ArrayUtils.h"
@@ -235,4 +235,4 @@ void PackedObjectVector<E>::Dump()
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__PACKEDOBJECTVECTOR_H__
+#endif //__ELASTOS_DROID_TEXT_PACKEDOBJECTVECTOR_H__

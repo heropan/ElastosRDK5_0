@@ -1,5 +1,5 @@
-#ifndef __CEDGEEFFECT_H_
-#define __CEDGEEFFECT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
+#define __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
 
 #include "_CEdgeEffect.h"
 #include "widget/EdgeEffect.h"
@@ -55,4 +55,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEDGEEFFECT_H_
+#endif //__ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__

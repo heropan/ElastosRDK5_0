@@ -1,6 +1,6 @@
 
-#ifndef __WEBBACKFORWARDLISTCLIENT_H__
-#define __WEBBACKFORWARDLISTCLIENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLIENT_H__
+#define __ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLIENT_H__
 
 #include "ext/frameworkext.h"
 
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBBACKFORWARDLISTCLIENT_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBBACKFORWARDLISTCLIENT_H__

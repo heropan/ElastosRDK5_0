@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHOUTPUTSTREAM_H__
-#define __BLUETOOTHOUTPUTSTREAM_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHOUTPUTSTREAM_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHOUTPUTSTREAM_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"

@@ -1,6 +1,6 @@
 
-#ifndef __CBLUETOOTHADAPTER_H__
-#define __CBLUETOOTHADAPTER_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTER_H__
+#define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTER_H__
 
 #include "_CBluetoothAdapter.h"
 #include "ext/frameworkdef.h"
@@ -247,4 +247,4 @@ private:
 }
 }
 
-#endif // __CBLUETOOTHADAPTER_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_TIMER_H__
+#define __ELASTOS_DROID_NET_HTTP_TIMER_H__
 
 #include "elastos.h"
 
@@ -34,4 +34,4 @@ private:
 }
 }
 
-#endif // __TIMER_H__
+#endif // __ELASTOS_DROID_NET_HTTP_TIMER_H__

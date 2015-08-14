@@ -1,6 +1,6 @@
 
-#ifndef __HH_NINEPATCHDRAWABLE_H
-#define __HH_NINEPATCHDRAWABLE_H
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__
 
 #include "graphics/drawable/Drawable.h"
 #include "graphics/Insets.h"
@@ -246,4 +246,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_NINEPATCHDRAWABLE_H
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_H_H__

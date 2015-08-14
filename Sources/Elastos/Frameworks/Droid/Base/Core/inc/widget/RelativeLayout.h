@@ -1,6 +1,6 @@
 
-#ifndef __RELATIVELAYOUT_H__
-#define __RELATIVELAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_RELATIVELAYOUT_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewGroup.h"
@@ -30,7 +30,6 @@ namespace Widget {
 class Node;
 }}}
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_USING_ADDR_NODE
 #define HASH_FUNC_FOR_AUTOPTR_USING_ADDR_NODE
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Widget::Node)
 #endif

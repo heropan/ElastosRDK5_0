@@ -1,6 +1,6 @@
 
-#ifndef __ASYNCQUERYHANDLER_H__
-#define __ASYNCQUERYHANDLER_H__
+#ifndef __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__
+#define __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__
 
 #include <ext/frameworkext.h>
 #include "os/HandlerBase.h"
@@ -262,4 +262,4 @@ private:
 }
 }
 
-#endif // __ASYNCQUERYHANDLER_H__
+#endif // __ELASTOS_DROID_CONTENT_ASYNCQUERYHANDLER_H__

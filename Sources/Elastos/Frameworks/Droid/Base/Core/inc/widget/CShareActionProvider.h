@@ -1,5 +1,5 @@
-#ifndef __CSHAREACTIONPROVIDER_H_
-#define __CSHAREACTIONPROVIDER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSHAREACTIONPROVIDER_H__
+#define __ELASTOS_DROID_WIDGET_CSHAREACTIONPROVIDER_H__
 
 #include "_CShareActionProvider.h"
 #include "widget/ShareActionProvider.h"
@@ -67,4 +67,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSHAREACTIONPROVIDER_H_
+#endif //__ELASTOS_DROID_WIDGET_CSHAREACTIONPROVIDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CETC1TEXTURE_H__
-#define __CETC1TEXTURE_H__
+#ifndef __ELASTOS_DROID_OPENGL_CETC1TEXTURE_H__
+#define __ELASTOS_DROID_OPENGL_CETC1TEXTURE_H__
 
 #include "_CETC1Texture.h"
 
@@ -37,4 +37,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CETC1TEXTURE_H__
+#endif // __ELASTOS_DROID_OPENGL_CETC1TEXTURE_H__

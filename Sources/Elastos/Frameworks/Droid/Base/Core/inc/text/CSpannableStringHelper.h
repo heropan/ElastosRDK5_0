@@ -1,5 +1,5 @@
-#ifndef __CSPANNABLESTRINGHELPER_H__
-#define __CSPANNABLESTRINGHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_CSPANNABLESTRINGHELPER_H__
+#define __ELASTOS_DROID_TEXT_CSPANNABLESTRINGHELPER_H__
 
 #include "_CSpannableStringHelper.h"
 
@@ -21,5 +21,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CSPANNABLESTRINGHELPER_H__
+#endif //__ELASTOS_DROID_TEXT_CSPANNABLESTRINGHELPER_H__
 

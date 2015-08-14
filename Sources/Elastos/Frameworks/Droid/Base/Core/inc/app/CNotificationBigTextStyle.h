@@ -1,6 +1,6 @@
 
-#ifndef __CNOTIFICATIONINBOXSTYLE_H__
-#define __CNOTIFICATIONINBOXSTYLE_H__
+#ifndef __ELASTOS_DROID_APP_CNOTIFICATIONINBOXSTYLE_H__
+#define __ELASTOS_DROID_APP_CNOTIFICATIONINBOXSTYLE_H__
 
 #include "_CNotificationBigTextStyle.h"
 #include "app/NotificationStyle.h"
@@ -78,4 +78,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNOTIFICATIONINBOXSTYLE_H__
+#endif // __ELASTOS_DROID_APP_CNOTIFICATIONINBOXSTYLE_H__

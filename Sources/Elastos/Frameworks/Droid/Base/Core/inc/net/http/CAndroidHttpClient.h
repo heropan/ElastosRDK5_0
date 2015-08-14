@@ -1,6 +1,6 @@
 
-#ifndef __CANDROIDHTTPCLIENT_H__
-#define __CANDROIDHTTPCLIENT_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
+#define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
 
 #include "_CAndroidHttpClient.h"
 #include "ext/frameworkext.h"
@@ -254,4 +254,4 @@ private:
 }
 }
 
-#endif // __CANDROIDHTTPCLIENT_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__

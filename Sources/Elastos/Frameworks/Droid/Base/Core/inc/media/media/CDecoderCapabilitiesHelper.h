@@ -1,6 +1,6 @@
 
-#ifndef __CDECODERCAPABILITIESHELPER_H__
-#define __CDECODERCAPABILITIESHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CDECODERCAPABILITIESHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CDECODERCAPABILITIESHELPER_H__
 
 #include "_CDecoderCapabilitiesHelper.h"
 #include "ext/frameworkext.h"
@@ -31,4 +31,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDECODERCAPABILITIESHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CDECODERCAPABILITIESHELPER_H__

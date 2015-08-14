@@ -1,6 +1,6 @@
 
-#ifndef __CWORDITERATOR_H__
-#define __CWORDITERATOR_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CWORDITERATOR_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CWORDITERATOR_H__
 
 #include "_CWordIterator.h"
 #include "text/method/WordIterator.h"
@@ -45,4 +45,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CWORDITERATOR_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CWORDITERATOR_H__

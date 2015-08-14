@@ -1,6 +1,6 @@
 
-#ifndef __CBASSBOOSTSETTINGS_H__
-#define __CBASSBOOSTSETTINGS_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOSTSETTINGS_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOSTSETTINGS_H__
 
 #include "_CBassBoostSettings.h"
 #include "ext/frameworkext.h"
@@ -48,4 +48,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CBASSBOOSTSETTINGS_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOSTSETTINGS_H__

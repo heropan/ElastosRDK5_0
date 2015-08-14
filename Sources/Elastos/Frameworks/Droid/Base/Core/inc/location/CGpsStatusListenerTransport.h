@@ -1,6 +1,6 @@
 
-#ifndef __CGPSSTATUSLISTENERTRANSPORT_H__
-#define __CGPSSTATUSLISTENERTRANSPORT_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGPSSTATUSLISTENERTRANSPORT_H__
+#define __ELASTOS_DROID_LOCATION_CGPSSTATUSLISTENERTRANSPORT_H__
 
 #include "ext/frameworkext.h"
 #include "_CGpsStatusListenerTransport.h"
@@ -100,4 +100,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CGPSSTATUSLISTENERTRANSPORT_H__
+#endif //__ELASTOS_DROID_LOCATION_CGPSSTATUSLISTENERTRANSPORT_H__

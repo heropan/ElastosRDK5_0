@@ -1,5 +1,5 @@
-#ifndef __DateKeyListener_H__
-#define __DateKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__
 
 #include "text/method/NumberKeyListener.h"
 
@@ -47,4 +47,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DateKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DateKeyListener_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIDEOVIEWLEGACY_H__
-#define __CONTENTVIDEOVIEWLEGACY_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__
 
 // import android.content.Context;
 // import android.graphics.Color;
@@ -225,4 +225,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIDEOVIEWLEGACY_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIDEOVIEWLEGACY_H__

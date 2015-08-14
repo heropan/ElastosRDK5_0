@@ -1,6 +1,6 @@
 
-#ifndef __CROUTECATEGORY_H__
-#define __CROUTECATEGORY_H__
+#ifndef __ELASTOS_DROID_MEDIA_CROUTECATEGORY_H__
+#define __ELASTOS_DROID_MEDIA_CROUTECATEGORY_H__
 
 #include "_CRouteCategory.h"
 #include "ext/frameworkext.h"
@@ -113,4 +113,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CROUTECATEGORY_H__
+#endif // __ELASTOS_DROID_MEDIA_CROUTECATEGORY_H__

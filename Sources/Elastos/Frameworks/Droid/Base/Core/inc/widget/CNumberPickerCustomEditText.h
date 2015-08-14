@@ -1,5 +1,5 @@
-#ifndef __CNUMBERPICKERCUSTOMEDITTEXT__H_
-#define __CNUMBERPICKERCUSTOMEDITTEXT__H_
+#ifndef __ELASTOS_DROID_WIDGET_CNUMBERPICKERCUSTOMEDITTEXT_H__
+#define __ELASTOS_DROID_WIDGET_CNUMBERPICKERCUSTOMEDITTEXT_H__
 
 #include "_CNumberPickerCustomEditText.h"
 #include "widget/NumberPickerCustomEditText.h"
@@ -47,4 +47,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNUMBERPICKERCUSTOMEDITTEXT__H_
+#endif //__ELASTOS_DROID_WIDGET_CNUMBERPICKERCUSTOMEDITTEXT_H__

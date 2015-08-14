@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOEFFECTHELPER_H__
-#define __CAUDIOEFFECTHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTHELPER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTHELPER_H__
 
 #include "_CAudioEffectHelper.h"
 #include "ext/frameworkext.h"
@@ -57,4 +57,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CAUDIOEFFECTHELPER_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTHELPER_H__

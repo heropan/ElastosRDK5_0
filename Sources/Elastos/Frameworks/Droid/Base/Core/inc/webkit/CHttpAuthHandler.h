@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPAUTHHANDLER_H__
-#define __CHTTPAUTHHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CHTTPAUTHHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_CHTTPAUTHHANDLER_H__
 
 #include "_CHttpAuthHandler.h"
 
@@ -38,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CHTTPAUTHHANDLER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CHTTPAUTHHANDLER_H__

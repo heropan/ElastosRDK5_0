@@ -1,6 +1,6 @@
 
-#ifndef __CSSLCERTIFICATE_H__
-#define __CSSLCERTIFICATE_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATE_H__
+#define __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATE_H__
 
 #include "_CSslCertificate.h"
 
@@ -235,4 +235,4 @@ private:
 }
 }
 
-#endif // __CSSLCERTIFICATE_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CTHROTTLEMANAGER_H__
-#define __CTHROTTLEMANAGER_H__
+#ifndef __ELASTOS_DROID_NET_CTHROTTLEMANAGER_H__
+#define __ELASTOS_DROID_NET_CTHROTTLEMANAGER_H__
 
 #include "_CThrottleManager.h"
 
@@ -85,4 +85,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTHROTTLEMANAGER_H__
+#endif // __ELASTOS_DROID_NET_CTHROTTLEMANAGER_H__

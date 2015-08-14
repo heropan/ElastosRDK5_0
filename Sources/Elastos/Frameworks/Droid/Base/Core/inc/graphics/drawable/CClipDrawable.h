@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPDRAWABLE_H__
-#define __CCLIPDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__
 
 #include "_CClipDrawable.h"
 #include "graphics/drawable/ClipDrawable.h"
@@ -42,4 +42,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCLIPDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CGLDEBUGHELPER_H__
-#define __CGLDEBUGHELPER_H__
+#ifndef __ELASTOS_DROID_OPENGL_CGLDEBUGHELPER_H__
+#define __ELASTOS_DROID_OPENGL_CGLDEBUGHELPER_H__
 
 #include "_CGLDebugHelper.h"
 
@@ -34,4 +34,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGLDEBUGHELPER_H__
+#endif // __ELASTOS_DROID_OPENGL_CGLDEBUGHELPER_H__

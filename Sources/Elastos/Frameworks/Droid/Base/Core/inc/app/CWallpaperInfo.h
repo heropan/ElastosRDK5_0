@@ -1,5 +1,5 @@
-#ifndef __CWALLPAPERINFO_H__
-#define __CWALLPAPERINFO_H__
+#ifndef __ELASTOS_DROID_APP_CWALLPAPERINFO_H__
+#define __ELASTOS_DROID_APP_CWALLPAPERINFO_H__
 
 #include "_CWallpaperInfo.h"
 
@@ -184,4 +184,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWALLPAPERINFO_H__
+#endif // __ELASTOS_DROID_APP_CWALLPAPERINFO_H__

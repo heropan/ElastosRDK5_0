@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWCORE_H__
-#define __CWEBVIEWCORE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__
 
 #include "_CWebViewCore.h"
 #include "graphics/CPoint.h"
@@ -2608,4 +2608,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CWEBVIEWCORE_H__
+#endif //__ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__

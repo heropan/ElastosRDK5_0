@@ -1,6 +1,6 @@
 
-#ifndef __ABSSEEKBAR_H__
-#define __ABSSEEKBAR_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSSEEKBAR_H__
+#define __ELASTOS_DROID_WIDGET_ABSSEEKBAR_H__
 
 #include "widget/ProgressBar.h"
 #include "R.h"

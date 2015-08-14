@@ -1,6 +1,6 @@
 
-#ifndef __CMOTIONEVENTHELPER_H__
-#define __CMOTIONEVENTHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CMOTIONEVENTHELPER_H__
+#define __ELASTOS_DROID_VIEW_CMOTIONEVENTHELPER_H__
 
 #include "_CMotionEventHelper.h"
 
@@ -306,4 +306,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CMOTIONEVENTHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CMOTIONEVENTHELPER_H__

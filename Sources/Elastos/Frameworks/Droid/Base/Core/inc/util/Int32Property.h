@@ -1,5 +1,5 @@
-#ifndef __INT32PROPERTY_H__
-#define __INT32PROPERTY_H__
+#ifndef __ELASTOS_DROID_UTILITY_INT32PROPERTY_H__
+#define __ELASTOS_DROID_UTILITY_INT32PROPERTY_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"

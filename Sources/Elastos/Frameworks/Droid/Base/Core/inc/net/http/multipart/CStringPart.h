@@ -1,6 +1,6 @@
 
-#ifndef __CSTRINGPART_H__
-#define __CSTRINGPART_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CSTRINGPART_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CSTRINGPART_H__
 
 #include "_CStringPart.h"
 #include "PartBase.h"
@@ -139,4 +139,4 @@ private:
 }
 }
 
-#endif // __CSTRINGPART_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CSTRINGPART_H__

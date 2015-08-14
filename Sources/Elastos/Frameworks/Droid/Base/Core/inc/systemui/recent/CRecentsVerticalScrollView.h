@@ -1,5 +1,5 @@
-#ifndef __CRECENTSVERTICALSCROLLVIEW_H_
-#define __CRECENTSVERTICALSCROLLVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSVERTICALSCROLLVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSVERTICALSCROLLVIEW_H__
 
 #include "_CRecentsVerticalScrollView.h"
 #include "systemui/recent/RecentsVerticalScrollView.h"
@@ -87,4 +87,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CRECENTSVERTICALSCROLLVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSVERTICALSCROLLVIEW_H__

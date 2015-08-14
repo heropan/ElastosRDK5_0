@@ -1,5 +1,5 @@
-#ifndef __CSPACE_H_
-#define __CSPACE_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSPACE_H__
+#define __ELASTOS_DROID_WIDGET_CSPACE_H__
 
 #include "_CSpace.h"
 
@@ -37,4 +37,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSPACE_H_
+#endif //__ELASTOS_DROID_WIDGET_CSPACE_H__

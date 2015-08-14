@@ -1,6 +1,6 @@
 
-#ifndef __CSSLERRORHELPER_H__
-#define __CSSLERRORHELPER_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CSSLERRORHELPER_H__
+#define __ELASTOS_DROID_NET_HTTP_CSSLERRORHELPER_H__
 
 #include "_CSslErrorHelper.h"
 
@@ -32,4 +32,4 @@ public:
 }
 }
 
-#endif // __CSSLERRORHELPER_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CSSLERRORHELPER_H__

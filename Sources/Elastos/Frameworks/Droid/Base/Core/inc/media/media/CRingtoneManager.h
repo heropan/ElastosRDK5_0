@@ -1,6 +1,6 @@
 
-#ifndef __CRINGTONEMANAGER_H__
-#define __CRINGTONEMANAGER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CRINGTONEMANAGER_H__
+#define __ELASTOS_DROID_MEDIA_CRINGTONEMANAGER_H__
 
 #include "_CRingtoneManager.h"
 #include "ext/frameworkext.h"
@@ -352,5 +352,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CRINGTONEMANAGER_H__
+#endif // __ELASTOS_DROID_MEDIA_CRINGTONEMANAGER_H__
 

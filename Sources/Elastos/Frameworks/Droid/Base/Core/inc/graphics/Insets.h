@@ -1,6 +1,6 @@
 
-#ifndef __INSETS_H__
-#define __INSETS_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_INSETS_H__
+#define __ELASTOS_DROID_GRAPHICS_INSETS_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -85,4 +85,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__INSETS_H__
+#endif //__ELASTOS_DROID_GRAPHICS_INSETS_H__

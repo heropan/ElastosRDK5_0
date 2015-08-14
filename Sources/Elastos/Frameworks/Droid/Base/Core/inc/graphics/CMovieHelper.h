@@ -1,6 +1,6 @@
 
-#ifndef __CMOVIEHELPER_H__
-#define __CMOVIEHELPER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CMOVIEHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_CMOVIEHELPER_H__
 
 #include "_CMovieHelper.h"
 
@@ -32,4 +32,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMOVIEHELPER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CMOVIEHELPER_H__

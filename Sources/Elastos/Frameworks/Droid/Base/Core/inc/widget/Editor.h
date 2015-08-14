@@ -1,6 +1,6 @@
 
-#ifndef __EDITOR_H__
-#define __EDITOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_EDITOR_H__
+#define __ELASTOS_DROID_WIDGET_EDITOR_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewTreeObserver.h"
@@ -1661,4 +1661,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __EDITOR_H__
+#endif // __ELASTOS_DROID_WIDGET_EDITOR_H__

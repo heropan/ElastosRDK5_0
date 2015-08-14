@@ -1,6 +1,6 @@
 
-#ifndef __WEBRESOURCERESPONSE_H__
-#define __WEBRESOURCERESPONSE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__
+#define __ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__
 
 #include "ext/frameworkext.h"
 
@@ -99,4 +99,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBRESOURCERESPONSE_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBRESOURCERESPONSE_H__

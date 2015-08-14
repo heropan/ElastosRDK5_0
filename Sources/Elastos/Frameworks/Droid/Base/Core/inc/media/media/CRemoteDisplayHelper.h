@@ -1,6 +1,6 @@
 
-#ifndef __CREMOTEDISPLAYHELPER_H__
-#define __CREMOTEDISPLAYHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CREMOTEDISPLAYHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CREMOTEDISPLAYHELPER_H__
 
 #include "_CRemoteDisplayHelper.h"
 #include "ext/frameworkext.h"
@@ -32,4 +32,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CREMOTEDISPLAYHELPER_H__
+#endif //__ELASTOS_DROID_MEDIA_CREMOTEDISPLAYHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CVIDEOEDITORPROFILE_H__
-#define __CVIDEOEDITORPROFILE_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORPROFILE_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORPROFILE_H__
 
 #include "_CVideoEditorProfile.h"
 #include <ext/frameworkext.h>
@@ -96,5 +96,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CVIDEOEDITORPROFILE_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORPROFILE_H__
 

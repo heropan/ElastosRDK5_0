@@ -1,6 +1,6 @@
 
-#ifndef __CACCOUNTMANAGERHELPER_H__
-#define __CACCOUNTMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERHELPER_H__
+#define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERHELPER_H__
 
 #include "_CAccountManagerHelper.h"
 
@@ -81,4 +81,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CACCOUNTMANAGERHELPER_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERHELPER_H__

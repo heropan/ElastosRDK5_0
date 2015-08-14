@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAYEVENTRECEIVER_H__
-#define __DISPLAYEVENTRECEIVER_H__
+#ifndef __ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__
+#define __ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__
 
 #include "view/NativeDisplayEventReceiver.h"
 
@@ -112,4 +112,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__DISPLAYEVENTRECEIVER_H__
+#endif //__ELASTOS_DROID_VIEW_DISPLAYEVENTRECEIVER_H__

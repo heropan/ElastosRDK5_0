@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIORECORDHELPER_H__
-#define __CAUDIORECORDHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIORECORDHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIORECORDHELPER_H__
 
 #include "_CAudioRecordHelper.h"
 #include "ext/frameworkext.h"
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CAUDIORECORDHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIORECORDHELPER_H__

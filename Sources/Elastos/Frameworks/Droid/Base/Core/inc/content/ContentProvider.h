@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTPROVIDER_H__
-#define __CONTENTPROVIDER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CONTENTPROVIDER_H__
+#define __ELASTOS_DROID_CONTENT_CONTENTPROVIDER_H__
 
 #include "ext/frameworkext.h"
 #include "os/AsyncTask.h"

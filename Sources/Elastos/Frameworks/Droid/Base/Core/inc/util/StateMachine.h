@@ -1,6 +1,6 @@
 
-#ifndef __STATEMACHINE_H__
-#define __STATEMACHINE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__
 
 #include "ext/frameworkdef.h"
 #include "os/HandlerBase.h"
@@ -956,4 +956,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__STATEMACHINE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_STATEMACHINE_H__

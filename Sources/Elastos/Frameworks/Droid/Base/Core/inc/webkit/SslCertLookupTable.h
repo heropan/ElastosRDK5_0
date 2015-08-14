@@ -1,6 +1,6 @@
 
-#ifndef __SSLCERTLOOKUPTABLE_H__
-#define __SSLCERTLOOKUPTABLE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_SSLCERTLOOKUPTABLE_H__
+#define __ELASTOS_DROID_WEBKIT_SSLCERTLOOKUPTABLE_H__
 
 #include "ext/frameworkext.h"
 
@@ -45,4 +45,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SSLCERTLOOKUPTABLE_H__
+#endif //__ELASTOS_DROID_WEBKIT_SSLCERTLOOKUPTABLE_H__

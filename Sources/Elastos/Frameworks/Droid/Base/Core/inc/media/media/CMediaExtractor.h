@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAEXTRACTOR_H__
-#define __CMEDIAEXTRACTOR_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__
 
 #include "_CMediaExtractor.h"
 #include <ext/frameworkext.h>
@@ -305,4 +305,4 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMEDIAEXTRACTOR_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__

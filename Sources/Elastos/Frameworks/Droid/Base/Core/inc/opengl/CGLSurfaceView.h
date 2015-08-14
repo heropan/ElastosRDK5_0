@@ -1,6 +1,6 @@
 
-#ifndef __CGLSURFACEVIEW_H__
-#define __CGLSURFACEVIEW_H__
+#ifndef __ELASTOS_DROID_OPENGL_CGLSURFACEVIEW_H__
+#define __ELASTOS_DROID_OPENGL_CGLSURFACEVIEW_H__
 
 #include "_CGLSurfaceView.h"
 #include "GLSurfaceView.h"
@@ -40,4 +40,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGLSURFACEVIEW_H__
+#endif // __ELASTOS_DROID_OPENGL_CGLSURFACEVIEW_H__

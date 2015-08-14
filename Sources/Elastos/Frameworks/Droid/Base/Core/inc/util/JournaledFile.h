@@ -1,6 +1,6 @@
 
-#ifndef __JOURNALEDFILE_H__
-#define __JOURNALEDFILE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__
 
 #include "ext/frameworkext.h"
 
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__JOURNALEDFILE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_JOURNALEDFILE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CINSETSHELPER_H__
-#define __CINSETSHELPER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CINSETSHELPER_H__
+#define __ELASTOS_DROID_GRAPHICS_CINSETSHELPER_H__
 
 #include "_CInsetsHelper.h"
 
@@ -44,4 +44,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CINSETSHELPER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CINSETSHELPER_H__

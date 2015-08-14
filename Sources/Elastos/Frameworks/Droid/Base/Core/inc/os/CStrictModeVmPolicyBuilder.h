@@ -1,5 +1,5 @@
-#ifndef __CSTRICTMODEVMPOLICYBUILDER_H__
-#define __CSTRICTMODEVMPOLICYBUILDER_H__
+#ifndef __ELASTOS_DROID_OS_CSTRICTMODEVMPOLICYBUILDER_H__
+#define __ELASTOS_DROID_OS_CSTRICTMODEVMPOLICYBUILDER_H__
 
 #include "_CStrictModeVmPolicyBuilder.h"
 #include "ext/frameworkdef.h"
@@ -115,4 +115,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRICTMODEVMPOLICYBUILDER_H__
+#endif //__ELASTOS_DROID_OS_CSTRICTMODEVMPOLICYBUILDER_H__

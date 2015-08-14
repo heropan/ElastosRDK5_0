@@ -1,6 +1,6 @@
 
-#ifndef __DATEPICKER_H__
-#define __DATEPICKER_H__
+#ifndef __ELASTOS_DROID_WIDGET_DATEPICKER_H__
+#define __ELASTOS_DROID_WIDGET_DATEPICKER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"

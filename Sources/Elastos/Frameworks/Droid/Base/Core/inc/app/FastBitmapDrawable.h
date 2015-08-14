@@ -1,6 +1,6 @@
 
-#ifndef __FASTBITMAPDRAWABLE_H__
-#define __FASTBITMAPDRAWABLE_H__
+#ifndef __ELASTOS_DROID_APP_FASTBITMAPDRAWABLE_H__
+#define __ELASTOS_DROID_APP_FASTBITMAPDRAWABLE_H__
 
 #include "ext/frameworkdef.h"
 #include "graphics/drawable/Drawable.h"
@@ -97,4 +97,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __FASTBITMAPDRAWABLE_H__
+#endif // __ELASTOS_DROID_APP_FASTBITMAPDRAWABLE_H__

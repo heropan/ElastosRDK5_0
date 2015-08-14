@@ -1,6 +1,6 @@
 
-#ifndef __SIMPLESTRINGSPLITTER_H__
-#define __SIMPLESTRINGSPLITTER_H__
+#ifndef __ELASTOS_DROID_TEXT_SIMPLESTRINGSPLITTER_H__
+#define __ELASTOS_DROID_TEXT_SIMPLESTRINGSPLITTER_H__
 
 #include "_CSimpleStringSplitter.h"
 
@@ -44,4 +44,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__SIMPLESTRINGSPLITTER_H__
+#endif //__ELASTOS_DROID_TEXT_SIMPLESTRINGSPLITTER_H__

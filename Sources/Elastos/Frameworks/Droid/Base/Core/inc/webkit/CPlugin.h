@@ -1,6 +1,6 @@
 
-#ifndef __CPLUGIN_H__
-#define __CPLUGIN_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CPLUGIN_H__
+#define __ELASTOS_DROID_WEBKIT_CPLUGIN_H__
 
 #include "_CPlugin.h"
 
@@ -123,4 +123,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPLUGIN_H__
+#endif // __ELASTOS_DROID_WEBKIT_CPLUGIN_H__

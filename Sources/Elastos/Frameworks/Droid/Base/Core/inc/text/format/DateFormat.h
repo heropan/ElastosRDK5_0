@@ -1,5 +1,5 @@
-#ifndef __DATEFORMAT_H__
-#define __DATEFORMAT_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -190,4 +190,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__DATEFORMAT_H__
+#endif //__ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__

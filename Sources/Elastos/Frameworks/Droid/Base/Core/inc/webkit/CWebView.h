@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEW_H__
-#define __CWEBVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEW_H__
 
 #include "_CWebView.h"
 #include "webkit/WebView.h"
@@ -333,4 +333,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBVIEW_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBVIEW_H__

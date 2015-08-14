@@ -1,6 +1,6 @@
 
-#ifndef __CMTPSTORAGE_H__
-#define __CMTPSTORAGE_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPSTORAGE_H__
+#define __ELASTOS_DROID_MTP_CMTPSTORAGE_H__
 
 #include "_CMtpStorage.h"
 
@@ -54,4 +54,4 @@ private:
 } // namespace Mtp
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMTPSTORAGE_H__
+#endif // __ELASTOS_DROID_MTP_CMTPSTORAGE_H__

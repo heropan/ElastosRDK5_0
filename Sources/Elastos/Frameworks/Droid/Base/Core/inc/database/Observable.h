@@ -1,5 +1,5 @@
-#ifndef __OBSERVABLE_H__
-#define __OBSERVABLE_H__
+#ifndef __ELASTOS_DROID_DATABASE_OBSERVABLE_H__
+#define __ELASTOS_DROID_DATABASE_OBSERVABLE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -53,4 +53,4 @@ protected:
 } //Droid
 } //Elastos
 
-#endif //__OBSERVABLE_H__
+#endif //__ELASTOS_DROID_DATABASE_OBSERVABLE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CLAYERRASTERIZER_H__
-#define __CLAYERRASTERIZER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__
+#define __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__
 
 #include "_CLayerRasterizer.h"
 #include "graphics/Rasterizer.h"
@@ -45,4 +45,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLAYERRASTERIZER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__

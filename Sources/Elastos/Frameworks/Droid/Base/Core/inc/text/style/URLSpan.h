@@ -1,5 +1,5 @@
-#ifndef __URLSpan_H__
-#define __URLSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_URLSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_URLSpan_H__
 
 #include "text/style/ClickableSpan.h"
 
@@ -51,4 +51,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __URLSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_URLSpan_H__

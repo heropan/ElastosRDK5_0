@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAROUTER_H__
-#define __CMEDIAROUTER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__
 
 #include "_CMediaRouter.h"
 #include "ext/frameworkext.h"
@@ -532,4 +532,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAROUTER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__

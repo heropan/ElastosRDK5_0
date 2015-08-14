@@ -1,6 +1,6 @@
 
-#ifndef __CDECELERATEINTERPOLATOR_H__
-#define __CDECELERATEINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 
 #include "_CDecelerateInterpolator.h"
 #include "R.h"
@@ -40,4 +40,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDECELERATEINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__

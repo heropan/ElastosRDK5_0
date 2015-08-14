@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPLETIONINFO_H__
-#define __CCOMPLETIONINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__
+#define __ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__
 
 #include "_CCompletionInfo.h"
 
@@ -85,4 +85,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCOMPLETIONINFO_H__
+#endif //__ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__

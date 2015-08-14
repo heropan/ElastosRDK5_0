@@ -1,6 +1,6 @@
 
-#ifndef __CRFC822TOKENIZER_H__
-#define __CRFC822TOKENIZER_H__
+#ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENIZER_H__
+#define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENIZER_H__
 
 #include "_CRfc822Tokenizer.h"
 #include <elastos/core/StringBuilder.h>
@@ -78,4 +78,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CRFC822TOKENIZER_H__
+#endif // __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENIZER_H__

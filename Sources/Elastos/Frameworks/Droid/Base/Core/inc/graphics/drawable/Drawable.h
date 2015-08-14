@@ -1,6 +1,6 @@
 
-#ifndef __DRAWABLE_H__
-#define __DRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
@@ -663,5 +663,5 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_DRAWABLE_H__
 

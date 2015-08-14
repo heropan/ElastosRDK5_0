@@ -1,6 +1,6 @@
 
-#ifndef __CSPELLCHECKSPAN_H__
-#define __CSPELLCHECKSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSPELLCHECKSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSPELLCHECKSPAN_H__
 
 #include "_CSpellCheckSpan.h"
 #include "text/style/SpellCheckSpan.h"
@@ -33,4 +33,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSPELLCHECKSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSPELLCHECKSPAN_H__

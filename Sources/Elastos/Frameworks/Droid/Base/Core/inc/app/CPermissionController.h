@@ -1,6 +1,6 @@
 
-#ifndef __CPERMISSIONCONTROLLER_H__
-#define __CPERMISSIONCONTROLLER_H__
+#ifndef __ELASTOS_DROID_APP_CPERMISSIONCONTROLLER_H__
+#define __ELASTOS_DROID_APP_CPERMISSIONCONTROLLER_H__
 
 #include "_CPermissionController.h"
 
@@ -29,4 +29,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPERMISSIONCONTROLLER_H__
+#endif // __ELASTOS_DROID_APP_CPERMISSIONCONTROLLER_H__

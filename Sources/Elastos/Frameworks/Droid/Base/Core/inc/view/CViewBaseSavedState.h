@@ -1,6 +1,6 @@
 
-#ifndef __CVIEWBASESAVEDSTATE_H__
-#define __CVIEWBASESAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__
+#define __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__
 
 #include "_CViewBaseSavedState.h"
 #include "view/ViewBaseSavedState.h"
@@ -36,4 +36,4 @@ private:
 }// namespace View
 }// namespace Droid
 }// namespace Elastos
-#endif // __CVIEWBASESAVEDSTATE_H__
+#endif // __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__

@@ -1,5 +1,5 @@
-#ifndef __CREMOTEVIEWS_H_
-#define __CREMOTEVIEWS_H_
+#ifndef __ELASTOS_DROID_WIDGET_CREMOTEVIEWS_H__
+#define __ELASTOS_DROID_WIDGET_CREMOTEVIEWS_H__
 
 #include "_CRemoteViews.h"
 #include "widget/RemoteViews.h"
@@ -676,4 +676,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CREMOTEVIEWS_H_
+#endif //__ELASTOS_DROID_WIDGET_CREMOTEVIEWS_H__

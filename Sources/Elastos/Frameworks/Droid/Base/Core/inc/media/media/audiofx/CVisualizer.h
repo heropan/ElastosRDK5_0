@@ -1,5 +1,5 @@
-#ifndef __CVISUALIZER_H__
-#define __CVISUALIZER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZER_H__
 
 #include "_CVisualizer.h"
 #include "ext/frameworkext.h"
@@ -401,4 +401,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVISUALIZER_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZER_H__

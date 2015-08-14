@@ -1,6 +1,6 @@
 
-#ifndef  __ACTIONMENU_H__
-#define  __ACTIONMENU_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENU_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENU_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -164,4 +164,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ACTIONMENU_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ACTIONMENU_H__

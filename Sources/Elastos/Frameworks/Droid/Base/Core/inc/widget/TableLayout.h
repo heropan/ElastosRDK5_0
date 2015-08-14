@@ -1,6 +1,6 @@
 
-#ifndef __TABLELAYOUT_H__
-#define __TABLELAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_TABLELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_TABLELAYOUT_H__
 
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"

@@ -1,5 +1,5 @@
-#ifndef __CBINDERDEATHRECIPIENT_H__
-#define __CBINDERDEATHRECIPIENT_H__
+#ifndef __ELASTOS_DROID_OS_CBINDERDEATHRECIPIENT_H__
+#define __ELASTOS_DROID_OS_CBINDERDEATHRECIPIENT_H__
 
 #include "_CBinderDeathRecipient.h"
 
@@ -18,4 +18,4 @@ CarClass(CBinderDeathRecipient)
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBINDERDEATHRECIPIENT_H__
+#endif //__ELASTOS_DROID_OS_CBINDERDEATHRECIPIENT_H__

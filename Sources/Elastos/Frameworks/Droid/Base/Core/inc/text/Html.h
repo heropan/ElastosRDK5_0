@@ -1,5 +1,5 @@
-#ifndef __Html_H__
-#define __Html_H__
+#ifndef __ELASTOS_DROID_TEXT_Html_H__
+#define __ELASTOS_DROID_TEXT_Html_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -310,4 +310,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__Html_H__
+#endif //__ELASTOS_DROID_TEXT_Html_H__

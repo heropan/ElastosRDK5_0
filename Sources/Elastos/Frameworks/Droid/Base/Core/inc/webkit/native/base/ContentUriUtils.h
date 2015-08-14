@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTURIUTILS_H__
-#define __CONTENTURIUTILS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_CONTENTURIUTILS_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_CONTENTURIUTILS_H__
 
 // import android.content.ContentResolver;
 // import android.content.Context;
@@ -82,4 +82,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTURIUTILS_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_CONTENTURIUTILS_H__

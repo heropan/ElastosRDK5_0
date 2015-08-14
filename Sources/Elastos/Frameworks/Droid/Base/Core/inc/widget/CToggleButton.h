@@ -1,5 +1,5 @@
-#ifndef __CCOMPOUNDBUTTON_H__
-#define __CCOMPOUNDBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_CCOMPOUNDBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_CCOMPOUNDBUTTON_H__
 
 #include "_CToggleButton.h"
 #include "widget/ToggleButton.h"

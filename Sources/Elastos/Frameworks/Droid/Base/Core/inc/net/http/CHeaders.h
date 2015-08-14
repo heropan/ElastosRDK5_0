@@ -1,6 +1,6 @@
 
-#ifndef __CHEADERS_H__
-#define __CHEADERS_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CHEADERS_H__
+#define __ELASTOS_DROID_NET_HTTP_CHEADERS_H__
 
 #include "_CHeaders.h"
 #include "ext/frameworkext.h"
@@ -210,4 +210,4 @@ private:
 }
 }
 
-#endif // __CHEADERS_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CHEADERS_H__

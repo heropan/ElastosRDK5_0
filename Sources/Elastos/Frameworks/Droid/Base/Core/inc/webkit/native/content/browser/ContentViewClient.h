@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIEWCLIENT_H__
-#define __CONTENTVIEWCLIENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__
 
 // import android.content.ActivityNotFoundException;
 // import android.content.Context;
@@ -155,4 +155,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIEWCLIENT_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWCLIENT_H__

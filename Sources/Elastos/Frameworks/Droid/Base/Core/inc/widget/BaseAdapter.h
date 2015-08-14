@@ -1,6 +1,6 @@
 
-#ifndef __BASEADAPTER_H__
-#define __BASEADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_BASEADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_BASEADAPTER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/Adapter.h"
@@ -60,4 +60,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__BASEADAPTER_H__
+#endif //__ELASTOS_DROID_WIDGET_BASEADAPTER_H__

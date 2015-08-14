@@ -1,6 +1,6 @@
 
-#ifndef __CCDMASMSCBPROGRAMDATA_H__
-#define __CCDMASMSCBPROGRAMDATA_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCDMASMSCBPROGRAMDATA_H__
+#define __ELASTOS_DROID_TELEPHONY_CCDMASMSCBPROGRAMDATA_H__
 
 #include "_CCdmaSmsCbProgramData.h"
 
@@ -94,4 +94,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCDMASMSCBPROGRAMDATA_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCDMASMSCBPROGRAMDATA_H__

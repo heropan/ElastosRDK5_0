@@ -1,6 +1,6 @@
 
-#ifndef __HTML5VIDEOVIEW_H__
-#define __HTML5VIDEOVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_HTML5VIDEOVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_HTML5VIDEOVIEW_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/TimerTask.h>
@@ -259,4 +259,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__HTML5VIDEOVIEW_H__
+#endif //__ELASTOS_DROID_WEBKIT_HTML5VIDEOVIEW_H__

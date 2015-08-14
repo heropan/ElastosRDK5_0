@@ -1,5 +1,5 @@
-#ifndef __CROOTELEMENT_H__
-#define __CROOTELEMENT_H__
+#ifndef __ELASTOS_DROID_SAX_CROOTELEMENT_H__
+#define __ELASTOS_DROID_SAX_CROOTELEMENT_H__
 
 #include "_CRootElement.h"
 #include "sax/Element.h"
@@ -508,4 +508,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CROOTELEMENT_H__
+#endif //__ELASTOS_DROID_SAX_CROOTELEMENT_H__

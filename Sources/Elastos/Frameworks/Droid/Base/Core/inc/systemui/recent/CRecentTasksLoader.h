@@ -1,5 +1,5 @@
-#ifndef __CRECENTTASKSLOADER_H_
-#define __CRECENTTASKSLOADER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
 
 #include "_CRecentTasksLoader.h"
 #include "app/Activity.h"
@@ -242,4 +242,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CRECENTTASKSLOADER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__

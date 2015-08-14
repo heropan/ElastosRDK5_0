@@ -1,6 +1,6 @@
 
-#ifndef __NETWORKSTATETRACKER_H__
-#define __NETWORKSTATETRACKER_H__
+#ifndef __ELASTOS_DROID_NET_NETWORKSTATETRACKER_H__
+#define __ELASTOS_DROID_NET_NETWORKSTATETRACKER_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -217,4 +217,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NETWORKSTATETRACKER_H__
+#endif //__ELASTOS_DROID_NET_NETWORKSTATETRACKER_H__

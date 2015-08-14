@@ -1,5 +1,5 @@
-#ifndef __LINEARLAYOUT_H__
-#define __LINEARLAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 
 #include "view/ViewGroup.h"
 #include "widget/CLinearLayoutLayoutParams.h"
@@ -484,5 +484,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__LINEARLAYOUT_H__
+#endif //__ELASTOS_DROID_WIDGET_LINEARLAYOUT_H__
 

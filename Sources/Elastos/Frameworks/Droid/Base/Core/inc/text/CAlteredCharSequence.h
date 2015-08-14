@@ -1,6 +1,6 @@
 
-#ifndef __CALTEREDCHARSEQUENCE_H__
-#define __CALTEREDCHARSEQUENCE_H__
+#ifndef __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCE_H__
+#define __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCE_H__
 
 #include "_CAlteredCharSequence.h"
 
@@ -171,4 +171,4 @@ protected://private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CALTEREDCHARSEQUENCE_H__
+#endif // __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCE_H__

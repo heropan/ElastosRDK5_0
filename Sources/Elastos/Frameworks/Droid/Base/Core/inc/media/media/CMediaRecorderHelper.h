@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIARECORDERHELPER_H__
-#define __CMEDIARECORDERHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIARECORDERHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIARECORDERHELPER_H__
 
 #include "_CMediaRecorderHelper.h"
 #include "ext/frameworkext.h"
@@ -25,4 +25,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CMEDIARECORDERHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIARECORDERHELPER_H__

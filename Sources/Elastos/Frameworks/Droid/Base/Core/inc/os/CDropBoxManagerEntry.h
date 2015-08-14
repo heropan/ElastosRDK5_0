@@ -1,5 +1,5 @@
-#ifndef __CDROPBOXMANAGERENTRY_H__
-#define __CDROPBOXMANAGERENTRY_H__
+#ifndef __ELASTOS_DROID_OS_CDROPBOXMANAGERENTRY_H__
+#define __ELASTOS_DROID_OS_CDROPBOXMANAGERENTRY_H__
 
 #include "_CDropBoxManagerEntry.h"
 #include "ext/frameworkdef.h"
@@ -137,4 +137,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDROPBOXMANAGERENTRY_H__
+#endif //__ELASTOS_DROID_OS_CDROPBOXMANAGERENTRY_H__

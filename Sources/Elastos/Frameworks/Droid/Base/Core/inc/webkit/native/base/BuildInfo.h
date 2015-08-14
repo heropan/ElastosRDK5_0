@@ -1,6 +1,6 @@
 
-#ifndef __BUILDINFO_H__
-#define __BUILDINFO_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_BUILDINFO_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_BUILDINFO_H__
 
 namespace Elastos {
 namespace Droid {
@@ -73,4 +73,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BUILDINFO_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_BUILDINFO_H__

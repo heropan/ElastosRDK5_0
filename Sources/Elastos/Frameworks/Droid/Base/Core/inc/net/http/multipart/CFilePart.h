@@ -1,6 +1,6 @@
 
-#ifndef __CFILEPART_H__
-#define __CFILEPART_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPART_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPART_H__
 
 #include "_CFilePart.h"
 #include "PartBase.h"
@@ -224,4 +224,4 @@ private:
 }
 }
 
-#endif // __CFILEPART_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPART_H__

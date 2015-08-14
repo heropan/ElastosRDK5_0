@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCCONTEXT_H__
-#define __CSYNCCONTEXT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__
 
 #include "_CSyncContext.h"
 
@@ -61,4 +61,4 @@ private:
 }
 }
 
-#endif // __CSYNCCONTEXT_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__

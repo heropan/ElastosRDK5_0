@@ -1,6 +1,6 @@
 
-#ifndef __COUNTRYDETECTOR_H__
-#define __COUNTRYDETECTOR_H__
+#ifndef __ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__
+#define __ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -131,4 +131,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__COUNTRYDETECTOR_H__
+#endif //__ELASTOS_DROID_LOCATION_COUNTRYDETECTOR_H__

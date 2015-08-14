@@ -1,6 +1,6 @@
 
-#ifndef __CDRMCONSTRAINTINFO_H__
-#define __CDRMCONSTRAINTINFO_H__
+#ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMCONSTRAINTINFO_H__
+#define __ELASTOS_DROID_DRM_MOBILE1_CDRMCONSTRAINTINFO_H__
 
 #include "_CDrmConstraintInfo.h"
 #include <ext/frameworkext.h>
@@ -78,5 +78,5 @@ public:
 } // namespace drm
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CDRMCONSTRAINTINFO_H__
+#endif // __ELASTOS_DROID_DRM_MOBILE1_CDRMCONSTRAINTINFO_H__
 

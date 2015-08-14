@@ -1,6 +1,6 @@
 
-#ifndef __EDITTEXT_H__
-#define __EDITTEXT_H__
+#ifndef __ELASTOS_DROID_WIDGET_EDITTEXT_H__
+#define __ELASTOS_DROID_WIDGET_EDITTEXT_H__
 
 #include "R.h"
 #include "widget/TextView.h"

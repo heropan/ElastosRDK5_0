@@ -1,6 +1,6 @@
 
-#ifndef __CSPANNABLESTRINGBUILDER_H__
-#define __CSPANNABLESTRINGBUILDER_H__
+#ifndef __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__
+#define __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__
 
 #include "_CSpannableStringBuilder.h"
 #include "text/SpannableStringBuilder.h"
@@ -243,4 +243,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSPANNABLESTRINGBUILDER_H__
+#endif // __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__

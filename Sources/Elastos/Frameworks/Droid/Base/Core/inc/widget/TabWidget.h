@@ -1,6 +1,6 @@
 
-#ifndef __TABWIDGET_H__
-#define __TABWIDGET_H__
+#ifndef __ELASTOS_DROID_WIDGET_TABWIDGET_H__
+#define __ELASTOS_DROID_WIDGET_TABWIDGET_H__
 
 #include "widget/LinearLayout.h"
 #include "R.h"

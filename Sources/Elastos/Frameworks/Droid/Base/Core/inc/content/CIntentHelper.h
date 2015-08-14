@@ -1,6 +1,6 @@
 
-#ifndef __CINTENTHELPER_H__
-#define __CINTENTHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
+#define __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
 
 #include "_CIntentHelper.h"
 #include "Intent.h"
@@ -204,4 +204,4 @@ private:
 }
 }
 
-#endif // __CINTENTHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__

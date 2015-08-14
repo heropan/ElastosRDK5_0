@@ -1,6 +1,6 @@
 
-#ifndef __CDEVICEADMINRECEIVER_H__
-#define __CDEVICEADMINRECEIVER_H__
+#ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEADMINRECEIVER_H__
+#define __ELASTOS_DROID_APP_ADMIN_CDEVICEADMINRECEIVER_H__
 
 #include "_CDeviceAdminReceiver.h"
 
@@ -152,4 +152,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CDEVICEADMINRECEIVER_H__
+#endif //__ELASTOS_DROID_APP_ADMIN_CDEVICEADMINRECEIVER_H__

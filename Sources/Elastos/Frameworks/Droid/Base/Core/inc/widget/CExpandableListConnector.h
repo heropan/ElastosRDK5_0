@@ -1,6 +1,6 @@
 
-#ifndef __CEXPANDABLELISTCONNECTOR_H__
-#define __CEXPANDABLELISTCONNECTOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__
+#define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__
 
 #include "_CExpandableListConnector.h"
 #include "widget/ExpandableListConnector.h"
@@ -111,4 +111,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEXPANDABLELISTCONNECTOR_H__
+#endif //__ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CHTML_H__
-#define __CHTML_H__
+#ifndef __ELASTOS_DROID_TEXT_CHTML_H__
+#define __ELASTOS_DROID_TEXT_CHTML_H__
 
 #include "_CHtml.h"
 
@@ -38,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CHTML_H__
+#endif // __ELASTOS_DROID_TEXT_CHTML_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPAINT_H__
-#define __CPAINT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPAINT_H__
+#define __ELASTOS_DROID_GRAPHICS_CPAINT_H__
 
 #include "_CPaint.h"
 #include "graphics/Paint.h"
@@ -830,4 +830,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPAINT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CPAINT_H__

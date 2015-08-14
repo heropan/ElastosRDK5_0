@@ -1,5 +1,5 @@
-#ifndef __BlockingAudioTrack_H__
-#define __BlockingAudioTrack_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_BlockingAudioTrack_H__
+#define __ELASTOS_DROID_SPEECH_TTS_BlockingAudioTrack_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -146,4 +146,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __BlockingAudioTrack_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_BlockingAudioTrack_H__

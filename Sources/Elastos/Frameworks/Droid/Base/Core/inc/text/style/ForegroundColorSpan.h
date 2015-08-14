@@ -1,5 +1,5 @@
-#ifndef __ForegroundColorSpan_H__
-#define __ForegroundColorSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_ForegroundColorSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_ForegroundColorSpan_H__
 
 #include "text/style/CharacterStyle.h"
 
@@ -51,4 +51,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ForegroundColorSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_ForegroundColorSpan_H__

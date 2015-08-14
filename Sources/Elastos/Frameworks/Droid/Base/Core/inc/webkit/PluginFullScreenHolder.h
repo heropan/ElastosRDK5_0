@@ -1,6 +1,6 @@
 
-#ifndef __PLUGINFULLSCREENHOLDER_H__
-#define __PLUGINFULLSCREENHOLDER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_PLUGINFULLSCREENHOLDER_H__
+#define __ELASTOS_DROID_WEBKIT_PLUGINFULLSCREENHOLDER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/FrameLayout.h"
@@ -115,4 +115,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PLUGINFULLSCREENHOLDER_H__
+#endif //__ELASTOS_DROID_WEBKIT_PLUGINFULLSCREENHOLDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPICTURE_H__
-#define __CPICTURE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPICTURE_H__
+#define __ELASTOS_DROID_GRAPHICS_CPICTURE_H__
 
 #include "_CPicture.h"
 #include "graphics/Canvas.h"
@@ -201,4 +201,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPICTURE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CPICTURE_H__

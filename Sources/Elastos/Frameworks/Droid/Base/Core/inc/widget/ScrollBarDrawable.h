@@ -1,6 +1,6 @@
 
-#ifndef __SCROLLBARDRAWABLE_H__
-#define __SCROLLBARDRAWABLE_H__
+#ifndef __ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__
+#define __ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__
 
 #include "ext/frameworkext.h"
 #include "graphics/drawable/Drawable.h"
@@ -136,4 +136,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__SCROLLBARDRAWABLE_H__
+#endif //__ELASTOS_DROID_WIDGET_SCROLLBARDRAWABLE_H__

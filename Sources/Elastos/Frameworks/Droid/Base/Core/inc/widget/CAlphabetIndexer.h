@@ -1,6 +1,6 @@
 
-#ifndef __CALPHABETINDEXER_H__
-#define __CALPHABETINDEXER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CALPHABETINDEXER_H__
+#define __ELASTOS_DROID_WIDGET_CALPHABETINDEXER_H__
 
 #include "_CAlphabetIndexer.h"
 #include "widget/AlphabetIndexer.h"
@@ -47,4 +47,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CALPHABETINDEXER_H__
+#endif // __ELASTOS_DROID_WIDGET_CALPHABETINDEXER_H__

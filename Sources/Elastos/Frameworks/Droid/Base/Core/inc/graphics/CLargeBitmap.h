@@ -1,6 +1,6 @@
 
-#ifndef __CLARGEBITMAP_H__
-#define __CLARGEBITMAP_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__
+#define __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__
 
 #include "_CLargeBitmap.h"
 
@@ -95,4 +95,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLARGEBITMAP_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__

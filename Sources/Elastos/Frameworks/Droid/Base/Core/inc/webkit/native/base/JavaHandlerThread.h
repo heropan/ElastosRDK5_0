@@ -1,6 +1,6 @@
 
-#ifndef __JAVAHANDLERTHREAD_H__
-#define __JAVAHANDLERTHREAD_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_JAVAHANDLERTHREAD_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_JAVAHANDLERTHREAD_H__
 
 // import android.os.Handler;
 // import android.os.HandlerThread;
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__JAVAHANDLERTHREAD_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_JAVAHANDLERTHREAD_H__

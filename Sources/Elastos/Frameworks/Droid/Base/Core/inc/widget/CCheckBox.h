@@ -1,6 +1,6 @@
 
-#ifndef __CCHECKBOX_H__
-#define __CCHECKBOX_H__
+#ifndef __ELASTOS_DROID_WIDGET_CCHECKBOX_H__
+#define __ELASTOS_DROID_WIDGET_CCHECKBOX_H__
 
 #include "_CCheckBox.h"
 #include "widget/CheckBox.h"
@@ -53,4 +53,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CCHECKBOX_H__
+#endif // __ELASTOS_DROID_WIDGET_CCHECKBOX_H__

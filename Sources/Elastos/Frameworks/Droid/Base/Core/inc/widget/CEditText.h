@@ -1,5 +1,5 @@
-#ifndef __CEDITTEXT_H_
-#define __CEDITTEXT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CEDITTEXT_H__
+#define __ELASTOS_DROID_WIDGET_CEDITTEXT_H__
 
 #include "_CEditText.h"
 #include "widget/EditText.h"
@@ -54,4 +54,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CEDITTEXT_H_
+#endif // __ELASTOS_DROID_WIDGET_CEDITTEXT_H__

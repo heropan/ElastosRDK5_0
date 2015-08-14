@@ -1,6 +1,6 @@
 
-#ifndef __COVERLAYFRAME_H__
-#define __COVERLAYFRAME_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_COVERLAYFRAME_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_COVERLAYFRAME_H__
 
 #include "_COverlayFrame.h"
 #include <ext/frameworkext.h>
@@ -202,5 +202,5 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __COVERLAYFRAME_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_COVERLAYFRAME_H__
 

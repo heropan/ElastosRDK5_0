@@ -1,6 +1,6 @@
 
-#ifndef __TICKERVIEW_H_
-#define __TICKERVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_TICKERVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_TICKERVIEW_H__
 
 #include "widget/TextSwitcher.h"
 
@@ -40,4 +40,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__TICKERVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_TICKERVIEW_H__

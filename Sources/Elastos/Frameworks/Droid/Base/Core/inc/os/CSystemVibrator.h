@@ -1,5 +1,5 @@
-#ifndef __CSYSTEMVIBRATOR_H__
-#define __CSYSTEMVIBRATOR_H__
+#ifndef __ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__
+#define __ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__
 
 #include "_CSystemVibrator.h"
 #include "ext/frameworkdef.h"
@@ -44,4 +44,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSYSTEMVIBRATOR_H__
+#endif //__ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__

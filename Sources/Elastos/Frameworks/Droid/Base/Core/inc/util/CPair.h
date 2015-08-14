@@ -1,6 +1,6 @@
 
-#ifndef __CPAIR_H__
-#define __CPAIR_H__
+#ifndef __ELASTOS_DROID_UTILITY_CPAIR_H__
+#define __ELASTOS_DROID_UTILITY_CPAIR_H__
 
 #include "_CPair.h"
 
@@ -42,4 +42,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPAIR_H__
+#endif // __ELASTOS_DROID_UTILITY_CPAIR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CGEOFENCE_H__
-#define __CGEOFENCE_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGEOFENCE_H__
+#define __ELASTOS_DROID_LOCATION_CGEOFENCE_H__
 
 #include "ext/frameworkext.h"
 #include "_CGeofence.h"
@@ -102,4 +102,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CGEOFENCE_H__
+#endif // __ELASTOS_DROID_LOCATION_CGEOFENCE_H__

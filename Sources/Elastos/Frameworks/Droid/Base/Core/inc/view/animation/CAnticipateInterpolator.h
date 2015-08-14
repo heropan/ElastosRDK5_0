@@ -1,6 +1,6 @@
 
-#ifndef __CANTICIPATEINTERPOLATOR_H__
-#define __CANTICIPATEINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 
 #include "_CAnticipateInterpolator.h"
 #include "R.h"
@@ -40,4 +40,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CANTICIPATEINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__

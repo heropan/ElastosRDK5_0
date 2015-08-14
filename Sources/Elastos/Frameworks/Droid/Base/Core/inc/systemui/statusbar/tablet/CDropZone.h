@@ -1,6 +1,6 @@
 
-#ifndef __CDROPZONE_H__
-#define __CDROPZONE_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CDROPZONE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CDROPZONE_H__
 
 #include "_CDropZone.h"
 
@@ -37,4 +37,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CDROPZONE_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CDROPZONE_H__

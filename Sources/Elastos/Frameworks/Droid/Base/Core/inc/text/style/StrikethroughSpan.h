@@ -1,5 +1,5 @@
-#ifndef __StrikethroughSpan_H__
-#define __StrikethroughSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_StrikethroughSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_StrikethroughSpan_H__
 
 #include "text/style/CharacterStyle.h"
 
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __StrikethroughSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_StrikethroughSpan_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CFRAGMENTSAVEDSTATE_H__
-#define __CFRAGMENTSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__
+#define __ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__
 
 #include "_CFragmentSavedState.h"
 
@@ -46,4 +46,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CFRAGMENTSAVEDSTATE_H__
+#endif //__ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__

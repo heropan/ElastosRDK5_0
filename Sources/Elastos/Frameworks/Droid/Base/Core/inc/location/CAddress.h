@@ -1,6 +1,6 @@
 
-#ifndef __CADDRESS_H__
-#define __CADDRESS_H__
+#ifndef __ELASTOS_DROID_LOCATION_CADDRESS_H__
+#define __ELASTOS_DROID_LOCATION_CADDRESS_H__
 
 #include "ext/frameworkext.h"
 #include "_CAddress.h"
@@ -348,4 +348,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CADDRESS_H__
+#endif // __ELASTOS_DROID_LOCATION_CADDRESS_H__

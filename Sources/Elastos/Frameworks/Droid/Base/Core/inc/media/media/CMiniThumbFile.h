@@ -1,6 +1,6 @@
 
-#ifndef __CMINITHUMBFILE_H__
-#define __CMINITHUMBFILE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__
+#define __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__
 
 #include "_CMiniThumbFile.h"
 #include "ext/frameworkext.h"
@@ -89,4 +89,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMINITHUMBFILE_H__
+#endif // __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__

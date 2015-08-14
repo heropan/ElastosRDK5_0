@@ -1,6 +1,6 @@
 
-#ifndef __CCMailToHelper_H__
-#define __CCMailToHelper_H__
+#ifndef __ELASTOS_DROID_NET_CCMailToHelper_H__
+#define __ELASTOS_DROID_NET_CCMailToHelper_H__
 
 #include "_CCMailTo.h"
 #include "net/CMailTo.h"
@@ -39,4 +39,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCMailToHelper_H__
+#endif // __ELASTOS_DROID_NET_CCMailToHelper_H__

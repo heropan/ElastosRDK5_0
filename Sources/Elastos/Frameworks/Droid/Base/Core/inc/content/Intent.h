@@ -1,6 +1,6 @@
 
-#ifndef __INTENT_H__
-#define __INTENT_H__
+#ifndef __ELASTOS_DROID_CONTENT_INTENT_H__
+#define __ELASTOS_DROID_CONTENT_INTENT_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashSet.h>
@@ -686,4 +686,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__INTENT_H__
+#endif //__ELASTOS_DROID_CONTENT_INTENT_H__

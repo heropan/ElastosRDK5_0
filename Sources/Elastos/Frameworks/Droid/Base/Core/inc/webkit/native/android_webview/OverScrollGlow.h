@@ -1,6 +1,6 @@
 
-#ifndef __OVERSCROLLGLOW_H__
-#define __OVERSCROLLGLOW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_OVERSCROLLGLOW_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_OVERSCROLLGLOW_H__
 
 // import android.content.Context;
 // import android.graphics.Canvas;
@@ -115,4 +115,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__OVERSCROLLGLOW_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_OVERSCROLLGLOW_H__

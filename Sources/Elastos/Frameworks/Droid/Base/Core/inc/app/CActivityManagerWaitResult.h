@@ -1,5 +1,5 @@
-#ifndef __CACTIVITYMANAGER_WAIT_RESULT_H__
-#define __CACTIVITYMANAGER_WAIT_RESULT_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__
 
 #include "_CActivityManagerWaitResult.h"
 
@@ -65,4 +65,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYMANAGER_WAIT_RESULT_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__

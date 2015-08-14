@@ -1,5 +1,5 @@
-#ifndef __CFACEUNLOCKVIEW_H__
-#define __CFACEUNLOCKVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CFACEUNLOCKVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CFACEUNLOCKVIEW_H__
 
 #include "_CFaceUnlockView.h"
 #include "internal/FaceUnlockView.h"

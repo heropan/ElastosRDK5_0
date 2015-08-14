@@ -1,6 +1,6 @@
 
-#ifndef __CINTENTSENDER_H__
-#define __CINTENTSENDER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__
+#define __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__
 
 #include "_CIntentSender.h"
 #include <ext/frameworkext.h>
@@ -217,4 +217,4 @@ private:
 }
 }
 
-#endif // __CINTENTSENDER_H__
+#endif // __ELASTOS_DROID_CONTENT_CINTENTSENDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHA2DP_H__
-#define __BLUETOOTHA2DP_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHA2DP_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHA2DP_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
@@ -118,4 +118,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __BLUETOOTHA2DP_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_BLUETOOTHA2DP_H__

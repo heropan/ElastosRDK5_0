@@ -1,6 +1,6 @@
 
-#ifndef __MIMETYPEMAP_H__
-#define __MIMETYPEMAP_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MIMETYPEMAP_H__
+#define __ELASTOS_DROID_WEBKIT_MIMETYPEMAP_H__
 
 #include "ext/frameworkext.h"
 
@@ -110,4 +110,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__MIMETYPEMAP_H__
+#endif //__ELASTOS_DROID_WEBKIT_MIMETYPEMAP_H__

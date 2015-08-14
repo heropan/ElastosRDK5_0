@@ -1,6 +1,6 @@
 
-#ifndef __WEBVIEWCLASSICHELPER_H__
-#define __WEBVIEWCLASSICHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBVIEWCLASSICHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_WEBVIEWCLASSICHELPER_H__
 
 #include "_CWebViewClassicHelper.h"
 
@@ -85,4 +85,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBVIEWCLASSICHELPER_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBVIEWCLASSICHELPER_H__

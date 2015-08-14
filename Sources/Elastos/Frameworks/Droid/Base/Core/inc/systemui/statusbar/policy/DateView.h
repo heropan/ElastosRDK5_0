@@ -1,6 +1,6 @@
 
-#ifndef __COMPATMODEBUTTON_H__
-#define __COMPATMODEBUTTON_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_COMPATMODEBUTTON_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_COMPATMODEBUTTON_H__
 
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
@@ -96,4 +96,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__COMPATMODEBUTTON_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_COMPATMODEBUTTON_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSHAPEDRAWABLE_H__
-#define __CSHAPEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__
 
 #include "_CShapeDrawable.h"
 #include "graphics/drawable/CShapeDrawable.h"
@@ -113,4 +113,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSHAPEDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__

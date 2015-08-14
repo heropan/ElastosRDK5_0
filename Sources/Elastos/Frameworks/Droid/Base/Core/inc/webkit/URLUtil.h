@@ -1,6 +1,6 @@
 
-#ifndef __URLUTIL_H__
-#define __URLUTIL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_URLUTIL_H__
+#define __ELASTOS_DROID_WEBKIT_URLUTIL_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -115,4 +115,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__URLUTIL_H__
+#endif//__ELASTOS_DROID_WEBKIT_URLUTIL_H__

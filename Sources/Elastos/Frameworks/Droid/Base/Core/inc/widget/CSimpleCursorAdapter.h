@@ -1,5 +1,5 @@
-#ifndef __CSIMPLECURSORADAPTER_H__
-#define __CSIMPLECURSORADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSIMPLECURSORADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CSIMPLECURSORADAPTER_H__
 
 #include "_CSimpleCursorAdapter.h"
 
@@ -61,4 +61,4 @@ public:
 }// namespace Droid
 }// namespace Widget
 
-#endif // __CSIMPLECURSORADAPTER_H__
+#endif // __ELASTOS_DROID_WIDGET_CSIMPLECURSORADAPTER_H__

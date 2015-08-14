@@ -1,5 +1,5 @@
-#ifndef __EMOJIFACTORYHELPER_H__
-#define __EMOJIFACTORYHELPER_H__
+#ifndef __ELASTOS_DROID_EMOJI_EMOJIFACTORYHELPER_H__
+#define __ELASTOS_DROID_EMOJI_EMOJIFACTORYHELPER_H__
 
 
 #include "graphics/CBitmap.h"
@@ -39,4 +39,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__EMOJIFACTORYHELPER_H__
+#endif //__ELASTOS_DROID_EMOJI_EMOJIFACTORYHELPER_H__

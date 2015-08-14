@@ -1,5 +1,5 @@
-#ifndef __CPREDICTION_H__
-#define __CPREDICTION_H__
+#ifndef __ELASTOS_DROID_GESTURE_CPREDICTION_H__
+#define __ELASTOS_DROID_GESTURE_CPREDICTION_H__
 
 #include "_CPrediction.h"
 

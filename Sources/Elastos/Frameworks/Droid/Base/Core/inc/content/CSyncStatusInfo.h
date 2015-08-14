@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCSTATUSINFO_H__
-#define __CSYNCSTATUSINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__
 
 #include "_CSyncStatusInfo.h"
 #include <ext/frameworkext.h>
@@ -174,4 +174,4 @@ private:
 }
 }
 
-#endif // __CSYNCSTATUSINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__

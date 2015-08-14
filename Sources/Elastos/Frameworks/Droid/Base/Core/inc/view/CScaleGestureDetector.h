@@ -1,5 +1,5 @@
-#ifndef __CSCALEGESTUREDETECTOR_H__
-#define __CSCALEGESTUREDETECTOR_H__
+#ifndef __ELASTOS_DROID_VIEW_CSCALEGESTUREDETECTOR_H__
+#define __ELASTOS_DROID_VIEW_CSCALEGESTUREDETECTOR_H__
 
 #include "_CScaleGestureDetector.h"
 #include "Elastos.Droid.Core_server.h"
@@ -224,4 +224,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSCALEGESTUREDETECTOR_H__
+#endif //__ELASTOS_DROID_VIEW_CSCALEGESTUREDETECTOR_H__

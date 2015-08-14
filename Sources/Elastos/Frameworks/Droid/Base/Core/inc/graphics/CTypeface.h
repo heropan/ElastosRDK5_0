@@ -1,6 +1,6 @@
 
-#ifndef __CTYPEFACE_H__
-#define __CTYPEFACE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CTYPEFACE_H__
+#define __ELASTOS_DROID_GRAPHICS_CTYPEFACE_H__
 
 #include "_CTypeface.h"
 #include "graphics/Typeface.h"
@@ -43,4 +43,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CTYPEFACE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CTYPEFACE_H__

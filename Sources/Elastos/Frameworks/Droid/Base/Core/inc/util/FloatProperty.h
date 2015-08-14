@@ -1,5 +1,5 @@
-#ifndef __FLOATPROPERTY_H__
-#define  __FLOATPROPERTY_H__
+#ifndef __ELASTOS_DROID_UTILITY_FLOATPROPERTY_H__
+#define  __ELASTOS_DROID_UTILITY_FLOATPROPERTY_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"

@@ -1,5 +1,5 @@
-#ifndef __RECENTSHORIZONTALSCROLLVIEW_H_
-#define __RECENTSHORIZONTALSCROLLVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSHORIZONTALSCROLLVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSHORIZONTALSCROLLVIEW_H__
 
 #include "widget/HorizontalScrollView.h"
 #include "systemui/recent/RecentsScrollViewPerformanceHelper.h"
@@ -276,4 +276,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__RECENTSHORIZONTALSCROLLVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSHORIZONTALSCROLLVIEW_H__

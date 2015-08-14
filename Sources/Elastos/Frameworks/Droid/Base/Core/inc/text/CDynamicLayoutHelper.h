@@ -1,6 +1,6 @@
 
-#ifndef __CDYNAMICLAYOUTHELPER_H__
-#define __CDYNAMICLAYOUTHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_CDYNAMICLAYOUTHELPER_H__
+#define __ELASTOS_DROID_TEXT_CDYNAMICLAYOUTHELPER_H__
 
 #include "_CDynamicLayoutHelper.h"
 
@@ -20,4 +20,4 @@ CarClass(CDynamicLayoutHelper)
 } // namepsace Droid
 } // namespace Elastos
 
-#endif//__CDYNAMICLAYOUTHELPER_H__
+#endif//__ELASTOS_DROID_TEXT_CDYNAMICLAYOUTHELPER_H__

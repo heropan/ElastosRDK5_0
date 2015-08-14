@@ -1,6 +1,6 @@
 
-#ifndef __CDYNAMICLAYOUT_H__
-#define __CDYNAMICLAYOUT_H__
+#ifndef __ELASTOS_DROID_TEXT_CDYNAMICLAYOUT_H__
+#define __ELASTOS_DROID_TEXT_CDYNAMICLAYOUT_H__
 
 #include "_CDynamicLayout.h"
 #include "text/DynamicLayout.h"
@@ -110,4 +110,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CDYNAMICLAYOUT_H__
+#endif //__ELASTOS_DROID_TEXT_CDYNAMICLAYOUT_H__

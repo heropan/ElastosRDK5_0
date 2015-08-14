@@ -1,5 +1,5 @@
-#ifndef __TextToSpeechService_H__
-#define __TextToSpeechService_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__
+#define __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__
 
 
 #include "app/Service.h"
@@ -845,4 +845,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __TextToSpeechService_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_TextToSpeechService_H__

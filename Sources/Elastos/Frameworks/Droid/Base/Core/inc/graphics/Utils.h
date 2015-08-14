@@ -1,5 +1,5 @@
-#ifndef __HH_GRAPHICS_UTILS_H
-#define __HH_GRAPHICS_UTILS_H
+#ifndef __ELASTOS_DROID_GRAPHICS_H_H__
+#define __ELASTOS_DROID_GRAPHICS_H_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <skia/core/SkStream.h>
@@ -45,4 +45,4 @@ private:
 }; // namespace Droid
 }; // namespace Elastos
 
-#endif // __HH_GRAPHICS_UTILS_H
+#endif // __ELASTOS_DROID_GRAPHICS_H_H__

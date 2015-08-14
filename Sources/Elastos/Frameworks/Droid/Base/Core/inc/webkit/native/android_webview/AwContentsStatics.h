@@ -1,6 +1,6 @@
 
-#ifndef __AWCONTENTSSTATICS_H__
-#define __AWCONTENTSSTATICS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -82,4 +82,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWCONTENTSSTATICS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSSTATICS_H__

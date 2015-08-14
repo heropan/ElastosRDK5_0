@@ -1,5 +1,5 @@
-#ifndef __BORINGLAYOUT_H__
-#define __BORINGLAYOUT_H__
+#ifndef __ELASTOS_DROID_TEXT_BORINGLAYOUT_H__
+#define __ELASTOS_DROID_TEXT_BORINGLAYOUT_H__
 
 #include "text/Layout.h"
 #include "text/CTextPaint.h"
@@ -282,4 +282,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__BORINGLAYOUT_H__
+#endif //__ELASTOS_DROID_TEXT_BORINGLAYOUT_H__

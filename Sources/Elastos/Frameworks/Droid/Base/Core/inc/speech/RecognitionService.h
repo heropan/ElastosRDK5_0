@@ -1,5 +1,5 @@
-#ifndef __RecognitionService_H__
-#define __RecognitionService_H__
+#ifndef __ELASTOS_DROID_SPEECH_RecognitionService_H__
+#define __ELASTOS_DROID_SPEECH_RecognitionService_H__
 
 #include "app/Service.h"
 #include "os/HandlerBase.h"
@@ -330,4 +330,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __RecognitionService_H__
+#endif // __ELASTOS_DROID_SPEECH_RecognitionService_H__

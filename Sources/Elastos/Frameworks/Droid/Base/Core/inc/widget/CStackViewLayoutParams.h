@@ -1,5 +1,5 @@
-#ifndef __CSTACKVIEWLAYOUTPARAMS__H_
-#define __CSTACKVIEWLAYOUTPARAMS__H_
+#ifndef __ELASTOS_DROID_WIDGET_CSTACKVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_CSTACKVIEWLAYOUTPARAMS_H__
 
 #include "_CStackViewLayoutParams.h"
 #include "widget/StackViewLayoutParams.h"
@@ -52,4 +52,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSTACKVIEWLAYOUTPARAMS__H_
+#endif //__ELASTOS_DROID_WIDGET_CSTACKVIEWLAYOUTPARAMS_H__

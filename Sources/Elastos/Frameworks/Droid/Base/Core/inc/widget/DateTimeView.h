@@ -1,6 +1,6 @@
 
-#ifndef __DATETIMEVIEW_H__
-#define __DATETIMEVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_DATETIMEVIEW_H__
+#define __ELASTOS_DROID_WIDGET_DATETIMEVIEW_H__
 
 #include <Elastos.CoreLibrary.h>
 #include "ext/frameworkext.h"

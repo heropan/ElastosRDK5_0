@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIDISPLAY_H__
-#define __CWIFIDISPLAY_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__
 
 #include "_CWifiDisplay.h"
 
@@ -107,4 +107,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CWIFIDISPLAY_H__
+#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAY_H__

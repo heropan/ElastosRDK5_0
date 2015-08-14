@@ -1,6 +1,6 @@
 
-#ifndef __POINTERLOCATIONVIEW_H__
-#define __POINTERLOCATIONVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_POINTERLOCATIONVIEW_H__
 
 #include "view/View.h"
 #include "view/VelocityTracker.h"

@@ -1,6 +1,6 @@
 
-#ifndef __STATELISTDRAWABLE_H__
-#define __STATELISTDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_STATELISTDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_STATELISTDRAWABLE_H__
 
 #include "graphics/drawable/DrawableContainer.h"
 #include "util/StateSet.h"
@@ -163,5 +163,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__STATELISTDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_STATELISTDRAWABLE_H__
 

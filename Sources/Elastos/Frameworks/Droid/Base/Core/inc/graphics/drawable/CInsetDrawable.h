@@ -1,6 +1,6 @@
 
-#ifndef __CINSETDRAWABLE_H__
-#define __CINSETDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__
 
 #include "_CInsetDrawable.h"
 #include "graphics/drawable/InsetDrawable.h"
@@ -44,4 +44,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CINSETDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__

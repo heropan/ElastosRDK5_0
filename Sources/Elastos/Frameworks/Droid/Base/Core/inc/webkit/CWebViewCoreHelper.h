@@ -1,6 +1,6 @@
 
-#ifndef _CWEBVIEWCOREHELPER_H_
-#define _CWEBVIEWCOREHELPER_H_
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCOREHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWCOREHELPER_H__
 
 #include "_CWebViewCoreHelper.h"
 
@@ -27,4 +27,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //_CWEBVIEWCOREHELPER_H_
+#endif //__ELASTOS_DROID_WEBKIT_CWEBVIEWCOREHELPER_H__

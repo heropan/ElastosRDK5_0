@@ -1,6 +1,6 @@
 
-#ifndef __WINDOWMANAGERIMPL_H__
-#define __WINDOWMANAGERIMPL_H__
+#ifndef __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
+#define __ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -56,4 +56,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__WINDOWMANAGERIMPL_H__
+#endif //__ELASTOS_DROID_VIEW_WINDOWMANAGERIMPL_H__

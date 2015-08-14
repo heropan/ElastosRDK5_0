@@ -1,6 +1,6 @@
 
-#ifndef __INPUTDIALOGCONTAINER_H__
-#define __INPUTDIALOGCONTAINER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__
 
 // import android.app.AlertDialog;
 // import android.app.DatePickerDialog.OnDateSetListener;
@@ -320,4 +320,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__INPUTDIALOGCONTAINER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_INPUTDIALOGCONTAINER_H__

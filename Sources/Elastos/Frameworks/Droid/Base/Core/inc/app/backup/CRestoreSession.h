@@ -1,5 +1,5 @@
-#ifndef __CRESTORESESSION_H__
-#define __CRESTORESESSION_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CRESTORESESSION_H__
+#define __ELASTOS_DROID_APP_BACKUP_CRESTORESESSION_H__
 
 #include "_CRestoreSession.h"
 #include "ext/frameworkext.h"

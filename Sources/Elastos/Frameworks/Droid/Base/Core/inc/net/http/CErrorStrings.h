@@ -1,6 +1,6 @@
 
-#ifndef __CERRORSTRINGS_H__
-#define __CERRORSTRINGS_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CERRORSTRINGS_H__
+#define __ELASTOS_DROID_NET_HTTP_CERRORSTRINGS_H__
 
 #include "_CErrorStrings.h"
 
@@ -38,4 +38,4 @@ private:
 }
 }
 
-#endif // __CERRORSTRINGS_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CERRORSTRINGS_H__

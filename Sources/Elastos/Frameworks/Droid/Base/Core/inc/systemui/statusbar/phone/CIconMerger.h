@@ -1,5 +1,5 @@
-#ifndef __CICONMERGER_H_
-#define __CICONMERGER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
 
 #include "_CIconMerger.h"
 
@@ -42,4 +42,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CICONMERGER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__

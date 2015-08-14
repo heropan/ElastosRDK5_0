@@ -1,6 +1,6 @@
 
-#ifndef __CREGIONITERATOR_H__
-#define __CREGIONITERATOR_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
+#define __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
 
 #include "_CRegionIterator.h"
 
@@ -51,4 +51,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CREGIONITERATOR_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__

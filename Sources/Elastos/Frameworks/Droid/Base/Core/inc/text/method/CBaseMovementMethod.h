@@ -1,6 +1,6 @@
 
-#ifndef __CBASEMOVEMENTMETHOD_H__
-#define __CBASEMOVEMENTMETHOD_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CBASEMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CBASEMOVEMENTMETHOD_H__
 
 #include "_CBaseMovementMethod.h"
 #include "text/method/BaseMovementMethod.h"
@@ -70,4 +70,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CBASEMOVEMENTMETHOD_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CBASEMOVEMENTMETHOD_H__

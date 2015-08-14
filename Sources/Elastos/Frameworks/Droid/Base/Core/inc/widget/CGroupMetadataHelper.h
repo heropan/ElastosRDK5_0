@@ -1,5 +1,5 @@
-#ifndef __CGROUPMETADATAHELPER_H__
-#define __CGROUPMETADATAHELPER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CGROUPMETADATAHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CGROUPMETADATAHELPER_H__
 
 #include "_CGroupMetadataHelper.h"
 #include "widget/GroupMetadata.h"
@@ -24,4 +24,4 @@ CarClass(CGroupMetadataHelper)
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGROUPMETADATAHELPER_H__
+#endif //__ELASTOS_DROID_WIDGET_CGROUPMETADATAHELPER_H__

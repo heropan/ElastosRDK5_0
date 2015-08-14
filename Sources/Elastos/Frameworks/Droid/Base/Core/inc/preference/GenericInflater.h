@@ -1,6 +1,6 @@
 
-#ifndef  __GENERICINFLATER_H__
-#define  __GENERICINFLATER_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_GENERICINFLATER_H__
+#define  __ELASTOS_DROID_PREFERENCE_GENERICINFLATER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -320,4 +320,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif  // __GENERICINFLATER_H__
+#endif  // __ELASTOS_DROID_PREFERENCE_GENERICINFLATER_H__

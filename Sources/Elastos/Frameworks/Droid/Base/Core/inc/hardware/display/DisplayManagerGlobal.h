@@ -1,6 +1,6 @@
 
-#ifndef __DISPLAYMANAGERGLOBAL_H__
-#define __DISPLAYMANAGERGLOBAL_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -188,4 +188,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DISPLAYMANAGERGLOBAL_H__
+#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_DISPLAYMANAGERGLOBAL_H__

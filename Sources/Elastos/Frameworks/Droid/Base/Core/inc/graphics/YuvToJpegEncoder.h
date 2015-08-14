@@ -1,5 +1,5 @@
-#ifndef __YUVTOJPEGENCODER_H__
-#define __YUVTOJPEGENCODER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_YUVTOJPEGENCODER_H__
+#define __ELASTOS_DROID_GRAPHICS_YUVTOJPEGENCODER_H__
 
 #include "ext/frameworkext.h"
 #include <skia/core/SkStream.h>
@@ -132,4 +132,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__YUVTOJPEGENCODER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_YUVTOJPEGENCODER_H__

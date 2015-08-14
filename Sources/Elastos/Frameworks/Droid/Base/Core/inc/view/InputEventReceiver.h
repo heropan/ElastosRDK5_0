@@ -1,6 +1,6 @@
 
-#ifndef __INPUTEVENTRECEIVER_H__
-#define __INPUTEVENTRECEIVER_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
+#define __ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__
 
 #include "ext/frameworkext.h"
 #include <utils/Looper.h>
@@ -126,4 +126,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__INPUTEVENTRECEIVER_H__
+#endif //__ELASTOS_DROID_VIEW_INPUTEVENTRECEIVER_H__

@@ -1,5 +1,5 @@
-#ifndef __PRIVACYCURSOR_H__
-#define __PRIVACYCURSOR_H__
+#ifndef __ELASTOS_DROID_PRIVACY_SURROGATE_PRIVACYCURSOR_H__
+#define __ELASTOS_DROID_PRIVACY_SURROGATE_PRIVACYCURSOR_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -227,4 +227,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //  __PRIVACYCURSOR_H__
+#endif //  __ELASTOS_DROID_PRIVACY_SURROGATE_PRIVACYCURSOR_H__

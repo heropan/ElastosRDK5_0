@@ -1,5 +1,5 @@
-#ifndef __CEVENTLOGTAGS_H__
-#define __CEVENTLOGTAGS_H__
+#ifndef __ELASTOS_DROID_UTILITY_CEVENTLOGTAGS_H__
+#define __ELASTOS_DROID_UTILITY_CEVENTLOGTAGS_H__
 
 #include "_CEventLogTags.h"
 
@@ -34,4 +34,4 @@ public:
 }
 }
 
-#endif // __CEVENTLOGTAGS_H__
+#endif // __ELASTOS_DROID_UTILITY_CEVENTLOGTAGS_H__

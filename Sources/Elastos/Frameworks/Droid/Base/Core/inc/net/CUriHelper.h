@@ -1,6 +1,6 @@
 
-#ifndef __CURIHELPER_H__
-#define __CURIHELPER_H__
+#ifndef __ELASTOS_DROID_NET_CURIHELPER_H__
+#define __ELASTOS_DROID_NET_CURIHELPER_H__
 
 #include "_CUriHelper.h"
 #include <Elastos.CoreLibrary.h>
@@ -58,4 +58,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CURIHELPER_H__
+#endif //__ELASTOS_DROID_NET_CURIHELPER_H__

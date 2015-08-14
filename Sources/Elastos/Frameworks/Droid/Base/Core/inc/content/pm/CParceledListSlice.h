@@ -1,6 +1,6 @@
 
-#ifndef __CPARCELEDLISTSLICE_H__
-#define __CPARCELEDLISTSLICE_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPARCELEDLISTSLICE_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPARCELEDLISTSLICE_H__
 
 #include "_CParceledListSlice.h"
 
@@ -76,4 +76,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPARCELEDLISTSLICE_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPARCELEDLISTSLICE_H__

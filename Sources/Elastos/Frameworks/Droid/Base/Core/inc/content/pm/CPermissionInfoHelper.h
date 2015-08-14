@@ -1,6 +1,6 @@
 
-#ifndef __CPERMISSIONINFOHELPER_H__
-#define __CPERMISSIONINFOHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFOHELPER_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFOHELPER_H__
 
 #include "_CPermissionInfoHelper.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPERMISSIONINFOHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFOHELPER_H__

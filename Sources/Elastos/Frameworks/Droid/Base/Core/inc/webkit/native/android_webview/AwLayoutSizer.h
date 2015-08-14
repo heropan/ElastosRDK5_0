@@ -1,6 +1,6 @@
 
-#ifndef __AWLAYOUTSIZER_H__
-#define __AWLAYOUTSIZER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWLAYOUTSIZER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWLAYOUTSIZER_H__
 
 // import android.view.View;
 // import android.view.View.MeasureSpec;
@@ -147,4 +147,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWLAYOUTSIZER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWLAYOUTSIZER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __BYTEARRAYBUILDER_H__
-#define __BYTEARRAYBUILDER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BYTEARRAYBUILDER_H__
+#define __ELASTOS_DROID_WEBKIT_BYTEARRAYBUILDER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
@@ -96,4 +96,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BYTEARRAYBUILDER_H__
+#endif //__ELASTOS_DROID_WEBKIT_BYTEARRAYBUILDER_H__

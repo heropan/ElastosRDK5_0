@@ -1,6 +1,6 @@
 
-#ifndef __WEBHISTORYITEMCLASSIC_H__
-#define __WEBHISTORYITEMCLASSIC_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBHISTORYITEMCLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_WEBHISTORYITEMCLASSIC_H__
 
 #include "ext/frameworkext.h"
 
@@ -201,4 +201,4 @@ private:// Global identifier count.
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBHISTORYITEMCLASSIC_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBHISTORYITEMCLASSIC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPRIVACYSETTINGSSTUB_H__
-#define __CPRIVACYSETTINGSSTUB_H__
+#ifndef __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGSSTUB_H__
+#define __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGSSTUB_H__
 
 #include "ext/frameworkext.h"
 
@@ -25,4 +25,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPRIVACYSETTINGSSTUB_H__
+#endif //__ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGSSTUB_H__

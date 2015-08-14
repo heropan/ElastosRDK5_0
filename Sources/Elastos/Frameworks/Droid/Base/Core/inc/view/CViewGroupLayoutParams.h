@@ -1,6 +1,6 @@
 
-#ifndef __CVIEWGROUPLAYOUTPARAMS_H__
-#define __CVIEWGROUPLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_VIEW_CVIEWGROUPLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_VIEW_CVIEWGROUPLAYOUTPARAMS_H__
 
 #include "_CViewGroupLayoutParams.h"
 #include "view/ViewGroupLayoutParams.h"
@@ -36,4 +36,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CVIEWGROUPLAYOUTPARAMS_H__
+#endif //__ELASTOS_DROID_VIEW_CVIEWGROUPLAYOUTPARAMS_H__

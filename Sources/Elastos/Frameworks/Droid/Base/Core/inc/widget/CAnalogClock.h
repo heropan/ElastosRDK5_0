@@ -1,5 +1,5 @@
-#ifndef __CANALOGCLOCK_H__
-#define __CANALOGCLOCK_H__
+#ifndef __ELASTOS_DROID_WIDGET_CANALOGCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_CANALOGCLOCK_H__
 
 #include "_CAnalogClock.h"
 #include "AnalogClock.h"

@@ -1,6 +1,6 @@
 
-#ifndef __REGISTEREDSERVICESCACHE_H__
-#define __REGISTEREDSERVICESCACHE_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__
+#define __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__
 
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
@@ -284,4 +284,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __REGISTEREDSERVICESCACHE_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_REGISTEREDSERVICESCACHE_H__

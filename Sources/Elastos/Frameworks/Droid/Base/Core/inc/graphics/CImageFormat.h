@@ -1,6 +1,6 @@
 
-#ifndef __CIMAGEFORMAT_H__
-#define __CIMAGEFORMAT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CIMAGEFORMAT_H__
+#define __ELASTOS_DROID_GRAPHICS_CIMAGEFORMAT_H__
 
 #include "_CImageFormat.h"
 
@@ -28,4 +28,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CIMAGEFORMAT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CIMAGEFORMAT_H__

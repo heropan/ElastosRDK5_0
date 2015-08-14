@@ -1,6 +1,6 @@
 
-#ifndef __CNOCOPYSPAN_H__
-#define __CNOCOPYSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_CNOCOPYSPAN_H__
+#define __ELASTOS_DROID_TEXT_CNOCOPYSPAN_H__
 
 #include "_CNoCopySpan.h"
 
@@ -19,4 +19,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNOCOPYSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_CNOCOPYSPAN_H__

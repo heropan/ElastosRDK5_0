@@ -1,5 +1,5 @@
-#ifndef __PRESENTATION_H__
-#define __PRESENTATION_H__
+#ifndef __ELASTOS_DROID_APP_PRESENTATION_H__
+#define __ELASTOS_DROID_APP_PRESENTATION_H__
 
 #include "os/HandlerBase.h"
 #include "app/Dialog.h"
@@ -673,4 +673,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __PRESENTATION_H__
+#endif // __ELASTOS_DROID_APP_PRESENTATION_H__

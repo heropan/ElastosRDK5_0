@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYINFOHELPER_H__
-#define __CACTIVITYINFOHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFOHELPER_H__
+#define __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFOHELPER_H__
 
 #include "_CActivityInfoHelper.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CACTIVITYINFOHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFOHELPER_H__

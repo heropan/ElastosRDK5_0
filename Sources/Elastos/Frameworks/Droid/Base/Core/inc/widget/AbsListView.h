@@ -1,6 +1,6 @@
 
-#ifndef __ABSLISTVIEW_H__
-#define __ABSLISTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -2165,4 +2165,4 @@ private:
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-#endif //__ABSLISTVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_ABSLISTVIEW_H__

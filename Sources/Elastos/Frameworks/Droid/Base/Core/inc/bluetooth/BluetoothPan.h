@@ -1,6 +1,6 @@
 
-#ifndef __BLUETOOTHPAN_H__
-#define __BLUETOOTHPAN_H__
+#ifndef __ELASTOS_DROID_BLUETOOTH_BLUETOOTHPAN_H__
+#define __ELASTOS_DROID_BLUETOOTH_BLUETOOTHPAN_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkdef.h"
@@ -178,4 +178,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __BLUETOOTHPAN_H__
+#endif // __ELASTOS_DROID_BLUETOOTH_BLUETOOTHPAN_H__

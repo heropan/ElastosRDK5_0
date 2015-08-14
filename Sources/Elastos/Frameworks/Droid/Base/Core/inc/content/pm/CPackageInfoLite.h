@@ -1,6 +1,6 @@
 
-#ifndef __CPACKAGEINFOLITE_H__
-#define __CPACKAGEINFOLITE_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEINFOLITE_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPACKAGEINFOLITE_H__
 
 #include "_CPackageInfoLite.h"
 
@@ -93,4 +93,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPACKAGEINFOLITE_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPACKAGEINFOLITE_H__

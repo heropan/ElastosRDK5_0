@@ -1,6 +1,6 @@
 
-#ifndef __CEDITTEXTPREFERENCE_H__
-#define __CEDITTEXTPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCE_H__
 
 #include "_CEditTextPreference.h"
 #include "DialogPreference.h"
@@ -180,4 +180,4 @@ private:
 }
 }
 
-#endif // __CEDITTEXTPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCE_H__

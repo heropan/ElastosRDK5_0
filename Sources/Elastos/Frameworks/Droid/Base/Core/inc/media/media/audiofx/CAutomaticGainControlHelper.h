@@ -1,6 +1,6 @@
 
-#ifndef __CAUTOMATICGAINCONTROLHELPER_H__
-#define __CAUTOMATICGAINCONTROLHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
 
 #include "_CAutomaticGainControlHelper.h"
 #include <ext/frameworkext.h>
@@ -58,5 +58,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUTOMATICGAINCONTROLHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
 

@@ -1,6 +1,6 @@
 
-#ifndef __CEFFECTCOLOR_H__
-#define __CEFFECTCOLOR_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTCOLOR_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTCOLOR_H__
 
 #include "_CEffectColor.h"
 #include <ext/frameworkext.h>
@@ -83,5 +83,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CEFFECTCOLOR_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTCOLOR_H__
 

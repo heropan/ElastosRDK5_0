@@ -1,5 +1,5 @@
-#ifndef __CSPANNEDSTRING_H__
-#define __CSPANNEDSTRING_H__
+#ifndef __ELASTOS_DROID_TEXT_CSPANNEDSTRING_H__
+#define __ELASTOS_DROID_TEXT_CSPANNEDSTRING_H__
 
 #include "_CSpannedString.h"
 #include "text/SpannedString.h"
@@ -85,4 +85,4 @@ public:
 } // namespace Elastos
 
 
-#endif //__CSPANNEDSTRING_H__
+#endif //__ELASTOS_DROID_TEXT_CSPANNEDSTRING_H__

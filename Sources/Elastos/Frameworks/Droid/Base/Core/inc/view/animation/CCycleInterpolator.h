@@ -1,6 +1,6 @@
 
-#ifndef __CCYCLEINTERPOLATOR_H__
-#define __CCYCLEINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
 
 #include "_CCycleInterpolator.h"
 #include "R.h"
@@ -38,4 +38,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CCYCLEINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__

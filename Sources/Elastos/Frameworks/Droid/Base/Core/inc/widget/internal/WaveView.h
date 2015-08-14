@@ -1,6 +1,6 @@
 
-#ifndef __WAVEVIEW_H__
-#define __WAVEVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_WAVEVIEW_H__
 
 #include "view/View.h"
 

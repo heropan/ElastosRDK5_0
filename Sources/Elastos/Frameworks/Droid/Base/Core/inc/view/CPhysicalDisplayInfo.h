@@ -1,6 +1,6 @@
 
-#ifndef  __CPHYSICALDISPLAYINFO_H__
-#define  __CPHYSICALDISPLAYINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_CPHYSICALDISPLAYINFO_H__
+#define  __ELASTOS_DROID_VIEW_CPHYSICALDISPLAYINFO_H__
 
 #include "_CPhysicalDisplayInfo.h"
 
@@ -96,4 +96,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CPHYSICALDISPLAYINFO_H__
+#endif  //__ELASTOS_DROID_VIEW_CPHYSICALDISPLAYINFO_H__

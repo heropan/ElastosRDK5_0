@@ -1,5 +1,5 @@
-#ifndef __CTRACKINFOVENDOR_H__
-#define __CTRACKINFOVENDOR_H__
+#ifndef __ELASTOS_DROID_MEDIA_CTRACKINFOVENDOR_H__
+#define __ELASTOS_DROID_MEDIA_CTRACKINFOVENDOR_H__
 
 #include "_CTrackInfoVendor.h"
 
@@ -37,4 +37,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CTRACKINFOVENDOR_H__
+#endif //__ELASTOS_DROID_MEDIA_CTRACKINFOVENDOR_H__

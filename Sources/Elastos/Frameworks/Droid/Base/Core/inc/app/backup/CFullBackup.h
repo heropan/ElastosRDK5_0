@@ -1,5 +1,5 @@
-#ifndef __CFULLBACKUP_H__
-#define __CFULLBACKUP_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CFULLBACKUP_H__
+#define __ELASTOS_DROID_APP_BACKUP_CFULLBACKUP_H__
 
 #include "ext/frameworkext.h"
 #include "_CFullBackup.h"
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CFULLBACKUP_H__
+#endif // __ELASTOS_DROID_APP_BACKUP_CFULLBACKUP_H__

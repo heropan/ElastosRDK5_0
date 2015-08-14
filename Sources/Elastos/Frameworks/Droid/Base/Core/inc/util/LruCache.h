@@ -1,6 +1,6 @@
 
-#ifndef __LRUCACHE_H__
-#define __LRUCACHE_H__
+#ifndef __ELASTOS_DROID_UTILITY_LRUCACHE_H__
+#define __ELASTOS_DROID_UTILITY_LRUCACHE_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
@@ -550,4 +550,4 @@ String LruCache<K, V>::ToString()
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__LRUCACHE_H__
+#endif //__ELASTOS_DROID_UTILITY_LRUCACHE_H__

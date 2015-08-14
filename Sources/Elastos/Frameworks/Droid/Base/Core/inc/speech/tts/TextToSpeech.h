@@ -1,5 +1,5 @@
-#ifndef __TextToSpeech_H__
-#define __TextToSpeech_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
+#define __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__
 
 #include "speech/tts/UtteranceProgressListener.h"
 #include "Elastos.Droid.Core_server.h"
@@ -893,4 +893,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __TextToSpeech_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_TextToSpeech_H__

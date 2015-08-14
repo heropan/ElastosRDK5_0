@@ -1,6 +1,6 @@
 
-#ifndef __CENTERPRISEFIELD_H__
-#define __CENTERPRISEFIELD_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CENTERPRISEFIELD_H__
+#define __ELASTOS_DROID_NET_WIFI_CENTERPRISEFIELD_H__
 
 #include "_CEnterpriseField.h"
 
@@ -34,4 +34,4 @@ private:
 }
 }
 
-#endif // __CENTERPRISEFIELD_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CENTERPRISEFIELD_H__

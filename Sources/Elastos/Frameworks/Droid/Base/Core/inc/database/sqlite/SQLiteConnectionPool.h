@@ -1,5 +1,5 @@
-#ifndef __SQLITECONNECTIONPOOL_H__
-#define __SQLITECONNECTIONPOOL_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTIONPOOL_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTIONPOOL_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -16,7 +16,6 @@ using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Os::ICancellationSignalOnCancelListener;
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_SQLITECONNECTION
 #define HASH_FUNC_FOR_AUTOPTR_SQLITECONNECTION
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Database::Sqlite::SQLiteConnection)
 #endif
@@ -384,4 +383,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__SQLITECONNECTIONPOOL_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTIONPOOL_H__

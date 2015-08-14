@@ -1,6 +1,6 @@
 
-#ifndef __CPOWERMANAGERWAKELOCK_H__
-#define __CPOWERMANAGERWAKELOCK_H__
+#ifndef __ELASTOS_DROID_OS_CPOWERMANAGERWAKELOCK_H__
+#define __ELASTOS_DROID_OS_CPOWERMANAGERWAKELOCK_H__
 
 #include "_CPowerManagerWakeLock.h"
 #include "ext/frameworkdef.h"
@@ -165,4 +165,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPOWERMANAGERWAKELOCK_H__
+#endif // __ELASTOS_DROID_OS_CPOWERMANAGERWAKELOCK_H__

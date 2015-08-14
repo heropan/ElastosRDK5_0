@@ -1,5 +1,5 @@
-#ifndef __NAVIGATIONBARVIEW_H_
-#define __NAVIGATIONBARVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -260,4 +260,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__NAVIGATIONBARVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_NAVIGATIONBARVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __USBMIDIDEVICEFACTORYANDROID_H__
-#define __USBMIDIDEVICEFACTORYANDROID_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEFACTORYANDROID_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEFACTORYANDROID_H__
 
 // import android.app.PendingIntent;
 // import android.content.BroadcastReceiver;
@@ -134,4 +134,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__USBMIDIDEVICEFACTORYANDROID_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEFACTORYANDROID_H__

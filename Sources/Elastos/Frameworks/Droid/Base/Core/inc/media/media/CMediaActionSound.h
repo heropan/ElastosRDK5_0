@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAACTIONSOUND_H__
-#define __CMEDIAACTIONSOUND_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAACTIONSOUND_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAACTIONSOUND_H__
 
 #include "_CMediaActionSound.h"
 #include <ext/frameworkext.h>
@@ -112,4 +112,4 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMEDIAACTIONSOUND_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAACTIONSOUND_H__

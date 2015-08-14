@@ -1,6 +1,6 @@
 
-#ifndef __CCELLINFO_H__
-#define __CCELLINFO_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCELLINFO_H__
+#define __ELASTOS_DROID_TELEPHONY_CCELLINFO_H__
 
 #include "_CCellInfo.h"
 #include "ext/frameworkdef.h"
@@ -80,4 +80,4 @@ private:
 }
 }
 
-#endif // __CCELLINFO_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCELLINFO_H__

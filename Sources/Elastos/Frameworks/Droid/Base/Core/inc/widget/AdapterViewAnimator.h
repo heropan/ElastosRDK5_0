@@ -1,6 +1,6 @@
 
-#ifndef __ADAPTERVIEWANIMATOR_H__
-#define __ADAPTERVIEWANIMATOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
+#define __ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>
@@ -305,4 +305,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ADAPTERVIEWANIMATOR_H__
+#endif //__ELASTOS_DROID_WIDGET_ADAPTERVIEWANIMATOR_H__

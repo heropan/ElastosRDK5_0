@@ -1,6 +1,6 @@
 
-#ifndef __USBMIDIDEVICEANDROID_H__
-#define __USBMIDIDEVICEANDROID_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__
 
 // import android.annotation.TargetApi;
 // import android.hardware.usb.UsbConstants;
@@ -186,4 +186,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__USBMIDIDEVICEANDROID_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_USBMIDIDEVICEANDROID_H__

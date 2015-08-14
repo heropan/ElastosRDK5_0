@@ -1,5 +1,5 @@
-#ifndef __CBUNDLE_H__
-#define __CBUNDLE_H__
+#ifndef __ELASTOS_DROID_OS_CBUNDLE_H__
+#define __ELASTOS_DROID_OS_CBUNDLE_H__
 
 #include "_CBundle.h"
 #include "ext/frameworkext.h"
@@ -987,4 +987,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CBUNDLE_H__
+#endif //__ELASTOS_DROID_OS_CBUNDLE_H__

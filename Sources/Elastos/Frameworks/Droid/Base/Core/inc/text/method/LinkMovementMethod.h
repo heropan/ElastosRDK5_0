@@ -1,5 +1,5 @@
-#ifndef __LinkMovementMethod_H__
-#define __LinkMovementMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__
 
 #include "text/method/ScrollingMovementMethod.h"
 //#include "os/ElObject.h"
@@ -9,10 +9,8 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-#ifndef Integer_MAX_VALUE
     #define Integer_MAX_VALUE 0x7fffffff
 #endif
-#ifndef Integer_MIN_VALUE
     #define Integer_MIN_VALUE 0x80000000
 #endif
 
@@ -92,4 +90,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __LinkMovementMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_LinkMovementMethod_H__

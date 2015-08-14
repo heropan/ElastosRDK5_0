@@ -1,6 +1,6 @@
 
-#ifndef __TEXTCLOCK_H__
-#define __TEXTCLOCK_H__
+#ifndef __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_TEXTCLOCK_H__
 
 namespace Elastos{
 namespace Droid{

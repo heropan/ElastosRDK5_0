@@ -1,6 +1,6 @@
 
-#ifndef __CLIGHTINGCOLORFILTER_H__
-#define __CLIGHTINGCOLORFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CLIGHTINGCOLORFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_CLIGHTINGCOLORFILTER_H__
 
 #include "_CLightingColorFilter.h"
 #include "graphics/ColorFilter.h"
@@ -39,4 +39,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLIGHTINGCOLORFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CLIGHTINGCOLORFILTER_H__

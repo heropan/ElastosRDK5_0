@@ -1,6 +1,6 @@
 
-#ifndef __CJETPLAYERHELPER_H__
-#define __CJETPLAYERHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CJETPLAYERHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CJETPLAYERHELPER_H__
 
 #include "_CJetPlayerHelper.h"
 #include "CJetPlayer.h"
@@ -29,4 +29,4 @@ public:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CJETPLAYERHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CJETPLAYERHELPER_H__

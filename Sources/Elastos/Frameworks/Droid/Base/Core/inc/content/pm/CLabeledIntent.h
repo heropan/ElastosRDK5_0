@@ -1,6 +1,6 @@
 
-#ifndef __CLABELEDINTENT_H__
-#define __CLABELEDINTENT_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__
+#define __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__
 
 #include "_CLabeledIntent.h"
 #include "../Intent.h"
@@ -606,4 +606,4 @@ private:
 }
 }
 
-#endif // __CLABELEDINTENT_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__

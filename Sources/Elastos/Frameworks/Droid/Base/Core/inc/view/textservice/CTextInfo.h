@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTINFO_H__
-#define __CTEXTINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_TEXTSERVICE_CTEXTINFO_H__
+#define __ELASTOS_DROID_VIEW_TEXTSERVICE_CTEXTINFO_H__
 
 namespace Elastos {
 namespace Droid {
@@ -73,4 +73,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CTEXTINFO_H__
+#endif //__ELASTOS_DROID_VIEW_TEXTSERVICE_CTEXTINFO_H__

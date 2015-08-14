@@ -1,6 +1,6 @@
 
-#ifndef __CLISTPREFERENCE_H__
-#define __CLISTPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CLISTPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CLISTPREFERENCE_H__
 
 #include "_CListPreference.h"
 #include "DialogPreference.h"
@@ -197,4 +197,4 @@ private:
 }
 }
 
-#endif // __CLISTPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CLISTPREFERENCE_H__

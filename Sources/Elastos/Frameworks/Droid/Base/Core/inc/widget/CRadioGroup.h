@@ -1,5 +1,5 @@
-#ifndef __CRADIOGROUP_H_
-#define __CRADIOGROUP_H_
+#ifndef __ELASTOS_DROID_WIDGET_CRADIOGROUP_H__
+#define __ELASTOS_DROID_WIDGET_CRADIOGROUP_H__
 
 #include "_CRadioGroup.h"
 
@@ -85,4 +85,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CRADIOGROUP_H_
+#endif //__ELASTOS_DROID_WIDGET_CRADIOGROUP_H__

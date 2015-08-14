@@ -1,6 +1,6 @@
 
-#ifndef __VIEWBASESAVEDSTATE_H__
-#define __VIEWBASESAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWBASESAVEDSTATE_H__
+#define __ELASTOS_DROID_VIEW_VIEWBASESAVEDSTATE_H__
 
 #include "view/AbsSavedState.h"
 
@@ -27,4 +27,4 @@ protected:
 }// namespace View
 }// namespace Droid
 }// namespace Elastos
-#endif //__VIEWBASESAVEDSTATE_H__
+#endif //__ELASTOS_DROID_VIEW_VIEWBASESAVEDSTATE_H__

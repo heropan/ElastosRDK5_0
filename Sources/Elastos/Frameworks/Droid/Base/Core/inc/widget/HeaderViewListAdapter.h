@@ -1,5 +1,5 @@
-#ifndef __HEADERVIEWLISTADAPTER_H__
-#define __HEADERVIEWLISTADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ListView.h"
@@ -97,4 +97,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__HEADERVIEWLISTADAPTER_H__
+#endif //__ELASTOS_DROID_WIDGET_HEADERVIEWLISTADAPTER_H__

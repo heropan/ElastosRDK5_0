@@ -1,6 +1,6 @@
 
-#ifndef __CSURFACEVIEW_H__
-#define __CSURFACEVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__
+#define __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__
 
 #include "_CSurfaceView.h"
 #include "view/SurfaceView.h"
@@ -64,4 +64,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSURFACEVIEW_H__
+#endif // __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__

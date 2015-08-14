@@ -1,6 +1,6 @@
 
-#ifndef __ADAPTER_H__
-#define __ADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_ADAPTER_H__
 
 #include "ext/frameworkext.h"
 

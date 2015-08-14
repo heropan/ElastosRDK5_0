@@ -1,5 +1,5 @@
-#ifndef __CURSORENTITYITERATOR_H__
-#define __CURSORENTITYITERATOR_H__
+#ifndef __ELASTOS_DROID_CONTENT_CURSORENTITYITERATOR_H__
+#define __ELASTOS_DROID_CONTENT_CURSORENTITYITERATOR_H__
 
 #include <ext/frameworkext.h>
 
@@ -86,4 +86,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CURSORENTITYITERATOR_H__
+#endif //__ELASTOS_DROID_CONTENT_CURSORENTITYITERATOR_H__

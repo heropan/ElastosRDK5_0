@@ -1,6 +1,6 @@
 
-#ifndef __AWHTTPAUTHHANDLER_H__
-#define __AWHTTPAUTHHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__
 
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
@@ -53,4 +53,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWHTTPAUTHHANDLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWHTTPAUTHHANDLER_H__

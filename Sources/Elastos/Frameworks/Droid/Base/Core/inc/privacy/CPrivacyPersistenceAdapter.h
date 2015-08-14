@@ -1,6 +1,6 @@
 
-#ifndef __CPRIVACYPERSISTENCEADAPTER_H__
-#define __CPRIVACYPERSISTENCEADAPTER_H__
+#ifndef __ELASTOS_DROID_PRIVACY_CPRIVACYPERSISTENCEADAPTER_H__
+#define __ELASTOS_DROID_PRIVACY_CPRIVACYPERSISTENCEADAPTER_H__
 
 #include "ext/frameworkdef.h"
 #include "_CPrivacyPersistenceAdapter.h"
@@ -172,4 +172,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPRIVACYPERSISTENCEADAPTER_H__
+#endif // __ELASTOS_DROID_PRIVACY_CPRIVACYPERSISTENCEADAPTER_H__

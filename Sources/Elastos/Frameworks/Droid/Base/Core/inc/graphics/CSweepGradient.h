@@ -1,6 +1,6 @@
 
-#ifndef __CSWEEPGRADIENT_H__
-#define __CSWEEPGRADIENT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CSWEEPGRADIENT_H__
+#define __ELASTOS_DROID_GRAPHICS_CSWEEPGRADIENT_H__
 
 #include "_CSweepGradient.h"
 #include "graphics/Shader.h"
@@ -88,4 +88,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CSWEEPGRADIENT_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CSWEEPGRADIENT_H__

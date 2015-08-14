@@ -1,6 +1,6 @@
 
-#ifndef __IDLECACHE_H__
-#define __IDLECACHE_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__
+#define __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__
 
 #include "ext/frameworkext.h"
 #include "Connection.h"
@@ -99,4 +99,4 @@ private:
 }
 }
 
-#endif // __IDLECACHE_H__
+#endif // __ELASTOS_DROID_NET_HTTP_IDLECACHE_H__

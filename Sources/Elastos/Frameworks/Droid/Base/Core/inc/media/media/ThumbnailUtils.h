@@ -1,6 +1,6 @@
 
-#ifndef __THUMBNAILUTILS_H__
-#define __THUMBNAILUTILS_H__
+#ifndef __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
+#define __ELASTOS_DROID_MEDIA_THUMBNAILUTILS_H__
 
 #include <ext/frameworkext.h>
 

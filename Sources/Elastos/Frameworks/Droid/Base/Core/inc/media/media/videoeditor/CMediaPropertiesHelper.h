@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAPROPERTIESHELPER_H__
-#define __CMEDIAPROPERTIESHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAPROPERTIESHELPER_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAPROPERTIESHELPER_H__
 
 #include "_CMediaPropertiesHelper.h"
 #include <ext/frameworkext.h>
@@ -119,5 +119,5 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMEDIAPROPERTIESHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAPROPERTIESHELPER_H__
 

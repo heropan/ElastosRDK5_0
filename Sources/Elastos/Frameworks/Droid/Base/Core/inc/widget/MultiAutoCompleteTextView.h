@@ -1,6 +1,6 @@
 
-#ifndef __MULTIAUTOCOMPLETETEXTVIEW_H__
-#define __MULTIAUTOCOMPLETETEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_MULTIAUTOCOMPLETETEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_MULTIAUTOCOMPLETETEXTVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "widget/AutoCompleteTextView.h"

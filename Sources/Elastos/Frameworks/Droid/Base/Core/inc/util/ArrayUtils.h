@@ -1,5 +1,5 @@
-#ifndef __ARRAYUTILS_H__
-#define __ARRAYUTILS_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_ARRAYUTILS_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_ARRAYUTILS_H__
 
 #include "ext/frameworkext.h"
 
@@ -92,4 +92,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ARRAYUTILS_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_ARRAYUTILS_H__

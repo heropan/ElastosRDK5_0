@@ -1,6 +1,6 @@
 
-#ifndef __CPRIVACYSETTINGS_H__
-#define __CPRIVACYSETTINGS_H__
+#ifndef __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGS_H__
+#define __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGS_H__
 
 #include "_CPrivacySettings.h"
 #include "ext/frameworkdef.h"
@@ -520,4 +520,4 @@ private:
 }
 }
 
-#endif // __CPRIVACYSETTINGS_H__
+#endif // __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGS_H__

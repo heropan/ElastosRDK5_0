@@ -1,6 +1,6 @@
 
-#ifndef __CONKEYGUARDEXITRESULT_H__
-#define __CONKEYGUARDEXITRESULT_H__
+#ifndef __ELASTOS_DROID_APP_CONKEYGUARDEXITRESULT_H__
+#define __ELASTOS_DROID_APP_CONKEYGUARDEXITRESULT_H__
 
 #include "_COnKeyguardExitResult.h"
 
@@ -25,4 +25,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CONKEYGUARDEXITRESULT_H__
+#endif //__ELASTOS_DROID_APP_CONKEYGUARDEXITRESULT_H__

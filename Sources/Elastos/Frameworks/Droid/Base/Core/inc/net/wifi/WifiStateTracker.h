@@ -1,6 +1,6 @@
 
-#ifndef  __WIFISTATETRACKER_H__
-#define  __WIFISTATETRACKER_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFISTATETRACKER_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFISTATETRACKER_H__
 
 #include "net/NetworkStateTracker.h"
 #include "ext/frameworkdef.h"
@@ -200,4 +200,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__WIFISTATETRACKER_H__
+#endif  //__ELASTOS_DROID_NET_WIFI_WIFISTATETRACKER_H__

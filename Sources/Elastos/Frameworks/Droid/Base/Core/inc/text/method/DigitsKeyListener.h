@@ -1,5 +1,5 @@
-#ifndef __DigitsKeyListener_H__
-#define __DigitsKeyListener_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__
+#define __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__
 
 #include "text/method/NumberKeyListener.h"
 
@@ -93,4 +93,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DigitsKeyListener_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_DigitsKeyListener_H__

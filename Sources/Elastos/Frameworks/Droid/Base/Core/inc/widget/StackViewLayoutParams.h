@@ -1,5 +1,5 @@
-#ifndef __STACKVIEWLAYOUTPARAMS__H_
-#define __STACKVIEWLAYOUTPARAMS__H_
+#ifndef __ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__
 
 #include <ext/frameworkext.h>
 #include "view/ViewGroupLayoutParams.h"
@@ -75,4 +75,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__STACKVIEWLAYOUTPARAMS__H_
+#endif //__ELASTOS_DROID_WIDGET_STACKVIEWLAYOUTPARAMS_H__

@@ -1,5 +1,5 @@
-#ifndef __CSTRICTMODESPAN_H__
-#define __CSTRICTMODESPAN_H__
+#ifndef __ELASTOS_DROID_OS_CSTRICTMODESPAN_H__
+#define __ELASTOS_DROID_OS_CSTRICTMODESPAN_H__
 
 #include "_CStrictModeSpan.h"
 #include "ext/frameworkdef.h"
@@ -38,4 +38,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRICTMODESPAN_H__
+#endif //__ELASTOS_DROID_OS_CSTRICTMODESPAN_H__

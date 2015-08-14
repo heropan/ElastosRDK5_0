@@ -1,6 +1,6 @@
 
-#ifndef __HTTPAUTHDATABASE_H__
-#define __HTTPAUTHDATABASE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__
 
 // import android.content.ContentValues;
 // import android.content.Context;
@@ -164,4 +164,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__HTTPAUTHDATABASE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_HTTPAUTHDATABASE_H__

@@ -1,6 +1,6 @@
 
-#ifndef _ICONMENUVIEWLAYOUTPARAMS_H__
-#define _ICONMENUVIEWLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEWLAYOUTPARAMS_H__
 
 #include "view/ViewGroupMarginLayoutParams.h"
 
@@ -46,4 +46,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif   //_ICONMENUVIEWLAYOUTPARAMS_H__
+#endif   //__ELASTOS_DROID_VIEW_MENU_ICONMENUVIEWLAYOUTPARAMS_H__

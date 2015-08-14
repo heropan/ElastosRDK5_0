@@ -1,6 +1,6 @@
 
-#ifndef __CWAVEHEADER_H__
-#define __CWAVEHEADER_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_CWAVEHEADER_H__
+#define __ELASTOS_DROID_SPEECH_SREC_CWAVEHEADER_H__
 
 #include "_CWaveHeader.h"
 #include "speech/srec/WaveHeader.h"
@@ -75,4 +75,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CWAVEHEADER_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_CWAVEHEADER_H__

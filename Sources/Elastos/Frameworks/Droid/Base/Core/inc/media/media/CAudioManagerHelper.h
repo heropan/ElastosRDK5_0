@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOMANAGERHELPER_H__
-#define __CAUDIOMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOMANAGERHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOMANAGERHELPER_H__
 
 #include "_CAudioManagerHelper.h"
 #include "ext/frameworkext.h"
@@ -53,4 +53,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CAUDIOMANAGERHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIOMANAGERHELPER_H__

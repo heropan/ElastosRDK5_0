@@ -1,5 +1,5 @@
-#ifndef __CACTIONBARVIEW_H_
-#define __CACTIONBARVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CACTIONBARVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CACTIONBARVIEW_H__
 
 #include "_CActionBarView.h"
 
@@ -172,4 +172,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CACTIONBARVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CACTIONBARVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CURIBUILDER_H__
-#define __CURIBUILDER_H__
+#ifndef __ELASTOS_DROID_NET_CURIBUILDER_H__
+#define __ELASTOS_DROID_NET_CURIBUILDER_H__
 
 #include "_CUriBuilder.h"
 #include "net/Uri.h"
@@ -110,4 +110,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CURIBUILDER_H__
+#endif // __ELASTOS_DROID_NET_CURIBUILDER_H__

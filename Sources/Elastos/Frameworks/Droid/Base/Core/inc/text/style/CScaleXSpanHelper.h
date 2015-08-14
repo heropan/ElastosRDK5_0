@@ -1,6 +1,6 @@
 
-#ifndef __CSCALEXSPANHELPER_H__
-#define __CSCALEXSPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSCALEXSPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSCALEXSPANHELPER_H__
 
 #include "_CScaleXSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSCALEXSPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSCALEXSPANHELPER_H__

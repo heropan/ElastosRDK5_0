@@ -1,6 +1,6 @@
 
-#ifndef __CALARMMANAGER_H__
-#define __CALARMMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CALARMMANAGER_H__
+#define __ELASTOS_DROID_APP_CALARMMANAGER_H__
 
 #include "_CAlarmManager.h"
 
@@ -214,4 +214,4 @@ private:
 }
 }
 
-#endif //__CALARMMANAGER_H__
+#endif //__ELASTOS_DROID_APP_CALARMMANAGER_H__

@@ -1,4 +1,4 @@
-#ifndef __CFADEOUTRUNNABLE_H__
+#ifndef __ELASTOS_DROID_GESTURE_CFADEOUTRUNNABLE_H__
 #define __GFADEOUTRUNNABLE_H__
 
 #include "_CFadeOutRunnable.h"

@@ -1,5 +1,5 @@
-#ifndef __CSETTINGSVIEW_H_
-#define __CSETTINGSVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSETTINGSVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSETTINGSVIEW_H__
 
 #include "_CSettingsView.h"
 
@@ -47,4 +47,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSETTINGSVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSETTINGSVIEW_H__

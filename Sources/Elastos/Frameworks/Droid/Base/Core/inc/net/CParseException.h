@@ -1,6 +1,6 @@
 
-#ifndef __CPARSEEXCEPTION_H__
-#define __CPARSEEXCEPTION_H__
+#ifndef __ELASTOS_DROID_NET_CPARSEEXCEPTION_H__
+#define __ELASTOS_DROID_NET_CPARSEEXCEPTION_H__
 
 
 
@@ -24,4 +24,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CPARSEEXCEPTION_H__
+#endif // __ELASTOS_DROID_NET_CPARSEEXCEPTION_H__

@@ -1,6 +1,6 @@
 
-#ifndef __NETINITIATEDACTIVITY_H__
-#define __NETINITIATEDACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_NETINITIATEDACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_NETINITIATEDACTIVITY_H__
 
 #include "ext/frameworkdef.h"
 #include "app/AlertActivity.h"
@@ -122,4 +122,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__NETINITIATEDACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_NETINITIATEDACTIVITY_H__

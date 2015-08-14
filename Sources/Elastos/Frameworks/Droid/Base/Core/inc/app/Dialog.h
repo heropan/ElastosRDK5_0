@@ -1,6 +1,6 @@
 
-#ifndef __DIALOG_H__
-#define __DIALOG_H__
+#ifndef __ELASTOS_DROID_APP_DIALOG_H__
+#define __ELASTOS_DROID_APP_DIALOG_H__
 
 #include "os/Runnable.h"
 #include "os/HandlerBase.h"
@@ -511,4 +511,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DIALOG_H__
+#endif //__ELASTOS_DROID_APP_DIALOG_H__

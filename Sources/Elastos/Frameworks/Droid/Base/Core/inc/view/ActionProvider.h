@@ -1,6 +1,6 @@
 
-#ifndef  __ACTIONPROVIDER_H__
-#define  __ACTIONPROVIDER_H__
+#ifndef __ELASTOS_DROID_VIEW_ACTIONPROVIDER_H__
+#define  __ELASTOS_DROID_VIEW_ACTIONPROVIDER_H__
 
 #include "ext/frameworkext.h"
 
@@ -206,4 +206,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __ACTIONPROVIDER_H__
+#endif  // __ELASTOS_DROID_VIEW_ACTIONPROVIDER_H__

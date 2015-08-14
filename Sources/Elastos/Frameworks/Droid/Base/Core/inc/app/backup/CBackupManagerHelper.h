@@ -1,5 +1,5 @@
-#ifndef __CBACKUPMANAGERHELPER_H__
-#define __CBACKUPMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
+#define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
 
 #include "_CBackupManagerHelper.h"
 #include "ext/frameworkext.h"
@@ -33,4 +33,4 @@ public:
 }
 }
 
-#endif // __CBACKUPMANAGERHELPER_H__
+#endif // __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__

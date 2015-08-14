@@ -1,6 +1,6 @@
 
-#ifndef __CHECKBOX_H__
-#define __CHECKBOX_H__
+#ifndef __ELASTOS_DROID_WIDGET_CHECKBOX_H__
+#define __ELASTOS_DROID_WIDGET_CHECKBOX_H__
 
 #include "widget/CompoundButton.h"
 

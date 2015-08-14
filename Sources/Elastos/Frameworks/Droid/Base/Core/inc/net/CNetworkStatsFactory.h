@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKSTATSFACTORY_H__
-#define __CNETWORKSTATSFACTORY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_NET_CNETWORKSTATSFACTORY_H__
+#define __ELASTOS_DROID_INTERNAL_NET_CNETWORKSTATSFACTORY_H__
 
 #include "_CNetworkStatsFactory.h"
 
@@ -68,4 +68,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNETWORKSTATSFACTORY_H__
+#endif //__ELASTOS_DROID_INTERNAL_NET_CNETWORKSTATSFACTORY_H__

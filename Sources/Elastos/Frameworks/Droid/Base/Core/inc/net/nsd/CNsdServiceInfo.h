@@ -1,5 +1,5 @@
-#ifndef __CNSDSERVICEINFO_H__
-#define __CNSDSERVICEINFO_H__
+#ifndef __ELASTOS_DROID_NET_NSD_CNSDSERVICEINFO_H__
+#define __ELASTOS_DROID_NET_NSD_CNSDSERVICEINFO_H__
 
 #include "_CNsdServiceInfo.h"
 
@@ -90,4 +90,4 @@ public:
 }
 }
 
-#endif // __CNSDSERVICEINFO_H__
+#endif // __ELASTOS_DROID_NET_NSD_CNSDSERVICEINFO_H__

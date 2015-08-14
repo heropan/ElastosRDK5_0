@@ -1,6 +1,6 @@
 
-#ifndef __CDIGITSKEYLISTENER_H__
-#define __CDIGITSKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CDIGITSKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CDIGITSKEYLISTENER_H__
 
 #include "_CDigitsKeyListener.h"
 
@@ -36,4 +36,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDIGITSKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CDIGITSKEYLISTENER_H__

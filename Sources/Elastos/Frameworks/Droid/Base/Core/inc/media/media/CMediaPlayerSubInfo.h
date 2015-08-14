@@ -1,5 +1,5 @@
-#ifndef __CMEDIAPLAYER_SUBINFO_H__
-#define __CMEDIAPLAYER_SUBINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYER_SUBINFO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAPLAYER_SUBINFO_H__
 
 #include "_CMediaPlayerSubInfo.h"
 
@@ -45,4 +45,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CMEDIAPLAYER_SUBINFO_H__
+#endif //__ELASTOS_DROID_MEDIA_CMEDIAPLAYER_SUBINFO_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PACKAGEPARSER_H__
-#define __PACKAGEPARSER_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
+#define __ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__
 
 #include "ext/frameworkext.h"
 #include "content/IntentFilter.h"
@@ -997,4 +997,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PACKAGEPARSER_H__
+#endif //__ELASTOS_DROID_CONTENT_PM_PACKAGEPARSER_H__

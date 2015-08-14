@@ -1,6 +1,6 @@
 
-#ifndef __CNEIGHBORINGCELLINFO_H__
-#define __CNEIGHBORINGCELLINFO_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CNEIGHBORINGCELLINFO_H__
+#define __ELASTOS_DROID_TELEPHONY_CNEIGHBORINGCELLINFO_H__
 
 #include "_CNeighboringCellInfo.h"
 
@@ -86,4 +86,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNEIGHBORINGCELLINFO_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CNEIGHBORINGCELLINFO_H__

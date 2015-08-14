@@ -1,6 +1,6 @@
 
-#ifndef __CRECOGNIZER_H__
-#define __CRECOGNIZER_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZER_H__
+#define __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZER_H__
 
 #include "_CRecognizer.h"
 #include "speech/srec/Recognizer.h"
@@ -62,4 +62,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CRECOGNIZER_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZER_H__

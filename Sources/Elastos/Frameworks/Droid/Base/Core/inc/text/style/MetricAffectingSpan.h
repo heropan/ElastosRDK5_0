@@ -1,5 +1,5 @@
-#ifndef __MetricAffectingSpan_H__
-#define __MetricAffectingSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__
 
 #include "text/style/CharacterStyle.h"
 #include "Elastos.Droid.Core_server.h"
@@ -96,4 +96,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MetricAffectingSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_MetricAffectingSpan_H__

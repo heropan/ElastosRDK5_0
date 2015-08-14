@@ -1,6 +1,6 @@
 
-#ifndef __CONTEXTMENUBUILDER_H__
-#define __CONTEXTMENUBUILDER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDER_H__
 
 #include "view/menu/ContextMenuBuilderBase.h"
 #include "_CContextMenuBuilder.h"
@@ -104,4 +104,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CONTEXTMENUBUILDER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_CONTEXTMENUBUILDER_H__

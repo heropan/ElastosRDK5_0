@@ -22,8 +22,8 @@
  */
 
 
-#ifndef POLY_HDR
-#define POLY_HDR
+#ifndef __ELASTOS_DROID_OPENGL_POLY_HDR__
+#define __ELASTOS_DROID_OPENGL_POLY_HDR__
 
 #include "Elastos.Droid.Core_server.h"
 

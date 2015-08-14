@@ -1,5 +1,5 @@
-#ifndef __CSQLITEQUERYBUILDERHELPER_H__
-#define __CSQLITEQUERYBUILDERHELPER_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDERHELPER_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDERHELPER_H__
 
 #include "_Elastos_Droid_Database_Sqlite_CSQLiteQueryBuilderHelper.h"
 #include <elastos/core/Singleton.h>
@@ -41,4 +41,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CSQLITEQUERYBUILDERHELPER_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDERHELPER_H__

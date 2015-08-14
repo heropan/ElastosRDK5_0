@@ -1,6 +1,6 @@
 
-#ifndef __CCALLS_H__
-#define __CCALLS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCALLS_H__
+#define __ELASTOS_DROID_PROVIDER_CCALLS_H__
 
 #include "_CCalls.h"
 
@@ -87,4 +87,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CCALLS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCALLS_H__

@@ -1,5 +1,5 @@
-#ifndef __CPROGRESSDIALOG_H__
-#define __CPROGRESSDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_CPROGRESSDIALOG_H__
+#define __ELASTOS_DROID_APP_CPROGRESSDIALOG_H__
 
 #include "_CProgressDialog.h"
 
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPROGRESSDIALOG_H__
+#endif // __ELASTOS_DROID_APP_CPROGRESSDIALOG_H__

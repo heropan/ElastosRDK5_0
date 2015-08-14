@@ -1,5 +1,5 @@
-#ifndef __CGESTUREOVERLAYVIEW_H__
-#define __CGESTUREOVERLAYVIEW_H__
+#ifndef __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
+#define __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
 
 #include "_CGestureOverlayView.h"
 #include "GestureOverlayView.h"

@@ -1,5 +1,5 @@
-#ifndef __CXML_H__
-#define __CXML_H__
+#ifndef __ELASTOS_DROID_UTILITY_CXML_H__
+#define __ELASTOS_DROID_UTILITY_CXML_H__
 
 #include "_CXml.h"
 
@@ -90,4 +90,4 @@ public:
 }
 }
 
-#endif // __CXML_H__
+#endif // __ELASTOS_DROID_UTILITY_CXML_H__

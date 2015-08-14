@@ -1,5 +1,5 @@
-#ifndef __ClickableSpan_H__
-#define __ClickableSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_ClickableSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_ClickableSpan_H__
 
 #include "text/style/CharacterStyle.h"
 #include "Elastos.Droid.Core_server.h"
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ClickableSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_ClickableSpan_H__

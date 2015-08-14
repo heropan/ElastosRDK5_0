@@ -1,6 +1,6 @@
 
-#ifndef __CWORKSOURCE_H__
-#define __CWORKSOURCE_H__
+#ifndef __ELASTOS_DROID_OS_CWORKSOURCE_H__
+#define __ELASTOS_DROID_OS_CWORKSOURCE_H__
 
 #include "_CWorkSource.h"
 
@@ -145,4 +145,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CWORKSOURCE_H__
+#endif //__ELASTOS_DROID_OS_CWORKSOURCE_H__

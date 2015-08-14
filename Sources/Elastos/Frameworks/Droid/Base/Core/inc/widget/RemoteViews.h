@@ -1,6 +1,6 @@
 
-#ifndef __REMOTEVIEWS_H__
-#define __REMOTEVIEWS_H__
+#ifndef __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
+#define __ELASTOS_DROID_WIDGET_REMOTEVIEWS_H__
 
 #include "widget/Filter.h"
 #include "ext/frameworkext.h"

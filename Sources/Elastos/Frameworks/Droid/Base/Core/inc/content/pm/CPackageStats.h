@@ -1,6 +1,6 @@
 
-#ifndef __CPACKAGESTATS_H__
-#define __CPACKAGESTATS_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGESTATS_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPACKAGESTATS_H__
 
 #include "_CPackageStats.h"
 
@@ -151,4 +151,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPACKAGESTATS_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPACKAGESTATS_H__

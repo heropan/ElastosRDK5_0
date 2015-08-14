@@ -1,6 +1,6 @@
 
-#ifndef __PARTBASE_H__
-#define __PARTBASE_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__
 
 #include "Part.h"
 
@@ -117,4 +117,4 @@ private:
 }
 }
 
-#endif // __PARTBASE_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_PARTBASE_H__

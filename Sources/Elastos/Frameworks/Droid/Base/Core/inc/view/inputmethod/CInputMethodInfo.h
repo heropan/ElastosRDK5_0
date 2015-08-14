@@ -1,6 +1,6 @@
 
-#ifndef  __CINPUTMETHODINFO_H__
-#define  __CINPUTMETHODINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODINFO_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODINFO_H__
 
 #include "ext/frameworkdef.h"
 #include "_CInputMethodInfo.h"
@@ -163,4 +163,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CINPUTMETHODINFO_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODINFO_H__

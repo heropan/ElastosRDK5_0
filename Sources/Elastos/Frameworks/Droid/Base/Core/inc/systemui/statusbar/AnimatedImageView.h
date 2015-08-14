@@ -1,5 +1,5 @@
-#ifndef __ANIMATEDIMAGEVIEW_H__
-#define __ANIMATEDIMAGEVIEW_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ANIMATEDIMAGEVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ANIMATEDIMAGEVIEW_H__
 
 #include "widget/ImageView.h"
 
@@ -53,4 +53,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ANIMATEDIMAGEVIEW_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_ANIMATEDIMAGEVIEW_H__

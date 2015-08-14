@@ -1,6 +1,6 @@
 
-#ifndef __CANIMATIONUTILS_H__
-#define __CANIMATIONUTILS_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANIMATIONUTILS_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CANIMATIONUTILS_H__
 #include "AnimationUtils.h"
 #include "_CAnimationUtils.h"
 
@@ -54,4 +54,4 @@ public:
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
-#endif //__CANIMATIONUTILS_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CANIMATIONUTILS_H__

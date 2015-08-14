@@ -1,6 +1,6 @@
 
-#ifndef __CLEGACYVPNINFO_H__
-#define __CLEGACYVPNINFO_H__
+#ifndef __ELASTOS_DROID_INTERNAL_NET_CLEGACYVPNINFO_H__
+#define __ELASTOS_DROID_INTERNAL_NET_CLEGACYVPNINFO_H__
 
 #include "_CLegacyVpnInfo.h"
 
@@ -53,4 +53,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CLEGACYVPNINFO_H__
+#endif //__ELASTOS_DROID_INTERNAL_NET_CLEGACYVPNINFO_H__

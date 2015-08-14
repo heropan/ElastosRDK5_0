@@ -1,6 +1,6 @@
 
-#ifndef __ROTATEDRAWABLE_H__
-#define __ROTATEDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_ROTATEDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_ROTATEDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 
@@ -168,4 +168,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ROTATEDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_ROTATEDRAWABLE_H__

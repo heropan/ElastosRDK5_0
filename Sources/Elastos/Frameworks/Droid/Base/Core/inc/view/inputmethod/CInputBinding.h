@@ -1,6 +1,6 @@
 
-#ifndef  _CINPUTBINDING_H__
-#define  _CINPUTBINDING_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__
 
 #include "_CInputBinding.h"
 
@@ -114,4 +114,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //_CINPUTBINDING_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__

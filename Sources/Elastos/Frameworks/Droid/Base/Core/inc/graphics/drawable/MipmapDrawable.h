@@ -1,6 +1,6 @@
 
-#ifndef __MIPMAPDRAWABLE_H__
-#define __MIPMAPDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_MIPMAPDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_MIPMAPDRAWABLE_H__
 
 #include "graphics/drawable/DrawableContainer.h"
 #include "utils/StateSet.h"
@@ -172,5 +172,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__MIPMAPDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_MIPMAPDRAWABLE_H__
 

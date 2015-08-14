@@ -1,6 +1,6 @@
 
-#ifndef __CDEBUG_H__
-#define __CDEBUG_H__
+#ifndef __ELASTOS_DROID_OS_CDEBUG_H__
+#define __ELASTOS_DROID_OS_CDEBUG_H__
 
 #include "_CDebug.h"
 #include "ext/frameworkdef.h"
@@ -65,4 +65,4 @@ private:
 }
 }
 
-#endif // __CDEBUG_H__
+#endif // __ELASTOS_DROID_OS_CDEBUG_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCALLERINFOHELPER_H__
-#define __CCALLERINFOHELPER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOHELPER_H__
+#define __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOHELPER_H__
 
 #include "_CCallerInfoHelper.h"
 
@@ -98,4 +98,4 @@ private:
 } //namespace Internal
 } //namespace Telephony
 
-#endif // __CCALLERINFOHELPER_H__
+#endif // __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOHELPER_H__

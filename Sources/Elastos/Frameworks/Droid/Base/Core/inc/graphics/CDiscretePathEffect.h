@@ -1,6 +1,6 @@
 
-#ifndef __CDISCRETEPATHEFFECT_H__
-#define __CDISCRETEPATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CDISCRETEPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CDISCRETEPATHEFFECT_H__
 
 #include "_CDiscretePathEffect.h"
 #include "graphics/PathEffect.h"
@@ -33,4 +33,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDISCRETEPATHEFFECT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CDISCRETEPATHEFFECT_H__

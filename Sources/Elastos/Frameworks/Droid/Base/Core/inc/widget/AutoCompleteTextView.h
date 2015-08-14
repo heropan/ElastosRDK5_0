@@ -1,6 +1,6 @@
 
-#ifndef __AUTOCOMPLETETEXTVIEW_H__
-#define __AUTOCOMPLETETEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_AUTOCOMPLETETEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_AUTOCOMPLETETEXTVIEW_H__
 
 #include "widget/EditText.h"
 #include "widget/ListView.h"

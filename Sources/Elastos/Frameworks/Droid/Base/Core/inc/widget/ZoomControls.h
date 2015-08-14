@@ -1,6 +1,6 @@
 
-#ifndef __ZOOMCONTROLS_H__
-#define __ZOOMCONTROLS_H__
+#ifndef __ELASTOS_DROID_WIDGET_ZOOMCONTROLS_H__
+#define __ELASTOS_DROID_WIDGET_ZOOMCONTROLS_H__
 
 #include "widget/LinearLayout.h"
 

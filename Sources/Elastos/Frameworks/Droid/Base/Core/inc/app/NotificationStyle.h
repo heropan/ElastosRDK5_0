@@ -1,5 +1,5 @@
-#ifndef __NOTIFICATIONSTYLE_H__
-#define __NOTIFICATIONSTYLE_H__
+#ifndef __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__
+#define __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__
 
 #include "ext/frameworkext.h"
 
@@ -56,4 +56,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __NOTIFICATIONSTYLE_H__
+#endif // __ELASTOS_DROID_APP_NOTIFICATIONSTYLE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPATIBILITYINFOHOLDER_H__
-#define __CCOMPATIBILITYINFOHOLDER_H__
+#ifndef __ELASTOS_DROID_VIEW_CCOMPATIBILITYINFOHOLDER_H__
+#define __ELASTOS_DROID_VIEW_CCOMPATIBILITYINFOHOLDER_H__
 
 #include "_CCompatibilityInfoHolder.h"
 
@@ -32,4 +32,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCOMPATIBILITYINFOHOLDER_H__
+#endif //__ELASTOS_DROID_VIEW_CCOMPATIBILITYINFOHOLDER_H__

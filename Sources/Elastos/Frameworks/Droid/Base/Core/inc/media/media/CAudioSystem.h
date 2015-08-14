@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIOSYSTEM_H__
-#define __CAUDIOSYSTEM_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIOSYSTEM_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIOSYSTEM_H__
 
 #include "_CAudioSystem.h"
 #include "ext/frameworkext.h"
@@ -172,4 +172,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUDIOSYSTEM_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIOSYSTEM_H__

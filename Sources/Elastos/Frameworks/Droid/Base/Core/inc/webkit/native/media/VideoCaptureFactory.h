@@ -1,6 +1,6 @@
 
-#ifndef __VIDEOCAPTUREFACTORY_H__
-#define __VIDEOCAPTUREFACTORY_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__
 
 // import android.content.Context;
 // import android.content.pm.PackageManager;
@@ -130,4 +130,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__VIDEOCAPTUREFACTORY_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_VIDEOCAPTUREFACTORY_H__

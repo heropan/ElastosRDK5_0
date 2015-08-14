@@ -1,6 +1,6 @@
 
-#ifndef __CCACHEMANAGER_H__
-#define __CCACHEMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CCACHEMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_CCACHEMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "_CCacheManager.h"

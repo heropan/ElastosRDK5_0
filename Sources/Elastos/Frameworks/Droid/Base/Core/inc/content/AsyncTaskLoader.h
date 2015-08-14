@@ -1,6 +1,6 @@
 
-#ifndef __ASYNCTASKLOADER_H__
-#define __ASYNCTASKLOADER_H__
+#ifndef __ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__
+#define __ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
@@ -240,4 +240,4 @@ private:
 }
 }
 
-#endif //__ASYNCTASKLOADER_H__
+#endif //__ELASTOS_DROID_CONTENT_ASYNCTASKLOADER_H__

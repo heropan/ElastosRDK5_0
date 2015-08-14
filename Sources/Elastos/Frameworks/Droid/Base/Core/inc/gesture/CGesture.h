@@ -1,5 +1,5 @@
-#ifndef __CGESTURE_H__
-#define __CGESTURE_H__
+#ifndef __ELASTOS_DROID_GESTURE_CGESTURE_H__
+#define __ELASTOS_DROID_GESTURE_CGESTURE_H__
 
 #include "ext/frameworkext.h"
 #include "_CGesture.h"

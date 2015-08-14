@@ -1,6 +1,6 @@
 
-#ifndef __FACEUNLOCKVIEW_H__
-#define __FACEUNLOCKVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_FACEUNLOCKVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_FACEUNLOCKVIEW_H__
 
 #include "widget/RelativeLayout.h"
 

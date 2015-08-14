@@ -1,5 +1,5 @@
-#ifndef __CTASKSTACKBUILDERHELPER_H__
-#define __CTASKSTACKBUILDERHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CTASKSTACKBUILDERHELPER_H__
+#define __ELASTOS_DROID_APP_CTASKSTACKBUILDERHELPER_H__
 
 #include "_CTaskStackBuilderHelper.h"
 
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CTASKSTACKBUILDERHELPER_H__
+#endif // __ELASTOS_DROID_APP_CTASKSTACKBUILDERHELPER_H__

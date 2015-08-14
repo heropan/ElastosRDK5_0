@@ -1,6 +1,6 @@
 
-#ifndef __CCONTEXTIMPL_H__
-#define __CCONTEXTIMPL_H__
+#ifndef __ELASTOS_DROID_APP_CCONTEXTIMPL_H__
+#define __ELASTOS_DROID_APP_CCONTEXTIMPL_H__
 
 #include "_CContextImpl.h"
 #include "app/LoadedPkg.h"
@@ -738,4 +738,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCONTEXTIMPL_H__
+#endif //__ELASTOS_DROID_APP_CCONTEXTIMPL_H__

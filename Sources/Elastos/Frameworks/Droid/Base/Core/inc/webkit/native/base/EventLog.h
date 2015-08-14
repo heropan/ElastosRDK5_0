@@ -1,6 +1,6 @@
 
-#ifndef __EVENTLOG_H__
-#define __EVENTLOG_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_EVENTLOG_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_EVENTLOG_H__
 
 namespace Elastos {
 namespace Droid {
@@ -25,4 +25,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__EVENTLOG_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_EVENTLOG_H__

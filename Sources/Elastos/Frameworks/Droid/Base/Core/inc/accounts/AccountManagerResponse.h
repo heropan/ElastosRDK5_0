@@ -1,6 +1,6 @@
 
-#ifndef __ACCOUNTMANAGERRESPONSE_H__
-#define __ACCOUNTMANAGERRESPONSE_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_ACCOUNTMANAGERRESPONSE_H__
+#define __ELASTOS_DROID_ACCOUNTS_ACCOUNTMANAGERRESPONSE_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -44,4 +44,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACCOUNTMANAGERRESPONSE_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_ACCOUNTMANAGERRESPONSE_H__

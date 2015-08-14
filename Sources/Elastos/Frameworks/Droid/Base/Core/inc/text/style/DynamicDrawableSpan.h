@@ -1,5 +1,5 @@
-#ifndef __DynamicDrawableSpan_H__
-#define __DynamicDrawableSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_DynamicDrawableSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_DynamicDrawableSpan_H__
 
 #include "text/style/ReplacementSpan.h"
 
@@ -78,4 +78,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DynamicDrawableSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_DynamicDrawableSpan_H__

@@ -1,5 +1,5 @@
-#ifndef __CFRAMELAYOUT_H_
-#define __CFRAMELAYOUT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CFRAMELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CFRAMELAYOUT_H__
 
 #include "_CFrameLayout.h"
 
@@ -125,4 +125,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CFRAMELAYOUT_H_
+#endif //__ELASTOS_DROID_WIDGET_CFRAMELAYOUT_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSUGGESTIONSPAN_H__
-#define __CSUGGESTIONSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPAN_H__
 
 #include "_CSuggestionSpan.h"
 #include "ext/frameworkext.h"
@@ -109,4 +109,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSUGGESTIONSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPAN_H__

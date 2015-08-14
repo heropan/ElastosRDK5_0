@@ -1,5 +1,5 @@
-#ifndef __CATOMICFILE_H__
-#define __CATOMICFILE_H__
+#ifndef __ELASTOS_DROID_UTILITY_CATOMICFILE_H__
+#define __ELASTOS_DROID_UTILITY_CATOMICFILE_H__
 
 #include "_Elastos_Droid_Utility_CAtomicFile.h"
 #include "elastos/core/Object.h"
@@ -110,4 +110,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif // __CATOMICFILE_H__
+#endif // __ELASTOS_DROID_UTILITY_CATOMICFILE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CLEVELLISTDRAWABLE_H__
-#define __CLEVELLISTDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLEVELLISTDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLEVELLISTDRAWABLE_H__
 
 #include "_CLevelListDrawable.h"
 #include "graphics/drawable/LevelListDrawable.h"
@@ -48,4 +48,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CLEVELLISTDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CLEVELLISTDRAWABLE_H__

@@ -1,5 +1,5 @@
-#ifndef __GRAPHICSNATIVE_H__
-#define __GRAPHICSNATIVE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__
+#define __ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__
 
 #include "graphics/CBitmap.h"
 #include <skia/core/SkBitmap.h>
@@ -150,4 +150,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GRAPHICSNATIVE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_GRAPHICSNATIVE_H__

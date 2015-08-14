@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTS_H__
-#define __CCONTACTS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTS_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTS_H__
 
 #include "_CContacts.h"
 
@@ -34,4 +34,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif //__CCONTACTS_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSTRIKETHROUGHSPAN_H__
-#define __CSTRIKETHROUGHSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSTRIKETHROUGHSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSTRIKETHROUGHSPAN_H__
 
 #include "_CStrikethroughSpan.h"
 #include "text/style/StrikethroughSpan.h"
@@ -32,4 +32,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSTRIKETHROUGHSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSTRIKETHROUGHSPAN_H__

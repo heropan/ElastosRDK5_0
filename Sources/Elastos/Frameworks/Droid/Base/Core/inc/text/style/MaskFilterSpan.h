@@ -1,5 +1,5 @@
-#ifndef __MaskFilterSpan_H__
-#define __MaskFilterSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_MaskFilterSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_MaskFilterSpan_H__
 
 #include "text/style/CharacterStyle.h"
 #include "Elastos.Droid.Core_server.h"
@@ -40,4 +40,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MaskFilterSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_MaskFilterSpan_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSPANNABLEFACTORY_H__
-#define __CSPANNABLEFACTORY_H__
+#ifndef __ELASTOS_DROID_TEXT_CSPANNABLEFACTORY_H__
+#define __ELASTOS_DROID_TEXT_CSPANNABLEFACTORY_H__
 
 #include "_CSpannableFactory.h"
 
@@ -22,4 +22,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CSPANNABLEFACTORY_H__
+#endif //__ELASTOS_DROID_TEXT_CSPANNABLEFACTORY_H__

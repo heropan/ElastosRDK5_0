@@ -1,6 +1,6 @@
 
-#ifndef __CPENDINGINTENTHELPER_H__
-#define __CPENDINGINTENTHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__
+#define __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__
 
 #include "_CPendingIntentHelper.h"
 
@@ -302,4 +302,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPENDINGINTENTHELPER_H__
+#endif // __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__

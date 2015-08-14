@@ -1,6 +1,6 @@
 
-#ifndef __DEBUGFLAGS_H__
-#define __DEBUGFLAGS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_DEBUGFLAGS_H__
+#define __ELASTOS_DROID_WEBKIT_DEBUGFLAGS_H__
 
 #include "ext/frameworkext.h"
 
@@ -44,4 +44,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__DEBUGFLAGS_H__
+#endif //__ELASTOS_DROID_WEBKIT_DEBUGFLAGS_H__

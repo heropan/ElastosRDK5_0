@@ -1,6 +1,6 @@
 
-#ifndef __CSPELLCHECKERSERVICE_H__
-#define __CSPELLCHECKERSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__
+#define __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__
 
 #include "_CSpellCheckerService.h"
 #include <ext/frameworkext.h>
@@ -256,4 +256,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSPELLCHECKERSERVICE_H__
+#endif // __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__

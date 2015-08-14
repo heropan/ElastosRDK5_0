@@ -1,6 +1,6 @@
 
-#ifndef __CLOCALTRANSPORT_H__
-#define __CLOCALTRANSPORT_H__
+#ifndef __ELASTOS_DROID_INTERNAL_BACKUP_CLOCALTRANSPORT_H__
+#define __ELASTOS_DROID_INTERNAL_BACKUP_CLOCALTRANSPORT_H__
 
 #include "ext/frameworkext.h"
 #include "_CLocalTransport.h"
@@ -99,4 +99,4 @@ private:
 } // Internal
 } // Droid
 } // namespace Elastos
-#endif //__CLOCALTRANSPORT_H__
+#endif //__ELASTOS_DROID_INTERNAL_BACKUP_CLOCALTRANSPORT_H__

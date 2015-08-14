@@ -1,6 +1,6 @@
 
-#ifndef __CLINEARINTERPOLATOR_H__
-#define __CLINEARINTERPOLATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CLINEARINTERPOLATOR_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CLINEARINTERPOLATOR_H__
 #include "_CLinearInterpolator.h"
 
 using Elastos::Droid::Utility::IAttributeSet;
@@ -30,4 +30,4 @@ public:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CLINEARINTERPOLATOR_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_CLINEARINTERPOLATOR_H__

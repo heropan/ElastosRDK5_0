@@ -1,6 +1,6 @@
 
-#ifndef __CTRANSITIONSLIDING_H__
-#define __CTRANSITIONSLIDING_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONSLIDING_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONSLIDING_H__
 
 #include "_CTransitionSliding.h"
 #include <ext/frameworkext.h>
@@ -70,5 +70,5 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CTRANSITIONSLIDING_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONSLIDING_H__
 

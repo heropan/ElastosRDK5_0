@@ -1,6 +1,6 @@
 
-#ifndef __PREFERENCE_H__
-#define __PREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__
 
 #include "ext/frameworkext.h"
 #include "R.h"
@@ -442,4 +442,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __PREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_PREFERENCE_H__

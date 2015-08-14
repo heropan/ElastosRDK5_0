@@ -1,5 +1,5 @@
-#ifndef __CEGLIMPL_H__
-#define __CEGLIMPL_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLES_CEGLIMPL_H__
+#define __ELASTOS_DROID_OPENGL_GLES_CEGLIMPL_H__
 
 #include "_CEGLImpl.h"
 #include <gui/Surface.h>

@@ -1,6 +1,6 @@
 
-#ifndef  __CAPPWIDGETHOSTCALLBACKS_H__
-#define  __CAPPWIDGETHOSTCALLBACKS_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTCALLBACKS_H__
+#define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTCALLBACKS_H__
 
 #include "_CAppWidgetHostCallbacks.h"
 #include "appwidget/CAppWidgetHost.h"
@@ -44,4 +44,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  // __CAPPWIDGETHOSTCALLBACKS_H__
+#endif  // __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTCALLBACKS_H__

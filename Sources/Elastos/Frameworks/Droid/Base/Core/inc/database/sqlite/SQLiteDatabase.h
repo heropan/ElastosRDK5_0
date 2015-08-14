@@ -1,5 +1,5 @@
-#ifndef __SQLITEDATABASE_H__
-#define __SQLITEDATABASE_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
@@ -1483,9 +1483,8 @@ private:
 } //Droid
 } //Elastos
 
-#ifndef HASH_FUNC_FOR_AUTOPTR_SQLITEDATABASE
 #define HASH_FUNC_FOR_AUTOPTR_SQLITEDATABASE
 DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Database::Sqlite::SQLiteDatabase);
 #endif
 
-#endif //__SQLITEDATABASE_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__

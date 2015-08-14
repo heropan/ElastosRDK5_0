@@ -1,6 +1,6 @@
 
-#ifndef __CVIDEOEDITORAUDIOTRACK_H__
-#define __CVIDEOEDITORAUDIOTRACK_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORAUDIOTRACK_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORAUDIOTRACK_H__
 
 #include "_CAudioTrack2.h"
 #include <ext/frameworkext.h>
@@ -397,5 +397,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CVIDEOEDITORAUDIOTRACK_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORAUDIOTRACK_H__
 

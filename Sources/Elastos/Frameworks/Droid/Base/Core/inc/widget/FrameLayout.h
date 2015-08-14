@@ -1,6 +1,6 @@
 
-#ifndef __FRAMELAYOUT_H__
-#define __FRAMELAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__
 
 
 #include "view/ViewGroup.h"
@@ -160,4 +160,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__FRAMELAYOUT_H__
+#endif //__ELASTOS_DROID_WIDGET_FRAMELAYOUT_H__

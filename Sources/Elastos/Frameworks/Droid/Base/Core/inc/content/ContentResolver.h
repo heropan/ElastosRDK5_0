@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTRESOLVER_H__
-#define __CONTENTRESOLVER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
+#define __ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -1244,4 +1244,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CONTENTRESOLVER_H__
+#endif //__ELASTOS_DROID_CONTENT_CONTENTRESOLVER_H__

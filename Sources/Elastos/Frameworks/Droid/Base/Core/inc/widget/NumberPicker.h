@@ -1,5 +1,5 @@
-#ifndef __NUMBERPICKER_H__
-#define __NUMBERPICKER_H__
+#ifndef __ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
+#define __ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
 
 #include <elastos/core/Math.h>
 #include "ext/frameworkext.h"
@@ -704,5 +704,5 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__NUMBERPICKER_H__
+#endif //__ELASTOS_DROID_WIDGET_NUMBERPICKER_H__
 

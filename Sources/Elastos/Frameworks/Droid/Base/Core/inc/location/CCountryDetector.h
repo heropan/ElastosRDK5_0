@@ -1,6 +1,6 @@
 
-#ifndef __CCOUNTRYDETECTOR_H__
-#define __CCOUNTRYDETECTOR_H__
+#ifndef __ELASTOS_DROID_LOCATION_CCOUNTRYDETECTOR_H__
+#define __ELASTOS_DROID_LOCATION_CCOUNTRYDETECTOR_H__
 
 #include "ext/frameworkext.h"
 #include "_CCountryDetector.h"
@@ -82,4 +82,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CCOUNTRYDETECTOR_H__
+#endif //__ELASTOS_DROID_LOCATION_CCOUNTRYDETECTOR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAINSERTER_H__
-#define __CMEDIAINSERTER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAINSERTER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAINSERTER_H__
 
 #include "_CMediaInserter.h"
 #include "ext/frameworkext.h"
@@ -71,4 +71,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAINSERTER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAINSERTER_H__

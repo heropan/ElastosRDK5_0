@@ -1,6 +1,6 @@
 
-#ifndef __CMENUINFLATER_H__
-#define __CMENUINFLATER_H__
+#ifndef __ELASTOS_DROID_VIEW_CMENUINFLATER_H__
+#define __ELASTOS_DROID_VIEW_CMENUINFLATER_H__
 
 #include "ext/frameworkext.h"
 #include "_CMenuInflater.h"
@@ -229,4 +229,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CMENUINFLATER_H__
+#endif  //__ELASTOS_DROID_VIEW_CMENUINFLATER_H__

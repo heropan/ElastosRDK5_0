@@ -1,6 +1,6 @@
 
-#ifndef __ABSSPANNER_H__
-#define __ABSSPANNER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
+#define __ELASTOS_DROID_WIDGET_ABSSPANNER_H__
 
 /**
  * An abstract base class for spinner widgets. SDK users will probably not
@@ -217,5 +217,5 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ABSSPANNER_H__
+#endif //__ELASTOS_DROID_WIDGET_ABSSPANNER_H__
 

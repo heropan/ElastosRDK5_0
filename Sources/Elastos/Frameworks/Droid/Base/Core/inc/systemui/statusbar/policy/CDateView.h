@@ -1,5 +1,5 @@
-#ifndef __CDATEVIEW_H_
-#define __CDATEVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDATEVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDATEVIEW_H__
 
 #include "_CDateView.h"
 
@@ -38,4 +38,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDATEVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDATEVIEW_H__

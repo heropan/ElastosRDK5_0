@@ -1,5 +1,5 @@
-#ifndef __CTABLELAYOUT_H_
-#define __CTABLELAYOUT_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTABLELAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CTABLELAYOUT_H__
 
 #include "_CTableLayout.h"
 
@@ -153,4 +153,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTABLELAYOUT_H_
+#endif //__ELASTOS_DROID_WIDGET_CTABLELAYOUT_H__

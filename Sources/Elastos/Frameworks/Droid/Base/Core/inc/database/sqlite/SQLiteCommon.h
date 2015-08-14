@@ -1,6 +1,6 @@
 
-#ifndef __SQLITECOMMON_H__
-#define __SQLITECOMMON_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITECOMMON_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECOMMON_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <sqlite3.h>
@@ -36,4 +36,4 @@ ECode throw_sqlite3_exception(int errcode, const char* sqlite3Message, const cha
 } //Droid
 } //Elastos
 
-#endif // __SQLITECOMMON_H__
+#endif // __ELASTOS_DROID_DATABASE_SQLITE_SQLITECOMMON_H__

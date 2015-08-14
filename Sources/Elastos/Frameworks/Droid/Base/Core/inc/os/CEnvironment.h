@@ -1,6 +1,6 @@
 
-#ifndef __CENVIRONMENT_H__
-#define __CENVIRONMENT_H__
+#ifndef __ELASTOS_DROID_OS_CENVIRONMENT_H__
+#define __ELASTOS_DROID_OS_CENVIRONMENT_H__
 
 #include "_CEnvironment.h"
 
@@ -184,4 +184,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CENVIRONMENT_H__
+#endif //__ELASTOS_DROID_OS_CENVIRONMENT_H__

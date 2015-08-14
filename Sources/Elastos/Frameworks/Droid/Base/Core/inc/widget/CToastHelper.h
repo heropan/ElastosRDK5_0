@@ -1,5 +1,5 @@
-#ifndef __CTOASTHELPER_H_
-#define __CTOASTHELPER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTOASTHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CTOASTHELPER_H__
 
 #include "_CToastHelper.h"
 
@@ -51,4 +51,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTOASTHELPER_H_
+#endif //__ELASTOS_DROID_WIDGET_CTOASTHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIEWSTATICS_H__
-#define __CONTENTVIEWSTATICS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWSTATICS_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWSTATICS_H__
 
 // import org.chromium.net.ProxyChangeListener;
 
@@ -64,4 +64,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIEWSTATICS_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEWSTATICS_H__

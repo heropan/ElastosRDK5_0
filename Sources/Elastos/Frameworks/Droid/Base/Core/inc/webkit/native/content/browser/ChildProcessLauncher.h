@@ -1,6 +1,6 @@
 
-#ifndef __CHILDPROCESSLAUNCHER_H__
-#define __CHILDPROCESSLAUNCHER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSLAUNCHER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSLAUNCHER_H__
 
 // import android.content.Context;
 // import android.graphics.SurfaceTexture;
@@ -334,4 +334,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CHILDPROCESSLAUNCHER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CHILDPROCESSLAUNCHER_H__

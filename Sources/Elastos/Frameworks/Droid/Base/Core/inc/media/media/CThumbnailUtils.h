@@ -1,6 +1,6 @@
 
-#ifndef __CTHUMBNAILUTILS_H__
-#define __CTHUMBNAILUTILS_H__
+#ifndef __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__
+#define __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__
 
 #include "_CThumbnailUtils.h"
 #include "ext/frameworkext.h"
@@ -79,4 +79,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTHUMBNAILUTILS_H__
+#endif // __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAPLAYERHELPER_H__
-#define __CMEDIAPLAYERHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__
 
 #include "_CMediaPlayerHelper.h"
 
@@ -95,4 +95,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAPLAYERHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CKEYEVENTHELPER_H__
-#define __CKEYEVENTHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CKEYEVENTHELPER_H__
+#define __ELASTOS_DROID_VIEW_CKEYEVENTHELPER_H__
 
 #include "_CKeyEventHelper.h"
 
@@ -301,4 +301,4 @@ public:
 }   //namespace View
 }   //namespace Droid
 }   //namespace Elastos
-#endif //__CKEYEVENTHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CKEYEVENTHELPER_H__

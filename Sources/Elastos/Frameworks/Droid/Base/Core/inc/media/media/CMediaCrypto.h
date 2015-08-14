@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIACRYPTO_H__
-#define __CMEDIACRYPTO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__
 
 #include "_CMediaCrypto.h"
 #include <ext/frameworkext.h>
@@ -110,4 +110,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIACRYPTO_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__

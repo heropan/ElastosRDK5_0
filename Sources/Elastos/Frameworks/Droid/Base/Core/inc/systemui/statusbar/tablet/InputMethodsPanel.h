@@ -1,5 +1,5 @@
-#ifndef __INPUTMETHODPANEL_H_
-#define __INPUTMETHODPANEL_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODPANEL_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODPANEL_H__
 
 #include "widget/LinearLayout.h"
 #include "ext/frameworkext.h"
@@ -247,4 +247,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__INPUTMETHODPANEL_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_INPUTMETHODPANEL_H__

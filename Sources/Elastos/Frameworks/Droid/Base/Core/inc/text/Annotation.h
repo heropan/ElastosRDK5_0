@@ -1,5 +1,5 @@
-#ifndef __Annotation_H__
-#define __Annotation_H__
+#ifndef __ELASTOS_DROID_TEXT_Annotation_H__
+#define __ELASTOS_DROID_TEXT_Annotation_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -50,4 +50,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__Annotation_H__
+#endif //__ELASTOS_DROID_TEXT_Annotation_H__

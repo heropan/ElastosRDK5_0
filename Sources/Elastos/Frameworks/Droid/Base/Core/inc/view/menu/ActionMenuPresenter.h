@@ -1,6 +1,6 @@
 
-#ifndef  __ACTIONMENUPRESENTER_H__
-#define  __ACTIONMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__
 
 #include "widget/ImageButton.h"
 
@@ -613,4 +613,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ACTIONMENUPRESENTER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ACTIONMENUPRESENTER_H__

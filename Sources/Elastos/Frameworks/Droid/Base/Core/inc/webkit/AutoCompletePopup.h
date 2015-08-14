@@ -1,6 +1,6 @@
 
-#ifndef __AUTOCOMPLETEPOPUP_H__
-#define __AUTOCOMPLETEPOPUP_H__
+#ifndef __ELASTOS_DROID_WEBKIT_AUTOCOMPLETEPOPUP_H__
+#define __ELASTOS_DROID_WEBKIT_AUTOCOMPLETEPOPUP_H__
 
 #include "ext/frameworkext.h"
 
@@ -121,4 +121,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__AUTOCOMPLETEPOPUP_H__
+#endif //__ELASTOS_DROID_WEBKIT_AUTOCOMPLETEPOPUP_H__

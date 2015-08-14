@@ -1,6 +1,6 @@
 
-#ifndef __CCALENDARCONTRACT_H__
-#define __CCALENDARCONTRACT_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACT_H__
+#define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACT_H__
 
 #include "_CCalendarContract.h"
 #include "CalendarContract.h"
@@ -27,4 +27,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CCALENDARCONTRACT_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCALENDARCONTRACT_H__

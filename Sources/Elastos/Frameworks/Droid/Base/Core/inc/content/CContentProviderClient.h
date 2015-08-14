@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTPROVIDERCLIENT_H__
-#define __CCONTENTPROVIDERCLIENT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERCLIENT_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERCLIENT_H__
 
 #include "_CContentProviderClient.h"
 #include "ext/frameworkext.h"
@@ -164,4 +164,4 @@ private:
 }
 }
 
-#endif // __CCONTENTPROVIDERCLIENT_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERCLIENT_H__

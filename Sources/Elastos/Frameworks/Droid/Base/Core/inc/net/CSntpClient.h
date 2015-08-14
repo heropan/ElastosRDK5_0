@@ -1,6 +1,6 @@
 
-#ifndef __CSNTPCLIENT_H__
-#define __CSNTPCLIENT_H__
+#ifndef __ELASTOS_DROID_NET_CSNTPCLIENT_H__
+#define __ELASTOS_DROID_NET_CSNTPCLIENT_H__
 
 #include "_CSntpClient.h"
 
@@ -122,4 +122,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CSNTPCLIENT_H__
+#endif // __ELASTOS_DROID_NET_CSNTPCLIENT_H__

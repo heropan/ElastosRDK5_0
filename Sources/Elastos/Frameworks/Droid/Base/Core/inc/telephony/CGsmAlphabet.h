@@ -1,6 +1,6 @@
 
-#ifndef __CGSMALPHABET_H__
-#define __CGSMALPHABET_H__
+#ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABET_H__
+#define __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABET_H__
 
 #include "_CGsmAlphabet.h"
 #include "util/SparseInt32Array.h"
@@ -274,4 +274,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CGSMALPHABET_H__
+#endif // __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABET_H__

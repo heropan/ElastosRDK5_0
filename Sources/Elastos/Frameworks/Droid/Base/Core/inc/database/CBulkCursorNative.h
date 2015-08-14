@@ -1,5 +1,5 @@
-#ifndef __CBULKCURSORNATIVE_H__
-#define __CBULKCURSORNATIVE_H__
+#ifndef __ELASTOS_DROID_DATABASE_CBULKCURSORNATIVE_H__
+#define __ELASTOS_DROID_DATABASE_CBULKCURSORNATIVE_H__
 
 #include "_CBulkCursorNative.h"
 #include "database/BulkCursorNative.h"
@@ -63,4 +63,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif // __CBULKCURSORNATIVE_H__
+#endif // __ELASTOS_DROID_DATABASE_CBULKCURSORNATIVE_H__

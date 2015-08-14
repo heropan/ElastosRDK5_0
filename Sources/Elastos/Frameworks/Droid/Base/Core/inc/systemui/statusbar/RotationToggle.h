@@ -1,5 +1,5 @@
-#ifndef __ROTATIONTOGGLE_H__
-#define __ROTATIONTOGGLE_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ROTATIONTOGGLE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_ROTATIONTOGGLE_H__
 
 #include "widget/CompoundButton.h"
 #include "policy/AutoRotateController.h"
@@ -48,4 +48,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ROTATIONTOGGLE_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_ROTATIONTOGGLE_H__

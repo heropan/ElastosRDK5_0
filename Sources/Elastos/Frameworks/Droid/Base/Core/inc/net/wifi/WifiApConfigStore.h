@@ -1,6 +1,6 @@
 
-#ifndef  __WIFIAPCONFIGSTORE_H__
-#define  __WIFIAPCONFIGSTORE_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_WIFIAPCONFIGSTORE_H__
+#define  __ELASTOS_DROID_NET_WIFI_WIFIAPCONFIGSTORE_H__
 
 #include "ext/frameworkext.h"
 #include "util/AsyncChannel.h"
@@ -155,4 +155,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WIFIAPCONFIGSTORE_H__
+#endif //__ELASTOS_DROID_NET_WIFI_WIFIAPCONFIGSTORE_H__

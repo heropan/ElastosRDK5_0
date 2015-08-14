@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYINFO_H__
-#define __CACTIVITYINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__
 
 #include "_CActivityInfo.h"
 #include "ComponentInfo.h"
@@ -352,4 +352,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CACTIVITYINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__

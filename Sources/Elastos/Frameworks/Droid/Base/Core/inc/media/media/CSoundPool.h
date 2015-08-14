@@ -1,6 +1,6 @@
 
-#ifndef __CSOUNDPOOL_H__
-#define __CSOUNDPOOL_H__
+#ifndef __ELASTOS_DROID_MEDIA_CSOUNDPOOL_H__
+#define __ELASTOS_DROID_MEDIA_CSOUNDPOOL_H__
 
 #include "_CSoundPool.h"
 #include "ext/frameworkext.h"
@@ -433,4 +433,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSOUNDPOOL_H__
+#endif // __ELASTOS_DROID_MEDIA_CSOUNDPOOL_H__

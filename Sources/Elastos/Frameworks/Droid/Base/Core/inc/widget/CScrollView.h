@@ -1,5 +1,5 @@
-#ifndef __CSCROLLVIEW_H_
-#define __CSCROLLVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSCROLLVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CSCROLLVIEW_H__
 
 #include "_CScrollView.h"
 
@@ -166,4 +166,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSCROLLVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CSCROLLVIEW_H__

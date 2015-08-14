@@ -1,6 +1,6 @@
 
-#ifndef __CRADIALGRADIENT_H__
-#define __CRADIALGRADIENT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CRADIALGRADIENT_H__
+#define __ELASTOS_DROID_GRAPHICS_CRADIALGRADIENT_H__
 
 #include "_CRadialGradient.h"
 #include "graphics/Shader.h"
@@ -96,4 +96,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CRADIALGRADIENT_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CRADIALGRADIENT_H__

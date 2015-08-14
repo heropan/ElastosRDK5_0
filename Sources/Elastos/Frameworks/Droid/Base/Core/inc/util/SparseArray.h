@@ -1,6 +1,6 @@
 
-#ifndef __SPARSEARRAY_H__
-#define __SPARSEARRAY_H__
+#ifndef __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
+#define __ELASTOS_DROID_UTILITY_SPARSEARRAY_H__
 
 #include "util/ArrayUtils.h"
 

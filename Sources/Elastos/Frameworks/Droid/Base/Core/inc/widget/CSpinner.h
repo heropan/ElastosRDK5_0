@@ -1,5 +1,5 @@
-#ifndef __CSPINNER_H__
-#define __CSPINNER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSPINNER_H__
+#define __ELASTOS_DROID_WIDGET_CSPINNER_H__
 
 #include "_CSpinner.h"
 #include "widget/Spinner.h"

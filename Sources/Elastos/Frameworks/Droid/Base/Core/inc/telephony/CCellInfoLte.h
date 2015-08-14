@@ -1,6 +1,6 @@
 
-#ifndef __CCELLINFOLTE_H__
-#define __CCELLINFOLTE_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCELLINFOLTE_H__
+#define __ELASTOS_DROID_TELEPHONY_CCELLINFOLTE_H__
 
 #include "_CCellInfoLte.h"
 #include "telephony/CellInfo.h"
@@ -79,4 +79,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCELLINFOLTE_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCELLINFOLTE_H__

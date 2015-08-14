@@ -1,6 +1,6 @@
 
-#ifndef __CPPPOEDEVINFO_H__
-#define __CPPPOEDEVINFO_H__
+#ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOEDEVINFO_H__
+#define __ELASTOS_DROID_NET_PPPOE_CPPPOEDEVINFO_H__
 
 #include "_CPppoeDevInfo.h"
 #include "ext/frameworkext.h"
@@ -75,4 +75,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CPPPOEDEVINFO_H__
+#endif // __ELASTOS_DROID_NET_PPPOE_CPPPOEDEVINFO_H__

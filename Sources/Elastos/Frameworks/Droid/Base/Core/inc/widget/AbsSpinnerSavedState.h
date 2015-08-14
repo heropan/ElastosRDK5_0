@@ -1,6 +1,6 @@
 
-#ifndef __ABSSPINNERSAVEDSTATE_H__
-#define __ABSSPINNERSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSSPINNERSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_ABSSPINNERSAVEDSTATE_H__
 
 #include "view/ViewBaseSavedState.h"
 
@@ -41,4 +41,4 @@ public:
 }// Droid
 }// Elastos
 
-#endif //__ABSSPINNERSAVEDSTATE_H__
+#endif //__ELASTOS_DROID_WIDGET_ABSSPINNERSAVEDSTATE_H__

@@ -1,5 +1,5 @@
-#ifndef __CRINGTONEPLAYER_H__
-#define __CRINGTONEPLAYER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_CRINGTONEPLAYER_H__
+#define __ELASTOS_DROID_SYSTEMUI_MEDIA_CRINGTONEPLAYER_H__
 
 #include "_CRingtonePlayer.h"
 #include "SystemUI.h"
@@ -128,4 +128,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CRINGTONEPLAYER_H__
+#endif // __ELASTOS_DROID_SYSTEMUI_MEDIA_CRINGTONEPLAYER_H__

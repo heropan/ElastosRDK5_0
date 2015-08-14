@@ -1,5 +1,5 @@
-#ifndef __CNOTIFICATIONBUILDER_H__
-#define __CNOTIFICATIONBUILDER_H__
+#ifndef __ELASTOS_DROID_APP_CNOTIFICATIONBUILDER_H__
+#define __ELASTOS_DROID_APP_CNOTIFICATIONBUILDER_H__
 
 #include "_CNotificationBuilder.h"
 #include "ext/frameworkext.h"
@@ -469,4 +469,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CNOTIFICATIONBUILDER_H__
+#endif // __ELASTOS_DROID_APP_CNOTIFICATIONBUILDER_H__

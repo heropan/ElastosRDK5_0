@@ -1,6 +1,6 @@
 
-#ifndef __CHOOSERACTIVITY_H__
-#define __CHOOSERACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_CHOOSERACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_CHOOSERACTIVITY_H__
 
 #include "app/ResolverActivity.h"
 
@@ -22,4 +22,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CHOOSERACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_CHOOSERACTIVITY_H__

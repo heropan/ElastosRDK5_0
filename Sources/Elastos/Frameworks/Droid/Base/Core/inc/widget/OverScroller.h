@@ -1,6 +1,6 @@
 
-#ifndef __OVERSCROLLER_H__
-#define __OVERSCROLLER_H__
+#ifndef __ELASTOS_DROID_WIDGET_OVERSCROLLER_H__
+#define __ELASTOS_DROID_WIDGET_OVERSCROLLER_H__
 
 #include "ext/frameworkext.h"
 
@@ -606,4 +606,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__OVERSCROLLER_H__
+#endif //__ELASTOS_DROID_WIDGET_OVERSCROLLER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PREFERENCEGROUP_H__
-#define __PREFERENCEGROUP_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEGROUP_H__
+#define __ELASTOS_DROID_PREFERENCE_PREFERENCEGROUP_H__
 
 #include "Preference.h"
 
@@ -101,4 +101,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __PREFERENCEGROUP_H__
+#endif // __ELASTOS_DROID_PREFERENCE_PREFERENCEGROUP_H__

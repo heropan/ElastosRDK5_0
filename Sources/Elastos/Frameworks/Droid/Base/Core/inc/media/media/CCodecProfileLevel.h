@@ -1,6 +1,6 @@
 
-#ifndef __CCODECPROFILELEVEL_H__
-#define __CCODECPROFILELEVEL_H__
+#ifndef __ELASTOS_DROID_MEDIA_CCODECPROFILELEVEL_H__
+#define __ELASTOS_DROID_MEDIA_CCODECPROFILELEVEL_H__
 
 #include "_CCodecProfileLevel.h"
 
@@ -34,4 +34,4 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CCODECPROFILELEVEL_H__
+#endif // __ELASTOS_DROID_MEDIA_CCODECPROFILELEVEL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCOMPONENTNAME_H__
-#define __CCOMPONENTNAME_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__
+#define __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__
 
 #include "_CComponentName.h"
 
@@ -148,4 +148,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOMPONENTNAME_H__
+#endif // __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__

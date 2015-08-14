@@ -1,6 +1,6 @@
 
-#ifndef __CPERMISSIONINFO_H__
-#define __CPERMISSIONINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFO_H__
 
 #include "_CPermissionInfo.h"
 #include "PackageItemInfo.h"
@@ -182,4 +182,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPERMISSIONINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFO_H__

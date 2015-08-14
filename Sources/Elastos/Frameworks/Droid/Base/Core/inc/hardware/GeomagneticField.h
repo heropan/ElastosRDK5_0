@@ -1,6 +1,6 @@
 
-#ifndef  __GEOMAGNETICFIELD_H__
-#define  __GEOMAGNETICFIELD_H__
+#ifndef __ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__
+#define  __ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__
 
 #include "ext/frameworkext.h"
 
@@ -186,4 +186,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__GEOMAGNETICFIELD_H__
+#endif  //__ELASTOS_DROID_HARDWARE_GEOMAGNETICFIELD_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CFACE_H__
-#define __CFACE_H__
+#ifndef __ELASTOS_DROID_MEDIA_CFACE_H__
+#define __ELASTOS_DROID_MEDIA_CFACE_H__
 
 #include "_CFace.h"
 #include "ext/frameworkext.h"
@@ -68,4 +68,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CFACE_H__
+#endif // __ELASTOS_DROID_MEDIA_CFACE_H__

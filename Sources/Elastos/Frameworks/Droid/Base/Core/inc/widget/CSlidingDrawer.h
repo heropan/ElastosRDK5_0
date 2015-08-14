@@ -1,5 +1,5 @@
-#ifndef __CSLIDINGDRAWER_H__
-#define __CSLIDINGDRAWER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSLIDINGDRAWER_H__
+#define __ELASTOS_DROID_WIDGET_CSLIDINGDRAWER_H__
 
 #include "_CSlidingDrawer.h"
 

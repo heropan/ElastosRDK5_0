@@ -1,5 +1,5 @@
-#ifndef __CSTATUSBARNOTIFICATION_H__
-#define __CSTATUSBARNOTIFICATION_H__
+#ifndef __ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__
+#define __ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__
 
 #include "_CStatusBarNotification.h"
 #include "ext/frameworkdef.h"
@@ -131,4 +131,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CSTATUSBARNOTIFICATION_H__
+#endif //__ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__

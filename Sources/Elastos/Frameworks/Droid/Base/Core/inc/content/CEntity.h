@@ -1,6 +1,6 @@
 
-#ifndef __CENTITY_H__
-#define __CENTITY_H__
+#ifndef __ELASTOS_DROID_CONTENT_CENTITY_H__
+#define __ELASTOS_DROID_CONTENT_CENTITY_H__
 
 #include "_CEntity.h"
 #include <ext/frameworkext.h>
@@ -49,4 +49,4 @@ private:
 }
 }
 
-#endif // __CENTITY_H__
+#endif // __ELASTOS_DROID_CONTENT_CENTITY_H__

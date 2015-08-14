@@ -1,6 +1,6 @@
 
-#ifndef __VideoView_h__
-#define __VideoView_h__
+#ifndef __ELASTOS_DROID_WIDGET_VideoView_H__
+#define __ELASTOS_DROID_WIDGET_VideoView_H__
 
 #include "ext/frameworkext.h"
 #include "view/SurfaceView.h"
@@ -355,4 +355,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__VideoView_h__
+#endif //__ELASTOS_DROID_WIDGET_VideoView_H__

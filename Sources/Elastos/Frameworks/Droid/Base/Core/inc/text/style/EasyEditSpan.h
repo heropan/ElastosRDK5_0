@@ -1,5 +1,5 @@
-#ifndef __EasyEditSpan_H__
-#define __EasyEditSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -38,4 +38,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __EasyEditSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_EasyEditSpan_H__

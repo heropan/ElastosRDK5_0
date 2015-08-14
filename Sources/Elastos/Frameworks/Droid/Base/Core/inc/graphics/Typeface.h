@@ -1,6 +1,6 @@
 
-#ifndef __TYPEFACE_H__
-#define __TYPEFACE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_TYPEFACE_H__
+#define __ELASTOS_DROID_GRAPHICS_TYPEFACE_H__
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
@@ -186,4 +186,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__TYPEFACE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_TYPEFACE_H__

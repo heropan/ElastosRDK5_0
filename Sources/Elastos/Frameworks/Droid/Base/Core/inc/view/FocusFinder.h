@@ -1,6 +1,6 @@
 
-#ifndef __FOCUSFINDER_H__
-#define __FOCUSFINDER_H__
+#ifndef __ELASTOS_DROID_VIEW_FOCUSFINDER_H__
+#define __ELASTOS_DROID_VIEW_FOCUSFINDER_H__
 
 #include "ext/frameworkext.h"
 #include "graphics/CRect.h"
@@ -270,4 +270,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif  //__FOCUSFINDER_H__
+#endif  //__ELASTOS_DROID_VIEW_FOCUSFINDER_H__

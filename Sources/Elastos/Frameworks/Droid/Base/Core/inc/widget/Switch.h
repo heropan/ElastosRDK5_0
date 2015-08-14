@@ -1,6 +1,6 @@
 
-#ifndef __SWITCH_H__
-#define __SWITCH_H__
+#ifndef __ELASTOS_DROID_WIDGET_SWITCH_H__
+#define __ELASTOS_DROID_WIDGET_SWITCH_H__
 
 #include "ext/frameworkext.h"
 #include "widget/CompoundButton.h"
@@ -387,4 +387,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SWITCH_H__
+#endif //__ELASTOS_DROID_WIDGET_SWITCH_H__

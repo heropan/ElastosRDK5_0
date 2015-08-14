@@ -1,5 +1,5 @@
-#ifndef __CEIDTABLEINPUTCONNECTION_H_
-#define __CEIDTABLEINPUTCONNECTION_H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CEIDTABLEINPUTCONNECTION_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CEIDTABLEINPUTCONNECTION_H__
 
 #include "_CEditableInputConnection.h"
 #include "widget/internal/EditableInputConnection.h"
@@ -119,4 +119,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CEIDTABLEINPUTCONNECTION_H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CEIDTABLEINPUTCONNECTION_H__

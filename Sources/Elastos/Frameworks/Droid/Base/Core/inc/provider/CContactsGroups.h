@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSGROUPS_H__
-#define __CCONTACTSGROUPS_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPS_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPS_H__
 
 #include "_CContactsGroups.h"
 

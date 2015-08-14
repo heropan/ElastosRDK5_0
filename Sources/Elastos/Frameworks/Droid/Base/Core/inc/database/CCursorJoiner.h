@@ -1,5 +1,5 @@
-#ifndef __CCURSORJOINER_H__
-#define __CCURSORJOINER_H__
+#ifndef __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__
+#define __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__
 
 #include "_CCursorJoiner.h"
 
@@ -85,4 +85,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif // __CCURSORJOINER_H__
+#endif // __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__

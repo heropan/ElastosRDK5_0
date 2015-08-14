@@ -1,5 +1,5 @@
-#ifndef __CKEYGUARDMANAGER_H__
-#define __CKEYGUARDMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
+#define __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 
 #include "ext/frameworkdef.h"
 #include "_CKeyguardManager.h"
@@ -159,4 +159,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CKEYGUARDMANAGER_H__
+#endif // __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__

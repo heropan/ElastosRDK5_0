@@ -1,6 +1,6 @@
 
-#ifndef __CREQUESTHANDLE_H__
-#define __CREQUESTHANDLE_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLE_H__
+#define __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLE_H__
 
 #include "_CRequestHandle.h"
 #include "ext/frameworkext.h"
@@ -230,4 +230,4 @@ private:
 }
 }
 
-#endif // __CREQUESTHANDLE_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLE_H__

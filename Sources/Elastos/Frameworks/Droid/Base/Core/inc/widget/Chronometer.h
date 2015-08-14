@@ -1,6 +1,6 @@
 
-#ifndef __CHRONOMETER_H__
-#define __CHRONOMETER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
+#define __ELASTOS_DROID_WIDGET_CHRONOMETER_H__
 
 #include "widget/TextView.h"
 #include "R.h"

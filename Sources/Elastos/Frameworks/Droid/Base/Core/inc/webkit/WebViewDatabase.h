@@ -1,6 +1,6 @@
 
-#ifndef __WEBVIEWDATABASE_H__
-#define __WEBVIEWDATABASE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBVIEWDATABASE_H__
+#define __ELASTOS_DROID_WEBKIT_WEBVIEWDATABASE_H__
 
 #include "ext/frameworkext.h"
 
@@ -102,4 +102,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBVIEWDATABASE_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBVIEWDATABASE_H__

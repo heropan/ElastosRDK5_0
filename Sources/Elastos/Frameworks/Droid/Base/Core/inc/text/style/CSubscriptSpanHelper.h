@@ -1,6 +1,6 @@
 
-#ifndef __CSUBSCRIPTSPANHELPER_H__
-#define __CSUBSCRIPTSPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPANHELPER_H__
 
 #include "_CSubscriptSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSUBSCRIPTSPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPANHELPER_H__

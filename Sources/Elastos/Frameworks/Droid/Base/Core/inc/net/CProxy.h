@@ -1,6 +1,6 @@
 
-#ifndef __CPROXY_H__
-#define __CPROXY_H__
+#ifndef __ELASTOS_DROID_NET_CPROXY_H__
+#define __ELASTOS_DROID_NET_CPROXY_H__
 
 #include "_CProxy.h"
 #include "ext/frameworkext.h"
@@ -206,4 +206,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CPROXY_H__
+#endif // __ELASTOS_DROID_NET_CPROXY_H__

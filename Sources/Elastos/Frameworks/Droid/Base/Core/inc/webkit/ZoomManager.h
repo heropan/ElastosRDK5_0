@@ -1,6 +1,6 @@
 
-#ifndef __ZOOMMANAGER_H__
-#define __ZOOMMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ZOOMMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_ZOOMMANAGER_H__
 
 #include "ext/frameworkext.h"
 
@@ -567,4 +567,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ZOOMMANAGER_H__
+#endif //__ELASTOS_DROID_WEBKIT_ZOOMMANAGER_H__

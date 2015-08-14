@@ -1,6 +1,6 @@
 
-#ifndef __SPANSET_H__
-#define __SPANSET_H__
+#ifndef __ELASTOS_DROID_TEXT_SPANSET_H__
+#define __ELASTOS_DROID_TEXT_SPANSET_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"

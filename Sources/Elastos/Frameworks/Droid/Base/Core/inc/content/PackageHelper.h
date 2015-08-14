@@ -1,6 +1,6 @@
 
-#ifndef __PACKAGEHELPER_H__
-#define __PACKAGEHELPER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEHELPER_H__
+#define __ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEHELPER_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -86,4 +86,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PACKAGEHELPER_H__
+#endif //__ELASTOS_DROID_INTERNAL_CONTENT_PACKAGEHELPER_H__

@@ -1,5 +1,5 @@
-#ifndef __Linkify_H__
-#define __Linkify_H__
+#ifndef __ELASTOS_DROID_TEXT_UTILITY_Linkify_H__
+#define __ELASTOS_DROID_TEXT_UTILITY_Linkify_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
@@ -265,4 +265,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __Linkify_H__
+#endif // __ELASTOS_DROID_TEXT_UTILITY_Linkify_H__

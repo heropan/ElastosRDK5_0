@@ -1,6 +1,6 @@
 
-#ifndef __CPREFERENCE_H__
-#define __CPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__
 
 #include "Preference.h"
 #include "_CPreference.h"
@@ -29,4 +29,4 @@ public:
 }
 }
 
-#endif // __CPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__

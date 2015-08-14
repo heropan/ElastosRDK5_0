@@ -1,6 +1,6 @@
 
-#ifndef __CONNECTIONTHREAD_H__
-#define __CONNECTIONTHREAD_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__
+#define __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__
 
 #include "ext/frameworkext.h"
 #include "RequestFeeder.h"
@@ -99,4 +99,4 @@ private:
 }
 }
 
-#endif // __CONNECTIONTHREAD_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CONNECTIONTHREAD_H__

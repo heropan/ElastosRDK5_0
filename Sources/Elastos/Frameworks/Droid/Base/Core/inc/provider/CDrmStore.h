@@ -1,6 +1,6 @@
 
-#ifndef __CDRMSTORE_H__
-#define __CDRMSTORE_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CDRMSTORE_H__
+#define __ELASTOS_DROID_PROVIDER_CDRMSTORE_H__
 
 #include "_CDrmStore.h"
 
@@ -63,4 +63,4 @@ private:
 }
 }
 
-#endif //__CDRMSTORE_H__
+#endif //__ELASTOS_DROID_PROVIDER_CDRMSTORE_H__

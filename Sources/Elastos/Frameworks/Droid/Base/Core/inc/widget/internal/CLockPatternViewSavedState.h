@@ -1,5 +1,5 @@
-#ifndef __CLOCKPATTERNVIEWSAVEDSTATE__H_
-#define __CLOCKPATTERNVIEWSAVEDSTATE__H_
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEWSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEWSAVEDSTATE_H__
 
 #include "_CLockPatternViewSavedState.h"
 #include "widget/internal/LockPatternViewSavedState.h"
@@ -47,4 +47,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CLOCKPATTERNVIEWSAVEDSTATE__H_
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNVIEWSAVEDSTATE_H__

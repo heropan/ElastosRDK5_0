@@ -1,5 +1,5 @@
-#ifndef __PATHSHAPE_H__
-#define __PATHSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_PATHSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_PATHSHAPE_H__
 
 #include "graphics/drawable/shapes/Shape.h"
 
@@ -70,4 +70,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PATHSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_PATHSHAPE_H__

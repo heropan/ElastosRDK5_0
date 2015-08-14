@@ -1,5 +1,5 @@
-#ifndef __COMPATMODEPANEL_H_
-#define __COMPATMODEPANEL_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_COMPATMODEPANEL_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_COMPATMODEPANEL_H__
 
 #include "widget/FrameLayout.h"
 
@@ -79,4 +79,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__COMPATMODEPANEL_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_COMPATMODEPANEL_H__

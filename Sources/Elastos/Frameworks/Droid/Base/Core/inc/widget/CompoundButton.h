@@ -1,6 +1,6 @@
 
-#ifndef __COMPOUNDBUTTON_H__
-#define __COMPOUNDBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__
 
 #include "widget/Button.h"
 #include "view/ViewBaseSavedState.h"
@@ -183,4 +183,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__COMPOUNDBUTTON_H__
+#endif //__ELASTOS_DROID_WIDGET_COMPOUNDBUTTON_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CAVOIDXFERMODE_H__
-#define __CAVOIDXFERMODE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CAVOIDXFERMODE_H__
+#define __ELASTOS_DROID_GRAPHICS_CAVOIDXFERMODE_H__
 
 #include "_CAvoidXfermode.h"
 #include "graphics/Xfermode.h"
@@ -50,4 +50,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAVOIDXFERMODE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CAVOIDXFERMODE_H__

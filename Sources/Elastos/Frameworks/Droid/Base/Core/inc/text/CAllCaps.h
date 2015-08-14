@@ -1,5 +1,5 @@
-#ifndef __CALLCAPS_H__
-#define __CALLCAPS_H__
+#ifndef __ELASTOS_DROID_TEXT_CALLCAPS_H__
+#define __ELASTOS_DROID_TEXT_CALLCAPS_H__
 
 #include "_CAllCaps.h"
 
@@ -26,4 +26,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CALLCAPS_H__
+#endif //__ELASTOS_DROID_TEXT_CALLCAPS_H__

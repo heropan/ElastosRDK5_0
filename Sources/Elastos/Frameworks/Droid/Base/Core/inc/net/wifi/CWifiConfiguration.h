@@ -1,6 +1,6 @@
 
-#ifndef __CWIFICONFIGURATION_H__
-#define __CWIFICONFIGURATION_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATION_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATION_H__
 
 #include "ext/frameworkdef.h"
 #include "_CWifiConfiguration.h"
@@ -262,4 +262,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWIFICONFIGURATION_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATION_H__

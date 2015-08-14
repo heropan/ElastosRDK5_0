@@ -1,5 +1,5 @@
-#ifndef __SETTINGSVIEW_H_
-#define __SETTINGSVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SETTINGSVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SETTINGSVIEW_H__
 
 #include "widget/LinearLayout.h"
 
@@ -66,4 +66,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__SETTINGSVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SETTINGSVIEW_H__

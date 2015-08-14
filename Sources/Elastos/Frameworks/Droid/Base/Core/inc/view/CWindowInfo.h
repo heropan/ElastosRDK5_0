@@ -1,5 +1,5 @@
-#ifndef __CWINDOWINFO_H__
-#define __CWINDOWINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
+#define __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 
 #include "_CWindowInfo.h"
 #include "graphics/CRect.h"

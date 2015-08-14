@@ -1,6 +1,6 @@
 
-#ifndef __GAMEPADDEVICE_H__
-#define __GAMEPADDEVICE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__
 
 // import android.os.SystemClock;
 // import android.view.InputDevice;
@@ -127,4 +127,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__GAMEPADDEVICE_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_GAMEPADDEVICE_H__

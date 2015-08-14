@@ -1,5 +1,5 @@
-#ifndef __ImageSpan_H__
-#define __ImageSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__
 
 #include "text/style/DynamicDrawableSpan.h"
 #include "Elastos.Droid.Core_server.h"
@@ -173,4 +173,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ImageSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_ImageSpan_H__

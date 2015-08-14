@@ -1,6 +1,6 @@
 
-#ifndef __AWZOOMCONTROLS_H__
-#define __AWZOOMCONTROLS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__
 
 // import android.view.Gravity;
 // import android.view.View;
@@ -67,4 +67,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWZOOMCONTROLS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWZOOMCONTROLS_H__

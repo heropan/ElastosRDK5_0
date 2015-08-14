@@ -1,6 +1,6 @@
 
-#ifndef __CPOINTERPROPERTIES_H__
-#define __CPOINTERPROPERTIES_H__
+#ifndef __ELASTOS_DROID_VIEW_CPOINTERPROPERTIES_H__
+#define __ELASTOS_DROID_VIEW_CPOINTERPROPERTIES_H__
 
 #include "_CPointerProperties.h"
 
@@ -88,4 +88,4 @@ private:
 }
 }
 
-#endif // __CPOINTERPROPERTIES_H__
+#endif // __ELASTOS_DROID_VIEW_CPOINTERPROPERTIES_H__

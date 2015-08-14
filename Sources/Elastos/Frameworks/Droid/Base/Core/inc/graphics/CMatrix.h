@@ -1,6 +1,6 @@
 
-#ifndef __CMATRIX_H__
-#define __CMATRIX_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CMATRIX_H__
+#define __ELASTOS_DROID_GRAPHICS_CMATRIX_H__
 
 #include "_CMatrix.h"
 #include "Matrix.h"
@@ -742,4 +742,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CMATRIX_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CMATRIX_H__

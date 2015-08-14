@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYTHREADHELPER_H__
-#define __CACTIVITYTHREADHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__
+#define __ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__
 
 #include "_CActivityThreadHelper.h"
 
@@ -45,4 +45,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYTHREADHELPER_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__

@@ -1,5 +1,5 @@
-#ifndef __CETHERNETMANAGER_H__
-#define __CETHERNETMANAGER_H__
+#ifndef __ELASTOS_DROID_NET_ETHERNET_CETHERNETMANAGER_H__
+#define __ELASTOS_DROID_NET_ETHERNET_CETHERNETMANAGER_H__
 
 #include "_CEthernetManager.h"
 
@@ -67,4 +67,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif // __CETHERNETMANAGER_H__
+#endif // __ELASTOS_DROID_NET_ETHERNET_CETHERNETMANAGER_H__

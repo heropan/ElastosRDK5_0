@@ -1,6 +1,6 @@
 
-#ifndef __CUSBMANAGER_H__
-#define __CUSBMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_USB_CUSBMANAGER_H__
 
 #include "_CUsbManager.h"
 #include "ext/frameworkext.h"
@@ -216,4 +216,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSBMANAGER_H__
+#endif // __ELASTOS_DROID_HARDWARE_USB_CUSBMANAGER_H__

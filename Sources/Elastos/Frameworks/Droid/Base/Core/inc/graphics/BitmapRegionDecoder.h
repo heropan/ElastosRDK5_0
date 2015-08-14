@@ -1,6 +1,6 @@
 
-#ifndef __BITMAPREGIONDECODER_H__
-#define __BITMAPREGIONDECODER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__
+#define __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
@@ -174,4 +174,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __BITMAPREGIONDECODER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_BITMAPREGIONDECODER_H__

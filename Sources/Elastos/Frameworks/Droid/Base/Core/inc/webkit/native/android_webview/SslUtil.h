@@ -1,6 +1,6 @@
 
-#ifndef __SSLUTIL_H__
-#define __SSLUTIL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SSLUTIL_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SSLUTIL_H__
 
 // import android.net.http.SslCertificate;
 // import android.net.http.SslError;
@@ -42,4 +42,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__SSLUTIL_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_SSLUTIL_H__

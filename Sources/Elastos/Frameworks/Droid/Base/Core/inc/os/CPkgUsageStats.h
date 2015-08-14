@@ -1,5 +1,5 @@
-#ifndef __CPkgUsageStats_H__
-#define __CPkgUsageStats_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_CPKGUSAGESTATS_H__
+#define __ELASTOS_DROID_INTERNAL_OS_CPKGUSAGESTATS_H__
 
 #include "_CPkgUsageStats.h"
 
@@ -49,4 +49,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPkgUsageStats_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_CPKGUSAGESTATS_H__

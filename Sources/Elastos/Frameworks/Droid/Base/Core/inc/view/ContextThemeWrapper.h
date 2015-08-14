@@ -1,5 +1,5 @@
-#ifndef __CONTEXTTHEMEWRAPPER_H__
-#define __CONTEXTTHEMEWRAPPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__
+#define __ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__
 
 #include "content/ContextWrapper.h"
 
@@ -75,4 +75,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CONTEXTTHEMEWRAPPER_H__
+#endif //__ELASTOS_DROID_VIEW_CONTEXTTHEMEWRAPPER_H__

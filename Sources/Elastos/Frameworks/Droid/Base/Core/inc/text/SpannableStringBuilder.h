@@ -1,5 +1,5 @@
-#ifndef __SPANNABLESTRINGBUILDER_H__
-#define __SPANNABLESTRINGBUILDER_H__
+#ifndef __ELASTOS_DROID_TEXT_SPANNABLESTRINGBUILDER_H__
+#define __ELASTOS_DROID_TEXT_SPANNABLESTRINGBUILDER_H__
 
 #include "ext/frameworkext.h"
 
@@ -475,4 +475,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__SPANNABLESTRINGBUILDER_H__
+#endif //__ELASTOS_DROID_TEXT_SPANNABLESTRINGBUILDER_H__

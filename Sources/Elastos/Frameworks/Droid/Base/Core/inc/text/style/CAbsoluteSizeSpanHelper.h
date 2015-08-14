@@ -1,6 +1,6 @@
 
-#ifndef __CABSOLUTESIZESPANHELPER_H__
-#define __CABSOLUTESIZESPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPANHELPER_H__
 
 #include "_CAbsoluteSizeSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CABSOLUTESIZESPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPANHELPER_H__

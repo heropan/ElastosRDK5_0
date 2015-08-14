@@ -1,5 +1,5 @@
-#ifndef __CREMOTEVIEWSBITMAPCACHE_H_
-#define __CREMOTEVIEWSBITMAPCACHE_H_
+#ifndef __ELASTOS_DROID_WIDGET_CREMOTEVIEWSBITMAPCACHE_H__
+#define __ELASTOS_DROID_WIDGET_CREMOTEVIEWSBITMAPCACHE_H__
 
 #include "_CRemoteViewsBitmapCache.h"
 #include "ext/frameworkext.h"
@@ -48,4 +48,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CREMOTEVIEWSBITMAPCACHE_H_
+#endif //__ELASTOS_DROID_WIDGET_CREMOTEVIEWSBITMAPCACHE_H__

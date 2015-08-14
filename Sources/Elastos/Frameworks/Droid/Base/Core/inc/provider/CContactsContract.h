@@ -1,6 +1,6 @@
 
-#ifndef __CCONTACTSCONTRACT_H__
-#define __CCONTACTSCONTRACT_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACT_H__
+#define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACT_H__
 
 #include "_CContactsContract.h"
 #include "ContactsContract.h"
@@ -61,4 +61,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__CCONTACTSCONTRACT_H__
+#endif //__ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACT_H__

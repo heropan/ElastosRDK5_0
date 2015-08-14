@@ -1,6 +1,6 @@
 
-#ifndef  __IINPUTCONNECTIONWRQPPER_H__
-#define  __IINPUTCONNECTIONWRQPPER_H__
+#ifndef __ELASTOS_DROID_VIEW_IINPUTCONNECTIONWRQPPER_H__
+#define  __ELASTOS_DROID_VIEW_IINPUTCONNECTIONWRQPPER_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "os/HandlerBase.h"
@@ -237,4 +237,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__IINPUTCONNECTIONWRQPPER_H__
+#endif  //__ELASTOS_DROID_VIEW_IINPUTCONNECTIONWRQPPER_H__

@@ -1,5 +1,5 @@
-#ifndef __RelativeSizeSpan_H__
-#define __RelativeSizeSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_RelativeSizeSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_RelativeSizeSpan_H__
 
 #include "text/style/MetricAffectingSpan.h"
 
@@ -55,4 +55,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __RelativeSizeSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_RelativeSizeSpan_H__

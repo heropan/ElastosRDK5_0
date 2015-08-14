@@ -1,6 +1,6 @@
 
-#ifndef __CRFC822TOKENHELPER_H__
-#define __CRFC822TOKENHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENHELPER_H__
+#define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENHELPER_H__
 
 #include "_CRfc822TokenHelper.h"
 
@@ -31,4 +31,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CRFC822TOKENHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENHELPER_H__

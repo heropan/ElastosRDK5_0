@@ -1,6 +1,6 @@
 
-#ifndef __CCMailTo_H__
-#define __CCMailTo_H__
+#ifndef __ELASTOS_DROID_NET_CCMailTo_H__
+#define __ELASTOS_DROID_NET_CCMailTo_H__
 
 #include "_CCMailTo.h"
 #include "elautptr.h"

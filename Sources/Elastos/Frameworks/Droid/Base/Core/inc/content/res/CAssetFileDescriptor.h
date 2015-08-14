@@ -1,6 +1,6 @@
 
-#ifndef __CASSETFILEDESCRIPTOR_H__
-#define __CASSETFILEDESCRIPTOR_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__
+#define __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__
 
 #include "_CAssetFileDescriptor.h"
 
@@ -137,4 +137,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CASSETFILEDESCRIPTOR_H__
+#endif // __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__

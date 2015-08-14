@@ -1,6 +1,6 @@
 
-#ifndef __CURSORADAPTER_H__
-#define __CURSORADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CURSORADAPTER_H__
 
 #include <ext/frameworkext.h>
 #include "widget/BaseAdapter.h"

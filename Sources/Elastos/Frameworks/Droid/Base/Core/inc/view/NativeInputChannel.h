@@ -1,6 +1,6 @@
 
-#ifndef __NATIVEINPUTCHANNEL_H__
-#define __NATIVEINPUTCHANNEL_H__
+#ifndef __ELASTOS_DROID_VIEW_NATIVEINPUTCHANNEL_H__
+#define __ELASTOS_DROID_VIEW_NATIVEINPUTCHANNEL_H__
 
 #include <androidfw/InputTransport.h>
 #include <elastos.h>
@@ -46,4 +46,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__NATIVEINPUTCHANNEL_H__
+#endif //__ELASTOS_DROID_VIEW_NATIVEINPUTCHANNEL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CONNECTION_H__
-#define __CONNECTION_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CONNECTION_H__
+#define __ELASTOS_DROID_NET_HTTP_CONNECTION_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -210,4 +210,4 @@ private:
 }
 }
 
-#endif // __CONNECTION_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CONNECTION_H__

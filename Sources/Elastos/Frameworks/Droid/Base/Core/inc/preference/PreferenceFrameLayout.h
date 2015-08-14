@@ -1,6 +1,6 @@
 
-#ifndef  __PREFERENCEFRAMELAYOUT_H__
-#define  __PREFERENCEFRAMELAYOUT_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAMELAYOUT_H__
+#define  __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAMELAYOUT_H__
 
 #include "widget/FrameLayout.h"
 #include "widget/FrameLayoutLayoutParams.h"
@@ -131,4 +131,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif  // __PREFERENCEFRAMELAYOUT_H__
+#endif  // __ELASTOS_DROID_PREFERENCE_PREFERENCEFRAMELAYOUT_H__

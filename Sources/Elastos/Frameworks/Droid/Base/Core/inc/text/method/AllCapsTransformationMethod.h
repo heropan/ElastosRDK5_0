@@ -1,5 +1,5 @@
-#ifndef __AllCapsTransformationMethod_H__
-#define __AllCapsTransformationMethod_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__
+#define __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -60,4 +60,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __AllCapsTransformationMethod_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_AllCapsTransformationMethod_H__

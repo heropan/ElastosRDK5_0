@@ -1,6 +1,6 @@
 
-#ifndef __CVPNPROFILE_H__
-#define __CVPNPROFILE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_NET_CVPNPROFILE_H__
+#define __ELASTOS_DROID_INTERNAL_NET_CVPNPROFILE_H__
 
 #include "_CVpnProfile.h"
 
@@ -171,4 +171,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CVPNPROFILE_H__
+#endif //__ELASTOS_DROID_INTERNAL_NET_CVPNPROFILE_H__

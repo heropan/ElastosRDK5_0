@@ -1,5 +1,5 @@
-#ifndef __RasterizerSpan_H__
-#define __RasterizerSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_RasterizerSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_RasterizerSpan_H__
 
 #include "text/style/CharacterStyle.h"
 
@@ -38,4 +38,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __RasterizerSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_RasterizerSpan_H__

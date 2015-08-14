@@ -1,5 +1,5 @@
-#ifndef __CZOOMBUTTON_H__
-#define __CZOOMBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_CZOOMBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_CZOOMBUTTON_H__
 
 #include "_CZoomButton.h"
 #include "widget/ZoomButton.h"
@@ -136,4 +136,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CZOOMBUTTON_H__
+#endif //__ELASTOS_DROID_WIDGET_CZOOMBUTTON_H__

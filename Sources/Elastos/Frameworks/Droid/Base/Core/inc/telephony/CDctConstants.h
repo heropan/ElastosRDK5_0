@@ -1,5 +1,5 @@
-#ifndef __DCTCONSTANTS_H__
-#define __DCTCONSTANTS_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_DCTCONSTANTS_H__
+#define __ELASTOS_DROID_TELEPHONY_DCTCONSTANTS_H__
 
 namespace Elastos {
 namespace Droid {
@@ -70,4 +70,4 @@ namespace Telephony {
 } // Telephony
 } // Droid
 } // Elastos
-#endif //__DCTCONSTANTS_H__
+#endif //__ELASTOS_DROID_TELEPHONY_DCTCONSTANTS_H__

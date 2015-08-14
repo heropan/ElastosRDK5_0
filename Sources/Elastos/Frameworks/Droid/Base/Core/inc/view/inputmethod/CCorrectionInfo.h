@@ -1,6 +1,6 @@
 
-#ifndef  __CCORRECTIONINFO_H__
-#define  __CCORRECTIONINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CCORRECTIONINFO_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CCORRECTIONINFO_H__
 
 #include "_CCorrectionInfo.h"
 
@@ -101,4 +101,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CCORRECTIONINFO_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CCORRECTIONINFO_H__

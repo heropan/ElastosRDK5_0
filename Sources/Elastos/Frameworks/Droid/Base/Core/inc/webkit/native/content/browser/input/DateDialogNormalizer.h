@@ -1,6 +1,6 @@
 
-#ifndef __DATEDIALOGNORMALIZER_H__
-#define __DATEDIALOGNORMALIZER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATEDIALOGNORMALIZER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATEDIALOGNORMALIZER_H__
 
 // import android.widget.DatePicker;
 // import android.widget.DatePicker.OnDateChangedListener;
@@ -53,4 +53,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__DATEDIALOGNORMALIZER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_DATEDIALOGNORMALIZER_H__

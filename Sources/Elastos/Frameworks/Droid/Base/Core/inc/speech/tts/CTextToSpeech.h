@@ -1,6 +1,6 @@
 
-#ifndef __CTEXTTOSPEECH_H__
-#define __CTEXTTOSPEECH_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__
+#define __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__
 
 #include "_CTextToSpeech.h"
 #include "speech/tts/TextToSpeech.h"
@@ -137,4 +137,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CTEXTTOSPEECH_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__

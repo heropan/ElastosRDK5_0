@@ -1,6 +1,6 @@
 
-#ifndef __CALERTDIALOGBUILDER_H__
-#define __CALERTDIALOGBUILDER_H__
+#ifndef __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__
+#define __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__
 
 #include "_CAlertDialogBuilder.h"
 //#include "app/AlertController.h"
@@ -214,4 +214,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CALERTDIALOGBUILDER_H__
+#endif // __ELASTOS_DROID_APP_CALERTDIALOGBUILDER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CBUTTON_H__
-#define __CBUTTON_H__
+#ifndef __ELASTOS_DROID_WIDGET_CBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_CBUTTON_H__
 
 #include "_CButton.h"
 #include "widget/Button.h"
@@ -51,4 +51,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CBUTTON_H__
+#endif // __ELASTOS_DROID_WIDGET_CBUTTON_H__

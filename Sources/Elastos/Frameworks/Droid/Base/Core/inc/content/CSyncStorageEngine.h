@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCSTORAGEENGINE_H__
-#define __CSYNCSTORAGEENGINE_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINE_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINE_H__
 
 #include "_CSyncStorageEngine.h"
 #include <ext/frameworkext.h>
@@ -591,4 +591,4 @@ private:
 }
 }
 
-#endif // __CSYNCSTORAGEENGINE_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINE_H__

@@ -1,5 +1,5 @@
-#ifndef __ETHERNETDATATRACKER_H__
-#define __ETHERNETDATATRACKER_H__
+#ifndef __ELASTOS_DROID_NET_ETHERNET_ETHERNETDATATRACKER_H__
+#define __ELASTOS_DROID_NET_ETHERNET_ETHERNETDATATRACKER_H__
 
 #include "net/NetworkStateTracker.h"
 #include "net/DhcpInfoInternal.h"
@@ -313,4 +313,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __ETHERNETDATATRACKER_H__
+#endif // __ELASTOS_DROID_NET_ETHERNET_ETHERNETDATATRACKER_H__

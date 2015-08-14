@@ -1,6 +1,6 @@
 
-#ifndef __MEDIACODECBRIDGE_H__
-#define __MEDIACODECBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIACODECBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIACODECBRIDGE_H__
 
 // import android.media.AudioFormat;
 // import android.media.AudioManager;
@@ -340,4 +340,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__MEDIACODECBRIDGE_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_MEDIACODECBRIDGE_H__

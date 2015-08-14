@@ -1,6 +1,6 @@
 
-#ifndef __CAUTOTEXT_H__
-#define __CAUTOTEXT_H__
+#ifndef __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
+#define __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 
 #include "_CAutoText.h"
 #include "Elastos.Droid.Core_server.h"
@@ -107,4 +107,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUTOTEXT_H__
+#endif // __ELASTOS_DROID_TEXT_CAUTOTEXT_H__

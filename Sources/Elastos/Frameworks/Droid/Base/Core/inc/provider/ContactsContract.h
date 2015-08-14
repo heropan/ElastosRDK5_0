@@ -1,8 +1,7 @@
 
-#ifndef __CONTACTSCONTRACT_H__
-#define __CONTACTSCONTRACT_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CONTACTSCONTRACT_H__
+#define __ELASTOS_DROID_PROVIDER_CONTACTSCONTRACT_H__
 
-#ifndef __USE_MALLOC
 #define __USE_MALLOC
 #endif
 
@@ -93,4 +92,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__CONTACTSCONTRACT_H__
+#endif //__ELASTOS_DROID_PROVIDER_CONTACTSCONTRACT_H__

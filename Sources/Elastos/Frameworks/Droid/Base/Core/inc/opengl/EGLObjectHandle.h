@@ -1,5 +1,5 @@
-#ifndef __EGLOBJECTHANDLE_H__
-#define __EGLOBJECTHANDLE_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLOBJECTHANDLE_H__
+#define __ELASTOS_DROID_OPENGL_EGLOBJECTHANDLE_H__
 
 #include "ext/frameworkext.h"
 
@@ -33,4 +33,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __EGLOBJECTHANDLE_H__
+#endif // __ELASTOS_DROID_OPENGL_EGLOBJECTHANDLE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ROTARYSELECTOR_H__
-#define __ROTARYSELECTOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_ROTARYSELECTOR_H__
 
 #include "view/View.h"
 #include "view/VelocityTracker.h"

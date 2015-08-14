@@ -1,5 +1,5 @@
-#ifndef __CMENUPOPUPHELPER_H__
-#define __CMENUPOPUPHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CMENUPOPUPHELPER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CMENUPOPUPHELPER_H__
 
 #include "_CMenuPopupHelper.h"
 #include "view/menu/MenuPopupHelper.h"

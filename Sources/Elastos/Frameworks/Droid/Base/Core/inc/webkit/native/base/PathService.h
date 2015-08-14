@@ -1,6 +1,6 @@
 
-#ifndef __PATHSERVICE_H__
-#define __PATHSERVICE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_PATHSERVICE_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_PATHSERVICE_H__
 
 namespace Elastos {
 namespace Droid {
@@ -34,4 +34,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__PATHSERVICE_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_PATHSERVICE_H__

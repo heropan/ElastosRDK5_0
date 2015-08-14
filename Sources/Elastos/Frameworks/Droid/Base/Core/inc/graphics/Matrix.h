@@ -1,6 +1,6 @@
 
-#ifndef __MATRIX_H__
-#define __MATRIX_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_MATRIX_H__
+#define __ELASTOS_DROID_GRAPHICS_MATRIX_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
@@ -705,4 +705,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__MATRIX_H__
+#endif //__ELASTOS_DROID_GRAPHICS_MATRIX_H__

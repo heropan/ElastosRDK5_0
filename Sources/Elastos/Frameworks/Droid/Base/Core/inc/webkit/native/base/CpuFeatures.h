@@ -1,6 +1,6 @@
 
-#ifndef __CPUFEATURES_H__
-#define __CPUFEATURES_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_CPUFEATURES_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_CPUFEATURES_H__
 
 namespace Elastos {
 namespace Droid {
@@ -46,4 +46,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CPUFEATURES_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_CPUFEATURES_H__

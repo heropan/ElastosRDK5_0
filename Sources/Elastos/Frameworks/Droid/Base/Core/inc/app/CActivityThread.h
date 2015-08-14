@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYTHREAD_H__
-#define __CACTIVITYTHREAD_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
+#define __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 
 #include "ext/frameworkext.h"
 #include "_CActivityThread.h"
@@ -99,7 +99,6 @@ private:
 
 _ETL_NAMESPACE_BEGIN
 
-#ifndef AUTOPTR_CAT_RESOURCESKEY_EQUALTO_FUNC
 #define AUTOPTR_CAT_RESOURCESKEY_EQUALTO_FUNC
 template<> struct EqualTo<AutoPtr<Elastos::Droid::App::ResourcesKey> >
 {
@@ -112,7 +111,6 @@ template<> struct EqualTo<AutoPtr<Elastos::Droid::App::ResourcesKey> >
 };
 #endif //AUTOPTR_CAT_RESOURCESKEY_EQUALTO_FUNC
 
-#ifndef AUTOPTR_CAT_RESOURCESKEY_HASH_FUNC
 #define AUTOPTR_CAT_RESOURCESKEY_HASH_FUNC
 template<> struct Hash<AutoPtr<Elastos::Droid::App::ResourcesKey> >
 {
@@ -1374,4 +1372,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CACTIVITYTHREAD_H__
+#endif // __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__

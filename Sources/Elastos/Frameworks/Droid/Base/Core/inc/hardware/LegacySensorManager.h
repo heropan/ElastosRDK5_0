@@ -1,6 +1,6 @@
 
-#ifndef  __LEGACYSENSORMANAGER_H__
-#define  __LEGACYSENSORMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
+#define  __ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -21,7 +21,6 @@ class LegacyListener;
 } // namespace Droid
 } // namespace Elastos
 
-#ifndef DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR_LEGACYLISTENER
 #define DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR_LEGACYLISTENER
 DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR(Elastos::Droid::Hardware::LegacyListener);
 #endif  //DEFINE_HASH_FUNC_FOR_PTR_USING_ADDR_LEGACYLISTENER
@@ -186,4 +185,4 @@ private:
 } // namespace Elastos
 
 
-#endif  //__LEGACYSENSORMANAGER_H__
+#endif  //__ELASTOS_DROID_HARDWARE_LEGACYSENSORMANAGER_H__

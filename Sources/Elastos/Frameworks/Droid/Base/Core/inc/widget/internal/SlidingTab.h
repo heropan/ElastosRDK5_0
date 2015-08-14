@@ -1,6 +1,6 @@
 
-#ifndef __SLIDINGTAB_H__
-#define __SLIDINGTAB_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_SLIDINGTAB_H__
 
 #include "view/ViewGroup.h"
 #include <elastos/core/Math.h>

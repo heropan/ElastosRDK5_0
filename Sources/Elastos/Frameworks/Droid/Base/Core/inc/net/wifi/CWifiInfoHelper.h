@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIINFOHELPER_H__
-#define __CWIFIINFOHELPER_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFIINFOHELPER_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFIINFOHELPER_H__
 
 #include "_CWifiInfoHelper.h"
 
@@ -26,4 +26,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CWIFIINFOHELPER_H__
+#endif //__ELASTOS_DROID_NET_WIFI_CWIFIINFOHELPER_H__

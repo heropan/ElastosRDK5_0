@@ -1,6 +1,6 @@
 
-#ifndef __CHROMEDATEPICKERDIALOG_H__
-#define __CHROMEDATEPICKERDIALOG_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CHROMEDATEPICKERDIALOG_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CHROMEDATEPICKERDIALOG_H__
 
 // import android.content.Context;
 // import android.content.DialogInterface;
@@ -49,4 +49,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CHROMEDATEPICKERDIALOG_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CHROMEDATEPICKERDIALOG_H__

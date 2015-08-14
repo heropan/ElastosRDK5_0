@@ -1,6 +1,6 @@
 
-#ifndef __CCOLORMATRIX_H__
-#define __CCOLORMATRIX_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__
+#define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__
 
 #include "_CColorMatrix.h"
 
@@ -143,4 +143,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCOLORMATRIX_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__

@@ -1,6 +1,6 @@
 
-#ifndef __AWPDFEXPORTER_H__
-#define __AWPDFEXPORTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__
 
 // import android.os.CancellationSignal;
 // import android.os.ParcelFileDescriptor;
@@ -95,4 +95,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWPDFEXPORTER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWPDFEXPORTER_H__

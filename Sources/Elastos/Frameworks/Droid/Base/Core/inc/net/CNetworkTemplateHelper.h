@@ -1,6 +1,6 @@
 
-#ifndef __CNETWORKTEMPLATEHELPER_H__
-#define __CNETWORKTEMPLATEHELPER_H__
+#ifndef __ELASTOS_DROID_NET_CNETWORKTEMPLATEHELPER_H__
+#define __ELASTOS_DROID_NET_CNETWORKTEMPLATEHELPER_H__
 
 #include "_CNetworkTemplateHelper.h"
 
@@ -47,4 +47,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNETWORKTEMPLATEHELPER_H__
+#endif // __ELASTOS_DROID_NET_CNETWORKTEMPLATEHELPER_H__

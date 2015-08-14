@@ -1,6 +1,6 @@
 
-#ifndef __CVIEWFLIPPER_H__
-#define __CVIEWFLIPPER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CVIEWFLIPPER_H__
+#define __ELASTOS_DROID_WIDGET_CVIEWFLIPPER_H__
 
 #include "_CViewFlipper.h"
 
@@ -148,4 +148,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CVIEWFLIPPER_H__
+#endif // __ELASTOS_DROID_WIDGET_CVIEWFLIPPER_H__

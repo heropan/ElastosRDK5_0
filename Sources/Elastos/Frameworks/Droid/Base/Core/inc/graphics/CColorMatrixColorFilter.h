@@ -1,6 +1,6 @@
 
-#ifndef __CCOLORMATRIXCOLORFILTER_H__
-#define __CCOLORMATRIXCOLORFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__
 
 #include "_CColorMatrixColorFilter.h"
 #include "graphics/ColorFilter.h"
@@ -48,4 +48,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCOLORMATRIXCOLORFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__

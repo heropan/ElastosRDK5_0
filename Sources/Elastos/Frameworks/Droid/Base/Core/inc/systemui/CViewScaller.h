@@ -1,5 +1,5 @@
-#ifndef __CVIEWSCALLER_H__
-#define __CVIEWSCALLER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_CVIEWSCALLER_H__
+#define __ELASTOS_DROID_SYSTEMUI_CVIEWSCALLER_H__
 
 #include "_CViewScaller.h"
 

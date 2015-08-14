@@ -1,6 +1,6 @@
 
-#ifndef __CDREAMSERVICE_H__
-#define __CDREAMSERVICE_H__
+#ifndef __ELASTOS_DROID_SERVICE_DREAMS_CDREAMSERVICE_H__
+#define __ELASTOS_DROID_SERVICE_DREAMS_CDREAMSERVICE_H__
 
 #include "_CDreamService.h"
 #include <ext/frameworkext.h>

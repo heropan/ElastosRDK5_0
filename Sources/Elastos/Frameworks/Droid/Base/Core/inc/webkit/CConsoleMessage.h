@@ -1,6 +1,6 @@
 
-#ifndef __CCONSOLEMESSAGE_H__
-#define __CCONSOLEMESSAGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CCONSOLEMESSAGE_H__
+#define __ELASTOS_DROID_WEBKIT_CCONSOLEMESSAGE_H__
 
 #include "_CConsoleMessage.h"
 #include "webkit/ConsoleMessage.h"
@@ -35,4 +35,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCONSOLEMESSAGE_H__
+#endif // __ELASTOS_DROID_WEBKIT_CCONSOLEMESSAGE_H__

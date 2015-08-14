@@ -1,6 +1,6 @@
 
-#ifndef  __CWIFIMANAGER_H__
-#define  __CWIFIMANAGER_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
+#define  __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "_CWifiManager.h"
@@ -645,4 +645,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CWIFIMANAGER_H__
+#endif  //__ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCALLERINFOASYNCQUERY_H__
-#define __CCALLERINFOASYNCQUERY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERY_H__
+#define __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERY_H__
 
 #include "_CCallerInfoAsyncQuery.h"
 #include "content/AsyncQueryHandler.h"
@@ -135,4 +135,4 @@ private:
 } //namespace Internal
 } //namespace Telephony
 
-#endif // __CCALLERINFOASYNCQUERY_H__
+#endif // __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERY_H__

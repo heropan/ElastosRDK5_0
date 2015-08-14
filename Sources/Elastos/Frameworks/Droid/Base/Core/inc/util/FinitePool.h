@@ -1,6 +1,6 @@
 
-#ifndef __FINITEPOOL_H__
-#define __FINITEPOOL_H__
+#ifndef __ELASTOS_DROID_UTILITY_FINITEPOOL_H__
+#define __ELASTOS_DROID_UTILITY_FINITEPOOL_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -64,4 +64,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__FINITEPOOL_H__
+#endif //__ELASTOS_DROID_UTILITY_FINITEPOOL_H__

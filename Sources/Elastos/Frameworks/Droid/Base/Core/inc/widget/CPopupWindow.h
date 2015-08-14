@@ -1,5 +1,5 @@
-#ifndef __CPOPUPWINDOW_H_
-#define __CPOPUPWINDOW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__
+#define __ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__
 
 #include "_CPopupWindow.h"
 #include "ext/frameworkext.h"
@@ -67,4 +67,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CPOPUPWINDOW_H_
+#endif //__ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CAPPWIDGETMANAGER_H__
-#define __CAPPWIDGETMANAGER_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETMANAGER_H__
+#define __ELASTOS_DROID_APPWIDGET_CAPPWIDGETMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "_CAppWidgetManager.h"
@@ -405,4 +405,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CAPPWIDGETMANAGER_H__
+#endif //__ELASTOS_DROID_APPWIDGET_CAPPWIDGETMANAGER_H__

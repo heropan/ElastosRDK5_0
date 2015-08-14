@@ -1,5 +1,5 @@
-#ifndef __CTOUCH_H__
-#define __CTOUCH_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CTOUCH_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CTOUCH_H__
 
 #include "_CTouch.h"
 #include "text/method/Touch.h"
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTOUCH_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CTOUCH_H__

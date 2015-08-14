@@ -1,5 +1,5 @@
-#ifndef __CEMPTYABSSAVEDSTATE_H__
-#define __CEMPTYABSSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_VIEW_CEMPTYABSSAVEDSTATE_H__
+#define __ELASTOS_DROID_VIEW_CEMPTYABSSAVEDSTATE_H__
 
 #include "_CEmptyAbsSavedState.h"
 #include "view/AbsSavedState.h"

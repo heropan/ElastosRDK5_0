@@ -1,6 +1,6 @@
 
-#ifndef __CQUOTESPAN_H__
-#define __CQUOTESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CQUOTESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CQUOTESPAN_H__
 
 #include "_CQuoteSpan.h"
 #include "text/style/QuoteSpan.h"
@@ -35,4 +35,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CQUOTESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CQUOTESPAN_H__

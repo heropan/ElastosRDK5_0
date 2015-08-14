@@ -1,5 +1,5 @@
-#ifndef __DELEGATEVIEWHELPER_H__
-#define __DELEGATEVIEWHELPER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_DELEGATEVIEWHELPER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_DELEGATEVIEWHELPER_H__
 
 #include "ext/frameworkext.h"
 
@@ -68,4 +68,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__DELEGATEVIEWHELPER_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_DELEGATEVIEWHELPER_H__

@@ -1,5 +1,5 @@
-#ifndef __CVIEWANIMATOR_H__
-#define __CVIEWANIMATOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_CVIEWANIMATOR_H__
+#define __ELASTOS_DROID_WIDGET_CVIEWANIMATOR_H__
 
 #include "_CViewAnimator.h"
 #include "ViewAnimator.h"

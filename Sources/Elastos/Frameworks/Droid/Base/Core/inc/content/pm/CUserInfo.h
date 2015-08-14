@@ -1,6 +1,6 @@
 
-#ifndef __CUSERINFO_H__
-#define __CUSERINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__
 
 #include "_CUserInfo.h"
 
@@ -132,4 +132,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSERINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__

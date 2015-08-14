@@ -1,6 +1,6 @@
 
-#ifndef __CELLINFO_H__
-#define __CELLINFO_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CELLINFO_H__
+#define __ELASTOS_DROID_TELEPHONY_CELLINFO_H__
 
 #include "ext/frameworkext.h"
 
@@ -86,4 +86,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CELLINFO_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CELLINFO_H__

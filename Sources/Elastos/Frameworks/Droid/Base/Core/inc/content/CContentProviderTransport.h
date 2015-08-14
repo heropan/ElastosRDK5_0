@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTPROVIDERTRANSPORT_H__
-#define __CCONTENTPROVIDERTRANSPORT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
 
 #include "_CContentProviderTransport.h"
 #include "content/ContentProvider.h"
@@ -111,4 +111,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCONTENTPROVIDERTRANSPORT_H__
+#endif //__ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__

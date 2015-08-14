@@ -1,6 +1,6 @@
 
-#ifndef __CSTYLESPAN_H__
-#define __CSTYLESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CSTYLESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CSTYLESPAN_H__
 
 #include "_CStyleSpan.h"
 #include "text/style/StyleSpan.h"
@@ -40,4 +40,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSTYLESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CSTYLESPAN_H__

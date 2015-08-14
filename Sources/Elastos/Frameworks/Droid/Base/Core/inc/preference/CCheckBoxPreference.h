@@ -1,6 +1,6 @@
 
-#ifndef __CCHECKBOXPREFERENCE_H__
-#define __CCHECKBOXPREFERENCE_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CCHECKBOXPREFERENCE_H__
+#define __ELASTOS_DROID_PREFERENCE_CCHECKBOXPREFERENCE_H__
 
 #include "_CCheckBoxPreference.h"
 #include "TwoStatePreference.h"
@@ -69,4 +69,4 @@ public:
 }
 }
 
-#endif // __CCHECKBOXPREFERENCE_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CCHECKBOXPREFERENCE_H__

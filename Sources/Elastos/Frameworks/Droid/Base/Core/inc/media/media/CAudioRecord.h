@@ -1,6 +1,6 @@
 
-#ifndef __CAUDIORECORD_H__
-#define __CAUDIORECORD_H__
+#ifndef __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
+#define __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__
 
 #include "_CAudioRecord.h"
 #include "os/HandlerBase.h"
@@ -569,4 +569,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CAUDIORECORD_H__
+#endif // __ELASTOS_DROID_MEDIA_CAUDIORECORD_H__

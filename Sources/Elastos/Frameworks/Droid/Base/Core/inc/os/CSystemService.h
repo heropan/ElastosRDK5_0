@@ -1,6 +1,6 @@
 
-#ifndef __CSYSTEMSERVICE_H__
-#define __CSYSTEMSERVICE_H__
+#ifndef __ELASTOS_DROID_OS_CSYSTEMSERVICE_H__
+#define __ELASTOS_DROID_OS_CSYSTEMSERVICE_H__
 
 #include "ext/frameworkdef.h"
 #include "_CSystemService.h"
@@ -69,4 +69,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSYSTEMSERVICE_H__
+#endif //__ELASTOS_DROID_OS_CSYSTEMSERVICE_H__

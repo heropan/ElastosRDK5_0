@@ -1,5 +1,5 @@
-#ifndef __UlawEncoderInputStream_H__
-#define __UlawEncoderInputStream_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_UlawEncoderInputStream_H__
+#define __ELASTOS_DROID_SPEECH_SREC_UlawEncoderInputStream_H__
 
 #include <elastos/io/InputStream.h>
 
@@ -102,4 +102,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __UlawEncoderInputStream_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_UlawEncoderInputStream_H__

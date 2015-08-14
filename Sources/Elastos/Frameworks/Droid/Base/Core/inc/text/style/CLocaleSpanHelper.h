@@ -1,6 +1,6 @@
 
-#ifndef __CLOCALESPANHELPER_H__
-#define __CLOCALESPANHELPER_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CLOCALESPANHELPER_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CLOCALESPANHELPER_H__
 
 #include "_CLocaleSpanHelper.h"
 
@@ -21,4 +21,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLOCALESPANHELPER_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CLOCALESPANHELPER_H__

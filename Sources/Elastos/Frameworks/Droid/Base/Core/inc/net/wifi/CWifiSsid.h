@@ -1,6 +1,6 @@
 
-#ifndef __CWIFISSID_H__
-#define __CWIFISSID_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
+#define __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__
 
 #include "_CWifiSsid.h"
 
@@ -58,4 +58,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWIFISSID_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CWIFISSID_H__

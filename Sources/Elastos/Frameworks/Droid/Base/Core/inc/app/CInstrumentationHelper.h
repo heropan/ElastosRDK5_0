@@ -1,6 +1,6 @@
 
-#ifndef __CINSTRUMENTATIONHELPER_H__
-#define __CINSTRUMENTATIONHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__
+#define __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__
 
 #include "_CInstrumentationHelper.h"
 #include "ext/frameworkext.h"
@@ -36,4 +36,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CINSTRUMENTATIONHELPER_H__
+#endif // __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYMANAGERTASKTHUMBNAILS_H__
-#define __CACTIVITYMANAGERTASKTHUMBNAILS_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
 
 #include "_CActivityManagerTaskThumbnails.h"
 #include "ActivityManagerTaskThumbnails.h"
@@ -53,4 +53,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYMANAGERTASKTHUMBNAILS_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__

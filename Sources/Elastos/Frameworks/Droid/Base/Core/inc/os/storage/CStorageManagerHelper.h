@@ -1,6 +1,6 @@
 
-#ifndef __CSTORAGEMANAGERHELPER_H__
-#define __CSTORAGEMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_OS_STORAGE_CSTORAGEMANAGERHELPER_H__
+#define __ELASTOS_DROID_OS_STORAGE_CSTORAGEMANAGERHELPER_H__
 
 #include "_CStorageManagerHelper.h"
 #include "ext/frameworkext.h"
@@ -29,4 +29,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CSTORAGEMANAGERHELPER_H__
+#endif // __ELASTOS_DROID_OS_STORAGE_CSTORAGEMANAGERHELPER_H__

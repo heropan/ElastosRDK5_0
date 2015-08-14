@@ -1,6 +1,6 @@
 
-#ifndef __CRESOURCESHELPER_H__
-#define __CRESOURCESHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__
+#define __ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__
 
 #include "_CResourcesHelper.h"
 
@@ -45,4 +45,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CRESOURCESHELPER_H__
+#endif //__ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__

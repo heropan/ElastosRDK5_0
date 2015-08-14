@@ -1,5 +1,5 @@
-#ifndef __CSCROLLBARDRAWABLE_H__
-#define __CSCROLLBARDRAWABLE_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSCROLLBARDRAWABLE_H__
+#define __ELASTOS_DROID_WIDGET_CSCROLLBARDRAWABLE_H__
 
 #include "_CScrollBarDrawable.h"
 
@@ -82,4 +82,4 @@ public :
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSCROLLBARDRAWABLE_H__
+#endif //__ELASTOS_DROID_WIDGET_CSCROLLBARDRAWABLE_H__

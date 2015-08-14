@@ -1,6 +1,6 @@
 
-#ifndef __IMEADAPTER_H__
-#define __IMEADAPTER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__
 
 // import android.os.Handler;
 // import android.os.ResultReceiver;
@@ -459,4 +459,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__IMEADAPTER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_IMEADAPTER_H__

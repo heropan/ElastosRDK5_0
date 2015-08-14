@@ -1,6 +1,6 @@
 
-#ifndef __CMTPDEVICEINFO_H__
-#define __CMTPDEVICEINFO_H__
+#ifndef __ELASTOS_DROID_MTP_CMTPDEVICEINFO_H__
+#define __ELASTOS_DROID_MTP_CMTPDEVICEINFO_H__
 
 #include "_CMtpDeviceInfo.h"
 
@@ -47,4 +47,4 @@ private:
 } // namespace Mtp
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CMTPDEVICEINFO_H__
+#endif // __ELASTOS_DROID_MTP_CMTPDEVICEINFO_H__

@@ -1,5 +1,5 @@
-#ifndef __CNUMBERPICKERHELPER_H_
-#define __CNUMBERPICKERHELPER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CNUMBERPICKERHELPER_H__
+#define __ELASTOS_DROID_WIDGET_CNUMBERPICKERHELPER_H__
 
 #include "_CNumberPickerHelper.h"
 #include "widget/NumberPicker.h"
@@ -18,4 +18,4 @@ CarClass(CNumberPickerHelper)
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNUMBERPICKERHELPER_H_
+#endif //__ELASTOS_DROID_WIDGET_CNUMBERPICKERHELPER_H__

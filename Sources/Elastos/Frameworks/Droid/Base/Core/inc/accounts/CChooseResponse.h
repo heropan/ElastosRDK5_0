@@ -1,6 +1,6 @@
 
-#ifndef __CCHOOSERESPONSE_H__
-#define __CCHOOSERESPONSE_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CCHOOSERESPONSE_H__
+#define __ELASTOS_DROID_ACCOUNTS_CCHOOSERESPONSE_H__
 
 #include "_CChooseResponse.h"
 #include "accounts/CAccountManager.h"
@@ -32,4 +32,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCHOOSERESPONSE_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CCHOOSERESPONSE_H__

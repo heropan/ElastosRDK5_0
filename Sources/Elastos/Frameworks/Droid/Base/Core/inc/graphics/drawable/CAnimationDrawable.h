@@ -1,6 +1,6 @@
 
-#ifndef __CANIMATIONDRAWABLE_H__
-#define __CANIMATIONDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__
 
 #include "_CAnimationDrawable.h"
 #include "graphics/drawable/AnimationDrawable.h"
@@ -98,4 +98,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CANIMATIONDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__

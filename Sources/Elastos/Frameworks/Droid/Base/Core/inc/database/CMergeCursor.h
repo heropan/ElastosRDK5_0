@@ -1,5 +1,5 @@
-#ifndef __CMERGECURSOR_H__
-#define __CMERGECURSOR_H__
+#ifndef __ELASTOS_DROID_DATABASE_CMERGECURSOR_H__
+#define __ELASTOS_DROID_DATABASE_CMERGECURSOR_H__
 
 #include "_CMergeCursor.h"
 #include "database/MergeCursor.h"
@@ -183,4 +183,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif // __CMERGECURSOR_H__
+#endif // __ELASTOS_DROID_DATABASE_CMERGECURSOR_H__

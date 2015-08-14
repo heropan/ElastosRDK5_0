@@ -1,5 +1,5 @@
-#ifndef __CLATESTITEMVIEW_H_
-#define __CLATESTITEMVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CLATESTITEMVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CLATESTITEMVIEW_H__
 
 #include "_CLatestItemView.h"
 
@@ -38,4 +38,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CLATESTITEMVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_CLATESTITEMVIEW_H__

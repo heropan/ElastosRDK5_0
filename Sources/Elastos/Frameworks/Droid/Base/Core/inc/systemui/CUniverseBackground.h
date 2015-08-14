@@ -1,5 +1,5 @@
-#ifndef __CUNHIVERSEBZACKGROUND_H_
-#define __CUNHIVERSEBZACKGROUND_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_CUNHIVERSEBZACKGROUND_H__
+#define __ELASTOS_DROID_SYSTEMUI_CUNHIVERSEBZACKGROUND_H__
 
 #include "_CUniverseBackground.h"
 
@@ -46,4 +46,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CUNHIVERSEBZACKGROUND_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_CUNHIVERSEBZACKGROUND_H__

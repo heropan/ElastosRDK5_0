@@ -1,6 +1,6 @@
 
-#ifndef __ARRAYADAPTER_H__
-#define __ARRAYADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ARRAYADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_ARRAYADAPTER_H__
 
 #include <ext/frameworkext.h>
 #include "widget/BaseAdapter.h"
@@ -266,4 +266,4 @@ private:
 }// namespace Elastos
 
 
-#endif //__ARRAYADAPTER_H__
+#endif //__ELASTOS_DROID_WIDGET_ARRAYADAPTER_H__

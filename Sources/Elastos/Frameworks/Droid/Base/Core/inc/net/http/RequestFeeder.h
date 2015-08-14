@@ -1,6 +1,6 @@
 
-#ifndef __REQUESTFEEDER_H__
-#define __REQUESTFEEDER_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_REQUESTFEEDER_H__
+#define __ELASTOS_DROID_NET_HTTP_REQUESTFEEDER_H__
 
 #include "elastos.h"
 
@@ -45,4 +45,4 @@ public:
 }
 }
 
-#endif // __REQUESTFEEDER_H__
+#endif // __ELASTOS_DROID_NET_HTTP_REQUESTFEEDER_H__

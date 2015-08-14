@@ -1,6 +1,6 @@
 
-#ifndef __DRAWFILTER_H__
-#define __DRAWFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWFILTER_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -33,4 +33,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __DRAWFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWFILTER_H__

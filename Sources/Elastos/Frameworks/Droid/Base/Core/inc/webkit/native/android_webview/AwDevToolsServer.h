@@ -1,6 +1,6 @@
 
-#ifndef __AWDEVTOOLSSERVER_H__
-#define __AWDEVTOOLSSERVER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWDEVTOOLSSERVER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWDEVTOOLSSERVER_H__
 
 // import org.chromium.base.JNINamespace;
 
@@ -41,4 +41,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWDEVTOOLSSERVER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWDEVTOOLSSERVER_H__

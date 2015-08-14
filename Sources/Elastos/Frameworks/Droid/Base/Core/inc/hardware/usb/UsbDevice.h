@@ -1,6 +1,6 @@
 
-#ifndef __USBDEVICE_H__
-#define __USBDEVICE_H__
+#ifndef __ELASTOS_DROID_HARDWARE_USB_USBDEVICE_H__
+#define __ELASTOS_DROID_HARDWARE_USB_USBDEVICE_H__
 
 #include "ext/frameworkext.h"
 
@@ -24,4 +24,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __USBDEVICE_H__
+#endif // __ELASTOS_DROID_HARDWARE_USB_USBDEVICE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CCOLOR_H__
-#define __CCOLOR_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCOLOR_H__
+#define __ELASTOS_DROID_GRAPHICS_CCOLOR_H__
 
 #include "ext/frameworkext.h"
 #include "_CColor.h"
@@ -253,4 +253,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCOLOR_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCOLOR_H__

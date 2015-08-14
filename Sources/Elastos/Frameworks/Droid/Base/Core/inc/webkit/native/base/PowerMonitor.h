@@ -1,6 +1,6 @@
 
-#ifndef __POWERMONITOR_H__
-#define __POWERMONITOR_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__
 
 // import android.content.Context;
 // import android.content.Intent;
@@ -90,4 +90,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__POWERMONITOR_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_POWERMONITOR_H__

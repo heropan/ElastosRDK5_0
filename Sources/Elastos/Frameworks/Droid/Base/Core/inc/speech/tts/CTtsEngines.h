@@ -1,6 +1,6 @@
 
-#ifndef __CTTSENGINES_H__
-#define __CTTSENGINES_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__
+#define __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__
 
 #include "_CTtsEngines.h"
 
@@ -56,4 +56,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CTTSENGINES_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_CTTSENGINES_H__

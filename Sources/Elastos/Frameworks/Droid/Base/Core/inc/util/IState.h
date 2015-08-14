@@ -1,5 +1,5 @@
-#ifndef __ISTATE_H__
-#define __ISTATE_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_ISTATE_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_ISTATE_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -78,4 +78,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ISTATE_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_ISTATE_H__

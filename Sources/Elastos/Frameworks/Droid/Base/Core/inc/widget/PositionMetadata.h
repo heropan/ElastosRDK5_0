@@ -1,5 +1,5 @@
-#ifndef __POSITIONMETADATA_H__
-#define __POSITIONMETADATA_H__
+#ifndef __ELASTOS_DROID_WIDGET_POSITIONMETADATA_H__
+#define __ELASTOS_DROID_WIDGET_POSITIONMETADATA_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>

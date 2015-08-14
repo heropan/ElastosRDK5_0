@@ -1,6 +1,6 @@
 
-#ifndef __CCONTEXTTHEMEWRAPPER_H__
-#define __CCONTEXTTHEMEWRAPPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CCONTEXTTHEMEWRAPPER_H__
+#define __ELASTOS_DROID_VIEW_CCONTEXTTHEMEWRAPPER_H__
 
 #include "_CContextThemeWrapper.h"
 #include "view/ContextThemeWrapper.h"
@@ -45,4 +45,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCONTEXTTHEMEWRAPPER_H__
+#endif // __ELASTOS_DROID_VIEW_CCONTEXTTHEMEWRAPPER_H__

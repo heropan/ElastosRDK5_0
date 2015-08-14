@@ -1,6 +1,6 @@
 
-#ifndef __AWSCROLLOFFSETMANAGER_H__
-#define __AWSCROLLOFFSETMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__
 
 // import android.graphics.Rect;
 // import android.widget.OverScroller;
@@ -235,4 +235,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWSCROLLOFFSETMANAGER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWSCROLLOFFSETMANAGER_H__

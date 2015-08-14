@@ -1,6 +1,6 @@
 
-#ifndef __INPUTEVENTCONSISTENCYVERIFIER_H__
-#define __INPUTEVENTCONSISTENCYVERIFIER_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTEVENTCONSISTENCYVERIFIER_H__
+#define __ELASTOS_DROID_VIEW_INPUTEVENTCONSISTENCYVERIFIER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
@@ -275,4 +275,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__INPUTEVENTCONSISTENCYVERIFIER_H__
+#endif //__ELASTOS_DROID_VIEW_INPUTEVENTCONSISTENCYVERIFIER_H__

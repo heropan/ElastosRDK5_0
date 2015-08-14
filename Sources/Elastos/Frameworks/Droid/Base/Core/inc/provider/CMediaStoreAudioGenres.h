@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIASTOREAUDIOGENRES_H__
-#define __CMEDIASTOREAUDIOGENRES_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOGENRES_H__
+#define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOGENRES_H__
 
 #include "_CMediaStoreAudioGenres.h"
 
@@ -55,4 +55,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CMEDIASTOREAUDIOGENRES_H__
+#endif //__ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOGENRES_H__

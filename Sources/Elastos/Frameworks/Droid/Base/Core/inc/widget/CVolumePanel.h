@@ -1,6 +1,6 @@
 
-#ifndef __CVOLUMEPANEL_H__
-#define __CVOLUMEPANEL_H__
+#ifndef __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__
+#define __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__
 
 #include "_CVolumePanel.h"
 #include "ext/frameworkext.h"
@@ -447,4 +447,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CVOLUMEPANEL_H__
+#endif // __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__

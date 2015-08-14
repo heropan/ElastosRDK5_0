@@ -1,5 +1,5 @@
-#ifndef __CBACKUPMANAGER_H__
-#define __CBACKUPMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
+#define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
 
 #include "_CBackupManager.h"
 #include "ext/frameworkext.h"
@@ -87,4 +87,4 @@ private:
 }
 }
 }
-#endif // __CBACKUPMANAGER_H__
+#endif // __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__

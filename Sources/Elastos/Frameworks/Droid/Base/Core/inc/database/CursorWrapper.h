@@ -1,6 +1,6 @@
 
-#ifndef _CURSORWRAPPER_H_
-#define _CURSORWRAPPER_H_
+#ifndef __ELASTOS_DROID_DATABASE_CURSORWRAPPER_H__
+#define __ELASTOS_DROID_DATABASE_CURSORWRAPPER_H__
 
 #include "ext/frameworkext.h"
 
@@ -168,4 +168,4 @@ protected:
 } //Droid
 } //Elastos
 
-#endif //_CURSORWRAPPER_H_
+#endif //__ELASTOS_DROID_DATABASE_CURSORWRAPPER_H__

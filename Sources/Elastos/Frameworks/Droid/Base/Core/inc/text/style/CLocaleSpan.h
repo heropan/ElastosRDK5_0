@@ -1,6 +1,6 @@
 
-#ifndef __CLOCALESPAN_H__
-#define __CLOCALESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CLOCALESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CLOCALESPAN_H__
 
 #include "_CLocaleSpan.h"
 #include "text/style/LocaleSpan.h"
@@ -42,4 +42,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLOCALESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CLOCALESPAN_H__

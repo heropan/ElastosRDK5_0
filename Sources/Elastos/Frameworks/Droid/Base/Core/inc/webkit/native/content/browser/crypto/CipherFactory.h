@@ -1,6 +1,6 @@
 
-#ifndef __CIPHERFACTORY_H__
-#define __CIPHERFACTORY_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__
 
 // import android.os.AsyncTask;
 // import android.os.Bundle;
@@ -177,4 +177,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CIPHERFACTORY_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CRYPTO_CIPHERFACTORY_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ACTIONBARCONTAINER_H__
-#define __ACTIONBARCONTAINER_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARCONTAINER_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARCONTAINER_H__
 
 #include "widget/FrameLayout.h"
 
@@ -122,4 +122,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ACTIONBARCONTAINER_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARCONTAINER_H__

@@ -1,5 +1,5 @@
-#ifndef __CRemoteViewsAdapterServiceConnection_h__
-#define __CRemoteViewsAdapterServiceConnection_h__
+#ifndef __ELASTOS_DROID_WIDGET_CRemoteViewsAdapterServiceConnection_H__
+#define __ELASTOS_DROID_WIDGET_CRemoteViewsAdapterServiceConnection_H__
 
 #include "_CRemoteViewsAdapterServiceConnection.h"
 #include "os/Runnable.h"

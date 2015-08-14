@@ -1,6 +1,6 @@
 
-#ifndef __CNATIVECONTENTVIEW_H__
-#define __CNATIVECONTENTVIEW_H__
+#ifndef __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
+#define __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
 
 #include "_CNativeContentView.h"
 #include "view/View.h"
@@ -38,4 +38,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNATIVECONTENTVIEW_H__
+#endif //__ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef  _CSURFACEVIEWWINDOW_H__
-#define  _CSURFACEVIEWWINDOW_H__
+#ifndef __ELASTOS_DROID_VIEW_CSURFACEVIEWWINDOW_H__
+#define  __ELASTOS_DROID_VIEW_CSURFACEVIEWWINDOW_H__
 
 #include "_CSurfaceViewWindow.h"
 #include "ext/frameworkext.h"
@@ -121,4 +121,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //_CSURFACEVIEWWINDOW_H__
+#endif  //__ELASTOS_DROID_VIEW_CSURFACEVIEWWINDOW_H__

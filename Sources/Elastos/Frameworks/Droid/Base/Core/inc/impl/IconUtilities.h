@@ -1,5 +1,5 @@
-#ifndef __ICONUTILITIES_H__
-#define __ICONUTILITIES_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_ICONUTILITIES_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_ICONUTILITIES_H__
 
 #include "ext/frameworkext.h"
 
@@ -65,4 +65,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ICONUTILITIES_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_ICONUTILITIES_H__

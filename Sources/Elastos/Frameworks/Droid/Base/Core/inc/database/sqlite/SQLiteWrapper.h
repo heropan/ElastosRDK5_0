@@ -1,5 +1,5 @@
-#ifndef __SQLITEWRAPPER_H__
-#define __SQLITEWRAPPER_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
@@ -79,4 +79,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__SQLITEWRAPPER_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITEWRAPPER_H__

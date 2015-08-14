@@ -1,6 +1,6 @@
 
-#ifndef __ACTIONMODE_H__
-#define __ACTIONMODE_H__
+#ifndef __ELASTOS_DROID_VIEW_ACTIONMODE_H__
+#define __ELASTOS_DROID_VIEW_ACTIONMODE_H__
 
 #include "ext/frameworkext.h"
 #include "elautoptr.h"
@@ -206,4 +206,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACTIONMODE_H__
+#endif //__ELASTOS_DROID_VIEW_ACTIONMODE_H__

@@ -1,5 +1,5 @@
-#ifndef __CGESTURESTORE_H__
-#define __CGESTURESTORE_H__
+#ifndef __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
+#define __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
 
 #include "ext/frameworkext.h"
 #include "_CGestureStore.h"
@@ -157,4 +157,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CGESTURESTORE_H__
+#endif //__ELASTOS_DROID_GESTURE_CGESTURESTORE_H__

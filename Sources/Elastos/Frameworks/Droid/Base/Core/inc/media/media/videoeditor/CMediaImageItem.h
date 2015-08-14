@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAIMAGEITEM_H__
-#define __CMEDIAIMAGEITEM_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAIMAGEITEM_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAIMAGEITEM_H__
 
 #include "_CMediaImageItem.h"
 #include <ext/frameworkext.h>
@@ -275,5 +275,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAIMAGEITEM_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAIMAGEITEM_H__
 

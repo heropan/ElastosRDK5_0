@@ -1,6 +1,6 @@
 
-#ifndef __WEBADDRESS_H__
-#define __WEBADDRESS_H__
+#ifndef __ELASTOS_DROID_NET_WEBADDRESS_H__
+#define __ELASTOS_DROID_NET_WEBADDRESS_H__
 
 #include <elastos/AutoPtr.h>
 
@@ -80,4 +80,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __WEBADDRESS_H__
+#endif // __ELASTOS_DROID_NET_WEBADDRESS_H__

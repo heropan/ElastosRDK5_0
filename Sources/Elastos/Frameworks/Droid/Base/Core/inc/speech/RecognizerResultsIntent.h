@@ -1,5 +1,5 @@
-#ifndef __RecognizerResultsIntent_H__
-#define __RecognizerResultsIntent_H__
+#ifndef __ELASTOS_DROID_SPEECH_RecognizerResultsIntent_H__
+#define __ELASTOS_DROID_SPEECH_RecognizerResultsIntent_H__
 
 ////
 #include "Elastos.Droid.Core_server.h"
@@ -129,4 +129,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __RecognizerResultsIntent_H__
+#endif // __ELASTOS_DROID_SPEECH_RecognizerResultsIntent_H__

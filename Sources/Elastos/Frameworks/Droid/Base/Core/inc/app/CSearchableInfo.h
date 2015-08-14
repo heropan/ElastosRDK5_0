@@ -1,5 +1,5 @@
-#ifndef __CSEARCHABLEINFO_H__
-#define __CSEARCHABLEINFO_H__
+#ifndef __ELASTOS_DROID_APP_CSEARCHABLEINFO_H__
+#define __ELASTOS_DROID_APP_CSEARCHABLEINFO_H__
 
 #include "_CSearchableInfo.h"
 #include "ext/frameworkext.h"

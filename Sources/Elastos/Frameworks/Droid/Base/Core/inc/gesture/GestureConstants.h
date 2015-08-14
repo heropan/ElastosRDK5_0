@@ -1,5 +1,5 @@
-#ifndef __GESTURECONSTANTS_H__
-#define __GESTURECONSTANTS_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTURECONSTANTS_H__
+#define __ELASTOS_DROID_GESTURE_GESTURECONSTANTS_H__
 
 #include "ext/frameworkext.h"
 
@@ -22,4 +22,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __GESTURECONSTANTS_H__
+#endif // __ELASTOS_DROID_GESTURE_GESTURECONSTANTS_H__

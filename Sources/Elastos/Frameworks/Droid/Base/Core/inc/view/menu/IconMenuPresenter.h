@@ -1,6 +1,6 @@
 
-#ifndef  __ICONMENUPRESENTER_H__
-#define  __ICONMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENUPRESENTER_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ICONMENUPRESENTER_H__
 
 #include "view/menu/BaseMenuPresenter.h"
 #include "view/menu/MenuDialogHelper.h"
@@ -135,4 +135,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ICONMENUPRESENTER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ICONMENUPRESENTER_H__

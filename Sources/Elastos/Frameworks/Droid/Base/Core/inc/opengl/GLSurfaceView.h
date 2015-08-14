@@ -1,5 +1,5 @@
-#ifndef __GLSURFACEVIEW_H__
-#define __GLSURFACEVIEW_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__
+#define __ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__
 
 #include "view/SurfaceView.h"
 #include <elastos/Core/Object.h>
@@ -513,4 +513,4 @@ private:
 } // namespace Elastos
 
 
-#endif //__GLSURFACEVIEW_H__
+#endif //__ELASTOS_DROID_OPENGL_GLSURFACEVIEW_H__

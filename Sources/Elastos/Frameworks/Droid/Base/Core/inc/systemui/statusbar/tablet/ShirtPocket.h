@@ -1,5 +1,5 @@
-#ifndef __SHIRTPOCKET_H_
-#define __SHIRTPOCKET_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SHIRTPOCKET_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SHIRTPOCKET_H__
 
 #include "widget/ImageView.h"
 
@@ -106,4 +106,4 @@ View.OnTouchListener mWindowTouchListener = new View.OnTouchListener() {
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__SHIRTPOCKET_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_SHIRTPOCKET_H__

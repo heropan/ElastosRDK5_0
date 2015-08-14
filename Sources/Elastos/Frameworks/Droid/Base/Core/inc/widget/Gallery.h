@@ -1,6 +1,6 @@
 
-#ifndef __GALLERY_H__
-#define __GALLERY_H__
+#ifndef __ELASTOS_DROID_WIDGET_GALLERY_H__
+#define __ELASTOS_DROID_WIDGET_GALLERY_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
@@ -640,4 +640,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __GALLERY_H__
+#endif // __ELASTOS_DROID_WIDGET_GALLERY_H__

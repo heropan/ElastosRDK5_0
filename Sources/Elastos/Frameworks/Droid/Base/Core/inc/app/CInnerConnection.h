@@ -1,5 +1,5 @@
-#ifndef __CINNERCONNECTION_H__
-#define __CINNERCONNECTION_H__
+#ifndef __ELASTOS_DROID_APP_CINNERCONNECTION_H__
+#define __ELASTOS_DROID_APP_CINNERCONNECTION_H__
 
 #include "_CInnerConnection.h"
 #include "app/LoadedPkg.h"
@@ -32,4 +32,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CINNERCONNECTION_H__
+#endif //__ELASTOS_DROID_APP_CINNERCONNECTION_H__

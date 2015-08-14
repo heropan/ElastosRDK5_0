@@ -1,6 +1,6 @@
 
-#ifndef __AWRESOURCE_H__
-#define __AWRESOURCE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__
 
 // import android.content.res.Resources;
 // import android.util.SparseArray;
@@ -89,4 +89,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWRESOURCE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWRESOURCE_H__

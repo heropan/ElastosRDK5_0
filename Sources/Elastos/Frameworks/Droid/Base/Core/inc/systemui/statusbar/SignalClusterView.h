@@ -1,5 +1,5 @@
-#ifndef __SIGNALCLUSTERVIEW_H_
-#define __SIGNALCLUSTERVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__
 
 #include "os/Runnable.h"
 #include "widget/LinearLayout.h"
@@ -122,4 +122,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__SIGNALCLUSTERVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_SIGNALCLUSTERVIEW_H__

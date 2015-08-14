@@ -1,6 +1,6 @@
 
-#ifndef __CENTITYNAMEDCONTENTVALUES_H__
-#define __CENTITYNAMEDCONTENTVALUES_H__
+#ifndef __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__
+#define __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__
 
 #include "_CEntityNamedContentValues.h"
 #include <ext/frameworkext.h>
@@ -39,4 +39,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CENTITYNAMEDCONTENTVALUES_H__
+#endif // __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__

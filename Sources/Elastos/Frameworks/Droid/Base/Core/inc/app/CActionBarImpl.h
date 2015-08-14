@@ -1,5 +1,5 @@
-#ifndef __CACTIONBARIMPL_H__
-#define __CACTIONBARIMPL_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_CACTIONBARIMPL_H__
+#define __ELASTOS_DROID_INTERNAL_APP_CACTIONBARIMPL_H__
 
 #include "_CActionBarImpl.h"
 #include "ext/frameworkext.h"
@@ -573,4 +573,4 @@ private:
 }
 }
 
-#endif //__CACTIONBARIMPL_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_CACTIONBARIMPL_H__

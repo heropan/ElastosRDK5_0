@@ -1,6 +1,6 @@
 
-#ifndef __VIEWGROUPLAYOUTPARAMS_H__
-#define __VIEWGROUPLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWGROUPLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_VIEW_VIEWGROUPLAYOUTPARAMS_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -156,4 +156,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__VIEWGROUPLAYOUTPARAMS_H__
+#endif //__ELASTOS_DROID_VIEW_VIEWGROUPLAYOUTPARAMS_H__

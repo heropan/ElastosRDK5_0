@@ -1,6 +1,6 @@
 
-#ifndef __WEIGHTEDLINEARLAYOUT_H__
-#define __WEIGHTEDLINEARLAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__
 
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"
@@ -61,4 +61,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEIGHTEDLINEARLAYOUT_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_WEIGHTEDLINEARLAYOUT_H__

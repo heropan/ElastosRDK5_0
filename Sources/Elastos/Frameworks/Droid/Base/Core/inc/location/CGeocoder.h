@@ -1,6 +1,6 @@
 
-#ifndef __CGEOCODER_H__
-#define __CGEOCODER_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGEOCODER_H__
+#define __ELASTOS_DROID_LOCATION_CGEOCODER_H__
 
 #include "ext/frameworkext.h"
 #include "_CGeocoder.h"
@@ -146,4 +146,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CGEOCODER_H__
+#endif // __ELASTOS_DROID_LOCATION_CGEOCODER_H__

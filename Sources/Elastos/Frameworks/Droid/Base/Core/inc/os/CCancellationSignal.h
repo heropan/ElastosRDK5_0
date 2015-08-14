@@ -1,6 +1,6 @@
 
-#ifndef __CCANCELLATIONSIGNAL_H__
-#define __CCANCELLATIONSIGNAL_H__
+#ifndef __ELASTOS_DROID_OS_CCANCELLATIONSIGNAL_H__
+#define __ELASTOS_DROID_OS_CCANCELLATIONSIGNAL_H__
 
 #include "_CCancellationSignal.h"
 #include "ext/frameworkext.h"
@@ -144,4 +144,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CCANCELLATIONSIGNAL_H__
+#endif //__ELASTOS_DROID_OS_CCANCELLATIONSIGNAL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CDOWNLOADSIMPL_H__
-#define __CDOWNLOADSIMPL_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CDOWNLOADSIMPL_H__
+#define __ELASTOS_DROID_PROVIDER_CDOWNLOADSIMPL_H__
 
 #include "_CDownloadsImpl.h"
 
@@ -96,4 +96,4 @@ public:
 }
 }
 
-#endif //__CDOWNLOADSIMPL_H__
+#endif //__ELASTOS_DROID_PROVIDER_CDOWNLOADSIMPL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __SELECTACTIONMODECALLBACK_H__
-#define __SELECTACTIONMODECALLBACK_H__
+#ifndef __ELASTOS_DROID_WEBKIT_SELECTACTIONMODECALLBACK_H__
+#define __ELASTOS_DROID_WEBKIT_SELECTACTIONMODECALLBACK_H__
 
 #include "ext/frameworkext.h"
 
@@ -68,4 +68,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SELECTACTIONMODECALLBACK_H__
+#endif //__ELASTOS_DROID_WEBKIT_SELECTACTIONMODECALLBACK_H__

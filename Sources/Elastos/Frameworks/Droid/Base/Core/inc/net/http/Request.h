@@ -1,6 +1,6 @@
 
-#ifndef __REQUEST_H__
-#define __REQUEST_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_REQUEST_H__
+#define __ELASTOS_DROID_NET_HTTP_REQUEST_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -253,4 +253,4 @@ private:
 }
 }
 
-#endif // __REQUEST_H__
+#endif // __ELASTOS_DROID_NET_HTTP_REQUEST_H__

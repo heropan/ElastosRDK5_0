@@ -1,6 +1,6 @@
 
-#ifndef __CEMBOSSMASKFILTER_H__
-#define __CEMBOSSMASKFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CEMBOSSMASKFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_CEMBOSSMASKFILTER_H__
 
 #include "_CEmbossMaskFilter.h"
 #include "graphics/MaskFilter.h"
@@ -42,4 +42,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CEMBOSSMASKFILTER_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CEMBOSSMASKFILTER_H__

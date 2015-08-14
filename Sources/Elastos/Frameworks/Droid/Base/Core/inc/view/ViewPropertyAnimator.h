@@ -1,5 +1,5 @@
-#ifndef __VIEWPROPERTYANIMATOR_H__
-#define __VIEWPROPERTYANIMATOR_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
+#define __ELASTOS_DROID_VIEW_VIEWPROPERTYANIMATOR_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"

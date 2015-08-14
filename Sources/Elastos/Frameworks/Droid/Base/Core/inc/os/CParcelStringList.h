@@ -1,5 +1,5 @@
-#ifndef __CPARCELSTRINGLIST_H__
-#define __CPARCELSTRINGLIST_H__
+#ifndef __ELASTOS_DROID_OS_CPARCELSTRINGLIST_H__
+#define __ELASTOS_DROID_OS_CPARCELSTRINGLIST_H__
 
 #include "_CParcelStringList.h"
 
@@ -30,4 +30,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPARCELSTRINGLIST_H__
+#endif // __ELASTOS_DROID_OS_CPARCELSTRINGLIST_H__

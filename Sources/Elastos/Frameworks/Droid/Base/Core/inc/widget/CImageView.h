@@ -1,5 +1,5 @@
-#ifndef __CIMAGEVIEW_H_
-#define __CIMAGEVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CIMAGEVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CIMAGEVIEW_H__
 
 #include "_CImageView.h"
 
@@ -42,4 +42,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CIMAGEVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CIMAGEVIEW_H__

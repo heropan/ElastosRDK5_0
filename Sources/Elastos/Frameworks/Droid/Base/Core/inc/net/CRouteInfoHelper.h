@@ -1,6 +1,6 @@
 
-#ifndef __CROUTEINFOHELPER_H__
-#define __CROUTEINFOHELPER_H__
+#ifndef __ELASTOS_DROID_NET_CROUTEINFOHELPER_H__
+#define __ELASTOS_DROID_NET_CROUTEINFOHELPER_H__
 
 #include "_CRouteInfoHelper.h"
 
@@ -41,4 +41,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CROUTEINFOHELPER_H__
+#endif // __ELASTOS_DROID_NET_CROUTEINFOHELPER_H__

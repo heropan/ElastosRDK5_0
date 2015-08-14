@@ -1,6 +1,6 @@
 
-#ifndef __CICONMENIITEMVIEW_H__
-#define __CICONMENIITEMVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CICONMENIITEMVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_CICONMENIITEMVIEW_H__
 
 
 #include "_CIconMenuItemView.h"
@@ -87,4 +87,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CICONMENIITEMVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_MENU_CICONMENIITEMVIEW_H__

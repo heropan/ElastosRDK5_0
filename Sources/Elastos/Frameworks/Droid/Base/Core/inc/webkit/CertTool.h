@@ -1,6 +1,6 @@
 
-#ifndef __CERTTOOL_H__
-#define __CERTTOOL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CERTTOOL_H__
+#define __ELASTOS_DROID_WEBKIT_CERTTOOL_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
@@ -43,4 +43,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CERTTOOL_H__
+#endif //__ELASTOS_DROID_WEBKIT_CERTTOOL_H__

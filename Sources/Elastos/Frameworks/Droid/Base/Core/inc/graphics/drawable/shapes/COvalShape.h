@@ -1,6 +1,6 @@
 
-#ifndef __COVALSHAPE_H__
-#define __COVALSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_COVALSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_COVALSHAPE_H__
 
 #include "graphics/drawable/shapes/OvalShape.h"
 #include "_COvalShape.h"
@@ -43,4 +43,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__COVALSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_COVALSHAPE_H__

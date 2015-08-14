@@ -1,5 +1,5 @@
-#ifndef __CSIMPLEADAPTER_H__
-#define __CSIMPLEADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSIMPLEADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CSIMPLEADAPTER_H__
 
 #include "_CSimpleAdapter.h"
 #include "widget/SimpleAdapter.h"
@@ -160,4 +160,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSIMPLEADAPTER_H__
+#endif //__ELASTOS_DROID_WIDGET_CSIMPLEADAPTER_H__

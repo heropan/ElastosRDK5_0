@@ -1,5 +1,5 @@
-#ifndef __DIGITALCLOCK__H_
-#define __DIGITALCLOCK__H_
+#ifndef __ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__
+#define __ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__
 
 #include <ext/frameworkext.h>
 #include "widget/TextView.h"
@@ -98,4 +98,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__DIGITALCLOCK__H_
+#endif //__ELASTOS_DROID_WIDGET_DIGITALCLOCK_H__

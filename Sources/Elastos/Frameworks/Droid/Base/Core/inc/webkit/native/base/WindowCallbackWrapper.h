@@ -1,6 +1,6 @@
 
-#ifndef __WINDOWCALLBACKWRAPPER_H__
-#define __WINDOWCALLBACKWRAPPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__
 
 // import android.annotation.SuppressLint;
 // import android.view.ActionMode;
@@ -142,4 +142,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__WINDOWCALLBACKWRAPPER_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_WINDOWCALLBACKWRAPPER_H__

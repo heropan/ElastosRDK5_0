@@ -1,6 +1,6 @@
 
-#ifndef __BATTERYSTATSIMPL_H__
-#define __BATTERYSTATSIMPL_H__
+#ifndef __ELASTOS_DROID_OS_BATTERYSTATSIMPL_H__
+#define __ELASTOS_DROID_OS_BATTERYSTATSIMPL_H__
 
 #include "ext/frameworkext.h"
 #include "os/BatteryStats.h"
@@ -2099,4 +2099,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__BATTERYSTATSIMPL_H__
+#endif //__ELASTOS_DROID_OS_BATTERYSTATSIMPL_H__

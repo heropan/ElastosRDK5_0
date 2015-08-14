@@ -1,5 +1,5 @@
-#ifndef __CDATEPICKER_H_
-#define __CDATEPICKER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CDATEPICKER_H__
+#define __ELASTOS_DROID_WIDGET_CDATEPICKER_H__
 
 #include "_CDatePicker.h"
 #include "widget/DatePicker.h"
@@ -110,4 +110,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDATEPICKER_H_
+#endif //__ELASTOS_DROID_WIDGET_CDATEPICKER_H__

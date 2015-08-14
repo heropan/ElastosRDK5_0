@@ -1,6 +1,6 @@
 
-#ifndef __CDRAWABLEMARGINSPAN_H__
-#define __CDRAWABLEMARGINSPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__
 
 #include "_CDrawableMarginSpan.h"
 #include "text/style/DrawableMarginSpan.h"
@@ -58,4 +58,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDRAWABLEMARGINSPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__

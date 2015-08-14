@@ -1,6 +1,6 @@
 
-#ifndef __VMOUCECONTROLLER_H__
-#define __VMOUCECONTROLLER_H__
+#ifndef __ELASTOS_DROID_GOOGLEREMOTE_VMOUCECONTROLLER_H__
+#define __ELASTOS_DROID_GOOGLEREMOTE_VMOUCECONTROLLER_H__
 
 #include <elastos.h>
 
@@ -37,4 +37,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __VMOUCECONTROLLER_H__
+#endif // __ELASTOS_DROID_GOOGLEREMOTE_VMOUCECONTROLLER_H__

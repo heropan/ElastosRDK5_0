@@ -1,5 +1,5 @@
-#ifndef __TtsEngines_H__
-#define __TtsEngines_H__
+#ifndef __ELASTOS_DROID_SPEECH_TTS_TtsEngines_H__
+#define __ELASTOS_DROID_SPEECH_TTS_TtsEngines_H__
 
 #include "speech/tts/TextToSpeech.h"
 #include <elastos/utility/etl/List.h>
@@ -245,4 +245,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __TtsEngines_H__
+#endif // __ELASTOS_DROID_SPEECH_TTS_TtsEngines_H__

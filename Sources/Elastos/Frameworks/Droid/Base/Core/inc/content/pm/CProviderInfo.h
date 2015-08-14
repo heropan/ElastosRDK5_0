@@ -1,6 +1,6 @@
 
-#ifndef __CPROVIDERINFO_H__
-#define __CPROVIDERINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPROVIDERINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPROVIDERINFO_H__
 
 #include "_CProviderInfo.h"
 #include "ComponentInfo.h"
@@ -260,4 +260,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPROVIDERINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPROVIDERINFO_H__

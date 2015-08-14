@@ -1,6 +1,6 @@
 
-#ifndef __CSURFACE_H__
-#define __CSURFACE_H__
+#ifndef __ELASTOS_DROID_VIEW_CSURFACE_H__
+#define __ELASTOS_DROID_VIEW_CSURFACE_H__
 
 #include "_CSurface.h"
 #include "graphics/Canvas.h"
@@ -499,4 +499,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CSURFACE_H__
+#endif // __ELASTOS_DROID_VIEW_CSURFACE_H__

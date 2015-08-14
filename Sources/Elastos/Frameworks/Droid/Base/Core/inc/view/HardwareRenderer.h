@@ -1,6 +1,6 @@
 
-#ifndef __HARDWARERENDERER_H__
-#define __HARDWARERENDERER_H__
+#ifndef __ELASTOS_DROID_VIEW_HARDWARERENDERER_H__
+#define __ELASTOS_DROID_VIEW_HARDWARERENDERER_H__
 
 #include "ext/frameworkext.h"
 
@@ -40,4 +40,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__HARDWARERENDERER_H__
+#endif //__ELASTOS_DROID_VIEW_HARDWARERENDERER_H__

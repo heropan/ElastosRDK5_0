@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWDATABASE_H__
-#define __CWEBVIEWDATABASE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWDATABASE_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWDATABASE_H__
 
 #include "_CWebViewDatabase.h"
 #include "webkit/WebViewDatabaseClassic.h"
@@ -32,4 +32,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBVIEWDATABASE_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBVIEWDATABASE_H__

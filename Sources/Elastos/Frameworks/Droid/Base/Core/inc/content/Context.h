@@ -1,6 +1,6 @@
 
-#ifndef __CONTEXT_H__
-#define __CONTEXT_H__
+#ifndef __ELASTOS_DROID_CONTENT_CONTEXT_H__
+#define __ELASTOS_DROID_CONTENT_CONTEXT_H__
 
 #include "ext/frameworkext.h"
 
@@ -2323,4 +2323,4 @@ public:
 }
 }
 
-#endif //__CONTEXT_H__
+#endif //__ELASTOS_DROID_CONTENT_CONTEXT_H__

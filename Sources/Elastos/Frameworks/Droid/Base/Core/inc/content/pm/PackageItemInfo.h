@@ -1,6 +1,6 @@
 
-#ifndef __PACKAGEITEMINFO_H__
-#define __PACKAGEITEMINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_PACKAGEITEMINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_PACKAGEITEMINFO_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
@@ -250,4 +250,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PACKAGEITEMINFO_H__
+#endif //__ELASTOS_DROID_CONTENT_PM_PACKAGEITEMINFO_H__

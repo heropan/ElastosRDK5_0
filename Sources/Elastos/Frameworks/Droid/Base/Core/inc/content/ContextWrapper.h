@@ -1,6 +1,6 @@
 
-#ifndef __CONTEXTWRAPPER_H__
-#define __CONTEXTWRAPPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
+#define __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__
 
 #include "ext/frameworkdef.h"
 #include "Context.h"
@@ -492,4 +492,4 @@ protected:
 }
 }
 
-#endif // __CONTEXTWRAPPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CONTEXTWRAPPER_H__

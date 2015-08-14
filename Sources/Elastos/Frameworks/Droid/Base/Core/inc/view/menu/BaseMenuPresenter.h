@@ -1,6 +1,6 @@
 
-#ifndef  __BASEMENUPRESENTER_H__
-#define  __BASEMENUPRESENTER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_BASEMENUPRESENTER_H__
+#define  __ELASTOS_DROID_VIEW_MENU_BASEMENUPRESENTER_H__
 
 #include "ext/frameworkext.h"
 
@@ -174,4 +174,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__BASEMENUPRESENTER_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_BASEMENUPRESENTER_H__

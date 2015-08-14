@@ -1,6 +1,6 @@
 
-#ifndef __CSTRINGURI_H__
-#define __CSTRINGURI_H__
+#ifndef __ELASTOS_DROID_NET_CSTRINGURI_H__
+#define __ELASTOS_DROID_NET_CSTRINGURI_H__
 
 #include "_CStringUri.h"
 #include "net/Uri.h"
@@ -140,4 +140,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CSTRINGURI_H__
+#endif //__ELASTOS_DROID_NET_CSTRINGURI_H__

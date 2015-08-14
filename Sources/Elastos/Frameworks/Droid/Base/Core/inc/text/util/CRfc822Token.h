@@ -1,6 +1,6 @@
 
-#ifndef __CRFC822TOKEN_H__
-#define __CRFC822TOKEN_H__
+#ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__
+#define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__
 
 #include "_CRfc822Token.h"
 #include "text/util/Rfc822Token.h"
@@ -54,4 +54,4 @@ public:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CRFC822TOKEN_H__
+#endif // __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__

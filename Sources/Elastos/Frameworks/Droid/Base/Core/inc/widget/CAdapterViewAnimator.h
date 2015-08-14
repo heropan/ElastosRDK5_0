@@ -1,5 +1,5 @@
-#ifndef __CADAPTERVIEWANIMATOR_H__
-#define __CADAPTERVIEWANIMATOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_CADAPTERVIEWANIMATOR_H__
+#define __ELASTOS_DROID_WIDGET_CADAPTERVIEWANIMATOR_H__
 
 #include "_CAdapterViewAnimator.h"
 #include "widget/AdapterViewAnimator.h"
@@ -96,4 +96,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CADAPTERVIEWANIMATOR_H__
+#endif //__ELASTOS_DROID_WIDGET_CADAPTERVIEWANIMATOR_H__

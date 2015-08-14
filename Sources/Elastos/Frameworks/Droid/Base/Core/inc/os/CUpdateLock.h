@@ -1,5 +1,5 @@
-#ifndef __CUPDATELOCK_H__
-#define __CUPDATELOCK_H__
+#ifndef __ELASTOS_DROID_OS_CUPDATELOCK_H__
+#define __ELASTOS_DROID_OS_CUPDATELOCK_H__
 
 #include "_CUpdateLock.h"
 #include "ext/frameworkdef.h"
@@ -69,4 +69,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CUPDATELOCK_H__
+#endif //__ELASTOS_DROID_OS_CUPDATELOCK_H__

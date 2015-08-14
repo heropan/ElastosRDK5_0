@@ -1,6 +1,6 @@
 
-#ifndef __ALERTACTIVITY_H__
-#define __ALERTACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__
 
 #include "app/CAlertControllerAlertParams.h"
 #include "app/CAlertController.h"
@@ -79,4 +79,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ALERTACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_ALERTACTIVITY_H__

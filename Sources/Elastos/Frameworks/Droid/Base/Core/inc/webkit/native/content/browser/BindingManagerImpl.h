@@ -1,6 +1,6 @@
 
-#ifndef __BINDINGMANAGERIMPL_H__
-#define __BINDINGMANAGERIMPL_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__
 
 // import android.util.Log;
 // import android.util.SparseArray;
@@ -215,4 +215,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BINDINGMANAGERIMPL_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BINDINGMANAGERIMPL_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYOPTIONS_H__
-#define __CACTIVITYOPTIONS_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYOPTIONS_H__
+#define __ELASTOS_DROID_APP_CACTIVITYOPTIONS_H__
 
 #include "_CActivityOptions.h"
 #include "ext/frameworkext.h"
@@ -323,4 +323,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYOPTIONS_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYOPTIONS_H__

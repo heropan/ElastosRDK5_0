@@ -1,5 +1,5 @@
-#ifndef __CSTATFS_H__
-#define __CSTATFS_H__
+#ifndef __ELASTOS_DROID_OS_CSTATFS_H__
+#define __ELASTOS_DROID_OS_CSTATFS_H__
 
 #include "ext/frameworkdef.h"
 #include "_CStatFs.h"
@@ -48,4 +48,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__CSTATFS_H__
+#endif //__ELASTOS_DROID_OS_CSTATFS_H__

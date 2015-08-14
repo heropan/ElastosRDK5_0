@@ -1,5 +1,5 @@
-#ifndef __CMENUITEMIMPL_H__
-#define __CMENUITEMIMPL_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CMENUITEMIMPL_H__
+#define __ELASTOS_DROID_VIEW_MENU_CMENUITEMIMPL_H__
 
 #include "_CMenuItemImpl.h"
 #include "view/menu/MenuItemImpl.h"

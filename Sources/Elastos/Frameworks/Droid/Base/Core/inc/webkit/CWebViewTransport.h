@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWTRANSPORT_H__
-#define __CWEBVIEWTRANSPORT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWTRANSPORT_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWTRANSPORT_H__
 
 #include "_CWebViewTransport.h"
 #include "webkit/WebView.h"
@@ -23,4 +23,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBVIEWTRANSPORT_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBVIEWTRANSPORT_H__

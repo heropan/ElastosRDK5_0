@@ -1,5 +1,5 @@
-#ifndef __CGRIDLAYOUT_H__
-#define __CGRIDLAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_CGRIDLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_CGRIDLAYOUT_H__
 
 #include "_CGridLayout.h"
 
@@ -89,4 +89,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CGRIDLAYOUT_H__
+#endif //__ELASTOS_DROID_WIDGET_CGRIDLAYOUT_H__

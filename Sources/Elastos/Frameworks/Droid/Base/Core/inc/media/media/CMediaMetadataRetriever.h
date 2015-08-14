@@ -1,6 +1,6 @@
 
-#ifndef __CMEDIAMETADATARETRIEVER_H__
-#define __CMEDIAMETADATARETRIEVER_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAMETADATARETRIEVER_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAMETADATARETRIEVER_H__
 
 #include "_CMediaMetadataRetriever.h"
 #include "ext/frameworkext.h"

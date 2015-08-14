@@ -1,6 +1,6 @@
 
-#ifndef __GRAVITY_H__
-#define __GRAVITY_H__
+#ifndef __ELASTOS_DROID_VIEW_GRAVITY_H__
+#define __ELASTOS_DROID_VIEW_GRAVITY_H__
 
 #include "ext/frameworkext.h"
 
@@ -73,4 +73,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GRAVITY_H__
+#endif //__ELASTOS_DROID_VIEW_GRAVITY_H__

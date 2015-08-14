@@ -1,6 +1,6 @@
 
-#ifndef __CINSTRUMENTATIONINFO_H__
-#define __CINSTRUMENTATIONINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CINSTRUMENTATIONINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CINSTRUMENTATIONINFO_H__
 
 #include "_CInstrumentationInfo.h"
 #include "PackageItemInfo.h"
@@ -181,4 +181,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CINSTRUMENTATIONINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CINSTRUMENTATIONINFO_H__

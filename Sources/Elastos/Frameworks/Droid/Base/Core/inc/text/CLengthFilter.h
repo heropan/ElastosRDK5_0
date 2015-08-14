@@ -1,6 +1,6 @@
 
-#ifndef __CLENGTHFILTER_H__
-#define __CLENGTHFILTER_H__
+#ifndef __ELASTOS_DROID_TEXT_CLENGTHFILTER_H__
+#define __ELASTOS_DROID_TEXT_CLENGTHFILTER_H__
 
 #include "_CLengthFilter.h"
 
@@ -35,4 +35,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__CLENGTHFILTER_H__
+#endif //__ELASTOS_DROID_TEXT_CLENGTHFILTER_H__

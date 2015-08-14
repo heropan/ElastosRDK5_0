@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWCLASSIC_H_
-#define __CWEBVIEWCLASSIC_H_
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCLASSIC_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWCLASSIC_H__
 
 #include "_CWebViewClassic.h"
 #include "content/BroadcastReceiver.h"
@@ -4028,4 +4028,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CWEBVIEWCLASSIC_H_
+#endif //__ELASTOS_DROID_WEBKIT_CWEBVIEWCLASSIC_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CLINKMOVEMENTMETHOD_H__
-#define __CLINKMOVEMENTMETHOD_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHOD_H__
 
 #include "_CLinkMovementMethod.h"
 #include "text/method/LinkMovementMethod.h"
@@ -28,4 +28,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CLINKMOVEMENTMETHOD_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHOD_H__

@@ -1,6 +1,6 @@
 
-#ifndef __SPACE_H__
-#define __SPACE_H__
+#ifndef __ELASTOS_DROID_WIDGET_SPACE_H__
+#define __ELASTOS_DROID_WIDGET_SPACE_H__
 
 #include "view/View.h"
 
@@ -79,4 +79,4 @@ private:
 }// namespace Elastos
 
 
-#endif //__SPACE_H__
+#endif //__ELASTOS_DROID_WIDGET_SPACE_H__

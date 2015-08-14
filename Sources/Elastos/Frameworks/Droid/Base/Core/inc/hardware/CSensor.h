@@ -1,6 +1,6 @@
 
-#ifndef  __CSENSOR_H__
-#define  __CSENSOR_H__
+#ifndef __ELASTOS_DROID_HARDWARE_CSENSOR_H__
+#define  __ELASTOS_DROID_HARDWARE_CSENSOR_H__
 
 #include "_CSensor.h"
 
@@ -101,4 +101,4 @@ friend class CSystemSensorManager;
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CSENSOR_H__
+#endif  //__ELASTOS_DROID_HARDWARE_CSENSOR_H__

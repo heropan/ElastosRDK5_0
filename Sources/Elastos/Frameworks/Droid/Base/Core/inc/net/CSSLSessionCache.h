@@ -1,6 +1,6 @@
 
-#ifndef __CSSLSESSIONCACHE_H__
-#define __CSSLSESSIONCACHE_H__
+#ifndef __ELASTOS_DROID_NET_CSSLSESSIONCACHE_H__
+#define __ELASTOS_DROID_NET_CSSLSESSIONCACHE_H__
 
 #include "_CSSLSessionCache.h"
 
@@ -37,4 +37,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CSSLSESSIONCACHE_H__
+#endif // __ELASTOS_DROID_NET_CSSLSESSIONCACHE_H__

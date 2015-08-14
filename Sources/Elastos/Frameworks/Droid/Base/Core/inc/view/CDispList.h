@@ -1,5 +1,5 @@
-#ifndef __CDISPLIST_H__
-#define __CDISPLIST_H__
+#ifndef __ELASTOS_DROID_VIEW_CDISPLIST_H__
+#define __ELASTOS_DROID_VIEW_CDISPLIST_H__
 
 #include "_CDispList.h"
 #include "os/Handler.h"

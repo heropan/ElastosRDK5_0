@@ -1,6 +1,6 @@
 
-#ifndef __CCOOKIESYNCMANAGERHELPER_H__
-#define __CCOOKIESYNCMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__
 
 #include "_CCookieSyncManagerHelper.h"
 
@@ -31,4 +31,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOOKIESYNCMANAGERHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__

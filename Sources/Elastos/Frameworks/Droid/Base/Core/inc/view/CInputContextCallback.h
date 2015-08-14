@@ -1,6 +1,6 @@
 
-#ifndef __CINPUTCONTEXTCALLBACK_H__
-#define __CINPUTCONTEXTCALLBACK_H__
+#ifndef __ELASTOS_DROID_INTERNAL_VIEW_CINPUTCONTEXTCALLBACK_H__
+#define __ELASTOS_DROID_INTERNAL_VIEW_CINPUTCONTEXTCALLBACK_H__
 
 #include "_CInputContextCallback.h"
 
@@ -95,4 +95,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CINPUTCONTEXTCALLBACK_H__
+#endif //__ELASTOS_DROID_INTERNAL_VIEW_CINPUTCONTEXTCALLBACK_H__

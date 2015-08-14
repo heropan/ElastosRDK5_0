@@ -1,6 +1,6 @@
 
-#ifndef __CABSLISTVIEWLAYOUTPARAMS_H__
-#define __CABSLISTVIEWLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_WIDGET_CABSLISTVIEWLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_CABSLISTVIEWLAYOUTPARAMS_H__
 
 #include "_CAbsListViewLayoutParams.h"
 #include "widget/AbsListViewLayoutParams.h"

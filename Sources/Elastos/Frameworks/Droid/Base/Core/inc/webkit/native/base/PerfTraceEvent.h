@@ -1,6 +1,6 @@
 
-#ifndef __PERFTRACEEVENT_H__
-#define __PERFTRACEEVENT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__
 
 // import android.os.Debug;
 // import android.os.Debug.MemoryInfo;
@@ -271,4 +271,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__PERFTRACEEVENT_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_PERFTRACEEVENT_H__

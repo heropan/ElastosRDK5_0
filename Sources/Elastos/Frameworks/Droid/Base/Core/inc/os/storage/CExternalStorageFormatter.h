@@ -1,6 +1,6 @@
 
-#ifndef __CEXTERNALSTORAGEFORMATTER_H__
-#define __CEXTERNALSTORAGEFORMATTER_H__
+#ifndef __ELASTOS_DROID_OS_STORAGE_CEXTERNALSTORAGEFORMATTER_H__
+#define __ELASTOS_DROID_OS_STORAGE_CEXTERNALSTORAGEFORMATTER_H__
 
 #include "app/Service.h"
 #include "_CExternalStorageFormatter.h"
@@ -82,4 +82,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CEXTERNALSTORAGEFORMATTER_H__
+#endif // __ELASTOS_DROID_OS_STORAGE_CEXTERNALSTORAGEFORMATTER_H__

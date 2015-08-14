@@ -1,6 +1,6 @@
 
-#ifndef  __CRESTOREOBSERVERWRAPPER_H__
-#define  __CRESTOREOBSERVERWRAPPER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CRESTOREOBSERVERWRAPPER_H__
+#define  __ELASTOS_DROID_APP_BACKUP_CRESTOREOBSERVERWRAPPER_H__
 
 #include "_CRestoreObserverWrapper.h"
 #include "ext/frameworkext.h"
@@ -74,5 +74,5 @@ private:
 }
 }
 }
-#endif  //__CRESTOREOBSERVERWRAPPER_H__
+#endif  //__ELASTOS_DROID_APP_BACKUP_CRESTOREOBSERVERWRAPPER_H__
 

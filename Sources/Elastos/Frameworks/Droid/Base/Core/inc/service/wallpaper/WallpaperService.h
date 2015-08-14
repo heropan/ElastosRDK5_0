@@ -1,6 +1,6 @@
 
-#ifndef __WallpaperService_H__
-#define __WallpaperService_H__
+#ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
+#define __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__
 
 #include "app/Service.h"
 #include "content/BroadcastReceiver.h"
@@ -476,4 +476,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __WallpaperService_H__
+#endif // __ELASTOS_DROID_SERVICE_WALLPAPER_WALLPAPERSERVICE_H__

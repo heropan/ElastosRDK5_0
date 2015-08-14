@@ -1,5 +1,5 @@
-#ifndef __TEXTVIEW_H__
-#define __TEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_TEXTVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
@@ -3068,4 +3068,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__TEXTVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_TEXTVIEW_H__

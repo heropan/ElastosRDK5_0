@@ -1,5 +1,5 @@
-#ifndef __CMENUDIALOGHELPER_H__
-#define __CMENUDIALOGHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CMENUDIALOGHELPER_H__
+#define __ELASTOS_DROID_VIEW_MENU_CMENUDIALOGHELPER_H__
 
 #include "_CMenuDialogHelper.h"
 #include "view/menu/MenuDialogHelper.h"

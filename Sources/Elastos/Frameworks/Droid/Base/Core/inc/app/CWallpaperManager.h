@@ -1,5 +1,5 @@
-#ifndef __CWALLPAPERMANAGER_H__
-#define __CWALLPAPERMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
+#define __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
 
 #include "_CWallpaperManager.h"
 #include "ext/frameworkdef.h"
@@ -347,4 +347,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWALLPAPERMANAGER_H__
+#endif // __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__

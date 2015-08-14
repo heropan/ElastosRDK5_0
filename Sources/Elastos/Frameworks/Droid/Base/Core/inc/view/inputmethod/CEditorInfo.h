@@ -1,6 +1,6 @@
 
-#ifndef  __CEDITORINFO_H__
-#define  __CEDITORINFO_H__
+#ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__
+#define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__
 
 #include "_CEditorInfo.h"
 
@@ -230,4 +230,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__CEDITORINFO_H__
+#endif  //__ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__

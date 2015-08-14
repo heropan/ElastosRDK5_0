@@ -1,5 +1,5 @@
-#ifndef __CIMAGEBUTTON_H_
-#define __CIMAGEBUTTON_H_
+#ifndef __ELASTOS_DROID_WIDGET_CIMAGEBUTTON_H__
+#define __ELASTOS_DROID_WIDGET_CIMAGEBUTTON_H__
 
 #include "_CImageButton.h"
 #include "ImageButton.h"
@@ -130,4 +130,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CIMAGEBUTTON_H_
+#endif //__ELASTOS_DROID_WIDGET_CIMAGEBUTTON_H__

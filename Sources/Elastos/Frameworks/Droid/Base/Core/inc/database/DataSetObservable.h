@@ -1,6 +1,6 @@
 
-#ifndef __DATASETOBSERVABLE_H__
-#define __DATASETOBSERVABLE_H__
+#ifndef __ELASTOS_DROID_DATABASE_DATASETOBSERVABLE_H__
+#define __ELASTOS_DROID_DATABASE_DATASETOBSERVABLE_H__
 
 #include "database/Observable.h"
 
@@ -31,4 +31,4 @@ public:
 } //Droid
 } //Elastos
 
-#endif //__DATASETOBSERVABLE_H__
+#endif //__ELASTOS_DROID_DATABASE_DATASETOBSERVABLE_H__

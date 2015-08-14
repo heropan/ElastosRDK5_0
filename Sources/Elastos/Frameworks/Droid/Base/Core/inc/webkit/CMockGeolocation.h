@@ -1,6 +1,6 @@
 
-#ifndef __CMOCKGEOLOCATION_H__
-#define __CMOCKGEOLOCATION_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CMOCKGEOLOCATION_H__
+#define __ELASTOS_DROID_WEBKIT_CMOCKGEOLOCATION_H__
 
 #include "_CMockGeolocation.h"
 
@@ -69,4 +69,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CMOCKGEOLOCATION_H__
+#endif //__ELASTOS_DROID_WEBKIT_CMOCKGEOLOCATION_H__

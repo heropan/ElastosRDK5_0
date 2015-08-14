@@ -1,6 +1,6 @@
 
-#ifndef __CL10NUTILSHELPER_H__
-#define __CL10NUTILSHELPER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CL10NUTILSHELPER_H__
+#define __ELASTOS_DROID_WEBKIT_CL10NUTILSHELPER_H__
 
 #include "_CL10nUtilsHelper.h"
 
@@ -25,4 +25,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CL10NUTILSHELPER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CL10NUTILSHELPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CWPSRESULT_H__
-#define __CWPSRESULT_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__
+#define __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__
 
 #include "_CWpsResult.h"
 
@@ -52,4 +52,4 @@ friend class WifiConfigStore;
 }
 }
 }
-#endif // __CWPSRESULT_H__
+#endif // __ELASTOS_DROID_NET_WIFI_CWPSRESULT_H__

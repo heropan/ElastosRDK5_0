@@ -1,6 +1,6 @@
 
-#ifndef __CPorterDuffColorFilter_h__
-#define __CPorterDuffColorFilter_h__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPorterDuffColorFilter_H__
+#define __ELASTOS_DROID_GRAPHICS_CPorterDuffColorFilter_H__
 
 #include "_CPorterDuffColorFilter.h"
 #include "graphics/ColorFilter.h"
@@ -41,4 +41,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPorterDuffColorFilter_h__
+#endif //__ELASTOS_DROID_GRAPHICS_CPorterDuffColorFilter_H__

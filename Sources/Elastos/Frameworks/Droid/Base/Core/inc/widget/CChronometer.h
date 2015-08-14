@@ -1,6 +1,6 @@
 
-#ifndef __CCHRONOMETER_H__
-#define __CCHRONOMETER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CCHRONOMETER_H__
+#define __ELASTOS_DROID_WIDGET_CCHRONOMETER_H__
 
 #include "_CChronometer.h"
 #include "widget/Chronometer.h"
@@ -74,4 +74,4 @@ private:
 }// namespace Elastos
 }// namespace Droid
 }// namespace Widget
-#endif // __CCHRONOMETER_H__
+#endif // __ELASTOS_DROID_WIDGET_CCHRONOMETER_H__

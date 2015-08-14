@@ -1,6 +1,6 @@
 
-#ifndef __CACTIVITYMANAGERHELPER_H__
-#define __CACTIVITYMANAGERHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__
+#define __ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__
 
 #include "_CActivityManagerHelper.h"
 
@@ -99,4 +99,4 @@ CarClass(CActivityManagerHelper)
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACTIVITYMANAGERHELPER_H__
+#endif //__ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__

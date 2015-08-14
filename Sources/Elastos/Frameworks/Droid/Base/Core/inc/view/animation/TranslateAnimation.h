@@ -1,6 +1,6 @@
 
-#ifndef __TRANSLATEANIMATION_H__
-#define __TRANSLATEANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_TRANSLATEANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_TRANSLATEANIMATION_H__
 
 #include "view/animation/Animation.h"
 
@@ -99,4 +99,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__TRANSLATEANIMATION_H__
+#endif //__ELASTOS_DROID_VIEW_ANIMATION_TRANSLATEANIMATION_H__

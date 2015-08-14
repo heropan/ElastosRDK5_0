@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPDATAHELPER_H__
-#define __CCLIPDATAHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__
+#define __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__
 
 #include "_CClipDataHelper.h"
 
@@ -98,4 +98,4 @@ public:
 } // Droid
 } // Elastos
 
-#endif // __CCLIPDATAHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__

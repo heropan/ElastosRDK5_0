@@ -1,6 +1,6 @@
 
-#ifndef __CCLIPBOARDMANAGER_H__
-#define __CCLIPBOARDMANAGER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__
+#define __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__
 
 #include "_CClipboardManager.h"
 #include <ext/frameworkext.h>
@@ -140,4 +140,4 @@ private:
 }
 }
 
-#endif // __CCLIPBOARDMANAGER_H__
+#endif // __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__

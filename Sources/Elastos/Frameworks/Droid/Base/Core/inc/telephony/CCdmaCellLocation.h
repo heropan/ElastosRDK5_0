@@ -1,6 +1,6 @@
 
-#ifndef __CCDMACELLLOCATION_H__
-#define __CCDMACELLLOCATION_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CCDMACELLLOCATION_H__
+#define __ELASTOS_DROID_TELEPHONY_CCDMACELLLOCATION_H__
 
 #include "_CCdmaCellLocation.h"
 #include "telephony/CellLocation.h"
@@ -105,4 +105,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCDMACELLLOCATION_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CCDMACELLLOCATION_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CEVENTHOLE_H_
-#define __CEVENTHOLE_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CEVENTHOLE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CEVENTHOLE_H__
 
 #include "_CEventHole.h"
 
@@ -42,4 +42,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif // __CEVENTHOLE_H_
+#endif // __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CEVENTHOLE_H__

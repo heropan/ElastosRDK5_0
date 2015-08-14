@@ -1,6 +1,6 @@
 
-#ifndef __DHCPINFOINTERNAL_H__
-#define __DHCPINFOINTERNAL_H__
+#ifndef __ELASTOS_DROID_NET_DHCPINFOINTERNAL_H__
+#define __ELASTOS_DROID_NET_DHCPINFOINTERNAL_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -80,4 +80,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__DHCPINFOINTERNAL_H__
+#endif //__ELASTOS_DROID_NET_DHCPINFOINTERNAL_H__

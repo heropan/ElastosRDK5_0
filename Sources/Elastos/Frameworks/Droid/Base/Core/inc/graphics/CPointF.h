@@ -1,6 +1,6 @@
 
-#ifndef __CPOINTF_H__
-#define __CPOINTF_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPOINTF_H__
+#define __ELASTOS_DROID_GRAPHICS_CPOINTF_H__
 
 #include "_CPointF.h"
 
@@ -99,4 +99,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPOINTF_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CPOINTF_H__

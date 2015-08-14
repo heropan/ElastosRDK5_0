@@ -1,5 +1,5 @@
-#ifndef __CUIMODEMANAGER_H__
-#define __CUIMODEMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_CUIMODEMANAGER_H__
+#define __ELASTOS_DROID_APP_CUIMODEMANAGER_H__
 
 #include "_CUiModeManager.h"
 #include <elstring.h>
@@ -78,4 +78,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUIMODEMANAGER_H__
+#endif // __ELASTOS_DROID_APP_CUIMODEMANAGER_H__

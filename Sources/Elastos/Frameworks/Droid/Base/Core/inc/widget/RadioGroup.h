@@ -1,5 +1,5 @@
-#ifndef __RADIOGROUP_H__
-#define __RADIOGROUP_H__
+#ifndef __ELASTOS_DROID_WIDGET_RADIOGROUP_H__
+#define __ELASTOS_DROID_WIDGET_RADIOGROUP_H__
 
 #include "ext/frameworkext.h"
 #include "widget/LinearLayout.h"
@@ -143,4 +143,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RADIOGROUP_H__
+#endif //__ELASTOS_DROID_WIDGET_RADIOGROUP_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIP2PGROUP_H__
-#define __CWIFIP2PGROUP_H__
+#ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__
+#define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__
 
 #include "_CWifiP2pGroup.h"
 #include <ext/frameworkext.h>
@@ -128,4 +128,4 @@ private:
 }
 }
 
-#endif // __CWIFIP2PGROUP_H__
+#endif // __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUP_H__

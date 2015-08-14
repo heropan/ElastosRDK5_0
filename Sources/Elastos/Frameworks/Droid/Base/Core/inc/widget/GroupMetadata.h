@@ -1,5 +1,5 @@
-#ifndef __GROUPMETADATA_H__
-#define __GROUPMETADATA_H__
+#ifndef __ELASTOS_DROID_WIDGET_GROUPMETADATA_H__
+#define __ELASTOS_DROID_WIDGET_GROUPMETADATA_H__
 
 #include "ext/frameworkext.h"
 
@@ -56,4 +56,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GROUPMETADATA_H__
+#endif //__ELASTOS_DROID_WIDGET_GROUPMETADATA_H__

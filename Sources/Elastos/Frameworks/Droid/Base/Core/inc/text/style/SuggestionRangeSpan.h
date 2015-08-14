@@ -1,5 +1,5 @@
-#ifndef __SuggestionRangeSpan_H__
-#define __SuggestionRangeSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_SuggestionRangeSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_SuggestionRangeSpan_H__
 
 #include "text/style/CharacterStyle.h"
 
@@ -55,4 +55,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __SuggestionRangeSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_SuggestionRangeSpan_H__

@@ -1,6 +1,6 @@
 
-#ifndef  __SENSORMANAGER_H__
-#define  __SENSORMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_SENSORMANAGER_H__
+#define  __ELASTOS_DROID_HARDWARE_SENSORMANAGER_H__
 
 #include "_CSensorManager.h"
 #include "hardware/LegacySensorManager.h"
@@ -330,4 +330,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SENSORMANAGER_H__
+#endif //__ELASTOS_DROID_HARDWARE_SENSORMANAGER_H__

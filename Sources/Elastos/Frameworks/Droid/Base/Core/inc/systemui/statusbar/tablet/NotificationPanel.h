@@ -1,5 +1,5 @@
-#ifndef __NOTIFICATIONPANEL_H_
-#define __NOTIFICATIONPANEL_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANEL_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANEL_H__
 
 #include "widget/RelativeLayout.h"
 #include "animation/AnimatorListenerAdapter.h"
@@ -240,4 +240,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__NOTIFICATIONPANEL_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_NOTIFICATIONPANEL_H__

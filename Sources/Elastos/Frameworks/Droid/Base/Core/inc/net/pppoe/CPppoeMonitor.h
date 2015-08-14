@@ -1,6 +1,6 @@
 
-#ifndef __CPPPOEMONITOR_H__
-#define __CPPPOEMONITOR_H__
+#ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOEMONITOR_H__
+#define __ELASTOS_DROID_NET_PPPOE_CPPPOEMONITOR_H__
 
 #include "_CPppoeMonitor.h"
 #include "ext/frameworkext.h"
@@ -60,4 +60,4 @@ private:
 } // Droid
 } // Elastos
 
-#endif // __CPPPOEMONITOR_H__
+#endif // __ELASTOS_DROID_NET_PPPOE_CPPPOEMONITOR_H__

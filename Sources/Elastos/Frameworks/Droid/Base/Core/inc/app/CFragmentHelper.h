@@ -1,6 +1,6 @@
 
-#ifndef __CFRAGMENTHELPER_H__
-#define __CFRAGMENTHELPER_H__
+#ifndef __ELASTOS_DROID_APP_CFRAGMENTHELPER_H__
+#define __ELASTOS_DROID_APP_CFRAGMENTHELPER_H__
 
 #include "_CFragmentHelper.h"
 #include "app/Fragment.h"
@@ -28,4 +28,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CFRAGMENTHELPER_H__
+#endif //__ELASTOS_DROID_APP_CFRAGMENTHELPER_H__

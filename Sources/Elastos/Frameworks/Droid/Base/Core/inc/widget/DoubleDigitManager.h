@@ -1,6 +1,6 @@
 
-#ifndef __DOUBLEDIGITMANAGER_H__
-#define __DOUBLEDIGITMANAGER_H__
+#ifndef __ELASTOS_DROID_WIDGET_DOUBLEDIGITMANAGER_H__
+#define __ELASTOS_DROID_WIDGET_DOUBLEDIGITMANAGER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"

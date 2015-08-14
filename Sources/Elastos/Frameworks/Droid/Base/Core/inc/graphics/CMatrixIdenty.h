@@ -1,6 +1,6 @@
 
-#ifndef __CMATRIXIDENTY_H__
-#define __CMATRIXIDENTY_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CMATRIXIDENTY_H__
+#define __ELASTOS_DROID_GRAPHICS_CMATRIXIDENTY_H__
 
 #include "_CMatrixIdenty.h"
 #include "graphics/CMatrix.h"
@@ -147,4 +147,4 @@ public:
         /* [in] */ const ArrayOf<Float>& values);
 };
 
-#endif //__CMATRIXIDENTY_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CMATRIXIDENTY_H__

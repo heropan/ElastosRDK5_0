@@ -1,5 +1,5 @@
-#ifndef __CLOCATIONMANAGER_H__
-#define __CLOCATIONMANAGER_H__
+#ifndef __ELASTOS_DROID_LOCATION_CLOCATIONMANAGER_H__
+#define __ELASTOS_DROID_LOCATION_CLOCATIONMANAGER_H__
 
 #include "_CLocationManager.h"
 #include "location/LocationManager.h"
@@ -943,4 +943,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CLOCATIONMANAGER_H__
+#endif //__ELASTOS_DROID_LOCATION_CLOCATIONMANAGER_H__

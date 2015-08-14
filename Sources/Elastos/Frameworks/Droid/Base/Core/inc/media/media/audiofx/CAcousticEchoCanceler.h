@@ -1,6 +1,6 @@
 
-#ifndef __CACOUSTICECHOCANCELER_H__
-#define __CACOUSTICECHOCANCELER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELER_H__
 
 #include "_CAcousticEchoCanceler.h"
 #include <ext/frameworkext.h>
@@ -79,5 +79,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CACOUSTICECHOCANCELER_H__
+#endif // __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELER_H__
 

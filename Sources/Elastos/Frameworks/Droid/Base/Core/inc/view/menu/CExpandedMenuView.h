@@ -1,6 +1,6 @@
 
-#ifndef __CEXPANDEDMENUVIEW_H__
-#define __CEXPANDEDMENUVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_CEXPANDEDMENUVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_CEXPANDEDMENUVIEW_H__
 
 #include "ext/frameworkext.h"
 
@@ -111,4 +111,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEXPANDEDMENUVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_MENU_CEXPANDEDMENUVIEW_H__

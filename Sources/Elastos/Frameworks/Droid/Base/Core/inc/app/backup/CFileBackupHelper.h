@@ -1,5 +1,5 @@
-#ifndef __CFILEBACKUPHELPER_H__
-#define __CFILEBACKUPHELPER_H__
+#ifndef __ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPER_H__
+#define __ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPER_H__
 
 #include "_CFileBackupHelper.h"
 #include "ext/frameworkext.h"

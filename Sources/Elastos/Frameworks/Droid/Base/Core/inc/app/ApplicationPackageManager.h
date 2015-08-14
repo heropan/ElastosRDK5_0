@@ -1,6 +1,6 @@
 
-#ifndef __APPLICATIONPACKAGEMANAGER_H__
-#define __APPLICATIONPACKAGEMANAGER_H__
+#ifndef __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
+#define __ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "app/CContextImpl.h"
@@ -573,7 +573,6 @@ private:
 
 _ETL_NAMESPACE_BEGIN
 
-#ifndef AUTOPTR_APM_RESOURCESNAME_HASH_FUNC
 #define AUTOPTR_APM_RESOURCESNAME_HASH_FUNC
 
 template<> struct Hash<AutoPtr<ApplicationPackageManager::ResourceName> >
@@ -599,4 +598,4 @@ template<> struct EqualTo<AutoPtr<ApplicationPackageManager::ResourceName> >
 #endif //AUTOPTR_APM_RESOURCESNAME_HASH_FUNC
 _ETL_NAMESPACE_END
 
-#endif //__APPLICATIONPACKAGEMANAGER_H__
+#endif //__ELASTOS_DROID_APP_APPLICATIONPACKAGEMANAGER_H__

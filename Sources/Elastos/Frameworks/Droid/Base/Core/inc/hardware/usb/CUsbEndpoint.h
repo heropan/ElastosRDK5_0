@@ -1,6 +1,6 @@
 
-#ifndef __CUSBENDPOINT_H__
-#define __CUSBENDPOINT_H__
+#ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBENDPOINT_H__
+#define __ELASTOS_DROID_HARDWARE_USB_CUSBENDPOINT_H__
 
 #include "_CUsbEndpoint.h"
 #include "ext/frameworkext.h"
@@ -135,4 +135,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CUSBENDPOINT_H__
+#endif // __ELASTOS_DROID_HARDWARE_USB_CUSBENDPOINT_H__

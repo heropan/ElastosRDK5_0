@@ -1,6 +1,6 @@
 
-#ifndef __EXPANDABLELISTCONNECTOR_H__
-#define __EXPANDABLELISTCONNECTOR_H__
+#ifndef __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
+#define __ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ExpandableListPosition.h"
@@ -232,4 +232,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__EXPANDABLELISTCONNECTOR_H__
+#endif //__ELASTOS_DROID_WIDGET_EXPANDABLELISTCONNECTOR_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CDISABLECARMODEACTIVITY_H__
-#define __CDISABLECARMODEACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__
 
 #include "app/Activity.h"
 #include "_CDisableCarModeActivity.h"
@@ -29,4 +29,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif //__CDISABLECARMODEACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__

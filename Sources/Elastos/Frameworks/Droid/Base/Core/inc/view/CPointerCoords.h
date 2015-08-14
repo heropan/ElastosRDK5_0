@@ -1,6 +1,6 @@
 
-#ifndef __CPOINTERCOORDS_H__
-#define __CPOINTERCOORDS_H__
+#ifndef __ELASTOS_DROID_VIEW_CPOINTERCOORDS_H__
+#define __ELASTOS_DROID_VIEW_CPOINTERCOORDS_H__
 
 #include "_CPointerCoords.h"
 
@@ -294,4 +294,4 @@ public:
 }
 }
 
-#endif // __CPOINTERCOORDS_H__
+#endif // __ELASTOS_DROID_VIEW_CPOINTERCOORDS_H__

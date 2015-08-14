@@ -1,6 +1,6 @@
 
-#ifndef __CPREFERENCECATEGORY_H__
-#define __CPREFERENCECATEGORY_H__
+#ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCECATEGORY_H__
+#define __ELASTOS_DROID_PREFERENCE_CPREFERENCECATEGORY_H__
 
 #include "_CPreferenceCategory.h"
 #include "PreferenceGroup.h"
@@ -76,4 +76,4 @@ private:
 }
 }
 
-#endif // __CPREFERENCECATEGORY_H__
+#endif // __ELASTOS_DROID_PREFERENCE_CPREFERENCECATEGORY_H__

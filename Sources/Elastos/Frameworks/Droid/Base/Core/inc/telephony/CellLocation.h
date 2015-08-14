@@ -1,6 +1,6 @@
 
-#ifndef __CELLLOCATION_H__
-#define __CELLLOCATION_H__
+#ifndef __ELASTOS_DROID_TELEPHONY_CELLLOCATION_H__
+#define __ELASTOS_DROID_TELEPHONY_CELLLOCATION_H__
 
 #include "ext/frameworkext.h"
 
@@ -49,4 +49,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CELLLOCATION_H__
+#endif // __ELASTOS_DROID_TELEPHONY_CELLLOCATION_H__

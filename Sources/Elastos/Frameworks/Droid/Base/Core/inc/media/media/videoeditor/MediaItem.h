@@ -1,6 +1,6 @@
 
-#ifndef __MEDIAITEM_H__
-#define __MEDIAITEM_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_MEDIAITEM_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_MEDIAITEM_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/List.h>
@@ -506,5 +506,5 @@ protected:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MEDIAITEM_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_MEDIAITEM_H__
 

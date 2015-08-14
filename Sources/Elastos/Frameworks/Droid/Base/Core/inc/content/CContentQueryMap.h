@@ -1,6 +1,6 @@
 
-#ifndef __CCONTENTQUERYMAP_H__
-#define __CCONTENTQUERYMAP_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
+#define __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
 
 #include "_CContentQueryMap.h"
 #include <ext/frameworkext.h>
@@ -193,4 +193,4 @@ private:
 }
 }
 
-#endif // __CCONTENTQUERYMAP_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__

@@ -1,5 +1,5 @@
-#ifndef __GLERRORWRAPPER_H__
-#define __GLERRORWRAPPER_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLERRORWRAPPER_H__
+#define __ELASTOS_DROID_OPENGL_GLERRORWRAPPER_H__
 
 #include "GLWrapperBase.h"
 

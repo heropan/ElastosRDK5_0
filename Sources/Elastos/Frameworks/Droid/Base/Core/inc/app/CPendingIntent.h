@@ -1,6 +1,6 @@
 
-#ifndef __CPENDINGINTENT_H__
-#define __CPENDINGINTENT_H__
+#ifndef __ELASTOS_DROID_APP_CPENDINGINTENT_H__
+#define __ELASTOS_DROID_APP_CPENDINGINTENT_H__
 
 #include "ext/frameworkext.h"
 #include "_CPendingIntent.h"
@@ -114,4 +114,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPENDINGINTENT_H__
+#endif //__ELASTOS_DROID_APP_CPENDINGINTENT_H__

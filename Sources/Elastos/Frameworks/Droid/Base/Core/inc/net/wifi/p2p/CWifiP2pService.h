@@ -1,5 +1,5 @@
-#ifndef __CWIFIP2PSERVICE_H__
-#define __CWIFIP2PSERVICE_H__
+#ifndef __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
+#define __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 
 #include "_CWifiP2pService.h"
 #include "ext/frameworkdef.h"
@@ -990,4 +990,4 @@ public:
 }
 }
 }
-#endif // __CWIFIP2PSERVICE_H__
+#endif // __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__

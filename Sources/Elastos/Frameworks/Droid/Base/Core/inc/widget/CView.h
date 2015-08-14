@@ -1,5 +1,5 @@
-#ifndef __CVIEW_H_
-#define __CVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CVIEW_H__
 
 #include "_CView.h"
 
@@ -36,4 +36,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CVIEW_H__

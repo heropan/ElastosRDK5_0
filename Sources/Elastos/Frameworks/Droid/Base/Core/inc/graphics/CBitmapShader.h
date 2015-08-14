@@ -1,6 +1,6 @@
 
-#ifndef __CBITMAPSHADER_H__
-#define __CBITMAPSHADER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPSHADER_H__
+#define __ELASTOS_DROID_GRAPHICS_CBITMAPSHADER_H__
 
 #include "_CBitmapShader.h"
 #include "graphics/Shader.h"
@@ -61,4 +61,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CBITMAPSHADER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CBITMAPSHADER_H__

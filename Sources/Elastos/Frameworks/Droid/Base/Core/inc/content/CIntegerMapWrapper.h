@@ -1,6 +1,6 @@
 
-#ifndef __CINTEGERMAPWRAPPER_H__
-#define __CINTEGERMAPWRAPPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CINTEGERMAPWRAPPER_H__
+#define __ELASTOS_DROID_CONTENT_CINTEGERMAPWRAPPER_H__
 
 #include "_CIntegerMapWrapper.h"
 #include "ext/frameworkext.h"
@@ -34,4 +34,4 @@ private:
 }
 }
 
-#endif // __CINTEGERMAPWRAPPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CINTEGERMAPWRAPPER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CLAYERDRAWABLE_H__
-#define __CLAYERDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLAYERDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLAYERDRAWABLE_H__
 
 #include "_CLayerDrawable.h"
 #include "graphics/drawable/LayerDrawable.h"
@@ -74,4 +74,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CLAYERDRAWABLE_H__
+#endif // __ELASTOS_DROID_GRAPHICS_DRAWABLE_CLAYERDRAWABLE_H__

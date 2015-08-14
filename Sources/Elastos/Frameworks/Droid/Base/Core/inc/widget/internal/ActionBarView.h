@@ -1,6 +1,6 @@
 
-#ifndef __ACTIONBARVIEW_H__
-#define __ACTIONBARVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARVIEW_H__
 
 #include "AbsActionBarView.h"
 
@@ -418,4 +418,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ACTIONBARVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_ACTIONBARVIEW_H__

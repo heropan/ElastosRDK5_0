@@ -1,5 +1,5 @@
-#ifndef __CTOAST_H_
-#define __CTOAST_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTOAST_H__
+#define __ELASTOS_DROID_WIDGET_CTOAST_H__
 
 #include "_CToast.h"
 #include "widget/Toast.h"
@@ -138,4 +138,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTOAST_H_
+#endif //__ELASTOS_DROID_WIDGET_CTOAST_H__

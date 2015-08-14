@@ -1,5 +1,5 @@
-#ifndef __CHEADERVIEWLISTADAPTER_H_
-#define __CHEADERVIEWLISTADAPTER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CHEADERVIEWLISTADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CHEADERVIEWLISTADAPTER_H__
 
 #include "_CHeaderViewListAdapter.h"
 #include "widget/HeaderViewListAdapter.h"
@@ -47,4 +47,4 @@ public:
 } // namespace Elastos
 
 
-#endif //__CHEADERVIEWLISTADAPTER_H_
+#endif //__ELASTOS_DROID_WIDGET_CHEADERVIEWLISTADAPTER_H__

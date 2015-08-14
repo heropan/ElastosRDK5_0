@@ -1,6 +1,6 @@
 
-#ifndef __CMULTITAPKEYLISTENER_H__
-#define __CMULTITAPKEYLISTENER_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENER_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENER_H__
 
 #include "_CMultiTapKeyListener.h"
 #include "text/method/MultiTapKeyListener.h"
@@ -65,4 +65,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMULTITAPKEYLISTENER_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENER_H__

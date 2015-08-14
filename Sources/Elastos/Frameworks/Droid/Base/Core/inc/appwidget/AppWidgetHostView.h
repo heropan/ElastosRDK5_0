@@ -1,6 +1,6 @@
 
-#ifndef __APPWIDGETHOSTVIEW_H__
-#define __APPWIDGETHOSTVIEW_H__
+#ifndef __ELASTOS_DROID_APPWIDGET_APPWIDGETHOSTVIEW_H__
+#define __ELASTOS_DROID_APPWIDGET_APPWIDGETHOSTVIEW_H__
 
 #include "widget/FrameLayout.h"
 
@@ -238,4 +238,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__APPWIDGETHOSTVIEW_H__
+#endif //__ELASTOS_DROID_APPWIDGET_APPWIDGETHOSTVIEW_H__

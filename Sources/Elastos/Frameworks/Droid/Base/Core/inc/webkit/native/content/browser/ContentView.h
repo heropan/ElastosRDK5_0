@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTVIEW_H__
-#define __CONTENTVIEW_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__
 
 // import android.content.Context;
 // import android.content.res.Configuration;
@@ -277,4 +277,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CONTENTVIEW_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_CONTENTVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __AUDIORECORDINPUT_H__
-#define __AUDIORECORDINPUT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__
 
 // import android.annotation.SuppressLint;
 // import android.media.AudioFormat;
@@ -118,4 +118,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AUDIORECORDINPUT_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_AUDIORECORDINPUT_H__

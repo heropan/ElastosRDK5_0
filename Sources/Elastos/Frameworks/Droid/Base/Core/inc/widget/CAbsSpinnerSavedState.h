@@ -1,5 +1,5 @@
-#ifndef ___CABSSPINNERSAVEDSTATE_H__
-#define ___CABSSPINNERSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_CABSSPINNERSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_CABSSPINNERSAVEDSTATE_H__
 
 #include "_CAbsSpinnerSavedState.h"
 #include "AbsSpinnerSavedState.h"

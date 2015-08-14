@@ -1,6 +1,6 @@
 
-#ifndef __CSELECTIONBUILDER_H__
-#define __CSELECTIONBUILDER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_CONTENT_CSELECTIONBUILDER_H__
+#define __ELASTOS_DROID_INTERNAL_CONTENT_CSELECTIONBUILDER_H__
 
 #include "_CSelectionBuilder.h"
 #include <ext/frameworkext.h>
@@ -106,4 +106,4 @@ private:
 }
 }
 
-#endif // __CSELECTIONBUILDER_H__
+#endif // __ELASTOS_DROID_INTERNAL_CONTENT_CSELECTIONBUILDER_H__

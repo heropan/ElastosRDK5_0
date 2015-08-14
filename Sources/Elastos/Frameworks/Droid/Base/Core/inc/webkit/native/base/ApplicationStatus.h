@@ -1,6 +1,6 @@
 
-#ifndef __APPLICATIONSTATUS_H__
-#define __APPLICATIONSTATUS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__
 
 // import android.app.Activity;
 // import android.app.Application;
@@ -373,4 +373,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__APPLICATIONSTATUS_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_APPLICATIONSTATUS_H__

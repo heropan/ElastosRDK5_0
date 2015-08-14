@@ -1,6 +1,6 @@
 
-#ifndef __AWASSETS_H__
-#define __AWASSETS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__
 
 // import android.content.Context;
 // import android.content.res.AssetFileDescriptor;
@@ -39,4 +39,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWASSETS_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWASSETS_H__

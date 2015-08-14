@@ -1,6 +1,6 @@
 
-#ifndef __CCORNERPATHEFFECT_H__
-#define __CCORNERPATHEFFECT_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__
+#define __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__
 
 #include "_CCornerPathEffect.h"
 #include "graphics/PathEffect.h"
@@ -33,4 +33,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CCORNERPATHEFFECT_H__
+#endif // __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__

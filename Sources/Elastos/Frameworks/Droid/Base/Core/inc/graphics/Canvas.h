@@ -1,7 +1,7 @@
 
 
-#ifndef __HH_CANVAS_H
-#define __HH_CANVAS_H
+#ifndef __ELASTOS_DROID_GRAPHICS_H_H__
+#define __ELASTOS_DROID_GRAPHICS_H_H__
 
 #include "graphics/CBitmap.h"
 
@@ -869,5 +869,5 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __HH_CANVAS_H
+#endif // __ELASTOS_DROID_GRAPHICS_H_H__
 

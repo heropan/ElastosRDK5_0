@@ -1,6 +1,6 @@
 
-#ifndef __CTIME_H__
-#define __CTIME_H__
+#ifndef __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__
+#define __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__
 
 #include "_CTime.h"
 
@@ -636,4 +636,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CTIME_H__
+#endif // __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__

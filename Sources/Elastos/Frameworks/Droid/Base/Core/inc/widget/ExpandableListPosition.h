@@ -1,6 +1,6 @@
 
-#ifndef __EXPANDABLELISTPOSITION_H__
-#define __EXPANDABLELISTPOSITION_H__
+#ifndef __ELASTOS_DROID_WIDGET_EXPANDABLELISTPOSITION_H__
+#define __ELASTOS_DROID_WIDGET_EXPANDABLELISTPOSITION_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ExpandableListView.h"

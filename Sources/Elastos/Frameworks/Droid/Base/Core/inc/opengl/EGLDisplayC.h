@@ -1,6 +1,6 @@
 
-#ifndef __EGLDISPLAY_H__
-#define __EGLDISPLAY_H__
+#ifndef __ELASTOS_DROID_OPENGL_EGLDISPLAY_H__
+#define __ELASTOS_DROID_OPENGL_EGLDISPLAY_H__
 
 #include "EGLObjectHandle.h"
 
@@ -52,4 +52,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __EGLDISPLAY_H__
+#endif // __ELASTOS_DROID_OPENGL_EGLDISPLAY_H__

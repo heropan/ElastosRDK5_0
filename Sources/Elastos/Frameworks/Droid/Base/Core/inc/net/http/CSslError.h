@@ -1,6 +1,6 @@
 
-#ifndef __CSSLERROR_H__
-#define __CSSLERROR_H__
+#ifndef __ELASTOS_DROID_NET_HTTP_CSSLERROR_H__
+#define __ELASTOS_DROID_NET_HTTP_CSSLERROR_H__
 
 #include "_CSslError.h"
 #include "elautoptr.h"
@@ -192,4 +192,4 @@ private:
 }
 }
 
-#endif // __CSSLERROR_H__
+#endif // __ELASTOS_DROID_NET_HTTP_CSSLERROR_H__

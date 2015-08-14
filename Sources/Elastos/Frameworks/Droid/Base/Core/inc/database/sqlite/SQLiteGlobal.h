@@ -1,5 +1,5 @@
-#ifndef __SQLITEGLOBAL_H__
-#define __SQLITEGLOBAL_H__
+#ifndef __ELASTOS_DROID_DATABASE_SQLITE_SQLITEGLOBAL_H__
+#define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEGLOBAL_H__
 
 #include "ext/frameworkdef.h"
 
@@ -84,4 +84,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__SQLITEGLOBAL_H__
+#endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITEGLOBAL_H__

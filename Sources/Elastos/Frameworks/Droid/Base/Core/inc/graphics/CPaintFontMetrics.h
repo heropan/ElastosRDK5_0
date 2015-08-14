@@ -1,5 +1,5 @@
-#ifndef __CPAINTFONTMETRICS_H__
-#define __CPAINTFONTMETRICS_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICS_H__
+#define __ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICS_H__
 
 #include "_CPaintFontMetrics.h"
 
@@ -52,4 +52,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CPAINTFONTMETRICS_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICS_H__

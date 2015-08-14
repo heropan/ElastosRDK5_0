@@ -1,6 +1,6 @@
 
-#ifndef __CCONTEXTWRAPPER_H__
-#define __CCONTEXTWRAPPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__
+#define __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__
 
 #include "_CContextWrapper.h"
 #include <ext/frameworkext.h>
@@ -50,4 +50,4 @@ private:
 }
 }
 
-#endif // __CCONTEXTWRAPPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__

@@ -1,5 +1,5 @@
-#ifndef __GESTUREUTILS_H__
-#define __GESTUREUTILS_H__
+#ifndef __ELASTOS_DROID_GESTURE_GESTUREUTILS_H__
+#define __ELASTOS_DROID_GESTURE_GESTUREUTILS_H__
 
 #include "ext/frameworkext.h"
 #include "gesture/CGesture.h"
@@ -201,4 +201,4 @@ private:
 }//namespace Gesture
 }//namespace Droid
 }//namespace Elastos
-#endif //__GESTUREUTILS_H__
+#endif //__ELASTOS_DROID_GESTURE_GESTUREUTILS_H__

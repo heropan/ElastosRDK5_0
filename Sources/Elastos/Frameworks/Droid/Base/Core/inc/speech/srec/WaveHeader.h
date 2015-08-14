@@ -1,5 +1,5 @@
-#ifndef __WaveHeader_H__
-#define __WaveHeader_H__
+#ifndef __ELASTOS_DROID_SPEECH_SREC_WaveHeader_H__
+#define __ELASTOS_DROID_SPEECH_SREC_WaveHeader_H__
 
 #include <elastos/io/InputStream.h>
 #include <elastos/io/OutputStream.h>
@@ -194,4 +194,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __WaveHeader_H__
+#endif // __ELASTOS_DROID_SPEECH_SREC_WaveHeader_H__

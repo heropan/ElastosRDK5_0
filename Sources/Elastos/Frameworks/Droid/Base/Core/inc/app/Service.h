@@ -1,5 +1,5 @@
-#ifndef __SERVICE_H__
-#define __SERVICE_H__
+#ifndef __ELASTOS_DROID_APP_SERVICE_H__
+#define __ELASTOS_DROID_APP_SERVICE_H__
 
 #include "ext/frameworkext.h"
 
@@ -682,4 +682,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__SERVICE_H__
+#endif //__ELASTOS_DROID_APP_SERVICE_H__

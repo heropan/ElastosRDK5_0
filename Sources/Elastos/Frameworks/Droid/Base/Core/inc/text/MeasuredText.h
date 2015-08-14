@@ -1,6 +1,6 @@
 
-#ifndef __MEASUREDTEXT_H__
-#define __MEASUREDTEXT_H__
+#ifndef __ELASTOS_DROID_TEXT_MEASUREDTEXT_H__
+#define __ELASTOS_DROID_TEXT_MEASUREDTEXT_H__
 
 #include "ext/frameworkext.h"
 
@@ -77,4 +77,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__MEASUREDTEXT_H__
+#endif //__ELASTOS_DROID_TEXT_MEASUREDTEXT_H__

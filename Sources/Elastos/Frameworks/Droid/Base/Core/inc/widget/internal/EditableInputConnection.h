@@ -1,6 +1,6 @@
 
-#ifndef __EDITABLEINPUTCONNECTION_H__
-#define __EDITABLEINPUTCONNECTION_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_EDITABLEINPUTCONNECTION_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_EDITABLEINPUTCONNECTION_H__
 
 #include "view/inputmethod/BaseInputConnection.h"
 #include "view/inputmethod/CExtractedText.h"

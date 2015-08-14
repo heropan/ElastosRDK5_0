@@ -1,5 +1,5 @@
-#ifndef __CSEARCHVIEW_H_
-#define __CSEARCHVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CSEARCHVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CSEARCHVIEW_H__
 
 #include "_CSearchView.h"
 #include "widget/SearchView.h"
@@ -127,4 +127,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSEARCHVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CSEARCHVIEW_H__

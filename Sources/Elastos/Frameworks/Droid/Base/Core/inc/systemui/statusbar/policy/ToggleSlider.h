@@ -1,5 +1,5 @@
-#ifndef __TOGGLESLIDER_H_
-#define __TOGGLESLIDER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TOGGLESLIDER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TOGGLESLIDER_H__
 
 #include "widget/RelativeLayout.h"
 
@@ -95,4 +95,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__TOGGLESLIDER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_TOGGLESLIDER_H__

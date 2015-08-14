@@ -1,6 +1,6 @@
 
-#ifndef __CACCOUNT_H__
-#define __CACCOUNT_H__
+#ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNT_H__
+#define __ELASTOS_DROID_ACCOUNTS_CACCOUNT_H__
 
 #include "_CAccount.h"
 
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CACCOUNT_H__
+#endif //__ELASTOS_DROID_ACCOUNTS_CACCOUNT_H__

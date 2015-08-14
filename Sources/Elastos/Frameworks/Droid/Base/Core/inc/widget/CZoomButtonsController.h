@@ -1,5 +1,5 @@
-#ifndef __CZOOMBUTTONSCONTROLLER_H__
-#define __CZOOMBUTTONSCONTROLLER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CZOOMBUTTONSCONTROLLER_H__
+#define __ELASTOS_DROID_WIDGET_CZOOMBUTTONSCONTROLLER_H__
 
 #include "_CZoomButtonsController.h"
 #include "widget/ZoomButtonsController.h"

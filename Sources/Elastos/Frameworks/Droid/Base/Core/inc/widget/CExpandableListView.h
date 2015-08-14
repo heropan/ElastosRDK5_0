@@ -1,5 +1,5 @@
-#ifndef __CEXPANDABLELISTVIEW_H__
-#define __CEXPANDABLELISTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEW_H__
 
 #include "_CExpandableListView.h"
 #include "widget/ExpandableListView.h"
@@ -124,4 +124,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CEXPANDABLELISTVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEW_H__

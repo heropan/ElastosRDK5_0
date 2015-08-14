@@ -1,6 +1,6 @@
 
-#ifndef __BATTERYSTATUSMAMAGER_H__
-#define __BATTERYSTATUSMAMAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__
 
 // import android.content.BroadcastReceiver;
 // import android.content.Context;
@@ -119,4 +119,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BATTERYSTATUSMAMAGER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_BATTERYSTATUSMAMAGER_H__

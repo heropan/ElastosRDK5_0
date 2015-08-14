@@ -1,6 +1,6 @@
 
-#ifndef __CDISPLAYMANAGER_H__
-#define __CDISPLAYMANAGER_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
 
 #include "_CDisplayManager.h"
 #include "ext/frameworkext.h"
@@ -205,4 +205,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDISPLAYMANAGER_H__
+#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__

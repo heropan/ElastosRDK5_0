@@ -1,6 +1,6 @@
 
-#ifndef __CHTTPDATETIME_H__
-#define __CHTTPDATETIME_H__
+#ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_CHTTPDATETIME_H__
+#define __ELASTOS_DROID_NET_INTERNAL_HTTP_CHTTPDATETIME_H__
 
 #include "_CHttpDateTime.h"
 #include "ext/frameworkext.h"
@@ -112,4 +112,4 @@ private:
 }
 }
 
-#endif // __CHTTPDATETIME_H__
+#endif // __ELASTOS_DROID_NET_INTERNAL_HTTP_CHTTPDATETIME_H__

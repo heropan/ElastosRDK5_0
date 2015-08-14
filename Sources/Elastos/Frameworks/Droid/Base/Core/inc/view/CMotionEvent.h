@@ -1,6 +1,6 @@
 
-#ifndef __CMOTIONEVENT_H__
-#define __CMOTIONEVENT_H__
+#ifndef __ELASTOS_DROID_VIEW_CMOTIONEVENT_H__
+#define __ELASTOS_DROID_VIEW_CMOTIONEVENT_H__
 
 #include "_CMotionEvent.h"
 #include "ext/frameworkext.h"
@@ -1523,4 +1523,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif //__CMOTIONEVENT_H__
+#endif //__ELASTOS_DROID_VIEW_CMOTIONEVENT_H__

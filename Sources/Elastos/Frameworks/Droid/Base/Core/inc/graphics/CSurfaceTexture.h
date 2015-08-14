@@ -1,5 +1,5 @@
 
-#ifndef __CSURFACETEXTURE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CSURFACETEXTURE_H__
 #define __CSUMPATHEFFECT_H__
 
 #include "_CSurfaceTexture.h"

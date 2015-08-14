@@ -1,6 +1,6 @@
 
-#ifndef __SYNCADAPTERSCACHE_H__
-#define __SYNCADAPTERSCACHE_H__
+#ifndef __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__
+#define __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__
 
 #include <ext/frameworkext.h>
 #include "content/pm/RegisteredServicesCache.h"
@@ -65,4 +65,4 @@ private:
 }
 }
 
-#endif // __SYNCADAPTERSCACHE_H__
+#endif // __ELASTOS_DROID_CONTENT_SYNCADAPTERSCACHE_H__

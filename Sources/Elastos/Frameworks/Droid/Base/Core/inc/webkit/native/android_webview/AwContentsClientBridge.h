@@ -1,6 +1,6 @@
 
-#ifndef __AWCONTENTSCLIENTBRIDGE_H__
-#define __AWCONTENTSCLIENTBRIDGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__
 
 // import android.net.http.SslCertificate;
 // import android.net.http.SslError;
@@ -287,4 +287,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWCONTENTSCLIENTBRIDGE_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCONTENTSCLIENTBRIDGE_H__

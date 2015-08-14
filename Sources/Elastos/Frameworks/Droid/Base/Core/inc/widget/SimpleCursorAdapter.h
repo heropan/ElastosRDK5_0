@@ -1,6 +1,6 @@
 
-#ifndef __SIMPLECURSORADAPTER_H__
-#define __SIMPLECURSORADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_SIMPLECURSORADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_SIMPLECURSORADAPTER_H__
 
 #include "widget/ResourceCursorAdapter.h"
 
@@ -316,4 +316,4 @@ private:
 }// namespace Droid
 }// namespace Widget
 
-#endif // __SIMPLECURSORADAPTER_H__
+#endif // __ELASTOS_DROID_WIDGET_SIMPLECURSORADAPTER_H__

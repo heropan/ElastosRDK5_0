@@ -1,5 +1,5 @@
-#ifndef  __ACTIONMENUITEMVIEW_H__
-#define  __ACTIONMENUITEMVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ACTIONMENUITEMVIEW_H__
+#define  __ELASTOS_DROID_VIEW_MENU_ACTIONMENUITEMVIEW_H__
 
 #include "widget/TextView.h"
 
@@ -139,4 +139,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__ACTIONMENUITEMVIEW_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_ACTIONMENUITEMVIEW_H__

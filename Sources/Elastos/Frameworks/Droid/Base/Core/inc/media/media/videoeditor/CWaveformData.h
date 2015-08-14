@@ -1,6 +1,6 @@
 
-#ifndef __CWAVEFORMDATA_H__
-#define __CWAVEFORMDATA_H__
+#ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CWAVEFORMDATA_H__
+#define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CWAVEFORMDATA_H__
 
 #include "_CWaveformData.h"
 #include <ext/frameworkext.h>
@@ -75,5 +75,5 @@ private:
 } // namespace Media
 } // namepsace Droid
 } // namespace Elastos
-#endif // __CWAVEFORMDATA_H__
+#endif // __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CWAVEFORMDATA_H__
 

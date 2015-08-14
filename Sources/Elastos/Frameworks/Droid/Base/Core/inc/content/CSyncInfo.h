@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCINFO_H__
-#define __CSYNCINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCINFO_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCINFO_H__
 
 #include "_CSyncInfo.h"
 
@@ -83,4 +83,4 @@ private:
 }
 }
 
-#endif // __CSYNCINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCINFO_H__

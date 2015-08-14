@@ -1,5 +1,5 @@
-#ifndef __CGPSNIRESPONSE_H__
-#define __CGPSNIRESPONSE_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGPSNIRESPONSE_H__
+#define __ELASTOS_DROID_LOCATION_CGPSNIRESPONSE_H__
 #include "_CGpsNiResponse.h"
 
 using Elastos::Droid::Os::IBundle;

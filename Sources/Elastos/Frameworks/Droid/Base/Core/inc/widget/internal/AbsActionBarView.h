@@ -1,6 +1,6 @@
 
-#ifndef __ABSACTIONBARVIEW_H__
-#define __ABSACTIONBARVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_ABSACTIONBARVIEW_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_ABSACTIONBARVIEW_H__
 
 #include "ext/frameworkdef.h"
 #include "view/ViewGroup.h"
@@ -175,4 +175,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__ABSACTIONBARVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_INTERNAL_ABSACTIONBARVIEW_H__

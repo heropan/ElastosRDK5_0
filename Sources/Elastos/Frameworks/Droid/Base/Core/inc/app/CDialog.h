@@ -1,6 +1,6 @@
 
-#ifndef __CDIALOG_H__
-#define __CDIALOG_H__
+#ifndef __ELASTOS_DROID_APP_CDIALOG_H__
+#define __ELASTOS_DROID_APP_CDIALOG_H__
 
 #include "_CDialog.h"
 #include "app/Dialog.h"
@@ -53,4 +53,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CDIALOG_H__
+#endif // __ELASTOS_DROID_APP_CDIALOG_H__

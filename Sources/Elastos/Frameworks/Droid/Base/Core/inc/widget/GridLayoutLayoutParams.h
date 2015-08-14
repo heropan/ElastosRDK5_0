@@ -1,5 +1,5 @@
-#ifndef __GRIDLAYOUTLAYOUTPARAMS_H__
-#define __GRIDLAYOUTLAYOUTPARAMS_H__
+#ifndef __ELASTOS_DROID_WIDGET_GRIDLAYOUTLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_GRIDLAYOUTLAYOUTPARAMS_H__
 
 #include "ext/frameworkext.h"
 #include "widget/GridLayout.h"
@@ -138,7 +138,7 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GRIDLAYOUTLAYOUTPARAMS_H__
+#endif //__ELASTOS_DROID_WIDGET_GRIDLAYOUTLAYOUTPARAMS_H__
 
 
 

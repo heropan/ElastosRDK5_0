@@ -1,6 +1,6 @@
 
-#ifndef __HTML5VIDEOFULLSCREEN_H__
-#define __HTML5VIDEOFULLSCREEN_H__
+#ifndef __ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__
+#define __ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__
 
 #include "ext/frameworkext.h"
 #include "webkit/HTML5VideoView.h"
@@ -320,4 +320,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__HTML5VIDEOFULLSCREEN_H__
+#endif //__ELASTOS_DROID_WEBKIT_HTML5VIDEOFULLSCREEN_H__

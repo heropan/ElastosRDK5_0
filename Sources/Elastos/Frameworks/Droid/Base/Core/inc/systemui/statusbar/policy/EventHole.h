@@ -1,5 +1,5 @@
-#ifndef __EVENTHOLE_H_
-#define __EVENTHOLE_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_EVENTHOLE_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_EVENTHOLE_H__
 
 #include "view/View.h"
 
@@ -59,4 +59,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__EVENTHOLE_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_EVENTHOLE_H__

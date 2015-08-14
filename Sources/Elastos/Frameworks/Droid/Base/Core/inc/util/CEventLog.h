@@ -1,5 +1,5 @@
-#ifndef __CEVENTLOG_H__
-#define __CEVENTLOG_H__
+#ifndef __ELASTOS_DROID_APP_CEVENTLOG_H__
+#define __ELASTOS_DROID_APP_CEVENTLOG_H__
 
 #include "_CEventLog.h"
 
@@ -49,4 +49,4 @@ private:
 }
 }
 
-#endif // __CEVENTLOG_H__
+#endif // __ELASTOS_DROID_APP_CEVENTLOG_H__

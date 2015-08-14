@@ -1,6 +1,6 @@
 
-#ifndef __MEDIAPLAYERLISTENER_H__
-#define __MEDIAPLAYERLISTENER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
+#define __ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__
 
 // import android.content.Context;
 // import android.media.AudioManager;
@@ -126,4 +126,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__MEDIAPLAYERLISTENER_H__
+#endif//__ELASTOS_DROID_WEBKIT_MEDIA_MEDIAPLAYERLISTENER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __PARCELFILEDESCRIPTOR_H__
-#define __PARCELFILEDESCRIPTOR_H__
+#ifndef __ELASTOS_DROID_OS_PARCELFILEDESCRIPTOR_H__
+#define __ELASTOS_DROID_OS_PARCELFILEDESCRIPTOR_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/Core/Object.h>
@@ -248,4 +248,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PARCELFILEDESCRIPTOR_H__
+#endif //__ELASTOS_DROID_OS_PARCELFILEDESCRIPTOR_H__

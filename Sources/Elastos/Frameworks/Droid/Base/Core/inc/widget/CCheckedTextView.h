@@ -1,6 +1,6 @@
 
-#ifndef __CCHECKEDTEXTVIEW_H__
-#define __CCHECKEDTEXTVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_CCHECKEDTEXTVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CCHECKEDTEXTVIEW_H__
 
 #include "_CCheckedTextView.h"
 #include "widget/CheckedTextView.h"
@@ -68,4 +68,4 @@ private:
 }// namespace Elastos
 }// namespace Droid
 }// namespace Widget
-#endif // __CCHECKEDTEXTVIEW_H__
+#endif // __ELASTOS_DROID_WIDGET_CCHECKEDTEXTVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __WEBSTORAGE_H__
-#define __WEBSTORAGE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_WEBSTORAGE_H__
+#define __ELASTOS_DROID_WEBKIT_WEBSTORAGE_H__
 
 #include "ext/frameworkext.h"
 
@@ -190,4 +190,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__WEBSTORAGE_H__
+#endif //__ELASTOS_DROID_WEBKIT_WEBSTORAGE_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CGPSATELLITE_H__
-#define __CGPSATELLITE_H__
+#ifndef __ELASTOS_DROID_LOCATION_CGPSATELLITE_H__
+#define __ELASTOS_DROID_LOCATION_CGPSATELLITE_H__
 
 #include "ext/frameworkext.h"
 #include "_CGpsSatellite.h"
@@ -129,4 +129,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CGPSATELLITE_H__
+#endif // __ELASTOS_DROID_LOCATION_CGPSATELLITE_H__

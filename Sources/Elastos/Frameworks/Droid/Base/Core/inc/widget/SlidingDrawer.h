@@ -1,6 +1,6 @@
 
-#ifndef __SLIDINGDRAWER_H__
-#define __SLIDINGDRAWER_H__
+#ifndef __ELASTOS_DROID_WIDGET_SLIDINGDRAWER_H__
+#define __ELASTOS_DROID_WIDGET_SLIDINGDRAWER_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewGroup.h"

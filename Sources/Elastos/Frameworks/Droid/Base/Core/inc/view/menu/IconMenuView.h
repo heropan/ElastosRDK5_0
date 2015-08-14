@@ -1,6 +1,6 @@
 
-#ifndef __ICONMENUVIEW_H__
-#define __ICONMENUVIEW_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEW_H__
+#define __ELASTOS_DROID_VIEW_MENU_ICONMENUVIEW_H__
 
 #include "ext/frameworkext.h"
 #include "view/View.h"
@@ -316,4 +316,4 @@ friend class IconMenuPresenter;
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ICONMENUVIEW_H__
+#endif //__ELASTOS_DROID_VIEW_MENU_ICONMENUVIEW_H__

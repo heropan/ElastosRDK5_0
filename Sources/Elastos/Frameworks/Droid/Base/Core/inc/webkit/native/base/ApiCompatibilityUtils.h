@@ -1,6 +1,6 @@
 
-#ifndef __APICOMPATIBILITYUTILS_H__
-#define __APICOMPATIBILITYUTILS_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__
 
 // import android.app.PendingIntent;
 // import android.content.res.Configuration;
@@ -199,4 +199,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__APICOMPATIBILITYUTILS_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_APICOMPATIBILITYUTILS_H__

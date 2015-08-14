@@ -1,5 +1,5 @@
-#ifndef __CONACTIVITYPAUSEDLISTENER_H__
-#define __CONACTIVITYPAUSEDLISTENER_H__
+#ifndef __ELASTOS_DROID_APP_CONACTIVITYPAUSEDLISTENER_H__
+#define __ELASTOS_DROID_APP_CONACTIVITYPAUSEDLISTENER_H__
 
 #include "_COnActivityPausedListener.h"
 
@@ -21,4 +21,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CONACTIVITYPAUSEDLISTENER_H__
+#endif // __ELASTOS_DROID_APP_CONACTIVITYPAUSEDLISTENER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CINSTRUMENTATION_H__
-#define __CINSTRUMENTATION_H__
+#ifndef __ELASTOS_DROID_APP_CINSTRUMENTATION_H__
+#define __ELASTOS_DROID_APP_CINSTRUMENTATION_H__
 
 #include "_CInstrumentation.h"
 #include "app/Instrumentation.h"
@@ -882,4 +882,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CINSTRUMENTATION_H__
+#endif // __ELASTOS_DROID_APP_CINSTRUMENTATION_H__

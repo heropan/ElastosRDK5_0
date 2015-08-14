@@ -1,6 +1,6 @@
 
-#ifndef __CNOISESUPPRESSORHELPER_H__
-#define __CNOISESUPPRESSORHELPER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSORHELPER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSORHELPER_H__
 
 #include "_CNoiseSuppressorHelper.h"
 #include <ext/frameworkext.h>
@@ -38,5 +38,5 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CNOISESUPPRESSORHELPER_H__
+#endif // __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSORHELPER_H__
 

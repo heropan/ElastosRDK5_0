@@ -1,5 +1,5 @@
-#ifndef __RECTSHAPE_H__
-#define __RECTSHAPE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_RECTSHAPE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_RECTSHAPE_H__
 
 #include "graphics/drawable/shapes/Shape.h"
 #include "graphics/CRectF.h"
@@ -55,4 +55,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RECTSHAPE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_RECTSHAPE_H__

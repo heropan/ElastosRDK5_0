@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCMANAGER_H__
-#define __CSYNCMANAGER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCMANAGER_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCMANAGER_H__
 
 #include "_CSyncManager.h"
 #include <ext/frameworkext.h>
@@ -31,7 +31,6 @@ using Elastos::Utility::Concurrent::ICountDownLatch;
 // TODO please define in frameworkhash.h
 //
 _ETL_NAMESPACE_BEGIN
-#ifndef AUTOPTR_IPAIR_HASH_FUNC
 #define AUTOPTR_IPAIR_HASH_FUNC
 template<> struct Hash< AutoPtr<IPair> >
 {
@@ -1031,4 +1030,4 @@ private:
 }
 }
 
-#endif // __CSYNCMANAGER_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCMANAGER_H__

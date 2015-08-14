@@ -1,5 +1,5 @@
-#ifndef __Touch_H__
-#define __Touch_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_Touch_H__
+#define __ELASTOS_DROID_TEXT_METHOD_Touch_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -13,10 +13,8 @@ namespace Droid {
 namespace Text {
 namespace Method {
 
-#ifndef Integer_MAX_VALUE
     #define Integer_MAX_VALUE 0x7fffffff
 #endif
-#ifndef Integer_MIN_VALUE
     #define Integer_MIN_VALUE 0x80000000
 #endif
 
@@ -100,4 +98,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __Touch_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_Touch_H__

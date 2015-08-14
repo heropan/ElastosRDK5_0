@@ -1,6 +1,6 @@
 
-#ifndef __SPARSEINT32ARRAY_H__
-#define __SPARSEINT32ARRAY_H__
+#ifndef __ELASTOS_DROID_UTILITY_SPARSEINT32ARRAY_H__
+#define __ELASTOS_DROID_UTILITY_SPARSEINT32ARRAY_H__
 
 #include "util/ArrayUtils.h"
 

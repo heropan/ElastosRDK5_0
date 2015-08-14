@@ -1,6 +1,6 @@
 
-#ifndef __VIEWSTATESERIALIZER_H__
-#define __VIEWSTATESERIALIZER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_VIEWSTATESERIALIZER_H__
+#define __ELASTOS_DROID_WEBKIT_VIEWSTATESERIALIZER_H__
 
 #include "ext/frameworkext.h"
 
@@ -62,4 +62,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__VIEWSTATESERIALIZER_H__
+#endif //__ELASTOS_DROID_WEBKIT_VIEWSTATESERIALIZER_H__

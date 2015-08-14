@@ -1,6 +1,6 @@
 
-#ifndef __CURSORTREEADAPTER_H__
-#define __CURSORTREEADAPTER_H__
+#ifndef __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
+#define __ELASTOS_DROID_WIDGET_CURSORTREEADAPTER_H__
 
 #include "widget/BaseExpandableListAdapter.h"
 #include "database/ContentObserver.h"

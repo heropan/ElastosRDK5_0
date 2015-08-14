@@ -1,6 +1,6 @@
 
-#ifndef __CETC1_H__
-#define __CETC1_H__
+#ifndef __ELASTOS_DROID_OPENGL_CETC1_H__
+#define __ELASTOS_DROID_OPENGL_CETC1_H__
 
 #include "_CETC1.h"
 #include <cmdef.h>
@@ -116,4 +116,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CETC1_H__
+#endif // __ELASTOS_DROID_OPENGL_CETC1_H__

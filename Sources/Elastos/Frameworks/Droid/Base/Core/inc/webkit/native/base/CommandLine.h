@@ -1,6 +1,6 @@
 
-#ifndef __COMMANDLINE_H__
-#define __COMMANDLINE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__
 
 // import android.text.TextUtils;
 // import android.util.Log;
@@ -269,4 +269,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__COMMANDLINE_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_COMMANDLINE_H__

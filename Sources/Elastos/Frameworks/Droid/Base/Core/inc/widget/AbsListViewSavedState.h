@@ -1,6 +1,6 @@
 
-#ifndef __ABSLISTVIEWSAVEDSTATE_H__
-#define __ABSLISTVIEWSAVEDSTATE_H__
+#ifndef __ELASTOS_DROID_WIDGET_ABSLISTVIEWSAVEDSTATE_H__
+#define __ELASTOS_DROID_WIDGET_ABSLISTVIEWSAVEDSTATE_H__
 
 #include "view/ViewBaseSavedState.h"
 #include <ext/frameworkext.h>
@@ -52,4 +52,4 @@ protected:
 }// namespace Widget
 }// namespace Droid
 }// namespace Elastos
-#endif //__ABSLISTVIEWSAVEDSTATE_H__
+#endif //__ELASTOS_DROID_WIDGET_ABSLISTVIEWSAVEDSTATE_H__

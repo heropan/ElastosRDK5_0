@@ -1,6 +1,6 @@
 
-#ifndef __CBROWSER_H__
-#define __CBROWSER_H__
+#ifndef __ELASTOS_DROID_PROVIDER_CBROWSER_H__
+#define __ELASTOS_DROID_PROVIDER_CBROWSER_H__
 
 #include "_CBrowser.h"
 
@@ -253,4 +253,4 @@ private:
 }
 }
 
-#endif //__CBROWSER_H__
+#endif //__ELASTOS_DROID_PROVIDER_CBROWSER_H__

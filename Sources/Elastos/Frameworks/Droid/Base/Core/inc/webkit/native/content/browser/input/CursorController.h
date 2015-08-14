@@ -1,6 +1,6 @@
 
-#ifndef __CURSORCONTROLLER_H__
-#define __CURSORCONTROLLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CURSORCONTROLLER_H__
+#define __ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CURSORCONTROLLER_H__
 
 // import android.view.ViewTreeObserver;
 
@@ -58,4 +58,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__CURSORCONTROLLER_H__
+#endif//__ELASTOS_DROID_WEBKIT_CONTENT_BROWSER_INPUT_CURSORCONTROLLER_H__

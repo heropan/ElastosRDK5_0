@@ -1,6 +1,6 @@
 
-#ifndef __TEMPORARYBUFFER_H__
-#define __TEMPORARYBUFFER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_TEMPORARYBUFFER_H__
+#define __ELASTOS_DROID_GRAPHICS_TEMPORARYBUFFER_H__
 
 #include "Elastos.Droid.Core_server.h"
 

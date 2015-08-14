@@ -1,6 +1,6 @@
 
-#ifndef __CPATHPERMISSION_H__
-#define __CPATHPERMISSION_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CPATHPERMISSION_H__
+#define __ELASTOS_DROID_CONTENT_PM_CPATHPERMISSION_H__
 
 #include "_CPathPermission.h"
 #include "os/PatternMatcher.h"
@@ -60,4 +60,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CPATHPERMISSION_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CPATHPERMISSION_H__

@@ -1,6 +1,6 @@
 
-#ifndef __BASECHROMIUMAPPLICATION_H__
-#define __BASECHROMIUMAPPLICATION_H__
+#ifndef __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
+#define __ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__
 
 // import android.app.Activity;
 // import android.app.Application;
@@ -122,4 +122,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__BASECHROMIUMAPPLICATION_H__
+#endif//__ELASTOS_DROID_WEBKIT_BASE_BASECHROMIUMAPPLICATION_H__

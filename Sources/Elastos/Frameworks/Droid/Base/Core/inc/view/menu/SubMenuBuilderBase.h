@@ -1,6 +1,6 @@
 
-#ifndef __SUBMENUBUILDERBASE_H__
-#define __SUBMENUBUILDERBASE_H__
+#ifndef __ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__
+#define __ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__
 
 #include "ext/frameworkext.h"
 #include "view/menu/MenuBuilderBase.h"
@@ -103,4 +103,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__SUBMENUBUILDERBASE_H__
+#endif  //__ELASTOS_DROID_VIEW_MENU_SUBMENUBUILDERBASE_H__

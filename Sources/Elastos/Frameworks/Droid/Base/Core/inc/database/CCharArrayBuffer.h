@@ -1,5 +1,5 @@
-#ifndef __CCHARARRAYBUFFER_H__
-#define __CCHARARRAYBUFFER_H__
+#ifndef __ELASTOS_DROID_DATABASE_CCHARARRAYBUFFER_H__
+#define __ELASTOS_DROID_DATABASE_CCHARARRAYBUFFER_H__
 
 #include "_CCharArrayBuffer.h"
 #include "database/CharArrayBuffer.h"
@@ -37,4 +37,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif // __CCHARARRAYBUFFER_H__
+#endif // __ELASTOS_DROID_DATABASE_CCHARARRAYBUFFER_H__

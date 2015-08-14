@@ -1,5 +1,5 @@
-#ifndef __DropZone_H_
-#define __DropZone_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_DropZone_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_DropZone_H__
 
 #include "view/View.h"
 #include "animation/AnimatorListenerAdapter.h"
@@ -64,4 +64,4 @@ protected:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__DropZone_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_DropZone_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CSTACKVIEW_H__
-#define __CSTACKVIEW_H__
+#ifndef __ELASTOS_DROID_WIDGET_CSTACKVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CSTACKVIEW_H__
 
 #include "_CStackView.h"
 #include "widget/StackView.h"
@@ -98,4 +98,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CSTACKVIEW_H__
+#endif //__ELASTOS_DROID_WIDGET_CSTACKVIEW_H__

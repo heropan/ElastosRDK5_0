@@ -1,6 +1,6 @@
 
-#ifndef __CALLCAPSTRANSFORMATIONMETHOD_H__
-#define __CALLCAPSTRANSFORMATIONMETHOD_H__
+#ifndef __ELASTOS_DROID_TEXT_METHOD_CALLCAPSTRANSFORMATIONMETHOD_H__
+#define __ELASTOS_DROID_TEXT_METHOD_CALLCAPSTRANSFORMATIONMETHOD_H__
 
 #include "_CAllCapsTransformationMethod.h"
 #include "text/method/AllCapsTransformationMethod.h"
@@ -38,4 +38,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CALLCAPSTRANSFORMATIONMETHOD_H__
+#endif // __ELASTOS_DROID_TEXT_METHOD_CALLCAPSTRANSFORMATIONMETHOD_H__

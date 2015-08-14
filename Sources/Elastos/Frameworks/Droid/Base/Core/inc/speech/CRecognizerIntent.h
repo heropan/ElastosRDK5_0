@@ -1,6 +1,6 @@
 
-#ifndef __CRECOGNIZERINTENT_H__
-#define __CRECOGNIZERINTENT_H__
+#ifndef __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
+#define __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
 
 #include "_CRecognizerIntent.h"
 
@@ -28,4 +28,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif // __CRECOGNIZERINTENT_H__
+#endif // __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__

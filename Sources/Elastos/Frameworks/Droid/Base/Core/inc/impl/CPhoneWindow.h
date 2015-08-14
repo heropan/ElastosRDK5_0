@@ -1,6 +1,6 @@
 
-#ifndef __CPHONEWINDOW_H__
-#define __CPHONEWINDOW_H__
+#ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__
+#define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__
 
 #include "_CPhoneWindow.h"
 #include "view/Window.h"
@@ -1459,4 +1459,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CPHONEWINDOW_H__
+#endif // __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__

@@ -1,5 +1,5 @@
-#ifndef __BulletSpan_H__
-#define __BulletSpan_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_BulletSpan_H__
+#define __ELASTOS_DROID_TEXT_STYLE_BulletSpan_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -82,4 +82,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __BulletSpan_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_BulletSpan_H__

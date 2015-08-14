@@ -1,6 +1,6 @@
 
-#ifndef __DRAWABLEHOLDER_H__
-#define __DRAWABLEHOLDER_H__
+#ifndef __ELASTOS_DROID_WIDGET_INTERNAL_DRAWABLEHOLDER_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_DRAWABLEHOLDER_H__
 
 #include <ext/frameworkext.h>
 #include <elastos/core/Math.h>

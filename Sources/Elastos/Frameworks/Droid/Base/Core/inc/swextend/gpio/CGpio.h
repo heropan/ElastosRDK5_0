@@ -1,6 +1,6 @@
 
-#ifndef __CGPIO_H__
-#define __CGPIO_H__
+#ifndef __ELASTOS_DROID_SWEXTEND_CGPIO_H__
+#define __ELASTOS_DROID_SWEXTEND_CGPIO_H__
 
 #include "_CGpio.h"
 #include "ext/frameworkext.h"
@@ -98,4 +98,4 @@ private:
 } // namespace Droid
 } // namespace Swextend
 
-#endif // __CGPIO_H__
+#endif // __ELASTOS_DROID_SWEXTEND_CGPIO_H__

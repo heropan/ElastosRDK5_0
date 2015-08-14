@@ -1,5 +1,5 @@
-#ifndef __CFASTXMLSERIALIZER_H__
-#define __CFASTXMLSERIALIZER_H__
+#ifndef __ELASTOS_DROID_UTILITY_CFASTXMLSERIALIZER_H__
+#define __ELASTOS_DROID_UTILITY_CFASTXMLSERIALIZER_H__
 
 #include "_CFastXmlSerializer.h"
 #include <Elastos.CoreLibrary.h>
@@ -156,4 +156,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CFASTXMLSERIALIZER_H__
+#endif //__ELASTOS_DROID_UTILITY_CFASTXMLSERIALIZER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __CPERIODICSYNC_H__
-#define __CPERIODICSYNC_H__
+#ifndef __ELASTOS_DROID_CONTENT_CPERIODICSYNC_H__
+#define __ELASTOS_DROID_CONTENT_CPERIODICSYNC_H__
 
 #include "_CPeriodicSync.h"
 
@@ -72,4 +72,4 @@ private:
 }
 }
 
-#endif // __CPERIODICSYNC_H__
+#endif // __ELASTOS_DROID_CONTENT_CPERIODICSYNC_H__

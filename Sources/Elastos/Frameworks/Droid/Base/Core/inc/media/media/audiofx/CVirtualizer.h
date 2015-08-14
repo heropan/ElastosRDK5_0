@@ -1,5 +1,5 @@
-#ifndef __CVIRTUALIZER_H__
-#define __CVIRTUALIZER_H__
+#ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZER_H__
+#define __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZER_H__
 
 #include "_CVirtualizer.h"
 #include "ext/frameworkext.h"
@@ -179,4 +179,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CVIRTUALIZER_H__
+#endif //__ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZER_H__

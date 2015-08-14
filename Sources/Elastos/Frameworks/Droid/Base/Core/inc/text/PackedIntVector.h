@@ -1,6 +1,6 @@
 
-#ifndef __PACKEDINTVECTOR_H__
-#define __PACKEDINTVECTOR_H__
+#ifndef __ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__
+#define __ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__
 
 #include "Elastos.Droid.Core_server.h"
 
@@ -174,4 +174,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__PACKEDINTVECTOR_H__
+#endif //__ELASTOS_DROID_TEXT_PACKEDINTVECTOR_H__

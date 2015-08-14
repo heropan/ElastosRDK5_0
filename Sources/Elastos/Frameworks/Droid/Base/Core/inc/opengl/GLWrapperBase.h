@@ -1,5 +1,5 @@
-#ifndef __GLWRAPPERBASE_H__
-#define __GLWRAPPERBASE_H__
+#ifndef __ELASTOS_DROID_OPENGL_GLWRAPPERBASE_H__
+#define __ELASTOS_DROID_OPENGL_GLWRAPPERBASE_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"

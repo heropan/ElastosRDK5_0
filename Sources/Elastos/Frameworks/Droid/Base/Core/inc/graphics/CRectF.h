@@ -1,6 +1,6 @@
 
-#ifndef __CRECTF_H__
-#define __CRECTF_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_CRECTF_H__
+#define __ELASTOS_DROID_GRAPHICS_CRECTF_H__
 
 #include "_CRectF.h"
 
@@ -405,4 +405,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__CRECTF_H__
+#endif //__ELASTOS_DROID_GRAPHICS_CRECTF_H__

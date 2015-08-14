@@ -1,6 +1,6 @@
 
-#ifndef __CPROXYPROPERTIES_H__
-#define __CPROXYPROPERTIES_H__
+#ifndef __ELASTOS_DROID_NET_CPROXYPROPERTIES_H__
+#define __ELASTOS_DROID_NET_CPROXYPROPERTIES_H__
 
 #include "_CProxyProperties.h"
 #include <elastos/core/StringBuffer.h>
@@ -93,4 +93,4 @@ private:
 } //namespace Droid
 } //namespace Elastos
 
-#endif // __CPROXYPROPERTIES_H__
+#endif // __ELASTOS_DROID_NET_CPROXYPROPERTIES_H__

@@ -1,6 +1,6 @@
 
-#ifndef __RESOLVERACTIVITY_H__
-#define __RESOLVERACTIVITY_H__
+#ifndef __ELASTOS_DROID_INTERNAL_APP_RESOLVERACTIVITY_H__
+#define __ELASTOS_DROID_INTERNAL_APP_RESOLVERACTIVITY_H__
 
 #include "app/AlertActivity.h"
 #include "content/PackageMonitor.h"
@@ -248,4 +248,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__RESOLVERACTIVITY_H__
+#endif //__ELASTOS_DROID_INTERNAL_APP_RESOLVERACTIVITY_H__

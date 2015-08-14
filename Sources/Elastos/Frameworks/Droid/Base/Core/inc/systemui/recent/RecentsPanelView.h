@@ -1,5 +1,5 @@
-#ifndef __RECENTSPANELVIEW_H_
-#define __RECENTSPANELVIEW_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSPANELVIEW_H__
+#define __ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSPANELVIEW_H__
 
 #include "widget/FrameLayout.h"
 #include "widget/BaseAdapter.h"
@@ -384,4 +384,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__RECENTSPANELVIEW_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_RECENT_RECENTSPANELVIEW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __HTTPAUTHHANDLER_H__
-#define __HTTPAUTHHANDLER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_HTTPAUTHHANDLER_H__
+#define __ELASTOS_DROID_WEBKIT_HTTPAUTHHANDLER_H__
 
 #include "ext/frameworkext.h"
 #include "os/Handler.h"
@@ -66,4 +66,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__HTTPAUTHHANDLER_H__
+#endif //__ELASTOS_DROID_WEBKIT_HTTPAUTHHANDLER_H__

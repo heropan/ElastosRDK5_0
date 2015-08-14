@@ -1,6 +1,6 @@
 
-#ifndef __CDRMRIGHTSMANAGER_H__
-#define __CDRMRIGHTSMANAGER_H__
+#ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTSMANAGER_H__
+#define __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTSMANAGER_H__
 
 #include "_CDrmRightsManager.h"
 #include <Elastos.CoreLibrary.h>
@@ -138,4 +138,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CDRMRIGHTSMANAGER_H__
+#endif // __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTSMANAGER_H__

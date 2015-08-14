@@ -1,6 +1,6 @@
 
-#ifndef __GEOLOCATIONSERVICE_H__
-#define __GEOLOCATIONSERVICE_H__
+#ifndef __ELASTOS_DROID_WEBKIT_GEOLOCATIONSERVICE_H__
+#define __ELASTOS_DROID_WEBKIT_GEOLOCATIONSERVICE_H__
 
 #include "ext/frameworkext.h"
 
@@ -164,4 +164,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GEOLOCATIONSERVICE_H__
+#endif //__ELASTOS_DROID_WEBKIT_GEOLOCATIONSERVICE_H__

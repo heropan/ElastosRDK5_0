@@ -1,5 +1,5 @@
-#ifndef __HH_INTENTFILTER_H
-#define __HH_INTENTFILTER_H
+#ifndef __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__
+#define __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -609,4 +609,4 @@ protected:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __HH_INTENTFILTER_H
+#endif // __ELASTOS_DROID_CONTENT_HH_INTENTFILTER_H__

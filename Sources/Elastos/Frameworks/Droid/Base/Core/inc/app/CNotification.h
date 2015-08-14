@@ -1,6 +1,6 @@
 
-#ifndef __CNOTIFICATION_H__
-#define __CNOTIFICATION_H__
+#ifndef __ELASTOS_DROID_APP_CNOTIFICATION_H__
+#define __ELASTOS_DROID_APP_CNOTIFICATION_H__
 
 #include "_CNotification.h"
 #include "ext/frameworkext.h"
@@ -400,4 +400,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CNOTIFICATION_H__
+#endif //__ELASTOS_DROID_APP_CNOTIFICATION_H__

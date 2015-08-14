@@ -1,5 +1,5 @@
-#ifndef __CTICKERHELPER_H_
-#define __CTICKERHELPER_H_
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERHELPER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERHELPER_H__
 
 #include "_CTickerHelper.h"
 
@@ -21,4 +21,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CTICKERHELPER_H_
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERHELPER_H__

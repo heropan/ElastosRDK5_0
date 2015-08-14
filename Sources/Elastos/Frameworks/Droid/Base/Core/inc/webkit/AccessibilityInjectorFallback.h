@@ -1,6 +1,6 @@
 
-#ifndef __ACCESSIBILITYINJECTORFALLBACK_H__
-#define __ACCESSIBILITYINJECTORFALLBACK_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ACCESSIBILITYINJECTORFALLBACK_H__
+#define __ELASTOS_DROID_WEBKIT_ACCESSIBILITYINJECTORFALLBACK_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -322,4 +322,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ACCESSIBILITYINJECTORFALLBACK_H__
+#endif //__ELASTOS_DROID_WEBKIT_ACCESSIBILITYINJECTORFALLBACK_H__

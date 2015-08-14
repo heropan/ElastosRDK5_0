@@ -1,5 +1,5 @@
-#ifndef __CIMAGESWITCHER_H_
-#define __CIMAGESWITCHER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CIMAGESWITCHER_H__
+#define __ELASTOS_DROID_WIDGET_CIMAGESWITCHER_H__
 
 #include "_CImageSwitcher.h"
 #include "widget/ImageSwitcher.h"
@@ -93,4 +93,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CIMAGESWITCHER_H_
+#endif //__ELASTOS_DROID_WIDGET_CIMAGESWITCHER_H__

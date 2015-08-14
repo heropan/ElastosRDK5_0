@@ -1,6 +1,6 @@
 
-#ifndef __CTABWIDGET_H_
-#define __CTABWIDGET_H_
+#ifndef __ELASTOS_DROID_WIDGET_CTABWIDGET_H__
+#define __ELASTOS_DROID_WIDGET_CTABWIDGET_H__
 
 #include "_CTabWidget.h"
 
@@ -182,4 +182,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTABWIDGET_H_
+#endif //__ELASTOS_DROID_WIDGET_CTABWIDGET_H__

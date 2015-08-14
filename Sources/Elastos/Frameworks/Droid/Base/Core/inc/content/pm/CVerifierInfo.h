@@ -1,6 +1,6 @@
 
-#ifndef __CVERIFIERINFO_H__
-#define __CVERIFIERINFO_H__
+#ifndef __ELASTOS_DROID_CONTENT_PM_CVERIFIERINFO_H__
+#define __ELASTOS_DROID_CONTENT_PM_CVERIFIERINFO_H__
 
 #include "_CVerifierInfo.h"
 
@@ -71,4 +71,4 @@ public:
 }
 }
 
-#endif // __CVERIFIERINFO_H__
+#endif // __ELASTOS_DROID_CONTENT_PM_CVERIFIERINFO_H__

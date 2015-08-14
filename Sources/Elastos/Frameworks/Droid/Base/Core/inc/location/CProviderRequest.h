@@ -1,6 +1,6 @@
 
-#ifndef __PROVIDERREQUEST_H__
-#define __PROVIDERREQUEST_H__
+#ifndef __ELASTOS_DROID_LOCATION_PROVIDERREQUEST_H__
+#define __ELASTOS_DROID_LOCATION_PROVIDERREQUEST_H__
 
 #include "ext/frameworkext.h"
 #include "_CProviderRequest.h"
@@ -73,4 +73,4 @@ public:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__PROVIDERREQUEST_H__
+#endif //__ELASTOS_DROID_LOCATION_PROVIDERREQUEST_H__

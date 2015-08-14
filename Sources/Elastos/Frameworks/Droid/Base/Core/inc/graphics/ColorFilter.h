@@ -1,5 +1,5 @@
-#ifndef __COLORFILTER_H__
-#define __COLORFILTER_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_COLORFILTER_H__
+#define __ELASTOS_DROID_GRAPHICS_COLORFILTER_H__
 
 #include <elastos.h>
 
@@ -35,4 +35,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__COLORFILTER_H__
+#endif //__ELASTOS_DROID_GRAPHICS_COLORFILTER_H__

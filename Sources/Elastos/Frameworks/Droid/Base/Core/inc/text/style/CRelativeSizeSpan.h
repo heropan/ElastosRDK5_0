@@ -1,6 +1,6 @@
 
-#ifndef __CRELATIVESIZESPAN_H__
-#define __CRELATIVESIZESPAN_H__
+#ifndef __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPAN_H__
+#define __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPAN_H__
 
 #include "_CRelativeSizeSpan.h"
 #include "text/style/RelativeSizeSpan.h"
@@ -41,4 +41,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CRELATIVESIZESPAN_H__
+#endif // __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPAN_H__

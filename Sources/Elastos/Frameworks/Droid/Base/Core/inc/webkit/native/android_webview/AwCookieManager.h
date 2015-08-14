@@ -1,6 +1,6 @@
 
-#ifndef __AWCOOKIEMANAGER_H__
-#define __AWCOOKIEMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCOOKIEMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCOOKIEMANAGER_H__
 
 // import android.os.Handler;
 // import android.os.Looper;
@@ -223,4 +223,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif//__AWCOOKIEMANAGER_H__
+#endif//__ELASTOS_DROID_WEBKIT_ANDROIDWEBVIEW_AWCOOKIEMANAGER_H__

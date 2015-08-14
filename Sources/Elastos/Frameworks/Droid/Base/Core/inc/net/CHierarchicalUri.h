@@ -1,6 +1,6 @@
 
-#ifndef __CHIERARCHICALURI_H__
-#define __CHIERARCHICALURI_H__
+#ifndef __ELASTOS_DROID_NET_CHIERARCHICALURI_H__
+#define __ELASTOS_DROID_NET_CHIERARCHICALURI_H__
 
 #include "_CHierarchicalUri.h"
 #include "net/Uri.h"
@@ -144,4 +144,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CHIERARCHICALURI_H__
+#endif // __ELASTOS_DROID_NET_CHIERARCHICALURI_H__

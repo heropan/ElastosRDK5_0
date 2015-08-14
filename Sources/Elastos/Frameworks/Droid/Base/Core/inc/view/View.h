@@ -1,6 +1,6 @@
 
-#ifndef __View_h__
-#define __View_h__
+#ifndef __ELASTOS_DROID_VIEW_View_H__
+#define __ELASTOS_DROID_VIEW_View_H__
 
 #include "ext/frameworkext.h"
 #include "graphics/CRect.h"
@@ -62,11 +62,9 @@ namespace View {
 
 extern "C" const InterfaceID EIID_View;
 
-#ifndef VIEW_PROBE
 #define VIEW_PROBE(expr) reinterpret_cast<View*>((expr)->Probe(EIID_View))
 #endif
 
-#ifndef IVIEW_PROBE
 #define IVIEW_PROBE(expr) ((IView*)(expr)->Probe(EIID_IView))
 #endif
 
@@ -5454,4 +5452,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__View_h__
+#endif //__ELASTOS_DROID_VIEW_View_H__

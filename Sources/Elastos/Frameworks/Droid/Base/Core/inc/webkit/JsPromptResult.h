@@ -1,6 +1,6 @@
 
-#ifndef __JSPROMPTRESULT_H__
-#define __JSPROMPTRESULT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_JSPROMPTRESULT_H__
+#define __ELASTOS_DROID_WEBKIT_JSPROMPTRESULT_H__
 
 #include "webkit/JsResult.h"
 
@@ -56,4 +56,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__JSPROMPTRESULT_H__
+#endif //__ELASTOS_DROID_WEBKIT_JSPROMPTRESULT_H__

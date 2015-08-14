@@ -1,5 +1,5 @@
-#ifndef __CGRIDVIEW_H_
-#define __CGRIDVIEW_H_
+#ifndef __ELASTOS_DROID_WIDGET_CGRIDVIEW_H__
+#define __ELASTOS_DROID_WIDGET_CGRIDVIEW_H__
 
 #include "_CGridView.h"
 #include "widget/GridView.h"
@@ -95,4 +95,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CGRIDVIEW_H_
+#endif //__ELASTOS_DROID_WIDGET_CGRIDVIEW_H__

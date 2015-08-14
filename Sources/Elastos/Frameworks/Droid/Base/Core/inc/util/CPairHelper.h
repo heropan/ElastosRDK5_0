@@ -1,6 +1,6 @@
 
-#ifndef __CPAIRHELPER_H__
-#define __CPAIRHELPER_H__
+#ifndef __ELASTOS_DROID_UTILITY_CPAIRHELPER_H__
+#define __ELASTOS_DROID_UTILITY_CPAIRHELPER_H__
 
 #include "_CPairHelper.h"
 
@@ -21,4 +21,4 @@ public:
 }
 }
 
-#endif // __CPAIRHELPER_H__
+#endif // __ELASTOS_DROID_UTILITY_CPAIRHELPER_H__

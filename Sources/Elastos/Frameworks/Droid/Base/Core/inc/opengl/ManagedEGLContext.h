@@ -1,5 +1,5 @@
-#ifndef __MANAGEDEGLCONTEXT_H__
-#define __MANAGEDEGLCONTEXT_H__
+#ifndef __ELASTOS_DROID_OPENGL_MANAGEDEGLCONTEXT_H__
+#define __ELASTOS_DROID_OPENGL_MANAGEDEGLCONTEXT_H__
 
 #include "elastos/Mutex.h"
 #include "Elastos.Droid.Core_server.h"
@@ -46,4 +46,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__MANAGEDEGLCONTEXT_H__
+#endif //__ELASTOS_DROID_OPENGL_MANAGEDEGLCONTEXT_H__

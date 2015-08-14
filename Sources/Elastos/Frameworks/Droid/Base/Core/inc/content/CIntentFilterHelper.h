@@ -1,6 +1,6 @@
 
-#ifndef __CINTENTFILTERHELPER_H__
-#define __CINTENTFILTERHELPER_H__
+#ifndef __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
+#define __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
 
 #include "_CIntentFilterHelper.h"
 #include "IntentFilter.h"
@@ -38,4 +38,4 @@ private:
 }
 }
 
-#endif // __CINTENTFILTERHELPER_H__
+#endif // __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__

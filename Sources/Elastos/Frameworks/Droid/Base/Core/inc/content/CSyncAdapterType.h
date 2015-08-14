@@ -1,6 +1,6 @@
 
-#ifndef __CSYNCADAPTERTYPE_H__
-#define __CSYNCADAPTERTYPE_H__
+#ifndef __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPE_H__
+#define __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPE_H__
 
 #include "_CSyncAdapterType.h"
 
@@ -110,4 +110,4 @@ private:
 }
 }
 
-#endif // __CSYNCADAPTERTYPE_H__
+#endif // __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPE_H__

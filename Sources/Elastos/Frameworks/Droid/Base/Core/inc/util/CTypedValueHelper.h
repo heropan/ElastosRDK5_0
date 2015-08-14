@@ -1,6 +1,6 @@
 
-#ifndef __CTYPEDVALUEHELPER_H__
-#define __CTYPEDVALUEHELPER_H__
+#ifndef __ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__
+#define __ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__
 
 #include "_CTypedValueHelper.h"
 
@@ -57,4 +57,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CTYPEDVALUEHELPER_H__
+#endif //__ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__

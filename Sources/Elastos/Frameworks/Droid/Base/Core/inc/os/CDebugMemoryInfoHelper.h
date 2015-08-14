@@ -1,6 +1,6 @@
 
-#ifndef __CDEBUGMEMORYINFOHELPER_H__
-#define __CDEBUGMEMORYINFOHELPER_H__
+#ifndef __ELASTOS_DROID_OS_CDEBUGMEMORYINFOHELPER_H__
+#define __ELASTOS_DROID_OS_CDEBUGMEMORYINFOHELPER_H__
 
 #include "_CDebugMemoryInfoHelper.h"
 
@@ -22,4 +22,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CDEBUGMEMORYINFOHELPER_H__
+#endif // __ELASTOS_DROID_OS_CDEBUGMEMORYINFOHELPER_H__

@@ -1,5 +1,5 @@
-#ifndef __ACTIVITYCHOOSERMODEL_H__
-#define __ACTIVITYCHOOSERMODEL_H__
+#ifndef __ELASTOS_DROID_WIDGET_ACTIVITYCHOOSERMODEL_H__
+#define __ELASTOS_DROID_WIDGET_ACTIVITYCHOOSERMODEL_H__
 
 #include "database/DataSetObservable.h"
 #include "content/PackageMonitor.h"

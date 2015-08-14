@@ -1,5 +1,5 @@
-#ifndef __CGALLERYLAYOUTPARAMS_H_
-#define __CGALLERYLAYOUTPARAMS_H_
+#ifndef __ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__
+#define __ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__
 
 #include "_CGalleryLayoutParams.h"
 #include "widget/GalleryLayoutParams.h"
@@ -34,4 +34,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CGALLERYLAYOUTPARAMS_H_
+#endif //__ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__

@@ -1,5 +1,5 @@
-#ifndef __PHONE_TICKER_H__
-#define __PHONE_TICKER_H__
+#ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONE_TICKER_H__
+#define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONE_TICKER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -131,4 +131,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__PHONE_TICKER_H__
+#endif //__ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_PHONE_TICKER_H__

@@ -1,6 +1,6 @@
 
-#ifndef __ALPHABETINDEXER_H__
-#define __ALPHABETINDEXER_H__
+#ifndef __ELASTOS_DROID_WIDGET_ALPHABETINDEXER_H__
+#define __ELASTOS_DROID_WIDGET_ALPHABETINDEXER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>

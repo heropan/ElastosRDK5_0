@@ -1,5 +1,5 @@
-#ifndef __INSTANCELEARNER_H__
-#define __INSTANCELEARNER_H__
+#ifndef __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
+#define __ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__
 
 #include "ext/frameworkext.h"
 #include "gesture/Learner.h"
@@ -45,4 +45,4 @@ private:
 }//namespace Droid
 }//namespace Elastos
 
-#endif //__INSTANCELEARNER_H__
+#endif //__ELASTOS_DROID_GESTURE_INSTANCELEARNER_H__

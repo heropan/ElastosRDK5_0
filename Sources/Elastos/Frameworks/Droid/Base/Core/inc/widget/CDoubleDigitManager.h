@@ -1,5 +1,5 @@
-#ifndef __CDOUBLEDIGITMANAGER_H_
-#define __CDOUBLEDIGITMANAGER_H_
+#ifndef __ELASTOS_DROID_WIDGET_CDOUBLEDIGITMANAGER_H__
+#define __ELASTOS_DROID_WIDGET_CDOUBLEDIGITMANAGER_H__
 
 #include "_CDoubleDigitManager.h"
 #include "widget/DoubleDigitManager.h"
@@ -27,4 +27,4 @@ public:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__CDOUBLEDIGITMANAGER_H_
+#endif //__ELASTOS_DROID_WIDGET_CDOUBLEDIGITMANAGER_H__

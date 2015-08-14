@@ -1,6 +1,6 @@
 
-#ifndef __CWIFIDISPLAYSTATUS_H__
-#define __CWIFIDISPLAYSTATUS_H__
+#ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAYSTATUS_H__
+#define __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAYSTATUS_H__
 
 #include "_CWifiDisplayStatus.h"
 
@@ -108,4 +108,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CWIFIDISPLAYSTATUS_H__
+#endif // __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAYSTATUS_H__

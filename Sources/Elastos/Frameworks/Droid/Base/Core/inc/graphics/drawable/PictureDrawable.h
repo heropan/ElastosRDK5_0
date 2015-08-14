@@ -1,6 +1,6 @@
 
-#ifndef __PICTUREDRAWABLE_H__
-#define __PICTUREDRAWABLE_H__
+#ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_PICTUREDRAWABLE_H__
+#define __ELASTOS_DROID_GRAPHICS_DRAWABLE_PICTUREDRAWABLE_H__
 
 #include "graphics/drawable/Drawable.h"
 #include "graphics/CPicture.h"
@@ -85,4 +85,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__PICTUREDRAWABLE_H__
+#endif //__ELASTOS_DROID_GRAPHICS_DRAWABLE_PICTUREDRAWABLE_H__

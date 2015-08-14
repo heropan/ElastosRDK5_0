@@ -1,6 +1,6 @@
 
-#ifndef __CPROCESSSTATS_H__
-#define __CPROCESSSTATS_H__
+#ifndef __ELASTOS_DROID_INTERNAL_OS_CPROCESSSTATS_H__
+#define __ELASTOS_DROID_INTERNAL_OS_CPROCESSSTATS_H__
 
 #include "_CProcessStats.h"
 #include "ext/frameworkdef.h"
@@ -333,4 +333,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CPROCESSSTATS_H__
+#endif //__ELASTOS_DROID_INTERNAL_OS_CPROCESSSTATS_H__

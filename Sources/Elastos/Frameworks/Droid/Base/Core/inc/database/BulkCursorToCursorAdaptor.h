@@ -1,5 +1,5 @@
-#ifndef __BULKCURSORTOCURSORADAPTOR_H__
-#define __BULKCURSORTOCURSORADAPTOR_H__
+#ifndef __ELASTOS_DROID_DATABASE_BULKCURSORTOCURSORADAPTOR_H__
+#define __ELASTOS_DROID_DATABASE_BULKCURSORTOCURSORADAPTOR_H__
 
 #include "ext/frameworkext.h"
 #include "database/AbstractWindowedCursor.h"
@@ -238,4 +238,4 @@ private:
 } //Droid
 } //Elastos
 
-#endif //__BULKCURSORTOCURSORADAPTOR_H__
+#endif //__ELASTOS_DROID_DATABASE_BULKCURSORTOCURSORADAPTOR_H__

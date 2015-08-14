@@ -1,6 +1,6 @@
 
-#ifndef __CCOOKIEMANAGER_H__
-#define __CCOOKIEMANAGER_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGER_H__
+#define __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGER_H__
 
 #include "_CCookieManager.h"
 #include "webkit/CookieManager.h"
@@ -55,4 +55,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CCOOKIEMANAGER_H__
+#endif // __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGER_H__

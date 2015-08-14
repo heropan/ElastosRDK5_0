@@ -1,6 +1,6 @@
 
-#ifndef __CVPNCONFIGHELPER_H__
-#define __CVPNCONFIGHELPER_H__
+#ifndef __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIGHELPER_H__
+#define __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIGHELPER_H__
 
 #include "_CVpnConfigHelper.h"
 
@@ -30,4 +30,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CVPNCONFIGHELPER_H__
+#endif //__ELASTOS_DROID_INTERNAL_NET_CVPNCONFIGHELPER_H__

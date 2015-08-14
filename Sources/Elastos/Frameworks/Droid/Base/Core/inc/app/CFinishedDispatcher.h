@@ -1,5 +1,5 @@
-#ifndef __CFINISHDISPATCHERH__
-#define __CFINISHDISPATCHERH__
+#ifndef __ELASTOS_DROID_APP_CFINISHDISPATCHER_H__
+#define __ELASTOS_DROID_APP_CFINISHDISPATCHER_H__
 
 #include "ext/frameworkext.h"
 #include "_CFinishedDispatcher.h"
@@ -56,4 +56,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CFINISHDISPATCHERH__
+#endif //__ELASTOS_DROID_APP_CFINISHDISPATCHER_H__

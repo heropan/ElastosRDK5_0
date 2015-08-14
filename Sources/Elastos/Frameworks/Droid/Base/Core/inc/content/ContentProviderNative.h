@@ -1,6 +1,6 @@
 
-#ifndef __CONTENTPROVIDERNATIVE_H__
-#define __CONTENTPROVIDERNATIVE_H__
+#ifndef __ELASTOS_DROID_CONTENT_CONTENTPROVIDERNATIVE_H__
+#define __ELASTOS_DROID_CONTENT_CONTENTPROVIDERNATIVE_H__
 
 #include <ext/frameworkext.h>
 #include "IIContentProviderConstants.h"
@@ -266,4 +266,4 @@ private:
 }
 }
 
-#endif //__CONTENTPROVIDERNATIVE_H__
+#endif //__ELASTOS_DROID_CONTENT_CONTENTPROVIDERNATIVE_H__

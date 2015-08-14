@@ -1,6 +1,6 @@
 
-#ifndef __ASYNCCHANNEL_H__
-#define __ASYNCCHANNEL_H__
+#ifndef __ELASTOS_DROID_INTERNAL_UTILITY_ASYNCCHANNEL_H__
+#define __ELASTOS_DROID_INTERNAL_UTILITY_ASYNCCHANNEL_H__
 
 #include "ext/frameworkdef.h"
 #include "os/HandlerBase.h"
@@ -556,4 +556,4 @@ private:
 } // namespace Elastos
 
 
-#endif //__ASYNCCHANNEL_H__
+#endif //__ELASTOS_DROID_INTERNAL_UTILITY_ASYNCCHANNEL_H__

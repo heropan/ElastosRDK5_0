@@ -1,6 +1,6 @@
 
-#ifndef __VIEWTREEOBSERVER_H__
-#define __VIEWTREEOBSERVER_H__
+#ifndef __ELASTOS_DROID_VIEW_VIEWTREEOBSERVER_H__
+#define __ELASTOS_DROID_VIEW_VIEWTREEOBSERVER_H__
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
@@ -433,4 +433,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__VIEWTREEOBSERVER_H__
+#endif //__ELASTOS_DROID_VIEW_VIEWTREEOBSERVER_H__

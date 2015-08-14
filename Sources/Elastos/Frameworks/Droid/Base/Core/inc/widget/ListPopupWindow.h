@@ -1,5 +1,5 @@
-#ifndef __LISTPOPUPWINDOW_H__
-#define __LISTPOPUPWINDOW_H__
+#ifndef __ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__
+#define __ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__
 
 #include "ext/frameworkext.h"
 #include "widget/ListView.h"
@@ -440,4 +440,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif //__LISTPOPUPWINDOW_H__
+#endif //__ELASTOS_DROID_WIDGET_LISTPOPUPWINDOW_H__

@@ -1,6 +1,6 @@
 
-#ifndef __GRIDLAYOUT_H__
-#define __GRIDLAYOUT_H__
+#ifndef __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
+#define __ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__
 
 #include "ext/frameworkext.h"
 #include "view/ViewGroup.h"
@@ -955,4 +955,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__GRIDLAYOUT_H__
+#endif //__ELASTOS_DROID_WIDGET_GRIDLAYOUT_H__

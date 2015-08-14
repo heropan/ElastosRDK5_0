@@ -1,5 +1,5 @@
-#ifndef __CVELOCITYTRACKERHELPER_H__
-#define __CVELOCITYTRACKERHELPER_H__
+#ifndef __ELASTOS_DROID_VIEW_CVELOCITYTRACKERHELPER_H__
+#define __ELASTOS_DROID_VIEW_CVELOCITYTRACKERHELPER_H__
 
 #include "_CVelocityTrackerHelper.h"
 
@@ -22,4 +22,4 @@ public:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__CVELOCITYTRACKERHELPER_H__
+#endif //__ELASTOS_DROID_VIEW_CVELOCITYTRACKERHELPER_H__

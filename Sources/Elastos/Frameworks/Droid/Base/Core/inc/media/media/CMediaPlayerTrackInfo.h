@@ -1,5 +1,5 @@
-#ifndef __CMEDIAPLAYERTRACKINFO_H__
-#define __CMEDIAPLAYERTRACKINFO_H__
+#ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__
+#define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__
 
 #include "_CMediaPlayerTrackInfo.h"
 
@@ -61,4 +61,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __CMEDIAPLAYERTRACKINFO_H__
+#endif // __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__

@@ -1,5 +1,5 @@
-#ifndef __LoginFilter_H__
-#define __LoginFilter_H__
+#ifndef __ELASTOS_DROID_TEXT_LoginFilter_H__
+#define __ELASTOS_DROID_TEXT_LoginFilter_H__
 
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
@@ -161,4 +161,4 @@ public:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif //__LoginFilter_H__
+#endif //__ELASTOS_DROID_TEXT_LoginFilter_H__

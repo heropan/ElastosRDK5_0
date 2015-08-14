@@ -1,6 +1,6 @@
 
-#ifndef __CROTATEANIMATION_H__
-#define __CROTATEANIMATION_H__
+#ifndef __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__
+#define __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__
 
 #include "_CRotateAnimation.h"
 #include "view/animation/RotateAnimation.h"
@@ -50,4 +50,4 @@ private:
 }   //namespace Droid
 }   //namespace Elastos
 
-#endif // __CROTATEANIMATION_H__
+#endif // __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__

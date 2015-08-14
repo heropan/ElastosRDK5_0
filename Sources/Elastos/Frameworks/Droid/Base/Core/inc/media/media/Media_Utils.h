@@ -1,6 +1,6 @@
 
-#ifndef __MEDIA_UTIL_H__
-#define __MEDIA_UTIL_H__
+#ifndef __ELASTOS_DROID_MEDIA_MEDIA_UTIL_H__
+#define __ELASTOS_DROID_MEDIA_MEDIA_UTIL_H__
 
 #include <ext/frameworkext.h>
 #include <utils/KeyedVector.h>
@@ -52,4 +52,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __MEDIA_UTIL_H__
+#endif // __ELASTOS_DROID_MEDIA_MEDIA_UTIL_H__

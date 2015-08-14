@@ -1,6 +1,6 @@
 
-#ifndef __CWEBVIEWHITTESTRESULT_H__
-#define __CWEBVIEWHITTESTRESULT_H__
+#ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWHITTESTRESULT_H__
+#define __ELASTOS_DROID_WEBKIT_CWEBVIEWHITTESTRESULT_H__
 
 #include "_CWebViewHitTestResult.h"
 #include "webkit/WebView.h"
@@ -57,4 +57,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __CWEBVIEWHITTESTRESULT_H__
+#endif // __ELASTOS_DROID_WEBKIT_CWEBVIEWHITTESTRESULT_H__
