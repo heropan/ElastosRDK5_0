@@ -968,7 +968,7 @@ ECode Cipher::GetSpi(
 // }
 
 Boolean Cipher::MatchAttribute(
-    /* [in] */ IService* service,
+    /* [in] */ IProviderService* service,
     /* [in] */ const String& attr,
     /* [in] */ const String& value)
 {

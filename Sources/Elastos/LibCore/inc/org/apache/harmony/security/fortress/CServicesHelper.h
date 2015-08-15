@@ -6,7 +6,7 @@
 
 using Elastos::Security::IProvider;
 using Elastos::Utility::IList;
-using Elastos::Security::IService;
+using Elastos::Security::IProviderService;
 
 namespace Org {
 namespace Apache {
@@ -45,10 +45,10 @@ public:
 
     CARAPI GetService(
         /* [in] */ const String& key,
-        /* [out] */ IService** service);
+        /* [out] */ IProviderService** service);
 
     CARAPI GetSecureRandomService(
-        /* [out] */ IService** service);
+        /* [out] */ IProviderService** service);
 
     CARAPI SetNeedRefresh();
 
@@ -68,7 +68,7 @@ private:
      * Save default SecureRandom service as well.
      * Avoids similar provider/services iteration in SecureRandom constructor.
      */
-    static AutoPtr<IService> sCachedSecureRandomService;
+    static AutoPtr<IProviderService> sCachedSecureRandomService;
 
     /**
      * Need refresh flag.

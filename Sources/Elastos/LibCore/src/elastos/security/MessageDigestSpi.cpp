@@ -1,49 +1,52 @@
 
 #include "MessageDigestSpi.h"
-#include <cutils/log.h>
-#include <cmdef.h>
+#include <elastos/utility/logging/Logger.h>
+
+using Elastos::IO::IBuffer;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Security {
-//5ADF9E34-6626-84B4-6EDC-C27A2FF98A96
-extern "C" const InterfaceID EIID_MessageDigestSpi =
-    { 0x5ADF9E34, 0x6626, 0x84B4, { 0x6E, 0xDC, 0xC2, 0x7A, 0x2F, 0xF9, 0x8A, 0x96 } };
 
 ECode MessageDigestSpi::EngineGetDigestLength(
-        /* [out] */ Int32* len)
+    /* [out] */ Int32* len)
 {
     VALIDATE_NOT_NULL(len)
     *len = 0;
     return NOERROR;
 }
 
-ECode MessageDigestSpi::EngineUpdateEx2(
+ECode MessageDigestSpi::EngineUpdate(
     /* [in] */ IByteBuffer* input)
 {
-    Boolean hasRemaining;
-    input->HasRemaining(&hasRemaining);
-    if (!hasRemaining) {
-            return NOERROR;
+    Boolean result;
+    IBuffer::Probe(input)->HasRemaining(&result);
+    if (!result) {
+        return NOERROR;
     }
-    AutoPtr<ArrayOf<Byte> > tmp;
-    input->HasArray(&hasRemaining);
-    Int32 offset, position, limit;
-    input->GetArrayOffset(&offset);
-    input->GetPosition(&position);
-    input->GetLimit(&limit);
-    if (hasRemaining) {
+    AutoPtr< ArrayOf<Byte> > tmp;
+    IBuffer::Probe(input)->HasArray(&result);
+    if (result) {
         input->GetArray((ArrayOf<Byte>**)&tmp);
-        EngineUpdateEx(tmp, offset+position, limit-position);
-        input->SetPosition(limit);
-    } else {
+        Int32 offset, position, limit;
+        IBuffer::Probe(input)->GetArrayOffset(&offset);
+        IBuffer::Probe(input)->GetPosition(&position);
+        IBuffer::Probe(input)->GetLimit(&limit);
+        FAIL_RETURN(EngineUpdate(tmp, offset + position, limit - position));
+        IBuffer::Probe(input)->SetPosition(limit);
+    }
+    else {
+        Int32 limit, position;
+        IBuffer::Probe(input)->GetLimit(&limit);
+        IBuffer::Probe(input)->GetPosition(&position);
         tmp = ArrayOf<Byte>::Alloc(limit - position);
-        input->GetBytes(tmp);
-        EngineUpdateEx(tmp, 0, tmp->GetLength());
+        input->Get(tmp);
+        FAIL_RETURN(EngineUpdate(tmp, 0, tmp->GetLength()));
     }
     return NOERROR;
 }
 
-ECode MessageDigestSpi::EngineDigestEx(
+ECode MessageDigestSpi::EngineDigest(
     /* [in, out] */ ArrayOf<Byte>* buf,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
@@ -54,23 +57,23 @@ ECode MessageDigestSpi::EngineDigestEx(
     EngineGetDigestLength(&length);
     if (len < length) {
         EngineReset();
-        ALOGE("The value of len parameter is less than the actual digest length");
+        Logger::E("MessageDigestSpi", "The value of len parameter is less than the actual digest length");
         return E_DIGEST_EXCEPTION;
     }
     if (offset < 0) {
         EngineReset();
-        ALOGE("offset < 0");
+        Logger::E("MessageDigestSpi", "offset < 0");
         return E_DIGEST_EXCEPTION;
     }
     if (offset + len > buf->GetLength()) {
         EngineReset();
-        ALOGE("offset + len > buf.length");
+        Logger::E("MessageDigestSpi", "offset + len > buf.length");
         return E_DIGEST_EXCEPTION;
     }
     AutoPtr<ArrayOf<Byte> > tmp;
-    EngineDigest((ArrayOf<Byte>**)&tmp);
+    FAIL_RETURN(EngineDigest((ArrayOf<Byte>**)&tmp));
     if (len < tmp->GetLength()) {
-        ALOGE("The value of len parameter is less than the actual digest length");
+        Logger::E("MessageDigestSpi", "The value of len parameter is less than the actual digest length");
         return E_DIGEST_EXCEPTION;
     }
     buf->Copy(offset, tmp, 0, tmp->GetLength());

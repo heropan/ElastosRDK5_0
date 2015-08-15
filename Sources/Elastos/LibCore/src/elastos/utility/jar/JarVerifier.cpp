@@ -63,7 +63,7 @@ ECode JarVerifier::VerifierEntry::Write(
     /* [in] */ ArrayOf<Byte>* buffer)
 {
     VALIDATE_NOT_NULL(buffer)
-    return mDigest->UpdateEx(buffer, 0, buffer->GetLength());
+    return mDigest->Update(buffer, 0, buffer->GetLength());
 }
 
 ECode JarVerifier::VerifierEntry::Write(
@@ -71,7 +71,7 @@ ECode JarVerifier::VerifierEntry::Write(
     /* in */ Int32 off,
     /* in */ Int32 nbytes)
 {
-    return mDigest->UpdateEx(buf, off, nbytes);
+    return mDigest->Update(buf, off, nbytes);
 }
 
 ECode JarVerifier::VerifierEntry::Verify()
@@ -401,10 +401,10 @@ ECode JarVerifier::Verify(
         }
 
         if (ignoreSecondEndline && (*data)[end - 1] == '\n' && (*data)[end - 2] == '\n') {
-            md->UpdateEx(data, start, end - 1 - start);
+            md->Update(data, start, end - 1 - start);
         }
         else {
-            md->UpdateEx(data, start, end - start);
+            md->Update(data, start, end - start);
         }
 
         AutoPtr<ArrayOf<Byte> > b;

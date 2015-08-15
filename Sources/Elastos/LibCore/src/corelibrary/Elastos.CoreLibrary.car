@@ -18,6 +18,7 @@ module
 
     merge("../../car/elastosx/elastosx.car");
 
+    // merge("../../car/org/apache.car");
     merge("../../car/org/w3c.car");
     merge("../../car/org/xml.car");
     merge("../../car/org/xmlpull.car");

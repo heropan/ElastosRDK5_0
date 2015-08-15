@@ -4,7 +4,7 @@
 
 #include "_CEngine.h"
 
-using Elastos::Security::IService;
+using Elastos::Security::IProviderService;
 
 namespace Org {
 namespace Apache {
@@ -21,14 +21,14 @@ private:
         ServiceCacheEntry(
             /* [in] */ String algorithm,
             /* [in] */ Int32 cacheVersion,
-            /* [in] */ IService* service);
+            /* [in] */ IProviderService* service);
     public:
         /** used to test for cache hit */
         String mAlgorithm;
         /** used to test for cache validity */
         Int32 mCacheVersion;
         /** cached result */
-        AutoPtr<IService> mService;
+        AutoPtr<IProviderService> mService;
     };
 public:
     CARAPI GetInstance(

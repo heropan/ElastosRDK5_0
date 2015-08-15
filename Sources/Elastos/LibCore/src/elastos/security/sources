@@ -1,0 +1,32 @@
+TARGET_NAME= elastos.security
+TARGET_TYPE= lib
+
+C_DEFINES += -DELASTOS_CORELIBRARY
+
+include $(MAKEDIR)/../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/security;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility/regex;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/io;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/nio;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/io/charset;
+#INCLUDES += $(MAKEDIR)/../../../inc/elastos/text;
+#INCLUDES += $(MAKEDIR)/../../../inc/libcore/io;
+#INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
+#INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
+
+#SOURCES += MessageDigestSpi.cpp
+#SOURCES += MessageDigest.cpp
+
+#LIBRARIES += concurrent/concurrent.lib
+#LIBRARIES += jar/jar.lib
+#LIBRARIES += logging/logging.lib
+#LIBRARIES += prefs/prefs.lib
+#LIBRARIES += regex/regex.lib
+#LIBRARIES += zip/zip.lib

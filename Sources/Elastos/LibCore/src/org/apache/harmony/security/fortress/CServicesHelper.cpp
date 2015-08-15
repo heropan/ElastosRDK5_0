@@ -16,7 +16,7 @@ AutoPtr<IMap> CServicesHelper::sServices;// = new HashMap<String, Provider.Servi
 * Save default SecureRandom service as well.
 * Avoids similar provider/services iteration in SecureRandom constructor.
  */
-AutoPtr<IService> CServicesHelper::sCachedSecureRandomService;
+AutoPtr<IProviderService> CServicesHelper::sCachedSecureRandomService;
 
 /**
 * Need refresh flag.
@@ -170,7 +170,7 @@ ECode CServicesHelper::InitServiceInfo(
     while(hasNext) {
         AutoPtr<IInterface> next;
         it->GetNext((IInterface**)&next);
-        AutoPtr<IService> service = IService::Probe(next);
+        AutoPtr<IProviderService> service = IProviderService::Probe(next);
         String type;
         service->GetType(&type);
         if (sCachedSecureRandomService == NULL && type->Equals("SecureRandom")) {
@@ -221,7 +221,7 @@ ECode CServicesHelper::IsEmpty(
 
 ECode CServicesHelper::GetService(
     /* [in] */ const String& key,
-    /* [out] */ IService** service)
+    /* [out] */ IProviderService** service)
 {
     AutoLock lock(mLock);
     VALIDATE_NOT_NULL(service)
@@ -229,13 +229,13 @@ ECode CServicesHelper::GetService(
     CString::New(key, (ICharSequence**)&cs);
     AutoPtr<IInterface> ret;
     sServices->Get(cs.Get(), (IInterface**)&ret);
-    *service = IService::Probe(ret);
+    *service = IProviderService::Probe(ret);
     REFCOUNT_ADD(*service)
     return NOERROR;
 }
 
 ECode CServicesHelper::GetSecureRandomService(
-    /* [out] */ IService** service)
+    /* [out] */ IProviderService** service)
 {
     AutoLock lock(mLock);
     VALIDATE_NOT_NULL(service)

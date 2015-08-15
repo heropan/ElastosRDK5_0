@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Security.IService;
+    using interface Elastos.Security.IProviderService;
     using interface Elastos.Security.IProvider;
     using interface Elastos.Utility.IList;
 
@@ -73,13 +73,13 @@ module
          */
         GetService(
             [in] String key,
-            [out] IService** service);
+            [out] IProviderService** service);
 
         /**
          * Returns the default SecureRandom service description.
          */
         GetSecureRandomService(
-            [out] IService** service);
+            [out] IProviderService** service);
 
         /**
          * In addition to being used here when the list of providers

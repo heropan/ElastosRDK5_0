@@ -2,9 +2,6 @@
 #ifndef __ELASTOS_SECURITY_MESSAGEDIGEST_H__
 #define __ELASTOS_SECURITY_MESSAGEDIGEST_H__
 
-
-
-#include <cmdef.h>
 #include "MessageDigestMacro.h"
 #include "MessageDigestSpi.h"
 
@@ -15,7 +12,9 @@ namespace Elastos {
 namespace Security {
 
 class MessageDigest
-    : public MessageDigestSpi {
+    : public MessageDigestSpi
+    , public IMessageDigest
+{
 public:
     static CARAPI GetInstance(
         /* [in] */ const String& algorithm,
@@ -80,6 +79,7 @@ public:
 protected:
     virtual CARAPI_(PInterface) Probe(
         /* [in] */ REIID riid);
+
 protected:
     /**
      * Constructs a new instance of {@code MessageDigest} with the name of
@@ -90,7 +90,6 @@ protected:
      */
     MessageDigest(
         /* [in] */ const String& algorithm);
-
 
 protected:
     //Todo later, related to apache...

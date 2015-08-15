@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastos.Security.IService;
+    using interface Elastos.Security.IProviderService;
     using interface Elastos.Utility.IList;
     using interface Elastos.Security.IProvider;
 
@@ -24,7 +24,7 @@ module
          * @return
          */
         GetAliases(
-            [in] IService* s,
+            [in] IProviderService* s,
             [out] IList** aliases);
 
         /**
@@ -36,7 +36,7 @@ module
         GetService(
             [in] IProvider* p,
             [in] String type,
-            [out] IService** service);
+            [out] IProviderService** service);
     }
 
     } // namespace Fortress

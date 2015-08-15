@@ -82,7 +82,7 @@ public:
     CARAPI GetService(
         /* [in] */ const String& type,
         /* [in] */ const String& algorithm,
-        /* [out] */ Elastos::Security::IService ** ppService);
+        /* [out] */ Elastos::Security::IProviderService ** ppService);
 
     CARAPI GetServices(
         /* [out] */ Elastos::Utility::ISet ** ppServices);

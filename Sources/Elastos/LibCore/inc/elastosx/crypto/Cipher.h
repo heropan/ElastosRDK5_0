@@ -7,7 +7,7 @@
 using Elastos::IO::IByteBuffer;
 using Elastos::Security::IKey;
 using Elastos::Security::IProvider;
-using Elastos::Security::IService;
+using Elastos::Security::IProviderService;
 using Elastos::Security::ISecureRandom;
 using Elastos::Security::IAlgorithmParameters;
 using Elastos::Security::Cert::ICertificate;
@@ -1055,14 +1055,14 @@ private:
 //        /* [in] */ IKey* key,
 //        /* [in] */ ArrayOf<String> * transformParts,
 //        /* [in] */ NeedToSet type,
-//        /* [in] */ IService * service);
+//        /* [in] */ IProviderService * service);
 
     /**
      * If the attribute listed exists, check that it matches the regular
      * expression.
      */
     static CARAPI_(Boolean) MatchAttribute(
-        /* [in] */ IService* service,
+        /* [in] */ IProviderService* service,
         /* [in] */ const String& attr,
         /* [in] */ const String& value);
 

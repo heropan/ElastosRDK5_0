@@ -7,7 +7,7 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
-using Elastos::Security::IService;
+using Elastos::Security::IProviderService;
 using Elastos::Security::IProvider;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IMapEntry;
@@ -471,7 +471,7 @@ ECode CSecurity::GetAlgorithms(
         while ((it->HasNext(&next), next)) {
             AutoPtr<IInterface> elm;
             it->GetNext((IInterface**)&elm);
-            AutoPtr<IService> service = IService::Probe(elm);
+            AutoPtr<IProviderService> service = IProviderService::Probe(elm);
             String type, algorithm;
             if ((service->GetType(&type), type).EqualsIgnoreCase(serviceName)) {
                 service->GetAlgorithm(&algorithm);

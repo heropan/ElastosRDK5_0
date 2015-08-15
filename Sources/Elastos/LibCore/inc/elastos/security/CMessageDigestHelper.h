@@ -4,8 +4,6 @@
 
 #include "_CMessageDigestHelper.h"
 
-
-
 namespace Elastos {
 namespace Security {
 

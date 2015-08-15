@@ -5,7 +5,6 @@ module
     merge("security/IPublicKey.car");
     merge("security/IPrivateKey.car");
     merge("security/IPrincipal.car");
-    merge("security/IMessageDigestSpi.car");
 
     merge("security/acl/Exceptions.car");
     merge("security/acl/IOwner.car");

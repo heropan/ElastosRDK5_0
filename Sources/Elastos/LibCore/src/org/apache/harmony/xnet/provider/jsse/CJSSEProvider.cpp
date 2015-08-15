@@ -149,7 +149,7 @@ ECode CJSSEProvider::GetInfo(
 ECode CJSSEProvider::GetService(
     /* [in] */ const String& type,
     /* [in] */ const String& algorithm,
-    /* [out] */ Elastos::Security::IService ** ppService)
+    /* [out] */ Elastos::Security::IProviderService ** ppService)
 {
     // TODO: Add your code here
     return E_NOT_IMPLEMENTED;

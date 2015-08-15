@@ -10,7 +10,7 @@ namespace Fortress {
 CEngine::ServiceCacheEntry::ServiceCacheEntry(
     /* [in] */ String algorithm,
     /* [in] */ Int32 cacheVersion,
-    /* [in] */ IService* service)
+    /* [in] */ IProviderService* service)
     : mCacheVersion(0)
 {
     mAlgorithm = algorithm;
@@ -32,7 +32,7 @@ ECode CEngine::GetInstance(
     CServicesHelper::AcquireSingleton((IServicesHelper**)&helper);
     Int32 newCacheVersion;
     helper->GetCacheVersion(&newCacheVersion);
-    AutoPtr<IService> service;
+    AutoPtr<IProviderService> service;
     AutoPtr<ServiceCacheEntry> cacheEntry = mServiceCache;
     if (cacheEntry != NULL
             && cacheEntry->mAlgorithm.EqualsIgnoreCase(algorithm)
@@ -45,7 +45,7 @@ ECode CEngine::GetInstance(
             return E_NO_SUCH_ALGORITHM_EXCEPTION;
         }
         String name = mServiceName + "." + algorithm.ToUpperCase();
-        helper->GetService(name, (IService**)&service);
+        helper->GetService(name, (IProviderService**)&service);
         if (service == NULL) {
             //throw notFound(serviceName, algorithm);
             return E_NO_SUCH_ALGORITHM_EXCEPTION;
@@ -71,8 +71,8 @@ ECode CEngine::GetInstanceEx(
         //throw new NoSuchAlgorithmException("algorithm == null");
         return E_NO_SUCH_ALGORITHM_EXCEPTION;
     }
-    AutoPtr<IService> service;
-    provider->GetService(mServiceName, algorithm, (IService**)&service);
+    AutoPtr<IProviderService> service;
+    provider->GetService(mServiceName, algorithm, (IProviderService**)&service);
     if (service == NULL) {
         //throw notFound(serviceName, algorithm);
         return E_NO_SUCH_ALGORITHM_EXCEPTION;

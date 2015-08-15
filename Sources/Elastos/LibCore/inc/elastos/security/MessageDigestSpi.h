@@ -2,21 +2,22 @@
 #ifndef __ELASTOS_SECURITY_MESSAGEDIGESTSPI_H__
 #define __ELASTOS_SECURITY_MESSAGEDIGESTSPI_H__
 
-
-
-#include <cmdef.h>
+#include <coredef.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "Elastos.CoreLibrary_server.h"
+#else
+#include "Elastos.CoreLibrary.h"
+#endif
 
 using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Security {
 
-extern "C" const InterfaceID EIID_MessageDigestSpi;
-
 class MessageDigestSpi
-    : public ElRefBase {
-public:
-/**
+{
+protected:
+    /**
      * Returns the engine digest length in bytes. If the implementation does not
      * implement this function {@code 0} is returned.
      *
@@ -48,7 +49,7 @@ public:
      *             if {@code offset} or {@code len} are not valid in respect to
      *             {@code input}.
      */
-    virtual CARAPI EngineUpdateEx(
+    virtual CARAPI EngineUpdate(
         /* [in] */ ArrayOf<Byte>* input,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len) = 0;
@@ -59,7 +60,7 @@ public:
      * @param input
      *            the {@code ByteBuffer}.
      */
-    virtual CARAPI EngineUpdateEx2(
+    virtual CARAPI EngineUpdate(
         /* [in] */ IByteBuffer* input);
 
     /**
@@ -92,7 +93,7 @@ public:
      *             {@code buf}.
      * @see #engineReset()
      */
-    virtual CARAPI EngineDigestEx(
+    virtual CARAPI EngineDigest(
         /* [in, out] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
