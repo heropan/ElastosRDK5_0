@@ -5,7 +5,7 @@
 #include "COutputStreamWriter.h"
 #include "CPrintStream.h"
 #include "CCharsetHelper.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CDate.h"
 #include "CHashTable.h"
 #include "Collections.h"
@@ -19,7 +19,7 @@
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Utility::Collections;
 using Elastos::IO::IBufferedReader;
@@ -59,7 +59,7 @@ static AutoPtr<ICharSequence> StrToCS(
     /* [in] */ const String& str)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     return cs;
 }
 

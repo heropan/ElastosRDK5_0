@@ -4,9 +4,9 @@ module
     interface Elastos.Security.ICodeSigner;
     interface Elastos.Security.Cert.ICertificate;
 
-    namespace Elastos{
-    namespace Utility{
-    namespace Jar{
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
 
     /**
      * @Involve
@@ -50,7 +50,7 @@ module
             [out, callee] ArrayOf<ICodeSigner*>* codeSigner);
     }
 
-    }//Jar
-    }//Utility
-    }//Elastos
+    } //Jar
+    } //Utility
+    } //Elastos
 }

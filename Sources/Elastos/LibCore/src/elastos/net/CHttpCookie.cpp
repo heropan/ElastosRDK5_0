@@ -2,7 +2,7 @@
 #include "CHttpCookie.h"
 #include "http/CHttpDate.h"
 #include "Arrays.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Character.h"
 #include "StringUtils.h"
 #include "CSystem.h"
@@ -13,7 +13,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::CArrayList;
 using Libcore::Net::Http::CHttpDate;

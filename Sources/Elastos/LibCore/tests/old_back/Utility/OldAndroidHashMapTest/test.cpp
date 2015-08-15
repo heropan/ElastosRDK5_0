@@ -79,7 +79,7 @@ int CTest::testRemove(int argc, char* argv[])
     addItems(map);
     AutoPtr<IInterface> rmface;
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("three"), (ICharSequence**)&cs1);
+    CString::New(String("three"), (ICharSequence**)&cs1);
     PFL_EX("Remove: cs1:%p", cs1.Get())
 
     map->Remove(cs1, (IInterface**)&rmface);
@@ -107,7 +107,7 @@ int CTest::testManipulate(int argc, char* argv[])
     assert((map->Get(NULL, (IInterface**)&intface), intface) == NULL);
 
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("one"), (ICharSequence**)&cs1);
+    CString::New(String("one"), (ICharSequence**)&cs1);
     intface = NULL;
     assert((map->Get(cs1, (IInterface**)&intface), intface) == NULL);
 
@@ -132,14 +132,14 @@ int CTest::testManipulate(int argc, char* argv[])
     assert((map->Put(cs1, integer1, (IInterface**)&intface), intface) == NULL);
 
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(String("two"), (ICharSequence**)&cs2);
+    CString::New(String("two"), (ICharSequence**)&cs2);
     intface = NULL;
     AutoPtr<IInteger32> Integer2;
     CInteger32::New(2, (IInteger32**)&Integer2);
     assert((map->Put(cs2, Integer2, (IInterface**)&intface), intface) == NULL);
 
     AutoPtr<ICharSequence> cs3;
-    CStringWrapper::New(String("three"), (ICharSequence**)&cs3);
+    CString::New(String("three"), (ICharSequence**)&cs3);
 
     intface = NULL;
     AutoPtr<IInteger32> Integer3;
@@ -421,22 +421,22 @@ int CTest::testEquals(int argc, char* argv[])
     CHashMap::New((IMap**)&map3);
 
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("one"), (ICharSequence**)&cs1);
+    CString::New(String("one"), (ICharSequence**)&cs1);
 
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(String("two"), (ICharSequence**)&cs2);
+    CString::New(String("two"), (ICharSequence**)&cs2);
 
     AutoPtr<ICharSequence> cs3;
-    CStringWrapper::New(String("three"), (ICharSequence**)&cs3);
+    CString::New(String("three"), (ICharSequence**)&cs3);
 
     AutoPtr<ICharSequence> int1;
-    CStringWrapper::New(String("1"), (ICharSequence**)&int1);
+    CString::New(String("1"), (ICharSequence**)&int1);
 
     AutoPtr<ICharSequence> int2;
-    CStringWrapper::New(String("2"), (ICharSequence**)&int2);
+    CString::New(String("2"), (ICharSequence**)&int2);
 
     AutoPtr<ICharSequence> int3;
-    CStringWrapper::New(String("3"), (ICharSequence**)&int3);
+    CString::New(String("3"), (ICharSequence**)&int3);
 
     AutoPtr<IInterface> outface;
     map1->Put(cs1, int1, (IInterface**)&outface);
@@ -475,17 +475,17 @@ void CTest::addItems(IMap* map)
     CInteger32::New(FOUR, (IInteger32**)&Integer4);
 
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("one"), (ICharSequence**)&cs1);
+    CString::New(String("one"), (ICharSequence**)&cs1);
 
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(String("two"), (ICharSequence**)&cs2);
+    CString::New(String("two"), (ICharSequence**)&cs2);
 
     AutoPtr<ICharSequence> cs3;
-    CStringWrapper::New(String("three"), (ICharSequence**)&cs3);
+    CString::New(String("three"), (ICharSequence**)&cs3);
     PFL_EX("addItems: cs3:%p", cs3.Get())
 
     AutoPtr<ICharSequence> cs4;
-    CStringWrapper::New(String("four"), (ICharSequence**)&cs4);
+    CString::New(String("four"), (ICharSequence**)&cs4);
 
     AutoPtr<IInterface> outface;
     map->Put(cs1, Integer1, (IInterface**)&outface);

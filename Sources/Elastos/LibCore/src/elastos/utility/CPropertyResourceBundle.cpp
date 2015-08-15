@@ -1,10 +1,10 @@
 
 #include "CPropertyResourceBundle.h"
 #include "CProperties.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Utility {
@@ -51,7 +51,7 @@ ECode CPropertyResourceBundle::_Enumeration::GetNextElement(
         String result = mNextElement;
         mNextElement = String(NULL);
         AutoPtr<ICharSequence> sq;
-        CStringWrapper::New(result, (ICharSequence**)&sq);
+        CString::New(result, (ICharSequence**)&sq);
         *inter = sq;
         REFCOUNT_ADD(*inter)
         return NOERROR;
@@ -134,7 +134,7 @@ ECode CPropertyResourceBundle::HandleGetObject(
 {
     VALIDATE_NOT_NULL(outface)
     AutoPtr<ICharSequence> sq;
-    CStringWrapper::New(key, (ICharSequence**)&sq);
+    CString::New(key, (ICharSequence**)&sq);
     return (IDictionary::Probe(mResources))->Get(sq, outface);
 }
 

@@ -1,10 +1,10 @@
 
 #include "CStringTokenizer.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringUtils.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 
 namespace Elastos {
@@ -119,7 +119,7 @@ ECode CStringTokenizer::GetNextElement(
     String str;
     GetNextToken(&str);
     AutoPtr<ICharSequence> sq;
-    CStringWrapper::New(str, (ICharSequence**)&sq);
+    CString::New(str, (ICharSequence**)&sq);
     *inter = sq;
     REFCOUNT_ADD(*inter)
     return NOERROR;

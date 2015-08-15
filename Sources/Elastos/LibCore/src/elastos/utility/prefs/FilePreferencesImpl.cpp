@@ -3,10 +3,10 @@
 #include "CHashSet.h"
 #include "XMLParser.h"
 #include "CFile.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::CFile;
 using Elastos::IO::EIID_IFilenameFilter;
 using Elastos::Utility::CHashSet;
@@ -181,7 +181,7 @@ ECode FilePreferencesImpl::PutSpi(
     String tmp;
     mPrefs->SetProperty(name, value, &tmp);
     AutoPtr<ICharSequence> obj;
-    CStringWrapper::New(name, (ICharSequence**)&obj);
+    CString::New(name, (ICharSequence**)&obj);
     return mUpdated->Add(obj);
 }
 
@@ -201,7 +201,7 @@ ECode FilePreferencesImpl::RemoveSpi(
     /* [in] */ const String& key)
 {
     AutoPtr<ICharSequence> obj;
-    CStringWrapper::New(key, (ICharSequence**)&obj);
+    CString::New(key, (ICharSequence**)&obj);
 
     IMap::Probe(mPrefs)->Remove(obj);
     IMap::Probe(mUpdated)->Remove(obj);

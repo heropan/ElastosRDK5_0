@@ -2,7 +2,7 @@
 #include "CHttpOptions.h"
 #include <elastos/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ISet;
 using Elastos::Utility::CHashSet;
@@ -59,7 +59,7 @@ ECode CHttpOptions::GetAllowedMethods(
             String name;
             element->GetName(&name);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(name, (ICharSequence**)&cs);
+            CString::New(name, (ICharSequence**)&cs);
             col->Add(cs);
         }
     }

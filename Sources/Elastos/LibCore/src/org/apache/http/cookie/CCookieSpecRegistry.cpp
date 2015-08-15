@@ -36,7 +36,7 @@ ECode CCookieSpecRegistry::Register(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
         mRegisteredSpecs->Put(cs, factory);
     }
 }
@@ -50,7 +50,7 @@ ECode CCookieSpecRegistry::Unregister(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
         mRegisteredSpecs->Remove(cs);
     }
 }
@@ -69,7 +69,7 @@ ECode CCookieSpecRegistry::GetCookieSpec(
             return E_ILLEGAL_ARGUMENT_EXCEPTION;
         }
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
         AutoPtr<IInterface> temp;
         mRegisteredSpecs->Get(cs, (IInterface**)&temp);
         AutoPtr<ICookieSpecFactory> factory = ICookieSpecFactory::Probe(temp);

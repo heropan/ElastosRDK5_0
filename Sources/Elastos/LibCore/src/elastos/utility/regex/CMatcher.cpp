@@ -3,13 +3,13 @@
 #include "Pattern.h"
 #include "MatchResultImpl.h"
 #include "eldebugdef.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringBuilder.h"
 #include "unicode/parseerr.h"
 #include "unicode/regex.h"
 #include "AutoLock.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -234,7 +234,7 @@ ECode CMatcher::AppendEvaluated(
 ECode CMatcher::Reset()
 {
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
+    CString::New(mInput, (ICharSequence**)&charSeq);
 
     return Reset(charSeq, 0, mInput.GetLength());
 }
@@ -316,7 +316,7 @@ ECode CMatcher::Region(
     /* [in] */ Int32 end)
 {
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(mInput, (ICharSequence**)&charSeq);
+    CString::New(mInput, (ICharSequence**)&charSeq);
 
     return Reset(charSeq, start, end);
 }

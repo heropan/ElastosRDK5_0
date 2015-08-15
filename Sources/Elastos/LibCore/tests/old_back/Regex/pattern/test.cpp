@@ -22,7 +22,7 @@ int CTest::test1(int argc, char* argv[])
     printf("the match str is %s\n", (const char *) matchStr);
 
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(matchStr, (ICharSequence **)&charSeq);
+    CString::New(matchStr, (ICharSequence **)&charSeq);
 
     AutoPtr<IPattern> pattern;
 
@@ -105,7 +105,7 @@ int CTest::test3(int argc, char* argv[])
     ec = CPattern::New(regex, 0, (IPattern **)&pattern);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(input, (ICharSequence **)&cs);
+    CString::New(input, (ICharSequence **)&cs);
     pattern->Split(cs, &str);
     Int32 count;
     count = str->GetLength();
@@ -136,7 +136,7 @@ int CTest::test4(int argc, char* argv[])
     AutoPtr<IMatcher> matcher;
 
 
-    CStringWrapper::New(input, (ICharSequence **)&cs);
+    CString::New(input, (ICharSequence **)&cs);
     ec = pattern->Matcher(cs, (IMatcher **) &matcher);
 
     String replace("####");
@@ -174,7 +174,7 @@ int CTest::test5(int argc, char* argv[])
     AutoPtr<IMatcher> matcher;
 
 
-    CStringWrapper::New(input, (ICharSequence **)&cs);
+    CString::New(input, (ICharSequence **)&cs);
     ec = pattern->Matcher(cs, (IMatcher **) &matcher);
 
     Boolean find;

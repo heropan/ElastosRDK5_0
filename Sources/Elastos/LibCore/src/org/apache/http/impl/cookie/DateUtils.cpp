@@ -2,7 +2,7 @@
 #include "DateUtils.h"
 #include <elastos/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Text::CSimpleDateFormat;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::CCalendarHelper;
@@ -32,8 +32,8 @@ AutoPtr<ISimpleDateFormat> DateUtils::DateFormatHolder::FormatFor(
         //         new SoftReference<Map<String, SimpleDateFormat>>(formats));
     }
 
-    AutoPtr<CStringWrapper> cs;
-    CStringWrapper::NewByFriend(pattern, (CStringWrapper**)&cs);
+    AutoPtr<CString> cs;
+    CString::NewByFriend(pattern, (CString**)&cs);
     AutoPtr<IInterface> value;
     formats->Get(cs, (IInterface**)&value);
     AutoPtr<ISimpleDateFormat> format = ISimpleDateFormat::Probe(value);

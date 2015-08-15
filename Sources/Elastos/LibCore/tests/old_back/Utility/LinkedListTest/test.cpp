@@ -34,7 +34,7 @@ int CTest::test_addILjava_lang_Object(int argc, char* argv[]) {
     // Test for method void java.util.LinkedList.add(int, java.lang.Object)
     Boolean flag = FALSE;
     AutoPtr<ICharSequence> o;
-    CStringWrapper::New(String("Test"), (ICharSequence**)&o);
+    CString::New(String("Test"), (ICharSequence**)&o);
     ll->AddEx(50, o);
     AutoPtr<IInterface> lsObj;
     ll->Get(50, (IInterface**)&lsObj);
@@ -104,11 +104,11 @@ int CTest::test_addAllILjava_util_Collection(int argc, char* argv[]) {
     myList->Add(NULL, &flag);
 
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("Blah"), (ICharSequence**)&cs1);
+    CString::New(String("Blah"), (ICharSequence**)&cs1);
     myList->Add(cs1, &flag);
     myList->Add(NULL, &flag);
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(String("Booga"), (ICharSequence**)&cs2);
+    CString::New(String("Booga"), (ICharSequence**)&cs2);
     myList->Add(cs2, &flag);
     myList->Add(NULL, &flag);
     ll->AddAllEx(50, myList, &flag);
@@ -186,11 +186,11 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
     AutoPtr<IList> myList = IList::Probe(_myList);
     myList->Add((IInterface*)NULL, &flag);
     AutoPtr<ICharSequence> blah;
-    CStringWrapper::New(String("Blah"), (ICharSequence**)&blah);
+    CString::New(String("Blah"), (ICharSequence**)&blah);
     myList->Add(blah, &flag);
     myList->Add((IInterface*)NULL, &flag);
     AutoPtr<ICharSequence> booga;
-    CStringWrapper::New(String("Booga"), (ICharSequence**)&booga);
+    CString::New(String("Booga"), (ICharSequence**)&booga);
     myList->Add(booga, &flag);
     myList->Add((IInterface*)NULL, &flag);
     ll->AddAll(ICollection::Probe(myList), &flag);
@@ -437,11 +437,11 @@ int CTest::test_listIteratorI(int argc, char* argv[]) {
     flag = TRUE;
     myList->Add(NULL, &flag);
     AutoPtr<ICharSequence> o1;
-    CStringWrapper::New(String("Blah"), (ICharSequence**)&o1);
+    CString::New(String("Blah"), (ICharSequence**)&o1);
     myList->Add(o1, &flag);
     myList->Add(NULL, &flag);
     AutoPtr<ICharSequence> o2;
-    CStringWrapper::New(String("Booga"), (ICharSequence**)&o2);
+    CString::New(String("Booga"), (ICharSequence**)&o2);
     myList->Add(o2, &flag);
     myList->Add(NULL, &flag);
     AutoPtr<IListIterator> li;
@@ -473,7 +473,7 @@ int CTest::test_listIteratorI(int argc, char* argv[]) {
 
     li->Next((IInterface**)&obj);
     AutoPtr<ICharSequence> o4;
-    CStringWrapper::New(String("Booga"), (ICharSequence**)&o4);
+    CString::New(String("Booga"), (ICharSequence**)&o4);
     assert(obj == o2);
 
     li->HasNext(&flag);
@@ -674,10 +674,10 @@ int CTest::test_toArrayLjava_lang_Object(int argc, char* argv[]) {
     AutoPtr<ILinkedList> lls;
     CLinkedList::New((ILinkedList**)&lls);
     AutoPtr<ICharSequence> first;
-    CStringWrapper::New(String("First"), (ICharSequence**)&first);
+    CString::New(String("First"), (ICharSequence**)&first);
     lls->Add(first, &flag);
     AutoPtr<ICharSequence> second;
-    CStringWrapper::New(String("Second"), (ICharSequence**)&second);
+    CString::New(String("Second"), (ICharSequence**)&second);
     lls->Add(second, &flag);
 
     ec = lls->ToArrayEx(argArray, (ArrayOf<IInterface*>**)&retArray);*/

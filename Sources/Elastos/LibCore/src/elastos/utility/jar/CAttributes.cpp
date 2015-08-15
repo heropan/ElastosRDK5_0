@@ -2,11 +2,11 @@
 #include "CAttributes.h"
 #include "CName.h"
 #include "CHashMap.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 using Elastos::Utility::CHashMap;
 using Elastos::Core::EIID_ICloneable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Utility {
@@ -93,8 +93,9 @@ ECode CAttributes::Put(
     /* [in] */ PInterface key,
     /* [in] */ PInterface value)
 {
-    if (IName::Probe(key) == NULL || ICharSequence::Probe(value) == NULL)
+    if (IName::Probe(key) == NULL || ICharSequence::Probe(value) == NULL) {
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
     return mMap->Put(key, value);
 }
@@ -122,7 +123,7 @@ ECode CAttributes::Remove(
     /* [in] */ PInterface key)
 {
     AutoPtr<IInterface> obj;
-    return mMap->Remove(key, (IInterface**)&obj);
+    return Remove(key, (PInterface*)&obj);
 }
 
 ECode CAttributes::GetSize(
@@ -215,7 +216,7 @@ ECode CAttributes::PutValue(
     AutoPtr<IName> iname;
     FAIL_RETURN(CName::New(name, (IName**)&iname))
     AutoPtr<ICharSequence> cs;
-    FAIL_RETURN(CStringWrapper::New(val, (ICharSequence**)&cs))
+    CString::New(val, (ICharSequence**)&cs);
 
     if (oldVal) {
         AutoPtr<IInterface> outface;

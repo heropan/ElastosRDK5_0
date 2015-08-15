@@ -8,7 +8,7 @@
 #include "CBufferedWriter.h"
 #include "IoUtils.h"
 #include "Charset.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CBigInteger.h"
 #include "Date.h"
 #include "Calendar.h"
@@ -29,7 +29,7 @@ using Libcore::IO::IoUtils;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::Core::IStringBuilder;
 using Elastos::Core::EIID_IStringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IntegralToString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
@@ -420,7 +420,7 @@ ECode CFormatter::DoFormat(
         // ...and output it.
         if (plainTextEnd > plainTextStart) {
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(format, (ICharSequence**)&seq);
+            CString::New(format, (ICharSequence**)&seq);
             OutputCharSequence(seq, plainTextStart, plainTextEnd);
         }
         i = plainTextEnd;
@@ -516,11 +516,11 @@ AutoPtr<ICharSequence> CFormatter::Transform(
         switch (token->GetConversionType()) {
         case 's':
             if (mArg == NULL) {
-                CStringWrapper::New(String("null"), (ICharSequence**)&outseq);
+                CString::New(String("null"), (ICharSequence**)&outseq);
                 return outseq;
             }
             else if (!(IFormattable::Probe(mArg))) {
-                CStringWrapper::New(Object::ToString(mArg), (ICharSequence**)&outseq);
+                CString::New(Object::ToString(mArg), (ICharSequence**)&outseq);
                 return outseq;
             }
             break;
@@ -546,7 +546,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
                 }
 
                 if (isNumber) {
-                    CStringWrapper::New(argValue, (ICharSequence**)&outseq);
+                    CString::New(argValue, (ICharSequence**)&outseq);
                     return needLocalizedDigits ? LocalizeDigits(outseq) : outseq;
                 }
             }
@@ -589,7 +589,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
         result = TransformFromPercent();
         break;
     case 'n':
-        CStringWrapper::New(separator, (ICharSequence**)&result);
+        CString::New(separator, (ICharSequence**)&result);
         break;
     case 't': case 'T':
         result = TransformFromDateTime();
@@ -607,7 +607,7 @@ AutoPtr<ICharSequence> CFormatter::Transform(
             result->ToString(&str);
             str = str.ToUpperCase();
             result = NULL;
-            CStringWrapper::New(str, (ICharSequence**)&result);
+            CString::New(str, (ICharSequence**)&result);
         }
     }
     return result;
@@ -639,7 +639,7 @@ AutoPtr<ICharSequence> CFormatter::LocalizeDigits(
     String str;
     result.ToString(&str);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(str, (ICharSequence**)&seq);
+    CString::New(str, (ICharSequence**)&seq);
     return seq;
 }
 
@@ -695,7 +695,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBoolean()
     else {
         result = "TRUE";
     }
-    CStringWrapper::New(result, (ICharSequence**)&cs);
+    CString::New(result, (ICharSequence**)&cs);
     return Padding(cs, 0);
 }
 
@@ -710,7 +710,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromHashCode()
         Int32 codevalue = Object::GetHashCode(mArg);
         result = StringUtils::ToHexString(codevalue);
     }
-    CStringWrapper::New(result, (ICharSequence**)&cs);
+    CString::New(result, (ICharSequence**)&cs);
     return Padding(cs, 0);
 }
 
@@ -739,7 +739,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromString()
     AutoPtr<ICharSequence> result;
     String midstr;
     String outstr = mArg != NULL ? Object::ToString(mArg) : String("null");
-    CStringWrapper::New(outstr, (ICharSequence**)&result);
+    CString::New(outstr, (ICharSequence**)&result);
     return Padding(result, 0);
 }
 
@@ -747,13 +747,13 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
 {
     if (mArg == NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("null"), (ICharSequence**)&cs);
+        CString::New(String("null"), (ICharSequence**)&cs);
         return Padding(cs, 0);
     }
     if (IChar32::Probe(mArg) /*mArg instanceof Character*/) {
         String str = Object::ToString(mArg);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
     }
     else if (IByte::Probe(mArg) || IInteger16::Probe(mArg) || IInteger32::Probe(mArg)) {
@@ -765,7 +765,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
         }
         String str = Object::ToString(mArg);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         return Padding(cs, 0);
     }
     // else {
@@ -777,7 +777,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromCharacter()
 AutoPtr<ICharSequence> CFormatter::TransformFromPercent()
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("%"), (ICharSequence**)&cs);
+    CString::New(String("%"), (ICharSequence**)&cs);
     return Padding(cs, 0);
 }
 
@@ -905,7 +905,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromInteger()
 
     if (currentConversionType == 'd') {
         AutoPtr<ICharSequence> digits;
-        CStringWrapper::New(StringUtils::ToString(value), (ICharSequence**)&digits);
+        CString::New(StringUtils::ToString(value), (ICharSequence**)&digits);
         if (mFormatToken->mFlagComma) {
             digits = InsertGrouping(digits);
         }
@@ -961,7 +961,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromNull()
 {
     mFormatToken->mFlagZero = FALSE;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("null"), (ICharSequence**)&cs);
+    CString::New(String("null"), (ICharSequence**)&cs);
     return Padding(cs, 0);
 }
 
@@ -984,7 +984,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromBigInteger()
         String str;
         bigInt->ToString(10, &str);
         AutoPtr<ICharSequence> digits;
-        CStringWrapper::New(str, (ICharSequence**)&digits);
+        CString::New(str, (ICharSequence**)&digits);
         if (mFormatToken->mFlagComma) {
             digits = InsertGrouping(digits);
         }
@@ -1347,7 +1347,7 @@ void CFormatter::AppendLocalized(
     }
     else {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(StringUtils::ToString(value), (ICharSequence**)&cs);
+        CString::New(StringUtils::ToString(value), (ICharSequence**)&cs);
         result->Append(LocalizeDigits(cs));
     }
     Int32 len = 0;
@@ -1401,7 +1401,7 @@ AutoPtr<ICharSequence> CFormatter::TransformFromSpecialNumber(
     mFormatToken->SetPrecision(FormatToken::UNSET);
     mFormatToken->mFlagZero = FALSE;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(source, (ICharSequence**)&cs);
+    CString::New(source, (ICharSequence**)&cs);
     return Padding(cs, 0);
 }
 

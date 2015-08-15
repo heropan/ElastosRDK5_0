@@ -1,12 +1,12 @@
 
 #include "CSecurity.h"
 #include "CProperties.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CHashMap.h"
 #include "CHashSet.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Security::IService;
 using Elastos::Security::IProvider;
 using Elastos::Utility::IEnumeration;
@@ -274,14 +274,14 @@ ECode CSecurity::GetProvidersEx(
     AutoPtr<ICharSequence> key, value;
     AutoPtr<IInterface> rst;
     if (i < 1) {
-        CStringWrapper::New(filter, (ICharSequence**)&key);
-        CStringWrapper::New(String(""), (ICharSequence**)&value);
+        CString::New(filter, (ICharSequence**)&key);
+        CString::New(String(""), (ICharSequence**)&value);
         hm->Put(key.Get(), value.Get(), (PInterface*)&rst);
     } else {
-        AutoPtr<CStringWrapper> swKey, swValue;
-        CStringWrapper::NewByFriend(filter, (CStringWrapper**)&swKey);
+        AutoPtr<CString> swKey, swValue;
+        CString::NewByFriend(filter, (CString**)&swKey);
         swKey->SubSequence(0, i, (ICharSequence**)&key);
-        CStringWrapper::NewByFriend(filter, (CStringWrapper**)&swValue);
+        CString::NewByFriend(filter, (CString**)&swValue);
         swValue->SubSequence(i + 1, filter.GetLength(), (ICharSequence**)&value);
         hm->Put(key.Get(), value.Get(), (PInterface*)&rst);
     }
@@ -476,7 +476,7 @@ ECode CSecurity::GetAlgorithms(
             if ((service->GetType(&type), type).EqualsIgnoreCase(serviceName)) {
                 service->GetAlgorithm(&algorithm);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(algorithm, (ICharSequence**)&cs);
+                CString::New(algorithm, (ICharSequence**)&cs);
                 Boolean ret;
                 result->Add(cs.Get(), &ret);
             }

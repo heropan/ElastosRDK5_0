@@ -1,19 +1,19 @@
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringBuilder.h"
 #include <cutils/log.h>
 
 namespace Elastos {
 namespace Core {
 
-CAR_INTERFACE_IMPL(CStringWrapper, Object, ICharSequence)
+CAR_INTERFACE_IMPL(CString, Object, ICharSequence)
 
-CAR_OBJECT_IMPL(CStringWrapper)
+CAR_OBJECT_IMPL(CString)
 
-ECode CStringWrapper::constructor(
+ECode CString::constructor(
     /* [in] */ const String& str)
 {
     if (str.IsNull()) {
-        // ALOGW("CStringWrapper: null string when create ICharSequence.");
+        // ALOGW("CString: null string when create ICharSequence.");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
@@ -21,7 +21,7 @@ ECode CStringWrapper::constructor(
     return NOERROR;
 }
 
-ECode CStringWrapper::GetLength(
+ECode CString::GetLength(
     /* [out] */ Int32* number)
 {
     VALIDATE_NOT_NULL(number);
@@ -29,7 +29,7 @@ ECode CStringWrapper::GetLength(
     return NOERROR;
 }
 
-ECode CStringWrapper::GetCharAt(
+ECode CString::GetCharAt(
     /* [in] */ Int32 index,
     /* [out] */ Char32* c)
 {
@@ -45,7 +45,7 @@ ECode CStringWrapper::GetCharAt(
     return NOERROR;
 }
 
-ECode CStringWrapper::SubSequence(
+ECode CString::SubSequence(
     /* [in] */ Int32 start,
     /* [in] */ Int32 end,
     /* [out] */ ICharSequence** csq)
@@ -58,11 +58,11 @@ ECode CStringWrapper::SubSequence(
     }
 
     String subStr = mString.Substring(start, end);
-    CStringWrapper::New(subStr, csq);
+    CString::New(subStr, csq);
     return NOERROR;
 }
 
-ECode CStringWrapper::ToString(
+ECode CString::ToString(
     /* [out] */ String* str)
 {
     VALIDATE_NOT_NULL(str);
@@ -71,7 +71,7 @@ ECode CStringWrapper::ToString(
     return NOERROR;
 }
 
-ECode CStringWrapper::Equals(
+ECode CString::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
 {
@@ -85,7 +85,7 @@ ECode CStringWrapper::Equals(
     return NOERROR;
 }
 
-ECode CStringWrapper::GetHashCode(
+ECode CString::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
@@ -99,7 +99,7 @@ ECode CStringWrapper::GetHashCode(
     return NOERROR;
 }
 
-ECode CStringWrapper::CompareTo(
+ECode CString::CompareTo(
     /* [in] */ IInterface* another,
     /* [out] */ Int32* result)
 {

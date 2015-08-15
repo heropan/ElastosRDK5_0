@@ -2,7 +2,7 @@
 #include "AuthParams.h"
 #include <elastos/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::IHTTP;
@@ -49,7 +49,7 @@ ECode AuthParams::SetCredentialCharset(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(charset, (ICharSequence**)&cs);
+    CString::New(charset, (ICharSequence**)&cs);
     return params->SetParameter(IAuthPNames::CREDENTIAL_CHARSET, cs);
 }
 

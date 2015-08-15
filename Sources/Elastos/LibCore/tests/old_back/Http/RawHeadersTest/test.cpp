@@ -50,7 +50,7 @@ int CTest::test_caseInsensitiveButCasePreserving(int argc, char* argv[])
     // We differ from the RI in that the Map we return is also case-insensitive.
     // Our behavior seems more consistent. (And code that works on the RI will work on Android.)
     // AutoPtr<ICharSequence> cs1;
-    // CStringWrapper::New(String("Content-Type"), (ICharSequence**)&cs1);
+    // CString::New(String("Content-Type"), (ICharSequence**)&cs1);
     // AutoPtr<IInterface> value;
     // innerMap->Get(cs1, (IInterface**)&value);
     // assertEquals(Arrays.asList("text/plain"), h.toMultimap().get("Content-Type"));

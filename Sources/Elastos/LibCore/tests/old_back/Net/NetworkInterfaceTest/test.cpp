@@ -179,7 +179,7 @@ int CTest::testDumpAll(int argc, char* argv[])
         String name;
         nif->GetName(&name);
         AutoPtr<ICharSequence> iName;
-        CStringWrapper::New(name, (ICharSequence**)&iName);
+        CString::New(name, (ICharSequence**)&iName);
         allNames->Contains(iName, &b);
         assert(b == FALSE);
         Boolean isflag = FALSE;

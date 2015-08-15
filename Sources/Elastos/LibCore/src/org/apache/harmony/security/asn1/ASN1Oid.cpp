@@ -12,7 +12,7 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 
 namespace Org {
@@ -87,7 +87,7 @@ ECode ASN1Oid::DerivedASN1Oid::GetDecodedObject(
     String str;
     buf.ToString(&str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
     REFCOUNT_ADD(*object)
     return NOERROR;

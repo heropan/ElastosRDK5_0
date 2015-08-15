@@ -3,7 +3,7 @@
 #include "ManifestReader.h"
 #include "CStreams.h"
 #include "CHashMap.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CAttributes.h"
 #include "CName.h"
 #include "CharBuffer.h"
@@ -23,7 +23,7 @@ using Elastos::IO::Charset::ICoderResultHelper;
 //using Elastos::IO::Charset::CCoderResultHelper;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::CHashMap;
 
@@ -132,7 +132,7 @@ ECode CManifest::GetAttributes(
     AutoPtr<IMap> map;
     GetEntries((IMap**)&map);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> obj;
     map->Get(cs, (IInterface**)&obj);
     *attrib = IAttributes::Probe(obj);

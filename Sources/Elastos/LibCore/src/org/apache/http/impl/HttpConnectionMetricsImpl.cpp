@@ -3,7 +3,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Utility::CHashMap;
@@ -97,7 +97,7 @@ ECode HttpConnectionMetricsImpl::GetMetric(
 
     if (mMetricsCache != NULL) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(metricName, (ICharSequence**)&cs);
+        CString::New(metricName, (ICharSequence**)&cs);
         AutoPtr<IMap> map = IMap::Probe(mMetricsCache);
         AutoPtr<IInterface> interface;
         map->Get(cs, (IInterface**)&interface);
@@ -153,7 +153,7 @@ ECode HttpConnectionMetricsImpl::SetMetric(
         CHashMap::New((IHashMap**)&mMetricsCache);
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(metricName, (ICharSequence**)&cs);
+    CString::New(metricName, (ICharSequence**)&cs);
     IMap::Probe(mMetricsCache)->Put(cs, metric);
     return NOERROR;
 }

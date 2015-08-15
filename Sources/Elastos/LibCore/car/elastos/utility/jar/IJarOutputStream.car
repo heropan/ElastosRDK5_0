@@ -1,9 +1,9 @@
 
 module
 {
-    namespace Elastos{
-    namespace Utility{
-    namespace Jar{
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
 
     /**
      * @Involve
@@ -15,7 +15,8 @@ module
      */
     interface IJarOutputStream {
     }
-    }//Jar
-    }//Utility
-    }//Elastos
+
+    } //Jar
+    } //Utility
+    } //Elastos
 }

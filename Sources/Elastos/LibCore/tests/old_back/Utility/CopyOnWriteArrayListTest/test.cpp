@@ -5,21 +5,21 @@ CTest::CTest()
 {
     mabcde = ArrayOf<IInterface*>::Alloc(5);
     autoarr = ArrayOf<IInterface*>::Alloc(5);
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
-    CStringWrapper::New(String("c"), (ICharSequence**)&sqc);
-    CStringWrapper::New(String("d"), (ICharSequence**)&sqd);
-    CStringWrapper::New(String("e"), (ICharSequence**)&sqe);
-    CStringWrapper::New(String("f"), (ICharSequence**)&sqf);
-    CStringWrapper::New(String("g"), (ICharSequence**)&sqg);
-    CStringWrapper::New(String("h"), (ICharSequence**)&sqh);
-    CStringWrapper::New(String("i"), (ICharSequence**)&sqi);
+    CString::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("c"), (ICharSequence**)&sqc);
+    CString::New(String("d"), (ICharSequence**)&sqd);
+    CString::New(String("e"), (ICharSequence**)&sqe);
+    CString::New(String("f"), (ICharSequence**)&sqf);
+    CString::New(String("g"), (ICharSequence**)&sqg);
+    CString::New(String("h"), (ICharSequence**)&sqh);
+    CString::New(String("i"), (ICharSequence**)&sqi);
 
-    CStringWrapper::New(String("A"), (ICharSequence**)&sqA);
-    CStringWrapper::New(String("B"), (ICharSequence**)&sqB);
-    CStringWrapper::New(String("C"), (ICharSequence**)&sqC);
-    CStringWrapper::New(String("D"), (ICharSequence**)&sqD);
-    CStringWrapper::New(String("E"), (ICharSequence**)&sqE);
+    CString::New(String("A"), (ICharSequence**)&sqA);
+    CString::New(String("B"), (ICharSequence**)&sqB);
+    CString::New(String("C"), (ICharSequence**)&sqC);
+    CString::New(String("D"), (ICharSequence**)&sqD);
+    CString::New(String("E"), (ICharSequence**)&sqE);
 
     mabcde->Set(0, sqa);
     mabcde->Set(1, sqb);

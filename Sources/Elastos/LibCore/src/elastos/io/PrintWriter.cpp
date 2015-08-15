@@ -3,7 +3,7 @@
 #include "COutputStreamWriter.h"
 #include "CFileOutputStream.h"
 #include "CBufferedOutputStream.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CLocaleHelper.h"
 #include "CLocale.h"
 #include "CFormatter.h"
@@ -14,7 +14,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IAppendable;
 using Elastos::Core::EIID_IAppendable;
 using Elastos::IO::COutputStreamWriter;
@@ -452,7 +452,7 @@ ECode PrintWriter::Append(
 
     if (csq == NULL) {
         AutoPtr<ICharSequence> _csq;
-        CStringWrapper::New(String("NULL"), (ICharSequence**)&_csq);
+        CString::New(String("NULL"), (ICharSequence**)&_csq);
         FAIL_RETURN(_csq->GetLength(&length))
         return Append(_csq, 0, length);
     }

@@ -5,7 +5,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
@@ -50,8 +50,8 @@ ECode RFC2617Scheme::ParseChallenge(
         element->GetName(&name);
         element->GetValue(&value);
         AutoPtr<ICharSequence> nameCs, valueCs;
-        CStringWrapper::New(name, (ICharSequence**)&nameCs);
-        CStringWrapper::New(value, (ICharSequence**)&valueCs);
+        CString::New(name, (ICharSequence**)&nameCs);
+        CString::New(value, (ICharSequence**)&valueCs);
         mParams->Put(nameCs, valueCs);
     }
     return NOERROR;
@@ -81,7 +81,7 @@ ECode RFC2617Scheme::GetParameter(
         return NOERROR;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     mParams->Get(cs, (IInterface**)&value);
     ICharSequence::Probe(value)->ToString(param);

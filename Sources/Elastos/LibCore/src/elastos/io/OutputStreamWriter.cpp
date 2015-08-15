@@ -2,12 +2,12 @@
 #include "OutputStreamWriter.h"
 #include "ByteBuffer.h"
 #include "CharBuffer.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Charset.h"
 #include "AutoLock.h"
 #include "CCodingErrorAction.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICodingErrorAction;
 using Elastos::IO::Charset::CCodingErrorAction;
@@ -269,7 +269,7 @@ ECode OutputStreamWriter::Write(
     }
     FAIL_RETURN(CheckStatus());
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(String(str), (ICharSequence**)&charSeq);
+    CString::New(String(str), (ICharSequence**)&charSeq);
     AutoPtr<ICharBuffer> chars;
     CharBuffer::Wrap(charSeq, offset, count + offset, (ICharBuffer**)&chars);
     return Convert(chars);

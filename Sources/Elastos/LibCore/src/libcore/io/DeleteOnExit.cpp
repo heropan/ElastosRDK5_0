@@ -1,6 +1,6 @@
 
 #include "DeleteOnExit.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "AutoLock.h"
 #include "CFile.h"
 #include "utility/Collections.h"
@@ -13,7 +13,7 @@ using Elastos::IO::CFile;
 using Elastos::Utility::IList;
 using Elastos::Utility::Collections;
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Libcore {
@@ -44,7 +44,7 @@ ECode DeleteOnExit::AddFile(
 {
     AutoLock lock(this);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(filename, (ICharSequence**)&cs);
+    CString::New(filename, (ICharSequence**)&cs);
     Boolean isContained;
     AutoPtr<ICollection> collection = ICollection::Probe(mFiles);
     collection->Contains(cs, &isContained);

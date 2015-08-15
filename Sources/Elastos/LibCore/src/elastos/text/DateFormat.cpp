@@ -6,7 +6,7 @@
 #include "CDate.h"
 #include "ICUUtil.h"
 #include "CLocaleHelper.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CDouble.h"
 #include "CLocaleDataHelper.h"
 #include "CLocaleData.h"

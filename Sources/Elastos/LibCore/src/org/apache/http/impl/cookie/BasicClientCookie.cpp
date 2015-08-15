@@ -5,7 +5,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::IHashMap;
@@ -208,8 +208,8 @@ ECode BasicClientCookie::SetAttribute(
     /* [in] */ const String& v)
 {
     AutoPtr<ICharSequence> key, value;
-    CStringWrapper::New(name, (ICharSequence**)&key);
-    CStringWrapper::New(v, (ICharSequence**)&value);
+    CString::New(name, (ICharSequence**)&key);
+    CString::New(v, (ICharSequence**)&value);
     return mAttribs->Put(key, value);
 }
 
@@ -220,7 +220,7 @@ ECode BasicClientCookie::GetAttribute(
     VALIDATE_NOT_NULL(attr)
     *attr = String(NULL)
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     mAttribs->Get(cs, (IInterface**)&value);
     if (value) {
@@ -235,7 +235,7 @@ ECode BasicClientCookie::ContainsAttribute(
 {
     VALIDATE_NOT_NULL(result)
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     mAttribs->Get(cs, (IInterface**)&value);
     *result = (value != NULL);

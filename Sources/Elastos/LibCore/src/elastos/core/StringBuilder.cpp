@@ -1,7 +1,7 @@
 
 #include "StringBuilder.h"
 #include "StringBuffer.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 
 namespace Elastos {
@@ -434,7 +434,7 @@ AutoPtr<ICharSequence> StringBuilder::ToCharSequence()
     String str;
     AbstractStringBuilder::Substring(0, &str);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(str, (ICharSequence**)&seq);
+    CString::New(str, (ICharSequence**)&seq);
     return seq;
 }
 

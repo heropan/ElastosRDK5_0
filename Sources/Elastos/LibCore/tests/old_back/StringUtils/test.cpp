@@ -8,7 +8,7 @@
 
 using namespace Elastos;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Regex::CSplitter;
@@ -100,7 +100,7 @@ void testSplit()
         CPatternHelper::AcquireSingleton((IPatternHelper**)&helper);
         helper->CompileEx(String("abc"), 0, (IPattern**)&pattern);
 
-        CStringWrapper::New(String("abc ABC  123  !@#"), (ICharSequence**)&input);
+        CString::New(String("abc ABC  123  !@#"), (ICharSequence**)&input);
         CMatcher::New(pattern, input, (IMatcher**)&matcher);
 
         matcher->Pattern((IPattern**)&pattern_new);

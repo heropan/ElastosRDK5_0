@@ -1,11 +1,11 @@
 
 #include "CSplitter.h"
 #include "CMatcher.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Math.h"
 #include "EmptyArray.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Math;
 using Libcore::Utility::EmptyArray;
 
@@ -135,7 +135,7 @@ ECode CSplitter::Split(
 
     AutoPtr<CMatcher> matcher;
     AutoPtr<ICharSequence> inputSeq;
-    FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&inputSeq));
+    FAIL_RETURN(CString::New(input, (ICharSequence**)&inputSeq));
     FAIL_RETURN(CMatcher::NewByFriend(pattern, inputSeq, (CMatcher**)&matcher));
 
     Int32 begin = 0, end;

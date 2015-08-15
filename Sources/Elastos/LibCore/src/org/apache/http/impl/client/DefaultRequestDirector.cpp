@@ -20,7 +20,7 @@
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::Concurrent::ITimeUnit;
 using Elastos::Utility::Logging::Logger;
@@ -1040,7 +1040,7 @@ ECode DefaultRequestDirector::ProcessChallenges(
     authScheme->GetSchemeName(&id);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     challenges->Get(cs, (IInterface**)&value);
     AutoPtr<IHeader> challenge = IHeader::Probe(value);

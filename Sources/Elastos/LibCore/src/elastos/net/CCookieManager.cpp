@@ -4,12 +4,12 @@
 #include "CHttpCookie.h"
 #include "CCookiePolicyHelper.h"
 #include "Collections.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringBuilder.h"
 #include "StringUtils.h"
 #include "Math.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
@@ -134,7 +134,7 @@ ECode CCookieManager::CookiesToHeaders(
     AutoPtr<IList> outlist;
     Collections::SingletonList(result.ToCharSequence(), (IList**)&outlist);
     AutoPtr<ICharSequence> Cookie;
-    CStringWrapper::New(String("Cookie"), (ICharSequence**)&Cookie);
+    CString::New(String("Cookie"), (ICharSequence**)&Cookie);
     return Collections::SingletonMap(Cookie, outlist, cookiesMap);
 }
 

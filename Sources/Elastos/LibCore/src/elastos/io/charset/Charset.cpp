@@ -2,7 +2,7 @@
 #include "CharBuffer.h"
 #include "CCodingErrorAction.h"
 #include "NativeConverter.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "AutoLock.h"
 #include "CSystem.h"
 #include "CTreeMap.h"
@@ -14,7 +14,7 @@
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::ServiceLoader;
 using Elastos::Utility::IServiceLoader;
 using Elastos::Utility::IIterator;
@@ -269,7 +269,7 @@ ECode Charset::Encode(
     VALIDATE_NOT_NULL(byteBuffer);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(s, (ICharSequence**)&cs);
+    CString::New(s, (ICharSequence**)&cs);
     AutoPtr<ICharBuffer> charBuffer;
     CharBuffer::Wrap(cs.Get(), (ICharBuffer**)&charBuffer);
 

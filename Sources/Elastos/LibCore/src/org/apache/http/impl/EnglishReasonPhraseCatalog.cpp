@@ -3,7 +3,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IHttpEntity;
 using Org::Apache::Http::IHttpVersion;
@@ -37,7 +37,7 @@ void EnglishReasonPhraseCatalog::SetReason(
     Int32 category = status / 100;
     Int32 subcode  = status - 100*category;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(reason, (ICharSequence**)&cs);
+    CString::New(reason, (ICharSequence**)&cs);
     (*REASON_PHRASES)[category]->Set(subcode, cs);
 }
 

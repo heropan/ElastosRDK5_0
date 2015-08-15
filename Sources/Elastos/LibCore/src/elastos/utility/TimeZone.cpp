@@ -3,7 +3,7 @@
 #include "CSimpleTimeZone.h"
 #include "CZoneInfoDB.h"
 #include "StringUtils.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Pattern.h"
 #include "CLocaleHelper.h"
 #include "AutoLock.h"
@@ -16,7 +16,7 @@ using Elastos::Core::IArrayOf;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Regex::Pattern;
 using Elastos::Utility::Regex::IMatcher;
 using Elastos::Utility::Regex::IMatchResult;

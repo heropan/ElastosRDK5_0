@@ -1,7 +1,7 @@
 
 #include "DateFormatSymbols.h"
 #include "CDateFormatSymbols.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CLocaleHelper.h"
 #include "Arrays.h"
 #include "CLocaleDataHelper.h"
@@ -17,7 +17,7 @@
 using Elastos::IO::EIID_ISerializable;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;

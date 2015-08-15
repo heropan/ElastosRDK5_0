@@ -4,7 +4,7 @@
 #include "RealToString.h"
 #include "IntegralToString.h"
 #include "Character.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include <utils/Log.h>
 
 #define DEFAULT_STEP 16
@@ -907,7 +907,7 @@ ECode AbstractStringBuilder::SubSequence(
 
     String str;
     FAIL_RETURN(Substring(start, end, &str));
-    FAIL_RETURN(CStringWrapper::New(str, seq));
+    FAIL_RETURN(CString::New(str, seq));
     return NOERROR;
 }
 

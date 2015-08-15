@@ -224,8 +224,8 @@ int CTest::test_10522(int argc, char* argv[])
     ArrayOf<String> tstSetChoicesFms(tstFms , 2);
     AutoPtr<ArrayOf<ICharSequence *> > pGetCS = ArrayOf<ICharSequence *>::Alloc(2);
     AutoPtr<ArrayOf<IInterface *> > pGetFms = ArrayOf<IInterface *>::Alloc(2);
-    CStringWrapper::New(String(""), (ICharSequence **)&(*pGetCS)[0]);
-    CStringWrapper::New(String(""), (ICharSequence **)&(*pGetCS)[1]);
+    CString::New(String(""), (ICharSequence **)&(*pGetCS)[0]);
+    CString::New(String(""), (ICharSequence **)&(*pGetCS)[1]);
     (*pGetFms)[0] = (IInterface *)(*pGetCS)[0]->Probe(EIID_IInterface);
     (*pGetFms)[1] = (IInterface *)(*pGetCS)[1]->Probe(EIID_IInterface);
     ECode ec = CChoiceFormat::New(appleLimits, appleFormats, (IChoiceFormat **)&pTCF);

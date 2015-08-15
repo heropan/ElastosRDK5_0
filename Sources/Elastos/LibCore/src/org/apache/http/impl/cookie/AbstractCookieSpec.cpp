@@ -3,7 +3,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::Logging::Logger;
@@ -36,7 +36,7 @@ ECode AbstractCookieSpec::RegisterAttribHandler(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     mAttribHandlerMap->Put(name, handler);
 }
 
@@ -46,7 +46,7 @@ ECode AbstractCookieSpec::FindAttribHandler(
 {
     VALIDATE_NOT_NULL(handler)
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     mAttribHandlerMap->Get(cs, (IInterface**)&value);
     *handler = ICookieAttributeHandler::Probe(value);

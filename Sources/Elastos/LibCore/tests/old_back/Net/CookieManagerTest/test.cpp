@@ -83,7 +83,7 @@ int CTest::test_Put_Get_LURI_LMap(int argc, char* argv[])
     assert(1 == sizelen);
     AutoPtr<IList> list;
     AutoPtr<ICharSequence> sq;
-    CStringWrapper::New(String("Cookie"), (ICharSequence**)&sq);
+    CString::New(String("Cookie"), (ICharSequence**)&sq);
     map->Get(sq, (IInterface**)&list);
     list->GetSize(&sizelen);
     assert(1 == sizelen);
@@ -223,7 +223,7 @@ int CTest::test_SetCookiePolicy_LCookiePolicy(int argc, char* argv[])
     assert(1 == maplen);
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> Cookie;
-    CStringWrapper::New(String("Cookie"), (ICharSequence**)&Cookie);
+    CString::New(String("Cookie"), (ICharSequence**)&Cookie);
     map->Get(Cookie, (IInterface**)&outface);
     // assertTrue(map.get("Cookie").isEmpty());
     AutoPtr< ArrayOf<IInterface*> > outarr;
@@ -243,11 +243,11 @@ int CTest::test_SetCookiePolicy_LCookiePolicy(int argc, char* argv[])
     AutoPtr<IArrayList> list;
     CArrayList::New((IArrayList**)&list);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test=null"), (ICharSequence**)&test);
+    CString::New(String("test=null"), (ICharSequence**)&test);
     Boolean isflag = FALSE;
     list->Add(test, &isflag);
     AutoPtr<ICharSequence> setcookie;
-    CStringWrapper::New(String("Set-cookie"), (ICharSequence**)&setcookie);
+    CString::New(String("Set-cookie"), (ICharSequence**)&setcookie);
     responseHeaders->Put(setcookie, list, (IInterface**)&outface);
     AutoPtr<IURI> newuri;
     CURI::New(String("http://b.c.d"), (IURI**)&newuri);
@@ -312,13 +312,13 @@ AutoPtr<IMap> CTest::addCookie(String** cookies, int length)
         CArrayList::New((IArrayList**)&fields);
         for (int j = 1; j < 5; j += 2) {
             AutoPtr<ICharSequence> sq;
-            CStringWrapper::New(cookies[i][j], (ICharSequence**)&sq);
+            CString::New(cookies[i][j], (ICharSequence**)&sq);
             Boolean isflag = FALSE;
             fields->Add(sq, &isflag);
         }
         AutoPtr<IInterface> outface;
         AutoPtr<ICharSequence> sq;
-        CStringWrapper::New(cookies[i][0], (ICharSequence**)&sq);
+        CString::New(cookies[i][0], (ICharSequence**)&sq);
         responseHeaders->Put(sq, fields, (IInterface**)&outface);
     }
     return responseHeaders;

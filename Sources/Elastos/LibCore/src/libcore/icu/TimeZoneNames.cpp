@@ -4,7 +4,7 @@
 #include "ElStringByteSink.h"
 #include "CLocaleHelper.h"
 #include "CArrayOf.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CSystem.h"
 #include "CZoneInfoDB.h"
 #include "StringUtils.h"
@@ -26,7 +26,7 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::TimeZone;
 using Elastos::Utility::ITimeZone;
 using Elastos::Utility::ILocaleHelper;
@@ -181,7 +181,7 @@ AutoPtr<IInterface> TimeZoneNames::ArrayOfToInterface(
         for (Int32 j = 0; j < (*array)[i]->GetLength(); j++) {
             String str = (*((*array)[i]))[j];
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(str, (ICharSequence**)&cs);
+            CString::New(str, (ICharSequence**)&cs);
             subArr->Set(j, cs);
         }
         iArray->Set(i, subArr);
@@ -322,7 +322,7 @@ ECode TimeZoneNames::GetZoneStrings(
         FAIL_RETURN(CArrayOf::New(midlen, (IArrayOf**)&arrof));
         for (Int32 j = 0; j < midlen; ++j) {
             AutoPtr<ICharSequence> sq;
-            CStringWrapper::New((*subArr)[j], (ICharSequence**)&sq);
+            CString::New((*subArr)[j], (ICharSequence**)&sq);
             arrof->Set(j, sq);
         }
         resarr->Set(i, arrof);

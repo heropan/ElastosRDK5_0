@@ -5,7 +5,7 @@
 #include <elastos/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CLinkedHashMap;
@@ -75,7 +75,7 @@ ECode CSchemeRegistry::Get(
         // leave it to the caller to use the correct name - all lowercase
         //name = name.toLowerCase();
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         AutoPtr<IInterface> found;
         mRegisteredSchemes->Get(cs, (IInterface**)&found);
         *scheme = IScheme::Probe(found);
@@ -99,7 +99,7 @@ ECode CSchemeRegistry::Register(
         String name;
         sch->GetName(&name);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         AutoPtr<IInterface> old;
         mRegisteredSchemes->(cs, (IInterface**)&old);
         mRegisteredSchemes->Put(cs, sch);
@@ -124,7 +124,7 @@ ECode CSchemeRegistry::Unregister(
         // leave it to the caller to use the correct name - all lowercase
         //name = name.toLowerCase();
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         AutoPtr<IInterface> gone;
         mRegisteredSchemes->Remove(cs, (IInterface**)&gone);
         *scheme = IScheme::Probe(gone);

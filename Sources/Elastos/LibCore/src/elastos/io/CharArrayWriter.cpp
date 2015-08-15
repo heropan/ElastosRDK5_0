@@ -2,11 +2,11 @@
 #include "CharArrayWriter.h"
 #include "Math.h"
 #include "Character.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "AutoLock.h"
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Math;
 
 namespace Elastos {

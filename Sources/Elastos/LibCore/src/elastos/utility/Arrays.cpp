@@ -7,7 +7,7 @@
 #include "CInteger64.h"
 #include "CFloat.h"
 #include "CDouble.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CArrayList.h"
 
 using Elastos::Core::IByte;
@@ -25,7 +25,7 @@ using Elastos::Core::CFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::CDouble;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 
 namespace Elastos {
@@ -419,7 +419,7 @@ ECode Arrays::AsList(
 
         for (Int32 i = 0; i < array->GetLength(); ++i) {
             AutoPtr<ICharSequence> obj;
-            CStringWrapper::New((*array)[i], (ICharSequence**)&obj);
+            CString::New((*array)[i], (ICharSequence**)&obj);
             l->Add(i, obj);
         }
 

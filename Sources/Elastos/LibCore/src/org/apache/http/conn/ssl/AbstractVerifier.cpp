@@ -4,7 +4,7 @@
 #include <elastos/utility/Arrays.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IIterable;
@@ -106,7 +106,7 @@ ECode AbstractVerifier::Verify(
     AutoPtr<ICollection> col = ICollection::Probe(names);
     if(cns != NULL && cns->GetLength() > 0 && !(*cns)[0].IsNull()) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New((*cns)[0], (ICharSequence**)&cs);
+        CString::New((*cns)[0], (ICharSequence**)&cs);
         col->Add(cs);
     }
     if(subjectAlts != NULL) {
@@ -114,7 +114,7 @@ ECode AbstractVerifier::Verify(
             String subjectAlt = (*subjectAlts)[i];
             if (!subjectAlt.IsNull()) {
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(subjectAlt, (ICharSequence**)&cs);
+                CString::New(subjectAlt, (ICharSequence**)&cs);
                 col->Add(cs);
             }
         }

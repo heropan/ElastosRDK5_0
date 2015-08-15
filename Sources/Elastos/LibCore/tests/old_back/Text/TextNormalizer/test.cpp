@@ -13,7 +13,7 @@ void assertEquals(String src ,String instr, NormalizerForm inform)
     AutoPtr<INormalizerHelper> nh;
     CNormalizerHelper::AcquireSingleton((INormalizerHelper **)&nh);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(instr, (ICharSequence**)&csq);
+    CString::New(instr, (ICharSequence**)&csq);
     String strout;
     nh->Normalize(csq , inform , &strout);
     PFL_EX("src: %s , strout : %s " , src.string(), strout.string())
@@ -52,7 +52,7 @@ void assertTrueOrFalse(String src, NormalizerForm inform , Boolean trueflag)
     AutoPtr<INormalizerHelper> nh;
     CNormalizerHelper::AcquireSingleton((INormalizerHelper **)&nh);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(src, (ICharSequence**)&csq);
+    CString::New(src, (ICharSequence**)&csq);
     Boolean outflag;
     nh->IsNormalized(csq , inform , &outflag);
     PFL_EX("outflag : %d " , outflag)

@@ -2,7 +2,7 @@
 #include "CServicesHelper.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Org {
 namespace Apache {
@@ -110,7 +110,7 @@ ECode CServicesHelper::GetProvider(
     //return providersNames.get(name);
     AutoPtr<ICharSequence> cs;
     AutoPtr<IInterface> ret;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     sProvidersNames->Get(cs.Get(), (IInterface**)&ret);
     *provider = IProvider::Probe(ret);
     REFCOUNT_ADD(*provider)
@@ -133,7 +133,7 @@ ECode CServicesHelper::InsertProviderAt(
     String name;
     provider->GetName(&name);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     AutoPtr<IInterface> ret;
     sProvidersNames->Put(cs.Get(), provider, (IInterface**)&ret);
     SetNeedRefresh();
@@ -151,7 +151,7 @@ ECode CServicesHelper::RemoveProvider(
     String name;
     p->GetName(&name);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     rm = NULL;
     sProvidersNames->Remove(cs.Get(), (IInterface**)&rm);
     return SetNeedRefresh();
@@ -180,7 +180,7 @@ ECode CServicesHelper::InitServiceInfo(
         service->GetAlgorithm(&algo);
         String key = type + "." + algo.ToUpperCase();
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(key, (ICharSequence**)&cs);
+        CString::New(key, (ICharSequence**)&cs);
         Boolean contains;
         if (sServices->ContainsKey(cs.Get(), &contains), !contains) {
             AutoPtr<IInterface> old;
@@ -199,7 +199,7 @@ ECode CServicesHelper::InitServiceInfo(
             ICharSequence::Probe(nextAlias)->ToString(&alias);
             key = type + "." + alias.ToUpperCase();
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(key, (ICharSequence**)&cs);
+            CString::New(key, (ICharSequence**)&cs);
             Boolean contains;
             if (sServices->ContainsKey(cs.Get(), &contains), !contains) {
                 AutoPtr<IInterface> old;
@@ -226,7 +226,7 @@ ECode CServicesHelper::GetService(
     AutoLock lock(mLock);
     VALIDATE_NOT_NULL(service)
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(key, (ICharSequence**)&cs);
+    CString::New(key, (ICharSequence**)&cs);
     AutoPtr<IInterface> ret;
     sServices->Get(cs.Get(), (IInterface**)&ret);
     *service = IService::Probe(ret);

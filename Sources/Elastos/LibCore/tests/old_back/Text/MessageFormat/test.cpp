@@ -194,7 +194,7 @@ int CTest::test_formatLjava_lang_ObjectLjava_lang_StringBufferLjava_text_FieldPo
     AutoPtr< ArrayOf<IInterface*> > objlst = ArrayOf<IInterface*>::Alloc(2);
     String zerostr("0");
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(zerostr, (ICharSequence**)&charSeq);
+    CString::New(zerostr, (ICharSequence**)&charSeq);
     AutoPtr<IDouble> dinter;
     CDouble::New(53.863, (IDouble**)&dinter);
     objlst->Set(0, charSeq);
@@ -254,7 +254,7 @@ int CTest::test_formatLjava_lang_ObjectLjava_lang_StringBufferLjava_text_FieldPo
     // try {
     objlst = ArrayOf<IInterface*>::Alloc(3);
     String nullstr("");
-    CStringWrapper::New(nullstr, (ICharSequence**)&charSeq);
+    CString::New(nullstr, (ICharSequence**)&charSeq);
     CDouble::New(1, (IDouble**)&dinter);
     objlst->Set(0, (IInterface*)&zerostr);
     objlst->Set(1, dinter);

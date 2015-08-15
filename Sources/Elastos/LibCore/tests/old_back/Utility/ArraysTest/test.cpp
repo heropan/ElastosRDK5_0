@@ -285,15 +285,15 @@ int CTest::test_binarySearch_Ljava_lang_ObjectLjava_lang_Object(int argc, char* 
 
     AutoPtr<ArrayOf<IInterface*> > oArray = ArrayOf<IInterface*>::Alloc(5);
     AutoPtr<ICharSequence> str1;
-    CStringWrapper::New(String("1"), (ICharSequence**)&str1);
+    CString::New(String("1"), (ICharSequence**)&str1);
     AutoPtr<ICharSequence> str2;
-    CStringWrapper::New(String("2"), (ICharSequence**)&str2);
+    CString::New(String("2"), (ICharSequence**)&str2);
     AutoPtr<ICharSequence> str3;
-    CStringWrapper::New(String("3"), (ICharSequence**)&str3);
+    CString::New(String("3"), (ICharSequence**)&str3);
     AutoPtr<ICharSequence> str4;
-    CStringWrapper::New(String("4"), (ICharSequence**)&str4);
+    CString::New(String("4"), (ICharSequence**)&str4);
     AutoPtr<ICharSequence> str5;
-    CStringWrapper::New(String(""), (ICharSequence**)&str5);
+    CString::New(String(""), (ICharSequence**)&str5);
     oArray->Set(0, str1);
     oArray->Set(1, str2);
     oArray->Set(2, str3);
@@ -1315,7 +1315,7 @@ int CTest::test_sort_Ljava_lang_Object(int argc, char* argv[])
         assert((*reversedArray)[counter] == (*objectArray)[counter]);
 
     AutoPtr<ICharSequence> str;
-    CStringWrapper::New(String("String"), (ICharSequence**)&str);
+    CString::New(String("String"), (ICharSequence**)&str);
     ec = Arrays::FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
@@ -1361,7 +1361,7 @@ int CTest::test_sort_Ljava_lang_ObjectII(int argc, char* argv[])
     assert(ec == E_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
     AutoPtr<ICharSequence> str;
-    CStringWrapper::New(String("String"), (ICharSequence**)&str);
+    CString::New(String("String"), (ICharSequence**)&str);
     ec = Arrays::FillObjectEx(reversedArray, 0, reversedArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
@@ -1395,7 +1395,7 @@ int CTest::test_sort_Ljava_lang_ObjectIILjava_util_Comparator(int argc, char* ar
     for (Int32 counter = endIndex; counter < arraySize; counter++)
         assert((*objectArray)[counter] == (*originalArray)[counter]);
     AutoPtr<ICharSequence> str;
-    CStringWrapper::New(String("String"), (ICharSequence**)&str);
+    CString::New(String("String"), (ICharSequence**)&str);
     ec = Arrays::FillObjectEx(originalArray, 0, originalArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);
@@ -1430,7 +1430,7 @@ int CTest::test_sort_Ljava_lang_ObjectLjava_util_Comparator(int argc, char* argv
                                 (*objectArray)[counter + 1]) <= 0);
 
     AutoPtr<ICharSequence> str;
-    CStringWrapper::New(String("String"), (ICharSequence**)&str);
+    CString::New(String("String"), (ICharSequence**)&str);
     ec = Arrays::FillObjectEx(objectArray, 0, objectArray->GetLength()/2, str);
     AutoPtr<IInteger32> it;
     CInteger32::New(1, (IInteger32**)&it);

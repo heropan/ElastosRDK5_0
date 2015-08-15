@@ -13,7 +13,7 @@
 using Elastos::Utility::CCollections;
 using Elastos::Utility::ICollections;
 using Elastos::Utility::Arrays;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Org {
@@ -243,10 +243,10 @@ AutoPtr<ArrayOf<String> > CX509CertPathImpl::InitStatic()
 {
     AutoPtr<ArrayOf<IInterface*> > tmp = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New("PkiPath", (ICharSequence**)&cs);
+    CString::New("PkiPath", (ICharSequence**)&cs);
     tmp->Set(0, cs.Get());
     cs = NULL;
-    CStringWrapper::New("PKCS7", (ICharSequence**)&cs);
+    CString::New("PKCS7", (ICharSequence**)&cs);
     tmp->Set(1, cs.Get());
     AutoPtr<IArrays> arr;
     CArrays::AcquireSingleton((IArrays**)&arr);
@@ -305,7 +305,7 @@ ECode CX509CertPathImpl::GetInstance(
     VALIDATE_NOT_NULL(instance)
     Boolean isContained;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(encoding, (ICharSequence**)&cs);
+    CString::New(encoding, (ICharSequence**)&cs);
     if (sEncodings->Contains(cs.Get(), &isContained), !isContained) {
         //throw new CertificateException("Unsupported encoding");
         return E_CERTIFICATE_EXCEPTION;
@@ -383,7 +383,7 @@ ECode CX509CertPathImpl::GetInstance(
     VALIDATE_NOT_NULL(instance)
     Boolean isContained;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(encoding, (ICharSequence**)&cs);
+    CString::New(encoding, (ICharSequence**)&cs);
     if (sEncodings->Contains(cs.Get(), &isContained), !isContained) {
         //throw new CertificateException("Unsupported encoding");
         return E_CERTIFICATE_EXCEPTION;
@@ -492,7 +492,7 @@ ECode CX509CertPathImpl::GetEncodedEx(
     VALIDATE_NOT_NULL(encoded)
     Boolean isContained;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(encoding, (ICharSequence**)&cs);
+    CString::New(encoding, (ICharSequence**)&cs);
     if (sEncodings->Contains(cs.Get(), &isContained), !isContained) {
         //throw new CertificateEncodingException("Unsupported encoding");
         return E_CERTIFICATE_ENCODING_EXCEPTION;

@@ -11,12 +11,12 @@
 #include "CStreams.h"
 #include "IoUtils.h"
 #include "CLinkedHashMap.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "HeapBufferIterator.h"
 
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IDataInput;
@@ -387,7 +387,7 @@ ECode ZipFile::GetEntry(
     }
 
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(entryName, (ICharSequence**)&csq);
+    CString::New(entryName, (ICharSequence**)&csq);
     AutoPtr<IInterface> obj;
     mEntries->Get(TO_IINTERFACE(csq), (IInterface**)&obj);
     AutoPtr<IZipEntry> ze = IZipEntry::Probe(obj);
@@ -395,7 +395,7 @@ ECode ZipFile::GetEntry(
         String name(entryName);
         name += "/";
         csq = NULL;
-        CStringWrapper::New(name, (ICharSequence**)&csq);
+        CString::New(name, (ICharSequence**)&csq);
         obj = NULL;
         mEntries->Get(TO_IINTERFACE(csq), (IInterface**)&obj);
         ze = IZipEntry::Probe(obj);
@@ -627,7 +627,7 @@ ECode ZipFile::ReadCentralDir()
         String entryName;
         newEntry->GetName(&entryName);
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(entryName, (ICharSequence**)&csq);
+        CString::New(entryName, (ICharSequence**)&csq);
         AutoPtr<IInterface> oldValue;
         mEntries->Put(TO_IINTERFACE(csq), TO_IINTERFACE(newEntry), (IInterface**)&oldValue);
         if (oldValue.Get() != NULL) {

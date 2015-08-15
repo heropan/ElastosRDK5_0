@@ -2,7 +2,7 @@
 #include "HttpClientParams.h"
 #include <elastos/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Logging::Logger;
 
@@ -96,7 +96,7 @@ ECode HttpClientParams::SetCookiePolicy(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(cookiePolicy, (ICharSequence**)&cs);
+    CString::New(cookiePolicy, (ICharSequence**)&cs);
     AutoPtr<IHttpParams> p;
     return params->SetParameter(IClientPNames::COOKIE_POLICY, cs, (IHttpParams**)&p);
 }

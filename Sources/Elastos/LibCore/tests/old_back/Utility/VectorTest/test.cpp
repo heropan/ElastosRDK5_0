@@ -41,7 +41,7 @@ void CTest::setUp() {
 	        c = 48 + iVal;
 	        str += c;
 	    }
-	    CStringWrapper::New(str, (ICharSequence**)&cs);
+	    CString::New(str, (ICharSequence**)&cs);
 		tVector->AddElement(cs);
 		objArray->Set(i, cs);
 	}
@@ -99,10 +99,10 @@ int CTest::test_ConstructorII(int argc, char* argv[]) {
 	CVector::New(3, -1, (IVector**)&grow);
 	AutoPtr<ICharSequence> cs;
 	String str = String("one");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	grow->AddElement(cs);
 	str = String("two");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	grow->AddElement(cs);
 	str  = String("three");
 	grow->AddElement(cs);
@@ -130,7 +130,7 @@ int CTest::test_ConstructorLjava_util_Collection(int argc, char* argv[]) {
 	AutoPtr<ICharSequence> cs;
 	for (int i = 0; i < 100; ++i) {
 		str = String("Test") + i;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		Boolean flag = FALSE;
 		l->Add(cs, &flag);
 	}
@@ -219,7 +219,7 @@ int CTest::test_addAllILjava_util_Collection(int argc, char* argv[]) {
 	for (int i = 0; i < 100; ++i) {
 		str = String("Test") + i;
 		AutoPtr<ICharSequence> cs;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		l->Add(cs, &flag);
 	}
 	AutoPtr<IVector> v;
@@ -236,14 +236,14 @@ int CTest::test_addAllILjava_util_Collection(int argc, char* argv[]) {
 	CVector::New((IVector**)&v);
 	String str1 = String("one");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str1, (ICharSequence**)&cs);
+	CString::New(str1, (ICharSequence**)&cs);
 	v->Add(cs, &flag);
 	AutoPtr<ILinkedList> lst;
 	CLinkedList::New((ILinkedList**)&lst);
 	l = ICollection::Probe(lst);
 	l->Add(NULL, &flag);
 	String str2 = String("gah");
-	CStringWrapper::New(str2, (ICharSequence**)&cs);
+	CString::New(str2, (ICharSequence**)&cs);
 	l->Add(cs, &flag);
 	l->Add(NULL, &flag);
 	tVector->AddAllEx(50, l, &flag);
@@ -274,7 +274,7 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
 	Boolean flag = FALSE;
 	for (int i = 0; i < 100; ++i) {
 		str = String("Test ") + i;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		l->Add(cs, &flag);
 	}
 	v->AddAll(l, &flag);
@@ -297,7 +297,7 @@ int CTest::test_addAllLjava_util_Collection(int argc, char* argv[]) {
 	l = ICollection::Probe(ll);
 	l->Add(NULL, &flag);
 	String s1 = String("gah");
-	CStringWrapper::New(s1, (ICharSequence**)&cs);
+	CString::New(s1, (ICharSequence**)&cs);
 	l->Add(cs, &flag);
 	l->Add(NULL, &flag);
 	tVector->AddAll(l, &flag);
@@ -322,7 +322,7 @@ int CTest::test_addElementLjava_lang_Object(int argc, char* argv[]) {
 	AutoPtr<IVector> v = IVector::Probe(obj);
 	String str = String("Added Element");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->AddElement(cs);
 	Boolean flag = FALSE;
 	v->Contains(cs, &flag);
@@ -350,7 +350,7 @@ int CTest::test_addElementLjava_lang_Object_subtest0(int argc, char* argv[]) {
 	AutoPtr<IVector> v = IVector::Probe(obj);
 	String str = String("Added Element");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->AddElement(cs);
 	Boolean flag = FALSE;
 	v->Contains(cs, &flag);
@@ -445,13 +445,13 @@ int CTest::test_clone(int argc, char* argv[]) {
 int CTest::test_containsLjava_lang_Object(int argc, char* argv[]) {
 	String str = String("Test 42");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Boolean flag = FALSE;
 	tVector->Contains(cs, &flag);
 	assert(TRUE == flag);
 
 	str = String("Hello");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	tVector->Contains(cs, &flag);
 	assert(FALSE == flag);
 
@@ -473,7 +473,7 @@ int CTest::test_containsAllLjava_util_Collection(int argc, char* argv[]) {
 	AutoPtr<ICharSequence> cs;
 	for (int i = 0; i < 100; ++i) {
 		str = String("Test ") + i;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		s->Add(cs, &flag);
 	}
 
@@ -585,7 +585,7 @@ int CTest::test_equalsLjava_lang_Object(int argc, char* argv[]) {
 	AutoPtr<ICharSequence> cs;
 	for (int i = 0; i < 100; ++i) {
 		str = String("Test ") + i;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		v->AddElement(cs);
 	}
 
@@ -675,13 +675,13 @@ int CTest::test_hashCode(int argc, char* argv[]) {
 int CTest::test_indexOfLjava_lang_Object(int argc, char* argv[]) {
 	String str = String("Test 10");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Int32 index;
 	tVector->IndexOf(cs, &index);
 	assert(10 == index);
 
 	str = String("XXXXXXXXXXX");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	tVector->IndexOf(cs, &index);
 	assert(-1 == index);
 
@@ -695,13 +695,13 @@ int CTest::test_indexOfLjava_lang_Object(int argc, char* argv[]) {
 int CTest::test_indexOfLjava_lang_ObjectI(int argc, char* argv[]) {
 	AutoPtr<ICharSequence> cs;
 	String str = String("Test 98");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Int32 value;
 	tVector->IndexOfEx(cs, 50, &value);
 	assert(value == 98);
 
 	str = String("Test 1001");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	tVector->IndexOfEx(cs, 50, &value);
 	assert(value == -1);
 
@@ -729,7 +729,7 @@ int CTest::test_insertElementAtLjava_lang_ObjectI(int argc, char* argv[]) {
 	String preElementAt;
 	cs->ToString(&preElementAt);
 	String str = String("Inserted Element");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->InsertElementAt(cs, 99);
 	v->ElementAt(99, (IInterface**)&inter);
 	AutoPtr<ICharSequence> cs1;
@@ -789,13 +789,13 @@ int CTest::test_lastIndexOfLjava_lang_Object(int argc, char* argv[]) {
 	CVector::New(9, (IVector**)&v);
 	String str = String("Test");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	for (int i = 0; i < 9; ++i) {
 		v->AddElement(cs);
 	}
 	AutoPtr<ICharSequence> cs1;
 	String str1 = String("z");
-	CStringWrapper::New(str1, (ICharSequence**)&cs1);
+	CString::New(str1, (ICharSequence**)&cs1);
 	v->AddElement(cs1);
 	Int32 value;
 	v->LastIndexOf(cs, &value);
@@ -811,7 +811,7 @@ int CTest::test_lastIndexOfLjava_lang_Object(int argc, char* argv[]) {
 int CTest::test_lastIndexOfLjava_lang_ObjectI(int argc, char* argv[]) {
 	String str = String("Test 0");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Int32 value;
 	tVector->LastIndexOfEx(cs, 0, &value);
 	assert(0 ==  value);
@@ -840,7 +840,7 @@ int CTest::test_removeI(int argc, char* argv[]) {
 	tVector->RemoveEx(36, (IInterface**)&inter);
 	String str = String("Test 36");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Boolean flag = FALSE;
 	tVector->Contains(cs, &flag);
 	assert(FALSE == flag);
@@ -874,7 +874,7 @@ int CTest::test_removeLjava_lang_Object(int argc, char* argv[]) {
 	Boolean flag = FALSE;
 	String str = String("Test 0");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	tVector->Remove(cs, &flag); //because remove return false
 	tVector->Contains(cs, &flag);
 	assert(FALSE == flag);
@@ -904,7 +904,7 @@ int CTest::test_removeAllLjava_util_Collection(int argc, char* argv[]) {
 	Boolean flag = FALSE;
 	for (int i = 0; i < 5; ++i) {
 		str = String("Test ") + i;
-		CStringWrapper::New(str, (ICharSequence**)&cs);
+		CString::New(str, (ICharSequence**)&cs);
 		l->Add(cs, &flag);
 	}
 	v->AddElement(l);
@@ -929,7 +929,7 @@ int CTest::test_removeAllLjava_util_Collection(int argc, char* argv[]) {
 	v->Add(NULL, &flag);
 	v->Add(NULL, &flag);
 	str = String("Boom");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->Add(cs, &flag);
 	v->RemoveAll(s, &flag);
 
@@ -973,7 +973,7 @@ int CTest::test_removeElementLjava_lang_Object(int argc, char* argv[]) {
 	AutoPtr<IVector> v = IVector::Probe(obj);
 	String str = String("Test 98");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Boolean flag = FALSE;
 	v->RemoveElement(cs, &flag);
 	v->ElementAt(98, (IInterface**)&obj);
@@ -999,7 +999,7 @@ int CTest::test_removeElementAtI(int argc, char* argv[]) {
 	v->RemoveElementAt(50);
 	String str = String("Test 50");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Int32 value;
 	v->IndexOfEx(cs, 0, &value);
 	tVector->InsertElementAt(NULL, 60);
@@ -1049,7 +1049,7 @@ int CTest::test_setILjava_lang_Object(int argc, char* argv[]) {
 
 	String str = String("Wrong position");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	ECode ec = tVector->Set(-5, cs, (IInterface**)&out);
 	assert(ec == E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
@@ -1066,7 +1066,7 @@ int CTest::test_setElementAtLjava_lang_ObjectI(int argc, char* argv[]) {
 	AutoPtr<IVector> v = IVector::Probe(obj);
 	String str = String("Inserted Element");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->SetElementAt(cs, 99);
 	v->ElementAt(99, (IInterface**)&obj);
 	AutoPtr<ICharSequence> cs1;
@@ -1074,7 +1074,7 @@ int CTest::test_setElementAtLjava_lang_ObjectI(int argc, char* argv[]) {
 	assert(cs == cs1);
 
 	str = String("Wrong position");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	ECode ec = tVector->SetElementAt(cs, -5);
 	assert(ec == E_ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION);
 
@@ -1181,11 +1181,11 @@ int CTest::test_toString(int argc, char* argv[]) {
 	CVector::New((IVector**)&v);
 	str = String("one");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->AddElement(cs);
 	v->AddElement(v);
 	str = String("3");
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	v->AddElement(v);
 	String result = Object::ToString(v);
 	Int32 value = result.IndexOf(String("this"));
@@ -1210,23 +1210,23 @@ int CTest::test_removeRangeII(int argc, char* argv[]) {
 	CVector::New((IVector**)&mv);
 	String str = String("First");
 	AutoPtr<ICharSequence> cs;
-	CStringWrapper::New(str, (ICharSequence**)&cs);
+	CString::New(str, (ICharSequence**)&cs);
 	Boolean flag = FALSE;
 	mv->Add(cs, &flag);
 
 	AutoPtr<ICharSequence> cs1;
 	str = String("Second");
-	CStringWrapper::New(str, (ICharSequence**)&cs1);
+	CString::New(str, (ICharSequence**)&cs1);
 	mv->Add(cs1, &flag);
 
 	str = String("One more");
 	AutoPtr<ICharSequence> cs2;
-	CStringWrapper::New(str, (ICharSequence**)&cs2);
+	CString::New(str, (ICharSequence**)&cs2);
 	mv->Add(cs2, &flag);
 
 	str = String("Last");
 	AutoPtr<ICharSequence> cs3;
-	CStringWrapper::New(str, (ICharSequence**)&cs3);
+	CString::New(str, (ICharSequence**)&cs3);
 	mv->Add(cs3, &flag);
 
 	// mv->RemoveRange(1, 3); //need modify protected to public

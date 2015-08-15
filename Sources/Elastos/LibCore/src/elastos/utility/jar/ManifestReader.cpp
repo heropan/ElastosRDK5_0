@@ -1,11 +1,11 @@
 
 #include "ManifestReader.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CName.h"
 #include "CByteArrayOutputStream.h"
 #include "CAttributes.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
@@ -31,7 +31,7 @@ ManifestReader::ManifestReader(
     Boolean result;
     while (ReadHeader(&result), result) {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(mValue, (ICharSequence**)&csq);
+        CString::New(mValue, (ICharSequence**)&csq);
         IMap::Probe(main)->Put(mName, csq);
     }
     mEndOfMainSection = mPos;
@@ -47,7 +47,7 @@ ECode ManifestReader::ReadEntries(
     HashMap<String, AutoPtr<IAttributes> >::Iterator it;
     for (it = map.Begin(); it != map.End(); ++it) {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(it->mFirst, (ICharSequence**)&csq);
+        CString::New(it->mFirst, (ICharSequence**)&csq);
         entries->Put(csq, it->mSecond);
     }
     return NOERROR;
@@ -81,7 +81,7 @@ ECode ManifestReader::ReadEntries(
 
         while (ReadHeader(&bval), bval) {
             AutoPtr<ICharSequence> cst;
-            CStringWrapper::New(mValue, (ICharSequence**)&cst);
+            CString::New(mValue, (ICharSequence**)&cst);
             IMap::Probe(entry)->Put(mName, cst);
         }
 

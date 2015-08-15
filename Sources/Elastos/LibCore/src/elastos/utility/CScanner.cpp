@@ -7,7 +7,7 @@
 #include "CStringReader.h"
 #include "CFileInputStream.h"
 #include "CInputStreamReader.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CBigDecimal.h"
 #include "CBigInteger.h"
 #include "CByte.h"
@@ -23,7 +23,7 @@
 #include <StringUtils.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
@@ -226,7 +226,7 @@ ECode CScanner::GetNext(
     String str;
     FAIL_RETURN(Next(ANY_PATTERN, &str));
     AutoPtr<ICharSequence> sq;
-    CStringWrapper::New(str, (ICharSequence**)&sq);
+    CString::New(str, (ICharSequence**)&sq);
     *object = sq;
     REFCOUNT_ADD(*object);
     return NOERROR;

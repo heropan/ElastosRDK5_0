@@ -1,14 +1,14 @@
 #include "ServiceLoader.h"
 #include "io/CInputStreamReader.h"
 #include "io/CBufferedReader.h"
-#include "core/CStringWrapper.h"
+#include "core/CString.h"
 #include "core/Character.h"
 #include "utility/CHashSet.h"
 #include "utility/Collections.h"
 #include "core/Thread.h"
 #include "core/CSystem.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Character;
 using Elastos::Core::Thread;
 using Elastos::Core::CSystem;
@@ -115,7 +115,7 @@ ECode ServiceLoader::ServiceIterator::ReadClass()
 
 
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(classname, (ICharSequence**)&csq);
+            CString::New(classname, (ICharSequence**)&csq);
             Boolean isContains = FALSE;
             if (((ICollection::Probe(mQueue))->Contains(csq, &isContains)), !isContains) {
                 (ICollection::Probe(mQueue))->Add(csq);

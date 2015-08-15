@@ -241,9 +241,9 @@ int CTest::test_Serialization(int argc, char* argv[])
     AutoPtr<ISet> hs;
     CHashSet::New((ISet**)&hs);
     AutoPtr<ICharSequence> hello;
-    CStringWrapper::New(String("hello"), (ICharSequence**)&hello);
+    CString::New(String("hello"), (ICharSequence**)&hello);
     AutoPtr<ICharSequence> world;
-    CStringWrapper::New(String("world"), (ICharSequence**)&world);
+    CString::New(String("world"), (ICharSequence**)&world);
     Boolean isflag = FALSE;
     hs->Add(hello, &isflag);
     hs->Add(world, &isflag);

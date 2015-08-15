@@ -32,9 +32,9 @@ int CTest::testSerializationWithComparator(int argc, char* argv[])
     AutoPtr<INavigableSet> set;
     CTreeSet::New(/*String.CASE_INSENSITIVE_ORDER*/(INavigableSet**)&set);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     Boolean isflag = FALSE;
     set->Add(sqa, &isflag);
     set->Add(sqb, &isflag);
@@ -57,13 +57,13 @@ int CTest::testSubSetSerialization(int argc, char* argv[])
     AutoPtr<INavigableSet> set;
     CTreeSet::New(/*String.CASE_INSENSITIVE_ORDER*/(INavigableSet**)&set);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     AutoPtr<ICharSequence> sqc;
-    CStringWrapper::New(String("c"), (ICharSequence**)&sqc);
+    CString::New(String("c"), (ICharSequence**)&sqc);
     AutoPtr<ICharSequence> sqd;
-    CStringWrapper::New(String("d"), (ICharSequence**)&sqd);
+    CString::New(String("d"), (ICharSequence**)&sqd);
     Boolean isflag = FALSE;
     set->Add(sqa, &isflag);
     set->Add(sqb, &isflag);
@@ -89,13 +89,13 @@ int CTest::testNavigableSubSetSerialization(int argc, char* argv[])
     AutoPtr<INavigableSet> set;
     CTreeSet::New(/*String.CASE_INSENSITIVE_ORDER*/(INavigableSet**)&set);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     AutoPtr<ICharSequence> sqc;
-    CStringWrapper::New(String("c"), (ICharSequence**)&sqc);
+    CString::New(String("c"), (ICharSequence**)&sqc);
     AutoPtr<ICharSequence> sqd;
-    CStringWrapper::New(String("d"), (ICharSequence**)&sqd);
+    CString::New(String("d"), (ICharSequence**)&sqd);
     Boolean isflag = FALSE;
     set->Add(sqa, &isflag);
     set->Add(sqb, &isflag);
@@ -123,9 +123,9 @@ int CTest::testDescendingSetSerialization(int argc, char* argv[])
     AutoPtr<INavigableSet> set;
     CTreeSet::New((INavigableSet**)&set);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     Boolean isflag = FALSE;
     set->Add(sqa, &isflag);
     set->Add(sqb, &isflag);
@@ -150,9 +150,9 @@ int CTest::testJava5SerializationWithComparator(int argc, char* argv[])
     AutoPtr<INavigableSet> set;
     CTreeSet::New((INavigableSet**)&set);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     Boolean isflag = FALSE;
     set->Add(sqa, &isflag);
     set->Add(sqb, &isflag);
@@ -170,7 +170,7 @@ void CTest::assertBounded(ISortedSet* deserialized, Boolean bounded)
 
     Boolean isflag = FALSE;
     AutoPtr<ICharSequence> sqe;
-    CStringWrapper::New(String("e"), (ICharSequence**)&sqe);
+    CString::New(String("e"), (ICharSequence**)&sqe);
     if (bounded) {
         // try {
         ECode ec = deserialized->Add(sqe, &isflag);

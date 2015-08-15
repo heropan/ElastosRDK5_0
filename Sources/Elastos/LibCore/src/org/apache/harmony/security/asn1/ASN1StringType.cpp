@@ -4,7 +4,7 @@
 #include <cmdef.h>
 #include <CBerInputStream.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Org {
@@ -395,7 +395,7 @@ ECode ASN1StringType::ASN1StringTypeOfDerived::GetDecodedObject(
     //String str(reinterpret_cast<ArrayOf<Char32>* >(buffer.Get()), contentOffset, length);
     String str;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
     REFCOUNT_ADD(*object)
     return NOERROR;
@@ -410,7 +410,7 @@ ECode ASN1StringType::ASN1StringTypeOfDerived::SetEncodingContent(
     ICharSequence::Probe(content)->ToString(&str);
     AutoPtr<ArrayOf<Byte> > bytes = str.GetBytes();
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     bos->SetContent(cs.Get());
     bos->SetLength(bytes->GetLength());
     return NOERROR;
@@ -467,7 +467,7 @@ ECode ASN1StringType::GetDecodedObject(
     //String str(buffer.Get(), contentOffset, length);
     String str;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *object = cs.Get();
     REFCOUNT_ADD(*object)
     return NOERROR;
@@ -495,7 +495,7 @@ ECode ASN1StringType::SetEncodingContent(
     ICharSequence::Probe(content)->ToString(&str);
     AutoPtr<ArrayOf<Byte> > bytes = str.GetBytes();
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     bos->SetContent(cs.Get());
     bos->SetLength(bytes->GetLength());
     return NOERROR;

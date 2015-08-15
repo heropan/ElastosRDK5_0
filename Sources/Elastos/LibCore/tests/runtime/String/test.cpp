@@ -5,7 +5,7 @@
 
 using namespace Elastos;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::Regex::CSplitter;

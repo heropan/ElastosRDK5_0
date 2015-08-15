@@ -10,13 +10,13 @@
 #include "CByteArrayOutputStream.h"
 #include "StringUtils.h"
 #include "CTreeMap.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Collections.h"
 #include "CFilePermission.h"
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IComparator;
 using Elastos::IO::CFile;
 using Elastos::IO::CFilePermission;
@@ -233,10 +233,10 @@ ECode FileURLConnection::GetHeaderFields(
 
         for (Int32 i = 0; i < mHeaderKeysAndValues->GetLength(); i += 2) {
             AutoPtr<ICharSequence> key;
-            CStringWrapper::New((*mHeaderKeysAndValues)[i], (ICharSequence**)&key);
+            CString::New((*mHeaderKeysAndValues)[i], (ICharSequence**)&key);
 
             AutoPtr<ICharSequence> key2;
-            CStringWrapper::New((*mHeaderKeysAndValues)[i + 1], (ICharSequence**)&key2);
+            CString::New((*mHeaderKeysAndValues)[i + 1], (ICharSequence**)&key2);
             AutoPtr<IList> list;
             Collections::SingletonList(key2, (IList**)&list);
             IMap::Probe(headerFieldsMap)->Put(key, list);

@@ -3,11 +3,11 @@
 #include "CTreeMap.h"
 #include "CLocale.h"
 #include "StringUtils.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CChar32.h"
 #include "CoreUtils.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringUtils;
@@ -279,7 +279,7 @@ ECode CLocaleBuilder::AddUnicodeLocaleAttribute(
     }
 
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
+    CString::New(lowercaseAttribute, (ICharSequence**)&csq);
     return mAttributes->Add(csq->Probe(EIID_IInterface));
 }
 
@@ -299,7 +299,7 @@ ECode CLocaleBuilder::RemoveUnicodeLocaleAttribute(
     }
 
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(lowercaseAttribute, (ICharSequence**)&csq);
+    CString::New(lowercaseAttribute, (ICharSequence**)&csq);
     return mAttributes->Remove(csq->Probe(EIID_IInterface));
 }
 
@@ -343,7 +343,7 @@ ECode CLocaleBuilder::SetExtension(
     }
     else {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(normalizedValue, (ICharSequence**)&csq);
+        CString::New(normalizedValue, (ICharSequence**)&csq);
         mExtensions->Put(keyObj, TO_IINTERFACE(csq));
     }
     return NOERROR;
@@ -367,7 +367,7 @@ ECode CLocaleBuilder::SetUnicodeLocaleKeyword(
 
     if (type.IsNull() && mKeywords != NULL) {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(key, (ICharSequence**)&csq);
+        CString::New(key, (ICharSequence**)&csq);
         mKeywords->Remove(TO_IINTERFACE(csq));
         return NOERROR;
     }

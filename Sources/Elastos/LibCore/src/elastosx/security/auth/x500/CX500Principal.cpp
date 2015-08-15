@@ -1,10 +1,10 @@
 
 #include "CX500Principal.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringBuilder.h"
 #include "AutoLock.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 
@@ -94,7 +94,7 @@ ECode CX500Principal::GetName(
                     && subName.Substring(0, 4).Equals("OID.")) {
                 String subSubName = subName.Substring(4);
                 AutoPtr<ICharSequence> csq;
-                CStringWrapper::New(subSubName, (ICharSequence**)&csq);
+                CString::New(subSubName, (ICharSequence**)&csq);
                 Boolean b;
                 if (oidMap->ContainsKey(csq, &b), b) {
                     String replaceName;
@@ -125,7 +125,7 @@ ECode CX500Principal::GetName(
             resultName->LastIndexOf(String(","), equalIndex, &commaIndex);
             String subName = resultName->Substring(commaIndex + 1, equalIndex).Trim();
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(subName, (ICharSequence**)&csq);
+            CString::New(subName, (ICharSequence**)&csq);
             Boolean b;
             if (oidMap->ContainsKey(csq, &b), b) {
                 Int32 subOrignalEndIndex;
@@ -347,7 +347,7 @@ ECode CX500Principal::SubstituteNameFromMap(
         String subName;
         subName = (sbName->Substring(commaIndex + 1, equalIndex, &subName), subName).Trim();
         AutoPtr<ICharSequence> key;
-        CStringWrapper::New(subName, (ICharSequence**)&key);
+        CString::New(subName, (ICharSequence**)&key);
         Boolean isContained;
         keywordMap->ContainsKey(key, &isContained);
         if (isContained) {

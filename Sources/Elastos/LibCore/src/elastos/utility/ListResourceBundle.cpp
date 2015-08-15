@@ -1,9 +1,9 @@
 #include "ListResourceBundle.h"
 #include "CHashMap.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos{
 namespace Utility{
@@ -50,7 +50,7 @@ ECode ListResourceBundle::_FirstEnumeration::GetNextElement(
     }
     if (FindNext()) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(mNextElement, (ICharSequence**)&seq);
+        CString::New(mNextElement, (ICharSequence**)&seq);
         mNextElement = NULL;
         *res = (IInterface*)seq->Probe(EIID_IInterface);
         return NOERROR;
@@ -151,7 +151,7 @@ ECode ListResourceBundle::HandleGetObject(
         return E_NULL_POINTER_EXCEPTION;
     }
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(key, (ICharSequence**)&seq);
+    CString::New(key, (ICharSequence**)&seq);
     (IMap::Probe(mTable))->Get(seq, (IInterface**)&outface);
     return NOERROR;
 }

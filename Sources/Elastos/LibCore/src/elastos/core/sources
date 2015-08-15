@@ -25,7 +25,7 @@ SOURCES += Object.cpp
 SOURCES += Singleton.cpp
 
 SOURCES += exportext.cpp
-SOURCES += CStringWrapper.cpp
+SOURCES += CString.cpp
 SOURCES += CBoolean.cpp
 SOURCES += CByte.cpp
 SOURCES += CChar32.cpp

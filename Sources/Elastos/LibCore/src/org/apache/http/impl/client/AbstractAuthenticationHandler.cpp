@@ -5,7 +5,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::ILocale;
 using Elastos::Utility::IHashMap;
 using Elastos::Utility::CHashMap;
@@ -28,10 +28,10 @@ static AutoPtr<IList> InitDefaultSchemePriority()
 {
     AutoPtr<CList> list;
     CList::NewByFriend((CList**)&list);
-    AutoPtr<CStringWrapper> ntlm, digest, basic;
-    CStringWrapper::NewByFriend(String("ntlm"), (CStringWrapper**)&ntlm);
-    CStringWrapper::NewByFriend(String("digest"), (CStringWrapper**)&digest);
-    CStringWrapper::NewByFriend(String("basic"), (CStringWrapper**)&basic);
+    AutoPtr<CString> ntlm, digest, basic;
+    CString::NewByFriend(String("ntlm"), (CString**)&ntlm);
+    CString::NewByFriend(String("digest"), (CString**)&digest);
+    CString::NewByFriend(String("basic"), (CString**)&basic);
     list->Add(ntlm->Probe(EIID_IInterface));
     list->Add(digest->Probe(EIID_IInterface));
     list->Add(basic->Probe(EIID_IInterface));
@@ -84,7 +84,7 @@ ECode AbstractAuthenticationHandler::ParseChallenges(
         String s;
         buffer->Substring(beginIndex, endIndex, &s);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(s.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+        CString::New(s.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
         map->Put(cs, header);
     }
     *challenges = map;
@@ -136,7 +136,7 @@ ECode AbstractAuthenticationHandler::SelectScheme(
         String id;
         cs->ToString(&id);
         AutoPtr<ICharSequence> idcs;
-        CStringWrapper::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&idcs);
+        CString::New(id.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&idcs);
         value = NULL;
         challenges->Get(idcs, (IInterface**)&value);
         AutoPtr<IHeader> challenge = IHeader::Probe(value);

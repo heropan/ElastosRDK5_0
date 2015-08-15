@@ -37,13 +37,13 @@ int CTest::test_ConstructorI(int argc, char* argv[])
     CHashTable::New(0, (IDictionary**)&empty);
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> nothing;
-    CStringWrapper::New(String("nothing"), (ICharSequence**)&nothing);
+    CString::New(String("nothing"), (ICharSequence**)&nothing);
 
     assert((empty->Get(nothing, (IInterface**)&outface), outface) == NULL);
     AutoPtr<ICharSequence> something;
-    CStringWrapper::New(String("something"), (ICharSequence**)&something);
+    CString::New(String("something"), (ICharSequence**)&something);
     AutoPtr<ICharSequence> here;
-    CStringWrapper::New(String("here"), (ICharSequence**)&here);
+    CString::New(String("here"), (ICharSequence**)&here);
 
     empty->Put(something, here, (IInterface**)&outface);
     String str;
@@ -76,14 +76,14 @@ int CTest::test_ConstructorIF(int argc, char* argv[])
     AutoPtr<IDictionary> empty;
     CHashTable::New(0, 0.75f, (IDictionary**)&empty);
     AutoPtr<ICharSequence> nothing;
-    CStringWrapper::New(String("nothing"), (ICharSequence**)&nothing);
+    CString::New(String("nothing"), (ICharSequence**)&nothing);
     AutoPtr<IInterface> outface;
     assert((empty->Get(nothing, (IInterface**)&outface), outface) == NULL);
 
     AutoPtr<ICharSequence> something;
-    CStringWrapper::New(String("something"), (ICharSequence**)&something);
+    CString::New(String("something"), (ICharSequence**)&something);
     AutoPtr<ICharSequence> here;
-    CStringWrapper::New(String("here"), (ICharSequence**)&here);
+    CString::New(String("here"), (ICharSequence**)&here);
     empty->Put(something, here, (IInterface**)&outface);
 
     empty->Get(something, (IInterface**)&outface);
@@ -121,15 +121,15 @@ int CTest::test_ConstructorLjava_util_Map(int argc, char* argv[])
     CTreeMap::New((INavigableMap**)&navmap);
     map = IMap::Probe(navmap);
     AutoPtr<ICharSequence> firstVal;
-    CStringWrapper::New(String("Gabba"), (ICharSequence**)&firstVal);
+    CString::New(String("Gabba"), (ICharSequence**)&firstVal);
     AutoPtr<IInteger32> secondVal;
     CInteger32::New(5, (IInteger32**)&secondVal);
     AutoPtr<ICharSequence> Gah;
-    CStringWrapper::New(String("Gah"), (ICharSequence**)&Gah);
+    CString::New(String("Gah"), (ICharSequence**)&Gah);
     AutoPtr<IInterface> outface;
     ECode ec = map->Put(Gah, firstVal, (IInterface**)&outface);
     AutoPtr<ICharSequence> Ooga;
-    CStringWrapper::New(String("Ooga"), (ICharSequence**)&Ooga);
+    CString::New(String("Ooga"), (ICharSequence**)&Ooga);
     ec = map->Put(Ooga, secondVal, (IInterface**)&outface);
     AutoPtr<IDictionary> ht;
     CHashTable::New(map, (IDictionary**)&ht);
@@ -231,13 +231,13 @@ int CTest::test_containsLjava_lang_Object(int argc, char* argv[])
     // Test for method boolean
     // java.util.Hashtable.contains(java.lang.Object)
     AutoPtr<ICharSequence> val7;
-    CStringWrapper::New(String("Val 7"), (ICharSequence**)&val7);
+    CString::New(String("Val 7"), (ICharSequence**)&val7);
     Boolean isflag = FALSE;
     assert(0 && "TODO");
     AutoPtr<IMap> ht10map = IMap::Probe(ht10);
     assert(ht10map->ContainsValue(val7, &isflag));
     AutoPtr<ICharSequence> ZZZZZZZZZZZZZZZZ;
-    CStringWrapper::New(String("ZZZZZZZZZZZZZZZZ"), (ICharSequence**)&ZZZZZZZZZZZZZZZZ);
+    CString::New(String("ZZZZZZZZZZZZZZZZ"), (ICharSequence**)&ZZZZZZZZZZZZZZZZ);
     assert(!(ht10map->ContainsValue(ZZZZZZZZZZZZZZZZ, &isflag), isflag));
 
     // try {
@@ -258,12 +258,12 @@ int CTest::test_containsKeyLjava_lang_Object(int argc, char* argv[])
     // java.util.Hashtable.containsKey(java.lang.Object)
     Boolean isflag = FALSE;
     AutoPtr<ICharSequence> FKey4;
-    CStringWrapper::New(String("FKey 4"), (ICharSequence**)&FKey4);
+    CString::New(String("FKey 4"), (ICharSequence**)&FKey4);
     assert(0 && "TODO");
     AutoPtr<IMap> htfullmap = IMap::Probe(htfull);
     assert((htfullmap->ContainsKey(FKey4, &isflag), isflag));
     AutoPtr<ICharSequence> FKey99;
-    CStringWrapper::New(String("FKey 99"), (ICharSequence**)&FKey99);
+    CString::New(String("FKey 99"), (ICharSequence**)&FKey99);
     assert(!(htfullmap->ContainsKey(FKey99, &isflag), isflag));
 
     // try {
@@ -293,7 +293,7 @@ int CTest::test_containsValueLjava_lang_Object(int argc, char* argv[])
         assert((ht10map->ContainsValue(outface, &isflag), isflag));
     }
     AutoPtr<ICharSequence> nullchar;
-    CStringWrapper::New(String("NULL"), (ICharSequence**)&nullchar);
+    CString::New(String("NULL"), (ICharSequence**)&nullchar);
     assert(!(ht10map->ContainsValue(nullchar, &isflag), isflag));
 
     // try {
@@ -379,7 +379,7 @@ int CTest::test_getLjava_lang_Object(int argc, char* argv[])
     // java.util.Hashtable.get(java.lang.Object)
     AutoPtr<IDictionary> h = hashtableClone(htfull);
     AutoPtr<ICharSequence> FKey2;
-    CStringWrapper::New(String("FKey 2"), (ICharSequence**)&FKey2);
+    CString::New(String("FKey 2"), (ICharSequence**)&FKey2);
     AutoPtr<IInterface> outface;
     h->Get(FKey2, (IInterface**)&outface);
     String str;
@@ -418,9 +418,9 @@ int CTest::test_isEmpty(int argc, char* argv[])
     AutoPtr<IDictionary> ht;
     CHashTable::New((IDictionary**)&ht);
     AutoPtr<ICharSequence> int0;
-    CStringWrapper::New(String("0"), (ICharSequence**)&int0);
+    CString::New(String("0"), (ICharSequence**)&int0);
     AutoPtr<ICharSequence> strnull;
-    CStringWrapper::New(String(""), (ICharSequence**)&strnull);
+    CString::New(String(""), (ICharSequence**)&strnull);
     AutoPtr<IInterface> outface;
     ht->Put(int0, strnull, (IInterface**)&outface);
     // Thread t1 = new Thread() {
@@ -434,10 +434,10 @@ int CTest::test_isEmpty(int argc, char* argv[])
     for (int i = 1; i < 10000; i++) {
         // synchronized (ht) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(StringUtils::Int32ToString(i - 1), (ICharSequence**)&seq);
+        CString::New(StringUtils::Int32ToString(i - 1), (ICharSequence**)&seq);
         ht->Remove(seq, (IInterface**)&outface);
         AutoPtr<ICharSequence> seq2;
-        CStringWrapper::New(StringUtils::Int32ToString(i), (ICharSequence**)&seq2);
+        CString::New(StringUtils::Int32ToString(i), (ICharSequence**)&seq2);
         ht->Put(seq2, strnull, (IInterface**)&outface);
         // }
         int size = 0;
@@ -486,9 +486,9 @@ int CTest::test_keys_subtest0(int argc, char* argv[])
     AutoPtr<IDictionary> ht;
     CHashTable::New(3, (IDictionary**)&ht);
     AutoPtr<ICharSequence> initial;
-    CStringWrapper::New(String("initial"), (ICharSequence**)&initial);
+    CString::New(String("initial"), (ICharSequence**)&initial);
     AutoPtr<ICharSequence> strnull;
-    CStringWrapper::New(String(""), (ICharSequence**)&strnull);
+    CString::New(String(""), (ICharSequence**)&strnull);
     AutoPtr<IInterface> outface;
     ht->Put(initial, strnull, (IInterface**)&outface);
 PFL
@@ -543,19 +543,19 @@ int CTest::test_keySet(int argc, char* argv[])
     assert(0 && "TODO");
     AutoPtr<IMap> map = IMap::Probe(h101);
     AutoPtr<ICharSequence> seq1;
-    CStringWrapper::New(String("1"), (ICharSequence**)&seq1);
+    CString::New(String("1"), (ICharSequence**)&seq1);
     AutoPtr<IInteger32> int1;
     CInteger32::New(1, (IInteger32**)&int1);
     map->Put(int1, seq1, (IInterface**)&outface);
     AutoPtr<IInteger32> int102;
     CInteger32::New(102, (IInteger32**)&int102);
     AutoPtr<ICharSequence> seq102;
-    CStringWrapper::New(String("102"), (ICharSequence**)&seq102);
+    CString::New(String("102"), (ICharSequence**)&seq102);
     map->Put(int102, seq102, (IInterface**)&outface);
     AutoPtr<IInteger32> int203;
     CInteger32::New(203, (IInteger32**)&int203);
     AutoPtr<ICharSequence> seq203;
-    CStringWrapper::New(String("203"), (ICharSequence**)&int203);
+    CString::New(String("203"), (ICharSequence**)&int203);
     map->Put(int203, seq203, (IInterface**)&outface);
     map->KeySet((ISet**)&s);
     AutoPtr<IIterator> it;
@@ -592,7 +592,7 @@ int CTest::test_keySet(int argc, char* argv[])
     AutoPtr<IMap> map2 = IMap::Probe(midh);
     map2->Put(int1, seq1, (IInterface**)&outface);
     AutoPtr<ICharSequence> seq4;
-    CStringWrapper::New(String("4"), (ICharSequence**)&seq4);
+    CString::New(String("4"), (ICharSequence**)&seq4);
     AutoPtr<IInteger32> int4;
     CInteger32::New(4, (IInteger32**)&int4);
     map2->Put(int4, seq4, (IInterface**)&outface);
@@ -658,7 +658,7 @@ int CTest::test_putLjava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
     AutoPtr<IInteger32> key;
     CInteger32::New(100, (IInteger32**)&key);
     AutoPtr<ICharSequence> value100;
-    CStringWrapper::New(String("Value 100"), (ICharSequence**)&value100);
+    CString::New(String("Value 100"), (ICharSequence**)&value100);
     AutoPtr<IInterface> outface;
     h->Put(value100, key, (IInterface**)&outface);
     Int32 sizelen = 0;
@@ -740,7 +740,7 @@ int CTest::test_removeLjava_lang_Object(int argc, char* argv[])
     AutoPtr<IDictionary> h = hashtableClone(htfull);
     AutoPtr<IInterface> k;
     AutoPtr<ICharSequence> FKey0;
-    CStringWrapper::New(String("FKey 0"), (ICharSequence**)&FKey0);
+    CString::New(String("FKey 0"), (ICharSequence**)&FKey0);
     h->Remove(FKey0, (IInterface**)&k);
     Boolean isflag = FALSE;
     assert(!(IMap::Probe(h)->ContainsKey(FKey0, &isflag), isflag) || k == NULL);
@@ -802,16 +802,16 @@ int CTest::test_toString(int argc, char* argv[])
     // assertEquals("Incorrect toString for Empty table",
     //         "{}", h.toString());
     AutoPtr<ICharSequence> one;
-    CStringWrapper::New(String("one"), (ICharSequence**)&one);
+    CString::New(String("one"), (ICharSequence**)&one);
     AutoPtr<ICharSequence> int1;
-    CStringWrapper::New(String("1"), (ICharSequence**)&int1);
+    CString::New(String("1"), (ICharSequence**)&int1);
     AutoPtr<IInterface> outface;
     h->Put(one, int1, (IInterface**)&outface);
     AutoPtr<ICharSequence> two;
-    CStringWrapper::New(String("two"), (ICharSequence**)&two);
+    CString::New(String("two"), (ICharSequence**)&two);
     h->Put(two, h, (IInterface**)&outface);
     AutoPtr<ICharSequence> sq3;
-    CStringWrapper::New(String("3"), (ICharSequence**)&sq3);
+    CString::New(String("3"), (ICharSequence**)&sq3);
     h->Put(h, sq3, (IInterface**)&outface);
     h->Put(h, h, (IInterface**)&outface);
     // String result = h.toString();
@@ -868,15 +868,15 @@ int CTest::test_entrySet_remove(int argc, char* argv[])
     AutoPtr<IDictionary> hashtable;
     CHashTable::New((IDictionary**)&hashtable);
     AutoPtr<ICharSequence> sqmy;
-    CStringWrapper::New(String("my.nonexistent.prop"), (ICharSequence**)&sqmy);
+    CString::New(String("my.nonexistent.prop"), (ICharSequence**)&sqmy);
     AutoPtr<ICharSequence> AAA;
-    CStringWrapper::New(String("AAA"), (ICharSequence**)&AAA);
+    CString::New(String("AAA"), (ICharSequence**)&AAA);
     AutoPtr<IInterface> outface;
     hashtable->Put(sqmy, AAA, (IInterface**)&outface);
     AutoPtr<ICharSequence> sqpar;
-    CStringWrapper::New(String("parse.error"), (ICharSequence**)&sqpar);
+    CString::New(String("parse.error"), (ICharSequence**)&sqpar);
     AutoPtr<ICharSequence> BBB;
-    CStringWrapper::New(String("BBB"), (ICharSequence**)&BBB);
+    CString::New(String("BBB"), (ICharSequence**)&BBB);
     hashtable->Put(sqpar, BBB, (IInterface**)&outface);
     AutoPtr<IIterator> iterator;
     AutoPtr<ISet> outset;
@@ -933,8 +933,8 @@ void CTest::setUp()
     for (int i = 0; i < 10; i++) {
         AutoPtr<ICharSequence> vali;
         AutoPtr<ICharSequence> keyi;
-        CStringWrapper::New(String("Key") + StringUtils::Int32ToString(i), (ICharSequence**)&keyi);
-        CStringWrapper::New(String("Val") + StringUtils::Int32ToString(i), (ICharSequence**)&vali);
+        CString::New(String("Key") + StringUtils::Int32ToString(i), (ICharSequence**)&keyi);
+        CString::New(String("Val") + StringUtils::Int32ToString(i), (ICharSequence**)&vali);
         AutoPtr<IInterface> outface;
         ht10->Put(keyi, vali, (IInterface**)&outface);
         keyVector->AddElement(keyi);
@@ -944,8 +944,8 @@ void CTest::setUp()
     for (int i = 0; i < 7; i++) {
         AutoPtr<ICharSequence> vali;
         AutoPtr<ICharSequence> keyi;
-        CStringWrapper::New(String("FKey") + StringUtils::Int32ToString(i), (ICharSequence**)&keyi);
-        CStringWrapper::New(String("FVal") + StringUtils::Int32ToString(i), (ICharSequence**)&vali);
+        CString::New(String("FKey") + StringUtils::Int32ToString(i), (ICharSequence**)&keyi);
+        CString::New(String("FVal") + StringUtils::Int32ToString(i), (ICharSequence**)&vali);
         AutoPtr<IInterface> outface;
         htfull->Put(keyi, vali, (IInterface**)&outface);
     }

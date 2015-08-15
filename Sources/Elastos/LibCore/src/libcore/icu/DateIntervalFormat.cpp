@@ -5,7 +5,7 @@
 #include "CCalendarHelper.h"
 #include "AutoLock.h"
 #include "CInteger64.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include <unicode/utypes.h>
 #include <unicode/uobject.h>
 #include <unicode/locid.h>
@@ -19,7 +19,7 @@ using Elastos::Utility::CLocale;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Libcore {
 namespace ICU {
@@ -115,7 +115,7 @@ Int64 DateIntervalFormat::GetFormatter(
     String key = skeleton + "\t" + localeName + "\t" + tzName;
     AutoPtr<IInterface> tmp;
     AutoPtr<ICharSequence> csKey;
-    CStringWrapper::New(key, (ICharSequence**)&csKey);
+    CString::New(key, (ICharSequence**)&csKey);
     CACHED_FORMATTERS->Get(csKey, (IInterface**)&tmp);
     AutoPtr<IInteger64> iValue = IInteger64::Probe(tmp);
 

@@ -4,7 +4,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::IStatusLine;
 using Org::Apache::Http::IHttpEntity;
@@ -39,7 +39,7 @@ ECode BasicResponseHandler::HandleResponse(
         String str;
         EntityUtils::ToString(entity, &str);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         *value = (IInterface*)cs.Get();
         REFCOUNT_ADD(*value)
     }

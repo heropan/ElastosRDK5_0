@@ -3,17 +3,17 @@
 
 CTest::CTest()
 {
-    CStringWrapper::New(String("A"), (ICharSequence**)&csA);
-    CStringWrapper::New(String("a"), (ICharSequence**)&csa);
-    CStringWrapper::New(String("B"), (ICharSequence**)&csB);
-    CStringWrapper::New(String("b"), (ICharSequence**)&csb);
-    CStringWrapper::New(String("C"), (ICharSequence**)&csC);
-    CStringWrapper::New(String("c"), (ICharSequence**)&csc);
-    CStringWrapper::New(String("D"), (ICharSequence**)&csD);
-    CStringWrapper::New(String("d"), (ICharSequence**)&csd);
-    CStringWrapper::New(String("x"), (ICharSequence**)&csx);
-    CStringWrapper::New(String("y"), (ICharSequence**)&csy);
-    CStringWrapper::New(String("z"), (ICharSequence**)&csz);
+    CString::New(String("A"), (ICharSequence**)&csA);
+    CString::New(String("a"), (ICharSequence**)&csa);
+    CString::New(String("B"), (ICharSequence**)&csB);
+    CString::New(String("b"), (ICharSequence**)&csb);
+    CString::New(String("C"), (ICharSequence**)&csC);
+    CString::New(String("c"), (ICharSequence**)&csc);
+    CString::New(String("D"), (ICharSequence**)&csD);
+    CString::New(String("d"), (ICharSequence**)&csd);
+    CString::New(String("x"), (ICharSequence**)&csx);
+    CString::New(String("y"), (ICharSequence**)&csy);
+    CString::New(String("z"), (ICharSequence**)&csz);
 }
 
 CTest::~CTest()
@@ -403,7 +403,7 @@ int CTest::testEntrySetUsesComparatorOnly(int argc, char* argv[])
 
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> csABC;
-    CStringWrapper::New(String("ABC"), (ICharSequence**)&csABC);
+    CString::New(String("ABC"), (ICharSequence**)&csABC);
     map->Put(csABC, csa, (IInterface**)&outface);
 
     // assertTrue(map.entrySet().contains(new SimpleEntry<String, String>("abc", "a")));

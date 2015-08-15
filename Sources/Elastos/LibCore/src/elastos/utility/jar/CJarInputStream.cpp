@@ -3,7 +3,7 @@
 #include "CByteArrayOutputStream.h"
 #include "CManifest.h"
 #include "CAttributes.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "JarVerifier.h"
 #include "CJarFile.h"
 #include "CStreams.h"
@@ -14,7 +14,7 @@ using Elastos::IO::EIID_IInputStream;
 using Libcore::IO::IStreams;
 using Libcore::IO::CStreams;
 using Elastos::Utility::Zip::IZipEntry;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Utility {

@@ -1,14 +1,14 @@
 
-#ifndef __ELASTOS_CORE_CSTRINGWRAPPER_H__
-#define __ELASTOS_CORE_CSTRINGWRAPPER_H__
+#ifndef __ELASTOS_CORE_CSTRING_H__
+#define __ELASTOS_CORE_CSTRING_H__
 
-#include "_Elastos_Core_CStringWrapper.h"
+#include "_Elastos_Core_CString.h"
 #include "Object.h"
 
 namespace Elastos {
 namespace Core {
 
-CarClass(CStringWrapper)
+CarClass(CString)
     , public Object
     , public ICharSequence
 {
@@ -93,4 +93,4 @@ private:
 } // namespace Core
 } // namespace Elastos
 
-#endif // __ELASTOS_CORE_CSTRINGWRAPPER_H__
+#endif // __ELASTOS_CORE_CSTRING_H__

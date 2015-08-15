@@ -2,10 +2,10 @@
 #include "CNamespaceSupport.h"
 #include "CArrayList.h"
 #include "Collections.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::Collections;
@@ -178,7 +178,7 @@ ECode CNamespaceSupport::GetPrefixes(
         GetURI(prefix, &us);
         if (uri.Equals(us)) {
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(prefix, (ICharSequence**)&csq);
+            CString::New(prefix, (ICharSequence**)&csq);
             prefixes->Add(csq);
         }
     }
@@ -303,7 +303,7 @@ ECode CNamespaceSupport::Context::DeclarePrefix(
     }
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(prefix, (ICharSequence**)&seq);
+    CString::New(prefix, (ICharSequence**)&seq);
     return mDeclarations->Add(seq);
 }
 
@@ -445,7 +445,7 @@ AutoPtr<IEnumeration> CNamespaceSupport::Context::GetPrefixes ()
         HashMap<String, String>::Iterator iter = mPrefixTable.Begin();
         while (iter != mPrefixTable.End()) {
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(iter->mFirst, (ICharSequence**)&csq);
+            CString::New(iter->mFirst, (ICharSequence**)&csq);
             prefixes->Add(csq);
             iter++;
         }

@@ -1,14 +1,14 @@
 
 #include "CZoneInfoDB.h"
 #include "CSystem.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "ZoneInfo.h"
 #include <elastos/utility/etl/List.h>
 #include "io/CMemoryMappedFile.h"
 
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Libcore::IO::IBufferIterator;
 using Elastos::Utility::Etl::List;
@@ -67,7 +67,7 @@ AutoPtr<IZoneInfo> TzData::MyBasicLruCache::Create(
     /* [in] */ const String& id)
 {
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(id, (ICharSequence**)&csq);
+    CString::New(id, (ICharSequence**)&csq);
     AutoPtr<IInterface> obj = Create(TO_IINTERFACE(csq));
     AutoPtr<IZoneInfo> zi = IZoneInfo::Probe(obj);
     return zi;
@@ -332,7 +332,7 @@ ECode TzData::MakeTimeZone(
     /* [out] */ IZoneInfo** zone)
 {
     AutoPtr<ICharSequence> cId;
-    CStringWrapper::New(id, (ICharSequence**)&cId);
+    CString::New(id, (ICharSequence**)&cId);
     AutoPtr<IInterface> tmp;
     mCache->Get(cId, (IInterface**)&tmp);
     AutoPtr<IZoneInfo> zoneInfo = IZoneInfo::Probe(tmp);
@@ -362,7 +362,7 @@ AutoPtr<ArrayOf<Int32> > TzData::GetRawUtcOffsets()
         // Telephony shouldn't care, but someone converting a bunch of calendar
         // events might.
         AutoPtr<ICharSequence> id;
-        CStringWrapper::New((*mIds)[i], (ICharSequence**)&id);
+        CString::New((*mIds)[i], (ICharSequence**)&id);
         AutoPtr<IInterface> tmp;
         mCache->Get(id, (IInterface**)&tmp);
         AutoPtr<ITimeZone> info = ITimeZone::Probe(tmp);

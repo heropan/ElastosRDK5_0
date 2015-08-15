@@ -841,7 +841,7 @@ void testSelfCopy()
     for (Int32 i = 0; i < objArray->GetLength(); ++i) {
         String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         objArray->Set(i, seq);
     }
 
@@ -856,7 +856,7 @@ void testSelfCopy()
     for (Int32 i = 0; i < array->GetLength(); ++i) {
         String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         objArray->Set(i, seq);
     }
 
@@ -872,7 +872,7 @@ void testSelfCopy()
     for (Int32 i = 0; i < autoPtrArray->GetLength(); ++i) {
         String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         autoPtrArray->Set(i, seq);
     }
 
@@ -886,7 +886,7 @@ void testSelfCopy()
     for (Int32 i = 0; i < array->GetLength(); ++i) {
         String str =  StringUtils::ToString(i);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(str, (ICharSequence**)&seq);
+        CString::New(str, (ICharSequence**)&seq);
         autoPtrArray->Set(i, seq);
     }
 

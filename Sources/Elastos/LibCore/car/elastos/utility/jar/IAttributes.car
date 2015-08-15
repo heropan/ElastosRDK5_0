@@ -1,9 +1,9 @@
 
 module
 {
-    namespace Elastos{
-    namespace Utility{
-    namespace Jar{
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
 
     interface IName {
         GetName(
@@ -66,7 +66,7 @@ module
             [in] String val);
     }
 
-    }//Jar
-    }//Utility
-    }//Elastos
+    } //Jar
+    } //Utility
+    } //Elastos
 }

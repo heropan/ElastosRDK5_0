@@ -5,14 +5,14 @@
 #include "StringToReal.h"
 #include "IntegralToString.h"
 #include "RealToString.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CPatternHelper.h"
 #include "CSplitter.h"
 #include "Math.h"
 #include "StringBuilder.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Character;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Regex::IPatternHelper;
@@ -465,7 +465,7 @@ ECode StringUtils::Split(
         AutoPtr<IPattern> pattern;
         FAIL_RETURN(helper->Compile(regularExpression, (IPattern**)&pattern));
         AutoPtr<ICharSequence> seq;
-        FAIL_RETURN(CStringWrapper::New(input, (ICharSequence**)&seq));
+        FAIL_RETURN(CString::New(input, (ICharSequence**)&seq));
         return pattern->Split(seq, limit, array);
     }
 }

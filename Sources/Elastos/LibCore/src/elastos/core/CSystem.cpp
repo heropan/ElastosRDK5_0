@@ -1,7 +1,7 @@
 
 #include "CSystem.h"
 #include "StringBuilder.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CHashMap.h"
 #include "CProperties.h"
 #include "ICUUtil.h"
@@ -20,7 +20,7 @@
 #include "openssl/opensslv.h"
 #include "zlib.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::IMap;
@@ -239,9 +239,9 @@ ECode CSystem::GetEnvs(
             key = entry.Substring(0, index);
             value = entry.Substring(index + 1);
 
-            AutoPtr<CStringWrapper> ko, vo;
-            CStringWrapper::NewByFriend(key, (CStringWrapper**)&ko);
-            CStringWrapper::NewByFriend(value, (CStringWrapper**)&vo);
+            AutoPtr<CString> ko, vo;
+            CString::NewByFriend(key, (CString**)&ko);
+            CString::NewByFriend(value, (CString**)&vo);
             hashMap->Put(ko->Probe(EIID_IInterface), vo->Probe(EIID_IInterface), NULL);
         }
         ++p;
@@ -427,7 +427,7 @@ ECode CSystem::ClearProperty(
     GetProperties((IProperties**)&properties);
     AutoPtr<IInterface> obj;
     AutoPtr<ICharSequence> keyObj;
-    CStringWrapper::New(key, (ICharSequence**)&keyObj);
+    CString::New(key, (ICharSequence**)&keyObj);
     IMap::Probe(properties)->Remove(keyObj, (IInterface**)&obj);
     if (obj) {
         ICharSequence* seq = ICharSequence::Probe(obj);

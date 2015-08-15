@@ -2,7 +2,7 @@
 #include "AbstractPreferences.h"
 #include "CLinkedList.h"
 #include "CTreeSet.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CBase64.h"
 #include "AutoLock.h"
 #include "XMLParser.h"
@@ -13,7 +13,7 @@ using Libcore::IO::CBase64;
 using Libcore::IO::IBase64;
 using Libcore::Utility::EmptyArray;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 
 
@@ -166,7 +166,7 @@ ECode AbstractPreferences::GetChildrenNames(
         Boolean modified = FALSE;
         for (Int32 i = 0; iter != mCachedNode.End(); ++iter, i++) {
             AutoPtr<ICharSequence> name;
-            CStringWrapper::New(iter->mFirst, (ICharSequence**)&name);
+            CString::New(iter->mFirst, (ICharSequence**)&name);
             result->Add(name, &modified);
         }
 
@@ -174,7 +174,7 @@ ECode AbstractPreferences::GetChildrenNames(
         FAIL_RETURN(ChildrenNamesSpi((ArrayOf<String>**)&names));
         for (Int32 i = 0; i < names->GetLength(); i++) {
             AutoPtr<ICharSequence> name;
-            CStringWrapper::New((*names)[i], (ICharSequence**)&name);
+            CString::New((*names)[i], (ICharSequence**)&name);
             result->Add(name, &modified);
         }
 

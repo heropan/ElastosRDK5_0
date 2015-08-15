@@ -7,9 +7,9 @@ module
     interface Elastos.Core.IArrayOf;
     interface Elastos.Security.Cert.ICertificate;
 
-    namespace Elastos{
-    namespace Utility{
-    namespace Jar{
+    namespace Elastos {
+    namespace Utility {
+    namespace Jar {
 
     /**
      * A subset of the JarFile API implemented as a thin wrapper over
@@ -52,8 +52,7 @@ module
         Close();
     }
 
-
-    }//Jar
-    }//Utility
-    }//Elastos
+    } //Jar
+    } //Utility
+    } //Elastos
 }

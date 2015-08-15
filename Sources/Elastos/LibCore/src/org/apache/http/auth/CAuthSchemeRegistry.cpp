@@ -36,7 +36,7 @@ ECode CAuthSchemeRegistry::Register(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
     AutoPtr<IInterface> oldValue;
     return mRegisteredSchemes->Put(cs, factory, (IInterface**)&oldValue);
 }
@@ -49,7 +49,7 @@ ECode CAuthSchemeRegistry::Unregister(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
     AutoPtr<IInterface> value;
     return mRegisteredSchemes->Remove(cs, (IInterface**)&value);
 }
@@ -67,7 +67,7 @@ ECode CAuthSchemeRegistry::GetAuthScheme(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
+    CString::New(name.ToLowerCase(ILocale::ENGLISH), (ICharSequence**)&cs);
     AutoPtr<IAuthSchemeFactory> factory;
     mRegisteredSchemes->Get(cs, (IInterface**)&factory);
     if (factory != NULL) {

@@ -2,7 +2,7 @@
 #include "StringBuffer.h"
 #include "StringBuilder.h"
 #include "Character.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include <stdio.h>
 #include "AutoLock.h"
 
@@ -487,7 +487,7 @@ AutoPtr<ICharSequence> StringBuffer::ToCharSequence()
     String str;
     AbstractStringBuilder::Substring(0, &str);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(str, (ICharSequence**)&seq);
+    CString::New(str, (ICharSequence**)&seq);
     return seq;
 }
 

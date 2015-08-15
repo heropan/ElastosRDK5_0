@@ -2,14 +2,14 @@
 #include "CX509CRLSelector.h"
 #include "CArrayList.h"
 #include "CX500Principal.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "StringBuilder.h"
 #include "CDate.h"
 #include "X509CRL.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CArrayList;
 using Elastos::Utility::CDate;
@@ -48,7 +48,7 @@ ECode CX509CRLSelector::SetIssuers(
         String name;
         IX500Principal::Probe(issuer)->GetNameEx(IX500Principal::CANONICAL, &name);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         Boolean isModified;
         mIssuerNames->Add(cs.Get(), &isModified);
     }
@@ -102,7 +102,7 @@ ECode CX509CRLSelector::AddIssuer(
     issuer->GetNameEx(IX500Principal::CANONICAL, &name);
     Boolean isContained;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(name, (ICharSequence**)&cs);
+    CString::New(name, (ICharSequence**)&cs);
     if ((mIssuerNames->Contains(cs.Get(), &isContained), !isContained)) {
         mIssuerNames->Add(cs.Get(), &isContained);
     }
@@ -338,7 +338,7 @@ ECode CX509CRLSelector::Match(
         principal->GetNameEx(IX500Principal::CANONICAL, &name);
         Boolean isContained;
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(name, (ICharSequence**)&cs);
+        CString::New(name, (ICharSequence**)&cs);
         if ((mIssuerNames->Contains(cs.Get(), &isContained), !isContained)) {
             *result = FALSE;
             return NOERROR;

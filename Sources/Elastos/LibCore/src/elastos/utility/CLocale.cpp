@@ -3,7 +3,7 @@
 #include "ICUUtil.h"
 #include "StringBuilder.h"
 #include "CSystem.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CLocaleBuilder.h"
 #include "Collections.h"
 #include "CTreeSet.h"
@@ -19,7 +19,7 @@ using Elastos::Core::CSystem;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_ICloneable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::EIID_ISerializable;
 using Libcore::ICU::ICUUtil;
@@ -759,7 +759,7 @@ String CLocale::MakeLanguageTag()
 
     // The private use extension comes right at the very end.
     csq = NULL;
-    CStringWrapper::New(String("x"), (ICharSequence**)&csq);
+    CString::New(String("x"), (ICharSequence**)&csq);
     mExtensions->Get(csq, (IInterface**)&obj);
     String privateUse;
     ICharSequence::Probe(obj)->ToString(&privateUse);
@@ -890,7 +890,7 @@ ECode CLocale::GetUnicodeLocaleType(
 {
     VALIDATE_NOT_NULL(type);
     AutoPtr<ICharSequence> key;
-    CStringWrapper::New(keyWord, (ICharSequence**)&key);
+    CString::New(keyWord, (ICharSequence**)&key);
     AutoPtr<IInterface> obj;
     mExtensions->Get(key, (IInterface**)&obj);
     ICharSequence* csq = ICharSequence::Probe(obj);
@@ -1312,7 +1312,7 @@ void CLocale::AddUnicodeExtensionToExtensionsMap(
     AutoPtr<IChar32> ch;
     CChar32::New(ILocale::UNICODE_LOCALE_EXTENSION, (IChar32**)&ch);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(sb.ToString(), (ICharSequence**)&csq);
+    CString::New(sb.ToString(), (ICharSequence**)&csq);
     extensions->Put(TO_IINTERFACE(ch), TO_IINTERFACE(csq));
 }
 

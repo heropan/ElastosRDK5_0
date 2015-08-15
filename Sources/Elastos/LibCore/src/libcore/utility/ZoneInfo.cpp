@@ -4,7 +4,7 @@
 #include "CFormatter.h"
 #include "CInteger32.h"
 #include "CBoolean.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CDate.h"
 #include "text/CSimpleDateFormat.h"
 #include "CSystem.h"
@@ -21,7 +21,7 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CBoolean;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
 using Elastos::Utility::CDate;
@@ -534,10 +534,10 @@ ECode ZoneInfo::ToString(
         CInteger32::New((*mTransitions)[i], (IInteger32**)&integer);
         arguments->Set(1, integer);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(utcTime, (ICharSequence**)&cs);
+        CString::New(utcTime, (ICharSequence**)&cs);
         arguments->Set(2, cs);
         cs = NULL;
-        CStringWrapper::New(localTime, (ICharSequence**)&cs);
+        CString::New(localTime, (ICharSequence**)&cs);
         arguments->Set(3, cs);
         AutoPtr<IBoolean> b;
         CBoolean::New((*mIsDsts)[i],(IBoolean**)&b);

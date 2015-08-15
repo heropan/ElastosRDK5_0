@@ -47,12 +47,12 @@ int CTest::test_ConstructorI(int argc, char* argv[])
     CLinkedHashMap::New(0, (IMap**)&empty);
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> nothing;
-    CStringWrapper::New(String("nothing"), (ICharSequence**)&nothing);
+    CString::New(String("nothing"), (ICharSequence**)&nothing);
     assert((empty->Get(nothing, (IInterface**)&outface), outface) == NULL);
     AutoPtr<ICharSequence> something;
-    CStringWrapper::New(String("something"), (ICharSequence**)&something);
+    CString::New(String("something"), (ICharSequence**)&something);
     AutoPtr<ICharSequence> here;
-    CStringWrapper::New(String("here"), (ICharSequence**)&here);
+    CString::New(String("here"), (ICharSequence**)&here);
     empty->Put(something, here, (IInterface**)&outface);
     empty->Get(something, (IInterface**)&outface);
     String str= Object::ToString(outface);
@@ -82,11 +82,11 @@ int CTest::test_ConstructorIF(int argc, char* argv[])
     CLinkedHashMap::New(0, 0.75f, (IMap**)&empty);
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> nothing;
-    CStringWrapper::New(String("nothing"), (ICharSequence**)&nothing);
+    CString::New(String("nothing"), (ICharSequence**)&nothing);
     AutoPtr<ICharSequence> something;
-    CStringWrapper::New(String("something"), (ICharSequence**)&something);
+    CString::New(String("something"), (ICharSequence**)&something);
     AutoPtr<ICharSequence> here;
-    CStringWrapper::New(String("here"), (ICharSequence**)&here);
+    CString::New(String("here"), (ICharSequence**)&here);
     assert((empty->Get(nothing, (IInterface**)&outface), outface) == NULL);
     empty->Put(something, here, (IInterface**)&outface);
     empty->Get(something, (IInterface**)&outface);
@@ -127,11 +127,11 @@ int CTest::test_getLjava_lang_Object(int argc, char* argv[])
     // java.util.LinkedHashMap.get(java.lang.Object)
     AutoPtr<IInterface> outface;
     AutoPtr<ICharSequence> sqT;
-    CStringWrapper::New(String("T"), (ICharSequence**)&sqT);
+    CString::New(String("T"), (ICharSequence**)&sqT);
     hm->Get(sqT, (IInterface**)&outface);
     assert(outface == NULL);
     AutoPtr<ICharSequence> HELLO;
-    CStringWrapper::New(String("HELLO"), (ICharSequence**)&HELLO);
+    CString::New(String("HELLO"), (ICharSequence**)&HELLO);
     hm->Put(sqT, HELLO, (IInterface**)&outface);
     hm->Get(sqT, (IInterface**)&outface);
     String str = Object::ToString(outface);
@@ -140,7 +140,7 @@ int CTest::test_getLjava_lang_Object(int argc, char* argv[])
     AutoPtr<IMap> m;
     CLinkedHashMap::New((IMap**)&m);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     m->Put(NULL, test, (IInterface**)&outface);
     m->Get(NULL, (IInterface**)&outface);
     str = Object::ToString(outface);
@@ -157,9 +157,9 @@ int CTest::test_putLjava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
     // Test for method java.lang.Object
     // java.util.LinkedHashMap.put(java.lang.Object, java.lang.Object)
     AutoPtr<ICharSequence> KEY;
-    CStringWrapper::New(String("KEY"), (ICharSequence**)&KEY);
+    CString::New(String("KEY"), (ICharSequence**)&KEY);
     AutoPtr<ICharSequence> VALUE;
-    CStringWrapper::New(String("VALUE"), (ICharSequence**)&VALUE);
+    CString::New(String("VALUE"), (ICharSequence**)&VALUE);
     AutoPtr<IInterface> outface;
     hm->Put(KEY, VALUE, (IInterface**)&outface);
     String str;
@@ -172,15 +172,15 @@ int CTest::test_putLjava_lang_ObjectLjava_lang_Object(int argc, char* argv[])
     AutoPtr<IInteger16> short0;
     CInteger16::New(0, (IInteger16**)&short0);
     AutoPtr<ICharSequence> sqshort;
-    CStringWrapper::New(String("short"), (ICharSequence**)&sqshort);
+    CString::New(String("short"), (ICharSequence**)&sqshort);
     m->Put(short0, sqshort, (IInterface**)&outface);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     m->Put(NULL, test, (IInterface**)&outface);
     AutoPtr<IInteger32> int0;
     CInteger32::New(0, (IInteger32**)&int0);
     AutoPtr<ICharSequence> sqint;
-    CStringWrapper::New(String("int"), (ICharSequence**)&sqint);
+    CString::New(String("int"), (ICharSequence**)&sqint);
     m->Put(int0, sqint, (IInterface**)&outface);
     m->Get(short0, (IInterface**)&outface);
     str = Object::ToString(outface);
@@ -197,13 +197,13 @@ int CTest::test_putPresent(int argc, char* argv[])
     AutoPtr<IMap> m;
     CLinkedHashMap::New(8, 0.75f, true, (IMap**)&m);
     AutoPtr<ICharSequence> KEY;
-    CStringWrapper::New(String("KEY"), (ICharSequence**)&KEY);
+    CString::New(String("KEY"), (ICharSequence**)&KEY);
     AutoPtr<ICharSequence> VALUE;
-    CStringWrapper::New(String("VALUE"), (ICharSequence**)&VALUE);
+    CString::New(String("VALUE"), (ICharSequence**)&VALUE);
     AutoPtr<ICharSequence> WOMBAT;
-    CStringWrapper::New(String("WOMBAT"), (ICharSequence**)&WOMBAT);
+    CString::New(String("WOMBAT"), (ICharSequence**)&WOMBAT);
     AutoPtr<ICharSequence> COMBAT;
-    CStringWrapper::New(String("COMBAT"), (ICharSequence**)&COMBAT);
+    CString::New(String("COMBAT"), (ICharSequence**)&COMBAT);
     AutoPtr<IInterface> outface;
     m->Put(KEY, VALUE, (IInterface**)&outface);
     m->Put(WOMBAT, COMBAT, (IInterface**)&outface);
@@ -240,7 +240,7 @@ int CTest::test_putAllLjava_util_Map(int argc, char* argv[])
         String str;
         midint->ToString(&str);
         AutoPtr<ICharSequence> midsq;
-        CStringWrapper::New(str, (ICharSequence**)&midsq);
+        CString::New(str, (ICharSequence**)&midsq);
         hm2->Get(midsq, (IInterface**)&outface);
         IObject::Probe(outface)->Equals(midint, &isflag);
         String str2;
@@ -327,7 +327,7 @@ int CTest::test_keySet(int argc, char* argv[])
     AutoPtr<IMap> m;
     CLinkedHashMap::New((IMap**)&m);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     AutoPtr<IInterface> outface;
     m->Put(NULL, test, (IInterface**)&outface);
     AutoPtr<ISet> outsetm;
@@ -347,11 +347,11 @@ int CTest::test_keySet(int argc, char* argv[])
     AutoPtr<IInteger32> int203;
     CInteger32::New(203, (IInteger32**)&int203);
     AutoPtr<ICharSequence> sq1;
-    CStringWrapper::New(String("1"), (ICharSequence**)&sq1);
+    CString::New(String("1"), (ICharSequence**)&sq1);
     AutoPtr<ICharSequence> sq102;
-    CStringWrapper::New(String("102"), (ICharSequence**)&sq102);
+    CString::New(String("102"), (ICharSequence**)&sq102);
     AutoPtr<ICharSequence> sq203;
-    CStringWrapper::New(String("203"), (ICharSequence**)&sq203);
+    CString::New(String("203"), (ICharSequence**)&sq203);
     map->Put(int1, sq1, (IInterface**)&outface);
     map->Put(int102, sq102, (IInterface**)&outface);
     map->Put(int203, sq203, (IInterface**)&outface);
@@ -390,7 +390,7 @@ int CTest::test_keySet(int argc, char* argv[])
     AutoPtr<IInteger32> int4;
     CInteger32::New(4, (IInteger32**)&int4);
     AutoPtr<ICharSequence> sq4;
-    CStringWrapper::New(String("4"), (ICharSequence**)&sq4);
+    CString::New(String("4"), (ICharSequence**)&sq4);
     map2->Put(int1, sq1, (IInterface**)&outface);
     map2->Put(int4, sq4, (IInterface**)&outface);
     AutoPtr<IIterator> it2;
@@ -466,7 +466,7 @@ int CTest::test_removeLjava_lang_Object(int argc, char* argv[])
     String str;
     y->ToString(&str);
     AutoPtr<ICharSequence> sqy;
-    CStringWrapper::New(str, (ICharSequence**)&sqy);
+    CString::New(str, (ICharSequence**)&sqy);
     hm->Remove(sqy, (IInterface**)&outface);
     AutoPtr<IInteger32> x = IInteger32::Probe(outface);
     Boolean isflag = FALSE;
@@ -477,13 +477,13 @@ int CTest::test_removeLjava_lang_Object(int argc, char* argv[])
     hm->GetSize(&len);
     assert(len == (size - 1));
     AutoPtr<ICharSequence> LCLCLC;
-    CStringWrapper::New(String("LCLCLC"), (ICharSequence**)&LCLCLC);
+    CString::New(String("LCLCLC"), (ICharSequence**)&LCLCLC);
     assert((hm->Remove(LCLCLC, (IInterface**)&outface), outface) == NULL);
 
     AutoPtr<IMap> m;
     CLinkedHashMap::New((IMap**)&m);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     m->Put(NULL, test, (IInterface**)&outface);
     AutoPtr<IInteger32> int0;
     CInteger32::New(0, (IInteger32**)&int0);
@@ -527,9 +527,9 @@ int CTest::test_clone(int argc, char* argv[])
     AutoPtr<IMap> map;
     CLinkedHashMap::New((IMap**)&map);
     AutoPtr<ICharSequence> key;
-    CStringWrapper::New(String("key"), (ICharSequence**)&key);
+    CString::New(String("key"), (ICharSequence**)&key);
     AutoPtr<ICharSequence> value;
-    CStringWrapper::New(String("value"), (ICharSequence**)&value);
+    CString::New(String("value"), (ICharSequence**)&value);
     map->Put(key, value, (IInterface**)&outface);
     // get the keySet() and values() on the original Map
     AutoPtr<ISet> keys;
@@ -553,7 +553,7 @@ PFL
 PFL
     map2 = IMap::Probe(outface);
     AutoPtr<ICharSequence> value2;
-    CStringWrapper::New(String("value2"), (ICharSequence**)&value2);
+    CString::New(String("value2"), (ICharSequence**)&value2);
     map2->Put(key, value2, (IInterface**)&outface);
     AutoPtr<ICollection> values2;
     map2->Values((ICollection**)&values2);
@@ -566,9 +566,9 @@ PFL
     map2->Clear();
 PFL
     AutoPtr<ICharSequence> key2;
-    CStringWrapper::New(String("key2"), (ICharSequence**)&key2);
+    CString::New(String("key2"), (ICharSequence**)&key2);
     AutoPtr<ICharSequence> value3;
-    CStringWrapper::New(String("value3"), (ICharSequence**)&value3);
+    CString::New(String("value3"), (ICharSequence**)&value3);
     map2->Put(key2, value3, (IInterface**)&outface);
     AutoPtr<ISet> keys2;
     map2->KeySet((ISet**)&keys2);
@@ -588,11 +588,11 @@ int CTest::test_clone_ordered(int argc, char* argv[])
     AutoPtr<IMap> hm1;
     CLinkedHashMap::New(10, 0.75f, true, (IMap**)&hm1);
     AutoPtr<ICharSequence> sqa;
-    CStringWrapper::New(String("a"), (ICharSequence**)&sqa);
+    CString::New(String("a"), (ICharSequence**)&sqa);
     AutoPtr<ICharSequence> sqb;
-    CStringWrapper::New(String("b"), (ICharSequence**)&sqb);
+    CString::New(String("b"), (ICharSequence**)&sqb);
     AutoPtr<ICharSequence> sqc;
-    CStringWrapper::New(String("c"), (ICharSequence**)&sqc);
+    CString::New(String("c"), (ICharSequence**)&sqc);
     AutoPtr<IInterface> outface;
     hm1->Put(sqa, sqa, (IInterface**)&outface);
     hm1->Put(sqb, sqb, (IInterface**)&outface);
@@ -693,17 +693,17 @@ int CTest::test_containsKeyLjava_lang_Object(int argc, char* argv[])
     String str;
     int876->ToString(&str);
     AutoPtr<ICharSequence> sq876;
-    CStringWrapper::New(str, (ICharSequence**)&sq876);
+    CString::New(str, (ICharSequence**)&sq876);
     Boolean isflag = FALSE;
     assert((hm->ContainsKey(sq876, &isflag), isflag));
     AutoPtr<ICharSequence> KKDKDKD;
-    CStringWrapper::New(String("KKDKDKD"), (ICharSequence**)&KKDKDKD);
+    CString::New(String("KKDKDKD"), (ICharSequence**)&KKDKDKD);
     assert(!(hm->ContainsKey(KKDKDKD, &isflag), isflag));
 
     AutoPtr<IMap> m;
     CLinkedHashMap::New((IMap**)&m);
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     AutoPtr<IInterface> outface;
     m->Put(NULL, test, (IInterface**)&outface);
     assert((m->ContainsKey(NULL, &isflag), isflag));
@@ -764,7 +764,7 @@ int CTest::test_ordered_entrySet(int argc, char* argv[])
         String str;
         ii->ToString(&str);
         AutoPtr<ICharSequence> sqi;
-        CStringWrapper::New(str, (ICharSequence**)&sqi);
+        CString::New(str, (ICharSequence**)&sqi);
         lhm->Put(ii, sqi, (IInterface**)&outface);
     }
 
@@ -797,7 +797,7 @@ int CTest::test_ordered_entrySet(int argc, char* argv[])
         String str;
         ii->ToString(&str);
         AutoPtr<ICharSequence> sqi;
-        CStringWrapper::New(str, (ICharSequence**)&sqi);
+        CString::New(str, (ICharSequence**)&sqi);
         lruhm->Put(ii, sqi, (IInterface**)&outface);
     }
 
@@ -872,7 +872,7 @@ int CTest::test_ordered_keySet(int argc, char* argv[])
         String str;
         ii->ToString(&str);
         AutoPtr<ICharSequence> sqi;
-        CStringWrapper::New(str, (ICharSequence**)&sqi);
+        CString::New(str, (ICharSequence**)&sqi);
         lhm->Put(ii, sqi, (IInterface**)&outface);
     }
 
@@ -900,7 +900,7 @@ int CTest::test_ordered_keySet(int argc, char* argv[])
         String str;
         ii->ToString(&str);
         AutoPtr<ICharSequence> sqi;
-        CStringWrapper::New(str, (ICharSequence**)&sqi);
+        CString::New(str, (ICharSequence**)&sqi);
         lruhm->Put(ii, sqi, (IInterface**)&outface);
     }
 
@@ -1077,7 +1077,7 @@ void CTest::setUp()
         String str;
         inti->ToString(&str);
         AutoPtr<ICharSequence> sqi;
-        CStringWrapper::New(str, (ICharSequence**)&sqi);
+        CString::New(str, (ICharSequence**)&sqi);
         objArray2->Set(i, sqi);
     }
 
@@ -1087,7 +1087,7 @@ void CTest::setUp()
         hm->Put((*objArray2)[i], (*objArray)[i], (IInterface**)&outface);
     }
     AutoPtr<ICharSequence> test;
-    CStringWrapper::New(String("test"), (ICharSequence**)&test);
+    CString::New(String("test"), (ICharSequence**)&test);
     hm->Put(test, NULL, (IInterface**)&outface);
     hm->Put(NULL, test, (IInterface**)&outface);
 }
@@ -1106,15 +1106,15 @@ void CTest::entrySetRemoveHelper(String key, String value)
     AutoPtr<IMap> m1;
     CLinkedHashMap::New((IMap**)&m1);
     AutoPtr<ICharSequence> sqkey;
-    CStringWrapper::New(key, (ICharSequence**)&sqkey);
+    CString::New(key, (ICharSequence**)&sqkey);
     AutoPtr<ICharSequence> sqvalue;
-    CStringWrapper::New(value, (ICharSequence**)&sqvalue);
+    CString::New(value, (ICharSequence**)&sqvalue);
     AutoPtr<IInterface> outface;
     m1->Put(sqkey, sqvalue, (IInterface**)&outface);
     AutoPtr<ICharSequence> jumbo;
-    CStringWrapper::New(String("jumbo"), (ICharSequence**)&jumbo);
+    CString::New(String("jumbo"), (ICharSequence**)&jumbo);
     AutoPtr<ICharSequence> shrimp;
-    CStringWrapper::New(String("shrimp"), (ICharSequence**)&shrimp);
+    CString::New(String("shrimp"), (ICharSequence**)&shrimp);
     m1->Put(jumbo, shrimp, (IInterface**)&outface);
     AutoPtr<IMap> m2;
     CLinkedHashMap::New(m1, (IMap**)&m2);

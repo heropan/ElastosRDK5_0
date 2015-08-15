@@ -152,8 +152,8 @@ void DigestScheme::OverrideParamter(
     /* [in] */ const String& value)
 {
     AutoPtr<ICharSequence> cs1, cs2;
-    CStringWrapper::New(name, (ICharSequence**)&cs1);
-    CStringWrapper::New(value, (ICharSequence**)&cs2);
+    CString::New(name, (ICharSequence**)&cs1);
+    CString::New(value, (ICharSequence**)&cs2);
     GetParameters()->Put(cs1, cs2);
     return NOERROR;
 }
@@ -185,19 +185,19 @@ ECode DigestScheme::Authenticate(
 
     // Add method name and request-URI to the parameter map
     AutoPtr<ICharSequence> cs1;
-    CStringWrapper::New(String("methodname"), (ICharSequence**)&cs1);
+    CString::New(String("methodname"), (ICharSequence**)&cs1);
     AutoPtr<IRequestLine> line;
     request->GetRequestLine((IRequestLine**)&line);
     String method;
     line->GetMethod(&method);
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(method, (ICharSequence**)&cs2);
+    CString::New(method, (ICharSequence**)&cs2);
     GetParameters()->Put(cs1, cs2);
     String uri;
     line->GetUri(&uri);
     AutoPtr<ICharSequence> cs3, cs4;
-    CStringWrapper::New(String("uri"), (ICharSequence**)&cs3);
-    CStringWrapper::New(uri, (ICharSequence**)&cs4);
+    CString::New(String("uri"), (ICharSequence**)&cs3);
+    CString::New(uri, (ICharSequence**)&cs4);
     GetParameters()->Put(cs3, cs4);
     String charset;
     GetParameter(String("charset"), &charset);
@@ -205,8 +205,8 @@ ECode DigestScheme::Authenticate(
         AutoPtr<IHttpParams> params;
         AuthParams::GetCredentialCharset(params, &charset);
         AutoPtr<ICharSequence> cs5, cs6;
-        CStringWrapper::New(String("charset"), (ICharSequence**)&cs5);
-        CStringWrapper::New(charset, (ICharSequence**)&cs6);
+        CString::New(String("charset"), (ICharSequence**)&cs5);
+        CString::New(charset, (ICharSequence**)&cs6);
         GetParameters()->Put(cs5, cs6);
     }
     String digest;

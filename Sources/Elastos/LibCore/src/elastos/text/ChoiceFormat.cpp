@@ -5,7 +5,7 @@
 #include "Character.h"
 #include "StringUtils.h"
 #include "CChoiceFormat.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CDouble.h"
 #include "CLocaleHelper.h"
 #include "CFieldPosition.h"
@@ -21,7 +21,7 @@ using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Utility::ILocaleHelper;

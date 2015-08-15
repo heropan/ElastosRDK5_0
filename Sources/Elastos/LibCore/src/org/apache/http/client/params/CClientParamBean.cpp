@@ -2,7 +2,7 @@
 #include "CClientParamBean.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Org {
 namespace Apache {
@@ -18,7 +18,7 @@ ECode CClientParamBean::SetConnectionManagerFactoryClassName(
     /* [in] */ const String& factory)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(factory, (ICharSequence**)&cs);
+    CString::New(factory, (ICharSequence**)&cs);
     AutoPtr<IHttpParams> params;
     return mParams->SetParameter(IClientPNames::CONNECTION_MANAGER_FACTORY_CLASS_NAME, cs,
             (IHttpParams**)&params);
@@ -76,7 +76,7 @@ ECode CClientParamBean::SetCookiePolicy(
     /* [in] */ String policy)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(factory, (ICharSequence**)&cs);
+    CString::New(factory, (ICharSequence**)&cs);
     AutoPtr<IHttpParams> params;
     return mParams->SetParameter(IClientPNames::COOKIE_POLICY, cs,
             (IHttpParams**)&params);

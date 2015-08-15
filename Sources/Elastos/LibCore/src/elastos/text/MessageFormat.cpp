@@ -4,7 +4,7 @@
 #include "CChoiceFormat.h"
 #include "CMessageFormatField.h"
 #include "CMessageFormat.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CAttributedString.h"
 #include "CDecimalFormatSymbols.h"
 #include "CDouble.h"
@@ -21,7 +21,7 @@ using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IByte;
 using Elastos::Core::IInteger16;
 using Elastos::Core::IInteger32;
@@ -536,7 +536,7 @@ ECode MessageFormat::Parse(
                 offset = (Int32)(string.GetLength());
             }
 
-            CStringWrapper::New(target, (ICharSequence**)&parse);
+            CString::New(target, (ICharSequence**)&parse);
         }
         else {
             internalPos->SetIndex(offset);

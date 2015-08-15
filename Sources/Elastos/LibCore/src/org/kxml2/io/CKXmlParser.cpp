@@ -1,12 +1,12 @@
 
 #include "CKXmlParser.h"
 #include "StringUtils.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "CInputStreamReader.h"
 #include "CBoolean.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CBoolean;
 using Elastos::Core::StringUtils;
 using Elastos::IO::IInputStreamReader;
@@ -2069,7 +2069,7 @@ ECode CKXmlParser::GetProperty(
     VALIDATE_NOT_NULL(value);
 
     if (property.Equals(PROPERTY_XMLDECL_VERSION)) {
-        return CStringWrapper::New(mVersion, (ICharSequence**)value);
+        return CString::New(mVersion, (ICharSequence**)value);
     }
     else if (property.Equals(PROPERTY_XMLDECL_STANDALONE)) {
         *value = mStandalone;
@@ -2078,7 +2078,7 @@ ECode CKXmlParser::GetProperty(
     }
     else if (property.Equals(PROPERTY_LOCATION)) {
         if (!mLocation.IsNull()) {
-            return CStringWrapper::New(mLocation, (ICharSequence**)value);
+            return CString::New(mLocation, (ICharSequence**)value);
         }
         else {
             //TODO:

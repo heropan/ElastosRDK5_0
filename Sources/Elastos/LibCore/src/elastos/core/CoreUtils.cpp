@@ -7,7 +7,7 @@
 #include "CInteger64.h"
 #include "CFloat.h"
 #include "CDouble.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 
 namespace Elastos {
 namespace Core {
@@ -79,16 +79,16 @@ AutoPtr<IDouble> CoreUtils::Convert(
 AutoPtr<ICharSequence> CoreUtils::Convert(
     /* [in] */ const String & value)
 {
-    AutoPtr<CStringWrapper> obj;
-    CStringWrapper::NewByFriend(value, (CStringWrapper**)&obj);
+    AutoPtr<CString> obj;
+    CString::NewByFriend(value, (CString**)&obj);
     return (ICharSequence*)obj.Get();
 }
 
 AutoPtr<ICharSequence> CoreUtils::Convert(
     /* [in] */ const char* str)
 {
-    AutoPtr<CStringWrapper> obj;
-    CStringWrapper::NewByFriend(String(str), (CStringWrapper**)&obj);
+    AutoPtr<CString> obj;
+    CString::NewByFriend(String(str), (CString**)&obj);
     return (ICharSequence*)obj.Get();
 }
 

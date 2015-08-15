@@ -12,7 +12,7 @@
 #include "CHashMap.h"
 #include "CHashSet.h"
 #include "StringUtils.h"
-#include "CStringWrapper.h"
+#include "CString.h"
 #include "Collections.h"
 
 #include <unicode/ucat.h>
@@ -51,7 +51,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Utility::EIID_ICollection;
 using Elastos::Core::IString;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::CLocale;
 
 namespace Libcore {
@@ -300,7 +300,7 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
                 for (Int32 j = 0; j < pSplitValues->GetLength(); ++j)
                 {
                     AutoPtr<ICharSequence> csq;
-                    CStringWrapper::New((*pSplitValues)[i], (ICharSequence**)&csq);
+                    CString::New((*pSplitValues)[i], (ICharSequence**)&csq);
                     ((ICollection*)pUnicodeAttributeSet->Probe(EIID_ICollection))->Add(csq);
                 }
             } else {
@@ -314,8 +314,8 @@ ECode ICUUtil::LocaleFromIcuLocaleId(
                 } else {
                     // This is a unicode extension keyword.
                     AutoPtr<ICharSequence> csq1, csq2;
-                    CStringWrapper::New(extension.Substring(0, separatorIndex), (ICharSequence**)&csq1);
-                    CStringWrapper::New(extension.Substring(separatorIndex + 1), (ICharSequence**)&csq2);
+                    CString::New(extension.Substring(0, separatorIndex), (ICharSequence**)&csq1);
+                    CString::New(extension.Substring(separatorIndex + 1), (ICharSequence**)&csq2);
                     pUnicodeKeywordsMap->Put(csq1, csq2);
                 }
             }
@@ -371,7 +371,7 @@ ECode ICUUtil::GetBestDateTimePattern(
     locale->ToLanguageTag(&languageTag);
     String key = skeleton + "\t" + languageTag;
     AutoPtr<ICharSequence> key_cs;
-    CStringWrapper::New(key, (ICharSequence**)&key_cs);
+    CString::New(key, (ICharSequence**)&key_cs);
     synchronized(CACHED_PATTERNS) {
         AutoPtr<IInterface> tmp;
         CACHED_PATTERNS->Get(key_cs, (IInterface**)&tmp);
@@ -379,7 +379,7 @@ ECode ICUUtil::GetBestDateTimePattern(
         if (pattern_cs == NULL) {
             String pattern;
             FAIL_RETURN(GetBestDateTimePatternNative(skeleton, languageTag, &pattern))
-            CStringWrapper::New(pattern, (ICharSequence**)&pattern_cs);
+            CString::New(pattern, (ICharSequence**)&pattern_cs);
             AutoPtr<IInterface> old;
             CACHED_PATTERNS->Put(key_cs, pattern_cs, (IInterface**)&old);
         } else {
