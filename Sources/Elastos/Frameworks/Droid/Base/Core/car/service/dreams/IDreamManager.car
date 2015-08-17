@@ -9,9 +9,8 @@ module
     namespace Service {
     namespace Dreams {
 
-    /** @hide */
     [deprecated]
-    interface IDreamManager {
+    interface IIDreamManager {
         Dream();
 
         Awaken();

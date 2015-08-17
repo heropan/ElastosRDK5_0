@@ -6,11 +6,6 @@ module
     namespace Service {
     namespace Dreams {
 
-    /**
-     * Dream manager local system service interface.
-     *
-     * @hide Only for use within the system server.
-     */
     interface IDreamManagerInternal {
         /**
          * Called by the power manager to start a dream.
@@ -34,7 +29,7 @@ module
          * Called by the power manager to determine whether a dream is running.
          */
         IsDreaming(
-            [out] Boolean* ret);
+            [out] Boolean* dreaming);
     }
 
     } // namespace Dreams

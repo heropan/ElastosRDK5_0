@@ -2,6 +2,8 @@ module
 {
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IHandlerCaller;
     interface Elastos.Droid.Graphics.IRect;
 
     namespace Elastos {
@@ -12,7 +14,7 @@ module
     /**
      * @hide
      */
-    [oneway]
+     [oneway]
     interface IIWallpaperEngine {
         SetDesiredSize(
             [in] Int32 width,

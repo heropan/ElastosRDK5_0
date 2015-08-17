@@ -31,6 +31,19 @@ module
 
     merge("service/textservice/SpellCheckerService.car");
 
+    merge("service/trust/ITrustAgentServiceCallback.car");
+    merge("service/trust/ITrustAgentService.car");
+    merge("service/trust/TrustAgentService.car");
+
+    merge("service/voice/AlwaysOnHotwordDetector.car");
+    merge("service/voice/IVoiceInteractionService.car");
+    merge("service/voice/IVoiceInteractionSession.car");
+    merge("service/voice/IVoiceInteractionSessionService.car");
+    merge("service/voice/VoiceInteractionService.car");
+    merge("service/voice/VoiceInteractionServiceInfo.car");
+    merge("service/voice/VoiceInteractionSession.car");
+    merge("service/voice/VoiceInteractionSessionService.car");
+
     merge("service/wallpaper/IWallpaperConnection.car");
     merge("service/wallpaper/IWallpaperEngine.car");
     merge("service/wallpaper/IWallpaperService.car");
