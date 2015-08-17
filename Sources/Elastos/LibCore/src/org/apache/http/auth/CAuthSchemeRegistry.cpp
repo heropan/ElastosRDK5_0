@@ -107,6 +107,7 @@ ECode CAuthSchemeRegistry::SetItems(
 
 ECode CAuthSchemeRegistry::constructor()
 {
+    mRegisteredSchemes = NULL;
     CLinkedHashMap::New((IMap**)&mRegisteredSchemes);
     return NOERROR;
 }

@@ -55,6 +55,7 @@ ECode AbstractSessionOutputBuffer::Init(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     mOutstream = outstream;
+    mBuffer = NULL;
     CByteArrayBuffer::New(buffersize, (IByteArrayBuffer**)&mBuffer);
     HttpProtocolParams::GetHttpElementCharset(params, &mCharset);
     mAscii = mCharset.EqualsIgnoreCase(IHTTP::US_ASCII) || mCharset.EqualsIgnoreCase(IHTTP::ASCII);

@@ -49,6 +49,7 @@ ECode AbstractSessionInputBuffer::Init(
     mBuffer = ArrayOf<Byte>::Alloc(buffersize);
     mBufferpos = 0;
     mBufferlen = 0;
+    mLinebuffer = NULL;
     CByteArrayBuffer::New(buffersize, (IByteArrayBuffer**)&mLinebuffer);
     HttpProtocolParams::GetHttpElementCharset(params, &mCharset);
     mAscii = mCharset.EqualsIgnoreCase(IHTTP::US_ASCII) || mCharset.EqualsIgnoreCase(IHTTP::ASCII);

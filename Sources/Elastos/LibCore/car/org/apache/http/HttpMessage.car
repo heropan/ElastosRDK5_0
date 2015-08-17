@@ -160,7 +160,7 @@ module
          * @return Iterator that returns Header objects in the sequence they are
          *         sent over a connection.
          */
-        HeaderIterator(
+        GetHeaderIterator(
             [out] IHeaderIterator** headerIterator);
 
 
@@ -173,7 +173,7 @@ module
          * @return Iterator that returns Header objects with the argument name
          *         in the sequence they are sent over a connection.
          */
-        HeaderIterator(
+        GetHeaderIterator(
             [in] String name,
             [out] IHeaderIterator** headerIterator);
 

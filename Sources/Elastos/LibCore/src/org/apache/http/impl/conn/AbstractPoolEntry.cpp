@@ -65,6 +65,7 @@ ECode AbstractPoolEntry::Open(
     // opening of the connection will be tracked.
 
     //@@@ verify route against planned route?
+    mTracker = NULL;
     CRouteTracker::New(route, (IRouteTracker**)&mTracker);
     AutoPtr<IHttpHost> proxy;
     route->GetProxyHost((IHttpHost**)&proxy);

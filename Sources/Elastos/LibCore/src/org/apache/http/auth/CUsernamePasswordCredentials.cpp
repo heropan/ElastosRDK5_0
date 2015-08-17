@@ -91,6 +91,7 @@ ECode CUsernamePasswordCredentials::constructor(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     Int32 atColon = usernamePassword.indexOf(':');
+    mPrincipal = NULL;
     if (atColon >= 0) {
         CBasicUserPrincipal::New(usernamePassword.Substring(0, atColon), (IBasicUserPrincipal**)&mPrincipal);
         mPassword = usernamePassword.Substring(atColon + 1);
@@ -110,6 +111,7 @@ ECode CUsernamePasswordCredentials::constructor(
         Logger::E("CUsernamePasswordCredentials", "User name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    mPrincipal = NULL;
     CBasicUserPrincipal::New(userName, (IBasicUserPrincipal**)&mPrincipal);
     mPassword = password;
     return NOERROR;

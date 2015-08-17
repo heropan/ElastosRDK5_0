@@ -131,6 +131,7 @@ ECode CNTCredentials::constructor(
         mPassword = STring(NULL);
     }
     Int32 atSlash = username.IndexOf('/');
+    mPrincipal = NULL;
     if (atSlash >= 0) {
         CNTUserPrincipal::New(username.Substring(0, atSlash).ToUpperCase(ILocale::ENGLISH),
                 username.Substring(atSlash + 1), (INTUserPrincipal**)&mPrincipal);
@@ -152,6 +153,7 @@ ECode CNTCredentials::constructor(
         Logger::E("CNTCredentials", "User name may not be null");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
+    mPrincipal = NULL;
     CNTUserPrincipal::New(domain, userName, (INTUserPrincipal**)&mPrincipal);
     mPassword = password;
     if (!workstation.IsNull()) {

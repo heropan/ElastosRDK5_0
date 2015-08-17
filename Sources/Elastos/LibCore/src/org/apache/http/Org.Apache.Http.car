@@ -149,6 +149,21 @@ module
     merge("../../../../car/org/apache/http/io/SessionInputBuffer.car");
     merge("../../../../car/org/apache/http/io/SessionOutputBuffer.car");
 
+    merge("../../../../car/org/apache/http/message/BasicHeaderIterator.car");
+    merge("../../../../car/org/apache/http/message/BasicHeaderValueFormatter.car");
+    merge("../../../../car/org/apache/http/message/BasicHeaderValueParser.car");
+    merge("../../../../car/org/apache/http/message/BasicHttpResponse.car");
+    merge("../../../../car/org/apache/http/message/BasicLineFormatter.car");
+    merge("../../../../car/org/apache/http/message/BasicLineParser.car");
+    merge("../../../../car/org/apache/http/message/BasicListHeaderIterator.car");
+    merge("../../../../car/org/apache/http/message/BasicTokenIterator.car");
+    merge("../../../../car/org/apache/http/message/HeaderGroup.car");
+    merge("../../../../car/org/apache/http/message/HeaderValueFormatter.car");
+    merge("../../../../car/org/apache/http/message/HeaderValueParser.car");
+    merge("../../../../car/org/apache/http/message/LineFormatter.car");
+    merge("../../../../car/org/apache/http/message/LineParser.car");
+    merge("../../../../car/org/apache/http/message/ParserCursor.car");
+
     merge("../../../../car/org/apache/http/params/HttpParams.car");
 
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
@@ -1023,5 +1038,231 @@ module
     } // namespace Apache
     } // namespace Org
 
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Message {
+
+    class CBasicLineParser {
+        constructor(
+            [in] IProtocolVersion* proto);
+
+        constructor();
+
+        interface IBasicLineParser;
+        interface ILineParser;
+    }
+
+    class CBasicTokenIterator {
+        constructor(
+            [in] IHeaderIterator* headerIterator);
+
+        interface IBasicTokenIterator;
+        interface ITokenIterator;
+        interface IIterator;
+    }
+
+    class CBasicHeaderValueFormatter {
+        interface IBasicHeaderValueFormatter;
+        interface IHeaderValueFormatter;
+    }
+
+    class CBasicHeaderValueParser {
+        interface IBasicHeaderValueParser;
+        interface IHeaderValueParser;
+    }
+
+    class CBasicLineFormatter {
+        interface IBasicLineFormatter;
+        interface ILineFormatter;
+    }
+
+    class CBasicHeaderElement {
+        constructor(
+            [in] String name,
+            [in] String value,
+            [in] ArrayOf<INameValuePair*>* parameters);
+
+        constructor(
+            [in] String name,
+            [in] String value);
+
+        constructor();
+
+        interface IHeaderElement;
+        interface ICloneable;
+    }
+
+    class CHeaderGroup {
+        constructor();
+
+        interface IHeaderGroup;
+        interface ICloneable;
+    }
+
+    class CBasicHttpResponse {
+        constructor(
+            [in] IStatusLine* statusline,
+            [in] IReasonPhraseCatalog* catalog,
+            [in] ILocale* locale);
+
+        constructor(
+            [in] IStatusLine* statusline);
+
+        constructor(
+            [in] IProtocolVersion* ver,
+            [in] Int32 code,
+            [in] String reason);
+
+        constructor();
+
+        interface IBasicHttpResponse;
+        interface IHttpResponse;
+        interface IHttpMessage;
+        interface ICloneable;
+    }
+
+    class CBasicHttpRequest {
+        constructor(
+            [in] String method,
+            [in] String uri);
+
+        constructor(
+            [in] String method,
+            [in] String uri
+            [in] IProtocolVersion* ver);
+
+        constructor(
+            [in] IRequestLine* requestline);
+
+        constructor();
+
+        interface IHttpRequest;
+        interface IHttpMessage;
+        interface ICloneable;
+    }
+
+    class CBasicNameValuePair {
+        constructor(
+            [in] String name,
+            [in] String value);
+
+        constructor();
+
+        interface INameValuePair;
+        interface ICloneable;
+    }
+
+    class CBasicListHeaderIterator {
+        constructor(
+            [in] IList* headers,
+            [in] String name);
+
+        interface IBasicListHeaderIterator;
+        interface IHeaderIterator;
+        interface IIterator;
+    }
+
+    class CBasicHeaderElementIterator {
+        constructor(
+            [in] IHeaderIterator* headerIterator,
+            [in] IHeaderValueParser* parser);
+
+        constructor(
+            [in] IHeaderIterator* headerIterator);
+
+        interface IHeaderElementIterator;
+        interface IIterator;
+    }
+
+    class CBasicHeaderIterator {
+        constructor(
+            [in] ArrayOf<IHeader*>* headers,
+            [in] String name);
+
+        interface IBasicHeaderIterator;
+        interface IHeaderIterator;
+        interface IIterator;
+    }
+
+    class CBasicHeader {
+        constructor(
+            [in] String name,
+            [in] String value);
+
+        constructor();
+
+        interface IHeader;
+        interface ICloneable;
+    }
+
+    class CBufferedHeader {
+        constructor(
+            [in] ICharArrayBuffer* buffer);
+
+        constructor();
+
+        interface IFormattedHeader;
+        interface IHeader;
+        interface ICloneable;
+    }
+
+    class CBasicStatusLine {
+        constructor(
+            [in] IProtocolVersion* version,
+            [in] Int32 statusCode,
+            [in] String reasonPhrase);
+
+        constructor();
+
+        interface IStatusLine;
+        interface ICloneable;
+    }
+
+    class CParserCursor {
+        constructor(
+            [in] Int32 lowerBound,
+            [in] Int32 upperBound);
+
+        interface IParserCursor;
+    }
+
+    class CBasicRequestLine {
+        constructor(
+            [in] String method,
+            [in] String uri,
+            [in] IProtocolVersion* version);
+
+        constructor();
+
+        interface IRequestLine;
+        interface ICloneable;
+    }
+
+    class CBasicHttpEntityEnclosingRequest {
+        constructor(
+            [in] String method,
+            [in] String uri);
+
+        constructor(
+            [in] String method,
+            [in] String uri
+            [in] IProtocolVersion* ver);
+
+        constructor(
+            [in] IRequestLine* requestline);
+
+        constructor();
+
+        interface IHttpEntityEnclosingRequest;
+        interface IHttpRequest;
+        interface IHttpMessage;
+        interface ICloneable;
+    }
+
+    } // namespace Message
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
 
 }

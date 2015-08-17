@@ -91,8 +91,7 @@ ECode CRouteTracker::TunnelProxy(
     proxies->Copy(0, mProxyChain, 0, mProxyChain->GetLength())
     // System.arraycopy(this.proxyChain, 0,
     //                  proxies, 0, this.proxyChain.length);
-    (*proxies)[proxies->GetLength() - 1] = proxy;
-
+    proxies->Set(proxies->GetLength() - 1, proxy);
     mProxyChain = proxies;
     mSecure = secure;
     return NOERROR;

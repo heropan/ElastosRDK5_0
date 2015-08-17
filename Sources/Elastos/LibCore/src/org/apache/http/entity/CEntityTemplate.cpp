@@ -71,7 +71,7 @@ ECode CEntityTemplate::constructor(
     return NOERROR;
 }
 
-} // namespace Cookie
+} // namespace Entity
 } // namespace Http
 } // namespace Apache
 } // namespace Org

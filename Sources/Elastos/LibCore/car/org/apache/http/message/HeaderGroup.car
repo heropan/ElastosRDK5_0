@@ -19,7 +19,6 @@ module
      *
      * @since 4.0
      */
-    [deprecated]
     interface IHeaderGroup {
 
         /**
@@ -145,7 +144,7 @@ module
          *
          * @since 4.0
          */
-        Iterator(
+        GetIterator(
             [out] IHeaderIterator** headerIterator);
 
         /**
@@ -158,7 +157,7 @@ module
          *
          * @since 4.0
          */
-        IteratorEx2(
+        GetIterator(
             [in] String name,
             [out] IHeaderIterator** headerIterator);
 

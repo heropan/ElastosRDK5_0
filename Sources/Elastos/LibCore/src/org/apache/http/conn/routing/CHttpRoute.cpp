@@ -30,7 +30,7 @@ ECode CHttpRoute::ToChain(
         return NOERROR;
     }
     AutoPtr< ArrayOf<IHttpHost*> > proxies = ArrayOf<IHttpHost*>::Alloc(1);
-    (*proxies)[0] = proxy;
+    proxies->Set(0, proxy);
     *chain = proxies;
     REFCOUNT_ADD(*chain)
     return NOERROR;

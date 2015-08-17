@@ -78,7 +78,7 @@ ECode NetscapeDraftHeaderParser::ParseHeader(
         AutoPtr<IInterface> value;
         it->GetNext((IInterface**)&value);
         AutoPtr<INameValuePair> pair = INameValuePair::Probe(value);
-        (*pairs)[i] = pair;
+        pairs->Set(i, pair);
         i++;
     }
     AutoPtr<IBasicHeaderElement> bhe;

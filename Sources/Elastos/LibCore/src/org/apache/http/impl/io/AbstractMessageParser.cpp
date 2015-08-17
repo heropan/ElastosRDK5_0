@@ -38,7 +38,7 @@ AbstractMessageParser::AbstractMessageParser(
     params->GetInt32Parameter(ICoreConnectionPNames::MAX_HEADER_COUNT, -1, &mMaxHeaderCount);
     params.GetInt32Parameter(
             ICoreConnectionPNames::MAX_LINE_LENGTH, -1, mMaxLineLen);
-    mLineParser = (parser != NULL) ? parser : BasicLineParser::DEFAULT;
+    mLineParser = (parser != NULL) ? parser : ILineParser::Probe(BasicLineParser::DEFAULT);
 }
 
 CAR_INTERFACE_IMPL(AbstractMessageParser, Object, IHttpMessageParser)
