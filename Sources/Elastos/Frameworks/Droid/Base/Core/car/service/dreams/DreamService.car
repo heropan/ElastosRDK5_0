@@ -1,8 +1,5 @@
 module
 {
-    using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.IO.IPrintWriter;
-
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.IMotionEvent;
     interface Elastos.Droid.View.Accessibility.IAccessibilityEvent;
@@ -22,107 +19,17 @@ module
     namespace Dreams {
 
     /**
-     * Extend this class to implement a custom dream (available to the user as a "Daydream").
-     *
-     * <p>Dreams are interactive screensavers launched when a charging device is idle, or docked in a
-     * desk dock. Dreams provide another modality for apps to express themselves, tailored for
-     * an exhibition/lean-back experience.</p>
-     *
-     * <p>The {@code DreamService} lifecycle is as follows:</p>
-     * <ol>
-     *   <li>{@link #onAttachedToWindow}
-     *     <p>Use this for initial setup, such as calling {@link #setContentView setContentView()}.</li>
-     *   <li>{@link #onDreamingStarted}
-     *     <p>Your dream has started, so you should begin animations or other behaviors here.</li>
-     *   <li>{@link #onDreamingStopped}
-     *     <p>Use this to stop the things you started in {@link #onDreamingStarted}.</li>
-     *   <li>{@link #onDetachedFromWindow}
-     *     <p>Use this to dismantle resources (for example, detach from handlers
-     *        and listeners).</li>
-     * </ol>
-     *
-     * <p>In addition, onCreate and onDestroy (from the Service interface) will also be called, but
-     * initialization and teardown should be done by overriding the hooks above.</p>
-     *
-     * <p>To be available to the system, your {@code DreamService} should be declared in the
-     * manifest as follows:</p>
-     * <pre>
-     * &lt;service
-     *     android:name=".MyDream"
-     *     android:exported="true"
-     *     android:icon="@drawable/my_icon"
-     *     android:label="@string/my_dream_label" >
-     *
-     *     &lt;intent-filter>
-     *         &lt;action android:name="android.service.dreams.DreamService" />
-     *         &lt;category android:name="android.intent.category.DEFAULT" />
-     *     &lt;/intent-filter>
-     *
-     *     &lt;!-- Point to additional information for this dream (optional) -->
-     *     &lt;meta-data
-     *         android:name="android.service.dream"
-     *         android:resource="@xml/my_dream" />
-     * &lt;/service>
-     * </pre>
-     *
-     * <p>If specified with the {@code &lt;meta-data&gt;} element,
-     * additional information for the dream is defined using the
-     * {@link android.R.styleable#Dream &lt;dream&gt;} element in a separate XML file.
-     * Currently, the only addtional
-     * information you can provide is for a settings activity that allows the user to configure
-     * the dream behavior. For example:</p>
-     * <p class="code-caption">res/xml/my_dream.xml</p>
-     * <pre>
-     * &lt;dream xmlns:android="http://schemas.android.com/apk/res/android"
-     *     android:settingsActivity="com.example.app/.MyDreamSettingsActivity" />
-     * </pre>
-     * <p>This makes a Settings button available alongside your dream's listing in the
-     * system settings, which when pressed opens the specified activity.</p>
-     *
-     *
-     * <p>To specify your dream layout, call {@link #setContentView}, typically during the
-     * {@link #onAttachedToWindow} callback. For example:</p>
-     * <pre>
-     * public class MyDream extends DreamService {
-     *
-     *     &#64;Override
-     *     public void onAttachedToWindow() {
-     *         super.onAttachedToWindow();
-     *
-     *         // Exit dream upon user touch
-     *         setInteractive(false);
-     *         // Hide system UI
-     *         setFullscreen(true);
-     *         // Set the dream layout
-     *         setContentView(R.layout.dream);
-     *     }
-     * }
-     * </pre>
-     *
-     * <p>When targeting api level 21 and above, you must declare the service in your manifest file
-     * with the {@link android.Manifest.permission#BIND_DREAM_SERVICE} permission. For example:</p>
-     * <pre>
-     * &lt;service
-     *     android:name=".MyDream"
-     *     android:exported="true"
-     *     android:icon="@drawable/my_icon"
-     *     android:label="@string/my_dream_label"
-     *     android:permission="android.permission.BIND_DREAM_SERVICE">
-     *   &lt;intent-filter>
-     *     &lt;action android:name=”android.service.dreams.DreamService” />
-     *     &lt;category android:name=”android.intent.category.DEFAULT” />
-     *   &lt;/intent-filter>
-     * &lt;/service>
-     * </pre>
-     *
      * @Involve
-     * interface IWindowCallback
-     * interface Elastos.Droid.Content.IContextWrapper
-     * interface IComponentCallbacks2
-     * interface Elastos.Droid.App.IService
+     * extends Elastos.Droid.Content.IContext
+     * extends Elastos.Droid.Content.IContextWrapper
+     * extends Elastos.Droid.App.IService
+     *
+     * interface Elastos.Droid.Content.IComponentCallbacks2
+     * interface Elastos.Droid.View.IWindowCallback
      */
-    [deprecated, local]
-    interface IDreamService {
+     [local]
+    interface IDreamService // implements Window.Callback
+    {
 
         /**
          * The name of the dream manager service.
@@ -142,114 +49,6 @@ module
          * tag.
          */
         const String DREAM_META_DATA = "android.service.dream";
-
-        /**
-         * @hide
-         */
-        SetDebug(
-            [in] Boolean dbg);
-
-        // begin Window.Callback methods
-        /** {@inheritDoc} */
-        DispatchKeyEvent(
-            [in] IKeyEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        DispatchKeyShortcutEvent(
-            [in] IKeyEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        DispatchTouchEvent(
-            [in] IMotionEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        DispatchTrackballEvent(
-            [in] IMotionEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        DispatchGenericMotionEvent(
-            [in] IMotionEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        DispatchPopulateAccessibilityEvent(
-            [in] IAccessibilityEvent* event,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnCreatePanelView(
-            [in] Int32 featureId,
-            [out] IView** result);
-
-        /** {@inheritDoc} */
-        OnCreatePanelMenu(
-            [in] Int32 featureId,
-            [in] IMenu* menu,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnPreparePanel(
-            [in] Int32 featureId,
-            [in] IView* view,
-            [in] IMenu* menu,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnMenuOpened(
-            [in] Int32 featureId,
-            [in] IMenu* menu,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnMenuItemSelected(
-            [in] Int32 featureId,
-            [in] IMenuItem* item,
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnWindowAttributesChanged(
-            [in] IWindowManagerLayoutParams* attrs);
-
-        /** {@inheritDoc} */
-        OnContentChanged();
-
-        /** {@inheritDoc} */
-        OnWindowFocusChanged(
-            [in] Boolean hasFocus);
-
-        /** {@inheritDoc} */
-        OnAttachedToWindow();
-
-        /** {@inheritDoc} */
-        OnDetachedFromWindow();
-
-        /** {@inheritDoc} */
-        OnPanelClosed(
-            [in] Int32 featureId,
-            [in] IMenu* menu);
-
-        /** {@inheritDoc} */
-        OnSearchRequested(
-            [out] Boolean* result);
-
-        /** {@inheritDoc} */
-        OnWindowStartingActionMode(
-            [in] IActionModeCallback* mCallback,
-            [out] IActionMode** result);
-
-        /** {@inheritDoc} */
-        OnActionModeStarted(
-            [in] IActionMode* mode);
-
-        /** {@inheritDoc} */
-        OnActionModeFinished(
-            [in] IActionMode* mode);
-
-        // end Window.Callback methods
 
         // begin public api
         /**
@@ -432,7 +231,7 @@ module
          * @hide
          */
         IsWindowless(
-            [out] Boolean* ret);
+            [out] Boolean* windowLess);
 
         /**
          * Returns true if this dream is allowed to doze.
@@ -445,7 +244,7 @@ module
          * @hide For use by system UI components only.
          */
         CanDoze(
-            [out] Boolean* ret);
+            [out] Boolean* doze);
 
         /**
          * Starts dozing, entering a deep dreamy sleep.
@@ -502,7 +301,7 @@ module
          * @hide For use by system UI components only.
          */
         IsDozing(
-            [out] Boolean* ret);
+            [out] Boolean* dozing);
 
         /**
          * Gets the screen state to use while dozing.
@@ -564,7 +363,7 @@ module
          * @hide For use by system UI components only.
          */
         GetDozeScreenBrightness(
-            [out] Int32* ret);
+            [out] Int32* brightness);
 
         /**
          * Sets the screen brightness to use while dozing.
@@ -622,18 +421,19 @@ module
         OnWakeUp();
 
         /**
-         * Stops the dream and detaches from the window.
-         * <p>
-         * When the dream ends, the system will be allowed to go to sleep fully unless there
-         * is a reason for it to be awake such as recent user activity or wake locks being held.
-         * </p>
+         * Stops the dream, detaches from the window, and wakes up.
          */
         Finish();
 
-        DumpOnHandler(
-            [in] IFileDescriptor* fd,
-            [in] IPrintWriter* pw,
-            [in] ArrayOf<String>* args);
+        /**
+         * Wakes the dream up gently.
+         * <p>
+         * Calls {@link #onWakeUp} to give the dream a chance to perform an exit transition.
+         * When the transition is over, the dream should call {@link #finish}.
+         * </p>
+         */
+        WakeUp();
+
     }
 
     } // namespace Dreams

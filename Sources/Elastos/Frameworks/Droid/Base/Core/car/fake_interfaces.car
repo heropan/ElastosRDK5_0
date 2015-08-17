@@ -58,6 +58,8 @@ module
 
         interface IAudioAttributes {}
 
+        interface IAudioFormat{}
+
         interface IMediaPlayerOnInfoListener {}
 
         interface IMediaPlayerOnErrorListener {}
@@ -198,22 +200,6 @@ module
         interface ISystemClock {}
 
     }}} // Elastos.Droid.Os
-
-
-    //
-    // Elastos.Droid.Service
-    //
-    namespace Elastos {
-    namespace Droid {
-    namespace Service {
-
-        namespace Voice {
-            interface IIVoiceInteractionSession {}
-
-            interface IIVoiceInteractionService {}
-        }
-
-    }}} // Elastos.Droid.Service
 
     namespace Elastos {
     namespace Droid {

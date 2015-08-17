@@ -1,22 +1,14 @@
 
 module
 {
-    interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
     namespace service {
 
-    /**
-     * Internal helper for launching dreams to ensure consistency between the
-     * <code>UiModeManagerService</code> system service and the <code>Somnambulator</code> activity.
-     *
-     * @hide
-     */
-    interface ISandman {}
-
-    interface ISandmanHelper
+    interface ISandman
     {
         /**
          * Returns true if the specified dock app intent should be started.
