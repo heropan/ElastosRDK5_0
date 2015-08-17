@@ -53,6 +53,5 @@ module
     merge("../car/appwidget.car");
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
-    //
-    //merge("../car/sax.car");
+    merge("../car/sax.car");
 }
