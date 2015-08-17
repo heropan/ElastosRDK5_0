@@ -57,13 +57,13 @@ module
          * Sets start and end element listeners at the same time.
          */
         SetElementListener(
-            [in] IInterface* elementListener);
+            [in] IElementListener* elementListener);
 
         /**
          * Sets start and end text element listeners at the same time.
          */
         SetTextElementListener(
-            [in] IInterface* elementListener);
+            [in] ITextElementListener* elementListener);
 
         /**
          * Sets a listener for the start of this element.
@@ -83,9 +83,6 @@ module
         SetEndTextElementListener(
             [in] IEndTextElementListener* endTextElementListener);
 
-        ToString(
-            [out] String* str);
-
         /**
          * Clears flags on required children.
          */
@@ -96,6 +93,13 @@ module
          */
         CheckRequiredChildren(
             [in] ILocator* locator);
+    }
+
+    interface IElementHelper {
+        ToString(
+            [in] String uri,
+            [in] String localName,
+            [out] String* str);
     }
 
     } // namespace Sax
