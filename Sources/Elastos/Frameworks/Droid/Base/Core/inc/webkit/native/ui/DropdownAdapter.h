@@ -35,21 +35,21 @@ class DropdownAdapter : public ArrayAdapter<DropdownItem*>
 {
 public:
     DropdownAdapter(
-        /* in */ IContext* context,
-        /* in */ IList< AutoPtr<DropdownItem> >* items,
-        /* in */ ISet<IInteger32>* separators);
+        /* [in] */ IContext* context,
+        /* [in] */ IList< AutoPtr<DropdownItem> >* items,
+        /* [in] */ ISet<IInteger32>* separators);
 
     DropdownAdapter(
-        /* in */ IContext* context,
-        /* in */ ArrayOf< AutoPtr<DropdownItem> >* items,
-        /* in */ ISet<IInteger32>* separators);
+        /* [in] */ IContext* context,
+        /* [in] */ ArrayOf< AutoPtr<DropdownItem> >* items,
+        /* [in] */ ISet<IInteger32>* separators);
 
     //@Override
     CARAPI_(Boolean) AreAllItemsEnabled();
 
     //@Override
     CARAPI_(Boolean) IsEnabled(
-        /* in */ Int32 position);
+        /* [in] */ Int32 position);
 
 private:
     CARAPI_(Boolean) CheckAreAllItemsEnabled();

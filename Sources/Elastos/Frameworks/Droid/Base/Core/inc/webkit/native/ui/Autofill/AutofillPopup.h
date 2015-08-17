@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILLPOPUP_H_
-#define _ELASTOS_DROID_WEBKIT_UI_AUTOFILLPOPUP_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
+#define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 
 //package org.chromium.ui.autofill;
 
@@ -25,6 +25,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Autofill {
 
 /**
  * The Autofill suggestion popup that lists relevant suggestions.
@@ -50,7 +51,7 @@ public:
          * @param listIndex The index of the selected Autofill suggestion.
          */
         virtual CARAPI SuggestionSelected(
-            /* in */ Int32 listIndex) = 0;
+            /* [in] */ Int32 listIndex) = 0;
     };
 
 public:
@@ -61,16 +62,16 @@ public:
      * @param autofillCallback A object that handles the calls to the native AutofillPopupView.
      */
     AutofillPopup(
-        /* in */ IContext* context,
-        /* in */ ViewAndroidDelegate* viewAndroidDelegate,
-        /* in */ AutofillPopupDelegate* autofillCallback);
+        /* [in] */ IContext* context,
+        /* [in] */ ViewAndroidDelegate* viewAndroidDelegate,
+        /* [in] */ AutofillPopupDelegate* autofillCallback);
 
     /**
      * Filters the Autofill suggestions to the ones that we support and shows the popup.
      * @param suggestions Autofill suggestion data.
      */
     virtual CARAPI FilterAndShow(
-        /* in */ ArrayOf<AutofillSuggestion*>* suggestions);
+        /* [in] */ ArrayOf<AutofillSuggestion*>* suggestions);
 
     /**
      * Overrides the default dismiss behavior to request the controller to dismiss the view.
@@ -86,10 +87,10 @@ public:
     //@Override
     template <class T>
     CARAPI OnItemClick(
-        /* in */ AdapterView<T>* parent,
-        /* in */ View* view,
-        /* in */ Int32 position,
-        /* in */ Int64 id);
+        /* [in] */ AdapterView<T>* parent,
+        /* [in] */ View* view,
+        /* [in] */ Int32 position,
+        /* [in] */ Int64 id);
 
 private:
     /**
@@ -112,10 +113,10 @@ private:
 //@Override
 template <class T>
 ECode AutofillPopup::OnItemClick(
-    /* in */ AdapterView<T>* parent,
-    /* in */ View* view,
-    /* in */ Int32 position,
-    /* in */ Int64 id)
+    /* [in] */ AdapterView<T>* parent,
+    /* [in] */ View* view,
+    /* [in] */ Int32 position,
+    /* [in] */ Int64 id)
 {
     AutoPtr<DropdownAdapter> adapter = (DropdownAdapter*)parent->GetAdapter();
     Int32 listIndex = mSuggestions->IndexOf(adapter->GetItem(position));
@@ -124,10 +125,11 @@ ECode AutofillPopup::OnItemClick(
     return NOERROR;
 }
 
+} // namespace Autofill
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_AUTOFILLPOPUP_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLPOPUP_H_
 

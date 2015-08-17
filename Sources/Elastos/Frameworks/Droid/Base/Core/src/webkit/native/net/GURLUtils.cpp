@@ -5,30 +5,30 @@ namespace Webkit {
 namespace Net {
 
 String GURLUtils::GetOrigin(
-	/* [in] */ String url)
+    /* [in] */ String url)
 {
-	return NativeGetOrigin(url);
+    return NativeGetOrigin(url);
 }
 
 String GURLUtils::GetScheme(
-	/* [in] */ String url)
+    /* [in] */ String url)
 {
-	return NativeGetScheme(url);
+    return NativeGetScheme(url);
 }
 
 // question: how to translate a native function.
 //private static native String nativeGetOrigin(String url);
 String GURLUtils::NativeGetOrigin(
-	/* [in] */ String url)
+    /* [in] */ String url)
 {
-	return String("");
+    return String("");
 }
 
 //private static native String nativeGetScheme(String url);
 String GURLUtils::NativeGetScheme(
-	/* [in] */ String url)
+    /* [in] */ String url)
 {
-	return String("");
+    return String("");
 }
 
 } // namespace Net

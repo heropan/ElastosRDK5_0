@@ -3,6 +3,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 const String SelectFileDialog::IMAGE_TYPE("image/");
 const String SelectFileDialog::VIDEO_TYPE("video/");
@@ -14,7 +15,7 @@ const String SelectFileDialog::ANY_TYPES("*/*");
 const String SelectFileDialog::CAPTURE_IMAGE_DIRECTORY("browser-photos");
 
 //===============================================================
-// 				SelectFileDialog::GetDisplayNameTask
+//                 SelectFileDialog::GetDisplayNameTask
 //===============================================================
 SelectFileDialog::GetDisplayNameTask::GetDisplayNameTask(
     /* in */ SelectFileDialog* owner,
@@ -43,7 +44,7 @@ AutoPtr< ArrayOf<String> > SelectFileDialog::GetDisplayNameTask::DoInBackground(
 ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
     /* in */ ArrayOf<String>* result)
 {
-	VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result);
     if (!mIsMultiple) {
         mOwner->NativeOnFileSelected(mOwner->mNativeSelectFileDialog, (*mFilePaths)[0], (*result)[0]);
     }
@@ -51,7 +52,7 @@ ECode SelectFileDialog::GetDisplayNameTask::OnPostExecute(
 }
 
 //===============================================================
-// 						SelectFileDialog
+//                         SelectFileDialog
 //===============================================================
 //@Override
 ECode SelectFileDialog::OnIntentCompleted(
@@ -60,9 +61,9 @@ ECode SelectFileDialog::OnIntentCompleted(
     /* in */ IContentResolver* contentResolver,
     /* in */ IIntent* results)
 {
-	VALIDATE_NOT_NULL(window);
-	VALIDATE_NOT_NULL(contentResolver);
-	VALIDATE_NOT_NULL(results);
+    VALIDATE_NOT_NULL(window);
+    VALIDATE_NOT_NULL(contentResolver);
+    VALIDATE_NOT_NULL(results);
     if (resultCode != IActivity::RESULT_OK) {
         OnFileNotSelected();
         return NOERROR;
@@ -84,18 +85,18 @@ ECode SelectFileDialog::OnIntentCompleted(
         return NOERROR;
     }
 
-	AutoPtr<IUri> url;
-	results->GetData((IUri**)&url);
-	String scheme;
-	url->GetScheme(&scheme);
+    AutoPtr<IUri> url;
+    results->GetData((IUri**)&url);
+    String scheme;
+    url->GetScheme(&scheme);
     if (IContentResolver::SCHEME_FILE == scheme)) {
-    	String specifyPart;
-    	url->GetSchemeSpecificPart(&specifyPart);
+        String specifyPart;
+        url->GetSchemeSpecificPart(&specifyPart);
         NativeOnFileSelected(mNativeSelectFileDialog, specifyPart, String(""));
         return NOERROR;
     }
 
-	results->GetScheme(&scheme);
+    results->GetScheme(&scheme);
     if (IContentResolver::SCHEME_CONTENT == scheme)) {
         AutoPtr<GetDisplayNameTask> task = new GetDisplayNameTask(this, contentResolver, FALSE);
         task->Execute(url);
@@ -119,16 +120,16 @@ ECode SelectFileDialog::SelectFile(
     /* in */ Boolean capture,
     /* in */ WindowAndroid* window)
 {
-	VALIDATE_NOT_NULL(fileTypes);
-	VALIDATE_NOT_NULL(window);
+    VALIDATE_NOT_NULL(fileTypes);
+    VALIDATE_NOT_NULL(window);
 
     mFileTypes = ArrayList<String>::Alloc(fileTypes->GetLength());
     mCapture = capture;
 
-	AutoPtr<IIntent> chooser;
-	AutoPtr<IIntent> camera;
-	CIntent::New(IIntent::ACTION_CHOOSER, (IIntent**)&chooser);
-	CIntent::New(IMediaStore::ACTION_IMAGE_CAPTURE, (IIntent**)&camera);
+    AutoPtr<IIntent> chooser;
+    AutoPtr<IIntent> camera;
+    CIntent::New(IIntent::ACTION_CHOOSER, (IIntent**)&chooser);
+    CIntent::New(IMediaStore::ACTION_IMAGE_CAPTURE, (IIntent**)&camera);
 
     CUri::FromFile(GetFileForImageCapture(), (IUri**)&mCameraOutputUri);
     camera->PutExtra(IMediaStore::EXTRA_OUTPUT, mCameraOutputUri);
@@ -143,19 +144,19 @@ ECode SelectFileDialog::SelectFile(
     // the accept type and then display that to the user.
     if (CaptureCamera()) {
         if (window->ShowIntent(camera, this, R::string::low_memory_error))
-        	return NOERROR;
+            return NOERROR;
     }
     else if (CaptureCamcorder()) {
         if (window->ShowIntent(camcorder, this, R::string::low_memory_error))
-        	return NOERROR;
+            return NOERROR;
     }
     else if (CaptureMicrophone()) {
         if (window->ShowIntent(soundRecorder, this, R::string::low_memory_error))
-        	return NOERROR;
+            return NOERROR;
     }
 
-	AutoPtr<IIntent> getContentIntent;
-	CIntent::New(IIntent::ACTION_GET_CONTENT, (IIntent**)&getContentIntent);
+    AutoPtr<IIntent> getContentIntent;
+    CIntent::New(IIntent::ACTION_GET_CONTENT, (IIntent**)&getContentIntent);
     getContentIntent->AddCategory(IIntent::CATEGORY_OPENABLE);
     AutoPtr< ArrayOf< AutoPtr<IIntent> > > extraIntents = ArrayOf< AutoPtr<IIntent> >::Alloc(1);
     if (!NoSpecificType()) {
@@ -184,8 +185,8 @@ ECode SelectFileDialog::SelectFile(
         extraIntents->Add(soundRecorder);
     }
 
-	AutoPtr< ArrayOf< AutoPtr<IIntent> > > toArray;
-	extraIntents->ToArray(&toArray)
+    AutoPtr< ArrayOf< AutoPtr<IIntent> > > toArray;
+    extraIntents->ToArray(&toArray)
     chooser->PutExtra(IIntent::EXTRA_INITIAL_INTENTS, &toArray);
     chooser->PutExtra(IIntent::EXTRA_INTENT, getContentIntent);
 
@@ -198,29 +199,29 @@ ECode SelectFileDialog::SelectFile(
 
 AutoPtr<IFile> SelectFileDialog::GetFileForImageCapture()
 {
-	AutoPtr<IFile> externalDataDir;
-	CEnvironment::GetExternalStoragePublicDirectory(IEnvironment::DIRECTORY_DCIM, (IFile**)&externalDataDir);
+    AutoPtr<IFile> externalDataDir;
+    CEnvironment::GetExternalStoragePublicDirectory(IEnvironment::DIRECTORY_DCIM, (IFile**)&externalDataDir);
 
-	String absolutePath;
-	externalDataDir->GetAbsolutePath(&absolutePath);
-	AutoPtr<IFile> cameraDataDir;
-	CFile::New(absolutePath + IFile::separator + CAPTURE_IMAGE_DIRECTORY, (IFile**)&cameraDataDir);
+    String absolutePath;
+    externalDataDir->GetAbsolutePath(&absolutePath);
+    AutoPtr<IFile> cameraDataDir;
+    CFile::New(absolutePath + IFile::separator + CAPTURE_IMAGE_DIRECTORY, (IFile**)&cameraDataDir);
 
-	Boolean exist;
-	cameraDataDir->Exists(&exist);
+    Boolean exist;
+    cameraDataDir->Exists(&exist);
 
-	Boolean mkdir;
-	cameraDataDir->Mkdirs(&mkdir);
+    Boolean mkdir;
+    cameraDataDir->Mkdirs(&mkdir);
     if (!exist && !mkdir) {
         cameraDataDir = externalDataDir;
     }
 
-	cameraDataDir->GetAbsolutePath(&absolutePath);
-	Int32 currTimeMill = 0;
-	System::CurrentTimeMillis(&currTimeMill);
-	String strCurrTimeMill = String::ForNum(currTimeMill);
+    cameraDataDir->GetAbsolutePath(&absolutePath);
+    Int32 currTimeMill = 0;
+    System::CurrentTimeMillis(&currTimeMill);
+    String strCurrTimeMill = String::ForNum(currTimeMill);
     AutoPtr<IFile> photoFile;
-	CFile::New(absolutePath + IFile::separator + strCurrTimeMill + String(".jpg"), (IFile**)&photoFile);
+    CFile::New(absolutePath + IFile::separator + strCurrTimeMill + String(".jpg"), (IFile**)&photoFile);
 
     return photoFile;
 }
@@ -245,7 +246,7 @@ Boolean SelectFileDialog::ShouldShowTypes(
     /* in */ String specificType)
 {
     if (NoSpecificType() || mFileTypes->Contains(allTypes))
-    	return TRUE;
+        return TRUE;
     return AcceptSpecificType(specificType);
 }
 
@@ -288,14 +289,14 @@ Boolean SelectFileDialog::CaptureMicrophone()
 Boolean SelectFileDialog::AcceptSpecificType(
     /* in */ String accept)
 {
-	String type;
-	for (Int32 i=0; i<mFileTypes->Size(); ++i)
-	{
-		type = mFileTypes->Get(i);
-		if (type.StartsWith(accept)) {
+    String type;
+    for (Int32 i=0; i<mFileTypes->Size(); ++i)
+    {
+        type = mFileTypes->Get(i);
+        if (type.StartsWith(accept)) {
             return TRUE;
         }
-	}
+    }
 
     return FALSE;
 }
@@ -304,7 +305,7 @@ Boolean SelectFileDialog::AcceptSpecificType(
 AutoPtr<SelectFileDialog> SelectFileDialog::Create(
     /* in */ Int64 nativeSelectFileDialog)
 {
-	AutoPtr<SelectFileDialog> ret = new SelectFileDialog(nativeSelectFileDialog);
+    AutoPtr<SelectFileDialog> ret = new SelectFileDialog(nativeSelectFileDialog);
     return ret;
 }
 
@@ -313,15 +314,16 @@ ECode SelectFileDialog::NativeOnFileSelected(
     /* in */ String filePath,
     /* in */ String displayName)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 ECode SelectFileDialog::NativeOnFileNotSelected(
     /* in */ Int64 nativeSelectFileDialogImpl)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

@@ -4,18 +4,19 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gl {
 
 SurfaceTextureListener::SurfaceTextureListener(
-	/* in */ Int64 nativeSurfaceTextureListener)
+    /* in */ Int64 nativeSurfaceTextureListener)
 {
-	assert (nativeSurfaceTextureListener != 0);
+    assert (nativeSurfaceTextureListener != 0);
     mNativeSurfaceTextureListener = nativeSurfaceTextureListener;
 }
 
 ECode SurfaceTextureListener::OnFrameAvailable(
     /* in */ ISurfaceTexture* surfaceTexture)
 {
-	VALIDATE_NOT_NULL(surfaceTexture);
+    VALIDATE_NOT_NULL(surfaceTexture);
     NativeFrameAvailable(mNativeSurfaceTextureListener);
     return NOERROR;
 }
@@ -43,6 +44,7 @@ ECode SurfaceTextureListener::NativeDestroy(
     return NOERROR;
 }
 
+} // namespace Gl
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

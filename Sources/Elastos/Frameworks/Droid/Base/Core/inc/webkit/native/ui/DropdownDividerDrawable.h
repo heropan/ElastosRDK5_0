@@ -28,25 +28,25 @@ public:
 
     //@Override
     CARAPI Draw(
-        /* in */ ICanvas* canvas);
+        /* [in] */ ICanvas* canvas);
 
     //@Override
     CARAPI OnBoundsChange(
-        /* in */ IRect* bounds);
+        /* [in] */ IRect* bounds);
 
     virtual CARAPI SetHeight(
-        /* in */ Int32 height);
+        /* [in] */ Int32 height);
 
     virtual CARAPI SetColor(
-        /* in */ Int32 color);
+        /* [in] */ Int32 color);
 
     //@Override
     CARAPI SetAlpha(
-        /* in */ Int32 alpha);
+        /* [in] */ Int32 alpha);
 
     //@Override
     CARAPI SetColorFilter(
-        /* in */ IColorFilter* cf);
+        /* [in] */ IColorFilter* cf);
 
     //@Override
     CARAPI_(Int32) GetOpacity();

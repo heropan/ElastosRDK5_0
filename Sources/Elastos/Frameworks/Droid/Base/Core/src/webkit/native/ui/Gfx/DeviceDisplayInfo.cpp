@@ -4,12 +4,13 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gfx {
 
 DeviceDisplayInfo::DeviceDisplayInfo(
     /* in */ IContext* context)
 {
-	AutoPtr<IContext> applicationContext;
-	context->GetApplicationContext((IContext**)&applicationContext);
+    AutoPtr<IContext> applicationContext;
+    context->GetApplicationContext((IContext**)&applicationContext);
     mAppContext = applicationContext;
     mAppContext->GetSystemService(IContext::WINDOW_SERVICE, (IWindowManager**)&mWinManager);
 }
@@ -49,39 +50,39 @@ Int32 DeviceDisplayInfo::GetBitsPerPixel()
     Int32 format = GetPixelFormat();
     AutoPtr<IPixelFormat> info;
     CPixelFormat::New((IPixelFormat**)&info);
-	CPixelFormat::GetPixelFormatInfo(format, &info);
-	return info->bitsPerPixel;
+    CPixelFormat::GetPixelFormatInfo(format, &info);
+    return info->bitsPerPixel;
 }
 
 Int32 DeviceDisplayInfo::GetBitsPerComponent()
 {
     Int32 format = GetPixelFormat();
     switch (format) {
-		case IPixelFormat::RGBA_4444:
+        case IPixelFormat::RGBA_4444:
             return 4;
-		case IPixelFormat::RGBA_5551:
+        case IPixelFormat::RGBA_5551:
             return 5;
-		case IPixelFormat::RGBA_8888:
-		case IPixelFormat::RGBA_8888:
+        case IPixelFormat::RGBA_8888:
+        case IPixelFormat::RGBA_8888:
         case IPixelFormat::RGBX_8888:
         case IPixelFormat::RGBA_8888:
         case IPixelFormat::RGBA_8888:
         case IPixelFormat::RGBX_8888:
         case IPixelFormat::RGB_888:
             return 8;
-		case IPixelFormat::RGB_332:
+        case IPixelFormat::RGB_332:
             return 2;
-		case IPixelFormat::RGB_565:
+        case IPixelFormat::RGB_565:
             return 5;
-		case IPixelFormat::A_8:
-		case IPixelFormat::A_8:
+        case IPixelFormat::A_8:
+        case IPixelFormat::A_8:
         case IPixelFormat::LA_88:
         case IPixelFormat::A_8:
         case IPixelFormat::A_8:
         case IPixelFormat::LA_88:
         case IPixelFormat::L_8:
             return 0;
-		default:
+        default:
             return 8;
     }
 }
@@ -94,7 +95,7 @@ Double DeviceDisplayInfo::GetDIPScale()
 
 ECode DeviceDisplayInfo::UpdateNativeSharedDisplayInfo()
 {
-	NativeUpdateSharedDeviceDisplayInfo(
+    NativeUpdateSharedDeviceDisplayInfo(
                 GetDisplayHeight(), GetDisplayWidth(),
                 GetPhysicalDisplayHeight(), GetPhysicalDisplayWidth(),
                 GetBitsPerPixel(), GetBitsPerComponent(),
@@ -105,7 +106,7 @@ ECode DeviceDisplayInfo::UpdateNativeSharedDisplayInfo()
 AutoPtr<DeviceDisplayInfo> DeviceDisplayInfo::Create(
     /* in */ IContext* context)
 {
-	AutoPtr<DeviceDisplayInfo> deviceDisplayInfo = new DeviceDisplayInfo(context);
+    AutoPtr<DeviceDisplayInfo> deviceDisplayInfo = new DeviceDisplayInfo(context);
     return deviceDisplayInfo;
 }
 
@@ -119,24 +120,24 @@ Int32 DeviceDisplayInfo::GetPixelFormat()
 
 Int32 DeviceDisplayInfo::GetSmallestDIPWidth()
 {
-	AutoPtr<IResources> resources;
-	mAppContext->GetResources((IResources**)&resources);
+    AutoPtr<IResources> resources;
+    mAppContext->GetResources((IResources**)&resources);
 
-	AutoPtr<IConfiguration> configuration;
-	resources->GetConfiguration((IConfiguration**)&configuration);
+    AutoPtr<IConfiguration> configuration;
+    resources->GetConfiguration((IConfiguration**)&configuration);
     return configuration->smallestScreenWidthDp;
 }
 
 Int32 DeviceDisplayInfo::GetRotationDegrees()
 {
     switch (GetDisplay()->GetRotation()) {
-		case ISurface::ROTATION_0:
+        case ISurface::ROTATION_0:
             return 0;
-		case ISurface::ROTATION_90:
+        case ISurface::ROTATION_90:
             return 90;
-		case ISurface::ROTATION_180:
+        case ISurface::ROTATION_180:
             return 180;
-		case ISurface::ROTATION_270:
+        case ISurface::ROTATION_270:
             return 270;
     }
     assert (FALSE);
@@ -145,8 +146,8 @@ Int32 DeviceDisplayInfo::GetRotationDegrees()
 
 AutoPtr<IDisplay> DeviceDisplayInfo::GetDisplay()
 {
-	AutoPtr<IDisplay> display;
-	mWinManager->GetDefaultDisplay((IDisplay**)&display);
+    AutoPtr<IDisplay> display;
+    mWinManager->GetDefaultDisplay((IDisplay**)&display);
     return display;
 }
 
@@ -164,6 +165,7 @@ ECode DeviceDisplayInfo::NativeUpdateSharedDeviceDisplayInfo(
     return NOERROR;
 }
 
+} // namespace Gfx
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

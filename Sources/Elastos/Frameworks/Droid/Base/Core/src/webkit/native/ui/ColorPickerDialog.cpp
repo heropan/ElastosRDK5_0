@@ -5,7 +5,7 @@ namespace Webkit {
 namespace Ui {
 
 //===============================================================
-// 		ColorPickerDialog::InnerPositiveButtonClickListener
+//         ColorPickerDialog::InnerPositiveButtonClickListener
 //===============================================================
 ColorPickerDialog::InnerPositiveButtonClickListener::InnerPositiveButtonClickListener(
     /* in */ ColorPickerDialog* dialog)
@@ -18,13 +18,13 @@ ECode ColorPickerDialog::InnerPositiveButtonClickListener::OnClick(
     /* in */ IDialogInterface* dialogInterface,
     /* in */ Int32 i)
 {
-	VALIDATE_NOT_NULL(dialogInterface);
-	mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mCurrentColor);
-	return NOERROR;
+    VALIDATE_NOT_NULL(dialogInterface);
+    mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mCurrentColor);
+    return NOERROR;
 }
 
 //===============================================================
-// 		ColorPickerDialog::InnerNegativeButtonClickListener
+//         ColorPickerDialog::InnerNegativeButtonClickListener
 //===============================================================
 ColorPickerDialog::InnerNegativeButtonClickListener::InnerNegativeButtonClickListener(
     /* in */ ColorPickerDialog* dialog)
@@ -37,13 +37,13 @@ ECode ColorPickerDialog::InnerNegativeButtonClickListener::OnClick(
     /* in */ IDialogInterface* dialogInterface,
     /* in */ Int32 i)
 {
-	VALIDATE_NOT_NULL(dialogInterface);
-	mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mInitialColor);
-	return NOERROR;
+    VALIDATE_NOT_NULL(dialogInterface);
+    mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mInitialColor);
+    return NOERROR;
 }
 
 //===============================================================
-// 			ColorPickerDialog::InnerOnCancelListener
+//             ColorPickerDialog::InnerOnCancelListener
 //===============================================================
 ColorPickerDialog::InnerOnCancelListener::InnerOnCancelListener(
     /* in */ ColorPickerDialog* dialog)
@@ -55,13 +55,13 @@ ColorPickerDialog::InnerOnCancelListener::InnerOnCancelListener(
 ECode ColorPickerDialog::InnerOnCancelListener::OnCancel(
     /* in */ IDialogInterface* arg0)
 {
-	VALIDATE_NOT_NULL(arg0);
-	mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mInitialColor);
-	return NOERROR;
+    VALIDATE_NOT_NULL(arg0);
+    mColorPickerDialog->TryNotifyColorSet(mColorPickerDialog->mInitialColor);
+    return NOERROR;
 }
 
 //===============================================================
-// 			ColorPickerDialog::InnerOnClickListener
+//             ColorPickerDialog::InnerOnClickListener
 //===============================================================
 ColorPickerDialog::InnerOnClickListener::InnerOnClickListener(
     /* in */ ColorPickerDialog* dialog)
@@ -73,13 +73,13 @@ ColorPickerDialog::InnerOnClickListener::InnerOnClickListener(
 ECode ColorPickerDialog::InnerOnClickListener::OnClick(
     /* in */ IView* v)
 {
-	VALIDATE_NOT_NULL(v);
-	mColorPickerDialog->ShowAdvancedView();
-	return NOERROR;
+    VALIDATE_NOT_NULL(v);
+    mColorPickerDialog->ShowAdvancedView();
+    return NOERROR;
 }
 
 //===============================================================
-// 						ColorPickerDialog
+//                         ColorPickerDialog
 //===============================================================
 /**
  * @param context The context the dialog is to run in.
@@ -130,7 +130,7 @@ ColorPickerDialog::ColorPickerDialog(
     AutoPtr<InnerNegativeButtonClickListener> negativeListener = new InnerNegativeButtonClickListener(this);
     SetButton(BUTTON_NEGATIVE, negativeButtonText, negativeListener);
 
-	AutoPtr<InnerOnCancelListener> onCancelListener = new InnerOnCancelListener(this);
+    AutoPtr<InnerOnCancelListener> onCancelListener = new InnerOnCancelListener(this);
     SetOnCancelListener(onCancelListener);
 
     // Initialize main content view
@@ -177,7 +177,7 @@ ECode ColorPickerDialog::ShowAdvancedView()
     // Only need to hide the borders, not the Views themselves, since the Views are
     // contained within the borders.
     AutoPtr<IView> buttonBorder;
-   	FindViewById(R::id::more_colors_button_border, (IView**)&buttonBorder);
+       FindViewById(R::id::more_colors_button_border, (IView**)&buttonBorder);
     buttonBorder->SetVisibility(IView::GONE);
 
     AutoPtr<IView> simpleView;
@@ -197,8 +197,8 @@ ECode ColorPickerDialog::TryNotifyColorSet(
     /* in */ Int32 color)
 {
     if (mListener != NULL)
-    	mListener->OnColorChanged(color);
-   	return NOERROR;
+        mListener->OnColorChanged(color);
+       return NOERROR;
 }
 
 /**
@@ -210,8 +210,8 @@ ECode ColorPickerDialog::UpdateCurrentColor(
 {
     mCurrentColor = color;
     if (mCurrentColorView != NULL)
-    	mCurrentColorView->SetBackgroundColor(color);
-   	return NOERROR;
+        mCurrentColorView->SetBackgroundColor(color);
+       return NOERROR;
 }
 
 } // namespace Ui

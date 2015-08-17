@@ -29,16 +29,16 @@ class ColorPickerSimple
 {
 public:
     ColorPickerSimple(
-        /* in */ IContext* context);
+        /* [in] */ IContext* context);
 
     ColorPickerSimple(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs);
 
     ColorPickerSimple(
-        /* in */ IContext* context,
-        /* in */ IAttributeSet* attrs,
-        /* in */ Int32 defStyle);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyle);
 
     /**
      * Initializes the listener and sets the adapter for the given list of suggestions. If the
@@ -49,12 +49,12 @@ public:
      *                               a color.
      */
     virtual CARAPI Init(
-        /* in */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions,
-        /* in */ OnColorChangedListener* onColorChangedListener);
+        /* [in] */ ArrayOf< AutoPtr<ColorSuggestion> >* suggestions,
+        /* [in] */ OnColorChangedListener* onColorChangedListener);
 
     //@Override
     OnColorSuggestionClick(
-        /* in */ ColorSuggestion* suggestion);
+        /* [in] */ ColorSuggestion* suggestion);
 
     static CARAPI_(AutoPtr< ArrayOf<Int32> >) InitDefaultColors();
     static CARAPI_(AutoPtr< ArrayOf<Int32> >) InitDefaultColorLabelIds();

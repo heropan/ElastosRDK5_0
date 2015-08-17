@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_SELECTFILEDIALOG_H_
-#define _ELASTOS_DROID_WEBKIT_UI_SELECTFILEDIALOG_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_SELECTFILEDIALOG_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_SELECTFILEDIALOG_H_
 
 // package org.chromium.ui.base;
 // import android.app.Activity;
@@ -27,6 +27,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * A dialog that is triggered from a file input field that allows a user to select a file based on
@@ -40,18 +41,18 @@ private:
     {
     public:
         GetDisplayNameTask(
-            /* in */ SelectFileDialog* owner,
-            /* in */ IContentResolver* contentResolver,
-            /* in */ Boolean isMultiple);
+            /* [in] */ SelectFileDialog* owner,
+            /* [in] */ IContentResolver* contentResolver,
+            /* [in] */ Boolean isMultiple);
 
     protected:
         //@Override
         CARAPI_(AutoPtr< ArrayOf<String> >) DoInBackground(
-            /* in */ Uri...uris);
+            /* [in] */ Uri...uris);
 
         //@Override
         CARAPI OnPostExecute(
-            /* in */ ArrayOf<String>* result);
+            /* [in] */ ArrayOf<String>* result);
 
     public:
         AutoPtr< ArrayOf<String> > mFilePaths;
@@ -73,14 +74,14 @@ public:
      */
     //@Override
     CARAPI OnIntentCompleted(
-        /* in */ WindowAndroid* window,
-        /* in */ Int32 resultCode,
-        /* in */ IContentResolver* contentResolver,
-        /* in */ IIntent* results);
+        /* [in] */ WindowAndroid* window,
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IContentResolver* contentResolver,
+        /* [in] */ IIntent* results);
 
 private:
     SelectFileDialog(
-        /* in */ Int64 nativeSelectFileDialog);
+        /* [in] */ Int64 nativeSelectFileDialog);
 
     /**
      * Creates and starts an intent based on the passed fileTypes and capture value.
@@ -90,9 +91,9 @@ private:
      */
     //@CalledByNative
     CARAPI SelectFile(
-        /* in */ ArrayOf<String>* fileTypes,
-        /* in */ Boolean capture,
-        /* in */ WindowAndroid* window);
+        /* [in] */ ArrayOf<String>* fileTypes,
+        /* [in] */ Boolean capture,
+        /* [in] */ WindowAndroid* window);
 
     /**
      * Get a file for the image capture in the CAPTURE_IMAGE_DIRECTORY directory.
@@ -104,8 +105,8 @@ private:
     CARAPI_(Boolean) NoSpecificType();
 
     CARAPI_(Boolean) ShouldShowTypes(
-        /* in */ String allTypes,
-        /* in */ String specificType);
+        /* [in] */ String allTypes,
+        /* [in] */ String specificType);
 
     CARAPI_(Boolean) ShouldShowImageTypes();
 
@@ -114,7 +115,7 @@ private:
     CARAPI_(Boolean) ShouldShowAudioTypes();
 
     CARAPI_(Boolean) AcceptsSpecificType(
-        /* in */ String type);
+        /* [in] */ String type);
 
     CARAPI_(Boolean) CaptureCamera();
 
@@ -123,18 +124,18 @@ private:
     CARAPI_(Boolean) CaptureMicrophone();
 
     CARAPI_(Boolean) AcceptSpecificType(
-        /* in */ String accept);
+        /* [in] */ String accept);
 
     //@CalledByNative
     static CARAPI_(AutoPtr<SelectFileDialog>) Create(
-        /* in */ Int64 nativeSelectFileDialog);
+        /* [in] */ Int64 nativeSelectFileDialog);
 
     CARAPI NativeOnFileSelected(
-        /* in */ Int64 nativeSelectFileDialogImpl,
-        /* in */ String filePath,
-        /* in */ String displayName);
+        /* [in] */ Int64 nativeSelectFileDialogImpl,
+        /* [in] */ String filePath,
+        /* [in] */ String displayName);
     CARAPI NativeOnFileNotSelected(
-        /* in */ Int64 nativeSelectFileDialogImpl);
+        /* [in] */ Int64 nativeSelectFileDialogImpl);
 
 private:
     static const String IMAGE_TYPE;
@@ -152,10 +153,11 @@ private:
     AutoPtr<IUri> mCameraOutputUri;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_SELECTFILEDIALOG_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_SELECTFILEDIALOG_H_
 

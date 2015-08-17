@@ -5,7 +5,7 @@ namespace Webkit {
 namespace Net {
 
 //===============================================================
-// 				ProxyChangeListener::ProxyConfig
+//                 ProxyChangeListener::ProxyConfig
 //===============================================================
 ProxyChangeListener::ProxyConfig::ProxyConfig(
     /* [in] */ String host,
@@ -16,18 +16,18 @@ ProxyChangeListener::ProxyConfig::ProxyConfig(
 }
 
 //===============================================================
-// 				ProxyChangeListener::ProxyReceiver
+//                 ProxyChangeListener::ProxyReceiver
 //===============================================================
 //@Override
 ECode ProxyChangeListener::ProxyReceiver::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-	VALIDATE_NOT_NULL(context);
-	VALIDATE_NOT_NULL(intent);
+    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(intent);
 
-	String action;
-	intent->GetAction(&action);
+    String action;
+    intent->GetAction(&action);
     if (action.Equals(IProxy::PROXY_CHANGE_ACTION)) {
         ProxySettingsChanged(ExtractNewProxy(intent));
     }
@@ -57,29 +57,29 @@ AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
             proxyInfo = "android.intent.extra.PROXY_INFO";
         }
 
-		// question: reflection
-		AutoPtr<Object> props;
-		AutoPtr<IExtras> extras;
-		intent->GetExtras((IExtras**)&extras);
-		extras->Get(proxyInfo, (Object**)&props);
+        // question: reflection
+        AutoPtr<Object> props;
+        AutoPtr<IExtras> extras;
+        intent->GetExtras((IExtras**)&extras);
+        extras->Get(proxyInfo, (Object**)&props);
         if (NULL == props) {
-        	AutoPtr<ProxyConfig> ret = NULL;
+            AutoPtr<ProxyConfig> ret = NULL;
             return ret;
         }
 
-		// question: reflection
+        // question: reflection
         AutoPtr<IProxyProperties> proxyProper;
         AutoPtr<IProxyInfo> proxyInfo;
         AutoPtr<IMethod> getHostMethod;
         AutoPtr<IMethod> getPortMethod;
 
         if (IBuild::VERSION::SDK_INT <= IBuild::VERSION_CODES::KITKAT) {
-			CProxyProper::New((IProxyProperties**)&proxyProper);
+            CProxyProper::New((IProxyProperties**)&proxyProper);
             proxyProper->GetDeclaredMethod(GET_HOST_NAME, (IMethod**)&getHostMethod);
             proxyProper->GetDeclaredMethod(GET_PORT_NAME, (IMethod**)&getPortMethod);
         }
         else {
-        	CProxyInfo::New((IProxyInfo**)&proxyInfo);
+            CProxyInfo::New((IProxyInfo**)&proxyInfo);
             proxyInfo->GetDeclaredMethod(GET_HOST_NAME, (IMethod**)&getHostMethod);
             proxyInfo->GetDeclaredMethod(GET_PORT_NAME, (IMethod**)&getPortMethod);
         }
@@ -89,7 +89,7 @@ AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
         getHostMethod->Invoke(props, &host);
         getPortMethod->Invoke(props, &port);
 
-		AutoPtr<ProxyConfig> result = new ProxyConfig(host, port);
+        AutoPtr<ProxyConfig> result = new ProxyConfig(host, port);
         return result;
     //} catch (ClassNotFoundException ex) {
     //    Log.e(TAG, "Using no proxy configuration due to exception:" + ex);
@@ -110,7 +110,7 @@ AutoPtr<ProxyConfig> ProxyChangeListener::ProxyReceiver::ExtractNewProxy(
 }
 
 //===============================================================
-// 					ProxyChangeListener
+//                     ProxyChangeListener
 //===============================================================
 const String ProxyChangeListener::TAG("ProxyChangeListener");
 Boolean ProxyChangeListener::sEnabled = TRUE;
@@ -132,7 +132,7 @@ ECode ProxyChangeListener::SetEnabled(
 ECode ProxyChangeListener::SetDelegateForTesting(
     /* [in] */ IDelegate* delegate)
 {
-	VALIDATE_NOT_NULL(delegate);
+    VALIDATE_NOT_NULL(delegate);
     mDelegate = delegate;
     return NOERROR;
 }
@@ -141,7 +141,7 @@ ECode ProxyChangeListener::SetDelegateForTesting(
 AutoPtr<ProxyChangeListener> ProxyChangeListener::Create(
     /* [in] */ IContext* context)
 {
-	AutoPtr<ProxyChangeListener> ret = new ProxyChangeListener(context);
+    AutoPtr<ProxyChangeListener> ret = new ProxyChangeListener(context);
     return ret;
 }
 
@@ -149,8 +149,8 @@ AutoPtr<ProxyChangeListener> ProxyChangeListener::Create(
 String ProxyChangeListener::GetProperty(
     /* [in] */ String property)
 {
-	String result;
-	ISystem::GetProperty(property, &result);
+    String result;
+    ISystem::GetProperty(property, &result);
     return result;
 }
 
@@ -175,9 +175,9 @@ ECode ProxyChangeListener::Stop()
 ECode ProxyChangeListener::ProxySettingsChanged(
     /* [in] */ ProxyConfig* cfg)
 {
-	VALIDATE_NOT_NULL(cfg);
+    VALIDATE_NOT_NULL(cfg);
 
-	// question: return ECode what value is, return NOERROR temporarily
+    // question: return ECode what value is, return NOERROR temporarily
     if (!sEnabled) {
         return NOERROR;
     }
@@ -200,7 +200,7 @@ ECode ProxyChangeListener::ProxySettingsChanged(
 
 ECode ProxyChangeListener::RegisterReceiver()
 {
-	// question: return ECode what value is, return NOERROR temporarily
+    // question: return ECode what value is, return NOERROR temporarily
     if (mProxyReceiver != NULL) {
         return NOERROR;
     }
@@ -215,7 +215,7 @@ ECode ProxyChangeListener::RegisterReceiver()
 
 ECode ProxyChangeListener::UnregisterReceiver()
 {
-	// question: return ECode what value is, return NOERROR temporarily
+    // question: return ECode what value is, return NOERROR temporarily
     if (mProxyReceiver == NULL) {
         return NOERROR;
     }
@@ -232,19 +232,19 @@ ECode ProxyChangeListener::UnregisterReceiver()
 //                                                 String host,
 //                                                 int port);
 ECode ProxyChangeListener::NativeProxySettingsChangedTo(
-	/* [in] */ Int64 nativePtr,
-	/* [in] */ String host,
-	/* [in] */ Int32 port)
+    /* [in] */ Int64 nativePtr,
+    /* [in] */ String host,
+    /* [in] */ Int32 port)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 //@NativeClassQualifiedName("ProxyConfigServiceAndroid::JNIDelegate")
 //private native void nativeProxySettingsChanged(long nativePtr);
 ECode ProxyChangeListener::NativeProxySettingsChanged(
-	/* [in] */ Int64 nativePtr)
+    /* [in] */ Int64 nativePtr)
 {
-	return NOERROR;
+    return NOERROR;
 }
 
 } // namespace Net

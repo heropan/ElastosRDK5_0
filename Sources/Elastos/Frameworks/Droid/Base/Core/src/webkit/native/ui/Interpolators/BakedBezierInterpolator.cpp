@@ -4,6 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Interpolators {
 
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::TRANSFORM_VALUES = BakedBezierInterpolator::InitTransformValus();
 
@@ -14,7 +15,7 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::FADE_IN_VALUES = BakedBezierI
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::TRANSFORM_FOLLOW_THROUGH_VALUES = BakedBezierInterpolator::InitTransformThroughValus();
 
 Float BakedBezierInterpolator::GetInterpolation(
-	/* in */ Float input)
+    /* in */ Float input)
 {
     if (input >= 1.0f) {
         return 1.0f;
@@ -36,20 +37,20 @@ Float BakedBezierInterpolator::GetInterpolation(
 }
 
 BakedBezierInterpolator::BakedBezierInterpolator(
-	/* in */ ArrayOf<Float>* values)
-	: mValues(values)
-	, mStepSize(1.f / (mValues->GetLength() - 1)
-	, TRANSFORM_CURVE(new BakedBezierInterpolator(TRANSFORM_VALUES))
-	, FADE_OUT_CURVE(new BakedBezierInterpolator(FADE_OUT_VALUES))
-	, FADE_IN_CURVE(new BakedBezierInterpolator(FADE_IN_VALUES))
-	, TRANSFORM_FOLLOW_THROUGH_CURVE(new BakedBezierInterpolator(TRANSFORM_FOLLOW_THROUGH_VALUES))
+    /* in */ ArrayOf<Float>* values)
+    : mValues(values)
+    , mStepSize(1.f / (mValues->GetLength() - 1)
+    , TRANSFORM_CURVE(new BakedBezierInterpolator(TRANSFORM_VALUES))
+    , FADE_OUT_CURVE(new BakedBezierInterpolator(FADE_OUT_VALUES))
+    , FADE_IN_CURVE(new BakedBezierInterpolator(FADE_IN_VALUES))
+    , TRANSFORM_FOLLOW_THROUGH_CURVE(new BakedBezierInterpolator(TRANSFORM_FOLLOW_THROUGH_VALUES))
 {
     //Super();
 }
 
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitTransformValus()
 {
-	Float tmps[] = {0.0f, 0.0002f, 0.0009f, 0.0019f, 0.0036f, 0.0059f, 0.0086f, 0.0119f, 0.0157f, 0.0209f,
+    Float tmps[] = {0.0f, 0.0002f, 0.0009f, 0.0019f, 0.0036f, 0.0059f, 0.0086f, 0.0119f, 0.0157f, 0.0209f,
     0.0257f, 0.0321f, 0.0392f, 0.0469f, 0.0566f, 0.0656f, 0.0768f, 0.0887f, 0.1033f, 0.1186f,
     0.1349f, 0.1519f, 0.1696f, 0.1928f, 0.2121f, 0.237f, 0.2627f, 0.2892f, 0.3109f, 0.3386f,
     0.3667f, 0.3952f, 0.4241f, 0.4474f, 0.4766f, 0.5f, 0.5234f, 0.5468f, 0.5701f, 0.5933f,
@@ -60,18 +61,18 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitTransformValus()
     0.9753f, 0.9777f, 0.9805f, 0.9826f, 0.9847f, 0.9866f, 0.9884f, 0.9901f, 0.9917f, 0.9931f,
     0.9944f, 0.9955f, 0.9964f, 0.9973f, 0.9981f, 0.9986f, 0.9992f, 0.9995f, 0.9998f, 1.0f, 1.0f};
 
-	Int32 count = sizeof(tmps) / sizeof(tmps[0]);
+    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Float> > result = ArrayOf<Float>::Alloc(count);
-	for (Int32 i=0; i<count; ++i) {
-		result->Set(i, tmps[i]);
-	}
+    for (Int32 i=0; i<count; ++i) {
+        result->Set(i, tmps[i]);
+    }
 
-	return result;
+    return result;
 }
 
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitFadeOutValus()
 {
-	Float tmps[] = {0.0f, 0.0002f, 0.0008f, 0.0019f, 0.0032f, 0.0049f, 0.0069f, 0.0093f, 0.0119f, 0.0149f,
+    Float tmps[] = {0.0f, 0.0002f, 0.0008f, 0.0019f, 0.0032f, 0.0049f, 0.0069f, 0.0093f, 0.0119f, 0.0149f,
     0.0182f, 0.0218f, 0.0257f, 0.0299f, 0.0344f, 0.0392f, 0.0443f, 0.0496f, 0.0552f, 0.0603f,
     0.0656f, 0.0719f, 0.0785f, 0.0853f, 0.0923f, 0.0986f, 0.1051f, 0.1128f, 0.1206f, 0.1287f,
     0.1359f, 0.1433f, 0.1519f, 0.1607f, 0.1696f, 0.1776f, 0.1857f, 0.1952f, 0.2048f, 0.2145f,
@@ -82,18 +83,18 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitFadeOutValus()
     0.7f, 0.7134f, 0.7267f, 0.7425f, 0.7554f, 0.7706f, 0.7855f, 0.8f, 0.8143f, 0.8281f, 0.8438f,
     0.8588f, 0.8733f, 0.8892f, 0.9041f, 0.9215f, 0.9344f, 0.9518f, 0.9667f, 0.9826f, 0.9993f};
 
-	Int32 count = sizeof(tmps) / sizeof(tmps[0]);
+    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Float> > result = ArrayOf<Float>::Alloc(count);
-	for (Int32 i=0; i<count; ++i) {
-		result->Set(i, tmps[i]);
-	}
+    for (Int32 i=0; i<count; ++i) {
+        result->Set(i, tmps[i]);
+    }
 
-	return result;
+    return result;
 }
 
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitFadeInValus()
 {
-	Float tmps[] = {0.0029f, 0.043f, 0.0785f, 0.1147f, 0.1476f, 0.1742f, 0.2024f, 0.2319f, 0.2575f, 0.2786f,
+    Float tmps[] = {0.0029f, 0.043f, 0.0785f, 0.1147f, 0.1476f, 0.1742f, 0.2024f, 0.2319f, 0.2575f, 0.2786f,
     0.3055f, 0.3274f, 0.3498f, 0.3695f, 0.3895f, 0.4096f, 0.4299f, 0.4474f, 0.4649f, 0.4824f,
     0.5f, 0.5176f, 0.5322f, 0.5468f, 0.5643f, 0.5788f, 0.5918f, 0.6048f, 0.6191f, 0.6333f,
     0.6446f, 0.6573f, 0.6698f, 0.6808f, 0.6918f, 0.704f, 0.7148f, 0.7254f, 0.7346f, 0.7451f,
@@ -104,18 +105,18 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitFadeInValus()
     0.9777f, 0.98f, 0.9818f, 0.9839f, 0.9859f, 0.9877f, 0.9891f, 0.9907f, 0.9922f, 0.9933f,
     0.9946f, 0.9957f, 0.9966f, 0.9974f, 0.9981f, 0.9986f, 0.9992f, 0.9995f, 0.9998f, 1.0f, 1.0f};
 
-	Int32 count = sizeof(tmps) / sizeof(tmps[0]);
+    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Float> > result = ArrayOf<Float>::Alloc(count);
-	for (Int32 i=0; i<count; ++i) {
-		result->Set(i, tmps[i]);
-	}
+    for (Int32 i=0; i<count; ++i) {
+        result->Set(i, tmps[i]);
+    }
 
-	return result;
+    return result;
 }
 
 AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitTransformThroughValus()
 {
-	Float tmps[] = {0.0767f, 0.315f, 0.4173f, 0.484f, 0.5396f, 0.5801f, 0.6129f, 0.644f, 0.6687f, 0.6876f,
+    Float tmps[] = {0.0767f, 0.315f, 0.4173f, 0.484f, 0.5396f, 0.5801f, 0.6129f, 0.644f, 0.6687f, 0.6876f,
     0.7102f, 0.7276f, 0.7443f, 0.7583f, 0.7718f, 0.7849f, 0.7975f, 0.8079f, 0.8179f, 0.8276f,
     0.8355f, 0.8446f, 0.8519f, 0.859f, 0.8659f, 0.8726f, 0.8791f, 0.8841f, 0.8902f, 0.8949f,
     0.9001f, 0.9051f, 0.9094f, 0.9136f, 0.9177f, 0.9217f, 0.925f, 0.9283f, 0.9319f, 0.9355f,
@@ -127,15 +128,16 @@ AutoPtr< ArrayOf<Float> > BakedBezierInterpolator::InitTransformThroughValus()
     0.9981f, 0.9984f, 0.9986f, 0.9989f, 0.9991f, 0.9992f, 0.9994f, 0.9996f, 0.9997f, 0.9999f,
     1.0f};
 
-	Int32 count = sizeof(tmps) / sizeof(tmps[0]);
+    Int32 count = sizeof(tmps) / sizeof(tmps[0]);
     AutoPtr< ArrayOf<Float> > result = ArrayOf<Float>::Alloc(count);
-	for (Int32 i=0; i<count; ++i) {
-		result->Set(i, tmps[i]);
-	}
+    for (Int32 i=0; i<count; ++i) {
+        result->Set(i, tmps[i]);
+    }
 
-	return result;
+    return result;
 }
 
+} // namespace Interpolators
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_DEVICEDISPLAYINFO_H_
-#define _ELASTOS_DROID_WEBKIT_UI_DEVICEDISPLAYINFO_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
+#define _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
 
 // package org.chromium.ui.gfx;
 // import android.content.Context;
@@ -22,6 +22,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Gfx {
 
 /**
  * This class facilitates access to android information typically only
@@ -35,7 +36,7 @@ class DeviceDisplayInfo
 {
 private:
     DeviceDisplayInfo(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 
 public:
     /**
@@ -96,7 +97,7 @@ public:
      */
     // @CalledByNative
     static CARAPI_(AutoPtr<DeviceDisplayInfo>) Create(
-    	/* in */ IContext* context);
+        /* [in] */ IContext* context);
 
 private:
     // @SuppressWarnings("deprecation")
@@ -121,15 +122,15 @@ private:
     CARAPI_(AutoPtr<IDisplay>) GetDisplay();
 
     CARAPI NativeUpdateSharedDeviceDisplayInfo(
-    	/* in */ Int32 displayHeight,
-    	/* in */ Int32 displayWidth,
-    	/* in */ Int32 physicalDisplayHeight,
-    	/* in */ Int32 physicalDisplayWidth,
-    	/* in */ Int32 bitsPerPixel,
-    	/* in */ Int32 bitsPerComponent,
-    	/* in */ Double dipScale,
-    	/* in */ Int32 smallestDIPWidth,
-    	/* in */ Int32 rotationDegrees);
+        /* [in] */ Int32 displayHeight,
+        /* [in] */ Int32 displayWidth,
+        /* [in] */ Int32 physicalDisplayHeight,
+        /* [in] */ Int32 physicalDisplayWidth,
+        /* [in] */ Int32 bitsPerPixel,
+        /* [in] */ Int32 bitsPerComponent,
+        /* [in] */ Double dipScale,
+        /* [in] */ Int32 smallestDIPWidth,
+        /* [in] */ Int32 rotationDegrees);
 
 private:
     AutoPtr<IContext> mAppContext;
@@ -138,10 +139,11 @@ private:
     AutoPtr<IDisplayMetrics> mTempMetrics;
 };
 
+} // namespace Gfx
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_DEVICEDISPLAYINFO_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_GFX_DEVICEDISPLAYINFO_H_
 

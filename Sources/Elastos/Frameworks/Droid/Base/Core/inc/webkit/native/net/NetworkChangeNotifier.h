@@ -47,19 +47,19 @@ public:
     };
 
     class InnerObserver
-		: public Object
-		, public NetworkChangeNotifierAutoDetect::IObserver
+        : public Object
+        , public NetworkChangeNotifierAutoDetect::IObserver
     {
-	public:
-		InnerObserver(
-			/* [in] */ NetworkChangeNotifier* owner);
+    public:
+        InnerObserver(
+            /* [in] */ NetworkChangeNotifier* owner);
 
-		virtual CARAPI OnConnectionTypeChanged(
+        virtual CARAPI OnConnectionTypeChanged(
             /* [in] */ Int32 newConnectionType);
 
-	private:
-		NetworkChangeNotifier* mOwner;
-	};
+    private:
+        NetworkChangeNotifier* mOwner;
+    };
 
 public:
     /**

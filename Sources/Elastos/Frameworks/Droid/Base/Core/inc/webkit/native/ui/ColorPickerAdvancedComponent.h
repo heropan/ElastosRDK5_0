@@ -43,7 +43,7 @@ public:
      * @param newValue The value to give the component.
      */
     virtual CARAPI SetValue(
-        /* in */ Float newValue);
+        /* [in] */ Float newValue);
 
     /**
      * Sets the colors for the gradient view to interpolate through.
@@ -51,7 +51,7 @@ public:
      * @param newColors The set of colors representing the interpolation points for the gradient.
      */
     virtual CARAPI SetGradientColors(
-        /* in */ ArrayOf<Int32>* newColors);
+        /* [in] */ ArrayOf<Int32>* newColors);
 
 private:
     /**
@@ -63,10 +63,10 @@ private:
      * @param seekBarListener The listener for when the seek bar value changes.
      */
     ColorPickerAdvancedComponent(
-        /* in */ const IView* rootView,
-        /* in */ const Int32 textResourceId,
-        /* in */ const Int32 seekBarMax,
-        /* in */ const IOnSeekBarChangeListener* seekBarListener);
+        /* [in] */ const IView* rootView,
+        /* [in] */ const Int32 textResourceId,
+        /* [in] */ const Int32 seekBarMax,
+        /* [in] */ const IOnSeekBarChangeListener* seekBarListener);
 
 private:
     // The view that displays the gradient.

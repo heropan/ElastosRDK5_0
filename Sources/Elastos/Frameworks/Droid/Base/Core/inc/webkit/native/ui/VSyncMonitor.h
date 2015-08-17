@@ -43,19 +43,19 @@ public:
          * @param vsyncTimeMicros Absolute frame time in microseconds.
          */
         virtual CARAPI OnVSync(
-        	/* in */ VSyncMonitor* monitor,
-        	/* in */ Int64 vsyncTimeMicros) = 0;
+            /* [in] */ VSyncMonitor* monitor,
+            /* [in] */ Int64 vsyncTimeMicros) = 0;
     };
 
     class InnerChoreographerFrameCallback : IChoreographer::IFrameCallback
     {
     public:
         InnerChoreographerFrameCallback(
-            /* in */ VSyncMonitor* owner);
+            /* [in] */ VSyncMonitor* owner);
 
         //@Override
         CARAPI DoFrame(
-            /* in */ Int64 frameTimeNanos);
+            /* [in] */ Int64 frameTimeNanos);
 
     private:
         VSyncMonitor* mOwner;
@@ -65,7 +65,7 @@ public:
     {
     public:
         InnerVSyncRunnable(
-            /* in */ VSyncMonitor* owner);
+            /* [in] */ VSyncMonitor* owner);
 
         //@Override
         CARAPI Run();
@@ -78,7 +78,7 @@ public:
     {
     public:
         SyntheticVSyncRunnable(
-            /* in */ VSyncMonitor* owner);
+            /* [in] */ VSyncMonitor* owner);
 
         //@Override
         CARAPI Run();
@@ -94,8 +94,8 @@ public:
      * @param listener The listener receiving VSync notifications.
      */
     VSyncMonitor(
-        /* in */ IContext* context,
-        /* in */ VSyncMonitor::Listener* listener);
+        /* [in] */ IContext* context,
+        /* [in] */ VSyncMonitor::Listener* listener);
 
     /**
      * Constructs a VSyncMonitor
@@ -104,9 +104,9 @@ public:
      * @param enableJBVsync Whether to allow Choreographer-based notifications on JB and up.
      */
     VSyncMonitor(
-        /* in */ IContext* context,
-        /* in */ VSyncMonitor::Listener* listener,
-        /* in */ Boolean enableJBVSync);
+        /* [in] */ IContext* context,
+        /* [in] */ VSyncMonitor::Listener* listener,
+        /* [in] */ Boolean enableJBVSync);
 
     /**
      * Returns the time interval between two consecutive vsync pulses in microseconds.
@@ -131,7 +131,7 @@ public:
      * @param goodStartingPointNano Known vsync point in the past.
      */
     virtual CARAPI SetVSyncPointForICS(
-        /* in */ Int64 goodStartingPointNano);
+        /* [in] */ Int64 goodStartingPointNano);
 
 private:
     /**
@@ -142,15 +142,15 @@ private:
     CARAPI_(Int64) GetCurrentNanoTime();
 
     CARAPI OnVSyncCallback(
-        /* in */ Int64 frameTimeNanos,
-        /* in */ Int64 currentTimeNanos);
+        /* [in] */ Int64 frameTimeNanos,
+        /* [in] */ Int64 currentTimeNanos);
 
     CARAPI PostCallback();
 
     CARAPI_(Boolean) PostSyntheticVSync();
 
     CARAPI_(Int64) EstimateLastVSyncTime(
-        /* in */ Int64 currentTime);
+        /* [in] */ Int64 currentTime);
 
     CARAPI PostRunnableCallback();
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_ACTIVITYWINDOWANDROID_H_
-#define _ELASTOS_DROID_WEBKIT_UI_ACTIVITYWINDOWANDROID_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_ACTIVITYWINDOWANDROID_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_ACTIVITYWINDOWANDROID_H_
 
 // package org.chromium.ui.base;
 // import android.app.Activity;
@@ -17,6 +17,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * The class provides the WindowAndroid's implementation which requires
@@ -27,29 +28,29 @@ class ActivityWindowAndroid : public WindowAndroid
 {
 public:
     ActivityWindowAndroid(
-        /* in */ IActivity* activity);
+        /* [in] */ IActivity* activity);
 
     //@Override
     CARAPI_(Int32) ShowCancelableIntent(
-        /* in */ IPendingIntent* intent,
-        /* in */ IIntentCallback* callback,
-        /* in */ Int32 errorId);
+        /* [in] */ IPendingIntent* intent,
+        /* [in] */ IIntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     //@Override
     CARAPI_(Int32) ShowCancelableIntent(
-        /* in */ IIntent* intent,
-        /* in */ IIntentCallback* callback,
-        /* in */ Int32 errorId);
+        /* [in] */ IIntent* intent,
+        /* [in] */ IIntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
     //@Override
     CARAPI CancelIntent(
-        /* in */ Int32 requestCode);
+        /* [in] */ Int32 requestCode);
 
     //@Override
     CARAPI_(Boolean) OnActivityResult(
-        /* in */ Int32 requestCode,
-        /* in */ Int32 resultCode,
-        /* in */ IIntent* data);
+        /* [in] */ Int32 requestCode,
+        /* [in] */ Int32 resultCode,
+        /* [in] */ IIntent* data);
 
     //@Override
     CARAPI_(AutoPtr< IWeakReference<Activity> >) GetActivity();
@@ -58,9 +59,9 @@ private:
     CARAPI_(Int32) GenerateNextRequestCode();
 
     CARAPI StoreCallbackData(
-        /* in */ Int32 requestCode,
-        /* in */ IIntentCallback* callback,
-        /* in */ Int32 errorId);
+        /* [in] */ Int32 requestCode,
+        /* [in] */ IIntentCallback* callback,
+        /* [in] */ Int32 errorId);
 
 private:
     // Constants used for intent request code bounding.
@@ -72,10 +73,11 @@ private:
     Int32 mNextRequestCode;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_ACTIVITYWINDOWANDROID_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_ACTIVITYWINDOWANDROID_H_
 

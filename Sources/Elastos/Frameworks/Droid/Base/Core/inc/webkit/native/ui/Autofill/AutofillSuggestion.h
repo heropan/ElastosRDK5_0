@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILLSUGGESTION_H_
-#define _ELASTOS_DROID_WEBKIT_UI_AUTOFILLSUGGESTION_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLSUGGESTION_H_
+#define _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLSUGGESTION_H_
 
 //package org.chromium.ui.autofill;
 
@@ -13,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Autofill {
 
 /**
  * Autofill suggestion container used to store information needed for each Autofill popup entry.
@@ -27,9 +28,9 @@ public:
      * @param uniqueId The unique id used to identify the Autofill suggestion.
      */
     AutofillSuggestion(
-        /* in */ String name,
-        /* in */ String label,
-        /* in */ Int32 uniqueId);
+        /* [in] */ String name,
+        /* [in] */ String label,
+        /* [in] */ Int32 uniqueId);
 
     //@Override
     CARAPI_(String) GetLabel();
@@ -51,10 +52,11 @@ private:
     const Int32 mUniqueId;
 };
 
+} // namespace Autofill
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_AUTOFILLSUGGESTION_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_AUTOFILL_AUTOFILLSUGGESTION_H_
 

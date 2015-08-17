@@ -4,8 +4,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_LOCALIZATIONUTILS_H_
-#define _ELASTOS_DROID_WEBKIT_UI_LOCALIZATIONUTILS_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_LOCALIZATIONUTILS_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_LOCALIZATIONUTILS_H_
 
 // package org.chromium.ui.base;
 // import android.content.res.Configuration;
@@ -20,6 +20,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * This class provides the locale related methods for the native library.
@@ -53,7 +54,7 @@ public:
      * @return One of the UNKNOWN_DIRECTION, RIGHT_TO_LEFT, and LEFT_TO_RIGHT.
      */
     static CARAPI_(Int32) GetFirstStrongCharacterDirection(
-        /* in */ String string);
+        /* [in] */ String string);
 
     /**
      * Jni binding to ui::TimeFormat::TimeRemaining. Converts milliseconds to
@@ -62,27 +63,27 @@ public:
      * @return time remaining
      */
     static CARAPI_(String) GetDurationString(
-        /* in */ Int64 timeInMillis);
+        /* [in] */ Int64 timeInMillis);
 
 private:
     LocalizationUtils();
 
     //@CalledByNative
     static CARAPI_(AutoPtr<ILocale>) GetJavaLocale(
-        /* in */ String language,
-        /* in */ String country,
-        /* in */ String variant);
+        /* [in] */ String language,
+        /* [in] */ String country,
+        /* [in] */ String variant);
 
     //@CalledByNative
     static CARAPI_(String) GetDisplayNameForLocale(
-        /* in */ ILocale* locale,
-        /* in */ ILocale* displayLocale);
+        /* [in] */ ILocale* locale,
+        /* [in] */ ILocale* displayLocale);
 
     static CARAPI_(Int32) NativeGetFirstStrongCharacterDirection(
-        /* in */ String str);
+        /* [in] */ String str);
 
     static CARAPI_(String) NativeGetDurationString(
-        /* in */ Int64 timeInMillis);
+        /* [in] */ Int64 timeInMillis);
 
 public:
     // This is mirrored from base/i18n/rtl.h. Please keep in sync.
@@ -94,10 +95,11 @@ private:
     static Boolean sIsLayoutRtl;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_LOCALIZATIONUTILS_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_LOCALIZATIONUTILS_H_
 

@@ -16,12 +16,12 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     /* in */ IAttributeSet* attrs)
     : LinearLayout(context, attrs)
     , mCurrentColor(0)
-	, mHueDetails(NULL)
-	, mSaturationDetails(NULL)
-	, mValueDetails(NULL)
-	, mOnColorChangedListener(NULL)
+    , mHueDetails(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
 {
-	mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
+    mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
     Init();
 }
 
@@ -32,11 +32,11 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     : LinearLayout(context, attrs, defStyle)
     , mCurrentColor(0)
     , mHueDetails(NULL)
-	, mSaturationDetails(NULL)
-	, mValueDetails(NULL)
-	, mOnColorChangedListener(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
 {
-	mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
+    mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
     Init();
 }
 
@@ -45,11 +45,11 @@ ColorPickerAdvanced::ColorPickerAdvanced(
     : LinearLayout(context)
     , mCurrentColor(0)
     , mHueDetails(NULL)
-	, mSaturationDetails(NULL)
-	, mValueDetails(NULL)
-	, mOnColorChangedListener(NULL)
+    , mSaturationDetails(NULL)
+    , mValueDetails(NULL)
+    , mOnColorChangedListener(NULL)
 {
-	mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
+    mCurrentHsvValues = ArrayOf<Float>::Alloc(3);
     Init();
 }
 
@@ -68,16 +68,16 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
     /* in */ Int32 seekBarMax,
     /* in */ IOnSeekBarChangeListener* seekBarListener)
 {
-	AutoPtr<IContext> content;
-	GetContext((IContext**)&content);
-	AutoPtr<ILayoutInflater> inflater;
-	content->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (ILayoutInflater**)&inflater);
+    AutoPtr<IContext> content;
+    GetContext((IContext**)&content);
+    AutoPtr<ILayoutInflater> inflater;
+    content->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (ILayoutInflater**)&inflater);
     AutoPtr<IView> newComponent;
-   	inflater->Inflate(R::Layout::color_picker_advanced_component, NULL, (IView**)&newComponent);
+       inflater->Inflate(R::Layout::color_picker_advanced_component, NULL, (IView**)&newComponent);
     AddView(newComponent);
 
-	AutoPtr<ColorPickerAdvancedComponent> ret =
-		new ColorPickerAdvancedComponent(newComponent, textResourceId, seekBarMax, seekBarListener);
+    AutoPtr<ColorPickerAdvancedComponent> ret =
+        new ColorPickerAdvancedComponent(newComponent, textResourceId, seekBarMax, seekBarListener);
     return ret;
 }
 
@@ -89,7 +89,7 @@ AutoPtr<ColorPickerAdvancedComponent> ColorPickerAdvanced::CreateAndAddNewGradie
 ECode ColorPickerAdvanced::SetListener(
     /* in */ OnColorChangedListener* onColorChangedListener)
 {
-	VALIDATE_NOT_NULL(onColorChangedListener);
+    VALIDATE_NOT_NULL(onColorChangedListener);
     mOnColorChangedListener = onColorChangedListener;
     return NOERROR;
 }
@@ -132,15 +132,15 @@ ECode ColorPickerAdvanced::OnProgressChanged(
     /* in */ Int32 progress,
     /* in */ Boolean fromUser)
 {
-	VALIDATE_NOT_NULL(seekBar);
+    VALIDATE_NOT_NULL(seekBar);
 
     if (fromUser) {
         (*mCurrentHsvValues)[0] = mHueDetails->GetValue();
         (*mCurrentHsvValues)[1] = mSaturationDetails->GetValue() / 100.0f;
         (*mCurrentHsvValues)[2] = mValueDetails->GetValue() / 100.0f;
 
-		AutoPtr<IColor> color;
-    	CColor::AcquireSingleton((IColor**)&color);
+        AutoPtr<IColor> color;
+        CColor::AcquireSingleton((IColor**)&color);
         color->HSVToColor(mCurrentHsvValues, &mCurrentColor);
 
         UpdateHueGradient();
@@ -156,7 +156,7 @@ ECode ColorPickerAdvanced::OnProgressChanged(
 ECode ColorPickerAdvanced::OnStartTrackingTouch(
     /* in */ ISeekBar* seekBar)
 {
-	VALIDATE_NOT_NULL(seekBar);
+    VALIDATE_NOT_NULL(seekBar);
     // Do nothing.
     return NOERROR;
 }
@@ -165,7 +165,7 @@ ECode ColorPickerAdvanced::OnStartTrackingTouch(
 ECode ColorPickerAdvanced::OnStopTrackingTouch(
     /* in */ ISeekBar* seekBar)
 {
-	VALIDATE_NOT_NULL(seekBar);
+    VALIDATE_NOT_NULL(seekBar);
     // Do nothing.
     return NOERROR;
 }
@@ -208,8 +208,8 @@ ECode ColorPickerAdvanced::UpdateHueGradient()
     (*tempHsvValues)[1] = (*mCurrentHsvValues)[1];
     (*tempHsvValues)[2] = (*mCurrentHsvValues)[2];
 
-	AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(HUE_COLOR_COUNT);
-	AutoPtr<IColor> color;
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(HUE_COLOR_COUNT);
+    AutoPtr<IColor> color;
     CColor::AcquireSingleton((IColor**)&color);
     Int32 colorTemp = 0;
     for (Int32 i = 0; i < HUE_COLOR_COUNT; ++i) {
@@ -232,11 +232,11 @@ ECode ColorPickerAdvanced::UpdateSaturationGradient()
     (*tempHsvValues)[1] = 0.0f;
     (*tempHsvValues)[2] = (*mCurrentHsvValues)[2];
 
-	AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(SATURATION_COLOR_COUNT);
-	Int32 hsvColor = 0;
-	AutoPtr<IColor> color;
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(SATURATION_COLOR_COUNT);
+    Int32 hsvColor = 0;
+    AutoPtr<IColor> color;
     CColor::AcquireSingleton((IColor**)&color);
-	color->HSVToColor(tempHsvValues, &hsvColor);
+    color->HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[0] = hsvColor;
 
     (*tempHsvValues)[1] = 1.0f;
@@ -257,9 +257,9 @@ ECode ColorPickerAdvanced::UpdateValueGradient()
     (*tempHsvValues)[1] = (*mCurrentHsvValues)[1];
     (*tempHsvValues)[2] = 0.0f;
 
-	AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(VALUE_COLOR_COUNT);
-	Int32 hsvColor = 0;
-	AutoPtr<IColor> color;
+    AutoPtr< ArrayOf<Int32> > newColors = ArrayOf<Int32>::Alloc(VALUE_COLOR_COUNT);
+    Int32 hsvColor = 0;
+    AutoPtr<IColor> color;
     CColor::AcquireSingleton((IColor**)&color);
     color->HSVToColor(tempHsvValues, &hsvColor);
     (*newColors)[0] = hsvColor;

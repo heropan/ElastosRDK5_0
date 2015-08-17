@@ -10,7 +10,7 @@ namespace Net {
 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ConnectivityManagerDelegate(
     /* [in] */ IContext* context)
 {
-   	context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
+       context->GetSystemService(IContext::CONNECTIVITY_SERVICE, (IInterface**)&mConnectivityManager);
 }
 
 // For testing.
@@ -22,49 +22,49 @@ NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ConnectivityManage
 
 Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::ActiveNetworkExists()
 {
-	AutoPtr<INetworkInfo> info;
+    AutoPtr<INetworkInfo> info;
     CNetworkInfo::New((INetworkInfo**)&info);
-	mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
+    mConnectivityManager->GetActiveNetworkInfo((INetworkInfo**)&info);
     return Boolean(info != NULL);
 }
 
 Boolean NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::IsConnected()
 {
-	AutoPtr<INetworkInfo> info;
-	CNetworkInfo::New((INetworkInfo**)&info);
-	mConnectivityManager->GetActiveNetworkInfo(&info);
-	Boolean isconnect;
-	info->IsConnected(&isconnect);
+    AutoPtr<INetworkInfo> info;
+    CNetworkInfo::New((INetworkInfo**)&info);
+    mConnectivityManager->GetActiveNetworkInfo(&info);
+    Boolean isconnect;
+    info->IsConnected(&isconnect);
     return isconnect;
 }
 
 Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkType()
 {
-	AutoPtr<INetworkInfo> info;
-	CNetworkInfo::New((INetworkInfo**)&info);
-	mConnectivityManager->GetActiveNetworkInfo(&info);
-	Int32 type;
-	info->GetType(&type);
+    AutoPtr<INetworkInfo> info;
+    CNetworkInfo::New((INetworkInfo**)&info);
+    mConnectivityManager->GetActiveNetworkInfo(&info);
+    Int32 type;
+    info->GetType(&type);
     return type;
 }
 
 Int32 NetworkChangeNotifierAutoDetect::ConnectivityManagerDelegate::GetNetworkSubtype()
 {
-	AutoPtr<INetworkInfo> info;
-	CNetworkInfo::New((INetworkInfo**)&info);
-	mConnectivityManager->GetActiveNetworkInfo(&info);
-	Int32 type;
-	info->GetSubtype(&type);
+    AutoPtr<INetworkInfo> info;
+    CNetworkInfo::New((INetworkInfo**)&info);
+    mConnectivityManager->GetActiveNetworkInfo(&info);
+    Int32 type;
+    info->GetSubtype(&type);
     return type;
 }
 
 //===============================================================
-// 		NetworkChangeNotifierAutoDetect::WifiManagerDelegate
+//         NetworkChangeNotifierAutoDetect::WifiManagerDelegate
 //===============================================================
 NetworkChangeNotifierAutoDetect::WifiManagerDelegate::WifiManagerDelegate(
     /* [in] */ IContext* context)
 {
-	context->GetSystemService(IContext::WIFI_SERVICE, (IWifiManager**)&mWifiManager);
+    context->GetSystemService(IContext::WIFI_SERVICE, (IWifiManager**)&mWifiManager);
 }
 
 // For testing.
@@ -96,7 +96,7 @@ NetworkChangeNotifierAutoDetect::NetworkConnectivityIntentFilter::NetworkConnect
 }
 
 //===============================================================
-// 				NetworkChangeNotifierAutoDetect
+//                 NetworkChangeNotifierAutoDetect
 //===============================================================
 const String NetworkChangeNotifierAutoDetect::TAG("NetworkChangeNotifierAutoDetect");
 
@@ -108,7 +108,7 @@ NetworkChangeNotifierAutoDetect::NetworkChangeNotifierAutoDetect(
     , mRegistered(FALSE)
     , mConnectionType(0)
 {
-	// question: ApplicationStatus and other.
+    // question: ApplicationStatus and other.
     context->GetApplicationContext(&mContext);
     mConnectivityManagerDelegate = new ConnectivityManagerDelegate(context);
     mWifiManagerDelegate = new WifiManagerDelegate(context);
@@ -141,31 +141,31 @@ Int32 NetworkChangeNotifierAutoDetect::GetCurrentConnectionType()
         case IConnectivityManager::TYPE_BLUETOOTH:
             return NetworkChangeNotifier::CONNECTION_BLUETOOTH;
         case IConnectivityManager::TYPE_MOBILE:
-        	{
-	            // Use information from TelephonyManager to classify the connection.
-	            switch (mConnectivityManagerDelegate->GetNetworkSubtype()) {
-	                case ITelephonyManager::NETWORK_TYPE_GPRS:
-	                case ITelephonyManager::NETWORK_TYPE_EDGE:
-	                case ITelephonyManager::NETWORK_TYPE_CDMA:
-	                case ITelephonyManager::NETWORK_TYPE_1xRTT:
-	                case ITelephonyManager::NETWORK_TYPE_IDEN:
-	                    return NetworkChangeNotifier::CONNECTION_2G;
-	                case ITelephonyManager::NETWORK_TYPE_UMTS:
-	                case ITelephonyManager::NETWORK_TYPE_EVDO_0:
-	                case ITelephonyManager::NETWORK_TYPE_EVDO_A:
-	                case ITelephonyManager::NETWORK_TYPE_HSDPA:
-	                case ITelephonyManager::NETWORK_TYPE_HSUPA:
-	                case ITelephonyManager::NETWORK_TYPE_HSPA:
-	                case ITelephonyManager::NETWORK_TYPE_EVDO_B:
-	                case ITelephonyManager::NETWORK_TYPE_EHRPD:
-	                case ITelephonyManager::NETWORK_TYPE_HSPAP:
-	                    return NetworkChangeNotifier::CONNECTION_3G;
-	                case ITelephonyManager::NETWORK_TYPE_LTE:
-	                    return NetworkChangeNotifier::CONNECTION_4G;
-	                default:
-	                    return NetworkChangeNotifier::CONNECTION_UNKNOWN;
-	            }
-	        }
+            {
+                // Use information from TelephonyManager to classify the connection.
+                switch (mConnectivityManagerDelegate->GetNetworkSubtype()) {
+                    case ITelephonyManager::NETWORK_TYPE_GPRS:
+                    case ITelephonyManager::NETWORK_TYPE_EDGE:
+                    case ITelephonyManager::NETWORK_TYPE_CDMA:
+                    case ITelephonyManager::NETWORK_TYPE_1xRTT:
+                    case ITelephonyManager::NETWORK_TYPE_IDEN:
+                        return NetworkChangeNotifier::CONNECTION_2G;
+                    case ITelephonyManager::NETWORK_TYPE_UMTS:
+                    case ITelephonyManager::NETWORK_TYPE_EVDO_0:
+                    case ITelephonyManager::NETWORK_TYPE_EVDO_A:
+                    case ITelephonyManager::NETWORK_TYPE_HSDPA:
+                    case ITelephonyManager::NETWORK_TYPE_HSUPA:
+                    case ITelephonyManager::NETWORK_TYPE_HSPA:
+                    case ITelephonyManager::NETWORK_TYPE_EVDO_B:
+                    case ITelephonyManager::NETWORK_TYPE_EHRPD:
+                    case ITelephonyManager::NETWORK_TYPE_HSPAP:
+                        return NetworkChangeNotifier::CONNECTION_3G;
+                    case ITelephonyManager::NETWORK_TYPE_LTE:
+                        return NetworkChangeNotifier::CONNECTION_4G;
+                    default:
+                        return NetworkChangeNotifier::CONNECTION_UNKNOWN;
+                }
+            }
         default:
             return NetworkChangeNotifier::CONNECTION_UNKNOWN;
     }
@@ -177,8 +177,8 @@ ECode NetworkChangeNotifierAutoDetect::OnReceive(
     /* [in] */ IContext* context,
     /* [in] */ IIntent* intent)
 {
-	VALIDATE_NOT_NULL(context);
-	VALIDATE_NOT_NULL(intent);
+    VALIDATE_NOT_NULL(context);
+    VALIDATE_NOT_NULL(intent);
     ConnectionTypeChanged();
     return NOERROR;
 }
@@ -204,7 +204,7 @@ ECode NetworkChangeNotifierAutoDetect::OnApplicationStateChange(
 ECode NetworkChangeNotifierAutoDetect::SetConnectivityManagerDelegateForTests(
     /* [in] */ ConnectivityManagerDelegate* delegate)
 {
-	VALIDATE_NOT_NULL(delegate);
+    VALIDATE_NOT_NULL(delegate);
     mConnectivityManagerDelegate = delegate;
     return NOERROR;
 }
@@ -215,7 +215,7 @@ ECode NetworkChangeNotifierAutoDetect::SetConnectivityManagerDelegateForTests(
 ECode NetworkChangeNotifierAutoDetect::SetWifiManagerDelegateForTests(
     /* [in] */ WifiManagerDelegate* delegate)
 {
-	VALIDATE_NOT_NULL(delegate);
+    VALIDATE_NOT_NULL(delegate);
     mWifiManagerDelegate = delegate;
     return NOERROR;
 }

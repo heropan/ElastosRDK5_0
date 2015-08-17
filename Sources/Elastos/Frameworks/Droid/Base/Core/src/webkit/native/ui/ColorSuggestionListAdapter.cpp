@@ -18,7 +18,7 @@ ColorSuggestionListAdapter::ColorSuggestionListAdapter(
 ECode ColorSuggestionListAdapter::SetOnColorSuggestionClickListener(
     /* in */ OnColorSuggestionClickListener* listener)
 {
-	VALIDATE_NOT_NULL(listener);
+    VALIDATE_NOT_NULL(listener);
     mListener = listener;
     return NOERROR;
 }
@@ -27,7 +27,7 @@ ECode ColorSuggestionListAdapter::SetOnColorSuggestionClickListener(
 ECode ColorSuggestionListAdapter::OnClick(
     /* in */ IView* v)
 {
-	VALIDATE_NOT_NULL(v);
+    VALIDATE_NOT_NULL(v);
     if (NULL == mListener) {
         return NOERROR;
     }
@@ -51,9 +51,9 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
         layout = maybelinear;
     }
     else {
-    	CLinearLayout::New(mContext, (ILinearLayout**)&layout);
-    	AutoPtr<IViewGroupLayoutParams> params;
-    	CAbsListView::New(AbsListView::LayoutParams::MATCH_PARENT, AbsListView::LayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
+        CLinearLayout::New(mContext, (ILinearLayout**)&layout);
+        AutoPtr<IViewGroupLayoutParams> params;
+        CAbsListView::New(AbsListView::LayoutParams::MATCH_PARENT, AbsListView::LayoutParams::WRAP_CONTENT, (IViewGroupLayoutParams**)&params);
         layout->SetLayoutParams(params);
         layout->SetOrientation(LinearLayout::HORIZONTAL);
         layout->SetBackgroundColor(IColor::WHITE);
@@ -61,7 +61,7 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
         Int32 buttonHeight;
         AutoPtr<IResources> resource;
         CResources::New((IResources**)&resource);
-		mContext->GetResources(&resource);
+        mContext->GetResources(&resource);
         resource->GetDimensionPixelOffset(R::dimen::color_button_height, &buttonHeight);
 
         for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
@@ -81,8 +81,8 @@ AutoPtr<IView> ColorSuggestionListAdapter::GetView(
         }
     }
     for (Int32 i = 0; i < COLORS_PER_ROW; ++i) {
-    	AutoPtr<IView> child;
-    	layout->GetChildAt(i, (IView**)&child);
+        AutoPtr<IView> child;
+        layout->GetChildAt(i, (IView**)&child);
         SetUpColorButton(child, position * COLORS_PER_ROW + i);
     }
     return layout;
@@ -112,7 +112,7 @@ ECode ColorSuggestionListAdapter::SetUpColorButton(
     /* in */ IView* button,
     /* in */ Int32 index)
 {
-	VALIDATE_NOT_NULL(button);
+    VALIDATE_NOT_NULL(button);
     if (index >= mSuggestions->GetLength()) {
         button->SetTag(NULL);
         button->SetContentDescription(NULL);

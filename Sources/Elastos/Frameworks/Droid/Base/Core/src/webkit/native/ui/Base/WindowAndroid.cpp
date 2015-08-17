@@ -4,6 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 const String WindowAndroid::TAG("WindowAndroid");
 const String WindowAndroid::WINDOW_CALLBACK_ERRORS("window_callback_errors");
@@ -19,24 +20,24 @@ WindowAndroid::InnerVSyncMonitorListener::InnerVSyncMonitorListener(
 }
 
 ECode WindowAndroid::InnerVSyncMonitorListener::OnVSync(
-	/* in */ VSyncMonitor* monitor,
-	/* in */ Int64 vsyncTimeMicros)
+    /* in */ VSyncMonitor* monitor,
+    /* in */ Int64 vsyncTimeMicros)
 {
-	VALIDATE_NOT_NULL(monitor);
-	if (mOwner->mNativeWindowAndroid != 0) {
+    VALIDATE_NOT_NULL(monitor);
+    if (mOwner->mNativeWindowAndroid != 0) {
         mOwner->NativeOnVSync(mOwner->mNativeWindowAndroid, vsyncTimeMicros);
     }
-	return NOERROR;
+    return NOERROR;
 }
 
 //===============================================================
-//           			WindowAndroid
+//                       WindowAndroid
 //===============================================================
 WindowAndroid::WindowAndroid(
     /* in */ IContext* context)
 {
-	AutoPtr<IContext> applicationContext;
-	context->GetApplicationContext((IContext**)&applicationContext);
+    AutoPtr<IContext> applicationContext;
+    context->GetApplicationContext((IContext**)&applicationContext);
     assert (context == applicationContext);
     mApplicationContext = context;
     mOutstandingIntents = SparseArray<IntentCallback>::Alloc(1);
@@ -107,8 +108,8 @@ ECode WindowAndroid::ShowError(
 ECode WindowAndroid::ShowError(
     /* in */ Int32 resId)
 {
-	String str;
-	mApplicationContext->GetString(resId, &str);
+    String str;
+    mApplicationContext->GetString(resId, &str);
     ShowError(str);
     return NOERROR;
 }
@@ -116,7 +117,7 @@ ECode WindowAndroid::ShowError(
 ECode WindowAndroid::SendBroadcast(
     /* in */ IIntent* intent)
 {
-	VALIDATE_NOT_NULL(intent);
+    VALIDATE_NOT_NULL(intent);
     mApplicationContext->SendBroadcast(intent);
     return NOERROR;
 }
@@ -129,7 +130,7 @@ AutoPtr<IContext> WindowAndroid::GetApplicationContext()
 ECode WindowAndroid::SaveInstanceState(
     /* in */ IBundle* bundle)
 {
-	VALIDATE_NOT_NULL(bundle);
+    VALIDATE_NOT_NULL(bundle);
     bundle->PutSerializable(WINDOW_CALLBACK_ERRORS, mIntentErrors);
     return NOERROR;
 }
@@ -137,7 +138,7 @@ ECode WindowAndroid::SaveInstanceState(
 ECode WindowAndroid::RestoreInstanceState(
     /* in */ IBundle* bundle)
 {
-	VALIDATE_NOT_NULL(bundle);
+    VALIDATE_NOT_NULL(bundle);
     if (bundle == NULL) return NOERROR;
     AutoPtr<Object> errors;
     bundle->GetSerializable(WINDOW_CALLBACK_ERRORS, (Object**)&errors);
@@ -159,11 +160,11 @@ Boolean WindowAndroid::OnActivityResult(
 Boolean WindowAndroid::CanResolveActivity(
     /* in */ IIntent* intent)
 {
-	AutoPtr<IPackageManager> packageManager;
+    AutoPtr<IPackageManager> packageManager;
     mApplicationContext->GetPackageManager((IPackageManager**)&packageManager);
 
     AutoPtr<IResolveInfo> resolveInfo;
-	packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
+    packageManager->ResolveActivity(intent, 0, (IResolveInfo**)&resolveInfo);
     return resolveInfo != NULL;
 }
 
@@ -193,7 +194,7 @@ ECode WindowAndroid::ShowCallbackNonExistentError(
 
 ECode WindowAndroid::RequestVSyncUpdate()
 {
-   	mVSyncMonitor->RequestUpdate();
+       mVSyncMonitor->RequestUpdate();
     return NOERROR;
 }
 
@@ -215,6 +216,7 @@ ECode WindowAndroid::NativeDestroy(
     return NOERROR;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

@@ -3,8 +3,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_BAKEDBEZIERINTERPOLATOR_H_
-#define _ELASTOS_DROID_WEBKIT_UI_BAKEDBEZIERINTERPOLATOR_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
+#define _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 
 //package org.chromium.ui.interpolators;
 //import android.view.animation.Interpolator;
@@ -13,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Interpolators {
 
 /**
  * A pre-baked bezier-curved interpolator for quantum-paper transitions.
@@ -24,13 +25,13 @@ class BakedBezierInterpolator : public Interpolator
 public:
     //@Override
     CARAPI_(Float) GetInterpolation(
-        /* in */ Float input);
+        /* [in] */ Float input);
 private:
     /**
      * Use the INSTANCE variable instead of instantiating.
      */
     BakedBezierInterpolator(
-        /* in */ ArrayOf<Float>* values);
+        /* [in] */ ArrayOf<Float>* values);
 
     static CARAPI_(AutoPtr< ArrayOf<Float> >) InitTransformValus();
 
@@ -112,10 +113,11 @@ private:
     const Float mStepSize;
 };
 
+} // namespace Interpolators
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_BAKEDBEZIERINTERPOLATOR_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_INTERPOLATORS_BAKEDBEZIERINTERPOLATOR_H_
 

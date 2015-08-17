@@ -35,19 +35,19 @@ private:
     {
     public:
         InnerLayoutChangeListener(
-            /* in */ DropdownPopupWindow* window);
+            /* [in] */ DropdownPopupWindow* window);
 
         // @Override
         CARAPI OnLayoutChange(
-            /* in */ IView* v,
-            /* in */ Int32 left,
-            /* in */ Int32 top,
-            /* in */ Int32 right,
-            /* in */ Int32 bottom,
-            /* in */ Int32 oldLeft,
-            /* in */ Int32 oldTop,
-            /* in */ Int32 oldRight,
-            /* in */ Int32 oldBottom);
+            /* [in] */ IView* v,
+            /* [in] */ Int32 left,
+            /* [in] */ Int32 top,
+            /* [in] */ Int32 right,
+            /* [in] */ Int32 bottom,
+            /* [in] */ Int32 oldLeft,
+            /* [in] */ Int32 oldTop,
+            /* [in] */ Int32 oldRight,
+            /* [in] */ Int32 oldBottom);
 
     private:
         DropdownPopupWindow* mWindow;
@@ -57,7 +57,7 @@ private:
     {
     public:
         InnerLayoutChangeListener(
-            /* in */ DropdownPopupWindow* window);
+            /* [in] */ DropdownPopupWindow* window);
 
         // @Override
         CARAPI OnDismiss();
@@ -73,8 +73,8 @@ public:
      * @param viewAndroidDelegate View delegate used to add and remove views.
      */
     DropdownPopupWindow(
-        /* in */ IContext* context,
-        /* in */ ViewAndroidDelegate* viewAndroidDelegate);
+        /* [in] */ IContext* context,
+        /* [in] */ ViewAndroidDelegate* viewAndroidDelegate);
 
     /**
      * Sets the location and the size of the anchor view that the DropdownPopupWindow will use to
@@ -85,21 +85,21 @@ public:
      * @param height The height of the anchor view.
      */
     virtual CARAPI SetAnchorRect(
-        /* in */ Float x,
-        /* in */ Float y,
-        /* in */ Float width,
-        /* in */ Float height);
+        /* [in] */ Float x,
+        /* [in] */ Float y,
+        /* [in] */ Float width,
+        /* [in] */ Float height);
 
     //@Override
     CARAPI SetAdapter(
-        /* in */ IListAdapter* adapter);
+        /* [in] */ IListAdapter* adapter);
 
     //@Override
     CARAPI Show();
 
     //@Override
     CARAPI SetOnDismissListener(
-        /* in */ IPopupWindow::OnDismissListener* listener);
+        /* [in] */ IPopupWindow::OnDismissListener* listener);
 
 private:
     /**

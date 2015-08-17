@@ -25,8 +25,8 @@ public:
      * @param label The label for the suggestion.
      */
     ColorSuggestion(
-        /* in */ Int32 color,
-        /* in */ String label);
+        /* [in] */ Int32 color,
+        /* [in] */ String label);
 
 public:
     const Int32 mColor;

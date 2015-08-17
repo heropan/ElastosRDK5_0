@@ -3,19 +3,20 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Autofill {
 
 //===============================================================
 //                  AutofillPopup
 //===============================================================
 AutofillPopup::AutofillPopup(
-	/* in */ IContext* context,
-	/* in */ ViewAndroidDelegate* viewAndroidDelegate,
-	/* in */ AutofillPopupDelegate* autofillCallback)
-	: DropdownPopupWindow(context, viewAndroidDelegate)
-	, mContext(context)
-	, mAutofillCallback(autofillCallback)
+    /* in */ IContext* context,
+    /* in */ ViewAndroidDelegate* viewAndroidDelegate,
+    /* in */ AutofillPopupDelegate* autofillCallback)
+    : DropdownPopupWindow(context, viewAndroidDelegate)
+    , mContext(context)
+    , mAutofillCallback(autofillCallback)
 {
-	SetOnItemClickListener(this);
+    SetOnItemClickListener(this);
 }
 
 /**
@@ -25,8 +26,8 @@ AutofillPopup::AutofillPopup(
 ECode AutofillPopup::FilterAndShow(
     /* in */ ArrayOf<AutofillSuggestion*>* suggestions)
 {
-	VALIDATE_NOT_NULL(suggestions);
-	// question: init
+    VALIDATE_NOT_NULL(suggestions);
+    // question: init
     mSuggestions = new List< AutoPtr<AutofillSuggestion> >(suggestions);
     // Remove the AutofillSuggestions with IDs that are not supported by Android
     AutoPtr< ArrayOf< AutoPtr<DropdownItem> > > cleanedData = ArrayOf< AutoPtr<DropdownItem> >::Alloc(1);
@@ -69,6 +70,7 @@ ECode AutofillPopup::Hide()
     return NOERROR;
 }
 
+} // namespace Autofill
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef _ELASTOS_DROID_WEBKIT_UI_DEVICEFORMFACTOR_H_
-#define _ELASTOS_DROID_WEBKIT_UI_DEVICEFORMFACTOR_H_
+#ifndef _ELASTOS_DROID_WEBKIT_UI_BASE_DEVICEFORMFACTOR_H_
+#define _ELASTOS_DROID_WEBKIT_UI_BASE_DEVICEFORMFACTOR_H_
 
 // package org.chromium.ui.base;
 // import android.content.Context;
@@ -13,6 +13,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 /**
  * UI utilities for accessing form factor information.
@@ -26,7 +27,7 @@ public:
      */
     //@CalledByNative
     static CARAPI_(Boolean) IsTablet(
-        /* in */ IContext* context);
+        /* [in] */ IContext* context);
 
 private:
     /**
@@ -36,10 +37,11 @@ private:
     static Boolean sIsTablet;
 };
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
 
-#endif // _ELASTOS_DROID_WEBKIT_UI_DEVICEFORMFACTOR_H_
+#endif // _ELASTOS_DROID_WEBKIT_UI_BASE_DEVICEFORMFACTOR_H_
 

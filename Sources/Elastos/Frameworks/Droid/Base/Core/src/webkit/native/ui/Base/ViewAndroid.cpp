@@ -4,6 +4,7 @@ namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Ui {
+namespace Base {
 
 ViewAndroid::ViewAndroid(
     /* in */ WindowAndroid* nativeWindow,
@@ -68,7 +69,9 @@ ECode ViewAndroid::NativeDestroy(
     return NOERROR;
 }
 
+} // namespace Base
 } // namespace Ui
 } // namespace Webkit
 } // namespace Droid
 } // namespace Elastos
+

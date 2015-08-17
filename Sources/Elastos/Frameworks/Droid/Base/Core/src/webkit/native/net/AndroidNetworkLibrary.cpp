@@ -10,19 +10,19 @@ namespace Net {
 const String AndroidNetworkLibrary::TAG("AndroidNetworkLibrary");
 
 Boolean AndroidNetworkLibrary::StoreKeyPair(
-	/* [in] */ IContext* context,
-	/* [in] */ ArrayOf<Byte>* publicKey,
-	/* [in] */ ArrayOf<Byte>* privateKey)
+    /* [in] */ IContext* context,
+    /* [in] */ ArrayOf<Byte>* publicKey,
+    /* [in] */ ArrayOf<Byte>* privateKey)
 {
-	//try {
+    //try {
         AutoPtr<IIntent> intent;
         //from qiuwenrong init "intent"
         //AutoPtr<IKeyChainHelper> helper;
         //CKeyChainHelper::AcquireSingleton((IKeyChainHelper**)&helper);
-		//hepler->CreateInstallIntent((IIntent**)&intent);
+        //hepler->CreateInstallIntent((IIntent**)&intent);
 
-		//self init "intent"
-		CIntent::New((IIntent**)&intent);
+        //self init "intent"
+        CIntent::New((IIntent**)&intent);
         intent->PutExtra(String("PKEY"), privateKey);
         intent->PutExtra(String("KEY"), publicKey);
         intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
@@ -39,48 +39,48 @@ Boolean AndroidNetworkLibrary::StoreCertificate(
     /* [in] */ Int32 certType,
     /* [in] */ ArrayOf<Byte>* data)
 {
-	//try {
-		AutoPtr<IIntent> intent;
+    //try {
+        AutoPtr<IIntent> intent;
         CIntent::New((IIntent**)&intent);
         intent->AddFlags(IIntent::FLAG_ACTIVITY_NEW_TASK);
 
-	    switch (certType) {
-	        case ICertificateMimeType::X509_USER_CERT:
-	        case ICertificateMimeType::X509_CA_CERT:
-	            intent->PutExtra(IKeyChain::EXTRA_CERTIFICATE, data);
-	            break;
+        switch (certType) {
+            case ICertificateMimeType::X509_USER_CERT:
+            case ICertificateMimeType::X509_CA_CERT:
+                intent->PutExtra(IKeyChain::EXTRA_CERTIFICATE, data);
+                break;
 
-	        case ICertificateMimeType::PKCS12_ARCHIVE:
-	            intent->PutExtra(IKeyChain::EXTRA_PKCS12, data);
-	            break;
+            case ICertificateMimeType::PKCS12_ARCHIVE:
+                intent->PutExtra(IKeyChain::EXTRA_PKCS12, data);
+                break;
 
-	        default:
-	            //Log.w(TAG, "invalid certificate type: " + certType);
-	            return FALSE;
-	    }
-	    context->StartActivity(intent);
-	    return TRUE;
-	//} catch (ActivityNotFoundException e) {
-	//    Log.w(TAG, "could not store crypto file: " + e);
-	//}
-	//return FALSE;
+            default:
+                //Log.w(TAG, "invalid certificate type: " + certType);
+                return FALSE;
+        }
+        context->StartActivity(intent);
+        return TRUE;
+    //} catch (ActivityNotFoundException e) {
+    //    Log.w(TAG, "could not store crypto file: " + e);
+    //}
+    //return FALSE;
 }
 
 String AndroidNetworkLibrary::GetMimeTypeFromExtension(
     /* [in] */ String extension)
 {
-	return URLConnection::GuessContentTypeFromName(String("foo.") + extension);
+    return URLConnection::GuessContentTypeFromName(String("foo.") + extension);
 }
 
 Boolean AndroidNetworkLibrary::HaveOnlyLoopbackAddresses()
 {
-	Enumeration< AutoPtr<INetworkInterface> > list;
+    Enumeration< AutoPtr<INetworkInterface> > list;
     //try {
-    	AutoPtr<INetworkInterfaceHelper> helper;
-    	CNetworkInterfaceHelper::AcquireSingleton((INetworkInterfaceHelper**)&helper);
-    	helper->GetNetworkInterfaces(&list);
+        AutoPtr<INetworkInterfaceHelper> helper;
+        CNetworkInterfaceHelper::AcquireSingleton((INetworkInterfaceHelper**)&helper);
+        helper->GetNetworkInterfaces(&list);
         if (list.IsEmpty())
-        	return FALSE;
+            return FALSE;
     //} catch (Exception e) {
     //    Log.w(TAG, "could not get network interfaces: " + e);
     //    return false;
@@ -90,7 +90,7 @@ Boolean AndroidNetworkLibrary::HaveOnlyLoopbackAddresses()
         AutoPtr<INetworkInterface> netIf = list.NextElement();
         //try {
             if (netIf->IsUp() && !netIf->IsLoopback())
-            	return FALSE;
+                return FALSE;
         //} catch (SocketException e) {
         //    continue;
         //}
@@ -100,20 +100,20 @@ Boolean AndroidNetworkLibrary::HaveOnlyLoopbackAddresses()
 
 String AndroidNetworkLibrary::GetNetworkList()
 {
-	// question: how to initlize Enumeration and how to free, using AutoPtr?
-	Enumeration< AutoPtr<INetworkInterface> > lists;
+    // question: how to initlize Enumeration and how to free, using AutoPtr?
+    Enumeration< AutoPtr<INetworkInterface> > lists;
     //try {
         AutoPtr<INetworkInterfaceHelper> helper;
-    	CNetworkInterfaceHelper::AcquireSingleton((INetworkInterfaceHelper**)&helper);
-    	helper->GetNetworkInterfaces(&list);
+        CNetworkInterfaceHelper::AcquireSingleton((INetworkInterfaceHelper**)&helper);
+        helper->GetNetworkInterfaces(&list);
         if (list.IsEmpty())
-        	return String("");
+            return String("");
     //} catch (SocketException e) {
     //    Log.w(TAG, "Unable to get network interfaces: " + e);
     //    return "";
     //}
 
-	StringBuilder result;
+    StringBuilder result;
     while (list.HasMoreElements()) {
         AutoPtr<INetworkInterface> netIf = list.NextElement();
         //try {
@@ -124,10 +124,10 @@ String AndroidNetworkLibrary::GetNetworkList()
             List< AutoPtr<IInterfaceAddress> > interfaceAddrs;
             netIf->GetInterfaceAddresses(&interfaceAddrs);
             for (Int32 i=0; i<interfaceAddrs.GetLength(); ++i) {
-               	AutoPtr<IInterfaceAddress> interfaceAddress = interfaceAddrs[i];
-            	AutoPtr<IInetAddress> address;
-            	CInetAddress::New((IInetAddress**)&address);
-            	interfaceAddress->GetAddress(&address);
+                   AutoPtr<IInterfaceAddress> interfaceAddress = interfaceAddrs[i];
+                AutoPtr<IInetAddress> address;
+                CInetAddress::New((IInetAddress**)&address);
+                interfaceAddress->GetAddress(&address);
 
                 // Skip loopback addresses configured on non-loopback interfaces.
                 if (address->IsLoopbackAddress())
@@ -143,7 +143,7 @@ String AndroidNetworkLibrary::GetNetworkList()
                 address->GetHostAddress(&ipAddress);
                 AutoPtr<IInet6Address> inet6Addr = (IInet6Address*)address->Probe(EIID_IInet6Address);
                 if (inet6Addr != NULL && ipAddress.Contains(String("%"))) {
-                	ipAddress = ipAddress.Substring(0, ipAddress.LastIndexOf(String("%")));
+                    ipAddress = ipAddress.Substring(0, ipAddress.LastIndexOf(String("%")));
                 }
                 addressString.Append(ipAddress);
                 addressString.Append(String("/"));
@@ -170,60 +170,60 @@ String AndroidNetworkLibrary::GetNetworkList()
 }
 
 AutoPtr<AndroidCertVerifyResult> AndroidNetworkLibrary::VerifyServerCertificates(
-	/* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
-	/* [in] */ String authType,
-	/* [in] */ String host)
+    /* [in] */ ArrayOf< AutoPtr< ArrayOf<Byte> > >* certChain,
+    /* [in] */ String authType,
+    /* [in] */ String host)
 {
-	//try {
-		return X509Util::VerifyServerCertificates(certChain, authType, host);
-	//} catch (KeyStoreException e) {
-	//    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
-	//} catch (NoSuchAlgorithmException e) {
-	//    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
-	//}
+    //try {
+        return X509Util::VerifyServerCertificates(certChain, authType, host);
+    //} catch (KeyStoreException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
+    //} catch (NoSuchAlgorithmException e) {
+    //    return new AndroidCertVerifyResult(CertVerifyStatusAndroid.VERIFY_FAILED);
+    //}
 }
 
 ECode AndroidNetworkLibrary::AddTestRootCertificate(
     /* [in] */ ArrayOf<Byte>* rootCert)
 {
-	VALIDATE_NOT_NULL(rootCert);
-	X509Util::AddTestRootCertificate(rootCert);
-	return NOERROR;
+    VALIDATE_NOT_NULL(rootCert);
+    X509Util::AddTestRootCertificate(rootCert);
+    return NOERROR;
 }
 
 ECode AndroidNetworkLibrary::ClearTestRootCertificates()
 {
-	X509Util::ClearTestRootCertificates();
-	return NOERROR;
+    X509Util::ClearTestRootCertificates();
+    return NOERROR;
 }
 
 String AndroidNetworkLibrary::GetNetworkCountryIso(
     /* [in] */ IContext* context)
 {
-	AutoPtr<ITelephonyManager> telephonyManager;
-	CTelephonyManager::New((ITelephonyManager**)&telephonyManager);
-	context->GetSystemService(IContext::TELEPHONY_SERVICE, (ITelephonyManager**)&telephonyManager);
-	String result("");
-	if (telephonyManager != NULL) {
-		telephonyManager->GetNetworkCountryIso(&result);
-		return result;
-	}
-	return result;
+    AutoPtr<ITelephonyManager> telephonyManager;
+    CTelephonyManager::New((ITelephonyManager**)&telephonyManager);
+    context->GetSystemService(IContext::TELEPHONY_SERVICE, (ITelephonyManager**)&telephonyManager);
+    String result("");
+    if (telephonyManager != NULL) {
+        telephonyManager->GetNetworkCountryIso(&result);
+        return result;
+    }
+    return result;
 }
 
 
 String AndroidNetworkLibrary::GetNetworkOperator(
     /* [in] */ IContext* context)
 {
-	AutoPtr<ITelephonyManager> telephonyManager;
-	CTelephonyManager::New((ITelephonyManager**)&telephonyManager);
-	context->GetSystemService(IContext::TELEPHONY_SERVICE, (ITelephonyManager**)&telephonyManager);
-	String result("");
-	if (telephonyManager != NULL) {
-		telephonyManager->GetNetworkOperator(&result);
-		return result;
-	}
-	return result;
+    AutoPtr<ITelephonyManager> telephonyManager;
+    CTelephonyManager::New((ITelephonyManager**)&telephonyManager);
+    context->GetSystemService(IContext::TELEPHONY_SERVICE, (ITelephonyManager**)&telephonyManager);
+    String result("");
+    if (telephonyManager != NULL) {
+        telephonyManager->GetNetworkOperator(&result);
+        return result;
+    }
+    return result;
 }
 
 } // namespace  Net
