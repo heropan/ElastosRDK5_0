@@ -55,7 +55,7 @@ ECode CAlertControllerAlertParams::_RecycleCursorAdapter::BindView(
     String str;
     AutoPtr<ICharSequence> csq;
     cursor->GetString(mLabelIndex, &str);
-    CStringWrapper::New(str, (ICharSequence**)&csq);
+    CString::New(str, (ICharSequence**)&csq);
     text->SetText(csq);
     Int32 position, checked;
     cursor->GetPosition(&position);

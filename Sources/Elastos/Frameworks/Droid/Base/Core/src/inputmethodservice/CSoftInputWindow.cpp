@@ -2,7 +2,7 @@
 #include "inputmethodservice/CSoftInputWindow.h"
 #include "view/CWindowManagerLayoutParams.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::View::CWindowManagerLayoutParams;
 using Elastos::Droid::View::IGravity;
 
@@ -142,7 +142,7 @@ void SoftInputWindow::InitDockWindow()
 
     lpObj->mType = IWindowManagerLayoutParams::TYPE_INPUT_METHOD;
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(String("InputMethod"), (ICharSequence**)&text);
+    CString::New(String("InputMethod"), (ICharSequence**)&text);
     lp->SetTitle(text);
 
     lpObj->mGravity = IGravity::BOTTOM;

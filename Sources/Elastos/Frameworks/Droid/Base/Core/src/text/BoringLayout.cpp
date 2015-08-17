@@ -7,7 +7,7 @@
 #include "text/TextLine.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ECLSID_CStringWrapper;
 using Elastos::Droid::Text::Style::EIID_IParagraphStyle;
 

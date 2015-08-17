@@ -27,7 +27,7 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IInteger32;

@@ -14,7 +14,7 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Binder;
 using Elastos::Droid::Os::CBundle;
 using Elastos::Droid::Content::CIntent;
@@ -593,7 +593,7 @@ void ChooseTypeAndAccountActivity::OverrideDescriptionIfSupplied(
     ASSERT_SUCCEEDED(FindViewById(R::id::description, (IView**)&view));
     AutoPtr<ITextView> descriptionView = ITextView::Probe(view);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(descriptionOverride, (ICharSequence**)&csq);
+    CString::New(descriptionOverride, (ICharSequence**)&csq);
     if (!TextUtils::IsEmpty(csq)) {
         descriptionView->SetText(csq);
     }
@@ -632,7 +632,7 @@ void ChooseTypeAndAccountActivity::PopulateUIAccountList(
     CObjectContainer::New((IObjectContainer**)&items);
     for (Int32 i = 0; i < listItems->GetLength(); ++i) {
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New((*listItems)[i], (ICharSequence**)&csq);
+        CString::New((*listItems)[i], (ICharSequence**)&csq);
         items->Add((IInterface*)csq);
     }
     AutoPtr<IArrayAdapter> arrayAdapter;

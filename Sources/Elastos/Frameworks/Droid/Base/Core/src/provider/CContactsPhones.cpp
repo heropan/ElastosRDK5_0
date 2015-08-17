@@ -3,7 +3,7 @@
 #include "net/Uri.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::Res::IResources;
@@ -43,7 +43,7 @@ ECode CContactsPhones::GetDisplayLabel(
     VALIDATE_NOT_NULL(label);
 
     AutoPtr<ICharSequence> display;
-    FAIL_RETURN(CStringWrapper::New(String(""), (ICharSequence**)&display))
+    FAIL_RETURN(CString::New(String(""), (ICharSequence**)&display))
 
     if (type != IContactsPhonesColumns::TYPE_CUSTOM) {
         AutoPtr<ArrayOf<ICharSequence*> > labels;

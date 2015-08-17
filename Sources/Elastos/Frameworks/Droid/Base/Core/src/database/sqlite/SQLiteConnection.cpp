@@ -19,7 +19,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Utility::Regex::IPatternHelper;
@@ -1518,7 +1518,7 @@ ECode SQLiteConnection::SetLocaleFromConfiguration()
     }
     AutoPtr<ArrayOf<IInterface*> > bindArgs = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(newLocale, (ICharSequence**)&seq);
+    CString::New(newLocale, (ICharSequence**)&seq);
     bindArgs->Set(0, seq);
     ec = Execute(String("INSERT INTO android_metadata (locale) VALUES(?)"), bindArgs, NULL);
     if (FAILED(ec)) {

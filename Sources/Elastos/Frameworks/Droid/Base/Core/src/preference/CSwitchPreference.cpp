@@ -4,7 +4,7 @@
 
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Widget::EIID_ICompoundButtonOnCheckedChangeListener;
 using Elastos::Droid::Widget::ICheckable;
 using Elastos::Droid::Widget::ISwitch;
@@ -139,7 +139,7 @@ ECode CSwitchPreference::SetSwitchTextOn(
     String textOnStr;
     context->GetString(resId, &textOnStr);
     AutoPtr<ICharSequence> textOn;
-    CStringWrapper::New(textOnStr, (ICharSequence**)&textOn);
+    CString::New(textOnStr, (ICharSequence**)&textOn);
     return SetSwitchTextOn(textOn);
 }
 
@@ -151,7 +151,7 @@ ECode CSwitchPreference::SetSwitchTextOff(
     String textOffStr;
     context->GetString(resId, &textOffStr);
     AutoPtr<ICharSequence> textOff;
-    CStringWrapper::New(textOffStr, (ICharSequence**)&textOff);
+    CString::New(textOffStr, (ICharSequence**)&textOff);
     return SetSwitchTextOn(textOff);
 }
 
@@ -188,25 +188,25 @@ ECode CSwitchPreference::constructor(
     String summaryOn;
     a->GetString(R::styleable::SwitchPreference_summaryOn, &summaryOn);
     AutoPtr<ICharSequence> summaryOnCs;
-    CStringWrapper::New(summaryOn, (ICharSequence**)&summaryOnCs);
+    CString::New(summaryOn, (ICharSequence**)&summaryOnCs);
     SetSummaryOn(summaryOnCs);
 
     String summaryOff;
     a->GetString(R::styleable::SwitchPreference_summaryOff, &summaryOff);
     AutoPtr<ICharSequence> summaryOffCs;
-    CStringWrapper::New(summaryOff, (ICharSequence**)&summaryOffCs);
+    CString::New(summaryOff, (ICharSequence**)&summaryOffCs);
     SetSummaryOff(summaryOffCs);
 
     String switchTextOn;
     a->GetString(R::styleable::SwitchPreference_switchTextOn, &switchTextOn);
     AutoPtr<ICharSequence> textOn;
-    CStringWrapper::New(switchTextOn, (ICharSequence**)&textOn);
+    CString::New(switchTextOn, (ICharSequence**)&textOn);
     SetSwitchTextOn(textOn);
 
     String switchTextOff;
     a->GetString(R::styleable::SwitchPreference_switchTextOff, &switchTextOff);
     AutoPtr<ICharSequence> textOff;
-    CStringWrapper::New(switchTextOff, (ICharSequence**)&textOff);
+    CString::New(switchTextOff, (ICharSequence**)&textOff);
     SetSwitchTextOff(textOff);
 
     Boolean disable;

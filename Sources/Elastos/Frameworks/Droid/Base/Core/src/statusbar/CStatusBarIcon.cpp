@@ -3,7 +3,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::CUserHandle;
 
 namespace Elastos {
@@ -101,7 +101,7 @@ ECode CStatusBarIcon::ReadFromParcel(
         String cd;
         in->ReadString(&cd);
         mContentDescription = NULL;
-        CStringWrapper::New(cd, (ICharSequence**)&mContentDescription);
+        CString::New(cd, (ICharSequence**)&mContentDescription);
     }
 
     return NOERROR;

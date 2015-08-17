@@ -7,7 +7,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Utility::CObjectInt32Map;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {
@@ -134,7 +134,7 @@ ECode CLinkCapabilities::Put(
     /* [in] */ const String& value)
 {
     AutoPtr<ICharSequence> temp;
-    CStringWrapper::New(value, (ICharSequence**)&temp);
+    CString::New(value, (ICharSequence**)&temp);
     return mCapabilities->Put(key, temp);
 }
 
@@ -287,7 +287,7 @@ ECode CLinkCapabilities::ReadFromParcel(
         String value;
         source->ReadString(&value);
         AutoPtr<ICharSequence> temp;
-        CStringWrapper::New(value, (ICharSequence**)&temp);
+        CString::New(value, (ICharSequence**)&temp);
         mCapabilities->Put(key, temp);
     }
     return NOERROR;

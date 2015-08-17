@@ -45,7 +45,7 @@ using Libcore::ICU::CLocaleHelper;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocale;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Logging::Logger;
@@ -2520,13 +2520,13 @@ void View::OnInitializeAccessibilityEventInternal(
 {
     event->SetSource(IVIEW_PROBE(this));
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("View"), (ICharSequence**)&seq);
+    CString::New(String("View"), (ICharSequence**)&seq);
     event->SetClassName(seq);
     AutoPtr<IContext> context = GetContext();
     String pkgName;
     context->GetPackageName(&pkgName);
     seq = NULL;
-    CStringWrapper::New(pkgName, (ICharSequence**)&seq);
+    CString::New(pkgName, (ICharSequence**)&seq);
     event->SetPackageName(seq);
     event->SetEnabled(IsEnabled());
     event->SetContentDescription(mContentDescription);
@@ -2676,13 +2676,13 @@ void View::OnInitializeAccessibilityNodeInfoInternal(
     info->SetVisibleToUser(IsVisibleToUser());
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("View"), (ICharSequence**)&seq);
+    CString::New(String("View"), (ICharSequence**)&seq);
     info->SetClassName(seq);
 
     String pkgName;
     mContext->GetPackageName(&pkgName);
     seq = NULL;
-    CStringWrapper::New(pkgName, (ICharSequence**)&seq);
+    CString::New(pkgName, (ICharSequence**)&seq);
     info->SetPackageName(seq);
     info->SetContentDescription(GetContentDescription());
 
@@ -14529,7 +14529,7 @@ ECode View::Init(
                 String str;
                 a->GetString(attr, &str);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(str, (ICharSequence**)&cs);
+                CString::New(str, (ICharSequence**)&cs);
                 SetContentDescription(cs);
                 break;
             }

@@ -17,7 +17,7 @@
 #include <elastos/core/Math.h>
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::IContentResolver;
 using Elastos::Droid::Provider::ISettingsSecure;
 using Elastos::Droid::Provider::CSettingsSecure;
@@ -903,7 +903,7 @@ AutoPtr<ICharSequence> KeyboardView::AdjustCase(
             label->ToString(&str);
             str = str.ToUpperCase();
             AutoPtr<ICharSequence> label2;
-            CStringWrapper::New(str, (ICharSequence**)&label2);
+            CString::New(str, (ICharSequence**)&label2);
             return label2;
         }
     }
@@ -1246,7 +1246,7 @@ AutoPtr<ICharSequence> KeyboardView::GetPreviewText(
         // mPreviewLabel.SetLength(0);
         mPreviewLabel += (Char32)(*codes.Get())[mTapCount < 0 ? 0 : mTapCount];
         AutoPtr<ICharSequence> text;
-        CStringWrapper::New(mPreviewLabel.ToString(), (ICharSequence**)&text);
+        CString::New(mPreviewLabel.ToString(), (ICharSequence**)&text);
         return AdjustCase(text);
     }
     else {
@@ -1521,7 +1521,7 @@ void KeyboardView::SendAccessibilityEventForUnicodeCharacter(
         }
 
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(text, (ICharSequence**)&seq);
+        CString::New(text, (ICharSequence**)&seq);
         AutoPtr<IObjectContainer> bc;
         event->GetText((IObjectContainer**)&bc);
         bc->Add(seq);

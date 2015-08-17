@@ -4,7 +4,7 @@
 #include "os/Looper.h"
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::ICorrectionInfo;
@@ -656,7 +656,7 @@ AutoPtr<IMessage> IInputConnectionWrapper::ObtainMessage(
     /* [in] */ IInterface* arg2)
 {
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(arg1, (ICharSequence**)&text);
+    CString::New(arg1, (ICharSequence**)&text);
 
     AutoPtr<SomeArgs> args = new SomeArgs(text, arg2);
     AutoPtr<IMessage> msg;

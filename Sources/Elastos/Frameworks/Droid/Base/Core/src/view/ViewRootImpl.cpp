@@ -50,7 +50,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Droid::Opengl::CGLES20;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::Thread;
 using Elastos::Droid::Media::IAudioManager;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
@@ -6380,7 +6380,7 @@ void ViewRootImpl::DispatchCloseSystemDialogs(
     /* [in] */ const String& reason)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(reason, (ICharSequence**)&seq);
+    CString::New(reason, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_CLOSE_SYSTEM_DIALOGS,

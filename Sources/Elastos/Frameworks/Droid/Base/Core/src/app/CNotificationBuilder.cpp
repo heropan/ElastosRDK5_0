@@ -700,7 +700,7 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
         	AutoPtr<ICharSequence> cs;
             String str;
         	res->GetString(R::string::status_bar_notification_info_overflow, &str);
-            CStringWrapper::New(str, (ICharSequence**)&cs);
+            CString::New(str, (ICharSequence**)&cs);
             contentView->SetTextViewText(R::id::info, cs);
         }
         else {
@@ -712,7 +712,7 @@ AutoPtr<IRemoteViews> CNotificationBuilder::ApplyStandardTemplate(
 			AutoPtr<ICharSequence> cs;
             String str;
             f->FormatInt64(mNumber, &str);
-            CStringWrapper::New(str, (ICharSequence**)&cs);
+            CString::New(str, (ICharSequence**)&cs);
             contentView->SetTextViewText(R::id::info, cs);
         }
         contentView->SetViewVisibility(R::id::info, IView::VISIBLE);

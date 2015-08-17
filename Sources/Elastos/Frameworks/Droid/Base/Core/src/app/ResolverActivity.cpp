@@ -15,7 +15,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Widget::EIID_IAdapterViewOnItemLongClickListener;
 using Elastos::Droid::Widget::EIID_IBaseAdapter;
@@ -738,7 +738,7 @@ void ResolverActivity::ResolveListAdapter::RebuildList()
                 AutoPtr<IActivityInfo> aInfo;
                 r0->GetActivityInfo((IActivityInfo**)&aInfo);
                 aInfo->GetPackageName(&r0pkgName);
-                CStringWrapper::New(r0pkgName, (ICharSequence**)&r0Label);
+                CString::New(r0pkgName, (ICharSequence**)&r0Label);
             }
             AutoPtr<IResolveInfo> ri = *it;
             AutoPtr<ICharSequence> riLabel;
@@ -747,7 +747,7 @@ void ResolverActivity::ResolveListAdapter::RebuildList()
                 AutoPtr<IActivityInfo> aInfo;
                 ri->GetActivityInfo((IActivityInfo**)&aInfo);
                 aInfo->GetPackageName(&ripkgName);
-                CStringWrapper::New(ripkgName, (ICharSequence**)&riLabel);
+                CString::New(ripkgName, (ICharSequence**)&riLabel);
             }
             if (ripkgName.Equals(r0pkgName)) {
                 continue;
@@ -833,7 +833,7 @@ void ResolverActivity::ResolveListAdapter::ProcessGroup(
                 String aname;
                 aaInfo->GetPackageName(&aname);
                 AutoPtr<ICharSequence> cname;
-                CStringWrapper::New(aname, (ICharSequence**)&cname);
+                CString::New(aname, (ICharSequence**)&cname);
                 AutoPtr<DisplayResolveInfo> info =
                         new DisplayResolveInfo(add, roLabel, cname, NULL);
                 mList.PushBack(info);

@@ -348,7 +348,7 @@ Boolean QwertyKeyListener::OnKeyDown(
         String str("");
         str.Append(i);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         content->Replace(selStart, selEnd, cs);
 
         Int32 oldStart;
@@ -405,7 +405,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                 content->SetSpan(r, x, oldStart,
                                 ISpanned::SPAN_EXCLUSIVE_EXCLUSIVE);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(rep, (ICharSequence**)&cs);
+                CString::New(rep, (ICharSequence**)&cs);
                 content->Replace(x, oldStart, cs);
             }
         }
@@ -433,7 +433,7 @@ Boolean QwertyKeyListener::OnKeyDown(
 
                     if (Character::IsLetter(c) || Character::IsDigit(c)) {
                         AutoPtr<ICharSequence> cs;
-                        CStringWrapper::New(String("."), (ICharSequence**)&cs);
+                        CString::New(String("."), (ICharSequence**)&cs);
                         content->Replace(selEnd - 2, selEnd - 1, cs);
                     }
                 }
@@ -483,7 +483,7 @@ Boolean QwertyKeyListener::OnKeyDown(
                 content->SetSpan(TextKeyListener::INHIBIT_REPLACEMENT,
                                 en, en, ISpanned::SPAN_POINT_POINT);
                 AutoPtr<ICharSequence> oldCs;
-                CStringWrapper::New(old, (ICharSequence**)&oldCs);
+                CString::New(old, (ICharSequence**)&oldCs);
                 content->Replace(st, en, oldCs);
 
                 content->GetSpanStart(TextKeyListener::INHIBIT_REPLACEMENT, &en);
@@ -524,7 +524,7 @@ String QwertyKeyListener::GetReplacement(
         key = TextUtils::Substring(src, start, end);
         key = key.ToLowerCase();
         AutoPtr<ICharSequence> csKey;
-        CStringWrapper::New(key, (ICharSequence**)&csKey);
+        CString::New(key, (ICharSequence**)&csKey);
         replacement = CAutoText::Get(csKey, 0, end - start, view);
         changecase = TRUE;
 
@@ -555,7 +555,7 @@ String QwertyKeyListener::GetReplacement(
         out = ToTitleCase(replacement);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(out, (ICharSequence**)&cs);
+    CString::New(out, (ICharSequence**)&cs);
     if (out.GetLength() == len &&
         TextUtils::RegionMatches(src, start, cs, 0, len))
         return String(NULL);

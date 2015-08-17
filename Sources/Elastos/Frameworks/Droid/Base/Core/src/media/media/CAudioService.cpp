@@ -77,7 +77,7 @@ using Elastos::Utility::Logging::Logger;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -5116,7 +5116,7 @@ ECode CAudioService::SetWiredDeviceConnectionState(
     AutoLock lock(mConnectedDevicesLock);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(name, (ICharSequence**)&seq);
+    CString::New(name, (ICharSequence**)&seq);
     Int32 delay = CheckSendBecomingNoisyIntent(device, state);
     QueueMsgUnderWakeLock(MSG_SET_WIRED_DEVICE_CONNECTION_STATE,
         device,
@@ -5195,7 +5195,7 @@ void CAudioService::MakeA2dpDeviceUnavailableLater(
 
     // send the delayed message to make the device unavailable later
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(address, (ICharSequence**)&seq);
+    CString::New(address, (ICharSequence**)&seq);
     AutoPtr<IMessage> message;
     mAudioHandler->ObtainMessage(MSG_BTA2DP_DOCK_TIMEOUT, seq, (IMessage**)&message);
     Boolean bval;
@@ -5298,7 +5298,7 @@ void CAudioService::OnSetA2dpConnectionState(
                 btDevice->GetAliasName(&name);
                 if (!TextUtils::Equals(bluetoothName, name)) {
                     seq = NULL;
-                    CStringWrapper::New(name, (ICharSequence**)&seq);
+                    CString::New(name, (ICharSequence**)&seq);
                     mCurAudioRoutes->SetBluetoothName(seq);
                     SendMsg(MSG_REPORT_NEW_ROUTES, SENDMSG_NOOP, 0, 0, NULL, 0);
                 }

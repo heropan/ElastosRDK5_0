@@ -5,7 +5,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::IDouble;
@@ -164,7 +164,7 @@ ECode SQLiteProgram::BindString(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     AutoPtr<ICharSequence> valueSequence;
-    CStringWrapper::New(value, (ICharSequence**)&valueSequence);
+    CString::New(value, (ICharSequence**)&valueSequence);
     return Bind(index, valueSequence);
 }
 

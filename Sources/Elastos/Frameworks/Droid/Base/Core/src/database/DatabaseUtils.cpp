@@ -10,7 +10,7 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger16;
 using Elastos::Core::CInteger16;
 using Elastos::Core::IInteger32;
@@ -958,7 +958,7 @@ void DatabaseUtils::CursorStringToContentValues(
     String str;
     cursor->GetString(columnIndexOrThrow, &str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     values->PutString(key, cs);
 }
 
@@ -1076,7 +1076,7 @@ void DatabaseUtils::CursorRowToContentValues(
             String str;
             cursor->GetString(i, &str);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(str, (ICharSequence**)&cs);
+            CString::New(str, (ICharSequence**)&cs);
             values->PutString((*columns)[i], cs);
         }
     }
@@ -1204,7 +1204,7 @@ void DatabaseUtils::CursorStringToContentValuesIfPresent(
         String columnValue;
         cursor->GetString(index, &columnValue);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(columnValue, (ICharSequence**)&cs);
+        CString::New(columnValue, (ICharSequence**)&cs);
         values->PutString(column, cs);
     }
 }

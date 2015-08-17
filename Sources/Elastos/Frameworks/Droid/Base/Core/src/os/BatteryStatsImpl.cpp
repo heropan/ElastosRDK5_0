@@ -19,7 +19,7 @@ using Elastos::Core::CObjectContainer;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::IThread;
@@ -3762,7 +3762,7 @@ void BatteryStatsImpl::DoUnplugLocked(
     HashSet<String>::Iterator it = mMobileIfaces.Begin();
     for (; it != mMobileIfaces.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         container->Add((IInterface*)cs);
     }
 
@@ -3820,7 +3820,7 @@ void BatteryStatsImpl::DoPlugLocked(
     HashSet<String>::Iterator it = mMobileIfaces.Begin();
     for (; it != mMobileIfaces.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         container->Add((IInterface*)cs);
     }
 
@@ -5524,7 +5524,7 @@ Int64 BatteryStatsImpl::GetMobileTcpBytesSent(
     HashSet<String>::Iterator it = mMobileIfaces.Begin();
     for (; it != mMobileIfaces.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         container->Add(cs);
     }
     ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);
@@ -5543,7 +5543,7 @@ Int64 BatteryStatsImpl::GetMobileTcpBytesReceived(
     HashSet<String>::Iterator it = mMobileIfaces.Begin();
     for (; it != mMobileIfaces.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         container->Add(cs);
     }
     ns->GetTotal(NULL, container, (INetworkStatsEntry**)&entry);

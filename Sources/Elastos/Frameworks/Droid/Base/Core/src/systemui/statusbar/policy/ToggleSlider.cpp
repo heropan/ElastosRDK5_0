@@ -3,7 +3,7 @@
 #include "R.h"
 
 using Elastos::Droid::R;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::EIID_IViewGroup;
 using Elastos::Droid::Widget::IRelativeLayout;
@@ -110,7 +110,7 @@ ECode ToggleSlider::InitImpl(
     String text;
     a->GetString(SystemUIR::styleable::ToggleSlider_text, &text);
     AutoPtr<ICharSequence> textSeq;
-    CStringWrapper::New(text, (ICharSequence**)&textSeq);
+    CString::New(text, (ICharSequence**)&textSeq);
     mLabel->SetText(textSeq);
     a->Recycle();
     return NOERROR;

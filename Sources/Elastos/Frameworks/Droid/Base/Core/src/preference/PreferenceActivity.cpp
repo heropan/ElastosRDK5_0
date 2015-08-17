@@ -17,7 +17,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::App::Fragment;
 using Elastos::Droid::App::IFragmentManager;
@@ -401,7 +401,7 @@ ECode PreferenceActivity::OnCreate(
             }
             else {
                 AutoPtr<ICharSequence> cButtonText;
-                CStringWrapper::New(buttonText, (ICharSequence**)&cButtonText);
+                CString::New(buttonText, (ICharSequence**)&cButtonText);
                 mNextButton->SetText(cButtonText);
             }
         }
@@ -414,7 +414,7 @@ ECode PreferenceActivity::OnCreate(
             }
             else {
                 AutoPtr<ICharSequence> cButtonText;
-                CStringWrapper::New(buttonText, (ICharSequence**)&cButtonText);
+                CString::New(buttonText, (ICharSequence**)&cButtonText);
                 backButton->SetText(cButtonText);
             }
         }
@@ -1381,7 +1381,7 @@ ECode PreferenceActivity::FindPreference(
     }
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(key, (ICharSequence**)&cs);
+    CString::New(key, (ICharSequence**)&cs);
     return mPreferenceManager->FindPreference(cs, preference);
 }
 

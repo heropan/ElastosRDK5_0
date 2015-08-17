@@ -28,7 +28,7 @@ using Elastos::Core::IFloat;
 using Elastos::Core::CDouble;
 using Elastos::Core::IDouble;
 using Elastos::Core::IByte;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::EIID_IInteger32;
@@ -525,7 +525,7 @@ ECode XmlUtils::ReadThisMapXml(
             if (!(*name)[0].IsNull()) {
                 //System.out.println("Adding to map: " + name + " -> " + val);
                 AutoPtr<ICharSequence> key;
-                CStringWrapper::New((*name)[0], (ICharSequence**)&key);
+                CString::New((*name)[0], (ICharSequence**)&key);
                 (*map)->Put(key, val);
             }
             else {
@@ -738,7 +738,7 @@ ECode XmlUtils::ReadThisValueXml(
                     (*name)[0] = valueName;
                     //System.out.println("Returning value for " + valueName + ": " + value);
                     AutoPtr<ICharSequence> v;
-                    CStringWrapper::New(value, (ICharSequence**)&v);
+                    CString::New(value, (ICharSequence**)&v);
                     *ret = v;
                     REFCOUNT_ADD(*ret);
                     return NOERROR;

@@ -48,7 +48,7 @@
 
 // #include "provider/Settings.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -150,27 +150,27 @@ static AutoPtr<HashMap<Int32, AutoPtr<IInterface> > > InitApplicationLaunchKeyCa
     AutoPtr<HashMap<Int32, AutoPtr<IInterface> > > sparseArray = new HashMap<Int32, AutoPtr<IInterface> >();
 
     AutoPtr<ICharSequence> categoryAppBrowser;
-    CStringWrapper::New(IIntent::CATEGORY_APP_BROWSER, (ICharSequence**)&categoryAppBrowser);
+    CString::New(IIntent::CATEGORY_APP_BROWSER, (ICharSequence**)&categoryAppBrowser);
     (*sparseArray)[IKeyEvent::KEYCODE_EXPLORER] = categoryAppBrowser;
 
     AutoPtr<ICharSequence> categoryAppEmail;
-    CStringWrapper::New(IIntent::CATEGORY_APP_EMAIL, (ICharSequence**)&categoryAppEmail);
+    CString::New(IIntent::CATEGORY_APP_EMAIL, (ICharSequence**)&categoryAppEmail);
     (*sparseArray)[IKeyEvent::KEYCODE_ENVELOPE] = categoryAppEmail;
 
     AutoPtr<ICharSequence> categoryAppContacts;
-    CStringWrapper::New(IIntent::CATEGORY_APP_CONTACTS, (ICharSequence**)&categoryAppContacts);
+    CString::New(IIntent::CATEGORY_APP_CONTACTS, (ICharSequence**)&categoryAppContacts);
     (*sparseArray)[IKeyEvent::KEYCODE_CONTACTS] = categoryAppContacts;
 
     AutoPtr<ICharSequence> categoryAppCalendar;
-    CStringWrapper::New(IIntent::CATEGORY_APP_CALENDAR, (ICharSequence**)&categoryAppCalendar);
+    CString::New(IIntent::CATEGORY_APP_CALENDAR, (ICharSequence**)&categoryAppCalendar);
     (*sparseArray)[IKeyEvent::KEYCODE_CALENDAR] = categoryAppCalendar;
 
     AutoPtr<ICharSequence> categoryAppMusic;
-    CStringWrapper::New(IIntent::CATEGORY_APP_MUSIC, (ICharSequence**)&categoryAppMusic);
+    CString::New(IIntent::CATEGORY_APP_MUSIC, (ICharSequence**)&categoryAppMusic);
     (*sparseArray)[IKeyEvent::KEYCODE_MUSIC] = categoryAppMusic;
 
     AutoPtr<ICharSequence> categoryAppCalculator;
-    CStringWrapper::New(IIntent::CATEGORY_APP_CALCULATOR, (ICharSequence**)&categoryAppCalculator);
+    CString::New(IIntent::CATEGORY_APP_CALCULATOR, (ICharSequence**)&categoryAppCalculator);
     (*sparseArray)[IKeyEvent::KEYCODE_CALCULATOR] = categoryAppCalculator;
 
     return sparseArray;
@@ -2510,7 +2510,7 @@ void CPhoneWindowManager::EnablePointerLocation()
         }
         lp->SetFormat(IPixelFormat::TRANSLUCENT);
         AutoPtr<ICharSequence> title;
-        CStringWrapper::New(String("PointerLocation"), (ICharSequence**)&title);
+        CString::New(String("PointerLocation"), (ICharSequence**)&title);
         lp->SetTitle(title);
         AutoPtr<IWindowManager> wm;
         mContext->GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
@@ -2582,7 +2582,7 @@ void CPhoneWindowManager::AcquireBootAnimationView()
         lp->SetFormat(IPixelFormat::TRANSLUCENT);
 
         AutoPtr<ICharSequence> title;
-        CStringWrapper::New(String("BootAnimationView"), (ICharSequence**)&title);
+        CString::New(String("BootAnimationView"), (ICharSequence**)&title);
         lp->SetTitle(title);
 
         AutoPtr<IWindowManager> wm;
@@ -3227,7 +3227,7 @@ ECode CPhoneWindowManager::AddStartingWindow(
                 | IWindowManagerLayoutParams::PRIVATE_FLAG_SHOW_FOR_ALL_USERS);
 
         AutoPtr<ICharSequence> tl;
-        CStringWrapper::New(String("Starting ") + packageName, (ICharSequence**)&tl);
+        CString::New(String("Starting ") + packageName, (ICharSequence**)&tl);
         lp->SetTitle(tl);
 
         AutoPtr<IWindowManager> wm;

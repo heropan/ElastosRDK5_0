@@ -18,7 +18,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Utility::Logging::Slogger;
@@ -74,10 +74,10 @@ Boolean Settings::NameValueTable::PutString(
     assert(values != NULL);
 
     AutoPtr<ICharSequence> tmp;
-    CStringWrapper::New(name, (ICharSequence**)&tmp);
+    CString::New(name, (ICharSequence**)&tmp);
     values->PutString(String("name"), tmp);
     tmp = NULL;
-    CStringWrapper::New(value, (ICharSequence**)&tmp);
+    CString::New(value, (ICharSequence**)&tmp);
     values->PutString(String("value"), tmp);
     AutoPtr<IUri> outUri;
     resolver->Insert(uri, values,(IUri**)&outUri);
@@ -566,12 +566,12 @@ void Settings::System::GetMovedKeys(
     HashSet<String>::Iterator it = MOVED_TO_GLOBAL.Begin();
     for (; it != MOVED_TO_GLOBAL.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         outKeySet->Add(cs);
     }
     for (it = MOVED_TO_SECURE_THEN_GLOBAL.Begin(); it != MOVED_TO_SECURE_THEN_GLOBAL.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         outKeySet->Add(cs);
     }
 }
@@ -582,7 +582,7 @@ void Settings::System::GetNonLegacyMovedKeys(
     HashSet<String>::Iterator it = MOVED_TO_GLOBAL.Begin();
     for (; it != MOVED_TO_GLOBAL.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         outKeySet->Add(cs);
     }
 }
@@ -1235,7 +1235,7 @@ void Settings::Secure::GetMovedKeys(
     HashSet<String>::Iterator ator = MOVED_TO_GLOBAL.Begin();
     for (; ator != MOVED_TO_GLOBAL.End(); ++ator) {
         AutoPtr<ICharSequence> keyObj;
-        CStringWrapper::New(*ator, (ICharSequence**)&keyObj);
+        CString::New(*ator, (ICharSequence**)&keyObj);
         outKeySet->Add(keyObj);
     }
 }
@@ -2066,19 +2066,19 @@ ECode Settings::Bookmarks::Add(
     CContentValues::New((IContentValues**)&values);
     if (!title.IsNull()) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(title, (ICharSequence**)&cs);
+        CString::New(title, (ICharSequence**)&cs);
         values->PutString(ISettingsBookmarks::TITLE, cs);
     }
     if (!folder.IsNull()) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(folder, (ICharSequence**)&cs);
+        CString::New(folder, (ICharSequence**)&cs);
         values->PutString(ISettingsBookmarks::FOLDER, cs);
     }
 
     String str;
     intent->ToUri(0, &str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     values->PutString(ISettingsBookmarks::INTENT, cs);
 
     if (shortcut != 0) {
@@ -2098,7 +2098,7 @@ AutoPtr<ICharSequence> Settings::Bookmarks::GetLabelForFolder(
     /* [in] */ const String& folder)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(folder, (ICharSequence**)&cs);
+    CString::New(folder, (ICharSequence**)&cs);
     return cs;
 }
 
@@ -2125,7 +2125,7 @@ ECode Settings::Bookmarks::GetTitle(
     FAIL_RETURN(cursor->GetString(titleColumn, &str))
     if (!TextUtils::IsEmpty(str)) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         *title = cs;
         REFCOUNT_ADD(*title)
         return NOERROR;
@@ -2135,7 +2135,7 @@ ECode Settings::Bookmarks::GetTitle(
     FAIL_RETURN(cursor->GetString(intentColumn, &intentUri))
     if (TextUtils::IsEmpty(intentUri)) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String(""), (ICharSequence**)&cs);
+        CString::New(String(""), (ICharSequence**)&cs);
         *title = cs;
         REFCOUNT_ADD(*title)
         return NOERROR;
@@ -2145,7 +2145,7 @@ ECode Settings::Bookmarks::GetTitle(
     // try {
     if (FAILED(Intent::ParseUri(intentUri, 0, (IIntent**)&intent))) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String(""), (ICharSequence**)&cs);
+        CString::New(String(""), (ICharSequence**)&cs);
         *title = cs;
         REFCOUNT_ADD(*title)
         return NOERROR;
@@ -2163,7 +2163,7 @@ ECode Settings::Bookmarks::GetTitle(
     }
     else {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String(""), (ICharSequence**)&cs);
+        CString::New(String(""), (ICharSequence**)&cs);
         *title = cs;
         REFCOUNT_ADD(*title)
         return NOERROR;

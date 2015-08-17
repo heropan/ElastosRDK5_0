@@ -3,11 +3,7 @@
 #define __ELASTOS_SECURITY_MESSAGEDIGESTSPI_H__
 
 #include <coredef.h>
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "Object.h"
 
 using Elastos::IO::IByteBuffer;
 
@@ -15,6 +11,7 @@ namespace Elastos {
 namespace Security {
 
 class MessageDigestSpi
+    : public Object
 {
 protected:
     /**

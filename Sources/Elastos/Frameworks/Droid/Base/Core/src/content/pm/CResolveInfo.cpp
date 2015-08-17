@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "content/pm/CResolveInfo.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 #include <elastos/utility/logging/Slogger.h>
 using Elastos::Utility::Logging::Slogger;
@@ -71,7 +71,7 @@ ECode CResolveInfo::LoadLabel(
             String str;
             (*label)->ToString(&str);
             *label = NULL;
-            return CStringWrapper::New(str.Trim(), label);
+            return CString::New(str.Trim(), label);
         }
     }
 
@@ -87,7 +87,7 @@ ECode CResolveInfo::LoadLabel(
             String str;
             (*label)->ToString(&str);
             *label = NULL;
-            return CStringWrapper::New(str.Trim(), label);
+            return CString::New(str.Trim(), label);
         }
     }
 
@@ -97,7 +97,7 @@ ECode CResolveInfo::LoadLabel(
     if (data != NULL) {
         String str;
         data->ToString(&str);
-        CStringWrapper::New(str.Trim(), label);
+        CString::New(str.Trim(), label);
     }
 
     return NOERROR;

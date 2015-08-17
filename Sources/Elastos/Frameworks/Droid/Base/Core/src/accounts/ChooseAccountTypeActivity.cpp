@@ -8,7 +8,7 @@
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::CBundle;
@@ -355,7 +355,7 @@ ECode ChooseAccountTypeActivity::AccountArrayAdapter::GetView(
     }
 
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New((*mInfos)[position]->mName, (ICharSequence**)&csq);
+    CString::New((*mInfos)[position]->mName, (ICharSequence**)&csq);
     holder->mText->SetText(csq);
     holder->mIcon->SetImageDrawable((*mInfos)[position]->mDrawable);
 

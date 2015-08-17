@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "view/inputmethod/CCompletionInfo.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -92,11 +92,11 @@ ECode CCompletionInfo::ReadFromParcel(
     mLabel = NULL;
 
     if (!strText.IsNull()) {
-        CStringWrapper::New(strText, (ICharSequence**)&mText);
+        CString::New(strText, (ICharSequence**)&mText);
     }
 
     if (!strLable.IsNull()) {
-        CStringWrapper::New(strLable, (ICharSequence**)&mLabel);
+        CString::New(strLable, (ICharSequence**)&mLabel);
     }
 
     return NOERROR;

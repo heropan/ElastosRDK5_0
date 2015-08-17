@@ -6,7 +6,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::INumber;
 using Elastos::Core::CByte;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CInteger16;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
@@ -669,7 +669,7 @@ AutoPtr<IInterface> CContentValues::ReadValue(
         String v;
         source->ReadString(&v);
         AutoPtr<ICharSequence> obj;
-        CStringWrapper::New(v, (ICharSequence**)&obj);
+        CString::New(v, (ICharSequence**)&obj);
         return obj;
     }
     case VAL_INTEGER16: {

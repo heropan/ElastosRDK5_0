@@ -6,7 +6,7 @@
 #include "text/TextUtils.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Media::IRingtoneManager;
@@ -200,7 +200,7 @@ ECode CRingtonePreference::OnGetDefaultValue(
     String out;
     a->GetString(index, (String*)&out);
     AutoPtr<ICharSequence> charsequ;
-    CStringWrapper::New(out, (ICharSequence**)&charsequ);
+    CString::New(out, (ICharSequence**)&charsequ);
     *value = charsequ;
     REFCOUNT_ADD(*value)
     return NOERROR;
@@ -260,7 +260,7 @@ ECode CRingtonePreference::OnActivityResult(
                 uri->ToString(&str);
             }
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(str, (ICharSequence**)&cs);
+            CString::New(str, (ICharSequence**)&cs);
             Boolean value;
             if (CallChangeListener(cs, &value), value) {
                 OnSaveRingtone(uri);

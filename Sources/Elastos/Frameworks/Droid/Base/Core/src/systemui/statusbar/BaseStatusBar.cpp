@@ -36,7 +36,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
@@ -512,7 +512,7 @@ ECode BaseStatusBar::VetoButtonClicker::OnClick(
     String info;
     mHost->mContext->GetString(SystemUIR::string::accessibility_notification_dismissed, &info);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(info, (ICharSequence**)&seq);
+    CString::New(info, (ICharSequence**)&seq);
     v->AnnounceForAccessibility(seq);
     // try {
     if (mHost->mBarService)
@@ -1234,7 +1234,7 @@ Boolean BaseStatusBar::InflateViews(
     sbn->GetId(&id);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(pkg, (ICharSequence**)&seq);
+    CString::New(pkg, (ICharSequence**)&seq);
     row->SetTag(seq);
 
     WorkAroundBadLayerDrawableOpacity(row);
@@ -1242,7 +1242,7 @@ Boolean BaseStatusBar::InflateViews(
     String contentDes;
     mContext->GetString(SystemUIR::string::accessibility_remove_notification, &contentDes);
     seq = NULL;
-    CStringWrapper::New(contentDes, (ICharSequence**)&seq);
+    CString::New(contentDes, (ICharSequence**)&seq);
     vetoButton->SetContentDescription(seq);
 
     // NB: the large icon is now handled entirely by the template

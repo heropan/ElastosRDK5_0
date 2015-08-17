@@ -11,7 +11,7 @@
 using Elastos::Core::IFloat;
 using Elastos::Core::CFloat;
 using Elastos::Droid::Text::TextUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::CLooperHelper;
 using Elastos::Droid::Os::ILooperHelper;
 using Elastos::Droid::Content::EIID_IServiceConnection;
@@ -358,7 +358,7 @@ void SpeechRecognizer::StartListening(
             String serviceComponent;// = CSettings::Secure::GetString(cr.Get(), ISettingsSecure::VOICE_RECOGNITION_SERVICE);
 
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(serviceComponent, (ICharSequence**)&cs);
+            CString::New(serviceComponent, (ICharSequence**)&cs);
             if (TextUtils::IsEmpty(cs)) {
                 //Java:    Log.e(TAG, "no selected voice recognition service");
                 Logger::E(TAG, String("no selected voice recognition service\n"));

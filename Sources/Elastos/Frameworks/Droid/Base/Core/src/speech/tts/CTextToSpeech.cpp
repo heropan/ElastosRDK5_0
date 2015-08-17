@@ -2,7 +2,7 @@
 #include "speech/tts/CTextToSpeech.h"
 #include "ext/frameworkext.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CObjectContainer;
 
@@ -105,7 +105,7 @@ ECode CTextToSpeech::GetFeatures(
     for( ; iterCur != sR->End(); ++iterCur){
         strTemp = *iterCur;
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(strTemp, (ICharSequence**)&cs);
+        CString::New(strTemp, (ICharSequence**)&cs);
         oc->Add(cs.Get());
     }
     *ret = oc;

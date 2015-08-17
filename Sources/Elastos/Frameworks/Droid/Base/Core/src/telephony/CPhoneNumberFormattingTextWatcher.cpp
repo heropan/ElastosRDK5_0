@@ -2,9 +2,9 @@
 #include "CPhoneNumberFormattingTextWatcher.h"
 #include "text/Selection.h"
 #include "CPhoneNumberUtils.h"
-//#include "CStringWrapper.h"
+//#include "CString.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::Selection;
 using Libcore::ICU::CLocaleHelper;
 using Libcore::ICU::ILocale;
@@ -67,7 +67,7 @@ ECode CPhoneNumberFormattingTextWatcher::AfterTextChanged(
         Int32 len1, len2;
         s->GetLength(&len1);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(formatted, (ICharSequence**)&cs);
+        CString::New(formatted, (ICharSequence**)&cs);
         cs->GetLength(&len2);
         s->Replace(0, len1, cs, 0, len2);
         // The text could be changed by other TextWatcher after we changed it. If we found the

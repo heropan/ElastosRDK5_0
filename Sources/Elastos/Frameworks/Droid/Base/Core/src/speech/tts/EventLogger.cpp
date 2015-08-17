@@ -4,7 +4,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
@@ -128,7 +128,7 @@ String EventLogger::GetLocaleString()
 
     String rCountry;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New((mRequest->GetCountry(&rCountry), rCountry), (ICharSequence**)&cs);
+    CString::New((mRequest->GetCountry(&rCountry), rCountry), (ICharSequence**)&cs);
 
     if (!TextUtils::IsEmpty(cs)) {
         sb.AppendChar((Char32)"-");
@@ -137,7 +137,7 @@ String EventLogger::GetLocaleString()
         String rVariant;
         mRequest->GetVariant(&rVariant);
         cs = NULL;
-        CStringWrapper::New(rVariant, (ICharSequence**)&cs);
+        CString::New(rVariant, (ICharSequence**)&cs);
         if (!TextUtils::IsEmpty(cs)) {
             sb.AppendChar((Char32)"-");
             sb.Append(rVariant);

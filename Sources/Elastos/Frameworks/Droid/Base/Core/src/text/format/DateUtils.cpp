@@ -14,7 +14,7 @@ using Libcore::ICU::ILocaleDataHelper;
 using Libcore::ICU::CLocale;
 using Libcore::ICU::CLocaleHelper;
 using Libcore::ICU::CLocaleDataHelper;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Text::IDateFormat;
@@ -390,7 +390,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
         // in a null context.
         String fdrRet = FormatDateRange(NULL, time, time, flags);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(fdrRet, (ICharSequence**)&cs);
+        CString::New(fdrRet, (ICharSequence**)&cs);
         return cs;
     }
 
@@ -401,7 +401,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     retVal.AppendFormat(format.string(), count);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(retVal, (ICharSequence**)&cs);
+    CString::New(retVal, (ICharSequence**)&cs);
     return cs;
 }
 
@@ -452,7 +452,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeDateTimeString(
 
     String fdr = FormatDateRange(c, time, time, IDateUtils::FORMAT_SHOW_TIME);
     AutoPtr<ICharSequence> timeClause;
-    CStringWrapper::New(fdr, (ICharSequence**)&timeClause);
+    CString::New(fdr, (ICharSequence**)&timeClause);
 
     String result;
     if (duration < transitionResolution) {
@@ -475,7 +475,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeDateTimeString(
     }
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(result, (ICharSequence**)&cs);
+    CString::New(result, (ICharSequence**)&cs);
     return cs;
 }
 
@@ -588,7 +588,7 @@ AutoPtr<ICharSequence> DateUtils::TimeString(
 //    sStatusTimeFormat->Format(millis, &ret);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(ret, (ICharSequence**)&cs);
+    CString::New(ret, (ICharSequence**)&cs);
     return cs;
 }
 
@@ -614,7 +614,7 @@ AutoPtr<ICharSequence> DateUtils::FormatDuration(
                 R::plurals::duration_seconds, seconds, &rStr);
     }
     AutoPtr<ICharSequence> rst;
-    CStringWrapper::New(rStr, (ICharSequence**)&rst);
+    CString::New(rStr, (ICharSequence**)&rst);
     return rst;
 }
 
@@ -784,7 +784,7 @@ AutoPtr<ICharSequence> DateUtils::FormatSameDayTime(
     String ret;
     f->FormatDate(thenDate, &ret);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(ret, (ICharSequence**)&cs);
+    CString::New(ret, (ICharSequence**)&cs);
     return cs;
 }
 
@@ -1537,7 +1537,7 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
         }
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(result, (ICharSequence**)&cs);
+    CString::New(result, (ICharSequence**)&cs);
     return cs;
 }
 

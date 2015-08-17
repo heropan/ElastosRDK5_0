@@ -24,7 +24,7 @@
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
@@ -1112,7 +1112,7 @@ void RecentsPanelView::UpdateUiElements()
         }
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(recentAppsAccessibilityDescription, (ICharSequence**)&cs);
+    CString::New(recentAppsAccessibilityDescription, (ICharSequence**)&cs);
     SetContentDescription(cs);
 }
 
@@ -1248,7 +1248,7 @@ ECode RecentsPanelView::HandleSwipe(
         String str;
         mContext->GetString(SystemUIR::string::accessibility_recents_item_dismissed, args, &str);
         cs = NULL;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         SetContentDescription(cs);
         SendAccessibilityEvent(IAccessibilityEvent::TYPE_VIEW_SELECTED);
         SetContentDescription(NULL);

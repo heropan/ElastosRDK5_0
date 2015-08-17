@@ -10,7 +10,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Utility::Etl::HashSet;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::CByte;
@@ -37,7 +37,7 @@ static AutoPtr<ICharSequence> GetCharSequence(
     /* [in] */ const String& s)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(s, (ICharSequence**)&cs);
+    CString::New(s, (ICharSequence**)&cs);
     return cs;
 }
 

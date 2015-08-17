@@ -5,7 +5,7 @@
 #include "os/SomeArgs.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SomeArgs;
@@ -273,7 +273,7 @@ ECode CIInputMethodSessionWrapper::AppPrivateCommand(
     /* [in] */ IBundle* data)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(action, (ICharSequence**)&seq);
+    CString::New(action, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessage(DO_APP_PRIVATE_COMMAND, seq, data, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);

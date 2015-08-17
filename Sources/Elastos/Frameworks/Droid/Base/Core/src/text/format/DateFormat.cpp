@@ -11,7 +11,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Text::IDateFormatHelper;
 using Elastos::Text::CDateFormatHelper;
 using Elastos::Text::ISimpleDateFormat;
@@ -291,7 +291,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
     /* [in] */ IDate* inDate)
 {
     AutoPtr<ICharSequence> inFormat;
-    CStringWrapper::New(format, (ICharSequence**)&inFormat);
+    CString::New(format, (ICharSequence**)&inFormat);
 
     AutoPtr<ICalendar> c;
     CGregorianCalendar::New((IGregorianCalendar**)&c);
@@ -471,7 +471,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
 
         if (!replacement.IsNull()) {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(replacement, (ICharSequence**)&cs);
+            CString::New(replacement, (ICharSequence**)&cs);
             s->Replace(i, i + count, cs);
             count = replacement.GetLength(); // CARE: count is used in the for loop above
             s->GetLength(&len);
@@ -487,7 +487,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
     else {
         String str;
         s->ToString(&str);
-        CStringWrapper::New(str, (ICharSequence**)&cseq);
+        CString::New(str, (ICharSequence**)&cseq);
     }
     return cseq;
 }

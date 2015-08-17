@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "content/pm/PackageItemInfo.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -37,7 +37,7 @@ ECode PackageItemInfo::constructor(
         String str;
         mNonLocalizedLabel->ToString(&str);
         mNonLocalizedLabel = NULL;
-        CStringWrapper::New(str.Trim(), (ICharSequence**)&mNonLocalizedLabel);
+        CString::New(str.Trim(), (ICharSequence**)&mNonLocalizedLabel);
     }
     orig->GetIcon(&mIcon);
     orig->GetLogo(&mLogo);
@@ -63,13 +63,13 @@ ECode PackageItemInfo::LoadLabel(
         if (lb != NULL) {
             String str;
             lb->ToString(&str);
-            return CStringWrapper::New(str.Trim(), label);
+            return CString::New(str.Trim(), label);
         }
     }
     if (!mName.IsNull()) {
-        return CStringWrapper::New(mName, label);
+        return CString::New(mName, label);
     }
-    return CStringWrapper::New(mPackageName, label);
+    return CString::New(mPackageName, label);
 }
 
 ECode PackageItemInfo::LoadIcon(

@@ -11,7 +11,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Animation::EIID_ITransitionListener;
 using Elastos::Droid::Animation::CLayoutTransition;
@@ -257,7 +257,7 @@ AutoPtr<IViewGroup> TabletTicker::MakeWindow()
     view->SetLayoutTransition(mLayoutTransition);
 
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(String("NotificationTicker"), (ICharSequence**)&titleSeq);
+    CString::New(String("NotificationTicker"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     view->SetLayoutParams(lp);
 

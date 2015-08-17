@@ -539,7 +539,7 @@ ECode CSyncManager::SyncHandler::GetSyncWakeLock(
     VALIDATE_NOT_NULL(wakeLock)
     AutoPtr<IPair> wakeLockKey;
     AutoPtr<ICharSequence> authObj;
-    FAIL_RETURN(CStringWrapper::New(authority, (ICharSequence**)&authObj))
+    FAIL_RETURN(CString::New(authority, (ICharSequence**)&authObj))
     FAIL_RETURN(CPair::New(account, authObj, (IPair**)&wakeLockKey))
     HashMap<AutoPtr<IPair>, AutoPtr<IPowerManagerWakeLock> >::Iterator it = mWakeLocks.Find(wakeLockKey);
     *wakeLock = it->mSecond;
@@ -1664,7 +1664,7 @@ ECode CSyncManager::SyncHandler::InstallHandleTooManyDeletesNotification(
     AutoPtr<ICharSequence> contentTitle;
     AutoPtr<ICharSequence> contentText;
     FAIL_RETURN(mSyncMgr->mContext->GetString(0x010400d0 /* R.string.contentServiceSyncNotificationTitle */, &str))
-    FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&contentTitle))
+    FAIL_RETURN(CString::New(str, (ICharSequence**)&contentTitle))
 //    contentText = String.format(tooManyDeletesDescFormat.toString(), authorityName)
     FAIL_RETURN(notification->SetLatestEventInfo(mSyncMgr->mContext,
             contentTitle, contentText, pendingIntent))
@@ -3038,7 +3038,7 @@ ECode CSyncManager::SendCancelSyncsMessage(
 {
 //***    if (Logger::IsLoggable(TAG, Logger::VERBOSE)) Logger::V(TAG, String("sending MESSAGE_CANCEL"));
     AutoPtr<ICharSequence> authCS;
-    FAIL_RETURN(CStringWrapper::New(authority, (ICharSequence**)&authCS))
+    FAIL_RETURN(CString::New(authority, (ICharSequence**)&authCS))
     AutoPtr<IPair> pair;
     FAIL_RETURN(CPair::New(account, authCS, (IPair**)&pair))
 
@@ -3453,9 +3453,9 @@ ECode CSyncManager::DumpRecentHistory(
                 AutoPtr<ICharSequence> nameCS;
                 AutoPtr<ICharSequence> timesStrCS;
                 AutoPtr<ICharSequence> timeStrCS;
-                FAIL_RETURN(CStringWrapper::New(name, (ICharSequence**)&nameCS))
-                FAIL_RETURN(CStringWrapper::New(timesStr, (ICharSequence**)&timesStrCS))
-                FAIL_RETURN(CStringWrapper::New(timeStr, (ICharSequence**)&timeStrCS))
+                FAIL_RETURN(CString::New(name, (ICharSequence**)&nameCS))
+                FAIL_RETURN(CString::New(timesStr, (ICharSequence**)&timesStrCS))
+                FAIL_RETURN(CString::New(timeStr, (ICharSequence**)&timeStrCS))
                 args2->Set(0, nameCS);
                 args2->Set(1, timesStrCS);
                 args2->Set(2, timeStrCS);
@@ -3490,9 +3490,9 @@ ECode CSyncManager::DumpRecentHistory(
                     AutoPtr<ICharSequence> nameCS;
                     AutoPtr<ICharSequence> timesStrCS;
                     AutoPtr<ICharSequence> timeStrCS;
-                    FAIL_RETURN(CStringWrapper::New(stats->name, (ICharSequence**)&nameCS))
-                    FAIL_RETURN(CStringWrapper::New(timesStr, (ICharSequence**)&timesStrCS))
-                    FAIL_RETURN(CStringWrapper::New(timeStr, (ICharSequence**)&timeStrCS))
+                    FAIL_RETURN(CString::New(stats->name, (ICharSequence**)&nameCS))
+                    FAIL_RETURN(CString::New(timesStr, (ICharSequence**)&timesStrCS))
+                    FAIL_RETURN(CString::New(timeStr, (ICharSequence**)&timeStrCS))
                     args2->Set(0, nameCS);
                     args2->Set(1, timesStrCS);
                     args2->Set(2, timeStrCS);
@@ -3583,7 +3583,7 @@ ECode CSyncManager::DumpRecentHistory(
             String formatTime;
             FAIL_RETURN(FormatTime(eventTime, &formatTime))
             AutoPtr<ICharSequence> formatTimeCS;
-            FAIL_RETURN(CStringWrapper::New(formatTime, (ICharSequence**)&formatTimeCS))
+            FAIL_RETURN(CString::New(formatTime, (ICharSequence**)&formatTimeCS))
             Int32 src = 0;
             FAIL_RETURN(item->GetSource(&src))
             String source;
@@ -3593,11 +3593,11 @@ ECode CSyncManager::DumpRecentHistory(
                 source = (*sources)[src];
             }
             AutoPtr<ICharSequence> sourceCS;
-            FAIL_RETURN(CStringWrapper::New(source, (ICharSequence**)&sourceCS))
+            FAIL_RETURN(CString::New(source, (ICharSequence**)&sourceCS))
             AutoPtr<IFloat> elapsedObj;
             FAIL_RETURN(CFloat::New(((Float) elapsedTime) / 1000, (IFloat**)&elapsedObj))
             AutoPtr<ICharSequence> diffStringCS;
-            FAIL_RETURN(CStringWrapper::New(diffString, (ICharSequence**)&diffStringCS))
+            FAIL_RETURN(CString::New(diffString, (ICharSequence**)&diffStringCS))
             args3->Set(0, intObj);
             args3->Set(1, formatTimeCS);
             args3->Set(2, sourceCS);
@@ -3608,8 +3608,8 @@ ECode CSyncManager::DumpRecentHistory(
             AutoPtr<ArrayOf<IInterface *> > args4 = ArrayOf<IInterface *>::Alloc(2);
             AutoPtr<ICharSequence> accountKeyCS;
             AutoPtr<ICharSequence> authorityNameCS;
-            FAIL_RETURN(CStringWrapper::New(accountKey, (ICharSequence**)&accountKeyCS))
-            FAIL_RETURN(CStringWrapper::New(authorityName, (ICharSequence**)&authorityNameCS))
+            FAIL_RETURN(CString::New(accountKey, (ICharSequence**)&accountKeyCS))
+            FAIL_RETURN(CString::New(authorityName, (ICharSequence**)&authorityNameCS))
             args4->Set(0, accountKeyCS);
             args4->Set(1, authorityNameCS);
             pw->Printf(format, args4);
@@ -3640,7 +3640,7 @@ ECode CSyncManager::DumpRecentHistory(
             if (!mesg.IsNull() && !ISyncStorageEngine::MESG_SUCCESS.Equals(mesg)) {
                 AutoPtr<ArrayOf<IInterface *> > args6 = ArrayOf<IInterface *>::Alloc(1);
                 AutoPtr<ICharSequence> mesgCS;
-                FAIL_RETURN(CStringWrapper::New(mesg, (ICharSequence**)&mesgCS))
+                FAIL_RETURN(CString::New(mesg, (ICharSequence**)&mesgCS))
                 args6->Set(0, mesgCS);
                 pw->Printf(String("    mesg=%s\n"), args6);
             }

@@ -6,7 +6,7 @@
 using Elastos::Droid::Os::IHandler;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -31,7 +31,7 @@ ECode CAudioManagerAudioFocusDispatcher::DispatchAudioFocusChange(
         return NOERROR;
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(id, (ICharSequence**)&seq);
+    CString::New(id, (ICharSequence**)&seq);
 
     AutoPtr<IHandler> handler = ((CAudioManager*)am.Get())->mAudioFocusEventHandlerDelegate->GetHandler();
     AutoPtr<IMessage> msg;

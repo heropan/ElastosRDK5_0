@@ -21,7 +21,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
@@ -1094,7 +1094,7 @@ ECode SQLiteDatabase::Delete(
         bindArgs = ArrayOf<IInterface*>::Alloc(whereArgs->GetLength());
         for(Int32 i = 0; i < whereArgs->GetLength(); i++) {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New((*whereArgs)[i], (ICharSequence**)&cs);
+            CString::New((*whereArgs)[i], (ICharSequence**)&cs);
             bindArgs->Set(i, cs);
         }
     }
@@ -1168,7 +1168,7 @@ ECode SQLiteDatabase::UpdateWithOnConflict(
     if (whereArgs != NULL) {
         for (i = setValuesSize; i < bindArgsSize; i++) {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New((*whereArgs)[i - setValuesSize], (ICharSequence**)&cs);
+            CString::New((*whereArgs)[i - setValuesSize], (ICharSequence**)&cs);
             bindArgs->Set(i, cs);
         }
     }
@@ -1537,7 +1537,7 @@ ECode SQLiteDatabase::GetAttachedDbs(
             // caller wants to collect stats on the database and all its attached databases.
             //attachedDbs.add(new Pair<String, String>("main", mConfigurationLocked.path));
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(mConfigurationLocked->mPath, (ICharSequence**)&cs);
+            CString::New(mConfigurationLocked->mPath, (ICharSequence**)&cs);
             attachedDbs->Put(String("main"), cs);
             *dbs = attachedDbs;
             REFCOUNT_ADD(*dbs);
@@ -1566,7 +1566,7 @@ ECode SQLiteDatabase::GetAttachedDbs(
         c->GetString(1, &str1);
         c->GetString(2, &str2);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str2, (ICharSequence**)&cs);
+        CString::New(str2, (ICharSequence**)&cs);
         attachedDbs->Put(str1, cs);
     }
     //} finally {
@@ -1600,7 +1600,7 @@ ECode SQLiteDatabase::IsDatabaseIntegrityOk(
         String path;
         GetPath(&path);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(path, (ICharSequence**)&cs);
+        CString::New(path, (ICharSequence**)&cs);
         attachedDbs->Put(String("main"), cs);
     }
     if (attachedDbs == NULL) {

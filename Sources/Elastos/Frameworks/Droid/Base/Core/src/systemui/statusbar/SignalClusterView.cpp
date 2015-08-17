@@ -2,7 +2,7 @@
 #include "systemui/SystemUIR.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::SystemUI::SystemUIR;
 using Elastos::Utility::Logging::Slogger;
 
@@ -262,7 +262,7 @@ void SignalClusterView::Apply()
         mWifiActivity->SetImageResource(mWifiActivityId);
 
         // AutoPtr<ICharSequence> seq;
-        // CStringWrapper::New(mWifiDescription, (ICharSequence**)&seq);
+        // CString::New(mWifiDescription, (ICharSequence**)&seq);
         // mWifiGroup->SetContentDescription(seq);
     }
     else {
@@ -271,7 +271,7 @@ void SignalClusterView::Apply()
 
     if (mEthernetVisible) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(mEthernetDescription, (ICharSequence**)&seq);
+        CString::New(mEthernetDescription, (ICharSequence**)&seq);
         mEthernetGroup->SetVisibility(IView::VISIBLE);
         mEthernet->SetImageResource(mEthernetStateId);
         mEthernetGroup->SetContentDescription(seq);

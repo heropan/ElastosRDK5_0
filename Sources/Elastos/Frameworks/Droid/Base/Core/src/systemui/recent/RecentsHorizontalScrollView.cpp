@@ -6,7 +6,7 @@
 #include <elastos/core/Math.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Database::EIID_IDataSetObserver;
 using Elastos::Droid::View::IViewTreeObserver;
@@ -283,7 +283,7 @@ void RecentsHorizontalScrollView::Update()
         AutoPtr<IView> appTitle;
         view->FindViewById(SystemUIR::id::app_label, (IView**)&appTitle);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String(""), (ICharSequence**)&cs);
+        CString::New(String(""), (ICharSequence**)&cs);
         appTitle->SetContentDescription(cs);
         appTitle->SetOnTouchListener(noOpListener);
         mLinearLayout->AddView(view);

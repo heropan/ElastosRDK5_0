@@ -3,7 +3,7 @@
 #include "text/CSimpleStringSplitter.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::EIID_IIterator;
 
 namespace Elastos {
@@ -72,7 +72,7 @@ ECode CSimpleStringSplitter::Next(
     NextString(&str);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(str, (ICharSequence**)&seq);
+    CString::New(str, (ICharSequence**)&seq);
     *obj = seq;
     REFCOUNT_ADD(*obj);
     return NOERROR;

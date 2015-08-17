@@ -6,7 +6,7 @@
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
@@ -104,7 +104,7 @@ ECode CAccount::constructor(
     /* [in] */ const String& type)
 {
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(name, (ICharSequence**)&csq);
+    CString::New(name, (ICharSequence**)&csq);
     if (TextUtils::IsEmpty(csq)) {
         Slogger::E(TAG, "the name must not be empty: %s", (const char*)name);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
@@ -112,7 +112,7 @@ ECode CAccount::constructor(
     }
 
     csq = NULL;
-    CStringWrapper::New(type, (ICharSequence**)&csq);
+    CString::New(type, (ICharSequence**)&csq);
     if (TextUtils::IsEmpty(csq)) {
         Slogger::E(TAG, "the type must not be empty: %s", (const char*)type);
         return E_ILLEGAL_ARGUMENT_EXCEPTION;

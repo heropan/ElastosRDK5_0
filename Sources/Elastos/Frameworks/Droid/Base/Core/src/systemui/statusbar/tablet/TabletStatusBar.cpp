@@ -26,7 +26,7 @@
 
 using Elastos::Core::Math;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Process;
@@ -782,7 +782,7 @@ void TabletStatusBar::AddStatusBarWindow()
     lp->SetGravity(GetStatusBarGravity());
 
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(title, (ICharSequence**)&titleSeq);
+    CString::New(title, (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetPackageName(pkgName);
 
@@ -875,7 +875,7 @@ void TabletStatusBar::AddPanelWindows()
         IPixelFormat::TRANSLUCENT, (IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(IGravity::BOTTOM | IGravity::RIGHT);
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(String("NotificationPanel"), (ICharSequence**)&titleSeq);
+    CString::New(String("NotificationPanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_STATE_UNCHANGED
         | IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_NOTHING);
@@ -915,7 +915,7 @@ void TabletStatusBar::AddPanelWindows()
         IPixelFormat::TRANSLUCENT, (IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(IGravity::BOTTOM | IGravity::RIGHT);
     titleSeq = NULL;
-    CStringWrapper::New(String("InputMethodsPanel"), (ICharSequence**)&titleSeq);
+    CString::New(String("InputMethodsPanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(SystemUIR::style::Animation_RecentPanel);
 
@@ -946,7 +946,7 @@ void TabletStatusBar::AddPanelWindows()
         IPixelFormat::TRANSLUCENT, (IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(IGravity::BOTTOM | IGravity::RIGHT);
     titleSeq = NULL;
-    CStringWrapper::New(String("CompatModePanel"), (ICharSequence**)&titleSeq);
+    CString::New(String("CompatModePanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(R::style::Animation_Dialog);
     mWindowManager->AddView(mCompatModePanel, lp);
@@ -1303,7 +1303,7 @@ AutoPtr<IWindowManagerLayoutParams> TabletStatusBar::GetRecentsLayoutParams(
             IPixelFormat::TRANSLUCENT, (IWindowManagerLayoutParams**)&lp);
     lp->SetGravity(IGravity::BOTTOM | IGravity::LEFT);
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(String("RecentsPanel"), (ICharSequence**)&titleSeq);
+    CString::New(String("RecentsPanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(R::style::Animation_RecentApplications);
     lp->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_STATE_UNCHANGED
@@ -1337,7 +1337,7 @@ AutoPtr<IWindowManagerLayoutParams> TabletStatusBar::GetSearchLayoutParams(
     lp->SetFlags(flags);
     lp->SetGravity(IGravity::BOTTOM | IGravity::LEFT);
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(String("SearchPanel"), (ICharSequence**)&titleSeq);
+    CString::New(String("SearchPanel"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetWindowAnimations(R::style::Animation_RecentApplications);
     lp->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_STATE_UNCHANGED
@@ -1855,7 +1855,7 @@ void TabletStatusBar::ShowCompatibilityHelp()
                 | IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM,
             IPixelFormat::TRANSLUCENT, (IWindowManagerLayoutParams**)&lp);
     AutoPtr<ICharSequence> titleSeq;
-    CStringWrapper::New(String("CompatibilityModeDialog"), (ICharSequence**)&titleSeq);
+    CString::New(String("CompatibilityModeDialog"), (ICharSequence**)&titleSeq);
     lp->SetTitle(titleSeq);
     lp->SetSoftInputMode(IWindowManagerLayoutParams::SOFT_INPUT_STATE_UNCHANGED
             | IWindowManagerLayoutParams::SOFT_INPUT_ADJUST_NOTHING);

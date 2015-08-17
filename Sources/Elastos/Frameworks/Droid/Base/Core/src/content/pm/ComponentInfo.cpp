@@ -2,7 +2,7 @@
 #include "ext/frameworkext.h"
 #include "content/pm/ComponentInfo.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -72,7 +72,7 @@ ECode ComponentInfo::LoadLabel(
             return NOERROR;
        }
     }
-    return CStringWrapper::New(mName, label);
+    return CString::New(mName, label);
 }
 
 ECode ComponentInfo::IsEnabled(

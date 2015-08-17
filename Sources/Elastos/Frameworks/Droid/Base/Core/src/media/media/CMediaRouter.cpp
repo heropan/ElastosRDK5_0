@@ -28,7 +28,7 @@ using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -1113,7 +1113,7 @@ AutoPtr<IRouteInfo> CMediaRouter::MakeWifiDisplayRoute(
 
     display->GetFriendlyDisplayName(&tempText);
     AutoPtr<ICharSequence> charSequence;
-    CStringWrapper::New(tempText, (ICharSequence**)&charSequence);
+    CString::New(tempText, (ICharSequence**)&charSequence);
     newRoute->SetName(charSequence);
 
     newRoute->SetPresentationDisplay(

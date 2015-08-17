@@ -8,7 +8,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
@@ -525,7 +525,7 @@ ECode CApplicationThread::DispatchPackageBroadcast(
         CObjectContainer::New((IObjectContainer**)&container);
         for (Int32 i = 0; i < packages->GetLength(); ++i) {
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New((*packages)[i], (ICharSequence**)&seq);
+            CString::New((*packages)[i], (ICharSequence**)&seq);
             container->Add(seq);
         }
     }
@@ -538,7 +538,7 @@ ECode CApplicationThread::ScheduleCrash(
     /* [in] */ const String& msg)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(msg, (ICharSequence**)&seq);
+    CString::New(msg, (ICharSequence**)&seq);
 
     return mAThread->QueueOrSendMessage(CActivityThread::H::SCHEDULE_CRASH, seq);
 }

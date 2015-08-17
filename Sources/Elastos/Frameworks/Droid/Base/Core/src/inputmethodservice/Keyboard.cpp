@@ -15,7 +15,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::R;
@@ -904,7 +904,7 @@ ECode Keyboard::Init(
         String str("");
         str.Append(c);
         AutoPtr<ICharSequence> label;
-        CStringWrapper::New(str, (ICharSequence**)&label);
+        CString::New(str, (ICharSequence**)&label);
         key->mLabel = label;
         key->mCodes = ArrayOf<Int32>::Alloc(1);
         (*key->mCodes)[0] = c;

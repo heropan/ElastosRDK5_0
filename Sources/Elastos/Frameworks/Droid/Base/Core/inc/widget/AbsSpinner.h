@@ -14,7 +14,7 @@
 #include "R.h"
 
 using Elastos::Droid::View::IView;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Utility::IAttributeSet;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IViewGroup;

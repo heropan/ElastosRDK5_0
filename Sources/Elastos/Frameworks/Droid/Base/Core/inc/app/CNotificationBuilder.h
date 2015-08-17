@@ -9,7 +9,7 @@ using Elastos::Utility::Etl::List;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Text::INumberFormat;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Net::IUri;

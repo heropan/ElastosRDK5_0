@@ -8,7 +8,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +54,7 @@ AutoPtr<ICharSequence> NumberKeyListener::Filter(
     if (end - start == 1) {
         // It was not OK, and there is only one char, so nothing remains.
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String(""), (ICharSequence**)&cs);
+        CString::New(String(""), (ICharSequence**)&cs);
         return cs;
     }
 
@@ -117,7 +117,7 @@ Boolean NumberKeyListener::OnKeyDown(
             }
 
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(StringUtils::Int32ToString(i), (ICharSequence**)&cs);
+            CString::New(StringUtils::Int32ToString(i), (ICharSequence**)&cs);
             content->Replace(selStart, selEnd, cs);
 
             AdjustMetaAfterKeypress(content);
@@ -130,7 +130,7 @@ Boolean NumberKeyListener::OnKeyDown(
         if (selStart == selEnd && selEnd > 0 && (content->GetCharAt(selStart - 1, &c), c) == '0') {
 
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(String("+"), (ICharSequence**)&cs);
+            CString::New(String("+"), (ICharSequence**)&cs);
             content->Replace(selStart - 1, selEnd, cs);
             AdjustMetaAfterKeypress(content);
             return TRUE;

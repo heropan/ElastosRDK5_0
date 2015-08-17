@@ -7,7 +7,7 @@
 using Elastos::Utility::Etl::Vector;
 using Elastos::Core::EIID_IThread;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -130,7 +130,7 @@ void UEventObserver::UEventThread::AddObserver(
     AutoLock lock(mKeysAndObserversLock);
 
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(match, (ICharSequence**)&charSeq);
+    CString::New(match, (ICharSequence**)&charSeq);
     mKeysAndObservers.PushBack(charSeq);
     mKeysAndObservers.PushBack(observer->Probe(EIID_IInterface));
     NativeAddMatch(match);

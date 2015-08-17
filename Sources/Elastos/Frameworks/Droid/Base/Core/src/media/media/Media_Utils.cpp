@@ -13,7 +13,7 @@ using Elastos::Core::IFloat;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CFloat;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::CObjectStringMap;
 using Elastos::Utility::Logging::Slogger;
@@ -139,7 +139,7 @@ ECode Media_Utils::ConvertMessageToMap(
                 android::AString val;
                 msg->findString(key, &val);
                 AutoPtr<ICharSequence> value;
-                CStringWrapper::New(String(val.c_str()), (ICharSequence**)&value);
+                CString::New(String(val.c_str()), (ICharSequence**)&value);
                 valueObj = value->Probe(EIID_IInterface);
                 break;
             }

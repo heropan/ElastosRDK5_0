@@ -6,7 +6,7 @@
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::IIntentFilter;
@@ -69,20 +69,20 @@ ECode CExternalMediaFormatActivity::OnCreate(
     String str;
     AutoPtr<ICharSequence> strSequence;
     GetString(0/*com.android.internal.R.string.extmedia_format_title*/, &str);
-    CStringWrapper::New(str, (ICharSequence**)&strSequence);
+    CString::New(str, (ICharSequence**)&strSequence);
     p->SetTitle(strSequence);
     GetString(0/*com.android.internal.R.string.extmedia_format_message*/, &str);
     strSequence = NULL;
-    CStringWrapper::New(str, (ICharSequence**)&strSequence);
+    CString::New(str, (ICharSequence**)&strSequence);
     p->SetMessage(strSequence);
     GetString(0/*com.android.internal.R.string.extmedia_format_button_format*/, &str);
     strSequence = NULL;
-    CStringWrapper::New(str, (ICharSequence**)&strSequence);
+    CString::New(str, (ICharSequence**)&strSequence);
     p->SetPositiveButtonText(strSequence);
     p->SetPositiveButtonListener(IDialogInterfaceOnClickListener::Probe(this));
     GetString(0/*com.android.internal.R.string.cancel*/, &str);
     strSequence = NULL;
-    CStringWrapper::New(str, (ICharSequence**)&strSequence);
+    CString::New(str, (ICharSequence**)&strSequence);
     p->SetNegativeButtonText(strSequence);
     p->SetNegativeButtonListener(IDialogInterfaceOnClickListener::Probe(this));
     SetupAlert();

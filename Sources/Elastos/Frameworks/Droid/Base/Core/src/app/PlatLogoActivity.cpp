@@ -11,7 +11,7 @@
 #include "view/CViewGroupLayoutParams.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Build;
 using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::IViewGroup;
@@ -125,7 +125,7 @@ AutoPtr<IView> PlatLogoActivity::MakeView()
     tv->SetTextColor(0xFFFFFFFF);
     tv->SetShadowLayer(4*density, 0, 2*density, 0x66000000);
     AutoPtr<ICharSequence> txt;
-    CStringWrapper::New(String("JELLY BEAN"), (ICharSequence**)&txt);
+    CString::New(String("JELLY BEAN"), (ICharSequence**)&txt);
     tv->SetText(txt);
     view->AddView(tv, lp);
 

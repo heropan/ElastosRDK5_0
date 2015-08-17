@@ -2,7 +2,7 @@
 #include "text/util/CRfc822Tokenizer.h"
 #include "text/util/CRfc822Token.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::Text::Utility::CRfc822Token;
 
@@ -341,7 +341,7 @@ ECode CRfc822Tokenizer::TerminateToken(
     VALIDATE_NOT_NULL(text);
     String strText;
     text->ToString(&strText);
-    return CStringWrapper::New(strText + String(", "), ret);
+    return CString::New(strText + String(", "), ret);
 }
 
 } // namespace Utility

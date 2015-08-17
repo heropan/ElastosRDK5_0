@@ -5,7 +5,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -384,7 +384,7 @@ void CRouteGroup::UpdateName()
     String tempText;
     sb.ToString(&tempText);
     AutoPtr<ICharSequence> charSequence;
-    CStringWrapper::New(tempText, (ICharSequence**)&charSequence);
+    CString::New(tempText, (ICharSequence**)&charSequence);
     mName = charSequence;
     mUpdateName = FALSE;
 }

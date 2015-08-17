@@ -125,7 +125,7 @@ ECode CProxyProperties::IsExcluded(
     Int32 length;
     length = mParsedExclusionList->GetLength();
     AutoPtr<ICharSequence> chars;
-    CStringWrapper::New(url, (ICharSequence**)&chars);
+    CString::New(url, (ICharSequence**)&chars);
     if (TextUtils::IsEmpty((ICharSequence*)&chars) || mParsedExclusionList == NULL ||length == 0) {
         *result = FALSE;
         return NOERROR;

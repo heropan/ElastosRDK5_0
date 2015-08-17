@@ -3,7 +3,7 @@
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 
 namespace Elastos {

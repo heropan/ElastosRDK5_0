@@ -14,7 +14,7 @@ using Elastos::IO::IFileInputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::Core::CInteger32;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::IUriHelper;
 using Elastos::Droid::Net::CUriHelper;
 using Elastos::Droid::Graphics::IMatrix;
@@ -201,13 +201,13 @@ ECode CMediaStoreImagesMedia::InsertImage(
     CContentValues::New((IContentValues**)&values);
 
     AutoPtr<ICharSequence> csTitle;
-    CStringWrapper::New(title, (ICharSequence**)&csTitle);
+    CString::New(title, (ICharSequence**)&csTitle);
     values->PutString(IMediaStoreImagesMedia::TITLE, csTitle);
     AutoPtr<ICharSequence> csDescription;
-    CStringWrapper::New(description, (ICharSequence**)&csDescription);
+    CString::New(description, (ICharSequence**)&csDescription);
     values->PutString(IMediaStoreImagesMedia::DESCRIPTION, csDescription);
     AutoPtr<ICharSequence> csImage;
-    CStringWrapper::New(String("image/jpeg"), (ICharSequence**)&csImage);
+    CString::New(String("image/jpeg"), (ICharSequence**)&csImage);
     values->PutString(IMediaStoreImagesMedia::MIME_TYPE, csImage);
 
     AutoPtr<IUri> url;

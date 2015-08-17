@@ -9,7 +9,7 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::Character;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IComparable;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::App::IIActivityManager;
@@ -59,7 +59,7 @@ AutoPtr<IView> _LocalArrayAdapter::GetView(
     String string;
     item->ToString(&string);
     AutoPtr<ICharSequence> cText;
-    CStringWrapper::New(string, (ICharSequence**)&cText);
+    CString::New(string, (ICharSequence**)&cText);
     text->SetText(cText);
     AutoPtr<ILocale> locale;
     item->GetLocale((ILocale**)&locale);

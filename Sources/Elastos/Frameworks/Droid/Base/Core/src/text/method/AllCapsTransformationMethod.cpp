@@ -2,7 +2,7 @@
 #include "content/res/CConfiguration.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Content::Res::CConfiguration;
@@ -45,7 +45,7 @@ AutoPtr<ICharSequence> AllCapsTransformationMethod::GetTransformation(
             String strSource;
             source->ToString(&strSource);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(strSource.ToUpperCase(), (ICharSequence**)&cs);
+            CString::New(strSource.ToUpperCase(), (ICharSequence**)&cs);
             return cs;
         } else {
             return NULL;

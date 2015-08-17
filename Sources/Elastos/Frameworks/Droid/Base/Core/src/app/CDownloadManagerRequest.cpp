@@ -8,7 +8,7 @@
 using Elastos::Core::CBoolean;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::IDownloadManagerRequest;
 using Elastos::Droid::Content::CContentValues;
@@ -238,13 +238,13 @@ AutoPtr<IContentValues> CDownloadManagerRequest::ToContentValues(
     String uriStr;
     mUri->ToString(&uriStr);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(uriStr, (ICharSequence**)&cs);
+    CString::New(uriStr, (ICharSequence**)&cs);
     values->PutString(IDownloadsImpl::COLUMN_URI, cs);
     AutoPtr<IBoolean> bvalue;
     CBoolean::New(TRUE, (IBoolean**)&bvalue);
     values->PutBoolean(IDownloadsImpl::COLUMN_IS_PUBLIC_API, bvalue);
     AutoPtr<ICharSequence> pkgcs;
-    CStringWrapper::New(packageName, (ICharSequence**)&pkgcs);
+    CString::New(packageName, (ICharSequence**)&pkgcs);
     values->PutString(IDownloadsImpl::COLUMN_NOTIFICATION_PACKAGE, pkgcs);
 
     if (mDestinationUri != NULL) {
@@ -254,7 +254,7 @@ AutoPtr<IContentValues> CDownloadManagerRequest::ToContentValues(
         String desStr;
         mDestinationUri->ToString(&desStr);
         AutoPtr<ICharSequence> descs;
-        CStringWrapper::New(desStr, (ICharSequence**)&descs);
+        CString::New(desStr, (ICharSequence**)&descs);
         values->PutString(IDownloadsImpl::COLUMN_FILE_NAME_HINT, descs);
     } else {
         AutoPtr<IInteger32> partition, purgeable;
@@ -276,7 +276,7 @@ AutoPtr<IContentValues> CDownloadManagerRequest::ToContentValues(
     PutIfNonNull(values, IDownloadsImpl::COLUMN_TITLE, mTitle);
     PutIfNonNull(values, IDownloadsImpl::COLUMN_DESCRIPTION, mDescription);
     AutoPtr<ICharSequence> type;
-    CStringWrapper::New(mMimeType, (ICharSequence**)&type);
+    CString::New(mMimeType, (ICharSequence**)&type);
     PutIfNonNull(values, IDownloadsImpl::COLUMN_MIME_TYPE, type);
 
     AutoPtr<IInteger32> visibility, types;
@@ -306,7 +306,7 @@ void CDownloadManagerRequest::EncodeHttpHeaders(
         Pair<String, String> header = *it;
         String headerString = header.mFirst + ": " + header.mSecond;
         AutoPtr<ICharSequence> headercs;
-        CStringWrapper::New(headerString, (ICharSequence**)&headercs);
+        CString::New(headerString, (ICharSequence**)&headercs);
         String key(IDownloadsImplRequestHeaders::INSERT_KEY_PREFIX);
         key += index;
         values->PutString(key, headercs);

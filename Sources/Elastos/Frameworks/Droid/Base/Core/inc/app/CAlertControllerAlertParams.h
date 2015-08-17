@@ -12,7 +12,7 @@
 #include "util/CParcelableObjectContainer.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::Widget::ArrayAdapter;

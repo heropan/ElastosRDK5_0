@@ -4,7 +4,7 @@
 #include "os/CHandlerThread.h"
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Utility::IProtocol;
 using Elastos::Droid::Net::Nsd::CNsdServiceInfo;
 using Elastos::Droid::Os::CHandlerThread;

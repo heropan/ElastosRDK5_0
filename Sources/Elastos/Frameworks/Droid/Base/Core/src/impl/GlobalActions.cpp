@@ -21,7 +21,7 @@
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Droid::App::ActivityManagerNative;
 using Elastos::Droid::App::CAlertDialogBuilder;
@@ -1257,7 +1257,7 @@ void GlobalActions::HandleShow()
     AutoPtr<IWindowManagerLayoutParams> attrs;
     window->GetAttributes((IWindowManagerLayoutParams**)&attrs);
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(String("GlobalActions"), (ICharSequence**)&title);
+    CString::New(String("GlobalActions"), (ICharSequence**)&title);
     attrs->SetTitle(title);
     window->SetAttributes(attrs);
     mDialog->Show();
@@ -1376,7 +1376,7 @@ void GlobalActions::AddUsersToMenu(
             String str = (userName != NULL ? userName : String("Primary"))
                         + (isCurrentUser ? String(" \u2714") : String(""));
             AutoPtr<ICharSequence> value;
-            CStringWrapper::New(str, (ICharSequence**)&value);
+            CString::New(str, (ICharSequence**)&value);
             AutoPtr<UserSinglePressAction> switchToUser = new UserSinglePressAction(
                     icon, value, userId);
             items->PushBack(switchToUser);

@@ -7,7 +7,7 @@
 #include <elastos/core/StringUtils.h>
 #include <ext/frameworkdef.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Droid::Content::Res::CResourcesHelper;
@@ -653,7 +653,7 @@ ECode CGsmAlphabet::StringToGsm7BitPacked(
     Int32 dataLen = data.GetLength();
     Int32 septetCount;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(data, (ICharSequence**)&cs);
+    CString::New(data, (ICharSequence**)&cs);
     CountGsmSeptetsUsingTables(cs, !throwException,
             languageTable, languageShiftTable, &septetCount);
     if (septetCount == -1) {
@@ -889,7 +889,7 @@ ECode CGsmAlphabet::StringToGsm8BitPacked(
 
     Int32 septets;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(s, (ICharSequence**)&cs);
+    CString::New(s, (ICharSequence**)&cs);
     CountGsmSeptetsUsingTables(cs, TRUE, 0, 0, &septets);
 
     // Enough for all the septets and the length byte prefix

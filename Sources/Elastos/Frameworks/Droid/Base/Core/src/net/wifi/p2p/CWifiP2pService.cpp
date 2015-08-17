@@ -35,7 +35,7 @@
 #include "Manifest.h"
 
 using Elastos::Utility::Etl::Pair;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IInteger32;
 using Elastos::Net::IInetAddress;
@@ -613,9 +613,9 @@ ECode CWifiP2pService::P2pStateMachine::NotifyP2pEnableFailure()
     AutoPtr<ICharSequence> csTitle;
     AutoPtr<ICharSequence> csMsg;
     AutoPtr<ICharSequence> csOk;
-    CStringWrapper::New(title, (ICharSequence**)&csTitle);
-    CStringWrapper::New(msg, (ICharSequence**)&csMsg);
-    CStringWrapper::New(ok, (ICharSequence**)&csOk);
+    CString::New(title, (ICharSequence**)&csTitle);
+    CString::New(msg, (ICharSequence**)&csMsg);
+    CString::New(ok, (ICharSequence**)&csOk);
 
     builder->SetTitle(csTitle);
     builder->SetMessage(csMsg);
@@ -651,7 +651,7 @@ ECode CWifiP2pService::P2pStateMachine::AddRowToDialog(
         String id;
         r->GetString(stringId, &id);
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(id, (ICharSequence**)&seq);
+        CString::New(id, (ICharSequence**)&seq);
         tx->SetText(seq);
     }
 
@@ -660,7 +660,7 @@ ECode CWifiP2pService::P2pStateMachine::AddRowToDialog(
     tx = ITextView::Probe(tempView);
     if (tx) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(value, (ICharSequence**)&seq);
+        CString::New(value, (ICharSequence**)&seq);
         tx->SetText(seq);
     }
 
@@ -699,8 +699,8 @@ ECode CWifiP2pService::P2pStateMachine::NotifyInvitationSent(
 
     AutoPtr<ICharSequence> csTitle;
     AutoPtr<ICharSequence> csOk;
-    CStringWrapper::New(title, (ICharSequence**)&csTitle);
-    CStringWrapper::New(ok, (ICharSequence**)&csOk);
+    CString::New(title, (ICharSequence**)&csTitle);
+    CString::New(ok, (ICharSequence**)&csOk);
 
     builder->SetTitle(csTitle);
     builder->SetView(textEntryView);
@@ -750,7 +750,7 @@ ECode CWifiP2pService::P2pStateMachine::NotifyInvitationReceived()
     r->GetString(Elastos::Droid::R::string::wifi_p2p_invitation_to_connect_title, &title);
     r->GetString(Elastos::Droid::R::string::accept, &accept);
     AutoPtr<ICharSequence> csTitle;
-    CStringWrapper::New(title, (ICharSequence**)&csTitle);
+    CString::New(title, (ICharSequence**)&csTitle);
     builder->SetTitle(csTitle);
     builder->SetView(textEntryView);
 //TODO: Need
@@ -3633,25 +3633,25 @@ ECode CWifiP2pService::P2pStateMachine::FrequencyConflictState::NotifyFrequencyC
     String addr, str;
     mHost->mSavedPeerConfig->GetDeviceAddress(&addr);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(addr, (ICharSequence**)&seq);
+    CString::New(addr, (ICharSequence**)&seq);
     AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(1);
     array->Set(0, seq->Probe(EIID_IInterface));
     r->GetString(R::string::wifi_p2p_frequency_conflict_message, array, &str);
     AutoPtr<ICharSequence> csMsg;
-    CStringWrapper::New(str, (ICharSequence**)&csMsg);
+    CString::New(str, (ICharSequence**)&csMsg);
     builder->SetMessage(csMsg);
 
     AutoPtr<IDialogInterfaceOnClickListener> listener;
     listener = new PositiveButtonListener(mHost);
     r->GetString(R::string::dlg_ok, &str);
     csMsg = NULL;
-    CStringWrapper::New(str, (ICharSequence**)&csMsg);
+    CString::New(str, (ICharSequence**)&csMsg);
     builder->SetPositiveButton(csMsg, listener);
 
     listener = new NegativeButtonListener(mHost);
     r->GetString(R::string::decline, &str);
     csMsg = NULL;
-    CStringWrapper::New(str, (ICharSequence**)&csMsg);
+    CString::New(str, (ICharSequence**)&csMsg);
     builder->SetNegativeButton(csMsg, listener);
 
     AutoPtr<IDialogInterfaceOnCancelListener> cancelListener;

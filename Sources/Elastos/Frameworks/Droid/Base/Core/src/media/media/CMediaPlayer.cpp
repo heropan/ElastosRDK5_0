@@ -22,7 +22,7 @@ using Elastos::Net::IInetAddress;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
 using Elastos::IO::CFileDescriptor;

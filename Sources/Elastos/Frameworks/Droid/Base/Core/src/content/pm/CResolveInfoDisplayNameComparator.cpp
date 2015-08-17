@@ -3,7 +3,7 @@
 #include "content/pm/CResolveInfoDisplayNameComparator.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Text::ICollatorHelper;
 using Elastos::Text::CCollatorHelper;
 

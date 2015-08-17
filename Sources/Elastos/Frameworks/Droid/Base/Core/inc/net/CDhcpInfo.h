@@ -6,7 +6,7 @@
 #include <elastos/core/StringBuffer.h>
 
 using Elastos::Core::StringBuffer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {

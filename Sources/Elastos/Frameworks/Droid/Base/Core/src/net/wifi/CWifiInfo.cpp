@@ -12,7 +12,7 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Net::IInet6Address;
 using Elastos::Net::IInetAddressHelper;
 using Elastos::Net::CInetAddressHelper;
@@ -110,7 +110,7 @@ ECode CWifiInfo::GetSSID(
         mWifiSsid->ToString(&unicode);
 
         AutoPtr<ICharSequence> tmp;
-        CStringWrapper::New(unicode, (ICharSequence**)&tmp);
+        CString::New(unicode, (ICharSequence**)&tmp);
         if (!TextUtils::IsEmpty(tmp)) {
             *ssid = String("\"") + unicode + String("\"");
             return NOERROR;

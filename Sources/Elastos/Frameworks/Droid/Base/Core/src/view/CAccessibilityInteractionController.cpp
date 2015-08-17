@@ -10,7 +10,7 @@
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::SomeArgs;
 using Elastos::Droid::View::Accessibility::IAccessibilityInteractionClient;
@@ -576,7 +576,7 @@ ECode CAccessibilityInteractionController::FindAccessibilityNodeInfosByTextClien
     CAccessibilityNodeInfoHelper::AcquireSingleton((IAccessibilityNodeInfoHelper**)&helper);
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(text, (ICharSequence**)&seq);
+    CString::New(text, (ICharSequence**)&seq);
     AutoPtr<SomeArgs> args = SomeArgs::Obtain();
     args->mArg1 = seq;
     args->mArg2 = callback;

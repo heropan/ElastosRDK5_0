@@ -8,7 +8,7 @@
 #include <elastos/utility/etl/Algorithm.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Etl::HashSet;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::Res::IXmlResourceParser;

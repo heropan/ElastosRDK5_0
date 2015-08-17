@@ -12,7 +12,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CEntity;
 using Elastos::Droid::Content::IContentValues;
@@ -281,13 +281,13 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         String name;
         subCursor->GetString(COLUMN_ATTENDEE_NAME, &name);
         AutoPtr<ICharSequence> cname;
-        CStringWrapper::New(name , (ICharSequence**)&cname);
+        CString::New(name , (ICharSequence**)&cname);
         attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_NAME, cname);
 
         String email;
         subCursor->GetString(COLUMN_ATTENDEE_EMAIL, &email);
         AutoPtr<ICharSequence> cemail;
-        CStringWrapper::New(email , (ICharSequence**)&cemail);
+        CString::New(email , (ICharSequence**)&cemail);
         attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_EMAIL, cemail);
 
         Int32 relationship;
@@ -311,13 +311,13 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         String identity;
         subCursor->GetString(COLUMN_ATTENDEE_IDENTITY, &identity);
         AutoPtr<ICharSequence> cidentity;
-        CStringWrapper::New(identity , (ICharSequence**)&cidentity);
+        CString::New(identity , (ICharSequence**)&cidentity);
         attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_IDENTITY, cidentity);
 
         String nameSpace;
         subCursor->GetString(COLUMN_ATTENDEE_ID_NAMESPACE, &nameSpace);
         AutoPtr<ICharSequence> cnamespace;
-        CStringWrapper::New(nameSpace , (ICharSequence**)&cnamespace);
+        CString::New(nameSpace , (ICharSequence**)&cnamespace);
         attendeeValues->PutString(ICalendarContractAttendeesColumns::ATTENDEE_ID_NAMESPACE, cnamespace);
 
         _entity->AddSubValue(attendeesUri, attendeeValues);
@@ -343,17 +343,17 @@ ECode CCalendarContractEventsEntity::EntityIteratorImpl::GetEntityAndIncrementCu
         String id;
         subCursor->GetString(COLUMN_ID, &id);
         AutoPtr<ICharSequence> cid;
-        CStringWrapper::New(id , (ICharSequence**)&cid);
+        CString::New(id , (ICharSequence**)&cid);
         extendedValues->PutString(IBaseColumns::ID, cid);
         String name;
         subCursor->GetString(COLUMN_NAME, &name);
         AutoPtr<ICharSequence> cname;
-        CStringWrapper::New(name , (ICharSequence**)&cname);
+        CString::New(name , (ICharSequence**)&cname);
         extendedValues->PutString(ICalendarContractExtendedPropertiesColumns::NAME, cname);
         String value;
         subCursor->GetString(COLUMN_VALUE, &value);
         AutoPtr<ICharSequence> cvalue;
-        CStringWrapper::New(value , (ICharSequence**)&cvalue);
+        CString::New(value , (ICharSequence**)&cvalue);
         extendedValues->PutString(ICalendarContractExtendedPropertiesColumns::VALUE, cvalue);
         _entity->AddSubValue(propertiesUri, extendedValues);
     }

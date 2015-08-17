@@ -38,7 +38,7 @@
 #endif
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuffer;
 using Elastos::Core::EIID_ICharSequence;
@@ -504,7 +504,7 @@ AutoPtr<ICharSequence> TextUtils::StringOrSpannedString(
     String str;
     source->ToString(&str);
     AutoPtr<ICharSequence> result;
-    CStringWrapper::New(str, (ICharSequence**)&result);
+    CString::New(str, (ICharSequence**)&result);
     return result;
 }
 
@@ -692,7 +692,7 @@ ECode TextUtils::CHAR_SEQUENCE_CREATOR::CreateFromParcel(
         return NOERROR;
     }
 
-    CStringWrapper::New(string, (ICharSequence**)&cs);
+    CString::New(string, (ICharSequence**)&cs);
     if (kind == 1) {
         *csq = cs;
         REFCOUNT_ADD(*csq);
@@ -1077,7 +1077,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
             ellipsis);
     if(rst == NULL) {
         String sNull("");
-        CStringWrapper::New(sNull, (ICharSequence**)&rst);
+        CString::New(sNull, (ICharSequence**)&rst);
     }
     return rst;
 }
@@ -1176,7 +1176,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
 
         if (remaining == 0) {
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(String(""), (ICharSequence**)&seq);
+            CString::New(String(""), (ICharSequence**)&seq);
             MeasuredText::Recycle(mt);
             return seq;
         }
@@ -1195,7 +1195,7 @@ AutoPtr<ICharSequence> TextUtils::Ellipsize(
         CSpannableStringBuilder::New((ISpannableStringBuilder**)&ssb);
         ssb->Append(text, 0, left);
         AutoPtr<ICharSequence> elpSeq;
-        CStringWrapper::New(ellipsis, (ICharSequence**)&elpSeq);
+        CString::New(ellipsis, (ICharSequence**)&elpSeq);
         ssb->Append(elpSeq);
         ssb->Append(text, right, len);
         MeasuredText::Recycle(mt);
@@ -1321,7 +1321,7 @@ AutoPtr<ICharSequence> TextUtils::Concat(
     AutoPtr<ICharSequence> result;
     Int32 len = text->GetLength();
     if (len == 0) {
-        CStringWrapper::New(String(""), (ICharSequence**)&result);
+        CString::New(String(""), (ICharSequence**)&result);
         return result;
     }
     if (len == 1) {
@@ -1342,7 +1342,7 @@ AutoPtr<ICharSequence> TextUtils::Concat(
     }
 
     if (!spanned) {
-        CStringWrapper::New(sb.ToString(), (ICharSequence**)&result);
+        CString::New(sb.ToString(), (ICharSequence**)&result);
         return result;
     }
     AutoPtr<ISpannableString> ss;

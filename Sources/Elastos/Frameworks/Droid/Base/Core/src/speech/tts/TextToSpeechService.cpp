@@ -20,7 +20,7 @@ using Elastos::Core::StringUtils;
 using Elastos::IO::CFile;
 using Elastos::Droid::Os::EIID_IIdleHandler;
 using Elastos::Core::EIID_IRunnable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::CBinder;
 using Elastos::Droid::Content::CIntent;
 using Elastos::Droid::Os::Looper;
@@ -540,7 +540,7 @@ Boolean TextToSpeechService::SynthesisSpeechItem::HasLanguage()
 {
     String stringParam = GetStringParam(ITextToSpeechEngine::KEY_PARAM_LANGUAGE, String(NULL));
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(stringParam, (ICharSequence**)&cs);
+    CString::New(stringParam, (ICharSequence**)&cs);
     return !TextUtils::IsEmpty(cs.Get());
 }
 
@@ -715,7 +715,7 @@ ECode TextToSpeechService::TextToSpeechServiceStub::Speak(
     AutoPtr< ArrayOf<IInterface*> > aryInterface = ArrayOf<IInterface*>::Alloc(3);
     (*aryInterface)[0] = (IInterface*)caller;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(text, (ICharSequence**)&cs);
+    CString::New(text, (ICharSequence**)&cs);
     (*aryInterface)[1] = (IInterface*)(cs.Get());
     (*aryInterface)[2] = (IInterface*)params;
 
@@ -740,10 +740,10 @@ ECode TextToSpeechService::TextToSpeechServiceStub::SynthesizeToFile(
     AutoPtr< ArrayOf<IInterface*> > aryInterface = ArrayOf<IInterface*>::Alloc(4);
     (*aryInterface)[0] = (IInterface*)caller;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(text, (ICharSequence**)&cs);
+    CString::New(text, (ICharSequence**)&cs);
     (*aryInterface)[1] = (IInterface*)(cs.Get());
     AutoPtr<ICharSequence> cs2;
-    CStringWrapper::New(filename, (ICharSequence**)&cs2);
+    CString::New(filename, (ICharSequence**)&cs2);
     (*aryInterface)[2] = (IInterface*)(cs2.Get());
     (*aryInterface)[3] = (IInterface*)params;
     if (!CheckNonNull( aryInterface.Get() )) {
@@ -836,7 +836,7 @@ ECode TextToSpeechService::TextToSpeechServiceStub::IsLanguageAvailable(
 {
     AutoPtr< ArrayOf<IInterface*> > aryInterface = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(lang, (ICharSequence**)&cs);
+    CString::New(lang, (ICharSequence**)&cs);
     (*aryInterface)[0] = (IInterface*)(cs.Get());
 
     if (!CheckNonNull(aryInterface.Get())) {
@@ -881,7 +881,7 @@ ECode TextToSpeechService::TextToSpeechServiceStub::LoadLanguage(
 {
     AutoPtr< ArrayOf<IInterface*> > aryInterface = ArrayOf<IInterface*>::Alloc(1);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(lang, (ICharSequence**)&cs);
+    CString::New(lang, (ICharSequence**)&cs);
     (*aryInterface)[0] = (IInterface*)(cs.Get());
 
     if (!CheckNonNull(aryInterface.Get())) {

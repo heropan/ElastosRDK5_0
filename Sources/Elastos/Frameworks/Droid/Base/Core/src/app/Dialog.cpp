@@ -18,7 +18,7 @@
 #endif
 
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Os::ILooper;
@@ -1041,7 +1041,7 @@ Boolean Dialog::DispatchPopulateAccessibilityEvent(
     String packageName;
     mContext->GetPackageName(&packageName);
     AutoPtr<ICharSequence> pnCsq;
-    CStringWrapper::New(packageName, (ICharSequence**)&pnCsq);
+    CString::New(packageName, (ICharSequence**)&pnCsq);
 //TODO    event.setClassName(getClass().getName());
     event->SetPackageName(pnCsq);
 

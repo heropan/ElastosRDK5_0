@@ -13,7 +13,7 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Content::CContentUris;
@@ -85,7 +85,7 @@ ECode CContactsContactMethods::DecodeImProtocol(
     if (encodedString.StartWith("custom:")) {
         String str = encodedString.Substring(7);
         AutoPtr<ICharSequence> result;
-        FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&result))
+        FAIL_RETURN(CString::New(str, (ICharSequence**)&result))
         *value = (IInterface*)result;
         REFCOUNT_ADD(*value);
         return NOERROR;
@@ -150,7 +150,7 @@ ECode CContactsContactMethods::GetDisplayLabel(
     VALIDATE_NOT_NULL(lb);
 
     AutoPtr<ICharSequence> display;
-    FAIL_RETURN(CStringWrapper::New(String(""), (ICharSequence**)&display))
+    FAIL_RETURN(CString::New(String(""), (ICharSequence**)&display))
     switch (kind) {
         case IContacts::KIND_EMAIL: {
             if (type != IContactsContactMethodsColumns::TYPE_CUSTOM) {
@@ -206,7 +206,7 @@ ECode CContactsContactMethods::GetDisplayLabel(
             String str;
             AutoPtr<ICharSequence> cstr;
             FAIL_RETURN(context->GetString(Elastos::Droid::R::string::untitled, &str))
-            FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&cstr))
+            FAIL_RETURN(CString::New(str, (ICharSequence**)&cstr))
             display = cstr;
     }
     *lb = display;

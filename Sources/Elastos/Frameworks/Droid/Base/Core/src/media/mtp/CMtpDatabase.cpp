@@ -31,7 +31,7 @@ using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
 using Elastos::Core::IStringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -1339,7 +1339,7 @@ Int32 CMtpDatabase::BeginSendObject(
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(path, (ICharSequence**)&csq);
+    CString::New(path, (ICharSequence**)&csq);
     values->PutString(IMediaStoreFilesFileColumns::DATA, csq);
     AutoPtr<IInteger32> iFormat;
     CInteger32::New(format, (IInteger32**)&iFormat);
@@ -1400,10 +1400,10 @@ void CMtpDatabase::EndSendObject(
             AutoPtr<IContentValues> values;
             CContentValues::New(1, (IContentValues**)&values);
             AutoPtr<ICharSequence> csData;
-            CStringWrapper::New(path, (ICharSequence**)&csData);
+            CString::New(path, (ICharSequence**)&csData);
             values->PutString(IMediaStoreAudioPlaylists::DATA, csData);
             AutoPtr<ICharSequence> csName;
-            CStringWrapper::New(name, (ICharSequence**)&csName);
+            CString::New(name, (ICharSequence**)&csName);
             values->PutString(IMediaStoreAudioPlaylists::NAME, csName);
             AutoPtr<IInteger32> iFormat;
             CInteger32::New(format, (IInteger32**)&iFormat);
@@ -1780,7 +1780,7 @@ Int32 CMtpDatabase::RenameFile(
     AutoPtr<IContentValues> values;
     CContentValues::New((IContentValues**)&values);
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(newPath, (ICharSequence**)&csq);
+    CString::New(newPath, (ICharSequence**)&csq);
     values->PutString(IMediaStoreFilesFileColumns::DATA, csq);
     Int32 updated = 0;
     //try {
@@ -1867,7 +1867,7 @@ Int32 CMtpDatabase::GetDeviceProperty(
             if (length > 255) {
                 length = 255;
             }
-            CStringWrapper::New(value, (ICharSequence**)&csq);
+            CString::New(value, (ICharSequence**)&csq);
             TextUtils::GetChars(csq, 0, length, outStringValue, 0);
             outStringValue->Set(length, 0);
             return IMtpConstants::RESPONSE_OK;
@@ -1879,7 +1879,7 @@ Int32 CMtpDatabase::GetDeviceProperty(
             display->GetMaximumSizeDimension(&width);
             display->GetMaximumSizeDimension(&height);
             imageSize = StringUtils::Int32ToString(width) + "x" +  StringUtils::Int32ToString(height);
-            CStringWrapper::New(imageSize, (ICharSequence**)&csq);
+            CString::New(imageSize, (ICharSequence**)&csq);
             TextUtils::GetChars(csq, 0, imageSize.GetLength(), outStringValue, 0);
             outStringValue->Set(imageSize.GetLength(), 0);
             return IMtpConstants::RESPONSE_OK;
@@ -1942,7 +1942,7 @@ Boolean CMtpDatabase::GetObjectInfo(
                 end = start + 255;
             }
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(path, (ICharSequence**)&csq);
+            CString::New(path, (ICharSequence**)&csq);
             TextUtils::GetChars(csq, start, end, outName, 0);
             outName->Set(end - start, 0);
 
@@ -1969,7 +1969,7 @@ Int32 CMtpDatabase::GetObjectFilePath(
     if (handle == 0) {
         // special case root directory
         AutoPtr<ICharSequence> csq;
-        CStringWrapper::New(mMediaStoragePath, (ICharSequence**)&csq);
+        CString::New(mMediaStoragePath, (ICharSequence**)&csq);
         TextUtils::GetChars(csq, 0, mMediaStoragePath.GetLength(), outFilePath, 0);
         outFilePath->Set(mMediaStoragePath.GetLength(), 0);
         outFileLengthFormat->Set(0, 0);
@@ -1987,7 +1987,7 @@ Int32 CMtpDatabase::GetObjectFilePath(
             String path;
             c->GetString(1, &path);
             AutoPtr<ICharSequence> csq;
-            CStringWrapper::New(path, (ICharSequence**)&csq);
+            CString::New(path, (ICharSequence**)&csq);
             TextUtils::GetChars(csq, 0, path.GetLength(), outFilePath, 0);
             outFilePath->Set(path.GetLength(), 0);
             // File transfers from device to host will likely fail if the size is incorrect.

@@ -11,7 +11,7 @@
 
 using Elastos::Core::StringUtils;
 using Libcore::ICU::CLocale;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CObjectContainer;
 using Elastos::Droid::Os::CBundle;
@@ -210,7 +210,7 @@ Handle32 TextToSpeech::TextToSpeechActionRGetFeatures::Run(
         {
             strTemp = (*features)[i];
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(strTemp, (ICharSequence**)&cs);
+            CString::New(strTemp, (ICharSequence**)&cs);
             oc->Add((IInterface*)(cs.Get()));
         }
         return (Handle32)(oc.Get());
@@ -967,7 +967,7 @@ AutoPtr<IBundle> TextToSpeech::GetParams(
         // engine that we are currently connected to. The engine is
         // free to interpret them as it chooses.
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(mCurrentEngine, (ICharSequence**)&cs);
+        CString::New(mCurrentEngine, (ICharSequence**)&cs);
         if (!TextUtils::IsEmpty(cs)) {
             AutoPtr< ArrayOf<String> > keys;
             AutoPtr<IObjectContainer> values;

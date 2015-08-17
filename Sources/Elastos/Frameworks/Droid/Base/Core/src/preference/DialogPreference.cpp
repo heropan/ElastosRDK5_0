@@ -8,7 +8,7 @@
 #include "R.h"
 
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::App::CAlertDialogBuilder;
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;
@@ -115,16 +115,16 @@ void DialogPreference::Init(
         GetTitle((ICharSequence**)&mDialogTitle);
     }
     else {
-        CStringWrapper::New(tmpString, (ICharSequence**)&mDialogTitle);
+        CString::New(tmpString, (ICharSequence**)&mDialogTitle);
     }
 
     a->GetString(R::styleable::DialogPreference_dialogMessage, &tmpString);
-    CStringWrapper::New(tmpString, (ICharSequence**)&mDialogMessage);
+    CString::New(tmpString, (ICharSequence**)&mDialogMessage);
     a->GetDrawable(R::styleable::DialogPreference_dialogIcon, (IDrawable**)&mDialogIcon);
     a->GetString(R::styleable::DialogPreference_positiveButtonText, &tmpString);
-    CStringWrapper::New(tmpString, (ICharSequence**)&mPositiveButtonText);
+    CString::New(tmpString, (ICharSequence**)&mPositiveButtonText);
     a->GetString(R::styleable::DialogPreference_negativeButtonText, &tmpString);
-    CStringWrapper::New(tmpString, (ICharSequence**)&mNegativeButtonText);
+    CString::New(tmpString, (ICharSequence**)&mNegativeButtonText);
     a->GetResourceId(R::styleable::DialogPreference_dialogLayout, mDialogLayoutResId, &mDialogLayoutResId);
     a->Recycle();
 }
@@ -151,7 +151,7 @@ ECode DialogPreference::SetDialogTitle(
     String str;
     context->GetString(dialogTitleResId, &str);
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(str, (ICharSequence**)&title);
+    CString::New(str, (ICharSequence**)&title);
     return SetDialogTitle(title);
 }
 
@@ -179,7 +179,7 @@ ECode DialogPreference::SetDialogMessage(
     String str;
     context->GetString(dialogMessageResId, &str);
     AutoPtr<ICharSequence> msg;
-    CStringWrapper::New(str, (ICharSequence**)&msg);
+    CString::New(str, (ICharSequence**)&msg);
     return SetDialogMessage(msg);
 }
 
@@ -235,7 +235,7 @@ ECode DialogPreference::SetPositiveButtonText(
     String str;
     context->GetString(positiveButtonTextResId, &str);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(str, (ICharSequence**)&text);
+    CString::New(str, (ICharSequence**)&text);
     return SetPositiveButtonText(text);
 }
 
@@ -263,7 +263,7 @@ ECode DialogPreference::SetNegativeButtonText(
     String str;
     context->GetString(negativeButtonTextResId, &str);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(str, (ICharSequence**)&text);
+    CString::New(str, (ICharSequence**)&text);
     return SetNegativeButtonText(text);
 }
 

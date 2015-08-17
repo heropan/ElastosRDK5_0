@@ -5,7 +5,7 @@
 #include "os/CBundle.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::CBundle;
 
@@ -75,7 +75,7 @@ ECode CListenerTransport::OnProviderEnabled(
     /* [in] */ const String& provider)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(provider, (ICharSequence**)&seq);
+    CString::New(provider, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
     mListenerHandler->ObtainMessage(TYPE_PROVIDER_ENABLED, seq, (IMessage**)&msg);
@@ -87,7 +87,7 @@ ECode CListenerTransport::OnProviderDisabled(
     /* [in] */ const String& provider)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(provider, (ICharSequence**)&seq);
+    CString::New(provider, (ICharSequence**)&seq);
 
     AutoPtr<IMessage> msg;
     mListenerHandler->ObtainMessage(TYPE_PROVIDER_DISABLED, seq, (IMessage**)&msg);

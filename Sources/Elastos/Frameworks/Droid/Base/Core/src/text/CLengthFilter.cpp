@@ -4,7 +4,7 @@
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +30,7 @@ ECode CLengthFilter::Filter(
     Int32 keep = mMax - (len - (dend - dstart));
 
     if (keep <= 0) {
-        return CStringWrapper::New(String(""), cs);
+        return CString::New(String(""), cs);
     }
     else if (keep >= end - start) {
         *cs = NULL;
@@ -42,7 +42,7 @@ ECode CLengthFilter::Filter(
         if (Character::IsHighSurrogate((source->GetCharAt(keep - 1, &sourceChar), sourceChar))) {
             --keep;
             if (keep == start) {
-                return CStringWrapper::New(String(""), cs);
+                return CString::New(String(""), cs);
             }
         }
         return source->SubSequence(start, keep, cs);

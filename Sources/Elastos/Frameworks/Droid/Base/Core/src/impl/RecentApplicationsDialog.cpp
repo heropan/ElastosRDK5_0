@@ -6,7 +6,7 @@
 #include "view/SoundEffectConstants.h"
 #include "content/CIntent.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::CHandler;
 using Elastos::Droid::View::SoundEffectConstants;
@@ -112,7 +112,7 @@ void RecentApplicationsDialog::OnCreate(
         IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM,
         IWindowManagerLayoutParams::FLAG_ALT_FOCUSABLE_IM);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("Recents"), (ICharSequence**)&seq);
+    CString::New(String("Recents"), (ICharSequence**)&seq);
     window->SetTitle(seq);
 
     SetContentView(R::layout::recent_apps_dialog);

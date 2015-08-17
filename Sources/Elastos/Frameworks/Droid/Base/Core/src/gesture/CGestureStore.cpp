@@ -13,7 +13,7 @@
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IDataInput;
@@ -91,7 +91,7 @@ ECode CGestureStore::GetGestureEntries(
     HashMap<String, AutoPtr<GestureList> >::Iterator iter = mNamedGestures.Begin();
     for (; iter != mNamedGestures.End(); ++iter) {
         AutoPtr<ICharSequence> keystr = NULL;
-        CStringWrapper::New(iter->mFirst, (ICharSequence**)&keystr);
+        CString::New(iter->mFirst, (ICharSequence**)&keystr);
         container->Add(keystr);
 
     }

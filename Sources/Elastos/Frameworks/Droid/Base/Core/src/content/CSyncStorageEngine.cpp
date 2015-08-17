@@ -2962,59 +2962,59 @@ ECode CSyncStorageEngine::ReadAndDeleteLegacyAccountInfoLocked()
         AutoPtr<IObjectStringMap> objMap;
         AutoPtr<ICharSequence> value;
         FAIL_RETURN(CObjectStringMap::New((IObjectStringMap**)&objMap))
-        FAIL_RETURN(CStringWrapper::New(String("status._id as _id"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("status._id as _id"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("_id"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("stats.account as account"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("stats.account as account"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("account"), (IInterface*) value))
         if (hasType) {
             value = NULL;
-            FAIL_RETURN(CStringWrapper::New(String("stats.account_type as account_type"), (ICharSequence**)&value))
+            FAIL_RETURN(CString::New(String("stats.account_type as account_type"), (ICharSequence**)&value))
             FAIL_RETURN(objMap->Put(String("account_type"), (IInterface*) value))
         }
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("stats.authority as authority"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("stats.authority as authority"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("authority"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("totalElapsedTime"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("totalElapsedTime"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("totalElapsedTime"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("numSyncs"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("numSyncs"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("numSyncs"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("numSourceLocal"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("numSourceLocal"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("numSourceLocal"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("numSourcePoll"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("numSourcePoll"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("numSourcePoll"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("numSourceServer"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("numSourceServer"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("numSourceServer"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("numSourceUser"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("numSourceUser"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("numSourceUser"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("lastSuccessSource"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("lastSuccessSource"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("lastSuccessSource"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("lastSuccessTime"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("lastSuccessTime"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("lastSuccessTime"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("lastFailureSource"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("lastFailureSource"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("lastFailureSource"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("lastFailureTime"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("lastFailureTime"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("lastFailureTime"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("lastFailureMesg"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("lastFailureMesg"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("lastFailureMesg"), (IInterface*) value))
         value = NULL;
-        FAIL_RETURN(CStringWrapper::New(String("pending"), (ICharSequence**)&value))
+        FAIL_RETURN(CString::New(String("pending"), (ICharSequence**)&value))
         FAIL_RETURN(objMap->Put(String("pending"), (IInterface*) value))
         FAIL_RETURN(qb->SetProjectionMap(objMap))
         String where("stats._id = status.stats_id");
         AutoPtr<ICharSequence> inWhere;
-        FAIL_RETURN(CStringWrapper::New(where, (ICharSequence**)&inWhere))
+        FAIL_RETURN(CString::New(where, (ICharSequence**)&inWhere))
         FAIL_RETURN(qb->AppendWhere(inWhere))
         AutoPtr<ICursor> c;
         FAIL_RETURN(qb->Query(db, NULL, String(NULL), NULL, String(NULL), String(NULL), String(NULL), (ICursor**)&c))

@@ -9,7 +9,7 @@
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Os::EIID_IHandler;
@@ -124,7 +124,7 @@ ECode CPasswordTransformationMethod::PasswordCharSequence::SubSequence(
     StringBuilder sb;
     sb.AppendChars(*buf);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(sb.ToString(), (ICharSequence**)&cs);
+    CString::New(sb.ToString(), (ICharSequence**)&cs);
     *ret = cs;
     REFCOUNT_ADD(*ret);
     return NOERROR;

@@ -22,7 +22,7 @@ using Elastos::Utility::Set;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Etl::List;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::CFile;
 using Elastos::IO::Charset::ICharset;
 using Elastos::IO::Charset::ICharsets;

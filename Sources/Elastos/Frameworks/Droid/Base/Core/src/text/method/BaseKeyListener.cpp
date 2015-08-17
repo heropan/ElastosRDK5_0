@@ -9,7 +9,7 @@
 #include "Elastos.Droid.Core.h"
 #endif
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::View::IKeyEventHelper;
 using Elastos::Droid::View::CKeyEventHelper;
 
@@ -214,7 +214,7 @@ Boolean BaseKeyListener::OnKeyOther(
     }
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(text, (ICharSequence**)&cs);
+    CString::New(text, (ICharSequence**)&cs);
     content->Replace(selectionStart, selectionEnd, cs);
     return TRUE;
 }

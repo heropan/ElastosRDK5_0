@@ -184,7 +184,7 @@ ECode CCMailTo::GetHeaders(
         tempvalue = it->mSecond;
 
         AutoPtr<ICharSequence> tempcharsequence;
-        CStringWrapper::New(tempvalue, (ICharSequence**)&tempcharsequence);
+        CString::New(tempvalue, (ICharSequence**)&tempcharsequence);
         rethashmap->Put(tempkey,tempcharsequence);
     }
     return NOERROR;

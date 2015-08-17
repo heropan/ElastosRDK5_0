@@ -15,7 +15,7 @@ using Elastos::Core::CByte;
 using Elastos::Core::EIID_IByte;
 using Elastos::Core::CInteger64;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
 using Elastos::Droid::Net::Uri;

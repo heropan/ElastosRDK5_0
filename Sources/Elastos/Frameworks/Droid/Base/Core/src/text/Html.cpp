@@ -26,7 +26,7 @@ using Org::Xml::Sax::IInputSource;
 using Org::Xml::Sax::CInputSource;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::IO::CStringReader;
 using Elastos::IO::IStringReader;
 using Elastos::Droid::Internal::Utility::ArrayUtils;
@@ -779,14 +779,14 @@ void HtmlToSpannedConverter::HandleP(
         }
 
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("\n"), (ICharSequence**)&cs);
+        CString::New(String("\n"), (ICharSequence**)&cs);
         text->Append(cs);
         return;
     }
 
     if (len != 0) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(String("\n\n"), (ICharSequence**)&cs);
+        CString::New(String("\n\n"), (ICharSequence**)&cs);
         text->Append(cs);
     }
 }
@@ -795,7 +795,7 @@ void HtmlToSpannedConverter::HandleBr(
     /* [in] */ ISpannableStringBuilder* text)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("\n"), (ICharSequence**)&cs);
+    CString::New(String("\n"), (ICharSequence**)&cs);
     text->Append(cs);
 }
 
@@ -875,7 +875,7 @@ void HtmlToSpannedConverter::StartImg(
     Int32 len;
     text->GetLength(&len);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("\uFFFC"), (ICharSequence**)&cs);
+    CString::New(String("\uFFFC"), (ICharSequence**)&cs);
     text->Append(cs);
 
     AutoPtr<IImageSpan> imageSpan;
@@ -916,7 +916,7 @@ void HtmlToSpannedConverter::EndFont(
         AutoPtr<Font> f = (Font*) (obj.Get());
 
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(f->mColor, (ICharSequence**)&cs);
+        CString::New(f->mColor, (ICharSequence**)&cs);
         if (!TextUtils::IsEmpty(cs)) {
             if ((f->mColor).StartWith("@")) {
                 AutoPtr<IResourcesHelper> rh;
@@ -1117,7 +1117,7 @@ ECode HtmlToSpannedConverter::Characters(
         }
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(sb.ToString(), (ICharSequence**)&cs);
+    CString::New(sb.ToString(), (ICharSequence**)&cs);
     mSpannableStringBuilder->Append(cs);
     return NOERROR;
 }
@@ -1176,7 +1176,7 @@ Int32 HtmlToSpannedConverter::GetHtmlColor(
     else {
         //try {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(color, (ICharSequence**)&cs);
+            CString::New(color, (ICharSequence**)&cs);
             return XmlUtils::ConvertValueToInt32(cs, -1);
         //} catch (NumberFormatException nfe) {
         //    return -1;

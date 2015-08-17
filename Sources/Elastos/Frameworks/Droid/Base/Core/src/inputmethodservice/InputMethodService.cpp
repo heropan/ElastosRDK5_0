@@ -2032,7 +2032,7 @@ ECode InputMethodService::SendKeyChar(
                         String str("");
                         str.Append(charCode);
                         AutoPtr<ICharSequence> cs;
-                        CStringWrapper::New(str, (ICharSequence**)&cs);
+                        CString::New(str, (ICharSequence**)&cs);
                         Boolean tmpState = FALSE;
                         ic->CommitText(cs, 1, &tmpState);
                     }
@@ -2316,7 +2316,7 @@ void InputMethodService::StartExtractingText(
         else {
             mExtractEditText->SetEnabled(FALSE);
             AutoPtr<ICharSequence> tmpText;
-            CStringWrapper::New(String(""), (ICharSequence**)&tmpText);
+            CString::New(String(""), (ICharSequence**)&tmpText);
             mExtractEditText->SetText(tmpText);
         }
         // } finally {

@@ -2,7 +2,7 @@
 #include "CCheckBoxPreference.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -141,13 +141,13 @@ ECode CCheckBoxPreference::constructor(
     String summaryOn;
     a->GetString(R::styleable::CheckBoxPreference_summaryOn, &summaryOn);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(summaryOn, (ICharSequence**)&cs);
+    CString::New(summaryOn, (ICharSequence**)&cs);
     TwoStatePreference::SetSummaryOn(cs);
 
     String summaryOff;
     a->GetString(R::styleable::CheckBoxPreference_summaryOff, &summaryOff);
     cs = NULL;
-    CStringWrapper::New(summaryOff, (ICharSequence**)&cs);
+    CString::New(summaryOff, (ICharSequence**)&cs);
     TwoStatePreference::SetSummaryOff(cs);
 
     Boolean disableDependentsState;

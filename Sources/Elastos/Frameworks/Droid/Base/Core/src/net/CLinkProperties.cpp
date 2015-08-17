@@ -15,7 +15,7 @@ using Elastos::Droid::Net::CCompareResult;
 using Elastos::Droid::Utility::CParcelableObjectContainer;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -294,9 +294,9 @@ ECode CLinkProperties::IsIdenticalInterfaceName(
     GetInterfaceName(&str1);
     target->GetInterfaceName(&str2);
     AutoPtr<ICharSequence> chars1;
-    CStringWrapper::New(str1, (ICharSequence**)&chars1);
+    CString::New(str1, (ICharSequence**)&chars1);
     AutoPtr<ICharSequence> chars2;
-    CStringWrapper::New(str2, (ICharSequence**)&chars2);
+    CString::New(str2, (ICharSequence**)&chars2);
     *result = TextUtils::Equals(chars1, chars2);
     return NOERROR;
 }

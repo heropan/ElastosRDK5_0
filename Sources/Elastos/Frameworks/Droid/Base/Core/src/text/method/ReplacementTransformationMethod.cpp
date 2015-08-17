@@ -4,7 +4,7 @@
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Text::ISpannedString;

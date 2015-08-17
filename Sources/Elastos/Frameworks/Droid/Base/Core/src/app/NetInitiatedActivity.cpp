@@ -5,7 +5,7 @@
 #include "location/LocationManager.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::BroadcastReceiver;
@@ -94,12 +94,12 @@ ECode NetInitiatedActivity::OnCreate(
     String title;
     intent->GetStringExtra(IGpsNetInitiatedHandler::NI_INTENT_KEY_TITLE, &title);
     AutoPtr<ICharSequence> titleSequence;
-    CStringWrapper::New(title, (ICharSequence**)&titleSequence);
+    CString::New(title, (ICharSequence**)&titleSequence);
     p->SetTitle(titleSequence);
     String message;
     intent->GetStringExtra(IGpsNetInitiatedHandler::NI_INTENT_KEY_MESSAGE, &message);
     AutoPtr<ICharSequence> mSequence;
-    CStringWrapper::New(message, (ICharSequence**)&mSequence);
+    CString::New(message, (ICharSequence**)&mSequence);
     p->SetMessage(mSequence);
 //    p->mPositiveButtonText = String.format(context.getString(R.string.gpsVerifYes));
     p->SetPositiveButtonListener(this);

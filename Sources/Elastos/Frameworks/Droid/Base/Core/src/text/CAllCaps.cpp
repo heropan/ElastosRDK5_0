@@ -6,7 +6,7 @@
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -34,7 +34,7 @@ ECode CAllCaps::Filter(
             s = s.ToUpperCase();
 
             AutoPtr<ICharSequence> charS;
-            FAIL_RETURN(CStringWrapper::New(s, (ICharSequence**)&charS));
+            FAIL_RETURN(CString::New(s, (ICharSequence**)&charS));
             if (ISpanned::Probe(source) != NULL) {
                 AutoPtr<ISpannableString> sp;
                 FAIL_RETURN(CSpannableString::New(charS, (ISpannableString**)&sp));

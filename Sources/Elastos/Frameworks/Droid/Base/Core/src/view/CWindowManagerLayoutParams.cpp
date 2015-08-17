@@ -6,7 +6,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::Content::Pm::IActivityInfo;
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -44,7 +44,7 @@ CWindowManagerLayoutParams::CWindowManagerLayoutParams()
     , mInputFeatures(0)
     , mUserActivityTimeout(-1)
 {
-    ASSERT_SUCCEEDED(CStringWrapper::New(String(""), (ICharSequence**)&mTitle));
+    ASSERT_SUCCEEDED(CString::New(String(""), (ICharSequence**)&mTitle));
 }
 
 Boolean CWindowManagerLayoutParams::MayUseInputMethod(
@@ -65,7 +65,7 @@ ECode CWindowManagerLayoutParams::SetTitle(
 {
     AutoPtr<ICharSequence> title = _title;
     if (NULL == title)
-       FAIL_RETURN(CStringWrapper::New(String(""), (ICharSequence**)&title));
+       FAIL_RETURN(CString::New(String(""), (ICharSequence**)&title));
 
     mTitle = TextUtils::StringOrSpannedString(title);
 

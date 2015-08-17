@@ -137,7 +137,7 @@ String CRingtone::GetTitle(
                 String actualTitle = GetTitle(context, actualUri, FALSE);
 
                 AutoPtr<ICharSequence> seq;
-                CStringWrapper::New(actualTitle, (ICharSequence**)&seq);
+                CString::New(actualTitle, (ICharSequence**)&seq);
                 AutoPtr<ArrayOf<IInterface*> > array = ArrayOf<IInterface*>::Alloc(1);
                 array->Set(0, (IInterface*)seq.Get());
                 context->GetString(R::string::ringtone_default_with_actual, array, &title);

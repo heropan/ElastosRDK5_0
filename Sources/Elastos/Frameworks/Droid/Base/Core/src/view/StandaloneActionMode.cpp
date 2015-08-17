@@ -4,7 +4,7 @@
 #include "view/menu/CMenuBuilder.h"
 #include "view/menu/CMenuPopupHelper.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventSource;
 using Elastos::Droid::View::EIID_IActionMode;
@@ -54,7 +54,7 @@ ECode StandaloneActionMode::SetTitle(
     String str;
     mContext->GetString(resId, &str);
     AutoPtr<ICharSequence> title;
-    CStringWrapper::New(str, (ICharSequence**)&title);
+    CString::New(str, (ICharSequence**)&title);
     return SetTitle(title);
 }
 
@@ -64,7 +64,7 @@ ECode StandaloneActionMode::SetSubtitle(
     String str;
     mContext->GetString(resId, &str);
     AutoPtr<ICharSequence> subTitle;
-    CStringWrapper::New(str, (ICharSequence**)&subTitle);
+    CString::New(str, (ICharSequence**)&subTitle);
     return SetSubtitle(subTitle);
 }
 

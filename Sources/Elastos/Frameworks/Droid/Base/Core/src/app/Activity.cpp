@@ -46,7 +46,7 @@ using Elastos::Core::StringUtils;
 using Elastos::Core::IRunnable;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Thread;
 using Elastos::Utility::CObjectStringMap;
@@ -1728,7 +1728,7 @@ ECode Activity::DispatchPopulateAccessibilityEvent(
     String pkgName;
     GetPackageName(&pkgName);
     AutoPtr<ICharSequence> nameS;
-    CStringWrapper::New(pkgName, (ICharSequence**)&nameS);
+    CString::New(pkgName, (ICharSequence**)&nameS);
     event->SetPackageName(nameS);
 
     AutoPtr<IWindowManagerLayoutParams> params;
@@ -3425,7 +3425,7 @@ ECode Activity::OnCreateView(
         AutoPtr<ICharSequence> tagcs;
         if (tag.IsNull()) fview->SetTag(NULL);
         else {
-            CStringWrapper::New(tag, (ICharSequence**)&tagcs);
+            CString::New(tag, (ICharSequence**)&tagcs);
             fview->SetTag(tagcs);
         }
     }
@@ -3690,7 +3690,7 @@ ECode Activity::GetParentActivityIntent(
     FAIL_RETURN(mActivityInfo->GetParentActivityName(&parentName));
 
     AutoPtr<ICharSequence> seq;
-    FAIL_RETURN(CStringWrapper::New(parentName, (ICharSequence**)&seq));
+    FAIL_RETURN(CString::New(parentName, (ICharSequence**)&seq));
 
     if (TextUtils::IsEmpty(seq)) {
         return NOERROR;

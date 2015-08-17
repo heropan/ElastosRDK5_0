@@ -26,7 +26,7 @@ using Elastos::Core::CDouble;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IInteger32;
 using Elastos::Core::EIID_IChar32;
 using Elastos::Core::EIID_IBoolean;
@@ -583,7 +583,7 @@ AutoPtr<IInterface> CBundle::ReadValue(
         String v;
         source->ReadString(&v);
         AutoPtr<ICharSequence> obj;
-        CStringWrapper::New(v, (ICharSequence**)&obj);
+        CString::New(v, (ICharSequence**)&obj);
         return obj;
     }
     // case VAL_LIST:
@@ -891,7 +891,7 @@ ECode CBundle::KeySet(
     HashMap<String, AutoPtr<IInterface> >::Iterator it;
     for (it = mMap->Begin(); it != mMap->End(); ++it) {
         AutoPtr<ICharSequence> str;
-        CStringWrapper::New(it->mFirst, (ICharSequence**)&str);
+        CString::New(it->mFirst, (ICharSequence**)&str);
         (*result)->Add(str.Get());
     }
     return NOERROR;
@@ -1095,7 +1095,7 @@ ECode CBundle::PutString(
 
     Unparcel();
     AutoPtr<ICharSequence> obj;
-    ECode ec = CStringWrapper::New(value, (ICharSequence**)&obj);
+    ECode ec = CString::New(value, (ICharSequence**)&obj);
     if (SUCCEEDED(ec)) {
         (*mMap)[key] = obj.Get();
     }
@@ -1409,7 +1409,7 @@ ECode CBundle::PutStringArray(
         CArrayOf::New(EIID_IInterface, value->GetLength(), (IArrayOf**)&obj);
         for (Int32 i = 0; i < value->GetLength(); ++i) {
             AutoPtr<ICharSequence> sv;
-            CStringWrapper::New((*value)[i], (ICharSequence**)&sv);
+            CString::New((*value)[i], (ICharSequence**)&sv);
             obj->Put(i, sv.Get());
         }
     }

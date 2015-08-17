@@ -6,7 +6,7 @@
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::StringUtils;
 using Elastos::Net::IInetSocketAddress;

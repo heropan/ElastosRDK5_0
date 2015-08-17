@@ -11,7 +11,7 @@
 using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IByte;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;
@@ -244,7 +244,7 @@ ECode CContactsContractRawContacts::EntityIteratorImpl::GetEntityAndIncrementCur
                 case ICursor::FIELD_TYPE_FLOAT:
                 case ICursor::FIELD_TYPE_STRING:
                     FAIL_RETURN(cursor->GetString(columnIndex, &str))
-                    FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&cstr))
+                    FAIL_RETURN(CString::New(str, (ICharSequence**)&cstr))
                     FAIL_RETURN(cv->PutString(key, cstr))
                     break;
                 case ICursor::FIELD_TYPE_BLOB:

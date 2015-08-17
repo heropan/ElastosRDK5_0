@@ -55,7 +55,7 @@ ECode CHttpDateTime::Parse(
 
     AutoPtr<IMatcher> rfcMatcher;
     AutoPtr<ICharSequence> cTimesString;
-    CStringWrapper::New(timeString, (ICharSequence**)&cTimesString);
+    CString::New(timeString, (ICharSequence**)&cTimesString);
     HTTP_DATE_RFC_PATTERN->Matcher(cTimesString, (IMatcher**)&rfcMatcher);
     Boolean isFind;
     rfcMatcher->Find(&isFind);

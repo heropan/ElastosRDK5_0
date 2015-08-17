@@ -387,7 +387,7 @@ ECode RequestQueue::QueueRequest(
         for (; it != headers->End(); ++it) {
             String key = it->mFirst;
             AutoPtr<ICharSequence> value;
-            CStringWrapper::New(it->mSecond, (ICharSequence**)&value);
+            CString::New(it->mSecond, (ICharSequence**)&value);
             headersMap->Put(key, value);
         }
     }
@@ -443,7 +443,7 @@ ECode RequestQueue::QueueSynchronousRequest(
         for (; it != headers->End(); ++it) {
             String key = it->mFirst;
             AutoPtr<ICharSequence> value;
-            CStringWrapper::New(it->mSecond, (ICharSequence**)&value);
+            CString::New(it->mSecond, (ICharSequence**)&value);
             headersMap->Put(key, value);
         }
     }

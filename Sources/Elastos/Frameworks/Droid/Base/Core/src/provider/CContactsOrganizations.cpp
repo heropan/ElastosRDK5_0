@@ -4,7 +4,7 @@
 #include "net/Uri.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Text::TextUtils;
@@ -34,7 +34,7 @@ ECode CContactsOrganizations::GetDisplayLabel(
     /* [out] */ ICharSequence** lb)
 {
     AutoPtr<ICharSequence> display;
-    FAIL_RETURN(CStringWrapper::New(String(""), (ICharSequence**)&display))
+    FAIL_RETURN(CString::New(String(""), (ICharSequence**)&display))
 
     if (type != IContactsOrganizationColumns::TYPE_CUSTOM) {
         AutoPtr<ArrayOf<ICharSequence*> > labels;

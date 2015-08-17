@@ -8,7 +8,7 @@
 
 using Elastos::Utility::Logging::Slogger;
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Droid::View::Accessibility::IAccessibilityEventHelper;
@@ -132,7 +132,7 @@ ECode TwoStatePreference::SetSummaryOn(
     String summaryStr;
     context->GetString(summaryResId, &summaryStr);
     AutoPtr<ICharSequence> summary;
-    CStringWrapper::New(summaryStr, (ICharSequence**)&summary);
+    CString::New(summaryStr, (ICharSequence**)&summary);
     return SetSummaryOn(summary);
 }
 
@@ -165,7 +165,7 @@ ECode TwoStatePreference::SetSummaryOff(
     String summaryStr;
     context->GetString(summaryResId, &summaryStr);
     AutoPtr<ICharSequence> summary;
-    CStringWrapper::New(summaryStr, (ICharSequence**)&summary);
+    CString::New(summaryStr, (ICharSequence**)&summary);
     return SetSummaryOff(summary);
 }
 

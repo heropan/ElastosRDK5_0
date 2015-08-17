@@ -39,7 +39,7 @@ using Elastos::Droid::App::IPendingIntentHelper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {

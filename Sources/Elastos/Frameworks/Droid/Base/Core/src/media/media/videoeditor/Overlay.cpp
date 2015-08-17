@@ -3,7 +3,7 @@
 #include "MediaItem.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::CObjectStringMap;
 
 namespace Elastos {
@@ -190,7 +190,7 @@ ECode Overlay::SetUserAttribute(
     /* [in] */ const String& value)
 {
     AutoPtr<ICharSequence> csq;
-    CStringWrapper::New(value, (ICharSequence**)&csq);
+    CString::New(value, (ICharSequence**)&csq);
     return mUserAttributes->Put(name, (IInterface*)csq);
 }
 

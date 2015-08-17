@@ -2,7 +2,6 @@
 #ifndef __ELASTOS_SECURITY_MESSAGEDIGEST_H__
 #define __ELASTOS_SECURITY_MESSAGEDIGEST_H__
 
-#include "MessageDigestMacro.h"
 #include "MessageDigestSpi.h"
 
 using Elastos::IO::IByteBuffer;

@@ -87,7 +87,7 @@ using Elastos::Utility::Etl::HashSet;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::StringBuffer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::Character;
 using Elastos::Core::StringUtils;
@@ -666,7 +666,7 @@ ECode CMediaScanner::MyMediaScannerClient::GetGenreName(
         Int32 i = 0;
         for (; i < length; ++i) {
             AutoPtr<ICharSequence> charSequence;
-            CStringWrapper::New(genreTagValue, (ICharSequence**)&charSequence);
+            CString::New(genreTagValue, (ICharSequence**)&charSequence);
             Char32 c;
             charSequence->GetCharAt(i, &c);
             if (i == 0 && c == '(') {
@@ -680,7 +680,7 @@ ECode CMediaScanner::MyMediaScannerClient::GetGenreName(
             }
         }
         AutoPtr<ICharSequence> charSequence;
-        CStringWrapper::New(genreTagValue, (ICharSequence**)&charSequence);
+        CString::New(genreTagValue, (ICharSequence**)&charSequence);
         Char32 charAfterNumber;
         if (i < length) {
             charSequence->GetCharAt(i, &charAfterNumber);
@@ -834,9 +834,9 @@ AutoPtr<IContentValues> CMediaScanner::MyMediaScannerClient::ToValues()
     CContentValues::New((IContentValues**)&map);
 
     AutoPtr<ICharSequence> temp1, temp2, temp3;
-    CStringWrapper::New(mPath, (ICharSequence**)&temp1);
-    CStringWrapper::New(mTitle, (ICharSequence**)&temp2);
-    CStringWrapper::New(mMimeType, (ICharSequence**)&temp3);
+    CString::New(mPath, (ICharSequence**)&temp1);
+    CString::New(mTitle, (ICharSequence**)&temp2);
+    CString::New(mMimeType, (ICharSequence**)&temp3);
     AutoPtr<IInteger64> temp4, temp5;
     CInteger64::New(mLastModified, (IInteger64**)&temp4);
     CInteger64::New(mFileSize, (IInteger64**)&temp5);
@@ -867,21 +867,21 @@ AutoPtr<IContentValues> CMediaScanner::MyMediaScannerClient::ToValues()
         if (tempState) {
             if (!mArtist.IsNullOrEmpty()) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(mArtist, (ICharSequence**)&charSequence);
+                CString::New(mArtist, (ICharSequence**)&charSequence);
                 map->PutString(String("artist"), charSequence);
             } else {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(String("<unknown>"), (ICharSequence**)&charSequence);
+                CString::New(String("<unknown>"), (ICharSequence**)&charSequence);
                 map->PutString(String("artist"), charSequence);
             }
 
             if (!mAlbum.IsNullOrEmpty()) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(mAlbum, (ICharSequence**)&charSequence);
+                CString::New(mAlbum, (ICharSequence**)&charSequence);
                 map->PutString(String("album"), charSequence);
             } else {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(String("<unknown>"), (ICharSequence**)&charSequence);
+                CString::New(String("<unknown>"), (ICharSequence**)&charSequence);
                 map->PutString(String("album"), charSequence);
             }
 
@@ -890,7 +890,7 @@ AutoPtr<IContentValues> CMediaScanner::MyMediaScannerClient::ToValues()
             map->PutInt32(String("duration"), integer32);
             if (resolution != NULL) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(resolution, (ICharSequence**)&charSequence);
+                CString::New(resolution, (ICharSequence**)&charSequence);
                 map->PutString(resolution, charSequence);
             }
         }
@@ -900,39 +900,39 @@ AutoPtr<IContentValues> CMediaScanner::MyMediaScannerClient::ToValues()
         else if ((mediaFile->IsAudioFileType(mFileType, &tempState), tempState)) {
             if (!mArtist.IsNullOrEmpty()) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(mArtist, (ICharSequence**)&charSequence);
+                CString::New(mArtist, (ICharSequence**)&charSequence);
                 map->PutString(String("artist"), charSequence);
             } else {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(String("<unknown>"), (ICharSequence**)&charSequence);
+                CString::New(String("<unknown>"), (ICharSequence**)&charSequence);
                 map->PutString(String("artist"), charSequence);
             }
 
             if (!mAlbumArtist.IsNullOrEmpty()) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(mAlbumArtist, (ICharSequence**)&charSequence);
+                CString::New(mAlbumArtist, (ICharSequence**)&charSequence);
                 map->PutString(String("album_artist"), charSequence);
             } else {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(String("<unknown>"), (ICharSequence**)&charSequence);
+                CString::New(String("<unknown>"), (ICharSequence**)&charSequence);
                 map->PutString(String("album_artist"), charSequence);
             }
 
             if (!mAlbum.IsNullOrEmpty()) {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(mAlbum, (ICharSequence**)&charSequence);
+                CString::New(mAlbum, (ICharSequence**)&charSequence);
                 map->PutString(String("album"), charSequence);
             } else {
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(String("<unknown>"), (ICharSequence**)&charSequence);
+                CString::New(String("<unknown>"), (ICharSequence**)&charSequence);
                 map->PutString(String("album"), charSequence);
             }
 
             AutoPtr<ICharSequence> charSequence1;
-            CStringWrapper::New(String("composer"), (ICharSequence**)&charSequence1);
+            CString::New(String("composer"), (ICharSequence**)&charSequence1);
             map->PutString(String("composer"), charSequence1);
             AutoPtr<ICharSequence> charSequence2;
-            CStringWrapper::New(String("genre"), (ICharSequence**)&charSequence2);
+            CString::New(String("genre"), (ICharSequence**)&charSequence2);
             map->PutString(String("genre"), charSequence2);
 
             if (mYear != 0) {
@@ -980,7 +980,7 @@ AutoPtr<IUri> CMediaScanner::MyMediaScannerClient::EndFile( // throws RemoteExce
         values->GetAsString(String("_data"), &tempText);
         mediaFile->GetFileTitle(tempText, &title);
         AutoPtr<ICharSequence> charSequence;
-        CStringWrapper::New(title, (ICharSequence**)&charSequence);
+        CString::New(title, (ICharSequence**)&charSequence);
         values->PutString(String("title"), charSequence);
     }
     String album;
@@ -1001,7 +1001,7 @@ AutoPtr<IUri> CMediaScanner::MyMediaScannerClient::EndFile( // throws RemoteExce
             if (previousSlash != 0) {
                 album = album.Substring(previousSlash + 1, lastSlash);
                 AutoPtr<ICharSequence> charSequence;
-                CStringWrapper::New(album, (ICharSequence**)&charSequence);
+                CString::New(album, (ICharSequence**)&charSequence);
                 values->PutString(String("album"), charSequence);
             }
         }
@@ -2519,7 +2519,7 @@ ECode CMediaScanner::ProcessPlayList( // throws RemoteException
         }
     }
     AutoPtr<ICharSequence> charSequence;
-    CStringWrapper::New(name, (ICharSequence**)&charSequence);
+    CString::New(name, (ICharSequence**)&charSequence);
     values->PutString(String("name"), charSequence);
     AutoPtr<IInteger64> integer64;
     CInteger64::New(entry->mLastModified, (IInteger64**)&integer64);
@@ -2529,7 +2529,7 @@ ECode CMediaScanner::ProcessPlayList( // throws RemoteException
     CContentUris::AcquireSingleton((IContentUris**)&contentUris);
     if (rowId == 0) {
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New(path, (ICharSequence**)&seq);
+        CString::New(path, (ICharSequence**)&seq);
         values->PutString(String("_data"), seq);
 
         mMediaProvider->Insert(mPlaylistsUri, values, (IUri**)&uri);

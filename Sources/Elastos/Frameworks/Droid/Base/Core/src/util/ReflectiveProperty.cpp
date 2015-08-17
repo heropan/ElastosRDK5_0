@@ -18,7 +18,7 @@ using Elastos::Core::CChar8;
 using Elastos::Core::IChar16;
 using Elastos::Core::CChar16;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 
@@ -344,7 +344,7 @@ ECode ReflectiveProperty::Get(
             list->SetOutputArgumentOfStringPtr(0, &v);
             FAIL_RETURN(mGetter->Invoke(obj, list));
             AutoPtr<ICharSequence> rTmp;
-            CStringWrapper::New(v, (ICharSequence**)&rTmp);
+            CString::New(v, (ICharSequence**)&rTmp);
             *rst = rTmp;
             REFCOUNT_ADD(*rst);
             return NOERROR;

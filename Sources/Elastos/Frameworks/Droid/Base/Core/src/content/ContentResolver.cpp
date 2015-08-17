@@ -26,7 +26,7 @@ using Elastos::Core::IBoolean;
 using Elastos::Core::IFloat;
 using Elastos::Core::IDouble;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::IO::IFile;

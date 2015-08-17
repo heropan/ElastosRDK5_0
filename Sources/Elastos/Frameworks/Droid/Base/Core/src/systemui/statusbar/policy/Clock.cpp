@@ -11,7 +11,7 @@
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Text::ISimpleDateFormat;
 using Elastos::Text::CSimpleDateFormat;
@@ -297,7 +297,7 @@ AutoPtr<ICharSequence> Clock::GetSmallTime()
         Int32 magic2 = result.IndexOf(MAGIC2);
         if (magic1 >= 0 && magic2 > magic1) {
             AutoPtr<ICharSequence> seq;
-            CStringWrapper::New(result, (ICharSequence**)&seq);
+            CString::New(result, (ICharSequence**)&seq);
             AutoPtr<ISpannableStringBuilder> formatted;
             CSpannableStringBuilder::New(seq, (ISpannableStringBuilder**)&formatted);
             if (AM_PM_STYLE == AM_PM_STYLE_GONE) {
@@ -320,7 +320,7 @@ AutoPtr<ICharSequence> Clock::GetSmallTime()
     }
 
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(result, (ICharSequence**)&seq);
+    CString::New(result, (ICharSequence**)&seq);
     return seq;
 }
 

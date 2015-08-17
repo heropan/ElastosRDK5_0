@@ -2,7 +2,7 @@
 #include "text/CSpannableStringBuilder.h"
 #include "text/method/CDigitsKeyListener.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::Method::CDigitsKeyListener;
 
 namespace Elastos {

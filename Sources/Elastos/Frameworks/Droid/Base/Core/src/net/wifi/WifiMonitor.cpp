@@ -17,7 +17,7 @@
 #include "util/ArrayUtils.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
@@ -713,7 +713,7 @@ void WifiMonitor::NotifyNetworkStateChange(
     /* [in] */ Int32 netId)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(BSSID, (ICharSequence**)&cs);
+    CString::New(BSSID, (ICharSequence**)&cs);
     if (newState == NetworkInfoDetailedState_CONNECTED) {
         AutoPtr<IMessage> m = mStateMachine->ObtainMessage(NETWORK_CONNECTION_EVENT,
                 netId, 0, cs);

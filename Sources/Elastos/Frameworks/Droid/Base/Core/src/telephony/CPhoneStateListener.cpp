@@ -3,7 +3,7 @@
 #include "CCellLocationHelper.h"
 #include "privacy/CPrivacySettingsManager.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Internal::Telephony::EIID_IIPhoneStateListener;
 using Elastos::Droid::Os::IMessage;
@@ -119,14 +119,14 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallStateChanged(
         if (pSet != NULL && iIcs != IPrivacySettings::REAL) {
             output = String("");
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(output, (ICharSequence**)&cs);
+            CString::New(output, (ICharSequence**)&cs);
             AutoPtr<IMessage> msg;
             mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);            msg->SendToTarget();
     //                    Log.d(TAG, "onCallStateChanged BLOCK - package:" + mHost->mPackageName + " uid:" + uid + " state:" + state + " output: " + output);
             pSetMan->Notification(mHost->mPackageName, IPrivacySettings::EMPTY, IPrivacySettings::DATA_INCOMING_CALL, output);
         } else {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(incomingNumber, (ICharSequence**)&cs);
+            CString::New(incomingNumber, (ICharSequence**)&cs);
             AutoPtr<IMessage> msg;
             mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
             msg->SendToTarget();
@@ -136,7 +136,7 @@ ECode CPhoneStateListener::CPhoneStateListenerCallback::OnCallStateChanged(
     } else {
     //                Log.d(TAG, "onCallStateChanged REAL 2 - package:" + mHost->mPackageName + " uid:" + uid + " state:" + state + " output: " + incomingNumber);
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(incomingNumber, (ICharSequence**)&cs);
+        CString::New(incomingNumber, (ICharSequence**)&cs);
         AutoPtr<IMessage> msg;
         mHost->mHandler->ObtainMessage(IPhoneStateListener::LISTEN_CALL_STATE, state, 0, reinterpret_cast<IInterface*>(cs.Get()), (IMessage**)&msg);
         msg->SendToTarget();

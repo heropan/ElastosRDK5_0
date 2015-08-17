@@ -9,7 +9,7 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IBoolean;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnMultiChoiceClickListener;
 using Elastos::Droid::Content::Res::IResources;
@@ -221,7 +221,7 @@ ECode MultiCheckPreference::GetSummary(
         return DialogPreference::GetSummary(summary);
     }
     else {
-        return CStringWrapper::New(mSummary, summary);
+        return CString::New(mSummary, summary);
     }
 }
 
@@ -309,7 +309,7 @@ ECode MultiCheckPreference::OnGetDefaultValue(
     String str;
     a->GetString(index, &str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
     REFCOUNT_ADD(*value)
     return NOERROR;

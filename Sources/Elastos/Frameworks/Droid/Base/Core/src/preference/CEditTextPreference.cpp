@@ -5,7 +5,7 @@
 #include "widget/CEditText.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::View::IViewParent;
 using Elastos::Droid::Widget::CEditText;
@@ -88,7 +88,7 @@ ECode CEditTextPreference::OnBindDialogView(
 
     AutoPtr<IEditText> editText = mEditText;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(mText, (ICharSequence**)&cs);
+    CString::New(mText, (ICharSequence**)&cs);
     editText->SetText(cs);
 
     AutoPtr<IViewParent> oldParent;
@@ -145,7 +145,7 @@ ECode CEditTextPreference::OnGetDefaultValue(
     String str;
     a->GetString(index, &str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
     REFCOUNT_ADD(*value)
     return NOERROR;

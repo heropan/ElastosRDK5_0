@@ -24,7 +24,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Graphics::CPaint;
 using Elastos::Droid::Graphics::IPaint;
@@ -271,7 +271,7 @@ AutoPtr<ICharSequence> StringBlock::Get(
     String str = NativeGetString(mNative, idx);
     assert(!str.IsNull());
     AutoPtr<ICharSequence> res;
-    CStringWrapper::New(str, (ICharSequence**)&res);
+    CString::New(str, (ICharSequence**)&res);
     AutoPtr< ArrayOf<Int32> > style = NativeGetStyle(mNative, idx);
     if (sLocalLOGV) {
         Slogger::V(TAG, "Got string: %s", (const char*)str);
@@ -354,7 +354,7 @@ AutoPtr<ICharSequence> StringBlock::ApplyStyles(
     if (style->GetLength() == 0) {
         assert(!str.IsNull());
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         return cs;
     }
 

@@ -16,7 +16,7 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::CIntentFilter;
 using Elastos::Droid::Content::Res::CConfiguration;
 using Elastos::Droid::Graphics::IPixelFormat;
@@ -480,7 +480,7 @@ void WallpaperService::Engine::UpdateSurface(
                 mLayout->SetType(type);
                 mLayout->SetGravity(IGravity::START|IGravity::TOP);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(String("WallpaperService"), (ICharSequence**)&cs);
+                CString::New(String("WallpaperService"), (ICharSequence**)&cs);
                 mLayout->SetTitle(cs);
                 mLayout->SetWindowAnimations(R::style::Animation_Wallpaper);
                 CInputChannel::New((IInputChannel**)&mInputChannel);

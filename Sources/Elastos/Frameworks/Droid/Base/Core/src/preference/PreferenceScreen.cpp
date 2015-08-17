@@ -7,7 +7,7 @@
 #include "widget/CListView.h"
 #include "CPreferenceScreenSavedState.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::App::CDialog;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Widget::CListView;

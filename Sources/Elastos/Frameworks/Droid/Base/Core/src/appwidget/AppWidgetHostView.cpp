@@ -15,7 +15,7 @@
 #include "util/CDisplayMetrics.h"
 #include "R.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::CDisplayMetrics;
 using Elastos::Droid::Content::Pm::IPackageManager;
@@ -138,7 +138,7 @@ ECode AppWidgetHostView::SetAppWidget(
         String labelStr;
         info->GetLabel(&labelStr);
         AutoPtr<ICharSequence> label;
-        CStringWrapper::New(labelStr, (ICharSequence**)&label);
+        CString::New(labelStr, (ICharSequence**)&label);
         SetContentDescription(label);
     }
     return NOERROR;
@@ -654,7 +654,7 @@ ECode AppWidgetHostView::OnInitializeAccessibilityNodeInfo(
 {
     FrameLayout::OnInitializeAccessibilityNodeInfo(info);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("CAppWidgetHostView"), (ICharSequence**)&seq);
+    CString::New(String("CAppWidgetHostView"), (ICharSequence**)&seq);
     info->SetClassName(seq);
     return NOERROR;
 }

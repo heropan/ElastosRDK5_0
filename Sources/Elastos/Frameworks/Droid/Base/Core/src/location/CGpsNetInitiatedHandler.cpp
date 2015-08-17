@@ -339,7 +339,7 @@ void CGpsNetInitiatedHandler::SetNiNotification(
     mNiNotification->SetFlags(INotification::FLAG_ONGOING_EVENT | INotification::FLAG_AUTO_CANCEL);
     String tickerTemp = GetNotifTicker(notif, mContext);
     AutoPtr<ICharSequence> ticker;
-    CStringWrapper::New(tickerTemp, (ICharSequence**)&ticker);
+    CString::New(tickerTemp, (ICharSequence**)&ticker);
     mNiNotification->SetTickerText(ticker);
 
     // if not to popup dialog immediately, pending intent will open the dialog
@@ -355,8 +355,8 @@ void CGpsNetInitiatedHandler::SetNiNotification(
     AutoPtr<IPendingIntent> pi;
     helper->GetBroadcast(mContext, 0, intent, 0, (IPendingIntent**)&pi);
     AutoPtr<ICharSequence> titleTemp, messageTemp;
-    CStringWrapper::New(title, (ICharSequence**)&titleTemp);
-    CStringWrapper::New(message, (ICharSequence**)&messageTemp);
+    CString::New(title, (ICharSequence**)&titleTemp);
+    CString::New(message, (ICharSequence**)&messageTemp);
     mNiNotification->SetLatestEventInfo(mContext, titleTemp, messageTemp, pi);
 
     AutoPtr<IUserHandle> ALL;

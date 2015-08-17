@@ -8,6 +8,7 @@ include $(MAKEDIR)/../../sources.inc
 INCLUDES += $(PREBUILD_INC)/sys;
 INCLUDES += ../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../inc/elastos;
+INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 INCLUDES += $(MAKEDIR)/../../../inc/elastos/security;
 #INCLUDES += $(MAKEDIR)/../../../inc/elastos/core;
 #INCLUDES += $(MAKEDIR)/../../../inc/elastos/math;
@@ -21,7 +22,7 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/security;
 #INCLUDES += $(MAKEDIR)/../../../inc/libcore/icu;
 #INCLUDES += $(MAKEDIR)/../../../inc/libcore/utility;
 
-#SOURCES += MessageDigestSpi.cpp
+SOURCES += MessageDigestSpi.cpp
 #SOURCES += MessageDigest.cpp
 
 #LIBRARIES += concurrent/concurrent.lib

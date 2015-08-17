@@ -3,7 +3,7 @@
 #include "app/ActivityManagerNative.h"
 #include "util/CTypedValue.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IImageView;
 using Elastos::Droid::Utility::ITypedValue;
@@ -137,7 +137,7 @@ void CHeavyWeightSwitcherActivity::SetIconAndText(
     /* [in] */ Int32 descriptionStr)
 {
     AutoPtr<ICharSequence> appName;
-    CStringWrapper::New(String(""), (ICharSequence**)&appName);
+    CString::New(String(""), (ICharSequence**)&appName);
     AutoPtr<IDrawable> appIcon;
     if (mCurApp != NULL) {
 //         try {
@@ -158,7 +158,7 @@ void CHeavyWeightSwitcherActivity::SetIconAndText(
     appNameArray->Set(0, appName);
     GetString(actionStr, appNameArray, &str);
     AutoPtr<ICharSequence> strSequence;
-    CStringWrapper::New(str, (ICharSequence**)&strSequence);
+    CString::New(str, (ICharSequence**)&strSequence);
     SetText(actionId, strSequence);
     AutoPtr<ICharSequence> txt;
     GetText(descriptionStr, (ICharSequence**)&txt);

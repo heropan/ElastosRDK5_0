@@ -21,7 +21,7 @@ using Elastos::Core::CObjectContainer;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::CInteger64;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::EIID_IRunnable;
@@ -625,8 +625,8 @@ ECode CAccountManager::GetAuthTokenByTypeAndFeaturesTask::Run(
         result->GetString(IAccountManager::KEY_ACCOUNT_NAME, &accountName);
         result->GetString(IAccountManager::KEY_ACCOUNT_TYPE, &accountType);
         AutoPtr<ICharSequence> cs1, cs2;
-        CStringWrapper::New(accountName, (ICharSequence**)&cs1);
-        CStringWrapper::New(accountType, (ICharSequence**)&cs2);
+        CString::New(accountName, (ICharSequence**)&cs1);
+        CString::New(accountType, (ICharSequence**)&cs2);
         if (TextUtils::IsEmpty(cs1) || TextUtils::IsEmpty(cs2)) {
             Slogger::E(TAG, "account not in result");
             return E_AUTHENTICATOR_EXCEPTION;
@@ -715,7 +715,7 @@ AutoPtr<IBundle> CAccountManager::SanitizeResult(
             String value;
             result->GetString(KEY_AUTHTOKEN, &value);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(value, (ICharSequence**)&cs);
+            CString::New(value, (ICharSequence**)&cs);
             if (!TextUtils::IsEmpty(cs)) {
                 AutoPtr<CBundle> newResult;
                 CBundle::NewByFriend((CBundle**)&newResult);
@@ -881,7 +881,7 @@ ECode CAccountManager::Future2Task_GetAuthTokenLabel::BundleToResult(
     String s;
     bundle->GetString(IAccountManager::KEY_AUTH_TOKEN_LABEL, &s);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(s, (ICharSequence**)&cs);
+    CString::New(s, (ICharSequence**)&cs);
     *result = (IInterface*)cs;
     REFCOUNT_ADD(*result);
     return NOERROR;

@@ -14,7 +14,7 @@ using Elastos::Core::CFloat;
 using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IBoolean;
 using Elastos::Core::IFloat;
 using Elastos::Core::IInteger32;
@@ -135,7 +135,7 @@ ECode SharedPreferencesImpl::EditorImpl::PutString(
 {
     AutoLock lock(this);
     AutoPtr<ICharSequence> pValue;
-    CStringWrapper::New(value, (ICharSequence**)&pValue);
+    CString::New(value, (ICharSequence**)&pValue);
     mModified[key] = pValue;
     return NOERROR;
 }
@@ -629,7 +629,7 @@ ECode SharedPreferencesImpl::GetAll(
     HashMap<String, AutoPtr<IInterface> >::Iterator it;
     for (it = mMap->Begin(); it != mMap->End(); ++it) {
         AutoPtr<ICharSequence> key;
-        CStringWrapper::New(it->mFirst, (ICharSequence**)&key);
+        CString::New(it->mFirst, (ICharSequence**)&key);
         (*result)->Put(key, it->mSecond);
     }
     return NOERROR;
@@ -922,7 +922,7 @@ void SharedPreferencesImpl::WriteToFile(
     HashMap<String, AutoPtr<IInterface> >::Iterator ator = mcr->mMapToWriteToDisk->Begin();
     for (; ator != mcr->mMapToWriteToDisk->End(); ++ator) {
         AutoPtr<ICharSequence> key;
-        CStringWrapper::New(ator->mFirst, (ICharSequence**)&key);
+        CString::New(ator->mFirst, (ICharSequence**)&key);
         map->Put(key, ator->mSecond);
     }
 

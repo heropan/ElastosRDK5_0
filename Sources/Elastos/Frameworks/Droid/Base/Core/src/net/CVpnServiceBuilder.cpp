@@ -141,7 +141,7 @@ ECode CVpnServiceBuilder::AddDnsServer(
     address->GetHostAddress(&hostAddress);
 
     AutoPtr<ICharSequence> elmt;
-    CStringWrapper::New(hostAddress, (IcharSequence**)&elmt);
+    CString::New(hostAddress, (IcharSequence**)&elmt);
     return dnsServers->Add(elmt->Get());
 }
 
@@ -169,7 +169,7 @@ ECode CVpnServiceBuilder::AddSearchDomain(
     }
 
     AutoPtr<ICharSequence> elmt;
-    CStringWrapper::New(dnsDomain, (IcharSequence**)&elmt);
+    CString::New(dnsDomain, (IcharSequence**)&elmt);
     return searchDomains->Add(elmt->Get());
 }
 

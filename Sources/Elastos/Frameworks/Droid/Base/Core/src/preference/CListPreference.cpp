@@ -4,7 +4,7 @@
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnClickListener;
 using Elastos::Droid::Content::Res::IResources;
@@ -166,7 +166,7 @@ ECode CListPreference::GetSummary(
 
     String str;
     str.AppendFormat(mSummary.string(), entry.Get());
-    return CStringWrapper::New(str, summary);
+    return CString::New(str, summary);
 }
 
 ECode CListPreference::SetSummary(
@@ -300,7 +300,7 @@ ECode CListPreference::OnGetDefaultValue(
     String str;
     a->GetString(index, &str);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     *value = (IInterface*)cs;
     REFCOUNT_ADD(*value)
     return NOERROR;

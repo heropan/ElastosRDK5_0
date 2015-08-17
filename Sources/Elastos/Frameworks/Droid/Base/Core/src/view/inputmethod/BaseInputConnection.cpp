@@ -11,7 +11,7 @@
 #include "os/SystemClock.h"
 #include "R.h"
 //#include "utils/ArrayUtils.h"
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Content::Res::IResourcesTheme;
 using Elastos::Droid::Os::SystemClock;
@@ -205,7 +205,7 @@ AutoPtr<IEditable> BaseInputConnection::GetEditable()
         ASSERT_SUCCEEDED(CEditableFactory::AcquireSingleton(
             (IEditableFactory**)&editableFactory));
         AutoPtr<ICharSequence> tmpStr;
-        CStringWrapper::New(String(""), (ICharSequence**)&tmpStr);
+        CString::New(String(""), (ICharSequence**)&tmpStr);
         editableFactory->NewEditable(tmpStr, (IEditable**)&mEditable);
         Selection::SetSelection(mEditable, 0);
     }
@@ -377,7 +377,7 @@ AutoPtr<ICharSequence> BaseInputConnection::GetTextBeforeCursor(
 
     if (a <= 0) {
         AutoPtr<ICharSequence> text;
-        CStringWrapper::New(String(""), (ICharSequence**)&text);
+        CString::New(String(""), (ICharSequence**)&text);
         return text;
     }
 
@@ -393,7 +393,7 @@ AutoPtr<ICharSequence> BaseInputConnection::GetTextBeforeCursor(
 
     String str = TextUtils::Substring(content, a - length, a);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(str, (ICharSequence**)&text);
+    CString::New(str, (ICharSequence**)&text);
     return text;
 }
 
@@ -422,7 +422,7 @@ AutoPtr<ICharSequence> BaseInputConnection::GetSelectedText(
 
     String str = TextUtils::Substring(content, a, b);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(str, (ICharSequence**)&text);
+    CString::New(str, (ICharSequence**)&text);
     return text;
 }
 
@@ -461,7 +461,7 @@ AutoPtr<ICharSequence> BaseInputConnection::GetTextAfterCursor(
 
     String str = TextUtils::Substring(content, b, b + length);
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(str, (ICharSequence**)&text);
+    CString::New(str, (ICharSequence**)&text);
     return text;
 }
 

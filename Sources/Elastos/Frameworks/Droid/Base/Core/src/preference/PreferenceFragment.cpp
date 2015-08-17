@@ -6,7 +6,7 @@
 #include "R.h"
 #include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::App::IActivity;
 using Elastos::Droid::Os::IBundle;
@@ -297,7 +297,7 @@ ECode PreferenceFragment::FindPreference(
         return NOERROR;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(key, (ICharSequence**)&cs);
+    CString::New(key, (ICharSequence**)&cs);
     return mPreferenceManager->FindPreference(cs, preference);
 }
 

@@ -6,7 +6,7 @@
 #include "text/style/CURLSpan.h"
 #include <elastos/core/StringBuilder.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::IO::IFileInputStream;
 using Elastos::IO::IInputStream;
@@ -93,7 +93,7 @@ ECode CClipDataItem::CoerceToText(
         if (ec == (ECode)E_FILE_NOT_FOUND_EXCEPTION) {
             String tmp;
             uri->ToString(&tmp);
-            return CStringWrapper::New(tmp, text);
+            return CString::New(tmp, text);
         }
 
         FAIL_RETURN(descr->CreateInputStream((IFileInputStream**)&stream));
@@ -146,11 +146,11 @@ ECode CClipDataItem::CoerceToText(
     if (intent != NULL) {
         String str;
         intent->ToUri(IIntent::URI_INTENT_SCHEME, &str);
-        return CStringWrapper::New(str, text);
+        return CString::New(str, text);
     }
 
     // Shouldn't get here, but just in case...
-    return CStringWrapper::New(String(""), text);
+    return CString::New(String(""), text);
 }
 
 ECode CClipDataItem::CoerceToStyledText(
@@ -297,20 +297,20 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
                         return NOERROR;
                     }
                     else {
-                        return CStringWrapper::New(text, cs);
+                        return CString::New(text, cs);
                     }
                 }
                 else {
                     // We loaded HTML formatted text and that is what
                     // the caller wants, just return it.
-                    return CStringWrapper::New(text, cs);
+                    return CString::New(text, cs);
                 }
             }
 
             if (styled) {
                 // We loaded plain text and the caller wants styled
                 // text, that is all we have so return it.
-                return CStringWrapper::New(text, cs);
+                return CString::New(text, cs);
             }
             else {
                 // We loaded plain text and the caller wants HTML
@@ -320,9 +320,9 @@ ECode CClipDataItem::CoerceToHtmlOrStyledText(
                 }
 
                 AutoPtr<ICharSequence> tmp;
-                CStringWrapper::New(text, (ICharSequence**)&tmp);
+                CString::New(text, (ICharSequence**)&tmp);
                 String value = Html::EscapeHtml(tmp);
-                return CStringWrapper::New(value, cs);
+                return CString::New(value, cs);
             }
 
             // } catch (FileNotFoundException e) {
@@ -372,7 +372,7 @@ EXIT:
         else {
             String htmlText;
             FAIL_RETURN(UriToHtml(str, &htmlText));
-            return CStringWrapper::New(htmlText, cs);
+            return CString::New(htmlText, cs);
         }
     }
 
@@ -387,12 +387,12 @@ EXIT:
         else {
             String htmlText;
             FAIL_RETURN(UriToHtml(uri, &htmlText));
-            return CStringWrapper::New(htmlText, cs);
+            return CString::New(htmlText, cs);
         }
     }
 
     // Shouldn't get here, but just in case...
-    return CStringWrapper::New(String(""), cs);
+    return CString::New(String(""), cs);
 }
 
 ECode CClipDataItem::ToString(
@@ -514,7 +514,7 @@ ECode CClipDataItem::UriToHtml(
 {
     VALIDATE_NOT_NULL(htmlText)
     AutoPtr<ICharSequence> uriSeq;
-    CStringWrapper::New(uri, (ICharSequence**)&uriSeq);
+    CString::New(uri, (ICharSequence**)&uriSeq);
     StringBuilder builder(256);
     builder += "<a href=\"";
     builder += Html::EscapeHtml(uriSeq);
@@ -534,7 +534,7 @@ ECode CClipDataItem::UriToStyledText(
     AutoPtr<ISpannableStringBuilder> builder;
     FAIL_RETURN(CSpannableStringBuilder::New((ISpannableStringBuilder**)&builder));
     AutoPtr<ICharSequence> tmpUri;
-    FAIL_RETURN(CStringWrapper::New(uri, (ICharSequence**)&tmpUri));
+    FAIL_RETURN(CString::New(uri, (ICharSequence**)&tmpUri));
     FAIL_RETURN(builder->Append(tmpUri));
 
     AutoPtr<IURLSpan> span;

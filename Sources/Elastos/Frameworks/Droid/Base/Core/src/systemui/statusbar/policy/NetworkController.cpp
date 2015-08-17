@@ -13,7 +13,7 @@
 
 using Elastos::Droid::R;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Provider::Settings;
 using Elastos::Droid::Provider::ISettingsGlobal;
@@ -1482,7 +1482,7 @@ ECode NetworkController::RefreshViews()
                 v->SetVisibility(IView::VISIBLE);
                 v->SetImageResource(mPhoneSignalIconId);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(mContentDescriptionPhoneSignal, (ICharSequence**)&cs);
+                CString::New(mContentDescriptionPhoneSignal, (ICharSequence**)&cs);
                 v->SetContentDescription(cs);
             }
         }
@@ -1496,7 +1496,7 @@ ECode NetworkController::RefreshViews()
             AutoPtr<IImageView> v = *it;
             v->SetImageResource(mDataDirectionIconId);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(mContentDescriptionDataType, (ICharSequence**)&cs);
+            CString::New(mContentDescriptionDataType, (ICharSequence**)&cs);
             v->SetContentDescription(cs);
         }
     }
@@ -1514,7 +1514,7 @@ ECode NetworkController::RefreshViews()
                     v->SetVisibility(IView::VISIBLE);
                     v->SetImageResource(mWifiIconId);
                     AutoPtr<ICharSequence> cs;
-                    CStringWrapper::New(mContentDescriptionWifi, (ICharSequence**)&cs);
+                    CString::New(mContentDescriptionWifi, (ICharSequence**)&cs);
                     v->SetContentDescription(cs);
                 }
             }
@@ -1533,7 +1533,7 @@ ECode NetworkController::RefreshViews()
                 v->SetVisibility(IView::VISIBLE);
                 v->SetImageResource(mWimaxIconId);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(mContentDescriptionWimax, (ICharSequence**)&cs);
+                CString::New(mContentDescriptionWimax, (ICharSequence**)&cs);
                 v->SetContentDescription(cs);
             }
        }
@@ -1547,7 +1547,7 @@ ECode NetworkController::RefreshViews()
             AutoPtr<IImageView> v = *it;
             v->SetImageResource(combinedSignalIconId);
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(mContentDescriptionCombinedSignal, (ICharSequence**)&cs);
+            CString::New(mContentDescriptionCombinedSignal, (ICharSequence**)&cs);
             v->SetContentDescription(cs);
         }
     }
@@ -1564,7 +1564,7 @@ ECode NetworkController::RefreshViews()
                 v->SetVisibility(IView::VISIBLE);
                 v->SetImageResource(mDataTypeIconId);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(mContentDescriptionDataType, (ICharSequence**)&cs);
+                CString::New(mContentDescriptionDataType, (ICharSequence**)&cs);
                 v->SetContentDescription(cs);
             }
         }
@@ -1585,7 +1585,7 @@ ECode NetworkController::RefreshViews()
                 v->SetVisibility(IView::VISIBLE);
                 v->SetImageResource(combinedActivityIconId);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(mContentDescriptionDataType, (ICharSequence**)&cs);
+                CString::New(mContentDescriptionDataType, (ICharSequence**)&cs);
                 v->SetContentDescription(cs);
             }
         }
@@ -1598,7 +1598,7 @@ ECode NetworkController::RefreshViews()
         for(; it != mCombinedLabelViews.End(); ++it) {
             AutoPtr<ITextView> v = *it;
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(combinedLabel, (ICharSequence**)&cs);
+            CString::New(combinedLabel, (ICharSequence**)&cs);
             v->SetText(cs);
         }
     }
@@ -1608,7 +1608,7 @@ ECode NetworkController::RefreshViews()
     for(; it != mWifiLabelViews.End(); ++it) {
         AutoPtr<ITextView> v = *it;
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(wifiLabel, (ICharSequence**)&cs);
+        CString::New(wifiLabel, (ICharSequence**)&cs);
         v->SetText(cs);
         if (wifiLabel.Equals("")) {
             v->SetVisibility(IView::GONE);
@@ -1622,7 +1622,7 @@ ECode NetworkController::RefreshViews()
     for(; ite != mMobileLabelViews.End(); ++ite) {
         AutoPtr<ITextView> v = *ite;
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(mobileLabel, (ICharSequence**)&cs);
+        CString::New(mobileLabel, (ICharSequence**)&cs);
         v->SetText(cs);
         if (mobileLabel.Equals("")) {
             v->SetVisibility(IView::GONE);
@@ -1639,7 +1639,7 @@ ECode NetworkController::RefreshViews()
             v->SetVisibility(IView::GONE);
         } else {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(mobileLabel, (ICharSequence**)&cs);
+            CString::New(mobileLabel, (ICharSequence**)&cs);
             v->SetText(cs);
             v->SetVisibility(IView::VISIBLE);
         }

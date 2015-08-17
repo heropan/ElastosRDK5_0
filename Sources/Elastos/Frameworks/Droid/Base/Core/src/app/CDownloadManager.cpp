@@ -15,7 +15,7 @@
 
 using Elastos::IO::CFile;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
@@ -908,10 +908,10 @@ ECode CDownloadManager::AddCompletedDownload(
     AutoPtr<IDownloadManagerRequest> request;
     CDownloadManagerRequest::New(NON_DOWNLOADMANAGER_DOWNLOAD, (IDownloadManagerRequest**)&request);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(title, (ICharSequence**)&cs);
+    CString::New(title, (ICharSequence**)&cs);
     request->SetTitle(cs);
     cs = NULL;
-    CStringWrapper::New(description, (ICharSequence**)&cs);
+    CString::New(description, (ICharSequence**)&cs);
     request->SetDescription(cs);
     request->SetMimeType(mimeType);
     AutoPtr<IContentValues> values = ((CDownloadManagerRequest*)request.Get())->ToContentValues(String(NULL));
@@ -919,7 +919,7 @@ ECode CDownloadManager::AddCompletedDownload(
     CInteger32::New(IDownloadsImpl::DESTINATION_NON_DOWNLOADMANAGER_DOWNLOAD, (IInteger32**)&value);
     values->PutInt32(IDownloadsImpl::COLUMN_DESTINATION, value);
     cs = NULL;
-    CStringWrapper::New(path, (ICharSequence**)&cs);
+    CString::New(path, (ICharSequence**)&cs);
     values->PutString(IDownloadsImpl::DATA, cs);
     value = NULL;
     CInteger32::New(IDownloadsImpl::STATUS_SUCCESS, (IInteger32**)&value);

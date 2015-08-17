@@ -401,7 +401,7 @@ ECode CHeaders::GetSetCookie(
     for (it = mCookies.Begin(); it != mCookies.End(); ++it) {
         String s = *it;
         cs = NULL;
-        CStringWrapper::New(s, (ICharSequence**)&cs);
+        CString::New(s, (ICharSequence**)&cs);
         (*cookie)->Add(cs);
     }
     return NOERROR;

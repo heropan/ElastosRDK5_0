@@ -25,7 +25,7 @@ using Elastos::Utility::IDate;
 using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::ITimeZone;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -46,7 +46,7 @@ using Elastos::Droid::View::Accessibility::EIID_IAccessibilityEventSource;
 using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
 using Elastos::Droid::Content::Res::IConfiguration;
 using Elastos::Droid::Database::IDataSetObserver;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {

@@ -33,7 +33,7 @@
 #include "R.h"
 #include "Manifest.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 
@@ -448,7 +448,7 @@ PackageParser::Component<II>::Component(
         if (targetSdkVersion >= Build::VERSION_CODES::FROYO) {
             String sname;
             args->mSa->GetNonConfigurationString(args->mProcessRes, 0, &sname);
-            CStringWrapper::New(sname, (ICharSequence**)&pname);
+            CString::New(sname, (ICharSequence**)&pname);
         }
         else {
             // Some older apps have been seen to use a resource reference
@@ -456,7 +456,7 @@ PackageParser::Component<II>::Component(
             // need to continue to do this for them so they don't break.
             String sname;
             args->mSa->GetNonResourceString(args->mProcessRes, &sname);
-            CStringWrapper::New(sname, (ICharSequence**)&pname);
+            CString::New(sname, (ICharSequence**)&pname);
         }
         String appPackageName;
         String appProcName;
@@ -3273,7 +3273,7 @@ Boolean PackageParser::ParseApplication(
             R::styleable::AndroidManifestApplication_taskAffinity, &str);
     }
     AutoPtr<ICharSequence> cStr;
-    CStringWrapper::New(str, (ICharSequence**)&cStr);
+    CString::New(str, (ICharSequence**)&cStr);
     String aiTask = BuildTaskAffinityName(pkgName, pkgName, cStr, outError);
     ai->SetTaskAffinity(aiTask);
 
@@ -3293,7 +3293,7 @@ Boolean PackageParser::ParseApplication(
                 &pname);
         }
         AutoPtr<ICharSequence> cpname;
-        CStringWrapper::New(pname, (ICharSequence**)&cpname);
+        CString::New(pname, (ICharSequence**)&cpname);
         String aiPName = BuildProcessName(pkgName, pkgName/*String(NULL)*/, cpname,
                 flags, mSeparateProcesses, outError);
         ai->SetProcessName(aiPName);
@@ -3637,7 +3637,7 @@ AutoPtr<PackageParser::Activity> PackageParser::ParseActivity(
     sa->GetNonConfigurationString(
         R::styleable::AndroidManifestActivity_taskAffinity, 0, &str);
     AutoPtr<ICharSequence> cStr;
-    CStringWrapper::New(str, (ICharSequence**)&cStr);
+    CString::New(str, (ICharSequence**)&cStr);
     String ownerPName, ownerTaskAffinity;
     owner->mApplicationInfo->GetPackageName(&ownerPName);
     owner->mApplicationInfo->GetTaskAffinity(&ownerTaskAffinity);

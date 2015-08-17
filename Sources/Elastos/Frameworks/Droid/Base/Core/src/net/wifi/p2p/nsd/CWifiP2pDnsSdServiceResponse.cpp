@@ -6,7 +6,7 @@
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IInputStream;
 using Elastos::Utility::Logging::Slogger;
@@ -363,7 +363,7 @@ ECode CWifiP2pDnsSdServiceResponse::ReadTxtData(
             return NOERROR;
         }
         AutoPtr<ICharSequence> seq;
-        CStringWrapper::New((*keyVal)[1], (ICharSequence**)&seq);
+        CString::New((*keyVal)[1], (ICharSequence**)&seq);
         mTxtRecord->Put((*keyVal)[0], seq->Probe(EIID_IInterface));
     }
 

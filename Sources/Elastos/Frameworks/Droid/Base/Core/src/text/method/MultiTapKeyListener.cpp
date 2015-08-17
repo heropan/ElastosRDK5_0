@@ -6,7 +6,7 @@
 #include <elastos/core/Character.h>
 
 using Elastos::Core::Character;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Text::Selection;
 using Elastos::Droid::Text::Method::CTextKeyListener;
@@ -150,7 +150,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
             if (Character::IsLowerCase(current)) {
                 String strT = String((char*)&current,1);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(strT.ToUpperCase(), (ICharSequence**)&cs);
+                CString::New(strT.ToUpperCase(), (ICharSequence**)&cs);
                 content->Replace(selStart, selEnd , cs.Get());
                 RemoveTimeouts(content);
                 AutoPtr<Timeout> t = new Timeout(content); // for its side effects
@@ -159,7 +159,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
             if (Character::IsUpperCase(current)) {
                 String strT = String((char*)&current,1);
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(strT.ToLowerCase(), (ICharSequence**)&cs);
+                CString::New(strT.ToLowerCase(), (ICharSequence**)&cs);
                 content->Replace(selStart, selEnd, cs.Get());
                 RemoveTimeouts(content);
                 AutoPtr<Timeout> t = new Timeout(content); // for its side effects
@@ -179,7 +179,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
             if (ix >= 0) {
                 ix = (ix + 1) % (val.GetLength());
                 AutoPtr<ICharSequence> cs;
-                CStringWrapper::New(val, (ICharSequence**)&cs);
+                CString::New(val, (ICharSequence**)&cs);
                 content->Replace(selStart, selEnd, cs, ix, ix + 1);
                 RemoveTimeouts(content);
                 AutoPtr<Timeout> t = new Timeout(content); // for its side effects
@@ -232,7 +232,7 @@ Boolean MultiTapKeyListener::OnKeyDown(
         content->SetSpan(OLD_SEL_START, selStart, selStart, ISpanned::SPAN_MARK_MARK);
 
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(val, (ICharSequence**)&cs);
+        CString::New(val, (ICharSequence**)&cs);
         content->Replace(selStart, selEnd, cs.Get(), off, off + 1);
 
         Int32 oldStart;

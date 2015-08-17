@@ -21,10 +21,10 @@ using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::IBoolean;
 using Elastos::Core::CBoolean;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -579,7 +579,7 @@ AutoPtr<INetworkStatsEntry> CNetworkStats::GetTotal(
     for (Int32 i = 0; i < mSize; i++) {
         Boolean bol;
         AutoPtr<ICharSequence> chars;
-        CStringWrapper::New((*mIface)[i], (ICharSequence**)&chars);
+        CString::New((*mIface)[i], (ICharSequence**)&chars);
         Boolean matchesUid = (limitUid == UID_ALL) || (limitUid == (*mUid)[i]);
 
         Boolean matchesIface = TRUE;

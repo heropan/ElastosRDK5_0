@@ -14,7 +14,7 @@ using Elastos::Core::CInteger32;
 using Elastos::Core::CInteger64;
 using Elastos::Core::CFloat;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -161,7 +161,7 @@ ECode CMediaFormat::SetString(
     /* [in] */ const String& value)
 {
     AutoPtr<ICharSequence> temp;
-    CStringWrapper::New(value, (ICharSequence**)&temp);
+    CString::New(value, (ICharSequence**)&temp);
     return mMap->Put(name,temp);
 }
 

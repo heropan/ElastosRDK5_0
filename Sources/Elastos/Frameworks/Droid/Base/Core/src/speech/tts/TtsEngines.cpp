@@ -23,7 +23,7 @@ using Elastos::Droid::Text::TextUtils;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::CLocale;
 using Libcore::ICU::CLocaleHelper;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
@@ -401,7 +401,7 @@ String TtsEngines::GetLocalePrefForEngine(
     locale = ParseEnginePrefFromList( /*GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_LOCALE)*/String(NULL), engineName);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(locale, (ICharSequence**)&cs);
+    CString::New(locale, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         // The new style setting is unset, attempt to return the old style setting.
         locale = GetV1Locale();
@@ -424,7 +424,7 @@ AutoPtr< ArrayOf<String> > TtsEngines::ParseLocalePref(
     (*returnVal)[2] = String("");
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(pref, (ICharSequence**)&cs);
+    CString::New(pref, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
         Int32 localeDelimiterLen = pref.GetLength();
         Int32 splitCount = 1;
@@ -475,14 +475,14 @@ String TtsEngines::GetV1Locale()
 //    variant = Settings::Secure::GetString(cr.Get(), ISettingsSecure::TTS_DEFAULT_VARIANT);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(lang, (ICharSequence**)&cs);
+    CString::New(lang, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         return GetDefaultLocale();
     }
 
     String v1Locale = lang;
     cs = NULL;
-    CStringWrapper::New(country, (ICharSequence**)&cs);
+    CString::New(country, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
             v1Locale += String(LOCALE_DELIMITER) + country;
     } else {
@@ -490,7 +490,7 @@ String TtsEngines::GetV1Locale()
     }
 
     cs = NULL;
-    CStringWrapper::New(variant, (ICharSequence**)&cs);
+    CString::New(variant, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
         v1Locale += String(LOCALE_DELIMITER) + variant;
     }
@@ -513,7 +513,7 @@ String TtsEngines::GetDefaultLocale()
     locale->GetISO3Language(&defaultLocale);
 
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(defaultLocale, (ICharSequence**)&cs);
+    CString::New(defaultLocale, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         //Java:    Log.w(TAG, "Default locale is empty.");
         Logger::W(TAG, String("Default locale is empty.\n"));
@@ -523,7 +523,7 @@ String TtsEngines::GetDefaultLocale()
     String localeCountry;
     locale->GetISO3Country(&localeCountry);
     cs = NULL;
-    CStringWrapper::New(localeCountry, (ICharSequence**)&cs);
+    CString::New(localeCountry, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
         defaultLocale += String(LOCALE_DELIMITER) + localeCountry;
     } else {
@@ -535,7 +535,7 @@ String TtsEngines::GetDefaultLocale()
     String strVariant;
     locale->GetVariant(&strVariant);
     cs = NULL;
-    CStringWrapper::New(strVariant, (ICharSequence**)&cs);
+    CString::New(strVariant, (ICharSequence**)&cs);
     if (!TextUtils::IsEmpty(cs)) {
         defaultLocale += String(LOCALE_DELIMITER) + strVariant;
     }
@@ -548,7 +548,7 @@ String TtsEngines::ParseEnginePrefFromList(
     /* [in] */ const String& engineName)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(prefValue, (ICharSequence**)&cs);
+    CString::New(prefValue, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         return String(NULL);
     }
@@ -624,7 +624,7 @@ String TtsEngines::UpdateValueInCommaSeparatedList(
     //Java:    StringBuilder newPrefList = new StringBuilder();
     String newPrefList;
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(list, (ICharSequence**)&cs);
+    CString::New(list, (ICharSequence**)&cs);
     if (TextUtils::IsEmpty(cs)) {
         // If empty, create a new list with a single entry.
         newPrefList.Append(key);

@@ -19,7 +19,7 @@ using Elastos::Core::IInteger64;
 using Elastos::Core::CInteger64;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::App::IPendingIntentHelper;
@@ -119,7 +119,7 @@ ECode CCalendarContractCalendarAlerts::Insert(
     FAIL_RETURN(values->PutInt32(ICalendarContractCalendarAlertsColumns::NOTIFY_TIME, cnotifytime))
 
     AutoPtr<ICharSequence> cstate;
-    FAIL_RETURN(CStringWrapper::New(String(STATE_SCHEDULED), (ICharSequence**)&cstate))
+    FAIL_RETURN(CString::New(String(STATE_SCHEDULED), (ICharSequence**)&cstate))
     FAIL_RETURN(values->PutString(ICalendarContractCalendarAlertsColumns::STATE, cstate))
 
     AutoPtr<IInteger32> cminutes;

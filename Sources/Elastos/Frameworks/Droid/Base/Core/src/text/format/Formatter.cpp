@@ -3,7 +3,7 @@
 #include "net/NetworkUtils.h"
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::NetworkUtils;
 
 namespace Elastos {
@@ -83,10 +83,10 @@ String Formatter::FormatFileSize(
     context->GetString(suffix, &resStr);
     AutoPtr< ArrayOf<IInterface*> > args = ArrayOf<IInterface*>::Alloc(2);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(value, (ICharSequence**)&cs);
+    CString::New(value, (ICharSequence**)&cs);
     args->Set(0, cs);
     cs = NULL;
-    CStringWrapper::New(resStr, (ICharSequence**)&cs);
+    CString::New(resStr, (ICharSequence**)&cs);
     args->Set(1, cs);
     AutoPtr<IResources> res;
     context->GetResources((IResources**)&res);

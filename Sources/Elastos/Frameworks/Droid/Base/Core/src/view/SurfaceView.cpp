@@ -11,7 +11,7 @@
 #include <elastos/utility/logging/Logger.h>
 #include "provider/Settings.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SystemProperties;
 using Elastos::Droid::Os::SystemClock;
@@ -562,7 +562,7 @@ ECode SurfaceView::OnAttachedToWindow()
     mLayout->SetToken(GetWindowToken());
 
     AutoPtr<ICharSequence> text;
-    CStringWrapper::New(String("SurfaceView"), (ICharSequence**)&text);
+    CString::New(String("SurfaceView"), (ICharSequence**)&text);
     mLayout->SetTitle(text);
     mViewVisibility = GetVisibility() == IView::VISIBLE;
 

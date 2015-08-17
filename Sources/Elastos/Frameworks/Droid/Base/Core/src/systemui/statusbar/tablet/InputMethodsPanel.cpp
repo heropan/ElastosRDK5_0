@@ -6,7 +6,7 @@
 #include "text/TextUtils.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::CIntent;
@@ -406,7 +406,7 @@ AutoPtr<IView> InputMethodsPanel::CreateInputMethodItem(
     String settingsActivity;
     imi->GetSettingsActivity(&settingsActivity);
     AutoPtr<ICharSequence> saSeq;
-    CStringWrapper::New(settingsActivity, (ICharSequence**)&saSeq);
+    CString::New(settingsActivity, (ICharSequence**)&saSeq);
     if (!TextUtils::IsEmpty(saSeq)) {
         String packageName;
         imi->GetPackageName(&packageName);

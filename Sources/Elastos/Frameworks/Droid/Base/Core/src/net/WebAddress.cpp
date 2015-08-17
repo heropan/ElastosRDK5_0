@@ -58,7 +58,7 @@ WebAddress::WebAddress(
     mAuthInfo = "";
 
     AutoPtr<ICharSequence> charSeq;
-    CStringWrapper::New(address, (ICharSequence**)&charSeq);
+    CString::New(address, (ICharSequence**)&charSeq);
 
     AutoPtr<IMatcher> matcher;
     sAddressPattern->Matcher(charSeq->Get(), (IMatcher**)&matcher);

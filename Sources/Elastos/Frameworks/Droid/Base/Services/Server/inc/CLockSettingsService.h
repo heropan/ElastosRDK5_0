@@ -1,6 +1,6 @@
 
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
-#define __CLOCKSWETTINGSERVICE_H__
+#define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
 
 #include "_CLockSettingsService.h"
 #include "ext/frameworkdef.h"
@@ -220,4 +220,4 @@ private:
 }// namespace Droid
 }// namespace Elastos
 
-#endif  // __CLOCKSWETTINGSERVICE_H__
+#endif  // __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__

@@ -17,7 +17,7 @@ using Elastos::IO::IByteBuffer;
 using Elastos::IO::ByteOrder;
 using Elastos::IO::IByteOrderHelper;
 using Elastos::IO::CByteOrderHelper;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 namespace Elastos {

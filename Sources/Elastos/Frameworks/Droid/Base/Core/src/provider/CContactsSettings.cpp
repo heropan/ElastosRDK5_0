@@ -4,7 +4,7 @@
 #include "content/CContentValues.h"
 #include <elastos/coredef.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Net::Uri;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Content::IContentValues;
@@ -99,10 +99,10 @@ ECode CContactsSettings::SetSetting(
     //values.put(_SYNC_ACCOUNT, account.mName);
     //values.put(_SYNC_ACCOUNT_TYPE, account.mType);
     AutoPtr<ICharSequence> keyStr;
-    FAIL_RETURN(CStringWrapper::New(key, (ICharSequence**)&keyStr))
+    FAIL_RETURN(CString::New(key, (ICharSequence**)&keyStr))
     FAIL_RETURN(values->PutString(IContactsSettingsColumns::KEY, keyStr))
     AutoPtr<ICharSequence> valueStr;
-    FAIL_RETURN(CStringWrapper::New(value, (ICharSequence**)&valueStr))
+    FAIL_RETURN(CString::New(value, (ICharSequence**)&valueStr))
     FAIL_RETURN(values->PutString(IContactsSettingsColumns::VALUE, valueStr))
     AutoPtr<IUri> uri;
     FAIL_RETURN(GetCONTENT_URI((IUri**)&uri))

@@ -500,7 +500,7 @@ ECode CNotification::SetLatestEventInfo(
         AutoPtr<ICharSequence> cs;
         String str;
         f->FormatInt64(mNumber, &str);
-        CStringWrapper::New(str, (ICharSequence**)&cs);
+        CString::New(str, (ICharSequence**)&cs);
         contentView->SetTextViewText(R::id::info, cs);
     }
 

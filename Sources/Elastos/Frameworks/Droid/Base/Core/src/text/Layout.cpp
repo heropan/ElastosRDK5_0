@@ -15,7 +15,7 @@
 #include "util/ArrayUtils.h"
 #include <elastos/core/Math.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_ICharSequence;
 //using Elastos::Droid::Emoji::IEmojiFactoryHelper;
 using Elastos::Droid::Graphics::CRect;
@@ -158,7 +158,7 @@ ECode Layout::Ellipsizer::SubSequence(
     AutoPtr< ArrayOf<Char32> > s = ArrayOf<Char32>::Alloc(end - start);
     GetChars(start, end, s, 0);
     String str = String(*s);
-    FAIL_RETURN(CStringWrapper::New(str, subcsq))
+    FAIL_RETURN(CString::New(str, subcsq))
 
     return NOERROR;
 }
@@ -403,7 +403,7 @@ ECode Layout::SpannedEllipsizer::SubSequence(
 
     AutoPtr<ICharSequence> seq;
     String str = String(*s, 0, s->GetLength());
-    FAIL_RETURN(CStringWrapper::New(str, (ICharSequence**)&seq))
+    FAIL_RETURN(CString::New(str, (ICharSequence**)&seq))
 
     AutoPtr<ISpannableString> ss;
     FAIL_RETURN(CSpannableString::New(seq, (ISpannableString**)&ss));

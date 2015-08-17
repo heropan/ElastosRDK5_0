@@ -14,7 +14,7 @@ using Elastos::Utility::CArrayList;
 using Elastos::Utility::IObservable;
 using Elastos::Utility::EIID_IObservable;
 using Elastos::Utility::CObjectStringMap;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 
 CContentQueryMap::KeepUpdatedContentObserver::KeepUpdatedContentObserver(
@@ -219,7 +219,7 @@ ECode CContentQueryMap::ReadCursorIntoCache(
             if (i != mKeyColumn) {
                 FAIL_RETURN(cursor->GetString(i, &columnValue))
                 AutoPtr<ICharSequence> stringObj;
-                FAIL_RETURN(CStringWrapper::New(columnValue, (ICharSequence**)&stringObj))
+                FAIL_RETURN(CString::New(columnValue, (ICharSequence**)&stringObj))
                 FAIL_RETURN(values->PutString((*mColumnNames)[i], stringObj))
             }
         }

@@ -4,7 +4,7 @@
 #include "R.h"
 #include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::CHashSet;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::EIID_IDialogInterfaceOnMultiChoiceClickListener;
@@ -182,7 +182,7 @@ ECode CMultiSelectListPreference::GetValues(
     Set<String>::Iterator it = mValues.Begin();
     for (; it != mValues.End(); ++it) {
         AutoPtr<ICharSequence> cs;
-        CStringWrapper::New(*it, (ICharSequence**)&cs);
+        CString::New(*it, (ICharSequence**)&cs);
         Boolean isSuccess;
         v->Add(cs, &isSuccess);
     }
@@ -259,7 +259,7 @@ ECode CMultiSelectListPreference::OnDialogClosed(
         Set<String>::Iterator it = mNewValues.Begin();
         for (; it != mNewValues.End(); ++it) {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(*it, (ICharSequence**)&cs);
+            CString::New(*it, (ICharSequence**)&cs);
             Boolean isSuccess;
             values->Add(cs, &isSuccess);
         }
@@ -304,7 +304,7 @@ ECode CMultiSelectListPreference::OnSetInitialValue(
         Set<String>::Iterator it = mValues.Begin();
         for (; it != mValues.End(); ++it) {
             AutoPtr<ICharSequence> cs;
-            CStringWrapper::New(*it, (ICharSequence**)&cs);
+            CString::New(*it, (ICharSequence**)&cs);
             Boolean isSuccess;
             valuesSet->Add(cs, &isSuccess);
         }

@@ -10,7 +10,7 @@
 
 using Elastos::Core::Character;
 using Elastos::Core::IComparable;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuffer;
 using Elastos::Core::EIID_ICharSequence;
 using Elastos::Droid::Internal::Utility::ArrayUtils;
@@ -38,7 +38,7 @@ const Int32 SpannableStringBuilder::SPAN_START_END_MASK;
 static AutoPtr<ICharSequence> CreateEmptyCs()
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String(""), (ICharSequence**)&cs);
+    CString::New(String(""), (ICharSequence**)&cs);
     return cs;
 }
 
@@ -287,7 +287,7 @@ ECode SpannableStringBuilder::Append(
     String str("");
     str.Append(text);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(str, (ICharSequence**)&cs);
+    CString::New(str, (ICharSequence**)&cs);
     return Append(cs);
 }
 

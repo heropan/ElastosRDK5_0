@@ -10,7 +10,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::IInteger64;
@@ -134,7 +134,7 @@ ECode CCalls::AddCall(
     FAIL_RETURN(CContentValues::New(5, (IContentValues**)&values))
 
     AutoPtr<ICharSequence> csq;
-    FAIL_RETURN(CStringWrapper::New(_number, (ICharSequence**)&csq))
+    FAIL_RETURN(CString::New(_number, (ICharSequence**)&csq))
     FAIL_RETURN(values->PutString(ICalls::NUMBER, csq))
 
     AutoPtr<IInteger32> integer32_1;
@@ -161,7 +161,7 @@ ECode CCalls::AddCall(
         String name;
         FAIL_RETURN(ci->GetName(&name))
         AutoPtr<ICharSequence> csqName;
-        FAIL_RETURN(CStringWrapper::New(name, (ICharSequence**)&csqName))
+        FAIL_RETURN(CString::New(name, (ICharSequence**)&csqName))
         FAIL_RETURN(values->PutString(ICalls::CACHED_NAME, csqName))
 
         Int32 type;
@@ -173,7 +173,7 @@ ECode CCalls::AddCall(
         String lable;
         FAIL_RETURN(ci->GetNumberLabel(&lable))
         AutoPtr<ICharSequence> csqLable;
-        FAIL_RETURN(CStringWrapper::New(lable, (ICharSequence**)&csqLable))
+        FAIL_RETURN(CString::New(lable, (ICharSequence**)&csqLable))
         FAIL_RETURN(values->PutString(ICalls::CACHED_NUMBER_LABEL, csqLable))
     }
 

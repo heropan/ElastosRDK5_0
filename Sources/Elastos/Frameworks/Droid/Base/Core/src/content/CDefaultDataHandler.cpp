@@ -5,7 +5,7 @@
 
 using Elastos::Droid::Net::IUriBuilder;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -120,7 +120,7 @@ ECode CDefaultDataHandler::StartElement(
 //***                FAIL_RETURN(CContentValues::New((IContentValues**)&mValues))
             }
             AutoPtr<ICharSequence> valueObj;
-            FAIL_RETURN(CStringWrapper::New(value, (ICharSequence**)&valueObj))
+            FAIL_RETURN(CString::New(value, (ICharSequence**)&valueObj))
             FAIL_RETURN(mValues->PutString(key, valueObj))
         }
         else {

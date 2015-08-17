@@ -39,7 +39,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
@@ -3942,7 +3942,7 @@ void WifiStateMachine::AddToBlacklist(
     /* [in] */ const String& bssid)
 {
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(bssid, (ICharSequence**)&cs);
+    CString::New(bssid, (ICharSequence**)&cs);
     AutoPtr<IMessage> m = ObtainMessage(CMD_BLACKLIST_NETWORK, cs.Get());
     SendMessage(m);
 }
@@ -4016,7 +4016,7 @@ void WifiStateMachine::SetCountryCode(
     //             countryCode);
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(countryCode, (ICharSequence**)&cs);
+    CString::New(countryCode, (ICharSequence**)&cs);
     AutoPtr<IMessage> m = ObtainMessage(CMD_SET_COUNTRY_CODE, cs);
     SendMessage(m);
 }

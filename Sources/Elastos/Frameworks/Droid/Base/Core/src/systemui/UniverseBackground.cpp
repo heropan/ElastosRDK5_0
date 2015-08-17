@@ -7,7 +7,7 @@
 #include "view/Choreographer.h"
 #include "view/CWindowManagerLayoutParams.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::R;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::SystemUI::SystemUIR;
@@ -152,7 +152,7 @@ AutoPtr<IWindowManagerLayoutParams> UniverseBackground::GetWindowManagerLayoutPa
         lp->SetFlags(flags);
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(String("UniverseBackground"), (ICharSequence**)&cs);
+    CString::New(String("UniverseBackground"), (ICharSequence**)&cs);
     lp->SetTitle(cs);
     lp->SetWindowAnimations(0);
     return lp;

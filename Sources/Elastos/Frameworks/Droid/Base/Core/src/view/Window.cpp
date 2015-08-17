@@ -10,7 +10,7 @@
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Graphics::IPixelFormat;
 using Elastos::Droid::Os::SystemProperties;
@@ -233,7 +233,7 @@ ECode Window::AdjustLayoutParamsForSubWindow(
                 title += String(":") + mAppName;
             }
             AutoPtr<ICharSequence> tl;
-            CStringWrapper::New(title, (ICharSequence**)&tl);
+            CString::New(title, (ICharSequence**)&tl);
             wp->SetTitle(tl);
         }
     }
@@ -245,7 +245,7 @@ ECode Window::AdjustLayoutParamsForSubWindow(
         if ((curTitle == NULL || (curTitle->GetLength(&length), length) == 0)
             && !mAppName.IsNull()) {
             AutoPtr<ICharSequence> tl;
-            CStringWrapper::New(mAppName, (ICharSequence**)&tl);
+            CString::New(mAppName, (ICharSequence**)&tl);
             wp->SetTitle(tl);
         }
     }

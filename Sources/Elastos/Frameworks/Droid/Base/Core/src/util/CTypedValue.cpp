@@ -6,7 +6,7 @@
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 
@@ -188,7 +188,7 @@ ECode CTypedValue::CoerceToString(
         return NOERROR;
     }
     String s = CoerceToString(t, mData);
-    return CStringWrapper::New(s, csq);
+    return CString::New(s, csq);
 }
 
 String CTypedValue::CoerceToString(

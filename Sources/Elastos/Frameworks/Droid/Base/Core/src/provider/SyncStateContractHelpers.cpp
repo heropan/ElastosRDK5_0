@@ -7,7 +7,7 @@ using Elastos::Core::IArrayOf;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::EIID_IByte;
 using Elastos::Core::ICharSequence;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Content::CContentValues;
@@ -85,8 +85,8 @@ ECode SyncStateContractHelpers::Set(
     FAIL_RETURN(account->GetName(&name))
     FAIL_RETURN(account->GetType(&type))
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CStringWrapper::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CStringWrapper::New(type, (ICharSequence**)&ctype))
+    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
+    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
     FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname))
     FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype))
     AutoPtr<IUri> _uri;
@@ -112,8 +112,8 @@ ECode SyncStateContractHelpers::Insert(
     FAIL_RETURN(account->GetName(&name))
     FAIL_RETURN(account->GetType(&type))
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CStringWrapper::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CStringWrapper::New(type, (ICharSequence**)&ctype))
+    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
+    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
     FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_NAME, cname))
     FAIL_RETURN(values->PutString(ISyncStateContractColumns::ACCOUNT_TYPE, ctype))
     return provider->Insert(uri, values, retUri);
@@ -158,8 +158,8 @@ ECode SyncStateContractHelpers::NewSetOperation(
     FAIL_RETURN(account->GetName(&name))
     FAIL_RETURN(account->GetType(&type))
     AutoPtr<ICharSequence> cname, ctype;
-    FAIL_RETURN(CStringWrapper::New(name, (ICharSequence**)&cname))
-    FAIL_RETURN(CStringWrapper::New(type, (ICharSequence**)&ctype))
+    FAIL_RETURN(CString::New(name, (ICharSequence**)&cname))
+    FAIL_RETURN(CString::New(type, (ICharSequence**)&ctype))
     FAIL_RETURN(builder->WithValue(ISyncStateContractColumns::ACCOUNT_NAME, (IInterface*)cname))
     FAIL_RETURN(builder->WithValue(ISyncStateContractColumns::ACCOUNT_TYPE, (IInterface*)ctype))
     return builder->Build(operation);

@@ -11,7 +11,7 @@
 #include <elastos/core/StringUtils.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CInteger64;
 using Elastos::Droid::Database::ICursor;
 using Elastos::Droid::Net::CStringUri;
@@ -153,9 +153,9 @@ ECode CContentProviderOperation::Apply(
                     FAIL_WithGoto(ecode)
                     AutoPtr<ICharSequence> charSeq;
                     AutoPtr<ICharSequence> charSeq2;
-                    ecode = CStringWrapper::New(cursorValue, (ICharSequence**)&charSeq);
+                    ecode = CString::New(cursorValue, (ICharSequence**)&charSeq);
                     FAIL_WithGoto(ecode)
-                    ecode = CStringWrapper::New(expectedValue, (ICharSequence**)&charSeq2);
+                    ecode = CString::New(expectedValue, (ICharSequence**)&charSeq2);
                     FAIL_WithGoto(ecode)
 
                     if (!TextUtils::Equals(charSeq, charSeq2)) {

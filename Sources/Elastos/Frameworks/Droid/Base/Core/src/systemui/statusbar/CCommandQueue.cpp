@@ -2,7 +2,7 @@
 #include <elastos/core/StringBuilder.h>
 #include "statusbar/CStatusBarIcon.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IUserHandle;

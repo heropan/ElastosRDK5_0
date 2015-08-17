@@ -487,7 +487,7 @@ ECode CRequestHandle::CreateAndQueueNewRequest()
         for (; it != mHeaders.End(); ++it) {
             String key = it->mFirst;
             AutoPtr<ICharSequence> value;
-            CStringWrapper::New(it->mSecond, (ICharSequence**)&value);
+            CString::New(it->mSecond, (ICharSequence**)&value);
             headersMap->Put(key, value);
         }
     }

@@ -1,7 +1,7 @@
 
 #include "app/backup/CRestoreObserverWrapper.h"
 
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Core::CObjectContainer;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IMessage;
@@ -130,7 +130,7 @@ ECode CRestoreObserverWrapper::OnUpdate(
     /* [in] */ const String& currentPackage)
 {
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(currentPackage, (ICharSequence**)&seq);
+    CString::New(currentPackage, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
     mHandler->ObtainMessage(MSG_UPDATE, nowBeingRestored, 0, seq, (IMessage**)&msg);
     Boolean result;

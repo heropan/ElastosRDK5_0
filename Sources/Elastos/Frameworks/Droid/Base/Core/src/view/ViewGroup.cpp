@@ -36,7 +36,7 @@ using Elastos::Droid::View::Animation::CTransformation;
 using Libcore::ICU::ILocale;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::CObjectContainer;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 
 namespace Elastos {
 namespace Droid {
@@ -2768,7 +2768,7 @@ void ViewGroup::OnInitializeAccessibilityEventInternal(
 {
     View::OnInitializeAccessibilityEventInternal(event);
     AutoPtr<ICharSequence> seq;
-    CStringWrapper::New(String("ViewGroup"), (ICharSequence**)&seq);
+    CString::New(String("ViewGroup"), (ICharSequence**)&seq);
     event->SetClassName(seq);
 }
 

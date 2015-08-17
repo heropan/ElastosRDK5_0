@@ -10,7 +10,7 @@
 using Elastos::Core::EIID_IComparable;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Math;
-using Elastos::Core::CStringWrapper;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Os::CBundle;
@@ -207,14 +207,14 @@ void Preference::Init(
                 a->GetResourceId(attr, 0, &mTitleRes);
                 String str;
                 a->GetString(attr, &str);
-                CStringWrapper::New(str, (ICharSequence**)&mTitle);
+                CString::New(str, (ICharSequence**)&mTitle);
                 break;
             }
             case R::styleable::Preference_summary:
             {
                 String str;
                 a->GetString(attr, &str);
-                CStringWrapper::New(str, (ICharSequence**)&mSummary);
+                CString::New(str, (ICharSequence**)&mSummary);
                 break;
             }
             case R::styleable::Preference_order:
@@ -539,7 +539,7 @@ ECode Preference::SetTitle(
     String title;
     mContext->GetString(titleResId, &title);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(title, (ICharSequence**)&cs);
+    CString::New(title, (ICharSequence**)&cs);
     SetTitle(cs);
     mTitleRes = titleResId;
     return NOERROR;
@@ -625,7 +625,7 @@ ECode Preference::SetSummary(
     String summary;
     mContext->GetString(summaryResId, &summary);
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(summary, (ICharSequence**)&cs);
+    CString::New(summary, (ICharSequence**)&cs);
     return SetSummary(cs);
 }
 
@@ -1017,7 +1017,7 @@ ECode Preference::FindPreferenceInHierarchy(
         return NOERROR;
     }
     AutoPtr<ICharSequence> cs;
-    CStringWrapper::New(key, (ICharSequence**)&cs);
+    CString::New(key, (ICharSequence**)&cs);
     return mPreferenceManager->FindPreference(cs, preference);
 }
 
