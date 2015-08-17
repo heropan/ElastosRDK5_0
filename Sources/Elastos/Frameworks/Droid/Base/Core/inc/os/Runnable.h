@@ -4,7 +4,6 @@
 
 #include <elastos/core/Object.h>
 
-using Elastos::Core::Object;
 using Elastos::Core::IRunnable;
 
 namespace Elastos {
@@ -15,7 +14,7 @@ class Runnable
     : public Object
     , public IRunnable
 {
-protected:
+public:
     CAR_INTERFACE_DECL()
 
     Runnable();

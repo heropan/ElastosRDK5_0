@@ -13,6 +13,7 @@ using Elastos::Core::ISystem;
 using Elastos::Core::IInteger32;
 using Elastos::Core::CInteger32;
 using Elastos::Core::EIID_IRunnable;
+using Elastos::Utility::Concurrent::Locks::LockSupport;
 using Elastos::Utility::Concurrent::Locks::ILockSupport;
 using Elastos::Utility::Concurrent::Locks::CLockSupport;
 using Elastos::Utility::Concurrent::IExecutors;
@@ -33,6 +34,9 @@ const Int32 FutureTask::INTERRUPTING = 5;
 const Int32 FutureTask::INTERRUPTED  = 6;
 
 FutureTask::FutureTask()
+{}
+
+FutureTask::~FutureTask()
 {}
 
 FutureTask::FutureTask(
@@ -61,13 +65,8 @@ ECode FutureTask::constructor(
     /* [in] */ IRunnable* runnable,
     /* [in] */ IInterface* result)
 {
-#ifdef ELASTOS_UTILITY_CONCURRENT
     FAIL_RETURN(Executors::Callable(runnable, result, (ICallable**)&mCallable));
-#else
-    AutoPtr<IExecutors> executors;
-    CExecutors::AcquireSingleton((IExecutors**)&executors);
-    FAIL_RETURN(executors->Callable(runnable, result, (ICallable**)&mCallable));
-#endif
+
     mState = NEW;       // ensure visibility of callable
     return NOERROR;
 }
@@ -77,6 +76,7 @@ ECode FutureTask::Report(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
     AutoPtr<IInterface> x = mOutcome;
     if (s == NORMAL) {
@@ -178,6 +178,7 @@ ECode FutureTask::Get(
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = NULL;
 
     if (unit == NULL) return E_NULL_POINTER_EXCEPTION;
     Int32 s = mState;
@@ -328,13 +329,7 @@ void FutureTask::FinishCompletion()
                 AutoPtr<IThread> t = q->mThread;
                 if (t != NULL) {
                     q->mThread = NULL;
-#ifdef ELASTOS_UTILITY_CONCURRENT
                     LockSupport::Unpark(t);
-#else
-                    AutoPtr<ILockSupport> lockSupport;
-                    CLockSupport::AcquireSingleton((ILockSupport**)&lockSupport);
-                    lockSupport->Unpark(t);
-#endif
                 }
                 AutoPtr<WaitNode> next = q->mNext;
                 if (next == NULL) {
@@ -359,14 +354,9 @@ ECode FutureTask::AwaitDone(
 {
     VALIDATE_NOT_NULL(state)
 
-    AutoPtr<ISystem> system;
-#ifdef ELASTOS_CORELIBRARY
     AutoPtr<Elastos::Core::CSystem> cs;
     Elastos::Core::CSystem::AcquireSingletonByFriend((Elastos::Core::CSystem**)&cs);
-    system = (ISystem*)cs.Get();
-#else
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-#endif
+    AutoPtr<ISystem> system = (ISystem*)cs.Get();
 
     Int64 deadline = 0ll;
     if (timed) {
@@ -407,23 +397,11 @@ ECode FutureTask::AwaitDone(
                 *state = mState;
                 return NOERROR;
             }
-#ifdef ELASTOS_UTILITY_CONCURRENT
-            LockSupport::ParkNanos((IRunnableFuture*)THIS_PROBE(IRunnableFuture), nanos);
-#else
-            AutoPtr<ILockSupport> lockSupport;
-            CLockSupport::AcquireSingleton((ILockSupport**)&lockSupport);
-            lockSupport->ParkNanos((IRunnableFuture*)THIS_PROBE(IRunnableFuture), nanos);
-#endif
 
+            LockSupport::ParkNanos(THIS_PROBE(IRunnableFuture), nanos);
         }
         else {
-#ifdef ELASTOS_UTILITY_CONCURRENT
-            LockSupport::Park((IRunnableFuture*)THIS_PROBE(IRunnableFuture));
-#else
-            AutoPtr<ILockSupport> lockSupport;
-            CLockSupport::AcquireSingleton((ILockSupport**)&lockSupport);
-            lockSupport->Park((IRunnableFuture*)THIS_PROBE(IRunnableFuture));
-#endif
+            LockSupport::Park(THIS_PROBE(IRunnableFuture));
         }
     }
     return NOERROR;

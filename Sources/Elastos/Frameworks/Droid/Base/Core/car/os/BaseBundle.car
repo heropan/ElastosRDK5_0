@@ -79,7 +79,7 @@ module
             [in] String key,
             [in] ICharSequence* value);
 
-        PutInt32ArrayList(
+        PutIntegerArrayList(
             [in] String key,
             [in] IArrayList* value);
 
@@ -229,7 +229,7 @@ module
             [in] String key,
             [out] ISerializable** value);
 
-        GetInt32ArrayList(
+        GetIntegerArrayList(
             [in] String key,
             [out] IArrayList** value);
 

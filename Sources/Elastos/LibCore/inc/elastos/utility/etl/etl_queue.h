@@ -9,7 +9,7 @@
  */
 
 #include <elastos/utility/etl/etl_def.h>
-#include <elastos/ConceptCheck.h>
+#include <elastos/utility/etl/ConceptCheck.h>
 #include <elrefbase.h>
 
 using Elastos::ElLightRefBase;

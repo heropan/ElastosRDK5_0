@@ -1112,7 +1112,16 @@ EXPORTS
     ;;elastos/core/CoreUtils
     _ZN7Elastos4Core9CoreUtils11ConvertByteEh
     _ZN7Elastos4Core9CoreUtils13ConvertChar32Ej
+    _ZN7Elastos4Core9CoreUtils16ConvertByteArrayEPNS_7ArrayOfIhEE
+    _ZN7Elastos4Core9CoreUtils18ConvertChar32ArrayEPNS_7ArrayOfIjEE
     _ZN7Elastos4Core9CoreUtils7ConvertEPKc
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfINS_6StringEEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIdEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIfEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIhEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIiEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIsEE
+    _ZN7Elastos4Core9CoreUtils7ConvertEPNS_7ArrayOfIxEE
     _ZN7Elastos4Core9CoreUtils7ConvertERKNS_6StringE
     _ZN7Elastos4Core9CoreUtils7ConvertEd
     _ZN7Elastos4Core9CoreUtils7ConvertEf
@@ -1911,3 +1920,25 @@ EXPORTS
     _ZN7Elastos5Droid6System11OsConstants9_SO_ERRORE
     _ZN7Elastos5Droid6System11OsConstants9_S_IFSOCKE
     _ZN7Elastos5Droid6System11OsConstants9_WSTOPPEDE
+
+    ;;elastos/utility/concurrent/FutureTask
+    _ZN7Elastos7Utility10Concurrent10FutureTask11constructorEPNS1_9ICallableE
+    _ZN7Elastos7Utility10Concurrent10FutureTask11constructorEPNS_4Core9IRunnableEP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTask11IsCancelledEPh
+    _ZN7Elastos7Utility10Concurrent10FutureTask6CancelEhPh
+    _ZN7Elastos7Utility10Concurrent10FutureTask6IsDoneEPh
+    _ZN7Elastos7Utility10Concurrent10FutureTask3GetEPP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTask3GetExPNS1_9ITimeUnitEPP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTask3RunEv
+    _ZN7Elastos7Utility10Concurrent10FutureTask3SetEP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTask12SetExceptionEi
+    _ZN7Elastos7Utility10Concurrent10FutureTask4DoneEv
+    _ZN7Elastos7Utility10Concurrent10FutureTask11RunAndResetEv
+    _ZN7Elastos7Utility10Concurrent10FutureTaskC1EPNS1_9ICallableE
+    _ZN7Elastos7Utility10Concurrent10FutureTaskC1EPNS_4Core9IRunnableEP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTaskC1Ev
+    _ZN7Elastos7Utility10Concurrent10FutureTaskC2EPNS1_9ICallableE
+    _ZN7Elastos7Utility10Concurrent10FutureTaskC2EPNS_4Core9IRunnableEP10IInterface
+    _ZN7Elastos7Utility10Concurrent10FutureTaskD0Ev
+    _ZN7Elastos7Utility10Concurrent10FutureTaskD1Ev
+    _ZN7Elastos7Utility10Concurrent10FutureTaskD2Ev

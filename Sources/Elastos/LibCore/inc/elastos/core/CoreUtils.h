@@ -2,6 +2,21 @@
 #define __ELASTOS_CORE_COREUTILS_H__
 
 #include <elastos/core/Object.h>
+#ifdef ELASTOS_CORELIBRARY
+#include "CArrayOf.h"
+#endif
+
+using Elastos::Core::IByte;
+using Elastos::Core::IChar32;
+using Elastos::Core::IBoolean;
+using Elastos::Core::IInteger16;
+using Elastos::Core::IInteger32;
+using Elastos::Core::IInteger64;
+using Elastos::Core::IFloat;
+using Elastos::Core::IDouble;
+using Elastos::Core::ICharSequence;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::CArrayOf;
 
 namespace Elastos {
 namespace Core {
@@ -39,6 +54,51 @@ public:
     static CARAPI_(AutoPtr<ICharSequence>) Convert(
         /* [in] */ const char* str);
 
+    static CARAPI_(AutoPtr<IArrayOf>) ConvertByteArray(
+        /* [in] */ ArrayOf<Byte>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) ConvertChar32Array(
+        /* [in] */ ArrayOf<Char32>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Boolean>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Int16>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Int32>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Int64>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Float>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<Double>* arr);
+
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<String>* arr);
+
+private:
+    template<typename T1, typename T2>
+    static CARAPI_(AutoPtr<IArrayOf>) ConvertImpl(
+        /* [in] */ ArrayOf<T1>* arr)
+    {
+        if (arr) {
+            Int32 length = arr->GetLength();
+            AutoPtr<IArrayOf> arrObj;
+            CArrayOf::New(length, (IArrayOf**)&arrObj);
+            for (Int32 i = 0; i < length; ++i) {
+                AutoPtr<T2> item = Convert((*arr)[i]);
+                arrObj->Set(i, item.Get());
+            }
+
+            return arrObj;
+        }
+        return NULL;
+    }
 private:
     CoreUtils();
     ~CoreUtils();

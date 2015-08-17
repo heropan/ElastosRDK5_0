@@ -3,13 +3,13 @@
 #define __ELASTOS_DROID_OS_ASYNCTASK_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/FutureTask.h>
-#include <elastos/Queue.h>
-#include "os/HandlerBase.h"
+#include "os/Handler.h"
+#include "os/Runnable.h"
+#include <elastos/utility/concurrent/FutureTask.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
-using Elastos::Utility::Deque;
+using Elastos::Utility::IArrayDeque;
 using Elastos::Utility::Concurrent::FutureTask;
 using Elastos::Utility::Concurrent::IThreadFactory;
 using Elastos::Utility::Concurrent::IExecutor;
@@ -20,7 +20,6 @@ using Elastos::Utility::Concurrent::IRunnableFuture;
 using Elastos::Utility::Concurrent::IRunnableFuture;
 using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
-using Elastos::Droid::Os::HandlerBase;
 
 namespace Elastos {
 namespace Droid {
@@ -35,7 +34,7 @@ namespace Os {
  * and does not constitute a generic threading framework. AsyncTasks should ideally be
  * used for short operations (a few seconds at the most.) If you need to keep threads
  * running for long periods of time, it is highly recommended you use the various APIs
- * provided by the <code>java.util.concurrent</code> pacakge such as {@link Executor},
+ * provided by the <code>java.util.concurrent</code> package such as {@link Executor},
  * {@link ThreadPoolExecutor} and {@link FutureTask}.</p>
  *
  * <p>An asynchronous task is defined by a computation that runs on a background thread and
@@ -169,18 +168,15 @@ namespace Os {
  * {@link #executeOnExecutor(java.util.concurrent.Executor, Object[])} with
  * {@link #THREAD_POOL_EXECUTOR}.</p>
  */
-class AsyncTask : public ElLightRefBase
+class AsyncTask
+    : public Object
 {
 private:
-    class InternalHandler : public HandlerBase
+    class InternalHandler
+        : public Handler
     {
     public:
         InternalHandler()
-        {}
-
-        InternalHandler(
-            /* [in] */ ILooper* looper)
-            : HandlerBase(looper)
         {}
 
         CARAPI HandleMessage(
@@ -210,7 +206,7 @@ public:
 
 private:
     class MyThreadFactory
-        : public ElLightRefBase
+        : public Object
         , public IThreadFactory
     {
     public:
@@ -227,13 +223,12 @@ private:
     };
 
     class SerialExecutor
-        : public ElLightRefBase
+        : public Object
         , public IExecutor
     {
     private:
         class MyRunnable
-            : public ElLightRefBase
-            , public IRunnable
+            : public Runnable
         {
         public:
             MyRunnable(
@@ -242,8 +237,6 @@ private:
                 : mOwner(owner)
                 , mR(r)
             {}
-
-            CAR_INTERFACE_DECL();
 
             CARAPI Run();
 
@@ -255,6 +248,8 @@ private:
     public:
         CAR_INTERFACE_DECL();
 
+        SerialExecutor();
+
         CARAPI Execute(
             /* [in] */ IRunnable* r);
 
@@ -262,13 +257,12 @@ private:
         CARAPI ScheduleNext();
 
     public:
-        Deque< AutoPtr<IRunnable> > mTasks;
+        AutoPtr<IArrayDeque> mTasks;
         AutoPtr<IRunnable> mActive;
-        Object mLock;
     };
 
     class WorkerRunnable
-        : public ElLightRefBase
+        : public Object
         , public ICallable
     {
     public:
@@ -284,14 +278,11 @@ private:
 
     public:
         AutoPtr< ArrayOf<IInterface*> > mParams;
-        AutoPtr<AsyncTask> mOwner;
+        AsyncTask* mOwner;
     };
 
     class MyFutureTask
-        : public ElLightRefBase
-        , public IRunnableFuture
-        , public IRunnable
-        , public FutureTask
+        : public FutureTask
     {
     public:
         MyFutureTask(
@@ -301,42 +292,17 @@ private:
             , mOwner(owner)
         {}
 
-        CAR_INTERFACE_DECL();
-
-        CARAPI Run();
-
-        CARAPI Cancel(
-            /* [in] */ Boolean mayInterruptIfRunning,
-            /* [out] */ Boolean* result);
-
-        CARAPI IsCancelled(
-            /* [out] */ Boolean* result);
-
-        CARAPI IsDone(
-            /* [out] */ Boolean* result);
-
-        CARAPI Get(
-            /* [out] */ IInterface** result);
-
-        CARAPI Get(
-            /* [in] */ Int64 timeout,
-            /* [in] */ ITimeUnit* unit,
-            /* [out] */ IInterface** result);
-
     protected:
-        CARAPI_(void) Done();
+        virtual CARAPI_(void) Done();
 
     private:
         AsyncTask* mOwner;
     };
 
     class AsyncTaskResult
-        : public ElRefBase
-        , public IInterface
+        : public Object
     {
     public:
-        CAR_INTERFACE_DECL()
-
         AsyncTaskResult(
             /* [in] */ AsyncTask* task,
             /* [in] */ ArrayOf<IInterface*>* data)
@@ -660,8 +626,9 @@ public:
 private:
     static const String TAG;
 
-    static const Int32 CORE_POOL_SIZE = 5;
-    static const Int32 MAXIMUM_POOL_SIZE = 128;
+    static const Int32 CPU_COUNT;//Runtime.getRuntime().availableProcessors();
+    static const Int32 CORE_POOL_SIZE;//CPU_COUNT + 1;
+    static const Int32 MAXIMUM_POOL_SIZE;//CPU_COUNT * 2 + 1;
     static const Int32 KEEP_ALIVE = 1;
 
     static const AutoPtr<IThreadFactory> sThreadFactory;
@@ -675,8 +642,8 @@ private:
     static const Int32 MESSAGE_POST_RESULT = 0x1;
     static const Int32 MESSAGE_POST_PROGRESS = 0x2;
 
-    WorkerRunnable* mWorker;
-    AutoPtr<IRunnableFuture> mFuture;
+    AutoPtr<WorkerRunnable> mWorker;
+    AutoPtr<MyFutureTask> mFuture;
 
     volatile Status mStatus;
 

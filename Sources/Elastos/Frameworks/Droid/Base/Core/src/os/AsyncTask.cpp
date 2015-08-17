@@ -1,14 +1,19 @@
 
 #include "os/AsyncTask.h"
-#ifdef DROID_CORE
 #include "os/CLooperHelper.h"
-#endif
 #include <os/Process.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/core/AutoLock.h>
+
+#include <unistd.h>
 
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
 using Elastos::Core::CThread;
+using Elastos::Utility::CArrayDeque;
+using Elastos::Utility::IDeque;
 using Elastos::Utility::Concurrent::CLinkedBlockingQueue;
 using Elastos::Utility::Concurrent::EIID_IThreadFactory;
 using Elastos::Utility::Concurrent::EIID_IExecutor;
@@ -27,6 +32,11 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+static Int32 GetCPUCount()
+{
+    return sysconf(_SC_NPROCESSORS_CONF);
+}
+
 static AutoPtr<IBlockingQueue> InitPoolWorkQueue()
 {
     AutoPtr<IBlockingQueue> bq;
@@ -35,8 +45,9 @@ static AutoPtr<IBlockingQueue> InitPoolWorkQueue()
 }
 
 const String AsyncTask::TAG("AsyncTask");
-const Int32 AsyncTask::CORE_POOL_SIZE;
-const Int32 AsyncTask::MAXIMUM_POOL_SIZE;
+const Int32 AsyncTask::CPU_COUNT = GetCPUCount();//Runtime.getRuntime().availableProcessors();
+const Int32 AsyncTask::CORE_POOL_SIZE = CPU_COUNT + 1;
+const Int32 AsyncTask::MAXIMUM_POOL_SIZE = CPU_COUNT * 2 + 1;
 const Int32 AsyncTask::KEEP_ALIVE;
 const AutoPtr<IThreadFactory> AsyncTask::sThreadFactory = new AsyncTask::MyThreadFactory();
 const AutoPtr<IBlockingQueue> AsyncTask::sPoolWorkQueue = InitPoolWorkQueue();
@@ -48,8 +59,6 @@ const Int32 AsyncTask::MESSAGE_POST_PROGRESS;
 AutoPtr<IHandler> AsyncTask::sHandler;
 /* volatile */ AutoPtr<IExecutor> AsyncTask::sDefaultExecutor = SERIAL_EXECUTOR;
 
-CAR_INTERFACE_IMPL(AsyncTask::AsyncTaskResult, IInterface)
-
 //====================================================================
 // AsyncTask::InternalHandler
 //====================================================================
@@ -60,7 +69,7 @@ ECode AsyncTask::InternalHandler::HandleMessage(
     msg->GetWhat(&what);
     AutoPtr<IInterface> obj;
     msg->GetObj((IInterface**)&obj);
-    AsyncTask::AsyncTaskResult* result = (AsyncTask::AsyncTaskResult*)obj.Get();
+    AsyncTask::AsyncTaskResult* result = (AsyncTask::AsyncTaskResult*)(IObject*)obj.Get();
 
     switch(what) {
         case AsyncTask::MESSAGE_POST_RESULT:
@@ -78,27 +87,29 @@ ECode AsyncTask::InternalHandler::HandleMessage(
 //====================================================================
 // AsyncTask::MyThreadFactory
 //====================================================================
+CAR_INTERFACE_IMPL(AsyncTask::MyThreadFactory, Object, IThreadFactory);
+
 AsyncTask::MyThreadFactory::MyThreadFactory()
 {
     CAtomicInteger32::New(1, (IAtomicInteger32**)&mCount);
 }
 
-CAR_INTERFACE_IMPL_LIGHT(AsyncTask::MyThreadFactory, IThreadFactory);
-
 ECode AsyncTask::MyThreadFactory::NewThread(
     /* [in] */ IRunnable* r,
     /* [out] */ IThread** t)
 {
+    VALIDATE_NOT_NULL(t);
+
     Int32 value;
     mCount->GetAndIncrement(&value);
-    return CThread::New(r, String("AsyncTask #") + StringUtils::Int32ToString(value), t);
+    StringBuilder sb("AsyncTask #");
+    sb.Append(value);
+    return CThread::New(r, sb.ToString(), t);
 }
-
 
 //====================================================================
 // AsyncTask::SerialExecutor::MyRunnable
 //====================================================================
-CAR_INTERFACE_IMPL_LIGHT(AsyncTask::SerialExecutor::MyRunnable, IRunnable)
 
 ECode AsyncTask::SerialExecutor::MyRunnable::Run()
 {
@@ -114,13 +125,22 @@ ECode AsyncTask::SerialExecutor::MyRunnable::Run()
 //====================================================================
 // AsyncTask::SerialExecutor
 //====================================================================
-CAR_INTERFACE_IMPL_LIGHT(AsyncTask::SerialExecutor, IExecutor)
+CAR_INTERFACE_IMPL(AsyncTask::SerialExecutor, Object, IExecutor)
+
+AsyncTask::SerialExecutor::SerialExecutor()
+{
+    CArrayDeque::New((IArrayDeque**)&mTasks);
+}
 
 ECode AsyncTask::SerialExecutor::Execute(
     /* [in] */ IRunnable* r)
 {
+    AutoLock lock(this);
+
     AutoPtr<IRunnable> runnable = new MyRunnable(this, r);
-    mTasks.PushBack(runnable);
+    Boolean result;
+    IDeque::Probe(mTasks)->Offer(TO_IINTERFACE(runnable), &result);
+
     if (mActive == NULL) {
         ScheduleNext();
     }
@@ -129,12 +149,11 @@ ECode AsyncTask::SerialExecutor::Execute(
 
 ECode AsyncTask::SerialExecutor::ScheduleNext()
 {
-    if (mTasks.GetSize() > 0) {
-        mActive = mTasks.GetFront();
-        mTasks.PopFront();
-    }
-    else
-        mActive = NULL;
+    AutoLock lock(this);
+
+    AutoPtr<IInterface> obj;
+    IDeque::Probe(mTasks)->Poll((IInterface**)&obj);
+    mActive = IRunnable::Probe(obj);
 
     if (mActive != NULL) {
         THREAD_POOL_EXECUTOR->Execute(mActive);
@@ -142,11 +161,10 @@ ECode AsyncTask::SerialExecutor::ScheduleNext()
     return NOERROR;
 }
 
-
 //====================================================================
 // AsyncTask::WorkerRunnable
 //====================================================================
-CAR_INTERFACE_IMPL_LIGHT(AsyncTask::WorkerRunnable, ICallable)
+CAR_INTERFACE_IMPL(AsyncTask::WorkerRunnable, Object, ICallable)
 
 ECode AsyncTask::WorkerRunnable::Call(
     /* [out] */ IInterface** result)
@@ -162,11 +180,9 @@ ECode AsyncTask::WorkerRunnable::Call(
     return NOERROR;
 }
 
-
 //====================================================================
 // AsyncTask::MyFutureTask
 //====================================================================
-CAR_INTERFACE_IMPL_LIGHT_2(AsyncTask::MyFutureTask, IRunnableFuture, IRunnable)
 
 void AsyncTask::MyFutureTask::Done()
 {
@@ -183,50 +199,6 @@ void AsyncTask::MyFutureTask::Done()
     //     postResultIfNotInvoked(null);
     // }
 }
-
-ECode AsyncTask::MyFutureTask::Run()
-{
-    return FutureTask::Run();
-}
-
-ECode AsyncTask::MyFutureTask::Cancel(
-    /* [in] */ Boolean mayInterruptIfRunning,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Cancel(mayInterruptIfRunning, result);
-}
-
-ECode AsyncTask::MyFutureTask::IsCancelled(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::IsCancelled(result);
-}
-
-ECode AsyncTask::MyFutureTask::IsDone(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::IsDone(result);
-}
-
-ECode AsyncTask::MyFutureTask::Get(
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Get(result);
-}
-
-ECode AsyncTask::MyFutureTask::Get(
-    /* [in] */ Int64 timeout,
-    /* [in] */ ITimeUnit* unit,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result);
-    return FutureTask::Get(timeout, unit, result);
-}
-
 
 //====================================================================
 // AsyncTask
@@ -249,14 +221,10 @@ ECode AsyncTask::Init()
 AutoPtr<IHandler> AsyncTask::GetHandler()
 {
     if (sHandler == NULL) {
-        AutoPtr<ILooperHelper> helper;
-        CLooperHelper::AcquireSingleton((ILooperHelper**)&helper);
-        helper->Prepare();
-        AutoPtr<ILooper> myLooper;
-        helper->MyLooper((ILooper**)&myLooper);
-        assert(myLooper != NULL && "Failed to get myLooper!");
+        AutoPtr<InternalHandler> ih = new InternalHandler();
+        ih->constructor();
+        sHandler = (IHandler*)ih.Get();
 
-        sHandler = new InternalHandler(myLooper); // TODO luo.zhaohui
     }
 
     return sHandler;
@@ -287,7 +255,7 @@ AutoPtr<IInterface> AsyncTask::PostResult(
     AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, data);
 
     AutoPtr<IMessage> msg;
-    GetHandler()->ObtainMessage(MESSAGE_POST_RESULT, atResult, (IMessage**)&msg);
+    GetHandler()->ObtainMessage(MESSAGE_POST_RESULT, TO_IINTERFACE(atResult), (IMessage**)&msg);
     msg->SendToTarget();
 
     return result;
@@ -349,6 +317,8 @@ ECode AsyncTask::ExecuteOnExecutor(
                 //         + " the task has already been executed "
                 //         + "(a task can be executed only once)");
                 return E_ILLEGAL_STATE_EXCEPTION;
+            case PENDING:
+                break;
         }
     }
 
@@ -372,11 +342,10 @@ void AsyncTask::PublishProgress(
     /* [in] */ ArrayOf<IInterface*>* values)
 {
     if (!IsCancelled()) {
-
         AutoPtr<AsyncTaskResult> atResult = new AsyncTaskResult(this, values);
 
         AutoPtr<IMessage> msg;
-        GetHandler()->ObtainMessage(MESSAGE_POST_PROGRESS, atResult, (IMessage**)&msg);
+        GetHandler()->ObtainMessage(MESSAGE_POST_PROGRESS, TO_IINTERFACE(atResult), (IMessage**)&msg);
         msg->SendToTarget();
     }
 }
