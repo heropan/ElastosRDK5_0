@@ -77,8 +77,7 @@ module
          * @return reference to this WaveHeader instance.
          */
         SetSampleRate(
-            [in] Int32 sampleRate,
-            [out] IWaveHeader** ret);
+            [in] Int32 sampleRate);
 
         /**
          * Get the number of bits per sample.
@@ -95,8 +94,7 @@ module
          * @return reference to this WaveHeader instance.
          */
         SetBitsPerSample(
-            [in] Int16 bitsPerSample,
-            [out] IWaveHeader** ret);
+            [in] Int16 bitsPerSample);
 
         /**
          * Get the size of audio data after this header, in bytes.
@@ -111,8 +109,7 @@ module
          * @return reference to this WaveHeader instance.
          */
         SetNumBytes(
-            [in] Int32 numBytes,
-            [out] IWaveHeader** ret);
+            [in] Int32 numBytes);
 
         /**
          * Read and initialize a WaveHeader.
@@ -133,11 +130,6 @@ module
         Write(
             [in] IOutputStream* outStream,
             [out] Int32* ret);
-
-        //@Override
-        ToString(
-            [out] String* ret);
-
     }
 
     }//namespace Srec

@@ -1,7 +1,7 @@
 #include "R.h"
 namespace Elastos {
 namespace Droid {
- 
+
 const int R::anim::accelerate_decelerate_interpolator;
 const int R::anim::accelerate_interpolator;
 const int R::anim::activity_close_enter;

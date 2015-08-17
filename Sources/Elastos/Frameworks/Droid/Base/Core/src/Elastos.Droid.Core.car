@@ -46,7 +46,7 @@ module
     //merge("../car/app/ResolverActivity.car");
     //merge("../car/pppoe.car");
     //merge("../car/ethernet.car");
-    //merge("../car/speech.car");
+    merge("../car/speech.car");
     //merge("../car/webkit.car");
     //merge("../car/privacy.car");
     merge("../car/service.car");

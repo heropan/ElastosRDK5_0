@@ -1,5 +1,8 @@
 module
 {
+    using interface Elastos.IO.IFile;
+    using interface Elastos.Core.ICharSequence;
+
     interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
@@ -26,9 +29,23 @@ module
     interface ISynthesisRequest {
         /**
          * Gets the text which should be synthesized.
+         * @deprecated As of API level 21, replaced by {@link #getCharSequenceText}.
+         * @Deprecated
          */
         GetText(
             [out] String* ret);
+
+        /**
+         * Gets the text which should be synthesized.
+         */
+        GetCharSequenceText(
+            [out] ICharSequence** text);
+
+        /**
+         * Gets the name of the voice to use.
+         */
+        GetVoiceName(
+            [out] String* name);
 
         /**
          * Gets the ISO 3-letter language code for the language to use.
@@ -65,6 +82,13 @@ module
          */
         GetParams(
             [out] IBundle** ret);
+
+        /**
+         * Gets the request caller Uid.
+         */
+        GetCallerUid(
+            [out] Int32* uid);
+
     }
 
     }//namespace Tts

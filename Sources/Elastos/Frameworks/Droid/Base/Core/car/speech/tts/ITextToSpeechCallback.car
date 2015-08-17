@@ -5,12 +5,15 @@ module
     namespace Speech {
     namespace Tts {
 
+    [oneway]
     interface IITextToSpeechCallback {
         OnStart(
             [in] String utteranceId);
-        OnDone(
+
+        OnSuccess(
             [in] String utteranceId);
-        OnError(
+
+        OnStop(
             [in] String utteranceId);
     }
 

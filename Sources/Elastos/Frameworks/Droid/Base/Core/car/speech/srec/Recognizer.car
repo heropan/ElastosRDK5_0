@@ -321,15 +321,6 @@ module
      */
     interface  IRecognizerGrammar {
         /**
-         * Create a <code>Grammar</code> instance.
-         * @param g2gFileName pathname of g2g file.
-         */
-        /*
-        construct(
-            [in] String g2gFileName);
-        */
-
-        /**
          * Reset all slots.
          */
         ResetAllSlots();
