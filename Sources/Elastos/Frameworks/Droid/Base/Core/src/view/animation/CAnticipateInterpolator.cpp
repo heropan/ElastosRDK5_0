@@ -7,6 +7,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CAnticipateInterpolator);
+CAR_INTERFACE_IMPL_5(CAnticipateInterpolator, Object, IAnticipateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode CAnticipateInterpolator::constructor()
 {
     mTension = 2.0f;
@@ -43,10 +46,8 @@ ECode CAnticipateInterpolator::GetInterpolation(
     /* [out] */ Float* output)
 {
     VALIDATE_NOT_NULL(output);
-
     // a(t) = t * t * ((tension + 1) * t - tension)
     *output = input * input * ((mTension + 1) * input - mTension);
-
     return NOERROR;
 }
 

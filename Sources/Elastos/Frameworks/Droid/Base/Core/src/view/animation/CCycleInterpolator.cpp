@@ -8,6 +8,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CCycleInterpolator);
+CAR_INTERFACE_IMPL_5(CCycleInterpolator, Object, ICycleInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode CCycleInterpolator::constructor(
     /* [in] */ Float cycles)
 {

@@ -126,7 +126,51 @@ ECode Animation::SetListenerHandlerRunable::Run()
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(Animation, Object, IAnimation);
+UInt32 Animation::AddRef()
+{
+    return ElRefBase::AddRef();
+}
+
+UInt32 Animation::Release()
+{
+    return ElRefBase::Release();
+}
+
+PInterface Animation::Probe(
+    /* [in]  */ REIID riid)
+{
+    if (riid == EIID_IAnimation) {
+        return (IAnimation*)this;
+    }
+    else if (riid == EIID_ICloneable) {
+        return (ICloneable*)this;
+    }
+    else if (riid == EIID_Animation) {
+        return reinterpret_cast<PInterface>((Animation*)this);
+    }
+
+    return Object::Probe(riid);
+}
+
+ECode Animation::GetInterfaceID(
+    /* [in] */ IInterface *pObject,
+    /* [out] */ InterfaceID *pIID)
+{
+    if (pIID == NULL) {
+        return E_INVALID_ARGUMENT;
+    }
+
+    if (pObject == (IInterface*)(IAnimation*)this) {
+        *pIID = EIID_IAnimation;
+    }
+    if (pObject == (IInterface*)(ICloneable*)this) {
+        *pIID = EIID_ICloneable;
+    }
+
+    return Object::GetInterfaceID(pObject, pIID);
+}
+
+CAR_INTERFACE_IMPL_2(Animation, Object, IAnimation, ICloneable);
 Animation::Animation()
     : mEnded(FALSE)
     , mStarted(FALSE)
@@ -191,12 +235,16 @@ Animation::Animation(
     Init(context, attrs);
 }
 
-//@Override
-AutoPtr<IAnimation> Animation::Clone()
+ECode Animation::Clone(
+    /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
     AutoPtr<IAnimation> result = GetCloneInstance();
-    if(result == NULL)
-        return result;
+    if(result == NULL) {
+        *object = result;
+        REFCOUNT_ADD(*object);
+        return NOERROR;
+    }
 
     Animation* animation = (Animation*)result->Probe(EIID_Animation);
     animation->mEnded = mEnded;
@@ -225,7 +273,9 @@ AutoPtr<IAnimation> Animation::Clone()
 
     //Reference object has Init in Constructor
     //So just need to value ordinary object
-    return result;
+    *object = result;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 /**

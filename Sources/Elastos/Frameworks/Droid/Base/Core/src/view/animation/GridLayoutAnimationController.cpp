@@ -9,38 +9,14 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-CAR_INTERFACE_IMPL(GridLayoutAnimationController::GridLayoutAnimationParameters, IGridLayoutAnimationParameters)
+CAR_INTERFACE_IMPL(GridLayoutAnimationController::GridLayoutAnimationParameters, LayoutAnimationController::AnimationParameters, IGridLayoutAnimationParameters);
 
 GridLayoutAnimationController::GridLayoutAnimationParameters::GridLayoutAnimationParameters()
-        : mColumn(0), mRow(0)
-        , mColumnsCount(0), mRowsCount(0)
+    : mColumn(0)
+    , mRow(0)
+    , mColumnsCount(0)
+    , mRowsCount(0)
 {}
-
-ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetCount(
-    /* [out] */ Int32* count)
-{
-    VALIDATE_NOT_NULL(count);
-    return LayoutAnimationController::AnimationParameters::GetCount(count);
-}
-
-ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetCount(
-    /* [in] */ Int32 count)
-{
-    return LayoutAnimationController::AnimationParameters::SetCount(count);
-}
-
-ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetIndex(
-    /* [out] */ Int32* index)
-{
-    VALIDATE_NOT_NULL(index);
-    return LayoutAnimationController::AnimationParameters::GetIndex(index);
-}
-
-ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetIndex(
-    /* [in] */ Int32 index)
-{
-    return LayoutAnimationController::AnimationParameters::SetIndex(index);
-}
 
 ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetColumn(
     /* [out] */ Int32* column)
@@ -72,7 +48,6 @@ ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetRow(
     return NOERROR;
 }
 
-
 ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetColumnsCount(
     /* [out] */ Int32* columnsCount)
 {
@@ -87,7 +62,6 @@ ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetColumnsCo
     mColumnsCount = columnsCount;
     return NOERROR;
 }
-
 
 ECode GridLayoutAnimationController::GridLayoutAnimationParameters::GetRowsCount(
     /* [out] */ Int32* rowsCount)
@@ -104,67 +78,34 @@ ECode GridLayoutAnimationController::GridLayoutAnimationParameters::SetRowsCount
     return NOERROR;
 }
 
-
+CAR_INTERFACE_IMPL(GridLayoutAnimationController, LayoutAnimationController, IGridLayoutAnimationController);
 GridLayoutAnimationController::GridLayoutAnimationController()
 {}
 
-/**
- * Creates a new grid layout animation controller from external resources.
- *
- * @param context the Context the view  group is running in, through which
- *        it can access the resources
- * @param attrs the attributes of the XML tag that is inflating the
- *        layout animation controller
- */
+
 GridLayoutAnimationController::GridLayoutAnimationController(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
-/**
- * Creates a new layout animation controller with the specified delays
- * and the specified animation.
- *
- * @param animation the animation to use on each child of the view group
- * @param columnDelay the delay by which each column animation must be offset
- * @param rowDelay the delay by which each row animation must be offset
- */
 GridLayoutAnimationController::GridLayoutAnimationController(
     /* [in] */ IAnimation* animation,
     /* [in] */ Float columnDelay,
     /* [in] */ Float rowDelay)
 {
-    Init(animation, columnDelay, rowDelay);
+    constructor(animation, columnDelay, rowDelay);
 }
 
-/**
- * Returns the delay by which the children's animation are offset from one
- * column to the other. The delay is expressed as a fraction of the
- * animation duration.
- *
- * @return a fraction of the animation duration
- *
- * @see #setColumnDelay(Float)
- * @see #getRowDelay()
- * @see #setRowDelay(Float)
- */
-Float GridLayoutAnimationController::GetColumnDelay()
+ECode GridLayoutAnimationController::GetColumnDelay(
+    /* [out] */ Float* columnDelay)
 {
-    return mColumnDelay;
+    VALIDATE_NOT_NULL(columnDelay);
+    *columnDelay = mColumnDelay;
+    return NOERROR;
 }
 
-/**
- * Sets the delay, as a fraction of the animation duration, by which the
- * children's animations are offset from one column to the other.
- *
- * @param columnDelay a fraction of the animation duration
- *
- * @see #getColumnDelay()
- * @see #getRowDelay()
- * @see #setRowDelay(Float)
- */
 ECode GridLayoutAnimationController::SetColumnDelay(
     /* [in] */ Float columnDelay)
 {
@@ -173,32 +114,14 @@ ECode GridLayoutAnimationController::SetColumnDelay(
     return NOERROR;
 }
 
-/**
- * Returns the delay by which the children's animation are offset from one
- * row to the other. The delay is expressed as a fraction of the
- * animation duration.
- *
- * @return a fraction of the animation duration
- *
- * @see #setRowDelay(Float)
- * @see #getColumnDelay()
- * @see #setColumnDelay(Float)
- */
-Float GridLayoutAnimationController::GetRowDelay()
+ECode GridLayoutAnimationController::GetRowDelay(
+    /* [out] */ Float* rowDelay)
 {
-    return mRowDelay;
+    VALIDATE_NOT_NULL(rowDelay);
+    *rowDelay = mRowDelay;
+    return NOERROR;
 }
 
-/**
- * Sets the delay, as a fraction of the animation duration, by which the
- * children's animations are offset from one row to the other.
- *
- * @param rowDelay a fraction of the animation duration
- *
- * @see #getRowDelay()
- * @see #getColumnDelay()
- * @see #setColumnDelay(Float)
- */
 ECode GridLayoutAnimationController::SetRowDelay(
     /* [in] */ Float rowDelay)
 {
@@ -206,41 +129,14 @@ ECode GridLayoutAnimationController::SetRowDelay(
     return NOERROR;
 }
 
-/**
- * Returns the direction of the animation. {@link #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK}
- * and {@link #DIRECTION_VERTICAL_MASK} can be used to retrieve the
- * horizontal and vertical components of the direction.
- *
- * @return the direction of the animation
- *
- * @see #setDirection(Int32)
- * @see #DIRECTION_BOTTOM_TO_TOP
- * @see #DIRECTION_TOP_TO_BOTTOM
- * @see #DIRECTION_LEFT_TO_RIGHT
- * @see #IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT
- * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
- * @see #DIRECTION_VERTICAL_MASK
- */
-Int32 GridLayoutAnimationController::GetDirection()
+ECode GridLayoutAnimationController::GetDirection(
+    /* [out] */ Int32* direction)
 {
-    return mDirection;
+    VALIDATE_NOT_NULL(direction)
+    *direction = mDirection;
+    return NOERROR;
 }
 
-/**
- * Sets the direction of the animation. The direction is expressed as an
- * integer containing a horizontal and vertical component. For instance,
- * <code>DIRECTION_BOTTOM_TO_TOP | IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT</code>.
- *
- * @param direction the direction of the animation
- *
- * @see #getDirection()
- * @see #DIRECTION_BOTTOM_TO_TOP
- * @see #DIRECTION_TOP_TO_BOTTOM
- * @see #DIRECTION_LEFT_TO_RIGHT
- * @see #IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT
- * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
- * @see #DIRECTION_VERTICAL_MASK
- */
 ECode GridLayoutAnimationController::SetDirection(
     /* [in] */ Int32 direction)
 {
@@ -248,35 +144,14 @@ ECode GridLayoutAnimationController::SetDirection(
     return NOERROR;
 }
 
-/**
- * Returns the direction priority for the animation. The priority can
- * be either {@link #IGridLayoutAnimationController::PRIORITY_NONE}, {@link #IGridLayoutAnimationController::PRIORITY_COLUMN} or
- * {@link #IGridLayoutAnimationController::PRIORITY_ROW}.
- *
- * @return the priority of the animation direction
- *
- * @see #setDirectionPriority(Int32)
- * @see #IGridLayoutAnimationController::PRIORITY_COLUMN
- * @see #IGridLayoutAnimationController::PRIORITY_NONE
- * @see #IGridLayoutAnimationController::PRIORITY_ROW
- */
-Int32 GridLayoutAnimationController::GetDirectionPriority()
+ECode GridLayoutAnimationController::GetDirectionPriority(
+    /* [out] */ Int32* directionPriority)
 {
-    return mDirectionPriority;
+    VALIDATE_NOT_NULL(directionPriority);
+    *directionPriority = mDirectionPriority;
+    return NOERROR;
 }
 
-/**
- * Specifies the direction priority of the animation. For instance,
- * {@link #IGridLayoutAnimationController::PRIORITY_COLUMN} will give priority to columns: the animation
- * will first play on the column, then on the rows.Z
- *
- * @param directionPriority the direction priority of the animation
- *
- * @see #getDirectionPriority()
- * @see #IGridLayoutAnimationController::PRIORITY_COLUMN
- * @see #IGridLayoutAnimationController::PRIORITY_NONE
- * @see #IGridLayoutAnimationController::PRIORITY_ROW
- */
 ECode GridLayoutAnimationController::SetDirectionPriority(
     /* [in] */ Int32 directionPriority)
 {
@@ -284,19 +159,14 @@ ECode GridLayoutAnimationController::SetDirectionPriority(
     return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
-Boolean GridLayoutAnimationController::WillOverlap()
+ECode GridLayoutAnimationController::WillOverlap(
+    /* [out] */ Boolean* willOverlap)
 {
-    return mColumnDelay < 1.0f || mRowDelay < 1.0f;
+    VALIDATE_NOT_NULL(willOverlap);
+    *willOverlap = mColumnDelay < 1.0f || mRowDelay < 1.0f;
+    return NOERROR;
 }
 
-/**
- * {@inheritDoc}
- */
-//@Override
 Int64 GridLayoutAnimationController::GetDelayForView(
     /* [in] */ IView* view)
 {
@@ -401,11 +271,11 @@ Int32 GridLayoutAnimationController::GetTransformedRowIndex(
     return index;
 }
 
-ECode GridLayoutAnimationController::Init(
+ECode GridLayoutAnimationController::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    LayoutAnimationController::Init(context, attrs);
+    LayoutAnimationController::constructor(context, attrs);
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::GridLayoutAnimation),
@@ -439,12 +309,12 @@ ECode GridLayoutAnimationController::Init(
     return NOERROR;
 }
 
-ECode GridLayoutAnimationController::Init(
+ECode GridLayoutAnimationController::constructor(
     /* [in] */ IAnimation* animation,
     /* [in] */ Float columnDelay,
     /* [in] */ Float rowDelay)
 {
-    LayoutAnimationController::Init(animation);
+    LayoutAnimationController::constructor(animation);
     mColumnDelay = columnDelay;
     mRowDelay = rowDelay;
 

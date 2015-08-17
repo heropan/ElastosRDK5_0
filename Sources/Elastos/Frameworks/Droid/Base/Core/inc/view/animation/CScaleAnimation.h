@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CSCALEANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CSCALEANIMATION_H__
 
-#include "_CScaleAnimation.h"
+#include "_Elastos_Droid_View_CScaleAnimation.h"
 #include "view/animation/ScaleAnimation.h"
-
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +13,9 @@ namespace Animation {
 CarClass(CScaleAnimation), public ScaleAnimation
 {
 public:
-    IANIMATION_METHODS_DECL()
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -43,9 +44,6 @@ public:
         /* [in] */ Float pivotXValue,
         /* [in] */ Float pivotYType,
         /* [in] */ Float pivotYValue);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     // TODO: Add your private member variables here.

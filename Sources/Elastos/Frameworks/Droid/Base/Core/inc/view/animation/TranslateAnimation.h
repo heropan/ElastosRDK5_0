@@ -15,9 +15,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class TranslateAnimation : public Animation
+class TranslateAnimation
+    : public Animation
+    , public ITranslateAnimation
 {
 public:
+    CAR_INTERFACE_DECL();
+
     TranslateAnimation(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -45,6 +49,9 @@ public:
         /* [in] */ Int32 parentWidth,
         /* [in] */ Int32 parentHeight);
 
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** object);
+
 protected:
     TranslateAnimation();
 
@@ -53,17 +60,17 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromXDelta,
         /* [in] */ Float toXDelta,
         /* [in] */ Float fromYDelta,
         /* [in] */ Float toYDelta);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromXType,
         /* [in] */ Float fromXValue,
         /* [in] */ Float toXType,
@@ -72,9 +79,9 @@ protected:
         /* [in] */ Float fromYValue,
         /* [in] */ Float toYType,
         /* [in] */ Float toYValue);
+
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
-    virtual CARAPI_(AutoPtr<IAnimation>) Clone();
 private:
     Int32 mFromXType;
     Int32 mToXType;

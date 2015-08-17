@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CACCELERATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CACCELERATEINTERPOLATOR_H__
 
-#include "_CAccelerateInterpolator.h"
+#include "_Elastos_Droid_View_Animation_CAccelerateInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -16,21 +16,31 @@ namespace View {
 namespace Animation {
 
 CarClass(CAccelerateInterpolator)
+    : public Object
+    , public IAccelerateInterpolator
+    , public INativeInterpolatorFactory
+    , public IHasNativeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Float factor);
-    
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-    
+
     CARAPI GetInterpolation(
         /* [in] */ Float input,
         /* [out] */ Float* output);
-    
+
 private:
     Float mFactor;
     Double mDoubleFactor;

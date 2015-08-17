@@ -6,7 +6,7 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-
+CAR_INTERFACE_IMPL(TranslateAnimation, Animation, ITranslateAnimation);
 TranslateAnimation::TranslateAnimation()
     : mFromXType(IAnimation::ABSOLUTE)
     , mToXType(IAnimation::ABSOLUTE)
@@ -22,7 +22,7 @@ TranslateAnimation::TranslateAnimation(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
 TranslateAnimation::TranslateAnimation(
@@ -31,7 +31,7 @@ TranslateAnimation::TranslateAnimation(
     /* [in] */ Float fromYDelta,
     /* [in] */ Float toYDelta)
 {
-    Init(fromXDelta, toXDelta, fromYDelta, toYDelta);
+    constructor(fromXDelta, toXDelta, fromYDelta, toYDelta);
 }
 
 TranslateAnimation::TranslateAnimation(
@@ -44,7 +44,7 @@ TranslateAnimation::TranslateAnimation(
     /* [in] */ Float toYType,
     /* [in] */ Float toYValue)
 {
-    Init(fromXType, fromXValue, toXType, toXValue,
+    constructor(fromXType, fromXValue, toXType, toXValue,
         fromYType, fromYValue, toYType, toYValue);
 }
 
@@ -55,13 +55,17 @@ AutoPtr<IAnimation> TranslateAnimation::GetCloneInstance()
     return result.Get();
 }
 
-AutoPtr<IAnimation> TranslateAnimation::Clone()
+ECode TranslateAnimation::Clone(
+    /* [out] */ IInterface** object)
 {
-    AutoPtr<IAnimation> result = Animation::Clone();
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_ITranslateAnimation))
-    {
-        return NULL;
+    VALIDATE_NOT_NULL(object);
+    *object = NULL;
+    AutoPtr<IAnimation> result;
+    Animation::Clone((IInterface**)&result);
+    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_ITranslateAnimation)) {
+        return NOERROR;
     }
+
     Animation* temp = (Animation*)result->Probe(EIID_Animation);
     TranslateAnimation* animation = (TranslateAnimation*)temp;
     animation->mFromXType = mFromXType;
@@ -75,7 +79,9 @@ AutoPtr<IAnimation> TranslateAnimation::Clone()
     animation->mToXDelta = mToXDelta;
     animation->mFromYDelta = mFromYDelta;
     animation->mToYDelta = mToYDelta;
-    return result;
+    *object = result;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 void TranslateAnimation::ApplyTransformation(
@@ -111,11 +117,11 @@ ECode TranslateAnimation::Initialize(
     return NOERROR;
 }
 
-ECode TranslateAnimation::Init(
+ECode TranslateAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(Animation::Init(context, attrs));
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TranslateAnimation),
@@ -152,7 +158,7 @@ ECode TranslateAnimation::Init(
     return NOERROR;
 }
 
-ECode TranslateAnimation::Init(
+ECode TranslateAnimation::constructor(
     /* [in] */ Float fromXDelta,
     /* [in] */ Float toXDelta,
     /* [in] */ Float fromYDelta,
@@ -171,7 +177,7 @@ ECode TranslateAnimation::Init(
     return NOERROR;
 }
 
-ECode TranslateAnimation::Init(
+ECode TranslateAnimation::constructor(
    /* [in] */ Float fromXType,
    /* [in] */ Float fromXValue,
    /* [in] */ Float toXType,

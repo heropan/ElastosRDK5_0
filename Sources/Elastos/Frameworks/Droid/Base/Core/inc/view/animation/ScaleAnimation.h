@@ -12,9 +12,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class ScaleAnimation : public Animation
+class ScaleAnimation
+    : public Animation
+    , public IScaleAnimation
 {
 public:
+    CAR_INTERFACE_DECL();
+
     ScaleAnimation(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -58,17 +62,17 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromX,
         /* [in] */ Float toX,
         /* [in] */ Float fromY,
         /* [in] */ Float toY);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromX,
         /* [in] */ Float toX,
         /* [in] */ Float fromY,
@@ -76,7 +80,7 @@ protected:
         /* [in] */ Float pivotX,
         /* [in] */ Float pivotY);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromX,
         /* [in] */ Float toX,
         /* [in] */ Float fromY,
@@ -95,7 +99,8 @@ protected:
 
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
-    CARAPI_(AutoPtr<IAnimation>) Clone();
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** object);
 
 private:
     /**

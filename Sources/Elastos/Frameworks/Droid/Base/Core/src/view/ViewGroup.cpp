@@ -3793,7 +3793,7 @@ ECode ViewGroup::AttachLayoutAnimationParameters(
     AutoPtr<IAnimationParameters> animationParams;
     params->GetLayoutAnimationParameters((IAnimationParameters**)&animationParams);
     if (animationParams == NULL) {
-        animationParams = new LayoutAnimationController::LayoutAnimationParameters();
+        animationParams = new LayoutAnimationController::AnimationParameters();
         params->SetLayoutAnimationParameters(animationParams);
     }
 

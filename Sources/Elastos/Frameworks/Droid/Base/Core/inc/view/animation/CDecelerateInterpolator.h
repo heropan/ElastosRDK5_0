@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CDECELERATEINTERPOLATOR_H__
 
-#include "_CDecelerateInterpolator.h"
+#include "_Elastos_Droid_View_CDecelerateInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -16,8 +16,18 @@ namespace View {
 namespace Animation {
 
 CarClass(CDecelerateInterpolator)
+    : public Object
+    , public IDecelerateInterpolator
+    , public INativeInterpolatorFactory
+    , public IHasNativeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(

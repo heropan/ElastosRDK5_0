@@ -14,11 +14,16 @@ namespace View {
 namespace Animation {
 
 class LayoutAnimationController
+    : public Object
+    , public ILayoutAnimationController
 {
 public:
     class AnimationParameters
+        : public Object
+        , public IAnimationParameters
     {
     public:
+        CAR_INTERFACE_DECL();
 
         AnimationParameters();
 
@@ -49,36 +54,8 @@ public:
     };
 
 public:
-    /**
-     * The set of parameters that has to be attached to each view contained in
-     * the view group animated by the layout animation controller. These
-     * parameters are used to compute the start time of each individual view's
-     * animation.
-     */
-    class LayoutAnimationParameters
-            : public ILayoutAnimationParameters
-            , public ElRefBase
-            , public AnimationParameters
-    {
-    public:
-        CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
-        CARAPI GetCount(
-            /* [out] */ Int32* count);
-
-        CARAPI SetCount(
-            /* [in] */ Int32 count);
-
-        CARAPI GetIndex(
-            /* [out] */ Int32* index);
-
-        CARAPI SetIndex(
-            /* [in] */ Int32 index);
-
-        friend class LayoutAnimationController;
-    };
-
-public:
     LayoutAnimationController(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -87,7 +64,8 @@ public:
         /* [in] */ IAnimation* animation,
         /* [in] */ Float delay = 0.5f);
 
-    virtual CARAPI_(Int32) GetOrder();
+    virtual CARAPI GetOrder(
+        /* [out] */ Int32* order);
 
     virtual CARAPI SetOrder(
         /* [in] */ Int32 order);
@@ -99,7 +77,8 @@ public:
     virtual CARAPI SetAnimation(
         /* [in] */ IAnimation* animation);
 
-    virtual CARAPI_(AutoPtr<IAnimation>) GetAnimation();
+    virtual CARAPI GetAnimation(
+        /* [out] */ IAnimation** animation);
 
     virtual CARAPI SetInterpolator(
         /* [in] */ IContext* context,
@@ -108,21 +87,26 @@ public:
     virtual CARAPI SetInterpolator(
         /* [in] */ IInterpolator* interpolator);
 
-    virtual CARAPI_(AutoPtr<IInterpolator>) GetInterpolator();
+    virtual CARAPI GetInterpolator(
+        /* [out] */ IInterpolator** interpolator);
 
-    virtual CARAPI_(Float) GetDelay();
+    virtual CARAPI GetDelay(
+        /* [out] */ Float* delay);
 
     virtual CARAPI SetDelay(
         /* [in] */ Float delay);
 
-    virtual CARAPI_(Boolean) WillOverlap();
+    virtual CARAPI WillOverlap(
+        /* [out] */ Boolean* willOverlap);
 
     virtual CARAPI Start();
 
-    CARAPI_(AutoPtr<IAnimation>) GetAnimationForView(
-        /* [in] */ IView* view);
+    CARAPI GetAnimationForView(
+        /* [in] */ IView* view,
+        /* [out] */ IAnimation** animation);
 
-    virtual CARAPI_(Boolean) IsDone();
+    virtual CARAPI IsDone(
+        /* [out] */ Boolean* done);
 
 protected:
     LayoutAnimationController();
@@ -131,13 +115,13 @@ protected:
         /* [in] */ IView* view);
 
     virtual CARAPI_(Int32) GetTransformedIndex(
-        /* [in] */ LayoutAnimationParameters* params);
+        /* [in] */ AnimationParameters* params);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAnimation* animation,
         /* [in] */ Float delay = 0.5f);
 

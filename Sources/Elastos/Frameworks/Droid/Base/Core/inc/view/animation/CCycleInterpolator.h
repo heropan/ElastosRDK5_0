@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
 
-#include "_CCycleInterpolator.h"
+#include "_Elastos_Droid_View_CCycleInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -16,19 +16,29 @@ namespace View {
 namespace Animation {
 
 CarClass(CCycleInterpolator)
+    : public Object
+    , public ICycleInterpolator
+    , public INativeInterpolatorFactory
+    , public IHasNativeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor(
         /* [in] */ Float cycles);
-    
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-    
+
     CARAPI GetInterpolation(
         /* [in] */ Float input,
         /* [out] */ Float* output);
-    
+
 private:
     Float mCycles;
 };

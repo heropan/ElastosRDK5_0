@@ -8,6 +8,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CAccelerateInterpolator);
+CAR_INTERFACE_IMPL_5(CAccelerateInterpolator, Object, IAccelerateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode CAccelerateInterpolator::constructor()
 {
     mFactor = 1.0f;

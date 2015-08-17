@@ -16,8 +16,18 @@ namespace View {
 namespace Animation {
 
 CarClass(CAnticipateOvershootInterpolator)
+    : public Object
+    , public IAnticipateOvershootInterpolator
+    , public INativeInterpolatorFactory
+    , public IHasNativeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
+
     CARAPI constructor();
 
     CARAPI constructor(
@@ -26,15 +36,15 @@ public:
     CARAPI constructor(
         /* [in] */ Float tension,
         /* [in] */ Float extraTension);
-    
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-    
+
     CARAPI GetInterpolation(
         /* [in] */ Float input,
         /* [out] */ Float* output);
-    
+
 private:
     Float mTension;
 };

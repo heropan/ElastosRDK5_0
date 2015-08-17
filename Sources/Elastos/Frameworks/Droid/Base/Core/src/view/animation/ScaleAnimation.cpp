@@ -9,6 +9,8 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_INTERFACE_IMPL(ScaleAnimation, Animation, IScaleAnimation);
+
 ScaleAnimation::ScaleAnimation()
     : mFromX(0.f)
     , mToX(0.f)
@@ -52,7 +54,7 @@ ScaleAnimation::ScaleAnimation(
     , mPivotX(0.f)
     , mPivotY(0.f)
 {
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
 ScaleAnimation::ScaleAnimation(
@@ -79,7 +81,7 @@ ScaleAnimation::ScaleAnimation(
     , mPivotX(0.f)
     , mPivotY(0.f)
 {
-    Init(fromX, toX, fromY, toY);
+    constructor(fromX, toX, fromY, toY);
 }
 
 ScaleAnimation::ScaleAnimation(
@@ -108,7 +110,7 @@ ScaleAnimation::ScaleAnimation(
     , mPivotX(0.f)
     , mPivotY(0.f)
 {
-    Init(fromX, toX, fromY, toY, pivotX, pivotY);
+    constructor(fromX, toX, fromY, toY, pivotX, pivotY);
 
     InitializePivotPoint();
 }
@@ -141,7 +143,7 @@ ScaleAnimation::ScaleAnimation(
     , mPivotX(0.f)
     , mPivotY(0.f)
 {
-    Init(fromX, toX, fromY, toY, pivotXType,
+    constructor(fromX, toX, fromY, toY, pivotXType,
         pivotXValue, pivotYType, pivotYValue);
 
     InitializePivotPoint();
@@ -154,12 +156,15 @@ AutoPtr<IAnimation> ScaleAnimation::GetCloneInstance()
     return result.Get();
 }
 
-AutoPtr<IAnimation> ScaleAnimation::Clone()
+ECode ScaleAnimation::Clone(
+    /* [out] */ IInterface** object)
 {
-    AutoPtr<IAnimation> result = Animation::Clone();
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IScaleAnimation))
-    {
-        return NULL;
+    VALIDATE_NOT_NULL(object);
+    *object = NULL;
+    AutoPtr<IAnimation> result;
+    Animation::Clone((IInterface**)&result);
+    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IScaleAnimation)) {
+        return NOERROR;
     }
     Animation* temp = (Animation*)result->Probe(EIID_Animation);
     ScaleAnimation* animation = (ScaleAnimation*)temp;
@@ -186,7 +191,9 @@ AutoPtr<IAnimation> ScaleAnimation::Clone()
 
     animation->mPivotX = mPivotX;
     animation->mPivotY = mPivotX;
-    return result;
+    *object = result;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 void ScaleAnimation::ApplyTransformation(
@@ -233,11 +240,11 @@ ECode ScaleAnimation::Initialize(
     return NOERROR;
 }
 
-ECode ScaleAnimation::Init(
+ECode ScaleAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(Animation::Init(context, attrs));
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
     context->GetResources((IResources**)&mResources);
 
@@ -330,7 +337,7 @@ ECode ScaleAnimation::Init(
     return NOERROR;
 }
 
-ECode ScaleAnimation::Init(
+ECode ScaleAnimation::constructor(
     /* [in] */ Float fromX,
     /* [in] */ Float toX,
     /* [in] */ Float fromY,
@@ -346,7 +353,7 @@ ECode ScaleAnimation::Init(
     return NOERROR;
 }
 
-ECode ScaleAnimation::Init(
+ECode ScaleAnimation::constructor(
     /* [in] */ Float fromX,
     /* [in] */ Float toX,
     /* [in] */ Float fromY,
@@ -368,7 +375,7 @@ ECode ScaleAnimation::Init(
     return NOERROR;
 }
 
-ECode ScaleAnimation::Init(
+ECode ScaleAnimation::constructor(
     /* [in] */ Float fromX,
     /* [in] */ Float toX,
     /* [in] */ Float fromY,

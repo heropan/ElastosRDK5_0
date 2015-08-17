@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 
-#include "_CAnticipateInterpolator.h"
+#include "_Elastos_Droid_View_CAnticipateInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;
@@ -16,21 +16,27 @@ namespace View {
 namespace Animation {
 
 CarClass(CAnticipateInterpolator)
+    : public Object
+    , public IAnticipateInterpolator
+    , public INativeInterpolatorFactory
+    , public IHasNativeInterpolator
+    , public IInterpolator
+    , public ITimeInterpolator
 {
 public:
     CARAPI constructor();
 
     CARAPI constructor(
         /* [in] */ Float tension);
-    
+
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
-    
+
     CARAPI GetInterpolation(
         /* [in] */ Float input,
         /* [out] */ Float* output);
-    
+
 private:
     Float mTension;
 };
