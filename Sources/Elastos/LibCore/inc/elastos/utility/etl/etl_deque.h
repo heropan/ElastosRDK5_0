@@ -303,7 +303,7 @@ DequeBase<Tp, Alloc>::~DequeBase()
 {
     if (mMap) {
         DestroyNodes(mStart.mNode, mFinish.mNode + 1);
-        DeallocateMap(mMap, mMapSize);
+        this->DeallocateMap(mMap, mMapSize);
     }
 }
 
@@ -324,7 +324,7 @@ DequeBase<Tp, Alloc>::InitializeMap(size_t numElements)
         numElements / __deque_buf_size(sizeof(Tp)) + 1;
 
     mMapSize = Max((size_t) sInitialMapSize, numNodes + 2);
-    mMap = AllocateMap(mMapSize);
+    mMap = this->AllocateMap(mMapSize);
 
     Tp** nstart = mMap + (mMapSize - numNodes) / 2;
     Tp** nfinish = nstart + numNodes;
@@ -333,7 +333,7 @@ DequeBase<Tp, Alloc>::InitializeMap(size_t numElements)
     { CreateNodes(nstart, nfinish); }
     catch(...)
     {
-        DeallocateMap(mMap, mMapSize);
+        this->DeallocateMap(mMap, mMapSize);
         mMap = 0;
         mMapSize = 0;
         THROW_EXCEPTION_AGAIN;
@@ -367,7 +367,7 @@ void
 DequeBase<Tp,Alloc>::DestroyNodes(Tp** nstart, Tp** nfinish)
 {
     for (Tp** n = nstart; n < nfinish; ++n) {
-        DeallocateNode(*n);
+        this->DeallocateNode(*n);
     }
 }
 

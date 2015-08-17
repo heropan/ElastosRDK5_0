@@ -12,6 +12,8 @@ INCLUDES += $(PREBUILD_INC)/utils
 
 SOURCES += os.cpp
 SOURCES += AsyncResult.cpp
+SOURCES += AsyncTask.cpp
+SOURCES += BaseBundle.cpp
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
@@ -74,7 +76,6 @@ SOURCES += Build.cpp
 #SOURCES += CDropBoxManagerEntry.cpp
 #SOURCES += CDropBoxManager.cpp
 #SOURCES += CSystemVibrator.cpp
-#SOURCES += AsyncTask.cpp
 #SOURCES += TokenWatcher.cpp
 #SOURCES += CUpdateLock.cpp
 #SOURCES += CCancellationSignal.cpp

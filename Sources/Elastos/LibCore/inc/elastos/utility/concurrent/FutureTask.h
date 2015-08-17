@@ -1,8 +1,8 @@
 
-#ifndef __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_FUTURETASK_H__
-#define __ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_FUTURETASK_H__
+#ifndef __ELASTOS_UTILITY_CONCURRENT_FUTURETASK_H__
+#define __ELASTOS_UTILITY_CONCURRENT_FUTURETASK_H__
 
-#include "Thread.h"
+#include <elastos/core/Thread.h>
 
 using Elastos::Core::IRunnable;
 using Elastos::Core::IThread;
@@ -17,26 +17,6 @@ class FutureTask
     , public IRunnableFuture
     , public IRunnable
 {
-public:
-    /**
-     * Simple linked list nodes to record waiting threads in a Treiber
-     * stack.  See other classes such as Phaser and SynchronousQueue
-     * for more detailed explanation.
-     */
-    class WaitNode
-        : public Object
-    {
-    public:
-        WaitNode()
-        {
-            mThread = Thread::GetCurrentThread();
-        }
-
-    public:
-        AutoPtr<IThread> mThread;
-        AutoPtr<WaitNode> mNext;
-    };
-
 public:
     CAR_INTERFACE_DECL()
 
@@ -65,6 +45,15 @@ public:
      * @throws NullPointerException if the runnable is null
      */
     FutureTask(
+        /* [in] */ IRunnable* runnable,
+        /* [in] */ IInterface* result);
+
+    virtual ~FutureTask();
+
+    CARAPI constructor(
+        /* [in] */ ICallable* callable);
+
+    CARAPI constructor(
         /* [in] */ IRunnable* runnable,
         /* [in] */ IInterface* result);
 
@@ -114,13 +103,6 @@ public:
     virtual CARAPI_(void) SetException(
         /* [in] */ ECode ec);
 
-    CARAPI constructor(
-        /* [in] */ ICallable* callable);
-
-    CARAPI constructor(
-        /* [in] */ IRunnable* runnable,
-        /* [in] */ IInterface* result);
-
     /**
      * Protected method invoked when this task transitions to state
      * {@code isDone} (whether normally or via cancellation). The
@@ -142,6 +124,26 @@ public:
      * @return true if successfully run and reset
      */
     virtual CARAPI_(Boolean) RunAndReset();
+
+private:
+    /**
+     * Simple linked list nodes to record waiting threads in a Treiber
+     * stack.  See other classes such as Phaser and SynchronousQueue
+     * for more detailed explanation.
+     */
+    class WaitNode
+        : public Object
+    {
+    public:
+        WaitNode()
+        {
+            mThread = Thread::GetCurrentThread();
+        }
+
+    public:
+        AutoPtr<IThread> mThread;
+        AutoPtr<WaitNode> mNext;
+    };
 
 private:
     /**
@@ -243,4 +245,4 @@ private:
 } // namespace Utility
 } // namespace Elastos
 
-#endif //__ELASTOS_UTILITY_CONCURRENT_ELASTOS_UTILITY_FUTURETASK_H__
+#endif //__ELASTOS_UTILITY_CONCURRENT_FUTURETASK_H__

@@ -83,6 +83,7 @@ module
     const E_PARCEL_FORMAT_EXCEPTION                     = 0xD6050000;
     const E_REMOTE_MAIL_EXCEPTION                       = 0xD6060000;
     const E_TRANSACTION_TOO_LARGE_EXCEPTION             = 0xD6070000;
+    const E_BAD_PARCELABLE_EXCEPTION                    = 0xD6080000;
 
     //==========================================================================
     // Elastos Droid Utility exception codes (Family: 0x57 - D7)

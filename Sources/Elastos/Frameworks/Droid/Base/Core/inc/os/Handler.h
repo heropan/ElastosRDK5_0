@@ -44,6 +44,7 @@ private:
 public:
     CAR_INTERFACE_DECL()
 
+    // sub class must call constructor() implicitly.
     Handler();
 
     Handler(

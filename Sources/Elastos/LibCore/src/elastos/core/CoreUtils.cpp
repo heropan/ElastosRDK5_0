@@ -92,5 +92,81 @@ AutoPtr<ICharSequence> CoreUtils::Convert(
     return (ICharSequence*)obj.Get();
 }
 
+AutoPtr<IArrayOf> CoreUtils::ConvertByteArray(
+    /* [in] */ ArrayOf<Byte>* arr)
+{
+    if (arr) {
+        Int32 length = arr->GetLength();
+        AutoPtr<IArrayOf> arrObj;
+        CArrayOf::New(length, (IArrayOf**)&arrObj);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IByte> item = ConvertByte((*arr)[i]);
+            arrObj->Set(i, item.Get());
+        }
+
+        return arrObj;
+    }
+    return NULL;
+}
+
+AutoPtr<IArrayOf> CoreUtils::ConvertChar32Array(
+    /* [in] */ ArrayOf<Char32>* arr)
+{
+    if (arr) {
+        Int32 length = arr->GetLength();
+        AutoPtr<IArrayOf> arrObj;
+        CArrayOf::New(length, (IArrayOf**)&arrObj);
+        for (Int32 i = 0; i < length; ++i) {
+            AutoPtr<IChar32> item = ConvertChar32((*arr)[i]);
+            arrObj->Set(i, item.Get());
+        }
+
+        return arrObj;
+    }
+    return NULL;
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Boolean>* arr)
+{
+    return ConvertImpl<Boolean, IBoolean>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Int16>* arr)
+{
+    return ConvertImpl<Int16, IInteger16>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Int32>* arr)
+{
+    return ConvertImpl<Int32, IInteger32>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Int64>* arr)
+{
+    return ConvertImpl<Int64, IInteger64>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Float>* arr)
+{
+    return ConvertImpl<Float, IFloat>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<Double>* arr)
+{
+    return ConvertImpl<Double, IDouble>(arr);
+}
+
+AutoPtr<IArrayOf> CoreUtils::Convert(
+    /* [in] */ ArrayOf<String>* arr)
+{
+    return ConvertImpl<String, ICharSequence>(arr);
+}
+
 } // namespace Core
 } // namespace Elastos
