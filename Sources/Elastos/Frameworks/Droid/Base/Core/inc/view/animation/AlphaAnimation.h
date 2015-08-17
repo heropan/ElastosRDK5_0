@@ -9,9 +9,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class AlphaAnimation : public Animation
+class AlphaAnimation
+    : public Animation
+    , public IAlphaAnimation
 {
 public:
+    CAR_INTERFACE_DECL();
+
     AlphaAnimation(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -20,11 +24,14 @@ public:
         /* [in] */ Float fromAlpha,
         /* [in] */ Float toAlpha);
 
-    CARAPI_(Boolean) WillChangeTransformationMatrix();
+    CARAPI WillChangeTransformationMatrix(
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) WillChangeBounds();
+    CARAPI WillChangeBounds(
+        /* [out] */ Boolean* result);
 
-    CARAPI_(Boolean) HasAlpha();
+    CARAPI HasAlpha(
+        /* [out] */ Boolean* has);
 
 protected:
     AlphaAnimation();
@@ -33,17 +40,18 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromAlpha,
         /* [in] */ Float toAlpha);
 
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
 
     CARAPI_(AutoPtr<IAnimation>) Clone();
+
 private:
     Float mFromAlpha;
     Float mToAlpha;

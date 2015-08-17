@@ -112,6 +112,7 @@ module
     merge("view/accessibility/IAccessibilityManager.car");
     merge("view/accessibility/IAccessibilityManagerClient.car");
 
+    merge("view/animation/NativeInterpolatorFactory.car");
     merge("view/animation/AccelerateDecelerateInterpolator.car");
     merge("view/animation/AccelerateInterpolator.car");
     merge("view/animation/AlphaAnimation.car");

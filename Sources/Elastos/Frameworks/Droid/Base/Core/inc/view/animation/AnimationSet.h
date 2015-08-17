@@ -16,9 +16,12 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class AnimationSet : public Animation
+class AnimationSet
+    : public Animation
+    , public IAnimationSet
 {
 public:
+    CAR_INTERFACE_DECL();
 
     AnimationSet(
         /* [in] */ IContext* context,
@@ -92,11 +95,11 @@ public:
 protected:
     AnimationSet();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Boolean shareInterpolator);
 
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();

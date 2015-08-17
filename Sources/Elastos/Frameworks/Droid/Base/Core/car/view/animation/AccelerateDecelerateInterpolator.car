@@ -13,6 +13,7 @@ module
      */
     /**
      * @Involve
+     * interface ITimeInterpolator
      * interface IInterpolator
      * interface IHasNativeInterpolator
      */

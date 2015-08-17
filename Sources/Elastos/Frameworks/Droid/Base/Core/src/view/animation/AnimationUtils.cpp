@@ -28,9 +28,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-Int64 AnimationUtils::CurrentAnimationTimeMillis()
+CAR_INTERFACE_IMPL(AnimationUtils, Object, IAnimationUtils);
+ECode AnimationUtils::CurrentAnimationTimeMillis(
+    /* [out] */ Int64* time)
 {
-    return SystemClock::GetUptimeMillis();
+    VALIDATE_NOT_NULL(time);
+    *time = SystemClock::GetUptimeMillis();
+    return NOERROR;
 }
 
 ECode AnimationUtils::LoadAnimation(

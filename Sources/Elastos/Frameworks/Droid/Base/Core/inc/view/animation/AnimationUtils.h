@@ -25,8 +25,12 @@ namespace Animation {
  *
  */
 class AnimationUtils
+    : public Object
+    , public IAnimationUtils
 {
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the current animation time in milliseconds. This time should be used when invoking
      * {@link Animation#setStartTime(long)}. Refer to {@link android.os.SystemClock} for more
@@ -37,7 +41,8 @@ public:
      *
      * @see android.os.SystemClock
      */
-    static CARAPI_(Int64) CurrentAnimationTimeMillis();
+    static CARAPI CurrentAnimationTimeMillis(
+        /* [out] */ Int64* time);
 
     /**
      * Loads an {@link Animation} object from a resource

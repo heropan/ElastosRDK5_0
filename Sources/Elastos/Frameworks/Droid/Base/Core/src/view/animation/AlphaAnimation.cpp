@@ -6,33 +6,21 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_INTERFACE_IMPL(AlphaAnimation, Animation, IAlphaAnimation);
 AlphaAnimation::AlphaAnimation()
-              : mFromAlpha(0.f)
-              , mToAlpha(0.f)
+    : mFromAlpha(0.f)
+    , mToAlpha(0.f)
 {}
 
-/**
- * Constructor used when an AlphaAnimation is loaded from a resource.
- *
- * @param context Application context to use
- * @param attrs Attribute set from which to read values
- */
 AlphaAnimation::AlphaAnimation(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-              : mFromAlpha(0.f)
-              , mToAlpha(0.f)
+    : mFromAlpha(0.f)
+    , mToAlpha(0.f)
 {
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
-/**
- * Constructor to use when building an AlphaAnimation from code
- *
- * @param fromAlpha Starting alpha value for the animation, where 1.0 means
- *        fully opaque and 0.0 means fully transparent.
- * @param toAlpha Ending alpha value for the animation.
- */
 AlphaAnimation::AlphaAnimation(
     /* [in] */ Float fromAlpha,
     /* [in] */ Float toAlpha)
@@ -50,8 +38,7 @@ AutoPtr<IAnimation> AlphaAnimation::GetCloneInstance()
 AutoPtr<IAnimation> AlphaAnimation::Clone()
 {
     AutoPtr<IAnimation> result = Animation::Clone();
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IAlphaAnimation))
-    {
+    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IAlphaAnimation)) {
         return NULL;
     }
     Animation* temp = (Animation*)result->Probe(EIID_Animation);
@@ -61,10 +48,6 @@ AutoPtr<IAnimation> AlphaAnimation::Clone()
     return result;
 }
 
-/**
- * Changes the alpha property of the supplied {@link Transformation}
- */
-//@Override
 void AlphaAnimation::ApplyTransformation(
     /* [in] */ Float interpolatedTime,
     /* [in] */ ITransformation* t)
@@ -72,29 +55,35 @@ void AlphaAnimation::ApplyTransformation(
     t->SetAlpha(mFromAlpha + ((mToAlpha - mFromAlpha) * interpolatedTime));
 }
 
-//@Override
-Boolean AlphaAnimation::WillChangeTransformationMatrix()
+ECode AlphaAnimation::WillChangeTransformationMatrix(
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
-//@Override
-Boolean AlphaAnimation::WillChangeBounds()
+ECode AlphaAnimation::WillChangeBounds(
+    /* [out] */ Boolean* result)
 {
-    return FALSE;
+    VALIDATE_NOT_NULL(result);
+    *result = FALSE;
+    return NOERROR;
 }
 
-//@Override
-Boolean AlphaAnimation::HasAlpha()
+ECode AlphaAnimation::HasAlpha(
+    /* [out] */ Boolean* has)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(has);
+    *has = TRUE;
+    return NOERROR;
 }
 
-ECode AlphaAnimation::Init(
+ECode AlphaAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(Animation::Init(context, attrs));
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AlphaAnimation),
@@ -112,14 +101,7 @@ ECode AlphaAnimation::Init(
     return NOERROR;
 }
 
-/**
- * Constructor to use when building an AlphaAnimation from code
- *
- * @param fromAlpha Starting alpha value for the animation, where 1.0 means
- *        fully opaque and 0.0 means fully transparent.
- * @param toAlpha Ending alpha value for the animation.
- */
-ECode AlphaAnimation::Init(
+ECode AlphaAnimation::constructor(
     /* [in] */ Float fromAlpha,
     /* [in] */ Float toAlpha)
 {

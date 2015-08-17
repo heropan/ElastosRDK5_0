@@ -28,6 +28,8 @@ namespace Animation {
 extern "C" const InterfaceID EIID_Animation;
 
 class Animation
+    : public Object
+    , public IAnimation
 {
     friend class AnimationSet;
 
@@ -40,18 +42,21 @@ public:
             /* [in] */ Animation* host,
             /* [in] */ Int32 type);
         CARAPI Run();
+
     private:
         Animation* mHost;
         const Int32 mType;
+
     public:
         static const Int32 ONSTART_TYPE = 0;
         static const Int32 ONREPEAT_TYPE = 1;
         static const Int32 ONEND_TYPE = 2;
     };
+
     /**
      * Utility class to parse a string description of a size.
      */
-    class Description : public ElRefBase
+    class Description : public Object
     {
     public:
         Description();
@@ -73,14 +78,15 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
     Animation();
 
     Animation(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
+    virtual ~Animation() = 0;
 
     virtual CARAPI Reset();
 
@@ -88,7 +94,8 @@ public:
 
     virtual CARAPI Detach();
 
-    virtual CARAPI_(Boolean) IsInitialized();
+    virtual CARAPI IsInitialized(
+        /* [out] */ Boolean* init);
 
     virtual CARAPI Initialize(
         /* [in] */ Int32 width,
@@ -136,7 +143,8 @@ public:
     virtual CARAPI SetRepeatCount(
         /* [in] */ Int32 repeatCount);
 
-    virtual CARAPI_(Boolean) IsFillEnabled();
+    virtual CARAPI IsFillEnabled(
+        /* [out] */ Boolean* enabled);
 
     virtual CARAPI SetFillEnabled(
         /* [in] */ Boolean fillEnabled);
@@ -165,49 +173,67 @@ public:
     virtual CARAPI SetDetachWallpaper(
         /* [in] */ Boolean detachWallpaper);
 
-    virtual CARAPI_(AutoPtr<IInterpolator>) GetInterpolator();
+    virtual CARAPI GetInterpolator(
+        /* [out] */ IInterpolator** interpolator);
 
-    virtual CARAPI_(Int64) GetStartTime();
+    virtual CARAPI GetStartTime(
+        /* [out] */ Int64* time);
 
-    virtual CARAPI_(Int64) GetDuration();
+    virtual CARAPI GetDuration(
+        /* [out] */ Int64* duration);
 
-    virtual CARAPI_(Int64) GetStartOffset();
+    virtual CARAPI GetStartOffset(
+        /* [out] */ Int64* startOffset);
 
-    virtual CARAPI_(Int32) GetRepeatMode();
+    virtual CARAPI GetRepeatMode(
+        /* [out] */ Int32* mode);
 
-    virtual CARAPI_(Int32) GetRepeatCount();
+    virtual CARAPI GetRepeatCount(
+        /* [out] */ Int32* count);
 
-    virtual CARAPI_(Boolean) GetFillBefore();
+    virtual CARAPI GetFillBefore(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) GetFillAfter();
+    virtual CARAPI GetFillAfter(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Int32) GetZAdjustment();
+    virtual CARAPI GetZAdjustment(
+        /* [out] */ Int32* zAdjustment);
 
-    virtual CARAPI_(Boolean) GetDetachWallpaper();
+    virtual CARAPI GetDetachWallpaper(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) WillChangeTransformationMatrix();
+    virtual CARAPI WillChangeTransformationMatrix(
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) WillChangeBounds();
+    virtual CARAPI WillChangeBounds(
+        /* [out] */ Boolean* result);
 
     virtual CARAPI SetAnimationListener(
         /* [in] */ IAnimationListener* listener);
 
-    virtual CARAPI_(Int64) ComputeDurationHint();
+    virtual CARAPI ComputeDurationHint(
+        /* [out] */ Int64* hint);
 
-    virtual CARAPI_(Boolean) GetTransformation(
+    virtual CARAPI GetTransformation(
         /* [in] */ Int64 currentTime,
-        /* [in] */ ITransformation* outTransformation);
+        /* [in] */ ITransformation* outTransformation,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) GetTransformation(
+    virtual CARAPI GetTransformation(
         /* [in] */ Int64 currentTime,
         /* [in, out] */ ITransformation* outTransformation,
-        /* [in] */ Float scale);
+        /* [in] */ Float scale,
+        /* [out] */ Boolean* result);
 
-    virtual CARAPI_(Boolean) HasStarted();
+    virtual CARAPI HasStarted(
+        /* [out] */ Boolean* has);
 
-    virtual CARAPI_(Boolean) HasEnded();
+    virtual CARAPI HasEnded(
+        /* [out] */ Boolean* has);
 
-    virtual CARAPI_(Boolean) HasAlpha();
+    virtual CARAPI HasAlpha(
+        /* [out] */ Boolean* has);
 
     virtual CARAPI GetInvalidateRegion(
         /* [in] */ Int32 left,
@@ -236,9 +262,9 @@ protected:
         /* [in] */ Int32 size,
         /* [in] */ Int32 parentSize);
 
-    CARAPI Init();
+    CARAPI constructor();
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 

@@ -126,10 +126,7 @@ ECode Animation::SetListenerHandlerRunable::Run()
     return NOERROR;
 }
 
-/**
- * Creates a new animation with a duration of 0ms, the default interpolator, with
- * fillBefore Set to TRUE and fillAfter Set to FALSE
- */
+CAR_INTERFACE_IMPL(Animation, Object, IAnimation);
 Animation::Animation()
     : mEnded(FALSE)
     , mStarted(FALSE)
@@ -300,9 +297,12 @@ ECode Animation::Detach()
  * @return Has this animation been initialized.
  * @see #initialize(Int32, Int32, Int32, Int32)
  */
-Boolean Animation::IsInitialized()
+ECode Animation::IsInitialized(
+    /* [out] */ Boolean* init)
 {
-    return mInitialized;
+    VALIDATE_NOT_NULL(init);
+    *init = mInitialized;
+    return NOERROR;
 }
 
 /**
@@ -562,9 +562,12 @@ ECode Animation::SetRepeatCount(
  * @return true if the animation will take fillBefore into account
  * @attr ref android.R.styleable#IAnimation::fillEnabled
  */
-Boolean Animation::IsFillEnabled()
+ECode Animation::IsFillEnabled(
+    /* [out] */ Boolean* enabled)
 {
-    return mFillEnabled;
+    VALIDATE_NOT_NULL(enabled);
+    *enabled = mFillEnabled;
+    return NOERROR;
 }
 
 /**
@@ -676,9 +679,13 @@ ECode Animation::SetDetachWallpaper(
  * @return the {@link Interpolator} associated to this animation
  * @attr ref android.R.styleable#IAnimation::interpolator
  */
-AutoPtr<IInterpolator> Animation::GetInterpolator()
+ECode Animation::GetInterpolator(
+    /* [out] */ IInterpolator** interpolator)
 {
-    return mInterpolator;
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = mInterpolator;
+    REFCOUNT_ADD(*interpolator);
+    return NOERROR;
 }
 
 /**
@@ -688,9 +695,12 @@ AutoPtr<IInterpolator> Animation::GetInterpolator()
  * @return the time in milliseconds when the animation should start or
  *         {@link #START_ON_FIRST_FRAME}
  */
-Int64 Animation::GetStartTime()
+ECode Animation::GetStartTime(
+    /* [out] */ Int64* time)
 {
-    return mStartTime;
+    VALIDATE_NOT_NULL(time);
+    *time = mStartTime;
+    return NOERROR;
 }
 
 /**
@@ -699,9 +709,12 @@ Int64 Animation::GetStartTime()
  * @return the duration in milliseconds of the animation
  * @attr ref android.R.styleable#IAnimation::duration
  */
-Int64 Animation::GetDuration()
+ECode Animation::GetDuration(
+    /* [out] */ Int64* duration)
 {
-    return mDuration;
+    VALIDATE_NOT_NULL(duration);
+    *duration = mDuration;
+    return NOERROR;
 }
 
 /**
@@ -710,9 +723,12 @@ Int64 Animation::GetDuration()
  * @return the start offset in milliseconds
  * @attr ref android.R.styleable#IAnimation::startOffset
  */
-Int64 Animation::GetStartOffset()
+ECode Animation::GetStartOffset(
+    /* [out] */ Int64* startOffset)
 {
-    return mStartOffset;
+    VALIDATE_NOT_NULL(startOffset);
+    *startOffset = mStartOffset;
+    return NOERROR;
 }
 
 /**
@@ -721,9 +737,12 @@ Int64 Animation::GetStartOffset()
  * @return either one of {@link #REVERSE} or {@link #IAnimation::RESTART}
  * @attr ref android.R.styleable#IAnimation::repeatMode
  */
-Int32 Animation::GetRepeatMode()
+ECode Animation::GetRepeatMode(
+    /* [out] */ Int32* mode)
 {
-    return mRepeatMode;
+    VALIDATE_NOT_NULL(mode);
+    *mode = mRepeatMode;
+    return NOERROR;
 }
 
 /**
@@ -733,9 +752,12 @@ Int32 Animation::GetRepeatMode()
  * @return the number of times the animation should repeat, or {@link #INFINITE}
  * @attr ref android.R.styleable#IAnimation::repeatCount
  */
-Int32 Animation::GetRepeatCount()
+ECode Animation::GetRepeatCount(
+    /* [out] */ Int32* count)
 {
-    return mRepeatCount;
+    VALIDATE_NOT_NULL(count);
+    *count = mRepeatCount;
+    return NOERROR;
 }
 
 /**
@@ -747,9 +769,12 @@ Int32 Animation::GetRepeatCount()
  * @return true if the animation applies its transformation before it starts
  * @attr ref android.R.styleable#IAnimation::fillBefore
  */
-Boolean Animation::GetFillBefore()
+ECode Animation::GetFillBefore(
+    /* [out] */ Boolean* result)
 {
-    return mFillBefore;
+    VALIDATE_NOT_NULL(result);
+    *result = mFillBefore;
+    return NOERROR;
 }
 
 /**
@@ -759,9 +784,12 @@ Boolean Animation::GetFillBefore()
  * @return TRUE if the animation applies its transformation after it ends
  * @attr ref android.R.styleable#IAnimation::fillAfter
  */
-Boolean Animation::GetFillAfter()
+ECode Animation::GetFillAfter(
+    /* [out] */ Boolean* result)
 {
-    return mFillAfter;
+    VALIDATE_NOT_NULL(result);
+    *result = mFillAfter;
+    return NOERROR;
 }
 
 /**
@@ -772,18 +800,24 @@ Boolean Animation::GetFillAfter()
  * {@link #ZORDER_TOP}, or {@link #ZORDER_BOTTOM}.
  * @attr ref android.R.styleable#IAnimation::zAdjustment
  */
-Int32 Animation::GetZAdjustment()
+ECode Animation::GetZAdjustment(
+    /* [out] */ Int32* zAdjustment)
 {
-    return mZAdjustment;
+    VALIDATE_NOT_NULL(zAdjustment);
+    *zAdjustment = mZAdjustment;
+    return NOERROR;
 }
 
 /**
  * Return value of {@link #setDetachWallpaper(Boolean)}.
  * @attr ref android.R.styleable#IAnimation::detachWallpaper
  */
-Boolean Animation::GetDetachWallpaper()
+ECode Animation::GetDetachWallpaper(
+    /* [out] */ Boolean* result)
 {
-    return mDetachWallpaper;
+    VALIDATE_NOT_NULL(result);
+    *result = mDetachWallpaper;
+    return NOERROR;
 }
 
 /**
@@ -793,10 +827,13 @@ Boolean Animation::GetDetachWallpaper()
  *
  * @return TRUE if this animation will change the transformation matrix
  */
-Boolean Animation::WillChangeTransformationMatrix()
+ECode Animation::WillChangeTransformationMatrix(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // assume we will change the matrix
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 /**
@@ -806,10 +843,13 @@ Boolean Animation::WillChangeTransformationMatrix()
  *
  * @return TRUE if this animation will change the view's bounds
  */
-Boolean Animation::WillChangeBounds()
+ECode Animation::WillChangeBounds(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     // assume we will change the bounds
-    return TRUE;
+    *result = TRUE;
+    return NOERROR;
 }
 
 /**
@@ -845,9 +885,12 @@ void Animation::EnsureInterpolator()
  * duration than what is computed here, but generally this should be
  * accurate.
  */
-Int64 Animation::ComputeDurationHint()
+ECode Animation::ComputeDurationHint(
+    /* [out] */ Int64* hint)
 {
-    return (GetStartOffset() + GetDuration()) * (GetRepeatCount() + 1);
+    VALIDATE_NOT_NULL(hint);
+    *hint = (GetStartOffset() + GetDuration()) * (GetRepeatCount() + 1);
+    return NOERROR;
 }
 
 /**
@@ -860,10 +903,12 @@ Int64 Animation::ComputeDurationHint()
  *        caller and will be filled in by the animation.
  * @return True if the animation is still running
  */
-Boolean Animation::GetTransformation(
+ECode Animation::GetTransformation(
     /* [in] */ Int64 currentTime,
-    /* [in] */ ITransformation* outTransformation)
+    /* [in] */ ITransformation* outTransformation,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     if (mStartTime == -1) {
         mStartTime = currentTime;
     }
@@ -939,19 +984,23 @@ Boolean Animation::GetTransformation(
 
     if (!mMore && mOneMoreTime) {
         mOneMoreTime = FALSE;
-        return TRUE;
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return mMore;
+    *result = mMore;
+    return NOERROR;
 }
 
 Boolean Animation::GetTransformation(
     /* [in] */ Int64 currentTime,
     /* [in, out] */ ITransformation* outTransformation,
-    /* [in] */ Float scale)
+    /* [in] */ Float scale,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     mScaleFactor = scale;
-    return GetTransformation(currentTime, outTransformation);
+    return GetTransformation(currentTime, outTransformation, result);
 }
 
 /**
@@ -959,9 +1008,12 @@ Boolean Animation::GetTransformation(
  *
  * @return TRUE if the animation has started, FALSE otherwise
  */
-Boolean Animation::HasStarted()
+ECode Animation::HasStarted(
+    /* [out] */ Boolean* has)
 {
-    return mStarted;
+    VALIDATE_NOT_NULL(has);
+    *has = mStarted;
+    return NOERROR;
 }
 
 /**
@@ -969,12 +1021,20 @@ Boolean Animation::HasStarted()
  *
  * @return TRUE if the animation has ended, FALSE otherwise
  */
-Boolean Animation::HasEnded() {
-    return mEnded;
+ECode Animation::HasEnded(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    *has = mEnded;
+    return NOERROR;
 }
 
-Boolean Animation::HasAlpha() {
-    return FALSE;
+ECode Animation::HasAlpha(
+    /* [out] */ Boolean* has)
+{
+    VALIDATE_NOT_NULL(has);
+    *has = FALSE;
+    return NOERROR;
 }
 
 /**
@@ -1090,20 +1150,13 @@ ECode Animation::InitializeInvalidateRegion(
     return NOERROR;
 }
 
-ECode Animation::Init()
+ECode Animation::constructor()
 {
     EnsureInterpolator();
     return NOERROR;
 }
 
-/**
- * Creates a new animation whose parameters come from the specified context and
- * attributes Set.
- *
- * @param context the application environment
- * @param attrs the Set of attributes holding the animation parameters
- */
-ECode Animation::Init(
+ECode Animation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {

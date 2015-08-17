@@ -23,6 +23,7 @@ const Int32 AnimationSet::PROPERTY_DURATION_MASK;
 const Int32 AnimationSet::PROPERTY_MORPH_MATRIX_MASK;
 const Int32 AnimationSet::PROPERTY_CHANGE_BOUNDS_MASK;
 
+CAR_INTERFACE_IMPL(AnimationSet, Animation, IAnimationSet);
 AnimationSet::AnimationSet()
     : mFlags(0)
     , mLastEnd(0)
@@ -49,7 +50,7 @@ AnimationSet::AnimationSet(
     , mHasAlpha(FALSE)
 {
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
 /**
@@ -68,7 +69,7 @@ AnimationSet::AnimationSet(
     , mHasAlpha(FALSE)
 {
     ASSERT_SUCCEEDED(CTransformation::New((ITransformation**)&mTempTransformation));
-    Init(shareInterpolator);
+    constructor(shareInterpolator);
 }
 
 AutoPtr<IAnimation> AnimationSet::GetCloneInstance()
@@ -545,13 +546,13 @@ Boolean AnimationSet::WillChangeBounds()
     return (mFlags & PROPERTY_CHANGE_BOUNDS_MASK) == PROPERTY_CHANGE_BOUNDS_MASK;
 }
 
-ECode AnimationSet::Init(
+ECode AnimationSet::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(Animation::Init(context, attrs));
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
-    // member variables may be changed in Animation::Init, initialize them here
+    // member variables may be changed in Animation::constructor, initialize them here
     //
     mFlags = 0;
     mLastEnd = 0;
@@ -605,7 +606,7 @@ ECode AnimationSet::Init(
     return NOERROR;
 }
 
-ECode AnimationSet::Init(
+ECode AnimationSet::constructor(
     /* [in] */ Boolean shareInterpolator)
 {
     SetFlag(PROPERTY_SHARE_INTERPOLATOR_MASK, shareInterpolator);
