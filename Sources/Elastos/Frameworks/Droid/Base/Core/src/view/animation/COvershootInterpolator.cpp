@@ -7,6 +7,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(COvershootInterpolator);
+CAR_INTERFACE_IMPL_5(COvershootInterpolator, Object, IOvershootInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode COvershootInterpolator::constructor()
 {
     mTension = 2.0f;

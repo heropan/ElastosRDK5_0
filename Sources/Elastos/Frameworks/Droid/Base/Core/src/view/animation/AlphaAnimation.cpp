@@ -24,8 +24,8 @@ AlphaAnimation::AlphaAnimation(
 AlphaAnimation::AlphaAnimation(
     /* [in] */ Float fromAlpha,
     /* [in] */ Float toAlpha)
-              : mFromAlpha(fromAlpha)
-              , mToAlpha(toAlpha)
+    : mFromAlpha(fromAlpha)
+    , mToAlpha(toAlpha)
 {}
 
 AutoPtr<IAnimation> AlphaAnimation::GetCloneInstance()
@@ -35,17 +35,23 @@ AutoPtr<IAnimation> AlphaAnimation::GetCloneInstance()
     return result.Get();
 }
 
-AutoPtr<IAnimation> AlphaAnimation::Clone()
+ECode AlphaAnimation::Clone(
+    /* [out] */ IInterface** object)
 {
-    AutoPtr<IAnimation> result = Animation::Clone();
+    VALIDATE_NOT_NULL(object);
+    *object = NULL;
+    AutoPtr<IAnimation> result;
+    Animation::Clone((IAnimation**)&result);
     if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IAlphaAnimation)) {
-        return NULL;
+        return NOERROR;
     }
     Animation* temp = (Animation*)result->Probe(EIID_Animation);
     AlphaAnimation* animation = (AlphaAnimation*)temp;
     animation->mFromAlpha = mFromAlpha;
     animation->mToAlpha = mToAlpha;
-    return result;
+    *object = result;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
 
 void AlphaAnimation::ApplyTransformation(

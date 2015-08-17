@@ -1209,6 +1209,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface ILinearInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1220,6 +1224,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAccelerateDecelerateInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1234,6 +1242,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAnticipateInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1252,6 +1264,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAnticipateOvershootInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1263,6 +1279,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IBounceInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1275,6 +1295,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface ICycleInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1289,6 +1313,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IDecelerateInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1303,6 +1331,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IAccelerateInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1317,6 +1349,10 @@ module
     //         [in] IAttributeSet* attrs);
 
     //     interface IOvershootInterpolator;
+    //     interface IHasNativeInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
+    //     interface INativeInterpolatorFactory;
     // }
 
     // [local]
@@ -1344,6 +1380,8 @@ module
     //         [in] Float pivotYValue);
 
     //      interface IRotateAnimation;
+    //      interface IAnimation;
+    //      interface ICloseable;
     // }
 
     // [local]
@@ -1369,6 +1407,8 @@ module
     //          [in] Float toYValue);
 
     //      interface ITranslateAnimation;
+    //      interface IAnimation;
+    //      interface ICloseable;
     // }
 
     // [local]
@@ -1383,6 +1423,8 @@ module
 
 
     //      interface IAlphaAnimation;
+    //      interface IAnimation;
+    //      interface ICloseable;
     // }
 
     // [local]
@@ -1416,6 +1458,7 @@ module
     //         [in] Float rowDelay);
 
     //     interface IGridLayoutAnimationController;
+    //     interface ILayoutAnimationController;
     // }
 
     // [local]
@@ -1449,6 +1492,8 @@ module
     //         [in] Float pivotYValue);
 
     //      interface IScaleAnimation;
+    //      interface IAnimation;
+    //      interface ICloseable;
     // }
 
     // [local]

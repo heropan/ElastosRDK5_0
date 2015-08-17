@@ -9,9 +9,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class RotateAnimation : public Animation
+class RotateAnimation
+    : public Animation
+    , public IRotateAnimation
 {
 public:
+    CAR_INTERFACE_DECL();
+
     RotateAnimation(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -41,6 +45,9 @@ public:
         /* [in] */ Int32 parentWidth,
         /* [in] */ Int32 parentHeight);
 
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** object);
+
 protected:
     RotateAnimation();
 
@@ -49,21 +56,21 @@ protected:
         /* [in] */ Float interpolatedTime,
         /* [in] */ ITransformation* t);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees,
         /* [in] */ Float pivotX,
         /* [in] */ Float pivotY);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Float fromDegrees,
         /* [in] */ Float toDegrees,
         /* [in] */ Int32 pivotXType,
@@ -72,8 +79,6 @@ protected:
         /* [in] */ Float pivotYValue);
 
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
-
-    CARAPI_(AutoPtr<IAnimation>) Clone();
 
 private:
     /**

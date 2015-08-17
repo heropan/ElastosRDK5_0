@@ -6,20 +6,20 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-IANIMATION_METHODS_IMPL(CRotateAnimation, RotateAnimation)
+CAR_OBJECT_IMPL(CRotateAnimation);
 
 ECode CRotateAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return RotateAnimation::Init(context, attrs);
+    return RotateAnimation::constructor(context, attrs);
 }
 
 ECode CRotateAnimation::constructor(
     /* [in] */ Float fromDegrees,
     /* [in] */ Float toDegrees)
 {
-    return RotateAnimation::Init(fromDegrees, toDegrees);
+    return RotateAnimation::constructor(fromDegrees, toDegrees);
 }
 
 ECode CRotateAnimation::constructor(
@@ -28,7 +28,7 @@ ECode CRotateAnimation::constructor(
     /* [in] */ Float pivotX,
     /* [in] */ Float pivotY)
 {
-    return RotateAnimation::Init(fromDegrees, toDegrees, pivotX, pivotY);
+    return RotateAnimation::constructor(fromDegrees, toDegrees, pivotX, pivotY);
 }
 
 ECode CRotateAnimation::constructor(
@@ -39,18 +39,8 @@ ECode CRotateAnimation::constructor(
     /* [in] */ Int32 pivotYType,
     /* [in] */ Float pivotYValue)
 {
-    return RotateAnimation::Init(fromDegrees, toDegrees, pivotXType,
+    return RotateAnimation::constructor(fromDegrees, toDegrees, pivotXType,
         pivotXValue, pivotYType, pivotYValue);
-}
-
-PInterface CRotateAnimation::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_Animation) {
-        return reinterpret_cast<PInterface>((Animation*)this);
-    }
-
-    return _CRotateAnimation::Probe(riid);
 }
 
 }   //namespace Animation

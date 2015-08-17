@@ -2,19 +2,21 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CALPHAANIMATION_H__
 
-#include "_CAlphaAnimation.h"
+#include "_Elastos_Droid_View_Animation_CAlphaAnimation.h"
 #include "view/animation/AlphaAnimation.h"
-
 
 namespace Elastos {
 namespace Droid {
 namespace View {
 namespace Animation {
 
-CarClass(CAlphaAnimation), public AlphaAnimation
+CarClass(CAlphaAnimation)
+    , public AlphaAnimation
 {
 public:
-    IANIMATION_METHODS_DECL()
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -23,9 +25,6 @@ public:
     CARAPI constructor(
         /* [in] */ Float fromAlpha,
         /* [in] */ Float toAlpha);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     // TODO: Add your private member variables here.

@@ -14,7 +14,9 @@ namespace Animation {
 CarClass(CRotateAnimation), public RotateAnimation
 {
 public:
-    IANIMATION_METHODS_DECL()
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -37,9 +39,6 @@ public:
         /* [in] */ Float pivotXValue,
         /* [in] */ Int32 pivotYType,
         /* [in] */ Float pivotYValue);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     // TODO: Add your private member variables here.

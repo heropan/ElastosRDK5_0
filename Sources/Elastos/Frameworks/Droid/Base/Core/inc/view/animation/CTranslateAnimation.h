@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CTRANSLATEANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CTRANSLATEANIMATION_H__
 
-#include "_CTranslateAnimation.h"
+#include "_Elastos_Droid_View_Animation_CTranslateAnimation.h"
 #include "view/animation/TranslateAnimation.h"
-
 
 namespace Elastos {
 namespace Droid {
@@ -14,7 +13,9 @@ namespace Animation {
 CarClass(CTranslateAnimation), public TranslateAnimation
 {
 public:
-    IANIMATION_METHODS_DECL();
+    CAR_INTERFACE_DECL();
+
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */ IContext* context,
@@ -35,9 +36,6 @@ public:
         /* [in] */ Float fromYValue,
         /* [in] */ Float toYType,
         /* [in] */ Float toYValue);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
 private:
     // TODO: Add your private member variables here.

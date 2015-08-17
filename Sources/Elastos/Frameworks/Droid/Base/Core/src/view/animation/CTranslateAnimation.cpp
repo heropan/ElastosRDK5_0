@@ -12,7 +12,7 @@ ECode CTranslateAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return TranslateAnimation::Init(context, attrs);
+    return TranslateAnimation::constructor(context, attrs);
 }
 
 ECode CTranslateAnimation::constructor(
@@ -21,7 +21,7 @@ ECode CTranslateAnimation::constructor(
     /* [in] */ Float fromYDelta,
     /* [in] */ Float toYDelta)
 {
-    return TranslateAnimation::Init(fromXDelta, toXDelta, fromYDelta, toYDelta);
+    return TranslateAnimation::constructor(fromXDelta, toXDelta, fromYDelta, toYDelta);
 }
 
 ECode CTranslateAnimation::constructor(
@@ -34,18 +34,8 @@ ECode CTranslateAnimation::constructor(
     /* [in] */ Float toYType,
     /* [in] */ Float toYValue)
 {
-    return TranslateAnimation::Init(fromYType, fromXValue, toXType, toXValue,
+    return TranslateAnimation::constructor(fromYType, fromXValue, toXType, toXValue,
         fromYType, fromYValue, toYType, toYValue);
-}
-
-PInterface CTranslateAnimation::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_Animation) {
-        return reinterpret_cast<PInterface>((Animation*)this);
-    }
-
-    return _CTranslateAnimation::Probe(riid);
 }
 
 }   //namespace Animation

@@ -9,7 +9,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-class GridLayoutAnimationController : public LayoutAnimationController
+class GridLayoutAnimationController
+    : public LayoutAnimationController
+    , public IGridLayoutAnimationController
 {
 public:
     /**
@@ -19,26 +21,14 @@ public:
      * animation.
      */
     class GridLayoutAnimationParameters
-            : public IGridLayoutAnimationParameters
-            , public LayoutAnimationController::AnimationParameters
-            , public ElRefBase
+            : public LayoutAnimationController::AnimationParameters
+            , public IGridLayoutAnimationParameters
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
 
         GridLayoutAnimationParameters();
 
-        CARAPI GetCount(
-            /* [out] */ Int32* count);
-
-        CARAPI SetCount(
-            /* [in] */ Int32 count);
-
-        CARAPI GetIndex(
-            /* [out] */ Int32* index);
-
-        CARAPI SetIndex(
-            /* [in] */ Int32 index);
         CARAPI GetColumn(
             /* [out] */ Int32* column);
 
@@ -87,50 +77,175 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL();
+
+    /**
+     * Creates a new grid layout animation controller from external resources.
+     *
+     * @param context the Context the view  group is running in, through which
+     *        it can access the resources
+     * @param attrs the attributes of the XML tag that is inflating the
+     *        layout animation controller
+     */
     GridLayoutAnimationController(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
+    /**
+     * Creates a new layout animation controller with the specified delays
+     * and the specified animation.
+     *
+     * @param animation the animation to use on each child of the view group
+     * @param columnDelay the delay by which each column animation must be offset
+     * @param rowDelay the delay by which each row animation must be offset
+     */
     GridLayoutAnimationController(
         /* [in] */ IAnimation* animation,
         /* [in] */ Float columnDelay = 0.5f,
         /* [in] */ Float rowDelay = 0.5f);
 
-    virtual CARAPI_(Float) GetColumnDelay();
+    /**
+     * Returns the delay by which the children's animation are offset from one
+     * column to the other. The delay is expressed as a fraction of the
+     * animation duration.
+     *
+     * @return a fraction of the animation duration
+     *
+     * @see #setColumnDelay(Float)
+     * @see #getRowDelay()
+     * @see #setRowDelay(Float)
+     */
+    virtual CARAPI GetColumnDelay(
+        /* [out] */ Float* columnDelay);
 
+    /**
+     * Sets the delay, as a fraction of the animation duration, by which the
+     * children's animations are offset from one column to the other.
+     *
+     * @param columnDelay a fraction of the animation duration
+     *
+     * @see #getColumnDelay()
+     * @see #getRowDelay()
+     * @see #setRowDelay(Float)
+     */
     virtual CARAPI SetColumnDelay(
         /* [in] */ Float columnDelay);
 
-    virtual CARAPI_(Float) GetRowDelay();
+    /**
+     * Returns the delay by which the children's animation are offset from one
+     * row to the other. The delay is expressed as a fraction of the
+     * animation duration.
+     *
+     * @return a fraction of the animation duration
+     *
+     * @see #setRowDelay(Float)
+     * @see #getColumnDelay()
+     * @see #setColumnDelay(Float)
+     */
+    virtual CARAPI GetRowDelay(
+        /* [out] */ Float* rowDelay);
 
+    /**
+     * Sets the delay, as a fraction of the animation duration, by which the
+     * children's animations are offset from one row to the other.
+     *
+     * @param rowDelay a fraction of the animation duration
+     *
+     * @see #getRowDelay()
+     * @see #getColumnDelay()
+     * @see #setColumnDelay(Float)
+     */
     virtual CARAPI SetRowDelay(
         /* [in] */ Float rowDelay);
 
-    virtual CARAPI_(Int32) GetDirection();
+    /**
+     * Returns the direction of the animation. {@link #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK}
+     * and {@link #DIRECTION_VERTICAL_MASK} can be used to retrieve the
+     * horizontal and vertical components of the direction.
+     *
+     * @return the direction of the animation
+     *
+     * @see #setDirection(Int32)
+     * @see #DIRECTION_BOTTOM_TO_TOP
+     * @see #DIRECTION_TOP_TO_BOTTOM
+     * @see #DIRECTION_LEFT_TO_RIGHT
+     * @see #IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT
+     * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
+     * @see #DIRECTION_VERTICAL_MASK
+     */
+    virtual CARAPI GetDirection(
+        /* [out] */ Int32* direction);
 
+    /**
+     * Sets the direction of the animation. The direction is expressed as an
+     * integer containing a horizontal and vertical component. For instance,
+     * <code>DIRECTION_BOTTOM_TO_TOP | IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT</code>.
+     *
+     * @param direction the direction of the animation
+     *
+     * @see #getDirection()
+     * @see #DIRECTION_BOTTOM_TO_TOP
+     * @see #DIRECTION_TOP_TO_BOTTOM
+     * @see #DIRECTION_LEFT_TO_RIGHT
+     * @see #IGridLayoutAnimationController::DIRECTION_RIGHT_TO_LEFT
+     * @see #IGridLayoutAnimationController::DIRECTION_HORIZONTAL_MASK
+     * @see #DIRECTION_VERTICAL_MASK
+     */
     virtual CARAPI SetDirection(
         /* [in] */ Int32 direction);
 
-    virtual CARAPI_(Int32) GetDirectionPriority();
+    /**
+     * Returns the direction priority for the animation. The priority can
+     * be either {@link #IGridLayoutAnimationController::PRIORITY_NONE}, {@link #IGridLayoutAnimationController::PRIORITY_COLUMN} or
+     * {@link #IGridLayoutAnimationController::PRIORITY_ROW}.
+     *
+     * @return the priority of the animation direction
+     *
+     * @see #setDirectionPriority(Int32)
+     * @see #IGridLayoutAnimationController::PRIORITY_COLUMN
+     * @see #IGridLayoutAnimationController::PRIORITY_NONE
+     * @see #IGridLayoutAnimationController::PRIORITY_ROW
+     */
+    virtual CARAPI GetDirectionPriority(
+        /* [out] */ Int32* directionPriority);
 
+    /**
+     * Specifies the direction priority of the animation. For instance,
+     * {@link #IGridLayoutAnimationController::PRIORITY_COLUMN} will give priority to columns: the animation
+     * will first play on the column, then on the rows.Z
+     *
+     * @param directionPriority the direction priority of the animation
+     *
+     * @see #getDirectionPriority()
+     * @see #IGridLayoutAnimationController::PRIORITY_COLUMN
+     * @see #IGridLayoutAnimationController::PRIORITY_NONE
+     * @see #IGridLayoutAnimationController::PRIORITY_ROW
+     */
     virtual CARAPI SetDirectionPriority(
         /* [in] */ Int32 directionPriority);
 
+    /**
+     * {@inheritDoc}
+     */
     //@Override
-    CARAPI_(Boolean) WillOverlap();
+    virtual CARAPI WillOverlap(
+        /* [out] */ Boolean* willOverlap);
 
 protected:
     GridLayoutAnimationController();
 
+    /**
+     * {@inheritDoc}
+     */
     //@Override
     CARAPI_(Int64) GetDelayForView(
         /* [in] */ IView* view);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IAnimation* animation,
         /* [in] */ Float columnDelay = 0.5f,
         /* [in] */ Float rowDelay = 0.5f);

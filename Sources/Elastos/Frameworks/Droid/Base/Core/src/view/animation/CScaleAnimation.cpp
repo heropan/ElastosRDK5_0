@@ -6,13 +6,13 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
-IANIMATION_METHODS_IMPL(CScaleAnimation, ScaleAnimation)
+CAR_OBJECT_IMPL(CScaleAnimation);
 
 ECode CScaleAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return ScaleAnimation::Init(context, attrs);
+    return ScaleAnimation::constructor(context, attrs);
 }
 
 ECode CScaleAnimation::constructor(
@@ -21,7 +21,7 @@ ECode CScaleAnimation::constructor(
     /* [in] */ Float fromY,
     /* [in] */ Float toY)
 {
-    return ScaleAnimation::Init(fromX, toX, fromY, toY);
+    return ScaleAnimation::constructor(fromX, toX, fromY, toY);
 }
 
 ECode CScaleAnimation::constructor(
@@ -32,7 +32,7 @@ ECode CScaleAnimation::constructor(
     /* [in] */ Float pivotX,
     /* [in] */ Float pivotY)
 {
-    return ScaleAnimation::Init(fromX, toX, fromY, toY, pivotX, pivotY);
+    return ScaleAnimation::constructor(fromX, toX, fromY, toY, pivotX, pivotY);
 }
 
 ECode CScaleAnimation::constructor(
@@ -45,18 +45,8 @@ ECode CScaleAnimation::constructor(
     /* [in] */ Float pivotYType,
     /* [in] */ Float pivotYValue)
 {
-    return ScaleAnimation::Init(fromX, toX, fromY, toY, pivotXType,
+    return ScaleAnimation::constructor(fromX, toX, fromY, toY, pivotXType,
         pivotXValue, pivotYType, pivotYValue);
-}
-
-PInterface CScaleAnimation::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_Animation) {
-        return reinterpret_cast<PInterface>((Animation*)this);
-    }
-
-    return _CScaleAnimation::Probe(riid);
 }
 
 }   //namespace Animation

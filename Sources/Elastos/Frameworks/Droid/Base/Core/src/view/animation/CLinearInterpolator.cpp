@@ -7,6 +7,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CLinearInterpolator);
+CAR_INTERFACE_IMPL_5(CLinearInterpolator, Object, ILinearInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode CLinearInterpolator::constructor()
 {
     return NOERROR;

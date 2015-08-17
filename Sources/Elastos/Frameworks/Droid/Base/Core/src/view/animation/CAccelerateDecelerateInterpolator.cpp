@@ -8,6 +8,9 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_OBJECT_IMPL(CAccelerateDecelerateInterpolator);
+CAR_INTERFACE_IMPL_5(CAccelerateDecelerateInterpolator, Object, IAccelerateDecelerateInterpolator,INativeInterpolatorFactory,IHasNativeInterpolator,IInterpolator,ITimeInterpolator);
+
 ECode CAccelerateDecelerateInterpolator::constructor()
 {
     return NOERROR;
@@ -25,9 +28,7 @@ ECode CAccelerateDecelerateInterpolator::GetInterpolation(
     /* [out] */ Float* output)
 {
     VALIDATE_NOT_NULL(output);
-
     *output = (Float)(Elastos::Core::Math::Cos((input + 1) * Elastos::Core::Math::DOUBLE_PI) / 2.0f) + 0.5f;
-
     return NOERROR;
 }
 

@@ -33,6 +33,9 @@ public:
     CARAPI HasAlpha(
         /* [out] */ Boolean* has);
 
+    virtual CARAPI Clone(
+        /* [out] */ IInterface** object);
+
 protected:
     AlphaAnimation();
 
@@ -49,8 +52,6 @@ protected:
         /* [in] */ Float toAlpha);
 
     virtual CARAPI_(AutoPtr<IAnimation>) GetCloneInstance();
-
-    CARAPI_(AutoPtr<IAnimation>) Clone();
 
 private:
     Float mFromAlpha;

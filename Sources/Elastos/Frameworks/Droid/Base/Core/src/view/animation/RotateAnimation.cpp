@@ -6,6 +6,8 @@ namespace Droid {
 namespace View {
 namespace Animation {
 
+CAR_INTERFACE_IMPL(RotateAnimation, Animation, IRotateAnimation);
+
 RotateAnimation::RotateAnimation()
     : mFromDegrees(0.f)
     , mToDegrees(0.f)
@@ -29,7 +31,7 @@ RotateAnimation::RotateAnimation(
     , mPivotX(0.f)
     , mPivotY(0.f)
 {
-    Init(context, attrs);
+    constructor(context, attrs);
 }
 
 RotateAnimation::RotateAnimation(
@@ -88,13 +90,17 @@ AutoPtr<IAnimation> RotateAnimation::GetCloneInstance()
     return result.Get();
 }
 
-AutoPtr<IAnimation> RotateAnimation::Clone()
+ECode RotateAnimation::Clone(
+    /* [out] */ IInterface** object)
 {
-    AutoPtr<IAnimation> result = Animation::Clone();
-    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IRotateAnimation))
-    {
-        return NULL;
+    VALIDATE_NOT_NULL(object);
+    *object = NULL;
+    AutoPtr<IAnimation> result;
+    Animation::Clone((IInterface**)&result);
+    if(NULL == result->Probe(EIID_Animation) || NULL ==result->Probe(EIID_IRotateAnimation)) {
+        return NOERROR;
     }
+
     Animation* temp = (Animation*)result->Probe(EIID_Animation);
     RotateAnimation* animation = (RotateAnimation*)temp;
     animation->mFromDegrees = mFromDegrees;
@@ -105,9 +111,10 @@ AutoPtr<IAnimation> RotateAnimation::Clone()
     animation->mPivotYValue = mPivotYValue;
     animation->mPivotX = mPivotX;
     animation->mPivotY = mPivotY;
-    return result;
+    *object = result;
+    REFCOUNT_ADD(*object);
+    return NOERROR;
 }
-
 
 void RotateAnimation::ApplyTransformation(
     /* [in] */ Float interpolatedTime,
@@ -139,11 +146,11 @@ ECode RotateAnimation::Initialize(
     return NOERROR;
 }
 
-ECode RotateAnimation::Init(
+ECode RotateAnimation::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    FAIL_RETURN(Animation::Init(context, attrs));
+    FAIL_RETURN(Animation::constructor(context, attrs));
 
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::RotateAnimation),
@@ -174,7 +181,7 @@ ECode RotateAnimation::Init(
     return NOERROR;
 }
 
-ECode RotateAnimation::Init(
+ECode RotateAnimation::constructor(
     /* [in] */ Float fromDegrees,
     /* [in] */ Float toDegrees)
 {
@@ -186,7 +193,7 @@ ECode RotateAnimation::Init(
     return NOERROR;
 }
 
-ECode RotateAnimation::Init(
+ECode RotateAnimation::constructor(
     /* [in] */ Float fromDegrees,
     /* [in] */ Float toDegrees,
     /* [in] */ Float pivotX,
@@ -203,7 +210,7 @@ ECode RotateAnimation::Init(
     return NOERROR;
 }
 
-ECode RotateAnimation::Init(
+ECode RotateAnimation::constructor(
     /* [in] */ Float fromDegrees,
     /* [in] */ Float toDegrees,
     /* [in] */ Int32 pivotXType,
