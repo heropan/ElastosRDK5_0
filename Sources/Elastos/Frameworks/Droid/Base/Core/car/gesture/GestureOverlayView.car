@@ -38,10 +38,11 @@ module
             [in] IMotionEvent* event);
     }
 
+    [local, deprecated]
     interface IOnGesturePerformedListener {
         OnGesturePerformed(
             [in] IGestureOverlayView* overlay,
-            [in] IMotionEvent* event);
+            [in] IGesture* gesture);
     }
 
     /**

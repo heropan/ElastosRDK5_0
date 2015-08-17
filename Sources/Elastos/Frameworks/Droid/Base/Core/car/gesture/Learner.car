@@ -24,7 +24,7 @@ module
          *
          * @return instances
          */
-        GetInstance(
+        GetInstances(
             [out] IArrayList** instances);
 
         /**
