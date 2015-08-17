@@ -1,0 +1,5 @@
+module
+{
+    merge("inputmethod/InputMethodSubtypeSwitchingController.car");
+    merge("inputmethod/InputMethodUtils.car");
+}

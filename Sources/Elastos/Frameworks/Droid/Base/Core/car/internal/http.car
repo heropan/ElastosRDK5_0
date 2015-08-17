@@ -1,0 +1,12 @@
+module
+{
+    merge("http/multipart/Part.car");
+    merge("http/multipart/PartBase.car");
+    merge("http/multipart/PartSource.car");
+    merge("http/multipart/ByteArrayPartSource.car");
+    merge("http/multipart/FilePart.car");
+    merge("http/multipart/FilePartSource.car");
+    merge("http/multipart/MultipartEntity.car");
+    merge("http/multipart/StringPart.car");
+    merge("http/HttpDateTime.car");
+}

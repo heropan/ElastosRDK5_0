@@ -1,0 +1,7 @@
+module
+{
+    merge("content/NativeLibraryHelper.car");
+    merge("content/PackageHelper.car");
+    merge("content/PackageMonitor.car");
+    merge("content/SelectionBuilder.car");
+}

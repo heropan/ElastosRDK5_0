@@ -32,8 +32,14 @@ module
     merge("../car/internal/app.car");
     merge("../car/internal/appwidget.car");
     merge("../car/internal/backup.car");
-    merge("../car/internal/view.car");
+    merge("../car/internal/content.car");
+    merge("../car/internal/database.car");
+    merge("../car/internal/http.car");
+    merge("../car/internal/inputmethod.car");
+    merge("../car/internal/logging.car");
+    merge("../car/internal/net.car");
     merge("../car/internal/policy.car");
+    merge("../car/internal/view.car");
     merge("../car/internal/widget.car");
 
 

@@ -94,15 +94,6 @@ module
     merge("net/http/HttpsConnection.car");
     merge("net/http/LoggingEventHandler.car");
     merge("net/http/X509TrustManagerExtensions.car");
-    merge("net/http/HttpDateTime.car");
-    merge("net/http/multipart/Part.car");
-    merge("net/http/multipart/PartBase.car");
-    merge("net/http/multipart/PartSource.car");
-    merge("net/http/multipart/ByteArrayPartSource.car");
-    merge("net/http/multipart/FilePart.car");
-    merge("net/http/multipart/FilePartSource.car");
-    merge("net/http/multipart/MultipartEntity.car");
-    merge("net/http/multipart/StringPart.car");
     merge("net/http/Request.car");
     merge("net/http/RequestFeeder.car");
     merge("net/http/RequestHandle.car");

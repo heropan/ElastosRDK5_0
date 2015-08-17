@@ -1,0 +1,7 @@
+module
+{
+    merge("net/LegacyVpnInfo.car");
+    merge("net/NetworkStatsFactory.car");
+    merge("net/VpnConfig.car");
+    merge("net/VpnProfile.car");
+}

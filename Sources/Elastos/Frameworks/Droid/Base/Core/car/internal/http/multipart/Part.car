@@ -4,7 +4,6 @@ module
 
     namespace Elastos {
     namespace Droid {
-    namespace Net {
     namespace Internal {
     namespace Http {
     namespace Multipart {
@@ -20,6 +19,7 @@ module
      *
      * @since 2.0
      */
+    [local]
     interface IPart {
         /**
          * Return the name of this part.
@@ -80,17 +80,9 @@ module
          */
         Length(
             [out] Int64* length);
-
-        /**
-         * Return a string representation of this object.
-         * @return A string representation of this object.
-         * @see java.lang.Object#toString()
-         */
-        ToString(
-            [out] String* str);
     }
 
-    [deprecated]
+    [local, deprecated]
     interface IPartHelper {
         /**
          * Return the boundary string.
@@ -105,6 +97,18 @@ module
          *
          * @param out The stream to write to.
          * @param parts The parts to write.
+         *
+         * @throws IOException If an I/O error occurs while writing the parts.
+         */
+        SendParts(
+            [in] IOutputStream* outStream,
+            [in] ArrayOf<IPart*>* parts);
+
+        /**
+         * Write all parts and the last boundary to the specified output stream.
+         *
+         * @param out The stream to write to.
+         * @param parts The parts to write.
          * @param partBoundary The ASCII bytes to use as the part boundary.
          *
          * @throws IOException If an I/O error occurs while writing the parts.
@@ -113,7 +117,7 @@ module
          */
         SendParts(
             [in] IOutputStream* outStream,
-            [in] ArrayOf<IPart*>* iparts,
+            [in] ArrayOf<IPart*>* parts,
             [in] ArrayOf<Byte>* partBoundary);
 
         /**
@@ -125,7 +129,7 @@ module
          * @throws IOException If an I/O error occurs while writing the parts.
          */
         GetLengthOfParts(
-            [in] ArrayOf<IPart*>* iparts,
+            [in] ArrayOf<IPart*>* parts,
             [out] Int64* length);
 
         /**
@@ -140,7 +144,7 @@ module
          * @since 3.0
          */
         GetLengthOfParts(
-            [in] ArrayOf<IPart*>* iparts,
+            [in] ArrayOf<IPart*>* parts,
             [in] ArrayOf<Byte>* partBoundary,
             [out] Int64* length);
     }
@@ -148,7 +152,6 @@ module
     } // namespace Multipart
     } // namespace Http
     } // namespace Internal
-    } // namespace Net
     } // namespace Droid
     } // namespace Elastos
 }
