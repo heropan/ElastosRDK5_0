@@ -429,6 +429,10 @@ ifeq "$(DEBUG_INFO)" "1"
 	$(CP) $(XDK_TARGETS)/$(TARGET_NAME) $(TARGET_DBG_INFO_PATH)
 endif
 else
+ifeq "$(XDK_TARGET_PLATFORM)" "win32"
+	$(LD) $(ECX_FLAGS) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map\
+		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group
+else
 	perl $(XDK_TOOLS)/res_trans.pl $(TARGET_NAME) "ecx" "$(SOURCES)"
 	if [ -e "__section.cpp" ]; then \
 		$(CC) $(C_DEFINES) -c -fno-builtin -o __section.o __section.cpp; \
@@ -451,6 +455,7 @@ ifeq "$(DEBUG_INFO)" "1"
 
 endif
 endif
+endif
 # endif (ELF PE)
 	touch $@
 
@@ -463,6 +468,10 @@ ifneq "$(USE_STDLIB)" ""
 ifeq "$(DEBUG_INFO)" "1"
 	$(CP) $(XDK_TARGETS)/$(TARGET_NAME) $(TARGET_DBG_INFO_PATH)
 endif
+else
+ifeq "$(XDK_TARGET_PLATFORM)" "win32"
+	$(LD) $(EXE_FLAGS) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map\
+		$(SEARCH_LIB) -o $(XDK_TARGETS)/$(TARGET_NAME) $(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(ELASTOS_LIBS) $(PASS2LD)--end-group
 else
 	perl $(XDK_TOOLS)/res_trans.pl $(TARGET_NAME) "exe" "$(SOURCES)"
 	if [ -e "__section.cpp" ]; then \
@@ -484,6 +493,7 @@ ifeq "$(DEBUG_INFO)" "1"
 		$(SEARCH_LIB) -o $(TARGET_DBG_INFO_PATH)/$(TARGET_NAME) \
 		$(PASS2LD)--start-group $(OBJECTS) $(LIBRARIES) $(RESSECTION) $(ELASTOS_LIBS) $(PASS2LD)--end-group $(EXE_CRT_END)
 
+endif
 endif
 endif
 # endif (ELF PE)
@@ -514,6 +524,11 @@ ifneq "$(TARGET_NAME).car" "$(filter %.car,$(SOURCES))"
 endif
 endif
 
+ifeq "$(XDK_TARGET_PLATFORM)" "win32"
+	$(LD) $(DLL_FLAGS) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) -o  $(XDK_TARGETS)/$@ \
+		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
+		$(CAR_DEF_FILE) $(PASS2LD)--end-group
+else
 ifeq "$(DEBUG_INFO)" "1"
 	@echo $(LD) $(DLL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) -Wl, -Map -Wl, $(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
@@ -532,6 +547,7 @@ else
 		$(PASS2LD)--strip-all $(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) \
 		$(ELASTOS_LIBS) $(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 endif
+endif
 # endif (ELF PE)
 	if [ -f $(XDK_USER_LIB)/$(TARGET_NAME).lib ]; then  \
 	    touch $(XDK_USER_LIB)/$(TARGET_NAME).lib; \
@@ -547,6 +563,11 @@ ifneq "$(TARGET_NAME).car" "$(filter %.car,$(SOURCES))"
 endif
 endif
 
+ifeq "$(XDK_TARGET_PLATFORM)" "win32"
+	$(LD) $(DLL_FLAGS) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) -o  $(XDK_TARGETS)/$@ \
+		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
+		$(CAR_DEF_FILE) $(PASS2LD)--end-group
+else
 ifeq "$(DEBUG_INFO)" "1"
 	@echo $(LD) $(DLL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
 		-o $(TARGET_DBG_INFO_PATH)/$@ \
@@ -565,6 +586,7 @@ else
 		$(PASS2LD)--strip-all $(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) \
 		$(ELASTOS_LIBS) $(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 endif
+endif
 # endif (ELF PE)
 	if [ -f $(XDK_USER_LIB)/$(TARGET_NAME).lib ]; then  \
 	    touch $(XDK_USER_LIB)/$(TARGET_NAME).lib; \
@@ -580,6 +602,11 @@ ifneq "$(TARGET_NAME).car" "$(filter %.car,$(SOURCES))"
 endif
 endif
 
+ifeq "$(XDK_TARGET_PLATFORM)" "win32"
+	$(LD) $(DLL_FLAGS) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) -o  $(XDK_TARGETS)/$@ \
+		$(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) $(ELASTOS_LIBS) \
+		$(CAR_DEF_FILE) $(PASS2LD)--end-group
+else
 ifeq "$(DEBUG_INFO)" "1"
 ifneq "$(EXPORT_ALL_SYMBOLS)" ""
 	@echo $(LD) $(DLL_FLAGS) $(DLLTOOL_FLAGS) $(DLL_CRT_BEGIN) $(LINK_FLAGS) $(PASS2LD)-Map $(PASS2LD)$(TARGET_NAME).map $(SEARCH_LIB) \
@@ -611,7 +638,7 @@ else
 		$(PASS2LD)--strip-all $(PASS2LD)--start-group $(OBJECTS:exp=def) $(LIBRARIES) \
 		$(ELASTOS_LIBS) $(CAR_DEF_FILE) $(RESSECTION) $(DLL_ENTRY_OBJECT_FILE) $(PASS2LD)--end-group $(DLL_CRT_END)
 endif
-
+endif
 ifneq "$(APPPACK)" ""
 	if [ ! -d  $(XDK_TARGETS)/$(TARGET_NAME) ]; then $(MKDIR) $(XDK_TARGETS)/$(TARGET_NAME); fi
 ifneq "$(FILERESOURCES)" ""
