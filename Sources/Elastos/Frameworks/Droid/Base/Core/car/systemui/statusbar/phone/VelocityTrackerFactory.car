@@ -1,0 +1,31 @@
+
+module
+{
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.SystemUI.StatusBar.Phone.IVelocityTrackerInterface;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    /**
+     * A class to generate {@link VelocityTrackerInterface}, depending on the configuration.
+     */
+    interface IVelocityTrackerFactory {
+
+        const String PLATFORM_IMPL = "platform";
+        const String NOISY_IMPL = "noisy";
+
+        Obtain(
+            [in] IContext* ctx,
+            [out] IVelocityTrackerInterface** result);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

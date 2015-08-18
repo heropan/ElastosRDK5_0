@@ -1,0 +1,37 @@
+
+module
+{
+    interface Elastos.Droid.View.IVelocityTracker;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    /**
+     * An implementation of {@link VelocityTrackerInterface} using the platform-standard
+     * {@link VelocityTracker}.
+     */
+    /**
+     * @Involve
+     * interface IVelocityTrackerInterface
+     */
+    interface IPlatformVelocityTracker {
+
+        SetTracker(
+            [in] IVelocityTracker* tracker);
+    }
+
+    interface IPlatformVelocityTrackerHelper {
+
+        Obtain(
+            [out] IPlatformVelocityTracker** result);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

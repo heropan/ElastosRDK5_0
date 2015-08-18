@@ -1,0 +1,34 @@
+
+module
+{
+    interface Elastos.Droid.SystemUI.StatusBar.Phone.IPhoneStatusBar;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    /**
+     * @Involve
+     * interface IPanelBar
+     */
+    [local]
+    interface IPhoneStatusBarView {
+
+        GetBarTransitions(
+            [out] IBarTransitions** result);
+
+        SetBar(
+            [in] IPhoneStatusBar* bar);
+
+        SetScrimController(
+            [in] IScrimController* scrimController);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

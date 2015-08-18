@@ -75,7 +75,6 @@ module
             [in] Boolean left);
     }
 
-
     } // namespace StatusBar
     } // namespace SystemUI
     } // namespace Droid

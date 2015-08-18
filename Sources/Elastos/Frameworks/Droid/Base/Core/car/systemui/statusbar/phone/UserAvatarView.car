@@ -1,0 +1,48 @@
+
+module
+{
+    interface Elastos.Droid.Graphics.IBitmap;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace StatusBar {
+    namespace Phone {
+
+    /**
+     * A view that displays a user image cropped to a circle with a frame.
+     */
+    /**
+     * @Involve
+     * interface IView
+     */
+    interface IUserAvatarView {
+
+        SetBitmap(
+            [in] IBitmap* bitmap);
+
+        SetFrameColor(
+            [in] Int32 frameColor);
+
+        SetActiveFrameColor(
+            [in] Int32 activeFrameColor);
+
+        SetFrameWidth(
+            [in] Float frameWidth);
+
+        SetFramePadding(
+            [in] Float framePadding);
+
+        ConfigureBounds();
+
+        SetDrawable(
+            [in] IDrawable* d);
+    }
+
+    } // namespace Phone
+    } // namespace StatusBar
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}
