@@ -1,0 +1,17 @@
+
+TARGET_NAME= params
+TARGET_TYPE= lib
+
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http
+INCLUDES += $(MAKEDIR)/../../../../inc/org/apache/http/params
+
+SOURCES = HttpAbstractParamBean.cpp
+SOURCES += HttpProtocolParams.cpp
+SOURCES += CHttpProtocolParams.cpp
+SOURCES += HttpConnectionParams.cpp
+SOURCES += CHttpConnectionParams.cpp
+SOURCES += AbstractHttpParams.cpp
+SOURCES += CBasicHttpParams.cpp
+SOURCES += CDefaultedHttpParams.cpp
+SOURCES += CHttpConnectionParamBean.cpp
+SOURCES += CHttpProtocolParamBean.cpp

@@ -1,5 +1,6 @@
 
 #include "HttpConnectionMetricsImpl.h"
+#include <elastos/core/CInteger64.h>
 #include <elastos/Logger.h>
 
 using Elastos::Core::ICharSequence;

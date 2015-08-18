@@ -24,3 +24,4 @@ DIRS += impl/cookie
 DIRS += impl/entity
 DIRS += impl/io
 DIRS += message
+DIRS += params
