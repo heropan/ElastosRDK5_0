@@ -1,0 +1,30 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace SystemUI {
+    namespace Media {
+
+    /**
+     * @Involve
+     * interface ICheckBoxOnCheckedChangeListener
+     * interface IDialogInterfaceOnClickListener
+     * interface Elastos.Droid.View.IContextThemeWrapper
+     * interface ILayoutInflaterFactory2
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IComponentCallbacks2
+     * interface IWindowOnWindowDismissedCallback
+     * interface IActivity
+     * interface IDialogInterface
+     * interface IAlertActivity
+     */
+    interface IMediaProjectionPermissionActivity {}
+
+    } // namespace Media
+    } // namespace SystemUI
+    } // namespace Droid
+    } // namespace Elastos
+}

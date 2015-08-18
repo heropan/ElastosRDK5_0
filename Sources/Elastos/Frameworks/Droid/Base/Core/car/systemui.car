@@ -20,10 +20,59 @@ module
     merge("systemui/SystemUIApplication.car");
     merge("systemui/SystemUIService.car");
 
+    merge("systemui/doze/DozeHost.car");
+    merge("systemui/doze/DozeLog.car");
+    merge("systemui/doze/DozeService.car");
+
+    merge("systemui/egg/LLand.car");
+    merge("systemui/egg/LLandActivity.car");
+
+    merge("systemui/keyguard/KeyguardService.car");
+    merge("systemui/keyguard/KeyguardViewMediator.car");
+
+    merge("systemui/media/MediaProjectionPermissionActivity.car");
+    merge("systemui/media/NotificationPlayer.car");
+    merge("systemui/media/RingtonePlayer.car");
+
+    merge("systemui/net/NetworkOverLimitActivity.car");
+
+    merge("systemui/power/PowerNotificationWarnings.car");
+    merge("systemui/power/PowerUI.car");
+
+    merge("systemui/qs/DataUsageGraph.car");
+    merge("systemui/qs/GlobalSetting.car");
+    merge("systemui/qs/PseudoGridView.car");
+    merge("systemui/qs/QSDetailClipper.car");
+    merge("systemui/qs/QSDetailItems.car");
+    merge("systemui/qs/QSDualTileLabel.car");
+    merge("systemui/qs/QSFooter.car");
+    merge("systemui/qs/QSPanel.car");
+    merge("systemui/qs/QSTile.car");
+    merge("systemui/qs/QSTileView.car");
+    merge("systemui/qs/SecureSetting.car");
+    merge("systemui/qs/SignalTileView.car");
+    merge("systemui/qs/UsageTracker.car");
+
+    merge("systemui/qs/tiles/AirplaneModeTile.car");
+    merge("systemui/qs/tiles/BluetoothTile.car");
+    merge("systemui/qs/tiles/CastTile.car");
+    merge("systemui/qs/tiles/CellularTile.car");
+    merge("systemui/qs/tiles/ColorInversionTile.car");
+    merge("systemui/qs/tiles/DataUsageDetailView.car");
+    merge("systemui/qs/tiles/FlashlightTile.car");
+    merge("systemui/qs/tiles/HotspotTile.car");
+    merge("systemui/qs/tiles/IntentTile.car");
+    merge("systemui/qs/tiles/LocationTile.car");
+    merge("systemui/qs/tiles/RotationLockTile.car");
+    merge("systemui/qs/tiles/UserDetailItemView.car");
+    merge("systemui/qs/tiles/UserDetailView.car");
+    merge("systemui/qs/tiles/WifiTile.car");
+
     merge("systemui/statusbar/ActivatableNotificationView.car");
     merge("systemui/statusbar/AlphaImageView.car");
     merge("systemui/statusbar/AlphaOptimizedFrameLayout.car");
     merge("systemui/statusbar/AnimatedImageView.car");
+    merge("systemui/statusbar/BackDropView.car");
     merge("systemui/statusbar/BaseStatusBar.car");
     merge("systemui/statusbar/CommandQueue.car");
     merge("systemui/statusbar/DelegateViewHelper.car");
@@ -44,6 +93,9 @@ module
     merge("systemui/statusbar/SystemBars.car");
 
     merge("systemui/statusbar/phone/ActivityStarter.car");
+    merge("systemui/statusbar/phone/ScrimController.car");
+    merge("systemui/statusbar/phone/StatusBarKeyguardViewManager.car");
+    merge("systemui/statusbar/phone/StatusBarWindowManager.car");
 
 //     merge("systemui/statusbar/phone/FastColorDrawable.car");
 //     merge("systemui/statusbar/phone/IconMerger.car");
@@ -98,8 +150,7 @@ module
     merge("systemui/statusbar/policy/ZenModeController.car");
 
 
-//     merge("systemui/media/NotificationPlayer.car");
-//     merge("systemui/media/RingtonePlayer.car");
+
 
 //     merge("systemui/recent/TaskDescription.car");
 //     merge("systemui/recent/RecentsCallback.car");

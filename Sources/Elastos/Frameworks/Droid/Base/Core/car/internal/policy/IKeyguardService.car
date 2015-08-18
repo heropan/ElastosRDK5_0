@@ -3,8 +3,8 @@ module
 {
     interface Elastos.Droid.Os.IBundle;
     interface Elastos.Droid.View.IMotionEvent;
-    interface Elastos.Droid.Internal.Policy.IKeyguardShowCallback;
-    interface Elastos.Droid.Internal.Policy.IKeyguardExitCallback;
+    interface Elastos.Droid.Internal.Policy.IIKeyguardShowCallback;
+    interface Elastos.Droid.Internal.Policy.IIKeyguardExitCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -29,7 +29,7 @@ module
             [out] Boolean* result);
 
         [oneway] VerifyUnlock(
-            [in] IKeyguardExitCallback* cb);
+            [in] IIKeyguardExitCallback* cb);
 
         [oneway] KeyguardDone(
             [in] Boolean authenticated,
@@ -59,7 +59,7 @@ module
             [in] Int32 reason);
 
         [oneway] OnScreenTurnedOn(
-            [in] IKeyguardShowCallback* cb);
+            [in] IIKeyguardShowCallback* cb);
 
         [oneway] SetKeyguardEnabled(
             [in] Boolean enabled);
