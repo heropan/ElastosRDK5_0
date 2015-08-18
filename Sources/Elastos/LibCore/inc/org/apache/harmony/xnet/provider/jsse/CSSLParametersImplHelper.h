@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSSLPARAMETERSIMPLHELPER_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSSLPARAMETERSIMPLHELPER_H__
 
-#include "_CSSLParametersImplHelper.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CSSLParametersImplHelper.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CPINLISTENTRY_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CPINLISTENTRY_H__
 
-#include "_CPinListEntry.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CPinListEntry.h"
 
 namespace Org {
 namespace Apache {

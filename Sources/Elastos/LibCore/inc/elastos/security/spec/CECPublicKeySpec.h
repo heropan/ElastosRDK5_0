@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CECPUBLICKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CECPUBLICKEYSPEC_H__
 
-#include "_CECPublicKeySpec.h"
+#include "_Elastos_Security_Spec_CECPublicKeySpec.h"
 
 namespace Elastos {
 namespace Security {

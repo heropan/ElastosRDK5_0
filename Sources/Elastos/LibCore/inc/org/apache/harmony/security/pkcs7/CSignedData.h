@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATA_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNEDDATA_H__
 
-#include "_CSignedData.h"
+#include "_Org_Apache_Harmony_Security_Pkcs7_CSignedData.h"
 
 using Elastos::Utility::IList;
 

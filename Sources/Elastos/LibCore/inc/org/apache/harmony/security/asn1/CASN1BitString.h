@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRING_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRING_H__
 
-#include "_CASN1BitString.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1BitString.h"
 #include "ASN1BitString.h"
 
 using Elastos::IO::IInputStream;

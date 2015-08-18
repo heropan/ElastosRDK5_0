@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CX509ENCODEDKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CX509ENCODEDKEYSPEC_H__
 
-#include "_CX509EncodedKeySpec.h"
+#include "_Elastos_Security_Spec_CX509EncodedKeySpec.h"
 #include "EncodedKeySpec.h"
 
 namespace Elastos {

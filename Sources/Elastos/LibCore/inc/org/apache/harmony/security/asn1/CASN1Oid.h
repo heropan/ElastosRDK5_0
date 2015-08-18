@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OID_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OID_H__
 
-#include "_CASN1Oid.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1Oid.h"
 #include <ASN1Oid.h>
 #include <Asn1TypeMacro.h>
 

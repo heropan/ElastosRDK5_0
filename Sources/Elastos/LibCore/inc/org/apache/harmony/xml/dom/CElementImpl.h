@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CELEMENTIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CELEMENTIMPL_H__
 
-#include "_CElementImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CElementImpl.h"
 
 namespace Org {
 namespace Apache {

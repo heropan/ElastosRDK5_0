@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORYHELPER_H__
 #define __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORYHELPER_H__
 
-#include "_CCertificateFactoryHelper.h"
+#include "_Elastos_Security_Cert_CCertificateFactoryHelper.h"
 
 
 using Elastos::Security::IProvider;

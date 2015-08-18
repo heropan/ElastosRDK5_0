@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CPKIXBUILDERPARAMETERS_H__
 #define __ELASTOS_SECURITY_CERT_CPKIXBUILDERPARAMETERS_H__
 
-#include "_CPKIXBuilderParameters.h"
+#include "_Elastos_Security_Cert_CPKIXBuilderParameters.h"
 #include "PKIXParameters.h"
 
 using Elastos::Utility::IDate;

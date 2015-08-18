@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CREASONFLAGSHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CREASONFLAGSHELPER_H__
 
-#include "_CReasonFlagsHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CReasonFlagsHelper.h"
 
 namespace Org {
 namespace Apache {

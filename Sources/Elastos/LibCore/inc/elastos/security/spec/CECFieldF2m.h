@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CECFIELDF2M_H__
 #define __ELASTOS_SECURITY_SPEC_CECFIELDF2M_H__
 
-#include "_CECFieldF2m.h"
+#include "_Elastos_Security_Spec_CECFieldF2m.h"
 
 using Elastos::Math::IBigInteger;
 

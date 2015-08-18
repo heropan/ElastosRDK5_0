@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CDSAPRIVATEKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CDSAPRIVATEKEYSPEC_H__
 
-#include "_CDSAPrivateKeySpec.h"
+#include "_Elastos_Security_Spec_CDSAPrivateKeySpec.h"
 
 using Elastos::Math::IBigInteger;
 

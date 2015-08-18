@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS8_CPRIVATEKEYINFO_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS8_CPRIVATEKEYINFO_H__
 
-#include "_CPrivateKeyInfo.h"
+#include "_Org_Apache_Harmony_Security_Pkcs8_CPrivateKeyInfo.h"
 
 using Org::Apache::Harmony::Security::X509::IAlgorithmIdentifier;
 using Elastos::Utility::IList;

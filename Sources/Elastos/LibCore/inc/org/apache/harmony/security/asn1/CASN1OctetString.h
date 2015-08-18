@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRING_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRING_H__
 
-#include "_CASN1OctetString.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1OctetString.h"
 #include <ASN1StringType.h>
 
 using Elastos::IO::IInputStream;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTOREPASSWORDPROTECTION_H__
 #define __ELASTOS_SECURITY_CKEYSTOREPASSWORDPROTECTION_H__
 
-#include "_CKeyStorePasswordProtection.h"
+#include "_Elastos_Security_CKeyStorePasswordProtection.h"
 #include "elastos/Object.h"
 
 

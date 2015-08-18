@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CENTITYREFERENCEIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CENTITYREFERENCEIMPL_H__
 
-#include "_CEntityReferenceImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CEntityReferenceImpl.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CCRLDISTRIBUTIONPOINTS_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CCRLDISTRIBUTIONPOINTS_H__
 
-#include "_CCRLDistributionPoints.h"
+#include "_Org_Apache_Harmony_Security_X509_CCRLDistributionPoints.h"
 
 namespace Org {
 namespace Apache {

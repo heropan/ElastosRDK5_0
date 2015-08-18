@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
 #define __ORG_APACHE_HTTP_CLIENT_ENTITY_CURLENCODEDFORMENTITY_H_
 
-#include "_Org_Apache_Http_Auth_CUrlEncodedFormEntity.h"
+#include "_Org_Apache_Http_Client_Entity_Org_Apache_Http_Auth_CUrlEncodedFormEntity.h"
 #include "StringEntity.h"
 
 using Elastos::Utility::IList;

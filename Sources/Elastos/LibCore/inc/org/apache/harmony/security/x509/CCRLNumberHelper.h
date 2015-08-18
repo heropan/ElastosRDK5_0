@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CCRLNUMBERHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CCRLNUMBERHELPER_H__
 
-#include "_CCRLNumberHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CCRLNumberHelper.h"
 
 namespace Org {
 namespace Apache {

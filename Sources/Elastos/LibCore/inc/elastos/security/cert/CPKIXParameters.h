@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CPKIXPARAMETERS_H__
 #define __ELASTOS_SECURITY_CERT_CPKIXPARAMETERS_H__
 
-#include "_CPKIXParameters.h"
+#include "_Elastos_Security_Cert_CPKIXParameters.h"
 #include "PKIXParameters.h"
 
 namespace Elastos {

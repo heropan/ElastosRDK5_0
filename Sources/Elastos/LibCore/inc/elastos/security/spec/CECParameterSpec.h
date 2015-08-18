@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CECPARAMETERSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CECPARAMETERSPEC_H__
 
-#include "_CECParameterSpec.h"
+#include "_Elastos_Security_Spec_CECParameterSpec.h"
 
 using Elastos::Math::IBigInteger;
 

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTPATHIMPLHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTPATHIMPLHELPER_H__
 
-#include "_CX509CertPathImplHelper.h"
+#include "_Org_Apache_Harmony_Security_Provider_Cert_CX509CertPathImplHelper.h"
 
 namespace Org {
 namespace Apache {

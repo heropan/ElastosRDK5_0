@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
 
-#include "_CServicesHelper.h"
+#include "_Org_Apache_Harmony_Security_Fortress_CServicesHelper.h"
 
 using Elastos::Security::IProvider;
 using Elastos::Utility::IList;

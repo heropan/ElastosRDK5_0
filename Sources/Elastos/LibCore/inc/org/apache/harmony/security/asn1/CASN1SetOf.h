@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SETOF_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SETOF_H__
 
-#include "_CASN1SetOf.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1SetOf.h"
 #include <ASN1SetOf.h>
 #include <Asn1TypeMacro.h>
 

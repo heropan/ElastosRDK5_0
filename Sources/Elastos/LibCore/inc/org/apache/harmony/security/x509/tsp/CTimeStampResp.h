@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTIMESTAMPRESP_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTIMESTAMPRESP_H__
 
-#include "_CTimeStampResp.h"
+#include "_Org_Apache_Harmony_Security_X509_Tsp_CTimeStampResp.h"
 
 namespace Org {
 namespace Apache {

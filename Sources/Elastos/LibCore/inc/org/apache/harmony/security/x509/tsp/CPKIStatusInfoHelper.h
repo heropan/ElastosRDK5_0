@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CPKISTATUSINFOHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CPKISTATUSINFOHELPER_H__
 
-#include "_CPKIStatusInfoHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_Tsp_CPKIStatusInfoHelper.h"
 
 namespace Org {
 namespace Apache {

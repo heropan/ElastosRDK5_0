@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CNODELISTIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CNODELISTIMPL_H__
 
-#include "_CNodeListImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CNodeListImpl.h"
 
 namespace Org {
 namespace Apache {

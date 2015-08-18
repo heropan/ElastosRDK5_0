@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CTBSCERTLIST_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CTBSCERTLIST_H__
 
-#include "_CTBSCertList.h"
+#include "_Org_Apache_Harmony_Security_X509_CTBSCertList.h"
 
 namespace Org {
 namespace Apache {

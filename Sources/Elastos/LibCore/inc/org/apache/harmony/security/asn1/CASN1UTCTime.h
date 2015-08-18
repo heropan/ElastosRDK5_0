@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1UTCTIME_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1UTCTIME_H__
 
-#include "_CASN1UTCTime.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1UTCTime.h"
 #include <ASN1Time.h>
 #include <Asn1TypeMacro.h>
 

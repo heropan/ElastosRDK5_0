@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_COPENSSLMESSAGEDIGESTJDK_SHA256_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_COPENSSLMESSAGEDIGESTJDK_SHA256_H__
 
-#include "_COpenSSLMessageDigestJDK_SHA256.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_COpenSSLMessageDigestJDK_SHA256.h"
 
 namespace Org {
 namespace Apache {

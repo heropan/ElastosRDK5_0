@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CORADDRESS_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CORADDRESS_H__
 
-#include "_CORAddress.h"
+#include "_Org_Apache_Harmony_Security_X509_CORAddress.h"
 
 namespace Org {
 namespace Apache {

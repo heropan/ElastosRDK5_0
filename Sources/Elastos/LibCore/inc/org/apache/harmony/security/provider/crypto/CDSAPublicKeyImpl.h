@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CDSAPUBLICKEYIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CDSAPUBLICKEYIMPL_H__
 
-#include "_CDSAPublicKeyImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Crypto_CDSAPublicKeyImpl.h"
 
 namespace Org {
 namespace Apache {

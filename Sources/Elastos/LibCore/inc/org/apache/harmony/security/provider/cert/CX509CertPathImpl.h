@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTPATHIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTPATHIMPL_H__
 
-#include "_CX509CertPathImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Cert_CX509CertPathImpl.h"
 
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;

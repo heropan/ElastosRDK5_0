@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CRSAOTHERPRIMEINFO_H__
 #define __ELASTOS_SECURITY_SPEC_CRSAOTHERPRIMEINFO_H__
 
-#include "_CRSAOtherPrimeInfo.h"
+#include "_Elastos_Security_Spec_CRSAOtherPrimeInfo.h"
 
 using Elastos::Math::IBigInteger;
 

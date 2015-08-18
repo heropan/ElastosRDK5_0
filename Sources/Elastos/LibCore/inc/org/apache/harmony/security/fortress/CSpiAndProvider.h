@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSPIANDPROVIDER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSPIANDPROVIDER_H__
 
-#include "_CSpiAndProvider.h"
+#include "_Org_Apache_Harmony_Security_Fortress_CSpiAndProvider.h"
 
 using Elastos::Security::IProvider;
 

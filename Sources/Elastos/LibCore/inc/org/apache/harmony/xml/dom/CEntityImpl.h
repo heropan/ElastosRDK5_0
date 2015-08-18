@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CENTITYIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CENTITYIMPL_H__
 
-#include "_CEntityImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CEntityImpl.h"
 
 namespace Org {
 namespace Apache {

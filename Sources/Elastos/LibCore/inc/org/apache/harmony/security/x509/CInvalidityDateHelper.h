@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CINVALIDITYDATEHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CINVALIDITYDATEHELPER_H__
 
-#include "_CInvalidityDateHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CInvalidityDateHelper.h"
 
 namespace Org {
 namespace Apache {

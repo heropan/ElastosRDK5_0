@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CPSSPARAMETERSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CPSSPARAMETERSPEC_H__
 
-#include "_CPSSParameterSpec.h"
+#include "_Elastos_Security_Spec_CPSSParameterSpec.h"
 
 namespace Elastos {
 namespace Security {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_PARSERS_CSAXPARSERIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_PARSERS_CSAXPARSERIMPL_H__
 
-#include "_CSAXParserImpl.h"
+#include "_Org_Apache_Harmony_Xml_Parsers_CSAXParserImpl.h"
 
 namespace Org {
 namespace Apache {

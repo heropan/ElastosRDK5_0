@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CMGF1PARAMETERSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CMGF1PARAMETERSPEC_H__
 
-#include "_CMGF1ParameterSpec.h"
+#include "_Elastos_Security_Spec_CMGF1ParameterSpec.h"
 
 namespace Elastos {
 namespace Security {

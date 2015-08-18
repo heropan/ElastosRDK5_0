@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTINFOHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTINFOHELPER_H__
 
-#include "_CCertificationRequestInfoHelper.h"
+#include "_Org_Apache_Harmony_Security_Pkcs10_CCertificationRequestInfoHelper.h"
 
 namespace Org {
 namespace Apache {

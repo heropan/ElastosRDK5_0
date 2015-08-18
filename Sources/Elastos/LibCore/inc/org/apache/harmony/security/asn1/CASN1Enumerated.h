@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1ENUMERATED_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1ENUMERATED_H__
 
-#include "_CASN1Enumerated.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1Enumerated.h"
 #include <ASN1Primitive.h>
 
 using Elastos::IO::IInputStream;

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CX509PUBLICKEY_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CX509PUBLICKEY_H__
 
-#include "_CX509PublicKey.h"
+#include "_Org_Apache_Harmony_Security_X509_CX509PublicKey.h"
 
 namespace Org {
 namespace Apache {

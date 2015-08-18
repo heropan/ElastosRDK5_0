@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTIMPL_H__
 
-#include "_CX509CertImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Cert_CX509CertImpl.h"
 
 using Elastos::Security::Cert::X509Certificate;
 using Elastos::Security::IPublicKey;

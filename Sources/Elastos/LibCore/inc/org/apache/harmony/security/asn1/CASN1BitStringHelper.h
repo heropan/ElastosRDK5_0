@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRINGHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BITSTRINGHELPER_H__
 
-#include "_CASN1BitStringHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1BitStringHelper.h"
 #include "CASN1BitString.h"
 
 namespace Org {

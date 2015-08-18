@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CSHA1PRNG_SECURERANDOMIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CSHA1PRNG_SECURERANDOMIMPL_H__
 
-#include "_CSHA1PRNG_SecureRandomImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Crypto_CSHA1PRNG_SecureRandomImpl.h"
 
 namespace Org {
 namespace Apache {

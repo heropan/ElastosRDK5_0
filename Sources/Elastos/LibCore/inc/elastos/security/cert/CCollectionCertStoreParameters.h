@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CCOLLECTIONCERTSTOREPARAMETERS_H__
 #define __ELASTOS_SECURITY_CERT_CCOLLECTIONCERTSTOREPARAMETERS_H__
 
-#include "_CCollectionCertStoreParameters.h"
+#include "_Elastos_Security_Cert_CCollectionCertStoreParameters.h"
 
 using Elastos::Utility::ICollection;
 

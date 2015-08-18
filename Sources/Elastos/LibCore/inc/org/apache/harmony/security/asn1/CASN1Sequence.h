@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SEQUENCE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1SEQUENCE_H__
 
-#include "_CASN1Sequence.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1Sequence.h"
 #include <ASN1Sequence.h>
 #include <Asn1TypeMacro.h>
 

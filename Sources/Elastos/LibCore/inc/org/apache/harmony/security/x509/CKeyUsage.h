@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CKEYUSAGE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CKEYUSAGE_H__
 
-#include "_CKeyUsage.h"
+#include "_Org_Apache_Harmony_Security_X509_CKeyUsage.h"
 
 namespace Org {
 namespace Apache {

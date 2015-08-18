@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CINHIBITANYPOLICY_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CINHIBITANYPOLICY_H__
 
-#include "_CInhibitAnyPolicy.h"
+#include "_Org_Apache_Harmony_Security_X509_CInhibitAnyPolicy.h"
 
 namespace Org {
 namespace Apache {

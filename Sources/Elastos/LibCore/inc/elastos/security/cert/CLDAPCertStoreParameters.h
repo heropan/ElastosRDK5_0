@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CLDAPCERTSTOREPARAMETERS_H__
 #define __ELASTOS_SECURITY_CERT_CLDAPCERTSTOREPARAMETERS_H__
 
-#include "_CLDAPCertStoreParameters.h"
+#include "_Elastos_Security_Cert_CLDAPCertStoreParameters.h"
 
 namespace Elastos {
 namespace Security {

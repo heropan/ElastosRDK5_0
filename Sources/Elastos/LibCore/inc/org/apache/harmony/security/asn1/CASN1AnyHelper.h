@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1ANYHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1ANYHELPER_H__
 
-#include "_CASN1AnyHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1AnyHelper.h"
 
 namespace Org {
 namespace Apache {

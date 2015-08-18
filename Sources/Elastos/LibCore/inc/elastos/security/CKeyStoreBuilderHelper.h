@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTOREBUILDERHELPER_H__
 #define __ELASTOS_SECURITY_CKEYSTOREBUILDERHELPER_H__
 
-#include "_CKeyStoreBuilderHelper.h"
+#include "_Elastos_Security_CKeyStoreBuilderHelper.h"
 
 using Elastos::IO::IFile;
 

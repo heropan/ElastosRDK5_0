@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIME_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIME_H__
 
-#include "_CASN1GeneralizedTime.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1GeneralizedTime.h"
 #include <ASN1Time.h>
 
 using Elastos::IO::IInputStream;

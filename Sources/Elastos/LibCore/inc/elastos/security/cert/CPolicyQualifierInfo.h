@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CPOLICYQUALIFIERINFO_H__
 #define __ELASTOS_SECURITY_CERT_CPOLICYQUALIFIERINFO_H__
 
-#include "_CPolicyQualifierInfo.h"
+#include "_Elastos_Security_Cert_CPolicyQualifierInfo.h"
 
 namespace Elastos {
 namespace Security {

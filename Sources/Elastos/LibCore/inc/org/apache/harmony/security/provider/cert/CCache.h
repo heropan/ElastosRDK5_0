@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CCACHE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CCACHE_H__
 
-#include "_CCache.h"
+#include "_Org_Apache_Harmony_Security_Provider_Cert_CCache.h"
 
 namespace Org {
 namespace Apache {

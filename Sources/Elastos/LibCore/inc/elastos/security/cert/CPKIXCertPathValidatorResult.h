@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CPKIXCERTPATHVALIDATORRESULT_H__
 #define __ELASTOS_SECURITY_CERT_CPKIXCERTPATHVALIDATORRESULT_H__
 
-#include "_CPKIXCertPathValidatorResult.h"
+#include "_Elastos_Security_Cert_CPKIXCertPathValidatorResult.h"
 #include "PKIXCertPathValidatorResult.h"
 
 

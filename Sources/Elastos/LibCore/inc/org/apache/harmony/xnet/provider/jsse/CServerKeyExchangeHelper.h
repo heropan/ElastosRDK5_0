@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSERVERKEYEXCHANGEHELPER_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSERVERKEYEXCHANGEHELPER_H__
 
-#include "_CServerKeyExchangeHelper.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CServerKeyExchangeHelper.h"
 
 namespace Org {
 namespace Apache {

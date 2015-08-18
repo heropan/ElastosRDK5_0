@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_CPRIVATEKEYIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_CPRIVATEKEYIMPL_H__
 
-#include "_CPrivateKeyImpl.h"
+#include "_Org_Apache_Harmony_Security_CPrivateKeyImpl.h"
 
 namespace Org {
 namespace Apache {

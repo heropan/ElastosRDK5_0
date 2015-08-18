@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CDSAPARAMETERSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CDSAPARAMETERSPEC_H__
 
-#include "_CDSAParameterSpec.h"
+#include "_Elastos_Security_Spec_CDSAParameterSpec.h"
 
 using Elastos::Math::IBigInteger;
 

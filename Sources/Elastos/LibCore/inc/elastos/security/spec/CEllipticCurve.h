@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CELLIPTICCURVE_H__
 #define __ELASTOS_SECURITY_SPEC_CELLIPTICCURVE_H__
 
-#include "_CEllipticCurve.h"
+#include "_Elastos_Security_Spec_CEllipticCurve.h"
 
 using Elastos::Math::IBigInteger;
 

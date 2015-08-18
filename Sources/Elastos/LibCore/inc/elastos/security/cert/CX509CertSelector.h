@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CX509CERTSELECTOR_H__
 #define __ELASTOS_SECURITY_CERT_CX509CERTSELECTOR_H__
 
-#include "_CX509CertSelector.h"
+#include "_Elastos_Security_Cert_CX509CertSelector.h"
 
 using Elastos::Math::IBigInteger;
 using Elastos::Utility::ISet;

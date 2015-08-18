@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CPRIVATEKEYUSAGEPERIODHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CPRIVATEKEYUSAGEPERIODHELPER_H__
 
-#include "_CPrivateKeyUsagePeriodHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CPrivateKeyUsagePeriodHelper.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CX509CRLSELECTOR_H__
 #define __ELASTOS_SECURITY_CERT_CX509CRLSELECTOR_H__
 
-#include "_CX509CRLSelector.h"
+#include "_Elastos_Security_Cert_CX509CRLSelector.h"
 
 using Elastos::Utility::IArrayList;
 using Elastos::Utility::IDate;

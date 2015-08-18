@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAMHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAMHELPER_H__
 
-#include "_CBerInputStreamHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CBerInputStreamHelper.h"
 
 namespace Org {
 namespace Apache {

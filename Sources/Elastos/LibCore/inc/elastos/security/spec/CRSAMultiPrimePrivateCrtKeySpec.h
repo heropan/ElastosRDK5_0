@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CRSAMULTIPRIMEPRIVATECRTKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CRSAMULTIPRIMEPRIVATECRTKEYSPEC_H__
 
-#include "_CRSAMultiPrimePrivateCrtKeySpec.h"
+#include "_Elastos_Security_Spec_CRSAMultiPrimePrivateCrtKeySpec.h"
 #include "RSAPrivateKeySpec.h"
 
 using Elastos::Math::IBigInteger;

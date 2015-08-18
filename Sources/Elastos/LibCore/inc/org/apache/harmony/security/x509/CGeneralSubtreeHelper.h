@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CGENERALSUBTREEHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CGENERALSUBTREEHELPER_H__
 
-#include "_CGeneralSubtreeHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CGeneralSubtreeHelper.h"
 
 namespace Org {
 namespace Apache {

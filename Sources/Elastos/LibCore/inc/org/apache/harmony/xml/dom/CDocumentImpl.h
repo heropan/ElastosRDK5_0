@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CDOCUMENTIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CDOCUMENTIMPL_H__
 
-#include "_CDocumentImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CDocumentImpl.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CCOMMENTIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CCOMMENTIMPL_H__
 
-#include "_CCommentImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CCommentImpl.h"
 
 namespace Org {
 namespace Apache {

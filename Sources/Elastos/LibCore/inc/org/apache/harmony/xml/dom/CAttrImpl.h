@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CATTRIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CATTRIMPL_H__
 
-#include "_CAttrImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CAttrImpl.h"
 
 namespace Org {
 namespace Apache {

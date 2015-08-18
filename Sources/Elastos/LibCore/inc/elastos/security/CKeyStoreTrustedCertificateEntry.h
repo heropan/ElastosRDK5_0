@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTORETRUSTEDCERTIFICATEENTRY_H__
 #define __ELASTOS_SECURITY_CKEYSTORETRUSTEDCERTIFICATEENTRY_H__
 
-#include "_CKeyStoreTrustedCertificateEntry.h"
+#include "_Elastos_Security_CKeyStoreTrustedCertificateEntry.h"
 
 namespace Elastos {
 namespace Security {

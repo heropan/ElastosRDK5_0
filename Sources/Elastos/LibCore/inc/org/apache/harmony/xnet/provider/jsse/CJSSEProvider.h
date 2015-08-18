@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CJSSEPROVIDER_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CJSSEPROVIDER_H__
 
-#include "_CJSSEProvider.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CJSSEProvider.h"
 
 namespace Org {
 namespace Apache {

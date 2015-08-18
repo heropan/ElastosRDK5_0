@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CISSUINGDISTRIBUTIONPOINT_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CISSUINGDISTRIBUTIONPOINT_H__
 
-#include "_CIssuingDistributionPoint.h"
+#include "_Org_Apache_Harmony_Security_X509_CIssuingDistributionPoint.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTFACTORYIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CERT_CX509CERTFACTORYIMPL_H__
 
-#include "_CX509CertFactoryImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Cert_CX509CertFactoryImpl.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IIterator;

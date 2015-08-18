@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CCERTIFICATELIST_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CCERTIFICATELIST_H__
 
-#include "_CCertificateList.h"
+#include "_Org_Apache_Harmony_Security_X509_CCertificateList.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_UTILS_COBJECTIDENTIFIERINUTILSHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_UTILS_COBJECTIDENTIFIERINUTILSHELPER_H__
 
-#include "_CObjectIdentifierInUtilsHelper.h"
+#include "_Org_Apache_Harmony_Security_Utils_CObjectIdentifierInUtilsHelper.h"
 
 namespace Org {
 namespace Apache {

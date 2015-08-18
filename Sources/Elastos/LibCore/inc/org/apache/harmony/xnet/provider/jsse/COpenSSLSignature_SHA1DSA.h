@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_COPENSSLSIGNATURE_SHA1DSA_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_COPENSSLSIGNATURE_SHA1DSA_H__
 
-#include "_COpenSSLSignature_SHA1DSA.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_COpenSSLSignature_SHA1DSA.h"
 
 namespace Org {
 namespace Apache {

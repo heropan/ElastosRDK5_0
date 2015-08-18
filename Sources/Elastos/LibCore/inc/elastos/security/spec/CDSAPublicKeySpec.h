@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CDSAPUBLICKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CDSAPUBLICKEYSPEC_H__
 
-#include "_CDSAPublicKeySpec.h"
+#include "_Elastos_Security_Spec_CDSAPublicKeySpec.h"
 
 using Elastos::Math::IBigInteger;
 

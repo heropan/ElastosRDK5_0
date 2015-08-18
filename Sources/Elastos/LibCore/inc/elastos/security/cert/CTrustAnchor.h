@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CTRUSTANCHOR_H__
 #define __ELASTOS_SECURITY_CERT_CTRUSTANCHOR_H__
 
-#include "_CTrustAnchor.h"
+#include "_Elastos_Security_Cert_CTrustAnchor.h"
 
 using Elastosx::Security::Auth::X500::IX500Principal;
 using Elastos::Security::IPublicKey;

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CEXTENDEDKEYUSAGE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CEXTENDEDKEYUSAGE_H__
 
-#include "_CExtendedKeyUsage.h"
+#include "_Org_Apache_Harmony_Security_X509_CExtendedKeyUsage.h"
 
 namespace Org {
 namespace Apache {

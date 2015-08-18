@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CDERINPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CDERINPUTSTREAM_H__
 
-#include "_CDerInputStream.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CDerInputStream.h"
 #include <BerInputStream.h>
 
 namespace Org {

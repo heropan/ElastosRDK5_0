@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_CRYPTO_INTERNAL_CNULLCIPHERSPI_H__
 #define __ORG_APACHE_HARMONY_CRYPTO_INTERNAL_CNULLCIPHERSPI_H__
 
-#include "_CNullCipherSpi.h"
+#include "_Org_Apache_Harmony_Crypto_Internal_CNullCipherSpi.h"
 
 using Elastos::Security::IAlgorithmParameters;
 using Elastos::Security::IKey;

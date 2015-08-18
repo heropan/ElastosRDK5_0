@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CNOTATIONIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CNOTATIONIMPL_H__
 
-#include "_CNotationImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CNotationImpl.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CNAMECONSTRAINTSHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CNAMECONSTRAINTSHELPER_H__
 
-#include "_CNameConstraintsHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CNameConstraintsHelper.h"
 
 namespace Org {
 namespace Apache {

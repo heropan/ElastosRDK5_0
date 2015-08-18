@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTOREPRIVATEKEYENTRY_H__
 #define __ELASTOS_SECURITY_CKEYSTOREPRIVATEKEYENTRY_H__
 
-#include "_CKeyStorePrivateKeyEntry.h"
+#include "_Elastos_Security_CKeyStorePrivateKeyEntry.h"
 
 namespace Elastos {
 namespace Security {

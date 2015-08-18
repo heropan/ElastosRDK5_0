@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CNATIVECRYPTO_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CNATIVECRYPTO_H__
 
-#include "_CNativeCrypto.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CNativeCrypto.h"
 
 namespace Org {
 namespace Apache {

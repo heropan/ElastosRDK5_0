@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CVALIDITY_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CVALIDITY_H__
 
-#include "_CValidity.h"
+#include "_Org_Apache_Harmony_Security_X509_CValidity.h"
 
 namespace Org {
 namespace Apache {

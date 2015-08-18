@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUEST_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUEST_H__
 
-#include "_CCertificationRequest.h"
+#include "_Org_Apache_Harmony_Security_Pkcs10_CCertificationRequest.h"
 #include <ASN1Sequence.h>
 
 namespace Org {

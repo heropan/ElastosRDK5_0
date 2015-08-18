@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_COTHERNAMEHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_COTHERNAMEHELPER_H__
 
-#include "_COtherNameHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_COtherNameHelper.h"
 
 namespace Org {
 namespace Apache {

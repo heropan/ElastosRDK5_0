@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_COBJECTIDENTIFIER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_COBJECTIDENTIFIER_H__
 
-#include "_CObjectIdentifier.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CObjectIdentifier.h"
 
 namespace Org {
 namespace Apache {

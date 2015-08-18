@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CDSAPRIVATEKEYIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CDSAPRIVATEKEYIMPL_H__
 
-#include "_CDSAPrivateKeyImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Crypto_CDSAPrivateKeyImpl.h"
 
 namespace Org {
 namespace Apache {

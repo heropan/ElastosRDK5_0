@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CINFOACCESSSYNTAX_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CINFOACCESSSYNTAX_H__
 
-#include "_CInfoAccessSyntax.h"
+#include "_Org_Apache_Harmony_Security_X509_CInfoAccessSyntax.h"
 
 namespace Org {
 namespace Apache {

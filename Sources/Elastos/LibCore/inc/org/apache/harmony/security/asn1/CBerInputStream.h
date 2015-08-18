@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBERINPUTSTREAM_H__
 
-#include "_CBerInputStream.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CBerInputStream.h"
 #include <BerInputStream.h>
 
 using Elastos::IO::IInputStream;

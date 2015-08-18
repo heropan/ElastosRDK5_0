@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_CSYSTEMSCOPE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_CSYSTEMSCOPE_H__
 
-#include "_CSystemScope.h"
+#include "_Org_Apache_Harmony_Security_CSystemScope.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X501_CATTRIBUTEVALUE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X501_CATTRIBUTEVALUE_H__
 
-#include "_CAttributeValue.h"
+#include "_Org_Apache_Harmony_Security_X501_CAttributeValue.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIMEHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1GENERALIZEDTIMEHELPER_H__
 
-#include "_CASN1GeneralizedTimeHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1GeneralizedTimeHelper.h"
 
 namespace Org {
 namespace Apache {

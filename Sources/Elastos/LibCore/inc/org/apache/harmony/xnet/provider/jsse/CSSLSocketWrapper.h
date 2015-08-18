@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSSLSOCKETWRAPPER_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CSSLSOCKETWRAPPER_H__
 
-#include "_CSSLSocketWrapper.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CSSLSocketWrapper.h"
 
 namespace Org {
 namespace Apache {

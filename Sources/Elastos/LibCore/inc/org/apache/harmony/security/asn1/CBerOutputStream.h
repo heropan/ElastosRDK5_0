@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBEROUTPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBEROUTPUTSTREAM_H__
 
-#include "_CBerOutputStream.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CBerOutputStream.h"
 #include <BerOutputStream.h>
 
 namespace Org {

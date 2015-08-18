@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_CEXPATREADER_H__
 #define __ORG_APACHE_HARMONY_XML_CEXPATREADER_H__
 
-#include "_CExpatReader.h"
+#include "_Org_Apache_Harmony_Xml_CExpatReader.h"
 
 namespace Org {
 namespace Apache {

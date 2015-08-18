@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CELEMENTATTRNAMEDNODEMAPIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CELEMENTATTRNAMEDNODEMAPIMPL_H__
 
-#include "_CElementAttrNamedNodeMapImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CElementAttrNamedNodeMapImpl.h"
 
 namespace Org {
 namespace Apache {

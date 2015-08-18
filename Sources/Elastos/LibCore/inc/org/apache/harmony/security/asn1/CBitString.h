@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CBITSTRING_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CBITSTRING_H__
 
-#include "_CBitString.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CBitString.h"
 
 namespace Org {
 namespace Apache {

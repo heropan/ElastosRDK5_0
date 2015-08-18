@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPOPTIONS_H_
 #define __ORG_APACHE_HTTP_CLIENT_METHODS_CHTTPOPTIONS_H_
 
-#include "_Org_Apache_Http_CHttpOptions.h"
+#include "_Org_Apache_Http_Client_Methods_Org_Apache_Http_CHttpOptions.h"
 #include "HttpRequestBase.h"
 
 namespace Org {

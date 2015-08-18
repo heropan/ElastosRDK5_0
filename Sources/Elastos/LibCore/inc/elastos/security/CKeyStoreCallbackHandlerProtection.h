@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTORECALLBACKHANDLERPROTECTION_H__
 #define __ELASTOS_SECURITY_CKEYSTORECALLBACKHANDLERPROTECTION_H__
 
-#include "_CKeyStoreCallbackHandlerProtection.h"
+#include "_Elastos_Security_CKeyStoreCallbackHandlerProtection.h"
 
 using Elastosx::Security::Auth::Callback::ICallbackHandler;
 

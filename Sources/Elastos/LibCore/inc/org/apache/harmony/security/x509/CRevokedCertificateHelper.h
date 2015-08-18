@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CREVOKEDCERTIFICATEHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CREVOKEDCERTIFICATEHELPER_H__
 
-#include "_CRevokedCertificateHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CRevokedCertificateHelper.h"
 
 namespace Org {
 namespace Apache {

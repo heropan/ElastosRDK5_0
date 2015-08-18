@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
 #define __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
 
-#include "_CCertificateFactory.h"
+#include "_Elastos_Security_Cert_CCertificateFactory.h"
 
 
 

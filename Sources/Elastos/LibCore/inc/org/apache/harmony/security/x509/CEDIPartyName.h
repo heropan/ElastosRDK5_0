@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CEDIPARTYNAME_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CEDIPARTYNAME_H__
 
-#include "_CEDIPartyName.h"
+#include "_Org_Apache_Harmony_Security_X509_CEDIPartyName.h"
 
 namespace Org {
 namespace Apache {

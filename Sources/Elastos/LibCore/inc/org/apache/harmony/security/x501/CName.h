@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X501_CNAME_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X501_CNAME_H__
 
-#include "_CName.h"
+#include "_Org_Apache_Harmony_Security_X501_CName.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CPROCESSINGINSTRUCTIONIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CPROCESSINGINSTRUCTIONIMPL_H__
 
-#include "_CProcessingInstructionImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CProcessingInstructionImpl.h"
 
 namespace Org {
 namespace Apache {

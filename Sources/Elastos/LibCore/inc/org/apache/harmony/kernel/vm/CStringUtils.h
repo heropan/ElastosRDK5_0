@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_KERNEL_VM_CSTRINGUTILS_H__
 #define __ORG_APACHE_HARMONY_KERNEL_VM_CSTRINGUTILS_H__
 
-#include "_CStringUtils.h"
+#include "_Org_Apache_Harmony_Kernel_Vm_CStringUtils.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CCDATASECTIONIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CCDATASECTIONIMPL_H__
 
-#include "_CCDATASectionImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CCDATASectionImpl.h"
 
 namespace Org {
 namespace Apache {

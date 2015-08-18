@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRINGHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1OCTETSTRINGHELPER_H__
 
-#include "_CASN1OctetStringHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1OctetStringHelper.h"
 
 namespace Org {
 namespace Apache {

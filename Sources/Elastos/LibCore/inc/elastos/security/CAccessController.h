@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CACCESSCONTROLLER_H__
 #define __ELASTOS_SECURITY_CACCESSCONTROLLER_H__
 
-#include "_CAccessController.h"
+#include "_Elastos_Security_CAccessController.h"
 
 namespace Elastos {
 namespace Security {

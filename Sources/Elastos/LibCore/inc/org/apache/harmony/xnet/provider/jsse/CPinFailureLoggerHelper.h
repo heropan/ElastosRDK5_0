@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CPINFAILURELOGGERHELPER_H__
 #define __ORG_APACHE_HARMONY_XNET_PROVIDER_JSSE_CPINFAILURELOGGERHELPER_H__
 
-#include "_CPinFailureLoggerHelper.h"
+#include "_Org_Apache_Harmony_Xnet_Provider_Jsse_CPinFailureLoggerHelper.h"
 
 namespace Org {
 namespace Apache {

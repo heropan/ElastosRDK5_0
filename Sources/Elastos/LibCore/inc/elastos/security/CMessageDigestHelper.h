@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__
 #define __ELASTOS_SECURITY_CMESSAGEDIGESTHELPER_H__
 
-#include "_CMessageDigestHelper.h"
+#include "_Elastos_Security_CMessageDigestHelper.h"
 
 namespace Elastos {
 namespace Security {

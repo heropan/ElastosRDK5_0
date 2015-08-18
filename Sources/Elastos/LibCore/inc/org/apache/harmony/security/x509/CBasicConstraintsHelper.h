@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_CBASICCONSTRAINTSHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_CBASICCONSTRAINTSHELPER_H__
 
-#include "_CBasicConstraintsHelper.h"
+#include "_Org_Apache_Harmony_Security_X509_CBasicConstraintsHelper.h"
 
 namespace Org {
 namespace Apache {

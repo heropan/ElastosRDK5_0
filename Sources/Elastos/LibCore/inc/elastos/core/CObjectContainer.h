@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_CORE_COBJECTCONTAINER_H__
 #define __ELASTOS_CORE_COBJECTCONTAINER_H__
 
-#include "_CObjectContainer.h"
+#include "_Elastos_Core_CObjectContainer.h"
 #include <elastos.h>
 #include "container.h"
 #include "CObjectEnumerator.h"

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_PARSERS_CDOCUMENTBUILDERFACTORYIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_PARSERS_CDOCUMENTBUILDERFACTORYIMPL_H__
 
-#include "_CDocumentBuilderFactoryImpl.h"
+#include "_Org_Apache_Harmony_Xml_Parsers_CDocumentBuilderFactoryImpl.h"
 
 namespace Org {
 namespace Apache {

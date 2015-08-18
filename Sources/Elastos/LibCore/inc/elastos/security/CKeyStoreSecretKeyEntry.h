@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CKEYSTORESECRETKEYENTRY_H__
 #define __ELASTOS_SECURITY_CKEYSTORESECRETKEYENTRY_H__
 
-#include "_CKeyStoreSecretKeyEntry.h"
+#include "_Elastos_Security_CKeyStoreSecretKeyEntry.h"
 
 using Elastosx::Crypto::ISecretKey;
 

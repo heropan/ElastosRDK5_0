@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_XML_DOM_CDOMCONFIGURATIONIMPL_H__
 #define __ORG_APACHE_HARMONY_XML_DOM_CDOMCONFIGURATIONIMPL_H__
 
-#include "_CDOMConfigurationImpl.h"
+#include "_Org_Apache_Harmony_Xml_Dom_CDOMConfigurationImpl.h"
 
 namespace Org {
 namespace Apache {

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__
 
-#include "_CEngine.h"
+#include "_Org_Apache_Harmony_Security_Fortress_CEngine.h"
 
 using Elastos::Security::IProviderService;
 

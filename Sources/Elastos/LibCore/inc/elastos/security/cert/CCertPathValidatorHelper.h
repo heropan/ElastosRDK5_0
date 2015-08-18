@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_CERT_CCERTPATHVALIDATORHELPER_H__
 #define __ELASTOS_SECURITY_CERT_CCERTPATHVALIDATORHELPER_H__
 
-#include "_CCertPathValidatorHelper.h"
+#include "_Elastos_Security_Cert_CCertPathValidatorHelper.h"
 
 using Elastos::Security::IProvider;
 

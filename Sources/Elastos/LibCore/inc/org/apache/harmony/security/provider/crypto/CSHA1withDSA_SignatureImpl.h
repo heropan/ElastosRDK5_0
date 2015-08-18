@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CSHA1WITHDSA_SIGNATUREIMPL_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PROVIDER_CRYPTO_CSHA1WITHDSA_SIGNATUREIMPL_H__
 
-#include "_CSHA1withDSA_SignatureImpl.h"
+#include "_Org_Apache_Harmony_Security_Provider_Crypto_CSHA1withDSA_SignatureImpl.h"
 
 namespace Org {
 namespace Apache {

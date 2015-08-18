@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFO_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFO_H__
 
-#include "_CSignerInfo.h"
+#include "_Org_Apache_Harmony_Security_Pkcs7_CSignerInfo.h"
 #include <ASN1SequenceMacro.h>
 
 using Elastosx::Security::Auth::X500::IX500Principal;

@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTHELPER_H__
 
-#include "_CCertificationRequestHelper.h"
+#include "_Org_Apache_Harmony_Security_Pkcs10_CCertificationRequestHelper.h"
 
 using Org::Apache::Harmony::Security::Asn1::IASN1Sequence;
 

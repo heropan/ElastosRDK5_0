@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BOOLEANHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CASN1BOOLEANHELPER_H__
 
-#include "_CASN1BooleanHelper.h"
+#include "_Org_Apache_Harmony_Security_Asn1_CASN1BooleanHelper.h"
 
 namespace Org {
 namespace Apache {

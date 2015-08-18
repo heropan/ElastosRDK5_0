@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTINFO_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS10_CCERTIFICATIONREQUESTINFO_H__
 
-#include "_CCertificationRequestInfo.h"
+#include "_Org_Apache_Harmony_Security_Pkcs10_CCertificationRequestInfo.h"
 
 using Org::Apache::Harmony::Security::X501::IName;
 

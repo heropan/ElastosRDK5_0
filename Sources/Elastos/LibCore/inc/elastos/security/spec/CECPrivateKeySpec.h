@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CECPRIVATEKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CECPRIVATEKEYSPEC_H__
 
-#include "_CECPrivateKeySpec.h"
+#include "_Elastos_Security_Spec_CECPrivateKeySpec.h"
 
 using Elastos::Math::IBigInteger;
 

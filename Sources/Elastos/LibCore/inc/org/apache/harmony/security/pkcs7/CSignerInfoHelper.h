@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFOHELPER_H__
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CSIGNERINFOHELPER_H__
 
-#include "_CSignerInfoHelper.h"
+#include "_Org_Apache_Harmony_Security_Pkcs7_CSignerInfoHelper.h"
 
 using Org::Apache::Harmony::Security::Asn1::IASN1Sequence;
 

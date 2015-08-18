@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_SECURITY_SPEC_CRSAPUBLICKEYSPEC_H__
 #define __ELASTOS_SECURITY_SPEC_CRSAPUBLICKEYSPEC_H__
 
-#include "_CRSAPublicKeySpec.h"
+#include "_Elastos_Security_Spec_CRSAPublicKeySpec.h"
 
 using Elastos::Math::IBigInteger;
 

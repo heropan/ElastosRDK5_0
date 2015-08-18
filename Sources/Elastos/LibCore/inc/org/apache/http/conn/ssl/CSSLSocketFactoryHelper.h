@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORYHELPER_H_
 #define __ORG_APACHE_HTTP_CONN_SSL_CSSLSOCKETFACTORYHELPER_H_
 
-#include "_Org_Apache_Http_Auth_CSSLSocketFactoryHelper.h"
+#include "_Org_Apache_Http_Conn_SSL_Org_Apache_Http_Auth_CSSLSocketFactoryHelper.h"
 #include <elastos/core/Singleton.h>
 
 using Elastos::Core::Singleton;

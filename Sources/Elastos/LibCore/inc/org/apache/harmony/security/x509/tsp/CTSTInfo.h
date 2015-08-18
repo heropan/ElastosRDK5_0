@@ -2,7 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTSTINFO_H__
 #define __ORG_APACHE_HARMONY_SECURITY_X509_TSP_CTSTINFO_H__
 
-#include "_CTSTInfo.h"
+#include "_Org_Apache_Harmony_Security_X509_Tsp_CTSTInfo.h"
 
 namespace Org {
 namespace Apache {
