@@ -75,10 +75,28 @@ module
             [in] String packageName,
             [in] Int32 uid);
 
+        /**
+         * Direct reflection of {@link Intent#ACTION_PACKAGE_CHANGED
+         * Intent.ACTION_PACKAGE_CHANGED} being received, informing you of
+         * changes to the enabled/disabled state of components in a package
+         * and/or of the overall package.
+         *
+         * @param packageName The name of the package that is changing.
+         * @param uid The user ID the package runs under.
+         * @param components Any components in the package that are changing.  If
+         * the overall package is changing, this will contain an entry of the
+         * package name itself.
+         * @return Return true to indicate you care about this change, which will
+         * result in {@link #onSomePackagesChanged()} being called later.  If you
+         * return false, no further callbacks will happen about this change.  The
+         * default implementation returns true if this is a change to the entire
+         * package.
+         */
         OnPackageChanged(
             [in] String packageName,
             [in] Int32 uid,
-            [in] ArrayOf<String>* components);
+            [in] ArrayOf<String>* components,
+            [out] Boolean* result);
 
         OnHandleForceStop(
             [in] IIntent* intent,
@@ -114,6 +132,9 @@ module
             [in] String packageName,
             [in] Int32 reason);
 
+        /**
+         * Called when an existing package is updated or its disabled state changes.
+         */
         OnPackageModified(
             [in] String packageName);
 
@@ -132,6 +153,9 @@ module
             [out] Int32* result);
 
         AnyPackagesDisappearing(
+            [out] Boolean* result);
+
+        IsReplacing(
             [out] Boolean* result);
 
         IsPackageModified(

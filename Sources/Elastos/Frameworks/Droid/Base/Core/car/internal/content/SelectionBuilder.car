@@ -10,7 +10,7 @@ module
     namespace Internal {
     namespace Content {
 
-    [deprecated]
+    [local, deprecated]
     interface ISelectionBuilder {
         /**
          * Reset any internal state, allowing this builder to be recycled.

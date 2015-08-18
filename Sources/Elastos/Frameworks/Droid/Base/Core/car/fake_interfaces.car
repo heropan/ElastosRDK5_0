@@ -244,16 +244,6 @@ module
             interface IStatusBarIcon {}
         }
 
-        namespace Net {
-
-            interface ILegacyVpnInfo {}
-
-            interface IVpnConfig {}
-
-            interface IVpnProfile {}
-
-        } // namespace Net
-
         namespace Util {
 
             interface IStateMachine {}
@@ -348,5 +338,12 @@ module
 
 
     }}} // Elastos.Droid.Hardware
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Content {
+    namespace Pm {
+        interface IPackageLite {}
+    }}}} // Elastos.Droid.Content.Pm
 
 }
