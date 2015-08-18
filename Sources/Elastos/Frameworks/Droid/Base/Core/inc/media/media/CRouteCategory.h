@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CROUTECATEGORY_H__
 #define __ELASTOS_DROID_MEDIA_CROUTECATEGORY_H__
 
-#include "_CRouteCategory.h"
+#include "_Elastos_Droid_Media_CRouteCategory.h"
 #include "ext/frameworkext.h"
 #include "media/media/CMediaRouter.h"
 

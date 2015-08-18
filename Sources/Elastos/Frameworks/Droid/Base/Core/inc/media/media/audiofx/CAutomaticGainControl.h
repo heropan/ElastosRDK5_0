@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROL_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROL_H__
 
-#include "_CAutomaticGainControl.h"
+#include "_Elastos_Droid_Media_Audiofx_CAutomaticGainControl.h"
 #include <ext/frameworkext.h>
 #include "media/media/audiofx/AudioEffect.h"
 

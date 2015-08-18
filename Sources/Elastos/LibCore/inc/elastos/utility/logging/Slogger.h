@@ -1,17 +1,17 @@
 
-#ifndef __ELASTOS_UTILITY_LOGGING_ELASTOS_UTILITY_SLOGGER_H__
-#define __ELASTOS_UTILITY_LOGGING_ELASTOS_UTILITY_SLOGGER_H__
+#ifndef __ELASTOS_UTILITY_LOGGING_SLOGGER_H__
+#define __ELASTOS_UTILITY_LOGGING_SLOGGER_H__
 
 #include <elastos.h>
 
-#ifndef __SLOGGER_MACRO__
-#define __SLOGGER_MACRO__
+#ifndef __ELASTOS_UTILITY_LOGGING_SLOGGER_MACRO__
+#define __ELASTOS_UTILITY_LOGGING_SLOGGER_MACRO__
 #define SLOGGERD(tag, ...)  Elastos::Utility::Logging::Slogger::D(tag, __VA_ARGS__);
 #define SLOGGERE(tag, ...)  Elastos::Utility::Logging::Slogger::E(tag, __VA_ARGS__);
 #define SLOGGERI(tag, ...)  Elastos::Utility::Logging::Slogger::I(tag, __VA_ARGS__);
 #define SLOGGERV(tag, ...)  Elastos::Utility::Logging::Slogger::V(tag, __VA_ARGS__);
 #define SLOGGERW(tag, ...)  Elastos::Utility::Logging::Slogger::W(tag, __VA_ARGS__);
-#endif //__SLOGGER_MACRO__
+#endif //__ELASTOS_UTILITY_LOGGING_SLOGGER_MACRO__
 
 namespace Elastos {
 namespace Utility {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PWFDINFO_H__
 
-#include "_CWifiP2pWfdInfo.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pWfdInfo.h"
 
 namespace Elastos {
 namespace Droid {

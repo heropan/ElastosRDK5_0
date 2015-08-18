@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CCHARARRAYBUFFER_H__
 #define __ELASTOS_DROID_DATABASE_CCHARARRAYBUFFER_H__
 
-#include "_CCharArrayBuffer.h"
+#include "_Elastos_Droid_Database_CCharArrayBuffer.h"
 #include "database/CharArrayBuffer.h"
 
 namespace Elastos {

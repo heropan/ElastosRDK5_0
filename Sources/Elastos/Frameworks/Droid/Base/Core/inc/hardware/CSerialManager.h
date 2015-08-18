@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSERIALMANAGER_H__
 #define  __ELASTOS_DROID_HARDWARE_CSERIALMANAGER_H__
 
-#include "_CSerialManager.h"
+#include "_Elastos_Droid_Hardware_CSerialManager.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelFileDescriptor;

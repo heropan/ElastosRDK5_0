@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CDEFAULTDATABASEERRORHANDLER_H__
 
 #include "ext/frameworkext.h"
-#include "_CDefaultDatabaseErrorHandler.h"
+#include "_Elastos_Droid_Database_CDefaultDatabaseErrorHandler.h"
 
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 

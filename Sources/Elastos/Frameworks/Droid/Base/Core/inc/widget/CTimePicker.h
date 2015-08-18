@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTIMEPICKER_H__
 #define __ELASTOS_DROID_WIDGET_CTIMEPICKER_H__
 
-#include "_CTimePicker.h"
+#include "_Elastos_Droid_Widget_CTimePicker.h"
 #include "widget/TimePicker.h"
 
 

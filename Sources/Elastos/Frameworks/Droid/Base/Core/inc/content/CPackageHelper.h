@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_CPACKAGEHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_CPACKAGEHELPER_H__
 
-#include "_CPackageHelper.h"
+#include "_Elastos_Droid_Internal_Content_CPackageHelper.h"
 #include "content/PackageHelper.h"
 
 using Elastos::Droid::Os::Storage::IMountService;

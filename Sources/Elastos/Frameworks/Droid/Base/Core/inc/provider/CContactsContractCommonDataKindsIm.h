@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSIM_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSIM_H__
 
-#include "_CContactsContractCommonDataKindsIm.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsIm.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::IResources;

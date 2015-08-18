@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 #define __ELASTOS_DROID_APP_CSTATUSBARMANAGER_H__
 
-#include "_CStatusBarManager.h"
+#include "_Elastos_Droid_App_CStatusBarManager.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Content::IContext;

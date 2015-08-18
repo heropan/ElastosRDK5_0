@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CHIERARCHICALURI_H__
 #define __ELASTOS_DROID_NET_CHIERARCHICALURI_H__
 
-#include "_CHierarchicalUri.h"
+#include "_Elastos_Droid_Net_CHierarchicalUri.h"
 #include "net/Uri.h"
 
 namespace Elastos {

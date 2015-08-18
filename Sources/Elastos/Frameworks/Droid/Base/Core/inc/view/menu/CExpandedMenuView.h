@@ -7,7 +7,7 @@
 
 
 
-#include "_CExpandedMenuView.h"
+#include "_Elastos_Droid_View_Menu_CExpandedMenuView.h"
 #include "view/menu/ExpandedMenuView.h"
 
 using Elastos::Droid::Text::IEditable;

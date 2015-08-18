@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CLATESTITEMVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CLATESTITEMVIEW_H__
 
-#include "_CLatestItemView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CLatestItemView.h"
 
 
 

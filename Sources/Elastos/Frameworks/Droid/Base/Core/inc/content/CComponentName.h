@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__
 #define __ELASTOS_DROID_CONTENT_CCOMPONENTNAME_H__
 
-#include "_CComponentName.h"
+#include "_Elastos_Droid_Content_CComponentName.h"
 
 namespace Elastos {
 namespace Droid {

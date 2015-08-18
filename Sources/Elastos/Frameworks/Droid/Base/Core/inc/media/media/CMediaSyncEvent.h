@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENT_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIASYNCEVENT_H__
 
-#include "_CMediaSyncEvent.h"
+#include "_Elastos_Droid_Media_CMediaSyncEvent.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCLASSIC_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCLASSIC_H__
 
-#include "_CWebViewClassic.h"
+#include "_Elastos_Droid_Webkit_CWebViewClassic.h"
 #include "content/BroadcastReceiver.h"
 #include "database/DataSetObserver.h"
 #include "graphics/drawable/Drawable.h"

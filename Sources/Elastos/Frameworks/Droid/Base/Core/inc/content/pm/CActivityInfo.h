@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CACTIVITYINFO_H__
 
-#include "_CActivityInfo.h"
+#include "_Elastos_Droid_Content_Pm_CActivityInfo.h"
 #include "ComponentInfo.h"
 
 using Elastos::Core::ICharSequence;

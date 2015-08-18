@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENERHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CDIALERKEYLISTENERHELPER_H__
 
-#include "_CDialerKeyListenerHelper.h"
+#include "_Elastos_Droid_Text_Method_CDialerKeyListenerHelper.h"
 
 #include "Elastos.Droid.Core_server.h"
 

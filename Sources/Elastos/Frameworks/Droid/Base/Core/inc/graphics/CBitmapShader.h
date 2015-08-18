@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPSHADER_H__
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPSHADER_H__
 
-#include "_CBitmapShader.h"
+#include "_Elastos_Droid_Graphics_CBitmapShader.h"
 #include "graphics/Shader.h"
 
 namespace Elastos {

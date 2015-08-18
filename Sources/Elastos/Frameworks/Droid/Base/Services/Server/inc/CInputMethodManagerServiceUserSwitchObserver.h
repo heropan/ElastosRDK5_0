@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CINPUTMETHODMANAGERSERVICEUSERSWITCHOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_CINPUTMETHODMANAGERSERVICEUSERSWITCHOBSERVER_H__
 
-#include "_CInputMethodManagerServiceUserSwitchObserver.h"
+#include "_Elastos_Droid_Server_CInputMethodManagerServiceUserSwitchObserver.h"
 #include "CInputMethodManagerService.h"
 
 using Elastos::Droid::Os::IRemoteCallback;

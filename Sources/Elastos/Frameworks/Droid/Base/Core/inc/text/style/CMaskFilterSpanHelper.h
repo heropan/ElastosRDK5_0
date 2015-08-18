@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CMASKFILTERSPANHELPER_H__
 
-#include "_CMaskFilterSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CMaskFilterSpanHelper.h"
 
 
 namespace Elastos {

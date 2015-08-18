@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUTOMATICGAINCONTROLHELPER_H__
 
-#include "_CAutomaticGainControlHelper.h"
+#include "_Elastos_Droid_Media_Audiofx_CAutomaticGainControlHelper.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

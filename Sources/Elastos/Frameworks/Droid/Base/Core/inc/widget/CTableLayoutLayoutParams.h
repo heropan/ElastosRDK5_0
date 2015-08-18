@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTABLELAYOUTLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_CTABLELAYOUTLAYOUTPARAMS_H__
 
-#include "_CTableLayoutLayoutParams.h"
+#include "_Elastos_Droid_Widget_CTableLayoutLayoutParams.h"
 
 #include "widget/TableLayoutLayoutParams.h"
 

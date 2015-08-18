@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CYUVIMAGE_H__
 #define __ELASTOS_DROID_GRAPHICS_CYUVIMAGE_H__
 
-#include "_CYuvImage.h"
+#include "_Elastos_Droid_Graphics_CYuvImage.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IOutputStream;

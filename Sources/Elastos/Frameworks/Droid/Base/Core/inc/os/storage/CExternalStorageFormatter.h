@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_STORAGE_CEXTERNALSTORAGEFORMATTER_H__
 
 #include "app/Service.h"
-#include "_CExternalStorageFormatter.h"
+#include "_Elastos_Droid_Os_Storage_CExternalStorageFormatter.h"
 
 namespace Elastos {
 namespace Droid {

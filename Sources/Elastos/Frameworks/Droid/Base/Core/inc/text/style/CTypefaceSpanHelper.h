@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CTYPEFACESPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CTYPEFACESPANHELPER_H__
 
-#include "_CTypefaceSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CTypefaceSpanHelper.h"
 
 
 namespace Elastos {

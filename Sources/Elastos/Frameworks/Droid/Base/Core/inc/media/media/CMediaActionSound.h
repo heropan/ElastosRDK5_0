@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAACTIONSOUND_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAACTIONSOUND_H__
 
-#include "_CMediaActionSound.h"
+#include "_Elastos_Droid_Media_CMediaActionSound.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

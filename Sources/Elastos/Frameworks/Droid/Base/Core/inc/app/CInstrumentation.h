@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CINSTRUMENTATION_H__
 #define __ELASTOS_DROID_APP_CINSTRUMENTATION_H__
 
-#include "_CInstrumentation.h"
+#include "_Elastos_Droid_App_CInstrumentation.h"
 #include "app/Instrumentation.h"
 
 namespace Elastos {

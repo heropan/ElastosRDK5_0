@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CLIGHTINGCOLORFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_CLIGHTINGCOLORFILTER_H__
 
-#include "_CLightingColorFilter.h"
+#include "_Elastos_Droid_Graphics_CLightingColorFilter.h"
 #include "graphics/ColorFilter.h"
 
 namespace Elastos {

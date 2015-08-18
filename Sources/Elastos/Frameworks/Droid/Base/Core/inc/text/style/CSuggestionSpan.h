@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPAN_H__
 
-#include "_CSuggestionSpan.h"
+#include "_Elastos_Droid_Text_Style_CSuggestionSpan.h"
 #include "ext/frameworkext.h"
 #include "text/style/SuggestionSpan.h"
 

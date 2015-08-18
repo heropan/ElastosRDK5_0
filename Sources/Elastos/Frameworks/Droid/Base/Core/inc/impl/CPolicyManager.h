@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_CPOLICYMANAGER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_CPOLICYMANAGER_H__
 
-#include "_CPolicyManager.h"
+#include "_Elastos_Droid_Internal_Policy_CPolicyManager.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::View::IWindow;

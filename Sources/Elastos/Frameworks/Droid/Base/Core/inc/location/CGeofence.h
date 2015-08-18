@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CGEOFENCE_H__
 
 #include "ext/frameworkext.h"
-#include "_CGeofence.h"
+#include "_Elastos_Droid_Location_CGeofence.h"
 
 namespace Elastos {
 namespace Droid {

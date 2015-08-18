@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_LOCATION_CLOCATIONPROVIDERHELPER_H__
 #define __ELASTOS_DROID_LOCATION_CLOCATIONPROVIDERHELPER_H__
-#include "_CLocationProviderHelper.h"
+#include "_Elastos_Droid_Location_CLocationProviderHelper.h"
 
 namespace Elastos {
 namespace Droid {

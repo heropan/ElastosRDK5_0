@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__
 #define __ELASTOS_DROID_TEXT_CBORINGLAYOUT_H__
 
-#include "_CBoringLayout.h"
+#include "_Elastos_Droid_Text_CBoringLayout.h"
 #include "text/BoringLayout.h"
 
 

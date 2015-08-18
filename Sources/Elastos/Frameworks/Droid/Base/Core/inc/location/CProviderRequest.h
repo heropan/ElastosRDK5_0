@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_PROVIDERREQUEST_H__
 
 #include "ext/frameworkext.h"
-#include "_CProviderRequest.h"
+#include "_Elastos_Droid_Location_CProviderRequest.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

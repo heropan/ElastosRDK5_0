@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CURIHELPER_H__
 #define __ELASTOS_DROID_NET_CURIHELPER_H__
 
-#include "_CUriHelper.h"
+#include "_Elastos_Droid_Net_CUriHelper.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFile;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CREMOVEACCOUNTSESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CREMOVEACCOUNTSESSION_H__
 
-#include "_CRemoveAccountSession.h"
+#include "_Elastos_Droid_Server_Accounts_CRemoveAccountSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 using Elastos::Droid::Accounts::IAccountManagerResponse;

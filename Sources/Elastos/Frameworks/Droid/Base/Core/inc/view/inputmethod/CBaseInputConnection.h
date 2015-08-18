@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CBASEINPUTCONNECTION_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CBASEINPUTCONNECTION_H__
 
-#include "_CBaseInputConnection.h"
+#include "_Elastos_Droid_View_InputMethod_CBaseInputConnection.h"
 #include "view/inputmethod/BaseInputConnection.h"
 
 

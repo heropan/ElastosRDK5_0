@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 #define __ELASTOS_DROID_TEXT_CEDITABLEFACTORY_H__
 
-#include "_CEditableFactory.h"
+#include "_Elastos_Droid_Text_CEditableFactory.h"
 
 using Elastos::Core::ICharSequence;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CDIALOGPREFERENCESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_CDIALOGPREFERENCESAVEDSTATE_H__
 
-#include "_CDialogPreferenceSavedState.h"
+#include "_Elastos_Droid_Preference_CDialogPreferenceSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 using Elastos::Droid::Os::IBundle;

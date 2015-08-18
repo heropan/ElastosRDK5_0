@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CTOGGLESLIDER_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CTOGGLESLIDER_H__
 
-#include "_CToggleSlider.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CToggleSlider.h"
 
 
 

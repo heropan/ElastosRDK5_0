@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGERQUERY_H__
 
 #include "ext/frameworkext.h"
-#include "_CDownloadManagerQuery.h"
+#include "_Elastos_Droid_App_CDownloadManagerQuery.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IInteger32;

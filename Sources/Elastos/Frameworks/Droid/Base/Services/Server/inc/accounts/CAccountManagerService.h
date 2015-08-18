@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CACCOUNTMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CAccountManagerService.h"
+#include "_Elastos_Droid_Server_Accounts_CAccountManagerService.h"
 #include "accounts/IAccountAuthenticatorCache.h"
 #include "content/BroadcastReceiver.h"
 #include "database/sqlite/SQLiteOpenHelper.h"

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTEXTSWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_CTEXTSWITCHER_H__
 
-#include "_CTextSwitcher.h"
+#include "_Elastos_Droid_Widget_CTextSwitcher.h"
 #include "TextSwitcher.h"
 
 

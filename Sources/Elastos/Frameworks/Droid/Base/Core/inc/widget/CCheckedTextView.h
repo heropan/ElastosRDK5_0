@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CCHECKEDTEXTVIEW_H__
 #define __ELASTOS_DROID_WIDGET_CCHECKEDTEXTVIEW_H__
 
-#include "_CCheckedTextView.h"
+#include "_Elastos_Droid_Widget_CCheckedTextView.h"
 #include "widget/CheckedTextView.h"
 
 

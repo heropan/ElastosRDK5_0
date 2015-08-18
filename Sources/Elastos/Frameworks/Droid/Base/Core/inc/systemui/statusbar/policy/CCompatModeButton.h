@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CCOMPATMODEBUTTON_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CCOMPATMODEBUTTON_H__
 
-#include "_CCompatModeButton.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CCompatModeButton.h"
 
 
 #include "systemui/statusbar/policy/CompatModeButton.h"

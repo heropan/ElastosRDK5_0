@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CPENDINGINTENT_H__
 
 #include "ext/frameworkext.h"
-#include "_CPendingIntent.h"
+#include "_Elastos_Droid_App_CPendingIntent.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CALARMMANAGER_H__
 #define __ELASTOS_DROID_APP_CALARMMANAGER_H__
 
-#include "_CAlarmManager.h"
+#include "_Elastos_Droid_App_CAlarmManager.h"
 
 using Elastos::Droid::App::IIAlarmManager;
 using Elastos::Droid::App::IPendingIntent;

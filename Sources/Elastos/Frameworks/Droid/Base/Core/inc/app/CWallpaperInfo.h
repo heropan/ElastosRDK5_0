@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CWALLPAPERINFO_H__
 #define __ELASTOS_DROID_APP_CWALLPAPERINFO_H__
 
-#include "_CWallpaperInfo.h"
+#include "_Elastos_Droid_App_CWallpaperInfo.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IComponentName;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCRESULTHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCRESULTHELPER_H__
 
-#include "_CSyncResultHelper.h"
+#include "_Elastos_Droid_Content_CSyncResultHelper.h"
 
 namespace Elastos {
 namespace Droid {

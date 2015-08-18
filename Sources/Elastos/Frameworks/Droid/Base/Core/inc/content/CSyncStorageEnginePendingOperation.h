@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEPENDINGOPERATION_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEPENDINGOPERATION_H__
 
-#include "_CSyncStorageEnginePendingOperation.h"
+#include "_Elastos_Droid_Content_CSyncStorageEnginePendingOperation.h"
 
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Os::IBundle;

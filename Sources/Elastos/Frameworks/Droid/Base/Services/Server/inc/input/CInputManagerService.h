@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_INPUT_CINPUTMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_INPUT_CINPUTMANAGERSERVICE_H__
 
-#include "_CInputManagerService.h"
+#include "_Elastos_Droid_Server_Input_CInputManagerService.h"
 #include "NativeInputManager.h"
 #include "input/PersistentDataStore.h"
 #include "content/BroadcastReceiver.h"

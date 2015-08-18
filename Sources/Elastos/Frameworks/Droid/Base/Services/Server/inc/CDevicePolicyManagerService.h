@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CDEVICEPOLICYMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CDEVICEPOLICYMANAGERSERVICE_H__
 
-#include "_CDevicePolicyManagerService.h"
+#include "_Elastos_Droid_Server_CDevicePolicyManagerService.h"
 #include "ext/frameworkext.h"
 #include "util/JournaledFile.h"
 #include "content/BroadcastReceiver.h"

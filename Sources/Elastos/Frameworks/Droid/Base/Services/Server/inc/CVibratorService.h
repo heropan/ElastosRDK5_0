@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CVIBRATORSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CVibratorService.h"
+#include "_Elastos_Droid_Server_CVibratorService.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "os/Runnable.h"

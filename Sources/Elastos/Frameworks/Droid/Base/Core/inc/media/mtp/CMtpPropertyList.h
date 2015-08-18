@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPPROPERTYLIST_H__
 #define __ELASTOS_DROID_MTP_CMTPPROPERTYLIST_H__
 
-#include "_CMtpPropertyList.h"
+#include "_Elastos_Droid_Mtp_CMtpPropertyList.h"
 
 namespace Elastos {
 namespace Droid {

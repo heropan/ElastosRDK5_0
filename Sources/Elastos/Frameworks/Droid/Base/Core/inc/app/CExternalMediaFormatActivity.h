@@ -4,7 +4,7 @@
 
 #include "content/BroadcastReceiver.h"
 #include "app/AlertActivity.h"
-#include "_CExternalMediaFormatActivity.h"
+#include "_Elastos_Droid_Internal_App_CExternalMediaFormatActivity.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::IContext;

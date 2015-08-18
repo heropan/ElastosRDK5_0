@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
 #define __ELASTOS_DROID_SYSTEMUI_CEXPANDHELPER_H__
 
-#include "_CExpandHelper.h"
+#include "_Elastos_Droid_SystemUI_CExpandHelper.h"
 #include "systemui/CViewScaller.h"
 #include "view/SimpleOnScaleGestureListener.h"
 #include "animation/AnimatorListenerAdapter.h"

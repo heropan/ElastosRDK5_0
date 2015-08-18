@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CCHARARRAYBUFFERSHELPER_H__
 #define __ELASTOS_DROID_NET_HTTP_CCHARARRAYBUFFERSHELPER_H__
 
-#include "_CCharArrayBuffersHelper.h"
+#include "_Elastos_Droid_Net_Http_CCharArrayBuffersHelper.h"
 
 namespace Elastos {
 namespace Droid {

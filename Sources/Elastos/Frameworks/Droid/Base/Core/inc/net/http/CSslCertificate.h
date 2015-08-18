@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATE_H__
 #define __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATE_H__
 
-#include "_CSslCertificate.h"
+#include "_Elastos_Droid_Net_Http_CSslCertificate.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Utility::IDate;

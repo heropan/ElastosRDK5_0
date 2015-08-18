@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_SERVER_CBACKUPMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CBackupManagerService.h"
+#include "_Elastos_Droid_Server_CBackupManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CTELEPHONYMANAGERHELPER_H__
 #define __ELASTOS_DROID_TELEPHONY_CTELEPHONYMANAGERHELPER_H__
 
-#include "_CTelephonyManagerHelper.h"
+#include "_Elastos_Droid_Telephony_CTelephonyManagerHelper.h"
 #include "ext/frameworkdef.h"
 
 using Elastos::Droid::Content::IContext;

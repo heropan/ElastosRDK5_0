@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CWMSWALLPAPERCONNECTION_H__
 #define __ELASTOS_DROID_SERVER_CWMSWALLPAPERCONNECTION_H__
 
-#include "_CWMSWallpaperConnection.h"
+#include "_Elastos_Droid_Server_CWMSWallpaperConnection.h"
 #include "CWallpaperManagerService.h"
 
 namespace Elastos {

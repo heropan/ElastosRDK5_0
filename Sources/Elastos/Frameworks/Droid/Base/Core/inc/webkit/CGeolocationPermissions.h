@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CGEOLOCATIONPERMISSIONS_H__
 #define __ELASTOS_DROID_WEBKIT_CGEOLOCATIONPERMISSIONS_H__
 
-#include "_CGeolocationPermissions.h"
+#include "_Elastos_Droid_Webkit_CGeolocationPermissions.h"
 #include "webkit/GeolocationPermissions.h"
 
 namespace Elastos {

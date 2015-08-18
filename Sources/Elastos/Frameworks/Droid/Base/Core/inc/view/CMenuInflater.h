@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CMENUINFLATER_H__
 
 #include "ext/frameworkext.h"
-#include "_CMenuInflater.h"
+#include "_Elastos_Droid_View_CMenuInflater.h"
 
 using Elastos::Core::ICharSequence;
 using Org::Xmlpull::V1::IXmlPullParser;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLES11_H__
 #define __ELASTOS_DROID_OPENGL_CGLES11_H__
 
-#include "_CGLES11.h"
+#include "_Elastos_Droid_Opengl_CGLES11.h"
 
 using Elastos::IO::IBuffer;
 

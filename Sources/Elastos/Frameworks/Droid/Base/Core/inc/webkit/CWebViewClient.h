@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCLIENT_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCLIENT_H__
 
-#include "_CWebViewClient.h"
+#include "_Elastos_Droid_Webkit_CWebViewClient.h"
 #include "webkit/WebViewClient.h"
 
 using Elastos::Droid::Graphics::IBitmap;

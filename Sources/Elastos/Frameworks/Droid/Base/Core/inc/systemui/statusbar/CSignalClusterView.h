@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSIGNALCLUSTERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSIGNALCLUSTERVIEW_H__
 
-#include "_CSignalClusterView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CSignalClusterView.h"
 
 
 

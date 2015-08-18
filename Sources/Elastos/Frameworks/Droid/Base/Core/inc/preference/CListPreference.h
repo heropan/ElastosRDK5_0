@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CLISTPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CLISTPREFERENCE_H__
 
-#include "_CListPreference.h"
+#include "_Elastos_Droid_Preference_CListPreference.h"
 #include "DialogPreference.h"
 
 namespace Elastos {

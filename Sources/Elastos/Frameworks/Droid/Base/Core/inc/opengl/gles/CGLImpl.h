@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLES_CGLIMPL_H__
 #define __ELASTOS_DROID_OPENGL_GLES_CGLIMPL_H__
 
-#include "_CGLImpl.h"
+#include "_Elastos_Droid_Opengl_Gles_CGLImpl.h"
 
 using Elastos::IO::IInt32Buffer;
 using Elastos::IO::IFloatBuffer;

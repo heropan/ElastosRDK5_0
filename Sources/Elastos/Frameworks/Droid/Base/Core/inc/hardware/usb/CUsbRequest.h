@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBREQUEST_H__
 #define __ELASTOS_DROID_HARDWARE_USB_CUSBREQUEST_H__
 
-#include "_CUsbRequest.h"
+#include "_Elastos_Droid_Hardware_Usb_CUsbRequest.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/logging/Logger.h>
 

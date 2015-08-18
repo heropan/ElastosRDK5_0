@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWROOTIMPLW_H__
 #define __ELASTOS_DROID_VIEW_CVIEWROOTIMPLW_H__
 
-#include "_CViewRootImplW.h"
+#include "_Elastos_Droid_View_CViewRootImplW.h"
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::IBundle;

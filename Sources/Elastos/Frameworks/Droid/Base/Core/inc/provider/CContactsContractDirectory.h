@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDIRECTORY_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDIRECTORY_H__
 
-#include "_CContactsContractDirectory.h"
+#include "_Elastos_Droid_Provider_CContactsContractDirectory.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

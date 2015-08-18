@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CGEOCODERPARAMS_H__
 #define __ELASTOS_DROID_LOCATION_CGEOCODERPARAMS_H__
 
-#include "_CGeocoderParams.h"
+#include "_Elastos_Droid_Location_CGeocoderParams.h"
 
 using Elastos::Droid::Content::IContext;
 using Libcore::ICU::ILocale;

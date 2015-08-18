@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYTHREADHELPER_H__
 
-#include "_CActivityThreadHelper.h"
+#include "_Elastos_Droid_App_CActivityThreadHelper.h"
 
 using Elastos::Droid::Content::IIntent;
 using Elastos::Droid::Content::Pm::IIPackageManager;

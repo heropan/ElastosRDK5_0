@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORT_H__
 
-#include "_CApplicationErrorReport.h"
+#include "_Elastos_Droid_App_CApplicationErrorReport.h"
 
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Content::IContext;

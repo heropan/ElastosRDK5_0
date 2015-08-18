@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CLOCALESPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CLOCALESPAN_H__
 
-#include "_CLocaleSpan.h"
+#include "_Elastos_Droid_Text_Style_CLocaleSpan.h"
 #include "text/style/LocaleSpan.h"
 
 

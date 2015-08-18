@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CFACE_H__
 #define __ELASTOS_DROID_MEDIA_CFACE_H__
 
-#include "_CFace.h"
+#include "_Elastos_Droid_Media_CFace.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IPointF;

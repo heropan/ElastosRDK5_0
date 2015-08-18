@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSOR_H__
 #define  __ELASTOS_DROID_HARDWARE_CSENSOR_H__
 
-#include "_CSensor.h"
+#include "_Elastos_Droid_Hardware_CSensor.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCORE_H__
 
-#include "_CWebViewCore.h"
+#include "_Elastos_Droid_Webkit_CWebViewCore.h"
 #include "graphics/CPoint.h"
 #include "webkit/WebViewInputDispatcher.h"
 #include "webkit/ViewManager.h"

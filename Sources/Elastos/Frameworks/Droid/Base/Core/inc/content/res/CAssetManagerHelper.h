@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__
 #define __ELASTOS_DROID_CONTENT_RES_CASSETMANAGERHELPER_H__
 
-#include "_CAssetManagerHelper.h"
+#include "_Elastos_Droid_Content_Res_CAssetManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

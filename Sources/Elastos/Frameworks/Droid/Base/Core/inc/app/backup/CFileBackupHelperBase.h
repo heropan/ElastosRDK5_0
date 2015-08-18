@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPERBASE_H__
 #define __ELASTOS_DROID_APP_BACKUP_CFILEBACKUPHELPERBASE_H__
 
-#include "_CFileBackupHelperBase.h"
+#include "_Elastos_Droid_App_Backup_CFileBackupHelperBase.h"
 #include "ext/frameworkext.h"
 #include "app/backup/FileBackupHelperBase.h"
 

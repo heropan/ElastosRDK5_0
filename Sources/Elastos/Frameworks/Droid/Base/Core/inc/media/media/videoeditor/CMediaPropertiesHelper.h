@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAPROPERTIESHELPER_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAPROPERTIESHELPER_H__
 
-#include "_CMediaPropertiesHelper.h"
+#include "_Elastos_Droid_Media_Videoeditor_CMediaPropertiesHelper.h"
 #include <ext/frameworkext.h>
 
 using Elastos::Droid::Utility::IPair;

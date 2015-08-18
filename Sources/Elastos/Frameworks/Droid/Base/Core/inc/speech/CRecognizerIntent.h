@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
 #define __ELASTOS_DROID_SPEECH_CRECOGNIZERINTENT_H__
 
-#include "_CRecognizerIntent.h"
+#include "_Elastos_Droid_Speech_CRecognizerIntent.h"
 
 #include "Elastos.Droid.Core_server.h"
 

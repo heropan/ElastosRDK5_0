@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
 #define __ELASTOS_DROID_MEDIA_CUSERROUTEINFO_H__
 
-#include "_CUserRouteInfo.h"
+#include "_Elastos_Droid_Media_CUserRouteInfo.h"
 #include "ext/frameworkext.h"
 #include "media/media/MediaRouteInfo.h"
 

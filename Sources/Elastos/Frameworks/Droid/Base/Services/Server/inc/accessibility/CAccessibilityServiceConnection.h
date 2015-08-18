@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYSERVICECONNECTION_H__
 
 #include "ext/frameworkext.h"
-#include "_CAccessibilityServiceConnection.h"
+#include "_Elastos_Droid_Server_Accessibility_CAccessibilityServiceConnection.h"
 #include "accessibility/CAccessibilityManagerService.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashSet.h>

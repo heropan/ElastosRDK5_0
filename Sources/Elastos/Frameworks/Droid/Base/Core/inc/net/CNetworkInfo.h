@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CNETWORKINFO_H__
 
 #include "ext/frameworkdef.h"
-#include "_CNetworkInfo.h"
+#include "_Elastos_Droid_Net_CNetworkInfo.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

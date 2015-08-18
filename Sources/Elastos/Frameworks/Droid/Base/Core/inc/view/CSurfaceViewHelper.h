@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSURFACEVIEWHELPER_H__
 #define __ELASTOS_DROID_VIEW_CSURFACEVIEWHELPER_H__
 
-#include "_CSurfaceViewHelper.h"
+#include "_Elastos_Droid_View_CSurfaceViewHelper.h"
 
 namespace Elastos {
 namespace Droid {

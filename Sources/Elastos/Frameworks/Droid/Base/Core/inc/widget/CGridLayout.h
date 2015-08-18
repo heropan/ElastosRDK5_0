@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CGRIDLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_CGRIDLAYOUT_H__
 
-#include "_CGridLayout.h"
+#include "_Elastos_Droid_Widget_CGridLayout.h"
 
 
 #include "widget/GridLayout.h"

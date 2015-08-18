@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CSCROLLINGTABCONTAINERVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CSCROLLINGTABCONTAINERVIEW_H__
 
-#include "_CScrollingTabContainerView.h"
+#include "_Elastos_Droid_Widget_Internal_CScrollingTabContainerView.h"
 
 
 

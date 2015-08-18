@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_STATUSBAR_CSTATUSBARICONLIST_H__
 #define __ELASTOS_DROID_STATUSBAR_CSTATUSBARICONLIST_H__
 
-#include "_CStatusBarIconList.h"
+#include "_Elastos_Droid_StatusBar_CStatusBarIconList.h"
 #include "ext/frameworkdef.h"
 #include <elastos/core/StringBuilder.h>
 #include "statusbar/CStatusBarIcon.h"

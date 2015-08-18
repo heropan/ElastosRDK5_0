@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CINPUTDEVICEHELPER_H__
 #define __ELASTOS_DROID_VIEW_CINPUTDEVICEHELPER_H__
 
-#include "_CInputDeviceHelper.h"
+#include "_Elastos_Droid_View_CInputDeviceHelper.h"
 
 namespace Elastos {
 namespace Droid {

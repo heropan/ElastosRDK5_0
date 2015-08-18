@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CONACTIVITYPAUSEDLISTENER_H__
 #define __ELASTOS_DROID_APP_CONACTIVITYPAUSEDLISTENER_H__
 
-#include "_COnActivityPausedListener.h"
+#include "_Elastos_Droid_App_COnActivityPausedListener.h"
 
 namespace Elastos{
 namespace Droid{

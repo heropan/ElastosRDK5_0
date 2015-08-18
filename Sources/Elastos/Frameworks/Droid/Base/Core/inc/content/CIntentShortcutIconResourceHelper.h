@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTSHORTCUTICONRESOURCEHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTSHORTCUTICONRESOURCEHELPER_H__
 
-#include "_CIntentShortcutIconResourceHelper.h"
+#include "_Elastos_Droid_Content_CIntentShortcutIconResourceHelper.h"
 
 namespace Elastos {
 namespace Droid {

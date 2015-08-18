@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEVENTDAS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEVENTDAS_H__
 
-#include "_CCalendarContractEventDays.h"
+#include "_Elastos_Droid_Provider_CCalendarContractEventDays.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Database::ICursor;

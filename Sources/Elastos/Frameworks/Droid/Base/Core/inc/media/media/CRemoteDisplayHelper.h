@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CREMOTEDISPLAYHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CREMOTEDISPLAYHELPER_H__
 
-#include "_CRemoteDisplayHelper.h"
+#include "_Elastos_Droid_Media_CRemoteDisplayHelper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Os::IHandler;

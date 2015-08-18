@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CUPDATECREDENTIALSSESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CUPDATECREDENTIALSSESSION_H__
 
-#include "_CUpdateCredentialsSession.h"
+#include "_Elastos_Droid_Server_Accounts_CUpdateCredentialsSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 using Elastos::Droid::Accounts::IAccountManagerResponse;

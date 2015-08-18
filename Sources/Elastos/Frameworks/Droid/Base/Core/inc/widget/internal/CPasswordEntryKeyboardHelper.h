@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARDHELPER_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARDHELPER_H__
 
-#include "_CPasswordEntryKeyboardHelper.h"
+#include "_Elastos_Droid_Widget_Internal_CPasswordEntryKeyboardHelper.h"
 #include "widget/internal/PasswordEntryKeyboardHelper.h"
 
 namespace Elastos {

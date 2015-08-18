@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYOPTIONSANIMATIONSTARTEDLISTENER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYOPTIONSANIMATIONSTARTEDLISTENER_H__
 
-#include "_CActivityOptionsAnimationStartedListener.h"
+#include "_Elastos_Droid_App_CActivityOptionsAnimationStartedListener.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Os::IHandler;

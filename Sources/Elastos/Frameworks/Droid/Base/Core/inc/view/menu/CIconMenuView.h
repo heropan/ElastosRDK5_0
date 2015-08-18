@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CICONMENUVIEW_H__
 #define __ELASTOS_DROID_VIEW_MENU_CICONMENUVIEW_H__
 
-#include "_CIconMenuView.h"
+#include "_Elastos_Droid_View_Menu_CIconMenuView.h"
 #include "view/menu/IconMenuView.h"
 
 namespace Elastos {

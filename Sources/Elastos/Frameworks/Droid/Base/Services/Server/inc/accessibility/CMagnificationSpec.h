@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCESSIBILITY_CMAGNIFICATIONSPEC_H__
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CMAGNIFICATIONSPEC_H__
 
-#include "_CMagnificationSpec.h"
+#include "_Elastos_Droid_Server_Accessibility_CMagnificationSpec.h"
 
 namespace Elastos {
 namespace Droid {

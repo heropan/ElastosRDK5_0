@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARCACHE_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARCACHE_H__
 
-#include "_CCalendarContractCalendarCache.h"
+#include "_Elastos_Droid_Provider_CCalendarContractCalendarCache.h"
 
 using Elastos::Droid::Net::IUri;
 

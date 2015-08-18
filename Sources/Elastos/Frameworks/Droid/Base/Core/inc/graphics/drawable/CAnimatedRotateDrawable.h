@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATEDROTATEDRAWABLE_H__
 
-#include "_CAnimatedRotateDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CAnimatedRotateDrawable.h"
 #include "graphics/drawable/AnimatedRotateDrawable.h"
 
 

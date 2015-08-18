@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CSUGGESTIONSPANHELPER_H__
 
-#include "_CSuggestionSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CSuggestionSpanHelper.h"
 
 #include "Elastos.Droid.Core_server.h"
 

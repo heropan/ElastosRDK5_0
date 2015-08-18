@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CMIPMAPDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CMIPMAPDRAWABLE_H__
 
-#include "_CMipmapDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CMipmapDrawable.h"
 #include "graphics/drawable/MipmapDrawable.h"
 
 

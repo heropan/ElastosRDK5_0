@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_CPROCESSSTATS_H__
 #define __ELASTOS_DROID_INTERNAL_OS_CPROCESSSTATS_H__
 
-#include "_CProcessStats.h"
+#include "_Elastos_Droid_Internal_Os_CProcessStats.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 

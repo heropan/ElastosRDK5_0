@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPAINTFLAGSDRAWFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_CPAINTFLAGSDRAWFILTER_H__
 
-#include "_CPaintFlagsDrawFilter.h"
+#include "_Elastos_Droid_Graphics_CPaintFlagsDrawFilter.h"
 #include "graphics/DrawFilter.h"
 
 namespace Elastos {

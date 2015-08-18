@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CALARMMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CAlarmManagerService.h"
+#include "_Elastos_Droid_Server_CAlarmManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

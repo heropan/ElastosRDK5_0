@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CMOTIONEVENT_H__
 #define __ELASTOS_DROID_VIEW_CMOTIONEVENT_H__
 
-#include "_CMotionEvent.h"
+#include "_Elastos_Droid_View_CMotionEvent.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "view/InputEvent.h"

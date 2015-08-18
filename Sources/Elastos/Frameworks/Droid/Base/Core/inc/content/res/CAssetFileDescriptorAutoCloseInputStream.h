@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTORAUTOCLOSEINPUTSTREAM_H__
 #define __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTORAUTOCLOSEINPUTSTREAM_H__
 
-#include "_CAssetFileDescriptorAutoCloseInputStream.h"
+#include "_Elastos_Droid_Content_Res_CAssetFileDescriptorAutoCloseInputStream.h"
 #include "os/ParcelFileDescriptor.h"
 
 using Elastos::IO::IFileDescriptor;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGERHELPER_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGERHELPER_H__
 
-#include "_CPreferenceManagerHelper.h"
+#include "_Elastos_Droid_Preference_CPreferenceManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::ISharedPreferences;

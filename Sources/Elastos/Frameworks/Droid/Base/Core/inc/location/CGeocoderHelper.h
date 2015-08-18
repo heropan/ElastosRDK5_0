@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CGEOCODERHELPER_H__
 #define __ELASTOS_DROID_LOCATION_CGEOCODERHELPER_H__
 
-#include "_CGeocoderHelper.h"
+#include "_Elastos_Droid_Location_CGeocoderHelper.h"
 
 namespace Elastos {
 namespace Droid {

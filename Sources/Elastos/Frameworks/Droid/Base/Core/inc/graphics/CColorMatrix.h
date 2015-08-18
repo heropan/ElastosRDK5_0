@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__
 #define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIX_H__
 
-#include "_CColorMatrix.h"
+#include "_Elastos_Droid_Graphics_CColorMatrix.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDISPLIST_H__
 #define __ELASTOS_DROID_VIEW_CDISPLIST_H__
 
-#include "_CDispList.h"
+#include "_Elastos_Droid_View_CDispList.h"
 #include "os/Handler.h"
 
 #include "widget/Toast.h"

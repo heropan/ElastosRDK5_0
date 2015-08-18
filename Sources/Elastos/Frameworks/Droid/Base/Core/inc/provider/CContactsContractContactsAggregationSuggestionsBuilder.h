@@ -5,7 +5,7 @@
 #define __USE_MALLOC
 #endif
 
-#include "_CContactsContractContactsAggregationSuggestionsBuilder.h"
+#include "_Elastos_Droid_Provider_CContactsContractContactsAggregationSuggestionsBuilder.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Droid::Net::IUri;

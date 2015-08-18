@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOSYSTEMHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOSYSTEMHELPER_H__
 
-#include "_CAudioSystemHelper.h"
+#include "_Elastos_Droid_Media_CAudioSystemHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

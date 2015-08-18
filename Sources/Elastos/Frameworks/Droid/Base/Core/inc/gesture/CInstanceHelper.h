@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CINSTANCEHELPER_H__
 #define __ELASTOS_DROID_GESTURE_CINSTANCEHELPER_H__
 
-#include "_CInstanceHelper.h"
+#include "_Elastos_Droid_Gesture_CInstanceHelper.h"
 #include "Instance.h"
 
 namespace Elastos {

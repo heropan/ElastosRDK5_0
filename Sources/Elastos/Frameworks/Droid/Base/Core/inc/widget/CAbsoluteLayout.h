@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_CABSOLUTELAYOUT_H__
 
-#include "_CAbsoluteLayout.h"
+#include "_Elastos_Droid_Widget_CAbsoluteLayout.h"
 
 #include "widget/AbsoluteLayout.h"
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CLOCALSOCKET_H__
 #define __ELASTOS_DROID_NET_CLOCALSOCKET_H__
 
-#include "_CLocalSocket.h"
+#include "_Elastos_Droid_Net_CLocalSocket.h"
 #include "net/LocalSocketImpl.h"
 
 using Elastos::IO::IFileDescriptor;

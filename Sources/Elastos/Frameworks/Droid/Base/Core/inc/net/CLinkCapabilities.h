@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CLINKCAPABILITIES_H__
 #define __ELASTOS_DROID_NET_CLINKCAPABILITIES_H__
 
-#include "_CLinkCapabilities.h"
+#include "_Elastos_Droid_Net_CLinkCapabilities.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Utility::IObjectInt32Map;

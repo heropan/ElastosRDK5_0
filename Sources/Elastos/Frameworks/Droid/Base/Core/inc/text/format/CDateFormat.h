@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 
-#include "_CDateFormat.h"
+#include "_Elastos_Droid_Text_Format_CDateFormat.h"
 #include "text/format/DateFormat.h"
 
 using Elastos::Core::ICharSequence;

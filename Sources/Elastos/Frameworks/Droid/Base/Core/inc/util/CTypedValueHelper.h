@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__
 #define __ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__
 
-#include "_CTypedValueHelper.h"
+#include "_Elastos_Droid_Utility_CTypedValueHelper.h"
 
 namespace Elastos {
 namespace Droid {

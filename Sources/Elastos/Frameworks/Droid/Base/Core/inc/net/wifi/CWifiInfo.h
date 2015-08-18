@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_NET_WIFI_CWIFIINFO_H__
 
 #include "ext/frameworkext.h"
-#include "_CWifiInfo.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiInfo.h"
 #include <elastos/utility/etl/HashMap.h>
 
 

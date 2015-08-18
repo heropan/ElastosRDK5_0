@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__
 #define __ELASTOS_DROID_STATUSBAR_CSTATUSBARNOTIFICATION_H__
 
-#include "_CStatusBarNotification.h"
+#include "_Elastos_Droid_StatusBar_CStatusBarNotification.h"
 #include "ext/frameworkdef.h"
 #include "os/UserHandle.h"
 #include "os/CUserHandle.h"

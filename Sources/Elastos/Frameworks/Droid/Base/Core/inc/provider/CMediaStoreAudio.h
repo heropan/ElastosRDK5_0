@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIO_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIO_H__
 
-#include "_CMediaStoreAudio.h"
+#include "_Elastos_Droid_Provider_CMediaStoreAudio.h"
 
 namespace Elastos {
 namespace Droid {

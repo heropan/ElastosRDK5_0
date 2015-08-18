@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CNETWORKMANAGEMENTSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CNetworkManagementService.h"
+#include "_Elastos_Droid_Server_CNetworkManagementService.h"
 #include "NativeDaemonConnector.h"
 #include "net/NetworkUtils.h"
 #include "os/Runnable.h"

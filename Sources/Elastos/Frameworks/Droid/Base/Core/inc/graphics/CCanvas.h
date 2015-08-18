@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCANVAS_H__
 #define __ELASTOS_DROID_GRAPHICS_CCANVAS_H__
 
-#include "_CCanvas.h"
+#include "_Elastos_Droid_Graphics_CCanvas.h"
 #include "graphics/Canvas.h"
 
 

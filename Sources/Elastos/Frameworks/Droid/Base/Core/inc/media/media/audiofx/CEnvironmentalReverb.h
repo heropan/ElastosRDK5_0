@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERB_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CENVIRONMENTALREVERB_H__
 
-#include "_CEnvironmentalReverb.h"
+#include "_Elastos_Droid_Media_Audiofx_CEnvironmentalReverb.h"
 #include "ext/frameworkext.h"
 #include "media/media/audiofx/AudioEffect.h"
 

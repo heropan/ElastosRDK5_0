@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAEXTRACTOR_H__
 
-#include "_CMediaExtractor.h"
+#include "_Elastos_Droid_Media_CMediaExtractor.h"
 #include <ext/frameworkext.h>
 #include <elastos/Map.h>
 #include "CMediaCodec.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBSETTINGSCLASSICHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBSETTINGSCLASSICHELPER_H__
 
-#include "_CWebSettingsClassicHelper.h"
+#include "_Elastos_Droid_Webkit_CWebSettingsClassicHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Libcore::ICU::ILocale;

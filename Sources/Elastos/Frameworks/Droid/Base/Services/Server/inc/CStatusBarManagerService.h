@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CSTATUSBARMANAGERSERVICE_H__
 
-#include "_CStatusBarManagerService.h"
+#include "_Elastos_Droid_Server_CStatusBarManagerService.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

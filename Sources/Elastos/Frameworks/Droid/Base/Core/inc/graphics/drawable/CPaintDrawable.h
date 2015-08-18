@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CPAINTDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CPAINTDRAWABLE_H__
 
-#include "_CPaintDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CPaintDrawable.h"
 #include "graphics/drawable/PaintDrawable.h"
 
 

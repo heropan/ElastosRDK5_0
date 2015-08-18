@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CPARCELSTRINGLIST_H__
 #define __ELASTOS_DROID_OS_CPARCELSTRINGLIST_H__
 
-#include "_CParcelStringList.h"
+#include "_Elastos_Droid_Os_CParcelStringList.h"
 
 namespace Elastos {
 namespace Droid {

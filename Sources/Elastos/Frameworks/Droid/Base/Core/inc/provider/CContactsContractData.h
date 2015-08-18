@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATA_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATA_H__
 
-#include "_CContactsContractData.h"
+#include "_Elastos_Droid_Provider_CContactsContractData.h"
 #include "ContactsContractData.h"
 
 namespace Elastos {

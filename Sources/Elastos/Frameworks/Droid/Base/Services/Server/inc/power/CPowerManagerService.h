@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_CPOWERMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_POWER_CPOWERMANAGERSERVICE_H__
 
-#include "_CPowerManagerService.h"
+#include "_Elastos_Droid_Server_Power_CPowerManagerService.h"
 #include "am/CActivityManagerService.h"
 #include "LightsService.h"
 #include "CBatteryService.h"

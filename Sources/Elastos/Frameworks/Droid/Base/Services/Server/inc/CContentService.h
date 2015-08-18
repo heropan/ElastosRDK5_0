@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CCONTENTSERVICE_H__
 
-#include "_CContentService.h"
+#include "_Elastos_Droid_Server_CContentService.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

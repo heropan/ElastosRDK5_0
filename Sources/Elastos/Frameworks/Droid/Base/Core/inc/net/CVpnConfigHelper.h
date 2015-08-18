@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIGHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_NET_CVPNCONFIGHELPER_H__
 
-#include "_CVpnConfigHelper.h"
+#include "_Elastos_Droid_Internal_Net_CVpnConfigHelper.h"
 
 using Elastos::Droid::App::IPendingIntent;
 using Elastos::Droid::Content::IContext;

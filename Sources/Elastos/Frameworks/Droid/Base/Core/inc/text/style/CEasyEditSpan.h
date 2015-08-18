@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CEASYEDITSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CEASYEDITSPAN_H__
 
-#include "_CEasyEditSpan.h"
+#include "_Elastos_Droid_Text_Style_CEasyEditSpan.h"
 #include "text/style/EasyEditSpan.h"
 
 

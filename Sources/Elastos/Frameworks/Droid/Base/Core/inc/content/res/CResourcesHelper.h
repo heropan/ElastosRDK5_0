@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__
 #define __ELASTOS_DROID_CONTENT_RES_CRESOURCESHELPER_H__
 
-#include "_CResourcesHelper.h"
+#include "_Elastos_Droid_Content_Res_CResourcesHelper.h"
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 

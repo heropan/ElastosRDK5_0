@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOMANAGERAUDIOFOCUSDISPATCHER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOMANAGERAUDIOFOCUSDISPATCHER_H__
 
-#include "_CAudioManagerAudioFocusDispatcher.h"
+#include "_Elastos_Droid_Media_CAudioManagerAudioFocusDispatcher.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CSUPPLICANTSTATE_H__
 #define __ELASTOS_DROID_NET_WIFI_CSUPPLICANTSTATE_H__
 
-#include "_CSupplicantState.h"
+#include "_Elastos_Droid_Net_Wifi_CSupplicantState.h"
 
 namespace Elastos {
 namespace Droid {

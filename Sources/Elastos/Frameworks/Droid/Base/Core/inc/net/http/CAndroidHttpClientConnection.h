@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTCONNECTION_H__
 #define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTCONNECTION_H__
 
-#include "_CAndroidHttpClientConnection.h"
+#include "_Elastos_Droid_Net_Http_CAndroidHttpClientConnection.h"
 
 using namespace Elastos::Core;
 using namespace Elastos::Net;

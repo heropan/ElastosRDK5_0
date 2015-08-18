@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIACODECINFO_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIACODECINFO_H__
 
-#include "_CMediaCodecInfo.h"
+#include "_Elastos_Droid_Media_CMediaCodecInfo.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Media::ICodecCapabilities;

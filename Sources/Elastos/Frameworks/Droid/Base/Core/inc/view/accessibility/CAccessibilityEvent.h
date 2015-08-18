@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYEVENT_H__
 
 #include "ext/frameworkdef.h"
-#include "_CAccessibilityEvent.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityEvent.h"
 #include "view/accessibility/AccessibilityRecord.h"
 #include <elastos/utility/etl/List.h>
 

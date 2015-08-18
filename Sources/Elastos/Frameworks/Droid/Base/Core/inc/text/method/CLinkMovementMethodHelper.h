@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHODHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CLINKMOVEMENTMETHODHELPER_H__
 
-#include "_CLinkMovementMethodHelper.h"
+#include "_Elastos_Droid_Text_Method_CLinkMovementMethodHelper.h"
 
 namespace Elastos {
 namespace Droid {

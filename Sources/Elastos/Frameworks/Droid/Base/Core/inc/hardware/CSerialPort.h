@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
 #define  __ELASTOS_DROID_HARDWARE_CSERIALPORT_H__
 
-#include "_CSerialPort.h"
+#include "_Elastos_Droid_Hardware_CSerialPort.h"
 
 using Elastos::IO::IByteBuffer;
 using Elastos::IO::IFileDescriptor;

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CURSORTOBULKCURSORADAPTOR_H__
 
 #include "ext/frameworkdef.h"
-#include "_CCursorToBulkCursorAdaptor.h"
+#include "_Elastos_Droid_Database_CCursorToBulkCursorAdaptor.h"
 #include "database/ContentObserver.h"
 #include "database/CBulkCursorDescriptor.h"
 

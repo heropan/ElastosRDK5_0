@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERYHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERYHELPER_H__
 
-#include "_CCallerInfoAsyncQueryHelper.h"
+#include "_Elastos_Droid_Internal_Telephony_CCallerInfoAsyncQueryHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Net::IUri;

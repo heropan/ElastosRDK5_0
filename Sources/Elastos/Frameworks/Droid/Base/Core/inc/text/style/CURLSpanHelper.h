@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CURLSPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CURLSPANHELPER_H__
 
-#include "_CURLSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CURLSpanHelper.h"
 
 
 namespace Elastos {

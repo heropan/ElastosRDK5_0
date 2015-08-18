@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERHELPER_H__
 
-#include "_CContentProviderHelper.h"
+#include "_Elastos_Droid_Content_CContentProviderHelper.h"
 #include "ContentProvider.h"
 
 namespace Elastos {

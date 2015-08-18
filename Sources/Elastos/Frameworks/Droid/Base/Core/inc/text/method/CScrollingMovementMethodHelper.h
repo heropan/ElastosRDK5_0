@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CSCROLLINGMOVEMENTMETHODHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CSCROLLINGMOVEMENTMETHODHELPER_H__
 
-#include "_CScrollingMovementMethodHelper.h"
+#include "_Elastos_Droid_Text_Method_CScrollingMovementMethodHelper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSOR_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSOR_H__
 
-#include "_CNoiseSuppressor.h"
+#include "_Elastos_Droid_Media_Audiofx_CNoiseSuppressor.h"
 #include <ext/frameworkext.h>
 #include "media/media/audiofx/AudioEffect.h"
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
 #define __ELASTOS_DROID_GESTURE_CGESTURESTROKE_H__
 
-#include "_CGestureStroke.h"
+#include "_Elastos_Droid_Gesture_CGestureStroke.h"
 
 using Elastos::IO::IDataInputStream;
 using Elastos::IO::IDataOutputStream;

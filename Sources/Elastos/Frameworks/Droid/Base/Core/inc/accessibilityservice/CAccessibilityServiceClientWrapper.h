@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICECLIENTWRAPPER_H__
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICECLIENTWRAPPER_H__
 
-#include "_CAccessibilityServiceClientWrapper.h"
+#include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceClientWrapper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::ILooper;

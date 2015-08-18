@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CWALLPAPERMANAGERHELPER_H__
 #define __ELASTOS_DROID_APP_CWALLPAPERMANAGERHELPER_H__
 
-#include "_CWallpaperManagerHelper.h"
+#include "_Elastos_Droid_App_CWallpaperManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

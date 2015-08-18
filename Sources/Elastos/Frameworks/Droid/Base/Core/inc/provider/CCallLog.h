@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALLLOG_H__
 #define __ELASTOS_DROID_PROVIDER_CCALLLOG_H__
 
-#include "_CCallLog.h"
+#include "_Elastos_Droid_Provider_CCallLog.h"
 
 using Elastos::Droid::Net::IUri;
 

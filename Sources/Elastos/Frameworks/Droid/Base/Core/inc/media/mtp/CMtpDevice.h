@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPDEVICE_H__
 #define __ELASTOS_DROID_MTP_CMTPDEVICE_H__
 
-#include "_CMtpDevice.h"
+#include "_Elastos_Droid_Mtp_CMtpDevice.h"
 
 using Elastos::Droid::Hardware::Usb::IUsbDevice;
 using Elastos::Droid::Hardware::Usb::IUsbDeviceConnection;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CPREDICTION_H__
 #define __ELASTOS_DROID_GESTURE_CPREDICTION_H__
 
-#include "_CPrediction.h"
+#include "_Elastos_Droid_Gesture_CPrediction.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__
 #define __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGER_H__
 
-#include "_CInputManager.h"
+#include "_Elastos_Droid_Hardware_Input_CInputManager.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>

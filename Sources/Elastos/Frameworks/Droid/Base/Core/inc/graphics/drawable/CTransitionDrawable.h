@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CTRANSITIONDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CTRANSITIONDRAWABLE_H__
 
-#include "_CTransitionDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CTransitionDrawable.h"
 #include "graphics/drawable/TransitionDrawable.h"
 
 

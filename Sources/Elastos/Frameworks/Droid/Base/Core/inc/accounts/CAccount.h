@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNT_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNT_H__
 
-#include "_CAccount.h"
+#include "_Elastos_Droid_Accounts_CAccount.h"
 
 namespace Elastos {
 namespace Droid {

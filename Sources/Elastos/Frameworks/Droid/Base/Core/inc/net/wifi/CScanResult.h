@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CSCANRESULT_H__
 #define __ELASTOS_DROID_NET_WIFI_CSCANRESULT_H__
 
-#include "_CScanResult.h"
+#include "_Elastos_Droid_Net_Wifi_CScanResult.h"
 
 namespace Elastos {
 namespace Droid {

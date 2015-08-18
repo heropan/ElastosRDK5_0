@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
 #define  __ELASTOS_DROID_HARDWARE_CSENSORMANAGERHELPER_H__
 
-#include "_CSensorManagerHelper.h"
+#include "_Elastos_Droid_Hardware_CSensorManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CTEXTKEYLISTENER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CTEXTKEYLISTENER_H__
 
-#include "_CTextKeyListener.h"
+#include "_Elastos_Droid_Text_Method_CTextKeyListener.h"
 #include "text/method/TextKeyListener.h"
 
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CBLUETOOTHMANAGERSERVICE_H__
 
-#include "_CBluetoothManagerService.h"
+#include "_Elastos_Droid_Server_CBluetoothManagerService.h"
 #include <elastos/core/Thread.h>
 #include "os/HandlerBase.h"
 

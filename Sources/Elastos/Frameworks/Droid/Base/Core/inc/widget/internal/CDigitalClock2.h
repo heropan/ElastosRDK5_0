@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALCDIGITALCLOCK_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_INTERNALCDIGITALCLOCK_H__
 
-#include "_CDigitalClock2.h"
+#include "_Elastos_Droid_Widget_Internal_CDigitalClock2.h"
 #include "DigitalClock.h"
 
 

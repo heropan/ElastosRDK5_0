@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTATS_H__
 
-#include "_CSyncStats.h"
+#include "_Elastos_Droid_Content_CSyncStats.h"
 
 namespace Elastos {
 namespace Droid {

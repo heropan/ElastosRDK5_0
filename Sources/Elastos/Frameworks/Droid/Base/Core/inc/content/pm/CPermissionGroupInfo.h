@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPERMISSIONGROUPINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPERMISSIONGROUPINFO_H__
 
-#include "_CPermissionGroupInfo.h"
+#include "_Elastos_Droid_Content_Pm_CPermissionGroupInfo.h"
 #include "PackageItemInfo.h"
 
 

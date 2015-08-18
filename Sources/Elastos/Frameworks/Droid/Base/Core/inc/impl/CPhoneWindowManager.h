@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWMANAGER_H__
 
-#include "_CPhoneWindowManager.h"
+#include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindowManager.h"
 #include "app/CProgressDialog.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWHITTESTRESULT_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWHITTESTRESULT_H__
 
-#include "_CWebViewHitTestResult.h"
+#include "_Elastos_Droid_Webkit_CWebViewHitTestResult.h"
 #include "webkit/WebView.h"
 
 namespace Elastos {

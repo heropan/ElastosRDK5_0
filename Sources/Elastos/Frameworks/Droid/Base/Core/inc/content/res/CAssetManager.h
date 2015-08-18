@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CASSETMANAGER_H__
 #define __ELASTOS_DROID_CONTENT_RES_CASSETMANAGER_H__
 
-#include "_CAssetManager.h"
+#include "_Elastos_Droid_Content_Res_CAssetManager.h"
 #include "content/res/StringBlock.h"
 #include "content/res/XmlBlock.h"
 #include <elastos/io/InputStream.h>

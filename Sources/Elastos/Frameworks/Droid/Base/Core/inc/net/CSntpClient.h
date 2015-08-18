@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CSNTPCLIENT_H__
 #define __ELASTOS_DROID_NET_CSNTPCLIENT_H__
 
-#include "_CSntpClient.h"
+#include "_Elastos_Droid_Net_CSntpClient.h"
 
 
 namespace Elastos {

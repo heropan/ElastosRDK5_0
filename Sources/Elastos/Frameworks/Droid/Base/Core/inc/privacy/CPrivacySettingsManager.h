@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGSMANAGER_H__
 #define __ELASTOS_DROID_PRIVACY_CPRIVACYSETTINGSMANAGER_H__
 
-#include "_CPrivacySettingsManager.h"
+#include "_Elastos_Droid_Privacy_CPrivacySettingsManager.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Privacy::IIPrivacySettingsManager;

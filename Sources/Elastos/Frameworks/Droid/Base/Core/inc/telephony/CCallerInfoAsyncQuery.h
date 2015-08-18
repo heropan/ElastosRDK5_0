@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERY_H__
 #define __ELASTOS_DROID_INTERNAL_TELEPHONY_CCALLERINFOASYNCQUERY_H__
 
-#include "_CCallerInfoAsyncQuery.h"
+#include "_Elastos_Droid_Internal_Telephony_CCallerInfoAsyncQuery.h"
 #include "content/AsyncQueryHandler.h"
 #include "CCallerInfoAsyncQueryHelper.h"
 #include "ext/frameworkext.h"

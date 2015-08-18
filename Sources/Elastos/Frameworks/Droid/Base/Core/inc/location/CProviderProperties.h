@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_PROVIDERPROPERTIES_H__
 #define __ELASTOS_DROID_LOCATION_PROVIDERPROPERTIES_H__
 
-#include "_CProviderProperties.h"
+#include "_Elastos_Droid_Location_CProviderProperties.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

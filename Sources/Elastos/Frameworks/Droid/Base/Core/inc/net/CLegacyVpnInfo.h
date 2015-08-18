@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_NET_CLEGACYVPNINFO_H__
 #define __ELASTOS_DROID_INTERNAL_NET_CLEGACYVPNINFO_H__
 
-#include "_CLegacyVpnInfo.h"
+#include "_Elastos_Droid_Internal_Net_CLegacyVpnInfo.h"
 
 using Elastos::Droid::App::IPendingIntent;
 

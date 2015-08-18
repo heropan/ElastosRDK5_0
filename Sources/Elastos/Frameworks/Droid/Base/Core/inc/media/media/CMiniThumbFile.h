@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__
 #define __ELASTOS_DROID_MEDIA_CMINITHUMBFILE_H__
 
-#include "_CMiniThumbFile.h"
+#include "_Elastos_Droid_Media_CMiniThumbFile.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

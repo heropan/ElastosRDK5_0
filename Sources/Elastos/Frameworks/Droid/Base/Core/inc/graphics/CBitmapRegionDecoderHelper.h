@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPREGIONDECODERHELPER_H__
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPREGIONDECODERHELPER_H__
 
-#include "_CBitmapRegionDecoderHelper.h"
+#include "_Elastos_Droid_Graphics_CBitmapRegionDecoderHelper.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFileDescriptor;

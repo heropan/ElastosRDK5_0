@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CABSSPINNERSAVEDSTATE_H__
 #define __ELASTOS_DROID_WIDGET_CABSSPINNERSAVEDSTATE_H__
 
-#include "_CAbsSpinnerSavedState.h"
+#include "_Elastos_Droid_Widget_CAbsSpinnerSavedState.h"
 #include "AbsSpinnerSavedState.h"
 
 namespace Elastos{

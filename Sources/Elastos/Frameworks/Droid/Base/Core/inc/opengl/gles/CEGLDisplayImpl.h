@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLES_CEGLDIFPLAYIMPL_H__
 #define __ELASTOS_DROID_OPENGL_GLES_CEGLDIFPLAYIMPL_H__
 
-#include "_CEGLDisplayImpl.h"
+#include "_Elastos_Droid_Opengl_Gles_CEGLDisplayImpl.h"
 
 namespace Elastos {
 namespace Droid {

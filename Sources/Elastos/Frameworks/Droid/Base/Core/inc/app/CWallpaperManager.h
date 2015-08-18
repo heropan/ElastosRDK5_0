@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
 #define __ELASTOS_DROID_APP_CWALLPAPERMANAGER_H__
 
-#include "_CWallpaperManager.h"
+#include "_Elastos_Droid_App_CWallpaperManager.h"
 #include "ext/frameworkdef.h"
 #include "app/CGlobalsWallpaperManagerCallback.h"
 #include "graphics/drawable/Drawable.h"

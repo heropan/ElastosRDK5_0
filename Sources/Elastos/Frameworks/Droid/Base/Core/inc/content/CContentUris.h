@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTURIS_H__
 
-#include "_CContentUris.h"
+#include "_Elastos_Droid_Content_CContentUris.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Net::IUri;

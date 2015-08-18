@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CEGL14HELPER_H__
 #define __ELASTOS_DROID_OPENGL_CEGL14HELPER_H__
 
-#include "_CEGL14Helper.h"
+#include "_Elastos_Droid_Opengl_CEGL14Helper.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWPROPERTYANIMATOR_H__
 #define __ELASTOS_DROID_VIEW_CVIEWPROPERTYANIMATOR_H__
 
-#include "_CViewPropertyAnimator.h"
+#include "_Elastos_Droid_View_CViewPropertyAnimator.h"
 #include "ViewPropertyAnimator.h"
 
 using Elastos::Droid::Animation::ITimeInterpolator;

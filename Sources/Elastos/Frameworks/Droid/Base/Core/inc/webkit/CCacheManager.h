@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_WEBKIT_CCACHEMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include "_CCacheManager.h"
+#include "_Elastos_Droid_Webkit_CCacheManager.h"
 #include "os/Runnable.h"
 
 using Elastos::IO::IFile;

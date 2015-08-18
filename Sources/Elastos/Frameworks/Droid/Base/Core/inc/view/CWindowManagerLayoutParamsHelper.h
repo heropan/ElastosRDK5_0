@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMSHELPER_H__
 #define  __ELASTOS_DROID_VIEW_CWINDOWMANAGERLAYOUTPARAMSHELPER_H__
 
-#include "_CWindowManagerLayoutParamsHelper.h"
+#include "_Elastos_Droid_View_CWindowManagerLayoutParamsHelper.h"
 
 namespace Elastos {
 namespace Droid {

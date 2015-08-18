@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CKEYGUARDMANAGER_H__
 
 #include "ext/frameworkdef.h"
-#include "_CKeyguardManager.h"
+#include "_Elastos_Droid_App_CKeyguardManager.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::IIWindowManager;

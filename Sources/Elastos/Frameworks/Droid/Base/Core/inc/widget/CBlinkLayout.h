@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CBLINKLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_CBLINKLAYOUT_H__
 
-#include "_CBlinkLayout.h"
+#include "_Elastos_Droid_Widget_CBlinkLayout.h"
 
 
 #include "widget/FrameLayout.h"

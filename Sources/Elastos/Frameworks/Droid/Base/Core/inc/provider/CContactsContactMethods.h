@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTACTMETHODS_H__
 
-#include "_CContactsContactMethods.h"
+#include "_Elastos_Droid_Provider_CContactsContactMethods.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

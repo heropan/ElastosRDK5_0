@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CMETAKEYKEYLISTENERHELPER_H__
 #define  __ELASTOS_DROID_TEXT_METHOD_CMETAKEYKEYLISTENERHELPER_H__
 
-#include "_CMetaKeyKeyListenerHelper.h"
+#include "_Elastos_Droid_Text_Method_CMetaKeyKeyListenerHelper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::View::IView;

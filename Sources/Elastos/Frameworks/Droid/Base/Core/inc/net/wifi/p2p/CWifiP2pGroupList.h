@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUPLIST_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PGROUPLIST_H__
 
-#include "_CWifiP2pGroupList.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pGroupList.h"
 #include "util/LruCache.h"
 
 using Elastos::Core::IInteger32;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCELLINFOLTE_H__
 #define __ELASTOS_DROID_TELEPHONY_CCELLINFOLTE_H__
 
-#include "_CCellInfoLte.h"
+#include "_Elastos_Droid_Telephony_CCellInfoLte.h"
 #include "telephony/CellInfo.h"
 
 namespace Elastos {

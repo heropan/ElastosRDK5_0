@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERAMSRESPONSE_H__
 
-#include "_CAccountManagerAmsResponse.h"
+#include "_Elastos_Droid_Accounts_CAccountManagerAmsResponse.h"
 #include "accounts/CAccountManager.h"
 
 using Elastos::Droid::Os::IBundle;

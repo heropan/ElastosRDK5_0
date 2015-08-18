@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__
 #define __ELASTOS_DROID_CONTENT_PM_CLABELEDINTENT_H__
 
-#include "_CLabeledIntent.h"
+#include "_Elastos_Droid_Content_Pm_CLabeledIntent.h"
 #include "../Intent.h"
 
 using Elastos::Core::ICharSequence;

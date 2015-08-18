@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_NET_CPROCESSOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_NET_CPROCESSOBSERVER_H__
 
-#include "_CProcessObserver.h"
+#include "_Elastos_Droid_Server_Net_CProcessObserver.h"
 
 namespace Elastos {
 namespace Droid {

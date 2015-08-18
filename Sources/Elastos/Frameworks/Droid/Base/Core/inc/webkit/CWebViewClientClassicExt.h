@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWCLIENTCLASSICEXT_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWCLIENTCLASSICEXT_H__
 
-#include "_CWebViewClientClassicExt.h"
+#include "_Elastos_Droid_Webkit_CWebViewClientClassicExt.h"
 #include "webkit/WebViewClientClassicExt.h"
 
 using Elastos::Droid::Os::IHandler;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CRESTORESET_H__
 #define __ELASTOS_DROID_APP_BACKUP_CRESTORESET_H__
 
-#include "_CRestoreSet.h"
+#include "_Elastos_Droid_App_Backup_CRestoreSet.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos{

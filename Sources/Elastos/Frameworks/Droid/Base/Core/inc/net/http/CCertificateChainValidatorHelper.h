@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CCERTIFICATECHAINVALIDATORHELPER_H__
 #define __ELASTOS_DROID_NET_HTTP_CCERTIFICATECHAINVALIDATORHELPER_H__
 
-#include "_CCertificateChainValidatorHelper.h"
+#include "_Elastos_Droid_Net_Http_CCertificateChainValidatorHelper.h"
 #include "CertificateChainValidator.h"
 
 namespace Elastos {

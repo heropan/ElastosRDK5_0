@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CACCESSIBILITYINTERACTIONCONNECTION_H__
 #define __ELASTOS_DROID_VIEW_CACCESSIBILITYINTERACTIONCONNECTION_H__
 
-#include "_CAccessibilityInteractionConnection.h"
+#include "_Elastos_Droid_View_CAccessibilityInteractionConnection.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Os::IBundle;

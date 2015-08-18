@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPERMISSIONINFO_H__
 
-#include "_CPermissionInfo.h"
+#include "_Elastos_Droid_Content_Pm_CPermissionInfo.h"
 #include "PackageItemInfo.h"
 
 namespace Elastos {

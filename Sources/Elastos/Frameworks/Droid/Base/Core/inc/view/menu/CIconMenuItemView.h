@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_CICONMENIITEMVIEW_H__
 
 
-#include "_CIconMenuItemView.h"
+#include "_Elastos_Droid_View_Menu_CIconMenuItemView.h"
 #include "view/menu/IconMenuItemView.h"
 
 

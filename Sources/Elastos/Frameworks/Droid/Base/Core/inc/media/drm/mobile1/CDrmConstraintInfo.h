@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMCONSTRAINTINFO_H__
 #define __ELASTOS_DROID_DRM_MOBILE1_CDRMCONSTRAINTINFO_H__
 
-#include "_CDrmConstraintInfo.h"
+#include "_Elastos_Droid_Drm_Mobile1_CDrmConstraintInfo.h"
 #include <ext/frameworkext.h>
 
 using Elastos::Utility::IDate;

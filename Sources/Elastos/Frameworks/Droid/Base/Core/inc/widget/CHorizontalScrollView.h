@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CHORIZONTALSCROLLVIEW_H__
 #define __ELASTOS_DROID_WIDGET_CHORIZONTALSCROLLVIEW_H__
 
-#include "_CHorizontalScrollView.h"
+#include "_Elastos_Droid_Widget_CHorizontalScrollView.h"
 #include "widget/HorizontalScrollView.h"
 
 

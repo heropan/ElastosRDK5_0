@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CPROXY_H__
 #define __ELASTOS_DROID_NET_CPROXY_H__
 
-#include "_CProxy.h"
+#include "_Elastos_Droid_Net_CProxy.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

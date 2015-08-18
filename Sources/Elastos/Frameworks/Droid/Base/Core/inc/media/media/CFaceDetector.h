@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
 #define __ELASTOS_DROID_MEDIA_CFACEDETECTOR_H__
 
-#include "_CFaceDetector.h"
+#include "_Elastos_Droid_Media_CFaceDetector.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Graphics::IPointF;

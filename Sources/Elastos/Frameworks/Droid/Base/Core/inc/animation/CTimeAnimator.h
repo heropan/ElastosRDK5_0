@@ -2,7 +2,7 @@
 #ifndef  __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__
 #define  __ELASTOS_DROID_ANIMATION_CTIMEANIMATOR_H__
 
-#include "_CTimeAnimator.h"
+#include "_Elastos_Droid_Animation_CTimeAnimator.h"
 #include "animation/TimeAnimator.h"
 
 namespace Elastos {

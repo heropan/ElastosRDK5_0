@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDATAITEM_H__
 
-#include "_CClipDataItem.h"
+#include "_Elastos_Droid_Content_CClipDataItem.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::IStringBuilder;

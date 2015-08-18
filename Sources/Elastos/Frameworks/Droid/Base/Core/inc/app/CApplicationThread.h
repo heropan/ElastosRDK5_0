@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONTHREAD_H__
 
-#include "_CApplicationThread.h"
+#include "_Elastos_Droid_App_CApplicationThread.h"
 #include "app/CActivityThread.h"
 
 using Elastos::IO::IFileDescriptor;

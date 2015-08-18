@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMETADATAHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMETADATAHELPER_H__
 
-#include "_CMetadataHelper.h"
+#include "_Elastos_Droid_Media_CMetadataHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

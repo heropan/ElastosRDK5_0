@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTAUTHENTICATORTRANSPORT_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTAUTHENTICATORTRANSPORT_H__
 
-#include "_CAccountAuthenticatorTransport.h"
+#include "_Elastos_Droid_Accounts_CAccountAuthenticatorTransport.h"
 
 using Elastos::Droid::Os::IBundle;
 

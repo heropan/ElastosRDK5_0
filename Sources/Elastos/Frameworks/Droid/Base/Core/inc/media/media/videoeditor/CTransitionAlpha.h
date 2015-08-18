@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONALPHA_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONALPHA_H__
 
-#include "_CTransitionAlpha.h"
+#include "_Elastos_Droid_Media_Videoeditor_CTransitionAlpha.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Transition.h"
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CSAMPLINGPROFILERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CSamplingProfilerService.h"
+#include "_Elastos_Droid_Server_CSamplingProfilerService.h"
 #include "database/ContentObserver.h"
 #include "os/FileObserver.h"
 

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYINTERACTIONCLIENTHELPER_H__
 
 #include "ext/frameworkext.h"
-#include "_CAccessibilityInteractionClientHelper.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClientHelper.h"
 
 namespace Elastos {
 namespace Droid {

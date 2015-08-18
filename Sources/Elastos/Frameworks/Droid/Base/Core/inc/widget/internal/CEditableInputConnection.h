@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CEIDTABLEINPUTCONNECTION_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CEIDTABLEINPUTCONNECTION_H__
 
-#include "_CEditableInputConnection.h"
+#include "_Elastos_Droid_Widget_Internal_CEditableInputConnection.h"
 #include "widget/internal/EditableInputConnection.h"
 
 using Elastos::Droid::View::IKeyEvent;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CRATINGBAR_H__
 #define __ELASTOS_DROID_WIDGET_CRATINGBAR_H__
 
-#include "_CRatingBar.h"
+#include "_Elastos_Droid_Widget_CRatingBar.h"
 
 #include "RatingBar.h"
 

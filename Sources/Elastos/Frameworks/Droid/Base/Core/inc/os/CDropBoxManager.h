@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CDROPBOXMANAGER_H__
 #define __ELASTOS_DROID_OS_CDROPBOXMANAGER_H__
 
-#include "_CDropBoxManager.h"
+#include "_Elastos_Droid_Os_CDropBoxManager.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/logging/Slogger.h>
 #include "os/ParcelFileDescriptor.h"

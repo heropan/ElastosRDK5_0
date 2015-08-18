@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CRELATIVESIZESPAN_H__
 
-#include "_CRelativeSizeSpan.h"
+#include "_Elastos_Droid_Text_Style_CRelativeSizeSpan.h"
 #include "text/style/RelativeSizeSpan.h"
 
 

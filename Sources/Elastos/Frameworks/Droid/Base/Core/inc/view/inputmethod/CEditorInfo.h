@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CEDITORINFO_H__
 
-#include "_CEditorInfo.h"
+#include "_Elastos_Droid_View_InputMethod_CEditorInfo.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Os::IBundle;

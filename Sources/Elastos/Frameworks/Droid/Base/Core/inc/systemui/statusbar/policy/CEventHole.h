@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CEVENTHOLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CEVENTHOLE_H__
 
-#include "_CEventHole.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CEventHole.h"
 
 #include "systemui/statusbar/policy/EventHole.h"
 

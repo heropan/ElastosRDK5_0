@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPDEVICEINFO_H__
 #define __ELASTOS_DROID_MTP_CMTPDEVICEINFO_H__
 
-#include "_CMtpDeviceInfo.h"
+#include "_Elastos_Droid_Mtp_CMtpDeviceInfo.h"
 
 namespace Elastos {
 namespace Droid {

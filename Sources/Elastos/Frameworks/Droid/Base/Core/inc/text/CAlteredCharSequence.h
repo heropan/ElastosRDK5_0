@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCE_H__
 #define __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCE_H__
 
-#include "_CAlteredCharSequence.h"
+#include "_Elastos_Droid_Text_CAlteredCharSequence.h"
 
 namespace Elastos {
 namespace Droid {

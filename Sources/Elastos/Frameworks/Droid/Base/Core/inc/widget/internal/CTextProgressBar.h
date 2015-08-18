@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CTEXTPROGRESSBAR_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CTEXTPROGRESSBAR_H__
 
-#include "_CTextProgressBar.h"
+#include "_Elastos_Droid_Widget_Internal_CTextProgressBar.h"
 #include "widget/internal/TextProgressBar.h"
 
 

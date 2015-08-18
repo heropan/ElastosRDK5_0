@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKSTATS_H__
 #define __ELASTOS_DROID_NET_CNETWORKSTATS_H__
 
-#include "_CNetworkStats.h"
+#include "_Elastos_Droid_Net_CNetworkStats.h"
 
 using Elastos::IO::IPrintWriter;
 

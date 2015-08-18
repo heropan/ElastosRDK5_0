@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CPOINTERCOORDS_H__
 #define __ELASTOS_DROID_VIEW_CPOINTERCOORDS_H__
 
-#include "_CPointerCoords.h"
+#include "_Elastos_Droid_View_CPointerCoords.h"
 
 namespace Elastos {
 namespace Droid {

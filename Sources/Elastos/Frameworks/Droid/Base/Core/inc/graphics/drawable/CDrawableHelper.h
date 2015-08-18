@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CDRAWABLEHELPER_H__
 
-#include "_CDrawableHelper.h"
+#include "_Elastos_Droid_Graphics_Drawable_CDrawableHelper.h"
 #include "graphics/drawable/Drawable.h"
 
 namespace Elastos {

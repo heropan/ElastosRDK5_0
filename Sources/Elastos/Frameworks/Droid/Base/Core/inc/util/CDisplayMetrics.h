@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__
 #define __ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__
 
-#include "_CDisplayMetrics.h"
+#include "_Elastos_Droid_Utility_CDisplayMetrics.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CFEATUREINFO_H__
 
-#include "_CFeatureInfo.h"
+#include "_Elastos_Droid_Content_Pm_CFeatureInfo.h"
 
 namespace Elastos {
 namespace Droid {

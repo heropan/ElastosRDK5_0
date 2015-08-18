@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 #define __ELASTOS_DROID_NET_CWIFIP2PSERVICE_H__
 
-#include "_CWifiP2pService.h"
+#include "_Elastos_Droid_Net_CWifiP2pService.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

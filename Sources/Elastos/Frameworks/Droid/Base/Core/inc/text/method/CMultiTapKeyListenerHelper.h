@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENERHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CMULTITAPKEYLISTENERHELPER_H__
 
-#include "_CMultiTapKeyListenerHelper.h"
+#include "_Elastos_Droid_Text_Method_CMultiTapKeyListenerHelper.h"
 
 
 using Elastos::Core::ICharSequence;

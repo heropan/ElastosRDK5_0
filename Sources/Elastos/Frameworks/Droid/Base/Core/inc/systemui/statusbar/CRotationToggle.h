@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CROTATIONTOGGLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CROTATIONTOGGLE_H__
 
-#include "_CRotationToggle.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CRotationToggle.h"
 
 
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CPHYSICALDISPLAYINFO_H__
 #define  __ELASTOS_DROID_VIEW_CPHYSICALDISPLAYINFO_H__
 
-#include "_CPhysicalDisplayInfo.h"
+#include "_Elastos_Droid_View_CPhysicalDisplayInfo.h"
 
 namespace Elastos {
 namespace Droid {

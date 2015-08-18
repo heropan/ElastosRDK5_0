@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTRAWCONTACTSENTITY_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTRAWCONTACTSENTITY_H__
 
-#include "_CContactsContractRawContactsEntity.h"
+#include "_Elastos_Droid_Provider_CContactsContractRawContactsEntity.h"
 
 using Elastos::Droid::Net::IUri;
 

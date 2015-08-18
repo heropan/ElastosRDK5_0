@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CTABLEMASKFILTERHELPER_H__
 #define __ELASTOS_DROID_GRAPHICS_CTABLEMASKFILTERHELPER_H__
 
-#include "_CTableMaskFilterHelper.h"
+#include "_Elastos_Droid_Graphics_CTableMaskFilterHelper.h"
 
 namespace Elastos {
 namespace Droid {

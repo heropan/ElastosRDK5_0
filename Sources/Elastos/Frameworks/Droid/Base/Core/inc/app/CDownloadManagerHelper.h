@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
 #define __ELASTOS_DROID_APP_CDOWNLOADMANAGERHELPER_H__
 
-#include "_CDownloadManagerHelper.h"
+#include "_Elastos_Droid_App_CDownloadManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

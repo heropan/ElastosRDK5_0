@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPCONSTANTS_H__
 #define __ELASTOS_DROID_MTP_CMTPCONSTANTS_H__
 
-#include "_CMtpConstants.h"
+#include "_Elastos_Droid_Mtp_CMtpConstants.h"
 
 namespace Elastos {
 namespace Droid {

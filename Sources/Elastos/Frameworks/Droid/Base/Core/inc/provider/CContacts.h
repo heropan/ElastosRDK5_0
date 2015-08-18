@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTS_H__
 
-#include "_CContacts.h"
+#include "_Elastos_Droid_Provider_CContacts.h"
 
 using Elastos::Droid::Net::IUri;
 

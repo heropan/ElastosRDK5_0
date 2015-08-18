@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAFILE_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAFILE_H__
 
-#include "_CMediaFile.h"
+#include "_Elastos_Droid_Media_CMediaFile.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

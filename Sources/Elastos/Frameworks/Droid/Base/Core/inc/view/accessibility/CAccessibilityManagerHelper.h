@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CAccessibilityManager_H__
 
-#include "_CAccessibilityManagerHelper.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

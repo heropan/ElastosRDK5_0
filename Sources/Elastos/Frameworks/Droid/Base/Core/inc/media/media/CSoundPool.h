@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CSOUNDPOOL_H__
 #define __ELASTOS_DROID_MEDIA_CSOUNDPOOL_H__
 
-#include "_CSoundPool.h"
+#include "_Elastos_Droid_Media_CSoundPool.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 

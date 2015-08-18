@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_ACCESSIBILITYSERVICE_CUITESTAUTOMATIONBRIDGE_H__
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CUITESTAUTOMATIONBRIDGE_H__
 
-#include "_CUiTestAutomationBridge.h"
+#include "_Elastos_Droid_AccessibilityService_CUiTestAutomationBridge.h"
 #include "ext/frameworkext.h"
 #include <elastos/Core/Object.h>
 

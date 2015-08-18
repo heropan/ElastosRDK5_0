@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSPANNABLESTRINGHELPER_H__
 #define __ELASTOS_DROID_TEXT_CSPANNABLESTRINGHELPER_H__
 
-#include "_CSpannableStringHelper.h"
+#include "_Elastos_Droid_Text_CSpannableStringHelper.h"
 
 using Elastos::Core::ICharSequence;
 

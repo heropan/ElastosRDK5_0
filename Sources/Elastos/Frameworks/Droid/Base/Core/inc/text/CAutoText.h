@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 #define __ELASTOS_DROID_TEXT_CAUTOTEXT_H__
 
-#include "_CAutoText.h"
+#include "_Elastos_Droid_Text_CAutoText.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Libcore::ICU::ILocale;

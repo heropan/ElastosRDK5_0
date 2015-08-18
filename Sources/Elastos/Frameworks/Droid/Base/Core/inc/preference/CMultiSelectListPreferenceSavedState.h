@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CMULTISELECTLISTPREFERENCESAVEDSTATE_H__
 #define  __ELASTOS_DROID_PREFERENCE_CMULTISELECTLISTPREFERENCESAVEDSTATE_H__
 
-#include "_CMultiSelectListPreferenceSavedState.h"
+#include "_Elastos_Droid_Preference_CMultiSelectListPreferenceSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 using Elastos::Utility::ISet;

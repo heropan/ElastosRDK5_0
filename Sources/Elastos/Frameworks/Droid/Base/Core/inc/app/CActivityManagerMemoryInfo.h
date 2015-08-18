@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERMEMORYINFO_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERMEMORYINFO_H__
 
-#include "_CActivityManagerMemoryInfo.h"
+#include "_Elastos_Droid_App_CActivityManagerMemoryInfo.h"
 
 
 namespace Elastos {

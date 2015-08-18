@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLE_H__
 #define __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLE_H__
 
-#include "_CRequestHandle.h"
+#include "_Elastos_Droid_Net_Http_CRequestHandle.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "Request.h"

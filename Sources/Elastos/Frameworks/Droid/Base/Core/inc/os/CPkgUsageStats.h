@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_OS_CPKGUSAGESTATS_H__
 #define __ELASTOS_DROID_INTERNAL_OS_CPKGUSAGESTATS_H__
 
-#include "_CPkgUsageStats.h"
+#include "_Elastos_Droid_Internal_Os_CPkgUsageStats.h"
 
 using Elastos::Utility::IObjectStringMap;
 

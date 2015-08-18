@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFODISPLAYNAMECOMPARATOR_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFODISPLAYNAMECOMPARATOR_H__
 
-#include "_CPackageItemInfoDisplayNameComparator.h"
+#include "_Elastos_Droid_Content_Pm_CPackageItemInfoDisplayNameComparator.h"
 
 namespace Elastos {
 namespace Droid {

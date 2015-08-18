@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARALERTS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCALENDARALERTS_H__
 
-#include "_CCalendarContractCalendarAlerts.h"
+#include "_Elastos_Droid_Provider_CCalendarContractCalendarAlerts.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::App::IAlarmManager;

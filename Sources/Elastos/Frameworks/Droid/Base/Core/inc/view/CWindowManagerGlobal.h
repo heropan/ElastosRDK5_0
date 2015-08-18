@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERGLOBAL_H__
 
-#include "_CWindowManagerGlobal.h"
+#include "_Elastos_Droid_View_CWindowManagerGlobal.h"
 #include "os/Runnable.h"
 
 using Elastos::IO::IFileDescriptor;

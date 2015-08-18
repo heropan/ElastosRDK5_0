@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTGROUPS_H__
 
-#include "_CContactsContractGroups.h"
+#include "_Elastos_Droid_Provider_CContactsContractGroups.h"
 #include "content/CursorEntityIterator.h"
 
 using Elastos::Droid::Net::IUri;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_CCOLOR_H__
 
 #include "ext/frameworkext.h"
-#include "_CColor.h"
+#include "_Elastos_Droid_Graphics_CColor.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

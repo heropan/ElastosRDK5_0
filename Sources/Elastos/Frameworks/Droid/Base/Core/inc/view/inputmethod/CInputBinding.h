@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTBINDING_H__
 
-#include "_CInputBinding.h"
+#include "_Elastos_Droid_View_InputMethod_CInputBinding.h"
 
 using Elastos::Droid::Os::IBinder;
 

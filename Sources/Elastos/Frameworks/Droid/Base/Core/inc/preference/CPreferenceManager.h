@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEMANAGER_H__
 
-#include "_CPreferenceManager.h"
+#include "_Elastos_Droid_Preference_CPreferenceManager.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
 #define __ELASTOS_DROID_GESTURE_CGESTUREOVERLAYVIEW_H__
 
-#include "_CGestureOverlayView.h"
+#include "_Elastos_Droid_Gesture_CGestureOverlayView.h"
 #include "GestureOverlayView.h"
 
 namespace Elastos {

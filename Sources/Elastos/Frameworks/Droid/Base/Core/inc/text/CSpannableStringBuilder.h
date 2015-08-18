@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__
 #define __ELASTOS_DROID_TEXT_CSPANNABLESTRINGBUILDER_H__
 
-#include "_CSpannableStringBuilder.h"
+#include "_Elastos_Droid_Text_CSpannableStringBuilder.h"
 #include "text/SpannableStringBuilder.h"
 
 namespace Elastos {

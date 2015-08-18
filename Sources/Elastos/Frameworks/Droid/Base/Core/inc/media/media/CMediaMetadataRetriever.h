@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAMETADATARETRIEVER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAMETADATARETRIEVER_H__
 
-#include "_CMediaMetadataRetriever.h"
+#include "_Elastos_Droid_Media_CMediaMetadataRetriever.h"
 #include "ext/frameworkext.h"
 #include <media/mediametadataretriever.h>
 

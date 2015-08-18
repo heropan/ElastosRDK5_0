@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CCAMERAPROFILEHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CCAMERAPROFILEHELPER_H__
 
-#include "_CCameraProfileHelper.h"
+#include "_Elastos_Droid_Media_CCameraProfileHelper.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

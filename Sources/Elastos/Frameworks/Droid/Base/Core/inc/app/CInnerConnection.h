@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CINNERCONNECTION_H__
 #define __ELASTOS_DROID_APP_CINNERCONNECTION_H__
 
-#include "_CInnerConnection.h"
+#include "_Elastos_Droid_App_CInnerConnection.h"
 #include "app/LoadedPkg.h"
 
 namespace Elastos{

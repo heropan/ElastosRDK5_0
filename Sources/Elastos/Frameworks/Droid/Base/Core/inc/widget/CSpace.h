@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSPACE_H__
 #define __ELASTOS_DROID_WIDGET_CSPACE_H__
 
-#include "_CSpace.h"
+#include "_Elastos_Droid_Widget_CSpace.h"
 
 #include "widget/Space.h"
 

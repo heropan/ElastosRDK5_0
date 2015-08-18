@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CVERIFIERDEVICEIDENTITY_H__
 #define __ELASTOS_DROID_CONTENT_PM_CVERIFIERDEVICEIDENTITY_H__
 
-#include "_CVerifierDeviceIdentity.h"
+#include "_Elastos_Droid_Content_Pm_CVerifierDeviceIdentity.h"
 #include "CVerifierDeviceIdentityHelper.h"
 
 namespace Elastos {

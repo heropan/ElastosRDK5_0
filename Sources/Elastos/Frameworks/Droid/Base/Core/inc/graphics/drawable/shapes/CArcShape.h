@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CARCSHAPE_H__
 
 #include "graphics/drawable/shapes/ArcShape.h"
-#include "_CArcShape.h"
+#include "_Elastos_Droid_Graphics_Drawable_Shapes_CArcShape.h"
 
 namespace Elastos {
 namespace Droid {

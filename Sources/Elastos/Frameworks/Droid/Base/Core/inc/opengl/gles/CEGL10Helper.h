@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLES_CEGL10HELPER_H__
 #define __ELASTOS_DROID_OPENGL_GLES_CEGL10HELPER_H__
 
-#include "_CEGL10Helper.h"
+#include "_Elastos_Droid_Opengl_Gles_CEGL10Helper.h"
 
 namespace Elastos {
 namespace Droid {

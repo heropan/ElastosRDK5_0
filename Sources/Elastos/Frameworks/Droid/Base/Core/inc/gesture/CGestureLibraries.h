@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CGESTURELIBRARIES_H__
 
 #include "ext/frameworkext.h"
-#include "_CGestureLibraries.h"
+#include "_Elastos_Droid_Gesture_CGestureLibraries.h"
 #include "gesture/GestureLibrary.h"
 
 using Elastos::IO::IFile;

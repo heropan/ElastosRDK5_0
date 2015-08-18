@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_CFormatter_H__
 
-#include "_CFormatter.h"
+#include "_Elastos_Droid_Text_Format_CFormatter.h"
 #include "Elastos.Droid.Core_server.h"
 using Elastos::Droid::Content::IContext;
 

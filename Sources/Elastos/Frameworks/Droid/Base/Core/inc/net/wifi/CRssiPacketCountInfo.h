@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CRSSIPACKETCOUNTINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_CRSSIPACKETCOUNTINFO_H__
 
-#include "_CRssiPacketCountInfo.h"
+#include "_Elastos_Droid_Net_Wifi_CRssiPacketCountInfo.h"
 
 namespace Elastos {
 namespace Droid {

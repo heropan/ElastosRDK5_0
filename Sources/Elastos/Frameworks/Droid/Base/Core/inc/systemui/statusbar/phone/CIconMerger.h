@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CICONMERGER_H__
 
-#include "_CIconMerger.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Phone_CIconMerger.h"
 
 
 

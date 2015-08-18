@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CCOUNTRYDETECTORSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CCOUNTRYDETECTORSERVICE_H__
 
-#include "_CCountryDetectorService.h"
+#include "_Elastos_Droid_Server_CCountryDetectorService.h"
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
 #include <elastos/utility/etl/HashMap.h>

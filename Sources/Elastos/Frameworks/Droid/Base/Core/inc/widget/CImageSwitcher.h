@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CIMAGESWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_CIMAGESWITCHER_H__
 
-#include "_CImageSwitcher.h"
+#include "_Elastos_Droid_Widget_CImageSwitcher.h"
 #include "widget/ImageSwitcher.h"
 
 

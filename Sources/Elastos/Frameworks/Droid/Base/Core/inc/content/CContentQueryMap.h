@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTQUERYMAP_H__
 
-#include "_CContentQueryMap.h"
+#include "_Elastos_Droid_Content_CContentQueryMap.h"
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>
 #include "database/ContentObserver.h"

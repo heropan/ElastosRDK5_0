@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
 #define __ELASTOS_DROID_HARDWARE_INPUT_CKEYBOARDLAYOUT_H__
 
-#include "_CKeyboardLayout.h"
+#include "_Elastos_Droid_Hardware_Input_CKeyboardLayout.h"
 
 namespace Elastos {
 namespace Droid {

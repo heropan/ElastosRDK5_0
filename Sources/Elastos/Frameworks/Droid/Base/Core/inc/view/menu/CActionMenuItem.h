@@ -3,7 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "view/menu/ActionMenuItem.h"
-#include "_CActionMenuItem.h"
+#include "_Elastos_Droid_View_Menu_CActionMenuItem.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;

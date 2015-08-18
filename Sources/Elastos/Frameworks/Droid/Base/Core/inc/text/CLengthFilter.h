@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CLENGTHFILTER_H__
 #define __ELASTOS_DROID_TEXT_CLENGTHFILTER_H__
 
-#include "_CLengthFilter.h"
+#include "_Elastos_Droid_Text_CLengthFilter.h"
 
 using Elastos::Core::ICharSequence;
 

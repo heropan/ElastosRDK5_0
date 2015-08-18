@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__
 #define __ELASTOS_DROID_TEXT_CAUTOTEXTHELPER_H__
 
-#include "_CAutoTextHelper.h"
+#include "_Elastos_Droid_Text_CAutoTextHelper.h"
 #include "Elastos.Droid.Core_server.h"
 
 using Elastos::Core::ICharSequence;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_CDRAGEVENT_H__
 
 #include "ext/frameworkdef.h"
-#include "_CDragEvent.h"
+#include "_Elastos_Droid_View_CDragEvent.h"
 #include "Elastos.Droid.Core_server.h"
 #include <Elastos.CoreLibrary.h>
 

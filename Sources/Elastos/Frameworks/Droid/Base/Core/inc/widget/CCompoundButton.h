@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CCOMPOUNDBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_CCOMPOUNDBUTTON_H__
 
-#include "_CCompoundButton.h"
+#include "_Elastos_Droid_Widget_CCompoundButton.h"
 #include "widget/CompoundButton.h"
 
 

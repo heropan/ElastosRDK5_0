@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYRESULT_H__
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYRESULT_H__
 
-#include "_CInstrumentationActivityResult.h"
+#include "_Elastos_Droid_App_CInstrumentationActivityResult.h"
 
 using Elastos::Droid::Content::IIntent;
 

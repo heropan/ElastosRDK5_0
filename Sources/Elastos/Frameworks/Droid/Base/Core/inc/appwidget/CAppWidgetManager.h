@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APPWIDGET_CAPPWIDGETMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include "_CAppWidgetManager.h"
+#include "_Elastos_Droid_AppWidget_CAppWidgetManager.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

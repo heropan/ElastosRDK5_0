@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTCONNECTIONWRAPPER_H__
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTCONNECTIONWRAPPER_H__
 
-#include "_CInputConnectionWrapper.h"
+#include "_Elastos_Droid_View_InputMethod_CInputConnectionWrapper.h"
 
 
 using Elastos::Core::ICharSequence;

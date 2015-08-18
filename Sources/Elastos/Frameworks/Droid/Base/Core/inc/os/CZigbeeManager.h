@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CZIGBEEMANAGER_H__
 #define __ELASTOS_DROID_OS_CZIGBEEMANAGER_H__
 
-#include "_CZigbeeManager.h"
+#include "_Elastos_Droid_Os_CZigbeeManager.h"
 
 namespace Elastos {
 namespace Droid {

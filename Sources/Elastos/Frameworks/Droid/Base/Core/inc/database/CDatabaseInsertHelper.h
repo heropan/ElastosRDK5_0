@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CDATABASEINSERTHELPER_H__
 #define __ELASTOS_DROID_DATABASE_CDATABASEINSERTHELPER_H__
 
-#include "_CDatabaseInsertHelper.h"
+#include "_Elastos_Droid_Database_CDatabaseInsertHelper.h"
 #include "database/DatabaseUtils.h"
 
 namespace Elastos {

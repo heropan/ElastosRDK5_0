@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CGALLERY_H__
 #define __ELASTOS_DROID_WIDGET_CGALLERY_H__
 
-#include "_CGallery.h"
+#include "_Elastos_Droid_Widget_CGallery.h"
 
 
 #include "widget/Gallery.h"

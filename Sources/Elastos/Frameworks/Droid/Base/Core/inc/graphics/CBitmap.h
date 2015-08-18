@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBITMAP_H__
 #define __ELASTOS_DROID_GRAPHICS_CBITMAP_H__
 
-#include "_CBitmap.h"
+#include "_Elastos_Droid_Graphics_CBitmap.h"
 
 using Elastos::IO::IBuffer;
 using Elastos::IO::IOutputStream;

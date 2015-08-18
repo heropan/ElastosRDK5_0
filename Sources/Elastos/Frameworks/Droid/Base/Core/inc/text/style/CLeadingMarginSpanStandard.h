@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CLEADINGMARGINSPANSTANDARD_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CLEADINGMARGINSPANSTANDARD_H__
 
-#include "_CLeadingMarginSpanStandard.h"
+#include "_Elastos_Droid_Text_Style_CLeadingMarginSpanStandard.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Graphics::ICanvas;

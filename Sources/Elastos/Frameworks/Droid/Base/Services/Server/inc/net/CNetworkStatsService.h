@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKSTATSSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CNetworkStatsService.h"
+#include "_Elastos_Droid_Server_Net_CNetworkStatsService.h"
 #include "content/BroadcastReceiver.h"
 #include "net/NetworkIdentitySet.h"
 #include "net/NetworkStatsRecorder.h"

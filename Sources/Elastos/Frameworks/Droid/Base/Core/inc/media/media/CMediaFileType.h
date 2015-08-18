@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAFILETYPE_H__
 
-#include "_CMediaFileType.h"
+#include "_Elastos_Droid_Media_CMediaFileType.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERHELPER_H__
 
-#include "_CMediaPlayerHelper.h"
+#include "_Elastos_Droid_Media_CMediaPlayerHelper.h"
 
 namespace Elastos {
 namespace Droid {

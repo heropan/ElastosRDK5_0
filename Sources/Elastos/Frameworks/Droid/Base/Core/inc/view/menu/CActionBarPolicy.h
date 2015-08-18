@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CACTIONBARPOLICY_H__
 #define __ELASTOS_DROID_VIEW_MENU_CACTIONBARPOLICY_H__
 
-#include "_CActionBarPolicy.h"
+#include "_Elastos_Droid_View_Menu_CActionBarPolicy.h"
 
 using Elastos::Droid::Content::IContext;
 

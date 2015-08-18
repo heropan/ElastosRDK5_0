@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_ETHERNET_CETHERNETDEVINFO_H__
 #define __ELASTOS_DROID_NET_ETHERNET_CETHERNETDEVINFO_H__
 
-#include "_CEthernetDevInfo.h"
+#include "_Elastos_Droid_Net_Ethernet_CEthernetDevInfo.h"
 
 namespace Elastos {
 namespace Droid {

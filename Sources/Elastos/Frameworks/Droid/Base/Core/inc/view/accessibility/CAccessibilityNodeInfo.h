@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFO_H__
 
 #include "ext/frameworkdef.h"
-#include "_CAccessibilityNodeInfo.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityNodeInfo.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

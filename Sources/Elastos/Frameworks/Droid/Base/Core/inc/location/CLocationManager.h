@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CLOCATIONMANAGER_H__
 #define __ELASTOS_DROID_LOCATION_CLOCATIONMANAGER_H__
 
-#include "_CLocationManager.h"
+#include "_Elastos_Droid_Location_CLocationManager.h"
 #include "location/LocationManager.h"
 
 namespace Elastos {

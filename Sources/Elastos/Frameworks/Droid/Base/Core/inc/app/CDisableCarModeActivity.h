@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_APP_CDISABLECARMODEACTIVITY_H__
 
 #include "app/Activity.h"
-#include "_CDisableCarModeActivity.h"
+#include "_Elastos_Droid_Internal_App_CDisableCarModeActivity.h"
 
 using Elastos::Droid::App::Activity;
 

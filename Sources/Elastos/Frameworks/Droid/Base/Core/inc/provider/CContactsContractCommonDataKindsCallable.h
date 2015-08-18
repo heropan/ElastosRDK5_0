@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSCALLABLE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSCALLABLE_H__
 
-#include "_CContactsContractCommonDataKindsCallable.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsCallable.h"
 
 using Elastos::Droid::Net::IUri;
 

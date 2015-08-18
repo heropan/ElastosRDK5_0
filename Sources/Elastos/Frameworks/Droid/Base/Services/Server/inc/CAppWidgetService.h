@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CAPPWIDGETSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CAppWidgetService.h"
+#include "_Elastos_Droid_Server_CAppWidgetService.h"
 #include "AppWidgetServiceImpl.h"
 #include "content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>

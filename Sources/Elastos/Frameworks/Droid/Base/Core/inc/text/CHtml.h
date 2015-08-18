@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CHTML_H__
 #define __ELASTOS_DROID_TEXT_CHTML_H__
 
-#include "_CHtml.h"
+#include "_Elastos_Droid_Text_CHtml.h"
 
 using Elastos::Core::ICharSequence;
 //using Elastos::Droid::Text::IHtmlImageGetter;

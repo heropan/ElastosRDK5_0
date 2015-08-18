@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
 #define __ELASTOS_DROID_WIDGET_CPROGRESSBARSAVEDSTATE_H__
 
-#include "_CProgressBarSavedState.h"
+#include "_Elastos_Droid_Widget_CProgressBarSavedState.h"
 #include "ProgressBarSavedState.h"
 
 namespace Elastos{

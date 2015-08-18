@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYNONCONFIGURATIONINSTANCES_H__
 #define __ELASTOS_DROID_APP_CACTIVITYNONCONFIGURATIONINSTANCES_H__
 
-#include "_CActivityNonConfigurationInstances.h"
+#include "_Elastos_Droid_App_CActivityNonConfigurationInstances.h"
 
 using Elastos::Utility::IObjectStringMap;
 

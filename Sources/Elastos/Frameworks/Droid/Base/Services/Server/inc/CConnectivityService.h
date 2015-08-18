@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CCONNECTIVITYSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CConnectivityService.h"
+#include "_Elastos_Droid_Server_CConnectivityService.h"
 #include "database/ContentObserver.h"
 #include "net/CaptivePortalTracker.h"
 #include "net/LockdownVpnTracker.h"

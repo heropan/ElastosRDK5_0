@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKSETTINGSSERVICE_H__
 
-#include "_CLockSettingsService.h"
+#include "_Elastos_Droid_Widget_Internal_CLockSettingsService.h"
 #include "ext/frameworkdef.h"
 #include <database/sqlite/SQLiteOpenHelper.h>
 

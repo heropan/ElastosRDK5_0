@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTIMAGEMAPPINGS_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTIMAGEMAPPINGS_H__
 
-#include "_CBrowserContractImageMappings.h"
+#include "_Elastos_Droid_Provider_CBrowserContractImageMappings.h"
 
 namespace Elastos {
 namespace Droid {

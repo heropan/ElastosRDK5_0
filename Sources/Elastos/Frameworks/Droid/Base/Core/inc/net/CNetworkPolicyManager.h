@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGER_H__
 #define __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGER_H__
 
-#include "_CNetworkPolicyManager.h"
+#include "_Elastos_Droid_Net_CNetworkPolicyManager.h"
 #include "text/format/CTime.h"
 #include "ext/frameworkext.h"
 

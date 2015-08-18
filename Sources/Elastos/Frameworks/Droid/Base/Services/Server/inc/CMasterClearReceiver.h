@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__
 #define __ELASTOS_DROID_SERVER_CMASTERCLEARRECEIVER_H__
 
-#include "_CMasterClearReceiver.h"
+#include "_Elastos_Droid_Server_CMasterClearReceiver.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSEEKBAR_H__
 #define __ELASTOS_DROID_WIDGET_CSEEKBAR_H__
 
-#include "_CSeekBar.h"
+#include "_Elastos_Droid_Widget_CSeekBar.h"
 #include "widget/SeekBar.h"
 
 

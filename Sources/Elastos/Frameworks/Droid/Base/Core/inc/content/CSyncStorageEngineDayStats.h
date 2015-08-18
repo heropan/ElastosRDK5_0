@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEDAYSTATS_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEDAYSTATS_H__
 
-#include "_CSyncStorageEngineDayStats.h"
+#include "_Elastos_Droid_Content_CSyncStorageEngineDayStats.h"
 
 namespace Elastos {
 namespace Droid {

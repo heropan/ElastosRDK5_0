@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTHELPER_H__
 
-#include "_CIntentHelper.h"
+#include "_Elastos_Droid_Content_CIntentHelper.h"
 #include "Intent.h"
 
 using namespace Elastos::Core;

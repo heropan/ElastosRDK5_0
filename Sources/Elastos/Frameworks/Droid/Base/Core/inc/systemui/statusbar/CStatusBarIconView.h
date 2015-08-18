@@ -3,7 +3,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSTATUSBARICONVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CSTATUSBARICONVIEW_H__
 
-#include "_CStatusBarIconView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CStatusBarIconView.h"
 
 
 #include "systemui/statusbar/StatusBarIconView.h"

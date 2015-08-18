@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICEINFO_H__
 #define __ELASTOS_DROID_ACCESSIBILITYSERVICE_CACCESSIBILITYSERVICEINFO_H__
 
-#include "_CAccessibilityServiceInfo.h"
+#include "_Elastos_Droid_AccessibilityService_CAccessibilityServiceInfo.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Content::Pm::IResolveInfo;

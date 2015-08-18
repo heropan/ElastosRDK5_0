@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOPLAYLISTS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOPLAYLISTS_H__
 
-#include "_CMediaStoreAudioPlaylists.h"
+#include "_Elastos_Droid_Provider_CMediaStoreAudioPlaylists.h"
 
 using Elastos::Droid::Net::IUri;
 

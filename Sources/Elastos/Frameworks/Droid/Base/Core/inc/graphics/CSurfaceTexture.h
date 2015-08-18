@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CSURFACETEXTURE_H__
 #define __CSUMPATHEFFECT_H__
 
-#include "_CSurfaceTexture.h"
+#include "_Elastos_Droid_Graphics_CSurfaceTexture.h"
 #include "os/HandlerBase.h"
 #include <gui/SurfaceTexture.h>
 

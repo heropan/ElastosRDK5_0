@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_CTIMEHELPER_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_CTIMEHELPER_H__
 
-#include "_CTimeHelper.h"
+#include "_Elastos_Droid_Text_Format_CTimeHelper.h"
 
 namespace Elastos {
 namespace Droid {

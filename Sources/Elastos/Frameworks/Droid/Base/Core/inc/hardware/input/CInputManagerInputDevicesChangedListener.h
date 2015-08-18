@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGERINPUTDEVICESCHANGEDLISTENER_H__
 #define __ELASTOS_DROID_HARDWARE_INPUT_CINPUTMANAGERINPUTDEVICESCHANGEDLISTENER_H__
 
-#include "_CInputManagerInputDevicesChangedListener.h"
+#include "_Elastos_Droid_Hardware_Input_CInputManagerInputDevicesChangedListener.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CLINKADDRESS_H__
 #define __ELASTOS_DROID_NET_CLINKADDRESS_H__
 
-#include "_CLinkAddress.h"
+#include "_Elastos_Droid_Net_CLinkAddress.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::IInterfaceAddress;

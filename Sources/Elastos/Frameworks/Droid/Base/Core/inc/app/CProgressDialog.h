@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CPROGRESSDIALOG_H__
 #define __ELASTOS_DROID_APP_CPROGRESSDIALOG_H__
 
-#include "_CProgressDialog.h"
+#include "_Elastos_Droid_App_CProgressDialog.h"
 
 
 

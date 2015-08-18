@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONCROSSFADE_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONCROSSFADE_H__
 
-#include "_CTransitionCrossfade.h"
+#include "_Elastos_Droid_Media_Videoeditor_CTransitionCrossfade.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Transition.h"
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CAPPLICATION_H__
 
 #include "ext/frameworkext.h"
-#include "_CApplication.h"
+#include "_Elastos_Droid_App_CApplication.h"
 #include "app/LoadedPkg.h"
 #include "content/ContextWrapper.h"
 

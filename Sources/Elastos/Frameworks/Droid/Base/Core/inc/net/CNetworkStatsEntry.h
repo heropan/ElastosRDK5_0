@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKSTATSENTRY_H__
 #define __ELASTOS_DROID_NET_CNETWORKSTATSENTRY_H__
 
-#include "_CNetworkStatsEntry.h"
+#include "_Elastos_Droid_Net_CNetworkStatsEntry.h"
 #include "ext/frameworkdef.h"
 
 namespace Elastos {

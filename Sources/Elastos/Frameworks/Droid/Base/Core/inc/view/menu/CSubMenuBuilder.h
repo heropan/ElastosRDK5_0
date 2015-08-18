@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_MENU_CSUBMENUBUILDER_H__
 
 #include "view/menu/SubMenuBuilderBase.h"
-#include "_CSubMenuBuilder.h"
+#include "_Elastos_Droid_View_Menu_CSubMenuBuilder.h"
 
 
 

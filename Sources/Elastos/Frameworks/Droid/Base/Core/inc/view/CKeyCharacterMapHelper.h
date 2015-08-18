@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CKEYCHARACTERMAP_HELPER_H__
 #define __ELASTOS_DROID_VIEW_CKEYCHARACTERMAP_HELPER_H__
 
-#include "_CKeyCharacterMapHelper.h"
+#include "_Elastos_Droid_View_CKeyCharacterMapHelper.h"
 
 namespace Elastos {
 namespace Droid {

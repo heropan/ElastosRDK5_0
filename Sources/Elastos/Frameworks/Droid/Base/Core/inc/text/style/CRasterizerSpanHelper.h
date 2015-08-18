@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPANHELPER_H__
 
-#include "_CRasterizerSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CRasterizerSpanHelper.h"
 
 
 namespace Elastos {

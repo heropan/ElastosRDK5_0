@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPART_H__
 #define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CFILEPART_H__
 
-#include "_CFilePart.h"
+#include "_Elastos_Droid_Net_Internal_Http_Multipart_CFilePart.h"
 #include "PartBase.h"
 #include "elautoptr.h"
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CXML_H__
 #define __ELASTOS_DROID_UTILITY_CXML_H__
 
-#include "_CXml.h"
+#include "_Elastos_Droid_Utility_CXml.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::IO::IReader;

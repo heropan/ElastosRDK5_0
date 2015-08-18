@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CTWOSTATEPREFERENCESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_CTWOSTATEPREFERENCESAVEDSTATE_H__
 
-#include "_CTwoStatePreferenceSavedState.h"
+#include "_Elastos_Droid_Preference_CTwoStatePreferenceSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 namespace Elastos {

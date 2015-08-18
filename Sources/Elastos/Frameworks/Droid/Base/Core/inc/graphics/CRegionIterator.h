@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
 #define __ELASTOS_DROID_GRAPHICS_CREGIONITERATOR_H__
 
-#include "_CRegionIterator.h"
+#include "_Elastos_Droid_Graphics_CRegionIterator.h"
 
 namespace Elastos {
 namespace Droid {

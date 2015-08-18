@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARDVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CPASSWORDENTRYKEYBOARDVIEW_H__
 
-#include "_CPasswordEntryKeyboardView.h"
+#include "_Elastos_Droid_Widget_Internal_CPasswordEntryKeyboardView.h"
 #include "PasswordEntryKeyboardView.h"
 
 

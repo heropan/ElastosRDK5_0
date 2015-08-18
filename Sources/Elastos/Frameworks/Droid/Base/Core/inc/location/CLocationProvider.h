@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_LOCATION_CLOCATIONPROVIDER_H__
 #define __ELASTOS_DROID_LOCATION_CLOCATIONPROVIDER_H__
 
-#include "_CLocationProvider.h"
+#include "_Elastos_Droid_Location_CLocationProvider.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAMRINPUTSTREAM_H__
 #define __ELASTOS_DROID_MEDIA_CAMRINPUTSTREAM_H__
 
-#include "_CAmrInputStream.h"
+#include "_Elastos_Droid_Media_CAmrInputStream.h"
 #include "AmrInputStream.h"
 
 using Elastos::IO::IInputStream;

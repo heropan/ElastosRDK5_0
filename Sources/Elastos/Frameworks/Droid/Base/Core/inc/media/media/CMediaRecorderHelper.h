@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIARECORDERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIARECORDERHELPER_H__
 
-#include "_CMediaRecorderHelper.h"
+#include "_Elastos_Droid_Media_CMediaRecorderHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CCOMMANDQUEUE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CCOMMANDQUEUE_H__
 
-#include "_CCommandQueue.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CCommandQueue.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 

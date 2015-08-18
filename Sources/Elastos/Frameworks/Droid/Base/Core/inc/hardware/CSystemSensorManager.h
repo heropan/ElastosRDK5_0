@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSYSTEMSENSORMANAGER_H__
 #define  __ELASTOS_DROID_HARDWARE_CSYSTEMSENSORMANAGER_H__
 
-#include "_CSystemSensorManager.h"
+#include "_Elastos_Droid_Hardware_CSystemSensorManager.h"
 #include "hardware/SensorManager.h"
 #include <elastos/utility/etl/List.h>
 #include "os/Runnable.h"

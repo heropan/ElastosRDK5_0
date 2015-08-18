@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CTYPEFACEHELPER_H__
 #define __ELASTOS_DROID_GRAPHICS_CTYPEFACEHELPER_H__
 
-#include "_CTypefaceHelper.h"
+#include "_Elastos_Droid_Graphics_CTypefaceHelper.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::IO::IFile;

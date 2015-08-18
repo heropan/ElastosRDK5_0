@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CMEDIAROUTECHOOSERDIALOGFRAGMENT_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CMEDIAROUTECHOOSERDIALOGFRAGMENT_H__
 
-#include "_CMediaRouteChooserDialogFragment.h"
+#include "_Elastos_Droid_Internal_App_CMediaRouteChooserDialogFragment.h"
 
 #include "widget/BaseAdapter.h"
 

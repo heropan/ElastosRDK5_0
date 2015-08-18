@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CJSPROMPTRESULT_H__
 #define __ELASTOS_DROID_WEBKIT_CJSPROMPTRESULT_H__
 
-#include "_CJsPromptResult.h"
+#include "_Elastos_Droid_Webkit_CJsPromptResult.h"
 #include "webkit/JsPromptResult.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCE_H__
 
-#include "_CEditTextPreference.h"
+#include "_Elastos_Droid_Preference_CEditTextPreference.h"
 #include "DialogPreference.h"
 
 using Elastos::Droid::Widget::IEditText;

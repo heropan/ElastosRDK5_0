@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CRINGTONEPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CRINGTONEPREFERENCE_H__
 
-#include "_CRingtonePreference.h"
+#include "_Elastos_Droid_Preference_CRingtonePreference.h"
 #include "Preference.h"
 
 using Elastos::Droid::Net::IUri;

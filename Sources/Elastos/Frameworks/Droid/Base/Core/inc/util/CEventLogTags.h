@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CEVENTLOGTAGS_H__
 #define __ELASTOS_DROID_UTILITY_CEVENTLOGTAGS_H__
 
-#include "_CEventLogTags.h"
+#include "_Elastos_Droid_Utility_CEventLogTags.h"
 
 using Elastos::IO::IBufferedReader;
 

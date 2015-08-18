@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CGRAVITY_H__
 #define __ELASTOS_DROID_VIEW_CGRAVITY_H__
 
-#include "_CGravity.h"
+#include "_Elastos_Droid_View_CGravity.h"
 
 using Elastos::Droid::Graphics::IRect;
 

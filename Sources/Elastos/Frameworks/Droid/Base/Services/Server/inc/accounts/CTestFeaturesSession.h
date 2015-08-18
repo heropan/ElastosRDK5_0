@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CTESTFEATURESSESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CTESTFEATURESSESSION_H__
 
-#include "_CTestFeaturesSession.h"
+#include "_Elastos_Droid_Server_Accounts_CTestFeaturesSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 using Elastos::Droid::Accounts::IAccountManagerResponse;

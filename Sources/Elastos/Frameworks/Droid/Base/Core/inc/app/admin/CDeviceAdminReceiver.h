@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEADMINRECEIVER_H__
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEADMINRECEIVER_H__
 
-#include "_CDeviceAdminReceiver.h"
+#include "_Elastos_Droid_App_Admin_CDeviceAdminReceiver.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CMOVIEHELPER_H__
 #define __ELASTOS_DROID_GRAPHICS_CMOVIEHELPER_H__
 
-#include "_CMovieHelper.h"
+#include "_Elastos_Droid_Graphics_CMovieHelper.h"
 
 using Elastos::IO::IInputStream;
 

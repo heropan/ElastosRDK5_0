@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOEMANAGER_H__
 #define __ELASTOS_DROID_NET_PPPOE_CPPPOEMANAGER_H__
 
-#include "_CPppoeManager.h"
+#include "_Elastos_Droid_Net_Pppoe_CPppoeManager.h"
 #include "CPppoeStateTracker.h"
 #include "ext/frameworkext.h"
 

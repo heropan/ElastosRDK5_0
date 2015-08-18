@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTSEARCHES_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTSEARCHES_H__
 
-#include "_CBrowserContractSearches.h"
+#include "_Elastos_Droid_Provider_CBrowserContractSearches.h"
 
 namespace Elastos {
 namespace Droid {

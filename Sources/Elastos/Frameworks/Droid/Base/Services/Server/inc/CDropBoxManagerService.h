@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CDROPBOXMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CDROPBOXMANAGERSERVICE_H__
 
-#include "_CDropBoxManagerService.h"
+#include "_Elastos_Droid_Server_CDropBoxManagerService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"

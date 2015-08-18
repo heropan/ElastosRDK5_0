@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__
 #define __ELASTOS_DROID_CONTENT_CENTITYNAMEDCONTENTVALUES_H__
 
-#include "_CEntityNamedContentValues.h"
+#include "_Elastos_Droid_Content_CEntityNamedContentValues.h"
 #include <ext/frameworkext.h>
 
 using Elastos::Droid::Net::IUri;

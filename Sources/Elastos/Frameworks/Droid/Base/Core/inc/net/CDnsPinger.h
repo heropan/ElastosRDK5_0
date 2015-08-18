@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CDNSPINGER_H__
 #define __ELASTOS_DROID_NET_CDNSPINGER_H__
 
-#include "_CDnsPinger.h"
+#include "_Elastos_Droid_Net_CDnsPinger.h"
 #include "ext/frameworkdef.h"
 #include "os/SystemClock.h"
 #include "os/Handler.h"

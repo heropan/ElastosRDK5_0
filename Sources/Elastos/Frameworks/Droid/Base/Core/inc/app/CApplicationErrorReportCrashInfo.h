@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTCRASHINFO_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTCRASHINFO_H__
 
-#include "_CApplicationErrorReportCrashInfo.h"
+#include "_Elastos_Droid_App_CApplicationErrorReportCrashInfo.h"
 
 using Elastos::Droid::Utility::IPrinter;
 

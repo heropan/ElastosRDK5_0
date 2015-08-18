@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSPANNEDSTRING_H__
 #define __ELASTOS_DROID_TEXT_CSPANNEDSTRING_H__
 
-#include "_CSpannedString.h"
+#include "_Elastos_Droid_Text_CSpannedString.h"
 #include "text/SpannedString.h"
 
 namespace Elastos {

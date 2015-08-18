@@ -1,4 +1,4 @@
-#include "_CWaveView.h"
+#include "_Elastos_Droid_Widget_Internal_CWaveView.h"
 #include "internal/WaveView.h"
 
 

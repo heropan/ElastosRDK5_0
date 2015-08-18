@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSORHELPER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CNOISESUPPRESSORHELPER_H__
 
-#include "_CNoiseSuppressorHelper.h"
+#include "_Elastos_Droid_Media_Audiofx_CNoiseSuppressorHelper.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

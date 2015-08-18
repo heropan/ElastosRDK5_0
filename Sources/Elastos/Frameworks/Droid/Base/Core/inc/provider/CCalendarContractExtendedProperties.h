@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEXTENDEDPROPERTIES_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTEXTENDEDPROPERTIES_H__
 
-#include "_CCalendarContractExtendedProperties.h"
+#include "_Elastos_Droid_Provider_CCalendarContractExtendedProperties.h"
 #include "CalendarContractExtendedProperties.h"
 
 namespace Elastos {

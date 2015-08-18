@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOTRACKHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOTRACKHELPER_H__
 
-#include "_CAudioTrackHelper.h"
+#include "_Elastos_Droid_Media_CAudioTrackHelper.h"
 
 namespace Elastos {
 namespace Droid {

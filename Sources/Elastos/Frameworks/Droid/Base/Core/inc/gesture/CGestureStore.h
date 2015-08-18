@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CGESTURESTORE_H__
 
 #include "ext/frameworkext.h"
-#include "_CGestureStore.h"
+#include "_Elastos_Droid_Gesture_CGestureStore.h"
 #include "gesture/CGesture.h"
 #include "gesture/Learner.h"
 #include <elastos/utility/etl/HashMap.h>

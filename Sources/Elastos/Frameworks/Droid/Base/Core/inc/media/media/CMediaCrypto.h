@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIACRYPTO_H__
 
-#include "_CMediaCrypto.h"
+#include "_Elastos_Droid_Media_CMediaCrypto.h"
 #include <ext/frameworkext.h>
 #include <utils/RefBase.h>
 #include <media/ICrypto.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CINPUTBINDRESULT_H__
 #define __ELASTOS_DROID_VIEW_CINPUTBINDRESULT_H__
 
-#include "_CInputBindResult.h"
+#include "_Elastos_Droid_View_CInputBindResult.h"
 
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 

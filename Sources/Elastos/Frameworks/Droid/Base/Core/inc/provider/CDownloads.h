@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CDOWNLOADS_H__
 #define __ELASTOS_DROID_PROVIDER_CDOWNLOADS_H__
 
-#include "_CDownloads.h"
+#include "_Elastos_Droid_Provider_CDownloads.h"
 
 using Elastos::Droid::Content::IContext;
 

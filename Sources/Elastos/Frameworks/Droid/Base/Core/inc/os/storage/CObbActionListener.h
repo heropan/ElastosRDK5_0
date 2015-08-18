@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_STORAGE_COBBACTIONLISTENER_H__
 #define __ELASTOS_DROID_OS_STORAGE_COBBACTIONLISTENER_H__
 
-#include "_CObbActionListener.h"
+#include "_Elastos_Droid_Os_Storage_CObbActionListener.h"
 #include "os/storage/CStorageManager.h"
 #include <elastos/utility/etl/HashMap.h>
 

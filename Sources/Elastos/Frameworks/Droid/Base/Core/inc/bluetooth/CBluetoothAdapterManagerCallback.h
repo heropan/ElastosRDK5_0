@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTERMANAGERCALLBACK_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHADAPTERMANAGERCALLBACK_H__
 
-#include "_CBluetoothAdapterManagerCallback.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothAdapterManagerCallback.h"
 #include "CBluetoothAdapter.h"
 
 namespace Elastos {

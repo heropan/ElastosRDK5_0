@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CACTIVITYCHOOSERMODELHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CACTIVITYCHOOSERMODELHELPER_H__
 
-#include "_CActivityChooserModelHelper.h"
+#include "_Elastos_Droid_Widget_CActivityChooserModelHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

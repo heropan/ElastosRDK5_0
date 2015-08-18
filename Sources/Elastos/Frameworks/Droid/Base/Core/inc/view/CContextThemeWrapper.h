@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CCONTEXTTHEMEWRAPPER_H__
 #define __ELASTOS_DROID_VIEW_CCONTEXTTHEMEWRAPPER_H__
 
-#include "_CContextThemeWrapper.h"
+#include "_Elastos_Droid_View_CContextThemeWrapper.h"
 #include "view/ContextThemeWrapper.h"
 
 

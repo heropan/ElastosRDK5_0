@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBICONDATABASEHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBICONDATABASEHELPER_H__
 
-#include "_CWebIconDatabaseHelper.h"
+#include "_Elastos_Droid_Webkit_CWebIconDatabaseHelper.h"
 
 namespace Elastos {
 namespace Droid {

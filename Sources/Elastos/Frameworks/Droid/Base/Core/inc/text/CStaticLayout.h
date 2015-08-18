@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__
 #define __ELASTOS_DROID_TEXT_CSTATICLAYOUT_H__
 
-#include "_CStaticLayout.h"
+#include "_Elastos_Droid_Text_CStaticLayout.h"
 #include "text/StaticLayout.h"
 
 

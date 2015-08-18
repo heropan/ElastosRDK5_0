@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__
 #define __ELASTOS_DROID_SERVER_CNETWORKPOLICYLISTENER_H__
 
-#include "_CNetworkPolicyListener.h"
+#include "_Elastos_Droid_Server_CNetworkPolicyListener.h"
 
 namespace Elastos {
 namespace Droid {

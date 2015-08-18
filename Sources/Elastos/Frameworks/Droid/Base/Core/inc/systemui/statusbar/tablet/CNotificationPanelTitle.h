@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CNOTIFICATIONPANELTITLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CNOTIFICATIONPANELTITLE_H__
 
-#include "_CNotificationPanelTitle.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CNotificationPanelTitle.h"
 
 
 

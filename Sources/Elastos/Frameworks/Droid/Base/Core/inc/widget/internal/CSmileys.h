@@ -4,7 +4,7 @@
 
 #include "ext/frameworkext.h"
 #include "R.h"
-#include "_CSmileys.h"
+#include "_Elastos_Droid_Widget_Internal_CSmileys.h"
 
 using Elastos::Droid::R;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CMOCKGEOLOCATION_H__
 #define __ELASTOS_DROID_WEBKIT_CMOCKGEOLOCATION_H__
 
-#include "_CMockGeolocation.h"
+#include "_Elastos_Droid_Webkit_CMockGeolocation.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_DREAMS_CDREAMSERVICE_H__
 #define __ELASTOS_DROID_SERVICE_DREAMS_CDREAMSERVICE_H__
 
-#include "_CDreamService.h"
+#include "_Elastos_Droid_Service_Dreams_CDreamService.h"
 #include <ext/frameworkext.h>
 
 

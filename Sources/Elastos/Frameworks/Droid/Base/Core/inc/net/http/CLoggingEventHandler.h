@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CLOGGINGEVENTHANDLER_H__
 #define __ELASTOS_DROID_NET_HTTP_CLOGGINGEVENTHANDLER_H__
 
-#include "_CLoggingEventHandler.h"
+#include "_Elastos_Droid_Net_Http_CLoggingEventHandler.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWMANAGERPOLICYTHREAD_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWMANAGERPOLICYTHREAD_H__
 
-#include "_CWindowManagerPolicyThread.h"
+#include "_Elastos_Droid_View_CWindowManagerPolicyThread.h"
 
 using Elastos::Core::IThread;
 using Elastos::Droid::Os::ILooper;

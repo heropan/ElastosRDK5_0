@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CExtractedText_H__
 
-#include "_CExtractedText.h"
+#include "_Elastos_Droid_View_InputMethod_CExtractedText.h"
 
 using Elastos::Core::ICharSequence;
 

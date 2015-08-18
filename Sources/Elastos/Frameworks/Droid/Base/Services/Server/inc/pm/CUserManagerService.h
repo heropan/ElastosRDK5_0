@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_CUSERMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CUserManagerService.h"
+#include "_Elastos_Droid_Server_Pm_CUserManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>
 

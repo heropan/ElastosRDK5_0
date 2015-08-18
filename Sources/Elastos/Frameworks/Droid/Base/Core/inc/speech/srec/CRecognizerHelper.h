@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZERHELPER_H__
 #define __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZERHELPER_H__
 
-#include "_CRecognizerHelper.h"
+#include "_Elastos_Droid_Speech_Srec_CRecognizerHelper.h"
 
 using Libcore::ICU::ILocale;
 

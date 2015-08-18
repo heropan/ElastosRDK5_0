@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CACTIONBARIMPL_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CACTIONBARIMPL_H__
 
-#include "_CActionBarImpl.h"
+#include "_Elastos_Droid_Internal_App_CActionBarImpl.h"
 #include "ext/frameworkext.h"
 #include "view/ActionMode.h"
 #include "view/menu/CActionBarPolicy.h"

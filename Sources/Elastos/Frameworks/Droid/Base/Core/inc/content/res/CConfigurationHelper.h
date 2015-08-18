@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CCONFIGURATIONHELPER_H__
 #define __ELASTOS_DROID_CONTENT_RES_CCONFIGURATIONHELPER_H__
 
-#include "_CConfigurationHelper.h"
+#include "_Elastos_Droid_Content_Res_CConfigurationHelper.h"
 
 namespace Elastos {
 namespace Droid {

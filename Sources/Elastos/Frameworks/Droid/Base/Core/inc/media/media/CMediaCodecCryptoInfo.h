@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
 #define __ELASTOS_DROID_MEDIA_CCRYPTOINFO_H__
 
-#include "_CMediaCodecCryptoInfo.h"
+#include "_Elastos_Droid_Media_CMediaCodecCryptoInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CMERGECURSOR_H__
 #define __ELASTOS_DROID_DATABASE_CMERGECURSOR_H__
 
-#include "_CMergeCursor.h"
+#include "_Elastos_Droid_Database_CMergeCursor.h"
 #include "database/MergeCursor.h"
 
 namespace Elastos {

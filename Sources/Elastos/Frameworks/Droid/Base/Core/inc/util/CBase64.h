@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CBASE64_H__
 #define __ELASTOS_DROID_UTILITY_CBASE64_H__
 
-#include "_CBase64.h"
+#include "_Elastos_Droid_Utility_CBase64.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONACTIVITYMONITOR_H__
 
-#include "_CInstrumentationActivityMonitor.h"
+#include "_Elastos_Droid_App_CInstrumentationActivityMonitor.h"
 #include <elastos/Core/Object.h>
 
 using Elastos::Core::Object;

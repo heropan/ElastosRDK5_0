@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__
 #define __ELASTOS_DROID_CONTENT_RES_CCONFIGURATION_H__
 
-#include "_CConfiguration.h"
+#include "_Elastos_Droid_Content_Res_CConfiguration.h"
 
 using Libcore::ICU::ILocale;
 

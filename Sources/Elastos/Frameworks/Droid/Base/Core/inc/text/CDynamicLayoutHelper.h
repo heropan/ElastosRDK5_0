@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CDYNAMICLAYOUTHELPER_H__
 #define __ELASTOS_DROID_TEXT_CDYNAMICLAYOUTHELPER_H__
 
-#include "_CDynamicLayoutHelper.h"
+#include "_Elastos_Droid_Text_CDynamicLayoutHelper.h"
 
 
 using Elastos::Core::ICharSequence;

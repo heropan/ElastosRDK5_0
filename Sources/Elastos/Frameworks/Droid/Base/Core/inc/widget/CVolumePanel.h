@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__
 #define __ELASTOS_DROID_WIDGET_CVOLUMEPANEL_H__
 
-#include "_CVolumePanel.h"
+#include "_Elastos_Droid_Widget_CVolumePanel.h"
 #include "ext/frameworkext.h"
 
 #include "os/Handler.h"

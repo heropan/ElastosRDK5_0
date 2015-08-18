@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__
 #define __ELASTOS_DROID_GRAPHICS_CCORNERPATHEFFECT_H__
 
-#include "_CCornerPathEffect.h"
+#include "_Elastos_Droid_Graphics_CCornerPathEffect.h"
 #include "graphics/PathEffect.h"
 
 namespace Elastos {

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CWIFISERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CWifiService.h"
+#include "_Elastos_Droid_Server_CWifiService.h"
 #include "database/ContentObserver.h"
 #include "net/wifi/WifiStateMachine.h"
 #include "net/wifi/WifiWatchdogStateMachine.h"

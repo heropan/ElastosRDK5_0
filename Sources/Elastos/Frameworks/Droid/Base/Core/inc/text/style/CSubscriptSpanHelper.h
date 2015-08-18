@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CSUBSCRIPTSPANHELPER_H__
 
-#include "_CSubscriptSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CSubscriptSpanHelper.h"
 
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPORTERDUFFXFERMODE_H__
 #define __ELASTOS_DROID_GRAPHICS_CPORTERDUFFXFERMODE_H__
 
-#include "_CPorterDuffXfermode.h"
+#include "_Elastos_Droid_Graphics_CPorterDuffXfermode.h"
 #include "graphics/Xfermode.h"
 
 namespace Elastos {

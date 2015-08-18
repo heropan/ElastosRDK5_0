@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__
 #define __ELASTOS_DROID_CONTENT_RES_CASSETFILEDESCRIPTOR_H__
 
-#include "_CAssetFileDescriptor.h"
+#include "_Elastos_Droid_Content_Res_CAssetFileDescriptor.h"
 
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;

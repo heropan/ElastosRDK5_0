@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPOBJECTINFO_H__
 #define __ELASTOS_DROID_MTP_CMTPOBJECTINFO_H__
 
-#include "_CMtpObjectInfo.h"
+#include "_Elastos_Droid_Mtp_CMtpObjectInfo.h"
 
 namespace Elastos {
 namespace Droid {

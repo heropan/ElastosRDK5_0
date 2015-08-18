@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CSSLCERTIFICATESOCKETFACTORYHELPER_H__
 #define __ELASTOS_DROID_NET_CSSLCERTIFICATESOCKETFACTORYHELPER_H__
 
-#include "_CSSLCertificateSocketFactoryHelper.h"
+#include "_Elastos_Droid_Net_CSSLCertificateSocketFactoryHelper.h"
 #include "CSSLCertificateSocketFactory"
 
 using namespace Org::Apache::Http::Conn::Ssl;

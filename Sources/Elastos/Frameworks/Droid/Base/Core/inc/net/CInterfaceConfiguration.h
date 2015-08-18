@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_NET_CINTERFACECONFIGURATION_H__
 
 #include "ext/frameworkdef.h"
-#include "_CInterfaceConfiguration.h"
+#include "_Elastos_Droid_Net_CInterfaceConfiguration.h"
 #include <elastos/utility/etl/HashSet.h>
 
 using Elastos::Utility::Etl::HashSet;

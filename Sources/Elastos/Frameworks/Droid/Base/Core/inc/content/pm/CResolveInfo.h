@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFO_H__
 
-#include "_CResolveInfo.h"
+#include "_Elastos_Droid_Content_Pm_CResolveInfo.h"
 
 using Elastos::Core::ICharSequence;
 

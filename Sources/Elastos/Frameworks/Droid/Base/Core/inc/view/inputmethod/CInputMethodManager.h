@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CLOCALINPUTMETHODMANAGER_H__
 
 #include "ext/frameworkdef.h"
-#include "_CInputMethodManager.h"
+#include "_Elastos_Droid_View_InputMethod_CInputMethodManager.h"
 #include "view/inputmethod/CControlledInputConnectionWrapper.h"
 #include "os/HandlerBase.h"
 #include "os/Runnable.h"

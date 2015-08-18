@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CSTRICTMODESPAN_H__
 #define __ELASTOS_DROID_OS_CSTRICTMODESPAN_H__
 
-#include "_CStrictModeSpan.h"
+#include "_Elastos_Droid_Os_CStrictModeSpan.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/Core/Object.h>

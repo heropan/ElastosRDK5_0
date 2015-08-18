@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
 #define __ELASTOS_DROID_WIDGET_CEDGEEFFECT_H__
 
-#include "_CEdgeEffect.h"
+#include "_Elastos_Droid_Widget_CEdgeEffect.h"
 #include "widget/EdgeEffect.h"
 
 using Elastos::Droid::Content::IContext;

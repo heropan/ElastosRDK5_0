@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CNOTIFICATION_H__
 #define __ELASTOS_DROID_APP_CNOTIFICATION_H__
 
-#include "_CNotification.h"
+#include "_Elastos_Droid_App_CNotification.h"
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Core;

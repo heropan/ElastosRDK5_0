@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CDEBUG_H__
 #define __ELASTOS_DROID_OS_CDEBUG_H__
 
-#include "_CDebug.h"
+#include "_Elastos_Droid_Os_CDebug.h"
 #include "ext/frameworkdef.h"
 
 using Elastos::IO::IFileDescriptor;

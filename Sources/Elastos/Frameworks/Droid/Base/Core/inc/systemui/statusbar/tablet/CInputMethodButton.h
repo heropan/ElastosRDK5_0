@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CINPUTMETHODBUTTON_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CINPUTMETHODBUTTON_H__
 
-#include "_CInputMethodButton.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CInputMethodButton.h"
 
 
 #include "systemui/statusbar/tablet/InputMethodButton.h"

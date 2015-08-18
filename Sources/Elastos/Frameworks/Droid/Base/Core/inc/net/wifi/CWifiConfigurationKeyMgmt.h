@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONKEYMGMT_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONKEYMGMT_H__
 
-#include "_CWifiConfigurationKeyMgmt.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiConfigurationKeyMgmt.h"
 
 namespace Elastos {
 namespace Droid {

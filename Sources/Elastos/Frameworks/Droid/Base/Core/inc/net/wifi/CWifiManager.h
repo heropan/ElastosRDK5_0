@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_NET_WIFI_CWIFIMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include "_CWifiManager.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiManager.h"
 #include "os/HandlerBase.h"
 #include "util/AsyncChannel.h"
 #include <elastos/utility/etl/HashMap.h>

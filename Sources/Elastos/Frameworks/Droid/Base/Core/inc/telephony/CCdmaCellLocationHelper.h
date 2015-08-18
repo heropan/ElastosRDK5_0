@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCDMACELLLOCATIONHELPER_H__
 #define __ELASTOS_DROID_TELEPHONY_CCDMACELLLOCATIONHELPER_H__
 
-#include "_CCdmaCellLocationHelper.h"
+#include "_Elastos_Droid_Telephony_CCdmaCellLocationHelper.h"
 
 namespace Elastos {
 namespace Droid {

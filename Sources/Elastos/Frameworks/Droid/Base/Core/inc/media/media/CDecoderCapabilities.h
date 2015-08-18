@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CDECODERCAPABILITIES_H__
 #define __ELASTOS_DROID_MEDIA_CDECODERCAPABILITIES_H__
 
-#include "_CDecoderCapabilities.h"
+#include "_Elastos_Droid_Media_CDecoderCapabilities.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

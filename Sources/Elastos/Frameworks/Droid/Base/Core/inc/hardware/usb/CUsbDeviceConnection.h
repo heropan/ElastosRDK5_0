@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICECONNECTION_H__
 #define __ELASTOS_DROID_HARDWARE_USB_CUSBDEVICECONNECTION_H__
 
-#include "_CUsbDeviceConnection.h"
+#include "_Elastos_Droid_Hardware_Usb_CUsbDeviceConnection.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/logging/Logger.h>
 

@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPEHELPER_H__
 
 #include "ext/frameworkext.h"
-#include "_CInputMethodSubtypeHelper.h"
+#include "_Elastos_Droid_View_InputMethod_CInputMethodSubtypeHelper.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CSERVICESTATE_H__
 #define __ELASTOS_DROID_TELEPHONY_CSERVICESTATE_H__
 
-#include "_CServiceState.h"
+#include "_Elastos_Droid_Telephony_CServiceState.h"
 
 using Elastos::Droid::Os::IBundle;
 

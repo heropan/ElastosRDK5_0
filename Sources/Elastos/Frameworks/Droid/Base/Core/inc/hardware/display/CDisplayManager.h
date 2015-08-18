@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGER_H__
 
-#include "_CDisplayManager.h"
+#include "_Elastos_Droid_Hardware_Display_CDisplayManager.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

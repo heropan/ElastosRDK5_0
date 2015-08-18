@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CBULLETSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CBULLETSPAN_H__
 
-#include "_CBulletSpan.h"
+#include "_Elastos_Droid_Text_Style_CBulletSpan.h"
 #include "text/style/BulletSpan.h"
 
 

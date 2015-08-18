@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CVOLUMEPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CVOLUMEPREFERENCE_H__
 
-#include "_CVolumePreference.h"
+#include "_Elastos_Droid_Preference_CVolumePreference.h"
 #include "SeekBarDialogPreference.h"
 
 using Elastos::Core::ICharSequence;

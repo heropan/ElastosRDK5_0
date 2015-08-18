@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CANDROIDCHARACTERHELPER_H__
 #define __ELASTOS_DROID_TEXT_CANDROIDCHARACTERHELPER_H__
 
-#include "_CAndroidCharacterHelper.h"
+#include "_Elastos_Droid_Text_CAndroidCharacterHelper.h"
 
 namespace Elastos {
 namespace Droid {

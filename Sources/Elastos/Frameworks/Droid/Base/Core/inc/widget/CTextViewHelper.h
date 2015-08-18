@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTEXTVIEWHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CTEXTVIEWHELPER_H__
 
-#include "_CTextViewHelper.h"
+#include "_Elastos_Droid_Widget_CTextViewHelper.h"
 #ifdef DROID_CORE
 #include "Elastos.Droid.Core_server.h"
 #else

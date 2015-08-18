@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTIONHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTIONHELPER_H__
 
-#include "_CMediaScannerConnectionHelper.h"
+#include "_Elastos_Droid_Media_CMediaScannerConnectionHelper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;

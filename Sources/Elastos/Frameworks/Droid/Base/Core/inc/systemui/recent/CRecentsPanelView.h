@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSPANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSPANELVIEW_H__
 
-#include "_CRecentsPanelView.h"
+#include "_Elastos_Droid_SystemUI_Recent_CRecentsPanelView.h"
 
 
 

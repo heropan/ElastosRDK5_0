@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSEHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PSERVICERESPONSEHELPER_H__
 
-#include "_CWifiP2pServiceResponseHelper.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pServiceResponseHelper.h"
 
 namespace Elastos {
 namespace Droid {

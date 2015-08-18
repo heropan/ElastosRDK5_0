@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGER_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGER_H__
 
-#include "_CAccountManager.h"
+#include "_Elastos_Droid_Accounts_CAccountManager.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashMap.h>

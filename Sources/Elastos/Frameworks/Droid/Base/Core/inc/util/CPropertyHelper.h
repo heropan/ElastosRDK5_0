@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_UTILITY_CPROPERTYHELPER_H__
 #define __ELASTOS_DROID_UTILITY_CPROPERTYHELPER_H__
-#include "_CPropertyHelper.h"
+#include "_Elastos_Droid_Utility_CPropertyHelper.h"
 
 namespace Elastos {
 namespace Droid {

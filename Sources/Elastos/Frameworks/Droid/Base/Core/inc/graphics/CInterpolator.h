@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__
 #define __ELASTOS_DROID_GRAPHICS_CINTERPOLATOR_H__
 
-#include "_CInterpolator.h"
+#include "_Elastos_Droid_Graphics_CInterpolator.h"
 
 namespace Elastos {
 namespace Droid {

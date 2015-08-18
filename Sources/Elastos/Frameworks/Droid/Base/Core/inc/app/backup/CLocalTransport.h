@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_INTERNAL_BACKUP_CLOCALTRANSPORT_H__
 
 #include "ext/frameworkext.h"
-#include "_CLocalTransport.h"
+#include "_Elastos_Droid_Internal_Backup_CLocalTransport.h"
 
 using Elastos::IO::IFile;
 using Elastos::Droid::App::Backup::IRestoreSet;

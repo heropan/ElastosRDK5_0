@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTORE_H__
 
-#include "_CMediaStore.h"
+#include "_Elastos_Droid_Provider_CMediaStore.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentResolver;

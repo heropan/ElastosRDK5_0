@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CUNHIVERSEBZACKGROUND_H__
 #define __ELASTOS_DROID_SYSTEMUI_CUNHIVERSEBZACKGROUND_H__
 
-#include "_CUniverseBackground.h"
+#include "_Elastos_Droid_SystemUI_CUniverseBackground.h"
 
 
 

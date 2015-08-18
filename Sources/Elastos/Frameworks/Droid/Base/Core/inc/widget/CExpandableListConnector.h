@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTCONNECTOR_H__
 
-#include "_CExpandableListConnector.h"
+#include "_Elastos_Droid_Widget_CExpandableListConnector.h"
 #include "widget/ExpandableListConnector.h"
 
 namespace Elastos{

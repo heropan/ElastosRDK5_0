@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTRESOLVERHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTRESOLVERHELPER_H__
 
-#include "_CContentResolverHelper.h"
+#include "_Elastos_Droid_Content_CContentResolverHelper.h"
 #include "ContentResolver.h"
 
 using Elastos::Droid::Accounts::IAccount;

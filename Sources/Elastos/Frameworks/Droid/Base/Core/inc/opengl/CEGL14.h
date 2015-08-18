@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CEGL14_H__
 #define __ELASTOS_DROID_OPENGL_CEGL14_H__
 
-#include "_CEGL14.h"
+#include "_Elastos_Droid_Opengl_CEGL14.h"
 #include <gui/Surface.h>
 
 namespace Elastos {

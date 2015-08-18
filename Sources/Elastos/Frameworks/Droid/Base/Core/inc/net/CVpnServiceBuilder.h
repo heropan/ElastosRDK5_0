@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CVPNSERVICEBUILDER_H__
 #define __ELASTOS_DROID_NET_CVPNSERVICEBUILDER_H__
 
-#include "_CVpnServiceBuilder.h"
+#include "_Elastos_Droid_Net_CVpnServiceBuilder.h"
 #include <Logger.h>
 
 using namespace Elastos::Utility::Logging;

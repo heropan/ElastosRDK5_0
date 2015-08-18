@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERHELPER_H__
 
-#include "_CIntentFilterHelper.h"
+#include "_Elastos_Droid_Content_CIntentFilterHelper.h"
 #include "IntentFilter.h"
 
 namespace Elastos {

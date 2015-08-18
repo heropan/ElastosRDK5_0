@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CACTIVERESTORESESSION_H__
 
 #include "ext/frameworkext.h"
-#include "_CActiveRestoreSession.h"
+#include "_Elastos_Droid_Server_CActiveRestoreSession.h"
 #include "CBackupManagerService.h"
 
 using Elastos::Droid::Server::CBackupManagerService;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTHELPER_H__
 
-#include "_CAppWidgetHostHelper.h"
+#include "_Elastos_Droid_AppWidget_CAppWidgetHostHelper.h"
 
 namespace Elastos {
 namespace Droid {

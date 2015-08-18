@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__
 #define __ELASTOS_DROID_WIDGET_CPOPUPWINDOW_H__
 
-#include "_CPopupWindow.h"
+#include "_Elastos_Droid_Widget_CPopupWindow.h"
 #include "ext/frameworkext.h"
 
 

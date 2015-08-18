@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITOROVERLAYDATA_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITOROVERLAYDATA_H__
 
-#include "_CVideoEditorOverlayData.h"
+#include "_Elastos_Droid_Media_Videoeditor_CVideoEditorOverlayData.h"
 #include <ext/frameworkext.h>
 
 using Elastos::Droid::Graphics::IBitmap;

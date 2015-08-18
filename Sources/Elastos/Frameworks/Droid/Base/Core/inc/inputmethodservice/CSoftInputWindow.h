@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
-#include "_CSoftInputWindow.h"
+#include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
 #include "app/Dialog.h"
 
 

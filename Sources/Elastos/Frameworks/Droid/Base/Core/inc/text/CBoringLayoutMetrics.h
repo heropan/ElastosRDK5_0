@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CBORINGLAYOUTMETRICS_H__
 #define __ELASTOS_DROID_TEXT_CBORINGLAYOUTMETRICS_H__
 
-#include "_CBoringLayoutMetrics.h"
+#include "_Elastos_Droid_Text_CBoringLayoutMetrics.h"
 
 namespace Elastos {
 namespace Droid {

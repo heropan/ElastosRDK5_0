@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CX509TRUSTMANAGEREXTENSIONS_H__
 #define __ELASTOS_DROID_NET_HTTP_CX509TRUSTMANAGEREXTENSIONS_H__
 
-#include "_CX509TrustManagerExtensions.h"
+#include "_Elastos_Droid_Net_Http_CX509TrustManagerExtensions.h"
 #include "elautoptr.h"
 
 using Org::Apache::Harmony::Xnet::Provider::Jsse::ITrustManagerImpl;

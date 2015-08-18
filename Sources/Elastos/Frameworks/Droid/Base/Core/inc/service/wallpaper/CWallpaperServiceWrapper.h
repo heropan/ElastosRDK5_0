@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSERVICEWRAPPER_H__
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSERVICEWRAPPER_H__
 
-#include "_CWallpaperServiceWrapper.h"
+#include "_Elastos_Droid_Service_Wallpaper_CWallpaperServiceWrapper.h"
 
 using Elastos::Droid::Os::IBinder;
 

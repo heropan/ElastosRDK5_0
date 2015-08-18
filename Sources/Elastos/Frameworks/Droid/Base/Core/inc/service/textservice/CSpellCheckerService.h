@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__
 #define __ELASTOS_DROID_SERVICE_CSPELLCHECKERSERVICE_H__
 
-#include "_CSpellCheckerService.h"
+#include "_Elastos_Droid_service_CSpellCheckerService.h"
 #include <ext/frameworkext.h>
 
 

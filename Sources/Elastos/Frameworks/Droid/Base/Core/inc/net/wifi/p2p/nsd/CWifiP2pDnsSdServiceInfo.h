@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICEINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PDNSSDSERVICEINFO_H__
 
-#include "_CWifiP2pDnsSdServiceInfo.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pDnsSdServiceInfo.h"
 #include "WifiP2pServiceInfo.h"
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/HashMap.h>

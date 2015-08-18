@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CLEGACYFLASHLIGHTHACK_H__
 
 #include "ext/frameworkext.h"
-#include "_CLegacyFlashlightHack.h"
+#include "_Elastos_Droid_Server_CLegacyFlashlightHack.h"
 
 using Elastos::Droid::Content::IContext;
 

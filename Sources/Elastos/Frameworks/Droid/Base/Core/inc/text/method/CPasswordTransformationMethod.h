@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHOD_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHOD_H__
 
-#include "_CPasswordTransformationMethod.h"
+#include "_Elastos_Droid_Text_Method_CPasswordTransformationMethod.h"
 
 
 using Elastos::Core::ICharSequence;

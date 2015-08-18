@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CCOMPATIBILITYINFOHELPER_H__
 #define __ELASTOS_DROID_CONTENT_RES_CCOMPATIBILITYINFOHELPER_H__
 
-#include "_CCompatibilityInfoHelper.h"
+#include "_Elastos_Droid_Content_Res_CCompatibilityInfoHelper.h"
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 

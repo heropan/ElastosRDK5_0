@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CCOUNTRYDETECTOR_H__
 
 #include "ext/frameworkext.h"
-#include "_CCountryDetector.h"
+#include "_Elastos_Droid_Location_CCountryDetector.h"
 #include "location/CountryDetector.h"
 
 namespace Elastos {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CNOTIFICATIONBIGPICTURESTYLE_H__
 #define __ELASTOS_DROID_APP_CNOTIFICATIONBIGPICTURESTYLE_H__
 
-#include "_CNotificationBigPictureStyle.h"
+#include "_Elastos_Droid_App_CNotificationBigPictureStyle.h"
 #include "app/NotificationStyle.h"
 
 using Elastos::Droid::Graphics::IBitmap;

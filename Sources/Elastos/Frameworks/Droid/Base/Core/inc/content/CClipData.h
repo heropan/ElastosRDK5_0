@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDATA_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDATA_H__
 
-#include "_CClipData.h"
+#include "_Elastos_Droid_Content_CClipData.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_CGALLERYLAYOUTPARAMS_H__
 
-#include "_CGalleryLayoutParams.h"
+#include "_Elastos_Droid_Widget_CGalleryLayoutParams.h"
 #include "widget/GalleryLayoutParams.h"
 
 

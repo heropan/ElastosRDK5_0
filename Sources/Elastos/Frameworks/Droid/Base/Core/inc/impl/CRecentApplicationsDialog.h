@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSDIALOG_H__
 
-#include "_CRecentApplicationsDialog.h"
+#include "_Elastos_Droid_Internal_Policy_Impl_CRecentApplicationsDialog.h"
 #include "impl/RecentApplicationsDialog.h"
 
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CNUMBERPICKERHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CNUMBERPICKERHELPER_H__
 
-#include "_CNumberPickerHelper.h"
+#include "_Elastos_Droid_Widget_CNumberPickerHelper.h"
 #include "widget/NumberPicker.h"
 
 namespace Elastos{

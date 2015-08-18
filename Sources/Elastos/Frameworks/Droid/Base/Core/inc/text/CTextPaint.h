@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CTEXTPAINT_H__
 #define __ELASTOS_DROID_TEXT_CTEXTPAINT_H__
 
-#include "_CTextPaint.h"
+#include "_Elastos_Droid_Text_CTextPaint.h"
 #include "graphics/Paint.h"
 #include "text/TextPaint.h"
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPPROPERTYGROUP_H__
 #define __ELASTOS_DROID_MTP_CMTPPROPERTYGROUP_H__
 
-#include "_CMtpPropertyGroup.h"
+#include "_Elastos_Droid_Mtp_CMtpPropertyGroup.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

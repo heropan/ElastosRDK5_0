@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__
 #define __ELASTOS_DROID_GESTURE_ORIENTEDBOUNDINGBOX_H__
 
-#include "_COrientedBoundingBox.h"
+#include "_Elastos_Droid_Gesture_COrientedBoundingBox.h"
 
 using Elastos::Droid::Graphics::IPath;
 

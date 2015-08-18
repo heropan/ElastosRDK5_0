@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLEHELPER_H__
 #define __ELASTOS_DROID_NET_HTTP_CREQUESTHANDLEHELPER_H__
 
-#include "_CRequestHandleHelper.h"
+#include "_Elastos_Droid_Net_Http_CRequestHandleHelper.h"
 
 namespace Elastos {
 namespace Droid {

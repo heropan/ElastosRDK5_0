@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROVIDERSTATUS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROVIDERSTATUS_H__
 
-#include "_CContactsContractProviderStatus.h"
+#include "_Elastos_Droid_Provider_CContactsContractProviderStatus.h"
 
 using Elastos::Droid::Net::IUri;
 

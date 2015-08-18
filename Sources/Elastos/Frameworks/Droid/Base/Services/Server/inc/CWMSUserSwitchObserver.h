@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CWMSUSERSWITCHOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_CWMSUSERSWITCHOBSERVER_H__
 
-#include "_CWMSUserSwitchObserver.h"
+#include "_Elastos_Droid_Server_CWMSUserSwitchObserver.h"
 
 using Elastos::Droid::Os::IRemoteCallback;
 

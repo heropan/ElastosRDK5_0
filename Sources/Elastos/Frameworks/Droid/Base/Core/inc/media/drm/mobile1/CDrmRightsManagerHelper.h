@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTSMANAGERHELPER_H__
 #define __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTSMANAGERHELPER_H__
 
-#include "_CDrmRightsManagerHelper.h"
+#include "_Elastos_Droid_Drm_Mobile1_CDrmRightsManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

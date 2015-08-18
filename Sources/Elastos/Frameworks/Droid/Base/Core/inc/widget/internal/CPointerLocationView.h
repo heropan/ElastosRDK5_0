@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CPOINTERLOCATIONVIEW_H__
 
 
-#include "_CPointerLocationView.h"
+#include "_Elastos_Droid_Widget_Internal_CPointerLocationView.h"
 #include "widget/internal/PointerLocationView.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTHELPER_H__
 #define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENTHELPER_H__
 
-#include "_CAndroidHttpClientHelper.h"
+#include "_Elastos_Droid_Net_Http_CAndroidHttpClientHelper.h"
 
 using Org::Apache::Http::Entity::IAbstractHttpEntity;
 

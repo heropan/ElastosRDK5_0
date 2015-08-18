@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTS_H__
 #define __ELASTOS_DROID_DRM_MOBILE1_CDRMRIGHTS_H__
 
-#include "_CDrmRights.h"
+#include "_Elastos_Droid_Drm_Mobile1_CDrmRights.h"
 #include "media/drm/mobile1/CDrmConstraintInfo.h"
 #include <ext/frameworkext.h>
 

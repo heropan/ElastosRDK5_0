@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPHONELOOKUP_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPHONELOOKUP_H__
 
-#include "_CContactsContractPhoneLookup.h"
+#include "_Elastos_Droid_Provider_CContactsContractPhoneLookup.h"
 
 using Elastos::Droid::Net::IUri;
 

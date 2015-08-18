@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CDIALOG_H__
 #define __ELASTOS_DROID_APP_CDIALOG_H__
 
-#include "_CDialog.h"
+#include "_Elastos_Droid_App_CDialog.h"
 #include "app/Dialog.h"
 
 

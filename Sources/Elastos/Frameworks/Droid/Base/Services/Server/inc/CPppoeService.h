@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CPPPOESERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CPppoeService.h"
+#include "_Elastos_Droid_Server_CPppoeService.h"
 #include "content/BroadcastReceiver.h"
 
 using Elastos::Droid::Content::BroadcastReceiver;

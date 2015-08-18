@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
 #define __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
 
-#include "_CPatternMatcher.h"
+#include "_Elastos_Droid_Os_CPatternMatcher.h"
 #include "os/PatternMatcher.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFOPOLICYINFO_H__
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFOPOLICYINFO_H__
 
-#include "_CDeviceAdminInfoPolicyInfo.h"
+#include "_Elastos_Droid_App_Admin_CDeviceAdminInfoPolicyInfo.h"
 #include "ext/frameworkext.h"
 
 

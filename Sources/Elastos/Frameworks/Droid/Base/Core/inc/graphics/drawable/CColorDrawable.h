@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCOLORDRAWABLE_H__
 
-#include "_CColorDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CColorDrawable.h"
 #include "graphics/drawable/ColorDrawable.h"
 
 

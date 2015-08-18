@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CRELATIVELAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_CRELATIVELAYOUT_H__
 
-#include "_CRelativeLayout.h"
+#include "_Elastos_Droid_Widget_CRelativeLayout.h"
 
 
 #include "widget/RelativeLayout.h"

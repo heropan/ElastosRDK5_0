@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CPERMISSIONCONTROLLER_H__
 #define __ELASTOS_DROID_APP_CPERMISSIONCONTROLLER_H__
 
-#include "_CPermissionController.h"
+#include "_Elastos_Droid_App_CPermissionController.h"
 
 namespace Elastos {
 namespace Droid {

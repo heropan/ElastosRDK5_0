@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTFILTERAUTHORITYENTRY_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERAUTHORITYENTRY_H__
 
-#include "_CIntentFilterAuthorityEntry.h"
+#include "_Elastos_Droid_Content_CIntentFilterAuthorityEntry.h"
 
 using Elastos::Droid::Net::IUri;
 

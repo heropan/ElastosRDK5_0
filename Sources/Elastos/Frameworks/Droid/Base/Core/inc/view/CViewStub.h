@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWSTUB_H__
 #define  __ELASTOS_DROID_VIEW_CVIEWSTUB_H__
 
-#include "_CViewStub.h"
+#include "_Elastos_Droid_View_CViewStub.h"
 #include "view/ViewStub.h"
 
 

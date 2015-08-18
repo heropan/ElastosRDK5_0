@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CJETPLAYERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CJETPLAYERHELPER_H__
 
-#include "_CJetPlayerHelper.h"
+#include "_Elastos_Droid_Media_CJetPlayerHelper.h"
 #include "CJetPlayer.h"
 
 namespace Elastos {

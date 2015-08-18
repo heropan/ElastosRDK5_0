@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__
 #define __ELASTOS_DROID_CONTENT_RES_COBBINFO_H__
 
-#include "_CObbInfo.h"
+#include "_Elastos_Droid_Content_Res_CObbInfo.h"
 
 namespace Elastos {
 namespace Droid {

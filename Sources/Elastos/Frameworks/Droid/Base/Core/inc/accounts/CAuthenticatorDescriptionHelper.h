@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CAUTHENTICATORDESCRIPTIONHELPER_H__
 #define __ELASTOS_DROID_ACCOUNTS_CAUTHENTICATORDESCRIPTIONHELPER_H__
 
-#include "_CAuthenticatorDescriptionHelper.h"
+#include "_Elastos_Droid_Accounts_CAuthenticatorDescriptionHelper.h"
 
 namespace Elastos {
 namespace Droid {

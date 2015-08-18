@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_WAIT_RESULT_H__
 
-#include "_CActivityManagerWaitResult.h"
+#include "_Elastos_Droid_App_CActivityManagerWaitResult.h"
 
 using Elastos::Droid::Content::IComponentName;
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CMAGNIFICATIONCONTROLLER_H__
 
 #include "ext/frameworkext.h"
-#include "_CMagnificationController.h"
+#include "_Elastos_Droid_Server_Accessibility_CMagnificationController.h"
 
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Animation::IValueAnimator;

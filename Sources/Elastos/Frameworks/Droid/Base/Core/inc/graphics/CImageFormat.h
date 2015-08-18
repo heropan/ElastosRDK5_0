@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CIMAGEFORMAT_H__
 #define __ELASTOS_DROID_GRAPHICS_CIMAGEFORMAT_H__
 
-#include "_CImageFormat.h"
+#include "_Elastos_Droid_Graphics_CImageFormat.h"
 
 namespace Elastos {
 namespace Droid {

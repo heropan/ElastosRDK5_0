@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CCONTENTPROVIDERCONNECTION_H__
 #define __ELASTOS_DROID_SERVER_AM_CCONTENTPROVIDERCONNECTION_H__
 
-#include "_CContentProviderConnection.h"
+#include "_Elastos_Droid_Server_Am_CContentProviderConnection.h"
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 

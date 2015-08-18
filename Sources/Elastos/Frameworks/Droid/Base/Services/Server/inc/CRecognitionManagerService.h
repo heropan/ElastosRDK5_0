@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CRECOGNITIONMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CRECOGNITIONMANAGERSERVICE_H__
 
-#include "_CRecognitionManagerService.h"
+#include "_Elastos_Droid_Server_CRecognitionManagerService.h"
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Server_server.h"
 #include "content/PackageMonitor.h"

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__
 #define __ELASTOS_DROID_DATABASE_CCURSORWRAPPER_H__
 
-#include "_CCursorWrapper.h"
+#include "_Elastos_Droid_Database_CCursorWrapper.h"
 #include "database/CursorWrapper.h"
 
 namespace Elastos {

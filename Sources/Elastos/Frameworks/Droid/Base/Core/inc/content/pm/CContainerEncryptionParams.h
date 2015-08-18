@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CCONTAINERENCRYPTIONPARAMS_H__
 #define __ELASTOS_DROID_CONTENT_PM_CCONTAINERENCRYPTIONPARAMS_H__
 
-#include "_CContainerEncryptionParams.h"
+#include "_Elastos_Droid_Content_Pm_CContainerEncryptionParams.h"
 
 using namespace Elastos::Core;
 

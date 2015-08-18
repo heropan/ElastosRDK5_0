@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CANIMATEDIMAGEVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_CANIMATEDIMAGEVIEW_H__
 
-#include "_CAnimatedImageView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_CAnimatedImageView.h"
 
 
 #include "systemui/statusbar/AnimatedImageView.h"

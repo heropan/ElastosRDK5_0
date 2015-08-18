@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CANIMATIONDRAWABLE_H__
 
-#include "_CAnimationDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CAnimationDrawable.h"
 #include "graphics/drawable/AnimationDrawable.h"
 
 

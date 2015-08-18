@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__
 #define __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__
 
-#include "_CCursorJoiner.h"
+#include "_Elastos_Droid_Database_CCursorJoiner.h"
 
 namespace Elastos {
 namespace Droid {

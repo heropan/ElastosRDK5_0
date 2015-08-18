@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLSURFACEVIEW_H__
 #define __ELASTOS_DROID_OPENGL_CGLSURFACEVIEW_H__
 
-#include "_CGLSurfaceView.h"
+#include "_Elastos_Droid_Opengl_CGLSurfaceView.h"
 #include "GLSurfaceView.h"
 
 

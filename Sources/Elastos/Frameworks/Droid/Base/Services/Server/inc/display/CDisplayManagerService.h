@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_DISPLAY_CDISPLAYMANAGERSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CDisplayManagerService.h"
+#include "_Elastos_Droid_Server_Display_CDisplayManagerService.h"
 #include "display/DisplayAdapter.h"
 #include "display/DisplayDevice.h"
 #include "display/DisplayViewport.h"

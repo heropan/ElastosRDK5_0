@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CWORDITERATOR_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CWORDITERATOR_H__
 
-#include "_CWordIterator.h"
+#include "_Elastos_Droid_Text_Method_CWordIterator.h"
 #include "text/method/WordIterator.h"
 
 namespace Elastos {

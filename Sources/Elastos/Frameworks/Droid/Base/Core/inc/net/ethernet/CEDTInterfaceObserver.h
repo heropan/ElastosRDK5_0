@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_ETHERNET_CEDTINTERFACEOBSERVER_H__
 #define __ELASTOS_DROID_NET_ETHERNET_CEDTINTERFACEOBSERVER_H__
 
-#include "_CEDTInterfaceObserver.h"
+#include "_Elastos_Droid_Net_Ethernet_CEDTInterfaceObserver.h"
 
 namespace Elastos {
 namespace Droid {

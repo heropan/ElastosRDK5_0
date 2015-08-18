@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
 #define __ELASTOS_DROID_OPENGL_CVISIBILITYGL_H__
 
-#include "_CVisibilityGL.h"
+#include "_Elastos_Droid_Opengl_CVisibilityGL.h"
 #include "CMatrixGL.h"
 #include <stdio.h>
 #include <stdlib.h>

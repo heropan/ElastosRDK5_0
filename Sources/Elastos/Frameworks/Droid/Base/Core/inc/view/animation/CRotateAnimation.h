@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CROTATEANIMATION_H__
 
-#include "_CRotateAnimation.h"
+#include "_Elastos_Droid_View_Animation_CRotateAnimation.h"
 #include "view/animation/RotateAnimation.h"
 
 

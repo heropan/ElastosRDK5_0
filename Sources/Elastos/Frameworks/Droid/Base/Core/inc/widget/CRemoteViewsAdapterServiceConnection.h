@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CRemoteViewsAdapterServiceConnection_H__
 #define __ELASTOS_DROID_WIDGET_CRemoteViewsAdapterServiceConnection_H__
 
-#include "_CRemoteViewsAdapterServiceConnection.h"
+#include "_Elastos_Droid_Widget_CRemoteViewsAdapterServiceConnection.h"
 #include "os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;

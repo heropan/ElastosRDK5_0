@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_CWIFIDISPLAYMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CWifiDisplayManagerService.h"
+#include "_Elastos_Droid_Server_CWifiDisplayManagerService.h"
 #include "power/CPowerManagerService.h"
 
 using Elastos::Droid::Os::IBinder;

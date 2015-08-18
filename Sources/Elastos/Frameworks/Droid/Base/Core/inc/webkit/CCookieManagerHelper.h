@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGERHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGERHELPER_H__
 
-#include "_CCookieManagerHelper.h"
+#include "_Elastos_Droid_Webkit_CCookieManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

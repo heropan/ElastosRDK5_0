@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYGSM_H__
 #define __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYGSM_H__
 
-#include "_CCellIdentityGsm.h"
+#include "_Elastos_Droid_Telephony_CCellIdentityGsm.h"
 
 namespace Elastos {
 namespace Droid {

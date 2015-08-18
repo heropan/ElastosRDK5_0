@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__
 #define  __ELASTOS_DROID_HARDWARE_CSENSOREVENT_H__
 
-#include "_CSensorEvent.h"
+#include "_Elastos_Droid_Hardware_CSensorEvent.h"
 
 
 namespace Elastos {

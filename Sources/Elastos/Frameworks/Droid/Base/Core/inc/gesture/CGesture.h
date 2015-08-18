@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GESTURE_CGESTURE_H__
 
 #include "ext/frameworkext.h"
-#include "_CGesture.h"
+#include "_Elastos_Droid_Gesture_CGesture.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::IO::IDataOutputStream;

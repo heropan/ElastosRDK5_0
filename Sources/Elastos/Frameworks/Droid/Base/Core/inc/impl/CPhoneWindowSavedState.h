@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWSAVEDSTATE_H__
 #define  __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOWSAVEDSTATE_H__
 
-#include "_CPhoneWindowSavedState.h"
+#include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindowSavedState.h"
 
 using Elastos::Droid::Os::IBundle;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAYSTATUS_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CWIFIDISPLAYSTATUS_H__
 
-#include "_CWifiDisplayStatus.h"
+#include "_Elastos_Droid_Hardware_Display_CWifiDisplayStatus.h"
 
 namespace Elastos {
 namespace Droid {

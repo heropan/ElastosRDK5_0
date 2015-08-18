@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKQUOTAINFO_H__
 #define __ELASTOS_DROID_NET_CNETWORKQUOTAINFO_H__
 
-#include "_CNetworkQuotaInfo.h"
+#include "_Elastos_Droid_Net_CNetworkQuotaInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DRM_MOBILE1_CDRMRAWCONTENT_H__
 #define __ELASTOS_DROID_DRM_MOBILE1_CDRMRAWCONTENT_H__
 
-#include "_CDrmRawContent.h"
+#include "_Elastos_Droid_Drm_Mobile1_CDrmRawContent.h"
 #include <Elastos.CoreLibrary.h>
 #include <ext/frameworkext.h>
 #include <elastos/io/InputStream.h>

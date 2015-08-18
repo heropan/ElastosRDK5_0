@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CBACKUPAGENTBACKUPSERVICEBINDER_H__
 
 #include "ext/frameworkext.h"
-#include "_CBackupAgentBackupServiceBinder.h"
+#include "_Elastos_Droid_App_CBackupAgentBackupServiceBinder.h"
 #include "backup/BackupAgent.h"
 
 using Elastos::Droid::App::Backup::BackupAgent;

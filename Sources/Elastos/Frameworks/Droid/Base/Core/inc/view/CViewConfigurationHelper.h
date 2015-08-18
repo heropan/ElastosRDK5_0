@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__
 #define __ELASTOS_DROID_VIEW_CVIEWCONFIGURATIONHELPER_H__
 
-#include "_CViewConfigurationHelper.h"
+#include "_Elastos_Droid_View_CViewConfigurationHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

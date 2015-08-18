@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CTONEGENERATOR_H__
 #define __ELASTOS_DROID_MEDIA_CTONEGENERATOR_H__
 
-#include "_CToneGenerator.h"
+#include "_Elastos_Droid_Media_CToneGenerator.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

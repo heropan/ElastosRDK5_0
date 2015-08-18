@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CLIMITEDLENGTHINPUTSTREAM_H__
 #define __ELASTOS_DROID_CONTENT_PM_CLIMITEDLENGTHINPUTSTREAM_H__
 
-#include "_CLimitedLengthInputStream.h"
+#include "_Elastos_Droid_Content_Pm_CLimitedLengthInputStream.h"
 #include "elastos/io/FilterInputStream.h"
 
 using Elastos::IO::IInputStream;

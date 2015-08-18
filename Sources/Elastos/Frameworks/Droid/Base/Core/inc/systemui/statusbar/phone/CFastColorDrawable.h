@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CFASTCOLORDRAWABLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CFASTCOLORDRAWABLE_H__
 
-#include "_CFastColorDrawable.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Phone_CFastColorDrawable.h"
 
 #include "systemui/statusbar/phone/FastColorDrawable.h"
 

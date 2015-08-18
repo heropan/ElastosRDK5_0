@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTHELPER_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTHELPER_H__
 
-#include "_CApplicationErrorReportHelper.h"
+#include "_Elastos_Droid_App_CApplicationErrorReportHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;

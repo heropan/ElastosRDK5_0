@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCECATEGORY_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCECATEGORY_H__
 
-#include "_CPreferenceCategory.h"
+#include "_Elastos_Droid_Preference_CPreferenceCategory.h"
 #include "PreferenceGroup.h"
 
 namespace Elastos {

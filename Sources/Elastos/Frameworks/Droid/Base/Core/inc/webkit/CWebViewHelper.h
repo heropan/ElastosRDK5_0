@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWHELPER_H__
 
-#include "_CWebViewHelper.h"
+#include "_Elastos_Droid_Webkit_CWebViewHelper.h"
 
 namespace Elastos {
 namespace Droid {

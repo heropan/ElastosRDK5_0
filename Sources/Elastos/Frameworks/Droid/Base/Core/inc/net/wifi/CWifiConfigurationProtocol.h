@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPROTOCOL_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPROTOCOL_H__
 
-#include "_CWifiConfigurationProtocol.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiConfigurationProtocol.h"
 
 namespace Elastos {
 namespace Droid {

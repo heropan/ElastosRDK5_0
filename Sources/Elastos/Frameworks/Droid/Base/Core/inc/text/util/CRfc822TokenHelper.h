@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENHELPER_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENHELPER_H__
 
-#include "_CRfc822TokenHelper.h"
+#include "_Elastos_Droid_Text_Utility_CRfc822TokenHelper.h"
 
 namespace Elastos {
 namespace Droid {

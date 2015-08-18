@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_PHONE_CTICKERVIEW_H__
 
-#include "_CTickerView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Phone_CTickerView.h"
 
 
 

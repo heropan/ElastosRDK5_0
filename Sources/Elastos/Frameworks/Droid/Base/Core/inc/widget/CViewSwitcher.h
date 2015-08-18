@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CVIEWSWITCHER_H__
 #define __ELASTOS_DROID_WIDGET_CVIEWSWITCHER_H__
 
-#include "_CViewSwitcher.h"
+#include "_Elastos_Droid_Widget_CViewSwitcher.h"
 #include "ViewSwitcher.h"
 
 

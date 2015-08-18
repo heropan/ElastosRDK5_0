@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSCROLLVIEW_H__
 #define __ELASTOS_DROID_WIDGET_CSCROLLVIEW_H__
 
-#include "_CScrollView.h"
+#include "_Elastos_Droid_Widget_CScrollView.h"
 
 
 #include "widget/ScrollView.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSYNCSTATECONTRACTHELPERS_H__
 #define __ELASTOS_DROID_PROVIDER_CSYNCSTATECONTRACTHELPERS_H__
 
-#include "_CSyncStateContractHelpers.h"
+#include "_Elastos_Droid_Provider_CSyncStateContractHelpers.h"
 #include "SyncStateContractHelpers.h"
 
 namespace Elastos {

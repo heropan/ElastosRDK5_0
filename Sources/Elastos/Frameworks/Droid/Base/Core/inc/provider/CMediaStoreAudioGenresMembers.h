@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOGENRESMEMBERS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOGENRESMEMBERS_H__
 
-#include "_CMediaStoreAudioGenresMembers.h"
+#include "_Elastos_Droid_Provider_CMediaStoreAudioGenresMembers.h"
 
 using Elastos::Droid::Net::IUri;
 

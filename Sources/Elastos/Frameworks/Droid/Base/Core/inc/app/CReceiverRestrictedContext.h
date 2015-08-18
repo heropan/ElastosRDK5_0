@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CRECEIVERRESTRICTEDCONTEXT_H__
 #define __ELASTOS_DROID_APP_CRECEIVERRESTRICTEDCONTEXT_H__
 
-#include "_CReceiverRestrictedContext.h"
+#include "_Elastos_Droid_App_CReceiverRestrictedContext.h"
 #include <ext/frameworkext.h>
 #include "ReceiverRestrictedContext.h"
 

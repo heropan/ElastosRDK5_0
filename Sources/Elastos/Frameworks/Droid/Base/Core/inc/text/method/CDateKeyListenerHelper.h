@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CDATEKEYLISTENERHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CDATEKEYLISTENERHELPER_H__
 
-#include "_CDateKeyListenerHelper.h"
+#include "_Elastos_Droid_Text_Method_CDateKeyListenerHelper.h"
 
 #include "Elastos.Droid.Core_server.h"
 
