@@ -26,12 +26,6 @@ ifeq "$(XDK_TARGET_PRODUCT)" "linux"
   NATIVE_BUILD=1
 endif
 
-ifneq "$(NATIVE_BUILD)" "1"
-  ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-    C_DEFINES += -D__gnuc_va_list=va_list
-  endif
-endif
-
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
   C_DEFINES +=-D_linux
 endif
@@ -104,9 +98,6 @@ ifeq "$(XDK_TARGET_FORMAT)" "elf"
       AR= ar
     endif
   endif
-endif
-ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-  CXX=g++
 endif
 
 LANGTOOL = ellangc.exe
@@ -195,16 +186,6 @@ ifeq "$(EXE_ENTRY)" ""
       EXE_ENTRY = mainCRTStartup
       ECX_ENTRY = mainCRTStartup
     endif
-
-    ifeq "$(SUBSYSTEM)" "WINDOWSCE"
-      EXE_ENTRY = mainCRTStartup
-      ECX_ENTRY = mainCRTStartup
-    endif
-
-    ifeq "$(SUBSYSTEM)" "windows"
-      EXE_ENTRY = WinMainCRTStartup
-      ECX_ENTRY = WinMainCRTStartup
-    endif
   else
     EXE_ENTRY = _start
     ECX_ENTRY = _start
@@ -280,9 +261,6 @@ ifneq "$(XDK_TARGET_FORMAT)" "elf"
     ifeq "$(USE_STDLIB)" ""
       LINK_FLAGS := -nostdlib $(LINK_FLAGS)
     endif
-    ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-      LINK_FLAGS:= -mno-win32 -mconsole $(LINK_FLAGS)
-    endif
   endif
 
   LINK_FLAGS:= -mno-cygwin $(LINK_FLAGS)
@@ -350,9 +328,6 @@ endif # elf
 # C_FLAGS
 #
 
-ifeq "$(XDK_TARGET_PLATFORM)" "win32"
-  C_FLAGS:= -mno-cygwin $(C_FLAGS)
-endif
 ifeq "$(XDK_TARGET_CPU)" "x86"
   C_FLAGS := -mno-align-double $(C_FLAGS)
 endif

@@ -85,13 +85,7 @@ endif
 
 ifneq "$(XDK_TARGET_PRODUCT)" "devtools"
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-ifeq "$(XDK_TARGET_PRODUCT)" "anyka"
-      PREBUILD_PATH = $(XDK_COMPILER_PATH)
-      PREBUILD_INC = $(PREBUILD_PATH)/include
-      PREBUILD_LIB = $(PREBUILD_PATH)/lib
-else
       PREBUILD_LIB = /usr/lib32
-endif
 else
 ifndef PREBUILD_PATH
 ifeq "$(XDK_TARGET_PLATFORM)" "android"
@@ -173,15 +167,9 @@ INCLUDES = .; $(XDK_USER_INC); \
           $(MAKEDIR);
 else
 ifeq "$(XDK_TARGET_PLATFORM)" "linux"
-ifneq "$(XDK_TARGET_PRODUCT)" "anyka"
 INCLUDES = .; $(XDK_USER_INC); $(XDK_INC_PATH); \
           $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
           $(MAKEDIR);
-else
-INCLUDES = .; $(PREBUILD_INC); $(XDK_USER_INC); $(XDK_INC_PATH); \
-          $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
-          $(MAKEDIR);
-endif
 else
 INCLUDES = .; $(PREBUILD_INC); $(XDK_USER_INC); $(XDK_INC_PATH); \
           $(KERNEL_INC_PATH); $(DRIVERS_INC_PATH); \
@@ -191,9 +179,6 @@ endif
 SYSTEM_INCLUDES := $(INCLUDES)
 
 # default C_FLAGS
-ifeq "$(XDK_COMPILER)" "msvc"
-C_FLAGS= -GR-
-endif
 ifeq "$(XDK_COMPILER)" "gnu"
 C_FLAGS= -fno-exceptions
 endif
@@ -336,12 +321,6 @@ endif
 # Custom defined makefile rules, targets and macros
 #
 ifeq "$(XDK_COMPILER)" "gnu"
--include $(MAKEDIR)/makefile.inc
-ifeq "$(NODEPEND)" ""
--include $(TARGET_OBJ_PATH)/depend.mk
-endif
-endif
-ifeq "$(XDK_COMPILER)" "msvc"
 -include $(MAKEDIR)/makefile.inc
 ifeq "$(NODEPEND)" ""
 -include $(TARGET_OBJ_PATH)/depend.mk
