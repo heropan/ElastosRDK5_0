@@ -112,7 +112,6 @@ module
     merge("view/accessibility/IAccessibilityManager.car");
     merge("view/accessibility/IAccessibilityManagerClient.car");
 
-    merge("view/animation/NativeInterpolatorFactory.car");
     merge("view/animation/AccelerateDecelerateInterpolator.car");
     merge("view/animation/AccelerateInterpolator.car");
     merge("view/animation/AlphaAnimation.car");
@@ -1241,6 +1240,11 @@ module
     //         [in] IContext* ctx,
     //         [in] IAttributeSet* attrs);
 
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
+    //         [in] IAttributeSet* attrs);
+
     //     interface IAnticipateInterpolator;
     //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
@@ -1261,6 +1265,11 @@ module
 
     //     constructor(
     //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs);
+
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
     //         [in] IAttributeSet* attrs);
 
     //     interface IAnticipateOvershootInterpolator;
@@ -1294,6 +1303,11 @@ module
     //         [in] IContext* ctx,
     //         [in] IAttributeSet* attrs);
 
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
+    //         [in] IAttributeSet* attrs);
+
     //     interface ICycleInterpolator;
     //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
@@ -1310,6 +1324,11 @@ module
 
     //     constructor(
     //         [in] IContext* ctx,
+    //         [in] IAttributeSet* attrs);
+
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
     //         [in] IAttributeSet* attrs);
 
     //     interface IDecelerateInterpolator;
@@ -1330,6 +1349,11 @@ module
     //         [in] IContext* ctx,
     //         [in] IAttributeSet* attrs);
 
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
+    //         [in] IAttributeSet* attrs);
+
     //     interface IAccelerateInterpolator;
     //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
@@ -1348,11 +1372,45 @@ module
     //         [in] IContext* ctx,
     //         [in] IAttributeSet* attrs);
 
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
+    //         [in] IAttributeSet* attrs);
+
     //     interface IOvershootInterpolator;
     //     interface IHasNativeInterpolator;
     //     interface IInterpolator;
     //     interface ITimeInterpolator;
     //     interface INativeInterpolatorFactory;
+    // }
+
+    // [local]
+    // class CPathInterpolator {
+    //     constructor(
+    //         [in] IPath path);
+
+    //     constructor(
+    //         [in] Float controlX,
+    //         [in] Float controlY);
+
+    //     constructor(
+    //         [in] Float controlX1,
+    //         [in] Float controlY1,
+    //         [in] Float controlX2,
+    //         [in] Float controlY2);
+
+    //     constructor(
+    //         [in] IContext* context,
+    //         [in] IAttributeSet* attrs);
+
+    //     constructor(
+    //         [in] IResources* res,
+    //         [in] ITheme* theme,
+    //         [in] IAttributeSet* attrs);
+
+    //     interface IPathInterpolator;
+    //     interface IInterpolator;
+    //     interface ITimeInterpolator;
     // }
 
     // [local]

@@ -286,7 +286,9 @@ ECode AnimationUtils::LoadInterpolator(
     FAIL_RETURN(context->GetResources((IResources**)&res));
     AutoPtr<IXmlResourceParser> parser;
     FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
-    ECode ec = CreateInterpolatorFromXml(context, parser, interpolator);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    ECode ec = CreateInterpolatorFromXml(res, theme, parser, interpolator);
 
     if (parser != NULL) {
         parser->Close();
@@ -295,8 +297,39 @@ ECode AnimationUtils::LoadInterpolator(
     return ec;
 }
 
+ECode AnimationUtils::LoadInterpolator(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ Int32 id,
+    /* [out] */ IInterpolator** interpolator) /*throws NotFoundException */
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NULL;
+
+    AutoPtr<IXmlResourceParser> parser;
+    // try {
+    FAIL_RETURN(res->GetAnimation(id, (IXmlResourceParser**)&parser));
+    ECode ec = CreateInterpolatorFromXml(res, theme, parser, interpolator);
+    // } catch (XmlPullParserException ex) {
+    //     NotFoundException rnf = new NotFoundException("Can't load animation resource ID #0x" +
+    //             Integer.toHexString(id));
+    //     rnf.initCause(ex);
+    //     throw rnf;
+    // } catch (IOException ex) {
+    //     NotFoundException rnf = new NotFoundException("Can't load animation resource ID #0x" +
+    //             Integer.toHexString(id));
+    //     rnf.initCause(ex);
+    //     throw rnf;
+    // } finally {
+    if (parser != NULL)
+        parser->Close();
+    // }
+    return ec;
+}
+
 ECode AnimationUtils::CreateInterpolatorFromXml(
-    /* [in] */ IContext* c,
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
     /* [in] */ IXmlPullParser* parser,
     /* [out] */ IInterpolator** interpolator)
 {
@@ -322,31 +355,34 @@ ECode AnimationUtils::CreateInterpolatorFromXml(
         attrs = Xml::AsAttributeSet(parser);
         parser->GetName(&name);
         if (name.Equals("linearInterpolator")) {
-            FAIL_RETURN(CLinearInterpolator::New(c, attrs, (ILinearInterpolator**)&temp));
+            FAIL_RETURN(CLinearInterpolator::New((ILinearInterpolator**)&temp));
         }
         else if (name.Equals("accelerateInterpolator")) {
-            FAIL_RETURN(CAccelerateInterpolator::New(c, attrs, (IAccelerateInterpolator**)&temp));
+            FAIL_RETURN(CAccelerateInterpolator::New(res, theme, attrs, (IAccelerateInterpolator**)&temp));
         }
         else if (name.Equals("decelerateInterpolator")) {
-            FAIL_RETURN(CDecelerateInterpolator::New(c, attrs, (IDecelerateInterpolator**)&temp));
+            FAIL_RETURN(CDecelerateInterpolator::New(res, theme, attrs, (IDecelerateInterpolator**)&temp));
         }
         else if (name.Equals("accelerateDecelerateInterpolator")) {
-            FAIL_RETURN(CAccelerateDecelerateInterpolator::New(c, attrs, (IAccelerateDecelerateInterpolator**)&temp));
+            FAIL_RETURN(CAccelerateDecelerateInterpolator::New((IAccelerateDecelerateInterpolator**)&temp));
         }
         else if (name.Equals("cycleInterpolator")) {
-            FAIL_RETURN(CCycleInterpolator::New(c, attrs, (ICycleInterpolator**)&temp));
+            FAIL_RETURN(CCycleInterpolator::New(res, theme, attrs, (ICycleInterpolator**)&temp));
         }
         else if (name.Equals("anticipateInterpolator")) {
-            FAIL_RETURN(CAnticipateInterpolator::New(c, attrs, (IAnticipateInterpolator**)&temp));
+            FAIL_RETURN(CAnticipateInterpolator::New(res, theme, attrs, (IAnticipateInterpolator**)&temp));
         }
         else if (name.Equals("overshootInterpolator")) {
-            FAIL_RETURN(COvershootInterpolator::New(c, attrs, (IOvershootInterpolator**)&temp));
+            FAIL_RETURN(COvershootInterpolator::New(res, theme, attrs, (IOvershootInterpolator**)&temp));
         }
         else if (name.Equals("anticipateOvershootInterpolator")) {
-            FAIL_RETURN(CAnticipateOvershootInterpolator::New(c, attrs, (IAnticipateOvershootInterpolator**)&temp));
+            FAIL_RETURN(CAnticipateOvershootInterpolator::New(res, theme, attrs, (IAnticipateOvershootInterpolator**)&temp));
         }
         else if (name.Equals("bounceInterpolator")) {
-            FAIL_RETURN(CBounceInterpolator::New(c, attrs, (IBounceInterpolator**)&temp));
+            FAIL_RETURN(CBounceInterpolator::New((IBounceInterpolator**)&temp));
+        }
+        else if (name.Equals("pathInterpolator")) {
+            FAIL_RETURN(CPathInterpolator::New(res, theme, attrs, (IPathInterpolator**)&interpolator));
         }
         else {
             Logger::E("AnimationUtils", "Unknown interpolator name: %s", name.string());

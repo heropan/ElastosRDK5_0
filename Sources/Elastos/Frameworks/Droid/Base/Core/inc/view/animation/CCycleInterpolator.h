@@ -35,9 +35,20 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
 
+    /** @hide */
+    CARAPI constructor(
+        /* [in] */ IResources* res,
+        /* [in] */ ITheme* theme,
+        /* [in] */ IAttributeSet* attrs);
+
     CARAPI GetInterpolation(
         /* [in] */ Float input,
         /* [out] */ Float* output);
+
+    /** @hide */
+    // @Override
+    CARAPI CreateNativeInterpolator(
+        /* [out] */ Int64* interpolator);
 
 private:
     Float mCycles;

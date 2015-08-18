@@ -28,17 +28,33 @@ ECode CAnticipateInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+
+    return constructor(res, theme, attrs);
+}
+
+ECode CAnticipateInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AnticipateInterpolator),
             ARRAY_SIZE(R::styleable::AnticipateInterpolator));
+
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != NULL) {
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     a->GetFloat(R::styleable::AnticipateInterpolator_tension, 2.0f, &mTension);
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 ECode CAnticipateInterpolator::GetInterpolation(
@@ -48,6 +64,14 @@ ECode CAnticipateInterpolator::GetInterpolation(
     VALIDATE_NOT_NULL(output);
     // a(t) = t * t * ((tension + 1) * t - tension)
     *output = input * input * ((mTension + 1) * input - mTension);
+    return NOERROR;
+}
+
+ECode CAnticipateInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateAnticipateInterpolator(mTension);
     return NOERROR;
 }
 

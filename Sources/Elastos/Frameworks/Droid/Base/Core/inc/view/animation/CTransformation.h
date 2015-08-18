@@ -17,6 +17,8 @@ namespace Animation {
 CarClass(CTransformation)
 {
 public:
+    CTransformation();
+
     CARAPI constructor();
 
     CARAPI Clear();
@@ -42,6 +44,37 @@ public:
     CARAPI SetAlpha(
         /* [in] */ Float alpha);
 
+    /**
+     * Sets the current Transform's clip rect
+     * @hide
+     */
+    CARAPI SetClipRect(
+        /* [in] */ IRect* r);
+
+    /**
+     * Sets the current Transform's clip rect
+     * @hide
+     */
+    CARAPI SetClipRect(
+        /* [in] */ Int32 l,
+        /* [in] */ Int32 t,
+        /* [in] */ Int32 r,
+        /* [in] */ Int32 b);
+
+    /**
+     * Returns the current Transform's clip rect
+     * @hide
+     */
+    CARAPI GetClipRect(
+        /* [out] */ IRect** cr);
+
+    /**
+     * Returns whether the current Transform's clip rect is set
+     * @hide
+     */
+    CARAPI HasClipRect(
+        /* [out] */ Boolean* has);
+
     CARAPI GetAlpha(
         /* [out] */ Float* pAlpha);
 
@@ -49,6 +82,9 @@ protected:
     AutoPtr<IMatrix> mMatrix;
     Float mAlpha;
     Int32 mTransformationType;
+
+    Boolean mHasClipRect;
+    AutoPtr<IRect> mClipRect;
 };
 
 

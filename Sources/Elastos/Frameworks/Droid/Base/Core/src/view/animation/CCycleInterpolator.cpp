@@ -23,17 +23,31 @@ ECode CCycleInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    return constructor(res, theme, attrs);
+}
+
+ECode CCycleInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::CycleInterpolator),
             ARRAY_SIZE(R::styleable::CycleInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != NULL) {
+        theme->btainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        resources->btainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     a->GetFloat(R::styleable::CycleInterpolator_cycles, 1.0f, &mCycles);
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 ECode CCycleInterpolator::GetInterpolation(
@@ -43,6 +57,14 @@ ECode CCycleInterpolator::GetInterpolation(
     VALIDATE_NOT_NULL(output);
     *output = (Float)(Elastos::Core::Math::Sin(2 * mCycles * Elastos::Core::Math::DOUBLE_PI * input));
 
+    return NOERROR;
+}
+
+ECode CCycleInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateCycleInterpolator(mCycles);
     return NOERROR;
 }
 

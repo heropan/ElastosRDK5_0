@@ -42,3 +42,6 @@ SOURCES += LayoutAnimationController.cpp
 SOURCES += CLayoutAnimationController.cpp
 SOURCES += GridLayoutAnimationController.cpp
 SOURCES += CGridLayoutAnimationController.cpp
+SOURCES += CClipRectAnimation.cpp
+SOURCES += CPathInterpolator.cpp
+SOURCES += NativeInterpolatorFactoryHelper.cpp

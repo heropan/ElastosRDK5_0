@@ -96,6 +96,37 @@ module
             [in] Float alpha);
 
         /**
+         * Sets the current Transform's clip rect
+         * @hide
+         */
+        SetClipRect(
+            [in] IRect* r);
+
+        /**
+         * Sets the current Transform's clip rect
+         * @hide
+         */
+        SetClipRect(
+            [in] Int32 l,
+            [in] Int32 t,
+            [in] Int32 r,
+            [in] Int32 b);
+
+        /**
+         * Returns the current Transform's clip rect
+         * @hide
+         */
+        GetClipRect(
+            [out] IRect** cr);
+
+        /**
+         * Returns whether the current Transform's clip rect is set
+         * @hide
+         */
+        HasClipRect(
+            [out] Boolean* has);
+
+        /**
          * @return The degree of transparency
          */
         GetAlpha(

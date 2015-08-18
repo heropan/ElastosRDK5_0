@@ -32,6 +32,14 @@ ECode CAccelerateDecelerateInterpolator::GetInterpolation(
     return NOERROR;
 }
 
+ECode CAccelerateDecelerateInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateAccelerateDecelerateInterpolator();
+    return NOERROR;
+}
+
 }// namespace Animation
 }// namespace View
 }// namespace Droid

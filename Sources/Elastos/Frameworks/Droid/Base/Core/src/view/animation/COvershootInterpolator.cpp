@@ -29,17 +29,31 @@ ECode COvershootInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    return constructor(res, theme, attrs);
+}
+
+ECode COvershootInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::OvershootInterpolator),
             ARRAY_SIZE(R::styleable::OvershootInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != NULL) {
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     a->GetFloat(R::styleable::OvershootInterpolator_tension, 2.0f, &mTension);
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 ECode COvershootInterpolator::GetInterpolation(
@@ -53,6 +67,14 @@ ECode COvershootInterpolator::GetInterpolation(
     input -= 1.0f;
     *output = input * input * ((mTension + 1) * input + mTension) + 1.0f;
 
+    return NOERROR;
+}
+
+ECode COvershootInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateOvershootInterpolator(mTension);
     return NOERROR;
 }
 

@@ -35,6 +35,11 @@ public:
         /* [in] */ Float input,
         /* [out] */ Float* output);
 
+    /** @hide */
+    // @Override
+    CARAPI CreateNativeInterpolator(
+        /* [out] */ Int64* interpolator);
+
 private:
 };
 

@@ -38,11 +38,27 @@ ECode CAnticipateOvershootInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    return constructor(res, theme, attrs);
+}
+
+ECode CAnticipateOvershootInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AnticipateOvershootInterpolator),
             ARRAY_SIZE(R::styleable::AnticipateOvershootInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != NULL) {
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     Float tension, extraTension;
     a->GetFloat(R::styleable::AnticipateOvershootInterpolator_tension, 2.0f, &tension);
@@ -50,9 +66,7 @@ ECode CAnticipateOvershootInterpolator::constructor(
 
     mTension = tension * extraTension;
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 static Float A(
@@ -86,6 +100,14 @@ ECode CAnticipateOvershootInterpolator::GetInterpolation(
         *output = 0.5f * (O(input * 2.0f - 2.0f, mTension) + 2.0f);
     }
 
+    return NOERROR;
+}
+
+ECode CAnticipateOvershootInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateAnticipateOvershootInterpolator(mTension);
     return NOERROR;
 }
 

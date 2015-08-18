@@ -32,6 +32,14 @@ ECode CLinearInterpolator::GetInterpolation(
     return NOERROR;
 }
 
+ECode CLinearInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateLinearInterpolator();
+    return NOERROR;
+}
+
 }   //namespace Animation
 }   //namespace View
 }   //namespace Droid

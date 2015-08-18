@@ -32,18 +32,33 @@ ECode CAccelerateInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    return constructor(res, theme, attrs);
+}
+
+ECode CAccelerateInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
+    AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::AccelerateInterpolator),
             ARRAY_SIZE(R::styleable::AccelerateInterpolator));
-    AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+
+    if (theme != NULL) {
+        theme->ObtainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        res->ObtainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
 
     a->GetFloat(R::styleable::AccelerateInterpolator_factor, 1.0f, &mFactor);
     mDoubleFactor = 2 * mFactor;
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 ECode CAccelerateInterpolator::GetInterpolation(
@@ -59,6 +74,14 @@ ECode CAccelerateInterpolator::GetInterpolation(
         *output =  (Float)Elastos::Core::Math::Pow(input, mDoubleFactor);
     }
 
+    return NOERROR;
+}
+
+ECode CAccelerateInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateAccelerateInterpolator(mFactor);
     return NOERROR;
 }
 

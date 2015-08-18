@@ -57,6 +57,14 @@ ECode CBounceInterpolator::GetInterpolation(
     return NOERROR;
 }
 
+ECode CBounceInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateBounceInterpolator();
+    return NOERROR;
+}
+
 }// namespace Animation
 }// namespace View
 }// namespace Droid

@@ -112,6 +112,21 @@ public:
         /* [in] */ Int32 id,
         /* [out] */ IInterpolator** interpolator);
 
+    /**
+     * Loads an {@link Interpolator} object from a resource
+     *
+     * @param res The resources
+     * @param id The resource id of the animation to load
+     * @return The interpolator object reference by the specified id
+     * @throws NotFoundException
+     * @hide
+     */
+    static CARAPI LoadInterpolator(
+        /* [in] */ IResources* res,
+        /* [in] */ ITheme* theme,
+        /* [in] */ Int32 id,
+        /* [out] */ IInterpolator** interpolator) /*throws NotFoundException */;
+
 private:
     static CARAPI CreateAnimationFromXml(
         /* [in] */ IContext* c,
@@ -137,7 +152,8 @@ private:
         /* [out] */ ILayoutAnimationController** controller);
 
     static CARAPI CreateInterpolatorFromXml(
-        /* [in] */ IContext* c,
+        /* [in] */ IResources* res,
+        /* [in] */ ITheme* theme,
         /* [in] */ IXmlPullParser* parser,
         /* [out] */ IInterpolator** interpolator);
 

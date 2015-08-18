@@ -19,13 +19,6 @@ ECode CDecelerateInterpolator::constructor()
     return NOERROR;
 }
 
-/**
- * Constructor
- *
- * @param factor Degree to which the animation should be eased. Setting factor to 1.0f produces
- *        an upside-down y=x^2 parabola. Increasing factor above 1.0f makes exaggerates the
- *        ease-out effect (i.e., it starts even faster and ends evens slower)
- */
 ECode CDecelerateInterpolator::constructor(
     /* [in] */ Float factor)
 {
@@ -38,17 +31,33 @@ ECode CDecelerateInterpolator::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
+    AutoPtr<IResources> res;
+    context->GetResources((IResources**)&res);
+    AutoPtr<ITheme> theme;
+    context->GetTheme((ITheme**)&theme);
+    return constructor(res, theme, attrs);
+}
+
+ECode CDecelerateInterpolator::constructor(
+    /* [in] */ IResources* res,
+    /* [in] */ ITheme* theme,
+    /* [in] */ IAttributeSet* attrs)
+{
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::DecelerateInterpolator),
             ARRAY_SIZE(R::styleable::DecelerateInterpolator));
     AutoPtr<ITypedArray> a;
-    context->ObtainStyledAttributes(attrs, attrIds, (ITypedArray**)&a);
+    if (theme != null) {
+        theme->btainStyledAttributes(attrs, attrIds, 0, 0, (ITypedArray**)&a);
+    } else {
+        res->btainAttributes(attrs, attrIds, (ITypedArray**)&a);
+    }
+
+    mFactor = a.getFloat(R.styleable.DecelerateInterpolator_factor, 1.0f);
 
     a->GetFloat(R::styleable::DecelerateInterpolator_factor, 1.0f, &mFactor);
 
-    a->Recycle();
-
-    return NOERROR;
+    return a->Recycle();
 }
 
 ECode CDecelerateInterpolator::GetInterpolation(
@@ -64,6 +73,14 @@ ECode CDecelerateInterpolator::GetInterpolation(
         *output = (Float)(1.0f - Elastos::Core::Math::Pow((1.0f - input), 2 * mFactor));
     }
 
+    return NOERROR;
+}
+
+ECode CDecelerateInterpolator::CreateNativeInterpolator(
+    /* [out] */ Int64* interpolator)
+{
+    VALIDATE_NOT_NULL(interpolator);
+    *interpolator = NativeInterpolatorFactoryHelper::CreateDecelerateInterpolator(mFactor);
     return NOERROR;
 }
 
