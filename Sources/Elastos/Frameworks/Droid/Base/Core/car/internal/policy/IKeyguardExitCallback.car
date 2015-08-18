@@ -7,7 +7,7 @@ module
     namespace Policy {
 
     [oneway]
-    interface IKeyguardExitCallback {
+    interface IIKeyguardExitCallback {
 
         OnKeyguardExitResult(
             [in] Boolean success);

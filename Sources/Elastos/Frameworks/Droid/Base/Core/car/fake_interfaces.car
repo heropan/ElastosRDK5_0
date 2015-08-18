@@ -319,6 +319,18 @@ module
 
     }}} // Elastos.Droid.Bluetooth
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Keyguard {
+
+        interface IViewMediatorCallback {}
+
+        namespace KeyguardHostView {
+            interface IOnDismissAction {}
+        }
+
+    }}} // Elastos.Droid.Keyguard
+
 
     namespace Elastos {
     namespace Droid {
