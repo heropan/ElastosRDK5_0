@@ -1,10 +1,20 @@
 
 module
 {
-    merge("media/drm/mobile1/DrmConstraintInfo.car");
-    merge("media/drm/mobile1/DrmRawContent.car");
-    merge("media/drm/mobile1/DrmRights.car");
-    merge("media/drm/mobile1/DrmRightsManager.car");
+    merge("media/service/media/IIMediaBrowserService.car");
+    merge("media/service/media/IIMediaBrowserServiceCallbacks.car");
+    merge("media/service/media/IMediaBrowserService.car");
+
+    merge("media/mtp/MtpConstants.car");
+    merge("media/mtp/MtpDatabase.car");
+    merge("media/mtp/MtpDevice.car");
+    merge("media/mtp/MtpDeviceInfo.car");
+    merge("media/mtp/MtpObjectInfo.car");
+    merge("media/mtp/MtpPropertyGroup.car");
+    merge("media/mtp/MtpPropertyList.car");
+    merge("media/mtp/MtpServer.car");
+    merge("media/mtp/MtpStorage.car");
+    merge("media/mtp/MtpStorageInfo.car");
 
     merge("media/media/audiofx/AudioEffect.car");
     merge("media/media/audiofx/AcousticEchoCanceler.car");
@@ -39,17 +49,6 @@ module
     merge("media/media/videoeditor/VideoEditorFactory.car");
     merge("media/media/videoeditor/VideoEditorProfile.car");
     merge("media/media/videoeditor/WaveformData.car");
-
-    merge("media/mtp/MtpConstants.car");
-    merge("media/mtp/MtpDatabase.car");
-    merge("media/mtp/MtpDevice.car");
-    merge("media/mtp/MtpDeviceInfo.car");
-    merge("media/mtp/MtpObjectInfo.car");
-    merge("media/mtp/MtpPropertyGroup.car");
-    merge("media/mtp/MtpPropertyList.car");
-    merge("media/mtp/MtpServer.car");
-    merge("media/mtp/MtpStorage.car");
-    merge("media/mtp/MtpStorageInfo.car");
 
     merge("media/media/AmrInputStream.car");
     merge("media/media/AsyncPlayer.car");
