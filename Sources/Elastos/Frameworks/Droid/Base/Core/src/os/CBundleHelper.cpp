@@ -6,7 +6,11 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-ECode CBundleHelper::GetEmpty(
+CAR_INTERFACE_IMPL(CBundleHelper, Singleton, IBundleHelper)
+
+CAR_SINGLETON_IMPL(CBundleHelper)
+
+ECode CBundleHelper::GetEMPTY(
     /* [out] */ IBundle** bundle)
 {
     VALIDATE_NOT_NULL(bundle)

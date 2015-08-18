@@ -81,6 +81,23 @@ public:
     static CARAPI_(AutoPtr<IArrayOf>) Convert(
         /* [in] */ ArrayOf<String>* arr);
 
+    template<typename T>
+    static CARAPI_(AutoPtr<IArrayOf>) Convert(
+        /* [in] */ ArrayOf<T*>* arr)
+    {
+        if (arr) {
+            Int32 length = arr->GetLength();
+            AutoPtr<IArrayOf> arrObj;
+            CArrayOf::New(length, (IArrayOf**)&arrObj);
+            for (Int32 i = 0; i < length; ++i) {
+                arrObj->Set(i, TO_IINTERFACE((*arr)[i]));
+            }
+
+            return arrObj;
+        }
+        return NULL;
+    }
+
 private:
     template<typename T1, typename T2>
     static CARAPI_(AutoPtr<IArrayOf>) ConvertImpl(

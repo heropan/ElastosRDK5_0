@@ -81,12 +81,13 @@ module
     merge("os/storage/StorageManager.car");
     merge("os/storage/StorageVolume.car");
 
-    // using interface Elastos.Core.IClassLoader;
+    using interface Elastos.Core.IClassLoader;
+    using interface Elastos.Core.ICloneable;
+    using interface Elastos.IO.IParcelable;
     // using interface Elastos.IO.IFileDescriptor;
     // using interface Elastos.IO.IFile;
     // using interface Elastos.IO.ICloseable;
     // using interface Elastos.IO.IFlushable;
-    // using interface Elastos.Utility.IObjectStringMap;
 
     // interface Elastos.Droid.Os.ILooper;
     //interface Elastos.Droid.Os.IUserHandle;
@@ -168,27 +169,34 @@ module
         interface ILooperHelper;
     }
 
-    // [local]
-    // class CBundle {
+    [local]
+    class CBundle {
+        /**
+         * Constructs a new, empty Bundle.
+         */
+        constructor();
 
-    //     constructor();
+        constructor(
+            [in] IClassLoader* loader);
 
-    //     constructor(
-    //         [in] IClassLoader* loader);
+        constructor(
+            [in] Int32 capacity);
 
-    //     constructor(
-    //         [in] Int32 capacity);
+        constructor(
+            [in] IBundle* b);
 
-    //     constructor(
-    //         [in] IBundle* b);
+        constructor(
+            [in] IPersistableBundle* bunble);
 
-    //     interface IBundle;
-    //     interface IParcelable;
-    // }
+        interface IBundle;
+        interface IBaseBundle;
+        interface ICloneable;
+        interface IParcelable;
+    }
 
-    // singleton class CBundleHelper {
-    //     interface IBundleHelper;
-    // }
+    singleton class CBundleHelper {
+        interface IBundleHelper;
+    }
 
     class CHandler {
         constructor();
