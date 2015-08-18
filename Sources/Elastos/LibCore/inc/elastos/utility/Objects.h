@@ -4,6 +4,7 @@
 #include <elastos/core/Object.h>
 
 using Elastos::Core::IComparator;
+using Elastos::Core::IArrayOf;
 
 namespace Elastos {
 namespace Utility {
@@ -67,7 +68,7 @@ public:
         /* [in] */ T* a);
 
     template<typename T>
-    static CARAPI_(Boolean) GetHashCode(
+    static CARAPI_(Int32) GetHashCode(
         /* [in] */ const AutoPtr<T>& a);
 
     /**

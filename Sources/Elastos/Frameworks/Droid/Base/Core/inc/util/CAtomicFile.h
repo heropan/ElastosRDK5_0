@@ -12,9 +12,15 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-CarClass(CAtomicFile) , public Object
+CarClass(CAtomicFile)
+    , public Object
+    , public IAtomicFile
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CAtomicFile();
 
     ~CAtomicFile();

@@ -57,6 +57,7 @@ module
     using interface Elastos.IO.IWriter;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFlushable;
+    using interface Elastos.Utility.IMap;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Elastos {
@@ -69,8 +70,24 @@ module
 
         interface IAtomicFile;
     }
+/*
+    class CArrayMap {
+        constructor();
 
-/*    class CDisplayMetrics {
+        constructor(
+            [in] Int32 capacity);
+
+        constructor(
+            [in] Boolean immutable);
+
+        constructor(
+            [in] IArrayMap* map);
+
+        interface IArrayMap;
+        interface IMap;
+    }
+
+    class CDisplayMetrics {
         interface IDisplayMetrics;
     }
 

@@ -12,6 +12,10 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CAtomicFile, Object, IAtomicFile)
+
+CAR_OBJECT_IMPL(CAtomicFile)
+
 CAtomicFile::CAtomicFile()
 {
 }
