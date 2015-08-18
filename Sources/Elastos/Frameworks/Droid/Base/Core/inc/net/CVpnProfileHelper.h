@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_NET_CVPNPROFILEHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_NET_CVPNPROFILEHELPER_H__
 
-#include "_CVpnProfileHelper.h"
+#include "_Elastos_Droid_Internal_Net_CVpnProfileHelper.h"
 
 namespace Elastos {
 namespace Droid {

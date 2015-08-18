@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__
 #define __ELASTOS_DROID_NET_NSD_CDNSSDTXTRECORD_H__
 
-#include "_CDnsSdTxtRecord.h"
+#include "_Elastos_Droid_Net_Nsd_CDnsSdTxtRecord.h"
 
 namespace Elastos {
 namespace Droid {

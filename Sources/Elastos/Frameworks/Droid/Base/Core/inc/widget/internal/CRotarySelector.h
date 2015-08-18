@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CROTARYSELECTOR_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CROTARYSELECTOR_H__
 
-#include "_CRotarySelector.h"
+#include "_Elastos_Droid_Widget_Internal_CRotarySelector.h"
 #include "widget/internal/RotarySelector.h"
 
 

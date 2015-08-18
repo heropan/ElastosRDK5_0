@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CRADIOGROUPLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_CRADIOGROUPLAYOUTPARAMS_H__
 
-#include "_CRadioGroupLayoutParams.h"
+#include "_Elastos_Droid_Widget_CRadioGroupLayoutParams.h"
 
 #include "widget/RadioGroupLayoutParams.h"
 

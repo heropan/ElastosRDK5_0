@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__
 #define __ELASTOS_DROID_SERVER_CBRICKRECEIVER_H__
 
-#include "_CBrickReceiver.h"
+#include "_Elastos_Droid_Server_CBrickReceiver.h"
 #include "ext/frameworkdef.h"
 #include "content/BroadcastReceiver.h"
 

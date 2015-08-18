@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CEMBOSSMASKFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_CEMBOSSMASKFILTER_H__
 
-#include "_CEmbossMaskFilter.h"
+#include "_Elastos_Droid_Graphics_CEmbossMaskFilter.h"
 #include "graphics/MaskFilter.h"
 
 namespace Elastos {

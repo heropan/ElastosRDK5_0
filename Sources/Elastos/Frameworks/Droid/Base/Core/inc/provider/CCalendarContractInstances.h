@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTINSTANCES_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTINSTANCES_H__
 
-#include "_CCalendarContractInstances.h"
+#include "_Elastos_Droid_Provider_CCalendarContractInstances.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Net::IUriBuilder;

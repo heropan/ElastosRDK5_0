@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CETC1UTIL_H__
 #define __ELASTOS_DROID_OPENGL_CETC1UTIL_H__
 
-#include "_CETC1Util.h"
+#include "_Elastos_Droid_Opengl_CETC1Util.h"
 
 namespace Elastos {
 namespace Droid {

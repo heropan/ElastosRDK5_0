@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CSTRINGURI_H__
 #define __ELASTOS_DROID_NET_CSTRINGURI_H__
 
-#include "_CStringUri.h"
+#include "_Elastos_Droid_Net_CStringUri.h"
 #include "net/Uri.h"
 
 namespace Elastos {

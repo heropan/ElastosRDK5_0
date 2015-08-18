@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCRESULT_H__
 
-#include "_CSyncResult.h"
+#include "_Elastos_Droid_Content_CSyncResult.h"
 
 using namespace Elastos::Core;
 //using Elastos::Core::IStringBuilder;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYOPTIONSHELPER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYOPTIONSHELPER_H__
 
-#include "_CActivityOptionsHelper.h"
+#include "_Elastos_Droid_App_CActivityOptionsHelper.h"
 
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IHandler;

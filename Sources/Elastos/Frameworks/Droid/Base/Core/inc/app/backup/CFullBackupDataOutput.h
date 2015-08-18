@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__
 #define __ELASTOS_DROID_APP_BACKUP_CFULLBACKUPDATAOUTPUT_H__
 
-#include "_CFullBackupDataOutput.h"
+#include "_Elastos_Droid_App_Backup_CFullBackupDataOutput.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Os::IParcelFileDescriptor;

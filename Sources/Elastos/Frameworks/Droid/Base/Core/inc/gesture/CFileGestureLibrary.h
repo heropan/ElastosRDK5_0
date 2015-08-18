@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CFILEGESTURELIBRARY_H__
 #define __ELASTOS_DROID_GESTURE_CFILEGESTURELIBRARY_H__
 
-#include "_CFileGestureLibrary.h"
+#include "_Elastos_Droid_Gesture_CFileGestureLibrary.h"
 #include "GestureLibraries.h"
 
 namespace Elastos {

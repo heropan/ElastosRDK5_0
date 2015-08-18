@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_CNOTIFICATIONMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CNotificationManagerService.h"
+#include "_Elastos_Droid_Server_CNotificationManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"

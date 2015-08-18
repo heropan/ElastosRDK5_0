@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHPBAPSTATECHANGECALLBACK_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHPBAPSTATECHANGECALLBACK_H__
 
-#include "_CBluetoothPbapStateChangeCallback.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothPbapStateChangeCallback.h"
 #include "BluetoothPbap.h"
 
 namespace Elastos {

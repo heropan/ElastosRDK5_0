@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CNTPTRUSTEDTIMEHELPER_H__
 #define __ELASTOS_DROID_UTILITY_CNTPTRUSTEDTIMEHELPER_H__
 
-#include "_CNtpTrustedTimeHelper.h"
+#include "_Elastos_Droid_Utility_CNtpTrustedTimeHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

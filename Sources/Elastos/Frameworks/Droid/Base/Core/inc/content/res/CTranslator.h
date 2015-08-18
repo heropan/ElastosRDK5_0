@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_CTRANSLATOR_H__
 #define __ELASTOS_DROID_CONTENT_RES_CTRANSLATOR_H__
 
-#include "_CTranslator.h"
+#include "_Elastos_Droid_Content_Res_CTranslator.h"
 
 namespace Elastos {
 namespace Droid {

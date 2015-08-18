@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CSEARCHABLEINFO_H__
 #define __ELASTOS_DROID_APP_CSEARCHABLEINFO_H__
 
-#include "_CSearchableInfo.h"
+#include "_Elastos_Droid_App_CSearchableInfo.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

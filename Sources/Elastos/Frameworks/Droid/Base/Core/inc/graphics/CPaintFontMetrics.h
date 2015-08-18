@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICS_H__
 #define __ELASTOS_DROID_GRAPHICS_CPAINTFONTMETRICS_H__
 
-#include "_CPaintFontMetrics.h"
+#include "_Elastos_Droid_Graphics_CPaintFontMetrics.h"
 
 namespace Elastos {
 namespace Droid {

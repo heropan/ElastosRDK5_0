@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__
 #define __ELASTOS_DROID_APP_CINSTRUMENTATIONHELPER_H__
 
-#include "_CInstrumentationHelper.h"
+#include "_Elastos_Droid_App_CInstrumentationHelper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Core::IClassLoader;

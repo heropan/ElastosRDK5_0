@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CROUTEGROUP_H__
 #define __ELASTOS_DROID_MEDIA_CROUTEGROUP_H__
 
-#include "_CRouteGroup.h"
+#include "_Elastos_Droid_Media_CRouteGroup.h"
 #include "ext/frameworkext.h"
 #include "media/media/MediaRouteInfo.h"
 

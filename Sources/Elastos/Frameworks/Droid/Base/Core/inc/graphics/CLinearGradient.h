@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CLINEARGRADIENT_H__
 #define __ELASTOS_DROID_GRAPHICS_CLINEARGRADIENT_H__
 
-#include "_CLinearGradient.h"
+#include "_Elastos_Droid_Graphics_CLinearGradient.h"
 #include "graphics/Shader.h"
 
 namespace Elastos {

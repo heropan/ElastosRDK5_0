@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBSETTINGSHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBSETTINGSHELPER_H__
 
-#include "_CWebSettingsHelper.h"
+#include "_Elastos_Droid_Webkit_CWebSettingsHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

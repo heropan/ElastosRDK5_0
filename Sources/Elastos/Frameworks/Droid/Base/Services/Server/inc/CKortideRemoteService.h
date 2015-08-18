@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_KORTIDEREMOTESERVICE_H__
 #define __ELASTOS_DROID_SERVER_KORTIDEREMOTESERVICE_H__
 
-#include "_CKortideRemoteService.h"
+#include "_Elastos_Droid_Server_CKortideRemoteService.h"
 #include "remote/RemoteCmdListener.h"
 #include "remote/LanDispatcher.h"
 

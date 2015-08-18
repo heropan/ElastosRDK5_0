@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGECLEANITEM_H__
 
-#include "_CPackageCleanItem.h"
+#include "_Elastos_Droid_Content_Pm_CPackageCleanItem.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPEOPLE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSPEOPLE_H__
 
-#include "_CContactsPeople.h"
+#include "_Elastos_Droid_Provider_CContactsPeople.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Droid::Net::IUri;

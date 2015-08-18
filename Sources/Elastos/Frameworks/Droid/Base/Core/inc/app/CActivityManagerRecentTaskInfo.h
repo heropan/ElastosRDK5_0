@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERRECENTTASKINFO_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERRECENTTASKINFO_H__
 
-#include "_CActivityManagerRecentTaskInfo.h"
+#include "_Elastos_Droid_App_CActivityManagerRecentTaskInfo.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IIntent;

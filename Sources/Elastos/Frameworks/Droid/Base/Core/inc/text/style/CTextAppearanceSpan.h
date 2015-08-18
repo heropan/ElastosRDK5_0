@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CTEXTAPPEARANCESPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CTEXTAPPEARANCESPAN_H__
 
-#include "_CTextAppearanceSpan.h"
+#include "_Elastos_Droid_Text_Style_CTextAppearanceSpan.h"
 #include "text/style/TextAppearanceSpan.h"
 
 

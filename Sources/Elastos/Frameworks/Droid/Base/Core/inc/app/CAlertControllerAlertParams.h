@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLERALERTPARAMS_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CALERTCONTROLLERALERTPARAMS_H__
 
-#include "_CAlertControllerAlertParams.h"
+#include "_Elastos_Droid_Internal_App_CAlertControllerAlertParams.h"
 #include "app/CAlertController.h"
 #include "widget/ArrayAdapter.h"
 #include "widget/CArrayAdapter.h"

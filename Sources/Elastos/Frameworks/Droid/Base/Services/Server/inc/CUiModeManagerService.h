@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CUIMODEMANAGERSERVICE_H__
 
-#include "_CUiModeManagerService.h"
+#include "_Elastos_Droid_Server_CUiModeManagerService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 #include "TwilightService.h"

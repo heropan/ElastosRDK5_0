@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHCLASS_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHCLASS_H__
 
-#include "_CBluetoothClass.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothClass.h"
 
 namespace Elastos {
 namespace Droid {

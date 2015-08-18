@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_CCOLORMATRIXCOLORFILTER_H__
 
-#include "_CColorMatrixColorFilter.h"
+#include "_Elastos_Droid_Graphics_CColorMatrixColorFilter.h"
 #include "graphics/ColorFilter.h"
 
 namespace Elastos {

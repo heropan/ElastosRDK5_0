@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENTFILTERCOMPARISON_H__
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTERCOMPARISON_H__
 
-#include "_CIntentFilterComparison.h"
+#include "_Elastos_Droid_Content_CIntentFilterComparison.h"
 
 namespace Elastos {
 namespace Droid {

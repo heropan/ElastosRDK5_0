@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTVALUES_H__
 
-#include "_CContentValues.h"
+#include "_Elastos_Droid_Content_CContentValues.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

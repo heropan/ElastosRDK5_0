@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_HARDWARE_CHARDWARE_CCAMERA_H__
 
 #include "ext/frameworkext.h"
-#include "_CHardwareCamera.h"
+#include "_Elastos_Droid_Hardware_CHardwareCamera.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <camera/Camera.h>
 #include <system/camera.h>

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_SEARCHVIEWSEARCHAUTOCOMPLETE_H__
 #define __ELASTOS_DROID_WIDGET_SEARCHVIEWSEARCHAUTOCOMPLETE_H__
 
-#include "_CSearchViewSearchAutoComplete.h"
+#include "_Elastos_Droid_Widget_CSearchViewSearchAutoComplete.h"
 #include "widget/SearchView.h"
 
 namespace Elastos {

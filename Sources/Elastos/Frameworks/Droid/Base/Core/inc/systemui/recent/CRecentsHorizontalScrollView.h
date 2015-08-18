@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSHORIZONTALSCROLLVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTSHORIZONTALSCROLLVIEW_H__
 
-#include "_CRecentsHorizontalScrollView.h"
+#include "_Elastos_Droid_SystemUI_Recent_CRecentsHorizontalScrollView.h"
 #include "systemui/recent/RecentsHorizontalScrollView.h"
 
 

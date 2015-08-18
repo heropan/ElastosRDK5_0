@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CDRMSTOREIMAGES_H__
 #define __ELASTOS_DROID_PROVIDER_CDRMSTOREIMAGES_H__
 
-#include "_CDrmStoreImages.h"
+#include "_Elastos_Droid_Provider_CDrmStoreImages.h"
 
 namespace Elastos {
 namespace Droid {

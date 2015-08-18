@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CSERVICEMANAGER_H__
 
 #include "ext/frameworkext.h"
-#include "_CServiceManager.h"
+#include "_Elastos_Droid_Os_CServiceManager.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

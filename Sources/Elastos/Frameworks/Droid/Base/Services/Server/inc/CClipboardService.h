@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CCLIPBOARDSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CCLIPBOARDSERVICE_H__
 
-#include "_CClipboardService.h"
+#include "_Elastos_Droid_Server_CClipboardService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 #include <elastos/utility/etl/HashSet.h>

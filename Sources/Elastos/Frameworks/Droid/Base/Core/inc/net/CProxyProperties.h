@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CPROXYPROPERTIES_H__
 #define __ELASTOS_DROID_NET_CPROXYPROPERTIES_H__
 
-#include "_CProxyProperties.h"
+#include "_Elastos_Droid_Net_CProxyProperties.h"
 #include <elastos/core/StringBuffer.h>
 #include <elastos/core/StringUtils.h>
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CTRANSFORMATION_H__
 
-#include "_CTransformation.h"
+#include "_Elastos_Droid_View_Animation_CTransformation.h"
 #include "ext/frameworkext.h"
 #include "graphics/CMatrix.h"
 

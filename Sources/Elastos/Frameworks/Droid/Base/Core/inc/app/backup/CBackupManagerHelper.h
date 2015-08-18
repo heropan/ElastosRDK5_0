@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
 #define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGERHELPER_H__
 
-#include "_CBackupManagerHelper.h"
+#include "_Elastos_Droid_App_Backup_CBackupManagerHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

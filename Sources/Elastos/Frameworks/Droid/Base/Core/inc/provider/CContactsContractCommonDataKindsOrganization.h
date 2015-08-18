@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSORGANIZATION_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSORGANIZATION_H__
 
-#include "_CContactsContractCommonDataKindsOrganization.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsOrganization.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::Res::IResources;

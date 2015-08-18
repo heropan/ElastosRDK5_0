@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCOMPOSESHADER_H__
 #define __ELASTOS_DROID_GRAPHICS_CCOMPOSESHADER_H__
 
-#include "_CComposeShader.h"
+#include "_Elastos_Droid_Graphics_CComposeShader.h"
 #include "graphics/Shader.h"
 
 namespace Elastos {

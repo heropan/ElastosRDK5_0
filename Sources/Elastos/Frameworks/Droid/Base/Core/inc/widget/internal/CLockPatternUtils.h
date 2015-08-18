@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNUTILS_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CLOCKPATTERNUTILS_H__
 
-#include "_CLockPatternUtils.h"
+#include "_Elastos_Droid_Widget_Internal_CLockPatternUtils.h"
 #include "widget/internal/LockPatternUtils.h"
 
 namespace Elastos {

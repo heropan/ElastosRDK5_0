@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_SERVER_CINPUTMETHODMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CInputMethodManagerService.h"
+#include "_Elastos_Droid_Server_CInputMethodManagerService.h"
 #include "wm/CWindowManagerService.h"
 #include "CStatusBarManagerService.h"
 #include "os/HandlerCaller.h"

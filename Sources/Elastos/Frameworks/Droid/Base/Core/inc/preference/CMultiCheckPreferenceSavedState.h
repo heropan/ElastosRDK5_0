@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CMULTICHECKPREFERENCESAVEDSTATE_H__
 #define  __ELASTOS_DROID_PREFERENCE_CMULTICHECKPREFERENCESAVEDSTATE_H__
 
-#include "_CMultiCheckPreferenceSavedState.h"
+#include "_Elastos_Droid_Preference_CMultiCheckPreferenceSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 namespace Elastos {

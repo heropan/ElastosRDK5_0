@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
 #define __ELASTOS_DROID_SERVER_PM_CRESOURCESCHANGEDRECEIVER_H__
 
-#include "_CResourcesChangedReceiver.h"
+#include "_Elastos_Droid_Server_Pm_CResourcesChangedReceiver.h"
 #include "ext/frameworkext.h"
 #include "pm/CPackageManagerService.h"
 

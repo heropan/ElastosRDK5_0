@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CCOOKIESYNCMANAGERHELPER_H__
 
-#include "_CCookieSyncManagerHelper.h"
+#include "_Elastos_Droid_Webkit_CCookieSyncManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

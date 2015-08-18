@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CREMOTEVIEWSFACTORYADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_CREMOTEVIEWSFACTORYADAPTER_H__
 
-#include "_CRemoteViewsFactoryAdapter.h"
+#include "_Elastos_Droid_Widget_CRemoteViewsFactoryAdapter.h"
 
 using Elastos::Droid::Content::IIntent;
 

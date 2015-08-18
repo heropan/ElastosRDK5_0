@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALLS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALLS_H__
 
-#include "_CCalls.h"
+#include "_Elastos_Droid_Provider_CCalls.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Internal::Telephony::ICallerInfo;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CZOOMBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_CZOOMBUTTON_H__
 
-#include "_CZoomButton.h"
+#include "_Elastos_Droid_Widget_CZoomButton.h"
 #include "widget/ZoomButton.h"
 
 

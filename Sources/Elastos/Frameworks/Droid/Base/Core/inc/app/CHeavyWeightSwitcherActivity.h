@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_APP_CHEAVYWEIGHTSWITCHERACTIVITY_H__
 #define __ELASTOS_DROID_INTERNAL_APP_CHEAVYWEIGHTSWITCHERACTIVITY_H__
 
-#include "_CHeavyWeightSwitcherActivity.h"
+#include "_Elastos_Droid_Internal_App_CHeavyWeightSwitcherActivity.h"
 
 #include "app/Activity.h"
 

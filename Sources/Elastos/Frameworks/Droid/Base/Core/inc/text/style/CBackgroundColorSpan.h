@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CBACKGROUNDCOLORSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CBACKGROUNDCOLORSPAN_H__
 
-#include "_CBackgroundColorSpan.h"
+#include "_Elastos_Droid_Text_Style_CBackgroundColorSpan.h"
 #include "text/style/BackgroundColorSpan.h"
 
 

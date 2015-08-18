@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERHELPER_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERHELPER_H__
 
-#include "_CAccountManagerHelper.h"
+#include "_Elastos_Droid_Accounts_CAccountManagerHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

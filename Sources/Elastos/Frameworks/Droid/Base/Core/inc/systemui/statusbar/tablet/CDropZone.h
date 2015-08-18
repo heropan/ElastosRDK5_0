@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CDROPZONE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CDROPZONE_H__
 
-#include "_CDropZone.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CDropZone.h"
 
 #include "systemui/statusbar/tablet/DropZone.h"
 

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CSYSTEMSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CSystemService.h"
+#include "_Elastos_Droid_Os_CSystemService.h"
 
 namespace Elastos {
 namespace Droid {

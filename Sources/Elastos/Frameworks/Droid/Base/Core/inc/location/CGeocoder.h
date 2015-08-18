@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CGEOCODER_H__
 
 #include "ext/frameworkext.h"
-#include "_CGeocoder.h"
+#include "_Elastos_Droid_Location_CGeocoder.h"
 
 using Elastos::Droid::Content::IContext;
 using Libcore::ICU::ILocale;

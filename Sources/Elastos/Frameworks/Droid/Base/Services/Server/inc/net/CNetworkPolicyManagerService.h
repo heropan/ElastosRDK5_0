@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CNetworkPolicyManagerService.h"
+#include "_Elastos_Droid_Server_Net_CNetworkPolicyManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>

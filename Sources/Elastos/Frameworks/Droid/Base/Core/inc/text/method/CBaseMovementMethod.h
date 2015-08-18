@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CBASEMOVEMENTMETHOD_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CBASEMOVEMENTMETHOD_H__
 
-#include "_CBaseMovementMethod.h"
+#include "_Elastos_Droid_Text_Method_CBaseMovementMethod.h"
 #include "text/method/BaseMovementMethod.h"
 
 namespace Elastos {

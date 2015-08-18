@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEACTIVITYHEADER_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEACTIVITYHEADER_H__
 
-#include "_CPreferenceActivityHeader.h"
+#include "_Elastos_Droid_Preference_CPreferenceActivityHeader.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IIntent;

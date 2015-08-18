@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCE_H__
 
 #include "Preference.h"
-#include "_CPreference.h"
+#include "_Elastos_Droid_Preference_CPreference.h"
 
 namespace Elastos {
 namespace Droid {

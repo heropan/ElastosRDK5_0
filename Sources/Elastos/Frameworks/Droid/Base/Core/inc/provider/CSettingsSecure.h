@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSSECURE_H__
 
-#include "_CSettingsSecure.h"
+#include "_Elastos_Droid_Provider_CSettingsSecure.h"
 #include "provider/Settings.h"
 
 using Elastos::Droid::Net::IUri;

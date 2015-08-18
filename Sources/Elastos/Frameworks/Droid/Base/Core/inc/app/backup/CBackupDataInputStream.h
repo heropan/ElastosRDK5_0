@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAINPUTSTREAM_H__
 #define  __ELASTOS_DROID_APP_BACKUP_CBACKUPDATAINPUTSTREAM_H__
 
-#include "_CBackupDataInputStream.h"
+#include "_Elastos_Droid_App_Backup_CBackupDataInputStream.h"
 
 namespace Elastos{
 namespace Droid{

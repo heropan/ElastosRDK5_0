@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSBACKGROUND_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CRECENTAPPLICATIONSBACKGROUND_H__
 
-#include "_CRecentApplicationsBackground.h"
+#include "_Elastos_Droid_Internal_Policy_Impl_CRecentApplicationsBackground.h"
 #include "impl/RecentApplicationsBackground.h"
 
 

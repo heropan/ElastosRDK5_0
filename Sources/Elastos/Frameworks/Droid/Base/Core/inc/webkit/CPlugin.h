@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CPLUGIN_H__
 #define __ELASTOS_DROID_WEBKIT_CPLUGIN_H__
 
-#include "_CPlugin.h"
+#include "_Elastos_Droid_Webkit_CPlugin.h"
 
 using Elastos::Droid::App::IAlertDialog;
 using Elastos::Droid::Content::IContext;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CMENUITEMIMPL_H__
 #define __ELASTOS_DROID_VIEW_MENU_CMENUITEMIMPL_H__
 
-#include "_CMenuItemImpl.h"
+#include "_Elastos_Droid_View_Menu_CMenuItemImpl.h"
 #include "view/menu/MenuItemImpl.h"
 
 using Elastos::Core::ICharSequence;

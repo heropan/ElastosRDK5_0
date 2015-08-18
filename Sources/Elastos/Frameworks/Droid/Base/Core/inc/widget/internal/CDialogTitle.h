@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CDIALOGTITLE_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CDIALOGTITLE_H__
 
-#include "_CDialogTitle.h"
+#include "_Elastos_Droid_Widget_Internal_CDialogTitle.h"
 
 
 #include "widget/internal/DialogTitle.h"

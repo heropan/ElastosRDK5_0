@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTKENBURNS_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTKENBURNS_H__
 
-#include "_CEffectKenBurns.h"
+#include "_Elastos_Droid_Media_Videoeditor_CEffectKenBurns.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Effect.h"
 

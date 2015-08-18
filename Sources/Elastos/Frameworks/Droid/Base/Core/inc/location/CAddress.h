@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CADDRESS_H__
 
 #include "ext/frameworkext.h"
-#include "_CAddress.h"
+#include "_Elastos_Droid_Location_CAddress.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Libcore::ICU::ILocale;

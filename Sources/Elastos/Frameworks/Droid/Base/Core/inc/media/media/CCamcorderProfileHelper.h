@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CCAMCORDERPROFILEHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CCAMCORDERPROFILEHELPER_H__
 
-#include "_CCamcorderProfileHelper.h"
+#include "_Elastos_Droid_Media_CCamcorderProfileHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

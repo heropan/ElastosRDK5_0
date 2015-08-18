@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__
 #define __ELASTOS_DROID_VIEW_INPUTMETHOD_CCOMPLETIONINFO_H__
 
-#include "_CCompletionInfo.h"
+#include "_Elastos_Droid_View_InputMethod_CCompletionInfo.h"
 
 
 using Elastos::Core::ICharSequence;

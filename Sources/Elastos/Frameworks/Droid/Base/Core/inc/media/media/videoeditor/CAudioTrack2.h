@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORAUDIOTRACK_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORAUDIOTRACK_H__
 
-#include "_CAudioTrack2.h"
+#include "_Elastos_Droid_Media_Videoeditor_CAudioTrack2.h"
 #include <ext/frameworkext.h>
 #include "MediaArtistNativeHelper.h"
 

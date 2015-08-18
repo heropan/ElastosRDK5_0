@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CCMailTo_H__
 #define __ELASTOS_DROID_NET_CCMailTo_H__
 
-#include "_CCMailTo.h"
+#include "_Elastos_Droid_Net_CCMailTo.h"
 #include "elautptr.h"
 
 namespace Elastos {

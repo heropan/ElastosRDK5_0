@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCANLENDARENTITY_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTCANLENDARENTITY_H__
 
-#include "_CCalendarContractCalendarEntity.h"
+#include "_Elastos_Droid_Provider_CCalendarContractCalendarEntity.h"
 #include "content/CursorEntityIterator.h"
 
 using Elastos::Droid::Net::IUri;

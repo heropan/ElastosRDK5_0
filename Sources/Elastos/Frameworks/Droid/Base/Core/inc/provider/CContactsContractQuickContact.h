@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTQUICKCONTACT_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTQUICKCONTACT_H__
 
-#include "_CContactsContractQuickContact.h"
+#include "_Elastos_Droid_Provider_CContactsContractQuickContact.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

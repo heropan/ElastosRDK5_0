@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__
 #define __ELASTOS_DROID_SPEECH_TTS_CTEXTTOSPEECH_H__
 
-#include "_CTextToSpeech.h"
+#include "_Elastos_Droid_Speech_Tts_CTextToSpeech.h"
 #include "speech/tts/TextToSpeech.h"
 
 namespace Elastos {

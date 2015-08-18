@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CONKEYGUARDEXITRESULT_H__
 #define __ELASTOS_DROID_APP_CONKEYGUARDEXITRESULT_H__
 
-#include "_COnKeyguardExitResult.h"
+#include "_Elastos_Droid_App_COnKeyguardExitResult.h"
 
 namespace Elastos {
 namespace Droid {

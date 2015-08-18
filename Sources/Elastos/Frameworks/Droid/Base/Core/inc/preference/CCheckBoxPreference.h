@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CCHECKBOXPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CCHECKBOXPREFERENCE_H__
 
-#include "_CCheckBoxPreference.h"
+#include "_Elastos_Droid_Preference_CCheckBoxPreference.h"
 #include "TwoStatePreference.h"
 
 using Elastos::Droid::Preference::IPreference;

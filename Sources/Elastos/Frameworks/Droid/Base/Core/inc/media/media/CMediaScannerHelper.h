@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNERHELPER_H__
 
-#include "_CMediaScannerHelper.h"
+#include "_Elastos_Droid_Media_CMediaScannerHelper.h"
 
 namespace Elastos {
 namespace Droid {

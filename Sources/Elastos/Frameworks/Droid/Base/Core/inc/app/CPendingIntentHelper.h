@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__
 #define __ELASTOS_DROID_APP_CPENDINGINTENTHELPER_H__
 
-#include "_CPendingIntentHelper.h"
+#include "_Elastos_Droid_App_CPendingIntentHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IIntent;

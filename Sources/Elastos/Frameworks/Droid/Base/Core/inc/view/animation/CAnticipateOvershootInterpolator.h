@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEOVERSHOOTINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEOVERSHOOTINTERPOLATOR_H__
 
-#include "_CAnticipateOvershootInterpolator.h"
+#include "_Elastos_Droid_View_Animation_CAnticipateOvershootInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;

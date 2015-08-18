@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAROUTEINFO_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAROUTEINFO_H__
 
-#include "_CMediaRouteInfo.h"
+#include "_Elastos_Droid_Media_CMediaRouteInfo.h"
 #include "MediaRouteInfo.h"
 #include "ext/frameworkext.h"
 #include "media/media/CMediaRouter.h"

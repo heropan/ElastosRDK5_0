@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERFUTURERESPONSE_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTMANAGERFUTURERESPONSE_H__
 
-#include "_CAccountManagerFutureResponse.h"
+#include "_Elastos_Droid_Accounts_CAccountManagerFutureResponse.h"
 #include "accounts/CAccountManager.h"
 
 using Elastos::Droid::Os::IBundle;

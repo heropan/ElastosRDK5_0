@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CNINEPATCHDRAWABLE_H__
 
-#include "_CNinePatchDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CNinePatchDrawable.h"
 #include "graphics/drawable/NinePatchDrawable.h"
 
 

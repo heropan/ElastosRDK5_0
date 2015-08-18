@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHODHELPER_H__
 #define __ELASTOS_DROID_TEXT_METHOD_CPASSWORDTRANSFORMATIONMETHODHELPER_H__
 
-#include "_CPasswordTransformationMethodHelper.h"
+#include "_Elastos_Droid_Text_Method_CPasswordTransformationMethodHelper.h"
 
 namespace Elastos {
 namespace Droid {

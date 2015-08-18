@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSNAMEVALUETABLE_H__
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSNAMEVALUETABLE_H__
 
-#include "_CSettingsNameValueTable.h"
+#include "_Elastos_Droid_Provider_CSettingsNameValueTable.h"
 
 using Elastos::Droid::Net::IUri;
 

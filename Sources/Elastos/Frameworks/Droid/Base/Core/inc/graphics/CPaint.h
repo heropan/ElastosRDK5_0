@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPAINT_H__
 #define __ELASTOS_DROID_GRAPHICS_CPAINT_H__
 
-#include "_CPaint.h"
+#include "_Elastos_Droid_Graphics_CPaint.h"
 #include "graphics/Paint.h"
 
 namespace Elastos {

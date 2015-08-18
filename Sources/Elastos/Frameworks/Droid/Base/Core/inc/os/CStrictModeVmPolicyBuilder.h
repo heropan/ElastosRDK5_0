@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CSTRICTMODEVMPOLICYBUILDER_H__
 #define __ELASTOS_DROID_OS_CSTRICTMODEVMPOLICYBUILDER_H__
 
-#include "_CStrictModeVmPolicyBuilder.h"
+#include "_Elastos_Droid_Os_CStrictModeVmPolicyBuilder.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

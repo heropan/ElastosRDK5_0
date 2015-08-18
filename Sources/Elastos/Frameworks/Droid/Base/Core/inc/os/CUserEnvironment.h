@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CUSERENVIRONMENT_H__
 #define __ELASTOS_DROID_OS_CUSERENVIRONMENT_H__
 
-#include "_CUserEnvironment.h"
+#include "_Elastos_Droid_Os_CUserEnvironment.h"
 #include "os/Environment.h"
 
 namespace Elastos {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSIMPLEONSCALEGESTURELISTENER_H__
 #define __ELASTOS_DROID_VIEW_CSIMPLEONSCALEGESTURELISTENER_H__
 
-#include "_CSimpleOnScaleGestureListener.h"
+#include "_Elastos_Droid_View_CSimpleOnScaleGestureListener.h"
 
 namespace Elastos {
 namespace Droid {

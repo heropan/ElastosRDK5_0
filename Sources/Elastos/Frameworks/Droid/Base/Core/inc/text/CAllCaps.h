@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CALLCAPS_H__
 #define __ELASTOS_DROID_TEXT_CALLCAPS_H__
 
-#include "_CAllCaps.h"
+#include "_Elastos_Droid_Text_CAllCaps.h"
 
 using Elastos::Core::ICharSequence;
 

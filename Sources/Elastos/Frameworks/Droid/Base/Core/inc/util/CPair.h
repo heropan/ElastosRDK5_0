@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CPAIR_H__
 #define __ELASTOS_DROID_UTILITY_CPAIR_H__
 
-#include "_CPair.h"
+#include "_Elastos_Droid_Utility_CPair.h"
 
 namespace Elastos {
 namespace Droid {

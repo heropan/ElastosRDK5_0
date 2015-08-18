@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_CWAVEHEADER_H__
 #define __ELASTOS_DROID_SPEECH_SREC_CWAVEHEADER_H__
 
-#include "_CWaveHeader.h"
+#include "_Elastos_Droid_Speech_Srec_CWaveHeader.h"
 #include "speech/srec/WaveHeader.h"
 
 namespace Elastos {

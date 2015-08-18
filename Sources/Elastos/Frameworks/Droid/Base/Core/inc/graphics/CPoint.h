@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPOINT_H__
 #define __ELASTOS_DROID_GRAPHICS_CPOINT_H__
 
-#include "_CPoint.h"
+#include "_Elastos_Droid_Graphics_CPoint.h"
 
 namespace Elastos {
 namespace Droid {

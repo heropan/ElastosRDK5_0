@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSETTINGSACTIVITY_H__
 #define __ELASTOS_DROID_SERVICE_WALLPAPER_CWALLPAPERSETTINGSACTIVITY_H__
 
-#include "_CWallpaperSettingsActivity.h"
+#include "_Elastos_Droid_Service_Wallpaper_CWallpaperSettingsActivity.h"
 #include <core/IPreferenceActivity.h>
 
 

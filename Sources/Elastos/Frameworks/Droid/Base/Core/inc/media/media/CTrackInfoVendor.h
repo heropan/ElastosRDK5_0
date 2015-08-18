@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CTRACKINFOVENDOR_H__
 #define __ELASTOS_DROID_MEDIA_CTRACKINFOVENDOR_H__
 
-#include "_CTrackInfoVendor.h"
+#include "_Elastos_Droid_Media_CTrackInfoVendor.h"
 
 namespace Elastos {
 namespace Droid {

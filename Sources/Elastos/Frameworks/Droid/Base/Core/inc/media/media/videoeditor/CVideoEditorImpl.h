@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORIMPL_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORIMPL_H__
 
-#include "_CVideoEditorImpl.h"
+#include "_Elastos_Droid_Media_Videoeditor_CVideoEditorImpl.h"
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/List.h>
 #include "MediaArtistNativeHelper.h"

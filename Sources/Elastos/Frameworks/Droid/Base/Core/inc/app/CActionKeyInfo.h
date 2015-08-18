@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CACITONKEYINFO_H__
 #define __ELASTOS_DROID_APP_CACITONKEYINFO_H__
 
-#include "_CActionKeyInfo.h"
+#include "_Elastos_Droid_App_CActionKeyInfo.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::IAttributeSet;

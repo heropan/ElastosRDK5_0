@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVICE_CSANDMAN_H__
 #define __ELASTOS_DROID_SERVICE_CSANDMAN_H__
 
-#include "_CSandman.h"
+#include "_Elastos_Droid_service_CSandman.h"
 #include <ext/frameworkext.h>
 
 

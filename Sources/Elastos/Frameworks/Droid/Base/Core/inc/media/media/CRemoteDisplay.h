@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CREMOTEDISPLAY_H__
 #define __ELASTOS_DROID_MEDIA_CREMOTEDISPLAY_H__
 
-#include "_CRemoteDisplay.h"
+#include "_Elastos_Droid_Media_CRemoteDisplay.h"
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
 

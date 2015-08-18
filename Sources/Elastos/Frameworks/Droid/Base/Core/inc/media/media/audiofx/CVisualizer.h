@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZER_H__
 
-#include "_CVisualizer.h"
+#include "_Elastos_Droid_Media_Audiofx_CVisualizer.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 

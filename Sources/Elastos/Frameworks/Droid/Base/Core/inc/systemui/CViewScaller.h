@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CVIEWSCALLER_H__
 #define __ELASTOS_DROID_SYSTEMUI_CVIEWSCALLER_H__
 
-#include "_CViewScaller.h"
+#include "_Elastos_Droid_SystemUI_CViewScaller.h"
 
 using Elastos::Droid::View::IView;
 using Elastos::Droid::Animation::IAnimator;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CRESULTINFO_H__
 #define __ELASTOS_DROID_APP_CRESULTINFO_H__
 
-#include "_CResultInfo.h"
+#include "_Elastos_Droid_App_CResultInfo.h"
 
 using Elastos::Droid::Content::IIntent;
 

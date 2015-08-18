@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATEDNAME_H__
 #define __ELASTOS_DROID_NET_HTTP_CSSLCERTIFICATEDNAME_H__
 
-#include "_CSslCertificateDName.h"
+#include "_Elastos_Droid_Net_Http_CSslCertificateDName.h"
 
 namespace Elastos {
 namespace Droid {

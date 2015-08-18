@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOST_H__
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOST_H__
 
-#include "_CAppWidgetHost.h"
+#include "_Elastos_Droid_AppWidget_CAppWidgetHost.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>

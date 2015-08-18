@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTENT_H__
 #define __ELASTOS_DROID_CONTENT_CINTENT_H__
 
-#include "_CIntent.h"
+#include "_Elastos_Droid_Content_CIntent.h"
 #include "content/Intent.h"
 
 

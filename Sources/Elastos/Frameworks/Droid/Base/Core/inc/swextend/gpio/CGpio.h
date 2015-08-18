@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SWEXTEND_CGPIO_H__
 #define __ELASTOS_DROID_SWEXTEND_CGPIO_H__
 
-#include "_CGpio.h"
+#include "_Elastos_Droid_Swextend_CGpio.h"
 #include "ext/frameworkext.h"
 #include "IGpioService.h"
 

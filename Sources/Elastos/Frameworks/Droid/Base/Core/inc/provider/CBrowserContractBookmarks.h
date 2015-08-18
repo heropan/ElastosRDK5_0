@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTBOOKMARKS_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTBOOKMARKS_H__
 
-#include "_CBrowserContractBookmarks.h"
+#include "_Elastos_Droid_Provider_CBrowserContractBookmarks.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CCROSSPROCESSCURSORWRAPPER_H__
 #define __ELASTOS_DROID_DATABASE_CCROSSPROCESSCURSORWRAPPER_H__
 
-#include "_CCrossProcessCursorWrapper.h"
+#include "_Elastos_Droid_Database_CCrossProcessCursorWrapper.h"
 #include "database/CrossProcessCursorWrapper.h"
 
 namespace Elastos {

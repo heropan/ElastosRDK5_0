@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPIXELFORMAT_H__
 #define __ELASTOS_DROID_GRAPHICS_CPIXELFORMAT_H__
 
-#include "_CPixelFormat.h"
+#include "_Elastos_Droid_Graphics_CPixelFormat.h"
 #include "graphics/PixelFormat.h"
 
 namespace Elastos {

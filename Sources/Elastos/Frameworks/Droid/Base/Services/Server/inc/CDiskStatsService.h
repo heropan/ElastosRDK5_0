@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CDISKSTATSSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CDISKSTATSSERVICE_H__
 
-#include "_CDiskStatsService.h"
+#include "_Elastos_Droid_Server_CDiskStatsService.h"
 
 using Elastos::IO::IFile;
 using Elastos::IO::IFileDescriptor;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CADDACOUNTSESSION_H__
 #define __CAddAcountSession_H__
 
-#include "_CAddAcountSession.h"
+#include "_Elastos_Droid_Server_Accounts_CAddAcountSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 using Elastos::Droid::Accounts::IAccountManagerResponse;

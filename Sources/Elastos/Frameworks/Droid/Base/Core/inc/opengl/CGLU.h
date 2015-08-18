@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLU_H__
 #define __ELASTOS_DROID_OPENGL_CGLU_H__
 
-#include "_CGLU.h"
+#include "_Elastos_Droid_Opengl_CGLU.h"
 #include "elastos/Mutex.h"
 
 using Elastosx::Microedition::Khronos::Opengles::IGL10;

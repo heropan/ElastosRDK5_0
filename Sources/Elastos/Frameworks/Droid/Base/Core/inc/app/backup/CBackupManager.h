@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
 #define __ELASTOS_DROID_APP_BACKUP_CBACKUPMANAGER_H__
 
-#include "_CBackupManager.h"
+#include "_Elastos_Droid_App_Backup_CBackupManager.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::App::Backup::IIBackupManager;

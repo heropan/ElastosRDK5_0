@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CBATTERYSERVICE_H__
 
-#include "_CBatteryService.h"
+#include "_Elastos_Droid_Server_CBatteryService.h"
 #include "ext/frameworkext.h"
 #include "os/UEventObserver.h"
 #include "os/Runnable.h"

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CEDITTEXT_H__
 #define __ELASTOS_DROID_WIDGET_CEDITTEXT_H__
 
-#include "_CEditText.h"
+#include "_Elastos_Droid_Widget_CEditText.h"
 #include "widget/EditText.h"
 
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDER_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEQUERYBUILDER_H__
 
-#include "_CSQLiteQueryBuilder.h"
+#include "_Elastos_Droid_Database_Sqlite_CSQLiteQueryBuilder.h"
 #include "database/sqlite/SQLiteQueryBuilder.h"
 
 namespace Elastos {

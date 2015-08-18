@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_APP_CACTIVITYTHREAD_H__
 
 #include "ext/frameworkext.h"
-#include "_CActivityThread.h"
+#include "_Elastos_Droid_App_CActivityThread.h"
 #include "content/pm/CApplicationInfo.h"
 #include "content/res/CCompatibilityInfo.h"
 #include "content/res/CResources.h"

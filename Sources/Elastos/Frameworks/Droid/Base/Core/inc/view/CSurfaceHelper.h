@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSURFACEHELPER_H__
 #define __ELASTOS_DROID_VIEW_CSURFACEHELPER_H__
 
-#include "_CSurfaceHelper.h"
+#include "_Elastos_Droid_View_CSurfaceHelper.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Graphics::IRect;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
 #define __ELASTOS_DROID_CONTENT_CCURSORLOADER_H__
 
-#include "_CCursorLoader.h"
+#include "_Elastos_Droid_Content_CCursorLoader.h"
 #include <ext/frameworkext.h>
 #include "AsyncTaskLoader.h"
 

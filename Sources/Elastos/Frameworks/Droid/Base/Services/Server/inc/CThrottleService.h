@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CTHROTTLESERVICE_H__
 #define __ELASTOS_DROID_SERVER_CTHROTTLESERVICE_H__
 
-#include "_CThrottleService.h"
+#include "_Elastos_Droid_Server_CThrottleService.h"
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
 #include "content/BroadcastReceiver.h"

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORPROFILE_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CVIDEOEDITORPROFILE_H__
 
-#include "_CVideoEditorProfile.h"
+#include "_Elastos_Droid_Media_Videoeditor_CVideoEditorProfile.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

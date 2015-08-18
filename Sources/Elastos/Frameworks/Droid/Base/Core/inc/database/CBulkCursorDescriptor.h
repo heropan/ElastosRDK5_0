@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CSQLITEBULKCURSORDESCRIPTOR_H__
 
 #include "ext/frameworkext.h"
-#include "_CBulkCursorDescriptor.h"
+#include "_Elastos_Droid_Database_CBulkCursorDescriptor.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__
 #define __ELASTOS_DROID_SERVER_USB_CUSBSERVICE_H__
 
-#include "_CUsbService.h"
+#include "_Elastos_Droid_Server_Usb_CUsbService.h"
 #include "ext/frameworkdef.h"
 #include "usb/UsbSettingsManager.h"
 #include "usb/UsbDeviceManager.h"

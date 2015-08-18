@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CGETAUTHTOKENSESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CGETAUTHTOKENSESSION_H__
 
-#include "_CGetAuthTokenSession.h"
+#include "_Elastos_Droid_Server_Accounts_CGetAuthTokenSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 using Elastos::Droid::Accounts::IAccount;

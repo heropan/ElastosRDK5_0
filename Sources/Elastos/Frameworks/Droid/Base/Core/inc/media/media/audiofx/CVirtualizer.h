@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZER_H__
 
-#include "_CVirtualizer.h"
+#include "_Elastos_Droid_Media_Audiofx_CVirtualizer.h"
 #include "ext/frameworkext.h"
 #include "media/media/audiofx/AudioEffect.h"
 

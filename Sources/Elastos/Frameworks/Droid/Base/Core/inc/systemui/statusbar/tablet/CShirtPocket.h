@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSHIRTPOCKET_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CSHIRTPOCKET_H__
 
-#include "_CShirtPocket.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CShirtPocket.h"
 
 
 #include "systemui/statusbar/tablet/ShirtPocket.h"

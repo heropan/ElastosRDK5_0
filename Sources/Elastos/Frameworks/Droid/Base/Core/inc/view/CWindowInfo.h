@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWINFO_H__
 
-#include "_CWindowInfo.h"
+#include "_Elastos_Droid_View_CWindowInfo.h"
 #include "graphics/CRect.h"
 
 using Elastos::Droid::Graphics::IRect;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CCOMPOSEPATHEFFECT_H__
 #define __ELASTOS_DROID_GRAPHICS_CCOMPOSEPATHEFFECT_H__
 
-#include "_CComposePathEffect.h"
+#include "_Elastos_Droid_Graphics_CComposePathEffect.h"
 #include "graphics/PathEffect.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWGROUPMARGINLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_CVIEWGROUPMARGINLAYOUTPARAMS_H__
 
-#include "_CViewGroupMarginLayoutParams.h"
+#include "_Elastos_Droid_View_CViewGroupMarginLayoutParams.h"
 #include "view/ViewGroupMarginLayoutParams.h"
 
 

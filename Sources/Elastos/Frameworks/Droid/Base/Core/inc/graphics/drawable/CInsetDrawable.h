@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CINSETDRAWABLE_H__
 
-#include "_CInsetDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CInsetDrawable.h"
 #include "graphics/drawable/InsetDrawable.h"
 
 

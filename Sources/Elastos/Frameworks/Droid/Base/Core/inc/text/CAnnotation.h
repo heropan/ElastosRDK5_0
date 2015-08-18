@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CANNOTATION_H__
 #define __ELASTOS_DROID_TEXT_CANNOTATION_H__
 
-#include "_CAnnotation.h"
+#include "_Elastos_Droid_Text_CAnnotation.h"
 #include "text/Annotation.h"
 
 namespace Elastos {

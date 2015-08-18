@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CNEIGHBORINGCELLINFO_H__
 #define __ELASTOS_DROID_TELEPHONY_CNEIGHBORINGCELLINFO_H__
 
-#include "_CNeighboringCellInfo.h"
+#include "_Elastos_Droid_Telephony_CNeighboringCellInfo.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CL10NUTILSHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CL10NUTILSHELPER_H__
 
-#include "_CL10nUtilsHelper.h"
+#include "_Elastos_Droid_Webkit_CL10nUtilsHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_CULAWENCODERINPUTSTREAMHELPER_H__
 #define __ELASTOS_DROID_SPEECH_SREC_CULAWENCODERINPUTSTREAMHELPER_H__
 
-#include "_CUlawEncoderInputStreamHelper.h"
+#include "_Elastos_Droid_Speech_Srec_CUlawEncoderInputStreamHelper.h"
 
 namespace Elastos {
 namespace Droid {

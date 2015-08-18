@@ -1,4 +1,4 @@
-#include "_CDisplayManagerAw.h"
+#include "_Elastos_Droid_View_CDisplayManagerAw.h"
 
 using Elastos::Droid::Os::IBinder;
 

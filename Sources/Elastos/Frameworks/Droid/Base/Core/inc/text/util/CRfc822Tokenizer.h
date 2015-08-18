@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENIZER_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKENIZER_H__
 
-#include "_CRfc822Tokenizer.h"
+#include "_Elastos_Droid_Text_Utility_CRfc822Tokenizer.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::ICharSequence;

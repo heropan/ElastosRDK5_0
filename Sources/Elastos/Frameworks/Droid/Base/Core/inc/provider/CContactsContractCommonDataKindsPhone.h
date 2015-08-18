@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSPHONE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSPHONE_H__
 
-#include "_CContactsContractCommonDataKindsPhone.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsPhone.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

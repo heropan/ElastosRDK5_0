@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CNOTIFICATIONICONAREAICONLAYOUT_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CNOTIFICATIONICONAREAICONLAYOUT_H__
 
-#include "_CNotificationIconAreaIconLayout.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CNotificationIconAreaIconLayout.h"
 
 
 

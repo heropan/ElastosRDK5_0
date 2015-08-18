@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
 #define __ELASTOS_DROID_APP_CNATIVECONTENTVIEW_H__
 
-#include "_CNativeContentView.h"
+#include "_Elastos_Droid_App_CNativeContentView.h"
 #include "view/View.h"
 
 

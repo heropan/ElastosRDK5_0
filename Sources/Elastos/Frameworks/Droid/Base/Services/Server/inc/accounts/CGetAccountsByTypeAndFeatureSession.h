@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CGETACCOUNTSBYTYPEANDFEATURESESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CGETACCOUNTSBYTYPEANDFEATURESESSION_H__
 
-#include "_CGetAccountsByTypeAndFeatureSession.h"
+#include "_Elastos_Droid_Server_Accounts_CGetAccountsByTypeAndFeatureSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 #include <elastos/utility/etl/List.h>
 

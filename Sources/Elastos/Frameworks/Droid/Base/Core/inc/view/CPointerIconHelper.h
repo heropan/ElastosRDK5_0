@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 #define __ELASTOS_DROID_VIEW_CPOINTERICONHELPER_H__
 
-#include "_CPointerIconHelper.h"
+#include "_Elastos_Droid_View_CPointerIconHelper.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::Content::IContext;

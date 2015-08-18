@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWCONFIGURATION_H__
 #define __ELASTOS_DROID_VIEW_CVIEWCONFIGURATION_H__
 
-#include "_CViewConfiguration.h"
+#include "_Elastos_Droid_View_CViewConfiguration.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 

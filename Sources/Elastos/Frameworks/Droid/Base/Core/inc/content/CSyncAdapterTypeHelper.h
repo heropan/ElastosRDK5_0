@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPEHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCADAPTERTYPEHELPER_H__
 
-#include "_CSyncAdapterTypeHelper.h"
+#include "_Elastos_Droid_Content_CSyncAdapterTypeHelper.h"
 
 namespace Elastos {
 namespace Droid {

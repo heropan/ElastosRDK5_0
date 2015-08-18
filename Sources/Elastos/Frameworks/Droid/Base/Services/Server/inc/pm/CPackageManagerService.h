@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_SERVER_PM_CPACKAGEMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CPackageManagerService.h"
+#include "_Elastos_Droid_Server_Pm_CPackageManagerService.h"
 #include "pm/PackageVerificationResponse.h"
 #include "pm/PackageVerificationState.h"
 #include "pm/Installer.h"

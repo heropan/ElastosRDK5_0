@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__
 #define __ELASTOS_DROID_VIEW_CVIEWBASESAVEDSTATE_H__
 
-#include "_CViewBaseSavedState.h"
+#include "_Elastos_Droid_View_CViewBaseSavedState.h"
 #include "view/ViewBaseSavedState.h"
 
 namespace Elastos{

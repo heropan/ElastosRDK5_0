@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_CONTENT_CNATIVELIBRARYHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_CONTENT_CNATIVELIBRARYHELPER_H__
 
-#include "_CNativeLibraryHelper.h"
+#include "_Elastos_Droid_Internal_Content_CNativeLibraryHelper.h"
 
 using Elastos::IO::IFile;
 

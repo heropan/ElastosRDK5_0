@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHSTATECHANGECALLBACK_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHSTATECHANGECALLBACK_H__
 
-#include "_CBluetoothHealthStateChangeCallback.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothHealthStateChangeCallback.h"
 #include "BluetoothHealth.h"
 
 namespace Elastos {

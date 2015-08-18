@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
 #define __ELASTOS_DROID_GRAPHICS_CNINEPATCH_H__
 
-#include "_CNinePatch.h"
+#include "_Elastos_Droid_Graphics_CNinePatch.h"
 #include "graphics/NinePatch.h"
 
 namespace Elastos {

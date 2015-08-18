@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CRECTSHAPE_H__
 
 #include "graphics/drawable/shapes/RectShape.h"
-#include "_CRectShape.h"
+#include "_Elastos_Droid_Graphics_Drawable_Shapes_CRectShape.h"
 
 namespace Elastos {
 namespace Droid {

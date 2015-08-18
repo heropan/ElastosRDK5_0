@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CVIEW_H__
 #define __ELASTOS_DROID_WIDGET_CVIEW_H__
 
-#include "_CView.h"
+#include "_Elastos_Droid_Widget_CView.h"
 
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_APP_CACTIONBARLAYOUTPARAMS_H__
 
-#include "_CActionBarLayoutParams.h"
+#include "_Elastos_Droid_App_CActionBarLayoutParams.h"
 #include "view/ViewGroupMarginLayoutParams.h"
 
 using Elastos::Droid::Content::IContext;

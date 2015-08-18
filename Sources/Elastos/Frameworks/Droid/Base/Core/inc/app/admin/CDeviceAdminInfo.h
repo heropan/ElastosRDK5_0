@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFO_H__
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEADMININFO_H__
 
-#include "_CDeviceAdminInfo.h"
+#include "_Elastos_Droid_App_Admin_CDeviceAdminInfo.h"
 #include "ext/frameworkext.h"
 #include "util/SparseArray.h"
 #include <elastos/utility/etl/HashMap.h>

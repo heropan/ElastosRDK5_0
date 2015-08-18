@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CALPHABETINDEXER_H__
 #define __ELASTOS_DROID_WIDGET_CALPHABETINDEXER_H__
 
-#include "_CAlphabetIndexer.h"
+#include "_Elastos_Droid_Widget_CAlphabetIndexer.h"
 #include "widget/AlphabetIndexer.h"
 
 namespace Elastos {

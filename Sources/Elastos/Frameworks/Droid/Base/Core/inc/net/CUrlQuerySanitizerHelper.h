@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
 #define __ELASTOS_DROID_NET_CUrlQuerySanitizer_H__
 
-#include "_CUrlQuerySanitizer.h"
+#include "_Elastos_Droid_Net_CUrlQuerySanitizer.h"
 
 using Elastos::Droid::Net::IValueSanitizer;
 

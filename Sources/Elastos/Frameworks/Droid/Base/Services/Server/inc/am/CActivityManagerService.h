@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CACTIVITYMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CActivityManagerService.h"
+#include "_Elastos_Droid_Server_Am_CActivityManagerService.h"
 #include "ProcessMap.h"
 #include "IntentResolver.h"
 #include "wm/CWindowManagerService.h"

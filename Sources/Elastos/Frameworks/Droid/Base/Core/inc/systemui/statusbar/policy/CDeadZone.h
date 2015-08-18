@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDEADZONE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDEADZONE_H__
 
-#include "_CDeadZone.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CDeadZone.h"
 
 #include "systemui/statusbar/policy/DeadZone.h"
 

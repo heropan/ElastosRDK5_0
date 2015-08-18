@@ -1,5 +1,5 @@
 
-#include "_CSizeAdaptiveLayout.h"
+#include "_Elastos_Droid_Widget_Internal_CSizeAdaptiveLayout.h"
 
 #include "widget/internal/SizeAdaptiveLayout.h"
 

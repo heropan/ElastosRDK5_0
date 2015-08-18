@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CURIMATCHER_H__
 #define __ELASTOS_DROID_CONTENT_CURIMATCHER_H__
 
-#include "_CUriMatcher.h"
+#include "_Elastos_Droid_Content_CUriMatcher.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

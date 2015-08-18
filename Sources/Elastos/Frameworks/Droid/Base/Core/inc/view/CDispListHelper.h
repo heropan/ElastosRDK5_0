@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDISPLISTHELPER_H__
 #define __ELASTOS_DROID_VIEW_CDISPLISTHELPER_H__
 
-#include "_CDispListHelper.h"
+#include "_Elastos_Droid_View_CDispListHelper.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "Elastos.Core.h"

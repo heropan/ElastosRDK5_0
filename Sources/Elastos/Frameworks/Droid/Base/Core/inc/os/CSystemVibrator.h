@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__
 #define __ELASTOS_DROID_OS_CSYSTEMVIBRATOR_H__
 
-#include "_CSystemVibrator.h"
+#include "_Elastos_Droid_Os_CSystemVibrator.h"
 #include "ext/frameworkdef.h"
 
 using Elastos::Droid::Os::IVibratorService;

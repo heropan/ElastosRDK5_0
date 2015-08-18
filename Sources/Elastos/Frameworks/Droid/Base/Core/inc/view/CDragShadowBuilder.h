@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDRAGSHADOWBUILDER_H__
 #define __ELASTOS_DROID_VIEW_CDRAGSHADOWBUILDER_H__
 
-#include "_CDragShadowBuilder.h"
+#include "_Elastos_Droid_View_CDragShadowBuilder.h"
 
 using Elastos::Droid::Graphics::IPoint;
 using Elastos::Droid::Graphics::ICanvas;

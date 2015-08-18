@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__
 #define __ELASTOS_DROID_APP_CCONTENTPROVIDERHOLDER_H__
 
-#include "_CContentProviderHolder.h"
+#include "_Elastos_Droid_App_CContentProviderHolder.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDATEVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CDATEVIEW_H__
 
-#include "_CDateView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CDateView.h"
 
 
 #include "systemui/statusbar/policy/DateView.h"

@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_APP_CFINISHDISPATCHER_H__
 
 #include "ext/frameworkext.h"
-#include "_CFinishedDispatcher.h"
+#include "_Elastos_Droid_App_CFinishedDispatcher.h"
 
 using Elastos::Core::IRunnable;
 using Elastos::Droid::Os::IHandler;

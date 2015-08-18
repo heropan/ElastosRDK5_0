@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKSTATSHISTORY_H__
 #define __ELASTOS_DROID_NET_CNETWORKSTATSHISTORY_H__
 
-#include "_CNetworkStatsHistory.h"
+#include "_Elastos_Droid_Net_CNetworkStatsHistory.h"
 #include "ext/frameworkext.h"
 
 using Elastos::IO::IDataOutputStream;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CSSLERRORHELPER_H__
 #define __ELASTOS_DROID_NET_HTTP_CSSLERRORHELPER_H__
 
-#include "_CSslErrorHelper.h"
+#include "_Elastos_Droid_Net_Http_CSslErrorHelper.h"
 
 namespace Elastos {
 namespace Droid {

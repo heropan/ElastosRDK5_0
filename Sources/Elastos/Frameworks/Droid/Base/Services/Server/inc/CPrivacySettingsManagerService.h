@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CPRIVACYSETTINGSMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CPRIVACYSETTINGSMANAGERSERVICE_H__
 
-#include "_CPrivacySettingsManagerService.h"
+#include "_Elastos_Droid_Server_CPrivacySettingsManagerService.h"
 
 using namespace Elastos::Droid::Privacy;
 using namespace Elastos::Droid::Content;

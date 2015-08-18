@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_CONTENT_CINTENTFILTER_H__
 
 #include "ext/frameworkext.h"
-#include "_CIntentFilter.h"
+#include "_Elastos_Droid_Content_CIntentFilter.h"
 #include "content/IntentFilter.h"
 
 using Elastos::Droid::Net::IUri;

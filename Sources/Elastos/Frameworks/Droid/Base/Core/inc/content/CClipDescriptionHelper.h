@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTIONHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTIONHELPER_H__
 
-#include "_CClipDescriptionHelper.h"
+#include "_Elastos_Droid_Content_CClipDescriptionHelper.h"
 
 namespace Elastos {
 namespace Droid {

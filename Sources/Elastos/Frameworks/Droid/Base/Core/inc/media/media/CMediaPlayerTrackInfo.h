@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAPLAYERTRACKINFO_H__
 
-#include "_CMediaPlayerTrackInfo.h"
+#include "_Elastos_Droid_Media_CMediaPlayerTrackInfo.h"
 
 namespace Elastos {
 namespace Droid {

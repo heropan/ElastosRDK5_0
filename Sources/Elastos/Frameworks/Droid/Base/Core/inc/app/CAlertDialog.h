@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CALERTDIALOG_H__
 #define __ELASTOS_DROID_APP_CALERTDIALOG_H__
 
-#include "_CAlertDialog.h"
+#include "_Elastos_Droid_App_CAlertDialog.h"
 
 
 

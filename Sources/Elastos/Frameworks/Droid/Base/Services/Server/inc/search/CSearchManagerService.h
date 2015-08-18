@@ -3,7 +3,7 @@
 
 #include "Elastos.Droid.Core.h"
 #include "ext/frameworkext.h"
-#include "_CSearchManagerService.h"
+#include "_Elastos_Droid_Server_Search_CSearchManagerService.h"
 #include "content/BroadcastReceiver.h"
 #include "content/PackageMonitor.h"
 #include "database/ContentObserver.h"

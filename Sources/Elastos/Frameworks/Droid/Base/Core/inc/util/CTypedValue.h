@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CTYPEDVALUE_H__
 #define __ELASTOS_DROID_UTILITY_CTYPEDVALUE_H__
 
-#include "_CTypedValue.h"
+#include "_Elastos_Droid_Utility_CTypedValue.h"
 
 using Elastos::Core::ICharSequence;
 

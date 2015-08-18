@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CGSMCELLLOCATION_H__
 #define __ELASTOS_DROID_TELEPHONY_CGSMCELLLOCATION_H__
 
-#include "_CGsmCellLocation.h"
+#include "_Elastos_Droid_Telephony_CGsmCellLocation.h"
 #include "telephony/CellLocation.h"
 
 using Elastos::Droid::Os::IBundle;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTVIEWHELPER_H__
 #define  __ELASTOS_DROID_APPWIDGET_CAPPWIDGETHOSTVIEWHELPER_H__
 
-#include "_CAppWidgetHostViewHelper.h"
+#include "_Elastos_Droid_AppWidget_CAppWidgetHostViewHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IComponentName;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZER_H__
 #define __ELASTOS_DROID_SPEECH_SREC_CRECOGNIZER_H__
 
-#include "_CRecognizer.h"
+#include "_Elastos_Droid_Speech_Srec_CRecognizer.h"
 #include "speech/srec/Recognizer.h"
 
 namespace Elastos {

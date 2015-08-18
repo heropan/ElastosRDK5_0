@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONSLIDING_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CTRANSITIONSLIDING_H__
 
-#include "_CTransitionSliding.h"
+#include "_Elastos_Droid_Media_Videoeditor_CTransitionSliding.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Transition.h"
 

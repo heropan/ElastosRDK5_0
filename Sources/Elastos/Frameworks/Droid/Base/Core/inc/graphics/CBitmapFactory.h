@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORY_H__
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORY_H__
 
-#include "_CBitmapFactory.h"
+#include "_Elastos_Droid_Graphics_CBitmapFactory.h"
 #include <Elastos.CoreLibrary.h>
 
 

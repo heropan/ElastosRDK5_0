@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__
 #define __ELASTOS_DROID_GRAPHICS_CLAYERRASTERIZER_H__
 
-#include "_CLayerRasterizer.h"
+#include "_Elastos_Droid_Graphics_CLayerRasterizer.h"
 #include "graphics/Rasterizer.h"
 
 namespace Elastos {

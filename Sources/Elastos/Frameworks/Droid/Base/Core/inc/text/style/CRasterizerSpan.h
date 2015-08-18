@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CRASTERIZERSPAN_H__
 
-#include "_CRasterizerSpan.h"
+#include "_Elastos_Droid_Text_Style_CRasterizerSpan.h"
 #include "text/style/RasterizerSpan.h"
 
 

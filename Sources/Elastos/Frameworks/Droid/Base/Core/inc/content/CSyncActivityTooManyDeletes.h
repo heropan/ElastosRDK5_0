@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCACTIVITYTOOMANYDELETES_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCACTIVITYTOOMANYDELETES_H__
 
-#include "_CSyncActivityTooManyDeletes.h"
+#include "_Elastos_Droid_Content_CSyncActivityTooManyDeletes.h"
 #include <ext/frameworkext.h>
 #include "app/Activity.h"
 

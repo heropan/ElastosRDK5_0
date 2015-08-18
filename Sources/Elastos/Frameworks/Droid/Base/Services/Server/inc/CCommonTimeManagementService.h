@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CCOMMONTIMEMANAGEMENTSERVICE_H__
 
-#include "_CCommonTimeManagementService.h"
+#include "_Elastos_Droid_Server_CCommonTimeManagementService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 //#include "os/CommonTimeConfig.h"

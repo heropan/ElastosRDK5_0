@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__
 #define __ELASTOS_DROID_SERVER_PM_CUSERSTOPUSERCALLBACK_H__
 
-#include "_CUserStopUserCallback.h"
+#include "_Elastos_Droid_Server_Pm_CUserStopUserCallback.h"
 #include "pm/CUserManagerService.h"
 
 using Elastos::Droid::Os::IIUserManager;

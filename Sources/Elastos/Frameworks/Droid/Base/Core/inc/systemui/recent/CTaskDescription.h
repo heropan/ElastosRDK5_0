@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CTASKDESCRIPTION_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CTASKDESCRIPTION_H__
 
-#include "_CTaskDescription.h"
+#include "_Elastos_Droid_SystemUI_Recent_CTaskDescription.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IIntent;

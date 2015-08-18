@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZERSETTINGS_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CVIRTUALIZERSETTINGS_H__
 
-#include "_CVirtualizerSettings.h"
+#include "_Elastos_Droid_Media_Audiofx_CVirtualizerSettings.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

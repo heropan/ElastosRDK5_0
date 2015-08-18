@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_ACCOUNTS_CACCOUNTAUTHENTICATORRESPONSE_H__
 #define __ELASTOS_DROID_ACCOUNTS_CACCOUNTAUTHENTICATORRESPONSE_H__
 
-#include "_CAccountAuthenticatorResponse.h"
+#include "_Elastos_Droid_Accounts_CAccountAuthenticatorResponse.h"
 
 using Elastos::Droid::Os::IBundle;
 

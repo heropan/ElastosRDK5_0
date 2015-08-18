@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_CBUTTON_H__
 
-#include "_CButton.h"
+#include "_Elastos_Droid_Widget_CButton.h"
 #include "widget/Button.h"
 
 

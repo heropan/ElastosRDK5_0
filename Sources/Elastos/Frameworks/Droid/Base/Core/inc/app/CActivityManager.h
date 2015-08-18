@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGER_H__
 
-#include "_CActivityManager.h"
+#include "_Elastos_Droid_App_CActivityManager.h"
 
 using Elastos::Utility::IObjectStringMap;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
 #define __ELASTOS_DROID_NET_CNETWORKPOLICY_H__
 
-#include "_CNetworkPolicy.h"
+#include "_Elastos_Droid_Net_CNetworkPolicy.h"
 
 
 namespace Elastos {

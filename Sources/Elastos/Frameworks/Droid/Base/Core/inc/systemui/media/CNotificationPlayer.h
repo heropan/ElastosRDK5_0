@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
 #define __ELASTOS_DROID_SYSTEMUI_MEDIA_CNOTIFICATIONPLAYER_H__
 
-#include "_CNotificationPlayer.h"
+#include "_Elastos_Droid_SystemUI_Media_CNotificationPlayer.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

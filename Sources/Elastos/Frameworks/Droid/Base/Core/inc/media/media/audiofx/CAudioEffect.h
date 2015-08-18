@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECT_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECT_H__
 
-#include "_CAudioEffect.h"
+#include "_Elastos_Droid_Media_Audiofx_CAudioEffect.h"
 #include "ext/frameworkext.h"
 #include "media/media/audiofx/AudioEffect.h"
 

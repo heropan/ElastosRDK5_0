@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CNUMBERPICKERCUSTOMEDITTEXT_H__
 #define __ELASTOS_DROID_WIDGET_CNUMBERPICKERCUSTOMEDITTEXT_H__
 
-#include "_CNumberPickerCustomEditText.h"
+#include "_Elastos_Droid_Widget_CNumberPickerCustomEditText.h"
 #include "widget/NumberPickerCustomEditText.h"
 
 

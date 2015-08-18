@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONHELPER_H__
 
-#include "_CWifiConfigurationHelper.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiConfigurationHelper.h"
 
 namespace Elastos {
 namespace Droid {

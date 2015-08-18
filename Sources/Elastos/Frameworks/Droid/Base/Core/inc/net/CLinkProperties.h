@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CLINKPROPERTIES_H__
 #define __ELASTOS_DROID_NET_CLINKPROPERTIES_H__
 
-#include "_CLinkProperties.h"
+#include "_Elastos_Droid_Net_CLinkProperties.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

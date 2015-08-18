@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAFORMATHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAFORMATHELPER_H__
 
-#include "_CMediaFormatHelper.h"
+#include "_Elastos_Droid_Media_CMediaFormatHelper.h"
 
 namespace Elastos {
 namespace Droid {

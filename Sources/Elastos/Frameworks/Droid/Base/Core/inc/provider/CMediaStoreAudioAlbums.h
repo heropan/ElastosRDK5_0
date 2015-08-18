@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOALBUMS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREAUDIOALBUMS_H__
 
-#include "_CMediaStoreAudioAlbums.h"
+#include "_Elastos_Droid_Provider_CMediaStoreAudioAlbums.h"
 
 using Elastos::Droid::Net::IUri;
 

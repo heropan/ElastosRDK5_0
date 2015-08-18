@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYRECORD_H__
 
 #include "ext/frameworkdef.h"
-#include "_CAccessibilityRecord.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityRecord.h"
 #include "view/accessibility/AccessibilityRecord.h"
 
 using Elastos::Core::ICharSequence;

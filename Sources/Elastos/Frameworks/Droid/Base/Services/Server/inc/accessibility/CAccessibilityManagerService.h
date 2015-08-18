@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_ACCESSIBILITY_CACCESSIBILITYMANAGERSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CAccessibilityManagerService.h"
+#include "_Elastos_Droid_Server_Accessibility_CAccessibilityManagerService.h"
 #include "accessibility/CAccessibilityInputFilter.h"
 #include "text/TextUtils.h"
 #include "content/BroadcastReceiver.h"

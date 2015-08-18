@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLDEBUGHELPER_H__
 #define __ELASTOS_DROID_OPENGL_CGLDEBUGHELPER_H__
 
-#include "_CGLDebugHelper.h"
+#include "_Elastos_Droid_Opengl_CGLDebugHelper.h"
 
 using Elastosx::Microedition::Khronos::Opengles::IGL;
 using Elastosx::Microedition::Khronos::Egl::IEGL;

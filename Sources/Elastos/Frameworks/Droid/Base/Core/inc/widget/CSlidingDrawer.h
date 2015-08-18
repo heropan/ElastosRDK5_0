@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSLIDINGDRAWER_H__
 #define __ELASTOS_DROID_WIDGET_CSLIDINGDRAWER_H__
 
-#include "_CSlidingDrawer.h"
+#include "_Elastos_Droid_Widget_CSlidingDrawer.h"
 
 #include "widget/SlidingDrawer.h"
 

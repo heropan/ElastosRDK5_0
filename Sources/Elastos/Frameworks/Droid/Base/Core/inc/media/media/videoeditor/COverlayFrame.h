@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_COVERLAYFRAME_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_COVERLAYFRAME_H__
 
-#include "_COverlayFrame.h"
+#include "_Elastos_Droid_Media_Videoeditor_COverlayFrame.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Overlay.h"
 

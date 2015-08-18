@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__
 #define __ELASTOS_DROID_WIDGET_CTOASTTRANSIENTNOTIFICATION_H__
 
-#include "_CToastTransientNotification.h"
+#include "_Elastos_Droid_Widget_CToastTransientNotification.h"
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
 

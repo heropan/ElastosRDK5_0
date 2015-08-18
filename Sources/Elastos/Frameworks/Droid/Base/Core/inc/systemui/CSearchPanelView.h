@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CSEARCHPANELVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_CSEARCHPANELVIEW_H__
 
-#include "_CSearchPanelView.h"
+#include "_Elastos_Droid_SystemUI_CSearchPanelView.h"
 
 
 

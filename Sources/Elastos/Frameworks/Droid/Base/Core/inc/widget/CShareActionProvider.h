@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSHAREACTIONPROVIDER_H__
 #define __ELASTOS_DROID_WIDGET_CSHAREACTIONPROVIDER_H__
 
-#include "_CShareActionProvider.h"
+#include "_Elastos_Droid_Widget_CShareActionProvider.h"
 #include "widget/ShareActionProvider.h"
 
 using Elastos::Droid::View::ISubUiVisibilityListener;

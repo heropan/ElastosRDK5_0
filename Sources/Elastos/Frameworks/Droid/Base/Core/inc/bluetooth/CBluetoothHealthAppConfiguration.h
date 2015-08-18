@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHAPPCONFIGURATION_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHAPPCONFIGURATION_H__
 
-#include "_CBluetoothHealthAppConfiguration.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothHealthAppConfiguration.h"
 
 namespace Elastos {
 namespace Droid {

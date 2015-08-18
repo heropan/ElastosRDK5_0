@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIAROUTER_H__
 
-#include "_CMediaRouter.h"
+#include "_Elastos_Droid_Media_CMediaRouter.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

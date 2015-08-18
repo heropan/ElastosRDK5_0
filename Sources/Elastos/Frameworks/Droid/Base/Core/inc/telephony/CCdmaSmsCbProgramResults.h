@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCDMASMSCBPROGRAMRESULTS_H__
 #define __ELASTOS_DROID_TELEPHONY_CCDMASMSCBPROGRAMRESULTS_H__
 
-#include "_CCdmaSmsCbProgramResults.h"
+#include "_Elastos_Droid_Telephony_CCdmaSmsCbProgramResults.h"
 
 namespace Elastos {
 namespace Droid {

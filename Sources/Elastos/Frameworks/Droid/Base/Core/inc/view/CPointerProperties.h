@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CPOINTERPROPERTIES_H__
 #define __ELASTOS_DROID_VIEW_CPOINTERPROPERTIES_H__
 
-#include "_CPointerProperties.h"
+#include "_Elastos_Droid_View_CPointerProperties.h"
 
 namespace Elastos {
 namespace Droid {

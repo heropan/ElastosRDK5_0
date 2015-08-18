@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSELECTION_H__
 #define __ELASTOS_DROID_TEXT_CSELECTION_H__
 
-#include "_CSelection.h"
+#include "_Elastos_Droid_Text_CSelection.h"
 
 using Elastos::Core::ICharSequence;
 

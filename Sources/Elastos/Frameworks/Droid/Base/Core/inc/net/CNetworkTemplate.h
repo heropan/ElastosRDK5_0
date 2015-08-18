@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKTEMPLATE_H__
 #define __ELASTOS_DROID_NET_CNETWORKTEMPLATE_H__
 
-#include "_CNetworkTemplate.h"
+#include "_Elastos_Droid_Net_CNetworkTemplate.h"
 
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__
 #define __ELASTOS_DROID_SPEECH_SREC_CMICROPHONEINPUTSTREAM_H__
 
-#include "_CMicrophoneInputStream.h"
+#include "_Elastos_Droid_Speech_Srec_CMicrophoneInputStream.h"
 #include "speech/srec/MicrophoneInputStream.h"
 
 namespace Elastos {

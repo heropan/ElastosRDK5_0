@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CLOADER_H__
 #define __ELASTOS_DROID_CONTENT_CLOADER_H__
 
-#include "_CLoader.h"
+#include "_Elastos_Droid_Content_CLoader.h"
 #include <ext/frameworkext.h>
 #include "Loader.h"
 

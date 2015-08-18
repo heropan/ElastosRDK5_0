@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CRECENTTASKSLOADER_H__
 
-#include "_CRecentTasksLoader.h"
+#include "_Elastos_Droid_SystemUI_Recent_CRecentTasksLoader.h"
 #include "app/Activity.h"
 #include "os/Runnable.h"
 #include "os/AsyncTask.h"

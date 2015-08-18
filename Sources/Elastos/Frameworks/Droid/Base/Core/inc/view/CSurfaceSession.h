@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSURFACESESSION_H__
 #define __ELASTOS_DROID_VIEW_CSURFACESESSION_H__
 
-#include "_CSurfaceSession.h"
+#include "_Elastos_Droid_View_CSurfaceSession.h"
 #include <gui/SurfaceComposerClient.h>
 
 namespace Elastos {

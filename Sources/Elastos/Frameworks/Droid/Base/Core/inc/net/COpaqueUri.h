@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_COPAQUEURI_H__
 #define __ELASTOS_DROID_NET_COPAQUEURI_H__
 
-#include "_COpaqueUri.h"
+#include "_Elastos_Droid_Net_COpaqueUri.h"
 #include "net/Uri.h"
 
 namespace Elastos {

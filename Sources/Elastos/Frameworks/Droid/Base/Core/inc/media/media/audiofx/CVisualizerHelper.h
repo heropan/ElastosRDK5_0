@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CVISUALIZERHELPER_H__
 
-#include "_CVisualizerHelper.h"
+#include "_Elastos_Droid_Media_Audiofx_CVisualizerHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

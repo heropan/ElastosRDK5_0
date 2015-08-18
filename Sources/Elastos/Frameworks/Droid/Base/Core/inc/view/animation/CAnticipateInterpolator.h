@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANTICIPATEINTERPOLATOR_H__
 
-#include "_Elastos_Droid_View_CAnticipateInterpolator.h"
+#include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CAnticipateInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;

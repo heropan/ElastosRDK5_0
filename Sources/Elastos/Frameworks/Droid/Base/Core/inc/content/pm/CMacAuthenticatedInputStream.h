@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CMACAUTHENTICATEDINPUTSTREAM_H__
 #define __ELASTOS_DROID_CONTENT_PM_CMACAUTHENTICATEDINPUTSTREAM_H__
 
-#include "_CMacAuthenticatedInputStream.h"
+#include "_Elastos_Droid_Content_Pm_CMacAuthenticatedInputStream.h"
 #include "elastos/io/FilterInputStream.h"
 
 using Elastos::Crypto::IMac;

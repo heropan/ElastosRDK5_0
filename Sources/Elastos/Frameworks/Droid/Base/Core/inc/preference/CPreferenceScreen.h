@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREEN_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREEN_H__
 
-#include "_CPreferenceScreen.h"
+#include "_Elastos_Droid_Preference_CPreferenceScreen.h"
 #include "PreferenceGroup.h"
 
 using Elastos::Droid::App::IDialog;

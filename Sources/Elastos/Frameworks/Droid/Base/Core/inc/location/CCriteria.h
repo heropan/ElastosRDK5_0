@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CCRITERIA_H__
 
 #include "ext/frameworkext.h"
-#include "_CCriteria.h"
+#include "_Elastos_Droid_Location_CCriteria.h"
 
 namespace Elastos {
 namespace Droid {

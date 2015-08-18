@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CEQUALIZERSETTINGS_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CEQUALIZERSETTINGS_H__
 
-#include "_CEqualizerSettings.h"
+#include "_Elastos_Droid_Media_Audiofx_CEqualizerSettings.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__
 #define __ELASTOS_DROID_WEBKIT_CURLINTERCEPTREGISTRY_H__
 
-#include "_CUrlInterceptRegistry.h"
+#include "_Elastos_Droid_Webkit_CUrlInterceptRegistry.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 

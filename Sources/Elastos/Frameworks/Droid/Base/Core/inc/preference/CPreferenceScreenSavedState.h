@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREENSAVEDSTATE_H__
 #define  __ELASTOS_DROID_PREFERENCE_CPREFERENCESCREENSAVEDSTATE_H__
 
-#include "_CPreferenceScreenSavedState.h"
+#include "_Elastos_Droid_Preference_CPreferenceScreenSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 using Elastos::Droid::Os::IBundle;

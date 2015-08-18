@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CPERIODICSYNC_H__
 #define __ELASTOS_DROID_CONTENT_CPERIODICSYNC_H__
 
-#include "_CPeriodicSync.h"
+#include "_Elastos_Droid_Content_CPeriodicSync.h"
 
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Os::IBundle;

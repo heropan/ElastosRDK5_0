@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CWALLPAPERBACKUPHELPER_H__
 #define __ELASTOS_DROID_APP_BACKUP_CWALLPAPERBACKUPHELPER_H__
 
-#include "_CWallpaperBackupHelper.h"
+#include "_Elastos_Droid_App_Backup_CWallpaperBackupHelper.h"
 #include "ext/frameworkext.h"
 #include "app/backup/FileBackupHelperBase.h"
 

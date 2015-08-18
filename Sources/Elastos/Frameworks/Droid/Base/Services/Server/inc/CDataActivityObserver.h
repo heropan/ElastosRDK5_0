@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_CDATAACTIVITYOBSERVER_H__
 
-#include "_CDataActivityObserver.h"
+#include "_Elastos_Droid_Server_CDataActivityObserver.h"
 #include "CConnectivityService.h"
 #include "net/BaseNetworkObserver.h"
 

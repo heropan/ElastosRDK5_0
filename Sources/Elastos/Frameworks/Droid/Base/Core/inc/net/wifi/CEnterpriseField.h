@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CENTERPRISEFIELD_H__
 #define __ELASTOS_DROID_NET_WIFI_CENTERPRISEFIELD_H__
 
-#include "_CEnterpriseField.h"
+#include "_Elastos_Droid_Net_Wifi_CEnterpriseField.h"
 
 namespace Elastos {
 namespace Droid {

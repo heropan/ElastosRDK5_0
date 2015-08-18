@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZER_H__
 #define __ELASTOS_DROID_SPEECH_CSPEECHRECOGNIZER_H__
 
-#include "_CSpeechRecognizer.h"
+#include "_Elastos_Droid_Speech_CSpeechRecognizer.h"
 
 #include "speech/SpeechRecognizer.h"
 

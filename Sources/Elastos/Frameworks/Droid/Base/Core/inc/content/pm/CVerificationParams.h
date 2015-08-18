@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CVERIFICATIONPARAMS_H__
 #define __ELASTOS_DROID_CONTENT_PM_CVERIFICATIONPARAMS_H__
 
-#include "_CVerificationParams.h"
+#include "_Elastos_Droid_Content_Pm_CVerificationParams.h"
 
 namespace Elastos {
 namespace Droid {

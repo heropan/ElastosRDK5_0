@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CREMOTEVIEWSADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_CREMOTEVIEWSADAPTER_H__
 
-#include "_CRemoteViewsAdapter.h"
+#include "_Elastos_Droid_Widget_CRemoteViewsAdapter.h"
 #include "RemoteViewsAdapter.h"
 
 

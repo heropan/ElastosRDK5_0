@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSPHOTOS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSPHOTOS_H__
 
-#include "_CContactsPhotos.h"
+#include "_Elastos_Droid_Provider_CContactsPhotos.h"
 
 using Elastos::Droid::Net::IUri;
 

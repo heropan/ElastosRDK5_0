@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CABSOLUTESIZESPANHELPER_H__
 
-#include "_CAbsoluteSizeSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CAbsoluteSizeSpanHelper.h"
 
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEPOLICYMANAGER_H__
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEPOLICYMANAGER_H__
 
-#include "_CDevicePolicyManager.h"
+#include "_Elastos_Droid_App_Admin_CDevicePolicyManager.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Os::IHandler;

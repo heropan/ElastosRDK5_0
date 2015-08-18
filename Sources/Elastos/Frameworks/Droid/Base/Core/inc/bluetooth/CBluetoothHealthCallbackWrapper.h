@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHCALLBACKWRAPPER_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHHEALTHCALLBACKWRAPPER_H__
 
-#include "_CBluetoothHealthCallbackWrapper.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothHealthCallbackWrapper.h"
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 

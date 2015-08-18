@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEDATABASEHELPER_H__
 #define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEDATABASEHELPER_H__
 
-#include "_CSQLiteDatabaseHelper.h"
+#include "_Elastos_Droid_Database_Sqlite_CSQLiteDatabaseHelper.h"
 
 using Elastos::IO::IFile;
 

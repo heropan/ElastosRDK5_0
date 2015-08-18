@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CFASTXMLSERIALIZER_H__
 #define __ELASTOS_DROID_UTILITY_CFASTXMLSERIALIZER_H__
 
-#include "_CFastXmlSerializer.h"
+#include "_Elastos_Droid_Utility_CFastXmlSerializer.h"
 #include <Elastos.CoreLibrary.h>
 
 using Elastos::Core::IBoolean;

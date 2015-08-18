@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__
 #define __ELASTOS_DROID_MEDIA_CTHUMBNAILUTILS_H__
 
-#include "_CThumbnailUtils.h"
+#include "_Elastos_Droid_Media_CThumbnailUtils.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;

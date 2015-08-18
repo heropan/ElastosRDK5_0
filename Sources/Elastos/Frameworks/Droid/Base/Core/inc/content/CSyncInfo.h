@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCINFO_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCINFO_H__
 
-#include "_CSyncInfo.h"
+#include "_Elastos_Droid_Content_CSyncInfo.h"
 
 using Elastos::Droid::Accounts::IAccount;
 

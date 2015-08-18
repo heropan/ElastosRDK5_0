@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERHELPER_H__
 
-#include "_CActivityManagerHelper.h"
+#include "_Elastos_Droid_App_CActivityManagerHelper.h"
 
 
 namespace Elastos {

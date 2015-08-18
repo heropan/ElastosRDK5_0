@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINE_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINE_H__
 
-#include "_CSyncStorageEngine.h"
+#include "_Elastos_Droid_Content_CSyncStorageEngine.h"
 #include <ext/frameworkext.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_CRFC822TOKEN_H__
 
-#include "_CRfc822Token.h"
+#include "_Elastos_Droid_Text_Utility_CRfc822Token.h"
 #include "text/util/Rfc822Token.h"
 
 namespace Elastos {

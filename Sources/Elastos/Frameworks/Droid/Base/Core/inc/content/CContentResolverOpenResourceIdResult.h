@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTRESOLVEROPENRESOURCEIDRESULT_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTRESOLVEROPENRESOURCEIDRESULT_H__
 
-#include "_CContentResolverOpenResourceIdResult.h"
+#include "_Elastos_Droid_Content_CContentResolverOpenResourceIdResult.h"
 
 using Elastos::Droid::Content::Res::IResources;
 

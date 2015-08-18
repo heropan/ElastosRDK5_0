@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_USB_CUSBINTERFACE_H__
 #define __ELASTOS_DROID_HARDWARE_USB_CUSBINTERFACE_H__
 
-#include "_CUsbInterface.h"
+#include "_Elastos_Droid_Hardware_Usb_CUsbInterface.h"
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Core;

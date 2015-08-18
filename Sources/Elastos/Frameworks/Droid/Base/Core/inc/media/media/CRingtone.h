@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CRINGTONE_H__
 #define __ELASTOS_DROID_MEDIA_CRINGTONE_H__
 
-#include "_CRingtone.h"
+#include "_Elastos_Droid_Media_CRingtone.h"
 #include "ext/frameworkext.h"
 #include "CRingtoneManager.h"
 

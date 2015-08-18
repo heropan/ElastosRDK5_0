@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_ADMIN_CDEVICEPOLICYMANAGERHELPER_H__
 #define __ELASTOS_DROID_APP_ADMIN_CDEVICEPOLICYMANAGERHELPER_H__
 
-#include "_CDevicePolicyManagerHelper.h"
+#include "_Elastos_Droid_App_Admin_CDevicePolicyManagerHelper.h"
 
 
 namespace Elastos {

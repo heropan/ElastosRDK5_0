@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CROTATEDRAWABLE_H__
 
-#include "_CRotateDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CRotateDrawable.h"
 #include "graphics/drawable/RotateDrawable.h"
 
 

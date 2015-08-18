@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CSPANNABLEFACTORY_H__
 #define __ELASTOS_DROID_TEXT_CSPANNABLEFACTORY_H__
 
-#include "_CSpannableFactory.h"
+#include "_Elastos_Droid_Text_CSpannableFactory.h"
 
 using Elastos::Core::ICharSequence;
 

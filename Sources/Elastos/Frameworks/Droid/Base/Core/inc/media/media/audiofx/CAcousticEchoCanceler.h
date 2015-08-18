@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELER_H__
 
-#include "_CAcousticEchoCanceler.h"
+#include "_Elastos_Droid_Media_Audiofx_CAcousticEchoCanceler.h"
 #include <ext/frameworkext.h>
 #include "media/media/audiofx/AudioEffect.h"
 

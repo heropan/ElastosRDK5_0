@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEOTHUMBNAILS_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEOTHUMBNAILS_H__
 
-#include "_CMediaStoreVideoThumbnails.h"
+#include "_Elastos_Droid_Provider_CMediaStoreVideoThumbnails.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

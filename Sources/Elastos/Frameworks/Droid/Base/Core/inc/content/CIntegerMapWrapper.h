@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CINTEGERMAPWRAPPER_H__
 #define __ELASTOS_DROID_CONTENT_CINTEGERMAPWRAPPER_H__
 
-#include "_CIntegerMapWrapper.h"
+#include "_Elastos_Droid_Content_CIntegerMapWrapper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

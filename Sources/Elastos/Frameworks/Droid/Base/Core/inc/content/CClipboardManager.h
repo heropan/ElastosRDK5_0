@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPBOARDMANAGER_H__
 
-#include "_CClipboardManager.h"
+#include "_Elastos_Droid_Content_CClipboardManager.h"
 #include <ext/frameworkext.h>
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CSHAREDPREFERENCESBACKUPHELPER_H__
 #define __ELASTOS_DROID_APP_BACKUP_CSHAREDPREFERENCESBACKUPHELPER_H__
 
-#include "_CSharedPreferencesBackupHelper.h"
+#include "_Elastos_Droid_App_Backup_CSharedPreferencesBackupHelper.h"
 #include "ext/frameworkext.h"
 #include "app/backup/FileBackupHelperBase.h"
 

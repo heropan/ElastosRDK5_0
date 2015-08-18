@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CLOADERFORCELOADCONTENTOBSERVER_H__
 #define __ELASTOS_DROID_CONTENT_CLOADERFORCELOADCONTENTOBSERVER_H__
 
-#include "_CLoaderForceLoadContentObserver.h"
+#include "_Elastos_Droid_Content_CLoaderForceLoadContentObserver.h"
 #include <ext/frameworkext.h>
 
 using namespace Elastos::Droid::Database;

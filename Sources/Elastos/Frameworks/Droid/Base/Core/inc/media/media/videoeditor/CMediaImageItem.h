@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAIMAGEITEM_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CMEDIAIMAGEITEM_H__
 
-#include "_CMediaImageItem.h"
+#include "_Elastos_Droid_Media_Videoeditor_CMediaImageItem.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/MediaItem.h"
 

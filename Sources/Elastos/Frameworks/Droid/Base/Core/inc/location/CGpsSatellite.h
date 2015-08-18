@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CGPSATELLITE_H__
 
 #include "ext/frameworkext.h"
-#include "_CGpsSatellite.h"
+#include "_Elastos_Droid_Location_CGpsSatellite.h"
 
 namespace Elastos {
 namespace Droid {

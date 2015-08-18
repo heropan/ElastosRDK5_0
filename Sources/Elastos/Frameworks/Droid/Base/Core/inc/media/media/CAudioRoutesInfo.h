@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOROUTESINFO_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOROUTESINFO_H__
 
-#include "_CAudioRoutesInfo.h"
+#include "_Elastos_Droid_Media_CAudioRoutesInfo.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CWINDOWINFOHELPER_H__
 #define __ELASTOS_DROID_VIEW_CWINDOWINFOHELPER_H__
 
-#include "_CWindowInfoHelper.h"
+#include "_Elastos_Droid_View_CWindowInfoHelper.h"
 
 namespace Elastos {
 namespace Droid {

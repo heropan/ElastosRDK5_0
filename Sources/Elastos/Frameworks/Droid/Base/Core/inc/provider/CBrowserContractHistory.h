@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTHISTORY_H__
 #define __ELASTOS_DROID_PROVIDER_CBROWSERCONTRACTHISTORY_H__
 
-#include "_CBrowserContractHistory.h"
+#include "_Elastos_Droid_Provider_CBrowserContractHistory.h"
 
 namespace Elastos {
 namespace Droid {

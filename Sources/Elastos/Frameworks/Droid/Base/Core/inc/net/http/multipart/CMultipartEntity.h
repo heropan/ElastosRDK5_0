@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CMULTIPARTENTITY_H__
 #define __ELASTOS_DROID_NET_INTERNAL_HTTP_MULTIPART_CMULTIPARTENTITY_H__
 
-#include "_CMultipartEntity.h"
+#include "_Elastos_Droid_Net_Internal_Http_Multipart_CMultipartEntity.h"
 #include "elautoptr.h"
 
 using Org::Apache::Commons::Logging::ILog;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDATAHELPER_H__
 
-#include "_CClipDataHelper.h"
+#include "_Elastos_Droid_Content_CClipDataHelper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

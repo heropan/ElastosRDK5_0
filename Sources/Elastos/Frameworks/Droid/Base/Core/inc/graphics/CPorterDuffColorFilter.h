@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPorterDuffColorFilter_H__
 #define __ELASTOS_DROID_GRAPHICS_CPorterDuffColorFilter_H__
 
-#include "_CPorterDuffColorFilter.h"
+#include "_Elastos_Droid_Graphics_CPorterDuffColorFilter.h"
 #include "graphics/ColorFilter.h"
 
 namespace Elastos {

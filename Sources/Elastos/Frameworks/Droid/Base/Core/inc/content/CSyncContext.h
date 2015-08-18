@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCCONTEXT_H__
 
-#include "_CSyncContext.h"
+#include "_Elastos_Droid_Content_CSyncContext.h"
 
 using Elastos::Droid::Os::IBinder;
 

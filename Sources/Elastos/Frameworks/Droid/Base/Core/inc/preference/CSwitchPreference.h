@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CSWITCHPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CSWITCHPREFERENCE_H__
 
-#include "_CSwitchPreference.h"
+#include "_Elastos_Droid_Preference_CSwitchPreference.h"
 #include "TwoStatePreference.h"
 
 using Elastos::Droid::Widget::ICompoundButton;

@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_PRIVACY_CPRIVACYPERSISTENCEADAPTER_H__
 
 #include "ext/frameworkdef.h"
-#include "_CPrivacyPersistenceAdapter.h"
+#include "_Elastos_Droid_Privacy_CPrivacyPersistenceAdapter.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/RWLock.h>
 

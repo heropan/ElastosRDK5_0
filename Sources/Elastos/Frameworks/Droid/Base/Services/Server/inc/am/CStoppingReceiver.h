@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_AM_CSTOPPINGRECEIVER_H__
 
 #include "ext/frameworkext.h"
-#include "_CStoppingReceiver.h"
+#include "_Elastos_Droid_Server_Am_CStoppingReceiver.h"
 #include "am/UserStartedState.h"
 
 namespace Elastos {

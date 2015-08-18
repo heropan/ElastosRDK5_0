@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CTrafficStatsHelper_H__
 #define __ELASTOS_DROID_NET_CTrafficStatsHelper_H__
 
-#include "_CTrafficStats.h"
+#include "_Elastos_Droid_Net_CTrafficStats.h"
 #include "elautptr.h"
 #include "net/CTrafficStats.h"
 

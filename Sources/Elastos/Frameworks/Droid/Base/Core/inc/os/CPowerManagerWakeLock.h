@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CPOWERMANAGERWAKELOCK_H__
 #define __ELASTOS_DROID_OS_CPOWERMANAGERWAKELOCK_H__
 
-#include "_CPowerManagerWakeLock.h"
+#include "_Elastos_Droid_Os_CPowerManagerWakeLock.h"
 #include "ext/frameworkdef.h"
 
 using Elastos::Core::IRunnable;

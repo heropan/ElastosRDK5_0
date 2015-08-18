@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_CSWIPEHELPER_H__
 #define __ELASTOS_DROID_SYSTEMUI_CSWIPEHELPER_H__
 
-#include "_CSwipeHelper.h"
+#include "_Elastos_Droid_SystemUI_CSwipeHelper.h"
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
 #include "view/VelocityTracker.h"

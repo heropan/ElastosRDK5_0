@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 #define __ELASTOS_DROID_WEBKIT_CPLUGINDATA_H__
 
-#include "_CPluginData.h"
+#include "_Elastos_Droid_Webkit_CPluginData.h"
 
 using Elastos::IO::IInputStream;
 using Elastos::Utility::IMap;

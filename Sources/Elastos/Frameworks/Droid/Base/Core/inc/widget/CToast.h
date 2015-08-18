@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTOAST_H__
 #define __ELASTOS_DROID_WIDGET_CTOAST_H__
 
-#include "_CToast.h"
+#include "_Elastos_Droid_Widget_CToast.h"
 #include "widget/Toast.h"
 
 namespace Elastos{

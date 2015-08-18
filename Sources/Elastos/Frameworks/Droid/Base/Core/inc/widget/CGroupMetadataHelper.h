@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CGROUPMETADATAHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CGROUPMETADATAHELPER_H__
 
-#include "_CGroupMetadataHelper.h"
+#include "_Elastos_Droid_Widget_CGroupMetadataHelper.h"
 #include "widget/GroupMetadata.h"
 
 namespace Elastos {

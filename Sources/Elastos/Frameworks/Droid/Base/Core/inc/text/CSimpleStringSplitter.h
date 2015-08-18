@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_SIMPLESTRINGSPLITTER_H__
 #define __ELASTOS_DROID_TEXT_SIMPLESTRINGSPLITTER_H__
 
-#include "_CSimpleStringSplitter.h"
+#include "_Elastos_Droid_Text_CSimpleStringSplitter.h"
 
 using Elastos::Utility::IIterator;
 

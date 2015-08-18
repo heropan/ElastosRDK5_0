@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CFIXEDSIZEDRAWABLE_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CFIXEDSIZEDRAWABLE_H__
 
-#include "_CFixedSizeDrawable.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CFixedSizeDrawable.h"
 
 #include "systemui/statusbar/policy/FixedSizeDrawable.h"
 

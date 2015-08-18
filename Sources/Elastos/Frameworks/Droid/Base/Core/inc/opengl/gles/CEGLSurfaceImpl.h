@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLES_CEGLSURFACEIMPL_H__
 #define __ELASTOS_DROID_OPENGL_GLES_CEGLSURFACEIMPL_H__
 
-#include "_CEGLSurfaceImpl.h"
+#include "_Elastos_Droid_Opengl_Gles_CEGLSurfaceImpl.h"
 
 namespace Elastos {
 namespace Droid {

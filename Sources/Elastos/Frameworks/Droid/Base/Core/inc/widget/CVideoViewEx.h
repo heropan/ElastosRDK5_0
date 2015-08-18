@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CVIDEOVIEWEX_H__
 #define __ELASTOS_DROID_WIDGET_CVIDEOVIEWEX_H__
 
-#include "_CVideoViewEx.h"
+#include "_Elastos_Droid_Widget_CVideoViewEx.h"
 
 
 #include "widget/VideoView.h"

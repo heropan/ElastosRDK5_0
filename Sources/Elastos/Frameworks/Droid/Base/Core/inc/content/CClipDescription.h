@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTION_H__
 #define __ELASTOS_DROID_CONTENT_CCLIPDESCRIPTION_H__
 
-#include "_CClipDescription.h"
+#include "_Elastos_Droid_Content_CClipDescription.h"
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
 

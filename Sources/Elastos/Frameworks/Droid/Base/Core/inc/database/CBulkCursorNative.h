@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CBULKCURSORNATIVE_H__
 #define __ELASTOS_DROID_DATABASE_CBULKCURSORNATIVE_H__
 
-#include "_CBulkCursorNative.h"
+#include "_Elastos_Droid_Database_CBulkCursorNative.h"
 #include "database/BulkCursorNative.h"
 
 using Elastos::Droid::Os::IBinder;

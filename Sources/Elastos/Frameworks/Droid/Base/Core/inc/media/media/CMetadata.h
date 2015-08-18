@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMETADATA_H__
 #define __ELASTOS_DROID_MEDIA_CMETADATA_H__
 
-#include "_CMetadata.h"
+#include "_Elastos_Droid_Media_CMetadata.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

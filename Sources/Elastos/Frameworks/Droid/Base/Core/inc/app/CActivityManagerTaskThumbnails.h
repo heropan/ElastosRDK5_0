@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
 #define __ELASTOS_DROID_APP_CACTIVITYMANAGERTASKTHUMBNAILS_H__
 
-#include "_CActivityManagerTaskThumbnails.h"
+#include "_Elastos_Droid_App_CActivityManagerTaskThumbnails.h"
 #include "ActivityManagerTaskThumbnails.h"
 
 using Elastos::Droid::Graphics::IBitmap;

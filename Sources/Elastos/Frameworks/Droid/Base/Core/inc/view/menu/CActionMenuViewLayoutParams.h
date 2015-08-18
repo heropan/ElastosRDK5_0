@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_MENU_CACTIONMENUVIEWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_VIEW_MENU_CACTIONMENUVIEWLAYOUTPARAMS_H__
 
-#include "_CActionMenuViewLayoutParams.h"
+#include "_Elastos_Droid_View_Menu_CActionMenuViewLayoutParams.h"
 
 #include "widget/LinearLayoutLayoutParams.h"
 

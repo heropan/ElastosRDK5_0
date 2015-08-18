@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTOASTHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CTOASTHELPER_H__
 
-#include "_CToastHelper.h"
+#include "_Elastos_Droid_Widget_CToastHelper.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;

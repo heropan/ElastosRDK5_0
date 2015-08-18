@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CDIALOGFRAGMENT_H__
 #define __ELASTOS_DROID_APP_CDIALOGFRAGMENT_H__
 
-#include "_CDialogFragment.h"
+#include "_Elastos_Droid_App_CDialogFragment.h"
 #include "app/DialogFragment.h"
 
 

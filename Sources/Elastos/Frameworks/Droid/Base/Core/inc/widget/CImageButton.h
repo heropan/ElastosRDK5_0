@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CIMAGEBUTTON_H__
 #define __ELASTOS_DROID_WIDGET_CIMAGEBUTTON_H__
 
-#include "_CImageButton.h"
+#include "_Elastos_Droid_Widget_CImageButton.h"
 #include "ImageButton.h"
 
 

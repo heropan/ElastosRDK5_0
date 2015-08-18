@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CALIGNMENTSPANSTANDARD_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CALIGNMENTSPANSTANDARD_H__
 
-#include "_CAlignmentSpanStandard.h"
+#include "_Elastos_Droid_Text_Style_CAlignmentSpanStandard.h"
 
 namespace Elastos {
 namespace Droid {

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_ETHERNET_CETHERNETMANAGER_H__
 #define __ELASTOS_DROID_NET_ETHERNET_CETHERNETMANAGER_H__
 
-#include "_CEthernetManager.h"
+#include "_Elastos_Droid_Net_Ethernet_CEthernetManager.h"
 
 using Elastos::Droid::Os::IHandler;
 

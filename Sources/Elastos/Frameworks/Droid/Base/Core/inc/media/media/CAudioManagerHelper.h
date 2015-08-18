@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOMANAGERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOMANAGERHELPER_H__
 
-#include "_CAudioManagerHelper.h"
+#include "_Elastos_Droid_Media_CAudioManagerHelper.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

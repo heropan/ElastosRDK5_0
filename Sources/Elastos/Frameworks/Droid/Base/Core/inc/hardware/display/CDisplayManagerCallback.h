@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__
 #define __ELASTOS_DROID_HARDWARE_DISPLAY_CDISPLAYMANAGERCALLBACK_H__
 
-#include "_CDisplayManagerCallback.h"
+#include "_Elastos_Droid_Hardware_Display_CDisplayManagerCallback.h"
 #include "hardware/display/DisplayManagerGlobal.h"
 
 namespace Elastos {

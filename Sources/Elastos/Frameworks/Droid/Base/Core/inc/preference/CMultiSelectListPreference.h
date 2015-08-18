@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CMULTISELECTLISTPREFERENCE_H__
 #define __ELASTOS_DROID_PREFERENCE_CMULTISELECTLISTPREFERENCE_H__
 
-#include "_CMultiSelectListPreference.h"
+#include "_Elastos_Droid_Preference_CMultiSelectListPreference.h"
 #include "DialogPreference.h"
 #include <elastos/Set.h>
 

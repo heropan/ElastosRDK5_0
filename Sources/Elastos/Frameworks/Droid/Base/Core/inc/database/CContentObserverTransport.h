@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CCONTENTOBSERVERTRANSPORT_H__
 #define __ELASTOS_DROID_DATABASE_CCONTENTOBSERVERTRANSPORT_H__
 
-#include "_CContentObserverTransport.h"
+#include "_Elastos_Droid_Database_CContentObserverTransport.h"
 
 using Elastos::Droid::Net::IUri;
 

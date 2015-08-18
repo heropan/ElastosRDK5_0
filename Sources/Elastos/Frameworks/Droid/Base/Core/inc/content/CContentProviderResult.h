@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERRESULT_H__
 
-#include "_CContentProviderResult.h"
+#include "_Elastos_Droid_Content_CContentProviderResult.h"
 #include "ext/frameworkext.h"
 
 using namespace Elastos::Droid::Net;

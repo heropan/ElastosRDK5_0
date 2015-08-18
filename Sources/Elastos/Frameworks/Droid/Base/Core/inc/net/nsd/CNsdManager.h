@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__
 #define __ELASTOS_DROID_NET_NSD_CNSDMANAGER_H__
 
-#include "_CNsdManager.h"
+#include "_Elastos_Droid_Net_Nsd_CNsdManager.h"
 #include "ext/frameworkdef.h"
 #include <elastos/utility/etl/HashMap.h>
 #include "text/TextUtils.h"

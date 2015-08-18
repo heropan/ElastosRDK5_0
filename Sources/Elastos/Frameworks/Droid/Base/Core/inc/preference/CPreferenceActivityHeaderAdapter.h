@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEACTIVITYHEADERADAPTER_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEACTIVITYHEADERADAPTER_H__
 
-#include "_CPreferenceActivityHeaderAdapter.h"
+#include "_Elastos_Droid_Preference_CPreferenceActivityHeaderAdapter.h"
 #include "widget/ArrayAdapter.h"
 
 using Elastos::Droid::Widget::ArrayAdapter;

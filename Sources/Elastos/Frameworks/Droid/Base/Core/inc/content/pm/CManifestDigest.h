@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__
 #define __ELASTOS_DROID_CONTENT_PM_CMANIFESTDIGEST_H__
 
-#include "_CManifestDigest.h"
+#include "_Elastos_Droid_Content_Pm_CManifestDigest.h"
 
 using Elastos::Utility::Jar::IAttributes;
 

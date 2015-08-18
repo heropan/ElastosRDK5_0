@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKIDENTITY_H__
 #define __ELASTOS_DROID_NET_CNETWORKIDENTITY_H__
 
-#include "_CNetworkIdentity.h"
+#include "_Elastos_Droid_Net_CNetworkIdentity.h"
 #include "os/Build.h"
 
 using Elastos::Droid::Content::IContext;

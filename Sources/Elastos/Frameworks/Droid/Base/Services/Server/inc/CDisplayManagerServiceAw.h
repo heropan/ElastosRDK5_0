@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CDISPLAYMANAGERSERVICEAW_H__
 #define __ELASTOS_DROID_SERVER_CDISPLAYMANAGERSERVICEAW_H__
 
-#include "_CDisplayManagerServiceAw.h"
+#include "_Elastos_Droid_Server_CDisplayManagerServiceAw.h"
 
 using Elastos::Core::IClassLoader;
 using Elastos::Core::IRunnable;

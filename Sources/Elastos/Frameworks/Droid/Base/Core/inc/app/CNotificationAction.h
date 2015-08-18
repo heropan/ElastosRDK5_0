@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
 #define __ELASTOS_DROID_APP_CNOTIFICATIONACTION_H__
 
-#include "_CNotificationAction.h"
+#include "_Elastos_Droid_App_CNotificationAction.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Core::ICharSequence;

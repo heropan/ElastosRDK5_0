@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CGRADIENTDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CGRADIENTDRAWABLE_H__
 
-#include "_CGradientDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CGradientDrawable.h"
 #include "graphics/drawable/GradientDrawable.h"
 
 

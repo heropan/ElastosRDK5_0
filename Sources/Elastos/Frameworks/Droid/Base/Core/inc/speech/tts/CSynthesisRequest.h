@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__
 #define __ELASTOS_DROID_SPEECH_TTS_CSYNTHESISREQUEST_H__
 
-#include "_CSynthesisRequest.h"
+#include "_Elastos_Droid_Speech_Tts_CSynthesisRequest.h"
 #include "SynthesisRequest.h"
 
 using Elastos::Droid::Os::IBundle;

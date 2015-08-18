@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCELLINFOCDMA_H__
 #define __ELASTOS_DROID_TELEPHONY_CCELLINFOCDMA_H__
 
-#include "_CCellInfoCdma.h"
+#include "_Elastos_Droid_Telephony_CCellInfoCdma.h"
 #include "telephony/CellInfo.h"
 
 namespace Elastos {

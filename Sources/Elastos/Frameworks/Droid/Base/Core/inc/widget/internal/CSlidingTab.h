@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CSLIDINGTAB_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CSLIDINGTAB_H__
 
-#include "_CSlidingTab.h"
+#include "_Elastos_Droid_Widget_Internal_CSlidingTab.h"
 
 #include "widget/internal/SlidingTab.h"
 

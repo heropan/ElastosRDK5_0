@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDISPLAYINFO_H__
 #define __ELASTOS_DROID_VIEW_CDISPLAYINFO_H__
 
-#include "_CDisplayInfo.h"
+#include "_Elastos_Droid_View_CDisplayInfo.h"
 
 using Elastos::Droid::Utility::IDisplayMetrics;
 

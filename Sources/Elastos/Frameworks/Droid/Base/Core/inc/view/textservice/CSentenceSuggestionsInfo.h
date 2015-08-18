@@ -7,7 +7,7 @@ namespace Droid {
 namespace View {
 namespace Textservice {
 
-#include "_CSentenceSuggestionsInfo.h"
+#include "_Elastos_Droid_View_Textservice_CSentenceSuggestionsInfo.h"
 
 CarClass(CSentenceSuggestionsInfo)
 {

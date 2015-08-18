@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CINPUTQUEUE_H__
 #define __ELASTOS_DROID_VIEW_CINPUTQUEUE_H__
 
-#include "_CInputQueue.h"
+#include "_Elastos_Droid_View_CInputQueue.h"
 
 namespace Elastos {
 namespace Droid {

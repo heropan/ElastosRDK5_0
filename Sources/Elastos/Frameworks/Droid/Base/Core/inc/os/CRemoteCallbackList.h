@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_OS_CREMOTECALLBACKLIST_H__
 
 #include "ext/frameworkext.h"
-#include "_CRemoteCallbackList.h"
+#include "_Elastos_Droid_Os_CRemoteCallbackList.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

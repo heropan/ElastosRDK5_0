@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTREAMITEMS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTSTREAMITEMS_H__
 
-#include "_CContactsContractStreamItems.h"
+#include "_Elastos_Droid_Provider_CContactsContractStreamItems.h"
 
 using Elastos::Droid::Net::IUri;
 

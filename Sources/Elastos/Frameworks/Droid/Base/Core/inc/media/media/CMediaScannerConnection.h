@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNERCONNECTION_H__
 
-#include "_CMediaScannerConnection.h"
+#include "_Elastos_Droid_Media_CMediaScannerConnection.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Net::IUri;

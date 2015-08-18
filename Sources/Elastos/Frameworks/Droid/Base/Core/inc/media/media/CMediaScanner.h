@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIASCANNER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIASCANNER_H__
 
-#include "_CMediaScanner.h"
+#include "_Elastos_Droid_Media_CMediaScanner.h"
 #include "ext/frameworkext.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/etl/List.h>

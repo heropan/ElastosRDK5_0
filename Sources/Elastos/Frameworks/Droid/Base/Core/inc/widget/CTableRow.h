@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTABLEROW_H__
 #define __ELASTOS_DROID_WIDGET_CTABLEROW_H__
 
-#include "_CTableRow.h"
+#include "_Elastos_Droid_Widget_CTableRow.h"
 
 
 

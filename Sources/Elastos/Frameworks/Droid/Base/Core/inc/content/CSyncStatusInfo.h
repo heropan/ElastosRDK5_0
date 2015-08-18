@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTATUSINFO_H__
 
-#include "_CSyncStatusInfo.h"
+#include "_Elastos_Droid_Content_CSyncStatusInfo.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

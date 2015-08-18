@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_WM_CSESSION_H__
 #define __ELASTOS_DROID_SERVER_WM_CSESSION_H__
 
-#include "_CSession.h"
+#include "_Elastos_Droid_Server_Wm_CSession.h"
 #include "wm/CWindowManagerService.h"
 
 using Elastos::Droid::View::IIWindow;

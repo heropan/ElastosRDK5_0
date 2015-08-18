@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATION_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATION_H__
 
-#include "_CContentProviderOperation.h"
+#include "_Elastos_Droid_Content_CContentProviderOperation.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

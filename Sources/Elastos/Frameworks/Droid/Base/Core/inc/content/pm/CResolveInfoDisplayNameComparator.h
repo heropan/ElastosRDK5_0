@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFODISPLAYNAMECOMPARATOR_H__
 #define __ELASTOS_DROID_CONTENT_PM_CRESOLVEINFODISPLAYNAMECOMPARATOR_H__
 
-#include "_CResolveInfoDisplayNameComparator.h"
+#include "_Elastos_Droid_Content_Pm_CResolveInfoDisplayNameComparator.h"
 
 using Elastos::Text::ICollator;
 

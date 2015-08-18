@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_TABLET_CTABLETSTATUSBAR_H__
 
-#include "_CTabletStatusBar.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Tablet_CTabletStatusBar.h"
 #include "systemui/statusbar/tablet/TabletStatusBar.h"
 
 

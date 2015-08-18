@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CKEYBUTTONVIEW_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_CKEYBUTTONVIEW_H__
 
-#include "_CKeyButtonView.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CKeyButtonView.h"
 
 #include "systemui/statusbar/policy/KeyButtonView.h"
 

@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CIMAGEVIEW_H__
 #define __ELASTOS_DROID_WIDGET_CIMAGEVIEW_H__
 
-#include "_CImageView.h"
+#include "_Elastos_Droid_Widget_CImageView.h"
 
 #include "widget/ImageView.h"
 

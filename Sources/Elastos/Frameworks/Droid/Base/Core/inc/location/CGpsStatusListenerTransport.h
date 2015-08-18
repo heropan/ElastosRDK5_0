@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_LOCATION_CGPSSTATUSLISTENERTRANSPORT_H__
 
 #include "ext/frameworkext.h"
-#include "_CGpsStatusListenerTransport.h"
+#include "_Elastos_Droid_Location_CGpsStatusListenerTransport.h"
 #include <elastos/utility/etl/List.h>
 #include "os/HandlerBase.h"
 

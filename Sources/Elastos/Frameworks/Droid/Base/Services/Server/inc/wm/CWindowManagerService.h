@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_WM_CWINDOWMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CWindowManagerService.h"
+#include "_Elastos_Droid_Server_Wm_CWindowManagerService.h"
 #include "input/CInputManagerService.h"
 #include "display/CDisplayManagerService.h"
 #include "power/CPowerManagerService.h"

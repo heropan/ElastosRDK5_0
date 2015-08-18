@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CPREFERENCEBASESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_CPREFERENCEBASESAVEDSTATE_H__
 
-#include "_CPreferenceBaseSavedState.h"
+#include "_Elastos_Droid_Preference_CPreferenceBaseSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 namespace Elastos {

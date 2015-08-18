@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATIONHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDEROPERATIONHELPER_H__
 
-#include "_CContentProviderOperationHelper.h"
+#include "_Elastos_Droid_Content_CContentProviderOperationHelper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Net::IUri;

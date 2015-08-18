@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCOPERATION_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCOPERATION_H__
 
-#include "_CSyncOperation.h"
+#include "_Elastos_Droid_Content_CSyncOperation.h"
 #include <ext/frameworkext.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/Math.h>

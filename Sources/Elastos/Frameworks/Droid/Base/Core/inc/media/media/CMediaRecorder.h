@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CMEDIARECORDER_H__
 #define __ELASTOS_DROID_MEDIA_CMEDIARECORDER_H__
 
-#include "_CMediaRecorder.h"
+#include "_Elastos_Droid_Media_CMediaRecorder.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 

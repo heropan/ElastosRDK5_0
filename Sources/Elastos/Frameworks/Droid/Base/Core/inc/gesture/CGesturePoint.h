@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
 #define __ELASTOS_DROID_GESTURE_CGESTUREPOINT_H__
 
-#include "_CGesturePoint.h"
+#include "_Elastos_Droid_Gesture_CGesturePoint.h"
 
 using Elastos::IO::IDataInputStream;
 

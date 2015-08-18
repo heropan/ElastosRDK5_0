@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CSIGNALSTRENGTH_H__
 #define __ELASTOS_DROID_TELEPHONY_CSIGNALSTRENGTH_H__
 
-#include "_CSignalStrength.h"
+#include "_Elastos_Droid_Telephony_CSignalStrength.h"
 
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Telephony::ISignalStrength;

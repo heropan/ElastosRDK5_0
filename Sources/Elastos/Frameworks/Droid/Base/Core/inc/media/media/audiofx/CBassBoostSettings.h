@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOSTSETTINGS_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CBASSBOOSTSETTINGS_H__
 
-#include "_CBassBoostSettings.h"
+#include "_Elastos_Droid_Media_Audiofx_CBassBoostSettings.h"
 #include "ext/frameworkext.h"
 
 namespace Elastos {

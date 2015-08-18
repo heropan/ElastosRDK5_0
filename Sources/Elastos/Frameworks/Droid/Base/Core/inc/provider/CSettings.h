@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSETTINGS_H__
 #define __ELASTOS_DROID_PROVIDER_CSETTINGS_H__
 
-#include "_CSettings.h"
+#include "_Elastos_Droid_Provider_CSettings.h"
 
 namespace Elastos {
 namespace Droid {

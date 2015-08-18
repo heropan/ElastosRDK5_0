@@ -2,7 +2,7 @@
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYINTERACTIONCLIENT_H__
 
 #include "ext/frameworkext.h"
-#include "_CAccessibilityInteractionClient.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityInteractionClient.h"
 #include "view/accessibility/AccessibilityNodeInfoCache.h"
 #include <elastos/Core/Object.h>
 #include <elastos/utility/etl/HashMap.h>

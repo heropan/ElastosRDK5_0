@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATAUSAGEFEEDBACK_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTDATAUSAGEFEEDBACK_H__
 
-#include "_CContactsContractDataUsageFeedback.h"
+#include "_Elastos_Droid_Provider_CContactsContractDataUsageFeedback.h"
 
 using Elastos::Droid::Net::IUri;
 

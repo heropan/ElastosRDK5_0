@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CSEARCHMANAGER_H__
 #define __ELASTOS_DROID_APP_CSEARCHMANAGER_H__
 
-#include "_CSearchManager.h"
+#include "_Elastos_Droid_App_CSearchManager.h"
 
 namespace Elastos {
 namespace Droid {

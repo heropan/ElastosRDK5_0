@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTREMENDERS_H__
 #define __ELASTOS_DROID_PROVIDER_CCALENDARCONTRACTREMENDERS_H__
 
-#include "_CCalendarContractReminders.h"
+#include "_Elastos_Droid_Provider_CCalendarContractReminders.h"
 #include "CalendarContractReminders.h"
 
 namespace Elastos {

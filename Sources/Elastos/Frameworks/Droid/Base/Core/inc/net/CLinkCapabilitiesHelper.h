@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CLINKCAPABILITIESHELPER_H__
 #define __ELASTOS_DROID_NET_CLINKCAPABILITIESHELPER_H__
 
-#include "_CLinkCapabilitiesHelper.h"
+#include "_Elastos_Droid_Net_CLinkCapabilitiesHelper.h"
 
 namespace Elastos {
 namespace Droid {

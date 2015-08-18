@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHDEVICE_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHDEVICE_H__
 
-#include "_CBluetoothDevice.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothDevice.h"
 #include "CBluetoothDeviceManagerCallback.h"
 
 using Elastos::Utility::IUUID;

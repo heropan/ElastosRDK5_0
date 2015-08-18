@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPSTORAGE_H__
 #define __ELASTOS_DROID_MTP_CMTPSTORAGE_H__
 
-#include "_CMtpStorage.h"
+#include "_Elastos_Droid_Mtp_CMtpStorage.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Storage::IStorageVolume;

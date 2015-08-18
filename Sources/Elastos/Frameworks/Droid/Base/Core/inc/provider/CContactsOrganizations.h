@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSORGANIZATIONS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSORGANIZATIONS_H__
 
-#include "_CContactsOrganizations.h"
+#include "_Elastos_Droid_Provider_CContactsOrganizations.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

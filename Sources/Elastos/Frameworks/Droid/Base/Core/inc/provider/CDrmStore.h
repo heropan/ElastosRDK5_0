@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CDRMSTORE_H__
 #define __ELASTOS_DROID_PROVIDER_CDRMSTORE_H__
 
-#include "_CDrmStore.h"
+#include "_Elastos_Droid_Provider_CDrmStore.h"
 
 namespace Elastos {
 namespace Droid {

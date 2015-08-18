@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
 #define __ELASTOS_DROID_NET_HTTP_CANDROIDHTTPCLIENT_H__
 
-#include "_CAndroidHttpClient.h"
+#include "_Elastos_Droid_Net_Http_CAndroidHttpClient.h"
 #include "ext/frameworkext.h"
 // #include "DefaultHttpClient.h"
 

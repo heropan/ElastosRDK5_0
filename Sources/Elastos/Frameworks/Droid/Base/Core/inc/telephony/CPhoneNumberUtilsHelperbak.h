@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CPHONENUMBERUTILSHELPER_H__
 #define __ELASTOS_DROID_TELEPHONY_CPHONENUMBERUTILSHELPER_H__
 
-#include "_CPhoneNumberUtilsHelper.h"
+#include "_Elastos_Droid_Telephony_CPhoneNumberUtilsHelper.h"
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Droid::Text::IEditable;

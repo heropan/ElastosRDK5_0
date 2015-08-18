@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWPSINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_CWPSINFO_H__
 
-#include "_CWpsInfo.h"
+#include "_Elastos_Droid_Net_Wifi_CWpsInfo.h"
 
 namespace Elastos {
 namespace Droid {

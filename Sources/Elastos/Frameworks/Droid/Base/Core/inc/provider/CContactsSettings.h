@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSSETTINGS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSSETTINGS_H__
 
-#include "_CContactsSettings.h"
+#include "_Elastos_Droid_Provider_CContactsSettings.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

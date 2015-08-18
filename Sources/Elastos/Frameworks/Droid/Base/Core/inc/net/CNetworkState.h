@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKSTATE_H__
 #define __ELASTOS_DROID_NET_CNETWORKSTATE_H__
 
-#include "_CNetworkState.h"
+#include "_Elastos_Droid_Net_CNetworkState.h"
 
 namespace Elastos {
 namespace Droid {

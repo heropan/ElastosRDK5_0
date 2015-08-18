@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKCONFIG_H__
 #define __ELASTOS_DROID_NET_CNETWORKCONFIG_H__
 
-#include "_CNetworkConfig.h"
+#include "_Elastos_Droid_Net_CNetworkConfig.h"
 
 namespace Elastos {
 namespace Droid {

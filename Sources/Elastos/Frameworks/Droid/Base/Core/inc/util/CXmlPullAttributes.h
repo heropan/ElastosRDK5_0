@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CXMLPULLATTRIBUTES_H__
 #define __ELASTOS_DROID_UTILITY_CXMLPULLATTRIBUTES_H__
 
-#include "_CXmlPullAttributes.h"
+#include "_Elastos_Droid_Utility_CXmlPullAttributes.h"
 
 using Org::Xmlpull::V1::IXmlPullParser;
 

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPMEMBERSHIP_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPMEMBERSHIP_H__
 
-#include "_CContactsGroupMembership.h"
+#include "_Elastos_Droid_Provider_CContactsGroupMembership.h"
 
 using Elastos::Droid::Net::IUri;
 

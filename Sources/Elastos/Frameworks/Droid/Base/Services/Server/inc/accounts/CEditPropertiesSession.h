@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_ACCOUNTS_CEDITPROPERTIESSESSION_H__
 #define __ELASTOS_DROID_SERVER_ACCOUNTS_CEDITPROPERTIESSESSION_H__
 
-#include "_CEditPropertiesSession.h"
+#include "_Elastos_Droid_Server_Accounts_CEditPropertiesSession.h"
 #include "accounts/AccountManagerServiceSession.h"
 
 namespace Elastos {

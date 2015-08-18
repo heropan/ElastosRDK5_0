@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOENATIVE_H__
 #define __ELASTOS_DROID_NET_PPPOE_CPPPOENATIVE_H__
 
-#include "_CPppoeNative.h"
+#include "_Elastos_Droid_Net_Pppoe_CPppoeNative.h"
 
 namespace Elastos {
 namespace Droid {

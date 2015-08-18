@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEO_H__
 #define __ELASTOS_DROID_PROVIDER_CMEDIASTOREVIDEO_H__
 
-#include "_CMediaStoreVideo.h"
+#include "_Elastos_Droid_Provider_CMediaStoreVideo.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

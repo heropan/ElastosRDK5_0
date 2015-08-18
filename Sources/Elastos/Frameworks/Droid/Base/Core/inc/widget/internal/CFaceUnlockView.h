@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CFACEUNLOCKVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CFACEUNLOCKVIEW_H__
 
-#include "_CFaceUnlockView.h"
+#include "_Elastos_Droid_Widget_Internal_CFaceUnlockView.h"
 #include "internal/FaceUnlockView.h"
 
 

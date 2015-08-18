@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTANRINFO_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTANRINFO_H__
 
-#include "_CApplicationErrorReportAnrInfo.h"
+#include "_Elastos_Droid_App_CApplicationErrorReportAnrInfo.h"
 
 using Elastos::Droid::Utility::IPrinter;
 

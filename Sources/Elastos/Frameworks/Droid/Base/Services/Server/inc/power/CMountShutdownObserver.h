@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_POWER_CMOUNTSHUTDOWNOBSERVER_H__
 #define __ELASTOS_DROID_SERVER_POWER_CMOUNTSHUTDOWNOBSERVER_H__
 
-#include "_CMountShutdownObserver.h"
+#include "_Elastos_Droid_Server_Power_CMountShutdownObserver.h"
 #include "power/ShutdownThread.h"
 #include "elautoptr.h"
 

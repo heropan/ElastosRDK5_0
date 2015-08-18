@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CSHAPEDRAWABLE_H__
 
-#include "_CShapeDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CShapeDrawable.h"
 #include "graphics/drawable/CShapeDrawable.h"
 #include "graphics/drawable/ShapeDrawable.h"
 

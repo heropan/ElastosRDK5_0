@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CPLUGINLIST_H__
 #define __ELASTOS_DROID_WEBKIT_CPLUGINLIST_H__
 
-#include "_CPluginList.h"
+#include "_Elastos_Droid_Webkit_CPluginList.h"
 #include "ext/frameworkdef.h"
 #include "webkit/CPlugin.h"
 #include <elastos/utility/etl/List.h>

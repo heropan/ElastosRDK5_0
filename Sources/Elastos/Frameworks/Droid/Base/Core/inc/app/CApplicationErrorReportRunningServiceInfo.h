@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTRUNNINGSERVICEINFO_H__
 #define __ELASTOS_DROID_APP_CAPPLICATIONERRORREPORTRUNNINGSERVICEINFO_H__
 
-#include "_CApplicationErrorReportRunningServiceInfo.h"
+#include "_Elastos_Droid_App_CApplicationErrorReportRunningServiceInfo.h"
 
 using Elastos::Droid::Utility::IPrinter;
 

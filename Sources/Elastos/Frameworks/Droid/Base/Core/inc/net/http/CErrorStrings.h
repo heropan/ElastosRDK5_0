@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CERRORSTRINGS_H__
 #define __ELASTOS_DROID_NET_HTTP_CERRORSTRINGS_H__
 
-#include "_CErrorStrings.h"
+#include "_Elastos_Droid_Net_Http_CErrorStrings.h"
 
 namespace Elastos {
 namespace Droid {

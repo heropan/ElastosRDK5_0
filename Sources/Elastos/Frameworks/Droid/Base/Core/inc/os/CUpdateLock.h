@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OS_CUPDATELOCK_H__
 #define __ELASTOS_DROID_OS_CUPDATELOCK_H__
 
-#include "_CUpdateLock.h"
+#include "_Elastos_Droid_Os_CUpdateLock.h"
 #include "ext/frameworkdef.h"
 
 using Elastos::Droid::Os::IIUpdateLock;

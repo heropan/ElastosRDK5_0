@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
 #define __ELASTOS_DROID_VIEW_CGESTUREDETECTOR_H__
 
-#include "_CGestureDetector.h"
+#include "_Elastos_Droid_View_CGestureDetector.h"
 #include "os/HandlerBase.h"
 #include "view/VelocityTracker.h"
 #include "view/InputEventConsistencyVerifier.h"

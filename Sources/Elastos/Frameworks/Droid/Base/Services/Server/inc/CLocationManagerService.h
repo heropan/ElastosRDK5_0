@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_SERVER_LOCATION_CLOCATIONMANAGERSERVICE_H__
 
 #include "ext/frameworkext.h"
-#include "_CLocationManagerService.h"
+#include "_Elastos_Droid_Server_Location_CLocationManagerService.h"
 #include "location/LocationFudger.h"
 #include "location/GeofenceManager.h"
 #include "location/PassiveProvider.h"

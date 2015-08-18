@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTDESCRIPTOR_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CAUDIOEFFECTDESCRIPTOR_H__
 
-#include "_CAudioEffectDescriptor.h"
+#include "_Elastos_Droid_Media_Audiofx_CAudioEffectDescriptor.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Utility::IUUID;

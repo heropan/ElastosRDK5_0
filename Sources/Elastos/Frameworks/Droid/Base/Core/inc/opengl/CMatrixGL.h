@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
 #define __ELASTOS_DROID_OPENGL_CMATRIXGL_H__
 
-#include "_CMatrixGL.h"
+#include "_Elastos_Droid_Opengl_CMatrixGL.h"
 #include "elastos/Mutex.h"
 
 namespace Elastos {

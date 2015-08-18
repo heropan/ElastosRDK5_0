@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_UTILITY_CLINKIFY_H__
 #define __ELASTOS_DROID_TEXT_UTILITY_CLINKIFY_H__
 
-#include "_CLinkify.h"
+#include "_Elastos_Droid_Text_Utility_CLinkify.h"
 #include "text/util/Linkify.h"
 
 using Elastos::Core::ICharSequence;

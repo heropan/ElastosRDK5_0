@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
 #define __ELASTOS_DROID_VIEW_ANIMATION_CCYCLEINTERPOLATOR_H__
 
-#include "_Elastos_Droid_View_CCycleInterpolator.h"
+#include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CCycleInterpolator.h"
 #include "R.h"
 
 using Elastos::Droid::R;

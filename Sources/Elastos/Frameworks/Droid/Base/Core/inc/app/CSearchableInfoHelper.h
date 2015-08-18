@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_CSEARCHABLEINFOHELPER_H__
 #define __ELASTOS_DROID_APP_CSEARCHABLEINFOHELPER_H__
 
-#include "_CSearchableInfoHelper.h"
+#include "_Elastos_Droid_App_CSearchableInfoHelper.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::Pm::IActivityInfo;

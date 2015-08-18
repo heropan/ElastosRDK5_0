@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CPOWERMANAGERHELPER_H__
 #define __ELASTOS_DROID_OS_CPOWERMANAGERHELPER_H__
 
-#include "_CPowerManagerHelper.h"
+#include "_Elastos_Droid_Os_CPowerManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

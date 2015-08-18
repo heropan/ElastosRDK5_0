@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__
 #define __ELASTOS_DROID_GRAPHICS_CBLURMASKFILTER_H__
 
-#include "_CBlurMaskFilter.h"
+#include "_Elastos_Droid_Graphics_CBlurMaskFilter.h"
 #include "graphics/MaskFilter.h"
 
 namespace Elastos {

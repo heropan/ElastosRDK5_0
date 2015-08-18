@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_DATABASE_CDATABASEUTILS_H__
 #define __ELASTOS_DROID_DATABASE_CDATABASEUTILS_H__
 
-#include "_CDatabaseUtils.h"
+#include "_Elastos_Droid_Database_CDatabaseUtils.h"
 
 using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintStream;

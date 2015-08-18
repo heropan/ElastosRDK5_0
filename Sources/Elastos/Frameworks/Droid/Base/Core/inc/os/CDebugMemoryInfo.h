@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CDEBUGMEMORYINFO_H__
 #define __ELASTOS_DROID_OS_CDEBUGMEMORYINFO_H__
 
-#include "_CDebugMemoryInfo.h"
+#include "_Elastos_Droid_Os_CDebugMemoryInfo.h"
 
 namespace Elastos {
 namespace Droid {

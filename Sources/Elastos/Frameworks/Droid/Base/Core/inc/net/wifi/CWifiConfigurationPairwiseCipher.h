@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPAIRWISECIPHER_H__
 #define __ELASTOS_DROID_NET_WIFI_CWIFICONFIGURATIONPAIRWISECIPHER_H__
 
-#include "_CWifiConfigurationPairwiseCipher.h"
+#include "_Elastos_Droid_Net_Wifi_CWifiConfigurationPairwiseCipher.h"
 
 namespace Elastos {
 namespace Droid {

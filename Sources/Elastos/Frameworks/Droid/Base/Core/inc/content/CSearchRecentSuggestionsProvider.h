@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSEARCHRECENTSUGGESTIONSPROVIDER_H__
 #define __ELASTOS_DROID_CONTENT_CSEARCHRECENTSUGGESTIONSPROVIDER_H__
 
-#include "_CSearchRecentSuggestionsProvider.h"
+#include "_Elastos_Droid_Content_CSearchRecentSuggestionsProvider.h"
 #include <ext/frameworkext.h>
 #include "ContentProvider.h"
 

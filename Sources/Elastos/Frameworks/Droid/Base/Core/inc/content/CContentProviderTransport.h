@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
 #define __ELASTOS_DROID_CONTENT_CCONTENTPROVIDERTRANSPORT_H__
 
-#include "_CContentProviderTransport.h"
+#include "_Elastos_Droid_Content_CContentProviderTransport.h"
 #include "content/ContentProvider.h"
 
 using Elastos::Droid::Os::IICancellationSignal;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 #define __ELASTOS_DROID_MTP_CMTPDATABASE_H__
 
-#include "_CMtpDatabase.h"
+#include "_Elastos_Droid_Mtp_CMtpDatabase.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

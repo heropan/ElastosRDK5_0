@@ -1,6 +1,6 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSIMPLEEXPANDABLELISTADAPTER_H__
 #define __ELASTOS_DROID_WIDGET_CSIMPLEEXPANDABLELISTADAPTER_H__
-#include "_CSimpleExpandableListAdapter.h"
+#include "_Elastos_Droid_Widget_CSimpleExpandableListAdapter.h"
 #include "widget/SimpleExpandableListAdapter.h"
 
 namespace Elastos {

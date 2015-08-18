@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHINPUTDEVICESTATECHANGECALLBACK_H__
 #define __ELASTOS_DROID_BLUETOOTH_CBLUETOOTHINPUTDEVICESTATECHANGECALLBACK_H__
 
-#include "_CBluetoothInputDeviceStateChangeCallback.h"
+#include "_Elastos_Droid_Bluetooth_CBluetoothInputDeviceStateChangeCallback.h"
 #include "BluetoothInputDevice.h"
 
 namespace Elastos {

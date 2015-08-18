@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CHTTPRESPONSECACHE_H__
 #define __ELASTOS_DROID_NET_HTTP_CHTTPRESPONSECACHE_H__
 
-#include "_CHttpResponseCache.h"
+#include "_Elastos_Droid_Net_Http_CHttpResponseCache.h"
 
 using namespace Elastos::Core;
 

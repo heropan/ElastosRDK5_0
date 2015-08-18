@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CRECTF_H__
 #define __ELASTOS_DROID_GRAPHICS_CRECTF_H__
 
-#include "_CRectF.h"
+#include "_Elastos_Droid_Graphics_CRectF.h"
 
 namespace Elastos {
 namespace Droid {

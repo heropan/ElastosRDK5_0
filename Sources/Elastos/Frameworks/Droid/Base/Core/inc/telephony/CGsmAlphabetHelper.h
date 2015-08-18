@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABETHELPER_H__
 #define __ELASTOS_DROID_INTERNAL_TELEPHONY_CGSMALPHABETHELPER_H__
 
-#include "_CGsmAlphabetHelper.h"
+#include "_Elastos_Droid_Internal_Telephony_CGsmAlphabetHelper.h"
 
 using Elastos::Core::ICharSequence;
 

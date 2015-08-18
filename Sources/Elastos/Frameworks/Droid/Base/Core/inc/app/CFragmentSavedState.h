@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__
 #define __ELASTOS_DROID_APP_CFRAGMENTSAVEDSTATE_H__
 
-#include "_CFragmentSavedState.h"
+#include "_Elastos_Droid_App_CFragmentSavedState.h"
 
 using Elastos::Core::IClassLoader;
 using Elastos::Droid::Os::IBundle;

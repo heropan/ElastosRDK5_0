@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_SHAPES_CROUNDRECTSHAPE_H__
 
 #include "graphics/drawable/shapes/RoundRectShape.h"
-#include "_CRoundRectShape.h"
+#include "_Elastos_Droid_Graphics_Drawable_Shapes_CRoundRectShape.h"
 
 namespace Elastos {
 namespace Droid {

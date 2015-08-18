@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSEMAIL_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSEMAIL_H__
 
-#include "_CContactsContractCommonDataKindsEmail.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsEmail.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

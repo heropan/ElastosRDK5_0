@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CURLUTIL_H__
 #define __ELASTOS_DROID_WEBKIT_CURLUTIL_H__
 
-#include "_CURLUtil.h"
+#include "_Elastos_Droid_Webkit_CURLUtil.h"
 
 namespace Elastos {
 namespace Droid {

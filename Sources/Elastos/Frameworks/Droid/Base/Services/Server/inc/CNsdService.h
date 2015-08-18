@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CNSDSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CNSDSERVICE_H__
 
-#include "_CNsdService.h"
+#include "_Elastos_Droid_Server_CNsdService.h"
 #include "ext/frameworkext.h"
 #include "util/AsyncChannel.h"
 #include "NativeDaemonConnector.h"

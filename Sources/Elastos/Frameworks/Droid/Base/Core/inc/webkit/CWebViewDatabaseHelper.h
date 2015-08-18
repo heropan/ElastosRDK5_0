@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBVIEWDATABASEHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBVIEWDATABASEHELPER_H__
 
-#include "_CWebViewDatabaseHelper.h"
+#include "_Elastos_Droid_Webkit_CWebViewDatabaseHelper.h"
 
 using Elastos::Droid::Content::IContext;
 

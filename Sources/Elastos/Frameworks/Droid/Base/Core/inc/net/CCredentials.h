@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CCREDENTIALS_H__
 #define __ELASTOS_DROID_NET_CCREDENTIALS_H__
 
-#include "_CCredentials.h"
+#include "_Elastos_Droid_Net_CCredentials.h"
 
 namespace Elastos {
 namespace Droid {

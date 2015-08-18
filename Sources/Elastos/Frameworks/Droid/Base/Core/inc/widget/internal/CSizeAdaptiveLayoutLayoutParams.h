@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CSIZEADAPTIVELAYOUTLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CSIZEADAPTIVELAYOUTLAYOUTPARAMS_H__
 
-#include "_CSizeAdaptiveLayoutLayoutParams.h"
+#include "_Elastos_Droid_Widget_Internal_CSizeAdaptiveLayoutLayoutParams.h"
 #include "widget/internal/SizeAdaptiveLayoutLayoutParams.h"
 
 

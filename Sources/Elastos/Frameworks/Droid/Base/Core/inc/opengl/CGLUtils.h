@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLUTILS_H__
 #define __ELASTOS_DROID_OPENGL_CGLUTILS_H__
 
-#include "_CGLUtils.h"
+#include "_Elastos_Droid_Opengl_CGLUtils.h"
 
 using Elastos::Droid::Graphics::IBitmap;
 

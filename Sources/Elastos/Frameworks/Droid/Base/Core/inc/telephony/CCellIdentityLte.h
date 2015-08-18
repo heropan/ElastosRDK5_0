@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYLTE_H__
 #define __ELASTOS_DROID_TELEPHONY_CCELLIDENTITYLTE_H__
 
-#include "_CCellIdentityLte.h"
+#include "_Elastos_Droid_Telephony_CCellIdentityLte.h"
 
 using Elastos::Droid::Telephony::ICellIdentityLte;
 

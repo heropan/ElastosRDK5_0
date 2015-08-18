@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CCLOCK_H__
 #define __ELASTOS_DROID_SYSTEMUI_STATUSBAR_POLICY_POLICY_CCLOCK_H__
 
-#include "_CClock.h"
+#include "_Elastos_Droid_SystemUI_StatusBar_Policy_CClock.h"
 
 
 #include "systemui/statusbar/policy/Clock.h"

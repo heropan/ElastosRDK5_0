@@ -3,7 +3,7 @@
 #define  __ELASTOS_DROID_VIEW_INPUTMETHOD_CINPUTMETHODSUBTYPE_H__
 
 #include "ext/frameworkdef.h"
-#include "_CInputMethodSubtype.h"
+#include "_Elastos_Droid_View_InputMethod_CInputMethodSubtype.h"
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;

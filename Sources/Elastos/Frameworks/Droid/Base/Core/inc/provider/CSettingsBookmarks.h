@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSBOOKMARKS_H__
 
-#include "_CSettingsBookmarks.h"
+#include "_Elastos_Droid_Provider_CSettingsBookmarks.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

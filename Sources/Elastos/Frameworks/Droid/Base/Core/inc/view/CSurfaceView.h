@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__
 #define __ELASTOS_DROID_VIEW_CSURFACEVIEW_H__
 
-#include "_CSurfaceView.h"
+#include "_Elastos_Droid_View_CSurfaceView.h"
 #include "view/SurfaceView.h"
 
 

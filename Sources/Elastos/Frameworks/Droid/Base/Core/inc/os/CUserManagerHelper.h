@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CUSERMANAGERHELPER_H__
 #define __ELASTOS_DROID_OS_CUSERMANAGERHELPER_H__
 
-#include "_CUserManagerHelper.h"
+#include "_Elastos_Droid_Os_CUserManagerHelper.h"
 
 namespace Elastos {
 namespace Droid {

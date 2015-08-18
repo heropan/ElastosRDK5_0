@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSGROUPS_H__
 
-#include "_CContactsGroups.h"
+#include "_Elastos_Droid_Provider_CContactsGroups.h"
 
 using Elastos::Droid::Net::IUri;
 

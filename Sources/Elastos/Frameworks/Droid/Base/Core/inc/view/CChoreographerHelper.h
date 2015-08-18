@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__
 #define __ELASTOS_DROID_VIEW_CCHOREOGRAPHERHELPER_H__
 
-#include "_CChoreographerHelper.h"
+#include "_Elastos_Droid_View_CChoreographerHelper.h"
 
 namespace Elastos {
 namespace Droid {

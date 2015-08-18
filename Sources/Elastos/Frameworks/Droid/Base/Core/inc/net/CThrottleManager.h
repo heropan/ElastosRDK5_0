@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CTHROTTLEMANAGER_H__
 #define __ELASTOS_DROID_NET_CTHROTTLEMANAGER_H__
 
-#include "_CThrottleManager.h"
+#include "_Elastos_Droid_Net_CThrottleManager.h"
 
 using Elastos::Droid::Net::IIThrottleManager;
 

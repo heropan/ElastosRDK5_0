@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_GLES_CEGLCONTEXIMPL_H__
 #define __ELASTOS_DROID_OPENGL_GLES_CEGLCONTEXIMPL_H__
 
-#include "_CEGLContextImpl.h"
+#include "_Elastos_Droid_Opengl_Gles_CEGLContextImpl.h"
 
 using Elastosx::Microedition::Khronos::Egl::IEGL;
 using Elastosx::Microedition::Khronos::Opengles::IGL;

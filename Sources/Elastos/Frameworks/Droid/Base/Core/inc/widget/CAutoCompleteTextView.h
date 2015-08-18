@@ -1,4 +1,4 @@
-#include "_CAutoCompleteTextView.h"
+#include "_Elastos_Droid_Widget_CAutoCompleteTextView.h"
 #include "AutoCompleteTextView.h"
 
 

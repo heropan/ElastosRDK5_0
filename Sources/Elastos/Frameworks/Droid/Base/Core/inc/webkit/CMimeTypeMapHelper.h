@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CMIMETYPEMAPHELPER_H__
 #define __ELASTOS_DROID_WEBKIT_CMIMETYPEMAPHELPER_H__
 
-#include "_CMimeTypeMapHelper.h"
+#include "_Elastos_Droid_Webkit_CMimeTypeMapHelper.h"
 
 namespace Elastos {
 namespace Droid {

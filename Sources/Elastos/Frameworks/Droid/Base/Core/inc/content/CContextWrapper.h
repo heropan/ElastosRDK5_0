@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__
 #define __ELASTOS_DROID_CONTENT_CCONTEXTWRAPPER_H__
 
-#include "_CContextWrapper.h"
+#include "_Elastos_Droid_Content_CContextWrapper.h"
 #include <ext/frameworkext.h>
 #include "ContextWrapper.h"
 

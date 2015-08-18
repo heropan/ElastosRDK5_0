@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCEHELPER_H__
 #define __ELASTOS_DROID_TEXT_CALTEREDCHARSEQUENCEHELPER_H__
 
-#include "_CAlteredCharSequenceHelper.h"
+#include "_Elastos_Droid_Text_CAlteredCharSequenceHelper.h"
 
 using Elastos::Core::ICharSequence;
 

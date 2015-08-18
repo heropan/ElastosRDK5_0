@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_MEDIA_CRINGTONEPLAYER_H__
 #define __ELASTOS_DROID_SYSTEMUI_MEDIA_CRINGTONEPLAYER_H__
 
-#include "_CRingtonePlayer.h"
+#include "_Elastos_Droid_SystemUI_Media_CRingtonePlayer.h"
 #include "SystemUI.h"
 #include <elastos/utility/etl/HashMap.h>
 

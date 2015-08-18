@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CSCALEGESTUREDETECTOR_H__
 #define __ELASTOS_DROID_VIEW_CSCALEGESTUREDETECTOR_H__
 
-#include "_CScaleGestureDetector.h"
+#include "_Elastos_Droid_View_CScaleGestureDetector.h"
 #include "Elastos.Droid.Core_server.h"
 #include "view/InputEventConsistencyVerifier.h"
 

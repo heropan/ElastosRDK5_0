@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CSERIALSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CSERIALSERVICE_H__
 
-#include "_CSerialService.h"
+#include "_Elastos_Droid_Server_CSerialService.h"
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IParcelFileDescriptor;

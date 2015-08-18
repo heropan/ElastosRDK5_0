@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CLOCALESPANHELPER_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CLOCALESPANHELPER_H__
 
-#include "_CLocaleSpanHelper.h"
+#include "_Elastos_Droid_Text_Style_CLocaleSpanHelper.h"
 
 
 namespace Elastos {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CTYPEFACE_H__
 #define __ELASTOS_DROID_GRAPHICS_CTYPEFACE_H__
 
-#include "_CTypeface.h"
+#include "_Elastos_Droid_Graphics_CTypeface.h"
 #include "graphics/Typeface.h"
 
 using namespace Elastos;

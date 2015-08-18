@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CWALLPAPERMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_CWALLPAPERMANAGERSERVICE_H__
 
-#include "_CWallpaperManagerService.h"
+#include "_Elastos_Droid_Server_CWallpaperManagerService.h"
 #include "os/FileObserver.h"
 #include "content/PackageMonitor.h"
 #include "util/JournaledFile.h"

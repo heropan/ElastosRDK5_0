@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_HTTP_CHTTPAUTHHEADER_H__
 #define __ELASTOS_DROID_NET_HTTP_CHTTPAUTHHEADER_H__
 
-#include "_CHttpAuthHeader.h"
+#include "_Elastos_Droid_Net_Http_CHttpAuthHeader.h"
 
 namespace Elastos {
 namespace Droid {

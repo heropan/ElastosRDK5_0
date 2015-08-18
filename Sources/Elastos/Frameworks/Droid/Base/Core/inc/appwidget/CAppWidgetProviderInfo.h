@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APPWIDGET_CAPPWIDGETPROVIDERINFO_H__
 #define __ELASTOS_DROID_APPWIDGET_CAPPWIDGETPROVIDERINFO_H__
 
-#include "_CAppWidgetProviderInfo.h"
+#include "_Elastos_Droid_AppWidget_CAppWidgetProviderInfo.h"
 
 using Elastos::Droid::Content::IComponentName;
 

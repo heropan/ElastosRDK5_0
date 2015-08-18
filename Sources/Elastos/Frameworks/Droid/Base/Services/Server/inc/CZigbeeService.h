@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SERVER_CZIGBEESERVICE_H__
 #define __ELASTOS_DROID_SERVER_CZIGBEESERVICE_H__
 
-#include "_CZigbeeService.h"
+#include "_Elastos_Droid_Server_CZigbeeService.h"
 #include "zigbee/ZigbeeTHSensor.h"
 #include "zigbee/ZigbeeGroup.h"
 #include <elastos/utility/etl/HashMap.h>

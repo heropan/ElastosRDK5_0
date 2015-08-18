@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEINFOLITE_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEINFOLITE_H__
 
-#include "_CPackageInfoLite.h"
+#include "_Elastos_Droid_Content_Pm_CPackageInfoLite.h"
 
 namespace Elastos {
 namespace Droid {

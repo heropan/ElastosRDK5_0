@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CSUMPATHEFFECT_H__
 #define __ELASTOS_DROID_GRAPHICS_CSUMPATHEFFECT_H__
 
-#include "_CSumPathEffect.h"
+#include "_Elastos_Droid_Graphics_CSumPathEffect.h"
 #include "graphics/PathEffect.h"
 
 namespace Elastos {

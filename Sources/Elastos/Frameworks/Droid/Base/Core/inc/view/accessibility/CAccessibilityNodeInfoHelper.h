@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFOHELPER_H__
 #define __ELASTOS_DROID_VIEW_ACCESSIBILITY_CACCESSIBILITYNODEINFOHELPER_H__
 
-#include "_CAccessibilityNodeInfoHelper.h"
+#include "_Elastos_Droid_View_Accessibility_CAccessibilityNodeInfoHelper.h"
 
 namespace Elastos {
 namespace Droid {

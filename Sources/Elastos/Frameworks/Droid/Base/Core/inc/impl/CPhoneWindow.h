@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__
 #define __ELASTOS_DROID_INTERNAL_POLICY_IMPL_CPHONEWINDOW_H__
 
-#include "_CPhoneWindow.h"
+#include "_Elastos_Droid_Internal_Policy_Impl_CPhoneWindow.h"
 #include "view/Window.h"
 #include "view/BaseSurfaceHolder.h"
 

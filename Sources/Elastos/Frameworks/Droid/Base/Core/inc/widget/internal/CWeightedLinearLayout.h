@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CWEIGHTEDLINEARLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CWEIGHTEDLINEARLAYOUT_H__
 
-#include "_CWeightedLinearLayout.h"
+#include "_Elastos_Droid_Widget_Internal_CWeightedLinearLayout.h"
 
 
 

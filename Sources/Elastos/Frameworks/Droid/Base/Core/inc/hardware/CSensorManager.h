@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CSENSORMANAGER_H__
 #define  __ELASTOS_DROID_HARDWARE_CSENSORMANAGER_H__
 
-#include "_CSensorManager.h"
+#include "_Elastos_Droid_Hardware_CSensorManager.h"
 #include "hardware/LegacySensorManager.h"
 #include "hardware/SensorManager.h"
 

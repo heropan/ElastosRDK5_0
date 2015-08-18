@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_CPENDINGINTENTRECORD_H__
 
-#include "_CPendingIntentRecord.h"
+#include "_Elastos_Droid_Server_Am_CPendingIntentRecord.h"
 #include <Elastos.Droid.Core.h>
 #include "am/CPendingIntentRecordKey.h"
 

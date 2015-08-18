@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CBITMAPDRAWABLE_H__
 
-#include "_CBitmapDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CBitmapDrawable.h"
 #include "graphics/drawable/BitmapDrawable.h"
 
 

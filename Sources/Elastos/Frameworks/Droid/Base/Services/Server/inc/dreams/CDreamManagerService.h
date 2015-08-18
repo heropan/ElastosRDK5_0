@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__
 #define __ELASTOS_DROID_SERVER_DREAMS_CDREAMMANAGERSERVICE_H__
 
-#include "_CDreamManagerService.h"
+#include "_Elastos_Droid_Server_Dreams_CDreamManagerService.h"
 #include "ext/frameworkext.h"
 #include "content/BroadcastReceiver.h"
 #include "dreams/DreamController.h"

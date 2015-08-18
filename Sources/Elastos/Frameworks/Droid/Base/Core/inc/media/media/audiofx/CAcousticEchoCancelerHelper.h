@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_AUDIOFX_CACOUSTICECHOCANCELERHELPER_H__
 
-#include "_CAcousticEchoCancelerHelper.h"
+#include "_Elastos_Droid_Media_Audiofx_CAcousticEchoCancelerHelper.h"
 #include <ext/frameworkext.h>
 
 namespace Elastos {

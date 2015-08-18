@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PINFO_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_CWIFIP2PINFO_H__
 
-#include "_CWifiP2pInfo.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_CWifiP2pInfo.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Droid::Net::Wifi::P2p::IWifiP2pInfo;

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CDISPATCHERSTATE_H__
 #define __ELASTOS_DROID_VIEW_CDISPATCHERSTATE_H__
 
-#include "_CDispatcherState.h"
+#include "_Elastos_Droid_View_CDispatcherState.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 

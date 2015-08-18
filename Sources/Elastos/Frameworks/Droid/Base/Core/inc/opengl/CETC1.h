@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CETC1_H__
 #define __ELASTOS_DROID_OPENGL_CETC1_H__
 
-#include "_CETC1.h"
+#include "_Elastos_Droid_Opengl_CETC1.h"
 #include <cmdef.h>
 
 using Elastos::IO::IBuffer;

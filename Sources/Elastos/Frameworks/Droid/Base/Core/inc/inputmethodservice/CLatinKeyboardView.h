@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_CLATINKEYBOARDVIEW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CLATINKEYBOARDVIEW_H__
 
-#include "_CLatinKeyboardView.h"
+#include "_Elastos_Droid_InputMethodService_CLatinKeyboardView.h"
 
 #include "inputmethodservice/KeyboardView.h"
 

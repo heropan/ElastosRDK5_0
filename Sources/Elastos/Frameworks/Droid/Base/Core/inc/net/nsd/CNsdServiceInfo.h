@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_NET_NSD_CNSDSERVICEINFO_H__
 #define __ELASTOS_DROID_NET_NSD_CNSDSERVICEINFO_H__
 
-#include "_CNsdServiceInfo.h"
+#include "_Elastos_Droid_Net_Nsd_CNsdServiceInfo.h"
 
 using Elastos::Net::IInetAddress;
 using Elastos::Net::EIID_IInetAddress;

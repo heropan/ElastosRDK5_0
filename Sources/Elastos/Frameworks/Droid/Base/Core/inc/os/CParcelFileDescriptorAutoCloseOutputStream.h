@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTORAUTOCLOSEOUTPUTSTREAM_H__
 #define __ELASTOS_DROID_OS_CPARCELFILEDESCRIPTORAUTOCLOSEOUTPUTSTREAM_H__
 
-#include "_CParcelFileDescriptorAutoCloseOutputStream.h"
+#include "_Elastos_Droid_Os_CParcelFileDescriptorAutoCloseOutputStream.h"
 #include "os/ParcelFileDescriptor.h"
 
 using Elastos::IO::IFileDescriptor;

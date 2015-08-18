@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CRINGTONEMANAGERHELPER_H__
 #define __ELASTOS_DROID_MEDIA_CRINGTONEMANAGERHELPER_H__
 
-#include "_CRingtoneManagerHelper.h"
+#include "_Elastos_Droid_Media_CRingtoneManagerHelper.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::Content::IContext;

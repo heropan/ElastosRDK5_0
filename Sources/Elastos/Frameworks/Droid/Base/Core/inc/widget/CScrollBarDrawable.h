@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSCROLLBARDRAWABLE_H__
 #define __ELASTOS_DROID_WIDGET_CSCROLLBARDRAWABLE_H__
 
-#include "_CScrollBarDrawable.h"
+#include "_Elastos_Droid_Widget_CScrollBarDrawable.h"
 
 #include "widget/ScrollBarDrawable.h"
 

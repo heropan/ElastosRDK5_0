@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_PPPOE_CPPPOESTATETRACKER_H__
 #define __ELASTOS_DROID_NET_PPPOE_CPPPOESTATETRACKER_H__
 
-#include "_CPppoeStateTracker.h"
+#include "_Elastos_Droid_Net_Pppoe_CPppoeStateTracker.h"
 #include "CPppoeMonitor.h"
 #include "net/DhcpInfoInternal.h"
 

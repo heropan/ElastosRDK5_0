@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTCOLOR_H__
 #define __ELASTOS_DROID_MEDIA_VIDEOEDITOR_CEFFECTCOLOR_H__
 
-#include "_CEffectColor.h"
+#include "_Elastos_Droid_Media_Videoeditor_CEffectColor.h"
 #include <ext/frameworkext.h>
 #include "media/media/videoeditor/Effect.h"
 

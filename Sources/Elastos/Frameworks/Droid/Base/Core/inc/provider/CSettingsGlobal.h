@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__
 #define __ELASTOS_DROID_PROVIDER_CSETTINGSGLOBAL_H__
 
-#include "_CSettingsGlobal.h"
+#include "_Elastos_Droid_Provider_CSettingsGlobal.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;

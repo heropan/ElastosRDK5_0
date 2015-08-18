@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CCOMPATIBILITYINFOHOLDER_H__
 #define __ELASTOS_DROID_VIEW_CCOMPATIBILITYINFOHOLDER_H__
 
-#include "_CCompatibilityInfoHolder.h"
+#include "_Elastos_Droid_View_CCompatibilityInfoHolder.h"
 
 using Elastos::Droid::Content::Res::ICompatibilityInfo;
 

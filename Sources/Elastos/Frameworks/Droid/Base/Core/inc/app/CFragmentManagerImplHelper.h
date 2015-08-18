@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPLHELPER_H__
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPLHELPER_H__
 
-#include "_CFragmentManagerImplHelper.h"
+#include "_Elastos_Droid_App_CFragmentManagerImplHelper.h"
 
 namespace Elastos {
 namespace Droid {

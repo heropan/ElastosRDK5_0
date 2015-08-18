@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPATH_H__
 #define __ELASTOS_DROID_GRAPHICS_CPATH_H__
 
-#include "_CPath.h"
+#include "_Elastos_Droid_Graphics_CPath.h"
 
 
 

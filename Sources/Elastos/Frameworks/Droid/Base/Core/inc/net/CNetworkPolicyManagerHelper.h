@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGERHELPER_H__
 #define __ELASTOS_DROID_NET_CNETWORKPOLICYMANAGERHELPER_H__
 
-#include "_CNetworkPolicyManagerHelper.h"
+#include "_Elastos_Droid_Net_CNetworkPolicyManagerHelper.h"
 
 using Elastos::Droid::Text::Format::ITime;
 using Elastos::Droid::Content::IContext;

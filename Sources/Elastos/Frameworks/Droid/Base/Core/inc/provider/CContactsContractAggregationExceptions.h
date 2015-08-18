@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTAGGREGATIONEXCEPTIONS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTAGGREGATIONEXCEPTIONS_H__
 
-#include "_CContactsContractAggregationExceptions.h"
+#include "_Elastos_Droid_Provider_CContactsContractAggregationExceptions.h"
 
 namespace Elastos {
 namespace Droid {

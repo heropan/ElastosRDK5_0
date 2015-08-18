@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CLINEARLAYOUT_H__
 #define __ELASTOS_DROID_WIDGET_CLINEARLAYOUT_H__
 
-#include "_CLinearLayout.h"
+#include "_Elastos_Droid_Widget_CLinearLayout.h"
 
 
 #include "widget/LinearLayout.h"

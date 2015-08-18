@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCONTACTSAGGREGATIONSUGGESTIONS_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCONTACTSAGGREGATIONSUGGESTIONS_H__
 
-#include "_CContactsContractContactsAggregationSuggestions.h"
+#include "_Elastos_Droid_Provider_CContactsContractContactsAggregationSuggestions.h"
 
 namespace Elastos {
 namespace Droid {

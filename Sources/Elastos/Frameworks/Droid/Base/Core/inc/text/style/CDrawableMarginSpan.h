@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__
 #define __ELASTOS_DROID_TEXT_STYLE_CDRAWABLEMARGINSPAN_H__
 
-#include "_CDrawableMarginSpan.h"
+#include "_Elastos_Droid_Text_Style_CDrawableMarginSpan.h"
 #include "text/style/DrawableMarginSpan.h"
 
 

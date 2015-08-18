@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CCOMPONENTNAMEHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CCOMPONENTNAMEHELPER_H__
 
-#include "_CComponentNameHelper.h"
+#include "_Elastos_Droid_Content_CComponentNameHelper.h"
 #include <ext/frameworkext.h>
 
 using namespace Elastos;

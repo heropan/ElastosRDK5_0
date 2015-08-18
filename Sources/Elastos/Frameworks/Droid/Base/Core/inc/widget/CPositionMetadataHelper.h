@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CPOSITIONMETADATAHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CPOSITIONMETADATAHELPER_H__
 
-#include "_CPositionMetadataHelper.h"
+#include "_Elastos_Droid_Widget_CPositionMetadataHelper.h"
 #include "widget/PositionMetadata.h"
 
 namespace Elastos{

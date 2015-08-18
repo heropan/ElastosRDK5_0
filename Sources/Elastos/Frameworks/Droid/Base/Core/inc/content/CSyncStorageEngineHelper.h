@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEHELPER_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINEHELPER_H__
 
-#include "_CSyncStorageEngineHelper.h"
+#include "_Elastos_Droid_Content_CSyncStorageEngineHelper.h"
 
 using Elastos::Droid::Os::IBundle;
 

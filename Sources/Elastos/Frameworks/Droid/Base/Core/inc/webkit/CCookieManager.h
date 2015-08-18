@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGER_H__
 #define __ELASTOS_DROID_WEBKIT_CCOOKIEMANAGER_H__
 
-#include "_CCookieManager.h"
+#include "_Elastos_Droid_Webkit_CCookieManager.h"
 #include "webkit/CookieManager.h"
 
 using Elastos::Droid::Net::IWebAddress;

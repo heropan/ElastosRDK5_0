@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TELEPHONY_CCELLSIGNALSTRENGTHLTE_H__
 #define __ELASTOS_DROID_TELEPHONY_CCELLSIGNALSTRENGTHLTE_H__
 
-#include "_CCellSignalStrengthLte.h"
+#include "_Elastos_Droid_Telephony_CCellSignalStrengthLte.h"
 #include "CellSignalStrength.h"
 
 namespace Elastos {

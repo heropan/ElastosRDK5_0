@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_INTERNAL_CACTIONBARVIEW_H__
 #define __ELASTOS_DROID_WIDGET_INTERNAL_CACTIONBARVIEW_H__
 
-#include "_CActionBarView.h"
+#include "_Elastos_Droid_Widget_Internal_CActionBarView.h"
 
 
 #include "widget/internal/ActionBarView.h"

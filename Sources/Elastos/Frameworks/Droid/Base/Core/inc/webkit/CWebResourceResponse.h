@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WEBKIT_CWEBRESOURCERESPONSE_H__
 #define __ELASTOS_DROID_WEBKIT_CWEBRESOURCERESPONSE_H__
 
-#include "_CWebResourceResponse.h"
+#include "_Elastos_Droid_Webkit_CWebResourceResponse.h"
 #include "webkit/WebResourceResponse.h"
 
 using Elastos::IO::IInputStream;

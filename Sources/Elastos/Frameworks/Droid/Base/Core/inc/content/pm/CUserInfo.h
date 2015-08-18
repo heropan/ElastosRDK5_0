@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CUSERINFO_H__
 
-#include "_CUserInfo.h"
+#include "_Elastos_Droid_Content_Pm_CUserInfo.h"
 
 using Elastos::Droid::Os::IUserHandle;
 

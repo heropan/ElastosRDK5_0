@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CPATHMEASURE_H__
 #define __ELASTOS_DROID_GRAPHICS_CPATHMEASURE_H__
 
-#include "_CPathMeasure.h"
+#include "_Elastos_Droid_Graphics_CPathMeasure.h"
 #include "graphics/CPath.h"
 #include "graphics/CMatrix.h"
 

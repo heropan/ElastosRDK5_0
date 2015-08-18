@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SYSTEMUI_RECENT_CSTATISBARTOUCHPROXY_H__
 #define __ELASTOS_DROID_SYSTEMUI_RECENT_CSTATISBARTOUCHPROXY_H__
 
-#include "_CStatusBarTouchProxy.h"
+#include "_Elastos_Droid_SystemUI_Recent_CStatusBarTouchProxy.h"
 
 
 

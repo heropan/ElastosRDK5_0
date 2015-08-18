@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MTP_CMTPSERVER_H__
 #define __ELASTOS_DROID_MTP_CMTPSERVER_H__
 
-#include "_CMtpServer.h"
+#include "_Elastos_Droid_Mtp_CMtpServer.h"
 
 namespace Elastos {
 namespace Droid {

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICERESPONSEHELPER_H__
 #define __ELASTOS_DROID_NET_WIFI_P2P_NSD_CWIFIP2PUPNPSERVICERESPONSEHELPER_H__
 
-#include "_CWifiP2pUpnpServiceResponseHelper.h"
+#include "_Elastos_Droid_Net_Wifi_P2p_Nsd_CWifiP2pUpnpServiceResponseHelper.h"
 
 using Elastos::Droid::Net::Wifi::P2p::IWifiP2pDevice;
 

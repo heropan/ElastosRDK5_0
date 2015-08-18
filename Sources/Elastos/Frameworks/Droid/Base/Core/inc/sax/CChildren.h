@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_SAX_CCHILDRENT_H__
 #define __ELASTOS_DROID_SAX_CCHILDRENT_H__
 
-#include "_CChildren.h"
+#include "_Elastos_Droid_Sax_CChildren.h"
 #include "sax/Element.h"
 
 namespace Elastos {

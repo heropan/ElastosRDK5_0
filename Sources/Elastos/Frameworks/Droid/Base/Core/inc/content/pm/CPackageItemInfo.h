@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__
 #define __ELASTOS_DROID_CONTENT_PM_CPACKAGEITEMINFO_H__
 
-#include "_CPackageItemInfo.h"
+#include "_Elastos_Droid_Content_Pm_CPackageItemInfo.h"
 #include "content/pm/PackageItemInfo.h"
 
 namespace Elastos {

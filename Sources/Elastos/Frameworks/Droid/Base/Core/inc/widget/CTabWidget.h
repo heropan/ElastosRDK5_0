@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CTABWIDGET_H__
 #define __ELASTOS_DROID_WIDGET_CTABWIDGET_H__
 
-#include "_CTabWidget.h"
+#include "_Elastos_Droid_Widget_CTabWidget.h"
 
 
 

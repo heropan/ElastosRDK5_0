@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCESAVEDSTATE_H__
 #define __ELASTOS_DROID_PREFERENCE_CEDITTEXTPREFERENCESAVEDSTATE_H__
 
-#include "_CEditTextPreferenceSavedState.h"
+#include "_Elastos_Droid_Preference_CEditTextPreferenceSavedState.h"
 #include "PreferenceBaseSavedState.h"
 
 namespace Elastos {

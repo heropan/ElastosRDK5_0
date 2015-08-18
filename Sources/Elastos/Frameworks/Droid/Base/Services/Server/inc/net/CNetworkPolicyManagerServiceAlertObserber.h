@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICEALERTOBSERBER_H__
 #define __ELASTOS_DROID_SERVER_NET_CNETWORKPOLICYMANAGERSERVICEALERTOBSERBER_H__
 
-#include "_CNetworkPolicyManagerServiceAlertObserber.h"
+#include "_Elastos_Droid_Server_Net_CNetworkPolicyManagerServiceAlertObserber.h"
 #include "net/CNetworkPolicyManagerService.h"
 #include "net/BaseNetworkObserver.h"
 

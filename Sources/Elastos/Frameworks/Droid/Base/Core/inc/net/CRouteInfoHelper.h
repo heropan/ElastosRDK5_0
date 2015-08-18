@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_NET_CROUTEINFOHELPER_H__
 #define __ELASTOS_DROID_NET_CROUTEINFOHELPER_H__
 
-#include "_CRouteInfoHelper.h"
+#include "_Elastos_Droid_Net_CRouteInfoHelper.h"
 
 using Elastos::Net::IInetAddress;
 

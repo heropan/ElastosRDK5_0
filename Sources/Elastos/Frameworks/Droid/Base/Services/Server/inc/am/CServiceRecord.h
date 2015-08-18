@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
 #define __ELASTOS_DROID_SERVER_AM_CSERVICERECORD_H__
 
-#include "_CServiceRecord.h"
+#include "_Elastos_Droid_Server_Am_CServiceRecord.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>

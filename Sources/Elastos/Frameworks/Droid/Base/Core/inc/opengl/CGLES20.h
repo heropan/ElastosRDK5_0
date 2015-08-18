@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_OPENGL_CGLES20_H__
 #define __ELASTOS_DROID_OPENGL_CGLES20_H__
 
-#include "_CGLES20.h"
+#include "_Elastos_Droid_Opengl_CGLES20.h"
 
 using Elastosx::Microedition::Khronos::Egl::IEGL10;
 typedef Elastosx::Microedition::Khronos::Egl::IEGLConfig XIEGLConfig;

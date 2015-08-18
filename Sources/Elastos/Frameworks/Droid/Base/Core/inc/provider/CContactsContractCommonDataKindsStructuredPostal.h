@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSSTRUCTUREDPOSTAL_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTCOMMONDATAKINDSSTRUCTUREDPOSTAL_H__
 
-#include "_CContactsContractCommonDataKindsStructuredPostal.h"
+#include "_Elastos_Droid_Provider_CContactsContractCommonDataKindsStructuredPostal.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Net::IUri;

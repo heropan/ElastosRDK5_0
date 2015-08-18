@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CSTACKVIEWLAYOUTPARAMS_H__
 #define __ELASTOS_DROID_WIDGET_CSTACKVIEWLAYOUTPARAMS_H__
 
-#include "_CStackViewLayoutParams.h"
+#include "_Elastos_Droid_Widget_CStackViewLayoutParams.h"
 #include "widget/StackViewLayoutParams.h"
 
 

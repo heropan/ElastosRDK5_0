@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_VIEW_CACCESSIBILITYINTERACTIONCONTROLLER_H__
 #define __ELASTOS_DROID_VIEW_CACCESSIBILITYINTERACTIONCONTROLLER_H__
 
-#include "_CAccessibilityInteractionController.h"
+#include "_Elastos_Droid_View_CAccessibilityInteractionController.h"
 #include "ext/frameworkext.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/List.h>

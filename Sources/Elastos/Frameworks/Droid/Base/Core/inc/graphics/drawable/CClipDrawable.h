@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__
 #define __ELASTOS_DROID_GRAPHICS_DRAWABLE_CCLIPDRAWABLE_H__
 
-#include "_CClipDrawable.h"
+#include "_Elastos_Droid_Graphics_Drawable_CClipDrawable.h"
 #include "graphics/drawable/ClipDrawable.h"
 
 

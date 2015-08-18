@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPL_H__
 #define __ELASTOS_DROID_APP_CFRAGMENTMANAGERIMPL_H__
 
-#include "_CFragmentManagerImpl.h"
+#include "_Elastos_Droid_App_CFragmentManagerImpl.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include "animation/AnimatorListenerAdapter.h"

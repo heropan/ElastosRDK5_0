@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_CTIME_H__
 
-#include "_CTime.h"
+#include "_Elastos_Droid_Text_Format_CTime.h"
 
 using Libcore::ICU::ILocale;
 using Elastos::Droid::Text::Format::ITime;

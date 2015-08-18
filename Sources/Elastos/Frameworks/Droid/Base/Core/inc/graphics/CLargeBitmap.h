@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__
 #define __ELASTOS_DROID_GRAPHICS_CLARGEBITMAP_H__
 
-#include "_CLargeBitmap.h"
+#include "_Elastos_Droid_Graphics_CLargeBitmap.h"
 
 namespace Elastos {
 namespace Droid {

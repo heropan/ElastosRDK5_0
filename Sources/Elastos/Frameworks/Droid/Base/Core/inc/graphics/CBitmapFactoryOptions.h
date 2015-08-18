@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__
 #define __ELASTOS_DROID_GRAPHICS_CBITMAPFACTORYOPTIONS_H__
 
-#include "_CBitmapFactoryOptions.h"
+#include "_Elastos_Droid_Graphics_CBitmapFactoryOptions.h"
 
 namespace Elastos {
 namespace Droid {

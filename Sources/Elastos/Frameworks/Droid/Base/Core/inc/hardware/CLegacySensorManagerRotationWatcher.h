@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_HARDWARE_CLEGACYSENSORMANAGERROTATIONWATCHER_H__
 #define __ELASTOS_DROID_HARDWARE_CLEGACYSENSORMANAGERROTATIONWATCHER_H__
 
-#include "_CLegacySensorManagerRotationWatcher.h"
+#include "_Elastos_Droid_Hardware_CLegacySensorManagerRotationWatcher.h"
 
 namespace Elastos {
 namespace Droid {

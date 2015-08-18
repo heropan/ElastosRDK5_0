@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_CEVENTLOGTAGSDESCRIPTION_H__
 #define __ELASTOS_DROID_UTILITY_CEVENTLOGTAGSDESCRIPTION_H__
 
-#include "_CEventLogTagsDescription.h"
+#include "_Elastos_Droid_Utility_CEventLogTagsDescription.h"
 
 namespace Elastos {
 namespace Droid {

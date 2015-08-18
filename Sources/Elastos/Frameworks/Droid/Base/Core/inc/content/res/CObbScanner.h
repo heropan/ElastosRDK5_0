@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_RES_COBBSCANNER_H__
 #define __ELASTOS_DROID_CONTENT_RES_COBBSCANNER_H__
 
-#include "_CObbScanner.h"
+#include "_Elastos_Droid_Content_Res_CObbScanner.h"
 
 namespace Elastos {
 namespace Droid {

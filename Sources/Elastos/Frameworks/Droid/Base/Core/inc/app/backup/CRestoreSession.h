@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_APP_BACKUP_CRESTORESESSION_H__
 #define __ELASTOS_DROID_APP_BACKUP_CRESTORESESSION_H__
 
-#include "_CRestoreSession.h"
+#include "_Elastos_Droid_App_Backup_CRestoreSession.h"
 #include "ext/frameworkext.h"
 
 using Elastos::Droid::App::Backup::IRestoreObserver;

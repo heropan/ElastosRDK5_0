@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROFILESYNCSTATE_H__
 #define __ELASTOS_DROID_PROVIDER_CCONTACTSCONTRACTPROFILESYNCSTATE_H__
 
-#include "_CContactsContractProfileSyncState.h"
+#include "_Elastos_Droid_Provider_CContactsContractProfileSyncState.h"
 
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Accounts::IAccount;

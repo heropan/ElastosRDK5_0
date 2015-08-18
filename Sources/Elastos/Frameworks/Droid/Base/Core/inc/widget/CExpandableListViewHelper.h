@@ -1,7 +1,7 @@
 #ifndef __ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEWHELPER_H__
 #define __ELASTOS_DROID_WIDGET_CEXPANDABLELISTVIEWHELPER_H__
 
-#include "_CExpandableListViewHelper.h"
+#include "_Elastos_Droid_Widget_CExpandableListViewHelper.h"
 #include "widget/ExpandableListView.h"
 
 namespace Elastos{

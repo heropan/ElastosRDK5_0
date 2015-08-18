@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_MEDIA_CAUDIOSERVICE_H__
 #define __ELASTOS_DROID_MEDIA_CAUDIOSERVICE_H__
 
-#include "_CAudioService.h"
+#include "_Elastos_Droid_Media_CAudioService.h"
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/Stack.h>

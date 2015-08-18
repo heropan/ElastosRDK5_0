@@ -1,4 +1,4 @@
-#include "_CActionBarViewHomeView.h"
+#include "_Elastos_Droid_Widget_Internal_CActionBarViewHomeView.h"
 #include "widget/internal/ActionBarViewHomeView.h"
 
 

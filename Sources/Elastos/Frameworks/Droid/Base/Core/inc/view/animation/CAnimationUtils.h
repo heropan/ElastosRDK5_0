@@ -3,7 +3,7 @@
 #define __ELASTOS_DROID_VIEW_ANIMATION_CANIMATIONUTILS_H__
 
 #include "AnimationUtils.h"
-#include "_Elastos_Droid_View_CAnimationUtils.h"
+#include "_Elastos_Droid_View_Animation_Elastos_Droid_View_CAnimationUtils.h"
 
 /**
  * Defines common utilities for working with animations.

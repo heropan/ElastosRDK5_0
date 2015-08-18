@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINESYNCHISTORYITEM_H__
 #define __ELASTOS_DROID_CONTENT_CSYNCSTORAGEENGINESYNCHISTORYITEM_H__
 
-#include "_CSyncStorageEngineSyncHistoryItem.h"
+#include "_Elastos_Droid_Content_CSyncStorageEngineSyncHistoryItem.h"
 
 namespace Elastos {
 namespace Droid {
