@@ -60,4 +60,5 @@ module
     //merge("../car/swextend.car");
     //merge("../car/telephony.car");
     merge("../car/sax.car");
+    merge("../car/keystore.car");
 }
