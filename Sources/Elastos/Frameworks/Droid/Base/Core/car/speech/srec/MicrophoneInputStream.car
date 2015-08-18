@@ -15,33 +15,6 @@ module
      */
     [deprecated]
     interface IMicrophoneInputStream {
-        //@Override
-        /*
-        Read(
-            [out] Int32* ret);
-        */
-
-        //@Override
-        /*
-        Read(
-            [in] ArrayOf<Byte>* b,
-            [out] Int32* ret);
-        */
-
-        //@Override
-        /*
-        Read(
-            [in] ArrayOf<Byte>* b,
-            [in] Int32 offset,
-            [in] Int32 length,
-            [out] Int32* ret);
-        */
-
-        /**
-         * Closes this stream.
-         */
-        //@Override
-        //Close();
     }
 
     }//namespace Srec

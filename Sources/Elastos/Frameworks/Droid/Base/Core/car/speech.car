@@ -12,6 +12,7 @@ module
     merge("speech/tts/TextToSpeechService.car");
     merge("speech/tts/TtsEngines.car");
     merge("speech/tts/UtteranceProgressListener.car");
+    merge("speech/tts/Voice.car");
     merge("speech/IRecognitionListener.car");
     merge("speech/IRecognitionService.car");
     merge("speech/RecognitionListener.car");
@@ -22,195 +23,195 @@ module
 
     //interface Elastos.Droid.Content.IContext;
 
-    namespace Elastos {
-    namespace Droid {
-    namespace Speech {
+    //  namespace Elastos {
+    // namespace Droid {
+    // namespace Speech {
 
-    namespace Srec {
+    // namespace Srec {
 
-    class CMicrophoneInputStream{
-        interface IMicrophoneInputStream;
+    // class CMicrophoneInputStream{
+    //     interface IMicrophoneInputStream;
 
-        /**
-         * MicrophoneInputStream constructor.
-         * @param sampleRate sample rate of the microphone, typically 11025 or 8000.
-         * @param fifoDepth depth of the real time fifo, measured in sampleRate clock ticks.
-         * This determines how long an application may delay before losing data.
-         */
-        //public
-        constructor(
-            [in] Int32 sampleRate,
-            [in] Int32 fifoDepth);
-    }
+    //     /**
+    //      * MicrophoneInputStream constructor.
+    //      * @param sampleRate sample rate of the microphone, typically 11025 or 8000.
+    //      * @param fifoDepth depth of the real time fifo, measured in sampleRate clock ticks.
+    //      * This determines how long an application may delay before losing data.
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] Int32 sampleRate,
+    //         [in] Int32 fifoDepth);
+    // }
 
-    class CRecognizer{
-        interface IRecognizer;
+    // class CRecognizer{
+    //     interface IRecognizer;
 
-        /**
-         * Create an instance of a SREC speech recognizer.
-         *
-         * @param configFile pathname of the baseline*.par configuration file,
-         * which in turn contains references to dictionaries, speech models,
-         * and other data needed to configure and operate the recognizer.
-         * A separate config file is needed for each audio sample rate.
-         * Two files, baseline11k.par and baseline8k.par, which correspond to
-         * 11025 and 8000 hz, are present in the directory indicated by
-         * {@link #getConfigDir}.
-         * @throws IOException
-         */
-        //public
-        constructor(
-            [in] String configFile);
-    }
+    //     /**
+    //      * Create an instance of a SREC speech recognizer.
+    //      *
+    //      * @param configFile pathname of the baseline*.par configuration file,
+    //      * which in turn contains references to dictionaries, speech models,
+    //      * and other data needed to configure and operate the recognizer.
+    //      * A separate config file is needed for each audio sample rate.
+    //      * Two files, baseline11k.par and baseline8k.par, which correspond to
+    //      * 11025 and 8000 hz, are present in the directory indicated by
+    //      * {@link #getConfigDir}.
+    //      * @throws IOException
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] String configFile);
+    // }
 
-    singleton class CRecognizerHelper{
-        interface IRecognizerHelper;
-    }
+    // singleton class CRecognizerHelper{
+    //     interface IRecognizerHelper;
+    // }
 
-    class CUlawEncoderInputStream{
-        interface IUlawEncoderInputStream;
+    // class CUlawEncoderInputStream{
+    //     interface IUlawEncoderInputStream;
 
-        /**
-         * Create an InputStream which takes 16 bit pcm data and produces ulaw data.
-         * @param in InputStream containing 16 bit pcm data.
-         * @param max pcm value corresponding to maximum ulaw value.
-         */
-        //public
-        constructor(
-            [in] Elastos.IO.IInputStream* inStream,
-            [in] Int32 max);
-    }
+    //     /**
+    //      * Create an InputStream which takes 16 bit pcm data and produces ulaw data.
+    //      * @param in InputStream containing 16 bit pcm data.
+    //      * @param max pcm value corresponding to maximum ulaw value.
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] Elastos.IO.IInputStream* inStream,
+    //         [in] Int32 max);
+    // }
 
-    singleton class CUlawEncoderInputStreamHelper{
-        interface IUlawEncoderInputStreamHelper;
-    }
+    // singleton class CUlawEncoderInputStreamHelper{
+    //     interface IUlawEncoderInputStreamHelper;
+    // }
 
-    class CWaveHeader{
-        interface IWaveHeader;
+    // class CWaveHeader{
+    //     interface IWaveHeader;
 
-        /**
-         * Construct a WaveHeader, with all fields defaulting to zero.
-         */
-        //public
-        constructor();
+    //     /**
+    //      * Construct a WaveHeader, with all fields defaulting to zero.
+    //      */
+    //     //public
+    //     constructor();
 
-        /**
-         * Construct a WaveHeader, with fields initialized.
-         * @param format format of audio data,
-         * one of {@link #FORMAT_PCM}, {@link #FORMAT_ULAW}, or {@link #FORMAT_ALAW}.
-         * @param numChannels 1 for mono, 2 for stereo.
-         * @param sampleRate typically 8000, 11025, 16000, 22050, or 44100 hz.
-         * @param bitsPerSample usually 16 for PCM, 8 for ULAW or 8 for ALAW.
-         * @param numBytes size of audio data after this header, in bytes.
-         */
-        //public
-        constructor(
-            [in] Int16 format,
-            [in] Int16 numChannels,
-            [in] Int32 sampleRate,
-            [in] Int16 bitsPerSample,
-            [in] Int32 numBytes);
-    }
+    //     /**
+    //      * Construct a WaveHeader, with fields initialized.
+    //      * @param format format of audio data,
+    //      * one of {@link #FORMAT_PCM}, {@link #FORMAT_ULAW}, or {@link #FORMAT_ALAW}.
+    //      * @param numChannels 1 for mono, 2 for stereo.
+    //      * @param sampleRate typically 8000, 11025, 16000, 22050, or 44100 hz.
+    //      * @param bitsPerSample usually 16 for PCM, 8 for ULAW or 8 for ALAW.
+    //      * @param numBytes size of audio data after this header, in bytes.
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] Int16 format,
+    //         [in] Int16 numChannels,
+    //         [in] Int32 sampleRate,
+    //         [in] Int16 bitsPerSample,
+    //         [in] Int32 numBytes);
+    // }
 
-    } //namespace Srec
+    // } //namespace Srec
 
-    namespace Tts {
+    // namespace Tts {
 
-    class CSynthesisRequest{
-        interface ISynthesisRequest;
+    // class CSynthesisRequest{
+    //     interface ISynthesisRequest;
 
-        //public
-        constructor(
-            [in] String text,
-            [in] Elastos.Droid.Os.IBundle* params);
-    }
+    //     //public
+    //     constructor(
+    //         [in] String text,
+    //         [in] Elastos.Droid.Os.IBundle* params);
+    // }
 
-    [local]
-    class CTextToSpeech{
-        interface ITextToSpeech;
+    // [local]
+    // class CTextToSpeech{
+    //     interface ITextToSpeech;
 
-        /**
-         * The constructor for the TextToSpeech class, using the default TTS engine.
-         * This will also initialize the associated TextToSpeech engine if it isn't already running.
-         *
-         * @param context
-         *            The context this instance is running in.
-         * @param listener
-         *            The {@link TextToSpeech.OnInitListener} that will be called when the
-         *            TextToSpeech engine has initialized.
-         */
-        //public
-        constructor(
-            [in] IContext* ctx,
-            [in] ITextToSpeechOnInitListener* listener);
+    //     /**
+    //      * The constructor for the TextToSpeech class, using the default TTS engine.
+    //      * This will also initialize the associated TextToSpeech engine if it isn't already running.
+    //      *
+    //      * @param context
+    //      *            The context this instance is running in.
+    //      * @param listener
+    //      *            The {@link TextToSpeech.OnInitListener} that will be called when the
+    //      *            TextToSpeech engine has initialized.
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] ITextToSpeechOnInitListener* listener);
 
-        /**
-         * The constructor for the TextToSpeech class, using the given TTS engine.
-         * This will also initialize the associated TextToSpeech engine if it isn't already running.
-         *
-         * @param context
-         *            The context this instance is running in.
-         * @param listener
-         *            The {@link TextToSpeech.OnInitListener} that will be called when the
-         *            TextToSpeech engine has initialized.
-         * @param engine Package name of the TTS engine to use.
-         */
-        //public
-        constructor(
-            [in] IContext* ctx,
-            [in] ITextToSpeechOnInitListener* listener,
-            [in] String engine);
+    //     /**
+    //      * The constructor for the TextToSpeech class, using the given TTS engine.
+    //      * This will also initialize the associated TextToSpeech engine if it isn't already running.
+    //      *
+    //      * @param context
+    //      *            The context this instance is running in.
+    //      * @param listener
+    //      *            The {@link TextToSpeech.OnInitListener} that will be called when the
+    //      *            TextToSpeech engine has initialized.
+    //      * @param engine Package name of the TTS engine to use.
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] ITextToSpeechOnInitListener* listener,
+    //         [in] String engine);
 
-        /**
-         * Used by the framework to instantiate TextToSpeech objects with a supplied
-         * package name, instead of using {@link android.content.Context#getPackageName()}
-         *
-         * @hide
-         */
-        //public
-        constructor(
-            [in] IContext* ctx,
-            [in] ITextToSpeechOnInitListener* listener,
-            [in] String engine,
-            [in] String packageName,
-            [in] Boolean useFallback);
-    }
+    //     /**
+    //      * Used by the framework to instantiate TextToSpeech objects with a supplied
+    //      * package name, instead of using {@link android.content.Context#getPackageName()}
+    //      *
+    //      * @hide
+    //      */
+    //     //public
+    //     constructor(
+    //         [in] IContext* ctx,
+    //         [in] ITextToSpeechOnInitListener* listener,
+    //         [in] String engine,
+    //         [in] String packageName,
+    //         [in] Boolean useFallback);
+    // }
 
-    [local]
-    class CTtsEngines{
-        interface ITtsEngines;
+    // [local]
+    // class CTtsEngines{
+    //     interface ITtsEngines;
 
-        //public
-        constructor(
-            [in] IContext* ctx);
-    }
+    //     //public
+    //     constructor(
+    //         [in] IContext* ctx);
+    // }
 
-    singleton class CTtsEnginesHelper{
-        interface ITtsEnginesHelper;
-    }
+    // singleton class CTtsEnginesHelper{
+    //     interface ITtsEnginesHelper;
+    // }
 
-    } //namespace Tts
+    // } //namespace Tts
 
-    class CRecognizerIntent{
-        interface IRecognizerIntent;
-    }
+    // class CRecognizerIntent{
+    //     interface IRecognizerIntent;
+    // }
 
-    /*
-    class CRecognizerResultsIntent{
-        interface IRecognizerResultsIntent;
-    }
-    */
+    // /*
+    // class CRecognizerResultsIntent{
+    //     interface IRecognizerResultsIntent;
+    // }
+    // */
 
-    class CSpeechRecognizer{
-        interface ISpeechRecognizer;
-    }
+    // class CSpeechRecognizer{
+    //     interface ISpeechRecognizer;
+    // }
 
-    singleton class CSpeechRecognizerHelper{
-        interface ISpeechRecognizerHelper;
-    }
+    // singleton class CSpeechRecognizerHelper{
+    //     interface ISpeechRecognizerHelper;
+    // }
 
-    } //namespace Speech
-    } //namespace Droid
-    } //namespace Elastos
+    // } //namespace Speech
+    // } //namespace Droid
+    // } //namespace Elastos
 
 }
