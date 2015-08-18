@@ -47,7 +47,7 @@ module
          * @param key The key to search for.
          * @return Returns the index of the key if it exists, else a negative integer.
          */
-        IndexOfKey(
+        GetIndexOfKey(
             [in] IInterface* key,
             [out] Int32* value);
 
@@ -56,7 +56,7 @@ module
          * @param index The desired index, must be between 0 and {@link #size()}-1.
          * @return Returns the key stored at the given index.
          */
-        KeyAt(
+        GetKeyAt(
             [in] Int32 index,
             [out] IInterface** outface);
 
@@ -65,7 +65,7 @@ module
          * @param index The desired index, must be between 0 and {@link #size()}-1.
          * @return Returns the value stored at the given index.
          */
-        ValueAt(
+        GetValueAt(
             [in] Int32 index,
             [out] IInterface** outface);
 

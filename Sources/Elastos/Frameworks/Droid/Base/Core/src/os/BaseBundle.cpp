@@ -10,6 +10,15 @@
 
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::CByte;
+using Elastos::Core::CChar32;
+using Elastos::Core::CBoolean;
+using Elastos::Core::CInteger16;
+using Elastos::Core::CInteger32;
+using Elastos::Core::CInteger64;
+using Elastos::Core::CFloat;
+using Elastos::Core::CDouble;
+using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
@@ -117,98 +126,111 @@ ECode BaseBundle::constructor(
 }
 
 ECode BaseBundle::constructor(
-    /* [in] */ IBaseBundle* b)
+    /* [in] */ IBaseBundle* bundle)
 {
-    // if (b.mParcelledData != null) {
-    //     if (b.mParcelledData == EMPTY_PARCEL) {
-    //         mParcelledData = EMPTY_PARCEL;
-    //     } else {
-    //         mParcelledData = Parcel.obtain();
-    //         mParcelledData.appendFrom(b.mParcelledData, 0, b.mParcelledData.dataSize());
-    //         mParcelledData.setDataPosition(0);
-    //     }
-    // } else {
-    //     mParcelledData = null;
-    // }
+    BaseBundle* b = (BaseBundle*)bundle;
+    if (b->mParcelledData != NULL) {
+        if (b->mParcelledData == EMPTY_PARCEL) {
+            mParcelledData = EMPTY_PARCEL;
+        }
+        else {
+            CParcel::New((IParcel**)&mParcelledData);
+            Int32 size;
+            b->mParcelledData->GetElementSize(&size);
+            mParcelledData->AppendFrom(b->mParcelledData, 0, size);
+            mParcelledData->SetDataPosition(0);
+        }
+    } else {
+        mParcelledData = NULL;
+    }
 
-    // if (b.mMap != null) {
-    //     mMap = new ArrayMap<String, Object>(b.mMap);
-    // } else {
-    //     mMap = null;
-    // }
+    if (b->mMap != NULL) {
+        //CArrayMap::New(b->mMap, (IArrayMap**)&mMap)
+    }
+    else {
+        mMap = NULL;
+    }
 
-    // mClassLoader = b.mClassLoader;
+    mClassLoader = b->mClassLoader;
     return NOERROR;
 }
 
 String BaseBundle::GetPairValue()
 {
-    // Unparcel();
-    // int size = mMap.size();
-    // if (size > 1) {
-    //     Log.w(TAG, "getPairValue() used on Bundle with multiple pairs.");
-    // }
-    // if (size == 0) {
-    //     return null;
-    // }
-    // Object o = mMap.valueAt(0);
-    // try {
-    //     return (String) o;
-    // } catch (ClassCastException e) {
-    //     typeWarning("getPairValue()", o, "String", e);
-    //     return null;
-    // }
-    return String("");
+    Unparcel();
+    Int32 size;
+    IMap::Probe(mMap)->GetSize(&size);
+    if (size > 1) {
+        Logger::W(TAG, "getPairValue() used on Bundle with multiple pairs.");
+    }
+    if (size == 0) {
+        return String(NULL);
+    }
+    AutoPtr<IInterface> obj;
+    mMap->GetValueAt(0, (IInterface**)&obj);
+
+    if (ICharSequence::Probe(obj) == NULL) {
+        TypeWarning(String("getPairValue()"), String("String"));
+        return String(NULL);
+    }
+
+    String str;
+    ICharSequence::Probe(obj)->ToString(&str);
+    return str;
 }
 
-void BaseBundle::SetClassLoader(
+ECode BaseBundle::SetClassLoader(
     /* [in] */ IClassLoader* loader)
 {
     mClassLoader = loader;
+    return NOERROR;
 }
 
-AutoPtr<IClassLoader> BaseBundle::GetClassLoader()
+ECode BaseBundle::GetClassLoader(
+    /* [out] */ IClassLoader** loader)
 {
-    return mClassLoader;
+    VALIDATE_NOT_NULL(loader)
+    *loader = mClassLoader;
+    REFCOUNT_ADD(*loader)
+    return NOERROR;
 }
 
 void BaseBundle::Unparcel()
 {
-    // if (mParcelledData == null) {
-    //     if (DEBUG) Log.d(TAG, "Unparcel " + Integer.toHexString(System.identityHashCode(this))
-    //             + ": no parcelled data");
-    //     return;
-    // }
+    if (mParcelledData == NULL) {
+        if (DEBUG) Logger::D(TAG, "Unparcel %p : no parcelled data", this);
+        return;
+    }
 
-    // if (mParcelledData == EMPTY_PARCEL) {
-    //     if (DEBUG) Log.d(TAG, "Unparcel " + Integer.toHexString(System.identityHashCode(this))
-    //             + ": empty");
-    //     if (mMap == null) {
-    //         mMap = new ArrayMap<String, Object>(1);
-    //     } else {
-    //         mMap.erase();
-    //     }
-    //     mParcelledData = null;
-    //     return;
-    // }
+    if (mParcelledData == EMPTY_PARCEL) {
+        if (DEBUG) Logger::D(TAG, "Unparcel %p : empty", this);
 
-    // int N = mParcelledData.readInt();
-    // if (DEBUG) Log.d(TAG, "Unparcel " + Integer.toHexString(System.identityHashCode(this))
-    //         + ": reading " + N + " maps");
-    // if (N < 0) {
-    //     return;
-    // }
-    // if (mMap == null) {
-    //     mMap = new ArrayMap<String, Object>(N);
-    // } else {
-    //     mMap.erase();
-    //     mMap.ensureCapacity(N);
-    // }
-    // mParcelledData.readArrayMapInternal(mMap, N, mClassLoader);
-    // mParcelledData.recycle();
-    // mParcelledData = null;
-    // if (DEBUG) Log.d(TAG, "Unparcel " + Integer.toHexString(System.identityHashCode(this))
-    //         + " final map: " + mMap);
+        if (mMap == NULL) {
+            //CArrayMap::New(1, (IArrayMap**)&mMap)
+        }
+        else {
+            mMap->Erase();
+        }
+        mParcelledData = NULL;
+        return;
+    }
+
+    Int32 N;
+    mParcelledData->ReadInt32(&N);
+    if (DEBUG) Logger::D(TAG, "Unparcel %p: reading %d maps.", this, N);
+    if (N < 0) {
+        return;
+    }
+    if (mMap == NULL) {
+        //CArrayMap::New(N, (IArrayMap**)&mMap)
+    } else {
+        mMap->Erase();
+        mMap->EnsureCapacity(N);
+    }
+    ReadArrayMapInternal(mParcelledData, mMap, N, mClassLoader);
+    //mParcelledData->Recycle();
+    mParcelledData = NULL;
+    if (DEBUG) Logger::D(TAG, "Unparcel %p: final map: %p", this, mMap.Get());
 }
 
 Boolean BaseBundle::IsParceled()
@@ -239,7 +261,7 @@ ECode BaseBundle::Clear()
 }
 
 ECode BaseBundle::ContainsKey(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -249,7 +271,7 @@ ECode BaseBundle::ContainsKey(
 }
 
 ECode BaseBundle::Get(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IInterface** obj)
 {
     VALIDATE_NOT_NULL(obj)
@@ -259,7 +281,7 @@ ECode BaseBundle::Get(
 }
 
 ECode BaseBundle::Remove(
-    /* [in] */ String key)
+    /* [in] */ const String& key)
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
@@ -291,7 +313,7 @@ ECode BaseBundle::GetKeySet(
 }
 
 ECode BaseBundle::PutBoolean(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Boolean value)
 {
     Unparcel();
@@ -301,7 +323,7 @@ ECode BaseBundle::PutBoolean(
 }
 
 ECode BaseBundle::PutByte(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Byte value)
 {
     Unparcel();
@@ -311,7 +333,7 @@ ECode BaseBundle::PutByte(
 }
 
 ECode BaseBundle::PutChar(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Char32 value)
 {
     Unparcel();
@@ -321,7 +343,7 @@ ECode BaseBundle::PutChar(
 }
 
 ECode BaseBundle::PutInt16(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int16 value)
 {
     Unparcel();
@@ -331,7 +353,7 @@ ECode BaseBundle::PutInt16(
 }
 
 ECode BaseBundle::PutInt32(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int32 value)
 {
     Unparcel();
@@ -341,7 +363,7 @@ ECode BaseBundle::PutInt32(
 }
 
 ECode BaseBundle::PutInt64(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int64 value)
 {
     Unparcel();
@@ -351,7 +373,7 @@ ECode BaseBundle::PutInt64(
 }
 
 ECode BaseBundle::PutFloat(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Float value)
 {
     Unparcel();
@@ -361,7 +383,7 @@ ECode BaseBundle::PutFloat(
 }
 
 ECode BaseBundle::PutDouble(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Double value)
 {
     Unparcel();
@@ -370,8 +392,8 @@ ECode BaseBundle::PutDouble(
     return IMap::Probe(mMap)->Put(keyObj.Get(), valueObj.Get());}
 
 ECode BaseBundle::PutString(
-    /* [in] */ String key,
-    /* [in] */ String value)
+    /* [in] */ const String& key,
+    /* [in] */ const String& value)
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
@@ -380,7 +402,7 @@ ECode BaseBundle::PutString(
 }
 
 ECode BaseBundle::PutCharSequence(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ICharSequence* value)
 {
     Unparcel();
@@ -389,7 +411,7 @@ ECode BaseBundle::PutCharSequence(
 }
 
 ECode BaseBundle::PutIntegerArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ IArrayList* value)
 {
     Unparcel();
@@ -398,7 +420,7 @@ ECode BaseBundle::PutIntegerArrayList(
 }
 
 ECode BaseBundle::PutStringArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ IArrayList* value)
 {
     Unparcel();
@@ -407,7 +429,7 @@ ECode BaseBundle::PutStringArrayList(
 }
 
 ECode BaseBundle::PutCharSequenceArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ IArrayList* value)
 {
     Unparcel();
@@ -416,7 +438,7 @@ ECode BaseBundle::PutCharSequenceArrayList(
 }
 
 ECode BaseBundle::PutSerializable(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ISerializable* value)
 {
     Unparcel();
@@ -425,7 +447,7 @@ ECode BaseBundle::PutSerializable(
 }
 
 ECode BaseBundle::PutBooleanArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Boolean>* value)
 {
     Unparcel();
@@ -435,7 +457,7 @@ ECode BaseBundle::PutBooleanArray(
 }
 
 ECode BaseBundle::PutByteArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Byte>* value)
 {
     Unparcel();
@@ -445,7 +467,7 @@ ECode BaseBundle::PutByteArray(
 }
 
 ECode BaseBundle::PutCharArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Char32>* value)
 {
     Unparcel();
@@ -455,7 +477,7 @@ ECode BaseBundle::PutCharArray(
 }
 
 ECode BaseBundle::PutInt16Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Int16>* value)
 {
     Unparcel();
@@ -465,7 +487,7 @@ ECode BaseBundle::PutInt16Array(
 }
 
 ECode BaseBundle::PutInt32Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Int32>* value)
 {
     Unparcel();
@@ -475,7 +497,7 @@ ECode BaseBundle::PutInt32Array(
 }
 
 ECode BaseBundle::PutInt64Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Int64>* value)
 {
     Unparcel();
@@ -485,7 +507,7 @@ ECode BaseBundle::PutInt64Array(
 }
 
 ECode BaseBundle::PutFloatArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Float>* value)
 {
     Unparcel();
@@ -495,7 +517,7 @@ ECode BaseBundle::PutFloatArray(
 }
 
 ECode BaseBundle::PutDoubleArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<Double>* value)
 {
     Unparcel();
@@ -505,7 +527,7 @@ ECode BaseBundle::PutDoubleArray(
 }
 
 ECode BaseBundle::PutStringArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<String>* value)
 {
     Unparcel();
@@ -515,26 +537,19 @@ ECode BaseBundle::PutStringArray(
 }
 
 ECode BaseBundle::PutCharSequenceArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ArrayOf<ICharSequence*>* value)
 {
     Unparcel();
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
-    AutoPtr<IArrayOf> arrObj;
-    if (value) {
-        Int32 length = value->GetLength();
-        CArrayOf::New(length, (IArrayOf**)&arrObj);
-        for (Int32 i = 0; i < length; ++i) {
-            arrObj->Set(i, (*value)[i]);
-        }
-    }
+    AutoPtr<IArrayOf> arrObj = CoreUtils::Convert(value);
 
     return IMap::Probe(mMap)->Put(keyObj.Get(), arrObj.Get());
 }
 
 void BaseBundle::TypeWarning(
-    /* [in] */ String key,
-    /* [in] */ String className)
+    /* [in] */ const String& key,
+    /* [in] */ const String& className)
 {
     StringBuilder sb("Error: Attempt to cast generated internal exception, Key: ");
     sb.Append(key);
@@ -544,7 +559,7 @@ void BaseBundle::TypeWarning(
 }
 
 AutoPtr<IInterface> BaseBundle::GetValue(
-    /* [in] */ String key)
+    /* [in] */ const String& key)
 {
     AutoPtr<ICharSequence> keyObj = CoreUtils::Convert(key);
     AutoPtr<IInterface> obj;
@@ -553,14 +568,14 @@ AutoPtr<IInterface> BaseBundle::GetValue(
 }
 
 ECode BaseBundle::GetBoolean(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Boolean* value)
 {
     return GetBoolean(key, FALSE, value);
 }
 
 ECode BaseBundle::GetBoolean(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Boolean defaultValue,
     /* [out] */ Boolean* value)
 {
@@ -581,14 +596,14 @@ ECode BaseBundle::GetBoolean(
 }
 
 ECode BaseBundle::GetByte(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Byte* value)
 {
     return GetByte(key, (Byte)0, value);
 }
 
 ECode BaseBundle::GetByte(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Byte defaultValue,
     /* [out] */ Byte* value)
 {
@@ -609,14 +624,14 @@ ECode BaseBundle::GetByte(
 }
 
 ECode BaseBundle::GetChar(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Char32* value)
 {
     return GetChar(key, (Char32)0, value);
 }
 
 ECode BaseBundle::GetChar(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Char32 defaultValue,
     /* [out] */ Char32* value)
 {
@@ -637,14 +652,14 @@ ECode BaseBundle::GetChar(
 }
 
 ECode BaseBundle::GetInt16(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Int16* value)
 {
     return GetInt16(key, 0, value);
 }
 
 ECode BaseBundle::GetInt16(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int16 defaultValue,
     /* [out] */ Int16* value)
 {
@@ -665,14 +680,14 @@ ECode BaseBundle::GetInt16(
 }
 
 ECode BaseBundle::GetInt32(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Int32* value)
 {
     return GetInt32(key, 0, value);
 }
 
 ECode BaseBundle::GetInt32(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int32 defaultValue,
     /* [out] */ Int32* value)
 {
@@ -693,14 +708,14 @@ ECode BaseBundle::GetInt32(
 }
 
 ECode BaseBundle::GetInt64(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Int64* value)
 {
     return GetInt64(key, 0, value);
 }
 
 ECode BaseBundle::GetInt64(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Int64 defaultValue,
     /* [out] */ Int64* value)
 {
@@ -721,14 +736,14 @@ ECode BaseBundle::GetInt64(
 }
 
 ECode BaseBundle::GetFloat(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Float* value)
 {
     return GetFloat(key, 0, value);
 }
 
 ECode BaseBundle::GetFloat(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Float defaultValue,
     /* [out] */ Float* value)
 {
@@ -749,14 +764,14 @@ ECode BaseBundle::GetFloat(
 }
 
 ECode BaseBundle::GetDouble(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ Double* value)
 {
     return GetDouble(key, 0, value);
 }
 
 ECode BaseBundle::GetDouble(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ Double defaultValue,
     /* [out] */ Double* value)
 {
@@ -777,7 +792,7 @@ ECode BaseBundle::GetDouble(
 }
 
 ECode BaseBundle::GetString(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -797,8 +812,8 @@ ECode BaseBundle::GetString(
 }
 
 ECode BaseBundle::GetString(
-    /* [in] */ String key,
-    /* [in] */ String defaultValue,
+    /* [in] */ const String& key,
+    /* [in] */ const String& defaultValue,
     /* [out] */ String* value)
 {
     VALIDATE_NOT_NULL(value)
@@ -818,7 +833,7 @@ ECode BaseBundle::GetString(
 }
 
 ECode BaseBundle::GetCharSequence(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ ICharSequence** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -841,7 +856,7 @@ ECode BaseBundle::GetCharSequence(
 }
 
 ECode BaseBundle::GetCharSequence(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [in] */ ICharSequence* defaultValue,
     /* [out] */ ICharSequence** value)
 {
@@ -868,7 +883,7 @@ ECode BaseBundle::GetCharSequence(
 }
 
 ECode BaseBundle::GetSerializable(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ ISerializable** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -891,7 +906,7 @@ ECode BaseBundle::GetSerializable(
 }
 
 ECode BaseBundle::GetIntegerArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IArrayList** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -914,7 +929,7 @@ ECode BaseBundle::GetIntegerArrayList(
 }
 
 ECode BaseBundle::GetStringArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IArrayList** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -937,7 +952,7 @@ ECode BaseBundle::GetStringArrayList(
 }
 
 ECode BaseBundle::GetCharSequenceArrayList(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out] */ IArrayList** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -960,8 +975,8 @@ ECode BaseBundle::GetCharSequenceArrayList(
 }
 
 AutoPtr<IArrayOf> BaseBundle::GetIArrayOf(
-    /* [in] */ String key,
-    /* [in] */ String className)
+    /* [in] */ const String& key,
+    /* [in] */ const String& className)
 {
     AutoPtr<IInterface> obj = GetValue(key);
     if (obj == NULL) {
@@ -978,7 +993,7 @@ AutoPtr<IArrayOf> BaseBundle::GetIArrayOf(
 }
 
 ECode BaseBundle::GetBooleanArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Boolean>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1008,7 +1023,7 @@ ECode BaseBundle::GetBooleanArray(
 }
 
 ECode BaseBundle::GetByteArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Byte>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1038,7 +1053,7 @@ ECode BaseBundle::GetByteArray(
 }
 
 ECode BaseBundle::GetInt16Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Int16>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1068,7 +1083,7 @@ ECode BaseBundle::GetInt16Array(
 }
 
 ECode BaseBundle::GetCharArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Char32>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1098,7 +1113,7 @@ ECode BaseBundle::GetCharArray(
 }
 
 ECode BaseBundle::GetInt32Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Int32>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1128,7 +1143,7 @@ ECode BaseBundle::GetInt32Array(
 }
 
 ECode BaseBundle::GetInt64Array(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Int64>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1158,7 +1173,7 @@ ECode BaseBundle::GetInt64Array(
 }
 
 ECode BaseBundle::GetFloatArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Float>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1188,7 +1203,7 @@ ECode BaseBundle::GetFloatArray(
 }
 
 ECode BaseBundle::GetDoubleArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<Double>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1218,7 +1233,7 @@ ECode BaseBundle::GetDoubleArray(
 }
 
 ECode BaseBundle::GetStringArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<String>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1248,7 +1263,7 @@ ECode BaseBundle::GetStringArray(
 }
 
 ECode BaseBundle::GetCharSequenceArray(
-    /* [in] */ String key,
+    /* [in] */ const String& key,
     /* [out, callee] */ ArrayOf<ICharSequence*>** value)
 {
     VALIDATE_NOT_NULL(value)
@@ -1356,9 +1371,6 @@ ECode BaseBundle::WriteValue(
         Int32 size = 0;
         array->GetLength(&size);
         dest->WriteInt32(VAL_ARRAYOF);
-        // InterfaceID iid;
-        // array->GetTypeId(&iid);
-        // dest->WriteEMuid(iid);
         dest->WriteInt32(size);
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> elem;
@@ -1434,6 +1446,167 @@ ECode BaseBundle::WriteValue(
     return NOERROR;
 }
 
+AutoPtr<IInterface> BaseBundle::ReadValue(
+    /* [in] */ IParcel* source)
+{
+    Int32 type;
+    source->ReadInt32(&type);
+
+    switch (type) {
+    case VAL_NULL:
+        return NULL;
+    // case VAL_STRING:
+    //     return readString();
+    case VAL_INTEGER32: {
+        Int32 v;
+        source->ReadInt32(&v);
+        AutoPtr<IInteger32> obj;
+        CInteger32::New(v, (IInteger32**)&obj);
+        return obj;
+    }
+    // case VAL_MAP:
+    //     return readHashMap(loader);
+
+    case VAL_PARCELABLE:{
+        AutoPtr<IParcelable> obj;
+        source->ReadInterfacePtr((Handle32*)&obj);
+        if(obj == NULL){
+            Logger::E(TAG, "Read IParcelable got null");
+        }
+        return obj;
+    }
+    case VAL_INTEGER16: {
+        Int32 v;
+        source->ReadInt32(&v);
+        Int16 sv = (Int16)v;
+        AutoPtr<IInteger16> obj;
+        CInteger16::New(sv, (IInteger16**)&obj);
+        return obj;
+    }
+    case VAL_INTEGER64: {
+        Int64 v;
+        source->ReadInt64(&v);
+        AutoPtr<IInteger64> obj;
+        CInteger64::New(v, (IInteger64**)&obj);
+        return obj;
+    }
+    case VAL_FLOAT: {
+        Float v;
+        source->ReadFloat(&v);
+        AutoPtr<IFloat> obj;
+        CFloat::New(v, (IFloat**)&obj);
+        return obj;
+    }
+    case VAL_DOUBLE: {
+        Double v;
+        source->ReadDouble(&v);
+        AutoPtr<IDouble> obj;
+        CDouble::New(v, (IDouble**)&obj);
+        return obj;
+    }
+    case VAL_BOOLEAN: {
+        Int32 v;
+        source->ReadInt32(&v);
+        AutoPtr<IBoolean> obj;
+        CBoolean::New(v == 1, (IBoolean**)&obj);
+        return obj;
+    }
+    case VAL_CHARSEQUENCE: {
+        String v;
+        source->ReadString(&v);
+        AutoPtr<ICharSequence> obj;
+        CString::New(v, (ICharSequence**)&obj);
+        return obj;
+    }
+    // case VAL_LIST:
+    //     return readArrayList(loader);
+    // case VAL_BOOLEANARRAY:
+    //     return createBooleanArray();
+    // case VAL_BYTEARRAY:
+    //     return createByteArray();
+    // case VAL_STRINGARRAY:
+    //     return readStringArray();
+    // case VAL_CHARSEQUENCEARRAY:
+    //     return readCharSequenceArray();
+    case VAL_IBINDER: {
+        AutoPtr<IBinder> obj;
+        source->ReadInterfacePtr((Handle32*)&obj);
+        if(obj == NULL){
+            Logger::E(TAG, "Read IBinder got null");
+        }
+        return obj;
+    }
+    // case VAL_OBJECTARRAY:
+    //     return readArray(loader);
+    // case VAL_INTARRAY:
+    //     return createIntArray();
+    // case VAL_LONGARRAY:
+    //     return createLongArray();
+    case VAL_BYTE: {
+        Int32 v;
+        source->ReadInt32(&v);
+        AutoPtr<IByte> obj;
+        CByte::New((Byte)v, (IByte**)&obj);
+        return obj;
+    }
+    // case VAL_SERIALIZABLE:
+    //     return readSerializable();
+    // case VAL_PARCELABLEARRAY:
+    //     return readParcelableArray(loader);
+    case VAL_ARRAYOF: {
+        Int32 size = 0;
+        source->ReadInt32(&size);
+        AutoPtr<IArrayOf> array;
+        CArrayOf::New(size, (IArrayOf**)&array);
+        for (Int32 i = 0; i < size; ++i) {
+            AutoPtr<IInterface> elem = ReadValue(source);
+            array->Set(i, elem);
+        }
+        return array;
+    }
+    // case VAL_SPARSEARRAY:
+    //     return readSparseArray(loader);
+    // case VAL_SPARSEBOOLEANARRAY:
+    //     return readSparseBooleanArray();
+    case VAL_BUNDLE:{
+        AutoPtr<IParcelable> obj;
+        source->ReadInterfacePtr((Handle32*)&obj);
+        if(obj == NULL){
+            Logger::E(TAG, "Read IBundle got null");
+        }
+        return obj;
+    }
+    default:
+        Logger::D(TAG, "- Unmarshalling unknown type code %d", type);
+        // int off = dataPosition() - 4;
+        // throw new RuntimeException(
+        //     "Parcel " + this + ": Unmarshalling unknown type code " + type + " at offset " + off);
+        assert(0);
+    }
+    return NULL;
+}
+
+ECode BaseBundle::ReadArrayMapInternal(
+    /* [in] */ IParcel* source,
+    /* [in] */ IArrayMap* arrayMap,
+    /* [in] */ Int32 size,
+    /* [in] */ IClassLoader* classLoader)
+{
+    String key;
+    AutoPtr<ICharSequence> keyObj;
+    AutoPtr<IInterface> valueObj;
+    AutoPtr<IMap> map = IMap::Probe(arrayMap);
+    while (size > 0) {
+        source->ReadString(&key);
+        keyObj = CoreUtils::Convert(key);
+        valueObj = ReadValue(source);
+
+        map->Put(keyObj.Get(), valueObj.Get());
+        size--;
+    }
+    return NOERROR;
+}
+
 ECode BaseBundle::WriteArrayMapInternal(
     /* [in] */ IParcel* dest,
     /* [in] */ IArrayMap* map)
@@ -1470,8 +1643,7 @@ ECode BaseBundle::WriteArrayMapInternal(
 }
 
 ECode BaseBundle::WriteToParcelInner(
-    /* [in] */ IParcel* dest,
-    /* [in] */ Int32 flags)
+    /* [in] */ IParcel* dest)
 {
     if (mParcelledData != NULL) {
         if (mParcelledData == EMPTY_PARCEL) {
