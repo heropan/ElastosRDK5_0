@@ -7,7 +7,14 @@ module
     namespace Security {
     namespace Asn1 {
 
-    interface IASN1Sequence extends IASN1TypeCollection {}
+    /**
+     * @Involve
+     * interface IASN1TypeCollection
+     * interface IASN1Type;
+     * interface IASN1Constants;
+     */
+    interface IASN1Sequence {
+    }
 
     } // namespace Asn1
     } // namespace Security

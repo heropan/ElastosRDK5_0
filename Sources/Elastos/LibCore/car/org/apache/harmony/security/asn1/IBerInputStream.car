@@ -5,7 +5,7 @@ module
     interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Set;
     interface Org.Apache.Harmony.Security.Asn1.IASN1SetOf;
-    interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1StringType;
 
     namespace Org {
     namespace Apache {
@@ -15,38 +15,6 @@ module
 
     [deprecated]
     interface IBerInputStream {
-        /** Current decoded tag */
-        SetTag(
-            [in] Int32 tag);
-
-        GetTag(
-            [out] Int32* tag);
-
-        GetLength(
-            [out] Int32* length);
-
-        SetLength(
-            [in] Int32 length);
-
-        /** Current decoded content */
-        SetContent(
-            [in] IInterface* content);
-
-        GetContent(
-            [out] IInterface** content);
-
-        GetTagOffSet(
-            [out] Int32* tagOffset);
-
-        SetTagOffSet(
-            [in] Int32 tagOffset);
-
-        GetContentOffset(
-            [out] Int32* contentOffset);
-
-        SetContentOffset(
-            [in] Int32 contentOffset);
-
         /**
          * Resets this stream to initial state.
          *
@@ -69,7 +37,7 @@ module
         /**
          * Decodes ASN.1 bitstring type
          */
-         ReadBitString();
+        ReadBitString();
 
         /**
         * Decodes ASN.1 Enumerated type
@@ -80,20 +48,6 @@ module
          * Decodes ASN.1 boolean type
          */
         ReadBoolean();
-
-        /** The last choice index */
-        SetChoiceIndex(
-            [in] Int32 choiceIndex);
-
-        GetChoiceIndex(
-            [out] Int32* choiceIndex);
-
-        /** Keeps last decoded: year, month, day, hour, minute, second, millisecond */
-        SetTimes(
-            [in] ArrayOf<Int32>* times);
-
-        GetTimes(
-            [out, callee] ArrayOf<Int32>* times);
 
         /**
          * Decodes ASN.1 GeneralizedTime type
@@ -118,12 +72,6 @@ module
          * Decodes ASN.1 Octetstring type
          */
         ReadOctetString();
-
-        SetOidElement(
-            [in] Int32 oidElement);
-
-        GetOidElement(
-            [out] Int32* oidElement);
 
         /**
          * Decodes ASN.1 ObjectIdentifier type
@@ -160,7 +108,7 @@ module
          * @throws IOException if an I/O error occurs or the end of the stream is reached
          */
         ReadString(
-            [in] IASN1Type* type);
+            [in] IASN1StringType* type);
 
         /**
          * Returns encoded array.
@@ -175,6 +123,9 @@ module
          */
         GetBuffer(
             [out, callee] ArrayOf<Byte>* buffer);
+
+        GetLength(
+            [out] Int32* length);
 
         /**
          * Returns the current offset
@@ -218,12 +169,60 @@ module
         Get(
             [in] IInterface* key,
             [out] IInterface** entry);
+
+//        /** Current decoded tag */
+//        SetTag(
+//            [in] Int32 tag);
+//
+//        GetTag(
+//            [out] Int32* tag);
+//
+//        SetLength(
+//            [in] Int32 length);
+//
+//        /** Current decoded content */
+//        SetContent(
+//            [in] IInterface* content);
+//
+//        GetContent(
+//            [out] IInterface** content);
+//
+//        GetTagOffSet(
+//            [out] Int32* tagOffset);
+//
+//        SetTagOffSet(
+//            [in] Int32 tagOffset);
+//
+//        GetContentOffset(
+//            [out] Int32* contentOffset);
+//
+//        SetContentOffset(
+//            [in] Int32 contentOffset);
+//
+//        /** The last choice index */
+//        SetChoiceIndex(
+//            [in] Int32 choiceIndex);
+//
+//        GetChoiceIndex(
+//            [out] Int32* choiceIndex);
+//
+//        /** Keeps last decoded: year, month, day, hour, minute, second, millisecond */
+//        SetTimes(
+//            [in] ArrayOf<Int32>* times);
+//
+//        GetTimes(
+//            [out, callee] ArrayOf<Int32>* times);
+//
+//        SetOidElement(
+//            [in] Int32 oidElement);
+//
+//        GetOidElement(
+//            [out] Int32* oidElement);
     }
 
-    [deprecated]
     interface IBerInputStreamHelper {
         GetLength(
-            [in] ArrayOf<Byte>* encoding,
+            [in] ArrayOf<Byte> encoding,
             [out] Int32* length);
     }
 

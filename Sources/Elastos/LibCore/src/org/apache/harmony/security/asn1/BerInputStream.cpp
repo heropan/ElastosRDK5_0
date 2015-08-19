@@ -1,6 +1,5 @@
 
 #include "BerInputStream.h"
-#include <cmdef.h>
 
 namespace Org {
 namespace Apache {

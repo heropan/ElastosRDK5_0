@@ -7,27 +7,33 @@ module
     namespace Security {
     namespace Asn1 {
 
-    interface IASN1StringTypeHelper {
+    /**
+     * @Involve
+     * interface IASN1TypeCollection
+     * interface IASN1Type;
+     * interface IASN1Constants;
+     */
+    interface IASN1StringType {
         GetBMPSTRING(
-            [out] IASN1Type** BMPSTRING);
+            [out] IASN1Type** type);
 
         GetIA5STRING(
-            [out] IASN1Type** IA5STRING);
+            [out] IASN1Type** type);
 
         GetGENERALSTRING(
-            [out] IASN1Type** GENERALSTRING);
+            [out] IASN1Type** type);
 
         GetPRINTABLESTRING(
-            [out] IASN1Type** PRINTABLESTRING);
+            [out] IASN1Type** type);
 
         GetTELETEXSTRING(
-            [out] IASN1Type** TELETEXSTRING);
+            [out] IASN1Type** type);
 
         GetUNIVERSALSTRING(
-            [out] IASN1Type** UNIVERSALSTRING);
+            [out] IASN1Type** type);
 
         GetUTF8STRING(
-            [out] IASN1Type** UTF8STRING);
+            [out] IASN1Type** type);
     }
 
     } // namespace Asn1
