@@ -535,7 +535,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertPath(
     return EngineGenerateCertPath(inStream, "PkiPath", certPath);
 }
 
-ECode CX509CertFactoryImpl::EngineGenerateCertPathEx(
+ECode CX509CertFactoryImpl::EngineGenerateCertPath(
     /* [in] */ IInputStream* inStream,
     /* [in] */ const String& encoding,
     /* [out] */ ICertPath** certPath)
@@ -573,7 +573,7 @@ ECode CX509CertFactoryImpl::EngineGenerateCertPathEx(
     return NOERROR;
 }
 
-ECode CX509CertFactoryImpl::EngineGenerateCertPathEx2(
+ECode CX509CertFactoryImpl::EngineGenerateCertPath(
     /* [in] */ IList* certificates,
     /* [out] */ ICertPath** certPath)
 {

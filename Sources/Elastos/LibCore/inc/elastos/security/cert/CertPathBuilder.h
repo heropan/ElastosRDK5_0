@@ -2,17 +2,26 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTPATHBUILDER_H__
 #define __ELASTOS_SECURITY_CERT_CERTPATHBUILDER_H__
 
+#include "Object.h"
 
-
+using Elastos::Core::Object;
 using Elastos::Security::IProvider;
 
 namespace Elastos {
 namespace Security {
 namespace Cert {
 
+/**
+ * This class implements the functionality of a builder for an unverified
+ * <i>Certification Path</i>s from a specified certificate to a trust anchor.
+ */
 class CertPathBuilder
+    : public Object
+    , public ICertPathBuilder
 {
 public:
+    CAR_INTERFACE_DECL();
+
     static CARAPI GetInstance(
     /* [in] */ const String& algorithm,
     /* [out] */ ICertPathBuilder **builder);

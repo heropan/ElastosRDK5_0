@@ -23,6 +23,7 @@ extern "C" const InterfaceID EIID_Certificate =
 
 static const Int64 sSerialVersionUID = -3585440601605666277L;
 
+CAR_INTERFACE_IMPL_2(Certificate, Object, ICertificate, ISerializable);
 Certificate::Certificate(
         /* [in] */ const String& type)
     : mType(type)
@@ -88,7 +89,7 @@ CARAPI Certificate::WriteReplace(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL_LIGHT(Certificate::CertificateRep, ISerializable)
+CAR_INTERFACE_IMPL(Certificate::CertificateRep, Object, ISerializable)
 
 const Int64 Certificate::CertificateRep::sSerialVersionUID = -8563758940495660020L;
 const AutoPtr<ArrayOf<IObjectStreamField*> > Certificate::CertificateRep::sSerialPersistentFields;

@@ -39,12 +39,16 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
+CAR_INTERFACE_IMPL_2(PKIXParameters, Object, IPKIXParameters, ICertPathParameters, ICloneable);
 PKIXParameters::PKIXParameters()
     : mRevocationEnabled(TRUE)
     , mExplicitPolicyRequired(FALSE)
     , mPolicyMappingInhibited(FALSE)
     , mAnyPolicyInhibited(FALSE)
     , mPolicyQualifiersRejected(TRUE)
+{}
+
+PKIXParameters::~PKIXParameters()
 {}
 
 ECode PKIXParameters::GetTrustAnchors(
@@ -456,7 +460,7 @@ ECode PKIXParameters::ToString(
     return sb.ToString(str);
 }
 
-ECode PKIXParameters::Init(
+ECode PKIXParameters::constructor(
     /* [in] */ ISet *trustAnchors)
 {
     if (!trustAnchors) {
@@ -466,7 +470,7 @@ ECode PKIXParameters::Init(
     return CHashSet::New(trustAnchors, (ISet**)&mTrustAnchors);
 }
 
-ECode PKIXParameters::Init(
+ECode PKIXParameters::constructor(
     /* [in] */ IKeyStore *keyStore)
 {
     if (keyStore == NULL) {

@@ -11,20 +11,26 @@ namespace Security {
 namespace Cert {
 
 CarClass(CCertStoreHelper)
+    , public Singleton
+    , public ICertStoreHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI GetInstance(
         /* [in] */ const String& type,
         /* [in] */ ICertStoreParameters *params,
         /* [out] */ ICertStore **certStore);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ const String& type,
         /* [in] */ ICertStoreParameters *params,
         /* [in] */ const String& provider,
         /* [out] */ ICertStore **certStore);
 
-    CARAPI GetInstanceEx2(
+    CARAPI GetInstance(
         /* [in] */ const String& type,
         /* [in] */ ICertStoreParameters *params,
         /* [in] */ IProvider *provider,

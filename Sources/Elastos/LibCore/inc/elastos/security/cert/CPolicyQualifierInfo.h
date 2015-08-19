@@ -9,8 +9,14 @@ namespace Security {
 namespace Cert {
 
 CarClass(CPolicyQualifierInfo)
+    , public Object
+    , public IPolicyQualifierInfo
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetEncoded(
         /* [out, callee] */ ArrayOf<Byte> **encoded);
 

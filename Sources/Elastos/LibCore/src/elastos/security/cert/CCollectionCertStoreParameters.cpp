@@ -10,6 +10,9 @@ namespace Cert {
 
 const AutoPtr<ICollection> CCollectionCertStoreParameters::mDefaultCollection; // = Collections.EMPTY_SET;
 
+CAR_OBJECT_IMPL(CCollectionCertStoreParameters);
+CAR_INTERFACE_IMPL_3(CCollectionCertStoreParameters, Object, ICollectionCertStoreParameters, ICertStoreParameters, ICloneable);
+
 ECode CCollectionCertStoreParameters::Clone(
     /* [out] */ IInterface **object)
 {
@@ -61,4 +64,3 @@ ECode CCollectionCertStoreParameters::constructor(
 }
 }
 }
-

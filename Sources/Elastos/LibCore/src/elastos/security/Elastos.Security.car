@@ -289,6 +289,8 @@ module
     //         [in] ICollection* collection);
 
     //     interface ICollectionCertStoreParameters;
+    //     interface ICertStoreParameters;
+    //     interface ICloneable;
     // }
 
     // class CLDAPCertStoreParameters {
@@ -300,6 +302,8 @@ module
     //         [in] String serverName);
 
     //     interface ILDAPCertStoreParameters;
+    //     interface ICertStoreParameters;
+    //     interface ICloneable;
     // }
 
     // class CPKIXBuilderParameters {
@@ -322,6 +326,10 @@ module
     //         [in] IPublicKey* subjectPublicKey);
 
     //     interface IPKIXCertPathBuilderResult;
+    //     interface IPKIXCertPathValidatorResult;
+    //     interface ICertPathValidatorResult;
+    //     interface ICertPathBuilderResult;
+    //     interface ICloneable;
     // }
 
     // class CPKIXCertPathValidatorResult {
@@ -331,6 +339,8 @@ module
     //         [in] IPublicKey* subjectPublicKey);
 
     //     interface IPKIXCertPathValidatorResult;
+    //     interface ICertPathValidatorResult;
+    //     interface ICloneable;
     // }
 
     // class CPKIXParameters {
@@ -372,12 +382,16 @@ module
     //     constructor();
 
     //     interface IX509CRLSelector;
+    //     interface ICRLSelector;
+    //     interface ICloneable;
     // }
 
     // class CX509CertSelector {
     //     constructor();
 
     //     interface IX509CertSelector;
+    //     interface ICertSelector;
+    //     interface ICloneable;
     // }
 
     // } // namespace Cert

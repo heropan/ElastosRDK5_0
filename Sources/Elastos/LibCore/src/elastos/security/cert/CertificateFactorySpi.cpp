@@ -5,6 +5,7 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
+CAR_INTERFACE_IMPL(CertificateFactorySpi, Object, ICertificateFactorySpi);
 CertificateFactorySpi::CertificateFactorySpi()
 {}
 

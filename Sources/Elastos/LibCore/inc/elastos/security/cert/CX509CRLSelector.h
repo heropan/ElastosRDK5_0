@@ -15,8 +15,16 @@ namespace Security {
 namespace Cert {
 
 CarClass(CX509CRLSelector)
+    , public Object
+    , public IX509CRLSelector
+    , public ICRLSelector
+    , public ICloneable
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CX509CRLSelector();
 
     CARAPI SetIssuers(

@@ -6,7 +6,8 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-
+CAR_INTERFACE_IMPL(CCertStoreHelper, Singleton, ICertStoreHelper)
+CAR_SINGLETON_IMPL(CCertStoreHelper)
 ECode CCertStoreHelper::GetInstance(
     /* [in] */ const String& type,
     /* [in] */ ICertStoreParameters *params,
@@ -15,7 +16,7 @@ ECode CCertStoreHelper::GetInstance(
     return CertStore::GetInstance(type, params, certStore);
 }
 
-ECode CCertStoreHelper::GetInstanceEx(
+ECode CCertStoreHelper::GetInstance(
     /* [in] */ const String& type,
     /* [in] */ ICertStoreParameters *params,
     /* [in] */ const String& provider,
@@ -24,7 +25,7 @@ ECode CCertStoreHelper::GetInstanceEx(
     return CertStore::GetInstance(type, params, provider, certStore);
 }
 
-ECode CCertStoreHelper::GetInstanceEx2(
+ECode CCertStoreHelper::GetInstance(
     /* [in] */ const String& type,
     /* [in] */ ICertStoreParameters * params,
     /* [in] */ IProvider *provider,
@@ -42,4 +43,3 @@ ECode CCertStoreHelper::GetDefaultType(
 }
 }
 }
-

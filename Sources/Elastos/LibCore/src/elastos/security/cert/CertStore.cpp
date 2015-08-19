@@ -24,6 +24,7 @@ const String CertStore::PROPERTYNAME = String("certstore.type");
 // property is not defined in java.security file
 const String CertStore::DEFAULTPROPERTY = String("LDAP");
 
+CAR_INTERFACE_IMPL(CertStore, Object, ICertStore);
 ECode CertStore:: GetInstance(
     /* [in] */ const String& type,
     /* [in] */ ICertStoreParameters *params,

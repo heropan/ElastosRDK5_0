@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTPATH_H__
 #define __ELASTOS_SECURITY_CERT_CERTPATH_H__
 
+#include "Object.h"
 
-
+using Elastos::Core::Object;
 using Elastos::Utility::IList;
 using Elastos::Utility::IIterator;
 using Elastos::IO::IObjectStreamField;
@@ -15,8 +16,14 @@ namespace Cert {
 
 extern "C" const InterfaceID EIID_CertPath;
 
-class CertPath {
+class CertPath
+    : public Object
+    , public ICertPath
+    , public ISerializable
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the type of {@code Certificate} in this instance.
      *
@@ -127,10 +134,12 @@ protected:
      * deserialization on {@code CertPath} objects.
      */
     class CertPathRep
-        : public ElLightRefBase
-        , public ISerializable {
+        : public Object
+        , public ISerializable
+    {
     public:
         CAR_INTERFACE_DECL()
+
         /**
          * Creates a new {@code CertPathRep} instance with the specified type
          * and encoded data.
@@ -143,6 +152,7 @@ protected:
         CertPathRep(
             /* [in] */ const String& type,
             /* [in] */ArrayOf<Byte>* data);
+
     protected:
         /**
          * Deserializes a {@code CertPath} from a serialized {@code CertPathRep}
@@ -154,6 +164,7 @@ protected:
          */
         CARAPI ReadResolve(
             /* [out] */ IInterface** object);
+
 
     private:
         static const Int64 sSerialVersionUID;/* = 3015633072427920915L;*/

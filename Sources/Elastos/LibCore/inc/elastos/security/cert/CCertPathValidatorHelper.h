@@ -11,18 +11,24 @@ namespace Security {
 namespace Cert {
 
 CarClass(CCertPathValidatorHelper)
+    , public Singleton
+    , public ICertPathValidatorHelper
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CAR_SINGLETON_DECL();
+
     CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [out] */ ICertPathValidator **validator);
 
-    CARAPI GetInstanceEx(
+    CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ const String& provider,
         /* [out] */ ICertPathValidator **validator);
 
-    CARAPI GetInstanceEx2(
+    CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ IProvider *provider,
         /* [out] */ ICertPathValidator **validator);

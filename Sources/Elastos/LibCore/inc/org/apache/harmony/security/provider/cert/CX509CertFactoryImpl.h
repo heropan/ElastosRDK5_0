@@ -44,12 +44,12 @@ public:
         /* [in] */ IInputStream* inStream,
         /* [out] */ ICertPath** certPath);
 
-    CARAPI EngineGenerateCertPathEx(
+    CARAPI EngineGenerateCertPath(
         /* [in] */ IInputStream* inStream,
         /* [in] */ const String& encoding,
         /* [out] */ ICertPath** certPath);
 
-    CARAPI EngineGenerateCertPathEx2(
+    CARAPI EngineGenerateCertPath(
         /* [in] */ IList* ertificates,
         /* [out] */ ICertPath** certPath);
 

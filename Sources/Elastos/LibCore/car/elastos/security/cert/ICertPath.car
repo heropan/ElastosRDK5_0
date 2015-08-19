@@ -8,6 +8,10 @@ module
     namespace Security {
     namespace Cert {
 
+    /**
+      * @Involve
+      * interface ISerializable
+      */
     interface ICertPath {
         /**
          * Returns the type of {@code Certificate} in this instance.
@@ -16,19 +20,6 @@ module
          */
         GetType(
             [out] String* type);
-
-        /**
-         * Returns {@code true} if {@code Certificate}s in the list are the same
-         * type and the lists are equal (and by implication the certificates
-         * contained within are the same).
-         *
-         * @param other
-         *            {@code CertPath} to be compared for equality.
-         * @return {@code true} if the object are equal, {@code false} otherwise.
-         */
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* result);
 
         /**
          * Overrides {@code Object.hashCode()}. The function is defined as follows:
@@ -41,16 +32,6 @@ module
          */
         GetHashCode(
             [out] Int32* hashCode);
-
-        /**
-         * Returns a {@code String} representation of this {@code CertPath}
-         * instance. It is the result of calling {@code toString} on all {@code
-         * Certificate}s in the {@code List}.
-         *
-         * @return a string representation of this instance.
-         */
-        ToString(
-            [out] String* str);
 
         /**
          * Returns an immutable List of the {@code Certificate}s contained
@@ -80,7 +61,7 @@ module
          * @throws CertificateEncodingException
          *             if the encoding fails.
          */
-        GetEncodedEx(
+        GetEncoded(
             [in] String encoding,
             [out, callee] ArrayOf<Byte>* encoded);
 

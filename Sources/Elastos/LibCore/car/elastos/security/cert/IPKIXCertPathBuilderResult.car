@@ -10,6 +10,9 @@ module
     /**
      * @Involve
      * interface IPKIXCertPathValidatorResult
+     * interface ICertPathValidatorResult
+     * interface ICertPathBuilderResult
+     * interface ICloneable
      */
     interface IPKIXCertPathBuilderResult {
         /**

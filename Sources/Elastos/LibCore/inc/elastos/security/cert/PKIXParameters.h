@@ -14,102 +14,107 @@ namespace Security {
 namespace Cert {
 
 class PKIXParameters
+    : public Object
+    , public IPKIXParameters
+    , public ICertPathParameters
+    , public ICloneable
 {
 public:
+    CAR_INTERFACE_DECL();
+
     PKIXParameters();
 
-    CARAPI GetTrustAnchors(
+    virtual ~PKIXParameters();
+
+    virtual CARAPI GetTrustAnchors(
         /* [out] */ ISet **trustAnchors);
 
-    CARAPI SetTrustAnchors(
+    virtual CARAPI SetTrustAnchors(
         /* [in] */ ISet *trustAnchors);
 
-    CARAPI IsAnyPolicyInhibited(
+    virtual CARAPI IsAnyPolicyInhibited(
         /* [out] */ Boolean *anyPolicyInhibited);
 
-    CARAPI SetAnyPolicyInhibited(
+    virtual CARAPI SetAnyPolicyInhibited(
         /* [in] */ Boolean anyPolicyInhibited);
 
-    CARAPI GetCertPathCheckers(
+    virtual CARAPI GetCertPathCheckers(
         /* [out] */ IList **certPathCheckers);
 
-    CARAPI SetCertPathCheckers(
+    virtual CARAPI SetCertPathCheckers(
         /* [in] */ IList *certPathCheckers);
 
-    CARAPI AddCertPathChecker(
+    virtual CARAPI AddCertPathChecker(
         /* [in] */ IPKIXCertPathChecker *checker);
 
-    CARAPI GetCertStores(
+    virtual CARAPI GetCertStores(
         /* [out] */ IList **certStores);
 
-    CARAPI SetCertStores(
+    virtual CARAPI SetCertStores(
         /* [in] */ IList *certStores);
 
-    CARAPI AddCertStore(
+    virtual CARAPI AddCertStore(
         /* [in] */ ICertStore *store);
 
-    CARAPI GetDate(
+    virtual CARAPI GetDate(
         /* [out] */ IDate **date);
 
-    CARAPI SetDate(
+    virtual CARAPI SetDate(
         /* [in] */ IDate *date);
 
-    CARAPI IsExplicitPolicyRequired(
+    virtual CARAPI IsExplicitPolicyRequired(
         /* [out] */ Boolean *explicitPolicyRequired);
 
-    CARAPI SetExplicitPolicyRequired(
+    virtual CARAPI SetExplicitPolicyRequired(
         /* [in] */ Boolean explicitPolicyRequired);
 
-    CARAPI GetInitialPolicies(
+    virtual CARAPI GetInitialPolicies(
         /* [out] */ ISet **initialPolicies);
 
-    CARAPI SetInitialPolicies(
+    virtual CARAPI SetInitialPolicies(
         /* [in] */ ISet *initialPolicies);
 
-    CARAPI IsPolicyMappingInhibited(
+    virtual CARAPI IsPolicyMappingInhibited(
         /* [out] */ Boolean *policyMappingInhibited);
 
-    CARAPI SetPolicyMappingInhibited(
+    virtual CARAPI SetPolicyMappingInhibited(
         /* [in] */ Boolean policyMappingInhibited);
 
-    CARAPI GetPolicyQualifiersRejected(
+    virtual CARAPI GetPolicyQualifiersRejected(
         /* [out] */ Boolean * policyQualifiersRejected);
 
-    CARAPI SetPolicyQualifiersRejected(
+    virtual CARAPI SetPolicyQualifiersRejected(
         /* [in] */ Boolean policyQualifiersRejected);
 
-    CARAPI IsRevocationEnabled(
+    virtual CARAPI IsRevocationEnabled(
         /* [out] */ Boolean *revocationEnabled);
 
-    CARAPI SetRevocationEnabled(
+    virtual CARAPI SetRevocationEnabled(
         /* [in] */ Boolean revocationEnabled);
 
-    CARAPI GetSigProvider(
+    virtual CARAPI GetSigProvider(
         /* [out] */ String *sigProvider);
 
-    CARAPI SetSigProvider(
+    virtual CARAPI SetSigProvider(
         /* [in] */ const String& sigProvider);
 
-    CARAPI GetTargetCertConstraints(
+    virtual CARAPI GetTargetCertConstraints(
         /* [out] */ ICertSelector **targetCertConstraints);
 
-    CARAPI SetTargetCertConstraints(
+    virtual CARAPI SetTargetCertConstraints(
         /* [in] */ ICertSelector *targetCertConstraints);
 
-    CARAPI Clone(
+    virtual CARAPI Clone(
         /* [out] */ IInterface **obj);
 
-    CARAPI ToString(
+    virtual CARAPI ToString(
         /* [out] */ String *str);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ISet *trustAnchors);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IKeyStore *keyStore);
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
 
 private:
     /**

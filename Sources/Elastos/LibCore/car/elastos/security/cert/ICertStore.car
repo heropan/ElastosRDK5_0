@@ -116,7 +116,7 @@ module
          * @throws NullPointerException
          *             if {@code type} is {@code null}.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] String type,
             [in] ICertStoreParameters* params,
             [in] String provider,
@@ -141,7 +141,7 @@ module
          * @throws IllegalArgumentException if {@code provider == null}
          * @throws NullPointerException if {@code type == null}
          */
-        GetInstanceEx2(
+        GetInstance(
             [in] String type,
             [in] ICertStoreParameters* params,
             [in] IProvider* provider,

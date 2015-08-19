@@ -6,7 +6,8 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-
+CAR_INTERFACE_IMPL(CCertPathValidatorHelper, Singleton, ICertPathValidatorHelper)
+CAR_SINGLETON_IMPL(CCertPathValidatorHelper)
 ECode CCertPathValidatorHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [out] */ ICertPathValidator **validator)
@@ -14,7 +15,7 @@ ECode CCertPathValidatorHelper::GetInstance(
     return CertPathValidator::GetInstance(algorithm, validator);
 }
 
-ECode CCertPathValidatorHelper::GetInstanceEx(
+ECode CCertPathValidatorHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ const String& provider,
     /* [out] */ ICertPathValidator **validator)
@@ -22,7 +23,7 @@ ECode CCertPathValidatorHelper::GetInstanceEx(
     return CertPathValidator::GetInstance(algorithm, provider, validator);
 }
 
-ECode CCertPathValidatorHelper::GetInstanceEx2(
+ECode CCertPathValidatorHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ IProvider *provider,
     /* [out] */ ICertPathValidator **validator)
@@ -39,4 +40,3 @@ ECode CCertPathValidatorHelper::GetDefaultType(
 }
 }
 }
-

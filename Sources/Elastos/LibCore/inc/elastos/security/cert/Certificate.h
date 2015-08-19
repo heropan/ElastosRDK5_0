@@ -15,8 +15,14 @@ namespace Cert {
 
 extern "C" const InterfaceID EIID_Certificate;
 
-class Certificate {
+class Certificate
+    : public Object
+    , public ICertificate
+    , public ISerializable
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the certificate type.
      *
@@ -122,6 +128,7 @@ public:
      */
     virtual CARAPI GetPublicKey(
         /* [out] */ IPublicKey** publicKey) = 0;
+
 protected:
     /**
      * Creates a new {@code Certificate} with the specified type.
@@ -147,14 +154,16 @@ protected:
      * deserialization of {@code Certificate} objects.
      */
     class CertificateRep
-        : public ISerializable
-        , public ElLightRefBase
+        : public Object
+        , public ISerializable
     {
     public:
-        CAR_INTERFACE_DECL()
+        CAR_INTERFACE_DECL();
+
         CertificateRep(
             /* [in] */ const String& type,
             /* [in] */ ArrayOf<Byte>* data);
+
     protected:
         /**
          * Creates a new {@code CertificateRep} instance with the specified
@@ -176,6 +185,7 @@ protected:
          */
         CARAPI ReadResolve(
             /* [out] */ IInterface** object);
+
     private:
         static const Int64 sSerialVersionUID;
         // The standard name of the certificate type
@@ -194,7 +204,6 @@ protected:
 private:
     // The standard name of the certificate type
     const String mType;
-
 };
 
 } // end Cert

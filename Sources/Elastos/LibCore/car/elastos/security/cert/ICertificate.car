@@ -12,6 +12,10 @@ module
      * verify the binding of a Principal and its public key. Examples are X.509,
      * PGP, and SDSI.
      */
+    /**
+      * @Involve
+      * interface ISerializable
+      */
     interface ICertificate {
         /**
          * Returns the certificate type.

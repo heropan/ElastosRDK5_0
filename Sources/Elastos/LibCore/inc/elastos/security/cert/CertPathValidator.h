@@ -2,7 +2,9 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTPATHVALIDATOR_H__
 #define __ELASTOS_SECURITY_CERT_CERTPATHVALIDATOR_H__
 
+#include "Object.h"
 
+using Elastos::Core::Object;
 using Elastos::Security::IProvider;
 
 namespace Elastos {
@@ -10,8 +12,12 @@ namespace Security {
 namespace Cert {
 
 class CertPathValidator
+    : public Object
+    , public ICertPathValidator
 {
 public:
+    CAR_INTERFACE_DECL();
+
     static CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [out] */ ICertPathValidator **validator);
