@@ -443,6 +443,9 @@ protected:
         /* [in] */ const String& key,
         /* [in] */ const String& className);
 
+public:
+    AutoPtr<IArrayMap> mMap;//ArrayMap<String, Object> mMap = null;
+
 protected:
     static const String TAG;// = "Bundle";
     static const Boolean DEBUG;// = false;
@@ -456,9 +459,6 @@ protected:
 
     // Invariant - exactly one of mMap / mParcelledData will be null
     // (except inside a call to unparcel)
-
-    AutoPtr<IArrayMap> mMap;//ArrayMap<String, Object> mMap = null;
-
     /*
      * If mParcelledData is non-null, then mMap will be null and the
      * data are stored as a Parcel containing a Bundle.  When the data

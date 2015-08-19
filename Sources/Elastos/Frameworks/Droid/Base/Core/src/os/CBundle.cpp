@@ -2,11 +2,13 @@
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/CoreUtils.h>
+#include "util/CArrayMap.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::EIID_ICloneable;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::Utility::CArrayMap;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +18,7 @@ static AutoPtr<IBundle> InitEMPTY()
 {
     AutoPtr<CBundle> empty;
     CBundle::NewByFriend((CBundle**)&empty);
-    //TODO empty->mMap = ArrayMap::EMPTY;
+    empty->mMap = CArrayMap::EMPTY;
     return empty;
 }
 

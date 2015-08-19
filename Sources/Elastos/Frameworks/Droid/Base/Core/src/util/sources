@@ -9,10 +9,13 @@ INCLUDES += $(MAKEDIR)/../../inc/util
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES += MapCollections.cpp
-// SOURCES = ArrayUtils.cpp
 SOURCES += CArrayMap.cpp
+SOURCES += CArraySet.cpp
 SOURCES += CAtomicFile.cpp
+//SOURCES += CBase64.cpp
+
+SOURCES += MapCollections.cpp
+
 // SOURCES += CDisplayMetrics.cpp
 // SOURCES += CTypedValue.cpp
 // SOURCES += CTypedValueHelper.cpp
@@ -46,4 +49,4 @@ SOURCES += CAtomicFile.cpp
 // SOURCES += CPair.cpp
 // SOURCES += CPairHelper.cpp
 // SOURCES += CIndentingPrintWriter.cpp
-// SOURCES += CBase64.cpp
+//

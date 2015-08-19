@@ -1,4 +1,4 @@
-#include "util/CArrayMap.h"
+#include "util/CArraySet.h"
 #include <libcore/utility/EmptyArray.h>
 #include "util/ContainerHelpers.h"
 #include <elastos/utility/logging/Logger.h>
@@ -14,94 +14,85 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-static AutoPtr<IArrayMap> InitEMPTY()
-{
-    AutoPtr<CArrayMap> map;
-    CArrayMap::NewByFriend((CArrayMap**)&map);
-    map->constructor(TRUE);
-    return (IArrayMap*)map.Get();
-}
+const Boolean CArraySet::DEBUG = FALSE;
+const String CArraySet::TAG("CArraySet");
+const Int32 CArraySet::BASE_SIZE = 4;
+const Int32 CArraySet::CACHE_SIZE = 10;
 
-const AutoPtr<IArrayMap> CArrayMap::EMPTY = InitEMPTY();
-const Boolean CArrayMap::DEBUG = FALSE;
-const String CArrayMap::TAG("CArrayMap");
-const Int32 CArrayMap::BASE_SIZE = 4;
-const Int32 CArrayMap::CACHE_SIZE = 10;
-
-AutoPtr<ArrayOf<IInterface*> > CArrayMap::mBaseCache;
-Int32 CArrayMap::mBaseCacheSize = 0;
-AutoPtr<ArrayOf<IInterface*> > CArrayMap::mTwiceBaseCache;
-Int32 CArrayMap::mTwiceBaseCacheSize = 0;
-Object CArrayMap::sLock;
-
-const AutoPtr<ArrayOf<Int32> > CArrayMap::EMPTY_IMMUTABLE_INTS = ArrayOf<Int32>::Alloc(0);
+AutoPtr<ArrayOf<IInterface*> > CArraySet::mBaseCache;
+Int32 CArraySet::mBaseCacheSize = 0;
+AutoPtr<ArrayOf<IInterface*> > CArraySet::mTwiceBaseCache;
+Int32 CArraySet::mTwiceBaseCacheSize = 0;
+Object CArraySet::sLock;
 
 //======================================================================
-// CArrayMap::InnerMapCollections
+// CArraySet::InnerMapCollections
 //======================================================================
-CArrayMap::InnerMapCollections::InnerMapCollections(
-    /* [in] */ CArrayMap* host)
+CArraySet::InnerMapCollections::InnerMapCollections(
+    /* [in] */ CArraySet* host)
     : mHost(host)
 {
 }
 
-Int32 CArrayMap::InnerMapCollections::ColGetSize()
+Int32 CArraySet::InnerMapCollections::ColGetSize()
 {
     return mHost->mSize;
 }
 
-AutoPtr<IInterface> CArrayMap::InnerMapCollections::ColGetEntry(
+AutoPtr<IInterface> CArraySet::InnerMapCollections::ColGetEntry(
     /* [in] */ Int32 index,
     /* [in] */ Int32 offset)
 {
-    return (*mHost->mArray)[(index<<1) + offset];
+    return (*mHost->mArray)[index];
 }
 
-Int32 CArrayMap::InnerMapCollections::ColIndexOfKey(
+Int32 CArraySet::InnerMapCollections::ColIndexOfKey(
     /* [in] */ IInterface* key)
 {
     Int32 index;
-    mHost->GetIndexOfKey(key, &index);
+    mHost->GetIndexOf(key, &index);
     return index;
 }
 
-Int32 CArrayMap::InnerMapCollections::ColIndexOfValue(
+Int32 CArraySet::InnerMapCollections::ColIndexOfValue(
     /* [in] */ IInterface* value)
 {
     Int32 index;
-    mHost->GetIndexOfValue(value, &index);
+    mHost->GetIndexOf(value, &index);
     return index;
 }
 
-AutoPtr<IMap> CArrayMap::InnerMapCollections::ColGetMap()
+AutoPtr<IMap> CArraySet::InnerMapCollections::ColGetMap()
 {
-    return (IMap*)mHost->Probe(EIID_IMap);
+    Logger::E("CArraySet::InnerMapCollections", "throw new UnsupportedOperationException: not a map");
+    assert(0);
+    return NULL;
 }
 
-void CArrayMap::InnerMapCollections::ColPut(
+void CArraySet::InnerMapCollections::ColPut(
     /* [in] */ IInterface* key,
     /* [in] */ IInterface* value)
 {
-    mHost->Put(key, value);
+    mHost->Add(key);
 }
 
-AutoPtr<IInterface> CArrayMap::InnerMapCollections::ColSetValue(
+AutoPtr<IInterface> CArraySet::InnerMapCollections::ColSetValue(
     /* [in] */ Int32 index,
     /* [in] */ IInterface* value)
 {
-    AutoPtr<IInterface> old;
-    mHost->SetValueAt(index, value, (IInterface**)&old);
-    return old;
+    Logger::E("CArraySet::InnerMapCollections", "throw new UnsupportedOperationException: not a map");
+    assert(0);
+    return NULL;
 }
 
-void CArrayMap::InnerMapCollections::ColRemoveAt(
+void CArraySet::InnerMapCollections::ColRemoveAt(
     /* [in] */ Int32 index)
 {
     AutoPtr<IInterface> old;
     mHost->RemoveAt(index, (IInterface**)&old);
 }
 
-void CArrayMap::InnerMapCollections::ColClear()
+void CArraySet::InnerMapCollections::ColClear()
 {
     mHost->Clear();
 }
@@ -109,16 +100,16 @@ void CArrayMap::InnerMapCollections::ColClear()
 //======================================================================
 //
 //======================================================================
-CAR_INTERFACE_IMPL_2(CArrayMap, Object, IArrayMap, IMap)
+CAR_INTERFACE_IMPL_2(CArraySet, Object, IArrayMap, IMap)
 
-CAR_OBJECT_IMPL(CArrayMap)
+CAR_OBJECT_IMPL(CArraySet)
 
-CArrayMap::CArrayMap()
+CArraySet::CArraySet()
     : mSize(0)
 {
 }
 
-ECode CArrayMap::constructor()
+ECode CArraySet::constructor()
 {
     mHashes = EmptyArray::INT32;
     mArray = EmptyArray::OBJECT;
@@ -126,7 +117,7 @@ ECode CArrayMap::constructor()
     return NOERROR;
 }
 
-ECode CArrayMap::constructor(
+ECode CArraySet::constructor(
     /* [in] */ Int32 capacity)
 {
     if (capacity == 0) {
@@ -140,26 +131,17 @@ ECode CArrayMap::constructor(
     return NOERROR;
 }
 
-ECode CArrayMap::constructor(
-    /* [in] */ Boolean immutable)
-{
-    mHashes = EmptyArray::INT32;
-    mArray = EmptyArray::OBJECT;
-    mSize = 0;
-    return NOERROR;
-}
-
-ECode CArrayMap::constructor(
-    /* [in] */ IArrayMap* map)
+ECode CArraySet::constructor(
+    /* [in] */ IArraySet* set)
 {
     constructor();
-    if (map != NULL) {
-        PutAll(IMap::Probe(map));
+    if (set != NULL) {
+        AddAll(set);
     }
     return NOERROR;
 }
 
-Int32 CArrayMap::GetIndexOf(
+Int32 CArraySet::GetIndexOf(
     /* [in] */ IInterface* key,
     /* [in] */ Int32 hash)
 {
@@ -178,19 +160,19 @@ Int32 CArrayMap::GetIndexOf(
     }
 
     // If the key at the returned index matches, that's what we want.
-    if (Object::Equals(key, (*mArray)[index<<1])) {
+    if (Object::Equals(key, (*mArray)[index])) {
         return index;
     }
 
     // Search for a matching key after the index.
     Int32 end;
     for (end = index + 1; end < N && (*mHashes)[end] == hash; end++) {
-        if (Object::Equals(key, (*mArray)[end << 1])) return end;
+        if (Object::Equals(key, (*mArray)[end])) return end;
     }
 
     // Search for a matching key before the index.
     for (Int32 i = index - 1; i >= 0 && (*mHashes)[i] == hash; i--) {
-        if (Object::Equals(key, (*mArray)[i << 1])) return i;
+        if (Object::Equals(key, (*mArray)[i])) return i;
     }
 
     // Key not found -- return negative value indicating where a
@@ -200,7 +182,7 @@ Int32 CArrayMap::GetIndexOf(
     return ~end;
 }
 
-Int32 CArrayMap::GetIndexOfNull()
+Int32 CArraySet::GetIndexOfNull()
 {
     Int32 N = mSize;
 
@@ -217,19 +199,19 @@ Int32 CArrayMap::GetIndexOfNull()
     }
 
     // If the key at the returned index matches, that's what we want.
-    if (NULL == (*mArray)[index<<1]) {
+    if (NULL == (*mArray)[index]) {
         return index;
     }
 
     // Search for a matching key after the index.
     Int32 end;
     for (end = index + 1; end < N && (*mHashes)[end] == 0; end++) {
-        if (NULL == (*mArray)[end << 1]) return end;
+        if (NULL == (*mArray)[end]) return end;
     }
 
     // Search for a matching key before the index.
     for (Int32 i = index - 1; i >= 0 && (*mHashes)[i] == 0; i--) {
-        if (NULL == (*mArray)[i << 1]) return i;
+        if (NULL == (*mArray)[i]) return i;
     }
 
     // Key not found -- return negative value indicating where a
@@ -239,14 +221,9 @@ Int32 CArrayMap::GetIndexOfNull()
     return ~end;
 }
 
-ECode CArrayMap::AllocArrays(
+ECode CArraySet::AllocArrays(
     /* [in] */ Int32 size)
 {
-    if (mHashes == EMPTY_IMMUTABLE_INTS) {
-        //throw new UnsupportedOperationException("ArrayMap is immutable");
-        return E_UNSUPPORTED_OPERATION_EXCEPTION;
-    }
-
     if (size == (BASE_SIZE * 2)) {
         synchronized (sLock) {
             if (mTwiceBaseCache != NULL) {
@@ -285,11 +262,11 @@ ECode CArrayMap::AllocArrays(
     }
 
     mHashes = ArrayOf<Int32>::Alloc(size);
-    mArray = ArrayOf<IInterface*>::Alloc(size << 1);
+    mArray = ArrayOf<IInterface*>::Alloc(size);
     return NOERROR;
 }
 
-ECode CArrayMap::FreeArrays(
+ECode CArraySet::FreeArrays(
     /* [in] */ ArrayOf<Int32>* hashes,
     /* [in] */ ArrayOf<IInterface*>* array,
     /* [in] */ Int32 size)
@@ -302,7 +279,7 @@ ECode CArrayMap::FreeArrays(
                 array->Set(0, oe);
                 array->Set(1, he);
 
-                for (Int32 i = (size << 1) - 1; i >= 2; i--) {
+                for (Int32 i = size - 1; i >= 2; i--) {
                     array->Set(i, NULL);
                 }
                 mTwiceBaseCache = array;
@@ -319,7 +296,7 @@ ECode CArrayMap::FreeArrays(
                 array->Set(0, oe);
                 array->Set(1, he);
 
-                for (Int32 i=(size<<1)-1; i>=2; i--) {
+                for (Int32 i= size - 1; i >= 2; i--) {
                     array->Set(i, NULL);
                 }
 
@@ -332,9 +309,9 @@ ECode CArrayMap::FreeArrays(
     return NOERROR;
 }
 
-ECode CArrayMap::Clear()
+ECode CArraySet::Clear()
 {
-    if (mSize > 0) {
+    if (mSize != 0) {
         FreeArrays(mHashes, mArray, mSize);
         mHashes = EmptyArray::INT32;
         mArray = EmptyArray::OBJECT;
@@ -343,20 +320,7 @@ ECode CArrayMap::Clear()
     return NOERROR;
 }
 
-ECode CArrayMap::Erase()
-{
-    if (mSize > 0) {
-        Int32 N = mSize << 1;
-        AutoPtr<ArrayOf<IInterface*> > array = mArray;
-        for (Int32 i = 0; i < N; i++) {
-            array->Set(i, NULL);
-        }
-        mSize = 0;
-    }
-    return NOERROR;
-}
-
-ECode CArrayMap::EnsureCapacity(
+ECode CArraySet::EnsureCapacity(
     /* [in] */ Int32 minimumCapacity)
 {
     if (mHashes->GetLength() < minimumCapacity) {
@@ -365,25 +329,25 @@ ECode CArrayMap::EnsureCapacity(
         AllocArrays(minimumCapacity);
         if (mSize > 0) {
             mHashes->Copy(ohashes, 0, mSize);
-            mArray->Copy(oarray, 0, mSize << 1);
+            mArray->Copy(oarray, 0, mSize);
         }
         FreeArrays(ohashes, oarray, mSize);
     }
     return NOERROR;
 }
 
-ECode CArrayMap::ContainsKey(
+ECode CArraySet::Contains(
     /* [in] */ IInterface* key,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 index;
-    GetIndexOfKey(key, &index);
+    GetIndexOf(key, &index);
     *result = index >= 0;
     return NOERROR;
 }
 
-ECode CArrayMap::GetIndexOfKey(
+ECode CArraySet::GetIndexOf(
     /* [in] */ IInterface* key,
     /* [out] */ Int32* result)
 {
@@ -397,96 +361,17 @@ ECode CArrayMap::GetIndexOfKey(
     return NOERROR;
 }
 
-ECode CArrayMap::GetIndexOfValue(
-    /* [in] */ IInterface* value,
-    /* [out] */ Int32* result)
-{
-    VALIDATE_NOT_NULL(result)
-    Int32 N = mSize*2;
-    AutoPtr<ArrayOf<IInterface*> > array = mArray;
-    if (value == NULL) {
-        for (Int32 i = 1; i < N; i += 2) {
-            if ((*array)[i] == NULL) {
-                *result = i>>1;
-                return NOERROR;
-            }
-        }
-    } else {
-        for (Int32 i = 1; i < N; i += 2) {
-            if (Object::Equals(value, (*array)[i])) {
-                *result = i>>1;
-                return NOERROR;
-            }
-        }
-    }
-
-    *result = -1;
-    return NOERROR;
-}
-
-ECode CArrayMap::ContainsValue(
-    /* [in] */ IInterface* value,
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result)
-    Int32 index;
-    GetIndexOfValue(value, &index);
-    *result = index >= 0;
-    return NOERROR;
-}
-
-ECode CArrayMap::Get(
-    /* [in] */ IInterface* key,
-    /* [out] */ IInterface** result)
-{
-    VALIDATE_NOT_NULL(result)
-    *result = NULL;
-
-    Int32 index;
-    GetIndexOfKey(key, &index);
-    if (index >= 0) {
-        *result = (*mArray)[(index << 1) + 1];
-        REFCOUNT_ADD(*result)
-    }
-    return NOERROR;
-}
-
-ECode CArrayMap::GetKeyAt(
-    /* [in] */ Int32 index,
-    /* [out] */ IInterface** key)
-{
-    VALIDATE_NOT_NULL(key)
-    *key = (*mArray)[index << 1];
-    REFCOUNT_ADD(*key)
-    return NOERROR;
-}
-
-ECode CArrayMap::GetValueAt(
+ECode CArraySet::GetValueAt(
     /* [in] */ Int32 index,
     /* [out] */ IInterface** value)
 {
     VALIDATE_NOT_NULL(value)
-    *value = (*mArray)[(index << 1) + 1];
+    *value = (*mArray)[index];
     REFCOUNT_ADD(*value)
     return NOERROR;
 }
 
-ECode CArrayMap::SetValueAt(
-    /* [in] */ Int32 index,
-    /* [in] */ IInterface* value,
-    /* [out] */ IInterface** oldValue)
-{
-    index = (index << 1) + 1;
-    AutoPtr<IInterface> old = (*mArray)[index];
-    mArray->Set(index, value);
-    if (oldValue) {
-        *oldValue = old;
-        REFCOUNT_ADD(*oldValue)
-    }
-    return NOERROR;
-}
-
-ECode CArrayMap::IsEmpty(
+ECode CArraySet::IsEmpty(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -494,38 +379,31 @@ ECode CArrayMap::IsEmpty(
     return NOERROR;
 }
 
-ECode CArrayMap::Put(
-    /* [in] */ IInterface* key,
+ECode CArraySet::Add(
     /* [in] */ IInterface* value)
 {
-    AutoPtr<IInterface> old;
-    return Put(key, value, (IInterface**)&old);
+    Boolean result;
+    return Add(value, &result);
 }
 
-ECode CArrayMap::Put(
-    /* [in] */ IInterface* key,
+ECode CArraySet::Add(
     /* [in] */ IInterface* value,
-    /* [out] */ IInterface** oldValue)
+    /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(oldValue)
-    *oldValue = NULL;
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
     Int32 hash;
     Int32 index;
-    if (key == NULL) {
+    if (value == NULL) {
         hash = 0;
         index = GetIndexOfNull();
     }
     else {
-        hash = Object::GetHashCode(key);
-        index = GetIndexOf(key, hash);
+        hash = Object::GetHashCode(value);
+        index = GetIndexOf(value, hash);
     }
     if (index >= 0) {
-        index = (index << 1) + 1;
-        AutoPtr<IInterface> old = (*mArray)[index];
-        mArray->Set(index, value);
-        *oldValue = old;
-        REFCOUNT_ADD(*oldValue)
         return NOERROR;
     }
 
@@ -534,14 +412,14 @@ ECode CArrayMap::Put(
         Int32 n = mSize >= (BASE_SIZE * 2) ? (mSize + (mSize >> 1))
                 : (mSize >= BASE_SIZE ? (BASE_SIZE * 2) : BASE_SIZE);
 
-        if (DEBUG) Logger::D(TAG, "put: grow from %d to n", mHashes->GetLength(), n);
+        if (DEBUG) Logger::D(TAG, "add: grow from %d to n", mHashes->GetLength(), n);
 
         AutoPtr<ArrayOf<Int32> > ohashes = mHashes;
         AutoPtr<ArrayOf<IInterface*> > oarray = mArray;
         AllocArrays(n);
 
         if (mHashes->GetLength() > 0) {
-            if (DEBUG) Logger::D(TAG, "put: copy 0- to 0", mSize);
+            if (DEBUG) Logger::D(TAG, "add: copy 0- to 0", mSize);
             mHashes->Copy(ohashes);
             mArray->Copy(oarray);
         }
@@ -550,135 +428,73 @@ ECode CArrayMap::Put(
     }
 
     if (index < mSize) {
-        if (DEBUG) Logger::D(TAG, "put: move %d-%d to %d", index, (mSize-index), (index+1));
+        if (DEBUG) Logger::D(TAG, "add: move %d-%d to %d", index, (mSize-index), (index+1));
         mHashes->Copy(index + 1, mHashes, index, mSize - index);
-        mArray->Copy((index + 1) << 1, mArray, index << 1, (mSize - index) << 1);
+        mArray->Copy((index + 1), mArray, index, mSize - index);
     }
 
     mHashes->Set(index, hash);
-    mArray->Set(index << 1, key);
-    mArray->Set((index<<1)+1, value);
+    mArray->Set(index, value);
     mSize++;
+    *result = TRUE;
     return NOERROR;
 }
 
-ECode CArrayMap::Append(
-    /* [in] */ IInterface* key,
-    /* [in] */ IInterface* value)
+ECode CArraySet::AddAll(
+    /* [in] */ IArraySet* set)
 {
-    Int32 index = mSize;
-    Int32 hash = key == NULL ? 0 : Object::GetHashCode(key);
-    if (index >= mHashes->GetLength()) {
-        //throw new IllegalStateException("Array is full");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-
-    if (index > 0 && (*mHashes)[index-1] > hash) {
-        // RuntimeException e = new RuntimeException("here");
-        // e.fillInStackTrace();
-        Logger::W(TAG, "New hash %d is before end of array hash %d at index %d key %p",
-            hash, (*mHashes)[index-1], index, key);
-        return Put(key, value);
-    }
-
-    mSize = index+1;
-    mHashes->Set(index, hash);
-    index <<= 1;
-    mArray->Set(index, key);
-    mArray->Set(index+1, value);
-    return NOERROR;
-}
-
-ECode CArrayMap::Validate()
-{
-    Int32 N = mSize;
-    if (N <= 1) {
-        // There can't be dups.
-        return NOERROR;
-    }
-    Int32 basehash = (*mHashes)[0];
-    Int32 basei = 0;
-    for (Int32 i = 1; i < N; i++) {
-        Int32 hash = (*mHashes)[i];
-        if (hash != basehash) {
-            basehash = hash;
-            basei = i;
-            continue;
-        }
-        // We are in a run of entries with the same hash code.  Go backwards through
-        // the array to see if any keys are the same.
-        AutoPtr<IInterface> cur = (*mArray)[i<<1];
-        for (Int32 j=i-1; j>=basei; j--) {
-            AutoPtr<IInterface> prev = (*mArray)[j<<1];
-            if (cur == prev) {
-                Logger::E(TAG, "Duplicate key in ArrayMap: %p", cur.Get());
-                // throw new IllegalArgumentException("Duplicate key in ArrayMap: " + cur);
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-            }
-            if (cur != NULL && prev != NULL && Object::Equals(cur, prev)) {
-                Logger::E(TAG, "Duplicate key in ArrayMap: %p", cur.Get());
-                return E_ILLEGAL_ARGUMENT_EXCEPTION;
-                //throw new IllegalArgumentException("Duplicate key in ArrayMap: " + cur);
-            }
-        }
-    }
-    return NOERROR;
-}
-
-ECode CArrayMap::PutAll(
-    /* [in] */ IArrayMap* map)
-{
-    CArrayMap* array = (CArrayMap*)map;
+    CArraySet* array = (CArraySet*)set;
     Int32 N = array->mSize;
     EnsureCapacity(mSize + N);
     if (mSize == 0) {
         if (N > 0) {
             mHashes->Copy(array->mHashes, 0, N);
-            mArray->Copy(mArray, 0, N << 1);
+            mArray->Copy(mArray, 0, N);
             mSize = N;
         }
     }
     else {
         for (Int32 i = 0; i < N; i++) {
             AutoPtr<IInterface> key, value;
-            array->GetKeyAt(i, (IInterface**)&key);
             array->GetValueAt(i, (IInterface**)&value);
-            Put(key, value);
+            Add(value);
         }
     }
     return NOERROR;
 }
 
-ECode CArrayMap::Remove(
-    /* [in] */ IInterface* key)
+ECode CArraySet::Remove(
+    /* [in] */ IInterface* value)
 {
-    AutoPtr<IInterface> old;
-    return Remove(key, (IInterface**)&old);
+    Boolean result;
+    return Remove(value, &result);
 }
 
-ECode CArrayMap::Remove(
-    /* [in] */ IInterface* key,
-    /* [out] */ IInterface** result)
+ECode CArraySet::Remove(
+    /* [in] */ IInterface* value,
+    /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
+    *result = FALSE;
 
     Int32 index;
-    GetIndexOfKey(key, &index);
+    GetIndexOf(value, &index);
     if (index >= 0) {
-        return RemoveAt(index, result);
+        AutoPtr<IInterface> old;
+        RemoveAt(index, (IInterface**)&old);
+        *result = TRUE;
     }
 
-    *result = NULL;
     return NOERROR;
 }
 
-ECode CArrayMap::RemoveAt(
+ECode CArraySet::RemoveAt(
     /* [in] */ Int32 index,
     /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
 
-    AutoPtr<IInterface> old = (*mArray)[(index << 1) + 1];
+    AutoPtr<IInterface> old = (*mArray)[index];
     if (mSize <= 1) {
         // Now empty.
         if (DEBUG) Logger::D(TAG, "remove: shrink from %d to 0", mHashes->GetLength());
@@ -704,12 +520,12 @@ ECode CArrayMap::RemoveAt(
             if (index > 0) {
                 if (DEBUG) Logger::D(TAG, "remove: copy from 0-%d to 0", index);
                 mHashes->Copy(ohashes, 0, index);
-                mArray->Copy(oarray, 0, index << 1);
+                mArray->Copy(oarray, 0, index);
             }
             if (index < mSize) {
                 if (DEBUG) Logger::D(TAG, "remove: copy from %d - %d to %d", (index+1), mSize, index);
                 mHashes->Copy(index, ohashes, index + 1, mSize - index);
-                mArray->Copy(index << 1, oarray, (index + 1) << 1, (mSize - index) << 1);
+                mArray->Copy(index, oarray, index + 1, mSize - index);
             }
         }
         else {
@@ -717,10 +533,10 @@ ECode CArrayMap::RemoveAt(
             if (index < mSize) {
                 if (DEBUG) Logger::D(TAG, "remove: move %d - %d to %d", (index+1), mSize, index);
                 mHashes->Copy(index, mHashes, index + 1, mSize - index);
-                mArray->Copy(index << 1, mArray, (index + 1) << 1, (mSize - index) << 1);
+                mArray->Copy(index, mArray, index + 1, mSize - index);
             }
-            mArray->Set(mSize << 1, NULL);
-            mArray->Set((mSize << 1) + 1,NULL);
+            mArray->Set(mSize, NULL);
+            mArray->Set(mSize + 1,NULL);
         }
     }
 
@@ -729,7 +545,7 @@ ECode CArrayMap::RemoveAt(
     return NOERROR;
 }
 
-ECode CArrayMap::GetSize(
+ECode CArraySet::GetSize(
     /* [out] */ Int32* size)
 {
     VALIDATE_NOT_NULL(size)
@@ -737,7 +553,40 @@ ECode CArrayMap::GetSize(
     return NOERROR;
 }
 
-ECode CArrayMap::Equals(
+
+ECode CArraySet::ToArray(
+    /* [out, callee] */ ArrayOf<IInterface*>** array)
+{
+    VALIDATE_NOT_NULL(array)
+    AutoPtr<ArrayOf<IInterface*> > result = ArrayOf<IInterface*>::Alloc(mSize);
+    result->Copy(mArray, mSize);
+    *array = result;
+    REFCOUNT_ADD(*array)
+    return NOERROR;
+}
+
+ECode CArraySet::ToArray(
+    /* [in] */ ArrayOf<IInterface*>* inArray,
+    /* [out, callee] */ ArrayOf<IInterface*>** outArray)
+{
+    VALIDATE_NOT_NULL(outArray)
+    *outArray = NULL;
+    VALIDATE_NOT_NULL(inArray)
+    AutoPtr<ArrayOf<IInterface*> > array = inArray;
+    if (array->GetLength() < mSize) {
+        array = ArrayOf<IInterface*>::Alloc(mSize);
+    }
+    array->Copy(mArray, mSize);
+
+    if (array->GetLength() > mSize) {
+        array->Set(mSize, NULL);
+    }
+    *outArray = array;
+    REFCOUNT_ADD(*outArray)
+    return NOERROR;
+}
+
+ECode CArraySet::Equals(
     /* [in] */ IInterface* object,
     /* [out] */ Boolean* result)
 {
@@ -749,11 +598,11 @@ ECode CArrayMap::Equals(
         return NOERROR;
     }
 
-    if (IMap::Probe(object)) {
-        IMap* map = IMap::Probe(object);
+    if (ISet::Probe(object)) {
+        ISet* set = ISet::Probe(object);
         Int32 size, osize;
         GetSize(&size);
-        map->GetSize(&osize);
+        set->GetSize(&osize);
         if (size != osize) {
             return NOERROR;
         }
@@ -761,17 +610,9 @@ ECode CArrayMap::Equals(
         //try {
         Boolean bval;
         for (Int32 i = 0; i < mSize; i++) {
-            AutoPtr<IInterface> key, mine;
-            GetKeyAt(i, (IInterface**)&key);
+            AutoPtr<IInterface> mine;
             GetValueAt(i, (IInterface**)&mine);
-            AutoPtr<IInterface> theirs;
-            map->Get(key, (IInterface**)&theirs);
-            if (mine == NULL) {
-                if (theirs != NULL || (map->ContainsKey(key, &bval), !bval)) {
-                    return NOERROR;
-                }
-            }
-            else if (!Object::Equals(mine, theirs)) {
+            if ((set->Contains(mine, &bval), !bval)) {
                 return NOERROR;
             }
         }
@@ -786,22 +627,20 @@ ECode CArrayMap::Equals(
     return NOERROR;
 }
 
-ECode CArrayMap::GetHashCode(
+ECode CArraySet::GetHashCode(
     /* [out] */ Int32* hash)
 {
     VALIDATE_NOT_NULL(hash)
     AutoPtr<ArrayOf<Int32> > hashes = mHashes;
-    AutoPtr<ArrayOf<IInterface*> > array = mArray;
     Int32 result = 0;
     for (Int32 i = 0, v = 1, s = mSize; i < s; i++, v+=2) {
-        AutoPtr<IInterface> value = (*array)[v];
-        result += (*hashes)[i] ^ (value == NULL ? 0 : Object::GetHashCode(value));
+        result += (*hashes)[i];
     }
     *hash = result;
     return NOERROR;
 }
 
-ECode CArrayMap::ToString(
+ECode CArraySet::ToString(
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -812,28 +651,20 @@ ECode CArrayMap::ToString(
         return NOERROR;
     }
 
-    StringBuilder buffer(mSize * 28);
+    StringBuilder buffer(mSize * 14);
     buffer.AppendChar('{');
     for (Int32 i=0; i<mSize; i++) {
         if (i > 0) {
             buffer.Append(", ");
         }
-        AutoPtr<IInterface> key;
-        GetKeyAt(i, (IInterface**)&key);
-        if (key.Get() != TO_IINTERFACE(this)) {
-            buffer.Append(key);
-        }
-        else {
-            buffer.Append("(this Map)");
-        }
-        buffer.AppendChar('=');
+
         AutoPtr<IInterface> value;
         GetValueAt(i, (IInterface**)&value);
         if (value.Get() != TO_IINTERFACE(this)) {
             buffer.Append(value);
         }
         else {
-            buffer.Append("(this Map)");
+            buffer.Append("(this Set)");
         }
     }
     buffer.AppendChar('}');
@@ -841,7 +672,7 @@ ECode CArrayMap::ToString(
     return NOERROR;
 }
 
-AutoPtr<MapCollections> CArrayMap::GetCollection()
+AutoPtr<MapCollections> CArraySet::GetCollection()
 {
     if (mCollections == NULL) {
         mCollections = new InnerMapCollections(this);
@@ -849,101 +680,129 @@ AutoPtr<MapCollections> CArrayMap::GetCollection()
     return NULL;
 }
 
-ECode CArrayMap::ContainsAll(
+ECode CArraySet::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    VALIDATE_NOT_NULL(it)
+    AutoPtr<ISet> keySet = GetCollection()->GetKeySet();
+    return keySet->GetIterator((IIterator**)&it);
+}
+
+ECode CArraySet::ContainsAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = MapCollections::ContainsAllHelper(THIS_PROBE(IMap), collection);
-    return NOERROR;
-}
+    *result = FALSE;
 
-ECode CArrayMap::PutAll(
-    /* [in] */ IMap* map)
-{
-    VALIDATE_NOT_NULL(map)
-    Int32 size;
-    map->GetSize(&size);
-    EnsureCapacity(mSize + size);
-    AutoPtr<ISet> entrySet;
-    map->GetEntrySet((ISet**)&entrySet);
     AutoPtr<IIterator> it;
-    entrySet->GetIterator((IIterator**)&it);
-    Boolean hasNext;
-    IMapEntry* entry;
+    collection->GetIterator((IIterator**)&it);
+    Boolean hasNext, contains;
     while (it->HasNext(&hasNext), hasNext) {
-        AutoPtr<IInterface> next;
-        it->GetNext((IInterface**)&next);
-        entry = IMapEntry::Probe(next);
-        AutoPtr<IInterface> key, value;
-        entry->GetKey((IInterface**)&key);
-        entry->GetValue((IInterface**)&value);
-        Put(key, value);
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        if (Contains(obj, &contains), !contains) {
+            return NOERROR;
+        }
     }
+    *result = TRUE;
     return NOERROR;
 }
 
-ECode CArrayMap::RemoveAll(
+ECode CArraySet::AddAll(
+    /* [in] */ ICollection* collection)
+{
+    Boolean result;
+    return AddAll(collection, &result);
+}
+
+ECode CArraySet::AddAll(
+    /* [in] */ ICollection* collection,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    VALIDATE_NOT_NULL(collection)
+
+    Int32 size;
+    collection->GetSize(&size);
+    EnsureCapacity(mSize + size);
+    Boolean added = FALSE;
+
+    AutoPtr<IIterator> it;
+    collection->GetIterator((IIterator**)&it);
+    Boolean hasNext, bval;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> value;
+        it->GetNext((IInterface**)&value);
+        Add(value, &bval);
+        added |= bval;
+    }
+
+    *result = added;
+    return NOERROR;
+}
+
+ECode CArraySet::RemoveAll(
     /* [in] */ ICollection* collection)
 {
     Boolean result;
     return RemoveAll(collection, &result);
 }
 
-ECode CArrayMap::RemoveAll(
+ECode CArraySet::RemoveAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = MapCollections::RemoveAllHelper(THIS_PROBE(IMap), collection);
+    *result = FALSE;
+    VALIDATE_NOT_NULL(collection)
+
+    Boolean removed = FALSE;
+
+    AutoPtr<IIterator> it;
+    collection->GetIterator((IIterator**)&it);
+    Boolean hasNext, bval;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> value;
+        it->GetNext((IInterface**)&value);
+        Remove(value, &bval);
+        removed |= bval;
+    }
+
+    *result = removed;
     return NOERROR;
 }
 
-ECode CArrayMap::RetainAll(
+ECode CArraySet::RetainAll(
     /* [in] */ ICollection* collection)
 {
     Boolean result;
     return RetainAll(collection, &result);
 }
 
-ECode CArrayMap::RetainAll(
+ECode CArraySet::RetainAll(
     /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result)
-    *result = MapCollections::RetainAllHelper(THIS_PROBE(IMap), collection);
+    *result = FALSE;
+    VALIDATE_NOT_NULL(collection)
+
+    Boolean removed = FALSE, contains;
+
+    for (Int32 i = mSize - 1; i >= 0; i--) {
+        if (collection->Contains((*mArray)[i], &contains), !contains) {
+            AutoPtr<IInterface> value;
+            RemoveAt(i, (IInterface**)&value);
+            removed = TRUE;
+        }
+    }
+
+    *result = removed;
     return NOERROR;
 }
 
-ECode CArrayMap::GetEntrySet(
-    /* [out] */ ISet** set)
-{
-    VALIDATE_NOT_NULL(set)
-    AutoPtr<ISet> r = GetCollection()->GetEntrySet();
-    *set = r;
-    REFCOUNT_ADD(*set)
-    return NOERROR;
-}
-
-ECode CArrayMap::GetKeySet(
-    /* [out] */ ISet** set)
-{
-    VALIDATE_NOT_NULL(set)
-    AutoPtr<ISet> r = GetCollection()->GetKeySet();
-    *set = r;
-    REFCOUNT_ADD(*set)
-    return NOERROR;
-}
-
-ECode CArrayMap::GetValues(
-    /* [out] */ ICollection** set)
-{
-    VALIDATE_NOT_NULL(set)
-    AutoPtr<ICollection> r = GetCollection()->GetValues();
-    *set = r;
-    REFCOUNT_ADD(*set)
-    return NOERROR;
-}
 
 } // Utility
 } // Droid

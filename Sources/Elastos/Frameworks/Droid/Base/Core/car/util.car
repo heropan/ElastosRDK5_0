@@ -58,6 +58,8 @@ module
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFlushable;
     using interface Elastos.Utility.IMap;
+    using interface Elastos.Utility.ISet;
+    using interface Elastos.Utility.ICollection;
     using interface Org.Xmlpull.V1.IXmlPullParser;
 
     namespace Elastos {
@@ -83,6 +85,22 @@ module
         interface IArrayMap;
         interface IMap;
     }
+
+
+    class CArraySet {
+        constructor();
+
+        constructor(
+            [in] Int32 capacity);
+
+        constructor(
+            [in] IArraySet* map);
+
+        interface IArraySet;
+        interface ISet;
+        interface ICollection;
+    }
+
 /*
     class CDisplayMetrics {
         interface IDisplayMetrics;

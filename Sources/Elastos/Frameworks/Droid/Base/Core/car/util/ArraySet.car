@@ -39,7 +39,7 @@ module
          * @param key The value to search for.
          * @return Returns the index of the value if it exists, else a negative integer.
          */
-        IndexOf(
+        GetIndexOf(
             [in] IInterface* key,
             [out] Int32* value);
 
@@ -48,7 +48,7 @@ module
          * @param index The desired index, must be between 0 and {@link #size()}-1.
          * @return Returns the value stored at the given index.
          */
-        ValueAt(
+        GetValueAt(
             [in] Int32 index,
             [out] IInterface** outface);
 
@@ -67,7 +67,6 @@ module
         RemoveAt(
             [in] Int32 index,
             [out] IInterface** outface);
-
     }
 
     } // namespace Utility

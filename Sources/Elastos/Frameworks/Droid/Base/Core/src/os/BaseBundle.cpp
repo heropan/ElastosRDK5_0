@@ -3,8 +3,7 @@
 #include <elastos/core/CoreUtils.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Logger.h>
-
-//#include "util/CArrayMap.h"
+#include "util/CArrayMap.h"
 
 #include <binder/Parcel.h>
 
@@ -22,7 +21,7 @@ using Elastos::Core::CString;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
-//using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Utility::CArrayMap;
 
 namespace Elastos {
 namespace Droid {
@@ -81,10 +80,10 @@ ECode BaseBundle::constructor(
     /* [in] */ Int32 capacity)
 {
     if (capacity > 0) {
-        //CArrayMap::New(capacity, (IArrayMap**)&mMap);
+        CArrayMap::New(capacity, (IArrayMap**)&mMap);
     }
     else {
-        //CArrayMap::New((IArrayMap**)&mMap);
+        CArrayMap::New((IArrayMap**)&mMap);
     }
 
     mClassLoader = loader;
@@ -145,7 +144,7 @@ ECode BaseBundle::constructor(
     }
 
     if (b->mMap != NULL) {
-        //CArrayMap::New(b->mMap, (IArrayMap**)&mMap)
+        CArrayMap::New(b->mMap, (IArrayMap**)&mMap);
     }
     else {
         mMap = NULL;
@@ -206,7 +205,7 @@ void BaseBundle::Unparcel()
         if (DEBUG) Logger::D(TAG, "Unparcel %p : empty", this);
 
         if (mMap == NULL) {
-            //CArrayMap::New(1, (IArrayMap**)&mMap)
+            CArrayMap::New(1, (IArrayMap**)&mMap);
         }
         else {
             mMap->Erase();
@@ -222,8 +221,9 @@ void BaseBundle::Unparcel()
         return;
     }
     if (mMap == NULL) {
-        //CArrayMap::New(N, (IArrayMap**)&mMap)
-    } else {
+        CArrayMap::New(N, (IArrayMap**)&mMap);
+    }
+    else {
         mMap->Erase();
         mMap->EnsureCapacity(N);
     }
