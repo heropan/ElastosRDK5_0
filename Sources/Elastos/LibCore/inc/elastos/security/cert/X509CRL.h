@@ -19,10 +19,9 @@ extern "C" const InterfaceID EIID_X509CRL;
 class X509CRL
     : public CRL
     , public IX509Extension
-    , public ElRefBase
 {
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     virtual CARAPI Equals(
         /* [in] */ IInterface *other,

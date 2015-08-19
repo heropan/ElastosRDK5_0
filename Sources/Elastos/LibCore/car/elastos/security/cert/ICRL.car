@@ -27,14 +27,6 @@ module
         IsRevoked(
             [in] ICertificate* cert,
             [out] Boolean* result);
-
-        /**
-         * Returns the string representation of this instance.
-         *
-         * @return the string representation of this instance.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Cert

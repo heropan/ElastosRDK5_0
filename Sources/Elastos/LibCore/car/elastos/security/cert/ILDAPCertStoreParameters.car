@@ -8,6 +8,7 @@ module
     /**
      * @Involve
      * interface ICertStoreParameters
+     * interface Elastos.Core.ICloneable;
      */
     interface ILDAPCertStoreParameters {
         /**
@@ -25,16 +26,6 @@ module
          */
         GetServerName(
             [out] String* name);
-
-        /**
-         * Returns the string representation of this {@code LDAPCertStoreParameters}
-         * instance.
-         *
-         * @return the string representation of this {@code LDAPCertStoreParameters}
-         *         instance.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Cert

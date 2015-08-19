@@ -13,7 +13,7 @@ namespace Cert {
 
 static const Int64 serialVersionUID = -2491127588187038216L;
 
-CAR_INTERFACE_IMPL(X509Certificate, IX509Extension)
+CAR_INTERFACE_IMPL(X509Certificate, Certificate, IX509Extension);
 
 X509Certificate::X509Certificate()
     : Certificate(String("X.509"))

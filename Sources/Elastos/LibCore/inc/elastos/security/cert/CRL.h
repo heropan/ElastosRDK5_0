@@ -2,15 +2,19 @@
 #ifndef __ELASTOS_SECURITY_CERT_CRL_H__
 #define __ELASTOS_SECURITY_CERT_CRL_H__
 
-
 using Elastos::Security::ICertificate;
 
 namespace Elastos {
 namespace Security {
 namespace Cert {
 
-class CRL {
+class CRL
+    : public Object
+    , public ICRL
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the type of this CRL.
      *
@@ -38,6 +42,7 @@ public:
      */
     virtual CARAPI ToString(
         /* [out] */ String* str) = 0;
+
 protected:
     /**
      * Creates a new certificate revocation list of the specified type.

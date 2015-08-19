@@ -78,7 +78,7 @@ module
          *             if algorithm is {@code null}.
          * @throws IllegalArgumentException if {@code provider == null || provider.isEmpty()}
          */
-        GetInstanceEx(
+        GetInstance(
             [in] String algorithm,
             [in] String provider,
             [out] ICertPathBuilder** builder);
@@ -98,7 +98,7 @@ module
          * @throws NullPointerException
          *             if algorithm is {@code null}.
          */
-        GetInstanceEx2(
+        GetInstance(
             [in] String algorithm,
             [in] IProvider* provider,
             [out] ICertPathBuilder** builder);

@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTSTORE_H__
 #define __ELASTOS_SECURITY_CERT_CERTSTORE_H__
 
+#include "Object.h"
 
-
+using Elastos::Core::Object;
 using Elastos::Security::IProvider;
 using Elastos::Utility::ICollection;
 
@@ -12,8 +13,12 @@ namespace Security {
 namespace Cert {
 
 class CertStore
+    : public Object
+    , public ICertStore
 {
 public:
+    CAR_INTERFACE_DECL();
+
     static CARAPI GetInstance(
         /* [in] */ const String& type,
         /* [in] */ ICertStoreParameters *params,

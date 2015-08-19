@@ -100,7 +100,7 @@ module
          * @throws UnsupportedOperationException
          *             if the provider does not implement this method.
          */
-        EngineGenerateCertPathEx(
+        EngineGenerateCertPath(
             [in] IInputStream* inStream,
             [in] String encoding,
             [out] ICertPath** certPath);
@@ -118,7 +118,7 @@ module
          * @throws UnsupportedOperationException
          *             if the provider does not implement this method.
          */
-        EngineGenerateCertPathEx2(
+        EngineGenerateCertPath(
             [in] IList* certificates,
             [out] ICertPath** certPath);
 

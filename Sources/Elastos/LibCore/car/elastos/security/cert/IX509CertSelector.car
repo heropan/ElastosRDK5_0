@@ -12,6 +12,11 @@ module
     namespace Security {
     namespace Cert {
 
+    /**
+      * @Involve
+      * interface ICertSelector
+      * interface Elastos.Core.ICloneable;
+      */
     [deprecated]
     interface IX509CertSelector {
         /**

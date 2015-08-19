@@ -86,7 +86,7 @@ module
          * @throws UnsupportedOperationException
          *             if the provider does not implement this method.
          */
-        GenerateCertPathEx(
+        GenerateCertPath(
             [in] IInputStream* inStream,
             [in] String encoding,
             [out] ICertPath** certPath);
@@ -104,7 +104,7 @@ module
          * @throws UnsupportedOperationException
          *             if the provider does not implement this method.
          */
-        GenerateCertPathEx2(
+        GenerateCertPath(
             [in] IList* certificates,
             [out] ICertPath** certPath);
 

@@ -10,7 +10,8 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-ECode PKIXCertPathValidatorResult::Init(
+CAR_INTERFACE_IMPL_3(PKIXCertPathValidatorResult, Object, IPKIXCertPathValidatorResult,ICertPathValidatorResult,ICloneable);
+ECode PKIXCertPathValidatorResult::constructor(
     /* [in] */ ITrustAnchor *trustAnchor,
     /* [in] */ IPolicyNode *policyTree,
     /* [in] */ IPublicKey *subjectPublicKey)

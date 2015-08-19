@@ -11,6 +11,7 @@ module
     /**
      * @Involve
      * interface ICertPathValidatorResult
+     * interface ICloneable
      */
     interface IPKIXCertPathValidatorResult {
         /**
@@ -37,16 +38,6 @@ module
          */
         GetTrustAnchor(
             [out] ITrustAnchor** anchor);
-
-        /**
-         * Returns a string representation for this {@code
-         * PKIXCertPathValidatorResult} instance.
-         *
-         * @return a string representation for this {@code
-         *         PKIXCertPathValidatorResult} instance.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Cert

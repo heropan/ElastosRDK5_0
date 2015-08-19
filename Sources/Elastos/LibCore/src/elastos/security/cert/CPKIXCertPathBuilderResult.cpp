@@ -8,31 +8,8 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-
-ECode CPKIXCertPathBuilderResult::Clone(
-    /* [out] */ IInterface **object)
-{
-    return PKIXCertPathValidatorResult::Clone(object);
-}
-
-ECode CPKIXCertPathBuilderResult::GetPolicyTree(
-    /* [out] */ IPolicyNode **policyTree)
-{
-    return PKIXCertPathValidatorResult::GetPolicyTree(policyTree);
-}
-
-ECode CPKIXCertPathBuilderResult::GetPublicKey(
-    /* [out] */ IPublicKey **key)
-{
-    return PKIXCertPathValidatorResult::GetPublicKey(key);
-}
-
-ECode CPKIXCertPathBuilderResult::GetTrustAnchor(
-    /* [out] */ ITrustAnchor **anchor)
-{
-    return PKIXCertPathValidatorResult::GetTrustAnchor(anchor);
-}
-
+CAR_OBJECT_IMPL(CPKIXCertPathBuilderResult);
+CAR_INTERFACE_IMPL(CPKIXCertPathBuilderResult, PKIXCertPathValidatorResult, IPKIXCertPathBuilderResult,ICertPathBuilderResult);
 ECode CPKIXCertPathBuilderResult::ToString(
     /* [out] */ String *str)
 {
@@ -61,7 +38,7 @@ ECode CPKIXCertPathBuilderResult::constructor(
     /* [in] */ IPolicyNode *policyTree,
     /* [in] */ IPublicKey *subjectPublicKey)
 {
-    PKIXCertPathValidatorResult::Init(trustAnchor, policyTree, subjectPublicKey);
+    PKIXCertPathValidatorResult::constructor(trustAnchor, policyTree, subjectPublicKey);
     if (!certPath) {
         return E_NULL_POINTER_EXCEPTION;
     }
@@ -69,13 +46,6 @@ ECode CPKIXCertPathBuilderResult::constructor(
     return NOERROR;
 }
 
-PInterface CPKIXCertPathBuilderResult::Probe(
-    /* [in] */ REIID riid)
-{
-    return _CPKIXCertPathBuilderResult::Probe(riid);
-}
-
 }
 }
 }
-

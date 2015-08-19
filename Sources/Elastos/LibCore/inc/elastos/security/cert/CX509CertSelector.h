@@ -21,8 +21,16 @@ namespace Cert {
  * X509Certificate}s that match the specified criteria.
  */
 CarClass(CX509CertSelector)
+    , public Object
+    , public IX509CertSelector
+    , public ICertSelector
+    , public ICloneable
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new {@code X509CertSelector}.
      */

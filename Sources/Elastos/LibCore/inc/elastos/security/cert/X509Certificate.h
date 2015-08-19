@@ -18,11 +18,11 @@ namespace Security {
 namespace Cert {
 
 class X509Certificate
-    : public ElRefBase
-    , public Certificate
-    , public IX509Extension {
+    : public Certificate
+    , public IX509Extension
+{
 public:
-    CAR_INTERFACE_DECL()
+    CAR_INTERFACE_DECL();
 
     /**
      * Checks whether the certificate is currently valid.

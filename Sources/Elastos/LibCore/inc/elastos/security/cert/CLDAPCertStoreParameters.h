@@ -9,8 +9,16 @@ namespace Security {
 namespace Cert {
 
 CarClass(CLDAPCertStoreParameters)
+    : public Object
+    , public ILDAPCertStoreParameters
+    , public ICertStoreParameters
+    , public ICloneable
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI Clone(
         /* [out] */ IInterface **object);
 

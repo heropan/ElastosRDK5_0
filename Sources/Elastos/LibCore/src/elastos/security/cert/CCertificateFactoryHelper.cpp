@@ -6,6 +6,8 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
+CAR_INTERFACE_IMPL(CCertificateFactoryHelper, Singleton, ICertificateFactoryHelper)
+CAR_SINGLETON_IMPL(CCertificateFactoryHelper)
 ECode CCertificateFactoryHelper::GetInstance(
     /* [in] */ const String& type,
     /* [out] */ ICertificateFactory** factory)
@@ -13,7 +15,7 @@ ECode CCertificateFactoryHelper::GetInstance(
     return CCertificateFactory::GetInstance(type, factory);
 }
 
-ECode CCertificateFactoryHelper::GetInstanceEx(
+ECode CCertificateFactoryHelper::GetInstance(
     /* [in] */ const String& type,
     /* [in] */ const String& provider,
     /* [out] */ ICertificateFactory** factory)
@@ -21,7 +23,7 @@ ECode CCertificateFactoryHelper::GetInstanceEx(
     return CCertificateFactory::GetInstance(type, provider, factory);
 }
 
-ECode CCertificateFactoryHelper::GetInstanceEx2(
+ECode CCertificateFactoryHelper::GetInstance(
     /* [in] */ const String& type,
     /* [in] */ IProvider* provider,
     /* [out] */ ICertificateFactory** factory)

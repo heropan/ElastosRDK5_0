@@ -10,6 +10,7 @@ module
     /**
      * @Involve
      * interface ICertStoreParameters
+     * interface Elastos.Core.ICloneable;
      */
     interface ICollectionCertStoreParameters {
         /**
@@ -21,14 +22,6 @@ module
          */
         GetCollection(
             [out] ICollection** collection);
-
-        /**
-         * Returns the string representation of this instance.
-         *
-         * @return the string representation of this instance.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Cert

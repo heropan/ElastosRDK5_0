@@ -11,20 +11,15 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-CarClass(CPKIXCertPathBuilderResult), public PKIXCertPathValidatorResult
+CarClass(CPKIXCertPathBuilderResult)
+    , public PKIXCertPathValidatorResult
+    , public IPKIXCertPathBuilderResult
+    , public ICertPathBuilderResult
 {
 public:
-    CARAPI Clone(
-        /* [out] */ IInterface **object);
+    CAR_OBJECT_DECL();
 
-    CARAPI GetPolicyTree(
-        /* [out] */ IPolicyNode **policyTree);
-
-    CARAPI GetPublicKey(
-        /* [out] */ IPublicKey **key);
-
-    CARAPI GetTrustAnchor(
-        /* [out] */ ITrustAnchor **anchor);
+    CAR_INTERFACE_DECL();
 
     CARAPI ToString(
         /* [out] */ String * pStr);
@@ -37,9 +32,6 @@ public:
         /* [in] */ ITrustAnchor *trustAnchor,
         /* [in] */ IPolicyNode *policyTree,
         /* [in] */ IPublicKey *subjectPublicKey);
-
-    CARAPI_(PInterface) Probe(
-    /* [in] */ REIID riid);
 
 private:
     // Built and validated certification path

@@ -24,6 +24,7 @@ const String CertPathBuilder::sPROPERTYNAME = String("certpathbuilder.type");
 // property is not defined in java.security file
 const String CertPathBuilder::sDEFAULTPROPERTY = String("PKIX");
 
+CAR_INTERFACE_IMPL(CertPathBuilder, Object, ICertPathBuilder);
 ECode CertPathBuilder::GetAlgorithm(
     /* [out] */ String *algorithm)
 {

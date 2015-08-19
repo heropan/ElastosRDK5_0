@@ -9,8 +9,15 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-class PKIXCertPathValidatorResult {
+class PKIXCertPathValidatorResult
+    : public Object
+    , public IPKIXCertPathValidatorResult
+    , public ICertPathValidatorResult
+    , public ICloneable
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Creates a new {@code PKIXCertPathValidatorResult} with the specified
      * trust anchor, the valid policy tree and the subject public key.
@@ -23,7 +30,7 @@ public:
      * @param subjectPublicKey
      *            the subject public key from the validation.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ITrustAnchor *trustAnchor,
         /* [in] */ IPolicyNode *policyTree,
         /* [in] */ IPublicKey *subjectPublicKey);
@@ -71,10 +78,6 @@ public:
     CARAPI ToString(
         /* [out] */ String *str);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid) = 0;
-
-protected:
 private:
     // A trust anchor used during validation of certification path
     AutoPtr<ITrustAnchor> mTrustAnchor;

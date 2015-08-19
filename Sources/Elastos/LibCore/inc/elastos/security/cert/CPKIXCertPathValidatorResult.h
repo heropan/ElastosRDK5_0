@@ -5,7 +5,6 @@
 #include "_Elastos_Security_Cert_CPKIXCertPathValidatorResult.h"
 #include "PKIXCertPathValidatorResult.h"
 
-
 using Elastos::Security::IPublicKey;
 
 namespace Elastos {
@@ -15,28 +14,12 @@ namespace Cert {
 CarClass(CPKIXCertPathValidatorResult), public PKIXCertPathValidatorResult
 {
 public:
-    CARAPI Clone(
-        /* [out] */ IInterface **object);
-
-    CARAPI GetPolicyTree(
-        /* [out] */ IPolicyNode **policyTree);
-
-    CARAPI GetPublicKey(
-        /* [out] */ IPublicKey **key);
-
-    CARAPI GetTrustAnchor(
-        /* [out] */ ITrustAnchor **anchor);
-
-    CARAPI ToString(
-        /* [out] */ String *str);
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */ ITrustAnchor *trustAnchor,
         /* [in] */ IPolicyNode *policyTree,
         /* [in] */ IPublicKey *subjectPublicKey);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 };
 
 }

@@ -12,8 +12,14 @@ namespace Security {
 namespace Cert {
 
 CarClass(CTrustAnchor)
+    , public Object
+    , public ITrustAnchor
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetNameConstraints(
         /* [out, callee] */ ArrayOf<Byte> **nameConstraints);
 
