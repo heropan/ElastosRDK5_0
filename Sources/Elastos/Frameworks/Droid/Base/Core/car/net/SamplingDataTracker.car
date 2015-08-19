@@ -3,7 +3,6 @@ module
 {
 
     interface Elastos.Droid.Net.ISamplingDataTrackerSamplingSnapshot;
-    interface Elastos.Droid.Os.ISystemClock;
     interface Elastos.Droid.Util.ISlog;
     using interface Elastos.IO.IBufferedReader;
     using interface Elastos.IO.IFileReader;

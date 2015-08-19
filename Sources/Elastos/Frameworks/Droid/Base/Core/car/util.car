@@ -70,7 +70,7 @@ module
 
         interface IAtomicFile;
     }
-/*
+
     class CArrayMap {
         constructor();
 
@@ -78,15 +78,12 @@ module
             [in] Int32 capacity);
 
         constructor(
-            [in] Boolean immutable);
-
-        constructor(
             [in] IArrayMap* map);
 
         interface IArrayMap;
         interface IMap;
     }
-
+/*
     class CDisplayMetrics {
         interface IDisplayMetrics;
     }

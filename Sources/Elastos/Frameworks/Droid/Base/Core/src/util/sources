@@ -11,7 +11,7 @@ C_DEFINES += -DDROID_CORE
 
 SOURCES += MapCollections.cpp
 // SOURCES = ArrayUtils.cpp
-//SOURCES += CArrayMap.cpp
+SOURCES += CArrayMap.cpp
 SOURCES += CAtomicFile.cpp
 // SOURCES += CDisplayMetrics.cpp
 // SOURCES += CTypedValue.cpp
