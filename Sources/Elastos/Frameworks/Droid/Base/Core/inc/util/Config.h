@@ -1,6 +1,6 @@
 
-#ifndef __ELASTOS_DROID_UTILITY_H_H__
-#define __ELASTOS_DROID_UTILITY_H_H__
+#ifndef __ELASTOS_DROID_UTILITY_CONFIG_H__
+#define __ELASTOS_DROID_UTILITY_CONFIG_H__
 
 #include <elastos.h>
 
@@ -43,6 +43,7 @@ public:
      */
     static const Boolean LOGD = TRUE;
 
+private:
     Config();
 };
 
@@ -50,4 +51,4 @@ public:
 }
 }
 
-#endif // __ELASTOS_DROID_UTILITY_H_H__
+#endif // __ELASTOS_DROID_UTILITY_CONFIG_H__
