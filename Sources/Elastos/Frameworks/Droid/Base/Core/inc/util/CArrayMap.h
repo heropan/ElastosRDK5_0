@@ -3,6 +3,7 @@
 
 #include "_Elastos_Droid_Utility_CArrayMap.h"
 #include <elastos/core/Object.h>
+#include "util/MapCollections.h"
 
 using Elastos::Utility::IMap;
 
@@ -19,6 +20,22 @@ public:
     CAR_INTERFACE_DECL()
 
     CAR_OBJECT_DECL()
+
+    CARAPI_(Int32) IndexOf(
+        /* [in] */ IInterface* key,
+        /* [in] */ Int32 hash);
+
+    CARAPI_(Int32) IndexOfNull();
+
+private:
+    CARAPI AllocArrays(
+        /* [in] */ Int32 size);
+
+    static CARAPI FreeArrays(
+        /* [in] */ ArrayOf<Int32>* hashes,
+        /* [in] */ ArrayOf<IInterface*> array,
+        /* [in] */ Int32 size);
+
 
 public:
     /**
@@ -55,12 +72,12 @@ private:
     /**
      * Special hash array value that indicates the container is immutable.
      */
-    static const Int32[] EMPTY_IMMUTABLE_INTS = new Int32[0];
+    static const AutoPtr<ArrayOf<Int32> > EMPTY_IMMUTABLE_INTS;// = new Int32[0];
 
     AutoPtr<ArrayOf<Int32> > mHashes;
     AutoPtr<ArrayOf<IInterface*> > mArray;
     Int32 mSize;
-    //MapCollections<K, V> mCollections;
+    AutoPtr<MapCollections> mCollections;
 };
 
 } // Utility

@@ -286,18 +286,6 @@ module
 
     }}} // Elastos.Droid.Telephony
 
-    namespace Elastos {
-    namespace Droid {
-    namespace SystemUI {
-
-        namespace StatusBar {
-            namespace Phone {
-                interface IPhoneStatusBar {}
-            }
-        }
-
-    }}} // Elastos.Droid.SystemUI
-
 
     namespace Elastos {
     namespace Droid {

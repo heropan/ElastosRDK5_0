@@ -260,21 +260,33 @@ ECode MapCollections::EntrySet::Add(
 }
 
 ECode MapCollections::EntrySet::AddAll(
-    /* [in] */ ICollection* objs)
+    /* [in] */ ICollection* collection)
 {
     Boolean result;
-    return AddAll(objs, &result);
+    return AddAll(collection, &result);
 }
 
 ECode MapCollections::EntrySet::AddAll(
-    /* [in] */ ICollection* objs,
+    /* [in] */ ICollection* collection,
     /* [out] */ Boolean* result)
 {
-    // Int32 oldSize = ColGetSize();
-    // for (Map.Entry<K, V> entry : collection) {
-    //     colPut(entry.getKey(), entry.getValue());
-    // }
-    // return oldSize != ColGetSize();
+    VALIDATE_NOT_NULL(result)
+    Int32 oldSize = mHost->ColGetSize();
+    AutoPtr<IIterator> it;
+    collection->GetIterator((IIterator**)&it);
+    Boolean hashNext, contains;
+    IMapEntry* me;
+    while (it->HasNext(&hashNext), hashNext) {
+        AutoPtr<IInterface> obj;
+        it->GetNext((IInterface**)&obj);
+        me = IMapEntry::Probe(obj);
+        AutoPtr<IInterface> key, value;
+        me->GetKey((IInterface**)&key);
+        me->GetValue((IInterface**)&value);
+        mHost->ColPut(key, value);
+    }
+
+    *result = oldSize != mHost->ColGetSize();
     return NOERROR;
 }
 
@@ -288,15 +300,24 @@ ECode MapCollections::EntrySet::Contains(
     /* [in] */ IInterface* o,
     /* [out] */ Boolean* result)
 {
-    // if (!(o instanceof Map.Entry))
-    //     return FALSE;
-    // Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
-    // Int32 index = ColIndexOfKey(e.getKey());
-    // if (index < 0) {
-    //     return FALSE;
-    // }
-    // Object foundVal = ColGetEntry(index, 1);
-    // return Objects.equal(foundVal, e.getValue());
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    IMapEntry* e = IMapEntry::Probe(o);
+    if (e == NULL)
+        return NOERROR;
+
+    AutoPtr<IInterface> key;
+    e->GetKey((IInterface**)&key);
+    Int32 index = mHost->ColIndexOfKey(key);
+    if (index < 0) {
+        return NOERROR;
+    }
+
+    AutoPtr<IInterface> foundVal = mHost->ColGetEntry(index, 1);
+    AutoPtr<IInterface> value;
+    e->GetValue((IInterface**)&value);
+    *result = Objects::Equals(foundVal, value);
     return NOERROR;
 }
 
