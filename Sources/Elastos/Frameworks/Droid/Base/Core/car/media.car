@@ -22,6 +22,7 @@ module
     merge("media/media/audiofx/BassBoost.car");
     merge("media/media/audiofx/EnvironmentalReverb.car");
     merge("media/media/audiofx/Equalizer.car");
+    merge("media/media/audiofx/LoudnessEnhancer.car");
     merge("media/media/audiofx/NoiseSuppressor.car");
     merge("media/media/audiofx/PresetReverb.car");
     merge("media/media/audiofx/Virtualizer.car");
