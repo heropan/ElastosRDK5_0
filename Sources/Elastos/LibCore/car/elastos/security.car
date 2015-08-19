@@ -1,6 +1,7 @@
 
 module
 {
+    merge("security/Exceptions.car");
     merge("security/IKey.car");
     merge("security/IPublicKey.car");
     merge("security/IPrivateKey.car");
@@ -90,7 +91,6 @@ module
     merge("security/spec/IRSAPublicKeySpec.car");
     merge("security/spec/IX509EncodedKeySpec.car");
 
-    merge("security/Exceptions.car");
     merge("security/IAccessControlContext.car");
     merge("security/IAccessController.car");
     merge("security/IAlgorithmParameterGenerator.car");
@@ -130,4 +130,18 @@ module
     merge("security/ISignedObject.car");
     merge("security/ISigner.car");
     merge("security/IUnresolvedPermission.car");
+
+    namespace Elastos {
+    namespace Security {
+
+    singleton class CSecurity {
+        interface ISecurity;
+    }
+
+    singleton class CMessageDigestHelper {
+        interface IMessageDigestHelper;
+    }
+
+    } // namespace Security
+    } // namespace Elastos
 }

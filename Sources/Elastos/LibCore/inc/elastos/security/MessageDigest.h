@@ -4,8 +4,9 @@
 
 #include "MessageDigestSpi.h"
 
-using Elastos::IO::IByteBuffer;
 using Elastos::Core::ICloneable;
+using Elastos::IO::IByteBuffer;
+using Org::Apache::Harmony::Security::Fortress::IEngine;
 
 namespace Elastos {
 namespace Security {
@@ -15,69 +16,74 @@ class MessageDigest
     , public IMessageDigest
 {
 public:
+    CARAPI_(PInterface) Probe(
+        /* [in] */ REIID riid);
+
     static CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [out] */ IMessageDigest** instance);
 
-    static CARAPI GetInstanceEx(
+    static CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ const String& provider,
         /* [out] */ IMessageDigest** instance);
 
-    static CARAPI GetInstanceEx2(
+    static CARAPI GetInstance(
         /* [in] */ const String& algorithm,
         /* [in] */ IProvider* provider,
         /* [out] */ IMessageDigest** instance);
-
-    static CARAPI IsEqual(
-        /* [in] */ ArrayOf<Byte>* digesta,
-        /* [in] */ ArrayOf<Byte>* digestb,
-        /* [out] */ Boolean* result);
 
     CARAPI Reset();
 
     CARAPI Update(
         /* [in] */ Byte arg0);
 
-    CARAPI UpdateEx(
+    CARAPI Update(
         /* [in] */ ArrayOf<Byte>* input,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len);
 
-    CARAPI UpdateEx2(
+    CARAPI Update(
         /* [in] */ ArrayOf<Byte>* input);
 
     CARAPI Digest(
         /* [out, callee] */ ArrayOf<Byte>** hashValue);
 
-    CARAPI DigestEx(
+    CARAPI Digest(
         /* [in] */ ArrayOf<Byte>* buf,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 len,
         /* [out] */ Int32* number);
 
-    CARAPI DigestEx2(
+    CARAPI Digest(
         /* [in] */ ArrayOf<Byte>* input,
         /* [out, callee] */ ArrayOf<Byte>** hashValue);
 
     CARAPI ToString(
         /* [out] */ String* str);
 
+    static CARAPI IsEqual(
+        /* [in] */ ArrayOf<Byte>* digesta,
+        /* [in] */ ArrayOf<Byte>* digestb,
+        /* [out] */ Boolean* result);
+
     CARAPI GetAlgorithm(
-        /* [out] */ String* algorithm) const;
+        /* [out] */ String* algorithm);
 
     CARAPI GetProvider(
-        /* [out, callee] */ IProvider** provider) const;
+        /* [out, callee] */ IProvider** provider);
 
     CARAPI GetDigestLength(
-        /* [out] */ Int32* length) const;
+        /* [out] */ Int32* length);
 
-    CARAPI UpdateEx3(
+    CARAPI Update(
         /* [in] */ IByteBuffer* input);
 
-protected:
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CARAPI SetProvider(
+        /* [in] */ IProvider* provider);
+
+    CARAPI SetAlgorithm(
+        /* [in] */ const String& algorithm);
 
 protected:
     /**
@@ -90,19 +96,18 @@ protected:
     MessageDigest(
         /* [in] */ const String& algorithm);
 
+private:
+    static CARAPI_(AutoPtr<IEngine>) Init_ENGINE();
+
 protected:
-    //Todo later, related to apache...
     // Used to access common engine functionality
-    //static const Engine ENGINE = new Engine("MessageDigest");
+    static const AutoPtr<IEngine> ENGINE;
 
     // The provider
     AutoPtr<IProvider> mProvider;
 
     // The algorithm.
     String mAlgorithm;
-
-private:
-    class MessageDigestImpl;
 };
 
 } // namespace Security

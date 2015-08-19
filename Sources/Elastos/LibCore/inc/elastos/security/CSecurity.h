@@ -3,13 +3,16 @@
 #define __ELASTOS_SECURITY_CSECURITY_H__
 
 #include "_Elastos_Security_CSecurity.h"
-#include "elastos/Object.h"
+#include "core/Object.h"
+#include "core/Singleton.h"
 
-
-
+using Elastos::Core::Object;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::IList;
 using Elastos::Utility::IMap;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IProperties;
+using Org::Apache::Harmony::Security::Fortress::ISecurityAccess;
 
 namespace Elastos {
 namespace Security {
@@ -20,9 +23,44 @@ namespace Security {
  * runtime environment.
  */
 CarClass(CSecurity)
+    , public Singleton
+    , public ISecurity
 {
+private:
+    class SecurityDoor
+        : public Object
+        , public ISecurityAccess
+    {
+    public:
+        CAR_INTERFACE_DECL()
+
+        CAR_OBJECT_DECL()
+
+        /**
+         * Access to Security.renumProviders()
+         */
+        CARAPI RenumProviders();
+
+        /**
+         * Access to Service.getAliases()
+         */
+        CARAPI GetAliases(
+            /* [in] */ IProviderService* s,
+            /* [out] */ IList** aliases);
+
+        /**
+         * Access to Provider.getService(String type)
+         */
+        CARAPI GetService(
+            /* [in] */ IProvider* p,
+            /* [in] */ const String& type,
+            /* [out] */ IProviderService** service);
+    };
+
 public:
-    static CARAPI_(AutoPtr<IProperties>) InitStatics();
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetAlgorithmProperty(
         /* [in] */ const String& algName,
@@ -30,7 +68,7 @@ public:
         /* [out] */ String* algProp);
 
     CARAPI InsertProviderAt(
-        /* [in] */ IProvider * provider,
+        /* [in] */ IProvider* provider,
         /* [in] */ Int32 position,
         /* [out] */ Int32* pos);
 
@@ -48,11 +86,11 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IProvider** provider);
 
-    CARAPI GetProvidersEx(
+    CARAPI GetProviders(
         /* [in] */ const String& filter,
         /* [out, callee] */ ArrayOf<IProvider*>** providers);
 
-    CARAPI GetProvidersEx2(
+    CARAPI GetProviders(
         /* [in] */ IMap* filter,
         /* [out, callee] */ ArrayOf<IProvider*>** providers);
 
@@ -66,37 +104,25 @@ public:
 
     CARAPI GetAlgorithms(
         /* [in] */ const String& serviceName,
-        /* [out] */ ISet ** algs);
+        /* [out] */ ISet** algs);
 
 private:
-    //Todo... after apache.
-    /*
-    private static class SecurityDoor implements SecurityAccess {
-    // Access to Security.renumProviders()
-    public void renumProviders() {
-        Security.renumProviders();
-    }
+    static CARAPI_(void) RegisterDefaultProviders();
 
-    //  Access to Security.getAliases()
-    public List<String> getAliases(Provider.Service s) {
-        return s.getAliases();
-    }
+    static CARAPI_(void) FilterProviders(
+        /* [in] */ IArrayList* providers,
+        /* [in] */ const String& service,
+        /* [in] */ const String& algorithm,
+        /* [in] */ const String& attribute,
+        /* [in] */ const String& attrValue);
 
-    // Access to Provider.getService()
-    public Provider.Service getService(Provider p, String type) {
-        return p.getService(type);
-    }
-    }
-    */
     static CARAPI RenumProviders();
 
-private:
-    static CARAPI RegisterDefaultProviders();
-    Object mLock;
+    static CARAPI_(AutoPtr<IProperties>) InitStatics();
 
 private:
     // Security properties
-    static const AutoPtr<IProperties> mSecprops;
+    static const AutoPtr<IProperties> sSecprops;
 };
 
 }

@@ -1,7 +1,9 @@
 
 module
 {
-    using interface Elastos.Security.IProvider;
+    interface Elastos.Security.IProvider;
+    interface Elastos.Security.IProviderService;
+    interface Elastos.Utility.IArrayList;
     interface Org.Apache.Harmony.Security.Fortress.ISecurityAccess;
 
     namespace Org {
@@ -36,11 +38,28 @@ module
             [out] ISpiAndProvider** instance);
 
         /**
+         * Finds the appropriate service implementation and returns an
+         * {@code SpiAndProvider} instance containing a reference to SPI
+         * and its {@code Provider}
+         */
+        GetInstance(
+            [in] IProviderService* service,
+            [in] String param,
+            [out] ISpiAndProvider** instance);
+
+        /**
+         * Returns a list of all possible matches for a given algorithm.
+         */
+        GetServices(
+            [in] String algorithm,
+            [out] IArrayList** services);
+
+        /**
          * Finds the appropriate service implementation and returns and
          * instance of the class that implements corresponding Service
          * Provider Interface.
          */
-        GetInstanceEx(
+        GetInstance(
             [in] String algorithm,
             [in] IProvider* provider,
             [in] IInterface* param,

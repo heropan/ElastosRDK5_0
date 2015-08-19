@@ -2,10 +2,15 @@
 TARGET_NAME= fortress
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Fortress
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/fortress
 
 SOURCES = CEngine.cpp
-SOURCES += CEngineHelper.cpp
-SOURCES += CServicesHelper.cpp
-SOURCES += CSpiAndProvider.cpp
+#SOURCES += CEngineHelper.cpp
+SOURCES += CServices.cpp

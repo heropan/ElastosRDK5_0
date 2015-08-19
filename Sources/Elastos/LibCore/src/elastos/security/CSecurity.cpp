@@ -1,26 +1,89 @@
 
-#include "CSecurity.h"
-#include "CProperties.h"
-#include "CString.h"
-#include "CHashMap.h"
-#include "CHashSet.h"
+#include "core/AutoLock.h"
+#include "core/CString.h"
+#include "security/CSecurity.h"
+#include "utility/CProperties.h"
+#include "utility/CHashMap.h"
+#include "utility/CHashSet.h"
+#include "utility/CArrayList.h"
+#include "utility/logging/Logger.h"
+#include "org/apache/harmony/security/fortress/CEngine.h"
+#include "org/apache/harmony/security/fortress/CServices.h"
 
 using Elastos::Core::ICharSequence;
 using Elastos::Core::CString;
+using Elastos::Core::AutoLock;
 using Elastos::Security::IProviderService;
 using Elastos::Security::IProvider;
 using Elastos::Utility::IEnumeration;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::IIterator;
-using Elastos::Utility::IList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::CProperties;
 using Elastos::Utility::CHashMap;
 using Elastos::Utility::CHashSet;
+using Elastos::Utility::Logging::Logger;
+using Org::Apache::Harmony::Security::Fortress::CEngine;
+using Org::Apache::Harmony::Security::Fortress::IServices;
+using Org::Apache::Harmony::Security::Fortress::CServices;
+using Org::Apache::Harmony::Security::Fortress::EIID_ISecurityAccess;
 
 namespace Elastos {
 namespace Security {
 
-const AutoPtr<IProperties> CSecurity::mSecprops = CSecurity::InitStatics();
+//----------------------------------------------------
+// CSecurity::SecurityDoor
+//----------------------------------------------------
+CAR_INTERFACE_IMPL(CSecurity::SecurityDoor, Object, ISecurityAccess)
+
+ECode CSecurity::SecurityDoor::Aggregate(
+    /* [in] */ AggregateType type,
+    /* [in] */ IInterface* object)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CSecurity::SecurityDoor::GetDomain(
+    /* [out] */ IInterface** object)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CSecurity::SecurityDoor::GetClassID(
+    /* [out] */ ClassID* clsid)
+{
+    return E_NOT_IMPLEMENTED;
+}
+
+ECode CSecurity::SecurityDoor::RenumProviders()
+{
+    return CSecurity::RenumProviders();
+}
+
+ECode CSecurity::SecurityDoor::GetAliases(
+    /* [in] */ IProviderService* s,
+    /* [out] */ IList** aliases)
+{
+    return s->GetAliases(aliases);
+}
+
+ECode CSecurity::SecurityDoor::GetService(
+    /* [in] */ IProvider* p,
+    /* [in] */ const String& type,
+    /* [out] */ IProviderService** service)
+{
+    return p->GetService(type, service);
+}
+
+
+//----------------------------------------------------
+// CSecurity
+//----------------------------------------------------
+const AutoPtr<IProperties> CSecurity::sSecprops = CSecurity::InitStatics();
+
+CAR_INTERFACE_IMPL(CSecurity, Singleton, ISecurity)
+
+CAR_SINGLETON_IMPL(CSecurity)
 
 AutoPtr<IProperties> CSecurity::InitStatics()
 {
@@ -28,42 +91,36 @@ AutoPtr<IProperties> CSecurity::InitStatics()
     // - load security properties files
     // - load statically registered providers
     // - if no provider description file found then load default providers
-    /*
+
     Boolean loaded = FALSE;
-    try {
-        InputStream configStream = Security.class.getResourceAsStream("security.properties");
-        InputStream input = new BufferedInputStream(configStream);
-        secprops.load(input);
-        loaded = true;
-        configStream.close();
-    } catch (Exception ex) {
-        System.logE("Could not load 'security.properties'", ex);
-    }
+    // try {
+    // TODO:
+    // InputStream configStream = Security.class.getResourceAsStream("security.properties");
+    // InputStream input = new BufferedInputStream(configStream);
+    // secprops.load(input);
+    // loaded = true;
+    // configStream.close();
+    // } catch (Exception ex) {
+    //     System.logE("Could not load 'security.properties'", ex);
+    // }
     if (!loaded) {
-        registerDefaultProviders();
+        RegisterDefaultProviders();
     }
-    Engine.door = new SecurityDoor();
-    */
+    CEngine::sDoor = new SecurityDoor();
+
     AutoPtr<CProperties> prop;
     CProperties::NewByFriend((CProperties**)&prop);
     return prop;
 }
 
 // Register default providers
-ECode CSecurity::RegisterDefaultProviders()
+void CSecurity::RegisterDefaultProviders()
 {
-    String temp;
-    mSecprops->SetProperty(String("security.provider.1"), String("org.apache.harmony.xnet.provider.jsse."
-        "OpenSSLProvider"), &temp);
-    mSecprops->SetProperty(String("security.provider.2"), String("org.apache.harmony.security.provider"
-        ".cert.DRLCertFactory"), &temp);
-    mSecprops->SetProperty(String("security.provider.3"), String("org.bouncycastle.jce.provider"
-        ".BouncyCastleProvider"), &temp);
-    mSecprops->SetProperty(String("security.provider.4"), String("org.apache.harmony.security.provider."
-        "crypto.CryptoProvider"), &temp);
-    mSecprops->SetProperty(String("security.provider.5"), String("org.apache.harmony.xnet.provider"
-        ".jsse.JSSEProvider"), &temp);
-    return NOERROR;
+    String old;
+    sSecprops->SetProperty(String("security.provider.1"), String("com.android.org.conscrypt.OpenSSLProvider"), &old);
+    sSecprops->SetProperty(String("security.provider.2"), String("com.android.org.bouncycastle.jce.provider.BouncyCastleProvider"), &old);
+    sSecprops->SetProperty(String("security.provider.3"), String("org.apache.harmony.security.provider.crypto.CryptoProvider"), &old);
+    sSecprops->SetProperty(String("security.provider.4"), String("com.android.org.conscrypt.JSSEProvider"), &old);
 }
 
 /**
@@ -84,30 +141,28 @@ ECode CSecurity::GetAlgorithmProperty(
 {
     VALIDATE_NOT_NULL(algProp)
     if (algName.IsNull() || propName.IsNull()) {
-            *algProp = String();
-            return NOERROR;
+        *algProp = NULL;
+        return NOERROR;
     }
-    String prop("Alg.");
-    prop += propName + "." + algName;
-    AutoPtr<ArrayOf<IProvider*> > providers;
+    String prop = String("Alg.") + propName + "." + algName;
+    AutoPtr< ArrayOf<IProvider*> > providers;
     GetProviders((ArrayOf<IProvider*>**)&providers);
     for (Int32 i = 0; i < providers->GetLength(); ++i) {
-        AutoPtr<IInterface> inter;
-        (*providers)[i]->PropertyNames((PInterface*)&inter);
-        AutoPtr<IEnumeration> e = IEnumeration::Probe(inter);
-        for (Boolean hasMore; (e->HasMoreElements(&hasMore), hasMore); ) {
-            inter = NULL;
+        IProvider* provider = (*providers)[i];
+        AutoPtr<IEnumeration> e;
+        IProperties::Probe(provider)->PropertyNames((IEnumeration**)&e);
+        Boolean hasMore;
+        while (e->HasMoreElements(&hasMore), hasMore) {
+            AutoPtr<IInterface> inter;
+            e->GetNextElement((PInterface*)&inter);
             String propertyName;
-            AutoPtr<ICharSequence> cs;
-            e->NextElement((PInterface*)&inter);
             ICharSequence::Probe(inter)->ToString(&propertyName);
             if (propertyName.EqualsIgnoreCase(prop)) {
-                (*providers)[i]->GetProperty(propertyName, algProp);
-                return NOERROR;
+                return IProperties::Probe(provider)->GetProperty(propertyName, algProp);
             }
         }
     }
-    *algProp = String();
+    *algProp = NULL;
     return NOERROR;
 }
 
@@ -134,7 +189,7 @@ ECode CSecurity::InsertProviderAt(
     // position) position = max position + 1; insert provider, shift up
     // one position for next providers; Note: The position is 1-based
     VALIDATE_NOT_NULL(pos)
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     String name;
     provider->GetName(&name);
     AutoPtr<IProvider> pro;
@@ -143,7 +198,10 @@ ECode CSecurity::InsertProviderAt(
         *pos = -1;
         return NOERROR;
     }
-    Int32 result;// = Services.insertProviderAt(provider, position);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    Int32 result;
+    services->InsertProviderAt(provider, position, &result);
     RenumProviders();
     *pos = result;
     return NOERROR;
@@ -162,7 +220,6 @@ ECode CSecurity::AddProvider(
     /* [in] */ IProvider* provider,
     /* [out] */ Int32* pos)
 {
-    VALIDATE_NOT_NULL(pos)
     return InsertProviderAt(provider, 0, pos);
 }
 
@@ -181,24 +238,28 @@ ECode CSecurity::AddProvider(
 ECode CSecurity::RemoveProvider(
     /* [in] */ const String& name)
 {
+    AutoLock lock(this);
     // It is not clear from spec.:
     // 1. if name is null, should we checkSecurityAccess or not?
     //    throw SecurityException or not?
     // 2. as 1 but provider is not installed
     // 3. behavior if name is empty string?
+
     AutoPtr<IProvider> p;
-    if (name.IsNull() || name.GetLength() == 0) {
+    if (name.IsNullOrEmpty()) {
         return NOERROR;
     }
     GetProvider(name, (IProvider**)&p);
     if (p == NULL) {
         return NOERROR;
     }
-    /*
-    Services.removeProvider(p.getProviderNumber());
-    renumProviders();
-    p.setProviderNumber(-1);
-    */
+    Int32 number;
+    p->GetProviderNumber(&number);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    services->RemoveProvider(number);
+    RenumProviders();
+    p->SetProviderNumber(-1);
     return NOERROR;
 }
 
@@ -212,10 +273,12 @@ ECode CSecurity::GetProviders(
     /* [out, callee] */ ArrayOf<IProvider*>** providers)
 {
     VALIDATE_NOT_NULL(providers)
-    AutoLock lock(mLock);
-    //Todo ... after apache
-    //return Services.getProviders();
-    return NOERROR;
+    AutoLock lock(this);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    AutoPtr<IArrayList> pros;
+    services->GetProviders((IArrayList**)&pros);
+    return pros->ToArray((ArrayOf<IInterface*>**)providers);
 }
 
 ECode CSecurity::GetProvider(
@@ -223,10 +286,10 @@ ECode CSecurity::GetProvider(
     /* [out] */ IProvider** provider)
 {
     VALIDATE_NOT_NULL(provider)
-    AutoLock lock(mLock);
-    //Todo ... after apache
-    //return Services.getProvider(name);
-    return NOERROR;
+    AutoLock lock(this);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    return services->GetProvider(name, provider);
 }
 
 /**
@@ -252,16 +315,15 @@ ECode CSecurity::GetProvider(
  * @throws NullPointerException
  *             if {@code filter} is {@code null}.
  */
-ECode CSecurity::GetProvidersEx(
+ECode CSecurity::GetProviders(
     /* [in] */ const String& filter,
     /* [out, callee] */ ArrayOf<IProvider*>** providers)
 {
     VALIDATE_NOT_NULL(providers)
     if (filter.IsNull()) {
-        //Slogger::E(TAG, "filter == NULL");
+        Logger::E("CSecurity", "filter == NULL");
         return E_NULL_POINTER_EXCEPTION;
     }
-
     if (filter.GetLength() == 0) {
         return E_INVALID_PARAMETER_EXCEPTION;
     }
@@ -272,20 +334,21 @@ ECode CSecurity::GetProvidersEx(
         return E_INVALID_PARAMETER_EXCEPTION;
     }
     AutoPtr<ICharSequence> key, value;
-    AutoPtr<IInterface> rst;
+    AutoPtr<IInterface> old;
     if (i < 1) {
         CString::New(filter, (ICharSequence**)&key);
         CString::New(String(""), (ICharSequence**)&value);
-        hm->Put(key.Get(), value.Get(), (PInterface*)&rst);
-    } else {
+        hm->Put(key, value, (PInterface*)&old);
+    }
+    else {
         AutoPtr<CString> swKey, swValue;
         CString::NewByFriend(filter, (CString**)&swKey);
         swKey->SubSequence(0, i, (ICharSequence**)&key);
         CString::NewByFriend(filter, (CString**)&swValue);
         swValue->SubSequence(i + 1, filter.GetLength(), (ICharSequence**)&value);
-        hm->Put(key.Get(), value.Get(), (PInterface*)&rst);
+        hm->Put(key, value, (PInterface*)&old);
     }
-    return GetProvidersEx2(hm, providers);
+    return GetProviders(hm, providers);
 }
 
 /**
@@ -312,14 +375,14 @@ ECode CSecurity::GetProvidersEx(
  * @throws NullPointerException
  *             if {@code filter} is {@code null}.
  */
-ECode CSecurity::GetProvidersEx2(
+ECode CSecurity::GetProviders(
     /* [in] */ IMap* filter,
     /* [out, callee] */ ArrayOf<IProvider*>** providers)
 {
-    AutoLock lock(mLock);
     VALIDATE_NOT_NULL(providers)
+    AutoLock lock(this);
     if (filter == NULL) {
-        //Slogger::E(TAG, "filter == null");
+        Logger::E("CSecurity", "filter == null");
         return E_NULL_POINTER_EXCEPTION;
     }
     Boolean empty;
@@ -328,15 +391,18 @@ ECode CSecurity::GetProvidersEx2(
         return NOERROR;
     }
 
-    //uncomment codes related to apache...
-    //java.util.List<Provider> result = Services.getProvidersList();
-    AutoPtr<IList> result;
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    AutoPtr<IArrayList> pros;
+    services->GetProviders((IArrayList**)&pros);
+    AutoPtr<IArrayList> result;
+    CArrayList::New(ICollection::Probe(pros), (IArrayList**)&result);
     AutoPtr<ISet> keys;
-    filter->EntrySet((ISet**)&keys);
-    Boolean isflag = FALSE;
+    filter->GetEntrySet((ISet**)&keys);
     AutoPtr<IIterator> it;
     keys->GetIterator((IIterator**)&it);
-    for (; (it->HasNext(&isflag), isflag);) {
+    Boolean hasNext = FALSE;
+    while (it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> outface;
         it->GetNext((IInterface**)&outface);
         AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
@@ -357,7 +423,8 @@ ECode CSecurity::GetProvidersEx2(
             if (val.GetLength() != 0) {
                 return E_INVALID_PARAMETER_EXCEPTION;
             }
-        } else {
+        }
+        else {
             // <crypto_service>.<algorithm_or_type> <attribute_name>
             if (val.GetLength() == 0) {
                 return E_INVALID_PARAMETER_EXCEPTION;
@@ -373,32 +440,37 @@ ECode CSecurity::GetProvidersEx2(
         if (serv.GetLength() == 0 || alg.GetLength() == 0) {
             return E_INVALID_PARAMETER_EXCEPTION;
         }
-        AutoPtr<IProvider> p;
-        Int32 size;
-        result->GetSize(&size);
-        for (Int32 k = 0; k < size; ++k) {
-            AutoPtr<IInterface> elm;
-            FAIL_RETURN(result->Get(k, (PInterface*)&elm))
-            p = IProvider::Probe(elm);
-            /*if (!p.implementsAlg(serv, alg, attribute, val))*/ {
-                Boolean ret;
-                result->Remove(p.Get(), &ret);
-                k--;
-            }
-        }
+        FilterProviders(result, serv, alg, attribute, val);
     }
     Int32 size;
     result->GetSize(&size);
     if (size > 0) {
-        AutoPtr<ArrayOf<PInterface> > tmp;
-        result->ToArray((ArrayOf<PInterface>**)&tmp);
-        AutoPtr<ArrayOf<IProvider*> > props = ArrayOf<IProvider*>::Alloc(tmp->GetLength());
-        for (Int32 i = 0; i < tmp->GetLength(); ++i) {
-            props->Set(i, (*tmp)[i]);
-        }
+        return result->ToArray((ArrayOf<IInterface*>**)providers);
     }
+    *providers = NULL;
     return NOERROR;
 }
+
+void CSecurity::FilterProviders(
+    /* [in] */ IArrayList* providers,
+    /* [in] */ const String& service,
+    /* [in] */ const String& algorithm,
+    /* [in] */ const String& attribute,
+    /* [in] */ const String& attrValue)
+{
+    AutoPtr<IIterator> it;
+    providers->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IProvider> p;
+        it->GetNext((IInterface**)&p);
+        Boolean result;
+        if (p->ImplementsAlg(service, algorithm, attribute, attrValue, &result), !result) {
+            it->Remove();
+        }
+    }
+}
+
 
 /**
  * Returns the value of the security property named by the argument.
@@ -413,11 +485,11 @@ ECode CSecurity::GetProperty(
 {
     VALIDATE_NOT_NULL(prop)
     if (key.IsNull()) {
-        //Slogger::E(TAG, "key == null");
+        Logger::E("CSecurity", "key == null");
         return E_NULL_POINTER_EXCEPTION;
     }
     String property;
-    mSecprops->GetProperty(key, &property);
+    sSecprops->GetProperty(key, &property);
     if (!property.IsNull()) {
         property = property.Trim();
     }
@@ -432,8 +504,11 @@ ECode CSecurity::SetProperty(
     /* [in] */ const String& key,
     /* [in] */ const String& value)
 {
-    String temp;
-    return mSecprops->SetProperty(key, value, &temp);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    services->SetNeedRefresh();
+    String old;
+    return sSecprops->SetProperty(key, value, &old);
 }
 
 /**
@@ -466,19 +541,21 @@ ECode CSecurity::GetAlgorithms(
     for (Int32 i = 0; i < providers->GetLength(); ++i) {
         AutoPtr<ISet> set;
         (*providers)[i]->GetServices((ISet**)&set);
-        AutoPtr<IIterator> it = IIterator::Probe(set.Get());
+        AutoPtr<IIterator> it;
+        set->GetIterator((IIterator**)&it);
         Boolean next;
-        while ((it->HasNext(&next), next)) {
+        while (it->HasNext(&next), next) {
             AutoPtr<IInterface> elm;
             it->GetNext((IInterface**)&elm);
             AutoPtr<IProviderService> service = IProviderService::Probe(elm);
             String type, algorithm;
-            if ((service->GetType(&type), type).EqualsIgnoreCase(serviceName)) {
+            service->GetType(&type);
+            if (type.EqualsIgnoreCase(serviceName)) {
                 service->GetAlgorithm(&algorithm);
                 AutoPtr<ICharSequence> cs;
                 CString::New(algorithm, (ICharSequence**)&cs);
                 Boolean ret;
-                result->Add(cs.Get(), &ret);
+                result->Add(cs, &ret);
             }
         }
     }
@@ -494,16 +571,19 @@ ECode CSecurity::GetAlgorithms(
  */
 ECode CSecurity::RenumProviders()
 {
-    //related to apache, todo later
-/*
-    Provider[] p = Services.getProviders();
-    for (int i = 0; i < p.length; i++) {
-        p[i].setProviderNumber(i + 1);
+    AutoPtr<IServices> services;
+    CServices::AcquireSingleton((IServices**)&services);
+    AutoPtr<IArrayList> providers;
+    services->GetProviders((IArrayList**)&providers);
+    Int32 size;
+    providers->GetSize(&size);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IProvider> provider;
+        providers->Get(i, (IInterface**)&provider);
+        provider->SetProviderNumber(i + 1);
     }
-*/
-    return E_NOT_IMPLEMENTED;
+    return NOERROR;
 }
 
 }
 }
-

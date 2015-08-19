@@ -2,12 +2,17 @@
 TARGET_NAME= utils
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Utils
+include $(MAKEDIR)/../../../../../sources.inc
 
-SOURCES = AlgNameMapper.cpp
-SOURCES += CAlgNameMapperHelper.cpp
-SOURCES += CArrayHelper.cpp
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/utils
+
+#SOURCES = AlgNameMapper.cpp
+#SOURCES += CAlgNameMapperHelper.cpp
+#SOURCES += CArrayHelper.cpp
 SOURCES += CJarUtils.cpp
-SOURCES += CObjectIdentifierInUtils.cpp
-SOURCES += CObjectIdentifierInUtilsHelper.cpp
+#SOURCES += CObjectIdentifierInUtils.cpp
+#SOURCES += CObjectIdentifierInUtilsHelper.cpp

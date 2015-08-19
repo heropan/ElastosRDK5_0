@@ -117,7 +117,7 @@ module
          * @throws NullPointerException
          *             if {@code filter} is {@code null}.
          */
-        GetProvidersEx(
+        GetProviders(
             [in] String filter,
             [out, callee] ArrayOf<IProvider*>* providers);
 
@@ -145,7 +145,7 @@ module
          * @throws NullPointerException
          *             if {@code filter} is {@code null}.
          */
-        GetProvidersEx2(
+        GetProviders(
             [in] IMap* filter,
             [out, callee] ArrayOf<IProvider*>* providers);
 

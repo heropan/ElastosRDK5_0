@@ -139,6 +139,12 @@ module
          */
         Update(
             [in] IByteBuffer* input);
+
+        SetProvider(
+            [in] IProvider* provider);
+
+        SetAlgorithm(
+            [in] String algorithm);
     }
 
     [deprecated]

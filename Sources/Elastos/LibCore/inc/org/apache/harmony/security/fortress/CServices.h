@@ -1,12 +1,17 @@
 
-#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
-#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
+#ifndef __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICES_H__
+#define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICES_H__
 
-#include "_Org_Apache_Harmony_Security_Fortress_CServicesHelper.h"
+#include "_Org_Apache_Harmony_Security_Fortress_CServices.h"
+#include "core/Singleton.h"
+#include "utility/etl/HashMap.h"
 
+using Elastos::Core::Singleton;
 using Elastos::Security::IProvider;
-using Elastos::Utility::IList;
 using Elastos::Security::IProviderService;
+using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Org {
 namespace Apache {
@@ -14,16 +19,19 @@ namespace Harmony {
 namespace Security {
 namespace Fortress {
 
-CarClass(CServicesHelper)
+CarClass(CServices)
+    , public Singleton
+    , public IServices
 {
 public:
-    static AutoPtr<IMap> InitStatic();
+    CServices();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
 
     CARAPI GetProviders(
-        /* [out, callee] */ ArrayOf<IProvider*>** providers);
-
-    CARAPI GetProvidersList(
-        /* [out] */ IList** providersList);
+        /* [out] */ IArrayList** providers);
 
     CARAPI GetProvider(
         /* [in] */ const String& name,
@@ -38,14 +46,14 @@ public:
         /* [in] */ Int32 providerNumber);
 
     CARAPI InitServiceInfo(
-        /* [in] */ IProvider* pro);
+        /* [in] */ IProvider* p);
 
     CARAPI IsEmpty(
         /* [out] */ Boolean* empty);
 
-    CARAPI GetService(
+    CARAPI GetServices(
         /* [in] */ const String& key,
-        /* [out] */ IProviderService** service);
+        /* [out] */ IArrayList** services);
 
     CARAPI GetSecureRandomService(
         /* [out] */ IProviderService** service);
@@ -57,12 +65,24 @@ public:
 
 private:
     /**
+     * Add or append the service to the key.
+     */
+    static CARAPI_(void) AppendServiceLocked(
+        /* [in] */ const String& key,
+        /* [in] */ IProviderService* service);
+
+    static CARAPI_(AutoPtr<IArrayList>) Init_sProviders();
+
+    static CARAPI_(void) Initialize();
+
+private:
+    /**
      * The HashMap that contains information about preferred implementations for
      * all serviceName.algName in the registered providers.
      * Set the initial size to 600 so we don't grow to 1024 by default because
      * initialization adds a few entries more than the growth threshold.
      */
-    static AutoPtr<IMap> sServices;// = new HashMap<String, Provider.Service>(600);
+    static const HashMap< String, AutoPtr<IArrayList> > sServices;
 
     /**
      * Save default SecureRandom service as well.
@@ -80,20 +100,19 @@ private:
      * information. It is used by external callers to validate their
      * own caches of Service information.
      */
-    static Int32 sCacheVersion = 1;
+    static Int32 sCacheVersion;
 
     /**
      * Registered providers.
      */
-    static AutoPtr<IList> sProviders;// = new ArrayList<Provider>(20);
+    static const AutoPtr<IArrayList> sProviders;
 
     /**
      * Hash for quick provider access by name.
      */
-    static AutoPtr<IMap> sProvidersNames;// = new HashMap<String, Provider>(20);
+    static const HashMap< String, AutoPtr<IProvider> > sProvidersNames;
 
-    Object mLock;
-    Object mLockForServices;
+    static Boolean sIsInitialized;
 };
 
 } // namespace Fortress
@@ -102,4 +121,4 @@ private:
 } // namespace Apache
 } // namespace Org
 
-#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICESHELPER_H__
+#endif // __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CSERVICES_H__

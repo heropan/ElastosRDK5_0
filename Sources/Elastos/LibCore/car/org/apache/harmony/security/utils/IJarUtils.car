@@ -1,8 +1,8 @@
 
 module
 {
+    interface Elastos.IO.IInputStream;
     interface Elastos.Security.Cert.ICertificate;
-    using interface Elastos.IO.IInputStream;
 
     namespace Org {
     namespace Apache {

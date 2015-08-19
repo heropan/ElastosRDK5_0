@@ -1,9 +1,9 @@
 
 module
 {
-    using interface Elastos.Security.IProviderService;
-    using interface Elastos.Security.IProvider;
-    using interface Elastos.Utility.IList;
+    interface Elastos.Security.IProviderService;
+    interface Elastos.Security.IProvider;
+    interface Elastos.Utility.IArrayList;
 
     namespace Org {
     namespace Apache {
@@ -15,18 +15,12 @@ module
      * This class contains information about all registered providers and preferred
      * implementations for all "serviceName.algName".
      */
-    interface IServicesHelper {
+    interface IServices {
         /**
          * Returns a copy of the registered providers as an array.
          */
         GetProviders(
-            [out, callee] ArrayOf<IProvider*>* providers);
-
-        /**
-         * Returns a copy of the registered providers as a list.
-         */
-        GetProvidersList(
-            [out] IList** providersList);
+            [out] IArrayList** providers);
 
         /**
          * Returns the provider with the specified name.
@@ -71,9 +65,9 @@ module
          * caches should be validated against the result of
          * Service.getCacheVersion() before use.
          */
-        GetService(
+        GetServices(
             [in] String key,
-            [out] IProviderService** service);
+            [out] IArrayList** services);
 
         /**
          * Returns the default SecureRandom service description.

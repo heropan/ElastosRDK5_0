@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IList;
     interface Elastos.Security.IProvider;
 
     namespace Elastos {
@@ -56,6 +57,9 @@ module
         GetAttribute(
             [in] String name,
             [out] String* attrib);
+
+        GetAliases(
+            [out] IList** aliases);
 
         /**
          * Creates and returns a new instance of the implementation described by
@@ -122,6 +126,54 @@ module
          */
         GetInfo(
             [out] String* info);
+
+        /**
+         * Returns true if this provider implements the given algorithm. Caller
+         * must specify the cryptographic service and specify constraints via the
+         * attribute name and value.
+         *
+         * @param serv
+         *            Crypto service.
+         * @param alg
+         *            Algorithm or type.
+         * @param attribute
+         *            The attribute name or {@code null}.
+         * @param val
+         *            The attribute value.
+         * @return
+         */
+        ImplementsAlg(
+            [in] String serv,
+            [in] String alg,
+            [in] String attribute,
+            [in] String val,
+            [out] Boolean* result);
+
+        /**
+         *
+         * Set the provider preference order number.
+         *
+         * @param n
+         */
+        SetProviderNumber(
+            [in] Int32 n);
+
+        /**
+         *
+         * Get the provider preference order number.
+         *
+         * @return
+         */
+        GetProviderNumber(
+            [out] Int32* n);
+
+        /**
+         * Get the service of the specified type
+         *
+         */
+        GetService(
+            [in] String type,
+            [out] IProviderService** service);
 
         /**
          * Returns the service with the specified {@code type} implementing the

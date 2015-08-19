@@ -3,8 +3,12 @@
 #define __ORG_APACHE_HARMONY_SECURITY_FORTRESS_CENGINE_H__
 
 #include "_Org_Apache_Harmony_Security_Fortress_CEngine.h"
+#include "core/Object.h"
 
+using Elastos::Core::Object;
+using Elastos::Security::IProvider;
 using Elastos::Security::IProviderService;
+using Elastos::Utility::IArrayList;
 
 namespace Org {
 namespace Apache {
@@ -13,43 +17,109 @@ namespace Security {
 namespace Fortress {
 
 CarClass(CEngine)
+    , public Object
+    , public IEngine
 {
+public:
+    class SpiAndProvider
+        : public Object
+        , public ISpiAndProvider
+    {
+        friend class CEngine;
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        CAR_OBJECT_DECL()
+
+        CARAPI SetSpi(
+            /* [in] */ IInterface* spi);
+
+        CARAPI GetSpi(
+            /* [out] */ IInterface** spi);
+
+        CARAPI SetProvider(
+            /* [in] */ IProvider* provider);
+
+        CARAPI GetProvider(
+            /* [out] */ IProvider** provider);
+
+    private:
+        SpiAndProvider(
+            /* [in] */ IInterface* spi,
+            /* [in] */ IProvider* provider)
+            : mSpi(spi)
+            , mProvider(provider)
+        {}
+
+    public:
+        AutoPtr<IInterface> mSpi;
+        AutoPtr<IProvider> mProvider;
+    };
+
 private:
-    class ServiceCacheEntry
-    : public ElLightRefBase {
+    class ServiceCacheEntry : public Object
+    {
     public:
         ServiceCacheEntry(
-            /* [in] */ String algorithm,
+            /* [in] */ const String& algorithm,
             /* [in] */ Int32 cacheVersion,
-            /* [in] */ IProviderService* service);
+            /* [in] */ IArrayList* services)
+            : mAlgorithm(algorithm)
+            , mCacheVersion(cacheVersion)
+            , mServices(services)
+        {}
+
     public:
         /** used to test for cache hit */
         String mAlgorithm;
         /** used to test for cache validity */
         Int32 mCacheVersion;
         /** cached result */
-        AutoPtr<IProviderService> mService;
+        AutoPtr<IArrayList> mServices;
     };
+
 public:
+    CARAPI constructor(
+        /* [in] */ const String& serviceName);
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetInstance(
         /* [in] */ const String& algorithm,
-        /* [in] */ IInterface * pParam,
-        /* [out] */ Org::Apache::Harmony::Security::Fortress::ISpiAndProvider ** ppInstance);
+        /* [in] */ IInterface* param,
+        /* [out] */ ISpiAndProvider** instance);
 
-    CARAPI GetInstanceEx(
+    /**
+     * Finds the appropriate service implementation and returns an
+     * {@code SpiAndProvider} instance containing a reference to SPI
+     * and its {@code Provider}
+     */
+    CARAPI GetInstance(
+        /* [in] */ IProviderService* service,
+        /* [in] */ const String& param,
+        /* [out] */ ISpiAndProvider** instance);
+
+    /**
+     * Returns a list of all possible matches for a given algorithm.
+     */
+    CARAPI GetServices(
         /* [in] */ const String& algorithm,
-        /* [in] */ Elastos::Security::IProvider * pProvider,
-        /* [in] */ IInterface * pParam,
-        /* [out] */ IInterface ** ppInstance);
+        /* [out] */ IArrayList** services);
 
-    CARAPI constructor(
-        /* [in] */ const String& service);
+    CARAPI GetInstance(
+        /* [in] */ const String& algorithm,
+        /* [in] */ IProvider* provider,
+        /* [in] */ IInterface* param,
+        /* [out] */ IInterface** instance);
 
 public:
     /**
      * Access to package visible api in java.security
      */
-    static AutoPtr<ISecurityAccess> mDoor;
+    static AutoPtr<ISecurityAccess> sDoor;
 
 private:
     /**

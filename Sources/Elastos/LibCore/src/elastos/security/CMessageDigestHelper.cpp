@@ -5,6 +5,10 @@
 namespace Elastos {
 namespace Security {
 
+CAR_INTERFACE_IMPL(CMessageDigestHelper, Singleton, IMessageDigestHelper)
+
+CAR_SINGLETON_IMPL(CMessageDigestHelper)
+
 ECode CMessageDigestHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [out] */ IMessageDigest** instance)
@@ -12,20 +16,20 @@ ECode CMessageDigestHelper::GetInstance(
     return MessageDigest::GetInstance(algorithm, instance);
 }
 
-ECode CMessageDigestHelper::GetInstanceEx(
+ECode CMessageDigestHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ const String& provider,
     /* [out] */ IMessageDigest** instance)
 {
-    return MessageDigest::GetInstanceEx(algorithm, provider, instance);
+    return MessageDigest::GetInstance(algorithm, provider, instance);
 }
 
-ECode CMessageDigestHelper::GetInstanceEx2(
+ECode CMessageDigestHelper::GetInstance(
     /* [in] */ const String& algorithm,
     /* [in] */ IProvider* provider,
     /* [out] */ IMessageDigest** instance)
 {
-    return MessageDigest::GetInstanceEx2(algorithm, provider, instance);
+    return MessageDigest::GetInstance(algorithm, provider, instance);
 }
 
 ECode CMessageDigestHelper::IsEqual(

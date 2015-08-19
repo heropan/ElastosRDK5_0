@@ -1,22 +1,23 @@
 #include "JarVerifier.h"
-#include "CBase64.h"
-#include "AutoLock.h"
+#include "core/AutoLock.h"
 #include "CAttributes.h"
 #include "CName.h"
 #include "ManifestReader.h"
-#include <elastos/utility/etl/List.h>
-#include "CByteArrayInputStream.h"
-// #include "CMessageDigestHelper.h"
+#include "io/CByteArrayInputStream.h"
+#include "io/CBase64.h"
+#include "security/CMessageDigestHelper.h"
+#include "utility/etl/List.h"
+#include "org/apache/harmony/security/utils/CJarUtils.h"
 
-using namespace Elastos::Utility::Etl;
-using Elastos::Utility::Etl::List;
 using Elastos::IO::IByteArrayInputStream;
 using Elastos::IO::CByteArrayInputStream;
 using Libcore::IO::IBase64;
 using Libcore::IO::CBase64;
 using Elastos::Security::IMessageDigestHelper;
-// using Elastos::Security::CMessageDigestHelper;
-// using Org::Apache::Harmony::Security::Utils::IJarUtils;
+using Elastos::Security::CMessageDigestHelper;
+using Elastos::Utility::Etl::List;
+using Org::Apache::Harmony::Security::Utils::IJarUtils;
+using Org::Apache::Harmony::Security::Utils::CJarUtils;
 
 namespace Elastos {
 namespace Utility {
@@ -79,7 +80,7 @@ ECode JarVerifier::VerifierEntry::Verify()
     AutoPtr<ArrayOf<Byte> > d;
     mDigest->Digest((ArrayOf<Byte>**)&d);
     AutoPtr<IMessageDigestHelper> helper;
-    // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+    CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
     Boolean isEqual;
     AutoPtr<IBase64> bs64;
     CBase64::AcquireSingleton((IBase64**)&bs64);
@@ -187,7 +188,7 @@ ECode JarVerifier::InitEntry(
         }
 
         AutoPtr<IMessageDigestHelper> helper;
-        // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+        CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md;
         ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
         if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
@@ -264,30 +265,14 @@ ECode JarVerifier::VerifyCertificate(
         sBlockBytes = it->mSecond;
     }
 
-    // TODO signature
-    /*
-        try {
-            Certificate[] signerCertChain = JarUtils.verifySignature(
-                    new ByteArrayInputStream(manifestBytes),
-                    new ByteArrayInputStream(sBlockBytes));
-            if (signerCertChain != null) {
-                certificates.put(signatureFile, signerCertChain);
-            }
-        } catch (IOException e) {
-            return;
-        } catch (GeneralSecurityException e) {
-            throw failedVerification(jarName, signatureFile);
-        }
-    */
-
-    AutoPtr<ArrayOf<ICertificate*> > signerCertChain;
-
-    // AutoPtr<IJarUtils> jarUtils;
-    // CJarUtils::AcquireSingleton((IJarUtils**)&jarUtils);
+    AutoPtr<IJarUtils> jarUtils;
+    CJarUtils::AcquireSingleton((IJarUtils**)&jarUtils);
     AutoPtr<IByteArrayInputStream> sfi, sbi;
     CByteArrayInputStream::New(manifestBytes, (IByteArrayInputStream**)&sfi);
     CByteArrayInputStream::New(sBlockBytes, (IByteArrayInputStream**)&sbi);
-    // FAIL_RETURN(jarUtils->VerifySignature(sfi, sbi, (ArrayOf<ICertificate*>**)&signerCertChain))
+    AutoPtr<ArrayOf<ICertificate*> > signerCertChain;
+    FAIL_RETURN(jarUtils->VerifySignature(
+            IInputStream::Probe(sfi), IInputStream::Probe(sbi), (ArrayOf<ICertificate*>**)&signerCertChain))
     if (signerCertChain != NULL) {
         (*mCertificates)[signatureFile] = signerCertChain;
     }
@@ -390,7 +375,7 @@ ECode JarVerifier::Verify(
         }
 
         AutoPtr<IMessageDigestHelper> helper;
-        // CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
+        CMessageDigestHelper::AcquireSingleton((IMessageDigestHelper**)&helper);
         AutoPtr<IMessageDigest> md;
         ECode ec = helper->GetInstance(algorithm, (IMessageDigest**)&md);
         if (ec == (ECode)E_NO_SUCH_ALGORITHM_EXCEPTION) {
@@ -442,7 +427,6 @@ ECode JarVerifier::RemoveMetaEntries()
     mMetaEntries->Clear();
     return NOERROR;
 }
-
 
 } // namespace Jar
 } // namespace Utility

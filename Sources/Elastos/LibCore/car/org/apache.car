@@ -1,5 +1,46 @@
 
 module
 {
-    // merge("apache/harmony/security/fortress/IEngine.car");
+    merge("apache/harmony/security/fortress/IEngine.car");
+    merge("apache/harmony/security/fortress/ISecurityAccess.car");
+    merge("apache/harmony/security/fortress/IServices.car");
+
+    merge("apache/harmony/security/utils/IJarUtils.car");
+
+    namespace Org {
+    namespace Apache {
+    namespace Harmony {
+    namespace Security {
+
+    namespace Fortress {
+
+    class CEngine {
+        /**
+         * Creates a Engine object
+         *
+         * @param serviceName
+         */
+        constructor(
+            [in] String serviceName);
+
+        interface IEngine;
+    }
+
+    singleton class CServices {
+        interface IServices;
+    }
+
+    } // namespace Fortress
+
+    namespace Utils {
+
+    singleton class CJarUtils {
+        interface IJarUtils;
+    }
+
+    } // namespace Utils
+    }
+    }
+    }
+    }
 }

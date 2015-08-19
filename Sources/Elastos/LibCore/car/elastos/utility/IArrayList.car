@@ -95,7 +95,6 @@ module
             [in] Int32 end,
             [out] IList** subList);
 
-
         /**
          * interfaces from ICollection
          *

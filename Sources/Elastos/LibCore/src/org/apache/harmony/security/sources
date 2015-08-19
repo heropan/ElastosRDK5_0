@@ -1,10 +1,13 @@
 
-TARGET_NAME= security
+TARGET_NAME= org.apache.harmony.security
 TARGET_TYPE= lib
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
 
-SOURCES = CPrivateKeyImpl.cpp
-SOURCES += CPublicKeyImpl.cpp
-SOURCES += CSystemScope.cpp
+#SOURCES = CPrivateKeyImpl.cpp
+#SOURCES += CPublicKeyImpl.cpp
+#SOURCES += CSystemScope.cpp
+
+LIBRARIES += fortress/fortress.lib
+LIBRARIES += utils/utils.lib

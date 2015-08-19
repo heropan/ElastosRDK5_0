@@ -3,17 +3,16 @@
 #define __ELASTOS_SECURITY_MESSAGEDIGESTSPI_H__
 
 #include <coredef.h>
-#include "Object.h"
+#include "Elastos.CoreLibrary_server.h"
 
 using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Security {
 
-class MessageDigestSpi
-    : public Object
+class MessageDigestSpi : public IInterface
 {
-protected:
+public:
     /**
      * Returns the engine digest length in bytes. If the implementation does not
      * implement this function {@code 0} is returned.
