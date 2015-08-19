@@ -64,6 +64,14 @@ module
         OnServerDied();
     }
 
+    /**
+     * A class to store peak and RMS values.
+     * Peak and RMS are expressed in mB, as described in the
+     * {@link Visualizer#MEASUREMENT_MODE_PEAK_RMS} measurement mode.
+     */
+    interface IVisualizerMeasurementPeakRms {
+    }
+
     [deprecated]
     interface IVisualizer {
         /**
@@ -90,6 +98,19 @@ module
          * captured data. A low playback volume will lead to low sample and fft values, and vice-versa.
          */
         const Int32 SCALING_MODE_AS_PLAYED = 1;
+
+        /**
+         * Defines a measurement mode in which no measurements are performed.
+         */
+        const Int32 MEASUREMENT_MODE_NONE = 0;
+
+        /**
+         * Defines a measurement mode which computes the peak and RMS value in mB, where 0mB is the
+         * maximum sample value, and -9600mB is the minimum value.
+         * Values for peak and RMS can be retrieved with
+         * {@link #getMeasurementPeakRms(MeasurementPeakRms)}.
+         */
+        const Int32 MEASUREMENT_MODE_PEAK_RMS = 1 << 0;
 
         // Error codes:
         /**
@@ -193,6 +214,28 @@ module
             [out] Int32* result);
 
         /**
+         * Sets the combination of measurement modes to be performed by this audio effect.
+         * @param mode a mask of the measurements to perform. The valid values are
+         *     {@link #MEASUREMENT_MODE_NONE} (to cancel any measurement)
+         *     or {@link #MEASUREMENT_MODE_PEAK_RMS}.
+         * @return {@link #SUCCESS} in case of success, {@link #ERROR_BAD_VALUE} in case of failure.
+         * @throws IllegalStateException
+         */
+        SetMeasurementMode(
+            [in] Int32 mode,
+            [out] Int32* result);
+
+        /**
+         * Returns the current measurement modes performed by this audio effect
+         * @return the mask of the measurements,
+         *     {@link #MEASUREMENT_MODE_NONE} (when no measurements are performed)
+         *     or {@link #MEASUREMENT_MODE_PEAK_RMS}.
+         * @throws IllegalStateException
+         */
+        GetMeasurementMode(
+            [out] Int32* result);
+
+        /**
          * Returns the sampling rate of the captured audio.
          * @return the sampling rate in milliHertz.
          */
@@ -261,6 +304,19 @@ module
         GetFft(
             [in] ArrayOf<Byte>* fft,
             [out] Int32* result);
+
+        /**
+         * Retrieves the latest peak and RMS measurement.
+         * Sets the peak and RMS fields of the supplied {@link Visualizer.MeasurementPeakRms} to the
+         * latest measured values.
+         * @param measurement a non-null {@link Visualizer.MeasurementPeakRms} instance to store
+         *    the measurement values.
+         * @return {@link #SUCCESS} in case of success, {@link #ERROR_BAD_VALUE},
+         *    {@link #ERROR_NO_MEMORY}, {@link #ERROR_INVALID_OPERATION} or {@link #ERROR_DEAD_OBJECT}
+         *    in case of failure.
+         */
+        GetMeasurementPeakRms(
+            [in] IMeasurementPeakRms * measurement);
 
         /**
          * Registers an OnDataCaptureListener interface and specifies the rate at which the capture

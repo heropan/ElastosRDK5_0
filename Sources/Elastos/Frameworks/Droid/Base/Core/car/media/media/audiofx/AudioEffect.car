@@ -193,6 +193,15 @@ module
         const String EFFECT_TYPE_NS = "58b4b260-8e06-11e0-aa8e-0002a5d5c51b";
 
         /**
+         * UUID for Loudness Enhancer
+         */
+        /*
+        public static final UUID EFFECT_TYPE_LOUDNESS_ENHANCER = UUID
+                  .fromString("fe3199be-aed0-413f-87bb-11260eb63cf1");
+        */
+        const String EFFECT_TYPE_LOUDNESS_ENHANCER = "fe3199be-aed0-413f-87bb-11260eb63cf1";
+
+        /**
          * UUID for virtualizer effect
          * @hide
          */
@@ -726,6 +735,45 @@ module
         CheckStatus(
             [in] Int32 status);
 
+    }
+
+    interface IAudioEffectHelper {
+        /**
+         * Query all effects available on the platform. Returns an array of
+         * {@link android.media.audiofx.AudioEffect.Descriptor} objects
+         *
+         * @throws IllegalStateException
+         */
+        QueryEffects(
+            [out, callee] ArrayOf<IAudioEffectDescriptor*>* descriptors);
+
+        /**
+         * Query all audio pre processing effects applied to the AudioRecord with the supplied
+         * audio session ID. Returns an array of {@link android.media.audiofx.AudioEffect.Descriptor}
+         * objects.
+         * @param audioSession system wide unique audio session identifier.
+         * @throws IllegalStateException
+         * @hide
+         */
+
+        QueryPreProcessings(
+            [in] Int32 audioSession,
+            [out, callee] ArrayOf<IAudioEffectDescriptor*>* descriptors);
+
+        /**
+         * Checks if the device implements the specified effect type.
+         * @param type the requested effect type.
+         * @return true if the device implements the specified effect type, false otherwise.
+         * @hide
+         */
+        IsEffectTypeAvailable(
+            [in] IUUID* type,
+            [out] Boolean* result);
+
+        IsError(
+            [in] Int32 status,
+            [out] Boolean* result);
+
         /**
          * @hide
          */
@@ -777,44 +825,6 @@ module
             [in] ArrayOf<Byte>* array1,
             [in] ArrayOf<Byte>* array2,
             [out, callee] ArrayOf<Byte>* result);
-    }
-
-    interface IAudioEffectHelper {
-        /**
-         * Query all effects available on the platform. Returns an array of
-         * {@link android.media.audiofx.AudioEffect.Descriptor} objects
-         *
-         * @throws IllegalStateException
-         */
-        QueryEffects(
-            [out, callee] ArrayOf<IAudioEffectDescriptor*>* descriptors);
-
-        /**
-         * Query all audio pre processing effects applied to the AudioRecord with the supplied
-         * audio session ID. Returns an array of {@link android.media.audiofx.AudioEffect.Descriptor}
-         * objects.
-         * @param audioSession system wide unique audio session identifier.
-         * @throws IllegalStateException
-         * @hide
-         */
-
-        QueryPreProcessings(
-            [in] Int32 audioSession,
-            [out, callee] ArrayOf<IAudioEffectDescriptor*>* descriptors);
-
-        /**
-         * Checks if the device implements the specified effect type.
-         * @param type the requested effect type.
-         * @return true if the device implements the specified effect type, false otherwise.
-         * @hide
-         */
-        IsEffectTypeAvailable(
-            [in] IUUID* type,
-            [out] Boolean* result);
-
-        IsError(
-            [in] Int32 status,
-            [out] Boolean* result);
 
     }
 
