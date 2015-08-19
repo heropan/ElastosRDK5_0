@@ -4,9 +4,11 @@
 
 #include "_Org_Apache_Harmony_Security_Fortress_CServices.h"
 #include "core/Singleton.h"
+#include "core/Mutex.h"
 #include "utility/etl/HashMap.h"
 
 using Elastos::Core::Singleton;
+using Elastos::Core::Mutex;
 using Elastos::Security::IProvider;
 using Elastos::Security::IProviderService;
 using Elastos::Utility::IList;
@@ -73,7 +75,7 @@ private:
 
     static CARAPI_(AutoPtr<IArrayList>) Init_sProviders();
 
-    static CARAPI_(void) Initialize();
+    CARAPI_(void) Initialize();
 
 private:
     /**
@@ -82,7 +84,8 @@ private:
      * Set the initial size to 600 so we don't grow to 1024 by default because
      * initialization adds a few entries more than the growth threshold.
      */
-    static const HashMap< String, AutoPtr<IArrayList> > sServices;
+    static HashMap< String, AutoPtr<IArrayList> > sServices;
+    static Mutex sServicesLock;
 
     /**
      * Save default SecureRandom service as well.
@@ -110,7 +113,7 @@ private:
     /**
      * Hash for quick provider access by name.
      */
-    static const HashMap< String, AutoPtr<IProvider> > sProvidersNames;
+    static HashMap< String, AutoPtr<IProvider> > sProvidersNames;
 
     static Boolean sIsInitialized;
 };

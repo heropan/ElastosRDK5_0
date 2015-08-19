@@ -1,7 +1,9 @@
 
 module
 {
-    using interface Elastos.IO.IInputStream;
+    interface Elastos.IO.IInputStream;
+    interface Org.Apache.Harmony.Security.Asn1.IBerInputStream;
+    interface Org.Apache.Harmony.Security.Asn1.IBerOutputStream;
 
     namespace Org {
     namespace Apache {
@@ -9,41 +11,37 @@ module
     namespace Security {
     namespace Asn1 {
 
+    /**
+     * @Involve
+     * interface IASN1Constants;
+     */
     [deprecated]
-    interface IASN1Type extends IASN1Constants {
-        /** Integer representation of primitive identifier. */
-        GetId(
-            [out] Int32* id);
-
-        /** Integer representation of constructed identifier. */
-        GetConstrId(
-            [out] Int32* constrId);
-
+    interface IASN1Type {
         Decode(
             [in] ArrayOf<Byte>* encoded,
             [out] IInterface** object);
 
-        DecodeEx(
+        Decode(
             [in] ArrayOf<Byte>* encoded,
             [in] Int32 offset,
             [in] Int32 encodingLen,
             [out] IInterface** object);
 
-        DecodeEx2(
+        Decode(
             [in] IInputStream* is,
             [out] IInterface** object);
 
         Verify(
             [in] ArrayOf<Byte>* encoded);
 
-        VerifyEx(
+        Verify(
             [in] IInputStream* is);
 
         Encode(
             [in] IInterface* object,
             [out, callee] ArrayOf<Byte>* encode);
 
-        DecodeEx3(
+        Decode(
             [in] IBerInputStream* bis,
             [out] IInterface** object);
 
@@ -70,8 +68,13 @@ module
             [in] IBerOutputStream* bos,
             [out] Int32* length);
 
-        ToString(
-            [out] String* result);
+//        /** Integer representation of primitive identifier. */
+//        GetId(
+//            [out] Int32* id);
+//
+//        /** Integer representation of constructed identifier. */
+//        GetConstrId(
+//            [out] Int32* constrId);
     }
 
     } // namespace Asn1

@@ -17,7 +17,7 @@ module
     * @implement Elastos.IO.IInputStream
     */
 
-     /**
+    /**
      * @Involve
      * interface ICloseable;
      * interface IInputStream;

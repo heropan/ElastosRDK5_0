@@ -40,6 +40,8 @@ private:
         /* [in] */ IPrincipal* issuer,
         /* [in] */ const ArrayOf<IX509Certificate*>& candidates);
 
+    static CARAPI_(AutoPtr< ArrayOf<Int32> >) Init_MESSAGE_DIGEST_OID();
+
 private:
     // as defined in PKCS #9: Selected Attribute Types:
     // http://www.ietf.org/rfc/rfc2985.txt

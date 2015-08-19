@@ -2,7 +2,12 @@
 module
 {
     interface Org.Apache.Harmony.Security.Asn1.IASN1Choice;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Explicit;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Set;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1SetOf;
 
     namespace Org {
     namespace Apache {
@@ -12,27 +17,6 @@ module
 
     [deprecated]
     interface IBerOutputStream {
-        /** Encoded byte array */
-        SetEncoded(
-            [in] ArrayOf<Byte>* encoded);
-
-        GetEncoded(
-            [out, callee] ArrayOf<Byte>* encoded);
-
-        /** Current encoded length */
-        SetLength(
-            [in] Int32 length);
-
-        GetLength(
-            [out] Int32* length);
-
-        /** Current decoded content */
-        SetContent(
-            [in] ArrayOf<Byte>* content);
-
-        GetContent(
-            [out] IInterface** content);
-
         EncodeTag(
             [in] Int32 tag);
 
@@ -46,7 +30,7 @@ module
             [in] IASN1Choice* choice);
 
         EncodeExplicit(
-            [in] IASN1Type* xplicit);
+            [in] IASN1Explicit* xplicit);
 
         EncodeGeneralizedTime();
 
@@ -76,7 +60,7 @@ module
             [in] IASN1Choice* choice);
 
         GetExplicitLength(
-            [in] IASN1Type* sequence);
+            [in] IASN1Explicit* sequence);
 
         GetSequenceLength(
             [in] IASN1Sequence* sequence);
@@ -89,6 +73,27 @@ module
 
         GetSetOfLength(
             [in] IASN1SetOf* setOf);
+
+//        /** Encoded byte array */
+//        SetEncoded(
+//            [in] ArrayOf<Byte>* encoded);
+//
+//        GetEncoded(
+//            [out, callee] ArrayOf<Byte>* encoded);
+//
+//        /** Current encoded length */
+//        SetLength(
+//            [in] Int32 length);
+//
+//        GetLength(
+//            [out] Int32* length);
+//
+//        /** Current decoded content */
+//        SetContent(
+//            [in] ArrayOf<Byte>* content);
+//
+//        GetContent(
+//            [out] IInterface** content);
     }
 
     } // namespace Asn1
