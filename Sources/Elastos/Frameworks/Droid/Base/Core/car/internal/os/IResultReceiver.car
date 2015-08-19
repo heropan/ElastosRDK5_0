@@ -8,6 +8,8 @@ module
     namespace Internal {
     namespace Os {
 
+    /** @hide */
+    [oneway]
     interface IIResultReceiver {
         Send(
             [in] Int32 resultCode,

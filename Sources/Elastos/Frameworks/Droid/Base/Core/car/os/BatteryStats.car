@@ -109,6 +109,9 @@ module
     interface IBatteryStatsUid {
     }
 
+    interface IBatteryStatsUidPid {
+    }
+
     interface IBatteryStatsUidProc {
     }
 
@@ -116,6 +119,9 @@ module
     }
 
     interface IBatteryStatsUidPkgServ {
+    }
+
+    interface IBatteryStatsHistoryItem {
     }
 
     } // namespace Os

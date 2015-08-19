@@ -224,10 +224,6 @@ module
             interface IVisibleForTesting {}
         }
 
-        namespace Os {
-            interface IParcelFileDescriptorFactory {}
-        }
-
         namespace StatusBar {
             interface IStatusBarIcon {}
         }
@@ -254,8 +250,6 @@ module
 
         interface ISlog {}
 
-        interface ISparseArray {}
-
         interface ISparseBooleanArray {}
 
         interface IMathUtils {}
@@ -271,6 +265,8 @@ module
     namespace Telephony {
 
         interface ITelephonyManager {}
+
+        interface ISignalStrength {}
 
     }}} // Elastos.Droid.Telephony
 
@@ -322,4 +318,9 @@ module
         interface IPackageLite {}
     }}}} // Elastos.Droid.Content.Pm
 
+    namespace Elastos {
+    namespace Droid {
+    namespace Bluetooth {
+        interface IBluetoothHeadset {}
+    }}} // Elastos.Droid.Bluetooth
 }

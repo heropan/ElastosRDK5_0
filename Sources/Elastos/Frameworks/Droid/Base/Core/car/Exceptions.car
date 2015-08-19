@@ -113,4 +113,8 @@ module
     //==========================================================================
     // Elastos Droid sax exception codes (Family: 0x5C - DC)
     const E_BAD_XML_EXCEPTION                           =  0xDC010000;
+
+    //==========================================================================
+    // Elastos Droid internal exception codes (Family: 0x5D - DD)
+    const E_ZYGOTE_SECURITY_EXCEPTION                   =  0xDD010000;
 }

@@ -3,9 +3,11 @@
 #include "os/SomeArgs.h"
 
 using Elastos::Droid::Os::SomeArgs;
+using Elastos::Droid::Os::Looper;
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
 namespace Os {
 
 //==========================================================================
@@ -447,5 +449,6 @@ AutoPtr<IHandlerCallerCallback> HandlerCaller::GetCallback()
 }
 
 } // namespace Os
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos

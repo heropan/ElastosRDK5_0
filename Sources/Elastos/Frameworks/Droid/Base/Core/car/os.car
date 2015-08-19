@@ -13,7 +13,6 @@ module
     merge("os/Debug.car");
     merge("os/DebugMemoryInfo.car");
     merge("os/DropBoxManager.car");
-    merge("os/IDropBoxManagerService.car");
     merge("os/Environment.car");
     merge("os/FileObserver.car");
     merge("os/Handler.car");
@@ -47,7 +46,6 @@ module
     merge("os/RemoteCallback.car");
     merge("os/RemoteCallbackList.car");
     merge("os/ResultReceiver.car");
-    merge("os/IResultReceiver.car");
     merge("os/ServiceManager.car");
     merge("os/StatFs.car");
     merge("os/StrictMode.car");
@@ -60,9 +58,6 @@ module
     merge("os/WorkSource.car");
 
     merge("os/IdleHandler.car");
-    merge("os/HandlerCaller.car");
-    merge("os/ZygoteInit.car");
-    merge("os/RuntimeInit.car");
 
     // merge("os/PkgUsageStats.car");
     // merge("os/IZigbeeService.car");
@@ -584,48 +579,6 @@ module
     // }
 
     } // namespace Os
-    } // namespace Droid
-    } // namespace Elastos
-
-    namespace Elastos {
-    namespace Droid {
-    namespace Internal {
-    namespace Os {
-
-    //singleton class CZygoteInit {
-    //    interface IZygoteInit;
-    //}
-
-    singleton class CRuntimeInit {
-        interface IRuntimeInit;
-    }
-
-    // class CProcessStats {
-    //     constructor(
-    //         [in] Boolean includeThreads);
-
-    //     interface IProcessStats;
-    // }
-
-    // class CPkgUsageStats {
-    //     constructor(
-    //         [in] String pkgName,
-    //         [in] Int32 count,
-    //         [in] Int64 time,
-    //         [in] IObjectStringMap* lastResumeTimes);
-
-    //     constructor(
-    //         [in] IParcel* source);
-
-    //     constructor(
-    //         [in] Handle32 pStats);
-
-    //     interface IPkgUsageStats;
-    //     interface IParcelable;
-    // }
-
-    } // namespace Os
-    } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
 

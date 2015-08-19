@@ -1,0 +1,40 @@
+module
+{
+    merge("os/AndroidPrintStream.car");
+    merge("os/AtomicFile.car");
+    merge("os/BackgroundThread.car");
+    merge("os/BaseCommand.car");
+    merge("os/BatterySipper.car");
+    merge("os/BatteryStatsImpl.car");
+    merge("os/BinderInternal.car");
+    merge("os/HandlerCaller.car");
+    merge("os/IDropBoxManagerService.car");
+    merge("os/IParcelFileDescriptorFactory.car");
+    merge("os/IResultReceiver.car");
+    merge("os/LoggingPrintStream.car");
+    merge("os/PowerProfile.car");
+    merge("os/ProcessCpuTracker.car");
+    merge("os/RuntimeInit.car");
+    merge("os/SamplingProfilerIntegration.car");
+    merge("os/SomeArgs.car");
+    merge("os/TransferPipe.car");
+    merge("os/ZygoteInit.car");
+
+    namespace Elastos {
+    namespace Droid {
+    namespace Internal {
+    namespace Os {
+
+    //singleton class CZygoteInit {
+    //    interface IZygoteInit;
+    //}
+
+    singleton class CRuntimeInit {
+        interface IRuntimeInit;
+    }
+
+    } // namespace Os
+    } // namespace Internal
+    } // namespace Droid
+    } // namespace Elastos
+}

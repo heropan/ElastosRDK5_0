@@ -5,10 +5,10 @@
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::Handler;
-using Elastos::Droid::Os::IHandlerCallerCallback;
 
 namespace Elastos {
 namespace Droid {
+namespace Internal {
 namespace Os {
 
 class HandlerCaller
@@ -217,6 +217,7 @@ private:
 };
 
 } // namespace Os
+} // namespace Internal
 } // namespace Droid
 } // namespace Elastos
 

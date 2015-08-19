@@ -2,29 +2,31 @@ module
 {
     interface Elastos.Droid.Os.IMessage;
     interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Internal.Os.ISomeArgs;
 
     namespace Elastos {
     namespace Droid {
+    namespace Internal {
     namespace Os {
 
     /**
      * Callback interface you can use when instantiating a Handler to avoid
      * having to implement your own subclass of Handler.
      */
+    [local]
     interface IHandlerCallerCallback {
         ExecuteMessage(
             [in] IMessage* msg);
     }
 
+    [local]
     interface IHandlerCaller {
-        GetContext(
-            [out] IContext** ctx);
-
-        SetContext(
-            [in] IContext* ctx);
-
         ExecuteOrSendMessage(
             [in] IMessage* msg);
+
+        SendMessageDelayed(
+            [in] IMessage* msg,
+            [in] Int64 delayMillis);
 
         HasMessages(
             [in] Int32 what,
@@ -33,60 +35,64 @@ module
         RemoveMessages(
             [in] Int32 what);
 
-        RemoveMessages(
+        RemoveMessagesEx(
             [in] Int32 what,
             [in] IInterface* obj);
 
         SendMessage(
             [in] IMessage* msg);
 
+        SendMessageAndWait(
+            [in] IMessage* msg,
+            [out] ISomeArgs** args);
+
         ObtainMessage(
             [in] Int32 what,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageBO(
             [in] Int32 what,
             [in] Boolean arg1,
             [in] IInterface* arg2,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageBOO(
             [in] Int32 what,
             [in] Boolean arg1,
             [in] IInterface* arg2,
             [in] IInterface* arg3,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageO(
             [in] Int32 what,
             [in] IInterface* arg1,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageI(
             [in] Int32 what,
             [in] Int32 arg1,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageII(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIO(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] IInterface* arg2,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIIO(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
             [in] IInterface* arg3,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIIOO(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
@@ -94,27 +100,35 @@ module
             [in] IInterface* arg4,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIOO(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] IInterface* arg2,
             [in] IInterface* arg3,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIOOO(
+            [in] Int32 what,
+            [in] Int32 arg1,
+            [in] IInterface* arg2,
+            [in] IInterface* arg3,
+            [in] IInterface* arg4,
+            [out] IMessage** msg);
+
+        ObtainMessageOO(
             [in] Int32 what,
             [in] IInterface* arg1,
             [in] IInterface* arg2,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageOOO(
             [in] Int32 what,
             [in] IInterface* arg1,
             [in] IInterface* arg2,
             [in] IInterface* arg3,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageOOOO(
             [in] Int32 what,
             [in] IInterface* arg1,
             [in] IInterface* arg2,
@@ -122,7 +136,16 @@ module
             [in] IInterface* arg4,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageOOOOO(
+            [in] Int32 what,
+            [in] IInterface* arg1,
+            [in] IInterface* arg2,
+            [in] IInterface* arg3,
+            [in] IInterface* arg4,
+            [in] IInterface* arg5,
+            [out] IMessage** msg);
+
+        ObtainMessageIIII(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
@@ -130,7 +153,7 @@ module
             [in] Int32 arg4,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIIIII(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
@@ -139,7 +162,7 @@ module
             [in] Int32 arg5,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIIIIII(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
@@ -149,7 +172,7 @@ module
             [in] Int32 arg6,
             [out] IMessage** msg);
 
-        ObtainMessage(
+        ObtainMessageIIIIO(
             [in] Int32 what,
             [in] Int32 arg1,
             [in] Int32 arg2,
@@ -160,6 +183,7 @@ module
     }
 
     } // namespace Os
+    } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
 }

@@ -38,6 +38,7 @@ module
     merge("../car/internal/inputmethod.car");
     merge("../car/internal/logging.car");
     merge("../car/internal/net.car");
+    merge("../car/internal/os.car");
     merge("../car/internal/policy.car");
     merge("../car/internal/view.car");
     merge("../car/internal/widget.car");
