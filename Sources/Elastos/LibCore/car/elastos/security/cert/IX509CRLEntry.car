@@ -77,6 +77,16 @@ module
          */
         HasExtensions(
             [out] Boolean* result);
+
+        /**
+         * Returns the reason this CRL entry was revoked. If the implementation
+         * doesn't support reasons, this will return {@code null}.
+         *
+         * @since 1.7
+         * @hide
+         */
+        GetRevocationReason(
+            [out] CRLReason* reason);
     }
 
     } // namespace Cert

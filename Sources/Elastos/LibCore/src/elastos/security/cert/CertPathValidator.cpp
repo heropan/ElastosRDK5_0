@@ -17,7 +17,7 @@ const String CertPathValidator::SERVICE(String("CertPathValidator"));
 //static final Engine ENGINE = new Engine(SERVICE);
 
 // Store default property name
-const String CertPathValidator::PROPERTYNAME(String("certpathvalidator.type"));
+const String CertPathValidator::PROPERTY_NAME(String("certpathvalidator.type"));
 
 // Default value of CertPathBuilder type. It returns if certpathbuild.type
 // property is not defined in java.security file
@@ -108,8 +108,8 @@ ECode CertPathValidator::GetDefaultType(
     String defaultType;
     AutoPtr<ISecurity> security;
     CSecurity::AcquireSingleton((ISecurity**)&security);
-    security->GetProperty(PROPERTYNAME, &defaultType);
-    *type = !defaultType.IsNull() ? defaultType : DEFAULTPROPERTY;
+    security->GetProperty(PROPERTY_NAME, &defaultType);
+    *type = !defaultType.IsNull() ? defaultType : DEFAULT_PROPERTY;
     return NOERROR;
 }
 

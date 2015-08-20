@@ -22,18 +22,6 @@ module
             [out] String* type);
 
         /**
-         * Overrides {@code Object.hashCode()}. The function is defined as follows:
-         * <pre>
-         * {@code hashCode = 31 * path.getType().hashCode() +
-         * path.getCertificates().hashCode();}
-         * </pre>
-         *
-         * @return the hash code for this instance.
-         */
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        /**
          * Returns an immutable List of the {@code Certificate}s contained
          * in the {@code CertPath}.
          *
@@ -53,11 +41,9 @@ module
             [out, callee] ArrayOf<Byte>* encoded);
 
         /**
-         * Returns an encoding of the {@code CertPath} using the specified encoding.
+         * Returns an encoding of this {@code CertPath} using the given
+         * {@code encoding} from {@link #getEncodings()}.
          *
-         * @param encoding
-         *            encoding that should be generated.
-         * @return default encoding of the {@code CertPath}.
          * @throws CertificateEncodingException
          *             if the encoding fails.
          */

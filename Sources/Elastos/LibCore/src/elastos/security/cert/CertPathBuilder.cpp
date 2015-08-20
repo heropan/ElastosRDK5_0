@@ -18,11 +18,11 @@ const String CertPathBuilder::sSERVICE = String("CertPathBuilder");
 //static const Engine ENGINE = new Engine(SERVICE);
 
 // Store default property name
-const String CertPathBuilder::sPROPERTYNAME = String("certpathbuilder.type");
+const String CertPathBuilder::sPROPERTY_NAME = String("certpathbuilder.type");
 
 // Default value of CertPathBuilder type. It returns if certpathbuild.type
 // property is not defined in java.security file
-const String CertPathBuilder::sDEFAULTPROPERTY = String("PKIX");
+const String CertPathBuilder::sDEFAULT_PROPERTY = String("PKIX");
 
 CAR_INTERFACE_IMPL(CertPathBuilder, Object, ICertPathBuilder);
 ECode CertPathBuilder::GetAlgorithm(
@@ -111,8 +111,8 @@ ECode CertPathBuilder::GetDefaultType(
     String defaultType;
     AutoPtr<ISecurity> security;
     CSecurity::AcquireSingleton((ISecurity**)&security);
-    security->GetProperty(sPROPERTYNAME, &defaultType);
-    *type = !defaultType.IsNull() ? defaultType : sDEFAULTPROPERTY;
+    security->GetProperty(sPROPERTY_NAME, &defaultType);
+    *type = !defaultType.IsNull() ? defaultType : sDEFAULT_PROPERTY;
     return NOERROR;
 }
 
@@ -128,4 +128,3 @@ CertPathBuilder::CertPathBuilder(
 }
 }
 }
-

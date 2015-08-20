@@ -105,8 +105,8 @@ public:
     virtual CARAPI ToString(
         /* [out] */ String* str) = 0;
 
-protected:
-private:
+    virtual CARAPI GetRevocationReason(
+        /* [out] */ CRLReason* reason);
 };
 
 } // end Cert

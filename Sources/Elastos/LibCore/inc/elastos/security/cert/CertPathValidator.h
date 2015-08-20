@@ -69,11 +69,11 @@ private:
     //static final Engine ENGINE = new Engine(SERVICE);
 
     // Store default property name
-    static const String PROPERTYNAME;
+    static const String PROPERTY_NAME;
 
     // Default value of CertPathBuilder type. It returns if certpathbuild.type
     // property is not defined in java.security file
-    static const String DEFAULTPROPERTY;
+    static const String DEFAULT_PROPERTY;
 
     // Store used provider
     const AutoPtr<IProvider> mProvider;

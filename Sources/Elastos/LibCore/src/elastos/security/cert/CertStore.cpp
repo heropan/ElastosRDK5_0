@@ -18,11 +18,11 @@ const String CertStore::SERVICE = String("CertStore");
 // Used to access common engine functionality
 //static const Engine ENGINE = new Engine(SERVICE);
 
-const String CertStore::PROPERTYNAME = String("certstore.type");
+const String CertStore::PROPERTY_NAME = String("certstore.type");
 
 // Default value of CertStore type. It returns if certpathbuild.type
 // property is not defined in java.security file
-const String CertStore::DEFAULTPROPERTY = String("LDAP");
+const String CertStore::DEFAULT_PROPERTY = String("LDAP");
 
 CAR_INTERFACE_IMPL(CertStore, Object, ICertStore);
 ECode CertStore:: GetInstance(
@@ -106,8 +106,8 @@ ECode CertStore:: GetDefaultType(
     String defaultType;
     AutoPtr<ISecurity> security;
     CSecurity::AcquireSingleton((ISecurity**)&security);
-    security->GetProperty(PROPERTYNAME, &defaultType);
-    *type = defaultType.IsNull() ? DEFAULTPROPERTY : defaultType;
+    security->GetProperty(PROPERTY_NAME, &defaultType);
+    *type = defaultType.IsNull() ? DEFAULT_PROPERTY : defaultType;
     return NOERROR;
 }
 

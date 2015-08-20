@@ -100,6 +100,48 @@ ECode X509CRLEntry::GetCertificateIssuer(
     return NOERROR;
 }
 
+ECode X509CRLEntry::GetRevocationReason(
+    /* [out] */ CRLReason* reason)
+{
+    VALIDATE_NOT_NULL(reason);
+    AutoPtr<ArrayOf<Byte> > reasonBytes;
+    GetExtensionValue(String("2.5.29.21"), (ArrayOf<Byte>**)&reasonBytes);
+    if (reasonBytes == NULL) {
+        *reason = CRLReason_NULL;
+        return NOERROR;
+    }
+
+    // try {
+    Int32 count = 0;
+    AutoPtr<IASN1Type> asn;
+    AutoPtr<IInterface> obj;
+    AutoPtr<ArrayOf<Byte> > rawBytes;
+    AutoPtr<IReasonCode> rc;
+    FAIL_GOTO(CASN1OctetString::GetInstance((IASN1Type**)&asn), fail);
+    FAIL_GOTO(asn->Decode(reasonBytes, (IInterface**)&obj), fail);
+    assert(IArrayOf::Probe(obj) != NULL);
+    obj->GetLength(&count);
+    rawBytes = ArrayOf<Byte>::Alloc(count);
+    for (Int32 i = 0; i < count; i++) {
+        AutoPtr<IInterface> item;
+        IArrayOf::Probe(obj)->Get(i, (IInterface**)&item);
+        assert(IByte::Probe(item) != NULL);
+        IByte::Probe(item)->GetValue(&((*rawBytes)[i]));
+    }
+
+    FAIL_GOTO(CReasonCode::New(rawBytes, (IReasonCode**)&rc), fail);
+    FAIL_GOTO(rc->GetReason(reason), fail);
+    return NOERROR;
+    // } catch (IOException e) {
+    //     *reason = CRLReason_NULL;
+    //     return NOERROR;
+    // }
+
+fail:
+    *reason = CRLReason_NULL;
+    return NOERROR;
+}
+
 } // end Cert
 } // end Security
 } // end Elastos
