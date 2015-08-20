@@ -7,10 +7,6 @@ using Elastos::Core::StringBuilder;
 namespace Elastos {
 namespace Utility {
 
-// {8cabe5bf-91a0-4b31-80c2-b348d29620fd}
-extern const _ELASTOS ClassID ECLSID_AbstractCollection =
-        { 0x8cabe5bf, 0x91a0, 0x4b31, { 0x80, 0xc2, 0xb3, 0x48, 0xd2, 0x96, 0x20, 0xfd } };
-
 CAR_INTERFACE_IMPL_2(AbstractCollection, Object, ICollection, IIterable)
 
 AbstractCollection::AbstractCollection()

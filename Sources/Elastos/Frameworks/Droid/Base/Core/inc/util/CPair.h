@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_UTILITY_CPAIR_H__
 
 #include "_Elastos_Droid_Utility_CPair.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
 CarClass(CPair)
+    , public Object
+    , public IPair
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetFirst(
         /* [out] */ IInterface **first);
 

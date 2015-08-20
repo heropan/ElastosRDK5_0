@@ -1,9 +1,10 @@
 #ifndef __ELASTOS_UTILITY_ABSTRACTSET_H__
 #define __ELASTOS_UTILITY_ABSTRACTSET_H__
 
-#include "AbstractCollection.h"
+#include <elastos/utility/AbstractCollection.h>
 
 using Elastos::Utility::ICollection;
+using Elastos::Utility::AbstractCollection;
 
 namespace Elastos {
 namespace Utility {
@@ -20,8 +21,15 @@ class AbstractSet
     , public ISet
 {
 public:
-
     CAR_INTERFACE_DECL()
+
+    /**
+     * Constructs a new instance of this AbstractSet.
+     */
+    AbstractSet();
+
+    virtual ~AbstractSet();
+
     /**
      * Compares the specified object to this Set and returns true if they are
      * equal. The object must be an instance of Set and contain the same
@@ -122,12 +130,6 @@ public:
     CARAPI ToArray(
         /* [in] */ ArrayOf<IInterface*>* inArray,
         /* [out, callee] */ ArrayOf<IInterface*>** outArray);
-
-protected:
-    /**
-     * Constructs a new instance of this AbstractSet.
-     */
-    AbstractSet();
 };
 
 } // namespace Utility

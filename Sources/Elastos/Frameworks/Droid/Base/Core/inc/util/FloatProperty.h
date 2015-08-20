@@ -1,16 +1,17 @@
 #ifndef __ELASTOS_DROID_UTILITY_FLOATPROPERTY_H__
-#define  __ELASTOS_DROID_UTILITY_FLOATPROPERTY_H__
+#define __ELASTOS_DROID_UTILITY_FLOATPROPERTY_H__
 
-#include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
 class FloatProperty
-    : public ElRefBase
+    : public Object
     , public IFloatProperty
+    , public IProperty
 {
 public :
     CAR_INTERFACE_DECL()
@@ -46,7 +47,6 @@ public :
         /* [in] */ Float value) = 0;
 private:
     String mName;
-    ClassID mClsId;
 };
 
 } // namespace Utility

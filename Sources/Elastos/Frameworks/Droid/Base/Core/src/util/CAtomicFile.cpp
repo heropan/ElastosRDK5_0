@@ -220,6 +220,19 @@ ECode CAtomicFile::OpenRead(
     return CFileInputStream::New(mBaseName, stream);
 }
 
+ECode CAtomicFile::GetLastModifiedTime(
+    /* [out] */ Int64* time)
+{
+    VALIDATE_NOT_NULL(time)
+
+    Boolean result;
+    mBackupName->Exists(&result);
+    if (result) {
+        return mBackupName->GetLastModified(time);
+    }
+    return mBaseName->GetLastModified(time);
+}
+
 /**
  * A convenience for {@link #openRead()} that also reads all of the
  * file contents into a byte array which is returned.

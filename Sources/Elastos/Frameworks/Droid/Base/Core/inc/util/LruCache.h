@@ -59,8 +59,7 @@ namespace Utility {
  */
 template<typename K, typename V>
 class LruCache
-    : public ElRefBase
-    , public Object
+    : public Object
 {
 public:
     /**
@@ -73,9 +72,8 @@ public:
 
     /**
      * Sets the size of the cache.
-     * @param maxSize The new maximum size.
      *
-     * @hide
+     * @param maxSize The new maximum size.
      */
     CARAPI_(void) Resize(
         /* [in] */ Int32 maxSize);

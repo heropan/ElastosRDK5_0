@@ -2,14 +2,21 @@
 #define __ELASTOS_DROID_UTILITY_CDISPLAYMETRICS_H__
 
 #include "_Elastos_Droid_Utility_CDisplayMetrics.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
 CarClass(CDisplayMetrics)
+    , public Object
+    , public IDisplayMetrics
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CDisplayMetrics();
 
     CARAPI SetTo(

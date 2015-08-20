@@ -7,18 +7,18 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-CAR_INTERFACE_IMPL_2(FloatProperty, IFloatProperty, IProperty)
+CAR_INTERFACE_IMPL_2(FloatProperty, Object, IFloatProperty, IProperty)
 
 FloatProperty::FloatProperty(
     /* [in] */ const String& name)
 {
     mName = name;
-    mClsId = ECLSID_CFloat;
 }
 
 ECode FloatProperty::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {
+    VALIDATE_NOT_NULL(readOnly)
     *readOnly = FALSE;
     return NOERROR;
 }
@@ -38,6 +38,7 @@ ECode FloatProperty::Set(
 ECode FloatProperty::GetName(
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
     *name = mName;
     return NOERROR;
 }
@@ -45,13 +46,15 @@ ECode FloatProperty::GetName(
 ECode FloatProperty::GetType(
     /* [out] */ ClassID* id)
 {
-    *id = mClsId;
+    VALIDATE_NOT_NULL(id)
+    *id = ECLSID_CFloat;
     return NOERROR;
 }
 
 ECode FloatProperty::IsWriteOnly(
     /* [out] */ Boolean* writeOnly)
 {
+    VALIDATE_NOT_NULL(writeOnly)
     *writeOnly = FALSE;
     return NOERROR;
 }
@@ -59,6 +62,7 @@ ECode FloatProperty::IsWriteOnly(
 ECode FloatProperty::ForbiddenOperate(
     /* [out] */ Boolean* forbidden)
 {
+    VALIDATE_NOT_NULL(forbidden)
     *forbidden = FALSE;
     return NOERROR;
 }

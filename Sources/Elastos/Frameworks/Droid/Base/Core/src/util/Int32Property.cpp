@@ -7,18 +7,18 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-CAR_INTERFACE_IMPL_2(Int32Property, IInt32Property, IProperty)
+CAR_INTERFACE_IMPL_2(Int32Property, Object, IInt32Property, IProperty)
 
 Int32Property::Int32Property(
     /* [in] */ const String& name)
 {
     mName = name;
-    mClsId = ECLSID_CInteger32;
 }
 
 ECode Int32Property::IsReadOnly(
     /* [out] */ Boolean* readOnly)
 {
+    VALIDATE_NOT_NULL(readOnly)
     *readOnly = FALSE;
     return NOERROR;
 }
@@ -40,6 +40,7 @@ ECode Int32Property::Set(
 ECode Int32Property::GetName(
     /* [out] */ String* name)
 {
+    VALIDATE_NOT_NULL(name)
     *name = mName;
     return NOERROR;
 }
@@ -47,13 +48,15 @@ ECode Int32Property::GetName(
 ECode Int32Property::GetType(
     /* [out] */ ClassID* id)
 {
-    *id = mClsId;
+    VALIDATE_NOT_NULL(id)
+    *id = ECLSID_CInteger32;
     return NOERROR;
 }
 
 ECode Int32Property::IsWriteOnly(
     /* [out] */ Boolean* writeOnly)
 {
+    VALIDATE_NOT_NULL(writeOnly)
     *writeOnly = FALSE;
     return NOERROR;
 }
@@ -61,6 +64,7 @@ ECode Int32Property::IsWriteOnly(
 ECode Int32Property::ForbiddenOperate(
     /* [out] */ Boolean* forbidden)
 {
+    VALIDATE_NOT_NULL(forbidden)
     *forbidden = FALSE;
     return NOERROR;
 }

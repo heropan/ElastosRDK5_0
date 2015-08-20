@@ -9,14 +9,29 @@ INCLUDES += $(MAKEDIR)/../../inc/util
 
 C_DEFINES += -DDROID_CORE
 
+SOURCES += util.cpp
 SOURCES += CArrayMap.cpp
 SOURCES += CArraySet.cpp
 SOURCES += CAtomicFile.cpp
-//SOURCES += CBase64.cpp
+SOURCES += CBase64.cpp
+SOURCES += Base64InputStream.cpp
+SOURCES += Base64OutputStream.cpp
+SOURCES += DayOfMonthCursor.cpp
+SOURCES += CDisplayMetrics.cpp
+SOURCES += FastImmutableArraySet.cpp
+SOURCES += FloatMath.cpp
+SOURCES += FloatProperty.cpp
+SOURCES += Int32Property.cpp
 
 SOURCES += MapCollections.cpp
+SOURCES += MathUtils.cpp
+SOURCES += MonthDisplayHelper.cpp
+SOURCES += NtpTrustedTime.cpp
+SOURCES += CNtpTrustedTimeHelper.cpp
+SOURCES += CPair.cpp
+SOURCES += CPairHelper.cpp
+SOURCES += PathParser.cpp
 
-// SOURCES += CDisplayMetrics.cpp
 // SOURCES += CTypedValue.cpp
 // SOURCES += CTypedValueHelper.cpp
 // SOURCES += StateSet.cpp
@@ -28,8 +43,6 @@ SOURCES += MapCollections.cpp
 // SOURCES += SparseInt32Array.cpp
 // SOURCES += CParcelableObjectContainer.cpp
 // SOURCES += Pools.cpp
-// SOURCES += FinitePool.cpp
-// SOURCES += FloatMath.cpp
 // SOURCES += SynchronizedPool.cpp
 // SOURCES += JournaledFile.cpp
 // SOURCES += CXmlPullAttributes.cpp
@@ -39,14 +52,8 @@ SOURCES += MapCollections.cpp
 // SOURCES += AsyncChannel.cpp
 // SOURCES += Patterns.cpp
 // SOURCES += TimeUtils.cpp
-// SOURCES += NtpTrustedTime.cpp
-// SOURCES += CNtpTrustedTimeHelper.cpp
 // SOURCES += CPropertyHelper.cpp
 // SOURCES += ReflectiveProperty.cpp
-// SOURCES += FloatProperty.cpp
-// SOURCES += Int32Property.cpp
 // SOURCES += FileRotator.cpp
-// SOURCES += CPair.cpp
-// SOURCES += CPairHelper.cpp
+
 // SOURCES += CIndentingPrintWriter.cpp
-//

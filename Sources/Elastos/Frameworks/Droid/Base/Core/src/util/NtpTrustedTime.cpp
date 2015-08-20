@@ -1,20 +1,23 @@
 #include "util/NtpTrustedTime.h"
-#include "provider/Settings.h"
-#include "os/SystemClock.h"
-#include "net/CSntpClient.h"
+
+//#include "provider/Settings.h"
+//#include "os/SystemClock.h"
+//#include "net/CSntpClient.h"
+
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Math.h>
 #include <elastos/utility/logging/Logger.h>
-#include "R.h"
+//#include "R.h"
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::R;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsGlobal;
-using Elastos::Droid::Net::ISntpClient;
-using Elastos::Droid::Net::CSntpClient;
-using Elastos::Droid::Os::SystemClock;
+//using Elastos::Droid::R;
+// using Elastos::Droid::Content::Res::IResources;
+// using Elastos::Droid::Content::IContentResolver;
+// using Elastos::Droid::Provider::Settings;
+// using Elastos::Droid::Provider::ISettingsGlobal;
+// using Elastos::Droid::Net::ISntpClient;
+// using Elastos::Droid::Net::CSntpClient;
+//using Elastos::Droid::Os::SystemClock;
 using Elastos::Core::Math;
 
 namespace Elastos {
@@ -24,7 +27,9 @@ namespace Utility {
 const String NtpTrustedTime::TAG("NtpTrustedTime");
 const Boolean NtpTrustedTime::LOGD = FALSE;
 AutoPtr<NtpTrustedTime> NtpTrustedTime::sSingleton;
-Mutex NtpTrustedTime::mLock;
+Object NtpTrustedTime::mLock;
+
+CAR_INTERFACE_IMPL_2(NtpTrustedTime, Object, INtpTrustedTime, ITrustedTime)
 
 NtpTrustedTime::NtpTrustedTime(
     /* [in] */ const String& server,
@@ -41,7 +46,6 @@ NtpTrustedTime::NtpTrustedTime(
     }
 }
 
-CAR_INTERFACE_IMPL(NtpTrustedTime, INtpTrustedTime);
 
 ECode NtpTrustedTime::GetInstance(
     /* [in] */ IContext* context,
@@ -51,25 +55,25 @@ ECode NtpTrustedTime::GetInstance(
 
     AutoLock lock(mLock);
     if (sSingleton == NULL) {
-        AutoPtr<IResources> res;
-        context->GetResources((IResources**)&res);
+        // AutoPtr<IResources> res;
+        // context->GetResources((IResources**)&res);
 
-        AutoPtr<IContentResolver> resolver;
-        context->GetContentResolver((IContentResolver**)&resolver);
+        // AutoPtr<IContentResolver> resolver;
+        // context->GetContentResolver((IContentResolver**)&resolver);
 
-        String defaultServer;
-        res->GetString(R::string::config_ntpServer, &defaultServer);
-        Int64 defaultTimeout;
-        res->GetInteger(R::integer::config_ntpTimeout, (Int32*)&defaultTimeout);
+        // String defaultServer;
+        // res->GetString(R::string::config_ntpServer, &defaultServer);
+        // Int64 defaultTimeout;
+        // res->GetInteger(R::integer::config_ntpTimeout, (Int32*)&defaultTimeout);
 
-        String secureServer;
-        FAIL_RETURN(Settings::Global::GetString(resolver, ISettingsGlobal::NTP_SERVER, &secureServer))
-        Int64 timeout;
-        Settings::Global::GetInt64(
-                resolver, ISettingsGlobal::NTP_TIMEOUT, defaultTimeout, &timeout);
+        // String secureServer;
+        // FAIL_RETURN(Settings::Global::GetString(resolver, ISettingsGlobal::NTP_SERVER, &secureServer))
+        // Int64 timeout;
+        // Settings::Global::GetInt64(
+        //         resolver, ISettingsGlobal::NTP_TIMEOUT, defaultTimeout, &timeout);
 
-        String server = secureServer != NULL ? secureServer : defaultServer;
-        sSingleton = new NtpTrustedTime(server, timeout);
+        // String server = secureServer != NULL ? secureServer : defaultServer;
+        // sSingleton = new NtpTrustedTime(server, timeout);
     }
     *instance = (INtpTrustedTime*)sSingleton.Get();
     REFCOUNT_ADD(*instance);
@@ -87,19 +91,19 @@ ECode NtpTrustedTime::ForceRefresh(
         return NOERROR;
     }
 
-    AutoPtr<ISntpClient> client;
-    CSntpClient::New((ISntpClient**)&client);
-    Boolean hasTime;
-    client->RequestTime(mServer, (Int32) mTimeout, &hasTime);
-    if (hasTime) {
-        mHasCache = TRUE;
-        client->GetNtpTime(&mCachedNtpTime);
-        client->GetNtpTimeReference(&mCachedNtpElapsedRealtime);
-        Int64 tripTime;
-        client->GetRoundTripTime(&tripTime);
-        mCachedNtpCertainty = tripTime / 2;
-        *isRefreshed = TRUE;
-    }
+    // AutoPtr<ISntpClient> client;
+    // CSntpClient::New((ISntpClient**)&client);
+    // Boolean hasTime;
+    // client->RequestTime(mServer, (Int32) mTimeout, &hasTime);
+    // if (hasTime) {
+    //     mHasCache = TRUE;
+    //     client->GetNtpTime(&mCachedNtpTime);
+    //     client->GetNtpTimeReference(&mCachedNtpElapsedRealtime);
+    //     Int64 tripTime;
+    //     client->GetRoundTripTime(&tripTime);
+    //     mCachedNtpCertainty = tripTime / 2;
+    //     *isRefreshed = TRUE;
+    // }
 
     if (LOGD) {
         if (*isRefreshed)
@@ -123,12 +127,12 @@ ECode NtpTrustedTime::GetCacheAge(
     /* [out] */  Int64* cacheAge)
 {
     VALIDATE_NOT_NULL(cacheAge);
-    if (mHasCache) {
-        *cacheAge = SystemClock::GetElapsedRealtime() - mCachedNtpElapsedRealtime;
-    }
-    else {
-        *cacheAge = Elastos::Core::Math::INT64_MAX_VALUE;
-    }
+    // if (mHasCache) {
+    //     *cacheAge = SystemClock::GetElapsedRealtime() - mCachedNtpElapsedRealtime;
+    // }
+    // else {
+    //     *cacheAge = Elastos::Core::Math::INT64_MAX_VALUE;
+    // }
     return NOERROR;
 }
 

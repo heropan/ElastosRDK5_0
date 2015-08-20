@@ -10,50 +10,6 @@ namespace Utility {
 //  shared code
 //  --------------------------------------------------------
 
-/* package */ class Coder
-{
-public:
-
-    Byte* output;
-    Int32 op;
-
-    Coder()
-        : output(NULL)
-        , op(0)
-    {
-    }
-
-    virtual ~Coder()
-    {
-        if (!output) {
-            free((Void*)output);
-        }
-    }
-
-    /**
-     * Encode/decode another block of input data.  this->output is
-     * provided by the caller, and must be big enough to hold all
-     * the coded data.  On exit, this->opwill be set to the length
-     * of the coded data.
-     *
-     * @param finish true if this is the final call to process for
-     *        this object.  Will finalize the coder state and
-     *        include any final bytes in the output.
-     *
-     * @return true if the input so far is good; false if some
-     *         error has been detected in the input stream..
-     */
-    virtual Boolean Process(
-        Byte* input, Int32 offset, Int32 len, Boolean finish) = 0;
-
-    /**
-     * @return the maximum number of bytes a call to process()
-     * could produce for the given number of input bytes.  This may
-     * be an overestimate.
-     */
-    virtual Int32 MaxOutputSize(Int32 len) = 0;
-};
-
 /**
  * Lookup table for turning bytes into their position in the
  * Base64 alphabet.
@@ -104,230 +60,211 @@ const Int32 DECODE_WEBSAFE[] = {
 const Int32 SKIP = -1;
 const Int32 EQUALS = -2;
 
-/* package */ class Decoder : public Coder
+CBase64::Decoder::Decoder(Int32 flags, ArrayOf<Byte>* output)
 {
-private:
+    mOutput = output;
 
-    /**
-     * States 0-3 are reading through the next input tuple.
-     * State 4 is having read one '=' and expecting exactly
-     * one more.
-     * State 5 is expecting no more data or padding characters
-     * in the input.
-     * State 6 is the error state; an error has been detected
-     * in the input and no future input can "fix" it.
-     */
-    Int32 state;   // state number (0 to 6)
-    Int32 value;
+    alphabet = ((flags & IBase64::URL_SAFE) == 0) ? DECODE : DECODE_WEBSAFE;
+    state = 0;
+    value = 0;
+}
 
-    const Int32* alphabet;
+/**
+ * @return an overestimate for the number of bytes {@code
+ * len} bytes could decode to.
+ */
+Int32 CBase64::Decoder::MaxOutputSize(Int32 len)
+{
+    return len * 3 / 4 + 10;
+}
 
-public:
+/**
+ * Decode another block of input data.
+ *
+ * @return true if the state machine is still healthy.  false if
+ *         bad base-64 data has been detected in the input stream.
+ */
+Boolean CBase64::Decoder::Process(
+    ArrayOf<Byte>* inputArray, Int32 offset, Int32 len, Boolean finish)
+{
+    if (this->state == 6) return FALSE;
 
-    Decoder(Int32 flags, Byte* output)
-    {
-        this->output = output;
+    Int32 p = offset;
+    len += offset;
 
-        alphabet = ((flags & IBase64::URL_SAFE) == 0) ? DECODE : DECODE_WEBSAFE;
-        state = 0;
-        value = 0;
-    }
+    // Using local variables makes the decoder about 12%
+    // faster than if we manipulate the member variables in
+    // the loop.  (Even alphabet makes a measurable
+    // difference, which is somewhat surprising to me since
+    // the member variable is final.)
+    Int32 state = this->state;
+    Int32 value = this->value;
+    Int32 op = 0;
+    Byte* input = inputArray->GetPayload();
+    Byte* output = mOutput->GetPayload();
+    const Int32* alphabet = this->alphabet;
 
-    /**
-     * @return an overestimate for the number of bytes {@code
-     * len} bytes could decode to.
-     */
-    virtual Int32 MaxOutputSize(Int32 len)
-    {
-        return len * 3 / 4 + 10;
-    }
-
-    /**
-     * Decode another block of input data.
-     *
-     * @return true if the state machine is still healthy.  false if
-     *         bad base-64 data has been detected in the input stream.
-     */
-    virtual Boolean Process(
-        Byte* input, Int32 offset, Int32 len, Boolean finish)
-    {
-        if (this->state == 6) return FALSE;
-
-        Int32 p = offset;
-        len += offset;
-
-        // Using local variables makes the decoder about 12%
-        // faster than if we manipulate the member variables in
-        // the loop.  (Even alphabet makes a measurable
-        // difference, which is somewhat surprising to me since
-        // the member variable is final.)
-        Int32 state = this->state;
-        Int32 value = this->value;
-        Int32 op = 0;
-        Byte* output = this->output;
-        const Int32* alphabet = this->alphabet;
-
-        while (p < len) {
-            // Try the fast path:  we're starting a new tuple and the
-            // next four bytes of the input stream are all data
-            // bytes.  This corresponds to going through states
-            // 0-1-2-3-0.  We expect to use this method for most of
-            // the data.
-            //
-            // If any of the next four bytes of input are non-data
-            // (whitespace, etc.), value will end up negative.  (All
-            // the non-data values in decode are small negative
-            // numbers, so shifting any of them up and or'ing them
-            // together will result in a value with its top bit set.)
-            //
-            // You can remove this whole block and the output should
-            // be the same, just slower.
-            if (state == 0) {
-                while (p + 4 <= len &&
-                       (value = ((alphabet[input[p] & 0xff] << 18) |
-                                 (alphabet[input[p + 1] & 0xff] << 12) |
-                                 (alphabet[input[p + 2] & 0xff] << 6) |
-                                 (alphabet[input[p + 3] & 0xff]))) >= 0) {
-                    output[op + 2] = (Byte)value;
-                    output[op + 1] = (Byte)(value >> 8);
-                    output[op] = (Byte)(value >> 16);
-                    op += 3;
-                    p += 4;
-                }
-                if (p >= len) break;
+    while (p < len) {
+        // Try the fast path:  we're starting a new tuple and the
+        // next four bytes of the input stream are all data
+        // bytes.  This corresponds to going through states
+        // 0-1-2-3-0.  We expect to use this method for most of
+        // the data.
+        //
+        // If any of the next four bytes of input are non-data
+        // (whitespace, etc.), value will end up negative.  (All
+        // the non-data values in decode are small negative
+        // numbers, so shifting any of them up and or'ing them
+        // together will result in a value with its top bit set.)
+        //
+        // You can remove this whole block and the output should
+        // be the same, just slower.
+        if (state == 0) {
+            while (p + 4 <= len &&
+                   (value = ((alphabet[input[p] & 0xff] << 18) |
+                             (alphabet[input[p + 1] & 0xff] << 12) |
+                             (alphabet[input[p + 2] & 0xff] << 6) |
+                             (alphabet[input[p + 3] & 0xff]))) >= 0) {
+                output[op + 2] = (Byte)value;
+                output[op + 1] = (Byte)(value >> 8);
+                output[op] = (Byte)(value >> 16);
+                op += 3;
+                p += 4;
             }
-
-            // The fast path isn't available -- either we've read a
-            // partial tuple, or the next four input bytes aren't all
-            // data, or whatever.  Fall back to the slower state
-            // machine implementation.
-
-            Int32 d = alphabet[input[p++] & 0xff];
-
-            switch (state) {
-            case 0:
-                if (d >= 0) {
-                    value = d;
-                    ++state;
-                } else if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-
-            case 1:
-                if (d >= 0) {
-                    value = (value << 6) | d;
-                    ++state;
-                } else if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-
-            case 2:
-                if (d >= 0) {
-                    value = (value << 6) | d;
-                    ++state;
-                } else if (d == EQUALS) {
-                    // Emit the last (partial) output tuple;
-                    // expect exactly one more padding character.
-                    output[op++] = (Byte)(value >> 4);
-                    state = 4;
-                } else if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-
-            case 3:
-                if (d >= 0) {
-                    // Emit the output triple and return to state 0.
-                    value = (value << 6) | d;
-                    output[op + 2] = (Byte)value;
-                    output[op + 1] = (Byte)(value >> 8);
-                    output[op] = (Byte)(value >> 16);
-                    op += 3;
-                    state = 0;
-                } else if (d == EQUALS) {
-                    // Emit the last (partial) output tuple;
-                    // expect no further data or padding characters.
-                    output[op + 1] = (Byte)(value >> 2);
-                    output[op] = (Byte)(value >> 10);
-                    op += 2;
-                    state = 5;
-                } else if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-
-            case 4:
-                if (d == EQUALS) {
-                    ++state;
-                } else if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-
-            case 5:
-                if (d != SKIP) {
-                    this->state = 6;
-                    return FALSE;
-                }
-                break;
-            }
+            if (p >= len) break;
         }
 
-        if (!finish) {
-            // We're out of input, but a future call could provide
-            // more.
-            this->state = state;
-            this->value = value;
-            this->op = op;
-            return TRUE;
-        }
+        // The fast path isn't available -- either we've read a
+        // partial tuple, or the next four input bytes aren't all
+        // data, or whatever.  Fall back to the slower state
+        // machine implementation.
 
-        // Done reading input.  Now figure out where we are left in
-        // the state machine and finish up.
+        Int32 d = alphabet[input[p++] & 0xff];
 
         switch (state) {
         case 0:
-            // Output length is a multiple of three.  Fine.
+            if (d >= 0) {
+                value = d;
+                ++state;
+            } else if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
             break;
+
         case 1:
-            // Read one extra input byte, which isn't enough to
-            // make another output byte.  Illegal.
-            this->state = 6;
-            return FALSE;
+            if (d >= 0) {
+                value = (value << 6) | d;
+                ++state;
+            } else if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
+            break;
+
         case 2:
-            // Read two extra input bytes, enough to emit 1 more
-            // output byte.  Fine.
-            output[op++] = (Byte)(value >> 4);
+            if (d >= 0) {
+                value = (value << 6) | d;
+                ++state;
+            } else if (d == EQUALS) {
+                // Emit the last (partial) output tuple;
+                // expect exactly one more padding character.
+                output[op++] = (Byte)(value >> 4);
+                state = 4;
+            } else if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
             break;
+
         case 3:
-            // Read three extra input bytes, enough to emit 2 more
-            // output bytes.  Fine.
-            output[op++] = (Byte)(value >> 10);
-            output[op++] = (Byte)(value >> 2);
+            if (d >= 0) {
+                // Emit the output triple and return to state 0.
+                value = (value << 6) | d;
+                output[op + 2] = (Byte)value;
+                output[op + 1] = (Byte)(value >> 8);
+                output[op] = (Byte)(value >> 16);
+                op += 3;
+                state = 0;
+            } else if (d == EQUALS) {
+                // Emit the last (partial) output tuple;
+                // expect no further data or padding characters.
+                output[op + 1] = (Byte)(value >> 2);
+                output[op] = (Byte)(value >> 10);
+                op += 2;
+                state = 5;
+            } else if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
             break;
+
         case 4:
-            // Read one padding '=' when we expected 2.  Illegal.
-            this->state = 6;
-            return FALSE;
+            if (d == EQUALS) {
+                ++state;
+            } else if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
+            break;
+
         case 5:
-            // Read all the padding '='s we expected and no more.
-            // Fine.
+            if (d != SKIP) {
+                this->state = 6;
+                return FALSE;
+            }
             break;
         }
+    }
 
+    if (!finish) {
+        // We're out of input, but a future call could provide
+        // more.
         this->state = state;
-        this->op = op;
-
+        this->value = value;
+        mOp = op;
         return TRUE;
     }
-};
+
+    // Done reading input.  Now figure out where we are left in
+    // the state machine and finish up.
+
+    switch (state) {
+    case 0:
+        // Output length is a multiple of three.  Fine.
+        break;
+    case 1:
+        // Read one extra input byte, which isn't enough to
+        // make another output byte.  Illegal.
+        this->state = 6;
+        return FALSE;
+    case 2:
+        // Read two extra input bytes, enough to emit 1 more
+        // output byte.  Fine.
+        output[op++] = (Byte)(value >> 4);
+        break;
+    case 3:
+        // Read three extra input bytes, enough to emit 2 more
+        // output bytes.  Fine.
+        output[op++] = (Byte)(value >> 10);
+        output[op++] = (Byte)(value >> 2);
+        break;
+    case 4:
+        // Read one padding '=' when we expected 2.  Illegal.
+        this->state = 6;
+        return FALSE;
+    case 5:
+        // Read all the padding '='s we expected and no more.
+        // Fine.
+        break;
+    }
+
+    this->state = state;
+    mOp = op;
+
+    return TRUE;
+}
+
 
 /**
  * Emit a new line every this many output tuples.  Corresponds to
@@ -358,248 +295,252 @@ const Byte ENCODE_WEBSAFE[] = {
     'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_',
 };
 
-/* package */ class Encoder : public Coder
+
+
+CBase64::Encoder::Encoder(Int32 flags, ArrayOf<Byte>* output)
 {
-private:
+    mOutput = output;
 
-    Byte tail[2];
-    /* package */ Int32 tailLen;
-    Int32 count;
-    const Byte* alphabet;
+    do_padding = (flags & IBase64::NO_PADDING) == 0;
+    do_newline = (flags & IBase64::NO_WRAP) == 0;
+    do_cr = (flags & IBase64::CRLF) != 0;
+    alphabet = ((flags & IBase64::URL_SAFE) == 0) ? ENCODE : ENCODE_WEBSAFE;
 
-public:
+    // tail = new byte[2];
+    tailLen = 0;
 
-    Boolean do_padding;
-    Boolean do_newline;
-    Boolean do_cr;
+    count = do_newline ? LINE_GROUPS : -1;
+}
 
-    Encoder(Int32 flags, Byte* output)
-    {
-        this->output = output;
+/**
+ * @return an overestimate for the number of bytes {@code
+ * len} bytes could encode to.
+ */
+Int32 CBase64::Encoder::MaxOutputSize(Int32 len)
+{
+    return len * 8 / 5 + 10;
+}
 
-        do_padding = (flags & IBase64::NO_PADDING) == 0;
-        do_newline = (flags & IBase64::NO_WRAP) == 0;
-        do_cr = (flags & IBase64::CRLF) != 0;
-        alphabet = ((flags & IBase64::URL_SAFE) == 0) ? ENCODE : ENCODE_WEBSAFE;
+Boolean CBase64::Encoder::Process(
+    ArrayOf<Byte>* inputArray, Int32 offset, Int32 len, Boolean finish)
+{
+    // Using local variables makes the encoder about 9% faster.
+    const Byte* alphabet = this->alphabet;
+    Byte* input = inputArray->GetPayload();
+    Byte* output = mOutput->GetPayload();
+    Int32 op = 0;
+    Int32 count = this->count;
 
-        // tail = new byte[2];
-        tailLen = 0;
+    Int32 p = offset;
+    len += offset;
+    Int32 v = -1;
 
-        count = do_newline ? LINE_GROUPS : -1;
+    // First we need to concatenate the tail of the previous call
+    // with any input bytes available now and see if we can empty
+    // the tail.
+
+    switch (tailLen) {
+        case 0:
+            // There was no tail.
+            break;
+
+        case 1:
+            if (p + 2 <= len) {
+                // A 1-byte tail with at least 2 bytes of
+                // input available now.
+                v = ((tail[0] & 0xff) << 16) |
+                    ((input[p] & 0xff) << 8) |
+                    (input[p+1] & 0xff);
+                p += 2;
+                tailLen = 0;
+            };
+            break;
+
+        case 2:
+            if (p + 1 <= len) {
+                // A 2-byte tail with at least 1 byte of input.
+                v = ((tail[0] & 0xff) << 16) |
+                    ((tail[1] & 0xff) << 8) |
+                    (input[p++] & 0xff);
+                tailLen = 0;
+            }
+            break;
     }
 
-    /**
-     * @return an overestimate for the number of bytes {@code
-     * len} bytes could encode to.
-     */
-    virtual Int32 MaxOutputSize(Int32 len)
-    {
-        return len * 8 / 5 + 10;
-    }
-
-    virtual Boolean Process(
-        Byte* input, Int32 offset, Int32 len, Boolean finish)
-    {
-        // Using local variables makes the encoder about 9% faster.
-        const Byte* alphabet = this->alphabet;
-        Byte* output = this->output;
-        Int32 op = 0;
-        Int32 count = this->count;
-
-        Int32 p = offset;
-        len += offset;
-        Int32 v = -1;
-
-        // First we need to concatenate the tail of the previous call
-        // with any input bytes available now and see if we can empty
-        // the tail.
-
-        switch (tailLen) {
-            case 0:
-                // There was no tail.
-                break;
-
-            case 1:
-                if (p + 2 <= len) {
-                    // A 1-byte tail with at least 2 bytes of
-                    // input available now.
-                    v = ((tail[0] & 0xff) << 16) |
-                        ((input[p++] & 0xff) << 8) |
-                        (input[p++] & 0xff);
-                    tailLen = 0;
-                };
-                break;
-
-            case 2:
-                if (p + 1 <= len) {
-                    // A 2-byte tail with at least 1 byte of input.
-                    v = ((tail[0] & 0xff) << 16) |
-                        ((tail[1] & 0xff) << 8) |
-                        (input[p++] & 0xff);
-                    tailLen = 0;
-                }
-                break;
+    if (v != -1) {
+        output[op++] = alphabet[(v >> 18) & 0x3f];
+        output[op++] = alphabet[(v >> 12) & 0x3f];
+        output[op++] = alphabet[(v >> 6) & 0x3f];
+        output[op++] = alphabet[v & 0x3f];
+        if (--count == 0) {
+            if (do_cr) output[op++] = '\r';
+            output[op++] = '\n';
+            count = LINE_GROUPS;
         }
+    }
 
-        if (v != -1) {
-            output[op++] = alphabet[(v >> 18) & 0x3f];
+    // At this point either there is no tail, or there are fewer
+    // than 3 bytes of input available.
+
+    // The main loop, turning 3 input bytes into 4 output bytes on
+    // each iteration.
+    while (p + 3 <= len) {
+        v = ((input[p] & 0xff) << 16) |
+            ((input[p + 1] & 0xff) << 8) |
+            (input[p + 2] & 0xff);
+        output[op] = alphabet[(v >> 18) & 0x3f];
+        output[op + 1] = alphabet[(v >> 12) & 0x3f];
+        output[op + 2] = alphabet[(v >> 6) & 0x3f];
+        output[op + 3] = alphabet[v & 0x3f];
+        p += 3;
+        op += 4;
+        if (--count == 0) {
+            if (do_cr) output[op++] = '\r';
+            output[op++] = '\n';
+            count = LINE_GROUPS;
+        }
+    }
+
+    if (finish) {
+        // Finish up the tail of the input.  Note that we need to
+        // consume any bytes in tail before any bytes
+        // remaining in input; there should be at most two bytes
+        // total.
+
+        if (p - tailLen == len - 1) {
+            Int32 t = 0;
+            v = ((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 4;
+            tailLen -= t;
+            output[op++] = alphabet[(v >> 6) & 0x3f];
+            output[op++] = alphabet[v & 0x3f];
+            if (do_padding) {
+                output[op++] = '=';
+                output[op++] = '=';
+            }
+            if (do_newline) {
+                if (do_cr) output[op++] = '\r';
+                output[op++] = '\n';
+            }
+        } else if (p - tailLen == len - 2) {
+            Int32 t = 0;
+            // v = (((tailLen > 1 ? tail[t++] : input[p++]) & 0xff) << 10) |
+            //     (((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 2);
+            if (tailLen > 1) {
+                v = ((tail[t] & 0xff) << 10) | ((tail[t + 1] & 0xff) << 2);
+                t += 2;
+            }
+            else if (tailLen > 0) {
+                v = ((input[p++] & 0xff) << 10) | ((tail[t++] & 0xff) << 2);
+            }
+            else {
+                v = ((input[p] & 0xff) << 10) | ((input[p + 1] & 0xff) << 2);
+                p += 2;
+            }
+
+            tailLen -= t;
             output[op++] = alphabet[(v >> 12) & 0x3f];
             output[op++] = alphabet[(v >> 6) & 0x3f];
             output[op++] = alphabet[v & 0x3f];
-            if (--count == 0) {
-                if (do_cr) output[op++] = '\r';
-                output[op++] = '\n';
-                count = LINE_GROUPS;
+            if (do_padding) {
+                output[op++] = '=';
             }
-        }
-
-        // At this point either there is no tail, or there are fewer
-        // than 3 bytes of input available.
-
-        // The main loop, turning 3 input bytes into 4 output bytes on
-        // each iteration.
-        while (p + 3 <= len) {
-            v = ((input[p] & 0xff) << 16) |
-                ((input[p + 1] & 0xff) << 8) |
-                (input[p + 2] & 0xff);
-            output[op] = alphabet[(v >> 18) & 0x3f];
-            output[op + 1] = alphabet[(v >> 12) & 0x3f];
-            output[op + 2] = alphabet[(v >> 6) & 0x3f];
-            output[op + 3] = alphabet[v & 0x3f];
-            p += 3;
-            op += 4;
-            if (--count == 0) {
-                if (do_cr) output[op++] = '\r';
-                output[op++] = '\n';
-                count = LINE_GROUPS;
-            }
-        }
-
-        if (finish) {
-            // Finish up the tail of the input.  Note that we need to
-            // consume any bytes in tail before any bytes
-            // remaining in input; there should be at most two bytes
-            // total.
-
-            if (p - tailLen == len - 1) {
-                Int32 t = 0;
-                v = ((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 4;
-                tailLen -= t;
-                output[op++] = alphabet[(v >> 6) & 0x3f];
-                output[op++] = alphabet[v & 0x3f];
-                if (do_padding) {
-                    output[op++] = '=';
-                    output[op++] = '=';
-                }
-                if (do_newline) {
-                    if (do_cr) output[op++] = '\r';
-                    output[op++] = '\n';
-                }
-            } else if (p - tailLen == len - 2) {
-                Int32 t = 0;
-                v = (((tailLen > 1 ? tail[t++] : input[p++]) & 0xff) << 10) |
-                    (((tailLen > 0 ? tail[t++] : input[p++]) & 0xff) << 2);
-                tailLen -= t;
-                output[op++] = alphabet[(v >> 12) & 0x3f];
-                output[op++] = alphabet[(v >> 6) & 0x3f];
-                output[op++] = alphabet[v & 0x3f];
-                if (do_padding) {
-                    output[op++] = '=';
-                }
-                if (do_newline) {
-                    if (do_cr) output[op++] = '\r';
-                    output[op++] = '\n';
-                }
-            } else if (do_newline && op > 0 && count != LINE_GROUPS) {
+            if (do_newline) {
                 if (do_cr) output[op++] = '\r';
                 output[op++] = '\n';
             }
-
-            assert(tailLen == 0);
-            assert(p == len);
-        } else {
-            // Save the leftovers in tail to be consumed on the next
-            // call to encodeInternal.
-
-            if (p == len - 1) {
-                tail[tailLen++] = input[p];
-            } else if (p == len - 2) {
-                tail[tailLen++] = input[p];
-                tail[tailLen++] = input[p+1];
-            }
+        } else if (do_newline && op > 0 && count != LINE_GROUPS) {
+            if (do_cr) output[op++] = '\r';
+            output[op++] = '\n';
         }
 
-        this->op = op;
-        this->count = count;
+        assert(tailLen == 0);
+        assert(p == len);
+    } else {
+        // Save the leftovers in tail to be consumed on the next
+        // call to encodeInternal.
 
-        return TRUE;
+        if (p == len - 1) {
+            tail[tailLen++] = input[p];
+        } else if (p == len - 2) {
+            tail[tailLen++] = input[p];
+            tail[tailLen++] = input[p+1];
+        }
     }
-};
+
+    mOp = op;
+    this->count = count;
+
+    return TRUE;
+}
+
+CAR_INTERFACE_IMPL(CBase64, Singleton, IBase64)
+
+CAR_SINGLETON_IMPL(CBase64)
 
 ECode CBase64::Decode(
     /* [in] */ const String& str,
     /* [in] */ Int32 flags,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    Int32 length = str.GetLength();
-    ArrayOf<Byte> input((Byte*)str.string(), length);
-
-    return Decode2(input, flags, result);
+    AutoPtr<ArrayOf<Byte> > input = str.GetBytes();
+    return Decode(input, flags, result);
 }
 
-ECode CBase64::Decode2(
-    /* [in] */ const ArrayOf<Byte>& input,
+ECode CBase64::Decode(
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 flags,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return Decode3(input, 0, input.GetLength(), flags, result);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
+    return Decode(input, 0, input->GetLength(), flags, result);
 }
 
-ECode CBase64::Decode3(
-    /* [in] */ const ArrayOf<Byte>& input,
+ECode CBase64::Decode(
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
     /* [in] */ Int32 flags,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
 
     // Allocate space for the most data the input could represent.
     // (It could contain less if it contains whitespace, etc.)
     Int32 outputLength = sizeof(Byte) * len * 3 / 4;
-    Byte* buffer = (Byte*)malloc(outputLength);
+    AutoPtr<ArrayOf<Byte> > buffer = ArrayOf<Byte>::Alloc(outputLength);
     if (!buffer) {
         return E_OUT_OF_MEMORY;
     }
 
-    Decoder* decoder = new Decoder(flags, buffer);
+    AutoPtr<Decoder> decoder = new Decoder(flags, buffer);
     if (!decoder) {
-        free((Void*)buffer);
         return E_OUT_OF_MEMORY;
     }
 
-    if (!decoder->Process(input.GetPayload(), offset, len, TRUE)) {
+    if (!decoder->Process(input, offset, len, TRUE)) {
         delete decoder;
         // throw new IllegalArgumentException("bad base-64");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
     // Maybe we got lucky and allocated exactly enough output space.
-    // if (decoder->op == outputLength) {
-    //     return decoder->output;
+    // if (decoder->mOp == outputLength) {
+    //     return decoder->mOutput;
     // }
 
     // Need to shorten the array, so allocate a new one of the
     // right size and copy.
-    AutoPtr<ArrayOf<Byte> > temp = ArrayOf<Byte>::Alloc(decoder->op);
+    AutoPtr<ArrayOf<Byte> > temp = ArrayOf<Byte>::Alloc(decoder->mOp);
     if (!temp) {
-        delete decoder;
         return E_OUT_OF_MEMORY;
     }
 
-    memcpy(temp->GetPayload(), decoder->output, sizeof(Byte) * decoder->op);
+    memcpy(temp->GetPayload(), decoder->mOutput->GetPayload(), sizeof(Byte) * decoder->mOp);
 
-    delete decoder;
     *result = temp;
     REFCOUNT_ADD(*result);
 
@@ -607,16 +548,18 @@ ECode CBase64::Decode3(
 }
 
 ECode CBase64::EncodeToString(
-    /* [in] */ const ArrayOf<Byte>& input,
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
 
     // try {
     AutoPtr<ArrayOf<Byte> > data;
     FAIL_RETURN(Encode(input, flags, (ArrayOf<Byte>**)&data));
-    *result = String((const char*)data->GetPayload(), (UInt32)data->GetLength());
+    *result = String((const char*)data->GetPayload(), data->GetLength());
 
     return NOERROR;
     // } catch (UnsupportedEncodingException e) {
@@ -625,18 +568,21 @@ ECode CBase64::EncodeToString(
     // }
 }
 
-ECode CBase64::EncodeToString2(
-    /* [in] */ const ArrayOf<Byte>& input,
+ECode CBase64::EncodeToString(
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
     /* [in] */ Int32 flags,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(result);
+
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
 
     // try {
     AutoPtr<ArrayOf<Byte> > data;
-    FAIL_RETURN(Encode2(input, offset, len, flags, (ArrayOf<Byte>**)&data));
+    FAIL_RETURN(Encode(input, offset, len, flags, (ArrayOf<Byte>**)&data));
     *result = String((const char*)data->GetPayload(), (UInt32)data->GetLength());
 
     return NOERROR;
@@ -647,23 +593,28 @@ ECode CBase64::EncodeToString2(
 }
 
 ECode CBase64::Encode(
-    /* [in] */ const ArrayOf<Byte>& input,
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 flags,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    return Encode2(input, 0, input.GetLength(), flags, result);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
+    return Encode(input, 0, input->GetLength(), flags, result);
 }
 
-ECode CBase64::Encode2(
-    /* [in] */ const ArrayOf<Byte>& input,
+ECode CBase64::Encode(
+    /* [in] */ ArrayOf<Byte>* input,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 len,
     /* [in] */ Int32 flags,
     /* [out, callee] */ ArrayOf<Byte>** result)
 {
-    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(input)
 
-    Encoder* encoder = new Encoder(flags, NULL);
+    AutoPtr<Encoder> encoder = new Encoder(flags, NULL);
     if (!encoder) {
         return E_OUT_OF_MEMORY;
     }
@@ -690,25 +641,22 @@ ECode CBase64::Encode2(
             (encoder->do_cr ? 2 : 1);
     }
 
-    encoder->output = (Byte*)malloc(output_len);
-    if (!encoder->output) {
-        delete encoder;
+    encoder->mOutput = ArrayOf<Byte>::Alloc(output_len);
+    if (!encoder->mOutput) {
         return E_OUT_OF_MEMORY;
     }
 
-    encoder->Process(input.GetPayload(), offset, len, TRUE);
-    assert(encoder->op == output_len);
+    encoder->Process(input, offset, len, TRUE);
+    assert(encoder->mOp == output_len);
 
     AutoPtr<ArrayOf<Byte> > temp = ArrayOf<Byte>::Alloc(output_len);
     if (!temp) {
-        delete encoder;
         return E_OUT_OF_MEMORY;
     }
 
-    memcpy(temp->GetPayload(), encoder->output, sizeof(Byte) * output_len);
+    memcpy(temp->GetPayload(), encoder->mOutput->GetPayload(), sizeof(Byte) * output_len);
 
     delete encoder;
-    *result = temp;
     REFCOUNT_ADD(*result);
 
     return NOERROR;
