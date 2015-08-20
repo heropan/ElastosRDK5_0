@@ -28,28 +28,20 @@ module
     merge("media/media/audiofx/Virtualizer.car");
     merge("media/media/audiofx/Visualizer.car");
 
-    merge("media/media/videoeditor/AudioTrack2.car");
-    merge("media/media/videoeditor/Effect.car");
-    merge("media/media/videoeditor/EffectColor.car");
-    merge("media/media/videoeditor/EffectKenBurns.car");
-    merge("media/media/videoeditor/ExtractAudioWaveformProgressListener.car");
-    merge("media/media/videoeditor/MediaArtistNativeHelper.car");
-    merge("media/media/videoeditor/MediaItem.car");
-    merge("media/media/videoeditor/MediaImageItem.car");
-    merge("media/media/videoeditor/MediaProperties.car");
-    merge("media/media/videoeditor/MediaVideoItem.car");
-    merge("media/media/videoeditor/Overlay.car");
-    merge("media/media/videoeditor/OverlayFrame.car");
-    merge("media/media/videoeditor/Transition.car");
-    merge("media/media/videoeditor/TransitionAlpha.car");
-    merge("media/media/videoeditor/TransitionCrossfade.car");
-    merge("media/media/videoeditor/TransitionFadeBlack.car");
-    merge("media/media/videoeditor/TransitionSliding.car");
-    merge("media/media/videoeditor/VideoEditor.car");
-    merge("media/media/videoeditor/VideoEditorImpl.car");
-    merge("media/media/videoeditor/VideoEditorFactory.car");
-    merge("media/media/videoeditor/VideoEditorProfile.car");
-    merge("media/media/videoeditor/WaveformData.car");
+    merge("media/media/audiopolicy/AudioMix.car");
+    merge("media/media/audiopolicy/AudioMixingRule.car");
+    merge("media/media/audiopolicy/AudioPolicy.car");
+    merge("media/media/audiopolicy/AudioPolicyConfig.car");
+
+    merge("media/media/browse/MediaBrowser.car");
+
+    merge("media/media/projection/IMediaProjection.car");
+    merge("media/media/projection/IMediaProjectionCallback.car");
+    merge("media/media/projection/IMediaProjectionManager.car");
+    merge("media/media/projection/IMediaProjectionWatcherCallback.car");
+    merge("media/media/projection/MediaProjection.car");
+    merge("media/media/projection/IMediaProjectionInfo.car");
+    merge("media/media/projection/MediaProjectionManager.car");
 
     merge("media/media/AmrInputStream.car");
     merge("media/media/AsyncPlayer.car");
