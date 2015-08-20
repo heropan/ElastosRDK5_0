@@ -5,9 +5,12 @@ include $(MAKEDIR)/../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../inc/
+INCLUDES += $(MAKEDIR)/../../inc/os/
 INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/
+INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/inc/
 INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/logging/
 INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/
+INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/concurrent/atomic/
 
 C_DEFINES += -DDROID_CORE
 

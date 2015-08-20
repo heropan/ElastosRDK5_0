@@ -84,6 +84,51 @@ public:
     CARAPI EnforceTetherChangePermission(
         /* [in] */ IContext* context);
 
+    /**
+     * Binds the current process to {@code network}.  All Sockets created in the future
+     * (and not explicitly bound via a bound SocketFactory from
+     * {@link Network#getSocketFactory() Network.getSocketFactory()}) will be bound to
+     * {@code network}.  All host name resolutions will be limited to {@code network} as well.
+     * Note that if {@code network} ever disconnects, all Sockets created in this way will cease to
+     * work and all host name resolutions will fail.  This is by design so an application doesn't
+     * accidentally use Sockets it thinks are still bound to a particular {@link Network}.
+     * To clear binding pass {@code null} for {@code network}.  Using individually bound
+     * Sockets created by Network.getSocketFactory().createSocket() and
+     * performing network-specific host name resolutions via
+     * {@link Network#getAllByName Network.getAllByName} is preferred to calling
+     * {@code setProcessDefaultNetwork}.
+     *
+     * @param network The {@link Network} to bind the current process to, or {@code null} to clear
+     *                the current binding.
+     * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+     */
+    CARAPI SetProcessDefaultNetwork(
+        /* [in] */ INetwork* network,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns the {@link Network} currently bound to this process via
+     * {@link #setProcessDefaultNetwork}, or {@code null} if no {@link Network} is explicitly bound.
+     *
+     * @return {@code Network} to which this process is bound, or {@code null}.
+     */
+    CARAPI GetProcessDefaultNetwork(
+        /* [out] */ INetwork** result);
+
+    /**
+     * Binds host resolutions performed by this process to {@code network}.
+     * {@link #setProcessDefaultNetwork} takes precedence over this setting.
+     *
+     * @param network The {@link Network} to bind host resolutions from the current process to, or
+     *                {@code null} to clear the current binding.
+     * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+     * @hide
+     * @deprecated This is strictly for legacy usage to support {@link #startUsingNetworkFeature}.
+     */
+    CARAPI SetProcessDefaultNetworkForHostResolution(
+        /* [in] */ INetwork* network,
+        /* [out] */ Boolean* result);
+
 };
 
 } // namespace Net

@@ -5,10 +5,8 @@
 #include "ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CConnectivityManager.h"
 #include <elastos/core/Object.h>
-#if 0 // TODO: Waiting for NetworkCallback
-#include "NetworkCallback.h"
-#endif
 #include <elastos/utility/logging/Logger.h>
+#include "Handler.h"
 
 
 using Elastos::Core::Object;
@@ -16,14 +14,36 @@ using Elastos::Net::IInetAddress;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Os::IMessenger;
 using Elastos::Droid::Os::INetworkManagementService;
+using Elastos::Droid::Os::IHandler;
+using Elastos::Droid::Os::Handler;
 using Elastos::Utility::IHashMap;
 using Elastos::Droid::Utility::IArrayMap;
 using Elastos::Utility::Logging::Logger;
+using Elastos::Droid::App::IPendingIntent;
+using Elastos::Utility::Concurrent::Atomic::IAtomicInteger32;
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
 
+/**
+ * Class that answers queries about the state of network connectivity. It also
+ * notifies applications when network connectivity changes. Get an instance
+ * of this class by calling
+ * {@link android.content.Context#getSystemService(String) Context.getSystemService(Context.CONNECTIVITY_SERVICE)}.
+ * <p>
+ * The primary responsibilities of this class are to:
+ * <ol>
+ * <li>Monitor network connections (Wi-Fi, GPRS, UMTS, etc.)</li>
+ * <li>Send broadcast intents when network connectivity changes</li>
+ * <li>Attempt to "fail over" to another network when connectivity to a network
+ * is lost</li>
+ * <li>Provide an API that allows applications to query the coarse-grained or fine-grained
+ * state of the available networks</li>
+ * <li>Provide an API that allows applications to request and select networks for their data
+ * traffic</li>
+ * </ol>
+ */
 CarClass(CConnectivityManager)
     , public Object
     , public IConnectivityManager
@@ -828,7 +848,7 @@ public:
      * @hide
      */
     CARAPI GetAllLinkQualityInfo(
-        /* [out, callee] */ ArrayOf<ILinkQualityInfo>** result);
+        /* [out, callee] */ ArrayOf<ILinkQualityInfo*>** result);
 
     /**
      * Set sign in error notification to visible or in visible
@@ -874,6 +894,98 @@ public:
         /* [in] */ INetworkMisc* misc);
 
     /**
+     * Base class for NetworkRequest callbacks.  Used for notifications about network
+     * changes.  Should be extended by applications wanting notifications.
+     */
+    class ConnectivityManagerNetworkCallback
+        : public Object
+        , public IConnectivityManagerNetworkCallback
+    {
+        friend class CConnectivityManager;
+
+    public:
+        CAR_INTERFACE_DECL()
+
+        /**
+         * @hide
+         * Called whenever the framework connects to a network that it may use to
+         * satisfy this request
+         */
+        CARAPI OnPreCheck(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called when the framework connects and has declared new network ready for use.
+         * This callback may be called more than once if the {@link Network} that is
+         * satisfying the request changes.
+         *
+         * @param network The {@link Network} of the satisfying network.
+         */
+        CARAPI OnAvailable(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called when the network is about to be disconnected.  Often paired with an
+         * {@link NetworkCallback#onAvailable} call with the new replacement network
+         * for graceful handover.  This may not be called if we have a hard loss
+         * (loss without warning).  This may be followed by either a
+         * {@link NetworkCallback#onLost} call or a
+         * {@link NetworkCallback#onAvailable} call for this network depending
+         * on whether we lose or regain it.
+         *
+         * @param network The {@link Network} that is about to be disconnected.
+         * @param maxMsToLive The time in ms the framework will attempt to keep the
+         *                     network connected.  Note that the network may suffer a
+         *                     hard loss at any time.
+         */
+        CARAPI OnLosing(
+            /* [in] */ INetwork* network,
+            /* [in] */ Int32 maxMsToLive);
+
+        /**
+         * Called when the framework has a hard loss of the network or when the
+         * graceful failure ends.
+         *
+         * @param network The {@link Network} lost.
+         */
+        CARAPI OnLost(
+            /* [in] */ INetwork* network);
+
+        /**
+         * Called if no network is found in the given timeout time.  If no timeout is given,
+         * this will not be called.
+         * @hide
+         */
+        CARAPI OnUnavailable();
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes capabilities but still satisfies the stated need.
+         *
+         * @param network The {@link Network} whose capabilities have changed.
+         * @param networkCapabilities The new {@link NetworkCapabilities} for this network.
+         */
+        CARAPI OnCapabilitiesChanged(
+            /* [in] */ INetwork* network,
+            /* [in] */ INetworkCapabilities* networkCapabilities);
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes {@link LinkProperties}.
+         *
+         * @param network The {@link Network} whose link properties have changed.
+         * @param linkProperties The new {@link LinkProperties} for this network.
+         */
+        CARAPI OnLinkPropertiesChanged(
+            /* [in] */ INetwork* network,
+            /* [in] */ ILinkProperties* linkProperties);
+
+    private:
+        AutoPtr<INetworkRequest> mNetworkRequest;
+
+    };
+
+    /**
      * Start listening to reports when the system's default data network is active, meaning it is
      * a good time to perform network traffic.  Use {@link #isDefaultNetworkActive()}
      * to determine the current state of the system's default network after registering the
@@ -886,7 +998,7 @@ public:
      * @param l The listener to be told when the network is active.
      */
     CARAPI AddDefaultNetworkActiveListener(
-        /* [in] */ IOnNetworkActiveListener* l);
+        /* [in] */ IConnectivityManagerOnNetworkActiveListener* l);
 
     /**
      * Remove network active listener previously registered with
@@ -895,7 +1007,7 @@ public:
      * @param l Previously registered listener.
      */
     CARAPI RemoveDefaultNetworkActiveListener(
-        /* [in] */ IOnNetworkActiveListener* l);
+        /* [in] */ IConnectivityManagerOnNetworkActiveListener* l);
 
     /**
      * Return whether the data network is currently active.  An active network means that
@@ -907,6 +1019,157 @@ public:
      */
     CARAPI IsDefaultNetworkActive(
         /* [out] */ Boolean* result);
+
+    /**
+     * Request a network to satisfy a set of {@link NetworkCapabilities}.
+     *
+     * This {@link NetworkRequest} will live until released via
+     * {@link #unregisterNetworkCallback} or the calling application exits.
+     * Status of the request can be followed by listening to the various
+     * callbacks described in {@link NetworkCallback}.  The {@link Network}
+     * can be used to direct traffic to the network.
+     *
+     * @param request {@link NetworkRequest} describing this request.
+     * @param networkCallback The {@link NetworkCallback} to be utilized for this
+     *                        request.  Note the callback must not be shared - they
+     *                        uniquely specify this request.
+     */
+    CARAPI RequestNetwork(
+        /* [in] */ INetworkRequest* request,
+        /* [in] */ IConnectivityManagerNetworkCallback* networkCallback);
+
+    /**
+     * Request a network to satisfy a set of {@link NetworkCapabilities}, limited
+     * by a timeout.
+     *
+     * This function behaves identically to the non-timedout version, but if a suitable
+     * network is not found within the given time (in milliseconds) the
+     * {@link NetworkCallback#unavailable} callback is called.  The request must
+     * still be released normally by calling {@link releaseNetworkRequest}.
+     * @param request {@link NetworkRequest} describing this request.
+     * @param networkCallback The callbacks to be utilized for this request.  Note
+     *                        the callbacks must not be shared - they uniquely specify
+     *                        this request.
+     * @param timeoutMs The time in milliseconds to attempt looking for a suitable network
+     *                  before {@link NetworkCallback#unavailable} is called.
+     * @hide
+     */
+    CARAPI RequestNetwork(
+        /* [in] */ INetworkRequest* request,
+        /* [in] */ IConnectivityManagerNetworkCallback* networkCallback,
+        /* [in] */ Int32 timeoutMs);
+
+    /**
+     * Request a network to satisfy a set of {@link NetworkCapabilities}.
+     *
+     * This function behavies identically to the version that takes a NetworkCallback, but instead
+     * of {@link NetworkCallback} a {@link PendingIntent} is used.  This means
+     * the request may outlive the calling application and get called back when a suitable
+     * network is found.
+     * <p>
+     * The operation is an Intent broadcast that goes to a broadcast receiver that
+     * you registered with {@link Context#registerReceiver} or through the
+     * &lt;receiver&gt; tag in an AndroidManifest.xml file
+     * <p>
+     * The operation Intent is delivered with two extras, a {@link Network} typed
+     * extra called {@link #EXTRA_NETWORK_REQUEST_NETWORK} and a {@link NetworkRequest}
+     * typed extra called {@link #EXTRA_NETWORK_REQUEST_NETWORK_REQUEST} containing
+     * the original requests parameters.  It is important to create a new,
+     * {@link NetworkCallback} based request before completing the processing of the
+     * Intent to reserve the network or it will be released shortly after the Intent
+     * is processed.
+     * <p>
+     * If there is already an request for this Intent registered (with the equality of
+     * two Intents defined by {@link Intent#filterEquals}), then it will be removed and
+     * replaced by this one, effectively releasing the previous {@link NetworkRequest}.
+     * <p>
+     * The request may be released normally by calling {@link #unregisterNetworkCallback}.
+     *
+     * @param request {@link NetworkRequest} describing this request.
+     * @param operation Action to perform when the network is available (corresponds
+     *                  to the {@link NetworkCallback#onAvailable} call.  Typically
+     *                  comes from {@link PendingIntent#getBroadcast}.
+     * @hide
+     */
+    CARAPI RequestNetwork(
+        /* [in] */ INetworkRequest* request,
+        /* [in] */ IPendingIntent* operation);
+
+    /**
+     * Registers to receive notifications about all networks which satisfy the given
+     * {@link NetworkRequest}.  The callbacks will continue to be called until
+     * either the application exits or {@link #unregisterNetworkCallback} is called
+     *
+     * @param request {@link NetworkRequest} describing this request.
+     * @param networkCallback The {@link NetworkCallback} that the system will call as suitable
+     *                        networks change state.
+     */
+    CARAPI RegisterNetworkCallback(
+        /* [in] */ INetworkRequest* request,
+        /* [in] */ IConnectivityManagerNetworkCallback* networkCallback);
+
+    /**
+     * Unregisters callbacks about and possibly releases networks originating from
+     * {@link #requestNetwork} and {@link #registerNetworkCallback} calls.  If the
+     * given {@code NetworkCallback} had previosuly been used with {@code #requestNetwork},
+     * any networks that had been connected to only to satisfy that request will be
+     * disconnected.
+     *
+     * @param networkCallback The {@link NetworkCallback} used when making the request.
+     */
+    CARAPI UnregisterNetworkCallback(
+        /* [in] */ IConnectivityManagerNetworkCallback* networkCallback);
+
+    /**
+     * Binds the current process to {@code network}.  All Sockets created in the future
+     * (and not explicitly bound via a bound SocketFactory from
+     * {@link Network#getSocketFactory() Network.getSocketFactory()}) will be bound to
+     * {@code network}.  All host name resolutions will be limited to {@code network} as well.
+     * Note that if {@code network} ever disconnects, all Sockets created in this way will cease to
+     * work and all host name resolutions will fail.  This is by design so an application doesn't
+     * accidentally use Sockets it thinks are still bound to a particular {@link Network}.
+     * To clear binding pass {@code null} for {@code network}.  Using individually bound
+     * Sockets created by Network.getSocketFactory().createSocket() and
+     * performing network-specific host name resolutions via
+     * {@link Network#getAllByName Network.getAllByName} is preferred to calling
+     * {@code setProcessDefaultNetwork}.
+     *
+     * @param network The {@link Network} to bind the current process to, or {@code null} to clear
+     *                the current binding.
+     * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+     */
+    static CARAPI SetProcessDefaultNetwork(
+        /* [in] */ INetwork* network,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns the {@link Network} currently bound to this process via
+     * {@link #setProcessDefaultNetwork}, or {@code null} if no {@link Network} is explicitly bound.
+     *
+     * @return {@code Network} to which this process is bound, or {@code null}.
+     */
+    static CARAPI GetProcessDefaultNetwork(
+        /* [out] */ INetwork** result);
+
+    /**
+     * Binds host resolutions performed by this process to {@code network}.
+     * {@link #setProcessDefaultNetwork} takes precedence over this setting.
+     *
+     * @param network The {@link Network} to bind host resolutions from the current process to, or
+     *                {@code null} to clear the current binding.
+     * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+     * @hide
+     * @deprecated This is strictly for legacy usage to support {@link #startUsingNetworkFeature}.
+     */
+    static CARAPI SetProcessDefaultNetworkForHostResolution(
+        /* [in] */ INetwork* network,
+        /* [out] */ Boolean* result);
+
+    static const AutoPtr<IHashMap> sNetworkCallback;
+
+    static const AutoPtr<IAtomicInteger32> sCallbackRefCount;
+
+    static AutoPtr<IHandler> sCallbackHandler;
 
 private:
     CARAPI NetworkCapabilitiesForFeature(
@@ -922,72 +1185,67 @@ private:
         /* [in] */ INetworkCapabilities* netCap,
         /* [out] */ Int32* result);
 
-    class Inner_LegacyRequest
+    class LegacyRequest
         : public Object
     {
     public:
-        Inner_LegacyRequest()
-            : mDelay(-1)
-            , mNetworkCallback(new InnerSub_NetworkCallback(this))
-        {}
+        LegacyRequest();
         AutoPtr<INetworkCapabilities> mNetworkCapabilities;
         AutoPtr<INetworkRequest> mNetworkRequest;
         Int32 mExpireSequenceNumber;
         AutoPtr<INetwork> mCurrentNetwork;
         Int32 mDelay;
-        class InnerSub_NetworkCallback
-#if 0 // TODO: Waiting for NetworkCallback
-            : public NetworkCallback
-#endif
+        class InnerSub_ConnectivityManagerNetworkCallback
+            : public ConnectivityManagerNetworkCallback
         {
         public:
-            InnerSub_NetworkCallback(Inner_LegacyRequest* const host)
-                :   mHost(host)
-            {}
+            InnerSub_ConnectivityManagerNetworkCallback(LegacyRequest* const host);
 
             // @Override
-            ECode OnAvailable(
-                /* [in] */ INetwork* network)
-            {
-                mHost->mCurrentNetwork = network;
-                // Log.d(TAG, "startUsingNetworkFeature got Network:" + network);
-                String s;
-#if 0 // TODO: Waiting for INetwork
-                network->ToString(&s);
-#endif
-                Logger::D(TAG, (String("startUsingNetworkFeature got Network:") + s).string());
-#if 0 // TODO: Waiting for NetworkCallback
-                SetProcessDefaultNetworkForHostResolution(network);
-#endif
-                return NOERROR;
-            }
+            CARAPI OnAvailable(
+                /* [in] */ INetwork* network);
+
             // @Override
             ECode OnLost(
-                /* [in] */ INetwork* network)
-            {
-#if 0 // TODO: Waiting for INetwork
-                if (network->Equals(mCurrentNetwork)) {
-                    mHost->mCurrentNetwork = NULL;
-#if 0 // TODO: Waiting for NetworkCallback
-                    SetProcessDefaultNetworkForHostResolution(NULL);
-#endif
-                }
-#endif
-                String s;
-#if 0 // TODO: Waiting for INetwork
-                network->ToString(&s);
-#endif
-                Logger::D(TAG, (String("startUsingNetworkFeature lost Network:") + s).string());
-                return NOERROR;
-            }
+                /* [in] */ INetwork* network);
+
         private:
-            Inner_LegacyRequest* const mHost;
+            LegacyRequest* const mHost;
         };
-#if 0 // TODO: Waiting for NetworkCallback
-        AutoPtr<InnerSub_NetworkCallback> mNetworkCallback;
-#else
-        InnerSub_NetworkCallback* mNetworkCallback;
-#endif
+
+        AutoPtr<InnerSub_ConnectivityManagerNetworkCallback> mNetworkCallback;
+    };
+
+    class CallbackHandler
+        : public Handler
+    {
+    public:
+        CallbackHandler(
+            /* [in] */ ILooper* looper,
+            /* [in] */ IHashMap* callbackMap,
+            /* [in] */ IAtomicInteger32* refCount,
+            /* [in] */ IConnectivityManager* cm);
+
+        // @Override
+        CARAPI HandleMessage(
+            /* [in] */ IMessage* message);
+    private:
+        const AutoPtr<IHashMap> mCallbackMap;
+        const AutoPtr<IAtomicInteger32> mRefCount;
+        static const String TAG;
+
+        const AutoPtr<IConnectivityManager> mCm;
+
+
+        CARAPI GetObject(
+            /* [in] */ IMessage* msg,
+            /* [in] */ ClassID c,
+            /* [out] */ IInterface* result);
+
+        CARAPI GetCallbacks(
+            /* [in] */ INetworkRequest* req,
+            /* [out] */ IConnectivityManagerNetworkCallback** result);
+
     };
 
     CARAPI FindRequestForFeature(
@@ -996,7 +1254,7 @@ private:
 
 
     CARAPI RenewRequestLocked(
-        /* [in] */ Inner_LegacyRequest& l);
+        /* [in] */ LegacyRequest* l);
 
     CARAPI ExpireRequest(
         /* [in] */ INetworkCapabilities* netCap,
@@ -1013,17 +1271,34 @@ private:
 
     CARAPI RemoveRequestForFeature(
         /* [in] */ INetworkCapabilities* netCap,
-        /* [out] */ INetworkCallback** result);
+        /* [out] */ IConnectivityManagerNetworkCallback** result);
 
     CARAPI GetNetworkManagementService(
-        /* [in] */ INetworkManagementService* result);
+        /* [out] */ INetworkManagementService** result);
+
+    CARAPI IncCallbackHandlerRefCount();
+
+    CARAPI DecCallbackHandlerRefCount();
+
+    CARAPI SendRequestForNetwork(
+        /* [in] */ INetworkCapabilities* need,
+        /* [in] */ IConnectivityManagerNetworkCallback* networkCallback,
+        /* [in] */ Int32 timeoutSec,
+        /* [in] */ Int32 action,
+        /* [in] */ Int32 legacyType,
+        /* [out] */ INetworkRequest** result);
+
 
     static const String TAG;
     static const Boolean LEGACY_DBG; // STOPSHIP
     AutoPtr<IIConnectivityManager> mService;
     AutoPtr<INetworkManagementService> mNMService;
-    static AutoPtr<IHashMap> sLegacyRequests;
+    static const AutoPtr<IHashMap> sLegacyRequests;
     AutoPtr<IArrayMap> mNetworkActivityListeners;
+    static const Int32 BASE;
+    static const Int32 EXPIRE_LEGACY_REQUEST;
+    const static Int32 LISTEN;
+    const static Int32 REQUEST;
 };
 
 } // namespace Net

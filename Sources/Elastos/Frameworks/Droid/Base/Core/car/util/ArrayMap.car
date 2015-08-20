@@ -27,6 +27,10 @@ module
      * item, it may reduce the capacity to better match the current size.  In the future an
      * explicit call to set the capacity should turn off this aggressive shrinking behavior.</p>
      */
+    /**
+     * @Involved
+     * interface IMap;
+     */
     interface IArrayMap {
         /**
          * @hide

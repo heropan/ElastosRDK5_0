@@ -8,16 +8,20 @@ module
     interface Elastos.Droid.Net.INetworkQuotaInfo;
     interface Elastos.Droid.Net.INetworkCapabilities;
     interface Elastos.Droid.Net.INetworkMisc;
-    interface Elastos.Droid.Net.IOnNetworkActiveListener;
+    interface Elastos.Droid.Net.IConnectivityManagerOnNetworkActiveListener;
+    interface Elastos.Droid.Net.INetworkRequest;
+    interface Elastos.Droid.Net.IConnectivityManagerNetworkCallback;
 
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Os.IMessenger;
+    interface Elastos.Droid.App.IPendingIntent;
 
     using interface Elastos.Net.IInetAddress;
 
     namespace Elastos {
     namespace Droid {
     namespace Net {
+
 
     /**
      * Class that answers queries about the state of network connectivity. It also
@@ -37,8 +41,11 @@ module
      * traffic</li>
      * </ol>
      */
-    interface IConnectivityManager{
-
+    /**
+     * @Involved
+     * no super interface
+     */
+    interface IConnectivityManager {
         /**
          * A change in network connectivity has occurred. A default connection has either
          * been established or lost. The NetworkInfo for the affected network is
@@ -72,7 +79,8 @@ module
          * @hide
          */
         // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
-        const String CONNECTIVITY_ACTION_IMMEDIATE ="android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE";
+        const String CONNECTIVITY_ACTION_IMMEDIATE =
+                "android.net.conn.CONNECTIVITY_CHANGE_IMMEDIATE";
 
         /**
          * The lookup key for a {@link NetworkInfo} object. Retrieve with
@@ -386,7 +394,7 @@ module
         const Int32 TYPE_VPN = 17;
 
         /** {@hide} */
-        const Int32 MAX_RADIO_TYPE   = TYPE_VPN;
+        const Int32 MAX_RADIO_TYPE = TYPE_VPN;
 
         /** {@hide} */
         const Int32 MAX_NETWORK_TYPE = TYPE_VPN;
@@ -429,17 +437,88 @@ module
          */
         const Int32 NETID_UNSET = 0;
 
-        const Int32 TETHER_ERROR_NO_ERROR           = 0;
-        const Int32 TETHER_ERROR_UNKNOWN_IFACE      = 1;
-        const Int32 TETHER_ERROR_SERVICE_UNAVAIL    = 2;
-        const Int32 TETHER_ERROR_UNSUPPORTED        = 3;
-        const Int32 TETHER_ERROR_UNAVAIL_IFACE      = 4;
-        const Int32 TETHER_ERROR_MASTER_ERROR       = 5;
+        /** {@hide} */
+        const Int32 TETHER_ERROR_NO_ERROR = 0;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_UNKNOWN_IFACE = 1;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_SERVICE_UNAVAIL = 2;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_UNSUPPORTED = 3;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_UNAVAIL_IFACE = 4;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_MASTER_ERROR = 5;
+
+        /** {@hide} */
         const Int32 TETHER_ERROR_TETHER_IFACE_ERROR = 6;
+
+        /** {@hide} */
         const Int32 TETHER_ERROR_UNTETHER_IFACE_ERROR = 7;
-        const Int32 TETHER_ERROR_ENABLE_NAT_ERROR     = 8;
-        const Int32 TETHER_ERROR_DISABLE_NAT_ERROR    = 9;
-        const Int32 TETHER_ERROR_IFACE_CFG_ERROR      = 10;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_ENABLE_NAT_ERROR = 8;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_DISABLE_NAT_ERROR = 9;
+
+        /** {@hide} */
+        const Int32 TETHER_ERROR_IFACE_CFG_ERROR = 10;
+
+        /** @hide obj = pair(NetworkRequest, Network) */
+        const Int32 CALLBACK_PRECHECK = 0x00080001;
+
+        /** @hide obj = pair(NetworkRequest, Network) */
+        const Int32 CALLBACK_AVAILABLE = 0x00080002;
+
+        /** @hide obj = pair(NetworkRequest, Network), arg1 = ttl */
+        const Int32 CALLBACK_LOSING = 0x00080003;
+
+        /** @hide obj = pair(NetworkRequest, Network) */
+        const Int32 CALLBACK_LOST = 0x00080004;
+
+        /** @hide obj = NetworkRequest */
+        const Int32 CALLBACK_UNAVAIL = 0x00080005;
+
+        /** @hide obj = pair(NetworkRequest, Network) */
+        const Int32 CALLBACK_CAP_CHANGED = 0x00080006;
+
+        /** @hide obj = pair(NetworkRequest, Network) */
+        const Int32 CALLBACK_IP_CHANGED = 0x00080007;
+
+        /** @hide obj = NetworkRequest */
+        const Int32 CALLBACK_RELEASED = 0x00080008;
+
+        /** @hide */
+        const Int32 CALLBACK_EXIT = 0x00080009;
+
+        /**
+         * The maximum number of milliseconds the framework will look for a suitable network
+         * during a timeout-equiped call to {@link requestNetwork}.
+         * {@hide}
+         */
+        const Int32 MAX_NETWORK_REQUEST_TIMEOUT_MS = 100 * 60 * 1000;
+
+        /**
+         * The lookup key for a {@link Network} object included with the intent after
+         * succesfully finding a network for the applications request.  Retrieve it with
+         * {@link android.content.Intent#getParcelableExtra(String)}.
+         * @hide
+         */
+        const String EXTRA_NETWORK_REQUEST_NETWORK = "networkRequestNetwork";
+
+        /**
+         * The lookup key for a {@link NetworkRequest} object included with the intent after
+         * succesfully finding a network for the applications request.  Retrieve it with
+         * {@link android.content.Intent#getParcelableExtra(String)}.
+         * @hide
+         */
+        const String EXTRA_NETWORK_REQUEST_NETWORK_REQUEST = "networkRequestNetworkRequest";
 
         /**
          * Specifies the preferred network type.  When the device has more
@@ -775,7 +854,42 @@ module
          * @hide
          * @deprecated Talk to TelephonyManager directly
          */
-         GetMobileDataEnabled(
+        GetMobileDataEnabled(
+            [out] Boolean* result);
+
+        /**
+         * Start listening to reports when the system's default data network is active, meaning it is
+         * a good time to perform network traffic.  Use {@link #isDefaultNetworkActive()}
+         * to determine the current state of the system's default network after registering the
+         * listener.
+         * <p>
+         * If the process default network has been set with
+         * {@link ConnectivityManager#setProcessDefaultNetwork} this function will not
+         * reflect the process's default, but the system default.
+         *
+         * @param l The listener to be told when the network is active.
+         */
+        AddDefaultNetworkActiveListener(
+            [in] IConnectivityManagerOnNetworkActiveListener* l);
+
+        /**
+         * Remove network active listener previously registered with
+         * {@link #addDefaultNetworkActiveListener}.
+         *
+         * @param l Previously registered listener.
+         */
+        RemoveDefaultNetworkActiveListener(
+            [in] IConnectivityManagerOnNetworkActiveListener* l);
+
+        /**
+         * Return whether the data network is currently active.  An active network means that
+         * it is currently in a high power state for performing data transmission.  On some
+         * types of networks, it may be expensive to move and stay in such a state, so it is
+         * more power efficient to batch network traffic together when the radio is already in
+         * this state.  This method tells you whether right now is currently a good time to
+         * initiate network traffic, as the network is already active.
+         */
+        IsDefaultNetworkActive(
             [out] Boolean* result);
 
         /**
@@ -1011,7 +1125,7 @@ module
          * @hide
          */
         GetGlobalProxy(
-            [out] IProxyInfo** p);
+            [out] IProxyInfo** result);
 
         /**
          * Get the HTTP proxy settings for the current default network.  Note that
@@ -1026,7 +1140,7 @@ module
          * @deprecated Deprecated in favor of {@link #getLinkProperties}
          */
         GetProxy(
-            [out] IProxyInfo** p);
+            [out] IProxyInfo** result);
 
         /**
          * Sets a secondary requirement bit for the given networkType.
@@ -1167,7 +1281,7 @@ module
          * @hide
          */
         GetAllLinkQualityInfo(
-            [out, callee] ArrayOf<ILinkQualityInfo>* result);
+            [out, callee] ArrayOf<ILinkQualityInfo*>* result);
 
         /**
          * Set sign in error notification to visible or in visible
@@ -1213,43 +1327,107 @@ module
             [in] INetworkMisc* misc);
 
         /**
-         * Start listening to reports when the system's default data network is active, meaning it is
-         * a good time to perform network traffic.  Use {@link #isDefaultNetworkActive()}
-         * to determine the current state of the system's default network after registering the
-         * listener.
+         * Request a network to satisfy a set of {@link NetworkCapabilities}.
+         *
+         * This {@link NetworkRequest} will live until released via
+         * {@link #unregisterNetworkCallback} or the calling application exits.
+         * Status of the request can be followed by listening to the various
+         * callbacks described in {@link NetworkCallback}.  The {@link Network}
+         * can be used to direct traffic to the network.
+         *
+         * @param request {@link NetworkRequest} describing this request.
+         * @param networkCallback The {@link NetworkCallback} to be utilized for this
+         *                        request.  Note the callback must not be shared - they
+         *                        uniquely specify this request.
+         */
+        RequestNetwork(
+            [in] INetworkRequest* request,
+            [in] IConnectivityManagerNetworkCallback* networkCallback);
+
+        /**
+         * Request a network to satisfy a set of {@link NetworkCapabilities}, limited
+         * by a timeout.
+         *
+         * This function behaves identically to the non-timedout version, but if a suitable
+         * network is not found within the given time (in milliseconds) the
+         * {@link NetworkCallback#unavailable} callback is called.  The request must
+         * still be released normally by calling {@link releaseNetworkRequest}.
+         * @param request {@link NetworkRequest} describing this request.
+         * @param networkCallback The callbacks to be utilized for this request.  Note
+         *                        the callbacks must not be shared - they uniquely specify
+         *                        this request.
+         * @param timeoutMs The time in milliseconds to attempt looking for a suitable network
+         *                  before {@link NetworkCallback#unavailable} is called.
+         * @hide
+         */
+        RequestNetwork(
+            [in] INetworkRequest* request,
+            [in] IConnectivityManagerNetworkCallback* networkCallback,
+            [in] Int32 timeoutMs);
+
+        /**
+         * Request a network to satisfy a set of {@link NetworkCapabilities}.
+         *
+         * This function behavies identically to the version that takes a NetworkCallback, but instead
+         * of {@link NetworkCallback} a {@link PendingIntent} is used.  This means
+         * the request may outlive the calling application and get called back when a suitable
+         * network is found.
          * <p>
-         * If the process default network has been set with
-         * {@link ConnectivityManager#setProcessDefaultNetwork} this function will not
-         * reflect the process's default, but the system default.
+         * The operation is an Intent broadcast that goes to a broadcast receiver that
+         * you registered with {@link Context#registerReceiver} or through the
+         * &lt;receiver&gt; tag in an AndroidManifest.xml file
+         * <p>
+         * The operation Intent is delivered with two extras, a {@link Network} typed
+         * extra called {@link #EXTRA_NETWORK_REQUEST_NETWORK} and a {@link NetworkRequest}
+         * typed extra called {@link #EXTRA_NETWORK_REQUEST_NETWORK_REQUEST} containing
+         * the original requests parameters.  It is important to create a new,
+         * {@link NetworkCallback} based request before completing the processing of the
+         * Intent to reserve the network or it will be released shortly after the Intent
+         * is processed.
+         * <p>
+         * If there is already an request for this Intent registered (with the equality of
+         * two Intents defined by {@link Intent#filterEquals}), then it will be removed and
+         * replaced by this one, effectively releasing the previous {@link NetworkRequest}.
+         * <p>
+         * The request may be released normally by calling {@link #unregisterNetworkCallback}.
          *
-         * @param l The listener to be told when the network is active.
+         * @param request {@link NetworkRequest} describing this request.
+         * @param operation Action to perform when the network is available (corresponds
+         *                  to the {@link NetworkCallback#onAvailable} call.  Typically
+         *                  comes from {@link PendingIntent#getBroadcast}.
+         * @hide
          */
-        AddDefaultNetworkActiveListener(
-            [in] IOnNetworkActiveListener* l);
+        RequestNetwork(
+            [in] INetworkRequest* request,
+            [in] IPendingIntent* operation);
 
         /**
-         * Remove network active listener previously registered with
-         * {@link #addDefaultNetworkActiveListener}.
+         * Registers to receive notifications about all networks which satisfy the given
+         * {@link NetworkRequest}.  The callbacks will continue to be called until
+         * either the application exits or {@link #unregisterNetworkCallback} is called
          *
-         * @param l Previously registered listener.
+         * @param request {@link NetworkRequest} describing this request.
+         * @param networkCallback The {@link NetworkCallback} that the system will call as suitable
+         *                        networks change state.
          */
-        RemoveDefaultNetworkActiveListener(
-            [in] IOnNetworkActiveListener* l);
+        RegisterNetworkCallback(
+            [in] INetworkRequest* request,
+            [in] IConnectivityManagerNetworkCallback* networkCallback);
 
         /**
-         * Return whether the data network is currently active.  An active network means that
-         * it is currently in a high power state for performing data transmission.  On some
-         * types of networks, it may be expensive to move and stay in such a state, so it is
-         * more power efficient to batch network traffic together when the radio is already in
-         * this state.  This method tells you whether right now is currently a good time to
-         * initiate network traffic, as the network is already active.
+         * Unregisters callbacks about and possibly releases networks originating from
+         * {@link #requestNetwork} and {@link #registerNetworkCallback} calls.  If the
+         * given {@code NetworkCallback} had previosuly been used with {@code #requestNetwork},
+         * any networks that had been connected to only to satisfy that request will be
+         * disconnected.
+         *
+         * @param networkCallback The {@link NetworkCallback} used when making the request.
          */
-        IsDefaultNetworkActive(
-            [out] Boolean* result);
+        UnregisterNetworkCallback(
+            [in] IConnectivityManagerNetworkCallback* networkCallback);
 
     }
 
-    [local]
     interface IConnectivityManagerHelper {
         /**
          * Tests if a given integer represents a valid network type.
@@ -1308,16 +1486,61 @@ module
 
         /** {@hide} */
         From(
-            [in] IContext* ctx,
+            [in] IContext* context,
             [out] IConnectivityManager** result);
 
         /** {@hide */
         EnforceTetherChangePermission(
             [in] IContext* context);
 
+        /**
+         * Binds the current process to {@code network}.  All Sockets created in the future
+         * (and not explicitly bound via a bound SocketFactory from
+         * {@link Network#getSocketFactory() Network.getSocketFactory()}) will be bound to
+         * {@code network}.  All host name resolutions will be limited to {@code network} as well.
+         * Note that if {@code network} ever disconnects, all Sockets created in this way will cease to
+         * work and all host name resolutions will fail.  This is by design so an application doesn't
+         * accidentally use Sockets it thinks are still bound to a particular {@link Network}.
+         * To clear binding pass {@code null} for {@code network}.  Using individually bound
+         * Sockets created by Network.getSocketFactory().createSocket() and
+         * performing network-specific host name resolutions via
+         * {@link Network#getAllByName Network.getAllByName} is preferred to calling
+         * {@code setProcessDefaultNetwork}.
+         *
+         * @param network The {@link Network} to bind the current process to, or {@code null} to clear
+         *                the current binding.
+         * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+         */
+        SetProcessDefaultNetwork(
+            [in] INetwork* network,
+            [out] Boolean* result);
+
+        /**
+         * Returns the {@link Network} currently bound to this process via
+         * {@link #setProcessDefaultNetwork}, or {@code null} if no {@link Network} is explicitly bound.
+         *
+         * @return {@code Network} to which this process is bound, or {@code null}.
+         */
+        GetProcessDefaultNetwork(
+            [out] INetwork** result);
+
+        /**
+         * Binds host resolutions performed by this process to {@code network}.
+         * {@link #setProcessDefaultNetwork} takes precedence over this setting.
+         *
+         * @param network The {@link Network} to bind host resolutions from the current process to, or
+         *                {@code null} to clear the current binding.
+         * @return {@code true} on success, {@code false} if the {@link Network} is no longer valid.
+         * @hide
+         * @deprecated This is strictly for legacy usage to support {@link #startUsingNetworkFeature}.
+         */
+        SetProcessDefaultNetworkForHostResolution(
+            [in] INetwork* network,
+            [out] Boolean* result);
+
     }
 
-    interface IOnNetworkActiveListener {
+    interface IConnectivityManagerOnNetworkActiveListener {
         /**
          * Called on the main thread of the process to report that the current data network
          * has become active, and it is now a good time to perform any pending network
@@ -1327,6 +1550,111 @@ module
          * {@link ConnectivityManager#isDefaultNetworkActive}.
          */
         OnNetworkActive();
+    }
+
+    /**
+     * Base class for NetworkRequest callbacks.  Used for notifications about network
+     * changes.  Should be extended by applications wanting notifications.
+     */
+    interface IConnectivityManagerNetworkCallback {
+        /** @hide */
+        const Int32 PRECHECK = 1;
+
+        /** @hide */
+        const Int32 AVAILABLE = 2;
+
+        /** @hide */
+        const Int32 LOSING = 3;
+
+        /** @hide */
+        const Int32 LOST = 4;
+
+        /** @hide */
+        const Int32 UNAVAIL = 5;
+
+        /** @hide */
+        const Int32 CAP_CHANGED = 6;
+
+        /** @hide */
+        const Int32 PROP_CHANGED = 7;
+
+        /** @hide */
+        const Int32 CANCELED = 8;
+
+        /**
+         * @hide
+         * Called whenever the framework connects to a network that it may use to
+         * satisfy this request
+         */
+        OnPreCheck(
+            [in] INetwork* network);
+
+        /**
+         * Called when the framework connects and has declared new network ready for use.
+         * This callback may be called more than once if the {@link Network} that is
+         * satisfying the request changes.
+         *
+         * @param network The {@link Network} of the satisfying network.
+         */
+        OnAvailable(
+            [in] INetwork* network);
+
+        /**
+         * Called when the network is about to be disconnected.  Often paired with an
+         * {@link NetworkCallback#onAvailable} call with the new replacement network
+         * for graceful handover.  This may not be called if we have a hard loss
+         * (loss without warning).  This may be followed by either a
+         * {@link NetworkCallback#onLost} call or a
+         * {@link NetworkCallback#onAvailable} call for this network depending
+         * on whether we lose or regain it.
+         *
+         * @param network The {@link Network} that is about to be disconnected.
+         * @param maxMsToLive The time in ms the framework will attempt to keep the
+         *                     network connected.  Note that the network may suffer a
+         *                     hard loss at any time.
+         */
+        OnLosing(
+            [in] INetwork* network,
+            [in] Int32 maxMsToLive);
+
+        /**
+         * Called when the framework has a hard loss of the network or when the
+         * graceful failure ends.
+         *
+         * @param network The {@link Network} lost.
+         */
+        OnLost(
+            [in] INetwork* network);
+
+        /**
+         * Called if no network is found in the given timeout time.  If no timeout is given,
+         * this will not be called.
+         * @hide
+         */
+        OnUnavailable();
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes capabilities but still satisfies the stated need.
+         *
+         * @param network The {@link Network} whose capabilities have changed.
+         * @param networkCapabilities The new {@link NetworkCapabilities} for this network.
+         */
+        OnCapabilitiesChanged(
+            [in] INetwork* network,
+            [in] INetworkCapabilities* networkCapabilities);
+
+        /**
+         * Called when the network the framework connected to for this request
+         * changes {@link LinkProperties}.
+         *
+         * @param network The {@link Network} whose link properties have changed.
+         * @param linkProperties The new {@link LinkProperties} for this network.
+         */
+        OnLinkPropertiesChanged(
+            [in] INetwork* network,
+            [in] ILinkProperties* linkProperties);
+
     }
 
     } // namespace Net

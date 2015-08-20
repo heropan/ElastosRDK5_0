@@ -288,22 +288,6 @@ module
 //        interface ICompareResult;
 //    }
 
-//    [local]
-//    class CLinkCapabilities {
-//        constructor();
-
-//        constructor(
-//            [in] ILinkCapabilities* source);
-
-//        interface ILinkCapabilities;
-//        interface IParcelable;
-//    }
-
-//    [local]
-//    singleton class CLinkCapabilitiesHelper {
-//        interface ILinkCapabilitiesHelper;
-//    }
-
 //    class CNetworkConfig {
 //        constructor(
 //            [in] String init);

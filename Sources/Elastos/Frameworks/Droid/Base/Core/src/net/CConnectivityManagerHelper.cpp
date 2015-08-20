@@ -78,6 +78,37 @@ ECode CConnectivityManagerHelper::EnforceTetherChangePermission(
     return CConnectivityManager::EnforceTetherChangePermission(context);
 }
 
+ECode CConnectivityManagerHelper::SetProcessDefaultNetwork(
+    /* [in] */ INetwork* network,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    VALIDATE_NOT_NULL(network)
+
+    return CConnectivityManager::SetProcessDefaultNetwork(network, result);
+}
+
+ECode CConnectivityManagerHelper::GetProcessDefaultNetwork(
+        /* [out] */ INetwork** result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = NULL;
+
+    return CConnectivityManager::GetProcessDefaultNetwork(result);
+}
+
+ECode CConnectivityManagerHelper::SetProcessDefaultNetworkForHostResolution(
+    /* [in] */ INetwork* network,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    VALIDATE_NOT_NULL(network)
+
+    return CConnectivityManager::SetProcessDefaultNetworkForHostResolution(network, result);
+}
+
 } // namespace Net
 } // namepsace Droid
 } // namespace Elastos
