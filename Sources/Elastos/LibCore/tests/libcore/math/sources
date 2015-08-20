@@ -3,6 +3,8 @@ TARGET_NAME = testMath
 TARGET_TYPE = ecx
 
 SOURCES = BigIntegerAddTest.cpp
+SOURCES += BigIntegerAndTest.cpp
+SOURCES += BigIntegerCompareTest.cpp
 
 IMPORTS = Elastos.CoreLibrary.eco
 
