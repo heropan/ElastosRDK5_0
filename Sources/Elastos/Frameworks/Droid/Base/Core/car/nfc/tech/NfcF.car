@@ -1,0 +1,45 @@
+
+module
+{
+
+    namespace Elastos{
+    namespace Droid{
+    namespace NFC{
+    namespace Tech{
+
+    /**
+     * @Involve
+     * interace IBasicTagTechnology
+     */
+    interface INfcF {
+        GetSystemCode(
+            [out] ArrayOf<Byte>* code);
+
+        GetManufacturer(
+            [out] ArrayOf<Byte>* facturer);
+
+        Transceive(
+            [in] ArrayOf<Byte>* data,
+            [out] ArrayOf<Byte>* res);
+
+        GetMaxTransceiveLength(
+            [out] Int32* len);
+
+        SetTimeout(
+            [in] Int32 timeout);
+
+        GetTimeout(
+            [out] Int32* timeout);
+    }
+
+    interface INfcFHelper {
+        GetNfcF(
+            [in] ITag* tag,
+            [out] INfcF** nfcf);
+    }
+
+    }// namespace Tech
+    }// namespace NFC
+    }// namespace Droid
+    }// namespace Elastos
+}
