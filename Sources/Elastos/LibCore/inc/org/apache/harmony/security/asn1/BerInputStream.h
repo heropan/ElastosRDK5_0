@@ -2,12 +2,10 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_BERINPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_BERINPUTSTREAM_H__
 
-#ifdef ELASTOS_CORELIBRARY
-#include "Elastos.CoreLibrary_server.h"
-#else
-#include "Elastos.CoreLibrary.h"
-#endif
+#include "coredef.h"
+#include "core/Object.h"
 
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Org {
@@ -21,6 +19,8 @@ class BerInputStream
     , public IBerInputStream
 {
 public:
+    BerInputStream();
+
     CARAPI constructor(
         /* [in] */ ArrayOf<Byte>* encoded);
 
@@ -35,6 +35,8 @@ public:
     CARAPI constructor(
         /* [in] */ IInputStream* is,
         /* [in] */ Int32 initialSize);
+
+    CAR_INTERFACE_DECL()
 
     CARAPI Reset(
         /* [in] */ ArrayOf<Byte>* encoded);
@@ -63,7 +65,7 @@ public:
     CARAPI ReadOID();
 
     CARAPI ReadSequence(
-        /* [out] */ IASN1Sequence** sequence);
+        /* [in] */ IASN1Sequence* sequence);
 
     CARAPI ReadSequenceOf(
         /* [in] */ IASN1SequenceOf* sequenceOf);
@@ -248,7 +250,7 @@ private:
      */
     static const Int32 BUF_INCREASE_SIZE;
 
-    AutoPtr< ArrayOf< AutoPtr< ArrayOf<IInterface> > > > mPool;
+    AutoPtr< ArrayOf< AutoPtr< ArrayOf<IInterface*> > > > mPool;
 };
 
 } // namespace Asn1

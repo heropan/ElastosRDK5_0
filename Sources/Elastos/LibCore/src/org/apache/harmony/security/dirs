@@ -1,5 +1,5 @@
 
-#DIRS = Asn1
+DIRS = asn1
 DIRS += fortress
 #DIRS += Pkcs10
 #DIRS += Pkcs7

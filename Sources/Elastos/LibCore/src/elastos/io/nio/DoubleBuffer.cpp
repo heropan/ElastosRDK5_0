@@ -7,6 +7,7 @@
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IDouble;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -248,7 +249,7 @@ ECode DoubleBuffer::GetArray(
     AutoPtr< ArrayOf<Double> > res;
     GetArray((ArrayOf<Double>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IDouble, res->GetLength(), (IArrayOf**)&iarr);
     for (Int32 i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::Convert((*res)[i]));
     }

@@ -21,7 +21,7 @@ module
          * @param encoded a new bytes array to be decoded
          * @throws IOException if an error occurs
          */
-         Reset(
+        Reset(
             [in] ArrayOf<Byte>* encoded);
 
         /**
@@ -31,7 +31,7 @@ module
          * @return next decoded tag
          * @throws IOException if error occured
          */
-         Next(
+        Next(
             [out] Int32* next);
 
         /**
@@ -82,7 +82,7 @@ module
          * Decodes ASN.1 Sequence type
          */
         ReadSequence(
-            [out] IASN1Sequence** sequence);
+            [in] IASN1Sequence* sequence);
 
         /**
          * Decodes ASN.1 SequenceOf type

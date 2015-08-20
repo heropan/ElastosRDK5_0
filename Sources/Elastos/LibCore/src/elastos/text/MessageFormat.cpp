@@ -582,7 +582,7 @@ ECode MessageFormat::ParseObject(
 
     if (objects != NULL) {
         AutoPtr<IArrayOf> bc;
-        CArrayOf::New(objects->GetLength(), (IArrayOf**)&bc);
+        CArrayOf::New(EIID_IInterface, objects->GetLength(), (IArrayOf**)&bc);
         for (Int32 i = 0; i < objects->GetLength(); ++i) {
             bc->Set(i, (*objects)[i]);
         }

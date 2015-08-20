@@ -138,6 +138,7 @@ module
 
     class CArrayOf {
         constructor(
+            [in] InterfaceID riid,
             [in] Int32 size);
 
         interface IArrayOf;

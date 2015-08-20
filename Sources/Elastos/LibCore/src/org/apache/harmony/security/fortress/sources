@@ -2,6 +2,8 @@
 TARGET_NAME= fortress
 TARGET_TYPE= lib
 
+C_DEFINES += -DELASTOS_CORELIBRARY
+
 include $(MAKEDIR)/../../../../../sources.inc
 
 INCLUDES += $(PREBUILD_INC)/sys;

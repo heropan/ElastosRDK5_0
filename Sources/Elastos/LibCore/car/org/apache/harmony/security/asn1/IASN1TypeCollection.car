@@ -17,21 +17,21 @@ module
 //        SetType(
 //            [in] ArrayOf<IASN1Type*>* type);
 //
-//        GetType(
-//            [out, callee] ArrayOf<IASN1Type*>* type);
-//
+        GetType(
+            [out, callee] ArrayOf<IASN1Type*>* type);
+
 //        SetOPTIONAL(
 //            [in] ArrayOf<Boolean>* optional);
 //
-//        GetOPTIONAL(
-//            [out, callee] ArrayOf<Boolean>* optional);
-//
+        GetOPTIONAL(
+            [out, callee] ArrayOf<Boolean>* optional);
+
 //        SetDEFAULT(
 //            [in] ArrayOf<IInterface*>* default);
 //
-//        GetDEFAULT(
-//            [out, callee] ArrayOf<IInterface*>* default);
-//
+        GetDEFAULT(
+            [out, callee] ArrayOf<IInterface*>* default);
+
 //        GetValues(
 //            [in] IInterface* object,
 //            [in] ArrayOf<IInterface*>* values);

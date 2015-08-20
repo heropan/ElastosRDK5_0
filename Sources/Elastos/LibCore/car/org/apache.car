@@ -1,9 +1,12 @@
 
 module
 {
+    merge("apache/harmony/security/asn1/Exceptions.car");
     merge("apache/harmony/security/asn1/IASN1Constants.car");
     merge("apache/harmony/security/asn1/IASN1Type.car");
     merge("apache/harmony/security/asn1/IASN1StringType.car");
+    merge("apache/harmony/security/asn1/IASN1Time.car");
+    merge("apache/harmony/security/asn1/IASN1UTCTime.car");
     merge("apache/harmony/security/asn1/IASN1Choice.car");
     merge("apache/harmony/security/asn1/IASN1Explicit.car");
     merge("apache/harmony/security/asn1/IASN1TypeCollection.car");
@@ -28,29 +31,29 @@ module
     namespace Harmony {
     namespace Security {
 
-//    namespace Asn1 {
-//
-//    [deprecated]
-//    class CBerInputStream {
-//        constructor(
-//            [in] ArrayOf<Byte>* encoded);
-//
-//        constructor(
-//            [in] ArrayOf<Byte>* encoded,
-//            [in] Int32 offset,
-//            [in] Int32 expectedLength);
-//
-//        constructor(
-//            [in] IInputStream* is);
-//
-//        constructor(
-//            [in] IInputStream* is,
-//            [in] Int32 initialSize);
-//
-//        interface IBerInputStream;
-//    }
-//
-//    }
+    namespace Asn1 {
+
+    [deprecated]
+    class CBerInputStream {
+        constructor(
+            [in] ArrayOf<Byte>* encoded);
+
+        constructor(
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 offset,
+            [in] Int32 expectedLength);
+
+        constructor(
+            [in] IInputStream* is);
+
+        constructor(
+            [in] IInputStream* is,
+            [in] Int32 initialSize);
+
+        interface IBerInputStream;
+    }
+
+    }
 
     namespace Fortress {
 

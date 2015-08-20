@@ -7,6 +7,7 @@
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IFloat;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -76,7 +77,7 @@ ECode FloatBuffer::GetArray(
     AutoPtr< ArrayOf<Float> > res;
     GetArray((ArrayOf<Float>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IFloat, res->GetLength(), (IArrayOf**)&iarr);
     for (Int32 i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::Convert((*res)[i]));
     }

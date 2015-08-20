@@ -192,7 +192,7 @@ ECode CStrictJarFile::GetCertificateChains(
             for (Int32 i = 0; i < arr->GetLength(); ++i) {
                 ArrayOf<ICertificate*> * subArr = (*arr)[i];
                 AutoPtr<IArrayOf> ao;
-                CArrayOf::New(subArr->GetLength(), (IArrayOf**)&ao);
+                CArrayOf::New(EIID_IInterface, subArr->GetLength(), (IArrayOf**)&ao);
                 for (Int32 j = 0; j < subArr->GetLength(); ++j) {
                     ao->Set(j, TO_IINTERFACE((*subArr)[j]));
                 }

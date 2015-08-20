@@ -98,7 +98,7 @@ AutoPtr<IArrayOf> CoreUtils::ConvertByteArray(
     if (arr) {
         Int32 length = arr->GetLength();
         AutoPtr<IArrayOf> arrObj;
-        CArrayOf::New(length, (IArrayOf**)&arrObj);
+        CArrayOf::New(EIID_IByte, length, (IArrayOf**)&arrObj);
         for (Int32 i = 0; i < length; ++i) {
             AutoPtr<IByte> item = ConvertByte((*arr)[i]);
             arrObj->Set(i, item.Get());
@@ -115,7 +115,7 @@ AutoPtr<IArrayOf> CoreUtils::ConvertChar32Array(
     if (arr) {
         Int32 length = arr->GetLength();
         AutoPtr<IArrayOf> arrObj;
-        CArrayOf::New(length, (IArrayOf**)&arrObj);
+        CArrayOf::New(EIID_IChar32, length, (IArrayOf**)&arrObj);
         for (Int32 i = 0; i < length; ++i) {
             AutoPtr<IChar32> item = ConvertChar32((*arr)[i]);
             arrObj->Set(i, item.Get());

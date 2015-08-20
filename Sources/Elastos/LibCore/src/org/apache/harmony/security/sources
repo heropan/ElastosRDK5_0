@@ -9,5 +9,6 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
 #SOURCES += CPublicKeyImpl.cpp
 #SOURCES += CSystemScope.cpp
 
+LIBRARIES += asn1/asn1.lib
 LIBRARIES += fortress/fortress.lib
 LIBRARIES += utils/utils.lib

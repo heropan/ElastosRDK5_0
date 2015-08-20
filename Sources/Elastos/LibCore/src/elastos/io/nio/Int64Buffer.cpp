@@ -7,6 +7,7 @@
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IInteger64;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -77,7 +78,7 @@ ECode Int64Buffer::GetArray(
     AutoPtr< ArrayOf<Int64> > res;
     GetArray((ArrayOf<Int64>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IInteger64, res->GetLength(), (IArrayOf**)&iarr);
     for (int i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::Convert((*res)[i]));
     }

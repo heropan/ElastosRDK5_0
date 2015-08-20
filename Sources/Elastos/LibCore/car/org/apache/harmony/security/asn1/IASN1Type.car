@@ -68,13 +68,13 @@ module
             [in] IBerOutputStream* bos,
             [out] Int32* length);
 
-//        /** Integer representation of primitive identifier. */
-//        GetId(
-//            [out] Int32* id);
-//
-//        /** Integer representation of constructed identifier. */
-//        GetConstrId(
-//            [out] Int32* constrId);
+        /** Integer representation of primitive identifier. */
+        GetId(
+            [out] Int32* id);
+
+        /** Integer representation of constructed identifier. */
+        GetConstrId(
+            [out] Int32* constrId);
     }
 
     } // namespace Asn1

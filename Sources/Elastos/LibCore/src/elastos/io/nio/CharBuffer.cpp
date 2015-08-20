@@ -11,6 +11,7 @@
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
 using Elastos::Core::StringBuilder;
+using Elastos::Core::EIID_IChar32;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -117,7 +118,7 @@ ECode CharBuffer::GetArray(
     AutoPtr< ArrayOf<Char32> > res;
     GetArray((ArrayOf<Char32>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IChar32, res->GetLength(), (IArrayOf**)&iarr);
     for (int i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::ConvertChar32((*res)[i]));
     }

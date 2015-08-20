@@ -22,6 +22,7 @@ public:
     ~CArrayOf();
 
     CARAPI constructor(
+        /* [in] */ const InterfaceID& riid,
         /* [in] */ Int32 size);
 
     CARAPI GetLength(
@@ -34,6 +35,9 @@ public:
     CARAPI Set(
         /* [in] */ Int32 index,
         /* [in] */ IInterface* element);
+
+    CARAPI GetTypeId(
+        /* [out] */ InterfaceID* id);
 
     /**
      * Creates a <i>"deep"</i> {@code String} representation of the
@@ -132,6 +136,7 @@ private:
 
 private:
     AutoPtr<ArrayOf<IInterface*> > mElements;
+    InterfaceID mTypeId;
 };
 
 } // namespace Core

@@ -7,6 +7,7 @@
 
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IInteger16;
 using Elastos::Utility::Arrays;
 
 namespace Elastos {
@@ -249,7 +250,7 @@ ECode Int16Buffer::GetArray(
     AutoPtr< ArrayOf<Int16> > res;
     GetArray((ArrayOf<Int16>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IInteger16, res->GetLength(), (IArrayOf**)&iarr);
     for (Int32 i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::Convert((*res)[i]));
     }

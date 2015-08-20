@@ -11,6 +11,7 @@
 using Elastos::Core::IComparable;
 using Elastos::Core::CArrayOf;
 using Elastos::Core::CoreUtils;
+using Elastos::Core::EIID_IByte;
 using Elastos::Utility::Arrays;
 using Elastos::IO::Channels::FileChannelMapMode_NONE;
 using Libcore::IO::Memory;
@@ -115,7 +116,7 @@ ECode ByteBuffer::GetArray(
     AutoPtr< ArrayOf<Byte> > res;
     GetArray((ArrayOf<Byte>**)&res);
     AutoPtr<IArrayOf> iarr;
-    CArrayOf::New(res->GetLength(), (IArrayOf**)&iarr);
+    CArrayOf::New(EIID_IByte, res->GetLength(), (IArrayOf**)&iarr);
     for (int i = 0; i < res->GetLength(); ++i) {
         iarr->Set(i, CoreUtils::ConvertByte((*res)[i]));
     }

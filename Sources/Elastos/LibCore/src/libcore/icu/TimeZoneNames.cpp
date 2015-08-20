@@ -26,6 +26,7 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringUtils;
 using Elastos::Core::EIID_ICharSequence;
+using Elastos::Core::EIID_IArrayOf;
 using Elastos::Core::CString;
 using Elastos::Utility::TimeZone;
 using Elastos::Utility::ITimeZone;
@@ -170,14 +171,14 @@ AutoPtr<IInterface> TimeZoneNames::ArrayOfToInterface(
 {
     if (array == NULL) return NULL;
     AutoPtr<IArrayOf> iArray;
-    CArrayOf::New(array->GetLength(), (IArrayOf**)&iArray);
+    CArrayOf::New(EIID_IArrayOf, array->GetLength(), (IArrayOf**)&iArray);
     for(Int32 i = 0; i < array->GetLength(); i++) {
         if ((*array)[i] == NULL) {
             iArray->Set(i, NULL);
             continue;
         }
         AutoPtr<IArrayOf> subArr;
-        CArrayOf::New((*array)[i]->GetLength(), (IArrayOf**)&subArr);
+        CArrayOf::New(EIID_ICharSequence, (*array)[i]->GetLength(), (IArrayOf**)&subArr);
         for (Int32 j = 0; j < (*array)[i]->GetLength(); j++) {
             String str = (*((*array)[i]))[j];
             AutoPtr<ICharSequence> cs;
@@ -319,7 +320,7 @@ ECode TimeZoneNames::GetZoneStrings(
         subArr = (*result)[i];
         Int32 midlen = subArr->GetLength();
         AutoPtr<IArrayOf> arrof;
-        FAIL_RETURN(CArrayOf::New(midlen, (IArrayOf**)&arrof));
+        FAIL_RETURN(CArrayOf::New(EIID_ICharSequence, midlen, (IArrayOf**)&arrof));
         for (Int32 j = 0; j < midlen; ++j) {
             AutoPtr<ICharSequence> sq;
             CString::New((*subArr)[j], (ICharSequence**)&sq);

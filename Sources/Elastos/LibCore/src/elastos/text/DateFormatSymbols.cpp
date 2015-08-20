@@ -423,8 +423,7 @@ AutoPtr<ArrayOf<IArrayOf*> > DateFormatSymbols::Clone2dStringArray(
         Int32 subSize;
         bc->GetLength(&subSize);
         AutoPtr<IArrayOf> newBc;
-        CArrayOf::New(subSize, (IArrayOf**)&newBc);
-
+        CArrayOf::New(EIID_IInterface, subSize, (IArrayOf**)&newBc);
         for (Int32 j = 0; j < subSize; ++j) {
             AutoPtr<IInterface> obj;
             bc->Get(j, (IInterface**)&obj);
