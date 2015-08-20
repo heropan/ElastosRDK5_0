@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Utility {
 
+CAR_INTERFACE_IMPL(CPairHelper, Singleton, IPairHelper)
+
+CAR_SINGLETON_IMPL(CPairHelper)
+
 ECode CPairHelper::Create(
     /* [in] */ IInterface *A,
     /* [in] */ IInterface *B,

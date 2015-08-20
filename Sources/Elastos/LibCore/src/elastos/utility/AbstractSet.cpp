@@ -7,7 +7,15 @@ using Elastos::Utility::EIID_ISet;
 namespace Elastos {
 namespace Utility {
 
-CAR_INTERFACE_IMPL(AbstractSet, Object, ISet)
+CAR_INTERFACE_IMPL(AbstractSet, AbstractCollection, ISet)
+
+AbstractSet::AbstractSet()
+{
+}
+
+AbstractSet::~AbstractSet()
+{
+}
 
 ECode AbstractSet::Equals(
     /* [in] */ IInterface* object,
@@ -93,11 +101,6 @@ ECode AbstractSet::RemoveAll(
     *value = result;
     return NOERROR;
 }
-
-AbstractSet::AbstractSet()
-{
-}
-
 
 AbstractSet::GetIterator(
     /* [out] */ IIterator** it)

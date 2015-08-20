@@ -1,15 +1,29 @@
 
 #include "ext/frameworkext.h"
 #include "util/CDisplayMetrics.h"
-#include "os/SystemProperties.h"
+// #include "os/SystemProperties.h"
 
-using Elastos::Droid::Os::SystemProperties;
+// using Elastos::Droid::Os::SystemProperties;
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
-Int32 CDisplayMetrics::DENSITY_DEVICE = CDisplayMetrics::GetDeviceDensity();
+static Int32 InitDENSITY_DEVICE()
+{
+    // Int32 ro = SystemProperties::GetInt32(String("ro.sf.lcd_density"),
+    //     IDisplayMetrics::DENSITY_DEFAULT);
+    // Int32 result = SystemProperties::GetInt32(String("qemu.sf.lcd_density"), ro);
+    // return result;
+    assert(0);
+    return 0;
+}
+
+Int32 CDisplayMetrics::DENSITY_DEVICE = InitDENSITY_DEVICE();
+
+CAR_INTERFACE_IMPL(CDisplayMetrics, Object, IDisplayMetrics)
+
+CAR_OBJECT_IMPL(CDisplayMetrics)
 
 CDisplayMetrics::CDisplayMetrics()
     : mWidthPixels(0)
@@ -129,8 +143,7 @@ Int32 CDisplayMetrics::GetDeviceDensity()
     // when running in the emulator, allowing for dynamic configurations.
     // The reason for this is that ro.sf.lcd_density is write-once and is
     // set by the init process when it parses build.prop before anything else.
-    return SystemProperties::GetInt32(String("qemu.sf.lcd_density"),
-            SystemProperties::GetInt32(String("ro.sf.lcd_density"), DENSITY_DEFAULT));
+    return InitDENSITY_DEVICE();
 }
 
 ECode CDisplayMetrics::GetWidthPixels(

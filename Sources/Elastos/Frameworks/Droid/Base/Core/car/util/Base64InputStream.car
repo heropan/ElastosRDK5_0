@@ -14,8 +14,6 @@ module
      */
     [deprecated]
     interface IBase64InputStream {
-        MarkSupported(
-            [out] Boolean* value);
     }
 
     } // namespace Utility

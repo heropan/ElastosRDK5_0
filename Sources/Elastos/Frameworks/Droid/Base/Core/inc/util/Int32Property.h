@@ -1,20 +1,17 @@
 #ifndef __ELASTOS_DROID_UTILITY_INT32PROPERTY_H__
 #define __ELASTOS_DROID_UTILITY_INT32PROPERTY_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
 class Int32Property
-    : public ElRefBase
+    : public Object
     , public IInt32Property
+    , public IProperty
 {
 public :
     CAR_INTERFACE_DECL()
@@ -50,7 +47,6 @@ public :
         /* [in] */ Int32 value) = 0;
 private:
     String mName;
-    ClassID mClsId;
 };
 
 } // namespace Utility

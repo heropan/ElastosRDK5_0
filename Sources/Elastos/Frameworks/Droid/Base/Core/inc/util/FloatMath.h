@@ -1,5 +1,5 @@
-#ifndef __ELASTOS_DROID_UTILITY_ELAOST_DROID_UTILITY_FLOAT_MATH_H__
-#define __ELASTOS_DROID_UTILITY_ELAOST_DROID_UTILITY_FLOAT_MATH_H__
+#ifndef __ELASTOS_DROID_UTILITY_FLOAT_MATH_H__
+#define __ELASTOS_DROID_UTILITY_FLOAT_MATH_H__
 
 #include <elastos.h>
 
@@ -10,12 +10,10 @@ namespace Droid {
 namespace Utility {
 
 /**
- * Math routines similar to those found in {@link java.lang.Math}. Performs
- * computations on {@code float} values directly without incurring the overhead
- * of conversions to and from {@code double}.
- *
- * <p>On one platform, {@code FloatMath.sqrt(100)} executes in one third of the
- * time required by {@code java.lang.Math.sqrt(100)}.</p>
+ * Math routines similar to those found in {@link java.lang.Math}. On
+ * versions of Android with a JIT, these are significantly slower than
+ * the equivalent {@code Math} functions, which should be used in preference
+ * to these.
  */
 class FloatMath
 {
@@ -111,4 +109,4 @@ private:
 } // namepsace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_UTILITY_ELAOST_DROID_UTILITY_FLOAT_MATH_H__
+#endif // __ELASTOS_DROID_UTILITY_FLOAT_MATH_H__

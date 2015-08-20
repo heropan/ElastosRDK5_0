@@ -28,7 +28,6 @@ module
     merge("util/DayOfMonthCursor.car");
     merge("util/DebugUtils.car");
     merge("util/FastImmutableArraySet.car");
-    merge("util/FloatMath.car");
     merge("util/JsonReader.car");
     merge("util/JsonWriter.car");
     merge("util/LayoutDirection.car");
@@ -37,7 +36,6 @@ module
     merge("util/LogPrinter.car");
     merge("util/Int64Array.car");
     merge("util/Int64SparseArray.car");
-    merge("util/LruCache.car");
     merge("util/MonthDisplayHelper.car");
     merge("util/Patterns.car");
     merge("util/Printer.car");
@@ -57,6 +55,10 @@ module
     using interface Elastos.IO.IWriter;
     using interface Elastos.IO.ICloseable;
     using interface Elastos.IO.IFlushable;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IFilterInputStream;
+    using interface Elastos.IO.IOutputStream;
+    using interface Elastos.IO.IFilterOutputStream;
     using interface Elastos.Utility.IMap;
     using interface Elastos.Utility.ISet;
     using interface Elastos.Utility.ICollection;
@@ -101,11 +103,80 @@ module
         interface ICollection;
     }
 
-/*
+    singleton class CBase64 {
+        interface IBase64;
+    }
+
+    class CBase64InputStream {
+
+        constructor(
+            [in] IInputStream* inputStream,
+            [in] Int32 flags);
+
+        constructor(
+            [in] IInputStream* inputStream,
+            [in] Int32 flags,
+            [in] Boolean encode);
+
+        interface IBase64InputStream;
+        interface IFilterInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
+
+    class CBase64OutputStream {
+
+        constructor(
+            [in] IOutputStream* outputStream,
+            [in] Int32 flags);
+
+        constructor(
+            [in] IOutputStream* outputStream,
+            [in] Int32 flags,
+            [in] Boolean encode);
+
+        interface IBase64OutputStream;
+        interface IFilterOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
+    }
+
+    class CMonthDisplayHelper {
+
+        constructor(
+            [in] Int32 year,
+            [in] Int32 month,
+            [in] Int32 weekStartDay);
+
+        constructor(
+            [in] Int32 year,
+            [in] Int32 month);
+
+        interface IMonthDisplayHelper;
+    }
+
     class CDisplayMetrics {
         interface IDisplayMetrics;
     }
 
+    singleton class CNtpTrustedTimeHelper {
+        interface INtpTrustedTimeHelper;
+    }
+
+    class CPair {
+        constructor(
+            [in] IInterface *first,
+            [in] IInterface *second);
+
+        interface IPair;
+    }
+
+    singleton class CPairHelper {
+        interface IPairHelper;
+    }
+
+/*
     class CTypedValue {
         interface ITypedValue;
     }
@@ -142,33 +213,13 @@ module
         interface IEventLogTags;
     }
 
-    singleton class CNtpTrustedTimeHelper {
-        interface INtpTrustedTimeHelper;
-    }
-
     singleton class CPropertyHelper {
         constructor();
         interface IPropertyHelper;
     }
 
-    class CPair {
-        constructor(
-            [in] IInterface *first,
-            [in] IInterface *second);
-
-        interface IPair;
-    }
-
-    singleton class CPairHelper {
-        interface IPairHelper;
-    }
-
     singleton class CXml {
         interface IXml;
-    }
-
-    singleton class CBase64 {
-        interface IBase64;
     }
 */
     } // namespace Utility

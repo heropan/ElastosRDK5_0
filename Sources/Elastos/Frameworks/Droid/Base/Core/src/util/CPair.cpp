@@ -1,10 +1,13 @@
 
 #include "util/CPair.h"
-#include <ext/frameworkdef.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
+
+CAR_INTERFACE_IMPL(CPair, Object, IPair)
+
+CAR_OBJECT_IMPL(CPair)
 
 ECode CPair::GetFirst(
     /* [out] */ IInterface **first)

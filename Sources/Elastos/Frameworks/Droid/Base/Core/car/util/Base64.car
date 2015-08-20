@@ -1,6 +1,7 @@
 
 module
 {
+    [deprecated]
     interface IBase64 {
         /**
          * Default values for encoder/decoder flags.
@@ -79,8 +80,8 @@ module
          * @throws IllegalArgumentException if the input contains
          * incorrect padding
          */
-        Decode2(
-            [in] ArrayOf<Byte> input,
+        Decode(
+            [in] ArrayOf<Byte>* input,
             [in] Int32 flags,
             [out, callee] ArrayOf<Byte>* result);
 
@@ -100,8 +101,8 @@ module
          * @throws IllegalArgumentException if the input contains
          * incorrect padding
          */
-        Decode3(
-            [in] ArrayOf<Byte> input,
+        Decode(
+            [in] ArrayOf<Byte>* input,
             [in] Int32 offset,
             [in] Int32 len,
             [in] Int32 flags,
@@ -121,7 +122,7 @@ module
          *               adheres to RFC 2045.
          */
         EncodeToString(
-            [in] ArrayOf<Byte> input,
+            [in] ArrayOf<Byte>* input,
             [in] Int32 flags,
             [out] String* result);
 
@@ -137,8 +138,8 @@ module
          *               Passing {@code DEFAULT} results in output that
          *               adheres to RFC 2045.
          */
-        EncodeToString2(
-            [in] ArrayOf<Byte> input,
+        EncodeToString(
+            [in] ArrayOf<Byte>* input,
             [in] Int32 offset,
             [in] Int32 len,
             [in] Int32 flags,
@@ -154,7 +155,7 @@ module
          *               adheres to RFC 2045.
          */
         Encode(
-            [in] ArrayOf<Byte> input,
+            [in] ArrayOf<Byte>* input,
             [in] Int32 flags,
             [out, callee] ArrayOf<Byte>* result);
 
@@ -170,8 +171,8 @@ module
          *               Passing {@code DEFAULT} results in output that
          *               adheres to RFC 2045.
          */
-        Encode2(
-            [in] ArrayOf<Byte> input,
+        Encode(
+            [in] ArrayOf<Byte>* input,
             [in] Int32 offset,
             [in] Int32 len,
             [in] Int32 flags,

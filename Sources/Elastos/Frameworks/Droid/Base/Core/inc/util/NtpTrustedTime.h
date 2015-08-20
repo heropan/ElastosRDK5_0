@@ -2,8 +2,7 @@
 #define __ELASTOS_DROID_UTILITY_NTPTRUSTEDTIME_H__
 
 #include "ext/frameworkext.h"
-#include "util/TrustedTime.h"
-
+#include <elastos/core/Object.h>
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Utility::INtpTrustedTime;
 
@@ -12,14 +11,15 @@ namespace Droid {
 namespace Utility {
 
 /**
- * Interface that provides trusted time information, possibly coming from an NTP
- * server. Implementations may cache answers until {@link #forceRefresh()}.
+ * {@link TrustedTime} that connects with a remote NTP server as its trusted
+ * time source.
  *
  * @hide
  */
 class NtpTrustedTime
-    : public ElRefBase
+    : public Object
     , public INtpTrustedTime
+    , public ITrustedTime
 {
 private:
     NtpTrustedTime(

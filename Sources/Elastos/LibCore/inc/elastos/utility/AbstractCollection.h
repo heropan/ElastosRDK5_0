@@ -1,20 +1,22 @@
 #ifndef __ELASTOS_UTILITY_ABSTRACTCOLLECTION_H__
 #define __ELASTOS_UTILITY_ABSTRACTCOLLECTION_H__
 
-#include "Object.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IIterable;
 
 namespace Elastos {
 namespace Utility {
-
-EXTERN const _ELASTOS ClassID ECLSID_AbstractCollection;
 
 class AbstractCollection
     : public Object
     , public ICollection
     , public IIterable
 {
-protected:
+public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Constructs a new instance of this AbstractCollection.
      */
@@ -22,8 +24,6 @@ protected:
 
     virtual ~AbstractCollection();
 
-public:
-    CAR_INTERFACE_DECL()
 
     CARAPI Add(
         /* [in] */ IInterface* object,

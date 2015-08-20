@@ -2,8 +2,7 @@
 #ifndef __ELASTOS_DROID_OS_SYSTEMPROPERTIES_H
 #define __ELASTOS_DROID_OS_SYSTEMPROPERTIES_H
 
-#include "Elastos.Droid.Core_server.h"
-#include <elastos/core/Object.h>
+#include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;

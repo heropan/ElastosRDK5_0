@@ -1,6 +1,7 @@
 
 module
 {
+    interface Elastos.Droid.Content.IContext;
 
     namespace Elastos {
     namespace Droid {
@@ -20,7 +21,7 @@ module
 
     interface INtpTrustedTimeHelper {
         GetInstance(
-            // [in] IContext* ctx,
+            [in] IContext* ctx,
             [out] INtpTrustedTime** ntpTT);
     }
 
