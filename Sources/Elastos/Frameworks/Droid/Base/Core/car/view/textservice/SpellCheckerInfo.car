@@ -20,7 +20,7 @@ module
      * @Invovle
      * interface IParcelable
      */
-    [deprecated, local]
+    [deprecated, local, parcelable]
     interface ISpellCheckerInfo {
 
         /**

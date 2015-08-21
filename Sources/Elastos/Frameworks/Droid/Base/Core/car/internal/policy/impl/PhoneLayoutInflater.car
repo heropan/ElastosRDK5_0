@@ -14,10 +14,8 @@ module
      * @Involve
      * interface Elastos.Droid.View.ILayoutInflater
      */
+    [local]
     interface IPhoneLayoutInflater {
-        CloneInContext(
-            [in] IContext* newContext,
-            [out] ILayoutInflater** li);
     }
 
     } // namespace Impl

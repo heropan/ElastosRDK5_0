@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.IO.IPrintWriter;
+
     namespace Elastos {
     namespace Droid {
     namespace Internal {
@@ -19,6 +21,10 @@ module
         RequestWakeUpTrigger();
 
         CancelWakeUpTrigger();
+
+        Dump(
+            [in] IPrintWriter* pw,
+            [in] String prefix);
     }
 
 

@@ -13,7 +13,7 @@ module
      *
      * {@hide}
      */
-    [oneway, local]
+    [oneway]
     interface IPackageDeleteObserver2 {
         OnUserActionRequired(
             [in] IIntent* intent);

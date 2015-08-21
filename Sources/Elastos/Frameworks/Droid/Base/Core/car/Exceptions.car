@@ -117,4 +117,5 @@ module
     //==========================================================================
     // Elastos Droid internal exception codes (Family: 0x6D - ED)
     const E_ZYGOTE_SECURITY_EXCEPTION                   =  0xDD010000;
+    const E_ACCESS_EXCEPTION                            =  0xDD020000;
 }

@@ -9,6 +9,11 @@ module
 
     /**
      * @Involve
+     * interface Elastos.Droid.Content.IDialogInterface
+     * interface IWindowCallback
+     * interface IKeyEventCallback
+     * interface IOnCreateContextMenuListener
+     * interface IWindowOnWindowDismissedCallback
      * interface Elastos.Droid.App.IDialog
      * interface Elastos.Droid.App.IViewOnClickListener
      */

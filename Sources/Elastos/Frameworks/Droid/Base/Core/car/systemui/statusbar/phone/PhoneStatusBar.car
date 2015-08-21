@@ -11,8 +11,8 @@ module
     interface Elastos.Droid.View.IKeyEvent;
     interface Elastos.Droid.View.IViewGroup;
     interface Elastos.Droid.View.IViewPropertyAnimator;
-//    interface Elastos.Droid.StatusBar.IStatusBarIcon;
-//    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+//    interface Elastos.Droid.Internal.StatusBar.IStatusBarIcon;
+//    interface Elastos.Droid.Service.Notification.IStatusBarNotification;
     interface Elastos.Droid.Animation.IAnimator;
     interface Elastos.Droid.Animation.ITimeInterpolator;
     interface Elastos.Droid.Content.IIntent;

@@ -221,15 +221,6 @@ module
             interface IPhoneConstants {}
         }
 
-        namespace Annotations {
-
-            interface IVisibleForTesting {}
-        }
-
-        namespace StatusBar {
-            interface IStatusBarIcon {}
-        }
-
         namespace Util {
 
             interface IStateMachine {}

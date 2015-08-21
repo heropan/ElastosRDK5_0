@@ -13,16 +13,8 @@ module
      * @Involve
      * interface Elastos.Droid.View.IFallbackEventHandler
      */
+    [local]
     interface IPhoneFallbackEventHandler {
-        OnKeyDown(
-            [in] Int32 keyCode,
-            [in] IKeyEvent *event,
-            [out] Boolean *res);
-
-        OnKeyUp(
-            [in] Int32 keyCode,
-            [in] IKeyEvent *event,
-            [out] Boolean *res);
     }
 
     } // namespace Impl

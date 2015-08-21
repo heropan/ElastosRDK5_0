@@ -90,7 +90,7 @@ module
      */
     /**
      * @Involve
-     * interface Elastos.Droid.StatusBar.IIStatusBar
+     * interface Elastos.Droid.Internal.StatusBar.IIStatusBar
      */
     interface ICommandQueue {
         const Int32 FLAG_EXCLUDE_NONE = 0;

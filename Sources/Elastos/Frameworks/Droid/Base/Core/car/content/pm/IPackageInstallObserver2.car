@@ -14,7 +14,7 @@ module
      * additional information will be provided.
      * @hide
      */
-    [oneway, local]
+    [oneway]
     interface IPackageInstallObserver2 {
         OnUserActionRequired(
             [in] IIntent* intent);

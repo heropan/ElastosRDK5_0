@@ -12,7 +12,6 @@ module
     namespace Policy {
 
     interface IIKeyguardService {
-
         IsShowing(
             [out] Boolean* result);
 

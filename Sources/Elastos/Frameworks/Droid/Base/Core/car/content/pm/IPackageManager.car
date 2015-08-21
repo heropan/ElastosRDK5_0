@@ -40,7 +40,7 @@ module
      *
      *  {@hide}
      */
-    [deprecated, local]
+    [deprecated]
     interface IIPackageManager {
         IsPackageAvailable(
             [in] String packageName,

@@ -40,6 +40,9 @@ module
     merge("../car/internal/net.car");
     merge("../car/internal/os.car");
     merge("../car/internal/policy.car");
+    merge("../car/internal/preference.car");
+    merge("../car/internal/statusbar.car");
+    merge("../car/internal/textservice.car");
     merge("../car/internal/view.car");
     merge("../car/internal/widget.car");
 

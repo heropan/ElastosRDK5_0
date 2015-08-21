@@ -4,32 +4,22 @@ module
 {
     using interface Elastos.Droid.Os.IBinder;
 
-    interface Elastos.Droid.StatusBar.IStatusBarIcon;
-    interface Elastos.Droid.StatusBar.IStatusBarNotification;
+    interface Elastos.Droid.Internal.StatusBar.IStatusBarIcon;
+    interface Elastos.Droid.Service.Notification.IStatusBarNotification;
 
     namespace Elastos {
     namespace Droid {
+    namespace Internal {
     namespace StatusBar {
 
-    interface IIStatusBar
-    {
+    [oneway]
+    interface IIStatusBar {
         SetIcon(
             [in] Int32 index,
             [in] IStatusBarIcon* icon);
 
         RemoveIcon(
             [in] Int32 index);
-
-        AddNotification(
-            [in] IBinder* key,
-            [in] IStatusBarNotification* notification);
-
-        UpdateNotification(
-            [in] IBinder* key,
-            [in] IStatusBarNotification* notification);
-
-        RemoveNotification(
-            [in] IBinder* key);
 
         Disable(
             [in] Int32 state);
@@ -50,23 +40,38 @@ module
         SetImeWindowStatus(
             [in] IBinder* token,
             [in] Int32 vis,
-            [in] Int32 backDisposition);
+            [in] Int32 backDisposition,
+            [in] Boolean showImeSwitcher);
 
-        SetHardKeyboardStatus(
-            [in] Boolean available,
-            [in] Boolean enabled);
+        SetWindowState(
+            [in] Int32 window,
+            [in] Int32 state);
+
+        BuzzBeepBlinked();
+
+        NotificationLightOff();
+
+        NotificationLightPulse(
+            [in] Int32 argb,
+            [in] Int32 millisOn,
+            [in] Int32 millisOff);
+
+        ShowRecentApps(
+            [in] Boolean triggeredFromAltTab);
+
+        HideRecentApps(
+            [in] Boolean triggeredFromAltTab,
+            [in] Boolean triggeredFromHomeKey);
 
         ToggleRecentApps();
 
         PreloadRecentApps();
 
         CancelPreloadRecentApps();
-
-        ToString(
-            [out] String* info);
     }
 
     } // namespace StatusBar
+    } // namespace Internal
     } // namespace Droid
     } // namespace Elastos
 }

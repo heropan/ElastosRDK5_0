@@ -1,0 +1,76 @@
+
+
+module
+{
+    merge("statusbar/IStatusBar.car");
+    merge("statusbar/IStatusBarService.car");
+    merge("statusbar/StatusBarIcon.car");
+    merge("statusbar/StatusBarIconList.car");
+
+    // using interface Elastos.Core.ICharSequence;
+    // interface Elastos.Droid.Os.IUserHandle;
+    // interface Elastos.Droid.Internal.StatusBar.IStatusBarIcon;
+    // interface Elastos.Droid.Internal.StatusBar.IStatusBarIconList;
+    // interface Elastos.Droid.Service.Notification.IStatusBarNotification;
+    // interface Elastos.Droid.App.INotification;
+    // interface Elastos.Droid.Os.IUserHandle;
+
+    // namespace Elastos {
+    // namespace Droid {
+    // namespace StatusBar {
+
+    // class CStatusBarIcon
+    // {
+    //     constructor();
+
+    //     constructor(
+    //         [in] String iconPackage,
+    //         [in] IUserHandle* user,
+    //         [in] Int32 iconId,
+    //         [in] Int32 iconLevel,
+    //         [in] Int32 number,
+    //         [in] ICharSequence* contentDescription);
+
+    //     interface IStatusBarIcon;
+    //     interface IParcelable;
+    // }
+
+    // class CStatusBarIconList
+    // {
+    //     constructor();
+
+    //     interface IStatusBarIconList;
+    //     interface IParcelable;
+    // }
+
+    // class CStatusBarNotification
+    // {
+    //     constructor();
+
+    //     constructor(
+    //         [in] String pkg,
+    //         [in] Int32 id,
+    //         [in] String tag,
+    //         [in] Int32 uid,
+    //         [in] Int32 initialPid,
+    //         [in] Int32 score,
+    //         [in] INotification* notification);
+
+    //     constructor(
+    //         [in] String pkg,
+    //         [in] Int32 id,
+    //         [in] String tag,
+    //         [in] Int32 uid,
+    //         [in] Int32 initialPid,
+    //         [in] Int32 score,
+    //         [in] INotification* notification,
+    //         [in] IUserHandle* user);
+
+    //     interface IStatusBarNotification;
+    //     interface IParcelable;
+    // }
+
+    } // namespace StatusBar
+    } // namespace Droid
+    } // namespace Elastos
+}

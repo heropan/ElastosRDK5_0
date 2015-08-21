@@ -5,6 +5,7 @@ module
     merge("policy/IFaceLockInterface.car");
     merge("policy/IKeyguardExitCallback.car");
     merge("policy/IKeyguardService.car");
+    merge("policy/IKeyguardServiceConstants.car");
     merge("policy/IKeyguardShowCallback.car");
     merge("policy/IPolicy.car");
     merge("policy/PolicyManager.car");
@@ -17,6 +18,7 @@ module
     merge("policy/impl/RecentApplicationsBackground.car");
     merge("policy/impl/RecentApplicationsDialog.car");
     merge("policy/impl/WakeGestureListener.car");
+    merge("policy/impl/keyguard/KeyguardServiceDelegate.car");
 
     // interface Elastos.Droid.Utility.IAttributeSet;
     // interface Elastos.Droid.Content.IContext;

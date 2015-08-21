@@ -16,7 +16,7 @@ module
     namespace Pm {
 
     /** {@hide} */
-    [oneway, local]
+    [oneway]
     interface IIPackageInstaller {
         CreateSession(
             [in] IPackageInstallerSessionParams* params,

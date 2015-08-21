@@ -7,7 +7,6 @@ module
     interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Os.IParcelable;
     interface Elastos.Droid.Util.ISparseBooleanArray;
-    interface Elastos.Droid.Internal.Annotations.IVisibleForTesting;
     interface Elastos.Droid.Internal.Util.IArrayUtils;
 
 
