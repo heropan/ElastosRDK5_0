@@ -43,6 +43,19 @@ module
     merge("media/media/projection/IMediaProjectionInfo.car");
     merge("media/media/projection/MediaProjectionManager.car");
 
+    merge("media/media/session/IActiveSessionsListener.car");
+    merge("media/media/session/ISession.car");
+    merge("media/media/session/ISessionCallback.car");
+    merge("media/media/session/ISessionController.car");
+    merge("media/media/session/ISessionControllerCallback.car");
+    merge("media/media/session/ISessionManager.car");
+    merge("media/media/session/MediaController.car");
+    merge("media/media/session/MediaSession.car");
+    merge("media/media/session/MediaSessionLegacyHelper.car");
+    merge("media/media/session/MediaSessionManager.car");
+    merge("media/media/session/ParcelableVolumeInfo.car");
+    merge("media/media/session/PlaybackState.car");
+
     merge("media/media/AmrInputStream.car");
     merge("media/media/AsyncPlayer.car");
     merge("media/media/AudioFormat.car");
