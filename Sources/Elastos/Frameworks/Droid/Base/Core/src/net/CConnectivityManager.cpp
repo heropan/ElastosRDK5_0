@@ -35,6 +35,9 @@ using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Os::IHandlerThread;
 using Elastos::Core::IThread;
 using Elastos::Droid::Os::CMessenger;
+using Elastos::Net::IInetAddressHelper;
+using Elastos::Net::CInetAddressHelper;
+// using Libcore::Net::Event::INetworkEventDispatcherHelper;
 
 namespace Elastos {
 namespace Droid {
@@ -1605,7 +1608,7 @@ ECode CConnectivityManager::GetLinkQualityInfo(
     //     LinkQualityInfo li = mService.getLinkQualityInfo(networkType);
     //     return li;
     // } catch (RemoteException e) {
-    //     return null;
+    //     return NULL;
     // }
 
     ECode ec = mService->GetLinkQualityInfo(networkType, result);
@@ -1623,7 +1626,7 @@ ECode CConnectivityManager::GetActiveLinkQualityInfo(
     //     LinkQualityInfo li = mService.getActiveLinkQualityInfo();
     //     return li;
     // } catch (RemoteException e) {
-    //     return null;
+    //     return NULL;
     // }
     ECode ec = mService->GetActiveLinkQualityInfo(result);
     if (E_REMOTE_EXCEPTION == ec) {
@@ -1640,7 +1643,7 @@ ECode CConnectivityManager::GetAllLinkQualityInfo(
     //     LinkQualityInfo[] li = mService.getAllLinkQualityInfo();
     //     return li;
     // } catch (RemoteException e) {
-    //     return null;
+    //     return NULL;
     // }
     ECode ec = mService->GetAllLinkQualityInfo(result);
     if (E_REMOTE_EXCEPTION == ec) {
@@ -1835,11 +1838,11 @@ ECode CConnectivityManager::SendRequestForNetwork(
     *result = NULL;
 
     if (NULL == networkCallback) {
-        // throw new IllegalArgumentException("null NetworkCallback");
+        // throw new IllegalArgumentException("NULL NetworkCallback");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     if (NULL == need) {
-        // throw new IllegalArgumentException("null NetworkCapabilities");
+        // throw new IllegalArgumentException("NULL NetworkCapabilities");
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
     // try {
@@ -1977,45 +1980,99 @@ ECode CConnectivityManager::SetProcessDefaultNetwork(
         /* [in] */ INetwork* network,
         /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0
-        int netId = (network == null) ? NETID_UNSET : network.netId;
-        if (netId == NetworkUtils.getNetworkBoundToProcess()) {
-            return true;
-        }
-        if (NetworkUtils.bindProcessToNetwork(netId)) {
-            // Must flush DNS cache as new network may have different DNS resolutions.
-            InetAddress.clearDnsCache();
-            // Must flush socket pool as idle sockets will be bound to previous network and may
-            // cause subsequent fetches to be performed on old network.
-            NetworkEventDispatcher.getInstance().onNetworkConfigurationChanged();
-            return true;
-        } else {
-            return false;
-        }
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    Int32 netId;
+    if (NULL == network) {
+        netId = NETID_UNSET;
+    } else {
+        network->GetNetId(&netId);
+    }
+    Int32 netBound;
+    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
+#if 0 // TODO: Waiting for CNetworkUtilsHelper
+    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
+#else
+    assert(0);
 #endif
+    FAIL_RETURN(networkUtilsHelper->GetNetworkBoundToProcess(&netBound))
+    if (netBound == netId) {
+        *result = TRUE;
+        return NOERROR;
+    }
+    Boolean b;
+    FAIL_RETURN(networkUtilsHelper->BindProcessToNetwork(netId, &b))
+    if (b) {
+        // Must flush DNS cache as new network may have different DNS resolutions.
+        AutoPtr<IInetAddressHelper> inetAddressHelper;
+#if 0 // TODO: Waiting for CInetAddressHelper
+        CInetAddressHelper::AcquireSingleton((IInetAddressHelper**)&inetAddressHelper);
+#else
+        assert(0);
+#endif
+        FAIL_RETURN(inetAddressHelper->ClearDnsCache())
+#if 0 // TODO: Waiting for NetworkEventDispatcher
+        AutoPtr<INetworkEventDispatcherHelper>  networkEventDispatcherHelper;
+        CNetworkEventDispatcherHelper::AcquireSingleton((INetworkEventDispatcherHelper**)&networkEventDispatcherHelper);
+        AutoPtr<INetworkEventDispatcher> networkEventDispatcher;
+        FAIL_RETURN(networkEventDispatcherHelper->GetInstance((INetworkEventDispatcher**)&networkEventDispatcher))
+        FAIL_RETURN(networkEventDispatcher->OnNetworkConfigurationChanged())
+#else
+        assert(0);
+#endif
+        *result = TRUE;
+        return NOERROR;
+    }
+    *result = FALSE;
+    return NOERROR;
 }
 
 ECode CConnectivityManager::GetProcessDefaultNetwork(
     /* [out] */ INetwork** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0
-        int netId = NetworkUtils.getNetworkBoundToProcess();
-        if (netId == NETID_UNSET) return null;
-        return new Network(netId);
+    VALIDATE_NOT_NULL(*result)
+    *result = NULL;
+
+    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
+#if 0 // TODO: Waiting for CNetworkUtilsHelper
+    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
+#else
+    assert(0);
 #endif
+    Int32 netId;
+    networkUtilsHelper->GetNetworkBoundToProcess(&netId);
+    if (NETID_UNSET == netId) {
+        *result = NULL;
+        return NOERROR;
+    }
+#if 0 // TODO: Waiting for CNetwork
+    CNetwork::New(netId, result);
+#else
+    assert(0);
+#endif
+    return NOERROR;
 }
 
 ECode CConnectivityManager::SetProcessDefaultNetworkForHostResolution(
     /* [in] */ INetwork* network,
     /* [out] */ Boolean* result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0
-        return NetworkUtils.bindProcessToNetworkForHostResolution(
-                network == null ? NETID_UNSET : network.netId);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+
+    Int32 netId = NETID_UNSET;
+    if (NULL == network) {
+        network->GetNetId(&netId);
+    }
+    AutoPtr<INetworkUtilsHelper> networkUtilsHelper;
+#if 0 // TODO: Waiting for CNetworkUtilsHelper
+    CNetworkUtilsHelper::AcquireSingleton((INetworkUtilsHelper**)&networkUtilsHelper);
+#else
+    assert(0);
 #endif
+    networkUtilsHelper->BindProcessToNetworkForHostResolution(netId, result);
+    return NOERROR;
 }
 
 CConnectivityManager::LegacyRequest::LegacyRequest()
@@ -2027,141 +2084,247 @@ CConnectivityManager::CallbackHandler::CallbackHandler(
     /* [in] */ ILooper* looper,
     /* [in] */ IHashMap* callbackMap,
     /* [in] */ IAtomicInteger32* refCount,
-    /* [in] */ IConnectivityManager* cm)
+    /* [in] */ CConnectivityManager* cm)
     : Handler(looper)
-{
-#if 0
-    mCallbackMap = callbackMap;
-    mRefCount = refCount;
-    mCm = cm;
-#endif
-}
+    , mCallbackMap(callbackMap)
+    , mRefCount(refCount)
+    , mCm(cm)
+{}
 
 ECode CConnectivityManager::CallbackHandler::HandleMessage(
     /* [in] */ IMessage* message)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0
-    Log.d(TAG, "CM callback handler got msg " + message.what);
-    switch (message.what) {
+    VALIDATE_NOT_NULL(message)
+
+    // Log.d(TAG, "CM callback handler got msg " + message.what);
+    Int32 what;
+    message->GetWhat(&what);
+    Logger::D(TAG, (String("CM callback handler got msg ") + StringUtils::ToString(what)).string());
+    switch (what) {
         case CALLBACK_PRECHECK: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                callbacks.onPreCheck((Network)getObject(message, Network.class));
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                callbacks->OnPreCheck(INetwork::Probe(network));
             } else {
-                Log.e(TAG, "callback not found for PRECHECK message");
+                // Log.e(TAG, "callback not found for PRECHECK message");
+                Logger::E(TAG, String("callback not found for PRECHECK message").string());
             }
             break;
         }
         case CALLBACK_AVAILABLE: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                callbacks.onAvailable((Network)getObject(message, Network.class));
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                callbacks->OnAvailable(INetwork::Probe(network));
             } else {
-                Log.e(TAG, "callback not found for AVAILABLE message");
+                // Log.e(TAG, "callback not found for AVAILABLE message");
+                Logger::E(TAG, String("callback not found for AVAILABLE message").string());
             }
             break;
         }
         case CALLBACK_LOSING: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                callbacks.onLosing((Network)getObject(message, Network.class),
-                        message.arg1);
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                Int32 arg1;
+                message->GetArg1(&arg1);
+                callbacks->OnLosing(INetwork::Probe(network), arg1);
             } else {
-                Log.e(TAG, "callback not found for LOSING message");
+                // Log.e(TAG, "callback not found for LOSING message");
+                Logger::E(TAG, String("callback not found for LOSING message").string());
             }
             break;
         }
         case CALLBACK_LOST: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                callbacks.onLost((Network)getObject(message, Network.class));
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                callbacks->OnLost(INetwork::Probe(network));
             } else {
-                Log.e(TAG, "callback not found for LOST message");
+                // Log.e(TAG, "callback not found for LOST message");
+                Logger::E(TAG, String("callback not found for LOST message").string());
             }
             break;
         }
         case CALLBACK_UNAVAIL: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = null;
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
-                callbacks = mCallbackMap.get(request);
+                mCallbackMap->Get(request, (IInterface**)&callbacks);
             }
-            if (callbacks != null) {
-                callbacks.onUnavailable();
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                IConnectivityManagerNetworkCallback::Probe(callbacks)->OnUnavailable();
             } else {
-                Log.e(TAG, "callback not found for UNAVAIL message");
+                // Log.e(TAG, "callback not found for UNAVAIL message");
+                Logger::E(TAG, String("callback not found for UNAVAIL message").string());
             }
             break;
         }
         case CALLBACK_CAP_CHANGED: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                Network network = (Network)getObject(message, Network.class);
-                NetworkCapabilities cap = (NetworkCapabilities)getObject(message,
-                        NetworkCapabilities.class);
-
-                callbacks.onCapabilitiesChanged(network, cap);
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                AutoPtr<IInterface> cap;
+#if 0 // TODO: Waiting for NetworkCapabilities
+                GetObject(message, ECLSID_NetworkCapabilities, (IInterface**)&cap);
+#else
+            assert(0);
+#endif
+                callbacks->OnCapabilitiesChanged(INetwork::Probe(network), INetworkCapabilities::Probe(cap));
             } else {
-                Log.e(TAG, "callback not found for CAP_CHANGED message");
+                // Log.e(TAG, "callback not found for CAP_CHANGED message");
+                Logger::E(TAG, String("callback not found for CAP_CHANGED message").string());
             }
             break;
         }
         case CALLBACK_IP_CHANGED: {
-            NetworkRequest request = (NetworkRequest)getObject(message,
-                    NetworkRequest.class);
-            NetworkCallback callbacks = getCallbacks(request);
-            if (callbacks != null) {
-                Network network = (Network)getObject(message, Network.class);
-                LinkProperties lp = (LinkProperties)getObject(message,
-                        LinkProperties.class);
+            AutoPtr<IInterface> request;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&request);
+#else
+            assert(0);
+#endif
+            AutoPtr<IConnectivityManagerNetworkCallback> callbacks;
+            GetCallbacks(INetworkRequest::Probe(request), (IConnectivityManagerNetworkCallback**)&callbacks);
+            if (callbacks != NULL) {
+                AutoPtr<IInterface> network;
+#if 0 // TODO: Waiting for class Network
+                GetObject(message, ECLSID_Network, (IInterface**)&network);
+#else
+                assert(0);
+#endif
+                AutoPtr<IInterface> lp;
+#if 0 // TODO: Waiting for LinkProperties
+                GetObject(message, ECLSID_LinkProperties, (IInterface**)&lp);
+#else
+                assert(0);
+#endif
 
-                callbacks.onLinkPropertiesChanged(network, lp);
+                callbacks->OnLinkPropertiesChanged(INetwork::Probe(network), ILinkProperties::Probe(lp));
             } else {
-                Log.e(TAG, "callback not found for IP_CHANGED message");
+                // Log.e(TAG, "callback not found for IP_CHANGED message");
+                Logger::E(TAG, String("callback not found for IP_CHANGED message").string());
             }
             break;
         }
         case CALLBACK_RELEASED: {
-            NetworkRequest req = (NetworkRequest)getObject(message, NetworkRequest.class);
-            NetworkCallback callbacks = null;
+            AutoPtr<IInterface> req;
+#if 0 // TODO: Waiting for NetworkRequest
+            GetObject(message, ECLSID_NetworkRequest, (IInterface**)&req)
+#else
+            assert(0);
+#endif
+            AutoPtr<IInterface> callbacks = NULL;
             synchronized(mCallbackMap) {
-                callbacks = mCallbackMap.remove(req);
+                mCallbackMap->Remove(req, (IInterface**)&callbacks);
             }
-            if (callbacks != null) {
+            if (callbacks != NULL) {
                 synchronized(mRefCount) {
-                    if (mRefCount.decrementAndGet() == 0) {
-                        getLooper().quit();
+                    Int32 count;
+                    mRefCount->DecrementAndGet(&count);
+                    if (0 == count) {
+                        AutoPtr<ILooper> looper;
+                        GetLooper((ILooper**)&looper);
+                        looper->Quit();
                     }
                 }
             } else {
-                Log.e(TAG, "callback not found for CANCELED message");
+                // Log.e(TAG, "callback not found for CANCELED message");
+                Logger::E(TAG, String("callback not found for CANCELED message").string());
             }
             break;
         }
         case CALLBACK_EXIT: {
-            Log.d(TAG, "Listener quiting");
-            getLooper().quit();
+            // Log.d(TAG, "Listener quiting");
+            Logger::D(TAG, String("Listener quiting").string());
+            AutoPtr<ILooper> looper;
+            GetLooper((ILooper**)&looper);
+            looper->Quit();
             break;
         }
         case EXPIRE_LEGACY_REQUEST: {
-            expireRequest((NetworkCapabilities)message.obj, message.arg1);
+            AutoPtr<IInterface> obj;
+            message->GetObj((IInterface**)&obj);
+            Int32 arg1;
+            message->GetArg1(&arg1);
+            mCm->ExpireRequest(INetworkCapabilities::Probe(obj), arg1);
             break;
         }
     }
-#endif
+    return NOERROR;
 }
 
 CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCallback::InnerSub_ConnectivityManagerNetworkCallback(LegacyRequest* const host)
@@ -2174,9 +2337,7 @@ ECode CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCa
     mHost->mCurrentNetwork = network;
     // Log.d(TAG, "startUsingNetworkFeature got Network:" + network);
     String s;
-#if 0 // TODO: Waiting for INetwork
-    network->ToString(&s);
-#endif
+    IObject::Probe(network)->ToString(&s);
     Logger::D(TAG, (String("startUsingNetworkFeature got Network:") + s).string());
     Boolean b;
     CConnectivityManager::SetProcessDefaultNetworkForHostResolution(network, &b);
@@ -2186,16 +2347,15 @@ ECode CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCa
 ECode CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCallback::OnLost(
     /* [in] */ INetwork* network)
 {
-#if 0 // TODO: Waiting for INetwork
-    if (network->Equals(mCurrentNetwork)) {
+    VALIDATE_NOT_NULL(network)
+
+    Boolean b;
+    if (IObject::Probe(network)->Equals(mHost->mCurrentNetwork, &b), b) {
         mHost->mCurrentNetwork = NULL;
-        SetProcessDefaultNetworkForHostResolution(NULL);
+        SetProcessDefaultNetworkForHostResolution(NULL, &b);
     }
-#endif
     String s;
-#if 0 // TODO: Waiting for INetwork
-    network->ToString(&s);
-#endif
+    IObject::Probe(network)->ToString(&s);
     Logger::D(TAG, (String("startUsingNetworkFeature lost Network:") + s).string());
     return NOERROR;
 }
@@ -2203,10 +2363,14 @@ ECode CConnectivityManager::LegacyRequest::InnerSub_ConnectivityManagerNetworkCa
 ECode CConnectivityManager::CallbackHandler::GetObject(
     /* [in] */ IMessage* msg,
     /* [in] */ ClassID c,
-    /* [out] */ IInterface* result)
+    /* [out] */ IInterface** result)
 {
+    VALIDATE_NOT_NULL(*result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(msg)
+
     return E_NOT_IMPLEMENTED;
-#if 0
+#if 0 // TODO: Waiting for the method to get name from classid
     return msg.getData().getParcelable(c.getSimpleName());
 #endif
 }
@@ -2215,12 +2379,17 @@ ECode CConnectivityManager::CallbackHandler::GetCallbacks(
     /* [in] */ INetworkRequest* req,
    /* [out] */ IConnectivityManagerNetworkCallback** result)
 {
-    return E_NOT_IMPLEMENTED;
-#if 0
+    VALIDATE_NOT_NULL(*result)
+    *result = NULL;
+    VALIDATE_NOT_NULL(req)
+
     synchronized(mCallbackMap) {
-        return mCallbackMap.get(req);
+        AutoPtr<IInterface> value;
+        mCallbackMap->Get(req, (IInterface**)&value);
+        *result = IConnectivityManagerNetworkCallback::Probe(value);
+        REFCOUNT_ADD(*result)
     }
-#endif
+    return NOERROR;
 }
 
 } // namespace Net

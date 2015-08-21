@@ -1224,7 +1224,7 @@ private:
             /* [in] */ ILooper* looper,
             /* [in] */ IHashMap* callbackMap,
             /* [in] */ IAtomicInteger32* refCount,
-            /* [in] */ IConnectivityManager* cm);
+            /* [in] */ CConnectivityManager* cm);
 
         // @Override
         CARAPI HandleMessage(
@@ -1234,13 +1234,13 @@ private:
         const AutoPtr<IAtomicInteger32> mRefCount;
         static const String TAG;
 
-        const AutoPtr<IConnectivityManager> mCm;
+        CConnectivityManager* const mCm;
 
 
         CARAPI GetObject(
             /* [in] */ IMessage* msg,
             /* [in] */ ClassID c,
-            /* [out] */ IInterface* result);
+            /* [out] */ IInterface** result);
 
         CARAPI GetCallbacks(
             /* [in] */ INetworkRequest* req,
@@ -1299,6 +1299,8 @@ private:
     static const Int32 EXPIRE_LEGACY_REQUEST;
     const static Int32 LISTEN;
     const static Int32 REQUEST;
+
+    friend class CConnectivityManager::CallbackHandler;
 };
 
 } // namespace Net
