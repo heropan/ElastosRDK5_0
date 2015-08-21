@@ -14,7 +14,11 @@ using Elastos::Math::IBigDecimal;
 using Elastos::Math::CBigDecimal;
 using Elastos::Math::IBigDecimalHelper;
 using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
 
+
+namespace Elastos {
+namespace Math {
 
 static void assertEquals(const String& aspect, const String& test)
 {
@@ -254,8 +258,9 @@ void testCompareToPosPos1()
     }
 
     Int32 result;
+    IComparable* comp = (IComparable *)aNumber->Probe(EIID_IComparable);
+    comp->CompareTo(bNumber, &result);
 
-    aNumber->CompareTo(bNumber, &result);
     assertEquals("compareto", 1, result);
 }
 
@@ -303,7 +308,8 @@ void testCompareToPosPos2()
 
     Int32 result;
 
-    aNumber->CompareTo(bNumber, &result);
+    IComparable* comp = (IComparable *)aNumber->Probe(EIID_IComparable);
+    comp->CompareTo(bNumber, &result);
     assertEquals("compareto", -1, result);
 }
 
@@ -322,7 +328,37 @@ void testCompareToPosPos2()
         assertEquals(0, aNumber.compareTo(bNumber));
     }
 #endif
+void testCompareToEqualPos()
+{
+    AutoPtr<ArrayOf<Byte> > aBytes = ArrayOf<Byte>::Alloc(14);
+    AutoPtr<ArrayOf<Byte> > bBytes = ArrayOf<Byte>::Alloc(14);
 
+    signed char _aBytes[] = {12, 56, 100, -2, -76, 89, 45, 91, 3, -15, 35, 26, 3, 91};
+    signed char _bBytes[] = {12, 56, 100, -2, -76, 89, 45, 91, 3, -15, 35, 26, 3, 91};
+    memcpy(aBytes->GetPayload(), _aBytes, 14);
+    memcpy(bBytes->GetPayload(), _bBytes, 14);
+
+    int aSign = 1;
+    int bSign = 1;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(aSign, *aBytes, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(bSign, *bBytes, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    Int32 result;
+
+    IComparable* comp = (IComparable *)aNumber->Probe(EIID_IComparable);
+    comp->CompareTo(bNumber, &result);
+    assertEquals("testCompareToEqualPos", 0, result);
+}
 
     /**
      * compareTo(BigInteger a).
@@ -340,7 +376,37 @@ void testCompareToPosPos2()
         assertEquals(-1, aNumber.compareTo(bNumber));
     }
 #endif
+void testCompareToNegNeg1()
+{
+    AutoPtr<ArrayOf<Byte> > aBytes = ArrayOf<Byte>::Alloc(14);
+    AutoPtr<ArrayOf<Byte> > bBytes = ArrayOf<Byte>::Alloc(10);
 
+    signed char _aBytes[] = {12, 56, 100, -2, -76, 89, 45, 91, 3, -15, 35, 26, 3, 91};
+    signed char _bBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
+    memcpy(aBytes->GetPayload(), _aBytes, 14);
+    memcpy(bBytes->GetPayload(), _bBytes, 10);
+
+    int aSign = 1;
+    int bSign = 1;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(aSign, *aBytes, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(bSign, *bBytes, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    Int32 result;
+
+    IComparable* comp = (IComparable *)aNumber->Probe(EIID_IComparable);
+    comp->CompareTo(bNumber, &result);
+    assertEquals("testCompareToNegNeg1", -1, result);
+}
 
     /**
      * compareTo(BigInteger a).
@@ -835,7 +901,8 @@ void testCompareToPosPos2()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerCompareTest ====\n");
     testAbsPositive();
     testAbsNegative();
@@ -843,4 +910,7 @@ int main(int argc, char *argv[]) {
     printf("\n==== end of libcore/math/BigIntegerCompareTest ====\n");
 
     return 0;
+}
+
+}
 }
