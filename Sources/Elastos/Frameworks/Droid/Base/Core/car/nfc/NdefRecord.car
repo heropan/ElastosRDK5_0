@@ -1,0 +1,90 @@
+
+module
+{
+
+    namespace Elastos{
+    namespace Droid{
+    namespace NFC{
+
+    /**
+     * @Involve
+     * interace IParcelable
+     */
+    interface INdefRecord {
+        GetTnf(
+            [out] Int16* tnf);
+
+        GetType(
+            [out] ArrayOf<Byte>* type);
+
+        GetId(
+            [out] ArrayOf<Byte>* Id);
+
+        GetPayload(
+            [out] ArrayOf<Byte>* payload);
+
+        ToByteArray(
+            [out] ArrayOf<Byte>* Id ba);
+
+        ToMimeType(
+            [out] String* type);
+
+        ToUri(
+            [out] IUri** uri);
+
+        WriteToByteBuffer(
+            [in] IByteBuffer* buffer,
+            [in] Boolean mb,
+            [in] Boolean me);
+
+        GetByteLength(
+            [out] Int32* len);
+
+    }
+
+    interface INdefRecordHelper {
+        NdefRecord createApplicationRecord(
+            [in] String packageName,
+            [out] INdefRecord** record);
+
+        static NdefRecord createUri(
+            [in] IUri* uri,
+            [out] INdefRecord** record);
+
+        static NdefRecord createUri(
+            [in] String uriString,
+            [out] INdefRecord** record);
+
+        static NdefRecord createMime(
+            [in] String mimeType,
+            [in] ArrayOf<Byte>* mimeData,
+            [out] INdefRecord** record);
+
+        NdefRecord createExternal(
+            [in] String domain,
+            [in] String type,
+            [in] ArrayOf<Byte>* data,
+            [out] INdefRecord** record);
+
+        NdefRecord createTextRecord(
+            [in] String languageCode,
+            [in] String text,
+            [out] INdefRecord** record);
+
+        NdefRecord[] parse(
+            [in] IByteBuffer* buffer,
+            [in] Boolean ignoreMbMe,
+            [out] INdefRecord** record);
+
+        String validateTnf(
+            [in] Int16 tnf,
+            [in] ArrayOf<Byte>* type,
+            [in] ArrayOf<Byte>* id,
+            [in] ArrayOf<Byte>* payload,
+            [out] INdefRecord** record);
+    }
+
+    }// namespace NFC
+    }// namespace Droid
+    }// namespace Elastos
+}
