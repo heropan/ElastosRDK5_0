@@ -35,7 +35,6 @@ module
     merge("util/Int64SparseArray.car");
     merge("util/MonthDisplayHelper.car");
     merge("util/Printer.car");
-    merge("util/Range.car");
     merge("util/Rational.car");
     merge("util/Size.car");
     merge("util/SizeF.car");
@@ -47,6 +46,8 @@ module
     merge("util/TimeUtils.car");
     merge("util/TimingLogger.car");
 
+    using interface Elastos.Core.INumber;
+    using interface Elastos.Core.IComparable;
     using interface Elastos.IO.IFile;
     using interface Elastos.IO.IWriter;
     using interface Elastos.IO.ICloseable;
@@ -83,7 +84,6 @@ module
         interface IArrayMap;
         interface IMap;
     }
-
 
     class CArraySet {
         constructor();
@@ -172,7 +172,44 @@ module
         interface IPairHelper;
     }
 
-/*
+    class CRational {
+        constructor(
+            [in] Int32 numerator,
+            [in] Int32 denominator);
+
+        interface IRational;
+        interface INumber;
+        interface IComparable;
+    }
+
+    singleton class CRationalHelper {
+        interface IRationalHelper;
+    }
+
+    class CSize {
+        constructor(
+            [in] Int32 w,
+            [in] Int32 h);
+
+        interface ISize;
+    }
+
+    singleton class CSizeHelper {
+        interface ISizeHelper;
+    }
+
+    class CSizeF {
+        constructor(
+            [in] Float w,
+            [in] Float h);
+
+        interface ISizeF;
+    }
+
+    singleton class CSizeFHelper {
+        interface ISizeFHelper;
+    }
+
     class CTypedValue {
         interface ITypedValue;
     }
@@ -181,6 +218,7 @@ module
         interface ITypedValueHelper;
     }
 
+/*
     class CParcelableObjectContainer {
         constructor();
 

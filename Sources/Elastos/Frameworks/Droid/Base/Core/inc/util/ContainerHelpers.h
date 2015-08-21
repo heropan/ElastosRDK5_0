@@ -46,6 +46,7 @@ public:
     {
         return BinarySearch(array.Get(), size, value);
     }
+
 private:
     ContainerHelpers();
 

@@ -218,6 +218,12 @@ EXPORTS
 #endif
 
     ;;elastos/core/Math
+    _ZN7Elastos4Core4Math9BYTE_SIZEE
+    _ZN7Elastos4Core4Math10INT16_SIZEE
+    _ZN7Elastos4Core4Math10INT32_SIZEE
+    _ZN7Elastos4Core4Math10INT64_SIZEE
+    _ZN7Elastos4Core4Math10FLOAT_SIZEE
+    _ZN7Elastos4Core4Math11DOUBLE_SIZEE
     _ZN7Elastos4Core4Math10FLOAT_ZEROE
     _ZN7Elastos4Core4Math10IsInfiniteEd
     _ZN7Elastos4Core4Math10IsInfiniteEf

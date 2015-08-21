@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_UTILITY_CXMLPULLATTRIBUTES_H__
 
 #include "_Elastos_Droid_Utility_CXmlPullAttributes.h"
+#include <elastos/core/Object.h>
 
 using Org::Xmlpull::V1::IXmlPullParser;
 
@@ -10,8 +11,14 @@ namespace Droid {
 namespace Utility {
 
 CarClass(CXmlPullAttributes)
+    , public Object
+    , public IXmlPullAttributes
+    , public IAttributeSet
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor(
         /* [in] */ IXmlPullParser* parser);

@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_DROID_UTILITY_STATESET_H__
 #define __ELASTOS_DROID_UTILITY_STATESET_H__
 
-#include "Elastos.Droid.Core_server.h"
+#include "ext/frameworkext.h"
 
 namespace Elastos {
 namespace Droid {
@@ -31,6 +31,9 @@ public:
 public:
     static const AutoPtr< ArrayOf<Int32> > WILD_CARD;
     static const AutoPtr< ArrayOf<Int32> > NOTHING;
+
+private:
+    StateSet();
 };
 
 } // namespace Utility

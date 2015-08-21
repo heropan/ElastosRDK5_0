@@ -1,11 +1,6 @@
 
 #include "util/Xml.h"
-
-#ifdef DROID_CORE
 #include "util/CXmlPullAttributes.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 
 using Org::Kxml2::IO::IKXmlParser;
 using Org::Kxml2::IO::CKXmlParser;

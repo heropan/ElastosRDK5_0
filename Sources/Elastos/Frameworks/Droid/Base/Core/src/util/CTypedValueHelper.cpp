@@ -3,10 +3,13 @@
 #include "util/CTypedValueHelper.h"
 #include "util/CTypedValue.h"
 
-
 namespace Elastos {
 namespace Droid {
 namespace Utility {
+
+CAR_INTERFACE_IMPL(CTypedValueHelper, Singleton, ITypedValueHelper)
+
+CAR_SINGLETON_IMPL(CTypedValueHelper)
 
 ECode CTypedValueHelper::ComplexToFloat(
     /* [in] */ Int32 complex,

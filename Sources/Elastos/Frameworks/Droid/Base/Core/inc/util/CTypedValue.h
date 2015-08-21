@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_UTILITY_CTYPEDVALUE_H__
 
 #include "_Elastos_Droid_Utility_CTypedValue.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::ICharSequence;
 
@@ -11,11 +12,17 @@ namespace Droid {
 namespace Utility {
 
 CarClass(CTypedValue)
+    , public Object
+    , public ITypedValue
 {
 public:
     CTypedValue();
 
     virtual ~CTypedValue();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
 public:
     CARAPI GetFloat(

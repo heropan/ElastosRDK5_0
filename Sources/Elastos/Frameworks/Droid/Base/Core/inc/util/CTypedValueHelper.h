@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_UTILITY_CTYPEDVALUEHELPER_H__
 
 #include "_Elastos_Droid_Utility_CTypedValueHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Utility {
 
 CarClass(CTypedValueHelper)
+    , public Singleton
+    , public ITypedValueHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ComplexToFloat(
         /* [in] */ Int32 complex,
         /* [out] */ Float* value);

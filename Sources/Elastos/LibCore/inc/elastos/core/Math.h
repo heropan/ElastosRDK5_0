@@ -20,6 +20,56 @@ namespace Core {
 class Math
 {
 public:
+
+
+    /**
+     * The number of bits needed to represent a {@code Byte} value in two's
+     * complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 BYTE_SIZE;
+
+    /**
+     * Constant for the number of bits needed to represent a {@code short} in
+     * two's complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 INT16_SIZE;
+
+    /**
+     * Constant for the number of bits needed to represent an {@code int} in
+     * two's complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 INT32_SIZE;
+
+    /**
+     * Constant for the number of bits needed to represent a {@code long} in
+     * two's complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 INT64_SIZE;
+
+    /**
+     * Constant for the number of bits needed to represent a {@code float} in
+     * two's complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 FLOAT_SIZE;
+
+    /**
+     * Constant for the number of bits needed to represent a {@code double} in
+     * two's complement form.
+     *
+     * @since 1.5
+     */
+    static const Int32 DOUBLE_SIZE;
+
     /**
      * The maximum {@code Byte} value, 2<sup>7</sup>-1.
      */

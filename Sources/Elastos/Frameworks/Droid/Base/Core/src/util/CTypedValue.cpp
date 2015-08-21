@@ -26,6 +26,10 @@ const String CTypedValue::FRACTION_UNIT_STRS[] = {
     String("%"), String("%p")
 };
 
+CAR_INTERFACE_IMPL(CTypedValue, Object, ITypedValue)
+
+CAR_OBJECT_IMPL(CTypedValue)
+
 CTypedValue::CTypedValue()
     : mType(0)
     , mData(0)
@@ -92,16 +96,7 @@ Float CTypedValue::ComplexToDimensionNoisy(
     /* [in] */ Int32 data,
     /* [in] */ IDisplayMetrics* metrics)
 {
-    Float res = ComplexToDimension(data, metrics);
-//        System.out.println(
-//            "Dimension (0x" + ((data>>TypedValue.COMPLEX_MANTISSA_SHIFT)
-//                               & TypedValue.COMPLEX_MANTISSA_MASK)
-//            + "*" + (RADIX_MULTS[(data>>TypedValue.COMPLEX_RADIX_SHIFT)
-//                                & TypedValue.COMPLEX_RADIX_MASK] / MANTISSA_MULT)
-//            + ")" + DIMENSION_UNIT_STRS[(data>>COMPLEX_UNIT_SHIFT)
-//                                & COMPLEX_UNIT_MASK]
-//            + " = " + res);
-    return res;
+    return ComplexToDimension(data, metrics);
 }
 
 Float CTypedValue::ApplyDimension(
@@ -213,18 +208,18 @@ String CTypedValue::CoerceToString(
         }
         case TYPE_FLOAT: {
             Float f = Elastos::Core::Math::Int32BitsToFloat(data);
-            return StringUtils::FloatToString(f);
+            return StringUtils::ToString(f);
         }
         case TYPE_DIMENSION: {
-            return StringUtils::FloatToString(ComplexToFloat(data)) +
+            return StringUtils::ToString(ComplexToFloat(data)) +
                     DIMENSION_UNIT_STRS[(data >> COMPLEX_UNIT_SHIFT) & COMPLEX_UNIT_MASK];
         }
         case TYPE_FRACTION: {
-            return StringUtils::FloatToString(ComplexToFloat(data)  *100) +
+            return StringUtils::ToString(ComplexToFloat(data)  *100) +
                     FRACTION_UNIT_STRS[(data >> COMPLEX_UNIT_SHIFT) & COMPLEX_UNIT_MASK];
         }
         case TYPE_INT_HEX: {
-            return String("0x") + StringUtils::Int32ToString(data, 16);
+            return String("0x") + StringUtils::ToString(data, 16);
         }
         case TYPE_INT_BOOLEAN: {
             return data != 0 ? String("TRUE") : String("FALSE");
@@ -232,10 +227,10 @@ String CTypedValue::CoerceToString(
     }
 
     if (type >= TYPE_FIRST_COLOR_INT && type <= TYPE_LAST_COLOR_INT) {
-        return String("#") + StringUtils::Int32ToString(data, 16);
+        return String("#") + StringUtils::ToString(data, 16);
     }
     else if (type >= TYPE_FIRST_INT && type <= TYPE_LAST_INT) {
-        return StringUtils::Int32ToString(data);
+        return StringUtils::ToString(data);
     }
 
     return String(NULL);

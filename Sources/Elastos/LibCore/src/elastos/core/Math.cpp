@@ -13,6 +13,13 @@ namespace Core {
 #define isnanf __isnanf
 #endif
 
+const Int32 Math::BYTE_SIZE                 = 8;
+const Int32 Math::INT16_SIZE                = 16;
+const Int32 Math::INT32_SIZE                = 32;
+const Int32 Math::INT64_SIZE                = 64;
+const Int32 Math::FLOAT_SIZE                = 32;
+const Int32 Math::DOUBLE_SIZE               = 64;
+
 const Byte Math::BYTE_MAX_VALUE             = (Byte)0x7F;
 const Byte Math::BYTE_MIN_VALUE             = (Byte)0x80;
 const Int16 Math::INT16_MAX_VALUE           = (Int16)0x7FFF;
