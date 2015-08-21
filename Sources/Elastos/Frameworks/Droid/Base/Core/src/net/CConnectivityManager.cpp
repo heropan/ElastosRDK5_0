@@ -1190,13 +1190,21 @@ ECode CConnectivityManager::EnforceTetherChangePermission(
     AutoPtr<ArrayOf<String> > stringArray;
     FAIL_RETURN(res->GetStringArray(Elastos::Droid::R::array::config_mobile_hotspot_provision_app, (ArrayOf<String>**)&stringArray))
     if(stringArray->GetLength() == 2) {
-            // Have a provisioning app - must only let system apps (which check this app)
-            // turn on tethering
+        // Have a provisioning app - must only let system apps (which check this app)
+        // turn on tethering
+#if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::Permission::CONNECTIVITY_INTERNAL, String("ConnectivityService")))
+#else
+        assert(0);
+#endif
     } else {
+#if 0 // TODO: Waiting for Manifest.cpp add to sources
         FAIL_RETURN(context->EnforceCallingOrSelfPermission(
                 Elastos::Droid::Manifest::Permission::CHANGE_NETWORK_STATE, String("ConnectivityService")))
+#else
+        assert(0);
+#endif
     }
     return NOERROR;
 }
