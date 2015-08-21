@@ -31,6 +31,7 @@ SOURCES += CNtpTrustedTimeHelper.cpp
 SOURCES += CPair.cpp
 SOURCES += CPairHelper.cpp
 SOURCES += PathParser.cpp
+SOURCES += Patterns.cpp
 
 // SOURCES += CTypedValue.cpp
 // SOURCES += CTypedValueHelper.cpp
@@ -50,7 +51,6 @@ SOURCES += PathParser.cpp
 // SOURCES += StateMachine.cpp
 // SOURCES += CharSequences.cpp
 // SOURCES += AsyncChannel.cpp
-// SOURCES += Patterns.cpp
 // SOURCES += TimeUtils.cpp
 // SOURCES += CPropertyHelper.cpp
 // SOURCES += ReflectiveProperty.cpp

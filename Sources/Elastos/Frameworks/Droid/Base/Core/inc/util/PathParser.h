@@ -21,7 +21,6 @@ class PathDataNode
 {
 public:
 
-private:
     PathDataNode(
         /* [in] */ Char32 type,
         /* [in] */ ArrayOf<Float>* params);
@@ -53,6 +52,7 @@ private:
         /* [in] */ PathDataNode* nodeTo,
         /* [in] */ Float fraction);
 
+private:
     static void AddCommand(
         /* [in] */ IPath* path,
         /* [in] */ ArrayOf<Float>* current,
@@ -98,7 +98,7 @@ private:
         /* [in] */ Double start,
         /* [in] */ Double sweep);
 
-private:
+public:
     Char32 mType;
     AutoPtr<ArrayOf<Float> > mParams;
 };
@@ -191,8 +191,9 @@ private:
      * @param s the string containing a command and list of floats
      * @return array of floats
      */
-    static AutoPtr<ArrayOf<Float> > GetFloats(
-        /* [in] */ const String& s);
+    static CARAPI GetFloats(
+        /* [in] */ const String& s,
+        /* [out, callee] */ ArrayOf<Float>** floats);
 
     /**
      * Calculate the position of the next comma or space or negative sign
@@ -210,6 +211,7 @@ private:
     PathParser();
 
 private:
+    friend class PathDataNode;
     static const String LOGTAG;
 };
 

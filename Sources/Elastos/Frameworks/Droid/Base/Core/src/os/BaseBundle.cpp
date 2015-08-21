@@ -1371,6 +1371,9 @@ ECode BaseBundle::WriteValue(
         Int32 size = 0;
         array->GetLength(&size);
         dest->WriteInt32(VAL_ARRAYOF);
+        InterfaceID iid;
+        array->GetTypeId(&iid);
+        dest->WriteEMuid(iid);
         dest->WriteInt32(size);
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> elem;
@@ -1554,10 +1557,12 @@ AutoPtr<IInterface> BaseBundle::ReadValue(
     // case VAL_PARCELABLEARRAY:
     //     return readParcelableArray(loader);
     case VAL_ARRAYOF: {
+        InterfaceID iid;
+        source->ReadEMuid(&iid);
         Int32 size = 0;
         source->ReadInt32(&size);
         AutoPtr<IArrayOf> array;
-        CArrayOf::New(size, (IArrayOf**)&array);
+        CArrayOf::New(iid, size, (IArrayOf**)&array);
         for (Int32 i = 0; i < size; ++i) {
             AutoPtr<IInterface> elem = ReadValue(source);
             array->Set(i, elem);

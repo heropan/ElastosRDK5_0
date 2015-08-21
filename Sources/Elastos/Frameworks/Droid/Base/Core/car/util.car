@@ -9,9 +9,6 @@ module
     merge("util/Xml.car");
     merge("util/DisplayMetrics.car");
     merge("util/TypedValue.car");
-    merge("util/Pool.car");
-    merge("util/Poolable.car");
-    merge("util/PoolableManager.car");
     merge("util/Predicate.car");
     merge("util/EventLogTags.car");
     merge("util/FastXmlSerializer.car");
@@ -37,7 +34,6 @@ module
     merge("util/Int64Array.car");
     merge("util/Int64SparseArray.car");
     merge("util/MonthDisplayHelper.car");
-    merge("util/Patterns.car");
     merge("util/Printer.car");
     merge("util/Range.car");
     merge("util/Rational.car");
