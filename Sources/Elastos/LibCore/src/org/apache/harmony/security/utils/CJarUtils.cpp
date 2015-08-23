@@ -1,5 +1,20 @@
 
 #include "CJarUtils.h"
+#include "utility/logging/Logger.h"
+#include "asn1/CBerInputStream.h"
+#include "pkcs7/CContentInfoHelper.h"
+
+using Elastos::Utility::ICollection;
+using Elastos::Utility::IList;
+using Elastos::Utility::Logging::Logger;
+using Org::Apache::Harmony::Security::Asn1::IASN1Sequence;
+using Org::Apache::Harmony::Security::Asn1::IASN1Type;
+using Org::Apache::Harmony::Security::Asn1::IBerInputStream;
+using Org::Apache::Harmony::Security::Asn1::CBerInputStream;
+using Org::Apache::Harmony::Security::Pkcs7::IContentInfo;
+using Org::Apache::Harmony::Security::Pkcs7::IContentInfoHelper;
+using Org::Apache::Harmony::Security::Pkcs7::CContentInfoHelper;
+using Org::Apache::Harmony::Security::Pkcs7::ISignedData;
 
 namespace Org {
 namespace Apache {
@@ -18,17 +33,30 @@ ECode CJarUtils::VerifySignature(
     /* [in] */ IInputStream* signatureBlock,
     /* [out, callee] */ ArrayOf<ICertificate*>** sign)
 {
-    // BerInputStream bis = new BerInputStream(signatureBlock);
-//    ContentInfo info = (ContentInfo)ContentInfo.ASN1.decode(bis);
-//    SignedData signedData = info.getSignedData();
-//    if (signedData == null) {
-//        throw new IOException("No SignedData found");
-//    }
-//    Collection<org.apache.harmony.security.x509.Certificate> encCerts
-//            = signedData.getCertificates();
-//    if (encCerts.isEmpty()) {
-//        return null;
-//    }
+    VALIDATE_NOT_NULL(sign);
+    *sign = NULL;
+    AutoPtr<IBerInputStream> bis;
+    FAIL_RETURN(CBerInputStream::New(signatureBlock, (IBerInputStream**)&bis));
+    AutoPtr<IContentInfoHelper> helper;
+    CContentInfoHelper::AcquireSingleton((IContentInfoHelper**)&helper);
+    AutoPtr<IASN1Sequence> asn1;
+    helper->GetASN1((IASN1Sequence**)&asn1);
+    AutoPtr<IInterface> obj;
+    IASN1Type::Probe(asn1)->Decode(bis, (IInterface**)&obj);
+    IContentInfo* info = IContentInfo::Probe(obj);
+    AutoPtr<ISignedData> signedData;
+    info->GetSignedData((ISignedData**)&signedData);
+    if (signedData == NULL) {
+        Logger::E("CJarUtils", "No SignedData found");
+        return E_IO_EXCEPTION;
+    }
+    AutoPtr<IList> certs;
+    signedData->GetCertificates((IList**)&certs);
+    ICollection* encCerts = ICollection::Probe(certs);
+    Boolean isEmpty;
+    if (encCerts->IsEmpty(&isEmpty), isEmpty) {
+        return NOERROR;
+    }
 //    X509Certificate[] certs = new X509Certificate[encCerts.size()];
 //    CertificateFactory cf = CertificateFactory.getInstance("X.509");
 //    int i = 0;

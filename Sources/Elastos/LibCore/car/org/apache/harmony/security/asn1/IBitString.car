@@ -9,20 +9,6 @@ module
 
     [deprecated]
     interface IBitString {
-        /** Sequence of bits padded with unused bits. */
-        SetBytes(
-            [in] ArrayOf<Byte>* bytes);
-
-        GetBytes(
-            [out, callee] ArrayOf<Byte>* bytes);
-
-        /** Number of unused bits in the last byte. */
-        SetUnusedBits(
-            [in] Int32 unusedBits);
-
-        GetUnusedBits(
-            [out] Int32* unusedBits);
-
         GetBit(
             [in] Int32 bit,
             [out] Boolean* value);
@@ -33,6 +19,20 @@ module
 
         ToBooleanArray(
             [out, callee] ArrayOf<Boolean>* array);
+
+//        /** Sequence of bits padded with unused bits. */
+//        SetBytes(
+//            [in] ArrayOf<Byte>* bytes);
+//
+        GetBytes(
+            [out, callee] ArrayOf<Byte>* bytes);
+
+//        /** Number of unused bits in the last byte. */
+//        SetUnusedBits(
+//            [in] Int32 unusedBits);
+//
+        GetUnusedBits(
+            [out] Int32* unusedBits);
     }
 
     } // namespace Asn1

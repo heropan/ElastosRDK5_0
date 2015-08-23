@@ -82,6 +82,7 @@
 > Elastos/LibCore/src/elastosx/xml
   Elastos/LibCore/src/org/apache/harmony/security/asn1
   Elastos/LibCore/src/org/apache/harmony/security/fortress
+  Elastos/LibCore/src/org/apache/harmony/security/pkcs7
   Elastos/LibCore/src/org/apache/harmony/security/utils
 > Elastos/LibCore/src/org/apache/harmony/security
   Elastos/LibCore/src/org/xml/sax/ext

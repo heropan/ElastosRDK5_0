@@ -31,9 +31,6 @@ module
 
         GetEncoded(
             [out, callee] ArrayOf<Byte>* encoded);
-
-        ToString(
-            [out] String* str);
     }
 
     interface IContentInfoHelper {

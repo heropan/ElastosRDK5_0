@@ -2,13 +2,22 @@
 TARGET_NAME= pkcs7
 TARGET_TYPE= lib
 
-INCLUDES += ../../
-INCLUDES += $(MAKEDIR)/../../../../../../inc/Org/Apache/Harmony/Security/Pkcs7
+C_DEFINES += -DELASTOS_CORELIBRARY
 
-SOURCES = AuthenticatedAttributes.cpp
-SOURCES += CContentInfo.cpp
+include $(MAKEDIR)/../../../../../sources.inc
+
+INCLUDES += $(PREBUILD_INC)/sys;
+INCLUDES += ../../../../../corelibrary
+INCLUDES += $(MAKEDIR)/../../../../../../inc
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos
+INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos/core
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/pkcs7
+
+#SOURCES = AuthenticatedAttributes.cpp
+SOURCES += ContentInfo.cpp
 SOURCES += CContentInfoHelper.cpp
-SOURCES += CSignedData.cpp
-SOURCES += CSignedDataHelper.cpp
-SOURCES += CSignerInfo.cpp
-SOURCES += CSignerInfoHelper.cpp
+#SOURCES += CSignedData.cpp
+#SOURCES += CSignedDataHelper.cpp
+#SOURCES += CSignerInfo.cpp
+#SOURCES += CSignerInfoHelper.cpp

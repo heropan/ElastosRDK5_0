@@ -78,16 +78,16 @@ module
 //        SetEncoded(
 //            [in] ArrayOf<Byte>* encoded);
 //
-//        GetEncoded(
-//            [out, callee] ArrayOf<Byte>* encoded);
-//
+        GetEncoded(
+            [out, callee] ArrayOf<Byte>* encoded);
+
 //        /** Current encoded length */
 //        SetLength(
 //            [in] Int32 length);
 //
-//        GetLength(
-//            [out] Int32* length);
-//
+        GetLength(
+            [out] Int32* length);
+
 //        /** Current decoded content */
 //        SetContent(
 //            [in] ArrayOf<Byte>* content);

@@ -2,6 +2,11 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_BEROUTPUTSTREAM_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_BEROUTPUTSTREAM_H__
 
+#include "coredef.h"
+#include "core/Object.h"
+
+using Elastos::Core::Object;
+
 namespace Org {
 namespace Apache {
 namespace Harmony {
@@ -9,25 +14,13 @@ namespace Security {
 namespace Asn1 {
 
 class BerOutputStream
+    : public Object
+    , public IBerOutputStream
 {
 public:
-    CARAPI SetEncoded(
-        /* [in] */ ArrayOf<Byte>* encoded);
+    BerOutputStream();
 
-    CARAPI GetEncoded(
-        /* [out, callee] */ ArrayOf<Byte>** encoded);
-
-    CARAPI SetLength(
-        /* [in] */ Int32 length);
-
-    CARAPI GetLength(
-        /* [out] */ Int32* length);
-
-    CARAPI SetContent(
-        /* [in] */ ArrayOf<Byte>* content);
-
-    CARAPI GetContent(
-        /* [out] */ IInterface** content);
+    CAR_INTERFACE_DECL();
 
     CARAPI EncodeTag(
         /* [in] */ Int32 tag);
@@ -42,7 +35,7 @@ public:
         /* [in] */ IASN1Choice* choice);
 
     CARAPI EncodeExplicit(
-        /* [in] */ IASN1Type* xplicit);
+        /* [in] */ IASN1Explicit* xplicit);
 
     CARAPI EncodeGeneralizedTime();
 
@@ -72,7 +65,7 @@ public:
         /* [in] */ IASN1Choice* choice);
 
     CARAPI GetExplicitLength(
-        /* [in] */ IASN1Type* sequence);
+        /* [in] */ IASN1Explicit* sequence);
 
     CARAPI GetSequenceLength(
         /* [in] */ IASN1Sequence* sequence);
@@ -85,6 +78,24 @@ public:
 
     CARAPI GetSetOfLength(
         /* [in] */ IASN1SetOf* setOf);
+
+//    CARAPI SetEncoded(
+//        /* [in] */ ArrayOf<Byte>* encoded);
+//
+    CARAPI GetEncoded(
+        /* [out, callee] */ ArrayOf<Byte>** encoded);
+
+//    CARAPI SetLength(
+//        /* [in] */ Int32 length);
+//
+    CARAPI GetLength(
+        /* [out] */ Int32* length);
+
+//    CARAPI SetContent(
+//        /* [in] */ ArrayOf<Byte>* content);
+//
+//    CARAPI GetContent(
+//        /* [out] */ IInterface** content);
 
 public:
     /** Encoded byte array */

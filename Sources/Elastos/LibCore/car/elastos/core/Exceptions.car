@@ -38,4 +38,6 @@ module
     const E_ILLEGAL_ACCESS_EXCEPTION                    = 0xA0180000;
     const E_NO_SUCH_FIELD_EXCEPTION                     = 0xA0190000;
     const E_CLASS_CAST_EXCEPTION                        = 0xA0200000;
+
+    const E_ARRAY_STORE_EXCEPTION                       = 0xA0210000;
 }

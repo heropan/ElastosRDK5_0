@@ -11,4 +11,5 @@ INCLUDES += $(MAKEDIR)/../../../../../inc/Org/Apache/Harmony/Security
 
 LIBRARIES += asn1/asn1.lib
 LIBRARIES += fortress/fortress.lib
+LIBRARIES += pkcs7/pkcs7.lib
 LIBRARIES += utils/utils.lib

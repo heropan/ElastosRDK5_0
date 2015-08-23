@@ -2,10 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1SEQUENCE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1SEQUENCE_H__
 
-#include <ASN1TypeCollection.h>
-#include <Asn1TypeMacro.h>
-
-using Elastos::IO::IInputStream;
+#include "ASN1TypeCollection.h"
 
 namespace Org {
 namespace Apache {
@@ -13,35 +10,25 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
-class ASN1Sequence : public ASN1TypeCollection
+class ASN1Sequence
+    : public ASN1TypeCollection
+    , public IASN1Sequence
 {
 public:
-    ASN1TYPE_METHODS_DECL()
+    CARAPI constructor(
+        /* [in] */ ArrayOf<IASN1Type*>* type);
 
-    CARAPI SetType(
-        /* [in] */ ArrayOf<IASN1Type *>* type);
+    CAR_INTERFACE_DECL()
 
-    CARAPI GetType(
-        /* [out, callee] */ ArrayOf<IASN1Type *>** type);
+    CARAPI Decode(
+        /* [in] */ IBerInputStream* bis,
+        /* [out] */ IInterface** object);
 
-    CARAPI SetOPTIONAL(
-        /* [in] */ ArrayOf<Boolean>* optional);
+    CARAPI EncodeContent(
+        /* [in] */ IBerOutputStream* bos);
 
-    CARAPI GetOPTIONAL(
-        /* [out, callee] */ ArrayOf<Boolean>** optional);
-
-    CARAPI SetDEFAULT(
-        /* [in] */ ArrayOf<IInterface *>* def);
-
-    CARAPI GetDEFAULT(
-        /* [out, callee] */ ArrayOf<IInterface *>** def);
-
-    CARAPI GetValues(
-        /* [in] */ IInterface* object,
-        /* [in] */ ArrayOf<IInterface*>* values);
-
-    CARAPI Init(
-        /* [in] */ ArrayOf<IASN1Type *>* type);
+    CARAPI SetEncodingContent(
+        /* [in] */ IBerOutputStream* bos);
 };
 
 } // namespace Asn1

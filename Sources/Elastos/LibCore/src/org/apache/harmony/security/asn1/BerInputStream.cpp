@@ -870,8 +870,6 @@ ECode BerInputStream::Get(
     return NOERROR;
 }
 
-
-
 //ECode BerInputStream::SetTag(
 //    /* [in] */ Int32 tag)
 //{
@@ -900,16 +898,16 @@ ECode BerInputStream::Get(
 //    mContent = content;
 //    return NOERROR;
 //}
-//
-//ECode BerInputStream::GetContent(
-//    /* [out] */ IInterface** content)
-//{
-//    VALIDATE_NOT_NULL(content)
-//    *content = mContent;
-//    REFCOUNT_ADD(*content)
-//    return NOERROR;
-//}
-//
+
+ECode BerInputStream::GetContent(
+    /* [out] */ IInterface** content)
+{
+    VALIDATE_NOT_NULL(content)
+    *content = mContent;
+    REFCOUNT_ADD(*content)
+    return NOERROR;
+}
+
 //ECode BerInputStream::GetTagOffSet(
 //    /* [out] */ Int32* tagOffset)
 //{
@@ -984,6 +982,14 @@ ECode BerInputStream::Get(
 //    *oidElement = mOidElement;
 //    return NOERROR;
 //}
+
+ECode BerInputStream::GetVerify(
+    /* [out] */ Boolean* isVerify)
+{
+    VALIDATE_NOT_NULL(isVerify);
+    *isVerify = mIsVerify;
+    return NOERROR;
+}
 
 } // namespace Asn1
 } // namespace Security

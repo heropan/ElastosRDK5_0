@@ -1,9 +1,12 @@
 
-#include <ASN1Type.h>
-#include <Org.Apache.Harmony_server.h>
-#include <cmdef.h>
-#include <CDerInputStream.h>
-#include <CDerOutputStream.h>
+#include "ASN1Type.h"
+#include "CDerInputStream.h"
+#include "CDerOutputStream.h"
+#include "utility/logging/Logger.h"
+// #include <CDerInputStream.h>
+// #include <CDerOutputStream.h>
+
+using Elastos::Utility::Logging::Logger;
 
 namespace Org {
 namespace Apache {
@@ -11,59 +14,60 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
-ASN1Type::ASN1Type(
+ASN1Type::ASN1Type()
+    : mId(0)
+    , mConstrId(0)
+{}
+
+ECode ASN1Type::constructor(
     /* [in] */ Int32 tagNumber)
 {
-    InitEx(IASN1Constants::CLASS_UNIVERSAL, tagNumber);
+    return constructor(CLASS_UNIVERSAL, tagNumber);
 }
 
-ASN1Type::ASN1Type(
+ECode ASN1Type::constructor(
     /* [in] */ Int32 tagClass,
     /* [in] */ Int32 tagNumber)
 {
-    InitEx(tagClass, tagNumber);
-}
+    if (tagNumber < 0) {
+        Logger::E("ASN1Type", "tagNumber < 0");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-ASN1Type::Init(
-    /* [in] */ Int32 tagNumber)
-{
-    InitEx(IASN1Constants::CLASS_UNIVERSAL, tagNumber);
-}
+    if (tagClass != CLASS_UNIVERSAL
+        && tagClass != CLASS_APPLICATION
+        && tagClass != CLASS_CONTEXTSPECIFIC
+        && tagClass != CLASS_PRIVATE) {
+        Logger::E("ASN1Type", "invalid tagClass");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
 
-ASN1Type::Init(
-    /* [in] */ Int32 tagClass,
-    /* [in] */ Int32 tagNumber)
-{
-    InitEx(tagClass, tagNumber);
-}
-
-ECode ASN1Type::GetId(
-    /* [out] */ Int32* id)
-{
-    VALIDATE_NOT_NULL(id)
-    *id = mId;
+    if (tagNumber < 31) {
+        // short form
+        mId = tagClass + tagNumber;
+    }
+    else {
+        // long form
+        Logger::E("ASN1Type", "tag long form not implemented");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    mConstrId = mId + PC_CONSTRUCTED;
     return NOERROR;
 }
 
-/** Integer representation of constructed identifier. */
-ECode ASN1Type::GetConstrId(
-    /* [out] */ Int32* constrId)
-{
-    VALIDATE_NOT_NULL(constrId)
-    *constrId = mConstrId;
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL_2(ASN1Type, Object, IASN1Type, IASN1Constants)
 
 ECode ASN1Type::Decode(
     /* [in] */ ArrayOf<Byte>* encoded,
     /* [out] */ IInterface** object)
 {
+    VALIDATE_NOT_NULL(object);
     AutoPtr<IBerInputStream> bis;
     CDerInputStream::New(encoded, (IBerInputStream**)&bis);
-    return DecodeEx3(bis, object);
+    return Decode(bis, object);
 }
 
-ECode ASN1Type::DecodeEx(
+ECode ASN1Type::Decode(
     /* [in] */ ArrayOf<Byte>* encoded,
     /* [in] */ Int32 offset,
     /* [in] */ Int32 encodingLen,
@@ -71,16 +75,16 @@ ECode ASN1Type::DecodeEx(
 {
     AutoPtr<IBerInputStream> bis;
     CDerInputStream::New(encoded, offset, encodingLen, (IBerInputStream**)&bis);
-    return DecodeEx3(bis, object);
+    return Decode(bis, object);
 }
 
-ECode ASN1Type::DecodeEx2(
+ECode ASN1Type::Decode(
     /* [in] */ IInputStream* is,
     /* [out] */ IInterface** object)
 {
     AutoPtr<IBerInputStream> bis;
     CDerInputStream::New(is, (IBerInputStream**)&bis);
-    return DecodeEx3(bis, object);
+    return Decode(bis, object);
 }
 
 ECode ASN1Type::Verify(
@@ -90,17 +94,17 @@ ECode ASN1Type::Verify(
     CDerInputStream::New(encoded, (IBerInputStream**)&bis);
     bis->SetVerify();
     AutoPtr<IInterface> object;
-    return DecodeEx3(bis, (IInterface**)&object);
+    return Decode(bis, (IInterface**)&object);
 }
 
-ECode ASN1Type::VerifyEx(
+ECode ASN1Type::Verify(
     /* [in] */ IInputStream* is)
 {
     AutoPtr<IBerInputStream> decoder;
     CDerInputStream::New(is, (IBerInputStream**)&decoder);
     decoder->SetVerify();
     AutoPtr<IInterface> object;
-    return DecodeEx3(decoder, (IInterface**)&object);
+    return Decode(decoder, (IInterface**)&object);
 }
 
 ECode ASN1Type::Encode(
@@ -108,7 +112,7 @@ ECode ASN1Type::Encode(
     /* [out, callee] */ ArrayOf<Byte>** encode)
 {
     AutoPtr<IBerOutputStream> output;
-    CDerOutputStream::New(THIS_PROBE(IASN1Type), object, (IBerOutputStream**)&output);
+    CDerOutputStream::New((IASN1Type*)this, object, (IBerOutputStream**)&output);
     return output->GetEncoded(encode);
 }
 
@@ -161,36 +165,21 @@ ECode ASN1Type::ToString(
     return E_NOT_IMPLEMENTED;
 }
 
-ECode ASN1Type::Init(
-    /* [in] */ Int32 tagClass,
-    /* [in] */ Int32 tagNumber)
+ECode ASN1Type::GetId(
+    /* [out] */ Int32* id)
 {
-    if (tagNumber < 0) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (tagClass != IASN1Constants::CLASS_UNIVERSAL
-        && tagClass != IASN1Constants::CLASS_APPLICATION
-        && tagClass != IASN1Constants::CLASS_CONTEXTSPECIFIC
-        && tagClass != IASN1Constants::CLASS_PRIVATE) {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-
-    if (tagNumber < 31) {
-        // short form
-        mId = tagClass + tagNumber;
-    } else {
-        // long form
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    mConstrId = mId + IASN1Constants::PC_CONSTRUCTED;
+    VALIDATE_NOT_NULL(id)
+    *id = mId;
     return NOERROR;
 }
 
-PInterface ASN1Type::Probe(
-    /* [in] */ REIID riid)
+/** Integer representation of constructed identifier. */
+ECode ASN1Type::GetConstrId(
+    /* [out] */ Int32* constrId)
 {
-    return NULL;
+    VALIDATE_NOT_NULL(constrId)
+    *constrId = mConstrId;
+    return NOERROR;
 }
 
 } // namespace Asn1

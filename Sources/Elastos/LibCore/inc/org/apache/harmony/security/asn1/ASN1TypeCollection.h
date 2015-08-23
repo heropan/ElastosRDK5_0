@@ -2,10 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPECOLLECTION_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPECOLLECTION_H__
 
-#include <elastos.h>
 #include "ASN1Constructed.h"
-
-_ELASTOS_NAMESPACE_USING
 
 namespace Org {
 namespace Apache {
@@ -19,7 +16,12 @@ namespace Asn1 {
  * @see <a href="http://asn1.elibel.tm.fr/en/standards/index.htm">ASN.1</a>
  */
 class ASN1TypeCollection
-    : public ASN1Constructed {
+    : public ASN1Constructed
+    , public IASN1TypeCollection
+{
+public:
+    CAR_INTERFACE_DECL()
+
 protected:
     /**
      * Constructs ASN.1 collection type.
@@ -28,7 +30,7 @@ protected:
      * @param type a collection of one or more ASN.1 types.
      * @throws IllegalArgumentException if tagNumber is invalid
      */
-    ASN1TypeCollection(
+    CARAPI constructor(
         /* [in] */ Int32 tagNumber,
         /* [in] */ ArrayOf<IASN1Type*>* type);
 
@@ -67,11 +69,11 @@ protected:
         /* [in] */ ArrayOf<IInterface*>* values);
 
 public:
-    AutoPtr<ArrayOf<IASN1Type*> > mType;
+    AutoPtr< ArrayOf<IASN1Type*> > mType;
 
-    AutoPtr<ArrayOf<Boolean> > mOPTIONAL;
+    AutoPtr< ArrayOf<Boolean> > mOPTIONAL;
 
-    AutoPtr<ArrayOf<IInterface*> > mDEFAULT;
+    AutoPtr< ArrayOf<IInterface*> > mDEFAULT;
 };
 
 } // namespace Asn1

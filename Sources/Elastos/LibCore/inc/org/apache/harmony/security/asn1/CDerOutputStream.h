@@ -3,7 +3,7 @@
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_CDEROUTPUTSTREAM_H__
 
 #include "_Org_Apache_Harmony_Security_Asn1_CDerOutputStream.h"
-#include <BerOutputStream.h>
+#include "BerOutputStream.h"
 
 namespace Org {
 namespace Apache {
@@ -11,51 +11,26 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
-CarClass(CDerOutputStream), public BerOutputStream
+CarClass(CDerOutputStream)
+    , public BerOutputStream
+    , public IDerOutputStream
 {
 public:
-    CARAPI SetEncoded(
-        /* [in] */ ArrayOf<Byte>* encoded);
+    CDerOutputStream();
 
-    CARAPI GetEncoded(
-        /* [out, callee] */ ArrayOf<Byte>** encoded);
+    CARAPI constructor(
+        /* [in] */ IASN1Type* asn1,
+        /* [in] */ IInterface* object);
 
-    CARAPI SetLength(
-        /* [in] */ Int32 length);
+    CAR_INTERFACE_DECL()
 
-    CARAPI GetLength(
-        /* [out] */ Int32* length);
-
-    CARAPI SetContent(
-        /* [in] */ IInterface* content);
-
-    CARAPI GetContent(
-        /* [out] */ IInterface** content);
-
-    CARAPI EncodeTag(
-        /* [in] */ Int32 tag);
-
-    CARAPI EncodeANY();
-
-    CARAPI EncodeBitString();
-
-    CARAPI EncodeBoolean();
+    CAR_OBJECT_DECL()
 
     CARAPI EncodeChoice(
         /* [in] */ IASN1Choice* choice);
 
     CARAPI EncodeExplicit(
-        /* [in] */ IASN1Type* xplicit);
-
-    CARAPI EncodeGeneralizedTime();
-
-    CARAPI EncodeUTCTime();
-
-    CARAPI EncodeInteger();
-
-    CARAPI EncodeOctetString();
-
-    CARAPI EncodeOID();
+        /* [in] */ IASN1Explicit* xplicit);
 
     CARAPI EncodeSequence(
         /* [in] */ IASN1Sequence* sequence);
@@ -63,19 +38,14 @@ public:
     CARAPI EncodeSequenceOf(
         /* [in] */ IASN1SequenceOf* sequenceOf);
 
-    CARAPI EncodeSet(
-        /* [in] */ IASN1Set* set);
-
     CARAPI EncodeSetOf(
         /* [in] */ IASN1SetOf* setOf);
-
-    CARAPI EncodeString();
 
     CARAPI GetChoiceLength(
         /* [in] */ IASN1Choice* choice);
 
     CARAPI GetExplicitLength(
-        /* [in] */ IASN1Explicit* xplicit);
+        /* [in] */ IASN1Explicit* sequence);
 
     CARAPI GetSequenceLength(
         /* [in] */ IASN1Sequence* sequence);
@@ -83,32 +53,25 @@ public:
     CARAPI GetSequenceOfLength(
         /* [in] */ IASN1SequenceOf* sequence);
 
-    CARAPI GetSetLength(
-        /* [in] */ IASN1Set* set);
-
     CARAPI GetSetOfLength(
         /* [in] */ IASN1SetOf* setOf);
-
-    CARAPI constructor(
-        /* [in] */ IASN1Type* asn1,
-        /* [in] */ IInterface* object);
 
 private:
     CARAPI EncodeValueCollection(
         /* [in] */ IASN1ValueCollection* collection);
 
-    CARAPI Push(
+    CARAPI_(void) Push(
         /* [in] */ ArrayOf<Int32>* lengths,
         /* [in] */ ArrayOf<IInterface*>* values);
 
-    CARAPI GetValueOfLength(
-        /* [in] */ IASN1ValueCollection* collection)
+    CARAPI_(void) GetValueOfLength(
+        /* [in] */ IASN1ValueCollection* collection);
 
 private:
-    static Int32 mInitSize = 32;
+    static const Int32 sInitSize;
     Int32 mIndex;
-    AutoPtr<ArrayOf<Int32Array > > mLen; //new int[initSize][]
-    AutoPtr<ArrayOf<AutoPtr<ArrayOf<IInterface*> > > > mVal;//new Object[initSize][];
+    AutoPtr< ArrayOf< AutoPtr< ArrayOf<Int32> > > > mLen;
+    AutoPtr< ArrayOf< AutoPtr< ArrayOf<IInterface*> > > > mVal;
 };
 
 } // namespace Asn1

@@ -9,12 +9,9 @@ module
 
     /**
      * @Involve
-     * interface IASN1Type;
-     * interface IASN1Constants;
+     * interface IBerOutputStream
      */
-    interface IASN1Explicit {
-        GetType(
-            [out] IASN1Type** type);
+    interface IDerOutputStream {
     }
 
     } // namespace Asn1

@@ -1,9 +1,15 @@
 
-#include "CBerOutputStream.h"
-#include <cmdef.h>
+#include "BerOutputStream.h"
+#include "utility/logging/Logger.h"
 
-using Elastos.Core.IBoolean;
-using Elastos.Core.IArrayOf;
+using Elastos::Core::IArrayOf;
+using Elastos::Core::IBoolean;
+using Elastos::Core::IByte;
+using Elastos::Core::IInteger32;
+using Elastos::Utility::Logging::Logger;
+
+// using Elastos.Core.IBoolean;
+// using Elastos.Core.IArrayOf;
 
 namespace Org {
 namespace Apache {
@@ -11,55 +17,14 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
+BerOutputStream::BerOutputStream()
+    : mLength(0)
+    , mOffset(0)
+{}
 
-ECode CBerOutputStream::SetEncoded(
-    /* [in] */ ArrayOf<Byte>* encoded)
-{
-    mEncoded = encoded;
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(BerOutputStream, Object, IBerOutputStream)
 
-ECode CBerOutputStream::GetEncoded(
-    /* [out, callee] */ ArrayOf<Byte>** encoded)
-{
-    VALIDATE_NOT_NULL(encoded)
-    *encoded = mEncoded;
-    REFCOUNT_ADD(*encoded)
-    return NOERROR;
-}
-
-ECode CBerOutputStream::SetLength(
-    /* [in] */ Int32 length)
-{
-    mLength = length;
-    return NOERROR;
-}
-
-ECode CBerOutputStream::GetLength(
-    /* [out] */ Int32* length)
-{
-    VALIDATE_NOT_NULL(length)
-    *length = mLength;
-    return NOERROR;
-}
-
-ECode CBerOutputStream::SetContent(
-    /* [in] */ IInterface* content)
-{
-    mContent = content;
-    return NOERROR;
-}
-
-ECode CBerOutputStream::GetContent(
-    /* [out] */ IInterface** content)
-{
-    VALIDATE_NOT_NULL(content)
-    *content = mContent;
-    REFCOUNT_ADD(*content)
-    return NOERROR;
-}
-
-ECode CBerOutputStream::EncodeTag(
+ECode BerOutputStream::EncodeTag(
     /* [in] */ Int32 tag)
 {
     (*mEncoded)[mOffset++] = (Byte) tag; //FIXME long form?
@@ -80,133 +45,169 @@ ECode CBerOutputStream::EncodeTag(
             (*mEncoded)[numOffset - i] = (Byte) eLen; //FIXME long value?
         }
         mOffset += numOctets;
-    } else { //short form
+    }
+    else { //short form
         (*mEncoded)[mOffset++] = (Byte) mLength;
     }
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeANY()
+ECode BerOutputStream::EncodeANY()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
-    mOffset = mLength;
+    mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeBitString()
+ECode BerOutputStream::EncodeBitString()
 {
-        //FIXME check encoding
-        AutoPtr<IBitString> bStr = IBitString::Probe(mContent);
-        Int32 unusedBits;
-        bStr->GetUnusedBits(&unusedBits);
-        (*mEncoded)[mOffset] = (Byte)unusedBits;
-        AutoPtr<ArrayOf<Byte> > bytes;
-        bStr->GetBytes((ArrayOf<Byte>**)&bytes);
-        mEncoded->Copy(mOffset + 1, bytes, 0, mLength - 1);
-        mOffset += mLength;
-        return NOERROR;
+    //FIXME check encoding
+    AutoPtr<IBitString> bStr = IBitString::Probe(mContent);
+    Int32 unusedBits;
+    bStr->GetUnusedBits(&unusedBits);
+    (*mEncoded)[mOffset] = (Byte)unusedBits;
+    AutoPtr< ArrayOf<Byte> > bytes;
+    bStr->GetBytes((ArrayOf<Byte>**)&bytes);
+    mEncoded->Copy(mOffset + 1, bytes, 0, mLength - 1);
+    mOffset += mLength;
+    return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeBoolean()
+ECode BerOutputStream::EncodeBoolean()
 {
-    Boolean val;
-    IBoolean::Probe(content)->GetValue(&val);
-    if (val) {
+    if (IBoolean::Probe(mContent)) {
         (*mEncoded)[mOffset] = (Byte) 0xFF;
-    } else {
+    }
+    else {
         (*mEncoded)[mOffset] = 0x00;
     }
     mOffset++;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeChoice(
+ECode BerOutputStream::EncodeChoice(
     /* [in] */ IASN1Choice* choice)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeExplicit(
-    /* [in] */ IASN1Type* xplicit)
+ECode BerOutputStream::EncodeExplicit(
+    /* [in] */ IASN1Explicit* xplicit)
 {
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeGeneralizedTime()
+ECode BerOutputStream::EncodeGeneralizedTime()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i + mOffset] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
     mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeUTCTime()
+ECode BerOutputStream::EncodeUTCTime()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i + mOffset] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
     mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeInteger()
+ECode BerOutputStream::EncodeInteger()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i + mOffset] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
     mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeOctetString()
+ECode BerOutputStream::EncodeOctetString()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i + mOffset] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
     mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeOID()
+ECode BerOutputStream::EncodeOID()
 {
     Int32 length;
     IArrayOf::Probe(mContent)->GetLength(&length);
@@ -233,7 +234,8 @@ ECode CBerOutputStream::EncodeOID()
                 (*mEncoded)[mOffset + oidLen - 1] = (Byte) (elem | 0x80);
                 elem = elem >> 7;
             }
-        } else {
+        }
+        else {
             (*mEncoded)[mOffset + oidLen - 1] = (Byte) elem;
         }
     }
@@ -248,7 +250,8 @@ ECode CBerOutputStream::EncodeOID()
             (*mEncoded)[mOffset + oidLen - 1] = (Byte) (elem | 0x80);
             elem = elem >> 7;
         }
-    } else {
+    }
+    else {
         (*mEncoded)[mOffset + oidLen - 1] = (Byte) elem;
     }
 
@@ -256,95 +259,148 @@ ECode CBerOutputStream::EncodeOID()
     return NOERROR;
 }
 
-ECode CBerOutputStream::EncodeSequence(
+ECode BerOutputStream::EncodeSequence(
     /* [in] */ IASN1Sequence* sequence)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeSequenceOf(
+ECode BerOutputStream::EncodeSequenceOf(
     /* [in] */ IASN1SequenceOf* sequenceOf)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeSet(
+ECode BerOutputStream::EncodeSet(
     /* [in] */ IASN1Set* set)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeSetOf(
+ECode BerOutputStream::EncodeSetOf(
     /* [in] */ IASN1SetOf* setOf)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::EncodeString()
+ECode BerOutputStream::EncodeString()
 {
-    AutoPtr<IArrayOf> arrayOf;
+    AutoPtr<IArrayOf> arrayObj = IArrayOf::Probe(mContent);
+    if (IArrayOf::Probe(mContent) == NULL) {
+        return E_ARRAY_STORE_EXCEPTION;
+    }
+
     Int32 length;
-    IArrayOf::Probe(mContent)->GetLength(&length);
+    arrayObj->GetLength(&length);
     for (Int32 i = 0; i < length; i++) {
         AutoPtr<IInterface> elem;
-        IArrayOf::Probe(mContent)->Get(i, (IInterface**)&elem);
+        arrayObj->Get(i, (IInterface**)&elem);
+        if (IByte::Probe(elem) == NULL) {
+            return E_ARRAY_STORE_EXCEPTION;
+        }
         Byte val;
         IByte::Probe(elem)->GetValue(&val);
-        (*mEncoded)[i + mOffset] = val;
+        (*mEncoded)[mOffset + i] = val;
     }
     mOffset += mLength;
     return NOERROR;
 }
 
-ECode CBerOutputStream::GetChoiceLength(
+ECode BerOutputStream::GetChoiceLength(
     /* [in] */ IASN1Choice* choice)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::GetExplicitLength(
-    /* [in] */ IASN1Type* sequence)
+ECode BerOutputStream::GetExplicitLength(
+    /* [in] */ IASN1Explicit* sequence)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::GetSequenceLength(
+ECode BerOutputStream::GetSequenceLength(
     /* [in] */ IASN1Sequence* sequence)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::GetSequenceOfLength(
+ECode BerOutputStream::GetSequenceOfLength(
     /* [in] */ IASN1SequenceOf* sequence)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::GetSetLength(
+ECode BerOutputStream::GetSetLength(
     /* [in] */ IASN1Set* set)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
 
-ECode CBerOutputStream::GetSetOfLength(
+ECode BerOutputStream::GetSetOfLength(
     /* [in] */ IASN1SetOf* setOf)
 {
-    //throw new RuntimeException("Is not implemented yet"); //FIXME
+    Logger::E("BerOutputStream", "Is not implemented yet");
     return E_RUNTIME_EXCEPTION;
 }
+
+//ECode BerOutputStream::SetEncoded(
+//    /* [in] */ ArrayOf<Byte>* encoded)
+//{
+//    mEncoded = encoded;
+//    return NOERROR;
+//}
+//
+ECode BerOutputStream::GetEncoded(
+    /* [out, callee] */ ArrayOf<Byte>** encoded)
+{
+    VALIDATE_NOT_NULL(encoded)
+    *encoded = mEncoded;
+    REFCOUNT_ADD(*encoded)
+    return NOERROR;
+}
+
+//ECode BerOutputStream::SetLength(
+//    /* [in] */ Int32 length)
+//{
+//    mLength = length;
+//    return NOERROR;
+//}
+//
+ECode BerOutputStream::GetLength(
+    /* [out] */ Int32* length)
+{
+    VALIDATE_NOT_NULL(length)
+    *length = mLength;
+    return NOERROR;
+}
+
+//ECode BerOutputStream::SetContent(
+//    /* [in] */ IInterface* content)
+//{
+//    mContent = content;
+//    return NOERROR;
+//}
+//
+//ECode BerOutputStream::GetContent(
+//    /* [out] */ IInterface** content)
+//{
+//    VALIDATE_NOT_NULL(content)
+//    *content = mContent;
+//    REFCOUNT_ADD(*content)
+//    return NOERROR;
+//}
 
 } // namespace Asn1
 } // namespace Security
 } // namespace Harmony
 } // namespace Apache
 } // namespace Org
-

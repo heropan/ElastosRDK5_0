@@ -15,12 +15,18 @@ module
     merge("apache/harmony/security/asn1/IASN1SequenceOf.car");
     merge("apache/harmony/security/asn1/IASN1Set.car");
     merge("apache/harmony/security/asn1/IASN1SetOf.car");
+    merge("apache/harmony/security/asn1/IBitString.car");
     merge("apache/harmony/security/asn1/IBerInputStream.car");
     merge("apache/harmony/security/asn1/IBerOutputStream.car");
+    merge("apache/harmony/security/asn1/IDerInputStream.car");
+    merge("apache/harmony/security/asn1/IDerOutputStream.car");
 
     merge("apache/harmony/security/fortress/IEngine.car");
     merge("apache/harmony/security/fortress/ISecurityAccess.car");
     merge("apache/harmony/security/fortress/IServices.car");
+
+    merge("apache/harmony/security/pkcs7/IContentInfo.car");
+    merge("apache/harmony/security/pkcs7/ISignedData.car");
 
     merge("apache/harmony/security/utils/IJarUtils.car");
 
@@ -53,6 +59,36 @@ module
         interface IBerInputStream;
     }
 
+    class CBerOutputStream {
+        interface IBerOutputStream;
+    }
+
+    [deprecated]
+    class CDerInputStream {
+        constructor(
+            [in] ArrayOf<Byte>* encoded);
+
+        constructor(
+            [in] ArrayOf<Byte>* encoded,
+            [in] Int32 offset,
+            [in] Int32 expectedLength);
+
+        constructor(
+            [in] IInputStream* is);
+
+        interface IDerInputStream;
+        interface IBerInputStream;
+    }
+
+    class CDerOutputStream {
+        constructor(
+            [in] IASN1Type* asn1,
+            [in] IInterface* object);
+
+        interface IDerOutputStream;
+        interface IBerOutputStream;
+    }
+
     }
 
     namespace Fortress {
@@ -74,6 +110,14 @@ module
     }
 
     } // namespace Fortress
+
+    namespace Pkcs7 {
+
+    singleton class CContentInfoHelper {
+        interface IContentInfoHelper;
+    }
+
+    } // namespace Pkcs7
 
     namespace Utils {
 

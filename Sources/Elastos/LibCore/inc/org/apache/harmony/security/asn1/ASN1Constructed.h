@@ -2,10 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1CONSTRUCTED_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1CONSTRUCTED_H__
 
-#include <elastos.h>
 #include "ASN1Type.h"
-
-_ELASTOS_NAMESPACE_USING
 
 namespace Org {
 namespace Apache {
@@ -20,23 +17,9 @@ namespace Asn1 {
  * @see <a href="http://asn1.elibel.tm.fr/en/standards/index.htm">ASN.1</a>
  */
 class ASN1Constructed
-    : public ASN1Type {
+    : public ASN1Type
+{
 public:
-protected:
-    ASN1Constructed(
-        /* [in] */ Int32 tagNumber);
-
-    ASN1Constructed(
-        /* [in] */ Int32 tagClass,
-        /* [in] */ Int32 tagNumber);
-
-    CARAPI Init(
-        /* [in] */ Int32 tagNumber);
-
-    CARAPI Init(
-        /* [in] */ Int32 tagClass,
-        /* [in] */ Int32 tagNumber);
-
     /**
      * Tests provided identifier.
      *
@@ -50,6 +33,14 @@ protected:
 
     CARAPI EncodeASN(
         /* [in] */ IBerOutputStream* out);
+
+protected:
+    CARAPI constructor(
+        /* [in] */ Int32 tagNumber);
+
+    CARAPI constructor(
+        /* [in] */ Int32 tagClass,
+        /* [in] */ Int32 tagNumber);
 };
 
 } // namespace Asn1

@@ -1,7 +1,6 @@
 
+#include "coredef.h"
 #include "ASN1Constructed.h"
-#include <Org.Apache.Harmony_server.h>
-#include <cmdef.h>
 
 namespace Org {
 namespace Apache {
@@ -9,28 +8,17 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
-ASN1Constructed::ASN1Constructed(
-    /* [in] */ Int32 tagNumber)
-    : ASN1Type(IASN1Constants::CLASS_UNIVERSAL, tagNumber)
-{}
-
-ASN1Constructed::ASN1Constructed(
-    /* [in] */ Int32 tagClass,
-    /* [in] */ Int32 tagNumber)
-    : ASN1Type(tagClass, tagNumber)
-{}
-
-ECode ASN1Constructed::Init(
+ECode ASN1Constructed::constructor(
     /* [in] */ Int32 tagNumber)
 {
-    return ASN1Type::Init(IASN1Constants::CLASS_UNIVERSAL, tagNumber);
+    return ASN1Type::constructor(CLASS_UNIVERSAL, tagNumber);
 }
 
-ECode ASN1Constructed::Init(
+ECode ASN1Constructed::constructor(
     /* [in] */ Int32 tagClass,
     /* [in] */ Int32 tagNumber)
 {
-    return ASN1Type::Init(tagClass, tagNumber);
+    return ASN1Type::constructor(tagClass, tagNumber);
 }
 
 /**
@@ -52,7 +40,7 @@ ECode ASN1Constructed::CheckTag(
 ECode ASN1Constructed::EncodeASN(
     /* [in] */ IBerOutputStream* out)
 {
-    out->EncodeTag(mConstrId);
+    FAIL_RETURN(out->EncodeTag(mConstrId));
     return EncodeContent(out);
 }
 

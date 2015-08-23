@@ -3,7 +3,9 @@
 #define __ORG_APACHE_HARMONY_SECURITY_PKCS7_CCONTENTINFOHELPER_H__
 
 #include "_Org_Apache_Harmony_Security_Pkcs7_CContentInfoHelper.h"
+#include "core/Singleton.h"
 
+using Elastos::Core::Singleton;
 using Org::Apache::Harmony::Security::Asn1::IASN1Sequence;
 
 namespace Org {
@@ -13,8 +15,14 @@ namespace Security {
 namespace Pkcs7 {
 
 CarClass(CContentInfoHelper)
+    , public Singleton
+    , public IContentInfoHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI GetData(
         /* [out, callee] */ ArrayOf<Int32>** data);
 

@@ -184,9 +184,9 @@ module
 //        SetContent(
 //            [in] IInterface* content);
 //
-//        GetContent(
-//            [out] IInterface** content);
-//
+        GetContent(
+            [out] IInterface** content);
+
 //        GetTagOffSet(
 //            [out] Int32* tagOffset);
 //
@@ -218,6 +218,9 @@ module
 //
 //        GetOidElement(
 //            [out] Int32* oidElement);
+
+        GetVerify(
+            [out] Boolean* isVerify);
     }
 
     interface IBerInputStreamHelper {

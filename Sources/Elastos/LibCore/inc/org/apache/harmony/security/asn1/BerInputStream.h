@@ -123,9 +123,9 @@ public:
 //    CARAPI SetContent(
 //        /* [in] */ IInterface* content);
 //
-//    CARAPI GetContent(
-//        /* [out] */ IInterface** content);
-//
+    CARAPI GetContent(
+        /* [out] */ IInterface** content);
+
 //    CARAPI GetTagOffSet(
 //        /* [out] */ Int32* tagOffset);
 //
@@ -156,6 +156,9 @@ public:
 //
 //    CARAPI GetOidElement(
 //        /* [out] */ Int32* oidElement);
+
+    CARAPI GetVerify(
+        /* [out] */ Boolean* isVerify);
 
 protected:
     virtual CARAPI Read(

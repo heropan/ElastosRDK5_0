@@ -32,9 +32,9 @@ module
         GetDEFAULT(
             [out, callee] ArrayOf<IInterface*>* default);
 
-//        GetValues(
-//            [in] IInterface* object,
-//            [in] ArrayOf<IInterface*>* values);
+        GetValues(
+            [in] IInterface* object,
+            [in] ArrayOf<IInterface*>* values);
     }
 
     } // namespace Asn1

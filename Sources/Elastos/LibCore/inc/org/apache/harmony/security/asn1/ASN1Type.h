@@ -2,11 +2,9 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1TYPE_H__
 
-#include <elastos.h>
-#include <Org.Apache.Harmony_server.h>
+#include "core/Object.h"
 
-_ELASTOS_NAMESPACE_USING
-
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 
 namespace Org {
@@ -21,85 +19,69 @@ namespace Asn1 {
  *
  * @see <a href="http://asn1.elibel.tm.fr/en/standards/index.htm">ASN.1</a>
  */
-class ASN1Type {
+class ASN1Type
+    : public Object
+    , public IASN1Type
+    , public IASN1Constants
+{
 public:
-    ASN1Type(
+    ASN1Type();
+
+    CARAPI constructor(
         /* [in] */ Int32 tagNumber);
 
-    Init(
-        /* [in] */ Int32 tagNumber);
-
-    ASN1Type(
+    CARAPI constructor(
         /* [in] */ Int32 tagClass,
         /* [in] */ Int32 tagNumber);
 
-    Init(
-        /* [in] */ Int32 tagClass,
-        /* [in] */ Int32 tagNumber);
+    CAR_INTERFACE_DECL()
 
-    CARAPI GetId(
-        /* [out] */ Int32* id);
-
-    /** Integer representation of constructed identifier. */
-    CARAPI GetConstrId(
-        /* [out] */ Int32* constrId);
-
-    virtual CARAPI Decode(
+    CARAPI Decode(
         /* [in] */ ArrayOf<Byte>* encoded,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI DecodeEx(
+    CARAPI Decode(
         /* [in] */ ArrayOf<Byte>* encoded,
         /* [in] */ Int32 offset,
         /* [in] */ Int32 encodingLen,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI DecodeEx2(
+    CARAPI Decode(
         /* [in] */ IInputStream* is,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI Verify(
+    CARAPI Verify(
         /* [in] */ ArrayOf<Byte>* encoded);
 
-    virtual CARAPI VerifyEx(
+    CARAPI Verify(
         /* [in] */ IInputStream* is);
 
-    virtual CARAPI Encode(
+    CARAPI Encode(
         /* [in] */ IInterface* object,
         /* [out, callee] */ ArrayOf<Byte>** encode);
 
-    virtual CARAPI DecodeEx3(
-        /* [in] */ IBerInputStream* bis,
-        /* [out] */ IInterface** object) = 0;
+    using IASN1Type::Decode;
 
-    /**
-     * Tests provided identifier.
-     *
-     * @param identifier identifier to be verified
-     * @return true if identifier is associated with this ASN.1 type
-    */
-    virtual CARAPI CheckTag(
-        /* [in] */ Int32 identifier,
-        /* [out] */ Boolean* checkTag) = 0;
+    using IASN1Type::CheckTag;
 
-    virtual CARAPI EncodeASN(
-        /* [in] */ IBerOutputStream* bos) = 0;
+    using IASN1Type::EncodeASN;
 
-    virtual CARAPI EncodeContent(
-        /* [in] */ IBerOutputStream* bos) = 0;
+    using IASN1Type::EncodeContent;
 
-    virtual CARAPI SetEncodingContent(
-        /* [in] */ IBerOutputStream* bos) = 0;
+    using IASN1Type::SetEncodingContent;
 
-    virtual CARAPI GetEncodedLength(
+    CARAPI GetEncodedLength(
         /* [in] */ IBerOutputStream* bos,
         /* [out] */ Int32* length);
 
-    virtual CARAPI ToString(
+    CARAPI ToString(
         /* [out] */ String* result);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CARAPI GetId(
+        /* [out] */ Int32* id);
+
+    CARAPI GetConstrId(
+        /* [out] */ Int32* constrId);
 
 protected:
         /**
@@ -113,11 +95,6 @@ protected:
     virtual CARAPI GetDecodedObject(
         /* [in] */ IBerInputStream* bis,
         /* [out] */ IInterface** object);
-
-private:
-    CARAPI InitEx(
-        /* [in] */ Int32 tagClass,
-        /* [in] */ Int32 tagNumber);
 
 public:
     /** Integer representation of primitive identifier. */
