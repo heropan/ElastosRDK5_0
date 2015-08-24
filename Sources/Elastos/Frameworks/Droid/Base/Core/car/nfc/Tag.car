@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -15,13 +17,13 @@ module
             [out] Int32* handle);
 
         GetTechCodeList(
-            [out] ArrayOf<Int32> * list);
+            [out, callee] ArrayOf<Int32> * list);
 
         GetId(
-            [out] ArrayOf<Byte> * id);
+            [out, callee] ArrayOf<Byte> * id);
 
         GetTechList(
-            [out] ArrayOf<String> * list);
+            [out, callee] ArrayOf<String> * list);
 
         Rediscover(
             [out] ITag** tag);
@@ -47,8 +49,9 @@ module
 
     }
 
+    [deprecated, local]
     interface ITagHelper {
-        Tag createMockTag(
+        CreateMockTag(
             [in] ArrayOf<Byte> * id,
             [in] ArrayOf<Int32> * techList,
             [in] ArrayOf<IBundle*> * techListExtras,
@@ -56,14 +59,14 @@ module
 
         GetTechCodesFromStrings(
             [in] ArrayOf<String> * techStringList,
-            [out] ArrayOf<Int32> * res);
+            [out, callee] ArrayOf<Int32> * res);
 
         ReadBytesWithNull(
-            [in] IParcel* in,
-            [out] ArrayOf<Byte> * res);
+            [in] IParcel* p,
+            [out, callee] ArrayOf<Byte> * res);
 
         WriteBytesWithNull(
-            [in] IParcel* out,
+            [in] IParcel* p,
             [in] ArrayOf<Byte> * b);
     }
 

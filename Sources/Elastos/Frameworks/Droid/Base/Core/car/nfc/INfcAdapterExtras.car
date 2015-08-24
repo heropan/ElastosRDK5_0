@@ -2,6 +2,9 @@
 module
 {
 
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -21,21 +24,22 @@ module
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    [deprecated]
     interface IINfcAdapterExtras {
         Open(
             [in] String pkg,
             [in] IBinder* b,
-            [out] IBundle* res);
+            [out] IBundle** res);
 
         Close(
             [in] String pkg,
             [in] IBinder* b,
-            [out] IBundle* res);
+            [out] IBundle** res);
 
         Transceive(
             [in] String pkg,
             [in] ArrayOf<Byte>* data_in,
-            [out] IBundle* res);
+            [out] IBundle** res);
 
         GetCardEmulationRoute(
             [in] String pkg,

@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.NFC.ITag;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -11,16 +13,17 @@ module
      * @Involve
      * interace IBasicTagTechnology
      */
+    [deprecated]
     interface INfcF {
         GetSystemCode(
-            [out] ArrayOf<Byte>* code);
+            [out, callee] ArrayOf<Byte>* code);
 
         GetManufacturer(
-            [out] ArrayOf<Byte>* facturer);
+            [out, callee] ArrayOf<Byte>* facturer);
 
         Transceive(
             [in] ArrayOf<Byte>* data,
-            [out] ArrayOf<Byte>* res);
+            [out, callee] ArrayOf<Byte>* res);
 
         GetMaxTransceiveLength(
             [out] Int32* len);

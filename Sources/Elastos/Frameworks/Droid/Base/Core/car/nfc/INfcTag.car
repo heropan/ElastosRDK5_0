@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.NFC.ITag;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -21,6 +23,7 @@ module
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    [deprecated]
     interface IINfcTag {
         Close(
             [in] Int32 nativeHandle,
@@ -37,7 +40,7 @@ module
 
         GetTechList(
             [in] Int32 nativeHandle,
-            [out] ArrayOf<Int32>* res);
+            [out, callee] ArrayOf<Int32>* res);
 
         IsNdef(
             [in] Int32 nativeHandle,
@@ -55,10 +58,11 @@ module
 
         NdefRead(
             [in] Int32 nativeHandle,
-            [out] INdefMessage* res);
+            [out] INdefMessage** res);
 
         NdefWrite(
-            [in] Int32 nativeHandle, in NdefMessage msg,
+            [in] Int32 nativeHandle,
+            [in] INdefMessage* msg,
             [out] Int32* res);
 
         NdefMakeReadOnly(

@@ -13,7 +13,7 @@ module
     interface ITransceiveResult {
 
         GetResponseOrThrow(
-            [out] ArrayOf<Byte> * res);
+            [out, callee] ArrayOf<Byte> * res);
     }
 
     }// namespace NFC

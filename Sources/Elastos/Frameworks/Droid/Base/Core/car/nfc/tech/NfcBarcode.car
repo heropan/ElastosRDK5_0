@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.NFC.ITag;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -16,7 +18,7 @@ module
             [out] Int32* type);
 
         GetBarcode(
-            [out] ArrayOf<Byte>* code);
+            [out, callee] ArrayOf<Byte>* code);
     }
 
     interface INfcBarcodeHelper {

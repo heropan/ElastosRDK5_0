@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -11,17 +13,18 @@ module
      * @Involve
      * interace IService
      */
+    [deprecated]
     interface IHostApduService {
 
         SendResponseApdu(
-            [in] Arrayof<Byte>* responseApdu);
+            [in] ArrayOf<Byte>* responseApdu);
 
         NotifyUnhandled();
 
         ProcessCommandApdu(
-            [in] Arrayof<Byte>* commandApdu,
+            [in] ArrayOf<Byte>* commandApdu,
             [in] IBundle* extras,
-            [out] Arrayof<Byte>* res);
+            [out, callee] ArrayOf<Byte>* res);
 
         OnDeactivated(
             [in] Int32 reason);

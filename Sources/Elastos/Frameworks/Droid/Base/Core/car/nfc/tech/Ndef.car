@@ -2,6 +2,9 @@
 module
 {
 
+    interface Elastos.Droid.NFC.INdefMessage;
+    interface Elastos.Droid.NFC.ITag;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -19,7 +22,7 @@ module
             [out] String* str);
 
         GetMaxSize(
-            [out] Int32 size);
+            [out] Int32* size);
 
         IsWritable(
             [out] Boolean* writable);

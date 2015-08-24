@@ -2,6 +2,8 @@
 module
 {
 
+    interface Elastos.Utility.IList;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -10,6 +12,7 @@ module
      * @Involve
      * interace IParcelable
      */
+    [deprecated]
     interface IApduList {
         Add(
             [in] ArrayOf<Byte>* command);

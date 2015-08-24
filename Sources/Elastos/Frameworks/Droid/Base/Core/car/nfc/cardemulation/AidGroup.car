@@ -2,6 +2,9 @@
 module
 {
 
+    interface Elastos.Utility.IList;
+    interface Org.Xmlpull.V1.IXmlSerializer;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -23,10 +26,10 @@ module
             [out] String* category);
 
         GetAids(
-            [out] IList** category);
+            [out] IList** res);
 
         WriteAsXml(
-            [in] IXmlSerializer* out);
+            [in] IXmlSerializer* res);
     }
 
     interface IAidGroupHelper {

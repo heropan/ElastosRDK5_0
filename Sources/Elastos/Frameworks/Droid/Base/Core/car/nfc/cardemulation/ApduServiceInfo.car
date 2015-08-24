@@ -1,6 +1,12 @@
 
 module
 {
+    interface Elastos.Utility.IArrayList;
+    interface Elastos.Droid.Content.Pm.IPackageManager;
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.IPrintWriter;
 
     namespace Elastos{
     namespace Droid{
@@ -25,6 +31,7 @@ module
      * @Involve
      * interace IParcelable
      */
+    [deprecated, local]
     interface IApduServiceInfo {
 
         GetAids(
@@ -66,7 +73,7 @@ module
 
         LoadLabel(
             [in] IPackageManager* pm,
-            [out] ICharSequence* res);
+            [out] ICharSequence** res);
 
         LoadIcon(
             [in] IPackageManager* pm,

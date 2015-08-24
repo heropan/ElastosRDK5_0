@@ -2,6 +2,11 @@
 module
 {
 
+    interface Elastos.Utility.IList;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.NFC.INfcAdapter;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -19,6 +24,7 @@ module
      * {@link PackageManager#FEATURE_NFC_HOST_CARD_EMULATION} to be present
      * on the device.
      */
+    [local]
     interface ICardEmulation {
 
         IsDefaultServiceForCategory(
@@ -53,41 +59,40 @@ module
         RemoveAidsForService(
             [in] IComponentName* service,
             [in] String category,
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         SetPreferredService(
             [in] IActivity* activity,
-            [in] ComponentName service,
-            [out] Boolean* res)
+            [in] IComponentName* service,
+            [out] Boolean* res);
 
         UnsetPreferredService(
             [in] IActivity* activity,
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         SupportsAidPrefixRegistration(
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         SetDefaultServiceForCategory(
             [in] IComponentName* service,
             [in] String category,
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         SetDefaultForNextTap(
             [in] IComponentName* service,
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         GetServices(
             [in] String category,
-            [out] IList**)
-
-
+            [out] IList** res);
     }
 
+    [local]
     interface ICardEmulationHelper {
 
         IsValidAid(
             [in] String aid,
-            [out] Boolean* res)
+            [out] Boolean* res);
 
         GetInstance(
             [in] INfcAdapter* adapter,
