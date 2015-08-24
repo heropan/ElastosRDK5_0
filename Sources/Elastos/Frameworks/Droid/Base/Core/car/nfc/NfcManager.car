@@ -25,6 +25,7 @@ module
      * @see Context#getSystemService
      * @see NfcAdapter#getDefaultAdapter(android.content.Context)
      */
+    [local]
     interface INfcManager {
         GetDefaultAdapter(
             [out] INfcAdapter** adapter);

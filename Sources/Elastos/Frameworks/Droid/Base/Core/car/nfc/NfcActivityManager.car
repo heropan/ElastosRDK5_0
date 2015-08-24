@@ -2,6 +2,16 @@
 module
 {
 
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.App.IApplication;
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.NFC.INfcAdapterReaderCallback;
+    interface Elastos.Droid.NFC.INfcAdapterCreateBeamUrisCallback;
+    interface Elastos.Droid.NFC.INfcAdapterCreateNdefMessageCallback;
+    interface Elastos.Droid.NFC.INfcAdapterOnNdefPushCompleteCallback;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -21,6 +31,7 @@ module
      * interace IIAppCallback
      * interface IApplicationActivityLifecycleCallbacks
      */
+    [deprecated, local]
     interface INfcActivityManager {
         FindAppState(
             [in] IApplication* app,
@@ -48,7 +59,7 @@ module
 
         EnableReaderMode(
             [in] IActivity* activity,
-            [in] INfcAdapterReaderCallback* callback,
+            [in] INfcAdapterReaderCallback* p,
             [in] Int32 flags,
             [in] IBundle* extras);
 
@@ -66,23 +77,23 @@ module
 
         SetNdefPushContentUriCallback(
             [in] IActivity* activity,
-            [in] INfcAdapterCreateBeamUrisCallback* callback);
+            [in] INfcAdapterCreateBeamUrisCallback* cb);
 
         SetNdefPushMessage(
-            [in] IActivity*Activity activity,
+            [in] IActivity* activity,
             [in] INdefMessage* message,
             [in] Int32 flags);
 
         SetNdefPushMessageCallback(
-            [in] IActivity*Activity activity,
-            [in] INfcAdapterCreateNdefMessageCallback* callback,
+            [in] IActivity* activity,
+            [in] INfcAdapterCreateNdefMessageCallback* cb,
             [in] Int32 flags);
 
         SetOnNdefPushCompleteCallback(
-            [in] IActivity*Activity activity,
-            [in] INfcAdapterOnNdefPushCompleteCallback* callback);
+            [in] IActivity* activity,
+            [in] INfcAdapterOnNdefPushCompleteCallback* cb);
 
-        RequestNfcServiceCallback()
+        RequestNfcServiceCallback();
 
     }
 

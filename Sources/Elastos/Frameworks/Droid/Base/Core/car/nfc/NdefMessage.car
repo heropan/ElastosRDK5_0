@@ -12,13 +12,13 @@ module
      */
     interface INdefMessage {
         GetRecords(
-            [out] ArrayOf<INdefRecord*>* res);
+            [out, callee] ArrayOf<INdefRecord*>* res);
 
         GetByteArrayLength(
             [out] Int32* len);
 
-        byte[] toByteArray(
-            [out] ArrayOf<Byte>* ba);
+        ToByteArray(
+            [out, callee] ArrayOf<Byte>* ba);
 
     }
 

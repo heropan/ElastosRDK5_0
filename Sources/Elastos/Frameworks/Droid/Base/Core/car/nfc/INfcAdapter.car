@@ -2,6 +2,15 @@
 module
 {
 
+    interface Elastos.Droid.NFC.IINfcCardEmulation;
+    interface Elastos.Droid.NFC.IINfcAdapterExtras;
+    interface Elastos.Droid.NFC.ITechListParcel;
+    interface Elastos.Droid.NFC.IINfcUnlockHandler;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IIntentFilter;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -21,6 +30,7 @@ module
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
+    [deprecated]
     interface IINfcAdapter {
         GetNfcTagInterface(
             [out] IINfcTag** tag);
@@ -37,19 +47,19 @@ module
 
         Disable(
             [in] Boolean saveState,
-            [out] Boolean* disable);
+            [out] Boolean* res);
 
         Enable(
-            [out] Boolean* enable);
+            [out] Boolean* res);
 
         EnableNdefPush(
-            [out] Boolean* enable);
+            [out] Boolean* res);
 
         DisableNdefPush(
-            [out] Boolean* disable);
+            [out] Boolean* res);
 
         IsNdefPushEnabled(
-            [out] Boolean* enable);
+            [out] Boolean* res);
 
         PausePolling(
             [in] Int32 timeoutInMs);
@@ -62,7 +72,7 @@ module
             [in] ITechListParcel* techLists);
 
         SetAppCallback(
-            [in] IIAppCallback* callback);
+            [in] IIAppCallback* cb);
 
         [oneway]
         InvokeBeam();
@@ -76,7 +86,7 @@ module
 
         SetReaderMode (
             [in] IBinder* b,
-            [in] IIAppCallback* callback,
+            [in] IIAppCallback* cb,
             [in] Int32 flags,
             [in] IBundle* extras);
 

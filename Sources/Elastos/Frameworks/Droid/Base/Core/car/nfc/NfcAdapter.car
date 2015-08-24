@@ -2,6 +2,15 @@
 module
 {
 
+    interface Elastos.Core.IArrayOf;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.App.IActivity;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Content.IIntentFilter;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.NFC.INfcEvent;
+
     namespace Elastos{
     namespace Droid{
     namespace NFC{
@@ -31,7 +40,7 @@ module
 
         CreateBeamUris(
             [in] INfcEvent* event,
-            [out] ArrayOf<IUri*> * uris);
+            [out, callee] ArrayOf<IUri*> * uris);
     }
 
     interface INfcAdapterNfcUnlockHandler {
@@ -41,9 +50,10 @@ module
             [out] Boolean* res);
     }
 
+    [deprecated, local]
     interface INfcAdapter {
         GetContext(
-            [out] IContext** context)
+            [out] IContext** context);
 
         GetService(
             [out] INfcAdapter** adapter);
@@ -51,17 +61,17 @@ module
         GetTagService(
             [out] IINfcTag** tag);
 
-        INfcCardEmulation getCardEmulationService(
+        GetCardEmulationService(
             [out] IINfcCardEmulation** res);
 
         IsEnabled(
-            [out] Boolean* enable);
+            [out] Boolean* res);
 
         GetAdapterState(
             [out] Int32* state);
 
         Enable(
-            [out] Boolean* enable);
+            [out] Boolean* res);
 
         Disable(
             [out] Boolean* res);
@@ -80,7 +90,7 @@ module
             [in] IActivity* activity);
 
         SetBeamPushUrisCallback(
-            [in] INfcAdapterCreateBeamUrisCallback* callback,
+            [in] INfcAdapterCreateBeamUrisCallback* cb,
             [in] IActivity* activity);
 
         SetNdefPushMessage(
@@ -94,17 +104,17 @@ module
             [in] Int32 flags);
 
         SetNdefPushMessageCallback(
-            [in] INfcAdapterCreateNdefMessageCallback* callback,
+            [in] INfcAdapterCreateNdefMessageCallback* cb,
             [in] IActivity* activity,
             [in] ArrayOf<IActivity*>* activities);
 
         SetNdefPushMessageCallback(
-            [in] INfcAdapterCreateNdefMessageCallback* callback,
+            [in] INfcAdapterCreateNdefMessageCallback* cb,
             [in] IActivity* activity,
             [in] Int32 flags);
 
         SetOnNdefPushCompleteCallback(
-            [in] INfcAdapterOnNdefPushCompleteCallback* callback,
+            [in] INfcAdapterOnNdefPushCompleteCallback* cb,
             [in] IActivity* activity,
             [in] ArrayOf<IActivity*>* activities);
 
@@ -112,7 +122,7 @@ module
             [in] IActivity* activity,
             [in] IPendingIntent* intent,
             [in] ArrayOf<IIntentFilter*>* filters,
-            [in] ArrayOf< ArrayOf<String> >* techLists);
+            [in] ArrayOf< IArrayOf* >* techLists);
 
         DisableForegroundDispatch(
             [in] IActivity* activity);
@@ -123,7 +133,7 @@ module
 
         EnableReaderMode(
             [in] IActivity* activity,
-            [in] INfcAdapterReaderCallback* callback,
+            [in] INfcAdapterReaderCallback* cb,
             [in] Int32 flags,
             [in] IBundle* extras);
 
@@ -177,9 +187,10 @@ module
             [in] IActivity* activity);
 
         GetSdkVersion(
-            [out] Int32* version);
+            [out] Int32* vs);
     }
 
+    [local]
     interface INfcAdapterHelper {
         GetNfcAdapter(
             [in] IContext* context,
