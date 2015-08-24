@@ -1,12 +1,13 @@
 
 module
 {
-    using interface Elastos.Utility.ISet;
-    using interface Elastos.Utility.IList;
-    using interface Elastos.Utility.ICollection;
-    using interface Elastosx.Security.Auth.X500.IX500Principal;
-    using interface Elastos.Core.IStringBuilder;
+    interface Elastos.Utility.ISet;
+    interface Elastos.Utility.IList;
+    interface Elastos.Utility.ICollection;
+    interface Elastos.Core.IStringBuilder;
+    interface Elastosx.Security.Auth.X500.IX500Principal;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
+    interface Org.Apache.Harmony.Security.X509.IExtension;
 
     namespace Org {
     namespace Apache {
@@ -178,13 +179,6 @@ module
          */
         GetEncoded(
             [out, callee] ArrayOf<Byte>* encoded);
-
-        Equals(
-            [in] IInterface* ai,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* result);
 
         DumpValue(
             [in] IStringBuilder* sb,

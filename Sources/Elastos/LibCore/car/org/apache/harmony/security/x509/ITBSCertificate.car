@@ -1,13 +1,13 @@
 
 module
 {
+    interface Elastos.Core.IStringBuilder;
+    interface Elastos.Math.IBigInteger;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
     interface Org.Apache.Harmony.Security.X509.IExtensions;
-    using interface Elastos.Math.IBigInteger;
     interface Org.Apache.Harmony.Security.X509.IAlgorithmIdentifier;
     interface Org.Apache.Harmony.Security.X509.IValidity;
     interface Org.Apache.Harmony.Security.X509.ISubjectPublicKeyInfo;
-    using interface Elastos.Core.IStringBuilder;
-    interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
     interface Org.Apache.Harmony.Security.X501.IName;
 
     namespace Org {

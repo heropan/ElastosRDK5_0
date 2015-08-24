@@ -144,6 +144,14 @@ module
         interface IMessageDigestHelper;
     }
 
+    namespace Cert {
+
+    singleton class CCertificateFactoryHelper {
+        interface ICertificateFactoryHelper;
+    }
+
+    } // namespace Cert
+
     } // namespace Security
     } // namespace Elastos
 }

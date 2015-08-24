@@ -1,7 +1,7 @@
 
 module
 {
-    using interface Elastosx.Security.Auth.X500.IX500Principal;
+    interface Elastosx.Security.Auth.X500.IX500Principal;
     interface Org.Apache.Harmony.Security.Asn1.IASN1SetOf;
     interface Org.Apache.Harmony.Security.Asn1.IASN1SequenceOf;
 
@@ -48,14 +48,8 @@ module
         GetASN1_RDN(
             [out] IASN1SetOf** asn1_rdn);
 
-        SetASN1_RDN(
-            [in] IASN1SetOf* asn1_rdn);
-
         GetASN1(
             [out] IASN1SequenceOf** asn1);
-
-        SetASN1(
-            [in] IASN1SequenceOf* asn1);
     }
 
     } // namespace X501

@@ -30,6 +30,23 @@ module
 
     merge("apache/harmony/security/utils/IJarUtils.car");
 
+    merge("apache/harmony/security/x501/IName.car");
+
+    merge("apache/harmony/security/x509/IAlgorithmIdentifier.car");
+    merge("apache/harmony/security/x509/IBasicConstraints.car");
+    merge("apache/harmony/security/x509/ICertificate.car");
+    merge("apache/harmony/security/x509/IExtension.car");
+    merge("apache/harmony/security/x509/IExtensions.car");
+    merge("apache/harmony/security/x509/IExtensionValue.car");
+    merge("apache/harmony/security/x509/IKeyUsage.car");
+
+    merge("apache/harmony/security/x509/ISubjectPublicKeyInfo.car");
+
+    merge("apache/harmony/security/x509/ITBSCertificate.car");
+    merge("apache/harmony/security/x509/IValidity.car");
+
+
+
     interface Elastos.IO.IInputStream;
 
     namespace Org {

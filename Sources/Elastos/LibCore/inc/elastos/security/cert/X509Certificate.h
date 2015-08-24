@@ -2,16 +2,16 @@
 #ifndef __ELASTOS_SECURITY_CERT_X509CERTIFICATE_H__
 #define __ELASTOS_SECURITY_CERT_X509CERTIFICATE_H__
 
-#include "Certificate.h"
+#include "security/cert/Certificate.h"
 
+using Elastos::Math::IBigInteger;
+using Elastos::Security::IPrincipal;
+using Elastos::Security::Cert::IX509Extension;
+using Elastos::Security::Cert::Certificate;
+using Elastosx::Security::Auth::X500::IX500Principal;
 using Elastos::Utility::IDate;
 using Elastos::Utility::IList;
 using Elastos::Utility::ICollection;
-using Elastos::Math::IBigInteger;
-using Elastos::Security::Cert::IX509Extension;
-using Elastos::Security::IPrincipal;
-using Elastos::Security::Cert::Certificate;
-using Elastosx::Security::Auth::X500::IX500Principal;
 
 namespace Elastos {
 namespace Security {
@@ -19,6 +19,7 @@ namespace Cert {
 
 class X509Certificate
     : public Certificate
+    , public IX509Certificate
     , public IX509Extension
 {
 public:
@@ -46,7 +47,6 @@ public:
      * @throws CertificateNotYetValidException
      *             if the certificate is not yet valid.
      */
-    virtual CARAPI CheckValidity() = 0;
 
     /**
      * Checks whether the certificate is valid at the specified date.
@@ -59,8 +59,7 @@ public:
      *             if the certificate is not yet valid.
      * @see #checkValidity()
      */
-    virtual CARAPI CheckValidity(
-        /* [out] */ IDate** date) = 0;
+    using IX509Certificate::CheckValidity;
 
     /**
      * Returns the certificates {@code version} (version number).
@@ -73,8 +72,7 @@ public:
      *
      * @return the version number.
      */
-     virtual CARAPI GetVersion(
-        /* [out] */ Int32* version) = 0 ;
+    using IX509Certificate::GetVersion;
 
     /**
      * Returns the {@code serialNumber} of the certificate.
@@ -87,8 +85,7 @@ public:
      *
      * @return the serial number.
      */
-    virtual CARAPI GetSerialNumber(
-        /* [out] */ IBigInteger** number) = 0;
+    using IX509Certificate::GetSerialNumber;
 
     /**
      * Returns the {@code issuer} (issuer distinguished name) as an
@@ -120,8 +117,7 @@ public:
      * @return the {@code issuer} as an implementation specific {@code
      *         Principal}.
      */
-    virtual CARAPI GetIssuerDN(
-        /* [out] */ IPrincipal** issuerDN) = 0;
+    using IX509Certificate::GetIssuerDN;
 
     /**
      * Returns the {@code issuer} (issuer distinguished name) as an {@code
@@ -129,7 +125,7 @@ public:
      *
      * @return the {@code issuer} (issuer distinguished name).
      */
-    virtual CARAPI GetIssuerX500Principal(
+    CARAPI GetIssuerX500Principal(
         /* [out] */ IX500Principal** issuer);
 
     /**
@@ -162,8 +158,7 @@ public:
      *
      * @return the {@code subject} (subject distinguished name).
      */
-    virtual CARAPI GetSubjectDN(
-        /* [out] */ IPrincipal** subDN) = 0;
+    using IX509Certificate::GetSubjectDN;
 
     /**
      * Returns the {@code subject} (subject distinguished name) as an {@code
@@ -171,7 +166,7 @@ public:
      *
      * @return the {@code subject} (subject distinguished name)
      */
-    virtual CARAPI GetSubjectX500Principal(
+    CARAPI GetSubjectX500Principal(
         /* [out] */ IX500Principal** principal);
 
     /**
@@ -180,9 +175,7 @@ public:
      *
      * @return the start of the validity period.
      */
-    virtual CARAPI GetNotBefore(
-        /* [out] */ IDate** date) = 0;
-
+    using IX509Certificate::GetNotBefore;
 
     /**
      * Returns the {@code notAfter} date of the validity period of the
@@ -190,8 +183,7 @@ public:
      *
      * @return the end of the validity period.
      */
-    virtual CARAPI GetNotAfter(
-        /* [out] */ IDate** date) = 0;
+    using IX509Certificate::GetNotAfter;
 
     /**
      * Returns the {@code tbsCertificate} information from this certificate in
@@ -201,32 +193,28 @@ public:
      * @throws CertificateEncodingException
      *             if an error occurs in encoding
      */
-    virtual CARAPI GetTBSCertificate(
-        /* [out, callee] */ ArrayOf<Byte>** cert) = 0;
+    using IX509Certificate::GetTBSCertificate;
 
     /**
      * Returns the raw signature bits from the certificate.
      *
      * @return the raw signature bits from the certificate.
      */
-    virtual CARAPI GetSignature(
-        /* [out, callee] */ ArrayOf<Byte>** sign) = 0;
+    using IX509Certificate::GetSignature;
 
     /**
      * Returns the name of the algorithm for the certificate signature.
      *
      * @return the signature algorithm name.
      */
-    virtual CARAPI GetSigAlgName(
-        /* [out] */ String* name) = 0;
+    using IX509Certificate::GetSigAlgName;
 
     /**
      * Returns the OID of the signature algorithm from the certificate.
      *
      * @return the OID of the signature algorithm.
      */
-    virtual CARAPI GetSigAlgOID(
-        /* [out] */ String* oid) = 0;
+    using IX509Certificate::GetSigAlgOID;
 
     /**
      * Returns the parameters of the signature algorithm in DER-encoded format.
@@ -234,8 +222,7 @@ public:
      * @return the parameters of the signature algorithm, or {@code null} if
      *         none are used.
      */
-    virtual CARAPI GetSigAlgParams(
-        /* [out, callee] */ ArrayOf<Byte>** param) = 0;
+    using IX509Certificate::GetSigAlgParams;
 
     /**
      * Returns the {@code issuerUniqueID} from the certificate.
@@ -243,8 +230,7 @@ public:
      * @return the {@code issuerUniqueID} or {@code null} if there's none in the
      *         certificate.
      */
-    virtual CARAPI GetIssuerUniqueID(
-        /* [out, callee] */ ArrayOf<Boolean>** id) = 0;
+    using IX509Certificate::GetIssuerUniqueID;
 
     /**
      * Returns the {@code subjectUniqueID} from the certificate.
@@ -252,8 +238,7 @@ public:
      * @return the {@code subjectUniqueID} or null if there's none in the
      *         certificate.
      */
-    virtual CARAPI GetSubjectUniqueID(
-        /* [out, callee] */ ArrayOf<Boolean>** id) = 0;
+    using IX509Certificate::GetSubjectUniqueID;
 
     /**
      * Returns the {@code KeyUsage} extension as a {@code boolean} array.
@@ -277,8 +262,7 @@ public:
      * @return the {@code KeyUsage} extension or {@code null} if there's none in
      *         the certificate.
      */
-    virtual CARAPI GetKeyUsage(
-        /* [out, callee] */ ArrayOf<Boolean>** usage) = 0;
+    using IX509Certificate::GetKeyUsage;
 
     /**
      * Returns a read-only list of OID strings representing the {@code
@@ -289,7 +273,7 @@ public:
      * @throws CertificateParsingException
      *             if the extension decoding fails.
      */
-    virtual CARAPI GetExtendedKeyUsage(
+    CARAPI GetExtendedKeyUsage(
         /* [out] */ IList** usage);
 
     /**
@@ -300,8 +284,7 @@ public:
      *         is present or {@code -1} if the extension is not present. {@code
      *         Integer.MAX_VALUE} if there's not limit.
      */
-    virtual CARAPI GetBasicConstraints(
-        /* [out] */ Int32* constraints) = 0;
+    using IX509Certificate::GetBasicConstraints;
 
     /**
      * Returns a read-only list of the subject alternative names from the
@@ -332,7 +315,7 @@ public:
      * @throws CertificateParsingException
      *             if decoding of the extension fails.
      */
-    virtual CARAPI GetSubjectAlternativeNames(
+    CARAPI GetSubjectAlternativeNames(
         /* [out] */ ICollection** names);
 
     /**
@@ -364,15 +347,14 @@ public:
      * @throws CertificateParsingException
      *             if decoding of the extension fails.
      */
-    virtual CARAPI GetIssuerAlternativeNames(
+    CARAPI GetIssuerAlternativeNames(
         /* [out] */ ICollection** names);
+
 protected:
     /**
      * Creates a new {@code X509Certificate}.
      */
-    X509Certificate();
-private:
-
+    CARAPI constructor();
 };
 
 } // end Cert

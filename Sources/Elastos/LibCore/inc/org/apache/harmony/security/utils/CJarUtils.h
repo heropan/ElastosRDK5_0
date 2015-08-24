@@ -21,6 +21,26 @@ CarClass(CJarUtils)
     , public Singleton
     , public IJarUtils
 {
+private:
+    /**
+     * For legacy reasons we need to return exactly the original encoded
+     * certificate bytes, instead of letting the underlying implementation have
+     * a shot at re-encoding the data.
+     */
+    // private static class VerbatimX509Certificate extends WrappedX509Certificate {
+    //     private byte[] encodedVerbatim;
+
+    //     public VerbatimX509Certificate(X509Certificate wrapped, byte[] encodedVerbatim) {
+    //         super(wrapped);
+    //         this.encodedVerbatim = encodedVerbatim;
+    //     }
+
+    //     @Override
+    //     public byte[] getEncoded() throws CertificateEncodingException {
+    //         return encodedVerbatim;
+    //     }
+    // };
+
 public:
     CAR_INTERFACE_DECL()
 

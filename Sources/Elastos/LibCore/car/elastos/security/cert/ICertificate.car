@@ -26,33 +26,6 @@ module
             [out] String* type);
 
         /**
-         * Compares the argument to the certificate, and returns {@code true} if they
-         * represent the <em>same</em> object using a class specific comparison. The
-         * implementation in Object returns {@code true} only if the argument is the
-         * exact same object as the callee (==).
-         *
-         * @param other
-         *            the object to compare with this object.
-         * @return {@code true} if the object is the same as this object, {@code
-         *         false} if it is different from this object.
-         * @see #hashCode
-         */
-        Equals(
-            [in] IInterface* other,
-            [out] Boolean* result);
-
-        /**
-         * Returns an integer hash code for the certificate. Any two objects which
-         * return {@code true} when passed to {@code equals} must return the same
-         * value for this method.
-         *
-         * @return the certificate's hash
-         * @see #equals
-         */
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        /**
          * Returns the encoded representation for this certificate.
          *
          * @return the encoded representation for this certificate.
@@ -105,15 +78,6 @@ module
         Verify(
             [in] IPublicKey* key,
             [in] String sigProvider);
-
-        /**
-         * Returns a string containing a concise, human-readable description of the
-         * receiver.
-         *
-         * @return a printable representation for the receiver.
-         */
-        ToString(
-            [out] String *str);
 
         /**
          * Returns the public key corresponding to this certificate.

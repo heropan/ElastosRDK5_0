@@ -1,9 +1,14 @@
 
 #include "CJarUtils.h"
+#include "io/CByteArrayInputStream.h"
+#include "security/cert/CertificateFactory.h"
 #include "utility/logging/Logger.h"
 #include "asn1/CBerInputStream.h"
 #include "pkcs7/CContentInfoHelper.h"
 
+using Elastos::IO::CByteArrayInputStream;
+using Elastos::Security::Cert::ICertificateFactory;
+using Elastos::Security::Cert::CertificateFactory;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Logger;
@@ -50,16 +55,33 @@ ECode CJarUtils::VerifySignature(
         Logger::E("CJarUtils", "No SignedData found");
         return E_IO_EXCEPTION;
     }
-    AutoPtr<IList> certs;
-    signedData->GetCertificates((IList**)&certs);
-    ICollection* encCerts = ICollection::Probe(certs);
+    AutoPtr<IList> certList;
+    signedData->GetCertificates((IList**)&certList);
+    ICollection* encCerts = ICollection::Probe(certList);
     Boolean isEmpty;
     if (encCerts->IsEmpty(&isEmpty), isEmpty) {
         return NOERROR;
     }
-//    X509Certificate[] certs = new X509Certificate[encCerts.size()];
-//    CertificateFactory cf = CertificateFactory.getInstance("X.509");
-//    int i = 0;
+    Int32 size;
+    encCerts->GetSize(&size);
+    AutoPtr< ArrayOf<IX509Certificate*> > certs = ArrayOf<IX509Certificate*>::Alloc(size);
+    AutoPtr<ICertificateFactory> cf;
+    CertificateFactory::GetInstance(String("X.509"), (ICertificateFactory**)&cf);
+    Int32 i = 0;
+    AutoPtr<IIterator> it;
+    encCerts->GetIterator((IIterator**)&it);
+    Boolean hasNext;
+    while (it->HasNext(&hasNext), hasNext) {
+        AutoPtr<IInterface> certObj;
+        it->GetNext((IInterface**)&certObj);
+        Org::Apache::Harmony::Security::X509::ICertificate* encCert =
+                Org::Apache::Harmony::Security::X509::ICertificate::Probe(certObj);
+        AutoPtr< ArrayOf<Byte> > encoded;
+        encCert->GetEncoded((ArrayOf<Byte>**)&encoded);
+        AutoPtr<IInputStream> is;
+        CByteArrayInputStream::New(encoded, (IInputStream**)&is);
+    }
+
 //    for (org.apache.harmony.security.x509.Certificate encCert : encCerts) {
 //        final byte[] encoded = encCert.getEncoded();
 //        final InputStream is = new ByteArrayInputStream(encoded);

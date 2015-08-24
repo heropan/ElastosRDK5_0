@@ -1,9 +1,11 @@
 
 module
 {
-    interface Org.Apache.Harmony.Security.X509.IKeyUsage;
-    using interface Elastos.Core.IStringBuilder;
+    interface Elastos.Core.IStringBuilder;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+    interface Org.Apache.Harmony.Security.X509.IBasicConstraints;
+    interface Org.Apache.Harmony.Security.X509.IExtensionValue;
+    interface Org.Apache.Harmony.Security.X509.IKeyUsage;
 
     namespace Org {
     namespace Apache {
@@ -26,29 +28,14 @@ module
      *       extnValue   OCTET STRING
      *  }
      * </pre>
+     *
+     * @ Involve
+     * interface Elastos.Security.Cert.IExtension
      */
     interface IExtension {
         // critical constants
         const Boolean CRITICAL = TRUE;
         const Boolean NON_CRITICAL = FALSE;
-
-        /**
-         * Returns the value of extnID field of the structure.
-         */
-        GetExtnID(
-            [out] String* extnID);
-
-        /**
-         * Returns the value of critical field of the structure.
-         */
-        GetCritical(
-            [out] Boolean* critical);
-
-        /**
-         * Returns the value of extnValue field of the structure.
-         */
-        GetExtnValue(
-            [out, callee] ArrayOf<Byte>* extnValue);
 
         /**
          * Returns the raw (undecoded octet string) value of extnValue
@@ -62,13 +49,6 @@ module
          */
         GetEncoded(
             [out, callee] ArrayOf<Byte>* encode);
-
-        Equals(
-            [in] IInterface* ext,
-            [out] Boolean* result);
-
-        GetHashCode(
-            [out] Int32* hashCode);
 
         GetDecodedExtensionValue(
             [out] IExtensionValue** extensionValue);

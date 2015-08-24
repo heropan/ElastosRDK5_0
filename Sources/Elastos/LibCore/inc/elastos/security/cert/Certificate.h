@@ -2,9 +2,8 @@
 #ifndef __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
 #define __ELASTOS_SECURITY_CERT_CERTIFICATE_H__
 
+#include "core/Object.h"
 
-
-using Elastos::IO::EIID_ISerializable;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IObjectStreamField;
 using Elastos::IO::ISerializable;
@@ -13,13 +12,60 @@ namespace Elastos {
 namespace Security {
 namespace Cert {
 
-extern "C" const InterfaceID EIID_Certificate;
-
 class Certificate
     : public Object
     , public ICertificate
     , public ISerializable
 {
+protected:
+    /**
+     * The alternate {@code Serializable} class to be used for serialization and
+     * deserialization of {@code Certificate} objects.
+     */
+    class CertificateRep
+        : public Object
+        , public ISerializable
+    {
+        friend class Certificate;
+
+    public:
+        CAR_INTERFACE_DECL();
+
+    protected:
+        /**
+         * Creates a new {@code CertificateRep} instance with the specified
+         * certificate type and encoded data.
+         *
+         * @param type
+         *            the certificate type.
+         * @param data
+         *            the encoded data.
+         */
+        CertificateRep(
+            /* [in] */ const String& type,
+            /* [in] */ ArrayOf<Byte>* data);
+
+        /**
+         * Deserializes a {@code Certificate} from a serialized {@code
+         * CertificateRep} object.
+         *
+         * @return the deserialized {@code Certificate}.
+         * @throws ObjectStreamException
+         *             if deserialization fails.
+         */
+        CARAPI ReadResolve(
+            /* [out] */ IInterface** object);
+
+    private:
+        // The standard name of the certificate type
+        const String mType;
+        // The certificate data
+        const AutoPtr< ArrayOf<Byte> > mData;
+        // Force default serialization to use writeUnshared/readUnshared
+        // for the certificate data
+        // static const AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
+    };
+
 public:
     CAR_INTERFACE_DECL();
 
@@ -29,7 +75,7 @@ public:
      * @return the certificate type.
      */
     CARAPI GetType(
-        /* [out] */ String* type) const;
+        /* [out] */ String* type);
 
     /**
      * Compares the argument to the certificate, and returns {@code true} if they
@@ -65,8 +111,7 @@ public:
      * @throws CertificateEncodingException
      *             if the encoding fails.
      */
-    virtual CARAPI GetEncoded(
-        /* [out, callee] */ ArrayOf<Byte>** encode) = 0;
+    using ICertificate::GetEncoded;
 
     /**
      * Verifies that this certificate was signed with the given public key.
@@ -85,8 +130,7 @@ public:
      * @throws SignatureException
      *             if signature errors are detected.
      */
-    virtual CARAPI Verify(
-        /* [in] */ IPublicKey* key) = 0;
+
 
     /**
      * Verifies that this certificate was signed with the given public key. It
@@ -108,9 +152,7 @@ public:
      * @exception SignatureException
      *                if signature errors are detected.
      */
-    virtual CARAPI Verify(
-        /* [in] */ IPublicKey* key,
-        /* [in] */ const String& sigProvider) = 0;
+    using ICertificate::Verify;
 
     /**
      * Returns a string containing a concise, human-readable description of the
@@ -126,8 +168,7 @@ public:
      *
      * @return the public key corresponding to this certificate.
      */
-    virtual CARAPI GetPublicKey(
-        /* [out] */ IPublicKey** publicKey) = 0;
+    using ICertificate::GetPublicKey;
 
 protected:
     /**
@@ -136,7 +177,7 @@ protected:
      * @param type
      *        the certificate type.
      */
-    Certificate(
+    CARAPI constructor(
         /* [in] */ const String& type);
 
     /**
@@ -149,61 +190,9 @@ protected:
     CARAPI WriteReplace(
         /* [out] */ IInterface** object);
 
-    /**
-     * The alternate {@code Serializable} class to be used for serialization and
-     * deserialization of {@code Certificate} objects.
-     */
-    class CertificateRep
-        : public Object
-        , public ISerializable
-    {
-    public:
-        CAR_INTERFACE_DECL();
-
-        CertificateRep(
-            /* [in] */ const String& type,
-            /* [in] */ ArrayOf<Byte>* data);
-
-    protected:
-        /**
-         * Creates a new {@code CertificateRep} instance with the specified
-         * certificate type and encoded data.
-         *
-         * @param type
-         *            the certificate type.
-         * @param data
-         *            the encoded data.
-         */
-
-        /**
-         * Deserializes a {@code Certificate} from a serialized {@code
-         * CertificateRep} object.
-         *
-         * @return the deserialized {@code Certificate}.
-         * @throws ObjectStreamException
-         *             if deserialization fails.
-         */
-        CARAPI ReadResolve(
-            /* [out] */ IInterface** object);
-
-    private:
-        static const Int64 sSerialVersionUID;
-        // The standard name of the certificate type
-        const String mType;
-        // The certificate data
-        const AutoPtr<ArrayOf<Byte> > mData;
-        // Force default serialization to use writeUnshared/readUnshared
-        // for the certificate data
-        static const AutoPtr<ArrayOf<IObjectStreamField*> > sSerialPersistentFields;
-        /* = {
-             new ObjectStreamField("type", String.class),
-             new ObjectStreamField("data", byte[].class, true)
-        };*/
-    };
-
 private:
     // The standard name of the certificate type
-    const String mType;
+    String mType;
 };
 
 } // end Cert

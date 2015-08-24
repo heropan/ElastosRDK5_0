@@ -27,9 +27,4 @@ SOURCES += CSecurity.cpp
 SOURCES += MessageDigestSpi.cpp
 SOURCES += MessageDigest.cpp
 
-#LIBRARIES += concurrent/concurrent.lib
-#LIBRARIES += jar/jar.lib
-#LIBRARIES += logging/logging.lib
-#LIBRARIES += prefs/prefs.lib
-#LIBRARIES += regex/regex.lib
-#LIBRARIES += zip/zip.lib
+LIBRARIES += cert/cert.lib

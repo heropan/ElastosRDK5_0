@@ -1,8 +1,8 @@
 
 module
 {
-    interface Org.Apache.Harmony.Security.X509.ITBSCertificate;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+    interface Org.Apache.Harmony.Security.X509.ITBSCertificate;
 
     namespace Org {
     namespace Apache {
@@ -39,9 +39,6 @@ module
         GetSignatureValue(
             [out, callee] ArrayOf<Byte>* signatureValue);
 
-        ToString(
-            [out] String* str);
-
         /**
          * Returns ASN.1 encoded form of this X.509 TBSCertificate value.
          */
@@ -52,9 +49,6 @@ module
     interface ICertificateHelper {
         GetASN1(
             [out] IASN1Sequence** asn1);
-
-        SetASN1(
-            [in] IASN1Sequence* asn1);
     }
 
     } // namespace X509

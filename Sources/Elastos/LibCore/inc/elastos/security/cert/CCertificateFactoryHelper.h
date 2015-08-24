@@ -4,6 +4,9 @@
 
 #include "_Elastos_Security_Cert_CCertificateFactoryHelper.h"
 
+#include "core/Singleton.h"
+
+using Elastos::Core::Singleton;
 using Elastos::Security::IProvider;
 
 namespace Elastos {
@@ -30,7 +33,7 @@ public:
 
     CARAPI GetInstance(
         /* [in] */ const String& type,
-        /* [in] */ IProvider * provider,
+        /* [in] */ IProvider* provider,
         /* [out] */ ICertificateFactory** factory);
 };
 

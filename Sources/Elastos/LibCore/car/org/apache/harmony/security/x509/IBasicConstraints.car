@@ -23,8 +23,15 @@ module
      *   }
      * </pre>
      * (as specified in RFC 3280)
+     *
+     *
+     * @Involve
+     * interface IExtensionValue;
      */
-    interface IBasicConstraints extends IExtensionValue {
+    interface IBasicConstraints {
+        GetCa(
+            [out] Boolean* ca);
+
         GetPathLenConstraint(
             [out] Int32* pathLenConstraint);
     }
@@ -32,9 +39,6 @@ module
     interface IBasicConstraintsHelper {
         GetASN1(
             [out] IASN1Type** asn1);
-
-        SetASN1(
-            [in] IASN1Type* asn1);
     }
 
     } // namespace X509

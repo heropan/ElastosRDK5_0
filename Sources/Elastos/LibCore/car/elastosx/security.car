@@ -8,13 +8,13 @@ module
     merge("security/auth/IPrivateCredentialPermission.car");
     merge("security/auth/ISubject.car");
     merge("security/auth/ISubjectDomainCombiner.car");
-    merge("security/cert/ICertificate.car");
-    merge("security/cert/IX509Certificate.car");
     merge("security/auth/x500/IX500Principal.car");
     merge("security/auth/callback/ICallback.car");
     merge("security/auth/callback/ICallbackHandler.car");
     merge("security/auth/IDestroyable.car");
     merge("security/auth/IAuthPermission.car");
+    merge("security/cert/ICertificate.car");
+    merge("security/cert/IX509Certificate.car");
 
     interface Elastos.Security.IPrincipal;
     interface Elastos.IO.IInputStream;

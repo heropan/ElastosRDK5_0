@@ -2,10 +2,10 @@
 module
 {
     interface Elastos.Math.IBigInteger;
+    interface Elastos.Security.IPrincipal;
     interface Elastos.Utility.IDate;
     interface Elastos.Utility.IList;
     interface Elastos.Utility.ICollection;
-    interface Elastos.Security.IPrincipal;
     interface Elastosx.Security.Auth.X500.IX500Principal;
 
     namespace Elastos {
@@ -15,8 +15,9 @@ module
     /**
      * @Involve
      * interface ICertificate
+     * interface IX509Extension
      */
-    interface IX509Certificate /*, IX509Extension */ {
+    interface IX509Certificate {
         /**
          * Checks whether the certificate is currently valid.
          * <p>
@@ -52,7 +53,7 @@ module
          *             if the certificate is not yet valid.
          * @see #checkValidity()
          */
-        CheckValidityEx(
+        CheckValidity(
             [in] IDate* date);
 
         /**

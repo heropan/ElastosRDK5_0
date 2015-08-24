@@ -125,7 +125,7 @@ ERROR_PROCESS_1:
             VALIDATE_NOT_NULL(rev)
             *rev = String(NULL);
 
-            return Elastos::Security::Cert::ICertificate::Probe(mCert)->ToString(rev);
+            return IObject::Probe(mCert)->ToString(rev);
         }
 
         ECode GetPublicKey(

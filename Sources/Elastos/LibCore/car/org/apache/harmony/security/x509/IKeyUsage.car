@@ -28,8 +28,12 @@ module
      * }
      * </pre>
      * (as specified in RFC 3280 http://www.ietf.org/rfc/rfc3280.txt)
+     *
+     *
+     * @Involve
+     * interface IExtensionValue;
      */
-    interface IKeyUsage extends IExtensionValue {
+    interface IKeyUsage {
         GetKeyUsage(
             [out, callee] ArrayOf<Boolean>* keyUsage);
     }

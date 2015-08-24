@@ -1,24 +1,23 @@
 
-#ifndef __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
-#define __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
+#ifndef __ELASTOS_SECURITY_CERT_CERTIFICATEFACTORY_H__
+#define __ELASTOS_SECURITY_CERT_CERTIFICATEFACTORY_H__
 
-#include "_Elastos_Security_Cert_CCertificateFactory.h"
+#include "core/Object.h"
 
-
-
-using Elastos::Security::IProvider;
-using Elastos::Security::ISecurity;
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
+using Elastos::Security::IProvider;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IList;
 using Elastos::Utility::ICollection;
+using Org::Apache::Harmony::Security::Fortress::IEngine;
 
 namespace Elastos {
 namespace Security {
 namespace Cert {
 
-CarClass(CCertificateFactory)
-    , public Object
+class CertificateFactory
+    : public Object
     , public ICertificateFactory
 {
 public:
@@ -39,8 +38,8 @@ public:
      * @throws NullPointerException if {@code type == null}
      */
     static CARAPI GetInstance(
-    /* [in] */ const String& type,
-    /* [out] */ ICertificateFactory** certFact);
+        /* [in] */ const String& type,
+        /* [out] */ ICertificateFactory** certFact);
 
     /**
      * Creates a new {@code CertificateFactory} instance from the specified
@@ -85,9 +84,9 @@ public:
      * @throws IllegalArgumentException if {@code provider == null}
      */
     static CARAPI GetInstance(
-    /* [in] */ const String& type,
-    /* [in] */ IProvider* provider,
-    /* [out] */ ICertificateFactory** certFact);
+        /* [in] */ const String& type,
+        /* [in] */ IProvider* provider,
+        /* [out] */ ICertificateFactory** certFact);
 
     /**
      * Returns the {@code Provider} of the certificate factory represented by
@@ -225,8 +224,7 @@ public:
         /* [in] */ IInputStream* inStream,
         /* [out] */ ICollection** crls);
 
-    CARAPI constructor();
-
+protected:
     /**
      * Creates a new {@code CertificateFactory} instance.
      *
@@ -237,12 +235,21 @@ public:
      * @param type
      *            the certificate type.
      */
-    CARAPI constructor(
+    CertificateFactory(
         /* [in] */ ICertificateFactorySpi* certFacSpi,
         /* [in] */ IProvider* provider,
         /* [in] */ const String& type);
 
 private:
+    static CARAPI_(AutoPtr<IEngine>) InitENGINE();
+
+private:
+    // Store CertificateFactory service name
+    static const String SERVICE;
+
+    // Used to access common engine functionality
+    static const AutoPtr<IEngine> ENGINE;
+
     // Store used provider
     const AutoPtr<IProvider> mProvider;
 
@@ -256,4 +263,4 @@ private:
 } // end Cert
 } // end Security
 } // end Elastos
-#endif // __ELASTOS_SECURITY_CERT_CCERTIFICATEFACTORY_H__
+#endif // __ELASTOS_SECURITY_CERT_CERTIFICATEFACTORY_H__
