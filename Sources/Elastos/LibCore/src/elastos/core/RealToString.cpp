@@ -1,3 +1,9 @@
+/**
+ * reference program:
+ * ~/libcore/luni/src/main/native/java_lang_RealToString.cpp
+ * ~/libcore/luni/src/main/java/java/lang/RealToString.java
+ */
+
 #include <RealToString.h>
 #include <IntegralToString.h>
 #include <StringBuilder.h>
@@ -344,157 +350,145 @@ void RealToString::LongDigitGenerator(Int64 f, Int32 e,
 void RealToString::BigIntDigitGenerator(Int64 f, Int32 e,
         Boolean isDenormalized, Int32 p)
 {
-    /*int RLength, SLength, TempLength, mplus_Length, mminus_Length;
+    int RLength, SLength, TempLength, mplus_Length, mminus_Length;
     int high, low, i;
     Int32 k, firstK, U;
 
     UInt64 R[RM_SIZE], S[STemp_SIZE], mplus[RM_SIZE], mminus[RM_SIZE], Temp[STemp_SIZE];
-    memset (R     , 0, RM_SIZE    * sizeof (UInt64));
-    memset (S     , 0, STemp_SIZE * sizeof (UInt64));
-    memset (mplus , 0, RM_SIZE    * sizeof (UInt64));
-    memset (mminus, 0, RM_SIZE    * sizeof (UInt64));
-    memset (Temp  , 0, STemp_SIZE * sizeof (UInt64));
+    memset(R     , 0, RM_SIZE    * sizeof(UInt64));
+    memset(S     , 0, STemp_SIZE * sizeof(UInt64));
+    memset(mplus , 0, RM_SIZE    * sizeof(UInt64));
+    memset(mminus, 0, RM_SIZE    * sizeof(UInt64));
+    memset(Temp  , 0, STemp_SIZE * sizeof(UInt64));
 
-    if (e >= 0)
-      {
+    if (e >= 0) {
         *R = f;
         *mplus = *mminus = 1;
-        simpleShiftLeftHighPrecision (mminus, RM_SIZE, e);
-        if (f != (2 << (p - 1)))
-          {
-            simpleShiftLeftHighPrecision (R, RM_SIZE, e + 1);
+        simpleShiftLeftHighPrecision(mminus, RM_SIZE, e);
+        if (f != (2 << (p - 1))) {
+            simpleShiftLeftHighPrecision(R, RM_SIZE, e + 1);
             *S = 2;
-
-            simpleShiftLeftHighPrecision (mplus, RM_SIZE, e);
-          }
-        else
-          {
-            simpleShiftLeftHighPrecision (R, RM_SIZE, e + 2);
+            /*
+             * m+ = m+ << e results in 1.0e23 to be printed as
+             * 0.9999999999999999E23
+             * m+ = m+ << e+1 results in 1.0e23 to be printed as
+             * 1.0e23 (caused too much rounding)
+             *      470fffffffffffff = 2.0769187434139308E34
+             *      4710000000000000 = 2.076918743413931E34
+             */
+            simpleShiftLeftHighPrecision(mplus, RM_SIZE, e);
+        } else {
+            simpleShiftLeftHighPrecision(R, RM_SIZE, e + 2);
             *S = 4;
-            simpleShiftLeftHighPrecision (mplus, RM_SIZE, e + 1);
-          }
-      }
-    else
-      {
-        if (isDenormalized || (f != (2 << (p - 1))))
-          {
+            simpleShiftLeftHighPrecision(mplus, RM_SIZE, e + 1);
+        }
+    } else {
+        if (isDenormalized || (f != (2 << (p - 1)))) {
             *R = f << 1;
             *S = 1;
-            simpleShiftLeftHighPrecision (S, STemp_SIZE, 1 - e);
+            simpleShiftLeftHighPrecision(S, STemp_SIZE, 1 - e);
             *mplus = *mminus = 1;
-          }
-        else
-          {
+        } else {
             *R = f << 2;
             *S = 1;
-            simpleShiftLeftHighPrecision (S, STemp_SIZE, 2 - e);
+            simpleShiftLeftHighPrecision(S, STemp_SIZE, 2 - e);
             *mplus = 2;
             *mminus = 1;
-          }
-      }
+        }
+    }
 
-    k = static_cast<int>(Math::Ceil ((e + p - 1) * INV_LOG_OF_TEN_BASE_2 - 1e-10));
+    k = static_cast<int>(Math::Ceil((e + p - 1) * INV_LOG_OF_TEN_BASE_2 - 1e-10));
 
-    if (k > 0)
-      {
-        timesTenToTheEHighPrecision (S, STemp_SIZE, k);
-      }
-    else
-      {
-        timesTenToTheEHighPrecision (R     , RM_SIZE, -k);
-        timesTenToTheEHighPrecision (mplus , RM_SIZE, -k);
-        timesTenToTheEHighPrecision (mminus, RM_SIZE, -k);
-      }
+    if (k > 0) {
+        timesTenToTheEHighPrecision(S, STemp_SIZE, k);
+    } else {
+        timesTenToTheEHighPrecision(R     , RM_SIZE, -k);
+        timesTenToTheEHighPrecision(mplus , RM_SIZE, -k);
+        timesTenToTheEHighPrecision(mminus, RM_SIZE, -k);
+    }
 
     RLength = mplus_Length = mminus_Length = RM_SIZE;
     SLength = TempLength = STemp_SIZE;
 
-    memset (Temp + RM_SIZE, 0, (STemp_SIZE - RM_SIZE) * sizeof (UInt64));
-    memcpy (Temp, R, RM_SIZE * sizeof (UInt64));
+    memset(Temp + RM_SIZE, 0, (STemp_SIZE - RM_SIZE) * sizeof(UInt64));
+    memcpy(Temp, R, RM_SIZE * sizeof (UInt64));
 
     while (RLength > 1 && R[RLength - 1] == 0)
-      --RLength;
+        --RLength;
     while (mplus_Length > 1 && mplus[mplus_Length - 1] == 0)
-      --mplus_Length;
+        --mplus_Length;
     while (mminus_Length > 1 && mminus[mminus_Length - 1] == 0)
-      --mminus_Length;
+        --mminus_Length;
     while (SLength > 1 && S[SLength - 1] == 0)
       --SLength;
     TempLength = (RLength > mplus_Length ? RLength : mplus_Length) + 1;
-    addHighPrecision (Temp, TempLength, mplus, mplus_Length);
+    addHighPrecision(Temp, TempLength, mplus, mplus_Length);
 
-    if (compareHighPrecision (Temp, TempLength, S, SLength) >= 0)
-      {
+    if (compareHighPrecision(Temp, TempLength, S, SLength) >= 0) {
         firstK = k;
-      }
-    else
-      {
+    } else {
         firstK = k - 1;
-        simpleAppendDecimalDigitHighPrecision (R     , ++RLength      , 0);
-        simpleAppendDecimalDigitHighPrecision (mplus , ++mplus_Length , 0);
-        simpleAppendDecimalDigitHighPrecision (mminus, ++mminus_Length, 0);
+        simpleAppendDecimalDigitHighPrecision(R     , ++RLength      , 0);
+        simpleAppendDecimalDigitHighPrecision(mplus , ++mplus_Length , 0);
+        simpleAppendDecimalDigitHighPrecision(mminus, ++mminus_Length, 0);
         while (RLength > 1 && R[RLength - 1] == 0)
-          --RLength;
+            --RLength;
         while (mplus_Length > 1 && mplus[mplus_Length - 1] == 0)
-          --mplus_Length;
+            --mplus_Length;
         while (mminus_Length > 1 && mminus[mminus_Length - 1] == 0)
-          --mminus_Length;
-      }
+            --mminus_Length;
+    }
 
     Int32 digitCount = 0;
-    do
-      {
+    do {
         U = 0;
-        for (i = 3; i >= 0; --i)
-          {
+        for (i = 3; i >= 0; --i) {
             TempLength = SLength + 1;
             Temp[SLength] = 0;
-            memcpy (Temp, S, SLength * sizeof (UInt64));
-            simpleShiftLeftHighPrecision (Temp, TempLength, i);
-            if (compareHighPrecision (R, RLength, Temp, TempLength) >= 0)
-              {
+            memcpy (Temp, S, SLength * sizeof(UInt64));
+            simpleShiftLeftHighPrecision(Temp, TempLength, i);
+            if (compareHighPrecision(R, RLength, Temp, TempLength) >= 0) {
                 subtractHighPrecision (R, RLength, Temp, TempLength);
                 U += 1 << i;
-              }
-          }
+            }
+        }
 
-        low = compareHighPrecision (R, RLength, mminus, mminus_Length) <= 0;
+        low = compareHighPrecision(R, RLength, mminus, mminus_Length) <= 0;
 
-        memset (Temp + RLength, 0, (STemp_SIZE - RLength) * sizeof (UInt64));
-        memcpy (Temp, R, RLength * sizeof (UInt64));
+        memset(Temp + RLength, 0, (STemp_SIZE - RLength) * sizeof (UInt64));
+        memcpy(Temp, R, RLength * sizeof (UInt64));
         TempLength = (RLength > mplus_Length ? RLength : mplus_Length) + 1;
         addHighPrecision (Temp, TempLength, mplus, mplus_Length);
 
-        high = compareHighPrecision (Temp, TempLength, S, SLength) >= 0;
+        high = compareHighPrecision(Temp, TempLength, S, SLength) >= 0;
 
         if (low || high)
-          break;
+            break;
 
-        simpleAppendDecimalDigitHighPrecision (R     , ++RLength      , 0);
-        simpleAppendDecimalDigitHighPrecision (mplus , ++mplus_Length , 0);
-        simpleAppendDecimalDigitHighPrecision (mminus, ++mminus_Length, 0);
+        simpleAppendDecimalDigitHighPrecision(R     , ++RLength      , 0);
+        simpleAppendDecimalDigitHighPrecision(mplus , ++mplus_Length , 0);
+        simpleAppendDecimalDigitHighPrecision(mminus, ++mminus_Length, 0);
         while (RLength > 1 && R[RLength - 1] == 0)
-          --RLength;
+            --RLength;
         while (mplus_Length > 1 && mplus[mplus_Length - 1] == 0)
-          --mplus_Length;
+            --mplus_Length;
         while (mminus_Length > 1 && mminus[mminus_Length - 1] == 0)
-          --mminus_Length;
+            --mminus_Length;
         mDigits[digitCount++] = U;
-      }
-    while (1);
+    } while (1);
 
-    simpleShiftLeftHighPrecision (R, ++RLength, 1);
+    simpleShiftLeftHighPrecision(R, ++RLength, 1);
     if (low && !high)
-      mDigits[digitCount++] = U;
+        mDigits[digitCount++] = U;
     else if (high && !low)
-      mDigits[digitCount++] = U + 1;
-    else if (compareHighPrecision (R, RLength, S, SLength) < 0)
-      mDigits[digitCount++] = U;
+        mDigits[digitCount++] = U + 1;
+    else if (compareHighPrecision(R, RLength, S, SLength) < 0)
+        mDigits[digitCount++] = U;
     else
-      mDigits[digitCount++] = U + 1;
+        mDigits[digitCount++] = U + 1;
 
     mDigitCount = digitCount;
-    mFirstK = firstK;*/
+    mFirstK = firstK;
 
 }
 
