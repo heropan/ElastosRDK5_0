@@ -43,7 +43,6 @@ module
     merge("util/SparseInt32Array.car");
     merge("util/SparseInt64Array.car");
     merge("util/StateSet.car");
-    merge("util/TimeUtils.car");
     merge("util/TimingLogger.car");
 
     using interface Elastos.Core.INumber;
@@ -218,6 +217,14 @@ module
         interface ITypedValueHelper;
     }
 
+    class CXmlPullAttributes {
+        constructor(
+            [in] IXmlPullParser* ps);
+
+        interface IXmlPullAttributes;
+        interface IAttributeSet;
+    }
+
 /*
     class CParcelableObjectContainer {
         constructor();
@@ -226,12 +233,6 @@ module
         interface IParcelable;
     }
 
-    class CXmlPullAttributes {
-        constructor(
-            [in] IXmlPullParser* ps);
-
-        interface IXmlPullAttributes;
-    }
 
     class CFastXmlSerializer {
         interface IFastXmlSerializer;
@@ -252,9 +253,6 @@ module
         interface IPropertyHelper;
     }
 
-    singleton class CXml {
-        interface IXml;
-    }
 */
     } // namespace Utility
 

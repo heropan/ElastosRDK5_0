@@ -42,6 +42,7 @@ module {
      * as {@link #getAttributeNameResource(int)} which returns the resource
      * identifier associated with a particular XML attribute name.
      */
+    [deprecated]
     interface IAttributeSet {
         /**
         * Returns the number of attributes available in the set.
@@ -132,7 +133,7 @@ module {
         GetAttributeListValue(
             [in] String namespace1,
             [in] String attribute,
-            [in] ArrayOf<String> options,
+            [in] ArrayOf<String>* options,
             [in] Int32 defaultValue,
             [out] Int32 * index);
 
@@ -227,7 +228,7 @@ module {
          */
         GetAttributeListValue(
             [in] Int32 index,
-            [in] ArrayOf<String> options,
+            [in] ArrayOf<String>* options,
             [in] Int32 defaultValue,
             [out] Int32 * value);
 

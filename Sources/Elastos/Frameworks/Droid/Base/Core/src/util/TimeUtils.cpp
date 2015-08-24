@@ -3,19 +3,19 @@
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/core/Math.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
-#include "util/XmlUtils.h"
-#include <R.h>
+// #include "internal/util/XmlUtils.h"
 #include "os/SystemClock.h"
-#ifdef DROID_CORE
-#include "content/res/CResourcesHelper.h"
-#endif
+// #include "content/res/CResourcesHelper.h"
+// #include <R.h>
 
+using Libcore::Utility::IZoneInfoDB;
+using Libcore::Utility::CZoneInfoDB;
+using Libcore::Utility::ITzData;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
-using Elastos::Utility::IZoneInfoDB;
-using Elastos::Utility::CZoneInfoDB;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ICalendar;
@@ -23,13 +23,16 @@ using Elastos::Utility::ICalendarHelper;
 using Elastos::Utility::CCalendarHelper;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Core::StringUtils;
-using Elastos::Droid::R;
+using Elastos::IO::ICloseable;
+using Org::Xmlpull::V1::IXmlPullParser;
+//using Elastos::Droid::R;
 using Elastos::Droid::Os::SystemClock;
 using Elastos::Droid::Text::Format::IDateUtils;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
-using Elastos::Droid::Content::Res::CResourcesHelper;
+//using Elastos::Droid::Content::Res::CResourcesHelper;
 using Elastos::Droid::Content::Res::IXmlResourceParser;
+//using Elastos::Droid::Internal::Utility::XmlUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -41,8 +44,9 @@ const Int32 TimeUtils::HUNDRED_DAY_FIELD_LEN = 19;
 const Int32 TimeUtils::SECONDS_PER_MINUTE = 60;
 const Int32 TimeUtils::SECONDS_PER_HOUR = 60 * 60;
 const Int32 TimeUtils::SECONDS_PER_DAY = 24 * 60 * 60;
+const Int64 TimeUtils::NANOS_PER_MS = 1000000;
 
-Mutex TimeUtils::sFormatSync;
+Object TimeUtils::sFormatSync;
 AutoPtr<ArrayOf<Char32> > TimeUtils::sFormatStr = ArrayOf<Char32>::Alloc(19 /* HUNDRED_DAY_FIELD_LEN */ + 5);
 
 const Int64 TimeUtils::LARGEST_DURATION = (1000 * IDateUtils::DAY_IN_MILLIS) - 1;
@@ -51,12 +55,12 @@ const Boolean TimeUtils::DBG = FALSE;
 const String TimeUtils::TAG("TimeUtils");
 
 /** Cached results of getTineZones */
-Mutex TimeUtils::sLastLockObj;
+Object TimeUtils::sLastLockObj;
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::sLastZones;
 String TimeUtils::sLastCountry;
 
 /** Cached results of getTimeZonesWithUniqueOffsets */
-Mutex TimeUtils::sLastUniqueLockObj;
+Object TimeUtils::sLastUniqueLockObj;
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::sLastUniqueZoneOffsets;
 String TimeUtils::sLastUniqueCountry;
 
@@ -68,13 +72,6 @@ AutoPtr<ITimeZone> TimeUtils::GetTimeZone(
     /* [in] */ const String& country)
 {
     AutoPtr<ITimeZone> best;
-
-    AutoPtr<IResourcesHelper> helper;
-    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
-    AutoPtr<IResources> r;
-    helper->GetSystem((IResources**)&r);
-    AutoPtr<IXmlResourceParser> parser;
-    r->GetXml(R::xml::time_zones_by_country, (IXmlResourceParser**)&parser);
 
     AutoPtr<IDate> d;
     CDate::New(when, (IDate**)&d);
@@ -131,9 +128,8 @@ AutoPtr<ITimeZone> TimeUtils::GetTimeZone(
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     /* [in] */ const String& country)
 {
-    {
-        AutoLock lock(&sLastUniqueLockObj);
-        if ((country != NULL) && country.Equals(sLastUniqueCountry)) {
+    synchronized (sLastUniqueLockObj) {
+        if ((!country.IsNull()) && country.Equals(sLastUniqueCountry)) {
             if (DBG) {
                 Logger::D(TAG, "getTimeZonesWithUniqueOffsets(%s): return cached version", country.string());
             }
@@ -144,7 +140,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
     AutoPtr<ArrayOf<ITimeZone *> > zones = GetTimeZones(country);
 
     if (!zones) {
-        AutoLock lock(&sLastUniqueLockObj);
+        AutoLock lock(sLastUniqueLockObj);
         sLastUniqueZoneOffsets = NULL;
         sLastUniqueCountry = NULL;
         return NULL;
@@ -152,7 +148,7 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
 
     Int32 offset1, offset2, count = 0;
     String id;
-    AutoPtr<ArrayOf<ITimeZone *> > tmp = ArrayOf<ITimeZone *>::Alloc(zones->GetLength());
+    AutoPtr<ArrayOf<ITimeZone *> > uniqueTimeZones = ArrayOf<ITimeZone *>::Alloc(zones->GetLength());
     for (Int32 i = 0; i < zones->GetLength(); ++i) {
         AutoPtr<ITimeZone> tz = (*zones)[i];
         tz->GetRawOffset(&offset1);
@@ -160,10 +156,9 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
         // See if we already have this offset,
         // Using slow but space efficient and these are small.
         Boolean found = FALSE;
-        for (Int32 j = 0; j < count; j++) {
-            AutoPtr<ITimeZone> ttz = (*tmp)[j];
+        for (Int32 j = 0; j < uniqueTimeZones->GetLength(); j++) {
+            AutoPtr<ITimeZone> ttz = (*uniqueTimeZones)[j];
             if (ttz != NULL) {
-
                 ttz->GetRawOffset(&offset2);
                 if (offset1 == offset2) {
                     found = TRUE;
@@ -179,17 +174,11 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
                     offset1, id.string());
             }
 
-            tmp->Set(count++, tz);
+            uniqueTimeZones->Set(count++, tz);
         }
     }
 
-    AutoPtr<ArrayOf<ITimeZone *> > uniqueTimeZones = ArrayOf<ITimeZone *>::Alloc(count);
-    if (count > 0) {
-        uniqueTimeZones->Copy(tmp, count);
-    }
-
-    {
-        AutoLock lock(&sLastUniqueLockObj);
+    synchronized(sLastUniqueLockObj) {
         // Cache the last result
         sLastUniqueZoneOffsets = uniqueTimeZones;
         sLastUniqueCountry = country;
@@ -201,9 +190,8 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZonesWithUniqueOffsets(
 AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     /* [in] */ const String& country)
 {
-    {
-        AutoLock lock(&sLastLockObj);
-        if ((country != NULL) && country.Equals(sLastCountry)) {
+    synchronized (sLastLockObj) {
+        if (!country.IsNull() && country.Equals(sLastCountry)) {
             if (DBG) Logger::D(TAG, "getTimeZones(): return cached version", country.string());
             return sLastZones;
         }
@@ -214,12 +202,13 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
         return NULL;
     }
 
-    AutoPtr<IResourcesHelper> helper;
-    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
-    AutoPtr<IResources> r;
-    helper->GetSystem((IResources**)&r);
-    AutoPtr<IXmlResourceParser> parser;
-    r->GetXml(R::xml::time_zones_by_country, (IXmlResourceParser**)&parser);
+    // AutoPtr<IResourcesHelper> helper;
+    // CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
+    // AutoPtr<IResources> r;
+    // helper->GetSystem((IResources**)&r);
+    AutoPtr<IXmlResourceParser> xrp;
+    //TODO r->GetXml(R::xml::time_zones_by_country, (IXmlResourceParser**)&xrp);
+    IXmlPullParser* parser = IXmlPullParser::Probe(xrp);
 
     const String strTimeZones("timezones");
     const String strCode("code");
@@ -229,13 +218,13 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzHelper);
 
     // try {
-    XmlUtils::BeginDocument(parser, strTimeZones);
+    //TODO XmlUtils::BeginDocument(parser, strTimeZones);
 
     List<AutoPtr<ITimeZone> > list;
     String element, code, zoneIdString, tzId, nullStr;
     Int32 nextId;
     while (TRUE) {
-        XmlUtils::NextElement(parser);
+        //TODO XmlUtils::NextElement(parser);
 
         parser->GetName(&element);
         if (element.IsNull() || !(element.Equals(strTimeZones))) {
@@ -279,10 +268,9 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
     //     parser.close();
     // }
 
-    parser->Close();
+    ICloseable::Probe(parser)->Close();
 
-    {
-        AutoLock lock(&sLastLockObj);
+    synchronized(sLastLockObj) {
 
         // Cache the last result;
         sLastZones = ArrayOf<ITimeZone*>::Alloc(list.GetSize());
@@ -292,16 +280,19 @@ AutoPtr<ArrayOf<ITimeZone *> > TimeUtils::GetTimeZones(
         }
 
         sLastCountry = country;
-        return sLastZones;
     }
+    return sLastZones;
 }
 
 String TimeUtils::GetTimeZoneDatabaseVersion()
 {
     AutoPtr<IZoneInfoDB> db;
     CZoneInfoDB::AcquireSingleton((IZoneInfoDB**)&db);
+    AutoPtr<ITzData> tzData;
+    db->GetInstance((ITzData**)&tzData);
+
     String version;
-    db->GetVersion(&version);
+    tzData->GetVersion(&version);
     return version;
 }
 
@@ -321,32 +312,6 @@ Int32 TimeUtils::AccumField(
         return 1 + suffix;
     }
     return 0;
-}
-
-String TimeUtils::LogTimeOfDay(
-    /* [in] */ Int64 millis)
-{
-    AutoPtr<ICalendarHelper> helper;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
-    AutoPtr<ICalendar> c;
-    helper->GetInstance((ICalendar**)&c);
-    if (millis >= 0) {
-        c->SetTimeInMillis(millis);
-        Int32 y, m, d, h, mi, s, ms;
-        c->Get(ICalendar::YEAR, &y);
-        c->Get(ICalendar::MONTH, &m);
-        c->Get(ICalendar::DATE, &d);
-        c->Get(ICalendar::HOUR, &h);
-        c->Get(ICalendar::MINUTE, &mi);
-        c->Get(ICalendar::SECOND, &s);
-        c->Get(ICalendar::MILLISECOND, &ms);
-        String str;
-        str.AppendFormat("%d-%2d-%2d %2d:%2d:%2d %06d", y, m, d, h, mi, s, ms);
-        return str;
-    }
-    else {
-        return StringUtils::Int64ToString(millis);
-    }
 }
 
 Int32 TimeUtils::PrintField(
@@ -464,7 +429,7 @@ void TimeUtils::FormatDuration(
 {
     AutoLock lock(sFormatSync);
     Int32 len = FormatDurationLocked(duration, 0);
-    builder.AppendChars(*sFormatStr, 0, len);
+    builder.Append(*sFormatStr, 0, len);
 }
 
     /** @hide Just for debugging; not internationalized. */
@@ -478,7 +443,7 @@ void TimeUtils::FormatDuration(
     AutoLock lock(sFormatSync);
     Int32 len = FormatDurationLocked(duration, fieldLen);
     String str(*sFormatStr, 0, len);
-    pw->PrintString(str);
+    pw->Print(str);
 }
 
 /** @hide Just for debugging; not internationalized. */
@@ -496,7 +461,7 @@ void TimeUtils::FormatDuration(
     /* [in] */ IPrintWriter* pw)
 {
     if (time == 0) {
-        pw->PrintString(String("--"));
+        pw->Print(String("--"));
         return;
     }
     FormatDuration(time - now, pw, 0);
@@ -526,6 +491,31 @@ String TimeUtils::FormatUptime(
     return sb.ToString();
 }
 
+String TimeUtils::LogTimeOfDay(
+    /* [in] */ Int64 millis)
+{
+    AutoPtr<ICalendarHelper> helper;
+    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&helper);
+    AutoPtr<ICalendar> c;
+    helper->GetInstance((ICalendar**)&c);
+    if (millis >= 0) {
+        c->SetTimeInMillis(millis);
+        Int32 y, m, d, h, mi, s, ms;
+        c->Get(ICalendar::YEAR, &y);
+        c->Get(ICalendar::MONTH, &m);
+        c->Get(ICalendar::DATE, &d);
+        c->Get(ICalendar::HOUR, &h);
+        c->Get(ICalendar::MINUTE, &mi);
+        c->Get(ICalendar::SECOND, &s);
+        c->Get(ICalendar::MILLISECOND, &ms);
+        String str;
+        str.AppendFormat("%d-%2d-%2d %2d:%2d:%2d %06d", y, m, d, h, mi, s, ms);
+        return str;
+    }
+    else {
+        return StringUtils::ToString(millis);
+    }
+}
 
 } // namespace Utility
 } // namespace Droid

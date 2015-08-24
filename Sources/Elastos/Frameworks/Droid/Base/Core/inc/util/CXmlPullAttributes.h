@@ -20,6 +20,8 @@ public:
 
     CAR_OBJECT_DECL()
 
+    CXmlPullAttributes();
+
     CARAPI constructor(
         /* [in] */ IXmlPullParser* parser);
 
@@ -49,7 +51,7 @@ public:
     CARAPI GetAttributeListValue(
         /* [in] */ const String& namespace1,
         /* [in] */ const String& attribute,
-        /* [in] */ const ArrayOf<String> &options,
+        /* [in] */ ArrayOf<String>* options,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * index);
 
@@ -85,7 +87,7 @@ public:
 
     CARAPI GetAttributeListValue(
         /* [in] */ Int32 index,
-        /* [in] */ const ArrayOf<String> &options,
+        /* [in] */ ArrayOf<String>* options,
         /* [in] */ Int32 defaultValue,
         /* [out] */ Int32 * value);
 
@@ -126,8 +128,8 @@ public:
 
     CARAPI GetStyleAttribute(
         /* [out] */ Int32 * value);
-private:
 
+public:
     AutoPtr<IXmlPullParser> mParser;
 };
 

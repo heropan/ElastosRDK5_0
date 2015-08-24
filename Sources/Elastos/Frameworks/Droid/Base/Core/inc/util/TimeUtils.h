@@ -1,8 +1,7 @@
-#ifndef __ELASTOS_DROID_UTILITY_TRUSTEDTIME_H__
-#define __ELASTOS_DROID_UTILITY_TRUSTEDTIME_H__
+#ifndef __ELASTOS_DROID_UTILITY_TIMEUTILS_H__
+#define __ELASTOS_DROID_UTILITY_TIMEUTILS_H__
 
 #include "ext/frameworkext.h"
-#include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringBuilder;
@@ -70,17 +69,6 @@ public:
      */
     static CARAPI_(String) GetTimeZoneDatabaseVersion();
 
-    /**
-     * Convert a System.currentTimeMillis() value to a time of day value like
-     * that printed in logs. MM-DD HH:MM:SS.MMM
-     *
-     * @param millis since the epoch (1/1/1970)
-     * @return String representation of the time.
-     * @hide
-     */
-    static CARAPI_(String) LogTimeOfDay(
-        /* [in] */ Int64 millis);
-
     /** @hide Just for debugging; not internationalized. */
     static CARAPI_(void) FormatDuration(
         /* [in] */ Int64 duration,
@@ -107,6 +95,17 @@ public:
     static CARAPI_(String) FormatUptime(
         /* [in] */ Int64 time);
 
+    /**
+     * Convert a System.currentTimeMillis() value to a time of day value like
+     * that printed in logs. MM-DD HH:MM:SS.MMM
+     *
+     * @param millis since the epoch (1/1/1970)
+     * @return String representation of the time.
+     * @hide
+     */
+    static CARAPI_(String) LogTimeOfDay(
+        /* [in] */ Int64 millis);
+
 private:
     static CARAPI_(Int32) AccumField(
         /* [in] */ Int32 amt,
@@ -126,8 +125,8 @@ private:
         /* [in] */ Int64 duration,
         /* [in] */ Int32 fieldLen);
 
+private:
     TimeUtils();
-
     TimeUtils(const TimeUtils& other);
 
 public:
@@ -142,6 +141,9 @@ public:
     static AutoPtr<ArrayOf<Char32> > sFormatStr;// = new char[HUNDRED_DAY_FIELD_LEN+5];
 
     static const Int64 LARGEST_DURATION;// = (1000 * DateUtils.DAY_IN_MILLIS) - 1;
+
+    /** @hide */
+    static const Int64 NANOS_PER_MS;// = 1000000;
 
 private:
     static const Boolean DBG;// = false;
@@ -163,4 +165,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif //__ELASTOS_DROID_UTILITY_TRUSTEDTIME_H__
+#endif //__ELASTOS_DROID_UTILITY_TIMEUTILS_H__
