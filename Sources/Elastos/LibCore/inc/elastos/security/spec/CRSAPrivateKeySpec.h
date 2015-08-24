@@ -14,11 +14,7 @@ namespace Spec {
 CarClass(CRSAPrivateKeySpec), public RSAPrivateKeySpec
 {
 public:
-    CARAPI GetModulus(
-        /* [out] */ IBigInteger **modulus);
-
-    CARAPI GetPrivateExponent(
-        /* [out] */ IBigInteger **exponent);
+    CAR_OBJECT_DECL();
 
     CARAPI constructor(
         /* [in] */IBigInteger *modulus,

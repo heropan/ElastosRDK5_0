@@ -25,12 +25,6 @@ public:
         /* [in] */ IPermission *permission,
         /* [out] */ Boolean *ret);
 
-    CARAPI GetName(
-        /* [out] */ String* name);
-
-    CARAPI NewPermissionCollection(
-        /* [out] */ IPermissionCollection** permissions);
-
     CARAPI constructor(
         /* [in] */ const String& name);
 

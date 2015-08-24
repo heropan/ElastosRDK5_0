@@ -11,14 +11,14 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-CarClass(CRSAMultiPrimePrivateCrtKeySpec), public RSAPrivateKeySpec
+CarClass(CRSAMultiPrimePrivateCrtKeySpec)
+    , public RSAPrivateKeySpec
+    , public IRSAMultiPrimePrivateCrtKeySpec
 {
 public:
-    CARAPI GetModulus(
-        /* [out] */ IBigInteger **modulus);
+    CAR_OBJECT_DECL();
 
-    CARAPI GetPrivateExponent(
-        /* [out] */ IBigInteger **exponent);
+    CAR_INTERFACE_DECL();
 
     CARAPI GetCrtCoefficient(
         /* [out] */ IBigInteger **crtCoefficient);

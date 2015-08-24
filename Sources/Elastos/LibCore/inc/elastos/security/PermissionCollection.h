@@ -2,15 +2,19 @@
 #ifndef __ELASTOS_SECURITY_PERMISSIONCOLLECTION_H__
 #define __ELASTOS_SECURITY_PERMISSIONCOLLECTION_H__
 
-
-
 using Elastos::Utility::IEnumeration;
 
 namespace Elastos {
 namespace Security {
 
-class PermissionCollection {
+class PermissionCollection
+    : public Object
+    , public IPermissionCollection
+    , public ISerializable
+{
 public:
+    CAR_INTERFACE_DECL();
+
     virtual CARAPI Add(
         /* [in] */ IPermission *permission) = 0;
 

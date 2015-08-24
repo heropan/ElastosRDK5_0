@@ -28,9 +28,9 @@ module
             [out] IBigInteger** prime);
 
         /**
-         * Returns the subprime ({@code q} value.
+         * Returns the subprime ({@code q}) value.
          *
-         * @return the subprime ({@code q} value.
+         * @return the subprime ({@code q}) value.
          */
         GetQ(
             [out] IBigInteger** subprime);

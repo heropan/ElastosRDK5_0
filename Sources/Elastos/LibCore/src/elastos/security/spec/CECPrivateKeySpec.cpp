@@ -5,7 +5,8 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-
+CAR_OBJECT_IMPL(CECPrivateKeySpec);
+CAR_INTERFACE_IMPL_2(CECPrivateKeySpec, Object, IECPrivateKeySpec, IKeySpec);
 ECode CECPrivateKeySpec::GetParams(
     /* [out] */ IECParameterSpec **params)
 {

@@ -12,6 +12,7 @@ module
     /**
      * @Involve
      * interface IEncodedKeySpec
+     * interface IKeySpec
      */
     interface IPKCS8EncodedKeySpec {
     }

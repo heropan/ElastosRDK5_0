@@ -9,9 +9,15 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-CarClass(CX509EncodedKeySpec), public EncodedKeySpec
+CarClass(CX509EncodedKeySpec)
+    , public EncodedKeySpec
+    , public IX509EncodedKeySpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetEncoded(
         /* [out, callee] */ ArrayOf<Byte> **encoded);
 

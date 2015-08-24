@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CDSAParameterSpec)
+    , public Object
+    , public IAlgorithmParameterSpec
+    , public IDSAParams
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetG(
         /* [out] */ IBigInteger **base);
 

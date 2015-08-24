@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CRSAKeyGenParameterSpec)
+    , public Object
+    , public IRSAKeyGenParameterSpec
+    , public IAlgorithmParameterSpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     static CARAPI_(const AutoPtr<IBigInteger>) InitStatic(
         /* [in] */ Int64 bi);
 

@@ -8,8 +8,14 @@ namespace Elastos {
 namespace Security {
 
 CarClass(CAccessController)
+    , public Singleton
+    , public IAccessController
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI DoPrivileged(
         /* [in] */ IPrivilegedAction *action,
         /* [out] */ IInterface **result);

@@ -16,6 +16,7 @@ namespace Security {
 
 extern "C" const InterfaceID EIID_KeyStore;
 
+CAR_INTERFACE_IMPL(KeyStoreBuilder, Object, IKeyStoreBuilder);
 KeyStoreBuilder::KeyStoreBuilder()
 {}
 
@@ -90,8 +91,6 @@ ECode KeyStoreBuilder::NewInstance(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(KeyStoreBuilder::KeyStoreBuilderImpl, IKeyStoreBuilder)
-
 KeyStoreBuilder::KeyStoreBuilderImpl::KeyStoreBuilderImpl(
     /* [in] */ IKeyStore *ks,
     /* [in] */ IKeyStoreProtectionParameter *pp,
@@ -115,7 +114,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetKeyStore(
     // then it was stored in lastException variable and will be
     // thrown
     // all subsequent calls of this method.
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(keyStore)
     FAIL_RETURN(mEc)
     if (mKeyStore) {
@@ -172,7 +171,7 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetProtectionParameter(
 /* [in] */ const String& alias,
 /* [out] */ IKeyStoreProtectionParameter** protectionParameter)
 {
-    AutoLock lock(mLock);
+    AutoLock lock(this);
     VALIDATE_NOT_NULL(protectionParameter)
     if (alias.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
@@ -185,15 +184,14 @@ ECode KeyStoreBuilder::KeyStoreBuilderImpl::GetProtectionParameter(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(KeyStoreBuilder::KeyStoreTmpLSParameter, IKeyStoreLoadStoreParameter)
-
+CAR_INTERFACE_IMPL(KeyStoreBuilder::KeyStoreTmpLSParameter, Object, IKeyStoreLoadStoreParameter);
 KeyStoreBuilder::KeyStoreTmpLSParameter::KeyStoreTmpLSParameter(
     /* [in] */ IKeyStoreProtectionParameter *protPar)
     : mProtPar(protPar)
 {}
 
 ECode KeyStoreBuilder::KeyStoreTmpLSParameter::GetProtectionParameter(
-                /* [out] */ IKeyStoreProtectionParameter** protectionParameter)
+    /* [out] */ IKeyStoreProtectionParameter** protectionParameter)
 {
     VALIDATE_NOT_NULL(protectionParameter)
     *protectionParameter = mProtPar;

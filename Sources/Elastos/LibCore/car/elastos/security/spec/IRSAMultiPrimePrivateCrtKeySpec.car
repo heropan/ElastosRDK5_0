@@ -19,6 +19,7 @@ module
     /**
      * @Involve
      * interface IRSAPrivateKeySpec
+     * interface IKeySpec
      */
     interface IRSAMultiPrimePrivateCrtKeySpec {
         /**

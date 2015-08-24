@@ -5,19 +5,8 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-
-ECode CRSAPrivateCrtKeySpec::GetModulus(
-    /* [out] */ IBigInteger **modulus)
-{
-    return RSAPrivateKeySpec::GetModulus(modulus);
-}
-
-ECode CRSAPrivateCrtKeySpec::GetPrivateExponent(
-    /* [out] */ IBigInteger **exponent)
-{
-    return RSAPrivateKeySpec::GetPrivateExponent(exponent);
-}
-
+CAR_OBJECT_IMPL(CRSAPrivateCrtKeySpec);
+CAR_INTERFACE_IMPL(CRSAPrivateCrtKeySpec, RSAPrivateKeySpec, IRSAPrivateCrtKeySpec);
 ECode CRSAPrivateCrtKeySpec::GetCrtCoefficient(
     /* [out] */ IBigInteger **coefficient)
 {
@@ -82,7 +71,7 @@ ECode CRSAPrivateCrtKeySpec::constructor(
     /* [in] */ IBigInteger *primeExponentQ,
     /* [in] */ IBigInteger *crtCoefficient)
 {
-    RSAPrivateKeySpec::Init(modulus, privateExponent);
+    RSAPrivateKeySpec::constructor(modulus, privateExponent);
 
     mPublicExponent = publicExponent;
     mPrimeP = primeP;
@@ -96,4 +85,3 @@ ECode CRSAPrivateCrtKeySpec::constructor(
 }
 }
 }
-

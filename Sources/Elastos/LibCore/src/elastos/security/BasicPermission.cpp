@@ -34,31 +34,17 @@ ECode BasicPermission::Implies(
     return NOERROR;
 }
 
-ECode BasicPermission::GetName(
-    /* [out] */ String* name)
-{
-    VALIDATE_NOT_NULL(name)
-    return Permission::GetName(name);
-}
-
-ECode BasicPermission::NewPermissionCollection(
-    /* [out] */ IPermissionCollection** permissions)
-{
-    VALIDATE_NOT_NULL(permissions)
-    return Permission::NewPermissionCollection(permissions);
-}
-
 ECode BasicPermission::constructor(
     /* [in] */ const String& name)
 {
-    return Permission::Init(String(""));
+    return Permission::constructor(String(""));
 }
 
 ECode BasicPermission::constructor(
     /* [in] */ const String& name,
     /* [in] */ const String& action)
 {
-    return Permission::Init(String(""));
+    return Permission::constructor(String(""));
 }
 
 } // namespace Security

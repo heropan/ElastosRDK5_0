@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CDSAPrivateKeySpec)
+    , public Object
+    , public IDSAPrivateKeySpec
+    , public IKeySpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetG(
         /* [out] */ IBigInteger **g);
 

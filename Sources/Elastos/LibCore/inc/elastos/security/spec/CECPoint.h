@@ -11,8 +11,14 @@ namespace Security {
 namespace Spec {
 
 CarClass(CECPoint)
+    , public Object
+    , public IECPoint
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     static CARAPI_(const AutoPtr<IECPoint>) InitStatic();
 
     CARAPI GetAffineX(

@@ -9,8 +9,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CPSSParameterSpec)
+    , public Object
+    , public IPSSParameterSpec
+    , public IAlgorithmParameterSpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     static CARAPI_(const AutoPtr<IPSSParameterSpec>) InitStatic();
 
     CARAPI GetSaltLength(

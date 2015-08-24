@@ -9,8 +9,13 @@ using Elastos::IO::IFile;
 namespace Elastos {
 namespace Security {
 
-class KeyStoreBuilder {
+class KeyStoreBuilder
+    : public Object
+    , public IKeyStoreBuilder
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the {@code KeyStore} created by this {@code Builder}.
      *
@@ -65,70 +70,68 @@ protected:
      * Constructs a new instance of {@code Builder}.
      */
      KeyStoreBuilder();
+
 private:
     class KeyStoreBuilderImpl
-        : public IKeyStoreBuilder
-        , public ElRefBase {
+        : public KeyStoreBuilder
+    {
+    public:
+        /**
+         * Constructor BuilderImpl initializes private fields: keyStore,
+         * protParameter, typeForKeyStore providerForKeyStore fileForLoad,
+         * isGetKeyStore
+         */
+        KeyStoreBuilderImpl(
+            /* [in] */ IKeyStore *ks,
+            /* [in] */ IKeyStoreProtectionParameter *pp,
+            /* [in] */ IFile *file,
+            /* [in] */ const String& type,
+            /* [in] */ IProvider *provider);
 
-        public:
-            CAR_INTERFACE_DECL()
-            /**
-             * Constructor BuilderImpl initializes private fields: keyStore,
-             * protParameter, typeForKeyStore providerForKeyStore fileForLoad,
-             * isGetKeyStore
-             */
-            KeyStoreBuilderImpl(
-                /* [in] */ IKeyStore *ks,
-                /* [in] */ IKeyStoreProtectionParameter *pp,
-                /* [in] */ IFile *file,
-                /* [in] */ const String& type,
-                /* [in] */ IProvider *provider);
+        CARAPI GetKeyStore(
+        /* [out] */ IKeyStore** keyStore);
 
-            CARAPI GetKeyStore(
-            /* [out] */ IKeyStore** keyStore);
+        CARAPI GetProtectionParameter(
+        /* [in] */ const String& alias,
+        /* [out] */ IKeyStoreProtectionParameter** protectionParameter);
 
-            CARAPI GetProtectionParameter(
-            /* [in] */ const String& alias,
-            /* [out] */ IKeyStoreProtectionParameter** protectionParameter);
+    private:
+        // Store used KeyStore
+        AutoPtr<IKeyStore> mKeyStore;
 
-        private:
-            // Store used KeyStore
-            AutoPtr<IKeyStore> mKeyStore;
+        // Store used ProtectionParameter
+        AutoPtr<IKeyStoreProtectionParameter> mProtParameter;
 
-            // Store used ProtectionParameter
-            AutoPtr<IKeyStoreProtectionParameter> mProtParameter;
+        // Store used KeyStore type
+        const String mTypeForKeyStore;
 
-            // Store used KeyStore type
-            const String mTypeForKeyStore;
+        // Store used KeyStore provider
+        const AutoPtr<IProvider> mProviderForKeyStore;
 
-            // Store used KeyStore provider
-            const AutoPtr<IProvider> mProviderForKeyStore;
+        // Store used file for KeyStore loading
+        const AutoPtr<IFile> mFileForLoad;
 
-            // Store used file for KeyStore loading
-            const AutoPtr<IFile> mFileForLoad;
+        // Store getKeyStore method was invoked or not for KeyStoreBuilder
+        Boolean mIsGetKeyStore;
 
-            // Store getKeyStore method was invoked or not for KeyStoreBuilder
-            Boolean mIsGetKeyStore;
-
-            ECode mEc;
-
-            Object mLock;
+        ECode mEc;
     };
 
     class KeyStoreTmpLSParameter
-        : public IKeyStoreLoadStoreParameter
-        , public ElRefBase {
-        public:
-            CAR_INTERFACE_DECL()
+        : public Object
+        , public IKeyStoreLoadStoreParameter
+    {
+    public:
+        CAR_INTERFACE_DECL();
 
-            KeyStoreTmpLSParameter(
-                /* [in] */ IKeyStoreProtectionParameter *protPar);
+        KeyStoreTmpLSParameter(
+            /* [in] */ IKeyStoreProtectionParameter *protPar);
 
-            CARAPI GetProtectionParameter(
-                /* [out] */ IKeyStoreProtectionParameter** protectionParameter);
-        private:
-            // Store used protection parameter
-            const AutoPtr<IKeyStoreProtectionParameter> mProtPar;
+        CARAPI GetProtectionParameter(
+            /* [out] */ IKeyStoreProtectionParameter** protectionParameter);
+    private:
+        // Store used protection parameter
+        const AutoPtr<IKeyStoreProtectionParameter> mProtPar;
     };
 };
 

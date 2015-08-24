@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CECFieldFp)
+    , public Object
+    , public IECFieldFp
+    , public IECField
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetFieldSize(
         /* [out] */ Int32 *size);
 

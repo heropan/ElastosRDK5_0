@@ -9,6 +9,8 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
+CAR_OBJECT_IMPL(CECParameterSpec);
+CAR_INTERFACE_IMPL_2(CECParameterSpec, Object, IECParameterSpec, IAlgorithmParameterSpec);
 ECode CECParameterSpec::GetCofactor(
     /* [out] */ Int32 *cofactor)
 {
@@ -71,7 +73,21 @@ ECode CECParameterSpec::constructor(
     return NOERROR;
 }
 
-}
-}
+ECode CECParameterSpec::SetCurveName(
+    /* [in] */ const String& curveName)
+{
+    mCurveName = curveName;
+    return NOERROR;
 }
 
+ECode CECParameterSpec::GetCurveName(
+    /* [out] */ String* name)
+{
+    VALIDATE_NOT_NULL(name);
+    *name = mCurveName;
+    return NOERROR;
+}
+
+}
+}
+}

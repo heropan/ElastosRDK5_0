@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CECPrivateKeySpec)
+    , public Object
+    , public IECPrivateKeySpec
+    , public IKeySpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetParams(
         /* [out] */ IECParameterSpec **params);
 

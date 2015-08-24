@@ -5,7 +5,8 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-
+CAR_OBJECT_IMPL(CRSAOtherPrimeInfo);
+CAR_INTERFACE_IMPL(CRSAOtherPrimeInfo, Object, IRSAOtherPrimeInfo);
 ECode CRSAOtherPrimeInfo::GetCrtCoefficient(
     /* [out] */ IBigInteger **crtCoefficient)
 {
@@ -59,4 +60,3 @@ ECode CRSAOtherPrimeInfo::constructor(
 }
 }
 }
-

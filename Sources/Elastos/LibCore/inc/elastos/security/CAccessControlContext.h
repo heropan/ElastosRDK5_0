@@ -8,8 +8,14 @@ namespace Elastos {
 namespace Security {
 
 CarClass(CAccessControlContext)
+    , public Object
+    , public IAccessControlContext
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI CheckPermission(
         /* [in] */ IPermission *perm);
 

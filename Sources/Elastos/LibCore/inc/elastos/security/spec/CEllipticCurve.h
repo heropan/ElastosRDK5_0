@@ -11,8 +11,14 @@ namespace Security {
 namespace Spec {
 
 CarClass(CEllipticCurve)
+    , public Object
+    , public IEllipticCurve
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetA(
         /* [out] */ IBigInteger **a);
 

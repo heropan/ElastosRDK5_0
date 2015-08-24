@@ -5,13 +5,8 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
-
-ECode CPKCS8EncodedKeySpec::GetEncoded(
-    /* [out, callee] */ ArrayOf<Byte> **encoded)
-{
-    return EncodedKeySpec::GetEncoded(encoded);
-}
-
+CAR_OBJECT_IMPL(CPKCS8EncodedKeySpec);
+CAR_INTERFACE_IMPL(CPKCS8EncodedKeySpec, EncodedKeySpec, IPKCS8EncodedKeySpec);
 ECode CPKCS8EncodedKeySpec::GetFormat(
     /* [out] */ String *format)
 {
@@ -23,7 +18,7 @@ ECode CPKCS8EncodedKeySpec::GetFormat(
 ECode CPKCS8EncodedKeySpec::constructor(
     /* [in] */ ArrayOf<Byte> *encodedKey)
 {
-    return EncodedKeySpec::Init(encodedKey);
+    return EncodedKeySpec::constructor(encodedKey);
 }
 
 }

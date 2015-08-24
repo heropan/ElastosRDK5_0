@@ -9,8 +9,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CMGF1ParameterSpec)
+    , public Object
+    , public IMGF1ParameterSpec
+    , public IAlgorithmParameterSpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     static CARAPI_(AutoPtr<IMGF1ParameterSpec>) InitStatic();
 
     CARAPI GetDigestAlgorithm(

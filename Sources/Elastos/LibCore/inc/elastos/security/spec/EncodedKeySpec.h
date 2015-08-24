@@ -9,8 +9,13 @@ namespace Security {
 namespace Spec {
 
 class EncodedKeySpec
+    : public Object
+    , public IEncodedKeySpec
+    , public IKeySpec
 {
 public:
+    CAR_INTERFACE_DECL();
+
     EncodedKeySpec();
 
     EncodedKeySpec(
@@ -27,7 +32,7 @@ public:
     virtual CARAPI GetFormat(
         /* [out] */ String *format) = 0;
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Byte> *encodedKey);
 private:
     // Encoded key

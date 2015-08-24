@@ -1,11 +1,12 @@
 
 #include "CKeyStoreBuilderHelper.h"
-#include <cmdef.h>
 #include "KeyStoreBuilder.h"
 
 namespace Elastos {
 namespace Security {
 
+CAR_SINGLETON_IMPL(CKeyStoreBuilderHelper);
+CAR_INTERFACE_IMPL(CKeyStoreBuilderHelper, Singleton, IKeyStoreBuilderHelper);
 ECode CKeyStoreBuilderHelper::NewInstance(
     /* [in] */ IKeyStore* keyStore,
     /* [in] */ IKeyStoreProtectionParameter* protectionParameter,
@@ -14,7 +15,7 @@ ECode CKeyStoreBuilderHelper::NewInstance(
     return KeyStoreBuilder::NewInstance(keyStore, protectionParameter, instance);
 }
 
-ECode CKeyStoreBuilderHelper::NewInstanceEx(
+ECode CKeyStoreBuilderHelper::NewInstance(
     /* [in] */ const String& type,
     /* [in] */ IProvider* provider,
     /* [in] */ IFile* file,
@@ -24,7 +25,7 @@ ECode CKeyStoreBuilderHelper::NewInstanceEx(
     return KeyStoreBuilder::NewInstance(type, provider, file ,protectionParameter, instance);
 }
 
-ECode CKeyStoreBuilderHelper::NewInstanceEx2(
+ECode CKeyStoreBuilderHelper::NewInstance(
     /* [in] */ const String& type,
     /* [in] */ IProvider* provider,
     /* [in] */ IKeyStoreProtectionParameter* protectionParameter,

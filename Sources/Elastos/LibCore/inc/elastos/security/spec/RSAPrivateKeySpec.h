@@ -11,8 +11,13 @@ namespace Security {
 namespace Spec {
 
 class RSAPrivateKeySpec
+    : public Object
+    , public IRSAPrivateKeySpec
+    , public IKeySpec
 {
 public:
+    CAR_INTERFACE_DECL();
+
     CARAPI GetModulus(
         /* [out] */ IBigInteger **modulus);
 

@@ -4,8 +4,6 @@
 namespace Elastos {
 namespace Security {
 
-CAR_INTERFACE_IMPL(AllPermissionCollection, IPermissionCollection)
-
 ECode AllPermissionCollection::Add(
     /* [in] */ IPermission *permission)
 {
@@ -25,17 +23,6 @@ ECode AllPermissionCollection::Implies(
     VALIDATE_NOT_NULL(ret)
     *ret = TRUE;
     return NOERROR;
-}
-
-ECode AllPermissionCollection::IsReadOnly(
-    /* [out] */ Boolean *ret)
-{
-    return PermissionCollection::IsReadOnly(ret);
-}
-
-ECode AllPermissionCollection::SetReadOnly()
-{
-    return PermissionCollection::SetReadOnly();
 }
 
 } // namespace Security

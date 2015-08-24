@@ -417,6 +417,7 @@ module
     //         [in] IBigInteger *g);
 
     //     interface IDSAPrivateKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CDSAPublicKeySpec {
@@ -427,6 +428,7 @@ module
     //         [in] IBigInteger *g);
 
     //     interface IDSAPublicKeySpec;
+    //     interface IKeySpec;
     // }
 
     // [deprecated]
@@ -441,6 +443,7 @@ module
     //         [in] ArrayOf<Int32> *ks);
 
     //     interface IECFieldF2m;
+    //     interface IECField;
     // }
 
     // class CECFieldFp {
@@ -448,6 +451,7 @@ module
     //         [in] IBigInteger *p);
 
     //     interface IECFieldFp;
+    //     interface IECField;
     // }
 
     // class CECGenParameterSpec {
@@ -455,6 +459,7 @@ module
     //         [in] String name);
 
     //     interface IECGenParameterSpec;
+    //     interface IAlgorithmParameterSpec;
     // }
 
     // class CECParameterSpec {
@@ -465,6 +470,7 @@ module
     //         [in] Int32 cofactor);
 
     //     interface IECParameterSpec;
+    //     interface IAlgorithmParameterSpec;
     // }
 
     // class CECPoint {
@@ -482,6 +488,7 @@ module
     //         [in] IECParameterSpec *params);
 
     //     interface IECPrivateKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CECPublicKeySpec {
@@ -490,6 +497,7 @@ module
     //         [in] IECParameterSpec *params);
 
     //     interface IECPublicKeySpec;
+    //     interface IKeySpec;
     // }
 
     // [deprecated]
@@ -512,6 +520,7 @@ module
     //         [in] String mdName);
 
     //     interface IMGF1ParameterSpec;
+    //     interface IAlgorithmParameterSpec;
     // }
 
     // [deprecated]
@@ -520,6 +529,8 @@ module
     //         [in] ArrayOf<Byte> *encodedKey);
 
     //     interface IPKCS8EncodedKeySpec;
+    //     interface IEncodedKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CPSSParameterSpec {
@@ -533,6 +544,7 @@ module
     //         [in] Int32 trailerField);
 
     //     interface IPSSParameterSpec;
+    //     interface IAlgorithmParameterSpec;
     // }
 
     // class CRSAKeyGenParameterSpec {
@@ -541,6 +553,7 @@ module
     //         [in] IBigInteger *publicExponent);
 
     //     interface IRSAKeyGenParameterSpec;
+    //     interface IAlgorithmParameterSpec;
     // }
 
     // [deprecated]
@@ -557,6 +570,8 @@ module
     //         [in] ArrayOf<IRSAOtherPrimeInfo*> *otherPrimeInfo);
 
     //     interface IRSAMultiPrimePrivateCrtKeySpec;
+    //     interface IRSAPrivateKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CRSAOtherPrimeInfo {
@@ -580,6 +595,8 @@ module
     //         [in] IBigInteger *crtCoefficient);
 
     //     interface IRSAPrivateCrtKeySpec;
+    //     interface IRSAPrivateKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CRSAPrivateKeySpec {
@@ -588,6 +605,7 @@ module
     //         [in] IBigInteger *privateExponent);
 
     //     interface IRSAPrivateKeySpec;
+    //     interface IKeySpec;
     // }
 
     // class CRSAPublicKeySpec {
@@ -596,6 +614,7 @@ module
     //         [in] IBigInteger *publicExponent);
 
     //     interface IRSAPublicKeySpec;
+    //     interface IKeySpec;
     // }
 
     // [deprecated]
@@ -604,6 +623,8 @@ module
     //         [in] ArrayOf<Byte> *encodedKey);
 
     //     interface IX509EncodedKeySpec;
+    //     interface IEncodedKeySpec;
+    //     interface IKeySpec;
     // }
 
     // } // namespace Spec

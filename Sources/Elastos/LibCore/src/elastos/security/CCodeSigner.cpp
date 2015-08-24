@@ -10,22 +10,12 @@ namespace Security {
 
 static const Int64 sSerialVersionUID = 6819288105193937581L;
 
+CAR_OBJECT_IMPL(CCodeSigner);
+CAR_INTERFACE_IMPL_2(CCodeSigner, Object, ICodeSigner, ISerializable);
 CCodeSigner::CCodeSigner()
     : mHash(0)
 {}
 
-/**
- * Compares the specified object with this {@code CodeSigner} for equality.
- * Returns {@code true} if the specified object is also an instance of
- * {@code CodeSigner}, the two {@code CodeSigner} encapsulate the same
- * certificate path and the same time stamp, if present in both.
- *
- * @param obj
- *            object to be compared for equality with this {@code
- *            CodeSigner}.
- * @return {@code true} if the specified object is equal to this {@code
- *         CodeSigner}, otherwise {@code false}.
- */
 ECode CCodeSigner::Equals(
     /* [in] */ IInterface* obj,
     /* [out] */ Boolean* result)
@@ -54,11 +44,6 @@ ECode CCodeSigner::Equals(
     return NOERROR;
 }
 
-/**
- * Returns the certificate path associated with this {@code CodeSigner}.
- *
- * @return the certificate path associated with this {@code CodeSigner}.
- */
 ECode CCodeSigner::GetSignerCertPath(
     /* [out] */ ICertPath** certPath)
 {
@@ -67,12 +52,6 @@ ECode CCodeSigner::GetSignerCertPath(
     return NOERROR;
 }
 
-/**
- * Returns the time stamp associated with this {@code CodeSigner}.
- *
- * @return the time stamp associated with this {@code CodeSigner}, maybe
- *         {@code null}.
- */
 ECode CCodeSigner::GetTimestamp(
     /* [out] */ ITimestamp** timestamp)
 {
@@ -81,15 +60,6 @@ ECode CCodeSigner::GetTimestamp(
     return NOERROR;
 }
 
-/**
- * Returns the hash code value for this {@code CodeSigner}. Returns the same
- * hash code for {@code CodeSigner}s that are equal to each other as
- * required by the general contract of {@link Object#hashCode}.
- *
- * @return the hash code value for this {@code CodeSigner}.
- * @see Object#equals(Object)
- * @see CodeSigner#equals(Object)
- */
 ECode CCodeSigner::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
@@ -103,13 +73,6 @@ ECode CCodeSigner::GetHashCode(
     return NOERROR;
 }
 
-/**
- * Returns a string containing a concise, human-readable description of the
- * this {@code CodeSigner} including its first certificate and its time
- * stamp, if present.
- *
- * @return a printable representation for this {@code CodeSigner}.
- */
 ECode CCodeSigner::ToString(
     /* [out] */ String* str)
 {
@@ -139,17 +102,6 @@ ECode CCodeSigner::constructor()
     return NOERROR;
 }
 
-/**
- * Constructs a new instance of {@code CodeSigner}.
- *
- * @param signerCertPath
- *            the certificate path associated with this code signer.
- * @param timestamp
- *            the time stamp associated with this code signer, maybe {@code
- *            null}.
- * @throws NullPointerException
- *             if {@code signerCertPath} is {@code null}.
- */
 ECode CCodeSigner::constructor(
     /* [in] */ ICertPath* signerCertPath,
     /* [in] */ ITimestamp* timestamp)

@@ -5,6 +5,7 @@ namespace Elastos {
 namespace Security {
 namespace Spec {
 
+CAR_INTERFACE_IMPL_2(EncodedKeySpec, Object, IEncodedKeySpec, IKeySpec);
 EncodedKeySpec::EncodedKeySpec()
 {}
 
@@ -17,11 +18,6 @@ EncodedKeySpec::EncodedKeySpec(
     mEncodedKey->Copy(0, encodedKey, 0, mEncodedKey->GetLength());
 }
 
-/**
- * Returns the encoded key bytes.
- *
- * @return the encoded key bytes.
- */
 ECode EncodedKeySpec::GetEncoded(
     /* [out, callee] */ ArrayOf<Byte> **encodedKey)
 {
@@ -35,7 +31,7 @@ ECode EncodedKeySpec::GetEncoded(
     return NOERROR;
 }
 
-ECode EncodedKeySpec::Init(
+ECode EncodedKeySpec::constructor(
     /* [in] */ ArrayOf<Byte> *encodedKey)
 {
     // Defensively copies parameter

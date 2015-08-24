@@ -9,22 +9,6 @@ module
 
     interface ICodeSigner {
         /**
-         * Compares the specified object with this {@code CodeSigner} for equality.
-         * Returns {@code true} if the specified object is also an instance of
-         * {@code CodeSigner}, the two {@code CodeSigner} encapsulate the same
-         * certificate path and the same time stamp, if present in both.
-         *
-         * @param obj
-         *            object to be compared for equality with this {@code
-         *            CodeSigner}.
-         * @return {@code true} if the specified object is equal to this {@code
-         *         CodeSigner}, otherwise {@code false}.
-         */
-        Equals(
-            [in] IInterface* obj,
-            [out] Boolean* result);
-
-        /**
          * Returns the certificate path associated with this {@code CodeSigner}.
          *
          * @return the certificate path associated with this {@code CodeSigner}.
@@ -40,28 +24,6 @@ module
          */
         GetTimestamp(
             [out] ITimestamp** timestamp);
-
-        /**
-         * Returns the hash code value for this {@code CodeSigner}. Returns the same
-         * hash code for {@code CodeSigner}s that are equal to each other as
-         * required by the general contract of {@link Object#hashCode}.
-         *
-         * @return the hash code value for this {@code CodeSigner}.
-         * @see Object#equals(Object)
-         * @see CodeSigner#equals(Object)
-         */
-        GetHashCode(
-            [out] Int32* hashCode);
-
-        /**
-         * Returns a string containing a concise, human-readable description of the
-         * this {@code CodeSigner} including its first certificate and its time
-         * stamp, if present.
-         *
-         * @return a printable representation for this {@code CodeSigner}.
-         */
-        ToString(
-            [out] String* str);
     }
 
     } // namespace Security

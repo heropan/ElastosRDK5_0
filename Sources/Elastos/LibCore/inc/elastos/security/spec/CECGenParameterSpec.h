@@ -9,8 +9,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CECGenParameterSpec)
+    , public Object
+    , public IECGenParameterSpec
+    , public IAlgorithmParameterSpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetName(
         /* [out] */ String *name);
 

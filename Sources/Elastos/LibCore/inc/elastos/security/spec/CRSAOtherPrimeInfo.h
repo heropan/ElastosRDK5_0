@@ -11,8 +11,14 @@ namespace Security {
 namespace Spec {
 
 CarClass(CRSAOtherPrimeInfo)
+    , public Object
+    , public IRSAOtherPrimeInfo
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetCrtCoefficient(
         /* [out] */ IBigInteger **crtCoefficient);
 

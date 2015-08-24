@@ -11,8 +11,15 @@ namespace Security {
 namespace Spec {
 
 CarClass(CECParameterSpec)
+    , public Object
+    , public IECParameterSpec
+    , public IAlgorithmParameterSpec
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetCofactor(
         /* [out] */ Int32 *cofactor);
 
@@ -31,6 +38,23 @@ public:
         /* [in] */ IBigInteger *order,
         /* [in] */ Int32 cofactor);
 
+    /**
+     * Used to set the curve name if available.
+     *
+     * @hide
+     */
+    CARAPI SetCurveName(
+        /* [in] */ const String& curveName);
+
+    /**
+     * Returns the name of the curve if this is a named curve. Returns
+     * {@code null} if this is not known to be a named curve.
+     *
+     * @hide
+     */
+    CARAPI GetCurveName(
+        /* [out] */ String* name);
+
 private:
     // Elliptic curve for which this is parameter
     AutoPtr<IEllipticCurve> mCurve;
@@ -40,6 +64,8 @@ private:
     AutoPtr<IBigInteger> mOrder;
     // Cofactor
     Int32 mCofactor;
+    // Name of curve if available.
+    String mCurveName;
 };
 
 }

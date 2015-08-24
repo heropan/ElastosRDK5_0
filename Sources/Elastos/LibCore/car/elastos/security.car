@@ -14,6 +14,7 @@ module
     merge("security/acl/IGroup.car");
     merge("security/acl/IPermission.car");
 
+    merge("security/cert/Extension.car");
     merge("security/cert/Exceptions.car");
     merge("security/cert/CRLReason.car");
     merge("security/cert/ICertificate.car");
