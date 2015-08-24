@@ -268,6 +268,7 @@ public:
         AutoPtr<IFile> mExternalStorageAndroidObb;
         AutoPtr<IFile> mMediaStorage;
     };
+
 private:
     static const String ENV_EXTERNAL_STORAGE;
     static const String ENV_EMULATED_STORAGE_SOURCE;

@@ -14,19 +14,34 @@ SOURCES += os.cpp
 SOURCES += AsyncResult.cpp
 SOURCES += AsyncTask.cpp
 SOURCES += BaseBundle.cpp
+
+#TODO Battery
+
+SOURCES += Binder.cpp
+SOURCES += CBinderHelper.cpp
+SOURCES += Broadcaster.cpp
+SOURCES += Build.cpp
 SOURCES += CBundle.cpp
 SOURCES += CBundleHelper.cpp
+SOURCES += CCancellationSignal.cpp
+SOURCES += CCancellationSignalHelper.cpp
+SOURCES += CommonClock.cpp
+SOURCES += ConditionVariable.cpp
+SOURCES += CountDownTimer.cpp
+#SOURCES += CDropBoxManagerEntry.cpp
+#SOURCES += CDropBoxManager.cpp
+#SOURCES += Environment.cpp
+
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
-SOURCES += Binder.cpp
-SOURCES += CBinderHelper.cpp
 SOURCES += SystemClock.cpp
 SOURCES += Looper.cpp
 SOURCES += CLooperHelper.cpp
 SOURCES += Handler.cpp
 SOURCES += HandlerRunnable.cpp
-#SOURCES += CHandlerThread.cpp
+SOURCES += HandlerThread.cpp
+SOURCES += CHandlerThread.cpp
 SOURCES += SomeArgs.cpp
 SOURCES += HandlerCaller.cpp
 SOURCES += Runnable.cpp
@@ -38,9 +53,8 @@ SOURCES += CMessageQueue.cpp
 SOURCES += NativeMessageQueue.cpp
 SOURCES += UserHandle.cpp
 SOURCES += CUserHandleHelper.cpp
-SOURCES += Build.cpp
-#SOURCES += SystemProperties.cpp
-#SOURCES += CSystemProperties.cpp
+SOURCES += SystemProperties.cpp
+SOURCES += CSystemProperties.cpp
 
 #SOURCES = BatteryStats.cpp
 #SOURCES += BatteryStatsImpl.cpp
@@ -56,7 +70,7 @@ SOURCES += Build.cpp
 #SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
 #SOURCES += CPatternMatcher.cpp
 #SOURCES += CServiceManager.cpp
-#SOURCES += Environment.cpp
+
 #SOURCES += FileObserver.cpp
 #SOURCES += FileUtils.cpp
 #SOURCES += invokeCallback_gnuc.S
@@ -73,13 +87,10 @@ SOURCES += Build.cpp
 #SOURCES += CPowerManagerWakeLock.cpp
 #SOURCES += UEventObserver.cpp
 #SOURCES += CStatFs.cpp
-#SOURCES += CDropBoxManagerEntry.cpp
-#SOURCES += CDropBoxManager.cpp
+
 #SOURCES += CSystemVibrator.cpp
 #SOURCES += TokenWatcher.cpp
 #SOURCES += CUpdateLock.cpp
-#SOURCES += CCancellationSignal.cpp
-#SOURCES += CCancellationSignalHelper.cpp
 #SOURCES += SystemService.cpp
 #SOURCES += CSystemService.cpp
 #SOURCES += CEnvironment.cpp

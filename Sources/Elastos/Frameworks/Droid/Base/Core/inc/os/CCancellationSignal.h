@@ -4,17 +4,22 @@
 
 #include "_Elastos_Droid_Os_CCancellationSignal.h"
 #include "ext/frameworkext.h"
-#include <pthread.h>
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
+/**
+ * Provides the ability to cancel an operation in progress.
+ */
 CarClass(CCancellationSignal)
+    , public Object
+    , public ICancellationSignal
 {
 private:
     class Transport
-        : public ElRefBase
+        : public Object
         , public IICancellationSignal {
     public:
         CAR_INTERFACE_DECL()
@@ -28,24 +33,17 @@ private:
         AutoPtr<ICancellationSignal> mCancellationSignal;
     };
 
-    class Autolock {
-    public:
-        Autolock(pthread_mutex_t* mutex) : mMutex(mutex) {
-            assert(mMutex != NULL);
-            pthread_mutex_lock(mMutex);
-        }
-
-        ~Autolock() {
-            pthread_mutex_unlock(mMutex);
-        }
-    private:
-        pthread_mutex_t* mMutex;
-    };
-
 public:
+    /**
+     * Creates a cancellation signal, initially not canceled.
+     */
     CCancellationSignal();
 
     ~CCancellationSignal();
+
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
 
     CARAPI constructor();
 
@@ -135,9 +133,6 @@ private:
     AutoPtr<ICancellationSignalOnCancelListener> mOnCancelListener;
     AutoPtr<IICancellationSignal> mRemote;
     Boolean mCancelInProgress;
-
-    pthread_cond_t mCond;
-    pthread_mutex_t mMutex;
 };
 
 } // namespace Os

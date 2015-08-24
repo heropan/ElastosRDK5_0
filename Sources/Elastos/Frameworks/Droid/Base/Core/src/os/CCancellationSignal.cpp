@@ -1,53 +1,14 @@
 #include "os/CCancellationSignal.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-// b4be01c2-5eff-4962-bad3-6b09feb1e384
-extern "C" const InterfaceID EIID_Transport =
-        { 0xb4be01c2, 0x5eff, 0x4962, { 0xba, 0xd3, 0x6b, 0x09, 0xfe, 0xb1, 0xe3, 0x84 } };
-
 //===============================================================================
 //                  CCancellationSignal::Transport
 //===============================================================================
-UInt32 CCancellationSignal::Transport::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 CCancellationSignal::Transport::Release()
-{
-    return ElRefBase::Release();
-}
-
-PInterface CCancellationSignal::Transport::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IICancellationSignal*)this;
-    }
-    else if (riid == EIID_IICancellationSignal) {
-        return (PInterface)(IICancellationSignal*)this;
-    }
-    else if (riid == EIID_Transport) {
-        return reinterpret_cast<PInterface>(this);
-    }
-
-    return NULL;
-}
-
-ECode CCancellationSignal::Transport::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IICancellationSignal*)this) {
-        *pIID = EIID_IICancellationSignal;
-    }
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CCancellationSignal::Transport, Object, IICancellationSignal)
 
 CCancellationSignal::Transport::Transport()
 {
@@ -62,18 +23,18 @@ ECode CCancellationSignal::Transport::Cancel()
 //===============================================================================
 //                  CCancellationSignal
 //===============================================================================
+CAR_OBJECT_IMPL(CCancellationSignal)
+
+CAR_INTERFACE_IMPL(CCancellationSignal, Object, ICancellationSignal)
+
 CCancellationSignal::CCancellationSignal()
     : mIsCanceled(FALSE)
     , mCancelInProgress(FALSE)
 {
-    pthread_cond_init(&mCond, NULL);
-    pthread_mutex_init(&mMutex, NULL);
 }
 
 CCancellationSignal::~CCancellationSignal()
 {
-    pthread_cond_destroy(&mCond);
-    pthread_mutex_destroy(&mMutex);
 }
 
 ECode CCancellationSignal::constructor()
@@ -84,7 +45,7 @@ ECode CCancellationSignal::constructor()
 ECode CCancellationSignal::IsCanceled(
     /* [out] */ Boolean* result)
 {
-    Autolock lock(&mMutex);
+    AutoLock lock(this);
     *result = mIsCanceled;
     return NOERROR;
 }
@@ -103,7 +64,7 @@ ECode CCancellationSignal::Cancel()
     AutoPtr<ICancellationSignalOnCancelListener> listener;
     AutoPtr<IICancellationSignal> remote;
     {
-        Autolock lock(&mMutex);
+        AutoLock lock(this);
         if (mIsCanceled) {
             return NOERROR;
         }
@@ -126,10 +87,9 @@ ECode CCancellationSignal::Cancel()
     }
     // } finally {
     {
-        Autolock lock(&mMutex);
+        AutoLock lock(this);
         mCancelInProgress = FALSE;
-        // NotifyAll();
-        pthread_cond_signal(&mCond);
+        NotifyAll();
     }
     // }
     return NOERROR;
@@ -139,7 +99,7 @@ ECode CCancellationSignal::SetOnCancelListener(
     /* [in] */ ICancellationSignalOnCancelListener* listener)
 {
     {
-        Autolock lock(&mMutex);
+        AutoLock lock(this);
         WaitForCancelFinishedLocked();
 
         if (mOnCancelListener.Get() == listener) {
@@ -160,7 +120,7 @@ ECode CCancellationSignal::SetRemote(
     /* [in] */ IICancellationSignal* remote)
 {
     {
-        Autolock lock(&mMutex);
+        AutoLock lock(this);
         WaitForCancelFinishedLocked();
 
         if (mRemote.Get() == remote) {
@@ -184,8 +144,7 @@ void CCancellationSignal::WaitForCancelFinishedLocked()
 {
     while (mCancelInProgress) {
         // try {
-        pthread_cond_wait(&mCond, &mMutex);
-        //Wait();
+        Wait();
         // } catch (InterruptedException ex) {
         // }
     }
@@ -201,7 +160,7 @@ AutoPtr<ICancellationSignal> CCancellationSignal::FromTransport(
     /* [in] */ IICancellationSignal* cancellationSignal)
 {
     if (cancellationSignal != NULL) {
-        Transport* transport = reinterpret_cast<Transport*>(cancellationSignal->Probe(EIID_Transport));
+        Transport* transport = (Transport*)cancellationSignal;
         if (transport) {
             return transport->mCancellationSignal;
         }

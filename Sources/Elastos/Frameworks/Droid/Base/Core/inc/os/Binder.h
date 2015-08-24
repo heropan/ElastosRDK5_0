@@ -1,12 +1,8 @@
 #ifndef __ELASTOS_DROID_OS_BINDER_H__
 #define __ELASTOS_DROID_OS_BINDER_H__
 
+#include "ext/frameworkext.h"
 #include <elastos/core/Object.h>
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
 
 namespace Elastos {
 namespace Droid {

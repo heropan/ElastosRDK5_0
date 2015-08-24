@@ -7,6 +7,7 @@ module
     merge("os/Binder.car");
     merge("os/Bundle.car");
     merge("os/CancellationSignal.car");
+    merge("os/CommonClock.car");
     merge("os/CommonTimeUtils.car");
     merge("os/ConditionVariable.car");
     merge("os/CountDownTimer.car");
@@ -78,6 +79,8 @@ module
 
     using interface Elastos.Core.IClassLoader;
     using interface Elastos.Core.ICloneable;
+    using interface Elastos.Core.IThread;
+    using interface Elastos.Core.IRunnable;
     using interface Elastos.IO.IParcelable;
     // using interface Elastos.IO.IFileDescriptor;
     // using interface Elastos.IO.IFile;
@@ -225,22 +228,24 @@ module
         interface IHandler;
     }
 
-    // class CHandlerThread {
-    //     constructor(
-    //         [in] String name);
+    class CHandlerThread {
+        constructor(
+            [in] String name);
 
-    //     /**
-    //      * Constructs a HandlerThread.
-    //      * @param name
-    //      * @param priority The priority to run the thread at. The value supplied must be from
-    //      * {@link android.os.Process} and not from java.lang.Thread.
-    //      */
-    //     constructor(
-    //         [in] String name,
-    //         [in] Int32 priority);
+        /**
+         * Constructs a HandlerThread.
+         * @param name
+         * @param priority The priority to run the thread at. The value supplied must be from
+         * {@link android.os.Process} and not from java.lang.Thread.
+         */
+        constructor(
+            [in] String name,
+            [in] Int32 priority);
 
-    //     interface IHandlerThread;
-    // }
+        interface IHandlerThread;
+        interface IThread;
+        interface IRunnable;
+    }
 
     class CMessageQueue {
          constructor(
@@ -296,6 +301,20 @@ module
 
     singleton class CUserHandleHelper {
         interface IUserHandleHelper;
+    }
+
+    singleton class CSystemProperties {
+        interface ISystemProperties;
+    }
+
+    class CCancellationSignal {
+        constructor();
+
+        interface ICancellationSignal;
+    }
+
+    singleton class CCancellationSignalHelper {
+        interface ICancellationSignalHelper;
     }
 
     // class CPatternMatcher {
@@ -445,10 +464,6 @@ module
     //     interface IParcelable;
     // }
 
-    //singleton class CSystemProperties {
-    //    interface ISystemProperties;
-    //}
-
     // singleton class CSystemService {
     //     interface ISystemService;
     // }
@@ -468,15 +483,6 @@ module
     //     interface IUpdateLock;
     // }
 
-    // class CCancellationSignal {
-    //     constructor();
-
-    //     interface ICancellationSignal;
-    // }
-
-    // singleton class CCancellationSignalHelper {
-    //     interface ICancellationSignalHelper;
-    // }
 
     // singleton class CEnvironment {
     //     interface IEnvironment;

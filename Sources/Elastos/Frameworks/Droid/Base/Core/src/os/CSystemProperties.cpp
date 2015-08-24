@@ -1,5 +1,4 @@
 
-#include "ext/frameworkdef.h"
 #include "os/CSystemProperties.h"
 #include "os/SystemProperties.h"
 
@@ -7,9 +6,9 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CAR_INTERFACE_DECL(CSystemProperties, Singleton, ISystemProperties)
+CAR_INTERFACE_IMPL(CSystemProperties, Singleton, ISystemProperties)
 
-CAR_SINGLETON_DECL(CSystemProperties)
+CAR_SINGLETON_IMPL(CSystemProperties)
 
 ECode CSystemProperties::Get(
     /* [in] */ const String& key,
@@ -31,9 +30,7 @@ ECode CSystemProperties::GetInt32(
     /* [in] */ Int32 def,
     /* [out] */ Int32* value)
 {
-    VALIDATE_NOT_NULL(value)
-    *value = SystemProperties::GetInt32(key, def);
-    return NOERROR;
+    return SystemProperties::GetInt32(key, def, value);
 }
 
 ECode CSystemProperties::GetInt64(
@@ -41,9 +38,7 @@ ECode CSystemProperties::GetInt64(
     /* [in] */ Int64 def,
     /* [out] */ Int64* value)
 {
-    VALIDATE_NOT_NULL(value)
-    *value = SystemProperties::GetInt64(key, def);
-    return NOERROR;
+    return SystemProperties::GetInt64(key, def, value);
 }
 
 ECode CSystemProperties::GetBoolean(
@@ -51,9 +46,7 @@ ECode CSystemProperties::GetBoolean(
     /* [in] */ Boolean def,
     /* [out] */ Boolean* value)
 {
-    VALIDATE_NOT_NULL(value)
-    *value = SystemProperties::GetBoolean(key, def);
-    return NOERROR;
+    return SystemProperties::GetBoolean(key, def, value);
 }
 
 ECode CSystemProperties::Set(

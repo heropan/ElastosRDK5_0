@@ -2,6 +2,11 @@
 #ifndef __ELASTOS_DROID_OS_HANDLERTHREAD_H__
 #define __ELASTOS_DROID_OS_HANDLERTHREAD_H__
 
+#include "ext/frameworkext.h"
+#include <elastos/core/Thread.h>
+
+using Elastos::Core::Thread;
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -21,6 +26,19 @@ public:
         /* [in] */ const String& name);
 
     HandlerThread(
+        /* [in] */ const String& name,
+        /* [in] */ Int32 priority);
+
+    CARAPI constructor(
+        /* [in] */ const String& name);
+
+    /**
+     * Constructs a HandlerThread.
+     * @param name
+     * @param priority The priority to run the thread at. The value supplied must be from
+     * {@link android.os.Process} and not from java.lang.Thread.
+     */
+    CARAPI constructor(
         /* [in] */ const String& name,
         /* [in] */ Int32 priority);
 
@@ -76,13 +94,15 @@ public:
         /* [out] */ Int32* tid);
 
 protected:
+    HandlerThread();
+
     /**
      * Call back method that can be explicitly overridden if needed to execute some
      * setup before Looper loops.
      */
     virtual CARAPI_(void) OnLooperPrepared();
 
-private:
+protected:
     Int32 mPriority;
     Int32 mTid;
     AutoPtr<ILooper> mLooper;

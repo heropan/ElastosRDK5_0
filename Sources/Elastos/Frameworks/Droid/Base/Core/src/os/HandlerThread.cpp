@@ -7,19 +7,40 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(HandlerThread, Thread, IHandlerThread)
+
+HandlerThread::HandlerThread()
+    : mPriority(0)
+    , mTid(0)
+{}
+
 HandlerThread::HandlerThread(
     /* [in] */ const String& name)
 {
-    Thread::constructor(name);
-    mPriority = IProcess::THREAD_PRIORITY_DEFAULT;
+    constructor(name);
 }
 
 HandlerThread::HandlerThread(
     /* [in] */ const String& name,
     /* [in] */ Int32 priority)
 {
+    constructor(name, priority);
+}
+
+ECode HandlerThread::constructor(
+    /* [in] */ const String& name)
+{
+    Thread::constructor(name);
+    mPriority = IProcess::THREAD_PRIORITY_DEFAULT;
+    return NOERROR;
+}
+ECode HandlerThread::constructor(
+    /* [in] */ const String& name,
+    /* [in] */ Int32 priority)
+{
     Thread::constructor(name);
     mPriority = priority;
+    return NOERROR;
 }
 
 void HandlerThread::OnLooperPrepared()
@@ -27,7 +48,7 @@ void HandlerThread::OnLooperPrepared()
 
 ECode HandlerThread::Run()
 {
-    mTid = Process::MyTid();
+    //TODO mTid = Process::MyTid();
     Looper::Prepare();
     {
         Lock();
@@ -37,7 +58,7 @@ ECode HandlerThread::Run()
 
         Unlock();
     }
-    Process::SetThreadPriority(mPriority);
+    //TODO Process::SetThreadPriority(mPriority);
     OnLooperPrepared();
     Looper::Loop();
     mTid = -1;

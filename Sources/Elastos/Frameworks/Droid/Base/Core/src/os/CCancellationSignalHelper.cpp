@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CCancellationSignalHelper, Singleton, ICancellationSignalHelper)
+
+CAR_SINGLETON_IMPL(CCancellationSignalHelper)
+
 ECode CCancellationSignalHelper::CreateTransport(
     /* [out] */ IICancellationSignal** cancellationSignal)
 {
