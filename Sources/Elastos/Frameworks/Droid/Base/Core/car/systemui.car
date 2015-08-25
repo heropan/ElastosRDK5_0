@@ -138,14 +138,6 @@ module
     merge("systemui/statusbar/phone/VelocityTrackerFactory.car");
     merge("systemui/statusbar/phone/VelocityTrackerInterface.car");
 
-//     merge("systemui/statusbar/phone/FastColorDrawable.car");
-//     merge("systemui/statusbar/phone/IconMerger.car");
-//     merge("systemui/statusbar/phone/NavigationBarView.car");
-//     merge("systemui/statusbar/phone/PhoneStatusBar.car");
-//     merge("systemui/statusbar/phone/Ticker.car");
-//     merge("systemui/statusbar/phone/TickerView.car");
-//     merge("systemui/statusbar/phone/Panel.car");
-
 
     merge("systemui/statusbar/stack/AmbientState.car");
     merge("systemui/statusbar/stack/AnimationFilter.car");
@@ -193,15 +185,70 @@ module
 
 
 
-//     merge("systemui/recent/TaskDescription.car");
-//     merge("systemui/recent/RecentsCallback.car");
-//     merge("systemui/recent/StatusBarTouchProxy.car");
-//     merge("systemui/recent/RecentsPanelView.car");
-//     merge("systemui/recent/RecentsActivity.car");
-//     merge("systemui/recent/RecentTasksLoader.car");
-//     merge("systemui/recent/TaskDescriptionAdapter.car");
-//     merge("systemui/recent/RecentsVerticalScrollView.car");
-//     merge("systemui/recent/RecentsHorizontalScrollView.car");
+    merge("systemui/recent/RecentTasksLoader.car");
+    merge("systemui/recent/RecentsActivity.car");
+    merge("systemui/recent/RecentsCallback.car");
+    merge("systemui/recent/RecentsHorizontalScrollView.car");
+    merge("systemui/recent/RecentsPanelView.car");
+    merge("systemui/recent/RecentsVerticalScrollView.car");
+    merge("systemui/recent/StatusBarTouchProxy.car");
+    merge("systemui/recent/TaskDescription.car");
+    merge("systemui/recent/TaskDescriptionAdapter.car");
+
+    merge("systemui/recents/AlternateRecentsComponent.car");
+    merge("systemui/recents/Constants.car");
+    merge("systemui/recents/RecentsActivity.car");
+    merge("systemui/recents/RecentsAppWidgetHost.car");
+    merge("systemui/recents/RecentsConfiguration.car");
+
+    merge("systemui/recents/misc/Console.car");
+    merge("systemui/recents/misc/DebugTrigger.car");
+    merge("systemui/recents/misc/DozeTrigger.car");
+    merge("systemui/recents/misc/NamedCounter.car");
+    merge("systemui/recents/misc/ReferenceCountedTrigger.car");
+    merge("systemui/recents/misc/SystemServicesProxy.car");
+    merge("systemui/recents/misc/Utilities.car");
+
+    merge("systemui/recents/model/BitmapLruCache.car");
+    merge("systemui/recents/model/DrawableLruCache.car");
+    merge("systemui/recents/model/KeyStoreLruCache.car");
+    merge("systemui/recents/model/RecentsPackageMonitor.car");
+    merge("systemui/recents/model/RecentsTaskLoader.car");
+    merge("systemui/recents/model/SpaceNode.car");
+    merge("systemui/recents/model/StringLruCache.car");
+    merge("systemui/recents/model/Task.car");
+    merge("systemui/recents/model/TaskGrouping.car");
+    merge("systemui/recents/model/TaskStack.car");
+
+    merge("systemui/recents/views/AnimateableViewBounds.car");
+    merge("systemui/recents/views/DebugOverlayView.car");
+    merge("systemui/recents/views/FakeShadowDrawable.car");
+    merge("systemui/recents/views/FixedSizeImageView.car");
+    merge("systemui/recents/views/RecentsView.car");
+    merge("systemui/recents/views/SwipeHelper.car");
+    merge("systemui/recents/views/SystemBarScrimViews.car");
+    merge("systemui/recents/views/TaskStackView.car");
+    merge("systemui/recents/views/TaskStackViewFilterAlgorithm.car");
+    merge("systemui/recents/views/TaskStackViewLayoutAlgorithm.car");
+    merge("systemui/recents/views/TaskStackViewScroller.car");
+    merge("systemui/recents/views/TaskStackViewTouchHandler.car");
+    merge("systemui/recents/views/TaskView.car");
+    merge("systemui/recents/views/TaskViewFooter.car");
+    merge("systemui/recents/views/TaskViewHeader.car");
+    merge("systemui/recents/views/TaskViewThumbnail.car");
+    merge("systemui/recents/views/TaskViewTransform.car");
+    merge("systemui/recents/views/ViewAnimation.car");
+    merge("systemui/recents/views/ViewPool.car");
+
+    merge("systemui/screenshot/GlobalScreenshot.car");
+    merge("systemui/screenshot/TakeScreenshotService.car");
+
+    merge("systemui/settings/BrightnessController.car");
+    merge("systemui/settings/BrightnessDialog.car");
+    merge("systemui/settings/CurrentUserTracker.car");
+    merge("systemui/settings/ToggleSeekBar.car");
+    merge("systemui/settings/ToggleSlider.car");
+
 
 
 //     interface Elastos.Core.ICharSequence;

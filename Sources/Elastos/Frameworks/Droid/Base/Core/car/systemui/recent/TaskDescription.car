@@ -11,6 +11,7 @@ module
     namespace SystemUI {
     namespace Recent {
 
+    [local]
     interface ITaskDescription {
         SetLoaded(
             [in] Boolean loaded);

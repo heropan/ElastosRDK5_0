@@ -1,5 +1,7 @@
 module
 {
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.View.IView;
     interface Elastos.Droid.SystemUI.Recent.ITaskDescription;
     interface Elastos.Droid.SystemUI.Recent.ITaskDescriptionAdapter;
@@ -34,7 +36,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IFrameLayout
      */
-    [deprecated]
+    [local, deprecated]
     interface IRecentsPanelView {
         NumItemsInOneScreenful(
             [out] Int32* num);
@@ -44,7 +46,7 @@ module
 
         Show(
             [in] Boolean show,
-            [in] IObjectContainer* recentTaskDescriptions,
+            [in] IArrayList* recentTaskDescriptions,
             [in] Boolean firstScreenful,
             [in] Boolean waitingForWindowAnimation);
 
@@ -80,7 +82,7 @@ module
         RefreshRecentTasksList();
 
         OnTasksLoaded(
-            [in] IObjectContainer* tasks,
+            [in] IArrayList* tasks,
             [in] Boolean firstScreenful);
 
         SimulateClick(

@@ -11,6 +11,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IFrameLayout
      */
+    [local]
     interface IStatusBarTouchProxy {
         SetStatusBar(
             [in] IView* statusBar);

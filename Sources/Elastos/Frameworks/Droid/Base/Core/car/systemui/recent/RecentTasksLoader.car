@@ -1,5 +1,7 @@
 module
 {
+    using interface Elastos.Utility.IArrayList;
+
     interface Elastos.Droid.Graphics.IBitmap;
     interface Elastos.Droid.Content.IContext;
 
@@ -28,7 +30,7 @@ module
             [out] IBitmap** bitmap);
 
         GetLoadedTasks(
-            [out] IObjectContainer** tasks);
+            [out] IArrayList** tasks);
 
         Remove(
             [in] ITaskDescription* td);

@@ -11,7 +11,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IHorizontalScrollView
      */
-    [deprecated]
+    [local, deprecated]
     interface IRecentsHorizontalScrollView {
         DismissChild(
             [in] IView* v);

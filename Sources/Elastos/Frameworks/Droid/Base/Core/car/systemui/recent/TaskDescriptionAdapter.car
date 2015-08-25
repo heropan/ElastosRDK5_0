@@ -12,6 +12,7 @@ module
      * @Involve
      * interface Elastos.Droid.Widget.IBaseAdapter
      */
+    [local]
     interface ITaskDescriptionAdapter {
         CreateView(
             [in] IViewGroup* parent,
