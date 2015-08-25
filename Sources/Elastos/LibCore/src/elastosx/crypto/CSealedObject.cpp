@@ -133,7 +133,7 @@ ECode CSealedObject::GetObject(
 //TODO: Need CAlgorithmParametersHelper
             // CAlgorithmParametersHelper::AcquireSingleton((IAlgorithmParametersHelper**)&apHelper);
             apHelper->GetInstance(mParamsAlg, (IAlgorithmParameters**)&params);
-            params->InitEx(*mEncodedParams);
+            params->Init(*mEncodedParams);
             cipher->Init(ICipher::DECRYPT_MODE, key, params);
         } else {
             cipher->Init(ICipher::DECRYPT_MODE, key);
@@ -206,7 +206,7 @@ ECode CSealedObject::GetObject(
             // CAlgorithmParametersHelper::AcquireSingleton((IAlgorithmParametersHelper**)&apHelper);
             apHelper->GetInstance(mParamsAlg, (IAlgorithmParameters**)&params);
 
-            params->InitEx(*mEncodedParams);
+            params->Init(*mEncodedParams);
             cipher->Init(ICipher::DECRYPT_MODE, key, params);
         } else {
             cipher->Init(ICipher::DECRYPT_MODE, key);

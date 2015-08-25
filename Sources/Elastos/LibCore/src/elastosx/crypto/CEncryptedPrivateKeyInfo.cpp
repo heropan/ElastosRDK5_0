@@ -82,7 +82,7 @@ ECode CEncryptedPrivateKeyInfo::constructor(
 //TODO: Need CAlgorithmParametersHelper
             // CAlgorithmParametersHelper::AcquireSingalton((IAlgorithmParametersHelper**)&helper);
             helper->GetInstance(mAlgName, (IAlgorithmParameters**)&aParams);
-            aParams->InitEx(*params);
+            aParams->Init(*params);
             if (!mappingExists) {
                 aParams->GetAlgorithm(&mAlgName);
             }
