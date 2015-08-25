@@ -8,8 +8,15 @@ namespace Elastos {
 namespace Security {
 
 CarClass(CKeyStorePrivateKeyEntry)
+    , public Object
+    , public IKeyStorePrivateKeyEntry
+    , public IKeyStoreEntry
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetPrivateKey(
         /* [out] */ IPrivateKey **privateKey);
 

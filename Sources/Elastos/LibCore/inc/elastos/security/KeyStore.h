@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_SECURITY_KEYSTORE_H__
 #define __ELASTOS_SECURITY_KEYSTORE_H__
 
+#include "core/Object.h"
 
-
+using Elastos::Core::Object;
 using Elastos::Utility::IDate;
 using Elastos::Utility::IEnumeration;
 using Elastos::IO::IInputStream;
@@ -14,8 +15,13 @@ namespace Security {
 
 extern "C" const InterfaceID EIID_KeyStore;
 
-class KeyStore{
+class KeyStore
+    : public Object
+    , public IKeyStore
+{
 public:
+    CAR_INTERFACE_DECL();
+
     static CARAPI GetInstance(
         /* [in] */ const String& type,
         /* [out] */ IKeyStore **instance);
@@ -39,7 +45,7 @@ public:
     CARAPI GetType(
         /* [out] */ String *type) const;
 
-   CARAPI GetKey(
+    CARAPI GetKey(
         /* [in] */ const String& alias,
         /* [in] */ ArrayOf<Char32> *password,
         /* [out] */ IKey **key) const;

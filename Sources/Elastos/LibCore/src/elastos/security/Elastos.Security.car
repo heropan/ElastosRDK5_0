@@ -218,6 +218,7 @@ module
     //         [in] ICallbackHandler *handler);
 
     //     interface IKeyStoreCallbackHandlerProtection;
+    //     interface IKeyStoreProtectionParameter;
     // }
 
     // [deprecated]
@@ -227,6 +228,7 @@ module
     //         [in] ArrayOf<ICertificate*> *chain);
 
     //     interface IKeyStorePrivateKeyEntry;
+    //     interface IKeyStoreEntry;
     // }
 
     // class CKeyStoreSecretKeyEntry {
@@ -234,6 +236,7 @@ module
     //         [in] ISecretKey *secretKey);
 
     //     interface IKeyStoreSecretKeyEntry;
+    //     interface IKeyStoreEntry;
     // }
 
     // class CKeyStoreTrustedCertificateEntry {
@@ -241,14 +244,11 @@ module
     //         [in] ICertificate *trustCertificate);
 
     //     interface IKeyStoreTrustedCertificateEntry;
+    //     interface IKeyStoreEntry;
     // }
 
     // singleton class CKeyStoreHelper {
     //     interface IKeyStoreHelper;
-    // }
-
-    // singleton class CMessageDigestHelper {
-    //     interface IMessageDigestHelper;
     // }
 
     // singleton class CKeyStoreBuilderHelper {
@@ -277,10 +277,6 @@ module
     //         [in] String type);
 
     //     interface ICertificateFactory;
-    // }
-
-    // singleton class CCertificateFactoryHelper {
-    //     interface ICertificateFactoryHelper;
     // }
 
     // class CCollectionCertStoreParameters {
@@ -629,9 +625,6 @@ module
 
     // } // namespace Spec
 
-    // singleton class CSecurity {
-    //     interface ISecurity;
-    // }
 
     // } // end Security
     // } //end Elastos

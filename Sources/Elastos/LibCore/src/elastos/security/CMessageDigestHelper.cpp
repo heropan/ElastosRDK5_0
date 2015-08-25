@@ -6,7 +6,6 @@ namespace Elastos {
 namespace Security {
 
 CAR_INTERFACE_IMPL(CMessageDigestHelper, Singleton, IMessageDigestHelper)
-
 CAR_SINGLETON_IMPL(CMessageDigestHelper)
 
 ECode CMessageDigestHelper::GetInstance(

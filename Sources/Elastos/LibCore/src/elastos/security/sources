@@ -26,5 +26,8 @@ SOURCES += CMessageDigestHelper.cpp
 SOURCES += CSecurity.cpp
 SOURCES += MessageDigestSpi.cpp
 SOURCES += MessageDigest.cpp
+#SOURCES += CAlgorithmParameterGenerator.cpp
+#SOURCES += CAlgorithmParameterGeneratorHelper.cpp
+#SOURCES += AlgorithmParameterGeneratorSpi.cpp
 
 LIBRARIES += cert/cert.lib

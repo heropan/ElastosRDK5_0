@@ -8,13 +8,14 @@
 namespace Elastos {
 namespace Security {
 
-ECode KeyStoreSpi::EngineStoreEx(
+CAR_INTERFACE_IMPL(KeyStoreSpi, Object, IKeyStoreSpi);
+ECode KeyStoreSpi::EngineStore(
     /* [in] */ IKeyStoreLoadStoreParameter *param)
 {
     return E_UNSUPPORTED_OPERATION_EXCEPTION;
 }
 
-ECode KeyStoreSpi::EngineLoadEx(
+ECode KeyStoreSpi::EngineLoad(
     /* [in] */ IKeyStoreLoadStoreParameter *param)
 {
     if (param == NULL) {

@@ -16,8 +16,7 @@ class MessageDigest
     , public IMessageDigest
 {
 public:
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
+    CAR_INTERFACE_DECL();
 
     static CARAPI GetInstance(
         /* [in] */ const String& algorithm,

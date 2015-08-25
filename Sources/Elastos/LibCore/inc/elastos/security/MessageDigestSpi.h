@@ -4,13 +4,16 @@
 
 #include <coredef.h>
 #include "Elastos.CoreLibrary_server.h"
+#include "core/Object.h"
 
+using Elastos::Core::Object;
 using Elastos::IO::IByteBuffer;
 
 namespace Elastos {
 namespace Security {
 
-class MessageDigestSpi : public IInterface
+class MessageDigestSpi
+    : public Object
 {
 public:
     /**

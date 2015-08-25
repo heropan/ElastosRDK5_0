@@ -10,8 +10,15 @@ namespace Elastos {
 namespace Security {
 
 CarClass(CKeyStoreCallbackHandlerProtection)
+    , public Object
+    , public IKeyStoreCallbackHandlerProtection
+    , public IKeyStoreProtectionParameter
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetCallbackHandler(
         /* [out] */ ICallbackHandler **handler);
 

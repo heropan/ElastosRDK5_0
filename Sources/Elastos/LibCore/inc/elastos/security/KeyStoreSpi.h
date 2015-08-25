@@ -2,8 +2,9 @@
 #ifndef __ELASTOS_SECURITY_KEYSTORESPI_H__
 #define __ELASTOS_SECURITY_KEYSTORESPI_H__
 
+#include "core/Object.h"
 
-
+using Elastos::Core::Object;
 using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::IEnumeration;
@@ -12,8 +13,13 @@ using Elastos::Utility::IDate;
 namespace Elastos {
 namespace Security {
 
-class KeyStoreSpi {
+class KeyStoreSpi
+    : public Object
+    , public IKeyStoreSpi
+{
 public:
+    CAR_INTERFACE_DECL();
+
     /**
      * Returns the key with the given alias, using the password to recover the
      * key from the store.
@@ -113,7 +119,7 @@ public:
      *             if {@code key} is a {@code PrivateKey} and {@code chain}
      *             does.
      */
-    virtual CARAPI EngineSetKeyEntryEx(
+    virtual CARAPI EngineSetKeyEntry(
         /* [in] */ const String& alias,
         /* [in] */ ArrayOf<Byte> *key,
         /* [in] */ ArrayOf<Elastos::Security::Cert::ICertificate*> *chain) = 0;
@@ -254,7 +260,7 @@ public:
      *             if the given {@link KeyStore.LoadStoreParameter} is not
      *             recognized.
      */
-    virtual CARAPI EngineStoreEx(
+    virtual CARAPI EngineStore(
         /* [in] */ IKeyStoreLoadStoreParameter *param);
 
     /**
@@ -296,7 +302,7 @@ public:
      *             if the given {@link KeyStore.LoadStoreParameter} is not
      *             recognized.
      */
-    virtual CARAPI EngineLoadEx(
+    virtual CARAPI EngineLoad(
         /* [in] */ IKeyStoreLoadStoreParameter *param);
 
     /**

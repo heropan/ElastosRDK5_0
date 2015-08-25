@@ -15,16 +15,13 @@ namespace Elastos {
 namespace Security {
 
 class MessageDigestImpl
-    : public Object
+    : public MessageDigest
     , public ICloneable
-    , public MessageDigest
 {
     friend class MessageDigest;
 
 public:
     CAR_INTERFACE_DECL()
-
-    CAR_OBJECT_DECL()
 
     CARAPI Clone(
         /* [out] */ IInterface** object);
@@ -68,6 +65,7 @@ private:
     AutoPtr<MessageDigestSpi> mSpiImpl;
 };
 
+CAR_INTERFACE_IMPL(MessageDigestImpl, MessageDigest, ICloneable);
 MessageDigestImpl::MessageDigestImpl(
     /* [in] */ MessageDigestSpi* messageDigestSpi,
     /* [in] */ IProvider* provider,
@@ -76,63 +74,6 @@ MessageDigestImpl::MessageDigestImpl(
     , mSpiImpl(messageDigestSpi)
 {
     mProvider = provider;
-}
-
-PInterface MessageDigestImpl::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_ICloneable) {
-        return (ICloneable*)this;
-    }
-    else if (riid == EIID_IMessageDigest) {
-        return MessageDigest::Probe(riid);
-    }
-    else return Object::Probe(riid);
-}
-
-UInt32 MessageDigestImpl::AddRef()
-{
-    return Object::AddRef();
-}
-
-UInt32 MessageDigestImpl::Release()
-{
-    return Object::Release();
-}
-
-ECode MessageDigestImpl::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [out] */ InterfaceID* iid)
-{
-    VALIDATE_NOT_NULL(iid);
-    if (object == (IInterface*)(ICloneable*)this) {
-        *iid = EIID_ICloneable;
-        return NOERROR;
-    }
-    else if (object == (IInterface*)(IMessageDigest*)(MessageDigest*)this) {
-        *iid = EIID_IMessageDigest;
-        return NOERROR;
-    }
-    else return Object::GetInterfaceID(object, iid);
-}
-
-ECode MessageDigestImpl::Aggregate(
-    /* [in] */ AggregateType type,
-    /* [in] */ IInterface* object)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode MessageDigestImpl::GetDomain(
-    /* [out] */ IInterface** object)
-{
-    return E_NOT_IMPLEMENTED;
-}
-
-ECode MessageDigestImpl::GetClassID(
-    /* [out] */ ClassID* clsid)
-{
-    return E_NOT_IMPLEMENTED;
 }
 
 ECode MessageDigestImpl::EngineReset()
@@ -172,7 +113,7 @@ ECode MessageDigestImpl::Clone(
     VALIDATE_NOT_NULL(object)
     AutoPtr<IInterface> cloneObj;
     ICloneable::Probe(mSpiImpl)->Clone((IInterface**)&cloneObj);
-    MessageDigestSpi* spi = (MessageDigestSpi*)cloneObj.Get();
+    MessageDigestSpi* spi = (MessageDigestSpi*)(IObject*)cloneObj.Get();
     AutoPtr<IProvider> provider;
     GetProvider((IProvider**)&provider);
     String algorithm;
@@ -188,19 +129,11 @@ ECode MessageDigestImpl::Clone(
 //---------------------------------------------------------------------
 const AutoPtr<IEngine> MessageDigest::ENGINE = Init_ENGINE();
 
+CAR_INTERFACE_IMPL(MessageDigest, MessageDigestSpi, IMessageDigest);
 MessageDigest::MessageDigest(
     /* [in] */ const String& algorithm)
     : mAlgorithm(algorithm)
 {}
-
-PInterface MessageDigest::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IMessageDigest) {
-        return (IMessageDigest*)this;
-    }
-    return NULL;
-}
 
 ECode MessageDigest::GetInstance(
     /* [in] */ const String& algorithm,
@@ -225,7 +158,7 @@ ECode MessageDigest::GetInstance(
         REFCOUNT_ADD(*instance);
         return NOERROR;
     }
-    *instance = new MessageDigestImpl((MessageDigestSpi*)spi.Get(), provider, algorithm);
+    *instance = new MessageDigestImpl((MessageDigestSpi*)(IObject*)spi.Get(), provider, algorithm);
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }
@@ -272,7 +205,7 @@ ECode MessageDigest::GetInstance(
         REFCOUNT_ADD(*instance);
         return NOERROR;
     }
-    *instance = new MessageDigestImpl((MessageDigestSpi*)spi.Get(), provider, algorithm);
+    *instance = new MessageDigestImpl((MessageDigestSpi*)(IObject*)spi.Get(), provider, algorithm);
     REFCOUNT_ADD(*instance);
     return NOERROR;
 }

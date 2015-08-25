@@ -8,8 +8,15 @@ namespace Elastos {
 namespace Security {
 
 CarClass(CKeyStoreTrustedCertificateEntry)
+    , public Object
+    , public IKeyStoreTrustedCertificateEntry
+    , public IKeyStoreEntry
 {
 public:
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
     CARAPI GetTrustedCertificate(
         /* [out] */ Elastos::Security::Cert::ICertificate **cert);
 
