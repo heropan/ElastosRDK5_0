@@ -1,10 +1,9 @@
 #ifndef __ELASTOS_DROID_OS_ENVIRONMENT_H__
 #define __ELASTOS_DROID_OS_ENVIRONMENT_H__
 
-#include "Elastos.Droid.Core_server.h"
-
+#include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 using Elastos::IO::IFile;
-using Elastos::Droid::Os::Storage::IMountService;
 using Elastos::Droid::Os::Storage::IStorageVolume;
 
 namespace Elastos {
@@ -17,10 +16,92 @@ namespace Os {
 class Environment
 {
 public:
+
+    /** {@hide} */
+    class UserEnvironment
+        : public Object
+    {
+    public:
+        // TODO: generalize further to create package-specific environment
+
+        UserEnvironment(
+            /* [in] */ Int32 useid);
+
+        //@Deprecated
+        AutoPtr<IFile> GetExternalStorageDirectory();
+
+        //@Deprecated
+        AutoPtr<IFile> GetExternalStoragePublicDirectory(
+            /* [in] */ const String& type);
+
+        AutoPtr<ArrayOf<IFile*> > GetExternalDirsForVold();
+
+        AutoPtr<ArrayOf<IFile*> > GetExternalDirsForApp();
+
+        AutoPtr<IFile> GetMediaDir();
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStoragePublicDirs(
+            /* [in] */ const String& type);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAndroidDataDirs();
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAndroidObbDirs();
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppDataDirs(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppDataDirsForVold(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppMediaDirs(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppMediaDirsForVold(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppObbDirs(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppObbDirsForVold(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppFilesDirs(
+            /* [in] */ const String& packageName);
+
+        AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppCacheDirs(
+            /* [in] */ const String& packageName);
+
+    private:
+        /** External storage dirs, as visible to vold */
+        AutoPtr<ArrayOf<IFile*> > mExternalDirsForVold;
+        /** External storage dirs, as visible to apps */
+        AutoPtr<ArrayOf<IFile*> > mExternalDirsForApp;
+        /** Primary emulated storage dir for direct access */
+        AutoPtr<IFile> mEmulatedDirForDirect;
+    };
+
+public:
+
     /**
-     * Gets the Android root directory.
+     * Return root of the "system" partition holding the core Android OS.
+     * Always present and mounted read-only.
      */
-    static CARAPI_(AutoPtr<IFile>) GetRootDirectory();
+    static AutoPtr<IFile> GetRootDirectory();
+
+    /**
+     * Return root directory of the "oem" partition holding OEM customizations,
+     * if any. If present, the partition is mounted read-only.
+     *
+     * @hide
+     */
+    static AutoPtr<IFile> GetOemDirectory();
+
+    /**
+     * Return root directory of the "vendor" partition that holds vendor-provided
+     * software that should persist across simple reflashing of the "system" partition.
+     * @hide
+     */
+    static AutoPtr<IFile> GetVendorDirectory();
 
     /**
      * Gets the system directory available for secure storage.
@@ -29,7 +110,7 @@ public:
      * @return File object representing the secure storage system directory.
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetSystemSecureDirectory();
+    static AutoPtr<IFile> GetSystemSecureDirectory();
 
     /**
      * Gets the data directory for secure storage.
@@ -38,7 +119,15 @@ public:
      * @return File object representing the data directory for secure storage.
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetSecureDataDirectory();
+    static AutoPtr<IFile> GetSecureDataDirectory();
+
+    /**
+     * Return directory used for internal media storage, which is protected by
+     * {@link android.Manifest.permission#WRITE_MEDIA_STORAGE}.
+     *
+     * @hide
+     */
+    static AutoPtr<IFile> GetMediaStorageDirectory();
 
     /**
      * Return the system directory for a user. This is for use by system services to store
@@ -47,72 +136,116 @@ public:
      *
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetUserSystemDirectory(
+    static AutoPtr<IFile> GetUserSystemDirectory(
         /* [in] */ Int32 userId);
 
-    static CARAPI_(Boolean) IsEncryptedFilesystemEnabled();
-
     /**
-     * Gets the Android data directory.
+     * Returns the config directory for a user. This is for use by system services to store files
+     * relating to the user which should be readable by any app running as that user.
+     *
+     * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetDataDirectory();
+    static AutoPtr<IFile> GetUserConfigDirectory(
+        /* [in] */ Int32 userId);
 
     /**
-     * Gets the Android external storage directory.  This directory may not
+     * Returns whether the Encrypted File System feature is enabled on the device or not.
+     * @return <code>true</code> if Encrypted File System feature is enabled, <code>false</code>
+     * if disabled.
+     * @hide
+     */
+    static Boolean IsEncryptedFilesystemEnabled();
+
+    /**
+     * Return the user data directory.
+     */
+    static AutoPtr<IFile> GetDataDirectory();
+
+    /**
+     * Return the primary external storage directory. This directory may not
      * currently be accessible if it has been mounted by the user on their
      * computer, has been removed from the device, or some other problem has
-     * happened.  You can determine its current state with
-     * {@link #getExternalStorageState()}.
-     *
-     * <p><em>Note: don't be confused by the word "external" here.  This
-     * directory can better be thought as media/shared storage.  It is a
-     * filesystem that can hold a relatively large amount of data and that
-     * is shared across all applications (does not enforce permissions).
-     * Traditionally this is an SD card, but it may also be implemented as
-     * built-in storage in a device that is distinct from the protected
-     * internal storage and can be mounted as a filesystem on a computer.</em></p>
-     *
-     * <p>In devices with multiple "external" storage directories (such as
-     * both secure app storage and mountable shared storage), this directory
+     * happened. You can determine its current state with
+     * {@link #GetExternalStorageState()}.
+     * <p>
+     * <em>Note: don't be confused by the word "external" here. This directory
+     * can better be thought as media/shared storage. It is a filesystem that
+     * can hold a relatively large amount of data and that is shared across all
+     * applications (does not enforce permissions). Traditionally this is an SD
+     * card, but it may also be implemented as built-in storage in a device that
+     * is distinct from the protected internal storage and can be mounted as a
+     * filesystem on a computer.</em>
+     * <p>
+     * On devices with multiple users (as described by {@link UserManager}),
+     * each user has their own isolated external storage. Applications only have
+     * access to the external storage for the user they're running as.
+     * <p>
+     * In devices with multiple "external" storage directories, this directory
      * represents the "primary" external storage that the user will interact
-     * with.</p>
-     *
-     * <p>Applications should not directly use this top-level directory, in
-     * order to avoid polluting the user's root namespace.  Any files that are
-     * private to the application should be placed in a directory returned
-     * by {@link android.content.Context#getExternalFilesDir
-     * Context.getExternalFilesDir}, which the system will take care of deleting
-     * if the application is uninstalled.  Other shared files should be placed
-     * in one of the directories returned by
-     * {@link #getExternalStoragePublicDirectory}.
-     *
-     * <p>Here is an example of typical code to monitor the state of
-     * external storage:</p>
-     *
-     * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
+     * with. Access to secondary storage is available through
+     * <p>
+     * Applications should not directly use this top-level directory, in order
+     * to avoid polluting the user's root namespace. Any files that are private
+     * to the application should be placed in a directory returned by
+     * {@link android.content.Context#GetExternalFilesDir
+     * Context.GetExternalFilesDir}, which the system will take care of deleting
+     * if the application is uninstalled. Other shared files should be placed in
+     * one of the directories returned by
+     * {@link #GetExternalStoragePublicDirectory}.
+     * <p>
+     * Writing to this path requires the
+     * {@link android.Manifest.permission#WRITE_EXTERNAL_STORAGE} permission,
+     * and starting in read access requires the
+     * {@link android.Manifest.permission#READ_EXTERNAL_STORAGE} permission,
+     * which is automatically granted if you hold the write permission.
+     * <p>
+     * Starting in {@link android.os.Build.VERSION_CODES#KITKAT}, if your
+     * application only needs to store internal data, consider using
+     * {@link Context#GetExternalFilesDir(String)} or
+     * {@link Context#GetExternalCacheDir()}, which require no permissions to
+     * read or write.
+     * <p>
+     * This path may change between platform versions, so applications should
+     * only persist relative paths.
+     * <p>
+     * Here is an example of typical code to monitor the state of external
+     * storage:
+     * <p>
+     * {@sample
+     * development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
      * monitor_storage}
      *
-     * @see #getExternalStorageState()
-     * @see #isExternalStorageRemovable()
+     * @see #GetExternalStorageState()
+     * @see #IsExternalStorageRemovable()
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageDirectory();
+    static AutoPtr<IFile> GetExternalStorageDirectory();
 
-    static CARAPI_(AutoPtr<IFile>) GetLegacyExternalStorageDirectory();
+    /** {@hide} */
+    static AutoPtr<IFile> GetLegacyExternalStorageDirectory();
 
-    static CARAPI_(AutoPtr<IFile>) GetEmulatedStorageSource(
+    /** {@hide} */
+    static AutoPtr<IFile> GetLegacyExternalStorageObbDirectory();
+
+    /** {@hide} */
+    static AutoPtr<IFile> GetEmulatedStorageSource(
         /* [in] */ Int32 userId);
 
-    static CARAPI_(AutoPtr<IFile>) GetEmulatedStorageObbSource();
+    /** {@hide} */
+    static AutoPtr<IFile> GetEmulatedStorageObbSource();
 
     /**
-     * Get a top-level public external storage directory for placing files of
+     * Get a top-level external storage directory for placing files of
      * a particular type.  This is where the user will typically place and
      * manage their own files, so you should be careful about what you put here
      * to ensure you don't erase their files or get in the way of their own
      * organization.
      *
+     * <p>On devices with multiple users (as described by {@link UserManager}),
+     * each user has their own isolated external storage. Applications only
+     * have access to the external storage for the user they're running as.</p>
+     *
      * <p>Here is an example of typical code to manipulate a picture on
-     * the public external storage:</p>
+     * the external storage:</p>
      *
      * {@sample development/samples/ApiDemos/src/com/example/android/apis/content/ExternalStorage.java
      * public_picture}
@@ -128,175 +261,407 @@ public:
      * directory may not yet exist, so you must make sure it exists before
      * using it such as with {@link File#mkdirs File.mkdirs()}.
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStoragePublicDirectory(
+    static AutoPtr<IFile> GetExternalStoragePublicDirectory(
         /* [in] */ const String& type);
 
     /**
      * Returns the path for android-specific data on the SD card.
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageElastosDataDir();
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAndroidDataDirs();
 
     /**
      * Generates the raw path to an application's data
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppDataDirectory(
-        /* [in] */ const String& capsuleName);
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppDataDirs(
+        /* [in] */ const String& packageName);
 
     /**
      * Generates the raw path to an application's media
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppMediaDirectory(
-        /* [in] */ const String& capsuleName);
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppMediaDirs(
+        /* [in] */ const String& packageName);
 
     /**
      * Generates the raw path to an application's OBB files
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppObbDirectory(
-        /* [in] */ const String& capsuleName);
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppObbDirs(
+        /* [in] */ const String& packageName);
 
     /**
      * Generates the path to an application's files.
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppFilesDirectory(
-        /* [in] */ const String& capsuleName);
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppFilesDirs(
+        /* [in] */ const String& packageName);
 
     /**
      * Generates the path to an application's cache.
      * @hide
      */
-    static CARAPI_(AutoPtr<IFile>) GetExternalStorageAppCacheDirectory(
-        /* [in] */ const String& capsuleName);
+    static AutoPtr<ArrayOf<IFile*> > BuildExternalStorageAppCacheDirs(
+        /* [in] */ const String& packageName);
 
     /**
-     * Gets the Android Download/Cache content directory.
+     * Return the download/cache content directory.
      */
-    static CARAPI_(AutoPtr<IFile>) GetDownloadCacheDirectory();
+    static AutoPtr<IFile> GetDownloadCacheDirectory() ;
 
     /**
-     * Gets the current state of the primary "external" storage device.
+     * Returns the current state of the primary "external" storage device.
      *
-     * <p>See {@link #getExternalStorageDirectory()} for more information.
+     * @see #GetExternalStorageDirectory()
+     * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
+     *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
+     *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
+     *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
+     *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
      */
-    static CARAPI_(String) GetExternalStorageState();
+    static String GetExternalStorageState();
+
+    /**
+     * @deprecated use {@link #GetExternalStorageState(File)}
+     */
+    //@Deprecated
+    static String GetStorageState(
+        /* [in] */ IFile* path);
+
+    /**
+     * Returns the current state of the storage device that provides the given
+     * path.
+     *
+     * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
+     *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
+     *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
+     *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
+     *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
+     */
+    static String GetExternalStorageState(
+        /* [in] */ IFile* path);
 
     /**
      * Returns whether the primary "external" storage device is removable.
-     * If true is returned, this device is for example an SD card that the
-     * user can remove.  If false is returned, the storage is built into
-     * the device and can not be physically removed.
      *
-     * <p>See {@link #getExternalStorageDirectory()} for more information.
+     * @return true if the storage device can be removed (such as an SD card),
+     *         or false if the storage device is built in and cannot be
+     *         physically removed.
      */
-    static CARAPI_(Boolean) IsExternalStorageRemovable();
+    static Boolean IsExternalStorageRemovable();
 
     /**
-     * Returns whether the device has an external storage device which is
-     * emulated. If true, the device does not have real external storage, and the directory
-     * returned by {@link #getExternalStorageDirectory()} will be allocated using a portion of
-     * the internal storage system.
+     * Returns whether the storage device that provides the given path is
+     * removable.
      *
-     * <p>Certain system services, such as the package manager, use this
-     * to determine where to install an application.
-     *
-     * <p>Emulated external storage may also be encrypted - see
-     * {@link android.app.admin.DevicePolicyManager#setStorageEncryption(
-     * android.content.ComponentName, boolean)} for additional details.
+     * @return true if the storage device can be removed (such as an SD card),
+     *         or false if the storage device is built in and cannot be
+     *         physically removed.
+     * @throws IllegalArgumentException if the path is not a valid storage
+     *             device.
      */
-    static CARAPI_(Boolean) IsExternalStorageEmulated();
+    static Boolean IsExternalStorageRemovable(
+        /* [in] */ IFile* path);
 
-private:
-    static CARAPI_(AutoPtr<IFile>) GetDirectory(
+    /**
+     * Returns whether the primary "external" storage device is emulated. If
+     * true, data stored on this device will be stored on a portion of the
+     * internal storage system.
+     *
+     * @see DevicePolicyManager#setStorageEncryption(android.content.ComponentName,
+     *      Boolean)
+     */
+    static Boolean IsExternalStorageEmulated();
+
+    /**
+     * Returns whether the storage device that provides the given path is
+     * emulated. If true, data stored on this device will be stored on a portion
+     * of the internal storage system.
+     *
+     * @throws IllegalArgumentException if the path is not a valid storage
+     *             device.
+     */
+    static Boolean IsExternalStorageEmulated(
+        /* [in] */ IFile* path);
+
+    static AutoPtr<IFile> GetDirectory(
         /* [in] */ const String& variableName,
         /* [in] */ const String& defaultPath);
 
-    static CARAPI_(void) Init();
+    /** {@hide} */
+    static void SetUserRequired(
+        /* [in] */ Boolean userRequired);
 
-    static CARAPI_(AutoPtr<IStorageVolume>) GetPrimaryVolume();
+    /**
+     * Append path segments to each given base path, returning result.
+     *
+     * @hide
+     */
+    static AutoPtr<ArrayOf<IFile*> > BuildPaths(
+        /* [in] */ ArrayOf<IFile*>* base,
+        /* [in] */ ArrayOf<String>* segments);
+
+    /**
+     * Append path segments to given base path, returning result.
+     *
+     * @hide
+     */
+    static AutoPtr<IFile> BuildPath(
+        /* [in] */ IFile* base,
+        /* [in] */ ArrayOf<String>* segments);
+
+    /**
+     * If the given path exists on emulated external storage, return the
+     * translated backing path hosted on internal storage. This bypasses any
+     * emulation later, improving performance. This is <em>only</em> suitable
+     * for read-only access.
+     * <p>
+     * Returns original path if given path doesn't meet these criteria. Callers
+     * must hold {@link android.Manifest.permission#WRITE_MEDIA_STORAGE}
+     * permission.
+     *
+     * @hide
+     */
+    static AutoPtr<IFile> MaybeTranslateEmulatedPathToInternal(
+        /* [in] */ IFile* path);
+
+private:
+
+    static CARAPI ThrowIfUserRequired();
+
+    static Boolean IsStorageDisabled();
+
+    static AutoPtr<IStorageVolume> GetStorageVolume(
+        /* [in] */ IFile* path);
 
 public:
 
-    class UserEnvironment
-    {
-    public:
-        CARAPI Init(
-            /* [in] */ Int32 userId);
+    /**
+     * Unknown storage state, such as when a path isn't backed by known storage
+     * media.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_UNKNOWN; // = "unknown";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageDirectory();
+    /**
+     * Storage state if the media is not present.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_REMOVED; // = "removed";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageObbDirectory();
+    /**
+     * Storage state if the media is present but not mounted.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_UNMOUNTED; // = "unmounted";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStoragePublicDirectory(
-            /* [in] */ const String& type);
+    /**
+     * Storage state if the media is present and being disk-checked.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_CHECKING; // = "checking";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAndroidDataDir();
+    /**
+     * Storage state if the media is present but is blank or is using an
+     * unsupported filesystem.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_NOFS; // = "nofs";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAppDataDirectory(
-            /* [in] */ const String& packageName);
+    /**
+     * Storage state if the media is present and mounted at its mount point with
+     * read/write access.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_MOUNTED; // = "mounted";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAppMediaDirectory(
-            /* [in] */ const String& packageName);
+    /**
+     * Storage state if the media is present and mounted at its mount point with
+     * read-only access.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_MOUNTED_READ_ONLY; // = "mounted_ro";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAppObbDirectory(
-            /* [in] */ const String& packageName);
+    /**
+     * Storage state if the media is present not mounted, and shared via USB
+     * mass storage.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_SHARED; // = "shared";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAppFilesDirectory(
-            /* [in] */ const String& packageName);
+    /**
+     * Storage state if the media was removed before it was unmounted.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_BAD_REMOVAL; // = "bad_removal";
 
-        CARAPI_(AutoPtr<IFile>) GetExternalStorageAppCacheDirectory(
-            /* [in] */ const String& packageName);
+    /**
+     * Storage state if the media is present but cannot be mounted. Typically
+     * this happens if the file system on the media is corrupted.
+     *
+     * @see #GetExternalStorageState(File)
+     */
+    static const String MEDIA_UNMOUNTABLE; // = "unmountable";
 
-        CARAPI_(AutoPtr<IFile>) GetMediaStorageDirectory();
 
-    private:
-        static CARAPI_(AutoPtr<IFile>) BuildPath(
-            /* [in] */ IFile* base,
-            /* [in] */ const ArrayOf<String>& segments);
+    /**
+     * Standard directory in which to place any audio files that should be
+     * in the regular list of music for the user.
+     * This may be combined with
+     * {@link #DIRECTORY_PODCASTS}, {@link #DIRECTORY_NOTIFICATIONS},
+     * {@link #DIRECTORY_ALARMS}, and {@link #DIRECTORY_RINGTONES} as a series
+     * of directories to categories a particular audio file as more than one
+     * type.
+     */
+    static String DIRECTORY_MUSIC; // = "Music";
 
-        static CARAPI_(AutoPtr<IFile>) BuildPath(
-            /* [in] */ IFile* base,
-            /* [in] */ const String& segment);
+    /**
+     * Standard directory in which to place any audio files that should be
+     * in the list of podcasts that the user can select (not as regular
+     * music).
+     * This may be combined with {@link #DIRECTORY_MUSIC},
+     * {@link #DIRECTORY_NOTIFICATIONS},
+     * {@link #DIRECTORY_ALARMS}, and {@link #DIRECTORY_RINGTONES} as a series
+     * of directories to categories a particular audio file as more than one
+     * type.
+     */
+    static String DIRECTORY_PODCASTS; // = "Podcasts";
 
-    private:
-        AutoPtr<IFile> mExternalStorage;
-        AutoPtr<IFile> mExternalStorageAndroidData;
-        AutoPtr<IFile> mExternalStorageAndroidMedia;
-        AutoPtr<IFile> mExternalStorageAndroidObb;
-        AutoPtr<IFile> mMediaStorage;
-    };
+    /**
+     * Standard directory in which to place any audio files that should be
+     * in the list of ringtones that the user can select (not as regular
+     * music).
+     * This may be combined with {@link #DIRECTORY_MUSIC},
+     * {@link #DIRECTORY_PODCASTS}, {@link #DIRECTORY_NOTIFICATIONS}, and
+     * {@link #DIRECTORY_ALARMS} as a series
+     * of directories to categories a particular audio file as more than one
+     * type.
+     */
+    static String DIRECTORY_RINGTONES; // = "Ringtones";
+
+    /**
+     * Standard directory in which to place any audio files that should be
+     * in the list of alarms that the user can select (not as regular
+     * music).
+     * This may be combined with {@link #DIRECTORY_MUSIC},
+     * {@link #DIRECTORY_PODCASTS}, {@link #DIRECTORY_NOTIFICATIONS},
+     * and {@link #DIRECTORY_RINGTONES} as a series
+     * of directories to categories a particular audio file as more than one
+     * type.
+     */
+    static String DIRECTORY_ALARMS; // = "Alarms";
+
+    /**
+     * Standard directory in which to place any audio files that should be
+     * in the list of notifications that the user can select (not as regular
+     * music).
+     * This may be combined with {@link #DIRECTORY_MUSIC},
+     * {@link #DIRECTORY_PODCASTS},
+     * {@link #DIRECTORY_ALARMS}, and {@link #DIRECTORY_RINGTONES} as a series
+     * of directories to categories a particular audio file as more than one
+     * type.
+     */
+    static String DIRECTORY_NOTIFICATIONS; // = "Notifications";
+
+    /**
+     * Standard directory in which to place pictures that are available to
+     * the user.  Note that this is primarily a convention for the top-level
+     * directory, as the media scanner will find and collect pictures
+     * in any directory.
+     */
+    static String DIRECTORY_PICTURES; // = "Pictures";
+
+    /**
+     * Standard directory in which to place movies that are available to
+     * the user.  Note that this is primarily a convention for the top-level
+     * directory, as the media scanner will find and collect movies
+     * in any directory.
+     */
+    static String DIRECTORY_MOVIES; // = "Movies";
+
+    /**
+     * Standard directory in which to place files that have been downloaded by
+     * the user.  Note that this is primarily a convention for the top-level
+     * directory, you are free to download files anywhere in your own
+     * directories.  Also note that though the constant here is
+     * named DIRECTORY_DOWNLOADS (plural), the actual file name is non-plural for
+     * backwards compatibility reasons.
+     */
+    static String DIRECTORY_DOWNLOADS; // = "Download";
+
+    /**
+     * The traditional location for pictures and videos when mounting the
+     * device as a camera.  Note that this is primarily a convention for the
+     * top-level directory, as this convention makes no sense elsewhere.
+     */
+    static String DIRECTORY_DCIM; // = "DCIM";
+
+    /**
+     * Standard directory in which to place documents that have been created by
+     * the user.
+     */
+    static String DIRECTORY_DOCUMENTS; // = "Documents";
+
+    /** {@hide} */
+    static const String DIR_ANDROID; // = "Android";
+
+    /** {@hide} */
+    //@Deprecated
+    static const String DIRECTORY_ANDROID; // = DIR_ANDROID;
 
 private:
-    static const String ENV_EXTERNAL_STORAGE;
-    static const String ENV_EMULATED_STORAGE_SOURCE;
+    friend class UserEnvironment;
 
-    static AutoPtr<IFile> ROOT_DIRECTORY;
+    static const String ENV_EXTERNAL_STORAGE; // = "EXTERNAL_STORAGE";
+    static const String ENV_EMULATED_STORAGE_SOURCE; // = "EMULATED_STORAGE_SOURCE";
+    static const String ENV_EMULATED_STORAGE_TARGET; // = "EMULATED_STORAGE_TARGET";
+    static const String ENV_MEDIA_STORAGE; // = "MEDIA_STORAGE";
+    static const String ENV_SECONDARY_STORAGE; // = "SECONDARY_STORAGE";
+    static const String ENV_ANDROID_ROOT; // = "ANDROID_ROOT";
+    static const String ENV_OEM_ROOT; // = "OEM_ROOT";
+    static const String ENV_VENDOR_ROOT; // = "VENDOR_ROOT";
 
-    static const String SYSTEM_PROPERTY_EFS_ENABLED;
+    static const String DIR_DATA; // = "data";
+    static const String DIR_MEDIA; // = "media";
+    static const String DIR_OBB; // = "obb";
+    static const String DIR_FILES; // = "files";
+    static const String DIR_CACHE; // = "cache";
 
-    static AutoPtr<IMountService> mMntSvc;
+    static const AutoPtr<IFile> DIR_ANDROID_ROOT; // = GetDirectory(ENV_ANDROID_ROOT, "/system");
+    static const AutoPtr<IFile> DIR_OEM_ROOT; // = GetDirectory(ENV_OEM_ROOT, "/oem");
+    static const AutoPtr<IFile> DIR_VENDOR_ROOT; // = GetDirectory(ENV_VENDOR_ROOT, "/vendor");
+    static const AutoPtr<IFile> DIR_MEDIA_STORAGE; // = GetDirectory(ENV_MEDIA_STORAGE, "/data/media");
 
-    static AutoPtr<IStorageVolume> sPrimaryVolume;
-    static volatile Boolean sIsStorageVolumeInited;
-
-    static AutoPtr<IFile> DATA_DIRECTORY;
-
-    static Object sLock;
+    static const AutoPtr<IFile> DATA_DIRECTORY; //= GetDirectory("ANDROID_DATA", "/data");
 
     /**
      * @hide
      */
-    static AutoPtr<IFile> SECURE_DATA_DIRECTORY;
-    static AutoPtr<IFile> EXTERNAL_STORAGE_DIRECTORY;
-    static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY;
-    static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY;
-    static AutoPtr<IFile> EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY;
-    static AutoPtr<IFile> DOWNLOAD_CACHE_DIRECTORY;
+    static const AutoPtr<IFile> SECURE_DATA_DIRECTORY;// = GetDirectory("ANDROID_SECURE_DATA", "/data/secure");
 
-    static Boolean sIsInitilized;
+    static const AutoPtr<IFile> DOWNLOAD_CACHE_DIRECTORY;// = GetDirectory("DOWNLOAD_CACHE", "/cache");
+
+
+    static const String CANONCIAL_EMULATED_STORAGE_TARGET;
+        // = GetCanonicalPathOrNull(ENV_EMULATED_STORAGE_TARGET);
+
+    static const String SYSTEM_PROPERTY_EFS_ENABLED; // = "persist.security.efs.enabled";
+
+    static AutoPtr<UserEnvironment> sCurrentUser;
+    static Boolean sUserRequired;
+
+private:
+    Environment();
 };
 
 } // namespace Os

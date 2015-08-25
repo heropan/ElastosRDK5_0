@@ -4,9 +4,12 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
+#include <elastos/core/Thread.h>
 
 using Elastos::Droid::Os::IFileObserver;
 using Elastos::Core::IRunnable;
+using Elastos::Core::Thread;
 using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
@@ -14,13 +17,12 @@ namespace Droid {
 namespace Os {
 
 class FileObserver
-    : public ElRefBase
+    : public Object
     , public IFileObserver
-    , public IWeakReferenceSource
 {
 private:
     class ObserverThread
-        : public ThreadBase
+        : public Thread
     {
         friend class FileObserver;
     public:
@@ -63,6 +65,8 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     FileObserver()
         : mDescriptor(0)
         , mMask(0)
@@ -82,9 +86,10 @@ public:
 
     virtual ~FileObserver();
 
-    CAR_INTERFACE_DECL()
+    CARAPI constructor(
+        /* [in] */ const String& path);
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ const String& path,
         /* [in] */ Int32 mask = IFileObserver::ALL_EVENTS);
 

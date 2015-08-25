@@ -1,6 +1,8 @@
 
 #include "os/FileObserver.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
+
 #include <sys/inotify.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -157,6 +159,9 @@ void FileObserver::ObserverThread::NativeStopWatching(
     inotify_rm_watch((int)fd, (uint32_t)wfd);
 }
 
+//========================================================
+//
+//========================================================
 Boolean FileObserver::InitObserverThread()
 {
     sObserverThread = new ObserverThread();
@@ -175,68 +180,24 @@ FileObserver::FileObserver(
     , mMask(mask)
 {}
 
-PInterface FileObserver::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IWeakReferenceSource*)this;
-    }
-    else if (riid == EIID_IFileObserver) {
-        return (IFileObserver*)(this);
-    }
-    else if (riid == EIID_IWeakReferenceSource) {
-        return (IWeakReferenceSource*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 FileObserver::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 FileObserver::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode FileObserver::GetInterfaceID(
-    /* [in] */ IInterface* object,
-    /* [in] */ InterfaceID* iid)
-{
-    if (object == (IInterface*)(IFileObserver*)this) {
-        *iid = EIID_IFileObserver;
-    }
-    else if (object == (IInterface*)(IWeakReferenceSource*)this) {
-        *iid = EIID_IWeakReferenceSource;
-    }
-    else {
-        return E_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return NOERROR;
-}
-
 FileObserver::~FileObserver()
 {
     StopWatching();
 }
 
-void FileObserver::Init(
+ECode FileObserver::constructor(
+    /* [in] */ const String& path)
+{
+    return constructor(path, IFileObserver::ALL_EVENTS);
+}
+
+ECode FileObserver::constructor(
     /* [in] */ const String& path,
     /* [in] */ Int32 mask)
 {
     mPath = path;
     mMask = mask;
     mDescriptor = -1;
-}
-
-ECode FileObserver::GetWeakReference(
-    /* [out] */ IWeakReference** weakReference)
-{
-    VALIDATE_NOT_NULL(weakReference)
-    *weakReference = new WeakReferenceImpl(Probe(EIID_IInterface), CreateWeak(this));
-    REFCOUNT_ADD(*weakReference)
     return NOERROR;
 }
 

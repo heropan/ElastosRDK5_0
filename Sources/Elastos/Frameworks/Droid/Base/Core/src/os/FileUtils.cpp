@@ -1,15 +1,23 @@
-#include "ext/frameworkext.h"
 #include "os/FileUtils.h"
-#include <sys/errno.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <elastos/droid/system/Os.h>
+#include <elastos/droid/system/OsConstants.h>
+#include <elastos/utility/Arrays.h>
+//#include "text/TextUtils.h"
 
+// #include <sys/errno.h>
+// #include <sys/stat.h>
+// #include <fcntl.h>
+
+using Elastos::Core::EIID_IComparator;
+using Elastos::Core::ISystem;
+using Elastos::Core::CSystem;
 using Elastos::Core::CString;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFlushable;
 using Elastos::IO::ICloseable;
 using Elastos::IO::IFileDescriptor;
 using Elastos::IO::IFileInputStream;
+using Elastos::IO::IOutputStream;
 using Elastos::IO::CFileInputStream;
 using Elastos::IO::CFileOutputStream;
 using Elastos::IO::IBufferedInputStream;
@@ -18,13 +26,21 @@ using Elastos::IO::IByteArrayOutputStream;
 using Elastos::IO::CByteArrayOutputStream;
 using Elastos::IO::IFileWriter;
 using Elastos::IO::CFileWriter;
+using Elastos::IO::CFile;
+using Elastos::IO::IWriter;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
+using Elastos::Utility::Zip::IChecksum;
 using Elastos::Utility::Zip::ICRC32;
 using Elastos::Utility::Zip::CCRC32;
 using Elastos::Utility::Zip::ICheckedInputStream;
 using Elastos::Utility::Zip::CCheckedInputStream;
+using Elastos::Droid::System::IStructStat;
+using Elastos::Droid::System::Os;
+using Elastos::Droid::System::OsConstants;
+//using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
@@ -56,100 +72,128 @@ const Int32 FileUtils::sS_IWOTH;
 const Int32 FileUtils::sS_IXOTH;
 
 Int32 FileUtils::SetPermissions(
-    /* [in] */ const String& filename,
+    /* [in] */ IFile* file,
     /* [in] */ Int32 mode,
     /* [in] */ Int32 uid,
     /* [in] */ Int32 gid)
 {
-    if (filename.IsNullOrEmpty())
-        return ENOENT;
+    String path;
+    if (file) file->GetAbsolutePath(&path);
+    return SetPermissions(path, mode, uid, gid);
+}
+
+Int32 FileUtils::SetPermissions(
+    /* [in] */ const String& path,
+    /* [in] */ Int32 mode,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 gid)
+{
+    // try {
+    ECode ec = Elastos::Droid::System::Os::Chmod(path, mode);
+    if (FAILED(ec)) {
+        return (Int32)ec;
+    }
+    // } catch (ErrnoException e) {
+    //     Slog.w(TAG, "Failed to chmod(" + path + "): " + e);
+    //     return e.errno;
+    // }
 
     if (uid >= 0 || gid >= 0) {
-        Int32 res = chown(filename, uid, gid);
-        if (res != 0) {
-            return errno;
+        ec = Elastos::Droid::System::Os::Chown(path, uid, gid);
+        if (FAILED(ec)) {
+            return (Int32)ec;
         }
     }
-    return chmod(filename, mode) == 0 ? 0 : errno;
+    return 0;
 }
 
-/** returns the FAT file system volume ID for the volume mounted
- * at the given mount point, or -1 for failure
- * @param mountPoint point for FAT volume
- * @return volume ID or -1
- */
-Int32 FileUtils::GetFatVolumeId(
+Int32 FileUtils::SetPermissions(
+    /* [in] */ IFileDescriptor* fd,
+    /* [in] */ Int32 mode,
+    /* [in] */ Int32 uid,
+    /* [in] */ Int32 gid)
+{
+    // try {
+    ECode ec = Elastos::Droid::System::Os::Fchmod(fd, mode);
+    if (FAILED(ec)) {
+        return (Int32)ec;
+    }
+    // } catch (ErrnoException e) {
+    //     Slog.w(TAG, "Failed to chmod(" + path + "): " + e);
+    //     return e.errno;
+    // }
+
+    if (uid >= 0 || gid >= 0) {
+        ec = Elastos::Droid::System::Os::Fchown(fd, uid, gid);
+        if (FAILED(ec)) {
+            return (Int32)ec;
+        }
+    }
+    return 0;
+}
+
+Int32 FileUtils::GetUid(
     /* [in] */ const String& mountPoint)
 {
-    Int32 result = -1;
-    // only if our system supports this ioctl
-    #ifdef VFAT_IOCTL_GET_VOLUME_ID
-    Int32 fd = open(mountPoint, O_RDONLY);
-    if (fd >= 0) {
-        result = ioctl(fd, VFAT_IOCTL_GET_VOLUME_ID);
-        close(fd);
+    // try {
+    AutoPtr<IStructStat> ss;
+    ECode ec = Elastos::Droid::System::Os::Stat(mountPoint, (IStructStat**)&ss);
+    if (FAILED(ec)) {
+        return -1;
     }
-    #endif
+
+    Int32 result;
+    ss->GetUid(&result);
     return result;
+    // } catch (ErrnoException e) {
+        // return -1;
+    // }
 }
 
-/**
- * Perform an fsync on the given FileOutputStream.  The stream at this
- * point must be flushed but not yet closed.
- */
-ECode FileUtils::Sync(
-    /* [in] */ IFileOutputStream* stream,
-    /* [out] */ Boolean* result)
+Boolean FileUtils::Sync(
+    /* [in] */ IFileOutputStream* stream)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-
     if (stream != NULL) {
         AutoPtr<IFileDescriptor> fd;
-        FAIL_RETURN(stream->GetFD((IFileDescriptor**)&fd));
-        FAIL_RETURN(fd->Sync());
-        *result = TRUE;
+        ECode ec = stream->GetFD((IFileDescriptor**)&fd);
+        FAIL_GOTO(ec, _EXIT_)
+
+        ec = fd->Sync();
+        FAIL_GOTO(ec, _EXIT_)
+
+        return TRUE;
     }
 
-    return NOERROR;
+_EXIT_:
+    return FALSE;
 }
 
-// copy a file from srcFile to destFile, return true if succeed, return
-// FALSE if fail
-ECode FileUtils::CopyFile(
+Boolean FileUtils::CopyFile(
     /* [in] */ IFile* srcFile,
-    /* [in] */ IFile* destFile,
-    /* [out] */ Boolean* result)
+    /* [in] */ IFile* destFile)
 {
-    VALIDATE_NOT_NULL(result);
-    VALIDATE_NOT_NULL(srcFile);
-    VALIDATE_NOT_NULL(destFile);
-    *result = FALSE;
+    Boolean result = FALSE;
 
     AutoPtr<IInputStream> in;
     ECode ec = CFileInputStream::New(srcFile, (IFileInputStream**)&in);
     FAIL_GOTO(ec, _EXIT_);
-    ec = CopyToFile(in, destFile, result);
+    result = CopyToFile(in, destFile);
 
 _EXIT_:
     if (in)
         in->Close();
-    return ec;
+    return result;
 }
 
-/**
- * Copy data from a source stream to destFile.
- * Return true if succeed, return FALSE if failed.
- */
-ECode FileUtils::CopyToFile(
+Boolean FileUtils::CopyToFile(
     /* [in] */ IInputStream* inputStream,
-    /* [in] */ IFile* destFile,
-    /* [out] */ Boolean* result)
+    /* [in] */ IFile* destFile)
 {
-    VALIDATE_NOT_NULL(inputStream);
-    VALIDATE_NOT_NULL(destFile);
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
+    if (inputStream == NULL || destFile == NULL) {
+        return FALSE;
+    }
+
+    Boolean result = FALSE;
 
     Boolean temp;
     destFile->Exists(&temp);
@@ -161,39 +205,36 @@ ECode FileUtils::CopyToFile(
     AutoPtr<ArrayOf<Byte> > buffer;
     Int32 bytesRead;
 
+    IOutputStream* os;
     AutoPtr<IFileOutputStream> out;
     ECode ec = CFileOutputStream::New(destFile, (IFileOutputStream**)&out);
     FAIL_GOTO(ec, _EXIT_);
 
+    os = IOutputStream::Probe(out);
     buffer = ArrayOf<Byte>::Alloc(4096);
-    while (inputStream->ReadBytes(buffer, &bytesRead), bytesRead >= 0) {
-        out->WriteBytes(*buffer, 0, bytesRead);
+    while (inputStream->Read(buffer, &bytesRead), bytesRead >= 0) {
+        os->Write(buffer, 0, bytesRead);
     }
 
     IFlushable::Probe(out)->Flush();
     out->GetFD((IFileDescriptor**)&fd);
     fd->Sync();
 
-    *result = TRUE;
+    result = TRUE;
+
 _EXIT_:
     if (out) {
-        out->Close();
+        ICloseable::Probe(out)->Close();
     }
 
-    return ec;
+    return result;
 }
 
-/**
- * Check if a filename is "safe" (no metacharacters or spaces).
- * @param file  The file to check
- */
-ECode FileUtils::IsFilenameSafe(
-    /* [in] */ IFile* file,
-    /* [out] */ Boolean* result)
+
+Boolean FileUtils::IsFilenameSafe(
+    /* [in] */ IFile* file)
 {
-    VALIDATE_NOT_NULL(result);
-    *result = FALSE;
-    VALIDATE_NOT_NULL(file);
+    Boolean result = FALSE;
 
     // Note, we check whether it matches what's known to be safe,
     // rather than what's known to be unsafe.  Non-ASCII, control
@@ -202,26 +243,19 @@ ECode FileUtils::IsFilenameSafe(
     file->GetPath(&filepath);
     AutoPtr<IMatcher> matcher;
     SAFE_FILENAME_PATTERN->Matcher(filepath, (IMatcher**)&matcher);
-    return matcher->Matches(result);
+    matcher->Matches(&result);
+    return result;
 }
 
-/**
- * Read a text file into a String, optionally limiting the length.
- * @param file to read (will not seek, so things like /proc files are OK)
- * @param max length (positive for head, negative of tail, 0 for no limit)
- * @param ellipsis to add of the file was truncated (can be NULL)
- * @return the contents of the file, possibly truncated
- * @throws IOException if something goes wrong reading the file
- */
 ECode FileUtils::ReadTextFile(
     /* [in] */ IFile* file,
     /* [in] */ Int32 max,
     /* [in] */ const String& ellipsis,
     /* [out] */ String* result)
 {
-    VALIDATE_NOT_NULL(file);
     VALIDATE_NOT_NULL(result);
     *result = String("");
+    VALIDATE_NOT_NULL(file);
 
     AutoPtr<IInputStream> input;
     AutoPtr<IBufferedInputStream> bis;
@@ -230,8 +264,10 @@ ECode FileUtils::ReadTextFile(
     AutoPtr<ArrayOf<Byte> > data, last, tmp;
     Boolean rolled = FALSE;
     AutoPtr<IByteArrayOutputStream> contents;
+    IInputStream* is;
+    IOutputStream* os;
 
-    ECode ec = CFileInputStream::New(file, (IFileInputStream**)&input);
+    ECode ec = CFileInputStream::New(file, (IInputStream**)&input);
     FAIL_GOTO(ec, _EXIT_);
 
     // wrapping a BufferedInputStream around it because when reading /proc with unbuffered
@@ -240,11 +276,12 @@ ECode FileUtils::ReadTextFile(
     ec = CBufferedInputStream::New(input, (IBufferedInputStream**)&bis);
     FAIL_GOTO(ec, _EXIT_);
 
+    is = IInputStream::Probe(bis);
     file->GetLength(&size);
     if (max > 0 || (size > 0 && max == 0)) {  // "head" mode: read the first N bytes
         if (size > 0 && (max == 0 || size < max)) max = (Int32) size;
         data = ArrayOf<Byte>::Alloc(max + 1);
-        bis->ReadBytes(data, &length);
+        is->Read(data, &length);
         if (length <= 0) {
             *result = String("");
         }
@@ -264,7 +301,7 @@ ECode FileUtils::ReadTextFile(
             if (last != NULL) rolled = true;
             tmp = last; last = data; data = tmp;
             if (data == NULL) data = ArrayOf<Byte>::Alloc(-max);
-            bis->ReadBytes(data, &length);
+            is->Read(data, &length);
         } while (length == data->GetLength());
 
         if (last == NULL && length <= 0) {
@@ -294,29 +331,23 @@ ECode FileUtils::ReadTextFile(
     }
     else {  // "cat" mode: size unknown, read it all in streaming fashion
         CByteArrayOutputStream::New((IByteArrayOutputStream**)&contents);
+        os = IOutputStream::Probe(contents);
         data = ArrayOf<Byte>::Alloc(1024);
         do {
-            bis->ReadBytes(data, &length);
-            if (length > 0) contents->WriteBytes(*data, 0, length);
+            is->Read(data, &length);
+            if (length > 0) os->Write(data, 0, length);
         } while (length == data->GetLength());
 
         contents->ToString(result);
     }
 
 _EXIT_:
-    if (bis) bis->Close();
-    if (input) input->Close();
+    if (bis) ICloseable::Probe(bis)->Close();
+    if (input) ICloseable::Probe(input)->Close();
 
     return ec;
 }
 
-/**
-  * Writes string to file. Basically same as "echo -n $string > $filename"
-  *
-  * @param filename
-  * @param string
-  * @throws IOException
-  */
 ECode FileUtils::StringToFile(
     /* [in] */ const String& filename,
     /* [in] */ const String& string)
@@ -325,22 +356,15 @@ ECode FileUtils::StringToFile(
     ECode ec = CFileWriter::New(filename, (IFileWriter**)&out);
     FAIL_GOTO(ec, _EXIT_);
 
-    ec = out->WriteString(string);
+    ec = IWriter::Probe(out)->Write(string);
 
 _EXIT_:
-    if (out && ICloseable::Probe(out))
+    if (ICloseable::Probe(out))
         ICloseable::Probe(out)->Close();
 
     return ec;
 }
 
-/**
- * Computes the checksum of a file using the CRC32 checksum routine.
- * The value of the checksum is returned.
- *
- * @param file  the file to checksum, must not be NULL
- * @return the checksum value or an exception is thrown.
- */
 ECode FileUtils::ChecksumCrc32(
     /* [in] */ IFile* file,
     /* [out] */ Int64* summer)
@@ -358,24 +382,213 @@ ECode FileUtils::ChecksumCrc32(
     AutoPtr<IFileInputStream> input;
     CFileInputStream::New(file, (IFileInputStream**)&input);
 
+    IInputStream* is;
     AutoPtr<ICheckedInputStream> cis;
-    ECode ec = CCheckedInputStream::New(input, checkSummer, (ICheckedInputStream**)&cis);
+    ECode ec = CCheckedInputStream::New(
+        IInputStream::Probe(input),
+        IChecksum::Probe(checkSummer), (ICheckedInputStream**)&cis);
     FAIL_GOTO(ec, _EXIT_);
 
+    is = IInputStream::Probe(cis);
     buf = ArrayOf<Byte>::Alloc(128);
 
-    while(cis->ReadBytes(buf, &length), length >= 0) {
+    while(is->Read(buf, &length), length >= 0) {
         // Just read for checksum to get calculated.
     }
 
-    checkSummer->GetValue(summer);
+    IChecksum::Probe(checkSummer)->GetValue(summer);
 
 _EXIT_:
     if (cis != NULL) {
-        cis->Close();
+        ICloseable::Probe(cis)->Close();
     }
 
     return ec;
+}
+
+CAR_INTERFACE_IMPL(FileUtils::FileComparator, Object, IComparator)
+
+ECode FileUtils::FileComparator::Compare(
+    /* [in] */ IInterface* inlhs,
+    /* [in] */ IInterface* inrhs,
+    /* [out] */ Int32* result)
+{
+    VALIDATE_NOT_NULL(result)
+
+    IFile* lhs = IFile::Probe(inlhs);
+    IFile* rhs = IFile::Probe(inrhs);
+    if (lhs == NULL && rhs == NULL) {
+        *result = 0;
+        return NOERROR;
+    }
+
+    if (lhs != NULL && rhs == NULL) {
+        *result = -1;
+        return NOERROR;
+    }
+    else if (lhs == NULL && rhs != NULL) {
+        *result = 1;
+        return NOERROR;
+    }
+
+    Int64 l, r;
+    lhs->GetLastModified(&l);
+    rhs->GetLastModified(&r);
+
+    *result = (Int32)(r - l);
+    return NOERROR;
+}
+
+Boolean FileUtils::DeleteOlderFiles(
+    /* [in] */ IFile* dir,
+    /* [in] */ Int32 minCount,
+    /* [in] */ Int64 minAge)
+{
+    if (minCount < 0 || minAge < 0) {
+        // throw new IllegalArgumentException("Constraints must be positive or 0");
+        return FALSE;
+    }
+
+    AutoPtr<ArrayOf<IFile*> > files;
+    dir->ListFiles((ArrayOf<IFile*>**)&files);
+    if (files == NULL) return FALSE;
+
+    // Sort with newest files first
+    AutoPtr<IComparator> cmp = new FileComparator();
+    Arrays::Sort(files.Get(), cmp.Get());
+
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+
+    // Keep at least minCount files
+    Boolean deleted = FALSE, bval;
+    Int64 age, lastModified;
+    for (Int32 i = minCount; i < files->GetLength(); i++) {
+        IFile* file = (*files)[i];
+
+        // Keep files newer than minAge
+        system->GetCurrentTimeMillis(&age);
+        file->GetLastModified(&lastModified);
+        age -= lastModified;
+        if (age > minAge) {
+            if (file->Delete(&bval), bval) {
+                // Logger::D(TAG, "Deleted old file %s", file);
+                deleted = true;
+            }
+        }
+    }
+    return deleted;
+}
+
+Boolean FileUtils::Contains(
+    /* [in] */ IFile* dir,
+    /* [in] */ IFile* file)
+{
+    if (file == NULL) return FALSE;
+
+    String dirPath,filePath;
+    dir->GetAbsolutePath(&dirPath);
+    file->GetAbsolutePath(&filePath);
+
+    if (dirPath.Equals(filePath)) {
+        return TRUE;
+    }
+
+    if (!dirPath.EndWith("/")) {
+        dirPath += "/";
+    }
+    return filePath.StartWith(dirPath);
+}
+
+Boolean FileUtils::DeleteContents(
+    /* [in] */ IFile* dir)
+{
+    AutoPtr<ArrayOf<IFile*> > files;
+    dir->ListFiles((ArrayOf<IFile*>**)&files);
+
+    Boolean success = TRUE;
+    if (files != NULL) {
+        Boolean bval;
+        for (Int32 i = 0; i < files->GetLength(); ++i) {
+            IFile* file = (*files)[i];
+            if (file->IsDirectory(&bval), bval) {
+                success &= DeleteContents(file);
+            }
+            if (file->Delete(&bval), !bval) {
+                //Log.w(TAG, "Failed to delete " + file);
+                success = FALSE;
+            }
+        }
+    }
+    return success;
+}
+
+Boolean FileUtils::IsValidExtFilename(
+    /* [in] */ const String& name)
+{
+    assert(0);
+    // if (TextUtils::IsEmpty(name)
+    //     || name.Equals(".")
+    //     || name.Equals("..") {
+    //     return FALSE;
+    // }
+
+    for (Int32 i = 0; i < name.GetLength(); i++) {
+        Char32 c = name.GetChar(i);
+        if (c == '\0' || c == '/') {
+            return FALSE;
+        }
+    }
+    return TRUE;
+}
+
+String FileUtils::RewriteAfterRename(
+    /* [in] */ IFile* beforeDir,
+    /* [in] */ IFile* afterDir,
+    /* [in] */ const String& path)
+{
+    if (path.IsNull()) return String(NULL);
+
+    AutoPtr<IFile> file;
+    CFile::New(path, (IFile**)&file);
+    AutoPtr<IFile> result = RewriteAfterRename(beforeDir, afterDir, file);
+    String str;
+    if (result) {
+        result->GetAbsolutePath(&str);
+    }
+    return str;
+}
+
+AutoPtr<ArrayOf<String> > FileUtils::RewriteAfterRename(
+    /* [in] */ IFile* beforeDir,
+    /* [in] */ IFile* afterDir,
+    /* [in] */ ArrayOf<String>* paths)
+{
+    if (paths == NULL) return NULL;
+    AutoPtr<ArrayOf<String> > result = ArrayOf<String>::Alloc(paths->GetLength());
+    for (Int32 i = 0; i < paths->GetLength(); i++) {
+        result->Set(i, RewriteAfterRename(beforeDir, afterDir, (*paths)[i]));
+    }
+    return result;
+}
+
+AutoPtr<IFile> FileUtils::RewriteAfterRename(
+    /* [in] */ IFile* beforeDir,
+    /* [in] */ IFile* afterDir,
+    /* [in] */ IFile* file)
+{
+    if (file == NULL) return NULL;
+    if (Contains(beforeDir, file)) {
+        String ap, bap;
+        file->GetAbsolutePath(&ap);
+        beforeDir->GetAbsolutePath(&bap);
+        String splice = ap.Substring(bap.GetLength());
+
+        AutoPtr<IFile> result;
+        CFile::New(afterDir, splice, (IFile**)&result);
+        return result;
+    }
+    return NULL;
 }
 
 

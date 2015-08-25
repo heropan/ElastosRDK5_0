@@ -30,7 +30,11 @@ SOURCES += ConditionVariable.cpp
 SOURCES += CountDownTimer.cpp
 #SOURCES += CDropBoxManagerEntry.cpp
 #SOURCES += CDropBoxManager.cpp
-#SOURCES += Environment.cpp
+SOURCES += Environment.cpp
+SOURCES += FactoryTest.cpp
+SOURCES += FileBridge.cpp
+SOURCES += FileObserver.cpp
+SOURCES += FileUtils.cpp
 
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
@@ -70,9 +74,6 @@ SOURCES += CSystemProperties.cpp
 #SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
 #SOURCES += CPatternMatcher.cpp
 #SOURCES += CServiceManager.cpp
-
-#SOURCES += FileObserver.cpp
-#SOURCES += FileUtils.cpp
 #SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
 #SOURCES += PatternMatcher.cpp

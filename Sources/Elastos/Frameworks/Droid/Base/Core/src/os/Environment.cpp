@@ -1,57 +1,384 @@
 
 #include "os/Environment.h"
 #include "os/SystemProperties.h"
-#include "os/ServiceManager.h"
-#include "os/storage/CStorageManagerHelper.h"
-#include "content/res/CResourcesHelper.h"
-#include "R.h"
-#include <elastos/utility/logging/Logger.h>
+#include "os/UserHandle.h"
+//#include "os/FileUtils.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/utility/logging/Logger.h>
 
-using Elastos::Core::StringUtils;
+//#include "text/TextUtils.h"
+
+using Elastos::IO::CFile;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
+using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
-using Elastos::IO::CFile;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IResourcesHelper;
-using Elastos::Droid::Content::Res::CResourcesHelper;
-using Elastos::Droid::Os::Storage::IStorageManager;
-using Elastos::Droid::Os::Storage::IStorageManagerHelper;
-using Elastos::Droid::Os::Storage::CStorageManagerHelper;
+
+//using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-static const String TAG("Environment");
+const String Environment::MEDIA_UNKNOWN("unknown");
+const String Environment::MEDIA_REMOVED("removed");
+const String Environment::MEDIA_UNMOUNTED("unmounted");
+const String Environment::MEDIA_CHECKING("checking");
+const String Environment::MEDIA_NOFS("nofs");
+const String Environment::MEDIA_MOUNTED("mounted");
+const String Environment::MEDIA_MOUNTED_READ_ONLY("mounted_ro");
+const String Environment::MEDIA_SHARED("shared");
+const String Environment::MEDIA_BAD_REMOVAL("bad_removal");
+const String Environment::MEDIA_UNMOUNTABLE("unmountable");
+
+String Environment::DIRECTORY_MUSIC("Music");
+String Environment::DIRECTORY_PODCASTS("Podcasts");
+String Environment::DIRECTORY_RINGTONES("Ringtones");
+String Environment::DIRECTORY_ALARMS("Alarms");
+String Environment::DIRECTORY_NOTIFICATIONS("Notifications");
+String Environment::DIRECTORY_PICTURES("Pictures");
+String Environment::DIRECTORY_MOVIES("Movies");
+String Environment::DIRECTORY_DOWNLOADS("Download");
+String Environment::DIRECTORY_DCIM("DCIM");
+String Environment::DIRECTORY_DOCUMENTS("Documents");
+
+const String Environment::DIR_ANDROID("Android");
+const String Environment::DIRECTORY_ANDROID("Android"); // = DIR_ANDROID;
+
 const String Environment::ENV_EXTERNAL_STORAGE("EXTERNAL_STORAGE");
 const String Environment::ENV_EMULATED_STORAGE_SOURCE("EMULATED_STORAGE_SOURCE");
-const String Environment::SYSTEM_PROPERTY_EFS_ENABLED("persist.security.efs.enabled");
-AutoPtr<IFile> Environment::ROOT_DIRECTORY;
-AutoPtr<IMountService> Environment::mMntSvc;
-AutoPtr<IStorageVolume> Environment::sPrimaryVolume;
-volatile Boolean Environment::sIsStorageVolumeInited;
-Mutex Environment::sLock;
-AutoPtr<IFile> Environment::DATA_DIRECTORY;
-AutoPtr<IFile> Environment::SECURE_DATA_DIRECTORY;
-AutoPtr<IFile> Environment::EXTERNAL_STORAGE_DIRECTORY;
-AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY;
-AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY;
-AutoPtr<IFile> Environment::EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY;
-AutoPtr<IFile> Environment::DOWNLOAD_CACHE_DIRECTORY;
+const String Environment::ENV_EMULATED_STORAGE_TARGET("EMULATED_STORAGE_TARGET");
+const String Environment::ENV_MEDIA_STORAGE("MEDIA_STORAGE");
+const String Environment::ENV_SECONDARY_STORAGE("SECONDARY_STORAGE");
+const String Environment::ENV_ANDROID_ROOT("ANDROID_ROOT");
+const String Environment::ENV_OEM_ROOT("OEM_ROOT");
+const String Environment::ENV_VENDOR_ROOT("VENDOR_ROOT");
 
-Boolean Environment::sIsInitilized = FALSE;
+const String Environment::DIR_DATA("data");
+const String Environment::DIR_MEDIA("media");
+const String Environment::DIR_OBB("obb");
+const String Environment::DIR_FILES("files");
+const String Environment::DIR_CACHE("cache");
+
+AutoPtr<IFile> GetDirectoryImpl(
+    /* [in] */ const String& variableName,
+    /* [in] */ const String& defaultPath)
+{
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+
+    String path;
+    system->GetEnv(variableName, &path);
+    if (path.IsNull()) path = defaultPath;
+    AutoPtr<IFile> file;
+    CFile::New(path, (IFile**)&file);
+    return file;
+}
+
+String GetCanonicalPathOrNull(
+    /* [in] */ const String& variableName)
+{
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+
+    String path;
+    system->GetEnv(variableName, &path);
+
+    if (path.IsNull()) {
+        return path;
+    }
+
+    AutoPtr<IFile> file;
+    CFile::New(path, (IFile**)&file);
+    String cp;
+    ECode ec = file->GetCanonicalPath(&cp);
+    if (FAILED(ec)) {
+        Logger::W("Environment", "Unable to resolve canonical path for %s", path.string());
+        return String(NULL);
+    }
+    return cp;
+}
+
+AutoPtr<Environment::UserEnvironment> InitForCurrentUser()
+{
+    Int32 userId = UserHandle::GetMyUserId();
+    AutoPtr<Environment::UserEnvironment> ue = new Environment::UserEnvironment(userId);
+    return ue;
+}
+
+const AutoPtr<IFile> DIR_ANDROID_ROOT = GetDirectoryImpl(String("ANDROID_ROOT")/*ENV_ANDROID_ROOT*/, String("/system"));
+const AutoPtr<IFile> DIR_OEM_ROOT = GetDirectoryImpl(String("OEM_ROOT")/*ENV_OEM_ROOT*/, String("/oem"));
+const AutoPtr<IFile> DIR_VENDOR_ROOT = GetDirectoryImpl(String("VENDOR_ROOT")/*ENV_VENDOR_ROOT*/, String("/vendor"));
+const AutoPtr<IFile> DIR_MEDIA_STORAGE = GetDirectoryImpl(String("MEDIA_STORAGE")/*ENV_MEDIA_STORAGE*/, String("/data/media"));
+
+const AutoPtr<IFile> DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_DATA"), String("/data"));
+
+const AutoPtr<IFile> SECURE_DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_SECURE_DATA"), String("/data/secure"));
+const AutoPtr<IFile> DOWNLOAD_CACHE_DIRECTORY = GetDirectoryImpl(String("DOWNLOAD_CACHE"), String("/cache"));
+
+const String Environment::CANONCIAL_EMULATED_STORAGE_TARGET =
+    GetCanonicalPathOrNull(String("EMULATED_STORAGE_TARGET")/*ENV_EMULATED_STORAGE_TARGET*/);
+
+const String Environment::SYSTEM_PROPERTY_EFS_ENABLED("persist.security.efs.enabled");
+
+AutoPtr<Environment::UserEnvironment> Environment::sCurrentUser = InitForCurrentUser();
+Boolean Environment::sUserRequired;
+
+//===========================================================================================
+// Environment::UserEnvironment
+//===========================================================================================
+
+Environment::UserEnvironment::UserEnvironment(
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<ISystem> system;
+    CSystem::AcquireSingleton((ISystem**)&system);
+
+    // See storage config details at http://source.android.com/tech/storage/
+    String rawExternalStorage, rawEmulatedSource, rawEmulatedTarget;
+
+    system->GetEnv(Environment::ENV_EXTERNAL_STORAGE, &rawExternalStorage);
+    system->GetEnv(Environment::ENV_EMULATED_STORAGE_SOURCE, &rawEmulatedSource);
+    system->GetEnv(Environment::ENV_EMULATED_STORAGE_TARGET, &rawEmulatedTarget);
+
+    String rawMediaStorage;
+    system->GetEnv(Environment::ENV_MEDIA_STORAGE, &rawMediaStorage);
+    assert(0 && "TODO");
+    // if (TextUtils::IsEmpty(rawMediaStorage)) {
+    //     rawMediaStorage = String("/data/media");
+    // }
+
+    List<AutoPtr<IFile> > externalForVold, externalForApp;
+
+    Boolean isEmpty = FALSE;
+    //TODO Boolean isEmpty = TextUtils::IsEmpty(rawEmulatedTarget)
+    if (!isEmpty) {
+        // Device has emulated storage; external storage paths should have
+        // userId burned into them.
+        String rawUserId = StringUtils::ToString(userId);
+        AutoPtr<IFile> emulatedSourceBase, emulatedTargetBase, mediaBase;
+        CFile::New(rawEmulatedSource, (IFile**)&emulatedSourceBase);
+        CFile::New(rawEmulatedTarget, (IFile**)&emulatedTargetBase);
+        CFile::New(rawMediaStorage, (IFile**)&mediaBase);
+
+        // /storage/emulated/0
+        AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(1);
+        params->Set(0, rawUserId);
+        externalForVold.PushBack(Environment::BuildPath(emulatedSourceBase, params));
+        externalForApp.PushBack(Environment::BuildPath(emulatedTargetBase, params));
+        // /data/media/0
+        mEmulatedDirForDirect = Environment::BuildPath(mediaBase, params);
+    }
+    else {
+        // Device has physical external storage; use plain paths.
+        //TODO isEmpty = TextUtils::IsEmpty(rawExternalStorage)
+        if (isEmpty) {
+            Logger::W("Environment", "EXTERNAL_STORAGE undefined; falling back to default");
+            rawExternalStorage = String("/storage/sdcard0");
+        }
+
+        // /storage/sdcard0
+        AutoPtr<IFile> f1, f2;
+        CFile::New(rawExternalStorage, (IFile**)&f1);
+        CFile::New(rawExternalStorage, (IFile**)&f2);
+        externalForVold.PushBack(f1);
+        externalForApp.PushBack(f2);
+        // /data/media
+        CFile::New(rawMediaStorage, (IFile**)&mEmulatedDirForDirect);
+    }
+
+    // Splice in any secondary storage paths, but only for owner
+    String rawSecondaryStorage;
+    system->GetEnv(ENV_SECONDARY_STORAGE, &rawSecondaryStorage);
+
+    assert(0);
+    //isEmpty = TextUtils::IsEmpty(rawSecondaryStorage);
+    if (!isEmpty && userId == UserHandle::USER_OWNER) {
+        AutoPtr<ArrayOf<String> > arrays;
+        StringUtils::Split(rawSecondaryStorage, String(":"), (ArrayOf<String>**)&arrays);
+
+        for (Int32 i = 0; i < arrays->GetLength(); ++i) {
+            String secondaryPath = (*arrays)[i];
+            AutoPtr<IFile> f1, f2;
+            CFile::New(secondaryPath, (IFile**)&f1);
+            CFile::New(secondaryPath, (IFile**)&f2);
+            externalForVold.PushBack(f1);
+            externalForApp.PushBack(f2);
+        }
+    }
+
+    mExternalDirsForVold = ArrayOf<IFile*>::Alloc(externalForVold.GetSize());
+    mExternalDirsForApp = ArrayOf<IFile*>::Alloc(externalForApp.GetSize());
+
+    List<AutoPtr<IFile> >::Iterator it;
+
+    Int32 i = 0;
+    for (it = externalForVold.Begin(); it != externalForVold.End(); ++it) {
+        mExternalDirsForVold->Set(i++, *it);
+    }
+
+    i = 0;
+    for (it = externalForApp.Begin(); it != externalForApp.End(); ++it) {
+        mExternalDirsForApp->Set(i++, *it);
+    }
+}
+
+AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageDirectory()
+{
+    return (*mExternalDirsForApp)[0];
+}
+
+AutoPtr<IFile> Environment::UserEnvironment::GetExternalStoragePublicDirectory(
+    /* [in] */ const String& type)
+{
+    AutoPtr<ArrayOf<IFile*> > dirs = BuildExternalStoragePublicDirs(type);
+    return (*dirs)[0];
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::GetExternalDirsForVold()
+{
+    return mExternalDirsForVold;
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::GetExternalDirsForApp()
+{
+    return mExternalDirsForApp;
+}
+
+AutoPtr<IFile> Environment::UserEnvironment::GetMediaDir()
+{
+    return mEmulatedDirForDirect;
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStoragePublicDirs(
+    /* [in] */ const String& type)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(1);
+    params->Set(0, type);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAndroidDataDirs()
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(2);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_DATA);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAndroidObbDirs()
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_OBB);
+    params->Set(2, Environment::DIR_DATA);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppDataDirs(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_DATA);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppDataDirsForVold(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_DATA);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForVold, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppMediaDirs(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_MEDIA);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppMediaDirsForVold(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_MEDIA);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForVold, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppObbDirs(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_OBB);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppObbDirsForVold(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(3);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_OBB);
+    params->Set(2, packageName);
+    return BuildPaths(mExternalDirsForVold, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppFilesDirs(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(4);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_DATA);
+    params->Set(2, packageName);
+    params->Set(3, Environment::DIR_FILES);
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+AutoPtr<ArrayOf<IFile*> > Environment::UserEnvironment::BuildExternalStorageAppCacheDirs(
+    /* [in] */ const String& packageName)
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(4);
+    params->Set(0, Environment::DIR_ANDROID);
+    params->Set(1, Environment::DIR_DATA);
+    params->Set(2, packageName);
+    params->Set(3, Environment::DIR_CACHE);
+
+    return BuildPaths(mExternalDirsForApp, params);
+}
+
+//===========================================================================================
+// Environment::UserEnvironment
+//===========================================================================================
 
 AutoPtr<IFile> Environment::GetRootDirectory()
 {
-    Init();
-    return ROOT_DIRECTORY;
+    return DIR_ANDROID_ROOT;
+}
+
+AutoPtr<IFile> Environment::GetOemDirectory()
+{
+    return DIR_OEM_ROOT;
+}
+
+AutoPtr<IFile> Environment::GetVendorDirectory()
+{
+    return DIR_VENDOR_ROOT;
 }
 
 AutoPtr<IFile> Environment::GetSystemSecureDirectory()
 {
-    Init();
     AutoPtr<IFile> file;
     if (IsEncryptedFilesystemEnabled()) {
         CFile::New(SECURE_DATA_DIRECTORY, String("system"), (IFile**)&file);
@@ -59,12 +386,12 @@ AutoPtr<IFile> Environment::GetSystemSecureDirectory()
     else {
         CFile::New(DATA_DIRECTORY, String("system"), (IFile**)&file);
     }
+
     return file;
 }
 
 AutoPtr<IFile> Environment::GetSecureDataDirectory()
 {
-    Init();
     if (IsEncryptedFilesystemEnabled()) {
         return SECURE_DATA_DIRECTORY;
     }
@@ -73,211 +400,231 @@ AutoPtr<IFile> Environment::GetSecureDataDirectory()
     }
 }
 
+AutoPtr<IFile> Environment::GetMediaStorageDirectory()
+{
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->GetMediaDir();
+}
+
 AutoPtr<IFile> Environment::GetUserSystemDirectory(
     /* [in] */ Int32 userId)
 {
-    AutoPtr<IFile> usersFile;
-    CFile::New(GetSystemSecureDirectory(), String("users"), (IFile**)&usersFile);
-    AutoPtr<IFile> file;
-    CFile::New(usersFile, StringUtils::Int32ToString(userId), (IFile**)&file);
-    return file;
+    AutoPtr<IFile> sd = GetSystemSecureDirectory();
+    AutoPtr<IFile> users;
+    CFile::New(sd, String("users"), (IFile**)&users);
+    AutoPtr<IFile> result;
+    CFile::New(users, StringUtils::ToString(userId), (IFile**)&result);
+    return result;
+}
+
+AutoPtr<IFile> Environment::GetUserConfigDirectory(
+    /* [in] */ Int32 userId)
+{
+    AutoPtr<IFile> sd = GetDataDirectory();
+    AutoPtr<IFile> misc;
+    CFile::New(sd, String("misc"), (IFile**)&misc);
+    AutoPtr<IFile> user;
+    CFile::New(misc, String("user"), (IFile**)&user);
+    AutoPtr<IFile> result;
+    CFile::New(user, StringUtils::ToString(userId), (IFile**)&result);
+    return result;
 }
 
 Boolean Environment::IsEncryptedFilesystemEnabled()
 {
-    return SystemProperties::GetBoolean(SYSTEM_PROPERTY_EFS_ENABLED, FALSE);
+    Boolean result;
+    SystemProperties::GetBoolean(SYSTEM_PROPERTY_EFS_ENABLED, FALSE, &result);
+    return result;
 }
 
 AutoPtr<IFile> Environment::GetDataDirectory()
 {
-    Init();
     return DATA_DIRECTORY;
 }
 
 AutoPtr<IFile> Environment::GetExternalStorageDirectory()
 {
-    Init();
-    return EXTERNAL_STORAGE_DIRECTORY;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    return (*files)[0];
 }
 
 AutoPtr<IFile> Environment::GetLegacyExternalStorageDirectory()
 {
-    Init();
-
     AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String path;
+    system->GetEnv(ENV_EXTERNAL_STORAGE, &path);
+    AutoPtr<IFile> result;
+    CFile::New(path, (IFile**)&result);
+    return result;
+}
 
-    String dir;
-    system->GetEnv(ENV_EXTERNAL_STORAGE, &dir);
-
-    AutoPtr<IFile> file;
-    CFile::New(dir, (IFile**)&file);
-    return file;
+/** {@hide} */
+AutoPtr<IFile> Environment::GetLegacyExternalStorageObbDirectory()
+{
+    AutoPtr<ArrayOf<String> > params = ArrayOf<String>::Alloc(2);
+    params->Set(0, DIR_ANDROID);
+    params->Set(1, DIR_OBB);
+    return BuildPath(GetLegacyExternalStorageDirectory(), params);
 }
 
 AutoPtr<IFile> Environment::GetEmulatedStorageSource(
     /* [in] */ Int32 userId)
 {
-    // /mnt/shell/emulated/0
-    Init();
-
     AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-
-    String dir;
-    system->GetEnv(ENV_EMULATED_STORAGE_SOURCE, &dir);
-
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String value;
+    system->GetEnv(ENV_EMULATED_STORAGE_SOURCE, &value);
+    // /mnt/shell/emulated/0
     AutoPtr<IFile> file;
-    CFile::New(dir, StringUtils::Int32ToString(userId), (IFile**)&file);
+    CFile::New(value, StringUtils::ToString(userId), (IFile**)&file);
     return file;
 }
 
 AutoPtr<IFile> Environment::GetEmulatedStorageObbSource()
 {
-    // /mnt/shell/emulated/obb
-    Init();
-
     AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-
-    String dir;
-    system->GetEnv(ENV_EMULATED_STORAGE_SOURCE, &dir);
-
+    CSystem::AcquireSingleton((ISystem**)&system);
+    String value;
+    system->GetEnv(ENV_EMULATED_STORAGE_SOURCE, &value);
+    // /mnt/shell/emulated/obb
     AutoPtr<IFile> file;
-    CFile::New(dir, String("obb"), (IFile**)&file);
+    CFile::New(value, DIR_OBB, (IFile**)&file);
     return file;
 }
 
 AutoPtr<IFile> Environment::GetExternalStoragePublicDirectory(
     /* [in] */ const String& type)
 {
-    Init();
-    AutoPtr<IFile> file;
-    CFile::New(GetExternalStorageDirectory(), type, (IFile**)&file);
-    return file;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->BuildExternalStoragePublicDirs(type);
+    return (*files)[0];
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageElastosDataDir()
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAndroidDataDirs()
 {
-    Init();
-    return EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAndroidDataDirs();
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageAppDataDirectory(
-    /* [in] */ const String& capsuleName)
-{
-    Init();
-    AutoPtr<IFile> file;
-    CFile::New(EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY, capsuleName, (IFile**)&file);
-    return file;
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppDataDirs(
+    /* [in] */ const String& packageName)
+ {
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAppDataDirs(packageName);
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageAppMediaDirectory(
-    /* [in] */ const String& capsuleName)
-{
-    Init();
-    AutoPtr<IFile> file;
-    CFile::New(EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY, capsuleName, (IFile**)&file);
-    return file;
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppMediaDirs(
+    /* [in] */ const String& packageName)
+ {
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAppMediaDirs(packageName);
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageAppObbDirectory(
-    /* [in] */ const String& capsuleName)
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppObbDirs(
+    /* [in] */ const String& packageName)
 {
-    Init();
-    AutoPtr<IFile> file;
-    CFile::New(EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY, capsuleName, (IFile**)&file);
-    return file;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAppObbDirs(packageName);
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageAppFilesDirectory(
-    /* [in] */ const String& capsuleName)
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppFilesDirs(
+    /* [in] */ const String& packageName)
 {
-    Init();
-    AutoPtr<IFile> file1, file2;
-    CFile::New(EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY, capsuleName, (IFile**)&file1);
-    CFile::New(file1, String("files"), (IFile**)&file2);
-    return file2;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAppFilesDirs(packageName);
 }
 
-AutoPtr<IFile> Environment::GetExternalStorageAppCacheDirectory(
-    /* [in] */ const String& capsuleName)
+AutoPtr<ArrayOf<IFile*> > Environment::BuildExternalStorageAppCacheDirs(
+    /* [in] */ const String& packageName)
 {
-    Init();
-    AutoPtr<IFile> file1, file2;
-    CFile::New(EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY, capsuleName, (IFile**)&file1);
-    CFile::New(file1, String("cache"), (IFile**)&file2);
-    return file2;
+    if (FAILED(ThrowIfUserRequired())) return NULL;
+    return sCurrentUser->BuildExternalStorageAppCacheDirs(packageName);
 }
 
 AutoPtr<IFile> Environment::GetDownloadCacheDirectory()
 {
-    Init();
     return DOWNLOAD_CACHE_DIRECTORY;
 }
 
 String Environment::GetExternalStorageState()
 {
-    Init();
-
-    if (mMntSvc == NULL) {
-        mMntSvc = IMountService::Probe(ServiceManager::GetService(String("mount")));
-    }
-
-    String str, val;
-    GetExternalStorageDirectory()->ToString(&str);
-    ECode ec = mMntSvc->GetVolumeState(str, &val);
-    if (FAILED(ec)) {
-        return IEnvironment::MEDIA_REMOVED;
-    }
-
-    return val;
+    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<IFile> externalDir = (*files)[0];
+    return GetExternalStorageState(externalDir);
 }
 
-AutoPtr<IStorageVolume> Environment::GetPrimaryVolume()
+String Environment::GetStorageState(
+    /* [in] */ IFile* path)
 {
-    if (!sIsStorageVolumeInited) {
-        AutoLock lock(sLock);
-        if (!sIsStorageVolumeInited) {
-            assert(Environment::sPrimaryVolume.Get() == NULL);
-            // try {
-            AutoPtr<IMountService> mountService = IMountService::Probe(ServiceManager::GetService(String("mount")));
-            if (mountService != NULL) {
-                AutoPtr<ArrayOf<IStorageVolume*> > volumes;
-                mountService->GetVolumeList((ArrayOf<IStorageVolume*>**)&volumes);
-                AutoPtr<IStorageManagerHelper> helper;
-                CStorageManagerHelper::AcquireSingleton((IStorageManagerHelper**)&helper);
-                helper->GetPrimaryVolume(volumes, (IStorageVolume**)&Environment::sPrimaryVolume);
-                sIsStorageVolumeInited = TRUE;
-            }
-            else {
-                Logger::E(TAG, "couldn't talk to MountService");
-            }
-            // } catch (Exception e) {
-            //     Log.e(TAG, "couldn't talk to MountService", e);
-            // }
-        }
+    return GetExternalStorageState(path);
+}
+
+String Environment::GetExternalStorageState(
+    /* [in] */ IFile* path)
+{
+    AutoPtr<IStorageVolume> volume = GetStorageVolume(path);
+    if (volume != NULL) {
+        assert(0);
+
+        // AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
+        // IMountService* mountService = IMountService::Probe(mountService);
+        // // try {
+        // String result, path;
+        // volume->GetPath(&path);
+        // ECode ec = mountService->GetVolumeState(path, &result);
+        // if (!FAILED(ec)) {
+        //     return result;
+        // }
+        // } catch (RemoteException e) {
+        // }
     }
-    return Environment::sPrimaryVolume;
+
+    return MEDIA_UNKNOWN;
 }
 
 Boolean Environment::IsExternalStorageRemovable()
 {
+    if (IsStorageDisabled()) return FALSE;
+    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<IFile> externalDir = (*files)[0];
+    return IsExternalStorageRemovable(externalDir);
+}
+
+Boolean Environment::IsExternalStorageRemovable(
+    /* [in] */ IFile* path)
+{
+    AutoPtr<IStorageVolume> volume = GetStorageVolume(path);
     Boolean result = FALSE;
-    AutoPtr<IStorageVolume> primary = GetPrimaryVolume();
-    if (primary != NULL) {
-        primary->IsRemovable(&result);
+    if (volume != NULL) {
+        volume->IsRemovable(&result);
     }
+    // else {
+    //     throw new IllegalArgumentException("Failed to find storage device at " + path);
+    // }
     return result;
 }
 
 Boolean Environment::IsExternalStorageEmulated()
 {
+    if (IsStorageDisabled()) return FALSE;
+    AutoPtr<ArrayOf<IFile*> > files = sCurrentUser->GetExternalDirsForApp();
+    AutoPtr<IFile> externalDir = (*files)[0];
+    return IsExternalStorageEmulated(externalDir);
+}
+
+Boolean Environment::IsExternalStorageEmulated(
+    /* [in] */ IFile* path)
+{
+    AutoPtr<IStorageVolume> volume = GetStorageVolume(path);
     Boolean result = FALSE;
-    AutoPtr<IStorageVolume> primary = GetPrimaryVolume();
-    if (primary != NULL) {
-        primary->IsEmulated(&result);
+    if (volume != NULL) {
+        volume->IsEmulated(&result);
     }
+    // else {
+    //     throw new IllegalArgumentException("Failed to find storage device at " + path);
+    // }
     return result;
 }
 
@@ -285,186 +632,39 @@ AutoPtr<IFile> Environment::GetDirectory(
     /* [in] */ const String& variableName,
     /* [in] */ const String& defaultPath)
 {
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+    return GetDirectoryImpl(variableName, defaultPath);
+}
 
-    String path;
-    system->GetEnv(variableName, &path);
+void Environment::SetUserRequired(
+    /* [in] */ Boolean userRequired)
+{
+    sUserRequired = userRequired;
+}
 
-    AutoPtr<IFile> file;
-    if (path.IsNull()) {
-        CFile::New(defaultPath, (IFile**)&file);
+AutoPtr<ArrayOf<IFile*> > Environment::BuildPaths(
+    /* [in] */ ArrayOf<IFile*>* base,
+    /* [in] */ ArrayOf<String>* segments)
+{
+    AutoPtr<ArrayOf<IFile*> > result = ArrayOf<IFile*>::Alloc(base->GetLength());
+
+    for (Int32 i = 0; i < base->GetLength(); i++) {
+        result->Set(i, BuildPath((*base)[i], segments));
     }
-    else {
-        CFile::New(path, (IFile**)&file);
-    }
-    return file;
+    return result;
 }
 
-void Environment::Init()
-{
-    if (!sIsInitilized) {
-        ROOT_DIRECTORY = GetDirectory(String("ELASTOS_ROOT"), String("/system"));
-        DATA_DIRECTORY = GetDirectory(String("ELASTOS_DATA"), String("/data"));
-        SECURE_DATA_DIRECTORY = GetDirectory(String("ELASTOS_SECURE_DATA"), String("/data/secure"));
-        EXTERNAL_STORAGE_DIRECTORY = GetDirectory(String("EXTERNAL_STORAGE"), String("/sdcard"));
-
-        AutoPtr<IFile> file1, file2, file3;
-        file1 = GetDirectory(String("EXTERNAL_STORAGE"), String("/sdcard"));
-        CFile::New(file1, String("Elastos"), (IFile**)&file2);
-        CFile::New(file2, String("data"), (IFile**)&EXTERNAL_STORAGE_ELASTOS_DATA_DIRECTORY);
-
-        file1 = GetDirectory(String("EXTERNAL_STORAGE"), String("/sdcard"));
-        CFile::New(file1, String("Elastos"), (IFile**)&file3);
-        CFile::New(file3, String("media"), (IFile**)&EXTERNAL_STORAGE_ELASTOS_MEDIA_DIRECTORY);
-        CFile::New(file3, String("obb"), (IFile**)&EXTERNAL_STORAGE_ELASTOS_OBB_DIRECTORY);
-
-        DOWNLOAD_CACHE_DIRECTORY = GetDirectory(String("DOWNLOAD_CACHE"), String("/cache"));
-
-        sIsInitilized = TRUE;
-    }
-}
-
-ECode Environment::UserEnvironment::Init(
-    /* [in] */ Int32 userId)
-{
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-
-    // See storage config details at http://source.android.com/tech/storage/
-    String rawExternalStorage, rawEmulatedStorageTarget, rawMediaStorage;
-    system->GetEnv(String("EXTERNAL_STORAGE"), &rawExternalStorage);
-    system->GetEnv(String("EMULATED_STORAGE_TARGET"), &rawEmulatedStorageTarget);
-    system->GetEnv(String("MEDIA_STORAGE"), &rawMediaStorage);
-
-    if (rawMediaStorage.IsNullOrEmpty()) {
-        rawMediaStorage = String("/data/media");
-    }
-
-    if (!rawEmulatedStorageTarget.IsNullOrEmpty()) {
-        // Device has emulated storage; external storage paths should have
-        // userId burned into them.
-        String rawUserId = StringUtils::Int32ToString(userId);
-        AutoPtr<IFile> emulatedBase;
-        CFile::New(rawEmulatedStorageTarget, (IFile**)&emulatedBase);
-        AutoPtr<IFile> mediaBase;
-        CFile::New(rawMediaStorage, (IFile**)&mediaBase);
-
-        // /storage/emulated/0
-        mExternalStorage = BuildPath(emulatedBase, rawUserId);
-        // /data/media/0
-        mMediaStorage = BuildPath(mediaBase, rawUserId);
-
-    } else {
-        // Device has physical external storage; use plain paths.
-        if (rawExternalStorage.IsNullOrEmpty()) {
-            //Logger::W(TAG, String("EXTERNAL_STORAGE undefined; falling back to default"));
-            rawExternalStorage = String("/storage/sdcard0");
-        }
-
-        // /storage/sdcard0
-        CFile::New(rawExternalStorage, (IFile**)&mExternalStorage);
-        // /data/media
-        CFile::New(rawMediaStorage, (IFile**)&mMediaStorage);
-    }
-
-    ArrayOf_<String, 2> array;
-    array.Set(0, String("Android")/*DIRECTORY_ANDROID*/);
-    array.Set(1, String("obb"));
-    mExternalStorageAndroidObb = BuildPath(mExternalStorage, array);
-    array.Set(1, String("data"));
-    mExternalStorageAndroidData = BuildPath(mExternalStorage, array);
-    array.Set(1, String("media"));
-    mExternalStorageAndroidMedia = BuildPath(mExternalStorage, array);
-    return NOERROR;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageDirectory()
-{
-    return mExternalStorage;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageObbDirectory()
-{
-    return mExternalStorageAndroidObb;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStoragePublicDirectory(
-    /* [in] */ const String& type)
-{
-    AutoPtr<IFile> file;
-    CFile::New(mExternalStorage, type, (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAndroidDataDir()
-{
-    return mExternalStorageAndroidData;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAppDataDirectory(
-    /* [in] */ const String& packageName)
-{
-    AutoPtr<IFile> file;
-    CFile::New(mExternalStorageAndroidData, packageName, (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAppMediaDirectory(
-    /* [in] */ const String& packageName)
-{
-    AutoPtr<IFile> file;
-    CFile::New(mExternalStorageAndroidMedia, packageName, (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAppObbDirectory(
-    /* [in] */ const String& packageName)
-{
-    AutoPtr<IFile> file;
-    CFile::New(mExternalStorageAndroidObb, packageName, (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAppFilesDirectory(
-    /* [in] */ const String& packageName)
-{
-    AutoPtr<IFile> fileTemp;
-    CFile::New(mExternalStorageAndroidData, packageName, (IFile**)&fileTemp);
-    AutoPtr<IFile> file;
-    CFile::New(fileTemp, String("files"), (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetExternalStorageAppCacheDirectory(
-    /* [in] */ const String& packageName)
-{
-    AutoPtr<IFile> fileTemp;
-    CFile::New(mExternalStorageAndroidData, packageName, (IFile**)&fileTemp);
-    AutoPtr<IFile> file;
-    CFile::New(fileTemp, String("cache"), (IFile**)&file);
-    return file;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::GetMediaStorageDirectory()
-{
-    return mMediaStorage;
-}
-
-AutoPtr<IFile> Environment::UserEnvironment::BuildPath(
+AutoPtr<IFile> Environment::BuildPath(
     /* [in] */ IFile* base,
-    /* [in] */ const ArrayOf<String>& segments)
+    /* [in] */ ArrayOf<String>* segments)
 {
-    AutoPtr<IFile> cur = base, temp;
-    Int32 i;
-    String segment;
-    for(i = 0; i < segments.GetLength(); i++) {
-        segment = segments[i];
+    AutoPtr<IFile> cur = base;
+    for (Int32 i = 0; i < segments->GetLength(); ++i) {
+        String segment = (*segments)[i];
         if (cur == NULL) {
             CFile::New(segment, (IFile**)&cur);
         }
         else {
-            temp = NULL;
+            AutoPtr<IFile> temp;
             CFile::New(cur, segment, (IFile**)&temp);
             cur = temp;
         }
@@ -472,19 +672,85 @@ AutoPtr<IFile> Environment::UserEnvironment::BuildPath(
     return cur;
 }
 
-AutoPtr<IFile> Environment::UserEnvironment::BuildPath(
-    /* [in] */ IFile* base,
-    /* [in] */ const String& segment)
+AutoPtr<IFile> Environment::MaybeTranslateEmulatedPathToInternal(
+    /* [in] */ IFile* path)
 {
-    AutoPtr<IFile> cur;
-    if (base == NULL) {
-        CFile::New(segment, (IFile**)&cur);
+    // Fast return if not emulated, or missing variables
+    if (!Environment::IsExternalStorageEmulated()
+            || CANONCIAL_EMULATED_STORAGE_TARGET == NULL) {
+        return path;
     }
-    else {
-        CFile::New(base, segment, (IFile**)&cur);
+
+    // try {
+    String rawPath;
+    path->GetCanonicalPath(&rawPath);
+    if (rawPath.StartWith(CANONCIAL_EMULATED_STORAGE_TARGET)) {
+        String path = rawPath.Substring(CANONCIAL_EMULATED_STORAGE_TARGET.GetLength());
+        AutoPtr<IFile> internalPath;
+        CFile::New(DIR_MEDIA_STORAGE, path, (IFile**)&internalPath);
+        Boolean exists;
+        internalPath->Exists(&exists);
+        if (exists) {
+            return internalPath;
+        }
     }
-    return cur;
+    // } catch (IOException e) {
+    //     Logger::W(TAG, "Failed to resolve canonical path for " + path);
+    // }
+
+    // Unable to translate to internal path; use original
+    return path;
 }
+
+ECode Environment::ThrowIfUserRequired()
+{
+    if (sUserRequired) {
+        // Log.wtf(TAG, "Path requests must specify a user by using UserEnvironment",
+        //         new Throwable());
+        return E_FAIL;
+    }
+
+    return NOERROR;
+}
+
+
+Boolean Environment::IsStorageDisabled()
+{
+    Boolean result;
+    SystemProperties::GetBoolean(String("config.disable_storage"), FALSE, &result);
+    return result;
+}
+
+AutoPtr<IStorageVolume> Environment::GetStorageVolume(
+    /* [in] */ IFile* inPath)
+{
+    AutoPtr<IFile> path;
+    ECode ec = inPath->GetCanonicalFile((IFile**)&path);
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        return NULL;
+    }
+
+    assert(0);
+    // try {
+    // AutoPtr<IInterface> obj = ServiceManager::GetService(String("mount"));
+    // IMountService* mountService = IMountService::Probe(mountService);
+    // AutoPtr<ArrayOf<IStorageVolume*> > volumes;
+    // mountService->GetVolumeList((ArrayOf<IStorageVolume*>**)&volumes);
+    // for (Int32 i = 0; i < volumes; ++i) {
+    //     AutoPtr<IStorageVolume> volume = (*volumes)[i];
+    //     AutoPtr<IFile> file;
+    //     volume->GetPathFile((IFile**)&file);
+    //     if (FileUtils::Contains(file, path)) {
+    //         return volume;
+    //     }
+    // }
+    // } catch (RemoteException e) {
+    // }
+
+    return NULL;
+}
+
+
 
 } // namespace Os
 } // namespace Droid
