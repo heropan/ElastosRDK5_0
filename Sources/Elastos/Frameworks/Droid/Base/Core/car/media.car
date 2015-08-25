@@ -56,6 +56,27 @@ module
     merge("media/media/session/ParcelableVolumeInfo.car");
     merge("media/media/session/PlaybackState.car");
 
+    merge("media/media/tv/ITvInputClient.car");
+    merge("media/media/tv/ITvInputHardware.car");
+    merge("media/media/tv/ITvInputHardwareCallback.car");
+    merge("media/media/tv/ITvInputManager.car");
+    merge("media/media/tv/ITvInputManagerCallback.car");
+    merge("media/media/tv/ITvInputService.car");
+    merge("media/media/tv/ITvInputServiceCallback.car");
+    merge("media/media/tv/ITvInputSession.car");
+    merge("media/media/tv/ITvInputSessionCallback.car");
+    merge("media/media/tv/ITvInputSessionWrapper.car");
+    merge("media/media/tv/TvContentRating.car");
+    merge("media/media/tv/TvContentRatingSystemInfo.car");
+    merge("media/media/tv/TvContract.car");
+    merge("media/media/tv/TvInputHardwareInfo.car");
+    merge("media/media/tv/TvInputInfo.car");
+    merge("media/media/tv/TvInputManager.car");
+    merge("media/media/tv/TvInputService.car");
+    merge("media/media/tv/TvStreamConfig.car");
+    merge("media/media/tv/TvTrackInfo.car");
+    merge("media/media/tv/TvView.car");
+
     merge("media/media/AmrInputStream.car");
     merge("media/media/AsyncPlayer.car");
     merge("media/media/AudioFormat.car");
