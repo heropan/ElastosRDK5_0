@@ -1324,4 +1324,141 @@ module
     } // namespace Apache
     } // namespace Org
 
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Protocol {
+
+    class CHttpRequestExecutor {
+        constructor();
+
+        interface IHttpRequestExecutor;
+    }
+
+    class CBasicHttpProcessor {
+        constructor();
+
+        interface IBasicHttpProcessor;
+        interface IHttpRequestInterceptor;
+        interface IHttpResponseInterceptor;
+        interface IHttpRequestInterceptorList;
+        interface IHttpResponseInterceptorList;
+        interface ICloneable;
+    }
+
+    class CHttpService {
+        constructor(
+            [in] IHttpProcessor* processor,
+            [in] IConnectionReuseStrategy* connStrategy,
+            [in] IHttpResponseFactory* responseFactory);
+
+        interface IHttpService;
+    }
+
+    class CUriPatternMatcher {
+        constructor();
+
+        interface IUriPatternMatcher;
+    }
+
+    class CResponseConnControl {
+        constructor();
+
+        interface IHttpResponseInterceptor;
+    }
+
+    class CRequestContent {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CResponseContent {
+        constructor();
+
+        interface IHttpResponseInterceptor;
+    }
+
+    class CRequestTargetHost {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CRequestExpectContinue {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CBasicHttpContext {
+        constructor();
+
+        constructor(
+            [in] IHttpContext* parentContext);
+
+        interface IHttpContext;
+    }
+
+    class CHttpRequestHandlerRegistry {
+        constructor();
+
+        interface IHttpRequestHandlerRegistry;
+        interface IHttpRequestHandlerResolver;
+    }
+
+    class CDefaultedHttpContext {
+        constructor(
+            [in] IHttpContext* local,
+            [in] IHttpContext* defaults);
+
+        interface IDefaultedHttpContext;
+        interface IHttpContext;
+    }
+
+    class CHttpDateGenerator {
+        constructor();
+
+        interface IHttpDateGenerator;
+    }
+
+    singleton class CHttpDateGeneratorHelper {
+        interface IHttpDateGeneratorHelper;
+    }
+
+    class CResponseDate {
+        constructor();
+
+        interface IHttpResponseInterceptor;
+    }
+
+    class CRequestDate {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CResponseServer {
+        constructor();
+
+        interface IHttpResponseInterceptor;
+    }
+
+    class CRequestUserAgent {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    class CRequestConnControl {
+        constructor();
+
+        interface IHttpRequestInterceptor;
+    }
+
+    } // namespace Protocol
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
 }

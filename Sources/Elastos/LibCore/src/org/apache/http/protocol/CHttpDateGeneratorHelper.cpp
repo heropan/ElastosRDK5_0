@@ -1,0 +1,26 @@
+
+#include "CHttpDateGeneratorHelper.h"
+#include "HttpDateGenerator.h"
+
+namespace Org {
+namespace Apache {
+namespace Http {
+namespace Protocol {
+
+CAR_INTERFACE_IMPL(CHttpDateGeneratorHelper, Object, IHttpDateGeneratorHelper)
+
+CAR_SINGLETON_IMPL(CHttpDateGeneratorHelper)
+
+ECode CHttpDateGeneratorHelper::GetGMT(
+    /* [out] */ ITimeZone** timeZone)
+{
+    VALIDATE_NOT_NULL(timeZone)
+    *timeZone = HttpDateGenerator::GMT;
+    REFCOUNT_ADD(*timeZone)
+    return NOERROR;
+}
+
+} // namespace Protocol
+} // namespace Http
+} // namespace Apache
+} // namespace Org

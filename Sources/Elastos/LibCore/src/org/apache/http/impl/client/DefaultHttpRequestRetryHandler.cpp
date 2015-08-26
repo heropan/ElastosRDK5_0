@@ -2,7 +2,7 @@
 #include "DefaultHttpRequestRetryHandler.h"
 #include <elastos/Logger.h>
 
-using Elastos::Utility::IBoolean;
+using Elastos::Core::IBoolean;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Http::Protocol::IExecutionContext;
 
