@@ -2,7 +2,7 @@
 #ifndef __ELASTOS_IO_FILEOUTPUTSTREAM_H__
 #define __ELASTOS_IO_FILEOUTPUTSTREAM_H__
 
-#include "OutputStream.h"
+#include <elastos/io/OutputStream.h>
 
 using Elastos::IO::Channels::IFileChannel;
 

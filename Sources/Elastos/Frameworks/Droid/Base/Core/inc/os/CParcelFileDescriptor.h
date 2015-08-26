@@ -11,37 +11,11 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CarClass(CParcelFileDescriptor), public ParcelFileDescriptor
+CarClass(CParcelFileDescriptor)
+    , public ParcelFileDescriptor
 {
 public:
-    CARAPI constructor();
-
-    CARAPI constructor(
-        /* [in] */ IParcelFileDescriptor* descriptor);
-
-    CARAPI constructor(
-        /* [in] */ IFileDescriptor* descriptor);
-
-    CARAPI GetFileDescriptor(
-        /* [out] */ IFileDescriptor** des);
-
-    CARAPI GetStatSize(
-        /* [out] */ Int64* len);
-
-    CARAPI SeekTo(
-        /* [in] */ Int64 startOffset,
-        /* [out] */ Int64* toOffset);
-
-    CARAPI GetFd(
-        /* [out] */ Int32* fd);
-
-    CARAPI Close();
-
-    CARAPI ReadFromParcel(
-        /* [in] */ IParcel* source);
-
-    CARAPI WriteToParcel(
-        /* [in] */ IParcel* dest);
+    CAR_OBJECT_DECL()
 };
 
 } // namespace Os

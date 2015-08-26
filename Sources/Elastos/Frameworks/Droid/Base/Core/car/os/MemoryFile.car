@@ -50,7 +50,7 @@ module
          @return InputStream
          */
         GetInputStream(
-            [in] IInputStream* stream);
+            [out] IInputStream** stream);
 
         /**
          * Creates a new OutputStream for writing to the memory file.
@@ -58,7 +58,7 @@ module
          @return OutputStream
          */
         GetOutputStream(
-            [in] IOutputStream* stream);
+            [out] IOutputStream** stream);
 
         /**
          * Reads bytes from the memory file.
@@ -75,7 +75,8 @@ module
             [in] ArrayOf<Byte>* buffer,
             [in] Int32 srcOffset,
             [in] Int32 destOffset,
-            [in] Int32 count);
+            [in] Int32 count,
+            [out] Int32* number);
 
         /**
          * Write bytes to the memory file.

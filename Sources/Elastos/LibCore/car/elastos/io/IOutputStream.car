@@ -20,6 +20,7 @@ module
      /**
      * @Involve
      * interface ICloseable;
+     * interface IFlushable;
      */
     [deprecated]
     interface IOutputStream {

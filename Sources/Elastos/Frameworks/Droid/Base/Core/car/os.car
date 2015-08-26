@@ -81,10 +81,12 @@ module
     using interface Elastos.Core.IThread;
     using interface Elastos.Core.IRunnable;
     using interface Elastos.IO.IParcelable;
-    // using interface Elastos.IO.IFileDescriptor;
+    using interface Elastos.IO.IFileDescriptor;
     // using interface Elastos.IO.IFile;
-    // using interface Elastos.IO.ICloseable;
-    // using interface Elastos.IO.IFlushable;
+    using interface Elastos.IO.ICloseable;
+    using interface Elastos.IO.IFlushable;
+    using interface Elastos.IO.IInputStream;
+    using interface Elastos.IO.IOutputStream;
 
     // interface Elastos.Droid.Os.ILooper;
     //interface Elastos.Droid.Os.IUserHandle;
@@ -316,6 +318,54 @@ module
         interface ICancellationSignalHelper;
     }
 
+    class CMemoryFile {
+        constructor(
+            [in] String name,
+            [in] Int32 length);
+
+        interface IMemoryFile;
+    }
+
+    class CParcel {
+        constructor();
+
+        interface IParcel;
+    }
+
+    class CParcelFileDescriptor {
+        constructor();
+
+        constructor(
+            [in] IParcelFileDescriptor* pfd);
+
+        interface IParcelFileDescriptor;
+        interface IParcelable;
+        interface ICloseable;
+    }
+
+    singleton class CParcelFileDescriptorHelper {
+        interface IParcelFileDescriptorHelper;
+    }
+
+    class CParcelFileDescriptorAutoCloseInputStream {
+        constructor(
+            [in] IParcelFileDescriptor* pfd);
+
+        interface IParcelFileDescriptorAutoCloseInputStream;
+        interface IInputStream;
+        interface ICloseable;
+    }
+
+    class CParcelFileDescriptorAutoCloseOutputStream {
+        constructor(
+           [in] IParcelFileDescriptor* pfd);
+
+        interface IParcelFileDescriptorAutoCloseOutputStream;
+        interface IOutputStream;
+        interface ICloseable;
+        interface IFlushable;
+    }
+
     // class CPatternMatcher {
     //     constructor();
 
@@ -325,44 +375,6 @@ module
 
     //     interface IPatternMatcher;
     //     interface IParcelable;
-    // }
-
-    // class CParcel {
-    //     constructor();
-
-    //     interface IParcel;
-    // }
-
-    // class CParcelFileDescriptor {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IParcelFileDescriptor* pfd);
-
-    //     /*package*/ constructor(
-    //         [in] IFileDescriptor* fd);
-
-    //     interface IParcelFileDescriptor;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CParcelFileDescriptorHelper {
-    //     interface IParcelFileDescriptorHelper;
-    // }
-
-    // class CParcelFileDescriptorAutoCloseInputStream {
-    //     constructor(
-    //        [in] IParcelFileDescriptor* pfd);
-
-    //     interface IParcelFileDescriptorAutoCloseInputStream;
-    // }
-
-    // class CParcelFileDescriptorAutoCloseOutputStream {
-    //     constructor(
-    //        [in] IParcelFileDescriptor* pfd);
-
-    //     interface IParcelFileDescriptorAutoCloseOutputStream;
-    //     interface IFlushable;
     // }
 
     // class CProcessStartResult {

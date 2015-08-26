@@ -35,6 +35,25 @@ SOURCES += FactoryTest.cpp
 SOURCES += FileBridge.cpp
 SOURCES += FileObserver.cpp
 SOURCES += FileUtils.cpp
+SOURCES += Handler.cpp
+SOURCES += HandlerRunnable.cpp
+SOURCES += HandlerThread.cpp
+SOURCES += CHandlerThread.cpp
+SOURCES += CMemoryFile.cpp
+SOURCES += CMessage.cpp
+SOURCES += CMessageHelper.cpp
+SOURCES += CMessenger.cpp
+SOURCES += CMessengerImpl.cpp
+SOURCES += CMessageQueue.cpp
+SOURCES += NativeMessageQueue.cpp
+SOURCES += NullVibrator.cpp
+SOURCES += CParcel.cpp
+
+SOURCES += ParcelFileDescriptor.cpp
+SOURCES += CParcelFileDescriptorHelper.cpp
+
+
+SOURCES += Vibrator.cpp
 
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
@@ -42,34 +61,22 @@ SOURCES += CRuntimeInit.cpp
 SOURCES += SystemClock.cpp
 SOURCES += Looper.cpp
 SOURCES += CLooperHelper.cpp
-SOURCES += Handler.cpp
-SOURCES += HandlerRunnable.cpp
-SOURCES += HandlerThread.cpp
-SOURCES += CHandlerThread.cpp
 SOURCES += SomeArgs.cpp
-SOURCES += HandlerCaller.cpp
 SOURCES += Runnable.cpp
-SOURCES += CMessage.cpp
-SOURCES += CMessageHelper.cpp
-SOURCES += CMessenger.cpp
-SOURCES += CMessengerImpl.cpp
-SOURCES += CMessageQueue.cpp
-SOURCES += NativeMessageQueue.cpp
 SOURCES += UserHandle.cpp
 SOURCES += CUserHandleHelper.cpp
 SOURCES += SystemProperties.cpp
 SOURCES += CSystemProperties.cpp
 
+
+//SOURCES += HandlerCaller.cpp
 #SOURCES = BatteryStats.cpp
 #SOURCES += BatteryStatsImpl.cpp
 #SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
 #SOURCES += CRemoteCallbackList.cpp
-#SOURCES += CParcel.cpp
 #SOURCES += CWorkSource.cpp
-#SOURCES += ParcelFileDescriptor.cpp
-#SOURCES += CParcelFileDescriptor.cpp
-#SOURCES += CParcelFileDescriptorHelper.cpp
+
 #SOURCES += CParcelFileDescriptorAutoCloseInputStream.cpp
 #SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
 #SOURCES += CPatternMatcher.cpp

@@ -16,40 +16,12 @@ namespace Os {
  * take care of calling {@link ParcelFileDescriptor#close
  * ParcelFileDescriptor.close()} for you when the stream is closed.
  */
-CarClass(CParcelFileDescriptorAutoCloseOutputStream) , public ParcelFileDescriptor::AutoCloseOutputStream
+CarClass(CParcelFileDescriptorAutoCloseOutputStream)
+    , public ParcelFileDescriptor::AutoCloseOutputStream
 {
 public:
-    CParcelFileDescriptorAutoCloseOutputStream();
+    CAR_OBJECT_DECL();
 
-    CARAPI Close();
-
-    CARAPI Flush();
-
-    CARAPI constructor(
-        /* [in] */ IParcelFileDescriptor* pfd);
-
-    CARAPI GetFD(
-        /* [out] */ IFileDescriptor** fd);
-
-    CARAPI Write(
-        /* [in] */ Int32 oneByte);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer);
-
-    CARAPI WriteBytes(
-        /* [in] */ const ArrayOf<Byte>& buffer,
-        /* [in] */ Int32 offset,
-        /* [in] */ Int32 count);
-
-    CARAPI CheckError(
-        /* [out] */ Boolean* hasError);
-
-    CARAPI GetLock(
-        /* [out] */ IInterface** lockobj);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 };
 
 } // namespace Os

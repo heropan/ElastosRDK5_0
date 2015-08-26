@@ -78,6 +78,9 @@ module
          */
         const Int32 MODE_APPEND = 0x02000000;
 
+        Dup(
+            [out] IParcelFileDescriptor** descriptor);
+
         /**
          * Retrieve the actual FileDescriptor associated with this object.
          *
@@ -132,7 +135,8 @@ module
          *
          * @see #checkError()
          */
-        CanDetectErrors();
+        CanDetectErrors(
+            [out] Boolean* result);
 
         /**
          * Detect and throw if the other end of a pipe or socket pair encountered an
@@ -190,9 +194,6 @@ module
         */
         Dup(
             [in] IFileDescriptor* fd,
-            [out] IParcelFileDescriptor** descriptor);
-
-        Dup(
             [out] IParcelFileDescriptor** descriptor);
 
         /**

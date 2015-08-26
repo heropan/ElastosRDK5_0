@@ -10,7 +10,7 @@ module
     namespace Webkit {
 
     interface IHTML5VideoViewHelper {
-        Release();
+        ReleaseResources();
     }
 
     /**

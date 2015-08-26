@@ -12,6 +12,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CParcel, Object, IParcel)
+
+CAR_OBJECT_IMPL(CParcel)
+
 ECode CParcel::constructor()
 {
     return Elastos::CParcel::New((IParcel**)&mData);
@@ -57,22 +61,10 @@ ECode CParcel::ReadBoolean(
     return mData->ReadBoolean(value);
 }
 
-ECode CParcel::ReadChar8(
-    /* [out] */ Char8* value)
-{
-    return mData->ReadChar8(value);
-}
-
-ECode CParcel::ReadChar16(
-    /* [out] */ Char16* value)
-{
-    return mData->ReadChar16(value);
-}
-
-ECode CParcel::ReadChar32(
+ECode CParcel::ReadChar(
     /* [out] */ Char32* value)
 {
-    return mData->ReadChar32(value);
+    return mData->ReadChar(value);
 }
 
 ECode CParcel::ReadInt16(
@@ -129,12 +121,6 @@ ECode CParcel::ReadEGuid(
     return mData->ReadEGuid(id);
 }
 
-ECode CParcel::ReadInterfacePtr(
-    /* [out] */ Handle32* itfPtr)
-{
-    return mData->ReadInterfacePtr(itfPtr);
-}
-
 ECode CParcel::ReadArrayOf(
     /* [out] */ Handle32* array)
 {
@@ -147,124 +133,10 @@ ECode CParcel::ReadArrayOfString(
     return mData->ReadArrayOfString(array);
 }
 
-ECode CParcel::ReadBufferOf(
-    /* [out] */ Handle32* buffer)
+ECode CParcel::ReadInterfacePtr(
+    /* [out] */ Handle32* itfPtr)
 {
-    return mData->ReadBufferOf(buffer);
-}
-
-ECode CParcel::ReadBufferOfCString(
-    /* [out] */ Handle32* buffer)
-{
-    return mData->ReadBufferOfCString(buffer);
-}
-
-ECode CParcel::ReadBufferOfString(
-    /* [out] */ Handle32* buffer)
-{
-    return mData->ReadBufferOfString(buffer);
-}
-
-ECode CParcel::ReadMemoryBuf(
-    /* [out] */ Handle32* buffer)
-{
-    return mData->ReadMemoryBuf(buffer);
-}
-
-ECode CParcel::ReadStringBuf(
-    /* [out] */ Handle32* buffer)
-{
-    return mData->ReadStringBuf(buffer);
-}
-
-ECode CParcel::ReadBytePtr(
-    /* [out] */ Handle32* bypp)
-{
-    return mData->ReadBytePtr(bypp);
-}
-
-ECode CParcel::ReadBooleanPtr(
-    /* [out] */ Handle32* bopp)
-{
-    return mData->ReadBooleanPtr(bopp);
-}
-
-ECode CParcel::ReadChar8Ptr(
-    /* [out] */ Handle32* c8pp)
-{
-    return mData->ReadChar8Ptr(c8pp);
-}
-
-ECode CParcel::ReadChar16Ptr(
-    /* [out] */ Handle32* c16pp)
-{
-    return mData->ReadChar16Ptr(c16pp);
-}
-
-ECode CParcel::ReadInt16Ptr(
-    /* [out] */ Handle32* i16pp)
-{
-    return mData->ReadInt16Ptr(i16pp);
-}
-
-ECode CParcel::ReadInt32Ptr(
-    /* [out] */ Handle32* i32pp)
-{
-    return mData->ReadInt32Ptr(i32pp);
-}
-
-ECode CParcel::ReadInt64Ptr(
-    /* [out] */ Handle32* i64pp)
-{
-    return mData->ReadInt64Ptr(i64pp);
-}
-
-ECode CParcel::ReadFloatPtr(
-    /* [out] */ Handle32* fpp)
-{
-    return mData->ReadFloatPtr(fpp);
-}
-
-ECode CParcel::ReadDoublePtr(
-    /* [out] */ Handle32* dpp)
-{
-    return mData->ReadDoublePtr(dpp);
-}
-
-ECode CParcel::ReadStringPtr(
-    /* [out] */ Handle32* spp)
-{
-    return mData->ReadStringPtr(spp);
-}
-
-ECode CParcel::ReadStructPtr(
-    /* [out] */ Handle32* addr)
-{
-    return mData->ReadStructPtr(addr);
-}
-
-ECode CParcel::ReadEMuidPtr(
-    /* [out] */ Handle32* idpp)
-{
-    return mData->ReadEMuidPtr(idpp);
-}
-
-ECode CParcel::ReadEGuidPtr(
-    /* [out] */ Handle32* idpp)
-{
-    return mData->ReadEGuidPtr(idpp);
-}
-
-ECode CParcel::ReadInterfacePtrPtr(
-    /* [out] */ Handle32* itfpp)
-{
-    return mData->ReadInterfacePtrPtr(itfpp);
-}
-
-ECode CParcel::ReadBufferOfPtr(
-    /* [out] */ Handle32* buffer)
-{
-    return mData->ReadBufferOfPtr(buffer);
+    return mData->ReadInterfacePtr(itfPtr);
 }
 
 // Retrieve a file descriptor from the parcel.  This returns the raw fd
@@ -287,22 +159,10 @@ ECode CParcel::WriteBoolean(
     return mData->WriteBoolean(value);
 }
 
-ECode CParcel::WriteChar8(
-    /* [in] */ Char8 value)
-{
-    return mData->WriteChar8(value);
-}
-
-ECode CParcel::WriteChar16(
-    /* [in] */ Char16 value)
-{
-    return mData->WriteChar16(value);
-}
-
-ECode CParcel::WriteChar32(
+ECode CParcel::WriteChar(
     /* [in] */ Char32 value)
 {
-    return mData->WriteChar32(value);
+    return mData->WriteChar(value);
 }
 
 ECode CParcel::WriteInt16(
@@ -341,12 +201,6 @@ ECode CParcel::WriteString(
     return mData->WriteString(str);
 }
 
-ECode CParcel::WriteInterfacePtr(
-    /* [in] */ IInterface* value)
-{
-    return mData->WriteInterfacePtr(value);
-}
-
 ECode CParcel::WriteStruct(
     /* [in] */ Handle32 value,
     /* [in] */ Int32 size)
@@ -378,112 +232,10 @@ ECode CParcel::WriteArrayOfString(
     return mData->WriteArrayOfString(array);
 }
 
-ECode CParcel::WriteBufferOf(
-    /* [in] */ Handle32 buffer)
+ECode CParcel::WriteInterfacePtr(
+    /* [in] */ IInterface* value)
 {
-    return mData->WriteBufferOf(buffer);
-}
-
-ECode CParcel::WriteBufferOfCString(
-    /* [in] */ const BufferOf<CString>& buffer)
-{
-    return mData->WriteBufferOfCString(buffer);
-}
-
-ECode CParcel::WriteBufferOfString(
-    /* [in] */ const BufferOf<String>& buffer)
-{
-    return mData->WriteBufferOfString(buffer);
-}
-
-ECode CParcel::WriteMemoryBuf(
-    /* [in] */ Handle32 buffer)
-{
-    return mData->WriteMemoryBuf(buffer);
-}
-
-ECode CParcel::WriteStringBuf(
-    /* [in] */ Handle32 buffer)
-{
-    return mData->WriteStringBuf(buffer);
-}
-
-ECode CParcel::WriteBytePtr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteBytePtr(addr);
-}
-
-ECode CParcel::WriteBooleanPtr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteBooleanPtr(addr);
-}
-
-ECode CParcel::WriteChar8Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteChar8Ptr(addr);
-}
-
-ECode CParcel::WriteChar16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteChar16Ptr(addr);
-}
-
-ECode CParcel::WriteInt16Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteInt16Ptr(addr);
-}
-
-ECode CParcel::WriteInt32Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteInt32Ptr(addr);
-}
-
-ECode CParcel::WriteInt64Ptr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteInt64Ptr(addr);
-}
-
-ECode CParcel::WriteFloatPtr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteFloatPtr(addr);
-}
-
-ECode CParcel::WriteDoublePtr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteDoublePtr(addr);
-}
-
-ECode CParcel::WriteStringPtr(
-    /* [in] */ Handle32 addr)
-{
-    return mData->WriteStringPtr(addr);
-}
-
-ECode CParcel::WriteEMuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return mData->WriteEMuidPtr(idPtr);
-}
-
-ECode CParcel::WriteEGuidPtr(
-    /* [in] */ Handle32 idPtr)
-{
-    return mData->WriteEGuidPtr(idPtr);
-}
-
-ECode CParcel::WriteInterfacePtrPtr(
-    /* [in] */ Handle32 itfpp)
-{
-    return mData->WriteInterfacePtrPtr(itfpp);
+    return mData->WriteInterfacePtr(value);
 }
 
 ECode CParcel::WriteFileDescriptor(

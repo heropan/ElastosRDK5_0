@@ -86,6 +86,8 @@ EXPORT_HEADERS += elastos/io/InputStream.h
 EXPORT_HEADERS += elastos/io/OutputStream.h
 EXPORT_HEADERS += elastos/io/FilterInputStream.h
 EXPORT_HEADERS += elastos/io/FilterOutputStream.h
+EXPORT_HEADERS += elastos/io/FileInputStream.h
+EXPORT_HEADERS += elastos/io/FileOutputStream.h
 //EXPORT_HEADERS += elastos/io/PrintWriter.h
 //EXPORT_HEADERS += elastos/io/Writer.h
 
