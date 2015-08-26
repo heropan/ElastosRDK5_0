@@ -5,6 +5,10 @@ TARGET_TYPE = ecx
 SOURCES = BigIntegerAddTest.cpp
 SOURCES += BigIntegerAndTest.cpp
 SOURCES += BigIntegerCompareTest.cpp
+SOURCES += BigIntegerHashCodeTest.cpp
+SOURCES += BigIntegerModPowTest.cpp
+SOURCES += BigIntegerMultiplyTest.cpp
+SOURCES += BigIntegerDivideTest.cpp
 
 IMPORTS = Elastos.CoreLibrary.eco
 
