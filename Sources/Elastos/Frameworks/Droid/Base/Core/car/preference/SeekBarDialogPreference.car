@@ -7,14 +7,11 @@ module
     namespace Droid {
     namespace Preference {
 
-    /* @hide
-     *
+    /**
+     * @hide
+     */
+    /**
      * @Involve
-     * interface IComparable
-     * interface IPreferenceManagerOnActivityDestroyListener
-     * interface IDialogInterfaceOnDismissListener
-     * interface IDialogInterfaceOnClickListener
-     * interface IPreference
      * interface IDialogPreference
      */
     interface ISeekBarDialogPreference {
@@ -29,7 +26,7 @@ module
             [out] ISeekBar** bar);
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

@@ -1,14 +1,11 @@
 module
 {
-    using interface Elastos.Core.ICharSequence;
-
-    interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.App.IDialog;
+    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.App.IAlertDialogBuilder;
     interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    
-    
+    interface Elastos.Droid.Content.IDialogInterface;
+    interface Elastos.Droid.App.IDialog;
+    interface Elastos.Droid.Os.IBundle;
 
     namespace Elastos {
     namespace Droid {
@@ -25,157 +22,157 @@ module
      * @attr ref android.R.styleable#DialogPreference_dialogLayout
      * @attr ref android.R.styleable#DialogPreference_positiveButtonText
      * @attr ref android.R.styleable#DialogPreference_negativeButtonText
-     *
+     */
+    /**
      * @Involve
-     * interface IComparable
+     * interface IPreference
      * interface IPreferenceManagerOnActivityDestroyListener
      * interface IDialogInterfaceOnDismissListener
      * interface IDialogInterfaceOnClickListener
-     * interface IPreference
      */
-    [deprecated, local]
+     [deprecated, local]
     interface IDialogPreference {
         /**
-         * Sets the title of the dialog. This will be shown on subsequent dialogs.
-         *
-         * @param dialogTitle The title.
-         */
+             * Sets the title of the dialog. This will be shown on subsequent dialogs.
+             *
+             * @param dialogTitle The title.
+             */
         SetDialogTitle(
             [in] ICharSequence* dialogTitle);
 
         /**
-         * @see #setDialogTitle(CharSequence)
-         * @param dialogTitleResId The dialog title as a resource.
-         */
+             * @see #setDialogTitle(CharSequence)
+             * @param dialogTitleResId The dialog title as a resource.
+             */
         SetDialogTitle(
             [in] Int32 dialogTitleResId);
 
         /**
-         * Returns the title to be shown on subsequent dialogs.
-         * @return The title.
-         */
+             * Returns the title to be shown on subsequent dialogs.
+             * @return The title.
+             */
         GetDialogTitle(
-            [out] ICharSequence** title);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the message of the dialog. This will be shown on subsequent dialogs.
-         * <p>
-         * This message forms the content View of the dialog and conflicts with
-         * list-based dialogs, for example. If setting a custom View on a dialog via
-         * {@link #setDialogLayoutResource(int)}, include a text View with ID
-         * {@link android.R.id#message} and it will be populated with this message.
-         *
-         * @param dialogMessage The message.
-         */
+             * Sets the message of the dialog. This will be shown on subsequent dialogs.
+             * <p>
+             * This message forms the content View of the dialog and conflicts with
+             * list-based dialogs, for example. If setting a custom View on a dialog via
+             * {@link #setDialogLayoutResource(int)}, include a text View with ID
+             * {@link android.R.id#message} and it will be populated with this message.
+             *
+             * @param dialogMessage The message.
+             */
         SetDialogMessage(
             [in] ICharSequence* dialogMessage);
 
         /**
-         * @see #setDialogMessage(CharSequence)
-         * @param dialogMessageResId The dialog message as a resource.
-         */
+             * @see #setDialogMessage(CharSequence)
+             * @param dialogMessageResId The dialog message as a resource.
+             */
         SetDialogMessage(
             [in] Int32 dialogMessageResId);
 
         /**
-         * Returns the message to be shown on subsequent dialogs.
-         * @return The message.
-         */
+             * Returns the message to be shown on subsequent dialogs.
+             * @return The message.
+             */
         GetDialogMessage(
-            [out] ICharSequence** message);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the icon of the dialog. This will be shown on subsequent dialogs.
-         *
-         * @param dialogIcon The icon, as a {@link Drawable}.
-         */
+             * Sets the icon of the dialog. This will be shown on subsequent dialogs.
+             *
+             * @param dialogIcon The icon, as a {@link Drawable}.
+             */
         SetDialogIcon(
             [in] IDrawable* dialogIcon);
 
         /**
-         * Sets the icon (resource ID) of the dialog. This will be shown on
-         * subsequent dialogs.
-         *
-         * @param dialogIconRes The icon, as a resource ID.
-         */
+             * Sets the icon (resource ID) of the dialog. This will be shown on
+             * subsequent dialogs.
+             *
+             * @param dialogIconRes The icon, as a resource ID.
+             */
         SetDialogIcon(
             [in] Int32 dialogIconRes);
 
         /**
-         * Returns the icon to be shown on subsequent dialogs.
-         * @return The icon, as a {@link Drawable}.
-         */
+             * Returns the icon to be shown on subsequent dialogs.
+             * @return The icon, as a {@link Drawable}.
+             */
         GetDialogIcon(
-            [out] IDrawable** icon);
+            [out] IDrawable** result);
 
         /**
-         * Sets the text of the positive button of the dialog. This will be shown on
-         * subsequent dialogs.
-         *
-         * @param positiveButtonText The text of the positive button.
-         */
+             * Sets the text of the positive button of the dialog. This will be shown on
+             * subsequent dialogs.
+             *
+             * @param positiveButtonText The text of the positive button.
+             */
         SetPositiveButtonText(
             [in] ICharSequence* positiveButtonText);
 
         /**
-         * @see #setPositiveButtonText(CharSequence)
-         * @param positiveButtonTextResId The positive button text as a resource.
-         */
+             * @see #setPositiveButtonText(CharSequence)
+             * @param positiveButtonTextResId The positive button text as a resource.
+             */
         SetPositiveButtonText(
             [in] Int32 positiveButtonTextResId);
 
         /**
-         * Returns the text of the positive button to be shown on subsequent
-         * dialogs.
-         *
-         * @return The text of the positive button.
-         */
+             * Returns the text of the positive button to be shown on subsequent
+             * dialogs.
+             *
+             * @return The text of the positive button.
+             */
         GetPositiveButtonText(
-            [out] ICharSequence** text);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the text of the negative button of the dialog. This will be shown on
-         * subsequent dialogs.
-         *
-         * @param negativeButtonText The text of the negative button.
-         */
+             * Sets the text of the negative button of the dialog. This will be shown on
+             * subsequent dialogs.
+             *
+             * @param negativeButtonText The text of the negative button.
+             */
         SetNegativeButtonText(
             [in] ICharSequence* negativeButtonText);
 
         /**
-         * @see #setNegativeButtonText(CharSequence)
-         * @param negativeButtonTextResId The negative button text as a resource.
-         */
+             * @see #setNegativeButtonText(CharSequence)
+             * @param negativeButtonTextResId The negative button text as a resource.
+             */
         SetNegativeButtonText(
             [in] Int32 negativeButtonTextResId);
 
         /**
-         * Returns the text of the negative button to be shown on subsequent
-         * dialogs.
-         *
-         * @return The text of the negative button.
-         */
+             * Returns the text of the negative button to be shown on subsequent
+             * dialogs.
+             *
+             * @return The text of the negative button.
+             */
         GetNegativeButtonText(
-            [out] ICharSequence** text);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the layout resource that is inflated as the {@link View} to be shown
-         * as the content View of subsequent dialogs.
-         *
-         * @param dialogLayoutResId The layout resource ID to be inflated.
-         * @see #setDialogMessage(CharSequence)
-         */
+             * Sets the layout resource that is inflated as the {@link View} to be shown
+             * as the content View of subsequent dialogs.
+             *
+             * @param dialogLayoutResId The layout resource ID to be inflated.
+             * @see #setDialogMessage(CharSequence)
+             */
         SetDialogLayoutResource(
             [in] Int32 dialogLayoutResId);
 
         /**
-         * Returns the layout resource that is used as the content View for
-         * subsequent dialogs.
-         *
-         * @return The layout resource.
-         */
+             * Returns the layout resource that is used as the content View for
+             * subsequent dialogs.
+             *
+             * @return The layout resource.
+             */
         GetDialogLayoutResource(
-            [out] Int32* layoutResId);
+            [out] Int32* result);
 
         /**
          * Prepares the dialog builder to be shown when the preference is clicked.
@@ -197,35 +194,8 @@ module
         ShowDialog(
             [in] IBundle* state);
 
-        /**
-         * Returns whether the preference needs to display a soft input method when the dialog
-         * is displayed. Default is false. Subclasses should override this method if they need
-         * the soft input method brought up automatically.
-         * @hide
-         */
-        NeedInputMethod(
-            [out] Boolean* isNeed);
-
-        /**
-         * Creates the content view for the dialog (if a custom content view is
-         * required). By default, it inflates the dialog layout resource if it is
-         * set.
-         *
-         * @return The content View for the dialog.
-         * @see #setLayoutResource(int)
-         */
-        OnCreateDialogView(
-            [out] IView** view);
-
-        /**
-         * Binds views in the content View of the dialog to data.
-         * <p>
-         * Make sure to call through to the superclass implementation.
-         *
-         * @param view The content View of the dialog, if it is custom.
-         */
-        OnBindDialogView(
-            [in] IView* view);
+        OnDismiss(
+            [in] IDialogInterface* dialog);
 
         /**
          * Called when the dialog is dismissed and should be used to save data to
@@ -238,33 +208,21 @@ module
             [in] Boolean positiveResult);
 
         /**
-         * Gets the dialog that is shown by this preference.
-         *
-         * @return The dialog, or null if a dialog is not being shown.
-         */
+             * Gets the dialog that is shown by this preference.
+             *
+             * @return The dialog, or null if a dialog is not being shown.
+             */
         GetDialog(
-            [out] IDialog** dialog);
+            [out] IDialog** result);
+
+        /**
+             * {@inheritDoc}
+             */
+        OnActivityDestroy();
     }
 
-    /**
-     * @Involve
-     * interface Elastos.Droid.View.IAbsSavedState
-     */
-    interface IDialogPreferenceSavedState {
-        IsDialogShowing(
-            [out] Boolean* isShow);
-
-        SetDialogShowing(
-            [in] Boolean isShow);
-
-        GetDialogBundle(
-            [out] IBundle** bundle);
-
-        SetDialogBundle(
-            [in] IBundle* bundle);
-    }
-
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+

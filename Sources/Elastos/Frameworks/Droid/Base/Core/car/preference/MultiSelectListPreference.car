@@ -1,7 +1,8 @@
+
 module
 {
-    using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.ISet;
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -17,13 +18,9 @@ module
      *
      * @attr ref android.R.styleable#MultiSelectListPreference_entries
      * @attr ref android.R.styleable#MultiSelectListPreference_entryValues
-     *
+     */
+    /**
      * @Involve
-     * interface IComparable
-     * interface IPreferenceManagerOnActivityDestroyListener
-     * interface IDialogInterfaceOnDismissListener
-     * interface IDialogInterfaceOnClickListener
-     * interface IPreference
      * interface IDialogPreference
      */
     [deprecated]
@@ -54,7 +51,7 @@ module
          * @return The list as an array.
          */
         GetEntries(
-            [out, callee] ArrayOf<ICharSequence*>* entries);
+            [out, callee] ArrayOf<ICharSequence*>* result);
 
         /**
          * The array to find the value to save for a preference when an entry from
@@ -74,52 +71,40 @@ module
             [in] Int32 entryValuesResId);
 
         /**
-         * Returns the array of values to be saved for the preference.
-         *
-         * @return The array of values.
-         */
+             * Returns the array of values to be saved for the preference.
+             *
+             * @return The array of values.
+             */
         GetEntryValues(
-            [out, callee] ArrayOf<ICharSequence*>* entryValues);
+            [out, callee] ArrayOf<ICharSequence*>* result);
 
         /**
-         * Sets the value of the key. This should contain entries in
-         * {@link #getEntryValues()}.
-         *
-         * @param values The values to set for the key.
-         */
+             * Sets the value of the key. This should contain entries in
+             * {@link #getEntryValues()}.
+             *
+             * @param values The values to set for the key.
+             */
         SetValues(
             [in] ISet* values);
 
         /**
-         * Get the boolean state of a given value.
-         */
+             * Retrieves the current value of the key.
+             */
         GetValues(
-            [out] ISet** values);
+            [out] ISet** result);
 
         /**
-         * Returns the index of the given value (in the entry values array).
-         *
-         * @param value The value whose index should be returned.
-         * @return The index of the value, or -1 if not found.
-         */
+             * Returns the index of the given value (in the entry values array).
+             *
+             * @param value The value whose index should be returned.
+             * @return The index of the value, or -1 if not found.
+             */
         FindIndexOfValue(
             [in] String value,
-            [out] Int32* index);
+            [out] Int32* result);
     }
 
-    /**
-     * @Involve
-     * interface Elastos.Droid.View.IAbsSavedState
-     */
-    interface IMultiSelectListPreferenceSavedState {
-        SetValues(
-            [in] ISet* value);
-
-        GetValues(
-            [out] ISet** value);
-    }
-
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Net
+    } // namespace Droid
+    } // namespace Elastos
 }

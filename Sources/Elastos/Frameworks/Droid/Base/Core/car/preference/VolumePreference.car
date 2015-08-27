@@ -9,18 +9,13 @@ module
 
     /**
      * @hide
-     *
+     */
+    /**
      * @Involve
-     * interface ISeekBarVolumizerCallback
-     * interface IViewOnKeyListener
-     * interface IPreferenceManagerOnActivityStopListener
-     * interface IComparable
-     * interface IPreferenceManagerOnActivityDestroyListener
-     * interface IDialogInterfaceOnDismissListener
-     * interface IDialogInterfaceOnClickListener
-     * interface IPreference
-     * interface IDialogPreference
      * interface ISeekBarDialogPreference
+     * interface IPreferenceManagerOnActivityStopListener
+     * interface IViewOnKeyListener
+     * interface ISeekBarVolumizerCallback
      */
     [local]
     interface IVolumePreference {
@@ -57,7 +52,7 @@ module
     interface IVolumePreferenceSavedState {
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

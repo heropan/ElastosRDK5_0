@@ -1,3 +1,4 @@
+
 module
 {
     namespace Elastos {
@@ -8,28 +9,22 @@ module
      * @hide
      *
      * @Involve
-     * interface IAccessibilityEventSource
-     * interface IKeyEventCallback
-     * interface IDrawableCallback
-     * interface IViewManager
-     * interface IViewParent
-     * interface IView
-     * interface IViewGroup
      * interface IFrameLayout
      */
-    interface IPreferenceFrameLayout {}
+    interface IPreferenceFrameLayout {
+    }
 
     /**
      * @hide
      *
      * @Involve
-     * interface IViewGroupLayoutParams
-     * interface IViewGroupMarginLayoutParams
      * interface IFrameLayoutLayoutParams
      */
-    interface IPreferenceFrameLayoutLayoutParams {}
+    interface IPreferenceFrameLayoutParams {
+    }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+

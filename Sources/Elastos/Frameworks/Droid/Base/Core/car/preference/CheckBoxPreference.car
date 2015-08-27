@@ -13,15 +13,14 @@ module
      * @attr ref android.R.styleable#CheckBoxPreference_summaryOff
      * @attr ref android.R.styleable#CheckBoxPreference_summaryOn
      * @attr ref android.R.styleable#CheckBoxPreference_disableDependentsState
-     *
+     */
+    /**
      * @Involve
-     * interface IComparable
-     * interface IPreference
      * interface ITwoStatePreference
      */
     interface ICheckBoxPreference {}
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

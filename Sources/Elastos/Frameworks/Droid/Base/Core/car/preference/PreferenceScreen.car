@@ -28,21 +28,21 @@ module
      * </ul>
      * <p>Here's an example XML layout of a PreferenceScreen:</p>
      * <pre>
-     * &lt;PreferenceScreen
-     *       xmlns:android="http://schemas.android.com/apk/res/android"
-     *       android:key="first_preferencescreen"&gt;
-     *   &lt;CheckBoxPreference
-     *           android:key="wifi enabled"
-     *           android:title="WiFi" /&gt;
-     *   &lt;PreferenceScreen
-     *           android:key="second_preferencescreen"
-     *           android:title="WiFi settings"&gt;
-     *       &lt;CheckBoxPreference
-     *               android:key="prefer wifi"
-     *               android:title="Prefer WiFi" /&gt;
-     *       ... other preferences here ...
-     *   &lt;/PreferenceScreen&gt;
-     * &lt;/PreferenceScreen&gt; </pre>
+    &lt;PreferenceScreen
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:key="first_preferencescreen"&gt;
+        &lt;CheckBoxPreference
+                android:key="wifi enabled"
+                android:title="WiFi" /&gt;
+        &lt;PreferenceScreen
+                android:key="second_preferencescreen"
+                android:title="WiFi settings"&gt;
+            &lt;CheckBoxPreference
+                    android:key="prefer wifi"
+                    android:title="Prefer WiFi" /&gt;
+            ... other preferences here ...
+        &lt;/PreferenceScreen&gt;
+    &lt;/PreferenceScreen&gt; </pre>
      * <p>
      * In this example, the "first_preferencescreen" will be used as the root of the
      * hierarchy and given to a {@link PreferenceActivity}. The first screen will
@@ -61,12 +61,8 @@ module
      * @see PreferenceCategory
      *
      * @Involve
-     * interface IGenericInflaterParent
-     * interface IComparable
      * interface IPreference
-     * interface IDialogInterfaceOnDismissListener
      * interface IAdapterViewOnItemClickListener
-     * interface IPreferenceGroup
      */
     [local]
     interface IPreferenceScreen {

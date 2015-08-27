@@ -14,7 +14,6 @@ module
      * enabled/disabled based on the current state.
      *
      * @Involve
-     * interface IComparable
      * interface IPreference
      */
     [local]
@@ -118,7 +117,7 @@ module
             [in] Boolean checked);
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

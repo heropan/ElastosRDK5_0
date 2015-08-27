@@ -8,26 +8,23 @@ module
     namespace Preference {
 
     /**
-     * A base class for {@link Preference} objects that are
-     * dialog-based. These preferences will, when clicked, open a dialog showing the
-     * actual preference controls.
-     *
-     * @attr ref android.R.styleable#DialogPreference_dialogTitle
-     * @attr ref android.R.styleable#DialogPreference_dialogMessage
-     * @attr ref android.R.styleable#DialogPreference_dialogIcon
-     * @attr ref android.R.styleable#DialogPreference_dialogLayout
-     * @attr ref android.R.styleable#DialogPreference_positiveButtonText
-     * @attr ref android.R.styleable#DialogPreference_negativeButtonText
-     *
+     * A {@link Preference} that allows for string
+     * input.
+     * <p>
+     * It is a subclass of {@link DialogPreference} and shows the {@link EditText}
+     * in a dialog. This {@link EditText} can be modified either programmatically
+     * via {@link #getEditText()}, or through XML by setting any EditText
+     * attributes on the EditTextPreference.
+     * <p>
+     * This preference will store a string into the SharedPreferences.
+     * <p>
+     * See {@link android.R.styleable#EditText EditText Attributes}.
+     */
+    /**
      * @Involve
-     * interface IComparable
-     * interface IPreferenceManagerOnActivityDestroyListener
-     * interface IDialogInterfaceOnDismissListener
-     * interface IDialogInterfaceOnClickListener
-     * interface IPreference
      * interface IDialogPreference
      */
-    [local]
+     [local]
     interface IEditTextPreference {
         /**
          * Saves the text to the {@link SharedPreferences}.
@@ -43,7 +40,7 @@ module
          * @return The current preference value.
          */
         GetText(
-            [out] String* text);
+            [out] String* result);
 
         /**
          * Adds the EditText widget of this preference to the dialog's view.
@@ -60,22 +57,11 @@ module
          * @return The {@link EditText} widget that will be shown in the dialog.
          */
         GetEditText(
-            [out] IEditText** editText);
+            [out] IEditText** result);
     }
 
-    /**
-     * @Involve
-     * interface Elastos.Droid.View.IAbsSavedState
-     */
-    interface IEditTextPreferenceSavedState {
-        GetText(
-            [out] String* text);
-
-        SetText(
-            [in] String text);
-    }
-
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+

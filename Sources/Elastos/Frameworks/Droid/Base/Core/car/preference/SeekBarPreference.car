@@ -34,7 +34,6 @@ module
      *
      * @Involve
      * interface ISeekBarOnSeekBarChangeListener
-     * interface IComparable
      * interface IPreference
      */
     interface ISeekBarPreference {
@@ -55,7 +54,7 @@ module
             [in] ISeekBar* seekBar);
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

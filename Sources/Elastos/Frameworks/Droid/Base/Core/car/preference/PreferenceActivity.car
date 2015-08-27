@@ -76,23 +76,14 @@ module
      *
      * <p>See {@link PreferenceFragment} for information on implementing the
      * fragments themselves.
-     *
-     * @Involve
-     * interface IWindowOnWindowDismissedCallback
-     * interface IComponentCallbacks2
-     * interface IOnCreateContextMenuListener
-     * interface IKeyEventCallback
-     * interface IWindowCallback
-     * interface ILayoutInflaterFactory2
-     * interface IPreferenceFragmentOnPreferenceStartFragmentCallback
-     * interface IPreferenceManagerOnPreferenceTreeClickListene
-     * interface IContext
-     * interface IContextWrapper
-     * interface IContextThemeWrapper
-     * interface IActivity
-     * interface IListActivity
      */
-    [deprecated, local]
+    /**
+     * @Involve
+     * interface IListActivity
+     * interface IPreferenceManagerOnPreferenceTreeClickListener
+     * interface IPreferenceFragmentOnPreferenceStartFragmentCallback
+     */
+     [local,deprecated]
     interface IPreferenceActivity {
         /**
          * When starting this activity, the invoking Intent can contain this extra
@@ -123,8 +114,7 @@ module
          * this extra can also be specify to supply the short title to be shown for
          * that fragment.
          */
-        const String EXTRA_SHOW_FRAGMENT_SHORT_TITLE
-                = ":android:show_fragment_short_title";
+        const String EXTRA_SHOW_FRAGMENT_SHORT_TITLE = ":android:show_fragment_short_title";
 
         /**
          * When starting this activity, the invoking Intent can contain this extra
@@ -136,7 +126,7 @@ module
         const String EXTRA_NO_HEADERS = ":android:no_headers";
 
         /**
-         * Default value for {@link IPreferenceActivityHeader#id IPreferenceActivityHeader.id} indicating that no
+         * Default value for {@link Header#id Header.id} indicating that no
          * identifier value is set.  All other values (including those below -1)
          * are valid.
          */
@@ -146,7 +136,14 @@ module
          * Returns true if this activity is currently showing the header list.
          */
         HasHeaders(
-            [out] Boolean* hasHeaders);
+            [out] Boolean* result);
+
+        /**
+         * Returns the Header list
+         * @hide
+         */
+        GetHeaders(
+            [out] IList** result);
 
         /**
          * Returns true if this activity is showing multiple panes -- the headers
@@ -411,11 +408,10 @@ module
          *
          * @deprecated This function is not relevant for a modern fragment-based
          * PreferenceActivity.
-         *
-         * @Deprecated
          */
+        // @Deprecated
         GetPreferenceManager(
-            [out] IPreferenceManager** manager);
+            [out] IPreferenceManager** result);
 
         /**
          * Sets the root of the preference hierarchy that this activity is showing.

@@ -1,21 +1,21 @@
+
 module
 {
-    using interface Elastos.Core.ICharSequence;
-    using interface Elastos.Utility.ISet;
-
     interface Elastos.Droid.Content.Res.ITypedArray;
     interface Elastos.Droid.Content.IIntent;
-    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.View.IView;
+    interface Elastos.Utility.ISet;
+    interface Elastos.Droid.Preference.IPreferenceManager;
     interface Elastos.Droid.Content.ISharedPreferences;
     interface Elastos.Droid.Content.ISharedPreferencesEditor;
-    interface Elastos.Droid.View.IView;
-    interface Elastos.Droid.View.IViewGroup;
-    interface Elastos.Droid.View.IKeyEvent;
-    interface Elastos.Droid.Graphics.Drawable.IDrawable;
-    interface Elastos.Droid.Os.IBundle;
-    interface Elastos.Droid.Preference.IPreferenceManager;
     interface Elastos.Droid.Preference.IPreference;
+    interface Elastos.Droid.View.IViewGroup;
+    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Preference.IPreferenceScreen;
+    interface Elastos.Droid.Content.IContext;
+    interface Elastos.Droid.Graphics.Drawable.IDrawable;
+    interface Elastos.Droid.View.IKeyEvent;
 
     namespace Elastos {
     namespace Droid {
@@ -37,17 +37,18 @@ module
          * @param newValue The new value of the Preference.
          * @return True to update the state of the Preference with the new value.
          */
-         OnPreferenceChange(
+        OnPreferenceChange(
             [in] IPreference* preference,
             [in] IInterface* newValue,
-            [out] Boolean* update);
+            [out] Boolean* result);
     }
 
     /**
      * Interface definition for a callback to be invoked when a {@link Preference} is
      * clicked.
      */
-    interface IPreferenceOnPreferenceClickListener {
+    interface IPreferenceOnPreferenceClickListener
+    {
         /**
          * Called when a Preference has been clicked.
          *
@@ -56,7 +57,7 @@ module
          */
         OnPreferenceClick(
             [in] IPreference* preference,
-            [out] Boolean* handled);
+            [out] Boolean* result);
     }
 
     /**
@@ -117,14 +118,15 @@ module
      * @attr ref android.R.styleable#Preference_persistent
      * @attr ref android.R.styleable#Preference_defaultValue
      * @attr ref android.R.styleable#Preference_shouldDisableView
-     *
-     * @Involve
+     */
+    /**
+     * @Involved
      * interface IComparable
      */
-    [deprecated, local]
+     [deprecated, local]
     interface IPreference {
         /**
-         * Specify for {@link #setOrder(Int32)} if a specific order is not required.
+         * Specify for {@link #setOrder(int)} if a specific order is not required.
          */
         const Int32 DEFAULT_ORDER = 0x7fffffff;
 
@@ -135,7 +137,7 @@ module
          * value which will be its value type.
          * <p>
          * For example, if the value type is String, the body of the method would
-         * proxy to {@link TypedArray#getString(Int32)}.
+         * proxy to {@link TypedArray#getString(int)}.
          *
          * @param a The set of attributes.
          * @param index The index of the default value attribute.
@@ -147,116 +149,116 @@ module
             [out] IInterface** value);
 
         /**
-         * Sets an {@link Intent} to be used for
-         * {@link Context#startActivity(Intent)} when this Preference is clicked.
-         *
-         * @param intent The intent associated with this Preference.
-         */
+             * Sets an {@link Intent} to be used for
+             * {@link Context#startActivity(Intent)} when this Preference is clicked.
+             *
+             * @param intent The intent associated with this Preference.
+             */
         SetIntent(
             [in] IIntent* intent);
 
         /**
-         * Return the {@link Intent} associated with this Preference.
-         *
-         * @return The {@link Intent} last set via {@link #setIntent(Intent)} or XML.
-         */
+             * Return the {@link Intent} associated with this Preference.
+             *
+             * @return The {@link Intent} last set via {@link #setIntent(Intent)} or XML.
+             */
         GetIntent(
-            [out] IIntent** intent);
+            [out] IIntent** result);
 
         /**
-         * Sets the class name of a fragment to be shown when this Preference is clicked.
-         *
-         * @param fragment The class name of the fragment associated with this Preference.
-         */
+             * Sets the class name of a fragment to be shown when this Preference is clicked.
+             *
+             * @param fragment The class name of the fragment associated with this Preference.
+             */
         SetFragment(
             [in] String fragment);
 
         /**
-         * Return the fragment class name associated with this Preference.
-         *
-         * @return The fragment class name last set via {@link #setFragment} or XML.
-         */
+             * Return the fragment class name associated with this Preference.
+             *
+             * @return The fragment class name last set via {@link #setFragment} or XML.
+             */
         GetFragment(
-            [out] String* fragment);
+            [out] String* result);
 
         /**
-         * Return the extras Bundle object associated with this preference, creating
-         * a new Bundle if there currently isn't one.  You can use this to get and
-         * set individual extra key/value pairs.
-         */
+             * Return the extras Bundle object associated with this preference, creating
+             * a new Bundle if there currently isn't one.  You can use this to get and
+             * set individual extra key/value pairs.
+             */
         GetExtras(
-            [out] IBundle** extras);
+            [out] IBundle** result);
 
         /**
-         * Return the extras Bundle object associated with this preference,
-         * returning null if there is not currently one.
-         */
+             * Return the extras Bundle object associated with this preference,
+             * returning null if there is not currently one.
+             */
         PeekExtras(
-            [out] IBundle** extras);
+            [out] IBundle** result);
 
         /**
-         * Sets the layout resource that is inflated as the {@link View} to be shown
-         * for this Preference. In most cases, the default layout is sufficient for
-         * custom Preference objects and only the widget layout needs to be changed.
-         * <p>
-         * This layout should contain a {@link ViewGroup} with ID
-         * {@link android.R.id#widget_frame} to be the parent of the specific widget
-         * for this Preference. It should similarly contain
-         * {@link android.R.id#title} and {@link android.R.id#summary}.
-         *
-         * @param layoutResId The layout resource ID to be inflated and returned as
-         *            a {@link View}.
-         * @see #setWidgetLayoutResource(Int32)
-         */
+             * Sets the layout resource that is inflated as the {@link View} to be shown
+             * for this Preference. In most cases, the default layout is sufficient for
+             * custom Preference objects and only the widget layout needs to be changed.
+             * <p>
+             * This layout should contain a {@link ViewGroup} with ID
+             * {@link android.R.id#widget_frame} to be the parent of the specific widget
+             * for this Preference. It should similarly contain
+             * {@link android.R.id#title} and {@link android.R.id#summary}.
+             *
+             * @param layoutResId The layout resource ID to be inflated and returned as
+             *            a {@link View}.
+             * @see #setWidgetLayoutResource(int)
+             */
         SetLayoutResource(
             [in] Int32 layoutResId);
 
         /**
-         * Gets the layout resource that will be shown as the {@link View} for this Preference.
-         *
-         * @return The layout resource ID.
-         */
+             * Gets the layout resource that will be shown as the {@link View} for this Preference.
+             *
+             * @return The layout resource ID.
+             */
         GetLayoutResource(
-            [out] Int32* layoutResId);
+            [out] Int32* result);
 
         /**
-         * Sets the layout for the controllable widget portion of this Preference. This
-         * is inflated into the main layout. For example, a {@link CheckBoxPreference}
-         * would specify a custom layout (consisting of just the CheckBox) here,
-         * instead of creating its own main layout.
-         *
-         * @param widgetLayoutResId The layout resource ID to be inflated into the
-         *            main layout.
-         * @see #setLayoutResource(int)
-         */
+             * Sets the layout for the controllable widget portion of this Preference. This
+             * is inflated into the main layout. For example, a {@link CheckBoxPreference}
+             * would specify a custom layout (consisting of just the CheckBox) here,
+             * instead of creating its own main layout.
+             *
+             * @param widgetLayoutResId The layout resource ID to be inflated into the
+             *            main layout.
+             * @see #setLayoutResource(int)
+             */
         SetWidgetLayoutResource(
             [in] Int32 widgetLayoutResId);
 
         /**
-         * Gets the layout resource for the controllable widget portion of this Preference.
-         *
-         * @return The layout resource ID.
-         */
+             * Gets the layout resource for the controllable widget portion of this Preference.
+             *
+             * @return The layout resource ID.
+             */
         GetWidgetLayoutResource(
-            [out] Int32* widgetLayoutResId);
+            [out] Int32* result);
 
         /**
-         * Gets the View that will be shown in the {@link PreferenceActivity}.
-         *
-         * @param convertView The old View to reuse, if possible. Note: You should
-         *            check that this View is non-null and of an appropriate type
-         *            before using. If it is not possible to convert this View to
-         *            display the correct data, this method can create a new View.
-         * @param parent The parent that this View will eventually be attached to.
-         * @return Returns the same Preference object, for chaining multiple calls
-         *         into a single statement.
-         * @see #onCreateView(ViewGroup)
-         * @see #onBindView(View)
-         */
+             * Gets the View that will be shown in the {@link PreferenceActivity}.
+             *
+             * @param convertView The old View to reuse, if possible. Note: You should
+             *            check that this View is non-null and of an appropriate type
+             *            before using. If it is not possible to convert this View to
+             *            display the correct data, this method can create a new View.
+             * @param parent The parent that this View will eventually be attached to.
+             * @return Returns the same Preference object, for chaining multiple calls
+             *         into a single statement.
+             * @see #onCreateView(ViewGroup)
+             * @see #onBindView(View)
+             */
         GetView(
             [in] IView* convertView,
             [in] IViewGroup* parent,
-            [out] IView** view);
+            [out] IView** result);
 
         /**
          * Creates the View to be shown for this Preference in the
@@ -290,169 +292,169 @@ module
             [in] IView* view);
 
         /**
-         * Sets the order of this Preference with respect to other
-         * Preference objects on the same level. If this is not specified, the
-         * default behavior is to sort alphabetically. The
-         * {@link PreferenceGroup#setOrderingAsAdded(boolean)} can be used to order
-         * Preference objects based on the order they appear in the XML.
-         *
-         * @param order The order for this Preference. A lower value will be shown
-         *            first. Use {@link #DEFAULT_ORDER} to sort alphabetically or
-         *            allow ordering from XML.
-         * @see PreferenceGroup#setOrderingAsAdded(boolean)
-         * @see #DEFAULT_ORDER
-         */
+             * Sets the order of this Preference with respect to other
+             * Preference objects on the same level. If this is not specified, the
+             * default behavior is to sort alphabetically. The
+             * {@link PreferenceGroup#setOrderingAsAdded(boolean)} can be used to order
+             * Preference objects based on the order they appear in the XML.
+             *
+             * @param order The order for this Preference. A lower value will be shown
+             *            first. Use {@link #DEFAULT_ORDER} to sort alphabetically or
+             *            allow ordering from XML.
+             * @see PreferenceGroup#setOrderingAsAdded(boolean)
+             * @see #DEFAULT_ORDER
+             */
         SetOrder(
             [in] Int32 order);
 
         /**
-         * Gets the order of this Preference with respect to other Preference objects
-         * on the same level.
-         *
-         * @return The order of this Preference.
-         * @see #setOrder(Int32)
-         */
+             * Gets the order of this Preference with respect to other Preference objects
+             * on the same level.
+             *
+             * @return The order of this Preference.
+             * @see #setOrder(int)
+             */
         GetOrder(
-            [out] Int32* order);
+            [out] Int32* result);
 
         /**
-         * Sets the title for this Preference with a CharSequence.
-         * This title will be placed into the ID
-         * {@link android.R.id#title} within the View created by
-         * {@link #onCreateView(ViewGroup)}.
-         *
-         * @param title The title for this Preference.
-         */
+             * Sets the title for this Preference with a CharSequence.
+             * This title will be placed into the ID
+             * {@link android.R.id#title} within the View created by
+             * {@link #onCreateView(ViewGroup)}.
+             *
+             * @param title The title for this Preference.
+             */
         SetTitle(
             [in] ICharSequence* title);
 
         /**
-         * Sets the title for this Preference with a resource ID.
-         *
-         * @see #setTitle(CharSequence)
-         * @param titleResId The title as a resource ID.
-         */
+             * Sets the title for this Preference with a resource ID.
+             *
+             * @see #setTitle(CharSequence)
+             * @param titleResId The title as a resource ID.
+             */
         SetTitle(
             [in] Int32 titleResId);
 
         /**
-         * Returns the title resource ID of this Preference.  If the title did
-         * not come from a resource, 0 is returned.
-         *
-         * @return The title resource.
-         * @see #setTitle(Int32)
-         */
+             * Returns the title resource ID of this Preference.  If the title did
+             * not come from a resource, 0 is returned.
+             *
+             * @return The title resource.
+             * @see #setTitle(int)
+             */
         GetTitleRes(
-            [out] Int32* resId);
+            [out] Int32* result);
 
         /**
-         * Returns the title of this Preference.
-         *
-         * @return The title.
-         * @see #setTitle(CharSequence)
-         */
+             * Returns the title of this Preference.
+             *
+             * @return The title.
+             * @see #setTitle(CharSequence)
+             */
         GetTitle(
-            [out] ICharSequence** title);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the icon for this Preference with a Drawable.
-         * This icon will be placed into the ID
-         * {@link android.R.id#icon} within the View created by
-         * {@link #onCreateView(ViewGroup)}.
-         *
-         * @param icon The optional icon for this Preference.
-         */
+             * Sets the icon for this Preference with a Drawable.
+             * This icon will be placed into the ID
+             * {@link android.R.id#icon} within the View created by
+             * {@link #onCreateView(ViewGroup)}.
+             *
+             * @param icon The optional icon for this Preference.
+             */
         SetIcon(
             [in] IDrawable* icon);
 
         /**
-         * Sets the icon for this Preference with a resource ID.
-         *
-         * @see #setIcon(Drawable)
-         * @param iconResId The icon as a resource ID.
-         */
+             * Sets the icon for this Preference with a resource ID.
+             *
+             * @see #setIcon(Drawable)
+             * @param iconResId The icon as a resource ID.
+             */
         SetIcon(
             [in] Int32 iconResId);
 
         /**
-         * Returns the icon of this Preference.
-         *
-         * @return The icon.
-         * @see #setIcon(Drawable)
-         */
+             * Returns the icon of this Preference.
+             *
+             * @return The icon.
+             * @see #setIcon(Drawable)
+             */
         GetIcon(
-            [out] IDrawable** drawable);
+            [out] IDrawable** result);
 
         /**
-         * Returns the summary of this Preference.
-         *
-         * @return The summary.
-         * @see #setSummary(CharSequence)
-         */
+             * Returns the summary of this Preference.
+             *
+             * @return The summary.
+             * @see #setSummary(CharSequence)
+             */
         GetSummary(
-            [out] ICharSequence** summary);
+            [out] ICharSequence** result);
 
         /**
-         * Sets the summary for this Preference with a CharSequence.
-         *
-         * @param summary The summary for the preference.
-         */
+             * Sets the summary for this Preference with a CharSequence.
+             *
+             * @param summary The summary for the preference.
+             */
         SetSummary(
             [in] ICharSequence* summary);
 
         /**
-         * Sets the summary for this Preference with a resource ID.
-         *
-         * @see #setSummary(CharSequence)
-         * @param summaryResId The summary as a resource.
-         */
+             * Sets the summary for this Preference with a resource ID.
+             *
+             * @see #setSummary(CharSequence)
+             * @param summaryResId The summary as a resource.
+             */
         SetSummary(
             [in] Int32 summaryResId);
 
         /**
-         * Sets whether this Preference is enabled. If disabled, it will
-         * not handle clicks.
-         *
-         * @param enabled Set true to enable it.
-         */
+             * Sets whether this Preference is enabled. If disabled, it will
+             * not handle clicks.
+             *
+             * @param enabled Set true to enable it.
+             */
         SetEnabled(
             [in] Boolean enabled);
 
         /**
-         * Checks whether this Preference should be enabled in the list.
-         *
-         * @return True if this Preference is enabled, false otherwise.
-         */
+             * Checks whether this Preference should be enabled in the list.
+             *
+             * @return True if this Preference is enabled, false otherwise.
+             */
         IsEnabled(
-            [out] Boolean* isEnable);
+            [out] Boolean* result);
 
         /**
-         * Sets whether this Preference is selectable.
-         *
-         * @param selectable Set true to make it selectable.
-         */
+             * Sets whether this Preference is selectable.
+             *
+             * @param selectable Set true to make it selectable.
+             */
         SetSelectable(
             [in] Boolean selectable);
 
         /**
-         * Checks whether this Preference should be selectable in the list.
-         *
-         * @return True if it is selectable, false otherwise.
-         */
+             * Checks whether this Preference should be selectable in the list.
+             *
+             * @return True if it is selectable, false otherwise.
+             */
         IsSelectable(
-            [out] Boolean* isSelectable);
+            [out] Boolean* result);
 
         /**
-         * Sets whether this Preference should disable its view when it gets
-         * disabled.
-         * <p>
-         * For example, set this and {@link #setEnabled(boolean)} to false for
-         * preferences that are only displaying information and 1) should not be
-         * clickable 2) should not have the view set to the disabled state.
-         *
-         * @param shouldDisableView Set true if this preference should disable its view
-         *            when the preference is disabled.
-         */
+             * Sets whether this Preference should disable its view when it gets
+             * disabled.
+             * <p>
+             * For example, set this and {@link #setEnabled(boolean)} to false for
+             * preferences that are only displaying information and 1) should not be
+             * clickable 2) should not have the view set to the disabled state.
+             *
+             * @param shouldDisableView Set true if this preference should disable its view
+             *            when the preference is disabled.
+             */
         SetShouldDisableView(
             [in] Boolean shouldDisableView);
 
@@ -462,7 +464,16 @@ module
          * @return True if it should disable the view.
          */
         GetShouldDisableView(
-            [out] Boolean* shouldDisableView);
+            [out] Boolean* result);
+
+        /**
+         * Returns a unique ID for this Preference.  This ID should be unique across all
+         * Preference objects in a hierarchy.
+         *
+         * @return A unique ID for this Preference.
+         */
+        GetId(
+            [out] Int64* id);
 
         /**
          * Processes a click on the preference. This includes saving the value to
@@ -470,7 +481,7 @@ module
          * call {@link #callChangeListener(Object)} to make sure the client wants to
          * update the preference's state with the new value.
          */
-        /*protected*/ OnClick();
+        OnClick();
 
         /**
          * Sets the key for this Preference, which is used as a key to the
@@ -482,30 +493,39 @@ module
             [in] String key);
 
         /**
-         * Gets the key for this Preference, which is also the key used for storing
-         * values into SharedPreferences.
-         *
-         * @return The key.
-         */
+             * Gets the key for this Preference, which is also the key used for storing
+             * values into SharedPreferences.
+             *
+             * @return The key.
+             */
         GetKey(
-            [out] String* key);
+            [out] String* result);
 
         /**
-         * Checks whether this Preference has a valid key.
+         * Checks whether the key is present, and if it isn't throws an
+         * exception. This should be called by subclasses that store preferences in
+         * the {@link SharedPreferences}.
          *
-         * @return True if the key exists and is not a blank string, false otherwise.
+         * @throws IllegalStateException If there is no key assigned.
          */
+        RequireKey();
+
+        /**
+             * Checks whether this Preference has a valid key.
+             *
+             * @return True if the key exists and is not a blank string, false otherwise.
+             */
         HasKey(
-            [out] Boolean* hasKey);
+            [out] Boolean* result);
 
         /**
-         * Checks whether this Preference is persistent. If it is, it stores its value(s) into
-         * the persistent {@link SharedPreferences} storage.
-         *
-         * @return True if it is persistent.
-         */
+             * Checks whether this Preference is persistent. If it is, it stores its value(s) into
+             * the persistent {@link SharedPreferences} storage.
+             *
+             * @return True if it is persistent.
+             */
         IsPersistent(
-            [out] Boolean* isPersistent);
+            [out] Boolean* result);
 
         /**
          * Checks whether, at the given time this method is called,
@@ -517,15 +537,15 @@ module
          * @return True if it should persist the value.
          */
         ShouldPersist(
-            [out] Boolean* shouldPersist);
+            [out] Boolean* result);
 
         /**
-         * Sets whether this Preference is persistent. When persistent,
-         * it stores its value(s) into the persistent {@link SharedPreferences}
-         * storage.
-         *
-         * @param persistent Set true if it should store its value(s) into the {@link SharedPreferences}.
-         */
+             * Sets whether this Preference is persistent. When persistent,
+             * it stores its value(s) into the persistent {@link SharedPreferences}
+             * storage.
+             *
+             * @param persistent Set true if it should store its value(s) into the {@link SharedPreferences}.
+             */
         SetPersistent(
             [in] Boolean persistent);
 
@@ -539,129 +559,138 @@ module
          */
         CallChangeListener(
             [in] IInterface* newValue,
-            [out] Boolean* shouldSetValue);
+            [out] Boolean* result);
 
         /**
-         * Sets the callback to be invoked when this Preference is changed by the
-         * user (but before the internal state has been updated).
-         *
-         * @param onPreferenceChangeListener The callback to be invoked.
-         */
+             * Sets the callback to be invoked when this Preference is changed by the
+             * user (but before the internal state has been updated).
+             *
+             * @param onPreferenceChangeListener The callback to be invoked.
+             */
         SetOnPreferenceChangeListener(
             [in] IPreferenceOnPreferenceChangeListener* onPreferenceChangeListener);
 
         /**
-         * Returns the callback to be invoked when this Preference is changed by the
-         * user (but before the internal state has been updated).
-         *
-         * @return The callback to be invoked.
-         */
+             * Returns the callback to be invoked when this Preference is changed by the
+             * user (but before the internal state has been updated).
+             *
+             * @return The callback to be invoked.
+             */
         GetOnPreferenceChangeListener(
-            [out] IPreferenceOnPreferenceChangeListener** listener);
+            [out] IPreferenceOnPreferenceChangeListener** result);
 
         /**
-         * Sets the callback to be invoked when this Preference is clicked.
-         *
-         * @param onPreferenceClickListener The callback to be invoked.
-         */
+             * Sets the callback to be invoked when this Preference is clicked.
+             *
+             * @param onPreferenceClickListener The callback to be invoked.
+             */
         SetOnPreferenceClickListener(
             [in] IPreferenceOnPreferenceClickListener* onPreferenceClickListener);
 
         /**
-         * Returns the callback to be invoked when this Preference is clicked.
-         *
-         * @return The callback to be invoked.
-         */
+             * Returns the callback to be invoked when this Preference is clicked.
+             *
+             * @return The callback to be invoked.
+             */
         GetOnPreferenceClickListener(
-            [out] IPreferenceOnPreferenceClickListener** listener);
+            [out] IPreferenceOnPreferenceClickListener** result);
 
         /**
-         * Called when a click should be performed.
-         *
-         * @param preferenceScreen A {@link PreferenceScreen} whose hierarchy click
-         *            listener should be called in the proper order (between other
-         *            processing). May be null.
-         * @hide
-         */
+             * Called when a click should be performed.
+             *
+             * @param preferenceScreen A {@link PreferenceScreen} whose hierarchy click
+             *            listener should be called in the proper order (between other
+             *            processing). May be null.
+             * @hide
+             */
         PerformClick(
             [in] IPreferenceScreen* preferenceScreen);
 
         /**
-         * Allows a Preference to intercept key events without having focus.
-         * For example, SeekBarPreference uses this to intercept +/- to adjust
-         * the progress.
-         * @return True if the Preference handled the key. Returns false by default.
-         * @hide
-         */
+             * Allows a Preference to intercept key events without having focus.
+             * For example, SeekBarPreference uses this to intercept +/- to adjust
+             * the progress.
+             * @return True if the Preference handled the key. Returns false by default.
+             * @hide
+             */
         OnKey(
-            [in]  IView* v,
-            [in]  Int32 keyCode,
-            [in]  IKeyEvent* event,
-            [out]  Boolean* result);
+            [in] IView* v,
+            [in] Int32 keyCode,
+            [in] IKeyEvent* event,
+            [out] Boolean* result);
 
         /**
-         * Returns the {@link android.content.Context} of this Preference.
-         * Each Preference in a Preference hierarchy can be
-         * from different Context (for example, if multiple activities provide preferences into a single
-         * {@link PreferenceActivity}). This Context will be used to save the Preference values.
-         *
-         * @return The Context of this Preference.
-         */
+             * Returns the {@link android.content.Context} of this Preference.
+             * Each Preference in a Preference hierarchy can be
+             * from different Context (for example, if multiple activities provide preferences into a single
+             * {@link PreferenceActivity}). This Context will be used to save the Preference values.
+             *
+             * @return The Context of this Preference.
+             */
         GetContext(
-            [out] IContext** context);
+            [out] IContext** result);
 
         /**
-         * Returns the {@link SharedPreferences} where this Preference can read its
-         * value(s). Usually, it's easier to use one of the helper read methods:
-         * {@link #getPersistedBoolean(boolean)}, {@link #getPersistedFloat(float)},
-         * {@link #getPersistedInt(int)}, {@link #getPersistedLong(long)},
-         * {@link #getPersistedString(String)}. To save values, see
-         * {@link #getEditor()}.
-         * <p>
-         * In some cases, writes to the {@link #getEditor()} will not be committed
-         * right away and hence not show up in the returned
-         * {@link SharedPreferences}, this is intended behavior to improve
-         * performance.
-         *
-         * @return The {@link SharedPreferences} where this Preference reads its
-         *         value(s), or null if it isn't attached to a Preference hierarchy.
-         * @see #getEditor()
-         */
+             * Returns the {@link SharedPreferences} where this Preference can read its
+             * value(s). Usually, it's easier to use one of the helper read methods:
+             * {@link #getPersistedBoolean(boolean)}, {@link #getPersistedFloat(float)},
+             * {@link #getPersistedInt(int)}, {@link #getPersistedLong(long)},
+             * {@link #getPersistedString(String)}. To save values, see
+             * {@link #getEditor()}.
+             * <p>
+             * In some cases, writes to the {@link #getEditor()} will not be committed
+             * right away and hence not show up in the returned
+             * {@link SharedPreferences}, this is intended behavior to improve
+             * performance.
+             *
+             * @return The {@link SharedPreferences} where this Preference reads its
+             *         value(s), or null if it isn't attached to a Preference hierarchy.
+             * @see #getEditor()
+             */
         GetSharedPreferences(
-            [out] ISharedPreferences** preference);
+            [out] ISharedPreferences** result);
 
         /**
-         * Returns an {@link SharedPreferences.Editor} where this Preference can
-         * save its value(s). Usually it's easier to use one of the helper save
-         * methods: {@link #persistBoolean(boolean)}, {@link #persistFloat(float)},
-         * {@link #persistInt(int)}, {@link #persistLong(long)},
-         * {@link #persistString(String)}. To read values, see
-         * {@link #getSharedPreferences()}. If {@link #shouldCommit()} returns
-         * true, it is this Preference's responsibility to commit.
-         * <p>
-         * In some cases, writes to this will not be committed right away and hence
-         * not show up in the SharedPreferences, this is intended behavior to
-         * improve performance.
-         *
-         * @return A {@link SharedPreferences.Editor} where this preference saves
-         *         its value(s), or null if it isn't attached to a Preference
-         *         hierarchy.
-         * @see #shouldCommit()
-         * @see #getSharedPreferences()
-         */
+             * Returns an {@link SharedPreferences.Editor} where this Preference can
+             * save its value(s). Usually it's easier to use one of the helper save
+             * methods: {@link #persistBoolean(boolean)}, {@link #persistFloat(float)},
+             * {@link #persistInt(int)}, {@link #persistLong(long)},
+             * {@link #persistString(String)}. To read values, see
+             * {@link #getSharedPreferences()}. If {@link #shouldCommit()} returns
+             * true, it is this Preference's responsibility to commit.
+             * <p>
+             * In some cases, writes to this will not be committed right away and hence
+             * not show up in the SharedPreferences, this is intended behavior to
+             * improve performance.
+             *
+             * @return A {@link SharedPreferences.Editor} where this preference saves
+             *         its value(s), or null if it isn't attached to a Preference
+             *         hierarchy.
+             * @see #shouldCommit()
+             * @see #getSharedPreferences()
+             */
         GetEditor(
-            [out] ISharedPreferencesEditor** editor);
+            [out] ISharedPreferencesEditor** result);
 
         /**
-         * Returns whether the {@link Preference} should commit its saved value(s) in
-         * {@link #getEditor()}. This may return false in situations where batch
-         * committing is being done (by the manager) to improve performance.
-         *
-         * @return Whether the Preference should commit its saved value(s).
-         * @see #getEditor()
-         */
+             * Returns whether the {@link Preference} should commit its saved value(s) in
+             * {@link #getEditor()}. This may return false in situations where batch
+             * committing is being done (by the manager) to improve performance.
+             *
+             * @return Whether the Preference should commit its saved value(s).
+             * @see #getEditor()
+             */
         ShouldCommit(
-            [out] Boolean* shouldCommit);
+            [out] Boolean* result);
+
+        /**
+         * Sets the internal change listener.
+         *
+         * @param listener The listener.
+         * @see #notifyChanged()
+         */
+        SetOnPreferenceChangeInternalListener(
+            [in] IPreferenceOnPreferenceChangeInternalListener* listener);
 
         /**
          * Should be called when the data of this {@link Preference} has changed.
@@ -676,12 +705,12 @@ module
         NotifyHierarchyChanged();
 
         /**
-         * Gets the {@link PreferenceManager} that manages this Preference object's tree.
-         *
-         * @return The {@link PreferenceManager}.
-         */
+             * Gets the {@link PreferenceManager} that manages this Preference object's tree.
+             *
+             * @return The {@link PreferenceManager}.
+             */
         GetPreferenceManager(
-            [out] IPreferenceManager** manager);
+            [out] IPreferenceManager** result);
 
         /**
          * Called when this Preference has been attached to a Preference hierarchy.
@@ -710,73 +739,83 @@ module
          * @param key The key of the Preference to find.
          * @return The Preference that uses the given key.
          */
-        /*protected*/ FindPreferenceInHierarchy(
+        FindPreferenceInHierarchy(
             [in] String key,
-            [out] IPreference** preference);
+            [out] IPreference** pre);
 
         /**
-         * Notifies any listening dependents of a change that affects the
-         * dependency.
-         *
-         * @param disableDependents Whether this Preference should disable
-         *            its dependents.
-         */
+             * Notifies any listening dependents of a change that affects the
+             * dependency.
+             *
+             * @param disableDependents Whether this Preference should disable
+             *            its dependents.
+             */
         NotifyDependencyChange(
             [in] Boolean disableDependents);
 
         /**
-         * Called when the implicit parent dependency changes.
-         *
-         * @param parent The Preference that this Preference depends on.
-         * @param disableChild Set true to disable this Preference.
-         */
+             * Called when the dependency changes.
+             *
+             * @param dependency The Preference that this Preference depends on.
+             * @param disableDependent Set true to disable this Preference.
+             */
+        OnDependencyChanged(
+            [in] IPreference* dependency,
+            [in] Boolean disableDependent);
+
+        /**
+             * Called when the implicit parent dependency changes.
+             *
+             * @param parent The Preference that this Preference depends on.
+             * @param disableChild Set true to disable this Preference.
+             */
         OnParentChanged(
             [in] IPreference* parent,
             [in] Boolean disableChild);
 
         /**
-         * Checks whether this preference's dependents should currently be
-         * disabled.
-         *
-         * @return True if the dependents should be disabled, otherwise false.
-         */
+             * Checks whether this preference's dependents should currently be
+             * disabled.
+             *
+             * @return True if the dependents should be disabled, otherwise false.
+             */
         ShouldDisableDependents(
-            [out] Boolean* shouldDisableDependents);
+            [out] Boolean* result);
 
         /**
-         * Sets the key of a Preference that this Preference will depend on. If that
-         * Preference is not set or is off, this Preference will be disabled.
-         *
-         * @param dependencyKey The key of the Preference that this depends on.
-         */
+             * Sets the key of a Preference that this Preference will depend on. If that
+             * Preference is not set or is off, this Preference will be disabled.
+             *
+             * @param dependencyKey The key of the Preference that this depends on.
+             */
         SetDependency(
             [in] String dependencyKey);
 
         /**
-         * Returns the key of the dependency on this Preference.
-         *
-         * @return The key of the dependency.
-         * @see #setDependency(String)
-         */
+             * Returns the key of the dependency on this Preference.
+             *
+             * @return The key of the dependency.
+             * @see #setDependency(String)
+             */
         GetDependency(
-            [out] String* dependencyKey);
+            [out] String* result);
 
         /**
          * Called when this Preference is being removed from the hierarchy. You
          * should remove any references to this Preference that you know about. Make
          * sure to call through to the superclass implementation.
          */
-        /*protected*/ OnPrepareForRemoval();
+        OnPrepareForRemoval();
 
         /**
-         * Sets the default value for this Preference, which will be set either if
-         * persistence is off or persistence is on and the preference is not found
-         * in the persistent storage.
-         *
-         * @param defaultValue The default value.
-         */
+             * Sets the default value for this Preference, which will be set either if
+             * persistence is off or persistence is on and the preference is not found
+             * in the persistent storage.
+             *
+             * @param defaultValue The default value.
+             */
         SetDefaultValue(
-            [in] IInterface* defaultValue);
+            [in] IObject* defaultValue);
 
         /**
          * Implement this to set the initial value of the Preference.
@@ -797,7 +836,7 @@ module
          */
         OnSetInitialValue(
             [in] Boolean restorePersistedValue,
-            [in] IInterface* defaultValue);
+            [in] IInterface** defaultValue);
 
         /**
          * Attempts to persist a String to the {@link android.content.SharedPreferences}.
@@ -814,7 +853,7 @@ module
          */
         PersistString(
             [in] String value,
-            [out] Boolean* isPersistString);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted String from the {@link android.content.SharedPreferences}.
@@ -850,7 +889,7 @@ module
          */
         PersistStringSet(
             [in] ISet* values,
-            [out] Boolean* isPersistStringSet);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted set of Strings from the
@@ -870,8 +909,7 @@ module
          */
         GetPersistedStringSet(
             [in] ISet* defaultReturnValue,
-            [out] ISet** value
-            );
+            [out] ISet** pss);
 
         /**
          * Attempts to persist an int to the {@link android.content.SharedPreferences}.
@@ -883,9 +921,9 @@ module
          * @see #persistString(String)
          * @see #getPersistedInt(int)
          */
-        PersistInt32(
+        PersistInt(
             [in] Int32 value,
-            [out] Boolean* isPersist);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted int from the {@link android.content.SharedPreferences}.
@@ -900,7 +938,7 @@ module
          */
         GetPersistedInt32(
             [in] Int32 defaultReturnValue,
-            [out] Int32* value);
+            [out] Int32* result);
 
         /**
          * Attempts to persist a float to the {@link android.content.SharedPreferences}.
@@ -914,7 +952,7 @@ module
          */
         PersistFloat(
             [in] Float value,
-            [out] Boolean* isPersist);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted float from the {@link android.content.SharedPreferences}.
@@ -929,7 +967,7 @@ module
          */
         GetPersistedFloat(
             [in] Float defaultReturnValue,
-            [out] Float* value);
+            [out] Float* f);
 
         /**
          * Attempts to persist a long to the {@link android.content.SharedPreferences}.
@@ -943,7 +981,7 @@ module
          */
         PersistInt64(
             [in] Int64 value,
-            [out] Boolean* isPersist);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted long from the {@link android.content.SharedPreferences}.
@@ -958,7 +996,7 @@ module
          */
         GetPersistedInt64(
             [in] Int64 defaultReturnValue,
-            [out] Int64* value);
+            [out] Int64* l);
 
         /**
          * Attempts to persist a boolean to the {@link android.content.SharedPreferences}.
@@ -972,7 +1010,7 @@ module
          */
         PersistBoolean(
             [in] Boolean value,
-            [out] Boolean* isPersist);
+            [out] Boolean* result);
 
         /**
          * Attempts to get a persisted boolean from the {@link android.content.SharedPreferences}.
@@ -987,22 +1025,33 @@ module
          */
         GetPersistedBoolean(
             [in] Boolean defaultReturnValue,
-            [out] Boolean* value);
+            [out] Boolean* result);
 
         CanRecycleLayout(
-            [out] Boolean* hasSpecifiedLayout);
-
-        ToString(
-            [out] String* str);
+            [out] Boolean* result);
 
         /**
-         * Store this Preference hierarchy's frozen state into the given container.
+         * Returns the text that will be used to filter this Preference depending on
+         * user input.
+         * <p>
+         * If overridding and calling through to the superclass, make sure to prepend
+         * your additions with a space.
          *
-         * @param container The Bundle in which to save the instance of this Preference.
-         *
-         * @see #restoreHierarchyState
-         * @see #onSaveInstanceState
+         * @return Text as a {@link StringBuilder} that will be used to filter this
+         *         preference. By default, this is the title and summary
+         *         (concatenated with a space).
          */
+        GetFilterableStringBuilder(
+            [out] String* fsb);
+
+        /**
+             * Store this Preference hierarchy's frozen state into the given container.
+             *
+             * @param container The Bundle in which to save the instance of this Preference.
+             *
+             * @see #restoreHierarchyState
+             * @see #onSaveInstanceState
+             */
         SaveHierarchyState(
             [in] IBundle* container);
 
@@ -1035,13 +1084,13 @@ module
             [out] IParcelable** state);
 
         /**
-         * Restore this Preference hierarchy's previously saved state from the given container.
-         *
-         * @param container The Bundle that holds the previously saved state.
-         *
-         * @see #saveHierarchyState
-         * @see #onRestoreInstanceState
-         */
+             * Restore this Preference hierarchy's previously saved state from the given container.
+             *
+             * @param container The Bundle that holds the previously saved state.
+             *
+             * @see #saveHierarchyState
+             * @see #onRestoreInstanceState
+             */
         RestoreHierarchyState(
             [in] IBundle* container);
 
@@ -1070,9 +1119,11 @@ module
          */
         OnRestoreInstanceState(
             [in] IParcelable* state);
+
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+

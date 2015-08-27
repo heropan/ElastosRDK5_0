@@ -20,11 +20,11 @@ module
      * @attr ref android.R.styleable#RingtonePreference_ringtoneType
      * @attr ref android.R.styleable#RingtonePreference_showDefault
      * @attr ref android.R.styleable#RingtonePreference_showSilent
-     *
+     */
+    /**
      * @Involve
-     * interface IPreferenceManagerOnActivityResultListener
-     * interface IComparable
      * interface IPreference
+     * interface IPreferenceManagerOnActivityResultListener
      */
     [local]
     interface IRingtonePreference {
@@ -112,10 +112,17 @@ module
          * @return The ringtone to be marked as the current ringtone.
          */
         OnRestoreRingtone(
-            [out] IUri** uri);
+            [out] IUri** ringtoneUri);
+
+        OnActivityResult(
+            [in] Int32 requestCode,
+            [in] Int32 resultCode,
+            [in] IIntent* data,
+            [out] Boolean* result);
+
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }

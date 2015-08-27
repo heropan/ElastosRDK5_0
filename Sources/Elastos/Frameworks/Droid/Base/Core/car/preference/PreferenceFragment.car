@@ -1,7 +1,7 @@
+
 module
 {
-    using interface Elastos.Core.ICharSequence;
-
+    interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.Content.IIntent;
     interface Elastos.Droid.Widget.IListView;
 
@@ -78,20 +78,20 @@ module
      *
      * @see Preference
      * @see PreferenceScreen
-     *
-     * @Involve
-     * interface IPreferenceManagerOnPreferenceTreeClickListener
-     * interface IParcelable
-     * interface Elastos.Droid.App.IFragment
      */
-    [deprecated, local]
-    interface IPreferenceFragment{
+    /**
+     * @Involve
+     * interface Elastos.Droid.App.IFragment
+     * interface IPreferenceManagerOnPreferenceTreeClickListener
+     */
+     [local]
+    interface IPreferenceFragment {
         /**
          * Returns the {@link PreferenceManager} used by this fragment.
          * @return The {@link PreferenceManager}.
          */
         GetPreferenceManager(
-            [out] IPreferenceManager** manager);
+            [out] IPreferenceManager** result);
 
         /**
          * Sets the root of the preference hierarchy that this fragment is showing.
@@ -102,49 +102,49 @@ module
             [in] IPreferenceScreen* preferenceScreen);
 
         /**
-         * Gets the root of the preference hierarchy that this fragment is showing.
-         *
-         * @return The {@link PreferenceScreen} that is the root of the preference
-         *         hierarchy.
-         */
+             * Gets the root of the preference hierarchy that this fragment is showing.
+             *
+             * @return The {@link PreferenceScreen} that is the root of the preference
+             *         hierarchy.
+             */
         GetPreferenceScreen(
-            [out] IPreferenceScreen** preferenceScreen);
+            [out] IPreferenceScreen** result);
 
         /**
-         * Adds preferences from activities that match the given {@link Intent}.
-         *
-         * @param intent The {@link Intent} to query activities.
-         */
+             * Adds preferences from activities that match the given {@link Intent}.
+             *
+             * @param intent The {@link Intent} to query activities.
+             */
         AddPreferencesFromIntent(
             [in] IIntent* intent);
 
         /**
-         * Inflates the given XML resource and adds the preference hierarchy to the current
-         * preference hierarchy.
-         *
-         * @param preferencesResId The XML resource ID to inflate.
-         */
+             * Inflates the given XML resource and adds the preference hierarchy to the current
+             * preference hierarchy.
+             *
+             * @param preferencesResId The XML resource ID to inflate.
+             */
         AddPreferencesFromResource(
             [in] Int32 preferencesResId);
 
         /**
-         * {@inheritDoc}
-         */
+             * {@inheritDoc}
+             */
         OnPreferenceTreeClick(
             [in] IPreferenceScreen* preferenceScreen,
             [in] IPreference* preference,
             [out] Boolean* result);
 
         /**
-         * Finds a {@link Preference} based on its key.
-         *
-         * @param key The key of the preference to retrieve.
-         * @return The {@link Preference} with the key, or null.
-         * @see PreferenceGroup#findPreference(CharSequence)
-         */
+             * Finds a {@link Preference} based on its key.
+             *
+             * @param key The key of the preference to retrieve.
+             * @return The {@link Preference} with the key, or null.
+             * @see PreferenceGroup#findPreference(CharSequence)
+             */
         FindPreference(
             [in] ICharSequence* key,
-            [out] IPreference** preference);
+            [out] IPreference** result);
 
         /** @hide */
         OnBindPreferences();
@@ -154,28 +154,15 @@ module
 
         /** @hide */
         GetListView(
-            [out] IListView** listview);
+            [out] IListView** result);
 
         /** @hide */
         HasListView(
-            [out] Boolean* ret);
-    }
-
-    [local]
-    interface IPreferenceFragmentOnPreferenceStartFragmentCallback {
-        /**
-         * Called when the user has clicked on a Preference that has
-         * a fragment class name associated with it.  The implementation
-         * to should instantiate and switch to an instance of the given
-         * fragment.
-         */
-        OnPreferenceStartFragment(
-            [in] IPreferenceFragment* caller,
-            [in] IPreference* pref,
             [out] Boolean* result);
     }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+

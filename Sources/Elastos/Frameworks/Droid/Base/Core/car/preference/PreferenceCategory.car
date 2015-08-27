@@ -1,3 +1,4 @@
+// PreferenceCategory.car
 module
 {
     namespace Elastos {
@@ -14,16 +15,16 @@ module
      * read the <a href="{@docRoot}guide/topics/ui/settings.html">Settings</a>
      * guide.</p>
      * </div>
-     *
+     */
+    /**
      * @Involve
-     * interface IComparable
-     * interface IGenericInflaterParent
-     * interface IPreference
      * interface IPreferenceGroup
      */
-    interface IPreferenceCategory {}
+    interface IPreferenceCategory {
+    }
 
-    } // Preference
-    } // Droid
-    } // Elastos
+    } // namespace Preference
+    } // namespace Droid
+    } // namespace Elastos
 }
+
