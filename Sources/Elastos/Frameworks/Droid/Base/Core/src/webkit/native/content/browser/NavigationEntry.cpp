@@ -14,6 +14,7 @@ Int32 NavigationEntry::GetIndex()
     /*
     return mIndex;
     */
+    return 0;
 }
 
 String NavigationEntry::GetUrl()
@@ -21,6 +22,7 @@ String NavigationEntry::GetUrl()
     /*
     return mUrl;
     */
+    return String("");
 }
 
 String NavigationEntry::GetVirtualUrl()
@@ -28,6 +30,7 @@ String NavigationEntry::GetVirtualUrl()
     /*
     return mVirtualUrl;
     */
+    return String("");
 }
 
 String NavigationEntry::GetOriginalUrl()
@@ -35,6 +38,7 @@ String NavigationEntry::GetOriginalUrl()
     /*
     return mOriginalUrl;
     */
+    return String("");
 }
 
 String NavigationEntry::GetTitle()
@@ -42,6 +46,7 @@ String NavigationEntry::GetTitle()
     /*
     return mTitle;
     */
+    return String("");
 }
 
 AutoPtr<IBitmap> NavigationEntry::GetFavicon()
@@ -49,6 +54,7 @@ AutoPtr<IBitmap> NavigationEntry::GetFavicon()
     /*
     return mFavicon;
     */
+    return AutoPtr<IBitmap>(this);
 }
 
 ECode NavigationEntry::UpdateFavicon(

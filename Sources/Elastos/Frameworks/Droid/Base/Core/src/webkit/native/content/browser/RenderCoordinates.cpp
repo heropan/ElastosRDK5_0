@@ -14,6 +14,7 @@ Float RenderCoordinates::NormalizedPoint::GetXAbsoluteCss()
     /*
     return mXAbsoluteCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYAbsoluteCss()
@@ -21,6 +22,7 @@ Float RenderCoordinates::NormalizedPoint::GetYAbsoluteCss()
     /*
     return mYAbsoluteCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetXLocalDip()
@@ -28,6 +30,7 @@ Float RenderCoordinates::NormalizedPoint::GetXLocalDip()
     /*
     return (mXAbsoluteCss - mScrollXCss) * mPageScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYLocalDip()
@@ -35,6 +38,7 @@ Float RenderCoordinates::NormalizedPoint::GetYLocalDip()
     /*
     return (mYAbsoluteCss - mScrollYCss) * mPageScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetXPix()
@@ -42,6 +46,7 @@ Float RenderCoordinates::NormalizedPoint::GetXPix()
     /*
     return getXLocalDip() * mDeviceScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::NormalizedPoint::GetYPix()
@@ -49,6 +54,7 @@ Float RenderCoordinates::NormalizedPoint::GetYPix()
     /*
     return getYLocalDip() * mDeviceScaleFactor + mContentOffsetYPix;
     */
+    return 0.0f;
 }
 
 ECode RenderCoordinates::NormalizedPoint::SetAbsoluteCss(
@@ -153,6 +159,7 @@ AutoPtr<NormalizedPoint> RenderCoordinates::CreateNormalizedPoint()
     /*
     return new NormalizedPoint();
     */
+    return AutoPtr<NormalizedPoint>(this);
 }
 
 Float RenderCoordinates::GetScrollX()
@@ -160,6 +167,7 @@ Float RenderCoordinates::GetScrollX()
     /*
     return mScrollXCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollY()
@@ -167,6 +175,7 @@ Float RenderCoordinates::GetScrollY()
     /*
     return mScrollYCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollXPix()
@@ -174,6 +183,7 @@ Float RenderCoordinates::GetScrollXPix()
     /*
     return fromLocalCssToPix(mScrollXCss);
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetScrollYPix()
@@ -181,6 +191,7 @@ Float RenderCoordinates::GetScrollYPix()
     /*
     return fromLocalCssToPix(mScrollYCss);
     */
+    return 0.0f;
 }
 
 Int32 RenderCoordinates::GetScrollXPixInt()
@@ -188,6 +199,7 @@ Int32 RenderCoordinates::GetScrollXPixInt()
     /*
     return (int) Math.floor(getScrollXPix());
     */
+    return 0;
 }
 
 Int32 RenderCoordinates::GetScrollYPixInt()
@@ -195,6 +207,7 @@ Int32 RenderCoordinates::GetScrollYPixInt()
     /*
     return (int) Math.floor(getScrollYPix());
     */
+    return 0;
 }
 
 Float RenderCoordinates::GetContentWidthCss()
@@ -202,6 +215,7 @@ Float RenderCoordinates::GetContentWidthCss()
     /*
     return mContentWidthCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetContentHeightCss()
@@ -209,6 +223,7 @@ Float RenderCoordinates::GetContentHeightCss()
     /*
     return mContentHeightCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetContentWidthPix()
@@ -216,6 +231,7 @@ Float RenderCoordinates::GetContentWidthPix()
     /*
     return fromLocalCssToPix(mContentWidthCss);
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetContentHeightPix()
@@ -223,6 +239,7 @@ Float RenderCoordinates::GetContentHeightPix()
     /*
     return fromLocalCssToPix(mContentHeightCss);
     */
+    return 0.0f;
 }
 
 Int32 RenderCoordinates::GetContentWidthPixInt()
@@ -230,6 +247,7 @@ Int32 RenderCoordinates::GetContentWidthPixInt()
     /*
     return (int) Math.ceil(getContentWidthPix());
     */
+    return 0;
 }
 
 Int32 RenderCoordinates::GetContentHeightPixInt()
@@ -237,6 +255,7 @@ Int32 RenderCoordinates::GetContentHeightPixInt()
     /*
     return (int) Math.ceil(getContentHeightPix());
     */
+    return 0;
 }
 
 Float RenderCoordinates::GetLastFrameViewportWidthCss()
@@ -244,6 +263,7 @@ Float RenderCoordinates::GetLastFrameViewportWidthCss()
     /*
     return mLastFrameViewportWidthCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportHeightCss()
@@ -251,6 +271,7 @@ Float RenderCoordinates::GetLastFrameViewportHeightCss()
     /*
     return mLastFrameViewportHeightCss;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportWidthPix()
@@ -258,6 +279,7 @@ Float RenderCoordinates::GetLastFrameViewportWidthPix()
     /*
     return fromLocalCssToPix(mLastFrameViewportWidthCss);
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetLastFrameViewportHeightPix()
@@ -265,6 +287,7 @@ Float RenderCoordinates::GetLastFrameViewportHeightPix()
     /*
     return fromLocalCssToPix(mLastFrameViewportHeightCss);
     */
+    return 0.0f;
 }
 
 Int32 RenderCoordinates::GetLastFrameViewportWidthPixInt()
@@ -272,6 +295,7 @@ Int32 RenderCoordinates::GetLastFrameViewportWidthPixInt()
     /*
     return (int) Math.ceil(getLastFrameViewportWidthPix());
     */
+    return 0;
 }
 
 Int32 RenderCoordinates::GetLastFrameViewportHeightPixInt()
@@ -279,6 +303,7 @@ Int32 RenderCoordinates::GetLastFrameViewportHeightPixInt()
     /*
     return (int) Math.ceil(getLastFrameViewportHeightPix());
     */
+    return 0;
 }
 
 Float RenderCoordinates::GetContentOffsetYPix()
@@ -286,6 +311,7 @@ Float RenderCoordinates::GetContentOffsetYPix()
     /*
     return mContentOffsetYPix;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetPageScaleFactor()
@@ -293,6 +319,7 @@ Float RenderCoordinates::GetPageScaleFactor()
     /*
     return mPageScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetMinPageScaleFactor()
@@ -300,6 +327,7 @@ Float RenderCoordinates::GetMinPageScaleFactor()
     /*
     return mMinPageScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxPageScaleFactor()
@@ -307,6 +335,7 @@ Float RenderCoordinates::GetMaxPageScaleFactor()
     /*
     return mMaxPageScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetDeviceScaleFactor()
@@ -314,6 +343,7 @@ Float RenderCoordinates::GetDeviceScaleFactor()
     /*
     return mDeviceScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxHorizontalScrollPix()
@@ -321,6 +351,7 @@ Float RenderCoordinates::GetMaxHorizontalScrollPix()
     /*
     return getContentWidthPix() - getLastFrameViewportWidthPix();
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::GetMaxVerticalScrollPix()
@@ -328,6 +359,7 @@ Float RenderCoordinates::GetMaxVerticalScrollPix()
     /*
     return getContentHeightPix() - getLastFrameViewportHeightPix();
     */
+    return 0.0f;
 }
 
 Int32 RenderCoordinates::GetMaxHorizontalScrollPixInt()
@@ -335,6 +367,7 @@ Int32 RenderCoordinates::GetMaxHorizontalScrollPixInt()
     /*
     return (int) Math.floor(getMaxHorizontalScrollPix());
     */
+    return 0;
 }
 
 Int32 RenderCoordinates::GetMaxVerticalScrollPixInt()
@@ -342,6 +375,7 @@ Int32 RenderCoordinates::GetMaxVerticalScrollPixInt()
     /*
     return (int) Math.floor(getMaxVerticalScrollPix());
     */
+    return 0;
 }
 
 Float RenderCoordinates::FromPixToDip(
@@ -350,6 +384,7 @@ Float RenderCoordinates::FromPixToDip(
     /*
     return pix / mDeviceScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::FromDipToPix(
@@ -358,6 +393,7 @@ Float RenderCoordinates::FromDipToPix(
     /*
     return dip * mDeviceScaleFactor;
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::FromPixToLocalCss(
@@ -366,6 +402,7 @@ Float RenderCoordinates::FromPixToLocalCss(
     /*
     return pix / (mDeviceScaleFactor * mPageScaleFactor);
     */
+    return 0.0f;
 }
 
 Float RenderCoordinates::FromLocalCssToPix(
@@ -374,6 +411,7 @@ Float RenderCoordinates::FromLocalCssToPix(
     /*
     return css * mPageScaleFactor * mDeviceScaleFactor;
     */
+    return 0.0f;
 }
 
 } // namespace Browser

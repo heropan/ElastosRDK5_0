@@ -123,6 +123,7 @@ AutoPtr<ScreenOrientationListener> ScreenOrientationListener::GetInstance()
 
     return sInstance;
     */
+    return AutoPtr<ScreenOrientationListener>(this);
 }
 
 ECode ScreenOrientationListener::InjectConfigurationListenerBackendForTest()

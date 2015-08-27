@@ -28,6 +28,7 @@ Int32 MediaResourceGetter::MediaMetadata::GetDurationInMilliseconds()
     /*
     return mDurationInMilliseconds;
     */
+    return 0;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::GetWidth()
@@ -35,6 +36,7 @@ Int32 MediaResourceGetter::MediaMetadata::GetWidth()
     /*
     return mWidth;
     */
+    return 0;
 }
 
 Int32 MediaResourceGetter::MediaMetadata::GetHeight()
@@ -42,6 +44,7 @@ Int32 MediaResourceGetter::MediaMetadata::GetHeight()
     /*
     return mHeight;
     */
+    return 0;
 }
 
 Boolean MediaResourceGetter::MediaMetadata::IsSuccess()
@@ -49,6 +52,7 @@ Boolean MediaResourceGetter::MediaMetadata::IsSuccess()
     /*
     return mSuccess;
     */
+    return FALSE;
 }
 
 String MediaResourceGetter::MediaMetadata::ToString()
@@ -61,6 +65,7 @@ String MediaResourceGetter::MediaMetadata::ToString()
             + ", success=" + mSuccess
             + "]";
     */
+    return String("");
 }
 
 Int32 MediaResourceGetter::MediaMetadata::HashCode()
@@ -74,6 +79,7 @@ Int32 MediaResourceGetter::MediaMetadata::HashCode()
     result = prime * result + mWidth;
     return result;
     */
+    return 0;
 }
 
 Boolean MediaResourceGetter::MediaMetadata::Equals(
@@ -97,6 +103,7 @@ Boolean MediaResourceGetter::MediaMetadata::Equals(
         return false;
     return true;
     */
+    return FALSE;
 }
 
 //=====================================================================
@@ -118,6 +125,7 @@ AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
     configure(fd, offset, length);
     return doExtractMetadata();
     */
+    return AutoPtr<MediaMetadata>(this);
 }
 
 const AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
@@ -138,6 +146,7 @@ const AutoPtr<MediaMetadata> MediaResourceGetter::Extract(
     }
     return doExtractMetadata();
     */
+    return AutoPtr<MediaMetadata>(this);
 }
 
 Boolean MediaResourceGetter::Configure(
@@ -194,6 +203,7 @@ Boolean MediaResourceGetter::Configure(
         }
     }
     */
+    return FALSE;
 }
 
 Boolean MediaResourceGetter::IsNetworkReliable(
@@ -224,6 +234,7 @@ Boolean MediaResourceGetter::IsNetworkReliable(
             return false;
     }
     */
+    return FALSE;
 }
 
 Boolean MediaResourceGetter::FilePathAcceptable(
@@ -252,6 +263,7 @@ Boolean MediaResourceGetter::FilePathAcceptable(
     }
     return false;
     */
+    return FALSE;
 }
 
 const Boolean MediaResourceGetter::AndroidDeviceOk(
@@ -262,6 +274,7 @@ const Boolean MediaResourceGetter::AndroidDeviceOk(
     return !("GT-I9100".contentEquals(model) &&
              sdkVersion < android.os.Build.VERSION_CODES.JELLY_BEAN);
     */
+    return FALSE;
 }
 
 AutoPtr<IFile> MediaResourceGetter::UriToFile(
@@ -270,6 +283,7 @@ AutoPtr<IFile> MediaResourceGetter::UriToFile(
     /*
     return new File(path);
     */
+    return AutoPtr<IFile>(this);
 }
 
 AutoPtr<Integer> MediaResourceGetter::GetNetworkType(
@@ -290,6 +304,7 @@ AutoPtr<Integer> MediaResourceGetter::GetNetworkType(
     }
     return info.getType();
     */
+    return AutoPtr<Integer>(this);
 }
 
 String MediaResourceGetter::GetExternalStorageDirectory()
@@ -297,6 +312,7 @@ String MediaResourceGetter::GetExternalStorageDirectory()
     /*
     return PathUtils.getExternalStorageDirectory();
     */
+    return String("");
 }
 
 ECode MediaResourceGetter::Configure(
@@ -346,6 +362,7 @@ String MediaResourceGetter::ExtractMetadata(
     /*
     return mRetriever.extractMetadata(key);
     */
+    return String("");
 }
 
 const AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadata(
@@ -358,6 +375,7 @@ const AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadata(
     return new MediaResourceGetter().extract(
             context, url, cookies, userAgent);
     */
+    return AutoPtr<MediaMetadata>(this);
 }
 
 AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadataFromFd(
@@ -368,6 +386,7 @@ AutoPtr<MediaMetadata> MediaResourceGetter::ExtractMediaMetadataFromFd(
     /*
     return new MediaResourceGetter().extract(fd, offset, length);
     */
+    return AutoPtr<MediaMetadata>(this);
 }
 
 AutoPtr<MediaMetadata> MediaResourceGetter::DoExtractMetadata()
@@ -432,6 +451,7 @@ AutoPtr<MediaMetadata> MediaResourceGetter::DoExtractMetadata()
         return EMPTY_METADATA;
     }
     */
+    return AutoPtr<MediaMetadata>(this);
 }
 
 Boolean MediaResourceGetter::IsLoopbackAddress(
@@ -442,6 +462,7 @@ Boolean MediaResourceGetter::IsLoopbackAddress(
             || host.equals("127.0.0.1")  // typical IP v4 expression
             || host.equals("[::1]"));  // typical IP v6 expression
     */
+    return FALSE;
 }
 
 AutoPtr< IList<String> > MediaResourceGetter::GetRawAcceptableDirectories()
@@ -452,6 +473,7 @@ AutoPtr< IList<String> > MediaResourceGetter::GetRawAcceptableDirectories()
     result.add("/sdcard/");
     return result;
     */
+    return AutoPtr< IList<String> >(this);
 }
 
 AutoPtr< IList<String> > MediaResourceGetter::Canonicalize(
@@ -470,6 +492,7 @@ AutoPtr< IList<String> > MediaResourceGetter::Canonicalize(
     }
     return result;
     */
+    return AutoPtr< IList<String> >(this);
 }
 
 } // namespace Browser

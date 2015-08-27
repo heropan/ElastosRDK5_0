@@ -215,6 +215,7 @@ Boolean SpeechRecognition::Initialize(
     // If we reach this point, we failed to find a suitable recognition provider.
     return false;
     */
+    return FALSE;
 }
 
 const SpeechRecognition::SpeechRecognition(
@@ -284,6 +285,7 @@ AutoPtr<SpeechRecognition> SpeechRecognition::CreateSpeechRecognition(
     /*
     return new SpeechRecognition(context, nativeSpeechRecognizerImplAndroid);
     */
+    return AutoPtr<SpeechRecognition>(this);
 }
 
 ECode SpeechRecognition::StartRecognition(

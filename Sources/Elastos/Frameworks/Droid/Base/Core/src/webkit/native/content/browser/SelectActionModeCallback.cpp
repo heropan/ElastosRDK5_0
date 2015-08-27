@@ -21,6 +21,7 @@ Boolean SelectActionModeCallback::OnCreateActionMode(
     createActionMenu(mode, menu);
     return true;
     */
+    return FALSE;
 }
 
 Boolean SelectActionModeCallback::OnPrepareActionMode(
@@ -39,6 +40,7 @@ Boolean SelectActionModeCallback::OnPrepareActionMode(
     }
     return false;
     */
+    return FALSE;
 }
 
 Boolean SelectActionModeCallback::OnActionItemClicked(
@@ -69,6 +71,7 @@ Boolean SelectActionModeCallback::OnActionItemClicked(
     }
     return true;
     */
+    return FALSE;
 }
 
 ECode SelectActionModeCallback::OnDestroyActionMode(
@@ -98,6 +101,7 @@ AutoPtr<IContext> SelectActionModeCallback::GetContext()
     /*
     return mContext;
     */
+    return AutoPtr<IContext>(this);
 }
 
 ECode SelectActionModeCallback::CreateActionMenu(
@@ -141,6 +145,7 @@ Boolean SelectActionModeCallback::CanPaste()
             getContext().getSystemService(Context.CLIPBOARD_SERVICE);
     return clipMgr.hasPrimaryClip();
     */
+    return FALSE;
 }
 
 } // namespace Browser

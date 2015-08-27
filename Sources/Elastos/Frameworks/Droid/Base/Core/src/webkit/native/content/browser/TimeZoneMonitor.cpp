@@ -48,6 +48,7 @@ AutoPtr<TimeZoneMonitor> TimeZoneMonitor::GetInstance(
     /*
     return new TimeZoneMonitor(context, nativePtr);
     */
+    return AutoPtr<TimeZoneMonitor>(this);
 }
 
 ECode TimeZoneMonitor::Stop()

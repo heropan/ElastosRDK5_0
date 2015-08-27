@@ -145,6 +145,7 @@ ECode WebContentsObserverAndroid::DetachFromWebContents()
 Int64 WebContentsObserverAndroid::NativeInit(
     /* [in] */ WebContents* webContents)
 {
+    return 0;
 }
 
 ECode WebContentsObserverAndroid::NativeDestroy(

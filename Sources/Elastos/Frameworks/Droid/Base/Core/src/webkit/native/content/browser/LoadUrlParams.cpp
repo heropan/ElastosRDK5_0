@@ -58,6 +58,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
     /*
     return createLoadDataParams(data, mimeType, isBase64Encoded, null);
     */
+    return AutoPtr<LoadUrlParams>(this);
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
@@ -84,6 +85,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParams(
     params.setTransitionType(PageTransitionTypes.PAGE_TRANSITION_TYPED);
     return params;
     */
+    return AutoPtr<LoadUrlParams>(this);
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
@@ -97,6 +99,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
     return createLoadDataParamsWithBaseUrl(data, mimeType, isBase64Encoded,
             baseUrl, historyUrl, null);
     */
+    return AutoPtr<LoadUrlParams>(this);
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
@@ -120,6 +123,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadDataParamsWithBaseUrl(
     }
     return params;
     */
+    return AutoPtr<LoadUrlParams>(this);
 }
 
 AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadHttpPostParams(
@@ -133,6 +137,7 @@ AutoPtr<LoadUrlParams> LoadUrlParams::CreateLoadHttpPostParams(
     params.setPostData(postData);
     return params;
     */
+    return AutoPtr<LoadUrlParams>(this);
 }
 
 ECode LoadUrlParams::SetUrl(
@@ -149,6 +154,7 @@ String LoadUrlParams::GetUrl()
     /*
     return mUrl;
     */
+    return String("");
 }
 
 String LoadUrlParams::GetBaseUrl()
@@ -156,6 +162,7 @@ String LoadUrlParams::GetBaseUrl()
     /*
     return mBaseUrlForDataUrl;
     */
+    return String("");
 }
 
 ECode LoadUrlParams::SetLoadType(
@@ -181,6 +188,7 @@ Int32 LoadUrlParams::GetTransitionType()
     /*
     return mTransitionType;
     */
+    return 0;
 }
 
 ECode LoadUrlParams::SetReferrer(
@@ -198,6 +206,7 @@ AutoPtr<Referrer> LoadUrlParams::GetReferrer()
     /*
     return mReferrer;
     */
+    return AutoPtr<Referrer>(this);
 }
 
 ECode LoadUrlParams::SetExtraHeaders(
@@ -215,6 +224,7 @@ AutoPtr< IMap<String, String> > LoadUrlParams::GetExtraHeaders()
     /*
     return mExtraHeaders;
     */
+    return AutoPtr< IMap<String, String> >(this);
 }
 
 String LoadUrlParams::GetExtraHeadersString()
@@ -222,6 +232,7 @@ String LoadUrlParams::GetExtraHeadersString()
     /*
     return getExtraHeadersString("\n", false);
     */
+    return String("");
 }
 
 String LoadUrlParams::GetExtraHttpRequestHeadersString()
@@ -229,6 +240,7 @@ String LoadUrlParams::GetExtraHttpRequestHeadersString()
     /*
     return getExtraHeadersString("\r\n", true);
     */
+    return String("");
 }
 
 ECode LoadUrlParams::SetVerbatimHeaders(
@@ -245,6 +257,7 @@ String LoadUrlParams::GetVerbatimHeaders()
     /*
     return mVerbatimHeaders;
     */
+    return String("");
 }
 
 ECode LoadUrlParams::SetOverrideUserAgent(
@@ -271,6 +284,7 @@ AutoPtr< ArrayOf<Byte> > LoadUrlParams::GetPostData()
     /*
     return mPostData;
     */
+    return AutoPtr< ArrayOf<Byte> >(this);
 }
 
 ECode LoadUrlParams::SetBaseUrlForDataUrl(
@@ -305,6 +319,7 @@ Int32 LoadUrlParams::GetLoadUrlType()
     /*
     return mLoadUrlType;
     */
+    return 0;
 }
 
 ECode LoadUrlParams::SetIsRendererInitiated(
@@ -321,6 +336,7 @@ Boolean LoadUrlParams::GetIsRendererInitiated()
     /*
     return mIsRendererInitiated;
     */
+    return FALSE;
 }
 
 Boolean LoadUrlParams::IsBaseUrlDataScheme()
@@ -333,6 +349,7 @@ Boolean LoadUrlParams::IsBaseUrlDataScheme()
     }
     return nativeIsDataScheme(mBaseUrlForDataUrl);
     */
+    return FALSE;
 }
 
 String LoadUrlParams::GetExtraHeadersString(
@@ -359,6 +376,7 @@ String LoadUrlParams::GetExtraHeadersString(
 
     return headerBuilder.toString();
     */
+    return String("");
 }
 
 ECode LoadUrlParams::InitializeConstants(
@@ -383,6 +401,7 @@ ECode LoadUrlParams::InitializeConstants(
 Boolean LoadUrlParams::NativeIsDataScheme(
     /* [in] */ String url)
 {
+    return FALSE;
 }
 
 } // namespace Browser

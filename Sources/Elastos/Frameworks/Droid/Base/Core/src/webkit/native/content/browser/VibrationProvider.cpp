@@ -31,6 +31,7 @@ AutoPtr<VibrationProvider> VibrationProvider::Create(
     /*
     return new VibrationProvider(context);
     */
+    return AutoPtr<VibrationProvider>(this);
 }
 
 ECode VibrationProvider::Vibrate(

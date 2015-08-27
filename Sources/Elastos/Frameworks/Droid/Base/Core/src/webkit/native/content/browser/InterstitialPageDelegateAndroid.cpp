@@ -22,6 +22,7 @@ Int64 InterstitialPageDelegateAndroid::GetNative()
     /*
     return mNativePtr;
     */
+    return 0;
 }
 
 ECode InterstitialPageDelegateAndroid::OnProceed()
@@ -67,6 +68,7 @@ ECode InterstitialPageDelegateAndroid::OnNativeDestroyed()
 Int64 InterstitialPageDelegateAndroid::NativeInit(
     /* [in] */ String htmlContent)
 {
+    return 0;
 }
 
 ECode InterstitialPageDelegateAndroid::NativeProceed(

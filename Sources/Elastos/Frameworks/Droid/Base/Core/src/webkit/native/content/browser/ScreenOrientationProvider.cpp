@@ -16,6 +16,7 @@ AutoPtr<ScreenOrientationProvider> ScreenOrientationProvider::Create()
     /*
     return new ScreenOrientationProvider();
     */
+    return AutoPtr<ScreenOrientationProvider>(this);
 }
 
 ECode ScreenOrientationProvider::LockOrientation(
@@ -83,6 +84,7 @@ Int32 ScreenOrientationProvider::GetOrientationFromWebScreenOrientations(
             return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
     }
     */
+    return 0;
 }
 
 } // namespace Browser

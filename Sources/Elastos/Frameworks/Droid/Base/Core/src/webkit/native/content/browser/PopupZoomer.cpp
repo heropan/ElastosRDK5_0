@@ -35,6 +35,7 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnScroll(
     }
     return true;
     */
+    return FALSE;
 }
 
 Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnSingleTapUp(
@@ -43,6 +44,7 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnSingleTapUp(
     /*
     return handleTapOrPress(e, false);
     */
+    return FALSE;
 }
 
 ECode PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::OnLongPress(
@@ -81,6 +83,7 @@ Boolean PopupZoomer::InnerGestureDetectorSimpleOnGestureListener::HandleTapOrPre
     }
     return true;
     */
+    return FALSE;
 }
 
 //=====================================================================
@@ -102,6 +105,7 @@ Float PopupZoomer::ReverseInterpolator::GetInterpolation(
     if (mInterpolator == null) return input;
     return mInterpolator.getInterpolation(input);
     */
+    return 0.0f;
 }
 
 //=====================================================================
@@ -234,6 +238,7 @@ Boolean PopupZoomer::IsShowing()
     /*
     return mShowing || mAnimating;
     */
+    return FALSE;
 }
 
 ECode PopupZoomer::SetLastTouch(
@@ -284,6 +289,7 @@ Boolean PopupZoomer::OnTouchEvent(
     mGestureDetector.onTouchEvent(event);
     return true;
     */
+    return FALSE;
 }
 
 Boolean PopupZoomer::AcceptZeroSizeView()
@@ -291,6 +297,7 @@ Boolean PopupZoomer::AcceptZeroSizeView()
     /*
     return false;
     */
+    return FALSE;
 }
 
 ECode PopupZoomer::OnDraw(
@@ -401,6 +408,7 @@ Float PopupZoomer::GetOverlayCornerRadius(
     }
     return sOverlayCornerRadius;
     */
+    return 0.0f;
 }
 
 AutoPtr<IDrawable> PopupZoomer::GetOverlayDrawable(
@@ -420,6 +428,7 @@ AutoPtr<IDrawable> PopupZoomer::GetOverlayDrawable(
     }
     return sOverlayDrawable;
     */
+    return AutoPtr<IDrawable>(this);
 }
 
 Float PopupZoomer::Constrain(
@@ -430,6 +439,7 @@ Float PopupZoomer::Constrain(
     /*
     return amount < low ? low : (amount > high ? high : amount);
     */
+    return 0.0f;
 }
 
 Int32 PopupZoomer::Constrain(
@@ -440,6 +450,7 @@ Int32 PopupZoomer::Constrain(
     /*
     return amount < low ? low : (amount > high ? high : amount);
     */
+    return 0;
 }
 
 ECode PopupZoomer::Scroll(
@@ -614,6 +625,7 @@ AutoPtr<IPointF> PopupZoomer::ConvertTouchPoint(
     y = mTouch.y + (y - mTouch.y - mPopupScrollY) / mScale;
     return new PointF(x, y);
     */
+    return AutoPtr<IPointF>(this);
 }
 
 Boolean PopupZoomer::IsTouchOutsideArea(
@@ -623,6 +635,7 @@ Boolean PopupZoomer::IsTouchOutsideArea(
     /*
     return !mClipRect.contains(x, y);
     */
+    return FALSE;
 }
 
 } // namespace Browser

@@ -63,6 +63,7 @@ const String PepperPluginManager::GetPlugins(
     }
     return ret.toString();
     */
+    return String("");
 }
 
 String PepperPluginManager::GetPluginDescription(
@@ -110,6 +111,7 @@ String PepperPluginManager::GetPluginDescription(
 
     return plugin.toString();
     */
+    return String("");
 }
 
 } // namespace Browser

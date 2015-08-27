@@ -16,6 +16,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetUrl(
     mUrl = url;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetUserAgent(
@@ -25,6 +26,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetUserAgent(
     mUserAgent = userAgent;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetMimeType(
@@ -34,6 +36,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetMimeType(
     mMimeType = mimeType;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetCookie(
@@ -43,6 +46,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetCookie(
     mCookie = cookie;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetFileName(
@@ -52,6 +56,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetFileName(
     mFileName = fileName;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetDescription(
@@ -61,6 +66,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetDescription(
     mDescription = description;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetFilePath(
@@ -70,6 +76,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetFilePath(
     mFilePath = filePath;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetReferer(
@@ -79,6 +86,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetReferer(
     mReferer = referer;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetContentLength(
@@ -88,6 +96,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetContentLength(
     mContentLength = contentLength;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetIsGETRequest(
@@ -97,6 +106,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetIsGETRequest(
     mIsGETRequest = isGETRequest;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetHasDownloadId(
@@ -106,6 +116,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetHasDownloadId(
     mHasDownloadId = hasDownloadId;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetDownloadId(
@@ -115,6 +126,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetDownloadId(
     mDownloadId = downloadId;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetIsSuccessful(
@@ -124,6 +136,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetIsSuccessful(
     mIsSuccessful = isSuccessful;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetContentDisposition(
@@ -133,6 +146,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetContentDisposition(
     mContentDisposition = contentDisposition;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetPercentCompleted(
@@ -143,6 +157,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetPercentCompleted(
     mPercentCompleted = percentCompleted;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<Builder> DownloadInfo::Builder::SetTimeRemainingInMillis(
@@ -152,6 +167,7 @@ AutoPtr<Builder> DownloadInfo::Builder::SetTimeRemainingInMillis(
     mTimeRemainingInMillis = timeRemainingInMillis;
     return this;
     */
+    return AutoPtr<Builder>(this);
 }
 
 AutoPtr<DownloadInfo> DownloadInfo::Builder::Build()
@@ -159,6 +175,7 @@ AutoPtr<DownloadInfo> DownloadInfo::Builder::Build()
     /*
     return new DownloadInfo(this);
     */
+    return AutoPtr<DownloadInfo>(this);
 }
 
 const AutoPtr<Builder> DownloadInfo::Builder::FromDownloadInfo(
@@ -185,6 +202,7 @@ const AutoPtr<Builder> DownloadInfo::Builder::FromDownloadInfo(
             .setTimeRemainingInMillis(downloadInfo.getTimeRemainingInMillis());
     return builder;
     */
+    return AutoPtr<Builder>(this);
 }
 
 //=====================================================================
@@ -195,6 +213,7 @@ String DownloadInfo::GetUrl()
     /*
     return mUrl;
     */
+    return String("");
 }
 
 String DownloadInfo::GetUserAgent()
@@ -202,6 +221,7 @@ String DownloadInfo::GetUserAgent()
     /*
     return mUserAgent;
     */
+    return String("");
 }
 
 String DownloadInfo::GetMimeType()
@@ -209,6 +229,7 @@ String DownloadInfo::GetMimeType()
     /*
     return mMimeType;
     */
+    return String("");
 }
 
 String DownloadInfo::GetCookie()
@@ -216,6 +237,7 @@ String DownloadInfo::GetCookie()
     /*
     return mCookie;
     */
+    return String("");
 }
 
 String DownloadInfo::GetFileName()
@@ -223,6 +245,7 @@ String DownloadInfo::GetFileName()
     /*
     return mFileName;
     */
+    return String("");
 }
 
 String DownloadInfo::GetDescription()
@@ -230,6 +253,7 @@ String DownloadInfo::GetDescription()
     /*
     return mDescription;
     */
+    return String("");
 }
 
 String DownloadInfo::GetFilePath()
@@ -237,6 +261,7 @@ String DownloadInfo::GetFilePath()
     /*
     return mFilePath;
     */
+    return String("");
 }
 
 String DownloadInfo::GetReferer()
@@ -244,6 +269,7 @@ String DownloadInfo::GetReferer()
     /*
     return mReferer;
     */
+    return String("");
 }
 
 Int64 DownloadInfo::GetContentLength()
@@ -251,6 +277,7 @@ Int64 DownloadInfo::GetContentLength()
     /*
     return mContentLength;
     */
+    return 0;
 }
 
 Boolean DownloadInfo::IsGETRequest()
@@ -258,6 +285,7 @@ Boolean DownloadInfo::IsGETRequest()
     /*
     return mIsGETRequest;
     */
+    return FALSE;
 }
 
 Boolean DownloadInfo::HasDownloadId()
@@ -265,6 +293,7 @@ Boolean DownloadInfo::HasDownloadId()
     /*
     return mHasDownloadId;
     */
+    return FALSE;
 }
 
 Int32 DownloadInfo::GetDownloadId()
@@ -272,6 +301,7 @@ Int32 DownloadInfo::GetDownloadId()
     /*
     return mDownloadId;
     */
+    return 0;
 }
 
 Boolean DownloadInfo::IsSuccessful()
@@ -279,6 +309,7 @@ Boolean DownloadInfo::IsSuccessful()
     /*
     return mIsSuccessful;
     */
+    return FALSE;
 }
 
 String DownloadInfo::GetContentDisposition()
@@ -286,6 +317,7 @@ String DownloadInfo::GetContentDisposition()
     /*
     return mContentDisposition;
     */
+    return String("");
 }
 
 Int32 DownloadInfo::GetPercentCompleted()
@@ -293,6 +325,7 @@ Int32 DownloadInfo::GetPercentCompleted()
     /*
     return mPercentCompleted;
     */
+    return 0;
 }
 
 Int64 DownloadInfo::GetTimeRemainingInMillis()
@@ -300,6 +333,7 @@ Int64 DownloadInfo::GetTimeRemainingInMillis()
     /*
     return mTimeRemainingInMillis;
     */
+    return 0;
 }
 
 DownloadInfo::DownloadInfo(

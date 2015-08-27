@@ -24,6 +24,7 @@ Boolean ViewPositionObserver::InnerViewTreeObserverOnPreDrawListener::OnPreDraw(
     updatePosition();
     return true;
     */
+    return FALSE;
 }
 
 //=====================================================================
@@ -53,6 +54,7 @@ Int32 ViewPositionObserver::GetPositionX()
     updatePosition();
     return mPosition[0];
     */
+    return 0;
 }
 
 Int32 ViewPositionObserver::GetPositionY()
@@ -62,6 +64,7 @@ Int32 ViewPositionObserver::GetPositionY()
     updatePosition();
     return mPosition[1];
     */
+    return 0;
 }
 
 ECode ViewPositionObserver::AddListener(

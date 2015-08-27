@@ -55,6 +55,7 @@ AutoPtr<LocationProviderAdapter> LocationProviderAdapter::Create(
     /*
     return new LocationProviderAdapter(context);
     */
+    return AutoPtr<LocationProviderAdapter>(this);
 }
 
 const Boolean LocationProviderAdapter::Start(
@@ -70,6 +71,7 @@ const Boolean LocationProviderAdapter::Start(
     ThreadUtils.runOnUiThread(task);
     return true;
     */
+    return FALSE;
 }
 
 ECode LocationProviderAdapter::Stop()
@@ -92,6 +94,7 @@ Boolean LocationProviderAdapter::IsRunning()
     assert ThreadUtils.runningOnUiThread();
     return mImpl.isRunning();
     */
+    return FALSE;
 }
 
 ECode LocationProviderAdapter::NewLocationAvailable(

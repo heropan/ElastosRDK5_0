@@ -85,6 +85,7 @@ AutoPtr<IBroadcastReceiver> TracingControllerAndroid::GetBroadcastReceiver()
     /*
     return mBroadcastReceiver;
     */
+    return AutoPtr<IBroadcastReceiver>(this);
 }
 
 AutoPtr<IIntentFilter> TracingControllerAndroid::GetIntentFilter()
@@ -92,6 +93,7 @@ AutoPtr<IIntentFilter> TracingControllerAndroid::GetIntentFilter()
     /*
     return mIntentFilter;
     */
+    return AutoPtr<IIntentFilter>(this);
 }
 
 ECode TracingControllerAndroid::RegisterReceiver(
@@ -119,6 +121,7 @@ Boolean TracingControllerAndroid::IsTracing()
     /*
     return mIsTracing;
     */
+    return FALSE;
 }
 
 String TracingControllerAndroid::GetOutputPath()
@@ -126,6 +129,7 @@ String TracingControllerAndroid::GetOutputPath()
     /*
     return mFilename;
     */
+    return String("");
 }
 
 Boolean TracingControllerAndroid::StartTracing(
@@ -144,6 +148,7 @@ Boolean TracingControllerAndroid::StartTracing(
     }
     return startTracing(filePath, showToasts, categories, recordContinuously);
     */
+    return FALSE;
 }
 
 Boolean TracingControllerAndroid::StartTracing(
@@ -174,6 +179,7 @@ Boolean TracingControllerAndroid::StartTracing(
     mIsTracing = true;
     return true;
     */
+    return FALSE;
 }
 
 ECode TracingControllerAndroid::StopTracing()
@@ -247,6 +253,7 @@ String TracingControllerAndroid::GenerateTracingFilePath()
             dir, "chrome-profile-results-" + formatter.format(new Date()));
     return file.getPath();
     */
+    return String("");
 }
 
 ECode TracingControllerAndroid::InitializeNativeControllerIfNeeded()
@@ -289,6 +296,7 @@ ECode TracingControllerAndroid::ShowToast(
 
 Int64 TracingControllerAndroid::NativeInit()
 {
+    return 0;
 }
 
 ECode TracingControllerAndroid::NativeDestroy(
@@ -302,6 +310,7 @@ Boolean TracingControllerAndroid::NativeStartTracing(
     /* [in] */ String categories,
     /* [in] */ Boolean recordContinuously)
 {
+    return FALSE;
 }
 
 ECode TracingControllerAndroid::NativeStopTracing(
@@ -314,10 +323,12 @@ ECode TracingControllerAndroid::NativeStopTracing(
 Boolean TracingControllerAndroid::NativeGetKnownCategoryGroupsAsync(
     /* [in] */ Int64 nativeTracingControllerAndroid)
 {
+    return FALSE;
 }
 
 String TracingControllerAndroid::NativeGetDefaultCategories()
 {
+    return String("");
 }
 
 } // namespace Browser

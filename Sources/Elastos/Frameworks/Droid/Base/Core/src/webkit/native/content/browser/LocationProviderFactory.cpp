@@ -42,6 +42,7 @@ Boolean LocationProviderFactory::LocationProviderImpl::IsRunning()
     /*
     return mIsRunning;
     */
+    return FALSE;
 }
 
 ECode LocationProviderFactory::LocationProviderImpl::OnLocationChanged(
@@ -174,6 +175,7 @@ Boolean LocationProviderFactory::LocationProviderImpl::UsePassiveOneShotLocation
     }
     return true;
     */
+    return FALSE;
 }
 
 Boolean LocationProviderFactory::LocationProviderImpl::IsOnlyPassiveLocationProviderEnabled()
@@ -183,6 +185,7 @@ Boolean LocationProviderFactory::LocationProviderImpl::IsOnlyPassiveLocationProv
     return providers != null && providers.size() == 1
             && providers.get(0).equals(LocationManager.PASSIVE_PROVIDER);
     */
+    return FALSE;
 }
 
 //=====================================================================
@@ -229,6 +232,7 @@ AutoPtr<LocationProvider> LocationProviderFactory::Get(
     }
     return sProviderImpl;
     */
+    return AutoPtr<LocationProvider>(this);
 }
 
 LocationProviderFactory::LocationProviderFactory()

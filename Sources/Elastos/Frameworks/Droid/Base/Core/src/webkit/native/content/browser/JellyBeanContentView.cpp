@@ -30,6 +30,7 @@ Boolean JellyBeanContentView::PerformAccessibilityAction(
 
     return super.performAccessibilityAction(action, arguments);
     */
+    return FALSE;
 }
 
 AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodeProvider()
@@ -42,6 +43,7 @@ AutoPtr<IAccessibilityNodeProvider> JellyBeanContentView::GetAccessibilityNodePr
         return super.getAccessibilityNodeProvider();
     }
     */
+    return AutoPtr<IAccessibilityNodeProvider>(this);
 }
 
 } // namespace Browser

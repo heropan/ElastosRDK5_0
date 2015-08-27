@@ -25,6 +25,7 @@ Boolean ResourceExtractor::InnerFilenameFilter::Accept(
     /*
     return name.startsWith(TIMESTAMP_PREFIX);
     */
+    return FALSE;
 }
 
 //=====================================================================
@@ -184,6 +185,7 @@ AutoPtr<Void> ResourceExtractor::ExtractTask::DoInBackground(
     prefs.edit().putStringSet(PAK_FILENAMES, filenames).apply();
     return null;
     */
+    return AutoPtr<Void>(this);
 }
 
 String ResourceExtractor::ExtractTask::CheckPakTimestamp(
@@ -233,6 +235,7 @@ String ResourceExtractor::ExtractTask::CheckPakTimestamp(
     // timestamp file is already up-to date.
     return null;
     */
+    return String("");
 }
 
 //=====================================================================
@@ -255,6 +258,7 @@ AutoPtr<ResourceExtractor> ResourceExtractor::Get(
     }
     return sInstance;
     */
+    return AutoPtr<ResourceExtractor>(this);
 }
 
 ECode ResourceExtractor::SetMandatoryPaksToExtract(
@@ -336,6 +340,7 @@ AutoPtr<IFile> ResourceExtractor::GetAppDataDir()
     /*
     return new File(PathUtils.getDataDirectory(mContext));
     */
+    return AutoPtr<IFile>(this);
 }
 
 AutoPtr<IFile> ResourceExtractor::GetOutputDir()
@@ -343,6 +348,7 @@ AutoPtr<IFile> ResourceExtractor::GetOutputDir()
     /*
     return new File(getAppDataDir(), "paks");
     */
+    return AutoPtr<IFile>(this);
 }
 
 ECode ResourceExtractor::DeleteFiles()
@@ -372,6 +378,7 @@ Boolean ResourceExtractor::ShouldSkipPakExtraction()
     assert sMandatoryPaks != null;
     return sMandatoryPaks.length == 1 && "".equals(sMandatoryPaks[0]);
     */
+    return FALSE;
 }
 
 } // namespace Browser
