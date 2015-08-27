@@ -6,13 +6,17 @@
 #include <elastos/utility/logging/Logger.h>
 
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
+using Elastos::Core::CArrayOf;
+using Elastos::Core::IArrayOf;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Os::SomeArgs;
-using Elastos::Droid::Os::HandlerCaller;
-using Elastos::Droid::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Os::EIID_IBinder;
+using Elastos::Droid::Internal::Os::HandlerCaller;
+using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Internal::View::EIID_IIInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_ILocalInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
+using Elastos::Droid::View::InputMethod::EIID_ICompletionInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -27,6 +31,7 @@ const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_KEY_EVENT = 70;
 const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_TRACKBALL_EVENT = 80;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_SELECTION = 90;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_CURSOR = 95;
+const Int32 CIInputMethodSessionWrapper::DO_UPDATE_CURSOR_ANCHOR_INFO = 99;
 const Int32 CIInputMethodSessionWrapper::DO_APP_PRIVATE_COMMAND = 100;
 const Int32 CIInputMethodSessionWrapper::DO_TOGGLE_SOFT_INPUT = 105;
 const Int32 CIInputMethodSessionWrapper::DO_FINISH_SESSION = 110;
@@ -53,7 +58,8 @@ ECode CIInputMethodSessionWrapper::constructor(
     /* [in] */ IInputMethodSession* inputMethodSession)
 {
     mInputMethodSession = inputMethodSession;
-    mCaller = new HandlerCaller(context, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    assert(0 && "TODO");
+    // mCaller = new HandlerCaller(context, THIS_PROBE(IHandlerCallerCallback), FALSE);
     return NOERROR;
 }
 
@@ -82,18 +88,14 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             return NOERROR;
         case DO_DISPLAY_COMPLETIONS: {
             AutoPtr<ArrayOf<ICompletionInfo*> > array;
-            AutoPtr<IObjectContainer> container = IObjectContainer::Probe(obj);
+            AutoPtr<IArrayOf> container = IArrayOf::Probe(obj);
             if (container) {
                 Int32 count;
-                container->GetObjectCount(&count);
+                container->GetLength(&count);
                 array = ArrayOf<ICompletionInfo*>::Alloc(count);
-                AutoPtr<IObjectEnumerator> emu;
-                container->GetObjectEnumerator((IObjectEnumerator**)&emu);
-                Boolean hasNext = FALSE;
-                Int32 i = 0;
-                while(emu->MoveNext(&hasNext), hasNext) {
+                for (Int32 i = 0; i < count; i++) {
                     AutoPtr<IInterface> current;
-                    emu->Current((IInterface**)&current);
+                    container->Get(i, (IInterface**)&current);
                     array->Set(i++, ICompletionInfo::Probe(current));
                 }
             }
@@ -108,7 +110,7 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             mInputMethodSession->UpdateExtractedText(arg1, IExtractedText::Probe(obj));
             return NOERROR;
         case DO_DISPATCH_KEY_EVENT: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IKeyEvent* event = IKeyEvent::Probe(args->mArg1);
             IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
             AutoPtr<ILocalInputMethodSessionEventCallback> cb =
@@ -118,7 +120,7 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_DISPATCH_TRACKBALL_EVENT: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IMotionEvent* event = IMotionEvent::Probe(args->mArg1);
             IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
             AutoPtr<ILocalInputMethodSessionEventCallback> cb =
@@ -128,7 +130,7 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_DISPATCH_GENERIC_MOTION_EVENT: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IMotionEvent* event = IMotionEvent::Probe(args->mArg1);
             IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
             AutoPtr<ILocalInputMethodSessionEventCallback> cb =
@@ -138,7 +140,7 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_UPDATE_SELECTION: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             mInputMethodSession->UpdateSelection(args->mArgi1, args->mArgi2,
                 args->mArgi3, args->mArgi4, args->mArgi5, args->mArgi6);
             args->Recycle();
@@ -148,8 +150,12 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             mInputMethodSession->UpdateCursor(IRect::Probe(obj));
             return NOERROR;
         }
+        case DO_UPDATE_CURSOR_ANCHOR_INFO: {
+            mInputMethodSession->UpdateCursorAnchorInfo(ICursorAnchorInfo::Probe(obj));
+            return NOERROR;
+        }
         case DO_APP_PRIVATE_COMMAND: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             ICharSequence* seq = ICharSequence::Probe(args->mArg1);
             String info;
             seq->ToString(&info);
@@ -185,16 +191,16 @@ ECode CIInputMethodSessionWrapper::FinishInput()
 ECode CIInputMethodSessionWrapper::DisplayCompletions(
     /* [in] */ ArrayOf<ICompletionInfo*>* completions)
 {
-    AutoPtr<IObjectContainer> container;
+    AutoPtr<IArrayOf> container;
     if (completions != NULL) {
-        CObjectContainer::New((IObjectContainer**)&container);
+        CArrayOf::New(EIID_ICompletionInfo, completions->GetLength(), (IArrayOf**)&container);
         for (Int32 i = 0; i < completions->GetLength(); ++i) {
-            container->Add((*completions)[i]);
+            container->Set(i, (*completions)[i]);
         }
     }
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_DISPLAY_COMPLETIONS, container, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_DISPLAY_COMPLETIONS, container, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -203,7 +209,7 @@ ECode CIInputMethodSessionWrapper::UpdateExtractedText(
     /* [in] */ IExtractedText* text)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_UPDATE_EXTRACTED_TEXT, token, text, (IMessage**)&msg);
+    mCaller->ObtainMessageIO(DO_UPDATE_EXTRACTED_TEXT, token, text, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -213,7 +219,7 @@ ECode CIInputMethodSessionWrapper::DispatchKeyEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_DISPATCH_KEY_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessageIOO(DO_DISPATCH_KEY_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -223,7 +229,7 @@ ECode CIInputMethodSessionWrapper::DispatchTrackballEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_DISPATCH_TRACKBALL_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessageIOO(DO_DISPATCH_TRACKBALL_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -233,7 +239,7 @@ ECode CIInputMethodSessionWrapper::DispatchGenericMotionEvent(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_DISPATCH_GENERIC_MOTION_EVENT, seq, event, callback, (IMessage**)&msg);
+    mCaller->ObtainMessageIOO(DO_DISPATCH_GENERIC_MOTION_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -246,7 +252,7 @@ ECode CIInputMethodSessionWrapper::UpdateSelection(
     /* [in] */ Int32 candidatesEnd)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_UPDATE_SELECTION,
+    mCaller->ObtainMessageIIIIII(DO_UPDATE_SELECTION,
         oldSelStart, oldSelEnd, newSelStart, newSelEnd,
         candidatesStart, candidatesEnd, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
@@ -256,7 +262,7 @@ ECode CIInputMethodSessionWrapper::ViewClicked(
     /* [in] */ Boolean focusChanged)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_VIEW_CLICKED, focusChanged ? 1 : 0, (IMessage**)&msg);
+    mCaller->ObtainMessageI(DO_VIEW_CLICKED, focusChanged ? 1 : 0, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -264,7 +270,15 @@ ECode CIInputMethodSessionWrapper::UpdateCursor(
     /* [in] */ IRect* newCursor)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_UPDATE_CURSOR, newCursor, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_UPDATE_CURSOR, newCursor, (IMessage**)&msg);
+    return mCaller->ExecuteOrSendMessage(msg);
+}
+
+ECode CIInputMethodSessionWrapper::UpdateCursorAnchorInfo(
+    /* [in] */ ICursorAnchorInfo* cursorAnchorInfo)
+{
+    AutoPtr<IMessage> msg;
+    mCaller->ObtainMessageO(DO_UPDATE_CURSOR_ANCHOR_INFO, cursorAnchorInfo, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -275,7 +289,7 @@ ECode CIInputMethodSessionWrapper::AppPrivateCommand(
     AutoPtr<ICharSequence> seq;
     CString::New(action, (ICharSequence**)&seq);
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_APP_PRIVATE_COMMAND, seq, data, (IMessage**)&msg);
+    mCaller->ObtainMessageOO(DO_APP_PRIVATE_COMMAND, seq, data, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -284,7 +298,7 @@ ECode CIInputMethodSessionWrapper::ToggleSoftInput(
     /* [in] */ Int32 hideFlags)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_APP_PRIVATE_COMMAND, showFlags, hideFlags, (IMessage**)&msg);
+    mCaller->ObtainMessageII(DO_APP_PRIVATE_COMMAND, showFlags, hideFlags, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

@@ -14,7 +14,6 @@ module
     namespace Internal {
     namespace View {
 
-
     /**
      * Interface from an input method to the application, allowing it to perform
      * edits on the current input field and other interactions with the application.

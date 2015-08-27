@@ -10,6 +10,7 @@ module
     /**
      * @Involve
      * interface Elastos.Droid.View.IViewGroupMarginLayoutParams
+     * interface IViewGroupLayoutParams
      */
     interface ILinearLayoutLayoutParams {
         GetWeight(

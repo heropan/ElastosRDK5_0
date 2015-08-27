@@ -3,18 +3,26 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITLAYOUT_H__
 
 #include "_Elastos_Droid_InputMethodService_CExtractEditLayout.h"
-#include "widget/LinearLayout.h"
+// #include "widget/LinearLayout.h"
 #include "view/ActionMode.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::Widget::LinearLayout;
+using Elastos::Core::Object;
+using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Widget::LinearLayout;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::View::IMenu;
 using Elastos::Droid::View::ActionMode;
 using Elastos::Droid::View::IMenuItem;
 using Elastos::Droid::View::IMenuInflater;
-using Elastos::Droid::View::IViewOnClickListener;;
-using Elastos::Droid::View::Menu::IMenuBuilder;
-using Elastos::Droid::View::Menu::IMenuBuilderCallback;
+using Elastos::Droid::View::IViewOnClickListener;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IActionMode;
+using Elastos::Droid::View::IActionModeCallback;
+using Elastos::Droid::View::Accessibility::IAccessibilityEvent;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilder;
+using Elastos::Droid::Internal::View::Menu::IMenuBuilderCallback;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
@@ -27,12 +35,12 @@ namespace InputMethodService {
  * @hide
  */
 CarClass(CExtractEditLayout)
-    , public ILinearLayout
+    , public /*LinearLayout*/Object
     , public IExtractEditLayout
 {
 protected:
     class ExtractActionMode
-        , public ActionMode
+        : public /*ActionMode*/Object
         , public IMenuBuilderCallback
     {
     public:
@@ -103,21 +111,6 @@ protected:
         //@Override
         CARAPI OnMenuModeChange(
             /* [in] */ IMenuBuilder* menu);
-
-        virtual CARAPI SetTag(
-            /* [in] */ IInterface* tag);
-
-        virtual CARAPI GetTag(
-            /* [out] */ IInterface** tag);
-
-        virtual CARAPI SetTitleOptionalHint(
-            /* [in] */ Boolean titleOptional);
-
-        virtual CARAPI GetTitleOptionalHint(
-            /* [out] */ Boolean* titleOptionalHint);
-
-        virtual CARAPI IsUiFocusable(
-            /* [out] */ Boolean* isUiFocusable);
 
     private:
         AutoPtr<IActionModeCallback> mCallback;

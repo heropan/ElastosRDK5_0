@@ -1,22 +1,16 @@
 
-
 #ifdef DROID_CORE
 #include "inputmethodservice/InputMethodService.h"
 #include "view/ViewTreeObserver.h"
-#include "view/CViewGroupLayoutParams.h"
-#include "view/inputmethod/CEditorInfo.h"
-#include "view/inputmethod/CExtractedTextRequest.h"
-#include "view/inputmethod/CExtractedText.h"
-#include "view/CKeyEvent.h"
-#include "view/animation/AnimationUtils.h"
-#include "widget/CLinearLayoutLayoutParams.h"
-#include "content/res/CConfiguration.h"
-#include "content/res/CResources.h"
-#include "content/res/CResourcesHelper.h"
-#include "graphics/CRegion.h"
-#include "app/CActivityManagerHelper.h"
+// #include "view/CViewGroupLayoutParams.h"
+// #include "view/inputmethod/CExtractedTextRequest.h"
+// #include "view/CKeyEvent.h"
+// #include "view/animation/AnimationUtils.h"
+// #include "content/res/CResourcesHelper.h"
+// #include "graphics/CRegion.h"
+// #include "app/CActivityManagerHelper.h"
 // #include "provider/CSettingsGlobal.h"
-using Elastos::Droid::View::Animation::AnimationUtils;
+// using Elastos::Droid::View::Animation::AnimationUtils;
 
 #else
 #include "inputmethodservice/InputMethodService.h"
@@ -36,13 +30,16 @@ using namespace Elastos::Core;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::R;
-using Elastos::Droid::App::CActivityManagerHelper;
+// using Elastos::Droid::App::CActivityManagerHelper;
 using Elastos::Droid::App::IActivityManagerHelper;
+using Elastos::Droid::Content::IDialogInterface;
 using Elastos::Droid::Content::EIID_IContext;
-using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResourcesHelper;
-using Elastos::Droid::Content::Res::CResourcesHelper;
-using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Pm::IApplicationInfo;
+// using Elastos::Droid::Content::Res::CResourcesHelper;
+// using Elastos::Droid::Graphics::CRegion;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::Os::SystemClock;
 //using Elastos::Droid::Provider::ISettingsGlobal;
 // using Elastos::Droid::Provider::CSettingsGlobal;
@@ -50,8 +47,8 @@ using Elastos::Droid::Text::IInputType;
 using Elastos::Droid::Text::ISpannable;
 using Elastos::Droid::Text::ILayout;
 using Elastos::Droid::Text::Method::IMovementMethod;
-using Elastos::Droid::View::CViewGroupLayoutParams;
-using Elastos::Droid::View::CKeyEvent;
+// using Elastos::Droid::View::CViewGroupLayoutParams;
+// using Elastos::Droid::View::CKeyEvent;
 using Elastos::Droid::View::IKeyCharacterMap;
 using Elastos::Droid::View::IViewTreeObserver;
 using Elastos::Droid::View::IWindowManager;
@@ -63,14 +60,15 @@ using Elastos::Droid::View::EIID_IViewOnClickListener;
 using Elastos::Droid::View::EIID_IOnComputeInternalInsetsListener;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::IAnimationUtils;
-
+using Elastos::Droid::View::IDisplay;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethodSession;
-using Elastos::Droid::View::InputMethod::CExtractedTextRequest;
+// using Elastos::Droid::View::InputMethod::CExtractedTextRequest;
 using Elastos::Droid::View::InputMethod::IExtractedTextRequest;
 using Elastos::Droid::Widget::ILinearLayoutLayoutParams;
-
+using Elastos::Droid::Widget::IEditText;
+using Elastos::Droid::Widget::ITextView;
 
 namespace Elastos {
 namespace Droid {
@@ -153,45 +151,6 @@ InputMethodService::_OnClickListener::_OnClickListener(
     /* [in] */ InputMethodService* host)
     : mHost(host)
 {}
-
-InputMethodService::_OnClickListener::~_OnClickListener()
-{}
-
-PInterface InputMethodService::_OnClickListener::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IViewOnClickListener) {
-        return (IViewOnClickListener*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 InputMethodService::_OnClickListener::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 InputMethodService::_OnClickListener::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode InputMethodService::_OnClickListener::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IViewOnClickListener*)this) {
-        *pIID = EIID_IViewOnClickListener;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return NOERROR;
-}
 
 ECode InputMethodService::_OnClickListener::OnClick(
     /* [in] */ IView* v)
@@ -508,7 +467,8 @@ InputMethodService::Insets::Insets()
     , mVisibleTopInsets(0)
     , mTouchableInsets(0)
 {
-    CRegion::New((IRegion**)&mTouchableRegion);
+    assert(0 && "TODO");
+    // CRegion::New((IRegion**)&mTouchableRegion);
 }
 
 InputMethodService::InputMethodService()
@@ -573,7 +533,8 @@ ECode InputMethodService::EnableHardwareAcceleration(
     }
 
     AutoPtr<IActivityManagerHelper> helper;
-    CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
+    assert(0 && "TODO");
+    // CActivityManagerHelper::AcquireSingleton((IActivityManagerHelper**)&helper);
 
     Boolean tmp = FALSE;
     if (helper->IsHighEndGfx(&tmp), tmp) {
@@ -589,28 +550,29 @@ ECode InputMethodService::EnableHardwareAcceleration(
 ECode InputMethodService::OnCreate()
 {
     AutoPtr<IApplicationInfo> appInfo;
-    GetApplicationInfo((IApplicationInfo**)&appInfo);
+    assert(0 && "TODO");
+    // GetApplicationInfo((IApplicationInfo**)&appInfo);
     Int32 targetSdkVersion = 0;
     appInfo->GetTargetSdkVersion(&targetSdkVersion);
     AutoPtr<IResourcesHelper> helper;
-    CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
+    // CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
     helper->SelectSystemTheme(mTheme,
             targetSdkVersion,
             R::style::Theme_InputMethod,
             R::style::Theme_Holo_InputMethod,
             R::style::Theme_DeviceDefault_InputMethod,
             &mTheme);
-    AbstractInputMethodService::SetTheme(mTheme);
-    AbstractInputMethodService::OnCreate();
-    AbstractInputMethodService::GetSystemService(
-        IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
-    AbstractInputMethodService::GetSystemService(
-        IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
+    // AbstractInputMethodService::SetTheme(mTheme);
+    // AbstractInputMethodService::OnCreate();
+    // AbstractInputMethodService::GetSystemService(
+    //     IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
+    // AbstractInputMethodService::GetSystemService(
+    //     IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
     CSoftInputWindow::New((IContext*)this->Probe(EIID_IContext),
             mTheme, mDispatcherState, (ISoftInputWindow**)&mWindow);
 
     AutoPtr<IWindow> window;
-    mWindow->GetWindow((IWindow**)&window);
+    IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
     if (mHardwareAccelerated) {
         window->AddFlags(IWindowManagerLayoutParams::FLAG_HARDWARE_ACCELERATED);
     }
@@ -644,9 +606,9 @@ void InputMethodService::InitViews()
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::InputMethodService),
             ARRAY_SIZE(R::styleable::InputMethodService));
-    AbstractInputMethodService::ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
+    // AbstractInputMethodService::ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
     mInflater->Inflate(R::layout::input_method, NULL, (IView**)&mRootView);
-    mWindow->SetContentView(mRootView);
+    IDialog::Probe(mWindow)->SetContentView(mRootView);
     AutoPtr<IViewTreeObserver> vto;
     mRootView->GetViewTreeObserver((IViewTreeObserver**)&vto);
     vto->AddOnComputeInternalInsetsListener(mInsetsComputer);
@@ -659,7 +621,7 @@ void InputMethodService::InitViews()
     //         ISettingsGlobal::FANCY_IME_ANIMATIONS, 0, &value);
     // if (value != 0) {
     //     AutoPtr<IWindow> window;
-    //     mWindow->GetWindow((IWindow**)&window);
+    //     IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
     //     assert(window != NULL);
     //     window->SetWindowAnimations(
     //             R::style::Animation_InputMethodFancy);
@@ -678,15 +640,16 @@ void InputMethodService::InitViews()
     mInputView = NULL;
     mIsInputViewShown = FALSE;
 
-    mExtractFrame->SetVisibility(IView::GONE);
+    IView::Probe(mExtractFrame)->SetVisibility(IView::GONE);
     GetCandidatesHiddenVisibility(&mCandidatesVisibility);
-    mCandidatesFrame->SetVisibility(mCandidatesVisibility);
-    mInputFrame->SetVisibility(IView::GONE);
+    IView::Probe(mCandidatesFrame)->SetVisibility(mCandidatesVisibility);
+    IView::Probe(mInputFrame)->SetVisibility(IView::GONE);
 }
 
 ECode InputMethodService::OnDestroy()
 {
-    AbstractInputMethodService::OnDestroy();
+    assert(0 && "TODO");
+    // AbstractInputMethodService::OnDestroy();
     AutoPtr<IViewTreeObserver> observer;
     mRootView->GetViewTreeObserver((IViewTreeObserver**)&observer);
     assert(observer != NULL);
@@ -698,11 +661,11 @@ ECode InputMethodService::OnDestroy()
         // to avoid the race condition between the exit and enter animations
         // when the current IME is being switched to another one.
         AutoPtr<IWindow> window;
-        mWindow->GetWindow((IWindow**)&window);
+        IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
         assert(window != NULL);
         window->SetWindowAnimations(0);
 
-        return mWindow->Dismiss();
+        return IDialogInterface::Probe(mWindow)->Dismiss();
     }
     return NOERROR;
 }
@@ -710,7 +673,8 @@ ECode InputMethodService::OnDestroy()
 ECode InputMethodService::OnConfigurationChanged(
     /* [in] */ IConfiguration* newConfig)
 {
-    AbstractInputMethodService::OnConfigurationChanged(newConfig);
+    assert(0 && "TODO");
+    // AbstractInputMethodService::OnConfigurationChanged(newConfig);
 
     Boolean visible = mWindowVisible;
     Int32 showFlags = mShowInputFlags;
@@ -793,7 +757,7 @@ ECode InputMethodService::GetWindow(
     /* [out] */ IDialog** dialog)
 {
     assert(dialog != NULL);
-    *dialog = mWindow;
+    *dialog = IDialog::Probe(mWindow);
     REFCOUNT_ADD(*dialog);
     return NOERROR;
 }
@@ -818,7 +782,8 @@ ECode InputMethodService::GetMaxWidth(
 {
     assert(maxWidth != NULL);
     AutoPtr<IWindowManager> wm;
-    AbstractInputMethodService::GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
+    assert(0 && "TODO");
+    // AbstractInputMethodService::GetSystemService(IContext::WINDOW_SERVICE, (IInterface**)&wm);
     assert(wm != NULL);
     AutoPtr<IDisplay> display;
     wm->GetDefaultDisplay((IDisplay**)&display);
@@ -891,7 +856,7 @@ ECode InputMethodService::UpdateFullscreenMode()
         Initialize();
         assert(mFullscreenArea != NULL);
         AutoPtr<IViewGroupLayoutParams> _lp;
-        mFullscreenArea->GetLayoutParams((IViewGroupLayoutParams**)&_lp);
+        IView::Probe(mFullscreenArea)->GetLayoutParams((IViewGroupLayoutParams**)&_lp);
         ILinearLayoutLayoutParams* lp = ILinearLayoutLayoutParams::Probe(_lp.Get());
         assert(lp != NULL);
         if (isFullscreen) {
@@ -900,21 +865,21 @@ ECode InputMethodService::UpdateFullscreenMode()
             mThemeAttrs->GetDrawable(
                 R::styleable::InputMethodService_imeFullscreenBackground,
                 (IDrawable**)&drawable);
-            mFullscreenArea->SetBackgroundDrawable(drawable);
-            lp->SetHeight(0);
+            IView::Probe(mFullscreenArea)->SetBackgroundDrawable(drawable);
+            IViewGroupLayoutParams::Probe(lp)->SetHeight(0);
             lp->SetWeight(1);
         }
         else {
-            mFullscreenArea->SetBackgroundDrawable(NULL);
-            lp->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
+            IView::Probe(mFullscreenArea)->SetBackgroundDrawable(NULL);
+            IViewGroupLayoutParams::Probe(lp)->SetHeight(IViewGroupLayoutParams::WRAP_CONTENT);
             lp->SetWeight(0);
         }
         AutoPtr<IViewParent> parent;
-        mFullscreenArea->GetParent((IViewParent**)&parent);
+        IView::Probe(mFullscreenArea)->GetParent((IViewParent**)&parent);
         assert(parent != NULL);
         AutoPtr<IViewManager> viewM = IViewManager::Probe(parent);
         assert(viewM != NULL);
-        viewM->UpdateViewLayout(mFullscreenArea, lp);
+        viewM->UpdateViewLayout(IView::Probe(mFullscreenArea), IViewGroupLayoutParams::Probe(lp));
         if (isFullscreen) {
             if (mExtractView == NULL) {
                 AutoPtr<IView> v;
@@ -930,7 +895,7 @@ ECode InputMethodService::UpdateFullscreenMode()
 
     if (changed) {
         AutoPtr<IWindow> window;
-        mWindow->GetWindow((IWindow**)&window);
+        IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
         OnConfigureWindow(window, isFullscreen, !mShowInputRequested);
         mLastShowInputRequested = mShowInputRequested;
     }
@@ -944,12 +909,12 @@ ECode InputMethodService::OnConfigureWindow(
 {
     assert(mWindow != NULL);
     AutoPtr<IWindow> window;
-    mWindow->GetWindow((IWindow**)&window);
+    IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
     assert(window != NULL);
     AutoPtr<IWindowManagerLayoutParams> wmlp;
     window->GetAttributes((IWindowManagerLayoutParams**)&wmlp);
     Int32 currentHeight;
-    wmlp->GetHeight(&currentHeight);
+    IViewGroupLayoutParams::Probe(wmlp)->GetHeight(&currentHeight);
     Int32 newHeight = isFullscreen ? IViewGroupLayoutParams::MATCH_PARENT : IViewGroupLayoutParams::WRAP_CONTENT;
     if (mIsInputViewShown && currentHeight != newHeight) {
         Slogger::W(TAG, "Window size has been changed. This may cause jankiness of resizing window: %d -> %d"
@@ -980,7 +945,8 @@ ECode InputMethodService::OnEvaluateFullscreenMode(
 {
     assert(screenMode != NULL);
     AutoPtr<IResources> res;
-    AbstractInputMethodService::GetResources((IResources**)&res);
+    assert(0 && "TODO");
+    // AbstractInputMethodService::GetResources((IResources**)&res);
     assert(res != NULL);
     AutoPtr<IConfiguration> config;
     res->GetConfiguration((IConfiguration**)&config);
@@ -1025,15 +991,15 @@ void InputMethodService::UpdateExtractFrameVisibility()
     Boolean fullscreen = FALSE;
     if (IsFullscreenMode(&fullscreen), fullscreen) {
         vis = mExtractViewHidden ? IView::INVISIBLE : IView::VISIBLE;
-        mExtractFrame->SetVisibility(IView::VISIBLE);
+        IView::Probe(mExtractFrame)->SetVisibility(IView::VISIBLE);
     }
     else {
         vis = IView::VISIBLE;
-        mExtractFrame->SetVisibility(IView::GONE);
+        IView::Probe(mExtractFrame)->SetVisibility(IView::GONE);
     }
     UpdateCandidatesVisibility(mCandidatesVisibility == IView::VISIBLE);
     Int32 tmpVis = 0;
-    mFullscreenArea->GetVisibility(&tmpVis);
+    IView::Probe(mFullscreenArea)->GetVisibility(&tmpVis);
     if (mWindowWasVisible && tmpVis != vis) {
         Int32 animRes = 0;
         mThemeAttrs->GetResourceId(vis == IView::VISIBLE
@@ -1043,8 +1009,9 @@ void InputMethodService::UpdateExtractFrameVisibility()
         if (animRes != 0) {
             AutoPtr<IAnimation> ani;
 #ifdef DROID_CORE
-            AnimationUtils::LoadAnimation((IContext*)this->Probe(EIID_IContext),
-                    animRes, (IAnimation**)&ani);
+            assert(0 && "TODO");
+            // AnimationUtils::LoadAnimation((IContext*)this->Probe(EIID_IContext),
+            //         animRes, (IAnimation**)&ani);
 #else
             AutoPtr<IAnimationUtils> animationUtils;
             CAnimationUtils::AcquireSingleton((IAnimationUtils**)&animationUtils);
@@ -1052,18 +1019,18 @@ void InputMethodService::UpdateExtractFrameVisibility()
             animationUtils->LoadAnimation((IContext*)this->Probe(EIID_IContext),
                     animRes, (IAnimation**)&ani);
 #endif
-            mFullscreenArea->StartAnimation(ani);
+            IView::Probe(mFullscreenArea)->StartAnimation(ani);
         }
     }
-    mFullscreenArea->SetVisibility(vis);
+    IView::Probe(mFullscreenArea)->SetVisibility(vis);
 }
 
 ECode InputMethodService::OnComputeInsets(
     /* [in] */ Insets* outInsets)
 {
     Int32 vis = 0;
-    if (mInputFrame->GetVisibility(&vis), vis == IView::VISIBLE) {
-        mInputFrame->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
+    if (IView::Probe(mInputFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
+        IView::Probe(mInputFrame)->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
     }
     else {
         AutoPtr<IDialog> dlg;
@@ -1094,8 +1061,8 @@ ECode InputMethodService::OnComputeInsets(
     else {
         outInsets->mContentTopInsets = mTmpLocation[1];
     }
-    if (mCandidatesFrame->GetVisibility(&vis), vis == IView::VISIBLE) {
-        mCandidatesFrame->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
+    if (IView::Probe(mCandidatesFrame)->GetVisibility(&vis), vis == IView::VISIBLE) {
+        IView::Probe(mCandidatesFrame)->GetLocationInWindow(&mTmpLocation[0], &mTmpLocation[1]);
     }
     outInsets->mVisibleTopInsets = mTmpLocation[1];
     outInsets->mTouchableInsets = Insets::TOUCHABLE_INSETS_VISIBLE;
@@ -1110,7 +1077,7 @@ ECode InputMethodService::UpdateInputViewShown()
     isShown = mShowInputRequested && isShown;
     if (mIsInputViewShown != isShown && mWindowVisible) {
         mIsInputViewShown = isShown;
-        mInputFrame->SetVisibility(isShown ? IView::VISIBLE : IView::GONE);
+        IView::Probe(mInputFrame)->SetVisibility(isShown ? IView::VISIBLE : IView::GONE);
         if (mInputView == NULL) {
             Initialize();
             AutoPtr<IView> v;
@@ -1188,7 +1155,7 @@ void InputMethodService::UpdateCandidatesVisibility(
         GetCandidatesHiddenVisibility(&vis);
     }
     if (mCandidatesVisibility != vis) {
-        mCandidatesFrame->SetVisibility(vis);
+        IView::Probe(mCandidatesFrame)->SetVisibility(vis);
         mCandidatesVisibility = vis;
     }
 }
@@ -1208,7 +1175,8 @@ ECode InputMethodService::ShowStatusIcon(
 {
     mStatusIcon = iconResId;
     String packageName;
-    GetPackageName(&packageName);
+    assert(0 && "TODO");
+    // GetPackageName(&packageName);
     return mImm->ShowStatusIcon(mToken, packageName, iconResId);
 }
 
@@ -1227,12 +1195,13 @@ ECode InputMethodService::SwitchInputMethod(
 ECode InputMethodService::SetExtractView(
     /* [in] */ IView* view)
 {
-    mExtractFrame->RemoveAllViews();
+    IViewGroup::Probe(mExtractFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    CViewGroupLayoutParams::New(
-        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
-        (IViewGroupLayoutParams**)&params);
-    mExtractFrame->AddView(view, params.Get());
+    assert(0 && "TODO");
+    // CViewGroupLayoutParams::New(
+    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::MATCH_PARENT,
+    //     (IViewGroupLayoutParams**)&params);
+    IViewGroup::Probe(mExtractFrame)->AddView(view, params.Get());
     mExtractView = view;
 
     mExtractEditText = NULL;
@@ -1264,12 +1233,13 @@ ECode InputMethodService::SetExtractView(
 ECode InputMethodService::SetCandidatesView(
     /* [in] */ IView* view)
 {
-    mCandidatesFrame->RemoveAllViews();
+    IViewGroup::Probe(mCandidatesFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    CViewGroupLayoutParams::New(
-        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
-        (IViewGroupLayoutParams**)&params);
-    return mCandidatesFrame->AddView(view, params.Get());
+    assert(0 && "TODO");
+    // CViewGroupLayoutParams::New(
+    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
+    //     (IViewGroupLayoutParams**)&params);
+    return IViewGroup::Probe(mCandidatesFrame)->AddView(view, params.Get());
 }
 
 /**
@@ -1281,12 +1251,13 @@ ECode InputMethodService::SetCandidatesView(
 ECode InputMethodService::SetInputView(
     /* [in] */ IView* view)
 {
-    mInputFrame->RemoveAllViews();
+    IViewGroup::Probe(mInputFrame)->RemoveAllViews();
     AutoPtr<IViewGroupLayoutParams> params;
-    CViewGroupLayoutParams::New(
-        IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
-        (IViewGroupLayoutParams**)&params);
-    mInputFrame->AddView(view, params.Get());
+    assert(0 && "TODO");
+    // CViewGroupLayoutParams::New(
+    //     IViewGroupLayoutParams::MATCH_PARENT, IViewGroupLayoutParams::WRAP_CONTENT,
+    //     (IViewGroupLayoutParams**)&params);
+    IViewGroup::Probe(mInputFrame)->AddView(view, params.Get());
     mInputView = view;
     return NOERROR;
 }
@@ -1393,7 +1364,8 @@ ECode InputMethodService::OnShowInputRequested(
             return NOERROR;
         }
         AutoPtr<IResources> res;
-        AbstractInputMethodService::GetResources((IResources**)&res);
+        assert(0 && "TODO");
+        // AbstractInputMethodService::GetResources((IResources**)&res);
         AutoPtr<IConfiguration> config;
         res->GetConfiguration((IConfiguration**)&config);
         Int32 keyboard;
@@ -1491,7 +1463,7 @@ void InputMethodService::ShowWindowInner(
     if (!wasVisible) {
         // if (DEBUG) Logger::V(TAG, "showWindow: showing!");
         OnWindowShown();
-        mWindow->Show();
+        IDialog::Probe(mWindow)->Show();
     }
 }
 
@@ -1518,7 +1490,7 @@ ECode InputMethodService::HideWindow()
 {
     FinishViews();
     if (mWindowVisible) {
-        mWindow->Hide();
+        IDialog::Probe(mWindow)->Hide();
         mWindowVisible = FALSE;
         OnWindowHidden();
         mWindowWasVisible = FALSE;
@@ -1644,7 +1616,7 @@ ECode InputMethodService::OnUpdateExtractedText(
     if (text != NULL) {
         if (mExtractEditText != NULL) {
             mExtractedText = text;
-            return mExtractEditText->SetExtractedText(text);
+            return ITextView::Probe(mExtractEditText)->SetExtractedText(text);
         }
     }
     return NOERROR;
@@ -1668,7 +1640,7 @@ ECode InputMethodService::OnUpdateSelection(
         newSelEnd -= off;
         Int32 len = 0;
         AutoPtr<ICharSequence> text;
-        mExtractEditText->GetText((ICharSequence**)&text);
+        ITextView::Probe(mExtractEditText)->GetText((ICharSequence**)&text);
         assert(text != NULL);
         text->GetLength(&len);
         if (newSelStart < 0) {
@@ -1684,7 +1656,7 @@ ECode InputMethodService::OnUpdateSelection(
             newSelEnd = len;
         }
 
-        mExtractEditText->SetSelection(newSelStart, newSelEnd);
+        IEditText::Probe(mExtractEditText)->SetSelection(newSelStart, newSelEnd);
         mExtractEditText->FinishInternalChanges();
     }
     return NOERROR;
@@ -1890,17 +1862,17 @@ Boolean InputMethodService::DoMovementKey(
         // the extract edit text, but should NOT cause focus to move
         // to other fields.
         AutoPtr<IMovementMethod> movement;
-        mExtractEditText->GetMovementMethod((IMovementMethod**)&movement);
+        ITextView::Probe(mExtractEditText)->GetMovementMethod((IMovementMethod**)&movement);
         AutoPtr<ILayout> layout;
-        mExtractEditText->GetLayout((ILayout**)&layout);
+        ITextView::Probe(mExtractEditText)->GetLayout((ILayout**)&layout);
         if (movement != NULL && layout != NULL) {
             // We want our own movement method to handle the key, so the
             // cursor will properly move in our own word wrapping.
             AutoPtr<ICharSequence> text;
-            mExtractEditText->GetText((ICharSequence**)&text);
+            ITextView::Probe(mExtractEditText)->GetText((ICharSequence**)&text);
             Boolean keyRet = FALSE;
             if (count == MOVEMENT_DOWN) {
-                movement->OnKeyDown(mExtractEditText, ISpannable::Probe(text),
+                movement->OnKeyDown(ITextView::Probe(mExtractEditText), ISpannable::Probe(text),
                     keyCode, event, &keyRet);
                 if (keyRet) {
                     ReportExtractedMovement(keyCode, 1);
@@ -1908,14 +1880,14 @@ Boolean InputMethodService::DoMovementKey(
                 }
             }
             else if (count == MOVEMENT_UP) {
-                movement->OnKeyUp(mExtractEditText, ISpannable::Probe(text),
+                movement->OnKeyUp(ITextView::Probe(mExtractEditText), ISpannable::Probe(text),
                     keyCode, event, &keyRet);
                 if (keyRet) {
                     return TRUE;
                 }
             }
             else {
-                movement->OnKeyOther(mExtractEditText, ISpannable::Probe(text),
+                movement->OnKeyOther(ITextView::Probe(mExtractEditText), ISpannable::Probe(text),
                     event, &keyRet);
                 if (keyRet) {
                     ReportExtractedMovement(keyCode, count);
@@ -1923,18 +1895,18 @@ Boolean InputMethodService::DoMovementKey(
                 else {
                     AutoPtr<IKeyEvent> down;
                     // CKeyEvent::ChangeAction(event, KeyEvent_ACTION_DOWN, (IKeyEvent**)&down);
-                    movement->OnKeyDown(mExtractEditText, ISpannable::Probe(text),
+                    movement->OnKeyDown(ITextView::Probe(mExtractEditText), ISpannable::Probe(text),
                             keyCode, down, &keyRet);
                     if (keyRet) {
                         AutoPtr<IKeyEvent> up;
                         // CKeyEvent::ChangeAction(event, KeyEvent_ACTION_UP, (IKeyEvent**)&up);
-                        movement->OnKeyUp(mExtractEditText, ISpannable::Probe(text),
+                        movement->OnKeyUp(ITextView::Probe(mExtractEditText), ISpannable::Probe(text),
                                 keyCode, up, &keyRet);
                         while (--count > 0) {
-                            movement->OnKeyDown(mExtractEditText,
+                            movement->OnKeyDown(ITextView::Probe(mExtractEditText),
                                     ISpannable::Probe(text), keyCode, down, &keyRet);
 
-                            movement->OnKeyUp(mExtractEditText,
+                            movement->OnKeyUp(ITextView::Probe(mExtractEditText),
                                     ISpannable::Probe(text), keyCode, up, &keyRet);
                         }
                         ReportExtractedMovement(keyCode, count);
@@ -1964,18 +1936,19 @@ ECode InputMethodService::SendDownUpKeyEvents(
     if (ic == NULL) return NOERROR;
     long eventTime = SystemClock::GetUptimeMillis();
     AutoPtr<IKeyEvent> event;
-    CKeyEvent::New(eventTime, eventTime,
-            IKeyEvent::ACTION_DOWN, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
-            (IKeyEvent**)&event);
+    assert(0 && "TODO");
+    // CKeyEvent::New(eventTime, eventTime,
+    //         IKeyEvent::ACTION_DOWN, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
+    //         (IKeyEvent**)&event);
     Boolean tmpState = FALSE;
     ic->SendKeyEvent(event, &tmpState);
 
     event = NULL;
-    CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
-            IKeyEvent::ACTION_UP, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
-            IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
-            (IKeyEvent**)&event);
+    // CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
+    //         IKeyEvent::ACTION_UP, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
+    //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
+    //         (IKeyEvent**)&event);
     return ic->SendKeyEvent(event, &tmpState);
 }
 
@@ -2163,31 +2136,32 @@ ECode InputMethodService::GetTextForImeAction(
     /* [out] */ ICharSequence** text)
 {
     assert(text != NULL);
+    assert(0 && "TODO");
     switch (imeOptions & IEditorInfo::IME_MASK_ACTION) {
         case IEditorInfo::IME_ACTION_NONE:
             *text = NULL;
             return NOERROR;
-        case IEditorInfo::IME_ACTION_GO:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_go, text);
-        case IEditorInfo::IME_ACTION_SEARCH:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_search, text);
-        case IEditorInfo::IME_ACTION_SEND:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_send, text);
-        case IEditorInfo::IME_ACTION_NEXT:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_next, text);
-        case IEditorInfo::IME_ACTION_DONE:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_done, text);
-        case IEditorInfo::IME_ACTION_PREVIOUS:
-            return AbstractInputMethodService::GetText(
-                R::string::ime_action_previous, text);
-        default:
-            return AbstractInputMethodService::GetText(
-                    R::string::ime_action_default, text);
+        // case IEditorInfo::IME_ACTION_GO:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_go, text);
+        // case IEditorInfo::IME_ACTION_SEARCH:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_search, text);
+        // case IEditorInfo::IME_ACTION_SEND:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_send, text);
+        // case IEditorInfo::IME_ACTION_NEXT:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_next, text);
+        // case IEditorInfo::IME_ACTION_DONE:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_done, text);
+        // case IEditorInfo::IME_ACTION_PREVIOUS:
+        //     return AbstractInputMethodService::GetText(
+        //         R::string::ime_action_previous, text);
+        // default:
+        //     return AbstractInputMethodService::GetText(
+        //             R::string::ime_action_default, text);
     }
 }
 
@@ -2228,24 +2202,24 @@ ECode InputMethodService::OnUpdateExtractingViews(
             (imeOptions & IEditorInfo::IME_FLAG_NO_ACCESSORY_ACTION) == 0 &&
             inputType != IInputType::TYPE_NULL);
     if (hasAction) {
-        mExtractAccessories->SetVisibility(IView::VISIBLE);
+        IView::Probe(mExtractAccessories)->SetVisibility(IView::VISIBLE);
         if (mExtractAction != NULL) {
             if (actionLabel != NULL) {
-                mExtractAction->SetText(actionLabel);
+                ITextView::Probe(mExtractAction)->SetText(actionLabel);
             }
             else {
                 AutoPtr<ICharSequence> text;
                 GetTextForImeAction(imeOptions, (ICharSequence**)&text);
-                mExtractAction->SetText(text);
+                ITextView::Probe(mExtractAction)->SetText(text);
             }
 
-            mExtractAction->SetOnClickListener(mActionClickListener);
+            IView::Probe(mExtractAction)->SetOnClickListener(mActionClickListener);
         }
     }
     else {
-        mExtractAccessories->SetVisibility(IView::GONE);
+        IView::Probe(mExtractAccessories)->SetVisibility(IView::GONE);
         if (mExtractAction != NULL) {
-            mExtractAction->SetOnClickListener(NULL);
+            IView::Probe(mExtractAction)->SetOnClickListener(NULL);
         }
     }
     return NOERROR;
@@ -2271,7 +2245,8 @@ void InputMethodService::StartExtractingText(
     if (mExtractEditText != NULL && tmpState && fullscreen) {
         mExtractedToken++;
         AutoPtr<IExtractedTextRequest> req;
-        CExtractedTextRequest::New((IExtractedTextRequest**)&req);
+        assert(0 && "TODO");
+        // CExtractedTextRequest::New((IExtractedTextRequest**)&req);
         req->SetToken(mExtractedToken);
         req->SetFlags(IInputConnection::GET_TEXT_WITH_STYLES);
         req->SetHintMaxLines(10);
@@ -2305,19 +2280,19 @@ void InputMethodService::StartExtractingText(
                 inputType |= IInputType::TYPE_TEXT_FLAG_MULTI_LINE;
             }
         }
-        mExtractEditText->SetInputType(inputType);
+        ITextView::Probe(mExtractEditText)->SetInputType(inputType);
         AutoPtr<ICharSequence> hintText;
         ei->GetHintText((ICharSequence**)&hintText);
-        mExtractEditText->SetHint(hintText);
+        ITextView::Probe(mExtractEditText)->SetHint(hintText);
         if (mExtractedText != NULL) {
-            mExtractEditText->SetEnabled(TRUE);
-            mExtractEditText->SetExtractedText(mExtractedText);
+            IView::Probe(mExtractEditText)->SetEnabled(TRUE);
+            ITextView::Probe(mExtractEditText)->SetExtractedText(mExtractedText);
         }
         else {
-            mExtractEditText->SetEnabled(FALSE);
+            IView::Probe(mExtractEditText)->SetEnabled(FALSE);
             AutoPtr<ICharSequence> tmpText;
             CString::New(String(""), (ICharSequence**)&tmpText);
-            mExtractEditText->SetText(tmpText);
+            ITextView::Probe(mExtractEditText)->SetText(tmpText);
         }
         // } finally {
         //     eet.finishInternalChanges();
@@ -2344,35 +2319,37 @@ void InputMethodService::OnCurrentInputMethodSubtypeChanged(
     // }
 }
 
-ECode InputMethodService::GetBaseContext(
-    /* [out] */ IContext** context)
-{
-    return AbstractInputMethodService::GetBaseContext(context);
-}
+// ECode InputMethodService::GetBaseContext(
+//     /* [out] */ IContext** context)
+// {
+//     assert(0 && "TODO");
+//     return NOERROR;
+//     // return AbstractInputMethodService::GetBaseContext(context);
+// }
 
-ECode InputMethodService::Attach(
-    /* [in] */ IContext* ctx,
-    /* [in] */ IActivityThread* apartment,
-    /* [in] */ const String& className,
-    /* [in] */ IBinder* token,
-    /* [in] */ IApplication* application,
-    /* [in] */ IIActivityManager* activityManager)
-{
-    return AbstractInputMethodService::Attach(ctx, apartment, className,
-            token, application, activityManager);
-}
+// ECode InputMethodService::Attach(
+//     /* [in] */ IContext* ctx,
+//     /* [in] */ IActivityThread* apartment,
+//     /* [in] */ const String& className,
+//     /* [in] */ IBinder* token,
+//     /* [in] */ IApplication* application,
+//     /* [in] */ IIActivityManager* activityManager)
+// {
+//     return AbstractInputMethodService::Attach(ctx, apartment, className,
+//             token, application, activityManager);
+// }
 
-ECode InputMethodService::GetClassName(
-    /* [out] */ String* className)
-{
-    return AbstractInputMethodService::GetClassName(className);
-}
+// ECode InputMethodService::GetClassName(
+//     /* [out] */ String* className)
+// {
+//     return AbstractInputMethodService::GetClassName(className);
+// }
 
-ECode InputMethodService::GetKeyDispatcherState(
-    /* [out] */ IDispatcherState** dispatcherState)
-{
-    return AbstractInputMethodService::GetKeyDispatcherState(dispatcherState);
-}
+// ECode InputMethodService::GetKeyDispatcherState(
+//     /* [out] */ IDispatcherState** dispatcherState)
+// {
+//     return AbstractInputMethodService::GetKeyDispatcherState(dispatcherState);
+// }
 
 } // namespace InputMethodService
 } // namespace Droid

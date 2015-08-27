@@ -1,5 +1,5 @@
 
-#ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CKEYBOARDVIEW_H__
 
 #include "_Elastos_Droid_InputMethodService_CKeyboardView.h"
@@ -27,8 +27,6 @@ CarClass(CKeyboardView), public KeyboardView
 public:
     CAR_OBJECT_DECL();
 
-    CAR_INTERFACE_DECL();
-
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs);
@@ -37,9 +35,6 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 };
 
 } // namespace InputMethodService

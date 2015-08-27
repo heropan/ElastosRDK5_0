@@ -20,7 +20,7 @@ namespace InputMethodService {
 class AbstractInputMethodImpl
     : public Object
     , public IAbstractInputMethodImpl
-    , public IWeakReferenceSource
+    , public IInputMethod
 {
 public:
     CAR_INTERFACE_DECL();

@@ -4,12 +4,17 @@
 
 #include "_Elastos_Droid_InputMethodService_CIInputMethodSessionWrapper.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Core::ICharSequence;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBundle;
-using Elastos::Droid::Os::IHandlerCaller;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
+using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::View::IInputMethodCallback;
 using Elastos::Droid::View::IKeyEvent;
@@ -18,6 +23,7 @@ using Elastos::Droid::View::InputMethod::ILocalInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
+using Elastos::Droid::View::InputMethod::ICursorAnchorInfo;
 
 namespace Elastos {
 namespace Droid {
@@ -95,6 +101,10 @@ public:
     CARAPI UpdateCursor(
         /* [in] */ IRect* newCursor);
 
+    // @Override
+    CARAPI UpdateCursorAnchorInfo(
+        /* [in] */ ICursorAnchorInfo* cursorAnchorInfo);
+
     CARAPI AppPrivateCommand(
         /* [in] */ const String& action,
         /* [in] */ IBundle* data);
@@ -132,6 +142,7 @@ private:
     static const Int32 DO_DISPATCH_GENERIC_MOTION_EVENT;
     static const Int32 DO_UPDATE_SELECTION;
     static const Int32 DO_UPDATE_CURSOR;
+    static const Int32 DO_UPDATE_CURSOR_ANCHOR_INFO;
     static const Int32 DO_APP_PRIVATE_COMMAND;
     static const Int32 DO_TOGGLE_SOFT_INPUT;
     static const Int32 DO_FINISH_SESSION;

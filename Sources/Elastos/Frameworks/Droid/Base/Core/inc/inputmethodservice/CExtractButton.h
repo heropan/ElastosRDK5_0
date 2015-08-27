@@ -1,12 +1,15 @@
 
-#ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTBUTTON_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTBUTTON_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTBUTTON_H__
 
-//#include "ext/frameworkext.h"
 #include "_Elastos_Droid_InputMethodService_CExtractButton.h"
-#include "widget/Button.h"
+#include <elastos/core/Object.h>
+// #include "widget/Button.h"
 
-using Elastos::Droid::Widget::Button;
+using Elastos::Core::Object;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
+// using Elastos::Droid::Widget::Button;
 
 namespace Elastos {
 namespace Droid {
@@ -15,17 +18,14 @@ namespace InputMethodService {
 /**
  * Specialization of {@link Button} that ignores the window not being focused.
  */
-CarClass(CExtractButton), public Button
+CarClass(CExtractButton)
+    /*, public Button*/
+    , public Object //TODO
 {
 public:
     CAR_OBJECT_DECL();
 
-    CAR_INTERFACE_DECL();
-
     CExtractButton();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -38,9 +38,6 @@ public:
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
         /* [in] */ Int32 defStyle);
-
-    CARAPI OnPreDraw(
-        /* [out] */ Boolean* result);
 
     /**
      * Pretend like the window this view is in always has focus, so it will

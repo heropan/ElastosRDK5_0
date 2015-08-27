@@ -3,24 +3,37 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
 #include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
-#include "app/Dialog.h"
+// #include "app/Dialog.h"
+#include <elastos/core/Object.h>
 
-
-
-
-using Elastos::Droid::App::Dialog;
+using Elastos::Core::Object;
+// using Elastos::Droid::App::Dialog;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
-
-class SoftInputWindow : public Dialog
+/**
+ * A SoftInputWindow is a Dialog that is intended to be used for a top-level input
+ * method window.  It will be displayed along the edge of the screen, moving
+ * the application user interface away from it so that the focused item is
+ * always visible.
+ */
+CarClass(CSoftInputWindow)
+    , public /*Dialog*/Object
+    , public ISoftInputWindow
 {
 public:
-    SoftInputWindow();
+    CAR_OBJECT_DECL();
+
+    CAR_INTERFACE_DECL();
+
+    CSoftInputWindow();
 
     CARAPI SetToken(
         /* [in] */ IBinder* token);
@@ -29,8 +42,9 @@ public:
     CARAPI OnWindowFocusChanged(
         /* [in] */ Boolean hasFocus);
 
-    CARAPI_(Boolean) DispatchTouchEvent(
-        /* [in] */ IMotionEvent* ev);
+    CARAPI DispatchTouchEvent(
+        /* [in] */ IMotionEvent* ev,
+        /* [out] */ Boolean* result);
 
     /**
      * Get the size of the DockWindow.
@@ -67,7 +81,6 @@ public:
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
 
-protected:
     /**
      * Create a DockWindow that uses a custom style.
      *
@@ -80,7 +93,7 @@ protected:
      *        using styles. This theme is applied on top of the current theme in
      *        <var>context</var>. If 0, the default dialog theme will be used.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Int32 theme,
         /* [in] */ IDispatcherState* dispatcherState);
@@ -88,48 +101,9 @@ protected:
 private:
     CARAPI_(void) InitDockWindow();
 
-protected:
+private:
     AutoPtr<IDispatcherState> mDispatcherState;
     AutoPtr<IRect> mBounds;
-};
-
-/**
- * A SoftInputWindow is a Dialog that is intended to be used for a top-level input
- * method window.  It will be displayed along the edge of the screen, moving
- * the application user interface away from it so that the focused item is
- * always visible.
- */
-CarClass(CSoftInputWindow), public SoftInputWindow
-{
-public:
-    IDIALOG_METHODS_DECL();
-    IWINDOWCALLBACK_METHODS_DECL();
-    IKEYEVENTCALLBACK_METHODS_DECL();
-
-    CARAPI constructor(
-        /* [in] */ IContext* context,
-        /* [in] */ Int32 theme,
-        /* [in] */ IDispatcherState* dispatcherState);
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-
-    CARAPI SetToken(
-        /* [in] */ IBinder* token);
-
-    CARAPI GetSize(
-        /* [out] */ Int32* size);
-
-    CARAPI SetSize(
-        /* [in] */ Int32 size);
-
-    CARAPI SetGravity(
-        /* [in] */ Int32 gravity);
-
-    CARAPI OnCreateContextMenu(
-        /* [in] */ IContextMenu* menu,
-        /* [in] */ IView* v,
-        /* [in] */ IContextMenuInfo* menuInfo);
 };
 
 } // namespace InputMethodService

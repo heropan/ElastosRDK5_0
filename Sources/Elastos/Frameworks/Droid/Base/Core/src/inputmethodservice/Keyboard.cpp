@@ -2,7 +2,7 @@
 #include "ext/frameworkdef.h"
 #ifdef DROID_CORE
 #include "util/CTypedValue.h"
-#include "text/TextUtils.h"
+// #include "text/TextUtils.h"
 #else
 // #include "TextUtils.h"
 #endif
@@ -16,7 +16,6 @@
 using Elastos::Core::StringUtils;
 using Elastos::Core::Character;
 using Elastos::Core::CString;
-using Elastos::Core::CObjectContainer;
 using Org::Xmlpull::V1::IXmlPullParser;
 using Elastos::Droid::R;
 using Elastos::Droid::Utility::IAttributeSet;
@@ -24,6 +23,7 @@ using Elastos::Droid::Utility::IDisplayMetrics;
 using Elastos::Droid::Utility::Xml;
 using Elastos::Droid::Utility::CTypedValue;
 using Elastos::Droid::Utility::ITypedValue;
+using Elastos::Utility::CArrayList;
 
 namespace Elastos {
 namespace Droid {
@@ -68,7 +68,7 @@ Keyboard::Row::Row(
     layout->Copy(R::styleable::Keyboard, size);
 
     AutoPtr<ITypedArray> a;
-    res->ObtainAttributes(Xml::AsAttributeSet(parser), layout, (ITypedArray**)&a);
+    res->ObtainAttributes(Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), layout, (ITypedArray**)&a);
     mDefaultWidth = Keyboard::GetDimensionOrFraction(a,
             R::styleable::Keyboard_keyWidth,
             parent->mDisplayWidth, parent->mDefaultWidth);
@@ -88,7 +88,7 @@ Keyboard::Row::Row(
     layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard_Row, size);
 
-    res->ObtainAttributes(Xml::AsAttributeSet(parser), layout, (ITypedArray**)&a);
+    res->ObtainAttributes(Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), layout, (ITypedArray**)&a);
     a->GetInt32(R::styleable::Keyboard_Row_rowEdgeFlags,
             0, &mRowEdgeFlags);
     a->GetResourceId(R::styleable::Keyboard_Row_keyboardMode,
@@ -257,7 +257,7 @@ Keyboard::Key::Key(
     layout->Copy(R::styleable::Keyboard, size);
 
     AutoPtr<ITypedArray> a;
-    res->ObtainAttributes(Xml::AsAttributeSet(parser), layout, (ITypedArray**)&a);
+    res->ObtainAttributes(Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), layout, (ITypedArray**)&a);
 
     mWidth = Keyboard::GetDimensionOrFraction(a,
             R::styleable::Keyboard_keyWidth,
@@ -274,7 +274,7 @@ Keyboard::Key::Key(
     layout = ArrayOf<Int32>::Alloc(size);
     layout->Copy(R::styleable::Keyboard_Key, size);
 
-    res->ObtainAttributes(Xml::AsAttributeSet(parser), layout, (ITypedArray**)&a);
+    res->ObtainAttributes(Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), layout, (ITypedArray**)&a);
     mX += mGap;
     AutoPtr<ITypedValue> codesValue;
     CTypedValue::New((ITypedValue**)&codesValue);
@@ -431,7 +431,7 @@ ECode Keyboard::Key::SquaredDistanceFrom(
 ECode Keyboard::Key::GetCurrentDrawableState(
     /* [out, callee] */ ArrayOf<Int32>** drawableStates)
 {
-    VALIDATE_NOT_NULL(drawableStates != NULL);
+    VALIDATE_NOT_NULL(drawableStates);
     AutoPtr< ArrayOf<Int32> > states = ArrayOf<Int32>::Alloc(0);
 
     if (mOn) {
@@ -921,43 +921,6 @@ ECode Keyboard::Init(
     return NOERROR;
 }
 
-PInterface Keyboard::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IKeyboard*)this;
-    }
-    else if (riid == EIID_IKeyboard) {
-        return (IKeyboard*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 Keyboard::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 Keyboard::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode Keyboard::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (NULL == pIID) return E_INVALID_ARGUMENT;
-
-    if (pObject == (IInterface *)(IKeyboard *)this) {
-        *pIID = EIID_IKeyboard;
-        return NOERROR;
-    }
-
-    return E_INVALID_ARGUMENT;
-}
-
 void Keyboard::Resize(
     /* [in] */ Int32 newWidth,
     /* [in] */ Int32 newHeight)
@@ -993,13 +956,14 @@ void Keyboard::Resize(
 }
 
 ECode Keyboard::GetKeys(
-    /* [out] */ IObjectContainer** keys)
+    /* [out] */ IList** keys)
 {
     assert(keys != NULL);
-    FAIL_RETURN(CObjectContainer::New(keys));
+    FAIL_RETURN(CArrayList::New(keys));
     List< AutoPtr<Key> >::Iterator it;
+    Int32 i = 0;
     for (it = mKeys.Begin(); it != mKeys.End(); it++) {
-        (*keys)->Add((IKeyboardKey*)(*it).Get());
+        (*keys)->Set(i++, (IKeyboardKey*)(*it)->Probe(EIID_IKeyboardKey));
     }
     return NOERROR;
 }
@@ -1015,11 +979,13 @@ List<AutoPtr<Keyboard::Key> >& Keyboard::GetModifierKeys()
 }
 
 ECode Keyboard::GetModifierKeys(
-    /* [out] */ IObjectContainer** keys)
+    /* [out] */ IList** keys)
 {
+    assert(keys != NULL);
+    Int32 i = 0;
     List< AutoPtr<Key> >::Iterator it;
     for (it = mModifierKeys.Begin(); it != mModifierKeys.End(); it++) {
-        (*keys)->Add((IKeyboardKey*)(*it).Get());
+        (*keys)->Set(i++, (IKeyboardKey*)(*it)->Probe(EIID_IKeyboardKey));
     }
     return NOERROR;
 }
@@ -1244,10 +1210,10 @@ void Keyboard::LoadKeyboard(
 
     // try{
     Int32 event = 0;
-    while (parser->Next(&event), event != IXmlPullParser::END_DOCUMENT) {
+    while (IXmlPullParser::Probe(parser)->Next(&event), event != IXmlPullParser::END_DOCUMENT) {
         if (event == IXmlPullParser::START_TAG) {
             String tag;
-            parser->GetName(&tag);
+            IXmlPullParser::Probe(parser)->GetName(&tag);
             if (TAG_ROW.Equals(tag)) {
                 inRow = TRUE;
                 x = 0;
@@ -1314,9 +1280,9 @@ void Keyboard::SkipToEndOfRow(
     /* [in] */ IXmlResourceParser* parser)
 {
     Int32 event = 0;
-    while (parser->Next(&event), event != IXmlPullParser::END_DOCUMENT) {
+    while (IXmlPullParser::Probe(parser)->Next(&event), event != IXmlPullParser::END_DOCUMENT) {
         String tag;
-        parser->GetName(&tag);
+        IXmlPullParser::Probe(parser)->GetName(&tag);
         if (event == IXmlPullParser::END_TAG && TAG_ROW.Equals(tag)) {
             break;
         }
@@ -1332,7 +1298,7 @@ void Keyboard::ParseKeyboardAttributes(
     layout->Copy(R::styleable::Keyboard, size);
 
     AutoPtr<ITypedArray> a;
-    res->ObtainAttributes(Xml::AsAttributeSet(parser), layout, (ITypedArray**)&a);
+    res->ObtainAttributes(Xml::AsAttributeSet(IXmlPullParser::Probe(parser)), layout, (ITypedArray**)&a);
 
     mDefaultWidth = GetDimensionOrFraction(a,
             R::styleable::Keyboard_keyWidth,

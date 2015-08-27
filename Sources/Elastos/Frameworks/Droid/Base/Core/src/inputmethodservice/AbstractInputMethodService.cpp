@@ -3,45 +3,24 @@
 #include "ext/frameworkdef.h"
 #include "inputmethodservice/AbstractInputMethodService.h"
 #include "inputmethodservice/CIInputMethodWrapper.h"
-#include "view/CDispatcherState.h"
+// #include "view/CDispatcherState.h"
 #else
 #include "inputmethodservice/AbstractInputMethodService.h"
 #endif
 
-using Elastos::Droid::View::CDispatcherState;
+// using Elastos::Droid::View::CDispatcherState;
 using Elastos::Droid::View::EIID_IKeyEventCallback;
 using Elastos::Droid::Internal::View::IIInputMethod;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
-CAR_INTERFACE_IMPL(AbstractInputMethodService, Service, IKeyEventCallback);
 
+CAR_INTERFACE_IMPL(AbstractInputMethodService, /*Service*/ Object, IKeyEventCallback);
 AbstractInputMethodService::AbstractInputMethodService()
 {
-    ASSERT_TRUE(CDispatcherState::New((IDispatcherState**)&mDispatcherState) == NOERROR);
-}
-
-PInterface AbstractInputMethodService::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_IKeyEventCallback) {
-       return (IKeyEventCallback*)this;
-    }
-    else return Service::Probe(riid);
-}
-
-ECode AbstractInputMethodService::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    if (pIID == NULL) return E_ILLEGAL_ARGUMENT_EXCEPTION;
-
-    if (pObject == (IInterface*)(IKeyEventCallback*)this) {
-        *pIID = EIID_IKeyEventCallback;
-        return NOERROR;
-    }
-    else return Service::GetInterfaceID(pObject, pIID);
+    assert(0 && "TODO");
+    // ASSERT_TRUE(CDispatcherState::New((IDispatcherState**)&mDispatcherState) == NOERROR);
 }
 
 ECode AbstractInputMethodService::GetKeyDispatcherState(
