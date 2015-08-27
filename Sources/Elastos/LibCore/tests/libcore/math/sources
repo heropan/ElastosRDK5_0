@@ -9,6 +9,14 @@ SOURCES += BigIntegerHashCodeTest.cpp
 SOURCES += BigIntegerModPowTest.cpp
 SOURCES += BigIntegerMultiplyTest.cpp
 SOURCES += BigIntegerDivideTest.cpp
+SOURCES += BigIntegerConvertTest.cpp
+SOURCES += BigIntegerNotTest.cpp
+SOURCES += BigIntegerOperateBitsTest.cpp
+SOURCES += BigIntegerOrTest.cpp
+SOURCES += BigIntegerSubtractTest.cpp
+SOURCES += BigIntegerTest.cpp
+SOURCES += BigIntegerToStringTest.cpp
+SOURCES += BigIntegerXorTest.cpp
 
 IMPORTS = Elastos.CoreLibrary.eco
 
