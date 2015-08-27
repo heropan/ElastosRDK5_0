@@ -8,41 +8,20 @@
 using namespace Elastos;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
+using Elastos::Core::INumber;
 using Elastos::Math::IBigInteger;
 using Elastos::Math::CBigInteger;
 using Elastos::Math::IBigDecimal;
 using Elastos::Math::CBigDecimal;
+
 using Elastos::Math::IBigDecimalHelper;
 using Elastos::Math::CBigDecimalHelper;
 using Elastos::Core::EIID_IComparable;
+using Elastos::Core::EIID_INumber;
 
 
 namespace Elastos {
 namespace Math {
-
-static void assertEquals(const String& aspect, const String& test)
-{
-    printf("aspect: [%s], test: [%s]\n", aspect.string(), test.string());
-    assert(aspect.Equals(test) && "result not equals aspect!");
-}
-
-static void assertEquals(Double aspect, Double test)
-{
-    printf("aspect: %f, test: %f\n", aspect, test);
-    assert(aspect == test);
-}
-
-static void assertEquals(Float aspect, Float test)
-{
-    printf("aspect: %f, test: %f\n", aspect, test);
-    assert(aspect == test);
-}
-
-static void assertEquals(Int64 aspect, Int64 test)
-{
-    printf("aspect: %lld, test: %lld\n", aspect, test);
-    assert(aspect == test);
-}
 
 static void assertEquals(const char *info, Int32 aspect, Int32 test)
 {
@@ -50,35 +29,10 @@ static void assertEquals(const char *info, Int32 aspect, Int32 test)
     assert(aspect == test);
 }
 
-static void assertEquals(const char* info, Int64 test, Int64 aspect)
+static void assertEquals(const char *info, double aspect, double test)
 {
-    printf("aspect: %lld, test: %lld. %s\n", aspect, test, info);
+    printf("aspect: %f, test: %f. %s\n", aspect, test, info);
     assert(aspect == test);
-}
-
-static void assertEquals(const char* info, Byte test, Byte aspect)
-{
-    printf("aspect: %x, test: %x. %s\n", aspect, test, info);
-    assert(aspect == test);
-}
-
-
-static void printArray(ArrayOf<IBigInteger *> *v, const char* info)
-{
-    printf("  >------Start print %s ------<\n", info);
-    Int32 len = v->GetLength();
-    for (Int32 i = 0; i < len; ++i) {
-        if ((*v)[i]) {
-            IBigInteger* bi = (*v)[i];
-            Int32 sign = 0;
-            bi->GetSignum(&sign);
-            printf("    > %d: %p, sign %d\n", i, bi, sign);
-        }
-        else {
-            printf("    > %d: NULL\n", i);
-        }
-    }
-    printf("  >------End print %s ------<\n", info);
 }
 
 #if 0
@@ -125,6 +79,23 @@ public class BigIntegerConvertTest extends TestCase {
         assertTrue(aNumber == result);
     }
 #endif
+void testDoubleValueZero()
+{
+    String a = String("0");
+    double result = 0.0;
+    double bNumber;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValueZero", bNumber, result);
+}
 
     /**
      * Convert a positive number to a double value.
@@ -137,6 +108,25 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValuePositive1()
+{
+    String a = String("27467238945");
+    double result = 2.7467238945E10;
+    double bNumber;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValuePositive1", bNumber, result);
+}
+
 
     /**
      * Convert a positive number to a double value.
@@ -149,6 +139,25 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValuePositive2()
+{
+    String a = String("2746723894572364578265426346273456972");
+    double result = 2.7467238945723645E36;
+    double bNumber;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValuePositive2", bNumber, result);
+}
+
 
     /**
      * Convert a negative number to a double value.
@@ -161,6 +170,25 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValueNegative1()
+{
+    String a = String("-27467238945");
+    double result = -2.7467238945E10;
+    double bNumber;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValueNegative1", bNumber, result);
+}
+
 
     /**
      * Convert a negative number to a double value.
@@ -173,6 +201,25 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValueNegative2()
+{
+    String a = String("-2746723894572364578265426346273456972");
+    double result = -2.7467238945723645E36;
+    double bNumber;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValueNegative2", bNumber, result);
+}
+
 
     /**
      * Convert a positive number to a double value.
@@ -187,6 +234,30 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValuePosRounded1()
+{
+    double result = 1.54747264387948E26;
+    double bNumber;
+
+    signed char _aBytes[] = {-128, 1, 2, 3, 4, 5, 60, 23, 1, -3, -5};
+    AutoPtr<ArrayOf<Byte> > aBytes = ArrayOf<Byte>::Alloc(sizeof(_aBytes));
+    memcpy(aBytes->GetPayload(), _aBytes, sizeof(_aBytes));
+
+    int aSign = 1;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(aSign, *aBytes, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValuePosRounded1", bNumber, result);
+}
+
 
     /**
      * Convert a positive number to a double value.
@@ -202,6 +273,30 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValuePosRounded2()
+{
+    double result = 1.547472643879479E26;
+    double bNumber;
+
+    signed char _aBytes[] = {-128, 1, 2, 3, 4, 5, 36, 23, 1, -3, -5};
+    AutoPtr<ArrayOf<Byte> > aBytes = ArrayOf<Byte>::Alloc(sizeof(_aBytes));
+    memcpy(aBytes->GetPayload(), _aBytes, sizeof(_aBytes));
+
+    int aSign = 1;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(aSign, *aBytes, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValuePosRounded2", bNumber, result);
+}
+
         /**
      * Convert a positive number to a double value.
      * Rounding is NOT needed.
@@ -214,6 +309,30 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
+void testDoubleValuePosNotRounded()
+{
+    double result = 1.5474726438794828E26;
+    double bNumber;
+
+    signed char _aBytes[] = {-128, 1, 2, 3, 4, 5, -128, 23, 1, -3, -5};
+    AutoPtr<ArrayOf<Byte> > aBytes = ArrayOf<Byte>::Alloc(sizeof(_aBytes));
+    memcpy(aBytes->GetPayload(), _aBytes, sizeof(_aBytes));
+
+    int aSign = 1;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(aSign, *aBytes, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)aNumber->Probe(EIID_INumber);
+    cNumber->DoubleValue(&bNumber);
+    assertEquals("testDoubleValuePosNotRounded", bNumber, result);
+}
+
 
     /**
      * Convert a positive number to a double value.
@@ -227,6 +346,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -242,6 +362,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -255,6 +376,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -277,6 +399,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == Double.MAX_VALUE);
     }
+#endif
 
     /**
      * Convert a negative number to a double value.
@@ -298,6 +421,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == -Double.MAX_VALUE);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -320,6 +444,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == Double.POSITIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -331,6 +456,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == Double.POSITIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a negative number to a double value.
@@ -342,6 +468,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(a).doubleValue();
         assertTrue(aNumber == Double.NEGATIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a negative number to a double value.
@@ -364,6 +491,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == Double.NEGATIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -386,6 +514,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -407,6 +536,7 @@ public class BigIntegerConvertTest extends TestCase {
         double aNumber = new BigInteger(aSign, a).doubleValue();
         assertTrue(aNumber == -8.98846567431158E307);
     }
+#endif
 
     /**
      * Return the float value of ZERO.
@@ -418,6 +548,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -430,6 +561,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -442,6 +574,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a negative number to a float value.
@@ -454,6 +587,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a negative number to a doufloatble value.
@@ -466,6 +600,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -480,6 +615,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -495,6 +631,8 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
+
         /**
      * Convert a positive number to a float value.
      * Rounding is NOT needed.
@@ -507,6 +645,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -520,6 +659,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -535,6 +675,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -548,6 +689,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -562,6 +704,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == Float.MAX_VALUE);
     }
+#endif
 
     /**
      * Convert a negative number to a float value.
@@ -576,6 +719,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == -Float.MAX_VALUE);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -590,6 +734,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == Float.POSITIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -601,6 +746,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == Float.POSITIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a negative number to a float value.
@@ -612,6 +758,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == Float.NEGATIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a negative number to a float value.
@@ -626,6 +773,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == Float.NEGATIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a positive number to a float value.
@@ -640,6 +788,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive number to a double value.
@@ -653,6 +802,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(aSign, a).floatValue();
         assertTrue(aNumber == Float.NEGATIVE_INFINITY);
     }
+#endif
 
     /**
      * Convert a negative number to a float value.
@@ -665,6 +815,7 @@ public class BigIntegerConvertTest extends TestCase {
         float aNumber = new BigInteger(a).floatValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a positive BigInteger to an integer value.
@@ -677,6 +828,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(aBytes).intValue();
         assertTrue(aNumber == resInt);
     }
+#endif
 
     /**
      * Convert a positive BigInteger to an integer value.
@@ -689,6 +841,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(aBytes).intValue();
         assertTrue(aNumber == resInt);
     }
+#endif
 
     /**
      * Convert a positive BigInteger to an integer value.
@@ -702,6 +855,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(sign, aBytes).intValue();
         assertTrue(aNumber == resInt);
     }
+#endif
 
     /**
      * Convert a negative BigInteger to an integer value.
@@ -715,6 +869,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(sign, aBytes).intValue();
         assertTrue(aNumber == resInt);
     }
+#endif
 
     /**
      * Convert a negative BigInteger to an integer value.
@@ -727,6 +882,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(aBytes).intValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a negative BigInteger to an integer value.
@@ -740,6 +896,7 @@ public class BigIntegerConvertTest extends TestCase {
         int aNumber = new BigInteger(sign, aBytes).intValue();
         assertTrue(aNumber == resInt);
     }
+#endif
 
     /**
      * Convert a BigInteger to a positive long value
@@ -752,6 +909,7 @@ public class BigIntegerConvertTest extends TestCase {
         long aNumber = new BigInteger(aBytes).longValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a number to a positive long value
@@ -764,6 +922,7 @@ public class BigIntegerConvertTest extends TestCase {
         long aNumber = new BigInteger(aBytes).longValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a number to a negative long value
@@ -776,6 +935,7 @@ public class BigIntegerConvertTest extends TestCase {
         long aNumber = new BigInteger(aBytes).longValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * Convert a number to a negative long value
@@ -788,6 +948,7 @@ public class BigIntegerConvertTest extends TestCase {
         long aNumber = new BigInteger(aBytes).longValue();
         assertTrue(aNumber == result);
     }
+#endif
 
     /**
      * valueOf (long val): convert Integer.MAX_VALUE to a BigInteger.
@@ -804,6 +965,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", 1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert Integer.MIN_VALUE to a BigInteger.
@@ -820,6 +982,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", -1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert Long.MAX_VALUE to a BigInteger.
@@ -836,6 +999,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", 1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert Long.MIN_VALUE to a BigInteger.
@@ -852,6 +1016,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", -1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert a positive long value to a BigInteger.
@@ -868,6 +1033,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", 1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert a positive long value to a BigInteger.
@@ -885,6 +1051,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", 1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert a negative long value to a BigInteger.
@@ -901,6 +1068,7 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", -1, aNumber.signum());
     }
+#endif
 
     /**
      * valueOf (long val): convert a negative long value to a BigInteger.
@@ -918,6 +1086,8 @@ public class BigIntegerConvertTest extends TestCase {
         }
         assertEquals("incorrect sign", -1, aNumber.signum());
     }
+#endif
+
     /**
      * valueOf (long val): convert a zero long value to a BigInteger.
      */
@@ -935,6 +1105,22 @@ public class BigIntegerConvertTest extends TestCase {
     }
 #endif
 
-#if 0
+//==============================================================================
+
+int main(int argc, char *argv[]) {
+    printf("\n==== libcore/math/BigIntegerConvertTest ====\n");
+    testDoubleValueZero();
+    testDoubleValuePositive1();
+    testDoubleValuePositive2();
+    testDoubleValueNegative1();
+    testDoubleValueNegative2();
+    testDoubleValuePosRounded1();
+    testDoubleValuePosRounded2();
+    testDoubleValuePosNotRounded();
+    printf("\n==== end of libcore/math/BigIntegerConvertTest ====\n");
+
+    return 0;
 }
-#endif
+
+}
+}
