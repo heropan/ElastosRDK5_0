@@ -2,7 +2,7 @@
 #include "inputmethodservice/CIInputMethodWrapper.h"
 #include "inputmethodservice/CIInputMethodSessionWrapper.h"
 #include "view/LocalInputConnectionWrapper.h"
-#include "view/inputmethod/CInputBinding.h"
+// #include "view/inputmethod/CInputBinding.h"
 #include "os/SomeArgs.h"
 #include "os/HandlerCaller.h"
 #include <elastos/utility/logging/Logger.h>
@@ -13,13 +13,15 @@ using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::Pm::IApplicationInfo;
 using Elastos::Droid::InputMethodService::CIInputMethodSessionWrapper;
 using Elastos::Droid::Internal::View::LocalInputConnectionWrapper;
-using Elastos::Droid::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Internal::View::EIID_IIInputMethod;
+using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
+using Elastos::Droid::Internal::Os::HandlerCaller;
 using Elastos::Droid::Os::SomeArgs;
-using Elastos::Droid::Os::HandlerCaller;
+using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::View::InputMethod::IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputConnection;
-using Elastos::Droid::View::InputMethod::CInputBinding;
+// using Elastos::Droid::View::InputMethod::CInputBinding;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 
@@ -77,10 +79,11 @@ ECode CIInputMethodWrapper::constructor(
     wrs = IWeakReferenceSource::Probe(inputMethod);
     if (wrs) wrs->GetWeakReference((IWeakReference**)&mInputMethod);
 
-    context->GetApplicationContext((IContext**)&mContext);
-    mCaller = new HandlerCaller(mContext, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    IContext::Probe(context)->GetApplicationContext((IContext**)&mContext);
+    assert(0 && "TODO");
+    // mCaller = new HandlerCaller(mContext, THIS_PROBE(IHandlerCallerCallback), FALSE);
     AutoPtr<IApplicationInfo> appInfo;
-    context->GetApplicationInfo((IApplicationInfo**)&appInfo);
+    IContext::Probe(context)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     assert(appInfo != NULL);
     appInfo->GetTargetSdkVersion(&mTargetSdkVersion);
     return NOERROR;
@@ -128,7 +131,8 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             if (target == NULL) {
                 return NOERROR;
             }
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
+
             // try {
             //     target.dump((FileDescriptor)args->mArg1,
             //             (PrintWriter)args->mArg2, (String[])args->mArg3);
@@ -154,10 +158,11 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             inputMethod->UnbindInput();
             return NOERROR;
         case DO_START_INPUT: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IInputContext* inputContext = IInputContext::Probe(args->mArg1);
-            AutoPtr<IInputConnection> ic = inputContext != NULL
-                    ? new LocalInputConnectionWrapper(inputContext) : NULL;
+            AutoPtr<IInputConnection> ic;
+            assert(0 && "TODO");
+            // ic = inputContext != NULL ? new LocalInputConnectionWrapper(inputContext) : NULL;
             IEditorInfo* info = IEditorInfo::Probe(args->mArg2);
             info->MakeCompatible(mTargetSdkVersion);
             inputMethod->StartInput(ic, info);
@@ -165,10 +170,11 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_RESTART_INPUT: {
-            SomeArgs* args = (SomeArgs*)obj.Get();
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             IInputContext* inputContext = IInputContext::Probe(args->mArg1);
-            AutoPtr<IInputConnection> ic = inputContext != NULL
-                    ? new LocalInputConnectionWrapper(inputContext) : NULL;
+            AutoPtr<IInputConnection> ic;
+            assert(0 && "TODO");
+            // ic = inputContext != NULL ? new LocalInputConnectionWrapper(inputContext) : NULL;
             IEditorInfo* info = IEditorInfo::Probe(args->mArg2);
             info->MakeCompatible(mTargetSdkVersion);
             inputMethod->RestartInput(ic, info);
@@ -176,10 +182,8 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_CREATE_SESSION: {
-            AutoPtr<IContext> context;
-            mCaller->GetContext((IContext**)&context);
             AutoPtr<IInputMethodSessionEventCallback> cb = new InputMethodSessionCallbackWrapper(
-                    context, IInputMethodCallback::Probe(obj));
+                    mContext, IInputMethodCallback::Probe(obj));
             inputMethod->CreateSession(cb);
             return NOERROR;
         }
@@ -208,7 +212,7 @@ ECode CIInputMethodWrapper::AttachToken(
     /* [in] */ IBinder* token)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_ATTACH_TOKEN, token, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_ATTACH_TOKEN, token, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -217,12 +221,14 @@ ECode CIInputMethodWrapper::BindInput(
 {
     AutoPtr<IBinder> binder;
     FAIL_RETURN(binding->GetConnectionToken((IBinder**)&binder));
-    AutoPtr<IInputConnection> ic = new LocalInputConnectionWrapper(IInputContext::Probe(binder));
+    AutoPtr<IInputConnection> ic;
+    assert(0 && "TODO");
+    // ic = new LocalInputConnectionWrapper(IInputContext::Probe(binder));
     AutoPtr<IInputBinding> nu;
-    FAIL_RETURN(CInputBinding::New(ic, binding, (IInputBinding**)&nu));
+    // FAIL_RETURN(CInputBinding::New(ic, binding, (IInputBinding**)&nu));
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_SET_INPUT_CONTEXT, nu, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_SET_INPUT_CONTEXT, nu, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -238,7 +244,7 @@ ECode CIInputMethodWrapper::StartInput(
     /* [in] */ IEditorInfo* attribute)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_START_INPUT, inputContext, attribute, (IMessage**)&msg);
+    mCaller->ObtainMessageOO(DO_START_INPUT, inputContext, attribute, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -247,7 +253,7 @@ ECode CIInputMethodWrapper::RestartInput(
     /* [in] */ IEditorInfo* attribute)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_RESTART_INPUT, inputContext, attribute, (IMessage**)&msg);
+    mCaller->ObtainMessageOO(DO_RESTART_INPUT, inputContext, attribute, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -255,7 +261,7 @@ ECode CIInputMethodWrapper::CreateSession(
     /* [in] */ IInputMethodCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_CREATE_SESSION, callback, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_CREATE_SESSION, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -268,7 +274,7 @@ ECode CIInputMethodWrapper::SetSessionEnabled(
             session)->GetInternalInputMethodSession();
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_SET_SESSION_ENABLED, enabled ? 1 : 0, ls, (IMessage**)&msg);
+    mCaller->ObtainMessageIO(DO_SET_SESSION_ENABLED, enabled ? 1 : 0, ls, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -280,7 +286,7 @@ ECode CIInputMethodWrapper::RevokeSession(
             session)->GetInternalInputMethodSession();
 
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_REVOKE_SESSION, ls, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_REVOKE_SESSION, ls, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -289,7 +295,7 @@ ECode CIInputMethodWrapper::ShowSoftInput(
     /* [in] */ IResultReceiver* resultReceiver)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_SHOW_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
+    mCaller->ObtainMessageIO(DO_SHOW_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -298,7 +304,7 @@ ECode CIInputMethodWrapper::HideSoftInput(
     /* [in] */ IResultReceiver* resultReceiver)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_HIDE_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
+    mCaller->ObtainMessageIO(DO_HIDE_SOFT_INPUT, flags, resultReceiver, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -306,7 +312,7 @@ ECode CIInputMethodWrapper::ChangeInputMethodSubtype(
     /* [in] */ IInputMethodSubtype* subtype)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessage(DO_CHANGE_INPUTMETHOD_SUBTYPE, subtype, (IMessage**)&msg);
+    mCaller->ObtainMessageO(DO_CHANGE_INPUTMETHOD_SUBTYPE, subtype, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

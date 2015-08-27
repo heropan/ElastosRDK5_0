@@ -20,7 +20,6 @@ module
     merge("../car/nfc.car");
     merge("../car/widget.car");
     merge("../car/gesture.car");
-    merge("../car/inputmethodservice.car");
     merge("../car/preference.car");
     merge("../car/accounts.car");
     merge("../car/accessibilityservice.car");
@@ -47,7 +46,7 @@ module
     merge("../car/internal/view.car");
     merge("../car/internal/widget.car");
 
-
+    merge("../car/inputmethodservice.car");
     //merge("../car/media.car");
     //merge("../car/bluetooth.car");
     //merge("../car/menu1.car");

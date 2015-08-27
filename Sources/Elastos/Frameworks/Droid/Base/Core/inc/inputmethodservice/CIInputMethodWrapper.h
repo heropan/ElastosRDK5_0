@@ -4,13 +4,16 @@
 
 #include "_Elastos_Droid_InputMethodService_CIInputMethodWrapper.h"
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Internal::View::IInputContext;
+using Elastos::Droid::Internal::Os::IHandlerCaller;
+using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
 using Elastos::Droid::Os::IResultReceiver;
 using Elastos::Droid::Os::IBinder;
-using Elastos::Droid::Os::IHandlerCaller;
 using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IInputMethodCallback;
@@ -18,6 +21,7 @@ using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
+using Elastos::Droid::Internal::View::IIInputMethod;
 using Elastos::Droid::View::InputMethod::IInputBinding;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;

@@ -2,9 +2,13 @@
 #ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ABSTRACTINPUTMETHODSERVICE_H__
 
-#include "app/Service.h"
+// #include "app/Service.h"
+#include "ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
-using Elastos::Droid::InputMethodService::IAbstractInputMethodImpl;
+using Elastos::Core::Object;
+using Elastos::Droid::Content::IIntent;
+using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::View::IKeyEventCallback;
 using Elastos::Droid::View::IDispatcherState;
 using Elastos::Droid::View::IMotionEvent;
@@ -15,7 +19,7 @@ namespace Droid {
 namespace InputMethodService {
 
 class AbstractInputMethodService
-    : public Elastos::Droid::App::Service
+    : public /*Elastos::Droid::App::Service*/ Object
     , public IKeyEventCallback
 {
 public:

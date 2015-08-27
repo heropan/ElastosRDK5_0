@@ -3,18 +3,26 @@
 #define __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CCANDIDATEVIEW_H__
 
 #include "_Elastos_Droid_InputMethodService_CCandidateView.h"
-
-#include "view/View.h"
+#include <elastos/core/Object.h>
+// #include "view/View.h"
 //#include "view/GestureDetector.h"
 
-using Elastos::Droid::View::View;
+using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
+// using Elastos::Droid::View::View;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::Drawable::IDrawable;
+using Elastos::Droid::View::IMotionEvent;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
 CarClass(CCandidateView)
-    , public Elastos::Droid::View::View
+    , public Object/*Elastos::Droid::View::View*/
     , public ICandidateView
 {
 protected:
@@ -77,9 +85,6 @@ public:
         /* [in] */ IMotionEvent* event);
 
 protected:
-    CARAPI constructor(
-        /* [in] */ IContext* ctx);
-
     /**
      * For flick through from keyboard, call this method with the x coordinate of the flick
      * gesture.

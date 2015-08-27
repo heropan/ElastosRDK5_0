@@ -4,7 +4,6 @@
 #include "R.h"
 
 using Elastos::Droid::R;
-using Elastos::Droid::View::EIID_View;
 
 namespace Elastos {
 namespace Droid {
@@ -25,15 +24,6 @@ ECode CKeyboardView::constructor(
     /* [in] */ Int32 defStyle)
 {
     return KeyboardView::constructor(context, attrs, defStyle);
-}
-
-PInterface CKeyboardView::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    }
-    return KeyboardView::Probe(riid);
 }
 
 } // namespace InputMethodService

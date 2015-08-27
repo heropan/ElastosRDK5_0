@@ -1,6 +1,7 @@
 
 module
 {
+    using interface Elastos.Utility.IList;
     interface Elastos.Droid.Text.Style.ISuggestionSpan;
     interface Elastos.Droid.View.InputMethod.IInputMethodInfo;
     interface Elastos.Droid.View.InputMethod.IInputMethodSubtype;
@@ -16,7 +17,6 @@ module
     namespace Internal {
     namespace View {
 
-
     /**
      * Public interface to the global input method manager, used by all client
      * applications.
@@ -24,15 +24,15 @@ module
     [deprecated]
     interface IIInputMethodManager {
         GetInputMethodList(
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetEnabledInputMethodList(
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetEnabledInputMethodSubtypeList(
             [in] IInputMethodInfo* imi,
             [in] Boolean allowsImplicitlySelectedSubtypes,
-            [out] IObjectContainer** infos);
+            [out] IList** infos);
 
         GetLastInputMethodSubtype(
             [out] IInputMethodSubtype** subType);
@@ -40,7 +40,7 @@ module
         // TODO: We should change the return type from List to List<Parcelable>
         // Currently there is a bug that aidl doesn't accept List<Parcelable>
         GetShortcutInputMethodsAndSubtypes(
-            [out] IObjectContainer** subtypes);
+            [out] IList** subtypes);
 
         /* get the current inputcontext,used by tvremoteserver */
         GetInputContext(

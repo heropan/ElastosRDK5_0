@@ -13,7 +13,7 @@ using Elastos::Droid::Content::Res::IXmlResourceParser;
 using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::Graphics::Drawable::IDrawable;
 using Elastos::Droid::InputMethodService::IKeyboard;
-
+using Elastos::Utility::IList;
 
 namespace Elastos {
 namespace Droid {
@@ -430,26 +430,15 @@ public:
 
     virtual ~Keyboard();
 
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
-
-    CARAPI_(UInt32) AddRef();
-
-    CARAPI_(UInt32) Release();
-
-    CARAPI GetInterfaceID(
-        /* [in] */ IInterface *pObject,
-        /* [out] */ InterfaceID *pIID);
-
     virtual CARAPI_(void) Resize(
         /* [in] */ Int32 newWidth,
         /* [in] */ Int32 newHeight);
 
     virtual CARAPI GetKeys(
-        /* [out] */ IObjectContainer** keys);
+        /* [out] */ IList** keys);
 
     virtual CARAPI GetModifierKeys(
-        /* [out] */ IObjectContainer** keys);
+        /* [out] */ IList** keys);
 
     /**
      * Returns the total height of the keyboard
@@ -657,5 +646,7 @@ private:
 } // namespace InputMethodService
 } // namespace Droid
 } // namespace Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::InputMethodService::Keyboard::Key, IInterface)
 
 #endif  // __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_KEYBOARD_H__

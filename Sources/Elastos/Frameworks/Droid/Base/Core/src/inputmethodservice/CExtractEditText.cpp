@@ -1,15 +1,13 @@
 
 #include "inputmethodservice/CExtractEditText.h"
-
-using Elastos::Droid::View::EIID_View;
-using Elastos::Droid::Widget::EIID_TextView;
+#include "R.h"
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
 CAR_OBJECT_IMPL(CExtractEditText);
-CAR_INTERFACE_IMPL(CExtractEditText, EditText, IExtractEditText);
+CAR_INTERFACE_IMPL(CExtractEditText, /*EditText*/Object, IExtractEditText);
 
 CExtractEditText::CExtractEditText()
     : mSettingExtractedText(0)
@@ -20,56 +18,87 @@ ECode CExtractEditText::SetExtractedText(
     /* [in] */ IExtractedText* text)
 {
     mSettingExtractedText++;
-    EditText::SetExtractedText(text);
+    assert(0 && "TODO");
+    // EditText::SetExtractedText(text);
 
     mSettingExtractedText--;
     return NOERROR;
 }
 
-Boolean CExtractEditText::PerformClick()
+ECode CExtractEditText::PerformClick(
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     assert(mIME != NULL);
 
-    if (!EditText::PerformClick() && mIME != NULL) {
-        mIME->OnExtractedTextClicked();
-        return TRUE;
-    }
+    assert(0 && "TODO");
+    // Boolean tmp = FALSE;
+    // if (!(EditText::PerformClick(&tmp), tmp) && mIME != NULL) {
+    //     mIME->OnExtractedTextClicked();
+    //     *result = TRUE;
+    //     return NOERROR;
+    // }
 
-    return TRUE;
+    *result = FALSE;
+    return NOERROR;
 }
 
-Boolean CExtractEditText::OnTextContextMenuItem(
-    /* [in] */ Int32 id)
+ECode CExtractEditText::OnTextContextMenuItem(
+    /* [in] */ Int32 id,
+    /* [out] */ Boolean* result)
 {
+    VALIDATE_NOT_NULL(result);
     Boolean state = FALSE;
     if (mIME != NULL && (mIME->OnExtractTextContextMenuItem(id, &state), state)) {
         // Mode was started on Extracted, needs to be stopped here.
         // Cut and paste will change the text, which stops selection mode.
-        if (id == R::id::copy) StopSelectionActionMode();
-        return TRUE;
+        if (id == R::id::copy) {
+            assert(0 && "TODO");
+            // StopSelectionActionMode();
+        }
+
+        *result = TRUE;
+        return NOERROR;
     }
 
-    return EditText::OnTextContextMenuItem(id);
+    assert(0 && "TODO");
+    return NOERROR;
+    // return EditText::OnTextContextMenuItem(id, result);
 }
 
-Boolean CExtractEditText::IsInputMethodTarget()
+ECode CExtractEditText::IsInputMethodTarget(
+    /* [out] */ Boolean* result)
 {
-    return TRUE;
+    VALIDATE_NOT_NULL(result);
+    *result = TRUE;
+    return NOERROR;
 }
 
-Boolean CExtractEditText::HasWindowFocus()
+ECode CExtractEditText::HasWindowFocus(
+    /* [out] */ Boolean* result)
 {
-    return EditText::IsEnabled();
+    VALIDATE_NOT_NULL(result);
+    assert(0 && "TODO");
+    return NOERROR;
+    // return EditText::IsEnabled(result);
 }
 
-Boolean CExtractEditText::IsFocused()
+ECode CExtractEditText::IsFocused(
+    /* [out] */ Boolean* result)
 {
-    return EditText::IsEnabled();
+    VALIDATE_NOT_NULL(result);
+    assert(0 && "TODO");
+    return NOERROR;
+    // return EditText::IsEnabled(result);
 }
 
-Boolean CExtractEditText::HasFocus()
+ECode CExtractEditText::HasFocus(
+    /* [out] */ Boolean* result)
 {
-    return EditText::IsEnabled();
+    VALIDATE_NOT_NULL(result);
+    assert(0 && "TODO");
+    return NOERROR;
+    // return EditText::IsEnabled(result);
 }
 
 void CExtractEditText::OnSelectionChanged(
@@ -132,33 +161,21 @@ void CExtractEditText::SetCursorPosition_internal(
     mIME->OnExtractedSelectionChanged(start, end);
 }
 
-PInterface CExtractEditText::Probe(
-    /* [in] */ REIID riid)
-{
-    if (riid == EIID_View) {
-        return reinterpret_cast<PInterface>((View*)this);
-    }
-    else if (riid == EIID_TextView) {
-        return reinterpret_cast<PInterface>((TextView*)this);
-    }
-    else if (riid == EIID_IExtractEditText) {
-        return reinterpret_cast<PInterface>((IExtractEditText*)this);
-    }
-
-    return EditText::Probe(riid);
-}
-
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context)
 {
-    return EditText::constructor(context, NULL);
+    // return EditText::constructor(context, NULL);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return EditText::constructor(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
+    // return EditText::constructor(context, attrs, 0x0101006e /*com.android.internal.R.attr.editTextStyle*/);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CExtractEditText::constructor(
@@ -166,7 +183,9 @@ ECode CExtractEditText::constructor(
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
 {
-    return EditText::constructor(context, attrs, defStyle);
+    // return EditText::constructor(context, attrs, defStyle);
+    assert(0 && "TODO");
+    return NOERROR;
 }
 
 ECode CExtractEditText::SetIME(
@@ -192,7 +211,8 @@ ECode CExtractEditText::HasVerticalScrollBar(
     /* [out] */ Boolean* has)
 {
     assert(has != NULL);
-    *has = EditText::ComputeVerticalScrollRange() > EditText::ComputeVerticalScrollExtent();
+    assert(0 && "TODO");
+    // *has = EditText::ComputeVerticalScrollRange() > EditText::ComputeVerticalScrollExtent();
     return NOERROR;
 }
 

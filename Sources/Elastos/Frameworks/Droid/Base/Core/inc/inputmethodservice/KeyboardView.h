@@ -4,39 +4,46 @@
 
 #include "ext/frameworkext.h"
 //#include "view/GestureDetector.h"
-#include "view/View.h"
-#include "os/HandlerBase.h"
+// #include "view/View.h"
+#include "os/Handler.h"
 #include "inputmethodservice/Keyboard.h"
 #include "R.h"
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::StringBuilder;
 using Elastos::Droid::R;
-using Elastos::Droid::Os::HandlerBase;
+using Elastos::Droid::Os::Handler;
 using Elastos::Droid::InputMethodService::IKeyboardKey;
 using Elastos::Droid::InputMethodService::IOnKeyboardActionListener;
-using Elastos::Droid::View::View;
+// using Elastos::Droid::View::View;
+using Elastos::Droid::Graphics::ICanvas;
+using Elastos::Droid::Graphics::IPaint;
+using Elastos::Droid::Graphics::IRect;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Graphics::IBitmap;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IGestureDetector;
 using Elastos::Droid::View::Accessibility::IAccessibilityManager;
 using Elastos::Droid::Widget::ITextView;
 using Elastos::Droid::Widget::IPopupWindow;
-using Elastos::Droid::Media::IAudioManager;
-
+// using Elastos::Droid::Media::IAudioManager;
+using Elastos::Droid::Utility::IAttributeSet;
 
 namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
 class KeyboardView
-    : public Elastos::Droid::View::View
+    : public /*Elastos::Droid::View::View*/Object
     , public IKeyboardView
 {
 public:
-    class MyHandler : public HandlerBase
+    class MyHandler : public Handler
     {
     public:
         MyHandler(
@@ -95,10 +102,6 @@ private:
 
         ~SwipeTracker();
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
         CARAPI_(void) Clear();
 
         CARAPI_(void) AddMovement(
@@ -143,10 +146,6 @@ private:
 
         ~_SimpleOnGestureListener();
 
-        CARAPI_(UInt32) AddRef();
-
-        CARAPI_(UInt32) Release();
-
         virtual Boolean OnFling(
             /* [in] */ IMotionEvent* e1,
             /* [in] */ IMotionEvent* e2,
@@ -168,9 +167,6 @@ public:
         /* [in] */ Int32 defStyle = R::attr::keyboardViewStyle);
 
     ~KeyboardView();
-
-    CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid);
 
     virtual CARAPI SetOnKeyboardActionListener(
         /* [in] */ IOnKeyboardActionListener* listener);
@@ -544,7 +540,7 @@ protected:
     /** The accessibility manager for accessibility support */
     AutoPtr<IAccessibilityManager> mAccessibilityManager;
     /** The audio manager for accessibility support */
-    AutoPtr<IAudioManager> mAudioManager;
+    // AutoPtr<IAudioManager> mAudioManager;
     /** Whether the requirement of a headset to hear passwords if accessibility is enabled is announced. */
     Boolean mHeadsetRequiredToHearPasswordsAnnounced;
 

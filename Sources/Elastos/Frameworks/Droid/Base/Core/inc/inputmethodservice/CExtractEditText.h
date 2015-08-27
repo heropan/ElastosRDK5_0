@@ -3,9 +3,16 @@
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_ELASTOS_DROID_INPUTMEHTODSERVICE_CEXTRACTEDITTEXT_H__
 
 #include "_Elastos_Droid_InputMethodService_CExtractEditText.h"
-#include "widget/EditText.h"
+#include <elastos/core/Object.h>
+// #include "widget/EditText.h"
 
-using Elastos::Droid::Widget::EditText;
+// using Elastos::Droid::Widget::EditText;
+using Elastos::Core::Object;
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Utility::IAttributeSet;
+using Elastos::Droid::View::InputMethod::IExtractedText;
+using Elastos::Droid::View::InputMethod::IInputMethodManager;
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +22,7 @@ namespace InputMethodService {
  * extracted text in a full-screen input method.
  */
 CarClass(CExtractEditText)
-    , public EditText
+    , public /*EditText*/Object
     , public IExtractEditText
 {
 public:
@@ -24,9 +31,6 @@ public:
     CAR_INTERFACE_DECL();
 
     CExtractEditText();
-
-    CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
 
     CARAPI constructor(
         /* [in] */ IContext* context);
@@ -76,38 +80,44 @@ public:
      * on click handler to run, though.
      */
     //@Override
-    CARAPI_(Boolean) PerformClick();
+    CARAPI PerformClick(
+        /* [out] */ Boolean* result);
 
     //@Override
-    CARAPI_(Boolean) OnTextContextMenuItem(
-        /* [in] */ Int32 id);
+    CARAPI OnTextContextMenuItem(
+        /* [in] */ Int32 id,
+        /* [out] */ Boolean* result);
 
     /**
      * We are always considered to be an input method target.
      */
     //@Override
-    CARAPI_(Boolean) IsInputMethodTarget();
+    CARAPI IsInputMethodTarget(
+        /* [out] */ Boolean* result);
 
     /**
      * Pretend like the window this view is in always has focus, so its
      * highlight and cursor will be displayed.
      */
     //@Override
-    CARAPI_(Boolean) HasWindowFocus();
+    CARAPI HasWindowFocus(
+        /* [out] */ Boolean* result);
 
     /**
      * Pretend like this view always has focus, so its
      * highlight and cursor will be displayed.
      */
     //@Override
-    CARAPI_(Boolean) IsFocused();
+    CARAPI IsFocused(
+        /* [out] */ Boolean* result);
 
     /**
      * Pretend like this view always has focus, so its
      * highlight and cursor will be displayed.
      */
     //@Override
-    CARAPI_(Boolean) HasFocus();
+    CARAPI HasFocus(
+        /* [out] */ Boolean* result);
 
 protected:
     /**

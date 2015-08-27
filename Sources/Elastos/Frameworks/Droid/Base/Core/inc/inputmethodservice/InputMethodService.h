@@ -9,8 +9,6 @@
 #include "inputmethodservice/AbstractInputMethodService.h"
 #include "inputmethodservice/AbstractInputMethodSessionImpl.h"
 #include "view/ViewTreeObserver.h"
-
-#include "content/ContextWrapper.h"
 #else
 #include "Elastos.Droid.Core.h"
 #include "inputmethodservice/AbstractInputMethodService.h"
@@ -18,7 +16,9 @@
 #include "inputmethodservice/AbstractInputMethodSessionImpl.h"
 #endif
 
-
+using Elastos::Core::ICharSequence;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::ITypedArray;
 using Elastos::Droid::App::IApplication;
 using Elastos::Droid::App::IIActivityManager;
 using Elastos::Droid::App::IActivityThread;
@@ -26,12 +26,14 @@ using Elastos::Droid::App::IDialog;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Graphics::IRegion;
 using Elastos::Droid::Os::IResultReceiver;
+using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IInternalInsetsInfo;
 using Elastos::Droid::View::IView;
 using Elastos::Droid::View::IWindow;
 using Elastos::Droid::View::IViewGroup;
 using Elastos::Droid::View::IOnComputeInternalInsetsListener;
 using Elastos::Droid::View::IViewOnClickListener;;
+using Elastos::Droid::View::ILayoutInflater;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 using Elastos::Droid::View::InputMethod::IInputBinding;
@@ -78,8 +80,6 @@ private:
 
         _OnClickListener(
             /* [in] */ InputMethodService* host);
-
-        ~_OnClickListener();
 
         CARAPI OnClick(
             /* [in] */ IView* v);
@@ -1153,22 +1153,22 @@ public:
         /* [in] */ IEditorInfo* ei);
 
     //Add.
-    CARAPI GetBaseContext(
-        /* [out] */ IContext** ctx);
+    // CARAPI GetBaseContext(
+    //     /* [out] */ IContext** ctx);
 
-    CARAPI Attach(
-        /* [in] */ IContext* ctx,
-        /* [in] */ IActivityThread* apartment,
-        /* [in] */ const String& className,
-        /* [in] */ IBinder* token,
-        /* [in] */ IApplication* application,
-        /* [in] */ IIActivityManager* activityManager);
+    // CARAPI Attach(
+    //     /* [in] */ IContext* ctx,
+    //     /* [in] */ IActivityThread* apartment,
+    //     /* [in] */ const String& className,
+    //     /* [in] */ IBinder* token,
+    //     /* [in] */ IApplication* application,
+    //     /* [in] */ IIActivityManager* activityManager);
 
-    CARAPI GetClassName(
-        /* [out] */ String* className);
+    // CARAPI GetClassName(
+    //     /* [out] */ String* className);
 
-    CARAPI GetKeyDispatcherState(
-        /* [out] */ IDispatcherState** dispatcherState);
+    // CARAPI GetKeyDispatcherState(
+    //     /* [out] */ IDispatcherState** dispatcherState);
 
 protected:
     virtual CARAPI_(void) InitViews();
