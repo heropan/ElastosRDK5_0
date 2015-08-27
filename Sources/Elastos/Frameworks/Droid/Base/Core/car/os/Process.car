@@ -123,7 +123,7 @@ module
          * Defines the gid shared by all applications running under the same profile.
          * @hide
          */
-        public static final int SHARED_USER_GID = 9997;
+        const Int32 SHARED_USER_GID = 9997;
 
         /**
          * First gid for applications to share resources. Used when forward-locking
