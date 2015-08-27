@@ -87,6 +87,7 @@ module
     using interface Elastos.IO.IFlushable;
     using interface Elastos.IO.IInputStream;
     using interface Elastos.IO.IOutputStream;
+    using interface Elastos.Utility.IUUID;
 
     // interface Elastos.Droid.Os.ILooper;
     //interface Elastos.Droid.Os.IUserHandle;
@@ -366,16 +367,30 @@ module
         interface IFlushable;
     }
 
-    // class CPatternMatcher {
-    //     constructor();
+    class CParcelUuid {
+        constructor();
 
-    //     constructor(
-    //         [in] String pattern,
-    //         [in] Int32 type);
+        constructor(
+            [in] IUUID* pfd);
 
-    //     interface IPatternMatcher;
-    //     interface IParcelable;
-    // }
+        interface IParcelUuid;
+        interface IParcelable;
+    }
+
+    singleton class CParcelUuidHelper {
+        interface IParcelUuidHelper;
+    }
+
+    class CPatternMatcher {
+        constructor();
+
+        constructor(
+            [in] String pattern,
+            [in] Int32 type);
+
+        interface IPatternMatcher;
+        interface IParcelable;
+    }
 
     // class CProcessStartResult {
     //     interface IProcessStartResult;

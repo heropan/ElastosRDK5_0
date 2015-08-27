@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_OS_PROCESS_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Utility::Etl::List;
@@ -18,9 +19,45 @@ class Process
     , public IProcess
 {
 public:
+    /**
+     * State for communicating with the zygote process.
+     *
+     * @hide for internal use only.
+     */
+    class ZygoteState
+        : public Object
+    {
+    public:
+        ZygoteState(
+            /* [in] */ ILocalSocket* socket,
+            /* [in] */ IDataInputStream* inputStream,
+            /* [in] */ IBufferedWriter* writer,
+            /* [in] */ List<String>* abiList);
+
+        static CARAPI Connect(
+            /* [in] */ const String& socketAddress,
+            /* [out] */ ZygoteState** state);
+
+        Boolean Matches(
+            /* [in] */ const String& abi);
+
+        void Close();
+
+        Boolean IsClosed();
+
+    public:
+        AutoPtr<ILocalSocket> mSocket;
+        AutoPtr<IDataInputStream> mInputStream;
+        AutoPtr<IBufferedWriter> mWriter;
+        AutoPtr<List<String> > mAbiList;
+
+        Boolean mClosed;
+    };
+
+public:
     CAR_INTERFACE_DECL()
 
-    /**
+   /**
      * Start a new process.
      *
      * <p>If processes are enabled, a new process is created and the
@@ -43,7 +80,10 @@ public:
      * @param gids Additional group-ids associated with the process.
      * @param debugFlags Additional flags.
      * @param targetSdkVersion The target SDK version for the app.
-     * @param seInfo null-ok SE Android information for the new process.
+     * @param seInfo null-ok SELinux information for the new process.
+     * @param abi non-null the ABI this app should be started with.
+     * @param instructionSet null-ok the instruction set to use.
+     * @param appDataDir null-ok the data directory of the app.
      * @param zygoteArgs Additional arguments to supply to the zygote process.
      *
      * @return An object that describes the result of the attempt to start the process.
@@ -61,6 +101,9 @@ public:
         /* [in] */ Int32 mountExternal,
         /* [in] */ Int32 targetSdkVersion,
         /* [in] */ const String& seInfo,
+        /* [in] */ const String& abi,
+        /* [in] */ const String& instructionSet,
+        /* [in] */ const String& appDataDir,
         /* [in] */ ArrayOf<String>* zygoteArgs,
         /* [out] */ IProcessStartResult** result);
 
@@ -75,6 +118,12 @@ public:
      * {@link #killProcess} and {@link #sendSignal}.
      */
     static CARAPI_(Int32) MyPid();
+
+    /**
+     * Returns the identifier of this process' parent.
+     * @hide
+     */
+    static CARAPI_(Int32) MyPpid();
 
     /**
      * Returns the identifier of the calling thread, which be used with
@@ -206,6 +255,15 @@ public:
         /* [in] */ Int32 group);
 
     /**
+     * Return the scheduling group of requested process.
+     *
+     * @hide
+     */
+    static CARAPI GetProcessGroup(
+        /* [in] */ Int32 pid,
+        /* [out] */ Int32* group);
+
+    /**
      * Set the priority of the calling thread, based on Linux priorities.  See
      * {@link #setThreadPriority(int, int)} for more information.
      *
@@ -267,20 +325,20 @@ public:
      */
     static CARAPI_(Boolean) SupportsProcesses();
 
-    /**
-     * Set the out-of-memory badness adjustment for a process.
+   /**
+     * Adjust the swappiness level for a process.
      *
      * @param pid The process identifier to set.
-     * @param amt Adjustment value -- linux allows -16 to +15.
+     * @param is_increased Whether swappiness should be increased or default.
      *
      * @return Returns true if the underlying system supports this
      *         feature, else false.
      *
      * {@hide}
      */
-    static CARAPI_(Boolean) SetOomAdj(
+    static CARAPI_(Boolean) SetSwappiness(
         /* [in] */ Int32 pid,
-        /* [in] */ Int32 amt);
+        /* [in] */ Boolean is_increased);
 
     /**
      * Change this process's argv[0] parameter.  This can be useful to show
@@ -398,29 +456,60 @@ public:
     static CARAPI_(Int64) GetPss(
         /* [in] */ Int32 pid);
 
+    /**
+     * Kill all processes in a process group started for the given
+     * pid.
+     * @hide
+     */
+    static CARAPI_(Int32) KillProcessGroup(
+        /* [in] */ Int32 uid,
+        /* [in] */ Int32 pid);
+
+    /**
+     * Remove all process groups.  Expected to be called when ActivityManager
+     * is restarted.
+     * @hide
+     */
+    static CARAPI RemoveAllProcessGroups();
+
 private:
+    /**
+     * Queries the zygote for the list of ABIS it supports.
+     *
+     * @throws ZygoteStartFailedEx if the query failed.
+     */
+    static CARAPI GetAbiList(
+        /* [in] */ IBufferedWriter* writer,
+        /* [in] */ IDataInputStream* inputStream,
+        /* [out] */ String* result);
+
     /**
      * Tries to open socket to Zygote process if not already open. If
      * already open, does nothing.  May block and retry.
      */
-    static CARAPI OpenZygoteSocketIfNeeded();
+    static CARAPI OpenZygoteSocketIfNeeded(
+        /* [in] */ const String& abi,
+        /* [out] */ ZygoteState** state);
 
-    static CARAPI OpenJavaZygoteSocketIfNeeded();
+    static CARAPI OpenJavaZygoteSocketIfNeeded(
+        /* [in] */ const String& abi,
+        /* [out] */ ZygoteState** state);
 
     /**
      * Sends an argument list to the zygote process, which starts a new child
      * and returns the child's pid. Please note: the present implementation
      * replaces newlines in the argument list with spaces.
-     * @param args argument list
-     * @return An object that describes the result of the attempt to start the process.
+     *
      * @throws ZygoteStartFailedEx if process start failed for any reason
      */
     static CARAPI ZygoteSendArgsAndGetResult(
-        /* [in] */ List<String>& args,
+        /* [in] */ ZygoteState* state,
+        /* [in] */ List<String>* args,
         /* [out] */ IProcessStartResult** result);
 
     static CARAPI JavaZygoteSendArgsAndGetResult(
-        /* [in] */ List<String>& args,
+        /* [in] */ ZygoteState* state,
+        /* [in] */ List<String>* args,
         /* [out] */ IProcessStartResult** result);
 
     /**
@@ -434,7 +523,10 @@ private:
      * new process should setgroup() to.
      * @param debugFlags Additional flags.
      * @param targetSdkVersion The target SDK version for the app.
-     * @param seInfo null-ok SE Android information for the new process.
+     * @param seInfo null-ok SELinux information for the new process.
+     * @param abi the ABI the process should use.
+     * @param instructionSet null-ok the instruction set to use.
+     * @param appDataDir null-ok the data directory of the app.
      * @param extraArgs Additional arguments to supply to the zygote process.
      * @return An object that describes the result of the attempt to start the process.
      * @throws ZygoteStartFailedEx if process start failed for any reason
@@ -449,54 +541,69 @@ private:
         /* [in] */ Int32 mountExternal,
         /* [in] */ Int32 targetSdkVersion,
         /* [in] */ const String& seInfo,
+        /* [in] */ const String& abi,
+        /* [in] */ const String& instructionSet,
+        /* [in] */ const String& appDataDir,
         /* [in] */ ArrayOf<String>* zygoteArgs,
         /* [out] */ IProcessStartResult** result);
 
 public:
-    // State for communicating with elastos zygote process
 
-    static AutoPtr<ILocalSocket> sZygoteSocket;
-    static AutoPtr<IDataInputStream> sZygoteInputStream;
-    static AutoPtr<IBufferedWriter> sZygoteWriter;
+    /**
+     * The state of the connection to the primary zygote.
+     */
+    static AutoPtr<ZygoteState> mPrimaryZygoteState;
 
-    /** true if previous elastos zygote open failed */
-    static Boolean sPreviousZygoteOpenFailed;
+    /**
+     * The state of the connection to the secondary zygote.
+     */
+    static AutoPtr<ZygoteState> mSecondaryZygoteState;
 
-    // Added for android app
-    static AutoPtr<ILocalSocket> sJavaZygoteSocket;
-    static AutoPtr<IDataInputStream> sJavaZygoteInputStream;
-    static AutoPtr<IBufferedWriter> sJavaZygoteWriter;
+    static const String TAG;// = "Process";
 
-    /** true if previous android zygote open failed */
-    static Boolean sPreviousJavaZygoteOpenFailed;
+    /**
+     * @hide for internal use only.
+     */
+    static const String ZYGOTE_SOCKET;// = "zygote";
+
+    /**
+     * @hide for internal use only.
+     */
+    static const String SECONDARY_ZYGOTE_SOCKET;// = "zygote_secondary";
+
+    /**
+     * Defines the root UID.
+     * @hide
+     */
+    static const Int32 ROOT_UID = 0;
 
     /** retry interval for opening a zygote socket */
-    static const Int32 ZYGOTE_RETRY_MILLIS = 500;
+    static const Int32 ZYGOTE_RETRY_MILLIS;// = 500;
 
     /** @hide */
-    static const Int32 PROC_TERM_MASK = 0xff;
+    static const Int32 PROC_TERM_MASK;// = 0xff;
     /** @hide */
-    static const Int32 PROC_ZERO_TERM = 0;
+    static const Int32 PROC_ZERO_TERM;// = 0;
     /** @hide */
-    static const Int32 PROC_SPACE_TERM = (Int32)' ';
+    static const Int32 PROC_SPACE_TERM;// = (int)' ';
     /** @hide */
-    static const Int32 PROC_TAB_TERM = (Int32)'\t';
+    static const Int32 PROC_TAB_TERM;// = (int)'\t';
     /** @hide */
-    static const Int32 PROC_COMBINE = 0x100;
+    static const Int32 PROC_COMBINE;// = 0x100;
     /** @hide */
-    static const Int32 PROC_PARENS = 0x200;
+    static const Int32 PROC_PARENS;// = 0x200;
     /** @hide */
-    static const Int32 PROC_OUT_STRING = 0x1000;
+    static const Int32 PROC_QUOTES;// = 0x400;
     /** @hide */
-    static const Int32 PROC_OUT_LONG = 0x2000;
+    static const Int32 PROC_OUT_STRING;// = 0x1000;
     /** @hide */
-    static const Int32 PROC_OUT_FLOAT = 0x4000;
-
-private:
-    static const String ZYGOTE_SOCKET_ELASTOS;
-    static const String ZYGOTE_SOCKET_JAVA;
+    static const Int32 PROC_OUT_LONG;// = 0x2000;
+    /** @hide */
+    static const Int32 PROC_OUT_FLOAT;// = 0x4000;
 
     static Object sLock;
+
+    friend class ZygoteState;
 };
 
 } // namespace Os

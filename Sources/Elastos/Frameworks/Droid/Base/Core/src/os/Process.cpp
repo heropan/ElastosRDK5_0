@@ -1,30 +1,42 @@
-#include "ext/frameworkdef.h"
 #include "os/Process.h"
-
-#ifdef DROID_CORE
-#include "net/CLocalSocket.h"
-#include "net/CLocalSocketAddress.h"
-#include "os/CProcessStartResult.h"
+//#include "os/CProcessStartResult.h"
 #include "os/CUserHandleHelper.h"
 #include "os/CUserHandle.h"
 #include "os/CSystemProperties.h"
-#endif
+//#include "net/CLocalSocket.h"
+//#include "net/CLocalSocketAddress.h"
+//#include <elastos/droid/DroidRuntime.h>
+
+#include <elastos/droid/system/Os.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/Thread.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Logger.h>
 #include <elastos/utility/etl/Vector.h>
+#include <elastos/utility/etl/Algorithm.h>
+
 #include <binder/ProcessState.h>
+#include <cutils/process_name.h>
 #include <cutils/sched_policy.h>
-#include <sys/resource.h>
-#include <fcntl.h>
-#include <pwd.h>
-#include <grp.h>
+
 #include <dirent.h>
+#include <fcntl.h>
+#include <grp.h>
+#include <inttypes.h>
+#include <pwd.h>
+#include <signal.h>
+#include <sys/errno.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Thread;
+using Elastos::IO::IWriter;
+using Elastos::IO::ICloseable;
 using Elastos::IO::CDataInputStream;
 using Elastos::IO::IOutputStreamWriter;
 using Elastos::IO::COutputStreamWriter;
@@ -35,39 +47,137 @@ using Elastos::IO::IInputStream;
 using Elastos::IO::IOutputStream;
 using Elastos::Utility::Etl::Vector;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Droid::Net::CLocalSocket;
+//using Ellastos::Droid::DroidRuntime;
+//using Elastos::Droid::Net::CLocalSocket;
 using Elastos::Droid::Net::ILocalSocketAddress;
-using Elastos::Droid::Net::CLocalSocketAddress;
+//using Elastos::Droid::Net::CLocalSocketAddress;
 using Elastos::Droid::Net::LocalSocketAddressNamespace_RESERVED;
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-AutoPtr<ILocalSocket> Process::sZygoteSocket;
-AutoPtr<IDataInputStream> Process::sZygoteInputStream;
-AutoPtr<IBufferedWriter> Process::sZygoteWriter;
-Boolean Process::sPreviousZygoteOpenFailed = FALSE;
+static const String TAG("Process");
+static const String ZYGOTE_SOCKET("zygote");
+static const String SECONDARY_ZYGOTE_SOCKET("zygote_secondary");
 
-AutoPtr<ILocalSocket> Process::sJavaZygoteSocket;
-AutoPtr<IDataInputStream> Process::sJavaZygoteInputStream;
-AutoPtr<IBufferedWriter> Process::sJavaZygoteWriter;
-Boolean Process::sPreviousJavaZygoteOpenFailed = FALSE;
+static const Int32 ROOT_UID = 0;
 
-const Int32 Process::ZYGOTE_RETRY_MILLIS;
-const Int32 Process::PROC_TERM_MASK;
-const Int32 Process::PROC_ZERO_TERM;
-const Int32 Process::PROC_SPACE_TERM;
-const Int32 Process::PROC_TAB_TERM;
-const Int32 Process::PROC_COMBINE;
-const Int32 Process::PROC_PARENS;
-const Int32 Process::PROC_OUT_STRING;
-const Int32 Process::PROC_OUT_LONG;
-const Int32 Process::PROC_OUT_FLOAT;
-const String Process::ZYGOTE_SOCKET_ELASTOS("elzygote");
-const String Process::ZYGOTE_SOCKET_JAVA("zygote");
+static AutoPtr<Process::ZygoteState> mPrimaryZygoteState;
+static AutoPtr<Process::ZygoteState> mSecondaryZygoteState;
+
+static const Int32 ZYGOTE_RETRY_MILLIS = 500;
+
+static const Int32 PROC_TERM_MASK = 0xff;
+static const Int32 PROC_ZERO_TERM = 0;
+static const Int32 PROC_SPACE_TERM = (Int32)' ';
+static const Int32 PROC_TAB_TERM = (Int32)'\t';
+static const Int32 PROC_COMBINE = 0x100;
+static const Int32 PROC_PARENS = 0x200;
+static const Int32 PROC_QUOTES = 0x400;
+static const Int32 PROC_OUT_STRING = 0x1000;
+static const Int32 PROC_OUT_LONG = 0x2000;
+static const Int32 PROC_OUT_FLOAT = 0x4000;
+
 Object Process::sLock;
 
+//===============================================================================
+// Process::ZygoteState
+//===============================================================================
+
+Process::ZygoteState::ZygoteState(
+    /* [in] */ ILocalSocket* socket,
+    /* [in] */ IDataInputStream* inputStream,
+    /* [in] */ IBufferedWriter* writer,
+    /* [in] */ List<String>* abiList)
+    : mSocket(socket)
+    , mInputStream(inputStream)
+    , mWriter(writer)
+    , mAbiList(abiList)
+    , mClosed(FALSE)
+{}
+
+ECode Process::ZygoteState::Connect(
+    /* [in] */ const String& socketAddress,
+    /* [out] */ Process::ZygoteState** state)
+{
+    VALIDATE_NOT_NULL(state)
+    *state = NULL;
+
+    AutoPtr<IDataInputStream> zygoteInputStream = NULL;
+    AutoPtr<IBufferedWriter> zygoteWriter = NULL;
+    AutoPtr<ILocalSocket> zygoteSocket;
+    assert(0 && "TODO");
+    //CLocalSocket::New((ILocalSocket**)&zygoteSocket);
+
+    AutoPtr<IInputStream> inputStream;
+    AutoPtr<IOutputStream> outputStream;
+    AutoPtr<IOutputStreamWriter> outputStreamWriter;
+    AutoPtr<ArrayOf<String> > splits;
+    AutoPtr<List<String> > lists;
+    String abiListString;
+
+    ECode ec = NOERROR;
+    AutoPtr<ILocalSocketAddress> lsa;
+    //CLocalSocketAddress::New(socketAddress, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&lsa);
+    ec = zygoteSocket->Connect(lsa);
+    FAIL_GOTO(ec, _EXIT_)
+
+    ec = zygoteSocket->GetInputStream((IInputStream**)&inputStream);
+    FAIL_GOTO(ec, _EXIT_)
+    CDataInputStream::New(inputStream, (IDataInputStream**)&zygoteInputStream);
+
+    ec = zygoteSocket->GetOutputStream((IOutputStream**)&outputStream);
+    FAIL_GOTO(ec, _EXIT_)
+    ec = COutputStreamWriter::New(outputStream, (IOutputStreamWriter**)&outputStreamWriter);
+    FAIL_GOTO(ec, _EXIT_)
+    ec = CBufferedWriter::New(IWriter::Probe(outputStreamWriter), 256, (IBufferedWriter**)&zygoteWriter);
+    FAIL_GOTO(ec, _EXIT_)
+
+    Process::GetAbiList(zygoteWriter, zygoteInputStream, &abiListString);
+    Logger::I("Zygote", "Process: zygote socket opened, supported ABIS: %s", abiListString.string());
+
+    StringUtils::Split(abiListString, String(","), (ArrayOf<String>**)&splits);
+    lists = new List<String>(splits->GetLength());
+    for (Int32 i = 0; i < splits->GetLength(); ++i) {
+        lists->PushBack((*splits)[i]);
+    }
+    *state = new ZygoteState(zygoteSocket, zygoteInputStream, zygoteWriter, lists);
+    REFCOUNT_ADD(*state)
+    return NOERROR;
+
+_EXIT_:
+    if (zygoteSocket) {
+        ICloseable::Probe(zygoteSocket)->Close();
+    }
+    return ec;
+}
+
+Boolean Process::ZygoteState::Matches(
+    /* [in] */ const String& abi)
+{
+    List<String>::Iterator it = Find(mAbiList->Begin(), mAbiList->End(), abi);
+    return it != mAbiList->End();
+}
+
+void Process::ZygoteState::Close()
+{
+    ECode ec = ICloseable::Probe(mSocket)->Close();
+    if (ec == (ECode)E_IO_EXCEPTION) {
+        Logger::E("Process", "I/O exception on routine close E_IO_EXCEPTION");
+    }
+
+    mClosed = TRUE;
+}
+
+Boolean Process::ZygoteState::IsClosed()
+{
+    return mClosed;
+}
+
+//===============================================================================
+// Process
+//===============================================================================
 CAR_INTERFACE_IMPL(Process, Object, IProcess)
 
 ECode Process::Start(
@@ -80,6 +190,9 @@ ECode Process::Start(
     /* [in] */ Int32 mountExternal,
     /* [in] */ Int32 targetSdkVersion,
     /* [in] */ const String& seInfo,
+    /* [in] */ const String& abi,
+    /* [in] */ const String& instructionSet,
+    /* [in] */ const String& appDataDir,
     /* [in] */ ArrayOf<String>* zygoteArgs,
     /* [out] */ IProcessStartResult** result)
 {
@@ -87,175 +200,52 @@ ECode Process::Start(
 
     // try {
     ECode ec = StartViaZygote(processClass, niceName, uid, gid, gids,
-            debugFlags, mountExternal, targetSdkVersion, seInfo, zygoteArgs, result);
-    if (ec == (ECode)E_ZYGOTE_START_FAILED_EX) {
+            debugFlags, mountExternal, targetSdkVersion, seInfo,
+            abi, instructionSet, appDataDir, zygoteArgs, result);
+    if (ec == (ECode)E_ZYGOTE_START_FAILED_EXCEPTION) {
         return E_RUNTIME_EXCEPTION;
     }
     return ec;
     // } catch (ZygoteStartFailedEx ex) {
-    //     Log.e(LOG_TAG,
+    //     Log.e(TAG,
     //             "Starting VM process through Zygote failed");
     //     throw new RuntimeException(
     //             "Starting VM process through Zygote failed", ex);
     // }
 }
 
-ECode Process::OpenZygoteSocketIfNeeded()
+ECode Process::GetAbiList(
+    /* [in] */ IBufferedWriter* writer,
+    /* [in] */ IDataInputStream* inputStream,
+    /* [out] */ String* result)
 {
-    Int32 retryCount;
+    // Each query starts with the argument count (1 in this case)
+    IWriter::Probe(writer)->Write(String("1"));
+    // ... followed by a new-line.
+    writer->NewLine();
+    // ... followed by our only argument.
+    IWriter::Probe(writer)->Write(String("--query-abi-list"));
+    writer->NewLine();
+    IFlushable::Probe(writer)->Flush();
 
-    if (sPreviousZygoteOpenFailed) {
-        /*
-         * If we've failed before, expect that we'll fail again and
-         * don't pause for retries.
-         */
-        retryCount = 0;
-    }
-    else {
-        retryCount = 10;
-    }
+    // The response is a length prefixed stream of ASCII bytes.
+    Int32 numBytes;
+    IDataInput::Probe(inputStream)->ReadInt32(&numBytes);
+    AutoPtr<ArrayOf<Byte> > bytes = ArrayOf<Byte>::Alloc(numBytes);
+    IDataInput::Probe(inputStream)->ReadFully(bytes);
 
-    /*
-     * See bug #811181: Sometimes runtime can make it up before zygote.
-     * Really, we'd like to do something better to avoid this condition,
-     * but for now just wait a bit...
-     */
-    for (Int32 retry = 0
-            ; (sZygoteSocket == NULL) && (retry < (retryCount + 1))
-            ; retry++ ) {
-
-        if (retry > 0) {
-            // try {
-            Logger::I("Zygote", "Zygote not up yet, sleeping...");
-            Thread::Sleep(ZYGOTE_RETRY_MILLIS);
-            // } catch (InterruptedException ex) {
-            //     // should never happen
-            // }
-        }
-
-        // try {
-        CLocalSocket::New((ILocalSocket**)&sZygoteSocket);
-
-        AutoPtr<ILocalSocketAddress> address;
-        CLocalSocketAddress::New(ZYGOTE_SOCKET_ELASTOS, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&address);
-        FAIL_RETURN(sZygoteSocket->Connect(address));
-
-        AutoPtr<IInputStream> input;
-        sZygoteSocket->GetInputStream((IInputStream**)&input);
-        CDataInputStream::New(input, (IDataInputStream**)&sZygoteInputStream);
-
-        AutoPtr<IOutputStream> output;
-        sZygoteSocket->GetOutputStream((IOutputStream**)&output);
-        AutoPtr<IOutputStreamWriter> writer;
-        COutputStreamWriter::New(output, (IOutputStreamWriter**)&writer);
-        CBufferedWriter::New(writer, 256, (IBufferedWriter**)&sZygoteWriter);
-
-        Logger::I("Zygote", "Process: zygote socket opened");
-
-        sPreviousZygoteOpenFailed = FALSE;
-        break;
-        // } catch (IOException ex) {
-        //     if (sZygoteSocket != null) {
-        //         try {
-        //             sZygoteSocket.close();
-        //         } catch (IOException ex2) {
-        //             Log.e(LOG_TAG,"I/O exception on close after exception",
-        //                     ex2);
-        //         }
-        //     }
-
-        //     sZygoteSocket = null;
-        // }
-    }
-
-    if (sZygoteSocket == NULL) {
-        sPreviousZygoteOpenFailed = TRUE;
-        // throw new ZygoteStartFailed("connect failed");
-        return E_ZYGOTE_START_FAILED_EX;
-    }
-
-    return NOERROR;
-}
-
-ECode Process::OpenJavaZygoteSocketIfNeeded()
-{
-    Int32 retryCount;
-
-    if(sJavaZygoteSocket != NULL){
-        return NOERROR;
-    }
-
-    if (sPreviousJavaZygoteOpenFailed) {
-        /*
-         * If we've failed before, expect that we'll fail again and
-         * don't pause for retries.
-         */
-        retryCount = 0;
-    }
-    else {
-        retryCount = 40;
-    }
-
-    Int32 retry = 0;
-    String androidZygoteInited("false");
-
-    // A new way to judge if android zygote is ready
-    while(TRUE){
-        if(retry > retryCount){
-            Logger::W("Zygote", "wait for Android zygote initialized timeout!");
-            break;
-        }
-
-        AutoPtr<ISystemProperties> sysProp;
-        CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-        sysProp->Get(String("android_zygote_inited"), String("false"), &androidZygoteInited);
-        if(androidZygoteInited.Equals(String("true"))){
-            Logger::I("Zygote", "Android Zygote is ready");
-            break;
-        }
-
-        Logger::I("Zygote", "Android Zygote not up yet, sleeping...");
-        Thread::Sleep(ZYGOTE_RETRY_MILLIS);
-    }
-
-    // Try to connect to android zygote socket
-    CLocalSocket::New((ILocalSocket**)&sJavaZygoteSocket);
-
-    AutoPtr<ILocalSocketAddress> address;
-    CLocalSocketAddress::New(ZYGOTE_SOCKET_JAVA, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&address);
-    FAIL_RETURN(sJavaZygoteSocket->Connect(address));
-
-    AutoPtr<IInputStream> input;
-    sJavaZygoteSocket->GetInputStream((IInputStream**)&input);
-    CDataInputStream::New(input, (IDataInputStream**)&sJavaZygoteInputStream);
-
-    AutoPtr<IOutputStream> output;
-    sJavaZygoteSocket->GetOutputStream((IOutputStream**)&output);
-    AutoPtr<IOutputStreamWriter> writer;
-    COutputStreamWriter::New(output, (IOutputStreamWriter**)&writer);
-    CBufferedWriter::New(writer, 256, (IBufferedWriter**)&sJavaZygoteWriter);
-
-    Logger::I("Zygote", "Process: zygote socket opened");
-
-    sPreviousJavaZygoteOpenFailed = FALSE;
-
-    if (sJavaZygoteSocket == NULL) {
-        sPreviousJavaZygoteOpenFailed = TRUE;
-        // throw new ZygoteStartFailed("connect failed");
-        return E_ZYGOTE_START_FAILED_EX;
-    }
-
+    *result = String((const char*)bytes->GetPayload());
+    // return new String(bytes, StandardCharsets.US_ASCII);
     return NOERROR;
 }
 
 ECode Process::ZygoteSendArgsAndGetResult(
-    /* [in] */ List<String>& args,
+    /* [in] */ Process::ZygoteState* zygoteState,
+    /* [in] */ List<String>* args,
     /* [out] */ IProcessStartResult** _result)
 {
     VALIDATE_NOT_NULL(_result);
     *_result = NULL;
-
-    FAIL_RETURN(OpenZygoteSocketIfNeeded());
 
     // try {
     /**
@@ -269,63 +259,65 @@ ECode Process::ZygoteSendArgsAndGetResult(
      * indicate whether a wrapper process was used.
      */
 
-    sZygoteWriter->WriteString(StringUtils::Int32ToString(args.GetSize()));
-    sZygoteWriter->NewLine();
+    AutoPtr<IBufferedWriter> writer = zygoteState->mWriter;
+    AutoPtr<IDataInputStream> inputStream = zygoteState->mInputStream;
+
+    IWriter::Probe(writer)->Write(StringUtils::ToString((Int32)args->GetSize()));
+    writer->NewLine();
 
     List<String>::Iterator it;
-    for (it = args.Begin(); it != args.End(); ++it) {
+    for (it = args->Begin(); it != args->End(); ++it) {
         String& arg = *it;
         if (arg.IndexOf('\n') >= 0) {
             // throw new ZygoteStartFailed(
             //         "embedded newlines not allowed");
-            return E_ZYGOTE_START_FAILED_EX;
+            return E_ZYGOTE_START_FAILED_EXCEPTION;
         }
-        sZygoteWriter->WriteString(arg);
-        sZygoteWriter->NewLine();
+        IWriter::Probe(writer)->Write(arg);
+        writer->NewLine();
     }
 
-    IFlushable::Probe(sZygoteWriter)->Flush();
+    IFlushable::Probe(writer)->Flush();
+
+    Int32 pid;
+    Boolean usingWrapper;
 
     // Should there be a timeout on this?
     AutoPtr<IProcessStartResult> result;
-    CProcessStartResult::New((IProcessStartResult**)&result);
-    Int32 pid;
-    IDataInput::Probe(sZygoteInputStream)->ReadInt32(&pid);
+    //CProcessStartResult::New((IProcessStartResult**)&result);
+    ECode ec = IDataInput::Probe(inputStream)->ReadInt32(&pid);
+    FAIL_GOTO(ec, _EXIT_)
+
     result->SetPid(pid);
     if (pid < 0) {
         // throw new ZygoteStartFailed("fork() failed");
-        return E_ZYGOTE_START_FAILED_EX;
+        return E_ZYGOTE_START_FAILED_EXCEPTION;
     }
-    Boolean usingWrapper;
-    IDataInput::Probe(sZygoteInputStream)->ReadBoolean(&usingWrapper);
+
+    ec = IDataInput::Probe(inputStream)->ReadBoolean(&usingWrapper);
+    FAIL_GOTO(ec, _EXIT_)
+
     result->SetUsingWrapper(usingWrapper);
     *_result = result;
     REFCOUNT_ADD(*_result);
     return NOERROR;
+
+_EXIT_:
+    zygoteState->Close();
+    return E_FAIL;
     // } catch (IOException ex) {
-    //     try {
-    //         if (sZygoteSocket != null) {
-    //             sZygoteSocket.close();
-    //         }
-    //     } catch (IOException ex2) {
-    //         // we're going to fail anyway
-    //         Log.e(LOG_TAG,"I/O exception on routine close", ex2);
-    //     }
-
-    //     sZygoteSocket = null;
-
-    //     throw new ZygoteStartFailed(ex);
+            // zygoteState.close();
+            // throw new ZygoteStartFailedEx(ex);
     // }
 }
 
 ECode Process::JavaZygoteSendArgsAndGetResult(
-    /* [in] */ List<String>& args,
+    /* [in] */ ZygoteState* zygoteState,
+    /* [in] */ List<String>* args,
     /* [out] */ IProcessStartResult** _result)
 {
     VALIDATE_NOT_NULL(_result);
     *_result = NULL;
-
-    FAIL_RETURN(OpenJavaZygoteSocketIfNeeded());
 
     // try {
     /**
@@ -339,52 +331,56 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
      * indicate whether a wrapper process was used.
      */
 
-    sJavaZygoteWriter->WriteString(StringUtils::Int32ToString(args.GetSize()));
-    sJavaZygoteWriter->NewLine();
+    AutoPtr<IBufferedWriter> writer = zygoteState->mWriter;
+    AutoPtr<IDataInputStream> inputStream = zygoteState->mInputStream;
+
+    IWriter::Probe(writer)->Write(StringUtils::ToString((Int32)args->GetSize()));
+    writer->NewLine();
 
     List<String>::Iterator it;
-    for (it = args.Begin(); it != args.End(); ++it) {
+    for (it = args->Begin(); it != args->End(); ++it) {
         String& arg = *it;
         if (arg.IndexOf('\n') >= 0) {
             // throw new ZygoteStartFailed(
             //         "embedded newlines not allowed");
-            return E_ZYGOTE_START_FAILED_EX;
+            return E_ZYGOTE_START_FAILED_EXCEPTION;
         }
-        sJavaZygoteWriter->WriteString(arg);
-        sJavaZygoteWriter->NewLine();
+        IWriter::Probe(writer)->Write(arg);
+        writer->NewLine();
     }
 
-    IFlushable::Probe(sJavaZygoteWriter)->Flush();
+    IFlushable::Probe(writer)->Flush();
+
+    Int32 pid;
+    Boolean usingWrapper;
 
     // Should there be a timeout on this?
     AutoPtr<IProcessStartResult> result;
-    CProcessStartResult::New((IProcessStartResult**)&result);
-    Int32 pid;
-    IDataInput::Probe(sJavaZygoteInputStream)->ReadInt32(&pid);
+    //CProcessStartResult::New((IProcessStartResult**)&result);
+
+    ECode ec = IDataInput::Probe(inputStream)->ReadInt32(&pid);
+    FAIL_GOTO(ec, _EXIT_)
+
     result->SetPid(pid);
     if (pid < 0) {
         // throw new ZygoteStartFailed("fork() failed");
-        return E_ZYGOTE_START_FAILED_EX;
+        return E_ZYGOTE_START_FAILED_EXCEPTION;
     }
-    Boolean usingWrapper;
-    IDataInput::Probe(sJavaZygoteInputStream)->ReadBoolean(&usingWrapper);
+
+    ec = IDataInput::Probe(inputStream)->ReadBoolean(&usingWrapper);
+    FAIL_GOTO(ec, _EXIT_)
+
     result->SetUsingWrapper(usingWrapper);
     *_result = result;
     REFCOUNT_ADD(*_result);
     return NOERROR;
+
+_EXIT_:
+    zygoteState->Close();
+    return E_FAIL;
     // } catch (IOException ex) {
-    //     try {
-    //         if (sZygoteSocket != null) {
-    //             sZygoteSocket.close();
-    //         }
-    //     } catch (IOException ex2) {
-    //         // we're going to fail anyway
-    //         Log.e(LOG_TAG,"I/O exception on routine close", ex2);
-    //     }
-
-    //     sZygoteSocket = null;
-
-    //     throw new ZygoteStartFailed(ex);
+            // zygoteState.close();
+            // throw new ZygoteStartFailedEx(ex);
     // }
 }
 
@@ -398,6 +394,9 @@ ECode Process::StartViaZygote(
     /* [in] */ Int32 mountExternal,
     /* [in] */ Int32 targetSdkVersion,
     /* [in] */ const String& seInfo,
+    /* [in] */ const String& abi,
+    /* [in] */ const String& instructionSet,
+    /* [in] */ const String& appDataDir,
     /* [in] */ ArrayOf<String>* extraArgs,
     /* [out] */ IProcessStartResult** result)
 {
@@ -409,38 +408,38 @@ ECode Process::StartViaZygote(
 
         Boolean startJavaProcess = processClass.StartWith("android.");
 
-        List<String> argsForZygote;
+        AutoPtr<List<String> > argsForZygote = new List<String>();
 
         // --runtime-init, --setuid=, --setgid=,
         // and --setgroups= must go first
-        argsForZygote.PushBack(String("--runtime-init"));
-        argsForZygote.PushBack(String("--setuid=") + StringUtils::Int32ToString(uid));
-        argsForZygote.PushBack(String("--setgid=") + StringUtils::Int32ToString(gid));
+        argsForZygote->PushBack(String("--runtime-init"));
+        argsForZygote->PushBack(String("--setuid=") + StringUtils::ToString(uid));
+        argsForZygote->PushBack(String("--setgid=") + StringUtils::ToString(gid));
         // if ((debugFlags & Zygote.DEBUG_ENABLE_JNI_LOGGING) != 0) {
-        //     argsForZygote.add("--enable-jni-logging");
+        //     argsForZygote->add("--enable-jni-logging");
         // }
         // if ((debugFlags & Zygote.DEBUG_ENABLE_SAFEMODE) != 0) {
-        //     argsForZygote.add("--enable-safemode");
+        //     argsForZygote->add("--enable-safemode");
         // }
         // if ((debugFlags & Zygote.DEBUG_ENABLE_DEBUGGER) != 0) {
-        //     argsForZygote.add("--enable-debugger");
+        //     argsForZygote->add("--enable-debugger");
         // }
         // if ((debugFlags & Zygote.DEBUG_ENABLE_CHECKJNI) != 0) {
-        //     argsForZygote.add("--enable-checkjni");
+        //     argsForZygote->add("--enable-checkjni");
         // }
         // if ((debugFlags & Zygote.DEBUG_ENABLE_ASSERT) != 0) {
-        //     argsForZygote.add("--enable-assert");
+        //     argsForZygote->add("--enable-assert");
         // }
         // if (mountExternal == Zygote.MOUNT_EXTERNAL_MULTIUSER) {
-        //     argsForZygote.add("--mount-external-multiuser");
+        //     argsForZygote->add("--mount-external-multiuser");
         // }
         // else if (mountExternal == Zygote.MOUNT_EXTERNAL_MULTIUSER_ALL) {
-        //     argsForZygote.add("--mount-external-multiuser-all");
+        //     argsForZygote->add("--mount-external-multiuser-all");
         // }
-        argsForZygote.PushBack(String("--target-sdk-version=") + StringUtils::Int32ToString(targetSdkVersion));
+        argsForZygote->PushBack(String("--target-sdk-version=") + StringUtils::ToString(targetSdkVersion));
 
         //TODO optionally enable debuger
-        //argsForZygote.add("--enable-debugger");
+        //argsForZygote->add("--enable-debugger");
 
         // --setgroups is a comma-separated list
         if (gids != NULL && gids->GetLength() > 0) {
@@ -456,36 +455,48 @@ ECode Process::StartViaZygote(
             }
             String temp;
             Logger::I("permissionRelated", "processClass:%s niceName:%s groups:%s", processClass.string(), niceName.string(), (sb.ToString(&temp), temp.string()));
-            argsForZygote.PushBack(sb.ToString());
+            argsForZygote->PushBack(sb.ToString());
         }
 
         if (!niceName.IsNull()) {
-            argsForZygote.PushBack(String("--nice-name=") + niceName);
+            argsForZygote->PushBack(String("--nice-name=") + niceName);
         }
 
         if (!seInfo.IsNull()) {
-            argsForZygote.PushBack(String("--seinfo=") + seInfo);
+            argsForZygote->PushBack(String("--seinfo=") + seInfo);
+        }
+
+        if (!instructionSet.IsNull()) {
+            argsForZygote->PushBack(String("--instruction-set=") + instructionSet);
+        }
+
+        if (!appDataDir.IsNull()) {
+            argsForZygote->PushBack(String("--app-data-dir=") + appDataDir);
         }
 
         //TODO:
         if(!startJavaProcess){
-            argsForZygote.PushBack(String("Elastos.Droid.Core.eco"));
+            argsForZygote->PushBack(String("Elastos.Droid.Core.eco"));
         }
 
-        argsForZygote.PushBack(processClass);
+        argsForZygote->PushBack(processClass);
 
         if (extraArgs != NULL) {
             Int32 sz = extraArgs->GetLength();
             for (Int32 i = 0; i < sz; i++) {
-                argsForZygote.PushBack((*extraArgs)[i]);
+                argsForZygote->PushBack((*extraArgs)[i]);
             }
         }
 
-        if(startJavaProcess){
-            return JavaZygoteSendArgsAndGetResult(argsForZygote, result);
+        if (startJavaProcess){
+            AutoPtr<ZygoteState> zygoteState;
+            FAIL_RETURN(OpenJavaZygoteSocketIfNeeded(abi, (ZygoteState**)&zygoteState))
+            return JavaZygoteSendArgsAndGetResult(zygoteState, argsForZygote, result);
         }
-        else{
-            return ZygoteSendArgsAndGetResult(argsForZygote, result);
+        else {
+            AutoPtr<ZygoteState> zygoteState;
+            FAIL_RETURN(OpenZygoteSocketIfNeeded(abi, (ZygoteState**)&zygoteState))
+            return ZygoteSendArgsAndGetResult(zygoteState, argsForZygote, result);
         }
     }
 }
@@ -506,17 +517,30 @@ Int64 Process::GetElapsedCpuTime()
 
 Int32 Process::MyPid()
 {
-    return getpid();
+    Int32 id;
+    Elastos::Droid::System::Os::Getpid(&id);
+    return id;
+}
+
+Int32 Process::MyPpid()
+{
+    Int32 id;
+    Elastos::Droid::System::Os::Getppid(&id);
+    return id;
 }
 
 Int32 Process::MyTid()
 {
-    return androidGetTid();
+    Int32 id;
+    Elastos::Droid::System::Os::Gettid(&id);
+    return id;
 }
 
 Int32 Process::MyUid()
 {
-    return getuid();
+    Int32 id;
+    Elastos::Droid::System::Os::Getuid(&id);
+    return id;
 }
 
 ECode Process::MyUserHandle(
@@ -595,7 +619,7 @@ Int32 Process::GetUidForPid(
     AutoPtr< ArrayOf<Int64> > procStatusValues = ArrayOf<Int64>::Alloc(1);
     (*procStatusValues)[0] = -1;
     StringBuilder sb("/proc/");
-    sb += StringUtils::Int32ToString(pid);
+    sb += StringUtils::ToString(pid);
     sb += "/status";
     Process::ReadProcLines(sb.ToString(), *procStatusLabels, procStatusValues);
     return (Int32)(*procStatusValues)[0];
@@ -609,7 +633,7 @@ Int32 Process::GetParentPid(
     AutoPtr< ArrayOf<Int64> > procStatusValues = ArrayOf<Int64>::Alloc(1);
     (*procStatusValues)[0] = -1;
     StringBuilder sb("/proc/");
-    sb += StringUtils::Int32ToString(pid);
+    sb += StringUtils::ToString(pid);
     sb += "/status";
     Process::ReadProcLines(sb.ToString(), *procStatusLabels, procStatusValues);
     return (Int32)(*procStatusValues)[0];
@@ -623,7 +647,7 @@ Int32 Process::GetThreadGroupLeader(
     AutoPtr< ArrayOf<Int64> > procStatusValues = ArrayOf<Int64>::Alloc(1);
     (*procStatusValues)[0] = -1;
     StringBuilder sb("/proc/");
-    sb += StringUtils::Int32ToString(pid);
+    sb += StringUtils::ToString(pid);
     sb += "/status";
     Process::ReadProcLines(sb.ToString(), *procStatusLabels, procStatusValues);
     return (Int32)(*procStatusValues)[0];
@@ -819,6 +843,19 @@ ECode Process::SetProcessGroup(
     return ec;
 }
 
+ECode Process::GetProcessGroup(
+    /* [in] */ Int32 pid,
+    /* [out] */ Int32* group)
+{
+    VALIDATE_NOT_NULL(group)
+    SchedPolicy sp;
+    if (get_sched_policy(pid, &sp) != 0) {
+        return SignalExceptionForGroupError(errno);
+    }
+    *group = (int) sp;
+    return NOERROR;
+}
+
 ECode Process::SetThreadPriority(
     /* [in] */ Int32 priority)
 {
@@ -863,34 +900,44 @@ Boolean Process::SupportsProcesses()
     return TRUE;
 }
 
-Boolean Process::SetOomAdj(
+Boolean Process::SetSwappiness(
     /* [in] */ Int32 pid,
-    /* [in] */ Int32 amt)
+    /* [in] */ Boolean is_increased)
 {
-#ifdef HAVE_OOM_ADJ
     char text[64];
-    sprintf(text, "/proc/%d/oom_adj", pid);
+
+    if (is_increased) {
+        strcpy(text, "/sys/fs/cgroup/memory/sw/tasks");
+    } else {
+        strcpy(text, "/sys/fs/cgroup/memory/tasks");
+    }
+
+    struct stat st;
+    if (stat(text, &st) || !S_ISREG(st.st_mode)) {
+        return false;
+    }
+
     int fd = open(text, O_WRONLY);
     if (fd >= 0) {
-        sprintf(text, "%d", amt);
+        sprintf(text, "%" PRId32, pid);
         write(fd, text, strlen(text));
         close(fd);
     }
-    printf("Process::SetOomAdj pid = %d, adj = %d\n", pid, amt);
+
     return TRUE;
-#endif
-    return FALSE;
 }
 
 ECode Process::SetArgV0(
-    /* [in] */ const String& name)
+    /* [in] */ const String& procName)
 {
-    if (name.IsNull()) {
+    if (procName.IsNull()) {
         return E_NULL_POINTER_EXCEPTION;
     }
 
-    if (!name.IsEmpty()) {
-        android::ProcessState::self()->setArgV0(name.string());
+    if (!procName.IsEmpty()) {
+        set_process_name(procName);
+        assert(0);
+        //DroidRuntime::GetRuntime()->setArgv0(procName);
     }
     return NOERROR;
 }
@@ -999,7 +1046,6 @@ static Int64 GetFreeMemoryImpl(
     return numFound > 0 ? mem : -1LL;
 }
 
-/** @hide */
 Int64 Process::GetFreeMemory()
 {
     static const char* const sums[] = { "MemFree:", "Cached:", NULL };
@@ -1007,7 +1053,6 @@ Int64 Process::GetFreeMemory()
     return GetFreeMemoryImpl(sums, sumsLen, 2);
 }
 
-/** @hide */
 Int64 Process::GetTotalMemory()
 {
     static const char* const sums[] = { "MemTotal:", NULL };
@@ -1015,7 +1060,6 @@ Int64 Process::GetTotalMemory()
     return GetFreeMemoryImpl(sums, sumsLen, 1);
 }
 
-/** @hide */
 ECode Process::ReadProcLines(
     /* [in] */ const String& path,
     /* [in] */ const ArrayOf<String>& reqFields,
@@ -1115,7 +1159,6 @@ ECode Process::ReadProcLines(
     return NOERROR;
 }
 
-/** @hide */
 ECode Process::GetPids(
     /* [in] */ const String& path,
     /* [in] */ ArrayOf<Int32>* _lastArray,
@@ -1284,7 +1327,6 @@ static ECode ParseProcLineArray(
     return NOERROR;
 }
 
-/** @hide */
 ECode Process::ReadProcFile(
     /* [in] */ const String& file,
     /* [in] */ const ArrayOf<Int32>& format,
@@ -1322,7 +1364,6 @@ ECode Process::ReadProcFile(
             format, outStrings, outInt64s, outFloats, result);
 }
 
-/** @hide */
 ECode Process::ParseProcLine(
     /* [in] */ const ArrayOf<Byte>* buffer,
     /* [in] */ Int32 startIndex,
@@ -1338,7 +1379,6 @@ ECode Process::ParseProcLine(
             startIndex, endIndex, format, outStrings, outInt64s, outFloats, result);
 }
 
-/** @hide */
 ECode Process::GetPidsForCommands(
     /* [in] */ const ArrayOf<String>& cmds,
     /* [out] */ ArrayOf<Int32>** pids)
@@ -1457,6 +1497,126 @@ Int64 Process::GetPss(
 
     // Return the Pss value in bytes, not kilobytes
     return pss * 1024;
+}
+
+ECode Process::OpenZygoteSocketIfNeeded(
+    /* [in] */ const String& abi,
+    /* [out] */ Process::ZygoteState** state)
+{
+    if (mPrimaryZygoteState == NULL || mPrimaryZygoteState->IsClosed()) {
+        // try {
+        mPrimaryZygoteState = NULL;
+        ECode ec = ZygoteState::Connect(ZYGOTE_SOCKET, (ZygoteState**)&mPrimaryZygoteState);
+        // } catch (IOException ioe) {
+        if (ec == (ECode)E_IO_EXCEPTION) {
+            // throw new ZygoteStartFailedEx("Error connecting to primary zygote", ioe);
+            Logger::E(TAG, "Error connecting to primary zygote");
+            return E_FAIL;
+        }
+    }
+
+    if (mPrimaryZygoteState->Matches(abi)) {
+        *state = mPrimaryZygoteState;
+        REFCOUNT_ADD(*state)
+        return NOERROR;
+    }
+
+    // The primary zygote didn't match. Try the secondary.
+    if (mSecondaryZygoteState == NULL || mSecondaryZygoteState->IsClosed()) {
+        // try {
+        mSecondaryZygoteState = NULL;
+        ECode ec = ZygoteState::Connect(SECONDARY_ZYGOTE_SOCKET, (ZygoteState**)&mSecondaryZygoteState);
+        if (ec == (ECode)E_IO_EXCEPTION) {
+        // } catch (IOException ioe) {
+        //     throw new ZygoteStartFailedEx("Error connecting to secondary zygote", ioe);
+            Logger::E(TAG, "Error connecting to secondary zygote");
+            return E_FAIL;
+        }
+    }
+
+    if (mSecondaryZygoteState->Matches(abi)) {
+        *state = mSecondaryZygoteState;
+        REFCOUNT_ADD(*state)
+        return NOERROR;
+    }
+
+    // throw new ZygoteStartFailedEx("Unsupported zygote ABI: " + abi);
+    Logger::E(TAG, "Unsupported zygote ABI: %s", abi.string());
+    return E_ZYGOTE_START_FAILED_EXCEPTION;
+}
+
+ECode Process::OpenJavaZygoteSocketIfNeeded(
+    /* [in] */ const String& abi,
+    /* [out] */ Process::ZygoteState** state)
+{
+    assert(0 && "TODO");
+    // Int32 retryCount;
+
+    // if(sJavaZygoteSocket != NULL){
+    //     return NOERROR;
+    // }
+
+    // if (sPreviousJavaZygoteOpenFailed) {
+    //     /*
+    //      * If we've failed before, expect that we'll fail again and
+    //      * don't pause for retries.
+    //      */
+    //     retryCount = 0;
+    // }
+    // else {
+    //     retryCount = 40;
+    // }
+
+    // Int32 retry = 0;
+    // String androidZygoteInited("false");
+
+    // // A new way to judge if android zygote is ready
+    // while(TRUE){
+    //     if(retry > retryCount){
+    //         Logger::W("Zygote", "wait for Android zygote initialized timeout!");
+    //         break;
+    //     }
+
+    //     AutoPtr<ISystemProperties> sysProp;
+    //     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
+    //     sysProp->Get(String("android_zygote_inited"), String("false"), &androidZygoteInited);
+    //     if(androidZygoteInited.Equals(String("true"))){
+    //         Logger::I("Zygote", "Android Zygote is ready");
+    //         break;
+    //     }
+
+    //     Logger::I("Zygote", "Android Zygote not up yet, sleeping...");
+    //     Thread::Sleep(ZYGOTE_RETRY_MILLIS);
+    // }
+
+    // // Try to connect to android zygote socket
+    // CLocalSocket::New((ILocalSocket**)&sJavaZygoteSocket);
+
+    // AutoPtr<ILocalSocketAddress> address;
+    // CLocalSocketAddress::New(ZYGOTE_SOCKET_JAVA, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&address);
+    // FAIL_RETURN(sJavaZygoteSocket->Connect(address));
+
+    // AutoPtr<IInputStream> input;
+    // sJavaZygoteSocket->GetInputStream((IInputStream**)&input);
+    // CDataInputStream::New(input, (IDataInputStream**)&inputStream);
+
+    // AutoPtr<IOutputStream> output;
+    // sJavaZygoteSocket->GetOutputStream((IOutputStream**)&output);
+    // AutoPtr<IOutputStreamWriter> writer;
+    // COutputStreamWriter::New(output, (IOutputStreamWriter**)&writer);
+    // CBufferedWriter::New(writer, 256, (IBufferedWriter**)&writer);
+
+    // Logger::I("Zygote", "Process: zygote socket opened");
+
+    // sPreviousJavaZygoteOpenFailed = FALSE;
+
+    // if (sJavaZygoteSocket == NULL) {
+    //     sPreviousJavaZygoteOpenFailed = TRUE;
+    //     // throw new ZygoteStartFailed("connect failed");
+    //     return E_ZYGOTE_START_FAILED_EXCEPTION;
+    // }
+
+    return NOERROR;
 }
 
 } // namespace Os

@@ -1,31 +1,40 @@
-#ifndef __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
-#define __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
+#ifndef __ELASTOS_DROID_OS_PATTERNMATCHER_H__
+#define __ELASTOS_DROID_OS_PATTERNMATCHER_H__
 
 #include "_Elastos_Droid_Os_CPatternMatcher.h"
-#include "os/PatternMatcher.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CarClass(CPatternMatcher), public PatternMatcher
+CarClass(CPatternMatcher)
+    , public Object
+    , public IPatternMatcher
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
+    CPatternMatcher();
+
     CARAPI constructor();
 
     CARAPI constructor(
-        /* [in] */ const String& pattern,
-        /* [in] */ Int32 type);
+    /* [in] */ const String& pattern,
+    /* [in] */ Int32 type);
 
     CARAPI GetPath(
         /* [out] */ String* path);
 
     CARAPI GetType(
-        /* [out] */ Int32* path);
+        /* [out] */ Int32* type);
 
     CARAPI Match(
         /* [in] */ const String& str,
-        /* [out] */ Boolean* isMatch);
+        /* [out] */ Boolean* result);
 
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
@@ -35,10 +44,20 @@ public:
 
     CARAPI ToString(
         /* [out] */ String* str);
+
+protected:
+    static CARAPI_(Boolean) MatchPattern(
+        /* [in] */ const String& pattern,
+        /* [in] */ const String& match,
+        /* [in] */ Int32 type);
+
+private:
+    String mPattern;
+    Int32 mType;
 };
 
 } // namespace Os
 } // namespace Droid
 } // namespace Elastos
 
-#endif // __ELASTOS_DROID_OS_CPATTERNMATCHER_H__
+#endif //__ELASTOS_DROID_OS_PATTERNMATCHER_H__

@@ -60,12 +60,6 @@ module
         const Int32 DRM_UID = 1019;
 
         /**
-         * Defines the GID for the group that allows write access to the SD card.
-         * @hide
-         */
-        const Int32 SDCARD_RW_GID = 1015;
-
-        /**
          * Defines the UID/GID for the group that controls VPN services.
          * @hide
          */
@@ -88,6 +82,18 @@ module
          * @hide
          */
         const Int32 MEDIA_RW_GID = 1023;
+
+        /**
+         * Access to installed package details
+         * @hide
+         */
+        const Int32 PACKAGE_INFO_GID = 1032;
+
+        /**
+         * Defines the UID/GID for the shared RELRO file updater process.
+         * @hide
+         */
+        const Int32 SHARED_RELRO_UID = 1037;
 
         /**
          * Defines the start of a range of UIDs (and GIDs), going from this
@@ -114,6 +120,12 @@ module
         const Int32 LAST_ISOLATED_UID = 99999;
 
         /**
+         * Defines the gid shared by all applications running under the same profile.
+         * @hide
+         */
+        public static final int SHARED_USER_GID = 9997;
+
+        /**
          * First gid for applications to share resources. Used when forward-locking
          * is enabled but all UserHandles need to be able to read the resources.
          * @hide
@@ -126,11 +138,6 @@ module
          * @hide
          */
         const Int32 LAST_SHARED_APPLICATION_GID = 59999;
-
-        /**
-         * Defines a secondary group id for access to the bluetooth hardware.
-         */
-        const Int32 BLUETOOTH_GID = 2000;
 
         /**
          * Standard priority of application threads.

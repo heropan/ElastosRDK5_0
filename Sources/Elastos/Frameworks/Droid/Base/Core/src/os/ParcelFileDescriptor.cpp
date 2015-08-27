@@ -3,6 +3,7 @@
 #include "os/CParcelFileDescriptor.h"
 #include "os/CParcel.h"
 
+#include <elastos/core/Math.h>
 #include <elastos/droid/system/OsConstants.h>
 #include <elastos/droid/system/Os.h>
 #include <elastos/utility/logging/Logger.h>
@@ -14,6 +15,9 @@ using Libcore::IO::IIoUtils;
 using Libcore::IO::CIoUtils;
 using Libcore::IO::IIoBridge;
 using Libcore::IO::CIoBridge;
+using Libcore::IO::IMemory;
+using Libcore::IO::CMemory;
+using Elastos::IO::ByteOrder_BIG_ENDIAN;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::Core::CCloseGuard;
 using Elastos::IO::CFileDescriptor;
@@ -47,6 +51,34 @@ const Int32 ParcelFileDescriptor::Status::LEAKED = 3;
 
 ECode ParcelFileDescriptor::Status::AsIOException()
 {
+    switch (mStatus) {
+        case DEAD: {
+            //return new IOException("Remote side is dead");
+            Logger::E("ParcelFileDescriptor", "Remote side is dead");
+            return E_IO_EXCEPTION;
+        }
+        case OK: {
+            return NOERROR;
+        }
+        case ERROR: {
+            Logger::E("ParcelFileDescriptor", "Remote error: %s", mMsg.string());
+            // return new IOException("Remote error: " + msg);
+            return E_IO_EXCEPTION;
+        }
+        case DETACHED: {
+            // return new FileDescriptorDetachedException();
+            return E_IO_EXCEPTION;
+        }
+        case LEAKED: {
+            Logger::E("ParcelFileDescriptor", "Remote side was leaked");
+            // return new IOException("Remote side was leaked");
+            return E_IO_EXCEPTION;
+        }
+        default: {
+            // return new IOException("Unknown status: " + status);
+            return E_IO_EXCEPTION;
+        }
+    }
     return NOERROR;
 }
 
@@ -639,7 +671,7 @@ ECode ParcelFileDescriptor::GetStatSize(
         return NOERROR;
     }
     // } catch (ErrnoException e) {
-    //     Log.w(TAG, "fstat() failed: " + e);
+    //     Logger::W(TAG, "fstat() failed: " + e);
     //     return -1;
     // }
 }
@@ -663,63 +695,76 @@ ECode ParcelFileDescriptor::SeekTo(
 ECode ParcelFileDescriptor::GetFd(
     /* [out] */ Int32* fd)
 {
-    // if (mWrapped != NULL) {
-    //     return mWrapped.getFd();
-    // } else {
-    //     if (mClosed) {
-    //         throw new IllegalStateException("Already closed");
-    //     }
-    //     return mFd.getInt$();
-    // }
-    return NOERROR;
+    VALIDATE_NOT_NULL(fd)
+    *fd = -1;
+
+    if (mWrapped != NULL) {
+        return mWrapped->GetFd(fd);
+    }
+
+    if (mClosed) {
+        // throw new IllegalStateException("Already closed");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+    return mFd->GetDescriptor(fd);
 }
 
 ECode ParcelFileDescriptor::DetachFd(
-    /* [out] */ Int32* fd)
+    /* [out] */ Int32* result)
 {
-    // if (mWrapped != NULL) {
-    //     return mWrapped.detachFd();
-    // } else {
-    //     if (mClosed) {
-    //         throw new IllegalStateException("Already closed");
-    //     }
-    //     int fd = getFd();
-    //     Parcel.clearFileDescriptor(mFd);
-    //     writeCommStatusAndClose(Status.DETACHED, NULL);
-    //     return fd;
-    // }
+    VALIDATE_NOT_NULL(result)
+    *result = -1;
+
+    if (mWrapped != NULL) {
+        return mWrapped->DetachFd(result);
+    }
+
+    if (mClosed) {
+        //throw new IllegalStateException("Already closed");
+        return E_ILLEGAL_ARGUMENT_EXCEPTION;
+    }
+
+    Int32 fd;
+    GetFd(&fd);
+    CParcel::ClearFileDescriptor(mFd);
+    WriteCommStatusAndClose(Status::DETACHED, String(NULL));
+    *result = fd;
+
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::Close()
 {
-    // if (mWrapped != NULL) {
-    //     try {
-    //         mWrapped.close();
-    //     } finally {
-    //         releaseResources();
-    //     }
-    // } else {
-    //     closeWithStatus(Status.OK, NULL);
-    // }
+    if (mWrapped != NULL) {
+        // try {
+            mWrapped->Close();
+        // } finally {
+            ReleaseResources();
+        // }
+    }
+    else {
+        CloseWithStatus(Status::OK, String(NULL));
+    }
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::CloseWithError(
     /* [in] */ const String& msg)
 {
-    // if (mWrapped != NULL) {
-    //     try {
-    //         mWrapped.closeWithError(msg);
-    //     } finally {
-    //         releaseResources();
-    //     }
-    // } else {
-    //     if (msg == NULL) {
-    //         throw new IllegalArgumentException("Message must not be NULL");
-    //     }
-    //     closeWithStatus(Status.ERROR, msg);
-    // }
+    if (mWrapped != NULL) {
+        // try {
+            mWrapped->CloseWithError(msg);
+        // } finally {
+            ReleaseResources();
+        // }
+    }
+    else {
+        if (msg == NULL) {
+            // throw new IllegalArgumentException("Message must not be NULL");
+            return E_ILLEGAL_ARGUMENT_EXCEPTION;
+        }
+        CloseWithStatus(Status::ERROR, msg);
+    }
     return NOERROR;
 }
 
@@ -727,13 +772,15 @@ ECode ParcelFileDescriptor::CloseWithStatus(
     /* [in] */ Int32 status,
     /* [in] */ const String& msg)
 {
-    // if (mClosed) return;
-    // mClosed = TRUE;
-    // mGuard.close();
-    // // Status MUST be sent before closing actual descriptor
-    // writeCommStatusAndClose(status, msg);
-    // IoUtils.closeQuietly(mFd);
-    // releaseResources();
+    if (mClosed) return NOERROR;
+    mClosed = TRUE;
+    mGuard->Close();
+    // Status MUST be sent before closing actual descriptor
+    WriteCommStatusAndClose(status, msg);
+    AutoPtr<IIoUtils> iu;
+    CIoUtils::AcquireSingleton((IIoUtils**)&iu);
+    iu->CloseQuietly(mFd);
+    ReleaseResources();
     return NOERROR;
 }
 
@@ -745,10 +792,13 @@ ECode ParcelFileDescriptor::ReleaseResources()
 ECode ParcelFileDescriptor::GetOrCreateStatusBuffer(
     /* [out, callee] */ ArrayOf<Byte>** buffer)
 {
-    // if (mStatusBuf == NULL) {
-    //     mStatusBuf = new byte[MAX_STATUS];
-    // }
-    // return mStatusBuf;
+    VALIDATE_NOT_NULL(buffer)
+    if (mStatusBuf == NULL) {
+        mStatusBuf = ArrayOf<Byte>::Alloc(MAX_STATUS);
+    }
+
+    *buffer = mStatusBuf;
+    REFCOUNT_ADD(*buffer)
     return NOERROR;
 }
 
@@ -756,54 +806,60 @@ ECode ParcelFileDescriptor::WriteCommStatusAndClose(
     /* [in] */ Int32 status,
     /* [in] */ const String& msg)
 {
-    // if (mCommFd == NULL) {
-    //     // Not reliable, or someone already sent status
-    //     if (msg != NULL) {
-    //         Log.w(TAG, "Unable to inform peer: " + msg);
-    //     }
-    //     return;
-    // }
+    if (mCommFd == NULL) {
+        // Not reliable, or someone already sent status
+        if (!msg.IsNull()) {
+            Logger::W(TAG, "Unable to inform peer: %s", msg.string());
+        }
+        return NOERROR;
+    }
 
-    // if (status == Status.DETACHED) {
-    //     Log.w(TAG, "Peer expected signal when closed; unable to deliver after detach");
-    // }
+    if (status == Status::DETACHED) {
+        Logger::W(TAG, "Peer expected signal when closed; unable to deliver after detach");
+    }
 
     // try {
-    //     if (status == Status.SILENCE) return;
+    if (status == Status::SILENCE) return NOERROR;
 
-    //     // Since we're about to close, read off any remote status. It's
-    //     // okay to remember missing here.
-    //     mStatus = readCommStatus(mCommFd, getOrCreateStatusBuffer());
+    // Since we're about to close, read off any remote Status:: It's
+    // okay to remember missing here.
+    AutoPtr<ArrayOf<Byte> > buf;
+    GetOrCreateStatusBuffer((ArrayOf<Byte>**)&buf);
+    mStatus = ReadCommStatus(mCommFd, buf);
 
-    //     // Skip writing status when other end has already gone away.
-    //     if (mStatus != NULL) return;
+    // Skip writing status when other end has already gone away.
+    if (mStatus != NULL) return NOERROR;
 
-    //     try {
-    //         byte[] buf = getOrCreateStatusBuffer();
-    //         int writePtr = 0;
+    // try {
+        Int32 writePtr = 0;
 
-    //         Memory.pokeInt(buf, writePtr, status, ByteOrder.BIG_ENDIAN);
-    //         writePtr += 4;
+        AutoPtr<IMemory> memory;
+        CMemory::AcquireSingleton((IMemory**)&memory);
+        memory->PokeInt32(buf, writePtr, status, ByteOrder_BIG_ENDIAN);
+        writePtr += 4;
 
-    //         if (msg != NULL) {
-    //             byte[] rawMsg = msg.getBytes();
-    //             int len = Math.min(rawMsg.length, buf.length - writePtr);
-    //             System.arraycopy(rawMsg, 0, buf, writePtr, len);
-    //             writePtr += len;
-    //         }
+        if (msg != NULL) {
+            AutoPtr<ArrayOf<Byte> > rawMsg = msg.GetBytes();
+            Int32 len = Elastos::Core::Math::Min(rawMsg->GetLength(), buf->GetLength() - writePtr);
+            buf->Copy(writePtr, rawMsg, 0, len);
+            writePtr += len;
+        }
 
-    //         Os.write(mCommFd, buf, 0, writePtr);
-    //     } catch (ErrnoException e) {
-    //         // Reporting status is best-effort
-    //         Log.w(TAG, "Failed to report status: " + e);
-    //     } catch (InterruptedIOException e) {
-    //         // Reporting status is best-effort
-    //         Log.w(TAG, "Failed to report status: " + e);
-    //     }
+        Int32 num;
+        ECode ec = Elastos::Droid::System::Os::Write(mCommFd, buf, 0, writePtr, &num);
+    //} catch (ErrnoException e) {
+        // Reporting status is best-effort
+        if (FAILED(ec)) Logger::W(TAG, "Failed to report status: %08x", ec);
+    //} catch (InterruptedIOException e) {
+        // Reporting status is best-effort
+        // Logger::W(TAG, "Failed to report status: " + e);
+    //}
 
     // } finally {
-    //     IoUtils.closeQuietly(mCommFd);
-    //     mCommFd = NULL;
+    AutoPtr<IIoUtils> iu;
+    CIoUtils::AcquireSingleton((IIoUtils**)&iu);
+    iu->CloseQuietly(mCommFd);
+    mCommFd = NULL;
     // }
     return NOERROR;
 }
@@ -813,395 +869,191 @@ AutoPtr<ParcelFileDescriptor::Status> ParcelFileDescriptor::ReadCommStatus(
     /* [in] */ ArrayOf<Byte>* buf)
 {
     // try {
-    //     int n = Os.read(comm, buf, 0, buf.length);
-    //     if (n == 0) {
-    //         // EOF means they're dead
-    //         return new Status(Status.DEAD);
-    //     } else {
-    //         int status = Memory.peekInt(buf, 0, ByteOrder.BIG_ENDIAN);
-    //         if (status == Status.ERROR) {
-    //             String msg = new String(buf, 4, n - 4);
-    //             return new Status(status, msg);
-    //         }
-    //         return new Status(status);
-    //     }
-    // } catch (ErrnoException e) {
-    //     if (e.errno == OsConstants.EAGAIN) {
-    //         // Remote is still alive, but no status written yet
-    //         return NULL;
-    //     } else {
-    //         Log.d(TAG, "Failed to read status; assuming dead: " + e);
-    //         return new Status(Status.DEAD);
-    //     }
-    // } catch (InterruptedIOException e) {
-    //     Log.d(TAG, "Failed to read status; assuming dead: " + e);
-    //     return new Status(Status.DEAD);
-    // }
-    return NULL;
+    AutoPtr<Status> result;
+    AutoPtr<IMemory> memory;
+    CMemory::AcquireSingleton((IMemory**)&memory);
+    Int32 n, status;
+    ECode ec = Elastos::Droid::System::Os::Read(comm, buf, 0, buf->GetLength(), &n);
+    FAIL_GOTO(ec, _EXIT_)
+
+    if (n == 0) {
+        // EOF means they're dead
+        result = new Status(Status::DEAD);
+        return result;
+    }
+    else {
+        ec = memory->PeekInt32(buf, 0, ByteOrder_BIG_ENDIAN, &status);
+        FAIL_GOTO(ec, _EXIT_)
+        if (status == Status::ERROR) {
+            String msg((const char*)buf->GetPayload() + 4, n - 4);
+            result = new Status(status, msg);
+            return result;
+        }
+        result = new Status(status);
+        return result;
+    }
+
+_EXIT_:
+    if (ec == OsConstants::_EAGAIN) {
+        return NULL;
+    }
+    else {
+        Logger::D(TAG, "Failed to read status; assuming dead: %08x", ec);
+        result = new Status(Status::DEAD);
+        return result;
+    }
 }
 
 ECode ParcelFileDescriptor::CanDetectErrors(
     /* [out] */ Boolean* result)
 {
-    // if (mWrapped != NULL) {
-    //     return mWrapped.canDetectErrors();
-    // } else {
-    //     return mCommFd != NULL;
-    // }
+    VALIDATE_NOT_NULL(result)
+    if (mWrapped != NULL) {
+        return mWrapped->CanDetectErrors(result);
+    }
+
+    *result = mCommFd != NULL;
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::CheckError()
 {
-    // if (mWrapped != NULL) {
-    //     mWrapped.checkError();
-    // } else {
-    //     if (mStatus == NULL) {
-    //         if (mCommFd == NULL) {
-    //             Log.w(TAG, "Peer didn't provide a comm channel; unable to check for errors");
-    //             return;
-    //         }
+    if (mWrapped != NULL) {
+        mWrapped->CheckError();
+    }
+    else {
+        if (mStatus == NULL) {
+            if (mCommFd == NULL) {
+                Logger::W(TAG, "Peer didn't provide a comm channel; unable to check for errors");
+                return NOERROR;
+            }
 
-    //         // Try reading status; it might be NULL if nothing written yet.
-    //         // Either way, we keep comm open to write our status later.
-    //         mStatus = readCommStatus(mCommFd, getOrCreateStatusBuffer());
-    //     }
+            // Try reading status; it might be NULL if nothing written yet.
+            // Either way, we keep comm open to write our status later.
+            AutoPtr<ArrayOf<Byte> > buf;
+            GetOrCreateStatusBuffer((ArrayOf<Byte>**)&buf);
+            mStatus = ReadCommStatus(mCommFd, buf);
+        }
 
-    //     if (mStatus == NULL || mStatus.status == Status.OK) {
-    //         // No status yet, or everything is peachy!
-    //         return;
-    //     } else {
-    //         throw mStatus.asIOException();
-    //     }
-    // }
+        if (mStatus == NULL || mStatus->mStatus == Status::OK) {
+            // No status yet, or everything is peachy!
+            return NOERROR;
+        }
+        else {
+            return mStatus->AsIOException();
+        }
+    }
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::ToString(
     /* [out] */ String* str)
 {
-    // if (mWrapped != NULL) {
-    //     return mWrapped.toString();
-    // } else {
-    //     return "{ParcelFileDescriptor: " + mFd + "}";
-    // }
+    VALIDATE_NOT_NULL(str)
+    if (mWrapped != NULL) {
+        *str = Object::ToString(mWrapped);
+        return NOERROR;
+    }
+
+    String value("{ParcelFileDescriptor: ");
+    value += Object::ToString(mFd);
+    value += "}";
+    *str = value;
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::ReadFromParcel(
-    /* [in] */ IParcel* source)
+    /* [in] */ IParcel* in)
 {
+    // WARNING: This must stay in sync with Parcel::writeParcelFileDescriptor()
+    // in frameworks/native/libs/binder/Parcel.cpp
+    Int32 value;
+    in->ReadInt32(&value);
+    if (value == 1) {
+        // mWrapped
+        mWrapped = NULL;
+        CParcelFileDescriptor::New((IParcelFileDescriptor**)&mWrapped);
+        IParcelable::Probe(mWrapped)->ReadFromParcel(in);
+        return NOERROR;
+    }
+    else {
+        Int32 fd;
+        FAIL_RETURN(in->ReadFileDescriptor(&fd))
+        fd = dup(fd);
+        if (fd < 0) return E_IO_EXCEPTION;
+        if (mFd == NULL) {
+            CFileDescriptor::New((IFileDescriptor**)&mFd);
+        }
+        mFd->SetDescriptor(fd);
+
+        in->ReadInt32(&value);
+        if (value != 0) {
+            FAIL_RETURN(in->ReadFileDescriptor(&fd))
+            fd = dup(fd);
+            if (fd < 0) return E_IO_EXCEPTION;
+            if (mCommFd == NULL) {
+                CFileDescriptor::New((IFileDescriptor**)&mCommFd);
+            }
+            mCommFd->SetDescriptor(fd);
+        }
+    }
+
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::WriteToParcel(
-    /* [in] */ IParcel* dest)
+    /* [in] */ IParcel* out)
 {
-    // // WARNING: This must stay in sync with Parcel::readParcelFileDescriptor()
-    // // in frameworks/native/libs/binder/Parcel.cpp
-    // if (mWrapped != NULL) {
-    //     try {
-    //         mWrapped.writeToParcel(out, flags);
-    //     } finally {
-    //         releaseResources();
-    //     }
-    // } else {
-    //     out.writeFileDescriptor(mFd);
-    //     if (mCommFd != NULL) {
-    //         out.writeInt(1);
-    //         out.writeFileDescriptor(mCommFd);
-    //     } else {
-    //         out.writeInt(0);
-    //     }
-    //     if ((flags & PARCELABLE_WRITE_RETURN_VALUE) != 0 && !mClosed) {
-    //         // Not a real close, so emit no status
-    //         closeWithStatus(Status.SILENCE, NULL);
-    //     }
-    // }
+    // WARNING: This must stay in sync with Parcel::readParcelFileDescriptor()
+    // in frameworks/native/libs/binder/Parcel.cpp
+    if (mWrapped != NULL) {
+        out->WriteInt32(1);
+        // try {
+            IParcelable::Probe(mWrapped)->WriteToParcel(out);
+        // } finally {
+            ReleaseResources();
+        // }
+    }
+    else {
+        out->WriteInt32(0);
+
+        Int32 fd = -1;
+        mFd->GetDescriptor(&fd);
+        out->WriteFileDescriptor(fd);
+        if (mCommFd != NULL) {
+            mCommFd->GetDescriptor(&fd);
+            out->WriteInt32(1);
+            out->WriteFileDescriptor(fd);
+        }
+        else {
+            out->WriteInt32(0);
+        }
+        if (/*(flags & PARCELABLE_WRITE_RETURN_VALUE) != 0 &&*/ !mClosed) {
+            // Not a real close, so emit no status
+            CloseWithStatus(Status::SILENCE, String(NULL));
+        }
+    }
     return NOERROR;
 }
 
 ECode ParcelFileDescriptor::Finalize()
 {
-    // if (mWrapped != NULL) {
-    //     releaseResources();
-    // }
-    // if (mGuard != NULL) {
-    //     mGuard.warnIfOpen();
-    // }
+    if (mWrapped != NULL) {
+        ReleaseResources();
+    }
+    if (mGuard != NULL) {
+        mGuard->WarnIfOpen();
+    }
     // try {
-    //     if (!mClosed) {
-    //         closeWithStatus(Status::LEAKED, NULL);
-    //     }
+        if (!mClosed) {
+            CloseWithStatus(Status::LEAKED, String(NULL));
+        }
     // } finally {
     //     super.finalize();
     // }
     return NOERROR;
 }
 
-//========================================================
-
-// ParcelFileDescriptor::ParcelFileDescriptor()
-//     : mClosed(FALSE)
-// {}
-
-// ParcelFileDescriptor::~ParcelFileDescriptor()
-// {
-//     if (!mClosed) {
-//         Close();
-//     }
-// }
-
-// ParcelFileDescriptor::ParcelFileDescriptor(
-//     /* [in] */ IParcelFileDescriptor* descriptor)
-// {
-//     Init(descriptor);
-// }
-
-// ParcelFileDescriptor::ParcelFileDescriptor(
-//     /* [in] */ IFileDescriptor* descriptor)
-// {
-//     Init(descriptor);
-// }
-
-// ECode ParcelFileDescriptor::Init(
-//     /* [in] */ IParcelFileDescriptor* descriptor)
-// {
-//     mWrapped = descriptor;
-//     assert(mWrapped != NULL);
-//     descriptor->GetFileDescriptor((IFileDescriptor**)&mFileDescriptor);
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::Init(
-//     /* [in] */ IFileDescriptor* descriptor)
-// {
-//     if (descriptor == NULL) {
-//         //throw new NullPointerException("descriptor must not be NULL");
-//         return E_NULL_POINTER_EXCEPTION;
-//     }
-//     mFileDescriptor = descriptor;
-//     mWrapped = NULL;
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::Open(
-//     /* [in] */ IFile* file,
-//     /* [in] */ Int32 mode,
-//     /* [out] */ IParcelFileDescriptor** descriptor)
-// {
-//     VALIDATE_NOT_NULL(descriptor);
-//     *descriptor = NULL;
-
-//     assert(file != NULL);
-//     String path;
-//     file->GetPath(&path);
-
-//     //TODO
-//     // SecurityManager security = System.getSecurityManager();
-//     // if (security != NULL) {
-//     //     security.checkRead(path);
-//     //     if ((mode&MODE_WRITE_ONLY) != 0) {
-//     //         security.checkWrite(path);
-//     //     }
-//     // }
-
-//     if ((mode & IParcelFileDescriptor::MODE_READ_WRITE) == 0) {
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-
-//     AutoPtr<IFileDescriptor> fd;
-//     CParcel::OpenFileDescriptor(path, mode, (IFileDescriptor**)&fd);
-//     if (fd == NULL) {
-//         return NOERROR;
-//     }
-//     return CParcelFileDescriptor::New(fd, descriptor);
-// }
-
-// ECode ParcelFileDescriptor::AdoptFd(
-//     /* [in] */ Int32 fd,
-//     /* [out] */ IParcelFileDescriptor** descriptor)
-// {
-//     VALIDATE_NOT_NULL(descriptor);
-//     AutoPtr<IFileDescriptor> fdesc = GetFileDescriptorFromFdNoDup(fd);
-//     return CParcelFileDescriptor::New(fdesc, descriptor);
-// }
-
-// ECode ParcelFileDescriptor::CreatePipe(
-//     /* [out, callee] */ ArrayOf<IParcelFileDescriptor*>** _pfds)
-// {
-//     VALIDATE_NOT_NULL(_pfds)
-//     *_pfds = NULL;
-//     AutoPtr< ArrayOf<IFileDescriptor*> > fds = ArrayOf<IFileDescriptor*>::Alloc(2);
-//     FAIL_RETURN(CreatePipeNative(fds))
-//     AutoPtr< ArrayOf<IParcelFileDescriptor*> > pfds = ArrayOf<IParcelFileDescriptor*>::Alloc(2);
-//     AutoPtr<IParcelFileDescriptor> pfd1, pfd2;
-//     CParcelFileDescriptor::New((*fds)[0], (IParcelFileDescriptor**)&pfd1);
-//     pfds->Set(0, pfd1);
-//     CParcelFileDescriptor::New((*fds)[1], (IParcelFileDescriptor**)&pfd2);
-//     pfds->Set(1, pfd2);
-//     *_pfds = pfds;
-//     ARRAYOF_ADDREF(*_pfds)
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::Dup(
-//     /* [in] */ IFileDescriptor* fd,
-//     /* [out] */ IParcelFileDescriptor** descriptor)
-// {
-//     VALIDATE_NOT_NULL(descriptor);
-
-//     AutoPtr<IFileDescriptor> pFd;
-//     CParcel::DupFileDescriptor(fd, (IFileDescriptor**)&pFd);
-//     if (pFd == NULL) {
-//         *descriptor = NULL;
-//         return NOERROR;
-//     }
-//     return CParcelFileDescriptor::New(pFd, descriptor);
-// }
-
-// ECode ParcelFileDescriptor::CreatePipeNative(
-//     /* [in] */ ArrayOf<IFileDescriptor*>* outFds)
-// {
-//     int fds[2];
-//     if (pipe(fds) < 0) {
-//         // int therr = errno;
-//         return E_IO_EXCEPTION;
-//     }
-
-//     for (Int32 i = 0; i < 2; i++) {
-//         AutoPtr<IFileDescriptor> fd;
-//         CFileDescriptor::New((IFileDescriptor**)&fd);
-//         fd->SetDescriptor(fds[i]);
-//         outFds->Set(i, fd);
-//     }
-//     return NOERROR;
-// }
-
-// AutoPtr<IFileDescriptor> ParcelFileDescriptor::GetFileDescriptorFromFdNoDup(
-//     /* [in] */ Int32 fd)
-// {
-//     AutoPtr<IFileDescriptor> fdesc;
-//     CFileDescriptor::New((IFileDescriptor**)&fdesc);
-//     fdesc->SetDescriptor(fd);
-//     return fdesc;
-// }
-
-
-// ECode ParcelFileDescriptor::Close()
-// {
-//     if (mClosed) return NOERROR;
-//     mClosed = TRUE;
-//     // mGuard.close();
-
-//     if (mWrapped != NULL) {
-//         // If this is a proxy to another file descriptor, just call through to its
-//         // close method.
-//         mWrapped->Close();
-//     } else {
-//         CParcel::CloseFileDescriptor(mFileDescriptor);
-//     }
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::GetFileDescriptor(
-//     /* [out] */ IFileDescriptor** des)
-// {
-//     VALIDATE_NOT_NULL(des);
-//     *des = mFileDescriptor.Get();
-//     REFCOUNT_ADD(*des);
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::GetStatSize(
-//     /* [out] */ Int64* len)
-// {
-//     VALIDATE_NOT_NULL(len);
-//     Int32 fd = NativeGetFd();
-//     if (fd < 0) {
-//         *len = -1;
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-
-//     struct stat st;
-//     if (fstat(fd, &st) != 0) {
-//         *len = -1;
-//         return NOERROR;
-//     }
-
-//     if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
-//         *len = st.st_size;
-//         return NOERROR;
-//     }
-
-//     *len = -1;
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::SeekTo(
-//     /* [in] */ Int64 startOffset,
-//     /* [out] */ Int64* toOffset)
-// {
-//     VALIDATE_NOT_NULL(toOffset);
-//     Int32 fd = NativeGetFd();
-//     if (fd < 0) {
-//         *toOffset = -1;
-//         return E_ILLEGAL_ARGUMENT_EXCEPTION;
-//     }
-
-//     *toOffset = lseek(fd, startOffset, SEEK_SET);
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::GetFd(
-//     /* [out] */ Int32* fd)
-// {
-//     if (mClosed) {
-//         // throw new IllegalStateException("Already closed");
-//         return E_ILLEGAL_STATE_EXCEPTION;
-//     }
-//     *fd = NativeGetFd();
-//     return NOERROR;
-// }
-
-// Int32 ParcelFileDescriptor::NativeGetFd()
-// {
-//     if (mFileDescriptor == NULL) return -1;
-//     return CParcel::GetFDFromFileDescriptor(mFileDescriptor);
-// }
-
-// ECode ParcelFileDescriptor::ReadFromParcel(
-//     /* [in] */ IParcel* source)
-// {
-//     Int32 fd;
-//     FAIL_RETURN(source->ReadFileDescriptor(&fd));
-//     fd = dup(fd);
-//     if (fd < 0) return E_IO_EXCEPTION;
-//     if (mFileDescriptor == NULL) {
-//         CFileDescriptor::New((IFileDescriptor**)&mFileDescriptor);
-//     }
-//     mFileDescriptor->SetDescriptor(fd);
-//     return NOERROR;
-// }
-
-// ECode ParcelFileDescriptor::WriteToParcel(
-//     /* [in] */ IParcel* dest)
-// {
-//     Int32 fd = -1;
-//     if (mFileDescriptor != NULL) {
-//         mFileDescriptor->GetDescriptor(&fd);
-//     }
-//     ECode ec = dest->WriteDupFileDescriptor(fd);
-//     if (/*(flags & PARCELABLE_WRITE_RETURN_VALUE) != 0 &&*/ !mClosed) {
-//         // try {
-//             Close();
-//         // } catch (IOException e) {
-//         //     // Empty
-//         // }
-//     }
-
-//     return ec;
-// }
 
 } // namespace Os
 } // namespace Droid

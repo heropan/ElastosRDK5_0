@@ -48,10 +48,19 @@ SOURCES += CMessageQueue.cpp
 SOURCES += NativeMessageQueue.cpp
 SOURCES += NullVibrator.cpp
 SOURCES += CParcel.cpp
-
 SOURCES += ParcelFileDescriptor.cpp
 SOURCES += CParcelFileDescriptorHelper.cpp
-
+SOURCES += CParcelUuid.cpp
+SOURCES += CParcelUuidHelper.cpp
+SOURCES += CPatternMatcher.cpp
+SOURCES += PerformanceCollector.cpp
+#SOURCES += CPersistableBundle.cpp
+#SOURCES += CPowerManager.cpp
+#SOURCES += CPowerManagerHelper.cpp
+#SOURCES += PowerManagerInternal.cpp
+SOURCES += Process.cpp
+#SOURCES += CRecoverySystem.cpp
+SOURCES += Registrant.cpp
 
 SOURCES += Vibrator.cpp
 
@@ -79,19 +88,14 @@ SOURCES += CSystemProperties.cpp
 
 #SOURCES += CParcelFileDescriptorAutoCloseInputStream.cpp
 #SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
-#SOURCES += CPatternMatcher.cpp
 #SOURCES += CServiceManager.cpp
 #SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
-#SOURCES += PatternMatcher.cpp
-#SOURCES += Process.cpp
 #SOURCES += CProcessStartResult.cpp
 #SOURCES += CProcessStats.cpp
 #SOURCES += SELinux.cpp
 #SOURCES += ServiceManager.cpp
 #SOURCES += ZygoteConnection.cpp
-#SOURCES += CPowerManager.cpp
-#SOURCES += CPowerManagerHelper.cpp
 #SOURCES += CPowerManagerWakeLock.cpp
 #SOURCES += UEventObserver.cpp
 #SOURCES += CStatFs.cpp
