@@ -15,7 +15,7 @@ module
     namespace InputMethod {
 
 
-    interface IInputMethodSessionEventCallback {
+    interface IInputMethodSessionCallback {
         SessionCreated(
             [in] IInputMethodSession* session);
     }
@@ -172,7 +172,7 @@ module
          * @param callback Interface that is called with the newly created session.
          */
         CreateSession(
-            [in] IInputMethodSessionEventCallback* sessionCalllback);
+            [in] IInputMethodSessionCallback* sessionCalllback);
 
         /**
          * Control whether a particular input method session is active.

@@ -29,11 +29,20 @@ ECode CExtractButton::constructor(
 ECode CExtractButton::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    // return Button::constructor(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode CExtractButton::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
     assert(0 && "TODO");
     return NOERROR;
+    // return Button::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 Boolean CExtractButton::HasWindowFocus()

@@ -27,6 +27,7 @@ module
     interface Elastos.Droid.View.IViewOnClickListener;
     interface Elastos.Droid.View.IKeyEventCallback;
     interface Elastos.Droid.View.IDispatcherState;
+    interface Elastos.Droid.View.IInputChannel;
     interface Elastos.Droid.Utility.IAttributeSet;
     interface Elastos.Droid.Widget.IButton;
     interface Elastos.Droid.Widget.ITextView;
@@ -55,6 +56,12 @@ module
             [in] IAttributeSet* attrs,
             [in] Int32 defStyle);
 
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
         interface IButton;
         interface ITextView;
         interface IView;
@@ -78,6 +85,12 @@ module
             [in] IAttributeSet* attrs,
             [in] Int32 defStyle);
 
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
+
         interface IExtractEditText;
         interface ITextView;
         interface IView;
@@ -90,9 +103,15 @@ module
     [local]
     class CSoftInputWindow {
         constructor(
-            [in] IContext* ctx,
+            [in] IContext* context,
+            [in] String name,
             [in] Int32 theme,
-            [in] IDispatcherState* dispatcherState);
+            [in] ISoftInputWindowCallback* c,
+            [in] IKeyEventCallback* keyEventCallback,
+            [in] IDispatcherState* dispatcherState,
+            [in] Int32 windowType,
+            [in] Int32 gravity,
+            [in] Boolean takesFocus);
 
         interface ISoftInputWindow;
         interface IDialog;
@@ -112,7 +131,13 @@ module
         constructor(
             [in] IContext* ctx,
             [in] IAttributeSet* attrs,
-            [in] Int32 defStyle);
+            [in] Int32 defStyleAttr);
+
+        constructor(
+            [in] IContext* ctx,
+            [in] IAttributeSet* attrs,
+            [in] Int32 defStyleAttr,
+            [in] Int32 defStyleRes);
 
         interface IKeyboardView;
         interface IView;
@@ -137,7 +162,8 @@ module
     class CIInputMethodSessionWrapper {
         constructor(
             [in] IContext* ctx,
-            [in] IInputMethodSession* inputMethodSession);
+            [in] IInputMethodSession* inputMethodSession,
+            [in] IInputChannel* channel);
 
         interface Elastos.Droid.Internal.View.IIInputMethodSession;
         interface IBinder;

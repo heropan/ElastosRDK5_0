@@ -181,11 +181,20 @@ ECode CExtractEditText::constructor(
 ECode CExtractEditText::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    // return EditText::constructor(context, attrs, defStyle);
+    return constructor(context, attrs, defStyleAttr, 0);
+}
+
+ECode CExtractEditText::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
     assert(0 && "TODO");
     return NOERROR;
+    // return EditText::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode CExtractEditText::SetIME(

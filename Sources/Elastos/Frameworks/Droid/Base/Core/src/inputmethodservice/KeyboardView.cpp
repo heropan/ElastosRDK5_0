@@ -463,8 +463,9 @@ KeyboardView::KeyboardView()
 KeyboardView::KeyboardView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
-    : /*View(context, attrs, defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+    : /*View(context, attrs, defStyleAttr)
     ,*/ mCurrentKeyIndex(NOT_A_KEY)
     , mLabelTextSize(0)
     , mKeyTextSize(0)
@@ -530,7 +531,7 @@ KeyboardView::KeyboardView(
     // CRectF::New((IRectF**)&mDirtyRect);
     mHandler = new MyHandler(this);
     mCoordinates[0] = mCoordinates[1] = 0;
-    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyle));
+    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyleAttr, defStyleRes));
 }
 
 KeyboardView::~KeyboardView()
@@ -538,35 +539,30 @@ KeyboardView::~KeyboardView()
     mMiniKeyboardCache = NULL;
 }
 
-//TODO: should remove
-// void KeyboardView::SetAttribute(
-//     /* [in] */ )
-// {
-//     a->GetDrawable(attr, (IDrawable**)&mKeyBackground);
-// }
-
 ECode KeyboardView::constructor(
-    /* [in] */ IContext* context,
+    /* [in] */ IContext* ctx,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     assert(0 && "TODO");
-    // ASSERT_SUCCEEDED(View::constructor(context, attrs, defStyle));
-    ASSERT_SUCCEEDED(InitInternal(context, attrs, defStyle));
+    // ASSERT_SUCCEEDED(View::constructor(context, attrs, defStyleAttr, defStyleRes));
+    ASSERT_SUCCEEDED(InitInternal(ctx, attrs, defStyleAttr, defStyleRes));
     return NOERROR;
 }
 
 ECode KeyboardView::InitInternal(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle )
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     AutoPtr<ITypedArray> a;
     AutoPtr<ArrayOf<Int32> > attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::KeyboardView),
             ARRAY_SIZE(R::styleable::KeyboardView));
     context->ObtainStyledAttributes(attrs, attrIds,
-            defStyle, 0, (ITypedArray**)&a);
+            defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     AutoPtr<ILayoutInflater> inflate;
     context->GetSystemService(IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&inflate);

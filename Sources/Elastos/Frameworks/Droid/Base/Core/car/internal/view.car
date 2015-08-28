@@ -5,16 +5,11 @@ module
     merge("view/IInputContextCallback.car");
     merge("view/IInputMethodClient.car");
     merge("view/IInputMethodSession.car");
+    merge("view/IInputSessionCallback.car");
     merge("view/InputBindResult.car");
-
 
     merge("view/animation/FallbackLUTInterpolator.car");
     merge("view/animation/HasNativeInterpolator.car");
     merge("view/animation/NativeInterpolatorFactory.car");
     merge("view/animation/NativeInterpolatorFactoryHelper.car");
-
-
-
-
-
 }

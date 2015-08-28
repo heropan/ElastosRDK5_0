@@ -61,6 +61,7 @@ using Elastos::Droid::View::EIID_IOnComputeInternalInsetsListener;
 using Elastos::Droid::View::Animation::IAnimation;
 using Elastos::Droid::View::Animation::IAnimationUtils;
 using Elastos::Droid::View::IDisplay;
+using Elastos::Droid::View::IGravity;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethodSession;
@@ -218,7 +219,6 @@ ECode InputMethodService::InputMethodImpl::UnbindInput()
     assert(mHost != NULL);
     if (DEBUG) Logger::V(TAG, "unbindInput(): binding=%p, ic=%p", mHost->mInputBinding.Get(), mHost->mInputConnection.Get());
     mHost->OnUnbindInput();
-    mHost->mInputStarted = FALSE;
     mHost->mInputBinding = NULL;
     mHost->mInputConnection = NULL;
     return NOERROR;
@@ -279,12 +279,17 @@ ECode InputMethodService::InputMethodImpl::ShowSoftInput(
     Boolean requested = FALSE;
     mHost->OnShowInputRequested(flags, FALSE, &requested);
     if (requested) {
-        mHost->ShowWindow(TRUE);
+        ECode ec = mHost->ShowWindow(TRUE);
+        if (ec == E_BAD_TOKEN_EXCEPTION) {
+            if (DEBUG) Logger::V(TAG, "BadTokenException: IME is done.");
+            mHost->mWindowVisible = FALSE;
+            mHost->mWindowAdded = FALSE;
+        }
     }
 
     // If user uses hard keyboard, IME button should always be shown.
     Boolean showing = FALSE;
-    mHost->OnEvaluateInputViewShown(&showing);
+    mHost->IsInputViewShown(&showing);
     mHost->mImm->SetImeWindowStatus(mHost->mToken, IInputMethodService::IME_ACTIVE | (showing ? IInputMethodService::IME_VISIBLE : 0),
             mHost->mBackDisposition);
 
@@ -453,14 +458,15 @@ ECode InputMethodService::InputMethodSessionImpl::ToggleSoftInput(
     return NOERROR;
 }
 
-ECode InputMethodService::InputMethodSessionImpl::DispatchGenericMotionEvent(
-    /* [in] */ Int32 seq,
-    /* [in] */ IMotionEvent* event,
-    /* [in] */ ILocalInputMethodSessionEventCallback* callback)
+ECode InputMethodService::InputMethodSessionImpl::UpdateCursorAnchorInfo(
+    /* [in] */ ICursorAnchorInfo* info)
 {
-    return AbstractInputMethodSessionImpl::DispatchGenericMotionEvent(seq, event, callback);
+    Boolean enabled = FALSE;
+    if (IsEnabled(&enabled), !enabled) {
+        return NOERROR;
+    }
+    return mHost->OnUpdateCursorAnchorInfo(info);
 }
-
 
 InputMethodService::Insets::Insets()
     : mContentTopInsets(0)
@@ -556,20 +562,22 @@ ECode InputMethodService::OnCreate()
     appInfo->GetTargetSdkVersion(&targetSdkVersion);
     AutoPtr<IResourcesHelper> helper;
     // CResourcesHelper::AcquireSingleton((IResourcesHelper**)&helper);
-    helper->SelectSystemTheme(mTheme,
-            targetSdkVersion,
-            R::style::Theme_InputMethod,
-            R::style::Theme_Holo_InputMethod,
-            R::style::Theme_DeviceDefault_InputMethod,
-            &mTheme);
+    // helper->SelectSystemTheme(mTheme,
+    //         targetSdkVersion,
+    //         R::style::Theme_InputMethod,
+    //         R::style::Theme_Holo_InputMethod,
+    //         R::style::Theme_DeviceDefault_InputMethod,
+    //         R::style::Theme_DeviceDefault_InputMethod,
+    //         &mTheme);
     // AbstractInputMethodService::SetTheme(mTheme);
     // AbstractInputMethodService::OnCreate();
     // AbstractInputMethodService::GetSystemService(
     //     IContext::INPUT_METHOD_SERVICE, (IInterface**)&mImm);
     // AbstractInputMethodService::GetSystemService(
     //     IContext::LAYOUT_INFLATER_SERVICE, (IInterface**)&mInflater);
-    CSoftInputWindow::New((IContext*)this->Probe(EIID_IContext),
-            mTheme, mDispatcherState, (ISoftInputWindow**)&mWindow);
+    // CSoftInputWindow::New((IContext*)this->Probe(EIID_IContext), String("InputMethod"),
+    //         mTheme, NULL, NULL, mDispatcherState, IWindowManagerLayoutParams::TYPE_INPUT_METHOD,
+    //         IGravity::BOTTOM, FALSE, (ISoftInputWindow**)&mWindow);
 
     AutoPtr<IWindow> window;
     IDialog::Probe(mWindow)->GetWindow((IWindow**)&window);
@@ -608,6 +616,8 @@ void InputMethodService::InitViews()
             ARRAY_SIZE(R::styleable::InputMethodService));
     // AbstractInputMethodService::ObtainStyledAttributes(attrIds, (ITypedArray**)&mThemeAttrs);
     mInflater->Inflate(R::layout::input_method, NULL, (IView**)&mRootView);
+    mRootView->SetSystemUiVisibility(
+            IView::SYSTEM_UI_FLAG_LAYOUT_STABLE | IView::SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
     IDialog::Probe(mWindow)->SetContentView(mRootView);
     AutoPtr<IViewTreeObserver> vto;
     mRootView->GetViewTreeObserver((IViewTreeObserver**)&vto);
@@ -655,7 +665,7 @@ ECode InputMethodService::OnDestroy()
     assert(observer != NULL);
     observer->RemoveOnComputeInternalInsetsListener(mInsetsComputer);
 
-    FinishViews();
+    DoFinishInput();
     if (mWindowAdded) {
         // Disable exit animation for the current IME window
         // to avoid the race condition between the exit and enter animations
@@ -1676,6 +1686,13 @@ ECode InputMethodService::OnUpdateCursor(
     return NOERROR;
 }
 
+ECode InputMethodService::OnUpdateCursorAnchorInfo(
+    /* [in] */ ICursorAnchorInfo* cursorAnchorInfo)
+{
+    // Intentionally empty
+    return NOERROR;
+}
+
 ECode InputMethodService::RequestHideSelf(
     /* [in] */ Int32 flags)
 {
@@ -1945,7 +1962,7 @@ ECode InputMethodService::SendDownUpKeyEvents(
     ic->SendKeyEvent(event, &tmpState);
 
     event = NULL;
-    // CKeyEvent::New(SystemClock::GetUptimeMillis(), eventTime,
+    // CKeyEvent::New(eventTime, SystemClock::GetUptimeMillis(),
     //         IKeyEvent::ACTION_UP, keyEventCode, 0, 0, IKeyCharacterMap::VIRTUAL_KEYBOARD, 0,
     //         IKeyEvent::FLAG_SOFT_KEYBOARD | IKeyEvent::FLAG_KEEP_TOUCH_MODE,
     //         (IKeyEvent**)&event);
@@ -2319,37 +2336,23 @@ void InputMethodService::OnCurrentInputMethodSubtypeChanged(
     // }
 }
 
-// ECode InputMethodService::GetBaseContext(
-//     /* [out] */ IContext** context)
-// {
-//     assert(0 && "TODO");
-//     return NOERROR;
-//     // return AbstractInputMethodService::GetBaseContext(context);
-// }
-
-// ECode InputMethodService::Attach(
-//     /* [in] */ IContext* ctx,
-//     /* [in] */ IActivityThread* apartment,
-//     /* [in] */ const String& className,
-//     /* [in] */ IBinder* token,
-//     /* [in] */ IApplication* application,
-//     /* [in] */ IIActivityManager* activityManager)
-// {
-//     return AbstractInputMethodService::Attach(ctx, apartment, className,
-//             token, application, activityManager);
-// }
-
-// ECode InputMethodService::GetClassName(
-//     /* [out] */ String* className)
-// {
-//     return AbstractInputMethodService::GetClassName(className);
-// }
-
-// ECode InputMethodService::GetKeyDispatcherState(
-//     /* [out] */ IDispatcherState** dispatcherState)
-// {
-//     return AbstractInputMethodService::GetKeyDispatcherState(dispatcherState);
-// }
+/**
+ * @return The recommended height of the input method window.
+ * An IME author can get the last input method's height as the recommended height
+ * by calling this in
+ * {@link android.inputmethodservice.InputMethodService#onStartInputView(EditorInfo, boolean)}.
+ * If you don't need to use a predefined fixed height, you can avoid the window-resizing of IME
+ * switching by using this value as a visible inset height. It's efficient for the smooth
+ * transition between different IMEs. However, note that this may return 0 (or possibly
+ * unexpectedly low height). You should thus avoid relying on the return value of this method
+ * all the time. Please make sure to use a reasonable height for the IME.
+ */
+ECode InputMethodService::GetInputMethodWindowRecommendedHeight(
+    /* [out] */ Int32* height)
+{
+    VALIDATE_NOT_NULL(height);
+    return mImm->GetInputMethodWindowVisibleHeight(height);
+}
 
 } // namespace InputMethodService
 } // namespace Droid
