@@ -7,7 +7,14 @@ namespace Org {
 namespace Apache {
 namespace Harmony {
 namespace Security {
-namespace Cert {
+namespace Utils {
+
+ECode WrappedX509Certificate::constructor(
+    /* [in] */ IX509Certificate* wrapped)
+{
+    mWrapped = wrapped;
+    return NOERROR;
+}
 
 ECode WrappedX509Certificate::GetCriticalExtensionOIDs(
     /* [out] */ ISet** oids)
@@ -166,7 +173,7 @@ ECode WrappedX509Certificate::GetPublicKey(
     return ICertificate::Probe(mWrapped)->GetPublicKey(key);
 }
 
-} // namespace Cert
+} // namespace Utils
 } // namespace Security
 } // namespace Harmony
 } // namespace Apache

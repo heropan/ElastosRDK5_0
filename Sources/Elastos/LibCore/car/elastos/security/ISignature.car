@@ -7,6 +7,7 @@ module
     namespace Elastos {
     namespace Security {
 
+    [deprecated]
     interface ISignature {
         /**
          * Returns the provider associated with this {@code Signature}.
@@ -52,8 +53,8 @@ module
          *             if the publicKey in the certificate is not valid or not to be
          *             used for signing.
          */
-        InitVerifyEx(
-            [in] ICertificate* certificate);
+        InitVerify(
+            [in] Elastos.Security.Cert.ICertificate* certificate);
 
         /**
          * Initializes this {@code Signature} instance for signing, using the
@@ -79,7 +80,7 @@ module
          * @throws InvalidKeyException
          *             if {@code privateKey} is not valid.
          */
-        InitSignEx(
+        InitSign(
             [in] IPrivateKey* privateKey,
             [in] ISecureRandom* random);
 
@@ -120,8 +121,8 @@ module
          *             if {@code offset} or {@code len} are not valid in respect to
          *             {@code outbuf}.
          */
-        SignEx(
-            [in] ArrayOf<Byte> outbuf,
+        Sign(
+            [in] ArrayOf<Byte>* outbuf,
             [in] Int32 offset,
             [in] Int32 len,
             [out] Int32* num);
@@ -143,7 +144,7 @@ module
          *             properly.
          */
         Verify(
-            [in] ArrayOf<Byte> signature,
+            [in] ArrayOf<Byte>* signature,
             [out] Boolean* isVerified);
 
         /**
@@ -170,8 +171,8 @@ module
          *             if {@code offset} or {@code length} are not valid in respect
          *             to {@code signature}.
          */
-        VerifyEx(
-            [in] ArrayOf<Byte> signature,
+        Verify(
+            [in] ArrayOf<Byte>* signature,
             [in] Int32 offset,
             [in] Int32 length,
             [out] Boolean* isVerified);
@@ -199,8 +200,8 @@ module
          *             if this {@code Signature} instance is not initialized
          *             properly.
          */
-        UpdateEx(
-            [in] ArrayOf<Byte> data);
+        Update(
+            [in] ArrayOf<Byte>* data);
 
         /**
          * Updates the data to be verified or to be signed, using the given {@code
@@ -216,8 +217,8 @@ module
          *             if this {@code Signature} instance is not initialized
          *             properly.
          */
-        UpdateEx2(
-            [in] ArrayOf<Byte> data,
+        Update(
+            [in] ArrayOf<Byte>* data,
             [in] Int32 off,
             [in] Int32 len);
 
@@ -231,17 +232,8 @@ module
          *             if this {@code Signature} instance is not initialized
          *             properly.
          */
-        UpdateEx3(
+        Update(
             [in] IByteBuffer* data);
-
-        /**
-         * Returns a string containing a concise, human-readable description of this
-         * {@code Signature} including its algorithm and its state.
-         *
-         * @return a printable representation for this {@code Signature}.
-         */
-        ToString(
-            [out] String* str);
 
         /**
          * Sets the specified parameter to the given value.
@@ -269,7 +261,7 @@ module
          *             if the parameter is invalid, already set or is not allowed to
          *             be changed.
          */
-        SetParameterEx(
+        SetParameter(
             [in] IAlgorithmParameterSpec* params);
 
         /**
@@ -298,9 +290,6 @@ module
         GetParameter(
             [in] String name,
             [out] IInterface** param);
-
-        Clone(
-            [out] IInterface** clone);
     }
 
     interface ISignatureHelper {
@@ -339,7 +328,7 @@ module
          *             if {@code algorithm} is {@code null}.
          * @throws IllegalArgumentException if {@code provider == null || provider.isEmpty()}
          */
-        GetInstanceEx(
+        GetInstance(
             [in] String algorithm,
             [in] String provider,
             [out] ISignature** sign);
@@ -360,7 +349,7 @@ module
          *             if {@code algorithm} is {@code null}.
          * @throws IllegalArgumentException if {@code provider == null}
          */
-        GetInstanceEx2(
+        GetInstance(
             [in] String algorithm,
             [in] IProvider* provider,
             [out] ISignature** sign);

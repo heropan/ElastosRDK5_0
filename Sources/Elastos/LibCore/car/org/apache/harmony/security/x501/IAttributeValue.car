@@ -1,7 +1,9 @@
 
 module
 {
-    using interface Elastos.Core.IStringBuilder;
+    interface Elastos.Core.IStringBuilder;
+    interface Elastos.Utility.ICollection;
+    interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
 
     namespace Org {
     namespace Apache {
@@ -14,6 +16,29 @@ module
      */
     [deprecated]
     interface IAttributeValue {
+        GetTag(
+            [out] Int32* tag);
+
+        GetHexString(
+            [out] String* hexString);
+
+        GetValues(
+            [in] IASN1Type* type,
+            [out] ICollection** values);
+
+        AppendQEString(
+            [in] IStringBuilder* sb);
+
+        MakeCanonical(
+            [out] String* cannonical);
+
+        /**
+         * Removes escape sequences used in RFC1779 escaping but not in RFC2253 and
+         * returns the RFC2253 string to the caller..
+         */
+        GetRFC2253String(
+            [out] String* rfcString);
+
         GetWasEncoded(
             [out] Boolean* wasEncoded);
 
@@ -21,10 +46,10 @@ module
             [in] Boolean wasEncoded);
 
         GetEscapedString(
-            [out] String* wasEncoded);
+            [out] String* escapedString);
 
         SetEscapedString(
-            [in] String wasEncoded);
+            [in] String escapedString);
 
         GetEncoded(
             [out, callee] ArrayOf<Byte>* encoded);
@@ -32,14 +57,12 @@ module
         SetEncoded(
             [in] ArrayOf<Byte>* encoded);
 
-        //FIXME remove??? bytes to be encoded
         GetBytes(
             [out, callee] ArrayOf<Byte>* bytes);
 
         SetBytes(
             [in] ArrayOf<Byte>* bytes);
 
-        // raw string contains '"' or '\'
         GetHasQE(
             [out] Boolean* hasQE);
 
@@ -51,20 +74,7 @@ module
 
         SetRawString(
             [in] String rawString);
-
-        GetTag(
-            [out] Int32* tag);
-
-        GetHexString(
-            [out] String* hexString);
-
-        AppendQEString(
-            [in] IStringBuilder* sb);
-
-        MakeCanonical(
-            [out] String* cannonical);
     }
-
 
     } // namespace X501
     } // namespace Security

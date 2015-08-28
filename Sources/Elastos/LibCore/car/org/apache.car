@@ -27,9 +27,13 @@ module
 
     merge("apache/harmony/security/pkcs7/IContentInfo.car");
     merge("apache/harmony/security/pkcs7/ISignedData.car");
+    merge("apache/harmony/security/pkcs7/ISignerInfo.car");
 
+    merge("apache/harmony/security/utils/IObjectIdentifier.car");
     merge("apache/harmony/security/utils/IJarUtils.car");
 
+    merge("apache/harmony/security/x501/IAttributeValue.car");
+    merge("apache/harmony/security/x501/IAttributeTypeAndValue.car");
     merge("apache/harmony/security/x501/IName.car");
 
     merge("apache/harmony/security/x509/IAlgorithmIdentifier.car");

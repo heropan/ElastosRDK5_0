@@ -24,8 +24,10 @@ INCLUDES += $(MAKEDIR)/../../../inc/elastos/utility;
 
 SOURCES += CMessageDigestHelper.cpp
 SOURCES += CSecurity.cpp
-SOURCES += MessageDigestSpi.cpp
 SOURCES += MessageDigest.cpp
+SOURCES += MessageDigestSpi.cpp
+SOURCES += Signature.cpp
+SOURCES += SignatureSpi.cpp
 #SOURCES += CAlgorithmParameterGenerator.cpp
 #SOURCES += CAlgorithmParameterGeneratorHelper.cpp
 #SOURCES += AlgorithmParameterGeneratorSpi.cpp

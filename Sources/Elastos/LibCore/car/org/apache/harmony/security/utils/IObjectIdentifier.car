@@ -20,7 +20,7 @@ module
      *
      * @see <a href="http://asn1.elibel.tm.fr/en/standards/index.htm">ASN.1</a>
      */
-    interface IObjectIdentifierInUtils {
+    interface IObjectIdentifier {
         /**
          * Gets OID.
          *
@@ -43,17 +43,7 @@ module
          * @return group
          */
         GetGroup(
-            [out] IObject** group);
-
-        /**
-         * Compares object with OID for equality.
-         *
-         * @return true if object is ObjectIdentifier and it has the same
-         *         representation as array of integers, otherwise false
-         */
-        Equals(
-            [in] IInterface* o,
-            [out] Boolean* result);
+            [out] IInterface** group);
 
         /**
          * Add "OID." to the beginning of string representation.
@@ -62,24 +52,10 @@ module
          */
         ToOIDString(
             [out] String* str);
-
-        /**
-         * Overrides Object.toString()
-         *
-         * @return oid as string
-         */
-         ToString(
-            [out] String* str);
-
-        /**
-        * @see java.lang.Object#hashCode()
-        */
-        GetHashCode(
-            [out] Int32* hashCode);
     }
 
     [deprecated]
-    interface IObjectIdentifierInUtilsHelper {
+    interface IObjectIdentifierHelper {
         /**
          * Validates ObjectIdentifier (OID).
          *

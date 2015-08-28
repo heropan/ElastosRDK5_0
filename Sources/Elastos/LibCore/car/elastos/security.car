@@ -128,6 +128,7 @@ module
     merge("security/ISecureRandom.car");
     merge("security/ISecureRandomSpi.car");
     merge("security/ISecurity.car");
+    merge("security/ISignatureSpi.car");
     merge("security/ISignature.car");
     merge("security/ISignedObject.car");
     merge("security/ISigner.car");

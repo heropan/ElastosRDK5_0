@@ -14,15 +14,13 @@ namespace Org {
 namespace Apache {
 namespace Harmony {
 namespace Security {
-namespace Cert {
+namespace Utils {
 
 class WrappedX509Certificate : public X509Certificate
 {
 public:
-    WrappedX509Certificate(
-        /* [in] */ IX509Certificate* wrapped)
-        : mWrapped(wrapped)
-    {}
+    CARAPI constructor(
+        /* [in] */ IX509Certificate* wrapped);
 
     // @Override
     CARAPI GetCriticalExtensionOIDs(
@@ -133,7 +131,7 @@ private:
     AutoPtr<IX509Certificate> mWrapped;
 };
 
-} // namespace Cert
+} // namespace Utils
 } // namespace Security
 } // namespace Harmony
 } // namespace Apache

@@ -1,10 +1,11 @@
 
 module
 {
-    using interface Elastos.Core.IStringBuilder;
-    interface Org.Apache.Harmony.Security.Utils.IObjectIdentifierInUtils;
+    interface Elastos.Core.IStringBuilder;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Type;
     interface Org.Apache.Harmony.Security.Asn1.IASN1Sequence;
+    interface Org.Apache.Harmony.Security.Utils.IObjectIdentifier;
+    interface Org.Apache.Harmony.Security.X501.IAttributeValue;
 
     namespace Org {
     namespace Apache {
@@ -29,21 +30,37 @@ module
          * Gets type of the AttributeTypeAndValue
          */
         GetType(
-            [out] IObjectIdentifierInUtils** identifier);
+            [out] IObjectIdentifier** identifier);
+
+        GetValue(
+            [out] IAttributeValue** value);
     }
 
     interface IAttributeTypeAndValueHelper {
+        GetDC(
+            [out] IObjectIdentifier** dc);
+
+        GetEMAILADDRESS(
+            [out] IObjectIdentifier** address);
+
+        /**
+         * Parses OID string representation.
+         *
+         * @param sOid
+         *            string representation of OID
+         *
+         * @throws IOException
+         *             if OID can not be created from its string representation
+         */
+        GetObjectIdentifier(
+            [in] String sOid,
+            [out] IObjectIdentifier** objectIdentifier);
+
         GetAttributeValue(
             [out] IASN1Type** attributeValue);
 
-        SetAttributeValue(
-            [in] IASN1Type* attributeValue);
-
-        GetASN1Sequence(
+        GetASN1(
             [out] IASN1Sequence** asn1);
-
-        SetASN1Sequence(
-            [in] IASN1Sequence* asn1);
     }
 
     } // namespace X501

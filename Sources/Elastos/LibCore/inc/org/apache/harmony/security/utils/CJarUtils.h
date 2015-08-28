@@ -4,6 +4,7 @@
 
 #include "_Org_Apache_Harmony_Security_Utils_CJarUtils.h"
 #include "core/Singleton.h"
+#include "WrappedX509Certificate.h"
 
 using Elastos::Core::Singleton;
 using Elastos::IO::IInputStream;
@@ -27,19 +28,20 @@ private:
      * certificate bytes, instead of letting the underlying implementation have
      * a shot at re-encoding the data.
      */
-    // private static class VerbatimX509Certificate extends WrappedX509Certificate {
-    //     private byte[] encodedVerbatim;
+    class VerbatimX509Certificate : public WrappedX509Certificate
+    {
+    public:
+        VerbatimX509Certificate(
+            /* [in] */ IX509Certificate* wrapped,
+            /* [in] */ ArrayOf<Byte>* encodedVerbatim);
 
-    //     public VerbatimX509Certificate(X509Certificate wrapped, byte[] encodedVerbatim) {
-    //         super(wrapped);
-    //         this.encodedVerbatim = encodedVerbatim;
-    //     }
+        // @Override
+        CARAPI GetEncoded(
+            /* [out, callee] */ ArrayOf<Byte>** encoded);
 
-    //     @Override
-    //     public byte[] getEncoded() throws CertificateEncodingException {
-    //         return encodedVerbatim;
-    //     }
-    // };
+    private:
+        AutoPtr< ArrayOf<Byte> > mEncodedVerbatim;
+    };
 
 public:
     CAR_INTERFACE_DECL()

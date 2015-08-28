@@ -4,6 +4,10 @@ module
     namespace Elastos {
     namespace Utility {
 
+    /**
+     * @Involve
+     * interface ISerializable
+     */
     interface IRandom {
         /**
          * Returns a pseudo-random uniformly distributed {@code boolean}.
