@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CProcessStartResult, Object, IProcessStartResult)
+
+CAR_OBJECT_IMPL(CProcessStartResult)
+
 CProcessStartResult::CProcessStartResult()
     : mPid(0)
     , mUsingWrapper(FALSE)

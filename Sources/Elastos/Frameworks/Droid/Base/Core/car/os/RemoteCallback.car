@@ -6,15 +6,16 @@ module
     namespace Droid {
     namespace Os {
 
-    /**
-     * TODO: Make this a public API?  Let's see how it goes with a few use
-     * cases first.
-     * @hide
-     */
+
     /**
      * @Involve
      * interface IParcelable;
      */
+    interface IIRemoteCallback {
+        SendResult(
+            [in] IBundle* data);
+    }
+
     interface IRemoteCallback {
         SendResult(
             [in] IBundle* data);

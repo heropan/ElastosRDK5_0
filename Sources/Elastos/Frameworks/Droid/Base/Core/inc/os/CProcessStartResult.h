@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_OS_CPROCESSSTARTRESULT_H__
 
 #include "_Elastos_Droid_Os_CProcessStartResult.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CProcessStartResult)
+    , public Object
+    , public IProcessStartResult
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CProcessStartResult();
 
     CARAPI GetPid(

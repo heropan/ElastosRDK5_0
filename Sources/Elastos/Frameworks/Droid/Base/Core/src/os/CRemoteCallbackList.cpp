@@ -1,5 +1,6 @@
 
 #include "os/CRemoteCallbackList.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
@@ -8,7 +9,7 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-CAR_INTERFACE_IMPL(CRemoteCallbackList::Callback, IProxyDeathRecipient)
+CAR_INTERFACE_IMPL(CRemoteCallbackList::Callback, Object, IProxyDeathRecipient)
 
 CRemoteCallbackList::Callback::Callback(
     /* [in] */ IInterface* callback,
@@ -30,6 +31,9 @@ ECode CRemoteCallbackList::Callback::ProxyDied()
     return mOwner->OnCallbackDied(mCallback, mCookie);
 }
 
+CAR_INTERFACE_IMPL(CRemoteCallbackList, Object, IRemoteCallbackList)
+
+CAR_OBJECT_IMPL(CRemoteCallbackList)
 
 CRemoteCallbackList::CRemoteCallbackList()
     : mCallbacks(20)
@@ -157,7 +161,7 @@ ECode CRemoteCallbackList::BeginBroadcast(
         Int32 i = 0;
         HashMap< AutoPtr<IBinder>, AutoPtr<Callback> >::Iterator it;
         for (it = mCallbacks.Begin(); it != mCallbacks.End(); ++it) {
-            active->Set(i++, it->mSecond.Get());
+            active->Set(i++, TO_IINTERFACE(it->mSecond));
         }
         *number = i;
         return NOERROR;
@@ -170,7 +174,8 @@ ECode CRemoteCallbackList::GetBroadcastItem(
 {
     VALIDATE_NOT_NULL(callback);
 
-    *callback = ((Callback*)(*mActiveBroadcast)[index])->mCallback;
+    Callback* cb = (Callback*)IObject::Probe((*mActiveBroadcast)[index]);
+    *callback = cb->mCallback;
     REFCOUNT_ADD(*callback);
     return NOERROR;
 }
@@ -181,7 +186,8 @@ ECode CRemoteCallbackList::GetBroadcastCookie(
 {
     VALIDATE_NOT_NULL(cookie);
 
-    *cookie = ((Callback*)(*mActiveBroadcast)[index])->mCookie;
+    Callback* cb = (Callback*)IObject::Probe((*mActiveBroadcast)[index]);
+    *cookie = cb->mCookie;
     REFCOUNT_ADD(*cookie);
     return NOERROR;
 }

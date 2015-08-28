@@ -59,8 +59,13 @@ SOURCES += PerformanceCollector.cpp
 #SOURCES += CPowerManagerHelper.cpp
 #SOURCES += PowerManagerInternal.cpp
 SOURCES += Process.cpp
+SOURCES += CProcessStartResult.cpp
 #SOURCES += CRecoverySystem.cpp
 SOURCES += Registrant.cpp
+SOURCES += RemoteCallback.cpp
+SOURCES += CRemoteCallbackList.cpp
+
+
 
 SOURCES += Vibrator.cpp
 
@@ -83,7 +88,6 @@ SOURCES += CSystemProperties.cpp
 #SOURCES += BatteryStatsImpl.cpp
 #SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
-#SOURCES += CRemoteCallbackList.cpp
 #SOURCES += CWorkSource.cpp
 
 #SOURCES += CParcelFileDescriptorAutoCloseInputStream.cpp
@@ -91,7 +95,6 @@ SOURCES += CSystemProperties.cpp
 #SOURCES += CServiceManager.cpp
 #SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
-#SOURCES += CProcessStartResult.cpp
 #SOURCES += CProcessStats.cpp
 #SOURCES += SELinux.cpp
 #SOURCES += ServiceManager.cpp
