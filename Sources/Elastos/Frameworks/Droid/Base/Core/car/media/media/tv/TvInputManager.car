@@ -232,7 +232,7 @@ module
         /**
          * Releases this session.
          */
-        Release();
+        ReleaseResources();
 
         /**
          * Sets the {@link android.view.Surface} for this session.

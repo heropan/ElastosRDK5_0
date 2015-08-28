@@ -10,7 +10,7 @@ module
      * @hide
      */
     interface IITvInputSession {
-        Release();
+        ReleaseResources();
 
         SetMain(
             [in] Boolean isMain);

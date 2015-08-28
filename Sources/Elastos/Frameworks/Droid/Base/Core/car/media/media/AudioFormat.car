@@ -21,6 +21,12 @@ module
 
         /** Audio data format: PCM 8 bit per sample. Not guaranteed to be supported by devices. */
         const Int32 ENCODING_PCM_8BIT = 3;  // accessed by native code
+        /** Audio data format: single-precision floating-point per sample */
+        const Int32 ENCODING_PCM_FLOAT = 4;
+        /** Audio data format: AC-3 compressed */
+        const Int32 ENCODING_AC3 = 5;
+        /** Audio data format: E-AC-3 compressed */
+        const Int32 ENCODING_E_AC3 = 6;
 
         /** Invalid audio channel configuration */
         /** @deprecated use CHANNEL_INVALID instead  */
@@ -95,6 +101,10 @@ module
                 // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
                 //    CHANNEL_OUT_BACK_LEFT | CHANNEL_OUT_BACK_RIGHT);
 
+        const Int32 CHANNEL_OUT_QUAD_SIDE = 0x180C;
+         // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
+         //    CHANNEL_OUT_SIDE_LEFT | CHANNEL_OUT_SIDE_RIGHT);
+
         const Int32 CHANNEL_OUT_SURROUND = 0x41C;
                 // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
                 //    CHANNEL_OUT_FRONT_CENTER | CHANNEL_OUT_BACK_CENTER);
@@ -103,6 +113,12 @@ module
                 // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
                 //    CHANNEL_OUT_FRONT_CENTER | CHANNEL_OUT_LOW_FREQUENCY |
                 //    CHANNEL_OUT_BACK_LEFT | CHANNEL_OUT_BACK_RIGHT);
+
+        /** @hide */
+        const Int32 CHANNEL_OUT_5POINT1_SIDE = 0x183C;
+         // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
+         //    CHANNEL_OUT_FRONT_CENTER | CHANNEL_OUT_LOW_FREQUENCY |
+         //    CHANNEL_OUT_SIDE_LEFT | CHANNEL_OUT_SIDE_RIGHT);
 
         const Int32 CHANNEL_OUT_7POINT1 = 0x3FC;
                 // = (CHANNEL_OUT_FRONT_LEFT | CHANNEL_OUT_FRONT_RIGHT |
@@ -152,6 +168,167 @@ module
 
         const Int32 CHANNEL_IN_STEREO = 0xC;
                 // = (CHANNEL_IN_LEFT | CHANNEL_IN_RIGHT);
+
+        /** @hide */
+        const Int32 CHANNEL_IN_FRONT_BACK = 0x30;
+         // = CHANNEL_IN_FRONT | CHANNEL_IN_BACK;
+        // CHANNEL_IN_ALL is not yet defined; if added then it should match AUDIO_CHANNEL_IN_ALL
+
+        /** @hide */
+        const Int32 AUDIO_FORMAT_HAS_PROPERTY_NONE = 0x0;
+        /** @hide */
+        const Int32 AUDIO_FORMAT_HAS_PROPERTY_ENCODING = 0x1 << 0;
+        /** @hide */
+        const Int32 AUDIO_FORMAT_HAS_PROPERTY_SAMPLE_RATE = 0x1 << 1;
+        /** @hide */
+        const Int32 AUDIO_FORMAT_HAS_PROPERTY_CHANNEL_MASK = 0x1 << 2;
+
+        /**
+         * Return the encoding.
+         * @return one of the values that can be set in {@link Builder#setEncoding(int)} or
+         * {@link AudioFormat#ENCODING_INVALID} if not set.
+         */
+        GetEncoding(
+            [out] Int32 * result);
+
+        /**
+         * Return the sample rate.
+         * @return one of the values that can be set in {@link Builder#setSampleRate(int)} or
+         * 0 if not set.
+         */
+        GetSampleRate(
+            [out] Int32 * result);
+
+        /**
+         * Return the channel mask.
+         * @return one of the values that can be set in {@link Builder#setChannelMask(int)} or
+         * {@link AudioFormat#CHANNEL_INVALID} if not set.
+         */
+        GetChannelMask(
+            [out] Int32 * result);
+
+        /** @hide */
+        GetPropertySetMask(
+            [out] Int32 * result);
+
+
+    }
+
+    interface IAudioFormatHelper {
+        /**
+         * @hide
+         * Return the number of channels from an input channel mask
+         * @param mask a combination of the CHANNEL_IN_* definitions, even CHANNEL_IN_DEFAULT
+         * @return number of channels for the mask
+         */
+        ChannelCountFromInChannelMask(
+            [in] Int32 mask,
+            [out] Int32 * result);
+
+        /**
+         * @hide
+         * Return the number of channels from an output channel mask
+         * @param mask a combination of the CHANNEL_OUT_* definitions, but not CHANNEL_OUT_DEFAULT
+         * @return number of channels for the mask
+         */
+        ChannelCountFromOutChannelMask(
+            [in] Int32 mask,
+            [out] Int32 * result);
+
+        /**
+         * @hide
+         * Return a channel mask ready to be used by native code
+         * @param mask a combination of the CHANNEL_OUT_* definitions, but not CHANNEL_OUT_DEFAULT
+         * @return a native channel mask
+         */
+        ConvertChannelOutMaskToNativeMask(
+            [in] Int32 javaMask,
+            [out] Int32 * result);
+
+        /**
+         * @hide
+         * Return a java output channel mask
+         * @param mask a native channel mask
+         * @return a combination of the CHANNEL_OUT_* definitions
+         */
+        ConvertNativeChannelMaskToOutMask(
+            [in] Int32 nativeMask,
+            [out] Int32 * result);
+
+        /** @hide */
+        GetBytesPerSample(
+            [in] Int32 audioFormat,
+            [out] Int32 * result);
+
+        /** @hide */
+        IsValidEncoding(
+            [in] Int32 audioFormat,
+            [out] Boolean * result);
+
+        /** @hide */
+        IsEncodingLinearPcm(
+            [in] Int32 audioFormat,
+            [out] Boolean * result);
+
+    }
+
+    interface IAudioFormatBuilder {
+
+        /**
+         * Combines all of the format characteristics that have been set and return a new
+         * {@link AudioFormat} object.
+         * @return a new {@link AudioFormat} object
+         */
+        Build(
+            [out] IAudioFormat ** result);
+
+        /**
+         * Sets the data encoding format.
+         * @param encoding one of {@link AudioFormat#ENCODING_DEFAULT},
+         *     {@link AudioFormat#ENCODING_PCM_8BIT},
+         *     {@link AudioFormat#ENCODING_PCM_16BIT},
+         *     {@link AudioFormat#ENCODING_PCM_FLOAT},
+         *     {@link AudioFormat#ENCODING_AC3},
+         *     {@link AudioFormat#ENCODING_E_AC3}.
+         * @return the same Builder instance.
+         * @throws java.lang.IllegalArgumentException
+         */
+        SetEncoding(
+            [in] Int32 encoding,
+            [out] IAudioFormatBuilder ** result);
+
+        /**
+         * Sets the channel mask.
+         * @param channelMask describes the configuration of the audio channels.
+         *    <p>For output, the mask should be a combination of
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_CENTER},
+         *    {@link AudioFormat#CHANNEL_OUT_FRONT_RIGHT},
+         *    {@link AudioFormat#CHANNEL_OUT_SIDE_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_SIDE_RIGHT},
+         *    {@link AudioFormat#CHANNEL_OUT_BACK_LEFT},
+         *    {@link AudioFormat#CHANNEL_OUT_BACK_RIGHT}.
+         *    <p>for input, the mask should be {@link AudioFormat#CHANNEL_IN_MONO} or
+         *    {@link AudioFormat#CHANNEL_IN_STEREO}.  {@link AudioFormat#CHANNEL_IN_MONO} is
+         *    guaranteed to work on all devices.
+         * @return the same Builder instance.
+         */
+        SetChannelMask(
+            [in] Int32 channelMask,
+            [out] IAudioFormatBuilder ** result);
+
+        /**
+         * Sets the sample rate.
+         * @param sampleRate the sample rate expressed in Hz
+         * @return the same Builder instance.
+         * @throws java.lang.IllegalArgumentException
+         */
+        SetSampleRate(
+            [in] Int32 sampleRate,
+            [out] IAudioFormatBuilder ** result);
+
+    }
+
     }
 
     } // namespace Media

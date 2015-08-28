@@ -45,6 +45,7 @@ module
      * @Involve
      * interface IAudioEffect
      */
+    [deprecated]
     interface IVirtualizer {
 
         /**

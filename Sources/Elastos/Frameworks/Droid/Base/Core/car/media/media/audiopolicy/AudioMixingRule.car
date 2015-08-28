@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Droid.Media.IAudioAttributes;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -36,6 +38,7 @@ module
      * Builder class for {@link AudioMixingRule} objects
      *
      */
+    [deprecated]
     interface IAudioMixingRuleBuilder {
         /**
          * Add a rule for the selection of which streams are mixed together.

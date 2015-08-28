@@ -1,10 +1,13 @@
 module
 {
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
     namespace Session {
 
+    [deprecated]
     interface IISessionController {
         SendCommand(
             [in] String command,

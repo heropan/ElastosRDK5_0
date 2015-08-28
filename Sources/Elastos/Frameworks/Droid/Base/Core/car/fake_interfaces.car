@@ -242,6 +242,8 @@ module
 
         interface ISlog {}
 
+        interface IRange {}
+
     } // namespace Utility
     } // namespace Droid
     } // namespace Elastos

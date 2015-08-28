@@ -5,6 +5,13 @@ module
     namespace Droid {
     namespace Media {
 
+/**
+ * @hide
+ * Interface registered by AudioManager to notify a source of remote control information
+ * that information is requested to be displayed on the remote control (through
+ * IRemoteControlDisplay).
+ * {@see AudioManager#registerRemoteControlClient(RemoteControlClient)}.
+ */
     [oneway]
     interface IIRemoteControlClient {
         /**
@@ -14,16 +21,22 @@ module
          *   parameters are valid.
          * @param generationId
          * @param infoFlags
-         * @param artWidth if > 0, artHeight must be > 0 too.
-         * @param artHeight
          * FIXME: is infoFlags required? since the RCC pushes info, this might always be called
          *        with RC_INFO_ALL
          */
         OnInformationRequested(
             [in] Int32 generationId,
-            [in] Int32 infoFlags,
-            [in] Int32 artWidth,
-            [in] Int32 artHeight);
+            [in] Int32 infoFlags);
+
+        /**
+         * Notifies a remote control client that information for the given generation ID is
+         * requested for the given RemoteControlDisplay alone.
+         * @param rcd the display to which current info should be sent
+         */
+        InformationRequestForDisplay(
+            [in] IRemoteControlDisplay * rcd,
+            [in] Int32 w,
+            [in] Int32 h);
 
         /**
          * Sets the generation counter of the current client that is displayed on the remote control.
@@ -32,10 +45,35 @@ module
             [in] Int32 clientGeneration);
 
         PlugRemoteControlDisplay(
-            [in] IIRemoteControlDisplay* rcd);
+            [in] IRemoteControlDisplay * rcd,
+            [in] Int32 w,
+            [in] Int32 h);
 
         UnplugRemoteControlDisplay(
-            [in] IIRemoteControlDisplay* rcd);
+            [in] IRemoteControlDisplay * rcd);
+
+        SetBitmapSizeForDisplay(
+            [in] IRemoteControlDisplay * rcd,
+            [in] Int32 w,
+            [in] Int32 h);
+
+        SetWantsSyncForDisplay(
+            [in] IRemoteControlDisplay * rcd,
+            [in] Boolean wantsSync);
+
+        EnableRemoteControlDisplay(
+            [in] IRemoteControlDisplay * rcd,
+            [in] Boolean enabled);
+
+        SeekTo(
+            [in] Int32 clientGeneration,
+            [in] Int64 timeMs);
+
+        UpdateMetadata(
+            [in] Int32 clientGeneration,
+            [in] Int32 key,
+            [in] IRating * value);
+
     }
 
     } // namespace Media

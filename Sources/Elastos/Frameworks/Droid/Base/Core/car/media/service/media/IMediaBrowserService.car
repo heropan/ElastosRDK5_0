@@ -38,6 +38,19 @@ module
         Detach();
     }
 
+    interface IMediaBrowserServiceBrowserRoot {
+        /**
+         * Gets the root id for browsing.
+         */
+        GetRootId(
+            [out] String * result);
+
+        /**
+         * Gets any extras about the brwoser service.
+         */
+        GetExtras(
+            [out] IBundle ** result);
+    }
 
     /**
      * Base class for media browse services.
@@ -90,7 +103,7 @@ module
             [in] String clientPackageName,
             [in] Int32 clientUid,
             [in] IBundle * rootHints,
-            [out] IBrowserRoot ** result);
+            [out] IMediaBrowserServiceBrowserRoot ** result);
 
         /**
          * Called to get information about the children of a media item.
@@ -137,20 +150,6 @@ module
         NotifyChildrenChanged(
             [in] String parentId);
 
-    }
-
-    interface IMediaBrowserServiceBrowserRoot {
-        /**
-         * Gets the root id for browsing.
-         */
-        GetRootId(
-            [out] String * result);
-
-        /**
-         * Gets any extras about the brwoser service.
-         */
-        GetExtras(
-            [out] IBundle ** result);
     }
 
     } // namespace Media

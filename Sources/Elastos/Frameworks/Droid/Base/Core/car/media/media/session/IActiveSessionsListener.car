@@ -5,6 +5,7 @@ module
     namespace Media {
     namespace Session {
 
+    [deprecated]
     interface IIActiveSessionsListener {
         OnActiveSessionsChanged(
             [in] ArrayOf<IMediaSessionToken*> * sessions);

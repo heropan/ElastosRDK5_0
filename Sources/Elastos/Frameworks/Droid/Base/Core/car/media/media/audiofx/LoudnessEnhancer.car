@@ -98,7 +98,7 @@ module
          * @throws UnsupportedOperationException
          */
         GetProperties(
-            [out] ILoudnessEnhancerSettings * result);
+            [out] ILoudnessEnhancerSettings ** result);
 
         /**
          * @hide
@@ -109,7 +109,8 @@ module
          * @throws IllegalArgumentException
          * @throws UnsupportedOperationException
          */
-        SetProperties(ILoudnessEnhancerSettings * settings);
+        SetProperties(
+            [in] ILoudnessEnhancerSettings * settings);
 
     }
     } // namespace audiofx

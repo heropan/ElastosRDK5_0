@@ -35,22 +35,38 @@ module
     }
 
     /**
+     * Listener registered by client to be notified upon new audio port connections,
+     * disconnections or attributes update.
+     * @hide
+     */
+    interface IOnAudioPortUpdateListener {
+        /**
+         * Callback method called upon audio port list update.
+         * @param portList the updated list of audio ports
+         */
+        OnAudioPortListUpdate(
+            [in] ArrayOf<IAudioPort*> * portList);
+
+        /**
+         * Callback method called upon audio patch list update.
+         * @param patchList the updated list of audio patches
+         */
+        OnAudioPatchListUpdate(
+            [in] ArrayOf<IAudioPatch*> * patchList);
+
+        /**
+         * Callback method called when the mediaserver dies
+         */
+        OnServiceDied();
+    }
+
+    /**
      * AudioManager provides access to volume and ringer mode control.
      * <p>
      * Use <code>Context.getSystemService(Context.AUDIO_SERVICE)</code> to get
      * an instance of this class.
      */
     interface IAudioManager {
-        /* define audio device name */
-        const String AUDIO_NAME_CODEC     = "AUDIO_CODEC";
-        const String AUDIO_NAME_HDMI      = "AUDIO_HDMI";
-        const String AUDIO_NAME_SPDIF     = "AUDIO_SPDIF";
-
-        /* define type of device */
-        const String AUDIO_INPUT_TYPE     = "audio_devices_in";
-        const String AUDIO_OUTPUT_TYPE    = "audio_devices_out";
-        const String AUDIO_INPUT_ACTIVE   = "audio_devices_in_active";
-        const String AUDIO_OUTPUT_ACTIVE  = "audio_devices_out_active";
 
         /**
          * Broadcast intent, a hint for applications that audio is about to become
@@ -185,6 +201,125 @@ module
          * Value is boolean
          */
         const String EXTRA_MASTER_VOLUME_MUTED = "android.media.EXTRA_MASTER_VOLUME_MUTED";
+
+        /**
+         * Broadcast Action: Wired Headset plugged in or unplugged.
+         *
+         * You <em>cannot</em> receive this through components declared
+         * in manifests, only by explicitly registering for it with
+         * {@link Context#registerReceiver(BroadcastReceiver, IntentFilter)
+         * Context.registerReceiver()}.
+         *
+         * <p>The intent will have the following extra values:
+         * <ul>
+         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
+         *   <li><em>name</em> - Headset type, human readable string </li>
+         *   <li><em>microphone</em> - 1 if headset has a microphone, 0 otherwise </li>
+         * </ul>
+         * </ul>
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_HEADSET_PLUG =
+                "android.intent.action.HEADSET_PLUG";
+
+        /**
+         * Broadcast Action: A sticky broadcast indicating an HMDI cable was plugged or unplugged
+         *
+         * The intent will have the following extra values: {@link #EXTRA_AUDIO_PLUG_STATE},
+         * {@link #EXTRA_MAX_CHANNEL_COUNT}, {@link #EXTRA_ENCODINGS}.
+         * <p>It can only be received by explicitly registering for it with
+         * {@link Context#registerReceiver(BroadcastReceiver, IntentFilter)}.
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_HDMI_AUDIO_PLUG =
+                "android.media.action.HDMI_AUDIO_PLUG";
+
+        /**
+         * Extra used in {@link #ACTION_HDMI_AUDIO_PLUG} to communicate whether HDMI is plugged in
+         * or unplugged.
+         * An integer value of 1 indicates a plugged-in state, 0 is unplugged.
+         */
+        const String EXTRA_AUDIO_PLUG_STATE = "android.media.extra.AUDIO_PLUG_STATE";
+
+        /**
+         * Extra used in {@link #ACTION_HDMI_AUDIO_PLUG} to define the maximum number of channels
+         * supported by the HDMI device.
+         * The corresponding integer value is only available when the device is plugged in (as expressed
+         * by {@link #EXTRA_AUDIO_PLUG_STATE}).
+         */
+        const String EXTRA_MAX_CHANNEL_COUNT = "android.media.extra.MAX_CHANNEL_COUNT";
+
+        /**
+         * Extra used in {@link #ACTION_HDMI_AUDIO_PLUG} to define the audio encodings supported by
+         * the connected HDMI device.
+         * The corresponding array of encoding values is only available when the device is plugged in
+         * (as expressed by {@link #EXTRA_AUDIO_PLUG_STATE}). Encoding values are defined in
+         * {@link AudioFormat} (for instance see {@link AudioFormat#ENCODING_PCM_16BIT}). Use
+         * {@link android.content.Intent#getIntArrayExtra(String)} to retrieve the encoding values.
+         */
+        const String EXTRA_ENCODINGS = "android.media.extra.ENCODINGS";
+
+        /**
+         * Broadcast Action: An analog audio speaker/headset plugged in or unplugged.
+         *
+         * <p>The intent will have the following extra values:
+         * <ul>
+         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
+         *   <li><em>name</em> - Headset type, human readable string </li>
+         * </ul>
+         * </ul>
+         * @hide
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_ANALOG_AUDIO_DOCK_PLUG =
+                "android.media.action.ANALOG_AUDIO_DOCK_PLUG";
+
+        /**
+         * Broadcast Action: A digital audio speaker/headset plugged in or unplugged.
+         *
+         * <p>The intent will have the following extra values:
+         * <ul>
+         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
+         *   <li><em>name</em> - Headset type, human readable string </li>
+         * </ul>
+         * </ul>
+         * @hide
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_DIGITAL_AUDIO_DOCK_PLUG =
+                "android.media.action.DIGITAL_AUDIO_DOCK_PLUG";
+
+        /**
+         * Broadcast Action: A USB audio accessory was plugged in or unplugged.
+         *
+         * <p>The intent will have the following extra values:
+         * <ul>
+         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
+         *   <li><em>card</em> - ALSA card number (integer) </li>
+         *   <li><em>device</em> - ALSA device number (integer) </li>
+         * </ul>
+         * </ul>
+         * @hide
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_USB_AUDIO_ACCESSORY_PLUG =
+                "android.media.action.USB_AUDIO_ACCESSORY_PLUG";
+
+        /**
+         * Broadcast Action: A USB audio device was plugged in or unplugged.
+         *
+         * <p>The intent will have the following extra values:
+         * <ul>
+         *   <li><em>state</em> - 0 for unplugged, 1 for plugged. </li>
+         *   <li><em>card</em> - ALSA card number (integer) </li>
+         *   <li><em>device</em> - ALSA device number (integer) </li>
+         * </ul>
+         * </ul>
+         * @hide
+         */
+        // @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+        const String ACTION_USB_AUDIO_DEVICE_PLUG =
+                "android.media.action.USB_AUDIO_DEVICE_PLUG";
 
         /** The audio stream for phone calls */
         const Int32 STREAM_VOICE_CALL = 0; // IAudioSystem::STREAM_VOICE_CALL;
@@ -321,6 +456,36 @@ module
          * @hide
          */
         const Int32 FLAG_FIXED_VOLUME = 1 << 5; // 32;
+
+        /**
+         * Indicates the volume set/adjust call is for Bluetooth absolute volume
+         * @hide
+         */
+        const Int32 FLAG_BLUETOOTH_ABS_VOLUME = 1 << 6;
+
+        /**
+         * Adjusting the volume was prevented due to silent mode, display a hint in the UI.
+         * @hide
+         */
+        const Int32 FLAG_SHOW_SILENT_HINT = 1 << 7;
+
+        /**
+         * Indicates the volume call is for Hdmi Cec system audio volume
+         * @hide
+         */
+        const Int32 FLAG_HDMI_SYSTEM_AUDIO_VOLUME = 1 << 8;
+
+        /**
+         * Indicates that this should only be handled if media is actively playing.
+         * @hide
+         */
+        const Int32 FLAG_ACTIVE_MEDIA_ONLY = 1 << 9;
+
+        /**
+         * Like FLAG_SHOW_UI, but only dialog warnings and confirmations, no sliders.
+         * @hide
+         */
+        const Int32 FLAG_SHOW_UI_WARNINGS = 1 << 10;
 
         /**
          * Ringer mode that will be silent and will not vibrate. (This overrides the
@@ -626,9 +791,20 @@ module
         const Int32 FX_KEYPRESS_RETURN = 8;
 
         /**
+         * Invalid keypress sound
+         * @see #playSoundEffect(int)
+         */
+        const Int32 FX_KEYPRESS_INVALID = 9;
+        /**
          * @hide Number of sound effects
          */
-        const Int32 NUM_SOUND_EFFECTS = 9;
+        const Int32 NUM_SOUND_EFFECTS = 10;
+
+        /**
+         * @hide
+         * Used to indicate no audio focus has been gained or lost.
+         */
+        const Int32 AUDIOFOCUS_NONE = 0;
 
         /**
          * Used to indicate a gain of audio focus, or a request of audio focus, of unknown duration.
@@ -656,6 +832,16 @@ module
          * @see #requestAudioFocus(OnAudioFocusChangeListener, Int32, Int32)
          */
         const Int32 AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK = 3;
+
+        /**
+         * Used to indicate a temporary request of audio focus, anticipated to last a short
+         * amount of time, during which no other applications, or system components, should play
+         * anything. Examples of exclusive and transient audio focus requests are voice
+         * memo recording and speech recognition, during which the system shouldn't play any
+         * notifications, and media playback should have paused.
+         * @see #requestAudioFocus(OnAudioFocusChangeListener, int, int)
+         */
+        const Int32 AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE = 4;
 
         /**
          * Used to indicate a loss of audio focus of unknown duration.
@@ -743,6 +929,10 @@ module
         // class is not used by other parts of the framework, which instead use definitions and methods
         // from AudioManager. AudioSystem is an internal class used by AudioManager and AudioService.
 
+        /** @hide
+         * The audio device code for representing "no device." */
+        const Int32 DEVICE_NONE = 0x0; //AudioSystem.DEVICE_NONE;
+
         /** {@hide} The audio output device code for the small speaker at the front of the device used
          *  when placing calls.  Does not refer to an in-ear headphone without attached microphone,
          *  such as earbuds, earphones, or in-ear monitors (IEM). Those would be handled as a
@@ -782,6 +972,10 @@ module
         /** {@hide} The audio output device code for S/PDIF or HDMI */
         const Int32 DEVICE_OUT_AUX_DIGITAL = 0x400; // IAudioSystem::DEVICE_OUT_AUX_DIGITAL;
 
+        /** @hide
+         * The audio output device code for HDMI */
+        const Int32 DEVICE_OUT_HDMI = 0x400; //AudioSystem.DEVICE_OUT_HDMI;
+
         /** {@hide} The audio output device code for an analog wired headset attached via a
          *  docking station
          */
@@ -802,11 +996,99 @@ module
          */
         const Int32 DEVICE_OUT_USB_DEVICE = 0x4000; // IAudioSystem::DEVICE_OUT_USB_DEVICE;
 
+        /** @hide
+         * The audio output device code for projection output.
+         */
+        const Int32 DEVICE_OUT_REMOTE_SUBMIX = 0x8000; //AudioSystem.DEVICE_OUT_REMOTE_SUBMIX;
+        /** @hide
+         * The audio output device code the telephony voice TX path.
+         */
+        const Int32 DEVICE_OUT_TELEPHONY_TX = 0x10000; //AudioSystem.DEVICE_OUT_TELEPHONY_TX;
+        /** @hide
+         * The audio output device code for an analog jack with line impedance detected.
+         */
+        const Int32 DEVICE_OUT_LINE = 0x20000; //AudioSystem.DEVICE_OUT_LINE;
+        /** @hide
+         * The audio output device code for HDMI Audio Return Channel.
+         */
+        const Int32 DEVICE_OUT_HDMI_ARC = 0x40000; //AudioSystem.DEVICE_OUT_HDMI_ARC;
+        /** @hide
+         * The audio output device code for S/PDIF digital connection.
+         */
+        const Int32 DEVICE_OUT_SPDIF = 0x80000; //AudioSystem.DEVICE_OUT_SPDIF;
+        /** @hide
+         * The audio output device code for built-in FM transmitter.
+         */
+        const Int32 DEVICE_OUT_FM = 0x100000; //AudioSystem.DEVICE_OUT_FM;
+
         /** {@hide} This is not used as a returned value from {@link #getDevicesForStream}, but could be
          *  used in the future in a set method to select whatever default device is chosen by the
          *  platform-specific implementation.
          */
         const Int32 DEVICE_OUT_DEFAULT = 0x40000000; // IAudioSystem::DEVICE_OUT_DEFAULT;
+
+        /** @hide
+         * The audio input device code for default built-in microphone
+         */
+        cosnt Int32 DEVICE_IN_BUILTIN_MIC = 0x80000004; //AudioSystem.DEVICE_IN_BUILTIN_MIC;
+        /** @hide
+         * The audio input device code for a Bluetooth SCO headset
+         */
+        cosnt Int32 DEVICE_IN_BLUETOOTH_SCO_HEADSET = 0x80000008; // AudioSystem.DEVICE_IN_BLUETOOTH_SCO_HEADSET;
+        /** @hide
+         * The audio input device code for wired headset microphone
+         */
+        cosnt Int32 DEVICE_IN_WIRED_HEADSET = 0x80000010; // AudioSystem.DEVICE_IN_WIRED_HEADSET;
+        /** @hide
+         * The audio input device code for HDMI
+         */
+        cosnt Int32 DEVICE_IN_HDMI = 0x80000020; //AudioSystem.DEVICE_IN_HDMI;
+        /** @hide
+         * The audio input device code for telephony voice RX path
+         */
+        cosnt Int32 DEVICE_IN_TELEPHONY_RX = 0x80000040; //AudioSystem.DEVICE_IN_TELEPHONY_RX;
+        /** @hide
+         * The audio input device code for built-in microphone pointing to the back
+         */
+        cosnt Int32 DEVICE_IN_BACK_MIC = 0x80000080; //AudioSystem.DEVICE_IN_BACK_MIC;
+        /** @hide
+         * The audio input device code for analog from a docking station
+         */
+        cosnt Int32 DEVICE_IN_ANLG_DOCK_HEADSET = 0x80000200; //AudioSystem.DEVICE_IN_ANLG_DOCK_HEADSET;
+        /** @hide
+         * The audio input device code for digital from a docking station
+         */
+        cosnt Int32 DEVICE_IN_DGTL_DOCK_HEADSET = 0x80000400; //AudioSystem.DEVICE_IN_DGTL_DOCK_HEADSET;
+        /** @hide
+         * The audio input device code for a USB audio accessory. The accessory is in USB host
+         * mode and the Android device in USB device mode
+         */
+        cosnt Int32 DEVICE_IN_USB_ACCESSORY = 0x80000800; //AudioSystem.DEVICE_IN_USB_ACCESSORY;
+        /** @hide
+         * The audio input device code for a USB audio device. The device is in USB device
+         * mode and the Android device in USB host mode
+         */
+        cosnt Int32 DEVICE_IN_USB_DEVICE = 0x80001000; //AudioSystem.DEVICE_IN_USB_DEVICE;
+        /** @hide
+         * The audio input device code for a FM radio tuner
+         */
+        cosnt Int32 DEVICE_IN_FM_TUNER = 0x80002000; //AudioSystem.DEVICE_IN_FM_TUNER;
+        /** @hide
+         * The audio input device code for a TV tuner
+         */
+        cosnt Int32 DEVICE_IN_TV_TUNER = 0x80004000; //AudioSystem.DEVICE_IN_TV_TUNER;
+        /** @hide
+         * The audio input device code for an analog jack with line impedance detected
+         */
+        cosnt Int32 DEVICE_IN_LINE = 0x80008000; //AudioSystem.DEVICE_IN_LINE;
+        /** @hide
+         * The audio input device code for a S/PDIF digital connection
+         */
+        cosnt Int32 DEVICE_IN_SPDIF = 0x80010000; //AudioSystem.DEVICE_IN_SPDIF;
+        /** @hide
+         * The audio input device code for audio loopback
+         */
+        cosnt Int32 DEVICE_IN_LOOPBACK = 0x80040000; //AudioSystem.DEVICE_IN_LOOPBACK;
 
         /**
          * Used as a key for {@link #getProperty} to request the native or optimal output sample rate
@@ -819,6 +1101,71 @@ module
          * for this device's primary output stream, in decimal PCM frames.
          */
         const String PROPERTY_OUTPUT_FRAMES_PER_BUFFER = "android.media.property.OUTPUT_FRAMES_PER_BUFFER";
+
+        /**
+         * A special audio session ID to indicate that the audio session ID isn't known and the
+         * framework should generate a new value. This can be used when building a new
+         * {@link AudioTrack} instance with
+         * {@link AudioTrack#AudioTrack(AudioAttributes, AudioFormat, int, int, int)}.
+         */
+        const Int32 AUDIO_SESSION_ID_GENERATE = 0; //AudioSystem.AUDIO_SESSION_ALLOCATE;
+
+        /**
+         * Return codes for listAudioPorts(), createAudioPatch() ...
+         */
+
+        /** @hide
+         * CANDIDATE FOR PUBLIC API
+         */
+        const Int32 SUCCESS = 0; //AudioSystem.SUCCESS;
+        /**
+         * A default error code.
+         */
+        const Int32 ERROR = -1; //AudioSystem.ERROR;
+        /** @hide
+         * CANDIDATE FOR PUBLIC API
+         */
+        const Int32 ERROR_BAD_VALUE = -2; //AudioSystem.BAD_VALUE;
+        /** @hide
+         */
+        const Int32 ERROR_INVALID_OPERATION = -3; //AudioSystem.INVALID_OPERATION;
+        /** @hide
+         */
+        const Int32 ERROR_PERMISSION_DENIED = -4; //AudioSystem.PERMISSION_DENIED;
+        /** @hide
+         */
+        const Int32 ERROR_NO_INIT = -5; //AudioSystem.NO_INIT;
+        /**
+         * An error code indicating that the object reporting it is no longer valid and needs to
+         * be recreated.
+         */
+        const Int32 ERROR_DEAD_OBJECT = -6; //AudioSystem.DEAD_OBJECT;
+
+        /**
+         * Sends a simulated key event for a media button.
+         * To simulate a key press, you must first send a KeyEvent built with a
+         * {@link KeyEvent#ACTION_DOWN} action, then another event with the {@link KeyEvent#ACTION_UP}
+         * action.
+         * <p>The key event will be sent to the current media key event consumer which registered with
+         * {@link AudioManager#registerMediaButtonEventReceiver(PendingIntent)}.
+         * @param keyEvent a {@link KeyEvent} instance whose key code is one of
+         *     {@link KeyEvent#KEYCODE_MUTE},
+         *     {@link KeyEvent#KEYCODE_HEADSETHOOK},
+         *     {@link KeyEvent#KEYCODE_MEDIA_PLAY},
+         *     {@link KeyEvent#KEYCODE_MEDIA_PAUSE},
+         *     {@link KeyEvent#KEYCODE_MEDIA_PLAY_PAUSE},
+         *     {@link KeyEvent#KEYCODE_MEDIA_STOP},
+         *     {@link KeyEvent#KEYCODE_MEDIA_NEXT},
+         *     {@link KeyEvent#KEYCODE_MEDIA_PREVIOUS},
+         *     {@link KeyEvent#KEYCODE_MEDIA_REWIND},
+         *     {@link KeyEvent#KEYCODE_MEDIA_RECORD},
+         *     {@link KeyEvent#KEYCODE_MEDIA_FAST_FORWARD},
+         *     {@link KeyEvent#KEYCODE_MEDIA_CLOSE},
+         *     {@link KeyEvent#KEYCODE_MEDIA_EJECT},
+         *     or {@link KeyEvent#KEYCODE_MEDIA_AUDIO_TRACK}.
+         */
+        DispatchMediaKeyEvent(
+            [in] IKeyEvent* event);
 
         /**
          * @hide
@@ -840,6 +1187,25 @@ module
         HandleKeyUp(
             [in] IKeyEvent* event,
             [in] Int32 stream);
+
+        /**
+         * Indicates if the device implements a fixed volume policy.
+         * <p>Some devices may not have volume control and may operate at a fixed volume,
+         * and may not enable muting or changing the volume of audio streams.
+         * This method will return true on such devices.
+         * <p>The following APIs have no effect when volume is fixed:
+         * <ul>
+         *   <li> {@link #adjustVolume(int, int)}
+         *   <li> {@link #adjustSuggestedStreamVolume(int, int, int)}
+         *   <li> {@link #adjustStreamVolume(int, int, int)}
+         *   <li> {@link #setStreamVolume(int, int, int)}
+         *   <li> {@link #setRingerMode(int)}
+         *   <li> {@link #setStreamSolo(int, boolean)}
+         *   <li> {@link #setStreamMute(int, boolean)}
+         * </ul>
+         */
+        IsVolumeFixed(
+            [out] Boolean * result);
 
         /**
          * Adjusts the volume of a particular stream by one step in a direction.
@@ -981,6 +1347,15 @@ module
          */
         SetRingerMode(
             [in] Int32 ringerMode);
+
+        /**
+         * @see #setRingerMode(int)
+         * @param checkZen  Update zen mode if necessary to compensate.
+         * @hide
+         */
+        SetRingerMode(
+            [in] Int32 ringerMode,
+            [in] Boolean checkZen);
 
         /**
          * Sets the volume index for a particular stream.
@@ -1260,6 +1635,23 @@ module
         StartBluetoothSco();
 
         /**
+         * @hide
+         * Start bluetooth SCO audio connection in virtual call mode.
+         * <p>Requires Permission:
+         *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
+         * <p>Similar to {@link #startBluetoothSco()} with explicit selection of virtual call mode.
+         * Telephony and communication applications (VoIP, Video Chat) should preferably select
+         * virtual call mode.
+         * Applications using voice input for search or commands should first try raw audio connection
+         * with {@link #startBluetoothSco()} and fall back to startBluetoothScoVirtualCall() in case of
+         * failure.
+         * @see #startBluetoothSco()
+         * @see #stopBluetoothSco()
+         * @see #ACTION_SCO_AUDIO_STATE_UPDATED
+         */
+        StartBluetoothScoVirtualCall();
+
+        /**
          * Stop bluetooth SCO audio connection.
          * <p>Requires Permission:
          *   {@link android.Manifest.permission#MODIFY_AUDIO_SETTINGS}.
@@ -1308,14 +1700,6 @@ module
          */
         IsBluetoothA2dpOn(
             [out] Boolean* result);
-
-        /**
-         * @hide
-         * Signals whether remote submix audio rerouting is enabled.
-         */
-        SetRemoteSubmixOn(
-            [in] Boolean on,
-            [in] Int32 address);
 
         /**
          * Sets audio routing to the wired headset on or off.
@@ -1428,22 +1812,40 @@ module
 
         /**
          * @hide
-         * Checks whether speech recognition is active
-         * @return true if a recording with source {@link MediaRecorder.AudioSource#VOICE_RECOGNITION}
-         *    is underway.
+         * Checks whether any music or media is actively playing on a remote device (e.g. wireless
+         *   display). Note that BT audio sinks are not considered remote devices.
+         * @return true if {@link AudioManager#STREAM_MUSIC} is active on a remote device
          */
-        IsSpeechRecognitionActive(
-            [out] Boolean* result);
+        IsMusicActiveRemotely(
+            [out] Boolean * result);
 
         /**
          * @hide
-         * If the stream is active locally or remotely, adjust its volume according to the enforced
-         * priority rules.
-         * Note: only AudioManager.STREAM_MUSIC is supported at the moment
+         * Checks whether the current audio focus is exclusive.
+         * @return true if the top of the audio focus stack requested focus
+         *     with {@link #AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE}
          */
-        AdjustLocalOrRemoteStreamVolume(
-            [in] Int32 streamType,
-            [in] Int32 direction);
+        IsAudioFocusExclusive(
+            [out] Boolean * result);
+
+        /**
+         * Return a new audio session identifier not associated with any player or effect.
+         * An audio session identifier is a system wide unique identifier for a set of audio streams
+         * (one or more mixed together).
+         * <p>The primary use of the audio session ID is to associate audio effects to audio players,
+         * such as {@link MediaPlayer} or {@link AudioTrack}: all audio effects sharing the same audio
+         * session ID will be applied to the mixed audio content of the players that share the same
+         * audio session.
+         * <p>This method can for instance be used when creating one of the
+         * {@link android.media.audiofx.AudioEffect} objects to define the audio session of the effect,
+         * or to specify a session for a speech synthesis utterance
+         * in {@link android.speech.tts.TextToSpeech.Engine}.
+         * @return a new unclaimed and unused audio session identifier, or {@link #ERROR} when the
+         *   system failed to generate a new session, a condition in which audio playback or recording
+         *   will subsequently fail as well.
+         */
+        GenerateAudioSessionId(
+            [out] Int32 * result);
 
         /*
          * Sets a generic audio configuration parameter. The use of these parameters
@@ -1503,6 +1905,28 @@ module
          */
         PlaySoundEffect(
             [in] Int32 effectType);
+
+        /**
+         * Plays a sound effect (Key clicks, lid open/close...)
+         * @param effectType The type of sound effect. One of
+         *            {@link #FX_KEY_CLICK},
+         *            {@link #FX_FOCUS_NAVIGATION_UP},
+         *            {@link #FX_FOCUS_NAVIGATION_DOWN},
+         *            {@link #FX_FOCUS_NAVIGATION_LEFT},
+         *            {@link #FX_FOCUS_NAVIGATION_RIGHT},
+         *            {@link #FX_KEYPRESS_STANDARD},
+         *            {@link #FX_KEYPRESS_SPACEBAR},
+         *            {@link #FX_KEYPRESS_DELETE},
+         *            {@link #FX_KEYPRESS_RETURN},
+         *            {@link #FX_KEYPRESS_INVALID},
+         * @param userId The current user to pull sound settings from
+         * NOTE: This version uses the UI settings to determine
+         * whether sounds are heard or not.
+         * @hide
+         */
+        PlaySoundEffect(
+            [in] Int32 effectType,
+            [in] Int32 userId);
 
         /**
          * Plays a sound effect (Key clicks, lid open/close...)
@@ -1620,26 +2044,28 @@ module
             [in] IComponentName* eventReceiver);
 
         /**
+         * Register a component to be the sole receiver of MEDIA_BUTTON intents.  This is like
+         * {@link #registerMediaButtonEventReceiver(android.content.ComponentName)}, but allows
+         * the buttons to go to any PendingIntent.  Note that you should only use this form if
+         * you know you will continue running for the full time until unregistering the
+         * PendingIntent.
+         * @param eventReceiver target that will receive media button intents.  The PendingIntent
+         * will be sent an {@link Intent#ACTION_MEDIA_BUTTON} event when a media button action
+         * occurs, with {@link Intent#EXTRA_KEY_EVENT} added and holding the key code of the
+         * media button that was pressed.
+         * @deprecated Use {@link MediaSession#setMediaButtonReceiver(PendingIntent)} instead.
+         */
+        // @Deprecated
+        RegisterMediaButtonEventReceiver(
+            [in] IPendingIntent * eventReceiver);
+
+        /**
          * @hide
          * no-op if (pi == null) or (eventReceiver == null)
          */
         RegisterMediaButtonIntent(
             [in] IPendingIntent* pi,
             [in] IComponentName* eventReceiver);
-
-        /**
-         * @hide
-         * Used internally by telephony package to register an intent receiver for ACTION_MEDIA_BUTTON.
-         * @param eventReceiver the component that will receive the media button key events,
-         *          no-op if eventReceiver is null
-         */
-        RegisterMediaButtonEventReceiverForCalls(
-            [in] IComponentName* eventReceiver);
-
-        /**
-         * @hide
-         */
-        UnregisterMediaButtonEventReceiverForCalls();
 
         /**
          * Unregister the receiver of MEDIA_BUTTON intents.
@@ -1650,11 +2076,20 @@ module
             [in] IComponentName* eventReceiver);
 
         /**
+         * Unregister the receiver of MEDIA_BUTTON intents.
+         * @param eventReceiver same PendingIntent that was registed with
+         *      {@link #registerMediaButtonEventReceiver(PendingIntent)}.
+         * @deprecated Use {@link MediaSession} instead.
+         */
+        // @Deprecated
+        UnregisterMediaButtonEventReceiver(
+            [in] IPendingIntent * eventReceiver);
+
+        /**
          * @hide
          */
         UnregisterMediaButtonIntent(
-            [in] IPendingIntent* pi,
-            [in] IComponentName* eventReceiver);
+            [in] IPendingIntent * pi);
 
         /**
          * Registers the remote control client for providing information to display on the remote
@@ -1662,26 +2097,87 @@ module
          * @param rcClient The remote control client from which remote controls will receive
          *      information to display.
          * @see RemoteControlClient
+         * @deprecated Use {@link MediaSession} instead.
          */
+        // @Deprecated
         RegisterRemoteControlClient(
-            [in] IRemoteControlClient* rcClient);
+            [in] IRemoteControlClient * rcClient);
 
         /**
          * Unregisters the remote control client that was providing information to display on the
          * remote controls.
          * @param rcClient The remote control client to unregister.
          * @see #registerRemoteControlClient(RemoteControlClient)
+         * @deprecated Use {@link MediaSession} instead.
          */
+        // @Deprecated
         UnregisterRemoteControlClient(
-            [in] IRemoteControlClient* rcClient);
+            [in] IRemoteControlClient * rcClient);
+
+        /**
+         * Registers a {@link RemoteController} instance for it to receive media
+         * metadata updates and playback state information from applications using
+         * {@link RemoteControlClient}, and control their playback.
+         * <p>
+         * Registration requires the {@link OnClientUpdateListener} listener to be
+         * one of the enabled notification listeners (see
+         * {@link android.service.notification.NotificationListenerService}).
+         *
+         * @param rctlr the object to register.
+         * @return true if the {@link RemoteController} was successfully registered,
+         *         false if an error occurred, due to an internal system error, or
+         *         insufficient permissions.
+         * @deprecated Use
+         *             {@link MediaSessionManager#addOnActiveSessionsChangedListener(android.media.session.MediaSessionManager.OnActiveSessionsChangedListener, ComponentName)}
+         *             and {@link MediaController} instead.
+         */
+        // @Deprecated
+        RegisterRemoteController(
+            [in] IRemoteController * rctlr,
+            [out] Boolean * result);
+
+        /**
+         * Unregisters a {@link RemoteController}, causing it to no longer receive
+         * media metadata and playback state information, and no longer be capable
+         * of controlling playback.
+         *
+         * @param rctlr the object to unregister.
+         * @deprecated Use
+         *             {@link MediaSessionManager#removeOnActiveSessionsChangedListener(android.media.session.MediaSessionManager.OnActiveSessionsChangedListener)}
+         *             instead.
+         */
+        // @Deprecated
+        UnregisterRemoteController(
+            [in] IRemoteController * rctlr);
 
         /**
          * @hide
          * Registers a remote control display that will be sent information by remote control clients.
-         * @param rcd
+         * Use this method if your IRemoteControlDisplay is not going to display artwork, otherwise
+         * use {@link #registerRemoteControlDisplay(IRemoteControlDisplay, int, int)} to pass the
+         * artwork size directly, or
+         * {@link #remoteControlDisplayUsesBitmapSize(IRemoteControlDisplay, int, int)} later if artwork
+         * is not yet needed.
+         * <p>Registration requires the {@link Manifest.permission#MEDIA_CONTENT_CONTROL} permission.
+         * @param rcd the IRemoteControlDisplay
          */
         RegisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay* rcd);
+            [in] IIRemoteControlDisplay * rcd);
+
+        /**
+         * @hide
+         * Registers a remote control display that will be sent information by remote control clients.
+         * <p>Registration requires the {@link Manifest.permission#MEDIA_CONTENT_CONTROL} permission.
+         * @param rcd
+         * @param w the maximum width of the expected bitmap. Negative values indicate it is
+         *   useless to send artwork.
+         * @param h the maximum height of the expected bitmap. Negative values indicate it is
+         *   useless to send artwork.
+         */
+        RegisterRemoteControlDisplay(
+            [in] IIRemoteControlDisplay * rcd,
+            [in] Int32 w,
+            [in] Int32 h);
 
         /**
          * @hide
@@ -1689,7 +2185,7 @@ module
          * @param rcd
          */
         UnregisterRemoteControlDisplay(
-            [in] IIRemoteControlDisplay* rcd);
+            [in] IIRemoteControlDisplay * rcd);
 
         /**
          * @hide
@@ -1701,9 +2197,50 @@ module
          *   useless to send artwork.
          */
         RemoteControlDisplayUsesBitmapSize(
-            [in] IIRemoteControlDisplay* rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Int32 w,
             [in] Int32 h);
+
+        /**
+         * @hide
+         * Controls whether a remote control display needs periodic checks of the RemoteControlClient
+         * playback position to verify that the estimated position has not drifted from the actual
+         * position. By default the check is not performed.
+         * The IRemoteControlDisplay must have been previously registered for this to have any effect.
+         * @param rcd the IRemoteControlDisplay for which the anti-drift mechanism will be enabled
+         *     or disabled. No effect is null.
+         * @param wantsSync if true, RemoteControlClient instances which expose their playback position
+         *     to the framework will regularly compare the estimated playback position with the actual
+         *     position, and will update the IRemoteControlDisplay implementation whenever a drift is
+         *     detected.
+         */
+        RemoteControlDisplayWantsPlaybackPositionSync(
+            [in] IIRemoteControlDisplay * rcd,
+            [in] Boolean wantsSync);
+
+        /**
+         * @hide
+         * CANDIDATE FOR PUBLIC API
+         * Register the given {@link AudioPolicy}.
+         * This call is synchronous and blocks until the registration process successfully completed
+         * or failed to complete.
+         * @param policy the {@link AudioPolicy} to register.
+         * @return {@link #ERROR} if there was an error communicating with the registration service
+         *    or if the user doesn't have the required
+         *    {@link android.Manifest.permission#MODIFY_AUDIO_ROUTING} permission,
+         *    {@link #SUCCESS} otherwise.
+         */
+        RegisterAudioPolicy(
+            [in] IAudioPolicy * policy,
+            [out] Int32 * result);
+
+        /**
+         * @hide
+         * CANDIDATE FOR PUBLIC API
+         * @param policy the {@link AudioPolicy} to unregister.
+         */
+        UnregisterAudioPolicyAsync(
+            [in] IAudioPolicy * policy);
 
         /**
          *  @hide
@@ -1712,6 +2249,16 @@ module
          *  to read and apply restored settings.
          */
         ReloadAudioSettings();
+
+        /**
+         * @hide
+         * Notifies AudioService that it is connected to an A2DP device that supports absolute volume,
+         * so that AudioService can send volume change events to the A2DP device, rather than handling
+         * them.
+         */
+        AvrcpSupportsAbsoluteVolume(
+            [in] String address,
+            [in] Boolean support);
 
         /**
          * Checks whether the phone is in silent mode, with or without vibrate.
@@ -1723,7 +2270,7 @@ module
          * @hide pending API Council approval
          */
         IsSilentMode(
-            [out] Boolean* result);
+            [out] Boolean * result);
 
         /**
          * Return the enabled devices for the specified output stream type.
@@ -1749,9 +2296,17 @@ module
          *            {@link #DEVICE_OUT_BLUETOOTH_A2DP},
          *            {@link #DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES},
          *            {@link #DEVICE_OUT_BLUETOOTH_A2DP_SPEAKER},
-         *            {@link #DEVICE_OUT_AUX_DIGITAL},
+         *            {@link #DEVICE_OUT_HDMI},
          *            {@link #DEVICE_OUT_ANLG_DOCK_HEADSET},
          *            {@link #DEVICE_OUT_DGTL_DOCK_HEADSET}.
+         *            {@link #DEVICE_OUT_USB_ACCESSORY}.
+         *            {@link #DEVICE_OUT_USB_DEVICE}.
+         *            {@link #DEVICE_OUT_REMOTE_SUBMIX}.
+         *            {@link #DEVICE_OUT_TELEPHONY_TX}.
+         *            {@link #DEVICE_OUT_LINE}.
+         *            {@link #DEVICE_OUT_HDMI_ARC}.
+         *            {@link #DEVICE_OUT_SPDIF}.
+         *            {@link #DEVICE_OUT_FM}.
          *            {@link #DEVICE_OUT_DEFAULT} is not used here.
          *
          * The implementation may support additional device codes beyond those listed, so
@@ -1763,7 +2318,7 @@ module
          */
         GetDevicesForStream(
             [in] Int32 streamType,
-            [out] Int32* result);
+            [out] Int32 * result);
 
          /**
          * Indicate wired accessory connection state change.
@@ -1778,21 +2333,25 @@ module
             [in] String name);
 
          /**
-         * Indicate A2DP sink connection state change.
+         * Indicate A2DP source or sink connection state change.
          * @param device Bluetooth device connected/disconnected
          * @param state  new connection state (BluetoothProfile.STATE_xxx)
+         * @param profile profile for the A2DP device
+         * (either {@link android.bluetooth.BluetoothProfile.A2DP} or
+         * {@link android.bluetooth.BluetoothProfile.A2DP_SINK})
          * @return a delay in ms that the caller should wait before broadcasting
          * BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED intent.
          * {@hide}
          */
         SetBluetoothA2dpDeviceConnectionState(
-            [in] IBluetoothDevice* device,
+            [in] IBluetoothDevice * device,
             [in] Int32 state,
-            [out] Int32* result);
+            [in] Int32 profile,
+            [out] Int32 * result);
 
         /** {@hide} */
         GetRingtonePlayer(
-            [out] IIRingtonePlayer** result);
+            [out] IIRingtonePlayer ** result);
 
         /**
          * Returns the value of the property with the specified key.
@@ -1804,30 +2363,169 @@ module
          */
         GetProperty(
             [in] String key,
-            [out] String* result);
+            [out] String * result);
 
-        /* get audio devices list(the devices which are supported)
-         *  @param devType  the audio device type,maybe in/out
+        /**
+         * Returns the estimated latency for the given stream type in milliseconds.
+         *
+         * DO NOT UNHIDE. The existing approach for doing A/V sync has too many problems. We need
+         * a better solution.
+         * @hide
          */
-        GetAudioDevices(
-            [in] String devType,
-            [out, callee] ArrayOf<String>* result);
+        GetOutputLatency(
+            [in] Int32 streamType,
+            [out] Int32 * result);
 
-        /* get current active devices */
-        /* @param devType  the audio device type
-         *  @return the current list of the active device
+        /**
+         * Registers a global volume controller interface.  Currently limited to SystemUI.
+         *
+         * @hide
          */
-        GetActiveAudioDevices(
-            [in] String devType,
-            [out, callee] ArrayOf<String>* result);
+        SetVolumeController(
+            [in] IIVolumeController * controller);
 
-        /* set audio devices active
-         * @param devices
-         * @param state  must be AUDIO_INPUT_ACTIVE or AUDIO_OUTPUT_ACTIVE
+        /**
+         * Notify audio manager about volume controller visibility changes.
+         * Currently limited to SystemUI.
+         *
+         * @hide
          */
-        SetAudioDeviceActive(
-            [in] ArrayOf<String> devices,
-            [in] String state);
+        NotifyVolumeControllerVisible(
+            [in] IIVolumeController * controller,
+            [in] Boolean visible);
+
+        /**
+         * Only useful for volume controllers.
+         * @hide
+         */
+        IsStreamAffectedByRingerMode(
+            [in] Int32 streamType,
+            [out] Boolean * result);
+
+        /**
+         * Only useful for volume controllers.
+         * @hide
+         */
+        DisableSafeMediaVolume();
+
+        /**
+         * Set Hdmi Cec system audio mode.
+         *
+         * @param on whether to be on system audio mode
+         * @return output device type. 0 (DEVICE_NONE) if failed to set device.
+         * @hide
+         */
+        SetHdmiSystemAudioSupported(
+            [in] Boolean on,
+            [out] Int32 * result);
+
+        /**
+         * Returns true if Hdmi Cec system audio mode is supported.
+         *
+         * @hide
+         */
+        // @SystemApi
+        IsHdmiSystemAudioSupported(
+            [out] Boolean * result);
+
+        /**
+         * Returns a list of descriptors for all audio ports managed by the audio framework.
+         * Audio ports are nodes in the audio framework or audio hardware that can be configured
+         * or connected and disconnected with createAudioPatch() or releaseAudioPatch().
+         * See AudioPort for a list of attributes of each audio port.
+         * @param ports An AudioPort ArrayList where the list will be returned.
+         * @hide
+         */
+        ListAudioPorts(
+            [in] ArrayOf<IAudioPort*> * ports,
+            [out] Int32 * result);
+
+        /**
+         * Specialized version of listAudioPorts() listing only audio devices (AudioDevicePort)
+         * @see listAudioPorts(ArrayList<AudioPort>)
+         * @hide
+         */
+        ListAudioDevicePorts(
+            [in] ArrayOf<IAudioPort*> * devices,
+            [out] Int32 * result);
+
+        /**
+         * Create a connection between two or more devices. The framework will reject the request if
+         * device types are not compatible or the implementation does not support the requested
+         * configuration.
+         * NOTE: current implementation is limited to one source and one sink per patch.
+         * @param patch AudioPatch array where the newly created patch will be returned.
+         *              As input, if patch[0] is not null, the specified patch will be replaced by the
+         *              new patch created. This avoids calling releaseAudioPatch() when modifying a
+         *              patch and allows the implementation to optimize transitions.
+         * @param sources List of source audio ports. All must be AudioPort.ROLE_SOURCE.
+         * @param sinks   List of sink audio ports. All must be AudioPort.ROLE_SINK.
+         *
+         * @return - {@link #SUCCESS} if connection is successful.
+         *         - {@link #ERROR_BAD_VALUE} if incompatible device types are passed.
+         *         - {@link #ERROR_INVALID_OPERATION} if the requested connection is not supported.
+         *         - {@link #ERROR_PERMISSION_DENIED} if the client does not have permission to create
+         *         a patch.
+         *         - {@link #ERROR_DEAD_OBJECT} if the server process is dead
+         *         - {@link #ERROR} if patch cannot be connected for any other reason.
+         *
+         *         patch[0] contains the newly created patch
+         * @hide
+         */
+        CreateAudioPatch(
+            [in] ArrayOf<IAudioPatch*> * patch,
+            [in] ArrayOf<IAudioPortConfig*> * sources,
+            [in] ArrayOf<IAudioPortConfig*> * sinks,
+            [out] Int32 * result);
+
+        /**
+         * Releases an existing audio patch connection.
+         * @param patch The audio patch to disconnect.
+         * @return - {@link #SUCCESS} if disconnection is successful.
+         *         - {@link #ERROR_BAD_VALUE} if the specified patch does not exist.
+         *         - {@link #ERROR_PERMISSION_DENIED} if the client does not have permission to release
+         *         a patch.
+         *         - {@link #ERROR_DEAD_OBJECT} if the server process is dead
+         *         - {@link #ERROR} if patch cannot be released for any other reason.
+         * @hide
+         */
+        ReleaseAudioPatch(
+            [in] IAudioPatch * patch,
+            [out] Int32 * result);
+
+        /**
+         * List all existing connections between audio ports.
+         * @param patches An AudioPatch array where the list will be returned.
+         * @hide
+         */
+        ListAudioPatches(
+            [in] ArrayOf<IAudioPatch*> * patches,
+            [out] Int32 * result);
+
+        /**
+         * Set the gain on the specified AudioPort. The AudioGainConfig config is build by
+         * AudioGain.buildConfig()
+         * @hide
+         */
+        SetAudioPortGain(
+            [in] IAudioPort * port,
+            [in] IAudioGainConfig * gain,
+            [out] Int32 * result);
+
+        /**
+         * Register an audio port list update listener.
+         * @hide
+         */
+        RegisterAudioPortUpdateListener(
+            [in] IOnAudioPortUpdateListener * l);
+
+        /**
+         * Unregister an audio port list update listener.
+         * @hide
+         */
+        UnregisterAudioPortUpdateListener(
+            [in] IOnAudioPortUpdateListener * l);
+
     }
 
     interface IAudioManagerHelper{
@@ -1843,20 +2541,20 @@ module
             [in] Int32 rightMode,
             [out] Boolean* result);
 
-        SetHdmiAvailable(
-            [in] Boolean val);
+        /**
+         * Return true if the device code corresponds to an output device.
+         * @hide
+         */
+        IsOutputDevice(
+            [in] Int32 device);
 
-        GetHdmiAvailable(
-            [out] Boolean* result);
+        /**
+         * Return true if the device code corresponds to an input device.
+         * @hide
+         */
+        IsInputDevice(
+            [in] Int32 device);
 
-        SetHdmiExpected(
-            [in] Boolean val);
-
-        GetHdmiExpected(
-            [out] Boolean* result);
-
-        GetDefaultStreamVolume(
-            [out, callee] ArrayOf<Int32>* defaultStreamVolume);
     }
 
     } // namespace media

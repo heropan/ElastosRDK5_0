@@ -1,5 +1,8 @@
 module
 {
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.Os.IHandler;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -68,7 +71,7 @@ module
          * @hide
          */
         AddCallback(
-            [in] IMediaProjectionManagerCallback * callback,
+            [in] IMediaProjectionManagerCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -76,7 +79,7 @@ module
          * @hide
          */
         RemoveCallback(
-            [in] IMediaProjectionManagerCallback * callback);
+            [in] IMediaProjectionManagerCallback * cb);
 
 
     }

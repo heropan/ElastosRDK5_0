@@ -14,7 +14,7 @@ module
         Play(
             [in] IBinder* token,
             [in] IUri* uri,
-            [in] Int32 streamType);
+            [in] IAudioAttributes * aa);
 
         Stop(
             [in] IBinder* token);
@@ -28,7 +28,7 @@ module
             [in] IUri* uri,
             [in] IUserHandle* user,
             [in] Boolean looping,
-            [in] Int32 streamType);
+            [in] IAudioAttributes * aa);
 
         StopAsync();
     }

@@ -52,6 +52,11 @@ module
         const Int32 QUALITY_QVGA = 7;
 
         /**
+         * Quality level corresponding to the 2160p (3840x2160) resolution.
+         */
+        const Int32 QUALITY_2160P = 8;
+
+        /**
          * Time lapse quality level corresponding to the lowest available resolution.
          */
         const Int32 QUALITY_TIME_LAPSE_LOW  = 1000;
@@ -90,6 +95,46 @@ module
          * Time lapse quality level corresponding to the QVGA (320 x 240) resolution.
          */
         const Int32 QUALITY_TIME_LAPSE_QVGA = 1007;
+
+        /**
+         * Time lapse quality level corresponding to the 2160p (3840 x 2160) resolution.
+         */
+        const Int32 QUALITY_TIME_LAPSE_2160P = 1008;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the lowest available resolution.
+         */
+        const Int32 QUALITY_HIGH_SPEED_LOW = 2000;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the highest available resolution.
+         */
+        const Int32 QUALITY_HIGH_SPEED_HIGH = 2001;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the 480p (720 x 480) resolution.
+         *
+         * Note that the horizontal resolution for 480p can also be other
+         * values, such as 640 or 704, instead of 720.
+         */
+        const Int32 QUALITY_HIGH_SPEED_480P = 2002;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the 720p (1280 x 720) resolution.
+         */
+        const Int32 QUALITY_HIGH_SPEED_720P = 2003;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the 1080p (1920 x 1080 or 1920x1088)
+         * resolution.
+         */
+        const Int32 QUALITY_HIGH_SPEED_1080P = 2004;
+
+        /**
+         * High speed ( >= 100fps) quality level corresponding to the 2160p (3840 x 2160)
+         * resolution.
+         */
+        const Int32 QUALITY_HIGH_SPEED_2160P = 2005;
 
         SetDuration(
             [in] Int32 duration);
@@ -223,6 +268,24 @@ module
         /**
          * Returns true if camcorder profile exists for the first back-facing
          * camera at the given quality level.
+         *
+         * <p>
+         * When using the Camera 2 API in {@code LEGACY} mode (i.e. when
+         * {@link android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL} is set
+         * to
+         * {@link android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY}),
+         * {@link #hasProfile} may return {@code true} for unsupported resolutions.  To ensure a
+         * a given resolution is supported in LEGACY mode, the configuration given in
+         * {@link android.hardware.camera2.CameraCharacteristics#SCALER_STREAM_CONFIGURATION_MAP}
+         * must contain the the resolution in the supported output sizes.  The recommended way to check
+         * this is with
+         * {@link android.hardware.camera2.params.StreamConfigurationMap#getOutputSizes(Class)} with the
+         * class of the desired recording endpoint, and check that the desired resolution is contained
+         * in the list returned.
+         * </p>
+         * @see android.hardware.camera2.CameraManager
+         * @see android.hardware.camera2.CameraCharacteristics
+         *
          * @param quality the target quality level for the camcorder profile
          */
         HasProfile(
@@ -232,6 +295,24 @@ module
         /**
          * Returns true if camcorder profile exists for the given camera at
          * the given quality level.
+         *
+         * <p>
+         * When using the Camera 2 API in {@code LEGACY} mode (i.e. when
+         * {@link android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL} is set
+         * to
+         * {@link android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY}),
+         * {@link #hasProfile} may return {@code true} for unsupported resolutions.  To ensure a
+         * a given resolution is supported in LEGACY mode, the configuration given in
+         * {@link android.hardware.camera2.CameraCharacteristics#SCALER_STREAM_CONFIGURATION_MAP}
+         * must contain the the resolution in the supported output sizes.  The recommended way to check
+         * this is with
+         * {@link android.hardware.camera2.params.StreamConfigurationMap#getOutputSizes(Class)} with the
+         * class of the desired recording endpoint, and check that the desired resolution is contained
+         * in the list returned.
+         * </p>
+         * @see android.hardware.camera2.CameraManager
+         * @see android.hardware.camera2.CameraCharacteristics
+         *
          * @param cameraId the id for the camera
          * @param quality the target quality level for the camcorder profile
          */
