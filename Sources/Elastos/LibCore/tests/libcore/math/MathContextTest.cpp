@@ -1,3 +1,38 @@
+#include <elautoptr.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+
+using namespace Elastos;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Math;
+using Elastos::Math::IBigInteger;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigDecimal;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimalHelper;
+using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
+
+
+namespace Elastos {
+namespace Math {
+
+static void assertEquals(const char *info, Int32 aspect, Int32 test)
+{
+    printf("aspect: %d, test: %d. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+static void assertEquals(const char *info, const String& aspect, const String& test)
+{
+    printf("aspect: [%s], test: [%s] %s\n", aspect.string(), test.string(), info);
+    assert(aspect.Equals(test) && "result not equals aspect!");
+}
+
+#if 0
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
@@ -22,10 +57,12 @@ import java.math.MathContext;
 import java.math.RoundingMode;
 
 public class MathContextTest extends junit.framework.TestCase {
+#endif
 
     /**
      * java.math.MathContext#MathContext(...)
      */
+#if 0
     public void test_MathContextConstruction() {
         String a = "-12380945E+61";
         BigDecimal aNumber = new BigDecimal(a);
@@ -75,5 +112,65 @@ public class MathContextTest extends junit.framework.TestCase {
                 new BigDecimal("1.23809E+68"),
                 res);
     }
+#endif
+void test_MathContextConstruction()
+{
+        String a = String("-12380945E+61");
+        AutoPtr<IBigDecimal> aNumber;
 
+        ECode ec = CBigDecimal::New(a, (IBigDecimal**)&aNumber);
+        if (FAILED(ec) || aNumber == NULL) {
+            printf(" Failed to create CBigInteger. Error %08X\n", ec);
+        }
+
+        AutoPtr<IMathContext> mcIntRm6hd;
+        ec = CMathContext::New(6, RoundingMode_HALF_DOWN, (IMathContext**)&mcIntRm6hd);
+        if (FAILED(ec) || mcIntRm6hd == NULL) {
+            printf(" Failed to create CMathContext. Error %08X\n", ec);
+        }
+
+/*        AutoPtr<IMathContext> mcStr6hd;
+        ec = CMathContext::New(String("precision=6 roundingMode=HALF_DOWN"), (IMathContext**)&mcStr6hd);
+        if (FAILED(ec) || mcStr6hd == NULL) {
+            printf(" Failed to create CMathContext. Error %08X\n", ec);
+        }
+*/
+        AutoPtr<IMathContext> mcInt6;
+        ec = CMathContext::New(6, (IMathContext**)&mcInt6);
+        if (FAILED(ec) || mcInt6 == NULL) {
+            printf(" Failed to create CMathContext. Error %08X\n", ec);
+        }
+
+        AutoPtr<IMathContext> mcInt134;
+        ec = CMathContext::New(134, (IMathContext**)&mcInt134);
+        if (FAILED(ec) || mcInt134 == NULL) {
+            printf(" Failed to create CMathContext. Error %08X\n", ec);
+        }
+
+        // getPrecision()
+        Int32 r;
+        mcIntRm6hd->GetPrecision(&r);
+        assertEquals("MathContext.getPrecision() returns incorrect value", 6, r );
+        mcInt134->GetPrecision(&r);
+        assertEquals("MathContext.getPrecision() returns incorrect value", 134, r );
+
+        // toString()
+/*        String str;
+        mcIntRm6hd->ToString(&str);
+        assertEquals("MathContext.toString() returning incorrect value", String("precision=6 roundingMode=HALF_DOWN"), str);
+        mcInt6->ToString(&str);
+        assertEquals("MathContext.toString() returning incorrect value", String("precision=6 roundingMode=HALF_UP"), str);
+*/
+}
+
+//==============================================================================
+
+int main(int argc, char *argv[]) {
+    printf("\n==== libcore/math/MathContextTest ====\n");
+    printf("\n==== end of libcore/math/MathContextTest ====\n");
+
+    return 0;
+}
+
+}
 }
