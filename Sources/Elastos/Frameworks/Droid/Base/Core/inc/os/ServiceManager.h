@@ -63,6 +63,9 @@ private:
     static const String TAG;
 
     static AutoPtr<IServiceManager> sServiceManager;
+
+private:
+    ServiceManager();
 };
 
 } // namespace Os

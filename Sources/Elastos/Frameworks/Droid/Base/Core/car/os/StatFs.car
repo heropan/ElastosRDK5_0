@@ -25,7 +25,7 @@ module
          * The size, in bytes, of a block on the file system. This corresponds to
          * the Unix {@code statvfs.f_bsize} field.
          */
-        GetBlockSizeLong(
+        GetBlockSize(
             [out] Int64* size);
 
         /**
@@ -39,7 +39,7 @@ module
          * The total number of blocks on the file system. This corresponds to the
          * Unix {@code statvfs.f_blocks} field.
          */
-        GetBlockCountLong(
+        GetBlockCount(
             [out] Int64* count);
 
         /**
@@ -57,7 +57,7 @@ module
          * corresponds to the Unix {@code statvfs.f_bfree} field. Most applications
          * will want to use {@link #getAvailableBlocks()} instead.
          */
-        GetFreeBlocksLong(
+        GetFreeBlocks(
             [out] Int64* blocks);
 
         /**
@@ -71,7 +71,7 @@ module
          * The number of blocks that are free on the file system and available to
          * applications. This corresponds to the Unix {@code statvfs.f_bavail} field.
          */
-        GetAvailableBlocksLong(
+        GetAvailableBlocks(
             [out] Int64* blocks);
 
         /**

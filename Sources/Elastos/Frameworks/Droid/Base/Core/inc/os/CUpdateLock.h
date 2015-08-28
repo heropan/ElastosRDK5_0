@@ -3,18 +3,34 @@
 
 #include "_Elastos_Droid_Os_CUpdateLock.h"
 #include "ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IIUpdateLock;
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
+/**
+ * Advisory wakelock-like mechanism by which processes that should not be interrupted for
+ * OTA/update purposes can so advise the OS.  This is particularly relevant for headless
+ * or kiosk-like operation.
+ *
+ * @hide
+ */
 CarClass(CUpdateLock)
+    , public Object
+    , public IUpdateLock
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CUpdateLock();
 
-    ~CUpdateLock();
+    virtual ~CUpdateLock();
+
     /**
      * Construct an UpdateLock instance.
      * @param tag An arbitrary string used to identify this lock instance in dump output.

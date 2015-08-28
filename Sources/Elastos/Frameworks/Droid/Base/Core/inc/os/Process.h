@@ -575,7 +575,7 @@ public:
      * Defines the root UID.
      * @hide
      */
-    static const Int32 ROOT_UID = 0;
+    static const Int32 ROOT_UID;// = 0;
 
     /** retry interval for opening a zygote socket */
     static const Int32 ZYGOTE_RETRY_MILLIS;// = 500;

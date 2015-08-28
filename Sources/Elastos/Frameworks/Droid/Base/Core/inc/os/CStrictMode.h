@@ -498,6 +498,7 @@ private:
      */
     static const Int32 VM_PENALTY_MASK;
 
+    static const Int32 DETECT_VM_FILE_URI_EXPOSURE;// = 0x4000;  // for VmPolicy
 
     // TODO: wrap in some ImmutableHashMap thing.
     // Note: must be before static initialization of sVmPolicy.

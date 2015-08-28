@@ -4,8 +4,9 @@
 #include <binder/Binder.h>
 #include <utils/Log.h>
 #include "os/CServiceManager.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <os/Process.h>
+#include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -28,6 +29,10 @@ typedef struct InterfacePack
     UInt32              m_uIndex;            // interface index in class
     android::sp<android::IBinder> m_pBinder; // dbus unique connection name of stub
 } InterfacePack;
+
+CAR_INTERFACE_IMPL(CServiceManager, Object, IServiceManager)
+
+CAR_OBJECT_IMPL(CServiceManager)
 
 CServiceManager::CServiceManager() :
     mServiceCache(11)
@@ -159,13 +164,35 @@ ECode CServiceManager::GetService(
  * @hide
  */
 ECode CServiceManager::InitServiceCache(
-    /* [in] */ IObjectStringMap* services)
+    /* [in] */ IMap* services)
 {
     if (!mServiceCache.IsEmpty() && Process::SupportsProcesses()) {
 //        throw new IllegalStateException("setServiceCache may only be called once");
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 //    sCache.putAll(cache);
+    assert(0);
+    return NOERROR;
+}
+
+ECode CServiceManager::CheckService(
+    /* [in] */ const String& name,
+    /* [out] */ IInterface** service)
+{
+    assert(0);
+    return NOERROR;
+}
+
+ECode CServiceManager::ListServices(
+    /* [out, callee] */ ArrayOf<String>** services)
+{
+    assert(0);
+    return NOERROR;
+}
+
+ECode CServiceManager::SetPermissionController(
+    /* [in] */ IPermissionController* controller)
+{
     assert(0);
     return NOERROR;
 }

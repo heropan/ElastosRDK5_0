@@ -14,9 +14,8 @@ SOURCES += os.cpp
 SOURCES += AsyncResult.cpp
 SOURCES += AsyncTask.cpp
 SOURCES += BaseBundle.cpp
-
-#TODO Battery
-
+#SOURCES = BatteryStats.cpp
+#SOURCES += BatteryStatsImpl.cpp
 SOURCES += Binder.cpp
 SOURCES += CBinderHelper.cpp
 SOURCES += Broadcaster.cpp
@@ -39,6 +38,8 @@ SOURCES += Handler.cpp
 SOURCES += HandlerRunnable.cpp
 SOURCES += HandlerThread.cpp
 SOURCES += CHandlerThread.cpp
+SOURCES += Looper.cpp
+SOURCES += CLooperHelper.cpp
 SOURCES += CMemoryFile.cpp
 SOURCES += CMessage.cpp
 SOURCES += CMessageHelper.cpp
@@ -64,60 +65,50 @@ SOURCES += CProcessStartResult.cpp
 SOURCES += Registrant.cpp
 SOURCES += RemoteCallback.cpp
 SOURCES += CRemoteCallbackList.cpp
-
-
-
+SOURCES += ResultReceiver.cpp
+SOURCES += SELinux.cpp
+SOURCES += ServiceManager.cpp
+SOURCES += CServiceManager.cpp
+SOURCES += CStatFs.cpp
+#SOURCES += CStrictMode.cpp
+SOURCES += SystemClock.cpp
+SOURCES += SystemProperties.cpp
+SOURCES += CSystemProperties.cpp
+#SOURCES += SystemService.cpp
+#SOURCES += CSystemService.cpp
+#SOURCES += CSystemVibrator.cpp
+#SOURCES += TokenWatcher.cpp
+#SOURCES += UEventObserver.cpp
+#SOURCES += CUpdateLock.cpp
+SOURCES += UserHandle.cpp
+SOURCES += CUserHandleHelper.cpp
+#SOURCES += CUserManager.cpp
+#SOURCES += CUserManagerHelper.cpp
 SOURCES += Vibrator.cpp
+#SOURCES += CWorkSource.cpp
 
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
-SOURCES += SystemClock.cpp
-SOURCES += Looper.cpp
-SOURCES += CLooperHelper.cpp
 SOURCES += SomeArgs.cpp
 SOURCES += Runnable.cpp
-SOURCES += UserHandle.cpp
-SOURCES += CUserHandleHelper.cpp
-SOURCES += SystemProperties.cpp
-SOURCES += CSystemProperties.cpp
 
 
-//SOURCES += HandlerCaller.cpp
-#SOURCES = BatteryStats.cpp
-#SOURCES += BatteryStatsImpl.cpp
+
+
+#SOURCES += HandlerCaller.cpp
 #SOURCES += BinderProxy.cpp
 #SOURCES += CBinderDeathRecipient.cpp
-#SOURCES += CWorkSource.cpp
-
-#SOURCES += CParcelFileDescriptorAutoCloseInputStream.cpp
-#SOURCES += CParcelFileDescriptorAutoCloseOutputStream.cpp
-#SOURCES += CServiceManager.cpp
 #SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
 #SOURCES += CProcessStats.cpp
-#SOURCES += SELinux.cpp
-#SOURCES += ServiceManager.cpp
 #SOURCES += ZygoteConnection.cpp
 #SOURCES += CPowerManagerWakeLock.cpp
-#SOURCES += UEventObserver.cpp
-#SOURCES += CStatFs.cpp
-
-#SOURCES += CSystemVibrator.cpp
-#SOURCES += TokenWatcher.cpp
-#SOURCES += CUpdateLock.cpp
-#SOURCES += SystemService.cpp
-#SOURCES += CSystemService.cpp
-#SOURCES += CEnvironment.cpp
-#SOURCES += CUserEnvironment.cpp
-#SOURCES += CUserManager.cpp
-#SOURCES += CUserManagerHelper.cpp
 #SOURCES += CDebug.cpp
 #SOURCES += CDebugMemoryInfo.cpp
 #SOURCES += CDebugMemoryInfoHelper.cpp
 #SOURCES += CStrictModeViolationInfo.cpp
 #SOURCES += CPkgUsageStats.cpp
-#SOURCES += CStrictMode.cpp
 #SOURCES += CStrictModeSpan.cpp
 #SOURCES += CStrictModeThreadPolicyBuilder.cpp
 #SOURCES += CStrictModeVmPolicyBuilder.cpp

@@ -82,13 +82,14 @@ const Int64 CStrictMode::MIN_LOG_INTERVAL_MS = 1000;
 const Int64 CStrictMode::MIN_DIALOG_INTERVAL_MS = 30000;
 const Int32 CStrictMode::MAX_SPAN_TAGS = 20;
 const Int32 CStrictMode::MAX_OFFENSES_PER_LOOP = 10;
+const Int32 CStrictMode::DETECT_VM_FILE_URI_EXPOSURE = 0x4000;
 const Int32 CStrictMode::ALL_THREAD_DETECT_BITS =
             IStrictMode::DETECT_DISK_WRITE | IStrictMode::DETECT_DISK_READ | IStrictMode::DETECT_NETWORK | IStrictMode::DETECT_CUSTOM;
 const Int32 CStrictMode::DETECT_VM_INSTANCE_LEAKS = 0x1000;
 const Int32 CStrictMode::ALL_VM_DETECT_BITS =
             IStrictMode::DETECT_VM_CURSOR_LEAKS | IStrictMode::DETECT_VM_CLOSABLE_LEAKS |
             IStrictMode::DETECT_VM_ACTIVITY_LEAKS | DETECT_VM_INSTANCE_LEAKS |
-            IStrictMode::DETECT_VM_REGISTRATION_LEAKS;
+            IStrictMode::DETECT_VM_REGISTRATION_LEAKS | DETECT_VM_FILE_URI_EXPOSURE;
 const Int32 CStrictMode::THREAD_PENALTY_MASK =
             IStrictMode::PENALTY_LOG | IStrictMode::PENALTY_DIALOG | IStrictMode::PENALTY_DEATH |
             IStrictMode::PENALTY_DROPBOX | IStrictMode::PENALTY_GATHER |
@@ -188,14 +189,17 @@ void CStrictMode::SetBlockGuardPolicy(
     }
 
     helper->GetThreadPolicy((IBlockGuardPolicy**)&policy);
-    if(policy == NULL || policy->Probe(EIID_IAndroidBlockGuardPolicy) == NULL) {
-        policy = new AndroidBlockGuardPolicy(policyMask);
-        helper->SetThreadPolicy((IBlockGuardPolicy*)policy);
+
+    AutoPtr<IAndroidBlockGuardPolicy> androidPolicy;
+    if (IAndroidBlockGuardPolicy::Probe(policy)) {
+        androidPolicy = IAndroidBlockGuardPolicy::Probe(policy);
     }
     else {
-        AutoPtr<IAndroidBlockGuardPolicy> androidPolicy = IAndroidBlockGuardPolicy::Probe(policy.Get());
-        androidPolicy->SetPolicyMask(policyMask);
+        assert(0 && "TODO");
+        //androidPolicy = ThreadAndroidPolicy.get();
+        helper->SetThreadPolicy((IBlockGuardPolicy*)policy);
     }
+    androidPolicy->SetPolicyMask(policyMask);
 }
 
 void CStrictMode::SetCloseGuardEnabled(
@@ -211,7 +215,6 @@ void CStrictMode::SetCloseGuardEnabled(
     }
     helper->SetEnabled(enabled);
     return;
-
 }
 
 CStrictMode::StrictModeViolation::StrictModeViolation(

@@ -1,11 +1,6 @@
 
 #include "os/ServiceManager.h"
-#ifdef DROID_CORE
 #include "os/CServiceManager.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
 
 namespace Elastos {
 namespace Droid {

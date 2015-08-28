@@ -4,20 +4,28 @@
 
 #include "ext/frameworkext.h"
 #include "_Elastos_Droid_Os_CServiceManager.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::IObjectStringMap;
+using Elastos::Utility::IMap;
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CServiceManager)
+    , public Object
+    , public IServiceManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CServiceManager();
 
-    ~CServiceManager();
+    virtual ~CServiceManager();
 
     CARAPI AddService(
         /* [in] */ const String& name,
@@ -32,6 +40,16 @@ public:
         /* [in] */ const String& name,
         /* [out] */ IInterface** service);
 
+    CARAPI CheckService(
+        /* [in] */ const String& name,
+        /* [out] */ IInterface** service);
+
+    CARAPI ListServices(
+        /* [out, callee] */ ArrayOf<String>** services);
+
+    CARAPI SetPermissionController(
+        /* [in] */ IPermissionController* controller);
+
     /**
      * This is only intended to be called when the process is first being brought
      * up and bound by the activity manager. There is only one thread in the process
@@ -41,7 +59,7 @@ public:
      * @hide
      */
     CARAPI InitServiceCache(
-        /* [in] */ IObjectStringMap* services);
+        /* [in] */ IMap* services);
 
 private:
     HashMap<String, AutoPtr<IInterface> > mServiceCache;

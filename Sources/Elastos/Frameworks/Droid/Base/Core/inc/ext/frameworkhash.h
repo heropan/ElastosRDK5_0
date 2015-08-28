@@ -1,8 +1,11 @@
 
-#ifndef __DROIDFRAMEWORKHASH_H__
-#define __DROIDFRAMEWORKHASH_H__
+#ifndef __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
+#define __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 
+#include <elastos/core/Object.h>
 
-#endif // __DROIDFRAMEWORKHASH_H__
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Os::IBinder)
+
+#endif // __ELASTOS_DROID_EXT_FRAMEWORKHASH_H__
 
 
