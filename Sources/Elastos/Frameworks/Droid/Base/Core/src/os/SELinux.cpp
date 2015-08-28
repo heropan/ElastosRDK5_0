@@ -328,17 +328,18 @@ Boolean SELinux::Restorecon(
         assert(0);
         return FALSE;
     }
-    return NativeRestorecon(pathname);
+    return NativeRestorecon(pathname, 0);
 }
 
 Boolean SELinux::NativeRestorecon(
-    /* [in] */ const String& pathname)
+    /* [in] */ const String& pathname,
+    /* [in] */ Int32 flags)
 {
 #ifdef HAVE_SELINUX
     if (sIsSELinuxDisabled) return TRUE;
 
     const char *file = const_cast<char *>(pathname.string());
-    int ret = selinux_android_restorecon(file);
+    int ret = selinux_android_restorecon(file, flags);
     return (ret == 0);
 #else
     return TRUE;
@@ -351,10 +352,24 @@ Boolean SELinux::Restorecon(
     // try {
     String path;
     file->GetCanonicalPath(&path);
-    return Restorecon(path);
+    return NativeRestorecon(path, 0);
     // } catch (IOException e) {
     //     Slog.e(TAG, "Error getting canonical path. Restorecon failed for " +
     //            file.getPath(), e);
+    //     return false;
+    // }
+}
+
+Boolean SELinux::RestoreconRecursive(
+    /* [in] */ IFile* file)
+{
+    // try {
+    String path;
+    file->GetCanonicalPath(&path);
+    return NativeRestorecon(path, SELINUX_ANDROID_RESTORECON_RECURSE);
+    // } catch (IOException e) {
+    //     Slog.e(TAG, "Error getting canonical path. Restorecon failed for " +
+    //             file.getPath(), e);
     //     return false;
     // }
 }

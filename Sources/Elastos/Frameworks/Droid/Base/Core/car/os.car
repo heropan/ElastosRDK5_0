@@ -286,9 +286,9 @@ module
         interface IMessageHelper;
     }
 
-    // singleton class CServiceManager {
-    //     interface IServiceManager;
-    // }
+    singleton class CServiceManager {
+        interface IServiceManager;
+     }
 
     class CUserHandle {
         constructor();
@@ -399,6 +399,13 @@ module
         interface IRemoteCallbackList;
     }
 
+    class CStatFs {
+        constructor(
+            [in] String path);
+
+        interface IStatFs;
+    }
+
     // [local]
     // class CPowerManager {
     //     constructor(
@@ -420,13 +427,6 @@ module
     //         [in] Handle32 host);
 
     //     interface IPowerManagerWakeLock;
-    // }
-
-    // class CStatFs {
-    //     constructor(
-    //         [in] String path);
-
-    //     interface IStatFs;
     // }
 
     // [deprecated]

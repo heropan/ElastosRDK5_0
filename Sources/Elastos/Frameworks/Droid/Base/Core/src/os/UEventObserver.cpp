@@ -171,8 +171,6 @@ UEventObserver::~UEventObserver()
     StopObserving();
 }
 
-CAR_INTERFACE_IMPL(UEventObserver, IInterface);
-
 ECode UEventObserver::NativeSetup()
 {
     if (!uevent_init()) {

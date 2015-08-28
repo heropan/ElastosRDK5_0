@@ -3,9 +3,12 @@
 #define __ELASTOS_DROID_OS_UEVENTOBSERVER_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Thread.h>
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/etl/List.h>
 
+using Elastos::Core::Thread;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
 
@@ -31,14 +34,13 @@ namespace Os {
  * @hide
 */
 class UEventObserver
-    : public IInterface
-    , public ElRefBase
+    : public Object
 {
 public:
     /**
      * Representation of a UEvent.
      */
-    class UEvent : public ElRefBase
+    class UEvent : public Object
     {
     public:
         UEvent(
@@ -60,7 +62,7 @@ public:
 
 private:
     class UEventThread
-         : public ThreadBase
+         : public Thread
     {
     public:
         UEventThread();
@@ -93,8 +95,6 @@ private:
 
 public:
     virtual ~UEventObserver();
-
-    CAR_INTERFACE_DECL();
 
     /**
      * Begin observation of UEvent's.<p>

@@ -57,27 +57,27 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-static const String TAG("Process");
-static const String ZYGOTE_SOCKET("zygote");
-static const String SECONDARY_ZYGOTE_SOCKET("zygote_secondary");
+const String Process::TAG("Process");
+const String Process::ZYGOTE_SOCKET("zygote");
+const String Process::SECONDARY_ZYGOTE_SOCKET("zygote_secondary");
 
-static const Int32 ROOT_UID = 0;
+const Int32 Process::ROOT_UID = 0;
 
-static AutoPtr<Process::ZygoteState> mPrimaryZygoteState;
-static AutoPtr<Process::ZygoteState> mSecondaryZygoteState;
+AutoPtr<Process::ZygoteState> Process::mPrimaryZygoteState;
+AutoPtr<Process::ZygoteState> Process::mSecondaryZygoteState;
 
-static const Int32 ZYGOTE_RETRY_MILLIS = 500;
+const Int32 Process::ZYGOTE_RETRY_MILLIS = 500;
 
-static const Int32 PROC_TERM_MASK = 0xff;
-static const Int32 PROC_ZERO_TERM = 0;
-static const Int32 PROC_SPACE_TERM = (Int32)' ';
-static const Int32 PROC_TAB_TERM = (Int32)'\t';
-static const Int32 PROC_COMBINE = 0x100;
-static const Int32 PROC_PARENS = 0x200;
-static const Int32 PROC_QUOTES = 0x400;
-static const Int32 PROC_OUT_STRING = 0x1000;
-static const Int32 PROC_OUT_LONG = 0x2000;
-static const Int32 PROC_OUT_FLOAT = 0x4000;
+const Int32 Process::PROC_TERM_MASK = 0xff;
+const Int32 Process::PROC_ZERO_TERM = 0;
+const Int32 Process::PROC_SPACE_TERM = (Int32)' ';
+const Int32 Process::PROC_TAB_TERM = (Int32)'\t';
+const Int32 Process::PROC_COMBINE = 0x100;
+const Int32 Process::PROC_PARENS = 0x200;
+const Int32 Process::PROC_QUOTES = 0x400;
+const Int32 Process::PROC_OUT_STRING = 0x1000;
+const Int32 Process::PROC_OUT_LONG = 0x2000;
+const Int32 Process::PROC_OUT_FLOAT = 0x4000;
 
 Object Process::sLock;
 

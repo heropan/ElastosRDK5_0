@@ -158,6 +158,17 @@ public:
     static CARAPI_(Boolean) Restorecon(
         /* [in] */ IFile* file);
 
+    /**
+     * Recursively restores all files under the given path to their default
+     * SELinux security context. If the system is not compiled with SELinux,
+     * then {@code true} is automatically returned. If SELinux is compiled in,
+     * but disabled, then {@code true} is returned.
+     *
+     * @return a boolean indicating whether the relabeling succeeded.
+     */
+    static CARAPI_(Boolean) RestoreconRecursive(
+        /* [in] */ IFile* file);
+
 private:
     /**
      * Restores a file to its default SELinux security context.
@@ -170,7 +181,8 @@ private:
      * @return a boolean indicating whether the relabeling succeeded.
      */
     static CARAPI_(Boolean) NativeRestorecon(
-        /* [in] */ const String& pathname);
+        /* [in] */ const String& pathname,
+        /* [in] */ Int32 flags);
 
 private:
     static const String TAG;

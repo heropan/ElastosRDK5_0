@@ -16,6 +16,10 @@ const String CUpdateLock::TAG("UpdateLock");
 
 AutoPtr<IIUpdateLock> CUpdateLock::sService;
 
+CAR_INTERFACE_IMPL(CUpdateLock, Object, IUpdateLock)
+
+CAR_OBJECT_IMPL(CUpdateLock)
+
 void CUpdateLock::CheckService()
 {
     if (sService == NULL) {
