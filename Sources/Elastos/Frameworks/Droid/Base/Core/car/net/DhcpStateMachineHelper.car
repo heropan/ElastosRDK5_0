@@ -3,7 +3,7 @@ module
 {
 
     interface Elastos.Droid.Content.IContext;
-    interface Elastos.Droid.Internal.Util.IStateMachine;
+    interface Elastos.Droid.Internal.Utility.IStateMachine;
 
     namespace Elastos {
     namespace Droid {

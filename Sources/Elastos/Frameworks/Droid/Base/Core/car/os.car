@@ -25,7 +25,6 @@ module
     merge("os/INetworkManagementService.car");
     merge("os/IPermissionController.car");
     merge("os/IPowerManager.car");
-    merge("os/IRemoteCallback.car");
     merge("os/ISchedulingPolicyService.car");
     merge("os/IServiceManager.car");
     merge("os/IUpdateLock.car");
@@ -392,13 +391,13 @@ module
         interface IParcelable;
     }
 
-    // class CProcessStartResult {
-    //     interface IProcessStartResult;
-    // }
+    class CProcessStartResult {
+        interface IProcessStartResult;
+    }
 
-    // class CRemoteCallbackList {
-    //     interface IRemoteCallbackList;
-    // }
+    class CRemoteCallbackList {
+        interface IRemoteCallbackList;
+    }
 
     // [local]
     // class CPowerManager {

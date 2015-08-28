@@ -2,7 +2,7 @@
 module
 {
 
-    interface Elastos.Droid.Util.IPair;
+    interface Elastos.Droid.Utility.IPair;
 
     using interface Elastos.Net.IInetAddress;
     using interface Elastos.Net.IInet4Address;

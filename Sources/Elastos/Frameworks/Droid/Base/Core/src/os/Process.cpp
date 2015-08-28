@@ -1,5 +1,5 @@
 #include "os/Process.h"
-//#include "os/CProcessStartResult.h"
+#include "os/CProcessStartResult.h"
 #include "os/CUserHandleHelper.h"
 #include "os/CUserHandle.h"
 #include "os/CSystemProperties.h"
@@ -284,7 +284,7 @@ ECode Process::ZygoteSendArgsAndGetResult(
 
     // Should there be a timeout on this?
     AutoPtr<IProcessStartResult> result;
-    //CProcessStartResult::New((IProcessStartResult**)&result);
+    CProcessStartResult::New((IProcessStartResult**)&result);
     ECode ec = IDataInput::Probe(inputStream)->ReadInt32(&pid);
     FAIL_GOTO(ec, _EXIT_)
 
