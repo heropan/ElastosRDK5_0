@@ -1,3 +1,32 @@
+#include <elautoptr.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+
+using namespace Elastos;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Math;
+using Elastos::Math::IBigInteger;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigDecimal;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimalHelper;
+using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
+
+
+namespace Elastos {
+namespace Math {
+
+static void assertEquals(const char *info, Int32 aspect, Int32 test)
+{
+    printf("aspect: %d, test: %d. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+#if 0
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
@@ -21,7 +50,9 @@ import java.math.BigInteger;
 import java.util.Random;
 
 public class OldBigIntegerTest extends junit.framework.TestCase {
+#endif
 
+#if 0
     BigInteger minusOne = new BigInteger("-1", 10);
 
     BigInteger two = new BigInteger("2", 10);
@@ -345,7 +376,7 @@ public class OldBigIntegerTest extends junit.framework.TestCase {
                 throw new AssertionError(e); // android-changed
             }
         }
-    }
+     }
 
     @Override
     protected void setUp() {
@@ -369,4 +400,17 @@ public class OldBigIntegerTest extends junit.framework.TestCase {
         }
         return true;
     }
+#endif
+
+//==============================================================================
+
+int main(int argc, char *argv[]) {
+    printf("\n==== libcore/math/OldBigIntegerTest ====\n");
+    printf("\n==== end of libcore/math/OldBigIntegerTest ====\n");
+
+    return 0;
+}
+
+
+}
 }
