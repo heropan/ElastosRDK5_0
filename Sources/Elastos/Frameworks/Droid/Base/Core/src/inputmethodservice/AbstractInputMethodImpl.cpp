@@ -31,7 +31,7 @@ ECode AbstractInputMethodImpl::GetWeakReference(
 }
 
 ECode AbstractInputMethodImpl::CreateSession(
-    /* [in] */ IInputMethodSessionEventCallback* callback)
+    /* [in] */ IInputMethodSessionCallback* callback)
 {
     assert(mHost != NULL);
     AutoPtr<IAbstractInputMethodSessionImpl> impl;

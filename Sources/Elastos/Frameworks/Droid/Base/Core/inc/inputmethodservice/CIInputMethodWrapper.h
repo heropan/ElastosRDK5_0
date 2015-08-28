@@ -19,15 +19,17 @@ using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::View::IInputMethodCallback;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::Internal::View::IIInputMethod;
+using Elastos::Droid::Internal::View::IInputSessionCallback;
 using Elastos::Droid::View::InputMethod::IInputBinding;
 using Elastos::Droid::View::InputMethod::IEditorInfo;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodSubtype;
-using Elastos::Droid::View::InputMethod::IInputMethodSessionEventCallback;
+using Elastos::Droid::View::InputMethod::IInputMethodSessionCallback;
 using Elastos::Droid::View::InputMethod::IInputMethod;
 
 namespace Elastos {
@@ -53,21 +55,23 @@ private:
     // NOTE: we should have a cache of these.
     class InputMethodSessionCallbackWrapper
         : public Object
-        , public IInputMethodSessionEventCallback
+        , public IInputMethodSessionCallback
     {
     public:
         CAR_INTERFACE_DECL();
 
         InputMethodSessionCallbackWrapper(
             /* [in] */ IContext* context,
-            /* [in] */ IInputMethodCallback* cb);
+            /* [in] */ IInputChannel* channel,
+            /* [in] */ IInputSessionCallback* cb);
 
         CARAPI SessionCreated(
             /* [in] */ IInputMethodSession* session);
 
     private:
         AutoPtr<IContext> mContext;
-        AutoPtr<IInputMethodCallback> mCb;
+        AutoPtr<IInputChannel> mChannel;
+        AutoPtr<IInputSessionCallback> mCb;
     };
 
 public:
@@ -101,7 +105,8 @@ public:
         /* [in] */ IEditorInfo* attribute);
 
     CARAPI CreateSession(
-        /* [in] */ IInputMethodCallback* callback);
+        /* [in] */ IInputChannel* channel,
+        /* [in] */ IInputSessionCallback* callback);
 
     CARAPI SetSessionEnabled(
         /* [in] */ IIInputMethodSession* session,
@@ -142,9 +147,9 @@ private:
     static const Int32 DO_CHANGE_INPUTMETHOD_SUBTYPE;
 
     AutoPtr<IWeakReference> mTarget;//final WeakReference<AbstractInputMethodService> ;
+    AutoPtr<IContext> mContext;
     AutoPtr<IHandlerCaller> mCaller;
     AutoPtr<IWeakReference> mInputMethod; // WeakReference<InputMethod>
-    AutoPtr<IContext> mContext;
     Int32 mTargetSdkVersion;
 };
 

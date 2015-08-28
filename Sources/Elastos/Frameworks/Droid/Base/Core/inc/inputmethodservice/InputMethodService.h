@@ -41,6 +41,7 @@ using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodSubtype;
 using Elastos::Droid::View::InputMethod::IInputMethodManager;
+using Elastos::Droid::View::InputMethod::ICursorAnchorInfo;
 using Elastos::Droid::Widget::IButton;
 using Elastos::Droid::Widget::IFrameLayout;
 using Org::Xmlpull::V1::IXmlPullParser;
@@ -228,10 +229,12 @@ public:
             /* [in] */ Int32 showFlags,
             /* [in] */ Int32 hideFlags);
 
-        CARAPI DispatchGenericMotionEvent(
-            /* [in] */ Int32 seq,
-            /* [in] */ IMotionEvent* event,
-            /* [in] */ ILocalInputMethodSessionEventCallback* callback);
+        /**
+         * Call {@link InputMethodService#onUpdateCursorAnchorInfo
+         * InputMethodService.onUpdateCursorAnchorInfo()}.
+         */
+        CARAPI UpdateCursorAnchorInfo(
+            /* [in] */ ICursorAnchorInfo* info);
 
     private:
         InputMethodService* mHost;
@@ -330,10 +333,13 @@ public:
      * You can call this to try to enable hardware accelerated drawing for
      * your IME. This must be set before {@link #onCreate}, so you
      * will typically call it in your constructor.  It is not always possible
-     * to use hardware acclerated drawing in an IME (for example on low-end
+     * to use hardware accelerated drawing in an IME (for example on low-end
      * devices that do not have the resources to support this), so the call
      * returns true if it succeeds otherwise false if you will need to draw
      * in software.  You must be able to handle either case.
+     *
+     * @deprecated Starting in API 21, hardware acceleration is always enabled
+     *             on capable devices.
      */
     CARAPI EnableHardwareAcceleration(
         /* [out] */ Boolean* enable);
@@ -840,6 +846,11 @@ public:
      * extracted text updates, although if so it will not receive this call
      * if the extracted text has changed as well.
      *
+     * <p>Be careful about changing the text in reaction to this call with
+     * methods such as setComposingText, commitText or
+     * deleteSurroundingText. If the cursor moves as a result, this method
+     * will be called again, which may result in an infinite loop.
+     *
      * <p>The default implementation takes care of updating the cursor in
      * the extract text, if it is being shown.
      */
@@ -868,6 +879,16 @@ public:
      */
     virtual CARAPI OnUpdateCursor(
         /* [in] */ IRect* newCursor);
+
+    /**
+     * Called when the application has reported a new location of its text insertion point and
+     * characters in the composition string.  This is only called if explicitly requested by the
+     * input method. The default implementation does nothing.
+     * @param cursorAnchorInfo The positional information of the text insertion point and the
+     * composition string.
+     */
+    CARAPI OnUpdateCursorAnchorInfo(
+        /* [in] */ ICursorAnchorInfo* cursorAnchorInfo);
 
     /**
      * Close this input method's soft input area, removing it from the display.
@@ -1152,23 +1173,19 @@ public:
     virtual CARAPI OnExtractingInputChanged(
         /* [in] */ IEditorInfo* ei);
 
-    //Add.
-    // CARAPI GetBaseContext(
-    //     /* [out] */ IContext** ctx);
-
-    // CARAPI Attach(
-    //     /* [in] */ IContext* ctx,
-    //     /* [in] */ IActivityThread* apartment,
-    //     /* [in] */ const String& className,
-    //     /* [in] */ IBinder* token,
-    //     /* [in] */ IApplication* application,
-    //     /* [in] */ IIActivityManager* activityManager);
-
-    // CARAPI GetClassName(
-    //     /* [out] */ String* className);
-
-    // CARAPI GetKeyDispatcherState(
-    //     /* [out] */ IDispatcherState** dispatcherState);
+    /**
+     * @return The recommended height of the input method window.
+     * An IME author can get the last input method's height as the recommended height
+     * by calling this in
+     * {@link android.inputmethodservice.InputMethodService#onStartInputView(EditorInfo, boolean)}.
+     * If you don't need to use a predefined fixed height, you can avoid the window-resizing of IME
+     * switching by using this value as a visible inset height. It's efficient for the smooth
+     * transition between different IMEs. However, note that this may return 0 (or possibly
+     * unexpectedly low height). You should thus avoid relying on the return value of this method
+     * all the time. Please make sure to use a reasonable height for the IME.
+     */
+    virtual CARAPI GetInputMethodWindowRecommendedHeight(
+        /* [out] */ Int32* height);
 
 protected:
     virtual CARAPI_(void) InitViews();

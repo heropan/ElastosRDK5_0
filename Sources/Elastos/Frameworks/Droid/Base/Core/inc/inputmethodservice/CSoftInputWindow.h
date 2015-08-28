@@ -1,5 +1,5 @@
 
-#ifndef __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
+#ifndef  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 #define  __ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__
 
 #include "_Elastos_Droid_InputMethodService_CSoftInputWindow.h"
@@ -12,6 +12,9 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::View::IMotionEvent;
 using Elastos::Droid::View::IDispatcherState;
+using Elastos::Droid::View::IKeyEvent;
+using Elastos::Droid::View::IKeyEventCallback;
+using Elastos::Droid::View::IWindowManagerLayoutParams;
 using Elastos::Droid::Os::IBinder;
 
 namespace Elastos {
@@ -47,30 +50,6 @@ public:
         /* [out] */ Boolean* result);
 
     /**
-     * Get the size of the DockWindow.
-     *
-     * @return If the DockWindow sticks to the top or bottom of the screen, the
-     *         return value is the height of the DockWindow, and its width is
-     *         equal to the width of the screen; If the DockWindow sticks to the
-     *         left or right of the screen, the return value is the width of the
-     *         DockWindow, and its height is equal to the height of the screen.
-     */
-    CARAPI GetSize(
-        /* [out] */ Int32* size);
-
-    /**
-     * Set the size of the DockWindow.
-     *
-     * @param size If the DockWindow sticks to the top or bottom of the screen,
-     *        <var>size</var> is the height of the DockWindow, and its width is
-     *        equal to the width of the screen; If the DockWindow sticks to the
-     *        left or right of the screen, <var>size</var> is the width of the
-     *        DockWindow, and its height is equal to the height of the screen.
-     */
-    CARAPI SetSize(
-        /* [in] */ Int32 size);
-
-    /**
      * Set which boundary of the screen the DockWindow sticks to.
      *
      * @param gravity The boundary of the screen to stick. See {#link
@@ -80,6 +59,32 @@ public:
      */
     CARAPI SetGravity(
         /* [in] */ Int32 gravity);
+
+    CARAPI GetGravity(
+        /* [out] */ Int32* gravity);
+
+    virtual CARAPI OnKeyDown(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI OnKeyLongPress(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI OnKeyUp(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI OnKeyMultiple(
+        /* [in] */ Int32 keyCode,
+        /* [in] */ Int32 count,
+        /* [in] */ IKeyEvent* event,
+        /* [out] */ Boolean* result);
+
+    virtual CARAPI OnBackPressed();
 
     /**
      * Create a DockWindow that uses a custom style.
@@ -95,14 +100,29 @@ public:
      */
     CARAPI constructor(
         /* [in] */ IContext* context,
+        /* [in] */ const String& name,
         /* [in] */ Int32 theme,
-        /* [in] */ IDispatcherState* dispatcherState);
+        /* [in] */ ISoftInputWindowCallback* callback,
+        /* [in] */ IKeyEventCallback* keyEventCallback,
+        /* [in] */ IDispatcherState* dispatcherState,
+        /* [in] */ Int32 windowType,
+        /* [in] */ Int32 gravity,
+        /* [in] */ Boolean takesFocus);
 
 private:
     CARAPI_(void) InitDockWindow();
 
+    CARAPI_(void) UpdateWidthHeight(
+        /* [in] */ IWindowManagerLayoutParams* lp);
+
 private:
+    String mName;
+    AutoPtr<ISoftInputWindowCallback> mCallback;
+    AutoPtr<IKeyEventCallback> mKeyEventCallback;
     AutoPtr<IDispatcherState> mDispatcherState;
+    Int32 mWindowType;
+    Int32 mGravity;
+    Boolean mTakesFocus;
     AutoPtr<IRect> mBounds;
 };
 
@@ -110,4 +130,4 @@ private:
 } // namespace Droid
 } // namespace Elastos
 
-#endif  //__SOFTINPUTWINDOW_H__
+#endif  //__ELASTOS_DROID_INPUTMETHODSERVICE_CSOFTINPUTWINDOW_H__

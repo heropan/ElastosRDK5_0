@@ -12,18 +12,22 @@ using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Graphics::IRect;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::ILooper;
+using Elastos::Droid::Os::IMessage;
+using Elastos::Droid::View::IInputEvent;
 using Elastos::Droid::Internal::Os::IHandlerCaller;
 using Elastos::Droid::Internal::Os::IHandlerCallerCallback;
 using Elastos::Droid::Internal::View::IIInputMethodSession;
-using Elastos::Droid::Os::IMessage;
 using Elastos::Droid::View::IInputMethodCallback;
 using Elastos::Droid::View::IKeyEvent;
 using Elastos::Droid::View::IMotionEvent;
+using Elastos::Droid::View::IInputChannel;
 using Elastos::Droid::View::InputMethod::ILocalInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::ICompletionInfo;
 using Elastos::Droid::View::InputMethod::IExtractedText;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::ICursorAnchorInfo;
+using Elastos::Droid::Utility::ISparseArray;
 
 namespace Elastos {
 namespace Droid {
@@ -35,26 +39,31 @@ CarClass(CIInputMethodSessionWrapper)
     , public IBinder
     , public IHandlerCallerCallback
 {
-protected:
-    // NOTE: we should have a cache of these.
-    class InputMethodEventCallbackWrapper
-        : public Object
+private:
+    class ImeInputEventReceiver
+        : public Object /*InputEventReceiver*/
         , public ILocalInputMethodSessionEventCallback
     {
     public:
-        InputMethodEventCallbackWrapper(
-            /* [in] */ IInputMethodCallback* cb)
-            : mCb(cb)
-        {}
-
         CAR_INTERFACE_DECL();
 
+        ImeInputEventReceiver(
+            /* [in] */ IInputChannel* inputChannel,
+            /* [in] */ ILooper* looper,
+            /* [in] */ CIInputMethodSessionWrapper* host);
+
+        // @Override
+        CARAPI OnInputEvent(
+            /* [in] */ IInputEvent* event);
+
+        // @Override
         CARAPI FinishedEvent(
             /* [in] */ Int32 seq,
             /* [in] */ Boolean handled);
 
     private:
-        AutoPtr<IInputMethodCallback> mCb;
+        AutoPtr<ISparseArray/*<InputEvent>*/> mPendingEvents/* = new SparseArray<InputEvent>()*/;
+        CIInputMethodSessionWrapper* mHost;
     };
 
 public:
@@ -64,7 +73,8 @@ public:
 
     CARAPI constructor(
         /* [in] */ IContext* context,
-        /* [in] */ IInputMethodSession* inputMethodSession);
+        /* [in] */ IInputMethodSession* inputMethodSession,
+        /* [in] */ IInputChannel* channel);
 
     CARAPI_(AutoPtr<IInputMethodSession>) GetInternalInputMethodSession();
 
@@ -126,9 +136,14 @@ public:
     CARAPI ToString(
         /* [out] */ String* str);
 
+private:
+    CARAPI_(void) DoFinishSession();
+
 protected:
     AutoPtr<IHandlerCaller> mCaller;
     AutoPtr<IInputMethodSession> mInputMethodSession;
+    AutoPtr<IInputChannel> mChannel;
+    AutoPtr<ImeInputEventReceiver> mReceiver;
 
 private:
     static String TAG;
@@ -137,9 +152,6 @@ private:
     static const Int32 DO_FINISH_INPUT;
     static const Int32 DO_DISPLAY_COMPLETIONS;
     static const Int32 DO_UPDATE_EXTRACTED_TEXT;
-    static const Int32 DO_DISPATCH_KEY_EVENT;
-    static const Int32 DO_DISPATCH_TRACKBALL_EVENT;
-    static const Int32 DO_DISPATCH_GENERIC_MOTION_EVENT;
     static const Int32 DO_UPDATE_SELECTION;
     static const Int32 DO_UPDATE_CURSOR;
     static const Int32 DO_UPDATE_CURSOR_ANCHOR_INFO;

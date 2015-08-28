@@ -14,6 +14,7 @@ using Elastos::Droid::Os::EIID_IBinder;
 using Elastos::Droid::Internal::Os::HandlerCaller;
 using Elastos::Droid::Internal::Os::EIID_IHandlerCallerCallback;
 using Elastos::Droid::Internal::View::EIID_IIInputMethodSession;
+using Elastos::Droid::View::IInputDevice;
 using Elastos::Droid::View::InputMethod::EIID_ILocalInputMethodSessionEventCallback;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
 using Elastos::Droid::View::InputMethod::EIID_ICompletionInfo;
@@ -22,44 +23,93 @@ namespace Elastos {
 namespace Droid {
 namespace InputMethodService {
 
+CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::ImeInputEventReceiver, Object /*InputEventReceiver*/, ILocalInputMethodSessionEventCallback);
+CIInputMethodSessionWrapper::ImeInputEventReceiver::ImeInputEventReceiver(
+    /* [in] */ IInputChannel* inputChannel,
+    /* [in] */ ILooper* looper,
+    /* [in] */ CIInputMethodSessionWrapper* host)
+    : mHost(host)
+{
+    assert(0 && "TODO");
+    // InputEventReceiver::constructor(inputChannel, looper);
+    // mPendingEvents = new SparseArray<InputEvent>();
+}
+
+ECode CIInputMethodSessionWrapper::ImeInputEventReceiver::OnInputEvent(
+    /* [in] */ IInputEvent* event)
+{
+    if (mHost->mInputMethodSession == NULL) {
+        // The session has been finished.
+        assert(0 && "TODO");
+        // FinishInputEvent(event, FALSE);
+        return NOERROR;
+    }
+
+    Int32 seq = 0;
+    event->GetSequenceNumber(&seq);
+    assert(0 && "TODO");
+    // mPendingEvents.put(seq, event);
+    if (IKeyEvent::Probe(event)) {
+        AutoPtr<IKeyEvent> keyEvent = IKeyEvent::Probe(event);
+        mHost->mInputMethodSession->DispatchKeyEvent(seq, keyEvent, this);
+    } else {
+        AutoPtr<IMotionEvent> motionEvent = IMotionEvent::Probe(event);
+        Boolean isfs = FALSE;
+        if (IInputEvent::Probe(motionEvent)->IsFromSource(IInputDevice::SOURCE_CLASS_TRACKBALL, &isfs), isfs) {
+            mHost->mInputMethodSession->DispatchTrackballEvent(seq, motionEvent, THIS_PROBE(ILocalInputMethodSessionEventCallback));
+        } else {
+            mHost->mInputMethodSession->DispatchGenericMotionEvent(seq, motionEvent, THIS_PROBE(ILocalInputMethodSessionEventCallback));
+        }
+    }
+    return NOERROR;
+}
+
+ECode CIInputMethodSessionWrapper::ImeInputEventReceiver::FinishedEvent(
+    /* [in] */ Int32 seq,
+    /* [in] */ Boolean handled)
+{
+    assert(0 && "TODO");
+    // Int32 index = 0;
+    // mPendingEvents->IndexOfKey(seq, &index);
+    // if (index >= 0) {
+    //     AutoPtr<IInputEvent> event;
+    //     mPendingEvents->ValueAt(index, (IInterface**)&event);
+    //     mPendingEvents->RemoveAt(index);
+    //     FinishInputEvent(event, handled);
+    // }
+    return NOERROR;
+}
+
 String CIInputMethodSessionWrapper::TAG("CIInputMethodSessionWrapper");
 const Boolean CIInputMethodSessionWrapper::DEBUG = FALSE;
 const Int32 CIInputMethodSessionWrapper::DO_FINISH_INPUT = 60;
 const Int32 CIInputMethodSessionWrapper::DO_DISPLAY_COMPLETIONS = 65;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_EXTRACTED_TEXT = 67;
-const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_KEY_EVENT = 70;
-const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_TRACKBALL_EVENT = 80;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_SELECTION = 90;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_CURSOR = 95;
 const Int32 CIInputMethodSessionWrapper::DO_UPDATE_CURSOR_ANCHOR_INFO = 99;
 const Int32 CIInputMethodSessionWrapper::DO_APP_PRIVATE_COMMAND = 100;
 const Int32 CIInputMethodSessionWrapper::DO_TOGGLE_SOFT_INPUT = 105;
 const Int32 CIInputMethodSessionWrapper::DO_FINISH_SESSION = 110;
-const Int32 CIInputMethodSessionWrapper::DO_DISPATCH_GENERIC_MOTION_EVENT = 85;
 const Int32 CIInputMethodSessionWrapper::DO_VIEW_CLICKED = 115;
-
-CAR_INTERFACE_IMPL(CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper, Object, ILocalInputMethodSessionEventCallback)
-
-ECode CIInputMethodSessionWrapper::InputMethodEventCallbackWrapper::FinishedEvent(
-    /* [in] */ Int32 seq,
-    /* [in] */ Boolean handled)
-{
-    // try {
-    return mCb->FinishedEvent(seq, handled);
-    // } catch (RemoteException e) {
-    // }
-}
 
 CAR_OBJECT_IMPL(CIInputMethodSessionWrapper);
 CAR_INTERFACE_IMPL_3(CIInputMethodSessionWrapper, Object, IIInputMethodSession, IBinder, IHandlerCallerCallback);
-
 ECode CIInputMethodSessionWrapper::constructor(
     /* [in] */ IContext* context,
-    /* [in] */ IInputMethodSession* inputMethodSession)
+    /* [in] */ IInputMethodSession* inputMethodSession,
+    /* [in] */ IInputChannel* channel)
 {
-    mInputMethodSession = inputMethodSession;
     assert(0 && "TODO");
-    // mCaller = new HandlerCaller(context, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    // mCaller = new HandlerCaller(context, NULL, THIS_PROBE(IHandlerCallerCallback), TRUE /*asyncHandler*/);
+    mInputMethodSession = inputMethodSession;
+    mChannel = channel;
+    if (channel != NULL) {
+        AutoPtr<ILooper> looper;
+        context->GetMainLooper((ILooper**)&looper);
+        mReceiver = new ImeInputEventReceiver(channel, looper, this);
+    }
+
     return NOERROR;
 }
 
@@ -72,6 +122,19 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
     /* [in] */ IMessage* msg)
 {
     if (mInputMethodSession == NULL) {
+        // The session has been finished. Args needs to be recycled
+        // for cases below.
+        Int32 what = 0;
+        msg->GetWhat(&what);
+        switch (what) {
+            case DO_UPDATE_SELECTION:
+            case DO_APP_PRIVATE_COMMAND: {
+                AutoPtr<IInterface> obj;
+                msg->GetObj((IInterface**)&obj);
+                SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
+                args->Recycle();
+            }
+        }
         return NOERROR;
     }
 
@@ -109,36 +172,6 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
         case DO_UPDATE_EXTRACTED_TEXT:
             mInputMethodSession->UpdateExtractedText(arg1, IExtractedText::Probe(obj));
             return NOERROR;
-        case DO_DISPATCH_KEY_EVENT: {
-            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
-            IKeyEvent* event = IKeyEvent::Probe(args->mArg1);
-            IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
-            AutoPtr<ILocalInputMethodSessionEventCallback> cb =
-                new InputMethodEventCallbackWrapper(callback);
-            mInputMethodSession->DispatchKeyEvent(arg1, event, cb);
-            args->Recycle();
-            return NOERROR;
-        }
-        case DO_DISPATCH_TRACKBALL_EVENT: {
-            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
-            IMotionEvent* event = IMotionEvent::Probe(args->mArg1);
-            IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
-            AutoPtr<ILocalInputMethodSessionEventCallback> cb =
-                new InputMethodEventCallbackWrapper(callback);
-            mInputMethodSession->DispatchTrackballEvent(arg1, event, cb);
-            args->Recycle();
-            return NOERROR;
-        }
-        case DO_DISPATCH_GENERIC_MOTION_EVENT: {
-            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
-            IMotionEvent* event = IMotionEvent::Probe(args->mArg1);
-            IInputMethodCallback* callback = IInputMethodCallback::Probe(args->mArg2);
-            AutoPtr<ILocalInputMethodSessionEventCallback> cb =
-                new InputMethodEventCallbackWrapper(callback);
-            mInputMethodSession->DispatchGenericMotionEvent(arg1, event, cb);
-            args->Recycle();
-            return NOERROR;
-        }
         case DO_UPDATE_SELECTION: {
             SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
             mInputMethodSession->UpdateSelection(args->mArgi1, args->mArgi2,
@@ -168,7 +201,7 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_FINISH_SESSION: {
-            mInputMethodSession = NULL;
+            DoFinishSession();
             return NOERROR;
         }
         case DO_VIEW_CLICKED: {
@@ -179,6 +212,20 @@ ECode CIInputMethodSessionWrapper::ExecuteMessage(
 
     Logger::W(TAG, "Unhandled message code: %d", what);
     return NOERROR;
+}
+
+void CIInputMethodSessionWrapper::DoFinishSession()
+{
+    mInputMethodSession = NULL;
+    if (mReceiver != NULL) {
+        assert(0 && "TODO");
+        // mReceiver->Dispose();
+        mReceiver = NULL;
+    }
+    if (mChannel != NULL) {
+        mChannel->Dispose();
+        mChannel = NULL;
+    }
 }
 
 ECode CIInputMethodSessionWrapper::FinishInput()
@@ -210,36 +257,6 @@ ECode CIInputMethodSessionWrapper::UpdateExtractedText(
 {
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageIO(DO_UPDATE_EXTRACTED_TEXT, token, text, (IMessage**)&msg);
-    return mCaller->ExecuteOrSendMessage(msg);
-}
-
-ECode CIInputMethodSessionWrapper::DispatchKeyEvent(
-    /* [in] */ Int32 seq,
-    /* [in] */ IKeyEvent* event,
-    /* [in] */ IInputMethodCallback* callback)
-{
-    AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_KEY_EVENT, seq, event, callback, (IMessage**)&msg);
-    return mCaller->ExecuteOrSendMessage(msg);
-}
-
-ECode CIInputMethodSessionWrapper::DispatchTrackballEvent(
-    /* [in] */ Int32 seq,
-    /* [in] */ IMotionEvent* event,
-    /* [in] */ IInputMethodCallback* callback)
-{
-    AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_TRACKBALL_EVENT, seq, event, callback, (IMessage**)&msg);
-    return mCaller->ExecuteOrSendMessage(msg);
-}
-
-ECode CIInputMethodSessionWrapper::DispatchGenericMotionEvent(
-    /* [in] */ Int32 seq,
-    /* [in] */ IMotionEvent* event,
-    /* [in] */ IInputMethodCallback* callback)
-{
-    AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageIOO(DO_DISPATCH_GENERIC_MOTION_EVENT, seq, event, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 

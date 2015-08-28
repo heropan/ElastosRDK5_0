@@ -15,15 +15,24 @@ ECode CKeyboardView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
 {
-    return KeyboardView::constructor(context, attrs, R::attr::keyboardViewStyle);
+    return KeyboardView::constructor(context, attrs);
 }
 
 ECode CKeyboardView::constructor(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    return KeyboardView::constructor(context, attrs, defStyle);
+    return KeyboardView::constructor(context, attrs, defStyleAttr);
+}
+
+ECode CKeyboardView::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    return KeyboardView::constructor(context, attrs, defStyleAttr, defStyleRes);
 }
 
 } // namespace InputMethodService

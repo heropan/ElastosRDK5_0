@@ -7,6 +7,10 @@ module
     namespace Droid {
     namespace InputMethodService {
 
+    interface ISoftInputWindowCallback {
+        OnBackPressed();
+    }
+
     /**
      * @Involve
      * interface Elastos.Droid.App.IDialog
@@ -14,30 +18,6 @@ module
     interface ISoftInputWindow {
         SetToken(
             [in] IBinder* token);
-
-        /**
-         * Get the size of the DockWindow.
-         *
-         * @return If the DockWindow sticks to the top or bottom of the screen, the
-         *         return value is the height of the DockWindow, and its width is
-         *         equal to the width of the screen; If the DockWindow sticks to the
-         *         left or right of the screen, the return value is the width of the
-         *         DockWindow, and its height is equal to the height of the screen.
-         */
-        GetSize(
-            [out] Int32* size);
-
-        /**
-         * Set the size of the DockWindow.
-         *
-         * @param size If the DockWindow sticks to the top or bottom of the screen,
-         *        <var>size</var> is the height of the DockWindow, and its width is
-         *        equal to the width of the screen; If the DockWindow sticks to the
-         *        left or right of the screen, <var>size</var> is the width of the
-         *        DockWindow, and its height is equal to the height of the screen.
-         */
-        SetSize(
-            [in] Int32 size);
 
         /**
          * Set which boundary of the screen the DockWindow sticks to.

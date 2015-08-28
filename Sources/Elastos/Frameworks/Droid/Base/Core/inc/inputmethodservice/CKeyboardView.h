@@ -34,7 +34,13 @@ public:
     CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    CARAPI constructor(
+        /* [in] */ IContext* ctx,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 };
 
 } // namespace InputMethodService

@@ -39,6 +39,7 @@ module
             [in] IEditorInfo* attribute);
 
         CreateSession(
+            [in] IInputChannel* channel,
             [in] IInputMethodCallback* inputMethodCalllback);
 
         SetSessionEnabled(

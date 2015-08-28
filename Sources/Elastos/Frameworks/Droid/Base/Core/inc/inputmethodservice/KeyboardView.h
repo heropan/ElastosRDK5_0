@@ -164,7 +164,8 @@ public:
     KeyboardView(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = R::attr::keyboardViewStyle);
+        /* [in] */ Int32 defStyleAttr = R::attr::keyboardViewStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
     ~KeyboardView();
 
@@ -334,15 +335,17 @@ protected:
     virtual CARAPI_(void) SwipeDown();
 
     CARAPI constructor(
-        /* [in] */ IContext* context,
+        /* [in] */ IContext* ctx,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle = R::attr::keyboardViewStyle);
+        /* [in] */ Int32 defStyleAttr = R::attr::keyboardViewStyle,
+        /* [in] */ Int32 defStyleRes = 0);
 
 private:
     CARAPI InitInternal(
-    /* [in] */ IContext* context,
-    /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle = R::attr::keyboardViewStyle);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     CARAPI_(void) InitGestureDetector();
 

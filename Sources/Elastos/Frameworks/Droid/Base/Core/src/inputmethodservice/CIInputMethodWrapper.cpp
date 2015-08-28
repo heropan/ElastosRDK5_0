@@ -22,7 +22,7 @@ using Elastos::Droid::Internal::View::IIInputMethodSession;
 using Elastos::Droid::View::InputMethod::IInputMethod;
 using Elastos::Droid::View::InputMethod::IInputConnection;
 // using Elastos::Droid::View::InputMethod::CInputBinding;
-using Elastos::Droid::View::InputMethod::EIID_IInputMethodSessionEventCallback;
+using Elastos::Droid::View::InputMethod::EIID_IInputMethodSessionCallback;
 using Elastos::Droid::View::InputMethod::EIID_IInputMethod;
 
 namespace Elastos {
@@ -44,11 +44,13 @@ const Int32 CIInputMethodWrapper::DO_SHOW_SOFT_INPUT = 60;
 const Int32 CIInputMethodWrapper::DO_HIDE_SOFT_INPUT = 70;
 const Int32 CIInputMethodWrapper::DO_CHANGE_INPUTMETHOD_SUBTYPE = 80;
 
-CAR_INTERFACE_IMPL(CIInputMethodWrapper::InputMethodSessionCallbackWrapper, Object, IInputMethodSessionEventCallback)
+CAR_INTERFACE_IMPL(CIInputMethodWrapper::InputMethodSessionCallbackWrapper, Object, IInputMethodSessionCallback)
 CIInputMethodWrapper::InputMethodSessionCallbackWrapper::InputMethodSessionCallbackWrapper(
     /* [in] */ IContext* context,
-    /* [in] */ IInputMethodCallback* cb)
+    /* [in] */ IInputChannel* channel,
+    /* [in] */ IInputSessionCallback* cb)
     : mContext(context)
+    , mChannel(channel)
     , mCb(cb)
 {}
 
@@ -58,10 +60,13 @@ ECode CIInputMethodWrapper::InputMethodSessionCallbackWrapper::SessionCreated(
     // try {
     if (session != NULL) {
         AutoPtr<IIInputMethodSession> wrap;
-        CIInputMethodSessionWrapper::New(mContext, session, (IIInputMethodSession**)&wrap);
+        CIInputMethodSessionWrapper::New(mContext, session, mChannel, (IIInputMethodSession**)&wrap);
         return mCb->SessionCreated(wrap);
     }
     else {
+        if (mChannel != NULL) {
+            mChannel->Dispose();
+        }
         return mCb->SessionCreated(NULL);
     }
     // } catch (RemoteException e) {
@@ -81,7 +86,7 @@ ECode CIInputMethodWrapper::constructor(
 
     IContext::Probe(context)->GetApplicationContext((IContext**)&mContext);
     assert(0 && "TODO");
-    // mCaller = new HandlerCaller(mContext, THIS_PROBE(IHandlerCallerCallback), FALSE);
+    // mCaller = new HandlerCaller(mContext, NULL, THIS_PROBE(IHandlerCallerCallback), TRUE /*asyncHandler*/);
     AutoPtr<IApplicationInfo> appInfo;
     IContext::Probe(context)->GetApplicationInfo((IApplicationInfo**)&appInfo);
     assert(appInfo != NULL);
@@ -182,9 +187,11 @@ ECode CIInputMethodWrapper::ExecuteMessage(
             return NOERROR;
         }
         case DO_CREATE_SESSION: {
-            AutoPtr<IInputMethodSessionEventCallback> cb = new InputMethodSessionCallbackWrapper(
-                    mContext, IInputMethodCallback::Probe(obj));
+            SomeArgs* args = (SomeArgs*)IObject::Probe(obj);
+            AutoPtr<IInputMethodSessionCallback> cb = new InputMethodSessionCallbackWrapper(
+                    mContext, IInputChannel::Probe(args->mArg1), IInputSessionCallback::Probe(args->mArg2));
             inputMethod->CreateSession(cb);
+            args->Recycle();
             return NOERROR;
         }
         case DO_SET_SESSION_ENABLED:
@@ -258,10 +265,11 @@ ECode CIInputMethodWrapper::RestartInput(
 }
 
 ECode CIInputMethodWrapper::CreateSession(
-    /* [in] */ IInputMethodCallback* callback)
+    /* [in] */ IInputChannel* channel,
+    /* [in] */ IInputSessionCallback* callback)
 {
     AutoPtr<IMessage> msg;
-    mCaller->ObtainMessageO(DO_CREATE_SESSION, callback, (IMessage**)&msg);
+    mCaller->ObtainMessageOO(DO_CREATE_SESSION, channel, callback, (IMessage**)&msg);
     return mCaller->ExecuteOrSendMessage(msg);
 }
 
@@ -272,6 +280,11 @@ ECode CIInputMethodWrapper::SetSessionEnabled(
     // try {
     AutoPtr<IInputMethodSession> ls = ((CIInputMethodSessionWrapper*)
             session)->GetInternalInputMethodSession();
+
+    if (ls == NULL) {
+        Logger::W(TAG, "Session is already finished: 0x%8x", session);
+        return NOERROR;
+    }
 
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageIO(DO_SET_SESSION_ENABLED, enabled ? 1 : 0, ls, (IMessage**)&msg);
@@ -284,6 +297,11 @@ ECode CIInputMethodWrapper::RevokeSession(
     // try {
     AutoPtr<IInputMethodSession> ls = ((CIInputMethodSessionWrapper*)
             session)->GetInternalInputMethodSession();
+
+    if (ls == NULL) {
+        Logger::W(TAG, "Session is already finished: 0x%8x", session);
+        return NOERROR;
+    }
 
     AutoPtr<IMessage> msg;
     mCaller->ObtainMessageO(DO_REVOKE_SESSION, ls, (IMessage**)&msg);

@@ -11,7 +11,7 @@
 using Elastos::Droid::InputMethodService::AbstractInputMethodService;
 using Elastos::Droid::InputMethodService::IAbstractInputMethodImpl;
 using Elastos::Droid::View::InputMethod::IInputMethodSession;
-using Elastos::Droid::View::InputMethod::IInputMethodSessionEventCallback;
+using Elastos::Droid::View::InputMethod::IInputMethodSessionCallback;
 
 namespace Elastos {
 namespace Droid {
@@ -32,7 +32,7 @@ public:
         /* [out] */ IWeakReference** weakReference);
 
     CARAPI CreateSession(
-        /* [in] */ IInputMethodSessionEventCallback* callback);
+        /* [in] */ IInputMethodSessionCallback* callback);
 
     CARAPI SetSessionEnabled(
         /* [in] */ IInputMethodSession* session,
