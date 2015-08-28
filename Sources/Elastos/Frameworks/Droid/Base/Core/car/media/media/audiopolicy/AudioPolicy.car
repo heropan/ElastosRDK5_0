@@ -1,11 +1,14 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface IAudioPolicyConfig;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
     namespace AudioPolicy {
 
-    interface AudioPolicyStatusListener {
+    interface IAudioPolicyStatusListener {
         OnStatusChange();
 
         OnMixStateUpdate(

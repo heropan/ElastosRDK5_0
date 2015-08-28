@@ -1,5 +1,11 @@
 module
 {
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Media.IAudioRecord;
+    interface Elastos.Droid.Hardware.Display.IIVirtualDisplayCallback;
+    interface Elastos.Droid.Hardware.Display.IVirtualDisplay;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -27,7 +33,7 @@ module
          * @see #unregisterCallback
          */
         RegisterCallback(
-            [in] IMediaProjectionCallback * callback,
+            [in] IMediaProjectionCallback * cb,
             [in] IHandler * handler);
 
         /** Unregister a MediaProjection listener.
@@ -37,7 +43,7 @@ module
          * @see #registerCallback
          */
         UnregisterCallback(
-            [in] IMediaProjectionCallback * callback);
+            [in] IMediaProjectionCallback * cb);
 
         /**
          * @hide
@@ -49,7 +55,7 @@ module
             [in] Int32 dpi,
             [in] Boolean isSecure,
             [in] ISurface * surface,
-            [in] IVirtualDisplayCallback * callback,
+            [in] IIVirtualDisplayCallback * cb,
             [in] IHandler * handler,
             [out] IVirtualDisplay ** result);
 
@@ -84,7 +90,7 @@ module
             [in] Int32 dpi,
             [in] Int32 flags,
             [in] ISurface * surface,
-            [in] IVirtualDisplayCallback * callback,
+            [in] IIVirtualDisplayCallback * cb,
             [in] IHandler * handler,
             [out] IVirtualDisplay ** result);
 

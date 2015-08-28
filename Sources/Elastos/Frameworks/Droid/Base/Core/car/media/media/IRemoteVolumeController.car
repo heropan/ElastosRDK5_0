@@ -1,0 +1,22 @@
+
+module
+{
+    namespace Elastos {
+    namespace Droid {
+    namespace Media {
+
+    interface IIRemoteDisplayCallback {
+        RemoteVolumeChanged(
+            [in] IISessionController * session,
+            [in] Int32 flags);
+
+        // sets the default session to use with the slider, replaces remoteSliderVisibility
+        // on IVolumeController
+        UpdateRemoteController(
+            [in] IISessionController * session);
+
+    }
+    } // namespace media
+    } // namepsace Droid
+    } // namespace Elastos
+}

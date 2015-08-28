@@ -77,6 +77,8 @@ module
          */
         const Int32 ERROR_INVALID_OPERATION = -3;
 
+        cosnt String SUBMIX_FIXED_VOLUME = "fixedVolume";
+
         /**
          * Releases the native AudioRecord resources.
          * The object can no longer be used and the reference should be set to NULL

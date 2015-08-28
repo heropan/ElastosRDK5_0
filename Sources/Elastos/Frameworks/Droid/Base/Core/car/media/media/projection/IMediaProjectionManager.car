@@ -1,5 +1,8 @@
 module
 {
+    interface IMediaProjectionInfo;
+    interface IIMediaProjectionWatcherCallback;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -8,7 +11,7 @@ module
     interface IIMediaProjectionManager {
         HasProjectionPermission(
             [in] Int32 uid,
-            [in] String packageName
+            [in] String packageName,
             [out] Boolean * result);
 
         CreateProjection(
@@ -28,10 +31,10 @@ module
         StopActiveProjection();
 
         AddCallback(
-            [in] IIMediaProjectionWatcherCallback * callback);
+            [in] IIMediaProjectionWatcherCallback * cb);
 
         RemoveCallback(
-            [in] IIMediaProjectionWatcherCallback * callback);
+            [in] IIMediaProjectionWatcherCallback * cb);
     }
 
     } // namespace Projection

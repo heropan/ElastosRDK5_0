@@ -329,7 +329,7 @@ module
          * playback is expected to start again shortly the session can be left open,
          * but it must be released if your activity or service is being destroyed.
          */
-        Release();
+        ReleaseResources();
 
         /**
          * Retrieve a token object that can be used by apps to create a

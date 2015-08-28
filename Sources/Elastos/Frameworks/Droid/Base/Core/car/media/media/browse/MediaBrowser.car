@@ -1,5 +1,10 @@
 module
 {
+    interface Elastos.Droid.Media.IMediaDescription;
+    interface Elastos.Droid.Media.Session.IMediaSessionToken;
+    interface Elastos.Droid.Content.IComponentName;
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -73,6 +78,7 @@ module
         OnConnectionFailed();
     }
 
+    [deprecated]
     interface IMediaBrowserSubscriptionCallback {
         /**
          * Called when the list of children is loaded or updated.
@@ -169,7 +175,7 @@ module
          */
         Subscribe(
             [in] String parentId,
-            [in] IMediaBrowserSubscriptionCallback * callback);
+            [in] IMediaBrowserSubscriptionCallback * cb);
 
         /**
          * Unsubscribes for changes to the children of the specified media id.

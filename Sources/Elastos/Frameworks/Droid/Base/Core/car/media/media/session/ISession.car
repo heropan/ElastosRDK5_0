@@ -1,10 +1,20 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Media.IAudioAttributes;
+    interface Elastos.Droid.Media.IMediaMetadata;
+    interface Elastos.Droid.Content.Pm.IParceledListSlice;
+    interface IISessionController;
+    interface IPlaybackState;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
     namespace Session {
 
+    [deprecated]
     interface IISession {
         SendEvent(
             [in] String event,
@@ -18,6 +28,7 @@ module
 
         SetActive(
             [in] Boolean * active);
+
         SetMediaButtonReceiver(
             [in] IPendingIntent * mbr);
 

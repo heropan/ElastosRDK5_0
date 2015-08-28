@@ -1,5 +1,8 @@
 module
 {
+    interface Elastos.Droid.Media.IAudioFormat;
+    interface IAudioMixingRule;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -29,6 +32,7 @@ module
      * Builder class for {@link AudioMix} objects
      *
      */
+    [deprecated]
     interface IAudioMixBuilder {
         /**
          * @hide
