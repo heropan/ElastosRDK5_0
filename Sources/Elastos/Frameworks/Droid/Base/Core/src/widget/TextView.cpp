@@ -323,7 +323,9 @@ ECode CompressTextRunnable::Run()
 //==============================================================================
 
 Drawables::Drawables()
-    : mDrawableSizeTop(0)
+    : mIsRtlCompatibilityMode(FALSE)
+    , mOverride(FALSE)
+    , mDrawableSizeTop(0)
     , mDrawableSizeBottom(0)
     , mDrawableSizeLeft(0)
     , mDrawableSizeRight(0)
@@ -345,43 +347,93 @@ Drawables::Drawables()
     CRect::NewByFriend((CRect**)&mCompoundRect);
 }
 
+Drawables::Drawables(
+    /* [in] */ IContext* context)
+    : mIsRtlCompatibilityMode(FALSE)
+    , mOverride(FALSE)
+    , mDrawableSizeTop(0)
+    , mDrawableSizeBottom(0)
+    , mDrawableSizeLeft(0)
+    , mDrawableSizeRight(0)
+    , mDrawableSizeStart(0)
+    , mDrawableSizeEnd(0)
+    , mDrawableSizeError(0)
+    , mDrawableSizeTemp(0)
+    , mDrawableWidthTop(0)
+    , mDrawableWidthBottom(0)
+    , mDrawableHeightLeft(0)
+    , mDrawableHeightRight(0)
+    , mDrawableHeightStart(0)
+    , mDrawableHeightEnd(0)
+    , mDrawableHeightError(0)
+    , mDrawableHeightTemp(0)
+    , mDrawablePadding(0)
+    , mDrawableSaved(DRAWABLE_NONE)
+{
+    CRect::NewByFriend((CRect**)&mCompoundRect);
+    AutoPtr<IApplicationInfo> info;
+    context->GetApplicationInfo((IApplicationInfo**)&info);
+    Int32 targetSdkVersion;
+    info->GetTargetSdkVersion(&targetSdkVersion);
+
+    Boolean support;
+    info->HasRtlSupport(&support);
+
+    mIsRtlCompatibilityMode (targetSdkVersion < Build::VERSION_CODES::JELLY_BEAN_MR1 || !support);
+}
+
 ECode Drawables::ResolveWithLayoutDirection(
         /* [in] */ Int32 layoutDirection)
 {
-    switch(layoutDirection) {
-        case IView::LAYOUT_DIRECTION_RTL:
-            if (mDrawableStart != NULL) {
-                mDrawableRight = mDrawableStart;
+    mDrawableLeft = mDrawableLeftInitial;
+    mDrawableRight = mDrawableRightInitial;
 
-                mDrawableSizeRight = mDrawableSizeStart;
-                mDrawableHeightRight = mDrawableHeightStart;
-            }
-            if (mDrawableEnd != NULL) {
-                mDrawableLeft = mDrawableEnd;
+    if (mIsRtlCompatibilityMode) {
+                // Use "start" drawable as "left" drawable if the "left" drawable was not defined
+        if (mDrawableStart && !mDrawableLeft) {
+            mDrawableLeft = mDrawableStart;
+            mDrawableSizeLeft = mDrawableSizeStart;
+            mDrawableHeightLeft = mDrawableHeightStart;
+        }
+        // Use "end" drawable as "right" drawable if the "right" drawable was not defined
+        if (mDrawableEnd && !mDrawableRight) {
+            mDrawableRight = mDrawableEnd;
+            mDrawableSizeRight = mDrawableSizeEnd;
+            mDrawableHeightRight = mDrawableHeightEnd;
+        }
+    } else {
+        // JB-MR1+ normal case: "start" / "end" drawables are overriding "left" / "right"
+        // drawable if and only if they have been defined
+        switch(layoutDirection) {
+            case IView::LAYOUT_DIRECTION_RTL:
+                if (mOverride) {
+                    mDrawableRight = mDrawableStart;
+                    mDrawableSizeRight = mDrawableSizeStart;
+                    mDrawableHeightRight = mDrawableHeightStart;
 
-                mDrawableSizeLeft = mDrawableSizeEnd;
-                mDrawableHeightLeft = mDrawableHeightEnd;
-            }
-            break;
+                    mDrawableLeft = mDrawableEnd;
+                    mDrawableSizeLeft = mDrawableSizeEnd;
+                    mDrawableHeightLeft = mDrawableHeightEnd;
+                }
+                break;
 
-        case IView::LAYOUT_DIRECTION_LTR:
-        default:
-            if (mDrawableStart != NULL) {
-                mDrawableLeft = mDrawableStart;
+            case IView::LAYOUT_DIRECTION_LTR:
+            default:
+                if (mOverride) {
+                    mDrawableLeft = mDrawableStart;
+                    mDrawableSizeLeft = mDrawableSizeStart;
+                    mDrawableHeightLeft = mDrawableHeightStart;
 
-                mDrawableSizeLeft = mDrawableSizeStart;
-                mDrawableHeightLeft = mDrawableHeightStart;
-            }
-            if (mDrawableEnd != NULL) {
-                mDrawableRight = mDrawableEnd;
-
-                mDrawableSizeRight = mDrawableSizeEnd;
-                mDrawableHeightRight = mDrawableHeightEnd;
-            }
-            break;
+                    mDrawableRight = mDrawableEnd;
+                    mDrawableSizeRight = mDrawableSizeEnd;
+                    mDrawableHeightRight = mDrawableHeightEnd;
+                }
+                break;
+        }
     }
     ApplyErrorDrawableIfNeeded(layoutDirection);
     UpdateDrawablesLayoutDirection(layoutDirection);
+
     return NOERROR;
 }
 
@@ -1296,29 +1348,36 @@ TextView::TextView()
 
 TextView::TextView(
     /* [in] */ IContext* context)
-    : View(context, NULL, R::attr::textViewStyle)
+    : View(context, NULL, R::attr::textViewStyle, 0)
 {
-    InitFields();
-    ASSERT_SUCCEEDED(InitFromAttributes(context, NULL, R::attr::textViewStyle));
+    Init(context, NULL);
 }
 
 TextView::TextView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs)
-    : View(context, attrs, R::attr::textViewStyle)
+    : View(context, attrs, R::attr::textViewStyle, 0)
 {
-    InitFields();
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, R::attr::textViewStyle));
+    Init(context, attrs, R::attr::textViewStyle);
 }
 
 TextView::TextView(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
     /* [in] */ Int32 defStyle)
-    : View(context, attrs, defStyle)
+    : View(context, attrs, defStyle, 0)
 {
-    InitFields();
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    Init(context, attrs, defStyle, 0);
+}
+
+TextView::TextView(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+    : View(context, attrs, defStyleAttr, defStyleRes);
+{
+    Init(context, attrs, defStyleAttr, defStyleRes);
 }
 
 ECode TextView::Init(
@@ -1337,17 +1396,28 @@ ECode TextView::Init(
 ECode TextView::Init(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr)
 {
-    ASSERT_SUCCEEDED(View::Init(context, attrs, defStyle));
-    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyle));
+    return TextView::Init(context, attrs, defStyleAttr, 0);
+}
+
+ECode TextView::Init(
+    /* [in] */ IContext* context,
+    /* [in] */ IAttributeSet* attrs,
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
+{
+    InitFields();
+    ASSERT_SUCCEEDED(View::Init(context, attrs, defStyleAttr, defStyleRes));
+    ASSERT_SUCCEEDED(InitFromAttributes(context, attrs, defStyleAttr, defStyleRes));
     return NOERROR;
 }
 
 ECode TextView::InitFromAttributes(
     /* [in] */ IContext* context,
     /* [in] */ IAttributeSet* attrs,
-    /* [in] */ Int32 defStyle)
+    /* [in] */ Int32 defStyleAttr,
+    /* [in] */ Int32 defStyleRes)
 {
     VALIDATE_NOT_NULL(context);
 
@@ -1384,6 +1454,12 @@ ECode TextView::InitFromAttributes(
     Int32 styleIndex = -1;
     Boolean allCaps = FALSE;
 
+    Int32 shadowcolor = 0;
+    Float dx = 0, dy = 0, r = 0;
+    Boolean elegant = FALSE;
+    Float letterSpacing = 0;
+    String fontFeatureSettings;
+
     AutoPtr<IResourcesTheme> theme;
     context->GetTheme((IResourcesTheme**)&theme);
 
@@ -1397,7 +1473,7 @@ ECode TextView::InitFromAttributes(
             const_cast<Int32 *>(R::styleable::TextViewAppearance),
             ARRAY_SIZE(R::styleable::TextViewAppearance));
     AutoPtr<ITypedArray> a;
-    theme->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     AutoPtr<ITypedArray> appearance;
     Int32 ap;
@@ -1453,6 +1529,34 @@ ECode TextView::InitFromAttributes(
             case R::styleable::TextAppearance_textAllCaps:
                 appearance->GetBoolean(attr, FALSE, &allCaps);
                 break;
+
+            case R::styleable::TextAppearance_shadowColor:
+                appearance->GetInt32(attr, 0, &shadowcolor);
+                break;
+
+            case R::styleable::TextAppearance_shadowDx:
+                appearance->GetFloat(attr, 0, &dx);
+                break;
+
+            case R::styleable::TextAppearance_shadowDy:
+                appearance->GetFloat(attr, 0, &dy);
+                break;
+
+            case R::styleable::TextAppearance_shadowRadius:
+                appearance->GetFloat(attr, 0, &r);
+                break;
+
+            case R::styleable::TextAppearance_elegantTextHeight:
+                appearance->GetBoolean(attr, FALSE, &elegant);
+                break;
+
+            case R::styleable::TextAppearance_letterSpacing:
+                appearance->GetFloat(attr, 0, &letterSpacing);
+                break;
+
+            case R::styleable::TextAppearance_fontFeatureSettings:
+                appearance->GetString(attr, &fontFeatureSettings);
+                break;
             }
         }
 
@@ -1476,8 +1580,7 @@ ECode TextView::InitFromAttributes(
     AutoPtr<ICharSequence> text;
     CStringWrapper::New(String(""), (ICharSequence**)&text);
     AutoPtr<ICharSequence> hint;
-    Int32 shadowcolor = 0;
-    Float dx = 0, dy = 0, r = 0;
+
     Boolean password = FALSE;
     Int32 inputType = IInputType::TYPE_NULL;
 
@@ -1485,7 +1588,7 @@ ECode TextView::InitFromAttributes(
     attrIds = ArrayOf<Int32>::Alloc(
             const_cast<Int32 *>(R::styleable::TextView),
             ARRAY_SIZE(R::styleable::TextView));
-    theme->ObtainStyledAttributes(attrs, attrIds, defStyle, 0, (ITypedArray**)&a);
+    theme->ObtainStyledAttributes(attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a);
 
     //TODO  typedarray should has TextView_minHeight value, but no it has not
     SetMinHeight(35);
@@ -1841,6 +1944,18 @@ ECode TextView::InitFromAttributes(
         case R::styleable::TextView_textAllCaps:
             a->GetBoolean(attr, FALSE, &allCaps);
             break;
+
+        case R::styleable::TextView_elegantTextHeight:
+            a->GetBoolean(attr, FALSE, &elegant);
+            break;
+
+        case R::styleable::TextView_letterSpacing:
+            a->GetFloat(attr, 0, &letterSpacing);
+            break;
+
+        case R::styleable::TextView_fontFeatureSettings:
+            a->GetString(attr, &fontFeatureSettings);
+            break;
         }
     }
     a->Recycle();
@@ -2063,6 +2178,9 @@ ECode TextView::InitFromAttributes(
     }
 
     SetRawTextSize(textSize);
+    SetElegantTextHeight(elegant);
+    SetLetterSpacing(letterSpacing);
+    SetFontFeatureSettings(fontFeatureSettings);
 
     if (allCaps) {
         AutoPtr<ITransformationMethod> method;
@@ -2114,12 +2232,12 @@ ECode TextView::InitFromAttributes(
         const_cast<Int32 *>(R::styleable::View),
         ARRAY_SIZE(R::styleable::View));
     ASSERT_SUCCEEDED(context->ObtainStyledAttributes(
-            attrs, attrIds, defStyle, 0, (ITypedArray**)&a));
+            attrs, attrIds, defStyleAttr, defStyleRes, (ITypedArray**)&a));
 
     keyListener = GetKeyListener();
     Boolean focusable = mMovement != NULL || keyListener != NULL;
-    Boolean clickable = focusable;
-    Boolean longClickable = focusable;
+    Boolean clickable = focusable || IsClickable();
+    Boolean longClickable = focusable || IsLongClickable();
 
     a->GetIndexCount(&n);
     for (Int32 i = 0; i < n; i++) {
@@ -2197,8 +2315,9 @@ void TextView::SetRelativeDrawablesIfNeeded(
     if (hasRelativeDrawables) {
         AutoPtr<Drawables> dr = mDrawables;
         if (dr == NULL) {
-            mDrawables = dr = new Drawables();
+            mDrawables = dr = new Drawables(GetContext());
         }
+        mDrawables->mOverride = TRUE;
         AutoPtr<IRect> compoundRect = dr->mCompoundRect;
         AutoPtr<ArrayOf<Int32> > state = GetDrawableState();
         if (start != NULL) {
@@ -2234,6 +2353,8 @@ void TextView::SetRelativeDrawablesIfNeeded(
         } else {
             dr->mDrawableSizeEnd = dr->mDrawableHeightEnd = 0;
         }
+        ResetResolvedDrawables();
+        ResolveDrawables();
     }
 }
 
@@ -2348,6 +2469,35 @@ AutoPtr<ILayout> TextView::GetLayout()
 AutoPtr<ILayout> TextView::GetHintLayout()
 {
     return mHintLayout;
+}
+
+AutoPtr<IUndoManager> TextView::GetUndoManager() {
+
+    return mEditor == NULL ? NULL : mEditor->mUndoManager;
+}
+
+void TextView::SetUndoManager(
+    /* [in] */ IUndoManager* undoManager,
+    /* [in] */ String tag)
+{
+    if (undoManager != NULL) {
+        CreateEditorIfNeeded();
+        mEditor->mUndoManager = undoManager;
+        AutoPtr<IUndoOwner> owner;
+        undoManager->GetOwner(tag, THIS_PROBE(IInterface), (IUndoOwner**)&owner);
+        mEditor->mUndoOwner = owner;
+        mEditor->mUndoInputFilter = new EditorUndoInputFilter(mEditor);
+        if (!(mText->Probe(EIID_IEditable)) {
+            SetText(mText, BufferType_EDITABLE);
+        }
+
+        SetFilters(((IEditable*)mText->Probe(EIID_IEditable)), mFilters);
+    } else if (mEditor != NULL) {
+        // XXX need to destroy all associated state.
+        mEditor->mUndoManager = NULL;
+        mEditor->mUndoOwner = NULL;
+        mEditor->mUndoInputFilter = NULL;
+    }
 }
 
 AutoPtr<IKeyListener> TextView::GetKeyListener()
@@ -2474,7 +2624,8 @@ ECode TextView::SetTransformationMethod(
     }
     SetText(mText);
     if (HasPasswordTransformationMethod()) {
-        NotifyAccessibilityStateChanged();
+        NotifyViewAccessibilityStateChangedIfNeeded(
+            IAccessibilityEvent::CONTENT_CHANGE_TYPE_UNDEFINED);
     }
 
     return NOERROR;
@@ -2556,6 +2707,10 @@ Int32 TextView::GetExtendedPaddingTop()
         return GetCompoundPaddingTop();
     }
 
+    if (!mLayout) {
+        AssumeLayout();
+    }
+
     Int32 number;
     mLayout->GetLineCount(&number);
     if (number <= mMaximum) {
@@ -2588,6 +2743,10 @@ Int32 TextView::GetExtendedPaddingBottom()
 {
     if (mMaxMode != LINES) {
         return GetCompoundPaddingBottom();
+    }
+
+    if (!mLayout) {
+        AssumeLayout();
     }
 
     Int32 number;
@@ -2656,6 +2815,15 @@ ECode TextView::SetCompoundDrawables(
 {
     AutoPtr<Drawables> dr = mDrawables;
 
+    if (dr) {
+        if (dr->mDrawableStart) dr->mDrawableStart->SetCallback(NULL);
+        dr->mDrawableStart = NULL;
+        if (dr->mDrawableEnd) dr->mDrawableEnd->SetCallback(NULL);
+        dr->mDrawableEnd = NULL;
+        dr->mDrawableSizeStart = dr->mDrawableHeightStart = 0;
+        dr->mDrawableSizeEnd = dr->mDrawableHeightEnd = 0;
+    }
+
     Boolean drawables = left != NULL || top != NULL
             || right != NULL || bottom != NULL;
 
@@ -2685,8 +2853,10 @@ ECode TextView::SetCompoundDrawables(
     }
     else {
         if (dr == NULL) {
-            mDrawables = dr = new Drawables();
+            mDrawables = dr = new Drawables(GetContext());
         }
+
+        mDrawables->mOverride = FALSE;
 
         if (dr->mDrawableLeft.Get() != left && dr->mDrawableLeft != NULL) {
             dr->mDrawableLeft->SetCallback(NULL);
@@ -2762,6 +2932,14 @@ ECode TextView::SetCompoundDrawables(
         }
     }
 
+    if (dr) {
+        dr->mDrawableLeftInitial = left;
+        dr->mDrawableRightInitial = right;
+    }
+
+    ResetResolvedDrawables();
+    ResolveDrawables();
+
     Invalidate();
     RequestLayout();
     return NOERROR;
@@ -2774,27 +2952,25 @@ ECode TextView::SetCompoundDrawablesWithIntrinsicBounds(
     /* [in] */ Int32 bottom)
 {
     AutoPtr<IContext> c = GetContext();
-    AutoPtr<IResources> resources;
-    c->GetResources((IResources**)&resources);
 
     AutoPtr<IDrawable> leftDrawable;
     if (left != 0) {
-        resources->GetDrawable(left, (IDrawable**)&leftDrawable);
+        c->GetDrawable(left, (IDrawable**)&leftDrawable);
     }
 
     AutoPtr<IDrawable> topDrawable;
     if (top != 0) {
-        resources->GetDrawable(top, (IDrawable**)&topDrawable);
+        c->GetDrawable(top, (IDrawable**)&topDrawable);
     }
 
     AutoPtr<IDrawable> rightDrawable;
     if (right != 0) {
-        resources->GetDrawable(right, (IDrawable**)&rightDrawable);
+        c->GetDrawable(right, (IDrawable**)&rightDrawable);
     }
 
     AutoPtr<IDrawable> bottomDrawable;
     if (bottom != 0) {
-        resources->GetDrawable(bottom, (IDrawable**)&bottomDrawable);
+        c->GetDrawable(bottom, (IDrawable**)&bottomDrawable);
     }
 
     return SetCompoundDrawablesWithIntrinsicBounds(leftDrawable,
@@ -2839,6 +3015,15 @@ ECode TextView::SetCompoundDrawablesRelative(
 {
     AutoPtr<Drawables> dr = mDrawables;
 
+    if (dr) {
+        if (dr->mDrawableLeft) dr->mDrawableLeft->SetCallback(NULL);
+        dr->mDrawableLeft = dr->mDrawableLeftInitial = NULL;
+        if (dr->mDrawableRight) dr->mDrawableRight->SetCallback(NULL);
+        dr->mDrawableRight = dr->mDrawableRightInitial = NULL;
+        dr->mDrawableSizeLeft = dr->mDrawableHeightLeft = 0;
+        dr->mDrawableSizeRight = dr->mDrawableHeightRight = 0;
+    }
+
     Boolean drawables = start != NULL || top != NULL
             || end != NULL || bottom != NULL;
 
@@ -2866,8 +3051,10 @@ ECode TextView::SetCompoundDrawablesRelative(
         }
     } else {
         if (dr == NULL) {
-            mDrawables = dr = new Drawables();
+            mDrawables = dr = new Drawables(GetContext());
         }
+
+         mDrawables->mOverride = TRUE;
 
         if (dr->mDrawableStart.Get() != start && dr->mDrawableStart != NULL) {
             dr->mDrawableStart->SetCallback(NULL);
@@ -2942,6 +3129,7 @@ ECode TextView::SetCompoundDrawablesRelative(
         }
     }
 
+    ResetResolvedDrawables();
     ResolveDrawables();
     Invalidate();
     RequestLayout();
@@ -2955,22 +3143,20 @@ ECode TextView::SetCompoundDrawablesRelativeWithIntrinsicBounds(
     /* [in] */ Int32 end,
     /* [in] */ Int32 bottom)
 {
-    ResetResolvedDrawables();
     AutoPtr<IContext> c = GetContext();
-    AutoPtr<IResources> resources;
-    c->GetResources((IResources**)&resources);
+
     AutoPtr<IDrawable> drStart, drTop, drEnd, drBottom;
     if (start != 0) {
-        resources->GetDrawable(start, (IDrawable**)&drStart);
+        c->GetDrawable(start, (IDrawable**)&drStart);
     }
     if (top != 0) {
-        resources->GetDrawable(top, (IDrawable**)&drTop);
+        c->GetDrawable(top, (IDrawable**)&drTop);
     }
     if (end != 0) {
-        resources->GetDrawable(end, (IDrawable**)&drEnd);
+        c->GetDrawable(end, (IDrawable**)&drEnd);
     }
     if (bottom != 0) {
-        resources->GetDrawable(bottom, (IDrawable**)&drBottom);
+        c->GetDrawable(bottom, (IDrawable**)&drBottom);
     }
     return SetCompoundDrawablesRelativeWithIntrinsicBounds(
             drStart, drTop, drEnd, drBottom);
@@ -3046,7 +3232,7 @@ ECode TextView::SetCompoundDrawablePadding(
         }
     } else {
         if (dr == NULL) {
-            mDrawables = dr = new Drawables();
+            mDrawables = dr = new Drawables(GetContext());
         }
         dr->mDrawablePadding = pad;
     }
@@ -3164,6 +3350,17 @@ ECode TextView::SetTextAppearance(
 
     SetTypefaceFromAttrs(familyName, typefaceIndex, styleIndex);
 
+    Int32 shadowcolor;
+    appearance->GetInt32(R::styleable::TextAppearance_shadowColor, 0);
+    if (shadowcolor != 0) {
+        Float dx, dy, r;
+        appearance->GetFloat(R::styleable::TextAppearance_shadowDx, 0, &dx);
+        appearance->GetFloat(R::styleable::TextAppearance_shadowDy, 0, &dy);
+        appearance->GetFloat(R::styleable::TextAppearance_shadowRadius, 0, &r);
+
+        SetShadowLayer(r, dx, dy, shadowcolor);
+    }
+
     Boolean rValue;
     appearance->GetBoolean(R::styleable::TextAppearance_textAllCaps, FALSE, &rValue);
     if (rValue) {
@@ -3172,6 +3369,24 @@ ECode TextView::SetTextAppearance(
 //TODO        CAllCapsTransformationMethod::New(c, (IAllCapsTransformationMethod**)&method);
         assert(0 && "TODO");
         SetTransformationMethod(method);
+    }
+
+
+    if (appearance->HasValue(R::styleable::TextAppearance_elegantTextHeight, &rValue), rValue) {
+        SetElegantTextHeight((appearance->GetBoolean(R::styleable::TextAppearance_elegantTextHeight,
+            FALSE, &rValue), rValue));
+    }
+
+    if (appearance->HasValue(R::styleable::TextAppearance_letterSpacing, &rValue), rValue) {
+        Float spacing;
+        appearance->GetFloat(R::styleable::TextAppearance_letterSpacing, 0, &spacing);
+        SetLetterSpacing(spacing);
+    }
+
+    if (appearance->hasValue(R::styleable::TextAppearance_fontFeatureSettings, &rValue), rValue) {
+        String spacing;
+        appearance->GetString(R::styleable::TextAppearance_fontFeatureSettings, &spacing);
+        SetFontFeatureSettings(spacing);
     }
 
     appearance->Recycle();
@@ -3196,6 +3411,22 @@ Float TextView::GetTextSize()
     Float size;
     mTextPaint->GetTextSize(&size);
     return size;
+}
+
+Float TextView::GetScaledTextSize()
+{
+    Float size, density;
+    mTextPaint->GetTextSize(&size);
+    mTextPaint->GetDensity(&density);
+    return size / density;
+}
+
+Int32 TextView::GetTypefaceStyle() {
+    AutoPtr<ITypeface> tyepface;
+    mTextPaint->GetTypeface((ITypeface**)&typeface);
+    Int32 style;
+    tyepface->GetStyle(&style);
+    return style;
 }
 
 ECode TextView::SetTextSize(
@@ -3296,6 +3527,57 @@ AutoPtr<ITypeface> TextView::GetTypeface()
     AutoPtr<ITypeface> tyepface;
     mTextPaint->GetTypeface((ITypeface**)&tyepface);
     return tyepface;
+}
+
+void TextView::SetElegantTextHeight(
+    /* [in] */ Boolean elegant)
+{
+    mTextPaint->SetElegantTextHeight(elegant);
+}
+
+Float TextView::GetLetterSpacing()
+{
+    Float res;
+    mTextPaint->GetLetterSpacing(&res);
+    return res;
+}
+
+void TextView::SetLetterSpacing(
+    /* [in] */ Float letterSpacing)
+{
+    Float res;
+    if (letterSpacing != (mTextPaint->GetLetterSpacing(&res), res)) {
+        mTextPaint->SetLetterSpacing(letterSpacing);
+
+        if (mLayout) {
+            NullLayouts();
+            RequestLayout();
+            Invalidate();
+        }
+    }
+}
+
+String TextView::GetFontFeatureSettings()
+{
+    String res;
+    mTextPaint->GetFontFeatureSettings(&res);
+    return res;
+}
+
+void TextView::SetFontFeatureSettings(
+    /* [in] */ String fontFeatureSettings)
+{
+    String res;
+    mTextPaint->GetFontFeatureSettings(&res);
+    if (fontFeatureSettings.Equals(res)) {
+        mTextPaint->SetFontFeatureSettings(fontFeatureSettings);
+
+        if (mLayout) {
+            NullLayouts();
+            RequestLayout();
+            Invalidate();
+        }
+    }
 }
 
 ECode TextView::SetTextColor(
