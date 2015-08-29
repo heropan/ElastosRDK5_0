@@ -5,6 +5,7 @@
 #include "security/Signature.h"
 #include "security/cert/CertificateFactory.h"
 #include "utility/Arrays.h"
+#include "utility/CArrayList.h"
 #include "utility/logging/Logger.h"
 #include "asn1/CASN1OctetString.h"
 #include "asn1/CBerInputStream.h"
@@ -21,6 +22,8 @@ using Elastos::Security::Cert::CertificateFactory;
 using Elastos::Utility::Arrays;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
+using Elastos::Utility::IArrayList;
+using Elastos::Utility::CArrayList;
 using Elastos::Utility::Logging::Logger;
 using Org::Apache::Harmony::Security::Asn1::IASN1OctetString;
 using Org::Apache::Harmony::Security::Asn1::CASN1OctetString;
@@ -325,13 +328,58 @@ AutoPtr< ArrayOf<IX509Certificate*> > CJarUtils::CreateChain(
     /* [in] */ IX509Certificate* signer,
     /* [in] */ const ArrayOf<IX509Certificate*>& candidates)
 {
-    return NULL;
+    AutoPtr<IPrincipal> issuer;
+    signer->GetIssuerDN((IPrincipal**)&issuer);
+
+    // Signer is self-signed
+    AutoPtr<IPrincipal> subject;
+    signer->GetSubjectDN((IPrincipal**)&subject);
+    Boolean isEqual;
+    if (subject->Equals(issuer, &isEqual), isEqual) {
+        AutoPtr< ArrayOf<IX509Certificate*> > x509Certs = ArrayOf<IX509Certificate*>::Alloc(1);
+        x509Certs->Set(1, signer);
+        return x509Certs;
+    }
+
+    AutoPtr<IArrayList> chain;
+    CArrayList::New(candidates.GetLength() + 1, (IArrayList**)&chain);
+    chain->Add(0, signer);
+
+    AutoPtr<IX509Certificate> issuerCert;
+    Int32 count = 1;
+    while (TRUE) {
+        issuerCert = FindCert(issuer, candidates);
+        if (issuerCert == NULL) {
+            break;
+        }
+        Boolean result;
+        chain->Add(issuerCert, &result);
+        count++;
+        issuer = NULL;
+        issuerCert->GetIssuerDN((IPrincipal**)&issuer);
+        subject = NULL;
+        issuerCert->GetSubjectDN((IPrincipal**)&subject);
+        if (subject->Equals(issuer, &isEqual), isEqual) {
+            break;
+        }
+    }
+    AutoPtr< ArrayOf<IX509Certificate*> > x509Certs;
+    chain->ToArray((ArrayOf<IInterface*>**)&x509Certs);
+    return x509Certs;
 }
 
 AutoPtr<IX509Certificate> CJarUtils::FindCert(
     /* [in] */ IPrincipal* issuer,
     /* [in] */ const ArrayOf<IX509Certificate*>& candidates)
 {
+    for (Int32 i = 0; i < candidates.GetLength(); i++) {
+        AutoPtr<IPrincipal> subject;
+        candidates[i]->GetSubjectDN((IPrincipal**)&subject);
+        Boolean isEqual;
+        if (issuer->Equals(subject, &isEqual), isEqual) {
+            return candidates[i];
+        }
+    }
     return NULL;
 }
 
