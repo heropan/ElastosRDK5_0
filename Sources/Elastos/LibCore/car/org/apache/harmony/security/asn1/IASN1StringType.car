@@ -13,6 +13,12 @@ module
      * interface IASN1Constants;
      */
     interface IASN1StringType {
+        GetDecodedObject(
+            [in] IBerInputStream* bis,
+            [out] IInterface** object);
+    }
+
+    interface IASN1StringTypeHelper {
         GetBMPSTRING(
             [out] IASN1Type** type);
 

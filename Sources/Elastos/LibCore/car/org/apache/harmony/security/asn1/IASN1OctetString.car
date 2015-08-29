@@ -7,6 +7,15 @@ module
     namespace Security {
     namespace Asn1 {
 
+    /**
+     * @Invlove
+     * interface IASN1StringType
+     * interface IASN1Type;
+     * interface IASN1Constants;
+     */
+    interface IASN1OctetString {
+    }
+
     interface IASN1OctetStringHelper {
         GetInstance(
             [out] IASN1OctetString** instance);

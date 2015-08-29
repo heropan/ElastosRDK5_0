@@ -11,6 +11,7 @@ INCLUDES += ../../../../../corelibrary
 INCLUDES += $(MAKEDIR)/../../../../../../inc
 INCLUDES += $(MAKEDIR)/../../../../../../inc/elastos
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security
+INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/asn1
 INCLUDES += $(MAKEDIR)/../../../../../../inc/org/apache/harmony/security/utils
 
 #SOURCES = AlgNameMapper.cpp

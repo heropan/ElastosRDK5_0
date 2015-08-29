@@ -81,19 +81,19 @@ module
         GetEncoded(
             [out, callee] ArrayOf<Byte>* encoded);
 
-//        /** Current encoded length */
-//        SetLength(
-//            [in] Int32 length);
-//
+        /** Current encoded length */
+        SetLength(
+            [in] Int32 length);
+
         GetLength(
             [out] Int32* length);
 
-//        /** Current decoded content */
-//        SetContent(
-//            [in] ArrayOf<Byte>* content);
-//
-//        GetContent(
-//            [out] IInterface** content);
+        /** Current decoded content */
+        SetContent(
+            [in] IInterface* content);
+
+        GetContent(
+            [out] IInterface** content);
     }
 
     } // namespace Asn1

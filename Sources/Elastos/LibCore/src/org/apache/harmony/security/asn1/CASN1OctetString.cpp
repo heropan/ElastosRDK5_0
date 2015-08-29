@@ -1,13 +1,15 @@
 
 #include "CASN1OctetString.h"
-#include <cmdef.h>
+#include "core/CArrayOf.h"
+#include "core/CByte.h"
+#include "utility/Arrays.h"
 
-using Elastos::Utility::Arrays;
-using Elastos::Core::CArrayOf;
 using Elastos::Core::IArrayOf;
-using Elastos::Core::CByte;
+using Elastos::Core::CArrayOf;
 using Elastos::Core::IByte;
 using Elastos::Core::EIID_IByte;
+using Elastos::Core::CByte;
+using Elastos::Utility::Arrays;
 
 namespace Org {
 namespace Apache {
@@ -15,15 +17,22 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
-static AutoPtr<IASN1Type> ASN1;
+const AutoPtr<IASN1OctetString> CASN1OctetString::ASN1 = InitASN1();
 
-AutoPtr<IASN1Type> CASN1OctetString::InitStatic()
+AutoPtr<IASN1OctetString> CASN1OctetString::InitASN1()
 {
-    return new CASN1OctetString();
+    AutoPtr<CASN1OctetString> asn1Obj;
+    CASN1OctetString::NewByFriend((CASN1OctetString**)&asn1Obj);
+    return (IASN1OctetString*)asn1Obj.Get();
+}
+
+ECode CASN1OctetString::constructor()
+{
+    return ASN1StringType::constructor(IASN1Constants::TAG_OCTETSTRING);
 }
 
 ECode CASN1OctetString::GetInstance(
-    /* [out] */ IASN1Type** instance)
+    /* [out] */ IASN1OctetString** instance)
 {
     VALIDATE_NOT_NULL(instance)
     *instance = ASN1;
@@ -31,106 +40,44 @@ ECode CASN1OctetString::GetInstance(
     return NOERROR;
 }
 
-ECode CASN1OctetString::GetId(
-    /* [out] */ Int32* id)
-{
-    return ASN1StringType::GetId(id);
-}
-
-ECode CASN1OctetString::GetConstrId(
-    /* [out] */ Int32* constrId)
-{
-    return ASN1StringType::GetConstrId(constrId);
-}
-
 ECode CASN1OctetString::Decode(
-    /* [in] */ ArrayOf<Byte>* encoded,
-    /* [out] */ IInterface** object)
-{
-    return ASN1StringType::Decode(encoded, object);
-}
-
-ECode CASN1OctetString::DecodeEx(
-    /* [in] */ ArrayOf<Byte>* encoded,
-    /* [in] */ Int32 offset,
-    /* [in] */ Int32 encodingLen,
-    /* [out] */ IInterface** object)
-{
-    return ASN1StringType::DecodeEx(encoded, offset, encodingLen, object);
-}
-
-ECode CASN1OctetString::DecodeEx2(
-    /* [in] */ IInputStream* is,
-    /* [out] */ IInterface** object)
-{
-    return ASN1StringType::DecodeEx2(is, object);
-}
-
-ECode CASN1OctetString::Verify(
-    /* [in] */ ArrayOf<Byte>* encoded)
-{
-    return ASN1StringType::Verify(encoded);
-}
-
-ECode CASN1OctetString::VerifyEx(
-    /* [in] */ IInputStream* is)
-{
-    return ASN1StringType::VerifyEx(is);
-}
-
-ECode CASN1OctetString::Encode(
-    /* [in] */ IInterface* object,
-    /* [out, callee] */ ArrayOf<Byte>** encode)
-{
-    return ASN1StringType::Encode(object, encode);
-}
-
-ECode CASN1OctetString::DecodeEx3(
     /* [in] */ IBerInputStream* bis,
     /* [out] */ IInterface** object)
 {
-    bis->ReadOctetString();
+    VALIDATE_NOT_NULL(object);
+    *object = NULL;
+    FAIL_RETURN(bis->ReadOctetString());
 
-    if (((CBerInputStream*)bis)->mIsVerify) {
+    Boolean isVerify;
+    if (bis->GetVerify(&isVerify), isVerify) {
         return NOERROR;
     }
     return GetDecodedObject(bis, object);
-}
-
-ECode CASN1OctetString::CheckTag(
-    /* [in] */ Int32 identifier,
-    /* [out] */ Boolean* checkTag)
-{
-    return ASN1StringType::CheckTag(checkTag);
 }
 
 ECode CASN1OctetString::GetDecodedObject(
     /* [in] */ IBerInputStream* bis,
     /* [out] */ IInterface** object)
 {
-    Int32 contentOffset, length;
-    AutoPtr<ArrayOf<Byte> > buffer, tmp;
-    bis->GetContentOffset(&contentOffset);
+    AutoPtr< ArrayOf<Byte> > buffer;
+    bis->GetBuffer((ArrayOf<Byte>**)&buffer);
+    Int32 offset;
+    bis->GetContentOffset(&offset);
+    Int32 length;
     bis->GetLength(&length);
-    AutoPtr<IArrays> arr;
-    CArrays::Acquiresingleton((IArrays**)&arr);
-    arr->CopyOfRangeByte(buffer, contentOffset, contentOffset + length, tmp);
-    AutoPtr<IArrayOf> arrayOf;
-    CArrayOf::New(EIID_IByte, tmp->GetLength(), (IArrayOf**)&arrayOf);
-    for (Int32 i = 0; i < tmp->GetLength(); i++) {
-        AutoPtr<IByte> bt;
-        CByte::New((*tmp)[i], (IByte**)&bt);
-        arrayOf->Put(i, bt.Get());
+    AutoPtr< ArrayOf<Byte> > result;
+    Arrays::CopyOfRange(buffer, offset, offset + length, (ArrayOf<Byte>**)&result);
+    Int32 size = result->GetLength();
+    AutoPtr<IArrayOf> arrays;
+    CArrayOf::New(EIID_IByte, size, (IArrayOf**)&arrays);
+    for (Int32 i = 0; i < size; i++) {
+        AutoPtr<IByte> byteObj;
+        CByte::New((*result)[i], (IByte**)&byteObj);
+        arrays->Set(i, byteObj);
     }
-    *object = arrayOf.Get();
-    REFCOUNT_ADD(*object)
+    *object = arrays;
+    REFCOUNT_ADD(*object);
     return NOERROR;
-}
-
-ECode CASN1OctetString::EncodeASN(
-    /* [in] */ IBerOutputStream* bos)
-{
-    return ASN1StringType::EncodeASN(bos);
 }
 
 ECode CASN1OctetString::EncodeContent(
@@ -149,27 +96,8 @@ ECode CASN1OctetString::SetEncodingContent(
     return bos->SetLength(length);
 }
 
-ECode CASN1OctetString::GetEncodedLength(
-    /* [in] */ IBerOutputStream* bos,
-    /* [out] */ Int32* length)
-{
-    return ASN1StringType::GetEncodedLength(bos, length);
-}
-
-ECode CASN1OctetString::ToString(
-    /* [out] */ String* result)
-{
-    return ASN1StringType::ToString(result);
-}
-
-ECode CASN1OctetString::constructor()
-{
-    return ASN1StringType::Init(IASN1Constants::TAG_OCTETSTRING);
-}
-
 } // namespace Asn1
 } // namespace Security
 } // namespace Harmony
 } // namespace Apache
 } // namespace Org
-

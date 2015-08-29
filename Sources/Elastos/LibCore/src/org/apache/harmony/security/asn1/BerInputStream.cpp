@@ -922,14 +922,14 @@ ECode BerInputStream::GetContent(
 //    return NOERROR;
 //}
 //
-//ECode BerInputStream::GetContentOffset(
-//    /* [out] */ Int32* contentOffset)
-//{
-//    VALIDATE_NOT_NULL(contentOffset)
-//    *contentOffset = mContentOffset;
-//    return NOERROR;
-//}
-//
+ECode BerInputStream::GetContentOffset(
+    /* [out] */ Int32* contentOffset)
+{
+    VALIDATE_NOT_NULL(contentOffset)
+    *contentOffset = mContentOffset;
+    return NOERROR;
+}
+
 //ECode BerInputStream::SetContentOffset(
 //    /* [in] */ Int32 contentOffset)
 //{

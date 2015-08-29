@@ -368,13 +368,13 @@ ECode BerOutputStream::GetEncoded(
     return NOERROR;
 }
 
-//ECode BerOutputStream::SetLength(
-//    /* [in] */ Int32 length)
-//{
-//    mLength = length;
-//    return NOERROR;
-//}
-//
+ECode BerOutputStream::SetLength(
+    /* [in] */ Int32 length)
+{
+    mLength = length;
+    return NOERROR;
+}
+
 ECode BerOutputStream::GetLength(
     /* [out] */ Int32* length)
 {
@@ -383,21 +383,21 @@ ECode BerOutputStream::GetLength(
     return NOERROR;
 }
 
-//ECode BerOutputStream::SetContent(
-//    /* [in] */ IInterface* content)
-//{
-//    mContent = content;
-//    return NOERROR;
-//}
-//
-//ECode BerOutputStream::GetContent(
-//    /* [out] */ IInterface** content)
-//{
-//    VALIDATE_NOT_NULL(content)
-//    *content = mContent;
-//    REFCOUNT_ADD(*content)
-//    return NOERROR;
-//}
+ECode BerOutputStream::SetContent(
+    /* [in] */ IInterface* content)
+{
+    mContent = content;
+    return NOERROR;
+}
+
+ECode BerOutputStream::GetContent(
+    /* [out] */ IInterface** content)
+{
+    VALIDATE_NOT_NULL(content)
+    *content = mContent;
+    REFCOUNT_ADD(*content)
+    return NOERROR;
+}
 
 } // namespace Asn1
 } // namespace Security

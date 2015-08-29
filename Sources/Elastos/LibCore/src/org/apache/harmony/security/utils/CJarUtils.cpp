@@ -1,20 +1,29 @@
 
 #include "CJarUtils.h"
 #include "io/CByteArrayInputStream.h"
+#include "security/MessageDigest.h"
 #include "security/Signature.h"
 #include "security/cert/CertificateFactory.h"
+#include "utility/Arrays.h"
 #include "utility/logging/Logger.h"
+#include "asn1/CASN1OctetString.h"
 #include "asn1/CBerInputStream.h"
 #include "pkcs7/CContentInfoHelper.h"
 
+using Elastos::Core::IByte;
 using Elastos::IO::CByteArrayInputStream;
+using Elastos::Security::IMessageDigest;
 using Elastos::Security::ISignature;
+using Elastos::Security::MessageDigest;
 using Elastos::Security::Signature;
 using Elastos::Security::Cert::ICertificateFactory;
 using Elastos::Security::Cert::CertificateFactory;
+using Elastos::Utility::Arrays;
 using Elastos::Utility::ICollection;
 using Elastos::Utility::IList;
 using Elastos::Utility::Logging::Logger;
+using Org::Apache::Harmony::Security::Asn1::IASN1OctetString;
+using Org::Apache::Harmony::Security::Asn1::CASN1OctetString;
 using Org::Apache::Harmony::Security::Asn1::IASN1Sequence;
 using Org::Apache::Harmony::Security::Asn1::IASN1Type;
 using Org::Apache::Harmony::Security::Asn1::IBerInputStream;
@@ -25,6 +34,7 @@ using Org::Apache::Harmony::Security::Pkcs7::CContentInfoHelper;
 using Org::Apache::Harmony::Security::Pkcs7::ISignedData;
 using Org::Apache::Harmony::Security::Pkcs7::ISignerInfo;
 using Org::Apache::Harmony::Security::X501::IAttributeTypeAndValue;
+using Org::Apache::Harmony::Security::X501::IAttributeValue;
 
 namespace Org {
 namespace Apache {
@@ -225,28 +235,90 @@ ECode CJarUtils::VerifySignature(
 
         // If the authenticatedAttributes field contains the message-digest attribute,
         // verify that it equals the computed digest of the signature file
-        AutoPtr< ArrayOf<Byte> > mExistingDigest;
+        AutoPtr< ArrayOf<Byte> > existingDigest;
         AutoPtr<IIterator> it;
         atr->GetIterator((IIterator**)&it);
         Boolean hasNext;
         while (it->HasNext(&hasNext), hasNext) {
             AutoPtr<IAttributeTypeAndValue> a;
-            it->GetNext((IAttributeTypeAndValue**)&a);
-            // if (Arrays.equals(a.getType().getOid(), MESSAGE_DIGEST_OID)) {
-            //     if (existingDigest != null) {
-            //         throw new SecurityException("Too many MessageDigest attributes");
-            //     }
-            //     Collection<?> entries = a.getValue().getValues(ASN1OctetString.getInstance());
-            //     if (entries.size() != 1) {
-            //         throw new SecurityException("Too many values for MessageDigest attribute");
-            //     }
-            //     existingDigest = (byte[]) entries.iterator().next();
-            // }
+            it->GetNext((IInterface**)&a);
+            AutoPtr<IObjectIdentifier> oi;
+            a->GetType((IObjectIdentifier**)&oi);
+            AutoPtr< ArrayOf<Int32> > oid;
+            oi->GetOid((ArrayOf<Int32>**)&oid);
+            if (Arrays::Equals(oid, MESSAGE_DIGEST_OID)) {
+                if (existingDigest != NULL) {
+                    Logger::E("CJarUtils", "Too many MessageDigest attributes");
+                    return E_SECURITY_EXCEPTION;
+                }
+                AutoPtr<IAttributeValue> value;
+                a->GetValue((IAttributeValue**)&value);
+                AutoPtr<IASN1OctetString> octect;
+                CASN1OctetString::GetInstance((IASN1OctetString**)&octect);
+                AutoPtr<ICollection> entries;
+                value->GetValues(IASN1Type::Probe(octect), (ICollection**)&entries);
+                Int32 size;
+                if (entries->GetSize(&size), size != 1) {
+                    Logger::E("CJarUtils", "Too many values for MessageDigest attribute");
+                    return E_SECURITY_EXCEPTION;
+                }
+                AutoPtr<IIterator> entriesIt;
+                entries->GetIterator((IIterator**)&entriesIt);
+                AutoPtr<IArrayOf> arrayObj;
+                entriesIt->GetNext((IInterface**)&arrayObj);
+                arrayObj->GetLength(&size);
+                existingDigest = ArrayOf<Byte>::Alloc(size);
+                for (Int32 i = 0; i < size; i++) {
+                    AutoPtr<IByte> byteObj;
+                    arrayObj->Get(i, (IInterface**)&byteObj);
+                    Byte value;
+                    byteObj->GetValue(&value);
+                    (*existingDigest)[i] = value;
+                }
+            }
         }
 
+        // RFC 3852 section 9.2: it authAttrs is present, it must have a
+        // message digest entry.
+        if (existingDigest == NULL) {
+            Logger::E("CJarUtils", "Missing MessageDigest in Authenticated Attributes");
+            return E_SECURITY_EXCEPTION;
+        }
+
+        AutoPtr<IMessageDigest> md;
+        if (!daOid.IsNull()) {
+            MessageDigest::GetInstance(daOid, (IMessageDigest**)&md);
+        }
+        if (md == NULL && !daName.IsNull()) {
+            MessageDigest::GetInstance(daName, (IMessageDigest**)&md);
+        }
+        if (md == NULL) {
+            *sign = NULL;
+            return NOERROR;
+        }
+
+        AutoPtr< ArrayOf<Byte> > computedDigest;
+        md->Digest(sfBytes, (ArrayOf<Byte>**)&computedDigest);
+        if (!Arrays::Equals(existingDigest, computedDigest)) {
+            Logger::E("CJarUtils", "Incorrect MD");
+            return E_SECURITY_EXCEPTION;
+        }
     }
 
-    return E_NOT_IMPLEMENTED;
+    AutoPtr< ArrayOf<Byte> > encryptedDigest;
+    sigInfo->GetEncryptedDigest((ArrayOf<Byte>**)&encryptedDigest);
+    if (sig->Verify(encryptedDigest, &result), !result) {
+        Logger::E("CJarUtils", "Incorrect signature");
+        return E_SECURITY_EXCEPTION;
+    }
+
+    AutoPtr< ArrayOf<IX509Certificate*> > x509Certs = CreateChain((*certs)[issuerSertIndex], *certs);
+    *sign = ArrayOf<ICertificate*>::Alloc(x509Certs->GetLength());
+    REFCOUNT_ADD(*sign);
+    for (Int32 i = 0; i < x509Certs->GetLength(); i++) {
+        (*sign)->Set(i, ICertificate::Probe((*x509Certs)[i]));
+    }
+    return NOERROR;
 }
 
 AutoPtr< ArrayOf<IX509Certificate*> > CJarUtils::CreateChain(

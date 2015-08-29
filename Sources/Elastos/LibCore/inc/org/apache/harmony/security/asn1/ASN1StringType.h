@@ -2,10 +2,7 @@
 #ifndef __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1STRINGTYPE_H__
 #define __ORG_APACHE_HARMONY_SECURITY_ASN1_ASN1STRINGTYPE_H__
 
-#include <elastos.h>
 #include "ASN1Type.h"
-
-_ELASTOS_NAMESPACE_USING
 
 namespace Org {
 namespace Apache {
@@ -19,59 +16,65 @@ namespace Asn1 {
  * @see <a href="http://asn1.elibel.tm.fr/en/standards/index.htm">ASN.1</a>
  */
 class ASN1StringType
-    : public ASN1Type {
+    : public ASN1Type
+    , public IASN1StringType
+{
 public:
-    static AutoPtr<IASN1Type> InitStatic();
-
     ASN1StringType(
         /* [in] */ Int32 tagNumber);
 
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Int32 tagNumber);
 
-    virtual CARAPI CheckTag(
+    CAR_INTERFACE_DECL();
+
+    /**
+     * Tests provided identifier.
+     *
+     * @param identifier identifier to be verified
+     * @return true if identifier correspond to primitive or constructed
+     *     identifier of this ASN.1 string type, otherwise false
+     */
+    CARAPI CheckTag(
         /* [in] */ Int32 identifier,
         /* [ou] */ Boolean* result);
 
-    virtual CARAPI DecodeEx3(
+    CARAPI Decode(
         /* [in] */ IBerInputStream* bis,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI GetDecodedObject(
+    CARAPI GetDecodedObject(
         /* [in] */ IBerInputStream* bis,
         /* [out] */ IInterface** object);
 
-    virtual CARAPI EncodeASN(
+    CARAPI EncodeASN(
         /* [in] */ IBerOutputStream* bos);
 
-    virtual CARAPI EncodeContent(
+    CARAPI EncodeContent(
         /* [in] */ IBerOutputStream* bos);
 
-    virtual CARAPI SetEncodingContent(
+    CARAPI SetEncodingContent(
         /* [in] */ IBerOutputStream* bos);
 
-    virtual CARAPI_(PInterface) Probe(
-        /* [in] */ REIID riid);
-private:
-    class ASN1StringTypeNull;
+protected:
+    ASN1StringType() {}
 
-    class ASN1StringTypeOfDerived;
 public:
     // TODO: what about defining them as separate classes?
     // TODO: check decoded/encoded characters
-    static AutoPtr<IASN1Type> sBMPSTRING;
+    static const AutoPtr<IASN1StringType> BMPSTRING;
 
-    static AutoPtr<IASN1Type> sIA5STRING;
+    static const AutoPtr<IASN1StringType> IA5STRING;
 
-    static AutoPtr<IASN1Type> sGENERALSTRING;
+    static const AutoPtr<IASN1StringType> GENERALSTRING;
 
-    static AutoPtr<IASN1Type> sPRINTABLESTRING;
+    static const AutoPtr<IASN1StringType> PRINTABLESTRING;
 
-    static AutoPtr<IASN1Type> sTELETEXSTRING;
+    static const AutoPtr<IASN1StringType> TELETEXSTRING;
 
-    static AutoPtr<IASN1Type> sUNIVERSALSTRING;
+    static const AutoPtr<IASN1StringType> UNIVERSALSTRING;
 
-    static AutoPtr<IASN1Type> sUTF8STRING;
+    static const AutoPtr<IASN1StringType> UTF8STRING;
 };
 
 } // namespace Asn1

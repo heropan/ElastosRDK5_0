@@ -132,9 +132,9 @@ public:
 //    CARAPI SetTagOffSet(
 //        /* [in] */ Int32 tagOffset);
 //
-//    CARAPI GetContentOffset(
-//        /* [out] */ Int32* contentOffset);
-//
+    CARAPI GetContentOffset(
+        /* [out] */ Int32* contentOffset);
+
 //    CARAPI SetContentOffset(
 //        /* [in] */ Int32 contentOffset);
 //

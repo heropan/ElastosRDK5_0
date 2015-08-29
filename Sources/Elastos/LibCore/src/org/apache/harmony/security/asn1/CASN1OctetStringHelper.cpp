@@ -8,9 +8,12 @@ namespace Harmony {
 namespace Security {
 namespace Asn1 {
 
+CAR_INTERFACE_IMPL(CASN1OctetStringHelper, Singleton, IASN1OctetStringHelper)
+
+CAR_SINGLETON_IMPL(CASN1OctetStringHelper)
 
 ECode CASN1OctetStringHelper::GetInstance(
-    /* [out] */ IASN1Type** instance)
+    /* [out] */ IASN1OctetString** instance)
 {
     return CASN1OctetString::GetInstance(instance);
 }

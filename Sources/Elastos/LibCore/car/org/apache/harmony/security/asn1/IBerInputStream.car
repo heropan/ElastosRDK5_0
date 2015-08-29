@@ -193,9 +193,9 @@ module
 //        SetTagOffSet(
 //            [in] Int32 tagOffset);
 //
-//        GetContentOffset(
-//            [out] Int32* contentOffset);
-//
+        GetContentOffset(
+            [out] Int32* contentOffset);
+
 //        SetContentOffset(
 //            [in] Int32 contentOffset);
 //

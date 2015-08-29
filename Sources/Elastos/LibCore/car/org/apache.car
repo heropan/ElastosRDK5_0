@@ -3,6 +3,7 @@ module
 {
     merge("apache/harmony/security/asn1/Exceptions.car");
     merge("apache/harmony/security/asn1/IASN1Constants.car");
+    merge("apache/harmony/security/asn1/IASN1OctetString.car");
     merge("apache/harmony/security/asn1/IASN1Type.car");
     merge("apache/harmony/security/asn1/IASN1StringType.car");
     merge("apache/harmony/security/asn1/IASN1Time.car");
@@ -50,7 +51,6 @@ module
     merge("apache/harmony/security/x509/IValidity.car");
 
 
-
     interface Elastos.IO.IInputStream;
 
     namespace Org {
@@ -59,6 +59,19 @@ module
     namespace Security {
 
     namespace Asn1 {
+
+    class CASN1OctetString {
+        constructor();
+
+        interface IASN1OctetString;
+        interface IASN1StringType;
+        interface IASN1Type;
+        interface IASN1Constants;
+    }
+
+    singleton class CASN1OctetStringHelper {
+        interface IASN1OctetStringHelper;
+    }
 
     [deprecated]
     class CBerInputStream {

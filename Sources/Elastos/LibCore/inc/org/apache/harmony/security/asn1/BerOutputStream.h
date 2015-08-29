@@ -85,17 +85,17 @@ public:
     CARAPI GetEncoded(
         /* [out, callee] */ ArrayOf<Byte>** encoded);
 
-//    CARAPI SetLength(
-//        /* [in] */ Int32 length);
-//
+    CARAPI SetLength(
+        /* [in] */ Int32 length);
+
     CARAPI GetLength(
         /* [out] */ Int32* length);
 
-//    CARAPI SetContent(
-//        /* [in] */ ArrayOf<Byte>* content);
-//
-//    CARAPI GetContent(
-//        /* [out] */ IInterface** content);
+    CARAPI SetContent(
+        /* [in] */ IInterface* content);
+
+    CARAPI GetContent(
+        /* [out] */ IInterface** content);
 
 public:
     /** Encoded byte array */

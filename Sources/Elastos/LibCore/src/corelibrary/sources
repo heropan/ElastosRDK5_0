@@ -62,6 +62,7 @@ INCLUDES += $(MAKEDIR)/../../inc/libcore/net/http
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/url
 INCLUDES += $(MAKEDIR)/../../inc/libcore/net/utility
 INCLUDES += $(MAKEDIR)/../../inc/libcore/utility
+INCLUDES += $(MAKEDIR)/../../inc/org/apache/harmony/security
 INCLUDES += $(MAKEDIR)/../../inc/org/apache/harmony/security/asn1
 INCLUDES += $(MAKEDIR)/../../inc/org/apache/harmony/security/fortress
 INCLUDES += $(MAKEDIR)/../../inc/org/apache/harmony/security/pkcs7
