@@ -300,6 +300,16 @@ ECode CDatabaseUtils::Int64ForQuery(
     return NOERROR;
 }
 
+ECode CDatabaseUtils::QueryIsEmpty(
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ const String& table,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result)
+    *result = DatabaseUtils::QueryIsEmpty(db, table);
+    return NOERROR;
+}
+
 ECode CDatabaseUtils::Int64ForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs,

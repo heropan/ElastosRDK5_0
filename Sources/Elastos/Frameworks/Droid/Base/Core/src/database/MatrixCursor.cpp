@@ -22,13 +22,14 @@ namespace Droid {
 namespace Database {
 
 MatrixCursor::RowBuilder::RowBuilder(
-    /* [in] */ Int32 index,
-    /* [in] */ Int32 endIndex,
+    /* [in] */ Int32 row,
     /* [in] */ MatrixCursor* owner)
-    : mIndex(index)
-    , mEndIndex(endIndex)
+    : mRow(row)
+    , mIndex(row * owner->mColumnCount)
     , mOwner(owner)
-{}
+{
+    mEndIndex = mIndex + owner->mColumnCount;
+}
 
 CAR_INTERFACE_IMPL(MatrixCursor::RowBuilder, Object, IRowBuilder)
 
@@ -42,6 +43,18 @@ ECode MatrixCursor::RowBuilder::Add(
     }
 
     mOwner->mData->Set(mIndex++,  columnValue);
+    return NOERROR;
+}
+
+ECode MatrixCursor::RowBuilder::Add(
+    /* [in] */ String columnName,
+    /* [in] */ IInterface* value)
+{
+    for (Int32 i = 0; i < mOwner->mColumnNames->GetLength(); i++) {
+        if (columnName.Equals((*(mOwner->mColumnNames))[i])) {
+            mOwner->mData->Set((mRow * mOwner->mColumnCount) + i , value);
+        }
+    }
     return NOERROR;
 }
 
@@ -105,11 +118,10 @@ ECode MatrixCursor::NewRow(
 {
     VALIDATE_NOT_NULL(builder)
 
-    mRowCount++;
-    Int32 endIndex = mRowCount * mColumnCount;
+    const Int32 row = mRowCount++;
+    const Int32 endIndex = mRowCount * mColumnCount;
     EnsureCapacity(endIndex);
-    Int32 start = endIndex - mColumnCount;
-    AutoPtr<IRowBuilder> m_builder = new RowBuilder(start, endIndex, this);
+    AutoPtr<IRowBuilder> m_builder = new RowBuilder(row, this);
     *builder = m_builder;
     REFCOUNT_ADD(*builder)
     return NOERROR;

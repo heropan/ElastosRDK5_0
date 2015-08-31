@@ -163,6 +163,9 @@ public:
         /* [in] */ IContentResolver* cr,
         /* [in] */ IUri* uri);
 
+    virtual CARAPI GetNotificationUri(
+        /* [out] */ IUri** uri);
+
     virtual CARAPI UnregisterContentObserver(
         /* [in] */ IContentObserver* observer);
 

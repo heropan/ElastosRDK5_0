@@ -11,11 +11,12 @@ CAR_OBJECT_IMPL(CContentObserverTransport)
 
 ECode CContentObserverTransport::OnChange(
     /* [in] */ Boolean selfChange,
-    /* [in] */ IUri* uri)
+    /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId)
 {
     AutoPtr<IContentObserver> contentObserver = mContentObserver;
     if (contentObserver) {
-        contentObserver->DispatchChange(selfChange, uri);
+        contentObserver->DispatchChange(selfChange, uri, userId);
     }
     return NOERROR;
 }

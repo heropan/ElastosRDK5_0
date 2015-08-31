@@ -6,7 +6,10 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "os/Handler.h"
+#include "os/UserHandle.h"
 #include <elastos/core/AutoLock.h>
+
+using Elastos::Droid::Os::UserHandle;
 
 namespace Elastos {
 namespace Droid {
@@ -15,16 +18,18 @@ namespace Database {
 ContentObserver::NotificationRunnable::NotificationRunnable(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId,
     /* [in] */ ContentObserver* owner)
     : mSelfChange(selfChange)
     , mUri(uri)
+    , mUserId(userId)
     , mOwner(owner)
 {
 }
 
 ECode ContentObserver::NotificationRunnable::Run()
 {
-    return mOwner->OnChange(mSelfChange, mUri);
+    return mOwner->OnChange(mSelfChange, mUri, mUserId);
 }
 
 ContentObserver::ContentObserver(
@@ -94,6 +99,14 @@ ECode ContentObserver::OnChange(
     return OnChange(selfChange);
 }
 
+ECode ContentObserver::OnChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId)
+{
+    return OnChange(selfChange, uri);
+}
+
 ECode ContentObserver::DispatchChange(
     /* [in] */ Boolean selfChange)
 {
@@ -104,16 +117,25 @@ ECode ContentObserver::DispatchChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)
 {
+    return DispatchChange(selfChange, uri, UserHandle::GetCallingUserId());
+}
+
+ECode ContentObserver::DispatchChange(
+    /* [in] */ Boolean selfChange,
+    /* [in] */ IUri* uri,
+    /* [in] */ Int32 userId)
+{
     if (mHandler == NULL) {
-        OnChange(selfChange, uri);
+        OnChange(selfChange, uri, userId);
     }
     else {
         Boolean res;
-        AutoPtr<IRunnable> run = new NotificationRunnable(selfChange, uri, this);
+        AutoPtr<IRunnable> run = new NotificationRunnable(selfChange, uri, userId, this);
         mHandler->Post(run, &res);
     }
     return NOERROR;
 }
+
 
 } //Database
 } //Droid

@@ -534,111 +534,111 @@ protected:
     CARAPI_(void) OnAllReferencesReleased();
 
 private:
-    CARAPI_(Int32) NativeCreate(
+    CARAPI_(Int64) NativeCreate(
         /* [in] */ const String& name,
         /* [in] */ Int32 cursorWindowSize);
 
-    CARAPI_(Int32) NativeCreateFromParcel(
+    CARAPI_(Int64) NativeCreateFromParcel(
         /* [in] */ IParcel* parcel);
 
     CARAPI_(void) NativeDispose(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI NativeWriteToParcel(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ IParcel* parcel);
 
     CARAPI_(void) NativeClear(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI_(Int32) NativeGetNumRows(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI_(Boolean) NativeSetNumColumns(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 columnNum);
 
     CARAPI_(Boolean) NativeAllocRow(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI_(void) NativeFreeLastRow(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI_(Int32) NativeGetType(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 column);
 
     CARAPI NativeGetBlob(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col,
         /* [out] */ ArrayOf<Byte>** blob);
 
     CARAPI NativeGetString(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col,
         /* [out] */ String* str);
 
     CARAPI NativeGetInt64(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col,
         /* [out] */ Int64* value);
 
     CARAPI NativeGetDouble(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col,
         /* [out] */ Double* value);
 
     CARAPI NativeCopyStringToBuffer(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 column,
         /* [in] */ ICharArrayBuffer* buffer);
 
     CARAPI_(Boolean) NativePutBlob(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ const ArrayOf<Byte>& value,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col);
 
     CARAPI_(Boolean) NativePutString(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ const String& value,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col);
 
     CARAPI_(Boolean) NativePutInt64(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int64 value,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col);
 
     CARAPI_(Boolean) NativePutDouble(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Double value,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col);
 
     CARAPI_(Boolean) NativePutNull(
-        /* [in] */ Int32 windowPtr,
+        /* [in] */ Int64 windowPtr,
         /* [in] */ Int32 row,
         /* [in] */ Int32 col);
 
     CARAPI_(String) NativeGetName(
-        /* [in] */ Int32 windowPtr);
+        /* [in] */ Int64 windowPtr);
 
     CARAPI Dispose();
 
     CARAPI_(void) RecordNewWindow(
         /* [in] */ Int32 pid,
-        /* [in] */ Int32 window);
+        /* [in] */ Int64 window);
 
     CARAPI_(void) RecordClosingOfWindow(
-        /* [in] */ Int32 window);
+        /* [in] */ Int64 window);
 
     CARAPI_(String) PrintStats();
 
@@ -649,14 +649,12 @@ public:
      * The native CursorWindow object pointer.  (FOR INTERNAL USE ONLY)
      * @hide
      */
-    Int32 mWindowPtr;
+    Int64 mWindowPtr;
 
 private:
     static const String STATS_TAG;
 
-    /** The cursor window size. resource xml file specifies the value in kB.
-     * convert it to bytes here by multiplying with 1024.
-     */
+    // This static member will be evaluated when first used.
     static Int32 sCursorWindowSize;
 
     Int32 mStartPos;
@@ -665,7 +663,7 @@ private:
 
     //const CloseGuard mCloseGuard = CloseGuard.get();
 
-    static HashMap<Int32, Int32> sWindowToPidMap;
+    static HashMap<Int64, Int32> sWindowToPidMap;
 
     static Object sWindowToPidMapLock;
 

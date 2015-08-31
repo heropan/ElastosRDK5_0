@@ -28,7 +28,7 @@ namespace Database {
 const String CursorWindow::STATS_TAG("CursorWindow");
 
 Int32 CursorWindow::sCursorWindowSize = -1;
-HashMap<Int32, Int32> CursorWindow::sWindowToPidMap;
+HashMap<Int64, Int32> CursorWindow::sWindowToPidMap;
 Object CursorWindow::sWindowToPidMapLock;
 
 CAR_INTERFACE_IMPL_2(CursorWindow, SQLiteClosable, ICursorWindow, IParcelable)
@@ -74,7 +74,7 @@ static ECode ThrowUnknownTypeException(Int32 type) {
     return E_ILLEGAL_STATE_EXCEPTION;
 }
 
-Int32 CursorWindow::NativeCreate(
+Int64 CursorWindow::NativeCreate(
     /* [in] */ const String& name,
     /* [in] */ Int32 cursorWindowSize)
 {
@@ -90,7 +90,7 @@ Int32 CursorWindow::NativeCreate(
     return reinterpret_cast<Int32>(window);
 }
 
-Int32 CursorWindow::NativeCreateFromParcel(
+Int64 CursorWindow::NativeCreateFromParcel(
     /* [in] */ IParcel* parcel)
 {
     NativeCursorWindow* window;
@@ -106,7 +106,7 @@ Int32 CursorWindow::NativeCreateFromParcel(
 }
 
 void CursorWindow::NativeDispose(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     if (window) {
@@ -116,14 +116,14 @@ void CursorWindow::NativeDispose(
 }
 
 String CursorWindow::NativeGetName(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     return window->name();
 }
 
 ECode CursorWindow::NativeWriteToParcel(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ IParcel* parcel)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
@@ -137,7 +137,7 @@ ECode CursorWindow::NativeWriteToParcel(
 }
 
 void CursorWindow::NativeClear(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     LOG_WINDOW("Clearing window %p", window);
@@ -148,14 +148,14 @@ void CursorWindow::NativeClear(
 }
 
 Int32 CursorWindow::NativeGetNumRows(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     return window->getNumRows();
 }
 
 Boolean CursorWindow::NativeSetNumColumns(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 columnNum)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
@@ -164,7 +164,7 @@ Boolean CursorWindow::NativeSetNumColumns(
 }
 
 Boolean CursorWindow::NativeAllocRow(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     android::status_t status = window->allocRow();
@@ -172,14 +172,14 @@ Boolean CursorWindow::NativeAllocRow(
 }
 
 void CursorWindow::NativeFreeLastRow(
-    /* [in] */ Int32 windowPtr)
+    /* [in] */ Int64 windowPtr)
 {
     NativeCursorWindow* window = reinterpret_cast<NativeCursorWindow*>(windowPtr);
     window->freeLastRow();
 }
 
 Int32 CursorWindow::NativeGetType(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
 {
@@ -197,7 +197,7 @@ Int32 CursorWindow::NativeGetType(
 }
 
 ECode CursorWindow::NativeGetBlob(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column,
     /* [out] */ ArrayOf<Byte>** blob)
@@ -244,7 +244,7 @@ ECode CursorWindow::NativeGetBlob(
 }
 
 ECode CursorWindow::NativeGetString(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column,
     /* [out] */ String* str)
@@ -351,7 +351,7 @@ static void ClearCharArrayBuffer(ICharArrayBuffer* bufferObj)
 }
 
 ECode CursorWindow::NativeCopyStringToBuffer(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column,
     /* [in] */ ICharArrayBuffer* buffer)
@@ -399,7 +399,7 @@ ECode CursorWindow::NativeCopyStringToBuffer(
 }
 
 ECode CursorWindow::NativeGetInt64(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column,
     /* [out] */ Int64* value)
@@ -441,7 +441,7 @@ ECode CursorWindow::NativeGetInt64(
 }
 
 ECode CursorWindow::NativeGetDouble(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column,
     /* [out] */ Double* value)
@@ -485,7 +485,7 @@ ECode CursorWindow::NativeGetDouble(
 }
 
 Boolean CursorWindow::NativePutBlob(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ const ArrayOf<Byte>& value,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
@@ -506,7 +506,7 @@ Boolean CursorWindow::NativePutBlob(
 }
 
 Boolean CursorWindow::NativePutString(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ const String& valueStr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
@@ -529,7 +529,7 @@ Boolean CursorWindow::NativePutString(
 }
 
 Boolean CursorWindow::NativePutInt64(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int64 value,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
@@ -547,7 +547,7 @@ Boolean CursorWindow::NativePutInt64(
 }
 
 Boolean CursorWindow::NativePutDouble(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Double value,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
@@ -565,7 +565,7 @@ Boolean CursorWindow::NativePutDouble(
 }
 
 Boolean CursorWindow::NativePutNull(
-    /* [in] */ Int32 windowPtr,
+    /* [in] */ Int64 windowPtr,
     /* [in] */ Int32 row,
     /* [in] */ Int32 column)
 {
@@ -589,6 +589,18 @@ ECode CursorWindow::constructor(
 {
     mStartPos = 0;
     mName = !name.IsNullOrEmpty() ? name : String("<unnamed>");
+
+    if (sCursorWindowSize < 0) {
+        /** The cursor window size. resource xml file specifies the value in kB.
+        * convert it to bytes here by multiplying with 1024.
+        */
+        assert(0 && "TODO");
+        AutoPtr<IResources> res; //= CResources::GetSystem();
+        Int32 i;
+        res->GetInteger(R::integer::config_cursorWindowSize, &i);
+        sCursorWindowSize = i * 1024;
+    }
+
     mWindowPtr = NativeCreate(mName, GetCursorWindowSize());
     if (mWindowPtr == 0) {
         //throw new CursorWindowAllocationException("Cursor window allocation of " +
@@ -1029,7 +1041,7 @@ void CursorWindow::OnAllReferencesReleased()
 
 void CursorWindow::RecordNewWindow(
     /* [in] */ Int32 pid,
-    /* [in] */ Int32 window)
+    /* [in] */ Int64 window)
 {
     synchronized(sWindowToPidMapLock) {
         sWindowToPidMap[window] = pid;
@@ -1040,7 +1052,7 @@ void CursorWindow::RecordNewWindow(
 }
 
 void CursorWindow::RecordClosingOfWindow(
-    /* [in] */ Int32 window)
+    /* [in] */ Int64 window)
 {
     synchronized(sWindowToPidMapLock) {
         if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
@@ -1063,7 +1075,7 @@ String CursorWindow::PrintStats()
             // this means we are not in the ContentProvider.
             return String("");
         }
-        HashMap<Int32, Int32>::Iterator it = sWindowToPidMap.Begin();
+        HashMap<Int64, Int32>::Iterator it = sWindowToPidMap.Begin();
         for (; it != sWindowToPidMap.End(); ++it) {
             Int32 pid = it->mSecond;
             Int32 value = pidCounts[pid];

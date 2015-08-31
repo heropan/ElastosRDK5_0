@@ -22,7 +22,8 @@ public:
 
     CARAPI OnChange(
         /* [in] */ Boolean selfchange,
-        /* [in] */ IUri* uri);
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 userId);
 
     CARAPI ReleaseContentObserver();
 

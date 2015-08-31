@@ -463,8 +463,11 @@ ECode AbstractCursor::GetNotificationUri(
     /* [out] */ IUri** uri)
 {
     VALIDATE_NOT_NULL(uri)
-    *uri = mNotifyUri;
-    REFCOUNT_ADD(*uri)
+
+    synchronized(mSelfObserverLock) {
+        *uri = mNotifyUri;
+        REFCOUNT_ADD(*uri)
+    }
     return NOERROR;
 }
 

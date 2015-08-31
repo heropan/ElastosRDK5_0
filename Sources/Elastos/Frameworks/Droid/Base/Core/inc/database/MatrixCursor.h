@@ -21,9 +21,18 @@ class MatrixCursor
 {
 public:
     /**
-     * Builds a row, starting from the left-most column and adding one column
-     * value at a time. Follows the same ordering as the column names specified
-     * at cursor construction time.
+     * Builds a row of values using either of these approaches:
+     * <ul>
+     * <li>Values can be added with explicit column ordering using
+     * {@link #add(Object)}, which starts from the left-most column and adds one
+     * column value at a time. This follows the same ordering as the column
+     * names specified at cursor construction time.
+     * <li>Column and value pairs can be offered for possible inclusion using
+     * {@link #add(String, Object)}. If the cursor includes the given column,
+     * the value will be set for that column, otherwise the value is ignored.
+     * This approach is useful when matching data to a custom projection.
+     * </ul>
+     * Undefined values are left as {@code null}.
      */
     class RowBuilder
         : public Object
@@ -31,8 +40,7 @@ public:
     {
     public:
         RowBuilder(
-            /* [in] */ Int32 index,
-            /* [in] */ Int32 endIndex,
+            /* [in] */ Int32 row,
             /* [in] */ MatrixCursor* owner);
 
         CAR_INTERFACE_DECL()
@@ -47,9 +55,21 @@ public:
         CARAPI Add(
             /* [in] */ IInterface* columnValue);
 
+        /**
+         * Offer value for possible inclusion if this cursor defines the given
+         * column. Columns not defined by the cursor are silently ignored.
+         *
+         * @return this builder to support chaining
+         */
+        CARAPI Add(
+            /* [in] */ String columnName,
+            /* [in] */ IInterface* value);
+
     private:
-        Int32 mIndex;
+        Int32 mRow;
         Int32 mEndIndex;
+
+        Int32 mIndex;
         MatrixCursor* mOwner;
     };
 

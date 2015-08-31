@@ -1115,6 +1115,14 @@ Int64 DatabaseUtils::QueryNumEntries(
     return Int64ForQuery(db, sb.ToString(), selectionArgs);
 }
 
+Boolean DatabaseUtils::QueryIsEmpty(
+    /* [in] */ ISQLiteDatabase* db,
+    /* [in] */ const String& table)
+{
+    Int64 isEmpty = Int64ForQuery(db, String("select exists(select 1 from ") + table + String(")"), NULL);
+    return isEmpty == 0;
+}
+
 Int64 DatabaseUtils::Int64ForQuery(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& query,
@@ -1312,7 +1320,7 @@ Int32 DatabaseUtils::GetSqlStatementType(
         return DatabaseUtils_STATEMENT_OTHER;
     }
 
-    String prefixSql = sqlStr.Substring(0, 3).ToUpperCase();
+    String prefixSql = sqlStr.Substring(0, 3).ToUpperCase(/*Locale.ROOT*/);
     if (prefixSql.Equals("SEL")) {
         return DatabaseUtils_STATEMENT_SELECT;
     }

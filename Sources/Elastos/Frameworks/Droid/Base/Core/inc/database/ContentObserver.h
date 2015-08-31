@@ -28,6 +28,7 @@ private:
         NotificationRunnable(
             /* [in] */ Boolean selfChange,
             /* [in] */ IUri* uri,
+            /* [in] */ Int32 userId,
             /* [in] */ ContentObserver* owner);
 
         CARAPI Run();
@@ -35,6 +36,7 @@ private:
     private:
         Boolean mSelfChange;
         AutoPtr<IUri> mUri;
+        Int32 mUserId;
         ContentObserver* mOwner;
     };
 
@@ -125,6 +127,22 @@ public:
         /* [in] */ IUri* uri);
 
     /**
+     * Dispatches a change notification to the observer. Includes the changed
+     * content Uri when available and also the user whose content changed.
+     *
+     * @param selfChange True if this is a self-change notification.
+     * @param uri The Uri of the changed content, or null if unknown.
+     * @param userId The user whose content changed. Can be either a specific
+     *         user or {@link UserHandle#USER_ALL}.
+     *
+     * @hide
+     */
+    virtual CARAPI OnChange(
+        /* [in] */ Boolean selfChange,
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 userId);
+
+    /**
      * Dispatches a change notification to the observer.
      * <p>
      * If a {@link Handler} was supplied to the {@link ContentObserver} constructor,
@@ -155,6 +173,24 @@ public:
     virtual CARAPI DispatchChange(
         /* [in] */ Boolean selfChange,
         /* [in] */ IUri* uri);
+
+    /**
+     * Dispatches a change notification to the observer. Includes the changed
+     * content Uri when available and also the user whose content changed.
+     * <p>
+     * If a {@link Handler} was supplied to the {@link ContentObserver} constructor,
+     * then a call to the {@link #onChange} method is posted to the handler's message queue.
+     * Otherwise, the {@link #onChange} method is invoked immediately on this thread.
+     * </p>
+     *
+     * @param selfChange True if this is a self-change notification.
+     * @param uri The Uri of the changed content, or null if unknown.
+     * @param userId The user whose content changed.
+     */
+    virtual CARAPI DispatchChange(
+        /* [in] */ Boolean selfChange,
+        /* [in] */ IUri* uri,
+        /* [in] */ Int32 userId);
 
 protected:
     ContentObserver() {}

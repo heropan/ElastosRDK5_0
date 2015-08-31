@@ -2,6 +2,7 @@
 #include "database/CDefaultDatabaseErrorHandler.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include "database/sqlite/SQLiteDatabase.h"
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
@@ -13,6 +14,7 @@ using Elastos::Utility::IMap;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::ISet;
 using Elastos::Utility::IIterator;
+using Elastos::Droid::Database::Sqlite::SQLiteDatabase;
 
 namespace Elastos {
 namespace Droid {
@@ -105,10 +107,7 @@ void CDefaultDatabaseErrorHandler::DeleteDatabaseFile(
     AutoPtr<IFile> mfile;
     CFile::New(fileName, (IFile**)&mfile);
     Boolean result;
-    if (FAILED(mfile->Delete(&result))) {
-        /* print warning and ignore exception */
-        Slogger::W(TAG, "delete failed: ");
-    }
+    SQLiteDatabase::DeleteDatabase(mfile, &result);
     //} catch (Exception e) {
         /* print warning and ignore exception */
         // Log.w(TAG, "delete failed: " + e.getMessage());

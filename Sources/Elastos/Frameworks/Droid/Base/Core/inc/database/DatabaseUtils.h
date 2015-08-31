@@ -675,6 +675,17 @@ public:
         /* [in] */ ArrayOf<String>* selectionArgs);
 
     /**
+     * Query the table to check whether a table is empty or not
+     * @param db the database the table is in
+     * @param table the name of the table to query
+     * @return True if the table is empty
+     * @hide
+     */
+    static CARAPI_(Boolean) QueryIsEmpty(
+        /* [in] */ ISQLiteDatabase* db,
+        /* [in] */ const String& table);
+
+    /**
      * Utility method to run the query on the db and return the value in the
      * first column of the first row.
      */

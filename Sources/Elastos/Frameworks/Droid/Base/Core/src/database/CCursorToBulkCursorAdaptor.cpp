@@ -4,7 +4,9 @@
 #include "database/CCursorWindow.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
+#include "os/Process.h"
 
+using Elastos::Droid::Os::Process;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Database::Sqlite::ISQLiteClosable;
 
@@ -56,7 +58,7 @@ ECode CCursorToBulkCursorAdaptor::ContentObserverProxy::OnChange(
     /* [in] */ IUri* uri)
 {
     // try {
-    return mRemote->OnChange(selfChange, uri);
+    return mRemote->OnChange(selfChange, uri, Process::MyUid());
     // } catch (RemoteException ex) {
     //     // Do nothing, the far side is dead
     // }

@@ -12,7 +12,8 @@ module
     interface IIContentObserver {
         OnChange(
             [in] Boolean selfUpdate,
-            [in] IUri* uri);
+            [in] IUri* uri,
+            [in] Int32 userId);
 
         ToString(
             [out] String* str);

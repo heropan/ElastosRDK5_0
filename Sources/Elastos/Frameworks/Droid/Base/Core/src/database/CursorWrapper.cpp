@@ -294,6 +294,13 @@ ECode CursorWrapper::SetNotificationUri(
     return mCursor->SetNotificationUri(cr, uri);
 }
 
+ECode CursorWrapper::GetNotificationUri(
+    /* [out] */ IUri** uri)
+{
+    VALIDATE_NOT_NULL(uri)
+    return mCursor->GetNotificationUri(uri);
+}
+
 ECode CursorWrapper::UnregisterContentObserver(
     /* [in] */ IContentObserver* observer)
 {
