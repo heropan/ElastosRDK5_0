@@ -1,3 +1,37 @@
+#include <elautoptr.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+
+using namespace Elastos;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Math;
+using Elastos::Math::IBigInteger;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigDecimal;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimalHelper;
+using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
+
+
+namespace Elastos {
+namespace Math {
+
+static void assertEquals(const char *info, Int32 aspect, Int32 test)
+{
+    printf("aspect: %d, test: %d. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+static void assertEquals(const char *info, String aspect, String test)
+{
+    printf("aspect: %s, test: %s. %s\n", aspect.string(), test.string(), info);
+    assert(aspect.Equals(test) == 0);
+}
+
 #if 0
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
@@ -30,9 +64,13 @@ import junit.framework.TestCase;
  * Methods: add, subtract, multiply, divide
  */
 public class BigDecimalArithmeticTest extends TestCase {
+#endif
+
     /**
      * Add two numbers of equal positive scales
      */
+
+#if 0
     public void testAddEqualScalePosPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 10;
@@ -46,10 +84,58 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+void testAddEqualScalePosPos()
+{
+
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int aScale = 10;
+    String b = String("747233429293018787918347987234564568");
+    int bScale = 10;
+    String c = String("123121247898748373566323807282924555312937.1991359555");
+    int cScale = 10;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(b, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aDecimal;
+    ec = CBigDecimal::New((IBigInteger*)aNumber, aScale, (IBigDecimal**)&aDecimal);
+    if (FAILED(ec) || aDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> bDecimal;
+    ec = CBigDecimal::New((IBigInteger*)bNumber, bScale, (IBigDecimal**)&bDecimal);
+    if (FAILED(ec) || bDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    aDecimal->Add(bDecimal, (IBigDecimal **)&result);
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", c, str);
+    assertEquals("incorrect scale", cScale, scale);
+}
+
 
     /**
      * Add two numbers of equal positive scales using MathContext
      */
+#if 0
     public void testAddMathContextEqualScalePosPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 10;
@@ -64,10 +150,64 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+void testAddMathContextEqualScalePosPos()
+{
+
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int aScale = 10;
+    String b = String("747233429293018787918347987234564568");
+    int bScale = 10;
+    String c = String("1.2313E+41");
+    int cScale = -37;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(b, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aDecimal;
+    ec = CBigDecimal::New((IBigInteger*)aNumber, aScale, (IBigDecimal**)&aDecimal);
+    if (FAILED(ec) || aDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> bDecimal;
+    ec = CBigDecimal::New((IBigInteger*)bNumber, bScale, (IBigDecimal**)&bDecimal);
+    if (FAILED(ec) || bDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IMathContext> mc;
+    ec = CMathContext::New(5, RoundingMode_UP, (IMathContext**)&mc);
+    if (FAILED(ec) || mc == NULL) {
+        printf(" Failed to create CMathContext. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    aDecimal->Add(bDecimal, mc, (IBigDecimal **)&result);
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", c, str);
+    assertEquals("incorrect scale", cScale, scale);
+}
+
 
     /**
      * Add two numbers of equal negative scales
      */
+#if 0
     public void testAddEqualScaleNegNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -10;
@@ -81,10 +221,58 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+void testAddEqualScaleNegNeg()
+{
+
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int aScale = -10;
+    String b = String("747233429293018787918347987234564568");
+    int bScale = -10;
+    String c = String("1.231212478987483735663238072829245553129371991359555E+61");
+    int cScale = -10;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(b, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aDecimal;
+    ec = CBigDecimal::New((IBigInteger*)aNumber, aScale, (IBigDecimal**)&aDecimal);
+    if (FAILED(ec) || aDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> bDecimal;
+    ec = CBigDecimal::New((IBigInteger*)bNumber, bScale, (IBigDecimal**)&bDecimal);
+    if (FAILED(ec) || bDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    aDecimal->Add(bDecimal, (IBigDecimal **)&result);
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", c, str);
+    assertEquals("incorrect scale", cScale, scale);
+}
+
 
     /**
      * Add two numbers of equal negative scales using MathContext
      */
+#if 0
     public void testAddMathContextEqualScaleNegNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -10;
@@ -99,10 +287,64 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value ", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+void testAddMathContextEqualScaleNegNeg()
+{
+
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int aScale = -10;
+    String b = String("747233429293018787918347987234564568");
+    int bScale = -10;
+    String c = String("1.2312E+61");
+    int cScale = -57;
+
+    AutoPtr<IBigInteger> aNumber;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> bNumber;
+    ec = CBigInteger::New(b, (IBigInteger**)&bNumber);
+    if (FAILED(ec) || bNumber == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aDecimal;
+    ec = CBigDecimal::New((IBigInteger*)aNumber, aScale, (IBigDecimal**)&aDecimal);
+    if (FAILED(ec) || aDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> bDecimal;
+    ec = CBigDecimal::New((IBigInteger*)bNumber, bScale, (IBigDecimal**)&bDecimal);
+    if (FAILED(ec) || bDecimal == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IMathContext> mc;
+    ec = CMathContext::New(5, RoundingMode_FLOOR, (IMathContext**)&mc);
+    if (FAILED(ec) || mc == NULL) {
+        printf(" Failed to create CMathContext. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    aDecimal->Add(bDecimal, mc, (IBigDecimal **)&result);
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", c, str);
+    assertEquals("incorrect scale", cScale, scale);
+}
+
 
     /**
      * Add two numbers of different scales; the first is positive
      */
+#if 0
     public void testAddDiffScalePosNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -116,10 +358,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Add two numbers of different scales using MathContext; the first is positive
      */
+#if 0
     public void testAddMathContextDiffScalePosNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -134,10 +379,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, c.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Add two numbers of different scales; the first is negative
      */
+#if 0
     public void testAddDiffScaleNegPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -151,10 +399,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Add two zeroes of different scales; the first is negative
      */
+#if 0
     public void testAddDiffScaleZeroZero() {
         String a = "0";
         int aScale = -15;
@@ -168,10 +419,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of equal positive scales
      */
+#if 0
     public void testSubtractEqualScalePosPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 10;
@@ -185,10 +439,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of equal positive scales using MathContext
      */
+#if 0
     public void testSubtractMathContextEqualScalePosPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 10;
@@ -203,10 +460,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of equal negative scales
      */
+#if 0
     public void testSubtractEqualScaleNegNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -10;
@@ -220,10 +480,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of different scales; the first is positive
      */
+#if 0
     public void testSubtractDiffScalePosNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -237,11 +500,14 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of different scales using MathContext;
      *  the first is positive
      */
+#if 0
     public void testSubtractMathContextDiffScalePosNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -256,10 +522,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of different scales; the first is negative
      */
+#if 0
     public void testSubtractDiffScaleNegPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -273,11 +542,14 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Subtract two numbers of different scales using MathContext;
      *  the first is negative
      */
+#if 0
     public void testSubtractMathContextDiffScaleNegPos() {
         String a = "986798656676789766678767876078779810457634781384756794987";
         int aScale = -15;
@@ -292,10 +564,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of positive scales
      */
+#if 0
     public void testMultiplyScalePosPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -309,10 +584,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of positive scales using MathContext
      */
+#if 0
     public void testMultiplyMathContextScalePosPos() {
         String a = "97665696756578755423325476545428779810457634781384756794987";
         int aScale = -25;
@@ -327,10 +605,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of negative scales
      */
+#if 0
     public void testMultiplyEqualScaleNegNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -344,10 +625,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of different scales
      */
+#if 0
     public void testMultiplyDiffScalePosNeg() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 10;
@@ -361,10 +645,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of different scales using MathContext
      */
+#if 0
     public void testMultiplyMathContextDiffScalePosNeg() {
         String a = "987667796597975765768768767866756808779810457634781384756794987";
         int aScale = 100;
@@ -379,10 +666,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of different scales
      */
+#if 0
     public void testMultiplyDiffScaleNegPos() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -396,10 +686,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Multiply two numbers of different scales using MathContext
      */
+#if 0
     public void testMultiplyMathContextDiffScaleNegPos() {
         String a = "488757458676796558668876576576579097029810457634781384756794987";
         int aScale = -63;
@@ -414,10 +707,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * pow(int)
      */
+#if 0
     public void testPow() {
         String a = "123121247898748298842980";
         int aScale = 10;
@@ -432,10 +728,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * pow(0)
      */
+#if 0
     public void testPow0() {
         String a = "123121247898748298842980";
         int aScale = 10;
@@ -447,10 +746,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * ZERO.pow(0)
      */
+#if 0
     public void testZeroPow0() {
         String c = "1";
         int cScale = 0;
@@ -458,10 +760,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * pow(int, MathContext)
      */
+#if 0
     public void testPowMathContext() {
         String a = "123121247898748298842980";
         int aScale = 10;
@@ -474,10 +779,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", cScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide by zero
      */
+#if 0
     public void testDivideByZero() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -490,10 +798,13 @@ public class BigDecimalArithmeticTest extends TestCase {
             assertEquals("Improper exception message", "Division by zero", e.getMessage());
         }
     }
+#endif
+
 
     /**
      * Divide with ROUND_UNNECESSARY
      */
+#if 0
     public void testDivideExceptionRM() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -508,10 +819,13 @@ public class BigDecimalArithmeticTest extends TestCase {
             assertEquals("Improper exception message", "Rounding necessary", e.getMessage());
         }
     }
+#endif
+
 
     /**
      * Divide with invalid rounding mode
      */
+#if 0
     public void testDivideExceptionInvalidRM() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -526,10 +840,13 @@ public class BigDecimalArithmeticTest extends TestCase {
             assertEquals("Improper exception message", "Invalid rounding mode", e.getMessage());
         }
     }
+#endif
+
 
     /**
      * Divide: local variable exponent is less than zero
      */
+#if 0
     public void testDivideExpLessZero() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = 15;
@@ -543,10 +860,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: local variable exponent is equal to zero
      */
+#if 0
     public void testDivideExpEqualsZero() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -560,10 +880,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: local variable exponent is greater than zero
      */
+#if 0
     public void testDivideExpGreaterZero() {
         String a = "1231212478987482988429808779810457634781384756794987";
         int aScale = -15;
@@ -577,10 +900,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: remainder is zero
      */
+#if 0
     public void testDivideRemainderIsZero() {
         String a = "8311389578904553209874735431110";
         int aScale = -15;
@@ -594,10 +920,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_UP, result is negative
      */
+#if 0
     public void testDivideRoundUpNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -611,10 +940,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_UP, result is positive
      */
+#if 0
     public void testDivideRoundUpPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -628,10 +960,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_DOWN, result is negative
      */
+#if 0
     public void testDivideRoundDownNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -645,10 +980,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_DOWN, result is positive
      */
+#if 0
     public void testDivideRoundDownPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -662,10 +1000,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_FLOOR, result is positive
      */
+#if 0
     public void testDivideRoundFloorPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -679,10 +1020,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_FLOOR, result is negative
      */
+#if 0
     public void testDivideRoundFloorNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -696,10 +1040,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_CEILING, result is positive
      */
+#if 0
     public void testDivideRoundCeilingPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -713,10 +1060,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_CEILING, result is negative
      */
+#if 0
     public void testDivideRoundCeilingNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -730,10 +1080,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is positive; distance = -1
      */
+#if 0
     public void testDivideRoundHalfUpPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -747,10 +1100,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is negative; distance = -1
      */
+#if 0
     public void testDivideRoundHalfUpNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -764,10 +1120,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is positive; distance = 1
      */
+#if 0
     public void testDivideRoundHalfUpPos1() {
         String a = "92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -781,10 +1140,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is negative; distance = 1
      */
+#if 0
     public void testDivideRoundHalfUpNeg1() {
         String a = "-92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -798,10 +1160,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is negative; equidistant
      */
+#if 0
     public void testDivideRoundHalfUpNeg2() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -815,10 +1180,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_DOWN, result is positive; distance = -1
      */
+#if 0
     public void testDivideRoundHalfDownPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -832,10 +1200,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_DOWN, result is negative; distance = -1
      */
+#if 0
     public void testDivideRoundHalfDownNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -849,10 +1220,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_DOWN, result is positive; distance = 1
      */
+#if 0
     public void testDivideRoundHalfDownPos1() {
         String a = "92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -866,10 +1240,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_DOWN, result is negative; distance = 1
      */
+#if 0
     public void testDivideRoundHalfDownNeg1() {
         String a = "-92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -883,10 +1260,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_UP, result is negative; equidistant
      */
+#if 0
     public void testDivideRoundHalfDownNeg2() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -900,10 +1280,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_EVEN, result is positive; distance = -1
      */
+#if 0
     public void testDivideRoundHalfEvenPos() {
         String a = "92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -917,10 +1300,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_EVEN, result is negative; distance = -1
      */
+#if 0
     public void testDivideRoundHalfEvenNeg() {
         String a = "-92948782094488478231212478987482988429808779810457634781384756794987";
         int aScale = -24;
@@ -934,10 +1320,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_EVEN, result is positive; distance = 1
      */
+#if 0
     public void testDivideRoundHalfEvenPos1() {
         String a = "92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -951,10 +1340,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_EVEN, result is negative; distance = 1
      */
+#if 0
     public void testDivideRoundHalfEvenNeg1() {
         String a = "-92948782094488478231212478987482988798104576347813847567949855464535634534563456";
         int aScale = -24;
@@ -968,10 +1360,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide: rounding mode is ROUND_HALF_EVEN, result is negative; equidistant
      */
+#if 0
     public void testDivideRoundHalfEvenNeg2() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -985,10 +1380,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide to BigDecimal
      */
+#if 0
     public void testDivideBigDecimal1() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -1002,10 +1400,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * Divide to BigDecimal
      */
+#if 0
     public void testDivideBigDecimal2() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -1019,10 +1420,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeUP() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -1037,10 +1441,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeDOWN() {
         String a = "-37361671119238118911893939591735";
         int aScale = 10;
@@ -1055,10 +1462,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeCEILING() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 100;
@@ -1073,10 +1483,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeFLOOR() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 100;
@@ -1091,10 +1504,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeHALF_UP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -51;
@@ -1111,10 +1527,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeHALF_DOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 5;
@@ -1129,10 +1548,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, scale, RoundingMode)
      */
+#if 0
     public void testDivideBigDecimalScaleRoundingModeHALF_EVEN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 5;
@@ -1147,10 +1569,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", newScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextUP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 15;
@@ -1167,10 +1592,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextDOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 15;
@@ -1187,10 +1615,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextCEILING() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 15;
@@ -1207,10 +1638,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextFLOOR() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 15;
@@ -1227,10 +1661,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextHALF_UP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1247,10 +1684,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextHALF_DOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1267,10 +1707,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divide(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideBigDecimalScaleMathContextHALF_EVEN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1287,13 +1730,14 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
-
+#endif
 
     /**
      * BigDecimal.divide with a scale that's too large
      *
      * Regression test for HARMONY-6271
      */
+#if 0
     public void testDivideLargeScale() {
     	BigDecimal arg1 = new BigDecimal("320.0E+2147483647");
 		BigDecimal arg2 = new BigDecimal("6E-2147483647");
@@ -1305,10 +1749,13 @@ public class BigDecimalArithmeticTest extends TestCase {
     		// expected behaviour
     	}
     }
+#endif
+
 
     /**
      * divideToIntegralValue(BigDecimal)
      */
+#if 0
     public void testDivideToIntegralValue() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1322,10 +1769,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divideToIntegralValue(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideToIntegralValueMathContextUP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1342,10 +1792,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divideToIntegralValue(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideToIntegralValueMathContextDOWN() {
         String a = "3736186567876876578956958769675785435673453453653543654354365435675671119238118911893939591735";
         int aScale = 45;
@@ -1362,10 +1815,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", c, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * divideAndRemainder(BigDecimal)
      */
+#if 0
     public void testDivideAndRemainder1() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1383,10 +1839,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect remainder value", rem, result[1].toString());
         assertEquals("incorrect remainder scale", remScale, result[1].scale());
     }
+#endif
+
 
     /**
      * divideAndRemainder(BigDecimal)
      */
+#if 0
     public void testDivideAndRemainder2() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -45;
@@ -1406,10 +1865,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect remainder value", rem, result[1].toString());
         assertEquals("incorrect remainder scale", remScale, result[1].scale());
     }
+#endif
+
 
     /**
      * divideAndRemainder(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideAndRemainderMathContextUP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1430,10 +1892,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect remainder value", rem, result[1].toString());
         assertEquals("incorrect remainder scale", remScale, result[1].scale());
     }
+#endif
+
 
     /**
      * divideAndRemainder(BigDecimal, MathContext)
      */
+#if 0
     public void testDivideAndRemainderMathContextDOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1454,10 +1919,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect remainder value", rem, result[1].toString());
         assertEquals("incorrect remainder scale", remScale, result[1].scale());
     }
+#endif
+
 
     /**
      * remainder(BigDecimal)
      */
+#if 0
     public void testRemainder1() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1471,10 +1939,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * remainder(BigDecimal)
      */
+#if 0
     public void testRemainder2() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -45;
@@ -1488,10 +1959,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * remainder(BigDecimal, MathContext)
      */
+#if 0
     public void testRemainderMathContextHALF_UP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1508,10 +1982,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * remainder(BigDecimal, MathContext)
      */
+#if 0
     public void testRemainderMathContextHALF_DOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -45;
@@ -1528,10 +2005,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * round(BigDecimal, MathContext)
      */
+#if 0
     public void testRoundMathContextHALF_DOWN() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -45;
@@ -1545,10 +2025,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * round(BigDecimal, MathContext)
      */
+#if 0
     public void testRoundMathContextHALF_UP() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1562,10 +2045,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * round(BigDecimal, MathContext) when precision = 0
      */
+#if 0
     public void testRoundMathContextPrecision0() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1578,11 +2064,12 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect quotient value", res, result.toString());
         assertEquals("incorrect quotient scale", aScale, result.scale());
     }
-
+#endif
 
     /**
      * ulp() of a positive BigDecimal
      */
+#if 0
     public void testUlpPos() {
         String a = "3736186567876876578956958765675671119238118911893939591735";
         int aScale = -45;
@@ -1593,10 +2080,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * ulp() of a negative BigDecimal
      */
+#if 0
     public void testUlpNeg() {
         String a = "-3736186567876876578956958765675671119238118911893939591735";
         int aScale = 45;
@@ -1607,10 +2097,13 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
 
     /**
      * ulp() of a negative BigDecimal
      */
+#if 0
     public void testUlpZero() {
         String a = "0";
         int aScale = 2;
@@ -1621,5 +2114,21 @@ public class BigDecimalArithmeticTest extends TestCase {
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
-}
 #endif
+
+//==============================================================================
+
+int main(int argc, char *argv[]) {
+    printf("\n==== libcore/math/BigDecimalArithmeticTest ====\n");
+    testAddEqualScalePosPos();
+    testAddMathContextEqualScalePosPos();
+    testAddEqualScaleNegNeg();
+    testAddMathContextEqualScaleNegNeg();
+    printf("\n==== end of libcore/math/BigDecimalArithmeticTest ====\n");
+
+    return 0;
+}
+
+}
+}
+

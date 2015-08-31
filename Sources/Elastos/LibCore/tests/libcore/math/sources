@@ -21,6 +21,10 @@ SOURCES += MathContextTest.cpp
 SOURCES += OldBigIntegerTest.cpp
 SOURCES += RoundingModeTest.cpp
 
+SOURCES += BigDecimalArithmeticTest.cpp
+SOURCES += BigDecimalCompareTest.cpp
+SOURCES += BigDecimalConstructorsTest.cpp
+
 IMPORTS = Elastos.CoreLibrary.eco
 
 CAR_FLAGS += -n -u

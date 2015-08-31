@@ -1,3 +1,37 @@
+#include <elautoptr.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+
+using namespace Elastos;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Math;
+using Elastos::Math::IBigInteger;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigDecimal;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimalHelper;
+using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
+
+namespace Elastos {
+namespace Math {
+
+static void assertEquals(const char *info, Int32 aspect, Int32 test)
+{
+    printf("aspect: %d, test: %d. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+static void assertEquals(const char *info, String aspect, String test)
+{
+    printf("aspect: %s, test: %s. %s\n", aspect.string(), test.string(), info);
+    assert(aspect.Equals(test) == 0);
+}
+
+#if 0
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
@@ -32,39 +66,48 @@ import junit.framework.TestCase;
  * Methods: constructors and fields
  */
 public class BigDecimalConstructorsTest extends TestCase {
+#endif
+
     /**
      * check ONE
      */
+#if 0
     public void testFieldONE() {
         String oneS = "1";
         double oneD = 1.0;
         assertEquals("incorrect string value", oneS, BigDecimal.ONE.toString());
         assertEquals("incorrect double value", oneD, BigDecimal.ONE.doubleValue(), 0);
     }
+#endif
 
     /**
      * check TEN
      */
+#if 0
     public void testFieldTEN() {
         String oneS = "10";
         double oneD = 10.0;
         assertEquals("incorrect string value", oneS, BigDecimal.TEN.toString());
         assertEquals("incorrect double value", oneD, BigDecimal.TEN.doubleValue(), 0);
     }
+#endif
 
     /**
      * check ZERO
      */
+#if 0
     public void testFieldZERO() {
         String oneS = "0";
         double oneD = 0.0;
         assertEquals("incorrect string value", oneS, BigDecimal.ZERO.toString());
         assertEquals("incorrect double value", oneD, BigDecimal.ZERO.doubleValue(), 0);
     }
+#endif
 
     /**
      * new BigDecimal(BigInteger value)
      */
+#if 0
     public void testConstrBI() {
         String a = "1231212478987482988429808779810457634781384756794987";
         BigInteger bA = new BigInteger(a);
@@ -79,10 +122,44 @@ public class BigDecimalConstructorsTest extends TestCase {
         	//expected
         }
     }
-     
+#endif
+void testConstrBI()
+{
+    String a = String("1231212478987482988429808779810457634781384756794987");
+
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aNumber;
+    ec = CBigDecimal::New((IBigInteger*)bA, (IBigDecimal**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    aNumber->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    IComparable* comp = (IComparable *)rInteger->Probe(EIID_IComparable);
+    Int32 r;
+    comp->CompareTo(rInteger, &r);
+
+    if (r != 0) {
+        printf("incorrect value\n");
+    }
+
+    aNumber->GetScale(&r);
+
+    assertEquals("incorrect scale", 0, r);
+
+}
+
     /**
      * new BigDecimal(BigInteger value, int scale)
      */
+#if 0
     public void testConstrBIScale() {
         String a = "1231212478987482988429808779810457634781384756794987";
         BigInteger bA = new BigInteger(a);
@@ -91,10 +168,45 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
+void testConstrBIScale()
+{
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int aScale = 10;
+
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> aNumber;
+    ec = CBigDecimal::New((IBigInteger*)bA, aScale, (IBigDecimal**)&aNumber);
+    if (FAILED(ec) || aNumber == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    aNumber->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    IComparable* comp = (IComparable *)rInteger->Probe(EIID_IComparable);
+    Int32 r;
+    comp->CompareTo(rInteger, &r);
+
+    if (r != 0) {
+        printf("incorrect value\n");
+    }
+
+    aNumber->GetScale(&r);
+
+    assertEquals("incorrect scale", 0, r);
+
+}
 
     /**
      * new BigDecimal(BigInteger value, MathContext)
      */
+#if 0
     public void testConstrBigIntegerMathContext() {
         String a = "1231212478987482988429808779810457634781384756794987";
         BigInteger bA = new BigInteger(a);
@@ -107,10 +219,51 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+void testConstrBigIntegerMathContext()
+{
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int precision = 46;
+    RoundingMode rm = RoundingMode_CEILING;
+    String res = String("1231212478987482988429808779810457634781384757");
+    int resScale = -6;
+
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IMathContext> mc;
+    ec = CMathContext::New(precision, rm, (IMathContext**)&mc);
+    if (FAILED(ec) || mc == NULL) {
+        printf(" Failed to create CMathContext. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    ec = CBigDecimal::New((IBigInteger*)bA, mc, (IBigDecimal**)&result);
+    if (FAILED(ec) || result == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    result->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    String str;
+    str = Object::ToString(rInteger);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", res, str);
+    assertEquals("incorrect scale", resScale, scale);
+
+}
+
 
     /**
      * new BigDecimal(BigInteger value, int scale, MathContext)
      */
+#if 0
     public void testConstrBigIntegerScaleMathContext() {
         String a = "1231212478987482988429808779810457634781384756794987";
         BigInteger bA = new BigInteger(a);
@@ -124,10 +277,52 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+void testConstrBigIntegerScaleMathContext()
+{
+    String a = String("1231212478987482988429808779810457634781384756794987");
+    int precision = 46;
+    RoundingMode rm = RoundingMode_CEILING;
+    String res = String("1231212478987482988429808779810457634781384757");
+    int aScale = 10;
+    int resScale = 4;
+
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IMathContext> mc;
+    ec = CMathContext::New(precision, rm, (IMathContext**)&mc);
+    if (FAILED(ec) || mc == NULL) {
+        printf(" Failed to create CMathContext. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> result;
+    ec = CBigDecimal::New((IBigInteger*)bA, aScale, mc, (IBigDecimal**)&result);
+    if (FAILED(ec) || result == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    result->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    String str;
+    str = Object::ToString(rInteger);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", res, str);
+    assertEquals("incorrect scale", resScale, scale);
+
+}
+
 
     /**
-     * new BigDecimal(char[] value); 
+     * new BigDecimal(char[] value);
      */
+#if 0
     public void testConstrChar() {
         char value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
         BigDecimal result = new BigDecimal(value);
@@ -135,7 +330,7 @@ public class BigDecimalConstructorsTest extends TestCase {
         int resScale = 427;
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
-        
+
         try {
             // Regression for HARMONY-783
             new BigDecimal(new char[] {});
@@ -143,10 +338,45 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
      }
-    
+#endif
+void testConstrChar()
+{
+    Char32 _value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
+    String res = String("-1.23804738E-419");
+    int resScale = 427;
+
+    AutoPtr<ArrayOf<Char32> > value = ArrayOf<Char32>::Alloc(sizeof(_value));
+    memcpy(value->GetPayload(), value, sizeof(_value));
+
+    AutoPtr<IBigDecimal> result;
+    ECode ec = CBigDecimal::New(*value, (IBigDecimal**)&result);
+    if (FAILED(ec) || result == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", res, str);
+    assertEquals("incorrect scale", resScale, scale);
+
+    AutoPtr<ArrayOf<Char32> > value2 = ArrayOf<Char32>::Alloc(0);
+
+    AutoPtr<IBigDecimal> result2;
+    ec = CBigDecimal::New(*value2, (IBigDecimal**)&result2);
+    if (FAILED(ec) || result2 == NULL) {
+        printf("NumberFormatException has been thrown\n");
+    } else {
+        printf("NumberFormatException has not been thrown\n");
+    }
+}
+
     /**
-     * new BigDecimal(char[] value, int offset, int len); 
+     * new BigDecimal(char[] value, int offset, int len);
      */
+#if 0
     public void testConstrCharIntInt() {
         char value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
         int offset = 3;
@@ -156,7 +386,7 @@ public class BigDecimalConstructorsTest extends TestCase {
         int resScale = 46;
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
-        
+
         try {
             // Regression for HARMONY-783
             new BigDecimal(new char[] {}, 0, 0);
@@ -164,10 +394,48 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
      }
-    
+#endif
+void testConstrCharIntInt()
+{
+    Char32 _value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
+    int offset = 3;
+    int len = 12;
+    String res = String("3.804738E-40");
+    int resScale = 427;
+
+    AutoPtr<ArrayOf<Char32> > value = ArrayOf<Char32>::Alloc(sizeof(_value));
+    memcpy(value->GetPayload(), value, sizeof(_value));
+
+    AutoPtr<IBigDecimal> result;
+    ECode ec = CBigDecimal::New(*value, offset, len, (IBigDecimal**)&result);
+    if (FAILED(ec) || result == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    String str;
+    str = Object::ToString(result);
+    Int32 scale;
+    result->GetScale(&scale);
+
+    assertEquals("incorrect value", res, str);
+    assertEquals("incorrect scale", resScale, scale);
+
+    AutoPtr<ArrayOf<Char32> > value2 = ArrayOf<Char32>::Alloc(0);
+
+    AutoPtr<IBigDecimal> result2;
+    ec = CBigDecimal::New(*value2, 0, 0, (IBigDecimal**)&result2);
+    if (FAILED(ec) || result2 == NULL) {
+        printf("NumberFormatException has been thrown\n");
+    } else {
+        printf("NumberFormatException has not been thrown\n");
+    }
+
+}
+
     /**
-     * new BigDecimal(char[] value, int offset, int len, MathContext mc); 
+     * new BigDecimal(char[] value, int offset, int len, MathContext mc);
      */
+#if 0
     public void testConstrCharIntIntMathContext() {
         char value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
         int offset = 3;
@@ -180,7 +448,7 @@ public class BigDecimalConstructorsTest extends TestCase {
         int resScale = 43;
         assertEquals("incorrect value", res, result.toString());
         assertEquals("incorrect scale", resScale, result.scale());
-        
+
         try {
             // Regression for HARMONY-783
             new BigDecimal(new char[] {}, 0, 0, MathContext.DECIMAL32);
@@ -188,10 +456,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
      }
-    
+#endif
+
     /**
-     * new BigDecimal(char[] value, int offset, int len, MathContext mc); 
+     * new BigDecimal(char[] value, int offset, int len, MathContext mc);
      */
+#if 0
     public void testConstrCharIntIntMathContextException1() {
         char value[] = {'-', '1', '2', '3', '8', '0', '.', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
         int offset = 3;
@@ -205,10 +475,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
      }
-    
+#endif
+
     /**
-     * new BigDecimal(char[] value, int offset, int len, MathContext mc); 
+     * new BigDecimal(char[] value, int offset, int len, MathContext mc);
      */
+#if 0
     public void testConstrCharIntIntMathContextException2() {
         char value[] = {'-', '1', '2', '3', '8', '0', ',', '4', '7', '3', '8', 'E', '-', '4', '2', '3'};
         int offset = 3;
@@ -222,10 +494,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
      }
+#endif
 
     /**
      * new BigDecimal(char[] value, MathContext mc);
      */
+#if 0
     public void testConstrCharMathContext() {
         try {
             // Regression for HARMONY-783
@@ -234,10 +508,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
-    
+#endif
+
     /**
      * new BigDecimal(double value) when value is NaN
      */
+#if 0
     public void testConstrDoubleNaN() {
         double a = Double.NaN;
         try {
@@ -246,10 +522,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(double value) when value is positive infinity
      */
+#if 0
     public void testConstrDoublePosInfinity() {
         double a = Double.POSITIVE_INFINITY;
         try {
@@ -258,10 +536,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(double value) when value is positive infinity
      */
+#if 0
     public void testConstrDoubleNegInfinity() {
         double a = Double.NEGATIVE_INFINITY;
         try {
@@ -270,10 +550,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(double value)
      */
+#if 0
     public void testConstrDouble() {
         double a = 732546982374982347892379283571094797.287346782359284756;
         int aScale = 0;
@@ -282,10 +564,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(double, MathContext)
      */
+#if 0
     public void testConstrDoubleMathContext() {
         double a = 732546982374982347892379283571094797.287346782359284756;
         int precision = 21;
@@ -297,10 +581,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
 
     /**
      * new BigDecimal(0.1)
      */
+#if 0
     public void testConstrDouble01() {
         double a = 1.E-1;
         int aScale = 55;
@@ -309,10 +595,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(0.555)
      */
+#if 0
     public void testConstrDouble02() {
         double a = 0.555;
         int aScale = 53;
@@ -321,10 +609,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(-0.1)
      */
+#if 0
     public void testConstrDoubleMinus01() {
         double a = -1.E-1;
         int aScale = 55;
@@ -333,10 +623,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(int value)
      */
+#if 0
     public void testConstrInt() {
         int a = 732546982;
         String res = "732546982";
@@ -345,10 +637,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
 
     /**
      * new BigDecimal(int, MathContext)
      */
+#if 0
     public void testConstrIntMathContext() {
         int a = 732546982;
         int precision = 21;
@@ -360,10 +654,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
 
     /**
      * new BigDecimal(long value)
      */
+#if 0
     public void testConstrLong() {
         long a = 4576578677732546982L;
         String res = "4576578677732546982";
@@ -372,10 +668,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
 
     /**
      * new BigDecimal(long, MathContext)
      */
+#if 0
     public void testConstrLongMathContext() {
         long a = 4576578677732546982L;
         int precision = 5;
@@ -387,10 +685,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
 
     /**
      * new BigDecimal(double value) when value is denormalized
      */
+#if 0
     public void testConstrDoubleDenormalized() {
         double a = 2.274341322658976E-309;
         int aScale = 1073;
@@ -399,11 +699,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-     
+#endif
+
     /**
      * new BigDecimal(String value)
      * when value is not a valid representation of BigDecimal.
      */
+#if 0
     public void testConstrStringException() {
         String a = "-238768.787678287a+10";
         try {
@@ -411,10 +713,12 @@ public class BigDecimalConstructorsTest extends TestCase {
             fail("NumberFormatException has not been caught");
         } catch (NumberFormatException e) {}
     }
+#endif
 
     /**
      * new BigDecimal(String value) when exponent is empty.
      */
+#if 0
     public void testConstrStringExceptionEmptyExponent1() {
         String a = "-238768.787678287e";
         try {
@@ -423,10 +727,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(String value) when exponent is empty.
      */
+#if 0
     public void testConstrStringExceptionEmptyExponent2() {
         String a = "-238768.787678287e-";
         try {
@@ -435,11 +741,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(String value) when exponent is greater than
      * Integer.MAX_VALUE.
      */
+#if 0
     public void testConstrStringExceptionExponentGreaterIntegerMax() {
         String a = "-238768.787678287e214748364767876";
         try {
@@ -448,11 +756,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(String value) when exponent is less than
      * Integer.MIN_VALUE.
      */
+#if 0
     public void testConstrStringExceptionExponentLessIntegerMin() {
         String a = "-238768.787678287e-214748364767876";
         try {
@@ -461,11 +771,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
     /**
      * new BigDecimal(String value)
      * when exponent is Integer.MAX_VALUE.
      */
+#if 0
     public void testConstrStringExponentIntegerMax() {
         String a = "-238768.787678287e2147483647";
         int aScale = -2147483638;
@@ -474,11 +786,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(String value)
      * when exponent is Integer.MIN_VALUE.
      */
+#if 0
     public void testConstrStringExponentIntegerMin() {
         String a = ".238768e-2147483648";
         try {
@@ -487,11 +801,13 @@ public class BigDecimalConstructorsTest extends TestCase {
        } catch (NumberFormatException e) {
        }
     }
+#endif
 
     /**
      * new BigDecimal(String value); value does not contain exponent
      */
-      public void testConstrStringWithoutExpPos1() {
+  #if 0
+    public void testConstrStringWithoutExpPos1() {
         String a = "732546982374982347892379283571094797.287346782359284756";
         int aScale = 18;
         BigInteger bA = new BigInteger("732546982374982347892379283571094797287346782359284756");
@@ -499,11 +815,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(String value); value does not contain exponent
      */
-      public void testConstrStringWithoutExpPos2() {
+  #if 0
+    public void testConstrStringWithoutExpPos2() {
         String a = "+732546982374982347892379283571094797.287346782359284756";
         int aScale = 18;
         BigInteger bA = new BigInteger("732546982374982347892379283571094797287346782359284756");
@@ -511,11 +829,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-       
+#endif
+
     /**
      * new BigDecimal(String value); value does not contain exponent
      */
-      public void testConstrStringWithoutExpNeg() {
+  #if 0
+    public void testConstrStringWithoutExpNeg() {
         String a = "-732546982374982347892379283571094797.287346782359284756";
         int aScale = 18;
         BigInteger bA = new BigInteger("-732546982374982347892379283571094797287346782359284756");
@@ -523,12 +843,14 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-       
+#endif
+
     /**
      * new BigDecimal(String value); value does not contain exponent
      * and decimal point
      */
-      public void testConstrStringWithoutExpWithoutPoint() {
+  #if 0
+    public void testConstrStringWithoutExpWithoutPoint() {
         String a = "-732546982374982347892379283571094797287346782359284756";
         int aScale = 0;
         BigInteger bA = new BigInteger("-732546982374982347892379283571094797287346782359284756");
@@ -536,12 +858,14 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-       
-      /**
+#endif
+
+    /**
        * new BigDecimal(String value); value contains exponent
        * and does not contain decimal point
        */
-      public void testConstrStringWithExponentWithoutPoint1() {
+  #if 0
+    public void testConstrStringWithExponentWithoutPoint1() {
           String a = "-238768787678287e214";
           int aScale = -214;
           BigInteger bA = new BigInteger("-238768787678287");
@@ -549,11 +873,13 @@ public class BigDecimalConstructorsTest extends TestCase {
           assertEquals("incorrect value", bA, aNumber.unscaledValue());
           assertEquals("incorrect scale", aScale, aNumber.scale());
       }
+#endif
 
     /**
      * new BigDecimal(String value); value contains exponent
      * and does not contain decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithoutPoint2() {
         String a = "-238768787678287e-214";
         int aScale = 214;
@@ -562,11 +888,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-     
+#endif
+
     /**
      * new BigDecimal(String value); value contains exponent
      * and does not contain decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithoutPoint3() {
         String a = "238768787678287e-214";
         int aScale = 214;
@@ -575,11 +903,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(String value); value contains exponent
      * and does not contain decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithoutPoint4() {
         String a = "238768787678287e+214";
         int aScale = -214;
@@ -588,11 +918,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
      * new BigDecimal(String value); value contains exponent
      * and does not contain decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithoutPoint5() {
         String a = "238768787678287E214";
         int aScale = -214;
@@ -601,11 +933,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
-     * new BigDecimal(String value); 
+     * new BigDecimal(String value);
      * value contains both exponent and decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithPoint1() {
         String a = "23985439837984782435652424523876878.7678287e+214";
         int aScale = -207;
@@ -614,11 +948,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
-     * new BigDecimal(String value); 
+     * new BigDecimal(String value);
      * value contains both exponent and decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithPoint2() {
         String a = "238096483923847545735673567457356356789029578490276878.7678287e-214";
         int aScale = 221;
@@ -627,11 +963,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
+#endif
 
     /**
-     * new BigDecimal(String value); 
+     * new BigDecimal(String value);
      * value contains both exponent and decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithPoint3() {
         String a = "2380964839238475457356735674573563567890.295784902768787678287E+21";
         int aScale = 0;
@@ -640,11 +978,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-     
+#endif
+
     /**
-     * new BigDecimal(String value); 
+     * new BigDecimal(String value);
      * value contains both exponent and decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithPoint4() {
         String a = "23809648392384754573567356745735635678.90295784902768787678287E+21";
         int aScale = 2;
@@ -653,11 +993,13 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-     
+#endif
+
     /**
-     * new BigDecimal(String value); 
+     * new BigDecimal(String value);
      * value contains both exponent and decimal point
      */
+#if 0
     public void testConstrStringWithExponentWithPoint5() {
         String a = "238096483923847545735673567457356356789029.5784902768787678287E+21";
         int aScale = -2;
@@ -666,10 +1008,12 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", bA, aNumber.unscaledValue());
         assertEquals("incorrect scale", aScale, aNumber.scale());
     }
-    
+#endif
+
     /**
      * new BigDecimal(String value, MathContext)
      */
+#if 0
     public void testConstrStringMathContext() {
         String a = "-238768787678287e214";
         int precision = 5;
@@ -681,4 +1025,22 @@ public class BigDecimalConstructorsTest extends TestCase {
         assertEquals("incorrect value", res, result.unscaledValue().toString());
         assertEquals("incorrect scale", resScale, result.scale());
     }
+#endif
+
+//==============================================================================
+
+int main(int argc, char *argv[]) {
+    printf("\n==== libcore/math/BigDecimalConstructorsTest ====\n");
+    testConstrBI();
+    testConstrBIScale();
+    testConstrBigIntegerMathContext();
+    testConstrBigIntegerScaleMathContext();
+    testConstrChar();
+    testConstrCharIntInt();
+    printf("\n==== end of libcore/math/BigDecimalConstructorsTest ====\n");
+
+    return 0;
+}
+
+}
 }
