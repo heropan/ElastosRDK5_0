@@ -30,6 +30,12 @@ module
         SetUnderlineText(
             [in] Int32 color,
             [in] Float thickness);
+
+        SetDensity(
+            [in] Float density);
+
+        GetDensity(
+            [out] Float* density);
     }
 
     } // namespace Text

@@ -88,10 +88,13 @@ protected:
 //==============================================================================
 //          Drawables
 //==============================================================================
-class Drawables : public ElRefBase
+class Drawables : public Object
 {
 public:
     Drawables();
+
+    Drawables(
+        /* [in] */ IContext* context);
 
     CARAPI ResolveWithLayoutDirection(
         /* [in] */ Int32 layoutDirection);
@@ -119,6 +122,12 @@ public:
     AutoPtr<IDrawable> mDrawableError;
     AutoPtr<IDrawable> mDrawableTemp;
 
+    AutoPtr<IDrawable> mDrawableLeftInitial;
+    AutoPtr<IDrawable> mDrawableRightInitial;
+
+    Boolean mIsRtlCompatibilityMode;
+    Boolean mOverride;
+
     Int32 mDrawableSizeTop;
     Int32 mDrawableSizeBottom;
     Int32 mDrawableSizeLeft;
@@ -136,6 +145,7 @@ public:
     Int32 mDrawableHeightEnd;
     Int32 mDrawableHeightError;
     Int32 mDrawableHeightTemp;
+
     Int32 mDrawablePadding;
     Int32 mDrawableSaved;
 
@@ -406,7 +416,13 @@ public:
     TextView(
         /* [in] */ IContext* context,
         /* [in] */ IAttributeSet* attrs,
-        /* [in] */ Int32 defStyle);
+        /* [in] */ Int32 defStyleAttr);
+
+    TextView(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
     static CARAPI_(void) InitStatic();
 
@@ -803,6 +819,10 @@ public:
      */
     virtual CARAPI_(Float) GetTextSize();
 
+    virtual CARAPI_(Float) GetScaledTextSize();
+
+    virtual CARAPI_(Int32) GetTypefaceStyle();
+
     /**
      * Set the default text size to the given value, interpreted as "scaled
      * pixel" units.  This size is adjusted based on the current density and
@@ -860,6 +880,16 @@ public:
      * displayed.
      */
     virtual CARAPI_(AutoPtr<ITypeface>) GetTypeface();
+
+    virtual CARAPI_(void) SetElegantTextHeight(boolean elegant);
+
+    virtual CARAPI_(Float) GgetLetterSpacing();
+
+    virtual CARAPI_(void) SetLetterSpacing(float letterSpacing);
+
+    virtual CARAPI_(String) GetFontFeatureSettings();
+
+    virtual CARAPI_(void) SetFontFeatureSettings(@Nullable String fontFeatureSettings);
 
     /**
      * Sets the text color for all the states (normal, selected,
@@ -2301,6 +2331,12 @@ public: /*package*/
      */
     virtual CARAPI_(AutoPtr<ILayout>) GetHintLayout();
 
+    virtual CARAPI_(AutoPtr<IUndoManager>) GetUndoManager();
+
+    virtual CARAPI_(void) SetUndoManager(
+        /* [in] */ IUndoManager* undoManager,
+        /* [in] */ String tag);
+
     virtual CARAPI RemoveMisspelledSpans(
         /* [in] */ ISpannable* spannable);
 
@@ -2628,9 +2664,10 @@ protected:
          /* [in] */ Int32 end);
 
      CARAPI InitFromAttributes(
-         /* [in] */ IContext* context,
-         /* [in] */ IAttributeSet* attrs,
-         /* [in] */ Int32 defStyle);
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
 
      CARAPI Init(
          /* [in] */ IContext* context);
@@ -2642,7 +2679,14 @@ protected:
      CARAPI Init(
          /* [in] */ IContext* context,
          /* [in] */ IAttributeSet* attrs,
-         /* [in] */ Int32 defStyle);
+         /* [in] */ Int32 defStyleAttr);
+
+    CARAPI Init(
+        /* [in] */ IContext* context,
+        /* [in] */ IAttributeSet* attrs,
+        /* [in] */ Int32 defStyleAttr,
+        /* [in] */ Int32 defStyleRes);
+
 
 private:
     CARAPI_(void) SetTypefaceFromAttrs(
@@ -2970,10 +3014,6 @@ private:
 
     Int32 mMarqueeRepeatLimit;// = 3
 
-    // The alignment to pass to Layout, or null if not resolved.
-    LayoutAlignment mLayoutAlignment;
-    Int32 mResolvedTextAlignment;
-
     Int32 mLastLayoutDirection;// = -1;
 
     /**
@@ -3049,9 +3089,7 @@ private:
 
     AutoPtr<ArrayOf<Elastos::Droid::Text::IInputFilter*> > mFilters;// = NO_FILTERS;
 
-    /* volatile */ AutoPtr<ILocale> mCurrentTextServicesLocaleCache;
-
-    AutoPtr<IReentrantLock> mCurrentTextServicesLocaleLock;
+    /* volatile */ AutoPtr<ILocale> mCurrentSpellCheckerLocaleCache;
 
     AutoPtr<IPath> mHighlightPath;
     AutoPtr<IPaint> mHighlightPaint;

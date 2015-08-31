@@ -57,6 +57,10 @@ module
     merge("content/SyncStatusInfo.car");
     merge("content/SyncStatusObserver.car");
     merge("content/UriMatcher.car");
+    merge("content/UndoOwner.car");
+    merge("content/UndoOperation.car");
+    merge("content/UndoManager.car");
+
 
 //     merge("content/SyncManager.car");
 //     merge("content/SyncOperation.car");
