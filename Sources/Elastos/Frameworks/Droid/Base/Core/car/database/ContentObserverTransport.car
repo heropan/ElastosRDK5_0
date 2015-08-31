@@ -10,11 +10,10 @@ module
     *
     * This is an abstract cursor class that handles a lot of the common code
     * that all cursors need to deal with and is provided for convenience reasons.
+    *
+    * @Involve
+    * interface IIContentObserver
     */
-    /**
-     * @Involve
-     * interface IIContentObserver
-     */
     interface IContentObserverTransport {
         ReleaseContentObserver();
     }

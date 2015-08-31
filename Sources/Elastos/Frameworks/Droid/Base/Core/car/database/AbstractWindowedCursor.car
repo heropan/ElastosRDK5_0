@@ -22,10 +22,12 @@ module
      * If the contents of the cursor change or become invalid, the old window must be closed
      * (because it is owned by the cursor) and set to null.
      * </p>
-     */
-    /**
+     *
      * @Involve
-     * interface IAbstractCursor
+     * interface ICloseable;
+     * interface ICursor;
+     * interface ICrossProcessCursor;
+     * interface IAbstractCursor;
      */
     interface IAbstractWindowedCursor {
         /**

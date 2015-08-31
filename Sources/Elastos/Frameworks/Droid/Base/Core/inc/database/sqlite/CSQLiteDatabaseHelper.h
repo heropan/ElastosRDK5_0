@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_CSQLITEDATABASEHELPER_H__
 
 #include "_Elastos_Droid_Database_Sqlite_CSQLiteDatabaseHelper.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::IO::IFile;
 
@@ -12,8 +13,14 @@ namespace Database {
 namespace Sqlite {
 
 CarClass(CSQLiteDatabaseHelper)
+    , public Singleton
+    , public ISQLiteDatabaseHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     CARAPI ReleaseMemory(
         /* [out] */ Int32* result);
 

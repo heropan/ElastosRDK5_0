@@ -9,9 +9,15 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
-CarClass(CSQLiteQuery) , public SQLiteProgram
+CarClass(CSQLiteQuery)
+    , public SQLiteProgram
+    , public ISQLiteQuery
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI FillWindow(
         /* [in] */ ICursorWindow* window,
         /* [in] */ Int32 startPos,

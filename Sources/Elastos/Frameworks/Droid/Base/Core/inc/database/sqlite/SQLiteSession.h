@@ -3,6 +3,7 @@
 
 #include "ext/frameworkdef.h"
 #include "database/sqlite/SQLiteConnectionPool.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Database::ICursorWindow;
@@ -150,7 +151,7 @@ namespace Sqlite {
  *
  * @hide
  */
-class SQLiteSession : public ElRefBase
+class SQLiteSession : public Object
 {
 private:
     class Transaction  : public ElRefBase

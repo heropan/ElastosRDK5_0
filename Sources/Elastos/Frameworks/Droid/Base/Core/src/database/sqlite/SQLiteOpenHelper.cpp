@@ -5,9 +5,11 @@
 #include "database/sqlite/CSQLiteDatabaseHelper.h"
 #endif
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFile;
+using Elastos::IO::ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -16,6 +18,8 @@ namespace Sqlite {
 
 const String SQLiteOpenHelper::TAG("SQLiteOpenHelper");
 const Boolean SQLiteOpenHelper::DEBUG_STRICT_READONLY;
+
+CAR_INTERFACE_IMPL(SQLiteOpenHelper, Object, ISQLiteOpenHelper)
 
 SQLiteOpenHelper::SQLiteOpenHelper()
     : mNewVersion(0)
@@ -63,20 +67,21 @@ ECode SQLiteOpenHelper::GetDatabaseName(
 ECode SQLiteOpenHelper::SetWriteAheadLoggingEnabled(
     /*[in]*/ Boolean enabled)
 {
-    AutoLock lock(mLock);
-    if (mEnableWriteAheadLogging != enabled) {
-        Boolean isOpen, isReadOnly;
-        if (mDatabase != NULL && (mDatabase->IsOpen(&isOpen), isOpen)
-                && (mDatabase->IsReadOnly(&isReadOnly), !isReadOnly)) {
-            if (enabled) {
-                Boolean result;
-                FAIL_RETURN(mDatabase->EnableWriteAheadLogging(&result));
+    synchronized (mLock) {
+        if (mEnableWriteAheadLogging != enabled) {
+            Boolean isOpen, isReadOnly;
+            if (mDatabase != NULL && (mDatabase->IsOpen(&isOpen), isOpen)
+                    && (mDatabase->IsReadOnly(&isReadOnly), !isReadOnly)) {
+                if (enabled) {
+                    Boolean result;
+                    FAIL_RETURN(mDatabase->EnableWriteAheadLogging(&result));
+                }
+                else {
+                    FAIL_RETURN(mDatabase->DisableWriteAheadLogging());
+                }
             }
-            else {
-                FAIL_RETURN(mDatabase->DisableWriteAheadLogging());
-            }
+            mEnableWriteAheadLogging = enabled;
         }
-        mEnableWriteAheadLogging = enabled;
     }
 
     return NOERROR;
@@ -85,15 +90,21 @@ ECode SQLiteOpenHelper::SetWriteAheadLoggingEnabled(
 ECode SQLiteOpenHelper::GetWritableDatabase(
     /*[out]*/ ISQLiteDatabase** database)
 {
-    AutoLock lock(mLock);
-    return GetDatabaseLocked(TRUE, database);
+    ECode ec = NOERROR;
+    synchronized (mLock) {
+        ec = GetDatabaseLocked(TRUE, database);
+    }
+    return ec;
 }
 
 ECode SQLiteOpenHelper::GetReadableDatabase(
         /*[out]*/ ISQLiteDatabase** database)
 {
-    AutoLock lock(mLock);
-    return GetDatabaseLocked(FALSE, database);
+    ECode ec = NOERROR;
+    synchronized (mLock) {
+        ec =  GetDatabaseLocked(FALSE, database);
+    }
+    return ec;
 }
 
 ECode SQLiteOpenHelper::GetDatabaseLocked(
@@ -155,7 +166,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
             if (writable) {
                 mIsInitializing = FALSE;
                 if (db != NULL && db != mDatabase) {
-                    db->Close();
+                    ICloseable::Probe(db)->Close();
                 }
                 return ec;
             }
@@ -184,7 +195,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
                     version, mNewVersion, mName.string());
             mIsInitializing = FALSE;
             if (db != NULL && db != mDatabase) {
-                db->Close();
+                ICloseable::Probe(db)->Close();
             }
             return E_SQLITE_EXCEPTION;
         }
@@ -221,7 +232,7 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
 //} finally {
     mIsInitializing = FALSE;
     if (db != NULL && db != mDatabase) {
-        db->Close();
+        ICloseable::Probe(db)->Close();
     }
     //}
     return NOERROR;
@@ -229,16 +240,17 @@ ECode SQLiteOpenHelper::GetDatabaseLocked(
 
 ECode SQLiteOpenHelper::Close()
 {
-    AutoLock lock(mLock);
-    if (mIsInitializing) {
-//      throw new IllegalStateException("Closed during initialization");
-        Slogger::E(TAG, "Closed during initialization");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
-    Boolean isOpen;
-    if (mDatabase != NULL && (mDatabase->IsOpen(&isOpen), isOpen)) {
-        mDatabase->Close();
-        mDatabase = NULL;
+    synchronized (mLock) {
+        if (mIsInitializing) {
+            //throw new IllegalStateException("Closed during initialization");
+            Slogger::E(TAG, "Closed during initialization");
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        Boolean isOpen;
+        if (mDatabase != NULL && (mDatabase->IsOpen(&isOpen), isOpen)) {
+            ICloseable::Probe(mDatabase)->Close();
+            mDatabase = NULL;
+        }
     }
     return NOERROR;
 }

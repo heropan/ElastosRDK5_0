@@ -4,20 +4,24 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+CAR_INTERFACE_IMPL(CharArrayBuffer, Object, ICharArrayBuffer)
+
 CharArrayBuffer::CharArrayBuffer()
     : mSizeCopied(0)
 {}
 
-void CharArrayBuffer::Init(
+ECode CharArrayBuffer::constructor(
     /* [in] */ Int32 size)
 {
     mData = ArrayOf<Char32>::Alloc(size);
+    return NOERROR;
 }
 
-void CharArrayBuffer::Init(
+ECode CharArrayBuffer::constructor(
     /* [in] */ ArrayOf<Char32>* buf)
 {
     mData = buf;
+    return NOERROR;
 }
 
 ECode CharArrayBuffer::GetData(
@@ -25,7 +29,7 @@ ECode CharArrayBuffer::GetData(
 {
     VALIDATE_NOT_NULL(data)
     *data = mData;
-    ARRAYOF_ADDREF(*data);
+    REFCOUNT_ADD(*data);
     return NOERROR;
 }
 
@@ -50,7 +54,6 @@ ECode CharArrayBuffer::SetSizeCopied(
     mSizeCopied = sizeCopied;
     return NOERROR;
 }
-
 
 } //Database
 } //Droid

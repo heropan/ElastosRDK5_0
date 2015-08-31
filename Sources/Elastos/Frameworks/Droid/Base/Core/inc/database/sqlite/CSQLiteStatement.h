@@ -9,9 +9,15 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
-CarClass(CSQLiteStatement), SQLiteProgram
+CarClass(CSQLiteStatement)
+    , public SQLiteProgram
+    , public ISQLiteStatement
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI Execute();
 
     CARAPI ExecuteUpdateDelete(

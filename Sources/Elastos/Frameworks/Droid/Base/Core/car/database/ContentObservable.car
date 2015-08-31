@@ -10,8 +10,7 @@ module
      * A specialization of {@link Observable} for {@link ContentObserver}
      * that provides methods for sending notifications to a list of
      * {@link ContentObserver} objects.
-     */
-    /**
+     *
      * @Involve
      * interface IObservable
      */

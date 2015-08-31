@@ -56,9 +56,9 @@ module
      * and <code>UNICODE</code>, which is the Unicode Collation Algorithm and not tailored
      * to the current locale.
      * </p>
-     */
-    /**
+     *
      * @Involve
+     * interface ICloseable
      * interface ISQLiteClosable
      */
     [deprecated]

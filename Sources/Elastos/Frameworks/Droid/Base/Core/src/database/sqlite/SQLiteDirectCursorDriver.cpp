@@ -8,6 +8,8 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
+CAR_INTERFACE_IMPL(SQLiteDirectCursorDriver, Object, ISQLiteCursorDriver)
+
 SQLiteDirectCursorDriver::SQLiteDirectCursorDriver(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& sql,
@@ -18,8 +20,6 @@ SQLiteDirectCursorDriver::SQLiteDirectCursorDriver(
     , mSql(sql)
     , mCancellationSignal(cancellationSignal)
 {}
-
-CAR_INTERFACE_IMPL(SQLiteDirectCursorDriver, ISQLiteCursorDriver)
 
 ECode SQLiteDirectCursorDriver::Query(
     /* [in] */ ISQLiteDatabaseCursorFactory* factory,
@@ -33,9 +33,9 @@ ECode SQLiteDirectCursorDriver::Query(
     FAIL_RETURN(CSQLiteQuery::New(mDatabase, mSql, NULL, (ISQLiteQuery**)&query));
     AutoPtr<ICursor> cursor;
     //try {
-    ECode ec = query->BindAllArgsAsStrings(selectionArgs);
+    ECode ec = ISQLiteProgram::Probe(query)->BindAllArgsAsStrings(selectionArgs);
     if (FAILED(ec)) {
-        query->Close();
+        ICloseable::Probe(query)->Close();
         return ec;
     }
 
@@ -46,7 +46,7 @@ ECode SQLiteDirectCursorDriver::Query(
         ec = factory->NewCursor(mDatabase, (ISQLiteCursorDriver*)this, mEditTable, query, (ICursor**)&cursor);
     }
     if (FAILED(ec)) {
-        query->Close();
+        ICloseable::Probe(query)->Close();
         return ec;
     }
     // } catch (RuntimeException ex) {
@@ -68,7 +68,7 @@ ECode SQLiteDirectCursorDriver::CursorClosed()
 ECode SQLiteDirectCursorDriver::SetBindArguments(
     /* [in] */ ArrayOf<String>* bindArgs)
 {
-    return mQuery->BindAllArgsAsStrings(bindArgs);;
+    return ISQLiteProgram::Probe(mQuery)->BindAllArgsAsStrings(bindArgs);;
 }
 
 ECode SQLiteDirectCursorDriver::CursorDeactivated()

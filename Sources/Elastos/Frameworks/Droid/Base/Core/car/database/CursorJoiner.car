@@ -39,8 +39,7 @@ module
      *     }
      * }
      * </pre>
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.IO.IIterator
      * interface Elastos.IO.IIterable

@@ -18,8 +18,7 @@ module
      *
      * Cursor implementations are not required to be synchronized so code using a Cursor from multiple
      * threads should perform its own synchronization when using the Cursor.
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.IO.ICloseable
      */

@@ -10,7 +10,7 @@ MergeCursor::MyDataSetObserver::MyDataSetObserver(
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(MergeCursor::MyDataSetObserver, IDataSetObserver)
+CAR_INTERFACE_IMPL(MergeCursor::MyDataSetObserver, Object, IDataSetObserver)
 
 ECode MergeCursor::MyDataSetObserver::OnChanged()
 {
@@ -24,13 +24,14 @@ ECode MergeCursor::MyDataSetObserver::OnInvalidated()
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(MergeCursor, AbstractCursor, IMergeCursor);
 
 MergeCursor::MergeCursor()
 {
     mObserver = new MyDataSetObserver(this);
 }
 
-void MergeCursor::Init(
+ECode MergeCursor::constructor(
     /* [in] */ ArrayOf<ICursor*>* cursors)
 {
     mCursors = cursors;
@@ -39,6 +40,7 @@ void MergeCursor::Init(
         if ((*mCursors)[i] == NULL) continue;
         (*mCursors)[i]->RegisterDataSetObserver(mObserver);
     }
+    return NOERROR;
 }
 
 ECode MergeCursor::GetCount(
@@ -172,7 +174,7 @@ ECode MergeCursor::GetColumnNames(
     }
     else {
         *names = ArrayOf<String>::Alloc(0);
-        ARRAYOF_ADDREF(*names)
+        REFCOUNT_ADD(*names)
         return NOERROR;
     }
 }
@@ -193,7 +195,7 @@ ECode MergeCursor::Close()
     Int32 length = mCursors->GetLength();
     for (Int32 i = 0 ; i < length; i++) {
         if ((*mCursors)[i] == NULL) continue;
-        (*mCursors)[i]->Close();
+        ICloseable::Probe((*mCursors)[i])->Close();
     }
     return AbstractCursor::Close();
 }

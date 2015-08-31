@@ -5,9 +5,13 @@
 #include "_Elastos_Droid_Database_CCursorToBulkCursorAdaptor.h"
 #include "database/ContentObserver.h"
 #include "database/CBulkCursorDescriptor.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Droid::Os::IBinder;
+using Elastos::Droid::Os::EIID_IBinder;
 
 namespace Elastos {
 namespace Droid {
@@ -19,6 +23,10 @@ namespace Database {
  * {@hide}
  */
 CarClass(CCursorToBulkCursorAdaptor)
+    , public Object
+    , public IBinder
+    , public IBulkCursor
+    , public IProxyDeathRecipient
 {
 private:
     class ContentObserverProxy : public ContentObserver
@@ -44,6 +52,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CARAPI GetBulkCursorDescriptor(
         /* [out] */ CBulkCursorDescriptor** result);
 
@@ -100,6 +112,8 @@ private:
 
 private:
     static const String TAG;
+
+    Object mLock;
     String mProviderName;
     AutoPtr<ContentObserverProxy> mObserver;
 

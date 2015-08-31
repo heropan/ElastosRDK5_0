@@ -13,9 +13,10 @@ module
      * <p>
      * This class is not thread-safe.
      * </p>
-     */
-    /**
+     *
      * @Involve
+     * interface ICloseable;
+     * interface ISQLiteClosable;
      * interface ISQLiteProgram
      */
     interface ISQLiteQuery {

@@ -34,193 +34,235 @@ module
     merge("database/ContentObserverTransport.car");
     merge("database/sqlite/SQLiteCursor.car");
 
+    using interface Elastos.IO.ICloseable;
+
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.ICancellationSignal;
+    interface Elastos.Droid.Database.ICursor;
+    interface Elastos.Droid.Database.IAbstractCursor;
+    interface Elastos.Droid.Database.ICrossProcessCursor;
+    interface Elastos.Droid.Database.IAbstractWindowedCursor;
 
     namespace Elastos {
     namespace Droid {
     namespace Database {
     namespace Sqlite {
 
-    // class CSQLiteCursor {
-    //     constructor(
-    //         [in] ISQLiteDatabase* db,
-    //         [in] ISQLiteCursorDriver* driver,
-    //         [in] String editTable,
-    //         [in] ISQLiteQuery* query);
+    class CSQLiteCursor {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] ISQLiteCursorDriver* driver,
+            [in] String editTable,
+            [in] ISQLiteQuery* query);
 
-    //     constructor(
-    //         [in] ISQLiteCursorDriver* driver,
-    //         [in] String editTable,
-    //         [in] ISQLiteQuery* query);
+        constructor(
+            [in] ISQLiteCursorDriver* driver,
+            [in] String editTable,
+            [in] ISQLiteQuery* query);
 
-    //     interface ISQLiteCursor;
-    // }
+        interface ICloseable;
+        interface ICursor;
+        interface ICrossProcessCursor;
+        interface IAbstractCursor;
+        interface IAbstractWindowedCursor;
+        interface ISQLiteCursor;
+    }
 
-    // class CSQLiteQueryBuilder {
-    //     constructor();
+    class CSQLiteQueryBuilder {
+        constructor();
 
-    //     interface ISQLiteQueryBuilder;
-    // }
+        interface ISQLiteQueryBuilder;
+    }
 
     singleton class CSQLiteQueryBuilderHelper {
         interface ISQLiteQueryBuilderHelper;
     }
 
-    // singleton class  CSQLiteDatabaseHelper {
-    //     interface ISQLiteDatabaseHelper;
-    // }
+    singleton class  CSQLiteDatabaseHelper {
+        interface ISQLiteDatabaseHelper;
+    }
 
-    // class CSQLiteQuery {
-    //     constructor(
-    //         [in] ISQLiteDatabase* db,
-    //         [in] String query,
-    //         [in] ICancellationSignal* cancellationSignal);
+    class CSQLiteQuery {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] String query,
+            [in] ICancellationSignal* cancellationSignal);
 
-    //     interface ISQLiteQuery;
-    // }
+        interface ICloseable;
+        interface ISQLiteClosable;
+        interface ISQLiteProgram;
+        interface ISQLiteQuery;
+    }
 
-    // [deprecated]
-    // class CSQLiteStatement {
-    //     constructor(
-    //         [in] ISQLiteDatabase* db,
-    //         [in] String sql,
-    //         [in] ArrayOf<IInterface*>* bindArgs);
+    [deprecated]
+    class CSQLiteStatement {
+        constructor(
+            [in] ISQLiteDatabase* db,
+            [in] String sql,
+            [in] ArrayOf<IInterface*>* bindArgs);
 
-    //     interface ISQLiteStatement;
-    // }
+        interface ICloseable;
+        interface ISQLiteClosable;
+        interface ISQLiteProgram;
+        interface ISQLiteStatement;
+    }
 
     } // namespace Sqlite
     } // namespace Database
     } // namespace Droid
     } // namespace Elastos
 
+    using interface Elastos.Utility.IIterator;
+    using interface Elastos.Utility.IIterable;
+
+    interface Elastos.Droid.Database.Sqlite.ISQLiteClosable;
+
     namespace Elastos {
     namespace Droid {
     namespace Database {
 
-    // [deprecated]
-    // class CCharArrayBuffer {
-    //     constructor(
-    //         [in] Int32 size);
+    [deprecated]
+    class CCharArrayBuffer {
+        constructor(
+            [in] Int32 size);
 
-    //     constructor(
-    //         [in] ArrayOf<Char32>* buf);
+        constructor(
+            [in] ArrayOf<Char32>* buf);
 
-    //     interface ICharArrayBuffer;
-    // }
+        interface ICharArrayBuffer;
+    }
 
-    // class CDataSetObservable {
-    //     interface IDataSetObservable;
-    // }
+    class CDataSetObservable {
+        interface IObservable;
+        interface IDataSetObservable;
+    }
 
-    // class CContentObservable {
-    //     interface IContentObservable;
-    // }
+    class CContentObservable {
+        interface IObservable;
+        interface IContentObservable;
+    }
 
-    // class CCursorWrapper {
-    //     constructor(
-    //         [in] ICursor* cursor);
+    class CCursorWrapper {
+        constructor(
+            [in] ICursor* cursor);
 
-    //     interface ICursorWrapper;
-    // }
+        interface ICloseable;
+        interface ICursor;
+        interface ICursorWrapper;
+    }
 
-    // class CCursorWindow {
-    //     constructor();
+    class CCursorWindow {
+        constructor();
 
-    //     constructor(
-    //         [in] String name);
+        constructor(
+            [in] String name);
 
-    //     constructor(
-    //         [in] Boolean localWindow);
+        constructor(
+            [in] Boolean localWindow);
 
-    //     interface ICursorWindow;
-    //     interface IParcelable;
-    // }
+        interface IParcelable;
+        interface ICloseable;
+        interface ISQLiteClosable;
+        interface ICursorWindow;
+    }
 
     singleton class CCursorWindowHelper {
         interface ICursorWindowHelper;
     }
 
-    // class CCursorJoiner {
-    //     constructor(
-    //         [in] ICursor* cursorLeft,
-    //         [in] ArrayOf<String> columnNamesLeft,
-    //         [in] ICursor* cursorRight,
-    //         [in] ArrayOf<String> columnNamesRight);
+    class CCursorJoiner {
+        constructor(
+            [in] ICursor* cursorLeft,
+            [in] ArrayOf<String> columnNamesLeft,
+            [in] ICursor* cursorRight,
+            [in] ArrayOf<String> columnNamesRight);
 
-    //     interface ICursorJoiner;
-    // }
+        interface IIterator;
+        interface IIterable;
+        interface ICursorJoiner;
+    }
 
-    // [deprecated]
-    // class CMergeCursor {
-    //     constructor(
-    //         [in] ArrayOf<ICursor*>* cursors);
+    [deprecated]
+    class CMergeCursor {
+        constructor(
+            [in] ArrayOf<ICursor*>* cursors);
 
-    //     interface IMergeCursor;
-    // }
+        interface ICloseable;
+        interface ICursor;
+        interface ICrossProcessCursor;
+        interface IAbstractCursor;
+        interface IMergeCursor;
+    }
 
-    // [deprecated]
-    // class CMatrixCursor {
-    //     constructor(
-    //         [in] ArrayOf<String>* columnNames,
-    //         [in] Int32 initialCapacity);
+    [deprecated]
+    class CMatrixCursor {
+        constructor(
+            [in] ArrayOf<String>* columnNames,
+            [in] Int32 initialCapacity);
 
-    //     constructor(
-    //         [in] ArrayOf<String>* columnNames);
+        constructor(
+            [in] ArrayOf<String>* columnNames);
 
-    //     interface IMatrixCursor;
-    // }
+        interface ICloseable;
+        interface ICursor;
+        interface ICrossProcessCursor;
+        interface IAbstractCursor;
+        interface IMatrixCursor;
+    }
 
-    // class CCursorToBulkCursorAdaptor {
-    //     constructor(
-    //         [in] ICursor* cursor,
-    //         [in] IIContentObserver* observer,
-    //         [in] String providerName);
+    class CCursorToBulkCursorAdaptor {
+        constructor(
+            [in] ICursor* cursor,
+            [in] IIContentObserver* observer,
+            [in] String providerName);
 
-    //     interface IBinder;
-    //     interface IBulkCursor;
-    //     interface IProxyDeathRecipient;
-    // }
+        interface IBinder;
+        interface IBulkCursor;
+        interface IProxyDeathRecipient;
+    }
 
-    // singleton class CDatabaseUtils {
-    //     interface IDatabaseUtils;
-    // }
+    singleton class CDatabaseUtils {
+        interface IDatabaseUtils;
+    }
 
-    // class CDatabaseInsertHelper {
-    //     constructor(
-    //         [in] ISQLiteDatabase* db,
-    //         [in] String tableName);
+    //class CDatabaseInsertHelper {
+    //    constructor(
+    //        [in] ISQLiteDatabase* db,
+    //        [in] String tableName);
 
-    //     interface IDatabaseInsertHelper;
-    // }
+    //    interface IDatabaseInsertHelper;
+    //}
 
-    // class CBulkCursorDescriptor {
-    //     constructor();
+    class CBulkCursorDescriptor {
+        constructor();
 
-    //     interface IParcelable;
-    // }
+        interface IParcelable;
+    }
 
-    // class CCrossProcessCursorWrapper {
-    //     constructor(
-    //         [in] ICursor* cursor);
+    class CCrossProcessCursorWrapper {
+        constructor(
+            [in] ICursor* cursor);
 
-    //     interface ICrossProcessCursorWrapper;
-    //     interface ICrossProcessCursor;
-    // }
+        interface ICrossProcessCursor;
+        interface ICloseable;
+        interface ICursor;
+        interface ICursorWrapper;
+        interface ICrossProcessCursorWrapper;
+    }
 
-    // class CDefaultDatabaseErrorHandler {
-    //     interface IDatabaseErrorHandler;
-    // }
+    class CDefaultDatabaseErrorHandler {
+        interface IDatabaseErrorHandler;
+    }
 
-    // class CContentObserverTransport {
-    //     constructor(
-    //         [in] IContentObserver* contentObserver);
+    class CContentObserverTransport {
+        constructor(
+            [in] IContentObserver* contentObserver);
 
-    //     interface IContentObserverTransport;
-    // }
+        interface IIContentObserver;
+        interface IContentObserverTransport;
+    }
 
     } // namespace Database
     } // namespace Droid
     } // namespace Elastos
-
 }
-

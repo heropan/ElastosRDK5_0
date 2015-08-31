@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+CAR_INTERFACE_IMPL(CBulkCursorDescriptor, Object, IParcelable);
+
+CAR_OBJECT_IMPL(CBulkCursorDescriptor)
+
 CBulkCursorDescriptor::CBulkCursorDescriptor()
     : mWantsAllOnMoveCalls(FALSE)
     , mCount(0)

@@ -18,10 +18,15 @@ namespace Database {
  * {@link CrossProcessCursor}.
  * </p>
  */
-class CrossProcessCursorWrapper : public CursorWrapper
+class CrossProcessCursorWrapper
+    : public CursorWrapper
+    , public ICrossProcessCursorWrapper
+    , public ICrossProcessCursor
 {
 public:
-    CARAPI_(void) Init(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ ICursor* cursor);
 
     //@Override

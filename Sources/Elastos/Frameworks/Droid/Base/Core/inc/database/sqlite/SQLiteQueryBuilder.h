@@ -5,7 +5,9 @@
 #include "Elastos.Droid.Core_server.h"
 #include "database/sqlite/SQLiteDatabase.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Utility::IMap;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IStringBuilder;
@@ -21,9 +23,15 @@ namespace Sqlite {
  * {@link SQLiteDatabase} objects.
  */
 class SQLiteQueryBuilder
+    : public Object
+    , public ISQLiteQueryBuilder
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteQueryBuilder();
+
+    constructor();
 
     virtual ~SQLiteQueryBuilder();
 
@@ -40,7 +48,8 @@ public:
      *
      * @return the list of tables being queried
      */
-    virtual CARAPI_(String) GetTables();
+    virtual CARAPI GetTables(
+        /* [out] */ String* tables);
 
     /**
      * Sets the list of tables to query. Multiple tables can be specified to perform a join.
@@ -90,7 +99,7 @@ public:
      * @param columnMap maps from the user column names to the database column names
      */
     virtual CARAPI SetProjectionMap(
-        /* [in] */ IObjectStringMap* columnMap);
+        /* [in] */ IMap* columnMap);
 
     /**
      * Sets the cursor factory to be used for the query.  You can use
@@ -378,7 +387,7 @@ public:
     virtual CARAPI BuildUnionSubQuery(
         /* [in] */ const String& typeDiscriminatorColumn,
         /* [in] */ const ArrayOf<String>& unionColumns,
-        /* [in] */ IObjectStringMap* columnsPresentInTable,
+        /* [in] */ IMap* columnsPresentInTable,
         /* [in] */ Int32 computedColumnsOffset,
         /* [in] */ const String& typeDiscriminatorValue,
         /* [in] */ const String& selection,
@@ -397,7 +406,7 @@ public:
     virtual CARAPI BuildUnionSubQuery(
         /* [in] */ const String& typeDiscriminatorColumn,
         /* [in] */ const ArrayOf<String>& unionColumns,
-        /* [in] */ IObjectStringMap* columnsPresentInTable,
+        /* [in] */ IMap* columnsPresentInTable,
         /* [in] */ Int32 computedColumnsOffset,
         /* [in] */ const String& typeDiscriminatorValue,
         /* [in] */ const String& selection,
@@ -449,7 +458,7 @@ private:
     const static String TAG;
     const static AutoPtr<IPattern> sLimitPattern;
 
-    AutoPtr<IObjectStringMap> mProjectionMap;
+    AutoPtr<IMap> mProjectionMap;
     String mTables;
     StringBuilder* mWhereClause;
     Boolean mDistinct;

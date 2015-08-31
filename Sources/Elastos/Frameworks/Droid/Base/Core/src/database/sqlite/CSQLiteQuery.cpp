@@ -11,6 +11,10 @@ namespace Sqlite {
 
 const String CSQLiteQuery::TAG("SQLiteQuery");
 
+CAR_INTERFACE_IMPL(CSQLiteQuery, SQLiteProgram, ISQLiteQuery);
+
+CAR_OBJECT_IMPL(CSQLiteQuery)
+
 ECode CSQLiteQuery::FillWindow(
     /* [in] */ ICursorWindow* window,
     /* [in] */ Int32 startPos,
@@ -22,7 +26,7 @@ ECode CSQLiteQuery::FillWindow(
 
     AcquireReference();
     //try {
-    ECode ec = window->AcquireReference();
+    ECode ec = ISQLiteClosable::Probe(window)->AcquireReference();
     if (FAILED(ec)) {
         ReleaseReference();
         *result = -1;
@@ -53,7 +57,7 @@ ECode CSQLiteQuery::FillWindow(
     //    releaseReference();
     //}
     *result = numRows;
-    window->ReleaseReference();
+    ISQLiteClosable::Probe(window)->ReleaseReference();
     ReleaseReference();
     return ec;
 }

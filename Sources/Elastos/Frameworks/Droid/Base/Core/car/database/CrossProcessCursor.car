@@ -14,10 +14,10 @@ module
      * filling {@link CursorWindow} objects using {@link #fillWindow}.  As an optimization,
      * the cursor can provide a pre-filled window to use via {@link #getWindow} thereby
      * obviating the need to copy the data to yet another cursor window.
-     */
-    /**
+     *
      * @Involve
-     * interface ICursor
+     * interface ICloseable;
+     * interface ICursor;
      */
     interface ICrossProcessCursor {
         /**

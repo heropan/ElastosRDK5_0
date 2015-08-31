@@ -9,9 +9,11 @@ module
      * The schema of the cursors presented is entirely up to the creator of the MergeCursor, and
      * may be different if that is desired. Calls to getColumns, getColumnIndex, etc will return the
      * value for the row that the MergeCursor is currently pointing at.
-     */
-    /**
+     *
      * @Involve
+     * interface ICloseable
+     * interface ICursor
+     * interface ICrossProcessCursor
      * interface IAbstractCursor
      */
     interface IMergeCursor {

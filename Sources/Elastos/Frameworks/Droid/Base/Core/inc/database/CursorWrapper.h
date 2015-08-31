@@ -3,7 +3,10 @@
 #define __ELASTOS_DROID_DATABASE_CURSORWRAPPER_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Content::IContentResolver;
@@ -15,9 +18,15 @@ namespace Database {
  * Wrapper class for Cursor that delegates all calls to the actual cursor object
  */
 class CursorWrapper
+    : public Object
+    , public ICursorWrapper
+    , public ICursor
+    , public ICloseable
 {
 public:
-    CARAPI_(void) Init(
+    CAR_INTERFACE_DECL()
+
+    CARAPI constructor(
         /* [in] */ ICursor* cursor);
 
     /**

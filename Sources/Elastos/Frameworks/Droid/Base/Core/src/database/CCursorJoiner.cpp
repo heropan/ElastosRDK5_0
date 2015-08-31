@@ -3,11 +3,17 @@
 #include "database/CCursorJoiner.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::CInteger32;
+using Elastos::Core::IInteger32;
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
+
+CAR_INTERFACE_IMPL_3(CCursorJoiner, Object, ICursorJoiner, IIterable, IIterator);
+
+CAR_OBJECT_IMPL(CCursorJoiner)
 
 CCursorJoiner::CCursorJoiner()
     : mCompareResultIsValid(FALSE)
@@ -22,6 +28,16 @@ AutoPtr<ArrayOf<Int32> > CCursorJoiner::BuildColumnIndiciesArray(
         cursor->GetColumnIndexOrThrow(columnNames[i], &(*columns)[i]);
     }
     return columns;
+}
+
+ECode CCursorJoiner::GetIterator(
+    /* [out] */ IIterator** it)
+{
+    VALIDATE_NOT_NULL(it)
+
+    *it = THIS_PROBE(IIterator);
+    REFCOUNT_ADD(*it);
+    return NOERROR;
 }
 
 ECode CCursorJoiner::HasNext(
@@ -66,7 +82,7 @@ ECode CCursorJoiner::HasNext(
 }
 
 ECode CCursorJoiner::GetNext(
-    /* [out] */ CursorJoinerResult* result)
+    /* [out] */ IInterface** result)
 {
     VALIDATE_NOT_NULL(result)
 
@@ -89,9 +105,9 @@ ECode CCursorJoiner::GetNext(
     if (hasLeft && hasRight) {
         PopulateValues(*mValues, mCursorLeft, *mColumnsLeft, 0 /* start filling at index 0 */);
         PopulateValues(*mValues, mCursorRight, *mColumnsRight, 1 /* start filling at index 1 */);
-        Int32 result;
-        CompareStrings(*mValues, &result);
-        switch (result) {
+        Int32 _result;
+        CompareStrings(*mValues, &_result);
+        switch (_result) {
             case -1:
                 mCompareResult = CursorJoinerResult_LEFT;
                 break;
@@ -111,7 +127,10 @@ ECode CCursorJoiner::GetNext(
         mCompareResult = CursorJoinerResult_RIGHT;
     }
     mCompareResultIsValid = TRUE;
-    *result = mCompareResult;
+    AutoPtr<IInteger32> int32Obj;
+    return CInteger32::New(mCompareResult, (IInteger32**)&int32Obj);
+    *result = int32Obj;
+    REFCOUNT_ADD(*result);
     return NOERROR;
 }
 

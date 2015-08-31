@@ -6,7 +6,9 @@
 #include "database/DatabaseUtils.h"
 #include "os/UserHandle.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
+using Elastos::IO::EIID_ICloseable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::UserHandle;
 using Elastos::Droid::Os::CBundle;
@@ -14,6 +16,8 @@ using Elastos::Droid::Os::CBundle;
 namespace Elastos {
 namespace Droid {
 namespace Database {
+
+CAR_INTERFACE_IMPL_4(AbstractCursor, Object, IAbstractCursor, ICrossProcessCursor, ICursor, ICloseable);
 
 AbstractCursor::SelfContentObserver::SelfContentObserver(
     /* [in] */ IAbstractCursor* cursor)
@@ -147,7 +151,7 @@ ECode AbstractCursor::IsClosed(
 ECode AbstractCursor::Close()
 {
     mClosed = TRUE;
-    mContentObservable->UnregisterAll();
+    IObservable::Probe(mContentObservable)->UnregisterAll();
     return OnDeactivateOrClose();
 }
 
@@ -393,7 +397,7 @@ ECode AbstractCursor::GetColumnName(
 ECode AbstractCursor::RegisterContentObserver(
     /* [in] */ IContentObserver* observer)
 {
-    return mContentObservable->RegisterObserver(observer);
+    return IObservable::Probe(mContentObservable)->RegisterObserver(observer);
 }
 
 ECode AbstractCursor::UnregisterContentObserver(
@@ -401,7 +405,7 @@ ECode AbstractCursor::UnregisterContentObserver(
 {
     // cursor will unregister all observers when it close
     if(!mClosed) {
-        return mContentObservable->UnregisterObserver(observer);
+        return IObservable::Probe(mContentObservable)->UnregisterObserver(observer);
     }
     return NOERROR;
 }
@@ -409,23 +413,23 @@ ECode AbstractCursor::UnregisterContentObserver(
 ECode AbstractCursor::RegisterDataSetObserver(
     /* [in] */ IDataSetObserver* observer)
 {
-    return mDataSetObservable->RegisterObserver(observer);
+    return IObservable::Probe(mDataSetObservable)->RegisterObserver(observer);
 }
 
 ECode AbstractCursor::UnregisterDataSetObserver(
         /* [in] */ IDataSetObserver* observer)
 {
-    return mDataSetObservable->UnregisterObserver(observer);
+    return IObservable::Probe(mDataSetObservable)->UnregisterObserver(observer);
 }
 
 ECode AbstractCursor::OnChange(
     /* [in] */ Boolean selfChange)
 {
-    AutoLock lock(mSelfObserverLock);
-
-    mContentObservable->DispatchChange(selfChange);
-    if (mNotifyUri != NULL && selfChange) {
-        mContentResolver->NotifyChange(mNotifyUri, mSelfObserver);
+    synchronized(mSelfObserverLock) {
+        mContentObservable->DispatchChange(selfChange);
+        if (mNotifyUri != NULL && selfChange) {
+            mContentResolver->NotifyChange(mNotifyUri, mSelfObserver);
+        }
     }
     return NOERROR;
 }
@@ -442,16 +446,16 @@ ECode AbstractCursor::SetNotificationUri(
     /* [in] */ IUri* notifyUri,
     /* [in] */ Int32 userHandle)
 {
-    AutoLock lock(mSelfObserverLock);
-
-    mNotifyUri = notifyUri;
-    mContentResolver = cr;
-    if (mSelfObserver != NULL) {
-        mContentResolver->UnregisterContentObserver(mSelfObserver);
+    synchronized(mSelfObserverLock) {
+        mNotifyUri = notifyUri;
+        mContentResolver = cr;
+        if (mSelfObserver != NULL) {
+            mContentResolver->UnregisterContentObserver(mSelfObserver);
+        }
+        mSelfObserver = new SelfContentObserver(((IAbstractCursor*)this->Probe(EIID_IAbstractCursor)));
+        mContentResolver->RegisterContentObserver(mNotifyUri, TRUE, mSelfObserver);
+        mSelfObserverRegistered = TRUE;
     }
-    mSelfObserver = new SelfContentObserver(((IAbstractCursor*)this->Probe(EIID_IAbstractCursor)));
-    mContentResolver->RegisterContentObserver(mNotifyUri, TRUE, mSelfObserver);
-    mSelfObserverRegistered = TRUE;
     return NOERROR;
 }
 

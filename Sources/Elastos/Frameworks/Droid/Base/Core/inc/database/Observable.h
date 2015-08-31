@@ -3,7 +3,9 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::List;
 
 namespace Elastos {
@@ -13,8 +15,12 @@ namespace Database {
  * Provides methods for (un)registering arbitrary observers in an ArrayList.
  */
 class Observable
+    : public Object
+    , public IObservable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * Adds an observer to the list. The observer cannot be null and it must not already
      * be registered.

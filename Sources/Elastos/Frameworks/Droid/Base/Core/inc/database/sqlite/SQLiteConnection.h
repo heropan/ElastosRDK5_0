@@ -9,16 +9,17 @@
 #include "database/sqlite/SQLiteStatementInfo.h"
 #include "util/LruCache.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::IArrayOf;
 using Elastos::Utility::Regex::IPattern;
+using Elastos::Text::ISimpleDateFormat;
+using Elastos::Droid::Utility::IPrinter;
+using Elastos::Droid::Utility::LruCache;
+using Elastos::Droid::Database::ICursorWindow;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Os::ICancellationSignalOnCancelListener;
-using Elastos::Droid::Utility::IPrinter;
-using Elastos::Droid::Database::ICursorWindow;
-using Elastos::Text::ISimpleDateFormat;
-using Elastos::Droid::Utility::LruCache;
 
 namespace Elastos {
 namespace Droid {
@@ -29,7 +30,7 @@ class SQLiteConnectionPool;
 class SQLiteCustomFunction;
 
 class SQLiteConnection
-    : public ElRefBase
+    : public Object
     , public ICancellationSignalOnCancelListener
 {
 private:
@@ -43,7 +44,7 @@ private:
      * resource disposal because all native statement objects must be freed before
      * the native database object can be closed.  So no finalizers here.
      */
-    class PreparedStatement : public ElRefBase
+    class PreparedStatement : public Object
     {
     public:
         PreparedStatement();
@@ -101,7 +102,7 @@ private:
 
     class OperationLog;
 
-    class Operation : public ElRefBase
+    class Operation : public Object
     {
     public:
         Operation();
@@ -133,7 +134,7 @@ private:
         friend class OperationLog;
     };
 
-    class OperationLog : public ElRefBase
+    class OperationLog : public Object
     {
     public:
         OperationLog();
@@ -727,5 +728,7 @@ private:
 } //Database
 } //Droid
 } //Elastos
+
+DEFINE_CONVERSION_FOR(Elastos::Droid::Database::Sqlite::SQLiteConnection::Operation, IInterface)
 
 #endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITECONNECTION_H__

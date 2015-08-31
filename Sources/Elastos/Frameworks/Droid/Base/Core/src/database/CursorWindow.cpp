@@ -3,20 +3,21 @@
 #include "database/CCursorWindow.h"
 #include "database/NativeCursorWindow.h"
 #include "database/sqlite/SQLiteCommon.h"
-#include "content/res/CResources.h"
+//#include "content/res/CResources.h"
 #include "os/Process.h"
 #include "os/Binder.h"
 #include "R.h"
 #include <elastos/core/StringBuilder.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/Character.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Character;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Droid::Os::Process;
 using Elastos::Droid::Os::Binder;
-using Elastos::Droid::Content::Res::CResources;
+//using Elastos::Droid::Content::Res::CResources;
 using Elastos::Droid::Content::Res::IResources;
 using Elastos::Droid::R;
 
@@ -28,12 +29,15 @@ const String CursorWindow::STATS_TAG("CursorWindow");
 
 Int32 CursorWindow::sCursorWindowSize = -1;
 HashMap<Int32, Int32> CursorWindow::sWindowToPidMap;
-Mutex CursorWindow::sWindowToPidMapLock;
+Object CursorWindow::sWindowToPidMapLock;
+
+CAR_INTERFACE_IMPL_2(CursorWindow, SQLiteClosable, ICursorWindow, IParcelable)
 
 Int32 CursorWindow::GetCursorWindowSize()
 {
     if (sCursorWindowSize < 0) {
-        AutoPtr<IResources> res = CResources::GetSystem();
+        assert(0 && "TODO");
+        AutoPtr<IResources> res; //= CResources::GetSystem();
         Int32 i;
         res->GetInteger(R::integer::config_cursorWindowSize, &i);
         sCursorWindowSize = i * 1024;
@@ -223,7 +227,7 @@ ECode CursorWindow::NativeGetBlob(
             (*byteArray)[i] = (static_cast<const byte*>(value))[i];
         }
         *blob = byteArray;
-        ARRAYOF_ADDREF(*blob)
+        REFCOUNT_ADD(*blob)
         return NOERROR;
     } else if (type == NativeCursorWindow::FIELD_TYPE_INTEGER) {
         return Sqlite::throw_sqlite3_exception("INTEGER data in nativeGetBlob ");
@@ -325,14 +329,14 @@ static AutoPtr< ArrayOf<Char32> > AllocCharArrayBuffer(ICharArrayBuffer* bufferO
 static void FillCharArrayBufferUTF(ICharArrayBuffer* bufferObj, const char* str, Int32 len)
 {
     Int32 size;
-    Character::GetCharCount(CString(str), 0, strlen(str), &size);
+    Character::GetCharCount(String(str), 0, strlen(str), &size);
     if (size < 0) {
         size = 0; // invalid UTF8 string
     }
     AutoPtr< ArrayOf<Char32> > dataObj = AllocCharArrayBuffer(bufferObj, size);
     if (dataObj) {
         if (size) {
-            Character::ToChar32s(CString(str), 0, strlen(str), dataObj, 0);
+            Character::ToChar32s(String(str), 0, strlen(str), dataObj, 0);
         }
         bufferObj->SetSizeCopied(size);
     }
@@ -577,7 +581,10 @@ Boolean CursorWindow::NativePutNull(
     return TRUE;
 }
 
-ECode CursorWindow::Init(
+ECode CursorWindow::constructor()
+{}
+
+ECode CursorWindow::constructor(
     /* [in] */ const String& name)
 {
     mStartPos = 0;
@@ -594,10 +601,10 @@ ECode CursorWindow::Init(
     return NOERROR;
 }
 
-ECode CursorWindow::Init(
+ECode CursorWindow::constructor(
     /* [in] */ Boolean localWindow)
 {
-    return Init(String(NULL));
+    return constructor(String(NULL));
 }
 
 ECode CursorWindow::Dispose()
@@ -991,6 +998,13 @@ ECode CursorWindow::DescribeContents(
     return NOERROR;
 }
 
+ECode CursorWindow::ReadFromParcel(
+    /* [in] */ IParcel* source)
+{
+    assert(0 && "TODO");
+    return NOERROR;
+}
+
 ECode CursorWindow::WriteToParcel(
     /* [in] */ IParcel* dest)
 {
@@ -1017,22 +1031,24 @@ void CursorWindow::RecordNewWindow(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 window)
 {
-    AutoLock lock(sWindowToPidMapLock);
-    sWindowToPidMap[window] = pid;
-    // if (Log.isLoggable(STATS_TAG, Log.VERBOSE)) {
-    //     Log.i(STATS_TAG, "Created a new Cursor. " + printStats());
-    // }
+    synchronized(sWindowToPidMapLock) {
+        sWindowToPidMap[window] = pid;
+        // if (Log.isLoggable(STATS_TAG, Log.VERBOSE)) {
+        //     Log.i(STATS_TAG, "Created a new Cursor. " + printStats());
+        // }
+    }
 }
 
 void CursorWindow::RecordClosingOfWindow(
     /* [in] */ Int32 window)
 {
-    AutoLock lock(sWindowToPidMapLock);
-    if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
-        // this means we are not in the ContentProvider.
-        return;
+    synchronized(sWindowToPidMapLock) {
+        if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
+            // this means we are not in the ContentProvider.
+            return;
+        }
+        sWindowToPidMap.Erase(window);
     }
-    sWindowToPidMap.Erase(window);
 }
 
 String CursorWindow::PrintStats()
@@ -1042,8 +1058,7 @@ String CursorWindow::PrintStats()
     Int32 total = 0;
     HashMap<Int32, Int32> pidCounts;
 
-    {
-        AutoLock lock(sWindowToPidMapLock);
+    synchronized(sWindowToPidMapLock) {
         if (sWindowToPidMap.Begin() == sWindowToPidMap.End()) {
             // this means we are not in the ContentProvider.
             return String("");

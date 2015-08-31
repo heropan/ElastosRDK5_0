@@ -4,6 +4,7 @@
 
 #include "ext/frameworkdef.h"
 #include "database/sqlite/SQLiteDatabase.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,7 +16,7 @@ namespace Sqlite {
  *
  * @hide
  */
-class SQLiteCustomFunction : public ElRefBase
+class SQLiteCustomFunction : public Object
 {
 public:
     /**

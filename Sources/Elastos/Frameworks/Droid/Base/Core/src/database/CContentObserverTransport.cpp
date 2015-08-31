@@ -5,6 +5,10 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+CAR_INTERFACE_IMPL(CContentObserverTransport, Object, IContentObserverTransport);
+
+CAR_OBJECT_IMPL(CContentObserverTransport)
+
 ECode CContentObserverTransport::OnChange(
     /* [in] */ Boolean selfChange,
     /* [in] */ IUri* uri)

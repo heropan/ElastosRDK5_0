@@ -356,7 +356,7 @@ Boolean Object::Equals(
         return FALSE;
     }
     Boolean isflag = FALSE;
-    obj->Equals(rhs, &isflag);
+    obj->Equals(rhs->Probe(EIID_IInterface), &isflag);
     return isflag;
 }
 
@@ -378,7 +378,7 @@ Boolean Object::Equals(
         return FALSE;
     }
     Boolean isflag = FALSE;
-    obj->Equals(rhs, &isflag);
+    obj->Equals(rhs->Probe(EIID_IInterface), &isflag);
     return isflag;
 }
 

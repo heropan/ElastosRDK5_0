@@ -1,7 +1,8 @@
 #ifndef __ELASTOS_DROID_DATABASE_DATASETONSERVER_H__
-#define __DATASETOBSERVER_H__
+#define __ELASTOS_DROID_DATABASE_DATASETONSERVER_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -12,8 +13,12 @@ namespace Database {
  * DataSetObserver must be implemented by objects which are added to a DataSetObservable.
  */
 class DataSetObserver
+    : public Object
+    , public IDataSetObserver
 {
 public:
+    CAR_INTERFACE_DECL()
+
     /**
      * This method is called when the entire data set has changed,
      * most likely through a call to {@link Cursor#requery()} on a {@link Cursor}.

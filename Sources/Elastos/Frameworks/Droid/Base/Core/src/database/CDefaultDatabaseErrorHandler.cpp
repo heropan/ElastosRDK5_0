@@ -7,12 +7,20 @@ using Elastos::Core::StringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::IO::IFile;
 using Elastos::IO::CFile;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::IObjectStringMap;
+using Elastos::Utility::IMap;
+using Elastos::Utility::IMapEntry;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
+
+CAR_INTERFACE_IMPL(CDefaultDatabaseErrorHandler, Object, IDatabaseErrorHandler);
+
+CAR_OBJECT_IMPL(CDefaultDatabaseErrorHandler)
 
 const String CDefaultDatabaseErrorHandler::TAG("DefaultDatabaseErrorHandler");
 
@@ -37,28 +45,40 @@ ECode CDefaultDatabaseErrorHandler::OnCorruption(
         return NOERROR;
     }
 
-    AutoPtr<IObjectStringMap> attachedDbs;
+    AutoPtr<IMap> attachedDbs;
     //try {
     // Close the database, which will cause subsequent operations to fail.
     // before that, get the attached database list first.
     //try {
-    dbObj->GetAttachedDbs((IObjectStringMap**)&attachedDbs);
+    dbObj->GetAttachedDbs((IMap**)&attachedDbs);
     //} catch (SQLiteException e) {
         /* ignore */
     //}
     //try {
-    dbObj->Close();
+    ICloseable::Probe(dbObj)->Close();
     //} catch (SQLiteException e) {
         /* ignore */
     //}
     //} finally {
     // Delete all files of this corrupt database and/or attached databases
     if (attachedDbs != NULL) {
-        AutoPtr< ArrayOf<String> > keys;
-        attachedDbs->GetKeys((ArrayOf<String>**)&keys);
-        for (Int32 i = 0; i < keys->GetLength(); i++) {
+        AutoPtr<ISet> keys;
+        attachedDbs->GetKeySet((ISet**)&keys);
+        AutoPtr<IIterator> it;
+        keys->GetIterator((IIterator**)&it);
+        Boolean hasNext = FALSE;
+        String name;
+        while ((it->HasNext(&hasNext), hasNext)) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+            AutoPtr<IInterface> obj;
+            entry->GetKey((IInterface**)&obj);
+            assert(ICharSequence::Probe(obj) != NULL);
+            ICharSequence::Probe(obj)->ToString(&name);
+
             AutoPtr<ICharSequence> value;
-            attachedDbs->Get((*keys)[i], (IInterface**)&value);
+            attachedDbs->Get(obj, (IInterface**)&value);
             String second;
             value->ToString(&second);
             DeleteDatabaseFile(second);

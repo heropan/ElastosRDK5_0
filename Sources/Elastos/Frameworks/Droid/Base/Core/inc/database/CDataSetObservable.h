@@ -12,17 +12,7 @@ namespace Database {
 CarClass(CDataSetObservable), public DataSetObservable
 {
 public:
-    CARAPI RegisterObserver(
-        /* [in] */ IInterface* observer);
-
-    CARAPI UnregisterObserver(
-        /* [in] */ IInterface* observer);
-
-    CARAPI UnregisterAll();
-
-    CARAPI NotifyChanged();
-
-    CARAPI NotifyInvalidated();
+    CAR_OBJECT_DECL()
 };
 
 } //Database

@@ -1,14 +1,20 @@
 
 #include "database/CursorWrapper.h"
 
+using Elastos::IO::ICloseable;
+using Elastos::IO::EIID_ICloseable;
+
 namespace Elastos {
 namespace Droid {
 namespace Database {
 
-void CursorWrapper::Init(
+CAR_INTERFACE_IMPL_3(CursorWrapper, Object, ICursorWrapper, ICursor, ICloseable)
+
+ECode CursorWrapper::constructor(
     /* [in] */ ICursor* cursor)
 {
     mCursor = cursor;
+    return NOERROR;
 }
 
 ECode CursorWrapper::GetWrappedCursor(
@@ -22,7 +28,7 @@ ECode CursorWrapper::GetWrappedCursor(
 
 ECode CursorWrapper::Close()
 {
-    return mCursor->Close();
+    return ICloseable::Probe(mCursor)->Close();
 }
 
 ECode CursorWrapper::IsClosed(

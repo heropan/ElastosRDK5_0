@@ -9,13 +9,12 @@
 #include <elastos/utility/etl/HashMap.h>
 #include <pthread.h>
 
-using Libcore::ICU::ILocale;
-using Elastos::Core::CObjectContainer;
 using Elastos::IO::IFile;
 using Elastos::IO::IFileFilter;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::ICancellationSignal;
 using Elastos::Droid::Utility::IPrinter;
@@ -49,8 +48,7 @@ class SQLiteConnectionPool;
 extern "C" const InterfaceID EIID_SQLiteDatabase;
 
 class SQLiteDatabase
-    : public ElRefBase
-    , public SQLiteClosable
+    : public SQLiteClosable
     , public ISQLiteDatabase
 {
 public:
@@ -68,7 +66,7 @@ public:
 
 private:
     class MyFileFilter
-        : public ElRefBase
+        : public Object
         , public IFileFilter
     {
     public:
@@ -334,7 +332,7 @@ public:
         /* [out] */ Boolean* result);
 
     CARAPI GetSyncedTables(
-        /* [out] */ IObjectStringMap** tables);
+        /* [out] */ IMap** tables);
 
     /**
      * Open the database according to the flags {@link #OPEN_READWRITE}
@@ -1323,7 +1321,7 @@ public:
      * is not open.
      */
     CARAPI GetAttachedDbs(
-        /* [out] */ IObjectStringMap** dbs);
+        /* [out] */ IMap** dbs);
 
      /**
      * Runs 'pragma integrity_check' on the given database (and all the attached databases)
@@ -1478,13 +1476,12 @@ private:
     Boolean mHasAttachedDbsLocked;
 };
 
+
 } //Sqlite
 } //Database
 } //Droid
 } //Elastos
 
-#define HASH_FUNC_FOR_AUTOPTR_SQLITEDATABASE
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Database::Sqlite::SQLiteDatabase);
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Database::Sqlite::SQLiteDatabase);
 
 #endif //__ELASTOS_DROID_DATABASE_SQLITE_SQLITEDATABASE_H__

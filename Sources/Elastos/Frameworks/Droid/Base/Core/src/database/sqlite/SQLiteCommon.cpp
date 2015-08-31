@@ -114,11 +114,11 @@ ECode throw_sqlite3_exception(int errcode, const char* sqlite3Message, const cha
 
     if (temp) {
         StringBuilder fullMessage(sqlite3Message);
-        fullMessage.AppendCStr(" (code %d)");
-        fullMessage.AppendInt32(errcode); // print extended error code
+        fullMessage.Append(" (code %d)");
+        fullMessage.Append(errcode); // print extended error code
         if (message) {
-            fullMessage.AppendCStr(": ");
-            fullMessage.AppendCStr(message);
+            fullMessage.Append(": ");
+            fullMessage.Append(message);
         }
         Slogger::E(String("SQLiteException"), "%s", fullMessage.ToString().string());
         return ec;

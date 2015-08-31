@@ -15,9 +15,10 @@ module
      * will be allocated by the producer, filled with data, and then sent to the
      * consumer for reading.
      * </p>
-     */
-    /**
+     *
      * @Involve
+     * interface IParcelable
+     * interface ICloseable
      * interface Elastos.Droid.Database.Sqlite.ISQLiteClosable
      */
     [deprecated]
