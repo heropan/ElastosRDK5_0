@@ -12,10 +12,12 @@ module
      */
     /**
      * @Involve
+     * interface Elastos.Core.IAppendable;
+     * interface IWriter;
      * interface Elastos.IO.IPrintWriter
      */
-    interface IIndentingPrintWriter
-    {
+    [local]
+    interface IIndentingPrintWriter {
         IncreaseIndent();
 
         DecreaseIndent();
@@ -23,6 +25,10 @@ module
         PrintPair(
             [in] String key,
             [in] IInterface* value);
+
+        PrintHexPair(
+            [in] String key,
+            [in] Int32 value);
     }
 
     } // namespace Utility

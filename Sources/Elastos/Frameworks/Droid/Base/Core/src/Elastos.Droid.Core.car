@@ -43,6 +43,7 @@ module
     merge("../car/internal/preference.car");
     merge("../car/internal/statusbar.car");
     merge("../car/internal/textservice.car");
+    merge("../car/internal/util.car");
     merge("../car/internal/view.car");
     merge("../car/internal/widget.car");
 
