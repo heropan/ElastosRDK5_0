@@ -15,15 +15,10 @@ namespace Database {
  *
  * {@hide}
  */
-class BulkCursorToCursorAdaptor
-    : public ElRefBase
-    , public IAbstractWindowedCursor
-    , public AbstractWindowedCursor
+class BulkCursorToCursorAdaptor : public AbstractWindowedCursor
 {
 public:
     BulkCursorToCursorAdaptor();
-
-    CAR_INTERFACE_DECL()
 
     /**
      * Initializes the adaptor.

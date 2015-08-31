@@ -2,6 +2,10 @@
 #define __ELASTOS_DROID_DATABASE_MATRIXCURSOR_H__
 
 #include "database/AbstractCursor.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::Utility::IIterable;
 
 namespace Elastos {
 namespace Droid {
@@ -11,7 +15,9 @@ namespace Database {
  * {@link #newRow()} to add rows. Automatically expands internal capacity
  * as needed.
  */
-class MatrixCursor : public AbstractCursor
+class MatrixCursor
+    : public AbstractCursor
+    , public IMatrixCursor
 {
 public:
     /**
@@ -20,7 +26,7 @@ public:
      * at cursor construction time.
      */
     class RowBuilder
-        : public ElRefBase
+        : public Object
         , public IRowBuilder
     {
     public:
@@ -48,6 +54,8 @@ public:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     MatrixCursor();
 
     /**
@@ -57,7 +65,7 @@ public:
      *  determines column ordering elsewhere in this cursor
      * @param initialCapacity in rows
      */
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<String>* columnNames,
         /* [in] */ Int32 initialCapacity);
 
@@ -67,7 +75,7 @@ public:
      * @param columnNames names of the columns, the ordering of which
      *  determines column ordering elsewhere in this cursor
      */
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<String>* columnNames);
 
     /**
@@ -102,7 +110,7 @@ public:
      *  at cursor construction time
      */
     virtual CARAPI AddRow(
-        /* [in] */ IObjectContainer* columnValues);
+        /* [in] */ IIterable* columnValues);
 
     // AbstractCursor implementation.
 

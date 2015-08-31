@@ -4,7 +4,10 @@
 #include "ext/frameworkext.h"
 #include "database/ContentObserver.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Object.h>
 
+using Elastos::IO::ICloseable;
+using Elastos::Core::Object;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Os::IBundle;
 using Elastos::Droid::Content::IContentResolver;
@@ -17,6 +20,11 @@ namespace Database {
  * that all cursors need to deal with and is provided for convenience reasons.
  */
 class AbstractCursor
+    : public Object
+    , public IAbstractCursor
+    , public ICrossProcessCursor
+    , public ICursor
+    , public ICloseable
 {
 protected:
     class SelfContentObserver : public ContentObserver
@@ -38,12 +46,11 @@ protected:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     AbstractCursor();
 
     virtual ~AbstractCursor();
-
-    virtual CARAPI_(PInterface) Probe(
-        /* [in]  */ REIID riid) = 0;
 
     virtual CARAPI GetCount(
         /* [out] */ Int32* count) = 0;

@@ -7,7 +7,7 @@
 #include "database/sqlite/SQLiteCustomFunction.h"
 #include <elastos/utility/etl/List.h>
 
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
 using Elastos::Utility::Etl::List;
 using Elastos::Utility::Regex::IPattern;
 
@@ -16,7 +16,7 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
-class SQLiteDatabaseConfiguration : public ElRefBase
+class SQLiteDatabaseConfiguration : public Object
 {
 public:
     /**

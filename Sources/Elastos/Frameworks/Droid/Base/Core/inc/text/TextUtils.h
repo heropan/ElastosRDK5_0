@@ -9,7 +9,8 @@
 
 
 using Elastos::Core::ICharSequence;
-using Libcore::ICU::ILocale;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::IIterable;
 
 namespace Elastos {
 namespace Droid {
@@ -159,7 +160,7 @@ public:
      */
     static CARAPI_(String) Join(
         /* [in] */ ICharSequence* delimiter,
-        /* [in] */ IObjectContainer* tokens);
+        /* [in] */ IIterable* tokens);
 
     /**
      * Returns a string containing the tokens joined by delimiters.

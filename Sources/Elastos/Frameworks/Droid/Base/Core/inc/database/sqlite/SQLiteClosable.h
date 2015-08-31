@@ -2,6 +2,11 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECLOSABLE_H__
 
 #include "ext/frameworkdef.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::IO::ICloseable;
+using Elastos::IO::EIID_ICloseable;
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +19,13 @@ namespace Sqlite {
  * This class implements a primitive reference counting scheme for database objects.
  */
 class SQLiteClosable
+    : public Object
+    , public ISQLiteClosable
+    , public ICloseable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteClosable();
 
     virtual CARAPI AcquireReference();
@@ -33,7 +43,6 @@ protected:
 
 private:
     Int32 mReferenceCount;
-    Object mLock;
 };
 
 } //Sqlite

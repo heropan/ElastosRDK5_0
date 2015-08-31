@@ -20,69 +20,6 @@ BulkCursorToCursorAdaptor::BulkCursorToCursorAdaptor()
     mObserverBridge = new SelfContentObserver((IAbstractCursor*)this->Probe(EIID_IAbstractCursor));
 }
 
-PInterface BulkCursorToCursorAdaptor::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(IAbstractWindowedCursor*)this;
-    }
-    else if (riid == EIID_IAbstractWindowedCursor) {
-        return (IAbstractWindowedCursor*)this;
-    }
-    else if (riid == EIID_IAbstractCursor) {
-        return (IAbstractCursor*)this;
-    }
-    else if (riid == EIID_ICrossProcessCursor) {
-        return (ICrossProcessCursor*)this;
-    }
-    else if (riid == EIID_ICursor) {
-        return (ICursor*)this;
-    }
-    else if (riid == EIID_ICloseable) {
-        return (ICloseable*)this;
-    }
-
-    return NULL;
-}
-
-UInt32 BulkCursorToCursorAdaptor::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 BulkCursorToCursorAdaptor::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode BulkCursorToCursorAdaptor::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID);
-
-    if (pObject == (IInterface*)(IAbstractWindowedCursor*)this) {
-        *pIID = EIID_IAbstractWindowedCursor;
-    }
-    else if (pObject == (IInterface*)(IAbstractCursor*)this) {
-        *pIID = EIID_IAbstractCursor;
-    }
-    else if (pObject == (IInterface*)(ICrossProcessCursor*)this) {
-        *pIID = EIID_ICrossProcessCursor;
-    }
-    else if (pObject == (IInterface*)(ICursor*)this) {
-        *pIID = EIID_ICursor;
-    }
-    else if (pObject == (IInterface*)(ICloseable*)this) {
-        *pIID = EIID_ICloseable;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
-
-    return  NOERROR;
-}
-
 ECode BulkCursorToCursorAdaptor::Initialize(
     /* [in] */ CBulkCursorDescriptor* d)
 {
@@ -248,7 +185,7 @@ ECode BulkCursorToCursorAdaptor::GetColumnNames(
 {
     FAIL_RETURN(ThrowIfCursorIsClosed())
     *names = mColumns;
-    ARRAYOF_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 

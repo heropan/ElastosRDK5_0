@@ -5,6 +5,10 @@
 #include "text/TextUtils.h"
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Core::CString;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
 using Elastos::Utility::Regex::IPatternHelper;
 using Elastos::Utility::Regex::CPatternHelper;
 using Elastos::Utility::Regex::IMatcher;
@@ -30,10 +34,17 @@ static AutoPtr<IPattern> InitLimitPattern()
 }
 const AutoPtr<IPattern> SQLiteQueryBuilder::sLimitPattern = InitLimitPattern();
 
+CAR_INTERFACE_IMPL(SQLiteQueryBuilder, Object, ISQLiteQueryBuilder);
+
 SQLiteQueryBuilder::SQLiteQueryBuilder()
     : mDistinct(FALSE)
     , mStrict(FALSE)
 {}
+
+ECode SQLiteQueryBuilder::constructor()
+{
+    return NOERROR;
+}
 
 SQLiteQueryBuilder::~SQLiteQueryBuilder()
 {
@@ -49,9 +60,13 @@ ECode SQLiteQueryBuilder::SetDistinct(
     return NOERROR;
 }
 
-String SQLiteQueryBuilder::GetTables()
+ECode SQLiteQueryBuilder::GetTables(
+    /* [out] */ String* tables)
 {
-    return mTables;
+    VALIDATE_NOT_NULL(tables);
+
+    *tables = mTables;
+    return NOERROR;
 }
 
 ECode SQLiteQueryBuilder::SetTables(
@@ -90,7 +105,7 @@ ECode SQLiteQueryBuilder::AppendWhereEscapeString(
 }
 
 ECode SQLiteQueryBuilder::SetProjectionMap(
-    /* [in] */ IObjectStringMap* columnMap)
+    /* [in] */ IMap* columnMap)
 {
     mProjectionMap = columnMap;
     return NOERROR;
@@ -167,10 +182,11 @@ void SQLiteQueryBuilder::AppendClause(
     /* [in] */ const String& name,
     /* [in] */ const String& clause)
 {
-    if (!TextUtils::IsEmpty(clause)) {
-        s += name;
-        s += clause;
-    }
+    assert(0 && "TODO TextUtils::IsEmpty");
+    // if (!TextUtils::IsEmpty(clause)) {
+    //     s += name;
+    //     s += clause;
+    // }
 }
 
 ECode SQLiteQueryBuilder::AppendColumns(
@@ -184,12 +200,12 @@ ECode SQLiteQueryBuilder::AppendColumns(
 
         if (!column.IsNull()) {
             if (i > 0) {
-                s->AppendString(String(", "));
+                s->Append(String(", "));
             }
-            s->AppendString(column);
+            s->Append(column);
         }
     }
-    s->AppendChar(' ');
+    s->Append(' ');
     return NOERROR;
 }
 
@@ -330,7 +346,7 @@ ECode SQLiteQueryBuilder::BuildQuery(
 ECode SQLiteQueryBuilder::BuildUnionSubQuery(
     /* [in] */ const String& typeDiscriminatorColumn,
     /* [in] */ const ArrayOf<String>& unionColumns,
-    /* [in] */ IObjectStringMap* columnsPresentInTable,
+    /* [in] */ IMap* columnsPresentInTable,
     /* [in] */ Int32 computedColumnsOffset,
     /* [in] */ const String& typeDiscriminatorValue,
     /* [in] */ const String& selection,
@@ -345,6 +361,8 @@ ECode SQLiteQueryBuilder::BuildUnionSubQuery(
 
     for (Int32 i = 0; i < unionColumnsCount; i++) {
         String unionColumn = unionColumns[i];
+        AutoPtr<ICharSequence> charObj;
+        CString::New(unionColumn, (ICharSequence**)&charObj);
 
         Boolean isContain;
         if (unionColumn.Equals(typeDiscriminatorColumn)) {
@@ -352,7 +370,7 @@ ECode SQLiteQueryBuilder::BuildUnionSubQuery(
                     + typeDiscriminatorColumn;
         }
         else if (i <= computedColumnsOffset
-                || (columnsPresentInTable->ContainsKey(unionColumn, &isContain), isContain)) {
+                || (columnsPresentInTable->ContainsKey(charObj, &isContain), isContain)) {
             (*projectionIn)[i] = unionColumn;
         }
         else {
@@ -366,7 +384,7 @@ ECode SQLiteQueryBuilder::BuildUnionSubQuery(
 ECode SQLiteQueryBuilder::BuildUnionSubQuery(
     /* [in] */ const String& typeDiscriminatorColumn,
     /* [in] */ const ArrayOf<String>& unionColumns,
-    /* [in] */ IObjectStringMap* columnsPresentInTable,
+    /* [in] */ IMap* columnsPresentInTable,
     /* [in] */ Int32 computedColumnsOffset,
     /* [in] */ const String& typeDiscriminatorValue,
     /* [in] */ const String& selection,
@@ -418,8 +436,9 @@ ECode SQLiteQueryBuilder::ComputeProjection(
             for (Int32 i = 0; i < length; i++) {
                 String userColumn = (*projectionIn)[i];
                 String column;
-                AutoPtr<ICharSequence> value;
-                mProjectionMap->Get(userColumn, (IInterface**)&value);
+                AutoPtr<ICharSequence> value, columnObj;
+                CString::New(column, (ICharSequence**)&columnObj);
+                mProjectionMap->Get(columnObj, (IInterface**)&value);
                 value->ToString(&column);
 
                 if (!column.IsNull()) {
@@ -440,38 +459,51 @@ ECode SQLiteQueryBuilder::ComputeProjection(
                 return E_ILLEGAL_ARGUMENT_EXCEPTION;
             }
             *projectionOut = projection;
-            ARRAYOF_ADDREF(*projectionOut)
+            REFCOUNT_ADD(*projectionOut)
             return NOERROR;
         }
         else {
             *projectionOut = projectionIn;
-            ARRAYOF_ADDREF(*projectionOut)
+            REFCOUNT_ADD(*projectionOut)
             return NOERROR;
         }
     }
     else if (mProjectionMap != NULL) {
         // Return all columns in projection map.
-        AutoPtr< ArrayOf<String> > keys;
-        mProjectionMap->GetKeys((ArrayOf<String>**)&keys);
+        AutoPtr<ISet> keys;
+        mProjectionMap->GetKeySet((ISet**)&keys);
         Int32 size;
         mProjectionMap->GetSize(&size);
         AutoPtr< ArrayOf<String> > projection = ArrayOf<String>::Alloc(size);
         Int32 i = 0;
 
-        for (Int32 j = 0; j < keys->GetLength(); ++j) {
-            String key = (*keys)[j];
+        AutoPtr<IIterator> it;
+        keys->GetIterator((IIterator**)&it);
+        Boolean hasNext = FALSE;
+        String name;
+        while ((it->HasNext(&hasNext), hasNext)) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+            AutoPtr<IInterface> obj;
+            entry->GetKey((IInterface**)&obj);
+            assert(ICharSequence::Probe(obj) != NULL);
+            ICharSequence::Probe(obj)->ToString(&name);
+
+            String key = name;
             if (key.Equals(IBaseColumns::COUNT)) {
                 continue;
             }
-            AutoPtr<ICharSequence> cs;
-            mProjectionMap->Get(key, (IInterface**)&cs);
+            AutoPtr<ICharSequence> cs, keyObj;
+            CString::New(key, (ICharSequence**)&keyObj);
+            mProjectionMap->Get(keyObj, (IInterface**)&cs);
             String value;
             cs->ToString(&value);
             (*projection)[i++] = value;
         }
 
         *projectionOut = projection;
-        ARRAYOF_ADDREF(*projectionOut)
+        REFCOUNT_ADD(*projectionOut)
         return NOERROR;
     }
     *projectionOut = NULL;

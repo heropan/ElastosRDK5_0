@@ -9,8 +9,7 @@ module
      * An object created from a SQLiteDatabase that can be closed.
      *
      * This class implements a primitive reference counting scheme for database objects.
-     */
-    /**
+     *
      * @Involve
      * interface Elastos.IO.ICloseable
      */

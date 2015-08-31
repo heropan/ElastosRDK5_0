@@ -3,6 +3,9 @@
 
 #include "ext/frameworkext.h"
 #include "database/AbstractCursor.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -13,11 +16,13 @@ namespace Database {
  * may be different if that is desired. Calls to getColumns, getColumnIndex, etc will return the
  * value for the row that the MergeCursor is currently pointing at.
  */
-class MergeCursor : public AbstractCursor
+class MergeCursor
+    : public AbstractCursor
+    , public IMergeCursor
 {
 private:
     class MyDataSetObserver
-        : public ElRefBase
+        : public Object
         , public IDataSetObserver
     {
     public:
@@ -35,9 +40,11 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
     MergeCursor();
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<ICursor*>* cursors);
 
     //@Override

@@ -74,7 +74,8 @@ SQLiteDebug::SQLiteDebug()
 Boolean SQLiteDebug::ShouldLogSlowQuery(
     /*[in]*/ Int64 elapsedTimeMillis)
 {
-    Int32 slowQueryMillis = SystemProperties::GetInt32(String("db.log.slow_query_threshold"), -1);
+    Int32 slowQueryMillis;
+    SystemProperties::GetInt32(String("db.log.slow_query_threshold"), -1, &slowQueryMillis);
     return slowQueryMillis >= 0 && elapsedTimeMillis >= slowQueryMillis;
 }
 

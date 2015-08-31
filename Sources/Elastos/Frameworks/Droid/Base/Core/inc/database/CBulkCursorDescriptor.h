@@ -3,14 +3,23 @@
 
 #include "ext/frameworkext.h"
 #include "_Elastos_Droid_Database_CBulkCursorDescriptor.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
 
 CarClass(CBulkCursorDescriptor)
+    , public Object
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CBulkCursorDescriptor();
 
     //@Override

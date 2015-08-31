@@ -9,16 +9,14 @@
 #include <elastos/utility/etl/List.h>
 
 using Elastos::Core::IThread;
+using Elastos::IO::ICloseable;
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Utility::Etl::List;
-using Elastos::IO::ICloseable;
 using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Os::ICancellationSignalOnCancelListener;
 
-#define HASH_FUNC_FOR_AUTOPTR_SQLITECONNECTION
-DEFINE_HASH_FUNC_FOR_AUTOPTR_USING_ADDR(Elastos::Droid::Database::Sqlite::SQLiteConnection)
-#endif
+DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Database::Sqlite::SQLiteConnection)
 
 namespace Elastos {
 namespace Droid {
@@ -26,7 +24,7 @@ namespace Database {
 namespace Sqlite {
 
 class SQLiteConnectionPool
-    : public ElRefBase
+    : public Object
     , public ICloseable
 {
 public:
@@ -43,7 +41,7 @@ public:
     };
 
 private:
-    class ConnectionWaiter : public ElRefBase
+    class ConnectionWaiter : public Object
     {
     public:
         ConnectionWaiter()
@@ -69,7 +67,7 @@ private:
     };
 
     class OnCancelListener
-        : public ElRefBase
+        : public Object
         , public ICancellationSignalOnCancelListener
 
     {

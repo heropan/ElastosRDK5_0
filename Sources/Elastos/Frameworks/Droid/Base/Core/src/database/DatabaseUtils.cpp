@@ -29,11 +29,14 @@ using Elastos::Core::CArrayOf;
 using Elastos::Core::IByte;
 using Elastos::Core::CByte;
 using Elastos::Core::EIID_IByte;
+using Elastos::IO::ICloseable;
 using Elastos::Text::ICollatorHelper;
-using Elastos::Text::CCollatorHelper;
+//using Elastos::Text::CCollatorHelper;
 using Elastos::Text::ICollationKey;
+using Elastos::Utility::ISet;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::IMapEntry;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::IObjectStringMap;
 using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
@@ -43,12 +46,13 @@ namespace Database {
 const Int32 DatabaseUtils::InsertHelper::TABLE_INFO_PRAGMA_COLUMNNAME_INDEX;
 const Int32 DatabaseUtils::InsertHelper::TABLE_INFO_PRAGMA_DEFAULT_INDEX;
 
-void DatabaseUtils::InsertHelper::Init(
+ECode DatabaseUtils::InsertHelper::constructor(
     /* [in] */ ISQLiteDatabase* db,
     /* [in] */ const String& tableName)
 {
     mDb = db;
     mTableName = tableName;
+    return NOERROR;
 }
 
 DatabaseUtils::InsertHelper::~InsertHelper()
@@ -81,12 +85,12 @@ ECode DatabaseUtils::InsertHelper::BuildSQL()
         String columnName, defaultValue;
         ECode ec = cur->GetString(TABLE_INFO_PRAGMA_COLUMNNAME_INDEX, &columnName);
         if (FAILED(ec)) {
-            cur->Close();
+            ICloseable::Probe(cur)->Close();
             return ec;
         }
         ec = cur->GetString(TABLE_INFO_PRAGMA_DEFAULT_INDEX, &defaultValue);
         if (FAILED(ec)) {
-            cur->Close();
+            ICloseable::Probe(cur)->Close();
             return ec;
         }
 
@@ -110,7 +114,7 @@ ECode DatabaseUtils::InsertHelper::BuildSQL()
     }
     //} finally {
     if (cur != NULL) {
-        FAIL_RETURN(cur->Close())
+        FAIL_RETURN(ICloseable::Probe(cur)->Close())
     }
     //}
 
@@ -161,24 +165,32 @@ Int64 DatabaseUtils::InsertHelper::InsertInternal(
     mDb->BeginTransactionNonExclusive();
     //try {
     AutoPtr<ISQLiteStatement> stmt = GetStatement(allowReplace);
-    stmt->ClearBindings();
+    ISQLiteProgram::Probe(stmt)->ClearBindings();
     if (DEBUG) {
         Slogger::V(TAG, "--- inserting in table %s", mTableName.string());
     }
 
-    AutoPtr<IObjectStringMap> bsm;
-    values->ValueSet((IObjectStringMap**)&bsm);
-    AutoPtr< ArrayOf<String> > keys;
-    bsm->GetKeys((ArrayOf<String>**)&keys);
+    AutoPtr<ISet> bsm;
+    values->GetKeySet((ISet**)&bsm);
+    AutoPtr<IIterator> it;
+    bsm->GetIterator((IIterator**)&it);
+    Boolean hasNext = FALSE;
     String key;
-    AutoPtr<ISQLiteProgram> value;
     Int32 i;
-    for (Int32 it = 0; it < keys->GetLength(); ++it) {
-        key = (*keys)[it];
+    AutoPtr<ISQLiteProgram> value;
+    while ((it->HasNext(&hasNext), hasNext)) {
+        AutoPtr<IInterface> outface;
+        it->GetNext((IInterface**)&outface);
+        AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+        AutoPtr<IInterface> obj;
+        entry->GetKey((IInterface**)&obj);
+        assert(ICharSequence::Probe(obj) != NULL);
+        ICharSequence::Probe(obj)->ToString(&key);
+
         value = NULL;
-        bsm->Get(key, (IInterface**)&value);
+        values->Get(key, (IInterface**)&value);
         GetColumnIndex(key, &i);
-        if (DatabaseUtils::BindObjectToProgram(stmt, i, value) == (ECode)E_SQLITE_EXCEPTION) {
+        if (DatabaseUtils::BindObjectToProgram(ISQLiteProgram::Probe(stmt), i, value) == (ECode)E_SQLITE_EXCEPTION) {
             Slogger::E(TAG, "Error inserting %p into table  %s", values, mTableName.string());
             mDb->EndTransaction();
             return -1;
@@ -225,41 +237,41 @@ ECode DatabaseUtils::InsertHelper::BindDouble(
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
-    return mPreparedStatement->BindDouble(index, value);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindDouble(index, value);
 }
 
 ECode DatabaseUtils::InsertHelper::BindFloat(
     /* [in] */ Int32 index,
     /* [in] */ Float value)
 {
-    return mPreparedStatement->BindDouble(index, value);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindDouble(index, value);
 }
 
 ECode DatabaseUtils::InsertHelper::BindInt64(
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {
-    return mPreparedStatement->BindInt64(index, value);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindInt64(index, value);
 }
 
 ECode DatabaseUtils::InsertHelper::BindInt32(
     /* [in] */ Int32 index,
     /* [in] */ Int32 value)
 {
-    return mPreparedStatement->BindInt64(index, value);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindInt64(index, value);
 }
 
 ECode DatabaseUtils::InsertHelper::BindBoolean(
     /* [in] */ Int32 index,
     /* [in] */ Boolean value)
 {
-    return mPreparedStatement->BindInt64(index, value ? 1 : 0);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindInt64(index, value ? 1 : 0);
 }
 
 ECode DatabaseUtils::InsertHelper::BindNull(
     /* [in] */ Int32 index)
 {
-    return mPreparedStatement->BindNull(index);
+    return ISQLiteProgram::Probe(mPreparedStatement)->BindNull(index);
 }
 
 ECode DatabaseUtils::InsertHelper::BindBytes(
@@ -267,10 +279,10 @@ ECode DatabaseUtils::InsertHelper::BindBytes(
     /* [in] */ ArrayOf<Byte>* value)
 {
     if (value == NULL) {
-        return mPreparedStatement->BindNull(index);
+        return ISQLiteProgram::Probe(mPreparedStatement)->BindNull(index);
     }
     else {
-        return mPreparedStatement->BindBlob(index, *value);
+        return ISQLiteProgram::Probe(mPreparedStatement)->BindBlob(index, *value);
     }
 }
 
@@ -279,10 +291,10 @@ ECode DatabaseUtils::InsertHelper::BindString(
     /* [in] */ const String& value)
 {
     if (value.IsNull()) {
-        return mPreparedStatement->BindNull(index);
+        return ISQLiteProgram::Probe(mPreparedStatement)->BindNull(index);
     }
     else {
-        return mPreparedStatement->BindString(index, value);
+        return ISQLiteProgram::Probe(mPreparedStatement)->BindString(index, value);
     }
 }
 
@@ -325,13 +337,13 @@ ECode DatabaseUtils::InsertHelper::Execute(
 ECode DatabaseUtils::InsertHelper::PrepareForInsert()
 {
     mPreparedStatement = GetStatement(FALSE);
-    return mPreparedStatement->ClearBindings();
+    return ISQLiteProgram::Probe(mPreparedStatement)->ClearBindings();
 }
 
 ECode DatabaseUtils::InsertHelper::PrepareForReplace()
 {
     mPreparedStatement = GetStatement(TRUE);
-    return mPreparedStatement->ClearBindings();
+    return ISQLiteProgram::Probe(mPreparedStatement)->ClearBindings();
 }
 
 ECode DatabaseUtils::InsertHelper::Replace(
@@ -346,11 +358,11 @@ ECode DatabaseUtils::InsertHelper::Replace(
 ECode DatabaseUtils::InsertHelper::Close()
 {
     if (mInsertStatement != NULL) {
-        mInsertStatement->Close();
+        ICloseable::Probe(mInsertStatement)->Close();
         mInsertStatement = NULL;
     }
     if (mReplaceStatement != NULL) {
-        mReplaceStatement->Close();
+        ICloseable::Probe(mReplaceStatement)->Close();
         mReplaceStatement = NULL;
     }
     mInsertSQL = NULL;
@@ -662,7 +674,7 @@ void DatabaseUtils::AppendEscapedSQLString(
         }
     }
     else
-        sb->AppendString(sqlString);
+        sb->Append(sqlString);
     sb->AppendChar('\'');
 }
 
@@ -672,7 +684,7 @@ String DatabaseUtils::SqlEscapeString(
     AutoPtr<IStringBuilder> escaper = (IStringBuilder*)new StringBuilder();
     AppendEscapedSQLString(escaper, value);
     String str;
-    escaper->ToString(&str);
+    ICharSequence::Probe(escaper)->ToString(&str);
     return str;
 }
 
@@ -681,7 +693,7 @@ void DatabaseUtils::AppendValueToSql(
     /* [in] */ IInterface* value)
 {
     if (value == NULL) {
-        sql->AppendString(String("NULL"));
+        sql->Append(String("NULL"));
     }
     else if (IBoolean::Probe(value) != NULL) {
         AutoPtr<IBoolean> ib = IBoolean::Probe(value);
@@ -706,12 +718,13 @@ String DatabaseUtils::ConcatenateWhere(
     /* [in] */ const String& a,
     /* [in] */ const String& b)
 {
-    if (TextUtils::IsEmpty(a)) {
-        return b;
-    }
-    if (TextUtils::IsEmpty(b)) {
-        return a;
-    }
+    assert(0 && "TODO TextUtils::IsEmpty");
+    // if (TextUtils::IsEmpty(a)) {
+    //     return b;
+    // }
+    // if (TextUtils::IsEmpty(b)) {
+    //     return a;
+    // }
 
     StringBuilder sb("(");
     sb += a;
@@ -776,7 +789,8 @@ AutoPtr< ArrayOf<Byte> > DatabaseUtils::GetCollationKeyInBytes(
 {
     if (mColl == NULL) {
         AutoPtr<ICollatorHelper> helper;
-        CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
+        assert(0 && "TODO CCollatorHelper");
+        //CCollatorHelper::AcquireSingleton((ICollatorHelper**)&helper);
         helper->GetInstance((ICollator**)&mColl);
         mColl->SetStrength(ICollator::PRIMARY);
     }
@@ -798,8 +812,8 @@ void DatabaseUtils::DumpCursor(
     /* [in] */ ICursor* cursor,
     /* [in] */ IPrintStream* stream)
 {
-    stream->PrintStringln(String(">>>>> Dumping cursor "));
-    stream->PrintObjectln(cursor);
+    stream->Println(String(">>>>> Dumping cursor "));
+    stream->Println(cursor);
     if (cursor != NULL) {
         Int32 startPos;
         cursor->GetPosition(&startPos);
@@ -811,7 +825,7 @@ void DatabaseUtils::DumpCursor(
         }
         cursor->MoveToPosition(startPos, &succeeded);
     }
-    stream->PrintStringln(String("<<<<<"));
+    stream->Println(String("<<<<<"));
 }
 
 void DatabaseUtils::DumpCursor(
@@ -819,7 +833,7 @@ void DatabaseUtils::DumpCursor(
     /* [in] */ IStringBuilder* sb)
 {
     //sb += (">>>>> Dumping cursor " + cursor + "\n");
-    sb->AppendString(String(">>>>> Dumping cursor  \n"));
+    sb->Append(String(">>>>> Dumping cursor  \n"));
     if (cursor != NULL) {
         Int32 startPos;
         cursor->GetPosition(&startPos);
@@ -831,7 +845,7 @@ void DatabaseUtils::DumpCursor(
         }
         cursor->MoveToPosition(startPos, &succeeded);
     }
-    sb->AppendString(String("<<<<<\n"));
+    sb->Append(String("<<<<<\n"));
 }
 
 String DatabaseUtils::DumpCursorToString(
@@ -840,7 +854,7 @@ String DatabaseUtils::DumpCursorToString(
     AutoPtr<IStringBuilder> sb = (IStringBuilder*)new StringBuilder();
     DumpCursor(cursor, sb);
     String str;
-    sb->ToString(&str);
+    ICharSequence::Probe(sb)->ToString(&str);
     return str;
 }
 
@@ -862,7 +876,7 @@ void DatabaseUtils::DumpCurrentRow(
     StringBuilder sb1("");
     sb1 += position;
     sb1 += " {";
-    stream->PrintStringln(sb1.ToString());
+    stream->Println(sb1.ToString());
     Int32 length = cols->GetLength();
     for (Int32 i = 0; i < length; i++) {
         String value;
@@ -879,9 +893,9 @@ void DatabaseUtils::DumpCurrentRow(
         sb2 += (*cols)[i];
         sb2 += '=';
         sb2 += value;
-        stream->PrintStringln(sb2.ToString());
+        stream->Println(sb2.ToString());
     }
-    stream->PrintStringln(String("}"));
+    stream->Println(String("}"));
 }
 
 void DatabaseUtils::DumpCurrentRow(
@@ -890,11 +904,11 @@ void DatabaseUtils::DumpCurrentRow(
 {
     AutoPtr< ArrayOf<String> > cols;
     cursor->GetColumnNames((ArrayOf<String>**)&cols);
-    sb->AppendString(String(""));
+    sb->Append(String(""));
     Int32 pos;
     cursor->GetPosition(&pos);
-    sb->AppendInt32(pos);
-    sb->AppendString(String(" {\n"));
+    sb->Append(pos);
+    sb->Append(String(" {\n"));
     Int32 length = cols->GetLength();
     for (Int32 i = 0; i < length; i++) {
         String value;
@@ -907,13 +921,13 @@ void DatabaseUtils::DumpCurrentRow(
             value = String("<unprintable>");
         }
         //}
-        sb->AppendString(String("   "));
-        sb->AppendString((*cols)[i]);
+        sb->Append(String("   "));
+        sb->Append((*cols)[i]);
         sb->AppendChar('=');
-        sb->AppendString(value);
-        sb->AppendString(String("\n"));
+        sb->Append(value);
+        sb->Append(String("\n"));
     }
-    sb->AppendString(String("}\n"));
+    sb->Append(String("}\n"));
 }
 
 String DatabaseUtils::DumpCurrentRowToString(
@@ -922,7 +936,7 @@ String DatabaseUtils::DumpCurrentRowToString(
     AutoPtr<IStringBuilder> sb = (IStringBuilder*)new StringBuilder();
     DumpCurrentRow(cursor, sb);
     String str;
-    sb->ToString(&str);
+    ICharSequence::Probe(sb)->ToString(&str);
     return str;
 }
 
@@ -957,9 +971,7 @@ void DatabaseUtils::CursorStringToContentValues(
     cursor->GetColumnIndexOrThrow(field, &columnIndexOrThrow);
     String str;
     cursor->GetString(columnIndexOrThrow, &str);
-    AutoPtr<ICharSequence> cs;
-    CString::New(str, (ICharSequence**)&cs);
-    values->PutString(key, cs);
+    values->Put(key, str);
 }
 
 void DatabaseUtils::CursorInt32ToContentValues(
@@ -982,12 +994,10 @@ void DatabaseUtils::CursorInt32ToContentValues(
     if (cursor->IsNull(colIndex, &isNull), !isNull) {
         Int32 result;
         cursor->GetInt32(colIndex, &result);
-        AutoPtr<IInteger32> integer;
-        CInteger32::New(result, (IInteger32**)&integer);
-        values->PutInt32(key, integer);
+        values->Put(key, result);
     }
     else {
-        values->PutInt32(key, NULL);
+        values->Put(key, (Int32)NULL);
     }
 }
 
@@ -1011,12 +1021,10 @@ void DatabaseUtils::CursorInt64ToContentValues(
     if (cursor->IsNull(colIndex, &isNUll), !isNUll) {
         Int64 value;
         cursor->GetInt64(colIndex, &value);
-        AutoPtr<IInteger64> integer;
-        CInteger64::New(value, (IInteger64**)&integer);
-        values->PutInt64(key, integer);
+        values->Put(key, value);
     }
     else {
-        values->PutInt64(key, NULL);
+        values->Put(key, (Int64)NULL);
     }
 }
 
@@ -1040,12 +1048,10 @@ void DatabaseUtils::CursorDoubleToContentValues(
     if (cursor->IsNull(colIndex, &isNUll), !isNUll) {
         Double result;
         cursor->GetDouble(colIndex, &result);
-        AutoPtr<IDouble> d;
-        CDouble::New(result, (IDouble**)&d);
-        values->PutDouble(key, d);
+        values->Put(key, result);
     }
     else {
-        values->PutDouble(key, NULL);
+        values->Put(key, (Double)NULL);
     }
 }
 
@@ -1063,21 +1069,12 @@ void DatabaseUtils::CursorRowToContentValues(
         if (awc != NULL && (awc->IsBlob(i, &isBlob), isBlob)) {
             AutoPtr< ArrayOf<Byte> > blob;
             cursor->GetBlob(i, (ArrayOf<Byte>**)&blob);
-            AutoPtr<IArrayOf> array;
-            CArrayOf::New(EIID_IByte, blob->GetLength(), (IArrayOf**)&array);
-            for (Int32 j = 0; j < blob->GetLength(); ++j) {
-                AutoPtr<IByte> bv;
-                CByte::New((*blob)[j], (IByte**)&bv);
-                array->Put(j, bv);
-            }
-            values->PutBytes((*columns)[i], array);
+            values->Put((*columns)[i], blob);
         }
         else {
             String str;
             cursor->GetString(i, &str);
-            AutoPtr<ICharSequence> cs;
-            CString::New(str, (ICharSequence**)&cs);
-            values->PutString((*columns)[i], cs);
+            values->Put((*columns)[i], str);
         }
     }
 }
@@ -1110,7 +1107,8 @@ Int64 DatabaseUtils::QueryNumEntries(
     /* [in] */ const String& selection,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
-    String s = (!TextUtils::IsEmpty(selection)) ? String(" where ") + selection : String("");
+    assert(0 && "TODO TextUtils::IsEmpty");
+    String s ;//= (!TextUtils::IsEmpty(selection)) ? String(" where ") + selection : String("");
     StringBuilder sb("select count(*) from ");
     sb += table;
     sb += s;
@@ -1127,7 +1125,7 @@ Int64 DatabaseUtils::Int64ForQuery(
     //try {
     Int64 value = Int64ForQuery(prog, selectionArgs);
     //} finally {
-    prog->Close();
+    ICloseable::Probe(prog)->Close();
     //}
     return value;
 }
@@ -1136,7 +1134,7 @@ Int64 DatabaseUtils::Int64ForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
-    prog->BindAllArgsAsStrings(selectionArgs);
+    ISQLiteProgram::Probe(prog)->BindAllArgsAsStrings(selectionArgs);
     Int64 value;
     prog->SimpleQueryForInt64(&value);
     return value;
@@ -1152,7 +1150,7 @@ String DatabaseUtils::StringForQuery(
     //try {
     String str = StringForQuery(prog, selectionArgs);
     //} finally {
-    prog->Close();
+    ICloseable::Probe(prog)->Close();
     //}
     return str;
 }
@@ -1161,7 +1159,7 @@ String DatabaseUtils::StringForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
-    prog->BindAllArgsAsStrings(selectionArgs);
+    ISQLiteProgram::Probe(prog)->BindAllArgsAsStrings(selectionArgs);
     String str;
     prog->SimpleQueryForString(&str);
     return str;
@@ -1177,7 +1175,7 @@ AutoPtr<IParcelFileDescriptor> DatabaseUtils::BlobFileDescriptorForQuery(
     //try {
     AutoPtr<IParcelFileDescriptor> desc = BlobFileDescriptorForQuery(prog, selectionArgs);
     //} finally {
-    prog->Close();
+    ICloseable::Probe(prog)->Close();
     //}
     return desc;
 }
@@ -1186,7 +1184,7 @@ AutoPtr<IParcelFileDescriptor> DatabaseUtils::BlobFileDescriptorForQuery(
     /* [in] */ ISQLiteStatement* prog,
     /* [in] */ ArrayOf<String>* selectionArgs)
 {
-    prog->BindAllArgsAsStrings(selectionArgs);
+    ISQLiteProgram::Probe(prog)->BindAllArgsAsStrings(selectionArgs);
     AutoPtr<IParcelFileDescriptor> desc;
     prog->SimpleQueryForBlobFileDescriptor((IParcelFileDescriptor**)&desc);
     return desc;
@@ -1203,9 +1201,7 @@ void DatabaseUtils::CursorStringToContentValuesIfPresent(
     if (index != -1 && (cursor->IsNull(index, &isNUll), !isNUll)) {
         String columnValue;
         cursor->GetString(index, &columnValue);
-        AutoPtr<ICharSequence> cs;
-        CString::New(columnValue, (ICharSequence**)&cs);
-        values->PutString(column, cs);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1220,9 +1216,7 @@ void DatabaseUtils::CursorInt64ToContentValuesIfPresent(
     if (index != -1 && (cursor->IsNull(index, &isNull), !isNull)) {
         Int64 columnValue;
         cursor->GetInt64(index, &columnValue);
-        AutoPtr<IInteger64> integer;
-        CInteger64::New(columnValue, (IInteger64**)&integer);
-        values->PutInt64(column, integer);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1237,9 +1231,7 @@ void DatabaseUtils::CursorInt16ToContentValuesIfPresent(
     if (cursor->IsNull(index, &isNull), !isNull) {
         Int16 columnValue;
         cursor->GetInt16(index, &columnValue);
-        AutoPtr<IInteger16> integer;
-        CInteger16::New(columnValue, (IInteger16**)&integer);
-        values->PutInt16(column, integer);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1254,9 +1246,7 @@ void DatabaseUtils::CursorInt32ToContentValuesIfPresent(
     if (cursor->IsNull(index, &isNull), !isNull) {
         Int32 columnValue;
         cursor->GetInt32(index, &columnValue);
-        AutoPtr<IInteger32> integer;
-        CInteger32::New(columnValue, (IInteger32**)&integer);
-        values->PutInt32(column, integer);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1271,9 +1261,7 @@ void DatabaseUtils::CursorFloatToContentValuesIfPresent(
     if (cursor->IsNull(index, &isNull), !isNull) {
         Float columnValue;
         cursor->GetFloat(index, &columnValue);
-        AutoPtr<IFloat> f;
-        CFloat::New(columnValue, (IFloat**)&f);
-        values->PutFloat(column, f);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1288,9 +1276,7 @@ void DatabaseUtils::CursorDoubleToContentValuesIfPresent(
     if (cursor->IsNull(index, &isNull), !isNull) {
         Double columnValue;
         cursor->GetDouble(index, &columnValue);
-        AutoPtr<IDouble> d;
-        CDouble::New(columnValue, (IDouble**)&d);
-        values->PutDouble(column, d);
+        values->Put(column, columnValue);
     }
 }
 
@@ -1309,12 +1295,13 @@ void DatabaseUtils::CreateDbFromSqlStatements(
     ASSERT_SUCCEEDED(StringUtils::Split(sqlStatements, String(";\n"), (ArrayOf<String>**)&statements))
     for (Int32 i = 0; i < statements->GetLength(); i++) {
         String statement = (*statements)[i];
-        if (TextUtils::IsEmpty(statement)) continue;
+        assert(0 && "TODO TextUtils::IsEmpty");
+        //if (TextUtils::IsEmpty(statement)) continue;
         db->ExecSQL(statement);
     }
 
     db->SetVersion(dbVersion);
-    db->Close();
+    ICloseable::Probe(db)->Close();
 }
 
 Int32 DatabaseUtils::GetSqlStatementType(

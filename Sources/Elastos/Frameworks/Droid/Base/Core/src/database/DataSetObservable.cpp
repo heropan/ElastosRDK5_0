@@ -1,5 +1,6 @@
 
 #include "database/DataSetObservable.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -7,12 +8,12 @@ namespace Database {
 
 ECode DataSetObservable::NotifyChanged()
 {
-    AutoLock lock(mObserversLock);
-
-    List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
-    for (; rit != mObservers.REnd(); ++rit) {
-        AutoPtr<IDataSetObserver> observer = IDataSetObserver::Probe(*rit);
-        observer->OnChanged();
+    synchronized(mObserversLock) {
+        List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
+        for (; rit != mObservers.REnd(); ++rit) {
+            AutoPtr<IDataSetObserver> observer = IDataSetObserver::Probe(*rit);
+            observer->OnChanged();
+        }
     }
 
     return NOERROR;
@@ -20,12 +21,12 @@ ECode DataSetObservable::NotifyChanged()
 
 ECode DataSetObservable::NotifyInvalidated()
 {
-    AutoLock lock(mObserversLock);
-
-    List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
-    for (; rit != mObservers.REnd(); ++rit) {
-        AutoPtr<IDataSetObserver> observer = IDataSetObserver::Probe(*rit);
-        observer->OnInvalidated();
+    synchronized(mObserversLock) {
+        List< AutoPtr<IInterface> >::ReverseIterator rit = mObservers.RBegin();
+        for (; rit != mObservers.REnd(); ++rit) {
+            AutoPtr<IDataSetObserver> observer = IDataSetObserver::Probe(*rit);
+            observer->OnInvalidated();
+        }
     }
 
     return NOERROR;

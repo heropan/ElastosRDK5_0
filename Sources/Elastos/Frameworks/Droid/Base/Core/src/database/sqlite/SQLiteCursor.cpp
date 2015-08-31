@@ -3,6 +3,7 @@
 #include "database/sqlite/CSQLiteQuery.h"
 #include "database/DatabaseUtils.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Slogger;
 
@@ -14,21 +15,23 @@ namespace Sqlite {
 const String SQLiteCursor::TAG("SQLiteCursor");
 const Int32 SQLiteCursor::NO_COUNT;
 
+CAR_INTERFACE_IMPL(SQLiteCursor, AbstractWindowedCursor, ISQLiteCursor);
+
 SQLiteCursor::SQLiteCursor()
     : mCount(NO_COUNT)
     , mCursorWindowCapacity(0)
 {}
 
-ECode SQLiteCursor::Init(
+ECode SQLiteCursor::constructor(
     /*[in]*/ ISQLiteDatabase* db,
     /*[in]*/ ISQLiteCursorDriver* driver,
     /*[in]*/ const String& editTable,
     /*[in]*/ ISQLiteQuery* query)
 {
-    return Init(driver, editTable, query);
+    return constructor(driver, editTable, query);
 }
 
-ECode SQLiteCursor::Init(
+ECode SQLiteCursor::constructor(
     /*[in]*/ ISQLiteCursorDriver* driver,
     /*[in]*/ const String& editTable,
     /*[in]*/ ISQLiteQuery* query)
@@ -182,7 +185,7 @@ ECode SQLiteCursor::GetColumnNames(
 {
     VALIDATE_NOT_NULL(columnNames);
     *columnNames = mColumns;
-    ARRAYOF_ADDREF(*columnNames)
+    REFCOUNT_ADD(*columnNames)
     return NOERROR;
 }
 
@@ -195,9 +198,13 @@ ECode SQLiteCursor::Deactivate()
 ECode SQLiteCursor::Close()
 {
     AbstractWindowedCursor::Close();
-    AutoLock lock(mLock);
-    mQuery->Close();
-    return mDriver->CursorClosed();
+
+    ECode ec = NOERROR;
+    synchronized(mLock) {
+        ICloseable::Probe(mQuery)->Close();
+        ec = mDriver->CursorClosed();
+    }
+    return ec;
 }
 
 ECode SQLiteCursor::Requery(
@@ -211,8 +218,7 @@ ECode SQLiteCursor::Requery(
         return NOERROR;
     }
 
-    {
-        AutoLock lock(mLock);
+    synchronized (mLock){
         AutoPtr<ISQLiteDatabase> database = ((CSQLiteQuery*)mQuery.Get())->GetDatabase();
         Boolean isOpened;
         if (database->IsOpen(&isOpened), !isOpened) {

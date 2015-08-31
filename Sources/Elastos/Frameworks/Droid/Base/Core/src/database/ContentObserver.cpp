@@ -6,6 +6,7 @@
 #include "Elastos.Droid.Core.h"
 #endif
 #include "os/Handler.h"
+#include <elastos/core/AutoLock.h>
 
 namespace Elastos {
 namespace Droid {
@@ -38,19 +39,20 @@ ECode ContentObserver::Init(
     return NOERROR;
 }
 
-CAR_INTERFACE_IMPL(ContentObserver, IContentObserver)
+CAR_INTERFACE_IMPL(ContentObserver, Object, IContentObserver)
 
 ECode ContentObserver::GetContentObserver(
     /* [out] */ IIContentObserver** contentObserver)
 {
     VALIDATE_NOT_NULL(contentObserver)
 
-    AutoLock lock(mLock);
-    if (mTransport == NULL) {
-        CContentObserverTransport::New((IContentObserver*)this->Probe(EIID_IContentObserver), (IContentObserverTransport**)&mTransport);
+    synchronized(mLock) {
+        if (mTransport == NULL) {
+            CContentObserverTransport::New((IContentObserver*)this->Probe(EIID_IContentObserver), (IContentObserverTransport**)&mTransport);
+        }
+        *contentObserver = IIContentObserver::Probe(mTransport);
+        REFCOUNT_ADD(*contentObserver)
     }
-    *contentObserver = mTransport;
-    REFCOUNT_ADD(*contentObserver)
     return NOERROR;
 }
 
@@ -59,15 +61,15 @@ ECode ContentObserver::ReleaseContentObserver(
 {
     VALIDATE_NOT_NULL(contentObserver)
 
-    AutoLock lock(mLock);
-
-    AutoPtr<IContentObserverTransport> oldTransport = mTransport;
-    if (oldTransport != NULL) {
-        oldTransport->ReleaseContentObserver();
-        mTransport = NULL;
+    synchronized(mLock) {
+        AutoPtr<IContentObserverTransport> oldTransport = mTransport;
+        if (oldTransport != NULL) {
+            oldTransport->ReleaseContentObserver();
+            mTransport = NULL;
+        }
+        *contentObserver = IIContentObserver::Probe(oldTransport);
+        REFCOUNT_ADD(*contentObserver)
     }
-    *contentObserver = oldTransport;
-    REFCOUNT_ADD(*contentObserver)
     return NOERROR;
 }
 

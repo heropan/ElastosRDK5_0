@@ -9,9 +9,13 @@ namespace Database {
 /**
  * A base class for Cursors that store their data in {@link CursorWindow}s.
  */
-class AbstractWindowedCursor : public AbstractCursor
+class AbstractWindowedCursor
+    : public AbstractCursor
+    , public IAbstractWindowedCursor
 {
 public:
+    CAR_INTERFACE_DECL()
+
     //@Override
     virtual CARAPI GetBlob(
         /* [in] */ Int32 columnIndex,

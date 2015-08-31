@@ -7,6 +7,10 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
+CAR_INTERFACE_IMPL(CSQLiteDatabaseHelper, Singleton, ISQLiteDatabaseHelper)
+
+CAR_SINGLETON_IMPL(CSQLiteDatabaseHelper)
+
 ECode CSQLiteDatabaseHelper::ReleaseMemory(
     /* [out] */ Int32* result)
 {

@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITEGLOBAL_H__
 
 #include "ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -22,7 +23,7 @@ namespace Sqlite {
  *
  * @hide
  */
-class SQLiteGlobal
+class SQLiteGlobal : public Object
 {
 public:
     /**

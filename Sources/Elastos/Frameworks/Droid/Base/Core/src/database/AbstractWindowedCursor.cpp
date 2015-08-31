@@ -8,6 +8,8 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+CAR_INTERFACE_IMPL(AbstractWindowedCursor, AbstractCursor, IAbstractWindowedCursor);
+
 ECode AbstractWindowedCursor::GetBlob(
     /* [in] */ Int32 columnIndex,
     /* [out] */ ArrayOf<Byte>** blob)
@@ -187,7 +189,7 @@ ECode AbstractWindowedCursor::HasWindow(
 ECode AbstractWindowedCursor::CloseWindow()
 {
     if (mWindow != NULL) {
-        mWindow->Close();
+        ICloseable::Probe(mWindow)->Close();
         mWindow = NULL;
     }
     return NOERROR;

@@ -2,12 +2,15 @@
 #include "database/Observable.h"
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/etl/Algorithm.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
+
+CAR_INTERFACE_IMPL(Observable, Object, IObservable);
 
 ECode Observable::RegisterObserver(
     /* [in] */ IInterface* observer)
@@ -17,16 +20,16 @@ ECode Observable::RegisterObserver(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mObserversLock);
-
-    List< AutoPtr<IInterface> >::Iterator it =
-            Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
-    if (it != mObservers.End()) {
-        //throw new IllegalStateException("Observer " + observer + " is already registered.");
-        Slogger::E(String("Observable"), "Observer %p is already registered.", observer);
-        return E_ILLEGAL_STATE_EXCEPTION;
+    synchronized(mObserversLock) {
+        List< AutoPtr<IInterface> >::Iterator it =
+                Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
+        if (it != mObservers.End()) {
+            //throw new IllegalStateException("Observer " + observer + " is already registered.");
+            Slogger::E(String("Observable"), "Observer %p is already registered.", observer);
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        mObservers.PushBack(observer);
     }
-    mObservers.PushBack(observer);
 
     return NOERROR;
 }
@@ -39,24 +42,25 @@ ECode Observable::UnregisterObserver(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mObserversLock);
-
-    List< AutoPtr<IInterface> >::Iterator it =
-            Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
-    if (it == mObservers.End()) {
-        //throw new IllegalStateException("Observer " + observer + " was not registered.");
-        Slogger::E(String("Observable"), "Observer %p was not registered.", observer);
-        return E_ILLEGAL_STATE_EXCEPTION;
+    synchronized(mObserversLock) {
+        List< AutoPtr<IInterface> >::Iterator it =
+                Find(mObservers.Begin(), mObservers.End(), AutoPtr<IInterface>(observer));
+        if (it == mObservers.End()) {
+            //throw new IllegalStateException("Observer " + observer + " was not registered.");
+            Slogger::E(String("Observable"), "Observer %p was not registered.", observer);
+            return E_ILLEGAL_STATE_EXCEPTION;
+        }
+        mObservers.Erase(it);
     }
-    mObservers.Erase(it);
 
     return NOERROR;
 }
 
 ECode Observable::UnregisterAll()
 {
-    AutoLock lock(mObserversLock);
-    mObservers.Clear();
+    synchronized(mObserversLock) {
+        mObservers.Clear();
+    }
     return NOERROR;
 }
 

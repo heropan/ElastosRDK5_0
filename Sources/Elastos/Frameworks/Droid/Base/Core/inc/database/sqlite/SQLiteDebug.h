@@ -5,6 +5,7 @@
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/core/Object.h>
 
 using Elastos::Utility::Etl::List;
 using Elastos::Droid::Utility::IPrinter;
@@ -13,18 +14,19 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 namespace Sqlite {
+
 /**
  * Provides debugging info about all SQLite databases running in the current process.
  *
  * {@hide}
  */
-class SQLiteDebug : public ElRefBase
+class SQLiteDebug : public Object
 {
 public:
     /**
      * contains statistics about a database
      */
-    class DbStats : public ElRefBase
+    class DbStats : public Object
     {
     public:
         DbStats(
@@ -58,7 +60,7 @@ public:
      *
      * @see #getPagerStats(PagerStats)
      */
-    class PagerStats : public ElRefBase
+    class PagerStats : public Object
     {
     public:
         PagerStats()

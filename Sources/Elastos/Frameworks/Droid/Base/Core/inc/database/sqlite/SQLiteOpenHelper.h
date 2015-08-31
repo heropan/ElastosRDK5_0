@@ -6,6 +6,7 @@
 #else
 #include "Elastos.Droid.Core.h"
 #endif
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Database::IDatabaseErrorHandler;
@@ -28,8 +29,12 @@ namespace Sqlite {
  *     {@link #onUpgrade} will be used to upgrade the database
  */
 class SQLiteOpenHelper
+    : public Object
+    , public ISQLiteOpenHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteOpenHelper();
 
     /**

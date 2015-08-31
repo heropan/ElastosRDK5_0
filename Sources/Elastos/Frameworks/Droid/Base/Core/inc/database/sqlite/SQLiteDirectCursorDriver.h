@@ -3,6 +3,7 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Os::ICancellationSignal;
 
@@ -16,17 +17,17 @@ namespace Sqlite {
  * @hide
  */
 class SQLiteDirectCursorDriver
-    : public ElRefBase
+    : public Object
     , public ISQLiteCursorDriver
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteDirectCursorDriver(
         /* [in] */ ISQLiteDatabase* db,
         /* [in] */ const String& sql,
         /* [in] */ const String& editTable,
         /* [in] */ ICancellationSignal* cancellationSignal);
-
-    CAR_INTERFACE_DECL()
 
     CARAPI Query(
         /* [in] */ ISQLiteDatabaseCursorFactory* factory,

@@ -15,7 +15,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sqlite3.h>
-#include <sqlite3_android.h>
+//#include <sqlite3_android.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringUtils;
 using Elastos::Core::ICharSequence;
@@ -33,13 +34,13 @@ using Elastos::Core::EIID_IByte;
 using Elastos::Core::IBlockGuard;
 using Elastos::Core::CBlockGuard;
 using Elastos::Core::IBlockGuardPolicy;
+using Elastos::Text::IFormat;
 using Elastos::Text::CSimpleDateFormat;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
 using Elastos::Droid::Os::EIID_ICancellationSignalOnCancelListener;
 using Elastos::Droid::Os::CParcelFileDescriptor;
-
 
 namespace Elastos {
 namespace Droid {
@@ -54,7 +55,6 @@ SQLiteConnection::PreparedStatement::PreparedStatement()
     , mInCache(FALSE)
     , mInUse(FALSE)
 {}
-
 
 SQLiteConnection::PreparedStatementCache::PreparedStatementCache(
     /* [in] */ Int32 size,
@@ -128,7 +128,7 @@ void SQLiteConnection::Operation::Describe(
     msg += mKind;
     if (mFinished) {
         msg += " took ";
-        msg.AppendInt64(mEndTime - mStartTime);
+        msg.Append(mEndTime - mStartTime);
         msg += "ms";
     }
     else {
@@ -137,14 +137,14 @@ void SQLiteConnection::Operation::Describe(
         Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
         Int64 start;
         system->GetCurrentTimeMillis(&start);
-        msg.AppendInt64(start - mStartTime);
+        msg.Append(start - mStartTime);
         msg += "ms ago";
     }
     msg += " - ";
-    msg.AppendString(GetStatus());
+    msg.Append(GetStatus());
     if (mSql != NULL) {
         msg += ", sql=\"";
-        msg.AppendString(TrimSqlForDisplay(mSql));
+        msg.Append(TrimSqlForDisplay(mSql));
         msg += "\"";
     }
     if (mBindArgs->IsEmpty() && mBindArgs->IsEmpty() == FALSE) {
@@ -195,7 +195,7 @@ String SQLiteConnection::Operation::GetFormattedStartTime()
     AutoPtr<IDate> date;
     CDate::New(mStartTime, (IDate**)&date);
     String str;
-    GetDateFormat()->FormatDate(date, &str);
+    IFormat::Probe(GetDateFormat())->Format(date, &str);
     return str;
 }
 
@@ -216,48 +216,49 @@ Int32 SQLiteConnection::OperationLog::BeginOperation(
     /* [in] */ const String& sql,
     /* [in] */ ArrayOf<IInterface*>* bindArgs)
 {
-    AutoPtr<ISystem> system;
-    Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
-
-    AutoLock lock(mOperationsLock);
-    Int32 index = (mIndex + 1) % MAX_RECENT_OPERATIONS;
-    AutoPtr<Operation> operation = (*mOperations)[index];
-    if (operation == NULL) {
-        operation = new Operation();
-        mOperations->Set(index, operation);
-    }
-    else {
-        operation->mFinished = FALSE;
-        operation->mException = NOERROR;
-        if (operation->mBindArgs != NULL) {
-            operation->mBindArgs->Clear();
-        }
-    }
-
-    system->GetCurrentTimeMillis(&operation->mStartTime);
-    operation->mKind = kind;
-    operation->mSql = sql;
-    if (bindArgs != NULL) {
-        if (operation->mBindArgs == NULL) {
-            operation->mBindArgs = new List<AutoPtr<IInterface> >();
+    AutoPtr<Operation> operation;
+    synchronized(mOperationsLock) {
+        Int32 index = (mIndex + 1) % MAX_RECENT_OPERATIONS;
+        operation = (*mOperations)[index];
+        if (operation == NULL) {
+            operation = new Operation();
+            mOperations->Set(index, operation);
         }
         else {
-            operation->mBindArgs->Clear();
+            operation->mFinished = FALSE;
+            operation->mException = NOERROR;
+            if (operation->mBindArgs != NULL) {
+                operation->mBindArgs->Clear();
+            }
         }
-        for (Int32 i = 0; i < bindArgs->GetLength(); i++) {
-            AutoPtr<IInterface> arg = (*bindArgs)[i];
-            if (arg != NULL && IArrayOf::Probe(arg) != NULL) {
-                // Don't hold onto the real byte array longer than necessary.
-                //operation->mBindArgs->PushBack(EMPTY_BYTE_ARRAY);
-                operation->mBindArgs->PushBack(SQLiteConnection::EMPTY_BYTE_ARRAY);
+
+        AutoPtr<ISystem> system;
+        Elastos::Core::CSystem::AcquireSingleton((ISystem**)&system);
+        system->GetCurrentTimeMillis(&operation->mStartTime);
+        operation->mKind = kind;
+        operation->mSql = sql;
+        if (bindArgs != NULL) {
+            if (operation->mBindArgs == NULL) {
+                operation->mBindArgs = new List<AutoPtr<IInterface> >();
             }
             else {
-                operation->mBindArgs->PushBack(arg);
+                operation->mBindArgs->Clear();
+            }
+            for (Int32 i = 0; i < bindArgs->GetLength(); i++) {
+                AutoPtr<IInterface> arg = (*bindArgs)[i];
+                if (arg != NULL && IArrayOf::Probe(arg) != NULL) {
+                    // Don't hold onto the real byte array longer than necessary.
+                    //operation->mBindArgs->PushBack(EMPTY_BYTE_ARRAY);
+                    operation->mBindArgs->PushBack(SQLiteConnection::EMPTY_BYTE_ARRAY);
+                }
+                else {
+                    operation->mBindArgs->PushBack(arg);
+                }
             }
         }
+        operation->mCookie = NewOperationCookieLocked(index);
+        mIndex = index;
     }
-    operation->mCookie = NewOperationCookieLocked(index);
-    mIndex = index;
     return operation->mCookie;
 }
 
@@ -265,35 +266,41 @@ void SQLiteConnection::OperationLog::FailOperation(
     /* [in] */ Int32 cookie,
     /* [in] */ ECode ec)
 {
-    AutoLock lock(mOperationsLock);
-    AutoPtr<Operation> operation = GetOperationLocked(cookie);
-    if (operation != NULL) {
-        operation->mException = ec;
+    synchronized(mOperationsLock) {
+        AutoPtr<Operation> operation = GetOperationLocked(cookie);
+        if (operation != NULL) {
+            operation->mException = ec;
+        }
     }
 }
 
 void SQLiteConnection::OperationLog::EndOperation(
     /* [in] */ Int32 cookie)
 {
-    AutoLock lock(mOperationsLock);
-    if (EndOperationDeferLogLocked(cookie)) {
-        LogOperationLocked(cookie, String(NULL));
+    synchronized(mOperationsLock) {
+        if (EndOperationDeferLogLocked(cookie)) {
+            LogOperationLocked(cookie, String(NULL));
+        }
     }
 }
 
 Boolean SQLiteConnection::OperationLog::EndOperationDeferLog(
     /* [in] */ Int32 cookie)
 {
-    AutoLock lock(mOperationsLock);
-    return EndOperationDeferLogLocked(cookie);
+    Boolean ret;
+    synchronized(mOperationsLock) {
+        ret = EndOperationDeferLogLocked(cookie);
+    }
+    return ret;
 }
 
 void SQLiteConnection::OperationLog::LogOperation(
     /* [in] */ Int32 cookie,
     /* [in] */ const String& detail)
 {
-    AutoLock lock(mOperationsLock);
-    LogOperationLocked(cookie, detail);
+    synchronized(mOperationsLock) {
+        LogOperationLocked(cookie, detail);
+    }
 }
 
 Boolean SQLiteConnection::OperationLog::EndOperationDeferLogLocked(
@@ -341,12 +348,13 @@ AutoPtr<SQLiteConnection::Operation> SQLiteConnection::OperationLog::GetOperatio
 
 String SQLiteConnection::OperationLog::DescribeCurrentOperation()
 {
-    AutoLock lock(mOperationsLock);
-    AutoPtr<Operation> operation = (*mOperations)[mIndex];
-    if (operation != NULL && !operation->mFinished) {
-        StringBuilder msg;
-        operation->Describe(msg);
-        return msg.ToString();
+    synchronized(mOperationsLock) {
+        AutoPtr<Operation> operation = (*mOperations)[mIndex];
+        if (operation != NULL && !operation->mFinished) {
+            StringBuilder msg;
+            operation->Describe(msg);
+            return msg.ToString();
+        }
     }
     return String(NULL);
 }
@@ -354,33 +362,34 @@ String SQLiteConnection::OperationLog::DescribeCurrentOperation()
 void SQLiteConnection::OperationLog::Dump(
     /* [in] */ IPrinter* printer)
 {
-    AutoLock lock(mOperationsLock);
-    printer->Println(String("  Most recently executed operations:"));
-    Int32 index = mIndex;
-    AutoPtr<Operation> operation = (*mOperations)[mIndex];
-    if (operation != NULL) {
-        Int32 n = 0;
-        do {
-            StringBuilder msg("    ");
-            msg += n;
-            msg += ": [";
-            msg.AppendString(operation->GetFormattedStartTime());
-            msg += "] ";
-            operation->Describe(msg);
-            printer->Println(msg.ToString());
+    synchronized(mOperationsLock) {
+        printer->Println(String("  Most recently executed operations:"));
+        Int32 index = mIndex;
+        AutoPtr<Operation> operation = (*mOperations)[mIndex];
+        if (operation != NULL) {
+            Int32 n = 0;
+            do {
+                StringBuilder msg("    ");
+                msg += n;
+                msg += ": [";
+                msg.Append(operation->GetFormattedStartTime());
+                msg += "] ";
+                operation->Describe(msg);
+                printer->Println(msg.ToString());
 
-            if (index > 0) {
-                index -= 1;
-            }
-            else {
-                index = MAX_RECENT_OPERATIONS - 1;
-            }
-            n += 1;
-            operation = (*mOperations)[index];
-        } while (operation != NULL && n < MAX_RECENT_OPERATIONS);
-    }
-    else {
-        printer->Println(String("    <none>"));
+                if (index > 0) {
+                    index -= 1;
+                }
+                else {
+                    index = MAX_RECENT_OPERATIONS - 1;
+                }
+                n += 1;
+                operation = (*mOperations)[index];
+            } while (operation != NULL && n < MAX_RECENT_OPERATIONS);
+        }
+        else {
+            printer->Println(String("    <none>"));
+        }
     }
 }
 
@@ -516,7 +525,8 @@ ECode SQLiteConnection::NativeOpen(
     }
 
     // Register custom Android functions.
-    err = register_android_functions(db, UTF16_STORAGE);
+    assert(0 && "TODO");
+    //err = register_android_functions(db, UTF16_STORAGE);
     if (err) {
         *result = 0;
         sqlite3_close(db);
@@ -609,7 +619,8 @@ ECode SQLiteConnection::NativeRegisterLocalizedCollators(
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
 
-    Int32 err = register_localized_collators(connection->db, locale, UTF16_STORAGE);
+    assert(0 && "TODO");
+    Int32 err;// = register_localized_collators(connection->db, locale, UTF16_STORAGE);
 
     if (err != SQLITE_OK) {
         return throw_sqlite3_exception(connection->db);
@@ -1271,7 +1282,7 @@ SQLiteConnection::~SQLiteConnection()
     //}
 }
 
-CAR_INTERFACE_IMPL(SQLiteConnection, ICancellationSignalOnCancelListener);
+CAR_INTERFACE_IMPL(SQLiteConnection, Object, ICancellationSignalOnCancelListener);
 
 ECode SQLiteConnection::Open(
     /* [in] */ SQLiteConnectionPool* pool,
@@ -1346,7 +1357,7 @@ ECode SQLiteConnection::SetPageSize()
         Int64 value;
         FAIL_RETURN(ExecuteForInt64(String("PRAGMA page_size"), NULL, NULL, &value))
         if (value != (Int64)newValue) {
-            return Execute(String("PRAGMA page_size=") + StringUtils::Int32ToString(newValue), NULL, NULL);
+            return Execute(String("PRAGMA page_size=") + StringUtils::ToString(newValue), NULL, NULL);
         }
     }
     return NOERROR;
@@ -1992,7 +2003,7 @@ ECode SQLiteConnection::ExecuteForCursorWindow(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    window->AcquireReference();
+    ISQLiteClosable::Probe(window)->AcquireReference();
     //try {
     Int32 actualPos = -1;
     Int32 countedRows = -1;
@@ -2049,7 +2060,7 @@ fail:
     }
     if (mRecentOperations->EndOperationDeferLog(cookie)) {
         StringBuilder sb("window='");
-        sb.AppendObject(window);
+        sb.Append(window);
         sb += "', startPos=";
         sb += startPos;
         sb += ", actualPos=";
@@ -2060,7 +2071,7 @@ fail:
         sb += countedRows;
         mRecentOperations->LogOperation(cookie, sb.ToString());
     }
-    window->ReleaseReference();
+    ISQLiteClosable::Probe(window)->ReleaseReference();
     return ec;
 }
 
@@ -2393,7 +2404,7 @@ void SQLiteConnection::CollectDbStats(
     //     window.close();
     // }
 fail:
-    window->Close();
+    ICloseable::Probe(window)->Close();
 }
 
 void SQLiteConnection::CollectDbStatsUnsafe(

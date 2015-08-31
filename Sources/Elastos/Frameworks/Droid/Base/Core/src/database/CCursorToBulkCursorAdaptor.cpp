@@ -3,12 +3,18 @@
 #include "database/CCrossProcessCursorWrapper.h"
 #include "database/CCursorWindow.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Utility::Logging::Slogger;
+using Elastos::Droid::Database::Sqlite::ISQLiteClosable;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
+
+CAR_INTERFACE_IMPL_3(CCursorToBulkCursorAdaptor, Object, IBinder, IBulkCursor, IProxyDeathRecipient);
+
+CAR_OBJECT_IMPL(CCursorToBulkCursorAdaptor)
 
 CCursorToBulkCursorAdaptor::ContentObserverProxy::ContentObserverProxy(
     /* [in] */ IIContentObserver* remoteObserver,
@@ -61,7 +67,7 @@ const String CCursorToBulkCursorAdaptor::TAG("Cursor");
 void CCursorToBulkCursorAdaptor::CloseFilledWindowLocked()
 {
     if (mFilledWindow != NULL) {
-        mFilledWindow->Close();
+        ICloseable::Probe(mFilledWindow)->Close();
         mFilledWindow = NULL;
     }
 }
@@ -70,7 +76,7 @@ void CCursorToBulkCursorAdaptor::DisposeLocked()
 {
     if (mCursor != NULL) {
         UnregisterObserverProxyLocked();
-        mCursor->Close();
+        ICloseable::Probe(mCursor)->Close();
         mCursor = NULL;
     }
 
@@ -89,8 +95,9 @@ ECode CCursorToBulkCursorAdaptor::ThrowIfCursorIsClosed()
 
 ECode CCursorToBulkCursorAdaptor::ProxyDied()
 {
-    AutoLock lock(_m_syncLock);
-    DisposeLocked();
+    synchronized(mLock) {
+        DisposeLocked();
+    }
     return NOERROR;
 }
 
@@ -99,23 +106,24 @@ ECode CCursorToBulkCursorAdaptor::GetBulkCursorDescriptor(
 {
     VALIDATE_NOT_NULL(result);
 
-    AutoLock lock(_m_syncLock);
-    FAIL_RETURN(ThrowIfCursorIsClosed())
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
 
-    AutoPtr<CBulkCursorDescriptor> d;
-    CBulkCursorDescriptor::NewByFriend((CBulkCursorDescriptor**)&d);
-    d->mCursor = (IBulkCursor*)this;
-    mCursor->GetColumnNames((ArrayOf<String>**)&d->mColumnNames);
-    mCursor->GetWantsAllOnMoveCalls(&d->mWantsAllOnMoveCalls);
-    mCursor->GetCount(&d->mCount);
-    mCursor->GetWindow((ICursorWindow**)&d->mWindow);
-    if (d->mWindow != NULL) {
-        // Acquire a reference to the window because its reference count will be
-        // decremented when it is returned as part of the binder call reply parcel.
-        d->mWindow->AcquireReference();
+        AutoPtr<CBulkCursorDescriptor> d;
+        CBulkCursorDescriptor::NewByFriend((CBulkCursorDescriptor**)&d);
+        d->mCursor = (IBulkCursor*)this;
+        ICursor::Probe(mCursor)->GetColumnNames((ArrayOf<String>**)&d->mColumnNames);
+        ICursor::Probe(mCursor)->GetWantsAllOnMoveCalls(&d->mWantsAllOnMoveCalls);
+        ICursor::Probe(mCursor)->GetCount(&d->mCount);
+        mCursor->GetWindow((ICursorWindow**)&d->mWindow);
+        if (d->mWindow != NULL) {
+            // Acquire a reference to the window because its reference count will be
+            // decremented when it is returned as part of the binder call reply parcel.
+            ISQLiteClosable::Probe(d->mWindow)->AcquireReference();
+        }
+        *result = d;
+        REFCOUNT_ADD(*result)
     }
-    *result = d;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
@@ -126,74 +134,80 @@ ECode CCursorToBulkCursorAdaptor::GetWindow(
     VALIDATE_NOT_NULL(result)
     *result = NULL;
 
-    AutoLock lock(_m_syncLock);
-    FAIL_RETURN(ThrowIfCursorIsClosed())
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
 
-    Boolean isSuccess;
-    if (mCursor->MoveToPosition(position, &isSuccess), !isSuccess) {
-        CloseFilledWindowLocked();
-        return NOERROR;
-    }
+        Boolean isSuccess;
+        if (ICursor::Probe(mCursor)->MoveToPosition(position, &isSuccess), !isSuccess) {
+            CloseFilledWindowLocked();
+            return NOERROR;
+        }
 
-    AutoPtr<ICursorWindow> window;
-    mCursor->GetWindow((ICursorWindow**)&window);
-    if (window != NULL) {
-        CloseFilledWindowLocked();
-    }
-    else {
-        window = mFilledWindow;
-        if (window == NULL) {
-            CCursorWindow::New(mProviderName, (ICursorWindow**)&mFilledWindow);
-            window = mFilledWindow;
+        AutoPtr<ICursorWindow> window;
+        mCursor->GetWindow((ICursorWindow**)&window);
+        if (window != NULL) {
+            CloseFilledWindowLocked();
         }
         else {
-            Int32 pos, rows;
-            window->GetStartPosition(&pos);
-            window->GetNumRows(&rows);
-            if (position < pos || position >= pos + rows) {
-                window->Clear();
+            window = mFilledWindow;
+            if (window == NULL) {
+                CCursorWindow::New(mProviderName, (ICursorWindow**)&mFilledWindow);
+                window = mFilledWindow;
             }
+            else {
+                Int32 pos, rows;
+                window->GetStartPosition(&pos);
+                window->GetNumRows(&rows);
+                if (position < pos || position >= pos + rows) {
+                    window->Clear();
+                }
+            }
+            mCursor->FillWindow(position, window);
         }
-        mCursor->FillWindow(position, window);
-    }
 
-    if (window != NULL) {
-        // Acquire a reference to the window because its reference count will be
-        // decremented when it is returned as part of the binder call reply parcel.
-        window->AcquireReference();
+        if (window != NULL) {
+            // Acquire a reference to the window because its reference count will be
+            // decremented when it is returned as part of the binder call reply parcel.
+            ISQLiteClosable::Probe(window)->AcquireReference();
+        }
+        *result = window;
+        REFCOUNT_ADD(*result)
     }
-    *result = window;
-    REFCOUNT_ADD(*result)
     return NOERROR;
 }
 
 ECode CCursorToBulkCursorAdaptor::OnMove(
     /* [in] */ Int32 position)
 {
-    AutoLock lock(_m_syncLock);
-    FAIL_RETURN(ThrowIfCursorIsClosed())
-    Int32 mPosition;
-    mCursor->GetPosition(&mPosition);
-    Boolean isSuccess;
-    return mCursor->OnMove(mPosition, position, &isSuccess);
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
+        Int32 mPosition;
+        ICursor::Probe(mCursor)->GetPosition(&mPosition);
+        Boolean isSuccess;
+        ec = mCursor->OnMove(mPosition, position, &isSuccess);
+    }
+    return ec;
 }
 
 ECode CCursorToBulkCursorAdaptor::Deactivate()
 {
-    AutoLock lock(_m_syncLock);
-    if (mCursor != NULL) {
-        UnregisterObserverProxyLocked();
-        mCursor->Deactivate();
-    }
+    synchronized(mLock) {
+        if (mCursor != NULL) {
+            UnregisterObserverProxyLocked();
+            ICursor::Probe(mCursor)->Deactivate();
+        }
 
-    CloseFilledWindowLocked();
+        CloseFilledWindowLocked();
+    }
     return NOERROR;
 }
 
 ECode CCursorToBulkCursorAdaptor::Close()
 {
-    AutoLock lock(_m_syncLock);
-    DisposeLocked();
+    synchronized(mLock) {
+        DisposeLocked();
+    }
     return NOERROR;
 }
 
@@ -203,34 +217,36 @@ ECode CCursorToBulkCursorAdaptor::Requery(
 {
     VALIDATE_NOT_NULL(result)
 
-    AutoLock lock(_m_syncLock);
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
 
-    FAIL_RETURN(ThrowIfCursorIsClosed())
+        CloseFilledWindowLocked();
 
-    CloseFilledWindowLocked();
-
-    //try {
-    Boolean isSuccess;
-    ECode ec = mCursor->Requery(&isSuccess);
-    if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
-        Boolean isClosed;
-        mCursor->IsClosed(&isClosed);
-        Slogger::E(TAG, "%s Requery misuse db, mCursor isClosed:%d, 0x%08x", mProviderName.string(), isClosed, ec);
-        return ec;
+        //try {
+        Boolean isSuccess;
+        ec = ICursor::Probe(mCursor)->Requery(&isSuccess);
+        if (ec == (ECode)E_ILLEGAL_STATE_EXCEPTION) {
+            Boolean isClosed;
+            ICursor::Probe(mCursor)->IsClosed(&isClosed);
+            Slogger::E(TAG, "%s Requery misuse db, mCursor isClosed:%d, 0x%08x", mProviderName.string(), isClosed, ec);
+            return ec;
+        }
+        if (!isSuccess) {
+            *result = -1;
+            return NOERROR;
+        }
+        //} catch (IllegalStateException e) {
+            // IllegalStateException leakProgram = new IllegalStateException(
+            //         mProviderName + " Requery misuse db, mCursor isClosed:" +
+            //         mCursor.isClosed(), e);
+            // throw leakProgram;
+        //}
+        UnregisterObserverProxyLocked();
+        CreateAndRegisterObserverProxyLocked(observer);
+        ec =  ICursor::Probe(mCursor)->GetCount(result);
     }
-    if (!isSuccess) {
-        *result = -1;
-        return NOERROR;
-    }
-    //} catch (IllegalStateException e) {
-        // IllegalStateException leakProgram = new IllegalStateException(
-        //         mProviderName + " Requery misuse db, mCursor isClosed:" +
-        //         mCursor.isClosed(), e);
-        // throw leakProgram;
-    //}
-    UnregisterObserverProxyLocked();
-    CreateAndRegisterObserverProxyLocked(observer);
-    return mCursor->GetCount(result);
+    return ec;
 }
 
 ECode CCursorToBulkCursorAdaptor::CreateAndRegisterObserverProxyLocked(
@@ -242,13 +258,13 @@ ECode CCursorToBulkCursorAdaptor::CreateAndRegisterObserverProxyLocked(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
     mObserver = new ContentObserverProxy(observer, (IProxyDeathRecipient*)this->Probe(EIID_IProxyDeathRecipient));
-    return mCursor->RegisterContentObserver((IContentObserver*)mObserver);
+    return ICursor::Probe(mCursor)->RegisterContentObserver((IContentObserver*)mObserver);
 }
 
 ECode CCursorToBulkCursorAdaptor::UnregisterObserverProxyLocked()
 {
     if (mObserver != NULL) {
-        mCursor->UnregisterContentObserver(mObserver);
+        ICursor::Probe(mCursor)->UnregisterContentObserver(mObserver);
         Boolean result;
         mObserver->UnlinkToDeath(THIS_PROBE(IProxyDeathRecipient), &result);
         mObserver = NULL;
@@ -259,19 +275,24 @@ ECode CCursorToBulkCursorAdaptor::UnregisterObserverProxyLocked()
 ECode CCursorToBulkCursorAdaptor::GetExtras(
     /* [out] */ IBundle** result)
 {
-    AutoLock lock(_m_syncLock);
-
-    FAIL_RETURN(ThrowIfCursorIsClosed())
-    return mCursor->GetExtras(result);
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
+        ec = ICursor::Probe(mCursor)->GetExtras(result);
+    }
+    return ec;
 }
 
 ECode CCursorToBulkCursorAdaptor::Respond(
     /* [in] */ IBundle* extras,
     /* [out] */ IBundle** result)
 {
-    AutoLock lock(_m_syncLock);
-    FAIL_RETURN(ThrowIfCursorIsClosed())
-    return mCursor->Respond(extras, result);
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfCursorIsClosed())
+        ec = ICursor::Probe(mCursor)->Respond(extras, result);
+    }
+    return ec;
 }
 
 ECode CCursorToBulkCursorAdaptor::ToString(
@@ -295,8 +316,11 @@ ECode CCursorToBulkCursorAdaptor::constructor(
     }
     mProviderName = providerName;
 
-    AutoLock lock(_m_syncLock);
-    return CreateAndRegisterObserverProxyLocked(observer);
+    ECode ec;
+    synchronized(mLock) {
+        ec = CreateAndRegisterObserverProxyLocked(observer);
+    }
+    return ec;
 }
 
 } //Database

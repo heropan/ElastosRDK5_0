@@ -6,10 +6,12 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
-void CrossProcessCursorWrapper::Init(
+CAR_INTERFACE_IMPL_2(CrossProcessCursorWrapper, CursorWrapper, ICrossProcessCursorWrapper, ICrossProcessCursor)
+
+ECode CrossProcessCursorWrapper::constructor(
     /* [in] */ ICursor* cursor)
 {
-    CursorWrapper::Init(cursor);
+    return CursorWrapper::constructor(cursor);
 }
 
 ECode CrossProcessCursorWrapper::FillWindow(

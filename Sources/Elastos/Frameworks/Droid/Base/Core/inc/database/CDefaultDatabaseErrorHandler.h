@@ -3,6 +3,7 @@
 
 #include "ext/frameworkext.h"
 #include "_Elastos_Droid_Database_CDefaultDatabaseErrorHandler.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 
@@ -28,8 +29,14 @@ namespace Database {
  * as the default {@link DatabaseErrorHandler}.
  */
 CarClass(CDefaultDatabaseErrorHandler)
+    , public Object
+    , public IDatabaseErrorHandler
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * defines the default method to be invoked when database corruption is detected.
      * @param dbObj the {@link SQLiteDatabase} object representing the database on which corruption

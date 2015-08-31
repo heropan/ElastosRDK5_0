@@ -14,8 +14,8 @@ using Elastos::Core::ICharSequence;
 using Elastos::Core::IArrayOf;
 using Elastos::Core::IByte;
 using Elastos::Core::StringUtils;
+using Elastos::Utility::IIterator;
 using Elastos::Utility::Logging::Slogger;
-
 
 namespace Elastos {
 namespace Droid {
@@ -30,7 +30,7 @@ MatrixCursor::RowBuilder::RowBuilder(
     , mOwner(owner)
 {}
 
-CAR_INTERFACE_IMPL(MatrixCursor::RowBuilder, IRowBuilder)
+CAR_INTERFACE_IMPL(MatrixCursor::RowBuilder, Object, IRowBuilder)
 
 ECode MatrixCursor::RowBuilder::Add(
     /* [in] */ IInterface* columnValue)
@@ -45,13 +45,14 @@ ECode MatrixCursor::RowBuilder::Add(
     return NOERROR;
 }
 
+CAR_INTERFACE_IMPL(MatrixCursor, AbstractCursor, IMatrixCursor)
 
 MatrixCursor::MatrixCursor()
     : mRowCount(0)
     , mColumnCount(0)
 {}
 
-void MatrixCursor::Init(
+ECode MatrixCursor::constructor(
     /* [in] */ ArrayOf<String>* columnNames,
     /* [in] */ Int32 initialCapacity)
 {
@@ -63,12 +64,13 @@ void MatrixCursor::Init(
     }
 
     mData = ArrayOf<IInterface*>::Alloc(mColumnCount * initialCapacity);
+    return NOERROR;
 }
 
-void MatrixCursor::Init(
+ECode MatrixCursor::constructor(
     /* [in] */ ArrayOf<String>* columnNames)
 {
-    return Init(columnNames, 16);
+    return constructor(columnNames, 16);
 }
 
 ECode MatrixCursor::Get(
@@ -132,7 +134,7 @@ ECode MatrixCursor::AddRow(
 }
 
 ECode MatrixCursor::AddRow(
-    /* [in] */ IObjectContainer* columnValues)
+    /* [in] */ IIterable* columnValues)
 {
     Int32 start = mRowCount * mColumnCount;
     Int32 end = start + mColumnCount;
@@ -145,12 +147,12 @@ ECode MatrixCursor::AddRow(
 
     Int32 current = start;
     AutoPtr< ArrayOf<IInterface*> > localData = mData;
-    AutoPtr<IObjectEnumerator> enumerator;
-    columnValues->GetObjectEnumerator((IObjectEnumerator**)&enumerator);
+    AutoPtr<IIterator> it;
+    columnValues->GetIterator((IIterator**)&it);
     Boolean hasNext;
-    while(enumerator->MoveNext(&hasNext), hasNext) {
+    while(it->HasNext(&hasNext), hasNext) {
         AutoPtr<IInterface> columnValue;
-        enumerator->Current((IInterface**)&columnValue);
+        it->GetNext((IInterface**)&columnValue);
         if (current == end) {
             // TODO: null out row?
             //throw new IllegalArgumentException(
@@ -220,7 +222,7 @@ ECode MatrixCursor::GetColumnNames(
 {
     VALIDATE_NOT_NULL(names)
     *names = mColumnNames;
-    ARRAYOF_ADDREF(*names)
+    REFCOUNT_ADD(*names)
     return NOERROR;
 }
 
@@ -368,7 +370,7 @@ ECode MatrixCursor::GetBlob(
             b->GetValue(&(*_blob)[i]);
         }
         *blob = _blob;
-        ARRAYOF_ADDREF(*blob)
+        REFCOUNT_ADD(*blob)
         return NOERROR;
     }
     *blob = NULL;

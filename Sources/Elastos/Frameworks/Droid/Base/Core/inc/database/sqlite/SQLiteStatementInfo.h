@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITESTATEMENTINFO_H__
 
 #include "ext/frameworkdef.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -13,7 +14,7 @@ namespace Sqlite {
  *
  * @hide
  */
-class SQLiteStatementInfo : public ElRefBase
+class SQLiteStatementInfo : public Object
 {
 public:
     SQLiteStatementInfo()

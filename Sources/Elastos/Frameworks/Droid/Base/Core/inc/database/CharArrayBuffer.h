@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_CHARARRAYBUFFER_H__
 
 #include "ext/frameworkext.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -10,14 +11,18 @@ namespace Database {
  * This is used for {@link Cursor#copyStringToBuffer}
  */
 class CharArrayBuffer
+    : public Object
+    , public ICharArrayBuffer
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CharArrayBuffer();
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ Int32 size);
 
-    CARAPI_(void) Init(
+    CARAPI constructor(
         /* [in] */ ArrayOf<Char32>* buf);
 
     virtual CARAPI GetData(

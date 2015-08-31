@@ -2,15 +2,16 @@
 #define __ELASTOS_DROID_DATABASE_CDATABASEUTILS_H__
 
 #include "_Elastos_Droid_Database_CDatabaseUtils.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::IStringBuilder;
 using Elastos::IO::IPrintStream;
+using Elastos::Core::IStringBuilder;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::IContentValues;
+using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 using Elastos::Droid::Database::Sqlite::ISQLiteStatement;
 using Elastos::Droid::Database::Sqlite::ISQLiteProgram;
-using Elastos::Droid::Os::IParcelFileDescriptor;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::IContentValues;
 
 namespace Elastos {
 namespace Droid {
@@ -19,8 +20,14 @@ namespace Database {
  * Static utility methods for dealing with databases and {@link Cursor}s.
  */
 CarClass(CDatabaseUtils)
+    , public Singleton
+    , public IDatabaseUtils
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Special function for writing an exception result at the header of
      * a parcel, to be used when returning an exception from a transaction.

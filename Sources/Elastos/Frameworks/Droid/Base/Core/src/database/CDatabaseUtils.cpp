@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Database {
 
+CAR_INTERFACE_IMPL(CDatabaseUtils, Singleton, IDatabaseUtils)
+
+CAR_SINGLETON_IMPL(CDatabaseUtils)
+
 ECode CDatabaseUtils::WriteExceptionToParcel(
     /* [in] */ IParcel* reply,
     /* [in] */ ECode e)
@@ -433,7 +437,7 @@ ECode CDatabaseUtils::AppendSelectionArgs(
     VALIDATE_NOT_NULL(args)
     AutoPtr< ArrayOf<String> > array = DatabaseUtils::AppendSelectionArgs(originalValues, newValues);
     *args = array;
-    ARRAYOF_ADDREF(*args)
+    REFCOUNT_ADD(*args)
     return NOERROR;
 }
 

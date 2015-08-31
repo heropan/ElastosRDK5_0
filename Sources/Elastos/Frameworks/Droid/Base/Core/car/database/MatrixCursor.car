@@ -27,10 +27,12 @@ module
      * A mutable cursor implementation backed by an array of {@code Object}s. Use
      * {@link #newRow()} to add rows. Automatically expands internal capacity
      * as needed.
-     */
-    /**
+     *
      * @Involve
-     * interface IAbstractCursor
+     * interface ICloseable;
+     * interface ICursor;
+     * interface ICrossProcessCursor;
+     * interface IAbstractCursor;
      */
     interface IMatrixCursor {
         /**

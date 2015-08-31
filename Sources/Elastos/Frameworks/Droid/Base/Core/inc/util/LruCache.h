@@ -3,10 +3,11 @@
 #define __ELASTOS_DROID_UTILITY_LRUCACHE_H__
 
 #include "ext/frameworkext.h"
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Core::Object;
@@ -267,8 +268,7 @@ void LruCache<K, V>::Resize(
         // throw new IllegalArgumentException("maxSize <= 0");
     }
 
-    {
-        Object::Autolock lock(this);
+    synchronized(this) {
         mMaxSize = maxSize;
     }
 
@@ -286,8 +286,7 @@ V LruCache<K, V>::Get(
     }
 
     V mapValue;
-    {
-        Object::Autolock lock(this);
+    synchronized(this) {
         typename HashMap<K, V>::Iterator it = mMap.Find(key);
         if (it != mMap.End()) {
             mapValue = it->mSecond;
@@ -312,8 +311,7 @@ V LruCache<K, V>::Get(
         return NULL;
     }
 
-    {
-        Object::Autolock lock(this);
+    synchronized(this) {
         mCreateCount++;
         mapValue = mMap[key];
         if (mapValue == NULL) {
@@ -344,8 +342,7 @@ V LruCache<K, V>::Put(
     }
 
     V previous;
-    {
-        Object::Autolock lock(this);
+    synchronized(this) {
         mPutCount++;
         mSize += SafeSizeOf(key, value);
 
@@ -375,8 +372,7 @@ void LruCache<K, V>::TrimToSize(
     while (TRUE) {
         K key;
         V value;
-        {
-            Object::Autolock lock(this);
+        synchronized(this) {
             if (mSize < 0 || (mMap.IsEmpty() && mSize != 0)) {
                 Slogger::E("LruCache", ".sizeOf() is reporting inconsistent results!");
                 assert(0);
@@ -418,8 +414,7 @@ V LruCache<K, V>::Remove(
     }
 
     V previous;
-    {
-        Object::Autolock lock(this);
+    synchronized(this) {
         typename HashMap<K, V>::Iterator it = mMap.Find(key);
         if (it != mMap.End()) {
             previous = it->mSecond;

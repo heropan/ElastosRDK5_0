@@ -3,10 +3,12 @@
 
 #include "ext/frameworkext.h"
 #include "os/Runnable.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Core::Object;
+using Elastos::Droid::Net::IUri;
 using Elastos::Droid::Os::IHandler;
 using Elastos::Droid::Os::Runnable;
-using Elastos::Droid::Net::IUri;
 
 namespace Elastos {
 namespace Droid {
@@ -16,7 +18,7 @@ namespace Database {
  * to a {@link ContentObservable}.
  */
 class ContentObserver
-    : public ElRefBase
+    : public Object
     , public IContentObserver
 {
 private:

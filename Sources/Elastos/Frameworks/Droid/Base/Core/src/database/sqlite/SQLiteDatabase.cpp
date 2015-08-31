@@ -13,25 +13,26 @@
 #include "os/SystemClock.h"
 #include "os/Looper.h"
 #include "text/TextUtils.h"
+#include "util/CArrayMap.h"
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-#include <sqlite3_android.h>
+//#include <sqlite3_android.h>
 #include <sqlite3.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Core::StringUtils;
-using Elastos::Core::CObjectContainer;
 using Elastos::Core::CString;
 using Elastos::IO::CFile;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::CObjectStringMap;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::IO::EIID_IFileFilter;
 using Elastos::Droid::Os::Looper;
 using Elastos::Droid::Database::CDefaultDatabaseErrorHandler;
 using Elastos::Droid::Database::DatabaseUtils;
 using Elastos::Droid::Text::TextUtils;
+using Elastos::Droid::Utility::CArrayMap;
 
 namespace Elastos {
 namespace Droid {
@@ -57,7 +58,7 @@ SQLiteDatabase::MyFileFilter::MyFileFilter(
     : mPrefix(prefix)
 {}
 
-CAR_INTERFACE_IMPL(SQLiteDatabase::MyFileFilter, IFileFilter)
+CAR_INTERFACE_IMPL(SQLiteDatabase::MyFileFilter, Object, IFileFilter)
 
 ECode SQLiteDatabase::MyFileFilter::Accept(
     /* [in] */ IFile* candidate,
@@ -87,7 +88,9 @@ static AutoPtr< ArrayOf<String> > InitConflictValues()
 const AutoPtr< ArrayOf<String> > SQLiteDatabase::CONFLICT_VALUES = InitConflictValues();
 const Int32 SQLiteDatabase::OPEN_READ_MASK;
 HashMap<AutoPtr<SQLiteDatabase>, AutoPtr<IInterface> > SQLiteDatabase::sActiveDatabases;
-Mutex SQLiteDatabase::sActiveDatabasesLock;
+Object SQLiteDatabase::sActiveDatabasesLock;
+
+CAR_INTERFACE_IMPL(SQLiteDatabase, SQLiteClosable, ISQLiteDatabase);
 
 SQLiteDatabase::SQLiteDatabase(
     /* [in] */ const String& path,
@@ -105,62 +108,6 @@ SQLiteDatabase::SQLiteDatabase(
         CDefaultDatabaseErrorHandler::New((IDatabaseErrorHandler**)&mErrorHandler);
     }
     mConfigurationLocked = new SQLiteDatabaseConfiguration(path, openFlags);
-}
-
-PInterface SQLiteDatabase::Probe(
-    /* [in]  */ REIID riid)
-{
-    if (riid == EIID_IInterface) {
-        return (PInterface)(ISQLiteDatabase*)this;
-    }
-    else if (riid == EIID_ISQLiteDatabase) {
-        return (ISQLiteDatabase*)this;
-    }
-    else if (riid == EIID_ISQLiteClosable) {
-        return (ISQLiteClosable*)this;
-    }
-    else if (riid == EIID_ICloseable) {
-        return (ICloseable*)this;
-    }
-    else if (riid == EIID_SQLiteDatabase) {
-        return reinterpret_cast<PInterface>(this);
-    }
-    else {
-        return NULL;
-    }
-}
-
-UInt32 SQLiteDatabase::AddRef()
-{
-    return ElRefBase::AddRef();
-}
-
-UInt32 SQLiteDatabase::Release()
-{
-    return ElRefBase::Release();
-}
-
-ECode SQLiteDatabase::GetInterfaceID(
-    /* [in] */ IInterface *pObject,
-    /* [out] */ InterfaceID *pIID)
-{
-    VALIDATE_NOT_NULL(pIID)
-
-    if (pObject == (IInterface*)(ISQLiteDatabase*)this) {
-        *pIID = EIID_ISQLiteDatabase;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface*)(ISQLiteClosable*)this) {
-        *pIID = EIID_ISQLiteClosable;
-        return NOERROR;
-    }
-    else if (pObject == (IInterface*)(ICloseable*)this) {
-        *pIID = EIID_ICloseable;
-        return NOERROR;
-    }
-    else {
-        return E_INVALID_ARGUMENT;
-    }
 }
 
 SQLiteDatabase::~SQLiteDatabase()
@@ -182,8 +129,7 @@ void SQLiteDatabase::Dispose(
     /* [in] */ Boolean finalized)
 {
     AutoPtr<SQLiteConnectionPool> pool;
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         // if (mCloseGuardLocked != NULL) {
         //     if (finalized) {
         //         mCloseGuardLocked.warnIfOpen();
@@ -196,8 +142,7 @@ void SQLiteDatabase::Dispose(
     }
 
     if (!finalized) {
-        {
-            AutoLock lock(sActiveDatabasesLock);
+        synchronized(sActiveDatabasesLock) {
             sActiveDatabases.Erase(this);
         }
         if (pool != NULL) {
@@ -219,8 +164,11 @@ ECode SQLiteDatabase::SetLockingEnabled(
 
 String SQLiteDatabase::GetLabel()
 {
-    AutoLock lock(mLock);
-    return mConfigurationLocked->mLabel;
+    String lable;
+    synchronized(mLock) {
+        lable = mConfigurationLocked->mLabel;
+    }
+    return lable;
 }
 
 ECode SQLiteDatabase::OnCorruption()
@@ -252,8 +200,7 @@ ECode SQLiteDatabase::CreateSession(
     /* [out] */ SQLiteSession** session)
 {
     AutoPtr<SQLiteConnectionPool> pool;
-    {
-        AutoLock lock(mLock);
+    synchronized(mLock) {
         FAIL_RETURN(ThrowIfNotOpenLocked());
         pool = mConnectionPoolLocked;
     }
@@ -447,10 +394,10 @@ ECode SQLiteDatabase::YieldIfContendedHelper(
 }
 
 ECode SQLiteDatabase::GetSyncedTables(
-    /* [out] */ IObjectStringMap** tables)
+    /* [out] */ IMap** tables)
 {
     VALIDATE_NOT_NULL(tables);
-    return CObjectStringMap::New(tables);
+    return CArrayMap::New(tables);
 }
 
 ECode SQLiteDatabase::OpenDatabase(
@@ -557,24 +504,26 @@ ECode SQLiteDatabase::DeleteDatabase(
 
 ECode SQLiteDatabase::ReopenReadWrite()
 {
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    if (!IsReadOnlyLocked()) {
-        return NOERROR; // nothing to do
-    }
+        if (!IsReadOnlyLocked()) {
+            return NOERROR; // nothing to do
+        }
 
-    // Reopen the database in read-write mode.
-    Int32 oldOpenFlags = mConfigurationLocked->mOpenFlags;
-    mConfigurationLocked->mOpenFlags = (mConfigurationLocked->mOpenFlags & ~OPEN_READ_MASK)
-            | OPEN_READWRITE;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (FAILED(ec)) {
-        mConfigurationLocked->mOpenFlags = oldOpenFlags;
+        // Reopen the database in read-write mode.
+        Int32 oldOpenFlags = mConfigurationLocked->mOpenFlags;
+        mConfigurationLocked->mOpenFlags = (mConfigurationLocked->mOpenFlags & ~OPEN_READ_MASK)
+                | OPEN_READWRITE;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (FAILED(ec)) {
+            mConfigurationLocked->mOpenFlags = oldOpenFlags;
+        }
+        //}
     }
-    //}
     return ec;
 }
 
@@ -601,16 +550,15 @@ ECode SQLiteDatabase::Open()
 
 ECode SQLiteDatabase::OpenInner()
 {
-    {
-        AutoLock lock(mLock);
-
+    synchronized (mLock){
         assert(mConnectionPoolLocked == NULL);
         FAIL_RETURN(SQLiteConnectionPool::Open(mConfigurationLocked, (SQLiteConnectionPool**)&mConnectionPoolLocked));
         // mCloseGuardLocked.Open("close");
     }
 
-    AutoLock lock(sActiveDatabasesLock);
-    sActiveDatabases[this] = NULL;
+    synchronized(sActiveDatabasesLock) {
+        sActiveDatabases[this] = NULL;
+    }
     return NOERROR;
 }
 
@@ -631,17 +579,19 @@ ECode SQLiteDatabase::AddCustomFunction(
     // Create wrapper (also validates arguments).
     AutoPtr<SQLiteCustomFunction> wrapper = new SQLiteCustomFunction(name, numArgs, function);
 
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    mConfigurationLocked->mCustomFunctions.PushBack(wrapper);
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mCustomFunctions.Remove(wrapper);
+        mConfigurationLocked->mCustomFunctions.PushBack(wrapper);
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mCustomFunctions.Remove(wrapper);
+        }
+        //}
     }
-    //}
     return ec;
 }
 
@@ -657,7 +607,7 @@ ECode SQLiteDatabase::GetVersion(
 ECode SQLiteDatabase::SetVersion(
     /* [in] */ Int32 version)
 {
-    String sql = String("PRAGMA user_version = ") + StringUtils::Int32ToString(version);
+    String sql = String("PRAGMA user_version = ") + StringUtils::ToString(version);
     return ExecSQL(sql);
 }
 
@@ -687,7 +637,7 @@ ECode SQLiteDatabase::SetMaximumSize(
         numPages++;
     }
     Int64 newPageCount = DatabaseUtils::Int64ForQuery(THIS_PROBE(ISQLiteDatabase),
-            String("PRAGMA max_page_count = ") + StringUtils::Int64ToString(numPages), NULL);
+            String("PRAGMA max_page_count = ") + StringUtils::ToString(numPages), NULL);
     *maxSize = newPageCount * pageSize;
     return NOERROR;
 }
@@ -703,7 +653,7 @@ ECode SQLiteDatabase::GetPageSize(
 ECode SQLiteDatabase::SetPageSize(
     /* [in] */ Int64 numBytes)
 {
-    return ExecSQL(String("PRAGMA page_size = ") + StringUtils::Int64ToString(numBytes));
+    return ExecSQL(String("PRAGMA page_size = ") + StringUtils::ToString(numBytes));
 }
 
 ECode SQLiteDatabase::MarkTableSyncable(
@@ -727,27 +677,28 @@ ECode SQLiteDatabase::FindEditTable(
 {
     VALIDATE_NOT_NULL(editable);
 
-    if (!TextUtils::IsEmpty(tables)) {
-        // find the first word terminated by either a space or a comma
-        Int32 spacepos = tables.IndexOf(' ');
-        Int32 commapos = tables.IndexOf(',');
+    assert(0 && "TODO TextUtils::IsEmpty");
+    // if (!TextUtils::IsEmpty(tables)) {
+    //     // find the first word terminated by either a space or a comma
+    //     Int32 spacepos = tables.IndexOf(' ');
+    //     Int32 commapos = tables.IndexOf(',');
 
-        if (spacepos > 0 && (spacepos < commapos || commapos < 0)) {
-            *editable = tables.Substring(0, spacepos);
-            return NOERROR;
-        }
-        else if (commapos > 0 && (commapos < spacepos || spacepos < 0) ) {
-            *editable = tables.Substring(0, commapos);
-            return NOERROR;
-        }
-        *editable = tables;
-        return NOERROR;
-    }
-    else {
-        // throw new IllegalStateException("Invalid tables");
-        Slogger::E(TAG, "Invalid tables");
-        return E_ILLEGAL_STATE_EXCEPTION;
-    }
+    //     if (spacepos > 0 && (spacepos < commapos || commapos < 0)) {
+    //         *editable = tables.Substring(0, spacepos);
+    //         return NOERROR;
+    //     }
+    //     else if (commapos > 0 && (commapos < spacepos || spacepos < 0) ) {
+    //         *editable = tables.Substring(0, commapos);
+    //         return NOERROR;
+    //     }
+    //     *editable = tables;
+    //     return NOERROR;
+    // }
+    // else {
+    //     // throw new IllegalStateException("Invalid tables");
+    //     Slogger::E(TAG, "Invalid tables");
+    //     return E_ILLEGAL_STATE_EXCEPTION;
+    // }
 }
 
 ECode SQLiteDatabase::CompileStatement(
@@ -1025,10 +976,10 @@ ECode SQLiteDatabase::InsertWithOnConflict(
     AcquireReference();
     // try {
     StringBuilder sql("INSERT");
-    sql.AppendString((*CONFLICT_VALUES)[conflictAlgorithm]);
-    sql.AppendCStr(" INTO ");
-    sql.AppendString(table);
-    sql.AppendCStr("(");
+    sql.Append((*CONFLICT_VALUES)[conflictAlgorithm]);
+    sql.Append(" INTO ");
+    sql.Append(table);
+    sql.Append("(");
 
     AutoPtr< ArrayOf<IInterface*> > bindArgs;
     Int32 size = (initialValues != NULL && (initialValues->GetSize(&size), size > 0))
@@ -1036,26 +987,38 @@ ECode SQLiteDatabase::InsertWithOnConflict(
     if (size > 0) {
         bindArgs = ArrayOf<IInterface*>::Alloc(size);
         Int32 i = 0;
-        AutoPtr< ArrayOf<String> > colNames;
-        initialValues->KeySet((ArrayOf<String>**)&colNames);
-        for (Int32 j = 0; j < colNames->GetLength(); j++) {
-            sql.AppendCStr((i > 0) ? "," : "");
-            sql += (*colNames)[i];
+        AutoPtr<ISet> colNames;
+        initialValues->GetKeySet((ISet**)&colNames);
+        AutoPtr<IIterator> it;
+        colNames->GetIterator((IIterator**)&it);
+        Boolean hasNext = FALSE;
+        String name;
+        while ((it->HasNext(&hasNext), hasNext)) {
+            AutoPtr<IInterface> outface;
+            it->GetNext((IInterface**)&outface);
+            AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+            AutoPtr<IInterface> obj;
+            entry->GetKey((IInterface**)&obj);
+            assert(ICharSequence::Probe(obj) != NULL);
+            ICharSequence::Probe(obj)->ToString(&name);
+            sql.Append((i > 0) ? "," : "");
+            sql += name;
             AutoPtr<IInterface> temp;
-            initialValues->Get((*colNames)[i], (IInterface**)&temp);
+            initialValues->Get(name, (IInterface**)&temp);
             bindArgs->Set(i++, temp);
         }
-        sql.AppendCStr(")");
-        sql.AppendCStr(" VALUES (");
+
+        sql.Append(")");
+        sql.Append(" VALUES (");
             //begin from this
         for (i = 0; i < size; i++) {
-            sql.AppendCStr((i > 0) ? ",?" : "?");
+            sql.Append((i > 0) ? ",?" : "?");
         }
     }
     else {
-        sql.AppendString(nullColumnHack + String(") VALUES (NULL"));
+        sql.Append(nullColumnHack + String(") VALUES (NULL"));
     }
-    sql.AppendCStr(")");
+    sql.Append(")");
 
     AutoPtr<ISQLiteStatement> statement;
     ECode ec = CSQLiteStatement::New(THIS_PROBE(ISQLiteDatabase), sql.ToString(), bindArgs,
@@ -1066,7 +1029,7 @@ ECode SQLiteDatabase::InsertWithOnConflict(
     // try {
     ec = statement->ExecuteInsert(rowId);
     // } finally {
-    statement->Close();
+    ICloseable::Probe(statement)->Close();
     // }
     // } finally {
 fail:
@@ -1087,7 +1050,8 @@ ECode SQLiteDatabase::Delete(
     AutoPtr<ISQLiteStatement> statement;
     StringBuilder sb("DELETE FROM ");
     sb.Append(table);
-    sb.Append(!TextUtils::IsEmpty(whereClause) ? String(" WHERE ") + whereClause : String(""));
+    assert(0 && "TODO TextUtils::IsEmpty");
+    //sb.Append(!TextUtils::IsEmpty(whereClause) ? String(" WHERE ") + whereClause : String(""));
 
     AutoPtr< ArrayOf<IInterface*> > bindArgs;
     if (whereArgs != NULL && whereArgs->GetLength() > 0) {
@@ -1106,7 +1070,7 @@ ECode SQLiteDatabase::Delete(
     // try {
     ec = statement->ExecuteUpdateDelete(value);
     // } finally {
-    statement->Close();
+    ICloseable::Probe(statement)->Close();
     // }
     // } finally {
 fail:
@@ -1144,9 +1108,9 @@ ECode SQLiteDatabase::UpdateWithOnConflict(
     AcquireReference();
     // try {
     StringBuilder sql("UPDATE ");
-    sql.AppendString((*CONFLICT_VALUES)[conflictAlgorithm]);
-    sql.AppendString(table);
-    sql.AppendCStr(" SET ");
+    sql.Append((*CONFLICT_VALUES)[conflictAlgorithm]);
+    sql.Append(table);
+    sql.Append(" SET ");
 
     // move all bind args to one array
     Int32 setValuesSize;
@@ -1154,17 +1118,30 @@ ECode SQLiteDatabase::UpdateWithOnConflict(
     Int32 bindArgsSize = (whereArgs == NULL) ? setValuesSize : (setValuesSize + whereArgs->GetLength());
     AutoPtr< ArrayOf<IInterface*> > bindArgs = ArrayOf<IInterface*>::Alloc(bindArgsSize);
     Int32 i = 0;
-    AutoPtr< ArrayOf<String> > colNames;
-    values->KeySet((ArrayOf<String>**)&colNames);
-    for (Int32 j = 0; j < colNames->GetLength(); j++) {
-        String colName = (*colNames)[i];
-        sql.AppendCStr((i > 0) ? "," : "");
-        sql.AppendString(colName);
+    AutoPtr<ISet> colNames;
+    values->GetKeySet((ISet**)&colNames);
+    AutoPtr<IIterator> it;
+    colNames->GetIterator((IIterator**)&it);
+    Boolean hasNext = FALSE;
+    String name;
+    while ((it->HasNext(&hasNext), hasNext)) {
+        AutoPtr<IInterface> outface;
+        it->GetNext((IInterface**)&outface);
+        AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+        AutoPtr<IInterface> obj;
+        entry->GetKey((IInterface**)&obj);
+        assert(ICharSequence::Probe(obj) != NULL);
+        ICharSequence::Probe(obj)->ToString(&name);
+
+        String colName = name;
+        sql.Append((i > 0) ? "," : "");
+        sql.Append(colName);
         AutoPtr<IInterface> temp;
         values->Get(colName, (IInterface**)&temp);
         bindArgs->Set(i++, temp);
-        sql.AppendCStr("=?");
+        sql.Append("=?");
     }
+
     if (whereArgs != NULL) {
         for (i = setValuesSize; i < bindArgsSize; i++) {
             AutoPtr<ICharSequence> cs;
@@ -1172,10 +1149,11 @@ ECode SQLiteDatabase::UpdateWithOnConflict(
             bindArgs->Set(i, cs);
         }
     }
-    if (!TextUtils::IsEmpty(whereClause)) {
-        sql.AppendCStr(" WHERE ");
-        sql.AppendString(whereClause);
-    }
+    assert(0 && "TODO TextUtils::IsEmpty");
+    // if (!TextUtils::IsEmpty(whereClause)) {
+    //     sql.Append(" WHERE ");
+    //     sql.Append(whereClause);
+    // }
 
     AutoPtr<ISQLiteStatement> statement;
     ECode ec = CSQLiteStatement::New(THIS_PROBE(ISQLiteDatabase), sql.ToString(), bindArgs, (ISQLiteStatement**)&statement);
@@ -1185,7 +1163,7 @@ ECode SQLiteDatabase::UpdateWithOnConflict(
     //try {
     ec = statement->ExecuteUpdateDelete(value);
     //} finally {
-    statement->Close();
+    ICloseable::Probe(statement)->Close();
     //}
     //} finally {
 fail:
@@ -1221,8 +1199,7 @@ ECode SQLiteDatabase::ExecuteSql(
     Int32 type = DatabaseUtils::GetSqlStatementType(sql);
     if (type == DatabaseUtils_STATEMENT_ATTACH) {
         Boolean disableWal = FALSE;
-        {
-            AutoLock lock(mLock);
+        synchronized(mLock) {
             if (!mHasAttachedDbsLocked) {
                 mHasAttachedDbsLocked = TRUE;
                 disableWal = TRUE;
@@ -1242,7 +1219,7 @@ ECode SQLiteDatabase::ExecuteSql(
     Int32 result;
     ec = statement->ExecuteUpdateDelete(&result);
     //} finally {
-    statement->Close();
+    ICloseable::Probe(statement)->Close();
     //}
     //} finally {
 fail:
@@ -1255,23 +1232,28 @@ ECode SQLiteDatabase::IsReadOnly(
     /* [out] */ Boolean* isReadOnly)
 {
     VALIDATE_NOT_NULL(isReadOnly);
-    AutoLock lock(mLock);
-    *isReadOnly = IsReadOnlyLocked();
+    synchronized(mLock) {
+        *isReadOnly = IsReadOnlyLocked();
+    }
     return NOERROR;
 }
 
 Boolean SQLiteDatabase::IsReadOnlyLocked()
 {
-    AutoLock lock(mLock);
-    return (mConfigurationLocked->mOpenFlags & OPEN_READ_MASK) == OPEN_READONLY;
+    Boolean ret;
+    synchronized(mLock) {
+        ret = (mConfigurationLocked->mOpenFlags & OPEN_READ_MASK) == OPEN_READONLY;
+    }
+    return ret;
 }
 
 ECode SQLiteDatabase::IsInMemoryDatabase(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mLock);
-    *result = mConfigurationLocked->IsInMemoryDb();
+    synchronized(mLock) {
+        *result = mConfigurationLocked->IsInMemoryDb();
+    }
     return NOERROR;
 }
 
@@ -1279,8 +1261,9 @@ ECode SQLiteDatabase::IsOpen(
     /* [out] */ Boolean* isOpen)
 {
     VALIDATE_NOT_NULL(isOpen);
-    AutoLock lock(mLock);
-    *isOpen = mConnectionPoolLocked != NULL;
+    synchronized(mLock) {
+        *isOpen = mConnectionPoolLocked != NULL;
+    }
     return NOERROR;
 }
 
@@ -1299,8 +1282,9 @@ ECode SQLiteDatabase::GetPath(
     /* [out] */ String* path)
 {
     VALIDATE_NOT_NULL(path);
-    AutoLock lock(mLock);
-    *path = mConfigurationLocked->mPath;
+    synchronized(mLock) {
+        *path = mConfigurationLocked->mPath;
+    }
     return NOERROR;
 }
 
@@ -1313,18 +1297,20 @@ ECode SQLiteDatabase::SetLocale(
         return E_ILLEGAL_ARGUMENT_EXCEPTION;
     }
 
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    AutoPtr<ILocale> oldLocale = mConfigurationLocked->mLocale;
-    mConfigurationLocked->mLocale = locale;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mLocale = oldLocale;
+        AutoPtr<ILocale> oldLocale = mConfigurationLocked->mLocale;
+        mConfigurationLocked->mLocale = locale;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mLocale = oldLocale;
+        }
+        //}
     }
-    //}
     return ec;
 }
 
@@ -1338,41 +1324,45 @@ ECode SQLiteDatabase::SetMaxSqlCacheSize(
         return E_ILLEGAL_STATE_EXCEPTION;
     }
 
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    Int32 oldMaxSqlCacheSize = mConfigurationLocked->mMaxSqlCacheSize;
-    mConfigurationLocked->mMaxSqlCacheSize = cacheSize;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mMaxSqlCacheSize = oldMaxSqlCacheSize;
-        //throw ex;
+        Int32 oldMaxSqlCacheSize = mConfigurationLocked->mMaxSqlCacheSize;
+        mConfigurationLocked->mMaxSqlCacheSize = cacheSize;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mMaxSqlCacheSize = oldMaxSqlCacheSize;
+            //throw ex;
+        }
+        //}
     }
-    //}
     return ec;
 }
 
 ECode SQLiteDatabase::SetForeignKeyConstraintsEnabled(
     /* [in] */ Boolean enable)
 {
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    if (mConfigurationLocked->mForeignKeyConstraintsEnabled == enable) {
-        return NOERROR;
-    }
+        if (mConfigurationLocked->mForeignKeyConstraintsEnabled == enable) {
+            return NOERROR;
+        }
 
-    mConfigurationLocked->mForeignKeyConstraintsEnabled = enable;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mForeignKeyConstraintsEnabled = !enable;
-        //throw ex;
+        mConfigurationLocked->mForeignKeyConstraintsEnabled = enable;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mForeignKeyConstraintsEnabled = !enable;
+            //throw ex;
+        }
+        //}
     }
-    //}
     return ec;
 }
 
@@ -1380,69 +1370,74 @@ ECode SQLiteDatabase::EnableWriteAheadLogging(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0) {
-        *result = TRUE;
-        return NOERROR;
-    }
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    if (IsReadOnlyLocked()) {
-        // WAL doesn't make sense for readonly-databases.
-        // TODO: True, but connection pooling does still make sense...
-        *result = FALSE;
-        return NOERROR;
-    }
-
-    if (mConfigurationLocked->IsInMemoryDb()) {
-        //Log.i(TAG, "can't enable WAL for memory databases.");
-        Slogger::I(TAG, "can't enable WAL for memory databases.");
-        *result = FALSE;
-        return NOERROR;
-    }
-
-    // make sure this database has NO attached databases because sqlite's write-ahead-logging
-    // doesn't work for databases with attached databases
-    if (mHasAttachedDbsLocked) {
-        if (Logger::IsLoggable(TAG, FALSE/*Logger::DEBUG*/)) {
-           Logger::D(TAG, "this database: %s has attached databases. can't  enable WAL.", mConfigurationLocked->mLabel.string());
+        if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0) {
+            *result = TRUE;
+            return NOERROR;
         }
-        *result = FALSE;
-        return NOERROR;
-    }
 
-    mConfigurationLocked->mOpenFlags |= ENABLE_WRITE_AHEAD_LOGGING;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mOpenFlags &= ~ENABLE_WRITE_AHEAD_LOGGING;
-        *result = FALSE;
-        return ec;
+        if (IsReadOnlyLocked()) {
+            // WAL doesn't make sense for readonly-databases.
+            // TODO: True, but connection pooling does still make sense...
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        if (mConfigurationLocked->IsInMemoryDb()) {
+            //Log.i(TAG, "can't enable WAL for memory databases.");
+            Slogger::I(TAG, "can't enable WAL for memory databases.");
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        // make sure this database has NO attached databases because sqlite's write-ahead-logging
+        // doesn't work for databases with attached databases
+        if (mHasAttachedDbsLocked) {
+            if (Logger::IsLoggable(TAG, FALSE/*Logger::DEBUG*/)) {
+               Logger::D(TAG, "this database: %s has attached databases. can't  enable WAL.", mConfigurationLocked->mLabel.string());
+            }
+            *result = FALSE;
+            return NOERROR;
+        }
+
+        mConfigurationLocked->mOpenFlags |= ENABLE_WRITE_AHEAD_LOGGING;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mOpenFlags &= ~ENABLE_WRITE_AHEAD_LOGGING;
+            *result = FALSE;
+            return ec;
+        }
+        //}
+        *result = TRUE;
     }
-    //}
-    *result = TRUE;
     return ec;
 }
 
 ECode SQLiteDatabase::DisableWriteAheadLogging()
 {
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
+    ECode ec;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
 
-    if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) == 0) {
-        return NOERROR;
-    }
+        if ((mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) == 0) {
+            return NOERROR;
+        }
 
-    mConfigurationLocked->mOpenFlags &= ~ENABLE_WRITE_AHEAD_LOGGING;
-    //try {
-    ECode ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
-    //} catch (RuntimeException ex) {
-    if (ec == (ECode)E_RUNTIME_EXCEPTION) {
-        mConfigurationLocked->mOpenFlags |= ENABLE_WRITE_AHEAD_LOGGING;
+        mConfigurationLocked->mOpenFlags &= ~ENABLE_WRITE_AHEAD_LOGGING;
+        //try {
+        ec = mConnectionPoolLocked->Reconfigure(mConfigurationLocked);
+        //} catch (RuntimeException ex) {
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            mConfigurationLocked->mOpenFlags |= ENABLE_WRITE_AHEAD_LOGGING;
+        }
+        //}
     }
-    //}
     return ec;
 }
 
@@ -1450,9 +1445,10 @@ ECode SQLiteDatabase::IsWriteAheadLoggingEnabled(
     /* [out] */ Boolean* result)
 {
     VALIDATE_NOT_NULL(result);
-    AutoLock lock(mLock);
-    FAIL_RETURN(ThrowIfNotOpenLocked())
-    *result = (mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0;
+    synchronized(mLock) {
+        FAIL_RETURN(ThrowIfNotOpenLocked())
+        *result = (mConfigurationLocked->mOpenFlags & ENABLE_WRITE_AHEAD_LOGGING) != 0;
+    }
     return NOERROR;
 }
 
@@ -1470,19 +1466,21 @@ AutoPtr< List<AutoPtr<SQLiteDebug::DbStats> > > SQLiteDatabase::GetDbStats()
 void SQLiteDatabase::CollectDbStats(
     /* [in] */ List<AutoPtr<SQLiteDebug::DbStats> >* dbStatsList)
 {
-    AutoLock lock(mLock);
-    if (mConnectionPoolLocked != NULL) {
-        mConnectionPoolLocked->CollectDbStats(dbStatsList);
+    synchronized(mLock) {
+        if (mConnectionPoolLocked != NULL) {
+            mConnectionPoolLocked->CollectDbStats(dbStatsList);
+        }
     }
 }
 
 AutoPtr<List<AutoPtr<SQLiteDatabase> > > SQLiteDatabase::GetActiveDatabases()
 {
     AutoPtr<List<AutoPtr<SQLiteDatabase> > > databases = new List<AutoPtr<SQLiteDatabase> >();
-    AutoLock lock(sActiveDatabasesLock);
-    HashMap<AutoPtr<SQLiteDatabase>, AutoPtr<IInterface> >::Iterator it;
-    for (it = sActiveDatabases.Begin(); it != sActiveDatabases.End(); ++it) {
-        databases->PushBack(it->mFirst);
+    synchronized(sActiveDatabasesLock) {
+        HashMap<AutoPtr<SQLiteDatabase>, AutoPtr<IInterface> >::Iterator it;
+        for (it = sActiveDatabases.Begin(); it != sActiveDatabases.End(); ++it) {
+            databases->PushBack(it->mFirst);
+        }
     }
     return databases;
 }
@@ -1503,23 +1501,23 @@ void SQLiteDatabase::Dump(
     /* [in] */ IPrinter* printer,
     /* [in] */ Boolean verbose)
 {
-    AutoLock lock(mLock);
-    if (mConnectionPoolLocked != NULL) {
-        printer->Println(String(""));
-        mConnectionPoolLocked->Dump(printer, verbose);
+    synchronized(mLock) {
+        if (mConnectionPoolLocked != NULL) {
+            printer->Println(String(""));
+            mConnectionPoolLocked->Dump(printer, verbose);
+        }
     }
 }
 
 ECode SQLiteDatabase::GetAttachedDbs(
-    /* [out] */ IObjectStringMap** dbs)
+    /* [out] */ IMap** dbs)
 {
     VALIDATE_NOT_NULL(dbs)
     *dbs = NULL;
 
-    AutoPtr<IObjectStringMap> attachedDbs;
-    CObjectStringMap::New((IObjectStringMap**)&attachedDbs);
-    {
-        AutoLock lock(mLock);
+    AutoPtr<IMap> attachedDbs;
+    CArrayMap::New((IMap**)&attachedDbs);
+    synchronized(mLock) {
         if (mConnectionPoolLocked == NULL) {
             // not open
             return NOERROR;
@@ -1536,9 +1534,10 @@ ECode SQLiteDatabase::GetAttachedDbs(
             // method.  Typically, this method is called when 'adb bugreport' is done or the
             // caller wants to collect stats on the database and all its attached databases.
             //attachedDbs.add(new Pair<String, String>("main", mConfigurationLocked.path));
-            AutoPtr<ICharSequence> cs;
+            AutoPtr<ICharSequence> cs, keyObj;
             CString::New(mConfigurationLocked->mPath, (ICharSequence**)&cs);
-            attachedDbs->Put(String("main"), cs);
+            CString::New(String("main"), (ICharSequence**)&keyObj);
+            attachedDbs->Put(keyObj, cs);
             *dbs = attachedDbs;
             REFCOUNT_ADD(*dbs);
             return NOERROR;
@@ -1565,13 +1564,14 @@ ECode SQLiteDatabase::GetAttachedDbs(
         String str1,str2;
         c->GetString(1, &str1);
         c->GetString(2, &str2);
-        AutoPtr<ICharSequence> cs;
+        AutoPtr<ICharSequence> cs, keyObj;
         CString::New(str2, (ICharSequence**)&cs);
-        attachedDbs->Put(str1, cs);
+        CString::New(str1, (ICharSequence**)&keyObj);
+        attachedDbs->Put(keyObj, cs);
     }
     //} finally {
     if (c != NULL) {
-        c->Close();
+        ICloseable::Probe(c)->Close();
     }
 fail:
     //}
@@ -1590,18 +1590,19 @@ ECode SQLiteDatabase::IsDatabaseIntegrityOk(
     VALIDATE_NOT_NULL(result)
     AcquireReference();
     //try {
-    AutoPtr<IObjectStringMap> attachedDbs;
+    AutoPtr<IMap> attachedDbs;
     //try {
-    ECode ec = GetAttachedDbs((IObjectStringMap**)&attachedDbs);
+    ECode ec = GetAttachedDbs((IMap**)&attachedDbs);
     if (ec == (ECode)E_SQLITE_EXCEPTION) {
         // can't get attachedDb list. do integrity check on the main database
         attachedDbs = NULL;
-        CObjectStringMap::New((IObjectStringMap**)&attachedDbs);
+        CArrayMap::New((IMap**)&attachedDbs);
         String path;
         GetPath(&path);
-        AutoPtr<ICharSequence> cs;
+        AutoPtr<ICharSequence> cs, keyObj;
         CString::New(path, (ICharSequence**)&cs);
-        attachedDbs->Put(String("main"), cs);
+        CString::New(String("main"), (ICharSequence**)&keyObj);
+        attachedDbs->Put(keyObj, cs);
     }
     if (attachedDbs == NULL) {
         //throw new IllegalStateException("databaselist for: " + getPath() + " couldn't " +
@@ -1617,39 +1618,54 @@ ECode SQLiteDatabase::IsDatabaseIntegrityOk(
         // attachedDbs.add(new Pair<String, String>("main", getPath()));(SQLiteException e) {
     //}
 
-    AutoPtr< ArrayOf<String> > keys;
-    attachedDbs->GetKeys((ArrayOf<String>**)&keys);
-    for (Int32 i = 0; i < keys->GetLength(); i++) {
+    AutoPtr<ISet> keys;
+    attachedDbs->GetKeySet((ISet**)&keys);
+    AutoPtr<IIterator> it;
+    keys->GetIterator((IIterator**)&it);
+    Boolean hasNext = FALSE;
+    String name;
+    while ((it->HasNext(&hasNext), hasNext)) {
         AutoPtr<ISQLiteStatement> prog;
         // try {
         StringBuilder sb("PRAGMA ");
-        sb.Append((*keys)[i]);
+        AutoPtr<IInterface> outface;
+        it->GetNext((IInterface**)&outface);
+        AutoPtr<IMapEntry> entry = IMapEntry::Probe(outface);
+        AutoPtr<IInterface> obj;
+        entry->GetKey((IInterface**)&obj);
+        assert(ICharSequence::Probe(obj) != NULL);
+        ICharSequence::Probe(obj)->ToString(&name);
+
+        sb.Append(name);
         sb.Append(".integrity_check(1);");
         if (FAILED(CompileStatement(sb.ToString(), (ISQLiteStatement**)&prog))) {
-            if (prog != NULL) prog->Close();
+            if (prog != NULL) ICloseable::Probe(prog)->Close();
             continue;
         }
         String rslt;
         if (FAILED(prog->SimpleQueryForString(&rslt))) {
-            if (prog != NULL) prog->Close();
+            if (prog != NULL) ICloseable::Probe(prog)->Close();
             continue;
         }
         if (!rslt.EqualsIgnoreCase("ok")) {
-            AutoPtr<ICharSequence> cs;
-            attachedDbs->Get((*keys)[i], (IInterface**)&cs);
+            AutoPtr<ICharSequence> cs, keyObj;
+            CString::New(name, (ICharSequence**)&keyObj);
+            attachedDbs->Get(keyObj, (IInterface**)&cs);
             String value;
             cs->ToString(&value);
             // integrity_checker failed on main or attached databases
             Slogger::E(TAG, "PRAGMA integrity_check on %s returned: %s", value.string(), rslt.string());
             *result = FALSE;
-            if (prog != NULL) prog->Close();
+            if (prog != NULL) ICloseable::Probe(prog)->Close();
             ReleaseReference();
             return NOERROR;
         }
         //} finally {
-        if (prog != NULL) prog->Close();
+        if (prog != NULL) ICloseable::Probe(prog)->Close();
         //}
+
     }
+
     //} finally {
     ReleaseReference();
     //}

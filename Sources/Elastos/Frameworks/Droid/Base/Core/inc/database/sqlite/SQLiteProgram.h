@@ -6,22 +6,27 @@
 #include "database/sqlite/SQLiteSession.h"
 #include <sqlite3.h>
 
-using Droid::Database::Sqlite::SQLiteClosable;
 using Elastos::Core::IArrayOf;
+using Droid::Database::Sqlite::SQLiteClosable;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
 namespace Sqlite {
+
 /**
  * A base class for compiled SQLite programs.
  *
  * SQLiteProgram is not internally synchronized so code using a SQLiteProgram from multiple
  * threads should perform its own synchronization when using the SQLiteProgram.
  */
-class SQLiteProgram : public SQLiteClosable
+class SQLiteProgram
+    : public SQLiteClosable
+    , public ISQLiteProgram
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteProgram();
 
     CARAPI Init(

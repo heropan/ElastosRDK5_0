@@ -7,6 +7,7 @@
 #include <elastos/utility/etl/HashMap.h>
 
 using Elastos::Utility::Etl::HashMap;
+
 namespace Elastos {
 namespace Droid {
 namespace Database {
@@ -18,9 +19,13 @@ namespace Sqlite {
  * SQLiteCursor is not internally synchronized so code using a SQLiteCursor from multiple
  * threads should perform its own synchronization when using the SQLiteCursor.
  */
-class SQLiteCursor : public AbstractWindowedCursor
+class SQLiteCursor
+    : public AbstractWindowedCursor
+    , public ISQLiteCursor
 {
 public:
+    CAR_INTERFACE_DECL()
+
     SQLiteCursor();
 
     /**
@@ -37,7 +42,7 @@ public:
      * @param query the rest of the query terms
      *     cursor is finalized
      */
-    CARAPI Init(
+    CARAPI constructor(
         /*[in]*/ ISQLiteDatabase* db,
         /*[in]*/ ISQLiteCursorDriver* driver,
         /*[in]*/ const String& editTable,
@@ -53,7 +58,7 @@ public:
      * @param editTable the name of the table used for this query
      * @param query the {@link SQLiteQuery} object associated with this cursor object.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /*[in]*/ ISQLiteCursorDriver* driver,
         /*[in]*/ const String& editTable,
         /*[in]*/ ISQLiteQuery* query);

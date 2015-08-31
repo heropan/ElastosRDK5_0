@@ -18,12 +18,19 @@ class CCursorWindow;
 /**
  * A buffer containing multiple cursor rows.
  */
-class CursorWindow : public SQLiteClosable
+class CursorWindow
+    : public SQLiteClosable
+    , public ICursorWindow
+    , public IParcelable
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CursorWindow();
 
     virtual ~CursorWindow();
+
+    CARAPI constructor();
 
     /**
      * Creates a new empty cursor window and gives it a name.
@@ -34,7 +41,7 @@ public:
      *
      * @param name The name of the cursor window, or null if none.
      */
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ const String& name);
 
     /**
@@ -51,7 +58,7 @@ public:
      * cursor windows.  Use the {@link #CursorWindow(String)} constructor instead.
      */
     //@Deprecated
-    CARAPI Init(
+    CARAPI constructor(
         /* [in] */ Boolean localWindow);
 
     /**
@@ -511,6 +518,9 @@ public:
 
     virtual CARAPI DescribeContents(
         /* [out] */ Int32* value);
+
+    virtual CARAPI  ReadFromParcel(
+        /* [in] */ IParcel* source);
 
     virtual CARAPI WriteToParcel(
         /* [in] */ IParcel* dest);

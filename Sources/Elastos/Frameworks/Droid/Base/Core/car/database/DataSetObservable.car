@@ -8,8 +8,7 @@ module
      * A specialization of {@link Observable} for {@link DataSetObserver}
      * that provides methods for sending notifications to a list of
      * {@link DataSetObserver} objects.
-     */
-    /**
+     *
      * @Involve
      * interface IObservable
      */

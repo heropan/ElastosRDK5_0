@@ -24,6 +24,8 @@ namespace Sqlite {
 
 const AutoPtr< ArrayOf<String> > SQLiteProgram::EMPTY_STRING_ARRAY = ArrayOf<String>::Alloc(0);
 
+CAR_INTERFACE_IMPL(SQLiteProgram, SQLiteClosable, ISQLiteProgram)
+
 SQLiteProgram::SQLiteProgram()
     : mReadOnly(FALSE)
     , mNumParameters(0)
@@ -177,7 +179,7 @@ ECode SQLiteProgram::BindBlob(
     for (Int32 i = 0; i < value.GetLength(); ++i) {
         AutoPtr<IByte> bv;
         CByte::New(value[i], (IByte**)&bv);
-        array->Put(i, bv);
+        array->Set(i, bv);
     }
     return Bind(index, array);
 }

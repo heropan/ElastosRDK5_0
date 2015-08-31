@@ -2,21 +2,39 @@
 #define __ELASTOS_DROID_DATABASE_CCURSORJOINER_H__
 
 #include "_Elastos_Droid_Database_CCursorJoiner.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
+using Elastos::Utility::IIterable;
+using Elastos::Utility::IIterator;
+using Elastos::Utility::EIID_IIterable;
+using Elastos::Utility::EIID_IIterator;
 
 namespace Elastos {
 namespace Droid {
 namespace Database {
 
 CarClass(CCursorJoiner)
+    , public Object
+    , public ICursorJoiner
+    , public IIterable
+    , public IIterator
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CCursorJoiner();
+
+    CARAPI GetIterator(
+        /* [out] */ IIterator** it);
 
     CARAPI HasNext(
         /* [out] */ Boolean* result);
 
     CARAPI GetNext(
-        /* [out] */ CursorJoinerResult* result);
+        /* [out] */ IInterface** result);
 
     CARAPI Remove();
 

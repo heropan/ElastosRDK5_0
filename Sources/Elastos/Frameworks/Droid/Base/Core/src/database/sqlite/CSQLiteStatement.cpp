@@ -6,6 +6,10 @@ namespace Droid {
 namespace Database {
 namespace Sqlite {
 
+CAR_INTERFACE_IMPL(CSQLiteStatement, SQLiteProgram, ISQLiteStatement);
+
+CAR_OBJECT_IMPL(CSQLiteStatement)
+
 ECode CSQLiteStatement::Execute()
 {
     AcquireReference();
