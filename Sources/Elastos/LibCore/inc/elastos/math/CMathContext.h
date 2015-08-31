@@ -81,6 +81,41 @@ public:
     CARAPI GetRoundingMode(
         /* [out] */ RoundingMode* roundingMode);
 
+    /**
+     * Returns true if x is a {@code MathContext} with the same precision
+     * setting and the same rounding mode as this {@code MathContext} instance.
+     *
+     * @param x
+     *            object to be compared.
+     * @return {@code true} if this {@code MathContext} instance is equal to the
+     *         {@code x} argument; {@code false} otherwise.
+     */
+    CARAPI Equals(
+        /* [in] */ IInterface* obj,
+        /* [out] */ Boolean* result);
+
+    /**
+     * Returns the hash code for this {@code MathContext} instance.
+     *
+     * @return the hash code for this {@code MathContext}.
+     */
+    CARAPI GetHashCode(
+        /* [out] */ Int32* pCode);
+
+    /**
+     * Returns the string representation for this {@code MathContext} instance.
+     * The string has the form
+     * {@code
+     * "precision=<precision> roundingMode=<roundingMode>"
+     * } where {@code <precision>} is an integer describing the number
+     * of digits used for operations and {@code <roundingMode>} is the
+     * string representation of the rounding mode.
+     *
+     * @return a string representation for this {@code MathContext} instance
+     */
+    CARAPI ToString(
+        /* [out] */ String* string);
+
 public:
     /**
      * A {@code MathContext} which corresponds to the <a href="http://en.wikipedia.org/wiki/IEEE_754-1985">IEEE 754</a> quadruple

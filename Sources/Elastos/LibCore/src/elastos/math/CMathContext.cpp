@@ -63,5 +63,57 @@ ECode CMathContext::GetRoundingMode(
     return NOERROR;
 }
 
+ECode CMathContext::Equals(
+    /* [in] */ IInterface* other,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    VALIDATE_NOT_NULL(other);
+
+    if (IMathContext::Probe(other) == NULL)
+        return NOERROR;
+
+    IMathContext* mi = (CMathContext*)IMathContext::Probe(other);
+    if (this == mi) {
+        *result = TRUE;
+    }
+    else {
+
+        Int32 precision;
+        RoundingMode roundingMode;
+
+        mi->GetPrecision(&precision);
+        mi->GetRoundingMode(&roundingMode);
+
+        if ((precision == mPrecision) && (roundingMode == mRoundingMode))
+            *result = TRUE;
+        else
+            *result = FALSE;
+    }
+    return NOERROR;
+}
+
+ECode CMathContext::GetHashCode(
+    /* [out] */ Int32* hashCode)
+{
+    VALIDATE_NOT_NULL(hashCode);
+
+    *hashCode = (mPrecision << 3) | mRoundingMode;
+    return NOERROR;
+}
+
+ECode CMathContext::ToString(
+        /* [out] */ String *str)
+{
+    char buf[256];
+
+    snprintf(buf, 256, "precision=%d roundingMode=%d", mPrecision, mRoundingMode);
+
+    *str = String(buf);
+    return NOERROR;
+}
+
+
+
 } // namespace Math
 } // namespace Elastos

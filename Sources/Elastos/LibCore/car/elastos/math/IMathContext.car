@@ -50,6 +50,41 @@ module
          */
         GetRoundingMode(
             [out] RoundingMode* roundingMode);
+
+        /**
+         * Returns true if x is a {@code MathContext} with the same precision
+         * setting and the same rounding mode as this {@code MathContext} instance.
+         *
+         * @param x
+         *            object to be compared.
+         * @return {@code true} if this {@code MathContext} instance is equal to the
+         *         {@code x} argument; {@code false} otherwise.
+         */
+        Equals(
+            [in] IInterface* obj,
+            [out] Boolean* result);
+
+        /**
+         * Returns the hash code for this {@code MathContext} instance.
+         *
+         * @return the hash code for this {@code MathContext}.
+         */
+        GetHashCode(
+            [out] Int32* pCode);
+
+        /**
+         * Returns the string representation for this {@code MathContext} instance.
+         * The string has the form
+         * {@code
+         * "precision=<precision> roundingMode=<roundingMode>"
+         * } where {@code <precision>} is an integer describing the number
+         * of digits used for operations and {@code <roundingMode>} is the
+         * string representation of the rounding mode.
+         *
+         * @return a string representation for this {@code MathContext} instance
+         */
+        ToString(
+            [out] String* string);
     }
 
     /**
