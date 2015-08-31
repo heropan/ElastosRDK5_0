@@ -8,13 +8,7 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-ECode CDateUtils::Assign(
-    /* [in] */ ICalendar* rval,
-    /* [in] */ ICalendar* lval)
-{
-    DateUtils::Assign(rval, lval);
-    return NOERROR;
-}
+CAR_SINGLETON_IMPL(CDateUtils)
 
 ECode CDateUtils::FormatDateRange(
     /* [in] */ IContext* context,
@@ -30,31 +24,29 @@ ECode CDateUtils::FormatDateRange(
 
 ECode CDateUtils::FormatDateRange(
     /* [in] */ IContext* context,
-    /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+    /* [in] */ Elastos::Utility::IFormatter* formatter,
     /* [in] */ Int64 startMillis,
     /* [in] */ Int64 endMillis,
     /* [in] */ Int32 flags,
-    /* [out] */ /*Elastos::Utility::IFormatter*/IInterface** ret)
+    /* [out] */ Elastos::Utility::IFormatter** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IInterface> formatterRet = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags);
-    *ret = formatterRet;
+    *ret = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags);
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
 
 ECode CDateUtils::FormatDateRange(
     /* [in] */ IContext* context,
-    /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+    /* [in] */ Elastos::Utility::IFormatter* formatter,
     /* [in] */ Int64 startMillis,
     /* [in] */ Int64 endMillis,
     /* [in] */ Int32 flags,
     /* [in] */ const String& timeZone,
-    /* [out] */ /*Elastos::Utility::IFormatter*/IInterface** ret)
+    /* [out] */ Elastos::Utility::IFormatter** ret)
 {
     VALIDATE_NOT_NULL(ret);
-    AutoPtr<IInterface> formatterRet = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags, timeZone);
-    *ret = formatterRet;
+    *ret = DateUtils::FormatDateRange(context, formatter, startMillis, endMillis, flags, timeZone);
     REFCOUNT_ADD(*ret);
     return NOERROR;
 }
@@ -260,26 +252,6 @@ ECode CDateUtils::IsToday(
     return NOERROR;
 }
 
-ECode CDateUtils::IsUTC(
-    /* [in] */ const String& s,
-    /* [out] */ Boolean* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::IsUTC(s));
-    return NOERROR;
-}
-
-ECode CDateUtils::NewCalendar(
-    /* [in] */ Boolean zulu,
-    /* [out] */ ICalendar** ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    AutoPtr<ICalendar> cRet = DateUtils::NewCalendar(zulu);
-    *ret = cRet;
-    REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
 ECode CDateUtils::TimeString(
     /* [in] */ Int64 millis,
     /* [out] */ ICharSequence** ret)
@@ -288,35 +260,6 @@ ECode CDateUtils::TimeString(
     AutoPtr<ICharSequence> cRet = DateUtils::TimeString(millis);
     *ret = cRet;
     REFCOUNT_ADD(*ret);
-    return NOERROR;
-}
-
-ECode CDateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal,
-    /* [out] */ String* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::WriteDateTime(cal));
-    return NOERROR;
-}
-
-ECode CDateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal,
-    /* [in] */ Boolean zulu,
-    /* [out] */ String* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::WriteDateTime(cal, zulu));
-    return NOERROR;
-}
-
-ECode CDateUtils::WriteDateTime(
-    /* [in] */ ICalendar* cal,
-    /* [in,out] */ String* sb,
-    /* [out] */ String* ret)
-{
-    VALIDATE_NOT_NULL(ret);
-    *ret=(DateUtils::WriteDateTime(cal, sb));
     return NOERROR;
 }
 

@@ -8,6 +8,8 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+CAR_SINGLETON_IMPL(CFormatter)
+
 ECode CFormatter::FormatFileSize(
     /* [in] */ IContext* context,
     /* [in] */ Int64 number,

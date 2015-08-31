@@ -2,22 +2,31 @@
 #define __ELASTOS_DROID_TEXT_FORMAT_DATEFORMAT_H__
 
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Text::ISpannableStringBuilder;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
 using Libcore::ICU::ILocale;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Text::ISpannableStringBuilder;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
+extern "C" const InterfaceID EIID_DateFormat;
+
 class DateFormat
+    : public Object
+    , public IDateFormat
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CARAPI_(String) ToString();
+
     /**
      * Returns true if user preference is set to 24-hour format.
      * @param context the context to use for the content resolver
@@ -34,6 +43,15 @@ public:
      */
     static CARAPI_(AutoPtr<Elastos::Text::IDateFormat>) GetTimeFormat(
         /* [in] */  IContext* context);
+
+    /**
+     * Returns a String pattern that can be used to format the time according
+     * to the current locale and the user's 12-/24-hour clock preference.
+     * @param context the application context
+     * @hide
+     */
+    static CARAPI_(String) GetTimeFormatString(
+        /* [in] */ IContext* context);
 
     /**
      * Returns a {@link java.text.DateFormat} object that can format the date
@@ -60,7 +78,7 @@ public:
 
     /**
      * Returns a {@link java.text.DateFormat} object that can format the date
-     * in long form (such as December 31, 1999) for the current locale.
+     * in long form (such as {@code Monday, January 3, 2000}) for the current locale.
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
@@ -69,7 +87,7 @@ public:
 
     /**
      * Returns a {@link java.text.DateFormat} object that can format the date
-     * in medium form (such as Dec. 31, 1999) for the current locale.
+     * in medium form (such as {@code Jan 3, 2000}) for the current locale.
      * @param context the application context
      * @return the {@link java.text.DateFormat} object that formats the date in long form.
      */
@@ -152,8 +170,9 @@ private:
         /* [in] */ Int32 i,
         /* [in] */ Int32 len);
 
-    static CARAPI_(String) GetMonthString(
-        /* [in] */ ICalendar* inDate,
+    static CARAPI_(String) GetDayOfWeekString(
+        /* [in] */ ILocaleData* ld,
+        /* [in] */ Int32 day,
         /* [in] */ Int32 count,
         /* [in] */ Int32 kind);
 
@@ -166,7 +185,7 @@ private:
         /* [in] */ Int32 count);
 
     static CARAPI_(String) GetYearString(
-        /* [in] */ ICalendar* inDate,
+        /* [in] */ Int32 year,
         /* [in] */ Int32 count);
 
     static CARAPI_(Int32) AppendQuotedText(

@@ -1,23 +1,28 @@
-
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_CDATEFORMAT_H__
 
 #include "_Elastos_Droid_Text_Format_CDateFormat.h"
+#include "Elastos.Droid.Core_server.h"
 #include "text/format/DateFormat.h"
+#include <elastos/core/Singleton.h>
 
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Content::IContext;
 using Elastos::Utility::ICalendar;
 using Elastos::Utility::IDate;
-using Elastos::Droid::Content::IContext;
+using Elastos::Core::ICharSequence;
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
-CarClass(CDateFormat), public DateFormat
+CarClass(CDateFormat)
+    , public Singleton
+    , public DateFormat
 {
 public:
+    CAR_SINGLETON_DECL()
+
     CARAPI Is24HourFormat(
         /* [in] */ IContext* context,
         /* [out] */ Boolean* result);

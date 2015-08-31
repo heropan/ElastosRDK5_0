@@ -11,6 +11,20 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+extern "C" const InterfaceID EIID_Formatter =
+        { 0xe9643e63, 0x5ece, 0x4a47, { 0xb9, 0x39, 0x95, 0x45, 0xd6, 0x48, 0x2d, 0x9f } };
+
+Int32 Format::SECONDS_PER_MINUTE = 60;
+Int32 Format::SECONDS_PER_HOUR = 60 * 60;
+Int32 Format::SECONDS_PER_DAY = 24 * 60 * 60;
+
+CAR_INTERFACE_IMPL_2(Formatter, Object, IFormatter);
+
+String Formatter::ToString()
+{
+    return String("Formatter");
+}
+
 String Formatter::FormatFileSize(
     /* [in] */ IContext* context,
     /* [in] */ Int64 number)
@@ -105,6 +119,73 @@ String Formatter::FormatIpAddress(
     return ret;
 }
 
+String FormatShortElapsedTime(
+    /* [in] */ IContext* context,
+    /* [in] */ Int64 millis)
+{
+    VALIDATE_NOT_NULL(ret)
+    Int64 secondsLong = millis / 1000;
+
+    Int32 days = 0, hours = 0, minutes = 0;
+    if (secondsLong >= SECONDS_PER_DAY) {
+        days = (Int32)(secondsLong / SECONDS_PER_DAY);
+        secondsLong -= days * SECONDS_PER_DAY;
+    }
+    if (secondsLong >= SECONDS_PER_HOUR) {
+        hours = (Int32)(secondsLong / SECONDS_PER_HOUR);
+        secondsLong -= hours * SECONDS_PER_HOUR;
+    }
+    if (secondsLong >= SECONDS_PER_MINUTE) {
+        minutes = (Int32)(secondsLong / SECONDS_PER_MINUTE);
+        secondsLong -= minutes * SECONDS_PER_MINUTE;
+    }
+    Int32 seconds = (Int32)secondsLong;
+
+    if (days >= 2) {
+        days += (hours + 12) / 24;
+        // return context.getString(com.android.internal.R.string.durationDays, days);
+        return String("");
+    } else if (days > 0) {
+        if (hours == 1) {
+            // return context.getString(com.android.internal.R.string.durationDayHour, days, hours);
+            return String("");
+        }
+        // return context.getString(com.android.internal.R.string.durationDayHours, days, hours);
+        return String("");
+    } else if (hours >= 2) {
+        hours += (minutes + 30) / 60;
+        // return context.getString(com.android.internal.R.string.durationHours, hours);
+        return String("");
+    } else if (hours > 0) {
+        if (minutes == 1) {
+            // return context.getString(com.android.internal.R.string.durationHourMinute, hours,
+            //             minutes);
+            return String("");
+        }
+        // return context.getString(com.android.internal.R.string.durationHourMinutes, hours,
+        //             minutes);
+        return String("");
+    } else if (minutes >= 2) {
+        minutes += (seconds + 30) / 60;
+        // return context.getString(com.android.internal.R.string.durationMinutes, minutes);
+        return String("");
+    } else if (minutes > 0) {
+        if (seconds == 1) {
+            // return context.getString(com.android.internal.R.string.durationMinuteSecond, minutes,
+            //             seconds);
+            return String("");
+        }
+        // return context.getString(com.android.internal.R.string.durationMinuteSeconds, minutes,
+        //             seconds);
+        return String("");
+    } else if (seconds == 1) {
+        // return context.getString(com.android.internal.R.string.durationSecond, seconds);
+        return String("");
+    } else {
+        // return context.getString(com.android.internal.R.string.durationSeconds, seconds);
+        return String("");
+    }
+}
 
 } // namespace Format
 } // namespace Text

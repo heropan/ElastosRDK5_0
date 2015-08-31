@@ -7,6 +7,13 @@
 #include "R.h"
 #include <elastos/core/Math.h>
 
+using Elastos::Droid::R;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Content::Res::CResources;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::CResourcesHelper;
+using Elastos::Droid::Content::Res::IResourcesHelper;
+
 using Libcore::ICU::ILocale;
 using Libcore::ICU::ILocaleHelper;
 using Libcore::ICU::ILocaleData;
@@ -20,8 +27,8 @@ using Elastos::Core::CSystem;
 using Elastos::Text::IDateFormat;
 using Elastos::Text::IDateFormatHelper;
 using Elastos::Text::CDateFormatHelper;
-//using Elastos::Utility::IFormatter;
-//using Elastos::Utility::CFormatter;   //java.util.Formatter
+using Elastos::Utility::IFormatter;
+using Elastos::Utility::CFormatter;   //java.util.Formatter
 using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::IDate;
@@ -31,17 +38,13 @@ using Elastos::Utility::CTimeZoneHelper;
 using Elastos::Utility::ITimeZoneHelper;
 using Elastos::Utility::ITimeZone;
 
-using Elastos::Droid::R;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Content::Res::CResources;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::CResourcesHelper;
-using Elastos::Droid::Content::Res::IResourcesHelper;
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
+
+extern "C" const InterfaceID EIID_DateUtils =
+        { 0xef2a207c, 0x55b9, 0x4bd1, { 0xb2, 0xf9, 0x73, 0x6c, 0xab, 0x05, 0x25, 0x1c } };
 
 // This table is used to lookup the resource string id of a format string
 // used for formatting a start and end date that fall in the same year.
@@ -110,6 +113,12 @@ AutoPtr<ITime> DateUtils::sThenTime = NULL;
 
 Mutex DateUtils::sLockDateUtilsClass;
 
+CAR_INTERFACE_IMPL_2(DateUtils, Object, IDateUtils);
+
+String DateUtils::ToString()
+{
+    return String("DateUtils");
+}
 
 String DateUtils::GetDayOfWeekString(
 /* [in] */ Int32 dayOfWeek,
@@ -177,14 +186,10 @@ String DateUtils::GetMonthString(
     /* [in] */ Int32 month,
     /* [in] */ Int32 abbrev)
 {
-    // Note that here we use d.shortMonthNames for MEDIUM, SHORT and SHORTER.
-    // This is a shortcut to not spam the translators with too many variations
-    // of the same string.  If we find that in a language the distinction
-    // is necessary, we can can add more without changing this API.
-    AutoPtr<ILocaleHelper> localeHelp;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
+    AutoPtr<ILocaleHelper> localeHelper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
     AutoPtr<ILocale> defaultLocale;
-    localeHelp->GetDefault((ILocale**)&defaultLocale);
+    localeHelper->GetDefault((ILocale**)&defaultLocale);
 
     AutoPtr<ILocaleDataHelper> ldh;
     CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
@@ -367,25 +372,8 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
         }
     }
     else if (duration < IDateUtils::WEEK_IN_MILLIS && minResolution < IDateUtils::WEEK_IN_MILLIS) {
-        count = GetNumberOfDaysPassed(time, now);
-        if (past) {
-            if (abbrevRelative) {
-                resId = R::plurals::abbrev_num_days_ago;
-            }
-            else {
-                resId = R::plurals::num_days_ago;
-            }
-        }
-        else {
-            if (abbrevRelative) {
-                resId = R::plurals::abbrev_in_num_days;
-            }
-            else {
-                resId = R::plurals::in_num_days;
-            }
-        }
-    }
-    else {
+        return GetRelativeDayString(r, time, now);
+    } else {
         // We know that we won't be showing the time, so it is safe to pass
         // in a null context.
         String fdrRet = FormatDateRange(NULL, time, time, flags);
@@ -403,26 +391,6 @@ AutoPtr<ICharSequence> DateUtils::GetRelativeTimeSpanString(
     AutoPtr<ICharSequence> cs;
     CString::New(retVal, (ICharSequence**)&cs);
     return cs;
-}
-
-Int64 DateUtils::GetNumberOfDaysPassed(
-    /* [in] */ Int64 date1,
-    /* [in] */ Int64 date2)
-{
-    AutoLock lock(sLockDateUtilsClass);
-    if (sThenTime == NULL) {
-        CTime::New((ITime**)&sThenTime);
-    }
-    Int64 thenTimeGmtoff;
-    sThenTime->Set(date1);
-    Int32 day1;
-    sThenTime->GetGmtoff(&thenTimeGmtoff);
-    day1 = CTime::GetJulianDay(date1, thenTimeGmtoff);
-    sThenTime->Set(date2);
-    Int32 day2;
-    sThenTime->GetGmtoff(&thenTimeGmtoff);
-    day2 = CTime::GetJulianDay(date2, thenTimeGmtoff);
-    return Elastos::Core::Math::Abs(day2 - day1);
 }
 
 AutoPtr<ICharSequence> DateUtils::GetRelativeDateTimeString(
@@ -484,13 +452,19 @@ String DateUtils::GetRelativeDayString(
         /* [in] */ Int64 day,
         /* [in] */ Int64 today)
 {
+    VALIDATE_NOT_NULL(r)
+    AutoPtr<IConfiguration> config;
+    r->GetConfiguration((IConfiguration**)&config);
+    AutoPtr<ILocale> locale;
+    config->GetLocale((ILocale**)&locale);
+    if (NULL == locale) {
+        locale->GetDefault((ILocale**)&locale);
+
+    }
+    // TODO: use TimeZone.getOffset instead.
     AutoPtr<ITime> startTime;
     CTime::New((ITime**)&startTime);
     startTime->Set(day);
-    AutoPtr<ITime> currentTime;
-    CTime::New((ITime**)&currentTime);
-    currentTime->Set(today);
-
     Int64 startTimeGmtoff, currentTimeGmtoff;
     startTime->GetGmtoff(&startTimeGmtoff);
     currentTime->GetGmtoff(&currentTimeGmtoff);
@@ -502,21 +476,6 @@ String DateUtils::GetRelativeDayString(
     Boolean past = (today > day);
 
     // TODO: some locales name other days too, such as de_DE's "Vorgestern" (today - 2).
-    AutoPtr<IConfiguration> configuration;
-    r->GetConfiguration((IConfiguration**)&configuration);
-    AutoPtr<ILocale> locale;
-    configuration->GetLocale((ILocale**)&locale);
-    if (locale == NULL) {
-        AutoPtr<ILocaleHelper> localeHelp;
-        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-        localeHelp->GetDefault((ILocale**)&locale);
-    }
-
-    AutoPtr<ILocaleData> localeDate;
-    AutoPtr<ILocaleDataHelper> ldh;
-    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
-    ldh->Get(locale, (ILocaleData**)&localeDate);
-
     if (days == 1) {
         if (past) {
             String strYesterday;
@@ -567,29 +526,10 @@ ECode DateUtils::InitFormatStringsLocked()
     if (sLastConfig == NULL || (sLastConfig->Equals(cfg.Get(), &bLastConfigEquals), !bLastConfigEquals))
     {
        sLastConfig = cfg;
-
-       AutoPtr<Elastos::Text::IDateFormatHelper> dfh;
-       Elastos::Text::CDateFormatHelper::AcquireSingleton((Elastos::Text::IDateFormatHelper**)&dfh);
-       sStatusTimeFormat = NULL;
-       dfh->GetTimeInstance(Elastos::Text::IDateFormat::SHORT, (Elastos::Text::IDateFormat**)&sStatusTimeFormat);
-
        r->GetString(R::string::elapsed_time_short_format_mm_ss, &sElapsedFormatMMSS);
        r->GetString(R::string::elapsed_time_short_format_h_mm_ss, &sElapsedFormatHMMSS);
     }
     return NOERROR;
-}
-
-AutoPtr<ICharSequence> DateUtils::TimeString(
-    /* [in] */ Int64 millis)
-{
-    AutoLock lock(sLock);
-    InitFormatStringsLocked();
-    String ret;
-//    sStatusTimeFormat->Format(millis, &ret);
-
-    AutoPtr<ICharSequence> cs;
-    CString::New(ret, (ICharSequence**)&cs);
-    return cs;
 }
 
 AutoPtr<ICharSequence> DateUtils::FormatDuration(
@@ -628,8 +568,6 @@ String DateUtils::FormatElapsedTime(
     /* [in] */ const String& recycle,
     /* [in] */ Int64 elapsedSeconds)
 {
-    InitFormatStrings();
-
     Int64 hours = 0;
     Int64 minutes = 0;
     Int64 seconds = 0;
@@ -650,100 +588,6 @@ String DateUtils::FormatElapsedTime(
     }
     else {
         return FormatElapsedTime(recycle, sElapsedFormatMMSS, minutes, seconds);
-    }
-}
-
-ECode DateUtils::Append(
-        /* [in,out] */ StringBuilder* sb,
-        /* [in] */ Int64 value,
-        /* [in] */  Boolean pad,
-        /* [in] */  Char32 zeroDigit)
-{
-    if (value < 10) {
-        if (pad) {
-            sb->AppendChar(zeroDigit);
-        }
-    }
-    else {
-        Char32 c=(zeroDigit + (value / 10));
-        sb->AppendChar(c);
-    }
-    Char32 c=(zeroDigit + (value % 10));
-
-    sb->AppendChar(c);
-    return NOERROR;
-}
-
-String DateUtils::FormatElapsedTime(
-    /* [in] */ const String& recycle,
-    /* [in] */ const String& format,
-    /* [in] */ Int64 hours,
-    /* [in] */ Int64 minutes,
-    /* [in] */ Int64 seconds)
-{
-    if (FAST_FORMAT_HMMSS.Equals(format)) {
-
-        AutoPtr<ILocaleHelper> localeHelp;
-        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-        AutoPtr<ILocale> defaultLocale;
-        localeHelp->GetDefault((ILocale**)&defaultLocale);
-
-        AutoPtr<ILocaleDataHelper> ldh;
-        CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
-        AutoPtr<ILocaleData> localeDate;
-        ldh->Get(defaultLocale, (ILocaleData**)&localeDate);
-
-        Char32 zeroDigit;
-        localeDate->GetZeroDigit(&zeroDigit);
-
-        StringBuilder sb;
-        sb.Append(recycle);
-        Append(&sb, hours, FALSE, zeroDigit);
-        sb.AppendChar(TIME_SEPARATOR);
-        Append(&sb, minutes, TRUE, zeroDigit);
-        sb.AppendChar(TIME_SEPARATOR);
-        Append(&sb, seconds, TRUE, zeroDigit);
-        return sb.ToString();
-    }
-    else {
-        String retVal;
-//        retVal = String.format(format, hours, minutes, seconds);
-        return retVal;
-    }
-}
-
-String DateUtils::FormatElapsedTime(
-    /* [in] */ const String& recycle,
-    /* [in] */ const String& format,
-    /* [in] */ Int64 minutes,
-    /* [in] */ Int64 seconds)
-{
-    if (FAST_FORMAT_MMSS.Equals(format)) {
-
-        AutoPtr<ILocaleHelper> localeHelp;
-        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-        AutoPtr<ILocale> defaultLocale;
-        localeHelp->GetDefault((ILocale**)&defaultLocale);
-
-        AutoPtr<ILocaleDataHelper> ldh;
-        CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&ldh);
-        AutoPtr<ILocaleData> localeDate;
-        ldh->Get(defaultLocale, (ILocaleData**)&localeDate);
-
-        Char32 zeroDigit;
-        localeDate->GetZeroDigit(&zeroDigit);
-
-        StringBuilder sb;
-        sb.Append(recycle);
-        Append(&sb, minutes, FALSE, zeroDigit);
-        sb.AppendChar(TIME_SEPARATOR);
-        Append(&sb, seconds, TRUE, zeroDigit);
-        return sb.ToString();
-    }
-    else {
-        String retVal;
-//        retVal = String.format(format, minutes, seconds);
-        return retVal;
     }
 }
 
@@ -788,24 +632,6 @@ AutoPtr<ICharSequence> DateUtils::FormatSameDayTime(
     return cs;
 }
 
-AutoPtr<ICalendar> DateUtils::NewCalendar(
-    /* [in] */ Boolean zulu)
-{
-    AutoPtr<ICalendar> calendar;
-    AutoPtr<ICalendarHelper> ch;
-    CCalendarHelper::AcquireSingleton((ICalendarHelper**)&ch);
-    if (zulu) {
-        AutoPtr<ITimeZoneHelper> tzh;
-        CTimeZoneHelper::AcquireSingleton((ITimeZoneHelper**)&tzh);
-        AutoPtr<ITimeZone> timeZone;
-        tzh->GetGMT((ITimeZone**)&timeZone);//GetTimeZone(String("GMT"), (ITimeZone**)&timeZone);
-        ch->GetInstance(timeZone, (ICalendar**)&calendar);
-        return calendar;
-    }
-    ch->GetInstance((ICalendar**)&calendar);
-    return calendar;
-}
-
 Boolean DateUtils::IsToday(
     /* [in] */ Int64 when)
 {
@@ -832,19 +658,6 @@ Boolean DateUtils::IsToday(
     return (thenYear == newYear)
             && (thenMonth == newMonth)
             && (thenMonthDay == newMonthDay);
-}
-
-Boolean DateUtils::IsUTC(
-    /* [in] */ const String& s)
-{
-    if (s.GetLength() == 16 && s.GetChar(15) == 'Z') {
-        return TRUE;
-    }
-    if (s.GetLength() == 9 && s.GetChar(8) == 'Z') {
-        // XXX not sure if this case possible/valid
-        return TRUE;
-    }
-    return FALSE;
 }
 
 String DateUtils::WriteDateTime(
@@ -929,41 +742,29 @@ String DateUtils::WriteDateTime(
     return *sb;
 }
 
-ECode DateUtils::Assign(
-    /* [in] */ ICalendar* lval,
-    /* [in] */ ICalendar* rval)
-{
-    // there should be a faster way.
-    lval->Clear();
-    Int64 timeInMillis;
-    rval->GetTimeInMillis(&timeInMillis);
-    lval->SetTimeInMillis(timeInMillis);
-    return NOERROR;
-}
-
 String DateUtils::FormatDateRange(
     /* [in] */ IContext* context,
     /* [in] */ Int64 startMillis,
     /* [in] */ Int64 endMillis,
     /* [in] */ Int32 flags)
 {
-    //Java:    Formatter f = new Formatter(new StringBuilder(50), Locale.getDefault());
     StringBuilder s(50);
     AutoPtr<ILocaleHelper> localeHelp;
     CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
     AutoPtr<ILocale> locale;
     localeHelp->GetDefault((ILocale**)&locale);
-//    AutoPtr<Elastos::Utility::IFormatter> f;
-//    CFormatter::New((char*)s, locale, (IFormatter**)&f);
-//    AutoPtr<Elastos::Utility::IFormatter> fRet=FormatDateRange(context, f, startMillis, endMillis, flags);
+    AutoPtr<Elastos::Utility::IFormatter> f;
+    AutoPtr<IAppendable> appendable = (IAppendable*)s.Probe(EIID_IAppendable);
+    CFormatter::New(appendable, locale, (IFormatter**)&f);
+    AutoPtr<Elastos::Utility::IFormatter> fRet = FormatDateRange(context, f, startMillis, endMillis, flags);
     String ret;
-//    fRet->ToString(&ret);
+    fRet->ToString(&ret);
     return ret;
 }
 
-AutoPtr</*Elastos::Utility::IFormatter*/IInterface> DateUtils::FormatDateRange(
+AutoPtr<Elastos::Utility::IFormatter> DateUtils::FormatDateRange(
     /* [in] */ IContext* context,
-    /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+    /* [in] */ Elastos::Utility::IFormatter* formatter,
     /* [in] */ Int64 startMillis,
     /* [in] */ Int64 endMillis,
     /* [in] */ Int32 flags)
@@ -971,499 +772,41 @@ AutoPtr</*Elastos::Utility::IFormatter*/IInterface> DateUtils::FormatDateRange(
     return FormatDateRange(context, formatter, startMillis, endMillis, flags, String(NULL));
 }
 
-AutoPtr</*Elastos::Utility::IFormatter*/IInterface> DateUtils::FormatDateRange(
+AutoPtr<Elastos::Utility::IFormatter> DateUtils::FormatDateRange(
     /* [in] */ IContext* context,
-    /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+    /* [in] */ Elastos::Utility::IFormatter* formatter,
     /* [in] */ Int64 startMillis,
     /* [in] */ Int64 endMillis,
     /* [in] */ Int32 flags,
     /* [in] */ const String& timeZone)
 {
-    AutoPtr<IResources> res = CResources::GetSystem();
-    Boolean showTime = (flags & IDateUtils::FORMAT_SHOW_TIME) != 0;
-    Boolean showWeekDay = (flags & IDateUtils::FORMAT_SHOW_WEEKDAY) != 0;
-    Boolean showYear = (flags & IDateUtils::FORMAT_SHOW_YEAR) != 0;
-    Boolean noYear = (flags & IDateUtils::FORMAT_NO_YEAR) != 0;
-    Boolean useUTC = (flags & IDateUtils::FORMAT_UTC) != 0;
-    Boolean abbrevWeekDay = (flags & (IDateUtils::FORMAT_ABBREV_WEEKDAY | IDateUtils::FORMAT_ABBREV_ALL)) != 0;
-    Boolean abbrevMonth = (flags & (IDateUtils::FORMAT_ABBREV_MONTH | IDateUtils::FORMAT_ABBREV_ALL)) != 0;
-    Boolean noMonthDay = (flags & IDateUtils::FORMAT_NO_MONTH_DAY) != 0;
-    Boolean numericDate = (flags & IDateUtils::FORMAT_NUMERIC_DATE) != 0;
-
-    // If we're getting called with a single instant in time (from
-    // e.g. formatDateTime(), below), then we can skip a lot of
-    // computation below that'd otherwise be thrown out.
-    Boolean isInstant = (startMillis == endMillis);
-
-    AutoPtr<ITime> startDate;
-    if (!timeZone.IsNullOrEmpty()) {
-        CTime::New(timeZone, (ITime**)&startDate);
-    }
-    else if (useUTC) {
-        CTime::New(ITime::TIMEZONE_UTC, (ITime**)&startDate);
-    }
-    else {
-        CTime::New((ITime**)&startDate);
-    }
-    startDate->Set(startMillis);
-
-    AutoPtr<ITime> endDate;
-    Int32 dayDistance;
-    if (isInstant) {
-        endDate = startDate;
-        dayDistance = 0;
-    }
-    else {
-        if (!timeZone.IsNullOrEmpty()) {
-            CTime::New(timeZone, (ITime**)&endDate);
-        }
-        else if (useUTC) {
-            CTime::New(ITime::TIMEZONE_UTC, (ITime**)&endDate);
-        }
-        else {
-            CTime::New( (ITime**)&endDate);
-        }
-        endDate->Set(endMillis);
-        Int64 startDateGmtoff, endDateGmtoff;
-        startDate->GetGmtoff(&startDateGmtoff);
-        endDate->GetGmtoff(&endDateGmtoff);
-        Int32 startJulianDay = CTime::GetJulianDay(startMillis, startDateGmtoff);
-        Int32 endJulianDay = CTime::GetJulianDay(endMillis, endDateGmtoff);
-        dayDistance = endJulianDay - startJulianDay;
+    // If we're being asked to format a time without being explicitly told whether to use
+    // the 12- or 24-hour clock, icu4c will fall back to the locale's preferred 12/24 format,
+    // but we want to fall back to the user's preference.
+    if ((flags & (IDateUtils::FORMAT_SHOW_TIME
+        | IDateUtils::FORMAT_12HOUR
+        | IDateUtils::FORMAT_24HOUR))
+        == IDateUtils::FORMAT_SHOW_TIME) {
+        flags |= DateFormat::Is24HourFormat(context)
+              ? IDateUtils::FORMAT_24HOUR
+              : IDateUtils::FORMAT_12HOUR;
     }
 
-    Int32 endDateHour, endDateMinute, endDateSecond;
-    if (!isInstant
-        && ((endDate->GetHour(&endDateHour), endDateHour) | (endDate->GetMinute(&endDateMinute), endDateMinute) | (endDate->GetSecond(&endDateSecond), endDateSecond)) == 0
-        && (!showTime || dayDistance <= 1)) {
-        Int32 endDateMonthDay;
-        endDate->GetMonthDay(&endDateMonthDay);
-        endDate->SetMonthDay(endDateMonthDay-1);
-        Int64 normalizeRet;
-        endDate->Normalize(TRUE, &normalizeRet /* ignore isDst */);
+    AutoPtr<IDateIntervalFormat> dIntervalFormat;
+    CDateIntervalFormat::AcquireSingleton((IDateIntervalFormat**)&dIntervalFormat);
+    String range;
+    dIntervalFormat->FormatDateRange(startMillis, endMillis, flags, timeZone, &range);
+    try {
+        AutoPtr<IAppendable> appendable;
+        formatter->GetOut((IAppendable**)&appendable);
+        AutoPtr<ICharSequence> cs;
+        CStringWrapper::New(range, (ICharSequence**)&cs);
+        appendable->Append(cs);
+    } catch () {
+        // throw new AssertionError(impossible);
+        return E_ASSERTION_ERROR;
     }
-
-    Int32 startDay;
-    Int32 startMonthNum;
-    Int32 startYear;
-    startDate->GetMonthDay(&startDay);
-    startDate->GetMonth(&startMonthNum);
-    startDate->GetYear(&startYear);
-
-    Int32 endDay;
-    Int32 endMonthNum;
-    Int32 endYear;
-    endDate->GetMonthDay(&endDay);
-    endDate->GetMonth(&endMonthNum);
-    endDate->GetYear(&endYear);
-
-    String startWeekDayString;// = "";
-    String endWeekDayString;// = "";
-    if (showWeekDay) {
-        String weekDayFormat;// = "";
-        if (abbrevWeekDay) {
-            weekDayFormat = IDateUtils::ABBREV_WEEKDAY_FORMAT;
-        }
-        else {
-            weekDayFormat = IDateUtils::WEEKDAY_FORMAT;
-        }
-        startDate->Format(weekDayFormat, &startWeekDayString);
-        if(isInstant){
-            endWeekDayString = startWeekDayString;
-        }
-        else {
-            endDate->Format(weekDayFormat, &endWeekDayString);
-        }
-    }
-
-    String startTimeString;// = "";
-    String endTimeString;// = "";
-    if (showTime) {
-        String startTimeFormat;// = "";
-        String endTimeFormat;// = "";
-        Boolean force24Hour = (flags & IDateUtils::FORMAT_24HOUR) != 0;
-        Boolean force12Hour = (flags & IDateUtils::FORMAT_12HOUR) != 0;
-        Boolean use24Hour;
-        if (force24Hour) {
-            use24Hour = TRUE;
-        }
-        else if (force12Hour) {
-            use24Hour = FALSE;
-        }
-        else {
-            use24Hour = DateFormat::Is24HourFormat(context);
-        }
-        if (use24Hour) {
-            res->GetString(R::string::hour_minute_24, &startTimeFormat);
-            startTimeFormat = endTimeFormat;
-        }
-        else {
-            Boolean abbrevTime = (flags & (IDateUtils::FORMAT_ABBREV_TIME | IDateUtils::FORMAT_ABBREV_ALL)) != 0;
-            Boolean capAMPM = (flags & IDateUtils::FORMAT_CAP_AMPM) != 0;
-            Boolean noNoon = (flags & IDateUtils::FORMAT_NO_NOON) != 0;
-            Boolean capNoon = (flags & IDateUtils::FORMAT_CAP_NOON) != 0;
-            Boolean noMidnight = (flags & IDateUtils::FORMAT_NO_MIDNIGHT) != 0;
-            Boolean capMidnight = (flags & IDateUtils::FORMAT_CAP_MIDNIGHT) != 0;
-
-            Int32 startDateMinute, startDateSecond, endDateMinute, endDateSecond;
-            startDate->GetMinute(&startDateMinute);
-            startDate->GetSecond(&startDateSecond);
-            endDate->GetMinute(&endDateMinute);
-            endDate->GetSecond(&endDateSecond);
-            Boolean startOnTheHour = startDateMinute == 0 && startDateSecond == 0;
-            Boolean endOnTheHour = endDateMinute == 0 && endDateSecond == 0;
-            if (abbrevTime && startOnTheHour) {
-                if (capAMPM) {
-                    res->GetString(R::string::hour_cap_ampm, &startTimeFormat);
-                }
-                else {
-                    res->GetString(R::string::hour_ampm, &startTimeFormat);
-                }
-            }
-            else {
-                if (capAMPM) {
-                    res->GetString(R::string::hour_minute_cap_ampm, &startTimeFormat);
-                }
-                else {
-                    res->GetString(R::string::hour_minute_ampm, &startTimeFormat);
-                }
-            }
-
-            // Don't waste time on setting endTimeFormat when
-            // we're dealing with an instant, where we'll never
-            // need the end point.  (It's the same as the start
-            // point)
-            if (!isInstant) {
-                if (abbrevTime && endOnTheHour) {
-                    if (capAMPM) {
-                        res->GetString(R::string::hour_cap_ampm, &endTimeFormat);
-                    }
-                    else {
-                        res->GetString(R::string::hour_ampm, &endTimeFormat);
-                    }
-                }
-                else {
-                    if (capAMPM) {
-                        res->GetString(R::string::hour_minute_cap_ampm, &endTimeFormat);
-                    }
-                    else {
-                        res->GetString(R::string::hour_minute_ampm, &endTimeFormat);
-                    }
-                }
-
-                Int32 endDateHour;
-                if ((endDate->GetHour(&endDateHour), endDateHour == 12) && endOnTheHour && !noNoon) {
-                    if (capNoon) {
-                        res->GetString(R::string::Noon, &endTimeFormat);
-                    }
-                    else {
-                        res->GetString(R::string::noon, &endTimeFormat);
-                    }
-                }
-                else if (endDateHour == 0 && endOnTheHour && !noMidnight) {
-                    if (capMidnight) {
-                        res->GetString(R::string::Midnight, &endTimeFormat);
-                    }
-                    else {
-                        res->GetString(R::string::midnight, &endTimeFormat);
-                    }
-                }
-            }
-
-            Int32 startDateHour;
-            if ((startDate->GetHour(&startDateHour), startDateHour == 12) && startOnTheHour && !noNoon) {
-                if (capNoon) {
-                    res->GetString(R::string::Noon, &startTimeFormat);
-                }
-                else {
-                    res->GetString(R::string::noon, &startTimeFormat);
-                }
-                // Don't show the start time starting at midnight.  Show
-                // 12am instead.
-            }
-        }
-
-        startDate->Format(startTimeFormat, &startTimeString);
-        if(isInstant){
-            endTimeString = startTimeString;
-        }
-        else {
-            endDate->Format(endTimeFormat, &endTimeString);
-        }
-    }
-
-    // Show the year if the user specified FORMAT_SHOW_YEAR or if
-    // the starting and end years are different from each other
-    // or from the current year.  But don't show the year if the
-    // user specified FORMAT_NO_YEAR.
-    if (showYear) {
-        // No code... just a comment for clarity.  Keep showYear
-        // on, as they enabled it with FORMAT_SHOW_YEAR.  This
-        // takes precedence over them setting FORMAT_NO_YEAR.
-    }
-    else if (noYear) {
-        // They explicitly didn't want a year.
-        showYear = FALSE;
-    }
-    else if (startYear != endYear) {
-        showYear = TRUE;
-    }
-    else {
-        // Show the year if it's not equal to the current year.
-        AutoPtr<ITime> currentTime;
-        CTime::New((ITime**)&currentTime);
-        currentTime->SetToNow();
-        Int32 currentYear;
-        currentTime->GetYear(&currentYear);
-        showYear = (startYear != currentYear);
-    }
-
-    String defaultDateFormat, fullFormat, dateRange;
-    if (numericDate) {
-        res->GetString(R::string::numeric_date, &defaultDateFormat);
-    }
-    else if (showYear) {
-        if (abbrevMonth) {
-            if (noMonthDay) {
-                res->GetString(R::string::abbrev_month_year, &defaultDateFormat);
-            }
-            else {
-                res->GetString(R::string::abbrev_month_day_year, &defaultDateFormat);
-            }
-        }
-        else {
-            if (noMonthDay) {
-                res->GetString(R::string::month_year, &defaultDateFormat);
-            }
-            else {
-                res->GetString(R::string::month_day_year, &defaultDateFormat);
-            }
-        }
-    }
-    else {
-        if (abbrevMonth) {
-            if (noMonthDay) {
-                res->GetString(R::string::abbrev_month, &defaultDateFormat);
-            }
-            else {
-                res->GetString(R::string::abbrev_month_day, &defaultDateFormat);
-            }
-        }
-        else {
-            if (noMonthDay) {
-                res->GetString(R::string::month, &defaultDateFormat);
-            }
-            else {
-                res->GetString(R::string::month_day, &defaultDateFormat);
-            }
-        }
-    }
-
-    if (showWeekDay) {
-        if (showTime) {
-            res->GetString(R::string::wday1_date1_time1_wday2_date2_time2, &fullFormat);
-        }
-        else {
-            res->GetString(R::string::wday1_date1_wday2_date2, &fullFormat);
-        }
-    }
-    else {
-        if (showTime) {
-            res->GetString(R::string::date1_time1_date2_time2, &fullFormat);
-        }
-        else {
-            res->GetString(R::string::date1_date2, &fullFormat);
-        }
-    }
-
-    if (noMonthDay && startMonthNum == endMonthNum && startYear == endYear) {
-        // Example: "January, 2008"
-        String strDefFormatStartDate;
-        startDate->Format(defaultDateFormat, &strDefFormatStartDate);
-        AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//        formatter->Format("%s", strDefFormatStartDate, (Elastos::Utility::IFormatter**)&ret);
-        return ret;
-    }
-
-    if (startYear != endYear || noMonthDay) {
-        // Different year or we are not showing the month day number.
-        // Example: "December 31, 2007 - January 1, 2008"
-        // Or: "January - February, 2008"
-        String startDateString;
-        startDate->Format(defaultDateFormat, &startDateString);
-        String endDateString;
-        endDate->Format(defaultDateFormat, &endDateString);
-
-        // The values that are used in a fullFormat string are specified
-        // by position.
-        AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//        formatter->Format(fullFormat, startWeekDayString, startDateString, startTimeString, endWeekDayString, endDateString, endTimeString, (Elastos::Utility::IFormatter**)&ret);
-        return ret;
-    }
-
-    // Get the month, day, and year strings for the start and end dates
-    String monthFormat;
-    if (numericDate) {
-        monthFormat = IDateUtils::NUMERIC_MONTH_FORMAT;
-    }
-    else if (abbrevMonth) {
-        res->GetString(R::string::short_format_month, &monthFormat);
-    }
-    else {
-        monthFormat = IDateUtils::MONTH_FORMAT;
-    }
-    String startMonthString;
-    startDate->Format(monthFormat, &startMonthString);
-    String startMonthDayString;
-    startDate->Format(IDateUtils::MONTH_DAY_FORMAT, &startMonthDayString);
-    String startYearString;
-    startDate->Format(IDateUtils::YEAR_FORMAT, &startYearString);
-
-    String endMonthString;
-    String endMonthDayString;
-    String endYearString;
-    if(isInstant){
-        endMonthString=NULL;
-        endMonthDayString=NULL;
-        endYearString=NULL;
-    }
-    else {
-        endDate->Format(monthFormat, &endMonthString);
-        endDate->Format(IDateUtils::MONTH_DAY_FORMAT, &endMonthDayString);
-        endDate->Format(IDateUtils::YEAR_FORMAT, &endYearString);
-    }
-
-    String startStandaloneMonthString = startMonthString;
-    String endStandaloneMonthString = endMonthString;
-    // We need standalone months for these strings in Persian (fa): http://b/6811327
-
-    AutoPtr<ILocaleHelper> localeHelp;
-    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelp);
-    AutoPtr<ILocale> localeDef;
-    localeHelp->GetDefault((ILocale**)&localeDef);
-
-    String strLocaleDefLanguage;
-    if (!numericDate && !abbrevMonth && (localeDef->GetLanguage(&strLocaleDefLanguage), strLocaleDefLanguage).Equals("fa")) {
-        startDate->Format(String("%-B"), &startStandaloneMonthString);
-        endDate->Format(String("%-B"), &endStandaloneMonthString);
-    }
-
-    if (startMonthNum != endMonthNum) {
-        // Same year, different month.
-        // Example: "October 28 - November 3"
-        // or: "Wed, Oct 31 - Sat, Nov 3, 2007"
-        // or: "Oct 31, 8am - Sat, Nov 3, 2007, 5pm"
-
-        Int32 index = 0;
-        if (showWeekDay) index = 1;
-        if (showYear) index += 2;
-        if (showTime) index += 4;
-        if (numericDate) index += 8;
-        Int32 resId = sSameYearTable[index];
-        res->GetString(resId, &fullFormat);
-
-        // The values that are used in a fullFormat string are specified
-        // by position.
-        AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//        formatter->Format(fullFormat, startWeekDayString, startMonthString, startMonthDayString, startYearString, startTimeString, endWeekDayString, endMonthString, endMonthDayString, endYearString, endTimeString, startStandaloneMonthString, endStandaloneMonthString, (Elastos::Utility::IFormatter**)&ret);
-
-        return ret;
-    }
-
-    if (startDay != endDay) {
-        // Same month, different day.
-        Int32 index = 0;
-        if (showWeekDay) index = 1;
-        if (showYear) index += 2;
-        if (showTime) index += 4;
-        if (numericDate) index += 8;
-        Int32 resId = sSameMonthTable[index];
-        res->GetString(resId, &fullFormat);
-
-        // The values that are used in a fullFormat string are specified
-        // by position.
-        AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//        formatter->Format(fullFormat, startWeekDayString, startMonthString, startMonthDayString, startYearString, startTimeString, endWeekDayString, endMonthString, endMonthDayString, endYearString, endTimeString, startStandaloneMonthString, endStandaloneMonthString, (Elastos::Utility::IFormatter**)&ret);
-        return ret;
-    }
-
-    // Same start and end day
-    Boolean showDate = (flags & IDateUtils::FORMAT_SHOW_DATE) != 0;
-
-    // If nothing was specified, then show the date.
-    if (!showTime && !showDate && !showWeekDay) showDate = TRUE;
-
-    // Compute the time string (example: "10:00 - 11:00 am")
-    String timeString;// = "";
-    if (showTime) {
-        // If the start and end time are the same, then just show the
-        // start time.
-        if (isInstant) {
-            // Same start and end time.
-            // Example: "10:15 AM"
-            timeString = startTimeString;
-        }
-        else {
-            // Example: "10:00 - 11:00 am"
-            String timeFormat;
-            res->GetString(R::string::time1_time2, &timeFormat);
-            // Don't use the user supplied Formatter because the result will pollute the buffer.
-            timeString = NULL;
-//            timeString = String.format(timeFormat, startTimeString, endTimeString);
-        }
-    }
-
-    // Figure out which full format to use.
-    fullFormat = "";
-    String dateString;// = "";
-    if (showDate) {
-        startDate->Format(defaultDateFormat, &dateString);
-        if (showWeekDay) {
-            if (showTime) {
-                // Example: "10:00 - 11:00 am, Tue, Oct 9"
-                res->GetString(R::string::time_wday_date, &fullFormat);
-            }
-            else {
-                // Example: "Tue, Oct 9"
-                res->GetString(R::string::wday_date, &fullFormat);
-            }
-        }
-        else {
-            if (showTime) {
-                // Example: "10:00 - 11:00 am, Oct 9"
-                res->GetString(R::string::time_date, &fullFormat);
-            }
-            else {
-                // Example: "Oct 9"
-                AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//                formatter->Format("%s", dateString, (Elastos::Utility::IFormatter**)&ret);
-                return ret;
-            }
-        }
-    }
-    else if (showWeekDay) {
-        if (showTime) {
-            // Example: "10:00 - 11:00 am, Tue"
-            res->GetString(R::string::time_wday, &fullFormat);
-        }
-        else {
-            // Example: "Tue"
-            AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//            formatter->Format("%s", startWeekDayString, (Elastos::Utility::IFormatter**)&ret);
-            return ret;
-        }
-    }
-    else if (showTime) {
-        AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//        formatter->Format("%s", timeString, (Elastos::Utility::IFormatter**)&ret);
-        return ret;
-    }
-
-    // The values that are used in a fullFormat string are specified
-    // by position.
-    AutoPtr</*Elastos::Utility::IFormatter*/IInterface> ret;
-//    formatter->Format(fullFormat, timeString, startWeekDayString, dateString, (Elastos::Utility::IFormatter**)&ret);
-    return ret;
+    return formatter;
 }
 
 String DateUtils::FormatDateTime(

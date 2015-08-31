@@ -1,31 +1,40 @@
-
 #ifndef __ELASTOS_DROID_TEXT_FORMAT_DateUtils_H__
 #define __ELASTOS_DROID_TEXT_FORMAT_DateUtils_H__
 
 #include "Elastos.Droid.Core_server.h"
 #include <elastos/core/StringBuilder.h>
+#include <elastos/core/Object.h>
 
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Content::Res::IResources;
 using Elastos::Core::ICharSequence;
 using Elastos::Core::StringBuilder;
 using Elastos::Text::IDateFormat;
 using Elastos::Utility::ICalendar;
-//using Elastos::Utility::IFormatter;
-using Elastos::Droid::Content::IContext;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Content::Res::IResources;
+using Elastos::Utility::IFormatter;
+
 
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
+extern "C" const InterfaceID EIID_DateUtils;
+
 /**
  * This class contains various date-related utilities for creating text for things like
  * elapsed time and date ranges, strings for days of the week and months, and AM/PM text etc.
  */
 class DateUtils
+    : public Object
+    , public IDateUtils
 {
 public:
+    CAR_INTERFACE_DECL();
+
+    CARAPI_(String) ToString();
+
     /**
      * Return a string for the day of the week.
      * @param dayOfWeek One of {@link Calendar#SUNDAY Calendar.SUNDAY},
@@ -64,7 +73,7 @@ public:
      *               Undefined lengths will return {@link #LENGTH_MEDIUM}
      *               but may return something different in the future.
      * @return Localized month of the year.
-     * @deprecated use {@link java.text.SimpleDateFormat} instead.
+     * @deprecated Use {@link java.text.SimpleDateFormat} instead.
      */
     //@Deprecated
     static CARAPI_(String) GetMonthString(
@@ -224,73 +233,10 @@ public:
         /* [in] */ Int32 timeStyle);
 
     /**
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     */
-    static CARAPI_(AutoPtr<ICalendar>) NewCalendar(
-        /* [in] */ Boolean zulu);
-
-    /**
      * @return true if the supplied when is today else false
      */
     static CARAPI_(Boolean) IsToday(
         /* [in] */ Int64 when);
-
-    /**
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     * Return true if this date string is local time
-     */
-    static CARAPI_(Boolean) IsUTC(
-        /* [in] */ const String& s);
-
-    /**
-     * Return a string containing the date and time in RFC2445 format.
-     * Ensures that the time is written in UTC.  The Calendar class doesn't
-     * really help out with this, so this is slower than it ought to be.
-     *
-     * @param cal the date and time to write
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     */
-    static CARAPI_(String) WriteDateTime(
-        /* [in] */ ICalendar* cal);
-
-    /**
-     * Return a string containing the date and time in RFC2445 format.
-     *
-     * @param cal the date and time to write
-     * @param zulu If the calendar is in UTC, pass true, and a Z will
-     * be written at the end as per RFC2445.  Otherwise, the time is
-     * considered in localtime.
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     */
-    static CARAPI_(String) WriteDateTime(
-        /* [in] */ ICalendar* cal,
-        /* [in] */ Boolean zulu);
-
-    /**
-     * Return a string containing the date and time in RFC2445 format.
-     *
-     * @param cal the date and time to write
-     * @param sb a StringBuilder to use.  It is assumed that setLength
-     *           has already been called on sb to the appropriate length
-     *           which is sb.setLength(zulu ? 16 : 15)
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     */
-    static CARAPI_(String) WriteDateTime(
-        /* [in] */ ICalendar* cal,
-        /* [in,out] */ String* sb);
-
-    /**
-     * @hide
-     * @deprecated use {@link android.text.format.Time}
-     */
-    static CARAPI Assign(
-        /* [in] */ ICalendar* lval,
-        /* [in] */ ICalendar* rval);
 
     /**
      * Formats a date or a time range according to the local conventions.
@@ -335,9 +281,9 @@ public:
      * {@link #formatDateRange(Context, Formatter, long, long, int, String) formatDateRange}
      * @return a string containing the formatted date/time range.
      */
-    static CARAPI_(AutoPtr</*Elastos::Utility::IFormatter*/IInterface>) FormatDateRange(
+    static CARAPI_(AutoPtr<Elastos::Utility::IFormatter>) FormatDateRange(
         /* [in] */ IContext* context,
-        /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+        /* [in] */ Elastos::Utility::IFormatter* formatter,
         /* [in] */ Int64 startMillis,
         /* [in] */ Int64 endMillis,
         /* [in] */ Int32 flags);
@@ -508,9 +454,9 @@ public:
      *
      * @return the formatter with the formatted date/time range appended to the string buffer.
      */
-    static CARAPI_(AutoPtr</*Elastos::Utility::IFormatter*/IInterface>) FormatDateRange(
+    static CARAPI_(AutoPtr<Elastos::Utility::IFormatter>) FormatDateRange(
         /* [in] */ IContext* context,
-        /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+        /* [in] */ Elastos::Utility::IFormatter* formatter,
         /* [in] */ Int64 startMillis,
         /* [in] */ Int64 endMillis,
         /* [in] */ Int32 flags,
@@ -602,17 +548,6 @@ public:
 
 private:
     /**
-     * Returns the number of days passed between two dates.
-     *
-     * @param date1 first date
-     * @param date2 second date
-     * @return number of days passed between to dates.
-     */
-    static CARAPI_(Int64) GetNumberOfDaysPassed(
-        /* [in] */ Int64 date1,
-        /* [in] */ Int64 date2);
-
-    /**
      * Returns a string describing a day relative to the current day. For example if the day is
      * today this function returns "Today", if the day was a week ago it returns "7 days ago", and
      * if the day is in 2 weeks it returns "in 14 days".
@@ -636,25 +571,6 @@ private:
         /* [in] */ Int64 value,
         /* [in] */  Boolean pad,
         /* [in] */  Char32 zeroDigit);
-
-    /**
-     * Fast formatting of h:mm:ss.
-     */
-    static CARAPI_(String) FormatElapsedTime(
-        /* [in] */ const String& recycle,
-        /* [in] */ const String& format,
-        /* [in] */ Int64 hours,
-        /* [in] */ Int64 minutes,
-        /* [in] */ Int64 seconds);
-
-    /**
-     * Fast formatting of mm:ss.
-     */
-    static CARAPI_(String) FormatElapsedTime(
-        /* [in] */ const String& recycle,
-        /* [in] */ const String& format,
-        /* [in] */ Int64 minutes,
-        /* [in] */ Int64 seconds);
 
 public:
     // This table is used to lookup the resource string id of a format string
@@ -721,13 +637,8 @@ public:
 private:
     static Object sLock;
     static AutoPtr<IConfiguration> sLastConfig;
-    static AutoPtr<Elastos::Text::IDateFormat> sStatusTimeFormat;
     static String sElapsedFormatMMSS;
     static String sElapsedFormatHMMSS;
-
-    static const String FAST_FORMAT_HMMSS; //= "%1$d:%2$02d:%3$02d";
-    static const String FAST_FORMAT_MMSS; //= "%1$02d:%2$02d";
-    static const Char32 TIME_SEPARATOR; //= ':';
 
     static AutoPtr<ITime> sNowTime;
     static AutoPtr<ITime> sThenTime;

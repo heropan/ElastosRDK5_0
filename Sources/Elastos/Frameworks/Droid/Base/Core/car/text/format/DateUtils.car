@@ -144,14 +144,6 @@ module
         const Int32 LENGTH_SHORTEST = 50;
 
         /**
-         * @hide
-         * @deprecated Use {@link android.text.format.Time}
-         */
-        Assign(
-            [in] ICalendar* rval,
-            [in] ICalendar* lval);
-
-        /**
          * Formats a date or a time range according to the local conventions.
          * <p>
          * Note that this is a convenience method. Using it involves creating an
@@ -672,50 +664,6 @@ module
         IsToday(
             [in] Int64 when,
             [out] Boolean* ret);
-
-        /**
-         * Return a string containing the date and time in RFC2445 format.
-         * Ensures that the time is written in UTC.  The Calendar class doesn't
-         * really help out with this, so this is slower than it ought to be.
-         *
-         * @param cal the date and time to write
-         * @hide
-         * @deprecated Use {@link android.text.format.Time}
-         */
-        WriteDateTime(
-            [in] ICalendar* cal,
-            [out] String* ret);
-
-        /**
-         * Return a string containing the date and time in RFC2445 format.
-         *
-         * @param cal the date and time to write
-         * @param zulu If the calendar is in UTC, pass true, and a Z will
-         * be written at the end as per RFC2445.  Otherwise, the time is
-         * considered in localtime.
-         * @hide
-         * @deprecated Use {@link android.text.format.Time}
-         */
-        WriteDateTime(
-            [in] ICalendar* cal,
-            [in] Boolean zulu,
-            [out] String* ret);
-
-        /**
-         * Return a string containing the date and time in RFC2445 format.
-         *
-         * @param cal the date and time to write
-         * @param sb a StringBuilder to use.  It is assumed that setLength
-         *           has already been called on sb to the appropriate length
-         *           which is sb.setLength(zulu ? 16 : 15)
-         * @hide
-         * @deprecated Use {@link android.text.format.Time}
-         */
-        WriteDateTime(
-            [in] ICalendar* cal,
-            [out] String* sb,
-            [out] String* ret);
-
     }
 
     }//namespace Format

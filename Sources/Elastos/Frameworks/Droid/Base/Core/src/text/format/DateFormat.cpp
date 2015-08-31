@@ -9,6 +9,15 @@
 #include <Elastos.CoreLibrary.h>
 #include <elastos/core/StringUtils.h>
 
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::Res::IResources;
+using Elastos::Droid::Content::Res::IConfiguration;
+using Elastos::Droid::Provider::Settings;
+using Elastos::Droid::Provider::ISettingsSystem;
+using Elastos::Droid::Text::ISpannableStringBuilder;
+using Elastos::Droid::Text::CSpannableStringBuilder;
+using Elastos::Droid::Text::ISpannedString;
+using Elastos::Droid::Text::CSpannedString;
 using Elastos::Core::StringUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::CString;
@@ -23,24 +32,24 @@ using Elastos::Utility::IGregorianCalendar;
 using Elastos::Utility::CGregorianCalendar;
 using Elastos::Utility::ITimeZone;
 
-using Elastos::Droid::Content::IContentResolver;
-using Elastos::Droid::Content::Res::IResources;
-using Elastos::Droid::Content::Res::IConfiguration;
-using Elastos::Droid::Provider::Settings;
-using Elastos::Droid::Provider::ISettingsSystem;
-using Elastos::Droid::Text::ISpannableStringBuilder;
-using Elastos::Droid::Text::CSpannableStringBuilder;
-using Elastos::Droid::Text::ISpannedString;
-using Elastos::Droid::Text::CSpannedString;
-
 namespace Elastos {
 namespace Droid {
 namespace Text {
 namespace Format {
 
+extern "C" const InterfaceID EIID_DateFormat =
+        { 0x73d6f306, 0x1fb9, 0x481f, { 0x90, 0x12, 0x38, 0x80, 0xcf, 0x5b, 0x13, 0xb7 } };
+
 Mutex DateFormat::sLocaleLock;
 AutoPtr<ILocale> DateFormat::sIs24HourLocale;
 Boolean DateFormat::sIs24Hour = FALSE;
+
+CAR_INTERFACE_IMPL_2(DateFormat, Object, IDateFormat);
+
+String DateFormat::ToString()
+{
+    return String("DateFormat");
+}
 
 Boolean DateFormat::Is24HourFormat(
     /* [in] */ IContext* context)
@@ -58,9 +67,7 @@ Boolean DateFormat::Is24HourFormat(
         AutoPtr<ILocale> locale;
         config->GetLocale((ILocale**)&locale);
 
-        {
-            AutoLock lock(sLocaleLock);
-
+        synchronized(sLocaleLock){
             Boolean bIs24HourLocale;
             if (sIs24HourLocale != NULL &&
                     (sIs24HourLocale->Equals(locale, &bIs24HourLocale), bIs24HourLocale)) {
@@ -88,9 +95,9 @@ Boolean DateFormat::Is24HourFormat(
             value = "12";
         }
 
-        {
-            AutoLock lock(sLocaleLock);
 
+
+        synchronized(sLocaleLock){
             sIs24HourLocale = locale;
             sIs24Hour = value.Equals("24");
         }
@@ -104,20 +111,9 @@ Boolean DateFormat::Is24HourFormat(
 AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetTimeFormat(
     /* [in] */ IContext* context)
 {
-    Boolean b24 = Is24HourFormat(context);
-    Int32 res;
-
-    if (b24) {
-        res = R::string::twenty_four_hour_time_format;
-    }
-    else {
-        res = R::string::twelve_hour_time_format;
-    }
-
-    String strRes;
-    context->GetString(res, &strRes);
+    String timeFormat = GetTimeFormatString(context);
     AutoPtr<ISimpleDateFormat> sdf;
-    CSimpleDateFormat::New((ISimpleDateFormat**)&sdf);
+    CSimpleDateFormat::New(timeFormat, (ISimpleDateFormat**)&sdf);
     return Elastos::Text::IDateFormat::Probe(sdf);
 }
 
@@ -146,8 +142,7 @@ String DateFormat::GetDateFormatStringForSetting(
     /* [in] */ IContext* context,
     /* [in] */ const String& value)
 {
-    PEL("DateFormat::GetDateFormatStringForSetting")
-    if (!value.IsNull()) {
+     if (!value.IsNull()) {
         Int32 month = value.IndexOf('M');
         Int32 day = value.IndexOf('d');
         Int32 year = value.IndexOf('y');
@@ -185,14 +180,18 @@ String DateFormat::GetDateFormatStringForSetting(
         }
     }
 
-    /*
-     * The setting is not set; use the default.
-     * We use a resource string here instead of just DateFormat.SHORT
-     * so that we get a four-digit year instead a two-digit year.
-     */
-    String retValue = value;
-    context->GetString(R::string::numeric_date_format, &retValue);
-    return retValue;
+    // The setting is not set; use the locale's default.
+    AutoPtr<IResources> resources;
+    context->GetResources(IResources**(&resources));
+    AutoPtr<IConfiguration> config;
+    resources->GetConfiguration(IConfiguration**(&config));
+    AutoPtr<ILocale> locale;
+    config->GetLocale(ILocale**(&locale));
+    AutoPtr<ILocaleData> d;
+    LocaleData::Get(locale, (ILocaleData**)&d);
+
+    assert(0&&"TODO"); //localeData::mshorDateFormat4
+  //  return d->GetShortDateFormat4();
 }
 
 AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetLongDateFormat(
@@ -218,42 +217,7 @@ AutoPtr<Elastos::Text::IDateFormat> DateFormat::GetMediumDateFormat(
 AutoPtr< ArrayOf<Char32> > DateFormat::GetDateFormatOrder(
     /* [in] */ IContext* context)
 {
-    AutoPtr< ArrayOf<Char32> > order = ArrayOf<Char32>::Alloc(3);
-    (*order)[0] = Elastos::Droid::Text::Format::IDateFormat::DATE;
-    (*order)[1] = Elastos::Droid::Text::Format::IDateFormat::MONTH;
-    (*order)[2] = Elastos::Droid::Text::Format::IDateFormat::YEAR;
-    String value = GetDateFormatString(context);
-    Int32 index = 0;
-    Boolean foundDate = FALSE;
-    Boolean foundMonth = FALSE;
-    Boolean foundYear = FALSE;
-
-    Char32 c;
-    AutoPtr<ArrayOf<Char32> > chars = value.GetChars();
-    Int32 valueLen = chars->GetLength();
-    for(Int32 i = 0; i < valueLen; i++) {
-        c = (*chars)[i];
-
-        if (!foundDate && (c == Elastos::Droid::Text::Format::IDateFormat::DATE)) {
-            foundDate = TRUE;
-            (*order)[index] = Elastos::Droid::Text::Format::IDateFormat::DATE;
-            index++;
-        }
-
-        if (!foundMonth && (c == Elastos::Droid::Text::Format::IDateFormat::MONTH
-                         || c == Elastos::Droid::Text::Format::IDateFormat::STANDALONE_MONTH)) {
-            foundMonth = TRUE;
-            (*order)[index] = Elastos::Droid::Text::Format::IDateFormat::MONTH;
-            index++;
-        }
-
-        if (!foundYear && (c == Elastos::Droid::Text::Format::IDateFormat::YEAR)) {
-            foundYear = TRUE;
-            (*order)[index] = Elastos::Droid::Text::Format::IDateFormat::YEAR;
-            index++;
-        }
-    }
-    return order;
+    return Libcore::ICU::GetDateFormatOrder(GetDateFormatString(context));
 }
 
 String DateFormat::GetDateFormatString(
@@ -303,9 +267,14 @@ AutoPtr<ICharSequence> DateFormat::Format(
 Boolean DateFormat::HasSeconds(
     /* [in] */ ICharSequence* inFormat)
 {
-    if (inFormat == NULL) {
-        return FALSE;
-    }
+    return HasDesignator(inFormat, SECONDS);
+}
+
+Boolean DateFormat::HasDesignator(
+    /* [in] */ ICharSequence* inFormat,
+    /* [in] */ Char32* designator)
+{
+    if (inFormat == NULL) return FALSE;
 
     Int32 length;
     inFormat->GetLength(&length);
@@ -371,8 +340,16 @@ AutoPtr<ICharSequence> DateFormat::Format(
 {
     AutoPtr<ISpannableStringBuilder> s;
     CSpannableStringBuilder::New(inFormat, (ISpannableStringBuilder**)&s);
-    Char32 c;
     Int32 count;
+
+    AutoPtr<ILocaleHelper> localeHelper;
+    CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+    AutoPtr<ILocale> defaultLocale;
+    localeHelper->GetDefault((ILocale**)&defaultLocale);
+    AutoPtr<ILocaleDataHelper> localDataHelper;
+    CLocaleDataHelper::AcquireSingleton((ILocaleDataHelper**)&localDataHelper);
+    AutoPtr<ILocaleData> localeData;
+    localDataHelper->Get(defaultLocale, (ILocaleData**)&localeData);
 
     Int32 len;
     inFormat->GetLength(&len);
@@ -381,6 +358,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
         Int32 temp;
 
         count = 1;
+        Int32 c;
         s->GetCharAt(i, &c);
 
         if (c == Elastos::Droid::Text::Format::IDateFormat::QUOTE) {
@@ -397,67 +375,87 @@ AutoPtr<ICharSequence> DateFormat::Format(
         String replacement;
 
         switch (c) {
-            case Elastos::Droid::Text::Format::IDateFormat::AM_PM: {
-                inDate->Get(ICalendar::AM_PM, &temp);
-                AutoPtr<IDateUtils> du;
-                CDateUtils::AcquireSingleton((IDateUtils**)&du);
-                du->GetAMPMString(temp, &replacement);
+            case 'A':
+            case 'a':
+                {
+                    inDate->Get(ICalendar::AM_PM, &temp);
+                    ArrayOf<String> amPm;
+                    localeData->GetAmPm((ArrayOf<String>**)&amPm);
+                    replacement = amPm[temp - ICalendar::AM];
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::CAPITAL_AM_PM: {
-                inDate->Get(ICalendar::AM_PM, &temp);
-                AutoPtr<IDateUtils> du;
-                CDateUtils::AcquireSingleton((IDateUtils**)&du);
-                du->GetAMPMString(temp, &replacement);
+            case 'd':
+                {
+                    inDate->Get(ICalendar::DATE, &temp);
+                    replacement = ZeroPad(temp, count);
+                    AutoPtr<IDateUtils> du;
+                    CDateUtils::AcquireSingleton((IDateUtils**)&du);
+                    du->GetAMPMString(temp, &replacement);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::DATE: {
-                inDate->Get(ICalendar::DATE, &temp);
-                replacement = ZeroPad(temp, count);
+            case 'c':
+            case 'E':
+                {
+                    inDate->Get(ICalendar::DAY_OF_WEEK, &temp);
+                    replacement = GetDayOfWeekString(localeData, temp, count, c);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::DAY: {
-                inDate->Get(ICalendar::DAY_OF_WEEK, &temp);
-                AutoPtr<IDateUtils> du;
-                CDateUtils::AcquireSingleton((IDateUtils**)&du);
-                du->GetDayOfWeekString(temp,
-                        (count < 4 ? (IDateUtils::LENGTH_MEDIUM) : (IDateUtils::LENGTH_LONG)),
-                        &replacement);
+            case 'K': // hour in am/pm (0-11)
+            case 'h': // hour in am/pm (1-12)
+                {
+                    Int32 hour;
+                    inDate->Get(ICalendar::HOUR, &hour);
+                    if (c == 'h' && hour == 0) {
+                        hour = 12;
+                    }
+                    replacement = ZeroPad(hour, count);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::HOUR: {
-                inDate->Get(ICalendar::HOUR, &temp);
-
-                if (0 == temp) {
-                    temp = 12;
+            case 'H': // hour in day (0-23)
+            case 'k': // hour in day (1-24) [but see note below]
+                {
+                    Int32 hour;
+                    inDate->Get(ICalendar::HOUR_OF_DAY, &hour);
+                    // Historically on Android 'k' was interpreted as 'H', which wasn't
+                    // implemented, so pretty much all callers that want to format 24-hour
+                    // times are abusing 'k'. http://b/8359981.
+                    if (FALSE && c == 'k' && hour == 0) {
+                        hour = 24;
+                    }
+                    replacement = ZeroPad(hour, count);
                 }
 
                 replacement = ZeroPad(temp, count);
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::HOUR_OF_DAY: {
-                inDate->Get(ICalendar::HOUR_OF_DAY, &temp);
-                replacement = ZeroPad(temp, count);
+            case 'L':
+            case 'M':
+                {
+                    inDate->Get(ICalendar::MONTH, &temp);
+                    replacement = GetMonthString(localeData, temp, count, c);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::MINUTE: {
-                inDate->Get(ICalendar::MINUTE, &temp);
-                replacement = ZeroPad(temp, count);
+            case 'm':
+                {
+                    inDate->Get(ICalendar::MINUTE, &temp);
+                    replacement = ZeroPad(temp, count);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::MONTH:
-            case Elastos::Droid::Text::Format::IDateFormat::STANDALONE_MONTH: {
-                replacement = GetMonthString(inDate, count, c);
+            case 's':
+                {
+                    inDate->Get(ICalendar::SECONDS, &temp);
+                    replacement = ZeroPad(temp, count);
+                }
                 break;
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::SECONDS: {
-                inDate->Get(ICalendar::SECOND, &temp);
-                replacement = ZeroPad(temp, count);
+            case 'y':
+                {
+                    inDate->Get(ICalendar::YEAR, &temp);
+                    replacement = GetYearString(temp, count);
+                }
                 break;
-
-            }
-            case Elastos::Droid::Text::Format::IDateFormat::TIME_ZONE: {
-                replacement = GetTimeZoneString(inDate, count);
+            case 'z':
+                {
+                    replacement = GetTimeZoneString(inDate, count);
+                }
                 break;
             }
             case Elastos::Droid::Text::Format::IDateFormat::YEAR: {
@@ -470,9 +468,7 @@ AutoPtr<ICharSequence> DateFormat::Format(
         }
 
         if (!replacement.IsNull()) {
-            AutoPtr<ICharSequence> cs;
-            CString::New(replacement, (ICharSequence**)&cs);
-            s->Replace(i, i + count, cs);
+            s->Replace(i, i + count, replacement);
             count = replacement.GetLength(); // CARE: count is used in the for loop above
             s->GetLength(&len);
         }
@@ -483,13 +479,41 @@ AutoPtr<ICharSequence> DateFormat::Format(
         AutoPtr<ISpannedString> ss;
         CSpannedString::New(s, (ISpannedString**)&ss);
         cseq = ICharSequence::Probe(ss.Get());
-    }
-    else {
+    } else {
         String str;
         s->ToString(&str);
         CString::New(str, (ICharSequence**)&cseq);
     }
     return cseq;
+}
+
+String DateFormat::GetDayOfWeekString(
+    /* [in] */ ILocaleData* ld,
+    /* [in] */ Int32 day,
+    /* [in] */ Int32 count,
+    /* [in] */ Int32 kind)
+{
+    Boolean standalone = (kind == 'c');
+    if (count == 5) {
+        AutoPtr<ArrayOf<String> > tsaWeekdayNames;
+        ld->GetTinyStandAloneWeekdayNames((ArrayOf<String>**)&tsaWeekdayNames);
+        AutoPtr<ArrayOf<String> > tWeekdayNames;
+        ld->GetTinyWeekdayNames((ArrayOf<String>**)&tWeekdayNames);
+        return standalone ? tsaWeekdayNames[day] : tWeekdayNames[day];
+
+    } else if (count == 4) {
+        AutoPtr<ArrayOf<String> > lsaWeekdayNames;
+        ld->GetLongStandAloneWeekdayNames((ArrayOf<String>**)&lsaWeekdayNames);
+        AutoPtr<ArrayOf<String> > lWeekdayNames;
+        ld->GetLongWeekdayNames((ArrayOf<String>**)&lWeekdayNames);
+        return standalone ? lsaWeekdayNames[day] : lWeekdayNames[day];
+    } else {
+        AutoPtr<ArrayOf<String> > ssaWeekdayNames;
+        ld->GetShortStandAloneWeekdayNames((ArrayOf<String>**)&ssaWeekdayNames);
+        AutoPtr<ArrayOf<String> > sWeekdayNames;
+        ld->GetShortWeekdayNames((ArrayOf<String>**)&sWeekdayNames);
+        return standalone ? ssaWeekdayNames[day] : sWeekdayNames[day];
+    }
 }
 
 String DateFormat::GetMonthString(
@@ -578,7 +602,7 @@ String DateFormat::FormatZoneOffset(
 }
 
 String DateFormat::GetYearString(
-    /* [in] */ ICalendar* inDate,
+    /* [in] */ Int32* year,
     /* [in] */ Int32 count)
 {
     Int32 year;
@@ -587,7 +611,12 @@ String DateFormat::GetYearString(
         return ZeroPad(year % 100, 2);
     }
     else {
-        //String.format(Locale.getDefault(), "%d", year);
+        AutoPtr<ILocaleHelper> localeHelper;
+        CLocaleHelper::AcquireSingleton((ILocaleHelper**)&localeHelper);
+        AutoPtr<ILocale> defaultLocale;
+        localeHelper->GetDefault((ILocale**)&defaultLocale);
+        assert("TODO");
+        //String.format(defaultLocale, "%d", year);
         return StringUtils::Int32ToString(year);
     }
 }

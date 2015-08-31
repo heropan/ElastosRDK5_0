@@ -12,12 +12,21 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
+extern "C" const InterfaceID EIID_Formatter;
+
 /**
  * Utility class to aid in formatting common values that are not covered
  * by the {@link java.util.Formatter} class in {@link java.util}
  */
-class Formatter {
+class Formatter
+    : public Object
+    , public IDateUtils
+{
 public:
+    CAR_INTERFACE_DECL();
+
+    CARAPI_(String) ToString();
+
     /**
      * Formats a content size to be in the form of bytes, kilobytes, megabytes, etc
      *
@@ -53,7 +62,23 @@ public:
     static CARAPI_(String) FormatIpAddress(
         /* [in] */ Int32 ipv4Address);
 
+    /**
+     * Returns elapsed time for the given millis, in the following format:
+     * 1 day 5 hrs; will include at most two units, can go down to seconds precision.
+     * @param context the application context
+     * @param millis the elapsed time in milli seconds
+     * @return the formatted elapsed time
+     * @hide
+     */
+     static CARAPI_(String) FormatShortElapsedTime(
+            /* [in] */ IContext* context,
+            /* [in] */ Int64 millis);
+
 private:
+    static const Int32 SECONDS_PER_MINUTE;
+    static const Int32 SECONDS_PER_HOUR;
+    static const Int32 SECONDS_PER_DAY;
+
     static CARAPI_(String) FormatFileSize(
         /* [in] */ IContext* context,
         /* [in] */ Int64 number,

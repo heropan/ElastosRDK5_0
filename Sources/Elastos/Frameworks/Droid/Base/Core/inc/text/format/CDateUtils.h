@@ -3,11 +3,13 @@
 
 #include "_Elastos_Droid_Text_Format_CDateUtils.h"
 #include "Elastos.Droid.Core_server.h"
+#include "DateUtils.h"
+#include <elastos/core/Singleton.h>
 
+using Elastos::Droid::Content::IContext;
 using Elastos::Core::ICharSequence;
 using Elastos::Utility::ICalendar;
-//using Elastos::Utility::IFormatter;
-using Elastos::Droid::Content::IContext;
+using Elastos::Utility::IFormatter;
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +17,13 @@ namespace Text {
 namespace Format {
 
 CarClass(CDateUtils)
+    , public Singleton
+    , public DateUtils
 {
 public:
+    CAR_INTERFACE_DECL()
+    CAR_SINGLETON_DECL()
+
     CARAPI Assign(
         /* [in] */ ICalendar* rval,
         /* [in] */ ICalendar* lval);
@@ -30,20 +37,20 @@ public:
 
     CARAPI FormatDateRange(
         /* [in] */ IContext* context,
-        /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+        /* [in] */ Elastos::Utility::IFormatter* formatter,
         /* [in] */ Int64 startMillis,
         /* [in] */ Int64 endMillis,
         /* [in] */ Int32 flags,
-        /* [out] */ /*Elastos::Utility::IFormatter*/IInterface** ret);
+        /* [out] */ Elastos::Utility::IFormatter** ret);
 
     CARAPI FormatDateRange(
         /* [in] */ IContext* context,
-        /* [in] */ /*Elastos::Utility::IFormatter*/IInterface* formatter,
+        /* [in] */ Elastos::Utility::IFormatter* formatter,
         /* [in] */ Int64 startMillis,
         /* [in] */ Int64 endMillis,
         /* [in] */ Int32 flags,
         /* [in] */ const String& timeZone,
-        /* [out] */ /*Elastos::Utility::IFormatter*/IInterface** ret);
+        /* [out] */ Elastos::Utility::IFormatter** ret);
 
     CARAPI FormatDateTime(
         /* [in] */ IContext* context,
@@ -147,21 +154,6 @@ public:
     CARAPI TimeString(
         /* [in] */ Int64 millis,
         /* [out] */ ICharSequence** ret);
-
-    CARAPI WriteDateTime(
-        /* [in] */ ICalendar* cal,
-        /* [out] */ String* ret);
-
-    CARAPI WriteDateTime(
-        /* [in] */ ICalendar* cal,
-        /* [in] */ Boolean zulu,
-        /* [out] */ String* ret);
-
-    CARAPI WriteDateTime(
-        /* [in] */ ICalendar* cal,
-        /* [in,out] */ String* sb,
-        /* [out] */ String* ret);
-
 };
 
 } // namespace Format

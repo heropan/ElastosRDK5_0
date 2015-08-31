@@ -3,6 +3,8 @@
 
 #include "_Elastos_Droid_Text_Format_CFormatter.h"
 #include "Elastos.Droid.Core_server.h"
+#include <elastos/core/Singleton.h>
+
 using Elastos::Droid::Content::IContext;
 
 namespace Elastos {
@@ -11,8 +13,12 @@ namespace Text {
 namespace Format {
 
 CarClass(CFormatter)
+    , public Singleton
+    , public Formatter
 {
 public:
+    CAR_SINGLETON_DECL()
+
     CARAPI FormatFileSize(
         /* [in] */ IContext* context,
         /* [in] */ Int64 number,
