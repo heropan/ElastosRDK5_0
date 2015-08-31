@@ -6,11 +6,23 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_WEBCONTENTSDELEGATEANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_WEBCONTENTSDELEGATEANDROID_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "view/CKeyEvent.h"
+// #include "webkit/native/base/CalledByNative.h"
+// #include "webkit/native/base/JNINamespace.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+
 // package org.chromium.components.web_contents_delegate_android;
 // import android.view.KeyEvent;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
 // import org.chromium.content.browser.ContentViewCore;
+
+using Elastos::Droid::View::IKeyEvent;
+// using Elastos::Droid::Webkit::Base::CalledByNative;
+// using Elastos::Droid::Webkit::Base::JNINamespace;
 
 namespace Elastos {
 namespace Droid {
@@ -21,7 +33,7 @@ namespace Components {
   * Java peer of the native class of the same name.
   */
 // @JNINamespace("web_contents_delegate_android")
-class WebContentsDelegateAndroid
+class WebContentsDelegateAndroid : public Object
 {
 public:
     virtual CARAPI_(Int32) GetMostRecentProgress();

@@ -1,0 +1,15 @@
+TARGET_NAME = elastos.droid.webkit.ui.gfx
+TARGET_TYPE = lib
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += ../../../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
+INCLUDES += $(MAKEDIR)/../../../../../inc/webkit/native/ui/
+INCLUDES += $(MAKEDIR)/../../../../../inc/webkit/native/ui/gfx/
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = DeviceDisplayInfo.cpp
+SOURCES += BitmapHelper.cpp
+SOURCES += ViewConfigurationHelper.cpp

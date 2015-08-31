@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "WebContentsDelegateAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -20,9 +22,8 @@ const Int32 WebContentsDelegateAndroid::INVALIDATE_TYPE_TITLE;
 
 Int32 WebContentsDelegateAndroid::GetMostRecentProgress()
 {
-    /*
-    return mMostRecentProgress;
-    */
+    // ==================before translated======================
+    // return mMostRecentProgress;
     return 0;
 }
 
@@ -93,9 +94,8 @@ ECode WebContentsDelegateAndroid::OnUpdateUrl(
 Boolean WebContentsDelegateAndroid::TakeFocus(
     /* [in] */ Boolean reverse)
 {
-    /*
-    return false;
-    */
+    // ==================before translated======================
+    // return false;
     return FALSE;
 }
 
@@ -103,10 +103,9 @@ ECode WebContentsDelegateAndroid::HandleKeyboardEvent(
     /* [in] */ IKeyEvent* event)
 {
     VALIDATE_NOT_NULL(event);
-    /*
-    // TODO(bulach): we probably want to re-inject the KeyEvent back into
-    // the system. Investigate if this is at all possible.
-    */
+    // ==================before translated======================
+    // // TODO(bulach): we probably want to re-inject the KeyEvent back into
+    // // the system. Investigate if this is at all possible.
     return NOERROR;
 }
 
@@ -116,9 +115,8 @@ Boolean WebContentsDelegateAndroid::AddMessageToConsole(
     /* [in] */ Int32 lineNumber,
     /* [in] */ String sourceId)
 {
-    /*
-    return false;
-    */
+    // ==================before translated======================
+    // return false;
     return FALSE;
 }
 
@@ -137,19 +135,17 @@ ECode WebContentsDelegateAndroid::ToggleFullscreenModeForTab(
 
 Boolean WebContentsDelegateAndroid::IsFullscreenForTabOrPending()
 {
-    /*
-    return false;
-    */
+    // ==================before translated======================
+    // return false;
     return FALSE;
 }
 
 const ECode WebContentsDelegateAndroid::NotifyLoadProgressChanged(
     /* [in] */ Double progress)
 {
-    /*
-    mMostRecentProgress = (int) (100.0 * progress);
-    onLoadProgressChanged(mMostRecentProgress);
-    */
+    // ==================before translated======================
+    // mMostRecentProgress = (int) (100.0 * progress);
+    // onLoadProgressChanged(mMostRecentProgress);
     return NOERROR;
 }
 

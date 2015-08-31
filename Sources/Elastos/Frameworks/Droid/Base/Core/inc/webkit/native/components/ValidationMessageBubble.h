@@ -6,6 +6,24 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_VALIDATIONMESSAGEBUBBLE_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_VALIDATIONMESSAGEBUBBLE_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "graphics/CPoint.h"
+#include "graphics/CRectF.h"
+#include "text/TextUtils.h"
+#include "view/Gravity.h"
+#include "view/View.h"
+#include "view/ViewGroup.h"
+#include "widget/PopupWindow.h"
+#include "widget/RelativeLayout.h"
+#include "widget/TextView.h"
+#include "webkit/native/base/ApiCompatibilityUtils.h"
+// #include "webkit/native/base/CalledByNative.h"
+// #include "webkit/native/content/R.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/content/browser/RenderCoordinates.h"
+
 // package org.chromium.components.web_contents_delegate_android;
 // import android.graphics.Point;
 // import android.graphics.RectF;
@@ -22,6 +40,19 @@
 // import org.chromium.content.browser.ContentViewCore;
 // import org.chromium.content.browser.RenderCoordinates;
 
+using Elastos::Droid::Graphics::IPoint;
+using Elastos::Droid::Graphics::IRectF;
+using Elastos::Droid::Text::ITextUtils;
+using Elastos::Droid::View::IGravity;
+using Elastos::Droid::View::IView;
+using Elastos::Droid::View::IViewGroup;
+using Elastos::Droid::Widget::IPopupWindow;
+using Elastos::Droid::Widget::IRelativeLayout;
+using Elastos::Droid::Widget::ITextView;
+using Elastos::Droid::Webkit::Base::ApiCompatibilityUtils;
+// using Elastos::Droid::Webkit::Base::CalledByNative;
+// using Elastos::Droid::Webkit::Content::R;
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -30,7 +61,7 @@ namespace Components {
 /**
   * This class is an implementation of validation message bubble UI.
   */
-class ValidationMessageBubble
+class ValidationMessageBubble : public Object
 {
 private:
     ValidationMessageBubble(

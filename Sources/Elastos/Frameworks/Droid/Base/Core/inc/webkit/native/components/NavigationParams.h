@@ -6,15 +6,22 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_NAVIGATIONPARAMS_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_NAVIGATIONPARAMS_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+// #include "webkit/native/base/CalledByNative.h"
+
 // package org.chromium.components.navigation_interception;
 // import org.chromium.base.CalledByNative;
+
+// using Elastos::Droid::Webkit::Base::CalledByNative;
 
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
 namespace Components {
 
-class NavigationParams
+class NavigationParams : public Object
 {
 public:
     NavigationParams(
@@ -34,15 +41,15 @@ public:
 
 public:
     // Target url of the navigation.
-    const String url;
+    /*const*/ String url;
     // True if the the navigation method is "POST".
-    const Boolean isPost;
+    /*const*/ Boolean isPost;
     // True if the navigation was initiated by the user.
-    const Boolean hasUserGesture;
+    /*const*/ Boolean hasUserGesture;
     // Page transition type (e.g. link / typed).
-    const Int32 pageTransitionType;
+    /*const*/ Int32 pageTransitionType;
     // Is the navigation a redirect (in which case url is the "target" address).
-    const Boolean isRedirect;
+    /*const*/ Boolean isRedirect;
 };
 
 } // namespace Components

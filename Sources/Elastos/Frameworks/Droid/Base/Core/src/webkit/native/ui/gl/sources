@@ -1,0 +1,14 @@
+TARGET_NAME = elastos.droid.webkit.ui.gl
+TARGET_TYPE = lib
+
+include $(MAKEDIR)/../../../../../../../sources.inc
+
+INCLUDES += ../../../../
+INCLUDES += $(MAKEDIR)/../../../../../inc/
+INCLUDES += $(MAKEDIR)/../../../../../inc/webkit/native/ui/
+INCLUDES += $(MAKEDIR)/../../../../../inc/webkit/native/ui/gl/
+
+C_DEFINES += -DDROID_CORE
+
+SOURCES = SurfaceTextureListener.cpp
+SOURCES += SurfaceTexturePlatformWrapper.cpp

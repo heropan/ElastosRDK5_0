@@ -6,6 +6,17 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_COLORCHOOSERANDROID_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_COLORCHOOSERANDROID_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/Context.h"
+// #include "webkit/native/base/CalledByNative.h"
+// #include "webkit/native/base/JNINamespace.h"
+#include "webkit/native/content/browser/ContentViewCore.h"
+#include "webkit/native/ui/ColorPickerDialog.h"
+#include "webkit/native/ui/ColorSuggestion.h"
+#include "webkit/native/ui/OnColorChangedListener.h"
+
 // package org.chromium.components.web_contents_delegate_android;
 // import android.content.Context;
 // import org.chromium.base.CalledByNative;
@@ -14,6 +25,13 @@
 // import org.chromium.ui.ColorPickerDialog;
 // import org.chromium.ui.ColorSuggestion;
 // import org.chromium.ui.OnColorChangedListener;
+
+using Elastos::Droid::Content::IContext;
+// using Elastos::Droid::Webkit::Base::CalledByNative;
+// using Elastos::Droid::Webkit::Base::JNINamespace;
+using Elastos::Droid::Webkit::Ui::ColorPickerDialog;
+using Elastos::Droid::Webkit::Ui::ColorSuggestion;
+using Elastos::Droid::Webkit::Ui::OnColorChangedListener;
 
 namespace Elastos {
 namespace Droid {
@@ -25,10 +43,12 @@ namespace Components {
   * native color_chooser_android.cc
   */
 // @JNINamespace("web_contents_delegate_android")
-class ColorChooserAndroid
+class ColorChooserAndroid : public Object
 {
 public:
-    class InnerOnColorChangedListener : public OnColorChangedListener
+    class InnerOnColorChangedListener
+        : public Object
+        , public OnColorChangedListener
     {
     public:
         InnerOnColorChangedListener(
@@ -85,8 +105,8 @@ private:
         /* [in] */ Int32 color);
 
 private:
-    const AutoPtr<ColorPickerDialog> mDialog;
-    const Int64 mNativeColorChooserAndroid;
+    /*const*/ AutoPtr<ColorPickerDialog> mDialog;
+    /*const*/ Int64 mNativeColorChooserAndroid;
 };
 
 } // namespace Components

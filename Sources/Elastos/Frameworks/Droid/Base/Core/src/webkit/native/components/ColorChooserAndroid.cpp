@@ -1,5 +1,7 @@
 // wuweizuo automatic build .cpp file from .java file.
 
+#include "ColorChooserAndroid.h"
+
 namespace Elastos {
 namespace Droid {
 namespace Webkit {
@@ -12,18 +14,16 @@ ColorChooserAndroid::InnerOnColorChangedListener::InnerOnColorChangedListener(
     /* [in] */ ColorChooserAndroid* owner)
     : mOwner(owner)
 {
-    /*
-    mOwner = owner;
-    */
+    // ==================before translated======================
+    // mOwner = owner;
 }
 
 ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
     /* [in] */ Int32 color)
 {
-    /*
-    mDialog.dismiss();
-    nativeOnColorChosen(mNativeColorChooserAndroid, color);
-    */
+    // ==================before translated======================
+    // mDialog.dismiss();
+    // nativeOnColorChosen(mNativeColorChooserAndroid, color);
     return NOERROR;
 }
 
@@ -32,9 +32,8 @@ ECode ColorChooserAndroid::InnerOnColorChangedListener::OnColorChanged(
 //=====================================================================
 ECode ColorChooserAndroid::CloseColorChooser()
 {
-    /*
-    mDialog.dismiss();
-    */
+    // ==================before translated======================
+    // mDialog.dismiss();
     return NOERROR;
 }
 
@@ -44,13 +43,13 @@ AutoPtr<ColorChooserAndroid> ColorChooserAndroid::CreateColorChooserAndroid(
     /* [in] */ Int32 initialColor,
     /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
 {
-    /*
-    ColorChooserAndroid chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
-        contentViewCore.getContext(), initialColor, suggestions);
-    chooser.openColorChooser();
-    return chooser;
-    */
-    return AutoPtr<ColorChooserAndroid>(this);
+    // ==================before translated======================
+    // ColorChooserAndroid chooser = new ColorChooserAndroid(nativeColorChooserAndroid,
+    //     contentViewCore.getContext(), initialColor, suggestions);
+    // chooser.openColorChooser();
+    // return chooser;
+    AutoPtr<ColorChooserAndroid> empty;
+    return empty;
 }
 
 ColorChooserAndroid::ColorChooserAndroid(
@@ -59,36 +58,33 @@ ColorChooserAndroid::ColorChooserAndroid(
     /* [in] */ Int32 initialColor,
     /* [in] */ ArrayOf<ColorSuggestion>* suggestions)
 {
-    /*
-    OnColorChangedListener listener = // [wuweizuo auto add note here: new InnerOnColorChangedListener(this)] new OnColorChangedListener() {
-      @Override
-      public void onColorChanged(int color) {
-          mDialog.dismiss();
-          nativeOnColorChosen(mNativeColorChooserAndroid, color);
-      }
-    };
-
-
-    mNativeColorChooserAndroid = nativeColorChooserAndroid;
-    mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
-    */
+    // ==================before translated======================
+    // OnColorChangedListener listener = new OnColorChangedListener() {
+    //   @Override
+    //   public void onColorChanged(int color) {
+    //       mDialog.dismiss();
+    //       nativeOnColorChosen(mNativeColorChooserAndroid, color);
+    //   }
+    // };
+    // 
+    // mNativeColorChooserAndroid = nativeColorChooserAndroid;
+    // mDialog = new ColorPickerDialog(context, listener, initialColor, suggestions);
 }
 
 ECode ColorChooserAndroid::OpenColorChooser()
 {
-    /*
-    mDialog.show();
-    */
+    // ==================before translated======================
+    // mDialog.show();
     return NOERROR;
 }
 
 AutoPtr< ArrayOf<ColorSuggestion> > ColorChooserAndroid::CreateColorSuggestionArray(
     /* [in] */ Int32 size)
 {
-    /*
-    return new ColorSuggestion[size];
-    */
-    return AutoPtr< ArrayOf<ColorSuggestion> >(this);
+    // ==================before translated======================
+    // return new ColorSuggestion[size];
+    AutoPtr< ArrayOf<ColorSuggestion> > empty;
+    return empty;
 }
 
 ECode ColorChooserAndroid::AddToColorSuggestionArray(
@@ -98,9 +94,8 @@ ECode ColorChooserAndroid::AddToColorSuggestionArray(
     /* [in] */ String label)
 {
     VALIDATE_NOT_NULL(array);
-    /*
-    array[index] = new ColorSuggestion(color, label);
-    */
+    // ==================before translated======================
+    // array[index] = new ColorSuggestion(color, label);
     return NOERROR;
 }
 

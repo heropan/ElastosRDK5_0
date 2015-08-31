@@ -7,6 +7,18 @@
 #ifndef _ELASTOS_DROID_WEBKIT_COMPONENTS_PERSONALAUTOFILLPOPULATOR_H_
 #define _ELASTOS_DROID_WEBKIT_COMPONENTS_PERSONALAUTOFILLPOPULATOR_H_
 
+#include "elatypes.h"
+#include "elautoptr.h"
+#include "ext/frameworkext.h"
+#include "content/ContentResolver.h"
+#include "content/Context.h"
+#include "content/pm/PackageManager.h"
+// #include "database/Cursor.h"
+#include "net/Uri.h"
+#include "provider/ContactsContract.h"
+// #include "webkit/native/base/CalledByNative.h"
+// #include "webkit/native/base/JNINamespace.h"
+
 // package org.chromium.components.browser.autofill;
 // import android.content.ContentResolver;
 // import android.content.Context;
@@ -16,6 +28,15 @@
 // import android.provider.ContactsContract;
 // import org.chromium.base.CalledByNative;
 // import org.chromium.base.JNINamespace;
+
+using Elastos::Droid::Content::IContentResolver;
+using Elastos::Droid::Content::IContext;
+using Elastos::Droid::Content::Pm::IPackageManager;
+using Elastos::Droid::Database::ICursor;
+using Elastos::Droid::Net::IUri;
+using Elastos::Droid::Provider::IContactsContract;
+// using Elastos::Droid::Webkit::Base::CalledByNative;
+// using Elastos::Droid::Webkit::Base::JNINamespace;
 
 namespace Elastos {
 namespace Droid {
@@ -27,24 +48,26 @@ namespace Components {
   * Requires permissions: READ_CONTACTS and READ_PROFILE.
   */
 // @JNINamespace("autofill")
-class PersonalAutofillPopulator
+class PersonalAutofillPopulator : public Object
 {
-public:
+private:
     /**
       * SQL query definitions for obtaining specific profile information.
       */
-    class ProfileQuery
+    class ProfileQuery : public Object
     {
     public:
-        );
+        virtual CARAPI_(AutoPtr< ArrayOf<String> >) Projection() = 0;
 
-        );
+        virtual CARAPI_(String) MimeType() = 0;
 
     public:
         AutoPtr<IUri> profileDataUri;
     };
 
-    class EmailProfileQuery : public ProfileQuery
+    class EmailProfileQuery
+        : public Object
+        , public ProfileQuery
     {
     public:
         // @Override
@@ -57,7 +80,9 @@ public:
         static const Int32 EMAIL_ADDRESS = 0;
     };
 
-    class PhoneProfileQuery : public ProfileQuery
+    class PhoneProfileQuery
+        : public Object
+        , public ProfileQuery
     {
     public:
         // @Override
@@ -70,7 +95,9 @@ public:
         static const Int32 NUMBER = 0;
     };
 
-    class AddressProfileQuery : public ProfileQuery
+    class AddressProfileQuery
+        : public Object
+        , public ProfileQuery
     {
     public:
         // @Override
@@ -89,7 +116,9 @@ public:
         static const Int32 COUNTRY = 6;
     };
 
-    class NameProfileQuery : public ProfileQuery
+    class NameProfileQuery
+        : public Object
+        , public ProfileQuery
     {
     public:
         // @Override
