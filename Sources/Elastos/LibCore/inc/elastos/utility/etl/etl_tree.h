@@ -453,7 +453,7 @@ struct RBTreeBase : public RBTreeAllocBase<T, Alloc, AllocTraits<T, Alloc>::S_in
     {
         Base::mHeader = Base::GetNode();
     }
-    ~RBTreeBase() { PutNode(Base::mHeader); }
+    ~RBTreeBase() { Base::PutNode(Base::mHeader); }
 };
 
 template <class Key, class Value, class KeyOfValue, class Compare,

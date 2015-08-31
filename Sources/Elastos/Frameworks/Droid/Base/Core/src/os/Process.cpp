@@ -304,7 +304,7 @@ ECode Process::ZygoteSendArgsAndGetResult(
 
 _EXIT_:
     zygoteState->Close();
-    return E_FAIL;
+    return E_ZYGOTE_START_FAILED_EXCEPTION;
     // } catch (IOException ex) {
             // zygoteState.close();
             // throw new ZygoteStartFailedEx(ex);
@@ -356,7 +356,7 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
 
     // Should there be a timeout on this?
     AutoPtr<IProcessStartResult> result;
-    //CProcessStartResult::New((IProcessStartResult**)&result);
+    CProcessStartResult::New((IProcessStartResult**)&result);
 
     ECode ec = IDataInput::Probe(inputStream)->ReadInt32(&pid);
     FAIL_GOTO(ec, _EXIT_)
@@ -377,7 +377,7 @@ ECode Process::JavaZygoteSendArgsAndGetResult(
 
 _EXIT_:
     zygoteState->Close();
-    return E_FAIL;
+    return E_ZYGOTE_START_FAILED_EXCEPTION;
     // } catch (IOException ex) {
             // zygoteState.close();
             // throw new ZygoteStartFailedEx(ex);
@@ -1511,7 +1511,7 @@ ECode Process::OpenZygoteSocketIfNeeded(
         if (ec == (ECode)E_IO_EXCEPTION) {
             // throw new ZygoteStartFailedEx("Error connecting to primary zygote", ioe);
             Logger::E(TAG, "Error connecting to primary zygote");
-            return E_FAIL;
+            return E_ZYGOTE_START_FAILED_EXCEPTION;
         }
     }
 
@@ -1530,7 +1530,7 @@ ECode Process::OpenZygoteSocketIfNeeded(
         // } catch (IOException ioe) {
         //     throw new ZygoteStartFailedEx("Error connecting to secondary zygote", ioe);
             Logger::E(TAG, "Error connecting to secondary zygote");
-            return E_FAIL;
+            return E_ZYGOTE_START_FAILED_EXCEPTION;
         }
     }
 
@@ -1550,73 +1550,46 @@ ECode Process::OpenJavaZygoteSocketIfNeeded(
     /* [out] */ Process::ZygoteState** state)
 {
     assert(0 && "TODO");
-    // Int32 retryCount;
+    // if (mPrimaryZygoteState == NULL || mPrimaryZygoteState->IsClosed()) {
+    //     // try {
+    //     mPrimaryZygoteState = NULL;
+    //     ECode ec = ZygoteState::Connect(ZYGOTE_SOCKET_JAVA, (ZygoteState**)&mPrimaryZygoteState);
+    //     // } catch (IOException ioe) {
+    //     if (ec == (ECode)E_IO_EXCEPTION) {
+    //         // throw new ZygoteStartFailedEx("Error connecting to primary zygote", ioe);
+    //         Logger::E(TAG, "Error connecting to primary zygote");
+    //         return E_ZYGOTE_START_FAILED_EXCEPTION;
+    //     }
+    // }
 
-    // if(sJavaZygoteSocket != NULL){
+    // if (mPrimaryZygoteState->Matches(abi)) {
+    //     *state = mPrimaryZygoteState;
+    //     REFCOUNT_ADD(*state)
     //     return NOERROR;
     // }
 
-    // if (sPreviousJavaZygoteOpenFailed) {
-    //     /*
-    //      * If we've failed before, expect that we'll fail again and
-    //      * don't pause for retries.
-    //      */
-    //     retryCount = 0;
-    // }
-    // else {
-    //     retryCount = 40;
-    // }
-
-    // Int32 retry = 0;
-    // String androidZygoteInited("false");
-
-    // // A new way to judge if android zygote is ready
-    // while(TRUE){
-    //     if(retry > retryCount){
-    //         Logger::W("Zygote", "wait for Android zygote initialized timeout!");
-    //         break;
+    // // The primary zygote didn't match. Try the secondary.
+    // if (mSecondaryZygoteState == NULL || mSecondaryZygoteState->IsClosed()) {
+    //     // try {
+    //     mSecondaryZygoteState = NULL;
+    //     ECode ec = ZygoteState::Connect(SECONDARY_ZYGOTE_SOCKET, (ZygoteState**)&mSecondaryZygoteState);
+    //     if (ec == (ECode)E_IO_EXCEPTION) {
+    //     // } catch (IOException ioe) {
+    //     //     throw new ZygoteStartFailedEx("Error connecting to secondary zygote", ioe);
+    //         Logger::E(TAG, "Error connecting to secondary zygote");
+    //         return E_ZYGOTE_START_FAILED_EXCEPTION;
     //     }
-
-    //     AutoPtr<ISystemProperties> sysProp;
-    //     CSystemProperties::AcquireSingleton((ISystemProperties**)&sysProp);
-    //     sysProp->Get(String("android_zygote_inited"), String("false"), &androidZygoteInited);
-    //     if(androidZygoteInited.Equals(String("true"))){
-    //         Logger::I("Zygote", "Android Zygote is ready");
-    //         break;
-    //     }
-
-    //     Logger::I("Zygote", "Android Zygote not up yet, sleeping...");
-    //     Thread::Sleep(ZYGOTE_RETRY_MILLIS);
     // }
 
-    // // Try to connect to android zygote socket
-    // CLocalSocket::New((ILocalSocket**)&sJavaZygoteSocket);
-
-    // AutoPtr<ILocalSocketAddress> address;
-    // CLocalSocketAddress::New(ZYGOTE_SOCKET_JAVA, LocalSocketAddressNamespace_RESERVED, (ILocalSocketAddress**)&address);
-    // FAIL_RETURN(sJavaZygoteSocket->Connect(address));
-
-    // AutoPtr<IInputStream> input;
-    // sJavaZygoteSocket->GetInputStream((IInputStream**)&input);
-    // CDataInputStream::New(input, (IDataInputStream**)&inputStream);
-
-    // AutoPtr<IOutputStream> output;
-    // sJavaZygoteSocket->GetOutputStream((IOutputStream**)&output);
-    // AutoPtr<IOutputStreamWriter> writer;
-    // COutputStreamWriter::New(output, (IOutputStreamWriter**)&writer);
-    // CBufferedWriter::New(writer, 256, (IBufferedWriter**)&writer);
-
-    // Logger::I("Zygote", "Process: zygote socket opened");
-
-    // sPreviousJavaZygoteOpenFailed = FALSE;
-
-    // if (sJavaZygoteSocket == NULL) {
-    //     sPreviousJavaZygoteOpenFailed = TRUE;
-    //     // throw new ZygoteStartFailed("connect failed");
-    //     return E_ZYGOTE_START_FAILED_EXCEPTION;
+    // if (mSecondaryZygoteState->Matches(abi)) {
+    //     *state = mSecondaryZygoteState;
+    //     REFCOUNT_ADD(*state)
+    //     return NOERROR;
     // }
 
-    return NOERROR;
+    // throw new ZygoteStartFailedEx("Unsupported zygote ABI: " + abi);
+    Logger::E(TAG, "Unsupported zygote ABI: %s", abi.string());
+    return E_ZYGOTE_START_FAILED_EXCEPTION;
 }
 
 } // namespace Os

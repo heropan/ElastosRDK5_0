@@ -219,20 +219,19 @@ module
             [in] String fileName,
             [in] IFileDescriptor* fd);
 
-
-        getBinderSentTransactions(
+        GetBinderSentTransactions(
             [out] Int32* result);
 
-        getBinderReceivedTransactions(
+        GetBinderReceivedTransactions(
             [out] Int32* result);
 
-        getBinderLocalObjectCount(
+        GetBinderLocalObjectCount(
             [out] Int32* result);
 
-        getBinderProxyObjectCount(
+        GetBinderProxyObjectCount(
             [out] Int32* result);
 
-        getBinderDeathObjectCount(
+        GetBinderDeathObjectCount(
             [out] Int32* result);
 
         SetFieldsOn(

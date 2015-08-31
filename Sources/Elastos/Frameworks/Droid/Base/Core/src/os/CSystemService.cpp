@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CSystemService, Singleton, ISystemService)
+
+CAR_SINGLETON_IMPL(CSystemService)
+
 ECode CSystemService::Start(
     /* [in] */ const String& name)
 {

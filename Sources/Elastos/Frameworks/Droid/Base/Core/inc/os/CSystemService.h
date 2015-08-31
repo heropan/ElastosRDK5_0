@@ -4,6 +4,7 @@
 
 #include "ext/frameworkdef.h"
 #include "_Elastos_Droid_Os_CSystemService.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
@@ -15,8 +16,14 @@ namespace Os {
  * @hide
  */
 CarClass(CSystemService)
+    , public Singleton
+    , public ISystemService
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /** Request that the init daemon start a named service. */
     CARAPI Start(
         /* [in] */ const String& name);

@@ -2,7 +2,7 @@
 
 #include "net/Uri.h"
 #include <elastos/utility/logging/Slogger.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/core/StringBuilder.h>
 #include <elastos/core/StringUtils.h>

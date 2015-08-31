@@ -4,7 +4,7 @@
 
 #include "_Elastos_Droid_Preference_CMultiSelectListPreference.h"
 #include "DialogPreference.h"
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 
 using Elastos::Utility::ISet;
 using Elastos::Utility::Set;

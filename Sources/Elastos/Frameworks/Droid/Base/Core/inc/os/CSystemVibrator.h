@@ -3,19 +3,32 @@
 
 #include "_Elastos_Droid_Os_CSystemVibrator.h"
 #include "ext/frameworkdef.h"
+#include "os/Vibrator.h"
 
 using Elastos::Droid::Os::IVibratorService;
+using Elastos::Droid::Media::IAudioAttributes;
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
+/**
+ * Vibrator implementation that controls the main system vibrator.
+ *
+ * @hide
+ */
 CarClass(CSystemVibrator)
+    , public Vibrator
 {
 public:
+    CAR_OBJECT_DECL()
+
     CSystemVibrator();
 
     CARAPI constructor();
+
+    CARAPI constructor(
+        /* [in] */ IContext* context);
 
     //@Override
     CARAPI HasVibrator(
@@ -23,15 +36,25 @@ public:
 
     //@Override
     CARAPI Vibrate(
-        /* [in] */ Int64 milliseconds);
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& opPkg,
+        /* [in] */ Int64 milliseconds,
+        /* [in] */ IAudioAttributes* attributes);
 
     //@Override
     CARAPI Vibrate(
-        /* [in] */ const ArrayOf<Int64>& pattern,
-        /* [in] */ Int32 repeat);
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& opPkg,
+        /* [in] */ ArrayOf<Int64>* pattern,
+        /* [in] */ Int32 repeat,
+        /* [in] */ IAudioAttributes* attributes);
 
     //@Override
     CARAPI Cancel();
+
+private:
+    static Int32 UsageForAttributes(
+        /* [in] */ IAudioAttributes* attributes);
 
 private:
     static const String TAG;

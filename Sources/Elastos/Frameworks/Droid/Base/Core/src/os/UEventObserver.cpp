@@ -2,6 +2,7 @@
 #include "os/UEventObserver.h"
 #include <elastos/utility/etl/Vector.h>
 #include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 #include <hardware_legacy/uevent.h>
 
 using Elastos::Utility::Etl::Vector;
@@ -17,7 +18,7 @@ namespace Os {
 const String UEventObserver::TAG("UEventObserver");
 const Boolean UEventObserver::DEBUG = FALSE;
 AutoPtr<UEventObserver::UEventThread> UEventObserver::sThread;
-Mutex UEventObserver::sClsLock;
+Object UEventObserver::sClsLock;
 
 //===============================================================
 //UEventObserver::UEvent
@@ -104,7 +105,7 @@ void UEventObserver::UEventThread::SendEvent(
             if (message.Contains(key)) {
                 List< AutoPtr<IInterface> >::Iterator tmpIt = it;
                 AutoPtr<IInterface> obj = *(++tmpIt);
-                AutoPtr<UEventObserver> observer = (UEventObserver*)obj.Get();
+                AutoPtr<UEventObserver> observer = (UEventObserver*)IObject::Probe(obj);
                 mTempObserversToSignal.PushBack(observer);
             }
             ++it;

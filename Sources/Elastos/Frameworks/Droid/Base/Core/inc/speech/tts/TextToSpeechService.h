@@ -13,7 +13,7 @@
 #include "speech/tts/AudioPlaybackQueueItem.h"
 //#include "os/RemoteCallbackList.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 
 
 #include "Elastos.Droid.Core_server.h"

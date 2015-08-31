@@ -67,28 +67,27 @@ ECode CMathContext::Equals(
     /* [in] */ IInterface* other,
     /* [out] */ Boolean* result)
 {
-    VALIDATE_NOT_NULL(result);
-    VALIDATE_NOT_NULL(other);
+    VALIDATE_NOT_NULL(result)
+    *result = FALSE;
+    VALIDATE_NOT_NULL(other)
 
     if (IMathContext::Probe(other) == NULL)
         return NOERROR;
 
-    IMathContext* mi = (CMathContext*)IMathContext::Probe(other);
+    CMathContext* mi = (CMathContext*)IMathContext::Probe(other);
     if (this == mi) {
         *result = TRUE;
     }
     else {
-
         Int32 precision;
         RoundingMode roundingMode;
 
         mi->GetPrecision(&precision);
         mi->GetRoundingMode(&roundingMode);
 
-        if ((precision == mPrecision) && (roundingMode == mRoundingMode))
+        if ((precision == mPrecision) && (roundingMode == mRoundingMode)) {
             *result = TRUE;
-        else
-            *result = FALSE;
+        }
     }
     return NOERROR;
 }

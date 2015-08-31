@@ -6,6 +6,7 @@ module
     namespace Os {
 
     enum SystemServiceState {
+        SystemServiceState_NONE,
         SystemServiceState_RUNNING,
         SystemServiceState_STOPPING,
         SystemServiceState_STOPPED,

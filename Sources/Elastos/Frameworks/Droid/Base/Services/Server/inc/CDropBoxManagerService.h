@@ -7,7 +7,7 @@
 #include "database/ContentObserver.h"
 #include "os/HandlerBase.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 
 using Elastos::Core::IComparable;
 using Elastos::IO::IFile;

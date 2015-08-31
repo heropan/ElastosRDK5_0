@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CUserManagerHelper, Singleton, IUserManagerHelper)
+
+CAR_SINGLETON_IMPL(CUserManagerHelper)
+
 ECode CUserManagerHelper::SupportsMultipleUsers(
     /* [out] */ Boolean* result)
 {

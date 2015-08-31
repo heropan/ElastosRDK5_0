@@ -46,7 +46,6 @@ module
          */
         const Int32 FLAG_INITIALIZED = 0x00000010;
 
-
         IsPrimary(
             [out] Boolean* isPrimary);
 
@@ -54,7 +53,19 @@ module
             [out] Boolean* isAdmin);
 
         IsGuest(
-            [out] Boolean* isGuest);
+            [out] Boolean* result);
+
+        IsRestricted(
+            [out] Boolean* result);
+
+        IsManagedProfile(
+            [out] Boolean* result);
+
+        IsEnabled(
+            [out] Boolean* result);
+
+        SupportsSwitchTo(
+            [out] Boolean* result);
 
         GetUserHandle(
             [out] IUserHandle** userHandle);

@@ -4187,6 +4187,10 @@ module
          */
         ClearCrossProfileIntentFilters(
             [in] Int32 sourceUserId);
+
+        IsPackageAvailable(
+            [in] String packageName,
+            [out] Boolean* result);
     }
 
     interface IPackageManagerHelper {

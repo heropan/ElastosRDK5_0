@@ -2,9 +2,9 @@
 #define __ELASTOS_DROID_OS_SYSTEMSERVICE_H__
 
 #include "ext/frameworkdef.h"
-#include "Elastos.Droid.Core_server.h"
 #include <elastos/utility/etl/HashMap.h>
-#include <elastos/Core/Object.h>
+#include <elastos/core/Object.h>
+#include "os/Runnable.h"
 
 using Elastos::Utility::Etl::HashMap;
 using Elastos::Core::Object;
@@ -66,12 +66,24 @@ public:
         /* [in] */ ArrayOf<String>* services);
 
 private:
+
     static CARAPI_(Boolean) Init();
 
+    class MyRunnable
+        : public Runnable {
+    public:
+        CARAPI Run();
+    };
+
 private:
+    friend class MyRunnable;
+
     static HashMap<String, SystemServiceState> sStates;
     static Object sPropertyLock;
     static Boolean sInitialized;
+
+private:
+    SystemService();
 };
 
 } // namespace Os

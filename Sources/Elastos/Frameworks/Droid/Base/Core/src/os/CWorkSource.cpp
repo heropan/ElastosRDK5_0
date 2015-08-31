@@ -18,6 +18,13 @@ Mutex CWorkSource::sTmpWorkSourceLock;
 AutoPtr<IWorkSource> CWorkSource::sNewbWork;
 AutoPtr<IWorkSource> CWorkSource::sGoneWork;
 
+const String CWorkSource::TAG("WorkSource");
+const Boolean CWorkSource::DEBUG = FALSE;
+
+CAR_INTERFACE_IMPL(CWorkSource, Object, IWorkSource)
+
+CAR_OBJECT_IMPL(CWorkSource)
+
 CWorkSource::CWorkSource()
     : mNum(0)
 {}
@@ -37,6 +44,10 @@ ECode CWorkSource::constructor(
     mNum = ws->mNum;
     if (ws->mUids != NULL) {
         mUids = ws->mUids->Clone();
+    }
+
+    if (ws->mNames != NULL) {
+        mNames = ws->mNames->Clone()
     }
     return NOERROR;
 }

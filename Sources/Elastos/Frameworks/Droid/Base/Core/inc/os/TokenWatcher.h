@@ -1,16 +1,11 @@
 #ifndef __ELASTOS_DROID_OS_TOKENWATCHER_H__
 #define __ELASTOS_DROID_OS_TOKENWATCHER_H__
 
-#ifdef DROID_CORE
-#include "Elastos.Droid.Core_server.h"
-#else
-#include "Elastos.Droid.Core.h"
-#endif
-
 #include "ext/frameworkext.h"
-#include "os/Runnable.h"
+#include <elastos/core/Object.h>
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
+#include "os/Runnable.h"
 
 using Elastos::Droid::Os::Runnable;
 using Elastos::Droid::Os::IHandler;
@@ -21,6 +16,7 @@ using Elastos::IO::IPrintWriter;
 namespace Elastos {
 namespace Droid {
 namespace Os {
+
 /**
  * Helper class that helps you use IBinder objects as reference counted
  * tokens.  IBinders make good tokens because we find out when they are
@@ -45,20 +41,21 @@ private:
     };
 
     class Death
-        : public ElRefBase
+        : public Object
         , public IProxyDeathRecipient
     {
     public:
+        CAR_INTERFACE_DECL();
+
         Death(
             /* [in] */ IBinder* token,
             /* [in] */ const String& tag,
             /* [in] */ TokenWatcher* host);
 
-        CAR_INTERFACE_DECL();
+        ~Death();
 
         CARAPI ProxyDied();
 
-        ~Death();
     public:
         AutoPtr<IBinder> mToken;
         String mTag;

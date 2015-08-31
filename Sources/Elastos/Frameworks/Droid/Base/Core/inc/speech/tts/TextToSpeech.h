@@ -5,7 +5,7 @@
 #include "Elastos.Droid.Core_server.h"
 #include <ext/frameworkext.h>
 #include <elastos/Map.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 #include <elastos/utility/etl/List.h>
 
 

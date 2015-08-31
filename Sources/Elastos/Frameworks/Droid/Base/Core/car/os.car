@@ -406,6 +406,40 @@ module
         interface IStatFs;
     }
 
+    singleton class CSystemService {
+        interface ISystemService;
+    }
+
+    [local]
+    class CSystemVibrator {
+        constructor();
+
+        constructor(
+            [in] IContext* ctx);
+
+        interface IVibrator;
+    }
+
+    [local]
+    class CUpdateLock {
+        constructor(
+            [in] String tag);
+
+        interface IUpdateLock;
+    }
+
+    class CUserManager {
+        constructor(
+            [in] IContext* ctx,
+            [in] IIUserManager* service);
+
+        interface IUserManager;
+    }
+
+    singleton class CUserManagerHelper {
+        interface IUserManagerHelper;
+    }
+
     // [local]
     // class CPowerManager {
     //     constructor(
@@ -489,26 +523,6 @@ module
     //     interface IParcelable;
     // }
 
-    // singleton class CSystemService {
-    //     interface ISystemService;
-    // }
-
-    // [local]
-    // class CSystemVibrator {
-    //     constructor();
-
-    //     interface IVibrator;
-    // }
-
-    // [local]
-    // class CUpdateLock {
-    //     constructor(
-    //         [in] String tag);
-
-    //     interface IUpdateLock;
-    // }
-
-
     // singleton class CEnvironment {
     //     interface IEnvironment;
     // }
@@ -518,18 +532,6 @@ module
     //         [in] Int32 userId);
 
     //     interface IUserEnvironment;
-    // }
-
-    // class CUserManager {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IIUserManager* service);
-
-    //     interface IUserManager;
-    // }
-
-    // singleton class CUserManagerHelper {
-    //     interface IUserManagerHelper;
     // }
 
     // singleton class CDebug {

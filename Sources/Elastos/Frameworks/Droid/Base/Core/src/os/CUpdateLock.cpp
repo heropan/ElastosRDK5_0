@@ -1,11 +1,12 @@
 #include "os/CUpdateLock.h"
-#include <elastos/utility/logging/Logger.h>
 #include "os/ServiceManager.h"
 #include "os/CBinder.h"
+#include <elastos/utility/logging/Logger.h>
+#include <elastos/core/AutoLock.h>
 
 using Elastos::Droid::Os::CBinder;
-using Elastos::Utility::Logging::Logger;
 using Elastos::Droid::Content::IContext;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {

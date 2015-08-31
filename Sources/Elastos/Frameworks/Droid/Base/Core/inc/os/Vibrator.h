@@ -148,7 +148,7 @@ public:
     CARAPI Vibrate(
         /* [in] */ Int32 uid,
         /* [in] */ const String& opPkg,
-        /* [in] */ ArrayOf<Int64>* milliseconds,
+        /* [in] */ ArrayOf<Int64>* pattern,
         /* [in] */ Int32 repeat,
         /* [in] */ IAudioAttributes* attributes);
 

@@ -1,10 +1,11 @@
 #include "os/TokenWatcher.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Logger.h>
-#include <elastos/Set.h>
+#include <elastos/utility/etl/Set.h>
 #include <elastos/core/StringBuilder.h>
 
 using Elastos::Utility::Logging::Logger;
-using Elastos::Utility::Set;
+using Elastos::Utility::Etl::Set;
 using Elastos::Core::StringBuilder;
 
 namespace Elastos {
@@ -20,10 +21,10 @@ ECode TokenWatcher::NotificationTaskRunnable::Run()
 TokenWatcher::TokenWatcher(
     /* [in] */ IHandler* h,
     /* [in] */ const String& tag)
-    : mNotificationQueue(-1)
-    , mAcquired(FALSE)
-    , mHandler(h)
+    : mHandler(h)
     , mTag( (tag != NULL) ? tag : String("TokenWatcher") )
+    , mNotificationQueue(-1)
+    , mAcquired(FALSE)
 {
     mNotificationTask = new NotificationTaskRunnable(this);
 }
@@ -115,7 +116,7 @@ ECode TokenWatcher::Dump(
     List<String>::Iterator iter = a->Begin();
     String s;
     for (; iter != a->End(); ++iter) {
-        pw->PrintStringln(s);
+        pw->Println(s);
     }
     delete a;
     return NOERROR;
@@ -198,7 +199,7 @@ TokenWatcher::Death::Death(
 {
 }
 
-CAR_INTERFACE_IMPL(TokenWatcher::Death, IProxyDeathRecipient);
+CAR_INTERFACE_IMPL(TokenWatcher::Death, Object, IProxyDeathRecipient);
 
 ECode TokenWatcher::Death::ProxyDied()
 {

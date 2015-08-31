@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_OS_CWORKSOURCE_H__
 
 #include "_Elastos_Droid_Os_CWorkSource.h"
+#include <elastos/core/Object.h>
 
 namespace Elastos {
 namespace Droid {
@@ -14,8 +15,14 @@ namespace Os {
  * defined; this is an opaque container.
  */
 CarClass(CWorkSource)
+    , public Object
+    , public IWorkSource
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CWorkSource();
 
     CARAPI constructor();
@@ -121,8 +128,12 @@ private:
         /* [in] */ Int32 uid);
 
 public:
+    static const String TAG;// = "WorkSource";
+    static const Boolean DEBUG;// = false;
+
     Int32 mNum;
     AutoPtr< ArrayOf<Int32> > mUids;
+    AutoPtr< ArrayOf<String> > mNames;
 
     /**
      * Internal statics to avoid object allocations in some operations.

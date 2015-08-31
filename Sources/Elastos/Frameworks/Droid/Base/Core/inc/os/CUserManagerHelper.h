@@ -3,14 +3,21 @@
 #define __ELASTOS_DROID_OS_CUSERMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Os_CUserManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CUserManagerHelper)
+    , public Singleton
+    , public IUserManagerHelper
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Returns whether the system supports multiple users.
      * @return true if multiple users can be created, false if it is a single user device.

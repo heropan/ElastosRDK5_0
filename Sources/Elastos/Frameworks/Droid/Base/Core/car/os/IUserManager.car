@@ -100,10 +100,12 @@ module
             [out] IBundle** bundle);
 
         SetRestrictionsChallenge(
-            [in] String newPin);
+            [in] String newPin,
+            [out] Boolean* result);
 
         CheckRestrictionsChallenge(
-            [in] String pin);
+            [in] String pin,
+            [out] Int32* result);
 
         HasRestrictionsChallenge(
             [out] Boolean* result);

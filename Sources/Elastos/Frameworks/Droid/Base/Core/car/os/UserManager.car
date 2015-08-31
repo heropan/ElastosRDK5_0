@@ -344,6 +344,13 @@ module
          */
         const String DISALLOW_OUTGOING_BEAM = "no_outgoing_beam";
 
+        /** @hide */
+        const Int32 PIN_VERIFICATION_FAILED_INCORRECT = -3;
+        /** @hide */
+        const Int32 PIN_VERIFICATION_FAILED_NOT_SET = -2;
+        /** @hide */
+        const Int32 PIN_VERIFICATION_SUCCESS = -1;
+
         /**
          * Returns the user handle for the user that this application is running for.
          * @return the user handle of the user making this call.

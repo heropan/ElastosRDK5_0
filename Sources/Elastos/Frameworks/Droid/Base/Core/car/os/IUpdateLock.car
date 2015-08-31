@@ -1,10 +1,32 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
 
     namespace Elastos {
     namespace Droid {
     namespace Os {
 
+    /**
+     * Direct interface to the UpdateLockService's functionality
+     *
+     * {@hide}
+     */
+    interface IIUpdateLock {
+        AcquireUpdateLock(
+            [in] IBinder* token,
+            [in] String tag);
+
+        ReleaseUpdateLock(
+            [in] IBinder* token);
+    }
+
+    /**
+     * Advisory wakelock-like mechanism by which processes that should not be interrupted for
+     * OTA/update purposes can so advise the OS.  This is particularly relevant for headless
+     * or kiosk-like operation.
+     *
+     * @hide
+     */
     interface IUpdateLock {
         /**
          * Broadcast Intent action sent when the global update lock state changes,
