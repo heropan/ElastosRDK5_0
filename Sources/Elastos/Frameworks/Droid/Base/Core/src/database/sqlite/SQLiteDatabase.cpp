@@ -492,10 +492,12 @@ ECode SQLiteDatabase::DeleteDatabase(
         AutoPtr<IFileFilter> filter = (IFileFilter*)new MyFileFilter(prefix);
         AutoPtr< ArrayOf<IFile*> > fileList;
         dir->ListFiles((ArrayOf<IFile*>**)&fileList);
-        for (Int32 i = 0; i < fileList->GetLength(); ++i) {
-            AutoPtr<IFile> masterJournal = (*fileList)[i];
-            masterJournal->Delete(&result);
-            deleted |= result;
+        if (fileList != NULL) {
+            for (Int32 i = 0; i < fileList->GetLength(); ++i) {
+                AutoPtr<IFile> masterJournal = (*fileList)[i];
+                masterJournal->Delete(&result);
+                deleted |= result;
+            }
         }
     }
     *_result = deleted;

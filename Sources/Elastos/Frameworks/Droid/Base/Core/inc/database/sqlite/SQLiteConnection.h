@@ -58,7 +58,7 @@ private:
 
         // The native sqlite3_stmt object pointer.
         // Lifetime is managed explicitly by the connection.
-        Int32 mStatementPtr;
+        Int64 mStatementPtr;
 
         // The number of parameters that the prepared statement has.
         Int32 mNumParameters;
@@ -110,7 +110,8 @@ private:
         ~Operation();
 
         CARAPI_(void) Describe(
-            /* [in] */ StringBuilder& msg);
+            /* [in] */ StringBuilder& msg,
+            /* [in] */ Boolean verbose);
 
     private:
         CARAPI_(String) GetStatus();
@@ -161,7 +162,8 @@ private:
         CARAPI_(String) DescribeCurrentOperation();
 
         CARAPI_(void) Dump(
-            /* [in] */ IPrinter* printer);
+            /* [in] */ IPrinter* printer,
+            /* [in] */ Boolean verbose);
 
     private:
         CARAPI_(Boolean) EndOperationDeferLogLocked(
@@ -485,90 +487,90 @@ private:
         /* [in] */ const String& label,
         /* [in] */ Boolean enableTrace,
         /* [in] */ Boolean enableProfile,
-        /* [out] */ Int32* result);
+        /* [out] */ Int64* result);
 
     static CARAPI NativeClose(
-        /* [in] */ Int32 connectionPtr);
+        /* [in] */ Int64 connectionPtr);
 
     static CARAPI NativeRegisterCustomFunction(
-        /* [in] */ Int32 connectionPtr,
+        /* [in] */ Int64 connectionPtr,
         /* [in] */ SQLiteCustomFunction* function);
 
     static CARAPI NativeRegisterLocalizedCollators(
-        /* [in] */ Int32 connectionPtr,
+        /* [in] */ Int64 connectionPtr,
         /* [in] */ const String& locale);
 
     static CARAPI NativePrepareStatement(
-        /* [in] */ Int32 connectionPtr,
+        /* [in] */ Int64 connectionPtr,
         /* [in] */ const String& sql,
-        /* [out] */ Int32* result);
+        /* [out] */ Int64* result);
 
     static CARAPI_(void) NativeFinalizeStatement(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI_(Int32) NativeGetParameterCount(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI_(Boolean) NativeIsReadOnly(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI_(Int32) NativeGetColumnCount(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI_(String) NativeGetColumnName(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index);
 
     static CARAPI NativeBindNull(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index);
 
     static CARAPI NativeBindInt64(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index,
         /* [in] */ Int64 value);
 
     static CARAPI NativeBindDouble(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index,
         /* [in] */ Double value);
 
     static CARAPI NativeBindString(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index,
         /* [in] */ const String& value);
 
     static CARAPI NativeBindBlob(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 index,
         /* [in] */ ArrayOf<Byte>* value);
 
     static CARAPI NativeResetStatementAndClearBindings(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI NativeExecute(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr);
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr);
 
     static CARAPI NativeExecuteForInt64(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [out] */ Int64* result);
 
     static CARAPI NativeExecuteForString(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [out] */ String* result);
 
     static CARAPI_(Int32) CreateAshmemRegionWithData(
@@ -576,23 +578,23 @@ private:
         /* [in] */ Int32 length);
 
     static CARAPI NativeExecuteForBlobFileDescriptor(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [out] */ Int32* result);
 
     static CARAPI NativeExecuteForChangedRowCount(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [out] */ Int32* result);
 
     static CARAPI NativeExecuteForLastInsertedRowId(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [out] */ Int64* result);
 
     static CARAPI NativeExecuteForCursorWindow(
-        /* [in] */ Int32 connectionPtr,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 connectionPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 windowPtr,
         /* [in] */ Int32 startPos,
         /* [in] */ Int32 requiredPos,
@@ -600,13 +602,13 @@ private:
         /* [out] */ Int64* result);
 
     static CARAPI_(Int32) NativeGetDbLookaside(
-        /* [in] */ Int32 connectionPtr);
+        /* [in] */ Int64 connectionPtr);
 
     static CARAPI_(void) NativeCancel(
-        /* [in] */ Int32 connectionPtr);
+        /* [in] */ Int64 connectionPtr);
 
     static CARAPI_(void) NativeResetCancel(
-        /* [in] */ Int32 connectionPtr,
+        /* [in] */ Int64 connectionPtr,
         /* [in] */ Boolean cancelable);
 
     SQLiteConnection(
@@ -677,7 +679,7 @@ private:
 
     CARAPI_(AutoPtr<PreparedStatement>) ObtainPreparedStatement(
         /* [in] */ const String& sql,
-        /* [in] */ Int32 statementPtr,
+        /* [in] */ Int64 statementPtr,
         /* [in] */ Int32 numParameters,
         /* [in] */ Int32 type,
         /* [in] */ Boolean readOnly);
@@ -711,7 +713,7 @@ private:
     AutoPtr<OperationLog> mRecentOperations;
 
     // The native SQLiteConnection pointer.  (FOR INTERNAL USE ONLY)
-    Int32 mConnectionPtr;
+    Int64 mConnectionPtr;
 
     Boolean mOnlyAllowReadOnlyOperations;
 

@@ -598,7 +598,7 @@ ECode SQLiteSession::ThrowIfTransactionMarkedSuccessful()
 
 ECode SQLiteSession::ThrowIfNestedTransaction()
 {
-    if (mTransactionStack == NULL && mTransactionStack->mParent != NULL) {
+    if (HasNestedTransaction()) {
         //throw new IllegalStateException("Cannot perform this operation because "
         //        + "a nested transaction is in progress.");
         Slogger::E(String("SQLiteSession"), "Cannot perform this operation because a nested transaction is in progress.");

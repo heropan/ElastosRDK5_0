@@ -123,7 +123,8 @@ SQLiteConnection::Operation::~Operation()
 }
 
 void SQLiteConnection::Operation::Describe(
-    /* [in] */ StringBuilder& msg)
+    /* [in] */ StringBuilder& msg,
+    /* [in] */ Boolean verbose)
 {
     msg += mKind;
     if (mFinished) {
@@ -147,7 +148,7 @@ void SQLiteConnection::Operation::Describe(
         msg.Append(TrimSqlForDisplay(mSql));
         msg += "\"";
     }
-    if (mBindArgs->IsEmpty() && mBindArgs->IsEmpty() == FALSE) {
+    if (verbose && mBindArgs->IsEmpty() && mBindArgs->IsEmpty() == FALSE) {
         msg += ", bindArgs=[";
         Int32 count = mBindArgs->GetSize();
         for (Int32 i = 0; i < count; i++) {
@@ -323,7 +324,7 @@ void SQLiteConnection::OperationLog::LogOperationLocked(
 {
     AutoPtr<Operation> operation = GetOperationLocked(cookie);
     StringBuilder msg;
-    operation->Describe(msg);
+    operation->Describe(msg, FALSE);
     if (detail != NULL) {
         msg += ", ";
         msg += detail;
@@ -352,7 +353,7 @@ String SQLiteConnection::OperationLog::DescribeCurrentOperation()
         AutoPtr<Operation> operation = (*mOperations)[mIndex];
         if (operation != NULL && !operation->mFinished) {
             StringBuilder msg;
-            operation->Describe(msg);
+            operation->Describe(msg, FALSE);
             return msg.ToString();
         }
     }
@@ -360,7 +361,8 @@ String SQLiteConnection::OperationLog::DescribeCurrentOperation()
 }
 
 void SQLiteConnection::OperationLog::Dump(
-    /* [in] */ IPrinter* printer)
+    /* [in] */ IPrinter* printer,
+    /* [in] */ Boolean verbose)
 {
     synchronized(mOperationsLock) {
         printer->Println(String("  Most recently executed operations:"));
@@ -374,7 +376,7 @@ void SQLiteConnection::OperationLog::Dump(
                 msg += ": [";
                 msg.Append(operation->GetFormattedStartTime());
                 msg += "] ";
-                operation->Describe(msg);
+                operation->Describe(msg, verbose);
                 printer->Println(msg.ToString());
 
                 if (index > 0) {
@@ -488,7 +490,7 @@ ECode SQLiteConnection::NativeOpen(
     /* [in] */ const String& label,
     /* [in] */ Boolean enableTrace,
     /* [in] */ Boolean enableProfile,
-    /* [out] */ Int32* result)
+    /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
     Int32 sqliteFlags;
@@ -550,7 +552,7 @@ ECode SQLiteConnection::NativeOpen(
 }
 
 ECode SQLiteConnection::NativeClose(
-    /* [in] */ Int32 connectionPtr)
+    /* [in] */ Int64 connectionPtr)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
 
@@ -596,7 +598,7 @@ static void sqliteCustomFunctionCallback(sqlite3_context *context,
 }
 
 ECode SQLiteConnection::NativeRegisterCustomFunction(
-    /* [in] */ Int32 connectionPtr,
+    /* [in] */ Int64 connectionPtr,
     /* [in] */ SQLiteCustomFunction* function)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
@@ -614,7 +616,7 @@ ECode SQLiteConnection::NativeRegisterCustomFunction(
 }
 
 ECode SQLiteConnection::NativeRegisterLocalizedCollators(
-    /* [in] */ Int32 connectionPtr,
+    /* [in] */ Int64 connectionPtr,
     /* [in] */ const String& locale)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
@@ -629,9 +631,9 @@ ECode SQLiteConnection::NativeRegisterLocalizedCollators(
 }
 
 ECode SQLiteConnection::NativePrepareStatement(
-    /* [in] */ Int32 connectionPtr,
+    /* [in] */ Int64 connectionPtr,
     /* [in] */ const String& sql,
-    /* [out] */ Int32* result)
+    /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
 
@@ -660,8 +662,8 @@ ECode SQLiteConnection::NativePrepareStatement(
 }
 
 void SQLiteConnection::NativeFinalizeStatement(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     // SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -674,8 +676,8 @@ void SQLiteConnection::NativeFinalizeStatement(
 }
 
 Int32 SQLiteConnection::NativeGetParameterCount(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     // SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -684,8 +686,8 @@ Int32 SQLiteConnection::NativeGetParameterCount(
 }
 
 Boolean SQLiteConnection::NativeIsReadOnly(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     // SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -694,8 +696,8 @@ Boolean SQLiteConnection::NativeIsReadOnly(
 }
 
 Int32 SQLiteConnection::NativeGetColumnCount(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     // SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -704,8 +706,8 @@ Int32 SQLiteConnection::NativeGetColumnCount(
 }
 
 String SQLiteConnection::NativeGetColumnName(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index)
 {
     // SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
@@ -715,8 +717,8 @@ String SQLiteConnection::NativeGetColumnName(
 }
 
 ECode SQLiteConnection::NativeBindNull(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
@@ -730,8 +732,8 @@ ECode SQLiteConnection::NativeBindNull(
 }
 
 ECode SQLiteConnection::NativeBindInt64(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index,
     /* [in] */ Int64 value)
 {
@@ -746,8 +748,8 @@ ECode SQLiteConnection::NativeBindInt64(
 }
 
 ECode SQLiteConnection::NativeBindDouble(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index,
     /* [in] */ Double value)
 {
@@ -762,8 +764,8 @@ ECode SQLiteConnection::NativeBindDouble(
 }
 
 ECode SQLiteConnection::NativeBindString(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index,
     /* [in] */ const String& value)
 {
@@ -780,8 +782,8 @@ ECode SQLiteConnection::NativeBindString(
 }
 
 ECode SQLiteConnection::NativeBindBlob(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 index,
     /* [in] */ ArrayOf<Byte>* value)
 {
@@ -799,8 +801,8 @@ ECode SQLiteConnection::NativeBindBlob(
 }
 
 ECode SQLiteConnection::NativeResetStatementAndClearBindings(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -835,8 +837,8 @@ static ECode ExecuteNonQuery(
 }
 
 ECode SQLiteConnection::NativeExecute(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr)
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     sqlite3_stmt* statement = reinterpret_cast<sqlite3_stmt*>(statementPtr);
@@ -845,8 +847,8 @@ ECode SQLiteConnection::NativeExecute(
 }
 
 ECode SQLiteConnection::NativeExecuteForChangedRowCount(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -861,8 +863,8 @@ ECode SQLiteConnection::NativeExecuteForChangedRowCount(
 }
 
 ECode SQLiteConnection::NativeExecuteForLastInsertedRowId(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -891,8 +893,8 @@ static ECode ExecuteOneRowQuery(
 }
 
 ECode SQLiteConnection::NativeExecuteForInt64(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [out] */ Int64* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -910,8 +912,8 @@ ECode SQLiteConnection::NativeExecuteForInt64(
 }
 
 ECode SQLiteConnection::NativeExecuteForString(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [out] */ String* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -970,8 +972,8 @@ Int32 SQLiteConnection::CreateAshmemRegionWithData(
 }
 
 ECode SQLiteConnection::NativeExecuteForBlobFileDescriptor(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [out] */ Int32* result)
 {
     VALIDATE_NOT_NULL(result)
@@ -1104,8 +1106,8 @@ static ECode CopyRow(
 }
 
 ECode SQLiteConnection::NativeExecuteForCursorWindow(
-    /* [in] */ Int32 connectionPtr,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 connectionPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 windowPtr,
     /* [in] */ Int32 startPos,
     /* [in] */ Int32 requiredPos,
@@ -1214,7 +1216,7 @@ ECode SQLiteConnection::NativeExecuteForCursorWindow(
 }
 
 Int32 SQLiteConnection::NativeGetDbLookaside(
-    /* [in] */ Int32 connectionPtr)
+    /* [in] */ Int64 connectionPtr)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
 
@@ -1225,14 +1227,14 @@ Int32 SQLiteConnection::NativeGetDbLookaside(
 }
 
 void SQLiteConnection::NativeCancel(
-    /* [in] */ Int32 connectionPtr)
+    /* [in] */ Int64 connectionPtr)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
     connection->canceled = TRUE;
 }
 
 void SQLiteConnection::NativeResetCancel(
-    /* [in] */ Int32 connectionPtr,
+    /* [in] */ Int64 connectionPtr,
     /* [in] */ Boolean cancelable)
 {
     SQLiteConnectionNative* connection = reinterpret_cast<SQLiteConnectionNative*>(connectionPtr);
@@ -2095,7 +2097,7 @@ ECode SQLiteConnection::AcquirePreparedStatement(
         skipCache = TRUE;
     }
 
-    Int32 statementPtr;
+    Int64 statementPtr;
     FAIL_RETURN(NativePrepareStatement(mConnectionPtr, sql, &statementPtr))
     //try {
     Int32 numParameters = NativeGetParameterCount(mConnectionPtr, statementPtr);
@@ -2206,7 +2208,7 @@ ECode SQLiteConnection::BindArguments(
     if (count != statement->mNumParameters) {
         //throw new SQLiteBindOrColumnIndexOutOfRangeException(
         //        "Expected " + statement.mNumParameters + " bind arguments but "
-        //        + bindArgs.length + " were provided.");
+        //        + count + " were provided.");
         Slogger::E(TAG, "Expected %d bind arguments but %d were provided.", statement->mNumParameters, bindArgs->GetLength());
         return E_SQLITE_BIND_OR_COLUMN_INDEX_OUTOF_RANGE_EXCEPTION;
     }
@@ -2214,7 +2216,7 @@ ECode SQLiteConnection::BindArguments(
         return NOERROR;
     }
 
-    Int32 statementPtr = statement->mStatementPtr;
+    Int64 statementPtr = statement->mStatementPtr;
     for (Int32 i = 0; i < count; i++) {
         AutoPtr<IInterface> arg = (*bindArgs)[i];
         Int32 type = DatabaseUtils::GetTypeOfObject(arg);
@@ -2342,7 +2344,7 @@ void SQLiteConnection::DumpUnsafe(
     sb3 += mOnlyAllowReadOnlyOperations;
     printer->Println(sb3.ToString());
 
-    mRecentOperations->Dump(printer);
+    mRecentOperations->Dump(printer, verbose);
 
     if (verbose) {
         mPreparedStatementCache->Dump(printer);
@@ -2445,7 +2447,7 @@ String SQLiteConnection::ToString()
 
 AutoPtr<SQLiteConnection::PreparedStatement> SQLiteConnection::ObtainPreparedStatement(
     /* [in] */ const String& sql,
-    /* [in] */ Int32 statementPtr,
+    /* [in] */ Int64 statementPtr,
     /* [in] */ Int32 numParameters,
     /* [in] */ Int32 type,
     /* [in] */ Boolean readOnly)

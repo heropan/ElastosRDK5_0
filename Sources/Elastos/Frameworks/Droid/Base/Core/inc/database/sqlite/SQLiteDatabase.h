@@ -1043,6 +1043,9 @@ public:
      * @param table the table to delete from
      * @param whereClause the optional WHERE clause to apply when deleting.
      *            Passing null will delete all rows.
+     * @param whereArgs You may include ?s in the where clause, which
+     *            will be replaced by the values from whereArgs. The values
+     *            will be bound as Strings.
      * @return the number of rows affected if a whereClause is passed in, 0
      *         otherwise. To remove all rows and get a count pass "1" as the
      *         whereClause.
@@ -1061,6 +1064,9 @@ public:
      *            valid value that will be translated to NULL.
      * @param whereClause the optional WHERE clause to apply when updating.
      *            Passing null will update all rows.
+     * @param whereArgs You may include ?s in the where clause, which
+     *            will be replaced by the values from whereArgs. The values
+     *            will be bound as Strings.
      * @return the number of rows affected
      */
     CARAPI Update(
@@ -1078,9 +1084,10 @@ public:
      *            valid value that will be translated to NULL.
      * @param whereClause the optional WHERE clause to apply when updating.
      *            Passing null will update all rows.
-     * @param conflictAlgorithm for update conflict resos.append(name);
-        DatabaseUtils.appendEscapedSQLString(s, clause);
-    }lver
+     * @param whereArgs You may include ?s in the where clause, which
+     *            will be replaced by the values from whereArgs. The values
+     *            will be bound as Strings.
+     * @param conflictAlgorithm for update conflict resolver
      * @return the number of rows affected
      */
     CARAPI UpdateWithOnConflict(
@@ -1136,6 +1143,12 @@ public:
     CARAPI IsOpen(
         /* [out] */ Boolean* isOpen);
 
+    /**
+     * Returns true if the new version code is greater than the current database version.
+     *
+     * @param newVersion The new version code.
+     * @return True if the new version code is greater than the current database version.
+     */
     CARAPI NeedUpgrade(
         /* [in] */ Int32 newVersion,
         /* [out] */ Boolean* needed);

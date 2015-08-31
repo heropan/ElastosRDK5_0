@@ -127,10 +127,20 @@ void SQLiteCursor::FillWindow(
     database->GetPath(&path);
     ClearOrCreateWindow(path);
 
+    ECode ec;
+    //try {
     if (mCount == NO_COUNT) {
         Int32 startPos = DatabaseUtils::CursorPickFillWindowStartPosition(requiredPos, 0);
-        mQuery->FillWindow(mWindow, startPos, requiredPos, TRUE, &mCount);
-        mWindow->GetNumRows(&mCursorWindowCapacity);
+        ec = mQuery->FillWindow(mWindow, startPos, requiredPos, TRUE, &mCount);
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            CloseWindow();
+            return;
+        }
+        ec = mWindow->GetNumRows(&mCursorWindowCapacity);
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            CloseWindow();
+            return;
+        }
         //if (Log.isLoggable(TAG, Log.DEBUG)) {
             // StringBuilder sb;
             // sb.Append(String("received count(*) from native_fill_window: "));
@@ -141,8 +151,20 @@ void SQLiteCursor::FillWindow(
     else {
         Int32 startPos = DatabaseUtils::CursorPickFillWindowStartPosition(requiredPos, mCursorWindowCapacity);
         Int32 result;
-        mQuery->FillWindow(mWindow, startPos, requiredPos, FALSE, &result);
+        ec = mQuery->FillWindow(mWindow, startPos, requiredPos, FALSE, &result);
+        if (ec == (ECode)E_RUNTIME_EXCEPTION) {
+            CloseWindow();
+            return;
+        }
     }
+    // } catch (RuntimeException ex) {
+    //         // Close the cursor window if the query failed and therefore will
+    //         // not produce any results.  This helps to avoid accidentally leaking
+    //         // the cursor window if the client does not correctly handle exceptions
+    //         // and fails to close the cursor.
+    //         closeWindow();
+    //         throw ex;
+    // }
 }
 
 ECode SQLiteCursor::GetColumnIndex(
