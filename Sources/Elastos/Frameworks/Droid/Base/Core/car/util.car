@@ -9,15 +9,12 @@ module
     merge("util/Xml.car");
     merge("util/DisplayMetrics.car");
     merge("util/TypedValue.car");
-    merge("util/Predicate.car");
     merge("util/EventLogTags.car");
-    merge("util/FastXmlSerializer.car");
     merge("util/TrustedTime.car");
     merge("util/NtpTrustedTime.car");
     merge("util/Property.car");
     merge("util/Protocol.car");
     merge("util/Pair.car");
-    merge("util/IndentingPrintWriter.car");
     merge("util/Base64.car");
     merge("util/Base64InputStream.car");
     merge("util/Base64OutputStream.car");
