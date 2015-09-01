@@ -7,6 +7,10 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
+CAR_INTERFACE_IMPL(CEnvironment, Singleton, IEnvironment)
+
+CAR_SINGLETON_IMPL(CEnvironment)
+
 ECode CEnvironment::GetRootDirectory(
     /* [out] */ IFile** dir)
 {
@@ -42,17 +46,6 @@ ECode CEnvironment::GetSecureDataDirectory(
 {
     VALIDATE_NOT_NULL(dir)
     AutoPtr<IFile> f = Environment::GetSecureDataDirectory();
-    *dir = f;
-    REFCOUNT_ADD(*dir)
-    return NOERROR;
-}
-
-ECode CEnvironment::GetUserSystemDirectory(
-    /* [in] */ Int32 userId,
-    /* [out] */ IFile** dir)
-{
-    VALIDATE_NOT_NULL(dir)
-    AutoPtr<IFile> f = Environment::GetUserSystemDirectory(userId);
     *dir = f;
     REFCOUNT_ADD(*dir)
     return NOERROR;
@@ -99,6 +92,17 @@ ECode CEnvironment::GetEmulatedStorageObbSource(
     return NOERROR;
 }
 
+ECode CEnvironment::GetUserSystemDirectory(
+    /* [in] */ Int32 userId,
+    /* [out] */ IFile** dir)
+{
+    VALIDATE_NOT_NULL(dir)
+    AutoPtr<IFile> f = Environment::GetUserSystemDirectory(userId);
+    *dir = f;
+    REFCOUNT_ADD(*dir)
+    return NOERROR;
+}
+
 ECode CEnvironment::GetExternalStoragePublicDirectory(
     /* [in] */ const String& type,
     /* [out] */ IFile** dir)
@@ -128,6 +132,33 @@ ECode CEnvironment::GetExternalStorageState(
     return NOERROR;
 }
 
+ECode CEnvironment::GetStorageState(
+    /* [in] */ IFile* path,
+    /* [out] */ String* state)
+{
+    VALIDATE_NOT_NULL(state)
+    *state = Environment::GetStorageState(path);
+    return NOERROR;
+}
+
+ECode CEnvironment::GetExternalStorageState(
+    /* [in] */ IFile* path,
+    /* [out] */ String* state)
+{
+    VALIDATE_NOT_NULL(state)
+    *state = Environment::GetExternalStorageState(path);
+    return NOERROR;
+}
+
+ECode CEnvironment::IsExternalStorageRemovable(
+    /* [in] */ IFile* path,
+    /* [out] */ Boolean* isRemovable)
+{
+    VALIDATE_NOT_NULL(isRemovable)
+    *isRemovable = Environment::IsExternalStorageRemovable(path);
+    return NOERROR;
+}
+
 ECode CEnvironment::IsExternalStorageRemovable(
     /* [out] */ Boolean* isRemovable)
 {
@@ -144,6 +175,14 @@ ECode CEnvironment::IsExternalStorageEmulated(
     return NOERROR;
 }
 
+ECode CEnvironment::IsExternalStorageEmulated(
+    /* [in] */ IFile* path,
+    /* [out] */ Boolean* isEmulated)
+{
+    VALIDATE_NOT_NULL(isEmulated)
+    *isEmulated = Environment::IsExternalStorageEmulated(path);
+    return NOERROR;
+}
 
 } // namespace Os
 } // namespace Droid

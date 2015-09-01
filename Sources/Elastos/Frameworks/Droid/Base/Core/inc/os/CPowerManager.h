@@ -4,6 +4,7 @@
 
 #include "_Elastos_Droid_Os_CPowerManager.h"
 #include "os/CPowerManagerWakeLock.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Droid::Content::IContext;
 
@@ -90,8 +91,14 @@ namespace Os {
  * </p>
  */
 CarClass(CPowerManager)
+    , public Object
+    , public IPowerManager
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     /**
      * Gets the minimum supported screen brightness setting.
      * The screen may be allowed to become dimmer than this value but
@@ -116,13 +123,6 @@ public:
      */
     CARAPI GetDefaultScreenBrightnessSetting(
         /* [out] */ Int32* screenBrightness);
-
-    /**
-     * Returns true if the screen auto-brightness adjustment setting should
-     * be available in the UI.  This setting is experimental and disabled by default.
-     * @hide
-     */
-    static CARAPI_(Boolean) UseScreenAutoBrightnessAdjustmentFeature();
 
     /**
      * Returns true if the twilight service should be used to adjust screen brightness
@@ -222,6 +222,36 @@ public:
         /* [in] */ Boolean noChangeLights);
 
     /**
+     * Notifies the power manager that user activity happened.
+     * <p>
+     * Resets the auto-off timer and brightens the screen if the device
+     * is not asleep.  This is what happens normally when a key or the touch
+     * screen is pressed or when some other user activity occurs.
+     * This method does not wake up the device if it has been put to sleep.
+     * </p><p>
+     * Requires the {@link android.Manifest.permission#DEVICE_POWER} or
+     * {@link android.Manifest.permission#USER_ACTIVITY} permission.
+     * </p>
+     *
+     * @param when The time of the user activity, in the {@link SystemClock#uptimeMillis()}
+     * time base.  This timestamp is used to correctly order the user activity request with
+     * other power management functions.  It should be set
+     * to the timestamp of the input event that caused the user activity.
+     * @param event The user activity event.
+     * @param flags Optional user activity flags.
+     *
+     * @see #wakeUp
+     * @see #goToSleep
+     *
+     * @hide Requires signature or system permission.
+     */
+    //@SystemApi
+    CARAPI UserActivity(
+        /* [in] */ Int64 when,
+        /* [in] */ Int32 event,
+        /* [in] */ Int32 flags);
+
+    /**
      * Forces the device to go to sleep.
      * <p>
      * Overrides all the wake locks that are held.
@@ -237,9 +267,37 @@ public:
      *
      * @see #userActivity
      * @see #wakeUp
+     *
+     * @removed Requires signature permission.
      */
     CARAPI GoToSleep(
         /* [in] */ Int64 eventTime);
+
+    /**
+     * Forces the device to go to sleep.
+     * <p>
+     * Overrides all the wake locks that are held.
+     * This is what happens when the power key is pressed to turn off the screen.
+     * </p><p>
+     * Requires the {@link android.Manifest.permission#DEVICE_POWER} permission.
+     * </p>
+     *
+     * @param time The time when the request to go to sleep was issued, in the
+     * {@link SystemClock#uptimeMillis()} time base.  This timestamp is used to correctly
+     * order the go to sleep request with other power management functions.  It should be set
+     * to the timestamp of the input event that caused the request to go to sleep.
+     * @param reason The reason the device is going to sleep.
+     * @param flags Optional flags to apply when going to sleep.
+     *
+     * @see #userActivity
+     * @see #wakeUp
+     *
+     * @hide Requires signature permission.
+     */
+    CARAPI GoToSleep(
+        /* [in] */ Int64 eventTime,
+        /* [in] */ Int32 reason,
+        /* [in] */ Int32 flags);
 
     /**
      * Forces the device to wake up from sleep.
@@ -257,6 +315,8 @@ public:
      *
      * @see #userActivity
      * @see #goToSleep
+     *
+     * @removed Requires signature permission.
      */
     CARAPI WakeUp(
         /* [in] */ Int64 eventTime);
@@ -280,22 +340,10 @@ public:
      * @see #wakeUp
      * @see #goToSleep
      *
-     * @hide
+     * @hide Requires signature permission.
      */
     CARAPI Nap(
         /* [in] */ Int64 time);
-
-    CARAPI GoToBootFastSleep(
-        /* [in] */ Int64 time);
-
-    CARAPI BootFastWake(
-        /* [in] */ Int64 time);
-
-    CARAPI IsBootFastStatus(
-        /* [out] */ Boolean* result);
-
-    CARAPI IsBootFastWakeFromStandby(
-        /* [out] */ Boolean* result);
 
     /**
      * Sets the brightness of the backlights (screen, keyboard, button).
@@ -305,7 +353,7 @@ public:
      *
      * @param brightness The brightness value from 0 to 255.
      *
-     * {@hide}
+     * {@hide} Requires signature permission.
      */
     CARAPI SetBacklightBrightness(
         /* [in] */ Int32 brightness);
@@ -323,20 +371,61 @@ public:
         /* [out] */ Boolean* isSupported);
 
     /**
-      * Returns whether the screen is currently on.
+      * Returns true if the device is in an interactive state.
       * <p>
-      * Only indicates whether the screen is on.  The screen could be either bright or dim.
+      * For historical reasons, the name of this method refers to the power state of
+      * the screen but it actually describes the overall interactive state of
+      * the device.  This method has been replaced by {@link #isInteractive}.
       * </p><p>
-      * {@samplecode
-      * PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-      * boolean isScreenOn = pm.isScreenOn();
-      * }
+      * The value returned by this method only indicates whether the device is
+      * in an interactive state which may have nothing to do with the screen being
+      * on or off.  To determine the actual state of the screen,
+      * use {@link android.view.Display#getState}.
       * </p>
       *
-      * @return whether the screen is on (bright or dim).
+      * @return True if the device is in an interactive state.
+      *
+      * @deprecated Use {@link #isInteractive} instead.
       */
     CARAPI IsScreenOn(
         /* [out] */ Boolean* isScreenOn);
+
+    /**
+     * Returns true if the device is in an interactive state.
+     * <p>
+     * When this method returns true, the device is awake and ready to interact
+     * with the user (although this is not a guarantee that the user is actively
+     * interacting with the device just this moment).  The main screen is usually
+     * turned on while in this state.  Certain features, such as the proximity
+     * sensor, may temporarily turn off the screen while still leaving the device in an
+     * interactive state.  Note in particular that the device is still considered
+     * to be interactive while dreaming (since dreams can be interactive) but not
+     * when it is dozing or asleep.
+     * </p><p>
+     * When this method returns false, the device is dozing or asleep and must
+     * be awoken before it will become ready to interact with the user again.  The
+     * main screen is usually turned off while in this state.  Certain features,
+     * such as "ambient mode" may cause the main screen to remain on (albeit in a
+     * low power state) to display system-provided content while the device dozes.
+     * </p><p>
+     * The system will send a {@link android.content.Intent#ACTION_SCREEN_ON screen on}
+     * or {@link android.content.Intent#ACTION_SCREEN_OFF screen off} broadcast
+     * whenever the interactive state of the device changes.  For historical reasons,
+     * the names of these broadcasts refer to the power state of the screen
+     * but they are actually sent in response to changes in the overall interactive
+     * state of the device, as described by this method.
+     * </p><p>
+     * Services may use the non-interactive state as a hint to conserve power
+     * since the user is not present.
+     * </p>
+     *
+     * @return True if the device is in an interactive state.
+     *
+     * @see android.content.Intent#ACTION_SCREEN_ON
+     * @see android.content.Intent#ACTION_SCREEN_OFF
+     */
+    CARAPI IsInteractive(
+        /* [out] */ Boolean* result);
 
     /**
      * Reboot the device.  Will not return if the reboot is successful.
@@ -348,9 +437,32 @@ public:
      *               request special boot modes, or null.
      */
     CARAPI Reboot(
-        /* [in] */ Boolean confirm,
-        /* [in] */ const String& reason,
-        /* [in] */ Boolean wait);
+        /* [in] */ const String& reason);
+
+    /**
+     * Returns true if the device is currently in power save mode.  When in this mode,
+     * applications should reduce their functionality in order to conserve battery as
+     * much as possible.  You can monitor for changes to this state with
+     * {@link #ACTION_POWER_SAVE_MODE_CHANGED}.
+     *
+     * @return Returns true if currently in low power mode, else false.
+     */
+    CARAPI IsPowerSaveMode(
+        /* [out] */ Boolean* result);
+
+    /**
+     * Set the current power save mode.
+     *
+     * @return True if the set was allowed.
+     *
+     * @see #isPowerSaveMode()
+     *
+     * @hide
+     */
+    CARAPI SetPowerSaveMode(
+        /* [in] */ Boolean mode,
+        /* [out] */ Boolean* result);
+
 
     CARAPI constructor(
         /* [in] */ IContext* context,

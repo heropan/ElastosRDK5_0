@@ -14,6 +14,7 @@ module
     merge("os/Debug.car");
     merge("os/DebugMemoryInfo.car");
     merge("os/DropBoxManager.car");
+    merge("os/Environment.car");
     merge("os/FileObserver.car");
     merge("os/Handler.car");
     merge("os/HandlerThread.car");
@@ -40,6 +41,7 @@ module
     merge("os/PatternMatcher.car");
     merge("os/PersistableBundle.car");
     merge("os/PowerManager.car");
+    merge("os/PowerManagerInternal.car");
     merge("os/Process.car");
     merge("os/RecoverySystem.car");
     merge("os/RemoteCallback.car");
@@ -195,6 +197,10 @@ module
 
     singleton class CBundleHelper {
         interface IBundleHelper;
+    }
+
+    singleton class CEnvironment {
+        interface IEnvironment;
     }
 
     class CHandler {
@@ -440,28 +446,42 @@ module
         interface IUserManagerHelper;
     }
 
-    // [local]
-    // class CPowerManager {
-    //     constructor(
-    //         [in] IContext* ctx,
-    //         [in] IIPowerManager* service,
-    //         [in] IHandler* handler);
+    class CWorkSource {
+        constructor();
 
-    //     interface IPowerManager;
-    // }
+        constructor(
+            [in] IWorkSource* orig);
 
-    // singleton class CPowerManagerHelper {
-    //     interface IPowerManagerHelper;
-    // }
+        constructor(
+            [in] Int32 uid);
 
-    // class CPowerManagerWakeLock {
-    //     constructor(
-    //         [in] Int32 flags,
-    //         [in] String tag,
-    //         [in] Handle32 host);
+        interface IWorkSource;
+        interface IParcelable;
+    }
 
-    //     interface IPowerManagerWakeLock;
-    // }
+    [local]
+    class CPowerManager {
+        constructor(
+            [in] IContext* ctx,
+            [in] IIPowerManager* service,
+            [in] IHandler* handler);
+
+        interface IPowerManager;
+    }
+
+    singleton class CPowerManagerHelper {
+        interface IPowerManagerHelper;
+    }
+
+    class CPowerManagerWakeLock {
+        constructor(
+            [in] Int32 flags,
+            [in] String tag,
+            [in] String packageName,
+            [in] IPowerManager* host);
+
+        interface IPowerManagerWakeLock;
+    }
 
     // [deprecated]
     // class CDropBoxManagerEntry {
@@ -508,30 +528,6 @@ module
     //     constructor();
 
     //     interface IDropBoxManager;
-    // }
-
-    // class CWorkSource {
-    //     constructor();
-
-    //     constructor(
-    //         [in] IWorkSource* orig);
-
-    //     constructor(
-    //         [in] Int32 uid);
-
-    //     interface IWorkSource;
-    //     interface IParcelable;
-    // }
-
-    // singleton class CEnvironment {
-    //     interface IEnvironment;
-    // }
-
-    // class CUserEnvironment {
-    //     constructor(
-    //         [in] Int32 userId);
-
-    //     interface IUserEnvironment;
     // }
 
     // singleton class CDebug {

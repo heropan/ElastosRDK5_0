@@ -4,8 +4,11 @@
 
 #include "_Elastos_Droid_Os_CPowerManagerWakeLock.h"
 #include "ext/frameworkdef.h"
+#include "os/Runnable.h"
+#include <elastos/core/Object.h>
 
 using Elastos::Core::IRunnable;
+
 namespace Elastos {
 namespace Droid {
 namespace Os {
@@ -29,17 +32,16 @@ class CPowerManager;
  * </p>
  */
 CarClass(CPowerManagerWakeLock)
+    , public Object
+    , public IPowerManagerWakeLock
 {
 private:
     class ReleaseRunnable
-        : public ElRefBase
-        , public IRunnable
+        : public Runnable
     {
     public:
         ReleaseRunnable(
             /* [in] */ CPowerManagerWakeLock* host);
-
-        CAR_INTERFACE_DECL();
 
         CARAPI Run();
 
@@ -48,6 +50,10 @@ private:
     };
 
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_OBJECT_DECL()
+
     CPowerManagerWakeLock();
 
     ~CPowerManagerWakeLock();
@@ -140,10 +146,23 @@ public:
     CARAPI ToString(
         /* [out] */ String* s);
 
+    /** @hide */
+    CARAPI SetTag(
+        /* [in] */ const String& tag);
+
+    /** @hide */
+    CARAPI SetHistoryTag(
+        /* [in] */ const String& tag);
+
+    /** @hide */
+    CARAPI SetUnimportantForLogging(
+        /* [in] */ Boolean state);
+
     CARAPI constructor(
         /* [in] */ Int32 flags,
         /* [in] */ const String& tag,
-        /* [in] */ Handle32 host);
+        /* [in] */ const String& packageName,
+        /* [in] */ IPowerManager* host);
 
 private:
     CARAPI_(void) AcquireLocked();
@@ -151,6 +170,7 @@ private:
 private:
     Int32 mFlags;
     String mTag;
+    String mPackageName;
     AutoPtr<IBinder> mToken;
     Object mTokenLock;
     Int32 mCount;
@@ -158,7 +178,9 @@ private:
     Boolean mHeld;
     AutoPtr<IWorkSource> mWorkSource;
     AutoPtr<IRunnable> mReleaser;
-    AutoPtr<CPowerManager> mHost;
+    AutoPtr<CPowerManager> mHost;//TODO
+    String mHistoryTag;
+    String mTraceName;
 };
 
 } // namespace Os

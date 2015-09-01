@@ -28,6 +28,7 @@ CommonClock::~CommonClock()
 
 ECode CommonClock::constructor()
 {
+    assert(0);
     //mRemote = ServiceManager::GetService(SERVICE_NAME);
     if (NULL == mRemote)
         return E_REMOTE_EXCEPTION;

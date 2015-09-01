@@ -14,6 +14,10 @@ namespace Os {
 
 const String CPowerManager::TAG("PowerManager");
 
+CAR_INTERFACE_IMPL(CPowerManager, Object, IPowerManager)
+
+CAR_OBJECT_IMPL(CPowerManager)
+
 ECode CPowerManager::GetMinimumScreenBrightnessSetting(
     /* [out] */ Int32* screenBrightness)
 {
@@ -41,14 +45,11 @@ ECode CPowerManager::GetDefaultScreenBrightnessSetting(
     return res->GetInteger(R::integer::config_screenBrightnessSettingDefault, screenBrightness);
 }
 
-Boolean CPowerManager::UseScreenAutoBrightnessAdjustmentFeature()
-{
-    return SystemProperties::GetBoolean(String("persist.power.useautobrightadj"), FALSE);
-}
-
 Boolean CPowerManager::UseTwilightAdjustmentFeature()
 {
-    return SystemProperties::GetBoolean(String("persist.power.usetwilightadj"), FALSE);
+    Boolean bval;
+    SystemProperties::GetBoolean(String("persist.power.usetwilightadj"), FALSE, &bval);
+    return bval;
 }
 
 ECode CPowerManager::NewWakeLock(
@@ -58,7 +59,9 @@ ECode CPowerManager::NewWakeLock(
 {
     VALIDATE_NOT_NULL(wakeLock);
     FAIL_RETURN(ValidateWakeLockParameters(levelAndFlags, tag));
-    return CPowerManagerWakeLock::New(levelAndFlags, tag, (Handle32)this, wakeLock);
+    String name;
+    mContext->GetOpPackageName(&name);
+    return CPowerManagerWakeLock::New(levelAndFlags, tag, name, THIS_PROBE(IPowerManager), wakeLock);
 }
 
 ECode CPowerManager::ValidateWakeLockParameters(
@@ -71,6 +74,7 @@ ECode CPowerManager::ValidateWakeLockParameters(
         case SCREEN_BRIGHT_WAKE_LOCK:
         case FULL_WAKE_LOCK:
         case PROXIMITY_SCREEN_OFF_WAKE_LOCK:
+        case DOZE_WAKE_LOCK:
             break;
         default:
             Slogger::E(TAG, "Must specify a valid wake lock level.");
@@ -89,9 +93,17 @@ ECode CPowerManager::UserActivity(
     /* [in] */ Int64 when,
     /* [in] */ Boolean noChangeLights)
 {
-    // try {
-    return mService->UserActivity(when, USER_ACTIVITY_EVENT_OTHER,
+    return UserActivity(when, USER_ACTIVITY_EVENT_OTHER,
             noChangeLights ? USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS : 0);
+}
+
+ECode CPowerManager::UserActivity(
+    /* [in] */ Int64 when,
+    /* [in] */ Int32 event,
+    /* [in] */ Int32 flags)
+{
+    // try {
+    return mService->UserActivity(when, event, flags);
     // } catch (RemoteException e) {
     // }
 }
@@ -99,8 +111,16 @@ ECode CPowerManager::UserActivity(
 ECode CPowerManager::GoToSleep(
     /* [in] */ Int64 eventTime)
 {
+    return GoToSleep(eventTime, GO_TO_SLEEP_REASON_APPLICATION, 0);
+}
+
+ECode CPowerManager::GoToSleep(
+    /* [in] */ Int64 eventTime,
+    /* [in] */ Int32 reason,
+    /* [in] */ Int32 flags)
+{
     // try {
-    return mService->GoToSleep(eventTime, GO_TO_SLEEP_REASON_USER);
+    return mService->GoToSleep(eventTime, reason, flags);
     // } catch (RemoteException e) {
     // }
 }
@@ -121,32 +141,6 @@ ECode CPowerManager::Nap(
     return mService->Nap(time);
     // } catch (RemoteException e) {
     // }
-}
-
-ECode CPowerManager::GoToBootFastSleep(
-    /* [in] */ Int64 time)
-{
-    return mService->GoToBootFastSleep(time);
-}
-
-ECode CPowerManager::BootFastWake(
-    /* [in] */ Int64 time)
-{
-    return mService->BootFastWake(time);
-}
-
-ECode CPowerManager::IsBootFastStatus(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return mService->IsBootFastStatus(result);
-}
-
-ECode CPowerManager::IsBootFastWakeFromStandby(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    return mService->IsBootFastWakeFromStandby(result);
 }
 
 ECode CPowerManager::SetBacklightBrightness(
@@ -173,19 +167,46 @@ ECode CPowerManager::IsWakeLockLevelSupported(
 ECode CPowerManager::IsScreenOn(
     /* [out] */ Boolean* isScreenOn)
 {
+    return IsInteractive(isScreenOn);
+}
+
+ECode CPowerManager::IsInteractive(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
     // try {
-    return mService->IsScreenOn(isScreenOn);
+    return mService->IsInteractive(result);
     // } catch (RemoteException e) {
+    //     return false;
     // }
 }
 
 ECode CPowerManager::Reboot(
-    /* [in] */ Boolean confirm,
-    /* [in] */ const String& reason,
-    /* [in] */ Boolean wait)
+    /* [in] */ const String& reason)
 {
     // try {
     return mService->Reboot(FALSE, reason, TRUE);
+    // } catch (RemoteException e) {
+    // }
+}
+
+ECode CPowerManager::IsPowerSaveMode(
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+    return mService->IsPowerSaveMode(result);
+    // } catch (RemoteException e) {
+    // }
+}
+
+ECode CPowerManager::SetPowerSaveMode(
+    /* [in] */ Boolean mode,
+    /* [out] */ Boolean* result)
+{
+    VALIDATE_NOT_NULL(result);
+    // try {
+    return mService->SetPowerSaveMode(mode, result);
     // } catch (RemoteException e) {
     // }
 }

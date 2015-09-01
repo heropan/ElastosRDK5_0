@@ -33,6 +33,7 @@ SOURCES += CountDownTimer.cpp
 #SOURCES += CDropBoxManagerEntry.cpp
 #SOURCES += CDropBoxManager.cpp
 SOURCES += Environment.cpp
+SOURCES += CEnvironment.cpp
 SOURCES += FactoryTest.cpp
 SOURCES += FileBridge.cpp
 SOURCES += FileObserver.cpp
@@ -59,9 +60,9 @@ SOURCES += CParcelUuidHelper.cpp
 SOURCES += CPatternMatcher.cpp
 SOURCES += PerformanceCollector.cpp
 #SOURCES += CPersistableBundle.cpp
-#SOURCES += CPowerManager.cpp
-#SOURCES += CPowerManagerHelper.cpp
-#SOURCES += PowerManagerInternal.cpp
+SOURCES += CPowerManager.cpp
+SOURCES += CPowerManagerWakeLock.cpp
+SOURCES += CPowerManagerHelper.cpp
 SOURCES += Process.cpp
 SOURCES += CProcessStartResult.cpp
 #SOURCES += CRecoverySystem.cpp
@@ -69,6 +70,7 @@ SOURCES += Registrant.cpp
 SOURCES += RemoteCallback.cpp
 SOURCES += CRemoteCallbackList.cpp
 SOURCES += ResultReceiver.cpp
+SOURCES += Runnable.cpp
 SOURCES += SELinux.cpp
 SOURCES += ServiceManager.cpp
 SOURCES += CServiceManager.cpp
@@ -92,16 +94,14 @@ SOURCES += CUserHandleHelper.cpp
 SOURCES += CUserManager.cpp
 SOURCES += CUserManagerHelper.cpp
 SOURCES += Vibrator.cpp
-#SOURCES += CWorkSource.cpp
+SOURCES += CWorkSource.cpp
 
+# move to internal/os
 #SOURCES += CZygoteInit.cpp
 SOURCES += RuntimeInit.cpp
 SOURCES += CRuntimeInit.cpp
 SOURCES += SomeArgs.cpp
-SOURCES += Runnable.cpp
 SOURCES += invokeCallback_gnuc.S
-
-
 
 #SOURCES += HandlerCaller.cpp
 #SOURCES += BinderProxy.cpp
@@ -109,7 +109,6 @@ SOURCES += invokeCallback_gnuc.S
 #SOURCES += NativeBinder.cpp
 #SOURCES += CProcessStats.cpp
 #SOURCES += ZygoteConnection.cpp
-#SOURCES += CPowerManagerWakeLock.cpp
 #SOURCES += CPkgUsageStats.cpp
 #SOURCES += CParcelStringList.cpp
 #SOURCES += CZigbeeManager.cpp

@@ -15,15 +15,16 @@ module
             [in] IBinder* lock,
             [in] Int32 flags,
             [in] String tag,
-            [in] IWorkSource* ws);
+            [in] String packageName,
+            [in] IWorkSource* ws,
+            [in] String historyTag);
 
         AcquireWakeLockWithUid(
             [in] IBinder* lock,
             [in] Int32 flags,
             [in] String tag,
             [in] String packageName,
-            [in] Int32 uidtoblame,
-            [in] IWorkSource* ws);
+            [in] Int32 uidtoblame);
 
         ReleaseWakeLock(
             [in] IBinder* lock,
@@ -33,13 +34,15 @@ module
             [in] IBinder* lock,
             [in] ArrayOf<Int32>* uids);
 
+        [oneway]
         PowerHint(
             [in] Int32 hintId,
             [in] Int32 data);
 
         UpdateWakeLockWorkSource(
             [in] IBinder* lock,
-            [in] IWorkSource* ws);
+            [in] IWorkSource* ws,
+            [in] String historyTag);
 
         IsWakeLockLevelSupported(
             [in] Int32 level,
@@ -55,7 +58,8 @@ module
 
         GoToSleep(
             [in] Int64 eventTime,
-            [in] Int32 reason);
+            [in] Int32 reason,
+            [in] Int32 flags);
 
         Nap(
             [in] Int64 eventTime);

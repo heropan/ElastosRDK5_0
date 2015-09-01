@@ -85,8 +85,6 @@ Boolean DateFormat::Is24HourFormat(
             value = "12";
         }
 
-
-
         synchronized(sLocaleLock){
             sIs24HourLocale = locale;
             sIs24Hour = value.Equals("24");

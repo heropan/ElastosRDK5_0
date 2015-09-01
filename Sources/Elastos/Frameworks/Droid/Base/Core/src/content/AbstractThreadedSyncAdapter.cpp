@@ -22,6 +22,9 @@ namespace Content {
                 }                   \
             } while(0);
 
+
+CAR_INTERFACE_IMPL(AbstractThreadedSyncAdapter::ISyncAdapterImpl, Object, IISyncAdapter)
+
 AbstractThreadedSyncAdapter::ISyncAdapterImpl::ISyncAdapterImpl(
     /* [in] */ AbstractThreadedSyncAdapter* context)
     : mAdapterContext(context)
@@ -30,14 +33,13 @@ AbstractThreadedSyncAdapter::ISyncAdapterImpl::ISyncAdapterImpl(
 AbstractThreadedSyncAdapter::ISyncAdapterImpl::~ISyncAdapterImpl()
 {}
 
-CAR_INTERFACE_IMPL(AbstractThreadedSyncAdapter::ISyncAdapterImpl, IISyncAdapter)
-
 ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::StartSync(
     /* [in] */ IISyncContext* syncContext,
     /* [in] */ const String& authority,
     /* [in] */ IAccount* account,
     /* [in] */ IBundle* extras)
 {
+    assert(0 && "TODO");
     AutoPtr<ISyncContext> syncContextClient;
 //***    FAIL_RETURN(CSyncContext::New(syncContext, (ISyncContext**)&syncContextClient))
     Boolean alreadyInProgress = FALSE;
@@ -66,7 +68,7 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::StartSync(
             }
 
             AutoPtr<SyncThread> syncThread = new AbstractThreadedSyncAdapter::SyncThread(
-                    String("SyncAdapterThread-") + StringUtils::Int32ToString(atomic_inc(&mAdapterContext->mNumSyncStarts)),
+                    String("SyncAdapterThread-") + StringUtils::ToString(atomic_inc(&mAdapterContext->mNumSyncStarts)),
                     syncContextClient, authority, account, extras, mAdapterContext);
             mAdapterContext->mSyncThreads[threadsKey] = syncThread;
             FAIL_RETURN(syncThread->Start())
@@ -134,7 +136,9 @@ ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::Initialize(
 ECode AbstractThreadedSyncAdapter::ISyncAdapterImpl::ToString(
     /* [out] */ String* str)
 {
-    return E_NOT_IMPLEMENTED;
+    VALIDATE_NOT_NULL(str)
+    *str = String("AbstractThreadedSyncAdapter::ISyncAdapterImpl");
+    return NOERROR;
 }
 
 AbstractThreadedSyncAdapter::SyncThread::SyncThread(
@@ -229,29 +233,16 @@ ECode AbstractThreadedSyncAdapter::SyncThread::IsCanceled(
     return Thread::GetCurrentThread()->IsInterrupted(isCanceled);
 }
 
-AbstractThreadedSyncAdapter::AbstractThreadedSyncAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean autoInitialize)
-    : mContext(NULL)
-    , mNumSyncStarts(0)
-    , mISyncAdapterImpl(NULL)
-    , mAutoInitialize(FALSE)
-    , mAllowParallelSyncs(FALSE)
-{
-    ASSERT_SUCCEEDED(Init(context, autoInitialize, FALSE))
-}
+//============================================================
+// AbstractThreadedSyncAdapter
+//============================================================
 
-AbstractThreadedSyncAdapter::AbstractThreadedSyncAdapter(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean autoInitialize,
-    /* [in] */ Boolean allowParallelSyncs)
-    : mContext(NULL)
-    , mNumSyncStarts(0)
-    , mSyncThreads(NULL)
+CAR_INTERFACE_IMPL(AbstractThreadedSyncAdapter, Object, IAbstractThreadedSyncAdapter)
+AbstractThreadedSyncAdapter::AbstractThreadedSyncAdapter()
+    : mNumSyncStarts(0)
     , mAutoInitialize(FALSE)
     , mAllowParallelSyncs(FALSE)
 {
-    ASSERT_SUCCEEDED(Init(context, autoInitialize, allowParallelSyncs))
 }
 
 AbstractThreadedSyncAdapter::~AbstractThreadedSyncAdapter()
@@ -259,7 +250,26 @@ AbstractThreadedSyncAdapter::~AbstractThreadedSyncAdapter()
     mSyncThreads.Clear();
 }
 
-CAR_INTERFACE_IMPL(AbstractThreadedSyncAdapter, IAbstractThreadedSyncAdapter)
+
+ECode AbstractThreadedSyncAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Boolean autoInitialize)
+{
+    return constructor(context, autoInitialize, FALSE/* allowParallelSyncs */);
+}
+
+ECode AbstractThreadedSyncAdapter::constructor(
+    /* [in] */ IContext* context,
+    /* [in] */ Boolean autoInitialize,
+    /* [in] */ Boolean allowParallelSyncs)
+{
+    mContext = context;
+    mISyncAdapterImpl = new ISyncAdapterImpl(this);
+    mNumSyncStarts = 0;
+    mAutoInitialize = autoInitialize;
+    mAllowParallelSyncs = allowParallelSyncs;
+    return NOERROR;
+}
 
 ECode AbstractThreadedSyncAdapter::GetContext(
     /* [out] */ IContext** context)
@@ -313,18 +323,6 @@ AutoPtr<IAccount> AbstractThreadedSyncAdapter::ToSyncKey(
     }
 }
 
-ECode AbstractThreadedSyncAdapter::Init(
-    /* [in] */ IContext* context,
-    /* [in] */ Boolean autoInitialize,
-    /* [in] */ Boolean allowParallelSyncs)
-{
-    mContext = context;
-    mISyncAdapterImpl = new ISyncAdapterImpl(this);
-    mNumSyncStarts = 0;
-    mAutoInitialize = autoInitialize;
-    mAllowParallelSyncs = allowParallelSyncs;
-    return NOERROR;
-}
 
 }
 }

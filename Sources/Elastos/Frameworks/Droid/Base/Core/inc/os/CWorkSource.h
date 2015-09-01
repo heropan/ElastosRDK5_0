@@ -33,6 +33,10 @@ public:
     CARAPI constructor(
         /* [in] */ Int32 uid);
 
+    CARAPI constructor(
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& name);
+
     CARAPI GetSize(
         /* [out] */ Int32* value);
 
@@ -40,6 +44,20 @@ public:
     CARAPI Get(
         /* [in] */ Int32 index,
         /* [out] */ Int32* value);
+
+    /** @hide */
+    CARAPI GetName(
+        /* [in] */ Int32 index,
+        /* [out] */ String* name);
+
+    CARAPI ClearNames();
+
+    /**
+     * Clear names from this WorkSource.  Uids are left intact.
+     *
+     * <p>Useful when combining with another WorkSource that doesn't have names.
+     * @hide
+     */
 
     /**
      * Clear this WorkSource to be empty.
@@ -78,6 +96,10 @@ public:
     CARAPI Set(
         /* [in] */ Int32 uid);
 
+    CARAPI Set(
+        /* [in] */ Int32 index,
+        /* [in] */ const String& name);
+
     /** @hide */
     CARAPI SetReturningDiffs(
         /* [in] */ IWorkSource* other,
@@ -104,6 +126,12 @@ public:
         /* [out] */ Boolean* added);
 
     /** @hide */
+    CARAPI Add(
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& name,
+        /* [out] */ Boolean* added);
+
+    /** @hide */
     CARAPI AddReturningNewbs(
         /* [in] */ Int32 uid,
         /* [out] */ IWorkSource** result);
@@ -112,6 +140,10 @@ public:
         /* [in] */ IWorkSource* other,
         /* [out] */ Boolean* successed);
 
+    /** @hide */
+    CARAPI StripNames(
+        /* [out] */ IWorkSource** other);
+
     CARAPI ReadFromParcel(
         /* [in] */ IParcel* source);
 
@@ -119,13 +151,57 @@ public:
         /* [in] */ IParcel* dest);
 
 private:
-    CARAPI_(Boolean) UpdateLocked(
+    CARAPI UpdateLocked(
         /* [in] */ IWorkSource* other,
         /* [in] */ Boolean set,
-        /* [in] */ Boolean returnNewbs);
+        /* [in] */ Boolean returnNewbs,
+        /* [out] */ Boolean* result);
 
-    CARAPI_(void) AddLocked(
+    CARAPI RemoveUids(
+        /* [in] */ IWorkSource* other,
+        /* [out] */ Boolean* result);
+
+    CARAPI RemoveUidsAndNames(
+        /* [in] */ IWorkSource* other,
+        /* [out] */ Boolean* result);
+
+    static CARAPI_(AutoPtr<IWorkSource>) AddWork(
+        /* [in] */ IWorkSource* cur,
+        /* [in] */ Int32 newUid);
+
+    CARAPI UpdateUidsLocked(
+        /* [in] */ IWorkSource* other,
+        /* [in] */ Boolean set,
+        /* [in] */ Boolean returnNewbs,
+        /* [out] */ Boolean* result);
+
+    CARAPI_(Int32) Compare(
+        /* [in] */ IWorkSource* other,
+        /* [in] */ Int32 i1,
+        /* [in] */ Int32 i2);
+
+    CARAPI_(AutoPtr<IWorkSource>) AddWork(
+        /* [in] */ IWorkSource* cur,
+        /* [in] */ Int32 newUid,
+        /* [in] */ const String& newName);
+
+    CARAPI UpdateUidsAndNamesLocked(
+        /* [in] */ IWorkSource* other,
+        /* [in] */ Boolean set,
+        /* [in] */ Boolean returnNewbs,
+        /* [out] */ Boolean* result);
+
+    CARAPI Insert(
+        /* [in] */ Int32 index,
         /* [in] */ Int32 uid);
+
+    CARAPI Insert(
+        /* [in] */ Int32 index,
+        /* [in] */ Int32 uid,
+        /* [in] */ const String& name);
+
+    CARAPI ToString(
+        /* [out] */ String* str);
 
 public:
     static const String TAG;// = "WorkSource";
@@ -141,7 +217,7 @@ public:
      * hold sTmpWorkSource lock while working with these statics.
      */
     static const AutoPtr<IWorkSource> sTmpWorkSource;
-    static Object sTmpWorkSourceLock;
+
     /**
      * For returning newbie work from a modification operation.
      */

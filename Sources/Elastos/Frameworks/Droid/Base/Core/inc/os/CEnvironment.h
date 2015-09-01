@@ -3,6 +3,7 @@
 #define __ELASTOS_DROID_OS_CENVIRONMENT_H__
 
 #include "_Elastos_Droid_Os_CEnvironment.h"
+#include <elastos/core/Singleton.h>
 
 using Elastos::IO::IFile;
 
@@ -14,8 +15,14 @@ namespace Os {
  * Provides access to environment variables.
  */
 CarClass(CEnvironment)
+    , public Singleton
+    , public IEnvironment
 {
 public:
+    CAR_INTERFACE_DECL()
+
+    CAR_SINGLETON_DECL()
+
     /**
      * Gets the Android root directory.
      */
@@ -46,17 +53,6 @@ public:
      * @hide
      */
     CARAPI GetSecureDataDirectory(
-        /* [out] */ IFile** dir);
-
-    /**
-     * Return the system directory for a user. This is for use by system services to store
-     * files relating to the user. This directory will be automatically deleted when the user
-     * is removed.
-     *
-     * @hide
-     */
-    CARAPI GetUserSystemDirectory(
-        /* [in] */ Int32 userId,
         /* [out] */ IFile** dir);
 
     /**
@@ -111,6 +107,17 @@ public:
         /* [out] */ IFile** dir);
 
     /**
+     * Return the system directory for a user. This is for use by system services to store
+     * files relating to the user. This directory will be automatically deleted when the user
+     * is removed.
+     *
+     * @hide
+     */
+    CARAPI GetUserSystemDirectory(
+        /* [in] */ Int32 userId,
+        /* [out] */ IFile** dir);
+
+    /**
      * Get a top-level public external storage directory for placing files of
      * a particular type.  This is where the user will typically place and
      * manage their own files, so you should be careful about what you put here
@@ -153,12 +160,48 @@ public:
         /* [out] */ String* state);
 
     /**
+     * @deprecated use {@link #getExternalStorageState(File)}
+     */
+    //@Deprecated
+    CARAPI GetStorageState(
+        /* [in] */ IFile* path,
+        /* [out] */ String* state);
+
+    /**
+     * Returns the current state of the storage device that provides the given
+     * path.
+     *
+     * @return one of {@link #MEDIA_UNKNOWN}, {@link #MEDIA_REMOVED},
+     *         {@link #MEDIA_UNMOUNTED}, {@link #MEDIA_CHECKING},
+     *         {@link #MEDIA_NOFS}, {@link #MEDIA_MOUNTED},
+     *         {@link #MEDIA_MOUNTED_READ_ONLY}, {@link #MEDIA_SHARED},
+     *         {@link #MEDIA_BAD_REMOVAL}, or {@link #MEDIA_UNMOUNTABLE}.
+     */
+    CARAPI GetExternalStorageState(
+        /* [in] */ IFile* path,
+        /* [out] */ String* state);
+
+    /**
      * Returns whether the primary "external" storage device is removable.
      * If true is returned, this device is for example an SD card that the
      * user can remove.  If false is returned, the storage is built into
      * the device and can not be physically removed.
      *
      * <p>See {@link #getExternalStorageDirectory()} for more information.
+     */
+    CARAPI IsExternalStorageRemovable(
+        /* [in] */ IFile* path,
+        /* [out] */ Boolean* isRemovable);
+
+    /**
+     * Returns whether the storage device that provides the given path is
+     * removable.
+     *
+     * @return true if the storage device can be removed (such as an SD card),
+     *         or false if the storage device is built in and cannot be
+     *         physically removed.
+     * @throws IllegalArgumentException if the path is not a valid storage
+     *             device.
      */
     CARAPI IsExternalStorageRemovable(
         /* [out] */ Boolean* isRemovable);
@@ -177,6 +220,18 @@ public:
      * android.content.ComponentName, boolean)} for additional details.
      */
     CARAPI IsExternalStorageEmulated(
+        /* [out] */ Boolean* isEmulated);
+
+    /**
+     * Returns whether the storage device that provides the given path is
+     * emulated. If true, data stored on this device will be stored on a portion
+     * of the internal storage system.
+     *
+     * @throws IllegalArgumentException if the path is not a valid storage
+     *             device.
+     */
+    CARAPI IsExternalStorageEmulated(
+        /* [in] */ IFile* path,
         /* [out] */ Boolean* isEmulated);
 };
 

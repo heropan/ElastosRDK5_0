@@ -3,21 +3,20 @@
 #define __ELASTOS_DROID_OS_CPOWERMANAGERHELPER_H__
 
 #include "_Elastos_Droid_Os_CPowerManagerHelper.h"
+#include <elastos/core/Singleton.h>
 
 namespace Elastos {
 namespace Droid {
 namespace Os {
 
 CarClass(CPowerManagerHelper)
+    , public Singleton
+    , public IPowerManagerHelper
 {
 public:
-    /**
-     * Returns true if the screen auto-brightness adjustment setting should
-     * be available in the UI.  This setting is experimental and disabled by default.
-     * @hide
-     */
-    CARAPI UseScreenAutoBrightnessAdjustmentFeature(
-        /* [out] */ Boolean* result);
+    CAR_SINGLETON_DECL()
+
+    CAR_INTERFACE_DECL()
 
     /**
      * Returns true if the twilight service should be used to adjust screen brightness

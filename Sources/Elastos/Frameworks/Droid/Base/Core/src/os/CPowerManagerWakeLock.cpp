@@ -5,9 +5,12 @@
 #include "os/Handler.h"
 #include "os/CWorkSource.h"
 #include <elastos/utility/logging/Slogger.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
 
 using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Core::EIID_IRunnable;
 using Elastos::Droid::Os::CWorkSource;
@@ -21,12 +24,14 @@ CPowerManagerWakeLock::ReleaseRunnable::ReleaseRunnable(
     : mHost(host)
 {}
 
-CAR_INTERFACE_IMPL(CPowerManagerWakeLock::ReleaseRunnable, IRunnable);
-
 ECode CPowerManagerWakeLock::ReleaseRunnable::Run()
 {
     return mHost->ReleaseLock();
 }
+
+CAR_INTERFACE_IMPL(CPowerManagerWakeLock, Object, IPowerManagerWakeLock)
+
+CAR_OBJECT_IMPL(CPowerManagerWakeLock)
 
 CPowerManagerWakeLock::CPowerManagerWakeLock()
     : mFlags(0)
@@ -84,7 +89,7 @@ void CPowerManagerWakeLock::AcquireLocked()
         // been explicitly released by the keyguard.
         mHost->mHandler->RemoveCallbacks(mReleaser);
         // try {
-        mHost->mService->AcquireWakeLock(mToken, mFlags, mTag, mWorkSource);
+        mHost->mService->AcquireWakeLock(mToken, mFlags, mTag, mPackageName, mWorkSource, mHistoryTag);
         // } catch (RemoteException e) {
         // }
         mHeld = TRUE;
@@ -154,7 +159,7 @@ ECode CPowerManagerWakeLock::SetWorkSource(
 
     if (changed && mHeld) {
         // try {
-        mHost->mService->UpdateWakeLockWorkSource(mToken, mWorkSource);
+        mHost->mService->UpdateWakeLockWorkSource(mToken, mWorkSource, mHistoryTag);
         // } catch (RemoteException e) {
         // }
     }
@@ -168,19 +173,50 @@ ECode CPowerManagerWakeLock::ToString(
     AutoLock lock(mTokenLock);
     *s = String("WakeLock{") /*Integer.toHexString(System.identityHashCode(this))*/
             + String(" held=") + StringUtils::BooleanToString(mHeld) + String(", refCount=")
-            + StringUtils::Int32ToString(mCount) + String("}");
+            + StringUtils::ToString(mCount) + String("}");
+    return NOERROR;
+}
+
+ECode CPowerManagerWakeLock::SetTag(
+    /* [in] */ const String& tag)
+{
+    mHistoryTag = tag;
+    return NOERROR;
+}
+
+/** @hide */
+ECode CPowerManagerWakeLock::SetHistoryTag(
+    /* [in] */ const String& tag)
+{
+    mHistoryTag = tag;
+    return NOERROR;
+}
+
+/** @hide */
+ECode CPowerManagerWakeLock::SetUnimportantForLogging(
+    /* [in] */ Boolean state)
+{
+    if (state) mFlags |= IPowerManager::UNIMPORTANT_FOR_LOGGING;
+    else mFlags &= ~IPowerManager::UNIMPORTANT_FOR_LOGGING;
     return NOERROR;
 }
 
 ECode CPowerManagerWakeLock::constructor(
     /* [in] */ Int32 flags,
     /* [in] */ const String& tag,
-    /* [in] */ Handle32 host)
+    /* [in] */ const String& packageName,
+    /* [in] */ IPowerManager* host)
 {
     mFlags = flags;
+    mPackageName = packageName;
     mTag = tag;
     FAIL_RETURN(CBinder::New((IBinder**)&mToken));
     mHost = (CPowerManager*)host;
+
+    StringBuilder sb("WakeLock(");
+    sb += mTag;
+    sb += ")";
+    mTraceName = sb.ToString();
     return NOERROR;
 }
 

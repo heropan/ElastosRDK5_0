@@ -90,9 +90,6 @@ module
          */
         SetWorkSource(
             [in] IWorkSource* ws);
-
-        ToString(
-            [out] String* s);
     }
 
     interface IPowerManager
@@ -179,11 +176,25 @@ module
          * </p><p>
          * Since not all devices have proximity sensors, use {@link #isWakeLockLevelSupported}
          * to determine whether this wake lock level is supported.
+         * </p><p>
+         * Cannot be used with {@link #ACQUIRE_CAUSES_WAKEUP}.
+         * </p>
+         */
+        const Int32 PROXIMITY_SCREEN_OFF_WAKE_LOCK = 0x00000020;
+
+        /**
+         * Wake lock level: Put the screen in a low power state and allow the CPU to suspend
+         * if no other wake locks are held.
+         * <p>
+         * This is used by the dream manager to implement doze mode.  It currently
+         * has no effect unless the power manager is in the dozing state.
+         * </p><p>
+         * Requires the {@link android.Manifest.permission#DEVICE_POWER} permission.
          * </p>
          *
          * {@hide}
          */
-        const Int32 PROXIMITY_SCREEN_OFF_WAKE_LOCK = 0x00000020;
+        const Int32 DOZE_WAKE_LOCK = 0x00000040;
 
         /**
          * Mask for the wake lock level component of a combined wake lock level and flags integer.
@@ -218,13 +229,18 @@ module
         const Int32 ON_AFTER_RELEASE = 0x20000000;
 
         /**
-         * Flag for {@link WakeLock#release release(int)} to defer releasing a
-         * {@link #WAKE_BIT_PROXIMITY_SCREEN_OFF} wake lock until the proximity sensor returns
-         * a negative value.
-         *
-         * {@hide}
+         * Wake lock flag: This wake lock is not important for logging events.  If a later
+         * wake lock is acquired that is important, it will be considered the one to log.
+         * @hide
          */
-        const Int32 WAIT_FOR_PROXIMITY_NEGATIVE = 1;
+        const Int32 UNIMPORTANT_FOR_LOGGING = 0x40000000;
+
+        /**
+         * Flag for {@link WakeLock#release WakeLock.release(int)}: Defer releasing a
+         * {@link #PROXIMITY_SCREEN_OFF_WAKE_LOCK} wake lock until the proximity sensor
+         * indicates that an object is not in close proximity.
+         */
+        const Int32 RELEASE_FLAG_WAIT_FOR_NO_PROXIMITY = 1;
 
         /**
          * Brightness value for fully on.
@@ -238,6 +254,12 @@ module
          */
         const Int32 BRIGHTNESS_OFF = 0;
 
+        /**
+         * Brightness value for default policy handling by the system.
+         * @hide
+         */
+        const Int32 BRIGHTNESS_DEFAULT = -1;
+
         // Note: Be sure to update android.os.BatteryStats and PowerManager.h
         // if adding or modifying user activity event constants.
 
@@ -245,32 +267,48 @@ module
          * User activity event type: Unspecified event type.
          * @hide
          */
+        //@SystemApi
         const Int32 USER_ACTIVITY_EVENT_OTHER = 0;
 
         /**
          * User activity event type: Button or key pressed or released.
          * @hide
          */
+        //@SystemApi
         const Int32 USER_ACTIVITY_EVENT_BUTTON = 1;
 
         /**
          * User activity event type: Touch down, move or up.
          * @hide
          */
+        //@SystemApi
         const Int32 USER_ACTIVITY_EVENT_TOUCH = 2;
 
         /**
-         * User activity flag: Do not restart the user activity timeout or brighten
-         * the display in response to user activity if it is already dimmed.
+         * User activity flag: If already dimmed, extend the dim timeout
+         * but do not brighten.  This flag is useful for keeping the screen on
+         * a little longer without causing a visible change such as when
+         * the power key is pressed.
          * @hide
          */
+        //@SystemApi
         const Int32 USER_ACTIVITY_FLAG_NO_CHANGE_LIGHTS = 1 << 0;
 
         /**
-         * Go to sleep reason code: Going to sleep due by user request.
+         * User activity flag: Note the user activity as usual but do not
+         * reset the user activity timeout.  This flag is useful for applying
+         * user activity power hints when interacting with the device indirectly
+         * on a secondary screen while allowing the primary screen to go to sleep.
          * @hide
          */
-        const Int32 GO_TO_SLEEP_REASON_USER = 0;
+        //@SystemApi
+        const Int32 USER_ACTIVITY_FLAG_INDIRECT = 1 << 1;
+
+        /**
+         * Go to sleep reason code: Going to sleep due by application request.
+         * @hide
+         */
+        const Int32 GO_TO_SLEEP_REASON_APPLICATION = 0;
 
         /**
          * Go to sleep reason code: Going to sleep due by request of the
@@ -309,6 +347,18 @@ module
          */
         const Int32 GO_TO_SLEEP_FLAG_NO_DOZE = 1 << 0;
 
+        /**
+         * The value to pass as the 'reason' argument to reboot() to
+         * reboot into recovery mode (for applying system updates, doing
+         * factory resets, etc.).
+         * <p>
+         * Requires the {@link android.Manifest.permission#RECOVERY}
+         * permission (in addition to
+         * {@link android.Manifest.permission#REBOOT}).
+         * </p>
+         * @hide
+         */
+        const String REBOOT_RECOVERY = "recovery";
 
         /**
          * Intent that is broadcast when the state of {@link #isPowerSaveMode()} changes.
@@ -330,6 +380,7 @@ module
 
         /** @hide */
         const String EXTRA_POWER_SAVE_MODE = "mode";
+
 
         /**
          * Gets the minimum supported screen brightness setting.
@@ -584,8 +635,7 @@ module
          *               request special boot modes, or null.
          */
         Reboot(
-            [in] String reason,
-            [in] Boolean wait);
+            [in] String reason);
 
         /**
          * Returns true if the device is currently in power save mode.  When in this mode,
@@ -597,18 +647,9 @@ module
          */
         IsPowerSaveMode(
             [out] Boolean* result);
-
-
     }
 
     interface IPowerManagerHelper {
-        /**
-         * Returns true if the screen auto-brightness adjustment setting should
-         * be available in the UI.  This setting is experimental and disabled by default.
-         * @hide
-         */
-        UseScreenAutoBrightnessAdjustmentFeature(
-            [out] Boolean* result);
 
         /**
          * Returns true if the twilight service should be used to adjust screen brightness

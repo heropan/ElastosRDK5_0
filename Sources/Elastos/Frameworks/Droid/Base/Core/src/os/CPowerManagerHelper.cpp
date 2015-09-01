@@ -7,13 +7,9 @@ namespace Elastos {
 namespace Droid {
 namespace Os {
 
-ECode CPowerManagerHelper::UseScreenAutoBrightnessAdjustmentFeature(
-    /* [out] */ Boolean* result)
-{
-    VALIDATE_NOT_NULL(result);
-    *result = CPowerManager::UseScreenAutoBrightnessAdjustmentFeature();
-    return NOERROR;
-}
+CAR_INTERFACE_IMPL(CPowerManagerHelper, Singleton, IPowerManagerHelper)
+
+CAR_SINGLETON_IMPL(CPowerManagerHelper)
 
 ECode CPowerManagerHelper::UseTwilightAdjustmentFeature(
     /* [out] */ Boolean* result)

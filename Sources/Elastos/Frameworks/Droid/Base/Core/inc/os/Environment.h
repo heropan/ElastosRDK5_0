@@ -23,6 +23,7 @@ public:
         : public Object
     {
     public:
+
         // TODO: generalize further to create package-specific environment
 
         UserEnvironment(

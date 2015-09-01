@@ -106,15 +106,15 @@ AutoPtr<Environment::UserEnvironment> InitForCurrentUser()
     return ue;
 }
 
-const AutoPtr<IFile> DIR_ANDROID_ROOT = GetDirectoryImpl(String("ANDROID_ROOT")/*ENV_ANDROID_ROOT*/, String("/system"));
-const AutoPtr<IFile> DIR_OEM_ROOT = GetDirectoryImpl(String("OEM_ROOT")/*ENV_OEM_ROOT*/, String("/oem"));
-const AutoPtr<IFile> DIR_VENDOR_ROOT = GetDirectoryImpl(String("VENDOR_ROOT")/*ENV_VENDOR_ROOT*/, String("/vendor"));
-const AutoPtr<IFile> DIR_MEDIA_STORAGE = GetDirectoryImpl(String("MEDIA_STORAGE")/*ENV_MEDIA_STORAGE*/, String("/data/media"));
+const AutoPtr<IFile> Environment::DIR_ANDROID_ROOT = GetDirectoryImpl(String("ANDROID_ROOT")/*ENV_ANDROID_ROOT*/, String("/system"));
+const AutoPtr<IFile> Environment::DIR_OEM_ROOT = GetDirectoryImpl(String("OEM_ROOT")/*ENV_OEM_ROOT*/, String("/oem"));
+const AutoPtr<IFile> Environment::DIR_VENDOR_ROOT = GetDirectoryImpl(String("VENDOR_ROOT")/*ENV_VENDOR_ROOT*/, String("/vendor"));
+const AutoPtr<IFile> Environment::DIR_MEDIA_STORAGE = GetDirectoryImpl(String("MEDIA_STORAGE")/*ENV_MEDIA_STORAGE*/, String("/data/media"));
 
-const AutoPtr<IFile> DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_DATA"), String("/data"));
+const AutoPtr<IFile> Environment::DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_DATA"), String("/data"));
 
-const AutoPtr<IFile> SECURE_DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_SECURE_DATA"), String("/data/secure"));
-const AutoPtr<IFile> DOWNLOAD_CACHE_DIRECTORY = GetDirectoryImpl(String("DOWNLOAD_CACHE"), String("/cache"));
+const AutoPtr<IFile> Environment::SECURE_DATA_DIRECTORY = GetDirectoryImpl(String("ANDROID_SECURE_DATA"), String("/data/secure"));
+const AutoPtr<IFile> Environment::DOWNLOAD_CACHE_DIRECTORY = GetDirectoryImpl(String("DOWNLOAD_CACHE"), String("/cache"));
 
 const String Environment::CANONCIAL_EMULATED_STORAGE_TARGET =
     GetCanonicalPathOrNull(String("EMULATED_STORAGE_TARGET")/*ENV_EMULATED_STORAGE_TARGET*/);

@@ -4,11 +4,13 @@
 
 #include "ext/frameworkext.h"
 #include <elastos/utility/etl/HashMap.h>
+#include <elastos/core/Thread.h>
 
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Accounts::IAccount;
 using Elastos::Droid::Os::IBinder;
 using Elastos::Droid::Os::IBundle;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Core::Thread;
 
 namespace Elastos {
 namespace Droid {
@@ -70,11 +72,11 @@ namespace Content {
  * </ul>
  */
 class AbstractThreadedSyncAdapter
-    : public ElRefBase
+    : public Object
     , public IAbstractThreadedSyncAdapter
 {
     class ISyncAdapterImpl
-        : public ElRefBase
+        : public Object
         , public IISyncAdapter
     {
     public:
@@ -112,7 +114,7 @@ class AbstractThreadedSyncAdapter
      * this thread in order to cancel the sync.
      */
     class SyncThread
-        : public ThreadBase
+        : public Thread
     {
     friend class ISyncAdapterImpl;
 
@@ -145,39 +147,11 @@ class AbstractThreadedSyncAdapter
 friend class ISyncAdapterImpl;
 
 public:
-    /**
-     * Creates an {@link AbstractThreadedSyncAdapter}.
-     * @param context the {@link android.content.Context} that this is running within.
-     * @param autoInitialize if true then sync requests that have
-     * {@link ContentResolver#SYNC_EXTRAS_INITIALIZE} set will be internally handled by
-     * {@link AbstractThreadedSyncAdapter} by calling
-     * {@link ContentResolver#setIsSyncable(android.accounts.Account, String, int)} with 1 if it
-     * is currently set to <0.
-     */
-    AbstractThreadedSyncAdapter(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean autoInitialize);
+    CAR_INTERFACE_DECL()
 
-    /**
-     * Creates an {@link AbstractThreadedSyncAdapter}.
-     * @param context the {@link android.content.Context} that this is running within.
-     * @param autoInitialize if true then sync requests that have
-     * {@link ContentResolver#SYNC_EXTRAS_INITIALIZE} set will be internally handled by
-     * {@link AbstractThreadedSyncAdapter} by calling
-     * {@link ContentResolver#setIsSyncable(android.accounts.Account, String, int)} with 1 if it
-     * is currently set to <0.
-     * @param allowParallelSyncs if true then allow syncs for different accounts to run
-     * at the same time, each in their own thread. This must be consistent with the setting
-     * in the SyncAdapter's configuration file.
-     */
-    AbstractThreadedSyncAdapter(
-        /* [in] */ IContext* context,
-        /* [in] */ Boolean autoInitialize,
-        /* [in] */ Boolean allowParallelSyncs);
+    AbstractThreadedSyncAdapter();
 
     virtual ~AbstractThreadedSyncAdapter();
-
-    CAR_INTERFACE_DECL()
 
     CARAPI GetContext(
         /* [out] */ IContext** context);
@@ -229,11 +203,36 @@ public:
     virtual CARAPI OnSyncCanceled(
         /* [in] */ IThread* thread);
 
-private:
+protected:
     CARAPI_(AutoPtr<IAccount>) ToSyncKey(
         /* [in] */ IAccount* account);
 
-    CARAPI Init(
+    /**
+     * Creates an {@link AbstractThreadedSyncAdapter}.
+     * @param context the {@link android.content.Context} that this is running within.
+     * @param autoInitialize if true then sync requests that have
+     * {@link ContentResolver#SYNC_EXTRAS_INITIALIZE} set will be internally handled by
+     * {@link AbstractThreadedSyncAdapter} by calling
+     * {@link ContentResolver#setIsSyncable(android.accounts.Account, String, int)} with 1 if it
+     * is currently set to <0.
+     */
+    CARAPI constructor(
+        /* [in] */ IContext* context,
+        /* [in] */ Boolean autoInitialize);
+
+    /**
+     * Creates an {@link AbstractThreadedSyncAdapter}.
+     * @param context the {@link android.content.Context} that this is running within.
+     * @param autoInitialize if true then sync requests that have
+     * {@link ContentResolver#SYNC_EXTRAS_INITIALIZE} set will be internally handled by
+     * {@link AbstractThreadedSyncAdapter} by calling
+     * {@link ContentResolver#setIsSyncable(android.accounts.Account, String, int)} with 1 if it
+     * is currently set to <0.
+     * @param allowParallelSyncs if true then allow syncs for different accounts to run
+     * at the same time, each in their own thread. This must be consistent with the setting
+     * in the SyncAdapter's configuration file.
+     */
+    CARAPI constructor(
         /* [in] */ IContext* context,
         /* [in] */ Boolean autoInitialize,
         /* [in] */ Boolean allowParallelSyncs);
@@ -248,7 +247,6 @@ private:
     Boolean mAutoInitialize;
     Boolean mAllowParallelSyncs;
     Object mSyncThreadLock;
-
 };
 
 }
