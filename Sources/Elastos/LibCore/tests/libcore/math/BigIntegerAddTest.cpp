@@ -1004,7 +1004,8 @@ void testCase10() {
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerAddTest(int argc, char *argv[])
+{
 	printf("\n==== libcore/math/BigIntegerAddTest ====\n");
 	testCase1();
     testCase2();

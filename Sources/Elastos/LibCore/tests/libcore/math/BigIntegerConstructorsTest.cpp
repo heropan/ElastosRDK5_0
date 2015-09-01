@@ -1018,7 +1018,7 @@ void testConstructorBytesException()
 
 //==============================================================================
 
-int main(int argc, char *argv[])
+int mainBigIntegerConstructorsTest(int argc, char *argv[])
 {
     printf("\n==== libcore/math/BigIntegerConstructorsTest ====\n");
     testConstructorBytesException();

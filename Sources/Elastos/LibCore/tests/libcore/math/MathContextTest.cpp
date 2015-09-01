@@ -165,7 +165,8 @@ void test_MathContextConstruction()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainMathContextTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/MathContextTest ====\n");
     printf("\n==== end of libcore/math/MathContextTest ====\n");
 

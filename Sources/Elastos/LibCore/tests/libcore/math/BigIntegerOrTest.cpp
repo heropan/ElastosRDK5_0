@@ -705,7 +705,8 @@ void testRegression()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerOrTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerOrTest ====\n");
     testZeroPos();
     testZeroNeg();

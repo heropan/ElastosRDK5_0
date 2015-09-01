@@ -286,6 +286,18 @@ void testUnequalObjectsUnequal()
     }
 }
 
+//==============================================================================
+
+int mainBigIntegerHashCodeTest(int argc, char *argv[])
+{
+    printf("\n==== libcore/math/BigIntegerHashCodeTest ====\n");
+    testSameObject();
+    testEqualObjects();
+    testUnequalObjectsUnequal();
+    printf("\n==== end of libcore/math/BigIntegerHashCodeTest ====\n");
+
+    return 0;
+}
 
 }
 }

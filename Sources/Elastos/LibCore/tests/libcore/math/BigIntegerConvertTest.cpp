@@ -1107,7 +1107,8 @@ void testDoubleValuePosNotRounded()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerConvertTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerConvertTest ====\n");
     testDoubleValueZero();
     testDoubleValuePositive1();

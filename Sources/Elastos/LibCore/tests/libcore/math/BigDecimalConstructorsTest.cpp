@@ -1029,7 +1029,8 @@ void testConstrCharIntInt()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigDecimalConstructorsTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigDecimalConstructorsTest ====\n");
     testConstrBI();
     testConstrBIScale();

@@ -24,6 +24,13 @@ SOURCES += RoundingModeTest.cpp
 SOURCES += BigDecimalArithmeticTest.cpp
 SOURCES += BigDecimalCompareTest.cpp
 SOURCES += BigDecimalConstructorsTest.cpp
+SOURCES += BigDecimalConvertTest.cpp
+SOURCES += BigDecimalScaleOperationsTest.cpp
+SOURCES += BigDecimalTest.cpp
+
+SOURCES += testMathMain.cpp
+
+SOURCES += Elastos.CoreLibrary.cpp
 
 IMPORTS = Elastos.CoreLibrary.eco
 

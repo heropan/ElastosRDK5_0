@@ -2118,7 +2118,8 @@ void testAddMathContextEqualScaleNegNeg()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigDecimalArithmeticTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigDecimalArithmeticTest ====\n");
     testAddEqualScalePosPos();
     testAddMathContextEqualScalePosPos();

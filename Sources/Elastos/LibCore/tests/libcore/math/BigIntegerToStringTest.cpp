@@ -237,7 +237,8 @@ void testRadixOutOfRange()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerToStringTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerToStringTest ====\n");
     testRadixOutOfRange();
     printf("\n==== end of libcore/math/BigIntegerToStringTest ====\n");
