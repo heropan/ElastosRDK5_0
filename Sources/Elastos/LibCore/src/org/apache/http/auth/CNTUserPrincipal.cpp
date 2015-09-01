@@ -6,8 +6,7 @@
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Util::ILangUtils;
-using Org::Apache::Http::Util::LangUtils;
+using Org::Apache::Http::Utility::LangUtils;
 
 namespace Org {
 namespace Apache {
@@ -46,7 +45,7 @@ ECode CNTUserPrincipal::GetHashCode(
     /* [out] */ Int32* hashCode)
 {
     VALIDATE_NOT_NULL(hashCode)
-    Int32 hash = ILangUtils::HASH_SEED;
+    Int32 hash = LangUtils::HASH_SEED;
     hash = LangUtils::HashCode(hash, mUsername);
     hash = LangUtils::HashCode(hash, mDomain);
     *hashCode = hash;

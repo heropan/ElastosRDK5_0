@@ -78,5 +78,6 @@ LIBRARIES += impl/io/io.lib
 LIBRARIES += message/message.lib
 LIBRARIES += params/params.lib
 LIBRARIES += protocol/protocol.lib
+LIBRARIES += util/util.lib
 
 LIBRARIES += -lcutils

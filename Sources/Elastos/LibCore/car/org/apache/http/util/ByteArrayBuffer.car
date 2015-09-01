@@ -51,13 +51,13 @@ module
             [in] Int32 i,
             [out] Int32* byteAt);
 
-        Capacity(
+        GetCapacity(
             [out] Int32* capacity);
 
-        Length(
+        GetLength(
             [out] Int32* capacity);
 
-        Buffer(
+        GetBuffer(
             [out, callee] ArrayOf<Byte>* byteArray);
 
         SetLength(

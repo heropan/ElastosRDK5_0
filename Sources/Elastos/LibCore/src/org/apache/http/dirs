@@ -26,3 +26,4 @@ DIRS += impl/io
 DIRS += message
 DIRS += params
 DIRS += protocol
+DIRS += util

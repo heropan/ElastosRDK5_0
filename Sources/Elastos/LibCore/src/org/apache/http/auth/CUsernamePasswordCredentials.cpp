@@ -5,8 +5,7 @@
 #include <elastos/Logger.h>
 
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Util::ILangUtils;
-using Org::Apache::Http::Util::LangUtils;
+using Org::Apache::Http::Utility::LangUtils;
 
 namespace Org {
 namespace Apache {

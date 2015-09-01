@@ -1,4 +1,4 @@
-
+''
 module
 {
 
@@ -20,9 +20,6 @@ module
      */
     [deprecated]
     interface ICharArrayBuffer {
-
-        Expand(
-            [in] Int32 newlen);
 
         Append(
             [in] ArrayOf<Char32>* b,
@@ -54,7 +51,7 @@ module
             [in] Int32 len);
 
         Append(
-            [in] IObject* obj);
+            [in] IInterface* obj);
 
         Clear();
 
@@ -65,13 +62,13 @@ module
             [in] Int32 i,
             [out] Char32* charAt);
 
-        Buffer(
+        GetBuffer(
             [out, callee] ArrayOf<Char32>* buffer);
 
-        Capacity(
+        GetCapacity(
             [out] Int32* capacity);
 
-        Length(
+        GetLength(
             [out] Int32* length);
 
         EnsureCapacity(

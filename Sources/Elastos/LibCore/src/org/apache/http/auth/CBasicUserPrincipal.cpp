@@ -6,7 +6,7 @@
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Logger;
-using Org::Apache::Http::Util::ILangUtils;
+using Org::Apache::Http::Utility::LangUtils;
 
 namespace Org {
 namespace Apache {

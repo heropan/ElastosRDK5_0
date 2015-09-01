@@ -174,10 +174,26 @@ module
     merge("../../../../car/org/apache/http/params/HttpProtocolParamBean.car");
     merge("../../../../car/org/apache/http/params/HttpProtocolParams.car");
 
+    merge("../../../../car/org/apache/http/protocol/BasicHttpProcessor.car");
+    merge("../../../../car/org/apache/http/protocol/DefaultedHttpContext.car");
+    merge("../../../../car/org/apache/http/protocol/ExecutionContext.car");
+    merge("../../../../car/org/apache/http/protocol/HTTP.car");
     merge("../../../../car/org/apache/http/protocol/HttpContext.car");
+    merge("../../../../car/org/apache/http/protocol/HttpDateGenerator.car");
+    merge("../../../../car/org/apache/http/protocol/HttpExpectationVerifier.car");
+    merge("../../../../car/org/apache/http/protocol/HttpProcessor.car");
+    merge("../../../../car/org/apache/http/protocol/HttpRequestExecutor.car");
+    merge("../../../../car/org/apache/http/protocol/HttpRequestHandler.car");
+    merge("../../../../car/org/apache/http/protocol/HttpRequestHandlerRegistry.car");
+    merge("../../../../car/org/apache/http/protocol/HttpRequestHandlerResolver.car");
+    merge("../../../../car/org/apache/http/protocol/HttpRequestInterceptorList.car");
+    merge("../../../../car/org/apache/http/protocol/HttpResponseInterceptorList.car");
+    merge("../../../../car/org/apache/http/protocol/HttpService.car");
+    merge("../../../../car/org/apache/http/protocol/UriPatternMatcher.car");
 
     merge("../../../../car/org/apache/http/util/ByteArrayBuffer.car");
     merge("../../../../car/org/apache/http/util/CharArrayBuffer.car");
+    merge("../../../../car/org/apache/http/util/VersionInfo.car");
 
     using interface Elastos.Core.ICloneable;
     using interface Elastos.Core.IComparator;
@@ -1457,6 +1473,30 @@ module
     }
 
     } // namespace Protocol
+    } // namespace Http
+    } // namespace Apache
+    } // namespace Org
+
+    namespace Org {
+    namespace Apache {
+    namespace Http {
+    namespace Utility {
+
+    class CCharArrayBuffer {
+        constructor(
+            [in] Int32 capacity);
+
+        interface ICharArrayBuffer;
+    }
+
+    class CByteArrayBuffer {
+        constructor(
+            [in] Int32 capacity);
+
+        interface IByteArrayBuffer;
+    }
+
+    } // namespace Utility
     } // namespace Http
     } // namespace Apache
     } // namespace Org

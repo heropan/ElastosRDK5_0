@@ -8,9 +8,9 @@
 using Elastos::Core::StringUtils;
 using Elastos::Utility::Logging::Logger;
 using Libcore::ICU::ILocale;
-using Org::Apache::Http::Util::ICharArrayBuffer;
-using Org::Apache::Http::Util::CCharArrayBuffer;
-using Org::Apache::Http::Util::ILangUtils;
+using Org::Apache::Http::Utility::ICharArrayBuffer;
+using Org::Apache::Http::Utility::CCharArrayBuffer;
+using Org::Apache::Http::Utility::LangUtils;
 
 namespace Org {
 namespace Apache {
@@ -121,7 +121,7 @@ ECode CHttpHost::GetHashCode(
 {
     VALIDATE_NOT_NULL(hashCode)
 
-    Int32 hash = ILangUtils::HASH_SEED;
+    Int32 hash = LangUtils::HASH_SEED;
     hash = LangUtils::HashCode(hash, mLcHostname);
     hash = LangUtils::HashCode(hash, mPort);
     hash = LangUtils::HashCode(hash, mSchemeName);
