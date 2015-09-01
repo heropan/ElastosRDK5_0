@@ -16,17 +16,9 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-extern "C" const InterfaceID EIID_DateFormat;
-
 class DateFormat
-    : public Object
-    , public IDateFormat
 {
 public:
-    CAR_INTERFACE_DECL();
-
-    CARAPI_(String) ToString();
-
     /**
      * Returns true if user preference is set to 24-hour format.
      * @param context the context to use for the content resolver
@@ -196,6 +188,9 @@ private:
     static CARAPI_(String) ZeroPad(
         /* [in] */ Int32 inValue,
         /* [in] */ Int32 inMinDigits);
+
+private:
+    DateFormat();
 
 private:
     static Object sLocaleLock;

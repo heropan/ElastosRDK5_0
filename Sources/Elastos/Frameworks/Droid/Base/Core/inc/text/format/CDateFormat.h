@@ -18,9 +18,11 @@ namespace Format {
 
 CarClass(CDateFormat)
     , public Singleton
-    , public DateFormat
+    , public IDateFormat
 {
 public:
+    CAR_INTERFACE_DECL()
+
     CAR_SINGLETON_DECL()
 
     CARAPI Is24HourFormat(

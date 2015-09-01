@@ -37,19 +37,9 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-extern "C" const InterfaceID EIID_DateFormat =
-        { 0x73d6f306, 0x1fb9, 0x481f, { 0x90, 0x12, 0x38, 0x80, 0xcf, 0x5b, 0x13, 0xb7 } };
-
-Mutex DateFormat::sLocaleLock;
+Object DateFormat::sLocaleLock;
 AutoPtr<ILocale> DateFormat::sIs24HourLocale;
 Boolean DateFormat::sIs24Hour = FALSE;
-
-CAR_INTERFACE_IMPL_2(DateFormat, Object, IDateFormat);
-
-String DateFormat::ToString()
-{
-    return String("DateFormat");
-}
 
 Boolean DateFormat::Is24HourFormat(
     /* [in] */ IContext* context)

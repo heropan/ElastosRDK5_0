@@ -7,7 +7,9 @@ namespace Droid {
 namespace Text {
 namespace Format {
 
-CAR_SINGLETON_IMPL(CDateUtils)
+CAR_INTERFACE_IMPL(CDateFormat, Singleton, IDateFormat)
+
+CAR_SINGLETON_IMPL(CDateFormat)
 
 ECode CDateFormat::Is24HourFormat(
     /* [in] */ IContext* context,
