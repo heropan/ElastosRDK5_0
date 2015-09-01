@@ -3,20 +3,20 @@
 
 #include "ext/frameworkdef.h"
 #include "Elastos.Droid.Core_server.h"
-#include <elastos/utility/etl/HashMap.h>
 #include <elastos/core/Object.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::Object;
-using Elastos::Core::IStringBuilder;
-using Elastos::IO::IPrintStream;
-using Elastos::Text::ICollator;
-using Elastos::Utility::Etl::HashMap;
 using Elastos::Droid::Content::IContext;
 using Elastos::Droid::Content::IContentValues;
 using Elastos::Droid::Os::IParcelFileDescriptor;
 using Elastos::Droid::Database::Sqlite::ISQLiteDatabase;
 using Elastos::Droid::Database::Sqlite::ISQLiteStatement;
 using Elastos::Droid::Database::Sqlite::ISQLiteProgram;
+using Elastos::Core::Object;
+using Elastos::Core::IStringBuilder;
+using Elastos::IO::IPrintStream;
+using Elastos::Text::ICollator;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

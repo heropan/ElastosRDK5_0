@@ -1,7 +1,7 @@
 
 #include "database/sqlite/SQLiteCommon.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Core::StringBuilder;
 using Elastos::Utility::Logging::Slogger;

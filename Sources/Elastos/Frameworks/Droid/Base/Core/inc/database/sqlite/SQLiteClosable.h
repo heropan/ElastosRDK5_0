@@ -2,6 +2,7 @@
 #define __ELASTOS_DROID_DATABASE_SQLITE_SQLITECLOSABLE_H__
 
 #include "ext/frameworkdef.h"
+#include "Elastos.Droid.Core_server.h"
 #include <elastos/core/Object.h>
 
 using Elastos::Core::Object;

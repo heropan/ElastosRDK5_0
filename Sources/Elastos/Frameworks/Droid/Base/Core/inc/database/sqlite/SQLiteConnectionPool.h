@@ -3,18 +3,18 @@
 
 #include "ext/frameworkext.h"
 #include "Elastos.Droid.Core_server.h"
-#include "database/sqlite/SQLiteDatabaseConfiguration.h"
 #include "database/sqlite/SQLiteConnection.h"
-#include <elastos/utility/etl/HashMap.h>
+#include "database/sqlite/SQLiteDatabaseConfiguration.h"
 #include <elastos/utility/etl/List.h>
+#include <elastos/utility/etl/HashMap.h>
 
-using Elastos::Core::IThread;
-using Elastos::IO::ICloseable;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
-using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Os::ICancellationSignalOnCancelListener;
+using Elastos::Core::IThread;
+using Elastos::IO::ICloseable;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
+using Elastos::Utility::Concurrent::Atomic::IAtomicBoolean;
 
 DEFINE_OBJECT_HASH_FUNC_FOR(Elastos::Droid::Database::Sqlite::SQLiteConnection)
 

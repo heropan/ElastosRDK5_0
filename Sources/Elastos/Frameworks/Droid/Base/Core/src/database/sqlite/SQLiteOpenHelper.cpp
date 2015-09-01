@@ -7,9 +7,9 @@
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
 
-using Elastos::Utility::Logging::Slogger;
 using Elastos::IO::IFile;
 using Elastos::IO::ICloseable;
+using Elastos::Utility::Logging::Slogger;
 
 namespace Elastos {
 namespace Droid {

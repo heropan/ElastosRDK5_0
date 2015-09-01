@@ -2,8 +2,8 @@
 #include "database/sqlite/SQLiteCursor.h"
 #include "database/sqlite/CSQLiteQuery.h"
 #include "database/DatabaseUtils.h"
-#include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/utility/logging/Slogger.h>
 
 using Elastos::Utility::Logging::Slogger;
 

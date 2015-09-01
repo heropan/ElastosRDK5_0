@@ -3,22 +3,22 @@
 
 #include "Elastos.Droid.Core_server.h"
 #include "ext/frameworkext.h"
-#include "database/sqlite/SQLiteClosable.h"
 #include "database/sqlite/SQLiteDebug.h"
+#include "database/sqlite/SQLiteClosable.h"
 #include <elastos/utility/etl/List.h>
 #include <elastos/utility/etl/HashMap.h>
 #include <pthread.h>
 
-using Elastos::IO::IFile;
-using Elastos::IO::IFileFilter;
-using Elastos::Utility::IMap;
-using Elastos::Utility::ILocale;
-using Elastos::Utility::Etl::HashMap;
-using Elastos::Utility::Etl::List;
 using Elastos::Droid::Os::ILooper;
 using Elastos::Droid::Os::ICancellationSignal;
 using Elastos::Droid::Utility::IPrinter;
 using Elastos::Droid::Content::IContentValues;
+using Elastos::IO::IFile;
+using Elastos::IO::IFileFilter;
+using Elastos::Utility::IMap;
+using Elastos::Utility::ILocale;
+using Elastos::Utility::Etl::List;
+using Elastos::Utility::Etl::HashMap;
 
 namespace Elastos {
 namespace Droid {

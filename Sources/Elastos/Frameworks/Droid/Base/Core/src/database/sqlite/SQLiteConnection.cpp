@@ -8,6 +8,7 @@
 #include "database/DatabaseUtils.h"
 #include "database/CCursorWindow.h"
 #include "os/CParcelFileDescriptor.h"
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/core/StringUtils.h>
 #include <cutils/ashmem.h>
@@ -16,31 +17,30 @@
 #include <unistd.h>
 #include <sqlite3.h>
 //#include <sqlite3_android.h>
-#include <elastos/core/AutoLock.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::ICharSequence;
+using Elastos::Droid::Os::CParcelFileDescriptor;
+using Elastos::Droid::Os::EIID_ICancellationSignalOnCancelListener;
+using Elastos::Core::IByte;
 using Elastos::Core::CString;
 using Elastos::Core::ISystem;
 using Elastos::Core::CSystem;
-using Elastos::Utility::Regex::IPatternHelper;
-using Elastos::Utility::Regex::CPatternHelper;
-using Elastos::Utility::Regex::IMatcher;
 using Elastos::Core::CArrayOf;
-using Elastos::Core::IByte;
 using Elastos::Core::INumber;
 using Elastos::Core::IBoolean;
 using Elastos::Core::EIID_IByte;
+using Elastos::Core::StringUtils;
 using Elastos::Core::IBlockGuard;
 using Elastos::Core::CBlockGuard;
+using Elastos::Core::ICharSequence;
 using Elastos::Core::IBlockGuardPolicy;
 using Elastos::Text::IFormat;
 using Elastos::Text::CSimpleDateFormat;
-using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::IDate;
 using Elastos::Utility::CDate;
-using Elastos::Droid::Os::EIID_ICancellationSignalOnCancelListener;
-using Elastos::Droid::Os::CParcelFileDescriptor;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Regex::IPatternHelper;
+using Elastos::Utility::Regex::CPatternHelper;
+using Elastos::Utility::Regex::IMatcher;
 
 namespace Elastos {
 namespace Droid {

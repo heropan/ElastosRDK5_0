@@ -2,22 +2,22 @@
 #include "database/sqlite/SQLiteConnectionPool.h"
 #include "database/sqlite/SQLiteGlobal.h"
 #include "os/SystemClock.h"
-#include <elastos/core/StringBuilder.h>
 #include <elastos/core/Thread.h>
-#include <elastos/utility/logging/Slogger.h>
-#include <elastos/core/StringUtils.h>
 #include <elastos/core/AutoLock.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/logging/Slogger.h>
 
-using Elastos::Core::StringBuilder;
-using Elastos::Core::StringUtils;
+using Elastos::Droid::Os::SystemClock;
+using Elastos::Droid::Os::EIID_ICancellationSignalOnCancelListener;
 using Elastos::Core::Thread;
+using Elastos::Core::StringUtils;
+using Elastos::Core::StringBuilder;
 using Elastos::IO::EIID_ICloseable;
 using Elastos::Utility::Logging::Slogger;
 using Elastos::Utility::Concurrent::Atomic::CAtomicBoolean;
 using Elastos::Utility::Concurrent::Locks::ILockSupport;
 using Elastos::Utility::Concurrent::Locks::CLockSupport;
-using Elastos::Droid::Os::SystemClock;
-using Elastos::Droid::Os::EIID_ICancellationSignalOnCancelListener;
 
 namespace Elastos {
 namespace Droid {

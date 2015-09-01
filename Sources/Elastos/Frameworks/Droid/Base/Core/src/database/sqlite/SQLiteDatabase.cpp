@@ -7,32 +7,32 @@
 #include "database/sqlite/CSQLiteStatement.h"
 #include "database/sqlite/SQLiteQueryBuilder.h"
 #include "database/sqlite/SQLiteDirectCursorDriver.h"
-#include "database/CDefaultDatabaseErrorHandler.h"
 #include "database/DatabaseUtils.h"
-#include "os/SystemProperties.h"
-#include "os/SystemClock.h"
+#include "database/CDefaultDatabaseErrorHandler.h"
 #include "os/Looper.h"
+#include "os/SystemClock.h"
+#include "os/SystemProperties.h"
 #include "text/TextUtils.h"
 #include "util/CArrayMap.h"
 #include <elastos/core/StringUtils.h>
+#include <elastos/core/AutoLock.h>
 #include <elastos/utility/logging/Slogger.h>
 #include <elastos/utility/logging/Logger.h>
-//#include <sqlite3_android.h>
 #include <sqlite3.h>
-#include <elastos/core/AutoLock.h>
+//#include <sqlite3_android.h>
 
-using Elastos::Core::StringUtils;
-using Elastos::Core::CString;
-using Elastos::IO::CFile;
-using Elastos::Utility::Logging::Slogger;
-using Elastos::Utility::Logging::Logger;
-using Elastos::IO::EIID_ICloseable;
-using Elastos::IO::EIID_IFileFilter;
 using Elastos::Droid::Os::Looper;
-using Elastos::Droid::Database::CDefaultDatabaseErrorHandler;
-using Elastos::Droid::Database::DatabaseUtils;
 using Elastos::Droid::Text::TextUtils;
 using Elastos::Droid::Utility::CArrayMap;
+using Elastos::Droid::Database::DatabaseUtils;
+using Elastos::Droid::Database::CDefaultDatabaseErrorHandler;
+using Elastos::Core::CString;
+using Elastos::Core::StringUtils;
+using Elastos::IO::CFile;
+using Elastos::IO::EIID_ICloseable;
+using Elastos::IO::EIID_IFileFilter;
+using Elastos::Utility::Logging::Slogger;
+using Elastos::Utility::Logging::Logger;
 
 namespace Elastos {
 namespace Droid {

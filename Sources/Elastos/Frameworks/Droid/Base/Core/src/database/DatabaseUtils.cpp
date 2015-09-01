@@ -6,6 +6,7 @@
 #include <elastos/core/StringUtils.h>
 #include <elastos/utility/logging/Slogger.h>
 
+using Elastos::Droid::Text::TextUtils;
 using Elastos::Core::StringBuilder;
 using Elastos::Core::StringUtils;
 using Elastos::Core::Math;
@@ -37,7 +38,6 @@ using Elastos::Utility::ISet;
 using Elastos::Utility::IIterator;
 using Elastos::Utility::IMapEntry;
 using Elastos::Utility::Logging::Slogger;
-using Elastos::Droid::Text::TextUtils;
 
 namespace Elastos {
 namespace Droid {
