@@ -404,7 +404,8 @@ public class OldBigIntegerTest extends junit.framework.TestCase {
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainOldBigIntegerTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/OldBigIntegerTest ====\n");
     printf("\n==== end of libcore/math/OldBigIntegerTest ====\n");
 

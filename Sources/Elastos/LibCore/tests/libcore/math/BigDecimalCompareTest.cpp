@@ -847,7 +847,8 @@ void testCompareGreaterScale1()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigDecimalCompareTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigDecimalCompareTest ====\n");
     testAbsNeg();
     testAbsPos();

@@ -73,7 +73,7 @@ public class BigIntegerXorTest extends TestCase {
         assertTrue(res.equals(result.toString()));
     }
 #endif
-void testZeroPos()
+static void testZeroPos()
 {
     String numA = String("0");
     String numB = String("27384627835298756289327365");
@@ -391,7 +391,7 @@ void testZeroPos()
     }
 }
 #endif
-void testPosNegFirstShorter()
+static void testPosNegFirstShorter()
 {
     String numA = String("293478573489347658763745839457637");
     String numB = String("-2837462783428374767845648748973847593874837948575684767");
@@ -426,9 +426,11 @@ void testPosNegFirstShorter()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerXorTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerXorTest ====\n");
     testPosNegFirstShorter();
+    testZeroPos();
     printf("\n==== end of libcore/math/BigIntegerXorTest ====\n");
 
     return 0;

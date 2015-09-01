@@ -1,3 +1,45 @@
+#include <elautoptr.h>
+#include <elastos/coredef.h>
+#include <elastos/core/StringUtils.h>
+#include <elastos/core/StringBuilder.h>
+#include <elastos/utility/etl/List.h>
+#include <elastos/utility/Arrays.h>
+
+using namespace Elastos;
+using Elastos::Core::StringUtils;
+using Elastos::Core::Math;
+using Elastos::Core::INumber;
+using Elastos::Math::IBigInteger;
+using Elastos::Math::CBigInteger;
+using Elastos::Math::IBigDecimal;
+using Elastos::Math::CBigDecimal;
+using Elastos::Math::IBigDecimalHelper;
+using Elastos::Math::CBigDecimalHelper;
+using Elastos::Core::EIID_IComparable;
+using Elastos::Core::EIID_INumber;
+
+namespace Elastos {
+namespace Math {
+
+static void assertEquals(const char *info, Int32 aspect, Int32 test)
+{
+    printf("aspect: %d, test: %d. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+static void assertEquals(const char *info, Double aspect, Double test)
+{
+    printf("aspect: %f, test: %f. %s\n", aspect, test, info);
+    assert(aspect == test);
+}
+
+static void assertEquals(const char *info, String aspect, String test)
+{
+    printf("aspect: %s, test: %s. %s\n", aspect.string(), test.string(), info);
+    assert(aspect.Equals(test) == 0);
+}
+
+#if 0
 /*
  *  Licensed to the Apache Software Foundation (ASF) under one or more
  *  contributor license agreements.  See the NOTICE file distributed with
@@ -28,36 +70,111 @@ import java.math.RoundingMode;
 
 
 public class BigDecimalTest extends junit.framework.TestCase {
+
 	BigInteger value = new BigInteger("12345908");
 
 	BigInteger value2 = new BigInteger("12334560000");
+#endif
 
 	/**
 	 * @tests java.math.BigDecimal#BigDecimal(java.math.BigInteger)
 	 */
-	public void test_ConstructorLjava_math_BigInteger() {
+#if 0
+    public void test_ConstructorLjava_math_BigInteger() {
 		BigDecimal big = new BigDecimal(value);
 		assertTrue("the BigDecimal value is not initialized properly", big
 				.unscaledValue().equals(value)
 				&& big.scale() == 0);
-	}
+    }
+#endif
+void test_ConstructorLjava_math_BigInteger()
+{
+    String a = String("12345908");
 
-	/**
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(a, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> big;
+    ec = CBigDecimal::New(bA, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    big->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    Boolean result;
+	rInteger->Equals(bA, &result);
+
+    if (result) {
+        printf("incorrect value\n");
+    }
+
+    Int32 r;
+    big->GetScale(&r);
+
+    assertEquals("incorrect scale", 0, r);
+
+}
+
+    /**
 	 * @tests java.math.BigDecimal#BigDecimal(java.math.BigInteger, int)
 	 */
-	public void test_ConstructorLjava_math_BigIntegerI() {
+#if 0
+    public void test_ConstructorLjava_math_BigIntegerI() {
 		BigDecimal big = new BigDecimal(value2, 5);
 		assertTrue("the BigDecimal value is not initialized properly", big
 				.unscaledValue().equals(value2)
 				&& big.scale() == 5);
 		assertTrue("the BigDecimal value is not represented properly", big
 				.toString().equals("123345.60000"));
-	}
+    }
+#endif
+void test_ConstructorLjava_math_BigIntegerI()
+{
+    String value2 = String("12334560000");
 
-	/**
+    AutoPtr<IBigInteger> bA;
+    ECode ec = CBigInteger::New(value2, (IBigInteger**)&bA);
+    if (FAILED(ec) || bA == NULL) {
+        printf(" Failed to create CBigInteger. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigDecimal> big;
+    ec = CBigDecimal::New(bA, 5, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    AutoPtr<IBigInteger> rInteger;
+    big->GetUnscaledValue((IBigInteger **)&rInteger);
+
+    Boolean result;
+	rInteger->Equals(bA, &result);
+
+    if (result) {
+        printf("the BigDecimal value is not initialized properly\n");
+    }
+
+    Int32 r;
+    big->GetScale(&r);
+
+    assertEquals("incorrect scale", 5, r);
+
+    String str;
+    str = Object::ToString(big);
+
+    assertEquals("the BigDecimal value is not represented properly", String("123345.60000"), str);
+}
+
+    /**
 	 * @tests java.math.BigDecimal#BigDecimal(double)
 	 */
-	public void test_ConstructorD() {
+#if 0
+    public void test_ConstructorD() {
 		BigDecimal big = new BigDecimal(123E04);
 		assertTrue(
 				"the BigDecimal value taking a double argument is not initialized properly",
@@ -85,12 +202,103 @@ public class BigDecimalTest extends junit.framework.TestCase {
         assertTrue(
         		"the double representation of -0.0 bigDecimal is not correct",
         		big.scale() == 0);
-	}
+    }
+#endif
+void test_ConstructorD()
+{
+    AutoPtr<IBigDecimal> big;
 
-	/**
+    ECode ec = CBigDecimal::New(123E04, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    String str;
+    str = Object::ToString(big);
+
+	assertEquals("the double representation is not correct", String("1230000"), str);
+	big = NULL;
+
+	ec = CBigDecimal::New(1.2345E-12, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    Double r;
+    AutoPtr<INumber> cNumber;
+    cNumber = (INumber *)big->Probe(EIID_INumber);
+    cNumber->DoubleValue(&r);
+
+    assertEquals("the double representation is not correct", 1.2345E-12, r);
+	big = NULL;
+	cNumber = NULL;
+
+	ec = CBigDecimal::New(-12345E-3, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    cNumber = (INumber *)big->Probe(EIID_INumber);
+    cNumber->DoubleValue(&r);
+
+    assertEquals("the double representation is not correct", -12.345, r);
+	big = NULL;
+	cNumber = NULL;
+
+	ec = CBigDecimal::New(5.1234567897654321e138, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    cNumber = (INumber *)big->Probe(EIID_INumber);
+    cNumber->DoubleValue(&r);
+
+    Int32 scale;
+    big->GetScale(&scale);
+
+    assertEquals("the double representation is not correct", 5.1234567897654321E138, r);
+    assertEquals("the double representation is not correct", 0, scale);
+	big = NULL;
+	cNumber = NULL;
+
+	ec = CBigDecimal::New(0.1, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    cNumber = (INumber *)big->Probe(EIID_INumber);
+    cNumber->DoubleValue(&r);
+
+    assertEquals("the double representation of 0.1 bigDecimal is not correct", 0.1, r);
+	big = NULL;
+	cNumber = NULL;
+
+	ec = CBigDecimal::New(0.00345, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    cNumber = (INumber *)big->Probe(EIID_INumber);
+    cNumber->DoubleValue(&r);
+
+    assertEquals("the double representation of 0.00345 bigDecimal is not correct", 0.00345, r);
+	big = NULL;
+	cNumber = NULL;
+
+	ec = CBigDecimal::New(-0.0, (IBigDecimal**)&big);
+    if (FAILED(ec) || big == NULL) {
+        printf(" Failed to create CBigDecimal. Error %08X\n", ec);
+    }
+
+    big->GetScale(&scale);
+    assertEquals("the double representation of -0.0 bigDecimal is not correct", 0, scale);
+}
+
+    /**
 	 * @tests java.math.BigDecimal#BigDecimal(java.lang.String)
 	 */
-	public void test_ConstructorLjava_lang_String() throws NumberFormatException {
+#if 0
+    public void test_ConstructorLjava_lang_String() throws NumberFormatException {
 		BigDecimal big = new BigDecimal("345.23499600293850");
 		assertTrue("the BigDecimal value is not initialized properly", big
 				.toString().equals("345.23499600293850")
@@ -105,69 +313,79 @@ public class BigDecimalTest extends junit.framework.TestCase {
 				&& big.scale() == 0);
 
 		new BigDecimal("1.234E02");
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#BigDecimal(java.lang.String)
 	 */
-	public void test_constructor_String_plus_exp() {
+#if 0
+    public void test_constructor_String_plus_exp() {
 		/*
 		 * BigDecimal does not support a + sign in the exponent when converting
 		 * from a String
 		 */
 		new BigDecimal(+23e-0);
 		new BigDecimal(-23e+0);
+    }
+#endif
+
+    /**
+	 * @tests java.math.BigDecimal#BigDecimal(java.lang.String)
+	 */
+#if 0
+    public void test_constructor_String_empty() {
+		try {
+			new BigDecimal("");
+            fail("NumberFormatException expected");
+		} catch (NumberFormatException e) {
+		}
 	}
+#endif
 
 	/**
 	 * @tests java.math.BigDecimal#BigDecimal(java.lang.String)
 	 */
-	public void test_constructor_String_empty() {
+#if 0
+    public void test_constructor_String_plus_minus_exp() {
 		try {
-			new BigDecimal("");			
+			new BigDecimal("+35e+-2");
+            fail("NumberFormatException expected");
+		} catch (NumberFormatException e) {
+		}
+
+		try {
+			new BigDecimal("-35e-+2");
             fail("NumberFormatException expected");
 		} catch (NumberFormatException e) {
 		}
 	}
-	
-	/**
-	 * @tests java.math.BigDecimal#BigDecimal(java.lang.String)
-	 */
-	public void test_constructor_String_plus_minus_exp() {
-		try {
-			new BigDecimal("+35e+-2");			
-            fail("NumberFormatException expected");
-		} catch (NumberFormatException e) {
-		}
-		
-		try {
-			new BigDecimal("-35e-+2");			
-            fail("NumberFormatException expected");
-		} catch (NumberFormatException e) {
-		}
-	}
-    
+#endif
+
     /**
      * @tests java.math.BigDecimal#BigDecimal(char[])
      */
+#if 0
     public void test_constructor_CC_plus_minus_exp() {
         try {
-            new BigDecimal("+35e+-2".toCharArray());          
+            new BigDecimal("+35e+-2".toCharArray());
             fail("NumberFormatException expected");
         } catch (NumberFormatException e) {
         }
-        
+
         try {
-            new BigDecimal("-35e-+2".toCharArray());          
+            new BigDecimal("-35e-+2".toCharArray());
             fail("NumberFormatException expected");
         } catch (NumberFormatException e) {
         }
     }
+#endif
 
 	/**
 	 * @tests java.math.BigDecimal#abs()
 	 */
-	public void test_abs() {
+#if 0
+    public void test_abs() {
 		BigDecimal big = new BigDecimal("-1234");
 		BigDecimal bigabs = big.abs();
 		assertTrue("the absolute value of -1234 is not 1234", bigabs.toString()
@@ -176,12 +394,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		bigabs = big.abs();
 		assertTrue("the absolute value of 23.45 is not 23.45", bigabs
 				.toString().equals("23.45"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#add(java.math.BigDecimal)
 	 */
-	public void test_addLjava_math_BigDecimal() {
+#if 0
+    public void test_addLjava_math_BigDecimal() {
 		BigDecimal add1 = new BigDecimal("23.456");
 		BigDecimal add2 = new BigDecimal("3849.235");
 		BigDecimal sum = add1.add(add2);
@@ -193,12 +413,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		BigDecimal add3 = new BigDecimal(12.34E02D);
 		assertTrue("the sum of 23.456 + 12.34E02 is not printed correctly",
 				(add1.add(add3)).toString().equals("1257.456"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#compareTo(java.math.BigDecimal)
 	 */
-	public void test_compareToLjava_math_BigDecimal() {
+#if 0
+    public void test_compareToLjava_math_BigDecimal() {
 		BigDecimal comp1 = new BigDecimal("1.00");
 		BigDecimal comp2 = new BigDecimal(1.000000D);
 		assertTrue("1.00 and 1.000000 should be equal",
@@ -209,12 +431,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		BigDecimal comp4 = new BigDecimal(0.98D);
 		assertTrue("0.98 should be less than 1.00",
 				comp4.compareTo(comp1) == -1);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#divide(java.math.BigDecimal, int)
 	 */
-	public void test_divideLjava_math_BigDecimalI() {
+#if 0
+    public void test_divideLjava_math_BigDecimalI() {
 		BigDecimal divd1 = new BigDecimal(value, 2);
 		BigDecimal divd2 = new BigDecimal("2.335");
 		BigDecimal divd3 = divd1.divide(divd2, BigDecimal.ROUND_UP);
@@ -236,12 +460,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
             fail("divide by zero is not caught");
 		} catch (ArithmeticException e) {
 		}
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#divide(java.math.BigDecimal, int, int)
 	 */
-	public void test_divideLjava_math_BigDecimalII() {
+#if 0
+    public void test_divideLjava_math_BigDecimalII() {
 		BigDecimal divd1 = new BigDecimal(value2, 4);
 		BigDecimal divd2 = new BigDecimal("0.0023");
 		BigDecimal divd3 = divd1.divide(divd2, 3, BigDecimal.ROUND_HALF_UP);
@@ -260,12 +486,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
             fail("divide by zero is not caught");
 		} catch (ArithmeticException e) {
 		}
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#doubleValue()
 	 */
-	public void test_doubleValue() {
+#if 0
+    public void test_doubleValue() {
 		BigDecimal bigDB = new BigDecimal(-1.234E-112);
 //		Commenting out this part because it causes an endless loop (see HARMONY-319 and HARMONY-329)
 //		assertTrue(
@@ -291,12 +519,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue(
 				"a  - number out of the double range should return neg infinity",
 				bigDB.doubleValue() == Double.NEGATIVE_INFINITY);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#equals(java.lang.Object)
 	 */
-	public void test_equalsLjava_lang_Object() {
+#if 0
+    public void test_equalsLjava_lang_Object() {
 		BigDecimal equal1 = new BigDecimal(1.00D);
 		BigDecimal equal2 = new BigDecimal("1.0");
 		assertFalse("1.00 and 1.0 should not be equal",
@@ -318,12 +548,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 				.equals(equal2));
 		assertFalse("bigDecimal 100D does not equal string 23415", equal1
 				.equals("23415"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#floatValue()
 	 */
-	public void test_floatValue() {
+#if 0
+    public void test_floatValue() {
 		BigDecimal fl1 = new BigDecimal("234563782344567");
 		assertTrue("the float representation of bigDecimal 234563782344567",
 				fl1.floatValue() == 234563782344567f);
@@ -345,12 +577,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 				"A number can't be represented by float should return infinity",
 				fl2.floatValue() == Float.NEGATIVE_INFINITY);
 
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#hashCode()
 	 */
-	public void test_hashCode() {
+#if 0
+    public void test_hashCode() {
 		// anything that is equal must have the same hashCode
 		BigDecimal hash = new BigDecimal("1.00");
 		BigDecimal hash2 = new BigDecimal(1.00D);
@@ -373,12 +607,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue("hashCode of 123459.08 and -123459.08 is not equal", hash
 				.hashCode() != hash2.hashCode()
 				&& !hash.equals(hash2));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#intValue()
 	 */
-	public void test_intValue() {
+#if 0
+    public void test_intValue() {
 		BigDecimal int1 = new BigDecimal(value, 3);
 		assertTrue("the int value of 12345.908 is not 12345",
 				int1.intValue() == 12345);
@@ -391,12 +627,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		int1 = new BigDecimal(-1235D);
 		assertTrue("the int value of -1235 is not -1235",
 				int1.intValue() == -1235);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#longValue()
 	 */
-	public void test_longValue() {
+#if 0
+    public void test_longValue() {
 		BigDecimal long1 = new BigDecimal(value2.negate(), 0);
 		assertTrue("the long value of 12334560000 is not 12334560000", long1
 				.longValue() == -12334560000L);
@@ -409,12 +647,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue(
 				"the long value of 31323423423419083091823091283933 is wrong",
 				long1.longValue() == -5251313250005125155L);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#max(java.math.BigDecimal)
 	 */
-	public void test_maxLjava_math_BigDecimal() {
+#if 0
+    public void test_maxLjava_math_BigDecimal() {
 		BigDecimal max1 = new BigDecimal(value2, 1);
 		BigDecimal max2 = new BigDecimal(value2, 4);
 		assertTrue("1233456000.0 is not greater than 1233456", max1.max(max2)
@@ -426,12 +666,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		max1 = new BigDecimal(123E18);
 		max2 = new BigDecimal(123E19);
 		assertTrue("123E19 is the not the max", max1.max(max2).equals(max2));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#min(java.math.BigDecimal)
 	 */
-	public void test_minLjava_math_BigDecimal() {
+#if 0
+    public void test_minLjava_math_BigDecimal() {
 		BigDecimal min1 = new BigDecimal(-12345.4D);
 		BigDecimal min2 = new BigDecimal(-12345.39D);
 		assertTrue("-12345.39 should have been returned", min1.min(min2)
@@ -440,12 +682,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		min2 = new BigDecimal(value2, 0);
 		assertTrue("123345.6 should have been returned", min1.min(min2).equals(
 				min1));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#movePointLeft(int)
 	 */
-	public void test_movePointLeftI() {
+#if 0
+    public void test_movePointLeftI() {
 		BigDecimal movePtLeft = new BigDecimal("123456265.34");
 		BigDecimal alreadyMoved = movePtLeft.movePointLeft(5);
 		assertTrue("move point left 5 failed", alreadyMoved.scale() == 7
@@ -469,12 +713,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue("move point left -2 failed",
 				alreadyMoved.scale() == movePtLeft.scale() - 2
 						&& alreadyMoved.toString().equals("12345908"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#movePointRight(int)
 	 */
-	public void test_movePointRightI() {
+#if 0
+    public void test_movePointRightI() {
 		BigDecimal movePtRight = new BigDecimal("-1.58796521458");
 		BigDecimal alreadyMoved = movePtRight.movePointRight(8);
 		assertTrue("move point right 8 failed", alreadyMoved.scale() == 3
@@ -495,12 +741,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		alreadyMoved = alreadyMoved.movePointRight(-5);
 		assertTrue("move point right -5 failed", alreadyMoved
 				.equals(movePtRight));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#multiply(java.math.BigDecimal)
 	 */
-	public void test_multiplyLjava_math_BigDecimal() {
+#if 0
+    public void test_multiplyLjava_math_BigDecimal() {
 		BigDecimal multi1 = new BigDecimal(value, 5);
 		BigDecimal multi2 = new BigDecimal(2.345D);
 		BigDecimal result = multi1.multiply(multi2);
@@ -530,12 +778,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue("-0.00234 * 13.4E10 is not correct",
 				result.doubleValue() == -313560000
 						&& result.scale() == multi1.scale() + multi2.scale());
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#negate()
 	 */
-	public void test_negate() {
+#if 0
+    public void test_negate() {
 		BigDecimal negate1 = new BigDecimal(value2, 7);
 		assertTrue("the negate of 1233.4560000 is not -1233.4560000", negate1
 				.negate().toString().equals("-1233.4560000"));
@@ -545,12 +795,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		negate1 = new BigDecimal(-3.456E6);
 		assertTrue("the negate of -3.456E6 is not 3.456E6", negate1.negate()
 				.negate().equals(negate1));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#scale()
 	 */
-	public void test_scale() {
+#if 0
+    public void test_scale() {
 		BigDecimal scale1 = new BigDecimal(value2, 8);
 		assertTrue("the scale of the number 123.34560000 is wrong", scale1
 				.scale() == 8);
@@ -568,12 +820,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		scale4 = new BigDecimal("-345.4E-200");
 		assertTrue("the scale of the number -345.4E-200 is wrong", scale4
 				.scale() == 201);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#setScale(int)
 	 */
-	public void test_setScaleI() {
+#if 0
+    public void test_setScaleI() {
 		// rounding mode defaults to zero
 		BigDecimal setScale1 = new BigDecimal(value, 3);
 		BigDecimal setScale2 = setScale1.setScale(5);
@@ -587,12 +841,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
             fail("arithmetic Exception not caught as a result of loosing precision");
 		} catch (ArithmeticException e) {
 		}
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#setScale(int, int)
 	 */
-	public void test_setScaleII() {
+#if 0
+    public void test_setScaleII() {
 		BigDecimal setScale1 = new BigDecimal(2.323E102);
 		BigDecimal setScale2 = setScale1.setScale(4);
 		assertTrue("the number 2.323E102 after setting scale is wrong",
@@ -721,12 +977,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
             fail("IllegalArgumentException is not caught for wrong rounding mode");
 		} catch (IllegalArgumentException e) {
 		}
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#signum()
 	 */
-	public void test_signum() {
+#if 0
+    public void test_signum() {
 		BigDecimal sign = new BigDecimal(123E-104);
 		assertTrue("123E-104 is not positive in signum()", sign.signum() == 1);
 		sign = new BigDecimal("-1234.3959");
@@ -734,12 +992,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 				sign.signum() == -1);
 		sign = new BigDecimal(000D);
 		assertTrue("000D is not zero in signum()", sign.signum() == 0);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#subtract(java.math.BigDecimal)
 	 */
-	public void test_subtractLjava_math_BigDecimal() {
+#if 0
+    public void test_subtractLjava_math_BigDecimal() {
 		BigDecimal sub1 = new BigDecimal("13948");
 		BigDecimal sub2 = new BigDecimal("2839.489");
 		BigDecimal result = sub1.subtract(sub2);
@@ -766,12 +1026,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		result = sub1.subtract(sub2);
 		assertTrue("1234.0123 - 1234.0123000 is wrong, " + result.doubleValue(),
 				result.doubleValue() == 0.0);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#toBigInteger()
 	 */
-	public void test_toBigInteger() {
+#if 0
+    public void test_toBigInteger() {
 		BigDecimal sub1 = new BigDecimal("-29830.989");
 		BigInteger result = sub1.toBigInteger();
 
@@ -789,12 +1051,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		result = sub1.toBigInteger();
 		assertTrue("the bigInteger equivalent of 12334.560000 is wrong", result
 				.toString().equals("12334"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#toString()
 	 */
-	public void test_toString() {
+#if 0
+    public void test_toString() {
 		BigDecimal toString1 = new BigDecimal("1234.000");
 		assertTrue("the toString representation of 1234.000 is wrong",
 				toString1.toString().equals("1234.000"));
@@ -807,12 +1071,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		toString1 = new BigDecimal(value2, 4);
 		assertTrue("the toString representation of 1233456.0000 is wrong",
 				toString1.toString().equals("1233456.0000"));
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#unscaledValue()
 	 */
-	public void test_unscaledValue() {
+#if 0
+    public void test_unscaledValue() {
 		BigDecimal unsVal = new BigDecimal("-2839485.000");
 		assertTrue("the unscaledValue of -2839485.000 is wrong", unsVal
 				.unscaledValue().toString().equals("-2839485000"));
@@ -827,12 +1093,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue("the unscaledValue of 12345.908 is wrong", unsVal
 				.unscaledValue().toString().equals("12345908"));
 
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#valueOf(long)
 	 */
-	public void test_valueOfJ() {
+#if 0
+    public void test_valueOfJ() {
 		BigDecimal valueOfL = BigDecimal.valueOf(9223372036854775806L);
 		assertTrue("the bigDecimal equivalent of 9223372036854775806 is wrong",
 				valueOfL.unscaledValue().toString().equals(
@@ -845,12 +1113,14 @@ public class BigDecimalTest extends junit.framework.TestCase {
 		assertTrue("the bigDecimal equivalent of 0 is wrong", valueOfL
 				.unscaledValue().toString().equals("0")
 				&& valueOfL.scale() == 0);
-	}
+    }
+#endif
 
-	/**
+    /**
 	 * @tests java.math.BigDecimal#valueOf(long, int)
 	 */
-	public void test_valueOfJI() {
+#if 0
+    public void test_valueOfJI() {
 		BigDecimal valueOfJI = BigDecimal.valueOf(9223372036854775806L, 5);
 		assertTrue(
 				"the bigDecimal equivalent of 92233720368547.75806 is wrong",
@@ -878,8 +1148,11 @@ public class BigDecimalTest extends junit.framework.TestCase {
 				valueOfJI.toString().equals("0.000"));
 
 	}
+#endif
 
-	public void test_BigDecimal_serialization() throws Exception {
+
+#if 0
+    public void test_BigDecimal_serialization() throws Exception {
         // Regression for HARMONY-1896
         char[] in = { '1', '5', '6', '7', '8', '7', '.', '0', '0' };
         BigDecimal bd = new BigDecimal(in, 0, 9);
@@ -896,30 +1169,36 @@ public class BigDecimalTest extends junit.framework.TestCase {
         assertEquals(bd.doubleValue(), nbd.doubleValue(), 0.0);
         assertEquals(bd.toString(), nbd.toString());
     }
-	
+#endif
+
+
 	/**
 	 * @tests java.math.BigDecimal#stripTrailingZero(long)
 	 */
-	public void test_stripTrailingZero() {
+#if 0
+    public void test_stripTrailingZero() {
 		BigDecimal sixhundredtest = new BigDecimal("600.0");
 		assertTrue("stripTrailingZero failed for 600.0",
 				((sixhundredtest.stripTrailingZeros()).scale() == -2)
 				);
-		
+
 		/* Single digit, no trailing zero, odd number */
 		BigDecimal notrailingzerotest = new BigDecimal("1");
 		assertTrue("stripTrailingZero failed for 1",
 				((notrailingzerotest.stripTrailingZeros()).scale() == 0)
 				);
-		
+
                 // BEGIN android-changed: preserve RI compatibility, so BigDecimal.equals (which checks
                 // value *and* scale) continues to work. https://issues.apache.org/jira/browse/HARMONY-4623
 		/* Zero */
 		BigDecimal zerotest = new BigDecimal("0.0000");
                 assertEquals("stripTrailingZero failed for 0.0000", 4, zerotest.stripTrailingZeros().scale());
-	}	
+	}
+#endif
 
-	public void testMathContextConstruction() {
+
+#if 0
+    public void testMathContextConstruction() {
         String a = "-12380945E+61";
         BigDecimal aNumber = new BigDecimal(a);
         int precision = 6;
@@ -929,24 +1208,39 @@ public class BigDecimalTest extends junit.framework.TestCase {
         MathContext mcInt = new MathContext(precision);
         BigDecimal res = aNumber.abs(mcInt);
         assertEquals("MathContext Constructer with int precision failed",
-                res, 
+                res,
                 new BigDecimal("1.23809E+68"));
-        
+
         assertEquals("Equal MathContexts are not Equal ",
                 mcIntRm,
                 mcStr);
-        
+
         assertEquals("Different MathContext are reported as Equal ",
         		mcInt.equals(mcStr),
                 false);
-        
+
         assertEquals("Equal MathContexts have different hashcodes ",
                 mcIntRm.hashCode(),
                 mcStr.hashCode());
-       
+
         assertEquals("MathContext.toString() returning incorrect value",
                 mcIntRm.toString(),
                 "precision=6 roundingMode=HALF_DOWN");
 	}
+#endif
 
+//==============================================================================
+
+int mainBigDecimalTest(int argc, char *argv[])
+{
+    printf("\n==== libcore/math/BigDecimalTest ====\n");
+    test_ConstructorLjava_math_BigInteger();
+    test_ConstructorLjava_math_BigIntegerI();
+    test_ConstructorD();
+    printf("\n==== end of libcore/math/BigDecimalTest ====\n");
+
+    return 0;
+}
+
+}
 }

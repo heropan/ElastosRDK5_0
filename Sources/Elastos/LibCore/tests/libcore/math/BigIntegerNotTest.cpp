@@ -366,7 +366,8 @@ void testAndNotNegNegFirstLonger() {
 #endif
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerNotTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerNotTest ====\n");
     testAndNotPosPosFirstLonger();
     testAndNotPosPosFirstShorter();

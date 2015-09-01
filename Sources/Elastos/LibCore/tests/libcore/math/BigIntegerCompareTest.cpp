@@ -901,7 +901,7 @@ void testCompareToNegNeg1()
 
 //==============================================================================
 
-int main(int argc, char *argv[])
+int mainBigIntegerCompareTest(int argc, char *argv[])
 {
     printf("\n==== libcore/math/BigIntegerCompareTest ====\n");
     testAbsPositive();

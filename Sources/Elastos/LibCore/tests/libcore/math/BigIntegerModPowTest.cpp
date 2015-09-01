@@ -571,6 +571,17 @@ void testModPowPosExp()
 	}
 #endif
 
+//==============================================================================
+
+int mainBigIntegerModPowTest(int argc, char *argv[])
+{
+    printf("\n==== libcore/math/BigIntegerModPowTest ====\n");
+    testModPowException();
+    testModPowPosExp();
+    printf("\n==== end of libcore/math/BigIntegerModPowTest ====\n");
+
+    return 0;
+}
 
 }
 }

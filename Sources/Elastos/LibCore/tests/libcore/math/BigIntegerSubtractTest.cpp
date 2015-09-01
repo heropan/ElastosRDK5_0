@@ -840,7 +840,8 @@ void testCase5()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerSubtractTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerSubtractTest ====\n");
     testCase1();
     testCase2();

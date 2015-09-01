@@ -79,7 +79,7 @@ public class BigIntegerMultiplyTest extends TestCase {
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase1()
+static void testCase1()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3};
     signed char _bBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
@@ -145,7 +145,7 @@ void testCase1()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase2()
+static void testCase2()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3};
     signed char _bBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
@@ -213,7 +213,7 @@ void testCase2()
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase3()
+static void testCase3()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
@@ -282,7 +282,7 @@ void testCase3()
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase4()
+static void testCase4()
 {
     signed char _aBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
     signed char _bBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
@@ -352,7 +352,7 @@ void testCase4()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase5()
+static void testCase5()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
@@ -422,7 +422,7 @@ void testCase5()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase6()
+static void testCase6()
 {
     signed char _aBytes[] = {10, 20, 30, 40, 50, 60, 70, 10, 20, 30};
     signed char _bBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
@@ -489,7 +489,7 @@ void testCase6()
         assertEquals("incorrect sign", 0, result.signum());
     }
 #endif
-void testCase7()
+static void testCase7()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {0};
@@ -553,7 +553,7 @@ void testCase7()
         assertEquals("incorrect sign", 0, result.signum());
     }
 #endif
-void testCase8()
+static void testCase8()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {0};
@@ -617,7 +617,7 @@ void testCase8()
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase9()
+static void testCase9()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {1};
@@ -681,7 +681,7 @@ void testCase9()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase10()
+static void testCase10()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7, 1, 2, 3, 1, 2, 3, 4, 5};
     signed char _bBytes[] = {1};
@@ -747,7 +747,7 @@ void testCase10()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testIntbyInt1()
+static void testIntbyInt1()
 {
     signed char _aBytes[] = {10, 20, 30, 40};
     signed char _bBytes[] = {1, 2, 3, 4};
@@ -813,7 +813,7 @@ void testIntbyInt1()
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testIntbyInt2()
+static void testIntbyInt2()
 {
     signed char _aBytes[] = {-1, -1, -1, -1};
     signed char _bBytes[] = {-1, -1, -1, -1};
@@ -874,7 +874,7 @@ void testIntbyInt2()
         }
     }
 #endif
-void testPowException()
+static void testPowException()
 {
     signed char _aBytes[] = {1, 2, 3, 4, 5, 6, 7};
     signed char _rBytes[] = {1};
@@ -928,7 +928,7 @@ void testPowException()
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testPowNegativeNumToOddExp()
+static void testPowNegativeNumToOddExp()
 {
     signed char _aBytes[] = {50, -26, 90, 69, 120, 32, 63, -103, -14, 35};
     signed char _rBytes[] = {-21, -94, -42, -15, -127, 113, -50, -88, 115, -35, 3,
@@ -988,7 +988,7 @@ void testPowNegativeNumToOddExp()
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testPowNegativeNumToEvenExp()
+static void testPowNegativeNumToEvenExp()
 {
     signed char _aBytes[] = {50, -26, 90, 69, 120, 32, 63, -103, -14, 35};
     signed char _rBytes[] = {102, 107, -122, -43, -52, -20, -27, 25, -9, 88, -13,
@@ -1199,7 +1199,8 @@ void testPowPositiveNumToZeroExp()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerMultiplyTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerMultiplyTest ====\n");
     testCase1();
     testCase2();

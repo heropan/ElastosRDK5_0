@@ -684,7 +684,8 @@ void testPosZero()
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerAndTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerAndTest ====\n");
     testZeroPos();
     testZeroNeg();

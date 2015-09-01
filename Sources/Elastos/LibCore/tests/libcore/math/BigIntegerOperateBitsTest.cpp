@@ -1649,7 +1649,8 @@ void testBitLengthPositive2()
 #endif
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerOperateBitsTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerOperateBitsTest ====\n");
     testBitCountZero();
     testBitCountNeg();

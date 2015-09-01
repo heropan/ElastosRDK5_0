@@ -77,7 +77,7 @@ public class BigIntegerDivideTest extends TestCase {
         }
     }
 #endif
-void testCase1() {
+static void testCase1() {
     signed char _aBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _bBytes[] = {0};
     signed char _rBytes[] = {1};
@@ -155,7 +155,7 @@ void testCase1() {
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase3() {
+static void testCase3() {
     signed char _aBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _bBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _rBytes[] = {1};
@@ -219,7 +219,7 @@ void testCase3() {
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase4() {
+static void testCase4() {
     signed char _aBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _bBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _rBytes[] = {-1};
@@ -284,7 +284,7 @@ void testCase4() {
         assertEquals("incorrect sign", 0, result.signum());
     }
 #endif
-void testCase5() {
+static void testCase5() {
     signed char _aBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _bBytes[] = {-127, 100, 56, 7, 98, -1, 39, -128, 127, 1, 2, 3, 4, 5};
     signed char _rBytes[] = {0};
@@ -349,7 +349,7 @@ void testCase5() {
         assertEquals("incorrect sign", 0, result.signum());
     }
 #endif
-void testCase6() {
+static void testCase6() {
     signed char _aBytes[] = {1, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _bBytes[] = {15, 100, 56, 7, 98, -1, 39, -128, 127};
     signed char _rBytes[] = {0};
@@ -413,7 +413,7 @@ void testCase6() {
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase7() {
+static void testCase7() {
     signed char _aBytes[] = {1, 100, 56, 7, 98, -1, 39, -128, 127, 5, 6, 7, 8, 9};
     signed char _bBytes[] = {15, 48, -29, 7, 98, -1, 39, -128};
     signed char _rBytes[] = {23, 115, 11, 78, 35, -11};
@@ -477,7 +477,7 @@ void testCase7() {
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase8() {
+static void testCase8() {
     signed char _aBytes[] = {1, 100, 56, 7, 98, -1, 39, -128, 127, 5, 6, 7, 8, 9};
     signed char _bBytes[] = {15, 48, -29, 7, 98, -1, 39, -128};
     signed char _rBytes[] = {-24, -116, -12, -79, -36, 11};
@@ -541,7 +541,7 @@ void testCase8() {
         assertEquals("incorrect sign", -1, result.signum());
     }
 #endif
-void testCase9() {
+static void testCase9() {
     signed char _aBytes[] = {1, 100, 56, 7, 98, -1, 39, -128, 127, 5, 6, 7, 8, 9};
     signed char _bBytes[] = {15, 48, -29, 7, 98, -1, 39, -128};
     signed char _rBytes[] = {-24, -116, -12, -79, -36, 11};
@@ -605,7 +605,7 @@ void testCase9() {
         assertEquals("incorrect sign", 1, result.signum());
     }
 #endif
-void testCase10() {
+static void testCase10() {
     signed char _aBytes[] = {1, 100, 56, 7, 98, -1, 39, -128, 127, 5, 6, 7, 8, 9};
     signed char _bBytes[] = {15, 48, -29, 7, 98, -1, 39, -128};
     signed char _rBytes[] = {23, 115, 11, 78, 35, -11};
@@ -1157,7 +1157,8 @@ void testCase10() {
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerDivideTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerDivideTest ====\n");
     testCase1();
     testCase3();

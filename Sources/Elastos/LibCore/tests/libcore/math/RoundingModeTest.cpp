@@ -79,7 +79,8 @@ public class RoundingModeTest extends junit.framework.TestCase {
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainRoundingModeTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/RoundingModeTest ====\n");
     printf("\n==== end of libcore/math/RoundingModeTest ====\n");
 

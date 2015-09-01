@@ -1136,7 +1136,8 @@ IBigInteger* myBigInteger(String s, Int32 radix)
 
 //==============================================================================
 
-int main(int argc, char *argv[]) {
+int mainBigIntegerTest(int argc, char *argv[])
+{
     printf("\n==== libcore/math/BigIntegerTest ====\n");
     printf("\n==== end of libcore/math/BigIntegerTest ====\n");
 
