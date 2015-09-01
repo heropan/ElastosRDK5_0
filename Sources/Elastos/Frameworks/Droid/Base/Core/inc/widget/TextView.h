@@ -241,18 +241,6 @@ public:
         /* [in] */ IPaint* p,
         /* [out] */ Float* advance);
 
-    CARAPI GetTextRunAdvances(
-        /* [in] */ Int32 start,
-        /* [in] */ Int32 end,
-        /* [in] */ Int32 contextStart,
-        /* [in] */ Int32 contextEnd,
-        /* [in] */ Int32 flags,
-        /* [out] */ ArrayOf<Float>* advances,
-        /* [in] */ Int32 advancesIndex,
-        /* [in] */ IPaint* p,
-        /* [in] */ Int32 reserved,
-        /* [out] */ Float* advance);
-
     CARAPI GetTextRunCursor(
         /* [in] */ Int32 contextStart,
         /* [in] */ Int32 contextEnd,
@@ -276,6 +264,49 @@ private:
 class Marquee
     : public HandlerBase
 {
+private:
+    class TickCallback
+        : public Object
+        , public IFrameCallback
+    {
+    public:
+        TickCallback(
+            /* [in] */ Marquee* host);
+
+        CARAPI DoFrame(
+            /* [in] */ Int64 frameTimeNanos);
+    private:
+        Marquee* mHost;
+    };
+
+    class StartCallback
+        : public Object
+        , public IFrameCallback
+    {
+    public:
+        StartCallback(
+            /* [in] */ Marquee* host);
+
+        CARAPI DoFrame(
+            /* [in] */ Int64 frameTimeNanos);
+    private:
+        Marquee* mHost;
+    };
+
+    class RestartCallback
+        : public Object
+        , public IFrameCallback
+    {
+    public:
+        RestartCallback(
+            /* [in] */ Marquee* host);
+
+        CARAPI DoFrame(
+            /* [in] */ Int64 frameTimeNanos);
+    private:
+        Marquee* mHost;
+    };
+
 public:
     Marquee(
         /* [in] */ ITextView* v);
@@ -301,9 +332,6 @@ public:
 
     CARAPI_(Boolean) IsStopped();
 
-    CARAPI HandleMessage(
-        /* [in] */ IMessage* msg);
-
 protected:
     CARAPI_(void) ResetScroll();
 
@@ -314,21 +342,20 @@ private:
     static const Float MARQUEE_DELTA_MAX = 0.07f;
     static const Int32 MARQUEE_DELAY = 1200;
     static const Int32 MARQUEE_RESTART_DELAY = 1200;
-    static const Int32 MARQUEE_RESOLUTION = 1000 / 30;
-    static const Int32 MARQUEE_PIXELS_PER_SECOND = 30;
+    static const Int32 MARQUEE_DP_PER_SECOND = 30;
 
     static const Byte MARQUEE_STOPPED = 0x0;
     static const Byte MARQUEE_STARTING = 0x1;
     static const Byte MARQUEE_RUNNING = 0x2;
 
-    static const Int32 MESSAGE_START = 0x1;
-    static const Int32 MESSAGE_TICK = 0x2;
-    static const Int32 MESSAGE_RESTART = 0x3;
-
     AutoPtr<IWeakReference> mView;  //TextView
+    AutoPtr<Choreographer> mChoreographer;
+    AutoPtr<IFrameCallback> mTickCallback;
+    AutoPtr<IFrameCallback> mStartCallback;
+    AutoPtr<IFrameCallback> mRestartCallback;
 
     Byte mStatus;// = MARQUEE_STOPPED;
-    Float mScrollUnit;
+    Float mPixelsPerSecond;
     Float mMaxScroll;
     Float mMaxFadeScroll;
     Float mGhostStart;
@@ -337,6 +364,7 @@ private:
     Int32 mRepeatLimit;
 
     Float mScroll;
+    Int64 mLastAnimationMs;
 };
 
 //==============================================================================
@@ -881,15 +909,18 @@ public:
      */
     virtual CARAPI_(AutoPtr<ITypeface>) GetTypeface();
 
-    virtual CARAPI_(void) SetElegantTextHeight(boolean elegant);
+    virtual CARAPI_(void) SetElegantTextHeight(
+        /* [in] */ Boolean elegant);
 
-    virtual CARAPI_(Float) GgetLetterSpacing();
+    virtual CARAPI_(Float) GetLetterSpacing();
 
-    virtual CARAPI_(void) SetLetterSpacing(float letterSpacing);
+    virtual CARAPI_(void) SetLetterSpacing(
+        /* [in] */ Float letterSpacing);
 
     virtual CARAPI_(String) GetFontFeatureSettings();
 
-    virtual CARAPI_(void) SetFontFeatureSettings(@Nullable String fontFeatureSettings);
+    virtual CARAPI_(void) SetFontFeatureSettings(
+        /* [in] */ String fontFeatureSettings);
 
     /**
      * Sets the text color for all the states (normal, selected,
@@ -2190,6 +2221,12 @@ public:
 
     virtual CARAPI_(Int32) GetHorizontalOffsetForDrawables();
 
+    virtual CARAPI_(AutoPtr<ILocale>) GetSpellCheckerLocale();
+
+    virtual CARAPI_(Boolean) PerformAccessibilityAction(
+        /* [in] */ Int32 action,
+        /* [in] */ IBundle* arguments);
+
 public: /* override */
 
     virtual CARAPI SetEnabled(
@@ -2249,9 +2286,6 @@ public: /* override */
 
     virtual CARAPI_(AutoPtr<IInputConnection>) OnCreateInputConnection(
         /* [in] */ IEditorInfo* outAttrs);
-
-    virtual CARAPI OnRtlPropertiesChanged(
-        /* [in] */ Int32 layoutDirection);
 
     virtual CARAPI ComputeScroll();
 
@@ -2318,10 +2352,18 @@ public: /* override */
     virtual CARAPI_(AutoPtr<ITextSegmentIterator>) GetIteratorForGranularity(
         /* [in] */ Int32 granularity);
 
-    virtual CARAPI_(Int32) GetAccessibilityCursorPosition();
+    virtual CARAPI_(Int32) GetAccessibilitySelectionStart();
 
-    virtual CARAPI SetAccessibilityCursorPosition(
-        /* [in] */ Int32 position);
+    virtual CARAPI SetAccessibilitySelection(
+        /* [in] */ Int32 start,
+        /* [in] */ Int32 end);
+
+    virtual CARAPI_(void) OnRtlPropertiesChanged(
+        /* [in] */ Int32 layoutDirection);
+
+    virtual CARAPI_(Boolean) IsAccessibilitySelectionExtendable();
+
+    virtual CARAPI_(Int32) GetAccessibilitySelectionEnd();
 
 public: /*package*/
 
@@ -2421,9 +2463,10 @@ public: /*package*/
      * from the TextView_textAppearance attribute, if TextView_textColor
      * was not set directly.
      */
-    static AutoPtr<IColorStateList> GetTextColors(
+    static CARAPI GetTextColors(
         /* [in] */ IContext* context,
-        /* [in] */ ITypedArray* attrs);
+        /* [in] */ ITypedArray* attrs,
+        /* [out] */ IColorStateList** list);
 
     /**
      * Returns the default color from the TextView_textColor attribute
@@ -2463,15 +2506,6 @@ public: /*package*/
 
     virtual CARAPI_(Boolean) SelectAllText();
 
-    /**
-     * Prepare text so that there are not zero or two spaces at beginning and end of region defined
-     * by [min, max] when replacing this region by paste.
-     */
-    virtual CARAPI_(Int64) PrepareSpacesAroundPaste(
-        /* [in] */ Int32 min,
-        /* [in] */ Int32 max,
-        /* [in] */ ICharSequence* paste);
-
     virtual CARAPI_(Float) ConvertToLocalHorizontalCoordinate(
         /* [in] */ Float y);
 
@@ -2490,6 +2524,9 @@ public: /*package*/
         /* [in] */ Int32 start,
         /* [in] */ Int32 end);
 
+    virtual CARAPI_(void) RemoveAdjacentSuggestionSpans(
+        /* [in] */ Int32 pos);
+
 protected:
     /**
       * Subclasses override this to specify that they have a KeyListener
@@ -2504,6 +2541,10 @@ protected:
 
      virtual CARAPI DrawableStateChanged();
 
+     virtual CARAPI_(void) DrawableHotspotChanged(
+        /* [in] */ Float x,
+        /* [in] */ Float y);
+
      virtual CARAPI_(Boolean) SetFrame(
          /* [in] */ Int32 l,
          /* [in] */ Int32 t,
@@ -2512,7 +2553,7 @@ protected:
 
      virtual CARAPI OnAttachedToWindow();
 
-     virtual CARAPI OnDetachedFromWindow();
+     virtual CARAPI OnDetachedFromWindowInternal();
 
      virtual CARAPI_(Boolean) IsPaddingOffsetRequired();
 
@@ -2870,7 +2911,7 @@ private:
         /* [in] */ Int32 after);
 
     // Removes all spans that are inside or actually overlap the start..end range
-    CARAPI_(void) RemoveIntersectingSpans(
+    CARAPI_(void) RemoveIntersectingNonAdjacentSpans(
         /* [in] */ Int32 start,
         /* [in] */ Int32 end,
         /* [in] */ const InterfaceID& type);
@@ -2901,6 +2942,14 @@ private:
     CARAPI_(void) CreateEditorIfNeeded();
 
     CARAPI_(void) InitFields();
+
+    CARAPI_(Int32) GetBoxHeight(
+        /* [in] */ ILayout* l);
+
+    CARAPI_(void) UnregisterForPreDraw();
+
+    CARAPI_(AutoPtr<ILocale>) GetTextServicesLocale(
+        /* [in] */ Boolean allowNullLocale);
 
 public:
     static const char* TEXT_VIEW_TAG;
@@ -3001,7 +3050,12 @@ private:
     Float mShadowDx;
     Float mShadowDy;
 
+    Int32 mShadowColor;
+
     Boolean mPreDrawRegistered;
+    Boolean mPreDrawListenerDetached;
+
+    Boolean mPreventDefaultMovement;
 
     TextUtilsTruncateAt mEllipsize;
 
