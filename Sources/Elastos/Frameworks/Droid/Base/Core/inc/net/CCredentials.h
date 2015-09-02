@@ -2,7 +2,11 @@
 #ifndef __ELASTOS_DROID_NET_CCREDENTIALS_H__
 #define __ELASTOS_DROID_NET_CCREDENTIALS_H__
 
+#include "ext/frameworkext.h"
 #include "_Elastos_Droid_Net_CCredentials.h"
+#include <elastos/core/Object.h>
+
+using Elastos::Core::Object;
 
 namespace Elastos {
 namespace Droid {
@@ -13,8 +17,14 @@ namespace Net {
  * on UNIX domain sockets. See "man 7 unix" on a desktop linux distro.
  */
 CarClass(CCredentials)
+    , public Object
+    , public ICredentials
 {
 public:
+    CAR_OBJECT_DECL()
+
+    CAR_INTERFACE_DECL()
+
     CARAPI constructor(
         /* [in] */ Int32 pid,
         /* [in] */ Int32 uid,

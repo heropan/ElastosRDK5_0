@@ -110,14 +110,14 @@ module
     namespace Droid {
     namespace Net {
 
-//    class CCredentials {
-//        constructor(
-//            [in] Int32 pid,
-//            [in] Int32 uid,
-//            [in] Int32 gid);
+    class CCredentials {
+        constructor(
+            [in] Int32 pid,
+            [in] Int32 uid,
+            [in] Int32 gid);
 
-//        interface ICredentials;
-//    }
+        interface ICredentials;
+    }
 
 //    class CLocalSocket {
 //        constructor();

@@ -6,6 +6,10 @@ namespace Elastos {
 namespace Droid {
 namespace Net {
 
+CAR_OBJECT_IMPL(CCredentials)
+
+CAR_INTERFACE_IMPL(CCredentials, Object, ICredentials)
+
 ECode CCredentials::constructor(
     /* [in] */ Int32 pid,
     /* [in] */ Int32 uid,
