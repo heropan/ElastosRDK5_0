@@ -32,7 +32,7 @@ module
         /** The HTTP separator characters. Defined in RFC 2616, section 2.2. */
         // the order of the characters here is adjusted to put the
         // most likely candidates at the beginning of the collection
-        const String HTTP_SEPARATORS = " ,;=()<>@:\\\"/[]?{}\t";
+        //const String HTTP_SEPARATORS = " ,;=()<>@:\\\"/[]?{}\t";
 
         /**
          * Determines the next token.

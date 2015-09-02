@@ -36,14 +36,14 @@ module
          * These special characters MUST be in a quoted string to be used within
          * a parameter value .
          */
-        const String SEPARATORS = " ;,:@()<>\\\"/[]?={}\t";
+        // const String SEPARATORS = " ;,:@()<>\\\"/[]?={}\t";
 
 
         /**
          * Unsafe special characters that must be escaped using the backslash
          * character
          */
-        const String UNSAFE_CHARS = "\"\\";
+        // const String UNSAFE_CHARS = "\"\\";
 
         /**
          * Estimates the length of formatted header elements.
