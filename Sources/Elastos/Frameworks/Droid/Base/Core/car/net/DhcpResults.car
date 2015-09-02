@@ -1,6 +1,16 @@
 
 module
 {
+
+    interface Elastos.Droid.Net.INetworkUtils;
+    interface Elastos.Droid.Os.IParcelable;
+    interface Elastos.Droid.Os.IParcel;
+    interface Elastos.Droid.Text.ITextUtils;
+
+    using interface Elastos.Net.IInetAddress;
+    using interface Elastos.Net.IInet4Address;
+    using interface Elastos.Utility.IObjects;
+
     namespace Elastos {
     namespace Droid {
     namespace Net {
@@ -17,6 +27,19 @@ module
      * interface IParcelable;
      */
     interface IDhcpResults {
+        GetServerAddress(
+            [out] IInetAddress** result);
+
+        SetServerAddress(
+            [in] IInetAddress* serverAddress);
+
+        /** Vendor specific information (from RFC 2132). */
+        GetVendorInfo(
+            [out] String* result);
+
+        GetLeaseDuration(
+            [out] Int32* result);
+
         /**
          * Updates the DHCP fields that need to be retained from
          * original DHCP request if the current renewal shows them
@@ -38,6 +61,10 @@ module
         WriteToParcel(
             [in] IParcel* dest,
             [in] Int32 flags);
+
+        ReadFromParcel(
+            [in] IDhcpResults* dhcpResults,
+            [in] IParcel* parcel);
 
         // Utils for jni population - false on success
         // Not part of the superclass because they're only used by the JNI iterface to the DHCP daemon.

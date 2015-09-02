@@ -5,6 +5,7 @@ include $(MAKEDIR)/../../../../sources.inc
 
 INCLUDES += ../
 INCLUDES += $(MAKEDIR)/../../inc/
+INCLUDES += $(MAKEDIR)/../../inc/net/
 INCLUDES += $(MAKEDIR)/../../inc/os/
 INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/
 INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/core/inc/
@@ -14,9 +15,11 @@ INCLUDES += $(MAKEDIR)/../../../../../../LibCore/inc/elastos/utility/concurrent/
 
 C_DEFINES += -DDROID_CORE
 
-SOURCES = BaseNetworkStateTracker.cpp
+SOURCES = net.cpp
+SOURCES += BaseNetworkStateTracker.cpp
 SOURCES += CConnectivityManager.cpp
 SOURCES += CConnectivityManagerHelper.cpp
+SOURCES += DhcpResults.cpp
 #SOURCES += CaptivePortalTracker.cpp
 #SOURCES += CCredentials.cpp
 #SOURCES += CCompareResult.cpp

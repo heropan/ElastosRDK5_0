@@ -243,6 +243,20 @@ module
         interface IConnectivityManagerHelper;
     }
 
+    class CDhcpResults {
+        constructor();
+
+        constructor(
+            [in] IStaticIpConfiguration* staticIpConfigruation);
+
+        constructor(
+            [in] IDhcpResults* dhcpResults);
+
+        interface IDhcpResults;
+        interface IStaticIpConfiguration;
+        interface IParcelable;
+    }
+
 //    singleton class CProxy {
 //        interface IProxy;
 //    }
