@@ -1,5 +1,7 @@
 module
 {
+    interface Elastos.Droid.Media.Session.IMediaSessionToken;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

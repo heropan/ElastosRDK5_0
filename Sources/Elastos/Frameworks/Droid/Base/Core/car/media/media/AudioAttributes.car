@@ -1,6 +1,8 @@
 
 module
 {
+    using interface Elastos.Utility.ISet;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

@@ -1,9 +1,79 @@
 
 module
 {
+    interface Elastos.Droid.Utility.IRange;
+    interface Elastos.Droid.Utility.ISize;
+    interface IMediaCodecInfoCodecCapabilities;
+    interface IMediaCodecInfoEncoderCapabilities;
+    interface IMediaCodecInfoVideoCapabilities;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
+
+    /**
+     * A class that supports querying the audio capabilities of a codec.
+     */
+    interface IMediaCodecInfoAudioCapabilities {
+        /**
+         * Returns the range of supported bitrates in bits/second.
+         */
+        GetBitrateRange(
+            [out] IRange ** result);
+
+        /**
+         * Returns the array of supported sample rates if the codec
+         * supports only discrete values.  Otherwise, it returns
+         * {@code null}.  The array is sorted in ascending order.
+         */
+        GetSupportedSampleRates(
+            [out, callee] ArrayOf<Int32> * result);
+
+        /**
+         * Returns the array of supported sample rate ranges.  The
+         * array is sorted in ascending order, and the ranges are
+         * distinct.
+         */
+        GetSupportedSampleRateRanges(
+            [out, callee] ArrayOf<IRange*> * result);
+
+        /**
+         * Returns the maximum number of input channels supported.  The codec
+         * supports any number of channels between 1 and this maximum value.
+         */
+        GetMaxInputChannelCount(
+            [out] Int32 * result);
+
+        /** @hide */
+        Init(
+            [in] IMediaFormat * info,
+            [in] IMediaCodecInfoCodecCapabilities * parent);
+
+        /**
+         * Query whether the sample rate is supported by the codec.
+         */
+        IsSampleRateSupported(
+            [in] Int32 sampleRate,
+            [out] Boolean * result);
+
+        /** @hide */
+        SetDefaultFormat(
+            [in] IMediaFormat * format);
+
+        /** @hide */
+        SupportsFormat(
+            [in] IMediaFormat * format,
+            [out] Boolean * result);
+
+    }
+
+    interface IMediaCodecInfoAudioCapabilitiesHelper {
+        /** @hide */
+        Create(
+            [in] IMediaFormat * info,
+            [in] IMediaCodecInfoCodecCapabilities * parent,
+            [out] IMediaCodecInfoAudioCapabilities ** result);
+    }
 
     /**
      * Encapsulates the capabilities of a given codec component.
@@ -169,70 +239,6 @@ module
             [in] Int32 profile,
             [in] Int32 level,
             [out] IMediaCodecInfoCodecCapabilities ** result);
-    }
-
-    /**
-     * A class that supports querying the audio capabilities of a codec.
-     */
-    interface IMediaCodecInfoAudioCapabilities {
-        /**
-         * Returns the range of supported bitrates in bits/second.
-         */
-        GetBitrateRange(
-            [out] IRange ** result);
-
-        /**
-         * Returns the array of supported sample rates if the codec
-         * supports only discrete values.  Otherwise, it returns
-         * {@code null}.  The array is sorted in ascending order.
-         */
-        GetSupportedSampleRates(
-            [out, callee] ArrayOf<Int32> * result);
-
-        /**
-         * Returns the array of supported sample rate ranges.  The
-         * array is sorted in ascending order, and the ranges are
-         * distinct.
-         */
-        GetSupportedSampleRateRanges(
-            [out, callee] ArrayOf<IRange*> * result);
-
-        /**
-         * Returns the maximum number of input channels supported.  The codec
-         * supports any number of channels between 1 and this maximum value.
-         */
-        GetMaxInputChannelCount(
-            [out] Int32 * result);
-
-        /** @hide */
-        Init(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent);
-
-        /**
-         * Query whether the sample rate is supported by the codec.
-         */
-        IsSampleRateSupported(
-            [in] Int32 sampleRate,
-            [out] Boolean * result);
-
-        /** @hide */
-        SetDefaultFormat(
-            [in] IMediaFormat * format);
-
-        /** @hide */
-        SupportsFormat(
-            [in] IMediaFormat * format,
-            [out] Boolean * result);
-
-    }
-
-    interface IMediaCodecInfoAudioCapabilitiesHelper {
-        /** @hide */
-        Create(
-            [in] IMediaFormat * info,
-            [in] IMediaCodecInfoCodecCapabilities * parent,
-            [out] AudioCapabilities ** result);
     }
 
     /**

@@ -1,5 +1,8 @@
 module
 {
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Content.Pm.IApplicationInfo;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

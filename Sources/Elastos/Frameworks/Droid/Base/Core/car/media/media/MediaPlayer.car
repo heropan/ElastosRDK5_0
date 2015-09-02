@@ -5,14 +5,14 @@ module
     interface Elastos.Droid.Media.IMetadata;
     interface Elastos.Droid.Media.IMediaPlayer;
     interface Elastos.Droid.View.ISurfaceHolder;
-    using interface Elastos.Net.IInetSocketAddress;
     interface Elastos.Droid.View.ISurface;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.IBitmap;
-
-    using interface Elastos.IO.IFileDescriptor;
-    interface Elastos.Utility.IObjectStringMap;
+    interface Elastos.Net.IInetSocketAddress;
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.Utility.IMap;
+    interface Elastos.Utility.ISet;
 
     namespace Elastos {
     namespace Droid {
@@ -754,7 +754,7 @@ module
         SetDataSource(
             [in] IContext* ctx,
             [in] IUri* uri,
-            [in] IObjectStringMap* headers);
+            [in] IMap* headers);
 
         /**
          * Sets the data source (file-path or http/rtsp URL) to use.
@@ -775,7 +775,7 @@ module
          */
         SetDataSource(
             [in] String path,
-            [in] IObjectStringMap* headers);
+            [in] IMap* headers);
 
         /**
          * Sets the data source (FileDescriptor) to use. It is the caller's responsibility
@@ -983,8 +983,8 @@ module
          * {@hide}
          */
         SetMetadataFilter(
-            [in] IObjectContainer* allow,
-            [in] IObjectContainer* block);
+            [in] ISet* allow,
+            [in] ISet* block);
 
         /**
          * Set the MediaPlayer to start when this MediaPlayer finishes playback

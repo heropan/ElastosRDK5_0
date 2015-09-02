@@ -166,7 +166,7 @@ module
 
         const Int32 DEVICE_OUT_DEFAULT = 0x40000000; // DEVICE_BIT_DEFAULT;
 
-    public static final int DEVICE_OUT_ALL = 0x403FFFFF;
+        const Int32 DEVICE_OUT_ALL = 0x403FFFFF;
                                             // (DEVICE_OUT_EARPIECE |
                                             //   DEVICE_OUT_SPEAKER |
                                             //   DEVICE_OUT_WIRED_HEADSET |
@@ -237,7 +237,7 @@ module
         const Int32 DEVICE_IN_DEFAULT = 0xC0000000;               // DEVICE_BIT_IN | DEVICE_BIT_DEFAULT;
 
 
-    public static final int DEVICE_IN_ALL = 0xC007FFFF;
+        const Int32 DEVICE_IN_ALL = 0xC007FFFF;
                                             // (DEVICE_IN_COMMUNICATION |
                                             //  DEVICE_IN_AMBIENT |
                                             //  DEVICE_IN_BUILTIN_MIC |
@@ -329,6 +329,7 @@ module
 
     }
 
+    [deprecated]
     interface IAudioSystemHelper {
         GetNumStreamTypes(
             [out] Int32* result);

@@ -2,10 +2,32 @@
 module
 {
     interface Elastos.Droid.Os.IHandler;
+    interface Elastos.IO.IByteBuffer;
+    interface IAudioTrack;
 
     namespace Elastos {
     namespace Droid {
     namespace Media {
+
+    /**
+     * Interface definition for a callback to be invoked when the playback head position of
+     * an AudioTrack has reached a notification marker or has increased by a certain period.
+     */
+    interface IOnPlaybackPositionUpdateListener {
+        /**
+         * Called on the listener to notify it that the previously set marker has been reached
+         * by the playback head.
+         */
+        OnMarkerReached(
+            [in] IAudioTrack* track);
+
+        /**
+         * Called on the listener to periodically notify it that the playback head has reached
+         * a multiple of the notification period.
+         */
+        OnPeriodicNotification(
+            [in] IAudioTrack* track);
+    }
 
     /**
      * The AudioTrack class manages and plays a single audio resource for Java applications.
@@ -42,6 +64,7 @@ module
      *
      * AudioTrack is not final and thus permits subclasses, but such use is not recommended.
      */
+    [deprecated]
      interface IAudioTrack {
         /** indicates AudioTrack state is stopped */
         const Int32 PLAYSTATE_STOPPED = 1;  // matches SL_PLAYSTATE_STOPPED
@@ -678,25 +701,6 @@ module
 
     }
 
-    /**
-     * Interface definition for a callback to be invoked when the playback head position of
-     * an AudioTrack has reached a notification marker or has increased by a certain period.
-     */
-    interface IOnPlaybackPositionUpdateListener {
-        /**
-         * Called on the listener to notify it that the previously set marker has been reached
-         * by the playback head.
-         */
-        OnMarkerReached(
-            [in] IAudioTrack* track);
-
-        /**
-         * Called on the listener to periodically notify it that the playback head has reached
-         * a multiple of the notification period.
-         */
-        OnPeriodicNotification(
-            [in] IAudioTrack* track);
-    }
 
     } // namespace media
     } // namepsace Droid

@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.Droid.Media.IIRemoteControlDisplay;
+    interface Elastos.Droid.Media.IRating;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -34,7 +37,7 @@ module
          * @param rcd the display to which current info should be sent
          */
         InformationRequestForDisplay(
-            [in] IRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Int32 w,
             [in] Int32 h);
 
@@ -45,24 +48,24 @@ module
             [in] Int32 clientGeneration);
 
         PlugRemoteControlDisplay(
-            [in] IRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Int32 w,
             [in] Int32 h);
 
         UnplugRemoteControlDisplay(
-            [in] IRemoteControlDisplay * rcd);
+            [in] IIRemoteControlDisplay * rcd);
 
         SetBitmapSizeForDisplay(
-            [in] IRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Int32 w,
             [in] Int32 h);
 
         SetWantsSyncForDisplay(
-            [in] IRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Boolean wantsSync);
 
         EnableRemoteControlDisplay(
-            [in] IRemoteControlDisplay * rcd,
+            [in] IIRemoteControlDisplay * rcd,
             [in] Boolean enabled);
 
         SeekTo(

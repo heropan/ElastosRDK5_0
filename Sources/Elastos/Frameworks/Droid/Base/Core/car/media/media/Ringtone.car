@@ -3,6 +3,7 @@ module
 {
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Media.IAudioAttributes;
 
     namespace Elastos {
     namespace Droid {
@@ -25,6 +26,21 @@ module
          */
         GetStreamType(
             [out] Int32* type);
+
+        /**
+         * Sets the {@link AudioAttributes} for this ringtone.
+         * @param attributes the non-null attributes characterizing this ringtone.
+         */
+        SetAudioAttributes(
+            [in] IAudioAttributes * attributes);
+
+        /**
+         * Returns the {@link AudioAttributes} used by this object.
+         * @return the {@link AudioAttributes} that were set with
+         *     {@link #setAudioAttributes(AudioAttributes)} or the default attributes if none were set.
+         */
+        GetAudioAttributes(
+            [out] IAudioAttributes ** result);
 
         /**
          * Returns a human-presentable title for ringtone. Looks in media and DRM

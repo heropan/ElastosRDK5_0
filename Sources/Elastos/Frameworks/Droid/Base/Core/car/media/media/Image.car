@@ -1,6 +1,9 @@
 
 module
 {
+    interface Elastos.IO.IByteBuffer;
+    interface Elastos.Droid.Graphics.IRect;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -166,7 +169,7 @@ module
          * determined by the format of the Image.
          */
         GetPlanes(
-            [out] ArrayOf<IImagePlane*> * result);
+            [out, callee] ArrayOf<IImagePlane*> * result);
 
 
     }

@@ -1,5 +1,9 @@
 module
 {
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Net.IUri;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -10,6 +14,7 @@ module
      * new session has been created.
      * @hide
      */
+    [deprecated]
     interface IITvInputSessionCallback {
         OnSessionCreated(
             [in] IITvInputSession * session,

@@ -1,9 +1,8 @@
 
 module
 {
-    using interface Elastos.IO.IFileDescriptor;
-    using interface Elastos.Utility.IObjectStringMap;
-
+    interface Elastos.IO.IFileDescriptor;
+    interface Elastos.Utility.IMap;
     interface Elastos.Droid.Content.IContext;
     interface Elastos.Droid.Net.IUri;
     interface Elastos.Droid.Graphics.IBitmap;
@@ -206,7 +205,7 @@ module
          */
         SetDataSource(
             [in] String uri,
-            [in] IObjectStringMap* headers);
+            [in] IMap* headers);
 
         /**
          * Sets the data source (FileDescriptor) to use.  It is the caller's

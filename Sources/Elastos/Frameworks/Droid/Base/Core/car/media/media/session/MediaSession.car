@@ -1,5 +1,17 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IResultReceiver;
+    interface Elastos.Droid.Os.IHandler;
+    interface Elastos.Droid.Content.IIntent;
+    interface Elastos.Droid.App.IPendingIntent;
+    interface Elastos.Droid.Media.IRating;
+    interface Elastos.Droid.Media.IMediaDescription;
+    interface Elastos.Droid.Media.IAudioAttributes;
+    interface Elastos.Droid.Media.IVolumeProvider;
+    interface Elastos.Droid.Media.IMediaMetadata;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -29,7 +41,7 @@ module
          */
         OnCommand(
             [in] String command,
-            [in] IBundle * args,
+            [in] IBundle * arg,
             [in] IResultReceiver * cb);
 
         /**
@@ -189,6 +201,7 @@ module
      * <p>
      * MediaSession objects are thread safe.
      */
+    [deprecated]
     interface IMediaSession {
         /**
          * Set this flag on the session to indicate that it can handle media button
@@ -221,7 +234,7 @@ module
          * @param callback The callback object
          */
         SetCallback(
-            [in] IMediaSessionCallback * callback);
+            [in] IMediaSessionCallback * cb);
 
         /**
          * Set the callback to receive updates for the MediaSession. This includes
@@ -233,7 +246,7 @@ module
          * @param handler The handler that events should be posted on.
          */
         SetCallback(
-            [in] IMediaSessionCallback * callback,
+            [in] IMediaSessionCallback * cb,
             [in] IHandler * handler);
 
         /**
@@ -340,7 +353,7 @@ module
          *         session
          */
         GetSessionToken(
-            [out] IToken ** result);
+            [out] IMediaSessionToken ** result);
 
         /**
          * Get a controller for this session. This is a convenience method to avoid

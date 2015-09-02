@@ -1,5 +1,10 @@
 module
 {
+    interface Elastos.Droid.View.IInputChannel;
+    interface Elastos.Droid.Hardware.Hdmi.IHdmiDeviceInfo;
+    interface IITvInputServiceCallback;
+    interface IITvInputSessionCallback;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -9,16 +14,17 @@ module
      * Top-level interface to a TV input component (implemented in a Service).
      * @hide
      */
+    [deprecated]
     interface IITvInputService {
         RegisterCallback(
-            [in] IITvInputServiceCallback * callback);
+            [in] IITvInputServiceCallback * cb);
 
         UnregisterCallback(
-            [in] IITvInputServiceCallback * callback);
+            [in] IITvInputServiceCallback * cb);
 
         CreateSession(
             [in] IInputChannel * channel,
-            [in] IITvInputSessionCallback * callback,
+            [in] IITvInputSessionCallback * cb,
             [in] String inputId);
 
         // For hardware TvInputService

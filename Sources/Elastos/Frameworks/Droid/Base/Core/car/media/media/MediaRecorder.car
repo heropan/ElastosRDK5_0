@@ -4,7 +4,7 @@ module
     interface Elastos.Droid.Media.IMediaRecorder;
     interface Elastos.Droid.Hardware.IHardwareCamera;
     interface Elastos.Droid.View.ISurface;
-    using interface Elastos.IO.IFileDescriptor;
+    interface Elastos.IO.IFileDescriptor;
 
     namespace Elastos {
     namespace Droid {
@@ -14,6 +14,8 @@ module
         /* Do not change these values without updating their counterparts
          * in system/core/include/system/audio.h!
          */
+
+        const Int32 AUDIO_SOURCE_INVALID = -1;
 
         /** Default audio source **/
         const Int32 DEFAULT = 0;
@@ -46,10 +48,25 @@ module
         const Int32 VOICE_COMMUNICATION = 7;
 
         /**
-         * @hide
-         * Audio source for remote submix.
+         * Audio source for a submix of audio streams to be presented remotely.
+         * <p>
+         * An application can use this audio source to capture a mix of audio streams
+         * that should be transmitted to a remote receiver such as a Wifi display.
+         * While recording is active, these audio streams are redirected to the remote
+         * submix instead of being played on the device speaker or headset.
+         * </p><p>
+         * Certain streams are excluded from the remote submix, including
+         * {@link AudioManager#STREAM_RING}, {@link AudioManager#STREAM_ALARM},
+         * and {@link AudioManager#STREAM_NOTIFICATION}.  These streams will continue
+         * to be presented locally as usual.
+         * </p><p>
+         * Capturing the remote submix audio requires the
+         * {@link android.Manifest.permission#CAPTURE_AUDIO_OUTPUT} permission.
+         * This permission is reserved for use by system components and is not available to
+         * third-party applications.
+         * </p>
          */
-        const Int32 REMOTE_SUBMIX_SOURCE = 8;
+        const Int32 REMOTE_SUBMIX = 8;
     }
 
     interface IVideoSource {
@@ -58,10 +75,25 @@ module
          */
 
         const Int32 DEFAULT = 0;
-        /** Camera video source */
+
+        /** Camera video source
+         * <p>
+         * Using the {@link android.hardware.Camera} API as video source.
+         * </p>
+         */
         const Int32 CAMERA = 1;
-        /** @hide */
-        const Int32 GRALLOC_BUFFER = 2;
+
+        /** Surface video source
+         * <p>
+         * Using a Surface as video source.
+         * </p><p>
+         * This flag must be used when recording from an
+         * {@link android.hardware.camera2} API source.
+         * </p><p>
+         * When using this video source type, use {@link MediaRecorder#getSurface()}
+         * to retrieve the surface created by MediaRecorder.
+         */
+        const Int32 SURFACE = 2;
     }
 
     interface IOutputFormat {
@@ -100,6 +132,9 @@ module
 
         /** @hide H.264/AAC data encapsulated in MPEG2/TS */
         const Int32 OUTPUT_FORMAT_MPEG2TS = 8;
+
+        /** VP8/VORBIS data in a WEBM container */
+        const Int32 WEBM = 9;
     }
 
     interface IAudioEncoder {
@@ -117,6 +152,8 @@ module
         const Int32 HE_AAC = 4;
         /** Enhanced Low Delay AAC (AAC-ELD) audio codec */
         const Int32 AAC_ELD = 5;
+        /** Ogg Vorbis audio codec */
+        const Int32 VORBIS = 6;
     }
 
     interface IVideoEncoder {
@@ -127,6 +164,7 @@ module
         const Int32 H263 = 1;
         const Int32 H264 = 2;
         const Int32 MPEG_4_SP = 3;
+        const Int32 VP8 = 4;
     }
 
     /**
@@ -174,6 +212,48 @@ module
             [in] Int32 extra);
     }
 
+    /**
+     * Used to record audio and video. The recording control is based on a
+     * simple state machine (see below).
+     *
+     * <p><img src="{@docRoot}images/mediarecorder_state_diagram.gif" border="0" />
+     * </p>
+     *
+     * <p>A common case of using MediaRecorder to record audio works as follows:
+     *
+     * <pre>MediaRecorder recorder = new MediaRecorder();
+     * recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+     * recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+     * recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+     * recorder.setOutputFile(PATH_NAME);
+     * recorder.prepare();
+     * recorder.start();   // Recording is now started
+     * ...
+     * recorder.stop();
+     * recorder.reset();   // You can reuse the object by going back to setAudioSource() step
+     * recorder.release(); // Now the object cannot be reused
+     * </pre>
+     *
+     * <p>Applications may want to register for informational and error
+     * events in order to be informed of some internal update and possible
+     * runtime errors during recording. Registration for such events is
+     * done by setting the appropriate listeners (via calls
+     * (to {@link #setOnInfoListener(OnInfoListener)}setOnInfoListener and/or
+     * {@link #setOnErrorListener(OnErrorListener)}setOnErrorListener).
+     * In order to receive the respective callback associated with these listeners,
+     * applications are required to create MediaRecorder objects on threads with a
+     * Looper running (the main UI thread by default already has a Looper running).
+     *
+     * <p><strong>Note:</strong> Currently, MediaRecorder does not work on the emulator.
+     *
+     * <div class="special reference">
+     * <h3>Developer Guides</h3>
+     * <p>For more information about how to use MediaRecorder for recording video, read the
+     * <a href="{@docRoot}guide/topics/media/camera.html#capture-video">Camera</a> developer guide.
+     * For more information about how to use MediaRecorder for recording sound, read the
+     * <a href="{@docRoot}guide/topics/media/audio-capture.html">Audio Capture</a> developer guide.</p>
+     * </div>
+     */
     interface IMediaRecorder {
         /* Do not change this value without updating its counterpart
          * in include/media/mediarecorder.h!
@@ -296,6 +376,19 @@ module
          */
         SetCamera(
             [in] IHardwareCamera* c);
+
+        /**
+         * Gets the surface to record from when using SURFACE video source.
+         *
+         * <p> May only be called after {@link #prepare}. Frames rendered to the Surface before
+         * {@link #start} will be discarded.</p>
+         *
+         * @throws IllegalStateException if it is called before {@link #prepare}, after
+         * {@link #stop}, or is called when VideoSource is not set to SURFACE.
+         * @see android.media.MediaRecorder.VideoSource
+         */
+        GetSurface(
+            [out] ISurface ** result);
 
         /**
          * Sets a Surface to show a preview of recorded media (video). Calls this

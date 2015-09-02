@@ -1,5 +1,8 @@
 module
 {
+    interface Elastos.Core.ICharSequence;
+    interface Elastos.Droid.Os.IBundle;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {
@@ -328,7 +331,7 @@ module
          * Get the list of custom actions.
          */
         GetCustomActions(
-            [out] ArrayOf<IPlaybackStateCustomAction*> * result);
+            [out, callee] ArrayOf<IPlaybackStateCustomAction*> * result);
 
         /**
          * Get a user readable error message. This should be set when the state is

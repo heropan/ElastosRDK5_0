@@ -1,5 +1,11 @@
 module
 {
+    interface Elastos.Droid.View.ISurface;
+    interface Elastos.Droid.Net.IUri;
+    interface Elastos.Droid.Os.IBundle;
+    interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Graphics.IRect;
+
     namespace Elastos {
     namespace Droid {
     namespace Media {

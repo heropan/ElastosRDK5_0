@@ -263,6 +263,9 @@ module
             interface ISoundTriggerRecognitionConfig {}
         }
 
+        namespace Hdmi {
+            interface IHdmiDeviceInfo {}
+        }
 
     }}} // Elastos.Droid.Hardware
 

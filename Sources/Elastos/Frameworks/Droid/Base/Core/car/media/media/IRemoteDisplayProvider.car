@@ -5,9 +5,9 @@ module
     namespace Droid {
     namespace Media {
 
-    interface IIRemoteDisplayCallback {
+    interface IIRemoteDisplayProvider {
         SetCallback(
-            [in] IIRemoteDisplayCallback * callback);
+            [in] IIRemoteDisplayCallback * cb);
 
         SetDiscoveryMode(
             [in] Int32 mode);
