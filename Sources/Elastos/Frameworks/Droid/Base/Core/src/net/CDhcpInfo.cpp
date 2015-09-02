@@ -1,12 +1,16 @@
 
 #include "net/CDhcpInfo.h"
+#if 0 // TODO: Waiting for NetworkUtils
 #include "net/NetworkUtils.h"
-
-using Elastos::Droid::Net::NetworkUtils;
+#endif
 
 namespace Elastos {
 namespace Droid {
 namespace Net {
+
+CAR_OBJECT_IMPL(CDhcpInfo)
+
+CAR_INTERFACE_IMPL_2(CDhcpInfo, Object, IDhcpInfo, IParcelable)
 
 ECode CDhcpInfo::constructor()
 {
@@ -18,6 +22,8 @@ ECode CDhcpInfo::constructor()
 ECode CDhcpInfo::constructor(
     /* [in] */ IDhcpInfo* source)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: change translated codes below
     if (source != NULL)
     {
        source->GetIpAddress(&mIpAddress);
@@ -29,11 +35,14 @@ ECode CDhcpInfo::constructor(
        source->GetLeaseDuration(&mLeaseDuration);
     }
     return NOERROR;
+#endif
 }
 
 ECode CDhcpInfo::ToString(
     /* [out] */ String* result)
 {
+    return E_NOT_IMPLEMENTED;
+#if 0 // TODO: change translated codes below
     VALIDATE_NOT_NULL(result);
 
     StringBuffer str("ipaddr"); PutAddress(&str, mIpAddress);
@@ -48,18 +57,21 @@ ECode CDhcpInfo::ToString(
 
     *result = str.ToString();
     return NOERROR;
+#endif
 }
 
 void CDhcpInfo::PutAddress(
     /* [in] */ StringBuffer* buff,
     /* [in] */ Int32 addr)
 {
+#if 0 // TODO: change translated codes below
     buff = new StringBuffer();
     AutoPtr<IInetAddress> inetAddr;
     NetworkUtils::Int32ToInetAddress(addr,(IInetAddress**)&inetAddr);
     String address;
     inetAddr->GetHostAddress(&address);
     buff->AppendString(address);
+#endif
 }
 
 /** Implement the Parcelable interface {@hide} */
@@ -99,7 +111,7 @@ ECode CDhcpInfo::ReadFromParcel(
     return NOERROR;
 }
 
-ECode CDhcpInfo:: GetIpAddress(
+ECode CDhcpInfo::GetIpAddress(
     /* [out] */ Int32* ipaddress)
 {
     VALIDATE_NOT_NULL(ipaddress);
@@ -107,7 +119,7 @@ ECode CDhcpInfo:: GetIpAddress(
     return NOERROR;
 }
 
-ECode CDhcpInfo:: GetGateway(
+ECode CDhcpInfo::GetGateway(
     /* [out] */ Int32* gateway)
 {
     VALIDATE_NOT_NULL(gateway);
@@ -115,7 +127,7 @@ ECode CDhcpInfo:: GetGateway(
     return NOERROR;
 }
 
-ECode CDhcpInfo:: GetNetmask(
+ECode CDhcpInfo::GetNetmask(
     /* [out] */Int32* netmask)
 {
     VALIDATE_NOT_NULL(netmask);
@@ -123,7 +135,7 @@ ECode CDhcpInfo:: GetNetmask(
     return NOERROR;
 }
 
-ECode CDhcpInfo:: GetDns1(
+ECode CDhcpInfo::GetDns1(
      /* [out] */ Int32* dns1)
 {
     VALIDATE_NOT_NULL(dns1);
