@@ -22,12 +22,14 @@ module
      * interface INativeInterpolatorFactory
      * interface IHasNativeInterpolator
      */
+    [local]
     interface IFallbackLUTInterpolator {
     }
 
     /**
      * Used to create a one-shot float[] LUT & native interpolator
      */
+    [local]
     interface IFallbackLUTInterpolatorHelper {
         CreateNativeInterpolator(
             [in] ITimeInterpolator* interpolator,

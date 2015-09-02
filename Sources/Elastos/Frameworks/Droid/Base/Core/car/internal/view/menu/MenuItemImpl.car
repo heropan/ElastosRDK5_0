@@ -4,8 +4,8 @@ module
     interface Elastos.Core.IRunnable;
     interface Elastos.Core.ICharSequence;
     interface Elastos.Droid.View.IContextMenuInfo;
-    interface Elastos.Droid.View.Menu.ISubMenuBuilder;
-    interface Elastos.Droid.View.Menu.IMenuItemView;
+    interface Elastos.Droid.Internal.View.Menu.ISubMenuBuilder;
+    interface Elastos.Droid.Internal.View.Menu.IMenuItemView;
 
     namespace Elastos {
     namespace Droid {
@@ -38,13 +38,13 @@ module
             IsExclusiveCheckable(
                 [out] Boolean* checkable);
 
+            ActionFormatChanged();
+
             /**
              * @return Whether the menu should show icons for menu items.
              */
             ShouldShowIcon(
                 [out] Boolean* show);
-
-            ActionFormatChanged();
 
             IsActionButton(
                 [out] Boolean* action);
@@ -67,6 +67,7 @@ module
             SetActionViewExpanded(
                 [in] Boolean isExpanded);
 
+            /*********** following method is not public *********/
             GetShortcut(
                 [out] Char32* c);
 

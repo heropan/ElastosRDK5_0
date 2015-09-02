@@ -87,7 +87,6 @@ module
     // merge("view/IDisplayContentChangeListener.car");
     // merge("view/RootViewSurfaceTaker.car");
     merge("view/IInputMethodCallback.car");
-    merge("view/IInputMethodManager.car");
     // merge("view/WindowManagerPolicyThread.car");
     // merge("view/IInputContextCallback.car");
     // merge("view/DisplayManagerAw.car");

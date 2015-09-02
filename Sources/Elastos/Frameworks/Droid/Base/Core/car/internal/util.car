@@ -16,6 +16,7 @@ module
     merge("util/Predicate.car");
     merge("util/Predicates.car");
     merge("util/ProcFileReader.car");
+    merge("util/Protocol.car");
     merge("util/SizedInputStream.car");
     merge("util/TypedProperties.car");
     merge("util/VirtualRefBasePtr.car");

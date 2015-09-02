@@ -9,25 +9,26 @@ module
     namespace View {
     namespace Menu {
 
-        /**
-         * The item view for each item in the {@link IconMenuView}.
-         */
-        /**
-         * @Involve
-         * interface Elastos.Droid.View.Menu.IBaseMenuPresenter
-         */
-        [local]
-        interface IIconMenuPresenter {
+    /**
+     * MenuPresenter for the classic "six-pack" icon menu.
+     */
+    /**
+     * @Involve
+     * interface IMenuPresenter
+     * interface IBaseMenuPresenter
+     */
+    [local]
+    interface IIconMenuPresenter {
 
-            GetNumActualItemsShown(
-                [out] Int32* rst);
+        GetNumActualItemsShown(
+            [out] Int32* rst);
 
-            SaveHierarchyState(
-                [in] IBundle* outState);
+        SaveHierarchyState(
+            [in] IBundle* outState);
 
-            RestoreHierarchyState(
-                [in] IBundle* inState);
-        }
+        RestoreHierarchyState(
+            [in] IBundle* inState);
+    }
 
     } // namespace Menu
     } // namespace View

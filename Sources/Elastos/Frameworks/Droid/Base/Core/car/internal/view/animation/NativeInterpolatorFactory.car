@@ -7,6 +7,7 @@ module {
     namespace View {
     namespace Animation {
 
+    [local]
     interface INativeInterpolatorFactory {
         CreateNativeInterpolator(
             [out] Int64* result);

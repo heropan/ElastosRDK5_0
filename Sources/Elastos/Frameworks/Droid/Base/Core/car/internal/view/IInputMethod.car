@@ -2,13 +2,14 @@
 module
 {
     using interface Elastos.Droid.Os.IBinder;
+    interface Elastos.Droid.Os.IResultReceiver;
+    interface Elastos.Droid.View.IInputChannel;
     interface Elastos.Droid.View.InputMethod.IInputBinding;
     interface Elastos.Droid.View.InputMethod.IEditorInfo;
     interface Elastos.Droid.View.InputMethod.IInputMethodSubtype;
     interface Elastos.Droid.Internal.View.IInputContext;
-    interface Elastos.Droid.View.IInputMethodCallback;
-    interface Elastos.Droid.Os.IResultReceiver;
     interface Elastos.Droid.Internal.View.IIInputMethodSession;
+    interface Elastos.Droid.Internal.View.IInputSessionCallback;
 
     namespace Elastos {
     namespace Droid {
@@ -20,7 +21,7 @@ module
      * Service).
      * {@hide}
      */
-    [deprecated, oneway]
+    [oneway]
     interface IIInputMethod {
         AttachToken(
             [in] IBinder* token);
@@ -40,7 +41,7 @@ module
 
         CreateSession(
             [in] IInputChannel* channel,
-            [in] IInputMethodCallback* inputMethodCalllback);
+            [in] IInputSessionCallback* inputMethodCalllback);
 
         SetSessionEnabled(
             [in] IIInputMethodSession* session,

@@ -13,7 +13,6 @@ module
     merge("util/TrustedTime.car");
     merge("util/NtpTrustedTime.car");
     merge("util/Property.car");
-    merge("util/Protocol.car");
     merge("util/Pair.car");
     merge("util/Base64.car");
     merge("util/Base64InputStream.car");

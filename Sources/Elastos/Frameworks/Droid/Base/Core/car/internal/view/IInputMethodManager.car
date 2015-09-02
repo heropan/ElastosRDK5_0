@@ -21,7 +21,7 @@ module
      * Public interface to the global input method manager, used by all client
      * applications.
      */
-    [deprecated]
+    [local, parcelable, deprecated]
     interface IIInputMethodManager {
         GetInputMethodList(
             [out] IList** infos);
@@ -148,6 +148,10 @@ module
             [in] Boolean onlyCurrentIme,
             [out] Boolean* switched);
 
+        ShouldOfferSwitchingToNextInputMethod(
+            [in] IBinder* token,
+            [out] Boolean* result);
+
         SetInputMethodEnabled(
             [in] String id,
             [in] Boolean enabled,
@@ -156,6 +160,12 @@ module
         SetAdditionalInputMethodSubtypes(
             [in] String id,
             [in] ArrayOf<IInputMethodSubtype*>* subtypes);
+
+        GetInputMethodWindowVisibleHeight(
+            [out] Int32* height);
+
+        [oneway] NotifyUserAction(
+            [in] Int32 sequenceNumber);
     }
 
     } // namespace View

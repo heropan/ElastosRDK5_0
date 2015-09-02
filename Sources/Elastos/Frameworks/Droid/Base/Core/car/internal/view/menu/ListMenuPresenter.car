@@ -10,34 +10,33 @@ module
     namespace View {
     namespace Menu {
 
-        /**
-         * The item view for each item in the {@link IconMenuView}.
-         */
-        /**
-         * @Involve
-         * interface Elastos.Droid.View.Menu.IMenuPresenter
-         */
-        [local]
-        interface IListMenuPresenter {
+    /**
+     * The item view for each item in the {@link IconMenuView}.
+     */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.Menu.IMenuPresenter
+     * interface Elastos.Droid.Widget.IAdapterViewOnItemClickListener
+     */
+    [local]
+    interface IListMenuPresenter {
+        const String VIEWS_TAG = "android:menu:list";
 
-            GetAdapter(
-                [out] IListAdapter** apt);
+        GetAdapter(
+            [out] IListAdapter** apt);
 
-            GetItemIndexOffset(
-                [out] Int32* offset);
+        SetItemIndexOffset(
+            [in] Int32 offset);
 
-            SetItemIndexOffset(
-                [in] Int32 offset);
+        SaveHierarchyState(
+            [in] IBundle* outState);
 
-            SaveHierarchyState(
-                [in] IBundle* outState);
+        RestoreHierarchyState(
+            [in] IBundle* outState);
 
-            RestoreHierarchyState(
-                [in] IBundle* outState);
-
-            SetId(
-                [in] Int32 id);
-        }
+        SetId(
+            [in] Int32 id);
+    }
 
     } // namespace Menu
     } // namespace View

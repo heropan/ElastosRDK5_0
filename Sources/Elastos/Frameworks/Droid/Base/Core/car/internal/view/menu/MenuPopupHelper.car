@@ -2,6 +2,7 @@
 module
 {
     interface Elastos.Droid.View.IView;
+    interface Elastos.Droid.Widget.IListPopupWindow;
 
     namespace Elastos {
     namespace Droid {
@@ -9,35 +10,43 @@ module
     namespace View {
     namespace Menu {
 
-        /**
-         * The item view for each item in the {@link IconMenuView}.
-         */
-        [local]
-        interface IMenuPopupHelper {
+    /**
+     * Presents a menu as a small, simple popup anchored to another view.
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface IAdapterViewOnItemClickListener;
+     * interface IViewOnKeyListener;
+     * interface IOnGlobalLayoutListener;
+     * interface IPopupWindowOnDismissListener;
+     * interface IViewOnAttachStateChangeListener;
+     * interface IMenuPresenter;
+     */
+    [local]
+    interface IMenuPopupHelper {
+        SetAnchorView(
+            [in] IView* anchor);
 
-            SetAnchorView(
-                [in] IView* anchor);
+        SetForceShowIcon(
+            [in] Boolean forceShow);
 
-            SetForceShowIcon(
-                [in] Boolean forceShow);
+        SetGravity(
+            [in] Int32 gravity);
 
-            Show();
+        Show();
 
-            TryShow(
-                [out] Boolean* rst);
+        GetPopup(
+            [out] IListPopupWindow** listPopup);
 
-            Dismiss();
+        TryShow(
+            [out] Boolean* rst);
 
-            IsShowing(
-                [out] Boolean* rst);
-        }
+        Dismiss();
 
-        /**
-         * @Involve
-         * interface Elastos.Droid.Widget.IBaseAdapter
-         */
-        interface IMenuAdapter {
-        }
+        IsShowing(
+            [out] Boolean* rst);
+    }
 
     } // namespace Menu
     } // namespace View

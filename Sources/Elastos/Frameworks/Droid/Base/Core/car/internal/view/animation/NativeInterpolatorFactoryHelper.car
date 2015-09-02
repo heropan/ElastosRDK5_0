@@ -11,7 +11,7 @@ module {
      * Static utility class for constructing native interpolators to keep the
      * JNI simpler
      */
-    [deprecated]
+    [local, deprecated]
     interface INativeInterpolatorFactoryHelper {
         CreateAccelerateDecelerateInterpolator(
             [out] Int64* result);

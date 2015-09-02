@@ -7,22 +7,22 @@ module
     namespace View {
     namespace Menu {
 
-        /**
-         * @hide
-         */
-        /**
-         * @Involve
-         * interface Elastos.Droid.View.IMenuItem
-         */
-        [local]
-        interface IActionMenuItem {
+    /**
+     * @hide
+     */
+    /**
+     * @Involve
+     * interface Elastos.Droid.View.IMenuItem
+     */
+    [local]
+    interface IActionMenuItem {
 
-            SetExclusiveCheckable(
-                [in] Boolean exclusive);
+        SetExclusiveCheckable(
+            [in] Boolean exclusive);
 
-            Invoke(
-                [out] Boolean* res);
-        }
+        Invoke(
+            [out] Boolean* res);
+    }
 
     } // namespace Menu
     } // namespace View

@@ -159,7 +159,7 @@ module
    //  interface Elastos.Droid.View.IViewOnCreateContextMenuListener;
    //  interface Elastos.Droid.View.Animation.IInterpolator;
    //  interface Elastos.Droid.View.IViewOnLongClickListener;
-   //  interface Elastos.Droid.View.Menu.IMenuPresenterCallback;
+   //  interface Elastos.Droid.Internal.View.Menu.IMenuPresenterCallback;
    //  interface Elastos.Droid.View.Menu.IMenuBuilderCallback;
    //  interface Elastos.Droid.View.IOnGlobalLayoutListener;
    //  interface Elastos.Droid.View.ICollapsibleActionView;

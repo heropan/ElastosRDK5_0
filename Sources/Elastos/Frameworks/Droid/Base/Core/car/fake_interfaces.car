@@ -189,28 +189,6 @@ module
     namespace Droid {
     namespace Internal {
 
-        namespace View {
-            interface IIInputMethod {}
-
-            namespace Menu {
-
-                interface IMenuBuilder {}
-
-                interface IMenuItemImpl {}
-
-                interface IMenuPresenter {}
-
-                interface IMenuPresenterCallback {}
-
-                interface IMenuBuilderCallback {}
-
-                interface IMenuView {}
-
-                interface IBaseMenuPresenter {}
-
-            }
-        }
-
         namespace Telephony {
             interface ICallerInfo {}
 
@@ -218,15 +196,6 @@ module
 
             interface IPhoneConstants {}
         }
-
-        namespace Utility {
-
-            interface IStateMachine {}
-            interface IAsyncChannel {}
-            interface IProtocol {}
-            interface IArrayUtils {}
-
-        } // namespace Utility
 
     } // namespace Internal
     } // namespace Droid

@@ -1,15 +1,17 @@
 
 module
 {
+    interface Elastos.Droid.View.IWindowSession;
+
     namespace Elastos {
     namespace Droid {
+    namespace Internal {
     namespace View {
 
     /**
      * @Involve
      * interface IIWindow
      */
-    [deprecated]
     interface IBaseIWindow {
         SetSession(
             [in] IWindowSession* session);
@@ -22,6 +24,7 @@ module
     }
 
     } // namespace View
+    } // namespace Internal
     } // namepsace Droid
     } // namespace Elastos
 }

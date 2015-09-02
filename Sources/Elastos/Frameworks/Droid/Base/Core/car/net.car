@@ -6,8 +6,8 @@ module
     merge("net/DnsPinger.car");
     merge("net/DhcpInfo.car");
     merge("net/DhcpResults.car");
-    merge("net/DhcpStateMachine.car");
-    merge("net/DhcpStateMachineHelper.car");
+    // merge("net/DhcpStateMachine.car");
+    // merge("net/DhcpStateMachineHelper.car");
     merge("net/EthernetManager.car");
     merge("net/InterfaceConfiguration.car");
     merge("net/IEthernetManager.car");

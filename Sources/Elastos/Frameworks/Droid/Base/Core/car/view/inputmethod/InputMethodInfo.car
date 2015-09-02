@@ -30,7 +30,7 @@ module
      * @Involve
      * interface IParcelable
      */
-    [local]
+    [local, parcelable]
     interface IInputMethodInfo {
         /**
          * Return a unique ID for this input method.  The ID is generated from

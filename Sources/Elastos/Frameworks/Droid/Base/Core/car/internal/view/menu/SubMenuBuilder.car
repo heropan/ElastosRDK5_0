@@ -9,18 +9,19 @@ module
     namespace View {
     namespace Menu {
 
-        /**
-         * The model for a sub menu, which is an extension of the menu.  Most methods are proxied to
-         * the parent menu.
-         */
-        /**
-         * @Involve
-         * interface IMenuBuilder
-         */
-        interface ISubMenuBuilder {
-            GetParentMenu(
-                [out] IMenu** menu);
-        }
+    /**
+     * The model for a sub menu, which is an extension of the menu.  Most methods are proxied to
+     * the parent menu.
+     */
+    /**
+     * @Involve
+     * interface IMenuBuilder
+     */
+    [local]
+    interface ISubMenuBuilder {
+        GetParentMenu(
+            [out] IMenu** menu);
+    }
 
     } // namespace Menu
     } // namespace View

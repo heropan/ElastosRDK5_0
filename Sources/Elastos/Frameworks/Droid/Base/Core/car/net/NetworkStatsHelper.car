@@ -7,8 +7,6 @@ module
     interface Elastos.Droid.Os.IParcel;
     interface Elastos.Droid.Os.IParcelable;
     interface Elastos.Droid.Utility.ISparseBooleanArray;
-    interface Elastos.Droid.Internal.Utility.IArrayUtils;
-
 
     namespace Elastos {
     namespace Droid {
