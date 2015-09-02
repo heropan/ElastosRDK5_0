@@ -214,7 +214,8 @@ const Int32 View::PFLAG2_LAYOUT_DIRECTION_RESOLVED = 8 << PFLAG2_LAYOUT_DIRECTIO
 const Int32 View::PFLAG2_LAYOUT_DIRECTION_RESOLVED_MASK = 0x0000000C
             << PFLAG2_LAYOUT_DIRECTION_MASK_SHIFT;
 
-const Int32 View::PFLAG2_HAS_TRANSIENT_STATE = 0x1 << 22;
+const Int32 View::PFLAG2_HAS_TRANSIENT_STATE = 0x80000000;
+const Int32 View::LAYOUT_DIRECTION_RESOLVED_DEFAULT = IView::LAYOUT_DIRECTION_LTR;
 const Int32 View::PFLAG2_TEXT_DIRECTION_MASK_SHIFT = 6;
 const Int32 View::PFLAG2_TEXT_DIRECTION_MASK = 0x00000007
             << PFLAG2_TEXT_DIRECTION_MASK_SHIFT;
@@ -245,14 +246,19 @@ const Int32 View::PFLAG2_TEXT_ALIGNMENT_RESOLVED_DEFAULT =
 const Int32 View::PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT = 20;
 const Int32 View::IMPORTANT_FOR_ACCESSIBILITY_DEFAULT = IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO;
 const Int32 View::PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_MASK = (IView::IMPORTANT_FOR_ACCESSIBILITY_AUTO
-        | IView::IMPORTANT_FOR_ACCESSIBILITY_YES | IView::IMPORTANT_FOR_ACCESSIBILITY_NO)
-        << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
-const Int32 View::PFLAG2_ACCESSIBILITY_FOCUSED = 0x00000040 << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
-const Int32 View::PFLAG2_ACCESSIBILITY_STATE_CHANGED = 0x00000080
-            << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
+        | IView::IMPORTANT_FOR_ACCESSIBILITY_YES | IView::IMPORTANT_FOR_ACCESSIBILITY_NO
+        | IView::IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS ) << PFLAG2_IMPORTANT_FOR_ACCESSIBILITY_SHIFT;
+const Int32 View::PFLAG2_ACCESSIBILITY_LIVE_REGION_SHIFT = 23;
+const Int32 View::ACCESSIBILITY_LIVE_REGION_DEFAULT = IView::ACCESSIBILITY_LIVE_REGION_NONE;
+const Int32 View::PFLAG2_ACCESSIBILITY_LIVE_REGION_MASK = (IView::ACCESSIBILITY_LIVE_REGION_NONE
+            | IView::ACCESSIBILITY_LIVE_REGION_POLITE | IView::ACCESSIBILITY_LIVE_REGION_ASSERTIVE)
+            << PFLAG2_ACCESSIBILITY_LIVE_REGION_SHIFT;
+const Int32 View::PFLAG2_ACCESSIBILITY_FOCUSED = 0x04000000;
+const Int32 View::PFLAG2_SUBTREE_ACCESSIBILITY_STATE_CHANGED = 0x00000080;
 const Int32 View::PFLAG2_VIEW_QUICK_REJECTED = 0x10000000;
 const Int32 View::PFLAG2_PADDING_RESOLVED = 0x20000000;
 const Int32 View::PFLAG2_DRAWABLE_RESOLVED = 0x40000000;
+const Int32 View::PFLAG2_HAS_TRANSIENT_STATE = 0x80000000;
 const Int32 View::ALL_RTL_PROPERTIES_RESOLVED = PFLAG2_LAYOUT_DIRECTION_RESOLVED |
             PFLAG2_TEXT_DIRECTION_RESOLVED |
             PFLAG2_TEXT_ALIGNMENT_RESOLVED |
@@ -260,9 +266,14 @@ const Int32 View::ALL_RTL_PROPERTIES_RESOLVED = PFLAG2_LAYOUT_DIRECTION_RESOLVED
             PFLAG2_DRAWABLE_RESOLVED;
 const Int32 View::PFLAG3_VIEW_IS_ANIMATING_TRANSFORM = 0x1;
 const Int32 View::PFLAG3_VIEW_IS_ANIMATING_ALPHA = 0x2;
+const Int32 View::PFLAG3_IS_LAID_OUT = 0x4;
+const Int32 View::PFLAG3_MEASURE_NEEDED_BEFORE_LAYOUT = 0x8;
+const Int32 View::PFLAG3_CALLED_SUPER = 0x10;
+const Int32 View::PFLAG3_APPLYING_INSETS = 0x20;
+const Int32 View::PFLAG3_FITTING_SYSTEM_WINDOWS = 0x40;
+const Int32 View::PFLAG3_NESTED_SCROLLING_ENABLED = 0x80;
+const Int32 View::PFLAG3_OUTLINE_INVALID = 0x100;
 const Int32 View::DRAG_MASK = PFLAG2_DRAG_CAN_ACCEPT | PFLAG2_DRAG_HOVERED;
-
-
 
 const Int32 View::POPULATING_ACCESSIBILITY_EVENT_TYPES =
         IAccessibilityEvent::TYPE_VIEW_CLICKED
@@ -287,6 +298,7 @@ const Int32 View::LAYOUT_DIRECTION_FLAGS[] = {
     };
 const Int32 View::LAYOUT_DIRECTION_DEFAULT = IView::LAYOUT_DIRECTION_INHERIT;
 const Int32 View::TEXT_ALIGNMENT_DEFAULT = IView::TEXT_ALIGNMENT_GRAVITY;
+const Int32 View::TEXT_ALIGNMENT_RESOLVED_DEFAULT = IView::TEXT_ALIGNMENT_GRAVITY;
 const Int32 View::PFLAG2_TEXT_DIRECTION_FLAGS[] = {
             IView::TEXT_DIRECTION_INHERIT << PFLAG2_TEXT_DIRECTION_MASK_SHIFT,
             IView::TEXT_DIRECTION_FIRST_STRONG << PFLAG2_TEXT_DIRECTION_MASK_SHIFT,
@@ -296,7 +308,7 @@ const Int32 View::PFLAG2_TEXT_DIRECTION_FLAGS[] = {
             IView::TEXT_DIRECTION_LOCALE << PFLAG2_TEXT_DIRECTION_MASK_SHIFT
     };
 const Int32 View::TEXT_DIRECTION_DEFAULT = IView::TEXT_DIRECTION_INHERIT;
-const Int32 View::ACCESSIBILITY_CURSOR_POSITION_UNDEFINED = -1;
+const Int32 View::TEXT_DIRECTION_RESOLVED_DEFAULT = IView::TEXT_DIRECTION_FIRST_STRONG;
 
 const Int32 View::VIEW_STATE_WINDOW_FOCUSED = 1;
 const Int32 View::VIEW_STATE_SELECTED = 1 << 1;
@@ -317,8 +329,12 @@ const Int32 View::DRAWING_CACHE_QUALITY_FLAGS[] = {
 };
 
 const AutoPtr<ArrayOf<Int32Array> > View::VIEW_STATE_SETS = InitViewStateSets();
-const Float View::NONZERO_EPSILON = .001f;
 const Int32 View::UNDEFINED_PADDING = Elastos::Core::Math::INT32_MIN_VALUE;
+
+Boolean View::mDebugViewAttributes = FALSE;
+Boolean View::sCompatibilityDone = FALSE;
+Boolean View::sUseBrokenMakeMeasureSpec = FALSE;
+Boolean View::sIgnoreMeasureCache = FALSE;
 
 Int32 View::sNextAccessibilityViewId = 0;
 Int32 View::sNextGeneratedId = 1;
@@ -500,21 +516,8 @@ const AutoPtr<ArrayOf<Int32Array> > View::InitViewStateSets()
 // }
 
 View::TransformationInfo::TransformationInfo()
-    : mMatrixDirty(FALSE)
-    , mRotationY(0.0f)
-    , mRotationX(0.0f)
-    , mRotation(0.0f)
-    , mTranslationX(0.0f)
-    , mTranslationY(0.0f)
-    , mScaleX(1.0f)
-    , mScaleY(1.0f)
-    , mPivotX(0.0f)
-    , mPivotY(0.0f)
-    , mAlpha(1.0f)
-    , mInverseMatrixDirty(TRUE)
-    , mMatrixIsIdentity(TRUE)
-    , mPrevWidth(-1)
-    , mPrevHeight(-1)
+    : mAlpha(1.0f)
+    , mTransitionAlpha(1.0f)
 {
     CMatrix::New((IMatrix**)&mMatrix);
 }
@@ -1182,6 +1185,9 @@ View::View()
     , mVerticalScrollbarPosition(0)
     , mLayerType(IView::LAYER_TYPE_NONE)
     , mSendingHoverAccessibilityEvents(FALSE)
+    , mLeftPaddingDefined(FALSE)
+    , mRightPaddingDefined(FALSE)
+    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
@@ -1243,6 +1249,9 @@ View::View(
     , mVerticalScrollbarPosition(0)
     , mLayerType(IView::LAYER_TYPE_NONE)
     , mSendingHoverAccessibilityEvents(FALSE)
+    , mLeftPaddingDefined(FALSE)
+    , mRightPaddingDefined(FALSE)
+    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
@@ -1307,6 +1316,9 @@ View::View(
     , mVerticalScrollbarPosition(0)
     , mLayerType(IView::LAYER_TYPE_NONE)
     , mSendingHoverAccessibilityEvents(FALSE)
+    , mLeftPaddingDefined(FALSE)
+    , mRightPaddingDefined(FALSE)
+    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
@@ -1372,6 +1384,9 @@ View::View(
     , mVerticalScrollbarPosition(0)
     , mLayerType(IView::LAYER_TYPE_NONE)
     , mSendingHoverAccessibilityEvents(FALSE)
+    , mLeftPaddingDefined(FALSE)
+    , mRightPaddingDefined(FALSE)
+    //, mOutlineProvider(ViewOutlineProvider::BACKGROUND)
 {
     if (InputEventConsistencyVerifier::IsInstrumentationEnabled()) {
         mInputEventConsistencyVerifier = new InputEventConsistencyVerifier((IInterface*)this, 0);
@@ -1389,9 +1404,7 @@ View::~View()
     mKeyedTags.Clear();
     mInputEventConsistencyVerifier = NULL;
     mAccessibilityDelegate = NULL;
-    mLocalDirtyRect = NULL;
     mLayerPaint = NULL;
-    mLocalDirtyRect = NULL;
     mAnimator = NULL;
     mFloatingTreeObserver = NULL;
     mTouchDelegate = NULL;
@@ -1400,8 +1413,6 @@ View::~View()
     mPerformClick = NULL;
     mPendingCheckForTap = NULL;
     mPendingCheckForLongPress = NULL;
-    mDisplayList = NULL;
-    mHardwareLayer = NULL;
     mUnscaledDrawingCache = NULL;
     mDrawingCache = NULL;
     mDrawableState = NULL;
@@ -14275,6 +14286,24 @@ ECode View::Init(
     SetOverScrollMode(IView::OVER_SCROLL_IF_CONTENT_SCROLLS);
     mUserPaddingStart = UNDEFINED_PADDING;
     mUserPaddingEnd = UNDEFINED_PADDING;
+
+    mRenderNode = RenderNode::Create(String("View"), THIS_PROBE(IView));
+
+    if (!sCompatibilityDone && context) {
+        AutoPtr<IApplicationInfo> info;
+        context->GetApplicationInfo((IApplicationInfo**)&info);
+        Int32 targetSdkVersion;
+        info->GetTargetSdkVersion(&targetSdkVersion);
+
+        // Older apps may need this compatibility hack for measurement.
+        sUseBrokenMakeMeasureSpec = targetSdkVersion <= Build::VERSION_CODES::JELLY_BEAN_MR1;
+
+        // Older apps expect onMeasure() to always be called on a layout pass, regardless
+        // of whether a layout was requested on that View.
+        sIgnoreMeasureCache = targetSdkVersion < Build::VERSION_CODES::KITKAT;
+
+        sCompatibilityDone = TRUE;
+    }
 
     return NOERROR;
 }
